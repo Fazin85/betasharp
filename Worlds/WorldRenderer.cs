@@ -1,10 +1,10 @@
 using betareborn.Chunks;
+using betareborn.Profiling;
 using betareborn.Rendering;
 using Silk.NET.Maths;
 
 namespace betareborn.Worlds
 {
-    //TODO: THERE IS SOME KIND OF BUG WITH UNLOADING, WHERE RENDERERS WILL NEVER GET REMESHED
     public class WorldRenderer
     {
         static WorldRenderer()
@@ -49,9 +49,10 @@ namespace betareborn.Worlds
         private readonly ChunkMeshGenerator meshGenerator;
         private readonly World world;
         private readonly Dictionary<Vector3D<int>, ChunkMeshVersion> chunkVersions = [];
+        private readonly List<Vector3D<int>> chunkVersionsToRemove = [];
         private readonly List<ChunkToMeshInfo> dirtyChunks = [];
         private readonly List<ChunkToMeshInfo> lightingUpdates = [];
-        private int lastRenderDistance = 16;
+        private int lastRenderDistance;
         private Vector3D<double> lastViewPos;
         private int currentIndex = 0;
 
@@ -211,7 +212,7 @@ namespace betareborn.Worlds
         {
             foreach (var state in renderers.Values)
             {
-                if (state.IsLit)
+                if (IsChunkInRenderDistance(state.Renderer.Position, lastViewPos) && state.IsLit)
                 {
                     if (!chunkVersions.TryGetValue(state.Renderer.Position, out var version))
                     {
@@ -232,6 +233,8 @@ namespace betareborn.Worlds
 
         public void Tick(Vector3D<double> viewPos)
         {
+            Profiler.Start("WorldRenderer.Tick");
+
             lastViewPos = viewPos;
 
             Vector3D<int> currentChunk = new(
@@ -314,6 +317,25 @@ namespace betareborn.Worlds
                     }
                 }
             }
+
+            Profiler.Start("WorldRenderer.Tick.RemoveVersions");
+            foreach (var version in chunkVersions)
+            {
+                if (!IsChunkInRenderDistance(version.Key, lastViewPos))
+                {
+                    chunkVersionsToRemove.Add(version.Key);
+                }
+            }
+
+            foreach (var pos in chunkVersionsToRemove)
+            {
+                chunkVersions.Remove(pos);
+            }
+
+            chunkVersionsToRemove.Clear();
+            Profiler.Stop("WorldRenderer.Tick.RemoveVersions");
+
+            Profiler.Stop("WorldRenderer.Tick");
         }
 
         public bool MarkDirty(Vector3D<int> chunkPos, bool priority = false)

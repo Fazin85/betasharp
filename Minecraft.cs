@@ -618,6 +618,10 @@ namespace betareborn
                             ImGui.Text($"Async IO ops: {AsyncIO.activeTaskCount()}");
                             ImGui.End();
 
+                            ImGui.Begin("Render Info");
+                            ImGui.Text($"Vertex Buffer Allocated MB: {VertexBuffer<Vertex>.Allocated / 1000000.0}");
+                            ImGui.End();
+
                             imGuiController.Render();
                         }
 

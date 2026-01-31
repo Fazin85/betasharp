@@ -4,14 +4,18 @@ namespace betareborn.Rendering
 {
     public class VertexBuffer<T> : IDisposable where T : unmanaged
     {
+        public static long Allocated = 0;
         private uint id = 0;
         private bool disposed = false;
+        private int size = 0;
 
-        public VertexBuffer(Span<T> data)
+        public unsafe VertexBuffer(Span<T> data)
         {
             id = GLManager.GL.GenBuffer();
             GLManager.GL.BindBuffer(GLEnum.ArrayBuffer, id);
             GLManager.GL.BufferData<T>(GLEnum.ArrayBuffer, data, GLEnum.StaticDraw);
+            size = data.Length * sizeof(T);
+            Allocated += size;
         }
 
         public void Bind()
@@ -35,6 +39,10 @@ namespace betareborn.Rendering
                 GLManager.GL.BindBuffer(GLEnum.ArrayBuffer, id);
                 GLManager.GL.BufferData(GLEnum.ArrayBuffer, (nuint)(data.Length * sizeof(T)), (void*)0, GLEnum.StaticDraw);
                 GLManager.GL.BufferData<T>(GLEnum.ArrayBuffer, data, GLEnum.StaticDraw);
+
+                Allocated -= size;
+                size = data.Length * sizeof(T);
+                Allocated += size;
             }
         }
 
@@ -50,6 +58,8 @@ namespace betareborn.Rendering
             if (id != 0)
             {
                 GLManager.GL.DeleteBuffer(id);
+                Allocated -= size;
+                size = 0;
                 id = 0;
             }
 
