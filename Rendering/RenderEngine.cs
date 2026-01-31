@@ -7,12 +7,12 @@ using java.nio;
 using java.util;
 using javax.imageio;
 using Silk.NET.OpenGL.Legacy;
+using static betareborn.Textures.TextureAtlasMipmapGenerator;
 
 namespace betareborn.Rendering
 {
     public class RenderEngine : java.lang.Object
     {
-        public static bool useMipmaps = false;
         private readonly HashMap textureMap = [];
         private readonly HashMap field_28151_c = [];
         private readonly HashMap textureNameToImageMap = [];
@@ -31,9 +31,9 @@ namespace betareborn.Rendering
             texturePack = var1;
             options = var2;
             Graphics var3 = missingTextureImage.getGraphics();
-            var3.setColor(Color.WHITE);
+            var3.setColor(java.awt.Color.WHITE);
             var3.fillRect(0, 0, 64, 64);
-            var3.setColor(Color.BLACK);
+            var3.setColor(java.awt.Color.BLACK);
             var3.drawString("missingtex", 1, 10);
             var3.dispose();
         }
@@ -150,7 +150,49 @@ namespace betareborn.Rendering
                         }
                         else
                         {
-                            setupTexture(readTextureImage(var7), var6);
+                            if (var1.Contains("terrain.png"))
+                            {
+                                BufferedImage img = readTextureImage(var7);
+
+                                TextureAtlas[] mips = GenerateMipmaps(bufferedImageToTextureAtlas(img), 16);
+
+                                GLManager.GL.BindTexture(TextureTarget.Texture2D, (uint)var6);
+
+                                for (int mipLevel = 0; mipLevel < mips.Length; mipLevel++)
+                                {
+                                    TextureAtlas mip = mips[mipLevel];
+                                    byte[] pixelData = ToByteArray(mip.Pixels);
+
+                                    unsafe
+                                    {
+                                        fixed (byte* ptr = pixelData)
+                                        {
+                                            GLManager.GL.TexImage2D(
+                                                TextureTarget.Texture2D,
+                                                mipLevel,
+                                                InternalFormat.Rgba8,
+                                                (uint)mip.Width,
+                                                (uint)mip.Height,
+                                                0,
+                                                PixelFormat.Rgba,
+                                                PixelType.UnsignedByte,
+                                                ptr
+                                            );
+                                        }
+                                    }
+                                }
+
+                                GLManager.GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
+                                                 (int)TextureMinFilter.NearestMipmapNearest);
+                                GLManager.GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
+                                                 (int)TextureMagFilter.Nearest);
+                                GLManager.GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel,
+                                                 mips.Length - 1);
+                            }
+                            else
+                            {
+                                setupTexture(readTextureImage(var7), var6);
+                            }
                         }
                     }
 
@@ -198,16 +240,8 @@ namespace betareborn.Rendering
         {
             GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var2);
 
-            if (useMipmaps)
-            {
-                GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMinFilter, (int)GLEnum.NearestMipmapLinear);
-                GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMagFilter, (int)GLEnum.Nearest);
-            }
-            else
-            {
-                GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMinFilter, (int)GLEnum.Nearest);
-                GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMagFilter, (int)GLEnum.Nearest);
-            }
+            GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMinFilter, (int)GLEnum.Nearest);
+            GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMagFilter, (int)GLEnum.Nearest);
 
             if (blurTexture)
             {
@@ -261,31 +295,6 @@ namespace betareborn.Rendering
             {
                 var ptr = (byte*)p;
                 GLManager.GL.TexImage2D(GLEnum.Texture2D, 0, (int)GLEnum.Rgba, (uint)var3, (uint)var4, 0, GLEnum.Rgba, GLEnum.UnsignedByte, ptr);
-
-                if (useMipmaps)
-                {
-                    for (var7 = 1; var7 <= 4; ++var7)
-                    {
-                        var8 = var3 >> var7 - 1;
-                        var9 = var3 >> var7;
-                        var10 = var4 >> var7;
-
-                        for (var11 = 0; var11 < var9; ++var11)
-                        {
-                            for (var12 = 0; var12 < var10; ++var12)
-                            {
-                                var13 = imageData.getInt((var11 * 2 + 0 + (var12 * 2 + 0) * var8) * 4);
-                                var14 = imageData.getInt((var11 * 2 + 1 + (var12 * 2 + 0) * var8) * 4);
-                                int var15 = imageData.getInt((var11 * 2 + 1 + (var12 * 2 + 1) * var8) * 4);
-                                int var16 = imageData.getInt((var11 * 2 + 0 + (var12 * 2 + 1) * var8) * 4);
-                                int var17 = weightedAverageColor(weightedAverageColor(var13, var14), weightedAverageColor(var15, var16));
-                                imageData.putInt((var11 + var12 * var9) * 4, var17);
-                            }
-                        }
-
-                        GLManager.GL.TexImage2D(GLEnum.Texture2D, var7, (int)GLEnum.Rgba, (uint)var9, (uint)var10, 0, GLEnum.Rgba, GLEnum.UnsignedByte, ptr);
-                    }
-                }
             });
         }
 
@@ -294,16 +303,10 @@ namespace betareborn.Rendering
             //TODO: this is probably wrong and will crash
 
             GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var4);
-            if (useMipmaps)
-            {
-                GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMinFilter, (int)GLEnum.NearestMipmapLinear);
-                GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMagFilter, (int)GLEnum.Nearest);
-            }
-            else
-            {
-                GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMinFilter, (int)GLEnum.Nearest);
-                GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMagFilter, (int)GLEnum.Nearest);
-            }
+
+            GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMinFilter, (int)GLEnum.Nearest);
+            GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMagFilter, (int)GLEnum.Nearest);
+
             if (blurTexture)
             {
                 GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMinFilter, (int)GLEnum.Linear);
@@ -424,14 +427,6 @@ namespace betareborn.Rendering
             TextureFX var2;
             int var3;
             int var4;
-            int var5;
-            int var6;
-            int var7;
-            int var8;
-            int var9;
-            int var10;
-            int var11;
-            int var12;
 
             for (var1 = 0; var1 < textureList.size(); ++var1)
             {
@@ -441,41 +436,22 @@ namespace betareborn.Rendering
                 imageData.put(var2.imageData);
                 imageData.position(0).limit(var2.imageData.Length);
                 var2.bindImage(this);
-
                 BufferHelper.UsePointer(imageData, (p =>
                 {
                     var ptr = (byte*)p;
-
                     for (var3 = 0; var3 < var2.tileSize; ++var3)
                     {
                         for (var4 = 0; var4 < var2.tileSize; ++var4)
                         {
-                            GLManager.GL.TexSubImage2D(GLEnum.Texture2D, 0, var2.iconIndex % 16 * 16 + var3 * 16, var2.iconIndex / 16 * 16 + var4 * 16, 16, 16, GLEnum.Rgba, GLEnum.UnsignedByte, ptr);
-
-                            if (useMipmaps)
-                            {
-                                for (var5 = 1; var5 <= 4; ++var5)
-                                {
-                                    var6 = 16 >> var5 - 1;
-                                    var7 = 16 >> var5;
-                                    for (var8 = 0; var8 < var7; ++var8)
-                                    {
-                                        for (var9 = 0; var9 < var7; ++var9)
-                                        {
-                                            var10 = imageData.getInt((var8 * 2 + 0 + (var9 * 2 + 0) * var6) * 4);
-                                            var11 = imageData.getInt((var8 * 2 + 1 + (var9 * 2 + 0) * var6) * 4);
-                                            var12 = imageData.getInt((var8 * 2 + 1 + (var9 * 2 + 1) * var6) * 4);
-                                            int var13 = imageData.getInt((var8 * 2 + 0 + (var9 * 2 + 1) * var6) * 4);
-                                            int var14 = averageColor(averageColor(var10, var11), averageColor(var12, var13));
-                                            imageData.putInt((var8 + var9 * var7) * 4, var14);
-                                        }
-                                    }
-                                    GLManager.GL.TexSubImage2D(GLEnum.Texture2D, var5, var2.iconIndex % 16 * var7, var2.iconIndex / 16 * var7, (uint)var7, (uint)var7, GLEnum.Rgba, GLEnum.UnsignedByte, ptr);
-                                }
-                            }
+                            GLManager.GL.TexSubImage2D(GLEnum.Texture2D, 0,
+                                var2.iconIndex % 16 * 16 + var3 * 16,
+                                var2.iconIndex / 16 * 16 + var4 * 16,
+                                16, 16, GLEnum.Rgba, GLEnum.UnsignedByte, ptr);
                         }
                     }
                 }));
+
+                UpdateTileMipmaps(var2.iconIndex, var2.imageData, var2.tileSize);
             }
 
             for (var1 = 0; var1 < textureList.size(); ++var1)
@@ -487,68 +463,114 @@ namespace betareborn.Rendering
                     imageData.put(var2.imageData);
                     imageData.position(0).limit(var2.imageData.Length);
                     GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var2.textureId);
-
                     BufferHelper.UsePointer(imageData, (p =>
                     {
                         var ptr = (byte*)p;
-
                         GLManager.GL.TexSubImage2D(GLEnum.Texture2D, 0, 0, 0, 16, 16, GLEnum.Rgba, GLEnum.UnsignedByte, ptr);
-
-                        if (useMipmaps)
-                        {
-                            for (var3 = 1; var3 <= 4; ++var3)
-                            {
-                                var4 = 16 >> var3 - 1;
-                                var5 = 16 >> var3;
-                                for (var6 = 0; var6 < var5; ++var6)
-                                {
-                                    for (var7 = 0; var7 < var5; ++var7)
-                                    {
-                                        var8 = imageData.getInt((var6 * 2 + 0 + (var7 * 2 + 0) * var4) * 4);
-                                        var9 = imageData.getInt((var6 * 2 + 1 + (var7 * 2 + 0) * var4) * 4);
-                                        var10 = imageData.getInt((var6 * 2 + 1 + (var7 * 2 + 1) * var4) * 4);
-                                        var11 = imageData.getInt((var6 * 2 + 0 + (var7 * 2 + 1) * var4) * 4);
-                                        var12 = averageColor(averageColor(var8, var9), averageColor(var10, var11));
-                                        imageData.putInt((var6 + var7 * var5) * 4, var12);
-                                    }
-                                }
-                                GLManager.GL.TexSubImage2D(GLEnum.Texture2D, var3, 0, 0, (uint)var5, (uint)var5, GLEnum.Rgba, GLEnum.UnsignedByte, ptr);
-                            }
-                        }
                     }));
+
+                    UpdateSingleTextureMipmaps((uint)var2.textureId, var2.imageData);
                 }
             }
         }
 
-        private int averageColor(int var1, int var2)
+        private unsafe void UpdateTileMipmaps(int tileIndex, byte[] tileData, int tileSize)
         {
-            int var3 = (var1 & -16777216) >> 24 & 255;
-            int var4 = (var2 & -16777216) >> 24 & 255;
-            return (var3 + var4 >> 1 << 24) + ((var1 & 16711422) + (var2 & 16711422) >> 1);
-        }
+            int totalPixels = tileData.Length / 4;
+            int pixelSize = (int)System.Math.Sqrt(totalPixels);
 
-        private int weightedAverageColor(int var1, int var2)
-        {
-            int var3 = (var1 & -16777216) >> 24 & 255;
-            int var4 = (var2 & -16777216) >> 24 & 255;
-            short var5 = 255;
-            if (var3 + var4 == 0)
+            TextureAtlasMipmapGenerator.Color[] tilePixels = new TextureAtlasMipmapGenerator.Color[totalPixels];
+
+            for (int i = 0; i < totalPixels; i++)
             {
-                var3 = 1;
-                var4 = 1;
-                var5 = 0;
+                tilePixels[i] = new TextureAtlasMipmapGenerator.Color(
+                    tileData[i * 4 + 0],
+                    tileData[i * 4 + 1],
+                    tileData[i * 4 + 2],
+                    tileData[i * 4 + 3]
+                );
             }
 
-            int var6 = (var1 >> 16 & 255) * var3;
-            int var7 = (var1 >> 8 & 255) * var3;
-            int var8 = (var1 & 255) * var3;
-            int var9 = (var2 >> 16 & 255) * var4;
-            int var10 = (var2 >> 8 & 255) * var4;
-            int var11 = (var2 & 255) * var4;
-            int var12 = (var6 + var9) / (var3 + var4);
-            int var13 = (var7 + var10) / (var3 + var4);
-            int var14 = (var8 + var11) / (var3 + var4);
-            return var5 << 24 | var12 << 16 | var13 << 8 | var14;
+            TextureAtlasMipmapGenerator.Color[][] tileMipmaps = GenerateSingleTileMipmaps(tilePixels, pixelSize);
+
+            for (int mipLevel = 1; mipLevel < tileMipmaps.Length; mipLevel++)
+            {
+                int mipTileSize = pixelSize >> mipLevel;
+                int mipTileX = (tileIndex % 16) * mipTileSize;
+                int mipTileY = (tileIndex / 16) * mipTileSize;
+
+                byte[] mipData = new byte[tileMipmaps[mipLevel].Length * 4];
+                for (int i = 0; i < tileMipmaps[mipLevel].Length; i++)
+                {
+                    mipData[i * 4 + 0] = tileMipmaps[mipLevel][i].R;
+                    mipData[i * 4 + 1] = tileMipmaps[mipLevel][i].G;
+                    mipData[i * 4 + 2] = tileMipmaps[mipLevel][i].B;
+                    mipData[i * 4 + 3] = tileMipmaps[mipLevel][i].A;
+                }
+
+                fixed (byte* ptr = mipData)
+                {
+                    GLManager.GL.TexSubImage2D(GLEnum.Texture2D, mipLevel,
+                        mipTileX, mipTileY,
+                        (uint)mipTileSize, (uint)mipTileSize,
+                        GLEnum.Rgba, GLEnum.UnsignedByte, ptr);
+                }
+            }
+        }
+
+        private TextureAtlasMipmapGenerator.Color[][] GenerateSingleTileMipmaps(TextureAtlasMipmapGenerator.Color[] tile, int tileSize)
+        {
+            int maxMipLevels = (int)System.Math.Log2(tileSize) + 1;
+            TextureAtlasMipmapGenerator.Color[][] mipmaps = new TextureAtlasMipmapGenerator.Color[maxMipLevels][];
+            mipmaps[0] = tile;
+
+            for (int mipLevel = 1; mipLevel < maxMipLevels; mipLevel++)
+            {
+                int currentSize = tileSize >> (mipLevel - 1);
+                int newSize = tileSize >> mipLevel;
+                mipmaps[mipLevel] = DownsampleTile(mipmaps[mipLevel - 1], currentSize, newSize);
+            }
+
+            return mipmaps;
+        }
+
+        private unsafe void UpdateSingleTextureMipmaps(uint textureId, byte[] imageData)
+        {
+            GLManager.GL.BindTexture(GLEnum.Texture2D, textureId);
+
+            TextureAtlasMipmapGenerator.Color[] pixels = new TextureAtlasMipmapGenerator.Color[imageData.Length / 4];
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                pixels[i] = new TextureAtlasMipmapGenerator.Color(
+                    imageData[i * 4 + 0],
+                    imageData[i * 4 + 1],
+                    imageData[i * 4 + 2],
+                    imageData[i * 4 + 3]
+                );
+            }
+
+            TextureAtlasMipmapGenerator.Color[][] mipmaps = GenerateSingleTileMipmaps(pixels, 16);
+
+            for (int mipLevel = 1; mipLevel < mipmaps.Length; mipLevel++)
+            {
+                int mipSize = 16 >> mipLevel;
+                byte[] mipData = new byte[mipmaps[mipLevel].Length * 4];
+
+                for (int i = 0; i < mipmaps[mipLevel].Length; i++)
+                {
+                    mipData[i * 4 + 0] = mipmaps[mipLevel][i].R;
+                    mipData[i * 4 + 1] = mipmaps[mipLevel][i].G;
+                    mipData[i * 4 + 2] = mipmaps[mipLevel][i].B;
+                    mipData[i * 4 + 3] = mipmaps[mipLevel][i].A;
+                }
+
+                fixed (byte* ptr = mipData)
+                {
+                    GLManager.GL.TexImage2D(GLEnum.Texture2D, mipLevel,
+                        (int)GLEnum.Rgba8, (uint)mipSize, (uint)mipSize, 0,
+                        GLEnum.Rgba, GLEnum.UnsignedByte, ptr);
+                }
+            }
         }
 
         public void refreshTextures()
@@ -653,6 +675,34 @@ namespace betareborn.Rendering
             BufferedImage var2 = ImageIO.read(var1);
             var1.close();
             return var2;
+        }
+
+        private TextureAtlas bufferedImageToTextureAtlas(BufferedImage bufferedImage)
+        {
+            int width = bufferedImage.getWidth();
+            int height = bufferedImage.getHeight();
+
+            TextureAtlas atlas = new TextureAtlas(width, height);
+
+            // Get the raw pixel data from BufferedImage
+            int[] pixels = new int[width * height];
+            bufferedImage.getRGB(0, 0, width, height, pixels, 0, width);
+
+            // Convert from int ARGB to Color struct
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                int argb = pixels[i];
+
+                // Extract ARGB components from the int
+                byte a = (byte)((argb >> 24) & 0xFF);
+                byte r = (byte)((argb >> 16) & 0xFF);
+                byte g = (byte)((argb >> 8) & 0xFF);
+                byte b = (byte)(argb & 0xFF);
+
+                atlas.Pixels[i] = new TextureAtlasMipmapGenerator.Color(r, g, b, a);
+            }
+
+            return atlas;
         }
 
         public void bindTexture(int var1)
