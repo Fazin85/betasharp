@@ -13,7 +13,7 @@ namespace betareborn.Blocks
 
         public override int getDroppedItemId(int var1, java.util.Random var2)
         {
-            return Block.obsidian.id;
+            return Block.OBSIDIAN.id;
         }
     }
 

@@ -12,7 +12,7 @@ namespace betareborn.Blocks
         public BlockPressurePlate(int var1, int var2, EnumMobType var3, Material var4) : base(var1, var2, var4)
         {
             triggerMobType = var3;
-            setTickOnLoad(true);
+            setTickRandomly(true);
             float var5 = 1.0F / 16.0F;
             setBoundingBox(var5, 0.0F, var5, 1.0F - var5, 0.03125F, 1.0F - var5);
         }
@@ -22,7 +22,7 @@ namespace betareborn.Blocks
             return 20;
         }
 
-        public override Box getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getCollisionShape(World var1, int var2, int var3, int var4)
         {
             return null;
         }
@@ -62,7 +62,7 @@ namespace betareborn.Blocks
 
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
             if (!var1.multiplayerWorld)
             {

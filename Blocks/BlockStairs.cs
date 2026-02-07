@@ -9,13 +9,13 @@ namespace betareborn.Blocks
 
         private Block modelBlock;
 
-        public BlockStairs(int var1, Block var2) : base(var1, var2.textureId, var2.blockMaterial)
+        public BlockStairs(int var1, Block var2) : base(var1, var2.textureId, var2.material)
         {
             modelBlock = var2;
-            setHardness(var2.blockHardness);
-            setResistance(var2.blockResistance / 3.0F);
-            setStepSound(var2.stepSound);
-            setLightOpacity(255);
+            setHardness(var2.hardness);
+            setResistance(var2.resistance / 3.0F);
+            setSoundGroup(var2.soundGroup);
+            setOpacity(255);
         }
 
         public override void updateBoundingBox(BlockView var1, int var2, int var3, int var4)
@@ -23,9 +23,9 @@ namespace betareborn.Blocks
             setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         }
 
-        public override Box getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getCollisionShape(World var1, int var2, int var3, int var4)
         {
-            return base.getCollisionBoundingBoxFromPool(var1, var2, var3, var4);
+            return base.getCollisionShape(var1, var2, var3, var4);
         }
 
         public override bool isOpaque()
@@ -43,41 +43,41 @@ namespace betareborn.Blocks
             return 10;
         }
 
-        public override bool shouldSideBeRendered(BlockView var1, int var2, int var3, int var4, int var5)
+        public override bool isSideVisible(BlockView var1, int var2, int var3, int var4, int var5)
         {
-            return base.shouldSideBeRendered(var1, var2, var3, var4, var5);
+            return base.isSideVisible(var1, var2, var3, var4, var5);
         }
 
-        public override void getCollidingBoundingBoxes(World var1, int var2, int var3, int var4, Box var5, List<Box> var6)
+        public override void addIntersectingBoundingBox(World var1, int var2, int var3, int var4, Box var5, List<Box> var6)
         {
             int var7 = var1.getBlockMeta(var2, var3, var4);
             if (var7 == 0)
             {
                 setBoundingBox(0.0F, 0.0F, 0.0F, 0.5F, 0.5F, 1.0F);
-                base.getCollidingBoundingBoxes(var1, var2, var3, var4, var5, var6);
+                base.addIntersectingBoundingBox(var1, var2, var3, var4, var5, var6);
                 setBoundingBox(0.5F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-                base.getCollidingBoundingBoxes(var1, var2, var3, var4, var5, var6);
+                base.addIntersectingBoundingBox(var1, var2, var3, var4, var5, var6);
             }
             else if (var7 == 1)
             {
                 setBoundingBox(0.0F, 0.0F, 0.0F, 0.5F, 1.0F, 1.0F);
-                base.getCollidingBoundingBoxes(var1, var2, var3, var4, var5, var6);
+                base.addIntersectingBoundingBox(var1, var2, var3, var4, var5, var6);
                 setBoundingBox(0.5F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
-                base.getCollidingBoundingBoxes(var1, var2, var3, var4, var5, var6);
+                base.addIntersectingBoundingBox(var1, var2, var3, var4, var5, var6);
             }
             else if (var7 == 2)
             {
                 setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 0.5F);
-                base.getCollidingBoundingBoxes(var1, var2, var3, var4, var5, var6);
+                base.addIntersectingBoundingBox(var1, var2, var3, var4, var5, var6);
                 setBoundingBox(0.0F, 0.0F, 0.5F, 1.0F, 1.0F, 1.0F);
-                base.getCollidingBoundingBoxes(var1, var2, var3, var4, var5, var6);
+                base.addIntersectingBoundingBox(var1, var2, var3, var4, var5, var6);
             }
             else if (var7 == 3)
             {
                 setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.5F);
-                base.getCollidingBoundingBoxes(var1, var2, var3, var4, var5, var6);
+                base.addIntersectingBoundingBox(var1, var2, var3, var4, var5, var6);
                 setBoundingBox(0.0F, 0.0F, 0.5F, 1.0F, 0.5F, 1.0F);
-                base.getCollidingBoundingBoxes(var1, var2, var3, var4, var5, var6);
+                base.addIntersectingBoundingBox(var1, var2, var3, var4, var5, var6);
             }
 
             setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
@@ -98,9 +98,9 @@ namespace betareborn.Blocks
             modelBlock.onBlockDestroyedByPlayer(var1, var2, var3, var4, var5);
         }
 
-        public override float getBlockBrightness(BlockView var1, int var2, int var3, int var4)
+        public override float getLuminance(BlockView var1, int var2, int var3, int var4)
         {
-            return modelBlock.getBlockBrightness(var1, var2, var3, var4);
+            return modelBlock.getLuminance(var1, var2, var3, var4);
         }
 
         public override float getExplosionResistance(Entity var1)
@@ -128,14 +128,14 @@ namespace betareborn.Blocks
             return modelBlock.getTexture(var1, var2);
         }
 
-        public override int getBlockTextureFromSide(int var1)
+        public override int getTexture(int var1)
         {
-            return modelBlock.getBlockTextureFromSide(var1);
+            return modelBlock.getTexture(var1);
         }
 
-        public override int getBlockTexture(BlockView var1, int var2, int var3, int var4, int var5)
+        public override int getTexture(BlockView var1, int var2, int var3, int var4, int var5)
         {
-            return modelBlock.getBlockTexture(var1, var2, var3, var4, var5);
+            return modelBlock.getTexture(var1, var2, var3, var4, var5);
         }
 
         public override int tickRate()
@@ -143,9 +143,9 @@ namespace betareborn.Blocks
             return modelBlock.tickRate();
         }
 
-        public override Box getSelectedBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getBoundingBox(World var1, int var2, int var3, int var4)
         {
-            return modelBlock.getSelectedBoundingBoxFromPool(var1, var2, var3, var4);
+            return modelBlock.getBoundingBox(var1, var2, var3, var4);
         }
 
         public override void velocityToAddToEntity(World var1, int var2, int var3, int var4, Entity var5, Vec3D var6)
@@ -153,14 +153,14 @@ namespace betareborn.Blocks
             modelBlock.velocityToAddToEntity(var1, var2, var3, var4, var5, var6);
         }
 
-        public override bool isCollidable()
+        public override bool hasCollision()
         {
-            return modelBlock.isCollidable();
+            return modelBlock.hasCollision();
         }
 
-        public override bool canCollideCheck(int var1, bool var2)
+        public override bool hasCollision(int var1, bool var2)
         {
-            return modelBlock.canCollideCheck(var1, var2);
+            return modelBlock.hasCollision(var1, var2);
         }
 
         public override bool canPlaceBlockAt(World var1, int var2, int var3, int var4)
@@ -189,9 +189,9 @@ namespace betareborn.Blocks
             modelBlock.onEntityWalking(var1, var2, var3, var4, var5);
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
-            modelBlock.updateTick(var1, var2, var3, var4, var5);
+            modelBlock.onTick(var1, var2, var3, var4, var5);
         }
 
         public override bool onUse(World var1, int var2, int var3, int var4, EntityPlayer var5)

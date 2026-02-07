@@ -8,10 +8,10 @@ namespace betareborn.Blocks
     {
         public BlockButton(int var1, int var2) : base(var1, var2, Material.PISTON_BREAKABLE)
         {
-            setTickOnLoad(true);
+            setTickRandomly(true);
         }
 
-        public override Box getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getCollisionShape(World var1, int var2, int var3, int var4)
         {
             return null;
         }
@@ -259,7 +259,7 @@ namespace betareborn.Blocks
             return true;
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
             if (!var1.multiplayerWorld)
             {

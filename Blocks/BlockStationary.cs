@@ -7,10 +7,10 @@ namespace betareborn.Blocks
     {
         public BlockStationary(int var1, Material var2) : base(var1, var2)
         {
-            setTickOnLoad(false);
+            setTickRandomly(false);
             if (var2 == Material.LAVA)
             {
-                setTickOnLoad(true);
+                setTickRandomly(true);
             }
 
         }
@@ -35,9 +35,9 @@ namespace betareborn.Blocks
             var1.editingBlocks = false;
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
-            if (blockMaterial == Material.LAVA)
+            if (material == Material.LAVA)
             {
                 int var6 = var5.nextInt(3);
 
@@ -51,11 +51,11 @@ namespace betareborn.Blocks
                     {
                         if (func_301_k(var1, var2 - 1, var3, var4) || func_301_k(var1, var2 + 1, var3, var4) || func_301_k(var1, var2, var3, var4 - 1) || func_301_k(var1, var2, var3, var4 + 1) || func_301_k(var1, var2, var3 - 1, var4) || func_301_k(var1, var2, var3 + 1, var4))
                         {
-                            var1.setBlockWithNotify(var2, var3, var4, Block.fire.id);
+                            var1.setBlockWithNotify(var2, var3, var4, Block.FIRE.id);
                             return;
                         }
                     }
-                    else if (Block.BLOCKS[var8].blockMaterial.blocksMovement())
+                    else if (Block.BLOCKS[var8].material.blocksMovement())
                     {
                         return;
                     }

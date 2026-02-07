@@ -63,7 +63,7 @@ namespace betareborn.Worlds
                             {
                                 if (var11 == var4 - 1 && var2.nextInt(4) != 0)
                                 {
-                                    var1.setBlockWithNotify(var10, var11, var12, Block.cobblestoneMossy.id);
+                                    var1.setBlockWithNotify(var10, var11, var12, Block.MOSSY_COBBLESTONE.id);
                                 }
                                 else
                                 {
@@ -101,7 +101,7 @@ namespace betareborn.Worlds
                             }
                             if (var15 == 1)
                             {
-                                var1.setBlockWithNotify(var12, var4, var14, Block.chest.id);
+                                var1.setBlockWithNotify(var12, var4, var14, Block.CHEST.id);
                                 TileEntityChest var16 = (TileEntityChest)var1.getBlockTileEntity(var12, var4, var14);
 
                                 for (int var17 = 0; var17 < 8; ++var17)
@@ -117,7 +117,7 @@ namespace betareborn.Worlds
                     }
                 }
 
-                var1.setBlockWithNotify(var3, var4, var5, Block.mobSpawner.id);
+                var1.setBlockWithNotify(var3, var4, var5, Block.SPAWNER.id);
                 TileEntityMobSpawner var19 = (TileEntityMobSpawner)var1.getBlockTileEntity(var3, var4, var5);
                 var19.setSpawnedEntityId(pickMobSpawner(var2));
                 return true;

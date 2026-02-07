@@ -11,7 +11,7 @@ namespace betareborn.Blocks
 
         public override int getTexture(int var1, int var2)
         {
-            return var1 == 1 ? Block.redstoneWire.getTexture(var1, var2) : base.getTexture(var1, var2);
+            return var1 == 1 ? Block.REDSTONE_WIRE.getTexture(var1, var2) : base.getTexture(var1, var2);
         }
 
         private bool checkForBurnout(World var1, int var2, int var3, int var4, bool var5)
@@ -42,7 +42,7 @@ namespace betareborn.Blocks
         public BlockRedstoneTorch(int var1, int var2, bool var3) : base(var1, var2)
         {
             torchActive = var3;
-            setTickOnLoad(true);
+            setTickRandomly(true);
         }
 
         public override int tickRate()
@@ -102,7 +102,7 @@ namespace betareborn.Blocks
             return var5 == 5 && var1.isBlockIndirectlyProvidingPowerTo(var2, var3 - 1, var4, 0) ? true : (var5 == 3 && var1.isBlockIndirectlyProvidingPowerTo(var2, var3, var4 - 1, 2) ? true : (var5 == 4 && var1.isBlockIndirectlyProvidingPowerTo(var2, var3, var4 + 1, 3) ? true : (var5 == 1 && var1.isBlockIndirectlyProvidingPowerTo(var2 - 1, var3, var4, 4) ? true : var5 == 2 && var1.isBlockIndirectlyProvidingPowerTo(var2 + 1, var3, var4, 5))));
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
             bool var6 = func_30002_h(var1, var2, var3, var4);
 
@@ -115,7 +115,7 @@ namespace betareborn.Blocks
             {
                 if (var6)
                 {
-                    var1.setBlockAndMetadataWithNotify(var2, var3, var4, Block.torchRedstoneIdle.id, var1.getBlockMeta(var2, var3, var4));
+                    var1.setBlockAndMetadataWithNotify(var2, var3, var4, Block.REDSTONE_TORCH.id, var1.getBlockMeta(var2, var3, var4));
                     if (checkForBurnout(var1, var2, var3, var4, true))
                     {
                         var1.playSoundEffect((double)((float)var2 + 0.5F), (double)((float)var3 + 0.5F), (double)((float)var4 + 0.5F), "random.fizz", 0.5F, 2.6F + (var1.random.nextFloat() - var1.random.nextFloat()) * 0.8F);
@@ -132,7 +132,7 @@ namespace betareborn.Blocks
             }
             else if (!var6 && !checkForBurnout(var1, var2, var3, var4, false))
             {
-                var1.setBlockAndMetadataWithNotify(var2, var3, var4, Block.torchRedstoneActive.id, var1.getBlockMeta(var2, var3, var4));
+                var1.setBlockAndMetadataWithNotify(var2, var3, var4, Block.LIT_REDSTONE_TORCH.id, var1.getBlockMeta(var2, var3, var4));
             }
 
         }
@@ -150,7 +150,7 @@ namespace betareborn.Blocks
 
         public override int getDroppedItemId(int var1, java.util.Random var2)
         {
-            return Block.torchRedstoneActive.id;
+            return Block.LIT_REDSTONE_TORCH.id;
         }
 
         public override bool canProvidePower()

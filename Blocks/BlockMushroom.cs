@@ -8,10 +8,10 @@ namespace betareborn.Blocks
         {
             float var3 = 0.2F;
             setBoundingBox(0.5F - var3, 0.0F, 0.5F - var3, 0.5F + var3, var3 * 2.0F, 0.5F + var3);
-            setTickOnLoad(true);
+            setTickRandomly(true);
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
             if (var5.nextInt(100) == 0)
             {

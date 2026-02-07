@@ -10,19 +10,19 @@ namespace betareborn.Blocks
         public BlockCrops(int var1, int var2) : base(var1, var2)
         {
             textureId = var2;
-            setTickOnLoad(true);
+            setTickRandomly(true);
             float var3 = 0.5F;
             setBoundingBox(0.5F - var3, 0.0F, 0.5F - var3, 0.5F + var3, 0.25F, 0.5F + var3);
         }
 
         protected override bool canThisPlantGrowOnThisBlockID(int var1)
         {
-            return var1 == Block.tilledField.id;
+            return var1 == Block.FARMLAND.id;
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
-            base.updateTick(var1, var2, var3, var4, var5);
+            base.onTick(var1, var2, var3, var4, var5);
             if (var1.getBlockLightValue(var2, var3 + 1, var4) >= 9)
             {
                 int var6 = var1.getBlockMeta(var2, var3, var4);
@@ -65,7 +65,7 @@ namespace betareborn.Blocks
                 {
                     int var19 = var1.getBlockId(var17, var3 - 1, var18);
                     float var20 = 0.0F;
-                    if (var19 == Block.tilledField.id)
+                    if (var19 == Block.FARMLAND.id)
                     {
                         var20 = 1.0F;
                         if (var1.getBlockMeta(var17, var3 - 1, var18) > 0)

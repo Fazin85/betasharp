@@ -351,7 +351,7 @@ namespace betareborn
 
         public bool canHarvestBlock(Block var1)
         {
-            if (var1.blockMaterial.isHandHarvestable())
+            if (var1.material.isHandHarvestable())
             {
                 return true;
             }

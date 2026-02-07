@@ -42,7 +42,7 @@ namespace betareborn.Guis
             }
 
             ItemStack var9 = mc.thePlayer.inventory.armorItemInSlot(3);
-            if (!mc.gameSettings.thirdPersonView && var9 != null && var9.itemID == Block.pumpkin.id)
+            if (!mc.gameSettings.thirdPersonView && var9 != null && var9.itemID == Block.PUMPKIN.id)
             {
                 renderPumpkinBlur(var6, var7);
             }
@@ -370,10 +370,10 @@ namespace betareborn.Guis
             GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, var1);
             GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.renderEngine.getTexture("/terrain.png"));
-            float var4 = (float)(Block.portal.textureId % 16) / 16.0F;
-            float var5 = (float)(Block.portal.textureId / 16) / 16.0F;
-            float var6 = (float)(Block.portal.textureId % 16 + 1) / 16.0F;
-            float var7 = (float)(Block.portal.textureId / 16 + 1) / 16.0F;
+            float var4 = (float)(Block.NETHER_PORTAL.textureId % 16) / 16.0F;
+            float var5 = (float)(Block.NETHER_PORTAL.textureId / 16) / 16.0F;
+            float var6 = (float)(Block.NETHER_PORTAL.textureId % 16 + 1) / 16.0F;
+            float var7 = (float)(Block.NETHER_PORTAL.textureId / 16 + 1) / 16.0F;
             Tessellator var8 = Tessellator.instance;
             var8.startDrawingQuads();
             var8.addVertexWithUV(0.0D, (double)var3, -90.0D, (double)var4, (double)var7);

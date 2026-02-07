@@ -87,7 +87,7 @@ namespace betareborn.Guis
             GLManager.GL.Scale(-var4, -var4, -var4);
             GLManager.GL.Rotate(180.0F, 0.0F, 1.0F, 0.0F);
             Block var5 = entitySign.getBlock();
-            if (var5 == Block.signPost)
+            if (var5 == Block.SIGN)
             {
                 float var6 = (float)(entitySign.getPushedBlockData() * 360) / 16.0F;
                 GLManager.GL.Rotate(var6, 0.0F, 1.0F, 0.0F);

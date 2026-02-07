@@ -203,9 +203,9 @@ namespace betareborn
                         int var9 = worldMap.getBlockId(var6, var7, var8);
                         if (var9 > 0)
                         {
-                            if (var9 != Block.doorSteel.id && var9 != Block.doorWood.id)
+                            if (var9 != Block.IRON_DOOR.id && var9 != Block.DOOR.id)
                             {
-                                Material var11 = Block.BLOCKS[var9].blockMaterial;
+                                Material var11 = Block.BLOCKS[var9].material;
                                 if (var11.blocksMovement())
                                 {
                                     return 0;

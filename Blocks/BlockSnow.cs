@@ -12,10 +12,10 @@ namespace betareborn.Blocks
         public BlockSnow(int var1, int var2) : base(var1, var2, Material.SNOW_LAYER)
         {
             setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 2.0F / 16.0F, 1.0F);
-            setTickOnLoad(true);
+            setTickRandomly(true);
         }
 
-        public override Box getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getCollisionShape(World var1, int var2, int var3, int var4)
         {
             int var5 = var1.getBlockMeta(var2, var3, var4) & 7;
             return var5 >= 3 ? Box.createCached((double)var2 + minX, (double)var3 + minY, (double)var4 + minZ, (double)var2 + maxX, (double)((float)var3 + 0.5F), (double)var4 + maxZ) : null;
@@ -87,7 +87,7 @@ namespace betareborn.Blocks
             return 0;
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
             if (var1.getSavedLightValue(EnumSkyBlock.Block, var2, var3, var4) > 11)
             {
@@ -97,9 +97,9 @@ namespace betareborn.Blocks
 
         }
 
-        public override bool shouldSideBeRendered(BlockView var1, int var2, int var3, int var4, int var5)
+        public override bool isSideVisible(BlockView var1, int var2, int var3, int var4, int var5)
         {
-            return var5 == 1 ? true : base.shouldSideBeRendered(var1, var2, var3, var4, var5);
+            return var5 == 1 ? true : base.isSideVisible(var1, var2, var3, var4, var5);
         }
     }
 

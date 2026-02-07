@@ -22,15 +22,15 @@ namespace betareborn.Blocks
             setBoundingBox(0.5F - var4, 0.0F, 0.5F - var4, 0.5F + var4, var5, 0.5F + var4);
         }
 
-        public override Box getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getCollisionShape(World var1, int var2, int var3, int var4)
         {
             return null;
         }
 
-        public override Box getSelectedBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getBoundingBox(World var1, int var2, int var3, int var4)
         {
             updateBoundingBox(var1, var2, var3, var4);
-            return base.getSelectedBoundingBoxFromPool(var1, var2, var3, var4);
+            return base.getBoundingBox(var1, var2, var3, var4);
         }
 
         public override void updateBoundingBox(BlockView var1, int var2, int var3, int var4)

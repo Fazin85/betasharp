@@ -14,7 +14,7 @@ namespace betareborn.Blocks
         {
             if (var3)
             {
-                setTickOnLoad(true);
+                setTickRandomly(true);
             }
 
             field_468_a = var3;
@@ -46,18 +46,18 @@ namespace betareborn.Blocks
         private void func_320_h(World var1, int var2, int var3, int var4)
         {
             func_319_i(var1, var2, var3, var4);
-            if (id == Block.oreRedstone.id)
+            if (id == Block.REDSTONE_ORE.id)
             {
-                var1.setBlockWithNotify(var2, var3, var4, Block.oreRedstoneGlowing.id);
+                var1.setBlockWithNotify(var2, var3, var4, Block.LIT_REDSTONE_ORE.id);
             }
 
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
-            if (id == Block.oreRedstoneGlowing.id)
+            if (id == Block.LIT_REDSTONE_ORE.id)
             {
-                var1.setBlockWithNotify(var2, var3, var4, Block.oreRedstone.id);
+                var1.setBlockWithNotify(var2, var3, var4, Block.REDSTONE_ORE.id);
             }
 
         }

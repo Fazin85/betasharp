@@ -20,15 +20,15 @@ namespace betareborn
         {
             registeredBlocksList.add(Block.STONE);
             registeredBlocksList.add(Block.COBBLESTONE);
-            registeredBlocksList.add(Block.brick);
+            registeredBlocksList.add(Block.BRICKS);
             registeredBlocksList.add(Block.DIRT);
             registeredBlocksList.add(Block.PLANKS);
             registeredBlocksList.add(Block.LOG);
             registeredBlocksList.add(Block.LEAVES);
-            registeredBlocksList.add(Block.torchWood);
-            registeredBlocksList.add(Block.stairSingle);
+            registeredBlocksList.add(Block.TORCH);
+            registeredBlocksList.add(Block.SLAB);
             registeredBlocksList.add(Block.GLASS);
-            registeredBlocksList.add(Block.cobblestoneMossy);
+            registeredBlocksList.add(Block.MOSSY_COBBLESTONE);
             registeredBlocksList.add(Block.SAPLING);
             registeredBlocksList.add(Block.DANDELION);
             registeredBlocksList.add(Block.ROSE);
@@ -41,11 +41,11 @@ namespace betareborn
             registeredBlocksList.add(Block.COAL_ORE);
             registeredBlocksList.add(Block.IRON_ORE);
             registeredBlocksList.add(Block.GOLD_ORE);
-            registeredBlocksList.add(Block.blockSteel);
-            registeredBlocksList.add(Block.blockGold);
-            registeredBlocksList.add(Block.bookShelf);
-            registeredBlocksList.add(Block.tnt);
-            registeredBlocksList.add(Block.obsidian);
+            registeredBlocksList.add(Block.IRON_BLOCK);
+            registeredBlocksList.add(Block.GOLD_BLOCK);
+            registeredBlocksList.add(Block.BOOKSHELF);
+            registeredBlocksList.add(Block.TNT);
+            registeredBlocksList.add(Block.OBSIDIAN);
         }
     }
 

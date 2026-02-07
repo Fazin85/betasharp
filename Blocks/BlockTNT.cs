@@ -11,7 +11,7 @@ namespace betareborn.Blocks
         {
         }
 
-        public override int getBlockTextureFromSide(int var1)
+        public override int getTexture(int var1)
         {
             return var1 == 0 ? textureId + 2 : (var1 == 1 ? textureId + 1 : textureId);
         }
@@ -55,7 +55,7 @@ namespace betareborn.Blocks
             {
                 if ((var5 & 1) == 0)
                 {
-                    dropBlockAsItem_do(var1, var2, var3, var4, new ItemStack(Block.tnt.id, 1, 0));
+                    dropBlockAsItem_do(var1, var2, var3, var4, new ItemStack(Block.TNT.id, 1, 0));
                 }
                 else
                 {

@@ -19,9 +19,9 @@ namespace betareborn.Worlds
 
                     for (int var11 = 0; var11 < var10; ++var11)
                     {
-                        if (Block.reed.canBlockStay(var1, var7, var8 + var11, var9))
+                        if (Block.SUGAR_CANE.canBlockStay(var1, var7, var8 + var11, var9))
                         {
-                            var1.setBlock(var7, var8 + var11, var9, Block.reed.id);
+                            var1.setBlock(var7, var8 + var11, var9, Block.SUGAR_CANE.id);
                         }
                     }
                 }

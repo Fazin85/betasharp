@@ -9,10 +9,10 @@ namespace betareborn.Blocks
 
         public BlockCactus(int var1, int var2) : base(var1, var2, Material.CACTUS)
         {
-            setTickOnLoad(true);
+            setTickRandomly(true);
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
             if (var1.isAir(var2, var3 + 1, var4))
             {
@@ -38,19 +38,19 @@ namespace betareborn.Blocks
 
         }
 
-        public override Box getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getCollisionShape(World var1, int var2, int var3, int var4)
         {
             float var5 = 1.0F / 16.0F;
             return Box.createCached((double)((float)var2 + var5), (double)var3, (double)((float)var4 + var5), (double)((float)(var2 + 1) - var5), (double)((float)(var3 + 1) - var5), (double)((float)(var4 + 1) - var5));
         }
 
-        public override Box getSelectedBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getBoundingBox(World var1, int var2, int var3, int var4)
         {
             float var5 = 1.0F / 16.0F;
             return Box.createCached((double)((float)var2 + var5), (double)var3, (double)((float)var4 + var5), (double)((float)(var2 + 1) - var5), (double)(var3 + 1), (double)((float)(var4 + 1) - var5));
         }
 
-        public override int getBlockTextureFromSide(int var1)
+        public override int getTexture(int var1)
         {
             return var1 == 1 ? textureId - 1 : (var1 == 0 ? textureId + 1 : textureId);
         }
@@ -106,7 +106,7 @@ namespace betareborn.Blocks
             else
             {
                 int var5 = var1.getBlockId(var2, var3 - 1, var4);
-                return var5 == Block.cactus.id || var5 == Block.SAND.id;
+                return var5 == Block.CACTUS.id || var5 == Block.SAND.id;
             }
         }
 

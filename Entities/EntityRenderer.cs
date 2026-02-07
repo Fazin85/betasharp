@@ -667,7 +667,7 @@ namespace betareborn.Entities
                         float var21 = random.nextFloat();
                         if (var19 > 0)
                         {
-                            if (Block.BLOCKS[var19].blockMaterial == Material.LAVA)
+                            if (Block.BLOCKS[var19].material == Material.LAVA)
                             {
                                 mc.effectRenderer.addEffect(new EntitySmokeFX(var3, (double)((float)var16 + var20), (double)((float)var18 + 0.1F) - Block.BLOCKS[var19].minY, (double)((float)var17 + var21), 0.0D, 0.0D, 0.0D));
                             }

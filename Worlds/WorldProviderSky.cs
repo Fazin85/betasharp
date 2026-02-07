@@ -65,7 +65,7 @@ namespace betareborn.Worlds
         public override bool canCoordinateBeSpawn(int var1, int var2)
         {
             int var3 = worldObj.getFirstUncoveredBlock(var1, var2);
-            return var3 == 0 ? false : Block.BLOCKS[var3].blockMaterial.blocksMovement();
+            return var3 == 0 ? false : Block.BLOCKS[var3].material.blocksMovement();
         }
     }
 

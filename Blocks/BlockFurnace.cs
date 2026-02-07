@@ -21,7 +21,7 @@ namespace betareborn.Blocks
 
         public override int getDroppedItemId(int var1, java.util.Random var2)
         {
-            return Block.stoneOvenIdle.id;
+            return Block.FURNACE.id;
         }
 
         public override void onBlockAdded(World var1, int var2, int var3, int var4)
@@ -63,7 +63,7 @@ namespace betareborn.Blocks
             }
         }
 
-        public override int getBlockTexture(BlockView var1, int var2, int var3, int var4, int var5)
+        public override int getTexture(BlockView var1, int var2, int var3, int var4, int var5)
         {
             if (var5 == 1)
             {
@@ -114,7 +114,7 @@ namespace betareborn.Blocks
             }
         }
 
-        public override int getBlockTextureFromSide(int var1)
+        public override int getTexture(int var1)
         {
             return var1 == 1 ? textureId + 17 : (var1 == 0 ? textureId + 17 : (var1 == 3 ? textureId - 1 : textureId));
         }
@@ -140,11 +140,11 @@ namespace betareborn.Blocks
             keepFurnaceInventory = true;
             if (var0)
             {
-                var1.setBlockWithNotify(var2, var3, var4, Block.stoneOvenActive.id);
+                var1.setBlockWithNotify(var2, var3, var4, Block.LIT_FURNACE.id);
             }
             else
             {
-                var1.setBlockWithNotify(var2, var3, var4, Block.stoneOvenIdle.id);
+                var1.setBlockWithNotify(var2, var3, var4, Block.FURNACE.id);
             }
 
             keepFurnaceInventory = false;

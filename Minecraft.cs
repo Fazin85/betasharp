@@ -1080,9 +1080,9 @@ namespace betareborn
                     var1 = Block.DIRT.id;
                 }
 
-                if (var1 == Block.stairDouble.id)
+                if (var1 == Block.DOUBLE_SLAB.id)
                 {
-                    var1 = Block.stairSingle.id;
+                    var1 = Block.SLAB.id;
                 }
 
                 if (var1 == Block.BEDROCK.id)

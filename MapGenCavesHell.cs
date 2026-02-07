@@ -157,7 +157,7 @@ namespace betareborn
                                         if (var48 > -0.7D && var56 * var56 + var48 * var48 + var44 * var44 < 1.0D)
                                         {
                                             byte var50 = var3[var46];
-                                            if (var50 == Block.netherrack.id || var50 == Block.DIRT.id || var50 == Block.GRASS_BLOCK.id)
+                                            if (var50 == Block.NETHERRACK.id || var50 == Block.DIRT.id || var50 == Block.GRASS_BLOCK.id)
                                             {
                                                 var3[var46] = 0;
                                             }

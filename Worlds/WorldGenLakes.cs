@@ -109,7 +109,7 @@ namespace betareborn.Worlds
                 }
             }
 
-            if (Block.BLOCKS[field_15235_a].blockMaterial == Material.LAVA)
+            if (Block.BLOCKS[field_15235_a].material == Material.LAVA)
             {
                 for (var8 = 0; var8 < 16; ++var8)
                 {

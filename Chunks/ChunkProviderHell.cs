@@ -90,7 +90,7 @@ namespace betareborn.Chunks
 
                                     if (var46 > 0.0D)
                                     {
-                                        var51 = Block.netherrack.id;
+                                        var51 = Block.NETHERRACK.id;
                                     }
 
                                     var3[var42] = (byte)var51;
@@ -129,8 +129,8 @@ namespace betareborn.Chunks
                     bool var10 = field_4161_q[var7 + var8 * 16] + hellRNG.nextDouble() * 0.2D > 0.0D;
                     int var11 = (int)(field_4160_r[var7 + var8 * 16] / 3.0D + 3.0D + hellRNG.nextDouble() * 0.25D);
                     int var12 = -1;
-                    byte var13 = (byte)Block.netherrack.id;
-                    byte var14 = (byte)Block.netherrack.id;
+                    byte var13 = (byte)Block.NETHERRACK.id;
+                    byte var14 = (byte)Block.NETHERRACK.id;
 
                     for (int var15 = 127; var15 >= 0; --var15)
                     {
@@ -150,19 +150,19 @@ namespace betareborn.Chunks
                             {
                                 var12 = -1;
                             }
-                            else if (var17 == Block.netherrack.id)
+                            else if (var17 == Block.NETHERRACK.id)
                             {
                                 if (var12 == -1)
                                 {
                                     if (var11 <= 0)
                                     {
                                         var13 = 0;
-                                        var14 = (byte)Block.netherrack.id;
+                                        var14 = (byte)Block.NETHERRACK.id;
                                     }
                                     else if (var15 >= var4 - 4 && var15 <= var4 + 1)
                                     {
-                                        var13 = (byte)Block.netherrack.id;
-                                        var14 = (byte)Block.netherrack.id;
+                                        var13 = (byte)Block.NETHERRACK.id;
+                                        var14 = (byte)Block.NETHERRACK.id;
                                         if (var10)
                                         {
                                             var13 = (byte)Block.GRAVEL.id;
@@ -170,17 +170,17 @@ namespace betareborn.Chunks
 
                                         if (var10)
                                         {
-                                            var14 = (byte)Block.netherrack.id;
+                                            var14 = (byte)Block.NETHERRACK.id;
                                         }
 
                                         if (var9)
                                         {
-                                            var13 = (byte)Block.slowSand.id;
+                                            var13 = (byte)Block.SOUL_SAND.id;
                                         }
 
                                         if (var9)
                                         {
-                                            var14 = (byte)Block.slowSand.id;
+                                            var14 = (byte)Block.SOUL_SAND.id;
                                         }
                                     }
 

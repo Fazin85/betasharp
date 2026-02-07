@@ -10,7 +10,7 @@ namespace betareborn.Blocks
         public BlockIce(int var1, int var2) : base(var1, var2, Material.ICE, false)
         {
             slipperiness = 0.98F;
-            setTickOnLoad(true);
+            setTickRandomly(true);
         }
 
         public override int getRenderBlockPass()
@@ -18,9 +18,9 @@ namespace betareborn.Blocks
             return 1;
         }
 
-        public override bool shouldSideBeRendered(BlockView var1, int var2, int var3, int var4, int var5)
+        public override bool isSideVisible(BlockView var1, int var2, int var3, int var4, int var5)
         {
-            return base.shouldSideBeRendered(var1, var2, var3, var4, 1 - var5);
+            return base.isSideVisible(var1, var2, var3, var4, 1 - var5);
         }
 
         public override void harvestBlock(World var1, EntityPlayer var2, int var3, int var4, int var5, int var6)
@@ -39,7 +39,7 @@ namespace betareborn.Blocks
             return 0;
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
             if (var1.getSavedLightValue(EnumSkyBlock.Block, var2, var3, var4) > 11 - Block.BLOCK_LIGHT_OPACITY[id])
             {

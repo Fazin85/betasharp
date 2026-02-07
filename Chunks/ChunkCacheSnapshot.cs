@@ -72,7 +72,7 @@ namespace betareborn.Chunks
         public Material getMaterial(int var1, int var2, int var3)
         {
             int var4 = getBlockId(var1, var2, var3);
-            return var4 == 0 ? Material.AIR : Block.BLOCKS[var4].blockMaterial;
+            return var4 == 0 ? Material.AIR : Block.BLOCKS[var4].material;
         }
 
         public int getBlockMeta(int var1, int var2, int var3)
@@ -128,7 +128,7 @@ namespace betareborn.Chunks
                 if (var4)
                 {
                     var5 = getBlockId(var1, var2, var3);
-                    if (var5 == Block.stairSingle.id || var5 == Block.tilledField.id || var5 == Block.stairCompactPlanks.id || var5 == Block.stairCompactCobblestone.id)
+                    if (var5 == Block.SLAB.id || var5 == Block.FARMLAND.id || var5 == Block.WOODEN_STAIRS.id || var5 == Block.COBBLESTONE_STAIRS.id)
                     {
                         var6 = getLightValueExt(var1, var2 + 1, var3, false);
                         int var7 = getLightValueExt(var1 + 1, var2, var3, false);
@@ -203,7 +203,7 @@ namespace betareborn.Chunks
         public bool shouldSuffocate(int var1, int var2, int var3)
         {
             Block var4 = Block.BLOCKS[getBlockId(var1, var2, var3)];
-            return var4 == null ? false : var4.blockMaterial.blocksMovement() && var4.isFullCube();
+            return var4 == null ? false : var4.material.blocksMovement() && var4.isFullCube();
         }
 
         public bool isOpaque(int var1, int var2, int var3)

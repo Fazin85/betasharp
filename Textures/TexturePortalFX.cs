@@ -8,7 +8,7 @@ namespace betareborn.Textures
         private int portalTickCounter = 0;
         private byte[][] portalTextureData = new byte[32][];
 
-        public TexturePortalFX() : base(Block.portal.textureId)
+        public TexturePortalFX() : base(Block.NETHER_PORTAL.textureId)
         {
             java.util.Random var1 = new(100L);
             for (int i = 0; i < portalTextureData.Length; i++)

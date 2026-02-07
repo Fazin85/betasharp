@@ -11,7 +11,7 @@ namespace betareborn.Blocks
         {
         }
 
-        public override Box getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getCollisionShape(World var1, int var2, int var3, int var4)
         {
             return null;
         }
@@ -49,12 +49,12 @@ namespace betareborn.Blocks
         {
             sbyte var5 = 0;
             sbyte var6 = 0;
-            if (var1.getBlockId(var2 - 1, var3, var4) == Block.obsidian.id || var1.getBlockId(var2 + 1, var3, var4) == Block.obsidian.id)
+            if (var1.getBlockId(var2 - 1, var3, var4) == Block.OBSIDIAN.id || var1.getBlockId(var2 + 1, var3, var4) == Block.OBSIDIAN.id)
             {
                 var5 = 1;
             }
 
-            if (var1.getBlockId(var2, var3, var4 - 1) == Block.obsidian.id || var1.getBlockId(var2, var3, var4 + 1) == Block.obsidian.id)
+            if (var1.getBlockId(var2, var3, var4 - 1) == Block.OBSIDIAN.id || var1.getBlockId(var2, var3, var4 + 1) == Block.OBSIDIAN.id)
             {
                 var6 = 1;
             }
@@ -83,12 +83,12 @@ namespace betareborn.Blocks
                             int var10 = var1.getBlockId(var2 + var5 * var7, var3 + var8, var4 + var6 * var7);
                             if (var9)
                             {
-                                if (var10 != Block.obsidian.id)
+                                if (var10 != Block.OBSIDIAN.id)
                                 {
                                     return false;
                                 }
                             }
-                            else if (var10 != 0 && var10 != Block.fire.id)
+                            else if (var10 != 0 && var10 != Block.FIRE.id)
                             {
                                 return false;
                             }
@@ -102,7 +102,7 @@ namespace betareborn.Blocks
                 {
                     for (var8 = 0; var8 < 3; ++var8)
                     {
-                        var1.setBlockWithNotify(var2 + var5 * var7, var3 + var8, var4 + var6 * var7, Block.portal.id);
+                        var1.setBlockWithNotify(var2 + var5 * var7, var3 + var8, var4 + var6 * var7, Block.NETHER_PORTAL.id);
                     }
                 }
 
@@ -126,7 +126,7 @@ namespace betareborn.Blocks
             {
             }
 
-            if (var1.getBlockId(var2, var8 - 1, var4) != Block.obsidian.id)
+            if (var1.getBlockId(var2, var8 - 1, var4) != Block.OBSIDIAN.id)
             {
                 var1.setBlockWithNotify(var2, var3, var4, 0);
             }
@@ -137,7 +137,7 @@ namespace betareborn.Blocks
                 {
                 }
 
-                if (var9 == 3 && var1.getBlockId(var2, var8 + var9, var4) == Block.obsidian.id)
+                if (var9 == 3 && var1.getBlockId(var2, var8 + var9, var4) == Block.OBSIDIAN.id)
                 {
                     bool var10 = var1.getBlockId(var2 - 1, var3, var4) == id || var1.getBlockId(var2 + 1, var3, var4) == id;
                     bool var11 = var1.getBlockId(var2, var3, var4 - 1) == id || var1.getBlockId(var2, var3, var4 + 1) == id;
@@ -145,7 +145,7 @@ namespace betareborn.Blocks
                     {
                         var1.setBlockWithNotify(var2, var3, var4, 0);
                     }
-                    else if ((var1.getBlockId(var2 + var6, var3, var4 + var7) != Block.obsidian.id || var1.getBlockId(var2 - var6, var3, var4 - var7) != id) && (var1.getBlockId(var2 - var6, var3, var4 - var7) != Block.obsidian.id || var1.getBlockId(var2 + var6, var3, var4 + var7) != id))
+                    else if ((var1.getBlockId(var2 + var6, var3, var4 + var7) != Block.OBSIDIAN.id || var1.getBlockId(var2 - var6, var3, var4 - var7) != id) && (var1.getBlockId(var2 - var6, var3, var4 - var7) != Block.OBSIDIAN.id || var1.getBlockId(var2 + var6, var3, var4 + var7) != id))
                     {
                         var1.setBlockWithNotify(var2, var3, var4, 0);
                     }
@@ -157,7 +157,7 @@ namespace betareborn.Blocks
             }
         }
 
-        public override bool shouldSideBeRendered(BlockView var1, int var2, int var3, int var4, int var5)
+        public override bool isSideVisible(BlockView var1, int var2, int var3, int var4, int var5)
         {
             if (var1.getBlockId(var2, var3, var4) == id)
             {

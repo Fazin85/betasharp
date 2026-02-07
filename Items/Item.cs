@@ -56,7 +56,7 @@ namespace betareborn.Items
         public static Item hoeSteel = (new ItemHoe(36, EnumToolMaterial.IRON)).setIconCoord(2, 8).setItemName("hoeIron");
         public static Item hoeDiamond = (new ItemHoe(37, EnumToolMaterial.EMERALD)).setIconCoord(3, 8).setItemName("hoeDiamond");
         public static Item hoeGold = (new ItemHoe(38, EnumToolMaterial.GOLD)).setIconCoord(4, 8).setItemName("hoeGold");
-        public static Item seeds = (new ItemSeeds(39, Block.crops.id)).setIconCoord(9, 0).setItemName("seeds");
+        public static Item seeds = (new ItemSeeds(39, Block.WHEAT.id)).setIconCoord(9, 0).setItemName("seeds");
         public static Item wheat = (new Item(40)).setIconCoord(9, 1).setItemName("wheat");
         public static Item bread = (new ItemFood(41, 5, false)).setIconCoord(9, 2).setItemName("bread");
         public static Item helmetLeather = (new ItemArmor(42, 0, 0, 0)).setIconCoord(0, 0).setItemName("helmetCloth");
@@ -99,7 +99,7 @@ namespace betareborn.Items
         public static Item bucketMilk = (new ItemBucket(79, -1)).setIconCoord(13, 4).setItemName("milk").setContainerItem(bucketEmpty);
         public static Item brick = (new Item(80)).setIconCoord(6, 1).setItemName("brick");
         public static Item clay = (new Item(81)).setIconCoord(9, 3).setItemName("clay");
-        public static Item reed = (new ItemReed(82, Block.reed)).setIconCoord(11, 1).setItemName("reeds");
+        public static Item reed = (new ItemReed(82, Block.SUGAR_CANE)).setIconCoord(11, 1).setItemName("reeds");
         public static Item paper = (new Item(83)).setIconCoord(10, 3).setItemName("paper");
         public static Item book = (new Item(84)).setIconCoord(11, 3).setItemName("book");
         public static Item slimeBall = (new Item(85)).setIconCoord(14, 1).setItemName("slimeball");
@@ -115,9 +115,9 @@ namespace betareborn.Items
         public static Item dyePowder = (new ItemDye(95)).setIconCoord(14, 4).setItemName("dyePowder");
         public static Item bone = (new Item(96)).setIconCoord(12, 1).setItemName("bone").setFull3D();
         public static Item sugar = (new Item(97)).setIconCoord(13, 0).setItemName("sugar").setFull3D();
-        public static Item cake = (new ItemReed(98, Block.cake)).setMaxStackSize(1).setIconCoord(13, 1).setItemName("cake");
+        public static Item cake = (new ItemReed(98, Block.CAKE)).setMaxStackSize(1).setIconCoord(13, 1).setItemName("cake");
         public static Item bed = (new ItemBed(99)).setMaxStackSize(1).setIconCoord(13, 2).setItemName("bed");
-        public static Item redstoneRepeater = (new ItemReed(100, Block.redstoneRepeaterIdle)).setIconCoord(6, 5).setItemName("diode");
+        public static Item redstoneRepeater = (new ItemReed(100, Block.REPEATER)).setIconCoord(6, 5).setItemName("diode");
         public static Item cookie = (new ItemCookie(101, 1, false, 8)).setIconCoord(12, 5).setItemName("cookie");
         public static ItemMap mapItem = (ItemMap)(new ItemMap(102)).setIconCoord(12, 3).setItemName("map");
         public static ItemShears shears = (ItemShears)(new ItemShears(103)).setIconCoord(13, 5).setItemName("shears");

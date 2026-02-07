@@ -540,7 +540,7 @@ namespace betareborn.Entities
                 int var3 = worldObj.getBlockId(MathHelper.floor_double(posX), MathHelper.floor_double(posY - (double)0.2F - (double)yOffset), MathHelper.floor_double(posZ));
                 if (var3 > 0)
                 {
-                    StepSound var4 = Block.BLOCKS[var3].stepSound;
+                    BlockSoundGroup var4 = Block.BLOCKS[var3].soundGroup;
                     worldObj.playSoundAtEntity(this, var4.func_1145_d(), var4.getVolume() * 0.5F, var4.getPitch() * (12.0F / 16.0F));
                 }
             }
@@ -669,7 +669,7 @@ namespace betareborn.Entities
             int var1 = MathHelper.floor_double(posX);
             int var2 = MathHelper.floor_double(boundingBox.minY);
             int var3 = MathHelper.floor_double(posZ);
-            return worldObj.getBlockId(var1, var2, var3) == Block.ladder.id;
+            return worldObj.getBlockId(var1, var2, var3) == Block.LADDER.id;
         }
 
         public override void writeEntityToNBT(NBTTagCompound var1)

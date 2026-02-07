@@ -13,7 +13,7 @@ namespace betareborn.Blocks
         {
         }
 
-        public override int getBlockTextureFromSide(int var1)
+        public override int getTexture(int var1)
         {
             return textureId + (var1 == 1 ? 1 : 0);
         }

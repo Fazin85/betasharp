@@ -9,7 +9,7 @@ namespace betareborn.Blocks
 
         public BlockSnowBlock(int var1, int var2) : base(var1, var2, Material.SNOW_BLOCK)
         {
-            setTickOnLoad(true);
+            setTickRandomly(true);
         }
 
         public override int getDroppedItemId(int var1, java.util.Random var2)
@@ -22,7 +22,7 @@ namespace betareborn.Blocks
             return 4;
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
             if (var1.getSavedLightValue(EnumSkyBlock.Block, var2, var3, var4) > 11)
             {

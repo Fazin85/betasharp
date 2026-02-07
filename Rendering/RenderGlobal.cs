@@ -663,7 +663,7 @@ namespace betareborn.Rendering
                     double var8 = var1.lastTickPosX + (var1.posX - var1.lastTickPosX) * (double)var5;
                     double var10 = var1.lastTickPosY + (var1.posY - var1.lastTickPosY) * (double)var5;
                     double var12 = var1.lastTickPosZ + (var1.posZ - var1.lastTickPosZ) * (double)var5;
-                    drawOutlinedBoundingBox(Block.BLOCKS[var7].getSelectedBoundingBoxFromPool(worldObj, var2.blockX, var2.blockY, var2.blockZ).expand((double)var6, (double)var6, (double)var6).translate(-var8, -var10, -var12));
+                    drawOutlinedBoundingBox(Block.BLOCKS[var7].getBoundingBox(worldObj, var2.blockX, var2.blockY, var2.blockZ).expand((double)var6, (double)var6, (double)var6).translate(-var8, -var10, -var12));
                 }
 
                 GLManager.GL.DepthMask(true);
@@ -936,7 +936,7 @@ namespace betareborn.Rendering
                     if (var16 > 0)
                     {
                         Block var17 = Block.BLOCKS[var16];
-                        mc.sndManager.playSound(var17.stepSound.stepSoundDir(), (float)var3 + 0.5F, (float)var4 + 0.5F, (float)var5 + 0.5F, (var17.stepSound.getVolume() + 1.0F) / 2.0F, var17.stepSound.getPitch() * 0.8F);
+                        mc.sndManager.playSound(var17.soundGroup.stepSoundDir(), (float)var3 + 0.5F, (float)var4 + 0.5F, (float)var5 + 0.5F, (var17.soundGroup.getVolume() + 1.0F) / 2.0F, var17.soundGroup.getPitch() * 0.8F);
                     }
 
                     mc.effectRenderer.addBlockDestroyEffects(var3, var4, var5, var6 & 255, var6 >> 8 & 255);

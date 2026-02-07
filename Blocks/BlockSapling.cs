@@ -10,11 +10,11 @@ namespace betareborn.Blocks
             setBoundingBox(0.5F - var3, 0.0F, 0.5F - var3, 0.5F + var3, var3 * 2.0F, 0.5F + var3);
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
             if (!var1.multiplayerWorld)
             {
-                base.updateTick(var1, var2, var3, var4, var5);
+                base.onTick(var1, var2, var3, var4, var5);
                 if (var1.getBlockLightValue(var2, var3 + 1, var4) >= 9 && var5.nextInt(30) == 0)
                 {
                     int var6 = var1.getBlockMeta(var2, var3, var4);

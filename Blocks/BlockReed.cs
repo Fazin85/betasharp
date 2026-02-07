@@ -12,10 +12,10 @@ namespace betareborn.Blocks
             textureId = var2;
             float var3 = 6.0F / 16.0F;
             setBoundingBox(0.5F - var3, 0.0F, 0.5F - var3, 0.5F + var3, 1.0F, 0.5F + var3);
-            setTickOnLoad(true);
+            setTickRandomly(true);
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
             if (var1.isAir(var2, var3 + 1, var4))
             {
@@ -67,7 +67,7 @@ namespace betareborn.Blocks
             return canPlaceBlockAt(var1, var2, var3, var4);
         }
 
-        public override Box getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getCollisionShape(World var1, int var2, int var3, int var4)
         {
             return null;
         }

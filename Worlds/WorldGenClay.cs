@@ -6,7 +6,7 @@ namespace betareborn.Worlds
     public class WorldGenClay : WorldGenerator
     {
 
-        private int clayBlockId = Block.blockClay.id;
+        private int clayBlockId = Block.CLAY.id;
         private int numberOfBlocks;
 
         public WorldGenClay(int var1)

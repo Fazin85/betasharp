@@ -131,9 +131,9 @@ namespace betareborn.Rendering
             float var10 = 1.0F;
             float var11 = 0.8F;
             float var12 = 0.6F;
-            float var25 = var1.getBlockBrightness(blockAccess, var2, var3, var4);
+            float var25 = var1.getLuminance(blockAccess, var2, var3, var4);
             var5.setColorOpaque_F(var9 * var25, var9 * var25, var9 * var25);
-            int var26 = var1.getBlockTexture(blockAccess, var2, var3, var4, 0);
+            int var26 = var1.getTexture(blockAccess, var2, var3, var4, 0);
             int var27 = (var26 & 15) << 4;
             int var28 = var26 & 240;
             double var29 = (double)((float)var27 / 256.0F);
@@ -149,9 +149,9 @@ namespace betareborn.Rendering
             var5.addVertexWithUV(var37, var41, var43, var29, var33);
             var5.addVertexWithUV(var39, var41, var43, var31, var33);
             var5.addVertexWithUV(var39, var41, var45, var31, var35);
-            float var64 = var1.getBlockBrightness(blockAccess, var2, var3 + 1, var4);
+            float var64 = var1.getLuminance(blockAccess, var2, var3 + 1, var4);
             var5.setColorOpaque_F(var10 * var64, var10 * var64, var10 * var64);
-            var27 = var1.getBlockTexture(blockAccess, var2, var3, var4, 1);
+            var27 = var1.getTexture(blockAccess, var2, var3, var4, 1);
             var28 = (var27 & 15) << 4;
             int var67 = var27 & 240;
             double var30 = (double)((float)var28 / 256.0F);
@@ -225,9 +225,9 @@ namespace betareborn.Rendering
             }
 
             float var66;
-            if (var26 != 2 && (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2, var3, var4 - 1, 2)))
+            if (var26 != 2 && (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3, var4 - 1, 2)))
             {
-                var66 = var1.getBlockBrightness(blockAccess, var2, var3, var4 - 1);
+                var66 = var1.getLuminance(blockAccess, var2, var3, var4 - 1);
                 if (var1.minZ > 0.0D)
                 {
                     var66 = var25;
@@ -235,12 +235,12 @@ namespace betareborn.Rendering
 
                 var5.setColorOpaque_F(var11 * var66, var11 * var66, var11 * var66);
                 flipTexture = var65 == 2;
-                renderEastFace(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTexture(blockAccess, var2, var3, var4, 2));
+                renderEastFace(var1, (double)var2, (double)var3, (double)var4, var1.getTexture(blockAccess, var2, var3, var4, 2));
             }
 
-            if (var26 != 3 && (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2, var3, var4 + 1, 3)))
+            if (var26 != 3 && (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3, var4 + 1, 3)))
             {
-                var66 = var1.getBlockBrightness(blockAccess, var2, var3, var4 + 1);
+                var66 = var1.getLuminance(blockAccess, var2, var3, var4 + 1);
                 if (var1.maxZ < 1.0D)
                 {
                     var66 = var25;
@@ -248,12 +248,12 @@ namespace betareborn.Rendering
 
                 var5.setColorOpaque_F(var11 * var66, var11 * var66, var11 * var66);
                 flipTexture = var65 == 3;
-                renderWestFace(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTexture(blockAccess, var2, var3, var4, 3));
+                renderWestFace(var1, (double)var2, (double)var3, (double)var4, var1.getTexture(blockAccess, var2, var3, var4, 3));
             }
 
-            if (var26 != 4 && (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2 - 1, var3, var4, 4)))
+            if (var26 != 4 && (renderAllFaces || var1.isSideVisible(blockAccess, var2 - 1, var3, var4, 4)))
             {
-                var66 = var1.getBlockBrightness(blockAccess, var2 - 1, var3, var4);
+                var66 = var1.getLuminance(blockAccess, var2 - 1, var3, var4);
                 if (var1.minX > 0.0D)
                 {
                     var66 = var25;
@@ -261,12 +261,12 @@ namespace betareborn.Rendering
 
                 var5.setColorOpaque_F(var12 * var66, var12 * var66, var12 * var66);
                 flipTexture = var65 == 4;
-                renderNorthFace(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTexture(blockAccess, var2, var3, var4, 4));
+                renderNorthFace(var1, (double)var2, (double)var3, (double)var4, var1.getTexture(blockAccess, var2, var3, var4, 4));
             }
 
-            if (var26 != 5 && (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2 + 1, var3, var4, 5)))
+            if (var26 != 5 && (renderAllFaces || var1.isSideVisible(blockAccess, var2 + 1, var3, var4, 5)))
             {
-                var66 = var1.getBlockBrightness(blockAccess, var2 + 1, var3, var4);
+                var66 = var1.getLuminance(blockAccess, var2 + 1, var3, var4);
                 if (var1.maxX < 1.0D)
                 {
                     var66 = var25;
@@ -274,7 +274,7 @@ namespace betareborn.Rendering
 
                 var5.setColorOpaque_F(var12 * var66, var12 * var66, var12 * var66);
                 flipTexture = var65 == 5;
-                renderSouthFace(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTexture(blockAccess, var2, var3, var4, 5));
+                renderSouthFace(var1, (double)var2, (double)var3, (double)var4, var1.getTexture(blockAccess, var2, var3, var4, 5));
             }
 
             flipTexture = false;
@@ -285,7 +285,7 @@ namespace betareborn.Rendering
         {
             int var5 = blockAccess.getBlockMeta(var2, var3, var4);
             Tessellator var6 = getTessellator();
-            float var7 = var1.getBlockBrightness(blockAccess, var2, var3, var4);
+            float var7 = var1.getLuminance(blockAccess, var2, var3, var4);
             if (Block.BLOCKS_LIGHT_LUMINANCE[var1.id] > 0)
             {
                 var7 = 1.0F;
@@ -326,7 +326,7 @@ namespace betareborn.Rendering
             int var7 = (var5 & 12) >> 2;
             renderStandardBlock(var1, var2, var3, var4);
             Tessellator var8 = getTessellator();
-            float var9 = var1.getBlockBrightness(blockAccess, var2, var3, var4);
+            float var9 = var1.getLuminance(blockAccess, var2, var3, var4);
             if (Block.BLOCKS_LIGHT_LUMINANCE[var1.id] > 0)
             {
                 var9 = (var9 + 1.0F) * 0.5F;
@@ -360,7 +360,7 @@ namespace betareborn.Rendering
 
             renderTorchAtAngle(var1, (double)var2 + var12, (double)var3 + var10, (double)var4 + var14, 0.0D, 0.0D);
             renderTorchAtAngle(var1, (double)var2 + var16, (double)var3 + var10, (double)var4 + var18, 0.0D, 0.0D);
-            int var20 = var1.getBlockTextureFromSide(1);
+            int var20 = var1.getTexture(1);
             int var21 = (var20 & 15) << 4;
             int var22 = var20 & 240;
             double var23 = (double)((float)var21 / 256.0F);
@@ -607,7 +607,7 @@ namespace betareborn.Rendering
         {
             int var6 = blockAccess.getBlockMeta(var2, var3, var4);
             int var7 = BlockPistonExtension.func_31050_c(var6);
-            float var11 = var1.getBlockBrightness(blockAccess, var2, var3, var4);
+            float var11 = var1.getLuminance(blockAccess, var2, var3, var4);
             float var12 = var5 ? 1.0F : 0.5F;
             double var13 = var5 ? 16.0D : 8.0D;
             switch (var7)
@@ -736,14 +736,14 @@ namespace betareborn.Rendering
                 overrideBlockTexture = -1;
             }
 
-            float var13 = var1.getBlockBrightness(blockAccess, var2, var3, var4);
+            float var13 = var1.getLuminance(blockAccess, var2, var3, var4);
             if (Block.BLOCKS_LIGHT_LUMINANCE[var1.id] > 0)
             {
                 var13 = 1.0F;
             }
 
             var8.setColorOpaque_F(var13, var13, var13);
-            int var14 = var1.getBlockTextureFromSide(0);
+            int var14 = var1.getTexture(0);
             if (overrideBlockTexture >= 0)
             {
                 var14 = overrideBlockTexture;
@@ -899,13 +899,13 @@ namespace betareborn.Rendering
         public bool renderBlockFire(Block var1, int var2, int var3, int var4)
         {
             Tessellator var5 = getTessellator();
-            int var6 = var1.getBlockTextureFromSide(0);
+            int var6 = var1.getTexture(0);
             if (overrideBlockTexture >= 0)
             {
                 var6 = overrideBlockTexture;
             }
 
-            float var7 = var1.getBlockBrightness(blockAccess, var2, var3, var4);
+            float var7 = var1.getLuminance(blockAccess, var2, var3, var4);
             var5.setColorOpaque_F(var7, var7, var7);
             int var8 = (var6 & 15) << 4;
             int var9 = var6 & 240;
@@ -921,7 +921,7 @@ namespace betareborn.Rendering
             double var29;
             double var31;
             double var33;
-            if (!blockAccess.shouldSuffocate(var2, var3 - 1, var4) && !Block.fire.canBlockCatchFire(blockAccess, var2, var3 - 1, var4))
+            if (!blockAccess.shouldSuffocate(var2, var3 - 1, var4) && !Block.FIRE.canBlockCatchFire(blockAccess, var2, var3 - 1, var4))
             {
                 float var37 = 0.2F;
                 float var20 = 1.0F / 16.0F;
@@ -940,7 +940,7 @@ namespace betareborn.Rendering
                     var10 = var21;
                 }
 
-                if (Block.fire.canBlockCatchFire(blockAccess, var2 - 1, var3, var4))
+                if (Block.FIRE.canBlockCatchFire(blockAccess, var2 - 1, var3, var4))
                 {
                     var5.addVertexWithUV((double)((float)var2 + var37), (double)((float)var3 + var18 + var20), (double)(var4 + 1), var12, var14);
                     var5.addVertexWithUV((double)(var2 + 0), (double)((float)(var3 + 0) + var20), (double)(var4 + 1), var12, var16);
@@ -952,7 +952,7 @@ namespace betareborn.Rendering
                     var5.addVertexWithUV((double)((float)var2 + var37), (double)((float)var3 + var18 + var20), (double)(var4 + 1), var12, var14);
                 }
 
-                if (Block.fire.canBlockCatchFire(blockAccess, var2 + 1, var3, var4))
+                if (Block.FIRE.canBlockCatchFire(blockAccess, var2 + 1, var3, var4))
                 {
                     var5.addVertexWithUV((double)((float)(var2 + 1) - var37), (double)((float)var3 + var18 + var20), (double)(var4 + 0), var10, var14);
                     var5.addVertexWithUV((double)(var2 + 1 - 0), (double)((float)(var3 + 0) + var20), (double)(var4 + 0), var10, var16);
@@ -964,7 +964,7 @@ namespace betareborn.Rendering
                     var5.addVertexWithUV((double)((float)(var2 + 1) - var37), (double)((float)var3 + var18 + var20), (double)(var4 + 0), var10, var14);
                 }
 
-                if (Block.fire.canBlockCatchFire(blockAccess, var2, var3, var4 - 1))
+                if (Block.FIRE.canBlockCatchFire(blockAccess, var2, var3, var4 - 1))
                 {
                     var5.addVertexWithUV((double)(var2 + 0), (double)((float)var3 + var18 + var20), (double)((float)var4 + var37), var12, var14);
                     var5.addVertexWithUV((double)(var2 + 0), (double)((float)(var3 + 0) + var20), (double)(var4 + 0), var12, var16);
@@ -976,7 +976,7 @@ namespace betareborn.Rendering
                     var5.addVertexWithUV((double)(var2 + 0), (double)((float)var3 + var18 + var20), (double)((float)var4 + var37), var12, var14);
                 }
 
-                if (Block.fire.canBlockCatchFire(blockAccess, var2, var3, var4 + 1))
+                if (Block.FIRE.canBlockCatchFire(blockAccess, var2, var3, var4 + 1))
                 {
                     var5.addVertexWithUV((double)(var2 + 1), (double)((float)var3 + var18 + var20), (double)((float)(var4 + 1) - var37), var10, var14);
                     var5.addVertexWithUV((double)(var2 + 1), (double)((float)(var3 + 0) + var20), (double)(var4 + 1 - 0), var10, var16);
@@ -988,7 +988,7 @@ namespace betareborn.Rendering
                     var5.addVertexWithUV((double)(var2 + 1), (double)((float)var3 + var18 + var20), (double)((float)(var4 + 1) - var37), var10, var14);
                 }
 
-                if (Block.fire.canBlockCatchFire(blockAccess, var2, var3 + 1, var4))
+                if (Block.FIRE.canBlockCatchFire(blockAccess, var2, var3 + 1, var4))
                 {
                     var21 = (double)var2 + 0.5D + 0.5D;
                     var23 = (double)var2 + 0.5D - 0.5D;
@@ -1109,7 +1109,7 @@ namespace betareborn.Rendering
                 var7 = overrideBlockTexture;
             }
 
-            float var8 = var1.getBlockBrightness(blockAccess, var2, var3, var4);
+            float var8 = var1.getLuminance(blockAccess, var2, var3, var4);
             float var9 = (float)var6 / 15.0F;
             float var10 = var9 * 0.6F + 0.4F;
             if (var6 == 0)
@@ -1272,7 +1272,7 @@ namespace betareborn.Rendering
                 var17 = (double)(((float)(var13 + 16) + 15.99F) / 256.0F);
                 var19 = (double)((float)var14 / 256.0F);
                 var21 = (double)(((float)var14 + 15.99F) / 256.0F);
-                if (blockAccess.shouldSuffocate(var2 - 1, var3, var4) && blockAccess.getBlockId(var2 - 1, var3 + 1, var4) == Block.redstoneWire.id)
+                if (blockAccess.shouldSuffocate(var2 - 1, var3, var4) && blockAccess.getBlockId(var2 - 1, var3 + 1, var4) == Block.REDSTONE_WIRE.id)
                 {
                     var5.setColorOpaque_F(var8 * var10, var8 * var11, var8 * var12);
                     var5.addVertexWithUV((double)((float)var2 + 0.015625F), (double)((float)(var3 + 1) + 7.0F / 320.0F), (double)(var4 + 1), var17, var19);
@@ -1286,7 +1286,7 @@ namespace betareborn.Rendering
                     var5.addVertexWithUV((double)((float)var2 + 0.015625F), (double)((float)(var3 + 1) + 7.0F / 320.0F), (double)(var4 + 0), var17, var21 + 1.0D / 16.0D);
                 }
 
-                if (blockAccess.shouldSuffocate(var2 + 1, var3, var4) && blockAccess.getBlockId(var2 + 1, var3 + 1, var4) == Block.redstoneWire.id)
+                if (blockAccess.shouldSuffocate(var2 + 1, var3, var4) && blockAccess.getBlockId(var2 + 1, var3 + 1, var4) == Block.REDSTONE_WIRE.id)
                 {
                     var5.setColorOpaque_F(var8 * var10, var8 * var11, var8 * var12);
                     var5.addVertexWithUV((double)((float)(var2 + 1) - 0.015625F), (double)(var3 + 0), (double)(var4 + 1), var15, var21);
@@ -1300,7 +1300,7 @@ namespace betareborn.Rendering
                     var5.addVertexWithUV((double)((float)(var2 + 1) - 0.015625F), (double)(var3 + 0), (double)(var4 + 0), var15, var19 + 1.0D / 16.0D);
                 }
 
-                if (blockAccess.shouldSuffocate(var2, var3, var4 - 1) && blockAccess.getBlockId(var2, var3 + 1, var4 - 1) == Block.redstoneWire.id)
+                if (blockAccess.shouldSuffocate(var2, var3, var4 - 1) && blockAccess.getBlockId(var2, var3 + 1, var4 - 1) == Block.REDSTONE_WIRE.id)
                 {
                     var5.setColorOpaque_F(var8 * var10, var8 * var11, var8 * var12);
                     var5.addVertexWithUV((double)(var2 + 1), (double)(var3 + 0), (double)((float)var4 + 0.015625F), var15, var21);
@@ -1314,7 +1314,7 @@ namespace betareborn.Rendering
                     var5.addVertexWithUV((double)(var2 + 0), (double)(var3 + 0), (double)((float)var4 + 0.015625F), var15, var19 + 1.0D / 16.0D);
                 }
 
-                if (blockAccess.shouldSuffocate(var2, var3, var4 + 1) && blockAccess.getBlockId(var2, var3 + 1, var4 + 1) == Block.redstoneWire.id)
+                if (blockAccess.shouldSuffocate(var2, var3, var4 + 1) && blockAccess.getBlockId(var2, var3 + 1, var4 + 1) == Block.REDSTONE_WIRE.id)
                 {
                     var5.setColorOpaque_F(var8 * var10, var8 * var11, var8 * var12);
                     var5.addVertexWithUV((double)(var2 + 1), (double)((float)(var3 + 1) + 7.0F / 320.0F), (double)((float)(var4 + 1) - 0.015625F), var17, var19);
@@ -1347,7 +1347,7 @@ namespace betareborn.Rendering
                 var6 &= 7;
             }
 
-            float var8 = var1.getBlockBrightness(blockAccess, var2, var3, var4);
+            float var8 = var1.getLuminance(blockAccess, var2, var3, var4);
             var5.setColorOpaque_F(var8, var8, var8);
             int var9 = (var7 & 15) << 4;
             int var10 = var7 & 240;
@@ -1433,13 +1433,13 @@ namespace betareborn.Rendering
         public bool renderBlockLadder(Block var1, int var2, int var3, int var4)
         {
             Tessellator var5 = getTessellator();
-            int var6 = var1.getBlockTextureFromSide(0);
+            int var6 = var1.getTexture(0);
             if (overrideBlockTexture >= 0)
             {
                 var6 = overrideBlockTexture;
             }
 
-            float var7 = var1.getBlockBrightness(blockAccess, var2, var3, var4);
+            float var7 = var1.getLuminance(blockAccess, var2, var3, var4);
             var5.setColorOpaque_F(var7, var7, var7);
             int var8 = (var6 & 15) << 4;
             int var9 = var6 & 240;
@@ -1488,7 +1488,7 @@ namespace betareborn.Rendering
         public bool renderBlockReed(Block var1, int var2, int var3, int var4)
         {
             Tessellator var5 = getTessellator();
-            float var6 = var1.getBlockBrightness(blockAccess, var2, var3, var4);
+            float var6 = var1.getLuminance(blockAccess, var2, var3, var4);
             int var7 = var1.colorMultiplier(blockAccess, var2, var3, var4);
             float var8 = (float)(var7 >> 16 & 255) / 255.0F;
             float var9 = (float)(var7 >> 8 & 255) / 255.0F;
@@ -1514,7 +1514,7 @@ namespace betareborn.Rendering
         public bool renderBlockCrops(Block var1, int var2, int var3, int var4)
         {
             Tessellator var5 = getTessellator();
-            float var6 = var1.getBlockBrightness(blockAccess, var2, var3, var4);
+            float var6 = var1.getLuminance(blockAccess, var2, var3, var4);
             var5.setColorOpaque_F(var6, var6, var6);
             func_1245_b(var1, blockAccess.getBlockMeta(var2, var3, var4), (double)var2, (double)((float)var3 - 1.0F / 16.0F), (double)var4);
             return true;
@@ -1523,7 +1523,7 @@ namespace betareborn.Rendering
         public void renderTorchAtAngle(Block var1, double var2, double var4, double var6, double var8, double var10)
         {
             Tessellator var12 = getTessellator();
-            int var13 = var1.getBlockTextureFromSide(0);
+            int var13 = var1.getTexture(0);
             if (overrideBlockTexture >= 0)
             {
                 var13 = overrideBlockTexture;
@@ -1670,9 +1670,9 @@ namespace betareborn.Rendering
             float var7 = (float)(var6 >> 16 & 255) / 255.0F;
             float var8 = (float)(var6 >> 8 & 255) / 255.0F;
             float var9 = (float)(var6 & 255) / 255.0F;
-            bool var10 = var1.shouldSideBeRendered(blockAccess, var2, var3 + 1, var4, 1);
-            bool var11 = var1.shouldSideBeRendered(blockAccess, var2, var3 - 1, var4, 0);
-            bool[] var12 = new bool[] { var1.shouldSideBeRendered(blockAccess, var2, var3, var4 - 1, 2), var1.shouldSideBeRendered(blockAccess, var2, var3, var4 + 1, 3), var1.shouldSideBeRendered(blockAccess, var2 - 1, var3, var4, 4), var1.shouldSideBeRendered(blockAccess, var2 + 1, var3, var4, 5) };
+            bool var10 = var1.isSideVisible(blockAccess, var2, var3 + 1, var4, 1);
+            bool var11 = var1.isSideVisible(blockAccess, var2, var3 - 1, var4, 0);
+            bool[] var12 = new bool[] { var1.isSideVisible(blockAccess, var2, var3, var4 - 1, 2), var1.isSideVisible(blockAccess, var2, var3, var4 + 1, 3), var1.isSideVisible(blockAccess, var2 - 1, var3, var4, 4), var1.isSideVisible(blockAccess, var2 + 1, var3, var4, 5) };
             if (!var10 && !var11 && !var12[0] && !var12[1] && !var12[2] && !var12[3])
             {
                 return false;
@@ -1686,7 +1686,7 @@ namespace betareborn.Rendering
                 float var17 = 0.6F;
                 double var18 = 0.0D;
                 double var20 = 1.0D;
-                Material var22 = var1.blockMaterial;
+                Material var22 = var1.material;
                 int var23 = blockAccess.getBlockMeta(var2, var3, var4);
                 float var24 = func_1224_a(var2, var3, var4, var22);
                 float var25 = func_1224_a(var2, var3, var4 + 1, var22);
@@ -1723,7 +1723,7 @@ namespace betareborn.Rendering
 
                     var36 = MathHelper.sin(var29) * 8.0F / 256.0F;
                     var37 = MathHelper.cos(var29) * 8.0F / 256.0F;
-                    var38 = var1.getBlockBrightness(blockAccess, var2, var3, var4);
+                    var38 = var1.getLuminance(blockAccess, var2, var3, var4);
                     var5.setColorOpaque_F(var15 * var38 * var7, var15 * var38 * var8, var15 * var38 * var9);
                     var5.addVertexWithUV((double)(var2 + 0), (double)((float)var3 + var24), (double)(var4 + 0), var32 - (double)var37 - (double)var36, var34 - (double)var37 + (double)var36);
                     var5.addVertexWithUV((double)(var2 + 0), (double)((float)var3 + var25), (double)(var4 + 1), var32 - (double)var37 + (double)var36, var34 + (double)var37 + (double)var36);
@@ -1733,9 +1733,9 @@ namespace betareborn.Rendering
 
                 if (renderAllFaces || var11)
                 {
-                    float var52 = var1.getBlockBrightness(blockAccess, var2, var3 - 1, var4);
+                    float var52 = var1.getLuminance(blockAccess, var2, var3 - 1, var4);
                     var5.setColorOpaque_F(var14 * var52, var14 * var52, var14 * var52);
-                    renderBottomFace(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTextureFromSide(0));
+                    renderBottomFace(var1, (double)var2, (double)var3, (double)var4, var1.getTexture(0));
                     var13 = true;
                 }
 
@@ -1814,7 +1814,7 @@ namespace betareborn.Rendering
                         double var45 = (double)(((float)var55 + (1.0F - var35) * 16.0F) / 256.0F);
                         double var47 = (double)(((float)var55 + (1.0F - var36) * 16.0F) / 256.0F);
                         double var49 = ((double)(var55 + 16) - 0.01D) / 256.0D;
-                        float var51 = var1.getBlockBrightness(blockAccess, var53, var3, var31);
+                        float var51 = var1.getLuminance(blockAccess, var53, var3, var31);
                         if (var28 < 2)
                         {
                             var51 *= var16;
@@ -1886,55 +1886,55 @@ namespace betareborn.Rendering
             float var9 = 0.6F;
             Tessellator var10 = getTessellator();
             var10.startDrawingQuads();
-            float var11 = var1.getBlockBrightness(var2, var3, var4, var5);
-            float var12 = var1.getBlockBrightness(var2, var3, var4 - 1, var5);
+            float var11 = var1.getLuminance(var2, var3, var4, var5);
+            float var12 = var1.getLuminance(var2, var3, var4 - 1, var5);
             if (var12 < var11)
             {
                 var12 = var11;
             }
 
             var10.setColorOpaque_F(var6 * var12, var6 * var12, var6 * var12);
-            renderBottomFace(var1, -0.5D, -0.5D, -0.5D, var1.getBlockTextureFromSide(0));
-            var12 = var1.getBlockBrightness(var2, var3, var4 + 1, var5);
+            renderBottomFace(var1, -0.5D, -0.5D, -0.5D, var1.getTexture(0));
+            var12 = var1.getLuminance(var2, var3, var4 + 1, var5);
             if (var12 < var11)
             {
                 var12 = var11;
             }
 
             var10.setColorOpaque_F(var7 * var12, var7 * var12, var7 * var12);
-            renderTopFace(var1, -0.5D, -0.5D, -0.5D, var1.getBlockTextureFromSide(1));
-            var12 = var1.getBlockBrightness(var2, var3, var4, var5 - 1);
+            renderTopFace(var1, -0.5D, -0.5D, -0.5D, var1.getTexture(1));
+            var12 = var1.getLuminance(var2, var3, var4, var5 - 1);
             if (var12 < var11)
             {
                 var12 = var11;
             }
 
             var10.setColorOpaque_F(var8 * var12, var8 * var12, var8 * var12);
-            renderEastFace(var1, -0.5D, -0.5D, -0.5D, var1.getBlockTextureFromSide(2));
-            var12 = var1.getBlockBrightness(var2, var3, var4, var5 + 1);
+            renderEastFace(var1, -0.5D, -0.5D, -0.5D, var1.getTexture(2));
+            var12 = var1.getLuminance(var2, var3, var4, var5 + 1);
             if (var12 < var11)
             {
                 var12 = var11;
             }
 
             var10.setColorOpaque_F(var8 * var12, var8 * var12, var8 * var12);
-            renderWestFace(var1, -0.5D, -0.5D, -0.5D, var1.getBlockTextureFromSide(3));
-            var12 = var1.getBlockBrightness(var2, var3 - 1, var4, var5);
+            renderWestFace(var1, -0.5D, -0.5D, -0.5D, var1.getTexture(3));
+            var12 = var1.getLuminance(var2, var3 - 1, var4, var5);
             if (var12 < var11)
             {
                 var12 = var11;
             }
 
             var10.setColorOpaque_F(var9 * var12, var9 * var12, var9 * var12);
-            renderNorthFace(var1, -0.5D, -0.5D, -0.5D, var1.getBlockTextureFromSide(4));
-            var12 = var1.getBlockBrightness(var2, var3 + 1, var4, var5);
+            renderNorthFace(var1, -0.5D, -0.5D, -0.5D, var1.getTexture(4));
+            var12 = var1.getLuminance(var2, var3 + 1, var4, var5);
             if (var12 < var11)
             {
                 var12 = var11;
             }
 
             var10.setColorOpaque_F(var9 * var12, var9 * var12, var9 * var12);
-            renderSouthFace(var1, -0.5D, -0.5D, -0.5D, var1.getBlockTextureFromSide(5));
+            renderSouthFace(var1, -0.5D, -0.5D, -0.5D, var1.getTexture(5));
             var10.draw();
         }
 
@@ -1962,13 +1962,13 @@ namespace betareborn.Rendering
             bool var16 = true;
             bool var17 = true;
             bool var18 = true;
-            lightValueOwn = var1.getBlockBrightness(blockAccess, var2, var3, var4);
-            aoLightValueXNeg = var1.getBlockBrightness(blockAccess, var2 - 1, var3, var4);
-            aoLightValueYNeg = var1.getBlockBrightness(blockAccess, var2, var3 - 1, var4);
-            aoLightValueZNeg = var1.getBlockBrightness(blockAccess, var2, var3, var4 - 1);
-            aoLightValueXPos = var1.getBlockBrightness(blockAccess, var2 + 1, var3, var4);
-            aoLightValueYPos = var1.getBlockBrightness(blockAccess, var2, var3 + 1, var4);
-            aoLightValueZPos = var1.getBlockBrightness(blockAccess, var2, var3, var4 + 1);
+            lightValueOwn = var1.getLuminance(blockAccess, var2, var3, var4);
+            aoLightValueXNeg = var1.getLuminance(blockAccess, var2 - 1, var3, var4);
+            aoLightValueYNeg = var1.getLuminance(blockAccess, var2, var3 - 1, var4);
+            aoLightValueZNeg = var1.getLuminance(blockAccess, var2, var3, var4 - 1);
+            aoLightValueXPos = var1.getLuminance(blockAccess, var2 + 1, var3, var4);
+            aoLightValueYPos = var1.getLuminance(blockAccess, var2, var3 + 1, var4);
+            aoLightValueZPos = var1.getLuminance(blockAccess, var2, var3, var4 + 1);
             field_22338_U = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2 + 1, var3 + 1, var4)];
             field_22359_ac = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2 + 1, var3 - 1, var4)];
             field_22334_Y = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2 + 1, var3, var4 + 1)];
@@ -1999,7 +1999,7 @@ namespace betareborn.Rendering
                 var13 = var18;
             }
 
-            if (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2, var3 - 1, var4, 0))
+            if (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3 - 1, var4, 0))
             {
                 if (field_22352_G <= 0)
                 {
@@ -2011,17 +2011,17 @@ namespace betareborn.Rendering
                 else
                 {
                     --var3;
-                    field_22376_n = var1.getBlockBrightness(blockAccess, var2 - 1, var3, var4);
-                    field_22374_p = var1.getBlockBrightness(blockAccess, var2, var3, var4 - 1);
-                    field_22373_q = var1.getBlockBrightness(blockAccess, var2, var3, var4 + 1);
-                    field_22371_s = var1.getBlockBrightness(blockAccess, var2 + 1, var3, var4);
+                    field_22376_n = var1.getLuminance(blockAccess, var2 - 1, var3, var4);
+                    field_22374_p = var1.getLuminance(blockAccess, var2, var3, var4 - 1);
+                    field_22373_q = var1.getLuminance(blockAccess, var2, var3, var4 + 1);
+                    field_22371_s = var1.getLuminance(blockAccess, var2 + 1, var3, var4);
                     if (!field_22361_ab && !field_22357_ad)
                     {
                         field_22377_m = field_22376_n;
                     }
                     else
                     {
-                        field_22377_m = var1.getBlockBrightness(blockAccess, var2 - 1, var3, var4 - 1);
+                        field_22377_m = var1.getLuminance(blockAccess, var2 - 1, var3, var4 - 1);
                     }
 
                     if (!field_22355_ae && !field_22357_ad)
@@ -2030,7 +2030,7 @@ namespace betareborn.Rendering
                     }
                     else
                     {
-                        field_22375_o = var1.getBlockBrightness(blockAccess, var2 - 1, var3, var4 + 1);
+                        field_22375_o = var1.getLuminance(blockAccess, var2 - 1, var3, var4 + 1);
                     }
 
                     if (!field_22361_ab && !field_22359_ac)
@@ -2039,7 +2039,7 @@ namespace betareborn.Rendering
                     }
                     else
                     {
-                        field_22372_r = var1.getBlockBrightness(blockAccess, var2 + 1, var3, var4 - 1);
+                        field_22372_r = var1.getLuminance(blockAccess, var2 + 1, var3, var4 - 1);
                     }
 
                     if (!field_22355_ae && !field_22359_ac)
@@ -2048,7 +2048,7 @@ namespace betareborn.Rendering
                     }
                     else
                     {
-                        field_22370_t = var1.getBlockBrightness(blockAccess, var2 + 1, var3, var4 + 1);
+                        field_22370_t = var1.getLuminance(blockAccess, var2 + 1, var3, var4 + 1);
                     }
 
                     ++var3;
@@ -2073,11 +2073,11 @@ namespace betareborn.Rendering
                 colorRedTopRight *= var12;
                 colorGreenTopRight *= var12;
                 colorBlueTopRight *= var12;
-                renderBottomFace(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTexture(blockAccess, var2, var3, var4, 0));
+                renderBottomFace(var1, (double)var2, (double)var3, (double)var4, var1.getTexture(blockAccess, var2, var3, var4, 0));
                 var8 = true;
             }
 
-            if (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2, var3 + 1, var4, 1))
+            if (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3 + 1, var4, 1))
             {
                 if (field_22352_G <= 0)
                 {
@@ -2089,17 +2089,17 @@ namespace betareborn.Rendering
                 else
                 {
                     ++var3;
-                    field_22368_v = var1.getBlockBrightness(blockAccess, var2 - 1, var3, var4);
-                    field_22364_z = var1.getBlockBrightness(blockAccess, var2 + 1, var3, var4);
-                    field_22366_x = var1.getBlockBrightness(blockAccess, var2, var3, var4 - 1);
-                    field_22362_A = var1.getBlockBrightness(blockAccess, var2, var3, var4 + 1);
+                    field_22368_v = var1.getLuminance(blockAccess, var2 - 1, var3, var4);
+                    field_22364_z = var1.getLuminance(blockAccess, var2 + 1, var3, var4);
+                    field_22366_x = var1.getLuminance(blockAccess, var2, var3, var4 - 1);
+                    field_22362_A = var1.getLuminance(blockAccess, var2, var3, var4 + 1);
                     if (!field_22339_T && !field_22337_V)
                     {
                         field_22369_u = field_22368_v;
                     }
                     else
                     {
-                        field_22369_u = var1.getBlockBrightness(blockAccess, var2 - 1, var3, var4 - 1);
+                        field_22369_u = var1.getLuminance(blockAccess, var2 - 1, var3, var4 - 1);
                     }
 
                     if (!field_22339_T && !field_22338_U)
@@ -2108,7 +2108,7 @@ namespace betareborn.Rendering
                     }
                     else
                     {
-                        field_22365_y = var1.getBlockBrightness(blockAccess, var2 + 1, var3, var4 - 1);
+                        field_22365_y = var1.getLuminance(blockAccess, var2 + 1, var3, var4 - 1);
                     }
 
                     if (!field_22336_W && !field_22337_V)
@@ -2117,7 +2117,7 @@ namespace betareborn.Rendering
                     }
                     else
                     {
-                        field_22367_w = var1.getBlockBrightness(blockAccess, var2 - 1, var3, var4 + 1);
+                        field_22367_w = var1.getLuminance(blockAccess, var2 - 1, var3, var4 + 1);
                     }
 
                     if (!field_22336_W && !field_22338_U)
@@ -2126,7 +2126,7 @@ namespace betareborn.Rendering
                     }
                     else
                     {
-                        field_22360_B = var1.getBlockBrightness(blockAccess, var2 + 1, var3, var4 + 1);
+                        field_22360_B = var1.getLuminance(blockAccess, var2 + 1, var3, var4 + 1);
                     }
 
                     --var3;
@@ -2151,12 +2151,12 @@ namespace betareborn.Rendering
                 colorRedTopRight *= var12;
                 colorGreenTopRight *= var12;
                 colorBlueTopRight *= var12;
-                renderTopFace(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTexture(blockAccess, var2, var3, var4, 1));
+                renderTopFace(var1, (double)var2, (double)var3, (double)var4, var1.getTexture(blockAccess, var2, var3, var4, 1));
                 var8 = true;
             }
 
             int var19;
-            if (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2, var3, var4 - 1, 2))
+            if (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3, var4 - 1, 2))
             {
                 if (field_22352_G <= 0)
                 {
@@ -2168,17 +2168,17 @@ namespace betareborn.Rendering
                 else
                 {
                     --var4;
-                    field_22358_C = var1.getBlockBrightness(blockAccess, var2 - 1, var3, var4);
-                    field_22374_p = var1.getBlockBrightness(blockAccess, var2, var3 - 1, var4);
-                    field_22366_x = var1.getBlockBrightness(blockAccess, var2, var3 + 1, var4);
-                    field_22356_D = var1.getBlockBrightness(blockAccess, var2 + 1, var3, var4);
+                    field_22358_C = var1.getLuminance(blockAccess, var2 - 1, var3, var4);
+                    field_22374_p = var1.getLuminance(blockAccess, var2, var3 - 1, var4);
+                    field_22366_x = var1.getLuminance(blockAccess, var2, var3 + 1, var4);
+                    field_22356_D = var1.getLuminance(blockAccess, var2 + 1, var3, var4);
                     if (!field_22335_X && !field_22361_ab)
                     {
                         field_22377_m = field_22358_C;
                     }
                     else
                     {
-                        field_22377_m = var1.getBlockBrightness(blockAccess, var2 - 1, var3 - 1, var4);
+                        field_22377_m = var1.getLuminance(blockAccess, var2 - 1, var3 - 1, var4);
                     }
 
                     if (!field_22335_X && !field_22339_T)
@@ -2187,7 +2187,7 @@ namespace betareborn.Rendering
                     }
                     else
                     {
-                        field_22369_u = var1.getBlockBrightness(blockAccess, var2 - 1, var3 + 1, var4);
+                        field_22369_u = var1.getLuminance(blockAccess, var2 - 1, var3 + 1, var4);
                     }
 
                     if (!field_22363_aa && !field_22361_ab)
@@ -2196,7 +2196,7 @@ namespace betareborn.Rendering
                     }
                     else
                     {
-                        field_22372_r = var1.getBlockBrightness(blockAccess, var2 + 1, var3 - 1, var4);
+                        field_22372_r = var1.getLuminance(blockAccess, var2 + 1, var3 - 1, var4);
                     }
 
                     if (!field_22363_aa && !field_22339_T)
@@ -2205,7 +2205,7 @@ namespace betareborn.Rendering
                     }
                     else
                     {
-                        field_22365_y = var1.getBlockBrightness(blockAccess, var2 + 1, var3 + 1, var4);
+                        field_22365_y = var1.getLuminance(blockAccess, var2 + 1, var3 + 1, var4);
                     }
 
                     ++var4;
@@ -2230,7 +2230,7 @@ namespace betareborn.Rendering
                 colorRedTopRight *= var12;
                 colorGreenTopRight *= var12;
                 colorBlueTopRight *= var12;
-                var19 = var1.getBlockTexture(blockAccess, var2, var3, var4, 2);
+                var19 = var1.getTexture(blockAccess, var2, var3, var4, 2);
                 renderEastFace(var1, (double)var2, (double)var3, (double)var4, var19);
                 if (fancyGrass && var19 == 3 && overrideBlockTexture < 0)
                 {
@@ -2252,7 +2252,7 @@ namespace betareborn.Rendering
                 var8 = true;
             }
 
-            if (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2, var3, var4 + 1, 3))
+            if (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3, var4 + 1, 3))
             {
                 if (field_22352_G <= 0)
                 {
@@ -2264,17 +2264,17 @@ namespace betareborn.Rendering
                 else
                 {
                     ++var4;
-                    field_22354_E = var1.getBlockBrightness(blockAccess, var2 - 1, var3, var4);
-                    field_22353_F = var1.getBlockBrightness(blockAccess, var2 + 1, var3, var4);
-                    field_22373_q = var1.getBlockBrightness(blockAccess, var2, var3 - 1, var4);
-                    field_22362_A = var1.getBlockBrightness(blockAccess, var2, var3 + 1, var4);
+                    field_22354_E = var1.getLuminance(blockAccess, var2 - 1, var3, var4);
+                    field_22353_F = var1.getLuminance(blockAccess, var2 + 1, var3, var4);
+                    field_22373_q = var1.getLuminance(blockAccess, var2, var3 - 1, var4);
+                    field_22362_A = var1.getLuminance(blockAccess, var2, var3 + 1, var4);
                     if (!field_22333_Z && !field_22355_ae)
                     {
                         field_22375_o = field_22354_E;
                     }
                     else
                     {
-                        field_22375_o = var1.getBlockBrightness(blockAccess, var2 - 1, var3 - 1, var4);
+                        field_22375_o = var1.getLuminance(blockAccess, var2 - 1, var3 - 1, var4);
                     }
 
                     if (!field_22333_Z && !field_22336_W)
@@ -2283,7 +2283,7 @@ namespace betareborn.Rendering
                     }
                     else
                     {
-                        field_22367_w = var1.getBlockBrightness(blockAccess, var2 - 1, var3 + 1, var4);
+                        field_22367_w = var1.getLuminance(blockAccess, var2 - 1, var3 + 1, var4);
                     }
 
                     if (!field_22334_Y && !field_22355_ae)
@@ -2292,7 +2292,7 @@ namespace betareborn.Rendering
                     }
                     else
                     {
-                        field_22370_t = var1.getBlockBrightness(blockAccess, var2 + 1, var3 - 1, var4);
+                        field_22370_t = var1.getLuminance(blockAccess, var2 + 1, var3 - 1, var4);
                     }
 
                     if (!field_22334_Y && !field_22336_W)
@@ -2301,7 +2301,7 @@ namespace betareborn.Rendering
                     }
                     else
                     {
-                        field_22360_B = var1.getBlockBrightness(blockAccess, var2 + 1, var3 + 1, var4);
+                        field_22360_B = var1.getLuminance(blockAccess, var2 + 1, var3 + 1, var4);
                     }
 
                     --var4;
@@ -2326,8 +2326,8 @@ namespace betareborn.Rendering
                 colorRedTopRight *= var12;
                 colorGreenTopRight *= var12;
                 colorBlueTopRight *= var12;
-                var19 = var1.getBlockTexture(blockAccess, var2, var3, var4, 3);
-                renderWestFace(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTexture(blockAccess, var2, var3, var4, 3));
+                var19 = var1.getTexture(blockAccess, var2, var3, var4, 3);
+                renderWestFace(var1, (double)var2, (double)var3, (double)var4, var1.getTexture(blockAccess, var2, var3, var4, 3));
                 if (fancyGrass && var19 == 3 && overrideBlockTexture < 0)
                 {
                     colorRedTopLeft *= var5;
@@ -2348,7 +2348,7 @@ namespace betareborn.Rendering
                 var8 = true;
             }
 
-            if (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2 - 1, var3, var4, 4))
+            if (renderAllFaces || var1.isSideVisible(blockAccess, var2 - 1, var3, var4, 4))
             {
                 if (field_22352_G <= 0)
                 {
@@ -2360,17 +2360,17 @@ namespace betareborn.Rendering
                 else
                 {
                     --var2;
-                    field_22376_n = var1.getBlockBrightness(blockAccess, var2, var3 - 1, var4);
-                    field_22358_C = var1.getBlockBrightness(blockAccess, var2, var3, var4 - 1);
-                    field_22354_E = var1.getBlockBrightness(blockAccess, var2, var3, var4 + 1);
-                    field_22368_v = var1.getBlockBrightness(blockAccess, var2, var3 + 1, var4);
+                    field_22376_n = var1.getLuminance(blockAccess, var2, var3 - 1, var4);
+                    field_22358_C = var1.getLuminance(blockAccess, var2, var3, var4 - 1);
+                    field_22354_E = var1.getLuminance(blockAccess, var2, var3, var4 + 1);
+                    field_22368_v = var1.getLuminance(blockAccess, var2, var3 + 1, var4);
                     if (!field_22335_X && !field_22357_ad)
                     {
                         field_22377_m = field_22358_C;
                     }
                     else
                     {
-                        field_22377_m = var1.getBlockBrightness(blockAccess, var2, var3 - 1, var4 - 1);
+                        field_22377_m = var1.getLuminance(blockAccess, var2, var3 - 1, var4 - 1);
                     }
 
                     if (!field_22333_Z && !field_22357_ad)
@@ -2379,7 +2379,7 @@ namespace betareborn.Rendering
                     }
                     else
                     {
-                        field_22375_o = var1.getBlockBrightness(blockAccess, var2, var3 - 1, var4 + 1);
+                        field_22375_o = var1.getLuminance(blockAccess, var2, var3 - 1, var4 + 1);
                     }
 
                     if (!field_22335_X && !field_22337_V)
@@ -2388,7 +2388,7 @@ namespace betareborn.Rendering
                     }
                     else
                     {
-                        field_22369_u = var1.getBlockBrightness(blockAccess, var2, var3 + 1, var4 - 1);
+                        field_22369_u = var1.getLuminance(blockAccess, var2, var3 + 1, var4 - 1);
                     }
 
                     if (!field_22333_Z && !field_22337_V)
@@ -2397,7 +2397,7 @@ namespace betareborn.Rendering
                     }
                     else
                     {
-                        field_22367_w = var1.getBlockBrightness(blockAccess, var2, var3 + 1, var4 + 1);
+                        field_22367_w = var1.getLuminance(blockAccess, var2, var3 + 1, var4 + 1);
                     }
 
                     ++var2;
@@ -2422,7 +2422,7 @@ namespace betareborn.Rendering
                 colorRedTopRight *= var12;
                 colorGreenTopRight *= var12;
                 colorBlueTopRight *= var12;
-                var19 = var1.getBlockTexture(blockAccess, var2, var3, var4, 4);
+                var19 = var1.getTexture(blockAccess, var2, var3, var4, 4);
                 renderNorthFace(var1, (double)var2, (double)var3, (double)var4, var19);
                 if (fancyGrass && var19 == 3 && overrideBlockTexture < 0)
                 {
@@ -2444,7 +2444,7 @@ namespace betareborn.Rendering
                 var8 = true;
             }
 
-            if (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2 + 1, var3, var4, 5))
+            if (renderAllFaces || var1.isSideVisible(blockAccess, var2 + 1, var3, var4, 5))
             {
                 if (field_22352_G <= 0)
                 {
@@ -2456,17 +2456,17 @@ namespace betareborn.Rendering
                 else
                 {
                     ++var2;
-                    field_22371_s = var1.getBlockBrightness(blockAccess, var2, var3 - 1, var4);
-                    field_22356_D = var1.getBlockBrightness(blockAccess, var2, var3, var4 - 1);
-                    field_22353_F = var1.getBlockBrightness(blockAccess, var2, var3, var4 + 1);
-                    field_22364_z = var1.getBlockBrightness(blockAccess, var2, var3 + 1, var4);
+                    field_22371_s = var1.getLuminance(blockAccess, var2, var3 - 1, var4);
+                    field_22356_D = var1.getLuminance(blockAccess, var2, var3, var4 - 1);
+                    field_22353_F = var1.getLuminance(blockAccess, var2, var3, var4 + 1);
+                    field_22364_z = var1.getLuminance(blockAccess, var2, var3 + 1, var4);
                     if (!field_22359_ac && !field_22363_aa)
                     {
                         field_22372_r = field_22356_D;
                     }
                     else
                     {
-                        field_22372_r = var1.getBlockBrightness(blockAccess, var2, var3 - 1, var4 - 1);
+                        field_22372_r = var1.getLuminance(blockAccess, var2, var3 - 1, var4 - 1);
                     }
 
                     if (!field_22359_ac && !field_22334_Y)
@@ -2475,7 +2475,7 @@ namespace betareborn.Rendering
                     }
                     else
                     {
-                        field_22370_t = var1.getBlockBrightness(blockAccess, var2, var3 - 1, var4 + 1);
+                        field_22370_t = var1.getLuminance(blockAccess, var2, var3 - 1, var4 + 1);
                     }
 
                     if (!field_22338_U && !field_22363_aa)
@@ -2484,7 +2484,7 @@ namespace betareborn.Rendering
                     }
                     else
                     {
-                        field_22365_y = var1.getBlockBrightness(blockAccess, var2, var3 + 1, var4 - 1);
+                        field_22365_y = var1.getLuminance(blockAccess, var2, var3 + 1, var4 - 1);
                     }
 
                     if (!field_22338_U && !field_22334_Y)
@@ -2493,7 +2493,7 @@ namespace betareborn.Rendering
                     }
                     else
                     {
-                        field_22360_B = var1.getBlockBrightness(blockAccess, var2, var3 + 1, var4 + 1);
+                        field_22360_B = var1.getLuminance(blockAccess, var2, var3 + 1, var4 + 1);
                     }
 
                     --var2;
@@ -2518,7 +2518,7 @@ namespace betareborn.Rendering
                 colorRedTopRight *= var12;
                 colorGreenTopRight *= var12;
                 colorBlueTopRight *= var12;
-                var19 = var1.getBlockTexture(blockAccess, var2, var3, var4, 5);
+                var19 = var1.getTexture(blockAccess, var2, var3, var4, 5);
                 renderSouthFace(var1, (double)var2, (double)var3, (double)var4, var19);
                 if (fancyGrass && var19 == 3 && overrideBlockTexture < 0)
                 {
@@ -2578,40 +2578,40 @@ namespace betareborn.Rendering
                 var25 = var13 * var7;
             }
 
-            float var26 = var1.getBlockBrightness(blockAccess, var2, var3, var4);
+            float var26 = var1.getLuminance(blockAccess, var2, var3, var4);
             float var27;
-            if (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2, var3 - 1, var4, 0))
+            if (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3 - 1, var4, 0))
             {
-                var27 = var1.getBlockBrightness(blockAccess, var2, var3 - 1, var4);
+                var27 = var1.getLuminance(blockAccess, var2, var3 - 1, var4);
                 var8.setColorOpaque_F(var17 * var27, var20 * var27, var23 * var27);
-                renderBottomFace(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTexture(blockAccess, var2, var3, var4, 0));
+                renderBottomFace(var1, (double)var2, (double)var3, (double)var4, var1.getTexture(blockAccess, var2, var3, var4, 0));
                 var9 = true;
             }
 
-            if (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2, var3 + 1, var4, 1))
+            if (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3 + 1, var4, 1))
             {
-                var27 = var1.getBlockBrightness(blockAccess, var2, var3 + 1, var4);
-                if (var1.maxY != 1.0D && !var1.blockMaterial.isFluid())
+                var27 = var1.getLuminance(blockAccess, var2, var3 + 1, var4);
+                if (var1.maxY != 1.0D && !var1.material.isFluid())
                 {
                     var27 = var26;
                 }
 
                 var8.setColorOpaque_F(var14 * var27, var15 * var27, var16 * var27);
-                renderTopFace(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTexture(blockAccess, var2, var3, var4, 1));
+                renderTopFace(var1, (double)var2, (double)var3, (double)var4, var1.getTexture(blockAccess, var2, var3, var4, 1));
                 var9 = true;
             }
 
             int var28;
-            if (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2, var3, var4 - 1, 2))
+            if (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3, var4 - 1, 2))
             {
-                var27 = var1.getBlockBrightness(blockAccess, var2, var3, var4 - 1);
+                var27 = var1.getLuminance(blockAccess, var2, var3, var4 - 1);
                 if (var1.minZ > 0.0D)
                 {
                     var27 = var26;
                 }
 
                 var8.setColorOpaque_F(var18 * var27, var21 * var27, var24 * var27);
-                var28 = var1.getBlockTexture(blockAccess, var2, var3, var4, 2);
+                var28 = var1.getTexture(blockAccess, var2, var3, var4, 2);
                 renderEastFace(var1, (double)var2, (double)var3, (double)var4, var28);
                 if (fancyGrass && var28 == 3 && overrideBlockTexture < 0)
                 {
@@ -2622,16 +2622,16 @@ namespace betareborn.Rendering
                 var9 = true;
             }
 
-            if (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2, var3, var4 + 1, 3))
+            if (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3, var4 + 1, 3))
             {
-                var27 = var1.getBlockBrightness(blockAccess, var2, var3, var4 + 1);
+                var27 = var1.getLuminance(blockAccess, var2, var3, var4 + 1);
                 if (var1.maxZ < 1.0D)
                 {
                     var27 = var26;
                 }
 
                 var8.setColorOpaque_F(var18 * var27, var21 * var27, var24 * var27);
-                var28 = var1.getBlockTexture(blockAccess, var2, var3, var4, 3);
+                var28 = var1.getTexture(blockAccess, var2, var3, var4, 3);
                 renderWestFace(var1, (double)var2, (double)var3, (double)var4, var28);
                 if (fancyGrass && var28 == 3 && overrideBlockTexture < 0)
                 {
@@ -2642,16 +2642,16 @@ namespace betareborn.Rendering
                 var9 = true;
             }
 
-            if (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2 - 1, var3, var4, 4))
+            if (renderAllFaces || var1.isSideVisible(blockAccess, var2 - 1, var3, var4, 4))
             {
-                var27 = var1.getBlockBrightness(blockAccess, var2 - 1, var3, var4);
+                var27 = var1.getLuminance(blockAccess, var2 - 1, var3, var4);
                 if (var1.minX > 0.0D)
                 {
                     var27 = var26;
                 }
 
                 var8.setColorOpaque_F(var19 * var27, var22 * var27, var25 * var27);
-                var28 = var1.getBlockTexture(blockAccess, var2, var3, var4, 4);
+                var28 = var1.getTexture(blockAccess, var2, var3, var4, 4);
                 renderNorthFace(var1, (double)var2, (double)var3, (double)var4, var28);
                 if (fancyGrass && var28 == 3 && overrideBlockTexture < 0)
                 {
@@ -2662,16 +2662,16 @@ namespace betareborn.Rendering
                 var9 = true;
             }
 
-            if (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2 + 1, var3, var4, 5))
+            if (renderAllFaces || var1.isSideVisible(blockAccess, var2 + 1, var3, var4, 5))
             {
-                var27 = var1.getBlockBrightness(blockAccess, var2 + 1, var3, var4);
+                var27 = var1.getLuminance(blockAccess, var2 + 1, var3, var4);
                 if (var1.maxX < 1.0D)
                 {
                     var27 = var26;
                 }
 
                 var8.setColorOpaque_F(var19 * var27, var22 * var27, var25 * var27);
-                var28 = var1.getBlockTexture(blockAccess, var2, var3, var4, 5);
+                var28 = var1.getTexture(blockAccess, var2, var3, var4, 5);
                 renderSouthFace(var1, (double)var2, (double)var3, (double)var4, var28);
                 if (fancyGrass && var28 == 3 && overrideBlockTexture < 0)
                 {
@@ -2716,32 +2716,32 @@ namespace betareborn.Rendering
             float var24 = var12 * var7;
             float var25 = var13 * var7;
             float var26 = 1.0F / 16.0F;
-            float var27 = var1.getBlockBrightness(blockAccess, var2, var3, var4);
+            float var27 = var1.getLuminance(blockAccess, var2, var3, var4);
             float var28;
-            if (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2, var3 - 1, var4, 0))
+            if (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3 - 1, var4, 0))
             {
-                var28 = var1.getBlockBrightness(blockAccess, var2, var3 - 1, var4);
+                var28 = var1.getLuminance(blockAccess, var2, var3 - 1, var4);
                 var8.setColorOpaque_F(var14 * var28, var18 * var28, var22 * var28);
-                renderBottomFace(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTexture(blockAccess, var2, var3, var4, 0));
+                renderBottomFace(var1, (double)var2, (double)var3, (double)var4, var1.getTexture(blockAccess, var2, var3, var4, 0));
                 var9 = true;
             }
 
-            if (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2, var3 + 1, var4, 1))
+            if (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3 + 1, var4, 1))
             {
-                var28 = var1.getBlockBrightness(blockAccess, var2, var3 + 1, var4);
-                if (var1.maxY != 1.0D && !var1.blockMaterial.isFluid())
+                var28 = var1.getLuminance(blockAccess, var2, var3 + 1, var4);
+                if (var1.maxY != 1.0D && !var1.material.isFluid())
                 {
                     var28 = var27;
                 }
 
                 var8.setColorOpaque_F(var15 * var28, var19 * var28, var23 * var28);
-                renderTopFace(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTexture(blockAccess, var2, var3, var4, 1));
+                renderTopFace(var1, (double)var2, (double)var3, (double)var4, var1.getTexture(blockAccess, var2, var3, var4, 1));
                 var9 = true;
             }
 
-            if (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2, var3, var4 - 1, 2))
+            if (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3, var4 - 1, 2))
             {
-                var28 = var1.getBlockBrightness(blockAccess, var2, var3, var4 - 1);
+                var28 = var1.getLuminance(blockAccess, var2, var3, var4 - 1);
                 if (var1.minZ > 0.0D)
                 {
                     var28 = var27;
@@ -2749,14 +2749,14 @@ namespace betareborn.Rendering
 
                 var8.setColorOpaque_F(var16 * var28, var20 * var28, var24 * var28);
                 var8.setTranslationF(0.0F, 0.0F, var26);
-                renderEastFace(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTexture(blockAccess, var2, var3, var4, 2));
+                renderEastFace(var1, (double)var2, (double)var3, (double)var4, var1.getTexture(blockAccess, var2, var3, var4, 2));
                 var8.setTranslationF(0.0F, 0.0F, -var26);
                 var9 = true;
             }
 
-            if (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2, var3, var4 + 1, 3))
+            if (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3, var4 + 1, 3))
             {
-                var28 = var1.getBlockBrightness(blockAccess, var2, var3, var4 + 1);
+                var28 = var1.getLuminance(blockAccess, var2, var3, var4 + 1);
                 if (var1.maxZ < 1.0D)
                 {
                     var28 = var27;
@@ -2764,14 +2764,14 @@ namespace betareborn.Rendering
 
                 var8.setColorOpaque_F(var16 * var28, var20 * var28, var24 * var28);
                 var8.setTranslationF(0.0F, 0.0F, -var26);
-                renderWestFace(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTexture(blockAccess, var2, var3, var4, 3));
+                renderWestFace(var1, (double)var2, (double)var3, (double)var4, var1.getTexture(blockAccess, var2, var3, var4, 3));
                 var8.setTranslationF(0.0F, 0.0F, var26);
                 var9 = true;
             }
 
-            if (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2 - 1, var3, var4, 4))
+            if (renderAllFaces || var1.isSideVisible(blockAccess, var2 - 1, var3, var4, 4))
             {
-                var28 = var1.getBlockBrightness(blockAccess, var2 - 1, var3, var4);
+                var28 = var1.getLuminance(blockAccess, var2 - 1, var3, var4);
                 if (var1.minX > 0.0D)
                 {
                     var28 = var27;
@@ -2779,14 +2779,14 @@ namespace betareborn.Rendering
 
                 var8.setColorOpaque_F(var17 * var28, var21 * var28, var25 * var28);
                 var8.setTranslationF(var26, 0.0F, 0.0F);
-                renderNorthFace(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTexture(blockAccess, var2, var3, var4, 4));
+                renderNorthFace(var1, (double)var2, (double)var3, (double)var4, var1.getTexture(blockAccess, var2, var3, var4, 4));
                 var8.setTranslationF(-var26, 0.0F, 0.0F);
                 var9 = true;
             }
 
-            if (renderAllFaces || var1.shouldSideBeRendered(blockAccess, var2 + 1, var3, var4, 5))
+            if (renderAllFaces || var1.isSideVisible(blockAccess, var2 + 1, var3, var4, 5))
             {
-                var28 = var1.getBlockBrightness(blockAccess, var2 + 1, var3, var4);
+                var28 = var1.getLuminance(blockAccess, var2 + 1, var3, var4);
                 if (var1.maxX < 1.0D)
                 {
                     var28 = var27;
@@ -2794,7 +2794,7 @@ namespace betareborn.Rendering
 
                 var8.setColorOpaque_F(var17 * var28, var21 * var28, var25 * var28);
                 var8.setTranslationF(-var26, 0.0F, 0.0F);
-                renderSouthFace(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTexture(blockAccess, var2, var3, var4, 5));
+                renderSouthFace(var1, (double)var2, (double)var3, (double)var4, var1.getTexture(blockAccess, var2, var3, var4, 5));
                 var8.setTranslationF(var26, 0.0F, 0.0F);
                 var9 = true;
             }
@@ -2923,8 +2923,8 @@ namespace betareborn.Rendering
             float var9 = 1.0F;
             float var10 = 0.8F;
             float var11 = 0.6F;
-            float var12 = var1.getBlockBrightness(blockAccess, var2, var3, var4);
-            float var13 = var1.getBlockBrightness(blockAccess, var2, var3 - 1, var4);
+            float var12 = var1.getLuminance(blockAccess, var2, var3, var4);
+            float var13 = var1.getLuminance(blockAccess, var2, var3 - 1, var4);
             if (var6.minY > 0.0D)
             {
                 var13 = var12;
@@ -2936,9 +2936,9 @@ namespace betareborn.Rendering
             }
 
             var5.setColorOpaque_F(var8 * var13, var8 * var13, var8 * var13);
-            renderBottomFace(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTexture(blockAccess, var2, var3, var4, 0));
+            renderBottomFace(var1, (double)var2, (double)var3, (double)var4, var1.getTexture(blockAccess, var2, var3, var4, 0));
             var7 = true;
-            var13 = var1.getBlockBrightness(blockAccess, var2, var3 + 1, var4);
+            var13 = var1.getLuminance(blockAccess, var2, var3 + 1, var4);
             if (var6.maxY < 1.0D)
             {
                 var13 = var12;
@@ -2950,9 +2950,9 @@ namespace betareborn.Rendering
             }
 
             var5.setColorOpaque_F(var9 * var13, var9 * var13, var9 * var13);
-            renderTopFace(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTexture(blockAccess, var2, var3, var4, 1));
+            renderTopFace(var1, (double)var2, (double)var3, (double)var4, var1.getTexture(blockAccess, var2, var3, var4, 1));
             var7 = true;
-            var13 = var1.getBlockBrightness(blockAccess, var2, var3, var4 - 1);
+            var13 = var1.getLuminance(blockAccess, var2, var3, var4 - 1);
             if (var6.minZ > 0.0D)
             {
                 var13 = var12;
@@ -2964,7 +2964,7 @@ namespace betareborn.Rendering
             }
 
             var5.setColorOpaque_F(var10 * var13, var10 * var13, var10 * var13);
-            int var14 = var1.getBlockTexture(blockAccess, var2, var3, var4, 2);
+            int var14 = var1.getTexture(blockAccess, var2, var3, var4, 2);
             if (var14 < 0)
             {
                 flipTexture = true;
@@ -2974,7 +2974,7 @@ namespace betareborn.Rendering
             renderEastFace(var1, (double)var2, (double)var3, (double)var4, var14);
             var7 = true;
             flipTexture = false;
-            var13 = var1.getBlockBrightness(blockAccess, var2, var3, var4 + 1);
+            var13 = var1.getLuminance(blockAccess, var2, var3, var4 + 1);
             if (var6.maxZ < 1.0D)
             {
                 var13 = var12;
@@ -2986,7 +2986,7 @@ namespace betareborn.Rendering
             }
 
             var5.setColorOpaque_F(var10 * var13, var10 * var13, var10 * var13);
-            var14 = var1.getBlockTexture(blockAccess, var2, var3, var4, 3);
+            var14 = var1.getTexture(blockAccess, var2, var3, var4, 3);
             if (var14 < 0)
             {
                 flipTexture = true;
@@ -2996,7 +2996,7 @@ namespace betareborn.Rendering
             renderWestFace(var1, (double)var2, (double)var3, (double)var4, var14);
             var7 = true;
             flipTexture = false;
-            var13 = var1.getBlockBrightness(blockAccess, var2 - 1, var3, var4);
+            var13 = var1.getLuminance(blockAccess, var2 - 1, var3, var4);
             if (var6.minX > 0.0D)
             {
                 var13 = var12;
@@ -3008,7 +3008,7 @@ namespace betareborn.Rendering
             }
 
             var5.setColorOpaque_F(var11 * var13, var11 * var13, var11 * var13);
-            var14 = var1.getBlockTexture(blockAccess, var2, var3, var4, 4);
+            var14 = var1.getTexture(blockAccess, var2, var3, var4, 4);
             if (var14 < 0)
             {
                 flipTexture = true;
@@ -3018,7 +3018,7 @@ namespace betareborn.Rendering
             renderNorthFace(var1, (double)var2, (double)var3, (double)var4, var14);
             var7 = true;
             flipTexture = false;
-            var13 = var1.getBlockBrightness(blockAccess, var2 + 1, var3, var4);
+            var13 = var1.getLuminance(blockAccess, var2 + 1, var3, var4);
             if (var6.maxX < 1.0D)
             {
                 var13 = var12;
@@ -3030,7 +3030,7 @@ namespace betareborn.Rendering
             }
 
             var5.setColorOpaque_F(var11 * var13, var11 * var13, var11 * var13);
-            var14 = var1.getBlockTexture(blockAccess, var2, var3, var4, 5);
+            var14 = var1.getTexture(blockAccess, var2, var3, var4, 5);
             if (var14 < 0)
             {
                 flipTexture = true;
@@ -3671,34 +3671,34 @@ namespace betareborn.Rendering
                     var6 = 1.0F / 16.0F;
                     var4.startDrawingQuads();
                     var4.setNormal(0.0F, -1.0F, 0.0F);
-                    renderBottomFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(0));
+                    renderBottomFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(0));
                     var4.draw();
                     var4.startDrawingQuads();
                     var4.setNormal(0.0F, 1.0F, 0.0F);
-                    renderTopFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(1));
+                    renderTopFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(1));
                     var4.draw();
                     var4.startDrawingQuads();
                     var4.setNormal(0.0F, 0.0F, -1.0F);
                     var4.setTranslationF(0.0F, 0.0F, var6);
-                    renderEastFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(2));
+                    renderEastFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(2));
                     var4.setTranslationF(0.0F, 0.0F, -var6);
                     var4.draw();
                     var4.startDrawingQuads();
                     var4.setNormal(0.0F, 0.0F, 1.0F);
                     var4.setTranslationF(0.0F, 0.0F, -var6);
-                    renderWestFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(3));
+                    renderWestFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(3));
                     var4.setTranslationF(0.0F, 0.0F, var6);
                     var4.draw();
                     var4.startDrawingQuads();
                     var4.setNormal(-1.0F, 0.0F, 0.0F);
                     var4.setTranslationF(var6, 0.0F, 0.0F);
-                    renderNorthFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(4));
+                    renderNorthFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(4));
                     var4.setTranslationF(-var6, 0.0F, 0.0F);
                     var4.draw();
                     var4.startDrawingQuads();
                     var4.setNormal(1.0F, 0.0F, 0.0F);
                     var4.setTranslationF(-var6, 0.0F, 0.0F);
-                    renderSouthFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(5));
+                    renderSouthFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(5));
                     var4.setTranslationF(var6, 0.0F, 0.0F);
                     var4.draw();
                     GLManager.GL.Translate(0.5F, 0.5F, 0.5F);
@@ -3737,27 +3737,27 @@ namespace betareborn.Rendering
                             GLManager.GL.Translate(-0.5F, -0.5F, -0.5F);
                             var4.startDrawingQuads();
                             var4.setNormal(0.0F, -1.0F, 0.0F);
-                            renderBottomFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(0));
+                            renderBottomFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(0));
                             var4.draw();
                             var4.startDrawingQuads();
                             var4.setNormal(0.0F, 1.0F, 0.0F);
-                            renderTopFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(1));
+                            renderTopFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(1));
                             var4.draw();
                             var4.startDrawingQuads();
                             var4.setNormal(0.0F, 0.0F, -1.0F);
-                            renderEastFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(2));
+                            renderEastFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(2));
                             var4.draw();
                             var4.startDrawingQuads();
                             var4.setNormal(0.0F, 0.0F, 1.0F);
-                            renderWestFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(3));
+                            renderWestFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(3));
                             var4.draw();
                             var4.startDrawingQuads();
                             var4.setNormal(-1.0F, 0.0F, 0.0F);
-                            renderNorthFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(4));
+                            renderNorthFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(4));
                             var4.draw();
                             var4.startDrawingQuads();
                             var4.setNormal(1.0F, 0.0F, 0.0F);
-                            renderSouthFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(5));
+                            renderSouthFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(5));
                             var4.draw();
                             GLManager.GL.Translate(0.5F, 0.5F, 0.5F);
                         }
@@ -3791,27 +3791,27 @@ namespace betareborn.Rendering
                             GLManager.GL.Translate(-0.5F, -0.5F, -0.5F);
                             var4.startDrawingQuads();
                             var4.setNormal(0.0F, -1.0F, 0.0F);
-                            renderBottomFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(0));
+                            renderBottomFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(0));
                             var4.draw();
                             var4.startDrawingQuads();
                             var4.setNormal(0.0F, 1.0F, 0.0F);
-                            renderTopFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(1));
+                            renderTopFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(1));
                             var4.draw();
                             var4.startDrawingQuads();
                             var4.setNormal(0.0F, 0.0F, -1.0F);
-                            renderEastFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(2));
+                            renderEastFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(2));
                             var4.draw();
                             var4.startDrawingQuads();
                             var4.setNormal(0.0F, 0.0F, 1.0F);
-                            renderWestFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(3));
+                            renderWestFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(3));
                             var4.draw();
                             var4.startDrawingQuads();
                             var4.setNormal(-1.0F, 0.0F, 0.0F);
-                            renderNorthFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(4));
+                            renderNorthFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(4));
                             var4.draw();
                             var4.startDrawingQuads();
                             var4.setNormal(1.0F, 0.0F, 0.0F);
-                            renderSouthFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(5));
+                            renderSouthFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(5));
                             var4.draw();
                             GLManager.GL.Translate(0.5F, 0.5F, 0.5F);
                         }

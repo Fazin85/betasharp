@@ -22,7 +22,7 @@ namespace betareborn.Blocks
             var1.scheduleBlockUpdate(var2, var3, var4, this.id, this.tickRate());
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
             this.tryToFall(var1, var2, var3, var4);
         }
@@ -67,13 +67,13 @@ namespace betareborn.Blocks
             {
                 return true;
             }
-            else if (var4 == Block.fire.id)
+            else if (var4 == Block.FIRE.id)
             {
                 return true;
             }
             else
             {
-                Material var5 = Block.BLOCKS[var4].blockMaterial;
+                Material var5 = Block.BLOCKS[var4].material;
                 return var5 == Material.WATER ? true : var5 == Material.LAVA;
             }
         }

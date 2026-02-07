@@ -14,7 +14,7 @@ namespace betareborn.Blocks
         public BlockPistonBase(int var1, int var2, bool var3) : base(var1, var2, Material.PISTON)
         {
             isSticky = var3;
-            setStepSound(soundStoneFootstep);
+            setSoundGroup(soundStoneFootstep);
             setHardness(0.5F);
         }
 
@@ -220,10 +220,10 @@ namespace betareborn.Blocks
             setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         }
 
-        public override void getCollidingBoundingBoxes(World var1, int var2, int var3, int var4, Box var5, List<Box> var6)
+        public override void addIntersectingBoundingBox(World var1, int var2, int var3, int var4, Box var5, List<Box> var6)
         {
             setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-            base.getCollidingBoundingBoxes(var1, var2, var3, var4, var5, var6);
+            base.addIntersectingBoundingBox(var1, var2, var3, var4, var5, var6);
         }
 
         public override bool isFullCube()
@@ -263,7 +263,7 @@ namespace betareborn.Blocks
 
         private static bool canPushBlock(int var0, World var1, int var2, int var3, int var4, bool var5)
         {
-            if (var0 == Block.obsidian.id)
+            if (var0 == Block.OBSIDIAN.id)
             {
                 return false;
             }

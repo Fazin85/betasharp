@@ -11,13 +11,13 @@ namespace betareborn.Worlds
             {
                 return false;
             }
-            else if (var1.getBlockId(var3, var4 + 1, var5) != Block.netherrack.id)
+            else if (var1.getBlockId(var3, var4 + 1, var5) != Block.NETHERRACK.id)
             {
                 return false;
             }
             else
             {
-                var1.setBlockWithNotify(var3, var4, var5, Block.glowStone.id);
+                var1.setBlockWithNotify(var3, var4, var5, Block.GLOWSTONE.id);
 
                 for (int var6 = 0; var6 < 1500; ++var6)
                 {
@@ -61,7 +61,7 @@ namespace betareborn.Worlds
                                 var12 = var1.getBlockId(var7, var8, var9 + 1);
                             }
 
-                            if (var12 == Block.glowStone.id)
+                            if (var12 == Block.GLOWSTONE.id)
                             {
                                 ++var10;
                             }
@@ -69,7 +69,7 @@ namespace betareborn.Worlds
 
                         if (var10 == 1)
                         {
-                            var1.setBlockWithNotify(var7, var8, var9, Block.glowStone.id);
+                            var1.setBlockWithNotify(var7, var8, var9, Block.GLOWSTONE.id);
                         }
                     }
                 }

@@ -213,11 +213,11 @@ namespace betareborn.Guis
                         {
                             if (var21.nextInt(2) == 0)
                             {
-                                var26 = Block.oreDiamond.textureId;
+                                var26 = Block.DIAMOND_ORE.textureId;
                             }
                             else
                             {
-                                var26 = Block.oreRedstone.textureId;
+                                var26 = Block.REDSTONE_ORE.textureId;
                             }
                         }
                         else if (var25 == 10)

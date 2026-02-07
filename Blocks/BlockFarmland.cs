@@ -10,12 +10,12 @@ namespace betareborn.Blocks
         public BlockFarmland(int var1) : base(var1, Material.SOIL)
         {
             textureId = 87;
-            setTickOnLoad(true);
+            setTickRandomly(true);
             setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 15.0F / 16.0F, 1.0F);
-            setLightOpacity(255);
+            setOpacity(255);
         }
 
-        public override Box getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getCollisionShape(World var1, int var2, int var3, int var4)
         {
             return Box.createCached((double)(var2 + 0), (double)(var3 + 0), (double)(var4 + 0), (double)(var2 + 1), (double)(var3 + 1), (double)(var4 + 1));
         }
@@ -35,7 +35,7 @@ namespace betareborn.Blocks
             return var1 == 1 && var2 > 0 ? textureId - 1 : (var1 == 1 ? textureId : 2);
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
             if (var5.nextInt(5) == 0)
             {
@@ -76,7 +76,7 @@ namespace betareborn.Blocks
             {
                 for (int var7 = var4 - var5; var7 <= var4 + var5; ++var7)
                 {
-                    if (var1.getBlockId(var6, var3 + 1, var7) == Block.crops.id)
+                    if (var1.getBlockId(var6, var3 + 1, var7) == Block.WHEAT.id)
                     {
                         return true;
                     }

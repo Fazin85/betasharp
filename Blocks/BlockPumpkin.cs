@@ -12,7 +12,7 @@ namespace betareborn.Blocks
         public BlockPumpkin(int var1, int var2, bool var3) : base(var1, Material.PUMPKIN)
         {
             textureId = var2;
-            setTickOnLoad(true);
+            setTickRandomly(true);
             blockType = var3;
         }
 
@@ -38,7 +38,7 @@ namespace betareborn.Blocks
             }
         }
 
-        public override int getBlockTextureFromSide(int var1)
+        public override int getTexture(int var1)
         {
             return var1 == 1 ? textureId : (var1 == 0 ? textureId : (var1 == 3 ? textureId + 1 + 16 : textureId + 16));
         }
@@ -51,7 +51,7 @@ namespace betareborn.Blocks
         public override bool canPlaceBlockAt(World var1, int var2, int var3, int var4)
         {
             int var5 = var1.getBlockId(var2, var3, var4);
-            return (var5 == 0 || Block.BLOCKS[var5].blockMaterial.isReplaceable()) && var1.shouldSuffocate(var2, var3 - 1, var4);
+            return (var5 == 0 || Block.BLOCKS[var5].material.isReplaceable()) && var1.shouldSuffocate(var2, var3 - 1, var4);
         }
 
         public override void onBlockPlacedBy(World var1, int var2, int var3, int var4, EntityLiving var5)

@@ -28,11 +28,11 @@ namespace betareborn.Items
                 Block var8;
                 if (doorMaterial == Material.WOOD)
                 {
-                    var8 = Block.doorWood;
+                    var8 = Block.DOOR;
                 }
                 else
                 {
-                    var8 = Block.doorSteel;
+                    var8 = Block.IRON_DOOR;
                 }
 
                 if (!var8.canPlaceBlockAt(var3, var4, var5, var6))

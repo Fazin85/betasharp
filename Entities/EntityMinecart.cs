@@ -143,11 +143,11 @@ namespace betareborn.Entities
                             }
                         }
 
-                        dropItemWithOffset(Block.chest.id, 1, 0.0F);
+                        dropItemWithOffset(Block.CHEST.id, 1, 0.0F);
                     }
                     else if (minecartType == 2)
                     {
-                        dropItemWithOffset(Block.stoneOvenIdle.id, 1, 0.0F);
+                        dropItemWithOffset(Block.FURNACE.id, 1, 0.0F);
                     }
                 }
 

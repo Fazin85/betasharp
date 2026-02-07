@@ -13,7 +13,7 @@ namespace betareborn.TileEntities
             GLManager.GL.PushMatrix();
             float var10 = 2.0F / 3.0F;
             float var12;
-            if (var9 == Block.signPost)
+            if (var9 == Block.SIGN)
             {
                 GLManager.GL.Translate((float)var2 + 0.5F, (float)var4 + 12.0F / 16.0F * var10, (float)var6 + 0.5F);
                 float var11 = (float)(var1.getPushedBlockData() * 360) / 16.0F;

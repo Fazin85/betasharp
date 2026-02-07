@@ -33,21 +33,21 @@ namespace betareborn.Blocks
             return !var1.shouldSuffocate(var2, var3 - 1, var4) ? false : base.canBlockStay(var1, var2, var3, var4);
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
             int var6 = var1.getBlockMeta(var2, var3, var4);
             bool var7 = func_22022_g(var1, var2, var3, var4, var6);
             if (isRepeaterPowered && !var7)
             {
-                var1.setBlockAndMetadataWithNotify(var2, var3, var4, Block.redstoneRepeaterIdle.id, var6);
+                var1.setBlockAndMetadataWithNotify(var2, var3, var4, Block.REPEATER.id, var6);
             }
             else if (!isRepeaterPowered)
             {
-                var1.setBlockAndMetadataWithNotify(var2, var3, var4, Block.redstoneRepeaterActive.id, var6);
+                var1.setBlockAndMetadataWithNotify(var2, var3, var4, Block.POWERED_REPEATER.id, var6);
                 if (!var7)
                 {
                     int var8 = (var6 & 12) >> 2;
-                    var1.scheduleBlockUpdate(var2, var3, var4, Block.redstoneRepeaterActive.id, field_22023_b[var8] * 2);
+                    var1.scheduleBlockUpdate(var2, var3, var4, Block.POWERED_REPEATER.id, field_22023_b[var8] * 2);
                 }
             }
 
@@ -58,7 +58,7 @@ namespace betareborn.Blocks
             return var1 == 0 ? (isRepeaterPowered ? 99 : 115) : (var1 == 1 ? (isRepeaterPowered ? 147 : 131) : 5);
         }
 
-        public override bool shouldSideBeRendered(BlockView var1, int var2, int var3, int var4, int var5)
+        public override bool isSideVisible(BlockView var1, int var2, int var3, int var4, int var5)
         {
             return var5 != 0 && var5 != 1;
         }
@@ -68,7 +68,7 @@ namespace betareborn.Blocks
             return 15;
         }
 
-        public override int getBlockTextureFromSide(int var1)
+        public override int getTexture(int var1)
         {
             return getTexture(var1, 0);
         }
@@ -121,13 +121,13 @@ namespace betareborn.Blocks
             switch (var6)
             {
                 case 0:
-                    return var1.isBlockIndirectlyProvidingPowerTo(var2, var3, var4 + 1, 3) || var1.getBlockId(var2, var3, var4 + 1) == Block.redstoneWire.id && var1.getBlockMeta(var2, var3, var4 + 1) > 0;
+                    return var1.isBlockIndirectlyProvidingPowerTo(var2, var3, var4 + 1, 3) || var1.getBlockId(var2, var3, var4 + 1) == Block.REDSTONE_WIRE.id && var1.getBlockMeta(var2, var3, var4 + 1) > 0;
                 case 1:
-                    return var1.isBlockIndirectlyProvidingPowerTo(var2 - 1, var3, var4, 4) || var1.getBlockId(var2 - 1, var3, var4) == Block.redstoneWire.id && var1.getBlockMeta(var2 - 1, var3, var4) > 0;
+                    return var1.isBlockIndirectlyProvidingPowerTo(var2 - 1, var3, var4, 4) || var1.getBlockId(var2 - 1, var3, var4) == Block.REDSTONE_WIRE.id && var1.getBlockMeta(var2 - 1, var3, var4) > 0;
                 case 2:
-                    return var1.isBlockIndirectlyProvidingPowerTo(var2, var3, var4 - 1, 2) || var1.getBlockId(var2, var3, var4 - 1) == Block.redstoneWire.id && var1.getBlockMeta(var2, var3, var4 - 1) > 0;
+                    return var1.isBlockIndirectlyProvidingPowerTo(var2, var3, var4 - 1, 2) || var1.getBlockId(var2, var3, var4 - 1) == Block.REDSTONE_WIRE.id && var1.getBlockMeta(var2, var3, var4 - 1) > 0;
                 case 3:
-                    return var1.isBlockIndirectlyProvidingPowerTo(var2 + 1, var3, var4, 5) || var1.getBlockId(var2 + 1, var3, var4) == Block.redstoneWire.id && var1.getBlockMeta(var2 + 1, var3, var4) > 0;
+                    return var1.isBlockIndirectlyProvidingPowerTo(var2 + 1, var3, var4, 5) || var1.getBlockId(var2 + 1, var3, var4) == Block.REDSTONE_WIRE.id && var1.getBlockMeta(var2 + 1, var3, var4) > 0;
                 default:
                     return false;
             }

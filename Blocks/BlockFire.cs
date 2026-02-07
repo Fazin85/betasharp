@@ -10,18 +10,18 @@ namespace betareborn.Blocks
 
         public BlockFire(int var1, int var2) : base(var1, var2, Material.FIRE)
         {
-            setTickOnLoad(true);
+            setTickRandomly(true);
         }
 
-        protected override void initializeBlock()
+        protected override void init()
         {
             setBurnRate(Block.PLANKS.id, 5, 20);
-            setBurnRate(Block.fence.id, 5, 20);
-            setBurnRate(Block.stairCompactPlanks.id, 5, 20);
+            setBurnRate(Block.FENCE.id, 5, 20);
+            setBurnRate(Block.WOODEN_STAIRS.id, 5, 20);
             setBurnRate(Block.LOG.id, 5, 5);
             setBurnRate(Block.LEAVES.id, 30, 60);
-            setBurnRate(Block.bookShelf.id, 30, 20);
-            setBurnRate(Block.tnt.id, 15, 100);
+            setBurnRate(Block.BOOKSHELF.id, 30, 20);
+            setBurnRate(Block.TNT.id, 15, 100);
             setBurnRate(Block.GRASS.id, 60, 100);
             setBurnRate(Block.WOOL.id, 30, 60);
         }
@@ -32,7 +32,7 @@ namespace betareborn.Blocks
             abilityToCatchFire[var1] = var3;
         }
 
-        public override Box getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getCollisionShape(World var1, int var2, int var3, int var4)
         {
             return null;
         }
@@ -62,9 +62,9 @@ namespace betareborn.Blocks
             return 40;
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
-            bool var6 = var1.getBlockId(var2, var3 - 1, var4) == Block.netherrack.id;
+            bool var6 = var1.getBlockId(var2, var3 - 1, var4) == Block.NETHERRACK.id;
             if (!canPlaceBlockAt(var1, var2, var3, var4))
             {
                 var1.setBlockWithNotify(var2, var3, var4, 0);
@@ -147,7 +147,7 @@ namespace betareborn.Blocks
             int var8 = abilityToCatchFire[var1.getBlockId(var2, var3, var4)];
             if (var6.nextInt(var5) < var8)
             {
-                bool var9 = var1.getBlockId(var2, var3, var4) == Block.tnt.id;
+                bool var9 = var1.getBlockId(var2, var3, var4) == Block.TNT.id;
                 if (var6.nextInt(var7 + 10) < 5 && !var1.canBlockBeRainedOn(var2, var3, var4))
                 {
                     int var10 = var7 + var6.nextInt(5) / 4;
@@ -165,7 +165,7 @@ namespace betareborn.Blocks
 
                 if (var9)
                 {
-                    Block.tnt.onBlockDestroyedByPlayer(var1, var2, var3, var4, 1);
+                    Block.TNT.onBlockDestroyedByPlayer(var1, var2, var3, var4, 1);
                 }
             }
 
@@ -195,7 +195,7 @@ namespace betareborn.Blocks
             }
         }
 
-        public override bool isCollidable()
+        public override bool hasCollision()
         {
             return false;
         }
@@ -226,7 +226,7 @@ namespace betareborn.Blocks
 
         public override void onBlockAdded(World var1, int var2, int var3, int var4)
         {
-            if (var1.getBlockId(var2, var3 - 1, var4) != Block.obsidian.id || !Block.portal.tryToCreatePortal(var1, var2, var3, var4))
+            if (var1.getBlockId(var2, var3 - 1, var4) != Block.OBSIDIAN.id || !Block.NETHER_PORTAL.tryToCreatePortal(var1, var2, var3, var4))
             {
                 if (!var1.shouldSuffocate(var2, var3 - 1, var4) && !func_263_h(var1, var2, var3, var4))
                 {
@@ -250,9 +250,9 @@ namespace betareborn.Blocks
             float var7;
             float var8;
             float var9;
-            if (!var1.shouldSuffocate(var2, var3 - 1, var4) && !Block.fire.canBlockCatchFire(var1, var2, var3 - 1, var4))
+            if (!var1.shouldSuffocate(var2, var3 - 1, var4) && !Block.FIRE.canBlockCatchFire(var1, var2, var3 - 1, var4))
             {
-                if (Block.fire.canBlockCatchFire(var1, var2 - 1, var3, var4))
+                if (Block.FIRE.canBlockCatchFire(var1, var2 - 1, var3, var4))
                 {
                     for (var6 = 0; var6 < 2; ++var6)
                     {
@@ -263,7 +263,7 @@ namespace betareborn.Blocks
                     }
                 }
 
-                if (Block.fire.canBlockCatchFire(var1, var2 + 1, var3, var4))
+                if (Block.FIRE.canBlockCatchFire(var1, var2 + 1, var3, var4))
                 {
                     for (var6 = 0; var6 < 2; ++var6)
                     {
@@ -274,7 +274,7 @@ namespace betareborn.Blocks
                     }
                 }
 
-                if (Block.fire.canBlockCatchFire(var1, var2, var3, var4 - 1))
+                if (Block.FIRE.canBlockCatchFire(var1, var2, var3, var4 - 1))
                 {
                     for (var6 = 0; var6 < 2; ++var6)
                     {
@@ -285,7 +285,7 @@ namespace betareborn.Blocks
                     }
                 }
 
-                if (Block.fire.canBlockCatchFire(var1, var2, var3, var4 + 1))
+                if (Block.FIRE.canBlockCatchFire(var1, var2, var3, var4 + 1))
                 {
                     for (var6 = 0; var6 < 2; ++var6)
                     {
@@ -296,7 +296,7 @@ namespace betareborn.Blocks
                     }
                 }
 
-                if (Block.fire.canBlockCatchFire(var1, var2, var3 + 1, var4))
+                if (Block.FIRE.canBlockCatchFire(var1, var2, var3 + 1, var4))
                 {
                     for (var6 = 0; var6 < 2; ++var6)
                     {

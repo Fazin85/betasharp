@@ -40,11 +40,11 @@ namespace betareborn.Items
                     }
                     return true;
                 }
-                if (var8 == Block.crops.id)
+                if (var8 == Block.WHEAT.id)
                 {
                     if (!var3.multiplayerWorld)
                     {
-                        ((BlockCrops)Block.crops).fertilize(var3, var4, var5, var6);
+                        ((BlockCrops)Block.WHEAT).fertilize(var3, var4, var5, var6);
                         --var1.count;
                     }
                     return true;

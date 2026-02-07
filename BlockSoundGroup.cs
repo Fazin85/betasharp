@@ -1,12 +1,12 @@
 namespace betareborn
 {
-    public class StepSound : java.lang.Object
+    public class BlockSoundGroup : java.lang.Object
     {
         public readonly string field_1678_a;
         public readonly float field_1677_b;
         public readonly float field_1679_c;
 
-        public StepSound(string var1, float var2, float var3)
+        public BlockSoundGroup(string var1, float var2, float var3)
         {
             field_1678_a = var1;
             field_1677_b = var2;

@@ -23,7 +23,7 @@ namespace betareborn
 
         public override bool isItemValid(ItemStack var1)
         {
-            return var1.getItem() is ItemArmor ? ((ItemArmor)var1.getItem()).armorType == armorType : (var1.getItem().id == Block.pumpkin.id ? armorType == 0 : false);
+            return var1.getItem() is ItemArmor ? ((ItemArmor)var1.getItem()).armorType == armorType : (var1.getItem().id == Block.PUMPKIN.id ? armorType == 0 : false);
         }
     }
 

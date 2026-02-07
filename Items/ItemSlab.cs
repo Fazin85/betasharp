@@ -13,7 +13,7 @@ namespace betareborn.Items
 
         public override int getIconFromDamage(int var1)
         {
-            return Block.stairSingle.getTexture(2, var1);
+            return Block.SLAB.getTexture(2, var1);
         }
 
         public override int getPlacedBlockMetadata(int var1)

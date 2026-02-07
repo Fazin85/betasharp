@@ -11,12 +11,12 @@ namespace betareborn.Blocks
         public static bool isRailBlockAt(World var0, int var1, int var2, int var3)
         {
             int var4 = var0.getBlockId(var1, var2, var3);
-            return var4 == Block.rail.id || var4 == Block.POWERED_RAIL.id || var4 == Block.DETECTOR_RAIL.id;
+            return var4 == Block.RAIL.id || var4 == Block.POWERED_RAIL.id || var4 == Block.DETECTOR_RAIL.id;
         }
 
         public static bool isRailBlock(int var0)
         {
-            return var0 == Block.rail.id || var0 == Block.POWERED_RAIL.id || var0 == Block.DETECTOR_RAIL.id;
+            return var0 == Block.RAIL.id || var0 == Block.POWERED_RAIL.id || var0 == Block.DETECTOR_RAIL.id;
         }
 
         public BlockRail(int var1, int var2, bool var3) : base(var1, var2, Material.PISTON_BREAKABLE)
@@ -30,7 +30,7 @@ namespace betareborn.Blocks
             return isPowered;
         }
 
-        public override Box getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getCollisionShape(World var1, int var2, int var3, int var4)
         {
             return null;
         }

@@ -35,16 +35,16 @@ namespace betareborn.Blocks
             return 0;
         }
 
-        public override Box getSelectedBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getBoundingBox(World var1, int var2, int var3, int var4)
         {
             updateBoundingBox(var1, var2, var3, var4);
-            return base.getSelectedBoundingBoxFromPool(var1, var2, var3, var4);
+            return base.getBoundingBox(var1, var2, var3, var4);
         }
 
-        public override Box getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getCollisionShape(World var1, int var2, int var3, int var4)
         {
             updateBoundingBox(var1, var2, var3, var4);
-            return base.getCollisionBoundingBoxFromPool(var1, var2, var3, var4);
+            return base.getCollisionShape(var1, var2, var3, var4);
         }
 
         public override void updateBoundingBox(BlockView var1, int var2, int var3, int var4)
@@ -94,7 +94,7 @@ namespace betareborn.Blocks
 
         public override bool onUse(World var1, int var2, int var3, int var4, EntityPlayer var5)
         {
-            if (blockMaterial == Material.METAL)
+            if (material == Material.METAL)
             {
                 return true;
             }

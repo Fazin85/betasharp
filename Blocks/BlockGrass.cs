@@ -8,10 +8,10 @@ namespace betareborn.Blocks
         public BlockGrass(int var1) : base(var1, Material.SOLID_ORGANIC)
         {
             textureId = 3;
-            setTickOnLoad(true);
+            setTickRandomly(true);
         }
 
-        public override int getBlockTexture(BlockView var1, int var2, int var3, int var4, int var5)
+        public override int getTexture(BlockView var1, int var2, int var3, int var4, int var5)
         {
             if (var5 == 1)
             {
@@ -36,7 +36,7 @@ namespace betareborn.Blocks
             return ColorizerGrass.getGrassColor(var5, var7);
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
             if (!var1.multiplayerWorld)
             {

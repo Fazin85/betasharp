@@ -63,16 +63,16 @@ namespace betareborn.Blocks
             return 7;
         }
 
-        public override Box getSelectedBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getBoundingBox(World var1, int var2, int var3, int var4)
         {
             updateBoundingBox(var1, var2, var3, var4);
-            return base.getSelectedBoundingBoxFromPool(var1, var2, var3, var4);
+            return base.getBoundingBox(var1, var2, var3, var4);
         }
 
-        public override Box getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getCollisionShape(World var1, int var2, int var3, int var4)
         {
             updateBoundingBox(var1, var2, var3, var4);
-            return base.getCollisionBoundingBoxFromPool(var1, var2, var3, var4);
+            return base.getCollisionShape(var1, var2, var3, var4);
         }
 
         public override void updateBoundingBox(BlockView var1, int var2, int var3, int var4)
@@ -113,7 +113,7 @@ namespace betareborn.Blocks
 
         public override bool onUse(World var1, int var2, int var3, int var4, EntityPlayer var5)
         {
-            if (blockMaterial == Material.METAL)
+            if (material == Material.METAL)
             {
                 return true;
             }
@@ -224,7 +224,7 @@ namespace betareborn.Blocks
 
         public override int getDroppedItemId(int var1, java.util.Random var2)
         {
-            return (var1 & 8) != 0 ? 0 : (blockMaterial == Material.METAL ? Item.doorSteel.id : Item.doorWood.id);
+            return (var1 & 8) != 0 ? 0 : (material == Material.METAL ? Item.doorSteel.id : Item.doorWood.id);
         }
 
         public override MovingObjectPosition collisionRayTrace(World var1, int var2, int var3, int var4, Vec3D var5, Vec3D var6)

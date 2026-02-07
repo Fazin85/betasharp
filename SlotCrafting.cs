@@ -24,7 +24,7 @@ namespace betareborn
         public override void onPickupFromSlot(ItemStack var1)
         {
             var1.onCrafting(thePlayer.worldObj, thePlayer);
-            if (var1.itemID == Block.workbench.id)
+            if (var1.itemID == Block.CRAFTING_TABLE.id)
             {
                 thePlayer.addStat(Achievements.BUILD_WORKBENCH, 1);
             }
@@ -32,7 +32,7 @@ namespace betareborn
             {
                 thePlayer.addStat(Achievements.BUILD_PICKAXE, 1);
             }
-            else if (var1.itemID == Block.stoneOvenIdle.id)
+            else if (var1.itemID == Block.FURNACE.id)
             {
                 thePlayer.addStat(Achievements.BUILD_FURNACE, 1);
             }

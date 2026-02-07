@@ -51,7 +51,7 @@ namespace betareborn.Rendering
                 GLManager.GL.Rotate(var12, 0.0F, 1.0F, 0.0F);
                 loadTexture("/terrain.png");
                 float var28 = 0.25F;
-                if (!Block.BLOCKS[var10.itemID].isFullCube() && var10.itemID != Block.stairSingle.id && Block.BLOCKS[var10.itemID].getRenderType() != 16)
+                if (!Block.BLOCKS[var10.itemID].isFullCube() && var10.itemID != Block.SLAB.id && Block.BLOCKS[var10.itemID].getRenderType() != 16)
                 {
                     var28 = 0.5F;
                 }

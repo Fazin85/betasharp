@@ -11,7 +11,7 @@ namespace betareborn.Blocks
             textureId = 26;
         }
 
-        public override int getBlockTexture(BlockView var1, int var2, int var3, int var4, int var5)
+        public override int getTexture(BlockView var1, int var2, int var3, int var4, int var5)
         {
             if (var5 == 1)
             {
@@ -52,7 +52,7 @@ namespace betareborn.Blocks
             }
         }
 
-        public override int getBlockTextureFromSide(int var1)
+        public override int getTexture(int var1)
         {
             return var1 == 1 ? textureId - 1 : (var1 == 0 ? textureId - 1 : (var1 == 3 ? textureId + 1 : textureId));
         }
@@ -62,7 +62,7 @@ namespace betareborn.Blocks
             return true;
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
             var1.setBlockWithNotify(var2, var3, var4, 0);
         }

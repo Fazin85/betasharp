@@ -166,15 +166,15 @@ namespace betareborn.Stats
         {
             replaceSimilarBlocks(var0, Block.WATER.id, Block.FLOWING_WATER.id);
             replaceSimilarBlocks(var0, Block.LAVA.id, Block.LAVA.id);
-            replaceSimilarBlocks(var0, Block.pumpkinLantern.id, Block.pumpkin.id);
-            replaceSimilarBlocks(var0, Block.stoneOvenActive.id, Block.stoneOvenIdle.id);
-            replaceSimilarBlocks(var0, Block.oreRedstoneGlowing.id, Block.oreRedstone.id);
-            replaceSimilarBlocks(var0, Block.redstoneRepeaterActive.id, Block.redstoneRepeaterIdle.id);
-            replaceSimilarBlocks(var0, Block.torchRedstoneActive.id, Block.torchRedstoneIdle.id);
+            replaceSimilarBlocks(var0, Block.JACK_O_LANTERN.id, Block.PUMPKIN.id);
+            replaceSimilarBlocks(var0, Block.LIT_FURNACE.id, Block.FURNACE.id);
+            replaceSimilarBlocks(var0, Block.LIT_REDSTONE_ORE.id, Block.REDSTONE_ORE.id);
+            replaceSimilarBlocks(var0, Block.POWERED_REPEATER.id, Block.REPEATER.id);
+            replaceSimilarBlocks(var0, Block.LIT_REDSTONE_TORCH.id, Block.REDSTONE_TORCH.id);
             replaceSimilarBlocks(var0, Block.RED_MUSHROOM.id, Block.BROWN_MUSHROOM.id);
-            replaceSimilarBlocks(var0, Block.stairDouble.id, Block.stairSingle.id);
+            replaceSimilarBlocks(var0, Block.DOUBLE_SLAB.id, Block.SLAB.id);
             replaceSimilarBlocks(var0, Block.GRASS_BLOCK.id, Block.DIRT.id);
-            replaceSimilarBlocks(var0, Block.tilledField.id, Block.DIRT.id);
+            replaceSimilarBlocks(var0, Block.FARMLAND.id, Block.DIRT.id);
         }
 
         private static void replaceSimilarBlocks(StatBase[] var0, int var1, int var2)

@@ -49,7 +49,7 @@ namespace betareborn.Items
             if (var8 == 0)
             {
                 var3.playSoundEffect((double)var4 + 0.5D, (double)var5 + 0.5D, (double)var6 + 0.5D, "fire.ignite", 1.0F, itemRand.nextFloat() * 0.4F + 0.8F);
-                var3.setBlockWithNotify(var4, var5, var6, Block.fire.id);
+                var3.setBlockWithNotify(var4, var5, var6, Block.FIRE.id);
             }
 
             var1.damageItem(1, var2);

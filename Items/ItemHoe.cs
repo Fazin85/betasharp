@@ -23,8 +23,8 @@ namespace betareborn.Items
             }
             else
             {
-                Block var10 = Block.tilledField;
-                var3.playSoundEffect((double)((float)var4 + 0.5F), (double)((float)var5 + 0.5F), (double)((float)var6 + 0.5F), var10.stepSound.func_1145_d(), (var10.stepSound.getVolume() + 1.0F) / 2.0F, var10.stepSound.getPitch() * 0.8F);
+                Block var10 = Block.FARMLAND;
+                var3.playSoundEffect((double)((float)var4 + 0.5F), (double)((float)var5 + 0.5F), (double)((float)var6 + 0.5F), var10.soundGroup.func_1145_d(), (var10.soundGroup.getVolume() + 1.0F) / 2.0F, var10.soundGroup.getPitch() * 0.8F);
                 if (var3.multiplayerWorld)
                 {
                     return true;

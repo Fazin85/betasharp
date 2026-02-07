@@ -8,10 +8,10 @@ namespace betareborn.Blocks
 
         public BlockTorch(int var1, int var2) : base(var1, var2, Material.PISTON_BREAKABLE)
         {
-            setTickOnLoad(true);
+            setTickRandomly(true);
         }
 
-        public override Box getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getCollisionShape(World var1, int var2, int var3, int var4)
         {
             return null;
         }
@@ -33,7 +33,7 @@ namespace betareborn.Blocks
 
         private bool func_31032_h(World var1, int var2, int var3, int var4)
         {
-            return var1.shouldSuffocate(var2, var3, var4) || var1.getBlockId(var2, var3, var4) == Block.fence.id;
+            return var1.shouldSuffocate(var2, var3, var4) || var1.getBlockId(var2, var3, var4) == Block.FENCE.id;
         }
 
         public override bool canPlaceBlockAt(World var1, int var2, int var3, int var4)
@@ -72,9 +72,9 @@ namespace betareborn.Blocks
             var1.setBlockMeta(var2, var3, var4, var6);
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
-            base.updateTick(var1, var2, var3, var4, var5);
+            base.onTick(var1, var2, var3, var4, var5);
             if (var1.getBlockMeta(var2, var3, var4) == 0)
             {
                 onBlockAdded(var1, var2, var3, var4);

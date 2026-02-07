@@ -12,7 +12,7 @@ namespace betareborn.Blocks
             float var3 = 0.0F;
             float var4 = 0.0F;
             setBoundingBox(0.0F + var4, 0.0F + var3, 0.0F + var4, 1.0F + var4, 1.0F + var3, 1.0F + var4);
-            setTickOnLoad(true);
+            setTickRandomly(true);
         }
 
         public override int colorMultiplier(BlockView var1, int var2, int var3, int var4)
@@ -31,19 +31,19 @@ namespace betareborn.Blocks
             return var1;
         }
 
-        public override int getBlockTextureFromSide(int var1)
+        public override int getTexture(int var1)
         {
             return var1 != 0 && var1 != 1 ? textureId + 1 : textureId;
         }
 
         protected int getFlowDecay(World var1, int var2, int var3, int var4)
         {
-            return var1.getMaterial(var2, var3, var4) != blockMaterial ? -1 : var1.getBlockMeta(var2, var3, var4);
+            return var1.getMaterial(var2, var3, var4) != material ? -1 : var1.getBlockMeta(var2, var3, var4);
         }
 
         protected int getEffectiveFlowDecay(BlockView var1, int var2, int var3, int var4)
         {
-            if (var1.getMaterial(var2, var3, var4) != blockMaterial)
+            if (var1.getMaterial(var2, var3, var4) != material)
             {
                 return -1;
             }
@@ -69,24 +69,24 @@ namespace betareborn.Blocks
             return false;
         }
 
-        public override bool canCollideCheck(int var1, bool var2)
+        public override bool hasCollision(int var1, bool var2)
         {
             return var2 && var1 == 0;
         }
 
-        public override bool getIsBlockSolid(BlockView var1, int var2, int var3, int var4, int var5)
+        public override bool isSolidFace(BlockView var1, int var2, int var3, int var4, int var5)
         {
             Material var6 = var1.getMaterial(var2, var3, var4);
-            return var6 == blockMaterial ? false : (var6 == Material.ICE ? false : (var5 == 1 ? true : base.getIsBlockSolid(var1, var2, var3, var4, var5)));
+            return var6 == material ? false : (var6 == Material.ICE ? false : (var5 == 1 ? true : base.isSolidFace(var1, var2, var3, var4, var5)));
         }
 
-        public override bool shouldSideBeRendered(BlockView var1, int var2, int var3, int var4, int var5)
+        public override bool isSideVisible(BlockView var1, int var2, int var3, int var4, int var5)
         {
             Material var6 = var1.getMaterial(var2, var3, var4);
-            return var6 == blockMaterial ? false : (var6 == Material.ICE ? false : (var5 == 1 ? true : base.shouldSideBeRendered(var1, var2, var3, var4, var5)));
+            return var6 == material ? false : (var6 == Material.ICE ? false : (var5 == 1 ? true : base.isSideVisible(var1, var2, var3, var4, var5)));
         }
 
-        public override Box getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getCollisionShape(World var1, int var2, int var3, int var4)
         {
             return null;
         }
@@ -159,42 +159,42 @@ namespace betareborn.Blocks
             if (var1.getBlockMeta(var2, var3, var4) >= 8)
             {
                 bool var13 = false;
-                if (var13 || getIsBlockSolid(var1, var2, var3, var4 - 1, 2))
+                if (var13 || isSolidFace(var1, var2, var3, var4 - 1, 2))
                 {
                     var13 = true;
                 }
 
-                if (var13 || getIsBlockSolid(var1, var2, var3, var4 + 1, 3))
+                if (var13 || isSolidFace(var1, var2, var3, var4 + 1, 3))
                 {
                     var13 = true;
                 }
 
-                if (var13 || getIsBlockSolid(var1, var2 - 1, var3, var4, 4))
+                if (var13 || isSolidFace(var1, var2 - 1, var3, var4, 4))
                 {
                     var13 = true;
                 }
 
-                if (var13 || getIsBlockSolid(var1, var2 + 1, var3, var4, 5))
+                if (var13 || isSolidFace(var1, var2 + 1, var3, var4, 5))
                 {
                     var13 = true;
                 }
 
-                if (var13 || getIsBlockSolid(var1, var2, var3 + 1, var4 - 1, 2))
+                if (var13 || isSolidFace(var1, var2, var3 + 1, var4 - 1, 2))
                 {
                     var13 = true;
                 }
 
-                if (var13 || getIsBlockSolid(var1, var2, var3 + 1, var4 + 1, 3))
+                if (var13 || isSolidFace(var1, var2, var3 + 1, var4 + 1, 3))
                 {
                     var13 = true;
                 }
 
-                if (var13 || getIsBlockSolid(var1, var2 - 1, var3 + 1, var4, 4))
+                if (var13 || isSolidFace(var1, var2 - 1, var3 + 1, var4, 4))
                 {
                     var13 = true;
                 }
 
-                if (var13 || getIsBlockSolid(var1, var2 + 1, var3 + 1, var4, 5))
+                if (var13 || isSolidFace(var1, var2 + 1, var3 + 1, var4, 5))
                 {
                     var13 = true;
                 }
@@ -221,29 +221,29 @@ namespace betareborn.Blocks
 
         public override int tickRate()
         {
-            return blockMaterial == Material.WATER ? 5 : (blockMaterial == Material.LAVA ? 30 : 0);
+            return material == Material.WATER ? 5 : (material == Material.LAVA ? 30 : 0);
         }
 
-        public override float getBlockBrightness(BlockView var1, int var2, int var3, int var4)
+        public override float getLuminance(BlockView var1, int var2, int var3, int var4)
         {
             float var5 = var1.getLuminance(var2, var3, var4);
             float var6 = var1.getLuminance(var2, var3 + 1, var4);
             return var5 > var6 ? var5 : var6;
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
-            base.updateTick(var1, var2, var3, var4, var5);
+            base.onTick(var1, var2, var3, var4, var5);
         }
 
         public override int getRenderBlockPass()
         {
-            return blockMaterial == Material.WATER ? 1 : 0;
+            return material == Material.WATER ? 1 : 0;
         }
 
         public override void randomDisplayTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
-            if (blockMaterial == Material.WATER && var5.nextInt(64) == 0)
+            if (material == Material.WATER && var5.nextInt(64) == 0)
             {
                 int var6 = var1.getBlockMeta(var2, var3, var4);
                 if (var6 > 0 && var6 < 8)
@@ -252,7 +252,7 @@ namespace betareborn.Blocks
                 }
             }
 
-            if (blockMaterial == Material.LAVA && var1.getMaterial(var2, var3 + 1, var4) == Material.AIR && !var1.isOpaque(var2, var3 + 1, var4) && var5.nextInt(100) == 0)
+            if (material == Material.LAVA && var1.getMaterial(var2, var3 + 1, var4) == Material.AIR && !var1.isOpaque(var2, var3 + 1, var4) && var5.nextInt(100) == 0)
             {
                 double var12 = (double)((float)var2 + var5.nextFloat());
                 double var8 = (double)var3 + maxY;
@@ -292,7 +292,7 @@ namespace betareborn.Blocks
         {
             if (var1.getBlockId(var2, var3, var4) == id)
             {
-                if (blockMaterial == Material.LAVA)
+                if (material == Material.LAVA)
                 {
                     bool var5 = false;
                     if (var5 || var1.getMaterial(var2, var3, var4 - 1) == Material.WATER)
@@ -325,7 +325,7 @@ namespace betareborn.Blocks
                         int var6 = var1.getBlockMeta(var2, var3, var4);
                         if (var6 == 0)
                         {
-                            var1.setBlockWithNotify(var2, var3, var4, Block.obsidian.id);
+                            var1.setBlockWithNotify(var2, var3, var4, Block.OBSIDIAN.id);
                         }
                         else if (var6 <= 4)
                         {

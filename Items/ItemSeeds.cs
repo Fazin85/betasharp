@@ -23,7 +23,7 @@ namespace betareborn.Items
             else
             {
                 int var8 = var3.getBlockId(var4, var5, var6);
-                if (var8 == Block.tilledField.id && var3.isAir(var4, var5 + 1, var6))
+                if (var8 == Block.FARMLAND.id && var3.isAir(var4, var5 + 1, var6))
                 {
                     var3.setBlockWithNotify(var4, var5 + 1, var6, field_318_a);
                     --var1.count;

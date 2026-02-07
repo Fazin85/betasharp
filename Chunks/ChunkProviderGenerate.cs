@@ -94,7 +94,7 @@ namespace betareborn.Chunks
                                     {
                                         if (var53 < 0.5D && var13 * 8 + var32 >= var7 - 1)
                                         {
-                                            var55 = Block.ice.id;
+                                            var55 = Block.ICE.id;
                                         }
                                         else
                                         {
@@ -467,7 +467,7 @@ namespace betareborn.Chunks
                 var14 = var4 + rand.nextInt(16);
                 var15 = rand.nextInt(16);
                 var16 = var5 + rand.nextInt(16);
-                (new WorldGenMinable(Block.oreRedstone.id, 7)).generate(worldObj, rand, var14, var15, var16);
+                (new WorldGenMinable(Block.REDSTONE_ORE.id, 7)).generate(worldObj, rand, var14, var15, var16);
             }
 
             for (var13 = 0; var13 < 1; ++var13)
@@ -475,7 +475,7 @@ namespace betareborn.Chunks
                 var14 = var4 + rand.nextInt(16);
                 var15 = rand.nextInt(16);
                 var16 = var5 + rand.nextInt(16);
-                (new WorldGenMinable(Block.oreDiamond.id, 7)).generate(worldObj, rand, var14, var15, var16);
+                (new WorldGenMinable(Block.DIAMOND_ORE.id, 7)).generate(worldObj, rand, var14, var15, var16);
             }
 
             for (var13 = 0; var13 < 1; ++var13)
@@ -708,7 +708,7 @@ namespace betareborn.Chunks
                     double var23 = generatedTemperatures[var20 * 16 + var21] - (double)(var22 - 64) / 64.0D * 0.3D;
                     if (var23 < 0.5D && var22 > 0 && var22 < 128 && worldObj.isAir(var25, var22, var19) && worldObj.getMaterial(var25, var22 - 1, var19).blocksMovement() && worldObj.getMaterial(var25, var22 - 1, var19) != Material.ICE)
                     {
-                        worldObj.setBlockWithNotify(var25, var22, var19, Block.snow.id);
+                        worldObj.setBlockWithNotify(var25, var22, var19, Block.SNOW.id);
                     }
                 }
             }

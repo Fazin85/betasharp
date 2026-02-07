@@ -9,7 +9,7 @@ namespace betareborn.Blocks
 
         public BlockCake(int var1, int var2) : base(var1, var2, Material.CAKE)
         {
-            setTickOnLoad(true);
+            setTickRandomly(true);
         }
 
         public override void updateBoundingBox(BlockView var1, int var2, int var3, int var4)
@@ -28,7 +28,7 @@ namespace betareborn.Blocks
             setBoundingBox(var1, 0.0F, var1, 1.0F - var1, var2, 1.0F - var1);
         }
 
-        public override Box getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getCollisionShape(World var1, int var2, int var3, int var4)
         {
             int var5 = var1.getBlockMeta(var2, var3, var4);
             float var6 = 1.0F / 16.0F;
@@ -37,7 +37,7 @@ namespace betareborn.Blocks
             return Box.createCached((double)((float)var2 + var7), (double)var3, (double)((float)var4 + var6), (double)((float)(var2 + 1) - var6), (double)((float)var3 + var8 - var6), (double)((float)(var4 + 1) - var6));
         }
 
-        public override Box getSelectedBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getBoundingBox(World var1, int var2, int var3, int var4)
         {
             int var5 = var1.getBlockMeta(var2, var3, var4);
             float var6 = 1.0F / 16.0F;
@@ -51,7 +51,7 @@ namespace betareborn.Blocks
             return var1 == 1 ? textureId : (var1 == 0 ? textureId + 3 : (var2 > 0 && var1 == 4 ? textureId + 2 : textureId + 1));
         }
 
-        public override int getBlockTextureFromSide(int var1)
+        public override int getTexture(int var1)
         {
             return var1 == 1 ? textureId : (var1 == 0 ? textureId + 3 : textureId + 1);
         }

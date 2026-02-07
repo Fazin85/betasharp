@@ -16,10 +16,10 @@ namespace betareborn.Blocks
             return false;
         }
 
-        public override bool shouldSideBeRendered(BlockView var1, int var2, int var3, int var4, int var5)
+        public override bool isSideVisible(BlockView var1, int var2, int var3, int var4, int var5)
         {
             int var6 = var1.getBlockId(var2, var3, var4);
-            return !localFlag && var6 == id ? false : base.shouldSideBeRendered(var1, var2, var3, var4, var5);
+            return !localFlag && var6 == id ? false : base.isSideVisible(var1, var2, var3, var4, var5);
         }
     }
 

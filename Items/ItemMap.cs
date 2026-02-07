@@ -163,7 +163,7 @@ namespace betareborn.Items
                                 var38 = 0;
                                 if (var34 > 0)
                                 {
-                                    MapColor var44 = Block.BLOCKS[var34].blockMaterial.mapColor;
+                                    MapColor var44 = Block.BLOCKS[var34].material.mapColor;
                                     if (var44 == MapColor.waterColor)
                                     {
                                         var41 = (double)var30 * 0.1D + (double)(var12 + var17 & 1) * 0.2D;
@@ -229,7 +229,7 @@ namespace betareborn.Items
                 {
                     var37 = false;
                 }
-                else if (var35 > 0 && var36 > 0 && Block.BLOCKS[var36].blockMaterial.mapColor == MapColor.airColor)
+                else if (var35 > 0 && var36 > 0 && Block.BLOCKS[var36].material.mapColor == MapColor.airColor)
                 {
                     var37 = false;
                 }
@@ -242,7 +242,7 @@ namespace betareborn.Items
 
                 if (var37)
                 {
-                    if (var36 == 0 || !Block.BLOCKS[var36].blockMaterial.isFluid())
+                    if (var36 == 0 || !Block.BLOCKS[var36].material.isFluid())
                     {
                         exitLoop = true;
                     }
@@ -254,7 +254,7 @@ namespace betareborn.Items
                         {
                             int var43 = var27.getBlockID(var33 + var28, var38--, var34 + var29);
                             ++var30;
-                            if (var38 <= 0 || var43 == 0 || !Block.BLOCKS[var43].blockMaterial.isFluid())
+                            if (var38 <= 0 || var43 == 0 || !Block.BLOCKS[var43].material.isFluid())
                             {
                                 exitLoop = true;
                                 break;

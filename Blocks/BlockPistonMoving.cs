@@ -103,7 +103,7 @@ namespace betareborn.Blocks
             return new TileEntityPiston(var0, var1, var2, var3, var4);
         }
 
-        public override Box getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getCollisionShape(World var1, int var2, int var3, int var4)
         {
             TileEntityPiston var5 = func_31034_c(var1, var2, var3, var4);
             if (var5 == null)
@@ -155,7 +155,7 @@ namespace betareborn.Blocks
         {
             if (var5 != 0 && var5 != id)
             {
-                Box var8 = Block.BLOCKS[var5].getCollisionBoundingBoxFromPool(var1, var2, var3, var4);
+                Box var8 = Block.BLOCKS[var5].getCollisionShape(var1, var2, var3, var4);
                 if (var8 == null)
                 {
                     return null;

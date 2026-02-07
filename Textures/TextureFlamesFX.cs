@@ -8,7 +8,7 @@ namespace betareborn.Textures
         protected float[] field_1133_g = new float[320];
         protected float[] field_1132_h = new float[320];
 
-        public TextureFlamesFX(int var1) : base(Block.fire.textureId + var1 * 16)
+        public TextureFlamesFX(int var1) : base(Block.FIRE.textureId + var1 * 16)
         {
         }
 

@@ -10,7 +10,7 @@ namespace betareborn.Blocks
         {
         }
 
-        public override Box getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getCollisionShape(World var1, int var2, int var3, int var4)
         {
             int var5 = var1.getBlockMeta(var2, var3, var4);
             float var6 = 2.0F / 16.0F;
@@ -34,10 +34,10 @@ namespace betareborn.Blocks
                 setBoundingBox(0.0F, 0.0F, 0.0F, var6, 1.0F, 1.0F);
             }
 
-            return base.getCollisionBoundingBoxFromPool(var1, var2, var3, var4);
+            return base.getCollisionShape(var1, var2, var3, var4);
         }
 
-        public override Box getSelectedBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getBoundingBox(World var1, int var2, int var3, int var4)
         {
             int var5 = var1.getBlockMeta(var2, var3, var4);
             float var6 = 2.0F / 16.0F;
@@ -61,7 +61,7 @@ namespace betareborn.Blocks
                 setBoundingBox(0.0F, 0.0F, 0.0F, var6, 1.0F, 1.0F);
             }
 
-            return base.getSelectedBoundingBoxFromPool(var1, var2, var3, var4);
+            return base.getBoundingBox(var1, var2, var3, var4);
         }
 
         public override bool isOpaque()

@@ -14,7 +14,7 @@ namespace betareborn.Blocks
         public BlockLeaves(int var1, int var2) : base(var1, var2, Material.LEAVES, false)
         {
             baseIndexInPNG = var2;
-            setTickOnLoad(true);
+            setTickRandomly(true);
         }
 
         public override int getRenderColor(int var1)
@@ -67,7 +67,7 @@ namespace betareborn.Blocks
 
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
             if (!var1.multiplayerWorld)
             {

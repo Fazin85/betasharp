@@ -23,7 +23,7 @@ namespace betareborn.Blocks
             return textureId;
         }
 
-        public override Box getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4)
+        public override Box getCollisionShape(World var1, int var2, int var3, int var4)
         {
             return null;
         }
@@ -458,7 +458,7 @@ namespace betareborn.Blocks
         public static bool isPowerProviderOrWire(BlockView var0, int var1, int var2, int var3, int var4)
         {
             int var5 = var0.getBlockId(var1, var2, var3);
-            if (var5 == Block.redstoneWire.id)
+            if (var5 == Block.REDSTONE_WIRE.id)
             {
                 return true;
             }
@@ -470,7 +470,7 @@ namespace betareborn.Blocks
             {
                 return true;
             }
-            else if (var5 != Block.redstoneRepeaterIdle.id && var5 != Block.redstoneRepeaterActive.id)
+            else if (var5 != Block.REPEATER.id && var5 != Block.POWERED_REPEATER.id)
             {
                 return false;
             }

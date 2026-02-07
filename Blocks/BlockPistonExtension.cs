@@ -10,7 +10,7 @@ namespace betareborn.Blocks
 
         public BlockPistonExtension(int var1, int var2) : base(var1, var2, Material.PISTON)
         {
-            setStepSound(soundStoneFootstep);
+            setSoundGroup(soundStoneFootstep);
             setHardness(0.5F);
         }
 
@@ -81,46 +81,46 @@ namespace betareborn.Blocks
             return 0;
         }
 
-        public override void getCollidingBoundingBoxes(World var1, int var2, int var3, int var4, Box var5, List<Box> var6)
+        public override void addIntersectingBoundingBox(World var1, int var2, int var3, int var4, Box var5, List<Box> var6)
         {
             int var7 = var1.getBlockMeta(var2, var3, var4);
             switch (func_31050_c(var7))
             {
                 case 0:
                     setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 0.25F, 1.0F);
-                    base.getCollidingBoundingBoxes(var1, var2, var3, var4, var5, var6);
+                    base.addIntersectingBoundingBox(var1, var2, var3, var4, var5, var6);
                     setBoundingBox(6.0F / 16.0F, 0.25F, 6.0F / 16.0F, 10.0F / 16.0F, 1.0F, 10.0F / 16.0F);
-                    base.getCollidingBoundingBoxes(var1, var2, var3, var4, var5, var6);
+                    base.addIntersectingBoundingBox(var1, var2, var3, var4, var5, var6);
                     break;
                 case 1:
                     setBoundingBox(0.0F, 12.0F / 16.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-                    base.getCollidingBoundingBoxes(var1, var2, var3, var4, var5, var6);
+                    base.addIntersectingBoundingBox(var1, var2, var3, var4, var5, var6);
                     setBoundingBox(6.0F / 16.0F, 0.0F, 6.0F / 16.0F, 10.0F / 16.0F, 12.0F / 16.0F, 10.0F / 16.0F);
-                    base.getCollidingBoundingBoxes(var1, var2, var3, var4, var5, var6);
+                    base.addIntersectingBoundingBox(var1, var2, var3, var4, var5, var6);
                     break;
                 case 2:
                     setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.25F);
-                    base.getCollidingBoundingBoxes(var1, var2, var3, var4, var5, var6);
+                    base.addIntersectingBoundingBox(var1, var2, var3, var4, var5, var6);
                     setBoundingBox(0.25F, 6.0F / 16.0F, 0.25F, 12.0F / 16.0F, 10.0F / 16.0F, 1.0F);
-                    base.getCollidingBoundingBoxes(var1, var2, var3, var4, var5, var6);
+                    base.addIntersectingBoundingBox(var1, var2, var3, var4, var5, var6);
                     break;
                 case 3:
                     setBoundingBox(0.0F, 0.0F, 12.0F / 16.0F, 1.0F, 1.0F, 1.0F);
-                    base.getCollidingBoundingBoxes(var1, var2, var3, var4, var5, var6);
+                    base.addIntersectingBoundingBox(var1, var2, var3, var4, var5, var6);
                     setBoundingBox(0.25F, 6.0F / 16.0F, 0.0F, 12.0F / 16.0F, 10.0F / 16.0F, 12.0F / 16.0F);
-                    base.getCollidingBoundingBoxes(var1, var2, var3, var4, var5, var6);
+                    base.addIntersectingBoundingBox(var1, var2, var3, var4, var5, var6);
                     break;
                 case 4:
                     setBoundingBox(0.0F, 0.0F, 0.0F, 0.25F, 1.0F, 1.0F);
-                    base.getCollidingBoundingBoxes(var1, var2, var3, var4, var5, var6);
+                    base.addIntersectingBoundingBox(var1, var2, var3, var4, var5, var6);
                     setBoundingBox(6.0F / 16.0F, 0.25F, 0.25F, 10.0F / 16.0F, 12.0F / 16.0F, 1.0F);
-                    base.getCollidingBoundingBoxes(var1, var2, var3, var4, var5, var6);
+                    base.addIntersectingBoundingBox(var1, var2, var3, var4, var5, var6);
                     break;
                 case 5:
                     setBoundingBox(12.0F / 16.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-                    base.getCollidingBoundingBoxes(var1, var2, var3, var4, var5, var6);
+                    base.addIntersectingBoundingBox(var1, var2, var3, var4, var5, var6);
                     setBoundingBox(0.0F, 6.0F / 16.0F, 0.25F, 12.0F / 16.0F, 10.0F / 16.0F, 12.0F / 16.0F);
-                    base.getCollidingBoundingBoxes(var1, var2, var3, var4, var5, var6);
+                    base.addIntersectingBoundingBox(var1, var2, var3, var4, var5, var6);
                     break;
             }
 

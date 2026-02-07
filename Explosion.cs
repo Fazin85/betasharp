@@ -131,7 +131,7 @@ namespace betareborn
                     int var18 = worldObj.getBlockId(var36, var37 - 1, var16);
                     if (var38 == 0 && Block.BLOCKS_OPAQUE[var18] && ExplosionRNG.nextInt(3) == 0)
                     {
-                        worldObj.setBlockWithNotify(var36, var37, var16, Block.fire.id);
+                        worldObj.setBlockWithNotify(var36, var37, var16, Block.FIRE.id);
                     }
                 }
             }

@@ -409,7 +409,7 @@ namespace betareborn.Chunks
                 var14 = var4 + field_28087_j.nextInt(16);
                 var15 = field_28087_j.nextInt(16);
                 var16 = var5 + field_28087_j.nextInt(16);
-                (new WorldGenMinable(Block.oreRedstone.id, 7)).generate(field_28081_p, field_28087_j, var14, var15, var16);
+                (new WorldGenMinable(Block.REDSTONE_ORE.id, 7)).generate(field_28081_p, field_28087_j, var14, var15, var16);
             }
 
             for (var13 = 0; var13 < 1; ++var13)
@@ -417,7 +417,7 @@ namespace betareborn.Chunks
                 var14 = var4 + field_28087_j.nextInt(16);
                 var15 = field_28087_j.nextInt(16);
                 var16 = var5 + field_28087_j.nextInt(16);
-                (new WorldGenMinable(Block.oreDiamond.id, 7)).generate(field_28081_p, field_28087_j, var14, var15, var16);
+                (new WorldGenMinable(Block.DIAMOND_ORE.id, 7)).generate(field_28081_p, field_28087_j, var14, var15, var16);
             }
 
             for (var13 = 0; var13 < 1; ++var13)
@@ -573,7 +573,7 @@ namespace betareborn.Chunks
                     double var21 = field_28074_w[var23 * 16 + var19] - (double)(var20 - 64) / 64.0D * 0.3D;
                     if (var21 < 0.5D && var20 > 0 && var20 < 128 && field_28081_p.isAir(var16, var20, var17) && field_28081_p.getMaterial(var16, var20 - 1, var17).blocksMovement() && field_28081_p.getMaterial(var16, var20 - 1, var17) != Material.ICE)
                     {
-                        field_28081_p.setBlockWithNotify(var16, var20, var17, Block.snow.id);
+                        field_28081_p.setBlockWithNotify(var16, var20, var17, Block.SNOW.id);
                     }
                 }
             }

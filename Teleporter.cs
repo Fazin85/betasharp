@@ -38,9 +38,9 @@ namespace betareborn
 
                     for (int var17 = 127; var17 >= 0; --var17)
                     {
-                        if (var1.getBlockId(var11, var17, var14) == Block.portal.id)
+                        if (var1.getBlockId(var11, var17, var14) == Block.NETHER_PORTAL.id)
                         {
-                            while (var1.getBlockId(var11, var17 - 1, var14) == Block.portal.id)
+                            while (var1.getBlockId(var11, var17 - 1, var14) == Block.NETHER_PORTAL.id)
                             {
                                 --var17;
                             }
@@ -64,22 +64,22 @@ namespace betareborn
                 double var22 = (double)var6 + 0.5D;
                 double var16 = (double)var7 + 0.5D;
                 var18 = (double)var8 + 0.5D;
-                if (var1.getBlockId(var6 - 1, var7, var8) == Block.portal.id)
+                if (var1.getBlockId(var6 - 1, var7, var8) == Block.NETHER_PORTAL.id)
                 {
                     var22 -= 0.5D;
                 }
 
-                if (var1.getBlockId(var6 + 1, var7, var8) == Block.portal.id)
+                if (var1.getBlockId(var6 + 1, var7, var8) == Block.NETHER_PORTAL.id)
                 {
                     var22 += 0.5D;
                 }
 
-                if (var1.getBlockId(var6, var7, var8 - 1) == Block.portal.id)
+                if (var1.getBlockId(var6, var7, var8 - 1) == Block.NETHER_PORTAL.id)
                 {
                     var18 -= 0.5D;
                 }
 
-                if (var1.getBlockId(var6, var7, var8 + 1) == Block.portal.id)
+                if (var1.getBlockId(var6, var7, var8 + 1) == Block.NETHER_PORTAL.id)
                 {
                     var18 += 0.5D;
                 }
@@ -281,7 +281,7 @@ namespace betareborn
                             var24 = var16 + var22;
                             var25 = var17 + (var21 - 1) * var19 - var20 * var31;
                             var34 = var22 < 0;
-                            var1.setBlockWithNotify(var23, var24, var25, var34 ? Block.obsidian.id : 0);
+                            var1.setBlockWithNotify(var23, var24, var25, var34 ? Block.OBSIDIAN.id : 0);
                         }
                     }
                 }
@@ -299,7 +299,7 @@ namespace betareborn
                         var24 = var16 + var22;
                         var25 = var17 + (var21 - 1) * var19;
                         var34 = var21 == 0 || var21 == 3 || var22 == -1 || var22 == 3;
-                        var1.setBlockWithNotify(var23, var24, var25, var34 ? Block.obsidian.id : Block.portal.id);
+                        var1.setBlockWithNotify(var23, var24, var25, var34 ? Block.OBSIDIAN.id : Block.NETHER_PORTAL.id);
                     }
                 }
 

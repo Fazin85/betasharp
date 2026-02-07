@@ -17,7 +17,7 @@ namespace betareborn.Items
 
         public override bool onItemUse(ItemStack var1, EntityPlayer var2, World var3, int var4, int var5, int var6, int var7)
         {
-            if (var3.getBlockId(var4, var5, var6) == Block.jukebox.id && var3.getBlockMeta(var4, var5, var6) == 0)
+            if (var3.getBlockId(var4, var5, var6) == Block.JUKEBOX.id && var3.getBlockMeta(var4, var5, var6) == 0)
             {
                 if (var3.multiplayerWorld)
                 {
@@ -25,7 +25,7 @@ namespace betareborn.Items
                 }
                 else
                 {
-                    ((BlockJukeBox)Block.jukebox).ejectRecord(var3, var4, var5, var6, id);
+                    ((BlockJukeBox)Block.JUKEBOX).ejectRecord(var3, var4, var5, var6, id);
                     var3.func_28107_a((EntityPlayer)null, 1005, var4, var5, var6, id);
                     --var1.count;
                     return true;

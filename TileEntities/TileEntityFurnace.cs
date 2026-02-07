@@ -235,7 +235,7 @@ namespace betareborn.TileEntities
             else
             {
                 int var2 = itemStack.getItem().id;
-                return var2 < 256 && Block.BLOCKS[var2].blockMaterial == Material.WOOD ? 300 : (var2 == Item.stick.id ? 100 : (var2 == Item.coal.id ? 1600 : (var2 == Item.bucketLava.id ? 20000 : (var2 == Block.SAPLING.id ? 100 : 0))));
+                return var2 < 256 && Block.BLOCKS[var2].material == Material.WOOD ? 300 : (var2 == Item.stick.id ? 100 : (var2 == Item.coal.id ? 1600 : (var2 == Item.bucketLava.id ? 20000 : (var2 == Block.SAPLING.id ? 100 : 0))));
             }
         }
 

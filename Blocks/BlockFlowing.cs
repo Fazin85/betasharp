@@ -21,11 +21,11 @@ namespace betareborn.Blocks
             var1.markBlockNeedsUpdate(var2, var3, var4);
         }
 
-        public override void updateTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+        public override void onTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
             int var6 = getFlowDecay(var1, var2, var3, var4);
             sbyte var7 = 1;
-            if (blockMaterial == Material.LAVA && !var1.dimension.isHellWorld)
+            if (material == Material.LAVA && !var1.dimension.isHellWorld)
             {
                 var7 = 2;
             }
@@ -59,19 +59,19 @@ namespace betareborn.Blocks
                     }
                 }
 
-                if (numAdjacentSources >= 2 && blockMaterial == Material.WATER)
+                if (numAdjacentSources >= 2 && material == Material.WATER)
                 {
                     if (var1.getMaterial(var2, var3 - 1, var4).isSolid())
                     {
                         var10 = 0;
                     }
-                    else if (var1.getMaterial(var2, var3 - 1, var4) == blockMaterial && var1.getBlockMeta(var2, var3, var4) == 0)
+                    else if (var1.getMaterial(var2, var3 - 1, var4) == material && var1.getBlockMeta(var2, var3, var4) == 0)
                     {
                         var10 = 0;
                     }
                 }
 
-                if (blockMaterial == Material.LAVA && var6 < 8 && var10 < 8 && var10 > var6 && var5.nextInt(4) != 0)
+                if (material == Material.LAVA && var6 < 8 && var10 < 8 && var10 > var6 && var5.nextInt(4) != 0)
                 {
                     var10 = var6;
                     var8 = false;
@@ -156,7 +156,7 @@ namespace betareborn.Blocks
                 int var6 = var1.getBlockId(var2, var3, var4);
                 if (var6 > 0)
                 {
-                    if (blockMaterial == Material.LAVA)
+                    if (material == Material.LAVA)
                     {
                         triggerLavaMixEffects(var1, var2, var3, var4);
                     }
@@ -201,7 +201,7 @@ namespace betareborn.Blocks
                         ++var11;
                     }
 
-                    if (!blockBlocksFlow(var1, var9, var3, var11) && (var1.getMaterial(var9, var3, var11) != blockMaterial || var1.getBlockMeta(var9, var3, var11) != 0))
+                    if (!blockBlocksFlow(var1, var9, var3, var11) && (var1.getMaterial(var9, var3, var11) != material || var1.getBlockMeta(var9, var3, var11) != 0))
                     {
                         if (!blockBlocksFlow(var1, var9, var3 - 1, var11))
                         {
@@ -252,7 +252,7 @@ namespace betareborn.Blocks
                     ++var8;
                 }
 
-                if (!blockBlocksFlow(var1, var6, var3, var8) && (var1.getMaterial(var6, var3, var8) != blockMaterial || var1.getBlockMeta(var6, var3, var8) != 0))
+                if (!blockBlocksFlow(var1, var6, var3, var8) && (var1.getMaterial(var6, var3, var8) != material || var1.getBlockMeta(var6, var3, var8) != 0))
                 {
                     if (!blockBlocksFlow(var1, var6, var3 - 1, var8))
                     {
@@ -286,7 +286,7 @@ namespace betareborn.Blocks
         private bool blockBlocksFlow(World var1, int var2, int var3, int var4)
         {
             int var5 = var1.getBlockId(var2, var3, var4);
-            if (var5 != Block.doorWood.id && var5 != Block.doorSteel.id && var5 != Block.signPost.id && var5 != Block.ladder.id && var5 != Block.reed.id)
+            if (var5 != Block.DOOR.id && var5 != Block.IRON_DOOR.id && var5 != Block.SIGN.id && var5 != Block.LADDER.id && var5 != Block.SUGAR_CANE.id)
             {
                 if (var5 == 0)
                 {
@@ -294,7 +294,7 @@ namespace betareborn.Blocks
                 }
                 else
                 {
-                    Material var6 = Block.BLOCKS[var5].blockMaterial;
+                    Material var6 = Block.BLOCKS[var5].material;
                     return var6.blocksMovement();
                 }
             }
@@ -330,7 +330,7 @@ namespace betareborn.Blocks
         private bool liquidCanDisplaceBlock(World var1, int var2, int var3, int var4)
         {
             Material var5 = var1.getMaterial(var2, var3, var4);
-            return var5 == blockMaterial ? false : (var5 == Material.LAVA ? false : !blockBlocksFlow(var1, var2, var3, var4));
+            return var5 == material ? false : (var5 == Material.LAVA ? false : !blockBlocksFlow(var1, var2, var3, var4));
         }
 
         public override void onBlockAdded(World var1, int var2, int var3, int var4)

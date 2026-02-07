@@ -13,7 +13,7 @@ namespace betareborn.Entities
         {
             field_4082_a = var14;
             particleTextureIndex = var14.getTexture(0, var16);
-            particleGravity = var14.blockParticleGravity;
+            particleGravity = var14.particleFallSpeedModifier;
             particleRed = particleGreen = particleBlue = 0.6F;
             particleScale /= 2.0F;
             field_32001_o = var15;
