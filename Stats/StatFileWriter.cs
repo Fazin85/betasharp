@@ -226,7 +226,7 @@ namespace betareborn.Stats
 
         public bool func_27181_b(Achievement var1)
         {
-            return var1.parentAchievement == null || hasAchievementUnlocked(var1.parentAchievement);
+            return var1.parent == null || hasAchievementUnlocked(var1.parent);
         }
 
         public int writeStat(StatBase var1)

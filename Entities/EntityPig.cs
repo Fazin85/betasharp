@@ -98,7 +98,7 @@ namespace betareborn.Entities
             base.fall(var1);
             if (var1 > 5.0F && riddenByEntity is EntityPlayer)
             {
-                ((EntityPlayer)riddenByEntity).triggerAchievement(AchievementList.flyPig);
+                ((EntityPlayer)riddenByEntity).triggerAchievement(Achievements.KILL_PIG);
             }
 
         }

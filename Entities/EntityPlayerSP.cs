@@ -43,9 +43,9 @@ namespace betareborn.Entities
 
         public override void onLivingUpdate()
         {
-            if (!mc.statFileWriter.hasAchievementUnlocked(AchievementList.openInventory))
+            if (!mc.statFileWriter.hasAchievementUnlocked(Achievements.OPEN_INVENTORY))
             {
-                mc.guiAchievement.queueAchievementInformation(AchievementList.openInventory);
+                mc.guiAchievement.queueAchievementInformation(Achievements.OPEN_INVENTORY);
             }
 
             prevTimeInPortal = timeInPortal;
@@ -223,10 +223,10 @@ namespace betareborn.Entities
         {
             if (var1 != null)
             {
-                if (var1.func_25067_a())
+                if (var1.isAchievement())
                 {
                     Achievement var3 = (Achievement)var1;
-                    if (var3.parentAchievement == null || mc.statFileWriter.hasAchievementUnlocked(var3.parentAchievement))
+                    if (var3.parent == null || mc.statFileWriter.hasAchievementUnlocked(var3.parent))
                     {
                         if (!mc.statFileWriter.hasAchievementUnlocked(var3))
                         {

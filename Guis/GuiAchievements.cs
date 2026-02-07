@@ -8,10 +8,10 @@ namespace betareborn.Guis
     public class GuiAchievements : GuiScreen
     {
 
-        private static readonly int field_27126_s = AchievementList.minDisplayColumn * 24 - 112;
-        private static readonly int field_27125_t = AchievementList.minDisplayRow * 24 - 112;
-        private static readonly int field_27124_u = AchievementList.maxDisplayColumn * 24 - 77;
-        private static readonly int field_27123_v = AchievementList.maxDisplayRow * 24 - 77;
+        private static readonly int field_27126_s = Achievements.minColumn * 24 - 112;
+        private static readonly int field_27125_t = Achievements.minRow * 24 - 112;
+        private static readonly int field_27124_u = Achievements.maxColumn * 24 - 77;
+        private static readonly int field_27123_v = Achievements.maxRow * 24 - 77;
         protected int field_27121_a = 256;
         protected int field_27119_i = 202;
         protected int field_27118_j = 0;
@@ -30,8 +30,8 @@ namespace betareborn.Guis
             field_27120_x = var1;
             short var2 = 141;
             short var3 = 141;
-            field_27116_m = field_27114_o = field_27112_q = (double)(AchievementList.openInventory.displayColumn * 24 - var2 / 2 - 12);
-            field_27115_n = field_27113_p = field_27111_r = (double)(AchievementList.openInventory.displayRow * 24 - var3 / 2);
+            field_27116_m = field_27114_o = field_27112_q = (double)(Achievements.OPEN_INVENTORY.column * 24 - var2 / 2 - 12);
+            field_27115_n = field_27113_p = field_27111_r = (double)(Achievements.OPEN_INVENTORY.row * 24 - var3 / 2);
         }
 
         public override void initGui()
@@ -254,15 +254,15 @@ namespace betareborn.Guis
             int var17;
             int var33;
             int var38;
-            for (var12 = 0; var12 < AchievementList.achievementList.size(); ++var12)
+            for (var12 = 0; var12 < Achievements.ACHIEVEMENTS.size(); ++var12)
             {
-                Achievement var28 = (Achievement)AchievementList.achievementList.get(var12);
-                if (var28.parentAchievement != null)
+                Achievement var28 = (Achievement)Achievements.ACHIEVEMENTS.get(var12);
+                if (var28.parent != null)
                 {
-                    var14 = var28.displayColumn * 24 - var4 + 11 + var10;
-                    var15 = var28.displayRow * 24 - var5 + 11 + var11;
-                    var16 = var28.parentAchievement.displayColumn * 24 - var4 + 11 + var10;
-                    var17 = var28.parentAchievement.displayRow * 24 - var5 + 11 + var11;
+                    var14 = var28.column * 24 - var4 + 11 + var10;
+                    var15 = var28.row * 24 - var5 + 11 + var11;
+                    var16 = var28.parent.column * 24 - var4 + 11 + var10;
+                    var17 = var28.parent.row * 24 - var5 + 11 + var11;
                     bool var18 = false;
                     bool var19 = field_27120_x.hasAchievementUnlocked(var28);
                     bool var20 = field_27120_x.func_27181_b(var28);
@@ -296,11 +296,11 @@ namespace betareborn.Guis
             GLManager.GL.Enable(GLEnum.ColorMaterial);
 
             int var34;
-            for (var14 = 0; var14 < AchievementList.achievementList.size(); ++var14)
+            for (var14 = 0; var14 < Achievements.ACHIEVEMENTS.size(); ++var14)
             {
-                Achievement var30 = (Achievement)AchievementList.achievementList.get(var14);
-                var16 = var30.displayColumn * 24 - var4;
-                var17 = var30.displayRow * 24 - var5;
+                Achievement var30 = (Achievement)Achievements.ACHIEVEMENTS.get(var14);
+                var16 = var30.column * 24 - var4;
+                var17 = var30.row * 24 - var5;
                 if (var16 >= -24 && var17 >= -24 && var16 <= 224 && var17 <= 155)
                 {
                     float var35;
@@ -323,7 +323,7 @@ namespace betareborn.Guis
                     mc.renderEngine.bindTexture(var7);
                     var33 = var10 + var16;
                     var34 = var11 + var17;
-                    if (var30.getSpecial())
+                    if (var30.isChallenge())
                     {
                         drawTexturedModalRect(var33 - 2, var34 - 2, 26, 202, 26, 26);
                     }
@@ -341,7 +341,7 @@ namespace betareborn.Guis
 
                     GLManager.GL.Enable(GLEnum.Lighting);
                     GLManager.GL.Enable(GLEnum.CullFace);
-                    var29.renderItemIntoGUI(mc.fontRenderer, mc.renderEngine, var30.theItemStack, var33 + 3, var34 + 3);
+                    var29.renderItemIntoGUI(mc.fontRenderer, mc.renderEngine, var30.icon, var33 + 3, var34 + 3);
                     GLManager.GL.Disable(GLEnum.Lighting);
                     if (!field_27120_x.func_27181_b(var30))
                     {
@@ -370,7 +370,7 @@ namespace betareborn.Guis
             if (var27 != null)
             {
                 String var31 = var27.statName;
-                String var32 = var27.getDescription();
+                String var32 = var27.getTranslatedDescription();
                 var17 = var1 + 12;
                 var33 = var2 - 4;
                 if (field_27120_x.func_27181_b(var27))
@@ -392,13 +392,13 @@ namespace betareborn.Guis
                 else
                 {
                     var34 = java.lang.Math.max(fontRenderer.getStringWidth(var31), 120);
-                    String var39 = StatCollector.translateToLocalFormatted("achievement.requires", new Object[] { var27.parentAchievement.statName });
+                    String var39 = StatCollector.translateToLocalFormatted("achievement.requires", new Object[] { var27.parent.statName });
                     var38 = fontRenderer.func_27277_a(var39, var34);
                     drawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var38 + 12 + 3, -1073741824, -1073741824);
                     fontRenderer.func_27278_a(var39, var17, var33 + 12, var34, -9416624);
                 }
 
-                fontRenderer.drawStringWithShadow(var31, var17, var33, field_27120_x.func_27181_b(var27) ? (var27.getSpecial() ? -128 : -1) : (var27.getSpecial() ? -8355776 : -8355712));
+                fontRenderer.drawStringWithShadow(var31, var17, var33, field_27120_x.func_27181_b(var27) ? (var27.isChallenge() ? -128 : -1) : (var27.isChallenge() ? -8355776 : -8355712));
             }
 
             GLManager.GL.Enable(GLEnum.DepthTest);

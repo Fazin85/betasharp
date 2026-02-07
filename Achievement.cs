@@ -6,78 +6,78 @@ namespace betareborn
 {
     public class Achievement : StatBase
     {
-        public readonly int displayColumn;
-        public readonly int displayRow;
-        public readonly Achievement parentAchievement;
-        private readonly String achievementDescription;
+        public readonly int column;
+        public readonly int row;
+        public readonly Achievement parent;
+        private readonly String translationKey;
         private IStatStringFormat statStringFormatter;
-        public readonly ItemStack theItemStack;
-        private bool isSpecial;
+        public readonly ItemStack icon;
+        private bool _isChallenge;
 
-        public Achievement(int var1, string var2, int var3, int var4, Item var5, Achievement var6) : this(var1, var2, var3, var4, new ItemStack(var5), var6)
+        public Achievement(int id, string key, int column, int row, Item displayItem, Achievement parent) : this(id, key, column, row, new ItemStack(displayItem), parent)
         {
         }
 
-        public Achievement(int var1, string var2, int var3, int var4, Block var5, Achievement var6) : this(var1, var2, var3, var4, new ItemStack(var5), var6)
+        public Achievement(int id, string key, int column, int row, Block displayBlock, Achievement parent) : this(id, key, column, row, new ItemStack(displayBlock), parent)
         {
         }
 
-        public Achievement(int var1, string var2, int var3, int var4, ItemStack var5, Achievement var6) : base(5242880 + var1, StatCollector.translateToLocal("achievement." + var2))
+        public Achievement(int id, string key, int column, int row, ItemStack icon, Achievement parent) : base(5242880 + id, StatCollector.translateToLocal("achievement." + key))
         {
-            theItemStack = var5;
-            achievementDescription = StatCollector.translateToLocal("achievement." + var2 + ".desc");
-            displayColumn = var3;
-            displayRow = var4;
-            if (var3 < AchievementList.minDisplayColumn)
+            this.icon = icon;
+            translationKey = StatCollector.translateToLocal("achievement." + key + ".desc");
+            this.column = column;
+            this.row = row;
+            if (column < Achievements.minColumn)
             {
-                AchievementList.minDisplayColumn = var3;
+                Achievements.minColumn = column;
             }
 
-            if (var4 < AchievementList.minDisplayRow)
+            if (row < Achievements.minRow)
             {
-                AchievementList.minDisplayRow = var4;
+                Achievements.minRow = row;
             }
 
-            if (var3 > AchievementList.maxDisplayColumn)
+            if (column > Achievements.maxColumn)
             {
-                AchievementList.maxDisplayColumn = var3;
+                Achievements.maxColumn = column;
             }
 
-            if (var4 > AchievementList.maxDisplayRow)
+            if (row > Achievements.maxRow)
             {
-                AchievementList.maxDisplayRow = var4;
+                Achievements.maxRow = row;
             }
 
-            parentAchievement = var6;
+            this.parent = parent;
         }
 
-        public Achievement func_27089_a()
+        public Achievement m_66876377()
         {
-            field_27088_g = true;
+            localOnly = true;
             return this;
         }
 
-        public Achievement setSpecial()
+        public Achievement challenge()
         {
-            isSpecial = true;
+            _isChallenge = true;
             return this;
         }
 
         public Achievement registerAchievement()
         {
             base.registerStat();
-            AchievementList.achievementList.add(this);
+            Achievements.ACHIEVEMENTS.add(this);
             return this;
         }
 
-        public override bool func_25067_a()
+        public override bool isAchievement()
         {
             return true;
         }
 
-        public string getDescription()
+        public string getTranslatedDescription()
         {
-            return statStringFormatter != null ? statStringFormatter.formatString(achievementDescription) : achievementDescription;
+            return statStringFormatter != null ? statStringFormatter.formatString(translationKey) : translationKey;
         }
 
         public Achievement setStatStringFormatter(IStatStringFormat var1)
@@ -86,9 +86,9 @@ namespace betareborn
             return this;
         }
 
-        public bool getSpecial()
+        public bool isChallenge()
         {
-            return isSpecial;
+            return _isChallenge;
         }
 
         public override StatBase registerStat()
@@ -98,7 +98,7 @@ namespace betareborn
 
         public override StatBase func_27082_h()
         {
-            return func_27089_a();
+            return m_66876377();
         }
     }
 

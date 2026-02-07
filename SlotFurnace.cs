@@ -23,12 +23,12 @@ namespace betareborn
             var1.onCrafting(thePlayer.worldObj, thePlayer);
             if (var1.itemID == Item.ingotIron.shiftedIndex)
             {
-                thePlayer.addStat(AchievementList.acquireIron, 1);
+                thePlayer.addStat(Achievements.ACQUIRE_IRON, 1);
             }
 
             if (var1.itemID == Item.fishCooked.shiftedIndex)
             {
-                thePlayer.addStat(AchievementList.cookFish, 1);
+                thePlayer.addStat(Achievements.COOK_FISH, 1);
             }
 
             base.onPickupFromSlot(var1);

@@ -953,7 +953,7 @@ namespace betareborn.Entities
                         }
                         else if (startMinecartRidingCoordinate.getSqDistanceTo(MathHelper.floor_double(posX), MathHelper.floor_double(posY), MathHelper.floor_double(posZ)) >= 1000.0D)
                         {
-                            addStat(AchievementList.onARail, 1);
+                            addStat(Achievements.CRAFT_RAIL, 1);
                         }
                     }
                     else if (ridingEntity is EntityBoat)
@@ -983,7 +983,7 @@ namespace betareborn.Entities
         {
             if (var1 is EntityMob)
             {
-                triggerAchievement(AchievementList.killEnemy);
+                triggerAchievement(Achievements.KILL_ENEMY);
             }
 
         }

@@ -13,7 +13,7 @@ namespace betareborn.Guis
         public GuiInventory(EntityPlayer var1) : base(var1.inventorySlots)
         {
             field_948_f = true;
-            var1.addStat(AchievementList.openInventory, 1);
+            var1.addStat(Achievements.OPEN_INVENTORY, 1);
         }
 
         public override void initGui()

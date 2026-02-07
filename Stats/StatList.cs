@@ -199,7 +199,7 @@ namespace betareborn.Stats
 
         static StatList()
         {
-            AchievementList.func_27374_a();
+            Achievements.initialize();
             field_25166_D = false;
             field_25164_E = false;
         }

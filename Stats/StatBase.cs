@@ -8,7 +8,7 @@ namespace betareborn.Stats
     {
         public readonly int statId;
         public readonly string statName;
-        public bool field_27088_g;
+        public bool localOnly;
         public string statGuid;
         private readonly IStatType field_26902_a;
         private static NumberFormat field_26903_b = NumberFormat.getIntegerInstance(Locale.US);
@@ -19,7 +19,7 @@ namespace betareborn.Stats
 
         public StatBase(int var1, string var2, IStatType var3)
         {
-            field_27088_g = false;
+            localOnly = false;
             statId = var1;
             statName = var2;
             field_26902_a = var3;
@@ -31,7 +31,7 @@ namespace betareborn.Stats
 
         public virtual StatBase func_27082_h()
         {
-            field_27088_g = true;
+            localOnly = true;
             return this;
         }
 
@@ -50,7 +50,7 @@ namespace betareborn.Stats
             }
         }
 
-        public virtual bool func_25067_a()
+        public virtual bool isAchievement()
         {
             return false;
         }

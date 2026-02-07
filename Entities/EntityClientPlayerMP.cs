@@ -193,7 +193,7 @@ namespace betareborn.Entities
         {
             if (var1 != null)
             {
-                if (var1.field_27088_g)
+                if (var1.localOnly)
                 {
                     base.addStat(var1, var2);
                 }
@@ -205,7 +205,7 @@ namespace betareborn.Entities
         {
             if (var1 != null)
             {
-                if (!var1.field_27088_g)
+                if (!var1.localOnly)
                 {
                     base.addStat(var1, var2);
                 }

@@ -140,12 +140,12 @@ namespace betareborn.Entities
                 {
                     if (item.itemID == Block.wood.blockID)
                     {
-                        var1.triggerAchievement(AchievementList.mineWood);
+                        var1.triggerAchievement(Achievements.MINE_WOOD);
                     }
 
                     if (item.itemID == Item.leather.shiftedIndex)
                     {
-                        var1.triggerAchievement(AchievementList.killCow);
+                        var1.triggerAchievement(Achievements.KILL_COW);
                     }
 
                     worldObj.playSoundAtEntity(this, "random.pop", 0.2F, ((rand.nextFloat() - rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);

@@ -26,35 +26,35 @@ namespace betareborn
             var1.onCrafting(thePlayer.worldObj, thePlayer);
             if (var1.itemID == Block.workbench.blockID)
             {
-                thePlayer.addStat(AchievementList.buildWorkBench, 1);
+                thePlayer.addStat(Achievements.BUILD_WORKBENCH, 1);
             }
             else if (var1.itemID == Item.pickaxeWood.shiftedIndex)
             {
-                thePlayer.addStat(AchievementList.buildPickaxe, 1);
+                thePlayer.addStat(Achievements.BUILD_PICKAXE, 1);
             }
             else if (var1.itemID == Block.stoneOvenIdle.blockID)
             {
-                thePlayer.addStat(AchievementList.buildFurnace, 1);
+                thePlayer.addStat(Achievements.BUILD_FURNACE, 1);
             }
             else if (var1.itemID == Item.hoeWood.shiftedIndex)
             {
-                thePlayer.addStat(AchievementList.buildHoe, 1);
+                thePlayer.addStat(Achievements.BUILD_HOE, 1);
             }
             else if (var1.itemID == Item.bread.shiftedIndex)
             {
-                thePlayer.addStat(AchievementList.makeBread, 1);
+                thePlayer.addStat(Achievements.MAKE_BREAD, 1);
             }
             else if (var1.itemID == Item.cake.shiftedIndex)
             {
-                thePlayer.addStat(AchievementList.bakeCake, 1);
+                thePlayer.addStat(Achievements.BAKE_CAKE, 1);
             }
             else if (var1.itemID == Item.pickaxeStone.shiftedIndex)
             {
-                thePlayer.addStat(AchievementList.buildBetterPickaxe, 1);
+                thePlayer.addStat(Achievements.CRAFT_STONE_PICKAXE, 1);
             }
             else if (var1.itemID == Item.swordWood.shiftedIndex)
             {
-                thePlayer.addStat(AchievementList.buildSword, 1);
+                thePlayer.addStat(Achievements.CRAFT_SWORD, 1);
             }
 
             for (int var2 = 0; var2 < craftMatrix.getSizeInventory(); ++var2)

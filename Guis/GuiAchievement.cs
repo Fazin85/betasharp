@@ -35,7 +35,7 @@ namespace betareborn.Guis
         public void queueAchievementInformation(Achievement var1)
         {
             field_25085_d = var1.statName;
-            field_25084_e = var1.getDescription();
+            field_25084_e = var1.getTranslatedDescription();
             field_25083_f = java.lang.System.currentTimeMillis() - 2500L;
             theAchievement = var1;
             field_27103_i = true;
@@ -129,7 +129,7 @@ namespace betareborn.Guis
                     GLManager.GL.Enable(GLEnum.RescaleNormal);
                     GLManager.GL.Enable(GLEnum.ColorMaterial);
                     GLManager.GL.Enable(GLEnum.Lighting);
-                    itemRender.renderItemIntoGUI(theGame.fontRenderer, theGame.renderEngine, theAchievement.theItemStack, var5 + 8, var6 + 8);
+                    itemRender.renderItemIntoGUI(theGame.fontRenderer, theGame.renderEngine, theAchievement.icon, var5 + 8, var6 + 8);
                     GLManager.GL.Disable(GLEnum.Lighting);
                     GLManager.GL.DepthMask(true);
                     GLManager.GL.Enable(GLEnum.DepthTest);
