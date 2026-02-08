@@ -1,0 +1,23 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        on: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.on }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Restore
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --no-restore
