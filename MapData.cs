@@ -1,11 +1,12 @@
 using betareborn.Entities;
 using betareborn.Items;
 using betareborn.NBT;
+using betareborn.Worlds;
 using java.util;
 
 namespace betareborn
 {
-    public class MapData : MapDataBase
+    public class MapData : PersistentState
     {
         public static readonly java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(MapData).TypeHandle);
         public int field_28180_b;

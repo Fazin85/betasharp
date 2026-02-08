@@ -1,7 +1,7 @@
 using betareborn.Entities;
 using betareborn.Items;
 
-namespace betareborn
+namespace betareborn.Inventorys
 {
     public interface IInventory
     {

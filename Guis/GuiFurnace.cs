@@ -1,5 +1,6 @@
 using betareborn.Containers;
 using betareborn.Blocks.BlockEntities;
+using betareborn.Inventorys;
 
 namespace betareborn.Guis
 {

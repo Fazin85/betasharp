@@ -2,7 +2,7 @@ using betareborn.Containers;
 using betareborn.Entities;
 using betareborn.Items;
 
-namespace betareborn
+namespace betareborn.Inventorys
 {
     public class InventoryCrafting : java.lang.Object, IInventory
     {

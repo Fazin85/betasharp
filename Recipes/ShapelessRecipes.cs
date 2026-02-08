@@ -1,7 +1,8 @@
+using betareborn.Inventorys;
 using betareborn.Items;
 using java.util;
 
-namespace betareborn
+namespace betareborn.Recipes
 {
     public class ShapelessRecipes : IRecipe
     {

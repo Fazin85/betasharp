@@ -41,7 +41,7 @@ namespace betareborn.Worlds
         protected float rainingStrength;
         protected float prevThunderingStrength;
         protected float thunderingStrength;
-        protected int field_27168_F;
+        protected int ticksSinceLightning;
         public int field_27172_i;
         public bool pauseTicking;
         private readonly long lockTimestamp;
@@ -89,7 +89,7 @@ namespace betareborn.Worlds
             skylightSubtracted = 0;
             field_9437_g = (new java.util.Random()).nextInt();
             field_9436_h = 1013904223;
-            field_27168_F = 0;
+            ticksSinceLightning = 0;
             field_27172_i = 0;
             pauseTicking = false;
             lockTimestamp = java.lang.System.currentTimeMillis();
@@ -131,7 +131,7 @@ namespace betareborn.Worlds
             skylightSubtracted = 0;
             field_9437_g = (new java.util.Random()).nextInt();
             field_9436_h = 1013904223;
-            field_27168_F = 0;
+            ticksSinceLightning = 0;
             field_27172_i = 0;
             pauseTicking = false;
             lockTimestamp = java.lang.System.currentTimeMillis();
@@ -178,7 +178,7 @@ namespace betareborn.Worlds
             skylightSubtracted = 0;
             field_9437_g = (new java.util.Random()).nextInt();
             field_9436_h = 1013904223;
-            field_27168_F = 0;
+            ticksSinceLightning = 0;
             field_27172_i = 0;
             pauseTicking = false;
             lockTimestamp = java.lang.System.currentTimeMillis();
@@ -2283,9 +2283,9 @@ namespace betareborn.Worlds
         {
             if (!dimension.hasCeiling)
             {
-                if (field_27168_F > 0)
+                if (ticksSinceLightning > 0)
                 {
-                    --field_27168_F;
+                    --ticksSinceLightning;
                 }
 
                 int var1 = worldInfo.getThunderTime();
@@ -2454,7 +2454,7 @@ namespace betareborn.Worlds
                     if (isRaining(var7, var9, var8))
                     {
                         addWeatherEffect(new EntityLightningBolt(this, (double)var7, (double)var9, (double)var8));
-                        field_27168_F = 2;
+                        ticksSinceLightning = 2;
                     }
                 }
 
@@ -3087,12 +3087,12 @@ namespace betareborn.Worlds
             }
         }
 
-        public void setItemData(string var1, MapDataBase var2)
+        public void setItemData(string var1, PersistentState var2)
         {
             persistentStateManager.setData(var1, var2);
         }
 
-        public MapDataBase loadItemData(Class var1, string var2)
+        public PersistentState loadItemData(Class var1, string var2)
         {
             return persistentStateManager.loadData(var1, new(var2));
         }

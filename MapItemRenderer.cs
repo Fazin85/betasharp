@@ -101,7 +101,7 @@ namespace betareborn
             GLManager.GL.PushMatrix();
             GLManager.GL.Translate(0.0F, 0.0F, -0.04F);
             GLManager.GL.Scale(1.0F, 1.0F, 1.0F);
-            field_28160_d.drawString(var3.field_28168_a, var15, var16, -16777216);
+            field_28160_d.drawString(var3.id, var15, var16, -16777216);
             GLManager.GL.PopMatrix();
         }
     }

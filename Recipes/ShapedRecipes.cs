@@ -1,6 +1,7 @@
+using betareborn.Inventorys;
 using betareborn.Items;
 
-namespace betareborn
+namespace betareborn.Recipes
 {
     public class ShapedRecipes : java.lang.Object, IRecipe
     {

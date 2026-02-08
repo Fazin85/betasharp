@@ -1,5 +1,6 @@
 using betareborn.Blocks;
 using betareborn.Containers;
+using betareborn.Inventorys;
 using betareborn.Items;
 
 namespace betareborn

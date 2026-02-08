@@ -1,10 +1,9 @@
-
 using betareborn.Blocks;
 using betareborn.Entities;
 using betareborn.Items;
 using betareborn.NBT;
 
-namespace betareborn
+namespace betareborn.Inventorys
 {
     public class InventoryPlayer : java.lang.Object, IInventory
     {
@@ -333,7 +332,7 @@ namespace betareborn
             return var2[var1];
         }
 
-        public String getName()
+        public string getName()
         {
             return "Inventory";
         }

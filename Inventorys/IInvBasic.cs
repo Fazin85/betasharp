@@ -1,4 +1,4 @@
-namespace betareborn
+namespace betareborn.Inventorys
 {
     public interface IInvBasic
     {

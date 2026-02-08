@@ -1,5 +1,6 @@
 using betareborn.Blocks;
 using betareborn.Items;
+using betareborn.Recipes;
 using java.lang;
 using java.util;
 

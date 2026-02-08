@@ -4,6 +4,7 @@ using betareborn.Stats;
 using betareborn.Worlds;
 using java.lang;
 using betareborn.Blocks.BlockEntities;
+using betareborn.Inventorys;
 
 namespace betareborn.Entities
 {

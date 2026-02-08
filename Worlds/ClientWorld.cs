@@ -8,7 +8,7 @@ using java.util;
 
 namespace betareborn.Worlds
 {
-    public class WorldClient : World
+    public class ClientWorld : World
     {
 
         private readonly LinkedList blockResets = new LinkedList();
@@ -18,7 +18,7 @@ namespace betareborn.Worlds
         private readonly Set forcedEntities = new HashSet();
         private readonly Set pendingEntities = new HashSet();
 
-        public WorldClient(NetClientHandler netHandler, long seed, int dimId) : base(new EmptyWorldStorage(), "MpServer", Dimension.fromId(dimId), seed)
+        public ClientWorld(NetClientHandler netHandler, long seed, int dimId) : base(new EmptyWorldStorage(), "MpServer", Dimension.fromId(dimId), seed)
         {
             networkHandler = netHandler;
             setSpawnPoint(new Vec3i(8, 64, 8));
@@ -53,11 +53,11 @@ namespace betareborn.Worlds
 
             for (var2 = 0; var2 < blockResets.size(); ++var2)
             {
-                WorldBlockPositionType var4 = (WorldBlockPositionType)blockResets.get(var2);
-                if (--var4.field_1206_d == 0)
+                BlockReset var4 = (BlockReset)blockResets.get(var2);
+                if (--var4.delay == 0)
                 {
-                    base.setBlockAndMetadata(var4.field_1202_a, var4.field_1201_b, var4.field_1207_c, var4.field_1205_e, var4.field_1204_f);
-                    base.markBlockNeedsUpdate(var4.field_1202_a, var4.field_1201_b, var4.field_1207_c);
+                    base.setBlockAndMetadata(var4.x, var4.y, var4.z, var4.block, var4.meta);
+                    base.markBlockNeedsUpdate(var4.x, var4.y, var4.z);
                     blockResets.remove(var2--);
                 }
             }
@@ -68,8 +68,8 @@ namespace betareborn.Worlds
         {
             for (int var7 = 0; var7 < blockResets.size(); ++var7)
             {
-                WorldBlockPositionType var8 = (WorldBlockPositionType)blockResets.get(var7);
-                if (var8.field_1202_a >= var1 && var8.field_1201_b >= var2 && var8.field_1207_c >= var3 && var8.field_1202_a <= var4 && var8.field_1201_b <= var5 && var8.field_1207_c <= var6)
+                BlockReset var8 = (BlockReset)blockResets.get(var7);
+                if (var8.x >= var1 && var8.y >= var2 && var8.z >= var3 && var8.x <= var4 && var8.y <= var5 && var8.z <= var6)
                 {
                     blockResets.remove(var7--);
                 }
@@ -157,9 +157,9 @@ namespace betareborn.Worlds
 
         }
 
-        public void func_712_a(int var1, Entity var2)
+        public void forceEntity(int var1, Entity var2)
         {
-            Entity var3 = func_709_b(var1);
+            Entity var3 = getEntity(var1);
             if (var3 != null)
             {
                 setEntityDead(var3);
@@ -175,7 +175,7 @@ namespace betareborn.Worlds
             entitiesByNetworkId.addKey(var1, var2);
         }
 
-        public Entity func_709_b(int var1)
+        public Entity getEntity(int var1)
         {
             return (Entity)entitiesByNetworkId.lookup(var1);
         }
@@ -198,7 +198,7 @@ namespace betareborn.Worlds
             int var6 = getBlockMeta(var1, var2, var3);
             if (base.setBlockMetadata(var1, var2, var3, var4))
             {
-                blockResets.add(new WorldBlockPositionType(this, var1, var2, var3, var5, var6));
+                blockResets.add(new BlockReset(this, var1, var2, var3, var5, var6));
                 return true;
             }
             else
@@ -213,7 +213,7 @@ namespace betareborn.Worlds
             int var7 = getBlockMeta(var1, var2, var3);
             if (base.setBlockAndMetadata(var1, var2, var3, var4, var5))
             {
-                blockResets.add(new WorldBlockPositionType(this, var1, var2, var3, var6, var7));
+                blockResets.add(new BlockReset(this, var1, var2, var3, var6, var7));
                 return true;
             }
             else
@@ -228,7 +228,7 @@ namespace betareborn.Worlds
             int var6 = getBlockMeta(var1, var2, var3);
             if (base.setBlock(var1, var2, var3, var4))
             {
-                blockResets.add(new WorldBlockPositionType(this, var1, var2, var3, var5, var6));
+                blockResets.add(new BlockReset(this, var1, var2, var3, var5, var6));
                 return true;
             }
             else
@@ -237,7 +237,7 @@ namespace betareborn.Worlds
             }
         }
 
-        public bool func_714_c(int var1, int var2, int var3, int var4, int var5)
+        public bool setBlockWithMetaFromPacket(int var1, int var2, int var3, int var4, int var5)
         {
             clearBlockResets(var1, var2, var3, var1, var2, var3);
             if (base.setBlockAndMetadata(var1, var2, var3, var4, var5))
@@ -253,16 +253,16 @@ namespace betareborn.Worlds
 
         public override void sendQuittingDisconnectingPacket()
         {
-            networkHandler.func_28117_a(new Packet255KickDisconnect("Quitting"));
+            networkHandler.sendPacketAndDisconnect(new Packet255KickDisconnect("Quitting"));
         }
 
         protected override void updateWeather()
         {
             if (!dimension.hasCeiling)
             {
-                if (field_27168_F > 0)
+                if (ticksSinceLightning > 0)
                 {
-                    --field_27168_F;
+                    --ticksSinceLightning;
                 }
 
                 prevRainingStrength = rainingStrength;

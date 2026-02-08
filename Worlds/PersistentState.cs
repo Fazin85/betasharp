@@ -1,15 +1,15 @@
 using betareborn.NBT;
 
-namespace betareborn
+namespace betareborn.Worlds
 {
-    public abstract class MapDataBase : java.lang.Object
+    public abstract class PersistentState : java.lang.Object
     {
-        public readonly string field_28168_a;
+        public readonly string id;
         private bool dirty;
 
-        public MapDataBase(JString var1)
+        public PersistentState(JString var1)
         {
-            field_28168_a = var1.value;
+            id = var1.value;
         }
 
         public abstract void readFromNBT(NBTTagCompound var1);

@@ -3,7 +3,7 @@ using betareborn.Items;
 using java.lang;
 using java.util;
 
-namespace betareborn
+namespace betareborn.Recipes
 {
     public class SmeltingRecipeManager
     {

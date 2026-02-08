@@ -1,8 +1,10 @@
 using betareborn.Blocks;
 using betareborn.Blocks.Materials;
 using betareborn.Entities;
+using betareborn.Inventorys;
 using betareborn.Items;
 using betareborn.NBT;
+using betareborn.Recipes;
 
 namespace betareborn.Blocks.BlockEntities
 {

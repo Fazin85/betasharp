@@ -11,6 +11,7 @@ using betareborn.Worlds.Storage;
 using java.io;
 using java.net;
 using betareborn.Blocks.BlockEntities;
+using betareborn.Inventorys;
 
 namespace betareborn
 {
@@ -20,7 +21,7 @@ namespace betareborn
         private NetworkManager netManager;
         public String field_1209_a;
         private Minecraft mc;
-        private WorldClient worldClient;
+        private ClientWorld worldClient;
         private bool field_1210_g = false;
         public PersistentStateManager clientPersistentStateManager = new PersistentStateManager((WorldStorage)null);
         java.util.Random rand = new();
@@ -48,7 +49,7 @@ namespace betareborn
         {
             mc.playerController = new PlayerControllerMP(mc, this);
             mc.statFileWriter.readStat(Stats.Stats.joinMultiplayerStat, 1);
-            worldClient = new WorldClient(this, var1.mapSeed, var1.dimension);
+            worldClient = new ClientWorld(this, var1.mapSeed, var1.dimension);
             worldClient.isRemote = true;
             mc.changeWorld1(worldClient);
             mc.thePlayer.dimension = var1.dimension;
@@ -68,7 +69,7 @@ namespace betareborn
             var8.serverPosX = var1.xPosition;
             var8.serverPosY = var1.yPosition;
             var8.serverPosZ = var1.zPosition;
-            worldClient.func_712_a(var1.entityId, var8);
+            worldClient.forceEntity(var1.entityId, var8);
         }
 
         public override void handleVehicleSpawn(Packet23VehicleSpawn var1)
@@ -146,7 +147,7 @@ namespace betareborn
                 ((Entity)var8).rotationYaw = 0.0F;
                 ((Entity)var8).rotationPitch = 0.0F;
                 ((Entity)var8).entityId = var1.entityId;
-                worldClient.func_712_a(var1.entityId, (Entity)var8);
+                worldClient.forceEntity(var1.entityId, (Entity)var8);
                 if (var1.field_28044_i > 0)
                 {
                     if (var1.type == 60)
@@ -191,7 +192,7 @@ namespace betareborn
         public override void func_21146_a(Packet25EntityPainting var1)
         {
             EntityPainting var2 = new EntityPainting(worldClient, var1.xPosition, var1.yPosition, var1.zPosition, var1.direction, var1.title);
-            worldClient.func_712_a(var1.entityId, var2);
+            worldClient.forceEntity(var1.entityId, var2);
         }
 
         public override void func_6498_a(Packet28EntityVelocity var1)
@@ -235,7 +236,7 @@ namespace betareborn
             }
 
             var10.setPositionAndRotation(var2, var4, var6, var8, var9);
-            worldClient.func_712_a(var1.entityId, var10);
+            worldClient.forceEntity(var1.entityId, var10);
         }
 
         public override void handleEntityTeleport(Packet34EntityTeleport var1)
@@ -351,7 +352,7 @@ namespace betareborn
 
         public override void handleBlockChange(Packet53BlockChange var1)
         {
-            worldClient.func_714_c(var1.xPosition, var1.yPosition, var1.zPosition, var1.type, var1.metadata);
+            worldClient.setBlockWithMetaFromPacket(var1.xPosition, var1.yPosition, var1.zPosition, var1.type, var1.metadata);
         }
 
         public override void handleKickDisconnect(Packet255KickDisconnect var1)
@@ -372,7 +373,7 @@ namespace betareborn
             }
         }
 
-        public void func_28117_a(Packet var1)
+        public void sendPacketAndDisconnect(Packet var1)
         {
             if (!disconnected)
             {
@@ -509,7 +510,7 @@ namespace betareborn
             var10.entityId = var1.entityId;
             var10.setPositionAndRotation(var2, var4, var6, var8, var9);
             var10.isMultiplayerEntity = true;
-            worldClient.func_712_a(var1.entityId, var10);
+            worldClient.forceEntity(var1.entityId, var10);
             java.util.List var11 = var1.getMetadata();
             if (var11 != null)
             {
@@ -556,7 +557,7 @@ namespace betareborn
 
         private Entity getEntityByID(int var1)
         {
-            return (Entity)(var1 == mc.thePlayer.entityId ? mc.thePlayer : worldClient.func_709_b(var1));
+            return (Entity)(var1 == mc.thePlayer.entityId ? mc.thePlayer : worldClient.getEntity(var1));
         }
 
         public override void handleHealth(Packet8UpdateHealth var1)
@@ -569,7 +570,7 @@ namespace betareborn
             if (var1.field_28048_a != mc.thePlayer.dimension)
             {
                 field_1210_g = false;
-                worldClient = new WorldClient(this, worldClient.getWorldInfo().getRandomSeed(), var1.field_28048_a);
+                worldClient = new ClientWorld(this, worldClient.getWorldInfo().getRandomSeed(), var1.field_28048_a);
                 worldClient.isRemote = true;
                 mc.changeWorld1(worldClient);
                 mc.thePlayer.dimension = var1.field_28048_a;

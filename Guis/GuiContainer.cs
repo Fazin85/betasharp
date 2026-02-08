@@ -1,4 +1,5 @@
 using betareborn.Containers;
+using betareborn.Inventorys;
 using betareborn.Items;
 using betareborn.Rendering;
 using Silk.NET.OpenGL.Legacy;

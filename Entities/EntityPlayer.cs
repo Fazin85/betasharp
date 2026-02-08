@@ -9,6 +9,7 @@ using betareborn.Worlds.Chunks;
 using java.lang;
 using betareborn.Blocks.BlockEntities;
 using betareborn.Blocks.Materials;
+using betareborn.Inventorys;
 
 namespace betareborn.Entities
 {

@@ -1,5 +1,6 @@
 using betareborn.Blocks;
 using betareborn.Blocks.Materials;
+using betareborn.Inventorys;
 using betareborn.Items;
 using betareborn.Rendering;
 using java.awt;

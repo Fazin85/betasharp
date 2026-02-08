@@ -2,17 +2,17 @@ using betareborn.Entities;
 using betareborn.Items;
 using java.util;
 
-namespace betareborn
+namespace betareborn.Inventorys
 {
     public class InventoryBasic : IInventory
     {
 
-        private String inventoryTitle;
+        private string inventoryTitle;
         private int slotsCount;
         private ItemStack[] inventoryContents;
         private List field_20073_d;
 
-        public InventoryBasic(String var1, int var2)
+        public InventoryBasic(string var1, int var2)
         {
             inventoryTitle = var1;
             slotsCount = var2;
@@ -70,7 +70,7 @@ namespace betareborn
             return slotsCount;
         }
 
-        public String getName()
+        public string getName()
         {
             return inventoryTitle;
         }

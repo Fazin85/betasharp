@@ -1,9 +1,9 @@
 using betareborn.Blocks;
+using betareborn.Inventorys;
 using betareborn.Items;
-using betareborn.Recipes;
 using java.util;
 
-namespace betareborn
+namespace betareborn.Recipes
 {
     public class CraftingManager
     {
@@ -17,13 +17,13 @@ namespace betareborn
 
         private CraftingManager()
         {
-            (new RecipesTools()).addRecipes(this);
-            (new RecipesWeapons()).addRecipes(this);
-            (new RecipesIngots()).addRecipes(this);
-            (new RecipesFood()).addRecipes(this);
-            (new RecipesCrafting()).addRecipes(this);
-            (new RecipesArmor()).addRecipes(this);
-            (new RecipesDyes()).addRecipes(this);
+            new RecipesTools().addRecipes(this);
+            new RecipesWeapons().addRecipes(this);
+            new RecipesIngots().addRecipes(this);
+            new RecipesFood().addRecipes(this);
+            new RecipesCrafting().addRecipes(this);
+            new RecipesArmor().addRecipes(this);
+            new RecipesDyes().addRecipes(this);
             addRecipe(new ItemStack(Item.paper, 3), ["###", java.lang.Character.valueOf('#'), Item.reed]);
             addRecipe(new ItemStack(Item.book, 1), ["#", "#", "#", java.lang.Character.valueOf('#'), Item.paper]);
             addRecipe(new ItemStack(Block.FENCE, 2), ["###", "###", java.lang.Character.valueOf('#'), Item.stick]);
@@ -93,7 +93,7 @@ namespace betareborn
             int var6 = 0;
             if (var2[var4] is string[])
             {
-                string[] var11 = (string[])((string[])var2[var4++]);
+                string[] var11 = (string[])var2[var4++];
 
                 for (int var8 = 0; var8 < var11.Length; ++var8)
                 {

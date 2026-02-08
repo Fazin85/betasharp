@@ -19,9 +19,9 @@ namespace betareborn.Worlds.Storage
             loadIdCounts();
         }
 
-        public MapDataBase loadData(Class var1, JString var2)
+        public PersistentState loadData(Class var1, JString var2)
         {
-            MapDataBase var3 = (MapDataBase)loadedDataMap.get(var2);
+            PersistentState var3 = (PersistentState)loadedDataMap.get(var2);
             if (var3 != null)
             {
                 return var3;
@@ -37,7 +37,7 @@ namespace betareborn.Worlds.Storage
                         {
                             try
                             {
-                                var3 = (MapDataBase)var1.getConstructor([c]).newInstance([var2]);
+                                var3 = (PersistentState)var1.getConstructor([c]).newInstance([var2]);
 
                             }
                             catch (java.lang.Exception var7)
@@ -67,7 +67,7 @@ namespace betareborn.Worlds.Storage
             }
         }
 
-        public void setData(string var1, MapDataBase var2)
+        public void setData(string var1, PersistentState var2)
         {
             if (var2 == null)
             {
@@ -89,7 +89,7 @@ namespace betareborn.Worlds.Storage
         {
             for (int var1 = 0; var1 < loadedDataList.size(); ++var1)
             {
-                MapDataBase var2 = (MapDataBase)loadedDataList.get(var1);
+                PersistentState var2 = (PersistentState)loadedDataList.get(var1);
                 if (var2.isDirty())
                 {
                     saveData(var2);
@@ -99,13 +99,13 @@ namespace betareborn.Worlds.Storage
 
         }
 
-        private void saveData(MapDataBase var1)
+        private void saveData(PersistentState var1)
         {
             if (saveHandler != null)
             {
                 try
                 {
-                    java.io.File var2 = saveHandler.getWorldPropertiesFile(var1.field_28168_a);
+                    java.io.File var2 = saveHandler.getWorldPropertiesFile(var1.id);
                     if (var2 != null)
                     {
                         NBTTagCompound var3 = new();

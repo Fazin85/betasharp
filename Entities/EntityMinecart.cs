@@ -1,4 +1,5 @@
 using betareborn.Blocks;
+using betareborn.Inventorys;
 using betareborn.Items;
 using betareborn.NBT;
 using betareborn.Worlds;

@@ -3,6 +3,7 @@ using betareborn.Items;
 using betareborn.Worlds;
 using betareborn.Blocks.BlockEntities;
 using betareborn.Blocks.Materials;
+using betareborn.Inventorys;
 
 namespace betareborn.Blocks
 {
