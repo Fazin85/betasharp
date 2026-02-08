@@ -487,8 +487,6 @@ namespace betareborn.Rendering
                         int fxPixelSize = (int)System.Math.Sqrt(var2.imageData.Length / 4);
                         GLManager.GL.TexSubImage2D(GLEnum.Texture2D, 0, 0, 0, (uint)fxPixelSize, (uint)fxPixelSize, GLEnum.Rgba, GLEnum.UnsignedByte, ptr);
                     }));
-
-                    // UpdateSingleTextureMipmaps((uint)var2.textureId, var2.imageData);
                 }
             }
         }
@@ -553,48 +551,6 @@ namespace betareborn.Rendering
             }
 
             return mipmaps;
-        }
-
-        private unsafe void UpdateSingleTextureMipmaps(uint textureId, byte[] imageData)
-        {
-            GLManager.GL.BindTexture(GLEnum.Texture2D, textureId);
-
-            int totalPixels = imageData.Length / 4;
-            int tileSize = (int)System.Math.Sqrt(totalPixels);
-
-            TextureAtlasMipmapGenerator.Color[] pixels = new TextureAtlasMipmapGenerator.Color[totalPixels];
-            for (int i = 0; i < pixels.Length; i++)
-            {
-                pixels[i] = new TextureAtlasMipmapGenerator.Color(
-                    imageData[i * 4 + 0],
-                    imageData[i * 4 + 1],
-                    imageData[i * 4 + 2],
-                    imageData[i * 4 + 3]
-                );
-            }
-
-            TextureAtlasMipmapGenerator.Color[][] mipmaps = GenerateSingleTileMipmaps(pixels, tileSize);
-
-            for (int mipLevel = 1; mipLevel < mipmaps.Length; mipLevel++)
-            {
-                int mipSize = tileSize >> mipLevel;
-                byte[] mipData = new byte[mipmaps[mipLevel].Length * 4];
-
-                for (int i = 0; i < mipmaps[mipLevel].Length; i++)
-                {
-                    mipData[i * 4 + 0] = mipmaps[mipLevel][i].R;
-                    mipData[i * 4 + 1] = mipmaps[mipLevel][i].G;
-                    mipData[i * 4 + 2] = mipmaps[mipLevel][i].B;
-                    mipData[i * 4 + 3] = mipmaps[mipLevel][i].A;
-                }
-
-                fixed (byte* ptr = mipData)
-                {
-                    GLManager.GL.TexImage2D(GLEnum.Texture2D, mipLevel,
-                        (int)GLEnum.Rgba8, (uint)mipSize, (uint)mipSize, 0,
-                        GLEnum.Rgba, GLEnum.UnsignedByte, ptr);
-                }
-            }
         }
 
         public void refreshTextures()
