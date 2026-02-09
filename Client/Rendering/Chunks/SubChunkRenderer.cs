@@ -10,9 +10,8 @@ namespace betareborn.Client.Rendering.Terrain
 {
     public class SubChunkRenderer : IDisposable
     {
-        public static int SIZE = 16;
-        public static int BITSHIFT_AMOUNT = 4;
-
+        public static int Size = 16;
+        public bool HasTranslucentMesh => vertexCounts[1] > 0;
         public Vector3D<int> Position { get; }
         public Vector3D<int> PositionPlus { get; }
         public Vector3D<int> PositionMinus { get; }
@@ -28,7 +27,7 @@ namespace betareborn.Client.Rendering.Terrain
         {
             Position = position;
 
-            PositionPlus = new(position.X + SIZE / 2, position.Y + SIZE / 2, position.Z + SIZE / 2);
+            PositionPlus = new(position.X + Size / 2, position.Y + Size / 2, position.Z + Size / 2);
             ClipPosition = new(position.X & 1023, position.Y, position.Z & 1023);
             PositionMinus = position - ClipPosition;
 
@@ -39,9 +38,9 @@ namespace betareborn.Client.Rendering.Terrain
                 position.X - padding,
                 position.Y - padding,
                 position.Z - padding,
-                position.X + SIZE + padding,
-                position.Y + SIZE + padding,
-                position.Z + SIZE + padding
+                position.X + Size + padding,
+                position.Y + Size + padding,
+                position.Z + Size + padding
             );
 
             vertexCounts[0] = 0;
@@ -139,24 +138,15 @@ namespace betareborn.Client.Rendering.Terrain
             }
         }
 
-        public bool HasTranslucentMesh()
-        {
-            return vertexCounts[1] > 0;
-        }
-
-        public unsafe void Render(Shader shader, int pass, Vector3D<double> viewPos, Matrix4X4<float> modelViewMatrix)
+        public void Render(Shader shader, int pass, Vector3D<double> viewPos, Matrix4X4<float> modelViewMatrix)
         {
             if (pass < 0 || pass > 1)
-            {
                 throw new ArgumentException("Pass must be 0 or 1");
-            }
 
             int vertexCount = vertexCounts[pass];
 
             if (vertexCount == 0)
-            {
                 return;
-            }
 
             Vector3D<double> pos = new(PositionMinus.X - viewPos.X, PositionMinus.Y - viewPos.Y, PositionMinus.Z - viewPos.Z);
             pos += new Vector3D<double>(ClipPosition.X, ClipPosition.Y, ClipPosition.Z);
@@ -174,9 +164,7 @@ namespace betareborn.Client.Rendering.Terrain
         public void Dispose()
         {
             if (disposed)
-            {
                 return;
-            }
 
             GC.SuppressFinalize(this);
 

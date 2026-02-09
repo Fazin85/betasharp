@@ -182,13 +182,11 @@ namespace betareborn.Client.Rendering
 
             if (renderDistance == 0)
             {
-                SubChunkRenderer.SIZE = 32;
-                SubChunkRenderer.BITSHIFT_AMOUNT = 5;
+                SubChunkRenderer.Size = 32;
             }
             else
             {
-                SubChunkRenderer.SIZE = 16;
-                SubChunkRenderer.BITSHIFT_AMOUNT = 4;
+                SubChunkRenderer.Size = 16;
             }
 
             renderEntitiesStartupCounter = 2;
@@ -711,12 +709,12 @@ namespace betareborn.Client.Rendering
 
         public void func_949_a(int var1, int var2, int var3, int var4, int var5, int var6)
         {
-            int var7 = MathHelper.bucketInt(var1, SubChunkRenderer.SIZE);
-            int var8 = MathHelper.bucketInt(var2, SubChunkRenderer.SIZE);
-            int var9 = MathHelper.bucketInt(var3, SubChunkRenderer.SIZE);
-            int var10 = MathHelper.bucketInt(var4, SubChunkRenderer.SIZE);
-            int var11 = MathHelper.bucketInt(var5, SubChunkRenderer.SIZE);
-            int var12 = MathHelper.bucketInt(var6, SubChunkRenderer.SIZE);
+            int var7 = MathHelper.bucketInt(var1, SubChunkRenderer.Size);
+            int var8 = MathHelper.bucketInt(var2, SubChunkRenderer.Size);
+            int var9 = MathHelper.bucketInt(var3, SubChunkRenderer.Size);
+            int var10 = MathHelper.bucketInt(var4, SubChunkRenderer.Size);
+            int var11 = MathHelper.bucketInt(var5, SubChunkRenderer.Size);
+            int var12 = MathHelper.bucketInt(var6, SubChunkRenderer.Size);
 
             for (int var13 = var7; var13 <= var10; ++var13)
             {
@@ -724,7 +722,7 @@ namespace betareborn.Client.Rendering
                 {
                     for (int var17 = var9; var17 <= var12; ++var17)
                     {
-                        chunkRenderer.MarkDirty(new Vector3D<int>(var13, var15, var17) * SubChunkRenderer.SIZE, true);
+                        chunkRenderer.MarkDirty(new Vector3D<int>(var13, var15, var17) * SubChunkRenderer.Size, true);
                     }
                 }
             }

@@ -15,18 +15,26 @@ namespace betareborn.Client.Rendering.Chunks
         public Vector3D<int> Pos;
         public long Version;
 
-        public void Dispose()
+        public readonly void Dispose()
         {
             Solid?.Dispose();
             Translucent?.Dispose();
         }
     }
 
-    public class ChunkMeshGenerator(int maxConcurrentTasks = 4) : IDisposable
+    public class ChunkMeshGenerator : IDisposable
     {
         private readonly PooledQueue<MeshBuildResult> results = new();
-        private readonly ObjectPool<PooledList<ChunkVertex>> listPool = new(() => new PooledList<ChunkVertex>(), 64);
-        private readonly SemaphoreSlim concurrencySemaphore = new(maxConcurrentTasks, maxConcurrentTasks);
+        private readonly ObjectPool<PooledList<ChunkVertex>> listPool =
+            new(() => new PooledList<ChunkVertex>(), 64);
+
+        private ushort maxConcurrentTasks;
+        private SemaphoreSlim? concurrencySemaphore;
+
+        public ChunkMeshGenerator(ushort maxConcurrentTasks = 0)
+        {
+            MaxConcurrentTasks = maxConcurrentTasks;
+        }
 
         public MeshBuildResult? Mesh
         {
@@ -37,19 +45,35 @@ namespace betareborn.Client.Rendering.Chunks
             }
         }
 
+        public ushort MaxConcurrentTasks
+        {
+            get => maxConcurrentTasks;
+            set
+            {
+                maxConcurrentTasks = value;
+
+                concurrencySemaphore?.Dispose();
+                concurrencySemaphore = maxConcurrentTasks > 0
+                    ? new SemaphoreSlim(maxConcurrentTasks, maxConcurrentTasks)
+                    : null;
+            }
+        }
+
         public void MeshChunk(World world, Vector3D<int> pos, long version)
         {
             Task.Run(async () =>
             {
-                await concurrencySemaphore.WaitAsync();
+                if (concurrencySemaphore != null)
+                    await concurrencySemaphore.WaitAsync();
+
                 try
                 {
                     using var cache = new WorldRegionSnapshot(
                         world,
                         pos.X - 1, pos.Y - 1, pos.Z - 1,
-                        pos.X + SubChunkRenderer.SIZE + 1,
-                        pos.Y + SubChunkRenderer.SIZE + 1,
-                        pos.Z + SubChunkRenderer.SIZE + 1
+                        pos.X + SubChunkRenderer.Size + 1,
+                        pos.Y + SubChunkRenderer.Size + 1,
+                        pos.Z + SubChunkRenderer.Size + 1
                     );
 
                     var mesh = GenerateMesh(pos, version, cache);
@@ -59,20 +83,19 @@ namespace betareborn.Client.Rendering.Chunks
                 }
                 finally
                 {
-                    concurrencySemaphore.Release();
+                    concurrencySemaphore?.Release();
                 }
             });
         }
-
 
         private MeshBuildResult GenerateMesh(Vector3D<int> pos, long version, WorldRegionSnapshot cache)
         {
             int minX = pos.X;
             int minY = pos.Y;
             int minZ = pos.Z;
-            int maxX = pos.X + SubChunkRenderer.SIZE;
-            int maxY = pos.Y + SubChunkRenderer.SIZE;
-            int maxZ = pos.Z + SubChunkRenderer.SIZE;
+            int maxX = pos.X + SubChunkRenderer.Size;
+            int maxY = pos.Y + SubChunkRenderer.Size;
+            int maxZ = pos.Z + SubChunkRenderer.Size;
 
             var result = new MeshBuildResult
             {
@@ -139,5 +162,4 @@ namespace betareborn.Client.Rendering.Chunks
             listPool.Dispose();
         }
     }
-
 }

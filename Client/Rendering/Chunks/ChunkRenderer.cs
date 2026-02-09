@@ -47,7 +47,7 @@ namespace betareborn.Client.Rendering.Chunks
         }
 
         private static readonly Vector3D<int>[] spiralOffsets;
-        private const int MAX_RENDER_DISTANCE = 33;
+        private const int MAX_RENDER_DISTANCE = 32 + 1;
         private readonly Dictionary<Vector3D<int>, SubChunkState> renderers = [];
         private readonly List<SubChunkRenderer> translucentRenderers = [];
         private readonly List<SubChunkRenderer> renderersToRemove = [];
@@ -80,29 +80,19 @@ namespace betareborn.Client.Rendering.Chunks
             GLManager.GL.UseProgram(0);
         }
 
-        private static int CalculateRealRenderDistance(int val)
+        private static int CalculateRealRenderDistance(int val) // TODO: Maybe it's better to flip the values?
         {
-            if (val == 0)
+            return val switch
             {
-                return 16;
-            }
-            else if (val == 1)
-            {
-                return 8;
-            }
-            else if (val == 2)
-            {
-                return 4;
-            }
-            else if (val == 3)
-            {
-                return 2;
-            }
-
-            return 0;
+                0 => 16,
+                1 => 8,
+                2 => 4,
+                3 => 2,
+                _ => 0,
+            };
         }
 
-        public unsafe void Render(Culler camera, Vector3D<double> viewPos, int renderDistance, long ticks, float partialTicks, bool envAnim)
+        public void Render(Culler camera, Vector3D<double> viewPos, int renderDistance, long ticks, float partialTicks, bool envAnim)
         {
             lastRenderDistance = CalculateRealRenderDistance(renderDistance);
             lastViewPos = viewPos;
@@ -145,7 +135,7 @@ namespace betareborn.Client.Rendering.Chunks
                     {
                         state.Renderer.Render(chunkShader, 0, viewPos, modelView);
 
-                        if (state.Renderer.HasTranslucentMesh())
+                        if (state.Renderer.HasTranslucentMesh)
                         {
                             translucentRenderers.Add(state.Renderer);
                         }
@@ -169,10 +159,7 @@ namespace betareborn.Client.Rendering.Chunks
 
             ProcessOneMeshUpdate(camera);
             ProcessOneLightingMeshUpdate();
-
-            const int MAX_CHUNKS_PER_FRAME = 2;
-
-            LoadNewMeshes(viewPos, MAX_CHUNKS_PER_FRAME);
+            LoadNewMeshes(viewPos);
 
             GLManager.GL.UseProgram(0);
             Core.VertexArray.Unbind();
@@ -228,7 +215,7 @@ namespace betareborn.Client.Rendering.Chunks
             Core.VertexArray.Unbind();
         }
 
-        private void LoadNewMeshes(Vector3D<double> viewPos, int maxChunks)
+        private void LoadNewMeshes(Vector3D<double> viewPos, int maxChunks = 8)
         {
             for (int i = 0; i < maxChunks; i++)
             {
@@ -292,9 +279,9 @@ namespace betareborn.Client.Rendering.Chunks
 
                 var aabb = new Box(
                     info.Pos.X, info.Pos.Y, info.Pos.Z,
-                    info.Pos.X + SubChunkRenderer.SIZE,
-                    info.Pos.Y + SubChunkRenderer.SIZE,
-                    info.Pos.Z + SubChunkRenderer.SIZE
+                    info.Pos.X + SubChunkRenderer.Size,
+                    info.Pos.Y + SubChunkRenderer.Size,
+                    info.Pos.Z + SubChunkRenderer.Size
                 );
 
                 if (!camera.isBoundingBoxInFrustum(aabb))
@@ -302,7 +289,7 @@ namespace betareborn.Client.Rendering.Chunks
                     continue;
                 }
 
-                meshGenerator.MeshChunk(world, info.Pos, info.Version/*, info.priority*/);
+                meshGenerator.MeshChunk(world, info.Pos, info.Version);
                 dirtyChunks.RemoveAt(i);
                 return;
             }
@@ -328,7 +315,7 @@ namespace betareborn.Client.Rendering.Chunks
                     continue;
                 }
 
-                meshGenerator.MeshChunk(world, update.Pos, update.Version/*, false*/);
+                meshGenerator.MeshChunk(world, update.Pos, update.Version);
                 lightingUpdates.RemoveAt(i);
                 return;
             }
@@ -364,9 +351,9 @@ namespace betareborn.Client.Rendering.Chunks
             lastViewPos = viewPos;
 
             Vector3D<int> currentChunk = new(
-                (int)Math.Floor(viewPos.X / SubChunkRenderer.SIZE),
-                (int)Math.Floor(viewPos.Y / SubChunkRenderer.SIZE),
-                (int)Math.Floor(viewPos.Z / SubChunkRenderer.SIZE)
+                (int)Math.Floor(viewPos.X / SubChunkRenderer.Size),
+                (int)Math.Floor(viewPos.Y / SubChunkRenderer.Size),
+                (int)Math.Floor(viewPos.Z / SubChunkRenderer.Size)
             );
 
             int radiusSq = lastRenderDistance * lastRenderDistance;
@@ -374,7 +361,7 @@ namespace betareborn.Client.Rendering.Chunks
             bool priorityPassClean = true;
 
             //TODO: MAKE THESE CONFIGURABLE
-            const int MAX_CHUNKS_PER_FRAME = 16;
+            const int MAX_CHUNKS_PER_FRAME = 32;
             const int PRIORITY_PASS_LIMIT = 1024;
             const int BACKGROUND_PASS_LIMIT = 2048;
 
@@ -384,21 +371,15 @@ namespace betareborn.Client.Rendering.Chunks
                 int distSq = offset.X * offset.X + offset.Y * offset.Y + offset.Z * offset.Z;
 
                 if (distSq > radiusSq)
-                {
                     break;
-                }
 
-                var chunkPos = (currentChunk + offset) * SubChunkRenderer.SIZE;
+                var chunkPos = (currentChunk + offset) * SubChunkRenderer.Size;
 
                 if (chunkPos.Y < 0 || chunkPos.Y >= 128)
-                {
                     continue;
-                }
 
                 if (renderers.ContainsKey(chunkPos) || chunkVersions.ContainsKey(chunkPos))
-                {
                     continue;
-                }
 
                 if (MarkDirty(chunkPos))
                 {
@@ -411,9 +392,7 @@ namespace betareborn.Client.Rendering.Chunks
                 }
 
                 if (enqueuedCount >= MAX_CHUNKS_PER_FRAME)
-                {
                     break;
-                }
             }
 
             if (priorityPassClean && enqueuedCount < MAX_CHUNKS_PER_FRAME)
@@ -425,7 +404,7 @@ namespace betareborn.Client.Rendering.Chunks
 
                     if (distSq <= radiusSq)
                     {
-                        var chunkPos = (currentChunk + offset) * SubChunkRenderer.SIZE;
+                        var chunkPos = (currentChunk + offset) * SubChunkRenderer.Size;
                         if (!renderers.ContainsKey(chunkPos) && !chunkVersions.ContainsKey(chunkPos))
                         {
                             if (MarkDirty(chunkPos))
@@ -438,9 +417,7 @@ namespace betareborn.Client.Rendering.Chunks
                     currentIndex = (currentIndex + 1) % spiralOffsets.Length;
 
                     if (enqueuedCount >= MAX_CHUNKS_PER_FRAME)
-                    {
                         break;
-                    }
                 }
             }
 
@@ -466,22 +443,14 @@ namespace betareborn.Client.Rendering.Chunks
 
         public bool MarkDirty(Vector3D<int> chunkPos, bool priority = false)
         {
-            if (!IsChunkInRenderDistance(chunkPos, lastViewPos))
-            {
+            if (!world.isRegionLoaded(chunkPos.X - 1, chunkPos.Y - 1, chunkPos.Z - 1, chunkPos.X + SubChunkRenderer.Size + 1, chunkPos.Y + SubChunkRenderer.Size + 1, chunkPos.Z + SubChunkRenderer.Size + 1) | !IsChunkInRenderDistance(chunkPos, lastViewPos))
                 return false;
-            }
-
-            if (!world.isRegionLoaded(chunkPos.X - 1, chunkPos.Y - 1, chunkPos.Z - 1, chunkPos.X + SubChunkRenderer.SIZE + 1, chunkPos.Y + SubChunkRenderer.SIZE + 1, chunkPos.Z + SubChunkRenderer.SIZE + 1))
-            {
-                return false;
-            }
 
             if (!chunkVersions.TryGetValue(chunkPos, out var version))
             {
                 version = new();
                 chunkVersions[chunkPos] = version;
             }
-
             version.MarkDirty();
 
             long? snapshot = version.SnapshotIfNeeded();
@@ -496,21 +465,18 @@ namespace betareborn.Client.Rendering.Chunks
 
         private bool IsChunkInRenderDistance(Vector3D<int> chunkWorldPos, Vector3D<double> viewPos)
         {
-            int chunkX = chunkWorldPos.X >> SubChunkRenderer.BITSHIFT_AMOUNT;
-            int chunkZ = chunkWorldPos.Z >> SubChunkRenderer.BITSHIFT_AMOUNT;
+            int chunkX = chunkWorldPos.X / SubChunkRenderer.Size;
+            int chunkZ = chunkWorldPos.Z / SubChunkRenderer.Size;
 
-            int viewChunkX = (int)Math.Floor(viewPos.X / SubChunkRenderer.SIZE);
-            int viewChunkZ = (int)Math.Floor(viewPos.Z / SubChunkRenderer.SIZE);
+            int viewChunkX = (int)Math.Floor(viewPos.X / SubChunkRenderer.Size);
+            int viewChunkZ = (int)Math.Floor(viewPos.Z / SubChunkRenderer.Size);
 
             int dist = Vector2D.Distance(new Vector2D<int>(chunkX, chunkZ), new Vector2D<int>(viewChunkX, viewChunkZ));
             bool isIn = dist <= lastRenderDistance;
             return isIn;
         }
 
-        private static Vector3D<double> ToDoubleVec(Vector3D<int> vec)
-        {
-            return new(vec.X, vec.Y, vec.Z);
-        }
+        private static Vector3D<double> ToDoubleVec(Vector3D<int> vec) => new(vec.X, vec.Y, vec.Z);
 
         public void Dispose()
         {
