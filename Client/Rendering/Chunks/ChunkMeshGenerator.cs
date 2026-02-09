@@ -4,127 +4,68 @@ using betareborn.Client.Rendering.Terrain;
 using betareborn.Util;
 using betareborn.Worlds;
 using Silk.NET.Maths;
-using System.Collections.Concurrent;
 
 namespace betareborn.Client.Rendering.Chunks
 {
-    public class ChunkMeshGenerator
+    public struct MeshBuildResult
     {
-        public class MeshBuildResult
+        public PooledList<ChunkVertex> Solid;
+        public PooledList<ChunkVertex> Translucent;
+        public bool IsLit;
+        public Vector3D<int> Pos;
+        public long Version;
+
+        public void Dispose()
         {
-            public PooledList<ChunkVertex>? Solid;
-            public PooledList<ChunkVertex>? Translucent;
-            public bool IsLit;
-            public Vector3D<int> Pos;
-            public long Version;
+            Solid?.Dispose();
+            Translucent?.Dispose();
         }
+    }
 
-        private class MeshBuildTask
+    public class ChunkMeshGenerator(int maxConcurrentTasks = 4) : IDisposable
+    {
+        private readonly PooledQueue<MeshBuildResult> results = new();
+        private readonly ObjectPool<PooledList<ChunkVertex>> listPool = new(() => new PooledList<ChunkVertex>(), 64);
+        private readonly SemaphoreSlim concurrencySemaphore = new(maxConcurrentTasks, maxConcurrentTasks);
+
+        public MeshBuildResult? Mesh
         {
-            public required WorldRegionSnapshot Cache;
-            public Vector3D<int> Pos;
-            public long Version;
-        }
-
-        private readonly BlockingCollection<MeshBuildTask> buildTasks = [];
-        private readonly BlockingCollection<MeshBuildTask> priorityBuildTasks = [];
-        private readonly BlockingCollection<MeshBuildResult> results = [];
-        private readonly Thread[] workers;
-        private readonly CancellationTokenSource cancellationTokenSource = new();
-
-        public int PendingTaskCount => buildTasks.Count + priorityBuildTasks.Count;
-        public int CompletedMeshCount => results.Count;
-
-        public ChunkMeshGenerator(int workerCount)
-        {
-            workers = new Thread[workerCount];
-
-            for (int i = 0; i < workerCount; i++)
+            get
             {
-                workers[i] = new Thread(WorkerThread)
-                {
-                    IsBackground = true
-                };
-                workers[i].Start();
+                if (results.IsEmpty) return null;
+                return results.Dequeue();
             }
         }
 
-        public void MeshChunk(World world, Vector3D<int> pos, long version, bool priority = false)
+        public void MeshChunk(World world, Vector3D<int> pos, long version)
         {
-            if (buildTasks.IsAddingCompleted)
+            Task.Run(async () =>
             {
-                return;
-            }
-
-            WorldRegionSnapshot cache = new(world, pos.X - 1, pos.Y - 1, pos.Z - 1,
-                pos.X + SubChunkRenderer.SIZE + 1, pos.Y + SubChunkRenderer.SIZE + 1, pos.Z + SubChunkRenderer.SIZE + 1);
-
-            MeshBuildTask task = new() { Cache = cache, Pos = pos, Version = version };
-
-            try
-            {
-                if (priority)
+                await concurrencySemaphore.WaitAsync();
+                try
                 {
-                    priorityBuildTasks.Add(task);
+                    using var cache = new WorldRegionSnapshot(
+                        world,
+                        pos.X - 1, pos.Y - 1, pos.Z - 1,
+                        pos.X + SubChunkRenderer.SIZE + 1,
+                        pos.Y + SubChunkRenderer.SIZE + 1,
+                        pos.Z + SubChunkRenderer.SIZE + 1
+                    );
+
+                    var mesh = GenerateMesh(pos, version, cache);
+
+                    lock (results)
+                        results.Enqueue(mesh);
                 }
-                else
+                finally
                 {
-                    buildTasks.Add(task);
+                    concurrencySemaphore.Release();
                 }
-            }
-            catch (InvalidOperationException)
-            {
-                // Collection was marked as complete, dispose the cache
-                cache.Dispose();
-            }
+            });
         }
 
-        public void Stop()
-        {
-            buildTasks.CompleteAdding();
-            priorityBuildTasks.CompleteAdding();
 
-            cancellationTokenSource.Cancel();
-
-            foreach (var thread in workers)
-            {
-                thread.Join();
-            }
-
-            buildTasks.Dispose();
-            priorityBuildTasks.Dispose();
-            results.Dispose();
-            cancellationTokenSource.Dispose();
-        }
-
-        public MeshBuildResult? GetMesh()
-        {
-            results.TryTake(out MeshBuildResult? result);
-            return result;
-        }
-
-        private void WorkerThread()
-        {
-            try
-            {
-                while (!cancellationTokenSource.Token.IsCancellationRequested)
-                {
-                    if (priorityBuildTasks.TryTake(out MeshBuildTask? task, 0, cancellationTokenSource.Token))
-                    {
-                        results.Add(MeshChunk(task.Pos, task.Version, task.Cache), cancellationTokenSource.Token);
-                    }
-                    else if (buildTasks.TryTake(out task, 100, cancellationTokenSource.Token))
-                    {
-                        results.Add(MeshChunk(task.Pos, task.Version, task.Cache), cancellationTokenSource.Token);
-                    }
-                }
-            }
-            catch (OperationCanceledException)
-            {
-            }
-        }
-
-        private static MeshBuildResult MeshChunk(Vector3D<int> pos, long version, WorldRegionSnapshot cache)
+        private MeshBuildResult GenerateMesh(Vector3D<int> pos, long version, WorldRegionSnapshot cache)
         {
             int minX = pos.X;
             int minY = pos.Y;
@@ -163,13 +104,9 @@ namespace betareborn.Client.Rendering.Chunks
                             int blockPass = b.getRenderLayer();
 
                             if (blockPass != pass)
-                            {
                                 hasNextPass = true;
-                            }
                             else
-                            {
                                 rb.renderBlockByRenderType(b, x, y, z);
-                            }
                         }
                     }
                 }
@@ -180,25 +117,27 @@ namespace betareborn.Client.Rendering.Chunks
                 var verts = tess.endCaptureChunkVertices();
                 if (verts.Count > 0)
                 {
+                    var list = listPool.Get();
+                    list.AddRange(verts.Span);
+
                     if (pass == 0)
-                    {
-                        result.Solid = verts;
-                    }
+                        result.Solid = list;
                     else
-                    {
-                        result.Translucent = verts;
-                    }
+                        result.Translucent = list;
                 }
 
-                if (!hasNextPass)
-                {
-                    break;
-                }
+                if (!hasNextPass) break;
             }
 
             result.IsLit = cache.getIsLit();
-            cache.Dispose();
             return result;
         }
+
+        public void Dispose()
+        {
+            results.Dispose();
+            listPool.Dispose();
+        }
     }
+
 }

@@ -69,9 +69,9 @@ namespace betareborn.Client.Rendering.Chunks
         private float fogEnd;
         private Vector4D<float> fogColor;
 
-        public ChunkRenderer(World world, int workerCount)
+        public ChunkRenderer(World world)
         {
-            meshGenerator = new(workerCount);
+            meshGenerator = new();
             this.world = world;
 
             chunkShader = new(AssetManager.Instance.getAsset("shaders/chunk.vert").getTextContent(), AssetManager.Instance.getAsset("shaders/chunk.frag").getTextContent());
@@ -228,6 +228,48 @@ namespace betareborn.Client.Rendering.Chunks
             Core.VertexArray.Unbind();
         }
 
+        private void LoadNewMeshes(Vector3D<double> viewPos, int maxChunks)
+        {
+            for (int i = 0; i < maxChunks; i++)
+            {
+                if (meshGenerator.Mesh is MeshBuildResult mesh)
+                {
+                    if (IsChunkInRenderDistance(mesh.Pos, viewPos))
+                    {
+                        if (!chunkVersions.TryGetValue(mesh.Pos, out var version))
+                        {
+                            version = new ChunkMeshVersion();
+                            chunkVersions[mesh.Pos] = version;
+                        }
+
+                        version.CompleteMesh(mesh.Version);
+
+                        if (version.IsStale(mesh.Version))
+                        {
+                            long? snapshot = version.SnapshotIfNeeded();
+                            if (snapshot.HasValue)
+                            {
+                                meshGenerator.MeshChunk(world, mesh.Pos, snapshot.Value);
+                            }
+                            continue;
+                        }
+
+                        if (renderers.TryGetValue(mesh.Pos, out SubChunkState? state))
+                        {
+                            state.Renderer.UploadMeshData(mesh.Solid, mesh.Translucent);
+                            state.IsLit = mesh.IsLit;
+                        }
+                        else
+                        {
+                            var renderer = new SubChunkRenderer(mesh.Pos);
+                            renderer.UploadMeshData(mesh.Solid, mesh.Translucent);
+                            renderers[mesh.Pos] = new SubChunkState(mesh.IsLit, renderer);
+                        }
+                    }
+                }
+            }
+        }
+
         private void ProcessOneMeshUpdate(Culler camera)
         {
             dirtyChunks.Sort((a, b) =>
@@ -260,7 +302,7 @@ namespace betareborn.Client.Rendering.Chunks
                     continue;
                 }
 
-                meshGenerator.MeshChunk(world, info.Pos, info.Version, info.priority);
+                meshGenerator.MeshChunk(world, info.Pos, info.Version/*, info.priority*/);
                 dirtyChunks.RemoveAt(i);
                 return;
             }
@@ -286,7 +328,7 @@ namespace betareborn.Client.Rendering.Chunks
                     continue;
                 }
 
-                meshGenerator.MeshChunk(world, update.Pos, update.Version, false);
+                meshGenerator.MeshChunk(world, update.Pos, update.Version/*, false*/);
                 lightingUpdates.RemoveAt(i);
                 return;
             }
@@ -452,48 +494,6 @@ namespace betareborn.Client.Rendering.Chunks
             return false;
         }
 
-        private void LoadNewMeshes(Vector3D<double> viewPos, int maxChunks)
-        {
-            for (int i = 0; i < maxChunks; i++)
-            {
-                var mesh = meshGenerator.GetMesh();
-                if (mesh == null) break;
-
-                if (IsChunkInRenderDistance(mesh.Pos, viewPos))
-                {
-                    if (!chunkVersions.TryGetValue(mesh.Pos, out var version))
-                    {
-                        version = new ChunkMeshVersion();
-                        chunkVersions[mesh.Pos] = version;
-                    }
-
-                    version.CompleteMesh(mesh.Version);
-
-                    if (version.IsStale(mesh.Version))
-                    {
-                        long? snapshot = version.SnapshotIfNeeded();
-                        if (snapshot.HasValue)
-                        {
-                            meshGenerator.MeshChunk(world, mesh.Pos, snapshot.Value, false);
-                        }
-                        continue;
-                    }
-
-                    if (renderers.TryGetValue(mesh.Pos, out SubChunkState? state))
-                    {
-                        state.Renderer.UploadMeshData(mesh.Solid, mesh.Translucent);
-                        state.IsLit = mesh.IsLit;
-                    }
-                    else
-                    {
-                        var renderer = new SubChunkRenderer(mesh.Pos);
-                        renderer.UploadMeshData(mesh.Solid, mesh.Translucent);
-                        renderers[mesh.Pos] = new SubChunkState(mesh.IsLit, renderer);
-                    }
-                }
-            }
-        }
-
         private bool IsChunkInRenderDistance(Vector3D<int> chunkWorldPos, Vector3D<double> viewPos)
         {
             int chunkX = chunkWorldPos.X >> SubChunkRenderer.BITSHIFT_AMOUNT;
@@ -514,8 +514,6 @@ namespace betareborn.Client.Rendering.Chunks
 
         public void Dispose()
         {
-            meshGenerator.Stop();
-
             foreach (var state in renderers.Values)
             {
                 state.Renderer.Dispose();

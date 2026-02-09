@@ -114,11 +114,33 @@ namespace betareborn.Client.Rendering.Core
             renderAllFaces = false;
         }
 
-        public bool renderBlockByRenderType(Block var1, int var2, int var3, int var4)
+        public bool renderBlockByRenderType(Block block, int x, int y, int z)
         {
-            int var5 = var1.getRenderType();
-            var1.updateBoundingBox(blockAccess, var2, var3, var4);
-            return var5 == 0 ? renderStandardBlock(var1, var2, var3, var4) : var5 == 4 ? renderBlockFluids(var1, var2, var3, var4) : var5 == 13 ? renderBlockCactus(var1, var2, var3, var4) : var5 == 1 ? renderBlockReed(var1, var2, var3, var4) : var5 == 6 ? renderBlockCrops(var1, var2, var3, var4) : var5 == 2 ? renderBlockTorch(var1, var2, var3, var4) : var5 == 3 ? renderBlockFire(var1, var2, var3, var4) : var5 == 5 ? renderBlockRedstoneWire(var1, var2, var3, var4) : var5 == 8 ? renderBlockLadder(var1, var2, var3, var4) : var5 == 7 ? renderBlockDoor(var1, var2, var3, var4) : var5 == 9 ? renderBlockMinecartTrack((BlockRail)var1, var2, var3, var4) : var5 == 10 ? renderBlockStairs(var1, var2, var3, var4) : var5 == 11 ? renderBlockFence(var1, var2, var3, var4) : var5 == 12 ? renderBlockLever(var1, var2, var3, var4) : var5 == 14 ? renderBlockBed(var1, var2, var3, var4) : var5 == 15 ? renderBlockRepeater(var1, var2, var3, var4) : var5 == 16 ? func_31074_b(var1, var2, var3, var4, false) : var5 == 17 ? func_31080_c(var1, var2, var3, var4, true) : false;
+            int type = block.getRenderType();
+            block.updateBoundingBox(blockAccess, x, y, z);
+
+            return type switch
+            {
+                0 => renderStandardBlock(block, x, y, z),
+                1 => renderBlockReed(block, x, y, z),
+                2 => renderBlockTorch(block, x, y, z),
+                3 => renderBlockFire(block, x, y, z),
+                4 => renderBlockFluids(block, x, y, z),
+                5 => renderBlockRedstoneWire(block, x, y, z),
+                6 => renderBlockCrops(block, x, y, z),
+                7 => renderBlockDoor(block, x, y, z),
+                8 => renderBlockLadder(block, x, y, z),
+                9 => renderBlockMinecartTrack((BlockRail)block, x, y, z),
+                10 => renderBlockStairs(block, x, y, z),
+                11 => renderBlockFence(block, x, y, z),
+                12 => renderBlockLever(block, x, y, z),
+                13 => renderBlockCactus(block, x, y, z),
+                14 => renderBlockBed(block, x, y, z),
+                15 => renderBlockRepeater(block, x, y, z),
+                16 => func_31074_b(block, x, y, z, false),
+                17 => func_31080_c(block, x, y, z, true),
+                _ => false
+            };
         }
 
         private bool renderBlockBed(Block var1, int var2, int var3, int var4)

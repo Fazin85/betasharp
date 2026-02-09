@@ -136,7 +136,7 @@ namespace betareborn.Client.Rendering.Core
         private double zOffset;
         private int normal;
         public static readonly Tessellator instance = new(2097152);
-        private bool isDrawing = false;
+        public bool IsDrawing { get; private set; } = false;
         private readonly IntBuffer vertexBuffers;
         private int vboIndex = 0;
         private readonly int vboCount = 10;
@@ -166,7 +166,7 @@ namespace betareborn.Client.Rendering.Core
 
         public void startCapture(TesselatorCaptureVertexFormat format)
         {
-            if (format == TesselatorCaptureVertexFormat.Chunk && isDrawing)
+            if (format == TesselatorCaptureVertexFormat.Chunk && IsDrawing)
             {
                 throw new IllegalStateException("Chunk vertex format is only supported in capture mode!");
             }
@@ -237,13 +237,13 @@ namespace betareborn.Client.Rendering.Core
 
         public unsafe void draw()
         {
-            if (!isDrawing)
+            if (!IsDrawing)
             {
                 throw new IllegalStateException("Not tesselating!");
             }
             else
             {
-                isDrawing = false;
+                IsDrawing = false;
 
                 if (isCaptureMode)
                 {
@@ -321,10 +321,7 @@ namespace betareborn.Client.Rendering.Core
         private void reset()
         {
             vertexCount = 0;
-            if (byteBuffer != null)
-            {
-                byteBuffer.clear();
-            }
+            byteBuffer?.clear();
             rawBufferIndex = 0;
             addedVertices = 0;
         }
@@ -336,13 +333,13 @@ namespace betareborn.Client.Rendering.Core
 
         public void startDrawing(int var1)
         {
-            if (isDrawing)
+            if (IsDrawing)
             {
                 throw new IllegalStateException("Already tesselating!");
             }
             else
             {
-                isDrawing = true;
+                IsDrawing = true;
                 reset();
                 drawMode = var1;
                 hasNormals = false;
@@ -551,7 +548,7 @@ namespace betareborn.Client.Rendering.Core
                 if (vertexCount % 4 == 0 && rawBufferIndex >= bufferSize - 32)
                 {
                     draw();
-                    isDrawing = true;
+                    IsDrawing = true;
                 }
             }
         }
@@ -616,7 +613,7 @@ namespace betareborn.Client.Rendering.Core
 
         public void setNormal(float var1, float var2, float var3)
         {
-            if (!isDrawing)
+            if (!IsDrawing)
             {
                 java.lang.System.@out.println("But..");
             }

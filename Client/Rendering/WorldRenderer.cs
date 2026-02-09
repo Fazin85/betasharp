@@ -18,7 +18,7 @@ namespace betareborn.Client.Rendering
     public class WorldRenderer : IWorldAccess
     {
         public List<BlockEntity> tileEntities = [];
-        private World worldObj;
+        private World world;
         private readonly TextureManager renderEngine;
         private readonly Minecraft mc;
         private BlockRenderer globalRenderBlocks;
@@ -53,7 +53,7 @@ namespace betareborn.Client.Rendering
             int var7 = 256 / var6 + 2;
             float var5 = 16.0F;
 
-            chunkRenderer = new(gameInstance.world, 2);
+            chunkRenderer = new(gameInstance.world);
 
             int var8;
             int var9;
@@ -144,10 +144,10 @@ namespace betareborn.Client.Rendering
 
         public void changeWorld(World world)
         {
-            worldObj?.removeWorldAccess(this);
+            this.world?.removeWorldAccess(this);
 
             EntityRenderDispatcher.instance.func_852_a(world);
-            worldObj = world;
+            this.world = world;
             globalRenderBlocks = new BlockRenderer(world);
             if (world != null)
             {
@@ -176,7 +176,7 @@ namespace betareborn.Client.Rendering
             renderDistance = mc.options.renderDistance;
 
             chunkRenderer?.Dispose();
-            chunkRenderer = new(worldObj, 2);
+            chunkRenderer = new(world);
 
             tileEntities.Clear();
 
@@ -202,8 +202,8 @@ namespace betareborn.Client.Rendering
             }
             else
             {
-                BlockEntityRenderer.instance.cacheActiveRenderInfo(worldObj, renderEngine, mc.fontRenderer, mc.camera, var3);
-                EntityRenderDispatcher.instance.cacheActiveRenderInfo(worldObj, renderEngine, mc.fontRenderer, mc.camera, mc.options, var3);
+                BlockEntityRenderer.instance.cacheActiveRenderInfo(world, renderEngine, mc.fontRenderer, mc.camera, var3);
+                EntityRenderDispatcher.instance.cacheActiveRenderInfo(world, renderEngine, mc.fontRenderer, mc.camera, mc.options, var3);
                 countEntitiesTotal = 0;
                 countEntitiesRendered = 0;
                 countEntitiesHidden = 0;
@@ -214,14 +214,14 @@ namespace betareborn.Client.Rendering
                 BlockEntityRenderer.staticPlayerX = var4.lastTickX + (var4.x - var4.lastTickX) * (double)var3;
                 BlockEntityRenderer.staticPlayerY = var4.lastTickY + (var4.y - var4.lastTickY) * (double)var3;
                 BlockEntityRenderer.staticPlayerZ = var4.lastTickZ + (var4.z - var4.lastTickZ) * (double)var3;
-                List<Entity> var5 = worldObj.getEntities();
+                List<Entity> var5 = world.getEntities();
                 countEntitiesTotal = var5.Count;
 
                 int var6;
                 Entity var7;
-                for (var6 = 0; var6 < worldObj.globalEntities.size(); ++var6)
+                for (var6 = 0; var6 < world.globalEntities.size(); ++var6)
                 {
-                    var7 = (Entity)worldObj.globalEntities.get(var6);
+                    var7 = (Entity)world.globalEntities.get(var6);
                     ++countEntitiesRendered;
                     if (var7.shouldRender(var1))
                     {
@@ -245,7 +245,7 @@ namespace betareborn.Client.Rendering
                             var8 = 127;
                         }
 
-                        if (worldObj.isPosLoaded(MathHelper.floor_double(var7.x), var8, MathHelper.floor_double(var7.z)))
+                        if (world.isPosLoaded(MathHelper.floor_double(var7.x), var8, MathHelper.floor_double(var7.z)))
                         {
                             ++countEntitiesRendered;
                             EntityRenderDispatcher.instance.renderEntity(var7, var3);
@@ -281,7 +281,7 @@ namespace betareborn.Client.Rendering
 
             if (pass == 0)
             {
-                chunkRenderer.Render(cam, new(var33, var7, var9), renderDistance, worldObj.getTime(), (float)var3, mc.options.environmentAnimation);
+                chunkRenderer.Render(cam, new(var33, var7, var9), renderDistance, world.getTime(), (float)var3, mc.options.environmentAnimation);
             }
             else
             {
@@ -301,7 +301,7 @@ namespace betareborn.Client.Rendering
             if (!mc.world.dimension.isNether)
             {
                 GLManager.GL.Disable(GLEnum.Texture2D);
-                Vector3D<double> var2 = worldObj.getSkyColor(mc.camera, var1);
+                Vector3D<double> var2 = world.getSkyColor(mc.camera, var1);
                 float var3 = (float)var2.X;
                 float var4 = (float)var2.Y;
                 float var5 = (float)var2.Z;
@@ -319,7 +319,7 @@ namespace betareborn.Client.Rendering
                 GLManager.GL.Enable(GLEnum.Blend);
                 GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
                 Lighting.turnOff();
-                float[] var18 = worldObj.dimension.getBackgroundColor(worldObj.getTime(var1), var1);
+                float[] var18 = world.dimension.getBackgroundColor(world.getTime(var1), var1);
                 float var9;
                 float var10;
                 float var11;
@@ -330,7 +330,7 @@ namespace betareborn.Client.Rendering
                     GLManager.GL.ShadeModel(GLEnum.Smooth);
                     GLManager.GL.PushMatrix();
                     GLManager.GL.Rotate(90.0F, 1.0F, 0.0F, 0.0F);
-                    var8 = worldObj.getTime(var1);
+                    var8 = world.getTime(var1);
                     GLManager.GL.Rotate(var8 > 0.5F ? 180.0F : 0.0F, 0.0F, 0.0F, 1.0F);
                     var9 = var18[0];
                     var10 = var18[1];
@@ -359,14 +359,14 @@ namespace betareborn.Client.Rendering
                 GLManager.GL.Enable(GLEnum.Texture2D);
                 GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.One);
                 GLManager.GL.PushMatrix();
-                var7 = 1.0F - worldObj.getRainGradient(var1);
+                var7 = 1.0F - world.getRainGradient(var1);
                 var8 = 0.0F;
                 var9 = 0.0F;
                 var10 = 0.0F;
                 GLManager.GL.Color4(1.0F, 1.0F, 1.0F, var7);
                 GLManager.GL.Translate(var8, var9, var10);
                 GLManager.GL.Rotate(0.0F, 0.0F, 0.0F, 1.0F);
-                GLManager.GL.Rotate(worldObj.getTime(var1) * 360.0F, 1.0F, 0.0F, 0.0F);
+                GLManager.GL.Rotate(world.getTime(var1) * 360.0F, 1.0F, 0.0F, 0.0F);
                 var11 = 30.0F;
                 GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)renderEngine.getTextureId("/terrain/sun.png"));
                 var17.startDrawingQuads();
@@ -384,7 +384,7 @@ namespace betareborn.Client.Rendering
                 var17.addVertexWithUV((double)-var11, -100.0D, (double)-var11, 1.0D, 0.0D);
                 var17.draw();
                 GLManager.GL.Disable(GLEnum.Texture2D);
-                var12 = worldObj.calcualteSkyLightIntensity(var1) * var7;
+                var12 = world.calcualteSkyLightIntensity(var1) * var7;
                 if (var12 > 0.0F)
                 {
                     GLManager.GL.Color4(var12, var12, var12, var12);
@@ -396,7 +396,7 @@ namespace betareborn.Client.Rendering
                 GLManager.GL.Enable(GLEnum.AlphaTest);
                 GLManager.GL.Enable(GLEnum.Fog);
                 GLManager.GL.PopMatrix();
-                if (worldObj.dimension.hasGround())
+                if (world.dimension.hasGround())
                 {
                     GLManager.GL.Color3(var3 * 0.2F + 0.04F, var4 * 0.2F + 0.04F, var5 * 0.6F + 0.1F);
                 }
@@ -429,7 +429,7 @@ namespace betareborn.Client.Rendering
             float var5 = 4.0F;
             double var6 = (mc.camera.prevX + (mc.camera.x - mc.camera.prevX) * (double)var1 + (double)((cloudOffsetX + var1) * 0.03F)) / (double)var4;
             double var8 = (mc.camera.prevZ + (mc.camera.z - mc.camera.prevZ) * (double)var1) / (double)var4 + (double)0.33F;
-            float var10 = worldObj.dimension.getCloudHeight() - var2 + 0.33F;
+            float var10 = world.dimension.getCloudHeight() - var2 + 0.33F;
             int var11 = MathHelper.floor_double(var6 / 2048.0D);
             int var12 = MathHelper.floor_double(var8 / 2048.0D);
             var6 -= var11 * 2048;
@@ -437,7 +437,7 @@ namespace betareborn.Client.Rendering
             GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)renderEngine.getTextureId("/environment/clouds.png"));
             GLManager.GL.Enable(GLEnum.Blend);
             GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
-            Vector3D<double> var13 = worldObj.getCloudColor(var1);
+            Vector3D<double> var13 = world.getCloudColor(var1);
             float var14 = (float)var13.X;
             float var15 = (float)var13.Y;
             float var16 = (float)var13.Z;
@@ -579,7 +579,7 @@ namespace betareborn.Client.Rendering
                     GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var7);
                     GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 0.5F);
                     GLManager.GL.PushMatrix();
-                    var8 = worldObj.getBlockId(var2.blockX, var2.blockY, var2.blockZ);
+                    var8 = world.getBlockId(var2.blockX, var2.blockY, var2.blockZ);
                     Block var9 = var8 > 0 ? Block.BLOCKS[var8] : null;
                     GLManager.GL.Disable(GLEnum.AlphaTest);
                     GLManager.GL.PolygonOffset(-3.0F, -3.0F);
@@ -663,14 +663,14 @@ namespace betareborn.Client.Rendering
                 GLManager.GL.Disable(GLEnum.Texture2D);
                 GLManager.GL.DepthMask(false);
                 float var6 = 0.002F;
-                int var7 = worldObj.getBlockId(var2.blockX, var2.blockY, var2.blockZ);
+                int var7 = world.getBlockId(var2.blockX, var2.blockY, var2.blockZ);
                 if (var7 > 0)
                 {
-                    Block.BLOCKS[var7].updateBoundingBox(worldObj, var2.blockX, var2.blockY, var2.blockZ);
+                    Block.BLOCKS[var7].updateBoundingBox(world, var2.blockX, var2.blockY, var2.blockZ);
                     double var8 = var1.lastTickX + (var1.x - var1.lastTickX) * (double)var5;
                     double var10 = var1.lastTickY + (var1.y - var1.lastTickY) * (double)var5;
                     double var12 = var1.lastTickZ + (var1.z - var1.lastTickZ) * (double)var5;
-                    drawOutlinedBoundingBox(Block.BLOCKS[var7].getBoundingBox(worldObj, var2.blockX, var2.blockY, var2.blockZ).expand((double)var6, (double)var6, (double)var6).offset(-var8, -var10, -var12));
+                    drawOutlinedBoundingBox(Block.BLOCKS[var7].getBoundingBox(world, var2.blockX, var2.blockY, var2.blockZ).expand((double)var6, (double)var6, (double)var6).offset(-var8, -var10, -var12));
                 }
 
                 GLManager.GL.DepthMask(true);
@@ -777,63 +777,63 @@ namespace betareborn.Client.Rendering
                 {
                     if (var1.Equals("bubble"))
                     {
-                        mc.particleManager.addEffect(new EntityBubbleFX(worldObj, var2, var4, var6, var8, var10, var12));
+                        mc.particleManager.addEffect(new EntityBubbleFX(world, var2, var4, var6, var8, var10, var12));
                     }
                     else if (var1.Equals("smoke"))
                     {
-                        mc.particleManager.addEffect(new EntitySmokeFX(worldObj, var2, var4, var6, var8, var10, var12));
+                        mc.particleManager.addEffect(new EntitySmokeFX(world, var2, var4, var6, var8, var10, var12));
                     }
                     else if (var1.Equals("note"))
                     {
-                        mc.particleManager.addEffect(new EntityNoteFX(worldObj, var2, var4, var6, var8, var10, var12));
+                        mc.particleManager.addEffect(new EntityNoteFX(world, var2, var4, var6, var8, var10, var12));
                     }
                     else if (var1.Equals("portal"))
                     {
-                        mc.particleManager.addEffect(new EntityPortalFX(worldObj, var2, var4, var6, var8, var10, var12));
+                        mc.particleManager.addEffect(new EntityPortalFX(world, var2, var4, var6, var8, var10, var12));
                     }
                     else if (var1.Equals("explode"))
                     {
-                        mc.particleManager.addEffect(new EntityExplodeFX(worldObj, var2, var4, var6, var8, var10, var12));
+                        mc.particleManager.addEffect(new EntityExplodeFX(world, var2, var4, var6, var8, var10, var12));
                     }
                     else if (var1.Equals("flame"))
                     {
-                        mc.particleManager.addEffect(new EntityFlameFX(worldObj, var2, var4, var6, var8, var10, var12));
+                        mc.particleManager.addEffect(new EntityFlameFX(world, var2, var4, var6, var8, var10, var12));
                     }
                     else if (var1.Equals("lava"))
                     {
-                        mc.particleManager.addEffect(new EntityLavaFX(worldObj, var2, var4, var6));
+                        mc.particleManager.addEffect(new EntityLavaFX(world, var2, var4, var6));
                     }
                     else if (var1.Equals("footstep"))
                     {
-                        mc.particleManager.addEffect(new EntityFootStepFX(renderEngine, worldObj, var2, var4, var6));
+                        mc.particleManager.addEffect(new EntityFootStepFX(renderEngine, world, var2, var4, var6));
                     }
                     else if (var1.Equals("splash"))
                     {
-                        mc.particleManager.addEffect(new EntitySplashFX(worldObj, var2, var4, var6, var8, var10, var12));
+                        mc.particleManager.addEffect(new EntitySplashFX(world, var2, var4, var6, var8, var10, var12));
                     }
                     else if (var1.Equals("largesmoke"))
                     {
-                        mc.particleManager.addEffect(new EntitySmokeFX(worldObj, var2, var4, var6, var8, var10, var12, 2.5F));
+                        mc.particleManager.addEffect(new EntitySmokeFX(world, var2, var4, var6, var8, var10, var12, 2.5F));
                     }
                     else if (var1.Equals("reddust"))
                     {
-                        mc.particleManager.addEffect(new EntityReddustFX(worldObj, var2, var4, var6, (float)var8, (float)var10, (float)var12));
+                        mc.particleManager.addEffect(new EntityReddustFX(world, var2, var4, var6, (float)var8, (float)var10, (float)var12));
                     }
                     else if (var1.Equals("snowballpoof"))
                     {
-                        mc.particleManager.addEffect(new EntitySlimeFX(worldObj, var2, var4, var6, Item.SNOWBALL));
+                        mc.particleManager.addEffect(new EntitySlimeFX(world, var2, var4, var6, Item.SNOWBALL));
                     }
                     else if (var1.Equals("snowshovel"))
                     {
-                        mc.particleManager.addEffect(new EntitySnowShovelFX(worldObj, var2, var4, var6, var8, var10, var12));
+                        mc.particleManager.addEffect(new EntitySnowShovelFX(world, var2, var4, var6, var8, var10, var12));
                     }
                     else if (var1.Equals("slime"))
                     {
-                        mc.particleManager.addEffect(new EntitySlimeFX(worldObj, var2, var4, var6, Item.SLIMEBALL));
+                        mc.particleManager.addEffect(new EntitySlimeFX(world, var2, var4, var6, Item.SLIMEBALL));
                     }
                     else if (var1.Equals("heart"))
                     {
-                        mc.particleManager.addEffect(new EntityHeartFX(worldObj, var2, var4, var6, var8, var10, var12));
+                        mc.particleManager.addEffect(new EntityHeartFX(world, var2, var4, var6, var8, var10, var12));
                     }
 
                 }
@@ -882,40 +882,40 @@ namespace betareborn.Client.Rendering
 
         public void worldEvent(EntityPlayer var1, int var2, int var3, int var4, int var5, int var6)
         {
-            java.util.Random var7 = worldObj.random;
+            java.util.Random var7 = world.random;
             int var16;
             switch (var2)
             {
                 case 1000:
-                    worldObj.playSound(var3, var4, var5, "random.click", 1.0F, 1.0F);
+                    world.playSound(var3, var4, var5, "random.click", 1.0F, 1.0F);
                     break;
                 case 1001:
-                    worldObj.playSound(var3, var4, var5, "random.click", 1.0F, 1.2F);
+                    world.playSound(var3, var4, var5, "random.click", 1.0F, 1.2F);
                     break;
                 case 1002:
-                    worldObj.playSound(var3, var4, var5, "random.bow", 1.0F, 1.2F);
+                    world.playSound(var3, var4, var5, "random.bow", 1.0F, 1.2F);
                     break;
                 case 1003:
                     if (java.lang.Math.random() < 0.5D)
                     {
-                        worldObj.playSound(var3 + 0.5D, var4 + 0.5D, var5 + 0.5D, "random.door_open", 1.0F, worldObj.random.nextFloat() * 0.1F + 0.9F);
+                        world.playSound(var3 + 0.5D, var4 + 0.5D, var5 + 0.5D, "random.door_open", 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
                     }
                     else
                     {
-                        worldObj.playSound(var3 + 0.5D, var4 + 0.5D, var5 + 0.5D, "random.door_close", 1.0F, worldObj.random.nextFloat() * 0.1F + 0.9F);
+                        world.playSound(var3 + 0.5D, var4 + 0.5D, var5 + 0.5D, "random.door_close", 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
                     }
                     break;
                 case 1004:
-                    worldObj.playSound((double)(var3 + 0.5F), (double)(var4 + 0.5F), (double)(var5 + 0.5F), "random.fizz", 0.5F, 2.6F + (var7.nextFloat() - var7.nextFloat()) * 0.8F);
+                    world.playSound((double)(var3 + 0.5F), (double)(var4 + 0.5F), (double)(var5 + 0.5F), "random.fizz", 0.5F, 2.6F + (var7.nextFloat() - var7.nextFloat()) * 0.8F);
                     break;
                 case 1005:
                     if (Item.ITEMS[var6] is ItemRecord)
                     {
-                        worldObj.playStreaming(((ItemRecord)Item.ITEMS[var6]).recordName, var3, var4, var5);
+                        world.playStreaming(((ItemRecord)Item.ITEMS[var6]).recordName, var3, var4, var5);
                     }
                     else
                     {
-                        worldObj.playStreaming(null, var3, var4, var5);
+                        world.playStreaming(null, var3, var4, var5);
                     }
                     break;
                 case 2000:
