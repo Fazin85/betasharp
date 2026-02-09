@@ -9,6 +9,7 @@ using betareborn.Util.Maths;
 using java.awt;
 using java.util;
 using Silk.NET.OpenGL.Legacy;
+using System.Diagnostics;
 
 namespace betareborn.Client.Guis
 {
@@ -27,9 +28,9 @@ namespace betareborn.Client.Guis
         public float damageGuiPartialTime;
         float prevVignetteBrightness = 1.0F;
 
-        public GuiIngame(Minecraft var1)
+        public GuiIngame(Minecraft gameInstance)
         {
-            mc = var1;
+            mc = gameInstance;
         }
 
         public void renderGameOverlay(float var1, bool var2, int var3, int var4)
@@ -196,7 +197,7 @@ namespace betareborn.Client.Guis
                 GLManager.GL.Enable(GLEnum.DepthTest);
             }
 
-            string var23;
+            string line;
             if (mc.options.showDebugInfo)
             {
                 GLManager.GL.PushMatrix();
@@ -209,14 +210,13 @@ namespace betareborn.Client.Guis
                 var8.drawStringWithShadow(mc.func_6262_n(), 2, 22, 16777215);
                 var8.drawStringWithShadow(mc.func_6245_o(), 2, 32, 16777215);
                 var8.drawStringWithShadow(mc.func_21002_o(), 2, 42, 16777215);
-                long var24 = java.lang.Runtime.getRuntime().maxMemory();
-                long var29 = java.lang.Runtime.getRuntime().totalMemory();
-                long var30 = java.lang.Runtime.getRuntime().freeMemory();
-                long var21 = var29 - var30;
-                var23 = "Used memory: " + var21 * 100L / var24 + "% (" + var21 / 1024L / 1024L + "MB) of " + var24 / 1024L / 1024L + "MB";
-                drawString(var8, var23, var6 - var8.getStringWidth(var23) - 2, 2, 14737632);
-                var23 = "Allocated memory: " + var29 * 100L / var24 + "% (" + var29 / 1024L / 1024L + "MB)";
-                drawString(var8, var23, var6 - var8.getStringWidth(var23) - 2, 12, 14737632);
+                long maxMemory = GC.GetGCMemoryInfo().TotalAvailableMemoryBytes;
+                long usedMemory = Process.GetCurrentProcess().WorkingSet64;
+                long usedHeapMemory = GC.GetTotalMemory(false);
+                line = "Used memory: " + usedMemory * 100L / maxMemory + "% (" + usedMemory / 1024L / 1024L + "MB) of " + maxMemory / 1024L / 1024L + "MB";
+                drawString(var8, line, var6 - var8.getStringWidth(line) - 2, 2, 14737632);
+                line = "Used heap memory: " + usedHeapMemory / 1024L / 1024L + "MB";
+                drawString(var8, line, var6 - var8.getStringWidth(line) - 2, 12, 14737632);
                 drawString(var8, "x: " + mc.player.x, 2, 64, 14737632);
                 drawString(var8, "y: " + mc.player.y, 2, 72, 14737632);
                 drawString(var8, "z: " + mc.player.z, 2, 80, 14737632);
@@ -293,10 +293,10 @@ namespace betareborn.Client.Guis
                     {
                         byte var33 = 2;
                         int var22 = -var17 * 9;
-                        var23 = ((ChatLine)chatMessageList.get(var17)).message;
+                        line = ((ChatLine)chatMessageList.get(var17)).message;
                         drawRect(var33, var22 - 1, var33 + 320, var22 + 8, var20 / 2 << 24);
                         GLManager.GL.Enable(GLEnum.Blend);
-                        var8.drawStringWithShadow(var23, var33, var22, 16777215 + (var20 << 24));
+                        var8.drawStringWithShadow(line, var33, var22, 16777215 + (var20 << 24));
                     }
                 }
             }
