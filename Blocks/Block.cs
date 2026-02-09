@@ -288,10 +288,10 @@ namespace betareborn.Blocks
 
         public virtual void addIntersectingBoundingBox(World world, int x, int y, int z, Box box, List<Box> boxes)
         {
-            Box? var7 = getCollisionShape(world, x, y, z);
-            if (var7 != null && box.intersects(var7.Value))
+            Box? collisionBox = getCollisionShape(world, x, y, z);
+            if (collisionBox != null && box.intersects(collisionBox.Value))
             {
-                boxes.Add(var7.Value);
+                boxes.Add(collisionBox.Value);
             }
         }
 
@@ -368,16 +368,16 @@ namespace betareborn.Blocks
         {
             if (!world.isRemote)
             {
-                int var7 = getDroppedItemCount(world.random);
+                int dropCount = getDroppedItemCount(world.random);
 
-                for (int var8 = 0; var8 < var7; ++var8)
+                for (int attempt = 0; attempt < dropCount; ++attempt)
                 {
                     if (world.random.nextFloat() <= luck)
                     {
-                        int var9 = getDroppedItemId(meta, world.random);
-                        if (var9 > 0)
+                        int itemId = getDroppedItemId(meta, world.random);
+                        if (itemId > 0)
                         {
-                            dropStack(world, x, y, z, new ItemStack(var9, 1, getDroppedItemMeta(meta)));
+                            dropStack(world, x, y, z, new ItemStack(itemId, 1, getDroppedItemMeta(meta)));
                         }
                     }
                 }
@@ -389,13 +389,13 @@ namespace betareborn.Blocks
         {
             if (!world.isRemote)
             {
-                float var6 = 0.7F;
-                double var7 = (double)(world.random.nextFloat() * var6) + (double)(1.0F - var6) * 0.5D;
-                double var9 = (double)(world.random.nextFloat() * var6) + (double)(1.0F - var6) * 0.5D;
-                double var11 = (double)(world.random.nextFloat() * var6) + (double)(1.0F - var6) * 0.5D;
-                EntityItem var13 = new EntityItem(world, (double)x + var7, (double)y + var9, (double)z + var11, itemStack);
-                var13.delayBeforeCanPickup = 10;
-                world.spawnEntity(var13);
+                float spreadFactor = 0.7F;
+                double offsetX = (double)(world.random.nextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
+                double offsetY = (double)(world.random.nextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
+                double offsetZ = (double)(world.random.nextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
+                EntityItem droppedItem = new EntityItem(world, (double)x + offsetX, (double)y + offsetY, (double)z + offsetZ, itemStack);
+                droppedItem.delayBeforeCanPickup = 10;
+                world.spawnEntity(droppedItem);
             }
         }
 
@@ -414,111 +414,111 @@ namespace betareborn.Blocks
             updateBoundingBox(world, x, y, z);
             startPos = startPos.addVector((double)(-x), (double)(-y), (double)(-z));
             endPos = endPos.addVector((double)(-x), (double)(-y), (double)(-z));
-            Vec3D var7 = startPos.getIntermediateWithXValue(endPos, minX);
-            Vec3D var8 = startPos.getIntermediateWithXValue(endPos, maxX);
-            Vec3D var9 = startPos.getIntermediateWithYValue(endPos, minY);
-            Vec3D var10 = startPos.getIntermediateWithYValue(endPos, maxY);
-            Vec3D var11 = startPos.getIntermediateWithZValue(endPos, minZ);
-            Vec3D var12 = startPos.getIntermediateWithZValue(endPos, maxZ);
-            if (!isVecInsideYZBounds(var7))
+            Vec3D hitMinX = startPos.getIntermediateWithXValue(endPos, minX);
+            Vec3D hitMaxX = startPos.getIntermediateWithXValue(endPos, maxX);
+            Vec3D hitMinY = startPos.getIntermediateWithYValue(endPos, minY);
+            Vec3D hitMaxY = startPos.getIntermediateWithYValue(endPos, maxY);
+            Vec3D hitMinZ = startPos.getIntermediateWithZValue(endPos, minZ);
+            Vec3D hitMaxZ = startPos.getIntermediateWithZValue(endPos, maxZ);
+            if (!isVecInsideYZBounds(hitMinX))
             {
-                var7 = null;
+                hitMinX = null;
             }
 
-            if (!isVecInsideYZBounds(var8))
+            if (!isVecInsideYZBounds(hitMaxX))
             {
-                var8 = null;
+                hitMaxX = null;
             }
 
-            if (!isVecInsideXZBounds(var9))
+            if (!isVecInsideXZBounds(hitMinY))
             {
-                var9 = null;
+                hitMinY = null;
             }
 
-            if (!isVecInsideXZBounds(var10))
+            if (!isVecInsideXZBounds(hitMaxY))
             {
-                var10 = null;
+                hitMaxY = null;
             }
 
-            if (!isVecInsideXYBounds(var11))
+            if (!isVecInsideXYBounds(hitMinZ))
             {
-                var11 = null;
+                hitMinZ = null;
             }
 
-            if (!isVecInsideXYBounds(var12))
+            if (!isVecInsideXYBounds(hitMaxZ))
             {
-                var12 = null;
+                hitMaxZ = null;
             }
 
-            Vec3D var13 = null;
-            if (var7 != null && (var13 == null || startPos.distanceTo(var7) < startPos.distanceTo(var13)))
+            Vec3D hitPos = null;
+            if (hitMinX != null && (hitPos == null || startPos.distanceTo(hitMinX) < startPos.distanceTo(hitPos)))
             {
-                var13 = var7;
+                hitPos = hitMinX;
             }
 
-            if (var8 != null && (var13 == null || startPos.distanceTo(var8) < startPos.distanceTo(var13)))
+            if (hitMaxX != null && (hitPos == null || startPos.distanceTo(hitMaxX) < startPos.distanceTo(hitPos)))
             {
-                var13 = var8;
+                hitPos = hitMaxX;
             }
 
-            if (var9 != null && (var13 == null || startPos.distanceTo(var9) < startPos.distanceTo(var13)))
+            if (hitMinY != null && (hitPos == null || startPos.distanceTo(hitMinY) < startPos.distanceTo(hitPos)))
             {
-                var13 = var9;
+                hitPos = hitMinY;
             }
 
-            if (var10 != null && (var13 == null || startPos.distanceTo(var10) < startPos.distanceTo(var13)))
+            if (hitMaxY != null && (hitPos == null || startPos.distanceTo(hitMaxY) < startPos.distanceTo(hitPos)))
             {
-                var13 = var10;
+                hitPos = hitMaxY;
             }
 
-            if (var11 != null && (var13 == null || startPos.distanceTo(var11) < startPos.distanceTo(var13)))
+            if (hitMinZ != null && (hitPos == null || startPos.distanceTo(hitMinZ) < startPos.distanceTo(hitPos)))
             {
-                var13 = var11;
+                hitPos = hitMinZ;
             }
 
-            if (var12 != null && (var13 == null || startPos.distanceTo(var12) < startPos.distanceTo(var13)))
+            if (hitMaxZ != null && (hitPos == null || startPos.distanceTo(hitMaxZ) < startPos.distanceTo(hitPos)))
             {
-                var13 = var12;
+                hitPos = hitMaxZ;
             }
 
-            if (var13 == null)
+            if (hitPos == null)
             {
                 return null;
             }
             else
             {
-                int var14 = -1;
-                if (var13 == var7)
+                int side = -1;
+                if (hitPos == hitMinX)
                 {
-                    var14 = 4;
+                    side = 4;
                 }
 
-                if (var13 == var8)
+                if (hitPos == hitMaxX)
                 {
-                    var14 = 5;
+                    side = 5;
                 }
 
-                if (var13 == var9)
+                if (hitPos == hitMinY)
                 {
-                    var14 = 0;
+                    side = 0;
                 }
 
-                if (var13 == var10)
+                if (hitPos == hitMaxY)
                 {
-                    var14 = 1;
+                    side = 1;
                 }
 
-                if (var13 == var11)
+                if (hitPos == hitMinZ)
                 {
-                    var14 = 2;
+                    side = 2;
                 }
 
-                if (var13 == var12)
+                if (hitPos == hitMaxZ)
                 {
-                    var14 = 3;
+                    side = 3;
                 }
 
-                return new HitResult(x, y, z, var14, var13.addVector((double)x, (double)y, (double)z));
+                return new HitResult(x, y, z, side, hitPos.addVector((double)x, (double)y, (double)z));
             }
         }
 
@@ -553,8 +553,8 @@ namespace betareborn.Blocks
 
         public virtual bool canPlaceAt(World world, int x, int y, int z)
         {
-            int var5 = world.getBlockId(x, y, z);
-            return var5 == 0 || BLOCKS[var5].material.isReplaceable();
+            int blockId = world.getBlockId(x, y, z);
+            return blockId == 0 || BLOCKS[blockId].material.isReplaceable();
         }
 
         public virtual bool onUse(World world, int x, int y, int z, EntityPlayer player)
@@ -630,9 +630,9 @@ namespace betareborn.Blocks
         {
         }
 
-        public Block setBlockName(string var1)
+        public Block setBlockName(string name)
         {
-            blockName = "tile." + var1;
+            blockName = "tile." + name;
             return this;
         }
 
@@ -676,12 +676,12 @@ namespace betareborn.Blocks
             Item.ITEMS[PISTON.id] = new ItemPiston(PISTON.id - 256);
             Item.ITEMS[STICKY_PISTON.id] = new ItemPiston(STICKY_PISTON.id - 256);
 
-            for (int var0 = 0; var0 < 256; ++var0)
+            for (int blockId = 0; blockId < 256; ++blockId)
             {
-                if (BLOCKS[var0] != null && Item.ITEMS[var0] == null)
+                if (BLOCKS[blockId] != null && Item.ITEMS[blockId] == null)
                 {
-                    Item.ITEMS[var0] = new ItemBlock(var0 - 256);
-                    BLOCKS[var0].init();
+                    Item.ITEMS[blockId] = new ItemBlock(blockId - 256);
+                    BLOCKS[blockId].init();
                 }
             }
 
