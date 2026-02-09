@@ -34,10 +34,10 @@ namespace betareborn.Client.Rendering
         public ChunkRenderer chunkRenderer;
         public float damagePartialTime;
 
-        public WorldRenderer(Minecraft var1, TextureManager var2)
+        public WorldRenderer(Minecraft gameInstance, TextureManager textureManager)
         {
-            mc = var1;
-            renderEngine = var2;
+            mc = gameInstance;
+            renderEngine = textureManager;
             byte var3 = 64;
 
             starGLCallList = GLAllocation.generateDisplayLists(3);
@@ -53,7 +53,7 @@ namespace betareborn.Client.Rendering
             int var7 = 256 / var6 + 2;
             float var5 = 16.0F;
 
-            chunkRenderer = new(var1.world, 2);
+            chunkRenderer = new(gameInstance.world, 2);
 
             int var8;
             int var9;
@@ -142,16 +142,16 @@ namespace betareborn.Client.Rendering
             var2.draw();
         }
 
-        public void changeWorld(World var1)
+        public void changeWorld(World world)
         {
             worldObj?.removeWorldAccess(this);
 
-            EntityRenderDispatcher.instance.func_852_a(var1);
-            worldObj = var1;
-            globalRenderBlocks = new BlockRenderer(var1);
-            if (var1 != null)
+            EntityRenderDispatcher.instance.func_852_a(world);
+            worldObj = world;
+            globalRenderBlocks = new BlockRenderer(world);
+            if (world != null)
             {
-                var1.addWorldAccess(this);
+                world.addWorldAccess(this);
                 loadRenderers();
             }
 
