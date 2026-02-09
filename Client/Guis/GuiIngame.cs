@@ -15,7 +15,7 @@ namespace betareborn.Client.Guis
 {
     public class GuiIngame : Gui
     {
-
+        private readonly GCMonitor GCMonitor;
         private static ItemRenderer itemRenderer = new ItemRenderer();
         private java.util.List chatMessageList = new ArrayList();
         private java.util.Random rand = new();
@@ -31,6 +31,7 @@ namespace betareborn.Client.Guis
         public GuiIngame(Minecraft gameInstance)
         {
             mc = gameInstance;
+            GCMonitor = new GCMonitor();
         }
 
         public void renderGameOverlay(float var1, bool var2, int var3, int var4)
@@ -202,20 +203,15 @@ namespace betareborn.Client.Guis
             {
                 GLManager.GL.PushMatrix();
                 if (Minecraft.hasPaidCheckTime > 0L)
-                {
                     GLManager.GL.Translate(0.0F, 32.0F, 0.0F);
-                }
 
                 var8.drawStringWithShadow("Minecraft Beta 1.7.3 (" + mc.debug + ")", 2, 2, 16777215);
                 var8.drawStringWithShadow(mc.func_6262_n(), 2, 22, 16777215);
                 var8.drawStringWithShadow(mc.func_6245_o(), 2, 32, 16777215);
                 var8.drawStringWithShadow(mc.func_21002_o(), 2, 42, 16777215);
-                long maxMemory = GC.GetGCMemoryInfo().TotalAvailableMemoryBytes;
-                long usedMemory = Process.GetCurrentProcess().WorkingSet64;
-                long usedHeapMemory = GC.GetTotalMemory(false);
-                line = "Used memory: " + usedMemory * 100L / maxMemory + "% (" + usedMemory / 1024L / 1024L + "MB) of " + maxMemory / 1024L / 1024L + "MB";
+                line = "Used memory: " + GCMonitor.UsedMemoryBytes * 100L / GCMonitor.MaxMemoryBytes + "% (" + GCMonitor.UsedMemoryBytes / 1024L / 1024L + "MB) of " + GCMonitor.MaxMemoryBytes / 1024L / 1024L + "MB";
                 drawString(var8, line, var6 - var8.getStringWidth(line) - 2, 2, 14737632);
-                line = "Used heap memory: " + usedHeapMemory / 1024L / 1024L + "MB";
+                line = "Used heap memory: " + GCMonitor.UsedHeapBytes / 1024L / 1024L + "MB";
                 drawString(var8, line, var6 - var8.getStringWidth(line) - 2, 12, 14737632);
                 drawString(var8, "x: " + mc.player.x, 2, 64, 14737632);
                 drawString(var8, "y: " + mc.player.y, 2, 72, 14737632);
