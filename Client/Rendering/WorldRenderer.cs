@@ -93,35 +93,35 @@ namespace betareborn.Client.Rendering
 
         private void renderStars()
         {
-            java.util.Random var1 = new(10842L);
-            Tessellator var2 = Tessellator.instance;
-            var2.startDrawingQuads();
+            Random random = new(10842);
+            var tessellator = Tessellator.instance;
+            tessellator.startDrawingQuads();
 
             for (int var3 = 0; var3 < 1500; ++var3)
             {
-                double var4 = (double)(var1.nextFloat() * 2.0F - 1.0F);
-                double var6 = (double)(var1.nextFloat() * 2.0F - 1.0F);
-                double var8 = (double)(var1.nextFloat() * 2.0F - 1.0F);
-                double var10 = (double)(0.25F + var1.nextFloat() * 0.25F);
+                double var4 = (double)(random.NextDouble() * 2.0 - 1.0);
+                double var6 = (double)(random.NextDouble() * 2.0 - 1.0);
+                double var8 = (double)(random.NextDouble() * 2.0 - 1.0);
+                double var10 = (double)(0.25 + random.NextDouble() * 0.25);
                 double var12 = var4 * var4 + var6 * var6 + var8 * var8;
-                if (var12 < 1.0D && var12 > 0.01D)
+                if (var12 < 1.0 && var12 > 0.01)
                 {
-                    var12 = 1.0D / java.lang.Math.sqrt(var12);
+                    var12 = 1.0 / Math.Sqrt(var12);
                     var4 *= var12;
                     var6 *= var12;
                     var8 *= var12;
-                    double var14 = var4 * 100.0D;
-                    double var16 = var6 * 100.0D;
-                    double var18 = var8 * 100.0D;
-                    double var20 = java.lang.Math.atan2(var4, var8);
-                    double var22 = java.lang.Math.sin(var20);
-                    double var24 = java.lang.Math.cos(var20);
-                    double var26 = java.lang.Math.atan2(java.lang.Math.sqrt(var4 * var4 + var8 * var8), var6);
-                    double var28 = java.lang.Math.sin(var26);
-                    double var30 = java.lang.Math.cos(var26);
-                    double var32 = var1.nextDouble() * java.lang.Math.PI * 2.0D;
-                    double var34 = java.lang.Math.sin(var32);
-                    double var36 = java.lang.Math.cos(var32);
+                    double var14 = var4 * 100.0;
+                    double var16 = var6 * 100.0;
+                    double var18 = var8 * 100.0;
+                    double var20 = Math.Atan2(var4, var8);
+                    double var22 = Math.Sin(var20);
+                    double var24 = Math.Cos(var20);
+                    double var26 = Math.Atan2(Math.Sqrt(var4 * var4 + var8 * var8), var6);
+                    double var28 = Math.Sin(var26);
+                    double var30 = Math.Cos(var26);
+                    double var32 = random.NextDouble() * Math.PI * 2.0;
+                    double var34 = Math.Sin(var32);
+                    double var36 = Math.Cos(var32);
 
                     for (int var38 = 0; var38 < 4; ++var38)
                     {
@@ -134,12 +134,12 @@ namespace betareborn.Client.Rendering
                         double var55 = var39 * var28 - var47 * var30;
                         double var57 = var55 * var22 - var49 * var24;
                         double var61 = var49 * var22 + var55 * var24;
-                        var2.addVertex(var14 + var57, var16 + var53, var18 + var61);
+                        tessellator.addVertex(var14 + var57, var16 + var53, var18 + var61);
                     }
                 }
             }
 
-            var2.draw();
+            tessellator.draw();
         }
 
         public void changeWorld(World world)
