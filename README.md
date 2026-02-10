@@ -1,16 +1,20 @@
 ﻿# BetaSharp
 
+![C#](https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white)
+![.NET](https://img.shields.io/badge/.NET-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
+![Minecraft](https://img.shields.io/badge/Minecraft-Beta%201.7.3-62B47A?style=for-the-badge&logo=minecraft&logoColor=white)
+![Status](https://img.shields.io/badge/Status-In%20Development-yellow?style=for-the-badge)
+
 An enhanced version of Minecraft Beta 1.7.3, ported to C#.
 
 ## Legal Notice
 
-This project is a derivative work based on decompiled Minecraft Beta 1.7.3 code.
+⚠️ **Important:** This project is a derivative work based on decompiled Minecraft Beta 1.7.3 code.
 
-You must own a legitimate copy of Minecraft to use this client.
-Microsoft account authentication is required or you must provide your own legally owned client.jar.
-No game assets are distributed with this project.
-
-We do not support or condone piracy. Please purchase Minecraft from https://www.minecraft.net/.
+- You must own a legitimate copy of Minecraft to use this client.
+- Microsoft account authentication is required or you must provide your own legally owned client.jar.
+- No game assets are distributed with this project.
+- We do not support or condone piracy. Please purchase Minecraft from https://www.minecraft.net/.
 
 ## Contributing
 
@@ -19,15 +23,13 @@ Contributions are welcome, but this is a personal project with no guarantees on 
 ## Coding Style
 
 Use Allman style formatting for braces:
-
-```
+```csharp
 if (...)
 {
-
 }
 ```
 
-References to Minecraft object should be called mc, not theMinecraft, minecraft, or game
+References to Minecraft object should be called `mc`, not `theMinecraft`, `minecraft`, or `game`.
 
 ## License
 
