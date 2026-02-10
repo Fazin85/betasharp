@@ -1,4 +1,5 @@
-﻿using betareborn.Network.Packets.S2CPlay;
+﻿using betareborn.Launcher;
+using betareborn.Network.Packets.S2CPlay;
 using betareborn.Server.Commands;
 using betareborn.Server.Entities;
 using betareborn.Server.Network;
@@ -43,6 +44,22 @@ namespace betareborn.Server
 
         private bool init()
         {
+            if (!JarValidator.ValidateJar("b1.7.3.jar"))
+            {
+                Console.WriteLine("Downloading b1.7.3.jar");
+                var task = MinecraftDownloader.DownloadBeta173Async();
+                task.Wait();
+
+                if (task.Result)
+                {
+                    Console.WriteLine("Successfully downloaded b1.7.3.jar");
+                }
+                else
+                {
+                    Console.WriteLine("Failed to download b1.7.3.jar");
+                }
+            }
+
             commandHandler = new ServerCommandHandler(this);
             ConsoleInputThread var1 = new ConsoleInputThread(this);
             var1.setDaemon(true);
