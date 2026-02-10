@@ -46,7 +46,7 @@ namespace betareborn.Client.Guis
                         string msg = message.Trim();
                         if (msg.Length > 0)
                         {
-                            bool isCommand = mc.lineIsCommand(msg);
+                            bool isCommand = Minecraft.lineIsCommand(msg);
 
                             if (isCommand)
                             {

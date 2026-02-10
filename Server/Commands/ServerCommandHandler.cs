@@ -11,7 +11,7 @@ namespace betareborn.Server.Commands
     public class ServerCommandHandler
     {
         private static Logger logger = Logger.getLogger("Minecraft");
-        private MinecraftServer server;
+        private readonly MinecraftServer server;
 
         public ServerCommandHandler(MinecraftServer server)
         {
@@ -344,7 +344,7 @@ namespace betareborn.Server.Commands
             }
         }
 
-        private void displayHelp(CommandOutput output)
+        private static void displayHelp(CommandOutput output)
         {
             output.sendMessage("To run the server without a gui, start it like this:");
             output.sendMessage("   java -Xmx1024M -Xms1024M -jar minecraft_server.jar nogui");
@@ -376,7 +376,7 @@ namespace betareborn.Server.Commands
             logger.info(var3);
         }
 
-        private int parseInt(string strin, int fallback)
+        private static int parseInt(string strin, int fallback)
         {
             try
             {

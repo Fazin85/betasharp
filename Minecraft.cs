@@ -9,6 +9,7 @@ using betareborn.Client.Rendering;
 using betareborn.Client.Rendering.Core;
 using betareborn.Client.Rendering.Entitys;
 using betareborn.Client.Rendering.Items;
+using betareborn.Client.Resource;
 using betareborn.Client.Resource.Pack;
 using betareborn.Client.Textures;
 using betareborn.Entities;
@@ -16,7 +17,6 @@ using betareborn.Items;
 using betareborn.Launcher;
 using betareborn.Profiling;
 using betareborn.Stats;
-using betareborn.Threading;
 using betareborn.Util.Hit;
 using betareborn.Util.Maths;
 using betareborn.Worlds;
@@ -238,14 +238,8 @@ namespace betareborn
             GLManager.GL.Viewport(0, 0, (uint)displayWidth, (uint)displayHeight);
             particleManager = new ParticleManager(world, textureManager);
 
-            //try
-            //{
-            //    downloadResourcesThread = new ThreadDownloadResources(mcDataDir, this);
-            //    downloadResourcesThread.start();
-            //}
-            //catch (java.lang.Exception var3)
-            //{
-            //}
+            MinecraftResourceDownloader downloader = new(minecraftDir.getAbsolutePath());
+            downloader.DownloadResourcesAsync().Wait();
 
             checkGLError("Post startup");
             ingameGUI = new GuiIngame(this);
@@ -694,7 +688,7 @@ namespace betareborn
                     }
                     catch (OutOfMemoryError var19)
                     {
-                        func_28002_e();
+                        crashCleanup();
                         displayGuiScreen(new GuiErrorScreen());
                         java.lang.System.gc();
                     }
@@ -713,7 +707,7 @@ namespace betareborn
             }
             catch (Throwable var21)
             {
-                func_28002_e();
+                crashCleanup();
                 var21.printStackTrace();
                 onMinecraftCrash(new UnexpectedThrowable("Unexpected error", var21));
             }
@@ -727,7 +721,7 @@ namespace betareborn
             }
         }
 
-        public void func_28002_e()
+        public void crashCleanup()
         {
             try
             {
@@ -1043,7 +1037,6 @@ namespace betareborn
             }
             catch (System.Exception var2)
             {
-                //var2.printStackTrace();
                 Console.WriteLine(var2);
             }
         }
@@ -1097,18 +1090,9 @@ namespace betareborn
             }
         }
 
-        private void func_28001_B()
-        {
-            (new ThreadCheckHasPaid(this)).start();
-        }
-
         public void runTick(float partialTicks)
         {
             Profiler.PushGroup("runTick");
-            if (ticksRan == 6000)
-            {
-                func_28001_B();
-            }
 
             Profiler.Start("statFileWriter.func_27178_d");
             statFileWriter.func_27178_d();
@@ -1814,15 +1798,6 @@ namespace betareborn
 
         public static void startMainThread(string var0, string var1, string var2)
         {
-            bool var3 = false;
-            //Frame var5 = new Frame("Minecraft");
-            //Canvas var6 = new Canvas();
-            //var5.setLayout(new BorderLayout());
-            //var5.add(var6, "Center");
-            //var6.setPreferredSize(new Dimension(854, 480));
-            //var5.pack();
-            //var5.setLocationRelativeTo((Component)null);
-            //MinecraftImpl var7 = new MinecraftImpl(var5, var6, (MinecraftApplet)null, 854, 480, var3, var5);
             Minecraft mc = new(1920, 1080, false);
             java.lang.Thread var8 = new(mc, "Minecraft main thread");
             var8.setPriority(10);
@@ -1842,8 +1817,6 @@ namespace betareborn
                 mc.setServer(var9[0], Integer.parseInt(var9[1]));
             }
 
-            //var5.setVisible(true);
-            //var5.addWindowListener(new GameWindowListener(var7, var8));
             var8.start();
         }
 
@@ -1911,6 +1884,6 @@ namespace betareborn
             return INSTANCE != null && INSTANCE.options.showDebugInfo;
         }
 
-        public bool lineIsCommand(string var1) => (var1.StartsWith("/"));
+        public static bool lineIsCommand(string var1) => (var1.StartsWith("/"));
     }
 }

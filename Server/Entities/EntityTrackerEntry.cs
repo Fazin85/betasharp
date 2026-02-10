@@ -30,7 +30,7 @@ namespace betareborn.Server.Entities
         private bool alwaysUpdateVelocity;
         private int ticksSinceLastDismount = 0;
         public bool newPlayerDataUpdated = false;
-        public Set listeners = new HashSet();
+        public HashSet<ServerPlayerEntity> listeners = [];
 
         public EntityTrackerEntry(Entity entity, int trackedDistance, int trackedFrequency, bool alwaysUpdateVelocity)
         {
@@ -157,11 +157,9 @@ namespace betareborn.Server.Entities
 
         public void sendToListeners(Packet packet)
         {
-            var iter = listeners.iterator();
-            while (iter.hasNext())
+            foreach (var player in listeners)
             {
-                ServerPlayerEntity var3 = (ServerPlayerEntity)iter.next();
-                var3.networkHandler.sendPacket(packet);
+                player.networkHandler.sendPacket(packet);
             }
         }
 
@@ -181,9 +179,9 @@ namespace betareborn.Server.Entities
 
         public void notifyEntityRemoved(ServerPlayerEntity player)
         {
-            if (listeners.contains(player))
+            if (listeners.Contains(player))
             {
-                listeners.remove(player);
+                listeners.Remove(player);
             }
         }
 
@@ -195,9 +193,9 @@ namespace betareborn.Server.Entities
                 double var4 = player.z - lastZ / 32;
                 if (var2 >= -trackedDistance && var2 <= trackedDistance && var4 >= -trackedDistance && var4 <= trackedDistance)
                 {
-                    if (!listeners.contains(player))
+                    if (!listeners.Contains(player))
                     {
-                        listeners.add(player);
+                        listeners.Add(player);
                         player.networkHandler.sendPacket(createAddEntityPacket());
                         if (alwaysUpdateVelocity)
                         {
@@ -239,9 +237,9 @@ namespace betareborn.Server.Entities
                         }
                     }
                 }
-                else if (listeners.contains(player))
+                else if (listeners.Contains(player))
                 {
-                    listeners.remove(player);
+                    listeners.Remove(player);
                     player.networkHandler.sendPacket(new EntityDestroyS2CPacket(currentTrackedEntity.id));
                 }
             }
@@ -259,7 +257,7 @@ namespace betareborn.Server.Entities
         {
             if (currentTrackedEntity is EntityItem var6)
             {
-                ItemEntitySpawnS2CPacket var7 = new ItemEntitySpawnS2CPacket(var6);
+                ItemEntitySpawnS2CPacket var7 = new(var6);
                 var6.x = var7.x / 32.0;
                 var6.y = var7.y / 32.0;
                 var6.z = var7.z / 32.0;
@@ -301,9 +299,9 @@ namespace betareborn.Server.Entities
                 {
                     return new EntitySpawnS2CPacket(currentTrackedEntity, 90);
                 }
-                else if (currentTrackedEntity is EntityArrow)
+                else if (currentTrackedEntity is EntityArrow arrow)
                 {
-                    EntityLiving var5 = ((EntityArrow)currentTrackedEntity).owner;
+                    EntityLiving var5 = arrow.owner;
                     return new EntitySpawnS2CPacket(currentTrackedEntity, 60, var5 != null ? var5.id : currentTrackedEntity.id);
                 }
                 else if (currentTrackedEntity is EntitySnowball)
@@ -312,10 +310,12 @@ namespace betareborn.Server.Entities
                 }
                 else if (currentTrackedEntity is EntityFireball var4)
                 {
-                    EntitySpawnS2CPacket var2 = new EntitySpawnS2CPacket(currentTrackedEntity, 63, ((EntityFireball)currentTrackedEntity).owner.id);
-                    var2.velocityX = (int)(var4.powerX * 8000.0);
-                    var2.velocityY = (int)(var4.powerY * 8000.0);
-                    var2.velocityZ = (int)(var4.powerZ * 8000.0);
+                    EntitySpawnS2CPacket var2 = new(currentTrackedEntity, 63, ((EntityFireball)currentTrackedEntity).owner.id)
+                    {
+                        velocityX = (int)(var4.powerX * 8000.0),
+                        velocityY = (int)(var4.powerY * 8000.0),
+                        velocityZ = (int)(var4.powerZ * 8000.0)
+                    };
                     return var2;
                 }
                 else if (currentTrackedEntity is EntityEgg)
@@ -341,9 +341,9 @@ namespace betareborn.Server.Entities
                         }
                     }
 
-                    if (currentTrackedEntity is EntityPainting)
+                    if (currentTrackedEntity is EntityPainting painting)
                     {
-                        return new PaintingEntitySpawnS2CPacket((EntityPainting)currentTrackedEntity);
+                        return new PaintingEntitySpawnS2CPacket(painting);
                     }
                     else
                     {
@@ -355,9 +355,9 @@ namespace betareborn.Server.Entities
 
         public void removeListener(ServerPlayerEntity player)
         {
-            if (listeners.contains(player))
+            if (listeners.Contains(player))
             {
-                listeners.remove(player);
+                listeners.Remove(player);
                 player.networkHandler.sendPacket(new EntityDestroyS2CPacket(currentTrackedEntity.id));
             }
         }

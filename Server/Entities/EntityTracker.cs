@@ -9,7 +9,7 @@ namespace betareborn.Server.Entities
     public class EntityTracker
     {
         private HashSet<EntityTrackerEntry> entries = [];
-        private IntHashMap entriesById = new IntHashMap();
+        private IntHashMap entriesById = new();
         private MinecraftServer world;
         private int viewDistance;
         private int dimensionId;
@@ -108,7 +108,7 @@ namespace betareborn.Server.Entities
             }
             else
             {
-                EntityTrackerEntry var5 = new EntityTrackerEntry(entity, trackedDistance, tracingFrequency, alwaysUpdateVelocity);
+                EntityTrackerEntry var5 = new(entity, trackedDistance, tracingFrequency, alwaysUpdateVelocity);
                 entries.Add(var5);
                 entriesById.put(entity.id, var5);
                 var5.updateListeners(world.getWorld(dimensionId).players);
@@ -137,7 +137,7 @@ namespace betareborn.Server.Entities
 
         public void tick()
         {
-            ArrayList var1 = new ArrayList();
+            ArrayList var1 = new();
 
             foreach (EntityTrackerEntry var3 in entries)
             {
