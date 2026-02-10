@@ -24,7 +24,7 @@ namespace betareborn.Server
         public ServerWorld[] worlds;
         public PlayerManager playerManager;
         private ServerCommandHandler commandHandler;
-        private bool running = true;
+        public bool running = true;
         public bool stopped = false;
         int ticks = 0;
         public string progressMessage;
@@ -44,10 +44,9 @@ namespace betareborn.Server
         private bool init()
         {
             commandHandler = new ServerCommandHandler(this);
-            //C_97965498 var1 = new C_97965498(this);
-            //var1.setDaemon(true);
-            //var1.start();
-            //TODO: ADD CONSOLE INPUT
+            ConsoleInputThread var1 = new ConsoleInputThread(this);
+            var1.setDaemon(true);
+            var1.start();
             ServerLog.init();
             LOGGER.info("Starting minecraft server version Beta 1.7.3");
             if (Runtime.getRuntime().maxMemory() / 1024L / 1024L < 512L)
