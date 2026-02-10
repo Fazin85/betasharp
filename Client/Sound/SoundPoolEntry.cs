@@ -1,6 +1,6 @@
 using java.net;
 
-namespace betareborn
+namespace betareborn.Client.Sound
 {
     public class SoundPoolEntry : java.lang.Object
     {

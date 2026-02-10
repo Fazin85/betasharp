@@ -11,10 +11,12 @@ namespace betareborn.Client.Resource
 
         private readonly HttpClient _httpClient;
         private readonly string _resourcesDirectory;
+        private readonly Minecraft mc;
         private bool _cancelled = false;
 
-        public MinecraftResourceDownloader(string baseDirectory)
+        public MinecraftResourceDownloader(Minecraft mc, string baseDirectory)
         {
+            this.mc = mc;
             _resourcesDirectory = System.IO.Path.Combine(baseDirectory, "resources");
             Directory.CreateDirectory(_resourcesDirectory);
 
@@ -39,9 +41,11 @@ namespace betareborn.Client.Resource
 
                 foreach (var line in lines)
                 {
-                    if (File.Exists(System.IO.Path.Combine(_resourcesDirectory, line)))
+                    var localFile = System.IO.Path.Combine(_resourcesDirectory, line);
+                    if (File.Exists(localFile))
                     {
                         loaded++;
+                        mc.installResource(line, new java.io.File(localFile));
                     }
                 }
 
@@ -92,8 +96,6 @@ namespace betareborn.Client.Resource
 
                 for (int pass = 0; pass < 2; pass++)
                 {
-                    Console.WriteLine($"\n=== Pass {pass} ===");
-
                     foreach (var resource in resources)
                     {
                         if (_cancelled) return;
@@ -101,8 +103,6 @@ namespace betareborn.Client.Resource
                         await LoadFromUrl(resource.Key, resource.Size, pass);
                     }
                 }
-
-                Console.WriteLine("\nResource download complete!");
             }
             catch (Exception ex)
             {
@@ -158,7 +158,7 @@ namespace betareborn.Client.Resource
 
                 if (localFile.Exists && localFile.Length == size)
                 {
-                    Console.WriteLine($"Already exists: {path}");
+                    mc.installResource(path, new java.io.File(localFile.FullName));
                     return;
                 }
 
@@ -171,7 +171,7 @@ namespace betareborn.Client.Resource
 
                 if (!_cancelled)
                 {
-                    Console.WriteLine($"Downloaded: {path} ({size} bytes)");
+                    mc.installResource(path, new java.io.File(localFile.FullName));
                 }
             }
             catch (Exception ex)

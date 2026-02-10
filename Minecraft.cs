@@ -11,6 +11,7 @@ using betareborn.Client.Rendering.Entitys;
 using betareborn.Client.Rendering.Items;
 using betareborn.Client.Resource;
 using betareborn.Client.Resource.Pack;
+using betareborn.Client.Sound;
 using betareborn.Client.Textures;
 using betareborn.Entities;
 using betareborn.Items;
@@ -238,8 +239,8 @@ namespace betareborn
             GLManager.GL.Viewport(0, 0, (uint)displayWidth, (uint)displayHeight);
             particleManager = new ParticleManager(world, textureManager);
 
-            MinecraftResourceDownloader downloader = new(minecraftDir.getAbsolutePath());
-            downloader.DownloadResourcesAsync().Wait();
+            MinecraftResourceDownloader downloader = new(this, minecraftDir.getAbsolutePath());
+            _ = downloader.DownloadResourcesAsync();
 
             checkGLError("Post startup");
             ingameGUI = new GuiIngame(this);
@@ -566,7 +567,7 @@ namespace betareborn
                         long var24 = java.lang.System.nanoTime() - var23;
                         checkGLError("Pre render");
                         BlockRenderer.fancyGrass = true;
-                        sndManager.func_338_a(player, timer.renderPartialTicks);
+                        sndManager.updateListener(player, timer.renderPartialTicks);
                         GLManager.GL.Enable(GLEnum.Texture2D);
                         if (world != null)
                         {
@@ -1688,6 +1689,12 @@ namespace betareborn
 
         public void installResource(string var1, java.io.File var2)
         {
+            if (!var2.getPath().EndsWith("ogg"))
+            {
+                //TODO: ADD SUPPORT FOR MUS SFX?
+                return;
+            }
+
             int var3 = var1.IndexOf("/");
             string var4 = var1.Substring(0, var3);
             var1 = var1.Substring(var3 + 1);

@@ -2,15 +2,15 @@ using java.lang;
 using java.net;
 using java.util;
 
-namespace betareborn
+namespace betareborn.Client.Sound
 {
     public class SoundPool : java.lang.Object
     {
         private readonly java.util.Random rand = new();
-        private readonly Map nameToSoundPoolEntriesMapping = new HashMap();
-        private readonly List allSoundPoolEntries = new ArrayList();
-        public int numberOfSoundPoolEntries = 0;
-        public bool field_1657_b = true;
+        private readonly Map weightedSoundSet = new HashMap();
+        private readonly List loadedSounds = new ArrayList();
+        public int loadedSoundCount = 0;
+        public bool isRandom = true;
 
         public SoundPoolEntry addSound(string var1, java.io.File var2)
         {
@@ -18,7 +18,7 @@ namespace betareborn
             {
                 string var3 = var1;
                 var1 = var1[..var1.IndexOf('.')];
-                if (field_1657_b)
+                if (isRandom)
                 {
                     while (Character.isDigit(var1[var1.Length - 1]))
                     {
@@ -27,15 +27,15 @@ namespace betareborn
                 }
 
                 var1 = var1.Replace('/', '.');
-                if (!nameToSoundPoolEntriesMapping.containsKey(var1))
+                if (!weightedSoundSet.containsKey(var1))
                 {
-                    nameToSoundPoolEntriesMapping.put(var1, new ArrayList());
+                    weightedSoundSet.put(var1, new ArrayList());
                 }
 
                 SoundPoolEntry var4 = new(var3, var2.toURI().toURL());
-                ((List)nameToSoundPoolEntriesMapping.get(var1)).add(var4);
-                allSoundPoolEntries.add(var4);
-                ++numberOfSoundPoolEntries;
+                ((List)weightedSoundSet.get(var1)).add(var4);
+                loadedSounds.add(var4);
+                ++loadedSoundCount;
                 return var4;
             }
             catch (MalformedURLException var5)
@@ -47,13 +47,13 @@ namespace betareborn
 
         public SoundPoolEntry getRandomSoundFromSoundPool(string var1)
         {
-            List var2 = (List)nameToSoundPoolEntriesMapping.get(var1);
+            List var2 = (List)weightedSoundSet.get(var1);
             return var2 == null ? null : (SoundPoolEntry)var2.get(rand.nextInt(var2.size()));
         }
 
         public SoundPoolEntry getRandomSound()
         {
-            return allSoundPoolEntries.size() == 0 ? null : (SoundPoolEntry)allSoundPoolEntries.get(rand.nextInt(allSoundPoolEntries.size()));
+            return loadedSounds.size() == 0 ? null : (SoundPoolEntry)loadedSounds.get(rand.nextInt(loadedSounds.size()));
         }
     }
 
