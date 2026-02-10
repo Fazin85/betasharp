@@ -840,7 +840,7 @@ namespace betareborn.Client.Rendering
             }
         }
 
-        public void obtainEntitySkin(Entity var1)
+        public void notifyEntityAdded(Entity var1)
         {
             var1.updateCloak();
             //TODO: SKINS
@@ -856,7 +856,7 @@ namespace betareborn.Client.Rendering
 
         }
 
-        public void releaseEntitySkin(Entity var1)
+        public void notifyEntityRemoved(Entity var1)
         {
             //TODO: SKINS
             //if (var1.skinUrl != null)

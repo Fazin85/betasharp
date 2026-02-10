@@ -29,9 +29,9 @@ namespace betareborn.Entities
         private double field_6385_o;
         private double field_6384_p;
         private double field_6383_q;
-        private double velocityX;
-        private double velocityY;
-        private double velocityZ;
+        private double vX;
+        private double vY;
+        private double vZ;
 
         public EntityFish(World var1) : base(var1)
         {
@@ -122,16 +122,16 @@ namespace betareborn.Entities
             field_6384_p = (double)var7;
             field_6383_q = (double)var8;
             field_6388_l = var9;
-            base.velocityX = velocityX;
-            base.velocityY = velocityY;
-            base.velocityZ = velocityZ;
+            base.velocityX = vX;
+            base.velocityY = vY;
+            base.velocityZ = vZ;
         }
 
         public override void setVelocityClient(double var1, double var3, double var5)
         {
-            velocityX = base.velocityX = var1;
-            velocityY = base.velocityY = var3;
-            velocityZ = base.velocityZ = var5;
+            vX = base.velocityX = var1;
+            vY = base.velocityY = var3;
+            vZ = base.velocityZ = var5;
         }
 
         public override void tick()

@@ -1184,7 +1184,7 @@ namespace betareborn.Worlds
         {
             for (int var2 = 0; var2 < eventListeners.Count; ++var2)
             {
-                eventListeners[var2].obtainEntitySkin(entity);
+                eventListeners[var2].notifyEntityAdded(entity);
             }
 
         }
@@ -1193,7 +1193,7 @@ namespace betareborn.Worlds
         {
             for (int var2 = 0; var2 < eventListeners.Count; ++var2)
             {
-                eventListeners[var2].releaseEntitySkin(entity);
+                eventListeners[var2].notifyEntityRemoved(entity);
             }
 
         }

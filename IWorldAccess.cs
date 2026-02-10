@@ -1,5 +1,5 @@
-using betareborn.Entities;
 using betareborn.Blocks.Entities;
+using betareborn.Entities;
 
 namespace betareborn
 {
@@ -13,9 +13,9 @@ namespace betareborn
 
         void spawnParticle(string var1, double var2, double var4, double var6, double var8, double var10, double var12);
 
-        void obtainEntitySkin(Entity var1);
+        void notifyEntityAdded(Entity var1);
 
-        void releaseEntitySkin(Entity var1);
+        void notifyEntityRemoved(Entity var1);
 
         void notifyAmbientDarknessChanged();
 
