@@ -132,42 +132,42 @@ namespace betareborn.NBT
 
         public sbyte GetByte(string key)
         {
-            return !_tagMap.TryGetValue(key, out var value) ? (sbyte) 0 : ((NBTTagByte) value).byteValue;
+            return !_tagMap.TryGetValue(key, out var value) ? (sbyte) 0 : ((NBTTagByte) value).Value;
         }
 
         public short GetShort(string key)
         {
-            return !_tagMap.TryGetValue(key, out var value) ? (short) 0 : ((NBTTagShort) value).shortValue;
+            return !_tagMap.TryGetValue(key, out var value) ? (short) 0 : ((NBTTagShort) value).Value;
         }
 
         public int GetInteger(string key)
         {
-            return !_tagMap.TryGetValue(key, out var value) ? 0 : ((NBTTagInt) value).intValue;
+            return !_tagMap.TryGetValue(key, out var value) ? 0 : ((NBTTagInt) value).Value;
         }
 
         public long GetLong(string key)
         {
-            return !_tagMap.TryGetValue(key, out var value) ? 0L : ((NBTTagLong) value).longValue;
+            return !_tagMap.TryGetValue(key, out var value) ? 0L : ((NBTTagLong) value).Value;
         }
 
         public float GetFloat(string key)
         {
-            return !_tagMap.TryGetValue(key, out var value) ? 0.0F : ((NBTTagFloat) value).floatValue;
+            return !_tagMap.TryGetValue(key, out var value) ? 0.0F : ((NBTTagFloat) value).Value;
         }
 
         public double GetDouble(string key)
         {
-            return !_tagMap.TryGetValue(key, out var value) ? 0.0D : ((NBTTagDouble) value).doubleValue;
+            return !_tagMap.TryGetValue(key, out var value) ? 0.0D : ((NBTTagDouble) value).Value;
         }
 
         public string GetString(string key)
         {
-            return !_tagMap.TryGetValue(key, out var value) ? string.Empty : ((NBTTagString) value).stringValue;
+            return !_tagMap.TryGetValue(key, out var value) ? string.Empty : ((NBTTagString) value).Value;
         }
 
         public byte[] GetByteArray(string key)
         {
-            return !_tagMap.TryGetValue(key, out var value) ? [] : ((NBTTagByteArray) value).byteArray;
+            return !_tagMap.TryGetValue(key, out var value) ? [] : ((NBTTagByteArray) value).Values;
         }
 
         public NbtTagCompound GetCompoundTag(string key)

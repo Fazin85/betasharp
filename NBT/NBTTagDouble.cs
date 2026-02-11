@@ -5,7 +5,7 @@ namespace betareborn.NBT
 {
     public sealed class NBTTagDouble : NBTBase
     {
-        public double doubleValue;
+        public double Value { get; set; }
 
         public NBTTagDouble()
         {
@@ -13,17 +13,17 @@ namespace betareborn.NBT
 
         public NBTTagDouble(double value)
         {
-            doubleValue = value;
+            Value = value;
         }
 
         public override void WriteTagContents(DataOutput output)
         {
-            output.writeDouble(doubleValue);
+            output.writeDouble(Value);
         }
 
         public override void ReadTagContents(DataInput input)
         {
-            doubleValue = input.readDouble();
+            Value = input.readDouble();
         }
 
         public override byte GetTagType()
@@ -33,7 +33,7 @@ namespace betareborn.NBT
 
         public override string ToString()
         {
-            return doubleValue.ToString(CultureInfo.CurrentCulture);
+            return Value.ToString(CultureInfo.CurrentCulture);
         }
     }
 }
