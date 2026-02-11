@@ -770,7 +770,7 @@ namespace betareborn.Entities
                         NbtTagCompound var4 = new NbtTagCompound();
                         var4.SetByte("Slot", (sbyte)var3);
                         cargoItems[var3].writeToNBT(var4);
-                        var2.setTag(var4);
+                        var2.SetTag(var4);
                     }
                 }
 
@@ -793,9 +793,9 @@ namespace betareborn.Entities
                 NBTTagList var2 = var1.GetTagList("Items");
                 cargoItems = new ItemStack[size()];
 
-                for (int var3 = 0; var3 < var2.tagCount(); ++var3)
+                for (int var3 = 0; var3 < var2.TagCount(); ++var3)
                 {
-                    NbtTagCompound var4 = (NbtTagCompound)var2.tagAt(var3);
+                    NbtTagCompound var4 = (NbtTagCompound)var2.TagAt(var3);
                     int var5 = var4.GetByte("Slot") & 255;
                     if (var5 >= 0 && var5 < cargoItems.Length)
                     {

@@ -925,9 +925,9 @@ namespace betareborn.Entities
             NBTTagList var2 = var1.GetTagList("Pos");
             NBTTagList var3 = var1.GetTagList("Motion");
             NBTTagList var4 = var1.GetTagList("Rotation");
-            velocityX = ((NBTTagDouble)var3.tagAt(0)).Value;
-            velocityY = ((NBTTagDouble)var3.tagAt(1)).Value;
-            velocityZ = ((NBTTagDouble)var3.tagAt(2)).Value;
+            velocityX = ((NBTTagDouble)var3.TagAt(0)).Value;
+            velocityY = ((NBTTagDouble)var3.TagAt(1)).Value;
+            velocityZ = ((NBTTagDouble)var3.TagAt(2)).Value;
             if (java.lang.Math.abs(velocityX) > 10.0D)
             {
                 velocityX = 0.0D;
@@ -943,11 +943,11 @@ namespace betareborn.Entities
                 velocityZ = 0.0D;
             }
 
-            prevX = lastTickX = x = ((NBTTagDouble)var2.tagAt(0)).Value;
-            prevY = lastTickY = y = ((NBTTagDouble)var2.tagAt(1)).Value;
-            prevZ = lastTickZ = z = ((NBTTagDouble)var2.tagAt(2)).Value;
-            prevYaw = yaw = ((NBTTagFloat)var4.tagAt(0)).Value;
-            prevPitch = pitch = ((NBTTagFloat)var4.tagAt(1)).Value;
+            prevX = lastTickX = x = ((NBTTagDouble)var2.TagAt(0)).Value;
+            prevY = lastTickY = y = ((NBTTagDouble)var2.TagAt(1)).Value;
+            prevZ = lastTickZ = z = ((NBTTagDouble)var2.TagAt(2)).Value;
+            prevYaw = yaw = ((NBTTagFloat)var4.TagAt(0)).Value;
+            prevPitch = pitch = ((NBTTagFloat)var4.TagAt(1)).Value;
             fallDistance = var1.GetFloat("FallDistance");
             fireTicks = var1.GetShort("Fire");
             air = var1.GetShort("Air");
@@ -975,7 +975,7 @@ namespace betareborn.Entities
             for (int var5 = 0; var5 < var4; ++var5)
             {
                 double var6 = var3[var5];
-                var2.setTag(new NBTTagDouble(var6));
+                var2.SetTag(new NBTTagDouble(var6));
             }
 
             return var2;
@@ -990,7 +990,7 @@ namespace betareborn.Entities
             for (int var5 = 0; var5 < var4; ++var5)
             {
                 float var6 = var3[var5];
-                var2.setTag(new NBTTagFloat(var6));
+                var2.SetTag(new NBTTagFloat(var6));
             }
 
             return var2;

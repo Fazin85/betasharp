@@ -44,18 +44,18 @@ namespace betareborn.NBT
             return $"{tagList.Count} entries of type {GetTagName(tagType)}";
         }
 
-        public void setTag(NBTBase value)
+        public void SetTag(NBTBase value)
         {
             tagType = value.GetTagType();
             tagList.Add(value);
         }
 
-        public NBTBase tagAt(int value)
+        public NBTBase TagAt(int value)
         {
             return tagList[value];
         }
 
-        public int tagCount()
+        public int TagCount()
         {
             return tagList.Count;
         }

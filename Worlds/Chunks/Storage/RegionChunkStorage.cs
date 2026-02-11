@@ -101,7 +101,7 @@ namespace betareborn.Worlds.Chunks.Storage
                     var7 = new NbtTagCompound();
                     if (var6.saveSelfNbt(var7))
                     {
-                        var3.setTag(var7);
+                        var3.SetTag(var7);
                     }
                 }
             }
@@ -113,7 +113,7 @@ namespace betareborn.Worlds.Chunks.Storage
             {
                 var7 = new NbtTagCompound();
                 var9.writeNbt(var7);
-                var8.setTag(var7);
+                var8.SetTag(var7);
             }
 
             nbt.SetTag("TileEntities", var8);
@@ -151,9 +151,9 @@ namespace betareborn.Worlds.Chunks.Storage
             NBTTagList var5 = nbt.GetTagList("Entities");
             if (var5 != null)
             {
-                for (int var6 = 0; var6 < var5.tagCount(); ++var6)
+                for (int var6 = 0; var6 < var5.TagCount(); ++var6)
                 {
-                    NbtTagCompound var7 = (NbtTagCompound)var5.tagAt(var6);
+                    NbtTagCompound var7 = (NbtTagCompound)var5.TagAt(var6);
                     Entity var8 = EntityRegistry.getEntityFromNbt(var7, world);
                     var4.lastSaveHadEntities = true;
                     if (var8 != null)
@@ -166,9 +166,9 @@ namespace betareborn.Worlds.Chunks.Storage
             NBTTagList var10 = nbt.GetTagList("TileEntities");
             if (var10 != null)
             {
-                for (int var11 = 0; var11 < var10.tagCount(); ++var11)
+                for (int var11 = 0; var11 < var10.TagCount(); ++var11)
                 {
-                    NbtTagCompound var12 = (NbtTagCompound)var10.tagAt(var11);
+                    NbtTagCompound var12 = (NbtTagCompound)var10.TagAt(var11);
                     BlockEntity var9 = BlockEntity.createFromNbt(var12);
                     if (var9 != null)
                     {

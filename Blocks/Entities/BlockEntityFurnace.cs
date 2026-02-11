@@ -73,9 +73,9 @@ namespace betareborn.Blocks.Entities
             NBTTagList itemList = nbt.GetTagList("Items");
             inventory = new ItemStack[size()];
 
-            for (int itemIndex = 0; itemIndex < itemList.tagCount(); ++itemIndex)
+            for (int itemIndex = 0; itemIndex < itemList.TagCount(); ++itemIndex)
             {
-                NbtTagCompound itemTag = (NbtTagCompound)itemList.tagAt(itemIndex);
+                NbtTagCompound itemTag = (NbtTagCompound)itemList.TagAt(itemIndex);
                 sbyte slot = itemTag.GetByte("Slot");
                 if (slot >= 0 && slot < inventory.Length)
                 {
@@ -102,7 +102,7 @@ namespace betareborn.Blocks.Entities
                     NbtTagCompound slotTag = new NbtTagCompound();
                     slotTag.SetByte("Slot", (sbyte)slotIndex);
                     inventory[slotIndex].writeToNBT(slotTag);
-                    itemList.setTag(slotTag);
+                    itemList.SetTag(slotTag);
                 }
             }
 
