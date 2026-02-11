@@ -124,9 +124,9 @@ namespace betareborn.Worlds.Storage
         {
             var1.setSaveVersion(19132);
 
-            NBTTagCompound var3 = var1.getNBTTagCompoundWithPlayer(var2);
-            NBTTagCompound var4 = new();
-            var4.setTag("Data", var3);
+            NbtTagCompound var3 = var1.getNBTTagCompoundWithPlayer(var2);
+            NbtTagCompound var4 = new();
+            var4.SetTag("Data", var3);
 
             try
             {
@@ -165,14 +165,14 @@ namespace betareborn.Worlds.Storage
         public WorldProperties loadProperties()
         {
             java.io.File var1 = new java.io.File(saveDirectory, "level.dat");
-            NBTTagCompound var2;
-            NBTTagCompound var3;
+            NbtTagCompound var2;
+            NbtTagCompound var3;
             if (var1.exists())
             {
                 try
                 {
                     var2 = NbtIo.read(new FileInputStream(var1));
-                    var3 = var2.getCompoundTag("Data");
+                    var3 = var2.GetCompoundTag("Data");
                     WorldProperties wInfo = new(var3);
                     return wInfo;
                 }
@@ -188,7 +188,7 @@ namespace betareborn.Worlds.Storage
                 try
                 {
                     var2 = NbtIo.read(new FileInputStream(var1));
-                    var3 = var2.getCompoundTag("Data");
+                    var3 = var2.GetCompoundTag("Data");
                     WorldProperties wInfo = new(var3);
                     return wInfo;
                 }
@@ -203,9 +203,9 @@ namespace betareborn.Worlds.Storage
 
         public void save(WorldProperties var1)
         {
-            NBTTagCompound var2 = var1.getNBTTagCompound();
-            NBTTagCompound var3 = new NBTTagCompound();
-            var3.setTag("Data", var2);
+            NbtTagCompound var2 = var1.getNBTTagCompound();
+            NbtTagCompound var3 = new NbtTagCompound();
+            var3.SetTag("Data", var2);
 
             try
             {
@@ -246,7 +246,7 @@ namespace betareborn.Worlds.Storage
         {
             try
             {
-                NBTTagCompound var2 = new NBTTagCompound();
+                NbtTagCompound var2 = new NbtTagCompound();
                 player.write(var2);
                 java.io.File var3 = new java.io.File(playersDirectory, "_tmp_.dat");
                 java.io.File var4 = new java.io.File(playersDirectory, player.name + ".dat");
@@ -266,14 +266,14 @@ namespace betareborn.Worlds.Storage
 
         public void loadPlayerData(EntityPlayer player)
         {
-            NBTTagCompound var2 = loadPlayerData(player.name);
+            NbtTagCompound var2 = loadPlayerData(player.name);
             if (var2 != null)
             {
                 player.read(var2);
             }
         }
 
-        public NBTTagCompound loadPlayerData(String playerName)
+        public NbtTagCompound loadPlayerData(String playerName)
         {
             try
             {

@@ -380,24 +380,24 @@ namespace betareborn.Entities
             }
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NbtTagCompound var1)
         {
-            var1.setShort("xTile", (short)xTile);
-            var1.setShort("yTile", (short)yTile);
-            var1.setShort("zTile", (short)zTile);
-            var1.setByte("inTile", (sbyte)inTile);
-            var1.setByte("shake", (sbyte)shake);
-            var1.setByte("inGround", (sbyte)(inGround ? 1 : 0));
+            var1.SetShort("xTile", (short)xTile);
+            var1.SetShort("yTile", (short)yTile);
+            var1.SetShort("zTile", (short)zTile);
+            var1.SetByte("inTile", (sbyte)inTile);
+            var1.SetByte("shake", (sbyte)shake);
+            var1.SetByte("inGround", (sbyte)(inGround ? 1 : 0));
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NbtTagCompound var1)
         {
-            xTile = var1.getShort("xTile");
-            yTile = var1.getShort("yTile");
-            zTile = var1.getShort("zTile");
-            inTile = var1.getByte("inTile") & 255;
-            shake = var1.getByte("shake") & 255;
-            inGround = var1.getByte("inGround") == 1;
+            xTile = var1.GetShort("xTile");
+            yTile = var1.GetShort("yTile");
+            zTile = var1.GetShort("zTile");
+            inTile = var1.GetByte("inTile") & 255;
+            shake = var1.GetByte("shake") & 255;
+            inGround = var1.GetByte("inGround") == 1;
         }
 
         public override float getShadowRadius()

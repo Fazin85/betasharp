@@ -276,28 +276,28 @@ namespace betareborn.Entities
             }
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NbtTagCompound var1)
         {
-            var1.setShort("xTile", (short)xTile);
-            var1.setShort("yTile", (short)yTile);
-            var1.setShort("zTile", (short)zTile);
-            var1.setByte("inTile", (sbyte)inTile);
-            var1.setByte("inData", (sbyte)field_28019_h);
-            var1.setByte("shake", (sbyte)arrowShake);
-            var1.setByte("inGround", (sbyte)(inGround ? 1 : 0));
-            var1.setBoolean("player", doesArrowBelongToPlayer);
+            var1.SetShort("xTile", (short)xTile);
+            var1.SetShort("yTile", (short)yTile);
+            var1.SetShort("zTile", (short)zTile);
+            var1.SetByte("inTile", (sbyte)inTile);
+            var1.SetByte("inData", (sbyte)field_28019_h);
+            var1.SetByte("shake", (sbyte)arrowShake);
+            var1.SetByte("inGround", (sbyte)(inGround ? 1 : 0));
+            var1.SetBoolean("player", doesArrowBelongToPlayer);
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NbtTagCompound var1)
         {
-            xTile = var1.getShort("xTile");
-            yTile = var1.getShort("yTile");
-            zTile = var1.getShort("zTile");
-            inTile = var1.getByte("inTile") & 255;
-            field_28019_h = var1.getByte("inData") & 255;
-            arrowShake = var1.getByte("shake") & 255;
-            inGround = var1.getByte("inGround") == 1;
-            doesArrowBelongToPlayer = var1.getBoolean("player");
+            xTile = var1.GetShort("xTile");
+            yTile = var1.GetShort("yTile");
+            zTile = var1.GetShort("zTile");
+            inTile = var1.GetByte("inTile") & 255;
+            field_28019_h = var1.GetByte("inData") & 255;
+            arrowShake = var1.GetByte("shake") & 255;
+            inGround = var1.GetByte("inGround") == 1;
+            doesArrowBelongToPlayer = var1.GetBoolean("player");
         }
 
         public override void onPlayerInteraction(EntityPlayer var1)

@@ -50,7 +50,7 @@ namespace betareborn.Items
             damage = var3;
         }
 
-        public ItemStack(NBTTagCompound var1)
+        public ItemStack(NbtTagCompound var1)
         {
             count = 0;
             readFromNBT(var1);
@@ -93,19 +93,19 @@ namespace betareborn.Items
             return getItem().use(this, var1, var2);
         }
 
-        public NBTTagCompound writeToNBT(NBTTagCompound var1)
+        public NbtTagCompound writeToNBT(NbtTagCompound var1)
         {
-            var1.setShort("id", (short)itemId);
-            var1.setByte("Count", (sbyte)count);
-            var1.setShort("Damage", (short)damage);
+            var1.SetShort("id", (short)itemId);
+            var1.SetByte("Count", (sbyte)count);
+            var1.SetShort("Damage", (short)damage);
             return var1;
         }
 
-        public void readFromNBT(NBTTagCompound var1)
+        public void readFromNBT(NbtTagCompound var1)
         {
-            itemId = var1.getShort("id");
-            count = var1.getByte("Count");
-            damage = var1.getShort("Damage");
+            itemId = var1.GetShort("id");
+            count = var1.GetByte("Count");
+            damage = var1.GetShort("Damage");
         }
 
         public int getMaxCount()

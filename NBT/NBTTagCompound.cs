@@ -3,34 +3,34 @@ using java.util;
 
 namespace betareborn.NBT
 {
-    public sealed class NBTTagCompound : NBTBase
+    public sealed class NbtTagCompound : NBTBase
     {
         private readonly Dictionary<string, NBTBase> tagMap = [];
 
-        public override void writeTagContents(DataOutput output)
+        public override void WriteTagContents(DataOutput output)
         {
             foreach (var value in tagMap.Values)
             {
-                writeTag(value, output);
+                WriteTag(value, output);
             }
 
             output.writeByte(0);
         }
 
-        public override void readTagContents(DataInput input)
+        public override void ReadTagContents(DataInput input)
         {
             tagMap.Clear();
 
             while (true)
             {
-                var tag = readTag(input);
+                var tag = ReadTag(input);
 
-                if (tag.getType() is 0)
+                if (tag.GetTagType() is 0)
                 {
                     return;
                 }
 
-                tagMap[tag.getKey()] = tag;
+                tagMap[tag.GetKey()] = tag;
             }
         }
 
@@ -39,127 +39,127 @@ namespace betareborn.NBT
             throw new NotImplementedException();
         }
 
-        public override byte getType()
+        public override byte GetTagType()
         {
             return 10;
         }
 
-        public void setTag(string key, NBTBase value)
+        public void SetTag(string key, NBTBase value)
         {
-            tagMap[key] = value.setKey(key);
+            tagMap[key] = value.SetKey(key);
         }
 
-        public void setByte(string key, sbyte value)
+        public void SetByte(string key, sbyte value)
         {
-            tagMap[key] = new NBTTagByte(value).setKey(key);
+            tagMap[key] = new NBTTagByte(value).SetKey(key);
         }
 
-        public void setShort(string key, short value)
+        public void SetShort(string key, short value)
         {
-            tagMap[key] = new NBTTagShort(value).setKey(key);
+            tagMap[key] = new NBTTagShort(value).SetKey(key);
         }
 
-        public void setInteger(string key, int value)
+        public void SetInteger(string key, int value)
         {
-            tagMap[key] = new NBTTagInt(value).setKey(key);
+            tagMap[key] = new NBTTagInt(value).SetKey(key);
         }
 
-        public void setLong(string key, long value)
+        public void SetLong(string key, long value)
         {
-            tagMap[key] = new NBTTagLong(value).setKey(key);
+            tagMap[key] = new NBTTagLong(value).SetKey(key);
         }
 
-        public void setFloat(string key, float value)
+        public void SetFloat(string key, float value)
         {
-            tagMap[key] = new NBTTagFloat(value).setKey(key);
+            tagMap[key] = new NBTTagFloat(value).SetKey(key);
         }
 
-        public void setDouble(string key, double value)
+        public void SetDouble(string key, double value)
         {
-            tagMap[key] = new NBTTagDouble(value).setKey(key);
+            tagMap[key] = new NBTTagDouble(value).SetKey(key);
         }
 
-        public void setString(string key, string value)
+        public void SetString(string key, string value)
         {
-            tagMap[key] = new NBTTagString(value).setKey(key);
+            tagMap[key] = new NBTTagString(value).SetKey(key);
         }
 
-        public void setByteArray(string key, byte[] value)
+        public void SetByteArray(string key, byte[] value)
         {
-            tagMap[key] = new NBTTagByteArray(value).setKey(key);
+            tagMap[key] = new NBTTagByteArray(value).SetKey(key);
         }
 
-        public void setCompoundTag(string key, NBTTagCompound value)
+        public void SetCompoundTag(string key, NbtTagCompound value)
         {
-            tagMap[key] = value.setKey(key);
+            tagMap[key] = value.SetKey(key);
         }
 
-        public void setBoolean(string key, bool value)
+        public void SetBoolean(string key, bool value)
         {
-            setByte(key, (sbyte) (value ? 1 : 0));
+            SetByte(key, (sbyte) (value ? 1 : 0));
         }
 
-        public bool hasKey(string key)
+        public bool HasKey(string key)
         {
             return tagMap.ContainsKey(key);
         }
 
-        public sbyte getByte(string key)
+        public sbyte GetByte(string key)
         {
             return !tagMap.TryGetValue(key, out var value) ? (sbyte) 0 : ((NBTTagByte) value).byteValue;
         }
 
-        public short getShort(string key)
+        public short GetShort(string key)
         {
             return !tagMap.TryGetValue(key, out var value) ? (short) 0 : ((NBTTagShort) value).shortValue;
         }
 
-        public int getInteger(string key)
+        public int GetInteger(string key)
         {
             return !tagMap.TryGetValue(key, out var value) ? 0 : ((NBTTagInt) value).intValue;
         }
 
-        public long getLong(string key)
+        public long GetLong(string key)
         {
             return !tagMap.TryGetValue(key, out var value) ? 0L : ((NBTTagLong) value).longValue;
         }
 
-        public float getFloat(string key)
+        public float GetFloat(string key)
         {
             return !tagMap.TryGetValue(key, out var value) ? 0.0F : ((NBTTagFloat) value).floatValue;
         }
 
-        public double getDouble(string key)
+        public double GetDouble(string key)
         {
             return !tagMap.TryGetValue(key, out var value) ? 0.0D : ((NBTTagDouble) value).doubleValue;
         }
 
-        public string getString(string key)
+        public string GetString(string key)
         {
             return !tagMap.TryGetValue(key, out var value) ? string.Empty : ((NBTTagString) value).stringValue;
         }
 
-        public byte[] getByteArray(string key)
+        public byte[] GetByteArray(string key)
         {
             return !tagMap.TryGetValue(key, out var value) ? [] : ((NBTTagByteArray) value).byteArray;
         }
 
-        public NBTTagCompound getCompoundTag(string key)
+        public NbtTagCompound GetCompoundTag(string key)
         {
-            return !tagMap.TryGetValue(key, out var value) ? new NBTTagCompound() : (NBTTagCompound) value;
+            return !tagMap.TryGetValue(key, out var value) ? new NbtTagCompound() : (NbtTagCompound) value;
         }
 
-        public NBTTagList getTagList(string key)
+        public NBTTagList GetTagList(string key)
         {
             return !tagMap.TryGetValue(key, out var value) ? new NBTTagList() : (NBTTagList) value;
         }
 
-        public bool getBoolean(string key)
+        public bool GetBoolean(string key)
         {
-            return getByte(key) != 0;
+            return GetByte(key) != 0;
         }
 
-        public override string toString()
+        public override string ToString()
         {
             return $"{tagMap.Count} entries";
         }

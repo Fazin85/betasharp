@@ -893,12 +893,12 @@ namespace betareborn.Entities
             return null;
         }
 
-        public bool saveSelfNbt(NBTTagCompound var1)
+        public bool saveSelfNbt(NbtTagCompound var1)
         {
             string var2 = getRegistryEntry();
             if (!dead && var2 != null)
             {
-                var1.setString("id", var2);
+                var1.SetString("id", var2);
                 write(var1);
                 return true;
             }
@@ -908,23 +908,23 @@ namespace betareborn.Entities
             }
         }
 
-        public void write(NBTTagCompound var1)
+        public void write(NbtTagCompound var1)
         {
-            var1.setTag("Pos", newDoubleNBTList([x, y + (double)cameraOffset, z]));
-            var1.setTag("Motion", newDoubleNBTList([velocityX, velocityY, velocityZ]));
-            var1.setTag("Rotation", newFloatNBTList([yaw, pitch]));
-            var1.setFloat("FallDistance", fallDistance);
-            var1.setShort("Fire", (short)fireTicks);
-            var1.setShort("Air", (short)air);
-            var1.setBoolean("OnGround", onGround);
+            var1.SetTag("Pos", newDoubleNBTList([x, y + (double)cameraOffset, z]));
+            var1.SetTag("Motion", newDoubleNBTList([velocityX, velocityY, velocityZ]));
+            var1.SetTag("Rotation", newFloatNBTList([yaw, pitch]));
+            var1.SetFloat("FallDistance", fallDistance);
+            var1.SetShort("Fire", (short)fireTicks);
+            var1.SetShort("Air", (short)air);
+            var1.SetBoolean("OnGround", onGround);
             writeNbt(var1);
         }
 
-        public void read(NBTTagCompound var1)
+        public void read(NbtTagCompound var1)
         {
-            NBTTagList var2 = var1.getTagList("Pos");
-            NBTTagList var3 = var1.getTagList("Motion");
-            NBTTagList var4 = var1.getTagList("Rotation");
+            NBTTagList var2 = var1.GetTagList("Pos");
+            NBTTagList var3 = var1.GetTagList("Motion");
+            NBTTagList var4 = var1.GetTagList("Rotation");
             velocityX = ((NBTTagDouble)var3.tagAt(0)).doubleValue;
             velocityY = ((NBTTagDouble)var3.tagAt(1)).doubleValue;
             velocityZ = ((NBTTagDouble)var3.tagAt(2)).doubleValue;
@@ -948,10 +948,10 @@ namespace betareborn.Entities
             prevZ = lastTickZ = z = ((NBTTagDouble)var2.tagAt(2)).doubleValue;
             prevYaw = yaw = ((NBTTagFloat)var4.tagAt(0)).floatValue;
             prevPitch = pitch = ((NBTTagFloat)var4.tagAt(1)).floatValue;
-            fallDistance = var1.getFloat("FallDistance");
-            fireTicks = var1.getShort("Fire");
-            air = var1.getShort("Air");
-            onGround = var1.getBoolean("OnGround");
+            fallDistance = var1.GetFloat("FallDistance");
+            fireTicks = var1.GetShort("Fire");
+            air = var1.GetShort("Air");
+            onGround = var1.GetBoolean("OnGround");
             setPosition(x, y, z);
             setRotation(yaw, pitch);
             readNbt(var1);
@@ -962,9 +962,9 @@ namespace betareborn.Entities
             return EntityRegistry.getId(this);
         }
 
-        public abstract void readNbt(NBTTagCompound var1);
+        public abstract void readNbt(NbtTagCompound var1);
 
-        public abstract void writeNbt(NBTTagCompound var1);
+        public abstract void writeNbt(NbtTagCompound var1);
 
         protected NBTTagList newDoubleNBTList(params double[] var1)
         {

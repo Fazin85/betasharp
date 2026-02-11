@@ -42,16 +42,16 @@ namespace betareborn.Entities
             return dataWatcher.getWatchableObjectByte(16);
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NbtTagCompound var1)
         {
             base.writeNbt(var1);
-            var1.setInteger("Size", getSlimeSize() - 1);
+            var1.SetInteger("Size", getSlimeSize() - 1);
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NbtTagCompound var1)
         {
             base.readNbt(var1);
-            setSlimeSize(var1.getInteger("Size") + 1);
+            setSlimeSize(var1.GetInteger("Size") + 1);
         }
 
         public override void tick()

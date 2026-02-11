@@ -299,11 +299,11 @@ namespace betareborn.Worlds
         {
             try
             {
-                NBTTagCompound var2 = properties.getPlayerNBTTagCompound();
+                NbtTagCompound var2 = properties.getPlayerNBTTagCompound();
                 if (var2 != null)
                 {
                     player.read(var2);
-                    properties.setPlayerNBTTagCompound((NBTTagCompound)null);
+                    properties.setPlayerNBTTagCompound((NbtTagCompound)null);
                 }
 
                 spawnEntity(player);

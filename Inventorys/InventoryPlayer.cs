@@ -268,13 +268,13 @@ namespace betareborn.Inventorys
         public NBTTagList writeToNBT(NBTTagList var1)
         {
             int var2;
-            NBTTagCompound var3;
+            NbtTagCompound var3;
             for (var2 = 0; var2 < main.Length; ++var2)
             {
                 if (main[var2] != null)
                 {
-                    var3 = new NBTTagCompound();
-                    var3.setByte("Slot", (sbyte)var2);
+                    var3 = new NbtTagCompound();
+                    var3.SetByte("Slot", (sbyte)var2);
                     main[var2].writeToNBT(var3);
                     var1.setTag(var3);
                 }
@@ -284,8 +284,8 @@ namespace betareborn.Inventorys
             {
                 if (armor[var2] != null)
                 {
-                    var3 = new NBTTagCompound();
-                    var3.setByte("Slot", (sbyte)(var2 + 100));
+                    var3 = new NbtTagCompound();
+                    var3.SetByte("Slot", (sbyte)(var2 + 100));
                     armor[var2].writeToNBT(var3);
                     var1.setTag(var3);
                 }
@@ -301,8 +301,8 @@ namespace betareborn.Inventorys
 
             for (int var2 = 0; var2 < var1.tagCount(); ++var2)
             {
-                NBTTagCompound var3 = (NBTTagCompound)var1.tagAt(var2);
-                int var4 = var3.getByte("Slot") & 255;
+                NbtTagCompound var3 = (NbtTagCompound)var1.tagAt(var2);
+                int var4 = var3.GetByte("Slot") & 255;
                 ItemStack var5 = new ItemStack(var3);
                 if (var5.getItem() != null)
                 {

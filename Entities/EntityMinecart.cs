@@ -750,14 +750,14 @@ namespace betareborn.Entities
             }
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NbtTagCompound var1)
         {
-            var1.setInteger("Type", type);
+            var1.SetInteger("Type", type);
             if (type == 2)
             {
-                var1.setDouble("PushX", pushX);
-                var1.setDouble("PushZ", pushZ);
-                var1.setShort("Fuel", (short)fuel);
+                var1.SetDouble("PushX", pushX);
+                var1.SetDouble("PushZ", pushZ);
+                var1.SetShort("Fuel", (short)fuel);
             }
             else if (type == 1)
             {
@@ -767,36 +767,36 @@ namespace betareborn.Entities
                 {
                     if (cargoItems[var3] != null)
                     {
-                        NBTTagCompound var4 = new NBTTagCompound();
-                        var4.setByte("Slot", (sbyte)var3);
+                        NbtTagCompound var4 = new NbtTagCompound();
+                        var4.SetByte("Slot", (sbyte)var3);
                         cargoItems[var3].writeToNBT(var4);
                         var2.setTag(var4);
                     }
                 }
 
-                var1.setTag("Items", var2);
+                var1.SetTag("Items", var2);
             }
 
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NbtTagCompound var1)
         {
-            type = var1.getInteger("Type");
+            type = var1.GetInteger("Type");
             if (type == 2)
             {
-                pushX = var1.getDouble("PushX");
-                pushZ = var1.getDouble("PushZ");
-                fuel = var1.getShort("Fuel");
+                pushX = var1.GetDouble("PushX");
+                pushZ = var1.GetDouble("PushZ");
+                fuel = var1.GetShort("Fuel");
             }
             else if (type == 1)
             {
-                NBTTagList var2 = var1.getTagList("Items");
+                NBTTagList var2 = var1.GetTagList("Items");
                 cargoItems = new ItemStack[size()];
 
                 for (int var3 = 0; var3 < var2.tagCount(); ++var3)
                 {
-                    NBTTagCompound var4 = (NBTTagCompound)var2.tagAt(var3);
-                    int var5 = var4.getByte("Slot") & 255;
+                    NbtTagCompound var4 = (NbtTagCompound)var2.tagAt(var3);
+                    int var5 = var4.GetByte("Slot") & 255;
                     if (var5 >= 0 && var5 < cargoItems.Length)
                     {
                         cargoItems[var5] = new ItemStack(var4);

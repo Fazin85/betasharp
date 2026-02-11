@@ -679,25 +679,25 @@ namespace betareborn.Entities
             return world.getBlockId(var1, var2, var3) == Block.LADDER.id;
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NbtTagCompound var1)
         {
-            var1.setShort("Health", (short)health);
-            var1.setShort("HurtTime", (short)hurtTime);
-            var1.setShort("DeathTime", (short)deathTime);
-            var1.setShort("AttackTime", (short)attackTime);
+            var1.SetShort("Health", (short)health);
+            var1.SetShort("HurtTime", (short)hurtTime);
+            var1.SetShort("DeathTime", (short)deathTime);
+            var1.SetShort("AttackTime", (short)attackTime);
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NbtTagCompound var1)
         {
-            health = var1.getShort("Health");
-            if (!var1.hasKey("Health"))
+            health = var1.GetShort("Health");
+            if (!var1.HasKey("Health"))
             {
                 health = 10;
             }
 
-            hurtTime = var1.getShort("HurtTime");
-            deathTime = var1.getShort("DeathTime");
-            attackTime = var1.getShort("AttackTime");
+            hurtTime = var1.GetShort("HurtTime");
+            deathTime = var1.GetShort("DeathTime");
+            attackTime = var1.GetShort("AttackTime");
         }
 
         public override bool isAlive()

@@ -43,28 +43,28 @@ namespace betareborn.Entities
             return isWolfTamed() ? "/mob/wolf_tame.png" : (isWolfAngry() ? "/mob/wolf_angry.png" : base.getTexture());
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NbtTagCompound var1)
         {
             base.writeNbt(var1);
-            var1.setBoolean("Angry", isWolfAngry());
-            var1.setBoolean("Sitting", isWolfSitting());
+            var1.SetBoolean("Angry", isWolfAngry());
+            var1.SetBoolean("Sitting", isWolfSitting());
             if (getWolfOwner() == null)
             {
-                var1.setString("Owner", "");
+                var1.SetString("Owner", "");
             }
             else
             {
-                var1.setString("Owner", getWolfOwner());
+                var1.SetString("Owner", getWolfOwner());
             }
 
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NbtTagCompound var1)
         {
             base.readNbt(var1);
-            setWolfAngry(var1.getBoolean("Angry"));
-            setWolfSitting(var1.getBoolean("Sitting"));
-            string var2 = var1.getString("Owner");
+            setWolfAngry(var1.GetBoolean("Angry"));
+            setWolfSitting(var1.GetBoolean("Sitting"));
+            string var2 = var1.GetString("Owner");
             if (var2.Length > 0)
             {
                 setWolfOwner(var2);

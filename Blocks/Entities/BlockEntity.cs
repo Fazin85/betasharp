@@ -30,14 +30,14 @@ namespace betareborn.Blocks.Entities
             }
         }
 
-        public virtual void readNbt(NBTTagCompound nbt)
+        public virtual void readNbt(NbtTagCompound nbt)
         {
-            x = nbt.getInteger("x");
-            y = nbt.getInteger("y");
-            z = nbt.getInteger("z");
+            x = nbt.GetInteger("x");
+            y = nbt.GetInteger("y");
+            z = nbt.GetInteger("z");
         }
 
-        public virtual void writeNbt(NBTTagCompound nbt)
+        public virtual void writeNbt(NbtTagCompound nbt)
         {
             string entityId = (string)classToId.get(getClass());
             if (entityId == null)
@@ -46,10 +46,10 @@ namespace betareborn.Blocks.Entities
             }
             else
             {
-                nbt.setString("id", entityId);
-                nbt.setInteger("x", x);
-                nbt.setInteger("y", y);
-                nbt.setInteger("z", z);
+                nbt.SetString("id", entityId);
+                nbt.SetInteger("x", x);
+                nbt.SetInteger("y", y);
+                nbt.SetInteger("z", z);
             }
         }
 
@@ -57,13 +57,13 @@ namespace betareborn.Blocks.Entities
         {
         }
 
-        public static BlockEntity createFromNbt(NBTTagCompound nbt)
+        public static BlockEntity createFromNbt(NbtTagCompound nbt)
         {
             BlockEntity blockEntity = null;
 
             try
             {
-                Class blockEntityClass = (Class)idToClass.get(nbt.getString("id"));
+                Class blockEntityClass = (Class)idToClass.get(nbt.GetString("id"));
                 if (blockEntityClass != null)
                 {
                     blockEntity = (BlockEntity)blockEntityClass.newInstance();
@@ -80,7 +80,7 @@ namespace betareborn.Blocks.Entities
             }
             else
             {
-                java.lang.System.@out.println("Skipping TileEntity with id " + nbt.getString("id"));
+                java.lang.System.@out.println("Skipping TileEntity with id " + nbt.GetString("id"));
             }
 
             return blockEntity;

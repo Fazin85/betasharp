@@ -86,14 +86,14 @@ namespace betareborn.Entities
             world.createExplosion((Entity)null, x, y, z, var1);
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NbtTagCompound var1)
         {
-            var1.setByte("Fuse", (sbyte)fuse);
+            var1.SetByte("Fuse", (sbyte)fuse);
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NbtTagCompound var1)
         {
-            fuse = var1.getByte("Fuse");
+            fuse = var1.GetByte("Fuse");
         }
 
         public override float getShadowRadius()

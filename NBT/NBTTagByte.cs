@@ -15,22 +15,22 @@ namespace betareborn.NBT
             byteValue = value;
         }
 
-        public override void writeTagContents(DataOutput output)
+        public override void WriteTagContents(DataOutput output)
         {
             output.writeByte(byteValue);
         }
 
-        public override void readTagContents(DataInput input)
+        public override void ReadTagContents(DataInput input)
         {
             byteValue = (sbyte) input.readByte();
         }
 
-        public override byte getType()
+        public override byte GetTagType()
         {
             return 1;
         }
 
-        public override string toString()
+        public override string ToString()
         {
             return byteValue.ToString();
         }

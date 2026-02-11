@@ -45,13 +45,13 @@ namespace betareborn.Entities
             return var2;
         }
 
-        public static Entity getEntityFromNbt(NBTTagCompound nbt, World world)
+        public static Entity getEntityFromNbt(NbtTagCompound nbt, World world)
         {
             Entity var2 = null;
 
             try
             {
-                Class var3 = (Class)idToClass.get(nbt.getString("id"));
+                Class var3 = (Class)idToClass.get(nbt.GetString("id"));
                 if (var3 != null)
                 {
                     var2 = (Entity)var3.getConstructor([World.Class]).newInstance([world]);
@@ -68,7 +68,7 @@ namespace betareborn.Entities
             }
             else
             {
-                java.lang.System.@out.println("Skipping Entity with id " + nbt.getString("id"));
+                java.lang.System.@out.println("Skipping Entity with id " + nbt.GetString("id"));
             }
 
             return var2;

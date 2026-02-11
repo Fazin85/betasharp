@@ -19,16 +19,16 @@ namespace betareborn.Entities
             dataWatcher.addObject(16, java.lang.Byte.valueOf((byte)0));
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NbtTagCompound var1)
         {
             base.writeNbt(var1);
-            var1.setBoolean("Saddle", getSaddled());
+            var1.SetBoolean("Saddle", getSaddled());
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NbtTagCompound var1)
         {
             base.readNbt(var1);
-            setSaddled(var1.getBoolean("Saddle"));
+            setSaddled(var1.GetBoolean("Saddle"));
         }
 
         protected override string getLivingSound()

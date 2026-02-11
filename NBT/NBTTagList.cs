@@ -7,11 +7,11 @@ namespace betareborn.NBT
         private List<NBTBase> tagList = [];
         private byte tagType;
 
-        public override void writeTagContents(DataOutput output)
+        public override void WriteTagContents(DataOutput output)
         {
             if (tagList.Count > 0)
             {
-                tagType = tagList[0].getType();
+                tagType = tagList[0].GetTagType();
             }
             else
             {
@@ -23,11 +23,11 @@ namespace betareborn.NBT
 
             foreach (var tag in tagList)
             {
-                tag.writeTagContents(output);
+                tag.WriteTagContents(output);
             }
         }
 
-        public override void readTagContents(DataInput input)
+        public override void ReadTagContents(DataInput input)
         {
             tagType = input.readByte();
             var length = input.readInt();
@@ -35,25 +35,25 @@ namespace betareborn.NBT
 
             for (var index = 0; index < length; ++index)
             {
-                var tag = createTagOfType(tagType);
-                tag.readTagContents(input);
+                var tag = CreateTagOfType(tagType);
+                tag.ReadTagContents(input);
                 tagList.Add(tag);
             }
         }
 
-        public override byte getType()
+        public override byte GetTagType()
         {
             return 9;
         }
 
-        public override string toString()
+        public override string ToString()
         {
-            return $"{tagList.Count} entries of type {getTagName(tagType)}";
+            return $"{tagList.Count} entries of type {GetTagName(tagType)}";
         }
 
         public void setTag(NBTBase value)
         {
-            tagType = value.getType();
+            tagType = value.GetTagType();
             tagList.Add(value);
         }
 
