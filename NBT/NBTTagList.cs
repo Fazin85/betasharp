@@ -9,14 +9,7 @@ namespace betareborn.NBT
 
         public override void WriteTagContents(DataOutput output)
         {
-            if (tagList.Count > 0)
-            {
-                tagType = tagList[0].GetTagType();
-            }
-            else
-            {
-                tagType = 1;
-            }
+            tagType = tagList.Count > 0 ? tagList[0].GetTagType() : (byte) 1;
 
             output.writeByte(tagType);
             output.writeInt(tagList.Count);

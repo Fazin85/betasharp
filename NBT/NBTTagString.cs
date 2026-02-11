@@ -5,7 +5,7 @@ namespace betareborn.NBT
 {
     public sealed class NBTTagString : NBTBase
     {
-        public string stringValue = string.Empty;
+        public string Value { get; set; } = string.Empty;
 
         public NBTTagString()
         {
@@ -13,7 +13,7 @@ namespace betareborn.NBT
 
         public NBTTagString(string value)
         {
-            stringValue = value;
+            Value = value;
             
             if (string.IsNullOrWhiteSpace(value))
             {
@@ -23,12 +23,12 @@ namespace betareborn.NBT
 
         public override void WriteTagContents(DataOutput output)
         {
-            output.writeUTF(stringValue);
+            output.writeUTF(Value);
         }
 
         public override void ReadTagContents(DataInput input)
         {
-            stringValue = input.readUTF();
+            Value = input.readUTF();
         }
 
         public override byte GetTagType()
@@ -38,7 +38,7 @@ namespace betareborn.NBT
 
         public override string ToString()
         {
-            return stringValue;
+            return Value;
         }
     }
 }

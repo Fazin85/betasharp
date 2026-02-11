@@ -925,9 +925,9 @@ namespace betareborn.Entities
             NBTTagList var2 = var1.GetTagList("Pos");
             NBTTagList var3 = var1.GetTagList("Motion");
             NBTTagList var4 = var1.GetTagList("Rotation");
-            velocityX = ((NBTTagDouble)var3.tagAt(0)).doubleValue;
-            velocityY = ((NBTTagDouble)var3.tagAt(1)).doubleValue;
-            velocityZ = ((NBTTagDouble)var3.tagAt(2)).doubleValue;
+            velocityX = ((NBTTagDouble)var3.tagAt(0)).Value;
+            velocityY = ((NBTTagDouble)var3.tagAt(1)).Value;
+            velocityZ = ((NBTTagDouble)var3.tagAt(2)).Value;
             if (java.lang.Math.abs(velocityX) > 10.0D)
             {
                 velocityX = 0.0D;
@@ -943,11 +943,11 @@ namespace betareborn.Entities
                 velocityZ = 0.0D;
             }
 
-            prevX = lastTickX = x = ((NBTTagDouble)var2.tagAt(0)).doubleValue;
-            prevY = lastTickY = y = ((NBTTagDouble)var2.tagAt(1)).doubleValue;
-            prevZ = lastTickZ = z = ((NBTTagDouble)var2.tagAt(2)).doubleValue;
-            prevYaw = yaw = ((NBTTagFloat)var4.tagAt(0)).floatValue;
-            prevPitch = pitch = ((NBTTagFloat)var4.tagAt(1)).floatValue;
+            prevX = lastTickX = x = ((NBTTagDouble)var2.tagAt(0)).Value;
+            prevY = lastTickY = y = ((NBTTagDouble)var2.tagAt(1)).Value;
+            prevZ = lastTickZ = z = ((NBTTagDouble)var2.tagAt(2)).Value;
+            prevYaw = yaw = ((NBTTagFloat)var4.tagAt(0)).Value;
+            prevPitch = pitch = ((NBTTagFloat)var4.tagAt(1)).Value;
             fallDistance = var1.GetFloat("FallDistance");
             fireTicks = var1.GetShort("Fire");
             air = var1.GetShort("Air");

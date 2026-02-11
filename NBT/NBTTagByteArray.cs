@@ -4,7 +4,7 @@ namespace betareborn.NBT
 {
     public sealed class NBTTagByteArray : NBTBase
     {
-        public byte[] byteArray = [];
+        public byte[] Value { get; set; } = [];
 
         public NBTTagByteArray()
         {
@@ -12,20 +12,20 @@ namespace betareborn.NBT
 
         public NBTTagByteArray(byte[] value)
         {
-            byteArray = value;
+            Value = value;
         }
 
         public override void WriteTagContents(DataOutput output)
         {
-            output.writeInt(byteArray.Length);
-            output.write(byteArray);
+            output.writeInt(Value.Length);
+            output.write(Value);
         }
 
         public override void ReadTagContents(DataInput input)
         {
             var length = input.readInt();
-            byteArray = new byte[length];
-            input.readFully(byteArray);
+            Value = new byte[length];
+            input.readFully(Value);
         }
 
         public override byte GetTagType()
@@ -35,7 +35,7 @@ namespace betareborn.NBT
 
         public override string ToString()
         {
-            return $"[{byteArray.Length} bytes]";
+            return $"[{Value.Length} bytes]";
         }
     }
 }
