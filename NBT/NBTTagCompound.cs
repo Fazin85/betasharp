@@ -30,7 +30,7 @@ namespace betareborn.NBT
                     return;
                 }
 
-                tagMap[tag.GetKey()] = tag;
+                tagMap[tag.Key] = tag;
             }
         }
 
@@ -46,52 +46,78 @@ namespace betareborn.NBT
 
         public void SetTag(string key, NBTBase value)
         {
-            tagMap[key] = value.SetKey(key);
+            value.Key = key;
+            tagMap[key] = value;
         }
 
         public void SetByte(string key, sbyte value)
         {
-            tagMap[key] = new NBTTagByte(value).SetKey(key);
+            tagMap[key] = new NBTTagByte(value)
+            {
+                Key = Key
+            };
         }
 
         public void SetShort(string key, short value)
         {
-            tagMap[key] = new NBTTagShort(value).SetKey(key);
+            tagMap[key] = new NBTTagShort(value)
+            {
+                Key = Key
+            };
         }
 
         public void SetInteger(string key, int value)
         {
-            tagMap[key] = new NBTTagInt(value).SetKey(key);
+            tagMap[key] = new NBTTagInt(value)
+            {
+                Key = Key
+            };
         }
 
         public void SetLong(string key, long value)
         {
-            tagMap[key] = new NBTTagLong(value).SetKey(key);
+            tagMap[key] = new NBTTagLong(value)
+            {
+                Key = Key
+            };
         }
 
         public void SetFloat(string key, float value)
         {
-            tagMap[key] = new NBTTagFloat(value).SetKey(key);
+            tagMap[key] = new NBTTagFloat(value)
+            {
+                Key = Key
+            };
         }
 
         public void SetDouble(string key, double value)
         {
-            tagMap[key] = new NBTTagDouble(value).SetKey(key);
+            tagMap[key] = new NBTTagDouble(value)
+            {
+                Key = Key
+            };
         }
 
         public void SetString(string key, string value)
         {
-            tagMap[key] = new NBTTagString(value).SetKey(key);
+            tagMap[key] = new NBTTagString(value)
+            {
+                Key = Key
+            };
         }
 
         public void SetByteArray(string key, byte[] value)
         {
-            tagMap[key] = new NBTTagByteArray(value).SetKey(key);
+            tagMap[key] = new NBTTagByteArray(value)
+            {
+                Key = Key
+            };
         }
 
         public void SetCompoundTag(string key, NbtTagCompound value)
         {
-            tagMap[key] = value.SetKey(key);
+            value.Key = key;
+            tagMap[key] = value;
         }
 
         public void SetBoolean(string key, bool value)

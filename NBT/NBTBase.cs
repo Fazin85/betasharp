@@ -4,24 +4,13 @@ namespace betareborn.NBT
 {
     public abstract class NBTBase
     {
-        private string? key;
+        public string Key { get; set; } = string.Empty;
 
         public abstract void WriteTagContents(DataOutput output);
 
         public abstract void ReadTagContents(DataInput input);
 
         public abstract byte GetTagType();
-
-        public string GetKey()
-        {
-            return key ?? string.Empty;
-        }
-
-        public NBTBase SetKey(string value)
-        {
-            key = value;
-            return this;
-        }
 
         public static NBTBase ReadTag(DataInput input)
         {
@@ -34,7 +23,7 @@ namespace betareborn.NBT
 
             var tag = CreateTagOfType(identifier);
 
-            tag.key = input.readUTF();
+            tag.Key = input.readUTF();
             tag.ReadTagContents(input);
 
             return tag;
@@ -49,7 +38,7 @@ namespace betareborn.NBT
                 return;
             }
 
-            output.writeUTF(tag.GetKey());
+            output.writeUTF(tag.Key);
             tag.WriteTagContents(output);
         }
 
