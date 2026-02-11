@@ -68,7 +68,7 @@ namespace betareborn.NBT
                 8 => new NBTTagString(),
                 9 => new NBTTagList(),
                 10 => new NBTTagCompound(),
-                _ => throw new ArgumentOutOfRangeException(nameof(identifier), identifier, "Unknown NBT tag identifier")
+                _ => throw new ArgumentOutOfRangeException(nameof(identifier), identifier, "Unknown NBT identifier")
             };
         }
 
@@ -87,7 +87,7 @@ namespace betareborn.NBT
                 8 => "TAG_String",
                 9 => "TAG_List",
                 10 => "TAG_Compound",
-                _ => throw new ArgumentOutOfRangeException(nameof(identifier), identifier, "Unknown NBT tag identifier")
+                _ => throw new ArgumentOutOfRangeException(nameof(identifier), identifier, "Unknown NBT identifier")
             };
         }
     }
