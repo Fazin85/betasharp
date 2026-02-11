@@ -47,7 +47,7 @@ namespace betareborn
                 return compound;
             }
 
-            throw new java.io.IOException("Root tag must be a named compound tag");
+            throw new InvalidOperationException("Root tag must be a named compound tag");
         }
 
         public static void write(NBTTagCompound tag, DataOutput output)
