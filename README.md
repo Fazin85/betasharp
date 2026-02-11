@@ -57,8 +57,10 @@ cd betasharp
 dotnet build -c ClientDebug
 ```
 
-The compiled binary should end up in `./bin/<config-name>/net10.0`
-
+The compiled binary can then be run by running the desired configuration.
+```bash
+dotnet run -c ClientDebug
+```
 ## License
 
 This project is shared openly for collaboration. All code is derivative of Minecraft and subject to Mojang's rights.
