@@ -1,18 +1,17 @@
 using java.io;
-using java.util;
 
 namespace betareborn.NBT
 {
     public sealed class NBTTagList : NBTBase
     {
-        private List tagList = new ArrayList();
+        private List<NBTBase> tagList = [];
         private byte tagType;
 
         public override void writeTagContents(DataOutput output)
         {
-            if (tagList.size() > 0)
+            if (tagList.Count > 0)
             {
-                tagType = ((NBTBase) tagList.get(0)).getType();
+                tagType = tagList[0].getType();
             }
             else
             {
@@ -20,11 +19,11 @@ namespace betareborn.NBT
             }
 
             output.writeByte(tagType);
-            output.writeInt(tagList.size());
+            output.writeInt(tagList.Count);
 
-            for (var index = 0; index < tagList.size(); ++index)
+            foreach (var tag in tagList)
             {
-                ((NBTBase) tagList.get(index)).writeTagContents(output);
+                tag.writeTagContents(output);
             }
         }
 
@@ -32,13 +31,13 @@ namespace betareborn.NBT
         {
             tagType = input.readByte();
             var length = input.readInt();
-            tagList = new ArrayList();
+            tagList = [];
 
             for (var index = 0; index < length; ++index)
             {
                 var tag = createTagOfType(tagType);
                 tag.readTagContents(input);
-                tagList.add(tag);
+                tagList.Add(tag);
             }
         }
 
@@ -49,23 +48,23 @@ namespace betareborn.NBT
 
         public override string toString()
         {
-            return $"{tagList.size()} entries of type {getTagName(tagType)}";
+            return $"{tagList.Count} entries of type {getTagName(tagType)}";
         }
 
         public void setTag(NBTBase value)
         {
             tagType = value.getType();
-            tagList.add(value);
+            tagList.Add(value);
         }
 
         public NBTBase tagAt(int value)
         {
-            return (NBTBase) tagList.get(value);
+            return tagList[value];
         }
 
         public int tagCount()
         {
-            return tagList.size();
+            return tagList.Count;
         }
     }
 }
