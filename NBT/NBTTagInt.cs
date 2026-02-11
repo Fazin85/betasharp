@@ -30,7 +30,7 @@ namespace betareborn.NBT
             return 3;
         }
 
-        public override string toString()
+        public override string ToString()
         {
             return intValue.ToString();
         }

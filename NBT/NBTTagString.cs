@@ -36,7 +36,7 @@ namespace betareborn.NBT
             return 8;
         }
 
-        public override string toString()
+        public override string ToString()
         {
             return stringValue;
         }

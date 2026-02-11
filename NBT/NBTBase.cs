@@ -2,7 +2,7 @@ using java.io;
 
 namespace betareborn.NBT
 {
-    public abstract class NBTBase : java.lang.Object
+    public abstract class NBTBase
     {
         public string Key { get; set; } = string.Empty;
 

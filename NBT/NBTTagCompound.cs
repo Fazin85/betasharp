@@ -185,7 +185,7 @@ namespace betareborn.NBT
             return GetByte(key) != 0;
         }
 
-        public override string toString()
+        public override string ToString()
         {
             return $"{_tagMap.Count} entries";
         }

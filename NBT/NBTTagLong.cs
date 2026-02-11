@@ -30,7 +30,7 @@ namespace betareborn.NBT
             return 4;
         }
 
-        public override string toString()
+        public override string ToString()
         {
             return longValue.ToString();
         }

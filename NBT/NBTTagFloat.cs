@@ -31,7 +31,7 @@ namespace betareborn.NBT
             return 5;
         }
 
-        public override string toString()
+        public override string ToString()
         {
             return floatValue.ToString(CultureInfo.CurrentCulture);
         }
