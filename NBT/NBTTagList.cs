@@ -3,12 +3,12 @@ using java.util;
 
 namespace betareborn.NBT
 {
-    public class NBTTagList : NBTBase
+    public sealed class NBTTagList : NBTBase
     {
         private List tagList = new ArrayList();
         private byte tagType;
 
-        public override void writeTagContents(DataOutput var1)
+        public override void writeTagContents(DataOutput output)
         {
             if (tagList.size() > 0)
             {
@@ -19,27 +19,26 @@ namespace betareborn.NBT
                 tagType = 1;
             }
 
-            var1.writeByte(tagType);
-            var1.writeInt(tagList.size());
+            output.writeByte(tagType);
+            output.writeInt(tagList.size());
 
-            for (int var2 = 0; var2 < tagList.size(); ++var2)
+            for (var index = 0; index < tagList.size(); ++index)
             {
-                ((NBTBase) tagList.get(var2)).writeTagContents(var1);
+                ((NBTBase) tagList.get(index)).writeTagContents(output);
             }
         }
 
-        public override void readTagContents(DataInput var1)
+        public override void readTagContents(DataInput input)
         {
-            tagType = var1.readByte();
-            int var2 = var1.readInt();
+            tagType = input.readByte();
+            var length = input.readInt();
             tagList = new ArrayList();
 
-            for (int var3 = 0; var3 < var2; ++var3)
+            for (var index = 0; index < length; ++index)
             {
-                NBTBase var4 = createTagOfType(tagType);
-                var4.readTagContents(var1);
-
-                tagList.add(var4);
+                var tag = createTagOfType(tagType);
+                tag.readTagContents(input);
+                tagList.add(tag);
             }
         }
 
@@ -50,18 +49,18 @@ namespace betareborn.NBT
 
         public override string toString()
         {
-            return "" + tagList.size() + " entries of type " + getTagName(tagType);
+            return $"{tagList.size()} entries of type {getTagName(tagType)}";
         }
 
-        public void setTag(NBTBase var1)
+        public void setTag(NBTBase value)
         {
-            tagType = var1.getType();
-            tagList.add(var1);
+            tagType = value.getType();
+            tagList.add(value);
         }
 
-        public NBTBase tagAt(int var1)
+        public NBTBase tagAt(int value)
         {
-            return (NBTBase) tagList.get(var1);
+            return (NBTBase) tagList.get(value);
         }
 
         public int tagCount()

@@ -3,31 +3,32 @@ using java.lang;
 
 namespace betareborn.NBT
 {
-    public class NBTTagString : NBTBase
+    public sealed class NBTTagString : NBTBase
     {
-        public string stringValue;
+        public string stringValue = string.Empty;
 
         public NBTTagString()
         {
         }
 
-        public NBTTagString(string var1)
+        public NBTTagString(string value)
         {
-            stringValue = var1;
-            if (var1 == null)
+            stringValue = value;
+            
+            if (string.IsNullOrWhiteSpace(value))
             {
                 throw new IllegalArgumentException("Empty string not allowed");
             }
         }
 
-        public override void writeTagContents(DataOutput var1)
+        public override void writeTagContents(DataOutput output)
         {
-            var1.writeUTF(stringValue);
+            output.writeUTF(stringValue);
         }
 
-        public override void readTagContents(DataInput var1)
+        public override void readTagContents(DataInput input)
         {
-            stringValue = var1.readUTF();
+            stringValue = input.readUTF();
         }
 
         public override byte getType()
@@ -37,7 +38,7 @@ namespace betareborn.NBT
 
         public override string toString()
         {
-            return "" + stringValue;
+            return stringValue;
         }
     }
 }

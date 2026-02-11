@@ -2,7 +2,7 @@ using java.io;
 
 namespace betareborn.NBT
 {
-    public class NBTTagLong : NBTBase
+    public sealed class NBTTagLong : NBTBase
     {
         public long longValue;
 
@@ -10,19 +10,19 @@ namespace betareborn.NBT
         {
         }
 
-        public NBTTagLong(long var1)
+        public NBTTagLong(long value)
         {
-            longValue = var1;
+            longValue = value;
         }
 
-        public override void writeTagContents(DataOutput var1)
+        public override void writeTagContents(DataOutput output)
         {
-            var1.writeLong(longValue);
+            output.writeLong(longValue);
         }
 
-        public override void readTagContents(DataInput var1)
+        public override void readTagContents(DataInput input)
         {
-            longValue = var1.readLong();
+            longValue = input.readLong();
         }
 
         public override byte getType()
@@ -32,7 +32,7 @@ namespace betareborn.NBT
 
         public override string toString()
         {
-            return "" + longValue;
+            return longValue.ToString();
         }
     }
 }
