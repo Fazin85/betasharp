@@ -4,24 +4,17 @@ namespace betareborn.NBT
 {
     public sealed class NbtTagList : NBTBase
     {
-        private List<NBTBase> _tagList = [];
-        private byte _tagType;
+        private List<NBTBase> list = [];
+        private byte type;
 
         public override void WriteTagContents(DataOutput output)
         {
-            if (_tagList.Count > 0)
-            {
-                _tagType = _tagList[0].GetTagType();
-            }
-            else
-            {
-                _tagType = 1;
-            }
+            type = list.Count > 0 ? list[0].GetTagType() : (byte) 1;
 
-            output.writeByte(_tagType);
-            output.writeInt(_tagList.Count);
+            output.writeByte(type);
+            output.writeInt(list.Count);
 
-            foreach (var tag in _tagList)
+            foreach (var tag in list)
             {
                 tag.WriteTagContents(output);
             }
@@ -29,15 +22,16 @@ namespace betareborn.NBT
 
         public override void ReadTagContents(DataInput input)
         {
-            _tagType = input.readByte();
+            list = [];
+            type = input.readByte();
+
             var length = input.readInt();
-            _tagList = [];
 
             for (var index = 0; index < length; ++index)
             {
-                var tag = CreateTagOfType(_tagType);
+                var tag = CreateTagOfType(type);
                 tag.ReadTagContents(input);
-                _tagList.Add(tag);
+                list.Add(tag);
             }
         }
 
@@ -48,23 +42,23 @@ namespace betareborn.NBT
 
         public override string ToString()
         {
-            return $"{_tagList.Count} entries of type {GetTagName(_tagType)}";
+            return $"{list.Count} entries of type {GetTagName(type)}";
         }
 
         public void SetTag(NBTBase value)
         {
-            _tagType = value.GetTagType();
-            _tagList.Add(value);
+            type = value.GetTagType();
+            list.Add(value);
         }
 
         public NBTBase TagAt(int value)
         {
-            return _tagList[value];
+            return list[value];
         }
 
         public int TagCount()
         {
-            return _tagList.Count;
+            return list.Count;
         }
     }
 }

@@ -4,13 +4,13 @@ namespace betareborn.NBT
 {
     public sealed class NbtTagCompound : NBTBase
     {
-        public IEnumerable<NBTBase> Values => _tagMap.Values;
+        public IEnumerable<NBTBase> Values => dictionary.Values;
         
-        private readonly Dictionary<string, NBTBase> _tagMap = [];
+        private readonly Dictionary<string, NBTBase> dictionary = [];
 
         public override void WriteTagContents(DataOutput output)
         {
-            foreach (var value in _tagMap.Values)
+            foreach (var value in dictionary.Values)
             {
                 WriteTag(value, output);
             }
@@ -20,7 +20,7 @@ namespace betareborn.NBT
 
         public override void ReadTagContents(DataInput input)
         {
-            _tagMap.Clear();
+            dictionary.Clear();
 
             while (true)
             {
@@ -31,7 +31,7 @@ namespace betareborn.NBT
                     return;
                 }
 
-                _tagMap[tag.Key] = tag;
+                dictionary[tag.Key] = tag;
             }
         }
 
@@ -43,12 +43,12 @@ namespace betareborn.NBT
         public void SetTag(string key, NBTBase value)
         {
             value.Key = key;
-            _tagMap[key] = value;
+            dictionary[key] = value;
         }
 
         public void SetByte(string key, sbyte value)
         {
-            _tagMap[key] = new NBTTagByte(value)
+            dictionary[key] = new NBTTagByte(value)
             {
                 Key = key
             };
@@ -56,7 +56,7 @@ namespace betareborn.NBT
 
         public void SetShort(string key, short value)
         {
-            _tagMap[key] = new NBTTagShort(value)
+            dictionary[key] = new NBTTagShort(value)
             {
                 Key = key
             };
@@ -64,7 +64,7 @@ namespace betareborn.NBT
 
         public void SetInteger(string key, int value)
         {
-            _tagMap[key] = new NBTTagInt(value)
+            dictionary[key] = new NBTTagInt(value)
             {
                 Key = key
             };
@@ -72,7 +72,7 @@ namespace betareborn.NBT
 
         public void SetLong(string key, long value)
         {
-            _tagMap[key] = new NBTTagLong(value)
+            dictionary[key] = new NBTTagLong(value)
             {
                 Key = key
             };
@@ -80,7 +80,7 @@ namespace betareborn.NBT
 
         public void SetFloat(string key, float value)
         {
-            _tagMap[key] = new NBTTagFloat(value)
+            dictionary[key] = new NBTTagFloat(value)
             {
                 Key = key
             };
@@ -88,7 +88,7 @@ namespace betareborn.NBT
 
         public void SetDouble(string key, double value)
         {
-            _tagMap[key] = new NBTTagDouble(value)
+            dictionary[key] = new NBTTagDouble(value)
             {
                 Key = key
             };
@@ -96,7 +96,7 @@ namespace betareborn.NBT
 
         public void SetString(string key, string value)
         {
-            _tagMap[key] = new NBTTagString(value)
+            dictionary[key] = new NBTTagString(value)
             {
                 Key = key
             };
@@ -104,7 +104,7 @@ namespace betareborn.NBT
 
         public void SetByteArray(string key, byte[] value)
         {
-            _tagMap[key] = new NBTTagByteArray(value)
+            dictionary[key] = new NBTTagByteArray(value)
             {
                 Key = key
             };
@@ -113,7 +113,7 @@ namespace betareborn.NBT
         public void SetCompoundTag(string key, NbtTagCompound value)
         {
             value.Key = key;
-            _tagMap[key] = value;
+            dictionary[key] = value;
         }
 
         public void SetBoolean(string key, bool value)
@@ -123,57 +123,57 @@ namespace betareborn.NBT
 
         public bool HasKey(string key)
         {
-            return _tagMap.ContainsKey(key);
+            return dictionary.ContainsKey(key);
         }
 
         public sbyte GetByte(string key)
         {
-            return !_tagMap.TryGetValue(key, out var value) ? (sbyte) 0 : ((NBTTagByte) value).Value;
+            return !dictionary.TryGetValue(key, out var value) ? (sbyte) 0 : ((NBTTagByte) value).Value;
         }
 
         public short GetShort(string key)
         {
-            return !_tagMap.TryGetValue(key, out var value) ? (short) 0 : ((NBTTagShort) value).Value;
+            return !dictionary.TryGetValue(key, out var value) ? (short) 0 : ((NBTTagShort) value).Value;
         }
 
         public int GetInteger(string key)
         {
-            return !_tagMap.TryGetValue(key, out var value) ? 0 : ((NBTTagInt) value).Value;
+            return !dictionary.TryGetValue(key, out var value) ? 0 : ((NBTTagInt) value).Value;
         }
 
         public long GetLong(string key)
         {
-            return !_tagMap.TryGetValue(key, out var value) ? 0L : ((NBTTagLong) value).Value;
+            return !dictionary.TryGetValue(key, out var value) ? 0L : ((NBTTagLong) value).Value;
         }
 
         public float GetFloat(string key)
         {
-            return !_tagMap.TryGetValue(key, out var value) ? 0.0F : ((NBTTagFloat) value).Value;
+            return !dictionary.TryGetValue(key, out var value) ? 0.0F : ((NBTTagFloat) value).Value;
         }
 
         public double GetDouble(string key)
         {
-            return !_tagMap.TryGetValue(key, out var value) ? 0.0D : ((NBTTagDouble) value).Value;
+            return !dictionary.TryGetValue(key, out var value) ? 0.0D : ((NBTTagDouble) value).Value;
         }
 
         public string GetString(string key)
         {
-            return !_tagMap.TryGetValue(key, out var value) ? string.Empty : ((NBTTagString) value).Value;
+            return !dictionary.TryGetValue(key, out var value) ? string.Empty : ((NBTTagString) value).Value;
         }
 
         public byte[] GetByteArray(string key)
         {
-            return !_tagMap.TryGetValue(key, out var value) ? [] : ((NBTTagByteArray) value).Values;
+            return !dictionary.TryGetValue(key, out var value) ? [] : ((NBTTagByteArray) value).Values;
         }
 
         public NbtTagCompound GetCompoundTag(string key)
         {
-            return !_tagMap.TryGetValue(key, out var value) ? new NbtTagCompound() : (NbtTagCompound) value;
+            return !dictionary.TryGetValue(key, out var value) ? new NbtTagCompound() : (NbtTagCompound) value;
         }
 
         public NbtTagList GetTagList(string key)
         {
-            return !_tagMap.TryGetValue(key, out var value) ? new NbtTagList() : (NbtTagList) value;
+            return !dictionary.TryGetValue(key, out var value) ? new NbtTagList() : (NbtTagList) value;
         }
 
         public bool GetBoolean(string key)
@@ -183,7 +183,7 @@ namespace betareborn.NBT
 
         public override string ToString()
         {
-            return $"{_tagMap.Count} entries";
+            return $"{dictionary.Count} entries";
         }
     }
 }
