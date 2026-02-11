@@ -50,7 +50,7 @@ namespace betareborn.NBT
         {
             _tagMap[key] = new NBTTagByte(value)
             {
-                Key = Key
+                Key = key
             };
         }
 
@@ -58,7 +58,7 @@ namespace betareborn.NBT
         {
             _tagMap[key] = new NBTTagShort(value)
             {
-                Key = Key
+                Key = key
             };
         }
 
@@ -66,7 +66,7 @@ namespace betareborn.NBT
         {
             _tagMap[key] = new NBTTagInt(value)
             {
-                Key = Key
+                Key = key
             };
         }
 
@@ -74,7 +74,7 @@ namespace betareborn.NBT
         {
             _tagMap[key] = new NBTTagLong(value)
             {
-                Key = Key
+                Key = key
             };
         }
 
@@ -82,7 +82,7 @@ namespace betareborn.NBT
         {
             _tagMap[key] = new NBTTagFloat(value)
             {
-                Key = Key
+                Key = key
             };
         }
 
@@ -90,7 +90,7 @@ namespace betareborn.NBT
         {
             _tagMap[key] = new NBTTagDouble(value)
             {
-                Key = Key
+                Key = key
             };
         }
 
@@ -98,7 +98,7 @@ namespace betareborn.NBT
         {
             _tagMap[key] = new NBTTagString(value)
             {
-                Key = Key
+                Key = key
             };
         }
 
@@ -106,7 +106,7 @@ namespace betareborn.NBT
         {
             _tagMap[key] = new NBTTagByteArray(value)
             {
-                Key = Key
+                Key = key
             };
         }
 
