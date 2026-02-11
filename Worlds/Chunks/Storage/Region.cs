@@ -683,7 +683,7 @@ namespace betareborn.Worlds.Chunks.Storage
             ByteArrayOutputStream outputStream = new();
             DataOutputStream dataOutput = new(outputStream);
             dataOutput.flush();
-            NbtIo.write(nbt, dataOutput);
+            NbtIo.Write(nbt, dataOutput);
             return outputStream.toByteArray();
         }
 
@@ -691,7 +691,7 @@ namespace betareborn.Worlds.Chunks.Storage
         {
             ByteArrayInputStream inputStream = new(bytes, 0, length);
             DataInputStream dataInput = new(inputStream);
-            return NbtIo.read((DataInput)dataInput);
+            return NbtIo.Read((DataInput)dataInput);
         }
 
         //chunkX and chunkZ are not relative to region, they are world chunk coordinates
@@ -788,7 +788,7 @@ namespace betareborn.Worlds.Chunks.Storage
             }
             else if (compressionType == 2)
             {
-                NbtTagCompound chunkNBT = NbtIo.read((DataInput)chunkStream.getInputStream());
+                NbtTagCompound chunkNBT = NbtIo.Read((DataInput)chunkStream.getInputStream());
                 writeInternal(chunkPos.x, chunkPos.z, chunkNBT, false);
             }
             else

@@ -105,7 +105,7 @@ namespace betareborn.Worlds.Storage
                 {
                     try
                     {
-                        var4 = NbtIo.read(new FileInputStream(var3));
+                        var4 = NbtIo.Read(new FileInputStream(var3));
                         var5 = var4.GetCompoundTag("Data");
                         long sizeOnDisk = getFolderSizeMB(var2);
                         var wInfo = new WorldProperties(var5);
@@ -123,7 +123,7 @@ namespace betareborn.Worlds.Storage
                 {
                     try
                     {
-                        var4 = NbtIo.read(new FileInputStream(var3));
+                        var4 = NbtIo.Read(new FileInputStream(var3));
                         var5 = var4.GetCompoundTag("Data");
                         long sizeOnDisk = getFolderSizeMB(var2);
                         var wInfo = new WorldProperties(var5);
@@ -150,10 +150,10 @@ namespace betareborn.Worlds.Storage
                 {
                     try
                     {
-                        betareborn.NBT.NbtTagCompound var5 = NbtIo.read(new FileInputStream(var4));
+                        betareborn.NBT.NbtTagCompound var5 = NbtIo.Read(new FileInputStream(var4));
                         betareborn.NBT.NbtTagCompound var6 = var5.GetCompoundTag("Data");
                         var6.SetString("LevelName", var2);
-                        NbtIo.writeGzippedCompoundToOutputStream(var5, new FileOutputStream(var4));
+                        NbtIo.WriteCompressed(var5, new FileOutputStream(var4));
                     }
                     catch (java.lang.Exception var7)
                     {
