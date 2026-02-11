@@ -6,55 +6,53 @@ namespace betareborn
 {
     public class NbtIo : java.lang.Object
     {
-        public static NBTTagCompound read(InputStream var0)
+        public static NBTTagCompound read(InputStream input)
         {
-            DataInputStream var1 = new(new GZIPInputStream(var0));
+            var stream = new DataInputStream(new GZIPInputStream(input));
 
-            NBTTagCompound var2;
-            try
-            {
-                var2 = read((DataInput)var1);
-            }
-            finally
-            {
-                var1.close();
-            }
-
-            return var2;
-        }
-
-        public static void writeGzippedCompoundToOutputStream(NBTTagCompound var0, OutputStream var1)
-        {
-            DataOutputStream var2 = new(new GZIPOutputStream(var1));
+            NBTTagCompound tag;
 
             try
             {
-                write(var0, var2);
+                tag = read((DataInput) stream);
             }
             finally
             {
-                var2.close();
+                stream.close();
             }
 
+            return tag;
         }
 
-        public static NBTTagCompound read(DataInput var0)
+        public static void writeGzippedCompoundToOutputStream(NBTTagCompound tag, OutputStream output)
         {
-            NBTBase var1 = NBTBase.readTag(var0);
-            if (var1 is NBTTagCompound)
+            var stream = new DataOutputStream(new GZIPOutputStream(output));
+
+            try
             {
-                return (NBTTagCompound)var1;
+                write(tag, stream);
             }
-            else
+            finally
             {
-                throw new java.io.IOException("Root tag must be a named compound tag");
+                stream.close();
             }
         }
 
-        public static void write(NBTTagCompound var0, DataOutput var1)
+        public static NBTTagCompound read(DataInput input)
         {
-            NBTBase.writeTag(var0, var1);
+            var tag = NBTBase.readTag(input);
+            
+            if (tag is NBTTagCompound compound)
+            {
+                return compound;
+            }
+
+            throw new java.io.IOException("Root tag must be a named compound tag");
+        }
+
+        public static void write(NBTTagCompound tag, DataOutput output)
+        {
+            NBTBase.writeTag(tag, output);
         }
     }
-
 }
