@@ -4,7 +4,6 @@ namespace betareborn.NBT
 {
     public class NBTTagShort : NBTBase
     {
-
         public short shortValue;
 
         public NBTTagShort()
@@ -28,7 +27,7 @@ namespace betareborn.NBT
 
         public override byte getType()
         {
-            return (byte)2;
+            return 2;
         }
 
         public override string toString()
@@ -36,5 +35,4 @@ namespace betareborn.NBT
             return "" + shortValue;
         }
     }
-
 }

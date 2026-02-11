@@ -5,7 +5,6 @@ namespace betareborn.NBT
 {
     public class NBTTagList : NBTBase
     {
-
         private List tagList = new ArrayList();
         private byte tagType;
 
@@ -13,7 +12,7 @@ namespace betareborn.NBT
         {
             if (tagList.size() > 0)
             {
-                tagType = ((NBTBase)tagList.get(0)).getType();
+                tagType = ((NBTBase) tagList.get(0)).getType();
             }
             else
             {
@@ -25,9 +24,8 @@ namespace betareborn.NBT
 
             for (int var2 = 0; var2 < tagList.size(); ++var2)
             {
-                ((NBTBase)tagList.get(var2)).writeTagContents(var1);
+                ((NBTBase) tagList.get(var2)).writeTagContents(var1);
             }
-
         }
 
         public override void readTagContents(DataInput var1)
@@ -43,17 +41,16 @@ namespace betareborn.NBT
 
                 tagList.add(var4);
             }
-
         }
 
         public override byte getType()
         {
-            return (byte)9;
+            return 9;
         }
 
         public override string toString()
         {
-            return "" + tagList.size() + " entries of type " + NBTBase.getTagName(tagType);
+            return "" + tagList.size() + " entries of type " + getTagName(tagType);
         }
 
         public void setTag(NBTBase var1)
@@ -64,7 +61,7 @@ namespace betareborn.NBT
 
         public NBTBase tagAt(int var1)
         {
-            return (NBTBase)tagList.get(var1);
+            return (NBTBase) tagList.get(var1);
         }
 
         public int tagCount()
@@ -72,5 +69,4 @@ namespace betareborn.NBT
             return tagList.size();
         }
     }
-
 }

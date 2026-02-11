@@ -5,7 +5,6 @@ namespace betareborn.NBT
 {
     public class NBTTagString : NBTBase
     {
-
         public string stringValue;
 
         public NBTTagString()
@@ -33,7 +32,7 @@ namespace betareborn.NBT
 
         public override byte getType()
         {
-            return (byte)8;
+            return 8;
         }
 
         public override string toString()
@@ -41,5 +40,4 @@ namespace betareborn.NBT
             return "" + stringValue;
         }
     }
-
 }

@@ -15,7 +15,7 @@ namespace betareborn.NBT
 
         public override byte getType()
         {
-            return (byte)0;
+            return 0;
         }
 
         public override string toString()
@@ -23,5 +23,4 @@ namespace betareborn.NBT
             return "END";
         }
     }
-
 }

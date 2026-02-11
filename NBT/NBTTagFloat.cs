@@ -4,7 +4,6 @@ namespace betareborn.NBT
 {
     public class NBTTagFloat : NBTBase
     {
-
         public float floatValue;
 
         public NBTTagFloat()
@@ -28,7 +27,7 @@ namespace betareborn.NBT
 
         public override byte getType()
         {
-            return (byte)5;
+            return 5;
         }
 
         public override string toString()
@@ -36,5 +35,4 @@ namespace betareborn.NBT
             return "" + floatValue;
         }
     }
-
 }

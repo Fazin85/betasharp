@@ -4,7 +4,6 @@ namespace betareborn.NBT
 {
     public class NBTTagLong : NBTBase
     {
-
         public long longValue;
 
         public NBTTagLong()
@@ -28,7 +27,7 @@ namespace betareborn.NBT
 
         public override byte getType()
         {
-            return (byte)4;
+            return 4;
         }
 
         public override string toString()
@@ -36,5 +35,4 @@ namespace betareborn.NBT
             return "" + longValue;
         }
     }
-
 }

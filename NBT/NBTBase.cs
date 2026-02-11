@@ -25,7 +25,6 @@ namespace betareborn.NBT
 
         public static NBTBase readTag(DataInput var0)
         {
-
             byte var1 = var0.readByte();
             if (var1 == 0)
             {
@@ -54,17 +53,17 @@ namespace betareborn.NBT
         {
             return var0 switch
             {
-                0 => (NBTBase)new NBTTagEnd(),
-                1 => (NBTBase)new NBTTagByte(),
-                2 => (NBTBase)new NBTTagShort(),
-                3 => (NBTBase)new NBTTagInt(),
-                4 => (NBTBase)new NBTTagLong(),
-                5 => (NBTBase)new NBTTagFloat(),
-                6 => (NBTBase)new NBTTagDouble(),
-                7 => (NBTBase)new NBTTagByteArray(),
-                8 => (NBTBase)new NBTTagString(),
-                9 => (NBTBase)new NBTTagList(),
-                10 => (NBTBase)new NBTTagCompound(),
+                0 => new NBTTagEnd(),
+                1 => new NBTTagByte(),
+                2 => new NBTTagShort(),
+                3 => new NBTTagInt(),
+                4 => new NBTTagLong(),
+                5 => new NBTTagFloat(),
+                6 => new NBTTagDouble(),
+                7 => new NBTTagByteArray(),
+                8 => new NBTTagString(),
+                9 => new NBTTagList(),
+                10 => new NBTTagCompound(),
                 _ => null,
             };
         }
@@ -87,6 +86,5 @@ namespace betareborn.NBT
                 _ => "UNKNOWN",
             };
         }
-
     }
 }

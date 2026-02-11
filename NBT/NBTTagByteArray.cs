@@ -4,7 +4,6 @@ namespace betareborn.NBT
 {
     public class NBTTagByteArray : NBTBase
     {
-
         public byte[] byteArray;
 
         public NBTTagByteArray()
@@ -31,7 +30,7 @@ namespace betareborn.NBT
 
         public override byte getType()
         {
-            return (byte)7;
+            return 7;
         }
 
         public override string toString()
@@ -39,5 +38,4 @@ namespace betareborn.NBT
             return "[" + byteArray.Length + " bytes]";
         }
     }
-
 }

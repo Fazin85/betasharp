@@ -4,7 +4,6 @@ namespace betareborn.NBT
 {
     public class NBTTagDouble : NBTBase
     {
-
         public double doubleValue;
 
         public NBTTagDouble()
@@ -28,7 +27,7 @@ namespace betareborn.NBT
 
         public override byte getType()
         {
-            return (byte)6;
+            return 6;
         }
 
         public override string toString()

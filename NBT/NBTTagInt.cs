@@ -4,7 +4,6 @@ namespace betareborn.NBT
 {
     public class NBTTagInt : NBTBase
     {
-
         public int intValue;
 
         public NBTTagInt()
@@ -20,6 +19,7 @@ namespace betareborn.NBT
         {
             var1.writeInt(intValue);
         }
+
         public override void readTagContents(DataInput var1)
         {
             intValue = var1.readInt();
@@ -27,7 +27,7 @@ namespace betareborn.NBT
 
         public override byte getType()
         {
-            return (byte)3;
+            return 3;
         }
 
         public override string toString()
@@ -35,5 +35,4 @@ namespace betareborn.NBT
             return "" + intValue;
         }
     }
-
 }
