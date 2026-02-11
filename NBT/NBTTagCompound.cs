@@ -1,10 +1,11 @@
 using java.io;
-using java.util;
 
 namespace betareborn.NBT
 {
     public sealed class NbtTagCompound : NBTBase
     {
+        public IEnumerable<NBTBase> Values => tagMap.Values;
+        
         private readonly Dictionary<string, NBTBase> tagMap = [];
 
         public override void WriteTagContents(DataOutput output)
@@ -32,11 +33,6 @@ namespace betareborn.NBT
 
                 tagMap[tag.Key] = tag;
             }
-        }
-
-        public Collection func_28110_c()
-        {
-            throw new NotImplementedException();
         }
 
         public override byte GetTagType()
@@ -167,7 +163,7 @@ namespace betareborn.NBT
 
         public byte[] GetByteArray(string key)
         {
-            return !tagMap.TryGetValue(key, out var value) ? [] : ((NBTTagByteArray) value).Value;
+            return !tagMap.TryGetValue(key, out var value) ? [] : ((NBTTagByteArray) value).Values;
         }
 
         public NbtTagCompound GetCompoundTag(string key)
