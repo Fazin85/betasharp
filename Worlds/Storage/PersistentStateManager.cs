@@ -147,11 +147,9 @@ namespace betareborn.Worlds.Storage
                     DataInputStream var2 = new(new FileInputStream(var1));
                     NbtTagCompound var3 = NbtIo.read((DataInput)var2);
                     var2.close();
-                    Iterator var4 = var3.func_28110_c().iterator();
 
-                    while (var4.hasNext())
+                    foreach (var var5 in var3.Values)
                     {
-                        NBTBase var5 = (NBTBase)var4.next();
                         if (var5 is NBTTagShort)
                         {
                             NBTTagShort var6 = (NBTTagShort)var5;
