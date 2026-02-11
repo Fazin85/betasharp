@@ -24,20 +24,20 @@ namespace betareborn.Entities
             dataWatcher.addObject(17, java.lang.Byte.valueOf(0));
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NbtTagCompound var1)
         {
             base.writeNbt(var1);
             if (dataWatcher.getWatchableObjectByte(17) == 1)
             {
-                var1.setBoolean("powered", true);
+                var1.SetBoolean("powered", true);
             }
 
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NbtTagCompound var1)
         {
             base.readNbt(var1);
-            dataWatcher.updateObject(17, java.lang.Byte.valueOf((byte)(var1.getBoolean("powered") ? 1 : 0)));
+            dataWatcher.updateObject(17, java.lang.Byte.valueOf((byte)(var1.GetBoolean("powered") ? 1 : 0)));
         }
 
         protected override void attackBlockedEntity(Entity var1, float var2)

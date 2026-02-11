@@ -99,14 +99,14 @@ namespace betareborn.Worlds.Storage
             else
             {
                 java.io.File var3 = new java.io.File(var2, "level.dat");
-                betareborn.NBT.NBTTagCompound var4;
-                betareborn.NBT.NBTTagCompound var5;
+                betareborn.NBT.NbtTagCompound var4;
+                betareborn.NBT.NbtTagCompound var5;
                 if (var3.exists())
                 {
                     try
                     {
                         var4 = NbtIo.read(new FileInputStream(var3));
-                        var5 = var4.getCompoundTag("Data");
+                        var5 = var4.GetCompoundTag("Data");
                         long sizeOnDisk = getFolderSizeMB(var2);
                         var wInfo = new WorldProperties(var5);
                         wInfo.setSizeOnDisk(sizeOnDisk);
@@ -124,7 +124,7 @@ namespace betareborn.Worlds.Storage
                     try
                     {
                         var4 = NbtIo.read(new FileInputStream(var3));
-                        var5 = var4.getCompoundTag("Data");
+                        var5 = var4.GetCompoundTag("Data");
                         long sizeOnDisk = getFolderSizeMB(var2);
                         var wInfo = new WorldProperties(var5);
                         wInfo.setSizeOnDisk(sizeOnDisk);
@@ -150,9 +150,9 @@ namespace betareborn.Worlds.Storage
                 {
                     try
                     {
-                        betareborn.NBT.NBTTagCompound var5 = NbtIo.read(new FileInputStream(var4));
-                        betareborn.NBT.NBTTagCompound var6 = var5.getCompoundTag("Data");
-                        var6.setString("LevelName", var2);
+                        betareborn.NBT.NbtTagCompound var5 = NbtIo.read(new FileInputStream(var4));
+                        betareborn.NBT.NbtTagCompound var6 = var5.GetCompoundTag("Data");
+                        var6.SetString("LevelName", var2);
                         NbtIo.writeGzippedCompoundToOutputStream(var5, new FileOutputStream(var4));
                     }
                     catch (java.lang.Exception var7)

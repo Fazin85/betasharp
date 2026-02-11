@@ -255,22 +255,22 @@ namespace betareborn.Entities
             return true;
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NbtTagCompound var1)
         {
-            var1.setByte("Dir", (sbyte)direction);
-            var1.setString("Motive", art.title);
-            var1.setInteger("TileX", xPosition);
-            var1.setInteger("TileY", yPosition);
-            var1.setInteger("TileZ", zPosition);
+            var1.SetByte("Dir", (sbyte)direction);
+            var1.SetString("Motive", art.title);
+            var1.SetInteger("TileX", xPosition);
+            var1.SetInteger("TileY", yPosition);
+            var1.SetInteger("TileZ", zPosition);
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NbtTagCompound var1)
         {
-            direction = var1.getByte("Dir");
-            xPosition = var1.getInteger("TileX");
-            yPosition = var1.getInteger("TileY");
-            zPosition = var1.getInteger("TileZ");
-            String var2 = var1.getString("Motive");
+            direction = var1.GetByte("Dir");
+            xPosition = var1.GetInteger("TileX");
+            yPosition = var1.GetInteger("TileY");
+            zPosition = var1.GetInteger("TileZ");
+            String var2 = var1.GetString("Motive");
             EnumArt[] var3 = EnumArt.values;
             int var4 = var3.Length;
 

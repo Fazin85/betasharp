@@ -2,69 +2,69 @@ using java.io;
 
 namespace betareborn.NBT
 {
-    public sealed class NBTTagList : NBTBase
+    public sealed class NbtTagList : NBTBase
     {
-        private List<NBTBase> tagList = [];
-        private byte tagType;
+        private List<NBTBase> _tagList = [];
+        private byte _tagType;
 
-        public override void writeTagContents(DataOutput output)
+        public override void WriteTagContents(DataOutput output)
         {
-            if (tagList.Count > 0)
+            if (_tagList.Count > 0)
             {
-                tagType = tagList[0].getType();
+                _tagType = _tagList[0].GetTagType();
             }
             else
             {
-                tagType = 1;
+                _tagType = 1;
             }
 
-            output.writeByte(tagType);
-            output.writeInt(tagList.Count);
+            output.writeByte(_tagType);
+            output.writeInt(_tagList.Count);
 
-            foreach (var tag in tagList)
+            foreach (var tag in _tagList)
             {
-                tag.writeTagContents(output);
+                tag.WriteTagContents(output);
             }
         }
 
-        public override void readTagContents(DataInput input)
+        public override void ReadTagContents(DataInput input)
         {
-            tagType = input.readByte();
+            _tagType = input.readByte();
             var length = input.readInt();
-            tagList = [];
+            _tagList = [];
 
             for (var index = 0; index < length; ++index)
             {
-                var tag = createTagOfType(tagType);
-                tag.readTagContents(input);
-                tagList.Add(tag);
+                var tag = CreateTagOfType(_tagType);
+                tag.ReadTagContents(input);
+                _tagList.Add(tag);
             }
         }
 
-        public override byte getType()
+        public override byte GetTagType()
         {
             return 9;
         }
 
         public override string toString()
         {
-            return $"{tagList.Count} entries of type {getTagName(tagType)}";
+            return $"{_tagList.Count} entries of type {GetTagName(_tagType)}";
         }
 
-        public void setTag(NBTBase value)
+        public void SetTag(NBTBase value)
         {
-            tagType = value.getType();
-            tagList.Add(value);
+            _tagType = value.GetTagType();
+            _tagList.Add(value);
         }
 
-        public NBTBase tagAt(int value)
+        public NBTBase TagAt(int value)
         {
-            return tagList[value];
+            return _tagList[value];
         }
 
-        public int tagCount()
+        public int TagCount()
         {
-            return tagList.Count;
+            return _tagList.Count;
         }
     }
 }

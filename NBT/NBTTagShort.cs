@@ -15,17 +15,17 @@ namespace betareborn.NBT
             shortValue = value;
         }
 
-        public override void writeTagContents(DataOutput output)
+        public override void WriteTagContents(DataOutput output)
         {
             output.writeShort(shortValue);
         }
 
-        public override void readTagContents(DataInput input)
+        public override void ReadTagContents(DataInput input)
         {
             shortValue = input.readShort();
         }
 
-        public override byte getType()
+        public override byte GetTagType()
         {
             return 2;
         }

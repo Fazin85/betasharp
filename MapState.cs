@@ -23,12 +23,12 @@ namespace betareborn
         {
         }
 
-        public override void readNBT(NBTTagCompound nbt)
+        public override void readNBT(NbtTagCompound nbt)
         {
-            dimension = nbt.getByte("dimension");
-            centerX = nbt.getInteger("xCenter");
-            centerZ = nbt.getInteger("zCenter");
-            scale = nbt.getByte("scale");
+            dimension = nbt.GetByte("dimension");
+            centerX = nbt.GetInteger("xCenter");
+            centerZ = nbt.GetInteger("zCenter");
+            scale = nbt.GetByte("scale");
             if (scale < 0)
             {
                 scale = 0;
@@ -39,15 +39,15 @@ namespace betareborn
                 scale = 4;
             }
 
-            short var2 = nbt.getShort("width");
-            short var3 = nbt.getShort("height");
+            short var2 = nbt.GetShort("width");
+            short var3 = nbt.GetShort("height");
             if (var2 == 128 && var3 == 128)
             {
-                colors = nbt.getByteArray("colors");
+                colors = nbt.GetByteArray("colors");
             }
             else
             {
-                byte[] var4 = nbt.getByteArray("colors");
+                byte[] var4 = nbt.GetByteArray("colors");
                 colors = new byte[16384];
                 int var5 = (128 - var2) / 2;
                 int var6 = (128 - var3) / 2;
@@ -71,15 +71,15 @@ namespace betareborn
 
         }
 
-        public override void writeNBT(NBTTagCompound nbt)
+        public override void writeNBT(NbtTagCompound nbt)
         {
-            nbt.setByte("dimension", dimension);
-            nbt.setInteger("xCenter", centerX);
-            nbt.setInteger("zCenter", centerZ);
-            nbt.setByte("scale", scale);
-            nbt.setShort("width", (short)128);
-            nbt.setShort("height", (short)128);
-            nbt.setByteArray("colors", colors);
+            nbt.SetByte("dimension", dimension);
+            nbt.SetInteger("xCenter", centerX);
+            nbt.SetInteger("zCenter", centerZ);
+            nbt.SetByte("scale", scale);
+            nbt.SetShort("width", (short)128);
+            nbt.SetShort("height", (short)128);
+            nbt.SetByteArray("colors", colors);
         }
 
         public void update(EntityPlayer var1, ItemStack var2)

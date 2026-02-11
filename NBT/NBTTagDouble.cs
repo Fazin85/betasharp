@@ -16,17 +16,17 @@ namespace betareborn.NBT
             doubleValue = value;
         }
 
-        public override void writeTagContents(DataOutput output)
+        public override void WriteTagContents(DataOutput output)
         {
             output.writeDouble(doubleValue);
         }
 
-        public override void readTagContents(DataInput input)
+        public override void ReadTagContents(DataInput input)
         {
             doubleValue = input.readDouble();
         }
 
-        public override byte getType()
+        public override byte GetTagType()
         {
             return 6;
         }

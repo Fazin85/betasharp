@@ -46,9 +46,9 @@ namespace betareborn.Worlds.Storage
                             }
 
                             FileInputStream var5 = new(var4);
-                            NBTTagCompound var6 = NbtIo.read(var5);
+                            NbtTagCompound var6 = NbtIo.read(var5);
                             var5.close();
-                            var3.readNBT(var6.getCompoundTag("data"));
+                            var3.readNBT(var6.GetCompoundTag("data"));
                         }
                     }
                     catch (java.lang.Exception var8)
@@ -108,10 +108,10 @@ namespace betareborn.Worlds.Storage
                     java.io.File var2 = saveHandler.getWorldPropertiesFile(var1.id);
                     if (var2 != null)
                     {
-                        NBTTagCompound var3 = new();
+                        NbtTagCompound var3 = new();
                         var1.writeNBT(var3);
-                        NBTTagCompound var4 = new();
-                        var4.setCompoundTag("data", var3);
+                        NbtTagCompound var4 = new();
+                        var4.SetCompoundTag("data", var3);
 
                         var saveTask = Task.Run(() =>
                         {
@@ -145,7 +145,7 @@ namespace betareborn.Worlds.Storage
                 if (var1 != null && var1.exists())
                 {
                     DataInputStream var2 = new(new FileInputStream(var1));
-                    NBTTagCompound var3 = NbtIo.read((DataInput)var2);
+                    NbtTagCompound var3 = NbtIo.read((DataInput)var2);
                     var2.close();
                     Iterator var4 = var3.func_28110_c().iterator();
 
@@ -193,14 +193,14 @@ namespace betareborn.Worlds.Storage
                     java.io.File var3 = saveHandler.getWorldPropertiesFile("idcounts");
                     if (var3 != null)
                     {
-                        NBTTagCompound var4 = new();
+                        NbtTagCompound var4 = new();
                         Iterator var5 = idCounts.keySet().iterator();
 
                         while (var5.hasNext())
                         {
                             string var6 = (string)var5.next();
                             short var7 = ((Short)idCounts.get(var6)).shortValue();
-                            var4.setShort(var6, var7);
+                            var4.SetShort(var6, var7);
                         }
 
                         DataOutputStream var9 = new(new FileOutputStream(var3));

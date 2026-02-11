@@ -89,16 +89,16 @@ namespace betareborn.Blocks.Entities
             return "Trap";
         }
 
-        public override void readNbt(NBTTagCompound nbt)
+        public override void readNbt(NbtTagCompound nbt)
         {
             base.readNbt(nbt);
-            NBTTagList itemList = nbt.getTagList("Items");
+            NbtTagList itemList = nbt.GetTagList("Items");
             inventory = new ItemStack[size()];
 
-            for (int itemIndex = 0; itemIndex < itemList.tagCount(); ++itemIndex)
+            for (int itemIndex = 0; itemIndex < itemList.TagCount(); ++itemIndex)
             {
-                NBTTagCompound itemTag = (NBTTagCompound)itemList.tagAt(itemIndex);
-                int slotIndex = itemTag.getByte("Slot") & 255;
+                NbtTagCompound itemTag = (NbtTagCompound)itemList.TagAt(itemIndex);
+                int slotIndex = itemTag.GetByte("Slot") & 255;
                 if (slotIndex >= 0 && slotIndex < inventory.Length)
                 {
                     inventory[slotIndex] = new ItemStack(itemTag);
@@ -107,23 +107,23 @@ namespace betareborn.Blocks.Entities
 
         }
 
-        public override void writeNbt(NBTTagCompound nbt)
+        public override void writeNbt(NbtTagCompound nbt)
         {
             base.writeNbt(nbt);
-            NBTTagList itemList = new NBTTagList();
+            NbtTagList itemList = new NbtTagList();
 
             for (int slotIndex = 0; slotIndex < inventory.Length; ++slotIndex)
             {
                 if (inventory[slotIndex] != null)
                 {
-                    NBTTagCompound itemTag = new NBTTagCompound();
-                    itemTag.setByte("Slot", (sbyte)slotIndex);
+                    NbtTagCompound itemTag = new NbtTagCompound();
+                    itemTag.SetByte("Slot", (sbyte)slotIndex);
                     inventory[slotIndex].writeToNBT(itemTag);
-                    itemList.setTag(itemTag);
+                    itemList.SetTag(itemTag);
                 }
             }
 
-            nbt.setTag("Items", itemList);
+            nbt.SetTag("Items", itemList);
         }
 
         public int getMaxCountPerStack()

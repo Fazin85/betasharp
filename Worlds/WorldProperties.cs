@@ -13,7 +13,7 @@ namespace betareborn.Worlds
         private long worldTime;
         private readonly long lastTimePlayed;
         private long sizeOnDisk;
-        private NBTTagCompound playerTag;
+        private NbtTagCompound playerTag;
         private readonly int dimension;
         private string levelName;
         private int saveVersion;
@@ -22,24 +22,24 @@ namespace betareborn.Worlds
         private bool thundering;
         private int thunderTime;
 
-        public WorldProperties(NBTTagCompound var1)
+        public WorldProperties(NbtTagCompound var1)
         {
-            randomSeed = var1.getLong("RandomSeed");
-            spawnX = var1.getInteger("SpawnX");
-            spawnY = var1.getInteger("SpawnY");
-            spawnZ = var1.getInteger("SpawnZ");
-            worldTime = var1.getLong("Time");
-            lastTimePlayed = var1.getLong("LastPlayed");
-            levelName = var1.getString("LevelName");
-            saveVersion = var1.getInteger("version");
-            rainTime = var1.getInteger("rainTime");
-            raining = var1.getBoolean("raining");
-            thunderTime = var1.getInteger("thunderTime");
-            thundering = var1.getBoolean("thundering");
-            if (var1.hasKey("Player"))
+            randomSeed = var1.GetLong("RandomSeed");
+            spawnX = var1.GetInteger("SpawnX");
+            spawnY = var1.GetInteger("SpawnY");
+            spawnZ = var1.GetInteger("SpawnZ");
+            worldTime = var1.GetLong("Time");
+            lastTimePlayed = var1.GetLong("LastPlayed");
+            levelName = var1.GetString("LevelName");
+            saveVersion = var1.GetInteger("version");
+            rainTime = var1.GetInteger("rainTime");
+            raining = var1.GetBoolean("raining");
+            thunderTime = var1.GetInteger("thunderTime");
+            thundering = var1.GetBoolean("thundering");
+            if (var1.HasKey("Player"))
             {
-                playerTag = var1.getCompoundTag("Player");
-                dimension = playerTag.getInteger("Dimension");
+                playerTag = var1.GetCompoundTag("Player");
+                dimension = playerTag.GetInteger("Dimension");
             }
 
         }
@@ -69,18 +69,18 @@ namespace betareborn.Worlds
             thundering = var1.thundering;
         }
 
-        public NBTTagCompound getNBTTagCompound()
+        public NbtTagCompound getNBTTagCompound()
         {
-            NBTTagCompound var1 = new();
+            NbtTagCompound var1 = new();
             updateTagCompound(var1, playerTag);
             return var1;
         }
 
-        public NBTTagCompound getNBTTagCompoundWithPlayer(List var1)
+        public NbtTagCompound getNBTTagCompoundWithPlayer(List var1)
         {
-            NBTTagCompound var2 = new();
+            NbtTagCompound var2 = new();
             EntityPlayer var3 = null;
-            NBTTagCompound var4 = null;
+            NbtTagCompound var4 = null;
             if (var1.size() > 0)
             {
                 var3 = (EntityPlayer)var1.get(0);
@@ -88,7 +88,7 @@ namespace betareborn.Worlds
 
             if (var3 != null)
             {
-                var4 = new NBTTagCompound();
+                var4 = new NbtTagCompound();
                 var3.write(var4);
             }
 
@@ -96,24 +96,24 @@ namespace betareborn.Worlds
             return var2;
         }
 
-        private void updateTagCompound(NBTTagCompound var1, NBTTagCompound var2)
+        private void updateTagCompound(NbtTagCompound var1, NbtTagCompound var2)
         {
-            var1.setLong("RandomSeed", randomSeed);
-            var1.setInteger("SpawnX", spawnX);
-            var1.setInteger("SpawnY", spawnY);
-            var1.setInteger("SpawnZ", spawnZ);
-            var1.setLong("Time", worldTime);
-            var1.setLong("SizeOnDisk", sizeOnDisk);
-            var1.setLong("LastPlayed", java.lang.System.currentTimeMillis());
-            var1.setString("LevelName", levelName);
-            var1.setInteger("version", saveVersion);
-            var1.setInteger("rainTime", rainTime);
-            var1.setBoolean("raining", raining);
-            var1.setInteger("thunderTime", thunderTime);
-            var1.setBoolean("thundering", thundering);
+            var1.SetLong("RandomSeed", randomSeed);
+            var1.SetInteger("SpawnX", spawnX);
+            var1.SetInteger("SpawnY", spawnY);
+            var1.SetInteger("SpawnZ", spawnZ);
+            var1.SetLong("Time", worldTime);
+            var1.SetLong("SizeOnDisk", sizeOnDisk);
+            var1.SetLong("LastPlayed", java.lang.System.currentTimeMillis());
+            var1.SetString("LevelName", levelName);
+            var1.SetInteger("version", saveVersion);
+            var1.SetInteger("rainTime", rainTime);
+            var1.SetBoolean("raining", raining);
+            var1.SetInteger("thunderTime", thunderTime);
+            var1.SetBoolean("thundering", thundering);
             if (var2 != null)
             {
-                var1.setCompoundTag("Player", var2);
+                var1.SetCompoundTag("Player", var2);
             }
 
         }
@@ -148,7 +148,7 @@ namespace betareborn.Worlds
             return sizeOnDisk;
         }
 
-        public NBTTagCompound getPlayerNBTTagCompound()
+        public NbtTagCompound getPlayerNBTTagCompound()
         {
             return playerTag;
         }
@@ -183,7 +183,7 @@ namespace betareborn.Worlds
             sizeOnDisk = var1;
         }
 
-        public void setPlayerNBTTagCompound(NBTTagCompound var1)
+        public void setPlayerNBTTagCompound(NbtTagCompound var1)
         {
             playerTag = var1;
         }

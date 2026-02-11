@@ -12,23 +12,23 @@ namespace betareborn.Blocks.Entities
         public int currentRow = -1;
         private bool editable = true;
 
-        public override void writeNbt(NBTTagCompound nbt)
+        public override void writeNbt(NbtTagCompound nbt)
         {
             base.writeNbt(nbt);
-            nbt.setString("Text1", texts[0]);
-            nbt.setString("Text2", texts[1]);
-            nbt.setString("Text3", texts[2]);
-            nbt.setString("Text4", texts[3]);
+            nbt.SetString("Text1", texts[0]);
+            nbt.SetString("Text2", texts[1]);
+            nbt.SetString("Text3", texts[2]);
+            nbt.SetString("Text4", texts[3]);
         }
 
-        public override void readNbt(NBTTagCompound nbt)
+        public override void readNbt(NbtTagCompound nbt)
         {
             editable = false;
             base.readNbt(nbt);
 
             for (int line = 0; line < 4; ++line)
             {
-                texts[line] = nbt.getString("Text" + (line + 1));
+                texts[line] = nbt.GetString("Text" + (line + 1));
                 if (texts[line].Length > 15)
                 {
                     texts[line] = texts[line].Substring(0, 15);

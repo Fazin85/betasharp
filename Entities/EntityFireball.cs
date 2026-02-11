@@ -203,24 +203,24 @@ namespace betareborn.Entities
             setPosition(x, y, z);
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NbtTagCompound var1)
         {
-            var1.setShort("xTile", (short)blockX);
-            var1.setShort("yTile", (short)blockY);
-            var1.setShort("zTile", (short)blockZ);
-            var1.setByte("inTile", (sbyte)blockId);
-            var1.setByte("shake", (sbyte)shake);
-            var1.setByte("inGround", (sbyte)(inGround ? 1 : 0));
+            var1.SetShort("xTile", (short)blockX);
+            var1.SetShort("yTile", (short)blockY);
+            var1.SetShort("zTile", (short)blockZ);
+            var1.SetByte("inTile", (sbyte)blockId);
+            var1.SetByte("shake", (sbyte)shake);
+            var1.SetByte("inGround", (sbyte)(inGround ? 1 : 0));
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NbtTagCompound var1)
         {
-            blockX = var1.getShort("xTile");
-            blockY = var1.getShort("yTile");
-            blockZ = var1.getShort("zTile");
-            blockId = var1.getByte("inTile") & 255;
-            shake = var1.getByte("shake") & 255;
-            inGround = var1.getByte("inGround") == 1;
+            blockX = var1.GetShort("xTile");
+            blockY = var1.GetShort("yTile");
+            blockZ = var1.GetShort("zTile");
+            blockId = var1.GetByte("inTile") & 255;
+            shake = var1.GetByte("shake") & 255;
+            inGround = var1.GetByte("inGround") == 1;
         }
 
         public override bool isCollidable()

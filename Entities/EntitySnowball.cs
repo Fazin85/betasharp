@@ -236,24 +236,24 @@ namespace betareborn.Entities
             setPosition(x, y, z);
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NbtTagCompound var1)
         {
-            var1.setShort("xTile", (short)xTileSnowball);
-            var1.setShort("yTile", (short)yTileSnowball);
-            var1.setShort("zTile", (short)zTileSnowball);
-            var1.setByte("inTile", (sbyte)inTileSnowball);
-            var1.setByte("shake", (sbyte)shakeSnowball);
-            var1.setByte("inGround", (sbyte)(inGroundSnowball ? 1 : 0));
+            var1.SetShort("xTile", (short)xTileSnowball);
+            var1.SetShort("yTile", (short)yTileSnowball);
+            var1.SetShort("zTile", (short)zTileSnowball);
+            var1.SetByte("inTile", (sbyte)inTileSnowball);
+            var1.SetByte("shake", (sbyte)shakeSnowball);
+            var1.SetByte("inGround", (sbyte)(inGroundSnowball ? 1 : 0));
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NbtTagCompound var1)
         {
-            xTileSnowball = var1.getShort("xTile");
-            yTileSnowball = var1.getShort("yTile");
-            zTileSnowball = var1.getShort("zTile");
-            inTileSnowball = var1.getByte("inTile") & 255;
-            shakeSnowball = var1.getByte("shake") & 255;
-            inGroundSnowball = var1.getByte("inGround") == 1;
+            xTileSnowball = var1.GetShort("xTile");
+            yTileSnowball = var1.GetShort("yTile");
+            zTileSnowball = var1.GetShort("zTile");
+            inTileSnowball = var1.GetByte("inTile") & 255;
+            shakeSnowball = var1.GetByte("shake") & 255;
+            inGroundSnowball = var1.GetByte("inGround") == 1;
         }
 
         public override void onPlayerInteraction(EntityPlayer var1)

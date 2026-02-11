@@ -6,11 +6,11 @@ namespace betareborn
 {
     public class NbtIo : java.lang.Object
     {
-        public static NBTTagCompound read(InputStream input)
+        public static NbtTagCompound read(InputStream input)
         {
             var stream = new DataInputStream(new GZIPInputStream(input));
 
-            NBTTagCompound tag;
+            NbtTagCompound tag;
 
             try
             {
@@ -24,7 +24,7 @@ namespace betareborn
             return tag;
         }
 
-        public static void writeGzippedCompoundToOutputStream(NBTTagCompound tag, OutputStream output)
+        public static void writeGzippedCompoundToOutputStream(NbtTagCompound tag, OutputStream output)
         {
             var stream = new DataOutputStream(new GZIPOutputStream(output));
 
@@ -38,11 +38,11 @@ namespace betareborn
             }
         }
 
-        public static NBTTagCompound read(DataInput input)
+        public static NbtTagCompound read(DataInput input)
         {
-            var tag = NBTBase.readTag(input);
+            var tag = NBTBase.ReadTag(input);
             
-            if (tag is NBTTagCompound compound)
+            if (tag is NbtTagCompound compound)
             {
                 return compound;
             }
@@ -50,9 +50,9 @@ namespace betareborn
             throw new InvalidOperationException("Root tag must be a named compound tag");
         }
 
-        public static void write(NBTTagCompound tag, DataOutput output)
+        public static void write(NbtTagCompound tag, DataOutput output)
         {
-            NBTBase.writeTag(tag, output);
+            NBTBase.WriteTag(tag, output);
         }
     }
 }

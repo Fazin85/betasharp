@@ -6,13 +6,13 @@ namespace betareborn.NBT
     {
         public string Key { get; set; } = string.Empty;
 
-        public abstract void writeTagContents(DataOutput output);
+        public abstract void WriteTagContents(DataOutput output);
 
-        public abstract void readTagContents(DataInput input);
+        public abstract void ReadTagContents(DataInput input);
 
-        public abstract byte getType();
+        public abstract byte GetTagType();
 
-        public static NBTBase readTag(DataInput input)
+        public static NBTBase ReadTag(DataInput input)
         {
             var identifier = input.readByte();
 
@@ -21,28 +21,28 @@ namespace betareborn.NBT
                 return new NBTTagEnd();
             }
 
-            var tag = createTagOfType(identifier);
+            var tag = CreateTagOfType(identifier);
 
             tag.Key = input.readUTF();
-            tag.readTagContents(input);
+            tag.ReadTagContents(input);
 
             return tag;
         }
 
-        public static void writeTag(NBTBase tag, DataOutput output)
+        public static void WriteTag(NBTBase tag, DataOutput output)
         {
-            output.writeByte(tag.getType());
+            output.writeByte(tag.GetTagType());
 
-            if (tag.getType() is 0)
+            if (tag.GetTagType() is 0)
             {
                 return;
             }
 
             output.writeUTF(tag.Key);
-            tag.writeTagContents(output);
+            tag.WriteTagContents(output);
         }
 
-        public static NBTBase createTagOfType(byte identifier)
+        public static NBTBase CreateTagOfType(byte identifier)
         {
             return identifier switch
             {
@@ -55,13 +55,13 @@ namespace betareborn.NBT
                 6 => new NBTTagDouble(),
                 7 => new NBTTagByteArray(),
                 8 => new NBTTagString(),
-                9 => new NBTTagList(),
-                10 => new NBTTagCompound(),
+                9 => new NbtTagList(),
+                10 => new NbtTagCompound(),
                 _ => throw new ArgumentOutOfRangeException(nameof(identifier), identifier, "Unknown NBT identifier")
             };
         }
 
-        public static string getTagName(byte identifier)
+        public static string GetTagName(byte identifier)
         {
             return identifier switch
             {

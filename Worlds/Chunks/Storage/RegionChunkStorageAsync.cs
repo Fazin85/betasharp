@@ -14,28 +14,28 @@ namespace betareborn.Worlds.Chunks.Storage
 
         public Chunk loadChunk(World world, int chunkX, int chunkZ)
         {
-            NBTTagCompound? var4 = Region.RegionCache.readChunkNBT(worldDir, chunkX, chunkZ);
+            NbtTagCompound? var4 = Region.RegionCache.readChunkNBT(worldDir, chunkX, chunkZ);
             if (var4 != null)
             {
-                if (!var4.hasKey("Level"))
+                if (!var4.HasKey("Level"))
                 {
                     java.lang.System.@out.println("Chunk file at " + chunkX + "," + chunkZ + " is missing level data, skipping");
                     return null;
                 }
-                else if (!var4.getCompoundTag("Level").hasKey("Blocks"))
+                else if (!var4.GetCompoundTag("Level").HasKey("Blocks"))
                 {
                     java.lang.System.@out.println("Chunk file at " + chunkX + "," + chunkZ + " is missing block data, skipping");
                     return null;
                 }
                 else
                 {
-                    Chunk var6 = RegionChunkStorage.loadChunkFromNbt(world, var4.getCompoundTag("Level"));
+                    Chunk var6 = RegionChunkStorage.loadChunkFromNbt(world, var4.GetCompoundTag("Level"));
                     if (!var6.chunkPosEquals(chunkX, chunkZ))
                     {
                         java.lang.System.@out.println("Chunk file at " + chunkX + "," + chunkZ + " is in the wrong location; relocating. (Expected " + chunkX + ", " + chunkZ + ", got " + var6.x + ", " + var6.z + ")");
-                        var4.setInteger("xPos", chunkX);
-                        var4.setInteger("zPos", chunkZ);
-                        var6 = RegionChunkStorage.loadChunkFromNbt(world, var4.getCompoundTag("Level"));
+                        var4.SetInteger("xPos", chunkX);
+                        var4.SetInteger("zPos", chunkZ);
+                        var6 = RegionChunkStorage.loadChunkFromNbt(world, var4.GetCompoundTag("Level"));
                     }
 
                     var6.fill();
@@ -50,9 +50,9 @@ namespace betareborn.Worlds.Chunks.Storage
 
         public void saveChunk(World world, Chunk chunk, Action onSave, long _)
         {
-            NBTTagCompound var4 = new();
-            NBTTagCompound var5 = new();
-            var4.setTag("Level", var5);
+            NbtTagCompound var4 = new();
+            NbtTagCompound var5 = new();
+            var4.SetTag("Level", var5);
             RegionChunkStorage.storeChunkInCompound(chunk, world, var5);
             Region.RegionCache.writeChunkNBT(worldDir, chunk.x, chunk.z, var4);
         }

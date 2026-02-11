@@ -384,39 +384,39 @@ namespace betareborn.Entities
             return inventory.canHarvestBlock(block);
         }
 
-        public override void readNbt(NBTTagCompound nbt)
+        public override void readNbt(NbtTagCompound nbt)
         {
             base.readNbt(nbt);
-            NBTTagList var2 = nbt.getTagList("Inventory");
+            NbtTagList var2 = nbt.GetTagList("Inventory");
             inventory.readFromNBT(var2);
-            dimensionId = nbt.getInteger("Dimension");
-            sleeping = nbt.getBoolean("Sleeping");
-            sleepTimer = nbt.getShort("SleepTimer");
+            dimensionId = nbt.GetInteger("Dimension");
+            sleeping = nbt.GetBoolean("Sleeping");
+            sleepTimer = nbt.GetShort("SleepTimer");
             if (sleeping)
             {
                 sleepingPos = new Vec3i(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z));
                 wakeUp(true, true, false);
             }
 
-            if (nbt.hasKey("SpawnX") && nbt.hasKey("SpawnY") && nbt.hasKey("SpawnZ"))
+            if (nbt.HasKey("SpawnX") && nbt.HasKey("SpawnY") && nbt.HasKey("SpawnZ"))
             {
-                playerSpawnCoordinate = new Vec3i(nbt.getInteger("SpawnX"), nbt.getInteger("SpawnY"), nbt.getInteger("SpawnZ"));
+                playerSpawnCoordinate = new Vec3i(nbt.GetInteger("SpawnX"), nbt.GetInteger("SpawnY"), nbt.GetInteger("SpawnZ"));
             }
 
         }
 
-        public override void writeNbt(NBTTagCompound nbt)
+        public override void writeNbt(NbtTagCompound nbt)
         {
             base.writeNbt(nbt);
-            nbt.setTag("Inventory", inventory.writeToNBT(new NBTTagList()));
-            nbt.setInteger("Dimension", dimensionId);
-            nbt.setBoolean("Sleeping", sleeping);
-            nbt.setShort("SleepTimer", (short)sleepTimer);
+            nbt.SetTag("Inventory", inventory.writeToNBT(new NbtTagList()));
+            nbt.SetInteger("Dimension", dimensionId);
+            nbt.SetBoolean("Sleeping", sleeping);
+            nbt.SetShort("SleepTimer", (short)sleepTimer);
             if (playerSpawnCoordinate != null)
             {
-                nbt.setInteger("SpawnX", playerSpawnCoordinate.x);
-                nbt.setInteger("SpawnY", playerSpawnCoordinate.y);
-                nbt.setInteger("SpawnZ", playerSpawnCoordinate.z);
+                nbt.SetInteger("SpawnX", playerSpawnCoordinate.x);
+                nbt.SetInteger("SpawnY", playerSpawnCoordinate.y);
+                nbt.SetInteger("SpawnZ", playerSpawnCoordinate.z);
             }
 
         }
