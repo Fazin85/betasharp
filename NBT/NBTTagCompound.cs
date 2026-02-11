@@ -30,7 +30,7 @@ namespace betareborn.NBT
                     return;
                 }
 
-                tagMap[tag.getKey()] = tag;
+                tagMap[tag.Key] = tag;
             }
         }
 
@@ -46,52 +46,78 @@ namespace betareborn.NBT
 
         public void setTag(string key, NBTBase value)
         {
-            tagMap[key] = value.setKey(key);
+            value.Key = key;
+            tagMap[key] = value;
         }
 
         public void setByte(string key, sbyte value)
         {
-            tagMap[key] = new NBTTagByte(value).setKey(key);
+            tagMap[key] = new NBTTagByte(value)
+            {
+                Key = Key
+            };
         }
 
         public void setShort(string key, short value)
         {
-            tagMap[key] = new NBTTagShort(value).setKey(key);
+            tagMap[key] = new NBTTagShort(value)
+            {
+                Key = Key
+            };
         }
 
         public void setInteger(string key, int value)
         {
-            tagMap[key] = new NBTTagInt(value).setKey(key);
+            tagMap[key] = new NBTTagInt(value)
+            {
+                Key = Key
+            };
         }
 
         public void setLong(string key, long value)
         {
-            tagMap[key] = new NBTTagLong(value).setKey(key);
+            tagMap[key] = new NBTTagLong(value)
+            {
+                Key = Key
+            };
         }
 
         public void setFloat(string key, float value)
         {
-            tagMap[key] = new NBTTagFloat(value).setKey(key);
+            tagMap[key] = new NBTTagFloat(value)
+            {
+                Key = Key
+            };
         }
 
         public void setDouble(string key, double value)
         {
-            tagMap[key] = new NBTTagDouble(value).setKey(key);
+            tagMap[key] = new NBTTagDouble(value)
+            {
+                Key = Key
+            };
         }
 
         public void setString(string key, string value)
         {
-            tagMap[key] = new NBTTagString(value).setKey(key);
+            tagMap[key] = new NBTTagString(value)
+            {
+                Key = Key
+            };
         }
 
         public void setByteArray(string key, byte[] value)
         {
-            tagMap[key] = new NBTTagByteArray(value).setKey(key);
+            tagMap[key] = new NBTTagByteArray(value)
+            {
+                Key = Key
+            };
         }
 
         public void setCompoundTag(string key, NBTTagCompound value)
         {
-            tagMap[key] = value.setKey(key);
+            value.Key = key;
+            tagMap[key] = value;
         }
 
         public void setBoolean(string key, bool value)

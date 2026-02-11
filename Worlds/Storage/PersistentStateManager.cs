@@ -155,7 +155,7 @@ namespace betareborn.Worlds.Storage
                         if (var5 is NBTTagShort)
                         {
                             NBTTagShort var6 = (NBTTagShort)var5;
-                            string var7 = var6.getKey();
+                            string var7 = var6.Key;
                             short var8 = var6.shortValue;
                             idCounts.put(var7, Short.valueOf(var8));
                         }

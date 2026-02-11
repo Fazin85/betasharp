@@ -4,24 +4,13 @@ namespace betareborn.NBT
 {
     public abstract class NBTBase : java.lang.Object
     {
-        private string? key;
+        public string Key { get; set; } = string.Empty;
 
         public abstract void writeTagContents(DataOutput output);
 
         public abstract void readTagContents(DataInput input);
 
         public abstract byte getType();
-
-        public string getKey()
-        {
-            return key ?? string.Empty;
-        }
-
-        public NBTBase setKey(string value)
-        {
-            key = value;
-            return this;
-        }
 
         public static NBTBase readTag(DataInput input)
         {
@@ -34,7 +23,7 @@ namespace betareborn.NBT
 
             var tag = createTagOfType(identifier);
 
-            tag.key = input.readUTF();
+            tag.Key = input.readUTF();
             tag.readTagContents(input);
 
             return tag;
@@ -49,7 +38,7 @@ namespace betareborn.NBT
                 return;
             }
 
-            output.writeUTF(tag.getKey());
+            output.writeUTF(tag.Key);
             tag.writeTagContents(output);
         }
 
