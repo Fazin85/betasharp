@@ -31,6 +31,34 @@ if (...)
 
 References to Minecraft object should be called `mc`, not `theMinecraft`, `minecraft`, or `game`.
 
+## Build from source
+If you don't yet have the .NET SDK and Runtime, please install it beforehand.
+
+### Get .NET 10.0
+#### Windows
+Simply install the .NET 10 runtime with the installer Microsoft provides [on their website](https://dotnet.microsoft.com/en-us/download/dotnet/10.0).
+
+#### Linux (Debian)
+```bash
+sudo apt-get update
+sudo apt-get install -y dotnet-sdk-1.0 dotnet-runtime-10.0
+```
+
+#### Linux (Fedora)
+```bash
+sudo dnf install dotnet-sdk-10.0 dotnet-runtime-10.0
+```
+
+### Building
+Clone the source code and build it.
+```bash
+git clone https://github.com/Fazin85/betasharp
+cd betasharp
+dotnet build -c ClientDebug
+```
+
+The compiled binary should end up in `./bin/<config-name>/net10.0`
+
 ## License
 
 This project is shared openly for collaboration. All code is derivative of Minecraft and subject to Mojang's rights.
