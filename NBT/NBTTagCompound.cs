@@ -5,41 +5,38 @@ namespace betareborn.NBT
 {
     public sealed class NBTTagCompound : NBTBase
     {
-        private readonly Map tagMap = new HashMap();
+        private readonly Dictionary<string, NBTBase> tagMap = [];
 
         public override void writeTagContents(DataOutput output)
         {
-            var iterator = tagMap.values().iterator();
-
-            while (iterator.hasNext())
+            foreach (var value in tagMap.Values)
             {
-                var tag = (NBTBase) iterator.next();
-                writeTag(tag, output);
+                writeTag(value, output);
             }
 
             output.writeByte(0);
         }
 
-        public override void readTagContents(DataInput var1)
+        public override void readTagContents(DataInput input)
         {
-            tagMap.clear();
+            tagMap.Clear();
 
             while (true)
             {
-                var tag = readTag(var1);
+                var tag = readTag(input);
 
-                if (tag.getType() == 0)
+                if (tag.getType() is 0)
                 {
                     return;
                 }
 
-                tagMap.put(tag.getKey(), tag);
+                tagMap[tag.getKey()] = tag;
             }
         }
 
         public Collection func_28110_c()
         {
-            return tagMap.values();
+            throw new NotImplementedException();
         }
 
         public override byte getType()
@@ -49,52 +46,52 @@ namespace betareborn.NBT
 
         public void setTag(string key, NBTBase value)
         {
-            tagMap.put(key, value.setKey(key));
+            tagMap[key] = value.setKey(key);
         }
 
         public void setByte(string key, sbyte value)
         {
-            tagMap.put(key, (new NBTTagByte(value)).setKey(key));
+            tagMap[key] = new NBTTagByte(value).setKey(key);
         }
 
         public void setShort(string key, short value)
         {
-            tagMap.put(key, (new NBTTagShort(value)).setKey(key));
+            tagMap[key] = new NBTTagShort(value).setKey(key);
         }
 
         public void setInteger(string key, int value)
         {
-            tagMap.put(key, (new NBTTagInt(value)).setKey(key));
+            tagMap[key] = new NBTTagInt(value).setKey(key);
         }
 
         public void setLong(string key, long value)
         {
-            tagMap.put(key, (new NBTTagLong(value)).setKey(key));
+            tagMap[key] = new NBTTagLong(value).setKey(key);
         }
 
         public void setFloat(string key, float value)
         {
-            tagMap.put(key, (new NBTTagFloat(value)).setKey(key));
+            tagMap[key] = new NBTTagFloat(value).setKey(key);
         }
 
         public void setDouble(string key, double value)
         {
-            tagMap.put(key, (new NBTTagDouble(value)).setKey(key));
+            tagMap[key] = new NBTTagDouble(value).setKey(key);
         }
 
         public void setString(string key, string value)
         {
-            tagMap.put(key, (new NBTTagString(value)).setKey(key));
+            tagMap[key] = new NBTTagString(value).setKey(key);
         }
 
         public void setByteArray(string key, byte[] value)
         {
-            tagMap.put(key, (new NBTTagByteArray(value)).setKey(key));
+            tagMap[key] = new NBTTagByteArray(value).setKey(key);
         }
 
         public void setCompoundTag(string key, NBTTagCompound value)
         {
-            tagMap.put(key, value.setKey(key));
+            tagMap[key] = value.setKey(key);
         }
 
         public void setBoolean(string key, bool value)
@@ -104,57 +101,57 @@ namespace betareborn.NBT
 
         public bool hasKey(string key)
         {
-            return tagMap.containsKey(key);
+            return tagMap.ContainsKey(key);
         }
 
         public sbyte getByte(string key)
         {
-            return !tagMap.containsKey(key) ? (sbyte) 0 : ((NBTTagByte) tagMap.get(key)).byteValue;
+            return !tagMap.TryGetValue(key, out var value) ? (sbyte) 0 : ((NBTTagByte) value).byteValue;
         }
 
         public short getShort(string key)
         {
-            return !tagMap.containsKey(key) ? (short) 0 : ((NBTTagShort) tagMap.get(key)).shortValue;
+            return !tagMap.TryGetValue(key, out var value) ? (short) 0 : ((NBTTagShort) value).shortValue;
         }
 
         public int getInteger(string key)
         {
-            return !tagMap.containsKey(key) ? 0 : ((NBTTagInt) tagMap.get(key)).intValue;
+            return !tagMap.TryGetValue(key, out var value) ? 0 : ((NBTTagInt) value).intValue;
         }
 
         public long getLong(string key)
         {
-            return !tagMap.containsKey(key) ? 0L : ((NBTTagLong) tagMap.get(key)).longValue;
+            return !tagMap.TryGetValue(key, out var value) ? 0L : ((NBTTagLong) value).longValue;
         }
 
         public float getFloat(string key)
         {
-            return !tagMap.containsKey(key) ? 0.0F : ((NBTTagFloat) tagMap.get(key)).floatValue;
+            return !tagMap.TryGetValue(key, out var value) ? 0.0F : ((NBTTagFloat) value).floatValue;
         }
 
         public double getDouble(string key)
         {
-            return !tagMap.containsKey(key) ? 0.0D : ((NBTTagDouble) tagMap.get(key)).doubleValue;
+            return !tagMap.TryGetValue(key, out var value) ? 0.0D : ((NBTTagDouble) value).doubleValue;
         }
 
         public string getString(string key)
         {
-            return !tagMap.containsKey(key) ? "" : ((NBTTagString) tagMap.get(key)).stringValue;
+            return !tagMap.TryGetValue(key, out var value) ? string.Empty : ((NBTTagString) value).stringValue;
         }
 
         public byte[] getByteArray(string key)
         {
-            return !tagMap.containsKey(key) ? [] : ((NBTTagByteArray) tagMap.get(key)).byteArray;
+            return !tagMap.TryGetValue(key, out var value) ? [] : ((NBTTagByteArray) value).byteArray;
         }
 
         public NBTTagCompound getCompoundTag(string key)
         {
-            return !tagMap.containsKey(key) ? new NBTTagCompound() : (NBTTagCompound) tagMap.get(key);
+            return !tagMap.TryGetValue(key, out var value) ? new NBTTagCompound() : (NBTTagCompound) value;
         }
 
         public NBTTagList getTagList(string key)
         {
-            return !tagMap.containsKey(key) ? new NBTTagList() : (NBTTagList) tagMap.get(key);
+            return !tagMap.TryGetValue(key, out var value) ? new NBTTagList() : (NBTTagList) value;
         }
 
         public bool getBoolean(string key)
@@ -164,7 +161,7 @@ namespace betareborn.NBT
 
         public override string toString()
         {
-            return "" + tagMap.size() + " entries";
+            return $"{tagMap.Count} entries";
         }
     }
 }
