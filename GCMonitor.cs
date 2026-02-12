@@ -7,6 +7,7 @@ namespace betareborn
         public long MaxMemoryBytes { get; private set; }
         public long UsedMemoryBytes { get; private set; }
         public long UsedHeapBytes { get; private set; }
+        public bool AllowUpdating { get; set; } = true;
 
         private readonly System.Threading.Timer _timer;
         private readonly Process _process;
@@ -28,8 +29,11 @@ namespace betareborn
 
         private void Update()
         {
-            UsedMemoryBytes = _process.WorkingSet64;
-            UsedHeapBytes = GC.GetTotalMemory(false);
+            if (AllowUpdating)
+            {
+                UsedMemoryBytes = _process.WorkingSet64;
+                UsedHeapBytes = GC.GetTotalMemory(false);
+            }
         }
 
         public void Dispose()

@@ -201,6 +201,7 @@ namespace betareborn.Client.Guis
             string line;
             if (mc.options.showDebugInfo)
             {
+                GCMonitor.AllowUpdating = true;
                 GLManager.GL.PushMatrix();
                 if (Minecraft.hasPaidCheckTime > 0L)
                     GLManager.GL.Translate(0.0F, 32.0F, 0.0F);
@@ -218,6 +219,10 @@ namespace betareborn.Client.Guis
                 drawString(var8, "z: " + mc.player.z, 2, 80, 14737632);
                 drawString(var8, "f: " + (MathHelper.floor_double((double)(mc.player.yaw * 4.0F / 360.0F) + 0.5D) & 3), 2, 88, 14737632);
                 GLManager.GL.PopMatrix();
+            }
+            else
+            {
+                GCMonitor.AllowUpdating = false;
             }
 
             if (recordPlayingUpFor > 0)
