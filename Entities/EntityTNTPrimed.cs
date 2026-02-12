@@ -9,7 +9,7 @@ namespace betareborn.Entities
         public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityTNTPrimed).TypeHandle);
         public int fuse;
 
-        public EntityTNTPrimed(World var1) : base(var1)
+        public EntityTNTPrimed(World world) : base(world)
         {
             fuse = 0;
             preventEntitySpawning = true;
@@ -17,17 +17,17 @@ namespace betareborn.Entities
             standingEyeHeight = height / 2.0F;
         }
 
-        public EntityTNTPrimed(World var1, double var2, double var4, double var6) : base(var1)
+        public EntityTNTPrimed(World world, double x, double y, double z) : base(world)
         {
-            setPosition(var2, var4, var6);
-            float var8 = (float)(java.lang.Math.random() * (double)((float)Math.PI) * 2.0D);
-            velocityX = (double)(-MathHelper.sin(var8 * (float)Math.PI / 180.0F) * 0.02F);
+            setPosition(x, y, z);
+            float randomAngle = (float)(java.lang.Math.random() * (double)((float)Math.PI) * 2.0D);
+            velocityX = (double)(-MathHelper.sin(randomAngle * (float)Math.PI / 180.0F) * 0.02F);
             velocityY = (double)0.2F;
-            velocityZ = (double)(-MathHelper.cos(var8 * (float)Math.PI / 180.0F) * 0.02F);
+            velocityZ = (double)(-MathHelper.cos(randomAngle * (float)Math.PI / 180.0F) * 0.02F);
             fuse = 80;
-            prevX = var2;
-            prevY = var4;
-            prevZ = var6;
+            prevX = x;
+            prevY = y;
+            prevZ = z;
         }
 
         protected override void initDataTracker()
@@ -82,18 +82,18 @@ namespace betareborn.Entities
 
         private void explode()
         {
-            float var1 = 4.0F;
-            world.createExplosion((Entity)null, x, y, z, var1);
+            float power = 4.0F;
+            world.createExplosion((Entity)null, x, y, z, power);
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            var1.setByte("Fuse", (sbyte)fuse);
+            nbt.setByte("Fuse", (sbyte)fuse);
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            fuse = var1.getByte("Fuse");
+            fuse = nbt.getByte("Fuse");
         }
 
         public override float getShadowRadius()

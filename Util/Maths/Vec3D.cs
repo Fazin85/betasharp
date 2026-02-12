@@ -1,201 +1,157 @@
 namespace betareborn.Util.Maths
 {
-    public class Vec3D : java.lang.Object
+    public record struct Vec3D
     {
-        private class Pool
+        public static readonly Vec3D Zero = new Vec3D(0.0D, 0.0D, 0.0D);
+        
+        public double x;
+        public double y;
+        public double z;
+        
+        public Vec3D(double x, double y, double z)
         {
-            private readonly List<Vec3D> vectorList = [];
-            private int index = 0;
+            if (x == -0.0D) x = 0.0D;
+            if (y == -0.0D) y = 0.0D;
+            if (z == -0.0D) z = 0.0D;
 
-            public Vec3D create(double x, double y, double z)
-            {
-                if (index >= vectorList.Count)
-                {
-                    vectorList.Add(new Vec3D(0.0D, 0.0D, 0.0D));
-                }
-
-                return vectorList[index++].setComponents(x, y, z);
-            }
-
-            public void cleanUp()
-            {
-                index = 0;
-            }
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+        
+        public double squareDistanceTo(Vec3D other)
+        {
+            double dx = other.x - x;
+            double dy = other.y - y;
+            double dz = other.z - z;
+            return dx * dx + dy * dy + dz * dz;
+        }
+        
+        public double distanceTo(Vec3D other)
+        {
+            return Math.Sqrt(squareDistanceTo(other));
         }
 
-        private static readonly ThreadLocal<Pool> pool = new(() => new());
-        public double xCoord;
-        public double yCoord;
-        public double zCoord;
-
-        public static void cleanUp()
+        public double magnitude()
         {
-            Pool? p = pool.Value ?? throw new Exception("Vec3D pool was not created!");
-            p.cleanUp();
+            return distanceTo(Zero);
         }
-
-        public static Vec3D createVector(double x, double y, double z)
-        {
-            Pool? p = pool.Value;
-
-            return p == null ? throw new Exception("Vec3D pool was not created!") : p.create(x, y, z);
-        }
-
-        private Vec3D(double var1, double var3, double var5)
-        {
-            if (var1 == -0.0D)
-            {
-                var1 = 0.0D;
-            }
-
-            if (var3 == -0.0D)
-            {
-                var3 = 0.0D;
-            }
-
-            if (var5 == -0.0D)
-            {
-                var5 = 0.0D;
-            }
-
-            xCoord = var1;
-            yCoord = var3;
-            zCoord = var5;
-        }
-
-        private Vec3D setComponents(double var1, double var3, double var5)
-        {
-            xCoord = var1;
-            yCoord = var3;
-            zCoord = var5;
-            return this;
-        }
-
-        public Vec3D subtract(Vec3D var1)
-        {
-            return createVector(var1.xCoord - xCoord, var1.yCoord - yCoord, var1.zCoord - zCoord);
-        }
-
+        
         public Vec3D normalize()
         {
-            double var1 = (double)MathHelper.sqrt_double(xCoord * xCoord + yCoord * yCoord + zCoord * zCoord);
-            return var1 < 1.0E-4D ? createVector(0.0D, 0.0D, 0.0D) : createVector(xCoord / var1, yCoord / var1, zCoord / var1);
+            double mag = magnitude();
+            return mag < 1.0E-4D ? Zero : this / mag;
+        }
+        
+        public Vec3D crossProduct(Vec3D other)
+        {
+            return new Vec3D(y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x);
         }
 
-        public Vec3D crossProduct(Vec3D var1)
+        public Vec3D? getIntermediateWithXValue(Vec3D var1, double var2)
         {
-            return createVector(yCoord * var1.zCoord - zCoord * var1.yCoord, zCoord * var1.xCoord - xCoord * var1.zCoord, xCoord * var1.yCoord - yCoord * var1.xCoord);
-        }
-
-        public Vec3D addVector(double var1, double var3, double var5)
-        {
-            return createVector(xCoord + var1, yCoord + var3, zCoord + var5);
-        }
-
-        public double distanceTo(Vec3D var1)
-        {
-            double var2 = var1.xCoord - xCoord;
-            double var4 = var1.yCoord - yCoord;
-            double var6 = var1.zCoord - zCoord;
-            return (double)MathHelper.sqrt_double(var2 * var2 + var4 * var4 + var6 * var6);
-        }
-
-        public double squareDistanceTo(Vec3D var1)
-        {
-            double var2 = var1.xCoord - xCoord;
-            double var4 = var1.yCoord - yCoord;
-            double var6 = var1.zCoord - zCoord;
-            return var2 * var2 + var4 * var4 + var6 * var6;
-        }
-
-        public double squareDistanceTo(double var1, double var3, double var5)
-        {
-            double var7 = var1 - xCoord;
-            double var9 = var3 - yCoord;
-            double var11 = var5 - zCoord;
-            return var7 * var7 + var9 * var9 + var11 * var11;
-        }
-
-        public double lengthVector()
-        {
-            return (double)MathHelper.sqrt_double(xCoord * xCoord + yCoord * yCoord + zCoord * zCoord);
-        }
-
-        public Vec3D getIntermediateWithXValue(Vec3D var1, double var2)
-        {
-            double var4 = var1.xCoord - xCoord;
-            double var6 = var1.yCoord - yCoord;
-            double var8 = var1.zCoord - zCoord;
+            double var4 = var1.x - x;
+            double var6 = var1.y - y;
+            double var8 = var1.z - z;
             if (var4 * var4 < (double)1.0E-7F)
             {
                 return null;
             }
             else
             {
-                double var10 = (var2 - xCoord) / var4;
-                return var10 >= 0.0D && var10 <= 1.0D ? createVector(xCoord + var4 * var10, yCoord + var6 * var10, zCoord + var8 * var10) : null;
+                double var10 = (var2 - x) / var4;
+                return var10 >= 0.0D && var10 <= 1.0D ? new Vec3D(x + var4 * var10, y + var6 * var10, z + var8 * var10) : null;
             }
         }
 
-        public Vec3D getIntermediateWithYValue(Vec3D var1, double var2)
+        public Vec3D? getIntermediateWithYValue(Vec3D var1, double var2)
         {
-            double var4 = var1.xCoord - xCoord;
-            double var6 = var1.yCoord - yCoord;
-            double var8 = var1.zCoord - zCoord;
+            double var4 = var1.x - x;
+            double var6 = var1.y - y;
+            double var8 = var1.z - z;
             if (var6 * var6 < (double)1.0E-7F)
             {
                 return null;
             }
             else
             {
-                double var10 = (var2 - yCoord) / var6;
-                return var10 >= 0.0D && var10 <= 1.0D ? createVector(xCoord + var4 * var10, yCoord + var6 * var10, zCoord + var8 * var10) : null;
+                double var10 = (var2 - y) / var6;
+                return var10 >= 0.0D && var10 <= 1.0D ? new Vec3D(x + var4 * var10, y + var6 * var10, z + var8 * var10) : null;
             }
         }
 
-        public Vec3D getIntermediateWithZValue(Vec3D var1, double var2)
+        public Vec3D? getIntermediateWithZValue(Vec3D var1, double var2)
         {
-            double var4 = var1.xCoord - xCoord;
-            double var6 = var1.yCoord - yCoord;
-            double var8 = var1.zCoord - zCoord;
+            double var4 = var1.x - x;
+            double var6 = var1.y - y;
+            double var8 = var1.z - z;
             if (var8 * var8 < (double)1.0E-7F)
             {
                 return null;
             }
             else
             {
-                double var10 = (var2 - zCoord) / var8;
-                return var10 >= 0.0D && var10 <= 1.0D ? createVector(xCoord + var4 * var10, yCoord + var6 * var10, zCoord + var8 * var10) : null;
+                double var10 = (var2 - z) / var8;
+                return var10 >= 0.0D && var10 <= 1.0D ? new Vec3D(x + var4 * var10, y + var6 * var10, z + var8 * var10) : null;
             }
-        }
-
-        public override string toString()
-        {
-            return "(" + xCoord + ", " + yCoord + ", " + zCoord + ")";
         }
 
         public void rotateAroundX(float var1)
         {
             float var2 = MathHelper.cos(var1);
             float var3 = MathHelper.sin(var1);
-            double var4 = xCoord;
-            double var6 = yCoord * (double)var2 + zCoord * (double)var3;
-            double var8 = zCoord * (double)var2 - yCoord * (double)var3;
-            xCoord = var4;
-            yCoord = var6;
-            zCoord = var8;
+            double var4 = x;
+            double var6 = y * (double)var2 + z * (double)var3;
+            double var8 = z * (double)var2 - y * (double)var3;
+            x = var4;
+            y = var6;
+            z = var8;
         }
 
         public void rotateAroundY(float var1)
         {
             float var2 = MathHelper.cos(var1);
             float var3 = MathHelper.sin(var1);
-            double var4 = xCoord * (double)var2 + zCoord * (double)var3;
-            double var6 = yCoord;
-            double var8 = zCoord * (double)var2 - xCoord * (double)var3;
-            xCoord = var4;
-            yCoord = var6;
-            zCoord = var8;
+            double var4 = x * (double)var2 + z * (double)var3;
+            double var6 = y;
+            double var8 = z * (double)var2 - x * (double)var3;
+            x = var4;
+            y = var6;
+            z = var8;
+        }
+        
+        public override string ToString()
+        {
+            return "(" + x + ", " + y + ", " + z + ")";
+        }
+        
+        public static Vec3D operator +(Vec3D a, Vec3D b)
+        {
+            return new Vec3D(a.x + b.x, a.y + b.y, a.z + b.z);
+        }
+        public static Vec3D operator -(Vec3D a, Vec3D b)
+        {
+            return new Vec3D(a.x - b.x, a.y - b.y, a.z - b.z);
+        }
+        
+        public static Vec3D operator *(Vec3D a, Vec3D b)
+        {
+            return new Vec3D(a.x * b.x, a.y * b.y, a.z * b.z);
+        }
+        
+        public static Vec3D operator /(Vec3D a, Vec3D b)
+        {
+            return new Vec3D(a.x / b.x, a.y / b.y, a.z / b.z);
+        }
+        
+        public static Vec3D operator *(double a, Vec3D b)
+        {
+            return new Vec3D(a * b.x, a * b.y, a * b.z);
+        }
+        
+        public static Vec3D operator /(Vec3D a, double b)
+        {
+            return new Vec3D(a.x / b, a.y / b, a.z / b);
         }
     }
 }

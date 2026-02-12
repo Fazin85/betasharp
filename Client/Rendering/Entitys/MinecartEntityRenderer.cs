@@ -24,31 +24,22 @@ namespace betareborn.Client.Rendering.Entitys
             double var12 = var1.lastTickY + (var1.y - var1.lastTickY) * (double)var9;
             double var14 = var1.lastTickZ + (var1.z - var1.lastTickZ) * (double)var9;
             double var16 = (double)0.3F;
-            Vec3D var18 = var1.func_514_g(var10, var12, var14);
+            Vec3D? var18 = var1.func_514_g(var10, var12, var14);
             float var19 = var1.prevPitch + (var1.pitch - var1.prevPitch) * var9;
             if (var18 != null)
             {
-                Vec3D var20 = var1.func_515_a(var10, var12, var14, var16);
-                Vec3D var21 = var1.func_515_a(var10, var12, var14, -var16);
-                if (var20 == null)
-                {
-                    var20 = var18;
-                }
+                Vec3D var20 = var1.func_515_a(var10, var12, var14, var16) ?? var18.Value;
+                Vec3D var21 = var1.func_515_a(var10, var12, var14, -var16) ?? var18.Value;
 
-                if (var21 == null)
-                {
-                    var21 = var18;
-                }
-
-                var2 += var18.xCoord - var10;
-                var4 += (var20.yCoord + var21.yCoord) / 2.0D - var12;
-                var6 += var18.zCoord - var14;
-                Vec3D var22 = var21.addVector(-var20.xCoord, -var20.yCoord, -var20.zCoord);
-                if (var22.lengthVector() != 0.0D)
+                var2 += var18.Value.x - var10;
+                var4 += (var20.y + var21.y) / 2.0D - var12;
+                var6 += var18.Value.z - var14;
+                Vec3D var22 = var21 - var20;
+                if (var22.magnitude() != 0.0D)
                 {
                     var22 = var22.normalize();
-                    var8 = (float)(java.lang.Math.atan2(var22.zCoord, var22.xCoord) * 180.0D / Math.PI);
-                    var19 = (float)(java.lang.Math.atan(var22.yCoord) * 73.0D);
+                    var8 = (float)(java.lang.Math.atan2(var22.z, var22.x) * 180.0D / Math.PI);
+                    var19 = (float)(java.lang.Math.atan(var22.y) * 73.0D);
                 }
             }
 

@@ -9,12 +9,13 @@ using betareborn.Util.Maths;
 using java.awt;
 using java.util;
 using Silk.NET.OpenGL.Legacy;
+using System.Diagnostics;
 
 namespace betareborn.Client.Guis
 {
     public class GuiIngame : Gui
     {
-
+        private readonly GCMonitor GCMonitor;
         private static ItemRenderer itemRenderer = new ItemRenderer();
         private java.util.List chatMessageList = new ArrayList();
         private java.util.Random rand = new();
@@ -27,9 +28,10 @@ namespace betareborn.Client.Guis
         public float damageGuiPartialTime;
         float prevVignetteBrightness = 1.0F;
 
-        public GuiIngame(Minecraft var1)
+        public GuiIngame(Minecraft gameInstance)
         {
-            mc = var1;
+            mc = gameInstance;
+            GCMonitor = new GCMonitor();
         }
 
         public void renderGameOverlay(float partialTicks, bool unusedFlag, int unusedA, int unusedB)
@@ -199,11 +201,10 @@ namespace betareborn.Client.Guis
             string debugStr;
             if (mc.options.showDebugInfo)
             {
+                GCMonitor.AllowUpdating = true;
                 GLManager.GL.PushMatrix();
                 if (Minecraft.hasPaidCheckTime > 0L)
-                {
                     GLManager.GL.Translate(0.0F, 32.0F, 0.0F);
-                }
 
                 font.drawStringWithShadow("Minecraft Beta 1.7.3 (" + mc.debug + ")", 2, 2, 16777215);
                 font.drawStringWithShadow(mc.func_6262_n(), 2, 22, 16777215);
@@ -222,6 +223,10 @@ namespace betareborn.Client.Guis
                 drawString(font, "z: " + mc.player.z, 2, 80, 14737632);
                 drawString(font, "f: " + (MathHelper.floor_double((double)(mc.player.yaw * 4.0F / 360.0F) + 0.5D) & 3), 2, 88, 14737632);
                 GLManager.GL.PopMatrix();
+            }
+            else
+            {
+                GCMonitor.AllowUpdating = false;
             }
 
             if (recordPlayingUpFor > 0)

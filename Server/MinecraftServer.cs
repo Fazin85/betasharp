@@ -327,7 +327,6 @@ namespace betareborn.Server
                 GIVE_COMMANDS_COOLDOWNS.remove(var1.get(var6));
             }
 
-            Vec3D.cleanUp();
             AsyncIO.tick();
             ticks++;
 

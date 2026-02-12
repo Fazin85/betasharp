@@ -47,16 +47,27 @@ namespace betareborn.Server
 
             var2.append(logRecord.getMessage());
             var2.append('\n');
-            Throwable var4 = (Throwable)logRecord.getThrown();
-            if (var4 != null)
+
+            var thrown = logRecord.getThrown();
+            if (thrown != null)
             {
-                StringWriter var5 = new StringWriter();
-                var4.printStackTrace(new PrintWriter(var5));
-                var2.append(var5.toString());
+                if (thrown is System.Exception netEx) // .NET exception
+                {
+                    var2.append(netEx.ToString());
+                }
+                else if (thrown is java.lang.Throwable javaEx) // Java Throwable
+                {
+                    StringWriter sw = new();
+                    javaEx.printStackTrace(new PrintWriter(sw));
+                    var2.append(sw.toString());
+                }
+                else // Fallback safety
+                {
+                    var2.append(thrown.ToString());
+                }
             }
 
             return var2.toString();
         }
     }
-
 }

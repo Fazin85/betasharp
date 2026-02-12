@@ -743,7 +743,6 @@ namespace betareborn
             try
             {
                 java.lang.System.gc();
-                Vec3D.cleanUp();
             }
             catch (Throwable vec3dCleanupException)
             {

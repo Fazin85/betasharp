@@ -210,7 +210,7 @@ namespace betareborn.Util.Maths
 
         public bool contains(Vec3D pos)
         {
-            return pos.xCoord > minX && pos.xCoord < maxX ? pos.yCoord > minY && pos.yCoord < maxY ? pos.zCoord > minZ && pos.zCoord < maxZ : false : false;
+            return pos.x > minX && pos.x < maxX ? pos.y > minY && pos.y < maxY ? pos.z > minZ && pos.z < maxZ : false : false;
         }
 
         public double getAverageSizeLength()
@@ -232,129 +232,129 @@ namespace betareborn.Util.Maths
             return new Box(var7, var9, var11, var13, var15, var17);
         }
 
-        public HitResult raycast(Vec3D min, Vec3D max)
+        public HitResult raycast(Vec3D startPos, Vec3D endPos)
         {
-            Vec3D var3 = min.getIntermediateWithXValue(max, minX);
-            Vec3D var4 = min.getIntermediateWithXValue(max, maxX);
-            Vec3D var5 = min.getIntermediateWithYValue(max, minY);
-            Vec3D var6 = min.getIntermediateWithYValue(max, maxY);
-            Vec3D var7 = min.getIntermediateWithZValue(max, minZ);
-            Vec3D var8 = min.getIntermediateWithZValue(max, maxZ);
-            if (!containsInYZPlane(var3))
+            Vec3D? hitMinX = startPos.getIntermediateWithXValue(endPos, minX);
+            Vec3D? hitMaxX = startPos.getIntermediateWithXValue(endPos, maxX);
+            Vec3D? hitMinY = startPos.getIntermediateWithYValue(endPos, minY);
+            Vec3D? hitMaxY = startPos.getIntermediateWithYValue(endPos, maxY);
+            Vec3D? hitMinZ = startPos.getIntermediateWithZValue(endPos, minZ);
+            Vec3D? hitMaxZ = startPos.getIntermediateWithZValue(endPos, maxZ);
+            if (hitMinX != null && !isVecInsideYZBounds(hitMinX.Value))
             {
-                var3 = null;
+                hitMinX = null;
             }
 
-            if (!containsInYZPlane(var4))
+            if (hitMaxX != null && !isVecInsideYZBounds(hitMaxX.Value))
             {
-                var4 = null;
+                hitMaxX = null;
             }
 
-            if (!containsInXZPlane(var5))
+            if (hitMinY != null && !isVecInsideXZBounds(hitMinY.Value))
             {
-                var5 = null;
+                hitMinY = null;
             }
 
-            if (!containsInXZPlane(var6))
+            if (hitMaxY != null && !isVecInsideXZBounds(hitMaxY.Value))
             {
-                var6 = null;
+                hitMaxY = null;
             }
 
-            if (!containsInXYPlane(var7))
+            if (hitMinZ != null && !isVecInsideXYBounds(hitMinZ.Value))
             {
-                var7 = null;
+                hitMinZ = null;
             }
 
-            if (!containsInXYPlane(var8))
+            if (hitMaxZ != null && !isVecInsideXYBounds(hitMaxZ.Value))
             {
-                var8 = null;
+                hitMaxZ = null;
             }
 
-            Vec3D var9 = null;
-            if (var3 != null && (var9 == null || min.squareDistanceTo(var3) < min.squareDistanceTo(var9)))
+            Vec3D? hitPos = null;
+            if (hitMinX != null && (hitPos == null || startPos.distanceTo(hitMinX.Value) < startPos.distanceTo(hitPos.Value)))
             {
-                var9 = var3;
+                hitPos = hitMinX;
             }
 
-            if (var4 != null && (var9 == null || min.squareDistanceTo(var4) < min.squareDistanceTo(var9)))
+            if (hitMaxX != null && (hitPos == null || startPos.distanceTo(hitMaxX.Value) < startPos.distanceTo(hitPos.Value)))
             {
-                var9 = var4;
+                hitPos = hitMaxX;
             }
 
-            if (var5 != null && (var9 == null || min.squareDistanceTo(var5) < min.squareDistanceTo(var9)))
+            if (hitMinY != null && (hitPos == null || startPos.distanceTo(hitMinY.Value) < startPos.distanceTo(hitPos.Value)))
             {
-                var9 = var5;
+                hitPos = hitMinY;
             }
 
-            if (var6 != null && (var9 == null || min.squareDistanceTo(var6) < min.squareDistanceTo(var9)))
+            if (hitMaxY != null && (hitPos == null || startPos.distanceTo(hitMaxY.Value) < startPos.distanceTo(hitPos.Value)))
             {
-                var9 = var6;
+                hitPos = hitMaxY;
             }
 
-            if (var7 != null && (var9 == null || min.squareDistanceTo(var7) < min.squareDistanceTo(var9)))
+            if (hitMinZ != null && (hitPos == null || startPos.distanceTo(hitMinZ.Value) < startPos.distanceTo(hitPos.Value)))
             {
-                var9 = var7;
+                hitPos = hitMinZ;
             }
 
-            if (var8 != null && (var9 == null || min.squareDistanceTo(var8) < min.squareDistanceTo(var9)))
+            if (hitMaxZ != null && (hitPos == null || startPos.distanceTo(hitMaxZ.Value) < startPos.distanceTo(hitPos.Value)))
             {
-                var9 = var8;
+                hitPos = hitMaxZ;
             }
 
-            if (var9 == null)
+            if (hitPos == null)
             {
                 return null;
             }
             else
             {
-                int var10 = -1;
-                if (var9 == var3)
+                int side = -1;
+                if (hitPos == hitMinX)
                 {
-                    var10 = 4;
+                    side = 4;
                 }
 
-                if (var9 == var4)
+                if (hitPos == hitMaxX)
                 {
-                    var10 = 5;
+                    side = 5;
                 }
 
-                if (var9 == var5)
+                if (hitPos == hitMinY)
                 {
-                    var10 = 0;
+                    side = 0;
                 }
 
-                if (var9 == var6)
+                if (hitPos == hitMaxY)
                 {
-                    var10 = 1;
+                    side = 1;
                 }
 
-                if (var9 == var7)
+                if (hitPos == hitMinZ)
                 {
-                    var10 = 2;
+                    side = 2;
                 }
 
-                if (var9 == var8)
+                if (hitPos == hitMaxZ)
                 {
-                    var10 = 3;
+                    side = 3;
                 }
 
-                return new HitResult(0, 0, 0, var10, var9);
+                return new HitResult(0, 0, 0, side, hitPos.Value);
             }
         }
 
-        private bool containsInYZPlane(Vec3D pos)
+        private bool isVecInsideYZBounds(Vec3D pos)
         {
-            return pos == null ? false : pos.yCoord >= minY && pos.yCoord <= maxY && pos.zCoord >= minZ && pos.zCoord <= maxZ;
+            return pos.y >= minY && pos.y <= maxY && pos.z >= minZ && pos.z <= maxZ;
         }
 
-        private bool containsInXZPlane(Vec3D pos)
+        private bool isVecInsideXZBounds(Vec3D pos)
         {
-            return pos == null ? false : pos.xCoord >= minX && pos.xCoord <= maxX && pos.zCoord >= minZ && pos.zCoord <= maxZ;
+            return pos.x >= minX && pos.x <= maxX && pos.z >= minZ && pos.z <= maxZ;
         }
 
-        private bool containsInXYPlane(Vec3D pos)
+        private bool isVecInsideXYBounds(Vec3D pos)
         {
-            return pos == null ? false : pos.xCoord >= minX && pos.xCoord <= maxX && pos.yCoord >= minY && pos.yCoord <= maxY;
+            return pos.x >= minX && pos.x <= maxX && pos.y >= minY && pos.y <= maxY;
         }
 
         public override string ToString()

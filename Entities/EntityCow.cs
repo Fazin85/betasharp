@@ -8,20 +8,20 @@ namespace betareborn.Entities
     {
         public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityCow).TypeHandle);
 
-        public EntityCow(World var1) : base(var1)
+        public EntityCow(World world) : base(world)
         {
             this.texture = "/mob/cow.png";
             this.setBoundingBoxSpacing(0.9F, 1.3F);
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            base.writeNbt(var1);
+            base.writeNbt(nbt);
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            base.readNbt(var1);
+            base.readNbt(nbt);
         }
 
         protected override string getLivingSound()
@@ -49,12 +49,12 @@ namespace betareborn.Entities
             return Item.LEATHER.id;
         }
 
-        public override bool interact(EntityPlayer var1)
+        public override bool interact(EntityPlayer player)
         {
-            ItemStack var2 = var1.inventory.getSelectedItem();
-            if (var2 != null && var2.itemId == Item.BUCKET.id)
+            ItemStack heldBucket = player.inventory.getSelectedItem();
+            if (heldBucket != null && heldBucket.itemId == Item.BUCKET.id)
             {
-                var1.inventory.setStack(var1.inventory.selectedSlot, new ItemStack(Item.MILK_BUCKET));
+                player.inventory.setStack(player.inventory.selectedSlot, new ItemStack(Item.MILK_BUCKET));
                 return true;
             }
             else

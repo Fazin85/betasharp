@@ -7,9 +7,9 @@ namespace betareborn.Entities
     public class EntityLavaFX : EntityFX
     {
 
-        private float field_674_a;
+        private float baseScale;
 
-        public EntityLavaFX(World var1, double var2, double var4, double var6) : base(var1, var2, var4, var6, 0.0D, 0.0D, 0.0D)
+        public EntityLavaFX(World world, double x, double y, double z) : base(world, x, y, z, 0.0D, 0.0D, 0.0D)
         {
             velocityX *= (double)0.8F;
             velocityY *= (double)0.8F;
@@ -17,22 +17,22 @@ namespace betareborn.Entities
             velocityY = (double)(random.nextFloat() * 0.4F + 0.05F);
             particleRed = particleGreen = particleBlue = 1.0F;
             particleScale *= random.nextFloat() * 2.0F + 0.2F;
-            field_674_a = particleScale;
+            baseScale = particleScale;
             particleMaxAge = (int)(16.0D / (java.lang.Math.random() * 0.8D + 0.2D));
             noClip = false;
             particleTextureIndex = 49;
         }
 
-        public override float getBrightnessAtEyes(float var1)
+        public override float getBrightnessAtEyes(float brightness)
         {
             return 1.0F;
         }
 
-        public override void renderParticle(Tessellator var1, float var2, float var3, float var4, float var5, float var6, float var7)
+        public override void renderParticle(Tessellator t, float partialTick, float rotX, float rotY, float rotZ, float upX, float upZ)
         {
-            float var8 = ((float)particleAge + var2) / (float)particleMaxAge;
-            particleScale = field_674_a * (1.0F - var8 * var8);
-            base.renderParticle(var1, var2, var3, var4, var5, var6, var7);
+            float lifeProgress = ((float)particleAge + partialTick) / (float)particleMaxAge;
+            particleScale = baseScale * (1.0F - lifeProgress * lifeProgress);
+            base.renderParticle(t, partialTick, rotX, rotY, rotZ, upX, upZ);
         }
 
         public override void tick()
@@ -45,8 +45,8 @@ namespace betareborn.Entities
                 markDead();
             }
 
-            float var1 = (float)particleAge / (float)particleMaxAge;
-            if (random.nextFloat() > var1)
+            float lifeProgress = (float)particleAge / (float)particleMaxAge;
+            if (random.nextFloat() > lifeProgress)
             {
                 world.addParticle("smoke", x, y, z, velocityX, velocityY, velocityZ);
             }

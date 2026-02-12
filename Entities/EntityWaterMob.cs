@@ -7,7 +7,7 @@ namespace betareborn.Entities
     {
         public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityWaterMob).TypeHandle);
 
-        public EntityWaterMob(World var1) : base(var1)
+        public EntityWaterMob(World world) : base(world)
         {
         }
 
@@ -16,14 +16,14 @@ namespace betareborn.Entities
             return true;
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            base.writeNbt(var1);
+            base.writeNbt(nbt);
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            base.readNbt(var1);
+            base.readNbt(nbt);
         }
 
         public override bool canSpawn()

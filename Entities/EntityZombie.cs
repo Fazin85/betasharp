@@ -8,7 +8,7 @@ namespace betareborn.Entities
     {
         public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityZombie).TypeHandle);
 
-        public EntityZombie(World var1) : base(var1)
+        public EntityZombie(World world) : base(world)
         {
             texture = "/mob/zombie.png";
             movementSpeed = 0.5F;
@@ -19,8 +19,8 @@ namespace betareborn.Entities
         {
             if (world.canMonsterSpawn())
             {
-                float var1 = getBrightnessAtEyes(1.0F);
-                if (var1 > 0.5F && world.hasSkyLight(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z)) && random.nextFloat() * 30.0F < (var1 - 0.4F) * 2.0F)
+                float brightness = getBrightnessAtEyes(1.0F);
+                if (brightness > 0.5F && world.hasSkyLight(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z)) && random.nextFloat() * 30.0F < (brightness - 0.4F) * 2.0F)
                 {
                     fireTicks = 300;
                 }

@@ -16,14 +16,28 @@ namespace betareborn.Util
         public void Add(T value)
         {
             if (_count == _buffer.Length)
-                Grow();
+                Grow(_count + 1);
 
             _buffer[_count++] = value;
         }
 
-        private void Grow()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddRange(ReadOnlySpan<T> values)
         {
-            var newBuffer = ArrayPool<T>.Shared.Rent(_buffer.Length * 2);
+            if (_count + values.Length > _buffer.Length)
+                Grow(_count + values.Length);
+
+            values.CopyTo(_buffer.AsSpan(_count));
+            _count += values.Length;
+        }
+
+        private void Grow(int minCapacity)
+        {
+            int newSize = _buffer.Length * 2;
+            if (newSize < minCapacity)
+                newSize = minCapacity;
+
+            var newBuffer = ArrayPool<T>.Shared.Rent(newSize);
             Array.Copy(_buffer, newBuffer, _count);
             ArrayPool<T>.Shared.Return(_buffer, clearArray: false);
             _buffer = newBuffer;
