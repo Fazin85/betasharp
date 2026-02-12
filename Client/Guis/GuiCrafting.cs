@@ -8,7 +8,7 @@ namespace betareborn.Client.Guis
     public class GuiCrafting : GuiContainer
     {
 
-        public GuiCrafting(InventoryPlayer var1, World var2, int var3, int var4, int var5) : base(new CraftingScreenHandler(var1, var2, var3, var4, var5))
+        public GuiCrafting(InventoryPlayer player, World world, int posX, int posY, int posZ) : base(new CraftingScreenHandler(player, world, posX, posY, posZ))
         {
         }
 
@@ -24,14 +24,14 @@ namespace betareborn.Client.Guis
             fontRenderer.drawString("Inventory", 8, ySize - 96 + 2, 4210752);
         }
 
-        protected override void drawGuiContainerBackgroundLayer(float var1)
+        protected override void drawGuiContainerBackgroundLayer(float partialTicks)
         {
-            int var2 = mc.textureManager.getTextureId("/gui/crafting.png");
+            int textureId = mc.textureManager.getTextureId("/gui/crafting.png");
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-            mc.textureManager.bindTexture(var2);
-            int var3 = (width - xSize) / 2;
-            int var4 = (height - ySize) / 2;
-            drawTexturedModalRect(var3, var4, 0, 0, xSize, ySize);
+            mc.textureManager.bindTexture(textureId);
+            int guiLeft = (width - xSize) / 2;
+            int guiTop = (height - ySize) / 2;
+            drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
         }
     }
 

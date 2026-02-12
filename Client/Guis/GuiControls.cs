@@ -8,7 +8,8 @@ namespace betareborn.Client.Guis
         private GuiScreen parentScreen;
         protected string screenTitle = "Controls";
         private GameOptions options;
-        private int buttonId = -1;
+        private int selectedKey = -1;
+        private const int BUTTON_DONE = 200;
 
         public GuiControls(GuiScreen var1, GameOptions var2)
         {
@@ -16,51 +17,52 @@ namespace betareborn.Client.Guis
             options = var2;
         }
 
-        private int func_20080_j()
+        private int getLeftColumnX()
         {
             return width / 2 - 155;
         }
 
         public override void initGui()
         {
-            TranslationStorage var1 = TranslationStorage.getInstance();
-            int var2 = func_20080_j();
+            TranslationStorage translations = TranslationStorage.getInstance();
+            int leftX = getLeftColumnX();
 
-            for (int var3 = 0; var3 < options.keyBindings.Length; ++var3)
+            for (int i = 0; i < options.keyBindings.Length; ++i)
             {
-                controlList.add(new GuiSmallButton(var3, var2 + var3 % 2 * 160, height / 6 + 24 * (var3 >> 1), 70, 20, options.getOptionDisplayString(var3)));
+                controlList.add(new GuiSmallButton(i, leftX + i % 2 * 160, height / 6 + 24 * (i >> 1), 70, 20, options.getOptionDisplayString(i)));
             }
 
-            controlList.add(new GuiButton(200, width / 2 - 100, height / 6 + 168, var1.translateKey("gui.done")));
-            screenTitle = var1.translateKey("controls.title");
+            controlList.add(new GuiButton(BUTTON_DONE, width / 2 - 100, height / 6 + 168, translations.translateKey("gui.done")));
+            screenTitle = translations.translateKey("controls.title");
         }
 
-        protected override void actionPerformed(GuiButton var1)
+        protected override void actionPerformed(GuiButton button)
         {
-            for (int var2 = 0; var2 < options.keyBindings.Length; ++var2)
+            for (int i = 0; i < options.keyBindings.Length; ++i)
             {
-                ((GuiButton)controlList.get(var2)).displayString = options.getOptionDisplayString(var2);
+                ((GuiButton)controlList.get(i)).displayString = options.getOptionDisplayString(i);
             }
 
-            if (var1.id == 200)
+            switch (button.id)
             {
-                mc.displayGuiScreen(parentScreen);
-            }
-            else
-            {
-                buttonId = var1.id;
-                var1.displayString = "> " + options.getOptionDisplayString(var1.id) + " <";
+                case BUTTON_DONE:
+                    mc.displayGuiScreen(parentScreen);
+                    break;
+                default:
+                    selectedKey = button.id;
+                    button.displayString = "> " + options.getOptionDisplayString(button.id) + " <";
+                    break;
             }
 
         }
 
         protected override void keyTyped(char eventChar, int eventKey)
         {
-            if (buttonId >= 0)
+            if (selectedKey >= 0)
             {
-                options.setKeyBinding(buttonId, eventKey);
-                ((GuiButton)controlList.get(buttonId)).displayString = options.getOptionDisplayString(buttonId);
-                buttonId = -1;
+                options.setKeyBinding(selectedKey, eventKey);
+                ((GuiButton)controlList.get(selectedKey)).displayString = options.getOptionDisplayString(selectedKey);
+                selectedKey = -1;
             }
             else
             {
@@ -69,18 +71,18 @@ namespace betareborn.Client.Guis
 
         }
 
-        public override void render(int var1, int var2, float var3)
+        public override void render(int mouseX, int mouseY, float partialTicks)
         {
             drawDefaultBackground();
             drawCenteredString(fontRenderer, screenTitle, width / 2, 20, 16777215);
-            int var4 = func_20080_j();
+            int leftX = getLeftColumnX();
 
-            for (int var5 = 0; var5 < options.keyBindings.Length; ++var5)
+            for (int i = 0; i < options.keyBindings.Length; ++i)
             {
-                drawString(fontRenderer, options.getKeyBindingDescription(var5), var4 + var5 % 2 * 160 + 70 + 6, height / 6 + 24 * (var5 >> 1) + 7, -1);
+                drawString(fontRenderer, options.getKeyBindingDescription(i), leftX + i % 2 * 160 + 70 + 6, height / 6 + 24 * (i >> 1) + 7, -1);
             }
 
-            base.render(var1, var2, var3);
+            base.render(mouseX, mouseY, partialTicks);
         }
     }
 }

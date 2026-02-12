@@ -9,16 +9,18 @@ namespace betareborn.Client.Guis
 {
     public class GuiCreateWorld : GuiScreen
     {
+        private const int BUTTON_CREATE = 0;
+        private const int BUTTON_CANCEL = 1;
 
-        private GuiScreen field_22131_a;
+        private GuiScreen parentScreen;
         private GuiTextField textboxWorldName;
         private GuiTextField textboxSeed;
         private string folderName;
         private bool createClicked;
 
-        public GuiCreateWorld(GuiScreen var1)
+        public GuiCreateWorld(GuiScreen parentScreen)
         {
-            field_22131_a = var1;
+            this.parentScreen = parentScreen;
         }
 
         public override void updateScreen()
@@ -29,28 +31,28 @@ namespace betareborn.Client.Guis
 
         public override void initGui()
         {
-            TranslationStorage var1 = TranslationStorage.getInstance();
+            TranslationStorage translations = TranslationStorage.getInstance();
             Keyboard.enableRepeatEvents(true);
             controlList.clear();
-            controlList.add(new GuiButton(0, width / 2 - 100, height / 4 + 96 + 12, var1.translateKey("selectWorld.create")));
-            controlList.add(new GuiButton(1, width / 2 - 100, height / 4 + 120 + 12, var1.translateKey("gui.cancel")));
-            textboxWorldName = new GuiTextField(this, fontRenderer, width / 2 - 100, 60, 200, 20, var1.translateKey("selectWorld.newWorld"));
+            controlList.add(new GuiButton(BUTTON_CREATE, width / 2 - 100, height / 4 + 96 + 12, translations.translateKey("selectWorld.create")));
+            controlList.add(new GuiButton(BUTTON_CANCEL, width / 2 - 100, height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
+            textboxWorldName = new GuiTextField(this, fontRenderer, width / 2 - 100, 60, 200, 20, translations.translateKey("selectWorld.newWorld"));
             textboxWorldName.isFocused = true;
             textboxWorldName.setMaxStringLength(32);
             textboxSeed = new GuiTextField(this, fontRenderer, width / 2 - 100, 116, 200, 20, "");
-            func_22129_j();
+            updateFolderName();
         }
 
-        private void func_22129_j()
+        private void updateFolderName()
         {
             folderName = textboxWorldName.getText().Trim();
-            char[] var1 = ChatAllowedCharacters.allowedCharactersArray;
-            int var2 = var1.Length;
+            char[] invalidCharacters = ChatAllowedCharacters.allowedCharactersArray;
+            int charCount = invalidCharacters.Length;
 
-            for (int var3 = 0; var3 < var2; ++var3)
+            for (int i = 0; i < charCount; ++i)
             {
-                char var4 = var1[var3];
-                folderName = folderName.Replace(var4, '_');
+                char invalidChar = invalidCharacters[i];
+                folderName = folderName.Replace(invalidChar, '_');
             }
 
             if (MathHelper.stringNullOrLengthZero(folderName))
@@ -61,14 +63,14 @@ namespace betareborn.Client.Guis
             folderName = generateUnusedFolderName(mc.getSaveLoader(), folderName);
         }
 
-        public static string generateUnusedFolderName(WorldStorageSource var0, string var1)
+        public static string generateUnusedFolderName(WorldStorageSource worldStorage, string baseFolderName)
         {
-            while (var0.getProperties(var1) != null)
+            while (worldStorage.getProperties(baseFolderName) != null)
             {
-                var1 = var1 + "-";
+                baseFolderName = baseFolderName + "-";
             }
 
-            return var1;
+            return baseFolderName;
         }
 
         public override void onGuiClosed()
@@ -76,44 +78,46 @@ namespace betareborn.Client.Guis
             Keyboard.enableRepeatEvents(false);
         }
 
-        protected override void actionPerformed(GuiButton var1)
+        protected override void actionPerformed(GuiButton button)
         {
-            if (var1.enabled)
+            if (button.enabled)
             {
-                if (var1.id == 1)
+                switch (button.id)
                 {
-                    mc.displayGuiScreen(field_22131_a);
-                }
-                else if (var1.id == 0)
-                {
-                    if (createClicked)
+                    case BUTTON_CANCEL:
+                        mc.displayGuiScreen(parentScreen);
+                        break;
+                    case BUTTON_CREATE:
                     {
-                        return;
-                    }
-
-                    createClicked = true;
-                    long var2 = new java.util.Random().nextLong();
-                    string var4 = textboxSeed.getText();
-                    if (!MathHelper.stringNullOrLengthZero(var4))
-                    {
-                        try
+                        if (createClicked)
                         {
-                            long var5 = Long.parseLong(var4);
-                            if (var5 != 0L)
+                            return;
+                        }
+
+                        createClicked = true;
+                        long worldSeed = new java.util.Random().nextLong();
+                        string seedInput = textboxSeed.getText();
+                        if (!MathHelper.stringNullOrLengthZero(seedInput))
+                        {
+                            try
                             {
-                                var2 = var5;
+                                long parsedSeed = Long.parseLong(seedInput);
+                                if (parsedSeed != 0L)
+                                {
+                                    worldSeed = parsedSeed;
+                                }
+                            }
+                            catch (NumberFormatException exception)
+                            {
+                                worldSeed = seedInput.GetHashCode();
                             }
                         }
-                        catch (NumberFormatException var7)
-                        {
-                            var2 = var4.GetHashCode();
-                        }
+
+                        mc.playerController = new PlayerControllerSP(mc);
+                        mc.startWorld(folderName, textboxWorldName.getText(), worldSeed);
+                        break;
                     }
-
-                    mc.playerController = new PlayerControllerSP(mc);
-                    mc.startWorld(folderName, textboxWorldName.getText(), var2);
                 }
-
             }
         }
 
@@ -134,28 +138,28 @@ namespace betareborn.Client.Guis
             }
 
             ((GuiButton)controlList.get(0)).enabled = textboxWorldName.getText().Length > 0;
-            func_22129_j();
+            updateFolderName();
         }
 
-        protected override void mouseClicked(int var1, int var2, int var3)
+        protected override void mouseClicked(int x, int y, int button)
         {
-            base.mouseClicked(var1, var2, var3);
-            textboxWorldName.mouseClicked(var1, var2, var3);
-            textboxSeed.mouseClicked(var1, var2, var3);
+            base.mouseClicked(x, y, button);
+            textboxWorldName.mouseClicked(x, y, button);
+            textboxSeed.mouseClicked(x, y, button);
         }
 
-        public override void render(int var1, int var2, float var3)
+        public override void render(int mouseX, int mouseY, float partialTicks)
         {
-            TranslationStorage var4 = TranslationStorage.getInstance();
+            TranslationStorage translations = TranslationStorage.getInstance();
             drawDefaultBackground();
-            drawCenteredString(fontRenderer, var4.translateKey("selectWorld.create"), width / 2, height / 4 - 60 + 20, 16777215);
-            drawString(fontRenderer, var4.translateKey("selectWorld.enterName"), width / 2 - 100, 47, 10526880);
-            drawString(fontRenderer, var4.translateKey("selectWorld.resultFolder") + " " + folderName, width / 2 - 100, 85, 10526880);
-            drawString(fontRenderer, var4.translateKey("selectWorld.enterSeed"), width / 2 - 100, 104, 10526880);
-            drawString(fontRenderer, var4.translateKey("selectWorld.seedInfo"), width / 2 - 100, 140, 10526880);
+            drawCenteredString(fontRenderer, translations.translateKey("selectWorld.create"), width / 2, height / 4 - 60 + 20, 16777215);
+            drawString(fontRenderer, translations.translateKey("selectWorld.enterName"), width / 2 - 100, 47, 10526880);
+            drawString(fontRenderer, translations.translateKey("selectWorld.resultFolder") + " " + folderName, width / 2 - 100, 85, 10526880);
+            drawString(fontRenderer, translations.translateKey("selectWorld.enterSeed"), width / 2 - 100, 104, 10526880);
+            drawString(fontRenderer, translations.translateKey("selectWorld.seedInfo"), width / 2 - 100, 140, 10526880);
             textboxWorldName.drawTextBox();
             textboxSeed.drawTextBox();
-            base.render(var1, var2, var3);
+            base.render(mouseX, mouseY, partialTicks);
         }
 
         public override void selectNextField()

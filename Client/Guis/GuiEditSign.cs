@@ -17,16 +17,18 @@ namespace betareborn.Client.Guis
         private int editLine = 0;
         private static readonly string allowedCharacters = ChatAllowedCharacters.allowedCharacters;
 
-        public GuiEditSign(BlockEntitySign var1)
+        public GuiEditSign(BlockEntitySign sign)
         {
-            entitySign = var1;
+            entitySign = sign;
         }
+
+        private const int BUTTON_DONE = 0;
 
         public override void initGui()
         {
             controlList.clear();
             Keyboard.enableRepeatEvents(true);
-            controlList.add(new GuiButton(0, width / 2 - 100, height / 4 + 120, "Done"));
+            controlList.add(new GuiButton(BUTTON_DONE, width / 2 - 100, height / 4 + 120, "Done"));
         }
 
         public override void onGuiClosed()
@@ -44,16 +46,17 @@ namespace betareborn.Client.Guis
             ++updateCounter;
         }
 
-        protected override void actionPerformed(GuiButton var1)
+        protected override void actionPerformed(GuiButton button)
         {
-            if (var1.enabled)
+            if (button.enabled)
             {
-                if (var1.id == 0)
+                switch (button.id)
                 {
-                    entitySign.markDirty();
-                    mc.displayGuiScreen(null);
+                    case BUTTON_DONE:
+                        entitySign.markDirty();
+                        mc.displayGuiScreen(null);
+                        break;
                 }
-
             }
         }
 
@@ -81,42 +84,42 @@ namespace betareborn.Client.Guis
 
         }
 
-        public override void render(int var1, int var2, float var3)
+        public override void render(int mouseX, int mouseY, float partialTicks)
         {
             drawDefaultBackground();
             drawCenteredString(fontRenderer, screenTitle, width / 2, 40, 16777215);
             GLManager.GL.PushMatrix();
             GLManager.GL.Translate(width / 2, 0.0F, 50.0F);
-            float var4 = 93.75F;
-            GLManager.GL.Scale(-var4, -var4, -var4);
+            float scale = 93.75F;
+            GLManager.GL.Scale(-scale, -scale, -scale);
             GLManager.GL.Rotate(180.0F, 0.0F, 1.0F, 0.0F);
-            Block var5 = entitySign.getBlock();
-            if (var5 == Block.SIGN)
+            Block signBlock = entitySign.getBlock();
+            if (signBlock == Block.SIGN)
             {
-                float var6 = entitySign.getPushedBlockData() * 360 / 16.0F;
-                GLManager.GL.Rotate(var6, 0.0F, 1.0F, 0.0F);
+                float rotation = entitySign.getPushedBlockData() * 360 / 16.0F;
+                GLManager.GL.Rotate(rotation, 0.0F, 1.0F, 0.0F);
                 GLManager.GL.Translate(0.0F, -1.0625F, 0.0F);
             }
             else
             {
-                int var8 = entitySign.getPushedBlockData();
-                float var7 = 0.0F;
-                if (var8 == 2)
+                int rotationIndex = entitySign.getPushedBlockData();
+                float angle = 0.0F;
+                if (rotationIndex == 2)
                 {
-                    var7 = 180.0F;
+                    angle = 180.0F;
                 }
 
-                if (var8 == 4)
+                if (rotationIndex == 4)
                 {
-                    var7 = 90.0F;
+                    angle = 90.0F;
                 }
 
-                if (var8 == 5)
+                if (rotationIndex == 5)
                 {
-                    var7 = -90.0F;
+                    angle = -90.0F;
                 }
 
-                GLManager.GL.Rotate(var7, 0.0F, 1.0F, 0.0F);
+                GLManager.GL.Rotate(angle, 0.0F, 1.0F, 0.0F);
                 GLManager.GL.Translate(0.0F, -1.0625F, 0.0F);
             }
 
@@ -128,7 +131,7 @@ namespace betareborn.Client.Guis
             BlockEntityRenderer.instance.renderTileEntityAt(entitySign, -0.5D, -0.75D, -0.5D, 0.0F);
             entitySign.currentRow = -1;
             GLManager.GL.PopMatrix();
-            base.render(var1, var2, var3);
+            base.render(mouseX, mouseY, partialTicks);
         }
     }
 

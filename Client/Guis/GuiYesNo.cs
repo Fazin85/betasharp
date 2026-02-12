@@ -6,37 +6,48 @@ namespace betareborn.Client.Guis
         private GuiScreen parentScreen;
         private string message1;
         private string message2;
-        private string field_22106_k;
-        private string field_22105_l;
+        private string confirmButtonText;
+        private string cancelButtonText;
         private int worldNumber;
 
-        public GuiYesNo(GuiScreen var1, string var2, string var3, string var4, string var5, int var6)
+        private const int BUTTON_CONFIRM = 0;
+        private const int BUTTON_CANCEL = 1;
+
+        public GuiYesNo(GuiScreen parentScreen, string message1, string message2, string confirmButtonText, string cancelButtonText, int worldNumber)
         {
-            parentScreen = var1;
-            message1 = var2;
-            message2 = var3;
-            field_22106_k = var4;
-            field_22105_l = var5;
-            worldNumber = var6;
+            this.parentScreen = parentScreen;
+            this.message1 = message1;
+            this.message2 = message2;
+            this.confirmButtonText = confirmButtonText;
+            this.cancelButtonText = cancelButtonText;
+            this.worldNumber = worldNumber;
         }
 
         public override void initGui()
         {
-            controlList.add(new GuiSmallButton(0, width / 2 - 155 + 0, height / 6 + 96, field_22106_k));
-            controlList.add(new GuiSmallButton(1, width / 2 - 155 + 160, height / 6 + 96, field_22105_l));
+            controlList.add(new GuiSmallButton(BUTTON_CONFIRM, width / 2 - 155 + 0, height / 6 + 96, confirmButtonText));
+            controlList.add(new GuiSmallButton(BUTTON_CANCEL, width / 2 - 155 + 160, height / 6 + 96, cancelButtonText));
         }
 
-        protected override void actionPerformed(GuiButton var1)
+        protected override void actionPerformed(GuiButton button)
         {
-            parentScreen.deleteWorld(var1.id == 0, worldNumber);
+            switch (button.id)
+            {
+                case BUTTON_CONFIRM:
+                    parentScreen.deleteWorld(true, worldNumber);
+                    break;
+                case BUTTON_CANCEL:
+                    parentScreen.deleteWorld(false, worldNumber);
+                    break;
+            }
         }
 
-        public override void render(int var1, int var2, float var3)
+        public override void render(int mouseX, int mouseY, float partialTicks)
         {
             drawDefaultBackground();
             drawCenteredString(fontRenderer, message1, width / 2, 70, 16777215);
             drawCenteredString(fontRenderer, message2, width / 2, 90, 16777215);
-            base.render(var1, var2, var3);
+            base.render(mouseX, mouseY, partialTicks);
         }
     }
 

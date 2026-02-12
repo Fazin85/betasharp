@@ -8,12 +8,12 @@ namespace betareborn.Client.Guis
     public class GuiDownloadTerrain : GuiScreen
     {
 
-        private ClientNetworkHandler netHandler;
-        private int updateCounter = 0;
+        private ClientNetworkHandler networkHandler;
+        private int tickCounter = 0;
 
-        public GuiDownloadTerrain(ClientNetworkHandler var1)
+        public GuiDownloadTerrain(ClientNetworkHandler networkHandler)
         {
-            netHandler = var1;
+            this.networkHandler = networkHandler;
         }
 
         protected override void keyTyped(char eventChar, int eventKey)
@@ -27,29 +27,29 @@ namespace betareborn.Client.Guis
 
         public override void updateScreen()
         {
-            ++updateCounter;
-            if (updateCounter % 20 == 0)
+            ++tickCounter;
+            if (tickCounter % 20 == 0)
             {
-                netHandler.addToSendQueue(new KeepAlivePacket());
+                networkHandler.addToSendQueue(new KeepAlivePacket());
             }
 
-            if (netHandler != null)
+            if (networkHandler != null)
             {
-                netHandler.tick();
+                networkHandler.tick();
             }
 
         }
 
-        protected override void actionPerformed(GuiButton var1)
+        protected override void actionPerformed(GuiButton button)
         {
         }
 
-        public override void render(int var1, int var2, float var3)
+        public override void render(int mouseX, int mouseY, float partialTicks)
         {
             drawBackground(0);
-            TranslationStorage var4 = TranslationStorage.getInstance();
-            drawCenteredString(fontRenderer, var4.translateKey("multiplayer.downloadingTerrain"), width / 2, height / 2 - 50, 16777215);
-            base.render(var1, var2, var3);
+            TranslationStorage translations = TranslationStorage.getInstance();
+            drawCenteredString(fontRenderer, translations.translateKey("multiplayer.downloadingTerrain"), width / 2, height / 2 - 50, 16777215);
+            base.render(mouseX, mouseY, partialTicks);
         }
     }
 

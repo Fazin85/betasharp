@@ -5,12 +5,12 @@ namespace betareborn.Client.Guis
 {
     public class GuiSlotStatsGeneral : GuiSlot
     {
-        readonly GuiStats field_27276_a;
+        readonly GuiStats parentStatsGui;
 
 
-        public GuiSlotStatsGeneral(GuiStats var1) : base(GuiStats.func_27141_a(var1), var1.width, var1.height, 32, var1.height - 64, 10)
+        public GuiSlotStatsGeneral(GuiStats parent) : base(GuiStats.func_27141_a(parent), parent.width, parent.height, 32, parent.height - 64, 10)
         {
-            field_27276_a = var1;
+            parentStatsGui = parent;
             func_27258_a(false);
         }
 
@@ -35,15 +35,15 @@ namespace betareborn.Client.Guis
 
         protected override void drawBackground()
         {
-            field_27276_a.drawDefaultBackground();
+            parentStatsGui.drawDefaultBackground();
         }
 
-        protected override void drawSlot(int var1, int var2, int var3, int var4, Tessellator var5)
+        protected override void drawSlot(int index, int x, int y, int rowHeight, Tessellator tessellator)
         {
-            StatBase var6 = (StatBase)Stats.Stats.GENERAL_STATS.get(var1);
-            field_27276_a.drawString(GuiStats.func_27145_b(field_27276_a), var6.statName, var2 + 2, var3 + 1, var1 % 2 == 0 ? 16777215 : 9474192);
-            string var7 = var6.format(GuiStats.func_27142_c(field_27276_a).writeStat(var6));
-            field_27276_a.drawString(GuiStats.func_27140_d(field_27276_a), var7, var2 + 2 + 213 - GuiStats.func_27146_e(field_27276_a).getStringWidth(var7), var3 + 1, var1 % 2 == 0 ? 16777215 : 9474192);
+            StatBase stat = (StatBase)Stats.Stats.GENERAL_STATS.get(index);
+            parentStatsGui.drawString(GuiStats.func_27145_b(parentStatsGui), stat.statName, x + 2, y + 1, index % 2 == 0 ? 16777215 : 9474192);
+            string formatted = stat.format(GuiStats.func_27142_c(parentStatsGui).writeStat(stat));
+            parentStatsGui.drawString(GuiStats.func_27140_d(parentStatsGui), formatted, x + 2 + 213 - GuiStats.func_27146_e(parentStatsGui).getStringWidth(formatted), y + 1, index % 2 == 0 ? 16777215 : 9474192);
         }
     }
 

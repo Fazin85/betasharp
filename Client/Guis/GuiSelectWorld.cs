@@ -8,6 +8,11 @@ namespace betareborn.Client.Guis
 {
     public class GuiSelectWorld : GuiScreen
     {
+        private const int BUTTON_CANCEL = 0;
+        private const int BUTTON_SELECT = 1;
+        private const int BUTTON_DELETE = 2;
+        private const int BUTTON_CREATE = 3;
+        private const int BUTTON_RENAME = 6;
 
         private readonly DateFormat dateFormatter = new SimpleDateFormat();
         protected GuiScreen parentScreen;
@@ -23,16 +28,16 @@ namespace betareborn.Client.Guis
         private GuiButton buttonSelect;
         private GuiButton buttonDelete;
 
-        public GuiSelectWorld(GuiScreen var1)
+        public GuiSelectWorld(GuiScreen parentScreen)
         {
-            parentScreen = var1;
+            this.parentScreen = parentScreen;
         }
 
         public override void initGui()
         {
-            TranslationStorage var1 = TranslationStorage.getInstance();
-            screenTitle = var1.translateKey("selectWorld.title");
-            worldNameHeader = var1.translateKey("selectWorld.world");
+            TranslationStorage translations = TranslationStorage.getInstance();
+            screenTitle = translations.translateKey("selectWorld.title");
+            worldNameHeader = translations.translateKey("selectWorld.world");
             unsupportedFormatMessage = "Unsupported Format!";
             loadSaves();
             worldSlotContainer = new GuiWorldSlot(this);
@@ -42,112 +47,110 @@ namespace betareborn.Client.Guis
 
         private void loadSaves()
         {
-            WorldStorageSource var1 = mc.getSaveLoader();
-            saveList = var1.getAll();
+            WorldStorageSource worldStorage = mc.getSaveLoader();
+            saveList = worldStorage.getAll();
             Collections.sort(saveList);
             selectedWorld = -1;
         }
 
-        protected string getSaveFileName(int var1)
+        protected string getSaveFileName(int worldIndex)
         {
-            return ((WorldSaveInfo)saveList.get(var1)).getFileName();
+            return ((WorldSaveInfo)saveList.get(worldIndex)).getFileName();
         }
 
-        protected string getSaveName(int var1)
+        protected string getSaveName(int worldIndex)
         {
-            string var2 = ((WorldSaveInfo)saveList.get(var1)).getDisplayName();
-            if (var2 == null || MathHelper.stringNullOrLengthZero(var2))
+            string worldName = ((WorldSaveInfo)saveList.get(worldIndex)).getDisplayName();
+            if (worldName == null || MathHelper.stringNullOrLengthZero(worldName))
             {
-                TranslationStorage var3 = TranslationStorage.getInstance();
-                var2 = var3.translateKey("selectWorld.world") + " " + (var1 + 1);
+                TranslationStorage translations = TranslationStorage.getInstance();
+                worldName = translations.translateKey("selectWorld.world") + " " + (worldIndex + 1);
             }
 
-            return var2;
+            return worldName;
         }
 
         public void initButtons()
         {
-            TranslationStorage var1 = TranslationStorage.getInstance();
-            controlList.add(buttonSelect = new GuiButton(1, width / 2 - 154, height - 52, 150, 20, var1.translateKey("selectWorld.select")));
-            controlList.add(buttonRename = new GuiButton(6, width / 2 - 154, height - 28, 70, 20, var1.translateKey("selectWorld.rename")));
-            controlList.add(buttonDelete = new GuiButton(2, width / 2 - 74, height - 28, 70, 20, var1.translateKey("selectWorld.delete")));
-            controlList.add(new GuiButton(3, width / 2 + 4, height - 52, 150, 20, var1.translateKey("selectWorld.create")));
-            controlList.add(new GuiButton(0, width / 2 + 4, height - 28, 150, 20, var1.translateKey("gui.cancel")));
+            TranslationStorage translations = TranslationStorage.getInstance();
+            controlList.add(buttonSelect = new GuiButton(BUTTON_SELECT, width / 2 - 154, height - 52, 150, 20, translations.translateKey("selectWorld.select")));
+            controlList.add(buttonRename = new GuiButton(BUTTON_RENAME, width / 2 - 154, height - 28, 70, 20, translations.translateKey("selectWorld.rename")));
+            controlList.add(buttonDelete = new GuiButton(BUTTON_DELETE, width / 2 - 74, height - 28, 70, 20, translations.translateKey("selectWorld.delete")));
+            controlList.add(new GuiButton(BUTTON_CREATE, width / 2 + 4, height - 52, 150, 20, translations.translateKey("selectWorld.create")));
+            controlList.add(new GuiButton(BUTTON_CANCEL, width / 2 + 4, height - 28, 150, 20, translations.translateKey("gui.cancel")));
             buttonSelect.enabled = false;
             buttonRename.enabled = false;
             buttonDelete.enabled = false;
         }
 
-        protected override void actionPerformed(GuiButton var1)
+        private void deleteWorld(int worldIndex)
         {
-            if (var1.enabled)
+            string worldName = getSaveName(worldIndex);
+            if (worldName != null)
             {
-                if (var1.id == 2)
-                {
-                    string var2 = getSaveName(selectedWorld);
-                    if (var2 != null)
-                    {
-                        deleting = true;
-                        TranslationStorage var3 = TranslationStorage.getInstance();
-                        string var4 = var3.translateKey("selectWorld.deleteQuestion");
-                        string var5 = "\'" + var2 + "\' " + var3.translateKey("selectWorld.deleteWarning");
-                        string var6 = var3.translateKey("selectWorld.deleteButton");
-                        string var7 = var3.translateKey("gui.cancel");
-                        GuiYesNo var8 = new GuiYesNo(this, var4, var5, var6, var7, selectedWorld);
-                        mc.displayGuiScreen(var8);
-                    }
-                }
-                else if (var1.id == 1)
-                {
-                    selectWorld(selectedWorld);
-                }
-                else if (var1.id == 3)
-                {
-                    mc.displayGuiScreen(new GuiCreateWorld(this));
-                }
-                else if (var1.id == 6)
-                {
-                    mc.displayGuiScreen(new GuiRenameWorld(this, getSaveFileName(selectedWorld)));
-                }
-                else if (var1.id == 0)
-                {
-                    mc.displayGuiScreen(parentScreen);
-                }
-                else
-                {
-                    worldSlotContainer.actionPerformed(var1);
-                }
-
+                deleting = true;
+                TranslationStorage translations = TranslationStorage.getInstance();
+                string deleteQuestion = translations.translateKey("selectWorld.deleteQuestion");
+                string deleteWarning = "'" + worldName + "' " + translations.translateKey("selectWorld.deleteWarning");
+                string deleteButtonText = translations.translateKey("selectWorld.deleteButton");
+                string cancelButtonText = translations.translateKey("gui.cancel");
+                GuiYesNo confirmDialog = new GuiYesNo(this, deleteQuestion, deleteWarning, deleteButtonText, cancelButtonText, worldIndex);
+                mc.displayGuiScreen(confirmDialog);
             }
         }
 
-        public void selectWorld(int var1)
+        protected override void actionPerformed(GuiButton button)
+        {
+            if (button.enabled)
+            {
+                switch (button.id)
+                {
+                    case BUTTON_DELETE:
+                        deleteWorld(selectedWorld);
+                        break;
+                    case BUTTON_SELECT:
+                        selectWorld(selectedWorld);
+                        break;
+                    case BUTTON_CREATE:
+                        mc.displayGuiScreen(new GuiCreateWorld(this));
+                        break;
+                    case BUTTON_RENAME:
+                        mc.displayGuiScreen(new GuiRenameWorld(this, getSaveFileName(selectedWorld)));
+                        break;
+                    case BUTTON_CANCEL:
+                        mc.displayGuiScreen(parentScreen);
+                        break;
+                    default:
+                        worldSlotContainer.actionPerformed(button);
+                        break;
+                }
+            }
+        }
+
+        public void selectWorld(int worldIndex)
         {
             if (!selected)
             {
                 selected = true;
                 mc.playerController = new PlayerControllerSP(mc);
-                string var2 = getSaveFileName(var1);
-                if (var2 == null)
+                string worldFileName = getSaveFileName(worldIndex);
+                if (worldFileName == null)
                 {
-                    var2 = "World" + var1;
+                    worldFileName = "World" + worldIndex;
                 }
 
-                mc.startWorld(var2, getSaveName(var1), 0L);
+                mc.startWorld(worldFileName, getSaveName(worldIndex), 0L);
             }
         }
 
-        public override void deleteWorld(bool var1, int var2)
+        public override void deleteWorld(bool confirmed, int worldIndex)
         {
             if (deleting)
             {
                 deleting = false;
-                if (var1)
+                if (confirmed)
                 {
-                    WorldStorageSource var3 = mc.getSaveLoader();
-                    var3.flush();
-                    var3.delete(getSaveFileName(var2));
-                    loadSaves();
+                    performDelete(worldIndex);
                 }
 
                 mc.displayGuiScreen(this);
@@ -155,56 +158,64 @@ namespace betareborn.Client.Guis
 
         }
 
-        public override void render(int var1, int var2, float var3)
+        private void performDelete(int worldIndex)
         {
-            worldSlotContainer.drawScreen(var1, var2, var3);
+            WorldStorageSource worldStorage = mc.getSaveLoader();
+            worldStorage.flush();
+            worldStorage.delete(getSaveFileName(worldIndex));
+            loadSaves();
+        }
+
+        public override void render(int mouseX, int mouseY, float partialTicks)
+        {
+            worldSlotContainer.drawScreen(mouseX, mouseY, partialTicks);
             drawCenteredString(fontRenderer, screenTitle, width / 2, 20, 16777215);
-            base.render(var1, var2, var3);
+            base.render(mouseX, mouseY, partialTicks);
         }
 
-        public static List getSize(GuiSelectWorld var0)
+        public static List getSize(GuiSelectWorld screen)
         {
-            return var0.saveList;
+            return screen.saveList;
         }
 
-        public static int onElementSelected(GuiSelectWorld var0, int var1)
+        public static int onElementSelected(GuiSelectWorld screen, int worldIndex)
         {
-            return var0.selectedWorld = var1;
+            return screen.selectedWorld = worldIndex;
         }
 
-        public static int getSelectedWorld(GuiSelectWorld var0)
+        public static int getSelectedWorld(GuiSelectWorld screen)
         {
-            return var0.selectedWorld;
+            return screen.selectedWorld;
         }
 
-        public static GuiButton getSelectButton(GuiSelectWorld var0)
+        public static GuiButton getSelectButton(GuiSelectWorld screen)
         {
-            return var0.buttonSelect;
+            return screen.buttonSelect;
         }
 
-        public static GuiButton getRenameButton(GuiSelectWorld var0)
+        public static GuiButton getRenameButton(GuiSelectWorld screen)
         {
-            return var0.buttonRename;
+            return screen.buttonRename;
         }
 
-        public static GuiButton getDeleteButton(GuiSelectWorld var0)
+        public static GuiButton getDeleteButton(GuiSelectWorld screen)
         {
-            return var0.buttonDelete;
+            return screen.buttonDelete;
         }
 
-        public static string getWorldNameHeader(GuiSelectWorld var0)
+        public static string getWorldNameHeader(GuiSelectWorld screen)
         {
-            return var0.worldNameHeader;
+            return screen.worldNameHeader;
         }
 
-        public static DateFormat getDateFormatter(GuiSelectWorld var0)
+        public static DateFormat getDateFormatter(GuiSelectWorld screen)
         {
-            return var0.dateFormatter;
+            return screen.dateFormatter;
         }
 
-        public static string getUnsupportedFormatMessage(GuiSelectWorld var0)
+        public static string getUnsupportedFormatMessage(GuiSelectWorld screen)
         {
-            return var0.unsupportedFormatMessage;
+            return screen.unsupportedFormatMessage;
         }
     }
 

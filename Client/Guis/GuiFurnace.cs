@@ -21,23 +21,23 @@ namespace betareborn.Client.Guis
             fontRenderer.drawString("Inventory", 8, ySize - 96 + 2, 4210752);
         }
 
-        protected override void drawGuiContainerBackgroundLayer(float var1)
+        protected override void drawGuiContainerBackgroundLayer(float partialTicks)
         {
-            int var2 = mc.textureManager.getTextureId("/gui/furnace.png");
+            int textureId = mc.textureManager.getTextureId("/gui/furnace.png");
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-            mc.textureManager.bindTexture(var2);
-            int var3 = (width - xSize) / 2;
-            int var4 = (height - ySize) / 2;
-            drawTexturedModalRect(var3, var4, 0, 0, xSize, ySize);
-            int var5;
+            mc.textureManager.bindTexture(textureId);
+            int guiLeft = (width - xSize) / 2;
+            int guiTop = (height - ySize) / 2;
+            drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
+            int progress;
             if (furnaceInventory.isBurning())
             {
-                var5 = furnaceInventory.getFuelTimeDelta(12);
-                drawTexturedModalRect(var3 + 56, var4 + 36 + 12 - var5, 176, 12 - var5, 14, var5 + 2);
+                progress = furnaceInventory.getFuelTimeDelta(12);
+                drawTexturedModalRect(guiLeft + 56, guiTop + 36 + 12 - progress, 176, 12 - progress, 14, progress + 2);
             }
 
-            var5 = furnaceInventory.getCookTimeDelta(24);
-            drawTexturedModalRect(var3 + 79, var4 + 34, 176, 14, var5 + 1, 16);
+            progress = furnaceInventory.getCookTimeDelta(24);
+            drawTexturedModalRect(guiLeft + 79, guiTop + 34, 176, 14, progress + 1, 16);
         }
     }
 

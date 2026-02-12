@@ -32,132 +32,132 @@ namespace betareborn.Client.Guis
             mc = var1;
         }
 
-        public void renderGameOverlay(float var1, bool var2, int var3, int var4)
+        public void renderGameOverlay(float partialTicks, bool unusedFlag, int unusedA, int unusedB)
         {
-            ScaledResolution var5 = new ScaledResolution(mc.options, mc.displayWidth, mc.displayHeight);
-            int var6 = var5.getScaledWidth();
-            int var7 = var5.getScaledHeight();
-            TextRenderer var8 = mc.fontRenderer;
+            ScaledResolution scaled = new ScaledResolution(mc.options, mc.displayWidth, mc.displayHeight);
+            int scaledWidth = scaled.getScaledWidth();
+            int scaledHeight = scaled.getScaledHeight();
+            TextRenderer font = mc.fontRenderer;
             mc.gameRenderer.setupHudRender();
             GLManager.GL.Enable(GLEnum.Blend);
             if (Minecraft.isFancyGraphicsEnabled())
             {
-                renderVignette(mc.player.getBrightnessAtEyes(var1), var6, var7);
+                renderVignette(mc.player.getBrightnessAtEyes(partialTicks), scaledWidth, scaledHeight);
             }
 
-            ItemStack var9 = mc.player.inventory.armorItemInSlot(3);
-            if (!mc.options.thirdPersonView && var9 != null && var9.itemId == Block.PUMPKIN.id)
+            ItemStack helmet = mc.player.inventory.armorItemInSlot(3);
+            if (!mc.options.thirdPersonView && helmet != null && helmet.itemId == Block.PUMPKIN.id)
             {
-                renderPumpkinBlur(var6, var7);
+                renderPumpkinBlur(scaledWidth, scaledHeight);
             }
 
-            float var10 = mc.player.lastScreenDistortion + (mc.player.changeDimensionCooldown - mc.player.lastScreenDistortion) * var1;
-            if (var10 > 0.0F)
+            float screenDistortion = mc.player.lastScreenDistortion + (mc.player.changeDimensionCooldown - mc.player.lastScreenDistortion) * partialTicks;
+            if (screenDistortion > 0.0F)
             {
-                renderPortalOverlay(var10, var6, var7);
+                renderPortalOverlay(screenDistortion, scaledWidth, scaledHeight);
             }
 
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
             GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/gui/gui.png"));
-            InventoryPlayer var11 = mc.player.inventory;
+            InventoryPlayer inventory = mc.player.inventory;
             zLevel = -90.0F;
-            drawTexturedModalRect(var6 / 2 - 91, var7 - 22, 0, 0, 182, 22);
-            drawTexturedModalRect(var6 / 2 - 91 - 1 + var11.selectedSlot * 20, var7 - 22 - 1, 0, 22, 24, 22);
+            drawTexturedModalRect(scaledWidth / 2 - 91, scaledHeight - 22, 0, 0, 182, 22);
+            drawTexturedModalRect(scaledWidth / 2 - 91 - 1 + inventory.selectedSlot * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
             GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/gui/icons.png"));
             GLManager.GL.Enable(GLEnum.Blend);
             GLManager.GL.BlendFunc(GLEnum.OneMinusDstColor, GLEnum.OneMinusSrcColor);
-            drawTexturedModalRect(var6 / 2 - 7, var7 / 2 - 7, 0, 0, 16, 16);
+            drawTexturedModalRect(scaledWidth / 2 - 7, scaledHeight / 2 - 7, 0, 0, 16, 16);
             GLManager.GL.Disable(GLEnum.Blend);
-            bool var12 = mc.player.hearts / 3 % 2 == 1;
+            bool heartBlink = mc.player.hearts / 3 % 2 == 1;
             if (mc.player.hearts < 10)
             {
-                var12 = false;
+                heartBlink = false;
             }
 
-            int var13 = mc.player.health;
-            int var14 = mc.player.lastHealth;
+            int health = mc.player.health;
+            int lastHealth = mc.player.lastHealth;
             rand.setSeed(updateCounter * 312871);
-            int var15;
-            int var16;
-            int var17;
+            int armorValue;
+            int i;
+            int j;
             if (mc.playerController.shouldDrawHUD())
             {
-                var15 = mc.player.getPlayerArmorValue();
+                armorValue = mc.player.getPlayerArmorValue();
 
-                int var18;
-                for (var16 = 0; var16 < 10; ++var16)
+                int k;
+                for (i = 0; i < 10; ++i)
                 {
-                    var17 = var7 - 32;
-                    if (var15 > 0)
+                    j = scaledHeight - 32;
+                    if (armorValue > 0)
                     {
-                        var18 = var6 / 2 + 91 - var16 * 8 - 9;
-                        if (var16 * 2 + 1 < var15)
+                        k = scaledWidth / 2 + 91 - i * 8 - 9;
+                        if (i * 2 + 1 < armorValue)
                         {
-                            drawTexturedModalRect(var18, var17, 34, 9, 9, 9);
+                            drawTexturedModalRect(k, j, 34, 9, 9, 9);
                         }
 
-                        if (var16 * 2 + 1 == var15)
+                        if (i * 2 + 1 == armorValue)
                         {
-                            drawTexturedModalRect(var18, var17, 25, 9, 9, 9);
+                            drawTexturedModalRect(k, j, 25, 9, 9, 9);
                         }
 
-                        if (var16 * 2 + 1 > var15)
+                        if (i * 2 + 1 > armorValue)
                         {
-                            drawTexturedModalRect(var18, var17, 16, 9, 9, 9);
-                        }
-                    }
-
-                    byte var28 = 0;
-                    if (var12)
-                    {
-                        var28 = 1;
-                    }
-
-                    int var19 = var6 / 2 - 91 + var16 * 8;
-                    if (var13 <= 4)
-                    {
-                        var17 += rand.nextInt(2);
-                    }
-
-                    drawTexturedModalRect(var19, var17, 16 + var28 * 9, 0, 9, 9);
-                    if (var12)
-                    {
-                        if (var16 * 2 + 1 < var14)
-                        {
-                            drawTexturedModalRect(var19, var17, 70, 0, 9, 9);
-                        }
-
-                        if (var16 * 2 + 1 == var14)
-                        {
-                            drawTexturedModalRect(var19, var17, 79, 0, 9, 9);
+                            drawTexturedModalRect(k, j, 16, 9, 9, 9);
                         }
                     }
 
-                    if (var16 * 2 + 1 < var13)
+                    byte blinkIndex = 0;
+                    if (heartBlink)
                     {
-                        drawTexturedModalRect(var19, var17, 52, 0, 9, 9);
+                        blinkIndex = 1;
                     }
 
-                    if (var16 * 2 + 1 == var13)
+                    int x = scaledWidth / 2 - 91 + i * 8;
+                    if (health <= 4)
                     {
-                        drawTexturedModalRect(var19, var17, 61, 0, 9, 9);
+                        j += rand.nextInt(2);
+                    }
+
+                    drawTexturedModalRect(x, j, 16 + blinkIndex * 9, 0, 9, 9);
+                    if (heartBlink)
+                    {
+                        if (i * 2 + 1 < lastHealth)
+                        {
+                            drawTexturedModalRect(x, j, 70, 0, 9, 9);
+                        }
+
+                        if (i * 2 + 1 == lastHealth)
+                        {
+                            drawTexturedModalRect(x, j, 79, 0, 9, 9);
+                        }
+                    }
+
+                    if (i * 2 + 1 < health)
+                    {
+                        drawTexturedModalRect(x, j, 52, 0, 9, 9);
+                    }
+
+                    if (i * 2 + 1 == health)
+                    {
+                        drawTexturedModalRect(x, j, 61, 0, 9, 9);
                     }
                 }
 
                 if (mc.player.isInFluid(Material.WATER))
                 {
-                    var16 = (int)java.lang.Math.ceil((mc.player.air - 2) * 10.0D / 300.0D);
-                    var17 = (int)java.lang.Math.ceil(mc.player.air * 10.0D / 300.0D) - var16;
+                    i = (int)java.lang.Math.ceil((mc.player.air - 2) * 10.0D / 300.0D);
+                    j = (int)java.lang.Math.ceil(mc.player.air * 10.0D / 300.0D) - i;
 
-                    for (var18 = 0; var18 < var16 + var17; ++var18)
+                    for (k = 0; k < i + j; ++k)
                     {
-                        if (var18 < var16)
+                        if (k < i)
                         {
-                            drawTexturedModalRect(var6 / 2 - 91 + var18 * 8, var7 - 32 - 9, 16, 18, 9, 9);
+                            drawTexturedModalRect(scaledWidth / 2 - 91 + k * 8, scaledHeight - 32 - 9, 16, 18, 9, 9);
                         }
                         else
                         {
-                            drawTexturedModalRect(var6 / 2 - 91 + var18 * 8, var7 - 32 - 9, 25, 18, 9, 9);
+                            drawTexturedModalRect(scaledWidth / 2 - 91 + k * 8, scaledHeight - 32 - 9, 25, 18, 9, 9);
                         }
                     }
                 }
@@ -170,11 +170,11 @@ namespace betareborn.Client.Guis
             Lighting.turnOn();
             GLManager.GL.PopMatrix();
 
-            for (var15 = 0; var15 < 9; ++var15)
+            for (armorValue = 0; armorValue < 9; ++armorValue)
             {
-                var16 = var6 / 2 - 90 + var15 * 20 + 2;
-                var17 = var7 - 16 - 3;
-                renderInventorySlot(var15, var16, var17, var1);
+                i = scaledWidth / 2 - 90 + armorValue * 20 + 2;
+                j = scaledHeight - 16 - 3;
+                renderInventorySlot(armorValue, i, j, partialTicks);
             }
 
             Lighting.turnOff();
@@ -183,20 +183,20 @@ namespace betareborn.Client.Guis
             {
                 GLManager.GL.Disable(GLEnum.DepthTest);
                 GLManager.GL.Disable(GLEnum.AlphaTest);
-                var15 = mc.player.getSleepTimer();
-                float var27 = var15 / 100.0F;
-                if (var27 > 1.0F)
+                armorValue = mc.player.getSleepTimer();
+                float sleepAlpha = armorValue / 100.0F;
+                if (sleepAlpha > 1.0F)
                 {
-                    var27 = 1.0F - (var15 - 100) / 10.0F;
+                    sleepAlpha = 1.0F - (armorValue - 100) / 10.0F;
                 }
 
-                var17 = (int)(220.0F * var27) << 24 | 1052704;
-                drawRect(0, 0, var6, var7, var17);
+                j = (int)(220.0F * sleepAlpha) << 24 | 1052704;
+                drawRect(0, 0, scaledWidth, scaledHeight, j);
                 GLManager.GL.Enable(GLEnum.AlphaTest);
                 GLManager.GL.Enable(GLEnum.DepthTest);
             }
 
-            string var23;
+            string debugStr;
             if (mc.options.showDebugInfo)
             {
                 GLManager.GL.PushMatrix();
@@ -205,98 +205,98 @@ namespace betareborn.Client.Guis
                     GLManager.GL.Translate(0.0F, 32.0F, 0.0F);
                 }
 
-                var8.drawStringWithShadow("Minecraft Beta 1.7.3 (" + mc.debug + ")", 2, 2, 16777215);
-                var8.drawStringWithShadow(mc.func_6262_n(), 2, 22, 16777215);
-                var8.drawStringWithShadow(mc.func_6245_o(), 2, 32, 16777215);
-                var8.drawStringWithShadow(mc.func_21002_o(), 2, 42, 16777215);
-                long var24 = java.lang.Runtime.getRuntime().maxMemory();
-                long var29 = java.lang.Runtime.getRuntime().totalMemory();
-                long var30 = java.lang.Runtime.getRuntime().freeMemory();
-                long var21 = var29 - var30;
-                var23 = "Used memory: " + var21 * 100L / var24 + "% (" + var21 / 1024L / 1024L + "MB) of " + var24 / 1024L / 1024L + "MB";
-                drawString(var8, var23, var6 - var8.getStringWidth(var23) - 2, 2, 14737632);
-                var23 = "Allocated memory: " + var29 * 100L / var24 + "% (" + var29 / 1024L / 1024L + "MB)";
-                drawString(var8, var23, var6 - var8.getStringWidth(var23) - 2, 12, 14737632);
-                drawString(var8, "x: " + mc.player.x, 2, 64, 14737632);
-                drawString(var8, "y: " + mc.player.y, 2, 72, 14737632);
-                drawString(var8, "z: " + mc.player.z, 2, 80, 14737632);
-                drawString(var8, "f: " + (MathHelper.floor_double((double)(mc.player.yaw * 4.0F / 360.0F) + 0.5D) & 3), 2, 88, 14737632);
+                font.drawStringWithShadow("Minecraft Beta 1.7.3 (" + mc.debug + ")", 2, 2, 16777215);
+                font.drawStringWithShadow(mc.func_6262_n(), 2, 22, 16777215);
+                font.drawStringWithShadow(mc.func_6245_o(), 2, 32, 16777215);
+                font.drawStringWithShadow(mc.func_21002_o(), 2, 42, 16777215);
+                long maxMem = java.lang.Runtime.getRuntime().maxMemory();
+                long totalMem = java.lang.Runtime.getRuntime().totalMemory();
+                long freeMem = java.lang.Runtime.getRuntime().freeMemory();
+                long used = totalMem - freeMem;
+                debugStr = "Used memory: " + used * 100L / maxMem + "% (" + used / 1024L / 1024L + "MB) of " + maxMem / 1024L / 1024L + "MB";
+                drawString(font, debugStr, scaledWidth - font.getStringWidth(debugStr) - 2, 2, 14737632);
+                debugStr = "Allocated memory: " + totalMem * 100L / maxMem + "% (" + totalMem / 1024L / 1024L + "MB)";
+                drawString(font, debugStr, scaledWidth - font.getStringWidth(debugStr) - 2, 12, 14737632);
+                drawString(font, "x: " + mc.player.x, 2, 64, 14737632);
+                drawString(font, "y: " + mc.player.y, 2, 72, 14737632);
+                drawString(font, "z: " + mc.player.z, 2, 80, 14737632);
+                drawString(font, "f: " + (MathHelper.floor_double((double)(mc.player.yaw * 4.0F / 360.0F) + 0.5D) & 3), 2, 88, 14737632);
                 GLManager.GL.PopMatrix();
             }
 
             if (recordPlayingUpFor > 0)
             {
-                float var25 = recordPlayingUpFor - var1;
-                var16 = (int)(var25 * 256.0F / 20.0F);
-                if (var16 > 255)
+                float t = recordPlayingUpFor - partialTicks;
+                i = (int)(t * 256.0F / 20.0F);
+                if (i > 255)
                 {
-                    var16 = 255;
+                    i = 255;
                 }
 
-                if (var16 > 0)
+                if (i > 0)
                 {
                     GLManager.GL.PushMatrix();
-                    GLManager.GL.Translate(var6 / 2, var7 - 48, 0.0F);
+                    GLManager.GL.Translate(scaledWidth / 2, scaledHeight - 48, 0.0F);
                     GLManager.GL.Enable(GLEnum.Blend);
                     GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
-                    var17 = 16777215;
+                    j = 16777215;
                     if (field_22065_l)
                     {
-                        var17 = Color.HSBtoRGB(var25 / 50.0F, 0.7F, 0.6F) & 16777215;
+                        j = Color.HSBtoRGB(t / 50.0F, 0.7F, 0.6F) & 16777215;
                     }
 
-                    var8.drawString(recordPlaying, -var8.getStringWidth(recordPlaying) / 2, -4, var17 + (var16 << 24));
+                    font.drawString(recordPlaying, -font.getStringWidth(recordPlaying) / 2, -4, j + (i << 24));
                     GLManager.GL.Disable(GLEnum.Blend);
                     GLManager.GL.PopMatrix();
                 }
             }
 
-            byte var26 = 10;
-            bool var31 = false;
+            byte linesToShow = 10;
+            bool chatOpen = false;
             if (mc.currentScreen is GuiChat)
             {
-                var26 = 20;
-                var31 = true;
+                linesToShow = 20;
+                chatOpen = true;
             }
 
             GLManager.GL.Enable(GLEnum.Blend);
             GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
             GLManager.GL.Disable(GLEnum.AlphaTest);
             GLManager.GL.PushMatrix();
-            GLManager.GL.Translate(0.0F, var7 - 48, 0.0F);
+            GLManager.GL.Translate(0.0F, scaledHeight - 48, 0.0F);
 
-            for (var17 = 0; var17 < chatMessageList.size() && var17 < var26; ++var17)
+            for (j = 0; j < chatMessageList.size() && j < linesToShow; ++j)
             {
-                if (((ChatLine)chatMessageList.get(var17)).updateCounter < 200 || var31)
+                if (((ChatLine)chatMessageList.get(j)).updateCounter < 200 || chatOpen)
                 {
-                    double var32 = ((ChatLine)chatMessageList.get(var17)).updateCounter / 200.0D;
-                    var32 = 1.0D - var32;
-                    var32 *= 10.0D;
-                    if (var32 < 0.0D)
+                    double d = ((ChatLine)chatMessageList.get(j)).updateCounter / 200.0D;
+                    d = 1.0D - d;
+                    d *= 10.0D;
+                    if (d < 0.0D)
                     {
-                        var32 = 0.0D;
+                        d = 0.0D;
                     }
 
-                    if (var32 > 1.0D)
+                    if (d > 1.0D)
                     {
-                        var32 = 1.0D;
+                        d = 1.0D;
                     }
 
-                    var32 *= var32;
-                    int var20 = (int)(255.0D * var32);
-                    if (var31)
+                    d *= d;
+                    int alpha = (int)(255.0D * d);
+                    if (chatOpen)
                     {
-                        var20 = 255;
+                        alpha = 255;
                     }
 
-                    if (var20 > 0)
+                    if (alpha > 0)
                     {
-                        byte var33 = 2;
-                        int var22 = -var17 * 9;
-                        var23 = ((ChatLine)chatMessageList.get(var17)).message;
-                        drawRect(var33, var22 - 1, var33 + 320, var22 + 8, var20 / 2 << 24);
+                        byte left = 2;
+                        int y = -j * 9;
+                        debugStr = ((ChatLine)chatMessageList.get(j)).message;
+                        drawRect(left, y - 1, left + 320, y + 8, alpha / 2 << 24);
                         GLManager.GL.Enable(GLEnum.Blend);
-                        var8.drawStringWithShadow(var23, var33, var22, 16777215 + (var20 << 24));
+                        font.drawStringWithShadow(debugStr, left, y, 16777215 + (alpha << 24));
                     }
                 }
             }
@@ -306,7 +306,7 @@ namespace betareborn.Client.Guis
             GLManager.GL.Disable(GLEnum.Blend);
         }
 
-        private void renderPumpkinBlur(int var1, int var2)
+        private void renderPumpkinBlur(int screenWidth, int screenHeight)
         {
             GLManager.GL.Disable(GLEnum.DepthTest);
             GLManager.GL.DepthMask(false);
@@ -314,105 +314,105 @@ namespace betareborn.Client.Guis
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
             GLManager.GL.Disable(GLEnum.AlphaTest);
             GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("%blur%/misc/pumpkinblur.png"));
-            Tessellator var3 = Tessellator.instance;
-            var3.startDrawingQuads();
-            var3.addVertexWithUV(0.0D, var2, -90.0D, 0.0D, 1.0D);
-            var3.addVertexWithUV(var1, var2, -90.0D, 1.0D, 1.0D);
-            var3.addVertexWithUV(var1, 0.0D, -90.0D, 1.0D, 0.0D);
-            var3.addVertexWithUV(0.0D, 0.0D, -90.0D, 0.0D, 0.0D);
-            var3.draw();
+            Tessellator tess = Tessellator.instance;
+            tess.startDrawingQuads();
+            tess.addVertexWithUV(0.0D, screenHeight, -90.0D, 0.0D, 1.0D);
+            tess.addVertexWithUV(screenWidth, screenHeight, -90.0D, 1.0D, 1.0D);
+            tess.addVertexWithUV(screenWidth, 0.0D, -90.0D, 1.0D, 0.0D);
+            tess.addVertexWithUV(0.0D, 0.0D, -90.0D, 0.0D, 0.0D);
+            tess.draw();
             GLManager.GL.DepthMask(true);
             GLManager.GL.Enable(GLEnum.DepthTest);
             GLManager.GL.Enable(GLEnum.AlphaTest);
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         }
 
-        private void renderVignette(float var1, int var2, int var3)
+        private void renderVignette(float darkness, int screenWidth, int screenHeight)
         {
-            var1 = 1.0F - var1;
-            if (var1 < 0.0F)
+            darkness = 1.0F - darkness;
+            if (darkness < 0.0F)
             {
-                var1 = 0.0F;
+                darkness = 0.0F;
             }
 
-            if (var1 > 1.0F)
+            if (darkness > 1.0F)
             {
-                var1 = 1.0F;
+                darkness = 1.0F;
             }
 
-            prevVignetteBrightness = (float)(prevVignetteBrightness + (double)(var1 - prevVignetteBrightness) * 0.01D);
+            prevVignetteBrightness = (float)(prevVignetteBrightness + (double)(darkness - prevVignetteBrightness) * 0.01D);
             GLManager.GL.Disable(GLEnum.DepthTest);
             GLManager.GL.DepthMask(false);
             GLManager.GL.BlendFunc(GLEnum.Zero, GLEnum.OneMinusSrcColor);
             GLManager.GL.Color4(prevVignetteBrightness, prevVignetteBrightness, prevVignetteBrightness, 1.0F);
             GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("%blur%/misc/vignette.png"));
-            Tessellator var4 = Tessellator.instance;
-            var4.startDrawingQuads();
-            var4.addVertexWithUV(0.0D, var3, -90.0D, 0.0D, 1.0D);
-            var4.addVertexWithUV(var2, var3, -90.0D, 1.0D, 1.0D);
-            var4.addVertexWithUV(var2, 0.0D, -90.0D, 1.0D, 0.0D);
-            var4.addVertexWithUV(0.0D, 0.0D, -90.0D, 0.0D, 0.0D);
-            var4.draw();
+            Tessellator tess = Tessellator.instance;
+            tess.startDrawingQuads();
+            tess.addVertexWithUV(0.0D, screenHeight, -90.0D, 0.0D, 1.0D);
+            tess.addVertexWithUV(screenWidth, screenHeight, -90.0D, 1.0D, 1.0D);
+            tess.addVertexWithUV(screenWidth, 0.0D, -90.0D, 1.0D, 0.0D);
+            tess.addVertexWithUV(0.0D, 0.0D, -90.0D, 0.0D, 0.0D);
+            tess.draw();
             GLManager.GL.DepthMask(true);
             GLManager.GL.Enable(GLEnum.DepthTest);
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
             GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
         }
 
-        private void renderPortalOverlay(float var1, int var2, int var3)
+        private void renderPortalOverlay(float portalStrength, int screenWidth, int screenHeight)
         {
-            if (var1 < 1.0F)
+            if (portalStrength < 1.0F)
             {
-                var1 *= var1;
-                var1 *= var1;
-                var1 = var1 * 0.8F + 0.2F;
+                portalStrength *= portalStrength;
+                portalStrength *= portalStrength;
+                portalStrength = portalStrength * 0.8F + 0.2F;
             }
 
             GLManager.GL.Disable(GLEnum.AlphaTest);
             GLManager.GL.Disable(GLEnum.DepthTest);
             GLManager.GL.DepthMask(false);
             GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
-            GLManager.GL.Color4(1.0F, 1.0F, 1.0F, var1);
+            GLManager.GL.Color4(1.0F, 1.0F, 1.0F, portalStrength);
             GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/terrain.png"));
-            float var4 = Block.NETHER_PORTAL.textureId % 16 / 16.0F;
-            float var5 = Block.NETHER_PORTAL.textureId / 16 / 16.0F;
-            float var6 = (Block.NETHER_PORTAL.textureId % 16 + 1) / 16.0F;
-            float var7 = (Block.NETHER_PORTAL.textureId / 16 + 1) / 16.0F;
-            Tessellator var8 = Tessellator.instance;
-            var8.startDrawingQuads();
-            var8.addVertexWithUV(0.0D, var3, -90.0D, (double)var4, (double)var7);
-            var8.addVertexWithUV(var2, var3, -90.0D, (double)var6, (double)var7);
-            var8.addVertexWithUV(var2, 0.0D, -90.0D, (double)var6, (double)var5);
-            var8.addVertexWithUV(0.0D, 0.0D, -90.0D, (double)var4, (double)var5);
-            var8.draw();
+            float u1 = Block.NETHER_PORTAL.textureId % 16 / 16.0F;
+            float v1 = Block.NETHER_PORTAL.textureId / 16 / 16.0F;
+            float u2 = (Block.NETHER_PORTAL.textureId % 16 + 1) / 16.0F;
+            float v2 = (Block.NETHER_PORTAL.textureId / 16 + 1) / 16.0F;
+            Tessellator tess = Tessellator.instance;
+            tess.startDrawingQuads();
+            tess.addVertexWithUV(0.0D, screenHeight, -90.0D, (double)u1, (double)v2);
+            tess.addVertexWithUV(screenWidth, screenHeight, -90.0D, (double)u2, (double)v2);
+            tess.addVertexWithUV(screenWidth, 0.0D, -90.0D, (double)u2, (double)v1);
+            tess.addVertexWithUV(0.0D, 0.0D, -90.0D, (double)u1, (double)v1);
+            tess.draw();
             GLManager.GL.DepthMask(true);
             GLManager.GL.Enable(GLEnum.DepthTest);
             GLManager.GL.Enable(GLEnum.AlphaTest);
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         }
 
-        private void renderInventorySlot(int var1, int var2, int var3, float var4)
+        private void renderInventorySlot(int slotIndex, int x, int y, float partialTicks)
         {
-            ItemStack var5 = mc.player.inventory.main[var1];
-            if (var5 != null)
+            ItemStack stack = mc.player.inventory.main[slotIndex];
+            if (stack != null)
             {
-                float var6 = var5.bobbingAnimationTime - var4;
-                if (var6 > 0.0F)
+                float bob = stack.bobbingAnimationTime - partialTicks;
+                if (bob > 0.0F)
                 {
                     GLManager.GL.PushMatrix();
-                    float var7 = 1.0F + var6 / 5.0F;
-                    GLManager.GL.Translate(var2 + 8, var3 + 12, 0.0F);
-                    GLManager.GL.Scale(1.0F / var7, (var7 + 1.0F) / 2.0F, 1.0F);
-                    GLManager.GL.Translate(-(var2 + 8), -(var3 + 12), 0.0F);
+                    float scale = 1.0F + bob / 5.0F;
+                    GLManager.GL.Translate(x + 8, y + 12, 0.0F);
+                    GLManager.GL.Scale(1.0F / scale, (scale + 1.0F) / 2.0F, 1.0F);
+                    GLManager.GL.Translate(-(x + 8), -(y + 12), 0.0F);
                 }
 
-                itemRenderer.renderItemIntoGUI(mc.fontRenderer, mc.textureManager, var5, var2, var3);
-                if (var6 > 0.0F)
+                itemRenderer.renderItemIntoGUI(mc.fontRenderer, mc.textureManager, stack, x, y);
+                if (bob > 0.0F)
                 {
                     GLManager.GL.PopMatrix();
                 }
 
-                itemRenderer.renderItemOverlayIntoGUI(mc.fontRenderer, mc.textureManager, var5, var2, var3);
+                itemRenderer.renderItemOverlayIntoGUI(mc.fontRenderer, mc.textureManager, stack, x, y);
             }
         }
 
@@ -425,9 +425,9 @@ namespace betareborn.Client.Guis
 
             ++updateCounter;
 
-            for (int var1 = 0; var1 < chatMessageList.size(); ++var1)
+            for (int i = 0; i < chatMessageList.size(); ++i)
             {
-                ++((ChatLine)chatMessageList.get(var1)).updateCounter;
+                ++((ChatLine)chatMessageList.get(i)).updateCounter;
             }
 
         }
@@ -437,8 +437,10 @@ namespace betareborn.Client.Guis
             chatMessageList.clear();
         }
 
-        public void addChatMessage(string message) {
-            foreach (string line in message.Split("\n")) {
+        public void addChatMessage(string message)
+        {
+            foreach (string line in message.Split("\n"))
+            {
                 addWrappedChatMessage(line);
             }
         }
@@ -464,18 +466,18 @@ namespace betareborn.Client.Guis
             }
         }
 
-        public void setRecordPlayingMessage(string var1)
+        public void setRecordPlayingMessage(string recordName)
         {
-            recordPlaying = "Now playing: " + var1;
+            recordPlaying = "Now playing: " + recordName;
             recordPlayingUpFor = 60;
             field_22065_l = true;
         }
 
-        public void addChatMessageTranslate(string var1)
+        public void addChatMessageTranslate(string key)
         {
-            TranslationStorage var2 = TranslationStorage.getInstance();
-            string var3 = var2.translateKey(var1);
-            addChatMessage(var3);
+            TranslationStorage translations = TranslationStorage.getInstance();
+            string translated = translations.translateKey(key);
+            addChatMessage(translated);
         }
     }
 

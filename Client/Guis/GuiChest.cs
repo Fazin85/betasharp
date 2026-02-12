@@ -11,15 +11,15 @@ namespace betareborn.Client.Guis
         private IInventory lowerChestInventory;
         private int inventoryRows = 0;
 
-        public GuiChest(IInventory var1, IInventory var2) : base(new GenericContainerScreenHandler(var1, var2))
+        public GuiChest(IInventory upper, IInventory lower) : base(new GenericContainerScreenHandler(upper, lower))
         {
-            upperChestInventory = var1;
-            lowerChestInventory = var2;
+            upperChestInventory = upper;
+            lowerChestInventory = lower;
             field_948_f = false;
-            short var3 = 222;
-            int var4 = var3 - 108;
-            inventoryRows = var2.size() / 9;
-            ySize = var4 + inventoryRows * 18;
+            short baseHeight = 222;
+            int guiHeightMinus = baseHeight - 108;
+            inventoryRows = lower.size() / 9;
+            ySize = guiHeightMinus + inventoryRows * 18;
         }
 
         protected override void drawGuiContainerForegroundLayer()
@@ -28,15 +28,15 @@ namespace betareborn.Client.Guis
             fontRenderer.drawString(upperChestInventory.getName(), 8, ySize - 96 + 2, 4210752);
         }
 
-        protected override void drawGuiContainerBackgroundLayer(float var1)
+        protected override void drawGuiContainerBackgroundLayer(float partialTicks)
         {
-            int var2 = mc.textureManager.getTextureId("/gui/container.png");
+            int textureId = mc.textureManager.getTextureId("/gui/container.png");
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-            mc.textureManager.bindTexture(var2);
-            int var3 = (width - xSize) / 2;
-            int var4 = (height - ySize) / 2;
-            drawTexturedModalRect(var3, var4, 0, 0, xSize, inventoryRows * 18 + 17);
-            drawTexturedModalRect(var3, var4 + inventoryRows * 18 + 17, 0, 126, xSize, 96);
+            mc.textureManager.bindTexture(textureId);
+            int guiLeft = (width - xSize) / 2;
+            int guiTop = (height - ySize) / 2;
+            drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, inventoryRows * 18 + 17);
+            drawTexturedModalRect(guiLeft, guiTop + inventoryRows * 18 + 17, 0, 126, xSize, 96);
         }
     }
 

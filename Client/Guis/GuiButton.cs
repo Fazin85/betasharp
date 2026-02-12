@@ -5,6 +5,10 @@ namespace betareborn.Client.Guis
 {
     public class GuiButton : Gui
     {
+        protected const int HOVER_STATE_DISABLED = 0;
+        protected const int HOVER_STATE_NORMAL = 1;
+        protected const int HOVER_STATE_HOVERED = 2;
+        
         protected int width;
         protected int height;
         public int xPosition;
@@ -12,9 +16,9 @@ namespace betareborn.Client.Guis
         public string displayString;
         public int id;
         public bool enabled;
-        public bool enabled2;
+        public bool visible;
 
-        public GuiButton(int _id, int xPos, int yPos, string var4) : this(_id, xPos, yPos, 200, 20, var4)
+        public GuiButton(int _id, int xPos, int yPos, string displayStr) : this(_id, xPos, yPos, 200, 20, displayStr)
         {
 
         }
@@ -24,7 +28,7 @@ namespace betareborn.Client.Guis
             width = 200;
             height = 20;
             enabled = true;
-            enabled2 = true;
+            visible = true;
             id = _id;
             xPosition = xPos;
             yPosition = yPos;
@@ -33,60 +37,62 @@ namespace betareborn.Client.Guis
             displayString = displayStr;
         }
 
-        protected virtual int getHoverState(bool var1)
+        protected virtual int getHoverState(bool isMouseOver)
         {
-            byte var2 = 1;
+            int state = HOVER_STATE_NORMAL;
             if (!enabled)
             {
-                var2 = 0;
+                state = HOVER_STATE_DISABLED;
             }
-            else if (var1)
+            else if (isMouseOver)
             {
-                var2 = 2;
+                state = HOVER_STATE_HOVERED;
             }
 
-            return var2;
+            return state;
         }
 
-        public void drawButton(Minecraft var1, int var2, int var3)
+        public void drawButton(Minecraft mc, int mouseX, int mouseY)
         {
-            if (enabled2)
+            if (visible)
             {
-                TextRenderer var4 = var1.fontRenderer;
-                GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var1.textureManager.getTextureId("/gui/gui.png"));
+                TextRenderer font = mc.fontRenderer;
+                GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/gui/gui.png"));
                 GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-                bool var5 = var2 >= xPosition && var3 >= yPosition && var2 < xPosition + width && var3 < yPosition + height;
-                int var6 = getHoverState(var5);
-                drawTexturedModalRect(xPosition, yPosition, 0, 46 + var6 * 20, width / 2, height);
-                drawTexturedModalRect(xPosition + width / 2, yPosition, 200 - width / 2, 46 + var6 * 20, width / 2, height);
-                mouseDragged(var1, var2, var3);
-                if (!enabled)
+                bool isHovered = mouseX >= xPosition && mouseY >= yPosition && mouseX < xPosition + width && mouseY < yPosition + height;
+                int hoverState = getHoverState(isHovered);
+                drawTexturedModalRect(xPosition, yPosition, 0, 46 + hoverState * 20, width / 2, height);
+                drawTexturedModalRect(xPosition + width / 2, yPosition, 200 - width / 2, 46 + hoverState * 20, width / 2, height);
+                mouseDragged(mc, mouseX, mouseY);
+                int textColor;
+                switch (hoverState)
                 {
-                    drawCenteredString(var4, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, -6250336);
+                    case HOVER_STATE_DISABLED:
+                        textColor = -6250336;
+                        break;
+                    case HOVER_STATE_HOVERED:
+                        textColor = 16777120;
+                        break;
+                    default:
+                        textColor = 14737632;
+                        break;
                 }
-                else if (var5)
-                {
-                    drawCenteredString(var4, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 16777120);
-                }
-                else
-                {
-                    drawCenteredString(var4, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 14737632);
-                }
+                drawCenteredString(font, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, textColor);
 
             }
         }
 
-        protected virtual void mouseDragged(Minecraft var1, int var2, int var3)
+        protected virtual void mouseDragged(Minecraft mc, int mouseX, int mouseY)
         {
         }
 
-        public virtual void mouseReleased(int var1, int var2)
+        public virtual void mouseReleased(int mouseX, int mouseY)
         {
         }
 
-        public virtual bool mousePressed(Minecraft var1, int var2, int var3)
+        public virtual bool mousePressed(Minecraft mc, int mouseX, int mouseY)
         {
-            return enabled && var2 >= xPosition && var3 >= yPosition && var2 < xPosition + width && var3 < yPosition + height;
+            return enabled && mouseX >= xPosition && mouseY >= yPosition && mouseX < xPosition + width && mouseY < yPosition + height;
         }
     }
 }

@@ -10,9 +10,9 @@ namespace betareborn.Client.Guis
         readonly GuiSelectWorld parentWorldGui;
 
 
-        public GuiWorldSlot(GuiSelectWorld var1) : base(var1.mc, var1.width, var1.height, 32, var1.height - 64, 36)
+        public GuiWorldSlot(GuiSelectWorld parent) : base(parent.mc, parent.width, parent.height, 32, parent.height - 64, 36)
         {
-            parentWorldGui = var1;
+            parentWorldGui = parent;
         }
 
         public override int getSize()
@@ -20,24 +20,24 @@ namespace betareborn.Client.Guis
             return GuiSelectWorld.getSize(parentWorldGui).size();
         }
 
-        protected override void elementClicked(int var1, bool var2)
+        protected override void elementClicked(int slotIndex, bool doubleClick)
         {
-            GuiSelectWorld.onElementSelected(parentWorldGui, var1);
-            WorldSaveInfo var4 = (WorldSaveInfo)GuiSelectWorld.getSize(parentWorldGui).get(var1);
-            bool var3 = GuiSelectWorld.getSelectedWorld(parentWorldGui) >= 0 && GuiSelectWorld.getSelectedWorld(parentWorldGui) < getSize() && !var4.getIsUnsupported();
-            GuiSelectWorld.getSelectButton(parentWorldGui).enabled = var3;
-            GuiSelectWorld.getRenameButton(parentWorldGui).enabled = var3;
-            GuiSelectWorld.getDeleteButton(parentWorldGui).enabled = var3;
-            if (var2 && var3)
+            GuiSelectWorld.onElementSelected(parentWorldGui, slotIndex);
+            WorldSaveInfo worldInfo = (WorldSaveInfo)GuiSelectWorld.getSize(parentWorldGui).get(slotIndex);
+            bool canSelect = GuiSelectWorld.getSelectedWorld(parentWorldGui) >= 0 && GuiSelectWorld.getSelectedWorld(parentWorldGui) < getSize() && !worldInfo.getIsUnsupported();
+            GuiSelectWorld.getSelectButton(parentWorldGui).enabled = canSelect;
+            GuiSelectWorld.getRenameButton(parentWorldGui).enabled = canSelect;
+            GuiSelectWorld.getDeleteButton(parentWorldGui).enabled = canSelect;
+            if (doubleClick && canSelect)
             {
-                parentWorldGui.selectWorld(var1);
+                parentWorldGui.selectWorld(slotIndex);
             }
 
         }
 
-        protected override bool isSelected(int var1)
+        protected override bool isSelected(int slotIndex)
         {
-            return var1 == GuiSelectWorld.getSelectedWorld(parentWorldGui);
+            return slotIndex == GuiSelectWorld.getSelectedWorld(parentWorldGui);
         }
 
         protected override int getContentHeight()
@@ -50,28 +50,28 @@ namespace betareborn.Client.Guis
             parentWorldGui.drawDefaultBackground();
         }
 
-        protected override void drawSlot(int var1, int var2, int var3, int var4, Tessellator var5)
+        protected override void drawSlot(int slotIndex, int x, int y, int slotHeight, Tessellator tessellator)
         {
-            WorldSaveInfo var6 = (WorldSaveInfo)GuiSelectWorld.getSize(parentWorldGui).get(var1);
-            string var7 = var6.getDisplayName();
-            if (var7 == null || MathHelper.stringNullOrLengthZero(var7))
+            WorldSaveInfo worldInfo = (WorldSaveInfo)GuiSelectWorld.getSize(parentWorldGui).get(slotIndex);
+            string displayName = worldInfo.getDisplayName();
+            if (displayName == null || MathHelper.stringNullOrLengthZero(displayName))
             {
-                var7 = GuiSelectWorld.getWorldNameHeader(parentWorldGui) + " " + (var1 + 1);
+                displayName = GuiSelectWorld.getWorldNameHeader(parentWorldGui) + " " + (slotIndex + 1);
             }
 
-            string var8 = var6.getFileName();
-            var8 = var8 + " (" + GuiSelectWorld.getDateFormatter(parentWorldGui).format(new Date(var6.getLastPlayed()));
-            long var9 = var6.getSize();
-            var8 = var8 + ", " + var9 / 1024L * 100L / 1024L / 100.0F + " MB)";
-            string var11 = "";
-            if (var6.getIsUnsupported())
+            string fileInfo = worldInfo.getFileName();
+            fileInfo = fileInfo + " (" + GuiSelectWorld.getDateFormatter(parentWorldGui).format(new Date(worldInfo.getLastPlayed()));
+            long size = worldInfo.getSize();
+            fileInfo = fileInfo + ", " + size / 1024L * 100L / 1024L / 100.0F + " MB)";
+            string extraStatus = "";
+            if (worldInfo.getIsUnsupported())
             {
-                var11 = GuiSelectWorld.getUnsupportedFormatMessage(parentWorldGui) + " " + var11;
+                extraStatus = GuiSelectWorld.getUnsupportedFormatMessage(parentWorldGui) + " " + extraStatus;
             }
 
-            parentWorldGui.drawString(parentWorldGui.fontRenderer, var7, var2 + 2, var3 + 1, 16777215);
-            parentWorldGui.drawString(parentWorldGui.fontRenderer, var8, var2 + 2, var3 + 12, 8421504);
-            parentWorldGui.drawString(parentWorldGui.fontRenderer, var11, var2 + 2, var3 + 12 + 10, 8421504);
+            parentWorldGui.drawString(parentWorldGui.fontRenderer, displayName, x + 2, y + 1, 16777215);
+            parentWorldGui.drawString(parentWorldGui.fontRenderer, fileInfo, x + 2, y + 12, 8421504);
+            parentWorldGui.drawString(parentWorldGui.fontRenderer, extraStatus, x + 2, y + 12 + 10, 8421504);
         }
     }
 
