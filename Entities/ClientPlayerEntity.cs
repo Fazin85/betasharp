@@ -142,9 +142,9 @@ namespace betareborn.Entities
             mc.displayGuiScreen(null);
         }
 
-        public override void openEditSignScreen(BlockEntitySign sing)
+        public override void openEditSignScreen(BlockEntitySign sign)
         {
-            mc.displayGuiScreen(new GuiEditSign(sing));
+            mc.displayGuiScreen(new GuiEditSign(sign));
         }
 
         public override void openChestScreen(IInventory inventory)
