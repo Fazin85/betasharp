@@ -10,14 +10,14 @@ namespace betareborn.Entities
     {
         public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityWolf).TypeHandle);
         private bool looksWithInterest = false;
-        private float field_25048_b;
-        private float field_25054_c;
+        private float headTiltAmount;
+        private float prevHeadTiltAmount;
         private bool isWolfShaking;
-        private bool field_25052_g;
+        private bool isShaking;
         private float timeWolfIsShaking;
         private float prevTimeWolfIsShaking;
 
-        public EntityWolf(World var1) : base(var1)
+        public EntityWolf(World world) : base(world)
         {
             texture = "/mob/wolf.png";
             setBoundingBoxSpacing(0.8F, 0.8F);
@@ -43,31 +43,31 @@ namespace betareborn.Entities
             return isWolfTamed() ? "/mob/wolf_tame.png" : (isWolfAngry() ? "/mob/wolf_angry.png" : base.getTexture());
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            base.writeNbt(var1);
-            var1.setBoolean("Angry", isWolfAngry());
-            var1.setBoolean("Sitting", isWolfSitting());
+            base.writeNbt(nbt);
+            nbt.setBoolean("Angry", isWolfAngry());
+            nbt.setBoolean("Sitting", isWolfSitting());
             if (getWolfOwner() == null)
             {
-                var1.setString("Owner", "");
+                nbt.setString("Owner", "");
             }
             else
             {
-                var1.setString("Owner", getWolfOwner());
+                nbt.setString("Owner", getWolfOwner());
             }
 
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            base.readNbt(var1);
-            setWolfAngry(var1.getBoolean("Angry"));
-            setWolfSitting(var1.getBoolean("Sitting"));
-            string var2 = var1.getString("Owner");
-            if (var2.Length > 0)
+            base.readNbt(nbt);
+            setWolfAngry(nbt.getBoolean("Angry"));
+            setWolfSitting(nbt.getBoolean("Sitting"));
+            string ownerName = nbt.getString("Owner");
+            if (ownerName.Length > 0)
             {
-                setWolfOwner(var2);
+                setWolfOwner(ownerName);
                 setWolfTamed(true);
             }
 
@@ -108,13 +108,13 @@ namespace betareborn.Entities
             base.tickLiving();
             if (!hasAttacked && !hasPath() && isWolfTamed() && vehicle == null)
             {
-                EntityPlayer var3 = world.getPlayer(getWolfOwner());
-                if (var3 != null)
+                EntityPlayer owner = world.getPlayer(getWolfOwner());
+                if (owner != null)
                 {
-                    float var2 = var3.getDistance(this);
-                    if (var2 > 5.0F)
+                    float distance = owner.getDistance(this);
+                    if (distance > 5.0F)
                     {
-                        getPathOrWalkableBlock(var3, var2);
+                        getPathOrWalkableBlock(owner, distance);
                     }
                 }
                 else if (!isInWater())
@@ -124,10 +124,10 @@ namespace betareborn.Entities
             }
             else if (playerToAttack == null && !hasPath() && !isWolfTamed() && world.random.nextInt(100) == 0)
             {
-                var var1 = world.collectEntitiesByClass(EntitySheep.Class, new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(16.0D, 4.0D, 16.0D));
-                if (var1.Count > 0)
+                var nearbySheep = world.collectEntitiesByClass(EntitySheep.Class, new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(16.0D, 4.0D, 16.0D));
+                if (nearbySheep.Count > 0)
                 {
-                    setTarget(var1[world.random.nextInt(var1.Count)]);
+                    setTarget(nearbySheep[world.random.nextInt(nearbySheep.Count)]);
                 }
             }
 
@@ -149,28 +149,28 @@ namespace betareborn.Entities
             looksWithInterest = false;
             if (hasCurrentTarget() && !hasPath() && !isWolfAngry())
             {
-                Entity var1 = getCurrentTarget();
-                if (var1 is EntityPlayer)
+                Entity currentTarget = getCurrentTarget();
+                if (currentTarget is EntityPlayer)
                 {
-                    EntityPlayer var2 = (EntityPlayer)var1;
-                    ItemStack var3 = var2.inventory.getSelectedItem();
-                    if (var3 != null)
+                    EntityPlayer targetPlayer = (EntityPlayer)currentTarget;
+                    ItemStack heldItem = targetPlayer.inventory.getSelectedItem();
+                    if (heldItem != null)
                     {
-                        if (!isWolfTamed() && var3.itemId == Item.BONE.id)
+                        if (!isWolfTamed() && heldItem.itemId == Item.BONE.id)
                         {
                             looksWithInterest = true;
                         }
-                        else if (isWolfTamed() && Item.ITEMS[var3.itemId] is ItemFood)
+                        else if (isWolfTamed() && Item.ITEMS[heldItem.itemId] is ItemFood)
                         {
-                            looksWithInterest = ((ItemFood)Item.ITEMS[var3.itemId]).getIsWolfsFavoriteMeat();
+                            looksWithInterest = ((ItemFood)Item.ITEMS[heldItem.itemId]).getIsWolfsFavoriteMeat();
                         }
                     }
                 }
             }
 
-            if (!interpolateOnly && isWolfShaking && !field_25052_g && !hasPath() && onGround)
+            if (!interpolateOnly && isWolfShaking && !isShaking && !hasPath() && onGround)
             {
-                field_25052_g = true;
+                isShaking = true;
                 timeWolfIsShaking = 0.0F;
                 prevTimeWolfIsShaking = 0.0F;
                 world.broadcastEntityEvent(this, (byte)8);
@@ -181,14 +181,14 @@ namespace betareborn.Entities
         public override void tick()
         {
             base.tick();
-            field_25054_c = field_25048_b;
+            prevHeadTiltAmount = headTiltAmount;
             if (looksWithInterest)
             {
-                field_25048_b += (1.0F - field_25048_b) * 0.4F;
+                headTiltAmount += (1.0F - headTiltAmount) * 0.4F;
             }
             else
             {
-                field_25048_b += (0.0F - field_25048_b) * 0.4F;
+                headTiltAmount += (0.0F - headTiltAmount) * 0.4F;
             }
 
             if (looksWithInterest)
@@ -199,11 +199,11 @@ namespace betareborn.Entities
             if (isWet())
             {
                 isWolfShaking = true;
-                field_25052_g = false;
+                isShaking = false;
                 timeWolfIsShaking = 0.0F;
                 prevTimeWolfIsShaking = 0.0F;
             }
-            else if ((isWolfShaking || field_25052_g) && field_25052_g)
+            else if ((isWolfShaking || isShaking) && isShaking)
             {
                 if (timeWolfIsShaking == 0.0F)
                 {
@@ -215,21 +215,21 @@ namespace betareborn.Entities
                 if (prevTimeWolfIsShaking >= 2.0F)
                 {
                     isWolfShaking = false;
-                    field_25052_g = false;
+                    isShaking = false;
                     prevTimeWolfIsShaking = 0.0F;
                     timeWolfIsShaking = 0.0F;
                 }
 
                 if (timeWolfIsShaking > 0.4F)
                 {
-                    float var1 = (float)boundingBox.minY;
-                    int var2 = (int)(MathHelper.sin((timeWolfIsShaking - 0.4F) * (float)java.lang.Math.PI) * 7.0F);
+                    float groundY = (float)boundingBox.minY;
+                    int particleCount = (int)(MathHelper.sin((timeWolfIsShaking - 0.4F) * (float)System.Math.PI) * 7.0F);
 
-                    for (int var3 = 0; var3 < var2; ++var3)
+                    for (int _ = 0; _ < particleCount; ++_)
                     {
-                        float var4 = (random.nextFloat() * 2.0F - 1.0F) * width * 0.5F;
-                        float var5 = (random.nextFloat() * 2.0F - 1.0F) * width * 0.5F;
-                        world.addParticle("splash", x + (double)var4, (double)(var1 + 0.8F), z + (double)var5, velocityX, velocityY, velocityZ);
+                        float offsetX = (random.nextFloat() * 2.0F - 1.0F) * width * 0.5F;
+                        float offsetZ = (random.nextFloat() * 2.0F - 1.0F) * width * 0.5F;
+                        world.addParticle("splash", x + (double)offsetX, (double)(groundY + 0.8F), z + (double)offsetZ, velocityX, velocityY, velocityZ);
                     }
                 }
             }
@@ -241,29 +241,29 @@ namespace betareborn.Entities
             return isWolfShaking;
         }
 
-        public float getShadingWhileShaking(float var1)
+        public float getShadingWhileShaking(float partialTick)
         {
-            return 12.0F / 16.0F + (prevTimeWolfIsShaking + (timeWolfIsShaking - prevTimeWolfIsShaking) * var1) / 2.0F * 0.25F;
+            return 12.0F / 16.0F + (prevTimeWolfIsShaking + (timeWolfIsShaking - prevTimeWolfIsShaking) * partialTick) / 2.0F * 0.25F;
         }
 
-        public float getShakeAngle(float var1, float var2)
+        public float getShakeAngle(float partialTick, float offset)
         {
-            float var3 = (prevTimeWolfIsShaking + (timeWolfIsShaking - prevTimeWolfIsShaking) * var1 + var2) / 1.8F;
-            if (var3 < 0.0F)
+            float shakeProgress = (prevTimeWolfIsShaking + (timeWolfIsShaking - prevTimeWolfIsShaking) * partialTick + offset) / 1.8F;
+            if (shakeProgress < 0.0F)
             {
-                var3 = 0.0F;
+                shakeProgress = 0.0F;
             }
-            else if (var3 > 1.0F)
+            else if (shakeProgress > 1.0F)
             {
-                var3 = 1.0F;
+                shakeProgress = 1.0F;
             }
 
-            return MathHelper.sin(var3 * (float)java.lang.Math.PI) * MathHelper.sin(var3 * (float)java.lang.Math.PI * 11.0F) * 0.15F * (float)java.lang.Math.PI;
+            return MathHelper.sin(shakeProgress * (float)System.Math.PI) * MathHelper.sin(shakeProgress * (float)System.Math.PI * 11.0F) * 0.15F * (float)System.Math.PI;
         }
 
-        public float getInterestedAngle(float var1)
+        public float getInterestedAngle(float partialTick)
         {
-            return (field_25054_c + (field_25048_b - field_25054_c) * var1) * 0.15F * (float)java.lang.Math.PI;
+            return (prevHeadTiltAmount + (headTiltAmount - prevHeadTiltAmount) * partialTick) * 0.15F * (float)System.Math.PI;
         }
 
         public override float getEyeHeight()
@@ -271,27 +271,27 @@ namespace betareborn.Entities
             return height * 0.8F;
         }
 
-        protected override int func_25026_x()
+        protected override int getMaxFallDistance()
         {
-            return isWolfSitting() ? 20 : base.func_25026_x();
+            return isWolfSitting() ? 20 : base.getMaxFallDistance();
         }
 
-        private void getPathOrWalkableBlock(Entity var1, float var2)
+        private void getPathOrWalkableBlock(Entity entity, float distanceToOwner)
         {
-            PathEntity var3 = world.findPath(this, var1, 16.0F);
-            if (var3 == null && var2 > 12.0F)
+            PathEntity path = world.findPath(this, entity, 16.0F);
+            if (path == null && distanceToOwner > 12.0F)
             {
-                int var4 = MathHelper.floor_double(var1.x) - 2;
-                int var5 = MathHelper.floor_double(var1.z) - 2;
-                int var6 = MathHelper.floor_double(var1.boundingBox.minY);
+                int ownerBlockX = MathHelper.floor_double(entity.x) - 2;
+                int ownerBlockY = MathHelper.floor_double(entity.z) - 2;
+                int ownerBlockZ = MathHelper.floor_double(entity.boundingBox.minY);
 
-                for (int var7 = 0; var7 <= 4; ++var7)
+                for (int dx = 0; dx <= 4; ++dx)
                 {
-                    for (int var8 = 0; var8 <= 4; ++var8)
+                    for (int dy = 0; dy <= 4; ++dy)
                     {
                         if ((var7 < 1 || var8 < 1 || var7 > 3 || var8 > 3) && world.ShouldSuffocate(var4 + var7, var6 - 1, var5 + var8) && !world.ShouldSuffocate(var4 + var7, var6, var5 + var8) && !world.ShouldSuffocate(var4 + var7, var6 + 1, var5 + var8))
                         {
-                            setPositionAndAnglesKeepPrevAngles((double)((float)(var4 + var7) + 0.5F), (double)var6, (double)((float)(var5 + var8) + 0.5F), yaw, pitch);
+                            setPositionAndAnglesKeepPrevAngles((double)((float)(ownerBlockX + dx) + 0.5F), (double)ownerBlockZ, (double)((float)(ownerBlockY + dy) + 0.5F), yaw, pitch);
                             return;
                         }
                     }
@@ -299,25 +299,25 @@ namespace betareborn.Entities
             }
             else
             {
-                setPathToEntity(var3);
+                setPathToEntity(path);
             }
 
         }
 
         protected override bool isMovementCeased()
         {
-            return isWolfSitting() || field_25052_g;
+            return isWolfSitting() || isShaking;
         }
 
-        public override bool damage(Entity var1, int var2)
+        public override bool damage(Entity entity, int amount)
         {
             setWolfSitting(false);
-            if (var1 != null && !(var1 is EntityPlayer) && !(var1 is EntityArrow))
+            if (entity != null && !(entity is EntityPlayer) && !(entity is EntityArrow))
             {
-                var2 = (var2 + 1) / 2;
+                amount = (amount + 1) / 2;
             }
 
-            if (!base.damage((Entity)var1, var2))
+            if (!base.damage((Entity)entity, amount))
             {
                 return false;
             }
@@ -325,44 +325,44 @@ namespace betareborn.Entities
             {
                 if (!isWolfTamed() && !isWolfAngry())
                 {
-                    if (var1 is EntityPlayer)
+                    if (entity is EntityPlayer)
                     {
                         setWolfAngry(true);
-                        playerToAttack = var1;
+                        playerToAttack = entity;
                     }
 
-                    if (var1 is EntityArrow && ((EntityArrow)var1).owner != null)
+                    if (entity is EntityArrow && ((EntityArrow)entity).owner != null)
                     {
-                        var1 = ((EntityArrow)var1).owner;
+                        entity = ((EntityArrow)entity).owner;
                     }
 
-                    if (var1 is EntityLiving)
+                    if (entity is EntityLiving)
                     {
-                        var var3 = world.collectEntitiesByClass(typeof(EntityWolf), new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(16.0D, 4.0D, 16.0D));
+                        var nearbyWolves = world.collectEntitiesByClass(typeof(EntityWolf), new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(16.0D, 4.0D, 16.0D));
 
-                        foreach (var var5 in var3)
+                        foreach (var ent in nearbyWolves)
                         {
-                            EntityWolf var6 = (EntityWolf)var5;
-                            if (!var6.isWolfTamed() && var6.playerToAttack == null)
+                            EntityWolf wolf = (EntityWolf)ent;
+                            if (!wolf.isWolfTamed() && wolf.playerToAttack == null)
                             {
-                                var6.playerToAttack = var1;
-                                if (var1 is EntityPlayer)
+                                wolf.playerToAttack = ent;
+                                if (ent is EntityPlayer)
                                 {
 
-                                    var6.setWolfAngry(true);
+                                    wolf.setWolfAngry(true);
                                 }
                             }
                         }
                     }
                 }
-                else if (var1 != this && var1 != null)
+                else if (entity != this && entity != null)
                 {
-                    if (isWolfTamed() && var1 is EntityPlayer && ((EntityPlayer)var1).name.Equals(getWolfOwner(), StringComparison.OrdinalIgnoreCase))
+                    if (isWolfTamed() && entity is EntityPlayer && ((EntityPlayer)entity).name.Equals(getWolfOwner(), StringComparison.OrdinalIgnoreCase))
                     {
                         return true;
                     }
 
-                    playerToAttack = (Entity)var1;
+                    playerToAttack = (Entity)entity;
                 }
 
                 return true;
@@ -374,45 +374,45 @@ namespace betareborn.Entities
             return isWolfAngry() ? world.getClosestPlayer(this, 16.0D) : null;
         }
 
-        protected override void attackEntity(Entity var1, float var2)
+        protected override void attackEntity(Entity entity, float distance)
         {
-            if (var2 > 2.0F && var2 < 6.0F && random.nextInt(10) == 0)
+            if (distance > 2.0F && distance < 6.0F && random.nextInt(10) == 0)
             {
                 if (onGround)
                 {
-                    double var8 = var1.x - x;
-                    double var5 = var1.z - z;
-                    float var7 = MathHelper.sqrt_double(var8 * var8 + var5 * var5);
-                    velocityX = var8 / (double)var7 * 0.5D * (double)0.8F + velocityX * (double)0.2F;
-                    velocityZ = var5 / (double)var7 * 0.5D * (double)0.8F + velocityZ * (double)0.2F;
+                    double dx = entity.x - x;
+                    double dy = entity.z - z;
+                    float horizontalDistance = MathHelper.sqrt_double(dx * dx + dy * dy);
+                    velocityX = dx / (double)horizontalDistance * 0.5D * (double)0.8F + velocityX * (double)0.2F;
+                    velocityZ = dy / (double)horizontalDistance * 0.5D * (double)0.8F + velocityZ * (double)0.2F;
                     velocityY = (double)0.4F;
                 }
             }
-            else if ((double)var2 < 1.5D && var1.boundingBox.maxY > boundingBox.minY && var1.boundingBox.minY < boundingBox.maxY)
+            else if ((double)distance < 1.5D && entity.boundingBox.maxY > boundingBox.minY && entity.boundingBox.minY < boundingBox.maxY)
             {
                 attackTime = 20;
-                byte var3 = 2;
+                byte damageAmount = 2;
                 if (isWolfTamed())
                 {
-                    var3 = 4;
+                    damageAmount = 4;
                 }
 
-                var1.damage(this, var3);
+                entity.damage(this, damageAmount);
             }
 
         }
 
-        public override bool interact(EntityPlayer var1)
+        public override bool interact(EntityPlayer player)
         {
-            ItemStack var2 = var1.inventory.getSelectedItem();
+            ItemStack heldItem = player.inventory.getSelectedItem();
             if (!isWolfTamed())
             {
-                if (var2 != null && var2.itemId == Item.BONE.id && !isWolfAngry())
+                if (heldItem != null && heldItem.itemId == Item.BONE.id && !isWolfAngry())
                 {
-                    --var2.count;
-                    if (var2.count <= 0)
+                    --heldItem.count;
+                    if (heldItem.count <= 0)
                     {
-                        var1.inventory.setStack(var1.inventory.selectedSlot, (ItemStack)null);
+                        player.inventory.setStack(player.inventory.selectedSlot, (ItemStack)null);
                     }
 
                     if (!world.isRemote)
@@ -423,7 +423,7 @@ namespace betareborn.Entities
                             setPathToEntity((PathEntity)null);
                             setWolfSitting(true);
                             health = 20;
-                            setWolfOwner(var1.name);
+                            setWolfOwner(player.name);
                             showHeartsOrSmokeFX(true);
                             world.broadcastEntityEvent(this, (byte)7);
                         }
@@ -439,15 +439,15 @@ namespace betareborn.Entities
             }
             else
             {
-                if (var2 != null && Item.ITEMS[var2.itemId] is ItemFood)
+                if (heldItem != null && Item.ITEMS[heldItem.itemId] is ItemFood)
                 {
-                    ItemFood var3 = (ItemFood)Item.ITEMS[var2.itemId];
-                    if (var3.getIsWolfsFavoriteMeat() && dataWatcher.getWatchableObjectInt(18) < 20)
+                    ItemFood food = (ItemFood)Item.ITEMS[heldItem.itemId];
+                    if (food.getIsWolfsFavoriteMeat() && dataWatcher.getWatchableObjectInt(18) < 20)
                     {
-                        --var2.count;
-                        if (var2.count <= 0)
+                        --heldItem.count;
+                        if (heldItem.count <= 0)
                         {
-                            var1.inventory.setStack(var1.inventory.selectedSlot, (ItemStack)null);
+                            player.inventory.setStack(player.inventory.selectedSlot, (ItemStack)null);
                         }
 
                         heal(((ItemFood)Item.RAW_PORKCHOP).getHealAmount());
@@ -455,7 +455,7 @@ namespace betareborn.Entities
                     }
                 }
 
-                if (var1.name.Equals(getWolfOwner(), StringComparison.OrdinalIgnoreCase))
+                if (player.name.Equals(getWolfOwner(), StringComparison.OrdinalIgnoreCase))
                 {
                     if (!world.isRemote)
                     {
@@ -471,50 +471,50 @@ namespace betareborn.Entities
             return false;
         }
 
-        void showHeartsOrSmokeFX(bool var1)
+        void showHeartsOrSmokeFX(bool showHearts)
         {
-            string var2 = "heart";
-            if (!var1)
+            string particleName = "heart";
+            if (!showHearts)
             {
-                var2 = "smoke";
+                particleName = "smoke";
             }
 
-            for (int var3 = 0; var3 < 7; ++var3)
+            for (int _ = 0; _ < 7; ++_)
             {
-                double var4 = random.nextGaussian() * 0.02D;
-                double var6 = random.nextGaussian() * 0.02D;
-                double var8 = random.nextGaussian() * 0.02D;
-                world.addParticle(var2, x + (double)(random.nextFloat() * width * 2.0F) - (double)width, y + 0.5D + (double)(random.nextFloat() * height), z + (double)(random.nextFloat() * width * 2.0F) - (double)width, var4, var6, var8);
+                double paticleX = random.nextGaussian() * 0.02D;
+                double paticleY = random.nextGaussian() * 0.02D;
+                double paticleZ = random.nextGaussian() * 0.02D;
+                world.addParticle(particleName, x + (double)(random.nextFloat() * width * 2.0F) - (double)width, y + 0.5D + (double)(random.nextFloat() * height), z + (double)(random.nextFloat() * width * 2.0F) - (double)width, paticleX, paticleY, paticleZ);
             }
 
         }
 
-        public override void processServerEntityStatus(sbyte var1)
+        public override void processServerEntityStatus(sbyte status)
         {
-            if (var1 == 7)
+            if (status == 7)
             {
                 showHeartsOrSmokeFX(true);
             }
-            else if (var1 == 6)
+            else if (status == 6)
             {
                 showHeartsOrSmokeFX(false);
             }
-            else if (var1 == 8)
+            else if (status == 8)
             {
-                field_25052_g = true;
+                isShaking = true;
                 timeWolfIsShaking = 0.0F;
                 prevTimeWolfIsShaking = 0.0F;
             }
             else
             {
-                base.processServerEntityStatus(var1);
+                base.processServerEntityStatus(status);
             }
 
         }
 
-        public float setTailRotation()
+        public float getTailRotation()
         {
-            return isWolfAngry() ? (float)java.lang.Math.PI * 0.49F : (isWolfTamed() ? (0.55F - (float)(20 - dataWatcher.getWatchableObjectInt(18)) * 0.02F) * (float)java.lang.Math.PI : (float)java.lang.Math.PI * 0.2F);
+            return isWolfAngry() ? (float)System.Math.PI * 0.49F : (isWolfTamed() ? (0.55F - (float)(20 - dataWatcher.getWatchableObjectInt(18)) * 0.02F) * (float)System.Math.PI : (float)System.Math.PI * 0.2F);
         }
 
         public override int getMaxSpawnedInChunk()
@@ -527,9 +527,9 @@ namespace betareborn.Entities
             return dataWatcher.getWatchableObjectString(17);
         }
 
-        public void setWolfOwner(string var1)
+        public void setWolfOwner(string name)
         {
-            dataWatcher.updateObject(17, new JString(var1));
+            dataWatcher.updateObject(17, new JString(name));
         }
 
         public bool isWolfSitting()
@@ -537,16 +537,16 @@ namespace betareborn.Entities
             return (dataWatcher.getWatchableObjectByte(16) & 1) != 0;
         }
 
-        public void setWolfSitting(bool var1)
+        public void setWolfSitting(bool isSitting)
         {
-            sbyte var2 = dataWatcher.getWatchableObjectByte(16);
-            if (var1)
+            sbyte data = dataWatcher.getWatchableObjectByte(16);
+            if (isSitting)
             {
-                dataWatcher.updateObject(16, java.lang.Byte.valueOf((byte)(var2 | 1)));
+                dataWatcher.updateObject(16, java.lang.Byte.valueOf((byte)(data | 1)));
             }
             else
             {
-                dataWatcher.updateObject(16, java.lang.Byte.valueOf((byte)(var2 & -2)));
+                dataWatcher.updateObject(16, java.lang.Byte.valueOf((byte)(data & -2)));
             }
 
         }
@@ -556,16 +556,16 @@ namespace betareborn.Entities
             return (dataWatcher.getWatchableObjectByte(16) & 2) != 0;
         }
 
-        public void setWolfAngry(bool var1)
+        public void setWolfAngry(bool isAngry)
         {
-            sbyte var2 = dataWatcher.getWatchableObjectByte(16);
-            if (var1)
+            sbyte data = dataWatcher.getWatchableObjectByte(16);
+            if (isAngry)
             {
-                dataWatcher.updateObject(16, java.lang.Byte.valueOf((byte)(var2 | 2)));
+                dataWatcher.updateObject(16, java.lang.Byte.valueOf((byte)(data | 2)));
             }
             else
             {
-                dataWatcher.updateObject(16, java.lang.Byte.valueOf((byte)(var2 & -3)));
+                dataWatcher.updateObject(16, java.lang.Byte.valueOf((byte)(data & -3)));
             }
 
         }
@@ -575,16 +575,16 @@ namespace betareborn.Entities
             return (dataWatcher.getWatchableObjectByte(16) & 4) != 0;
         }
 
-        public void setWolfTamed(bool var1)
+        public void setWolfTamed(bool IsTamed)
         {
-            sbyte var2 = dataWatcher.getWatchableObjectByte(16);
-            if (var1)
+            sbyte data = dataWatcher.getWatchableObjectByte(16);
+            if (IsTamed)
             {
-                dataWatcher.updateObject(16, java.lang.Byte.valueOf((byte)(var2 | 4)));
+                dataWatcher.updateObject(16, java.lang.Byte.valueOf((byte)(data | 4)));
             }
             else
             {
-                dataWatcher.updateObject(16, java.lang.Byte.valueOf((byte)(var2 & -5)));
+                dataWatcher.updateObject(16, java.lang.Byte.valueOf((byte)(data & -5)));
             }
 
         }

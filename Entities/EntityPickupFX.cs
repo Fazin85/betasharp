@@ -8,21 +8,21 @@ namespace betareborn.Entities
     public class EntityPickupFX : EntityFX
     {
 
-        private Entity field_675_a;
-        private Entity field_679_o;
-        private int field_678_p = 0;
-        private int field_677_q = 0;
-        private float field_676_r;
+        private Entity target;
+        private Entity source;
+        private int currentAge = 0;
+        private int maxAge = 0;
+        private float yOffset;
 
-        public EntityPickupFX(World var1, Entity var2, Entity var3, float var4) : base(var1, var2.x, var2.y, var2.z, var2.velocityX, var2.velocityY, var2.velocityZ)
+        public EntityPickupFX(World world, Entity target, Entity source, float yOffset) : base(world, target.x, target.y, target.z, target.velocityX, target.velocityY, target.velocityZ)
         {
-            field_675_a = var2;
-            field_679_o = var3;
-            field_677_q = 3;
-            field_676_r = var4;
+            this.target = target;
+            this.source = source;
+            this.yOffset = yOffset;
+            maxAge = 3;
         }
 
-        public override void renderParticle(Tessellator var1, float var2, float var3, float var4, float var5, float var6, float var7)
+        public override void renderParticle(Tessellator t, float partialTick, float rotX, float rotY, float rotZ, float upX, float upZ)
         {
             float var8 = ((float)field_678_p + var2) / (float)field_677_q;
             var8 *= var8;
@@ -48,8 +48,8 @@ namespace betareborn.Entities
 
         public override void tick()
         {
-            ++field_678_p;
-            if (field_678_p == field_677_q)
+            ++currentAge;
+            if (currentAge == maxAge)
             {
                 markDead();
             }

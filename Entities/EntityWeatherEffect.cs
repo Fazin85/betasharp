@@ -4,7 +4,7 @@ namespace betareborn.Entities
 {
     public abstract class EntityWeatherEffect : Entity
     {
-        public EntityWeatherEffect(World var1) : base(var1)
+        public EntityWeatherEffect(World world) : base(world)
         {
         }
     }

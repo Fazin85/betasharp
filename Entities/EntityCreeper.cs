@@ -12,7 +12,7 @@ namespace betareborn.Entities
         int lastActiveTime;
 
 
-        public EntityCreeper(World var1) : base(var1)
+        public EntityCreeper(World world) : base(world)
         {
             texture = "/mob/creeper.png";
         }
@@ -24,23 +24,23 @@ namespace betareborn.Entities
             dataWatcher.addObject(17, java.lang.Byte.valueOf(0));
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            base.writeNbt(var1);
+            base.writeNbt(nbt);
             if (dataWatcher.getWatchableObjectByte(17) == 1)
             {
-                var1.setBoolean("powered", true);
+                nbt.setBoolean("powered", true);
             }
 
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            base.readNbt(var1);
-            dataWatcher.updateObject(17, java.lang.Byte.valueOf((byte)(var1.getBoolean("powered") ? 1 : 0)));
+            base.readNbt(nbt);
+            dataWatcher.updateObject(17, java.lang.Byte.valueOf((byte)(nbt.getBoolean("powered") ? 1 : 0)));
         }
 
-        protected override void attackBlockedEntity(Entity var1, float var2)
+        protected override void attackBlockedEntity(Entity entity, float distance)
         {
             if (!world.isRemote)
             {
@@ -62,13 +62,13 @@ namespace betareborn.Entities
             lastActiveTime = timeSinceIgnited;
             if (world.isRemote)
             {
-                int var1 = getCreeperState();
-                if (var1 > 0 && timeSinceIgnited == 0)
+                int state = getCreeperState();
+                if (state > 0 && timeSinceIgnited == 0)
                 {
                     world.playSound(this, "random.fuse", 1.0F, 0.5F);
                 }
 
-                timeSinceIgnited += var1;
+                timeSinceIgnited += state;
                 if (timeSinceIgnited < 0)
                 {
                     timeSinceIgnited = 0;
@@ -103,22 +103,22 @@ namespace betareborn.Entities
             return "mob.creeperdeath";
         }
 
-        public override void onKilledBy(Entity var1)
+        public override void onKilledBy(Entity entity)
         {
-            base.onKilledBy(var1);
-            if (var1 is EntitySkeleton)
+            base.onKilledBy(entity);
+            if (entity is EntitySkeleton)
             {
                 dropItem(Item.RECORD_THIRTEEN.id + random.nextInt(2), 1);
             }
 
         }
 
-        protected override void attackEntity(Entity var1, float var2)
+        protected override void attackEntity(Entity entity, float distance)
         {
             if (!world.isRemote)
             {
-                int var3 = getCreeperState();
-                if (var3 <= 0 && var2 < 3.0F || var3 > 0 && var2 < 7.0F)
+                int state = getCreeperState();
+                if (state <= 0 && distance < 3.0F || state > 0 && distance < 7.0F)
                 {
                     if (timeSinceIgnited == 0)
                     {
@@ -161,9 +161,9 @@ namespace betareborn.Entities
             return dataWatcher.getWatchableObjectByte(17) == 1;
         }
 
-        public float setCreeperFlashTime(float var1)
+        public float setCreeperFlashTime(float partialTick)
         {
-            return ((float)lastActiveTime + (float)(timeSinceIgnited - lastActiveTime) * var1) / 28.0F;
+            return ((float)lastActiveTime + (float)(timeSinceIgnited - lastActiveTime) * partialTick) / 28.0F;
         }
 
         protected override int getDropItemId()
@@ -176,14 +176,14 @@ namespace betareborn.Entities
             return dataWatcher.getWatchableObjectByte(16);
         }
 
-        private void setCreeperState(int var1)
+        private void setCreeperState(int state)
         {
-            dataWatcher.updateObject(16, java.lang.Byte.valueOf((byte)var1));
+            dataWatcher.updateObject(16, java.lang.Byte.valueOf((byte)state));
         }
 
-        public override void onStruckByLightning(EntityLightningBolt var1)
+        public override void onStruckByLightning(EntityLightningBolt bolt)
         {
-            base.onStruckByLightning(var1);
+            base.onStruckByLightning(bolt);
             dataWatcher.updateObject(17, java.lang.Byte.valueOf(1));
         }
     }

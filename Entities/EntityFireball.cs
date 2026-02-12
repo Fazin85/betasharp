@@ -22,7 +22,7 @@ namespace betareborn.Entities
         public double powerY;
         public double powerZ;
 
-        public EntityFireball(World var1) : base(var1)
+        public EntityFireball(World world) : base(world)
         {
             setBoundingBoxSpacing(1.0F, 1.0F);
         }
@@ -38,18 +38,18 @@ namespace betareborn.Entities
             return var1 < var3 * var3;
         }
 
-        public EntityFireball(World var1, double var2, double var4, double var6, double var8, double var10, double var12) : base(var1)
+        public EntityFireball(World world, double x, double y, double z, double var8, double var10, double var12) : base(world)
         {
             setBoundingBoxSpacing(1.0F, 1.0F);
-            setPositionAndAnglesKeepPrevAngles(var2, var4, var6, yaw, pitch);
-            setPosition(var2, var4, var6);
+            setPositionAndAnglesKeepPrevAngles(x, y, z, yaw, pitch);
+            setPosition(x, y, z);
             double var14 = (double)MathHelper.sqrt_double(var8 * var8 + var10 * var10 + var12 * var12);
             powerX = var8 / var14 * 0.1D;
             powerY = var10 / var14 * 0.1D;
             powerZ = var12 / var14 * 0.1D;
         }
 
-        public EntityFireball(World var1, EntityLiving var2, double var3, double var5, double var7) : base(var1)
+        public EntityFireball(World world, EntityLiving var2, double var3, double var5, double var7) : base(world)
         {
             owner = var2;
             setBoundingBoxSpacing(1.0F, 1.0F);
@@ -158,9 +158,9 @@ namespace betareborn.Entities
             y += velocityY;
             z += velocityZ;
             float var16 = MathHelper.sqrt_double(velocityX * velocityX + velocityZ * velocityZ);
-            yaw = (float)(java.lang.Math.atan2(velocityX, velocityZ) * 180.0D / (double)((float)Math.PI));
+            yaw = (float)(System.Math.Atan2(velocityX, velocityZ) * 180.0D / (double)((float)Math.PI));
 
-            for (pitch = (float)(java.lang.Math.atan2(velocityY, (double)var16) * 180.0D / (double)((float)Math.PI)); pitch - prevPitch < -180.0F; prevPitch -= 360.0F)
+            for (pitch = (float)(System.Math.Atan2(velocityY, (double)var16) * 180.0D / (double)((float)Math.PI)); pitch - prevPitch < -180.0F; prevPitch -= 360.0F)
             {
             }
 
@@ -203,24 +203,24 @@ namespace betareborn.Entities
             setPosition(x, y, z);
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            var1.setShort("xTile", (short)blockX);
-            var1.setShort("yTile", (short)blockY);
-            var1.setShort("zTile", (short)blockZ);
-            var1.setByte("inTile", (sbyte)blockId);
-            var1.setByte("shake", (sbyte)shake);
-            var1.setByte("inGround", (sbyte)(inGround ? 1 : 0));
+            nbt.setShort("xTile", (short)blockX);
+            nbt.setShort("yTile", (short)blockY);
+            nbt.setShort("zTile", (short)blockZ);
+            nbt.setByte("inTile", (sbyte)blockId);
+            nbt.setByte("shake", (sbyte)shake);
+            nbt.setByte("inGround", (sbyte)(inGround ? 1 : 0));
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            blockX = var1.getShort("xTile");
-            blockY = var1.getShort("yTile");
-            blockZ = var1.getShort("zTile");
-            blockId = var1.getByte("inTile") & 255;
-            shake = var1.getByte("shake") & 255;
-            inGround = var1.getByte("inGround") == 1;
+            blockX = nbt.getShort("xTile");
+            blockY = nbt.getShort("yTile");
+            blockZ = nbt.getShort("zTile");
+            blockId = nbt.getByte("inTile") & 255;
+            shake = nbt.getByte("shake") & 255;
+            inGround = nbt.getByte("inGround") == 1;
         }
 
         public override bool isCollidable()
@@ -233,12 +233,12 @@ namespace betareborn.Entities
             return 1.0F;
         }
 
-        public override bool damage(Entity var1, int var2)
+        public override bool damage(Entity entity, int amount)
         {
             scheduleVelocityUpdate();
-            if (var1 != null)
+            if (entity != null)
             {
-                Vec3D var3 = var1.getLookVector();
+                Vec3D var3 = entity.getLookVector();
                 if (var3 != null)
                 {
                     velocityX = var3.xCoord;

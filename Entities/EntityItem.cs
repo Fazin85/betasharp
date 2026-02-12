@@ -12,18 +12,18 @@ namespace betareborn.Entities
 
         public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityItem).TypeHandle);
         public ItemStack stack;
-        private int field_803_e;
+        private int animationTick;
         public int age = 0;
         public int delayBeforeCanPickup;
         private int health = 5;
-        public float field_804_d = (float)(java.lang.Math.random() * java.lang.Math.PI * 2.0D);
+        public float bobPhase = (float)(java.lang.Math.random() * System.Math.PI * 2.0D);
 
-        public EntityItem(World var1, double var2, double var4, double var6, ItemStack var8) : base(var1)
+        public EntityItem(World world, double x, double y, double z, ItemStack stack) : base(world)
         {
             setBoundingBoxSpacing(0.25F, 0.25F);
             standingEyeHeight = height / 2.0F;
-            setPosition(var2, var4, var6);
-            stack = var8;
+            setPosition(x, y, z);
+            this.stack = stack;
             yaw = (float)(java.lang.Math.random() * 360.0D);
             velocityX = (double)((float)(java.lang.Math.random() * (double)0.2F - (double)0.1F));
             velocityY = (double)0.2F;
@@ -35,7 +35,7 @@ namespace betareborn.Entities
             return false;
         }
 
-        public EntityItem(World var1) : base(var1)
+        public EntityItem(World world) : base(world)
         {
             setBoundingBoxSpacing(0.25F, 0.25F);
             standingEyeHeight = height / 2.0F;
@@ -67,26 +67,26 @@ namespace betareborn.Entities
 
             pushOutOfBlocks(x, (boundingBox.minY + boundingBox.maxY) / 2.0D, z);
             move(velocityX, velocityY, velocityZ);
-            float var1 = 0.98F;
+            float friction = 0.98F;
             if (onGround)
             {
                 var1 = 0.1F * 0.1F * 58.8F;
                 int var2 = world.GetBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
                 if (var2 > 0)
                 {
-                    var1 = Block.BLOCKS[var2].slipperiness * 0.98F;
+                    friction = Block.BLOCKS[groundBlockId].slipperiness * 0.98F;
                 }
             }
 
-            velocityX *= (double)var1;
+            velocityX *= (double)friction;
             velocityY *= (double)0.98F;
-            velocityZ *= (double)var1;
+            velocityZ *= (double)friction;
             if (onGround)
             {
                 velocityY *= -0.5D;
             }
 
-            ++field_803_e;
+            ++animationTick;
             ++age;
             if (age >= 6000)
             {
@@ -100,15 +100,15 @@ namespace betareborn.Entities
             return world.updateMovementInFluid(boundingBox, Material.WATER, this);
         }
 
-        protected override void damage(int var1)
+        protected override void damage(int amount)
         {
-            damage((Entity)null, var1);
+            damage((Entity)null, amount);
         }
 
-        public override bool damage(Entity var1, int var2)
+        public override bool damage(Entity entity, int amount)
         {
             scheduleVelocityUpdate();
-            health -= var2;
+            health -= amount;
             if (health <= 0)
             {
                 markDead();
@@ -117,40 +117,40 @@ namespace betareborn.Entities
             return false;
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            var1.setShort("Health", (short)((byte)health));
-            var1.setShort("Age", (short)age);
-            var1.setCompoundTag("Item", stack.writeToNBT(new NBTTagCompound()));
+            nbt.setShort("Health", (short)((byte)health));
+            nbt.setShort("Age", (short)age);
+            nbt.setCompoundTag("Item", stack.writeToNBT(new NBTTagCompound()));
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            health = var1.getShort("Health") & 255;
-            age = var1.getShort("Age");
-            NBTTagCompound var2 = var1.getCompoundTag("Item");
-            stack = new ItemStack(var2);
+            health = nbt.getShort("Health") & 255;
+            age = nbt.getShort("Age");
+            NBTTagCompound itemTag = nbt.getCompoundTag("Item");
+            stack = new ItemStack(itemTag);
         }
 
-        public override void onPlayerInteraction(EntityPlayer var1)
+        public override void onPlayerInteraction(EntityPlayer player)
         {
             if (!world.isRemote)
             {
-                int var2 = stack.count;
-                if (delayBeforeCanPickup == 0 && var1.inventory.addItemStackToInventory(stack))
+                int pickedUpCount = stack.count;
+                if (delayBeforeCanPickup == 0 && player.inventory.addItemStackToInventory(stack))
                 {
                     if (stack.itemId == Block.LOG.id)
                     {
-                        var1.incrementStat(Achievements.MINE_WOOD);
+                        player.incrementStat(Achievements.MINE_WOOD);
                     }
 
                     if (stack.itemId == Item.LEATHER.id)
                     {
-                        var1.incrementStat(Achievements.KILL_COW);
+                        player.incrementStat(Achievements.KILL_COW);
                     }
 
                     world.playSound(this, "random.pop", 0.2F, ((random.nextFloat() - random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
-                    var1.sendPickup(this, var2);
+                    player.sendPickup(this, pickedUpCount);
                     if (stack.count <= 0)
                     {
                         markDead();

@@ -9,7 +9,7 @@ namespace betareborn.Entities
     public class EntityRainFX : EntityFX
     {
 
-        public EntityRainFX(World var1, double var2, double var4, double var6) : base(var1, var2, var4, var6, 0.0D, 0.0D, 0.0D)
+        public EntityRainFX(World world, double x, double y, double z) : base(world, x, y, z, 0.0D, 0.0D, 0.0D)
         {
             velocityX *= (double)0.3F;
             velocityY = (double)((float)java.lang.Math.random() * 0.2F + 0.1F);
@@ -23,9 +23,9 @@ namespace betareborn.Entities
             particleMaxAge = (int)(8.0D / (java.lang.Math.random() * 0.8D + 0.2D));
         }
 
-        public override void renderParticle(Tessellator var1, float var2, float var3, float var4, float var5, float var6, float var7)
+        public override void renderParticle(Tessellator t, float partialTick, float rotX, float rotY, float rotZ, float upX, float upZ)
         {
-            base.renderParticle(var1, var2, var3, var4, var5, var6, var7);
+            base.renderParticle(t, partialTick, rotX, rotY, rotZ, upX, upZ);
         }
 
         public override void tick()

@@ -6,7 +6,7 @@ namespace betareborn.Entities
     {
         public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityGiantZombie).TypeHandle);
 
-        public EntityGiantZombie(World var1) : base(var1)
+        public EntityGiantZombie(World world) : base(world)
         {
             texture = "/mob/zombie.png";
             movementSpeed = 0.5F;
@@ -16,7 +16,7 @@ namespace betareborn.Entities
             setBoundingBoxSpacing(width * 6.0F, height * 6.0F);
         }
 
-        protected override float getBlockPathWeight(int var1, int var2, int var3)
+        protected override float getBlockPathWeight(int x, int y, int z)
         {
             return world.GetLuminance(var1, var2, var3) - 0.5F;
         }

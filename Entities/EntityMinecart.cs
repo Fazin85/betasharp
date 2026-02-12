@@ -22,29 +22,29 @@ namespace betareborn.Entities
         public double pushX;
         public double pushZ;
         private static readonly int[][][] field_855_j =
-    [
-        [[0, 0, -1], [0, 0, 1]],
-    [[-1, 0, 0], [1, 0, 0]],
-    [[-1, -1, 0], [1, 0, 0]],
-    [[-1, 0, 0], [1, -1, 0]],
-    [[0, 0, -1], [0, -1, 1]],
-    [[0, -1, -1], [0, 0, 1]],
-    [[0, 0, 1], [1, 0, 0]],
-    [[0, 0, 1], [-1, 0, 0]],
-    [[0, 0, -1], [-1, 0, 0]],
-    [[0, 0, -1], [1, 0, 0]]
-    ];
+        [
+            [[0, 0, -1], [0, 0, 1]],
+            [[-1, 0, 0], [1, 0, 0]],
+            [[-1, -1, 0], [1, 0, 0]],
+            [[-1, 0, 0], [1, -1, 0]],
+            [[0, 0, -1], [0, -1, 1]],
+            [[0, -1, -1], [0, 0, 1]],
+            [[0, 0, 1], [1, 0, 0]],
+            [[0, 0, 1], [-1, 0, 0]],
+            [[0, 0, -1], [-1, 0, 0]],
+            [[0, 0, -1], [1, 0, 0]]
+        ];
         private int field_9415_k;
         private double field_9414_l;
         private double field_9413_m;
         private double field_9412_n;
         private double field_9411_o;
         private double field_9410_p;
-        private double field_9409_q;
-        private double field_9408_r;
-        private double field_9407_s;
+        private double cartVelocityX;
+        private double cartVelocityY;
+        private double cartVelocityZ;
 
-        public EntityMinecart(World var1) : base(var1)
+        public EntityMinecart(World world) : base(world)
         {
             cargoItems = new ItemStack[36];
             minecartCurrentDamage = 0;
@@ -65,9 +65,9 @@ namespace betareborn.Entities
         {
         }
 
-        public override Box? getCollisionAgainstShape(Entity var1)
+        public override Box? getCollisionAgainstShape(Entity entity)
         {
-            return var1.boundingBox;
+            return entity.boundingBox;
         }
 
         public override Box? getBoundingBox()
@@ -80,16 +80,16 @@ namespace betareborn.Entities
             return true;
         }
 
-        public EntityMinecart(World var1, double var2, double var4, double var6, int var8) : base(var1)
+        public EntityMinecart(World world, double x, double y, double z, int type) : base(world)
         {
-            setPosition(var2, var4 + (double)standingEyeHeight, var6);
+            setPosition(x, y + (double)standingEyeHeight, z);
             velocityX = 0.0D;
             velocityY = 0.0D;
             velocityZ = 0.0D;
-            prevX = var2;
-            prevY = var4;
-            prevZ = var6;
-            type = var8;
+            prevX = x;
+            prevY = y;
+            prevZ = z;
+            this.type = type;
         }
 
         public override double getPassengerRidingHeight()
@@ -97,14 +97,14 @@ namespace betareborn.Entities
             return (double)height * 0.0D - (double)0.3F;
         }
 
-        public override bool damage(Entity var1, int var2)
+        public override bool damage(Entity entity, int amount)
         {
             if (!world.isRemote && !dead)
             {
                 minecartRockDirection = -minecartRockDirection;
                 minecartTimeSinceHit = 10;
                 scheduleVelocityUpdate();
-                minecartCurrentDamage += var2 * 10;
+                minecartCurrentDamage += amount * 10;
                 if (minecartCurrentDamage > 40)
                 {
                     if (passenger != null)
@@ -116,32 +116,32 @@ namespace betareborn.Entities
                     dropItem(Item.MINECART.id, 1, 0.0F);
                     if (type == 1)
                     {
-                        EntityMinecart var3 = this;
+                        EntityMinecart minecart = this;
 
-                        for (int var4 = 0; var4 < var3.size(); ++var4)
+                        for (int slotIndex = 0; slotIndex < minecart.size(); ++slotIndex)
                         {
-                            ItemStack var5 = var3.getStack(var4);
-                            if (var5 != null)
+                            ItemStack itemStack = minecart.getStack(slotIndex);
+                            if (itemStack != null)
                             {
-                                float var6 = random.nextFloat() * 0.8F + 0.1F;
-                                float var7 = random.nextFloat() * 0.8F + 0.1F;
-                                float var8 = random.nextFloat() * 0.8F + 0.1F;
+                                float offsetX = random.nextFloat() * 0.8F + 0.1F;
+                                float offsetY = random.nextFloat() * 0.8F + 0.1F;
+                                float offsetZ = random.nextFloat() * 0.8F + 0.1F;
 
-                                while (var5.count > 0)
+                                while (itemStack.count > 0)
                                 {
-                                    int var9 = random.nextInt(21) + 10;
-                                    if (var9 > var5.count)
+                                    int dropCount = random.nextInt(21) + 10;
+                                    if (dropCount > itemStack.count)
                                     {
-                                        var9 = var5.count;
+                                        dropCount = itemStack.count;
                                     }
 
-                                    var5.count -= var9;
-                                    EntityItem var10 = new EntityItem(world, x + (double)var6, y + (double)var7, z + (double)var8, new ItemStack(var5.itemId, var9, var5.getDamage()));
-                                    float var11 = 0.05F;
-                                    var10.velocityX = (double)((float)random.nextGaussian() * var11);
-                                    var10.velocityY = (double)((float)random.nextGaussian() * var11 + 0.2F);
-                                    var10.velocityZ = (double)((float)random.nextGaussian() * var11);
-                                    world.spawnEntity(var10);
+                                    itemStack.count -= dropCount;
+                                    EntityItem entityItem = new EntityItem(world, x + (double)offsetX, y + (double)offsetY, z + (double)offsetZ, new ItemStack(itemStack.itemId, dropCount, itemStack.getDamage()));
+                                    float scatterSpeed = 0.05F;
+                                    entityItem.velocityX = (double)((float)random.nextGaussian() * scatterSpeed);
+                                    entityItem.velocityY = (double)((float)random.nextGaussian() * scatterSpeed + 0.2F);
+                                    entityItem.velocityZ = (double)((float)random.nextGaussian() * scatterSpeed);
+                                    world.spawnEntity(entityItem);
                                 }
                             }
                         }
@@ -177,30 +177,30 @@ namespace betareborn.Entities
 
         public override void markDead()
         {
-            for (int var1 = 0; var1 < size(); ++var1)
+            for (int slotIndex = 0; slotIndex < size(); ++slotIndex)
             {
-                ItemStack var2 = getStack(var1);
-                if (var2 != null)
+                ItemStack itemStack = getStack(slotIndex);
+                if (itemStack != null)
                 {
-                    float var3 = random.nextFloat() * 0.8F + 0.1F;
-                    float var4 = random.nextFloat() * 0.8F + 0.1F;
-                    float var5 = random.nextFloat() * 0.8F + 0.1F;
+                    float offsetX = random.nextFloat() * 0.8F + 0.1F;
+                    float offsetY = random.nextFloat() * 0.8F + 0.1F;
+                    float offsetZ = random.nextFloat() * 0.8F + 0.1F;
 
-                    while (var2.count > 0)
+                    while (itemStack.count > 0)
                     {
-                        int var6 = random.nextInt(21) + 10;
-                        if (var6 > var2.count)
+                        int dropCount = random.nextInt(21) + 10;
+                        if (dropCount > itemStack.count)
                         {
-                            var6 = var2.count;
+                            dropCount = itemStack.count;
                         }
 
-                        var2.count -= var6;
-                        EntityItem var7 = new EntityItem(world, x + (double)var3, y + (double)var4, z + (double)var5, new ItemStack(var2.itemId, var6, var2.getDamage()));
-                        float var8 = 0.05F;
-                        var7.velocityX = (double)((float)random.nextGaussian() * var8);
-                        var7.velocityY = (double)((float)random.nextGaussian() * var8 + 0.2F);
-                        var7.velocityZ = (double)((float)random.nextGaussian() * var8);
-                        world.spawnEntity(var7);
+                        itemStack.count -= dropCount;
+                        EntityItem entityItem = new EntityItem(world, x + (double)offsetX, y + (double)offsetY, z + (double)offsetZ, new ItemStack(itemStack.itemId, dropCount, itemStack.getDamage()));
+                        float scatterSpeed = 0.05F;
+                        entityItem.velocityX = (double)((float)random.nextGaussian() * scatterSpeed);
+                        entityItem.velocityY = (double)((float)random.nextGaussian() * scatterSpeed + 0.2F);
+                        entityItem.velocityZ = (double)((float)random.nextGaussian() * scatterSpeed);
+                        world.spawnEntity(entityItem);
                     }
                 }
             }
@@ -257,12 +257,12 @@ namespace betareborn.Entities
                 prevY = y;
                 prevZ = z;
                 velocityY -= (double)0.04F;
-                int var1 = MathHelper.floor_double(x);
-                int var2 = MathHelper.floor_double(y);
-                int var3 = MathHelper.floor_double(z);
-                if (BlockRail.isRail(world, var1, var2 - 1, var3))
+                int floorX = MathHelper.floor_double(x);
+                int floorY = MathHelper.floor_double(y);
+                int floorZ = MathHelper.floor_double(z);
+                if (BlockRail.isRail(world, floorX, floorY - 1, floorZ))
                 {
-                    --var2;
+                    --floorY;
                 }
 
                 double var4 = 0.4D;
@@ -289,7 +289,7 @@ namespace betareborn.Entities
 
                     if (var11 >= 2 && var11 <= 5)
                     {
-                        y = (double)(var2 + 1);
+                        y = (double)(floorY + 1);
                     }
 
                     if (var11 == 2)
@@ -315,7 +315,7 @@ namespace betareborn.Entities
                     int[][] var14 = field_855_j[var11];
                     double var15 = (double)(var14[1][0] - var14[0][0]);
                     double var17 = (double)(var14[1][2] - var14[0][2]);
-                    double var19 = java.lang.Math.sqrt(var15 * var15 + var17 * var17);
+                    double var19 = System.Math.Sqrt(var15 * var15 + var17 * var17);
                     double var21 = velocityX * var15 + velocityZ * var17;
                     if (var21 < 0.0D)
                     {
@@ -323,13 +323,13 @@ namespace betareborn.Entities
                         var17 = -var17;
                     }
 
-                    double var23 = java.lang.Math.sqrt(velocityX * velocityX + velocityZ * velocityZ);
+                    double var23 = System.Math.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
                     velocityX = var23 * var15 / var19;
                     velocityZ = var23 * var17 / var19;
                     double var25;
                     if (var13)
                     {
-                        var25 = java.lang.Math.sqrt(velocityX * velocityX + velocityZ * velocityZ);
+                        var25 = System.Math.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
                         if (var25 < 0.03D)
                         {
                             velocityX *= 0.0D;
@@ -345,10 +345,10 @@ namespace betareborn.Entities
                     }
 
                     var25 = 0.0D;
-                    double var27 = (double)var1 + 0.5D + (double)var14[0][0] * 0.5D;
-                    double var29 = (double)var3 + 0.5D + (double)var14[0][2] * 0.5D;
-                    double var31 = (double)var1 + 0.5D + (double)var14[1][0] * 0.5D;
-                    double var33 = (double)var3 + 0.5D + (double)var14[1][2] * 0.5D;
+                    double var27 = (double)floorX + 0.5D + (double)var14[0][0] * 0.5D;
+                    double var29 = (double)floorZ + 0.5D + (double)var14[0][2] * 0.5D;
+                    double var31 = (double)floorX + 0.5D + (double)var14[1][0] * 0.5D;
+                    double var33 = (double)floorZ + 0.5D + (double)var14[1][2] * 0.5D;
                     var15 = var31 - var27;
                     var17 = var33 - var29;
                     double var35;
@@ -356,13 +356,13 @@ namespace betareborn.Entities
                     double var39;
                     if (var15 == 0.0D)
                     {
-                        x = (double)var1 + 0.5D;
-                        var25 = z - (double)var3;
+                        x = (double)floorX + 0.5D;
+                        var25 = z - (double)floorZ;
                     }
                     else if (var17 == 0.0D)
                     {
-                        z = (double)var3 + 0.5D;
-                        var25 = x - (double)var1;
+                        z = (double)floorZ + 0.5D;
+                        var25 = x - (double)floorX;
                     }
                     else
                     {
@@ -404,11 +404,11 @@ namespace betareborn.Entities
                     }
 
                     move(var35, 0.0D, var37);
-                    if (var14[0][1] != 0 && MathHelper.floor_double(x) - var1 == var14[0][0] && MathHelper.floor_double(z) - var3 == var14[0][2])
+                    if (var14[0][1] != 0 && MathHelper.floor_double(x) - floorX == var14[0][0] && MathHelper.floor_double(z) - floorZ == var14[0][2])
                     {
                         setPosition(x, y + (double)var14[0][1], z);
                     }
-                    else if (var14[1][1] != 0 && MathHelper.floor_double(x) - var1 == var14[1][0] && MathHelper.floor_double(z) - var3 == var14[1][2])
+                    else if (var14[1][1] != 0 && MathHelper.floor_double(x) - floorX == var14[1][0] && MathHelper.floor_double(z) - floorZ == var14[1][2])
                     {
                         setPosition(x, y + (double)var14[1][1], z);
                     }
@@ -453,7 +453,7 @@ namespace betareborn.Entities
                     if (var52 != null && var10 != null)
                     {
                         double var40 = (var10.yCoord - var52.yCoord) * 0.05D;
-                        var23 = java.lang.Math.sqrt(velocityX * velocityX + velocityZ * velocityZ);
+                        var23 = System.Math.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
                         if (var23 > 0.0D)
                         {
                             velocityX = velocityX / var23 * (var23 + var40);
@@ -465,11 +465,11 @@ namespace betareborn.Entities
 
                     int var53 = MathHelper.floor_double(x);
                     int var54 = MathHelper.floor_double(z);
-                    if (var53 != var1 || var54 != var3)
+                    if (var53 != floorX || var54 != floorZ)
                     {
-                        var23 = java.lang.Math.sqrt(velocityX * velocityX + velocityZ * velocityZ);
-                        velocityX = var23 * (double)(var53 - var1);
-                        velocityZ = var23 * (double)(var54 - var3);
+                        var23 = System.Math.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
+                        velocityX = var23 * (double)(var53 - floorX);
+                        velocityZ = var23 * (double)(var54 - floorZ);
                     }
 
                     double var42;
@@ -495,7 +495,7 @@ namespace betareborn.Entities
 
                     if (var12)
                     {
-                        var42 = java.lang.Math.sqrt(velocityX * velocityX + velocityZ * velocityZ);
+                        var42 = System.Math.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
                         if (var42 > 0.01D)
                         {
                             double var44 = 0.06D;
@@ -569,7 +569,7 @@ namespace betareborn.Entities
                 double var49 = prevZ - z;
                 if (var48 * var48 + var49 * var49 > 0.001D)
                 {
-                    yaw = (float)(java.lang.Math.atan2(var49, var48) * 180.0D / java.lang.Math.PI);
+                    yaw = (float)(System.Math.Atan2(var49, var48) * 180.0D / System.Math.PI);
                     if (yawFlipped)
                     {
                         yaw += 180.0F;
@@ -625,11 +625,11 @@ namespace betareborn.Entities
             }
         }
 
-        public Vec3D func_515_a(double var1, double var3, double var5, double var7)
+        public Vec3D func_515_a(double x, double y, double z, double var7)
         {
-            int var9 = MathHelper.floor_double(var1);
-            int var10 = MathHelper.floor_double(var3);
-            int var11 = MathHelper.floor_double(var5);
+            int var9 = MathHelper.floor_double(x);
+            int var10 = MathHelper.floor_double(y);
+            int var11 = MathHelper.floor_double(z);
             if (BlockRail.isRail(world, var9, var10 - 1, var11))
             {
                 --var10;
@@ -648,41 +648,41 @@ namespace betareborn.Entities
                     var13 &= 7;
                 }
 
-                var3 = (double)var10;
+                y = (double)var10;
                 if (var13 >= 2 && var13 <= 5)
                 {
-                    var3 = (double)(var10 + 1);
+                    y = (double)(var10 + 1);
                 }
 
                 int[][] var14 = field_855_j[var13];
                 double var15 = (double)(var14[1][0] - var14[0][0]);
                 double var17 = (double)(var14[1][2] - var14[0][2]);
-                double var19 = java.lang.Math.sqrt(var15 * var15 + var17 * var17);
+                double var19 = System.Math.Sqrt(var15 * var15 + var17 * var17);
                 var15 /= var19;
                 var17 /= var19;
-                var1 += var15 * var7;
-                var5 += var17 * var7;
-                if (var14[0][1] != 0 && MathHelper.floor_double(var1) - var9 == var14[0][0] && MathHelper.floor_double(var5) - var11 == var14[0][2])
+                x += var15 * var7;
+                z += var17 * var7;
+                if (var14[0][1] != 0 && MathHelper.floor_double(x) - var9 == var14[0][0] && MathHelper.floor_double(z) - var11 == var14[0][2])
                 {
-                    var3 += (double)var14[0][1];
+                    y += (double)var14[0][1];
                 }
-                else if (var14[1][1] != 0 && MathHelper.floor_double(var1) - var9 == var14[1][0] && MathHelper.floor_double(var5) - var11 == var14[1][2])
+                else if (var14[1][1] != 0 && MathHelper.floor_double(x) - var9 == var14[1][0] && MathHelper.floor_double(z) - var11 == var14[1][2])
                 {
-                    var3 += (double)var14[1][1];
+                    y += (double)var14[1][1];
                 }
 
-                return func_514_g(var1, var3, var5);
+                return func_514_g(x, y, z);
             }
         }
 
-        public Vec3D func_514_g(double var1, double var3, double var5)
+        public Vec3D func_514_g(double x, double y, double z)
         {
-            int var7 = MathHelper.floor_double(var1);
-            int var8 = MathHelper.floor_double(var3);
-            int var9 = MathHelper.floor_double(var5);
-            if (BlockRail.isRail(world, var7, var8 - 1, var9))
+            int floorX = MathHelper.floor_double(x);
+            int floorY = MathHelper.floor_double(y);
+            int floorZ = MathHelper.floor_double(z);
+            if (BlockRail.isRail(world, floorX, floorY - 1, floorZ))
             {
-                --var8;
+                --floorY;
             }
 
             int var10 = world.GetBlockId(var7, var8, var9);
@@ -692,57 +692,57 @@ namespace betareborn.Entities
                 var3 = (double)var8;
                 if (((BlockRail)Block.BLOCKS[var10]).isAlwaysStraight())
                 {
-                    var11 &= 7;
+                    meta &= 7;
                 }
 
-                if (var11 >= 2 && var11 <= 5)
+                if (meta >= 2 && meta <= 5)
                 {
-                    var3 = (double)(var8 + 1);
+                    y = (double)(floorY + 1);
                 }
 
-                int[][] var12 = field_855_j[var11];
+                int[][] var12 = field_855_j[meta];
                 double var13 = 0.0D;
-                double var15 = (double)var7 + 0.5D + (double)var12[0][0] * 0.5D;
-                double var17 = (double)var8 + 0.5D + (double)var12[0][1] * 0.5D;
-                double var19 = (double)var9 + 0.5D + (double)var12[0][2] * 0.5D;
-                double var21 = (double)var7 + 0.5D + (double)var12[1][0] * 0.5D;
-                double var23 = (double)var8 + 0.5D + (double)var12[1][1] * 0.5D;
-                double var25 = (double)var9 + 0.5D + (double)var12[1][2] * 0.5D;
+                double var15 = (double)floorX + 0.5D + (double)var12[0][0] * 0.5D;
+                double var17 = (double)floorY + 0.5D + (double)var12[0][1] * 0.5D;
+                double var19 = (double)floorZ + 0.5D + (double)var12[0][2] * 0.5D;
+                double var21 = (double)floorX + 0.5D + (double)var12[1][0] * 0.5D;
+                double var23 = (double)floorY + 0.5D + (double)var12[1][1] * 0.5D;
+                double var25 = (double)floorZ + 0.5D + (double)var12[1][2] * 0.5D;
                 double var27 = var21 - var15;
                 double var29 = (var23 - var17) * 2.0D;
                 double var31 = var25 - var19;
                 if (var27 == 0.0D)
                 {
-                    var1 = (double)var7 + 0.5D;
-                    var13 = var5 - (double)var9;
+                    x = (double)floorX + 0.5D;
+                    var13 = z - (double)floorZ;
                 }
                 else if (var31 == 0.0D)
                 {
-                    var5 = (double)var9 + 0.5D;
-                    var13 = var1 - (double)var7;
+                    z = (double)floorZ + 0.5D;
+                    var13 = x - (double)floorX;
                 }
                 else
                 {
-                    double var33 = var1 - var15;
-                    double var35 = var5 - var19;
+                    double var33 = x - var15;
+                    double var35 = z - var19;
                     double var37 = (var33 * var27 + var35 * var31) * 2.0D;
                     var13 = var37;
                 }
 
-                var1 = var15 + var27 * var13;
-                var3 = var17 + var29 * var13;
-                var5 = var19 + var31 * var13;
+                x = var15 + var27 * var13;
+                y = var17 + var29 * var13;
+                z = var19 + var31 * var13;
                 if (var29 < 0.0D)
                 {
-                    ++var3;
+                    ++y;
                 }
 
                 if (var29 > 0.0D)
                 {
-                    var3 += 0.5D;
+                    y += 0.5D;
                 }
 
-                return Vec3D.createVector(var1, var3, var5);
+                return Vec3D.createVector(x, y, z);
             }
             else
             {
@@ -750,56 +750,56 @@ namespace betareborn.Entities
             }
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            var1.setInteger("Type", type);
+            nbt.setInteger("Type", type);
             if (type == 2)
             {
-                var1.setDouble("PushX", pushX);
-                var1.setDouble("PushZ", pushZ);
-                var1.setShort("Fuel", (short)fuel);
+                nbt.setDouble("PushX", pushX);
+                nbt.setDouble("PushZ", pushZ);
+                nbt.setShort("Fuel", (short)fuel);
             }
             else if (type == 1)
             {
-                NBTTagList var2 = new NBTTagList();
+                NBTTagList items = new NBTTagList();
 
-                for (int var3 = 0; var3 < cargoItems.Length; ++var3)
+                for (int slotIndex = 0; slotIndex < cargoItems.Length; ++slotIndex)
                 {
-                    if (cargoItems[var3] != null)
+                    if (cargoItems[slotIndex] != null)
                     {
-                        NBTTagCompound var4 = new NBTTagCompound();
-                        var4.setByte("Slot", (sbyte)var3);
-                        cargoItems[var3].writeToNBT(var4);
-                        var2.setTag(var4);
+                        NBTTagCompound itemTag = new NBTTagCompound();
+                        itemTag.setByte("Slot", (sbyte)slotIndex);
+                        cargoItems[slotIndex].writeToNBT(itemTag);
+                        items.setTag(itemTag);
                     }
                 }
 
-                var1.setTag("Items", var2);
+                nbt.setTag("Items", items);
             }
 
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            type = var1.getInteger("Type");
+            type = nbt.getInteger("Type");
             if (type == 2)
             {
-                pushX = var1.getDouble("PushX");
-                pushZ = var1.getDouble("PushZ");
-                fuel = var1.getShort("Fuel");
+                pushX = nbt.getDouble("PushX");
+                pushZ = nbt.getDouble("PushZ");
+                fuel = nbt.getShort("Fuel");
             }
             else if (type == 1)
             {
-                NBTTagList var2 = var1.getTagList("Items");
+                NBTTagList items = nbt.getTagList("Items");
                 cargoItems = new ItemStack[size()];
 
-                for (int var3 = 0; var3 < var2.tagCount(); ++var3)
+                for (int i = 0; i < items.tagCount(); ++i)
                 {
-                    NBTTagCompound var4 = (NBTTagCompound)var2.tagAt(var3);
-                    int var5 = var4.getByte("Slot") & 255;
-                    if (var5 >= 0 && var5 < cargoItems.Length)
+                    NBTTagCompound itemTag = (NBTTagCompound)items.tagAt(i);
+                    int slotIndex = itemTag.getByte("Slot") & 255;
+                    if (slotIndex >= 0 && slotIndex < cargoItems.Length)
                     {
-                        cargoItems[var5] = new ItemStack(var4);
+                        cargoItems[slotIndex] = new ItemStack(itemTag);
                     }
                 }
             }
@@ -811,19 +811,19 @@ namespace betareborn.Entities
             return 0.0F;
         }
 
-        public override void onCollision(Entity var1)
+        public override void onCollision(Entity entity)
         {
             if (!world.isRemote)
             {
-                if (var1 != passenger)
+                if (entity != passenger)
                 {
-                    if (var1 is EntityLiving && !(var1 is EntityPlayer) && type == 0 && velocityX * velocityX + velocityZ * velocityZ > 0.01D && passenger == null && var1.vehicle == null)
+                    if (entity is EntityLiving && !(entity is EntityPlayer) && type == 0 && velocityX * velocityX + velocityZ * velocityZ > 0.01D && passenger == null && entity.vehicle == null)
                     {
-                        var1.setVehicle(this);
+                        entity.setVehicle(this);
                     }
 
-                    double var2 = var1.x - x;
-                    double var4 = var1.z - z;
+                    double var2 = entity.x - x;
+                    double var4 = entity.z - z;
                     double var6 = var2 * var2 + var4 * var4;
                     if (var6 >= (double)1.0E-4F)
                     {
@@ -844,32 +844,32 @@ namespace betareborn.Entities
                         var4 *= (double)(1.0F - pushSpeedReduction);
                         var2 *= 0.5D;
                         var4 *= 0.5D;
-                        if (var1 is EntityMinecart)
+                        if (entity is EntityMinecart)
                         {
-                            double var10 = var1.x - x;
-                            double var12 = var1.z - z;
-                            double var14 = var10 * var1.velocityZ + var12 * var1.prevX;
+                            double var10 = entity.x - x;
+                            double var12 = entity.z - z;
+                            double var14 = var10 * entity.velocityZ + var12 * entity.prevX;
                             var14 *= var14;
                             if (var14 > 5.0D)
                             {
                                 return;
                             }
 
-                            double var16 = var1.velocityX + velocityX;
-                            double var18 = var1.velocityZ + velocityZ;
-                            if (((EntityMinecart)var1).type == 2 && type != 2)
+                            double var16 = entity.velocityX + velocityX;
+                            double var18 = entity.velocityZ + velocityZ;
+                            if (((EntityMinecart)entity).type == 2 && type != 2)
                             {
                                 velocityX *= (double)0.2F;
                                 velocityZ *= (double)0.2F;
-                                addVelocity(var1.velocityX - var2, 0.0D, var1.velocityZ - var4);
-                                var1.velocityX *= (double)0.7F;
-                                var1.velocityZ *= (double)0.7F;
+                                addVelocity(entity.velocityX - var2, 0.0D, entity.velocityZ - var4);
+                                entity.velocityX *= (double)0.7F;
+                                entity.velocityZ *= (double)0.7F;
                             }
-                            else if (((EntityMinecart)var1).type != 2 && type == 2)
+                            else if (((EntityMinecart)entity).type != 2 && type == 2)
                             {
-                                var1.velocityX *= (double)0.2F;
-                                var1.velocityZ *= (double)0.2F;
-                                var1.addVelocity(velocityX + var2, 0.0D, velocityZ + var4);
+                                entity.velocityX *= (double)0.2F;
+                                entity.velocityZ *= (double)0.2F;
+                                entity.addVelocity(velocityX + var2, 0.0D, velocityZ + var4);
                                 velocityX *= (double)0.7F;
                                 velocityZ *= (double)0.7F;
                             }
@@ -880,15 +880,15 @@ namespace betareborn.Entities
                                 velocityX *= (double)0.2F;
                                 velocityZ *= (double)0.2F;
                                 addVelocity(var16 - var2, 0.0D, var18 - var4);
-                                var1.velocityX *= (double)0.2F;
-                                var1.velocityZ *= (double)0.2F;
-                                var1.addVelocity(var16 + var2, 0.0D, var18 + var4);
+                                entity.velocityX *= (double)0.2F;
+                                entity.velocityZ *= (double)0.2F;
+                                entity.addVelocity(var16 + var2, 0.0D, var18 + var4);
                             }
                         }
                         else
                         {
                             addVelocity(-var2, 0.0D, -var4);
-                            var1.addVelocity(var2 / 4.0D, 0.0D, var4 / 4.0D);
+                            entity.addVelocity(var2 / 4.0D, 0.0D, var4 / 4.0D);
                         }
                     }
 
@@ -901,31 +901,31 @@ namespace betareborn.Entities
             return 27;
         }
 
-        public ItemStack getStack(int var1)
+        public ItemStack getStack(int slotIndex)
         {
-            return cargoItems[var1];
+            return cargoItems[slotIndex];
         }
 
-        public ItemStack removeStack(int var1, int var2)
+        public ItemStack removeStack(int slotIndex, int amount)
         {
-            if (cargoItems[var1] != null)
+            if (cargoItems[slotIndex] != null)
             {
-                ItemStack var3;
-                if (cargoItems[var1].count <= var2)
+                ItemStack itemStack;
+                if (cargoItems[slotIndex].count <= amount)
                 {
-                    var3 = cargoItems[var1];
-                    cargoItems[var1] = null;
-                    return var3;
+                    itemStack = cargoItems[slotIndex];
+                    cargoItems[slotIndex] = null;
+                    return itemStack;
                 }
                 else
                 {
-                    var3 = cargoItems[var1].split(var2);
-                    if (cargoItems[var1].count == 0)
+                    itemStack = cargoItems[slotIndex].split(amount);
+                    if (cargoItems[slotIndex].count == 0)
                     {
-                        cargoItems[var1] = null;
+                        cargoItems[slotIndex] = null;
                     }
 
-                    return var3;
+                    return itemStack;
                 }
             }
             else
@@ -934,12 +934,12 @@ namespace betareborn.Entities
             }
         }
 
-        public void setStack(int var1, ItemStack var2)
+        public void setStack(int slotIndex, ItemStack itemStack)
         {
-            cargoItems[var1] = var2;
-            if (var2 != null && var2.count > getMaxCountPerStack())
+            cargoItems[slotIndex] = itemStack;
+            if (itemStack != null && itemStack.count > getMaxCountPerStack())
             {
-                var2.count = getMaxCountPerStack();
+                itemStack.count = getMaxCountPerStack();
             }
 
         }
@@ -958,42 +958,42 @@ namespace betareborn.Entities
         {
         }
 
-        public override bool interact(EntityPlayer var1)
+        public override bool interact(EntityPlayer player)
         {
             if (type == 0)
             {
-                if (passenger != null && passenger is EntityPlayer && passenger != var1)
+                if (passenger != null && passenger is EntityPlayer && passenger != player)
                 {
                     return true;
                 }
 
                 if (!world.isRemote)
                 {
-                    var1.setVehicle(this);
+                    player.setVehicle(this);
                 }
             }
             else if (type == 1)
             {
                 if (!world.isRemote)
                 {
-                    var1.openChestScreen(this);
+                    player.openChestScreen(this);
                 }
             }
             else if (type == 2)
             {
-                ItemStack var2 = var1.inventory.getSelectedItem();
-                if (var2 != null && var2.itemId == Item.COAL.id)
+                ItemStack heldItem = player.inventory.getSelectedItem();
+                if (heldItem != null && heldItem.itemId == Item.COAL.id)
                 {
-                    if (--var2.count == 0)
+                    if (--heldItem.count == 0)
                     {
-                        var1.inventory.setStack(var1.inventory.selectedSlot, (ItemStack)null);
+                        player.inventory.setStack(player.inventory.selectedSlot, (ItemStack)null);
                     }
 
                     fuel += 1200;
                 }
 
-                pushX = x - var1.x;
-                pushZ = z - var1.z;
+                pushX = x - player.x;
+                pushZ = z - player.z;
             }
 
             return true;
@@ -1007,21 +1007,21 @@ namespace betareborn.Entities
             field_9411_o = (double)var7;
             field_9410_p = (double)var8;
             field_9415_k = var9 + 2;
-            velocityX = field_9409_q;
-            velocityY = field_9408_r;
-            velocityZ = field_9407_s;
+            velocityX = cartVelocityX;
+            velocityY = cartVelocityY;
+            velocityZ = cartVelocityZ;
         }
 
-        public override void setVelocityClient(double var1, double var3, double var5)
+        public override void setVelocityClient(double velocityX, double velocityY, double velocityZ)
         {
-            field_9409_q = velocityX = var1;
-            field_9408_r = velocityY = var3;
-            field_9407_s = velocityZ = var5;
+            cartVelocityX = base.velocityX = velocityX;
+            cartVelocityY = base.velocityY = velocityY;
+            cartVelocityZ = base.velocityZ = velocityZ;
         }
 
-        public bool canPlayerUse(EntityPlayer var1)
+        public bool canPlayerUse(EntityPlayer player)
         {
-            return dead ? false : var1.getSquaredDistance(this) <= 64.0D;
+            return dead ? false : player.getSquaredDistance(this) <= 64.0D;
         }
     }
 

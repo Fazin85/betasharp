@@ -79,9 +79,9 @@ namespace betareborn.Entities
         public int trackedPosZ;
         public bool ignoreFrustumCheck;
 
-        public Entity(World var1)
+        public Entity(World world)
         {
-            world = var1;
+            this.world = world;
             setPosition(0.0D, 0.0D, 0.0D);
             dataWatcher.addObject(0, java.lang.Byte.valueOf(0));
             initDataTracker();
@@ -94,9 +94,9 @@ namespace betareborn.Entities
             return dataWatcher;
         }
 
-        public override bool equals(object var1)
+        public override bool equals(object other)
         {
-            return var1 is Entity ? ((Entity)var1).id == id : false;
+            return other is Entity ? ((Entity)other).id == id : false;
         }
 
         public override int hashCode()
@@ -129,46 +129,46 @@ namespace betareborn.Entities
             dead = true;
         }
 
-        protected virtual void setBoundingBoxSpacing(float var1, float var2)
+        protected virtual void setBoundingBoxSpacing(float width, float height)
         {
-            width = var1;
-            height = var2;
+            this.width = width;
+            this.height = height;
         }
 
-        protected void setRotation(float var1, float var2)
+        protected void setRotation(float yaw, float pitch)
         {
-            yaw = var1 % 360.0F;
-            pitch = var2 % 360.0F;
+            this.yaw = yaw % 360.0F;
+            this.pitch = pitch % 360.0F;
         }
 
-        public void setPosition(double var1, double var3, double var5)
+        public void setPosition(double x, double y, double z)
         {
-            x = var1;
-            y = var3;
-            z = var5;
-            float var7 = width / 2.0F;
-            float var8 = height;
-            boundingBox = new Box(var1 - (double)var7, var3 - (double)standingEyeHeight + (double)cameraOffset, var5 - (double)var7, var1 + (double)var7, var3 - (double)standingEyeHeight + (double)cameraOffset + (double)var8, var5 + (double)var7);
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            float halfWidth = width / 2.0F;
+            float height = this.height;
+            boundingBox = new Box(x - (double)halfWidth, y - (double)standingEyeHeight + (double)cameraOffset, z - (double)halfWidth, x + (double)halfWidth, y - (double)standingEyeHeight + (double)cameraOffset + (double)height, z + (double)halfWidth);
         }
 
-        public void changeLookDirection(float var1, float var2)
+        public void changeLookDirection(float yaw, float pitch)
         {
-            float var3 = pitch;
-            float var4 = yaw;
-            yaw = (float)((double)yaw + (double)var1 * 0.15D);
-            pitch = (float)((double)pitch - (double)var2 * 0.15D);
-            if (pitch < -90.0F)
+            float oldPitch = this.pitch;
+            float oldYaw = this.yaw;
+            this.yaw = (float)((double)this.yaw + (double)yaw * 0.15D);
+            this.pitch = (float)((double)this.pitch - (double)pitch * 0.15D);
+            if (this.pitch < -90.0F)
             {
-                pitch = -90.0F;
+                this.pitch = -90.0F;
             }
 
-            if (pitch > 90.0F)
+            if (this.pitch > 90.0F)
             {
-                pitch = 90.0F;
+                this.pitch = 90.0F;
             }
 
-            prevPitch += pitch - var3;
-            prevYaw += yaw - var4;
+            prevPitch += this.pitch - oldPitch;
+            prevYaw += this.yaw - oldYaw;
         }
 
         public virtual void tick()
@@ -289,200 +289,200 @@ namespace betareborn.Entities
             markDead();
         }
 
-        public bool getEntitiesInside(double var1, double var3, double var5)
+        public bool getEntitiesInside(double x, double y, double z)
         {
-            Box var7 = boundingBox.offset(var1, var3, var5);
-            var var8 = world.getEntityCollisions(this, var7);
-            return var8.Count > 0 ? false : !world.isBoxSubmergedInFluid(var7);
+            Box box = boundingBox.offset(x, y, z);
+            var entitiesInbound = world.getEntityCollisions(this, box);
+            return entitiesInbound.Count > 0 ? false : !world.isBoxSubmergedInFluid(box);
         }
 
-        public virtual void move(double var1, double var3, double var5)
+        public virtual void move(double x, double y, double z)
         {
             if (noClip)
             {
-                boundingBox.translate(var1, var3, var5);
-                x = (boundingBox.minX + boundingBox.maxX) / 2.0D;
-                y = boundingBox.minY + (double)standingEyeHeight - (double)cameraOffset;
-                z = (boundingBox.minZ + boundingBox.maxZ) / 2.0D;
+                boundingBox.translate(x, y, z);
+                this.x = (boundingBox.minX + boundingBox.maxX) / 2.0D;
+                this.y = boundingBox.minY + (double)standingEyeHeight - (double)cameraOffset;
+                this.z = (boundingBox.minZ + boundingBox.maxZ) / 2.0D;
             }
             else
             {
                 cameraOffset *= 0.4F;
-                double var7 = x;
-                double var9 = z;
+                double var7 = this.x;
+                double var9 = this.z;
                 if (slowed)
                 {
                     slowed = false;
-                    var1 *= 0.25D;
-                    var3 *= (double)0.05F;
-                    var5 *= 0.25D;
+                    x *= 0.25D;
+                    y *= (double)0.05F;
+                    z *= 0.25D;
                     velocityX = 0.0D;
                     velocityY = 0.0D;
                     velocityZ = 0.0D;
                 }
 
-                double var11 = var1;
-                double var13 = var3;
-                double var15 = var5;
+                double var11 = x;
+                double var13 = y;
+                double var15 = z;
                 Box var17 = boundingBox;
                 bool var18 = onGround && isSneaking();
                 if (var18)
                 {
                     double var19;
-                    for (var19 = 0.05D; var1 != 0.0D && world.getEntityCollisions(this, boundingBox.offset(var1, -1.0D, 0.0D)).Count == 0; var11 = var1)
+                    for (var19 = 0.05D; x != 0.0D && world.getEntityCollisions(this, boundingBox.offset(x, -1.0D, 0.0D)).Count == 0; var11 = x)
                     {
-                        if (var1 < var19 && var1 >= -var19)
+                        if (x < var19 && x >= -var19)
                         {
-                            var1 = 0.0D;
+                            x = 0.0D;
                         }
-                        else if (var1 > 0.0D)
+                        else if (x > 0.0D)
                         {
-                            var1 -= var19;
+                            x -= var19;
                         }
                         else
                         {
-                            var1 += var19;
+                            x += var19;
                         }
                     }
 
-                    for (; var5 != 0.0D && world.getEntityCollisions(this, boundingBox.offset(0.0D, -1.0D, var5)).Count == 0; var15 = var5)
+                    for (; z != 0.0D && world.getEntityCollisions(this, boundingBox.offset(0.0D, -1.0D, z)).Count == 0; var15 = z)
                     {
-                        if (var5 < var19 && var5 >= -var19)
+                        if (z < var19 && z >= -var19)
                         {
-                            var5 = 0.0D;
+                            z = 0.0D;
                         }
-                        else if (var5 > 0.0D)
+                        else if (z > 0.0D)
                         {
-                            var5 -= var19;
+                            z -= var19;
                         }
                         else
                         {
-                            var5 += var19;
+                            z += var19;
                         }
                     }
                 }
 
-                var var35 = world.getEntityCollisions(this, boundingBox.stretch(var1, var3, var5));
+                var entitiesInbound = world.getEntityCollisions(this, boundingBox.stretch(x, y, z));
 
-                for (int var20 = 0; var20 < var35.Count; ++var20)
+                for (int var20 = 0; var20 < entitiesInbound.Count; ++var20)
                 {
-                    var3 = var35[var20].getYOffset(boundingBox, var3);
+                    y = entitiesInbound[var20].getYOffset(boundingBox, y);
                 }
 
-                boundingBox.translate(0.0D, var3, 0.0D);
-                if (!keepVelocityOnCollision && var13 != var3)
+                boundingBox.translate(0.0D, y, 0.0D);
+                if (!keepVelocityOnCollision && var13 != y)
                 {
-                    var5 = 0.0D;
-                    var3 = var5;
-                    var1 = var5;
+                    z = 0.0D;
+                    y = z;
+                    x = z;
                 }
 
-                bool var36 = onGround || var13 != var3 && var13 < 0.0D;
+                bool var36 = onGround || var13 != y && var13 < 0.0D;
 
-                int var21;
-                for (var21 = 0; var21 < var35.Count; ++var21)
+                int i;
+                for (i = 0; i < entitiesInbound.Count; ++i)
                 {
-                    var1 = var35[var21].getXOffset(boundingBox, var1);
+                    x = entitiesInbound[i].getXOffset(boundingBox, x);
                 }
 
-                boundingBox.translate(var1, 0.0D, 0.0D);
-                if (!keepVelocityOnCollision && var11 != var1)
+                boundingBox.translate(x, 0.0D, 0.0D);
+                if (!keepVelocityOnCollision && var11 != x)
                 {
-                    var5 = 0.0D;
-                    var3 = var5;
-                    var1 = var5;
+                    z = 0.0D;
+                    y = z;
+                    x = z;
                 }
 
-                for (var21 = 0; var21 < var35.Count; ++var21)
+                for (i = 0; i < entitiesInbound.Count; ++i)
                 {
-                    var5 = var35[var21].getZOffset(boundingBox, var5);
+                    z = entitiesInbound[i].getZOffset(boundingBox, z);
                 }
 
-                boundingBox.translate(0.0D, 0.0D, var5);
-                if (!keepVelocityOnCollision && var15 != var5)
+                boundingBox.translate(0.0D, 0.0D, z);
+                if (!keepVelocityOnCollision && var15 != z)
                 {
-                    var5 = 0.0D;
-                    var3 = var5;
-                    var1 = var5;
+                    z = 0.0D;
+                    y = z;
+                    x = z;
                 }
 
                 double var23;
                 int var28;
                 double var37;
-                if (stepHeight > 0.0F && var36 && (var18 || cameraOffset < 0.05F) && (var11 != var1 || var15 != var5))
+                if (stepHeight > 0.0F && var36 && (var18 || cameraOffset < 0.05F) && (var11 != x || var15 != z))
                 {
-                    var37 = var1;
-                    var23 = var3;
-                    double var25 = var5;
-                    var1 = var11;
-                    var3 = (double)stepHeight;
-                    var5 = var15;
+                    var37 = x;
+                    var23 = y;
+                    double var25 = z;
+                    x = var11;
+                    y = (double)stepHeight;
+                    z = var15;
                     Box var27 = boundingBox;
                     boundingBox = var17;
-                    var35 = world.getEntityCollisions(this, boundingBox.stretch(var11, var3, var15));
+                    entitiesInbound = world.getEntityCollisions(this, boundingBox.stretch(var11, y, var15));
 
-                    for (var28 = 0; var28 < var35.Count; ++var28)
+                    for (var28 = 0; var28 < entitiesInbound.Count; ++var28)
                     {
-                        var3 = var35[var28].getYOffset(boundingBox, var3);
+                        y = entitiesInbound[var28].getYOffset(boundingBox, y);
                     }
 
-                    boundingBox.translate(0.0D, var3, 0.0D);
-                    if (!keepVelocityOnCollision && var13 != var3)
+                    boundingBox.translate(0.0D, y, 0.0D);
+                    if (!keepVelocityOnCollision && var13 != y)
                     {
-                        var5 = 0.0D;
-                        var3 = var5;
-                        var1 = var5;
+                        z = 0.0D;
+                        y = z;
+                        x = z;
                     }
 
-                    for (var28 = 0; var28 < var35.Count; ++var28)
+                    for (var28 = 0; var28 < entitiesInbound.Count; ++var28)
                     {
-                        var1 = var35[var28].getXOffset(boundingBox, var1);
+                        x = entitiesInbound[var28].getXOffset(boundingBox, x);
                     }
 
-                    boundingBox.translate(var1, 0.0D, 0.0D);
-                    if (!keepVelocityOnCollision && var11 != var1)
+                    boundingBox.translate(x, 0.0D, 0.0D);
+                    if (!keepVelocityOnCollision && var11 != x)
                     {
-                        var5 = 0.0D;
-                        var3 = var5;
-                        var1 = var5;
+                        z = 0.0D;
+                        y = z;
+                        x = z;
                     }
 
-                    for (var28 = 0; var28 < var35.Count; ++var28)
+                    for (var28 = 0; var28 < entitiesInbound.Count; ++var28)
                     {
-                        var5 = var35[var28].getZOffset(boundingBox, var5);
+                        z = entitiesInbound[var28].getZOffset(boundingBox, z);
                     }
 
-                    boundingBox.translate(0.0D, 0.0D, var5);
-                    if (!keepVelocityOnCollision && var15 != var5)
+                    boundingBox.translate(0.0D, 0.0D, z);
+                    if (!keepVelocityOnCollision && var15 != z)
                     {
-                        var5 = 0.0D;
-                        var3 = var5;
-                        var1 = var5;
+                        z = 0.0D;
+                        y = z;
+                        x = z;
                     }
 
-                    if (!keepVelocityOnCollision && var13 != var3)
+                    if (!keepVelocityOnCollision && var13 != y)
                     {
-                        var5 = 0.0D;
-                        var3 = var5;
-                        var1 = var5;
+                        z = 0.0D;
+                        y = z;
+                        x = z;
                     }
                     else
                     {
-                        var3 = (double)(-stepHeight);
+                        y = (double)(-stepHeight);
 
-                        for (var28 = 0; var28 < var35.Count; ++var28)
+                        for (var28 = 0; var28 < entitiesInbound.Count; ++var28)
                         {
-                            var3 = var35[var28].getYOffset(boundingBox, var3);
+                            y = entitiesInbound[var28].getYOffset(boundingBox, y);
                         }
 
-                        boundingBox.translate(0.0D, var3, 0.0D);
+                        boundingBox.translate(0.0D, y, 0.0D);
                     }
 
-                    if (var37 * var37 + var25 * var25 >= var1 * var1 + var5 * var5)
+                    if (var37 * var37 + var25 * var25 >= x * x + z * z)
                     {
-                        var1 = var37;
-                        var3 = var23;
-                        var5 = var25;
+                        x = var37;
+                        y = var23;
+                        z = var25;
                         boundingBox = var27;
                     }
                     else
@@ -495,31 +495,31 @@ namespace betareborn.Entities
                     }
                 }
 
-                x = (boundingBox.minX + boundingBox.maxX) / 2.0D;
-                y = boundingBox.minY + (double)standingEyeHeight - (double)cameraOffset;
-                z = (boundingBox.minZ + boundingBox.maxZ) / 2.0D;
-                horizontalCollison = var11 != var1 || var15 != var5;
-                verticalCollision = var13 != var3;
-                onGround = var13 != var3 && var13 < 0.0D;
+                this.x = (boundingBox.minX + boundingBox.maxX) / 2.0D;
+                this.y = boundingBox.minY + (double)standingEyeHeight - (double)cameraOffset;
+                this.z = (boundingBox.minZ + boundingBox.maxZ) / 2.0D;
+                horizontalCollison = var11 != x || var15 != z;
+                verticalCollision = var13 != y;
+                onGround = var13 != y && var13 < 0.0D;
                 hasCollided = horizontalCollison || verticalCollision;
-                fall(var3, onGround);
-                if (var11 != var1)
+                fall(y, onGround);
+                if (var11 != x)
                 {
                     velocityX = 0.0D;
                 }
 
-                if (var13 != var3)
+                if (var13 != y)
                 {
                     velocityY = 0.0D;
                 }
 
-                if (var15 != var5)
+                if (var15 != z)
                 {
                     velocityZ = 0.0D;
                 }
 
-                var37 = x - var7;
-                var23 = z - var9;
+                var37 = this.x - var7;
+                var23 = this.z - var9;
                 int var26;
                 int var38;
                 int var39;
@@ -609,19 +609,19 @@ namespace betareborn.Entities
             return true;
         }
 
-        protected virtual void fall(double var1, bool var3)
+        protected virtual void fall(double fallDistance, bool onGround)
         {
-            if (var3)
+            if (onGround)
             {
-                if (fallDistance > 0.0F)
+                if (this.fallDistance > 0.0F)
                 {
-                    onLanding(fallDistance);
-                    fallDistance = 0.0F;
+                    onLanding(this.fallDistance);
+                    this.fallDistance = 0.0F;
                 }
             }
-            else if (var1 < 0.0D)
+            else if (fallDistance < 0.0D)
             {
-                fallDistance = (float)((double)fallDistance - var1);
+                this.fallDistance = (float)((double)this.fallDistance - fallDistance);
             }
 
         }
@@ -640,11 +640,11 @@ namespace betareborn.Entities
 
         }
 
-        protected virtual void onLanding(float var1)
+        protected virtual void onLanding(float fallDistance)
         {
             if (passenger != null)
             {
-                passenger.onLanding(var1);
+                passenger.onLanding(fallDistance);
             }
 
         }
@@ -693,23 +693,23 @@ namespace betareborn.Entities
             return world.isMaterialInBox(boundingBox.expand((double)-0.1F, (double)-0.4F, (double)-0.1F), Material.LAVA);
         }
 
-        public void moveNonSolid(float var1, float var2, float var3)
+        public void moveNonSolid(float strafe, float forward, float speed)
         {
-            float var4 = MathHelper.sqrt_float(var1 * var1 + var2 * var2);
-            if (var4 >= 0.01F)
+            float inputLength = MathHelper.sqrt_float(strafe * strafe + forward * forward);
+            if (inputLength >= 0.01F)
             {
-                if (var4 < 1.0F)
+                if (inputLength < 1.0F)
                 {
-                    var4 = 1.0F;
+                    inputLength = 1.0F;
                 }
 
-                var4 = var3 / var4;
-                var1 *= var4;
-                var2 *= var4;
-                float var5 = MathHelper.sin(yaw * (float)java.lang.Math.PI / 180.0F);
-                float var6 = MathHelper.cos(yaw * (float)java.lang.Math.PI / 180.0F);
-                velocityX += (double)(var1 * var6 - var2 * var5);
-                velocityZ += (double)(var2 * var6 + var1 * var5);
+                inputLength = speed / inputLength;
+                strafe *= inputLength;
+                forward *= inputLength;
+                float sinYaw = MathHelper.sin(yaw * (float)System.Math.PI / 180.0F);
+                float cosYaw = MathHelper.cos(yaw * (float)System.Math.PI / 180.0F);
+                velocityX += (double)(strafe * cosYaw - forward * sinYaw);
+                velocityZ += (double)(forward * cosYaw + strafe * sinYaw);
             }
         }
 
@@ -735,9 +735,9 @@ namespace betareborn.Entities
             }
         }
 
-        public virtual void setWorld(World var1)
+        public virtual void setWorld(World world)
         {
-            world = var1;
+            this.world = world;
         }
 
         public void setPositionAndAngles(double x, double y, double z, float yaw, float pitch)
@@ -763,21 +763,21 @@ namespace betareborn.Entities
             setRotation(yaw, pitch);
         }
 
-        public void setPositionAndAnglesKeepPrevAngles(double var1, double var3, double var5, float var7, float var8)
+        public void setPositionAndAnglesKeepPrevAngles(double x, double y, double z, float yaw, float pitch)
         {
-            lastTickX = prevX = x = var1;
-            lastTickY = prevY = y = var3 + (double)standingEyeHeight;
-            lastTickZ = prevZ = z = var5;
-            yaw = var7;
-            pitch = var8;
-            setPosition(x, y, z);
+            lastTickX = prevX = this.x = x;
+            lastTickY = prevY = this.y = y + (double)standingEyeHeight;
+            lastTickZ = prevZ = this.z = z;
+            this.yaw = yaw;
+            this.pitch = pitch;
+            setPosition(this.x, this.y, this.z);
         }
 
-        public float getDistance(Entity var1)
+        public float getDistance(Entity entity)
         {
-            float var2 = (float)(x - var1.x);
-            float var3 = (float)(y - var1.y);
-            float var4 = (float)(z - var1.z);
+            float var2 = (float)(x - entity.x);
+            float var3 = (float)(y - entity.y);
+            float var4 = (float)(z - entity.z);
             return MathHelper.sqrt_float(var2 * var2 + var3 * var3 + var4 * var4);
         }
 
@@ -797,24 +797,24 @@ namespace betareborn.Entities
             return (double)MathHelper.sqrt_double(var7 * var7 + var9 * var9 + var11 * var11);
         }
 
-        public double getSquaredDistance(Entity var1)
+        public double getSquaredDistance(Entity entity)
         {
-            double var2 = x - var1.x;
-            double var4 = y - var1.y;
-            double var6 = z - var1.z;
+            double var2 = x - entity.x;
+            double var4 = y - entity.y;
+            double var6 = z - entity.z;
             return var2 * var2 + var4 * var4 + var6 * var6;
         }
 
-        public virtual void onPlayerInteraction(EntityPlayer var1)
+        public virtual void onPlayerInteraction(EntityPlayer player)
         {
         }
 
-        public virtual void onCollision(Entity var1)
+        public virtual void onCollision(Entity entity)
         {
-            if (var1.passenger != this && var1.vehicle != this)
+            if (entity.passenger != this && entity.vehicle != this)
             {
-                double var2 = var1.x - x;
-                double var4 = var1.z - z;
+                double var2 = entity.x - x;
+                double var4 = entity.z - z;
                 double var6 = MathHelper.abs_max(var2, var4);
                 if (var6 >= (double)0.01F)
                 {
@@ -834,7 +834,7 @@ namespace betareborn.Entities
                     var2 *= (double)(1.0F - pushSpeedReduction);
                     var4 *= (double)(1.0F - pushSpeedReduction);
                     addVelocity(-var2, 0.0D, -var4);
-                    var1.addVelocity(var2, 0.0D, var4);
+                    entity.addVelocity(var2, 0.0D, var4);
                 }
 
             }
@@ -852,7 +852,7 @@ namespace betareborn.Entities
             velocityModified = true;
         }
 
-        public virtual bool damage(Entity var1, int var2)
+        public virtual bool damage(Entity entity, int amount)
         {
             scheduleVelocityUpdate();
             return false;
@@ -868,7 +868,7 @@ namespace betareborn.Entities
             return false;
         }
 
-        public virtual void updateKilledAchievement(Entity var1, int var2)
+        public virtual void updateKilledAchievement(Entity entity, int var2)
         {
         }
 
@@ -893,13 +893,13 @@ namespace betareborn.Entities
             return null;
         }
 
-        public bool saveSelfNbt(NBTTagCompound var1)
+        public bool saveSelfNbt(NBTTagCompound nbt)
         {
             string var2 = getRegistryEntry();
             if (!dead && var2 != null)
             {
-                var1.setString("id", var2);
-                write(var1);
+                nbt.setString("id", var2);
+                write(nbt);
                 return true;
             }
             else
@@ -908,37 +908,37 @@ namespace betareborn.Entities
             }
         }
 
-        public void write(NBTTagCompound var1)
+        public void write(NBTTagCompound nbt)
         {
-            var1.setTag("Pos", newDoubleNBTList([x, y + (double)cameraOffset, z]));
-            var1.setTag("Motion", newDoubleNBTList([velocityX, velocityY, velocityZ]));
-            var1.setTag("Rotation", newFloatNBTList([yaw, pitch]));
-            var1.setFloat("FallDistance", fallDistance);
-            var1.setShort("Fire", (short)fireTicks);
-            var1.setShort("Air", (short)air);
-            var1.setBoolean("OnGround", onGround);
-            writeNbt(var1);
+            nbt.setTag("Pos", newDoubleNBTList([x, y + (double)cameraOffset, z]));
+            nbt.setTag("Motion", newDoubleNBTList([velocityX, velocityY, velocityZ]));
+            nbt.setTag("Rotation", newFloatNBTList([yaw, pitch]));
+            nbt.setFloat("FallDistance", fallDistance);
+            nbt.setShort("Fire", (short)fireTicks);
+            nbt.setShort("Air", (short)air);
+            nbt.setBoolean("OnGround", onGround);
+            writeNbt(nbt);
         }
 
-        public void read(NBTTagCompound var1)
+        public void read(NBTTagCompound nbt)
         {
-            NBTTagList var2 = var1.getTagList("Pos");
-            NBTTagList var3 = var1.getTagList("Motion");
-            NBTTagList var4 = var1.getTagList("Rotation");
+            NBTTagList var2 = nbt.getTagList("Pos");
+            NBTTagList var3 = nbt.getTagList("Motion");
+            NBTTagList var4 = nbt.getTagList("Rotation");
             velocityX = ((NBTTagDouble)var3.tagAt(0)).doubleValue;
             velocityY = ((NBTTagDouble)var3.tagAt(1)).doubleValue;
             velocityZ = ((NBTTagDouble)var3.tagAt(2)).doubleValue;
-            if (java.lang.Math.abs(velocityX) > 10.0D)
+            if (System.Math.Abs(velocityX) > 10.0D)
             {
                 velocityX = 0.0D;
             }
 
-            if (java.lang.Math.abs(velocityY) > 10.0D)
+            if (System.Math.Abs(velocityY) > 10.0D)
             {
                 velocityY = 0.0D;
             }
 
-            if (java.lang.Math.abs(velocityZ) > 10.0D)
+            if (System.Math.Abs(velocityZ) > 10.0D)
             {
                 velocityZ = 0.0D;
             }
@@ -948,13 +948,13 @@ namespace betareborn.Entities
             prevZ = lastTickZ = z = ((NBTTagDouble)var2.tagAt(2)).doubleValue;
             prevYaw = yaw = ((NBTTagFloat)var4.tagAt(0)).floatValue;
             prevPitch = pitch = ((NBTTagFloat)var4.tagAt(1)).floatValue;
-            fallDistance = var1.getFloat("FallDistance");
-            fireTicks = var1.getShort("Fire");
-            air = var1.getShort("Air");
-            onGround = var1.getBoolean("OnGround");
+            fallDistance = nbt.getFloat("FallDistance");
+            fireTicks = nbt.getShort("Fire");
+            air = nbt.getShort("Air");
+            onGround = nbt.getBoolean("OnGround");
             setPosition(x, y, z);
             setRotation(yaw, pitch);
-            readNbt(var1);
+            readNbt(nbt);
         }
 
         protected string getRegistryEntry()
@@ -962,9 +962,9 @@ namespace betareborn.Entities
             return EntityRegistry.getId(this);
         }
 
-        public abstract void readNbt(NBTTagCompound var1);
+        public abstract void readNbt(NBTTagCompound nbt);
 
-        public abstract void writeNbt(NBTTagCompound var1);
+        public abstract void writeNbt(NBTTagCompound nbt);
 
         protected NBTTagList newDoubleNBTList(params double[] var1)
         {
@@ -1043,12 +1043,12 @@ namespace betareborn.Entities
             return false;
         }
 
-        public virtual bool interact(EntityPlayer var1)
+        public virtual bool interact(EntityPlayer player)
         {
             return false;
         }
 
-        public virtual Box? getCollisionAgainstShape(Entity var1)
+        public virtual Box? getCollisionAgainstShape(Entity entity)
         {
             return null;
         }
@@ -1135,11 +1135,11 @@ namespace betareborn.Entities
             return (double)height * 0.75D;
         }
 
-        public virtual void setVehicle(Entity var1)
+        public virtual void setVehicle(Entity entity)
         {
             vehiclePitchDelta = 0.0D;
             vehicleYawDelta = 0.0D;
-            if (var1 == null)
+            if (entity == null)
             {
                 if (vehicle != null)
                 {
@@ -1149,11 +1149,11 @@ namespace betareborn.Entities
 
                 vehicle = null;
             }
-            else if (vehicle == var1)
+            else if (vehicle == entity)
             {
                 vehicle.passenger = null;
                 vehicle = null;
-                setPositionAndAnglesKeepPrevAngles(var1.x, var1.boundingBox.minY + (double)var1.height, var1.z, yaw, pitch);
+                setPositionAndAnglesKeepPrevAngles(entity.x, entity.boundingBox.minY + (double)entity.height, entity.z, yaw, pitch);
             }
             else
             {
@@ -1162,19 +1162,19 @@ namespace betareborn.Entities
                     vehicle.passenger = null;
                 }
 
-                if (var1.passenger != null)
+                if (entity.passenger != null)
                 {
-                    var1.passenger.vehicle = null;
+                    entity.passenger.vehicle = null;
                 }
 
-                vehicle = var1;
-                var1.passenger = this;
+                vehicle = entity;
+                entity.passenger = this;
             }
         }
 
-        public virtual void setPositionAndAnglesAvoidEntities(double var1, double var3, double var5, float var7, float var8, int var9)
+        public virtual void setPositionAndAnglesAvoidEntities(double x, double y, double z, float var7, float var8, int var9)
         {
-            setPosition(var1, var3, var5);
+            setPosition(x, y, z);
             setRotation(var7, var8);
             var var10 = world.getEntityCollisions(this, boundingBox.contract(1.0D / 32.0D, 0.0D, 1.0D / 32.0D));
             if (var10.Count > 0)
@@ -1190,8 +1190,8 @@ namespace betareborn.Entities
                     }
                 }
 
-                var3 += var11 - boundingBox.minY;
-                setPosition(var1, var3, var5);
+                y += var11 - boundingBox.minY;
+                setPosition(x, y, z);
             }
 
         }
@@ -1279,7 +1279,7 @@ namespace betareborn.Entities
 
         }
 
-        public virtual void onStruckByLightning(EntityLightningBolt var1)
+        public virtual void onStruckByLightning(EntityLightningBolt bolt)
         {
             damage(5);
             ++fireTicks;
@@ -1294,7 +1294,7 @@ namespace betareborn.Entities
         {
         }
 
-        protected virtual bool pushOutOfBlocks(double var1, double var3, double var5)
+        protected virtual bool pushOutOfBlocks(double x, double y, double z)
         {
             int var7 = MathHelper.floor_double(var1);
             int var8 = MathHelper.floor_double(var3);
@@ -1314,69 +1314,69 @@ namespace betareborn.Entities
                 double var23 = 9999.0D;
                 if (var16 && var10 < var23)
                 {
-                    var23 = var10;
-                    var22 = 0;
+                    closestEdgeDistance = fracX;
+                    pushDirection = 0;
                 }
 
-                if (var17 && 1.0D - var10 < var23)
+                if (canPushEast && 1.0D - fracX < closestEdgeDistance)
                 {
-                    var23 = 1.0D - var10;
-                    var22 = 1;
+                    closestEdgeDistance = 1.0D - fracX;
+                    pushDirection = 1;
                 }
 
-                if (var18 && var12 < var23)
+                if (canPushDown && fracY < closestEdgeDistance)
                 {
-                    var23 = var12;
-                    var22 = 2;
+                    closestEdgeDistance = fracY;
+                    pushDirection = 2;
                 }
 
-                if (var19 && 1.0D - var12 < var23)
+                if (canPushUp && 1.0D - fracY < closestEdgeDistance)
                 {
-                    var23 = 1.0D - var12;
-                    var22 = 3;
+                    closestEdgeDistance = 1.0D - fracY;
+                    pushDirection = 3;
                 }
 
-                if (var20 && var14 < var23)
+                if (canPushNorth && fracZ < closestEdgeDistance)
                 {
-                    var23 = var14;
-                    var22 = 4;
+                    closestEdgeDistance = fracZ;
+                    pushDirection = 4;
                 }
 
-                if (var21 && 1.0D - var14 < var23)
+                if (canPushSouth && 1.0D - fracZ < closestEdgeDistance)
                 {
-                    var23 = 1.0D - var14;
-                    var22 = 5;
+                    closestEdgeDistance = 1.0D - fracZ;
+                    pushDirection = 5;
                 }
 
-                float var25 = random.nextFloat() * 0.2F + 0.1F;
-                if (var22 == 0)
+                float pushStrength = random.nextFloat() * 0.2F + 0.1F;
+                if (pushDirection == 0)
                 {
-                    velocityX = (double)(-var25);
+                    velocityX = (double)(-pushStrength);
                 }
 
-                if (var22 == 1)
+                if (pushDirection == 1)
                 {
-                    velocityX = (double)var25;
+                    velocityX = (double)pushStrength;
                 }
 
-                if (var22 == 2)
+                if (pushDirection == 2)
                 {
-                    velocityY = (double)(-var25);
+                    velocityY = (double)(-pushStrength);
                 }
 
-                if (var22 == 3)
+                if (pushDirection == 3)
                 {
-                    velocityY = (double)var25;
+                    velocityY = (double)pushStrength;
                 }
 
-                if (var22 == 4)
+                if (pushDirection == 4)
                 {
-                    velocityZ = (double)(-var25);
+                    velocityZ = (double)(-pushStrength);
                 }
 
-                if (var22 == 5)
+                if (pushDirection == 5)
                 {
-                    velocityZ = (double)var25;
+                    velocityZ = (double)pushStrength;
                 }
             }
 

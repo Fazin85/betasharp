@@ -10,36 +10,36 @@ namespace betareborn.Entities
     {
         public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntitySquid).TypeHandle);
 
-        public float field_21089_a = 0.0F;
-        public float field_21088_b = 0.0F;
-        public float field_21087_c = 0.0F;
-        public float field_21086_f = 0.0F;
-        public float field_21085_g = 0.0F;
-        public float field_21084_h = 0.0F;
-        public float field_21083_i = 0.0F;
-        public float field_21082_j = 0.0F;
+        public float tiltAngle = 0.0F;
+        public float prevTiltAngle = 0.0F;
+        public float tentaclePhase = 0.0F;
+        public float prevTentaclePhase = 0.0F;
+        public float swimPhase = 0.0F;
+        public float prevSwimPhase = 0.0F;
+        public float tentacleSpread = 0.0F;
+        public float prevTentacleSpread = 0.0F;
         private float randomMotionSpeed = 0.0F;
-        private float field_21080_l = 0.0F;
-        private float field_21079_m = 0.0F;
+        private float animationSpeed = 0.0F;
+        private float squidRotation = 0.0F;
         private float randomMotionVecX = 0.0F;
         private float randomMotionVecY = 0.0F;
         private float randomMotionVecZ = 0.0F;
 
-        public EntitySquid(World var1) : base(var1)
+        public EntitySquid(World world) : base(world)
         {
             texture = "/mob/squid.png";
             setBoundingBoxSpacing(0.95F, 0.95F);
-            field_21080_l = 1.0F / (random.nextFloat() + 1.0F) * 0.2F;
+            animationSpeed = 1.0F / (random.nextFloat() + 1.0F) * 0.2F;
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            base.writeNbt(var1);
+            base.writeNbt(nbt);
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            base.readNbt(var1);
+            base.readNbt(nbt);
         }
 
         protected override String getLivingSound()
@@ -69,16 +69,16 @@ namespace betareborn.Entities
 
         protected override void dropFewItems()
         {
-            int var1 = random.nextInt(3) + 1;
+            int dropCount = random.nextInt(3) + 1;
 
-            for (int var2 = 0; var2 < var1; ++var2)
+            for (int _ = 0; _ < dropCount; ++_)
             {
                 dropItem(new ItemStack(Item.DYE, 1, 0), 0.0F);
             }
 
         }
 
-        public override bool interact(EntityPlayer var1)
+        public override bool interact(EntityPlayer player)
         {
             return false;
         }
@@ -91,42 +91,42 @@ namespace betareborn.Entities
         public override void tickMovement()
         {
             base.tickMovement();
-            field_21088_b = field_21089_a;
-            field_21086_f = field_21087_c;
-            field_21084_h = field_21085_g;
-            field_21082_j = field_21083_i;
-            field_21085_g += field_21080_l;
-            if (field_21085_g > (float)Math.PI * 2.0F)
+            prevTiltAngle = tiltAngle;
+            prevTentaclePhase = tentaclePhase;
+            prevSwimPhase = swimPhase;
+            prevTentacleSpread = tentacleSpread;
+            swimPhase += animationSpeed;
+            if (swimPhase > (float)Math.PI * 2.0F)
             {
-                field_21085_g -= (float)Math.PI * 2.0F;
+                swimPhase -= (float)Math.PI * 2.0F;
                 if (random.nextInt(10) == 0)
                 {
-                    field_21080_l = 1.0F / (random.nextFloat() + 1.0F) * 0.2F;
+                    animationSpeed = 1.0F / (random.nextFloat() + 1.0F) * 0.2F;
                 }
             }
 
             if (isInWater())
             {
-                float var1;
-                if (field_21085_g < (float)Math.PI)
+                float phaseProgress;
+                if (swimPhase < (float)Math.PI)
                 {
-                    var1 = field_21085_g / (float)Math.PI;
-                    field_21083_i = MathHelper.sin(var1 * var1 * (float)Math.PI) * (float)Math.PI * 0.25F;
-                    if ((double)var1 > 0.75D)
+                    phaseProgress = swimPhase / (float)Math.PI;
+                    tentacleSpread = MathHelper.sin(phaseProgress * phaseProgress * (float)Math.PI) * (float)Math.PI * 0.25F;
+                    if ((double)phaseProgress > 0.75D)
                     {
                         randomMotionSpeed = 1.0F;
-                        field_21079_m = 1.0F;
+                        squidRotation = 1.0F;
                     }
                     else
                     {
-                        field_21079_m *= 0.8F;
+                        squidRotation *= 0.8F;
                     }
                 }
                 else
                 {
-                    field_21083_i = 0.0F;
+                    tentacleSpread = 0.0F;
                     randomMotionSpeed *= 0.9F;
-                    field_21079_m *= 0.99F;
+                    squidRotation *= 0.99F;
                 }
 
                 if (!interpolateOnly)
@@ -136,15 +136,15 @@ namespace betareborn.Entities
                     velocityZ = (double)(randomMotionVecZ * randomMotionSpeed);
                 }
 
-                var1 = MathHelper.sqrt_double(velocityX * velocityX + velocityZ * velocityZ);
-                bodyYaw += (-((float)java.lang.Math.atan2(velocityX, velocityZ)) * 180.0F / (float)Math.PI - bodyYaw) * 0.1F;
+                phaseProgress = MathHelper.sqrt_double(velocityX * velocityX + velocityZ * velocityZ);
+                bodyYaw += (-((float)System.Math.Atan2(velocityX, velocityZ)) * 180.0F / (float)Math.PI - bodyYaw) * 0.1F;
                 yaw = bodyYaw;
-                field_21087_c += (float)Math.PI * field_21079_m * 1.5F;
-                field_21089_a += (-((float)java.lang.Math.atan2((double)var1, velocityY)) * 180.0F / (float)Math.PI - field_21089_a) * 0.1F;
+                tentaclePhase += (float)Math.PI * squidRotation * 1.5F;
+                tiltAngle += (-((float)System.Math.Atan2((double)phaseProgress, velocityY)) * 180.0F / (float)Math.PI - tiltAngle) * 0.1F;
             }
             else
             {
-                field_21083_i = MathHelper.abs(MathHelper.sin(field_21085_g)) * (float)Math.PI * 0.25F;
+                tentacleSpread = MathHelper.abs(MathHelper.sin(swimPhase)) * (float)Math.PI * 0.25F;
                 if (!interpolateOnly)
                 {
                     velocityX = 0.0D;
@@ -153,12 +153,12 @@ namespace betareborn.Entities
                     velocityZ = 0.0D;
                 }
 
-                field_21089_a = (float)((double)field_21089_a + (double)(-90.0F - field_21089_a) * 0.02D);
+                tiltAngle = (float)((double)tiltAngle + (double)(-90.0F - tiltAngle) * 0.02D);
             }
 
         }
 
-        public override void travel(float var1, float var2)
+        public override void travel(float strafe, float forward)
         {
             move(velocityX, velocityY, velocityZ);
         }
@@ -167,10 +167,10 @@ namespace betareborn.Entities
         {
             if (random.nextInt(50) == 0 || !inWater || randomMotionVecX == 0.0F && randomMotionVecY == 0.0F && randomMotionVecZ == 0.0F)
             {
-                float var1 = random.nextFloat() * (float)Math.PI * 2.0F;
-                randomMotionVecX = MathHelper.cos(var1) * 0.2F;
+                float randomAngle = random.nextFloat() * (float)Math.PI * 2.0F;
+                randomMotionVecX = MathHelper.cos(randomAngle) * 0.2F;
                 randomMotionVecY = -0.1F + random.nextFloat() * 0.2F;
-                randomMotionVecZ = MathHelper.sin(var1) * 0.2F;
+                randomMotionVecZ = MathHelper.sin(randomAngle) * 0.2F;
             }
 
             func_27021_X();

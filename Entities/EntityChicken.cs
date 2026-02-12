@@ -16,7 +16,7 @@ namespace betareborn.Entities
         public float field_755_h = 1.0F;
         public int timeUntilNextEgg;
 
-        public EntityChicken(World var1) : base(var1)
+        public EntityChicken(World world) : base(world)
         {
             texture = "/mob/chicken.png";
             setBoundingBoxSpacing(0.3F, 0.4F);
@@ -61,18 +61,18 @@ namespace betareborn.Entities
 
         }
 
-        protected override void onLanding(float var1)
+        protected override void onLanding(float fallDistance)
         {
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            base.writeNbt(var1);
+            base.writeNbt(nbt);
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            base.readNbt(var1);
+            base.readNbt(nbt);
         }
 
         protected override string getLivingSound()

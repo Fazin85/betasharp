@@ -18,7 +18,7 @@ namespace betareborn.Client.Rendering.Entitys
             double[] var12 = new double[8];
             double var13 = 0.0D;
             double var15 = 0.0D;
-            java.util.Random var17 = new(var1.field_27029_a);
+            java.util.Random var17 = new(var1.renderSeed);
 
             for (int var18 = 7; var18 >= 0; --var18)
             {
@@ -30,7 +30,7 @@ namespace betareborn.Client.Rendering.Entitys
 
             for (int var45 = 0; var45 < 4; ++var45)
             {
-                java.util.Random var46 = new(var1.field_27029_a);
+                java.util.Random var46 = new(var1.renderSeed);
 
                 for (int var19 = 0; var19 < 3; ++var19)
                 {
