@@ -1,6 +1,7 @@
 ﻿using betareborn.Network.Packets.S2CPlay;
 using betareborn.Server.Commands;
 using betareborn.Server.Entities;
+using betareborn.Server.Internal;
 using betareborn.Server.Network;
 using betareborn.Server.Worlds;
 using betareborn.Util;
@@ -172,7 +173,13 @@ namespace betareborn.Server
 
         private void shutdown()
         {
+            if (stopped)
+            {
+                return;
+            }
+
             LOGGER.info("Stopping server");
+
             if (playerManager != null)
             {
                 playerManager.savePlayers();
@@ -284,6 +291,13 @@ namespace betareborn.Server
                 catch (Throwable var54)
                 {
                     var54.printStackTrace();
+                }
+                finally
+                {
+                    if (this is not InternalServer)
+                    {
+                        Environment.Exit(0);
+                    }
                 }
             }
         }

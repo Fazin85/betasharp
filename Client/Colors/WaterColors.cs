@@ -4,9 +4,9 @@ namespace betareborn.Client.Colors
     {
         private static int[] waterBuffer = new int[65536];
 
-        public static void loadColors(int[] var0)
+        public static void loadColors(int[] waterBuffer)
         {
-            waterBuffer = var0;
+            WaterColors.waterBuffer = waterBuffer;
         }
     }
 

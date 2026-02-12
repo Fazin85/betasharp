@@ -36,18 +36,18 @@ namespace betareborn.Entities
         {
             interactionManager.player = this;
             this.interactionManager = interactionManager;
-            Vec3i var5 = world.getSpawnPos();
-            int var6 = var5.x;
-            int var7 = var5.z;
-            int var8 = var5.y;
+            Vec3i spawnPos = world.getSpawnPos();
+            int x = spawnPos.x;
+            int y = spawnPos.z;
+            int z = spawnPos.y;
             if (!world.dimension.hasCeiling)
             {
-                var6 += random.nextInt(20) - 10;
-                var8 = world.getSpawnPositionValidityY(var6, var7);
-                var7 += random.nextInt(20) - 10;
+                x += random.nextInt(20) - 10;
+                z = world.getSpawnPositionValidityY(x, y);
+                y += random.nextInt(20) - 10;
             }
 
-            setPositionAndAnglesKeepPrevAngles(var6 + 0.5, var8, var7 + 0.5, 0.0F, 0.0F);
+            setPositionAndAnglesKeepPrevAngles(x + 0.5, z, y + 0.5, 0.0F, 0.0F);
             this.server = server;
             stepHeight = 0.0F;
             this.name = name;
@@ -92,13 +92,13 @@ namespace betareborn.Entities
             joinInvulnerabilityTicks--;
             currentScreenHandler.sendContentUpdates();
 
-            for (int var1 = 0; var1 < 5; var1++)
+            for (int i = 0; i < 5; i++)
             {
-                ItemStack var2 = getEquipment(var1);
-                if (var2 != equipment[var1])
+                ItemStack itemStack = getEquipment(i);
+                if (itemStack != equipment[i])
                 {
-                    server.getEntityTracker(dimensionId).sendToListeners(this, new EntityEquipmentUpdateS2CPacket(id, var1, var2));
-                    equipment[var1] = var2;
+                    server.getEntityTracker(dimensionId).sendToListeners(this, new EntityEquipmentUpdateS2CPacket(id, i, itemStack));
+                    equipment[i] = itemStack;
                 }
             }
         }
@@ -130,9 +130,9 @@ namespace betareborn.Entities
                         return false;
                     }
 
-                    if (damageSource is EntityArrow var3)
+                    if (damageSource is EntityArrow arrow)
                     {
-                        if (var3.owner is EntityPlayer)
+                        if (arrow.owner is EntityPlayer)
                         {
                             return false;
                         }
@@ -159,40 +159,40 @@ namespace betareborn.Entities
         {
             base.tick();
 
-            for (int var2 = 0; var2 < inventory.size(); var2++)
+            for (int slotIndex = 0; slotIndex < inventory.size(); slotIndex++)
             {
-                ItemStack var3 = inventory.getStack(var2);
-                if (var3 != null && Item.ITEMS[var3.itemId].isNetworkSynced() && networkHandler.getBlockDataSendQueueSize() <= 2)
+                ItemStack itemStack = inventory.getStack(slotIndex);
+                if (itemStack != null && Item.ITEMS[itemStack.itemId].isNetworkSynced() && networkHandler.getBlockDataSendQueueSize() <= 2)
                 {
-                    Packet var4 = ((NetworkSyncedItem)Item.ITEMS[var3.itemId]).getUpdatePacket(var3, world, this);
-                    if (var4 != null)
+                    Packet packet = ((NetworkSyncedItem)Item.ITEMS[itemStack.itemId]).getUpdatePacket(itemStack, world, this);
+                    if (packet != null)
                     {
-                        networkHandler.sendPacket(var4);
+                        networkHandler.sendPacket(packet);
                     }
                 }
             }
 
             if (shouldSendChunkUpdates && !pendingChunkUpdates.isEmpty())
             {
-                ChunkPos? var7 = (ChunkPos?)pendingChunkUpdates.get(0);
-                if (var7 != null)
+                ChunkPos? chunkPos = (ChunkPos?)pendingChunkUpdates.get(0);
+                if (chunkPos != null)
                 {
-                    bool var8 = false;
+                    bool canSendChunkData = false;
                     if (networkHandler.getBlockDataSendQueueSize() < 4)
                     {
-                        var8 = true;
+                        canSendChunkData = true;
                     }
 
-                    if (var8)
+                    if (canSendChunkData)
                     {
-                        ServerWorld var9 = server.getWorld(dimensionId);
-                        pendingChunkUpdates.remove(var7);
-                        networkHandler.sendPacket(new ChunkDataS2CPacket(var7.Value.x * 16, 0, var7.Value.z * 16, 16, 128, 16, var9));
-                        var var5 = var9.getBlockEntities(var7.Value.x * 16, 0, var7.Value.z * 16, var7.Value.x * 16 + 16, 128, var7.Value.z * 16 + 16);
+                        ServerWorld world = server.getWorld(dimensionId);
+                        pendingChunkUpdates.remove(chunkPos);
+                        networkHandler.sendPacket(new ChunkDataS2CPacket(chunkPos.Value.x * 16, 0, chunkPos.Value.z * 16, 16, 128, 16, world));
+                        var blockEntities = world.getBlockEntities(chunkPos.Value.x * 16, 0, chunkPos.Value.z * 16, chunkPos.Value.x * 16 + 16, 128, chunkPos.Value.z * 16 + 16);
 
-                        for (int var6 = 0; var6 < var5.Count; var6++)
+                        for (int i = 0; i < blockEntities.Count; i++)
                         {
-                            updateBlockEntity(var5[var6]);
+                            updateBlockEntity(blockEntities[i]);
                         }
                     }
                 }
@@ -254,10 +254,10 @@ namespace betareborn.Entities
         {
             if (blockentity != null)
             {
-                Packet var2 = blockentity.createUpdatePacket();
-                if (var2 != null)
+                Packet packet = blockentity.createUpdatePacket();
+                if (packet != null)
                 {
-                    networkHandler.sendPacket(var2);
+                    networkHandler.sendPacket(packet);
                 }
             }
         }
@@ -273,15 +273,15 @@ namespace betareborn.Entities
         {
             if (!item.dead)
             {
-                EntityTracker var3 = server.getEntityTracker(dimensionId);
+                EntityTracker et = server.getEntityTracker(dimensionId);
                 if (item is EntityItem)
                 {
-                    var3.sendToListeners(item, new ItemPickupAnimationS2CPacket(item.id, id));
+                    et.sendToListeners(item, new ItemPickupAnimationS2CPacket(item.id, id));
                 }
 
                 if (item is EntityArrow)
                 {
-                    var3.sendToListeners(item, new ItemPickupAnimationS2CPacket(item.id, id));
+                    et.sendToListeners(item, new ItemPickupAnimationS2CPacket(item.id, id));
                 }
             }
 
@@ -296,8 +296,8 @@ namespace betareborn.Entities
             {
                 handSwingTicks = -1;
                 handSwinging = true;
-                EntityTracker var1 = server.getEntityTracker(dimensionId);
-                var1.sendToListeners(this, new EntityAnimationPacket(this, 1));
+                EntityTracker et = server.getEntityTracker(dimensionId);
+                et.sendToListeners(this, new EntityAnimationPacket(this, 1));
             }
         }
 
@@ -308,17 +308,17 @@ namespace betareborn.Entities
 
         public override SleepAttemptResult trySleep(int x, int y, int z)
         {
-            SleepAttemptResult var4 = base.trySleep(x, y, z);
-            if (var4 == SleepAttemptResult.OK)
+            SleepAttemptResult sleepAttemptResult = base.trySleep(x, y, z);
+            if (sleepAttemptResult == SleepAttemptResult.OK)
             {
-                EntityTracker var5 = server.getEntityTracker(dimensionId);
-                PlayerSleepUpdateS2CPacket var6 = new PlayerSleepUpdateS2CPacket(this, 0, x, y, z);
-                var5.sendToListeners(this, var6);
+                EntityTracker et = server.getEntityTracker(dimensionId);
+                PlayerSleepUpdateS2CPacket packet = new PlayerSleepUpdateS2CPacket(this, 0, x, y, z);
+                et.sendToListeners(this, packet);
                 networkHandler.teleport(x, y, z, yaw, pitch);
-                networkHandler.sendPacket(var6);
+                networkHandler.sendPacket(packet);
             }
 
-            return var4;
+            return sleepAttemptResult;
         }
 
 
@@ -326,8 +326,8 @@ namespace betareborn.Entities
         {
             if (isSleeping())
             {
-                EntityTracker var4 = server.getEntityTracker(dimensionId);
-                var4.sendToAround(this, new EntityAnimationPacket(this, 3));
+                EntityTracker et = server.getEntityTracker(dimensionId);
+                et.sendToAround(this, new EntityAnimationPacket(this, 3));
             }
 
             base.wakeUp(resetSleepTimer, updateSleepingPlayers, setSpawnPos);
@@ -510,9 +510,9 @@ namespace betareborn.Entities
 
         public override void sendMessage(string message)
         {
-            TranslationStorage var2 = TranslationStorage.getInstance();
-            string var3 = var2.translateKey(message);
-            networkHandler.sendPacket(new ChatMessagePacket(var3));
+            TranslationStorage ts = TranslationStorage.getInstance();
+            string translatedMessage = ts.translateKey(message);
+            networkHandler.sendPacket(new ChatMessagePacket(translatedMessage));
         }
 
         public override void spawn()

@@ -5,6 +5,7 @@ using betareborn.Util.Hit;
 using betareborn.Util.Maths;
 using betareborn.Worlds;
 using java.lang;
+using System;
 
 namespace betareborn.Entities
 {
@@ -16,7 +17,7 @@ namespace betareborn.Entities
         private int yTile = -1;
         private int zTile = -1;
         private int inTile = 0;
-        private int field_28019_h = 0;
+        private int inData = 0;
         private bool inGround = false;
         public bool doesArrowBelongToPlayer = false;
         public int arrowShake = 0;
@@ -24,32 +25,32 @@ namespace betareborn.Entities
         private int ticksInGround;
         private int ticksInAir = 0;
 
-        public EntityArrow(World var1) : base(var1)
+        public EntityArrow(World world) : base(world)
         {
             setBoundingBoxSpacing(0.5F, 0.5F);
         }
 
-        public EntityArrow(World var1, double var2, double var4, double var6) : base(var1)
+        public EntityArrow(World world, double x, double y, double z) : base(world)
         {
             setBoundingBoxSpacing(0.5F, 0.5F);
-            setPosition(var2, var4, var6);
-            standingEyeHeight = 0.0F;
-        }
-
-        public EntityArrow(World var1, EntityLiving var2) : base(var1)
-        {
-            owner = var2;
-            doesArrowBelongToPlayer = var2 is EntityPlayer;
-            setBoundingBoxSpacing(0.5F, 0.5F);
-            setPositionAndAnglesKeepPrevAngles(var2.x, var2.y + (double)var2.getEyeHeight(), var2.z, var2.yaw, var2.pitch);
-            x -= (double)(MathHelper.cos(yaw / 180.0F * (float)java.lang.Math.PI) * 0.16F);
-            y -= (double)0.1F;
-            z -= (double)(MathHelper.sin(yaw / 180.0F * (float)java.lang.Math.PI) * 0.16F);
             setPosition(x, y, z);
             standingEyeHeight = 0.0F;
-            velocityX = (double)(-MathHelper.sin(yaw / 180.0F * (float)java.lang.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)java.lang.Math.PI));
-            velocityZ = (double)(MathHelper.cos(yaw / 180.0F * (float)java.lang.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)java.lang.Math.PI));
-            velocityY = (double)(-MathHelper.sin(pitch / 180.0F * (float)java.lang.Math.PI));
+        }
+
+        public EntityArrow(World world, EntityLiving owner) : base(world)
+        {
+            this.owner = owner;
+            doesArrowBelongToPlayer = owner is EntityPlayer;
+            setBoundingBoxSpacing(0.5F, 0.5F);
+            setPositionAndAnglesKeepPrevAngles(owner.x, owner.y + (double)owner.getEyeHeight(), owner.z, owner.yaw, owner.pitch);
+            x -= (double)(MathHelper.cos(yaw / 180.0F * (float)System.Math.PI) * 0.16F);
+            y -= (double)0.1F;
+            z -= (double)(MathHelper.sin(yaw / 180.0F * (float)System.Math.PI) * 0.16F);
+            setPosition(x, y, z);
+            standingEyeHeight = 0.0F;
+            velocityX = (double)(-MathHelper.sin(yaw / 180.0F * (float)System.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)System.Math.PI));
+            velocityZ = (double)(MathHelper.cos(yaw / 180.0F * (float)System.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)System.Math.PI));
+            velocityY = (double)(-MathHelper.sin(pitch / 180.0F * (float)System.Math.PI));
             setArrowHeading(velocityX, velocityY, velocityZ, 1.5F, 1.0F);
         }
 
@@ -57,37 +58,37 @@ namespace betareborn.Entities
         {
         }
 
-        public void setArrowHeading(double var1, double var3, double var5, float var7, float var8)
+        public void setArrowHeading(double x, double y, double z, float speed, float spread)
         {
-            float var9 = MathHelper.sqrt_double(var1 * var1 + var3 * var3 + var5 * var5);
-            var1 /= (double)var9;
-            var3 /= (double)var9;
-            var5 /= (double)var9;
-            var1 += random.nextGaussian() * (double)0.0075F * (double)var8;
-            var3 += random.nextGaussian() * (double)0.0075F * (double)var8;
-            var5 += random.nextGaussian() * (double)0.0075F * (double)var8;
-            var1 *= (double)var7;
-            var3 *= (double)var7;
-            var5 *= (double)var7;
-            velocityX = var1;
-            velocityY = var3;
-            velocityZ = var5;
-            float var10 = MathHelper.sqrt_double(var1 * var1 + var5 * var5);
-            prevYaw = yaw = (float)(java.lang.Math.atan2(var1, var5) * 180.0D / (double)((float)java.lang.Math.PI));
-            prevPitch = pitch = (float)(java.lang.Math.atan2(var3, (double)var10) * 180.0D / (double)((float)java.lang.Math.PI));
+            float length = MathHelper.sqrt_double(x * x + y * y + z * z);
+            x /= (double)length;
+            y /= (double)length;
+            z /= (double)length;
+            x += random.nextGaussian() * (double)0.0075F * (double)spread;
+            y += random.nextGaussian() * (double)0.0075F * (double)spread;
+            z += random.nextGaussian() * (double)0.0075F * (double)spread;
+            x *= (double)speed;
+            y *= (double)speed;
+            z *= (double)speed;
+            velocityX = x;
+            velocityY = y;
+            velocityZ = z;
+            float horizontalSpeed = MathHelper.sqrt_double(x * x + z * z);
+            prevYaw = yaw = (float)(System.Math.Atan2(x, z) * 180.0D / (double)((float)System.Math.PI));
+            prevPitch = pitch = (float)(System.Math.Atan2(y, (double)horizontalSpeed) * 180.0D / (double)((float)System.Math.PI));
             ticksInGround = 0;
         }
 
-        public override void setVelocityClient(double var1, double var3, double var5)
+        public override void setVelocityClient(double velocityX, double velocityY, double velocityZ)
         {
-            velocityX = var1;
-            velocityY = var3;
-            velocityZ = var5;
+            base.velocityX = velocityX;
+            base.velocityY = velocityY;
+            base.velocityZ = velocityZ;
             if (prevPitch == 0.0F && prevYaw == 0.0F)
             {
-                float var7 = MathHelper.sqrt_double(var1 * var1 + var5 * var5);
-                prevYaw = yaw = (float)(java.lang.Math.atan2(var1, var5) * 180.0D / (double)((float)java.lang.Math.PI));
-                prevPitch = pitch = (float)(java.lang.Math.atan2(var3, (double)var7) * 180.0D / (double)((float)java.lang.Math.PI));
+                float length = MathHelper.sqrt_double(velocityX * velocityX + velocityZ * velocityZ);
+                prevYaw = yaw = (float)(System.Math.Atan2(velocityX, velocityZ) * 180.0D / (double)((float)System.Math.PI));
+                prevPitch = pitch = (float)(System.Math.Atan2(velocityY, (double)length) * 180.0D / (double)((float)System.Math.PI));
                 prevPitch = pitch;
                 prevYaw = yaw;
                 setPositionAndAnglesKeepPrevAngles(x, y, z, yaw, pitch);
@@ -101,17 +102,17 @@ namespace betareborn.Entities
             base.tick();
             if (prevPitch == 0.0F && prevYaw == 0.0F)
             {
-                float var1 = MathHelper.sqrt_double(velocityX * velocityX + velocityZ * velocityZ);
-                prevYaw = yaw = (float)(java.lang.Math.atan2(velocityX, velocityZ) * 180.0D / (double)((float)java.lang.Math.PI));
-                prevPitch = pitch = (float)(java.lang.Math.atan2(velocityY, (double)var1) * 180.0D / (double)((float)java.lang.Math.PI));
+                float length = MathHelper.sqrt_double(velocityX * velocityX + velocityZ * velocityZ);
+                prevYaw = yaw = (float)(System.Math.Atan2(velocityX, velocityZ) * 180.0D / (double)((float)System.Math.PI));
+                prevPitch = pitch = (float)(System.Math.Atan2(velocityY, (double)length) * 180.0D / (double)((float)System.Math.PI));
             }
 
-            int var15 = world.getBlockId(xTile, yTile, zTile);
-            if (var15 > 0)
+            int blockId = world.getBlockId(xTile, yTile, zTile);
+            if (blockId > 0)
             {
-                Block.BLOCKS[var15].updateBoundingBox(world, xTile, yTile, zTile);
-                Box? var2 = Block.BLOCKS[var15].getCollisionShape(world, xTile, yTile, zTile);
-                if (var2 != null && var2.Value.contains(Vec3D.createVector(x, y, z)))
+                Block.BLOCKS[blockId].updateBoundingBox(world, xTile, yTile, zTile);
+                Box? box = Block.BLOCKS[blockId].getCollisionShape(world, xTile, yTile, zTile);
+                if (box != null && box.Value.contains(Vec3D.createVector(x, y, z)))
                 {
                     inGround = true;
                 }
@@ -124,9 +125,9 @@ namespace betareborn.Entities
 
             if (inGround)
             {
-                var15 = world.getBlockId(xTile, yTile, zTile);
-                int var18 = world.getBlockMeta(xTile, yTile, zTile);
-                if (var15 == inTile && var18 == field_28019_h)
+                blockId = world.getBlockId(xTile, yTile, zTile);
+                int blockMeta = world.getBlockMeta(xTile, yTile, zTile);
+                if (blockId == inTile && blockMeta == inData)
                 {
                     ++ticksInGround;
                     if (ticksInGround == 1200)
@@ -148,52 +149,52 @@ namespace betareborn.Entities
             else
             {
                 ++ticksInAir;
-                Vec3D var16 = Vec3D.createVector(x, y, z);
-                Vec3D var17 = Vec3D.createVector(x + velocityX, y + velocityY, z + velocityZ);
-                HitResult var3 = world.raycast(var16, var17, false, true);
-                var16 = Vec3D.createVector(x, y, z);
-                var17 = Vec3D.createVector(x + velocityX, y + velocityY, z + velocityZ);
-                if (var3 != null)
+                Vec3D rayStart = Vec3D.createVector(x, y, z);
+                Vec3D rayEnd = Vec3D.createVector(x + velocityX, y + velocityY, z + velocityZ);
+                HitResult hit = world.raycast(rayStart, rayEnd, false, true);
+                rayStart = Vec3D.createVector(x, y, z);
+                rayEnd = Vec3D.createVector(x + velocityX, y + velocityY, z + velocityZ);
+                if (hit != null)
                 {
-                    var17 = Vec3D.createVector(var3.pos.xCoord, var3.pos.yCoord, var3.pos.zCoord);
+                    rayEnd = Vec3D.createVector(hit.pos.xCoord, hit.pos.yCoord, hit.pos.zCoord);
                 }
 
-                Entity var4 = null;
-                var var5 = world.getEntities(this, boundingBox.stretch(velocityX, velocityY, velocityZ).expand(1.0D, 1.0D, 1.0D));
-                double var6 = 0.0D;
+                Entity hitEntity = null;
+                var candidates = world.getEntities(this, boundingBox.stretch(velocityX, velocityY, velocityZ).expand(1.0D, 1.0D, 1.0D));
+                double minHitDistance = 0.0D;
 
-                float var10;
-                for (int var8 = 0; var8 < var5.Count; ++var8)
+                float expandAmount;
+                for (int i = 0; i < candidates.Count; ++i)
                 {
-                    Entity var9 = var5[var8];
-                    if (var9.isCollidable() && (var9 != owner || ticksInAir >= 5))
+                    Entity entity = candidates[i];
+                    if (entity.isCollidable() && (entity != owner || ticksInAir >= 5))
                     {
-                        var10 = 0.3F;
-                        Box var11 = var9.boundingBox.expand((double)var10, (double)var10, (double)var10);
-                        HitResult var12 = var11.raycast(var16, var17);
-                        if (var12 != null)
+                        expandAmount = 0.3F;
+                        Box expandedBox = entity.boundingBox.expand((double)expandAmount, (double)expandAmount, (double)expandAmount);
+                        HitResult hitResult = expandedBox.raycast(rayStart, rayEnd);
+                        if (hitResult != null)
                         {
-                            double var13 = var16.distanceTo(var12.pos);
-                            if (var13 < var6 || var6 == 0.0D)
+                            double hitDistance = rayStart.distanceTo(hitResult.pos);
+                            if (hitDistance < minHitDistance || minHitDistance == 0.0D)
                             {
-                                var4 = var9;
-                                var6 = var13;
+                                hitEntity = entity;
+                                minHitDistance = hitDistance;
                             }
                         }
                     }
                 }
 
-                if (var4 != null)
+                if (hitEntity != null)
                 {
-                    var3 = new HitResult(var4);
+                    hit = new HitResult(hitEntity);
                 }
 
-                float var19;
-                if (var3 != null)
+                float horizontalSpeed;
+                if (hit != null)
                 {
-                    if (var3.entity != null)
+                    if (hit.entity != null)
                     {
-                        if (var3.entity.damage(owner, 4))
+                        if (hit.entity.damage(owner, 4))
                         {
                             world.playSound(this, "random.drr", 1.0F, 1.2F / (random.nextFloat() * 0.2F + 0.9F));
                             markDead();
@@ -210,18 +211,18 @@ namespace betareborn.Entities
                     }
                     else
                     {
-                        xTile = var3.blockX;
-                        yTile = var3.blockY;
-                        zTile = var3.blockZ;
+                        xTile = hit.blockX;
+                        yTile = hit.blockY;
+                        zTile = hit.blockZ;
                         inTile = world.getBlockId(xTile, yTile, zTile);
-                        field_28019_h = world.getBlockMeta(xTile, yTile, zTile);
-                        velocityX = (double)((float)(var3.pos.xCoord - x));
-                        velocityY = (double)((float)(var3.pos.yCoord - y));
-                        velocityZ = (double)((float)(var3.pos.zCoord - z));
-                        var19 = MathHelper.sqrt_double(velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
-                        x -= velocityX / (double)var19 * (double)0.05F;
-                        y -= velocityY / (double)var19 * (double)0.05F;
-                        z -= velocityZ / (double)var19 * (double)0.05F;
+                        inData = world.getBlockMeta(xTile, yTile, zTile);
+                        velocityX = (double)((float)(hit.pos.xCoord - x));
+                        velocityY = (double)((float)(hit.pos.yCoord - y));
+                        velocityZ = (double)((float)(hit.pos.zCoord - z));
+                        horizontalSpeed = MathHelper.sqrt_double(velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
+                        x -= velocityX / (double)horizontalSpeed * (double)0.05F;
+                        y -= velocityY / (double)horizontalSpeed * (double)0.05F;
+                        z -= velocityZ / (double)horizontalSpeed * (double)0.05F;
                         world.playSound(this, "random.drr", 1.0F, 1.2F / (random.nextFloat() * 0.2F + 0.9F));
                         inGround = true;
                         arrowShake = 7;
@@ -231,10 +232,10 @@ namespace betareborn.Entities
                 x += velocityX;
                 y += velocityY;
                 z += velocityZ;
-                var19 = MathHelper.sqrt_double(velocityX * velocityX + velocityZ * velocityZ);
-                yaw = (float)(java.lang.Math.atan2(velocityX, velocityZ) * 180.0D / (double)((float)java.lang.Math.PI));
+                horizontalSpeed = MathHelper.sqrt_double(velocityX * velocityX + velocityZ * velocityZ);
+                yaw = (float)(System.Math.Atan2(velocityX, velocityZ) * 180.0D / (double)((float)System.Math.PI));
 
-                for (pitch = (float)(java.lang.Math.atan2(velocityY, (double)var19) * 180.0D / (double)((float)java.lang.Math.PI)); pitch - prevPitch < -180.0F; prevPitch -= 360.0F)
+                for (pitch = (float)(System.Math.Atan2(velocityY, (double)horizontalSpeed) * 180.0D / (double)((float)System.Math.PI)); pitch - prevPitch < -180.0F; prevPitch -= 360.0F)
                 {
                 }
 
@@ -255,59 +256,59 @@ namespace betareborn.Entities
 
                 pitch = prevPitch + (pitch - prevPitch) * 0.2F;
                 yaw = prevYaw + (yaw - prevYaw) * 0.2F;
-                float var20 = 0.99F;
-                var10 = 0.03F;
+                float drag = 0.99F;
+                expandAmount = 0.03F;
                 if (isInWater())
                 {
-                    for (int var21 = 0; var21 < 4; ++var21)
+                    for (int _ = 0; _ < 4; ++_)
                     {
-                        float var22 = 0.25F;
-                        world.addParticle("bubble", x - velocityX * (double)var22, y - velocityY * (double)var22, z - velocityZ * (double)var22, velocityX, velocityY, velocityZ);
+                        float bubbleOffset = 0.25F;
+                        world.addParticle("bubble", x - velocityX * (double)bubbleOffset, y - velocityY * (double)bubbleOffset, z - velocityZ * (double)bubbleOffset, velocityX, velocityY, velocityZ);
                     }
 
-                    var20 = 0.8F;
+                    drag = 0.8F;
                 }
 
-                velocityX *= (double)var20;
-                velocityY *= (double)var20;
-                velocityZ *= (double)var20;
-                velocityY -= (double)var10;
+                velocityX *= (double)drag;
+                velocityY *= (double)drag;
+                velocityZ *= (double)drag;
+                velocityY -= (double)expandAmount;
                 setPosition(x, y, z);
             }
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            var1.setShort("xTile", (short)xTile);
-            var1.setShort("yTile", (short)yTile);
-            var1.setShort("zTile", (short)zTile);
-            var1.setByte("inTile", (sbyte)inTile);
-            var1.setByte("inData", (sbyte)field_28019_h);
-            var1.setByte("shake", (sbyte)arrowShake);
-            var1.setByte("inGround", (sbyte)(inGround ? 1 : 0));
-            var1.setBoolean("player", doesArrowBelongToPlayer);
+            nbt.setShort("xTile", (short)xTile);
+            nbt.setShort("yTile", (short)yTile);
+            nbt.setShort("zTile", (short)zTile);
+            nbt.setByte("inTile", (sbyte)inTile);
+            nbt.setByte("inData", (sbyte)inData);
+            nbt.setByte("shake", (sbyte)arrowShake);
+            nbt.setByte("inGround", (sbyte)(inGround ? 1 : 0));
+            nbt.setBoolean("player", doesArrowBelongToPlayer);
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            xTile = var1.getShort("xTile");
-            yTile = var1.getShort("yTile");
-            zTile = var1.getShort("zTile");
-            inTile = var1.getByte("inTile") & 255;
-            field_28019_h = var1.getByte("inData") & 255;
-            arrowShake = var1.getByte("shake") & 255;
-            inGround = var1.getByte("inGround") == 1;
-            doesArrowBelongToPlayer = var1.getBoolean("player");
+            xTile = nbt.getShort("xTile");
+            yTile = nbt.getShort("yTile");
+            zTile = nbt.getShort("zTile");
+            inTile = nbt.getByte("inTile") & 255;
+            inData = nbt.getByte("inData") & 255;
+            arrowShake = nbt.getByte("shake") & 255;
+            inGround = nbt.getByte("inGround") == 1;
+            doesArrowBelongToPlayer = nbt.getBoolean("player");
         }
 
-        public override void onPlayerInteraction(EntityPlayer var1)
+        public override void onPlayerInteraction(EntityPlayer player)
         {
             if (!world.isRemote)
             {
-                if (inGround && doesArrowBelongToPlayer && arrowShake <= 0 && var1.inventory.addItemStackToInventory(new ItemStack(Item.ARROW, 1)))
+                if (inGround && doesArrowBelongToPlayer && arrowShake <= 0 && player.inventory.addItemStackToInventory(new ItemStack(Item.ARROW, 1)))
                 {
                     world.playSound(this, "random.pop", 0.2F, ((random.nextFloat() - random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
-                    var1.sendPickup(this, 1);
+                    player.sendPickup(this, 1);
                     markDead();
                 }
 

@@ -24,10 +24,6 @@ namespace betareborn.Worlds.Storage
                 return false;
             }
         }
-
-        public DimensionFileFilter(Empty2 var1) : this()
-        {
-        }
     }
 
 }

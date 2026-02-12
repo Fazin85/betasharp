@@ -15,9 +15,9 @@ namespace betareborn.Inventorys
         private ItemStack cursorStack;
         public bool dirty = false;
 
-        public InventoryPlayer(EntityPlayer var1)
+        public InventoryPlayer(EntityPlayer player)
         {
-            player = var1;
+            this.player = player;
         }
 
         public static int getHotbarSize()
@@ -30,26 +30,26 @@ namespace betareborn.Inventorys
             return selectedSlot < 9 && selectedSlot >= 0 ? main[selectedSlot] : null;
         }
 
-        private int getInventorySlotContainItem(int var1)
+        private int getInventorySlotContainItem(int itemId)
         {
-            for (int var2 = 0; var2 < main.Length; ++var2)
+            for (int slotIndex = 0; slotIndex < main.Length; ++slotIndex)
             {
-                if (main[var2] != null && main[var2].itemId == var1)
+                if (main[slotIndex] != null && main[slotIndex].itemId == itemId)
                 {
-                    return var2;
+                    return slotIndex;
                 }
             }
 
             return -1;
         }
 
-        private int storeItemStack(ItemStack var1)
+        private int storeItemStack(ItemStack itemStack)
         {
-            for (int var2 = 0; var2 < main.Length; ++var2)
+            for (int slotIndex = 0; slotIndex < main.Length; ++slotIndex)
             {
-                if (main[var2] != null && main[var2].itemId == var1.itemId && main[var2].isStackable() && main[var2].count < main[var2].getMaxCount() && main[var2].count < getMaxCountPerStack() && (!main[var2].getHasSubtypes() || main[var2].getDamage() == var1.getDamage()))
+                if (main[slotIndex] != null && main[slotIndex].itemId == itemStack.itemId && main[slotIndex].isStackable() && main[slotIndex].count < main[slotIndex].getMaxCount() && main[slotIndex].count < getMaxCountPerStack() && (!main[slotIndex].getHasSubtypes() || main[slotIndex].getDamage() == itemStack.getDamage()))
                 {
-                    return var2;
+                    return slotIndex;
                 }
             }
 
@@ -58,39 +58,39 @@ namespace betareborn.Inventorys
 
         private int getFirstEmptyStack()
         {
-            for (int var1 = 0; var1 < main.Length; ++var1)
+            for (int slotIndex = 0; slotIndex < main.Length; ++slotIndex)
             {
-                if (main[var1] == null)
+                if (main[slotIndex] == null)
                 {
-                    return var1;
+                    return slotIndex;
                 }
             }
 
             return -1;
         }
 
-        public void setCurrentItem(int var1, bool var2)
+        public void setCurrentItem(int itemId, bool var2)
         {
-            int var3 = getInventorySlotContainItem(var1);
-            if (var3 >= 0 && var3 < 9)
+            int slotIndex = getInventorySlotContainItem(itemId);
+            if (slotIndex >= 0 && slotIndex < 9)
             {
-                selectedSlot = var3;
+                selectedSlot = slotIndex;
             }
         }
 
-        public void changeCurrentItem(int var1)
+        public void changeCurrentItem(int scrollDirection)
         {
-            if (var1 > 0)
+            if (scrollDirection > 0)
             {
-                var1 = 1;
+                scrollDirection = 1;
             }
 
-            if (var1 < 0)
+            if (scrollDirection < 0)
             {
-                var1 = -1;
+                scrollDirection = -1;
             }
 
-            for (selectedSlot -= var1; selectedSlot < 0; selectedSlot += 9)
+            for (selectedSlot -= scrollDirection; selectedSlot < 0; selectedSlot += 9)
             {
             }
 
@@ -101,93 +101,93 @@ namespace betareborn.Inventorys
 
         }
 
-        private int storePartialItemStack(ItemStack var1)
+        private int storePartialItemStack(ItemStack itemStack)
         {
-            int var2 = var1.itemId;
-            int var3 = var1.count;
-            int var4 = storeItemStack(var1);
-            if (var4 < 0)
+            int itemId = itemStack.itemId;
+            int remainingCount = itemStack.count;
+            int slotIndex = storeItemStack(itemStack);
+            if (slotIndex < 0)
             {
-                var4 = getFirstEmptyStack();
+                slotIndex = getFirstEmptyStack();
             }
 
-            if (var4 < 0)
+            if (slotIndex < 0)
             {
-                return var3;
+                return remainingCount;
             }
             else
             {
-                if (main[var4] == null)
+                if (main[slotIndex] == null)
                 {
-                    main[var4] = new ItemStack(var2, 0, var1.getDamage());
+                    main[slotIndex] = new ItemStack(itemId, 0, itemStack.getDamage());
                 }
 
-                int var5 = var3;
-                if (var3 > main[var4].getMaxCount() - main[var4].count)
+                int spaceAvailable = remainingCount;
+                if (remainingCount > main[slotIndex].getMaxCount() - main[slotIndex].count)
                 {
-                    var5 = main[var4].getMaxCount() - main[var4].count;
+                    spaceAvailable = main[slotIndex].getMaxCount() - main[slotIndex].count;
                 }
 
-                if (var5 > getMaxCountPerStack() - main[var4].count)
+                if (spaceAvailable > getMaxCountPerStack() - main[slotIndex].count)
                 {
-                    var5 = getMaxCountPerStack() - main[var4].count;
+                    spaceAvailable = getMaxCountPerStack() - main[slotIndex].count;
                 }
 
-                if (var5 == 0)
+                if (spaceAvailable == 0)
                 {
-                    return var3;
+                    return remainingCount;
                 }
                 else
                 {
-                    var3 -= var5;
-                    main[var4].count += var5;
-                    main[var4].bobbingAnimationTime = 5;
-                    return var3;
+                    remainingCount -= spaceAvailable;
+                    main[slotIndex].count += spaceAvailable;
+                    main[slotIndex].bobbingAnimationTime = 5;
+                    return remainingCount;
                 }
             }
         }
 
         public void inventoryTick()
         {
-            for (int var1 = 0; var1 < main.Length; ++var1)
+            for (int slotIndex = 0; slotIndex < main.Length; ++slotIndex)
             {
-                if (main[var1] != null)
+                if (main[slotIndex] != null)
                 {
-                    main[var1].inventoryTick(player.world, player, var1, selectedSlot == var1);
+                    main[slotIndex].inventoryTick(player.world, player, slotIndex, selectedSlot == slotIndex);
                 }
             }
 
         }
 
-        public bool consumeInventoryItem(int var1)
+        public bool consumeInventoryItem(int itemId)
         {
-            int var2 = getInventorySlotContainItem(var1);
-            if (var2 < 0)
+            int slotIndex = getInventorySlotContainItem(itemId);
+            if (slotIndex < 0)
             {
                 return false;
             }
             else
             {
-                if (--main[var2].count <= 0)
+                if (--main[slotIndex].count <= 0)
                 {
-                    main[var2] = null;
+                    main[slotIndex] = null;
                 }
 
                 return true;
             }
         }
 
-        public bool addItemStackToInventory(ItemStack var1)
+        public bool addItemStackToInventory(ItemStack itemStack)
         {
-            int var2;
-            if (var1.isDamaged())
+            int slotIndex;
+            if (itemStack.isDamaged())
             {
-                var2 = getFirstEmptyStack();
-                if (var2 >= 0)
+                slotIndex = getFirstEmptyStack();
+                if (slotIndex >= 0)
                 {
-                    main[var2] = ItemStack.clone(var1);
-                    main[var2].bobbingAnimationTime = 5;
-                    var1.count = 0;
+                    main[slotIndex] = ItemStack.clone(itemStack);
+                    main[slotIndex].bobbingAnimationTime = 5;
+                    itemStack.count = 0;
                     return true;
                 }
                 else
@@ -199,41 +199,41 @@ namespace betareborn.Inventorys
             {
                 do
                 {
-                    var2 = var1.count;
-                    var1.count = storePartialItemStack(var1);
-                } while (var1.count > 0 && var1.count < var2);
+                    slotIndex = itemStack.count;
+                    itemStack.count = storePartialItemStack(itemStack);
+                } while (itemStack.count > 0 && itemStack.count < slotIndex);
 
-                return var1.count < var2;
+                return itemStack.count < slotIndex;
             }
         }
 
-        public ItemStack removeStack(int var1, int var2)
+        public ItemStack removeStack(int slotIndex, int amount)
         {
-            ItemStack[] var3 = main;
-            if (var1 >= main.Length)
+            ItemStack[] targetArray = main;
+            if (slotIndex >= main.Length)
             {
-                var3 = armor;
-                var1 -= main.Length;
+                targetArray = armor;
+                slotIndex -= main.Length;
             }
 
-            if (var3[var1] != null)
+            if (targetArray[slotIndex] != null)
             {
-                ItemStack var4;
-                if (var3[var1].count <= var2)
+                ItemStack removeStack;
+                if (targetArray[slotIndex].count <= amount)
                 {
-                    var4 = var3[var1];
-                    var3[var1] = null;
-                    return var4;
+                    removeStack = targetArray[slotIndex];
+                    targetArray[slotIndex] = null;
+                    return removeStack;
                 }
                 else
                 {
-                    var4 = var3[var1].split(var2);
-                    if (var3[var1].count == 0)
+                    removeStack = targetArray[slotIndex].split(amount);
+                    if (targetArray[slotIndex].count == 0)
                     {
-                        var3[var1] = null;
+                        targetArray[slotIndex] = null;
                     }
 
-                    return var4;
+                    return removeStack;
                 }
             }
             else
@@ -242,78 +242,78 @@ namespace betareborn.Inventorys
             }
         }
 
-        public void setStack(int var1, ItemStack var2)
+        public void setStack(int slotIndex, ItemStack itemStack)
         {
-            ItemStack[] var3 = main;
-            if (var1 >= var3.Length)
+            ItemStack[] targetArray = main;
+            if (slotIndex >= targetArray.Length)
             {
-                var1 -= var3.Length;
-                var3 = armor;
+                slotIndex -= targetArray.Length;
+                targetArray = armor;
             }
 
-            var3[var1] = var2;
+            targetArray[slotIndex] = itemStack;
         }
 
-        public float getStrVsBlock(Block var1)
+        public float getStrVsBlock(Block block)
         {
-            float var2 = 1.0F;
+            float miningSpeed = 1.0F;
             if (main[selectedSlot] != null)
             {
-                var2 *= main[selectedSlot].getMiningSpeedMultiplier(var1);
+                miningSpeed *= main[selectedSlot].getMiningSpeedMultiplier(block);
             }
 
-            return var2;
+            return miningSpeed;
         }
 
-        public NBTTagList writeToNBT(NBTTagList var1)
+        public NBTTagList writeToNBT(NBTTagList nbt)
         {
-            int var2;
-            NBTTagCompound var3;
-            for (var2 = 0; var2 < main.Length; ++var2)
+            int slotIndex;
+            NBTTagCompound itemTag;
+            for (slotIndex = 0; slotIndex < main.Length; ++slotIndex)
             {
-                if (main[var2] != null)
+                if (main[slotIndex] != null)
                 {
-                    var3 = new NBTTagCompound();
-                    var3.setByte("Slot", (sbyte)var2);
-                    main[var2].writeToNBT(var3);
-                    var1.setTag(var3);
+                    itemTag = new NBTTagCompound();
+                    itemTag.setByte("Slot", (sbyte)slotIndex);
+                    main[slotIndex].writeToNBT(itemTag);
+                    nbt.setTag(itemTag);
                 }
             }
 
-            for (var2 = 0; var2 < armor.Length; ++var2)
+            for (slotIndex = 0; slotIndex < armor.Length; ++slotIndex)
             {
-                if (armor[var2] != null)
+                if (armor[slotIndex] != null)
                 {
-                    var3 = new NBTTagCompound();
-                    var3.setByte("Slot", (sbyte)(var2 + 100));
-                    armor[var2].writeToNBT(var3);
-                    var1.setTag(var3);
+                    itemTag = new NBTTagCompound();
+                    itemTag.setByte("Slot", (sbyte)(slotIndex + 100));
+                    armor[slotIndex].writeToNBT(itemTag);
+                    nbt.setTag(itemTag);
                 }
             }
 
-            return var1;
+            return nbt;
         }
 
-        public void readFromNBT(NBTTagList var1)
+        public void readFromNBT(NBTTagList nbt)
         {
             main = new ItemStack[36];
             armor = new ItemStack[4];
 
-            for (int var2 = 0; var2 < var1.tagCount(); ++var2)
+            for (int i = 0; i < nbt.tagCount(); ++i)
             {
-                NBTTagCompound var3 = (NBTTagCompound)var1.tagAt(var2);
-                int var4 = var3.getByte("Slot") & 255;
-                ItemStack var5 = new ItemStack(var3);
-                if (var5.getItem() != null)
+                NBTTagCompound itemTag = (NBTTagCompound)nbt.tagAt(i);
+                int slotIndex = itemTag.getByte("Slot") & 255;
+                ItemStack itemStack = new ItemStack(itemTag);
+                if (itemStack.getItem() != null)
                 {
-                    if (var4 >= 0 && var4 < main.Length)
+                    if (slotIndex >= 0 && slotIndex < main.Length)
                     {
-                        main[var4] = var5;
+                        main[slotIndex] = itemStack;
                     }
 
-                    if (var4 >= 100 && var4 < armor.Length + 100)
+                    if (slotIndex >= 100 && slotIndex < armor.Length + 100)
                     {
-                        armor[var4 - 100] = var5;
+                        armor[slotIndex - 100] = itemStack;
                     }
                 }
             }
@@ -325,16 +325,16 @@ namespace betareborn.Inventorys
             return main.Length + 4;
         }
 
-        public ItemStack getStack(int var1)
+        public ItemStack getStack(int slotIndex)
         {
-            ItemStack[] var2 = main;
-            if (var1 >= var2.Length)
+            ItemStack[] targetArray = main;
+            if (slotIndex >= targetArray.Length)
             {
-                var1 -= var2.Length;
-                var2 = armor;
+                slotIndex -= targetArray.Length;
+                targetArray = armor;
             }
 
-            return var2[var1];
+            return targetArray[slotIndex];
         }
 
         public string getName()
@@ -347,71 +347,71 @@ namespace betareborn.Inventorys
             return 64;
         }
 
-        public int getDamageVsEntity(Entity var1)
+        public int getDamageVsEntity(Entity entity)
         {
-            ItemStack var2 = getStack(selectedSlot);
-            return var2 != null ? var2.getAttackDamage(var1) : 1;
+            ItemStack itemStack = getStack(selectedSlot);
+            return itemStack != null ? itemStack.getAttackDamage(entity) : 1;
         }
 
-        public bool canHarvestBlock(Block var1)
+        public bool canHarvestBlock(Block block)
         {
-            if (var1.material.isHandHarvestable())
+            if (block.material.isHandHarvestable())
             {
                 return true;
             }
             else
             {
-                ItemStack var2 = getStack(selectedSlot);
-                return var2 != null ? var2.isSuitableFor(var1) : false;
+                ItemStack itemStack = getStack(selectedSlot);
+                return itemStack != null ? itemStack.isSuitableFor(block) : false;
             }
         }
 
-        public ItemStack armorItemInSlot(int var1)
+        public ItemStack armorItemInSlot(int slotIndex)
         {
-            return armor[var1];
+            return armor[slotIndex];
         }
 
         public int getTotalArmorValue()
         {
-            int var1 = 0;
-            int var2 = 0;
-            int var3 = 0;
+            int totalArmor = 0;
+            int durabilitySum = 0;
+            int totalMaxDurability = 0;
 
-            for (int var4 = 0; var4 < armor.Length; ++var4)
+            for (int slotIndex = 0; slotIndex < armor.Length; ++slotIndex)
             {
-                if (armor[var4] != null && armor[var4].getItem() is ItemArmor)
+                if (armor[slotIndex] != null && armor[slotIndex].getItem() is ItemArmor)
                 {
-                    int var5 = armor[var4].getMaxDamage();
-                    int var6 = armor[var4].getDamage2();
-                    int var7 = var5 - var6;
-                    var2 += var7;
-                    var3 += var5;
-                    int var8 = ((ItemArmor)armor[var4].getItem()).damageReduceAmount;
-                    var1 += var8;
+                    int maxDurability = armor[slotIndex].getMaxDamage();
+                    int pieceDamage = armor[slotIndex].getDamage2();
+                    int remainingDurability = maxDurability - pieceDamage;
+                    durabilitySum += remainingDurability;
+                    totalMaxDurability += maxDurability;
+                    int armorValue = ((ItemArmor)armor[slotIndex].getItem()).damageReduceAmount;
+                    totalArmor += armorValue;
                 }
             }
 
-            if (var3 == 0)
+            if (totalMaxDurability == 0)
             {
                 return 0;
             }
             else
             {
-                return (var1 - 1) * var2 / var3 + 1;
+                return (totalArmor - 1) * durabilitySum / totalMaxDurability + 1;
             }
         }
 
         public void damageArmor(int durabilityLoss)
         {
-            for (int var2 = 0; var2 < armor.Length; ++var2)
+            for (int slotIndex = 0; slotIndex < armor.Length; ++slotIndex)
             {
-                if (armor[var2] != null && armor[var2].getItem() is ItemArmor)
+                if (armor[slotIndex] != null && armor[slotIndex].getItem() is ItemArmor)
                 {
-                    armor[var2].damageItem(durabilityLoss, player);
-                    if (armor[var2].count == 0)
+                    armor[slotIndex].damageItem(durabilityLoss, player);
+                    if (armor[slotIndex].count == 0)
                     {
-                        armor[var2].onRemoved(player);
-                        armor[var2] = null;
+                        armor[slotIndex].onRemoved(player);
+                        armor[slotIndex] = null;
                     }
                 }
             }
@@ -420,22 +420,22 @@ namespace betareborn.Inventorys
 
         public void dropInventory()
         {
-            int var1;
-            for (var1 = 0; var1 < main.Length; ++var1)
+            int slotIndex;
+            for (slotIndex = 0; slotIndex < main.Length; ++slotIndex)
             {
-                if (main[var1] != null)
+                if (main[slotIndex] != null)
                 {
-                    player.dropItem(main[var1], true);
-                    main[var1] = null;
+                    player.dropItem(main[slotIndex], true);
+                    main[slotIndex] = null;
                 }
             }
 
-            for (var1 = 0; var1 < armor.Length; ++var1)
+            for (slotIndex = 0; slotIndex < armor.Length; ++slotIndex)
             {
-                if (armor[var1] != null)
+                if (armor[slotIndex] != null)
                 {
-                    player.dropItem(armor[var1], true);
-                    armor[var1] = null;
+                    player.dropItem(armor[slotIndex], true);
+                    armor[slotIndex] = null;
                 }
             }
 
@@ -446,10 +446,10 @@ namespace betareborn.Inventorys
             dirty = true;
         }
 
-        public void setItemStack(ItemStack var1)
+        public void setItemStack(ItemStack itemStack)
         {
-            cursorStack = var1;
-            player.onCursorStackChanged(var1);
+            cursorStack = itemStack;
+            player.onCursorStackChanged(itemStack);
         }
 
         public ItemStack getCursorStack()
@@ -457,25 +457,25 @@ namespace betareborn.Inventorys
             return cursorStack;
         }
 
-        public bool canPlayerUse(EntityPlayer var1)
+        public bool canPlayerUse(EntityPlayer entityPlayer)
         {
-            return player.dead ? false : var1.getSquaredDistance(player) <= 64.0D;
+            return player.dead ? false : entityPlayer.getSquaredDistance(player) <= 64.0D;
         }
 
-        public bool contains(ItemStack var1)
+        public bool contains(ItemStack itemStack)
         {
-            int var2;
-            for (var2 = 0; var2 < armor.Length; ++var2)
+            int slotIndex;
+            for (slotIndex = 0; slotIndex < armor.Length; ++slotIndex)
             {
-                if (armor[var2] != null && armor[var2].equals(var1))
+                if (armor[slotIndex] != null && armor[slotIndex].equals(itemStack))
                 {
                     return true;
                 }
             }
 
-            for (var2 = 0; var2 < main.Length; ++var2)
+            for (slotIndex = 0; slotIndex < main.Length; ++slotIndex)
             {
-                if (main[var2] != null && main[var2].equals(var1))
+                if (main[slotIndex] != null && main[slotIndex].equals(itemStack))
                 {
                     return true;
                 }

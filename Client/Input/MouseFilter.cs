@@ -1,4 +1,4 @@
-namespace betareborn
+namespace betareborn.Client.Input
 {
     public class MouseFilter : java.lang.Object
     {
@@ -6,7 +6,7 @@ namespace betareborn
         private float field_22387_b;
         private float field_22389_c;
 
-        public float func_22386_a(float var1, float var2)
+        public float Smooth(float var1, float var2)
         {
             field_22388_a += var1;
             var1 = (field_22388_a - field_22387_b) * var2;

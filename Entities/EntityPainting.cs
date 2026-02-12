@@ -11,154 +11,154 @@ namespace betareborn.Entities
     {
         public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityPainting).TypeHandle);
 
-        private int field_695_c;
+        private int tickCounter;
         public int direction;
         public int xPosition;
         public int yPosition;
         public int zPosition;
         public EnumArt art;
 
-        public EntityPainting(World var1) : base(var1)
+        public EntityPainting(World world) : base(world)
         {
-            field_695_c = 0;
+            tickCounter = 0;
             direction = 0;
             standingEyeHeight = 0.0F;
             setBoundingBoxSpacing(0.5F, 0.5F);
         }
 
-        public EntityPainting(World var1, int var2, int var3, int var4, int var5) : this(var1)
+        public EntityPainting(World world, int xPosition, int yPosition, int zPosition, int direction) : this(world)
         {
-            xPosition = var2;
-            yPosition = var3;
-            zPosition = var4;
-            ArrayList var6 = new ArrayList();
-            EnumArt[] var7 = EnumArt.values;
-            int var8 = var7.Length;
+            this.xPosition = xPosition;
+            this.yPosition = yPosition;
+            this.zPosition = zPosition;
+            ArrayList validPaintings = new ArrayList();
+            EnumArt[] availablePaintings = EnumArt.values;
+            int artCount = availablePaintings.Length;
 
-            for (int var9 = 0; var9 < var8; ++var9)
+            for (int i = 0; i < artCount; ++i)
             {
-                EnumArt var10 = var7[var9];
-                art = var10;
-                func_412_b(var5);
-                if (func_410_i())
+                EnumArt art = availablePaintings[i];
+                this.art = art;
+                setFacing(direction);
+                if (canHangOnWall())
                 {
-                    var6.add(var10);
+                    validPaintings.add(art);
                 }
             }
 
-            if (var6.size() > 0)
+            if (validPaintings.size() > 0)
             {
-                art = (EnumArt)var6.get(random.nextInt(var6.size()));
+                art = (EnumArt)validPaintings.get(random.nextInt(validPaintings.size()));
             }
 
-            func_412_b(var5);
+            setFacing(direction);
         }
 
-        public EntityPainting(World var1, int var2, int var3, int var4, int var5, String var6) : this(var1)
+        public EntityPainting(World world, int x, int y, int z, int direction, String title) : this(world)
         {
-            xPosition = var2;
-            yPosition = var3;
-            zPosition = var4;
-            EnumArt[] var7 = EnumArt.values;
-            int var8 = var7.Length;
+            xPosition = x;
+            yPosition = y;
+            zPosition = z;
+            EnumArt[] availablePaintings = EnumArt.values;
+            int artCount = availablePaintings.Length;
 
-            for (int var9 = 0; var9 < var8; ++var9)
+            for (int i = 0; i < artCount; ++i)
             {
-                EnumArt var10 = var7[var9];
-                if (var10.title.Equals(var6))
+                EnumArt art = availablePaintings[i];
+                if (art.title.Equals(title))
                 {
-                    art = var10;
+                    this.art = art;
                     break;
                 }
             }
 
-            func_412_b(var5);
+            setFacing(direction);
         }
 
         protected override void initDataTracker()
         {
         }
 
-        public void func_412_b(int var1)
+        public void setFacing(int facing)
         {
-            direction = var1;
-            prevYaw = yaw = (float)(var1 * 90);
-            float var2 = (float)art.sizeX;
-            float var3 = (float)art.sizeY;
-            float var4 = (float)art.sizeX;
-            if (var1 != 0 && var1 != 2)
+            direction = facing;
+            prevYaw = yaw = (float)(facing * 90);
+            float halfWidth = (float)art.sizeX;
+            float halfHeight = (float)art.sizeY;
+            float halfDepth = (float)art.sizeX;
+            if (facing != 0 && facing != 2)
             {
-                var2 = 0.5F;
+                halfWidth = 0.5F;
             }
             else
             {
-                var4 = 0.5F;
+                halfDepth = 0.5F;
             }
 
-            var2 /= 32.0F;
-            var3 /= 32.0F;
-            var4 /= 32.0F;
-            float var5 = (float)xPosition + 0.5F;
-            float var6 = (float)yPosition + 0.5F;
-            float var7 = (float)zPosition + 0.5F;
-            float var8 = 9.0F / 16.0F;
-            if (var1 == 0)
+            halfWidth /= 32.0F;
+            halfHeight /= 32.0F;
+            halfDepth /= 32.0F;
+            float centerX = (float)xPosition + 0.5F;
+            float centerY = (float)yPosition + 0.5F;
+            float centerZ = (float)zPosition + 0.5F;
+            float wallOffset = 9.0F / 16.0F;
+            if (facing == 0)
             {
-                var7 -= var8;
+                centerZ -= wallOffset;
             }
 
-            if (var1 == 1)
+            if (facing == 1)
             {
-                var5 -= var8;
+                centerX -= wallOffset;
             }
 
-            if (var1 == 2)
+            if (facing == 2)
             {
-                var7 += var8;
+                centerZ += wallOffset;
             }
 
-            if (var1 == 3)
+            if (facing == 3)
             {
-                var5 += var8;
+                centerX += wallOffset;
             }
 
-            if (var1 == 0)
+            if (facing == 0)
             {
-                var5 -= func_411_c(art.sizeX);
+                centerX -= getArtOffset(art.sizeX);
             }
 
-            if (var1 == 1)
+            if (facing == 1)
             {
-                var7 += func_411_c(art.sizeX);
+                centerZ += getArtOffset(art.sizeX);
             }
 
-            if (var1 == 2)
+            if (facing == 2)
             {
-                var5 += func_411_c(art.sizeX);
+                centerX += getArtOffset(art.sizeX);
             }
 
-            if (var1 == 3)
+            if (facing == 3)
             {
-                var7 -= func_411_c(art.sizeX);
+                centerZ -= getArtOffset(art.sizeX);
             }
 
-            var6 += func_411_c(art.sizeY);
-            setPosition((double)var5, (double)var6, (double)var7);
-            float var9 = -(0.1F / 16.0F);
-            boundingBox = new Box((double)(var5 - var2 - var9), (double)(var6 - var3 - var9), (double)(var7 - var4 - var9), (double)(var5 + var2 + var9), (double)(var6 + var3 + var9), (double)(var7 + var4 + var9));
+            centerY += getArtOffset(art.sizeY);
+            setPosition((double)centerX, (double)centerY, (double)centerZ);
+            float margin = -(0.1F / 16.0F);
+            boundingBox = new Box((double)(centerX - halfWidth - margin), (double)(centerY - halfHeight - margin), (double)(centerZ - halfDepth - margin), (double)(centerX + halfWidth + margin), (double)(centerY + halfHeight + margin), (double)(centerZ + halfDepth + margin));
         }
 
-        private float func_411_c(int var1)
+        private float getArtOffset(int artSize)
         {
-            return var1 == 32 ? 0.5F : (var1 == 64 ? 0.5F : 0.0F);
+            return artSize == 32 ? 0.5F : (artSize == 64 ? 0.5F : 0.0F);
         }
 
         public override void tick()
         {
-            if (field_695_c++ == 100 && !world.isRemote)
+            if (tickCounter++ == 100 && !world.isRemote)
             {
-                field_695_c = 0;
-                if (!func_410_i())
+                tickCounter = 0;
+                if (!canHangOnWall())
                 {
                     markDead();
                     world.spawnEntity(new EntityItem(world, x, y, z, new ItemStack(Item.PAINTING)));
@@ -167,7 +167,7 @@ namespace betareborn.Entities
 
         }
 
-        public bool func_410_i()
+        public bool canHangOnWall()
         {
             if (world.getEntityCollisions(this, boundingBox).Count > 0)
             {
@@ -175,60 +175,60 @@ namespace betareborn.Entities
             }
             else
             {
-                int var1 = art.sizeX / 16;
-                int var2 = art.sizeY / 16;
-                int var3 = xPosition;
-                int var4 = yPosition;
-                int var5 = zPosition;
+                int widthInBlocks = art.sizeX / 16;
+                int heightInBlocks = art.sizeY / 16;
+                int startX = xPosition;
+                int startY = yPosition;
+                int startZ = zPosition;
                 if (direction == 0)
                 {
-                    var3 = MathHelper.floor_double(x - (double)((float)art.sizeX / 32.0F));
+                    startX = MathHelper.floor_double(x - (double)((float)art.sizeX / 32.0F));
                 }
 
                 if (direction == 1)
                 {
-                    var5 = MathHelper.floor_double(z - (double)((float)art.sizeX / 32.0F));
+                    startZ = MathHelper.floor_double(z - (double)((float)art.sizeX / 32.0F));
                 }
 
                 if (direction == 2)
                 {
-                    var3 = MathHelper.floor_double(x - (double)((float)art.sizeX / 32.0F));
+                    startX = MathHelper.floor_double(x - (double)((float)art.sizeX / 32.0F));
                 }
 
                 if (direction == 3)
                 {
-                    var5 = MathHelper.floor_double(z - (double)((float)art.sizeX / 32.0F));
+                    startZ = MathHelper.floor_double(z - (double)((float)art.sizeX / 32.0F));
                 }
 
-                var4 = MathHelper.floor_double(y - (double)((float)art.sizeY / 32.0F));
+                startY = MathHelper.floor_double(y - (double)((float)art.sizeY / 32.0F));
 
-                int var7;
-                for (int var6 = 0; var6 < var1; ++var6)
+                int dy;
+                for (int dx = 0; dx < widthInBlocks; ++dx)
                 {
-                    for (var7 = 0; var7 < var2; ++var7)
+                    for (dy = 0; dy < heightInBlocks; ++dy)
                     {
-                        Material var8;
+                        Material material;
                         if (direction != 0 && direction != 2)
                         {
-                            var8 = world.getMaterial(xPosition, var4 + var7, var5 + var6);
+                            material = world.getMaterial(xPosition, startY + dy, startZ + dx);
                         }
                         else
                         {
-                            var8 = world.getMaterial(var3 + var6, var4 + var7, zPosition);
+                            material = world.getMaterial(startX + dx, startY + dy, zPosition);
                         }
 
-                        if (!var8.isSolid())
+                        if (!material.isSolid())
                         {
                             return false;
                         }
                     }
                 }
 
-                var var9 = world.getEntities(this, boundingBox);
+                var entitiesInBox = world.getEntities(this, boundingBox);
 
-                for (var7 = 0; var7 < var9.Count; ++var7)
+                for (dy = 0; dy < entitiesInBox.Count; ++dy)
                 {
-                    if (var9[var7] is EntityPainting)
+                    if (entitiesInBox[dy] is EntityPainting)
                     {
                         return false;
                     }
@@ -243,7 +243,7 @@ namespace betareborn.Entities
             return true;
         }
 
-        public override bool damage(Entity var1, int var2)
+        public override bool damage(Entity entity, int amount)
         {
             if (!dead && !world.isRemote)
             {
@@ -255,31 +255,31 @@ namespace betareborn.Entities
             return true;
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            var1.setByte("Dir", (sbyte)direction);
-            var1.setString("Motive", art.title);
-            var1.setInteger("TileX", xPosition);
-            var1.setInteger("TileY", yPosition);
-            var1.setInteger("TileZ", zPosition);
+            nbt.setByte("Dir", (sbyte)direction);
+            nbt.setString("Motive", art.title);
+            nbt.setInteger("TileX", xPosition);
+            nbt.setInteger("TileY", yPosition);
+            nbt.setInteger("TileZ", zPosition);
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            direction = var1.getByte("Dir");
-            xPosition = var1.getInteger("TileX");
-            yPosition = var1.getInteger("TileY");
-            zPosition = var1.getInteger("TileZ");
-            String var2 = var1.getString("Motive");
-            EnumArt[] var3 = EnumArt.values;
-            int var4 = var3.Length;
+            direction = nbt.getByte("Dir");
+            xPosition = nbt.getInteger("TileX");
+            yPosition = nbt.getInteger("TileY");
+            zPosition = nbt.getInteger("TileZ");
+            String motiveTitle = nbt.getString("Motive");
+            EnumArt[] allArt = EnumArt.values;
+            int artCount = allArt.Length;
 
-            for (int var5 = 0; var5 < var4; ++var5)
+            for (int i = 0; i < artCount; ++i)
             {
-                EnumArt var6 = var3[var5];
-                if (var6.title.Equals(var2))
+                EnumArt candidateArt = allArt[i];
+                if (candidateArt.title.Equals(motiveTitle))
                 {
-                    art = var6;
+                    art = candidateArt;
                 }
             }
 
@@ -288,12 +288,12 @@ namespace betareborn.Entities
                 art = EnumArt.Kebab;
             }
 
-            func_412_b(direction);
+            setFacing(direction);
         }
 
-        public override void move(double var1, double var3, double var5)
+        public override void move(double dx, double dy, double dz)
         {
-            if (!world.isRemote && var1 * var1 + var3 * var3 + var5 * var5 > 0.0D)
+            if (!world.isRemote && dx * dx + dy * dy + dz * dz > 0.0D)
             {
                 markDead();
                 world.spawnEntity(new EntityItem(world, x, y, z, new ItemStack(Item.PAINTING)));
@@ -301,9 +301,9 @@ namespace betareborn.Entities
 
         }
 
-        public override void addVelocity(double var1, double var3, double var5)
+        public override void addVelocity(double dx, double dy, double dz)
         {
-            if (!world.isRemote && var1 * var1 + var3 * var3 + var5 * var5 > 0.0D)
+            if (!world.isRemote && dx * dx + dy * dy + dz * dz > 0.0D)
             {
                 markDead();
                 world.spawnEntity(new EntityItem(world, x, y, z, new ItemStack(Item.PAINTING)));

@@ -129,7 +129,7 @@ namespace betareborn.Server.Entities
                 }
 
                 DataWatcher var23 = currentTrackedEntity.getDataWatcher();
-                if (var23.isDirty())
+                if (var23.dirty)
                 {
                     sendToAround(new EntityTrackerUpdateS2CPacket(currentTrackedEntity.id, var23));
                 }

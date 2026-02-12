@@ -103,7 +103,7 @@ namespace betareborn.Network.Packets
             PacketTracker var4 = (PacketTracker)trackers.get(Integer.valueOf(var6));
             if (var4 == null)
             {
-                var4 = new PacketTracker(null);
+                var4 = new PacketTracker();
                 trackers.put(Integer.valueOf(var6), var4);
             }
 

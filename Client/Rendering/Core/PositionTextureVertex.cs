@@ -1,6 +1,6 @@
 using Silk.NET.Maths;
 
-namespace betareborn
+namespace betareborn.Client.Rendering.Core
 {
     public struct PositionTextureVertex
     {

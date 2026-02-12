@@ -54,7 +54,7 @@ namespace betareborn.Client.Rendering.Entitys
                 preRenderCallback(var1, var9);
                 GLManager.GL.Translate(0.0F, -24.0F * var14 - 0.0078125F, 0.0F);
                 float var15 = var1.lastWalkAnimationSpeed + (var1.walkAnimationSpeed - var1.lastWalkAnimationSpeed) * var9;
-                float var16 = var1.field_703_S - var1.walkAnimationSpeed * (1.0F - var9);
+                float var16 = var1.animationPhase - var1.walkAnimationSpeed * (1.0F - var9);
                 if (var15 > 1.0F)
                 {
                     var15 = 1.0F;

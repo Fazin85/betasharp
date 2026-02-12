@@ -1,6 +1,6 @@
 ﻿using Silk.NET.GLFW;
 
-namespace betareborn.Client {
+namespace betareborn.Client.Input {
     public class Keyboard {
         public const int EVENT_SIZE = 4 + 1 + 4 + 8 + 1;
 

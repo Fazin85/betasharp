@@ -6,45 +6,42 @@ namespace betareborn.Entities
     public class EntityFlameFX : EntityFX
     {
 
-        private float field_672_a;
+        private float baseScale;
 
-        public EntityFlameFX(World var1, double var2, double var4, double var6, double var8, double var10, double var12) : base(var1, var2, var4, var6, var8, var10, var12)
+        public EntityFlameFX(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) : base(world, x, y, z, velocityX, velocityY, velocityZ)
         {
-            velocityX = velocityX * (double)0.01F + var8;
-            velocityY = velocityY * (double)0.01F + var10;
-            velocityZ = velocityZ * (double)0.01F + var12;
-            double var10000 = var2 + (double)((random.nextFloat() - random.nextFloat()) * 0.05F);
-            var10000 = var4 + (double)((random.nextFloat() - random.nextFloat()) * 0.05F);
-            var10000 = var6 + (double)((random.nextFloat() - random.nextFloat()) * 0.05F);
-            field_672_a = particleScale;
+            base.velocityX = base.velocityX * (double)0.01F + velocityX;
+            base.velocityY = base.velocityY * (double)0.01F + velocityY;
+            base.velocityZ = base.velocityZ * (double)0.01F + velocityZ;
+            baseScale = particleScale;
             particleRed = particleGreen = particleBlue = 1.0F;
             particleMaxAge = (int)(8.0D / (java.lang.Math.random() * 0.8D + 0.2D)) + 4;
             noClip = true;
             particleTextureIndex = 48;
         }
 
-        public override void renderParticle(Tessellator var1, float var2, float var3, float var4, float var5, float var6, float var7)
+        public override void renderParticle(Tessellator t, float partialTick, float rotX, float rotY, float rotZ, float upX, float upZ)
         {
-            float var8 = ((float)particleAge + var2) / (float)particleMaxAge;
-            particleScale = field_672_a * (1.0F - var8 * var8 * 0.5F);
-            base.renderParticle(var1, var2, var3, var4, var5, var6, var7);
+            float lifeProgress = ((float)particleAge + partialTick) / (float)particleMaxAge;
+            particleScale = baseScale * (1.0F - lifeProgress * lifeProgress * 0.5F);
+            base.renderParticle(t, partialTick, rotX, rotY, rotZ, upX, upZ);
         }
 
-        public override float getBrightnessAtEyes(float var1)
+        public override float getBrightnessAtEyes(float partialTick)
         {
-            float var2 = ((float)particleAge + var1) / (float)particleMaxAge;
-            if (var2 < 0.0F)
+            float lifeProgress = ((float)particleAge + partialTick) / (float)particleMaxAge;
+            if (lifeProgress < 0.0F)
             {
-                var2 = 0.0F;
+                lifeProgress = 0.0F;
             }
 
-            if (var2 > 1.0F)
+            if (lifeProgress > 1.0F)
             {
-                var2 = 1.0F;
+                lifeProgress = 1.0F;
             }
 
-            float var3 = base.getBrightnessAtEyes(var1);
-            return var3 * var2 + (1.0F - var2);
+            float baseBrightness = base.getBrightnessAtEyes(partialTick);
+            return baseBrightness * lifeProgress + (1.0F - lifeProgress);
         }
 
         public override void tick()

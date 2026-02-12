@@ -9,11 +9,11 @@ namespace betareborn.Inventorys
         private IInventory upperChest;
         private IInventory lowerChest;
 
-        public InventoryLargeChest(string var1, IInventory var2, IInventory var3)
+        public InventoryLargeChest(string name, IInventory upperChest, IInventory lowerChest)
         {
-            name = var1;
-            upperChest = var2;
-            lowerChest = var3;
+            this.name = name;
+            this.upperChest = upperChest;
+            this.lowerChest = lowerChest;
         }
 
         public int size()
@@ -26,25 +26,25 @@ namespace betareborn.Inventorys
             return name;
         }
 
-        public ItemStack getStack(int var1)
+        public ItemStack getStack(int slotIndex)
         {
-            return var1 >= upperChest.size() ? lowerChest.getStack(var1 - upperChest.size()) : upperChest.getStack(var1);
+            return slotIndex >= upperChest.size() ? lowerChest.getStack(slotIndex - upperChest.size()) : upperChest.getStack(slotIndex);
         }
 
-        public ItemStack removeStack(int var1, int var2)
+        public ItemStack removeStack(int slotIndex, int amount)
         {
-            return var1 >= upperChest.size() ? lowerChest.removeStack(var1 - upperChest.size(), var2) : upperChest.removeStack(var1, var2);
+            return slotIndex >= upperChest.size() ? lowerChest.removeStack(slotIndex - upperChest.size(), amount) : upperChest.removeStack(slotIndex, amount);
         }
 
-        public void setStack(int var1, ItemStack var2)
+        public void setStack(int slotIndex, ItemStack itemStack)
         {
-            if (var1 >= upperChest.size())
+            if (slotIndex >= upperChest.size())
             {
-                lowerChest.setStack(var1 - upperChest.size(), var2);
+                lowerChest.setStack(slotIndex - upperChest.size(), itemStack);
             }
             else
             {
-                upperChest.setStack(var1, var2);
+                upperChest.setStack(slotIndex, itemStack);
             }
 
         }
@@ -60,9 +60,9 @@ namespace betareborn.Inventorys
             lowerChest.markDirty();
         }
 
-        public bool canPlayerUse(EntityPlayer var1)
+        public bool canPlayerUse(EntityPlayer entityPlayer)
         {
-            return upperChest.canPlayerUse(var1) && lowerChest.canPlayerUse(var1);
+            return upperChest.canPlayerUse(entityPlayer) && lowerChest.canPlayerUse(entityPlayer);
         }
     }
 

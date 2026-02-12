@@ -7,231 +7,212 @@ using java.util;
 
 namespace betareborn
 {
-    public class DataWatcher : java.lang.Object
+    public class DataWatcher
     {
-        private static readonly HashMap dataTypes = [];
-        private readonly Map watchedObjects = new HashMap();
-        private bool dirty;
-
-        public void addObject(int var1, java.lang.Object var2)
+        private static readonly Dictionary<Type, int> dataTypes = [];
+        
+        private readonly Dictionary<int, WatchableObject> watchedObjects = new();
+        public bool dirty { get; private set; }
+    
+        public void addObject(int id, java.lang.Object value)
         {
-            Integer var3 = (Integer)dataTypes.get(var2.GetType());
-            if (var3 == null)
+            if (!dataTypes.TryGetValue(value.GetType(), out int typeId)) 
             {
-                throw new ArgumentException("Unknown data type: " + var2.GetType());
+                throw new ArgumentException("Unknown data type: " + value.GetType());
             }
-            else if (var1 > 31)
+
+            if (id > 31)
             {
-                throw new ArgumentException("Data value id is too big with " + var1 + "! (Max is " + 31 + ")");
+                throw new ArgumentException("Data value id is too big with " + id + "! (Max is " + 31 + ")");
             }
-            else if (watchedObjects.containsKey(Integer.valueOf(var1)))
+
+            if (watchedObjects.ContainsKey(id))
             {
-                throw new ArgumentException("Duplicate id value for " + var1 + "!");
+                throw new ArgumentException("Duplicate id value for " + id + "!");
             }
-            else
-            {
-                WatchableObject var4 = new(var3.intValue(), var1, var2);
-                watchedObjects.put(Integer.valueOf(var1), var4);
-            }
+
+            watchedObjects[id] = new WatchableObject(typeId, id, value);
         }
 
-        public bool isDirty()
+        public List getDirtyEntries()
         {
-            return dirty;
-        }
-
-        public ArrayList getDirtyEntries()
-        {
-            ArrayList var1 = null;
+            List res = null;
             if (dirty)
             {
-                var collection = watchedObjects.values();
-                var iter = collection.iterator();
-                while (iter.hasNext())
+                foreach (var obj in watchedObjects.Values)
                 {
-                    WatchableObject var3 = (WatchableObject)iter.next();
-
-                    if (var3.getWatching())
+                    if (obj.dirty)
                     {
-                        var3.setWatching(false);
-                        if (var1 == null)
-                        {
-                            var1 = new ArrayList();
-                        }
-
-                        var1.add(var3);
+                        if (res == null) res = new ArrayList();
+                        
+                        obj.dirty = false;
+                        res.add(obj);
                     }
                 }
             }
 
             dirty = false;
-            return var1;
+            return res;
         }
 
-        public sbyte getWatchableObjectByte(int var1)
+        public sbyte getWatchableObjectByte(int id)
         {
-            return (sbyte)((java.lang.Byte)((WatchableObject)watchedObjects.get(Integer.valueOf(var1))).getObject()).byteValue();
+            return (sbyte)((java.lang.Byte)watchedObjects[id].watchedObject).byteValue();
         }
 
-        public int getWatchableObjectInt(int var1)
+        public int getWatchableObjectInt(int id)
         {
-            return ((Integer)((WatchableObject)watchedObjects.get(Integer.valueOf(var1))).getObject()).intValue();
+            return ((Integer)watchedObjects[id].watchedObject).intValue();
+        }
+        
+        public string getWatchableObjectString(int id)
+        {
+            return ((JString)watchedObjects[id].watchedObject).value;
         }
 
-        public string getWatchableObjectString(int var1)
+        public void updateObject(int id, java.lang.Object value)
         {
-            return ((JString)((WatchableObject)watchedObjects.get(Integer.valueOf(var1))).getObject()).value;
-        }
-
-        public void updateObject(int var1, java.lang.Object var2)
-        {
-            WatchableObject var3 = (WatchableObject)watchedObjects.get(Integer.valueOf(var1));
-            if (!var2.Equals(var3.getObject()))
+            WatchableObject obj = watchedObjects[id];
+            if (!value.Equals(obj.watchedObject))
             {
-                var3.setObject(var2);
-                var3.setWatching(true);
+                obj.watchedObject = value;
+                obj.dirty = true;
                 dirty = true;
             }
         }
 
-        public static void writeObjectsInListToStream(List var0, DataOutputStream var1)
+        public static void writeObjectsInListToStream(List list, DataOutputStream stream)
         {
-            if (var0 != null)
+            if (list != null)
             {
-                Iterator var2 = var0.iterator();
-
-                while (var2.hasNext())
+                Iterator it = list.iterator();
+                while (it.hasNext())
                 {
-                    WatchableObject var3 = (WatchableObject)var2.next();
-                    writeWatchableObject(var1, var3);
+                    var obj = (WatchableObject)it.next();
+                    writeWatchableObject(stream, obj);
                 }
             }
 
-            var1.writeByte(127);
+            stream.writeByte(127);
         }
 
-        public void writeWatchableObjects(DataOutputStream var1)
+        public void writeWatchableObjects(DataOutputStream stream)
         {
-            Iterator var2 = watchedObjects.values().iterator();
-
-            while (var2.hasNext())
+            foreach (var obj in watchedObjects.Values)
             {
-                WatchableObject var3 = (WatchableObject)var2.next();
-                writeWatchableObject(var1, var3);
+                writeWatchableObject(stream, obj);
             }
 
-            var1.writeByte(127);
+            stream.writeByte(127);
         }
 
-        private static void writeWatchableObject(DataOutputStream var0, WatchableObject var1)
+        private static void writeWatchableObject(DataOutputStream stream, WatchableObject obj)
         {
-            int var2 = (var1.getObjectType() << 5 | var1.getDataValueId() & 31) & 255;
-            var0.writeByte(var2);
-            switch (var1.getObjectType())
+            int header = (obj.objectType << 5 | obj.dataValueId & 31) & 255;
+            stream.writeByte(header);
+            switch (obj.objectType)
             {
                 case 0:
-                    var0.writeByte(((java.lang.Byte)var1.getObject()).byteValue());
+                    stream.writeByte(((java.lang.Byte)obj.watchedObject).byteValue());
                     break;
                 case 1:
-                    var0.writeShort(((Short)var1.getObject()).shortValue());
+                    stream.writeShort(((Short)obj.watchedObject).shortValue());
                     break;
                 case 2:
-                    var0.writeInt(((Integer)var1.getObject()).intValue());
+                    stream.writeInt(((Integer)obj.watchedObject).intValue());
                     break;
                 case 3:
-                    var0.writeFloat(((Float)var1.getObject()).floatValue());
+                    stream.writeFloat(((Float)obj.watchedObject).floatValue());
                     break;
                 case 4:
-                    Packet.writeString(((JString)var1.getObject()).value, var0);
+                    Packet.writeString(((JString)obj.watchedObject).value, stream);
                     break;
                 case 5:
-                    ItemStack var4 = (ItemStack)var1.getObject();
-                    var0.writeShort(var4.getItem().id);
-                    var0.writeByte(var4.count);
-                    var0.writeShort(var4.getDamage());
+                    ItemStack item = (ItemStack)obj.watchedObject;
+                    stream.writeShort(item.getItem().id);
+                    stream.writeByte(item.count);
+                    stream.writeShort(item.getDamage());
                     break;
                 case 6:
-                    Vec3i var3 = (Vec3i)var1.getObject();
-                    var0.writeInt(var3.x);
-                    var0.writeInt(var3.y);
-                    var0.writeInt(var3.z);
+                    Vec3i vec = (Vec3i)obj.watchedObject;
+                    stream.writeInt(vec.x);
+                    stream.writeInt(vec.y);
+                    stream.writeInt(vec.z);
                     break;
             }
         }
 
-        public static List readWatchableObjects(DataInputStream var0)
+        public static List readWatchableObjects(DataInputStream stream)
         {
-            ArrayList var1 = null;
+            ArrayList res = null;
 
-            for (sbyte var2 = (sbyte)var0.readByte(); var2 != 127; var2 = (sbyte)var0.readByte())
+            for (sbyte b = (sbyte)stream.readByte(); b != 127; b = (sbyte)stream.readByte())
             {
-                var1 ??= [];
+                res ??= [];
 
-                int var3 = (var2 & 224) >> 5;
-                int var4 = var2 & 31;
-                WatchableObject var5 = null;
-                switch (var3)
+                int objectType = (b & 224) >> 5;
+                int dataValueId = b & 31;
+                WatchableObject obj = null;
+                switch (objectType)
                 {
                     case 0:
-                        var5 = new WatchableObject(var3, var4, java.lang.Byte.valueOf(var0.readByte()));
+                        obj = new WatchableObject(objectType, dataValueId, java.lang.Byte.valueOf(stream.readByte()));
                         break;
                     case 1:
-                        var5 = new WatchableObject(var3, var4, Short.valueOf(var0.readShort()));
+                        obj = new WatchableObject(objectType, dataValueId, Short.valueOf(stream.readShort()));
                         break;
                     case 2:
-                        var5 = new WatchableObject(var3, var4, Integer.valueOf(var0.readInt()));
+                        obj = new WatchableObject(objectType, dataValueId, Integer.valueOf(stream.readInt()));
                         break;
                     case 3:
-                        var5 = new WatchableObject(var3, var4, Float.valueOf(var0.readFloat()));
+                        obj = new WatchableObject(objectType, dataValueId, Float.valueOf(stream.readFloat()));
                         break;
                     case 4:
-                        var5 = new WatchableObject(var3, var4, new JString(Packet.readString(var0, 64)));
+                        obj = new WatchableObject(objectType, dataValueId, new JString(Packet.readString(stream, 64)));
                         break;
                     case 5:
-                        short var9 = var0.readShort();
-                        sbyte var10 = (sbyte)var0.readByte();
-                        short var11 = var0.readShort();
-                        var5 = new WatchableObject(var3, var4, new ItemStack(var9, var10, var11));
+                        short id = stream.readShort();
+                        sbyte count = (sbyte)stream.readByte();
+                        short damage = stream.readShort();
+                        obj = new WatchableObject(objectType, dataValueId, new ItemStack(id, count, damage));
                         break;
                     case 6:
-                        int var6 = var0.readInt();
-                        int var7 = var0.readInt();
-                        int var8 = var0.readInt();
-                        var5 = new WatchableObject(var3, var4, new Vec3i(var6, var7, var8));
+                        int x = stream.readInt();
+                        int y = stream.readInt();
+                        int z = stream.readInt();
+                        obj = new WatchableObject(objectType, dataValueId, new Vec3i(x, y, z));
                         break;
                 }
 
-                var1.add(var5);
+                res.add(obj);
             }
 
-            return var1;
+            return res;
         }
 
-        public void updateWatchedObjectsFromList(List var1)
+        public void updateWatchedObjectsFromList(List list)
         {
-            Iterator var2 = var1.iterator();
+            Iterator it = list.iterator();
 
-            while (var2.hasNext())
+            while (it.hasNext())
             {
-                WatchableObject var3 = (WatchableObject)var2.next();
-                WatchableObject var4 = (WatchableObject)watchedObjects.get(Integer.valueOf(var3.getDataValueId()));
-                if (var4 != null)
+                WatchableObject obj = (WatchableObject)it.next();
+                if (watchedObjects.TryGetValue(obj.dataValueId, out var obj2))
                 {
-                    var4.setObject(var3.getObject());
+                    obj2.watchedObject = obj.watchedObject;
                 }
             }
         }
 
         static DataWatcher()
         {
-            dataTypes.put(typeof(java.lang.Byte), Integer.valueOf(0));
-            dataTypes.put(typeof(Short), Integer.valueOf(1));
-            dataTypes.put(typeof(Integer), Integer.valueOf(2));
-            dataTypes.put(typeof(Float), Integer.valueOf(3));
-            dataTypes.put(typeof(JString), Integer.valueOf(4));
-            dataTypes.put(typeof(ItemStack), Integer.valueOf(5));
-            dataTypes.put(typeof(Vec3i), Integer.valueOf(6));
+            dataTypes[typeof(java.lang.Byte)] =  0;
+            dataTypes[typeof(Short)] =  1;
+            dataTypes[typeof(Integer)] =  2;
+            dataTypes[typeof(Float)] =  3;
+            dataTypes[typeof(JString)] =  4;
+            dataTypes[typeof(ItemStack)] =  5;
+            dataTypes[typeof(Vec3i)] =  6;
         }
     }
-
 }

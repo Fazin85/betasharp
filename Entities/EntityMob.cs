@@ -10,15 +10,15 @@ namespace betareborn.Entities
 
         protected int attackStrength = 2;
 
-        public EntityMob(World var1) : base(var1)
+        public EntityMob(World world) : base(world)
         {
             health = 20;
         }
 
         public override void tickMovement()
         {
-            float var1 = getBrightnessAtEyes(1.0F);
-            if (var1 > 0.5F)
+            float brightness = getBrightnessAtEyes(1.0F);
+            if (brightness > 0.5F)
             {
                 entityAge += 2;
             }
@@ -38,19 +38,19 @@ namespace betareborn.Entities
 
         protected override Entity findPlayerToAttack()
         {
-            EntityPlayer var1 = world.getClosestPlayer(this, 16.0D);
-            return var1 != null && canSee(var1) ? var1 : null;
+            EntityPlayer player = world.getClosestPlayer(this, 16.0D);
+            return player != null && canSee(player) ? player : null;
         }
 
-        public override bool damage(Entity var1, int var2)
+        public override bool damage(Entity entity, int amount)
         {
-            if (base.damage(var1, var2))
+            if (base.damage(entity, amount))
             {
-                if (passenger != var1 && vehicle != var1)
+                if (passenger != entity && vehicle != entity)
                 {
-                    if (var1 != this)
+                    if (entity != this)
                     {
-                        playerToAttack = var1;
+                        playerToAttack = entity;
                     }
 
                     return true;
@@ -66,52 +66,52 @@ namespace betareborn.Entities
             }
         }
 
-        protected override void attackEntity(Entity var1, float var2)
+        protected override void attackEntity(Entity entity, float distance)
         {
-            if (attackTime <= 0 && var2 < 2.0F && var1.boundingBox.maxY > boundingBox.minY && var1.boundingBox.minY < boundingBox.maxY)
+            if (attackTime <= 0 && distance < 2.0F && entity.boundingBox.maxY > boundingBox.minY && entity.boundingBox.minY < boundingBox.maxY)
             {
                 attackTime = 20;
-                var1.damage(this, attackStrength);
+                entity.damage(this, attackStrength);
             }
 
         }
 
-        protected override float getBlockPathWeight(int var1, int var2, int var3)
+        protected override float getBlockPathWeight(int x, int y, int z)
         {
-            return 0.5F - world.getLuminance(var1, var2, var3);
+            return 0.5F - world.getLuminance(x, y, z);
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            base.writeNbt(var1);
+            base.writeNbt(nbt);
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            base.readNbt(var1);
+            base.readNbt(nbt);
         }
 
         public override bool canSpawn()
         {
-            int var1 = MathHelper.floor_double(x);
-            int var2 = MathHelper.floor_double(boundingBox.minY);
-            int var3 = MathHelper.floor_double(z);
-            if (world.getBrightness(LightType.Sky, var1, var2, var3) > random.nextInt(32))
+            int x = MathHelper.floor_double(base.x);
+            int y = MathHelper.floor_double(boundingBox.minY);
+            int z = MathHelper.floor_double(base.z);
+            if (world.getBrightness(LightType.Sky, x, y, z) > random.nextInt(32))
             {
                 return false;
             }
             else
             {
-                int var4 = world.getLightLevel(var1, var2, var3);
+                int lightLevel = world.getLightLevel(x, y, z);
                 if (world.isThundering())
                 {
-                    int var5 = world.ambientDarkness;
+                    int ambientDarkness = world.ambientDarkness;
                     world.ambientDarkness = 10;
-                    var4 = world.getLightLevel(var1, var2, var3);
-                    world.ambientDarkness = var5;
+                    lightLevel = world.getLightLevel(x, y, z);
+                    world.ambientDarkness = ambientDarkness;
                 }
 
-                return var4 <= random.nextInt(8) && base.canSpawn();
+                return lightLevel <= random.nextInt(8) && base.canSpawn();
             }
         }
     }

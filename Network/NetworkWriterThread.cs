@@ -1,7 +1,6 @@
-using betareborn.Network;
 using java.lang;
 
-namespace betareborn
+namespace betareborn.Network
 {
     public class NetworkWriterThread : java.lang.Thread
     {

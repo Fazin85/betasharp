@@ -11,7 +11,7 @@ namespace betareborn.Entities
         protected Entity playerToAttack;
         protected bool hasAttacked = false;
 
-        public EntityCreature(World var1) : base(var1)
+        public EntityCreature(World world) : base(world)
         {
         }
 
@@ -23,13 +23,13 @@ namespace betareborn.Entities
         public override void tickLiving()
         {
             hasAttacked = isMovementCeased();
-            float var1 = 16.0F;
+            float range = 16.0F;
             if (playerToAttack == null)
             {
                 playerToAttack = findPlayerToAttack();
                 if (playerToAttack != null)
                 {
-                    pathToEntity = world.findPath(this, playerToAttack, var1);
+                    pathToEntity = world.findPath(this, playerToAttack, range);
                 }
             }
             else if (!playerToAttack.isAlive())
@@ -38,14 +38,14 @@ namespace betareborn.Entities
             }
             else
             {
-                float var2 = playerToAttack.getDistance(this);
+                float distance = playerToAttack.getDistance(this);
                 if (canSee(playerToAttack))
                 {
-                    attackEntity(playerToAttack, var2);
+                    attackEntity(playerToAttack, distance);
                 }
                 else
                 {
-                    attackBlockedEntity(playerToAttack, var2);
+                    attackBlockedEntity(playerToAttack, distance);
                 }
             }
 
@@ -53,78 +53,78 @@ namespace betareborn.Entities
             {
                 if (!hasAttacked && (pathToEntity == null && random.nextInt(80) == 0 || random.nextInt(80) == 0))
                 {
-                    func_31026_E();
+                    findRandomWanderTarget();
                 }
             }
             else
             {
-                pathToEntity = world.findPath(this, playerToAttack, var1);
+                pathToEntity = world.findPath(this, playerToAttack, range);
             }
 
-            int var21 = MathHelper.floor_double(boundingBox.minY + 0.5D);
-            bool var3 = isInWater();
-            bool var4 = isTouchingLava();
+            int floorY = MathHelper.floor_double(boundingBox.minY + 0.5D);
+            bool isInWater = base.isInWater();
+            bool isTouchingLava = base.isTouchingLava();
             pitch = 0.0F;
             if (pathToEntity != null && random.nextInt(100) != 0)
             {
-                Vec3D var5 = pathToEntity.getPosition(this);
-                double var6 = (double)(width * 2.0F);
+                Vec3D pos = pathToEntity.getPosition(this);
+                double distance = (double)(width * 2.0F);
 
-                while (var5 != null && var5.squareDistanceTo(x, var5.yCoord, z) < var6 * var6)
+                while (pos != null && pos.squareDistanceTo(x, pos.yCoord, z) < distance * distance)
                 {
                     pathToEntity.incrementPathIndex();
                     if (pathToEntity.isFinished())
                     {
-                        var5 = null;
+                        pos = null;
                         pathToEntity = null;
                     }
                     else
                     {
-                        var5 = pathToEntity.getPosition(this);
+                        pos = pathToEntity.getPosition(this);
                     }
                 }
 
                 jumping = false;
-                if (var5 != null)
+                if (pos != null)
                 {
-                    double var8 = var5.xCoord - x;
-                    double var10 = var5.zCoord - z;
-                    double var12 = var5.yCoord - (double)var21;
-                    float var14 = (float)(java.lang.Math.atan2(var10, var8) * 180.0D / (double)((float)java.lang.Math.PI)) - 90.0F;
-                    float var15 = var14 - yaw;
+                    double dx = pos.xCoord - x;
+                    double dz = pos.zCoord - z;
+                    double verticalOffset = pos.yCoord - (double)floorY;
+                    float targetYaw = (float)(System.Math.Atan2(dz, dx) * 180.0D / (double)((float)System.Math.PI)) - 90.0F;
+                    float yawDelta = targetYaw - yaw;
 
-                    for (forwardSpeed = movementSpeed; var15 < -180.0F; var15 += 360.0F)
+                    for (forwardSpeed = movementSpeed; yawDelta < -180.0F; yawDelta += 360.0F)
                     {
                     }
 
-                    while (var15 >= 180.0F)
+                    while (yawDelta >= 180.0F)
                     {
-                        var15 -= 360.0F;
+                        yawDelta -= 360.0F;
                     }
 
-                    if (var15 > 30.0F)
+                    if (yawDelta > 30.0F)
                     {
-                        var15 = 30.0F;
+                        yawDelta = 30.0F;
                     }
 
-                    if (var15 < -30.0F)
+                    if (yawDelta < -30.0F)
                     {
-                        var15 = -30.0F;
+                        yawDelta = -30.0F;
                     }
 
-                    yaw += var15;
+                    yaw += yawDelta;
                     if (hasAttacked && playerToAttack != null)
                     {
-                        double var16 = playerToAttack.x - x;
-                        double var18 = playerToAttack.z - z;
-                        float var20 = yaw;
-                        yaw = (float)(java.lang.Math.atan2(var18, var16) * 180.0D / (double)((float)java.lang.Math.PI)) - 90.0F;
-                        var15 = (var20 - yaw + 90.0F) * (float)java.lang.Math.PI / 180.0F;
-                        sidewaysSpeed = -MathHelper.sin(var15) * forwardSpeed * 1.0F;
-                        forwardSpeed = MathHelper.cos(var15) * forwardSpeed * 1.0F;
+                        double targetDeltaX = playerToAttack.x - x;
+                        double targetDeltaZ = playerToAttack.z - z;
+                        float previousYaw = yaw;
+                        yaw = (float)(System.Math.Atan2(targetDeltaZ, targetDeltaX) * 180.0D / (double)((float)System.Math.PI)) - 90.0F;
+                        yawDelta = (previousYaw - yaw + 90.0F) * (float)System.Math.PI / 180.0F;
+                        sidewaysSpeed = -MathHelper.sin(yawDelta) * forwardSpeed * 1.0F;
+                        forwardSpeed = MathHelper.cos(yawDelta) * forwardSpeed * 1.0F;
                     }
 
-                    if (var12 > 0.0D)
+                    if (verticalOffset > 0.0D)
                     {
                         jumping = true;
                     }
@@ -140,7 +140,7 @@ namespace betareborn.Entities
                     jumping = true;
                 }
 
-                if (random.nextFloat() < 0.8F && (var3 || var4))
+                if (random.nextFloat() < 0.8F && (isInWater || isTouchingLava))
                 {
                     jumping = true;
                 }
@@ -153,46 +153,46 @@ namespace betareborn.Entities
             }
         }
 
-        protected void func_31026_E()
+        protected void findRandomWanderTarget()
         {
-            bool var1 = false;
-            int var2 = -1;
-            int var3 = -1;
-            int var4 = -1;
-            float var5 = -99999.0F;
+            bool foundWanderTarget = false;
+            int bestX = -1;
+            int bestY = -1;
+            int bestZ = -1;
+            float bestCost = -99999.0F;
 
-            for (int var6 = 0; var6 < 10; ++var6)
+            for (int _ = 0; _ < 10; ++_)
             {
-                int var7 = MathHelper.floor_double(x + (double)random.nextInt(13) - 6.0D);
-                int var8 = MathHelper.floor_double(y + (double)random.nextInt(7) - 3.0D);
-                int var9 = MathHelper.floor_double(z + (double)random.nextInt(13) - 6.0D);
-                float var10 = getBlockPathWeight(var7, var8, var9);
-                if (var10 > var5)
+                int floorX = MathHelper.floor_double(x + (double)random.nextInt(13) - 6.0D);
+                int floorY = MathHelper.floor_double(y + (double)random.nextInt(7) - 3.0D);
+                int floorZ = MathHelper.floor_double(z + (double)random.nextInt(13) - 6.0D);
+                float cost = getBlockPathWeight(floorX, floorY, floorZ);
+                if (cost > bestCost)
                 {
-                    var5 = var10;
-                    var2 = var7;
-                    var3 = var8;
-                    var4 = var9;
-                    var1 = true;
+                    bestCost = cost;
+                    bestX = floorX;
+                    bestY = floorY;
+                    bestZ = floorZ;
+                    foundWanderTarget = true;
                 }
             }
 
-            if (var1)
+            if (foundWanderTarget)
             {
-                pathToEntity = world.findPath(this, var2, var3, var4, 10.0F);
+                pathToEntity = world.findPath(this, bestX, bestY, bestZ, 10.0F);
             }
 
         }
 
-        protected virtual void attackEntity(Entity var1, float var2)
+        protected virtual void attackEntity(Entity entity, float distance)
         {
         }
 
-        protected virtual void attackBlockedEntity(Entity var1, float var2)
+        protected virtual void attackBlockedEntity(Entity entity, float distance)
         {
         }
 
-        protected virtual float getBlockPathWeight(int var1, int var2, int var3)
+        protected virtual float getBlockPathWeight(int x, int y, int z)
         {
             return 0.0F;
         }
@@ -204,10 +204,10 @@ namespace betareborn.Entities
 
         public override bool canSpawn()
         {
-            int var1 = MathHelper.floor_double(x);
-            int var2 = MathHelper.floor_double(boundingBox.minY);
-            int var3 = MathHelper.floor_double(z);
-            return base.canSpawn() && getBlockPathWeight(var1, var2, var3) >= 0.0F;
+            int floorX = MathHelper.floor_double(x);
+            int floorY = MathHelper.floor_double(boundingBox.minY);
+            int floorZ = MathHelper.floor_double(z);
+            return base.canSpawn() && getBlockPathWeight(floorX, floorY, floorZ) >= 0.0F;
         }
 
         public bool hasPath()
@@ -215,9 +215,9 @@ namespace betareborn.Entities
             return pathToEntity != null;
         }
 
-        public void setPathToEntity(PathEntity var1)
+        public void setPathToEntity(PathEntity pathToEntity)
         {
-            pathToEntity = var1;
+            this.pathToEntity = pathToEntity;
         }
 
         public Entity getTarget()
@@ -225,9 +225,9 @@ namespace betareborn.Entities
             return playerToAttack;
         }
 
-        public void setTarget(Entity var1)
+        public void setTarget(Entity playerToAttack)
         {
-            playerToAttack = var1;
+            this.playerToAttack = playerToAttack;
         }
     }
 

@@ -1,3 +1,4 @@
+using betareborn.Client.Input;
 using betareborn.Client.Rendering.Core;
 using betareborn.Client.Rendering.Items;
 using betareborn.Client.Resource.Language;
