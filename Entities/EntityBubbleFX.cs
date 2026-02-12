@@ -7,7 +7,7 @@ namespace betareborn.Entities
     public class EntityBubbleFX : EntityFX
     {
 
-        public EntityBubbleFX(World var1, double var2, double var4, double var6, double var8, double var10, double var12) : base(var1, var2, var4, var6, var8, var10, var12)
+        public EntityBubbleFX(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) : base(world, x, y, z, velocityX, velocityY, velocityZ)
         {
             particleRed = 1.0F;
             particleGreen = 1.0F;
@@ -15,9 +15,9 @@ namespace betareborn.Entities
             particleTextureIndex = 32;
             setBoundingBoxSpacing(0.02F, 0.02F);
             particleScale *= random.nextFloat() * 0.6F + 0.2F;
-            velocityX = var8 * (double)0.2F + (double)((float)(java.lang.Math.random() * 2.0D - 1.0D) * 0.02F);
-            velocityY = var10 * (double)0.2F + (double)((float)(java.lang.Math.random() * 2.0D - 1.0D) * 0.02F);
-            velocityZ = var12 * (double)0.2F + (double)((float)(java.lang.Math.random() * 2.0D - 1.0D) * 0.02F);
+            base.velocityX = velocityX * (double)0.2F + (double)((float)(java.lang.Math.random() * 2.0D - 1.0D) * 0.02F);
+            base.velocityY = velocityY * (double)0.2F + (double)((float)(java.lang.Math.random() * 2.0D - 1.0D) * 0.02F);
+            base.velocityZ = velocityZ * (double)0.2F + (double)((float)(java.lang.Math.random() * 2.0D - 1.0D) * 0.02F);
             particleMaxAge = (int)(8.0D / (java.lang.Math.random() * 0.8D + 0.2D));
         }
 

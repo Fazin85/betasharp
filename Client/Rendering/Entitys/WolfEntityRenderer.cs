@@ -17,7 +17,7 @@ namespace betareborn.Client.Rendering.Entitys
 
         protected float func_25004_a(EntityWolf var1, float var2)
         {
-            return var1.setTailRotation();
+            return var1.getTailRotation();
         }
 
         protected void func_25006_b(EntityWolf var1, float var2)

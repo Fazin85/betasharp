@@ -40,7 +40,7 @@ namespace betareborn.Items
                 }
 
                 EntityPainting painting = new EntityPainting(world, x, y, z, direction);
-                if (painting.func_410_i())
+                if (painting.canHangOnWall())
                 {
                     if (!world.isRemote)
                     {

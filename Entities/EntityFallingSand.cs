@@ -13,23 +13,23 @@ namespace betareborn.Entities
         public int blockId;
         public int fallTime = 0;
 
-        public EntityFallingSand(World var1) : base(var1)
+        public EntityFallingSand(World world) : base(world)
         {
         }
 
-        public EntityFallingSand(World var1, double var2, double var4, double var6, int var8) : base(var1)
+        public EntityFallingSand(World world, double x, double y, double z, int blockId) : base(world)
         {
-            blockId = var8;
+            this.blockId = blockId;
             preventEntitySpawning = true;
             setBoundingBoxSpacing(0.98F, 0.98F);
             standingEyeHeight = height / 2.0F;
-            setPosition(var2, var4, var6);
+            setPosition(x, y, z);
             velocityX = 0.0D;
             velocityY = 0.0D;
             velocityZ = 0.0D;
-            prevX = var2;
-            prevY = var4;
-            prevZ = var6;
+            prevX = x;
+            prevY = y;
+            prevZ = z;
         }
 
         protected override bool bypassesSteppingEffects()
@@ -63,12 +63,12 @@ namespace betareborn.Entities
                 velocityX *= (double)0.98F;
                 velocityY *= (double)0.98F;
                 velocityZ *= (double)0.98F;
-                int var1 = MathHelper.floor_double(x);
-                int var2 = MathHelper.floor_double(y);
-                int var3 = MathHelper.floor_double(z);
-                if (world.getBlockId(var1, var2, var3) == blockId)
+                int floorX = MathHelper.floor_double(x);
+                int floorY = MathHelper.floor_double(y);
+                int floorZ = MathHelper.floor_double(z);
+                if (world.getBlockId(floorX, floorY, floorZ) == blockId)
                 {
-                    world.setBlock(var1, var2, var3, 0);
+                    world.setBlock(floorX, floorY, floorZ, 0);
                 }
 
                 if (onGround)
@@ -77,7 +77,7 @@ namespace betareborn.Entities
                     velocityZ *= (double)0.7F;
                     velocityY *= -0.5D;
                     markDead();
-                    if ((!world.canPlace(blockId, var1, var2, var3, true, 1) || BlockSand.canFallThrough(world, var1, var2 - 1, var3) || !world.setBlock(var1, var2, var3, blockId)) && !world.isRemote)
+                    if ((!world.canPlace(blockId, floorX, floorY, floorZ, true, 1) || BlockSand.canFallThrough(world, floorX, floorY - 1, floorZ) || !world.setBlock(floorX, floorY, floorZ, blockId)) && !world.isRemote)
                     {
                         dropItem(blockId, 1);
                     }
@@ -91,14 +91,14 @@ namespace betareborn.Entities
             }
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            var1.setByte("Tile", (sbyte)blockId);
+            nbt.setByte("Tile", (sbyte)blockId);
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            blockId = var1.getByte("Tile") & 255;
+            blockId = nbt.getByte("Tile") & 255;
         }
 
         public override float getShadowRadius()

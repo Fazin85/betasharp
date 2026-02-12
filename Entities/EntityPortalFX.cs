@@ -6,22 +6,22 @@ namespace betareborn.Entities
     public class EntityPortalFX : EntityFX
     {
 
-        private float field_4083_a;
-        private double field_4086_p;
-        private double field_4085_q;
-        private double field_4084_r;
+        private float baseScale;
+        private double spawnX;
+        private double spawnY;
+        private double spawnZ;
 
-        public EntityPortalFX(World var1, double var2, double var4, double var6, double var8, double var10, double var12) : base(var1, var2, var4, var6, var8, var10, var12)
+        public EntityPortalFX(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) : base(world, x, y, z, velocityX, velocityY, velocityZ)
         {
-            velocityX = var8;
-            velocityY = var10;
-            velocityZ = var12;
-            field_4086_p = x = var2;
-            field_4085_q = y = var4;
-            field_4084_r = z = var6;
-            float var14 = random.nextFloat() * 0.6F + 0.4F;
-            field_4083_a = particleScale = random.nextFloat() * 0.2F + 0.5F;
-            particleRed = particleGreen = particleBlue = 1.0F * var14;
+            base.velocityX = velocityX;
+            base.velocityY = velocityY;
+            base.velocityZ = velocityZ;
+            spawnX = base.x = x;
+            spawnY = base.y = y;
+            spawnZ = base.z = z;
+            float brightnessVariation = random.nextFloat() * 0.6F + 0.4F;
+            baseScale = particleScale = random.nextFloat() * 0.2F + 0.5F;
+            particleRed = particleGreen = particleBlue = 1.0F * brightnessVariation;
             particleGreen *= 0.3F;
             particleRed *= 0.9F;
             particleMaxAge = (int)(java.lang.Math.random() * 10.0D) + 40;
@@ -29,23 +29,23 @@ namespace betareborn.Entities
             particleTextureIndex = (int)(java.lang.Math.random() * 8.0D);
         }
 
-        public override void renderParticle(Tessellator var1, float var2, float var3, float var4, float var5, float var6, float var7)
+        public override void renderParticle(Tessellator t, float partialTick, float rotX, float rotY, float rotZ, float upX, float upZ)
         {
-            float var8 = ((float)particleAge + var2) / (float)particleMaxAge;
-            var8 = 1.0F - var8;
-            var8 *= var8;
-            var8 = 1.0F - var8;
-            particleScale = field_4083_a * var8;
-            base.renderParticle(var1, var2, var3, var4, var5, var6, var7);
+            float lifeProgress = ((float)particleAge + partialTick) / (float)particleMaxAge;
+            lifeProgress = 1.0F - lifeProgress;
+            lifeProgress *= lifeProgress;
+            lifeProgress = 1.0F - lifeProgress;
+            particleScale = baseScale * lifeProgress;
+            base.renderParticle(t, partialTick, rotX, rotY, rotZ, upX, upZ);
         }
 
-        public override float getBrightnessAtEyes(float var1)
+        public override float getBrightnessAtEyes(float partialTick)
         {
-            float var2 = base.getBrightnessAtEyes(var1);
-            float var3 = (float)particleAge / (float)particleMaxAge;
-            var3 *= var3;
-            var3 *= var3;
-            return var2 * (1.0F - var3) + var3;
+            float worldBrightness = base.getBrightnessAtEyes(partialTick);
+            float lifeProgress = (float)particleAge / (float)particleMaxAge;
+            lifeProgress *= lifeProgress;
+            lifeProgress *= lifeProgress;
+            return worldBrightness * (1.0F - lifeProgress) + lifeProgress;
         }
 
         public override void tick()
@@ -53,13 +53,13 @@ namespace betareborn.Entities
             prevX = x;
             prevY = y;
             prevZ = z;
-            float var1 = (float)particleAge / (float)particleMaxAge;
-            float var2 = var1;
-            var1 = -var1 + var1 * var1 * 2.0F;
-            var1 = 1.0F - var1;
-            x = field_4086_p + velocityX * (double)var1;
-            y = field_4085_q + velocityY * (double)var1 + (double)(1.0F - var2);
-            z = field_4084_r + velocityZ * (double)var1;
+            float progressFactor = (float)particleAge / (float)particleMaxAge;
+            float lifeProgress = progressFactor;
+            progressFactor = -progressFactor + progressFactor * progressFactor * 2.0F;
+            progressFactor = 1.0F - progressFactor;
+            x = spawnX + velocityX * (double)progressFactor;
+            y = spawnY + velocityY * (double)progressFactor + (double)(1.0F - lifeProgress);
+            z = spawnZ + velocityZ * (double)progressFactor;
             if (particleAge++ >= particleMaxAge)
             {
                 markDead();

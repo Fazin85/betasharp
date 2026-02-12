@@ -40,7 +40,7 @@ namespace betareborn.Client.Rendering.Entitys
         protected void scaleSlime(EntitySlime var1, float var2)
         {
             int var3 = var1.getSlimeSize();
-            float var4 = (var1.field_767_b + (var1.field_768_a - var1.field_767_b) * var2) / (var3 * 0.5F + 1.0F);
+            float var4 = (var1.prevSquishAmount + (var1.squishAmount - var1.prevSquishAmount) * var2) / (var3 * 0.5F + 1.0F);
             float var5 = 1.0F / (var4 + 1.0F);
             float var6 = var3;
             GLManager.GL.Scale(var5 * var6, 1.0F / var5 * var6, var5 * var6);

@@ -65,7 +65,7 @@ namespace betareborn.Client.Network
             }
 
             walkAnimationSpeed += (var5 - walkAnimationSpeed) * 0.4F;
-            field_703_S += walkAnimationSpeed;
+            animationPhase += walkAnimationSpeed;
         }
 
         public override float getShadowRadius()

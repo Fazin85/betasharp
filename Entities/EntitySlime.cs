@@ -10,17 +10,17 @@ namespace betareborn.Entities
     {
         public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntitySlime).TypeHandle);
 
-        public float field_768_a;
-        public float field_767_b;
+        public float squishAmount;
+        public float prevSquishAmount;
         private int slimeJumpDelay = 0;
 
-        public EntitySlime(World var1) : base(var1)
+        public EntitySlime(World world) : base(world)
         {
             texture = "/mob/slime.png";
-            int var2 = 1 << random.nextInt(3);
+            int size = 1 << random.nextInt(3);
             standingEyeHeight = 0.0F;
             slimeJumpDelay = random.nextInt(20) + 10;
-            setSlimeSize(var2);
+            setSlimeSize(size);
         }
 
         protected override void initDataTracker()
@@ -29,11 +29,11 @@ namespace betareborn.Entities
             dataWatcher.addObject(16, new java.lang.Byte((byte)1));
         }
 
-        public void setSlimeSize(int var1)
+        public void setSlimeSize(int size)
         {
-            dataWatcher.updateObject(16, new java.lang.Byte((byte)var1));
-            setBoundingBoxSpacing(0.6F * (float)var1, 0.6F * (float)var1);
-            health = var1 * var1;
+            dataWatcher.updateObject(16, new java.lang.Byte((byte)size));
+            setBoundingBoxSpacing(0.6F * (float)size, 0.6F * (float)size);
+            health = size * size;
             setPosition(x, y, z);
         }
 
@@ -42,60 +42,60 @@ namespace betareborn.Entities
             return dataWatcher.getWatchableObjectByte(16);
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            base.writeNbt(var1);
-            var1.setInteger("Size", getSlimeSize() - 1);
+            base.writeNbt(nbt);
+            nbt.setInteger("Size", getSlimeSize() - 1);
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            base.readNbt(var1);
-            setSlimeSize(var1.getInteger("Size") + 1);
+            base.readNbt(nbt);
+            setSlimeSize(nbt.getInteger("Size") + 1);
         }
 
         public override void tick()
         {
-            field_767_b = field_768_a;
-            bool var1 = onGround;
+            prevSquishAmount = squishAmount;
+            bool wasOnGround = onGround;
             base.tick();
-            if (onGround && !var1)
+            if (onGround && !wasOnGround)
             {
-                int var2 = getSlimeSize();
+                int size = getSlimeSize();
 
-                for (int var3 = 0; var3 < var2 * 8; ++var3)
+                for (int _ = 0; _ < size * 8; ++_)
                 {
-                    float var4 = random.nextFloat() * (float)Math.PI * 2.0F;
-                    float var5 = random.nextFloat() * 0.5F + 0.5F;
-                    float var6 = MathHelper.sin(var4) * (float)var2 * 0.5F * var5;
-                    float var7 = MathHelper.cos(var4) * (float)var2 * 0.5F * var5;
-                    world.addParticle("slime", x + (double)var6, boundingBox.minY, z + (double)var7, 0.0D, 0.0D, 0.0D);
+                    float angle = random.nextFloat() * (float)Math.PI * 2.0F;
+                    float spread = random.nextFloat() * 0.5F + 0.5F;
+                    float offsetX = MathHelper.sin(angle) * (float)size * 0.5F * spread;
+                    float offsetY = MathHelper.cos(angle) * (float)size * 0.5F * spread;
+                    world.addParticle("slime", base.x + (double)offsetX, boundingBox.minY, z + (double)offsetY, 0.0D, 0.0D, 0.0D);
                 }
 
-                if (var2 > 2)
+                if (size > 2)
                 {
                     world.playSound(this, "mob.slime", getSoundVolume(), ((random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F) / 0.8F);
                 }
 
-                field_768_a = -0.5F;
+                squishAmount = -0.5F;
             }
 
-            field_768_a *= 0.6F;
+            squishAmount *= 0.6F;
         }
 
         public override void tickLiving()
         {
             func_27021_X();
-            EntityPlayer var1 = world.getClosestPlayer(this, 16.0D);
-            if (var1 != null)
+            EntityPlayer player = world.getClosestPlayer(this, 16.0D);
+            if (player != null)
             {
-                faceEntity(var1, 10.0F, 20.0F);
+                faceEntity(player, 10.0F, 20.0F);
             }
 
             if (onGround && slimeJumpDelay-- <= 0)
             {
                 slimeJumpDelay = random.nextInt(20) + 10;
-                if (var1 != null)
+                if (player != null)
                 {
                     slimeJumpDelay /= 3;
                 }
@@ -106,7 +106,7 @@ namespace betareborn.Entities
                     world.playSound(this, "mob.slime", getSoundVolume(), ((random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F) * 0.8F);
                 }
 
-                field_768_a = 1.0F;
+                squishAmount = 1.0F;
                 sidewaysSpeed = 1.0F - random.nextFloat() * 2.0F;
                 forwardSpeed = (float)(1 * getSlimeSize());
             }
@@ -123,27 +123,27 @@ namespace betareborn.Entities
 
         public override void markDead()
         {
-            int var1 = getSlimeSize();
-            if (!world.isRemote && var1 > 1 && health == 0)
+            int size = getSlimeSize();
+            if (!world.isRemote && size > 1 && health == 0)
             {
-                for (int var2 = 0; var2 < 4; ++var2)
+                for (int i = 0; i < 4; ++i)
                 {
-                    float var3 = ((float)(var2 % 2) - 0.5F) * (float)var1 / 4.0F;
-                    float var4 = ((float)(var2 / 2) - 0.5F) * (float)var1 / 4.0F;
-                    EntitySlime var5 = new EntitySlime(world);
-                    var5.setSlimeSize(var1 / 2);
-                    var5.setPositionAndAnglesKeepPrevAngles(x + (double)var3, y + 0.5D, z + (double)var4, random.nextFloat() * 360.0F, 0.0F);
-                    world.spawnEntity(var5);
+                    float offsetX = ((float)(i % 2) - 0.5F) * (float)size / 4.0F;
+                    float offsetY = ((float)(i / 2) - 0.5F) * (float)size / 4.0F;
+                    EntitySlime slime = new EntitySlime(world);
+                    slime.setSlimeSize(size / 2);
+                    slime.setPositionAndAnglesKeepPrevAngles(x + (double)offsetX, y + 0.5D, z + (double)offsetY, random.nextFloat() * 360.0F, 0.0F);
+                    world.spawnEntity(slime);
                 }
             }
 
             base.markDead();
         }
 
-        public override void onPlayerInteraction(EntityPlayer var1)
+        public override void onPlayerInteraction(EntityPlayer player)
         {
-            int var2 = getSlimeSize();
-            if (var2 > 1 && canSee(var1) && (double)getDistance(var1) < 0.6D * (double)var2 && var1.damage(this, var2))
+            int size = getSlimeSize();
+            if (size > 1 && canSee(player) && (double)getDistance(player) < 0.6D * (double)size && player.damage(this, size))
             {
                 world.playSound(this, "mob.slimeattack", 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
             }
@@ -167,8 +167,8 @@ namespace betareborn.Entities
 
         public override bool canSpawn()
         {
-            Chunk var1 = world.getChunkFromPos(MathHelper.floor_double(x), MathHelper.floor_double(z));
-            return (getSlimeSize() == 1 || world.difficulty > 0) && random.nextInt(10) == 0 && var1.getSlimeRandom(987234911L).nextInt(10) == 0 && y < 16.0D;
+            Chunk chunk = world.getChunkFromPos(MathHelper.floor_double(x), MathHelper.floor_double(z));
+            return (getSlimeSize() == 1 || world.difficulty > 0) && random.nextInt(10) == 0 && chunk.getSlimeRandom(987234911L).nextInt(10) == 0 && y < 16.0D;
         }
 
         protected override float getSoundVolume()

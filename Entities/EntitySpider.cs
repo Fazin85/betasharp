@@ -9,7 +9,7 @@ namespace betareborn.Entities
     {
         public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntitySpider).TypeHandle);
 
-        public EntitySpider(World var1) : base(var1)
+        public EntitySpider(World world) : base(world)
         {
             texture = "/mob/spider.png";
             setBoundingBoxSpacing(1.4F, 0.9F);
@@ -28,11 +28,11 @@ namespace betareborn.Entities
 
         protected override Entity findPlayerToAttack()
         {
-            float var1 = getBrightnessAtEyes(1.0F);
-            if (var1 < 0.5F)
+            float brightness = getBrightnessAtEyes(1.0F);
+            if (brightness < 0.5F)
             {
-                double var2 = 16.0D;
-                return world.getClosestPlayer(this, var2);
+                double distance = 16.0D;
+                return world.getClosestPlayer(this, distance);
             }
             else
             {
@@ -55,43 +55,43 @@ namespace betareborn.Entities
             return "mob.spiderdeath";
         }
 
-        protected override void attackEntity(Entity var1, float var2)
+        protected override void attackEntity(Entity entity, float distance)
         {
-            float var3 = getBrightnessAtEyes(1.0F);
-            if (var3 > 0.5F && random.nextInt(100) == 0)
+            float brightness = getBrightnessAtEyes(1.0F);
+            if (brightness > 0.5F && random.nextInt(100) == 0)
             {
                 playerToAttack = null;
             }
             else
             {
-                if (var2 > 2.0F && var2 < 6.0F && random.nextInt(10) == 0)
+                if (distance > 2.0F && distance < 6.0F && random.nextInt(10) == 0)
                 {
                     if (onGround)
                     {
-                        double var4 = var1.x - x;
-                        double var6 = var1.z - z;
-                        float var8 = MathHelper.sqrt_double(var4 * var4 + var6 * var6);
-                        velocityX = var4 / (double)var8 * 0.5D * (double)0.8F + velocityX * (double)0.2F;
-                        velocityZ = var6 / (double)var8 * 0.5D * (double)0.8F + velocityZ * (double)0.2F;
+                        double dx = entity.x - x;
+                        double dz = entity.z - z;
+                        float horizontalDistance = MathHelper.sqrt_double(dx * dx + dz * dz);
+                        velocityX = dx / (double)horizontalDistance * 0.5D * (double)0.8F + velocityX * (double)0.2F;
+                        velocityZ = dz / (double)horizontalDistance * 0.5D * (double)0.8F + velocityZ * (double)0.2F;
                         velocityY = (double)0.4F;
                     }
                 }
                 else
                 {
-                    base.attackEntity(var1, var2);
+                    base.attackEntity(entity, distance);
                 }
 
             }
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            base.writeNbt(var1);
+            base.writeNbt(nbt);
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            base.readNbt(var1);
+            base.readNbt(nbt);
         }
 
         protected override int getDropItemId()
