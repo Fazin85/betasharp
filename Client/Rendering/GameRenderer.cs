@@ -117,7 +117,7 @@ namespace betareborn.Client.Rendering
                     }
 
                     Vec3D var7 = client.camera.getLook(tickDelta);
-                    Vec3D var8 = var6.addVector(var7.xCoord * var2, var7.yCoord * var2, var7.zCoord * var2);
+                    Vec3D var8 = var6 + var2 * var7;
                     targetedEntity = null;
                     float var9 = 1.0F;
                     var var10 = client.world.getEntities(client.camera, client.camera.boundingBox.stretch(var7.xCoord * var2, var7.yCoord * var2, var7.zCoord * var2).expand((double)var9, (double)var9, (double)var9));

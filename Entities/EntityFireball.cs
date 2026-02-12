@@ -238,12 +238,12 @@ namespace betareborn.Entities
             scheduleVelocityUpdate();
             if (var1 != null)
             {
-                Vec3D var3 = var1.getLookVector();
+                Vec3D? var3 = var1.getLookVector();
                 if (var3 != null)
                 {
-                    velocityX = var3.xCoord;
-                    velocityY = var3.yCoord;
-                    velocityZ = var3.zCoord;
+                    velocityX = var3.Value.xCoord;
+                    velocityY = var3.Value.yCoord;
+                    velocityZ = var3.Value.zCoord;
                     powerX = velocityX * 0.1D;
                     powerY = velocityY * 0.1D;
                     powerZ = velocityZ * 0.1D;

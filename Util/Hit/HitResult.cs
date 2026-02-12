@@ -20,15 +20,14 @@ namespace betareborn.Util.Hit
             this.blockY = blockY;
             this.blockZ = blockZ;
             this.side = side;
-            this.pos = Vec3D.createVector(pos.xCoord, pos.yCoord, pos.zCoord);
+            this.pos = pos;
         }
 
         public HitResult(Entity entity)
         {
             type = HitResultType.ENTITY;
             this.entity = entity;
-            pos = Vec3D.createVector(entity.x, entity.y, entity.z);
+            pos = new Vec3D(entity.x, entity.y, entity.z);
         }
     }
-
 }

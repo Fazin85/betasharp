@@ -34,7 +34,7 @@ namespace betareborn.Items
             float dirX = sinYaw * cosPitch;
             float dirZ = cosYaw * cosPitch;
             double reachDistance = 5.0D;
-            Vec3D rayEnd = rayStart.addVector((double)dirX * reachDistance, (double)sinPitch * reachDistance, (double)dirZ * reachDistance);
+            Vec3D rayEnd = rayStart + new Vec3D((double)dirX * reachDistance, (double)sinPitch * reachDistance, (double)dirZ * reachDistance);
             HitResult hitResult = world.raycast(rayStart, rayEnd, isFull == 0);
             if (hitResult == null)
             {

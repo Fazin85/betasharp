@@ -30,7 +30,7 @@ namespace betareborn.Items
             float dirX = sinYaw * cosPitch;
             float dirZ = cosYaw * cosPitch;
             double rayLength = 5.0D;
-            Vec3D rayEnd = rayStart.addVector((double)dirX * rayLength, (double)sinPitch * rayLength, (double)dirZ * rayLength);
+            Vec3D rayEnd = rayStart + new Vec3D((double)dirX * rayLength, (double)sinPitch * rayLength, (double)dirZ * rayLength);
             HitResult hitResult = world.raycast(rayStart, rayEnd, true);
             if (hitResult == null)
             {

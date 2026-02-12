@@ -1924,7 +1924,7 @@ namespace betareborn.Worlds
                     }
                 }
 
-                if (var11.lengthVector() > 0.0D)
+                if (var11.magnitude() > 0.0D)
                 {
                     var11 = var11.normalize();
                     double var18 = 0.014D;

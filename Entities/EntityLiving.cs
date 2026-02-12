@@ -997,7 +997,7 @@ namespace betareborn.Entities
             }
         }
 
-        public override Vec3D getLookVector()
+        public override Vec3D? getLookVector()
         {
             return getLook(1.0F);
         }
@@ -1032,7 +1032,7 @@ namespace betareborn.Entities
         {
             Vec3D var4 = getPosition(var3);
             Vec3D var5 = getLook(var3);
-            Vec3D var6 = var4.addVector(var5.xCoord * var1, var5.yCoord * var1, var5.zCoord * var1);
+            Vec3D var6 = var4 + var1 * var5;
             return world.raycast(var4, var6);
         }
 

@@ -271,7 +271,7 @@ namespace betareborn.Entities
                 int var9 = world.getBlockId(var1, var2, var3);
                 if (BlockRail.isRail(var9))
                 {
-                    Vec3D var10 = func_514_g(x, y, z);
+                    Vec3D? var10 = func_514_g(x, y, z);
                     int var11 = world.getBlockMeta(var1, var2, var3);
                     y = (double)var2;
                     bool var12 = false;
@@ -449,10 +449,10 @@ namespace betareborn.Entities
                         velocityZ *= (double)0.96F;
                     }
 
-                    Vec3D var52 = func_514_g(x, y, z);
+                    Vec3D? var52 = func_514_g(x, y, z);
                     if (var52 != null && var10 != null)
                     {
-                        double var40 = (var10.yCoord - var52.yCoord) * 0.05D;
+                        double var40 = (var10.Value.yCoord - var52.Value.yCoord) * 0.05D;
                         var23 = java.lang.Math.sqrt(velocityX * velocityX + velocityZ * velocityZ);
                         if (var23 > 0.0D)
                         {
@@ -460,7 +460,7 @@ namespace betareborn.Entities
                             velocityZ = velocityZ / var23 * (var23 + var40);
                         }
 
-                        setPosition(x, var52.yCoord, z);
+                        setPosition(x, var52.Value.yCoord, z);
                     }
 
                     int var53 = MathHelper.floor_double(x);
@@ -625,7 +625,7 @@ namespace betareborn.Entities
             }
         }
 
-        public Vec3D func_515_a(double var1, double var3, double var5, double var7)
+        public Vec3D? func_515_a(double var1, double var3, double var5, double var7)
         {
             int var9 = MathHelper.floor_double(var1);
             int var10 = MathHelper.floor_double(var3);
@@ -675,7 +675,7 @@ namespace betareborn.Entities
             }
         }
 
-        public Vec3D func_514_g(double var1, double var3, double var5)
+        public Vec3D? func_514_g(double var1, double var3, double var5)
         {
             int var7 = MathHelper.floor_double(var1);
             int var8 = MathHelper.floor_double(var3);

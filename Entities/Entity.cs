@@ -1201,7 +1201,7 @@ namespace betareborn.Entities
             return 0.1F;
         }
 
-        public virtual Vec3D getLookVector()
+        public virtual Vec3D? getLookVector()
         {
             return null;
         }

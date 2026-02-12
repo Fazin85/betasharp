@@ -1,79 +1,27 @@
 namespace betareborn.Util.Maths
 {
-    public class Vec3D : java.lang.Object
+    public record struct Vec3D
     {
-        private class Pool
-        {
-            private readonly List<Vec3D> vectorList = [];
-            private int index = 0;
-
-            public Vec3D create(double x, double y, double z)
-            {
-                if (index >= vectorList.Count)
-                {
-                    vectorList.Add(new Vec3D(0.0D, 0.0D, 0.0D));
-                }
-
-                return vectorList[index++].setComponents(x, y, z);
-            }
-
-            public void cleanUp()
-            {
-                index = 0;
-            }
-        }
-
-        private static readonly ThreadLocal<Pool> pool = new(() => new());
+        public static readonly Vec3D Zero = new Vec3D(0.0D, 0.0D, 0.0D);
+        
         public double xCoord;
         public double yCoord;
         public double zCoord;
-
-        public static void cleanUp()
+        
+        public Vec3D(double xCoord, double yCoord, double zCoord)
         {
-            Pool? p = pool.Value ?? throw new Exception("Vec3D pool was not created!");
-            p.cleanUp();
+            if (xCoord == -0.0D) xCoord = 0.0D;
+            if (yCoord == -0.0D) yCoord = 0.0D;
+            if (zCoord == -0.0D) zCoord = 0.0D;
+
+            this.xCoord = xCoord;
+            this.yCoord = yCoord;
+            this.zCoord = zCoord;
         }
 
-        public static Vec3D createVector(double x, double y, double z)
+        public static Vec3D createVector(double xCoord, double yCoord, double zCoord)
         {
-            Pool? p = pool.Value;
-
-            return p == null ? throw new Exception("Vec3D pool was not created!") : p.create(x, y, z);
-        }
-
-        private Vec3D(double var1, double var3, double var5)
-        {
-            if (var1 == -0.0D)
-            {
-                var1 = 0.0D;
-            }
-
-            if (var3 == -0.0D)
-            {
-                var3 = 0.0D;
-            }
-
-            if (var5 == -0.0D)
-            {
-                var5 = 0.0D;
-            }
-
-            xCoord = var1;
-            yCoord = var3;
-            zCoord = var5;
-        }
-
-        private Vec3D setComponents(double var1, double var3, double var5)
-        {
-            xCoord = var1;
-            yCoord = var3;
-            zCoord = var5;
-            return this;
-        }
-
-        public Vec3D subtract(Vec3D var1)
-        {
-            return createVector(var1.xCoord - xCoord, var1.yCoord - yCoord, var1.zCoord - zCoord);
+            return new Vec3D(xCoord, yCoord, zCoord);
         }
 
         public Vec3D normalize()
@@ -86,42 +34,26 @@ namespace betareborn.Util.Maths
         {
             return createVector(yCoord * var1.zCoord - zCoord * var1.yCoord, zCoord * var1.xCoord - xCoord * var1.zCoord, xCoord * var1.yCoord - yCoord * var1.xCoord);
         }
-
-        public Vec3D addVector(double var1, double var3, double var5)
+        
+        public double squareDistanceTo(Vec3D other)
         {
-            return createVector(xCoord + var1, yCoord + var3, zCoord + var5);
+            double dx = other.xCoord - xCoord;
+            double dy = other.yCoord - yCoord;
+            double dz = other.zCoord - zCoord;
+            return dx * dx + dy * dy + dz * dz;
+        }
+        
+        public double distanceTo(Vec3D other)
+        {
+            return Math.Sqrt(squareDistanceTo(other));
         }
 
-        public double distanceTo(Vec3D var1)
+        public double magnitude()
         {
-            double var2 = var1.xCoord - xCoord;
-            double var4 = var1.yCoord - yCoord;
-            double var6 = var1.zCoord - zCoord;
-            return (double)MathHelper.sqrt_double(var2 * var2 + var4 * var4 + var6 * var6);
+            return distanceTo(Zero);
         }
 
-        public double squareDistanceTo(Vec3D var1)
-        {
-            double var2 = var1.xCoord - xCoord;
-            double var4 = var1.yCoord - yCoord;
-            double var6 = var1.zCoord - zCoord;
-            return var2 * var2 + var4 * var4 + var6 * var6;
-        }
-
-        public double squareDistanceTo(double var1, double var3, double var5)
-        {
-            double var7 = var1 - xCoord;
-            double var9 = var3 - yCoord;
-            double var11 = var5 - zCoord;
-            return var7 * var7 + var9 * var9 + var11 * var11;
-        }
-
-        public double lengthVector()
-        {
-            return (double)MathHelper.sqrt_double(xCoord * xCoord + yCoord * yCoord + zCoord * zCoord);
-        }
-
-        public Vec3D getIntermediateWithXValue(Vec3D var1, double var2)
+        public Vec3D? getIntermediateWithXValue(Vec3D var1, double var2)
         {
             double var4 = var1.xCoord - xCoord;
             double var6 = var1.yCoord - yCoord;
@@ -137,7 +69,7 @@ namespace betareborn.Util.Maths
             }
         }
 
-        public Vec3D getIntermediateWithYValue(Vec3D var1, double var2)
+        public Vec3D? getIntermediateWithYValue(Vec3D var1, double var2)
         {
             double var4 = var1.xCoord - xCoord;
             double var6 = var1.yCoord - yCoord;
@@ -153,7 +85,7 @@ namespace betareborn.Util.Maths
             }
         }
 
-        public Vec3D getIntermediateWithZValue(Vec3D var1, double var2)
+        public Vec3D? getIntermediateWithZValue(Vec3D var1, double var2)
         {
             double var4 = var1.xCoord - xCoord;
             double var6 = var1.yCoord - yCoord;
@@ -169,7 +101,7 @@ namespace betareborn.Util.Maths
             }
         }
 
-        public override string toString()
+        public override string ToString()
         {
             return "(" + xCoord + ", " + yCoord + ", " + zCoord + ")";
         }
@@ -196,6 +128,35 @@ namespace betareborn.Util.Maths
             xCoord = var4;
             yCoord = var6;
             zCoord = var8;
+        }
+
+        public static Vec3D operator +(Vec3D a, Vec3D b)
+        {
+            return new Vec3D(a.xCoord + b.xCoord, a.yCoord + b.yCoord, a.zCoord + b.zCoord);
+        }
+        public static Vec3D operator -(Vec3D a, Vec3D b)
+        {
+            return new Vec3D(a.xCoord - b.xCoord, a.yCoord - b.yCoord, a.zCoord - b.zCoord);
+        }
+        
+        public static Vec3D operator *(Vec3D a, Vec3D b)
+        {
+            return new Vec3D(a.xCoord * b.xCoord, a.yCoord * b.yCoord, a.zCoord * b.zCoord);
+        }
+        
+        public static Vec3D operator /(Vec3D a, Vec3D b)
+        {
+            return new Vec3D(a.xCoord / b.xCoord, a.yCoord / b.yCoord, a.zCoord / b.zCoord);
+        }
+        
+        public static Vec3D operator *(double a, Vec3D b)
+        {
+            return new Vec3D(a * b.xCoord, a * b.yCoord, a * b.zCoord);
+        }
+        
+        public static Vec3D operator /(double a, Vec3D b)
+        {
+            return new Vec3D(a / b.xCoord, a / b.yCoord, a / b.zCoord);
         }
     }
 }
