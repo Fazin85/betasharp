@@ -12,40 +12,40 @@ namespace betareborn.Inventorys
         private ItemStack[] inventoryContents;
         private List field_20073_d;
 
-        public InventoryBasic(string var1, int var2)
+        public InventoryBasic(string inventoryTitle, int slotsCount)
         {
-            inventoryTitle = var1;
-            slotsCount = var2;
-            inventoryContents = new ItemStack[var2];
+            this.inventoryTitle = inventoryTitle;
+            this.slotsCount = slotsCount;
+            inventoryContents = new ItemStack[slotsCount];
         }
 
-        public ItemStack getStack(int var1)
+        public ItemStack getStack(int slotIndex)
         {
-            return inventoryContents[var1];
+            return inventoryContents[slotIndex];
         }
 
-        public ItemStack removeStack(int var1, int var2)
+        public ItemStack removeStack(int slotIndex, int amount)
         {
-            if (inventoryContents[var1] != null)
+            if (inventoryContents[slotIndex] != null)
             {
-                ItemStack var3;
-                if (inventoryContents[var1].count <= var2)
+                ItemStack removeStack;
+                if (inventoryContents[slotIndex].count <= amount)
                 {
-                    var3 = inventoryContents[var1];
-                    inventoryContents[var1] = null;
+                    removeStack = inventoryContents[slotIndex];
+                    inventoryContents[slotIndex] = null;
                     markDirty();
-                    return var3;
+                    return removeStack;
                 }
                 else
                 {
-                    var3 = inventoryContents[var1].split(var2);
-                    if (inventoryContents[var1].count == 0)
+                    removeStack = inventoryContents[slotIndex].split(amount);
+                    if (inventoryContents[slotIndex].count == 0)
                     {
-                        inventoryContents[var1] = null;
+                        inventoryContents[slotIndex] = null;
                     }
 
                     markDirty();
-                    return var3;
+                    return removeStack;
                 }
             }
             else
@@ -54,12 +54,12 @@ namespace betareborn.Inventorys
             }
         }
 
-        public void setStack(int var1, ItemStack var2)
+        public void setStack(int slotIndex, ItemStack itemStack)
         {
-            inventoryContents[var1] = var2;
-            if (var2 != null && var2.count > getMaxCountPerStack())
+            inventoryContents[slotIndex] = itemStack;
+            if (itemStack != null && itemStack.count > getMaxCountPerStack())
             {
-                var2.count = getMaxCountPerStack();
+                itemStack.count = getMaxCountPerStack();
             }
 
             markDirty();
@@ -84,15 +84,15 @@ namespace betareborn.Inventorys
         {
             if (field_20073_d != null)
             {
-                for (int var1 = 0; var1 < field_20073_d.size(); ++var1)
+                for (int slotIndex = 0; slotIndex < field_20073_d.size(); ++slotIndex)
                 {
-                    ((IInvBasic)field_20073_d.get(var1)).func_20134_a(this);
+                    ((IInvBasic)field_20073_d.get(slotIndex)).func_20134_a(this);
                 }
             }
 
         }
 
-        public bool canPlayerUse(EntityPlayer var1)
+        public bool canPlayerUse(EntityPlayer entityPlayer)
         {
             return true;
         }

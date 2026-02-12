@@ -1,5 +1,4 @@
 using java.io;
-using java.lang;
 
 namespace betareborn.NBT
 {
@@ -13,12 +12,7 @@ namespace betareborn.NBT
 
         public NBTTagString(string value)
         {
-            Value = value;
-            
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                throw new IllegalArgumentException("Empty string not allowed");
-            }
+            stringValue = value;
         }
 
         public override void WriteTagContents(DataOutput output)

@@ -29,7 +29,7 @@ namespace betareborn.Recipes
             {
                 for (int var4 = 0; var4 < 3; ++var4)
                 {
-                    ItemStack var5 = var1.func_21103_b(var4, var3);
+                    ItemStack var5 = var1.getStackAt(var4, var3);
                     if (var5 != null)
                     {
                         bool var6 = false;

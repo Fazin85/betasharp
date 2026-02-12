@@ -4,6 +4,7 @@ using betareborn.Blocks;
 using betareborn.Client;
 using betareborn.Client.Colors;
 using betareborn.Client.Guis;
+using betareborn.Client.Input;
 using betareborn.Client.Network;
 using betareborn.Client.Rendering;
 using betareborn.Client.Rendering.Core;

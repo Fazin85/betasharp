@@ -16,10 +16,5 @@ namespace betareborn.Worlds.Storage
             Matcher var3 = PATTERN.matcher(var2);
             return var3.matches();
         }
-
-        public DataFilenameFilter(Empty2 var1) : this()
-        {
-        }
-
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Silk.NET.GLFW;
 
-namespace betareborn
+namespace betareborn.Client.Input
 {
     public static class Mouse
     {

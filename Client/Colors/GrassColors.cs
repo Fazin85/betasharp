@@ -4,16 +4,16 @@ namespace betareborn.Client.Colors
     {
         private static int[] grassBuffer = new int[65536];
 
-        public static void loadColors(int[] var0)
+        public static void loadColors(int[] grassBuffer)
         {
-            grassBuffer = var0;
+            GrassColors.grassBuffer = grassBuffer;
         }
 
-        public static int getColor(double var0, double var2)
+        public static int getColor(double temperature, double downfall)
         {
-            var2 *= var0;
-            int var4 = (int)((1.0D - var0) * 255.0D);
-            int var5 = (int)((1.0D - var2) * 255.0D);
+            downfall *= temperature;
+            int var4 = (int)((1.0D - temperature) * 255.0D);
+            int var5 = (int)((1.0D - downfall) * 255.0D);
             return grassBuffer[var5 << 8 | var4];
         }
     }

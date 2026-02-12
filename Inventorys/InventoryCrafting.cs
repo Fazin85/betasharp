@@ -7,15 +7,15 @@ namespace betareborn.Inventorys
     public class InventoryCrafting : java.lang.Object, IInventory
     {
         private ItemStack[] stackList;
-        private int field_21104_b;
+        private int gridWidth;
         private ScreenHandler eventHandler;
 
-        public InventoryCrafting(ScreenHandler var1, int var2, int var3)
+        public InventoryCrafting(ScreenHandler eventHandler, int gridWidth, int gridHeight)
         {
-            int var4 = var2 * var3;
-            stackList = new ItemStack[var4];
-            eventHandler = var1;
-            field_21104_b = var2;
+            int gridSize = gridWidth * gridHeight;
+            stackList = new ItemStack[gridSize];
+            this.eventHandler = eventHandler;
+            this.gridWidth = gridWidth;
         }
 
         public int size()
@@ -23,17 +23,17 @@ namespace betareborn.Inventorys
             return stackList.Length;
         }
 
-        public ItemStack getStack(int var1)
+        public ItemStack getStack(int slotIndex)
         {
-            return var1 >= size() ? null : stackList[var1];
+            return slotIndex >= size() ? null : stackList[slotIndex];
         }
 
-        public ItemStack func_21103_b(int var1, int var2)
+        public ItemStack getStackAt(int x, int y)
         {
-            if (var1 >= 0 && var1 < field_21104_b)
+            if (x >= 0 && x < gridWidth)
             {
-                int var3 = var1 + var2 * field_21104_b;
-                return getStack(var3);
+                int slotIndex = x + y * gridWidth;
+                return getStack(slotIndex);
             }
             else
             {
@@ -46,28 +46,28 @@ namespace betareborn.Inventorys
             return "Crafting";
         }
 
-        public ItemStack removeStack(int var1, int var2)
+        public ItemStack removeStack(int slotIndex, int amount)
         {
-            if (stackList[var1] != null)
+            if (stackList[slotIndex] != null)
             {
-                ItemStack var3;
-                if (stackList[var1].count <= var2)
+                ItemStack removeStack;
+                if (stackList[slotIndex].count <= amount)
                 {
-                    var3 = stackList[var1];
-                    stackList[var1] = null;
+                    removeStack = stackList[slotIndex];
+                    stackList[slotIndex] = null;
                     eventHandler.onSlotUpdate(this);
-                    return var3;
+                    return removeStack;
                 }
                 else
                 {
-                    var3 = stackList[var1].split(var2);
-                    if (stackList[var1].count == 0)
+                    removeStack = stackList[slotIndex].split(amount);
+                    if (stackList[slotIndex].count == 0)
                     {
-                        stackList[var1] = null;
+                        stackList[slotIndex] = null;
                     }
 
                     eventHandler.onSlotUpdate(this);
-                    return var3;
+                    return removeStack;
                 }
             }
             else
@@ -76,9 +76,9 @@ namespace betareborn.Inventorys
             }
         }
 
-        public void setStack(int var1, ItemStack var2)
+        public void setStack(int slotIndex, ItemStack itemStack)
         {
-            stackList[var1] = var2;
+            stackList[slotIndex] = itemStack;
             eventHandler.onSlotUpdate(this);
         }
 
@@ -91,7 +91,7 @@ namespace betareborn.Inventorys
         {
         }
 
-        public bool canPlayerUse(EntityPlayer var1)
+        public bool canPlayerUse(EntityPlayer entityPlayer)
         {
             return true;
         }

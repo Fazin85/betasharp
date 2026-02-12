@@ -6,6 +6,7 @@ using betareborn.Inventorys;
 using betareborn.Util.Maths;
 using betareborn.Client.Guis;
 using betareborn.Blocks.Entities;
+using betareborn.Client.Input;
 
 namespace betareborn.Entities
 {

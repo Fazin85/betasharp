@@ -13,9 +13,9 @@ namespace betareborn.Inventorys
             return 1;
         }
 
-        public ItemStack getStack(int var1)
+        public ItemStack getStack(int slotIndex)
         {
-            return stackResult[var1];
+            return stackResult[slotIndex];
         }
 
         public string getName()
@@ -23,13 +23,13 @@ namespace betareborn.Inventorys
             return "Result";
         }
 
-        public ItemStack removeStack(int var1, int var2)
+        public ItemStack removeStack(int slotIndex, int amount)
         {
-            if (stackResult[var1] != null)
+            if (stackResult[slotIndex] != null)
             {
-                ItemStack var3 = stackResult[var1];
-                stackResult[var1] = null;
-                return var3;
+                ItemStack removeStack = stackResult[slotIndex];
+                stackResult[slotIndex] = null;
+                return removeStack;
             }
             else
             {
@@ -37,9 +37,9 @@ namespace betareborn.Inventorys
             }
         }
 
-        public void setStack(int var1, ItemStack var2)
+        public void setStack(int slotIndex, ItemStack itemStack)
         {
-            stackResult[var1] = var2;
+            stackResult[slotIndex] = itemStack;
         }
 
         public int getMaxCountPerStack()
@@ -51,7 +51,7 @@ namespace betareborn.Inventorys
         {
         }
 
-        public bool canPlayerUse(EntityPlayer var1)
+        public bool canPlayerUse(EntityPlayer entityPlayer)
         {
             return true;
         }

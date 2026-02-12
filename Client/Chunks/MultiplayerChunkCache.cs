@@ -13,13 +13,13 @@ namespace betareborn.Client.Chunks
         private readonly Dictionary<ChunkPos, Chunk> chunkByPos = [];
         private readonly World world;
 
-        public MultiplayerChunkCache(World var1)
+        public MultiplayerChunkCache(World world)
         {
-            empty = new EmptyChunk(var1, new byte[-Short.MIN_VALUE], 0, 0);
-            world = var1;
+            empty = new EmptyChunk(world, new byte[-Short.MIN_VALUE], 0, 0);
+            this.world = world;
         }
 
-        public bool isChunkLoaded(int var1, int var2)
+        public bool isChunkLoaded(int x, int y)
         {
             if (this != null)
             {
@@ -27,17 +27,17 @@ namespace betareborn.Client.Chunks
             }
             else
             {
-                ChunkPos var3 = new ChunkPos(var1, var2);
-                return chunkByPos.ContainsKey(var3);
+                ChunkPos key = new ChunkPos(x, y);
+                return chunkByPos.ContainsKey(key);
             }
         }
 
         public void unloadChunk(int x, int z)
         {
-            Chunk var3 = getChunk(x, z);
-            if (!var3.isEmpty())
+            Chunk chunk = getChunk(x, z);
+            if (!chunk.isEmpty())
             {
-                var3.unload();
+                chunk.unload();
             }
 
             chunkByPos.Remove(new ChunkPos(x, z));
@@ -45,29 +45,29 @@ namespace betareborn.Client.Chunks
 
         public Chunk loadChunk(int x, int z)
         {
-            ChunkPos var3 = new ChunkPos(x, z);
-            byte[] var4 = new byte[-Short.MIN_VALUE];
-            Chunk var5 = new Chunk(world, var4, x, z);
-            Arrays.fill(var5.skyLight.bytes, 255);
+            ChunkPos key = new ChunkPos(x, z);
+            byte[] blocks = new byte[-Short.MIN_VALUE];
+            Chunk chunk = new Chunk(world, blocks, x, z);
+            Arrays.fill(chunk.skyLight.bytes, 255);
 
-            if (chunkByPos.ContainsKey(var3))
+            if (chunkByPos.ContainsKey(key))
             {
-                chunkByPos[var3] = var5;
+                chunkByPos[key] = chunk;
             }
             else
             {
-                chunkByPos.Add(var3, var5);
+                chunkByPos.Add(key, chunk);
             }
 
-            var5.loaded = true;
-            return var5;
+            chunk.loaded = true;
+            return chunk;
         }
 
         public Chunk getChunk(int x, int z)
         {
-            ChunkPos var3 = new ChunkPos(x, z);
-            chunkByPos.TryGetValue(var3, out Chunk? var4);
-            return var4 == null ? empty : var4;
+            ChunkPos key = new ChunkPos(x, z);
+            chunkByPos.TryGetValue(key, out Chunk? chunk);
+            return chunk == null ? empty : chunk;
         }
 
         public bool save(bool bl, LoadingDisplay display)
@@ -85,7 +85,7 @@ namespace betareborn.Client.Chunks
             return false;
         }
 
-        public void decorate(ChunkSource var1, int var2, int var3)
+        public void decorate(ChunkSource source, int x, int y)
         {
         }
 

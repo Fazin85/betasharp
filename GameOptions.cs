@@ -1,4 +1,4 @@
-using betareborn.Client;
+using betareborn.Client.Input;
 using betareborn.Client.Resource.Language;
 using betareborn.Stats;
 using java.io;

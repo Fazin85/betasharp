@@ -1,3 +1,4 @@
+using betareborn.Client.Input;
 using betareborn.Client.Resource.Language;
 using betareborn.Worlds;
 using betareborn.Worlds.Storage;

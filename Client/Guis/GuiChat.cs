@@ -1,3 +1,4 @@
+using betareborn.Client.Input;
 using betareborn.Util;
 
 namespace betareborn.Client.Guis

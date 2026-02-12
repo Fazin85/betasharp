@@ -67,7 +67,7 @@ namespace betareborn.Recipes
                         }
                     }
 
-                    ItemStack var10 = var1.func_21103_b(var5, var6);
+                    ItemStack var10 = var1.getStackAt(var5, var6);
                     if (var10 != null || var9 != null)
                     {
                         if (var10 == null && var9 != null || var10 != null && var9 == null)

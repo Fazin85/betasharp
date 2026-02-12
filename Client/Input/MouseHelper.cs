@@ -1,12 +1,11 @@
 using betareborn.Client;
 
-namespace betareborn
+namespace betareborn.Client.Input
 {
     public class MouseHelper
     {
         public int deltaX;
         public int deltaY;
-        private int field_1115_e = 10;
 
         public MouseHelper()
         {

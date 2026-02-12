@@ -11,7 +11,7 @@
 
         public override bool equals(object obj)
         {
-            return value.Equals(obj);
+            return obj is JString other && value.Equals(other.value);
         }
 
         public override int hashCode()

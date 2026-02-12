@@ -2,12 +2,8 @@ namespace betareborn.Network.Packets
 {
     public class PacketTracker
     {
-        private int count;
-        private long size;
-
-        private PacketTracker()
-        {
-        }
+        private int count = 0;
+        private long size = 0;
 
         public void update(int size)
         {
@@ -15,7 +11,7 @@ namespace betareborn.Network.Packets
             this.size += size;
         }
 
-        public PacketTracker(Empty1 var1) : this()
+        public PacketTracker()
         {
         }
     }

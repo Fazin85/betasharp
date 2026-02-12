@@ -1,7 +1,7 @@
 ﻿using System.Buffers;
 using System.Runtime.CompilerServices;
 
-namespace betareborn
+namespace betareborn.Util
 {
     public sealed class PooledList<T>(int initialCapacity = 16) : IDisposable where T : unmanaged
     {

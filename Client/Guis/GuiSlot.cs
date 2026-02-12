@@ -1,3 +1,4 @@
+using betareborn.Client.Input;
 using betareborn.Client.Rendering.Core;
 using java.util;
 using Silk.NET.OpenGL.Legacy;

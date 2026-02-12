@@ -7,11 +7,11 @@ namespace betareborn.Inventorys
     {
         int size();
 
-        ItemStack getStack(int var1);
+        ItemStack getStack(int slotIndex);
 
-        ItemStack removeStack(int var1, int var2);
+        ItemStack removeStack(int slotIndex, int amount);
 
-        void setStack(int var1, ItemStack var2);
+        void setStack(int slotIndex, ItemStack itemStack);
 
         string getName();
 
@@ -19,7 +19,7 @@ namespace betareborn.Inventorys
 
         void markDirty();
 
-        bool canPlayerUse(EntityPlayer var1);
+        bool canPlayerUse(EntityPlayer entityPlayer);
     }
 
 }

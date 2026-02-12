@@ -1,4 +1,4 @@
-namespace betareborn
+namespace betareborn.Client.Input
 {
     public class KeyBinding : java.lang.Object
     {

@@ -1,7 +1,6 @@
-using betareborn.Network;
 using java.lang;
 
-namespace betareborn
+namespace betareborn.Network
 {
     class NetworkReaderThread : java.lang.Thread
     {

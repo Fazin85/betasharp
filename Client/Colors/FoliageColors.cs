@@ -4,32 +4,32 @@ namespace betareborn.Client.Colors
     {
         private static int[] foliageBuffer = new int[65536];
 
-        public static void loadColors(int[] var0)
+        public static void loadColors(int[] foliageBuffer)
         {
-            foliageBuffer = var0;
+            FoliageColors.foliageBuffer = foliageBuffer;
         }
 
-        public static int getFoliageColor(double var0, double var2)
+        public static int getFoliageColor(double temperature, double downfall)
         {
-            var2 *= var0;
-            int var4 = (int)((1.0D - var0) * 255.0D);
-            int var5 = (int)((1.0D - var2) * 255.0D);
+            downfall *= temperature;
+            int var4 = (int)((1.0D - temperature) * 255.0D);
+            int var5 = (int)((1.0D - downfall) * 255.0D);
             return foliageBuffer[var5 << 8 | var4];
         }
 
         public static int getSpruceColor()
         {
-            return 6396257;
+            return 0x619961;
         }
 
         public static int getBirchColor()
         {
-            return 8431445;
+            return 0x80A755;
         }
 
         public static int getDefaultColor()
         {
-            return 4764952;
+            return 0x48B518;
         }
     }
 }

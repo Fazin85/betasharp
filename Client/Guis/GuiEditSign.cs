@@ -1,5 +1,6 @@
 using betareborn.Blocks;
 using betareborn.Blocks.Entities;
+using betareborn.Client.Input;
 using betareborn.Client.Rendering.Blocks.Entities;
 using betareborn.Client.Rendering.Core;
 using betareborn.Network.Packets.Play;

@@ -1,3 +1,4 @@
+using betareborn.Client.Input;
 using betareborn.Client.Resource.Language;
 using betareborn.Util;
 using betareborn.Util.Maths;

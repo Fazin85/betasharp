@@ -1,3 +1,4 @@
+using betareborn.Client.Input;
 using betareborn.Client.Network;
 using betareborn.Client.Resource.Language;
 using betareborn.Network.Packets.C2SPlay;
