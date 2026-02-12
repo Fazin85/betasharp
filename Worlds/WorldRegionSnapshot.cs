@@ -19,7 +19,6 @@ namespace betareborn.Worlds
 
         public WorldRegionSnapshot(World world, int x1, int y1, int z1, int x2, int y2, int z2)
         {
-            //TODO: OPTIMIZE THIS
             BiomeSource = new BiomeSource(world);
 
             chunkX = x1 >> 4;
