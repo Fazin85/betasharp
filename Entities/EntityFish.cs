@@ -216,14 +216,14 @@ namespace betareborn.Entities
                     ++ticksInAir;
                 }
 
-                Vec3D var20 = Vec3D.createVector(x, y, z);
-                Vec3D var2 = Vec3D.createVector(x + base.velocityX, y + base.velocityY, z + base.velocityZ);
+                Vec3D var20 = new Vec3D(x, y, z);
+                Vec3D var2 = new Vec3D(x + base.velocityX, y + base.velocityY, z + base.velocityZ);
                 HitResult var3 = world.raycast(var20, var2);
-                var20 = Vec3D.createVector(x, y, z);
-                var2 = Vec3D.createVector(x + base.velocityX, y + base.velocityY, z + base.velocityZ);
+                var20 = new Vec3D(x, y, z);
+                var2 = new Vec3D(x + base.velocityX, y + base.velocityY, z + base.velocityZ);
                 if (var3 != null)
                 {
-                    var2 = Vec3D.createVector(var3.pos.xCoord, var3.pos.yCoord, var3.pos.zCoord);
+                    var2 = new Vec3D(var3.pos.x, var3.pos.y, var3.pos.z);
                 }
 
                 Entity var4 = null;

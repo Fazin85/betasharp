@@ -271,7 +271,7 @@ namespace betareborn.Entities
                 int var9 = world.getBlockId(floorX, floorY, floorZ);
                 if (BlockRail.isRail(var9))
                 {
-                    Vec3D var10 = func_514_g(x, y, z);
+                    Vec3D? var10 = func_514_g(x, y, z);
                     int var11 = world.getBlockMeta(floorX, floorY, floorZ);
                     y = (double)floorY;
                     bool var12 = false;
@@ -449,10 +449,10 @@ namespace betareborn.Entities
                         velocityZ *= (double)0.96F;
                     }
 
-                    Vec3D var52 = func_514_g(x, y, z);
+                    Vec3D? var52 = func_514_g(x, y, z);
                     if (var52 != null && var10 != null)
                     {
-                        double var40 = (var10.yCoord - var52.yCoord) * 0.05D;
+                        double var40 = (var10.Value.y - var52.Value.y) * 0.05D;
                         var23 = System.Math.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
                         if (var23 > 0.0D)
                         {
@@ -460,7 +460,7 @@ namespace betareborn.Entities
                             velocityZ = velocityZ / var23 * (var23 + var40);
                         }
 
-                        setPosition(x, var52.yCoord, z);
+                        setPosition(x, var52.Value.y, z);
                     }
 
                     int var53 = MathHelper.floor_double(x);
@@ -625,7 +625,7 @@ namespace betareborn.Entities
             }
         }
 
-        public Vec3D func_515_a(double x, double y, double z, double var7)
+        public Vec3D? func_515_a(double x, double y, double z, double var7)
         {
             int var9 = MathHelper.floor_double(x);
             int var10 = MathHelper.floor_double(y);
@@ -674,8 +674,8 @@ namespace betareborn.Entities
                 return func_514_g(x, y, z);
             }
         }
-
-        public Vec3D func_514_g(double x, double y, double z)
+        
+        public Vec3D? func_514_g(double x, double y, double z)
         {
             int floorX = MathHelper.floor_double(x);
             int floorY = MathHelper.floor_double(y);
@@ -741,8 +741,8 @@ namespace betareborn.Entities
                 {
                     y += 0.5D;
                 }
-
-                return Vec3D.createVector(x, y, z);
+                
+                return new Vec3D(x, y, z);
             }
             else
             {

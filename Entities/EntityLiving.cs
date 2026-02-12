@@ -81,7 +81,7 @@ namespace betareborn.Entities
 
         public bool canSee(Entity entity)
         {
-            return world.raycast(Vec3D.createVector(x, y + (double)getEyeHeight(), z), Vec3D.createVector(entity.x, entity.y + (double)entity.getEyeHeight(), entity.z)) == null;
+            return world.raycast(new Vec3D(x, y + (double)getEyeHeight(), z), new Vec3D(entity.x, entity.y + (double)entity.getEyeHeight(), entity.z)) == null;
         }
 
         public override string getTexture()
@@ -986,18 +986,18 @@ namespace betareborn.Entities
         {
             if (partialTick == 1.0F)
             {
-                return Vec3D.createVector(x, y, z);
+                return new Vec3D(x, y, z);
             }
             else
             {
                 double x = prevX + (base.x - prevX) * (double)partialTick;
                 double y = prevY + (base.y - prevY) * (double)partialTick;
                 double z = prevZ + (base.z - prevZ) * (double)partialTick;
-                return Vec3D.createVector(x, y, z);
+                return new Vec3D(x, y, z);
             }
         }
 
-        public override Vec3D getLookVector()
+        public override Vec3D? getLookVector()
         {
             return getLook(1.0F);
         }
@@ -1014,7 +1014,7 @@ namespace betareborn.Entities
                 sinYaw = MathHelper.sin(-yaw * ((float)System.Math.PI / 180.0F) - (float)System.Math.PI);
                 cosPitch = -MathHelper.cos(-pitch * ((float)System.Math.PI / 180.0F));
                 sinPitch = MathHelper.sin(-pitch * ((float)System.Math.PI / 180.0F));
-                return Vec3D.createVector((double)(sinYaw * cosPitch), (double)sinPitch, (double)(cosYaw * cosPitch));
+                return new Vec3D((double)(sinYaw * cosPitch), (double)sinPitch, (double)(cosYaw * cosPitch));
             }
             else
             {
@@ -1024,7 +1024,7 @@ namespace betareborn.Entities
                 sinPitch = MathHelper.sin(-sinYaw * ((float)System.Math.PI / 180.0F) - (float)System.Math.PI);
                 float var6 = -MathHelper.cos(-cosYaw * ((float)System.Math.PI / 180.0F));
                 float var7 = MathHelper.sin(-cosYaw * ((float)System.Math.PI / 180.0F));
-                return Vec3D.createVector((double)(sinPitch * var6), (double)var7, (double)(cosPitch * var6));
+                return new Vec3D((double)(sinPitch * var6), (double)var7, (double)(cosPitch * var6));
             }
         }
 
@@ -1032,7 +1032,7 @@ namespace betareborn.Entities
         {
             Vec3D startPos = getPosition(partialTick);
             Vec3D lookDir = getLook(partialTick);
-            Vec3D endPos = startPos.addVector(lookDir.xCoord * range, lookDir.yCoord * range, lookDir.zCoord * range);
+            Vec3D endPos = startPos + range * lookDir;
             return world.raycast(startPos, endPos);
         }
 

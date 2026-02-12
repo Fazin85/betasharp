@@ -112,7 +112,7 @@ namespace betareborn.Entities
             {
                 Block.BLOCKS[blockId].updateBoundingBox(world, xTile, yTile, zTile);
                 Box? box = Block.BLOCKS[blockId].getCollisionShape(world, xTile, yTile, zTile);
-                if (box != null && box.Value.contains(Vec3D.createVector(x, y, z)))
+                if (box != null && box.Value.contains(new Vec3D(x, y, z)))
                 {
                     inGround = true;
                 }
@@ -149,14 +149,12 @@ namespace betareborn.Entities
             else
             {
                 ++ticksInAir;
-                Vec3D rayStart = Vec3D.createVector(x, y, z);
-                Vec3D rayEnd = Vec3D.createVector(x + velocityX, y + velocityY, z + velocityZ);
+                Vec3D rayStart = new Vec3D(x, y, z);
+                Vec3D rayEnd = new Vec3D(x + velocityX, y + velocityY, z + velocityZ);
                 HitResult hit = world.raycast(rayStart, rayEnd, false, true);
-                rayStart = Vec3D.createVector(x, y, z);
-                rayEnd = Vec3D.createVector(x + velocityX, y + velocityY, z + velocityZ);
                 if (hit != null)
                 {
-                    rayEnd = Vec3D.createVector(hit.pos.xCoord, hit.pos.yCoord, hit.pos.zCoord);
+                    rayEnd = hit.pos;
                 }
 
                 Entity hitEntity = null;
@@ -216,9 +214,9 @@ namespace betareborn.Entities
                         zTile = hit.blockZ;
                         inTile = world.getBlockId(xTile, yTile, zTile);
                         inData = world.getBlockMeta(xTile, yTile, zTile);
-                        velocityX = (double)((float)(hit.pos.xCoord - x));
-                        velocityY = (double)((float)(hit.pos.yCoord - y));
-                        velocityZ = (double)((float)(hit.pos.zCoord - z));
+                        velocityX = (double)((float)(hit.pos.x - x));
+                        velocityY = (double)((float)(hit.pos.y - y));
+                        velocityZ = (double)((float)(hit.pos.z - z));
                         horizontalSpeed = MathHelper.sqrt_double(velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
                         x -= velocityX / (double)horizontalSpeed * (double)0.05F;
                         y -= velocityY / (double)horizontalSpeed * (double)0.05F;

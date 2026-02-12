@@ -101,14 +101,14 @@ namespace betareborn.Entities
                 ++inAirTime;
             }
 
-            Vec3D var15 = Vec3D.createVector(x, y, z);
-            Vec3D var2 = Vec3D.createVector(x + velocityX, y + velocityY, z + velocityZ);
+            Vec3D var15 = new Vec3D(x, y, z);
+            Vec3D var2 = new Vec3D(x + velocityX, y + velocityY, z + velocityZ);
             HitResult var3 = world.raycast(var15, var2);
-            var15 = Vec3D.createVector(x, y, z);
-            var2 = Vec3D.createVector(x + velocityX, y + velocityY, z + velocityZ);
+            var15 = new Vec3D(x, y, z);
+            var2 = new Vec3D(x + velocityX, y + velocityY, z + velocityZ);
             if (var3 != null)
             {
-                var2 = Vec3D.createVector(var3.pos.xCoord, var3.pos.yCoord, var3.pos.zCoord);
+                var2 = new Vec3D(var3.pos.x, var3.pos.y, var3.pos.z);
             }
 
             Entity var4 = null;
@@ -238,12 +238,12 @@ namespace betareborn.Entities
             scheduleVelocityUpdate();
             if (entity != null)
             {
-                Vec3D var3 = entity.getLookVector();
+                Vec3D? var3 = entity.getLookVector();
                 if (var3 != null)
                 {
-                    velocityX = var3.xCoord;
-                    velocityY = var3.yCoord;
-                    velocityZ = var3.zCoord;
+                    velocityX = var3.Value.x;
+                    velocityY = var3.Value.y;
+                    velocityZ = var3.Value.z;
                     powerX = velocityX * 0.1D;
                     powerY = velocityY * 0.1D;
                     powerZ = velocityZ * 0.1D;

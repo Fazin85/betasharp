@@ -129,7 +129,7 @@ namespace betareborn.Blocks
         public float hardness;
         public float resistance;
         protected bool shouldTrackStatistics;
-        public double minX;
+        public double minX; // TODO: Just use Box, it's literally just pasted code
         public double minY;
         public double minZ;
         public double maxX;
@@ -412,129 +412,14 @@ namespace betareborn.Blocks
         public virtual HitResult raycast(World world, int x, int y, int z, Vec3D startPos, Vec3D endPos)
         {
             updateBoundingBox(world, x, y, z);
-            startPos = startPos.addVector((double)(-x), (double)(-y), (double)(-z));
-            endPos = endPos.addVector((double)(-x), (double)(-y), (double)(-z));
-            Vec3D hitMinX = startPos.getIntermediateWithXValue(endPos, minX);
-            Vec3D hitMaxX = startPos.getIntermediateWithXValue(endPos, maxX);
-            Vec3D hitMinY = startPos.getIntermediateWithYValue(endPos, minY);
-            Vec3D hitMaxY = startPos.getIntermediateWithYValue(endPos, maxY);
-            Vec3D hitMinZ = startPos.getIntermediateWithZValue(endPos, minZ);
-            Vec3D hitMaxZ = startPos.getIntermediateWithZValue(endPos, maxZ);
-            if (!isVecInsideYZBounds(hitMinX))
-            {
-                hitMinX = null;
-            }
-
-            if (!isVecInsideYZBounds(hitMaxX))
-            {
-                hitMaxX = null;
-            }
-
-            if (!isVecInsideXZBounds(hitMinY))
-            {
-                hitMinY = null;
-            }
-
-            if (!isVecInsideXZBounds(hitMaxY))
-            {
-                hitMaxY = null;
-            }
-
-            if (!isVecInsideXYBounds(hitMinZ))
-            {
-                hitMinZ = null;
-            }
-
-            if (!isVecInsideXYBounds(hitMaxZ))
-            {
-                hitMaxZ = null;
-            }
-
-            Vec3D hitPos = null;
-            if (hitMinX != null && (hitPos == null || startPos.distanceTo(hitMinX) < startPos.distanceTo(hitPos)))
-            {
-                hitPos = hitMinX;
-            }
-
-            if (hitMaxX != null && (hitPos == null || startPos.distanceTo(hitMaxX) < startPos.distanceTo(hitPos)))
-            {
-                hitPos = hitMaxX;
-            }
-
-            if (hitMinY != null && (hitPos == null || startPos.distanceTo(hitMinY) < startPos.distanceTo(hitPos)))
-            {
-                hitPos = hitMinY;
-            }
-
-            if (hitMaxY != null && (hitPos == null || startPos.distanceTo(hitMaxY) < startPos.distanceTo(hitPos)))
-            {
-                hitPos = hitMaxY;
-            }
-
-            if (hitMinZ != null && (hitPos == null || startPos.distanceTo(hitMinZ) < startPos.distanceTo(hitPos)))
-            {
-                hitPos = hitMinZ;
-            }
-
-            if (hitMaxZ != null && (hitPos == null || startPos.distanceTo(hitMaxZ) < startPos.distanceTo(hitPos)))
-            {
-                hitPos = hitMaxZ;
-            }
-
-            if (hitPos == null)
-            {
-                return null;
-            }
-            else
-            {
-                int side = -1;
-                if (hitPos == hitMinX)
-                {
-                    side = 4;
-                }
-
-                if (hitPos == hitMaxX)
-                {
-                    side = 5;
-                }
-
-                if (hitPos == hitMinY)
-                {
-                    side = 0;
-                }
-
-                if (hitPos == hitMaxY)
-                {
-                    side = 1;
-                }
-
-                if (hitPos == hitMinZ)
-                {
-                    side = 2;
-                }
-
-                if (hitPos == hitMaxZ)
-                {
-                    side = 3;
-                }
-
-                return new HitResult(x, y, z, side, hitPos.addVector((double)x, (double)y, (double)z));
-            }
-        }
-
-        private bool isVecInsideYZBounds(Vec3D pos)
-        {
-            return pos == null ? false : pos.yCoord >= minY && pos.yCoord <= maxY && pos.zCoord >= minZ && pos.zCoord <= maxZ;
-        }
-
-        private bool isVecInsideXZBounds(Vec3D pos)
-        {
-            return pos == null ? false : pos.xCoord >= minX && pos.xCoord <= maxX && pos.zCoord >= minZ && pos.zCoord <= maxZ;
-        }
-
-        private bool isVecInsideXYBounds(Vec3D pos)
-        {
-            return pos == null ? false : pos.xCoord >= minX && pos.xCoord <= maxX && pos.yCoord >= minY && pos.yCoord <= maxY;
+            Vec3D pos = new Vec3D(x, y, z);
+            HitResult res = new Box(minX, minY, minZ, maxX, maxY, maxZ).raycast(startPos - pos, endPos - pos);
+            if (res == null) return null;
+            res.blockX = x;
+            res.blockY = y;
+            res.blockZ = z;
+            res.pos += pos;
+            return res;
         }
 
         public virtual void onDestroyedByExplosion(World world, int x, int y, int z)

@@ -67,10 +67,10 @@ namespace betareborn.Entities
             pitch = 0.0F;
             if (pathToEntity != null && random.nextInt(100) != 0)
             {
-                Vec3D pos = pathToEntity.getPosition(this);
+                Vec3D? pos = pathToEntity.getPosition(this);
                 double distance = (double)(width * 2.0F);
 
-                while (pos != null && pos.squareDistanceTo(x, pos.yCoord, z) < distance * distance)
+                while (pos != null && pos.Value.squareDistanceTo(new Vec3D(x, pos.Value.y, z)) < distance * distance)
                 {
                     pathToEntity.incrementPathIndex();
                     if (pathToEntity.isFinished())
@@ -87,9 +87,9 @@ namespace betareborn.Entities
                 jumping = false;
                 if (pos != null)
                 {
-                    double dx = pos.xCoord - x;
-                    double dz = pos.zCoord - z;
-                    double verticalOffset = pos.yCoord - (double)floorY;
+                    double dx = pos.Value.x - x;
+                    double dz = pos.Value.z - z;
+                    double verticalOffset = pos.Value.y - (double)floorY;
                     float targetYaw = (float)(System.Math.Atan2(dz, dx) * 180.0D / (double)((float)System.Math.PI)) - 90.0F;
                     float yawDelta = targetYaw - yaw;
 
