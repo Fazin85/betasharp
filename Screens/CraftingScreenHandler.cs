@@ -77,7 +77,7 @@ namespace betareborn.Screens
 
         public override bool canUse(EntityPlayer player)
         {
-            return world.getBlockId(x, y, z) != Block.CRAFTING_TABLE.id ? false : player.getSquaredDistance(x + 0.5D, y + 0.5D, z + 0.5D) <= 64.0D;
+            return world.GetBlockId(x, y, z) != Block.CRAFTING_TABLE.id ? false : player.getSquaredDistance(x + 0.5D, y + 0.5D, z + 0.5D) <= 64.0D;
         }
 
         public override ItemStack quickMove(int slot)

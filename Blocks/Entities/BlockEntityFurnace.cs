@@ -242,7 +242,7 @@ namespace betareborn.Blocks.Entities
 
         public bool canPlayerUse(EntityPlayer player)
         {
-            return world.getBlockEntity(x, y, z) != this ? false : player.getSquaredDistance(x + 0.5D, y + 0.5D, z + 0.5D) <= 64.0D;
+            return world.GetBlockEntity(x, y, z) != this ? false : player.getSquaredDistance(x + 0.5D, y + 0.5D, z + 0.5D) <= 64.0D;
         }
     }
 

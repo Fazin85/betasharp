@@ -21,7 +21,7 @@ namespace betareborn.Blocks
         {
             float thickness;
             float halfExtent;
-            if (blockView.getBlockId(x - 1, y, z) != id && blockView.getBlockId(x + 1, y, z) != id)
+            if (blockView.GetBlockId(x - 1, y, z) != id && blockView.GetBlockId(x + 1, y, z) != id)
             {
                 thickness = 2.0F / 16.0F;
                 halfExtent = 0.5F;
@@ -50,12 +50,12 @@ namespace betareborn.Blocks
         {
             sbyte extendsInZ = 0;
             sbyte extendsInX = 0;
-            if (world.getBlockId(x - 1, y, z) == Block.OBSIDIAN.id || world.getBlockId(x + 1, y, z) == Block.OBSIDIAN.id)
+            if (world.GetBlockId(x - 1, y, z) == Block.OBSIDIAN.id || world.GetBlockId(x + 1, y, z) == Block.OBSIDIAN.id)
             {
                 extendsInZ = 1;
             }
 
-            if (world.getBlockId(x, y, z - 1) == Block.OBSIDIAN.id || world.getBlockId(x, y, z + 1) == Block.OBSIDIAN.id)
+            if (world.GetBlockId(x, y, z - 1) == Block.OBSIDIAN.id || world.GetBlockId(x, y, z + 1) == Block.OBSIDIAN.id)
             {
                 extendsInX = 1;
             }
@@ -66,7 +66,7 @@ namespace betareborn.Blocks
             }
             else
             {
-                if (world.getBlockId(x - extendsInZ, y, z - extendsInX) == 0)
+                if (world.GetBlockId(x - extendsInZ, y, z - extendsInX) == 0)
                 {
                     x -= extendsInZ;
                     z -= extendsInX;
@@ -81,7 +81,7 @@ namespace betareborn.Blocks
                         bool isFrame = horizontalOffset == -1 || horizontalOffset == 2 || verticalOffset == -1 || verticalOffset == 3;
                         if (horizontalOffset != -1 && horizontalOffset != 2 || verticalOffset != -1 && verticalOffset != 3)
                         {
-                            int blockId = world.getBlockId(x + extendsInZ * horizontalOffset, y + verticalOffset, z + extendsInX * horizontalOffset);
+                            int blockId = world.GetBlockId(x + extendsInZ * horizontalOffset, y + verticalOffset, z + extendsInX * horizontalOffset);
                             if (isFrame)
                             {
                                 if (blockId != Block.OBSIDIAN.id)
@@ -116,37 +116,37 @@ namespace betareborn.Blocks
         {
             sbyte offsetX = 0;
             sbyte offsetZ = 1;
-            if (world.getBlockId(x - 1, y, z) == base.id || world.getBlockId(x + 1, y, z) == base.id)
+            if (world.GetBlockId(x - 1, y, z) == base.id || world.GetBlockId(x + 1, y, z) == base.id)
             {
                 offsetX = 1;
                 offsetZ = 0;
             }
 
             int portalBottomY;
-            for (portalBottomY = y; world.getBlockId(x, portalBottomY - 1, z) == base.id; --portalBottomY)
+            for (portalBottomY = y; world.GetBlockId(x, portalBottomY - 1, z) == base.id; --portalBottomY)
             {
             }
 
-            if (world.getBlockId(x, portalBottomY - 1, z) != Block.OBSIDIAN.id)
+            if (world.GetBlockId(x, portalBottomY - 1, z) != Block.OBSIDIAN.id)
             {
                 world.setBlock(x, y, z, 0);
             }
             else
             {
                 int blocksAbove;
-                for (blocksAbove = 1; blocksAbove < 4 && world.getBlockId(x, portalBottomY + blocksAbove, z) == base.id; ++blocksAbove)
+                for (blocksAbove = 1; blocksAbove < 4 && world.GetBlockId(x, portalBottomY + blocksAbove, z) == base.id; ++blocksAbove)
                 {
                 }
 
-                if (blocksAbove == 3 && world.getBlockId(x, portalBottomY + blocksAbove, z) == Block.OBSIDIAN.id)
+                if (blocksAbove == 3 && world.GetBlockId(x, portalBottomY + blocksAbove, z) == Block.OBSIDIAN.id)
                 {
-                    bool hasXNeighbors = world.getBlockId(x - 1, y, z) == base.id || world.getBlockId(x + 1, y, z) == base.id;
-                    bool hasZNeighbors = world.getBlockId(x, y, z - 1) == base.id || world.getBlockId(x, y, z + 1) == base.id;
+                    bool hasXNeighbors = world.GetBlockId(x - 1, y, z) == base.id || world.GetBlockId(x + 1, y, z) == base.id;
+                    bool hasZNeighbors = world.GetBlockId(x, y, z - 1) == base.id || world.GetBlockId(x, y, z + 1) == base.id;
                     if (hasXNeighbors && hasZNeighbors)
                     {
                         world.setBlock(x, y, z, 0);
                     }
-                    else if ((world.getBlockId(x + offsetX, y, z + offsetZ) != Block.OBSIDIAN.id || world.getBlockId(x - offsetX, y, z - offsetZ) != base.id) && (world.getBlockId(x - offsetX, y, z - offsetZ) != Block.OBSIDIAN.id || world.getBlockId(x + offsetX, y, z + offsetZ) != base.id))
+                    else if ((world.GetBlockId(x + offsetX, y, z + offsetZ) != Block.OBSIDIAN.id || world.GetBlockId(x - offsetX, y, z - offsetZ) != base.id) && (world.GetBlockId(x - offsetX, y, z - offsetZ) != Block.OBSIDIAN.id || world.GetBlockId(x + offsetX, y, z + offsetZ) != base.id))
                     {
                         world.setBlock(x, y, z, 0);
                     }
@@ -160,16 +160,16 @@ namespace betareborn.Blocks
 
         public override bool isSideVisible(BlockView blockView, int x, int y, int z, int side)
         {
-            if (blockView.getBlockId(x, y, z) == id)
+            if (blockView.GetBlockId(x, y, z) == id)
             {
                 return false;
             }
             else
             {
-                bool edgeWest = blockView.getBlockId(x - 1, y, z) == id && blockView.getBlockId(x - 2, y, z) != id;
-                bool edgeEast = blockView.getBlockId(x + 1, y, z) == id && blockView.getBlockId(x + 2, y, z) != id;
-                bool edgeNorth = blockView.getBlockId(x, y, z - 1) == id && blockView.getBlockId(x, y, z - 2) != id;
-                bool edgeSouth = blockView.getBlockId(x, y, z + 1) == id && blockView.getBlockId(x, y, z + 2) != id;
+                bool edgeWest = blockView.GetBlockId(x - 1, y, z) == id && blockView.GetBlockId(x - 2, y, z) != id;
+                bool edgeEast = blockView.GetBlockId(x + 1, y, z) == id && blockView.GetBlockId(x + 2, y, z) != id;
+                bool edgeNorth = blockView.GetBlockId(x, y, z - 1) == id && blockView.GetBlockId(x, y, z - 2) != id;
+                bool edgeSouth = blockView.GetBlockId(x, y, z + 1) == id && blockView.GetBlockId(x, y, z + 2) != id;
                 bool extendsInX = edgeWest || edgeEast;
                 bool extendsInZ = edgeNorth || edgeSouth;
                 return extendsInX && side == 4 ? true : (extendsInX && side == 5 ? true : (extendsInZ && side == 2 ? true : extendsInZ && side == 3));
@@ -214,7 +214,7 @@ namespace betareborn.Blocks
                 velocityX = ((double)random.nextFloat() - 0.5D) * 0.5D;
                 velocityY = ((double)random.nextFloat() - 0.5D) * 0.5D;
                 velocityZ = ((double)random.nextFloat() - 0.5D) * 0.5D;
-                if (world.getBlockId(x - 1, y, z) != id && world.getBlockId(x + 1, y, z) != id)
+                if (world.GetBlockId(x - 1, y, z) != id && world.GetBlockId(x + 1, y, z) != id)
                 {
                     particleX = (double)x + 0.5D + 0.25D * (double)direction;
                     velocityX = (double)(random.nextFloat() * 2.0F * (float)direction);

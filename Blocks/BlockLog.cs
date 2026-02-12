@@ -38,10 +38,10 @@ namespace betareborn.Blocks
                     {
                         for (int offsetZ = -searchRadius; offsetZ <= searchRadius; ++offsetZ)
                         {
-                            int neighborBlockId = world.getBlockId(x + offsetX, y + offsetY, z + offsetZ);
+                            int neighborBlockId = world.GetBlockId(x + offsetX, y + offsetY, z + offsetZ);
                             if (neighborBlockId == Block.LEAVES.id)
                             {
-                                int leavesMeta = world.getBlockMeta(x + offsetX, y + offsetY, z + offsetZ);
+                                int leavesMeta = world.GetBlockMeta(x + offsetX, y + offsetY, z + offsetZ);
                                 if ((leavesMeta & 8) == 0)
                                 {
                                     world.setBlockMetaWithoutNotifyingNeighbors(x + offsetX, y + offsetY, z + offsetZ, leavesMeta | 8);

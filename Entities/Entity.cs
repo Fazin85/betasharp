@@ -529,17 +529,17 @@ namespace betareborn.Entities
                     var38 = MathHelper.floor_double(x);
                     var26 = MathHelper.floor_double(y - (double)0.2F - (double)standingEyeHeight);
                     var39 = MathHelper.floor_double(z);
-                    var28 = world.getBlockId(var38, var26, var39);
-                    if (world.getBlockId(var38, var26 - 1, var39) == Block.FENCE.id)
+                    var28 = world.GetBlockId(var38, var26, var39);
+                    if (world.GetBlockId(var38, var26 - 1, var39) == Block.FENCE.id)
                     {
-                        var28 = world.getBlockId(var38, var26 - 1, var39);
+                        var28 = world.GetBlockId(var38, var26 - 1, var39);
                     }
 
                     if (horizontalSpeed > (float)nextStepSoundDistance && var28 > 0)
                     {
                         ++nextStepSoundDistance;
                         BlockSoundGroup var29 = Block.BLOCKS[var28].soundGroup;
-                        if (world.getBlockId(var38, var26 + 1, var39) == Block.SNOW.id)
+                        if (world.GetBlockId(var38, var26 + 1, var39) == Block.SNOW.id)
                         {
                             var29 = Block.SNOW.soundGroup;
                             world.playSound(this, var29.func_1145_d(), var29.getVolume() * 0.15F, var29.getPitch());
@@ -567,7 +567,7 @@ namespace betareborn.Entities
                         {
                             for (int var33 = var39; var33 <= var30; ++var33)
                             {
-                                int var34 = world.getBlockId(var31, var32, var33);
+                                int var34 = world.GetBlockId(var31, var32, var33);
                                 if (var34 > 0)
                                 {
                                     Block.BLOCKS[var34].onEntityCollision(world, var31, var32, var33, this);
@@ -670,10 +670,10 @@ namespace betareborn.Entities
             int var4 = MathHelper.floor_double(x);
             int var5 = MathHelper.floor_float((float)MathHelper.floor_double(var2));
             int var6 = MathHelper.floor_double(z);
-            int var7 = world.getBlockId(var4, var5, var6);
+            int var7 = world.GetBlockId(var4, var5, var6);
             if (var7 != 0 && Block.BLOCKS[var7].material == var1)
             {
-                float var8 = BlockFluid.getFluidHeightFromMeta(world.getBlockMeta(var4, var5, var6)) - 1.0F / 9.0F;
+                float var8 = BlockFluid.getFluidHeightFromMeta(world.GetBlockMeta(var4, var5, var6)) - 1.0F / 9.0F;
                 float var9 = (float)(var5 + 1) - var8;
                 return var2 < (double)var9;
             }
@@ -721,7 +721,7 @@ namespace betareborn.Entities
             int var6 = MathHelper.floor_double(z);
             if (world.isRegionLoaded(MathHelper.floor_double(boundingBox.minX), MathHelper.floor_double(boundingBox.minY), MathHelper.floor_double(boundingBox.minZ), MathHelper.floor_double(boundingBox.maxX), MathHelper.floor_double(boundingBox.maxY), MathHelper.floor_double(boundingBox.maxZ)))
             {
-                float var7 = world.getLuminance(var2, var5, var6);
+                float var7 = world.GetLuminance(var2, var5, var6);
                 if (var7 < minBrightness)
                 {
                     var7 = minBrightness;
@@ -1034,7 +1034,7 @@ namespace betareborn.Entities
                 int var5 = MathHelper.floor_double(x + (double)var2);
                 int var6 = MathHelper.floor_double(y + (double)getEyeHeight() + (double)var3);
                 int var7 = MathHelper.floor_double(z + (double)var4);
-                if (world.shouldSuffocate(var5, var6, var7))
+                if (world.ShouldSuffocate(var5, var6, var7))
                 {
                     return true;
                 }
@@ -1302,14 +1302,14 @@ namespace betareborn.Entities
             double var10 = var1 - (double)var7;
             double var12 = var3 - (double)var8;
             double var14 = var5 - (double)var9;
-            if (world.shouldSuffocate(var7, var8, var9))
+            if (world.ShouldSuffocate(var7, var8, var9))
             {
-                bool var16 = !world.shouldSuffocate(var7 - 1, var8, var9);
-                bool var17 = !world.shouldSuffocate(var7 + 1, var8, var9);
-                bool var18 = !world.shouldSuffocate(var7, var8 - 1, var9);
-                bool var19 = !world.shouldSuffocate(var7, var8 + 1, var9);
-                bool var20 = !world.shouldSuffocate(var7, var8, var9 - 1);
-                bool var21 = !world.shouldSuffocate(var7, var8, var9 + 1);
+                bool var16 = !world.ShouldSuffocate(var7 - 1, var8, var9);
+                bool var17 = !world.ShouldSuffocate(var7 + 1, var8, var9);
+                bool var18 = !world.ShouldSuffocate(var7, var8 - 1, var9);
+                bool var19 = !world.ShouldSuffocate(var7, var8 + 1, var9);
+                bool var20 = !world.ShouldSuffocate(var7, var8, var9 - 1);
+                bool var21 = !world.ShouldSuffocate(var7, var8, var9 + 1);
                 int var22 = -1;
                 double var23 = 9999.0D;
                 if (var16 && var10 < var23)

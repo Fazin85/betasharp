@@ -120,7 +120,7 @@ namespace betareborn.Client.Rendering.Entitys
                 var6 = MathHelper.floor_double(var1.z + (double)(var2 / 16.0F));
             }
 
-            float var7 = dispatcher.world.getLuminance(var4, var5, var6);
+            float var7 = dispatcher.world.GetLuminance(var4, var5, var6);
             GLManager.GL.Color3(var7, var7, var7);
         }
 

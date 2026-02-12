@@ -17,7 +17,7 @@ namespace betareborn.Worlds.Gen.Features
 
         public override bool generate(World var1, java.util.Random var2, int var3, int var4, int var5)
         {
-            if (var1.getMaterial(var3, var4, var5) != Material.WATER)
+            if (var1.GetMaterial(var3, var4, var5) != Material.WATER)
             {
                 return false;
             }
@@ -57,7 +57,7 @@ namespace betareborn.Worlds.Gen.Features
                                 double var45 = (var40 + 0.5D - var24) / (var28 / 2.0D);
                                 if (var41 * var41 + var43 * var43 + var45 * var45 < 1.0D)
                                 {
-                                    int var47 = var1.getBlockId(var38, var39, var40);
+                                    int var47 = var1.GetBlockId(var38, var39, var40);
                                     if (var47 == Block.SAND.id)
                                     {
                                         var1.setBlockWithoutNotifyingNeighbors(var38, var39, var40, clayBlockId);

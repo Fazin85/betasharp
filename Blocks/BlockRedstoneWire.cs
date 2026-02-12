@@ -49,7 +49,7 @@ namespace betareborn.Blocks
 
         public override bool canPlaceAt(World var1, int var2, int var3, int var4)
         {
-            return var1.shouldSuffocate(var2, var3 - 1, var4);
+            return var1.ShouldSuffocate(var2, var3 - 1, var4);
         }
 
         private void updateAndPropagateCurrentStrength(World var1, int var2, int var3, int var4)
@@ -67,7 +67,7 @@ namespace betareborn.Blocks
 
         private void func_21030_a(World var1, int var2, int var3, int var4, int var5, int var6, int var7)
         {
-            int var8 = var1.getBlockMeta(var2, var3, var4);
+            int var8 = var1.GetBlockMeta(var2, var3, var4);
             int var9 = 0;
             wiresProvidePower = false;
             bool var10 = var1.isPowered(var2, var3, var4);
@@ -110,14 +110,14 @@ namespace betareborn.Blocks
                         var9 = getMaxCurrentStrength(var1, var12, var3, var13, var9);
                     }
 
-                    if (var1.shouldSuffocate(var12, var3, var13) && !var1.shouldSuffocate(var2, var3 + 1, var4))
+                    if (var1.ShouldSuffocate(var12, var3, var13) && !var1.ShouldSuffocate(var2, var3 + 1, var4))
                     {
                         if (var12 != var5 || var3 + 1 != var6 || var13 != var7)
                         {
                             var9 = getMaxCurrentStrength(var1, var12, var3 + 1, var13, var9);
                         }
                     }
-                    else if (!var1.shouldSuffocate(var12, var3, var13) && (var12 != var5 || var3 - 1 != var6 || var13 != var7))
+                    else if (!var1.ShouldSuffocate(var12, var3, var13) && (var12 != var5 || var3 - 1 != var6 || var13 != var7))
                     {
                         var9 = getMaxCurrentStrength(var1, var12, var3 - 1, var13, var9);
                     }
@@ -165,14 +165,14 @@ namespace betareborn.Blocks
                         ++var13;
                     }
 
-                    if (var1.shouldSuffocate(var12, var3, var13))
+                    if (var1.ShouldSuffocate(var12, var3, var13))
                     {
                         var14 += 2;
                     }
 
                     bool var15 = false;
                     int var16 = getMaxCurrentStrength(var1, var12, var3, var13, -1);
-                    var9 = var1.getBlockMeta(var2, var3, var4);
+                    var9 = var1.GetBlockMeta(var2, var3, var4);
                     if (var9 > 0)
                     {
                         --var9;
@@ -184,7 +184,7 @@ namespace betareborn.Blocks
                     }
 
                     var16 = getMaxCurrentStrength(var1, var12, var14, var13, -1);
-                    var9 = var1.getBlockMeta(var2, var3, var4);
+                    var9 = var1.GetBlockMeta(var2, var3, var4);
                     if (var9 > 0)
                     {
                         --var9;
@@ -212,7 +212,7 @@ namespace betareborn.Blocks
 
         private void notifyWireNeighborsOfNeighborChange(World var1, int var2, int var3, int var4)
         {
-            if (var1.getBlockId(var2, var3, var4) == id)
+            if (var1.GetBlockId(var2, var3, var4) == id)
             {
                 var1.notifyNeighbors(var2, var3, var4, id);
                 var1.notifyNeighbors(var2 - 1, var3, var4, id);
@@ -236,7 +236,7 @@ namespace betareborn.Blocks
                 notifyWireNeighborsOfNeighborChange(var1, var2 + 1, var3, var4);
                 notifyWireNeighborsOfNeighborChange(var1, var2, var3, var4 - 1);
                 notifyWireNeighborsOfNeighborChange(var1, var2, var3, var4 + 1);
-                if (var1.shouldSuffocate(var2 - 1, var3, var4))
+                if (var1.ShouldSuffocate(var2 - 1, var3, var4))
                 {
                     notifyWireNeighborsOfNeighborChange(var1, var2 - 1, var3 + 1, var4);
                 }
@@ -245,7 +245,7 @@ namespace betareborn.Blocks
                     notifyWireNeighborsOfNeighborChange(var1, var2 - 1, var3 - 1, var4);
                 }
 
-                if (var1.shouldSuffocate(var2 + 1, var3, var4))
+                if (var1.ShouldSuffocate(var2 + 1, var3, var4))
                 {
                     notifyWireNeighborsOfNeighborChange(var1, var2 + 1, var3 + 1, var4);
                 }
@@ -254,7 +254,7 @@ namespace betareborn.Blocks
                     notifyWireNeighborsOfNeighborChange(var1, var2 + 1, var3 - 1, var4);
                 }
 
-                if (var1.shouldSuffocate(var2, var3, var4 - 1))
+                if (var1.ShouldSuffocate(var2, var3, var4 - 1))
                 {
                     notifyWireNeighborsOfNeighborChange(var1, var2, var3 + 1, var4 - 1);
                 }
@@ -263,7 +263,7 @@ namespace betareborn.Blocks
                     notifyWireNeighborsOfNeighborChange(var1, var2, var3 - 1, var4 - 1);
                 }
 
-                if (var1.shouldSuffocate(var2, var3, var4 + 1))
+                if (var1.ShouldSuffocate(var2, var3, var4 + 1))
                 {
                     notifyWireNeighborsOfNeighborChange(var1, var2, var3 + 1, var4 + 1);
                 }
@@ -287,7 +287,7 @@ namespace betareborn.Blocks
                 notifyWireNeighborsOfNeighborChange(var1, var2 + 1, var3, var4);
                 notifyWireNeighborsOfNeighborChange(var1, var2, var3, var4 - 1);
                 notifyWireNeighborsOfNeighborChange(var1, var2, var3, var4 + 1);
-                if (var1.shouldSuffocate(var2 - 1, var3, var4))
+                if (var1.ShouldSuffocate(var2 - 1, var3, var4))
                 {
                     notifyWireNeighborsOfNeighborChange(var1, var2 - 1, var3 + 1, var4);
                 }
@@ -296,7 +296,7 @@ namespace betareborn.Blocks
                     notifyWireNeighborsOfNeighborChange(var1, var2 - 1, var3 - 1, var4);
                 }
 
-                if (var1.shouldSuffocate(var2 + 1, var3, var4))
+                if (var1.ShouldSuffocate(var2 + 1, var3, var4))
                 {
                     notifyWireNeighborsOfNeighborChange(var1, var2 + 1, var3 + 1, var4);
                 }
@@ -305,7 +305,7 @@ namespace betareborn.Blocks
                     notifyWireNeighborsOfNeighborChange(var1, var2 + 1, var3 - 1, var4);
                 }
 
-                if (var1.shouldSuffocate(var2, var3, var4 - 1))
+                if (var1.ShouldSuffocate(var2, var3, var4 - 1))
                 {
                     notifyWireNeighborsOfNeighborChange(var1, var2, var3 + 1, var4 - 1);
                 }
@@ -314,7 +314,7 @@ namespace betareborn.Blocks
                     notifyWireNeighborsOfNeighborChange(var1, var2, var3 - 1, var4 - 1);
                 }
 
-                if (var1.shouldSuffocate(var2, var3, var4 + 1))
+                if (var1.ShouldSuffocate(var2, var3, var4 + 1))
                 {
                     notifyWireNeighborsOfNeighborChange(var1, var2, var3 + 1, var4 + 1);
                 }
@@ -328,13 +328,13 @@ namespace betareborn.Blocks
 
         private int getMaxCurrentStrength(World var1, int var2, int var3, int var4, int var5)
         {
-            if (var1.getBlockId(var2, var3, var4) != id)
+            if (var1.GetBlockId(var2, var3, var4) != id)
             {
                 return var5;
             }
             else
             {
-                int var6 = var1.getBlockMeta(var2, var3, var4);
+                int var6 = var1.GetBlockMeta(var2, var3, var4);
                 return var6 > var5 ? var6 : var5;
             }
         }
@@ -343,7 +343,7 @@ namespace betareborn.Blocks
         {
             if (!var1.isRemote)
             {
-                int var6 = var1.getBlockMeta(var2, var3, var4);
+                int var6 = var1.GetBlockMeta(var2, var3, var4);
                 bool var7 = canPlaceAt(var1, var2, var3, var4);
                 if (!var7)
                 {
@@ -375,7 +375,7 @@ namespace betareborn.Blocks
             {
                 return false;
             }
-            else if (var1.getBlockMeta(var2, var3, var4) == 0)
+            else if (var1.GetBlockMeta(var2, var3, var4) == 0)
             {
                 return false;
             }
@@ -385,28 +385,28 @@ namespace betareborn.Blocks
             }
             else
             {
-                bool var6 = isPowerProviderOrWire(var1, var2 - 1, var3, var4, 1) || !var1.shouldSuffocate(var2 - 1, var3, var4) && isPowerProviderOrWire(var1, var2 - 1, var3 - 1, var4, -1);
-                bool var7 = isPowerProviderOrWire(var1, var2 + 1, var3, var4, 3) || !var1.shouldSuffocate(var2 + 1, var3, var4) && isPowerProviderOrWire(var1, var2 + 1, var3 - 1, var4, -1);
-                bool var8 = isPowerProviderOrWire(var1, var2, var3, var4 - 1, 2) || !var1.shouldSuffocate(var2, var3, var4 - 1) && isPowerProviderOrWire(var1, var2, var3 - 1, var4 - 1, -1);
-                bool var9 = isPowerProviderOrWire(var1, var2, var3, var4 + 1, 0) || !var1.shouldSuffocate(var2, var3, var4 + 1) && isPowerProviderOrWire(var1, var2, var3 - 1, var4 + 1, -1);
-                if (!var1.shouldSuffocate(var2, var3 + 1, var4))
+                bool var6 = isPowerProviderOrWire(var1, var2 - 1, var3, var4, 1) || !var1.ShouldSuffocate(var2 - 1, var3, var4) && isPowerProviderOrWire(var1, var2 - 1, var3 - 1, var4, -1);
+                bool var7 = isPowerProviderOrWire(var1, var2 + 1, var3, var4, 3) || !var1.ShouldSuffocate(var2 + 1, var3, var4) && isPowerProviderOrWire(var1, var2 + 1, var3 - 1, var4, -1);
+                bool var8 = isPowerProviderOrWire(var1, var2, var3, var4 - 1, 2) || !var1.ShouldSuffocate(var2, var3, var4 - 1) && isPowerProviderOrWire(var1, var2, var3 - 1, var4 - 1, -1);
+                bool var9 = isPowerProviderOrWire(var1, var2, var3, var4 + 1, 0) || !var1.ShouldSuffocate(var2, var3, var4 + 1) && isPowerProviderOrWire(var1, var2, var3 - 1, var4 + 1, -1);
+                if (!var1.ShouldSuffocate(var2, var3 + 1, var4))
                 {
-                    if (var1.shouldSuffocate(var2 - 1, var3, var4) && isPowerProviderOrWire(var1, var2 - 1, var3 + 1, var4, -1))
+                    if (var1.ShouldSuffocate(var2 - 1, var3, var4) && isPowerProviderOrWire(var1, var2 - 1, var3 + 1, var4, -1))
                     {
                         var6 = true;
                     }
 
-                    if (var1.shouldSuffocate(var2 + 1, var3, var4) && isPowerProviderOrWire(var1, var2 + 1, var3 + 1, var4, -1))
+                    if (var1.ShouldSuffocate(var2 + 1, var3, var4) && isPowerProviderOrWire(var1, var2 + 1, var3 + 1, var4, -1))
                     {
                         var7 = true;
                     }
 
-                    if (var1.shouldSuffocate(var2, var3, var4 - 1) && isPowerProviderOrWire(var1, var2, var3 + 1, var4 - 1, -1))
+                    if (var1.ShouldSuffocate(var2, var3, var4 - 1) && isPowerProviderOrWire(var1, var2, var3 + 1, var4 - 1, -1))
                     {
                         var8 = true;
                     }
 
-                    if (var1.shouldSuffocate(var2, var3, var4 + 1) && isPowerProviderOrWire(var1, var2, var3 + 1, var4 + 1, -1))
+                    if (var1.ShouldSuffocate(var2, var3, var4 + 1) && isPowerProviderOrWire(var1, var2, var3 + 1, var4 + 1, -1))
                     {
                         var9 = true;
                     }
@@ -423,7 +423,7 @@ namespace betareborn.Blocks
 
         public override void randomDisplayTick(World var1, int var2, int var3, int var4, java.util.Random var5)
         {
-            int var6 = var1.getBlockMeta(var2, var3, var4);
+            int var6 = var1.GetBlockMeta(var2, var3, var4);
             if (var6 > 0)
             {
                 double var7 = (double)var2 + 0.5D + ((double)var5.nextFloat() - 0.5D) * 0.2D;
@@ -455,7 +455,7 @@ namespace betareborn.Blocks
 
         public static bool isPowerProviderOrWire(BlockView var0, int var1, int var2, int var3, int var4)
         {
-            int var5 = var0.getBlockId(var1, var2, var3);
+            int var5 = var0.GetBlockId(var1, var2, var3);
             if (var5 == Block.REDSTONE_WIRE.id)
             {
                 return true;
@@ -474,7 +474,7 @@ namespace betareborn.Blocks
             }
             else
             {
-                int var6 = var0.getBlockMeta(var1, var2, var3);
+                int var6 = var0.GetBlockMeta(var1, var2, var3);
                 return var4 == Facings.OPPOSITE[var6 & 3];
             }
         }

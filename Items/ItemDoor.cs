@@ -65,10 +65,10 @@ namespace betareborn.Items
                         offsetX = 1;
                     }
 
-                    int solidBlocksLeft = (world.shouldSuffocate(x - offsetX, y, z - offsetZ) ? 1 : 0) + (world.shouldSuffocate(x - offsetX, y + 1, z - offsetZ) ? 1 : 0);
-                    int solidBlocksRight = (world.shouldSuffocate(x + offsetX, y, z + offsetZ) ? 1 : 0) + (world.shouldSuffocate(x + offsetX, y + 1, z + offsetZ) ? 1 : 0);
-                    bool hasDoorOnLeft = world.getBlockId(x - offsetX, y, z - offsetZ) == block.id || world.getBlockId(x - offsetX, y + 1, z - offsetZ) == block.id;
-                    bool hasDoorOnRight = world.getBlockId(x + offsetX, y, z + offsetZ) == block.id || world.getBlockId(x + offsetX, y + 1, z + offsetZ) == block.id;
+                    int solidBlocksLeft = (world.ShouldSuffocate(x - offsetX, y, z - offsetZ) ? 1 : 0) + (world.ShouldSuffocate(x - offsetX, y + 1, z - offsetZ) ? 1 : 0);
+                    int solidBlocksRight = (world.ShouldSuffocate(x + offsetX, y, z + offsetZ) ? 1 : 0) + (world.ShouldSuffocate(x + offsetX, y + 1, z + offsetZ) ? 1 : 0);
+                    bool hasDoorOnLeft = world.GetBlockId(x - offsetX, y, z - offsetZ) == block.id || world.GetBlockId(x - offsetX, y + 1, z - offsetZ) == block.id;
+                    bool hasDoorOnRight = world.GetBlockId(x + offsetX, y, z + offsetZ) == block.id || world.GetBlockId(x + offsetX, y + 1, z + offsetZ) == block.id;
                     bool shouldMirror = false;
                     if (hasDoorOnLeft && !hasDoorOnRight)
                     {

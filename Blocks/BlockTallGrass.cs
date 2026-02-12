@@ -19,7 +19,7 @@ namespace betareborn.Blocks
 
         public override int getColorMultiplier(BlockView blockView, int x, int y, int z)
         {
-            int meta = blockView.getBlockMeta(x, y, z);
+            int meta = blockView.GetBlockMeta(x, y, z);
             if (meta == 0)
             {
                 return 16777215;
@@ -31,9 +31,9 @@ namespace betareborn.Blocks
                 x = (int)((long)x + (positionSeed >> 14 & 31L));
                 y = (int)((long)y + (positionSeed >> 19 & 31L));
                 z = (int)((long)z + (positionSeed >> 24 & 31L));
-                blockView.getBiomeSource().getBiomesInArea(x, z, 1, 1);
-                double temperature = blockView.getBiomeSource().temperatureMap[0];
-                double downfall = blockView.getBiomeSource().downfallMap[0];
+                blockView.                BiomeSource.getBiomesInArea(x, z, 1, 1);
+                double temperature = blockView.BiomeSource.temperatureMap[0];
+                double downfall = blockView.BiomeSource.downfallMap[0];
                 return GrassColors.getColor(temperature, downfall);
             }
         }

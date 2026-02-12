@@ -38,7 +38,7 @@ namespace betareborn.Entities
             int var27 = MathHelper.floor_double(var21);
             int var28 = MathHelper.floor_double(var23 + (double)(standingEyeHeight / 2.0F));
             int var29 = MathHelper.floor_double(var25);
-            float var30 = world.getLuminance(var27, var28, var29);
+            float var30 = world.GetLuminance(var27, var28, var29);
             var21 -= interpPosX;
             var23 -= interpPosY;
             var25 -= interpPosZ;

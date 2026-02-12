@@ -57,7 +57,7 @@ namespace betareborn.Entities
             prevY = y;
             prevZ = z;
             velocityY -= (double)0.04F;
-            if (world.getMaterial(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z)) == Material.LAVA)
+            if (world.GetMaterial(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z)) == Material.LAVA)
             {
                 velocityY = (double)0.2F;
                 velocityX = (double)((random.nextFloat() - random.nextFloat()) * 0.2F);
@@ -71,7 +71,7 @@ namespace betareborn.Entities
             if (onGround)
             {
                 var1 = 0.1F * 0.1F * 58.8F;
-                int var2 = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
+                int var2 = world.GetBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
                 if (var2 > 0)
                 {
                     var1 = Block.BLOCKS[var2].slipperiness * 0.98F;

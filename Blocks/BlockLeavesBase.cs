@@ -19,7 +19,7 @@ namespace betareborn.Blocks
 
         public override bool isSideVisible(BlockView blockView, int x, int y, int z, int side)
         {
-            int var6 = blockView.getBlockId(x, y, z);
+            int var6 = blockView.GetBlockId(x, y, z);
             return !graphicsLevel && var6 == id ? false : base.isSideVisible(blockView, x, y, z, side);
         }
     }

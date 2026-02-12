@@ -318,7 +318,7 @@ namespace betareborn.Server.Network
                 else if (packet.action == 2)
                 {
                     player.interactionManager.continueMining(var5, var6, var7);
-                    if (var2.getBlockId(var5, var6, var7) != 0)
+                    if (var2.GetBlockId(var5, var6, var7) != 0)
                     {
                         player.networkHandler.sendPacket(new BlockUpdateS2CPacket(var5, var6, var7, var2));
                     }
@@ -652,7 +652,7 @@ namespace betareborn.Server.Network
             ServerWorld var2 = server.getWorld(player.dimensionId);
             if (var2.isPosLoaded(packet.x, packet.y, packet.z))
             {
-                BlockEntity var3 = var2.getBlockEntity(packet.x, packet.y, packet.z);
+                BlockEntity var3 = var2.GetBlockEntity(packet.x, packet.y, packet.z);
                 if (var3 is BlockEntitySign var4)
                 {
                     if (!var4.isEditable())

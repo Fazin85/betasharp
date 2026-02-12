@@ -36,7 +36,7 @@ namespace betareborn.Worlds
 
         }
 
-        public int getBlockId(int x, int y, int z)
+        public int GetBlockId(int x, int y, int z)
         {
             if (y < 0)
             {
@@ -62,14 +62,14 @@ namespace betareborn.Worlds
             }
         }
 
-        public BlockEntity getBlockEntity(int x, int y, int z)
+        public BlockEntity GetBlockEntity(int x, int y, int z)
         {
             int var4 = (x >> 4) - chunkX;
             int var5 = (z >> 4) - chunkZ;
             return chunks[var4][var5].getBlockEntity(x & 15, y, z & 15);
         }
 
-        public float getNaturalBrightness(int x, int y, int z, int blockLight)
+        public float GetNaturalBrightness(int x, int y, int z, int blockLight)
         {
             int var5 = getRawBrightness(x, y, z);
             if (var5 < blockLight)
@@ -80,7 +80,7 @@ namespace betareborn.Worlds
             return world.dimension.lightLevelToLuminance[var5];
         }
 
-        public float getLuminance(int x, int y, int z)
+        public float GetLuminance(int x, int y, int z)
         {
             return world.dimension.lightLevelToLuminance[getRawBrightness(x, y, z)];
         }
@@ -98,7 +98,7 @@ namespace betareborn.Worlds
                 int var6;
                 if (useNeighborLight)
                 {
-                    var5 = getBlockId(x, y, z);
+                    var5 = GetBlockId(x, y, z);
                     if (var5 == Block.SLAB.id || var5 == Block.FARMLAND.id || var5 == Block.WOODEN_STAIRS.id || var5 == Block.COBBLESTONE_STAIRS.id)
                     {
                         var6 = getRawBrightness(x, y + 1, z, false);
@@ -157,7 +157,7 @@ namespace betareborn.Worlds
             }
         }
 
-        public int getBlockMeta(int x, int y, int z)
+        public int GetBlockMeta(int x, int y, int z)
         {
             if (y < 0)
             {
@@ -175,26 +175,23 @@ namespace betareborn.Worlds
             }
         }
 
-        public Material getMaterial(int x, int y, int z)
+        public Material GetMaterial(int x, int y, int z)
         {
-            int var4 = getBlockId(x, y, z);
+            int var4 = GetBlockId(x, y, z);
             return var4 == 0 ? Material.AIR : Block.BLOCKS[var4].material;
         }
 
-        public BiomeSource getBiomeSource()
-        {
-            return world.getBiomeSource();
-        }
+        public BiomeSource BiomeSource => world.BiomeSource;
 
-        public bool isOpaque(int x, int y, int z)
+        public bool IsOpaque(int x, int y, int z)
         {
-            Block var4 = Block.BLOCKS[getBlockId(x, y, z)];
+            Block var4 = Block.BLOCKS[GetBlockId(x, y, z)];
             return var4 == null ? false : var4.isOpaque();
         }
 
-        public bool shouldSuffocate(int x, int y, int z)
+        public bool ShouldSuffocate(int x, int y, int z)
         {
-            Block var4 = Block.BLOCKS[getBlockId(x, y, z)];
+            Block var4 = Block.BLOCKS[GetBlockId(x, y, z)];
             return var4 == null ? false : var4.material.blocksMovement() && var4.isFullCube();
         }
     }

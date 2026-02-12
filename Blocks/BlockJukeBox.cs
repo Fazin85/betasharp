@@ -20,7 +20,7 @@ namespace betareborn.Blocks
 
         public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
         {
-            if (world.getBlockMeta(x, y, z) == 0)
+            if (world.GetBlockMeta(x, y, z) == 0)
             {
                 return false;
             }
@@ -35,7 +35,7 @@ namespace betareborn.Blocks
         {
             if (!world.isRemote)
             {
-                BlockEntityRecordPlayer jukebox = (BlockEntityRecordPlayer)world.getBlockEntity(x, y, z);
+                BlockEntityRecordPlayer jukebox = (BlockEntityRecordPlayer)world.GetBlockEntity(x, y, z);
                 jukebox.recordId = id;
                 jukebox.markDirty();
                 world.setBlockMeta(x, y, z, 1);
@@ -46,7 +46,7 @@ namespace betareborn.Blocks
         {
             if (!world.isRemote)
             {
-                BlockEntityRecordPlayer jukebox = (BlockEntityRecordPlayer)world.getBlockEntity(x, y, z);
+                BlockEntityRecordPlayer jukebox = (BlockEntityRecordPlayer)world.GetBlockEntity(x, y, z);
                 int recordId = jukebox.recordId;
                 if (recordId != 0)
                 {

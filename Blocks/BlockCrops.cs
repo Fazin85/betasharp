@@ -25,7 +25,7 @@ namespace betareborn.Blocks
             base.onTick(world, x, y, z, random);
             if (world.getLightLevel(x, y + 1, z) >= 9)
             {
-                int meta = world.getBlockMeta(x, y, z);
+                int meta = world.GetBlockMeta(x, y, z);
                 if (meta < 7)
                 {
                     float var7 = getAvailableMoisture(world, x, y, z);
@@ -47,14 +47,14 @@ namespace betareborn.Blocks
         private float getAvailableMoisture(World world, int x, int y, int z)
         {
             float totalMoisture = 1.0F;
-            int blockNorth = world.getBlockId(x, y, z - 1);
-            int blockSouth = world.getBlockId(x, y, z + 1);
-            int blockWest = world.getBlockId(x - 1, y, z);
-            int blockEast = world.getBlockId(x + 1, y, z);
-            int blockNorthWest = world.getBlockId(x - 1, y, z - 1);
-            int blockNorthEast = world.getBlockId(x + 1, y, z - 1);
-            int blockSouthEast = world.getBlockId(x + 1, y, z + 1);
-            int blockSouthWest = world.getBlockId(x - 1, y, z + 1);
+            int blockNorth = world.GetBlockId(x, y, z - 1);
+            int blockSouth = world.GetBlockId(x, y, z + 1);
+            int blockWest = world.GetBlockId(x - 1, y, z);
+            int blockEast = world.GetBlockId(x + 1, y, z);
+            int blockNorthWest = world.GetBlockId(x - 1, y, z - 1);
+            int blockNorthEast = world.GetBlockId(x + 1, y, z - 1);
+            int blockSouthEast = world.GetBlockId(x + 1, y, z + 1);
+            int blockSouthWest = world.GetBlockId(x - 1, y, z + 1);
             bool cropsEastWest = blockWest == id || blockEast == id;
             bool cropsNorthSouth = blockNorth == id || blockSouth == id;
             bool cropsDiagonals = blockNorthWest == id || blockNorthEast == id || blockSouthEast == id || blockSouthWest == id;
@@ -63,12 +63,12 @@ namespace betareborn.Blocks
             {
                 for (int dz = z - 1; dz <= z + 1; ++dz)
                 {
-                    int blockBelow = world.getBlockId(dx, y - 1, dz);
+                    int blockBelow = world.GetBlockId(dx, y - 1, dz);
                     float cellMoisture = 0.0F;
                     if (blockBelow == Block.FARMLAND.id)
                     {
                         cellMoisture = 1.0F;
-                        if (world.getBlockMeta(dx, y - 1, dz) > 0)
+                        if (world.GetBlockMeta(dx, y - 1, dz) > 0)
                         {
                             cellMoisture = 3.0F;
                         }

@@ -243,8 +243,8 @@ namespace betareborn.Worlds.Gen.Chunks
             random.setSeed(chunkX * 341873128712L + chunkZ * 132897987541L);
             byte[] var3 = new byte[-java.lang.Short.MIN_VALUE];
             Chunk var4 = new Chunk(world, var3, chunkX, chunkZ);
-            biomes = world.getBiomeSource().getBiomesInArea(biomes, chunkX * 16, chunkZ * 16, 16, 16);
-            double[] var5 = world.getBiomeSource().temperatureMap;
+            biomes = world.BiomeSource.getBiomesInArea(biomes, chunkX * 16, chunkZ * 16, 16, 16);
+            double[] var5 = world.BiomeSource.temperatureMap;
             buildTerrain(chunkX, chunkZ, var3, biomes, var5);
             buildSurfaces(chunkX, chunkZ, var3, biomes);
             cave.carve(this, world, chunkX, chunkZ, var3);
@@ -261,8 +261,8 @@ namespace betareborn.Worlds.Gen.Chunks
 
             double var8 = 684.412D;
             double var10 = 684.412D;
-            double[] var12 = world.getBiomeSource().temperatureMap;
-            double[] var13 = world.getBiomeSource().downfallMap;
+            double[] var12 = world.BiomeSource.temperatureMap;
+            double[] var13 = world.BiomeSource.downfallMap;
             scaleNoiseBuffer = floatingIslandScale.create(scaleNoiseBuffer, x, z, sizeX, sizeZ, 1.121D, 1.121D, 0.5D);
             depthNoiseBuffer = floatingIslandNoise.create(depthNoiseBuffer, x, z, sizeX, sizeZ, 200.0D, 200.0D, 0.5D);
             perlinNoiseBuffer = perlinNoise1.create(perlinNoiseBuffer, x, y, z, sizeX, sizeY, sizeZ, var8 / 80.0D, var10 / 160.0D, var8 / 80.0D);
@@ -382,7 +382,7 @@ namespace betareborn.Worlds.Gen.Chunks
             BlockSand.fallInstantly = true;
             int var4 = x * 16;
             int var5 = z * 16;
-            Biome var6 = world.getBiomeSource().getBiome(var4 + 16, var5 + 16);
+            Biome var6 = world.BiomeSource.getBiome(var4 + 16, var5 + 16);
             random.setSeed(world.getSeed());
             long var7 = random.nextLong() / 2L * 2L + 1L;
             long var9 = random.nextLong() / 2L * 2L + 1L;
@@ -701,7 +701,7 @@ namespace betareborn.Worlds.Gen.Chunks
                 new SpringFeature(Block.FLOWING_LAVA.id).generate(world, random, var19, var20, var21);
             }
 
-            temperatures = world.getBiomeSource().getTemperatures(temperatures, var4 + 8, var5 + 8, 16, 16);
+            temperatures = world.BiomeSource.getTemperatures(temperatures, var4 + 8, var5 + 8, 16, 16);
 
             for (var25 = var4 + 8; var25 < var4 + 8 + 16; ++var25)
             {
@@ -711,7 +711,7 @@ namespace betareborn.Worlds.Gen.Chunks
                     var21 = var19 - (var5 + 8);
                     int var22 = world.getTopSolidBlockY(var25, var19);
                     double var23 = temperatures[var20 * 16 + var21] - (var22 - 64) / 64.0D * 0.3D;
-                    if (var23 < 0.5D && var22 > 0 && var22 < 128 && world.isAir(var25, var22, var19) && world.getMaterial(var25, var22 - 1, var19).blocksMovement() && world.getMaterial(var25, var22 - 1, var19) != Material.ICE)
+                    if (var23 < 0.5D && var22 > 0 && var22 < 128 && world.isAir(var25, var22, var19) && world.GetMaterial(var25, var22 - 1, var19).blocksMovement() && world.GetMaterial(var25, var22 - 1, var19) != Material.ICE)
                     {
                         world.setBlock(var25, var22, var19, Block.SNOW.id);
                     }

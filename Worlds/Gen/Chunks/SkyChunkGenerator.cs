@@ -188,8 +188,8 @@ namespace betareborn.Worlds.Gen.Chunks
             field_28087_j.setSeed(var1 * 341873128712L + var2 * 132897987541L);
             byte[] var3 = new byte[-java.lang.Short.MIN_VALUE];
             Chunk var4 = new Chunk(field_28081_p, var3, var1, var2);
-            field_28075_v = field_28081_p.getBiomeSource().getBiomesInArea(field_28075_v, var1 * 16, var2 * 16, 16, 16);
-            double[] var5 = field_28081_p.getBiomeSource().temperatureMap;
+            field_28075_v = field_28081_p.BiomeSource.getBiomesInArea(field_28075_v, var1 * 16, var2 * 16, 16, 16);
+            double[] var5 = field_28081_p.BiomeSource.temperatureMap;
             func_28071_a(var1, var2, var3, field_28075_v, var5);
             func_28072_a(var1, var2, var3, field_28075_v);
             field_28076_u.carve(this, field_28081_p, var1, var2, var3);
@@ -206,8 +206,8 @@ namespace betareborn.Worlds.Gen.Chunks
 
             double var8 = 684.412D;
             double var10 = 684.412D;
-            double[] var12 = field_28081_p.getBiomeSource().temperatureMap;
-            double[] var13 = field_28081_p.getBiomeSource().downfallMap;
+            double[] var12 = field_28081_p.BiomeSource.temperatureMap;
+            double[] var13 = field_28081_p.BiomeSource.downfallMap;
             field_28090_g = field_28096_a.create(field_28090_g, var2, var4, var5, var7, 1.121D, 1.121D, 0.5D);
             field_28089_h = field_28095_b.create(field_28089_h, var2, var4, var5, var7, 200.0D, 200.0D, 0.5D);
             var8 *= 2.0D;
@@ -322,7 +322,7 @@ namespace betareborn.Worlds.Gen.Chunks
             BlockSand.fallInstantly = true;
             int var4 = var2 * 16;
             int var5 = var3 * 16;
-            Biome var6 = field_28081_p.getBiomeSource().getBiome(var4 + 16, var5 + 16);
+            Biome var6 = field_28081_p.BiomeSource.getBiome(var4 + 16, var5 + 16);
             field_28087_j.setSeed(field_28081_p.getSeed());
             long var7 = field_28087_j.nextLong() / 2L * 2L + 1L;
             long var9 = field_28087_j.nextLong() / 2L * 2L + 1L;
@@ -564,7 +564,7 @@ namespace betareborn.Worlds.Gen.Chunks
                 new SpringFeature(Block.FLOWING_LAVA.id).generate(field_28081_p, field_28087_j, var17, var23, var19);
             }
 
-            field_28074_w = field_28081_p.getBiomeSource().getTemperatures(field_28074_w, var4 + 8, var5 + 8, 16, 16);
+            field_28074_w = field_28081_p.BiomeSource.getTemperatures(field_28074_w, var4 + 8, var5 + 8, 16, 16);
 
             for (var16 = var4 + 8; var16 < var4 + 8 + 16; ++var16)
             {
@@ -574,7 +574,7 @@ namespace betareborn.Worlds.Gen.Chunks
                     var19 = var17 - (var5 + 8);
                     int var20 = field_28081_p.getTopSolidBlockY(var16, var17);
                     double var21 = field_28074_w[var23 * 16 + var19] - (var20 - 64) / 64.0D * 0.3D;
-                    if (var21 < 0.5D && var20 > 0 && var20 < 128 && field_28081_p.isAir(var16, var20, var17) && field_28081_p.getMaterial(var16, var20 - 1, var17).blocksMovement() && field_28081_p.getMaterial(var16, var20 - 1, var17) != Material.ICE)
+                    if (var21 < 0.5D && var20 > 0 && var20 < 128 && field_28081_p.isAir(var16, var20, var17) && field_28081_p.GetMaterial(var16, var20 - 1, var17).blocksMovement() && field_28081_p.GetMaterial(var16, var20 - 1, var17) != Material.ICE)
                     {
                         field_28081_p.setBlock(var16, var20, var17, Block.SNOW.id);
                     }

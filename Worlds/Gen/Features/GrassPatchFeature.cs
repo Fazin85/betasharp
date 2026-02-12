@@ -20,7 +20,7 @@ namespace betareborn.Worlds.Gen.Features
 
             while (true)
             {
-                int var11 = var1.getBlockId(var3, var4, var5);
+                int var11 = var1.GetBlockId(var3, var4, var5);
                 if (var11 != 0 && var11 != Block.LEAVES.id || var4 <= 0)
                 {
                     for (int var7 = 0; var7 < 128; ++var7)

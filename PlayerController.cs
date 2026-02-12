@@ -28,9 +28,9 @@ namespace betareborn
         public virtual bool sendBlockRemoved(int var1, int var2, int var3, int var4)
         {
             World var5 = mc.world;
-            Block var6 = Block.BLOCKS[var5.getBlockId(var1, var2, var3)];
-            var5.worldEvent(2001, var1, var2, var3, var6.id + var5.getBlockMeta(var1, var2, var3) * 256);
-            int var7 = var5.getBlockMeta(var1, var2, var3);
+            Block var6 = Block.BLOCKS[var5.GetBlockId(var1, var2, var3)];
+            var5.worldEvent(2001, var1, var2, var3, var6.id + var5.GetBlockMeta(var1, var2, var3) * 256);
+            int var7 = var5.GetBlockMeta(var1, var2, var3);
             bool var8 = var5.setBlock(var1, var2, var3, 0);
             if (var6 != null && var8)
             {
@@ -96,7 +96,7 @@ namespace betareborn
 
         public virtual bool sendPlaceBlock(EntityPlayer var1, World var2, ItemStack var3, int var4, int var5, int var6, int var7)
         {
-            int var8 = var2.getBlockId(var4, var5, var6);
+            int var8 = var2.GetBlockId(var4, var5, var6);
             return var8 > 0 && Block.BLOCKS[var8].onUse(var2, var4, var5, var6, var1) ? true : (var3 == null ? false : var3.useOnBlock(var1, var2, var4, var5, var6, var7));
         }
 

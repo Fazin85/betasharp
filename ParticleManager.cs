@@ -160,7 +160,7 @@ namespace betareborn
 
         public void addBlockHitEffects(int var1, int var2, int var3, int var4)
         {
-            int var5 = worldObj.getBlockId(var1, var2, var3);
+            int var5 = worldObj.GetBlockId(var1, var2, var3);
             if (var5 != 0)
             {
                 Block var6 = Block.BLOCKS[var5];
@@ -198,7 +198,7 @@ namespace betareborn
                     var8 = (double)var1 + var6.maxX + (double)var7;
                 }
 
-                addEffect((new EntityDiggingFX(worldObj, var8, var10, var12, 0.0D, 0.0D, 0.0D, var6, var4, worldObj.getBlockMeta(var1, var2, var3))).func_4041_a(var1, var2, var3).func_407_b(0.2F).func_405_d(0.6F));
+                addEffect((new EntityDiggingFX(worldObj, var8, var10, var12, 0.0D, 0.0D, 0.0D, var6, var4, worldObj.GetBlockMeta(var1, var2, var3))).func_4041_a(var1, var2, var3).func_407_b(0.2F).func_405_d(0.6F));
             }
         }
 

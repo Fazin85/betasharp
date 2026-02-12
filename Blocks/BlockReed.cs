@@ -21,13 +21,13 @@ namespace betareborn.Blocks
             if (world.isAir(x, y + 1, z))
             {
                 int heightBelow;
-                for (heightBelow = 1; world.getBlockId(x, y - heightBelow, z) == id; ++heightBelow)
+                for (heightBelow = 1; world.GetBlockId(x, y - heightBelow, z) == id; ++heightBelow)
                 {
                 }
 
                 if (heightBelow < 3)
                 {
-                    int meta = world.getBlockMeta(x, y, z);
+                    int meta = world.GetBlockMeta(x, y, z);
                     if (meta == 15)
                     {
                         world.setBlock(x, y + 1, z, id);
@@ -44,8 +44,8 @@ namespace betareborn.Blocks
 
         public override bool canPlaceAt(World world, int x, int y, int z)
         {
-            int blockBelowId = world.getBlockId(x, y - 1, z);
-            return blockBelowId == id ? true : (blockBelowId != Block.GRASS_BLOCK.id && blockBelowId != Block.DIRT.id ? false : (world.getMaterial(x - 1, y - 1, z) == Material.WATER ? true : (world.getMaterial(x + 1, y - 1, z) == Material.WATER ? true : (world.getMaterial(x, y - 1, z - 1) == Material.WATER ? true : world.getMaterial(x, y - 1, z + 1) == Material.WATER))));
+            int blockBelowId = world.GetBlockId(x, y - 1, z);
+            return blockBelowId == id ? true : (blockBelowId != Block.GRASS_BLOCK.id && blockBelowId != Block.DIRT.id ? false : (world.GetMaterial(x - 1, y - 1, z) == Material.WATER ? true : (world.GetMaterial(x + 1, y - 1, z) == Material.WATER ? true : (world.GetMaterial(x, y - 1, z - 1) == Material.WATER ? true : world.GetMaterial(x, y - 1, z + 1) == Material.WATER))));
         }
 
         public override void neighborUpdate(World world, int x, int y, int z, int id)
@@ -57,7 +57,7 @@ namespace betareborn.Blocks
         {
             if (!canGrow(world, x, y, z))
             {
-                dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
+                dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
                 world.setBlock(x, y, z, 0);
             }
 

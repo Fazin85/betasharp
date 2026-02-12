@@ -15,8 +15,8 @@ namespace betareborn.Items
 
         public override bool useOnBlock(ItemStack itemStack, EntityPlayer entityPlayer, World world, int x, int y, int z, int meta)
         {
-            int targetBlockId = world.getBlockId(x, y, z);
-            int blockAbove = world.getBlockId(x, y + 1, z);
+            int targetBlockId = world.GetBlockId(x, y, z);
+            int blockAbove = world.GetBlockId(x, y + 1, z);
             if ((meta == 0 || blockAbove != 0 || targetBlockId != Block.GRASS_BLOCK.id) && targetBlockId != Block.DIRT.id)
             {
                 return false;

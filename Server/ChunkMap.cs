@@ -339,9 +339,9 @@ namespace betareborn.Server
                         int var3 = minZ;
                         int var4 = chunkZ * 16 + maxY;
                         sendPacketToPlayers(new BlockUpdateS2CPacket(var2, var3, var4, var1));
-                        if (Block.BLOCKS_WITH_ENTITY[var1.getBlockId(var2, var3, var4)])
+                        if (Block.BLOCKS_WITH_ENTITY[var1.GetBlockId(var2, var3, var4)])
                         {
-                            sendBlockEntityUpdate(var1.getBlockEntity(var2, var3, var4));
+                            sendBlockEntityUpdate(var1.GetBlockEntity(var2, var3, var4));
                         }
                     }
                     else if (dirtyBlockCount == 10)
@@ -371,10 +371,10 @@ namespace betareborn.Server
                             int var13 = chunkX * 16 + (dirtyBlockCount >> 12 & 15);
                             int var15 = dirtyBlockCount & 0xFF;
                             int var16 = chunkZ * 16 + (dirtyBlockCount >> 8 & 15);
-                            if (Block.BLOCKS_WITH_ENTITY[var1.getBlockId(var13, var15, var16)])
+                            if (Block.BLOCKS_WITH_ENTITY[var1.GetBlockId(var13, var15, var16)])
                             {
                                 java.lang.System.@out.println("Sending!");
-                                sendBlockEntityUpdate(var1.getBlockEntity(var13, var15, var16));
+                                sendBlockEntityUpdate(var1.GetBlockEntity(var13, var15, var16));
                             }
                         }
                     }

@@ -91,32 +91,32 @@ namespace betareborn.Blocks
                 double particleX = (double)((float)x + random.nextFloat());
                 double particleY = (double)((float)y + random.nextFloat());
                 double particleZ = (double)((float)z + random.nextFloat());
-                if (direction == 0 && !world.isOpaque(x, y + 1, z))
+                if (direction == 0 && !world.IsOpaque(x, y + 1, z))
                 {
                     particleY = (double)(y + 1) + faceOffset;
                 }
 
-                if (direction == 1 && !world.isOpaque(x, y - 1, z))
+                if (direction == 1 && !world.IsOpaque(x, y - 1, z))
                 {
                     particleY = (double)(y + 0) - faceOffset;
                 }
 
-                if (direction == 2 && !world.isOpaque(x, y, z + 1))
+                if (direction == 2 && !world.IsOpaque(x, y, z + 1))
                 {
                     particleZ = (double)(z + 1) + faceOffset;
                 }
 
-                if (direction == 3 && !world.isOpaque(x, y, z - 1))
+                if (direction == 3 && !world.IsOpaque(x, y, z - 1))
                 {
                     particleZ = (double)(z + 0) - faceOffset;
                 }
 
-                if (direction == 4 && !world.isOpaque(x + 1, y, z))
+                if (direction == 4 && !world.IsOpaque(x + 1, y, z))
                 {
                     particleX = (double)(x + 1) + faceOffset;
                 }
 
-                if (direction == 5 && !world.isOpaque(x - 1, y, z))
+                if (direction == 5 && !world.IsOpaque(x - 1, y, z))
                 {
                     particleX = (double)(x + 0) - faceOffset;
                 }

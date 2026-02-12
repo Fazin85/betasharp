@@ -682,7 +682,7 @@ namespace betareborn.Entities
             standingEyeHeight = 0.2F;
             if (world.isPosLoaded(x, y, z))
             {
-                int var4 = world.getBlockMeta(x, y, z);
+                int var4 = world.GetBlockMeta(x, y, z);
                 int var5 = BlockBed.getDirection(var4);
                 float var6 = 0.5F;
                 float var7 = 0.5F;
@@ -750,7 +750,7 @@ namespace betareborn.Entities
             resetEyeHeight();
             Vec3i var4 = sleepingPos;
             Vec3i var5 = sleepingPos;
-            if (var4 != null && world.getBlockId(var4.x, var4.y, var4.z) == Block.BED.id)
+            if (var4 != null && world.GetBlockId(var4.x, var4.y, var4.z) == Block.BED.id)
             {
                 BlockBed.updateState(world, var4.x, var4.y, var4.z, false);
                 var5 = BlockBed.findWakeUpPosition(world, var4.x, var4.y, var4.z, 0);
@@ -786,7 +786,7 @@ namespace betareborn.Entities
 
         private bool isSleepingInBed()
         {
-            return world.getBlockId(sleepingPos.x, sleepingPos.y, sleepingPos.z) == Block.BED.id;
+            return world.GetBlockId(sleepingPos.x, sleepingPos.y, sleepingPos.z) == Block.BED.id;
         }
 
         public static Vec3i findRespawnPosition(World world, Vec3i spawnPos)
@@ -796,7 +796,7 @@ namespace betareborn.Entities
             var2.loadChunk(spawnPos.x + 3 >> 4, spawnPos.z - 3 >> 4);
             var2.loadChunk(spawnPos.x - 3 >> 4, spawnPos.z + 3 >> 4);
             var2.loadChunk(spawnPos.x + 3 >> 4, spawnPos.z + 3 >> 4);
-            if (world.getBlockId(spawnPos.x, spawnPos.y, spawnPos.z) != Block.BED.id)
+            if (world.GetBlockId(spawnPos.x, spawnPos.y, spawnPos.z) != Block.BED.id)
             {
                 return null;
             }
@@ -811,7 +811,7 @@ namespace betareborn.Entities
         {
             if (sleepingPos != null)
             {
-                int var1 = world.getBlockMeta(sleepingPos.x, sleepingPos.y, sleepingPos.z);
+                int var1 = world.GetBlockMeta(sleepingPos.x, sleepingPos.y, sleepingPos.z);
                 int var2 = BlockBed.getDirection(var1);
                 switch (var2)
                 {

@@ -36,10 +36,10 @@ namespace betareborn.Blocks
         {
             if (!world.isRemote)
             {
-                int blockNorth = world.getBlockId(x, y, z - 1);
-                int blockSouth = world.getBlockId(x, y, z + 1);
-                int blockWest = world.getBlockId(x - 1, y, z);
-                int blockEast = world.getBlockId(x + 1, y, z);
+                int blockNorth = world.GetBlockId(x, y, z - 1);
+                int blockSouth = world.GetBlockId(x, y, z + 1);
+                int blockWest = world.GetBlockId(x - 1, y, z);
+                int blockEast = world.GetBlockId(x + 1, y, z);
                 sbyte direction = 3;
                 if (Block.BLOCKS_OPAQUE[blockNorth] && !Block.BLOCKS_OPAQUE[blockSouth])
                 {
@@ -77,7 +77,7 @@ namespace betareborn.Blocks
             }
             else
             {
-                int meta = blockView.getBlockMeta(x, y, z);
+                int meta = blockView.GetBlockMeta(x, y, z);
                 return side != meta ? textureId : textureId + 1;
             }
         }
@@ -95,7 +95,7 @@ namespace betareborn.Blocks
             }
             else
             {
-                BlockEntityDispenser dispenser = (BlockEntityDispenser)world.getBlockEntity(x, y, z);
+                BlockEntityDispenser dispenser = (BlockEntityDispenser)world.GetBlockEntity(x, y, z);
                 player.openDispenserScreen(dispenser);
                 return true;
             }
@@ -103,7 +103,7 @@ namespace betareborn.Blocks
 
         private void dispense(World world, int x, int y, int z, java.util.Random random)
         {
-            int meta = world.getBlockMeta(x, y, z);
+            int meta = world.GetBlockMeta(x, y, z);
             int dirX = 0;
             int dirZ = 0;
             if (meta == 3)
@@ -123,7 +123,7 @@ namespace betareborn.Blocks
                 dirX = -1;
             }
 
-            BlockEntityDispenser dispenser = (BlockEntityDispenser)world.getBlockEntity(x, y, z);
+            BlockEntityDispenser dispenser = (BlockEntityDispenser)world.GetBlockEntity(x, y, z);
             ItemStack itemStack = dispenser.getItemToDispose();
             double spawnX = (double)x + (double)dirX * 0.6D + 0.5D;
             double spawnY = (double)y + 0.5D;
@@ -229,7 +229,7 @@ namespace betareborn.Blocks
 
         public override void onBreak(World world, int x, int y, int z)
         {
-            BlockEntityDispenser dispenser = (BlockEntityDispenser)world.getBlockEntity(x, y, z);
+            BlockEntityDispenser dispenser = (BlockEntityDispenser)world.GetBlockEntity(x, y, z);
 
             for (int slotIndex = 0; slotIndex < dispenser.size(); ++slotIndex)
             {

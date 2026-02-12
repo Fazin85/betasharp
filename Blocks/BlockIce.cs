@@ -26,7 +26,7 @@ namespace betareborn.Blocks
         public override void afterBreak(World world, EntityPlayer player, int x, int y, int z, int meta)
         {
             base.afterBreak(world, player, x, y, z, meta);
-            Material materialBelow = world.getMaterial(x, y - 1, z);
+            Material materialBelow = world.GetMaterial(x, y - 1, z);
             if (materialBelow.blocksMovement() || materialBelow.isFluid())
             {
                 world.setBlock(x, y, z, Block.FLOWING_WATER.id);
@@ -43,7 +43,7 @@ namespace betareborn.Blocks
         {
             if (world.getBrightness(LightType.Block, x, y, z) > 11 - Block.BLOCK_LIGHT_OPACITY[id])
             {
-                dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
+                dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
                 world.setBlock(x, y, z, Block.WATER.id);
             }
 

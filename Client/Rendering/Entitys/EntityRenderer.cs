@@ -143,7 +143,7 @@ namespace betareborn.Client.Rendering.Entitys
                 {
                     for (int var34 = var23; var34 <= var24; ++var34)
                     {
-                        int var35 = var11.getBlockId(var32, var33 - 1, var34);
+                        int var35 = var11.GetBlockId(var32, var33 - 1, var34);
                         if (var35 > 0 && var11.getLightLevel(var32, var33, var34) > 3)
                         {
                             renderShadowOnBlock(Block.BLOCKS[var35], var2, var4 + (double)var1.getShadowRadius(), var6, var32, var33, var34, var8, var12, var25, var27 + (double)var1.getShadowRadius(), var29);
@@ -168,7 +168,7 @@ namespace betareborn.Client.Rendering.Entitys
             Tessellator var19 = Tessellator.instance;
             if (var1.isFullCube())
             {
-                double var20 = ((double)var11 - (var4 - (var9 + var15)) / 2.0D) * 0.5D * (double)getWorld().getLuminance(var8, var9, var10);
+                double var20 = ((double)var11 - (var4 - (var9 + var15)) / 2.0D) * 0.5D * (double)getWorld().GetLuminance(var8, var9, var10);
                 if (var20 >= 0.0D)
                 {
                     if (var20 > 1.0D)

@@ -16,7 +16,7 @@ namespace betareborn.Items
 
         public override bool useOnBlock(ItemStack itemStack, EntityPlayer entityPlayer, World world, int x, int y, int z, int meta)
         {
-            if (world.getBlockId(x, y, z) == Block.SNOW.id)
+            if (world.GetBlockId(x, y, z) == Block.SNOW.id)
             {
                 meta = 0;
             }

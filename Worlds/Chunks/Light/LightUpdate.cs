@@ -85,7 +85,7 @@ namespace betareborn.Worlds.Chunks.Light
                             {
                                 int var16 = world.getBrightness(lightType, var10, var27, var11);
                                 bool var17 = false;
-                                int var18 = world.getBlockId(var10, var27, var11);
+                                int var18 = world.GetBlockId(var10, var27, var11);
                                 int var19 = Block.BLOCK_LIGHT_OPACITY[var18];
                                 if (var19 == 0)
                                 {

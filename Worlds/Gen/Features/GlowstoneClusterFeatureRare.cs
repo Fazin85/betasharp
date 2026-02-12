@@ -11,7 +11,7 @@ namespace betareborn.Worlds.Gen.Features
             {
                 return false;
             }
-            else if (var1.getBlockId(var3, var4 + 1, var5) != Block.NETHERRACK.id)
+            else if (var1.GetBlockId(var3, var4 + 1, var5) != Block.NETHERRACK.id)
             {
                 return false;
             }
@@ -24,7 +24,7 @@ namespace betareborn.Worlds.Gen.Features
                     int var7 = var3 + var2.nextInt(8) - var2.nextInt(8);
                     int var8 = var4 - var2.nextInt(12);
                     int var9 = var5 + var2.nextInt(8) - var2.nextInt(8);
-                    if (var1.getBlockId(var7, var8, var9) == 0)
+                    if (var1.GetBlockId(var7, var8, var9) == 0)
                     {
                         int var10 = 0;
 
@@ -33,32 +33,32 @@ namespace betareborn.Worlds.Gen.Features
                             int var12 = 0;
                             if (var11 == 0)
                             {
-                                var12 = var1.getBlockId(var7 - 1, var8, var9);
+                                var12 = var1.GetBlockId(var7 - 1, var8, var9);
                             }
 
                             if (var11 == 1)
                             {
-                                var12 = var1.getBlockId(var7 + 1, var8, var9);
+                                var12 = var1.GetBlockId(var7 + 1, var8, var9);
                             }
 
                             if (var11 == 2)
                             {
-                                var12 = var1.getBlockId(var7, var8 - 1, var9);
+                                var12 = var1.GetBlockId(var7, var8 - 1, var9);
                             }
 
                             if (var11 == 3)
                             {
-                                var12 = var1.getBlockId(var7, var8 + 1, var9);
+                                var12 = var1.GetBlockId(var7, var8 + 1, var9);
                             }
 
                             if (var11 == 4)
                             {
-                                var12 = var1.getBlockId(var7, var8, var9 - 1);
+                                var12 = var1.GetBlockId(var7, var8, var9 - 1);
                             }
 
                             if (var11 == 5)
                             {
-                                var12 = var1.getBlockId(var7, var8, var9 + 1);
+                                var12 = var1.GetBlockId(var7, var8, var9 + 1);
                             }
 
                             if (var12 == Block.GLOWSTONE.id)

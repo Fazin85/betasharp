@@ -97,10 +97,10 @@ namespace betareborn.Client.Rendering.Entitys
             fontRenderer = var3;
             if (var4.isSleeping())
             {
-                int var7 = var1.getBlockId(MathHelper.floor_double(var4.x), MathHelper.floor_double(var4.y), MathHelper.floor_double(var4.z));
+                int var7 = var1.GetBlockId(MathHelper.floor_double(var4.x), MathHelper.floor_double(var4.y), MathHelper.floor_double(var4.z));
                 if (var7 == Block.BED.id)
                 {
-                    int var8 = var1.getBlockMeta(MathHelper.floor_double(var4.x), MathHelper.floor_double(var4.y), MathHelper.floor_double(var4.z));
+                    int var8 = var1.GetBlockMeta(MathHelper.floor_double(var4.x), MathHelper.floor_double(var4.y), MathHelper.floor_double(var4.z));
                     int var9 = var8 & 3;
                     playerViewY = var9 * 90 + 180;
                     playerViewX = 0.0F;

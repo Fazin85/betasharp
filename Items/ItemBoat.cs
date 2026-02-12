@@ -45,7 +45,7 @@ namespace betareborn.Items
                     int hitZ = hitResult.blockZ;
                     if (!world.isRemote)
                     {
-                        if (world.getBlockId(hitX, hitY, hitZ) == Block.SNOW.id)
+                        if (world.GetBlockId(hitX, hitY, hitZ) == Block.SNOW.id)
                         {
                             --hitY;
                         }

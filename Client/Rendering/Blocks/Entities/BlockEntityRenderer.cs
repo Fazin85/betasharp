@@ -82,7 +82,7 @@ namespace betareborn.Client.Rendering.Blocks.Entities
         {
             if (var1.distanceFrom(playerX, playerY, playerZ) < 4096.0D)
             {
-                float var3 = worldObj.getLuminance(var1.x, var1.y, var1.z);
+                float var3 = worldObj.GetLuminance(var1.x, var1.y, var1.z);
                 GLManager.GL.Color3(var3, var3, var3);
                 renderTileEntityAt(var1, var1.x - staticPlayerX, var1.y - staticPlayerY, var1.z - staticPlayerZ, var2);
             }

@@ -25,7 +25,7 @@ namespace betareborn.Blocks
         {
             if (!world.isRemote)
             {
-                int meta = world.getBlockMeta(x, y, z);
+                int meta = world.GetBlockMeta(x, y, z);
                 if ((meta & 8) == 0)
                 {
                     updatePoweredStatus(world, x, y, z, meta);
@@ -37,7 +37,7 @@ namespace betareborn.Blocks
         {
             if (!world.isRemote)
             {
-                int meta = world.getBlockMeta(x, y, z);
+                int meta = world.GetBlockMeta(x, y, z);
                 if ((meta & 8) != 0)
                 {
                     updatePoweredStatus(world, x, y, z, meta);
@@ -47,12 +47,12 @@ namespace betareborn.Blocks
 
         public override bool isPoweringSide(BlockView blockView, int x, int y, int z, int side)
         {
-            return (blockView.getBlockMeta(x, y, z) & 8) != 0;
+            return (blockView.GetBlockMeta(x, y, z) & 8) != 0;
         }
 
         public override bool isStrongPoweringSide(World world, int x, int y, int z, int side)
         {
-            return (world.getBlockMeta(x, y, z) & 8) == 0 ? false : side == 1;
+            return (world.GetBlockMeta(x, y, z) & 8) == 0 ? false : side == 1;
         }
 
         private void updatePoweredStatus(World world, int x, int y, int z, int meta)

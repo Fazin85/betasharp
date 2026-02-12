@@ -18,7 +18,7 @@ namespace betareborn.Blocks
         public override void neighborUpdate(World world, int x, int y, int z, int id)
         {
             base.neighborUpdate(world, x, y, z, id);
-            if (world.getBlockId(x, y, z) == base.id)
+            if (world.GetBlockId(x, y, z) == base.id)
             {
                 convertToFlowing(world, x, y, z);
             }
@@ -27,7 +27,7 @@ namespace betareborn.Blocks
 
         private void convertToFlowing(World world, int x, int y, int z)
         {
-            int meta = world.getBlockMeta(x, y, z);
+            int meta = world.GetBlockMeta(x, y, z);
             world.pauseTicking = true;
             world.setBlockWithoutNotifyingNeighbors(x, y, z, id - 1, meta);
             world.setBlocksDirty(x, y, z, x, y, z);
@@ -46,7 +46,7 @@ namespace betareborn.Blocks
                     x += random.nextInt(3) - 1;
                     ++y;
                     z += random.nextInt(3) - 1;
-                    int neighborBlockId = world.getBlockId(x, y, z);
+                    int neighborBlockId = world.GetBlockId(x, y, z);
                     if (neighborBlockId == 0)
                     {
                         if (isFlammable(world, x - 1, y, z) || isFlammable(world, x + 1, y, z) || isFlammable(world, x, y, z - 1) || isFlammable(world, x, y, z + 1) || isFlammable(world, x, y - 1, z) || isFlammable(world, x, y + 1, z))
@@ -66,7 +66,7 @@ namespace betareborn.Blocks
 
         private bool isFlammable(World world, int x, int y, int z)
         {
-            return world.getMaterial(x, y, z).isBurnable();
+            return world.GetMaterial(x, y, z).isBurnable();
         }
     }
 

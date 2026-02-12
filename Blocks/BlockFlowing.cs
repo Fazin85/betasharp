@@ -15,7 +15,7 @@ namespace betareborn.Blocks
 
         private void convertToSource(World world, int x, int y, int z)
         {
-            int meta = world.getBlockMeta(x, y, z);
+            int meta = world.GetBlockMeta(x, y, z);
             world.setBlockWithoutNotifyingNeighbors(x, y, z, id + 1, meta);
             world.setBlocksDirty(x, y, z, x, y, z);
             world.blockUpdateEvent(x, y, z);
@@ -61,11 +61,11 @@ namespace betareborn.Blocks
 
                 if (adjacentSources >= 2 && material == Material.WATER)
                 {
-                    if (world.getMaterial(x, y - 1, z).isSolid())
+                    if (world.GetMaterial(x, y - 1, z).isSolid())
                     {
                         newLevel = 0;
                     }
-                    else if (world.getMaterial(x, y - 1, z) == material && world.getBlockMeta(x, y, z) == 0)
+                    else if (world.GetMaterial(x, y - 1, z) == material && world.GetBlockMeta(x, y, z) == 0)
                     {
                         newLevel = 0;
                     }
@@ -153,7 +153,7 @@ namespace betareborn.Blocks
         {
             if (canSpreadTo(world, x, y, z))
             {
-                int blockId = world.getBlockId(x, y, z);
+                int blockId = world.GetBlockId(x, y, z);
                 if (blockId > 0)
                 {
                     if (material == Material.LAVA)
@@ -162,7 +162,7 @@ namespace betareborn.Blocks
                     }
                     else
                     {
-                        Block.BLOCKS[blockId].dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
+                        Block.BLOCKS[blockId].dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
                     }
                 }
 
@@ -201,7 +201,7 @@ namespace betareborn.Blocks
                         ++neighborZ;
                     }
 
-                    if (!isLiquidBreaking(world, neighborX, y, neighborZ) && (world.getMaterial(neighborX, y, neighborZ) != material || world.getBlockMeta(neighborX, y, neighborZ) != 0))
+                    if (!isLiquidBreaking(world, neighborX, y, neighborZ) && (world.GetMaterial(neighborX, y, neighborZ) != material || world.GetBlockMeta(neighborX, y, neighborZ) != 0))
                     {
                         if (!isLiquidBreaking(world, neighborX, y - 1, neighborZ))
                         {
@@ -252,7 +252,7 @@ namespace betareborn.Blocks
                     ++neighborZ;
                 }
 
-                if (!isLiquidBreaking(world, neighborX, y, neighborZ) && (world.getMaterial(neighborX, y, neighborZ) != material || world.getBlockMeta(neighborX, y, neighborZ) != 0))
+                if (!isLiquidBreaking(world, neighborX, y, neighborZ) && (world.GetMaterial(neighborX, y, neighborZ) != material || world.GetBlockMeta(neighborX, y, neighborZ) != 0))
                 {
                     if (!isLiquidBreaking(world, neighborX, y - 1, neighborZ))
                     {
@@ -285,7 +285,7 @@ namespace betareborn.Blocks
 
         private bool isLiquidBreaking(World world, int x, int y, int z)
         {
-            int blockId = world.getBlockId(x, y, z);
+            int blockId = world.GetBlockId(x, y, z);
             if (blockId != Block.DOOR.id && blockId != Block.IRON_DOOR.id && blockId != Block.SIGN.id && blockId != Block.LADDER.id && blockId != Block.SUGAR_CANE.id)
             {
                 if (blockId == 0)
@@ -329,14 +329,14 @@ namespace betareborn.Blocks
 
         private bool canSpreadTo(World world, int x, int y, int z)
         {
-            Material material = world.getMaterial(x, y, z);
+            Material material = world.GetMaterial(x, y, z);
             return material == base.material ? false : (material == Material.LAVA ? false : !isLiquidBreaking(world, x, y, z));
         }
 
         public override void onPlaced(World world, int x, int y, int z)
         {
             base.onPlaced(world, x, y, z);
-            if (world.getBlockId(x, y, z) == id)
+            if (world.GetBlockId(x, y, z) == id)
             {
                 world.scheduleBlockUpdate(x, y, z, id, getTickRate());
             }

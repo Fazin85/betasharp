@@ -15,7 +15,7 @@ namespace betareborn.Blocks
 
         public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
         {
-            int slicesEaten = blockView.getBlockMeta(x, y, z);
+            int slicesEaten = blockView.GetBlockMeta(x, y, z);
             float edgeInset = 1.0F / 16.0F;
             float minX = (float)(1 + slicesEaten * 2) / 16.0F;
             float height = 0.5F;
@@ -31,7 +31,7 @@ namespace betareborn.Blocks
 
         public override Box? getCollisionShape(World world, int x, int y, int z)
         {
-            int slicesEaten = world.getBlockMeta(x, y, z);
+            int slicesEaten = world.GetBlockMeta(x, y, z);
             float edgeInset = 1.0F / 16.0F;
             float minX = (float)(1 + slicesEaten * 2) / 16.0F;
             float height = 0.5F;
@@ -40,7 +40,7 @@ namespace betareborn.Blocks
 
         public override Box getBoundingBox(World world, int x, int y, int z)
         {
-            int slicesEaten = world.getBlockMeta(x, y, z);
+            int slicesEaten = world.GetBlockMeta(x, y, z);
             float edgeInset = 1.0F / 16.0F;
             float minX = (float)(1 + slicesEaten * 2) / 16.0F;
             float height = 0.5F;
@@ -83,7 +83,7 @@ namespace betareborn.Blocks
             if (player.health < 20)
             {
                 player.heal(3);
-                int var6 = world.getBlockMeta(x, y, z) + 1;
+                int var6 = world.GetBlockMeta(x, y, z) + 1;
                 if (var6 >= 6)
                 {
                     world.setBlock(x, y, z, 0);
@@ -106,7 +106,7 @@ namespace betareborn.Blocks
         {
             if (!canGrow(world, x, y, z))
             {
-                dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
+                dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
                 world.setBlock(x, y, z, 0);
             }
 
@@ -114,7 +114,7 @@ namespace betareborn.Blocks
 
         public override bool canGrow(World world, int x, int y, int z)
         {
-            return world.getMaterial(x, y - 1, z).isSolid();
+            return world.GetMaterial(x, y - 1, z).isSolid();
         }
 
         public override int getDroppedItemCount(java.util.Random random)

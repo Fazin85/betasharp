@@ -39,9 +39,9 @@ namespace betareborn.Worlds.Dimensions
 
                     for (int var17 = 127; var17 >= 0; --var17)
                     {
-                        if (world.getBlockId(var11, var17, var14) == Block.NETHER_PORTAL.id)
+                        if (world.GetBlockId(var11, var17, var14) == Block.NETHER_PORTAL.id)
                         {
-                            while (world.getBlockId(var11, var17 - 1, var14) == Block.NETHER_PORTAL.id)
+                            while (world.GetBlockId(var11, var17 - 1, var14) == Block.NETHER_PORTAL.id)
                             {
                                 --var17;
                             }
@@ -65,22 +65,22 @@ namespace betareborn.Worlds.Dimensions
                 double var22 = var6 + 0.5D;
                 double var16 = var7 + 0.5D;
                 var18 = var8 + 0.5D;
-                if (world.getBlockId(var6 - 1, var7, var8) == Block.NETHER_PORTAL.id)
+                if (world.GetBlockId(var6 - 1, var7, var8) == Block.NETHER_PORTAL.id)
                 {
                     var22 -= 0.5D;
                 }
 
-                if (world.getBlockId(var6 + 1, var7, var8) == Block.NETHER_PORTAL.id)
+                if (world.GetBlockId(var6 + 1, var7, var8) == Block.NETHER_PORTAL.id)
                 {
                     var22 += 0.5D;
                 }
 
-                if (world.getBlockId(var6, var7, var8 - 1) == Block.NETHER_PORTAL.id)
+                if (world.GetBlockId(var6, var7, var8 - 1) == Block.NETHER_PORTAL.id)
                 {
                     var18 -= 0.5D;
                 }
 
-                if (world.getBlockId(var6, var7, var8 + 1) == Block.NETHER_PORTAL.id)
+                if (world.GetBlockId(var6, var7, var8 + 1) == Block.NETHER_PORTAL.id)
                 {
                     var18 += 0.5D;
                 }
@@ -160,7 +160,7 @@ namespace betareborn.Worlds.Dimensions
                                             var27 = var14 + (var25 - 1) * var22 + var24 * var23;
                                             var28 = var20 + var26;
                                             int var29 = var17 + (var25 - 1) * var23 - var24 * var22;
-                                            if (var26 < 0 && !world.getMaterial(var27, var28, var29).isSolid() || var26 >= 0 && !world.isAir(var27, var28, var29))
+                                            if (var26 < 0 && !world.GetMaterial(var27, var28, var29).isSolid() || var26 >= 0 && !world.isAir(var27, var28, var29))
                                             {
                                                 validLocation = false;
                                             }
@@ -219,7 +219,7 @@ namespace betareborn.Worlds.Dimensions
                                             var26 = var14 + (var24 - 1) * var22;
                                             var27 = var20 + var25;
                                             var28 = var17 + (var24 - 1) * var23;
-                                            if (var25 < 0 && !world.getMaterial(var26, var27, var28).isSolid() || var25 >= 0 && !world.isAir(var26, var27, var28))
+                                            if (var25 < 0 && !world.GetMaterial(var26, var27, var28).isSolid() || var25 >= 0 && !world.isAir(var26, var27, var28))
                                             {
                                                 validLocation = false;
                                             }
@@ -313,7 +313,7 @@ namespace betareborn.Worlds.Dimensions
                         var23 = var30 + (var21 - 1) * var31;
                         var24 = var16 + var22;
                         var25 = var17 + (var21 - 1) * var19;
-                        world.notifyNeighbors(var23, var24, var25, world.getBlockId(var23, var24, var25));
+                        world.notifyNeighbors(var23, var24, var25, world.GetBlockId(var23, var24, var25));
                     }
                 }
             }

@@ -109,7 +109,7 @@ namespace betareborn.Entities
 
             if (inGroundSnowball)
             {
-                int var1 = world.getBlockId(xTileSnowball, yTileSnowball, zTileSnowball);
+                int var1 = world.GetBlockId(xTileSnowball, yTileSnowball, zTileSnowball);
                 if (var1 == inTileSnowball)
                 {
                     ++ticksInGroundSnowball;

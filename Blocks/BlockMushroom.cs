@@ -36,7 +36,7 @@ namespace betareborn.Blocks
 
         public override bool canGrow(World world, int x, int y, int z)
         {
-            return y >= 0 && y < 128 ? world.getBrightness(x, y, z) < 13 && canPlantOnTop(world.getBlockId(x, y - 1, z)) : false;
+            return y >= 0 && y < 128 ? world.getBrightness(x, y, z) < 13 && canPlantOnTop(world.GetBlockId(x, y - 1, z)) : false;
         }
     }
 

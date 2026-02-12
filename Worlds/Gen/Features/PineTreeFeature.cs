@@ -37,7 +37,7 @@ namespace betareborn.Worlds.Gen.Features
                         {
                             if (var11 >= 0 && var11 < 128)
                             {
-                                var15 = var1.getBlockId(var13, var11, var14);
+                                var15 = var1.GetBlockId(var13, var11, var14);
                                 if (var15 != 0 && var15 != Block.LEAVES.id)
                                 {
                                     var10 = false;
@@ -57,7 +57,7 @@ namespace betareborn.Worlds.Gen.Features
                 }
                 else
                 {
-                    var11 = var1.getBlockId(var3, var4 - 1, var5);
+                    var11 = var1.GetBlockId(var3, var4 - 1, var5);
                     if ((var11 == Block.GRASS_BLOCK.id || var11 == Block.DIRT.id) && var4 < 128 - var6 - 1)
                     {
                         var1.setBlockWithoutNotifyingNeighbors(var3, var4 - 1, var5, Block.DIRT.id);
@@ -72,7 +72,7 @@ namespace betareborn.Worlds.Gen.Features
                                 for (int var16 = var5 - var18; var16 <= var5 + var18; ++var16)
                                 {
                                     int var17 = var16 - var5;
-                                    if ((java.lang.Math.abs(var15) != var18 || java.lang.Math.abs(var17) != var18 || var18 <= 0) && !Block.BLOCKS_OPAQUE[var1.getBlockId(var14, var13, var16)])
+                                    if ((java.lang.Math.abs(var15) != var18 || java.lang.Math.abs(var17) != var18 || var18 <= 0) && !Block.BLOCKS_OPAQUE[var1.GetBlockId(var14, var13, var16)])
                                     {
                                         var1.setBlockWithoutNotifyingNeighbors(var14, var13, var16, Block.LEAVES.id, 1);
                                     }
@@ -91,7 +91,7 @@ namespace betareborn.Worlds.Gen.Features
 
                         for (var13 = 0; var13 < var6 - 1; ++var13)
                         {
-                            var14 = var1.getBlockId(var3, var4 + var13, var5);
+                            var14 = var1.GetBlockId(var3, var4 + var13, var5);
                             if (var14 == 0 || var14 == Block.LEAVES.id)
                             {
                                 var1.setBlockWithoutNotifyingNeighbors(var3, var4 + var13, var5, Block.LOG.id, 1);

@@ -119,7 +119,7 @@ namespace betareborn.Client.Rendering.Chunks
                     {
                         for (int x = minX; x < maxX; x++)
                         {
-                            int id = cache.getBlockId(x, y, z);
+                            int id = cache.GetBlockId(x, y, z);
                             if (id <= 0) continue;
 
                             Block b = Block.BLOCKS[id];

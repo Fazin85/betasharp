@@ -1101,7 +1101,7 @@ namespace betareborn
         {
             if (objectMouseOver != null)
             {
-                int var1 = world.getBlockId(objectMouseOver.blockX, objectMouseOver.blockY, objectMouseOver.blockZ);
+                int var1 = world.GetBlockId(objectMouseOver.blockX, objectMouseOver.blockY, objectMouseOver.blockZ);
                 if (var1 == Block.GRASS_BLOCK.id)
                 {
                     var1 = Block.DIRT.id;
@@ -1690,7 +1690,7 @@ namespace betareborn
                 for (int var8 = -var2; var8 <= var2; var8 += 16)
                 {
                     loadingScreen.setLoadingProgress(var3++ * 100 / var4);
-                    world.getBlockId(var6.x + var10, 64, var6.z + var8);
+                    world.GetBlockId(var6.x + var10, 64, var6.z + var8);
 
                     while (world.doLightingUpdates())
                     {

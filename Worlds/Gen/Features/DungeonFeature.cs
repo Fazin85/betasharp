@@ -24,7 +24,7 @@ namespace betareborn.Worlds.Gen.Features
                 {
                     for (var12 = var5 - var8 - 1; var12 <= var5 + var8 + 1; ++var12)
                     {
-                        Material var13 = var1.getMaterial(var10, var11, var12);
+                        Material var13 = var1.GetMaterial(var10, var11, var12);
                         if (var11 == var4 - 1 && !var13.isSolid())
                         {
                             return false;
@@ -55,11 +55,11 @@ namespace betareborn.Worlds.Gen.Features
                             {
                                 var1.setBlock(var10, var11, var12, 0);
                             }
-                            else if (var11 >= 0 && !var1.getMaterial(var10, var11 - 1, var12).isSolid())
+                            else if (var11 >= 0 && !var1.GetMaterial(var10, var11 - 1, var12).isSolid())
                             {
                                 var1.setBlock(var10, var11, var12, 0);
                             }
-                            else if (var1.getMaterial(var10, var11, var12).isSolid())
+                            else if (var1.GetMaterial(var10, var11, var12).isSolid())
                             {
                                 if (var11 == var4 - 1 && var2.nextInt(4) != 0)
                                 {
@@ -83,26 +83,26 @@ namespace betareborn.Worlds.Gen.Features
                         if (var1.isAir(var12, var4, var14))
                         {
                             int var15 = 0;
-                            if (var1.getMaterial(var12 - 1, var4, var14).isSolid())
+                            if (var1.GetMaterial(var12 - 1, var4, var14).isSolid())
                             {
                                 ++var15;
                             }
-                            if (var1.getMaterial(var12 + 1, var4, var14).isSolid())
+                            if (var1.GetMaterial(var12 + 1, var4, var14).isSolid())
                             {
                                 ++var15;
                             }
-                            if (var1.getMaterial(var12, var4, var14 - 1).isSolid())
+                            if (var1.GetMaterial(var12, var4, var14 - 1).isSolid())
                             {
                                 ++var15;
                             }
-                            if (var1.getMaterial(var12, var4, var14 + 1).isSolid())
+                            if (var1.GetMaterial(var12, var4, var14 + 1).isSolid())
                             {
                                 ++var15;
                             }
                             if (var15 == 1)
                             {
                                 var1.setBlock(var12, var4, var14, Block.CHEST.id);
-                                BlockEntityChest var16 = (BlockEntityChest)var1.getBlockEntity(var12, var4, var14);
+                                BlockEntityChest var16 = (BlockEntityChest)var1.GetBlockEntity(var12, var4, var14);
 
                                 for (int var17 = 0; var17 < 8; ++var17)
                                 {
@@ -118,7 +118,7 @@ namespace betareborn.Worlds.Gen.Features
                 }
 
                 var1.setBlock(var3, var4, var5, Block.SPAWNER.id);
-                BlockEntityMobSpawner var19 = (BlockEntityMobSpawner)var1.getBlockEntity(var3, var4, var5);
+                BlockEntityMobSpawner var19 = (BlockEntityMobSpawner)var1.GetBlockEntity(var3, var4, var5);
                 var19.setSpawnedEntityId(pickMobSpawner(var2));
                 return true;
             }

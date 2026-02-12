@@ -20,7 +20,7 @@ namespace betareborn.Items
             {
                 return false;
             }
-            else if (!world.getMaterial(x, y, z).isSolid())
+            else if (!world.GetMaterial(x, y, z).isSolid())
             {
                 return false;
             }
@@ -67,7 +67,7 @@ namespace betareborn.Items
                     }
 
                     --itemStack.count;
-                    BlockEntitySign blockEntitySign = (BlockEntitySign)world.getBlockEntity(x, y, z);
+                    BlockEntitySign blockEntitySign = (BlockEntitySign)world.GetBlockEntity(x, y, z);
                     if (blockEntitySign != null)
                     {
                         entityPlayer.openEditSignScreen(blockEntitySign);

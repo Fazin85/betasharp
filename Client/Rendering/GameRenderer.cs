@@ -70,7 +70,7 @@ namespace betareborn.Client.Rendering
                 client.camera = client.player;
             }
 
-            float var1 = client.world.getLuminance(MathHelper.floor_double(client.camera.x), MathHelper.floor_double(client.camera.y), MathHelper.floor_double(client.camera.z));
+            float var1 = client.world.GetLuminance(MathHelper.floor_double(client.camera.x), MathHelper.floor_double(client.camera.y), MathHelper.floor_double(client.camera.z));
             float var2 = (3 - client.options.renderDistance) / 3.0F;
             float var3 = var1 * (1.0F - var2) + var2;
             viewBob += (var3 - viewBob) * 0.1F;
@@ -230,10 +230,10 @@ namespace betareborn.Client.Rendering
                 GLManager.GL.Translate(0.0F, 0.3F, 0.0F);
                 if (!client.options.debugCamera)
                 {
-                    int var10 = client.world.getBlockId(MathHelper.floor_double(var2.x), MathHelper.floor_double(var2.y), MathHelper.floor_double(var2.z));
+                    int var10 = client.world.GetBlockId(MathHelper.floor_double(var2.x), MathHelper.floor_double(var2.y), MathHelper.floor_double(var2.z));
                     if (var10 == Block.BED.id)
                     {
-                        int var11 = client.world.getBlockMeta(MathHelper.floor_double(var2.x), MathHelper.floor_double(var2.y), MathHelper.floor_double(var2.z));
+                        int var11 = client.world.GetBlockMeta(MathHelper.floor_double(var2.x), MathHelper.floor_double(var2.y), MathHelper.floor_double(var2.z));
                         int var12 = var11 & 3;
                         GLManager.GL.Rotate(var12 * 90, 0.0F, 1.0F, 0.0F);
                     }
@@ -653,8 +653,8 @@ namespace betareborn.Client.Rendering
                     int var16 = var4 + random.nextInt(var7) - random.nextInt(var7);
                     int var17 = var6 + random.nextInt(var7) - random.nextInt(var7);
                     int var18 = var3.getTopSolidBlockY(var16, var17);
-                    int var19 = var3.getBlockId(var16, var18 - 1, var17);
-                    if (var18 <= var5 + var7 && var18 >= var5 - var7 && var3.getBiomeSource().getBiome(var16, var17).canSpawnLightningBolt())
+                    int var19 = var3.GetBlockId(var16, var18 - 1, var17);
+                    if (var18 <= var5 + var7 && var18 >= var5 - var7 && var3.BiomeSource.getBiome(var16, var17).canSpawnLightningBolt())
                     {
                         float var20 = random.nextFloat();
                         float var21 = random.nextFloat();
@@ -719,7 +719,7 @@ namespace betareborn.Client.Rendering
                 int var15 = MathHelper.floor_double(var11);
                 byte var16 = 10;
 
-                Biome[] var17 = var4.getBiomeSource().getBiomesInArea(var5 - var16, var7 - var16, var16 * 2 + 1, var16 * 2 + 1);
+                Biome[] var17 = var4.BiomeSource.getBiomesInArea(var5 - var16, var7 - var16, var16 * 2 + 1, var16 * 2 + 1);
                 int var18 = 0;
 
                 int var19;
@@ -772,7 +772,7 @@ namespace betareborn.Client.Rendering
                                 double var33 = (double)(var20 + 0.5F) - var3.z;
                                 float var35 = MathHelper.sqrt_double(var31 * var31 + var33 * var33) / var16;
                                 var8.startDrawingQuads();
-                                float var36 = var4.getLuminance(var19, var23, var20);
+                                float var36 = var4.GetLuminance(var19, var23, var20);
                                 GLManager.GL.Color4(var36, var36, var36, ((1.0F - var35 * var35) * 0.3F + 0.5F) * var2);
                                 var8.setTranslationD(-var9 * 1.0D, -var11 * 1.0D, -var13 * 1.0D);
                                 var8.addVertexWithUV(var19 + 0, var24, var20 + 0.5D, (double)(0.0F * var26 + var29), (double)(var24 * var26 / 4.0F + var28 * var26 + var30));
@@ -824,7 +824,7 @@ namespace betareborn.Client.Rendering
                                 double var39 = (double)(var20 + 0.5F) - var3.z;
                                 float var40 = MathHelper.sqrt_double(var38 * var38 + var39 * var39) / var16;
                                 var8.startDrawingQuads();
-                                float var32 = var4.getLuminance(var19, 128, var20) * 0.85F + 0.15F;
+                                float var32 = var4.GetLuminance(var19, 128, var20) * 0.85F + 0.15F;
                                 GLManager.GL.Color4(var32, var32, var32, ((1.0F - var40 * var40) * 0.5F + 0.5F) * var2);
                                 var8.setTranslationD(-var9 * 1.0D, -var11 * 1.0D, -var13 * 1.0D);
                                 var8.addVertexWithUV(var19 + 0, var23, var20 + 0.5D, (double)(0.0F * var37), (double)(var23 * var37 / 4.0F + var26 * var37));

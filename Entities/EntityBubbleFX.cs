@@ -31,7 +31,7 @@ namespace betareborn.Entities
             velocityX *= (double)0.85F;
             velocityY *= (double)0.85F;
             velocityZ *= (double)0.85F;
-            if (world.getMaterial(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z)) != Material.WATER)
+            if (world.GetMaterial(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z)) != Material.WATER)
             {
                 markDead();
             }

@@ -26,8 +26,8 @@ namespace betareborn
 
         public override bool sendBlockRemoved(int x, int y, int z, int var4)
         {
-            int blockId = mc.world.getBlockId(x, y, z);
-            int var6 = mc.world.getBlockMeta(x, y, z);
+            int blockId = mc.world.GetBlockId(x, y, z);
+            int var6 = mc.world.GetBlockMeta(x, y, z);
             bool var7 = base.sendBlockRemoved(x, y, z, var4);
             ItemStack var8 = mc.player.getHand();
             bool var9 = mc.player.canHarvest(Block.BLOCKS[blockId]);
@@ -52,7 +52,7 @@ namespace betareborn
         public override void clickBlock(int var1, int var2, int var3, int var4)
         {
             mc.world.extinguishFire(mc.player, var1, var2, var3, var4);
-            int var5 = mc.world.getBlockId(var1, var2, var3);
+            int var5 = mc.world.GetBlockId(var1, var2, var3);
             if (var5 > 0 && curBlockDamage == 0.0F)
             {
                 Block.BLOCKS[var5].onBlockBreakStart(mc.world, var1, var2, var3, mc.player);
@@ -81,7 +81,7 @@ namespace betareborn
             {
                 if (var1 == field_1074_c && var2 == field_1073_d && var3 == field_1072_e)
                 {
-                    int var5 = mc.world.getBlockId(var1, var2, var3);
+                    int var5 = mc.world.GetBlockId(var1, var2, var3);
                     if (var5 == 0)
                     {
                         return;

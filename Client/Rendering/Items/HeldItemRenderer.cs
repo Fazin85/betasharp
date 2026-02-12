@@ -156,7 +156,7 @@ namespace betareborn.Client.Rendering.Items
             Lighting.turnOn();
             GLManager.GL.PopMatrix();
             ItemStack var5 = itemToRender;
-            float var6 = mc.world.getLuminance(MathHelper.floor_double(var3.x), MathHelper.floor_double(var3.y), MathHelper.floor_double(var3.z));
+            float var6 = mc.world.GetLuminance(MathHelper.floor_double(var3.x), MathHelper.floor_double(var3.y), MathHelper.floor_double(var3.z));
             float var8;
             float var9;
             float var10;
@@ -326,8 +326,8 @@ namespace betareborn.Client.Rendering.Items
                 int var4 = MathHelper.floor_double(mc.player.z);
                 int var5 = mc.textureManager.getTextureId("/terrain.png");
                 GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var5);
-                int var6 = mc.world.getBlockId(var2, var3, var4);
-                if (mc.world.shouldSuffocate(var2, var3, var4))
+                int var6 = mc.world.GetBlockId(var2, var3, var4);
+                if (mc.world.ShouldSuffocate(var2, var3, var4))
                 {
                     renderInsideOfBlock(var1, Block.BLOCKS[var6].getTexture(2));
                 }
@@ -341,9 +341,9 @@ namespace betareborn.Client.Rendering.Items
                         int var11 = MathHelper.floor_float(var2 + var8);
                         int var12 = MathHelper.floor_float(var3 + var9);
                         int var13 = MathHelper.floor_float(var4 + var10);
-                        if (mc.world.shouldSuffocate(var11, var12, var13))
+                        if (mc.world.ShouldSuffocate(var11, var12, var13))
                         {
-                            var6 = mc.world.getBlockId(var11, var12, var13);
+                            var6 = mc.world.GetBlockId(var11, var12, var13);
                         }
                     }
                 }

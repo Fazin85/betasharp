@@ -24,7 +24,7 @@ namespace betareborn.Blocks
 
         public override int getColorMultiplier(BlockView blockView, int x, int y, int z)
         {
-            int meta = blockView.getBlockMeta(x, y, z);
+            int meta = blockView.GetBlockMeta(x, y, z);
             if ((meta & 1) == 1)
             {
                 return FoliageColors.getSpruceColor();
@@ -35,9 +35,9 @@ namespace betareborn.Blocks
             }
             else
             {
-                blockView.getBiomeSource().getBiomesInArea(x, z, 1, 1);
-                double temperature = blockView.getBiomeSource().temperatureMap[0];
-                double downfall = blockView.getBiomeSource().downfallMap[0];
+                blockView.                BiomeSource.getBiomesInArea(x, z, 1, 1);
+                double temperature = blockView.BiomeSource.temperatureMap[0];
+                double downfall = blockView.BiomeSource.downfallMap[0];
                 return FoliageColors.getFoliageColor(temperature, downfall);
             }
         }
@@ -54,10 +54,10 @@ namespace betareborn.Blocks
                     {
                         for (int offsetZ = -searchRadius; offsetZ <= searchRadius; ++offsetZ)
                         {
-                            int blockId = world.getBlockId(x + offsetX, y + offsetY, z + offsetZ);
+                            int blockId = world.GetBlockId(x + offsetX, y + offsetY, z + offsetZ);
                             if (blockId == Block.LEAVES.id)
                             {
-                                int leavesMeta = world.getBlockMeta(x + offsetX, y + offsetY, z + offsetZ);
+                                int leavesMeta = world.GetBlockMeta(x + offsetX, y + offsetY, z + offsetZ);
                                 world.setBlockMetaWithoutNotifyingNeighbors(x + offsetX, y + offsetY, z + offsetZ, leavesMeta | 8);
                             }
                         }
@@ -71,7 +71,7 @@ namespace betareborn.Blocks
         {
             if (!world.isRemote)
             {
-                int meta = world.getBlockMeta(x, y, z);
+                int meta = world.GetBlockMeta(x, y, z);
                 if ((meta & 8) != 0)
                 {
                     sbyte decayRadius = 4;
@@ -99,7 +99,7 @@ namespace betareborn.Blocks
                             {
                                 for (dy = -decayRadius; dy <= decayRadius; ++dy)
                                 {
-                                    dz = world.getBlockId(x + distanceToLog, y + dx, z + dy);
+                                    dz = world.GetBlockId(x + distanceToLog, y + dx, z + dy);
                                     if (dz == Block.LOG.id)
                                     {
                                         decayRegion[(distanceToLog + centerOffset) * planeSize + (dx + centerOffset) * regionSize + dy + centerOffset] = 0;
@@ -184,7 +184,7 @@ namespace betareborn.Blocks
 
         private void breakLeaves(World world, int x, int y, int z)
         {
-            dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
+            dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
             world.setBlock(x, y, z, 0);
         }
 

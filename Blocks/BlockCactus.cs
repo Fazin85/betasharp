@@ -18,13 +18,13 @@ namespace betareborn.Blocks
             if (world.isAir(x, y + 1, z))
             {
                 int heightBelow;
-                for (heightBelow = 1; world.getBlockId(x, y - heightBelow, z) == id; ++heightBelow)
+                for (heightBelow = 1; world.GetBlockId(x, y - heightBelow, z) == id; ++heightBelow)
                 {
                 }
 
                 if (heightBelow < 3)
                 {
-                    int growthStage = world.getBlockMeta(x, y, z);
+                    int growthStage = world.GetBlockMeta(x, y, z);
                     if (growthStage == 15)
                     {
                         world.setBlock(x, y + 1, z, id);
@@ -80,7 +80,7 @@ namespace betareborn.Blocks
         {
             if (!canGrow(world, x, y, z))
             {
-                dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
+                dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
                 world.setBlock(x, y, z, 0);
             }
 
@@ -88,25 +88,25 @@ namespace betareborn.Blocks
 
         public override bool canGrow(World world, int x, int y, int z)
         {
-            if (world.getMaterial(x - 1, y, z).isSolid())
+            if (world.GetMaterial(x - 1, y, z).isSolid())
             {
                 return false;
             }
-            else if (world.getMaterial(x + 1, y, z).isSolid())
+            else if (world.GetMaterial(x + 1, y, z).isSolid())
             {
                 return false;
             }
-            else if (world.getMaterial(x, y, z - 1).isSolid())
+            else if (world.GetMaterial(x, y, z - 1).isSolid())
             {
                 return false;
             }
-            else if (world.getMaterial(x, y, z + 1).isSolid())
+            else if (world.GetMaterial(x, y, z + 1).isSolid())
             {
                 return false;
             }
             else
             {
-                int blockBelowId = world.getBlockId(x, y - 1, z);
+                int blockBelowId = world.GetBlockId(x, y - 1, z);
                 return blockBelowId == Block.CACTUS.id || blockBelowId == Block.SAND.id;
             }
         }
