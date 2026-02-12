@@ -51,8 +51,8 @@ namespace betareborn
                     return -1;
                 }
 
-                int var7 = GuiStats.func_27142_c(field_27372_b.field_27275_a).writeStat(var5);
-                int var8 = GuiStats.func_27142_c(field_27372_b.field_27275_a).writeStat(var6);
+                int var7 = GuiStats.func_27142_c(field_27373_a).writeStat(var5);
+                int var8 = GuiStats.func_27142_c(field_27373_a).writeStat(var6);
                 if (var7 != var8)
                 {
                     return (var7 - var8) * field_27372_b.field_27270_f;

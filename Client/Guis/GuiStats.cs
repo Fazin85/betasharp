@@ -159,7 +159,7 @@ namespace betareborn.Client.Guis
 
         public static void func_27128_a(GuiStats var0, int var1, int var2, int var3, int var4)
         {
-            var0.func_27136_c(var1, var2, var3, var4);
+            var0.drawGradientRect(var1, var2, var3, var4, -1073741824, -1073741824);
         }
 
         public static Minecraft func_27149_g(GuiStats var0)
@@ -219,7 +219,7 @@ namespace betareborn.Client.Guis
 
         public static void func_27148_a(GuiStats var0, int var1, int var2, int var3)
         {
-            var0.func_27138_c(var1, var2, var3);
+            var0.drawItemSlot(var1, var2, var3);
         }
     }
 

@@ -22,7 +22,7 @@ namespace betareborn.Client.Guis
 
         protected override void mouseDragged(Minecraft var1, int var2, int var3)
         {
-            if (enabled2)
+            if (enabled)
             {
                 if (dragging)
                 {
