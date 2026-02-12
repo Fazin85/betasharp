@@ -151,7 +151,7 @@ namespace betareborn.Client.Rendering.Chunks
                 if (!hasNextPass) break;
             }
 
-            result.IsLit = cache.IsLit;
+            result.IsLit = cache.getIsLit();
             return result;
         }
 
