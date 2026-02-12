@@ -28,10 +28,10 @@ namespace betareborn.Client.Rendering.Chunks
         private readonly ObjectPool<PooledList<ChunkVertex>> listPool =
             new(() => new PooledList<ChunkVertex>(), 64);
 
-        private ushort maxConcurrentTasks;
+        private int maxConcurrentTasks;
         private SemaphoreSlim? concurrencySemaphore;
 
-        public ChunkMeshGenerator(ushort maxConcurrentTasks = 0)
+        public ChunkMeshGenerator(int maxConcurrentTasks = 0)
         {
             MaxConcurrentTasks = maxConcurrentTasks;
         }
@@ -45,7 +45,7 @@ namespace betareborn.Client.Rendering.Chunks
             }
         }
 
-        public ushort MaxConcurrentTasks
+        public int MaxConcurrentTasks
         {
             get => maxConcurrentTasks;
             set

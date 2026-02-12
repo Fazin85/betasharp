@@ -71,7 +71,7 @@ namespace betareborn.Client.Rendering.Chunks
 
         public ChunkRenderer(World world)
         {
-            meshGenerator = new();
+            meshGenerator = new(Environment.ProcessorCount / 2);
             this.world = world;
 
             chunkShader = new(AssetManager.Instance.getAsset("shaders/chunk.vert").getTextContent(), AssetManager.Instance.getAsset("shaders/chunk.frag").getTextContent());
