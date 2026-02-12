@@ -35,38 +35,38 @@ namespace betareborn.Blocks
 
         private bool canPlaceOn(World world, int x, int y, int z)
         {
-            return world.ShouldSuffocate(x, y, z) || world.GetBlockId(x, y, z) == Block.FENCE.id;
+            return world.shouldSuffocate(x, y, z) || world.getBlockId(x, y, z) == Block.FENCE.id;
         }
 
         public override bool canPlaceAt(World world, int x, int y, int z)
         {
-            return world.ShouldSuffocate(x - 1, y, z) ? true : (world.ShouldSuffocate(x + 1, y, z) ? true : (world.ShouldSuffocate(x, y, z - 1) ? true : (world.ShouldSuffocate(x, y, z + 1) ? true : canPlaceOn(world, x, y - 1, z))));
+            return world.shouldSuffocate(x - 1, y, z) ? true : (world.shouldSuffocate(x + 1, y, z) ? true : (world.shouldSuffocate(x, y, z - 1) ? true : (world.shouldSuffocate(x, y, z + 1) ? true : canPlaceOn(world, x, y - 1, z))));
         }
 
         public override void onPlaced(World world, int x, int y, int z, int direction)
         {
-            int meta = world.GetBlockMeta(x, y, z);
+            int meta = world.getBlockMeta(x, y, z);
             if (direction == 1 && canPlaceOn(world, x, y - 1, z))
             {
                 meta = 5;
             }
 
-            if (direction == 2 && world.ShouldSuffocate(x, y, z + 1))
+            if (direction == 2 && world.shouldSuffocate(x, y, z + 1))
             {
                 meta = 4;
             }
 
-            if (direction == 3 && world.ShouldSuffocate(x, y, z - 1))
+            if (direction == 3 && world.shouldSuffocate(x, y, z - 1))
             {
                 meta = 3;
             }
 
-            if (direction == 4 && world.ShouldSuffocate(x + 1, y, z))
+            if (direction == 4 && world.shouldSuffocate(x + 1, y, z))
             {
                 meta = 2;
             }
 
-            if (direction == 5 && world.ShouldSuffocate(x - 1, y, z))
+            if (direction == 5 && world.shouldSuffocate(x - 1, y, z))
             {
                 meta = 1;
             }
@@ -77,7 +77,7 @@ namespace betareborn.Blocks
         public override void onTick(World world, int x, int y, int z, java.util.Random random)
         {
             base.onTick(world, x, y, z, random);
-            if (world.GetBlockMeta(x, y, z) == 0)
+            if (world.getBlockMeta(x, y, z) == 0)
             {
                 onPlaced(world, x, y, z);
             }
@@ -86,19 +86,19 @@ namespace betareborn.Blocks
 
         public override void onPlaced(World world, int x, int y, int z)
         {
-            if (world.ShouldSuffocate(x - 1, y, z))
+            if (world.shouldSuffocate(x - 1, y, z))
             {
                 world.setBlockMeta(x, y, z, 1);
             }
-            else if (world.ShouldSuffocate(x + 1, y, z))
+            else if (world.shouldSuffocate(x + 1, y, z))
             {
                 world.setBlockMeta(x, y, z, 2);
             }
-            else if (world.ShouldSuffocate(x, y, z - 1))
+            else if (world.shouldSuffocate(x, y, z - 1))
             {
                 world.setBlockMeta(x, y, z, 3);
             }
-            else if (world.ShouldSuffocate(x, y, z + 1))
+            else if (world.shouldSuffocate(x, y, z + 1))
             {
                 world.setBlockMeta(x, y, z, 4);
             }
@@ -114,24 +114,24 @@ namespace betareborn.Blocks
         {
             if (breakIfCannotPlaceAt(world, x, y, z))
             {
-                int meta = world.GetBlockMeta(x, y, z);
+                int meta = world.getBlockMeta(x, y, z);
                 bool canPlace = false;
-                if (!world.ShouldSuffocate(x - 1, y, z) && meta == 1)
+                if (!world.shouldSuffocate(x - 1, y, z) && meta == 1)
                 {
                     canPlace = true;
                 }
 
-                if (!world.ShouldSuffocate(x + 1, y, z) && meta == 2)
+                if (!world.shouldSuffocate(x + 1, y, z) && meta == 2)
                 {
                     canPlace = true;
                 }
 
-                if (!world.ShouldSuffocate(x, y, z - 1) && meta == 3)
+                if (!world.shouldSuffocate(x, y, z - 1) && meta == 3)
                 {
                     canPlace = true;
                 }
 
-                if (!world.ShouldSuffocate(x, y, z + 1) && meta == 4)
+                if (!world.shouldSuffocate(x, y, z + 1) && meta == 4)
                 {
                     canPlace = true;
                 }
@@ -143,7 +143,7 @@ namespace betareborn.Blocks
 
                 if (canPlace)
                 {
-                    dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
+                    dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
                     world.setBlock(x, y, z, 0);
                 }
             }
@@ -154,7 +154,7 @@ namespace betareborn.Blocks
         {
             if (!canPlaceAt(world, x, y, z))
             {
-                dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
+                dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
                 world.setBlock(x, y, z, 0);
                 return false;
             }
@@ -166,7 +166,7 @@ namespace betareborn.Blocks
 
         public override HitResult raycast(World world, int x, int y, int z, Vec3D startPos, Vec3D endPos)
         {
-            int meta = world.GetBlockMeta(x, y, z) & 7;
+            int meta = world.getBlockMeta(x, y, z) & 7;
             float torchWidth = 0.15F;
             if (meta == 1)
             {
@@ -195,7 +195,7 @@ namespace betareborn.Blocks
 
         public override void randomDisplayTick(World world, int x, int y, int z, java.util.Random random)
         {
-            int meta = world.GetBlockMeta(x, y, z);
+            int meta = world.getBlockMeta(x, y, z);
             double flameX = (double)((float)x + 0.5F);
             double flameY = (double)((float)y + 0.7F);
             double flameZ = (double)((float)z + 0.5F);

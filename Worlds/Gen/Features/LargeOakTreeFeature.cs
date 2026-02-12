@@ -141,7 +141,7 @@ namespace betareborn.Worlds.Gen.Features
                     }
 
                     var11[var9] = var10[var9] + var13;
-                    int var14 = world.GetBlockId(var11[0], var11[1], var11[2]);
+                    int var14 = world.getBlockId(var11[0], var11[1], var11[2]);
 
                     if (var14 != 0 && var14 != 18)
                     {
@@ -352,7 +352,7 @@ namespace betareborn.Worlds.Gen.Features
                     var13[var5] = var1[var5] + var14;
                     var13[var6] = MathHelper.floor_double(var1[var6] + var14 * var9);
                     var13[var7] = MathHelper.floor_double(var1[var7] + var14 * var11);
-                    int var16 = world.GetBlockId(var13[0], var13[1], var13[2]);
+                    int var16 = world.getBlockId(var13[0], var13[1], var13[2]);
                     if (var16 != 0 && var16 != 18)
                     {
                         break;
@@ -367,7 +367,7 @@ namespace betareborn.Worlds.Gen.Features
         {
             int[] var1 = new int[] { origin[0], origin[1], origin[2] };
             int[] var2 = new int[] { origin[0], origin[1] + height - 1, origin[2] };
-            int var3 = world.GetBlockId(origin[0], origin[1] - 1, origin[2]);
+            int var3 = world.getBlockId(origin[0], origin[1] - 1, origin[2]);
             if (var3 != 2 && var3 != 3)
             {
                 return false;

@@ -289,7 +289,7 @@ namespace betareborn.Entities
                 {
                     for (int dy = 0; dy <= 4; ++dy)
                     {
-                        if ((var7 < 1 || var8 < 1 || var7 > 3 || var8 > 3) && world.ShouldSuffocate(var4 + var7, var6 - 1, var5 + var8) && !world.ShouldSuffocate(var4 + var7, var6, var5 + var8) && !world.ShouldSuffocate(var4 + var7, var6 + 1, var5 + var8))
+                        if ((var7 < 1 || var8 < 1 || var7 > 3 || var8 > 3) && world.shouldSuffocate(var4 + var7, var6 - 1, var5 + var8) && !world.shouldSuffocate(var4 + var7, var6, var5 + var8) && !world.shouldSuffocate(var4 + var7, var6 + 1, var5 + var8))
                         {
                             setPositionAndAnglesKeepPrevAngles((double)((float)(ownerBlockX + dx) + 0.5F), (double)ownerBlockZ, (double)((float)(ownerBlockY + dy) + 0.5F), yaw, pitch);
                             return;

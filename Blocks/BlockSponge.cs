@@ -20,7 +20,7 @@ namespace betareborn.Blocks
                 {
                     for (int checkZ = z - radius; checkZ <= z + radius; ++checkZ)
                     {
-                        if (world.GetMaterial(checkX, checkY, checkZ) == Material.WATER)
+                        if (world.getMaterial(checkX, checkY, checkZ) == Material.WATER)
                         {
                         }
                     }
@@ -39,7 +39,7 @@ namespace betareborn.Blocks
                 {
                     for (int checkZ = z - radius; checkZ <= z + radius; ++checkZ)
                     {
-                        world.notifyNeighbors(checkX, checkY, checkZ, world.GetBlockId(checkX, checkY, checkZ));
+                        world.notifyNeighbors(checkX, checkY, checkZ, world.getBlockId(checkX, checkY, checkZ));
                     }
                 }
             }

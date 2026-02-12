@@ -39,9 +39,9 @@ namespace betareborn.Blocks.Entities
 
         public void playNote(World world, int x, int y, int z)
         {
-            if (world.GetMaterial(x, y + 1, z) == Material.AIR)
+            if (world.getMaterial(x, y + 1, z) == Material.AIR)
             {
-                Material material = world.GetMaterial(x, y - 1, z);
+                Material material = world.getMaterial(x, y - 1, z);
                 byte instrument = 0;
                 if (material == Material.STONE)
                 {

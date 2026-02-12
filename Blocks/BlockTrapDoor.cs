@@ -51,7 +51,7 @@ namespace betareborn.Blocks
 
         public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
         {
-            updateBoundingBox(blockView.GetBlockMeta(x, y, z));
+            updateBoundingBox(blockView.getBlockMeta(x, y, z));
         }
 
         public override void setupRenderBoundingBox()
@@ -102,7 +102,7 @@ namespace betareborn.Blocks
             }
             else
             {
-                int meta = world.GetBlockMeta(x, y, z);
+                int meta = world.getBlockMeta(x, y, z);
                 world.setBlockMeta(x, y, z, meta ^ 4);
                 world.worldEvent(player, 1003, x, y, z, 0);
                 return true;
@@ -111,7 +111,7 @@ namespace betareborn.Blocks
 
         public void setOpen(World world, int x, int y, int z, bool open)
         {
-            int meta = world.GetBlockMeta(x, y, z);
+            int meta = world.getBlockMeta(x, y, z);
             bool isOpen = (meta & 4) > 0;
             if (isOpen != open)
             {
@@ -124,7 +124,7 @@ namespace betareborn.Blocks
         {
             if (!world.isRemote)
             {
-                int meta = world.GetBlockMeta(x, y, z);
+                int meta = world.getBlockMeta(x, y, z);
                 int xPos = x;
                 int zPos = z;
                 if ((meta & 3) == 0)
@@ -147,7 +147,7 @@ namespace betareborn.Blocks
                     --xPos;
                 }
 
-                if (!world.ShouldSuffocate(xPos, y, zPos))
+                if (!world.shouldSuffocate(xPos, y, zPos))
                 {
                     world.setBlock(x, y, z, 0);
                     dropStacks(world, x, y, z, meta);
@@ -226,7 +226,7 @@ namespace betareborn.Blocks
                     --x;
                 }
 
-                return world.ShouldSuffocate(x, y, z);
+                return world.shouldSuffocate(x, y, z);
             }
         }
 

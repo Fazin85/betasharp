@@ -30,7 +30,7 @@ namespace betareborn.Items
         {
             if (itemStack.getDamage() == 15)
             {
-                int blockId = world.GetBlockId(x, y, z);
+                int blockId = world.getBlockId(x, y, z);
                 if (blockId == Block.SAPLING.id)
                 {
                     if (!world.isRemote)
@@ -67,13 +67,13 @@ namespace betareborn.Items
                                 spawnX += itemRand.nextInt(3) - 1;
                                 spawnY += (itemRand.nextInt(3) - 1) * itemRand.nextInt(3) / 2;
                                 spawnZ += itemRand.nextInt(3) - 1;
-                                if (world.GetBlockId(spawnX, spawnY - 1, spawnZ) != Block.GRASS_BLOCK.id || world.ShouldSuffocate(spawnX, spawnY, spawnZ))
+                                if (world.getBlockId(spawnX, spawnY - 1, spawnZ) != Block.GRASS_BLOCK.id || world.shouldSuffocate(spawnX, spawnY, spawnZ))
                                 {
                                     validPosition = false;
                                 }
                             }
 
-                            if (validPosition && world.GetBlockId(spawnX, spawnY, spawnZ) == 0)
+                            if (validPosition && world.getBlockId(spawnX, spawnY, spawnZ) == 0)
                             {
                                 if (itemRand.nextInt(10) != 0)
                                 {

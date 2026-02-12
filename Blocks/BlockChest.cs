@@ -28,10 +28,10 @@ namespace betareborn.Blocks
             }
             else
             {
-                int blockNorth = blockView.GetBlockId(x, y, z - 1);
-                int blockSouth = blockView.GetBlockId(x, y, z + 1);
-                int blockWest = blockView.GetBlockId(x - 1, y, z);
-                int blockEast = blockView.GetBlockId(x + 1, y, z);
+                int blockNorth = blockView.getBlockId(x, y, z - 1);
+                int blockSouth = blockView.getBlockId(x, y, z + 1);
+                int blockWest = blockView.getBlockId(x - 1, y, z);
+                int blockEast = blockView.getBlockId(x + 1, y, z);
                 int textureOffset;
                 int cornerBlock1;
                 int cornerBlock2;
@@ -71,8 +71,8 @@ namespace betareborn.Blocks
                             textureOffset = -1;
                         }
 
-                        cornerBlock1 = blockView.GetBlockId(blockWest == id ? x - 1 : x + 1, y, z - 1);
-                        cornerBlock2 = blockView.GetBlockId(blockWest == id ? x - 1 : x + 1, y, z + 1);
+                        cornerBlock1 = blockView.getBlockId(blockWest == id ? x - 1 : x + 1, y, z - 1);
+                        cornerBlock2 = blockView.getBlockId(blockWest == id ? x - 1 : x + 1, y, z + 1);
                         if (side == 3)
                         {
                             textureOffset = -1 - textureOffset;
@@ -104,8 +104,8 @@ namespace betareborn.Blocks
                         textureOffset = -1;
                     }
 
-                    cornerBlock1 = blockView.GetBlockId(x - 1, y, blockNorth == id ? z - 1 : z + 1);
-                    cornerBlock2 = blockView.GetBlockId(x + 1, y, blockNorth == id ? z - 1 : z + 1);
+                    cornerBlock1 = blockView.getBlockId(x - 1, y, blockNorth == id ? z - 1 : z + 1);
+                    cornerBlock2 = blockView.getBlockId(x + 1, y, blockNorth == id ? z - 1 : z + 1);
                     if (side == 4)
                     {
                         textureOffset = -1 - textureOffset;
@@ -139,22 +139,22 @@ namespace betareborn.Blocks
         public override bool canPlaceAt(World world, int x, int y, int z)
         {
             int adjacentChestCount = 0;
-            if (world.GetBlockId(x - 1, y, z) == id)
+            if (world.getBlockId(x - 1, y, z) == id)
             {
                 ++adjacentChestCount;
             }
 
-            if (world.GetBlockId(x + 1, y, z) == id)
+            if (world.getBlockId(x + 1, y, z) == id)
             {
                 ++adjacentChestCount;
             }
 
-            if (world.GetBlockId(x, y, z - 1) == id)
+            if (world.getBlockId(x, y, z - 1) == id)
             {
                 ++adjacentChestCount;
             }
 
-            if (world.GetBlockId(x, y, z + 1) == id)
+            if (world.getBlockId(x, y, z + 1) == id)
             {
                 ++adjacentChestCount;
             }
@@ -164,12 +164,12 @@ namespace betareborn.Blocks
 
         private bool hasNeighbor(World world, int x, int y, int z)
         {
-            return world.GetBlockId(x, y, z) != id ? false : (world.GetBlockId(x - 1, y, z) == id ? true : (world.GetBlockId(x + 1, y, z) == id ? true : (world.GetBlockId(x, y, z - 1) == id ? true : world.GetBlockId(x, y, z + 1) == id)));
+            return world.getBlockId(x, y, z) != id ? false : (world.getBlockId(x - 1, y, z) == id ? true : (world.getBlockId(x + 1, y, z) == id ? true : (world.getBlockId(x, y, z - 1) == id ? true : world.getBlockId(x, y, z + 1) == id)));
         }
 
         public override void onBreak(World world, int x, int y, int z)
         {
-            BlockEntityChest chest = (BlockEntityChest)world.GetBlockEntity(x, y, z);
+            BlockEntityChest chest = (BlockEntityChest)world.getBlockEntity(x, y, z);
 
             for (int slot = 0; slot < chest.size(); ++slot)
             {
@@ -204,47 +204,47 @@ namespace betareborn.Blocks
 
         public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
         {
-            java.lang.Object chestInventory = (BlockEntityChest)world.GetBlockEntity(x, y, z);
-            if (world.ShouldSuffocate(x, y + 1, z))
+            java.lang.Object chestInventory = (BlockEntityChest)world.getBlockEntity(x, y, z);
+            if (world.shouldSuffocate(x, y + 1, z))
             {
                 return true;
             }
-            else if (world.GetBlockId(x - 1, y, z) == id && world.ShouldSuffocate(x - 1, y + 1, z))
+            else if (world.getBlockId(x - 1, y, z) == id && world.shouldSuffocate(x - 1, y + 1, z))
             {
                 return true;
             }
-            else if (world.GetBlockId(x + 1, y, z) == id && world.ShouldSuffocate(x + 1, y + 1, z))
+            else if (world.getBlockId(x + 1, y, z) == id && world.shouldSuffocate(x + 1, y + 1, z))
             {
                 return true;
             }
-            else if (world.GetBlockId(x, y, z - 1) == id && world.ShouldSuffocate(x, y + 1, z - 1))
+            else if (world.getBlockId(x, y, z - 1) == id && world.shouldSuffocate(x, y + 1, z - 1))
             {
                 return true;
             }
-            else if (world.GetBlockId(x, y, z + 1) == id && world.ShouldSuffocate(x, y + 1, z + 1))
+            else if (world.getBlockId(x, y, z + 1) == id && world.shouldSuffocate(x, y + 1, z + 1))
             {
                 return true;
             }
             else
             {
-                if (world.GetBlockId(x - 1, y, z) == id)
+                if (world.getBlockId(x - 1, y, z) == id)
                 {
-                    chestInventory = new InventoryLargeChest("Large chest", (BlockEntityChest)world.GetBlockEntity(x - 1, y, z), (IInventory)chestInventory);
+                    chestInventory = new InventoryLargeChest("Large chest", (BlockEntityChest)world.getBlockEntity(x - 1, y, z), (IInventory)chestInventory);
                 }
 
-                if (world.GetBlockId(x + 1, y, z) == id)
+                if (world.getBlockId(x + 1, y, z) == id)
                 {
-                    chestInventory = new InventoryLargeChest("Large chest", (IInventory)chestInventory, (BlockEntityChest)world.GetBlockEntity(x + 1, y, z));
+                    chestInventory = new InventoryLargeChest("Large chest", (IInventory)chestInventory, (BlockEntityChest)world.getBlockEntity(x + 1, y, z));
                 }
 
-                if (world.GetBlockId(x, y, z - 1) == id)
+                if (world.getBlockId(x, y, z - 1) == id)
                 {
-                    chestInventory = new InventoryLargeChest("Large chest", (BlockEntityChest)world.GetBlockEntity(x, y, z - 1), (IInventory)chestInventory);
+                    chestInventory = new InventoryLargeChest("Large chest", (BlockEntityChest)world.getBlockEntity(x, y, z - 1), (IInventory)chestInventory);
                 }
 
-                if (world.GetBlockId(x, y, z + 1) == id)
+                if (world.getBlockId(x, y, z + 1) == id)
                 {
-                    chestInventory = new InventoryLargeChest("Large chest", (IInventory)chestInventory, (BlockEntityChest)world.GetBlockEntity(x, y, z + 1));
+                    chestInventory = new InventoryLargeChest("Large chest", (IInventory)chestInventory, (BlockEntityChest)world.getBlockEntity(x, y, z + 1));
                 }
 
                 if (world.isRemote)

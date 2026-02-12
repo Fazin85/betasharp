@@ -203,7 +203,7 @@ namespace betareborn
                 {
                     for (int var8 = var4; var8 < var4 + var5.zCoord; ++var8)
                     {
-                        int var9 = worldMap.GetBlockId(var6, var7, var8);
+                        int var9 = worldMap.getBlockId(var6, var7, var8);
                         if (var9 > 0)
                         {
                             if (var9 != Block.IRON_DOOR.id && var9 != Block.DOOR.id)
@@ -226,7 +226,7 @@ namespace betareborn
                             }
                             else
                             {
-                                int var10 = worldMap.GetBlockMeta(var6, var7, var8);
+                                int var10 = worldMap.getBlockMeta(var6, var7, var8);
                                 if (!BlockDoor.isOpen(var10))
                                 {
                                     return 0;

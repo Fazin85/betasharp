@@ -62,7 +62,7 @@ namespace betareborn.Blocks
 
         public static bool canFallThrough(World world, int x, int y, int z)
         {
-            int blockId = world.GetBlockId(x, y, z);
+            int blockId = world.getBlockId(x, y, z);
             if (blockId == 0)
             {
                 return true;

@@ -192,7 +192,7 @@ namespace betareborn.Entities
 
                 if (inGround)
                 {
-                    int var19 = world.GetBlockId(xTile, yTile, zTile);
+                    int var19 = world.getBlockId(xTile, yTile, zTile);
                     if (var19 == inTile)
                     {
                         ++ticksInGround;

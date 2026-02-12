@@ -12,7 +12,7 @@ namespace betareborn.Blocks
 
         public static bool isRail(World world, int x, int y, int z)
         {
-            int blockId = world.GetBlockId(x, y, z);
+            int blockId = world.getBlockId(x, y, z);
             return blockId == Block.RAIL.id || blockId == Block.POWERED_RAIL.id || blockId == Block.DETECTOR_RAIL.id;
         }
 
@@ -50,7 +50,7 @@ namespace betareborn.Blocks
 
         public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
         {
-            int meta = blockView.GetBlockMeta(x, y, z);
+            int meta = blockView.getBlockMeta(x, y, z);
             if (meta >= 2 && meta <= 5)
             {
                 setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 10.0F / 16.0F, 1.0F);
@@ -91,7 +91,7 @@ namespace betareborn.Blocks
 
         public override bool canPlaceAt(World world, int x, int y, int z)
         {
-            return world.ShouldSuffocate(x, y - 1, z);
+            return world.shouldSuffocate(x, y - 1, z);
         }
 
         public override void onPlaced(World world, int x, int y, int z)
@@ -107,7 +107,7 @@ namespace betareborn.Blocks
         {
             if (!world.isRemote)
             {
-                int meta = world.GetBlockMeta(x, y, z);
+                int meta = world.getBlockMeta(x, y, z);
                 int railMeta = meta;
                 if (alwaysStraight)
                 {
@@ -115,34 +115,34 @@ namespace betareborn.Blocks
                 }
 
                 bool shouldBreak = false;
-                if (!world.ShouldSuffocate(x, y - 1, z))
+                if (!world.shouldSuffocate(x, y - 1, z))
                 {
                     shouldBreak = true;
                 }
 
-                if (railMeta == 2 && !world.ShouldSuffocate(x + 1, y, z))
+                if (railMeta == 2 && !world.shouldSuffocate(x + 1, y, z))
                 {
                     shouldBreak = true;
                 }
 
-                if (railMeta == 3 && !world.ShouldSuffocate(x - 1, y, z))
+                if (railMeta == 3 && !world.shouldSuffocate(x - 1, y, z))
                 {
                     shouldBreak = true;
                 }
 
-                if (railMeta == 4 && !world.ShouldSuffocate(x, y, z - 1))
+                if (railMeta == 4 && !world.shouldSuffocate(x, y, z - 1))
                 {
                     shouldBreak = true;
                 }
 
-                if (railMeta == 5 && !world.ShouldSuffocate(x, y, z + 1))
+                if (railMeta == 5 && !world.shouldSuffocate(x, y, z + 1))
                 {
                     shouldBreak = true;
                 }
 
                 if (shouldBreak)
                 {
-                    dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
+                    dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
                     world.setBlock(x, y, z, 0);
                 }
                 else if (base.id == Block.POWERED_RAIL.id)
@@ -282,10 +282,10 @@ namespace betareborn.Blocks
 
         private bool isPoweredByRail(World world, int x, int y, int z, bool towardsNegative, int depth, int shape)
         {
-            int blockId = world.GetBlockId(x, y, z);
+            int blockId = world.getBlockId(x, y, z);
             if (blockId == Block.POWERED_RAIL.id)
             {
-                int meta = world.GetBlockMeta(x, y, z);
+                int meta = world.getBlockMeta(x, y, z);
                 int railMeta = meta & 7;
                 if (shape == 1 && (railMeta == 0 || railMeta == 4 || railMeta == 5))
                 {

@@ -577,7 +577,7 @@ namespace betareborn.Client.Rendering
                     GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var7);
                     GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 0.5F);
                     GLManager.GL.PushMatrix();
-                    var8 = world.GetBlockId(var2.blockX, var2.blockY, var2.blockZ);
+                    var8 = world.getBlockId(var2.blockX, var2.blockY, var2.blockZ);
                     Block var9 = var8 > 0 ? Block.BLOCKS[var8] : null;
                     GLManager.GL.Disable(GLEnum.AlphaTest);
                     GLManager.GL.PolygonOffset(-3.0F, -3.0F);
@@ -661,7 +661,7 @@ namespace betareborn.Client.Rendering
                 GLManager.GL.Disable(GLEnum.Texture2D);
                 GLManager.GL.DepthMask(false);
                 float var6 = 0.002F;
-                int var7 = world.GetBlockId(var2.blockX, var2.blockY, var2.blockZ);
+                int var7 = world.getBlockId(var2.blockX, var2.blockY, var2.blockZ);
                 if (var7 > 0)
                 {
                     Block.BLOCKS[var7].updateBoundingBox(world, var2.blockX, var2.blockY, var2.blockZ);

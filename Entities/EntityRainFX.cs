@@ -54,10 +54,10 @@ namespace betareborn.Entities
                 velocityZ *= (double)0.7F;
             }
 
-            Material var1 = world.GetMaterial(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z));
+            Material var1 = world.getMaterial(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z));
             if (var1.isFluid() || var1.isSolid())
             {
-                double var2 = (double)((float)(MathHelper.floor_double(y) + 1) - BlockFluid.getFluidHeightFromMeta(world.GetBlockMeta(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z))));
+                double var2 = (double)((float)(MathHelper.floor_double(y) + 1) - BlockFluid.getFluidHeightFromMeta(world.getBlockMeta(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z))));
                 if (y < var2)
                 {
                     markDead();

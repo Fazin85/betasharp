@@ -38,7 +38,7 @@ namespace betareborn.Blocks
         {
             if (!standing)
             {
-                int facing = blockView.GetBlockMeta(x, y, z);
+                int facing = blockView.getBlockMeta(x, y, z);
                 float topOffset = 9.0F / 32.0F;
                 float bottomOffset = 25.0F / 32.0F;
                 float minExtent = 0.0F;
@@ -105,31 +105,31 @@ namespace betareborn.Blocks
             bool shouldBreak = false;
             if (standing)
             {
-                if (!world.GetMaterial(x, y - 1, z).isSolid())
+                if (!world.getMaterial(x, y - 1, z).isSolid())
                 {
                     shouldBreak = true;
                 }
             }
             else
             {
-                int facing = world.GetBlockMeta(x, y, z);
+                int facing = world.getBlockMeta(x, y, z);
                 shouldBreak = true;
-                if (facing == 2 && world.GetMaterial(x, y, z + 1).isSolid())
+                if (facing == 2 && world.getMaterial(x, y, z + 1).isSolid())
                 {
                     shouldBreak = false;
                 }
 
-                if (facing == 3 && world.GetMaterial(x, y, z - 1).isSolid())
+                if (facing == 3 && world.getMaterial(x, y, z - 1).isSolid())
                 {
                     shouldBreak = false;
                 }
 
-                if (facing == 4 && world.GetMaterial(x + 1, y, z).isSolid())
+                if (facing == 4 && world.getMaterial(x + 1, y, z).isSolid())
                 {
                     shouldBreak = false;
                 }
 
-                if (facing == 5 && world.GetMaterial(x - 1, y, z).isSolid())
+                if (facing == 5 && world.getMaterial(x - 1, y, z).isSolid())
                 {
                     shouldBreak = false;
                 }
@@ -137,7 +137,7 @@ namespace betareborn.Blocks
 
             if (shouldBreak)
             {
-                dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
+                dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
                 world.setBlock(x, y, z, 0);
             }
 

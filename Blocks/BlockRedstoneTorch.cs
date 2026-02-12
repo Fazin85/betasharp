@@ -51,7 +51,7 @@ namespace betareborn.Blocks
 
         public override void onPlaced(World world, int x, int y, int z)
         {
-            if (world.GetBlockMeta(x, y, z) == 0)
+            if (world.getBlockMeta(x, y, z) == 0)
             {
                 base.onPlaced(world, x, y, z);
             }
@@ -90,14 +90,14 @@ namespace betareborn.Blocks
             }
             else
             {
-                int meta = blockView.GetBlockMeta(x, y, z);
+                int meta = blockView.getBlockMeta(x, y, z);
                 return meta == 5 && side == 1 ? false : (meta == 3 && side == 3 ? false : (meta == 4 && side == 2 ? false : (meta == 1 && side == 5 ? false : meta != 2 || side != 4)));
             }
         }
 
         private bool shouldUnpower(World world, int x, int y, int z)
         {
-            int meta = world.GetBlockMeta(x, y, z);
+            int meta = world.getBlockMeta(x, y, z);
             return meta == 5 && world.isPoweringSide(x, y - 1, z, 0) ? true : (meta == 3 && world.isPoweringSide(x, y, z - 1, 2) ? true : (meta == 4 && world.isPoweringSide(x, y, z + 1, 3) ? true : (meta == 1 && world.isPoweringSide(x - 1, y, z, 4) ? true : meta == 2 && world.isPoweringSide(x + 1, y, z, 5))));
         }
 
@@ -114,7 +114,7 @@ namespace betareborn.Blocks
             {
                 if (shouldTurnOff)
                 {
-                    world.setBlock(x, y, z, Block.REDSTONE_TORCH.id, world.GetBlockMeta(x, y, z));
+                    world.setBlock(x, y, z, Block.REDSTONE_TORCH.id, world.getBlockMeta(x, y, z));
                     if (isBurnedOut(world, x, y, z, true))
                     {
                         world.playSound((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "random.fizz", 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
@@ -131,7 +131,7 @@ namespace betareborn.Blocks
             }
             else if (!shouldTurnOff && !isBurnedOut(world, x, y, z, false))
             {
-                world.setBlock(x, y, z, Block.LIT_REDSTONE_TORCH.id, world.GetBlockMeta(x, y, z));
+                world.setBlock(x, y, z, Block.LIT_REDSTONE_TORCH.id, world.getBlockMeta(x, y, z));
             }
 
         }
@@ -161,7 +161,7 @@ namespace betareborn.Blocks
         {
             if (lit)
             {
-                int meta = world.GetBlockMeta(x, y, z);
+                int meta = world.getBlockMeta(x, y, z);
                 double particleX = (double)((float)x + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2D;
                 double particleY = (double)((float)y + 0.7F) + (double)(random.nextFloat() - 0.5F) * 0.2D;
                 double particleZ = (double)((float)z + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2D;

@@ -63,7 +63,7 @@ namespace betareborn.Worlds
                                 int var22 = MathHelper.floor_double(var15);
                                 int var23 = MathHelper.floor_double(var17);
                                 int var24 = MathHelper.floor_double(var19);
-                                int var25 = worldObj.GetBlockId(var22, var23, var24);
+                                int var25 = worldObj.getBlockId(var22, var23, var24);
                                 if (var25 > 0)
                                 {
                                     var14 -= (Block.BLOCKS[var25].getBlastResistance(exploder) + 0.3F) * var21;
@@ -125,8 +125,8 @@ namespace betareborn.Worlds
                     int var36 = var35.x;
                     int var37 = var35.y;
                     int var16 = var35.z;
-                    int var38 = worldObj.GetBlockId(var36, var37, var16);
-                    int var18 = worldObj.GetBlockId(var36, var37 - 1, var16);
+                    int var38 = worldObj.getBlockId(var36, var37, var16);
+                    int var18 = worldObj.getBlockId(var36, var37 - 1, var16);
                     if (var38 == 0 && Block.BLOCKS_OPAQUE[var18] && ExplosionRNG.nextInt(3) == 0)
                     {
                         worldObj.setBlock(var36, var37, var16, Block.FIRE.id);
@@ -147,7 +147,7 @@ namespace betareborn.Worlds
                 int var5 = var4.x;
                 int var6 = var4.y;
                 int var7 = var4.z;
-                int var8 = worldObj.GetBlockId(var5, var6, var7);
+                int var8 = worldObj.getBlockId(var5, var6, var7);
                 if (var1)
                 {
                     double var9 = (double)(var5 + worldObj.random.nextFloat());
@@ -171,7 +171,7 @@ namespace betareborn.Worlds
 
                 if (var8 > 0)
                 {
-                    Block.BLOCKS[var8].dropStacks(worldObj, var5, var6, var7, worldObj.GetBlockMeta(var5, var6, var7), 0.3F);
+                    Block.BLOCKS[var8].dropStacks(worldObj, var5, var6, var7, worldObj.getBlockMeta(var5, var6, var7), 0.3F);
                     worldObj.setBlock(var5, var6, var7, 0);
                     Block.BLOCKS[var8].onDestroyedByExplosion(worldObj, var5, var6, var7);
                 }

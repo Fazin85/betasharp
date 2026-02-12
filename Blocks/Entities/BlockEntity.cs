@@ -88,7 +88,7 @@ namespace betareborn.Blocks.Entities
 
         public virtual int getPushedBlockData()
         {
-            return world.GetBlockMeta(x, y, z);
+            return world.getBlockMeta(x, y, z);
         }
 
         public void markDirty()
@@ -110,7 +110,7 @@ namespace betareborn.Blocks.Entities
 
         public Block getBlock()
         {
-            return Block.BLOCKS[world.GetBlockId(x, y, z)];
+            return Block.BLOCKS[world.getBlockId(x, y, z)];
         }
 
         public virtual Packet createUpdatePacket()

@@ -66,7 +66,7 @@ namespace betareborn.Entities
                 int var1 = MathHelper.floor_double(x);
                 int var2 = MathHelper.floor_double(y);
                 int var3 = MathHelper.floor_double(z);
-                if (world.GetBlockId(var1, var2, var3) == blockId)
+                if (world.getBlockId(var1, var2, var3) == blockId)
                 {
                     world.setBlock(floorX, floorY, floorZ, 0);
                 }

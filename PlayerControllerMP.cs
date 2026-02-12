@@ -33,7 +33,7 @@ namespace betareborn
 
         public override bool sendBlockRemoved(int x, int y, int z, int var4)
         {
-            int blockId = mc.world.GetBlockId(x, y, z);
+            int blockId = mc.world.getBlockId(x, y, z);
             bool var6 = base.sendBlockRemoved(x, y, z, var4);
             ItemStack var7 = mc.player.getHand();
             if (var7 != null)
@@ -54,7 +54,7 @@ namespace betareborn
             if (!isHittingBlock || var1 != currentBlockX || var2 != currentBlockY || var3 != currentblockZ)
             {
                 netClientHandler.addToSendQueue(new PlayerActionC2SPacket(0, var1, var2, var3, var4));
-                int var5 = mc.world.GetBlockId(var1, var2, var3);
+                int var5 = mc.world.getBlockId(var1, var2, var3);
                 if (var5 > 0 && curBlockDamageMP == 0.0F)
                 {
                     Block.BLOCKS[var5].onBlockBreakStart(mc.world, var1, var2, var3, mc.player);
@@ -97,7 +97,7 @@ namespace betareborn
                 {
                     if (var1 == currentBlockX && var2 == currentBlockY && var3 == currentblockZ)
                     {
-                        int var5 = mc.world.GetBlockId(var1, var2, var3);
+                        int var5 = mc.world.getBlockId(var1, var2, var3);
                         if (var5 == 0)
                         {
                             isHittingBlock = false;

@@ -686,7 +686,7 @@ namespace betareborn.Client.Network
         {
             if (mc.world.isPosLoaded(var1.x, var1.y, var1.z))
             {
-                BlockEntity var2 = mc.world.GetBlockEntity(var1.x, var1.y, var1.z);
+                BlockEntity var2 = mc.world.getBlockEntity(var1.x, var1.y, var1.z);
                 if (var2 is BlockEntitySign)
                 {
                     BlockEntitySign var3 = (BlockEntitySign)var2;

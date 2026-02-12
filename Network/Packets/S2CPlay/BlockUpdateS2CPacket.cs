@@ -24,8 +24,8 @@ namespace betareborn.Network.Packets.S2CPlay
             this.x = x;
             this.y = y;
             this.z = z;
-            blockRawId = world.GetBlockId(x, y, z);
-            blockMetadata = world.GetBlockMeta(x, y, z);
+            blockRawId = world.getBlockId(x, y, z);
+            blockMetadata = world.getBlockMeta(x, y, z);
         }
 
         public override void read(DataInputStream var1)

@@ -6,23 +6,23 @@ namespace betareborn.Worlds
 {
     public interface BlockView
     {
-        int GetBlockId(int x, int y, int z);
+        int getBlockId(int x, int y, int z);
 
-        BlockEntity GetBlockEntity(int x, int y, int z);
+        BlockEntity getBlockEntity(int x, int y, int z);
 
-        float GetNaturalBrightness(int x, int y, int z, int blockLight);
+        float getNaturalBrightness(int x, int y, int z, int blockLight);
 
-        float GetLuminance(int x, int y, int z);
+        float getLuminance(int x, int y, int z);
 
-        int GetBlockMeta(int x, int y, int z);
+        int getBlockMeta(int x, int y, int z);
 
-        Material GetMaterial(int x, int y, int z);
+        Material getMaterial(int x, int y, int z);
 
-        bool IsOpaque(int x, int y, int z);
+        bool isOpaque(int x, int y, int z);
 
-        bool ShouldSuffocate(int x, int y, int z);
+        bool shouldSuffocate(int x, int y, int z);
 
-        BiomeSource BiomeSource { get; }
+        BiomeSource getBiomeSource();
     }
 
 }

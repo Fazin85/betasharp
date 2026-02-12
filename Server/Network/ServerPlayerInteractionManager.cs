@@ -32,7 +32,7 @@ namespace betareborn.Server.Network
             if (mining)
             {
                 int var1 = tickCounter - startMiningTime;
-                int var2 = world.GetBlockId(miningX, miningY, miningZ);
+                int var2 = world.getBlockId(miningX, miningY, miningZ);
                 if (var2 != 0)
                 {
                     Block var3 = Block.BLOCKS[var2];
@@ -54,7 +54,7 @@ namespace betareborn.Server.Network
         {
             world.extinguishFire(null, x, y, z, direction);
             failedMiningStartTime = tickCounter;
-            int var5 = world.GetBlockId(x, y, z);
+            int var5 = world.getBlockId(x, y, z);
             if (var5 > 0)
             {
                 Block.BLOCKS[var5].onBlockBreakStart(world, x, y, z, player);
@@ -77,7 +77,7 @@ namespace betareborn.Server.Network
             if (x == failedMiningX && y == failedMiningY && z == failedMiningZ)
             {
                 int var4 = tickCounter - failedMiningStartTime;
-                int var5 = world.GetBlockId(x, y, z);
+                int var5 = world.getBlockId(x, y, z);
                 if (var5 != 0)
                 {
                     Block var6 = Block.BLOCKS[var5];
@@ -100,8 +100,8 @@ namespace betareborn.Server.Network
 
         public bool finishMining(int x, int y, int z)
         {
-            Block var4 = Block.BLOCKS[world.GetBlockId(x, y, z)];
-            int var5 = world.GetBlockMeta(x, y, z);
+            Block var4 = Block.BLOCKS[world.getBlockId(x, y, z)];
+            int var5 = world.getBlockMeta(x, y, z);
             bool var6 = world.setBlock(x, y, z, 0);
             if (var4 != null && var6)
             {
@@ -113,9 +113,9 @@ namespace betareborn.Server.Network
 
         public bool tryBreakBlock(int x, int y, int z)
         {
-            int blockId = world.GetBlockId(x, y, z);
-            int var5 = world.GetBlockMeta(x, y, z);
-            world.worldEvent(player, 2001, x, y, z, blockId + world.GetBlockMeta(x, y, z) * 256);
+            int blockId = world.getBlockId(x, y, z);
+            int var5 = world.getBlockMeta(x, y, z);
+            world.worldEvent(player, 2001, x, y, z, blockId + world.getBlockMeta(x, y, z) * 256);
             bool var6 = finishMining(x, y, z);
             ItemStack var7 = player.getHand();
             if (var7 != null)
@@ -159,7 +159,7 @@ namespace betareborn.Server.Network
 
         public bool interactBlock(EntityPlayer player, World world, ItemStack stack, int x, int y, int z, int side)
         {
-            int var8 = world.GetBlockId(x, y, z);
+            int var8 = world.getBlockId(x, y, z);
             if (var8 > 0 && Block.BLOCKS[var8].onUse(world, x, y, z, player))
             {
                 return true;

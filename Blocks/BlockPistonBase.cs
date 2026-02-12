@@ -66,7 +66,7 @@ namespace betareborn.Blocks
 
         public override void onPlaced(World world, int x, int y, int z)
         {
-            if (!world.isRemote && world.GetBlockEntity(x, y, z) == null)
+            if (!world.isRemote && world.getBlockEntity(x, y, z) == null)
             {
                 checkExtended(world, x, y, z);
             }
@@ -75,7 +75,7 @@ namespace betareborn.Blocks
 
         private void checkExtended(World world, int x, int y, int z)
         {
-            int var5 = world.GetBlockMeta(x, y, z);
+            int var5 = world.getBlockMeta(x, y, z);
             int var6 = getFacing(var5);
             bool var7 = shouldExtend(world, x, y, z, var6);
             if (var5 != 7)
@@ -115,7 +115,7 @@ namespace betareborn.Blocks
             }
             else if (data1 == 1)
             {
-                BlockEntity var8 = world.GetBlockEntity(x + PistonConstants.HEAD_OFFSET_X[data2], y + PistonConstants.HEAD_OFFSET_Y[data2], z + PistonConstants.HEAD_OFFSET_Z[data2]);
+                BlockEntity var8 = world.getBlockEntity(x + PistonConstants.HEAD_OFFSET_X[data2], y + PistonConstants.HEAD_OFFSET_Y[data2], z + PistonConstants.HEAD_OFFSET_Z[data2]);
                 if (var8 != null && var8 is BlockEntityPiston)
                 {
                     ((BlockEntityPiston)var8).finish();
@@ -128,12 +128,12 @@ namespace betareborn.Blocks
                     int var9 = x + PistonConstants.HEAD_OFFSET_X[data2] * 2;
                     int var10 = y + PistonConstants.HEAD_OFFSET_Y[data2] * 2;
                     int var11 = z + PistonConstants.HEAD_OFFSET_Z[data2] * 2;
-                    int var12 = world.GetBlockId(var9, var10, var11);
-                    int var13 = world.GetBlockMeta(var9, var10, var11);
+                    int var12 = world.getBlockId(var9, var10, var11);
+                    int var13 = world.getBlockMeta(var9, var10, var11);
                     bool var14 = false;
                     if (var12 == Block.MOVING_PISTON.id)
                     {
-                        BlockEntity var15 = world.GetBlockEntity(var9, var10, var11);
+                        BlockEntity var15 = world.getBlockEntity(var9, var10, var11);
                         if (var15 != null && var15 is BlockEntityPiston)
                         {
                             BlockEntityPiston var16 = (BlockEntityPiston)var15;
@@ -183,7 +183,7 @@ namespace betareborn.Blocks
 
         public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
         {
-            int var5 = blockView.GetBlockMeta(x, y, z);
+            int var5 = blockView.getBlockMeta(x, y, z);
             if (isExtended(var5))
             {
                 switch (getFacing(var5))
@@ -286,12 +286,12 @@ namespace betareborn.Blocks
                         return false;
                     }
                 }
-                else if (isExtended(world.GetBlockMeta(x, y, z)))
+                else if (isExtended(world.getBlockMeta(x, y, z)))
                 {
                     return false;
                 }
 
-                BlockEntity var6 = world.GetBlockEntity(x, y, z);
+                BlockEntity var6 = world.getBlockEntity(x, y, z);
                 return var6 == null;
             }
         }
@@ -312,7 +312,7 @@ namespace betareborn.Blocks
                         return false;
                     }
 
-                    int var9 = world.GetBlockId(var5, var6, var7);
+                    int var9 = world.getBlockId(var5, var6, var7);
                     if (var9 != 0)
                     {
                         if (!canMoveBlock(var9, world, var5, var6, var7, true))
@@ -357,7 +357,7 @@ namespace betareborn.Blocks
                         return false;
                     }
 
-                    var10 = world.GetBlockId(var6, var7, var8);
+                    var10 = world.getBlockId(var6, var7, var8);
                     if (var10 != 0)
                     {
                         if (!canMoveBlock(var10, world, var6, var7, var8, true))
@@ -379,7 +379,7 @@ namespace betareborn.Blocks
                             continue;
                         }
 
-                        Block.BLOCKS[var10].dropStacks(world, var6, var7, var8, world.GetBlockMeta(var6, var7, var8));
+                        Block.BLOCKS[var10].dropStacks(world, var6, var7, var8, world.getBlockMeta(var6, var7, var8));
                         world.setBlock(var6, var7, var8, 0);
                     }
                 }
@@ -389,8 +389,8 @@ namespace betareborn.Blocks
                     var9 = var6 - PistonConstants.HEAD_OFFSET_X[dir];
                     var10 = var7 - PistonConstants.HEAD_OFFSET_Y[dir];
                     int var11 = var8 - PistonConstants.HEAD_OFFSET_Z[dir];
-                    int var12 = world.GetBlockId(var9, var10, var11);
-                    int var13 = world.GetBlockMeta(var9, var10, var11);
+                    int var12 = world.getBlockId(var9, var10, var11);
+                    int var13 = world.getBlockMeta(var9, var10, var11);
                     if (var12 == id && var9 == x && var10 == y && var11 == z)
                     {
                         world.setBlockWithoutNotifyingNeighbors(var6, var7, var8, Block.MOVING_PISTON.id, dir | (sticky ? 8 : 0));

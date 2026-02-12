@@ -109,7 +109,7 @@ namespace betareborn.Entities
 
             if (field_20052_f)
             {
-                int var1 = world.GetBlockId(field_20056_b, field_20055_c, field_20054_d);
+                int var1 = world.getBlockId(field_20056_b, field_20055_c, field_20054_d);
                 if (var1 == field_20053_e)
                 {
                     ++field_20050_h;

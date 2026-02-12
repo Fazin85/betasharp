@@ -197,8 +197,8 @@ namespace betareborn.Worlds
 
         public override bool setBlockMetaWithoutNotifyingNeighbors(int var1, int var2, int var3, int var4)
         {
-            int var5 = GetBlockId(var1, var2, var3);
-            int var6 = GetBlockMeta(var1, var2, var3);
+            int var5 = getBlockId(var1, var2, var3);
+            int var6 = getBlockMeta(var1, var2, var3);
             if (base.setBlockMetaWithoutNotifyingNeighbors(var1, var2, var3, var4))
             {
                 blockResets.add(new BlockReset(this, var1, var2, var3, var5, var6));
@@ -212,8 +212,8 @@ namespace betareborn.Worlds
 
         public override bool setBlockWithoutNotifyingNeighbors(int var1, int var2, int var3, int var4, int var5)
         {
-            int var6 = GetBlockId(var1, var2, var3);
-            int var7 = GetBlockMeta(var1, var2, var3);
+            int var6 = getBlockId(var1, var2, var3);
+            int var7 = getBlockMeta(var1, var2, var3);
             if (base.setBlockWithoutNotifyingNeighbors(var1, var2, var3, var4, var5))
             {
                 blockResets.add(new BlockReset(this, var1, var2, var3, var6, var7));
@@ -227,8 +227,8 @@ namespace betareborn.Worlds
 
         public override bool setBlockWithoutNotifyingNeighbors(int var1, int var2, int var3, int var4)
         {
-            int var5 = GetBlockId(var1, var2, var3);
-            int var6 = GetBlockMeta(var1, var2, var3);
+            int var5 = getBlockId(var1, var2, var3);
+            int var6 = getBlockMeta(var1, var2, var3);
             if (base.setBlockWithoutNotifyingNeighbors(var1, var2, var3, var4))
             {
                 blockResets.add(new BlockReset(this, var1, var2, var3, var5, var6));

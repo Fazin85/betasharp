@@ -24,16 +24,16 @@ namespace betareborn.Blocks
             }
             else
             {
-                Material materialAbove = blockView.GetMaterial(x, y + 1, z);
+                Material materialAbove = blockView.getMaterial(x, y + 1, z);
                 return materialAbove != Material.SNOW_LAYER && materialAbove != Material.SNOW_BLOCK ? 3 : 68;
             }
         }
 
         public override int getColorMultiplier(BlockView blockView, int x, int y, int z)
         {
-            blockView.            BiomeSource.getBiomesInArea(x, z, 1, 1);
-            double temperature = blockView.BiomeSource.temperatureMap[0];
-            double downfall = blockView.BiomeSource.downfallMap[0];
+            blockView.getBiomeSource().getBiomesInArea(x, z, 1, 1);
+            double temperature = blockView.getBiomeSource().temperatureMap[0];
+            double downfall = blockView.getBiomeSource().downfallMap[0];
             return GrassColors.getColor(temperature, downfall);
         }
 
@@ -41,7 +41,7 @@ namespace betareborn.Blocks
         {
             if (!world.isRemote)
             {
-                if (world.getLightLevel(x, y + 1, z) < 4 && Block.BLOCK_LIGHT_OPACITY[world.GetBlockId(x, y + 1, z)] > 2)
+                if (world.getLightLevel(x, y + 1, z) < 4 && Block.BLOCK_LIGHT_OPACITY[world.getBlockId(x, y + 1, z)] > 2)
                 {
                     if (random.nextInt(4) != 0)
                     {
@@ -55,8 +55,8 @@ namespace betareborn.Blocks
                     int spreadX = x + random.nextInt(3) - 1;
                     int spreadY = y + random.nextInt(5) - 3;
                     int spreadZ = z + random.nextInt(3) - 1;
-                    int blockAboveId = world.GetBlockId(spreadX, spreadY + 1, spreadZ);
-                    if (world.GetBlockId(spreadX, spreadY, spreadZ) == Block.DIRT.id && world.getLightLevel(spreadX, spreadY + 1, spreadZ) >= 4 && Block.BLOCK_LIGHT_OPACITY[blockAboveId] <= 2)
+                    int blockAboveId = world.getBlockId(spreadX, spreadY + 1, spreadZ);
+                    if (world.getBlockId(spreadX, spreadY, spreadZ) == Block.DIRT.id && world.getLightLevel(spreadX, spreadY + 1, spreadZ) >= 4 && Block.BLOCK_LIGHT_OPACITY[blockAboveId] <= 2)
                     {
                         world.setBlock(spreadX, spreadY, spreadZ, Block.GRASS_BLOCK.id);
                     }

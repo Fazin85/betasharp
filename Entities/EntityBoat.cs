@@ -374,7 +374,7 @@ namespace betareborn.Entities
                     int var25 = MathHelper.floor_double(x + ((double)(var24 % 2) - 0.5D) * 0.8D);
                     int var26 = MathHelper.floor_double(y);
                     int var20 = MathHelper.floor_double(z + ((double)(var24 / 2) - 0.5D) * 0.8D);
-                    if (world.GetBlockId(var25, var26, var20) == Block.SNOW.id)
+                    if (world.getBlockId(var25, var26, var20) == Block.SNOW.id)
                     {
                         world.setBlock(x, y, z, 0);
                     }

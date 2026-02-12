@@ -17,7 +17,7 @@ namespace betareborn.Items
 
         public override bool useOnBlock(ItemStack itemStack, EntityPlayer entityPlayer, World world, int x, int y, int z, int meta)
         {
-            if (world.GetBlockId(x, y, z) == Block.JUKEBOX.id && world.GetBlockMeta(x, y, z) == 0)
+            if (world.getBlockId(x, y, z) == Block.JUKEBOX.id && world.getBlockMeta(x, y, z) == 0)
             {
                 if (world.isRemote)
                 {

@@ -17,7 +17,7 @@ namespace betareborn.Blocks
 
         public override Box? getCollisionShape(World world, int x, int y, int z)
         {
-            int meta = world.GetBlockMeta(x, y, z) & 7;
+            int meta = world.getBlockMeta(x, y, z) & 7;
             return meta >= 3 ?
                 new Box((double)x + minX, (double)y + minY, (double)z + minZ, (double)x + maxX, (double)((float)y + 0.5F), (double)z + maxZ) :
                 null;
@@ -35,15 +35,15 @@ namespace betareborn.Blocks
 
         public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
         {
-            int meta = blockView.GetBlockMeta(x, y, z) & 7;
+            int meta = blockView.getBlockMeta(x, y, z) & 7;
             float height = (float)(2 * (1 + meta)) / 16.0F;
             setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, height, 1.0F);
         }
 
         public override bool canPlaceAt(World world, int x, int y, int z)
         {
-            int blockBelowId = world.GetBlockId(x, y - 1, z);
-            return blockBelowId != 0 && Block.BLOCKS[blockBelowId].isOpaque() ? world.GetMaterial(x, y - 1, z).blocksMovement() : false;
+            int blockBelowId = world.getBlockId(x, y - 1, z);
+            return blockBelowId != 0 && Block.BLOCKS[blockBelowId].isOpaque() ? world.getMaterial(x, y - 1, z).blocksMovement() : false;
         }
 
         public override void neighborUpdate(World world, int x, int y, int z, int id)
@@ -55,7 +55,7 @@ namespace betareborn.Blocks
         {
             if (!canPlaceAt(world, x, y, z))
             {
-                dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
+                dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
                 world.setBlock(x, y, z, 0);
                 return false;
             }
@@ -93,7 +93,7 @@ namespace betareborn.Blocks
         {
             if (world.getBrightness(LightType.Block, x, y, z) > 11)
             {
-                dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
+                dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
                 world.setBlock(x, y, z, 0);
             }
 

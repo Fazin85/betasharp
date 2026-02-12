@@ -35,10 +35,10 @@ namespace betareborn.Blocks
         {
             if (!world.isRemote)
             {
-                int blockNorth = world.GetBlockId(x, y, z - 1);
-                int blockSouth = world.GetBlockId(x, y, z + 1);
-                int westBlockId = world.GetBlockId(x - 1, y, z);
-                int eastBlockId = world.GetBlockId(x + 1, y, z);
+                int blockNorth = world.getBlockId(x, y, z - 1);
+                int blockSouth = world.getBlockId(x, y, z + 1);
+                int westBlockId = world.getBlockId(x - 1, y, z);
+                int eastBlockId = world.getBlockId(x + 1, y, z);
                 sbyte direction = 3;
                 if (Block.BLOCKS_OPAQUE[blockNorth] && !Block.BLOCKS_OPAQUE[blockSouth])
                 {
@@ -76,7 +76,7 @@ namespace betareborn.Blocks
             }
             else
             {
-                int meta = blockView.GetBlockMeta(x, y, z);
+                int meta = blockView.getBlockMeta(x, y, z);
                 return side != meta ? textureId : (lit ? textureId + 16 : textureId - 1);
             }
         }
@@ -85,7 +85,7 @@ namespace betareborn.Blocks
         {
             if (lit)
             {
-                int var6 = world.GetBlockMeta(x, y, z);
+                int var6 = world.getBlockMeta(x, y, z);
                 float particleX = (float)x + 0.5F;
                 float particleY = (float)y + 0.0F + random.nextFloat() * 6.0F / 16.0F;
                 float particleZ = (float)z + 0.5F;
@@ -128,7 +128,7 @@ namespace betareborn.Blocks
             }
             else
             {
-                BlockEntityFurnace furnace = (BlockEntityFurnace)world.GetBlockEntity(x, y, z);
+                BlockEntityFurnace furnace = (BlockEntityFurnace)world.getBlockEntity(x, y, z);
                 player.openFurnaceScreen(furnace);
                 return true;
             }
@@ -136,8 +136,8 @@ namespace betareborn.Blocks
 
         public static void updateLitState(bool lit, World world, int x, int y, int z)
         {
-            int meta = world.GetBlockMeta(x, y, z);
-            BlockEntity furnace = world.GetBlockEntity(x, y, z);
+            int meta = world.getBlockMeta(x, y, z);
+            BlockEntity furnace = world.getBlockEntity(x, y, z);
             ignoreBlockRemoval = true;
             if (lit)
             {
@@ -188,7 +188,7 @@ namespace betareborn.Blocks
         {
             if (!ignoreBlockRemoval)
             {
-                BlockEntityFurnace furnace = (BlockEntityFurnace)world.GetBlockEntity(x, y, z);
+                BlockEntityFurnace furnace = (BlockEntityFurnace)world.getBlockEntity(x, y, z);
 
                 for (int slotIndex = 0; slotIndex < furnace.size(); ++slotIndex)
                 {

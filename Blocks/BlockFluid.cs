@@ -39,18 +39,18 @@ namespace betareborn.Blocks
 
         protected int getLiquidState(World world, int x, int y, int z)
         {
-            return world.GetMaterial(x, y, z) != material ? -1 : world.GetBlockMeta(x, y, z);
+            return world.getMaterial(x, y, z) != material ? -1 : world.getBlockMeta(x, y, z);
         }
 
         protected int getLiquidDepth(BlockView blockView, int x, int y, int z)
         {
-            if (blockView.GetMaterial(x, y, z) != material)
+            if (blockView.getMaterial(x, y, z) != material)
             {
                 return -1;
             }
             else
             {
-                int depth = blockView.GetBlockMeta(x, y, z);
+                int depth = blockView.getBlockMeta(x, y, z);
                 if (depth >= 8)
                 {
                     depth = 0;
@@ -77,7 +77,7 @@ namespace betareborn.Blocks
 
         public override bool isSolidFace(BlockView blockView, int x, int y, int z, int face)
         {
-            Material material = blockView.GetMaterial(x, y, z);
+            Material material = blockView.getMaterial(x, y, z);
             return material == base.material ?
                 false :
                 (material == Material.ICE ? false : (face == 1 ? true : base.isSolidFace(blockView, x, y, z, face)));
@@ -85,7 +85,7 @@ namespace betareborn.Blocks
 
         public override bool isSideVisible(BlockView blockView, int x, int y, int z, int side)
         {
-            Material material = blockView.GetMaterial(x, y, z);
+            Material material = blockView.getMaterial(x, y, z);
             return material == base.material ?
                 false :
                 (material == Material.ICE ? false : (side == 1 ? true : base.isSideVisible(blockView, x, y, z, side)));
@@ -144,7 +144,7 @@ namespace betareborn.Blocks
                 int depthDiff;
                 if (neighborDepth < 0)
                 {
-                    if (!blockView.GetMaterial(neighborX, y, neighborZ).blocksMovement())
+                    if (!blockView.getMaterial(neighborX, y, neighborZ).blocksMovement())
                     {
                         neighborDepth = getLiquidDepth(blockView, neighborX, y - 1, neighborZ);
                         if (neighborDepth >= 0)
@@ -161,7 +161,7 @@ namespace betareborn.Blocks
                 }
             }
 
-            if (blockView.GetBlockMeta(x, y, z) >= 8)
+            if (blockView.getBlockMeta(x, y, z) >= 8)
             {
                 bool hasAdjacentSolid = false;
                 if (hasAdjacentSolid || isSolidFace(blockView, x, y, z - 1, 2))
@@ -229,8 +229,8 @@ namespace betareborn.Blocks
 
         public override float getLuminance(BlockView blockView, int x, int y, int z)
         {
-            float luminance = blockView.GetLuminance(x, y, z);
-            float luminanceAbove = blockView.GetLuminance(x, y + 1, z);
+            float luminance = blockView.getLuminance(x, y, z);
+            float luminanceAbove = blockView.getLuminance(x, y + 1, z);
             return luminance > luminanceAbove ? luminance : luminanceAbove;
         }
 
@@ -248,14 +248,14 @@ namespace betareborn.Blocks
         {
             if (material == Material.WATER && random.nextInt(64) == 0)
             {
-                int meta = world.GetBlockMeta(x, y, z);
+                int meta = world.getBlockMeta(x, y, z);
                 if (meta > 0 && meta < 8)
                 {
                     world.playSound((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "liquid.water", random.nextFloat() * 0.25F + 12.0F / 16.0F, random.nextFloat() * 1.0F + 0.5F);
                 }
             }
 
-            if (material == Material.LAVA && world.GetMaterial(x, y + 1, z) == Material.AIR && !world.IsOpaque(x, y + 1, z) && random.nextInt(100) == 0)
+            if (material == Material.LAVA && world.getMaterial(x, y + 1, z) == Material.AIR && !world.isOpaque(x, y + 1, z) && random.nextInt(100) == 0)
             {
                 double particleX = (double)((float)x + random.nextFloat());
                 double particleY = (double)y + maxY;
@@ -293,39 +293,39 @@ namespace betareborn.Blocks
 
         private void checkBlockCollisions(World world, int x, int y, int z)
         {
-            if (world.GetBlockId(x, y, z) == id)
+            if (world.getBlockId(x, y, z) == id)
             {
                 if (material == Material.LAVA)
                 {
                     bool hasWaterAdjacent = false;
-                    if (hasWaterAdjacent || world.GetMaterial(x, y, z - 1) == Material.WATER)
+                    if (hasWaterAdjacent || world.getMaterial(x, y, z - 1) == Material.WATER)
                     {
                         hasWaterAdjacent = true;
                     }
 
-                    if (hasWaterAdjacent || world.GetMaterial(x, y, z + 1) == Material.WATER)
+                    if (hasWaterAdjacent || world.getMaterial(x, y, z + 1) == Material.WATER)
                     {
                         hasWaterAdjacent = true;
                     }
 
-                    if (hasWaterAdjacent || world.GetMaterial(x - 1, y, z) == Material.WATER)
+                    if (hasWaterAdjacent || world.getMaterial(x - 1, y, z) == Material.WATER)
                     {
                         hasWaterAdjacent = true;
                     }
 
-                    if (hasWaterAdjacent || world.GetMaterial(x + 1, y, z) == Material.WATER)
+                    if (hasWaterAdjacent || world.getMaterial(x + 1, y, z) == Material.WATER)
                     {
                         hasWaterAdjacent = true;
                     }
 
-                    if (hasWaterAdjacent || world.GetMaterial(x, y + 1, z) == Material.WATER)
+                    if (hasWaterAdjacent || world.getMaterial(x, y + 1, z) == Material.WATER)
                     {
                         hasWaterAdjacent = true;
                     }
 
                     if (hasWaterAdjacent)
                     {
-                        int var6 = world.GetBlockMeta(x, y, z);
+                        int var6 = world.getBlockMeta(x, y, z);
                         if (var6 == 0)
                         {
                             world.setBlock(x, y, z, Block.OBSIDIAN.id);

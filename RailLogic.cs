@@ -23,8 +23,8 @@ namespace betareborn
             trackX = var3;
             trackY = var4;
             trackZ = var5;
-            int var6 = var2.GetBlockId(var3, var4, var5);
-            int var7 = var2.GetBlockMeta(var3, var4, var5);
+            int var6 = var2.getBlockId(var3, var4, var5);
+            int var7 = var2.getBlockMeta(var3, var4, var5);
             if (((BlockRail)Block.BLOCKS[var6]).isAlwaysStraight())
             {
                 isPoweredRail = true;
@@ -271,7 +271,7 @@ namespace betareborn
             int var7 = var6;
             if (isPoweredRail)
             {
-                var7 = worldObj.GetBlockMeta(trackX, trackY, trackZ) & 8 | var6;
+                var7 = worldObj.getBlockMeta(trackX, trackY, trackZ) & 8 | var6;
             }
 
             worldObj.setBlockMeta(trackX, trackY, trackZ, var7);
@@ -427,10 +427,10 @@ namespace betareborn
             int var8 = var7;
             if (isPoweredRail)
             {
-                var8 = worldObj.GetBlockMeta(trackX, trackY, trackZ) & 8 | var7;
+                var8 = worldObj.getBlockMeta(trackX, trackY, trackZ) & 8 | var7;
             }
 
-            if (var2 || worldObj.GetBlockMeta(trackX, trackY, trackZ) != var8)
+            if (var2 || worldObj.getBlockMeta(trackX, trackY, trackZ) != var8)
             {
                 worldObj.setBlockMeta(trackX, trackY, trackZ, var8);
 

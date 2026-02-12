@@ -23,10 +23,10 @@ namespace betareborn.Blocks
             }
             else
             {
-                int var6 = blockView.GetBlockId(x, y, z - 1);
-                int var7 = blockView.GetBlockId(x, y, z + 1);
-                int var8 = blockView.GetBlockId(x - 1, y, z);
-                int var9 = blockView.GetBlockId(x + 1, y, z);
+                int var6 = blockView.getBlockId(x, y, z - 1);
+                int var7 = blockView.getBlockId(x, y, z + 1);
+                int var8 = blockView.getBlockId(x - 1, y, z);
+                int var9 = blockView.getBlockId(x + 1, y, z);
                 sbyte var10 = 3;
                 if (Block.BLOCKS_OPAQUE[var6] && !Block.BLOCKS_OPAQUE[var7])
                 {

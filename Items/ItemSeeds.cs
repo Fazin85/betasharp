@@ -22,7 +22,7 @@ namespace betareborn.Items
             }
             else
             {
-                int blockId = world.GetBlockId(x, y, z);
+                int blockId = world.getBlockId(x, y, z);
                 if (blockId == Block.FARMLAND.id && world.isAir(x, y + 1, z))
                 {
                     world.setBlock(x, y + 1, z, this.blockId);

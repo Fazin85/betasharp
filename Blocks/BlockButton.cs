@@ -34,32 +34,32 @@ namespace betareborn.Blocks
 
         public override bool canPlaceAt(World world, int x, int y, int z, int side)
         {
-            return side == 2 && world.ShouldSuffocate(x, y, z + 1) ? true : (side == 3 && world.ShouldSuffocate(x, y, z - 1) ? true : (side == 4 && world.ShouldSuffocate(x + 1, y, z) ? true : side == 5 && world.ShouldSuffocate(x - 1, y, z)));
+            return side == 2 && world.shouldSuffocate(x, y, z + 1) ? true : (side == 3 && world.shouldSuffocate(x, y, z - 1) ? true : (side == 4 && world.shouldSuffocate(x + 1, y, z) ? true : side == 5 && world.shouldSuffocate(x - 1, y, z)));
         }
 
         public override bool canPlaceAt(World world, int x, int y, int z)
         {
-            return world.ShouldSuffocate(x - 1, y, z) ? true : (world.ShouldSuffocate(x + 1, y, z) ? true : (world.ShouldSuffocate(x, y, z - 1) ? true : world.ShouldSuffocate(x, y, z + 1)));
+            return world.shouldSuffocate(x - 1, y, z) ? true : (world.shouldSuffocate(x + 1, y, z) ? true : (world.shouldSuffocate(x, y, z - 1) ? true : world.shouldSuffocate(x, y, z + 1)));
         }
 
         public override void onPlaced(World world, int x, int y, int z, int direction)
         {
-            int facing = world.GetBlockMeta(x, y, z);
+            int facing = world.getBlockMeta(x, y, z);
             int pressedBit = facing & 8;
             facing &= 7;
-            if (direction == 2 && world.ShouldSuffocate(x, y, z + 1))
+            if (direction == 2 && world.shouldSuffocate(x, y, z + 1))
             {
                 facing = 4;
             }
-            else if (direction == 3 && world.ShouldSuffocate(x, y, z - 1))
+            else if (direction == 3 && world.shouldSuffocate(x, y, z - 1))
             {
                 facing = 3;
             }
-            else if (direction == 4 && world.ShouldSuffocate(x + 1, y, z))
+            else if (direction == 4 && world.shouldSuffocate(x + 1, y, z))
             {
                 facing = 2;
             }
-            else if (direction == 5 && world.ShouldSuffocate(x - 1, y, z))
+            else if (direction == 5 && world.shouldSuffocate(x - 1, y, z))
             {
                 facing = 1;
             }
@@ -73,38 +73,38 @@ namespace betareborn.Blocks
 
         private int getPlacementSide(World world, int x, int y, int z)
         {
-            return world.ShouldSuffocate(x - 1, y, z) ? 1 : (world.ShouldSuffocate(x + 1, y, z) ? 2 : (world.ShouldSuffocate(x, y, z - 1) ? 3 : (world.ShouldSuffocate(x, y, z + 1) ? 4 : 1)));
+            return world.shouldSuffocate(x - 1, y, z) ? 1 : (world.shouldSuffocate(x + 1, y, z) ? 2 : (world.shouldSuffocate(x, y, z - 1) ? 3 : (world.shouldSuffocate(x, y, z + 1) ? 4 : 1)));
         }
 
         public override void neighborUpdate(World world, int x, int y, int z, int id)
         {
             if (breakIfCannotPlaceAt(world, x, y, z))
             {
-                int facing = world.GetBlockMeta(x, y, z) & 7;
+                int facing = world.getBlockMeta(x, y, z) & 7;
                 bool shouldBreak = false;
-                if (!world.ShouldSuffocate(x - 1, y, z) && facing == 1)
+                if (!world.shouldSuffocate(x - 1, y, z) && facing == 1)
                 {
                     shouldBreak = true;
                 }
 
-                if (!world.ShouldSuffocate(x + 1, y, z) && facing == 2)
+                if (!world.shouldSuffocate(x + 1, y, z) && facing == 2)
                 {
                     shouldBreak = true;
                 }
 
-                if (!world.ShouldSuffocate(x, y, z - 1) && facing == 3)
+                if (!world.shouldSuffocate(x, y, z - 1) && facing == 3)
                 {
                     shouldBreak = true;
                 }
 
-                if (!world.ShouldSuffocate(x, y, z + 1) && facing == 4)
+                if (!world.shouldSuffocate(x, y, z + 1) && facing == 4)
                 {
                     shouldBreak = true;
                 }
 
                 if (shouldBreak)
                 {
-                    dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
+                    dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
                     world.setBlock(x, y, z, 0);
                 }
             }
@@ -115,7 +115,7 @@ namespace betareborn.Blocks
         {
             if (!canPlaceAt(world, x, y, z))
             {
-                dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
+                dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
                 world.setBlock(x, y, z, 0);
                 return false;
             }
@@ -127,7 +127,7 @@ namespace betareborn.Blocks
 
         public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
         {
-            int meta = blockView.GetBlockMeta(x, y, z);
+            int meta = blockView.getBlockMeta(x, y, z);
             int facing = meta & 7;
             bool isPressed = (meta & 8) > 0;
             float minY = 6.0F / 16.0F;
@@ -165,7 +165,7 @@ namespace betareborn.Blocks
 
         public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
         {
-            int meta = world.GetBlockMeta(x, y, z);
+            int meta = world.getBlockMeta(x, y, z);
             int facing = meta & 7;
             int pressToggle = 8 - (meta & 8);
             if (pressToggle == 0)
@@ -206,7 +206,7 @@ namespace betareborn.Blocks
 
         public override void onBreak(World world, int x, int y, int z)
         {
-            int meta = world.GetBlockMeta(x, y, z);
+            int meta = world.getBlockMeta(x, y, z);
             if ((meta & 8) > 0)
             {
                 world.notifyNeighbors(x, y, z, id);
@@ -238,12 +238,12 @@ namespace betareborn.Blocks
 
         public override bool isPoweringSide(BlockView blockView, int x, int y, int z, int side)
         {
-            return (blockView.GetBlockMeta(x, y, z) & 8) > 0;
+            return (blockView.getBlockMeta(x, y, z) & 8) > 0;
         }
 
         public override bool isStrongPoweringSide(World world, int x, int y, int z, int side)
         {
-            int meta = world.GetBlockMeta(x, y, z);
+            int meta = world.getBlockMeta(x, y, z);
             if ((meta & 8) == 0)
             {
                 return false;
@@ -264,7 +264,7 @@ namespace betareborn.Blocks
         {
             if (!world.isRemote)
             {
-                int meta = world.GetBlockMeta(x, y, z);
+                int meta = world.getBlockMeta(x, y, z);
                 if ((meta & 8) != 0)
                 {
                     world.setBlockMeta(x, y, z, meta & 7);

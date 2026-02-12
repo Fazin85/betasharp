@@ -54,13 +54,13 @@ namespace betareborn.Items
 
                     if (isFull == 0)
                     {
-                        if (world.GetMaterial(hitX, hitY, hitZ) == Material.WATER && world.GetBlockMeta(hitX, hitY, hitZ) == 0)
+                        if (world.getMaterial(hitX, hitY, hitZ) == Material.WATER && world.getBlockMeta(hitX, hitY, hitZ) == 0)
                         {
                             world.setBlock(hitX, hitY, hitZ, 0);
                             return new ItemStack(Item.WATER_BUCKET);
                         }
 
-                        if (world.GetMaterial(hitX, hitY, hitZ) == Material.LAVA && world.GetBlockMeta(hitX, hitY, hitZ) == 0)
+                        if (world.getMaterial(hitX, hitY, hitZ) == Material.LAVA && world.getBlockMeta(hitX, hitY, hitZ) == 0)
                         {
                             world.setBlock(hitX, hitY, hitZ, 0);
                             return new ItemStack(Item.LAVA_BUCKET);
@@ -103,7 +103,7 @@ namespace betareborn.Items
                             ++hitX;
                         }
 
-                        if (world.isAir(hitX, hitY, hitZ) || !world.GetMaterial(hitX, hitY, hitZ).isSolid())
+                        if (world.isAir(hitX, hitY, hitZ) || !world.getMaterial(hitX, hitY, hitZ).isSolid())
                         {
                             if (world.dimension.evaporatesWater && isFull == Block.FLOWING_WATER.id)
                             {

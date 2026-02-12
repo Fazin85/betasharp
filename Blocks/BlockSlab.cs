@@ -41,9 +41,9 @@ namespace betareborn.Blocks
                 base.onPlaced(world, x, y, z);
             }
 
-            int blockBelowId = world.GetBlockId(x, y - 1, z);
-            int slabMeta = world.GetBlockMeta(x, y, z);
-            int blockBelowMeta = world.GetBlockMeta(x, y - 1, z);
+            int blockBelowId = world.getBlockId(x, y - 1, z);
+            int slabMeta = world.getBlockMeta(x, y, z);
+            int blockBelowMeta = world.getBlockMeta(x, y - 1, z);
             if (slabMeta == blockBelowMeta)
             {
                 if (blockBelowId == SLAB.id)
@@ -82,7 +82,7 @@ namespace betareborn.Blocks
                 base.isSideVisible(blockView, x, y, z, side);
             }
 
-            return side == 1 ? true : (!base.isSideVisible(blockView, x, y, z, side) ? false : (side == 0 ? true : blockView.GetBlockId(x, y, z) != id));
+            return side == 1 ? true : (!base.isSideVisible(blockView, x, y, z, side) ? false : (side == 0 ? true : blockView.getBlockId(x, y, z) != id));
         }
     }
 

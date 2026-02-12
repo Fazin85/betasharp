@@ -14,37 +14,37 @@ namespace betareborn.Worlds.Gen.Features
 
         public override bool generate(World var1, java.util.Random var2, int var3, int var4, int var5)
         {
-            if (var1.GetBlockId(var3, var4 + 1, var5) != Block.STONE.id)
+            if (var1.getBlockId(var3, var4 + 1, var5) != Block.STONE.id)
             {
                 return false;
             }
-            else if (var1.GetBlockId(var3, var4 - 1, var5) != Block.STONE.id)
+            else if (var1.getBlockId(var3, var4 - 1, var5) != Block.STONE.id)
             {
                 return false;
             }
-            else if (var1.GetBlockId(var3, var4, var5) != 0 && var1.GetBlockId(var3, var4, var5) != Block.STONE.id)
+            else if (var1.getBlockId(var3, var4, var5) != 0 && var1.getBlockId(var3, var4, var5) != Block.STONE.id)
             {
                 return false;
             }
             else
             {
                 int var6 = 0;
-                if (var1.GetBlockId(var3 - 1, var4, var5) == Block.STONE.id)
+                if (var1.getBlockId(var3 - 1, var4, var5) == Block.STONE.id)
                 {
                     ++var6;
                 }
 
-                if (var1.GetBlockId(var3 + 1, var4, var5) == Block.STONE.id)
+                if (var1.getBlockId(var3 + 1, var4, var5) == Block.STONE.id)
                 {
                     ++var6;
                 }
 
-                if (var1.GetBlockId(var3, var4, var5 - 1) == Block.STONE.id)
+                if (var1.getBlockId(var3, var4, var5 - 1) == Block.STONE.id)
                 {
                     ++var6;
                 }
 
-                if (var1.GetBlockId(var3, var4, var5 + 1) == Block.STONE.id)
+                if (var1.getBlockId(var3, var4, var5 + 1) == Block.STONE.id)
                 {
                     ++var6;
                 }

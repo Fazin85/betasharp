@@ -146,7 +146,7 @@ namespace betareborn.Client.Rendering.Core
         private bool renderBlockBed(Block var1, int var2, int var3, int var4)
         {
             Tessellator var5 = getTessellator();
-            int var6 = blockAccess.GetBlockMeta(var2, var3, var4);
+            int var6 = blockAccess.getBlockMeta(var2, var3, var4);
             int var7 = BlockBed.getDirection(var6);
             bool var8 = BlockBed.isHeadOfBed(var6);
             float var9 = 0.5F;
@@ -305,7 +305,7 @@ namespace betareborn.Client.Rendering.Core
 
         public bool renderBlockTorch(Block var1, int var2, int var3, int var4)
         {
-            int var5 = blockAccess.GetBlockMeta(var2, var3, var4);
+            int var5 = blockAccess.getBlockMeta(var2, var3, var4);
             Tessellator var6 = getTessellator();
             float var7 = var1.getLuminance(blockAccess, var2, var3, var4);
             if (Block.BLOCKS_LIGHT_LUMINANCE[var1.id] > 0)
@@ -343,7 +343,7 @@ namespace betareborn.Client.Rendering.Core
 
         private bool renderBlockRepeater(Block var1, int var2, int var3, int var4)
         {
-            int var5 = blockAccess.GetBlockMeta(var2, var3, var4);
+            int var5 = blockAccess.getBlockMeta(var2, var3, var4);
             int var6 = var5 & 3;
             int var7 = (var5 & 12) >> 2;
             renderStandardBlock(var1, var2, var3, var4);
@@ -449,7 +449,7 @@ namespace betareborn.Client.Rendering.Core
 
         private bool func_31074_b(Block var1, int var2, int var3, int var4, bool var5)
         {
-            int var6 = blockAccess.GetBlockMeta(var2, var3, var4);
+            int var6 = blockAccess.getBlockMeta(var2, var3, var4);
             bool var7 = var5 || (var6 & 8) != 0;
             int var8 = BlockPistonBase.getFacing(var6);
             if (var7)
@@ -627,7 +627,7 @@ namespace betareborn.Client.Rendering.Core
 
         private bool func_31080_c(Block var1, int var2, int var3, int var4, bool var5)
         {
-            int var6 = blockAccess.GetBlockMeta(var2, var3, var4);
+            int var6 = blockAccess.getBlockMeta(var2, var3, var4);
             int var7 = BlockPistonExtension.getFacing(var6);
             float var11 = var1.getLuminance(blockAccess, var2, var3, var4);
             float var12 = var5 ? 1.0F : 0.5F;
@@ -714,7 +714,7 @@ namespace betareborn.Client.Rendering.Core
 
         public bool renderBlockLever(Block var1, int var2, int var3, int var4)
         {
-            int var5 = blockAccess.GetBlockMeta(var2, var3, var4);
+            int var5 = blockAccess.getBlockMeta(var2, var3, var4);
             int var6 = var5 & 7;
             bool var7 = (var5 & 8) > 0;
             Tessellator var8 = getTessellator();
@@ -943,7 +943,7 @@ namespace betareborn.Client.Rendering.Core
             double var29;
             double var31;
             double var33;
-            if (!blockAccess.ShouldSuffocate(var2, var3 - 1, var4) && !Block.FIRE.isFlammable(blockAccess, var2, var3 - 1, var4))
+            if (!blockAccess.shouldSuffocate(var2, var3 - 1, var4) && !Block.FIRE.isFlammable(blockAccess, var2, var3 - 1, var4))
             {
                 float var37 = 0.2F;
                 float var20 = 1.0F / 16.0F;
@@ -1124,7 +1124,7 @@ namespace betareborn.Client.Rendering.Core
         public bool renderBlockRedstoneWire(Block var1, int var2, int var3, int var4)
         {
             Tessellator var5 = getTessellator();
-            int var6 = blockAccess.GetBlockMeta(var2, var3, var4);
+            int var6 = blockAccess.getBlockMeta(var2, var3, var4);
             int var7 = var1.getTexture(1, var6);
             if (overrideBlockTexture >= 0)
             {
@@ -1158,28 +1158,28 @@ namespace betareborn.Client.Rendering.Core
             double var17 = (double)((var13 + 15.99F) / 256.0F);
             double var19 = (double)(var14 / 256.0F);
             double var21 = (double)((var14 + 15.99F) / 256.0F);
-            bool var26 = BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2 - 1, var3, var4, 1) || !blockAccess.ShouldSuffocate(var2 - 1, var3, var4) && BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2 - 1, var3 - 1, var4, -1);
-            bool var27 = BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2 + 1, var3, var4, 3) || !blockAccess.ShouldSuffocate(var2 + 1, var3, var4) && BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2 + 1, var3 - 1, var4, -1);
-            bool var28 = BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2, var3, var4 - 1, 2) || !blockAccess.ShouldSuffocate(var2, var3, var4 - 1) && BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2, var3 - 1, var4 - 1, -1);
-            bool var29 = BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2, var3, var4 + 1, 0) || !blockAccess.ShouldSuffocate(var2, var3, var4 + 1) && BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2, var3 - 1, var4 + 1, -1);
-            if (!blockAccess.ShouldSuffocate(var2, var3 + 1, var4))
+            bool var26 = BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2 - 1, var3, var4, 1) || !blockAccess.shouldSuffocate(var2 - 1, var3, var4) && BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2 - 1, var3 - 1, var4, -1);
+            bool var27 = BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2 + 1, var3, var4, 3) || !blockAccess.shouldSuffocate(var2 + 1, var3, var4) && BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2 + 1, var3 - 1, var4, -1);
+            bool var28 = BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2, var3, var4 - 1, 2) || !blockAccess.shouldSuffocate(var2, var3, var4 - 1) && BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2, var3 - 1, var4 - 1, -1);
+            bool var29 = BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2, var3, var4 + 1, 0) || !blockAccess.shouldSuffocate(var2, var3, var4 + 1) && BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2, var3 - 1, var4 + 1, -1);
+            if (!blockAccess.shouldSuffocate(var2, var3 + 1, var4))
             {
-                if (blockAccess.ShouldSuffocate(var2 - 1, var3, var4) && BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2 - 1, var3 + 1, var4, -1))
+                if (blockAccess.shouldSuffocate(var2 - 1, var3, var4) && BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2 - 1, var3 + 1, var4, -1))
                 {
                     var26 = true;
                 }
 
-                if (blockAccess.ShouldSuffocate(var2 + 1, var3, var4) && BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2 + 1, var3 + 1, var4, -1))
+                if (blockAccess.shouldSuffocate(var2 + 1, var3, var4) && BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2 + 1, var3 + 1, var4, -1))
                 {
                     var27 = true;
                 }
 
-                if (blockAccess.ShouldSuffocate(var2, var3, var4 - 1) && BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2, var3 + 1, var4 - 1, -1))
+                if (blockAccess.shouldSuffocate(var2, var3, var4 - 1) && BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2, var3 + 1, var4 - 1, -1))
                 {
                     var28 = true;
                 }
 
-                if (blockAccess.ShouldSuffocate(var2, var3, var4 + 1) && BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2, var3 + 1, var4 + 1, -1))
+                if (blockAccess.shouldSuffocate(var2, var3, var4 + 1) && BlockRedstoneWire.isPowerProviderOrWire(blockAccess, var2, var3 + 1, var4 + 1, -1))
                 {
                     var29 = true;
                 }
@@ -1288,13 +1288,13 @@ namespace betareborn.Client.Rendering.Core
                 var5.addVertexWithUV((double)var31, (double)(var3 + 0.015625F), (double)var34, var17, var19 + 1.0D / 16.0D);
             }
 
-            if (!blockAccess.ShouldSuffocate(var2, var3 + 1, var4))
+            if (!blockAccess.shouldSuffocate(var2, var3 + 1, var4))
             {
                 var15 = (double)((var13 + 16) / 256.0F);
                 var17 = (double)((var13 + 16 + 15.99F) / 256.0F);
                 var19 = (double)(var14 / 256.0F);
                 var21 = (double)((var14 + 15.99F) / 256.0F);
-                if (blockAccess.ShouldSuffocate(var2 - 1, var3, var4) && blockAccess.GetBlockId(var2 - 1, var3 + 1, var4) == Block.REDSTONE_WIRE.id)
+                if (blockAccess.shouldSuffocate(var2 - 1, var3, var4) && blockAccess.getBlockId(var2 - 1, var3 + 1, var4) == Block.REDSTONE_WIRE.id)
                 {
                     var5.setColorOpaque_F(var8 * var10, var8 * var11, var8 * var12);
                     var5.addVertexWithUV((double)(var2 + 0.015625F), (double)(var3 + 1 + 7.0F / 320.0F), var4 + 1, var17, var19);
@@ -1308,7 +1308,7 @@ namespace betareborn.Client.Rendering.Core
                     var5.addVertexWithUV((double)(var2 + 0.015625F), (double)(var3 + 1 + 7.0F / 320.0F), var4 + 0, var17, var21 + 1.0D / 16.0D);
                 }
 
-                if (blockAccess.ShouldSuffocate(var2 + 1, var3, var4) && blockAccess.GetBlockId(var2 + 1, var3 + 1, var4) == Block.REDSTONE_WIRE.id)
+                if (blockAccess.shouldSuffocate(var2 + 1, var3, var4) && blockAccess.getBlockId(var2 + 1, var3 + 1, var4) == Block.REDSTONE_WIRE.id)
                 {
                     var5.setColorOpaque_F(var8 * var10, var8 * var11, var8 * var12);
                     var5.addVertexWithUV((double)(var2 + 1 - 0.015625F), var3 + 0, var4 + 1, var15, var21);
@@ -1322,7 +1322,7 @@ namespace betareborn.Client.Rendering.Core
                     var5.addVertexWithUV((double)(var2 + 1 - 0.015625F), var3 + 0, var4 + 0, var15, var19 + 1.0D / 16.0D);
                 }
 
-                if (blockAccess.ShouldSuffocate(var2, var3, var4 - 1) && blockAccess.GetBlockId(var2, var3 + 1, var4 - 1) == Block.REDSTONE_WIRE.id)
+                if (blockAccess.shouldSuffocate(var2, var3, var4 - 1) && blockAccess.getBlockId(var2, var3 + 1, var4 - 1) == Block.REDSTONE_WIRE.id)
                 {
                     var5.setColorOpaque_F(var8 * var10, var8 * var11, var8 * var12);
                     var5.addVertexWithUV(var2 + 1, var3 + 0, (double)(var4 + 0.015625F), var15, var21);
@@ -1336,7 +1336,7 @@ namespace betareborn.Client.Rendering.Core
                     var5.addVertexWithUV(var2 + 0, var3 + 0, (double)(var4 + 0.015625F), var15, var19 + 1.0D / 16.0D);
                 }
 
-                if (blockAccess.ShouldSuffocate(var2, var3, var4 + 1) && blockAccess.GetBlockId(var2, var3 + 1, var4 + 1) == Block.REDSTONE_WIRE.id)
+                if (blockAccess.shouldSuffocate(var2, var3, var4 + 1) && blockAccess.getBlockId(var2, var3 + 1, var4 + 1) == Block.REDSTONE_WIRE.id)
                 {
                     var5.setColorOpaque_F(var8 * var10, var8 * var11, var8 * var12);
                     var5.addVertexWithUV(var2 + 1, (double)(var3 + 1 + 7.0F / 320.0F), (double)(var4 + 1 - 0.015625F), var17, var19);
@@ -1357,7 +1357,7 @@ namespace betareborn.Client.Rendering.Core
         public bool renderBlockMinecartTrack(BlockRail var1, int var2, int var3, int var4)
         {
             Tessellator var5 = getTessellator();
-            int var6 = blockAccess.GetBlockMeta(var2, var3, var4);
+            int var6 = blockAccess.getBlockMeta(var2, var3, var4);
             int var7 = var1.getTexture(0, var6);
             if (overrideBlockTexture >= 0)
             {
@@ -1469,7 +1469,7 @@ namespace betareborn.Client.Rendering.Core
             double var12 = (double)((var8 + 15.99F) / 256.0F);
             double var14 = (double)(var9 / 256.0F);
             double var16 = (double)((var9 + 15.99F) / 256.0F);
-            int var18 = blockAccess.GetBlockMeta(var2, var3, var4);
+            int var18 = blockAccess.getBlockMeta(var2, var3, var4);
             float var19 = 0.0F;
             float var20 = 0.05F;
             if (var18 == 5)
@@ -1529,7 +1529,7 @@ namespace betareborn.Client.Rendering.Core
                 var15 += ((double)((var17 >> 24 & 15L) / 15.0F) - 0.5D) * 0.5D;
             }
 
-            renderCrossedSquares(var1, blockAccess.GetBlockMeta(var2, var3, var4), var19, var20, var15);
+            renderCrossedSquares(var1, blockAccess.getBlockMeta(var2, var3, var4), var19, var20, var15);
             return true;
         }
 
@@ -1538,7 +1538,7 @@ namespace betareborn.Client.Rendering.Core
             Tessellator var5 = getTessellator();
             float var6 = var1.getLuminance(blockAccess, var2, var3, var4);
             var5.setColorOpaque_F(var6, var6, var6);
-            func_1245_b(var1, blockAccess.GetBlockMeta(var2, var3, var4), var2, (double)(var3 - 1.0F / 16.0F), var4);
+            func_1245_b(var1, blockAccess.getBlockMeta(var2, var3, var4), var2, (double)(var3 - 1.0F / 16.0F), var4);
             return true;
         }
 
@@ -1709,7 +1709,7 @@ namespace betareborn.Client.Rendering.Core
                 double var18 = 0.0D;
                 double var20 = 1.0D;
                 Material var22 = var1.material;
-                int var23 = blockAccess.GetBlockMeta(var2, var3, var4);
+                int var23 = blockAccess.getBlockMeta(var2, var3, var4);
                 float var24 = func_1224_a(var2, var3, var4, var22);
                 float var25 = func_1224_a(var2, var3, var4 + 1, var22);
                 float var26 = func_1224_a(var2 + 1, var3, var4 + 1, var22);
@@ -1869,12 +1869,12 @@ namespace betareborn.Client.Rendering.Core
             {
                 int var8 = var1 - (var7 & 1);
                 int var10 = var3 - (var7 >> 1 & 1);
-                if (blockAccess.GetMaterial(var8, var2 + 1, var10) == var4)
+                if (blockAccess.getMaterial(var8, var2 + 1, var10) == var4)
                 {
                     return 1.0F;
                 }
 
-                Material var11 = blockAccess.GetMaterial(var8, var2, var10);
+                Material var11 = blockAccess.getMaterial(var8, var2, var10);
                 if (var11 != var4)
                 {
                     if (!var11.isSolid())
@@ -1885,7 +1885,7 @@ namespace betareborn.Client.Rendering.Core
                 }
                 else
                 {
-                    int var12 = blockAccess.GetBlockMeta(var8, var2, var10);
+                    int var12 = blockAccess.getBlockMeta(var8, var2, var10);
                     if (var12 >= 8 || var12 == 0)
                     {
                         var6 += BlockFluid.getFluidHeightFromMeta(var12) * 10.0F;
@@ -1991,18 +1991,18 @@ namespace betareborn.Client.Rendering.Core
             aoLightValueXPos = var1.getLuminance(blockAccess, var2 + 1, var3, var4);
             aoLightValueYPos = var1.getLuminance(blockAccess, var2, var3 + 1, var4);
             aoLightValueZPos = var1.getLuminance(blockAccess, var2, var3, var4 + 1);
-            field_22338_U = Block.BLOCKS_ALLOW_VISION[blockAccess.GetBlockId(var2 + 1, var3 + 1, var4)];
-            field_22359_ac = Block.BLOCKS_ALLOW_VISION[blockAccess.GetBlockId(var2 + 1, var3 - 1, var4)];
-            field_22334_Y = Block.BLOCKS_ALLOW_VISION[blockAccess.GetBlockId(var2 + 1, var3, var4 + 1)];
-            field_22363_aa = Block.BLOCKS_ALLOW_VISION[blockAccess.GetBlockId(var2 + 1, var3, var4 - 1)];
-            field_22337_V = Block.BLOCKS_ALLOW_VISION[blockAccess.GetBlockId(var2 - 1, var3 + 1, var4)];
-            field_22357_ad = Block.BLOCKS_ALLOW_VISION[blockAccess.GetBlockId(var2 - 1, var3 - 1, var4)];
-            field_22335_X = Block.BLOCKS_ALLOW_VISION[blockAccess.GetBlockId(var2 - 1, var3, var4 - 1)];
-            field_22333_Z = Block.BLOCKS_ALLOW_VISION[blockAccess.GetBlockId(var2 - 1, var3, var4 + 1)];
-            field_22336_W = Block.BLOCKS_ALLOW_VISION[blockAccess.GetBlockId(var2, var3 + 1, var4 + 1)];
-            field_22339_T = Block.BLOCKS_ALLOW_VISION[blockAccess.GetBlockId(var2, var3 + 1, var4 - 1)];
-            field_22355_ae = Block.BLOCKS_ALLOW_VISION[blockAccess.GetBlockId(var2, var3 - 1, var4 + 1)];
-            field_22361_ab = Block.BLOCKS_ALLOW_VISION[blockAccess.GetBlockId(var2, var3 - 1, var4 - 1)];
+            field_22338_U = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2 + 1, var3 + 1, var4)];
+            field_22359_ac = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2 + 1, var3 - 1, var4)];
+            field_22334_Y = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2 + 1, var3, var4 + 1)];
+            field_22363_aa = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2 + 1, var3, var4 - 1)];
+            field_22337_V = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2 - 1, var3 + 1, var4)];
+            field_22357_ad = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2 - 1, var3 - 1, var4)];
+            field_22335_X = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2 - 1, var3, var4 - 1)];
+            field_22333_Z = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2 - 1, var3, var4 + 1)];
+            field_22336_W = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2, var3 + 1, var4 + 1)];
+            field_22339_T = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2, var3 + 1, var4 - 1)];
+            field_22355_ae = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2, var3 - 1, var4 + 1)];
+            field_22361_ab = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2, var3 - 1, var4 - 1)];
             if (var1.textureId == 3)
             {
                 var18 = false;
@@ -2834,20 +2834,20 @@ namespace betareborn.Client.Rendering.Core
             var5 = true;
             bool var8 = false;
             bool var9 = false;
-            if (blockAccess.GetBlockId(var2 - 1, var3, var4) == var1.id || blockAccess.GetBlockId(var2 + 1, var3, var4) == var1.id)
+            if (blockAccess.getBlockId(var2 - 1, var3, var4) == var1.id || blockAccess.getBlockId(var2 + 1, var3, var4) == var1.id)
             {
                 var8 = true;
             }
 
-            if (blockAccess.GetBlockId(var2, var3, var4 - 1) == var1.id || blockAccess.GetBlockId(var2, var3, var4 + 1) == var1.id)
+            if (blockAccess.getBlockId(var2, var3, var4 - 1) == var1.id || blockAccess.getBlockId(var2, var3, var4 + 1) == var1.id)
             {
                 var9 = true;
             }
 
-            bool var10 = blockAccess.GetBlockId(var2 - 1, var3, var4) == var1.id;
-            bool var11 = blockAccess.GetBlockId(var2 + 1, var3, var4) == var1.id;
-            bool var12 = blockAccess.GetBlockId(var2, var3, var4 - 1) == var1.id;
-            bool var13 = blockAccess.GetBlockId(var2, var3, var4 + 1) == var1.id;
+            bool var10 = blockAccess.getBlockId(var2 - 1, var3, var4) == var1.id;
+            bool var11 = blockAccess.getBlockId(var2 + 1, var3, var4) == var1.id;
+            bool var12 = blockAccess.getBlockId(var2, var3, var4 - 1) == var1.id;
+            bool var13 = blockAccess.getBlockId(var2, var3, var4 + 1) == var1.id;
             if (!var8 && !var9)
             {
                 var8 = true;
@@ -2898,7 +2898,7 @@ namespace betareborn.Client.Rendering.Core
         public bool renderBlockStairs(Block var1, int var2, int var3, int var4)
         {
             bool var5 = false;
-            int var6 = blockAccess.GetBlockMeta(var2, var3, var4);
+            int var6 = blockAccess.getBlockMeta(var2, var3, var4);
             if (var6 == 0)
             {
                 var1.setBoundingBox(0.0F, 0.0F, 0.0F, 0.5F, 0.5F, 1.0F);

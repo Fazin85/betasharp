@@ -42,7 +42,7 @@ namespace betareborn.Blocks
             {
                 if (!isWaterNearby(world, x, y, z) && !world.isRaining(x, y + 1, z))
                 {
-                    int meta = world.GetBlockMeta(x, y, z);
+                    int meta = world.getBlockMeta(x, y, z);
                     if (meta > 0)
                     {
                         world.setBlockMeta(x, y, z, meta - 1);
@@ -77,7 +77,7 @@ namespace betareborn.Blocks
             {
                 for (int var7 = z - cropRadius; var7 <= z + cropRadius; ++var7)
                 {
-                    if (world.GetBlockId(var6, y + 1, var7) == Block.WHEAT.id)
+                    if (world.getBlockId(var6, y + 1, var7) == Block.WHEAT.id)
                     {
                         return true;
                     }
@@ -95,7 +95,7 @@ namespace betareborn.Blocks
                 {
                     for (int checkZ = z - 4; checkZ <= z + 4; ++checkZ)
                     {
-                        if (world.GetMaterial(checkX, checkY, checkZ) == Material.WATER)
+                        if (world.getMaterial(checkX, checkY, checkZ) == Material.WATER)
                         {
                             return true;
                         }
@@ -109,7 +109,7 @@ namespace betareborn.Blocks
         public override void neighborUpdate(World world, int x, int y, int z, int id)
         {
             base.neighborUpdate(world, x, y, z, id);
-            Material material = world.GetMaterial(x, y + 1, z);
+            Material material = world.getMaterial(x, y + 1, z);
             if (material.isSolid())
             {
                 world.setBlock(x, y, z, Block.DIRT.id);

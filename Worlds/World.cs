@@ -69,7 +69,10 @@ namespace betareborn.Worlds
         private readonly List<Entity> tempEntityList;
         public bool isRemote;
 
-        public BiomeSource BiomeSource => dimension.biomeSource;
+        public BiomeSource getBiomeSource()
+        {
+            return dimension.biomeSource;
+        }
 
         public WorldStorage getWorldStorage()
         {
@@ -285,7 +288,7 @@ namespace betareborn.Worlds
             {
             }
 
-            return GetBlockId(var1, var3, var2);
+            return getBlockId(var1, var3, var2);
         }
 
         public void saveWorldData()
@@ -366,14 +369,14 @@ namespace betareborn.Worlds
             }
         }
 
-        public int GetBlockId(int x, int y, int z)
+        public int getBlockId(int x, int y, int z)
         {
             return x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000 ? (y < 0 ? 0 : (y >= 128 ? 0 : getChunk(x >> 4, z >> 4).getBlockId(x & 15, y, z & 15))) : 0;
         }
 
         public bool isAir(int x, int y, int z)
         {
-            return GetBlockId(x, y, z) == 0;
+            return getBlockId(x, y, z) == 0;
         }
 
         public bool isPosLoaded(int x, int y, int z)
@@ -479,13 +482,13 @@ namespace betareborn.Worlds
             }
         }
 
-        public Material GetMaterial(int x, int y, int z)
+        public Material getMaterial(int x, int y, int z)
         {
-            int var4 = GetBlockId(x, y, z);
+            int var4 = getBlockId(x, y, z);
             return var4 == 0 ? Material.AIR : Block.BLOCKS[var4].material;
         }
 
-        public int GetBlockMeta(int x, int y, int z)
+        public int getBlockMeta(int x, int y, int z)
         {
             if (x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
             {
@@ -515,7 +518,7 @@ namespace betareborn.Worlds
         {
             if (setBlockMetaWithoutNotifyingNeighbors(x, y, z, meta))
             {
-                int var5 = GetBlockId(x, y, z);
+                int var5 = getBlockId(x, y, z);
                 if (Block.BLOCKS_IGNORE_META_UPDATE[var5 & 255])
                 {
                     blockUpdate(x, y, z, var5);
@@ -640,7 +643,7 @@ namespace betareborn.Worlds
         {
             if (!pauseTicking && !isRemote)
             {
-                Block var5 = Block.BLOCKS[GetBlockId(x, y, z)];
+                Block var5 = Block.BLOCKS[getBlockId(x, y, z)];
                 if (var5 != null)
                 {
                     var5.neighborUpdate(this, x, y, z, blockId);
@@ -682,7 +685,7 @@ namespace betareborn.Worlds
             {
                 if (bl)
                 {
-                    int var5 = GetBlockId(x, y, z);
+                    int var5 = getBlockId(x, y, z);
                     if (var5 == Block.SLAB.id || var5 == Block.FARMLAND.id || var5 == Block.COBBLESTONE_STAIRS.id || var5 == Block.WOODEN_STAIRS.id)
                     {
                         int var6 = getLightLevel(x, y + 1, z, false);
@@ -802,7 +805,7 @@ namespace betareborn.Worlds
                     }
                     else if (lightType == LightType.Block)
                     {
-                        int var6 = GetBlockId(x, y, z);
+                        int var6 = getBlockId(x, y, z);
                         if (Block.BLOCKS_LIGHT_LUMINANCE[var6] > l)
                         {
                             l = Block.BLOCKS_LIGHT_LUMINANCE[var6];
@@ -874,7 +877,7 @@ namespace betareborn.Worlds
             }
         }
 
-        public float GetNaturalBrightness(int x, int y, int z, int blockLight)
+        public float getNaturalBrightness(int x, int y, int z, int blockLight)
         {
             int var5 = getLightLevel(x, y, z);
             if (var5 < blockLight)
@@ -885,7 +888,7 @@ namespace betareborn.Worlds
             return dimension.lightLevelToLuminance[var5];
         }
 
-        public float GetLuminance(int x, int y, int z)
+        public float getLuminance(int x, int y, int z)
         {
             return dimension.lightLevelToLuminance[getLightLevel(x, y, z)];
         }
@@ -917,8 +920,8 @@ namespace betareborn.Worlds
                     int var8 = MathHelper.floor_double(start.xCoord);
                     int var9 = MathHelper.floor_double(start.yCoord);
                     int var10 = MathHelper.floor_double(start.zCoord);
-                    int var11 = GetBlockId(var8, var9, var10);
-                    int var12 = GetBlockMeta(var8, var9, var10);
+                    int var11 = getBlockId(var8, var9, var10);
+                    int var12 = getBlockMeta(var8, var9, var10);
                     Block var13 = Block.BLOCKS[var11];
                     if ((!bl2 || var13 == null || var13.getCollisionShape(this, var8, var9, var10) != null) && var11 > 0 && var13.hasCollision(var12, bl))
                     {
@@ -1079,8 +1082,8 @@ namespace betareborn.Worlds
                             ++var34.zCoord;
                         }
 
-                        int var35 = GetBlockId(var8, var9, var10);
-                        int var36 = GetBlockMeta(var8, var9, var10);
+                        int var35 = getBlockId(var8, var9, var10);
+                        int var36 = getBlockMeta(var8, var9, var10);
                         Block var37 = Block.BLOCKS[var35];
                         if ((!bl2 || var37 == null || var37.getCollisionShape(this, var8, var9, var10) != null) && var35 > 0 && var37.hasCollision(var36, bl))
                         {
@@ -1264,7 +1267,7 @@ namespace betareborn.Worlds
                     {
                         for (int var11 = var5 - 1; var11 < var6; ++var11)
                         {
-                            Block var12 = Block.BLOCKS[GetBlockId(var9, var11, var10)];
+                            Block var12 = Block.BLOCKS[getBlockId(var9, var11, var10)];
                             if (var12 != null)
                             {
                                 var12.addIntersectingBoundingBox(this, var9, var11, var10, box, collidingBoundingBoxes);
@@ -1332,8 +1335,8 @@ namespace betareborn.Worlds
 
             int var5 = MathHelper.floor_double(entity.x);
             int var6 = MathHelper.floor_double(entity.z);
-            float var7 = (float)BiomeSource.getTemperature(var5, var6);
-            int var8 = BiomeSource.getBiome(var5, var6).getSkyColorByTemp(var7);
+            float var7 = (float)getBiomeSource().getTemperature(var5, var6);
+            int var8 = getBiomeSource().getBiome(var5, var6).getSkyColorByTemp(var7);
             float var9 = (float)(var8 >> 16 & 255) / 255.0F;
             float var10 = (float)(var8 >> 8 & 255) / 255.0F;
             float var11 = (float)(var8 & 255) / 255.0F;
@@ -1497,7 +1500,7 @@ namespace betareborn.Worlds
             {
                 if (isRegionLoaded(var6.x - var7, var6.y - var7, var6.z - var7, var6.x + var7, var6.y + var7, var6.z + var7))
                 {
-                    int var8 = GetBlockId(var6.x, var6.y, var6.z);
+                    int var8 = getBlockId(var6.x, var6.y, var6.z);
                     if (var8 == var6.blockId && var8 > 0)
                     {
                         Block.BLOCKS[var8].onTick(this, var6.x, var6.y, var6.z, random);
@@ -1802,7 +1805,7 @@ namespace betareborn.Worlds
                 {
                     for (int var10 = var6; var10 < var7; var10++)
                     {
-                        Block var11 = Block.BLOCKS[GetBlockId(var8, var9, var10)];
+                        Block var11 = Block.BLOCKS[getBlockId(var8, var9, var10)];
                         if (var11 != null)
                         {
                             return true;
@@ -1843,7 +1846,7 @@ namespace betareborn.Worlds
                 {
                     for (int var10 = var6; var10 < var7; ++var10)
                     {
-                        Block var11 = Block.BLOCKS[GetBlockId(var8, var9, var10)];
+                        Block var11 = Block.BLOCKS[getBlockId(var8, var9, var10)];
                         if (var11 != null && var11.material.isFluid())
                         {
                             return true;
@@ -1871,7 +1874,7 @@ namespace betareborn.Worlds
                     {
                         for (int var10 = var6; var10 < var7; ++var10)
                         {
-                            int var11 = GetBlockId(var8, var9, var10);
+                            int var11 = getBlockId(var8, var9, var10);
                             if (var11 == Block.FIRE.id || var11 == Block.FLOWING_LAVA.id || var11 == Block.LAVA.id)
                             {
                                 return true;
@@ -1907,10 +1910,10 @@ namespace betareborn.Worlds
                     {
                         for (int var14 = var8; var14 < var9; ++var14)
                         {
-                            Block var15 = Block.BLOCKS[GetBlockId(var12, var13, var14)];
+                            Block var15 = Block.BLOCKS[getBlockId(var12, var13, var14)];
                             if (var15 != null && var15.material == fluidMaterial)
                             {
-                                double var16 = (double)((float)(var13 + 1) - BlockFluid.getFluidHeightFromMeta(GetBlockMeta(var12, var13, var14)));
+                                double var16 = (double)((float)(var13 + 1) - BlockFluid.getFluidHeightFromMeta(getBlockMeta(var12, var13, var14)));
                                 if ((double)var7 >= var16)
                                 {
                                     var10 = true;
@@ -1949,7 +1952,7 @@ namespace betareborn.Worlds
                 {
                     for (int var11 = var7; var11 < var8; ++var11)
                     {
-                        Block var12 = Block.BLOCKS[GetBlockId(var9, var10, var11)];
+                        Block var12 = Block.BLOCKS[getBlockId(var9, var10, var11)];
                         if (var12 != null && var12.material == material)
                         {
                             return true;
@@ -1976,10 +1979,10 @@ namespace betareborn.Worlds
                 {
                     for (int var11 = var7; var11 < var8; ++var11)
                     {
-                        Block var12 = Block.BLOCKS[GetBlockId(var9, var10, var11)];
+                        Block var12 = Block.BLOCKS[getBlockId(var9, var10, var11)];
                         if (var12 != null && var12.material == fluid)
                         {
-                            int var13 = GetBlockMeta(var9, var10, var11);
+                            int var13 = getBlockMeta(var9, var10, var11);
                             double var14 = (double)(var10 + 1);
                             if (var13 < 8)
                             {
@@ -2074,7 +2077,7 @@ namespace betareborn.Worlds
                 ++x;
             }
 
-            if (GetBlockId(x, y, z) == Block.FIRE.id)
+            if (getBlockId(x, y, z) == Block.FIRE.id)
             {
                 worldEvent(player, 1004, x, y, z, 0);
                 setBlock(x, y, z, 0);
@@ -2097,7 +2100,7 @@ namespace betareborn.Worlds
             return chunkSource.getDebugInfo();
         }
 
-        public BlockEntity GetBlockEntity(int x, int y, int z)
+        public BlockEntity getBlockEntity(int x, int y, int z)
         {
             Chunk var4 = getChunk(x >> 4, z >> 4);
             return var4 != null ? var4.getBlockEntity(x & 15, y, z & 15) : null;
@@ -2129,7 +2132,7 @@ namespace betareborn.Worlds
 
         public void removeBlockEntity(int x, int y, int z)
         {
-            BlockEntity var4 = GetBlockEntity(x, y, z);
+            BlockEntity var4 = getBlockEntity(x, y, z);
             if (var4 != null && processingDeferred)
             {
                 var4.markRemoved();
@@ -2150,15 +2153,15 @@ namespace betareborn.Worlds
 
         }
 
-        public bool IsOpaque(int x, int y, int z)
+        public bool isOpaque(int x, int y, int z)
         {
-            Block var4 = Block.BLOCKS[GetBlockId(x, y, z)];
+            Block var4 = Block.BLOCKS[getBlockId(x, y, z)];
             return var4 == null ? false : var4.isOpaque();
         }
 
-        public bool ShouldSuffocate(int x, int y, int z)
+        public bool shouldSuffocate(int x, int y, int z)
         {
-            Block var4 = Block.BLOCKS[GetBlockId(x, y, z)];
+            Block var4 = Block.BLOCKS[getBlockId(x, y, z)];
             return var4 == null ? false : var4.material.suffocates() && var4.isFullCube();
         }
 
@@ -2545,7 +2548,7 @@ namespace betareborn.Worlds
                     var7 = var6 & 15;
                     var8 = var6 >> 8 & 15;
                     var9 = getTopSolidBlockY(var7 + var3, var8 + var4);
-                    if (BiomeSource.getBiome(var7 + var3, var8 + var4).getEnableSnow() && var9 >= 0 && var9 < 128 && var14.getLight(LightType.Block, var7, var9, var8) < 10)
+                    if (getBiomeSource().getBiome(var7 + var3, var8 + var4).getEnableSnow() && var9 >= 0 && var9 < 128 && var14.getLight(LightType.Block, var7, var9, var8) < 10)
                     {
                         var10 = var14.getBlockId(var7, var9 - 1, var8);
                         var15 = var14.getBlockId(var7, var9, var8);
@@ -2605,7 +2608,7 @@ namespace betareborn.Worlds
                     byte var5 = 8;
                     if (isRegionLoaded(var4.x - var5, var4.y - var5, var4.z - var5, var4.x + var5, var4.y + var5, var4.z + var5))
                     {
-                        int var6 = GetBlockId(var4.x, var4.y, var4.z);
+                        int var6 = getBlockId(var4.x, var4.y, var4.z);
                         if (var6 == var4.blockId && var6 > 0)
                         {
                             Block.BLOCKS[var6].onTick(this, var4.x, var4.y, var4.z, random);
@@ -2627,7 +2630,7 @@ namespace betareborn.Worlds
                 int var7 = x + random.nextInt(var4) - random.nextInt(var4);
                 int var8 = y + random.nextInt(var4) - random.nextInt(var4);
                 int var9 = z + random.nextInt(var4) - random.nextInt(var4);
-                int var10 = GetBlockId(var7, var8, var9);
+                int var10 = getBlockId(var7, var8, var9);
                 if (var10 > 0)
                 {
                     Block.BLOCKS[var10].randomDisplayTick(this, var7, var8, var9, var5);
@@ -2741,7 +2744,7 @@ namespace betareborn.Worlds
 
         public bool canPlace(int blockId, int x, int y, int z, bool fallingBlock, int side)
         {
-            int var7 = GetBlockId(x, y, z);
+            int var7 = getBlockId(x, y, z);
             Block var8 = Block.BLOCKS[var7];
             Block var9 = Block.BLOCKS[blockId];
             Box? var10 = var9.getCollisionShape(this, x, y, z);
@@ -2799,7 +2802,7 @@ namespace betareborn.Worlds
 
         public bool isStrongPoweringSide(int x, int y, int z, int side)
         {
-            int var5 = GetBlockId(x, y, z);
+            int var5 = getBlockId(x, y, z);
             return var5 == 0 ? false : Block.BLOCKS[var5].isStrongPoweringSide(this, x, y, z, side);
         }
 
@@ -2810,13 +2813,13 @@ namespace betareborn.Worlds
 
         public bool isPoweringSide(int x, int y, int z, int side)
         {
-            if (ShouldSuffocate(x, y, z))
+            if (shouldSuffocate(x, y, z))
             {
                 return isStrongPowered(x, y, z);
             }
             else
             {
-                int var5 = GetBlockId(x, y, z);
+                int var5 = getBlockId(x, y, z);
                 return var5 == 0 ? false : Block.BLOCKS[var5].isPoweringSide(this, x, y, z, side);
             }
         }
@@ -3116,7 +3119,7 @@ namespace betareborn.Worlds
 
         public virtual void playNoteBlockActionAt(int x, int y, int z, int soundType, int pitch)
         {
-            int var6 = GetBlockId(x, y, z);
+            int var6 = getBlockId(x, y, z);
             if (var6 > 0)
             {
                 Block.BLOCKS[var6].onBlockAction(this, x, y, z, soundType, pitch);
@@ -3230,7 +3233,7 @@ namespace betareborn.Worlds
             }
             else
             {
-                Biome var4 = BiomeSource.getBiome(x, z);
+                Biome var4 = getBiomeSource().getBiome(x, z);
                 return var4.getEnableSnow() ? false : var4.canSpawnLightningBolt();
             }
         }

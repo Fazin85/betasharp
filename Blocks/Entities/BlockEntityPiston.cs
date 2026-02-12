@@ -119,7 +119,7 @@ namespace betareborn.Blocks.Entities
                 progress = lastProgess = 1.0F;
                 world.removeBlockEntity(x, y, z);
                 markRemoved();
-                if (world.GetBlockId(x, y, z) == Block.MOVING_PISTON.id)
+                if (world.getBlockId(x, y, z) == Block.MOVING_PISTON.id)
                 {
                     world.setBlock(x, y, z, pushedBlockId, pushedBlockData);
                 }
@@ -135,7 +135,7 @@ namespace betareborn.Blocks.Entities
                 pushEntities(1.0F, 0.25F);
                 world.removeBlockEntity(x, y, z);
                 markRemoved();
-                if (world.GetBlockId(x, y, z) == Block.MOVING_PISTON.id)
+                if (world.getBlockId(x, y, z) == Block.MOVING_PISTON.id)
                 {
                     world.setBlock(x, y, z, pushedBlockId, pushedBlockData);
                 }

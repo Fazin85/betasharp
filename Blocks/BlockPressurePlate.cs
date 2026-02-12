@@ -40,7 +40,7 @@ namespace betareborn.Blocks
 
         public override bool canPlaceAt(World world, int x, int y, int z)
         {
-            return world.ShouldSuffocate(x, y - 1, z);
+            return world.shouldSuffocate(x, y - 1, z);
         }
 
         public override void onPlaced(World world, int x, int y, int z)
@@ -50,14 +50,14 @@ namespace betareborn.Blocks
         public override void neighborUpdate(World world, int x, int y, int z, int id)
         {
             bool shouldBreak = false;
-            if (!world.ShouldSuffocate(x, y - 1, z))
+            if (!world.shouldSuffocate(x, y - 1, z))
             {
                 shouldBreak = true;
             }
 
             if (shouldBreak)
             {
-                dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
+                dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
                 world.setBlock(x, y, z, 0);
             }
 
@@ -67,7 +67,7 @@ namespace betareborn.Blocks
         {
             if (!world.isRemote)
             {
-                if (world.GetBlockMeta(x, y, z) != 0)
+                if (world.getBlockMeta(x, y, z) != 0)
                 {
                     updatePlateState(world, x, y, z);
                 }
@@ -78,7 +78,7 @@ namespace betareborn.Blocks
         {
             if (!world.isRemote)
             {
-                if (world.GetBlockMeta(x, y, z) != 1)
+                if (world.getBlockMeta(x, y, z) != 1)
                 {
                     updatePlateState(world, x, y, z);
                 }
@@ -87,7 +87,7 @@ namespace betareborn.Blocks
 
         private void updatePlateState(World world, int x, int y, int z)
         {
-            bool wasPressed = world.GetBlockMeta(x, y, z) == 1;
+            bool wasPressed = world.getBlockMeta(x, y, z) == 1;
             bool shouldBePressed = false;
             float detectionInset = 2.0F / 16.0F;
             List<Entity> entitiesInBox = null;
@@ -138,7 +138,7 @@ namespace betareborn.Blocks
 
         public override void onBreak(World world, int x, int y, int z)
         {
-            int plateState = world.GetBlockMeta(x, y, z);
+            int plateState = world.getBlockMeta(x, y, z);
             if (plateState > 0)
             {
                 world.notifyNeighbors(x, y, z, id);
@@ -150,7 +150,7 @@ namespace betareborn.Blocks
 
         public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
         {
-            bool isPressed = blockView.GetBlockMeta(x, y, z) == 1;
+            bool isPressed = blockView.getBlockMeta(x, y, z) == 1;
             float edgeInset = 1.0F / 16.0F;
             if (isPressed)
             {
@@ -165,12 +165,12 @@ namespace betareborn.Blocks
 
         public override bool isPoweringSide(BlockView blockView, int x, int y, int z, int side)
         {
-            return blockView.GetBlockMeta(x, y, z) > 0;
+            return blockView.getBlockMeta(x, y, z) > 0;
         }
 
         public override bool isStrongPoweringSide(World world, int x, int y, int z, int side)
         {
-            return world.GetBlockMeta(x, y, z) == 0 ? false : side == 1;
+            return world.getBlockMeta(x, y, z) == 0 ? false : side == 1;
         }
 
         public override bool canEmitRedstonePower()

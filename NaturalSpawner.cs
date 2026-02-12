@@ -62,7 +62,7 @@ namespace betareborn
                     {
                         foreach (var chunk in eligibleChunksForSpawning)
                         {
-                            Biome var11 = var0.BiomeSource.getBiome(chunk);
+                            Biome var11 = var0.getBiomeSource().getBiome(chunk);
                             var var12 = var11.getSpawnableList(var38);
 
                             if (var12 == null || var12.Count == 0)
@@ -95,12 +95,12 @@ namespace betareborn
                             int var18 = var41.y;
                             int var19 = var41.z;
 
-                            if (var0.ShouldSuffocate(var42, var18, var19))
+                            if (var0.shouldSuffocate(var42, var18, var19))
                             {
                                 continue;
                             }
 
-                            if (var0.GetMaterial(var42, var18, var19) != var38.getCreatureMaterial())
+                            if (var0.getMaterial(var42, var18, var19) != var38.getCreatureMaterial())
                             {
                                 continue;
                             }
@@ -172,7 +172,7 @@ namespace betareborn
 
         private static bool canCreatureTypeSpawnAtLocation(EnumCreatureType var0, World var1, int var2, int var3, int var4)
         {
-            return var0.getCreatureMaterial() == Material.WATER ? var1.GetMaterial(var2, var3, var4).isFluid() && !var1.ShouldSuffocate(var2, var3 + 1, var4) : var1.ShouldSuffocate(var2, var3 - 1, var4) && !var1.ShouldSuffocate(var2, var3, var4) && !var1.GetMaterial(var2, var3, var4).isFluid() && !var1.ShouldSuffocate(var2, var3 + 1, var4);
+            return var0.getCreatureMaterial() == Material.WATER ? var1.getMaterial(var2, var3, var4).isFluid() && !var1.shouldSuffocate(var2, var3 + 1, var4) : var1.shouldSuffocate(var2, var3 - 1, var4) && !var1.shouldSuffocate(var2, var3, var4) && !var1.getMaterial(var2, var3, var4).isFluid() && !var1.shouldSuffocate(var2, var3 + 1, var4);
         }
 
         private static void creatureSpecificInit(EntityLiving var0, World var1, float var2, float var3, float var4)
@@ -234,7 +234,7 @@ namespace betareborn
                     int var12 = var0.random.nextInt(var6.Length);
 
                     int var13;
-                    for (var13 = var11; var13 > 2 && !var0.ShouldSuffocate(var9, var13 - 1, var10); --var13)
+                    for (var13 = var11; var13 > 2 && !var0.shouldSuffocate(var9, var13 - 1, var10); --var13)
                     {
                     }
 

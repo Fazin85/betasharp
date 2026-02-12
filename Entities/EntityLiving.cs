@@ -544,7 +544,7 @@ namespace betareborn.Entities
             if (var2 > 0)
             {
                 damage(null, var2);
-                int var3 = world.GetBlockId(MathHelper.floor_double(x), MathHelper.floor_double(y - (double)0.2F - (double)standingEyeHeight), MathHelper.floor_double(z));
+                int var3 = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(y - (double)0.2F - (double)standingEyeHeight), MathHelper.floor_double(z));
                 if (var3 > 0)
                 {
                     BlockSoundGroup var4 = Block.BLOCKS[var3].soundGroup;
@@ -591,7 +591,7 @@ namespace betareborn.Entities
                 if (onGround)
                 {
                     var8 = 546.0F * 0.1F * 0.1F * 0.1F;
-                    int var4 = world.GetBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
+                    int var4 = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
                     if (var4 > 0)
                     {
                         friction = Block.BLOCKS[groundBlockId].slipperiness * 0.91F;
@@ -604,7 +604,7 @@ namespace betareborn.Entities
                 if (onGround)
                 {
                     var8 = 546.0F * 0.1F * 0.1F * 0.1F;
-                    int var5 = world.GetBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
+                    int var5 = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
                     if (var5 > 0)
                     {
                         friction = Block.BLOCKS[groundBlockId].slipperiness * 0.91F;
@@ -676,7 +676,7 @@ namespace betareborn.Entities
             int var1 = MathHelper.floor_double(x);
             int var2 = MathHelper.floor_double(boundingBox.minY);
             int var3 = MathHelper.floor_double(z);
-            return world.GetBlockId(var1, var2, var3) == Block.LADDER.id;
+            return world.getBlockId(var1, var2, var3) == Block.LADDER.id;
         }
 
         public override void writeNbt(NBTTagCompound nbt)

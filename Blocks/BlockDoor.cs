@@ -79,7 +79,7 @@ namespace betareborn.Blocks
 
         public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
         {
-            rotate(setOpen(blockView.GetBlockMeta(x, y, z)));
+            rotate(setOpen(blockView.getBlockMeta(x, y, z)));
         }
 
         public void rotate(int meta)
@@ -121,10 +121,10 @@ namespace betareborn.Blocks
             }
             else
             {
-                int meta = world.GetBlockMeta(x, y, z);
+                int meta = world.getBlockMeta(x, y, z);
                 if ((meta & 8) != 0)
                 {
-                    if (world.GetBlockId(x, y - 1, z) == id)
+                    if (world.getBlockId(x, y - 1, z) == id)
                     {
                         onUse(world, x, y - 1, z, player);
                     }
@@ -133,7 +133,7 @@ namespace betareborn.Blocks
                 }
                 else
                 {
-                    if (world.GetBlockId(x, y + 1, z) == id)
+                    if (world.getBlockId(x, y + 1, z) == id)
                     {
                         world.setBlockMeta(x, y + 1, z, (meta ^ 4) + 8);
                     }
@@ -148,10 +148,10 @@ namespace betareborn.Blocks
 
         public void setOpen(World world, int x, int y, int z, bool open)
         {
-            int meta = world.GetBlockMeta(x, y, z);
+            int meta = world.getBlockMeta(x, y, z);
             if ((meta & 8) != 0)
             {
-                if (world.GetBlockId(x, y - 1, z) == id)
+                if (world.getBlockId(x, y - 1, z) == id)
                 {
                     setOpen(world, x, y - 1, z, open);
                 }
@@ -159,10 +159,10 @@ namespace betareborn.Blocks
             }
             else
             {
-                bool isOpen = (world.GetBlockMeta(x, y, z) & 4) > 0;
+                bool isOpen = (world.getBlockMeta(x, y, z) & 4) > 0;
                 if (isOpen != open)
                 {
-                    if (world.GetBlockId(x, y + 1, z) == id)
+                    if (world.getBlockId(x, y + 1, z) == id)
                     {
                         world.setBlockMeta(x, y + 1, z, (meta ^ 4) + 8);
                     }
@@ -176,10 +176,10 @@ namespace betareborn.Blocks
 
         public override void neighborUpdate(World world, int x, int y, int z, int id)
         {
-            int meta = world.GetBlockMeta(x, y, z);
+            int meta = world.getBlockMeta(x, y, z);
             if ((meta & 8) != 0)
             {
-                if (world.GetBlockId(x, y - 1, z) != base.id)
+                if (world.getBlockId(x, y - 1, z) != base.id)
                 {
                     world.setBlock(x, y, z, 0);
                 }
@@ -192,17 +192,17 @@ namespace betareborn.Blocks
             else
             {
                 bool wasBroken = false;
-                if (world.GetBlockId(x, y + 1, z) != base.id)
+                if (world.getBlockId(x, y + 1, z) != base.id)
                 {
                     world.setBlock(x, y, z, 0);
                     wasBroken = true;
                 }
 
-                if (!world.ShouldSuffocate(x, y - 1, z))
+                if (!world.shouldSuffocate(x, y - 1, z))
                 {
                     world.setBlock(x, y, z, 0);
                     wasBroken = true;
-                    if (world.GetBlockId(x, y + 1, z) == base.id)
+                    if (world.getBlockId(x, y + 1, z) == base.id)
                     {
                         world.setBlock(x, y + 1, z, 0);
                     }
@@ -242,7 +242,7 @@ namespace betareborn.Blocks
 
         public override bool canPlaceAt(World world, int x, int y, int z)
         {
-            return y >= 127 ? false : world.ShouldSuffocate(x, y - 1, z) && base.canPlaceAt(world, x, y, z) && base.canPlaceAt(world, x, y + 1, z);
+            return y >= 127 ? false : world.shouldSuffocate(x, y - 1, z) && base.canPlaceAt(world, x, y, z) && base.canPlaceAt(world, x, y + 1, z);
         }
 
         public static bool isOpen(int meta)

@@ -24,7 +24,7 @@ namespace betareborn.Blocks
 
         public override void onBreak(World world, int x, int y, int z)
         {
-            BlockEntity var5 = world.GetBlockEntity(x, y, z);
+            BlockEntity var5 = world.getBlockEntity(x, y, z);
             if (var5 != null && var5 is BlockEntityPiston)
             {
                 ((BlockEntityPiston)var5).finish();
@@ -63,7 +63,7 @@ namespace betareborn.Blocks
 
         public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
         {
-            if (!world.isRemote && world.GetBlockEntity(x, y, z) == null)
+            if (!world.isRemote && world.getBlockEntity(x, y, z) == null)
             {
                 world.setBlock(x, y, z, 0);
                 return true;
@@ -93,7 +93,7 @@ namespace betareborn.Blocks
 
         public override void neighborUpdate(World world, int x, int y, int z, int id)
         {
-            if (!world.isRemote && world.GetBlockEntity(x, y, z) == null)
+            if (!world.isRemote && world.getBlockEntity(x, y, z) == null)
             {
             }
 
@@ -181,7 +181,7 @@ namespace betareborn.Blocks
 
         private BlockEntityPiston getPistonBlockEntity(BlockView blockView, int x, int y, int z)
         {
-            BlockEntity var5 = blockView.GetBlockEntity(x, y, z);
+            BlockEntity var5 = blockView.getBlockEntity(x, y, z);
             return var5 != null && var5 is BlockEntityPiston ? (BlockEntityPiston)var5 : null;
         }
     }

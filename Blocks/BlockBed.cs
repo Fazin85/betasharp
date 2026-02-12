@@ -24,18 +24,18 @@ namespace betareborn.Blocks
             }
             else
             {
-                int meta = world.GetBlockMeta(x, y, z);
+                int meta = world.getBlockMeta(x, y, z);
                 if (!isHeadOfBed(meta))
                 {
                     int direction = getDirection(meta);
                     x += BED_OFFSETS[direction][0];
                     z += BED_OFFSETS[direction][1];
-                    if (world.GetBlockId(x, y, z) != id)
+                    if (world.getBlockId(x, y, z) != id)
                     {
                         return true;
                     }
 
-                    meta = world.GetBlockMeta(x, y, z);
+                    meta = world.getBlockMeta(x, y, z);
                 }
 
                 if (!world.dimension.hasWorldSpawn())
@@ -47,7 +47,7 @@ namespace betareborn.Blocks
                     int direction = getDirection(meta);
                     x += BED_OFFSETS[direction][0];
                     z += BED_OFFSETS[direction][1];
-                    if (world.GetBlockId(x, y, z) == id)
+                    if (world.getBlockId(x, y, z) == id)
                     {
                         world.setBlock(x, y, z, 0);
                         posX = (posX + (double)x + 0.5D) / 2.0D;
@@ -144,16 +144,16 @@ namespace betareborn.Blocks
 
         public override void neighborUpdate(World world, int x, int y, int z, int id)
         {
-            int blockMeta = world.GetBlockMeta(x, y, z);
+            int blockMeta = world.getBlockMeta(x, y, z);
             int direction = getDirection(blockMeta);
             if (isHeadOfBed(blockMeta))
             {
-                if (world.GetBlockId(x - BED_OFFSETS[direction][0], y, z - BED_OFFSETS[direction][1]) != this.id)
+                if (world.getBlockId(x - BED_OFFSETS[direction][0], y, z - BED_OFFSETS[direction][1]) != this.id)
                 {
                     world.setBlock(x, y, z, 0);
                 }
             }
-            else if (world.GetBlockId(x + BED_OFFSETS[direction][0], y, z + BED_OFFSETS[direction][1]) != this.id)
+            else if (world.getBlockId(x + BED_OFFSETS[direction][0], y, z + BED_OFFSETS[direction][1]) != this.id)
             {
                 world.setBlock(x, y, z, 0);
                 if (!world.isRemote)
@@ -191,7 +191,7 @@ namespace betareborn.Blocks
 
         public static void updateState(World world, int x, int y, int z, bool occupied)
         {
-            int blockMeta = world.GetBlockMeta(x, y, z);
+            int blockMeta = world.getBlockMeta(x, y, z);
             if (occupied)
             {
                 blockMeta |= 4;
@@ -206,7 +206,7 @@ namespace betareborn.Blocks
 
         public static Vec3i findWakeUpPosition(World world, int x, int y, int z, int skip)
         {
-            int blockMeta = world.GetBlockMeta(x, y, z);
+            int blockMeta = world.getBlockMeta(x, y, z);
             int direction = getDirection(blockMeta);
 
             for (int bedHalf = 0; bedHalf <= 1; ++bedHalf)
@@ -220,7 +220,7 @@ namespace betareborn.Blocks
                 {
                     for (int checkZ = searchMinZ; checkZ <= searchMaxZ; ++checkZ)
                     {
-                        if (world.ShouldSuffocate(checkX, y - 1, checkZ) && world.isAir(checkX, y, checkZ) && world.isAir(checkX, y + 1, checkZ))
+                        if (world.shouldSuffocate(checkX, y - 1, checkZ) && world.isAir(checkX, y, checkZ) && world.isAir(checkX, y + 1, checkZ))
                         {
                             if (skip <= 0)
                             {

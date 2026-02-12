@@ -26,17 +26,17 @@ namespace betareborn.Blocks
 
         public override bool canPlaceAt(World world, int x, int y, int z)
         {
-            return !world.ShouldSuffocate(x, y - 1, z) ? false : base.canPlaceAt(world, x, y, z);
+            return !world.shouldSuffocate(x, y - 1, z) ? false : base.canPlaceAt(world, x, y, z);
         }
 
         public override bool canGrow(World world, int x, int y, int z)
         {
-            return !world.ShouldSuffocate(x, y - 1, z) ? false : base.canGrow(world, x, y, z);
+            return !world.shouldSuffocate(x, y - 1, z) ? false : base.canGrow(world, x, y, z);
         }
 
         public override void onTick(World world, int x, int y, int z, java.util.Random random)
         {
-            int meta = world.GetBlockMeta(x, y, z);
+            int meta = world.getBlockMeta(x, y, z);
             bool powered = isPowered(world, x, y, z, meta);
             if (lit && !powered)
             {
@@ -87,7 +87,7 @@ namespace betareborn.Blocks
             }
             else
             {
-                int facing = blockView.GetBlockMeta(x, y, z) & 3;
+                int facing = blockView.getBlockMeta(x, y, z) & 3;
                 return facing == 0 && side == 3 ? true : (facing == 1 && side == 4 ? true : (facing == 2 && side == 2 ? true : facing == 3 && side == 5));
             }
         }
@@ -96,12 +96,12 @@ namespace betareborn.Blocks
         {
             if (!canGrow(world, x, y, z))
             {
-                dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
+                dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
                 world.setBlock(x, y, z, 0);
             }
             else
             {
-                int meta = world.GetBlockMeta(x, y, z);
+                int meta = world.getBlockMeta(x, y, z);
                 bool powered = isPowered(world, x, y, z, meta);
                 int delaySetting = (meta & 12) >> 2;
                 if (lit && !powered)
@@ -122,13 +122,13 @@ namespace betareborn.Blocks
             switch (facing)
             {
                 case 0:
-                    return world.isPoweringSide(x, y, z + 1, 3) || world.GetBlockId(x, y, z + 1) == Block.REDSTONE_WIRE.id && world.GetBlockMeta(x, y, z + 1) > 0;
+                    return world.isPoweringSide(x, y, z + 1, 3) || world.getBlockId(x, y, z + 1) == Block.REDSTONE_WIRE.id && world.getBlockMeta(x, y, z + 1) > 0;
                 case 1:
-                    return world.isPoweringSide(x - 1, y, z, 4) || world.GetBlockId(x - 1, y, z) == Block.REDSTONE_WIRE.id && world.GetBlockMeta(x - 1, y, z) > 0;
+                    return world.isPoweringSide(x - 1, y, z, 4) || world.getBlockId(x - 1, y, z) == Block.REDSTONE_WIRE.id && world.getBlockMeta(x - 1, y, z) > 0;
                 case 2:
-                    return world.isPoweringSide(x, y, z - 1, 2) || world.GetBlockId(x, y, z - 1) == Block.REDSTONE_WIRE.id && world.GetBlockMeta(x, y, z - 1) > 0;
+                    return world.isPoweringSide(x, y, z - 1, 2) || world.getBlockId(x, y, z - 1) == Block.REDSTONE_WIRE.id && world.getBlockMeta(x, y, z - 1) > 0;
                 case 3:
-                    return world.isPoweringSide(x + 1, y, z, 5) || world.GetBlockId(x + 1, y, z) == Block.REDSTONE_WIRE.id && world.GetBlockMeta(x + 1, y, z) > 0;
+                    return world.isPoweringSide(x + 1, y, z, 5) || world.getBlockId(x + 1, y, z) == Block.REDSTONE_WIRE.id && world.getBlockMeta(x + 1, y, z) > 0;
                 default:
                     return false;
             }
@@ -136,7 +136,7 @@ namespace betareborn.Blocks
 
         public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
         {
-            int meta = world.GetBlockMeta(x, y, z);
+            int meta = world.getBlockMeta(x, y, z);
             int newDelaySetting = (meta & 12) >> 2;
             newDelaySetting = newDelaySetting + 1 << 2 & 12;
             world.setBlockMeta(x, y, z, newDelaySetting | meta & 3);
@@ -184,7 +184,7 @@ namespace betareborn.Blocks
         {
             if (lit)
             {
-                int meta = world.GetBlockMeta(x, y, z);
+                int meta = world.getBlockMeta(x, y, z);
                 double particleX = (double)((float)x + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2D;
                 double particleY = (double)((float)y + 0.4F) + (double)(random.nextFloat() - 0.5F) * 0.2D;
                 double particleZ = (double)((float)z + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2D;

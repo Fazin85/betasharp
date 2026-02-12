@@ -77,7 +77,7 @@ namespace betareborn.Entities
 
             if (inGround)
             {
-                int var1 = world.GetBlockId(blockX, blockY, blockZ);
+                int var1 = world.getBlockId(blockX, blockY, blockZ);
                 if (var1 == blockId)
                 {
                     ++removalTimer;

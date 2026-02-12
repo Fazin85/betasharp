@@ -107,7 +107,7 @@ namespace betareborn.Entities
                 prevPitch = pitch = (float)(System.Math.Atan2(velocityY, (double)length) * 180.0D / (double)((float)System.Math.PI));
             }
 
-            int var15 = world.GetBlockId(xTile, yTile, zTile);
+            int var15 = world.getBlockId(xTile, yTile, zTile);
             if (var15 > 0)
             {
                 Block.BLOCKS[blockId].updateBoundingBox(world, xTile, yTile, zTile);
@@ -125,8 +125,8 @@ namespace betareborn.Entities
 
             if (inGround)
             {
-                var15 = world.GetBlockId(xTile, yTile, zTile);
-                int var18 = world.GetBlockMeta(xTile, yTile, zTile);
+                var15 = world.getBlockId(xTile, yTile, zTile);
+                int var18 = world.getBlockMeta(xTile, yTile, zTile);
                 if (var15 == inTile && var18 == field_28019_h)
                 {
                     ++ticksInGround;
@@ -214,8 +214,8 @@ namespace betareborn.Entities
                         xTile = var3.blockX;
                         yTile = var3.blockY;
                         zTile = var3.blockZ;
-                        inTile = world.GetBlockId(xTile, yTile, zTile);
-                        field_28019_h = world.GetBlockMeta(xTile, yTile, zTile);
+                        inTile = world.getBlockId(xTile, yTile, zTile);
+                        field_28019_h = world.getBlockMeta(xTile, yTile, zTile);
                         velocityX = (double)((float)(var3.pos.xCoord - x));
                         velocityY = (double)((float)(var3.pos.yCoord - y));
                         velocityZ = (double)((float)(var3.pos.zCoord - z));

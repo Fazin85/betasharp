@@ -253,22 +253,22 @@ namespace betareborn.Blocks
 
         public virtual float getLuminance(BlockView blockView, int x, int y, int z)
         {
-            return blockView.GetNaturalBrightness(x, y, z, BLOCKS_LIGHT_LUMINANCE[id]);
+            return blockView.getNaturalBrightness(x, y, z, BLOCKS_LIGHT_LUMINANCE[id]);
         }
 
         public virtual bool isSideVisible(BlockView blockView, int x, int y, int z, int side)
         {
-            return side == 0 && minY > 0.0D ? true : (side == 1 && maxY < 1.0D ? true : (side == 2 && minZ > 0.0D ? true : (side == 3 && maxZ < 1.0D ? true : (side == 4 && minX > 0.0D ? true : (side == 5 && maxX < 1.0D ? true : !blockView.IsOpaque(x, y, z))))));
+            return side == 0 && minY > 0.0D ? true : (side == 1 && maxY < 1.0D ? true : (side == 2 && minZ > 0.0D ? true : (side == 3 && maxZ < 1.0D ? true : (side == 4 && minX > 0.0D ? true : (side == 5 && maxX < 1.0D ? true : !blockView.isOpaque(x, y, z))))));
         }
 
         public virtual bool isSolidFace(BlockView blockView, int x, int y, int z, int face)
         {
-            return blockView.GetMaterial(x, y, z).isSolid();
+            return blockView.getMaterial(x, y, z).isSolid();
         }
 
         public virtual int getTextureId(BlockView blockView, int x, int y, int z, int side)
         {
-            return getTexture(side, blockView.GetBlockMeta(x, y, z));
+            return getTexture(side, blockView.getBlockMeta(x, y, z));
         }
 
         public virtual int getTexture(int side, int meta)
@@ -553,7 +553,7 @@ namespace betareborn.Blocks
 
         public virtual bool canPlaceAt(World world, int x, int y, int z)
         {
-            int blockId = world.GetBlockId(x, y, z);
+            int blockId = world.getBlockId(x, y, z);
             return blockId == 0 || BLOCKS[blockId].material.isReplaceable();
         }
 

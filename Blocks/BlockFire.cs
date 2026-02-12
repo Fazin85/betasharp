@@ -65,7 +65,7 @@ namespace betareborn.Blocks
 
         public override void onTick(World world, int x, int y, int z, java.util.Random random)
         {
-            bool isOnNetherrack = world.GetBlockId(x, y - 1, z) == Block.NETHERRACK.id;
+            bool isOnNetherrack = world.getBlockId(x, y - 1, z) == Block.NETHERRACK.id;
             if (!canPlaceAt(world, x, y, z))
             {
                 world.setBlock(x, y, z, 0);
@@ -73,7 +73,7 @@ namespace betareborn.Blocks
 
             if (isOnNetherrack || !world.isRaining() || !world.isRaining(x, y, z) && !world.isRaining(x - 1, y, z) && !world.isRaining(x + 1, y, z) && !world.isRaining(x, y, z - 1) && !world.isRaining(x, y, z + 1))
             {
-                int fireAge = world.GetBlockMeta(x, y, z);
+                int fireAge = world.getBlockMeta(x, y, z);
                 if (fireAge < 15)
                 {
                     world.setBlockMetaWithoutNotifyingNeighbors(x, y, z, fireAge + random.nextInt(3) / 2);
@@ -82,7 +82,7 @@ namespace betareborn.Blocks
                 world.scheduleBlockUpdate(x, y, z, id, getTickRate());
                 if (!isOnNetherrack && !areBlocksAroundFlammable(world, x, y, z))
                 {
-                    if (!world.ShouldSuffocate(x, y - 1, z) || fireAge > 3)
+                    if (!world.shouldSuffocate(x, y - 1, z) || fireAge > 3)
                     {
                         world.setBlock(x, y, z, 0);
                     }
@@ -145,10 +145,10 @@ namespace betareborn.Blocks
 
         private void trySpreadingFire(World world, int x, int y, int z, int spreadFactor, java.util.Random random, int currentAge)
         {
-            int targetSpreadChance = spreadChances[world.GetBlockId(x, y, z)];
+            int targetSpreadChance = spreadChances[world.getBlockId(x, y, z)];
             if (random.nextInt(spreadFactor) < targetSpreadChance)
             {
-                bool isTnt = world.GetBlockId(x, y, z) == Block.TNT.id;
+                bool isTnt = world.getBlockId(x, y, z) == Block.TNT.id;
                 if (random.nextInt(currentAge + 10) < 5 && !world.isRaining(x, y, z))
                 {
                     int newFireAge = currentAge + random.nextInt(5) / 4;
@@ -203,23 +203,23 @@ namespace betareborn.Blocks
 
         public bool isFlammable(BlockView blockView, int x, int y, int z)
         {
-            return burnChances[blockView.GetBlockId(x, y, z)] > 0;
+            return burnChances[blockView.getBlockId(x, y, z)] > 0;
         }
 
         public int getBurnChance(World world, int x, int y, int z, int currentChance)
         {
-            int blockBurnChance = burnChances[world.GetBlockId(x, y, z)];
+            int blockBurnChance = burnChances[world.getBlockId(x, y, z)];
             return blockBurnChance > currentChance ? blockBurnChance : currentChance;
         }
 
         public override bool canPlaceAt(World world, int x, int y, int z)
         {
-            return world.ShouldSuffocate(x, y - 1, z) || areBlocksAroundFlammable(world, x, y, z);
+            return world.shouldSuffocate(x, y - 1, z) || areBlocksAroundFlammable(world, x, y, z);
         }
 
         public override void neighborUpdate(World world, int x, int y, int z, int id)
         {
-            if (!world.ShouldSuffocate(x, y - 1, z) && !areBlocksAroundFlammable(world, x, y, z))
+            if (!world.shouldSuffocate(x, y - 1, z) && !areBlocksAroundFlammable(world, x, y, z))
             {
                 world.setBlock(x, y, z, 0);
             }
@@ -227,9 +227,9 @@ namespace betareborn.Blocks
 
         public override void onPlaced(World world, int x, int y, int z)
         {
-            if (world.GetBlockId(x, y - 1, z) != Block.OBSIDIAN.id || !Block.NETHER_PORTAL.create(world, x, y, z))
+            if (world.getBlockId(x, y - 1, z) != Block.OBSIDIAN.id || !Block.NETHER_PORTAL.create(world, x, y, z))
             {
-                if (!world.ShouldSuffocate(x, y - 1, z) && !areBlocksAroundFlammable(world, x, y, z))
+                if (!world.shouldSuffocate(x, y - 1, z) && !areBlocksAroundFlammable(world, x, y, z))
                 {
                     world.setBlock(x, y, z, 0);
                 }
@@ -251,7 +251,7 @@ namespace betareborn.Blocks
             float particleX;
             float particleY;
             float particleZ;
-            if (!world.ShouldSuffocate(x, y - 1, z) && !Block.FIRE.isFlammable(world, x, y - 1, z))
+            if (!world.shouldSuffocate(x, y - 1, z) && !Block.FIRE.isFlammable(world, x, y - 1, z))
             {
                 if (Block.FIRE.isFlammable(world, x - 1, y, z))
                 {

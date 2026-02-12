@@ -21,7 +21,7 @@ namespace betareborn.Blocks
             if (id > 0 && Block.BLOCKS[id].canEmitRedstonePower())
             {
                 bool isPowered = world.isStrongPowered(x, y, z);
-                BlockEntityNote blockEntity = (BlockEntityNote)world.GetBlockEntity(x, y, z);
+                BlockEntityNote blockEntity = (BlockEntityNote)world.getBlockEntity(x, y, z);
                 if (blockEntity.powered != isPowered)
                 {
                     if (isPowered)
@@ -43,7 +43,7 @@ namespace betareborn.Blocks
             }
             else
             {
-                BlockEntityNote blockEntity = (BlockEntityNote)world.GetBlockEntity(x, y, z);
+                BlockEntityNote blockEntity = (BlockEntityNote)world.getBlockEntity(x, y, z);
                 blockEntity.cycleNote();
                 blockEntity.playNote(world, x, y, z);
                 return true;
@@ -54,7 +54,7 @@ namespace betareborn.Blocks
         {
             if (!world.isRemote)
             {
-                BlockEntityNote blockEntity = (BlockEntityNote)world.GetBlockEntity(x, y, z);
+                BlockEntityNote blockEntity = (BlockEntityNote)world.getBlockEntity(x, y, z);
                 blockEntity.playNote(world, x, y, z);
             }
         }
