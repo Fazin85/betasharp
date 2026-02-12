@@ -210,11 +210,11 @@ namespace betareborn.Entities
                         Material material;
                         if (direction != 0 && direction != 2)
                         {
-                            var8 = world.getMaterial(xPosition, var4 + var7, var5 + var6);
+                            material = world.getMaterial(xPosition, startY + dy, startZ + dx);
                         }
                         else
                         {
-                            var8 = world.getMaterial(var3 + var6, var4 + var7, zPosition);
+                            material = world.getMaterial(startX + dx, startY + dy, zPosition);
                         }
 
                         if (!material.isSolid())

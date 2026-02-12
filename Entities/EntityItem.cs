@@ -70,9 +70,9 @@ namespace betareborn.Entities
             float friction = 0.98F;
             if (onGround)
             {
-                var1 = 0.1F * 0.1F * 58.8F;
-                int var2 = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
-                if (var2 > 0)
+                friction = 0.1F * 0.1F * 58.8F;
+                int groundBlockId = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
+                if (groundBlockId > 0)
                 {
                     friction = Block.BLOCKS[groundBlockId].slipperiness * 0.98F;
                 }

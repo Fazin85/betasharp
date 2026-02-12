@@ -78,7 +78,7 @@ namespace betareborn.Entities
 
         protected override float getBlockPathWeight(int x, int y, int z)
         {
-            return 0.5F - world.getLuminance(var1, var2, var3);
+            return 0.5F - world.getLuminance(x, y, z);
         }
 
         public override void writeNbt(NBTTagCompound nbt)

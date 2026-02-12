@@ -107,8 +107,8 @@ namespace betareborn.Entities
                 prevPitch = pitch = (float)(System.Math.Atan2(velocityY, (double)length) * 180.0D / (double)((float)System.Math.PI));
             }
 
-            int var15 = world.getBlockId(xTile, yTile, zTile);
-            if (var15 > 0)
+            int blockId = world.getBlockId(xTile, yTile, zTile);
+            if (blockId > 0)
             {
                 Block.BLOCKS[blockId].updateBoundingBox(world, xTile, yTile, zTile);
                 Box? box = Block.BLOCKS[blockId].getCollisionShape(world, xTile, yTile, zTile);
@@ -125,9 +125,9 @@ namespace betareborn.Entities
 
             if (inGround)
             {
-                var15 = world.getBlockId(xTile, yTile, zTile);
-                int var18 = world.getBlockMeta(xTile, yTile, zTile);
-                if (var15 == inTile && var18 == field_28019_h)
+                blockId = world.getBlockId(xTile, yTile, zTile);
+                int blockMeta = world.getBlockMeta(xTile, yTile, zTile);
+                if (blockId == inTile && blockMeta == inData)
                 {
                     ++ticksInGround;
                     if (ticksInGround == 1200)
@@ -211,18 +211,18 @@ namespace betareborn.Entities
                     }
                     else
                     {
-                        xTile = var3.blockX;
-                        yTile = var3.blockY;
-                        zTile = var3.blockZ;
+                        xTile = hit.blockX;
+                        yTile = hit.blockY;
+                        zTile = hit.blockZ;
                         inTile = world.getBlockId(xTile, yTile, zTile);
-                        field_28019_h = world.getBlockMeta(xTile, yTile, zTile);
-                        velocityX = (double)((float)(var3.pos.xCoord - x));
-                        velocityY = (double)((float)(var3.pos.yCoord - y));
-                        velocityZ = (double)((float)(var3.pos.zCoord - z));
-                        var19 = MathHelper.sqrt_double(velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
-                        x -= velocityX / (double)var19 * (double)0.05F;
-                        y -= velocityY / (double)var19 * (double)0.05F;
-                        z -= velocityZ / (double)var19 * (double)0.05F;
+                        inData = world.getBlockMeta(xTile, yTile, zTile);
+                        velocityX = (double)((float)(hit.pos.xCoord - x));
+                        velocityY = (double)((float)(hit.pos.yCoord - y));
+                        velocityZ = (double)((float)(hit.pos.zCoord - z));
+                        horizontalSpeed = MathHelper.sqrt_double(velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
+                        x -= velocityX / (double)horizontalSpeed * (double)0.05F;
+                        y -= velocityY / (double)horizontalSpeed * (double)0.05F;
+                        z -= velocityZ / (double)horizontalSpeed * (double)0.05F;
                         world.playSound(this, "random.drr", 1.0F, 1.2F / (random.nextFloat() * 0.2F + 0.9F));
                         inGround = true;
                         arrowShake = 7;

@@ -31,12 +31,12 @@ namespace betareborn.Entities
 
             alpha *= 0.2F;
             GLManager.GL.Disable(GLEnum.Lighting);
-            float var10 = 2.0F / 16.0F;
-            float var11 = (float)(x - interpPosX);
-            float var12 = (float)(y - interpPosY);
-            float var13 = (float)(z - interpPosZ);
-            float var14 = world.getLuminance(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z));
-            field_27019_p.bindTexture(field_27019_p.getTextureId("/misc/footprint.png"));
+            float footprintSize = 2.0F / 16.0F;
+            float renderX = (float)(x - interpPosX);
+            float renderY = (float)(y - interpPosY);
+            float renderZ = (float)(z - interpPosZ);
+            float brightness = world.getLuminance(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z));
+            textureManager.bindTexture(textureManager.getTextureId("/misc/footprint.png"));
             GLManager.GL.Enable(GLEnum.Blend);
             GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
             t.startDrawingQuads();

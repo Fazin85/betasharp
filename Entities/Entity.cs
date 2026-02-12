@@ -526,9 +526,9 @@ namespace betareborn.Entities
                 if (bypassesSteppingEffects() && !var18 && vehicle == null)
                 {
                     horizontalSpeed = (float)((double)horizontalSpeed + (double)MathHelper.sqrt_double(var37 * var37 + var23 * var23) * 0.6D);
-                    var38 = MathHelper.floor_double(x);
-                    var26 = MathHelper.floor_double(y - (double)0.2F - (double)standingEyeHeight);
-                    var39 = MathHelper.floor_double(z);
+                    var38 = MathHelper.floor_double(this.x);
+                    var26 = MathHelper.floor_double(this.y - (double)0.2F - (double)standingEyeHeight);
+                    var39 = MathHelper.floor_double(this.z);
                     var28 = world.getBlockId(var38, var26, var39);
                     if (world.getBlockId(var38, var26 - 1, var39) == Block.FENCE.id)
                     {
@@ -1296,23 +1296,23 @@ namespace betareborn.Entities
 
         protected virtual bool pushOutOfBlocks(double x, double y, double z)
         {
-            int var7 = MathHelper.floor_double(var1);
-            int var8 = MathHelper.floor_double(var3);
-            int var9 = MathHelper.floor_double(var5);
-            double var10 = var1 - (double)var7;
-            double var12 = var3 - (double)var8;
-            double var14 = var5 - (double)var9;
-            if (world.shouldSuffocate(var7, var8, var9))
+            int floorX = MathHelper.floor_double(x);
+            int floorY = MathHelper.floor_double(y);
+            int floorZ = MathHelper.floor_double(z);
+            double fracX = x - (double)floorX;
+            double fracY = y - (double)floorY;
+            double fracZ = z - (double)floorZ;
+            if (world.shouldSuffocate(floorX, floorY, floorZ))
             {
-                bool var16 = !world.shouldSuffocate(var7 - 1, var8, var9);
-                bool var17 = !world.shouldSuffocate(var7 + 1, var8, var9);
-                bool var18 = !world.shouldSuffocate(var7, var8 - 1, var9);
-                bool var19 = !world.shouldSuffocate(var7, var8 + 1, var9);
-                bool var20 = !world.shouldSuffocate(var7, var8, var9 - 1);
-                bool var21 = !world.shouldSuffocate(var7, var8, var9 + 1);
-                int var22 = -1;
-                double var23 = 9999.0D;
-                if (var16 && var10 < var23)
+                bool canPushWest = !world.shouldSuffocate(floorX - 1, floorY, floorZ);
+                bool canPushEast = !world.shouldSuffocate(floorX + 1, floorY, floorZ);
+                bool canPushDown = !world.shouldSuffocate(floorX, floorY - 1, floorZ);
+                bool canPushUp = !world.shouldSuffocate(floorX, floorY + 1, floorZ);
+                bool canPushNorth = !world.shouldSuffocate(floorX, floorY, floorZ - 1);
+                bool canPushSouth = !world.shouldSuffocate(floorX, floorY, floorZ + 1);
+                int pushDirection = -1;
+                double closestEdgeDistance = 9999.0D;
+                if (canPushWest && fracX < closestEdgeDistance)
                 {
                     closestEdgeDistance = fracX;
                     pushDirection = 0;

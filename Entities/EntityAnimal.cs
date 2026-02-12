@@ -16,7 +16,7 @@ namespace betareborn.Entities
 
         protected override float getBlockPathWeight(int x, int y, int z)
         {
-            return world.getBlockId(var1, var2 - 1, var3) == Block.GRASS_BLOCK.id ? 10.0F : world.getLuminance(var1, var2, var3) - 0.5F;
+            return world.getBlockId(x, y - 1, z) == Block.GRASS_BLOCK.id ? 10.0F : world.getLuminance(x, y, z) - 0.5F;
         }
 
         public override void writeNbt(NBTTagCompound nbt)
@@ -31,10 +31,10 @@ namespace betareborn.Entities
 
         public override bool canSpawn()
         {
-            int var1 = MathHelper.floor_double(x);
-            int var2 = MathHelper.floor_double(boundingBox.minY);
-            int var3 = MathHelper.floor_double(z);
-            return world.getBlockId(var1, var2 - 1, var3) == Block.GRASS_BLOCK.id && world.getBrightness(var1, var2, var3) > 8 && base.canSpawn();
+            int x = MathHelper.floor_double(base.x);
+            int y = MathHelper.floor_double(boundingBox.minY);
+            int z = MathHelper.floor_double(base.z);
+            return world.getBlockId(x, y - 1, z) == Block.GRASS_BLOCK.id && world.getBrightness(x, y, z) > 8 && base.canSpawn();
         }
 
         public override int getTalkInterval()

@@ -590,9 +590,9 @@ namespace betareborn.Entities
                 float friction = 0.91F;
                 if (onGround)
                 {
-                    var8 = 546.0F * 0.1F * 0.1F * 0.1F;
-                    int var4 = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
-                    if (var4 > 0)
+                    friction = 546.0F * 0.1F * 0.1F * 0.1F;
+                    int groundBlockId = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
+                    if (groundBlockId > 0)
                     {
                         friction = Block.BLOCKS[groundBlockId].slipperiness * 0.91F;
                     }
@@ -603,9 +603,9 @@ namespace betareborn.Entities
                 friction = 0.91F;
                 if (onGround)
                 {
-                    var8 = 546.0F * 0.1F * 0.1F * 0.1F;
-                    int var5 = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
-                    if (var5 > 0)
+                    friction = 546.0F * 0.1F * 0.1F * 0.1F;
+                    int groundBlockId = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
+                    if (groundBlockId > 0)
                     {
                         friction = Block.BLOCKS[groundBlockId].slipperiness * 0.91F;
                     }
@@ -673,10 +673,10 @@ namespace betareborn.Entities
 
         public virtual bool isOnLadder()
         {
-            int var1 = MathHelper.floor_double(x);
-            int var2 = MathHelper.floor_double(boundingBox.minY);
-            int var3 = MathHelper.floor_double(z);
-            return world.getBlockId(var1, var2, var3) == Block.LADDER.id;
+            int x = MathHelper.floor_double(base.x);
+            int y = MathHelper.floor_double(boundingBox.minY);
+            int z = MathHelper.floor_double(base.z);
+            return world.getBlockId(x, y, z) == Block.LADDER.id;
         }
 
         public override void writeNbt(NBTTagCompound nbt)

@@ -268,12 +268,12 @@ namespace betareborn.Entities
                 double var4 = 0.4D;
                 bool var6 = false;
                 var7 = 1.0D / 128.0D;
-                int var9 = world.getBlockId(var1, var2, var3);
+                int var9 = world.getBlockId(floorX, floorY, floorZ);
                 if (BlockRail.isRail(var9))
                 {
                     Vec3D var10 = func_514_g(x, y, z);
-                    int var11 = world.getBlockMeta(var1, var2, var3);
-                    y = (double)var2;
+                    int var11 = world.getBlockMeta(floorX, floorY, floorZ);
+                    y = (double)floorY;
                     bool var12 = false;
                     bool var13 = false;
                     if (var9 == Block.POWERED_RAIL.id)
@@ -504,22 +504,22 @@ namespace betareborn.Entities
                         }
                         else if (var11 == 1)
                         {
-                            if (world.shouldSuffocate(var1 - 1, var2, var3))
+                            if (world.shouldSuffocate(floorX - 1, floorY, floorZ))
                             {
                                 velocityX = 0.02D;
                             }
-                            else if (world.shouldSuffocate(var1 + 1, var2, var3))
+                            else if (world.shouldSuffocate(floorX + 1, floorY, floorZ))
                             {
                                 velocityX = -0.02D;
                             }
                         }
                         else if (var11 == 0)
                         {
-                            if (world.shouldSuffocate(var1, var2, var3 - 1))
+                            if (world.shouldSuffocate(floorX, floorY, floorZ - 1))
                             {
                                 velocityZ = 0.02D;
                             }
-                            else if (world.shouldSuffocate(var1, var2, var3 + 1))
+                            else if (world.shouldSuffocate(floorX, floorY, floorZ + 1))
                             {
                                 velocityZ = -0.02D;
                             }
@@ -685,12 +685,12 @@ namespace betareborn.Entities
                 --floorY;
             }
 
-            int var10 = world.getBlockId(var7, var8, var9);
-            if (BlockRail.isRail(var10))
+            int blockId = world.getBlockId(floorX, floorY, floorZ);
+            if (BlockRail.isRail(blockId))
             {
-                int var11 = world.getBlockMeta(var7, var8, var9);
-                var3 = (double)var8;
-                if (((BlockRail)Block.BLOCKS[var10]).isAlwaysStraight())
+                int meta = world.getBlockMeta(floorX, floorY, floorZ);
+                y = (double)floorY;
+                if (((BlockRail)Block.BLOCKS[blockId]).isAlwaysStraight())
                 {
                     meta &= 7;
                 }

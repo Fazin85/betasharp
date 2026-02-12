@@ -63,10 +63,10 @@ namespace betareborn.Entities
                 velocityX *= (double)0.98F;
                 velocityY *= (double)0.98F;
                 velocityZ *= (double)0.98F;
-                int var1 = MathHelper.floor_double(x);
-                int var2 = MathHelper.floor_double(y);
-                int var3 = MathHelper.floor_double(z);
-                if (world.getBlockId(var1, var2, var3) == blockId)
+                int floorX = MathHelper.floor_double(x);
+                int floorY = MathHelper.floor_double(y);
+                int floorZ = MathHelper.floor_double(z);
+                if (world.getBlockId(floorX, floorY, floorZ) == blockId)
                 {
                     world.setBlock(floorX, floorY, floorZ, 0);
                 }

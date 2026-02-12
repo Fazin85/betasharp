@@ -250,7 +250,7 @@ namespace betareborn.Entities
 
         private bool isBlockTranslucent(int x, int y, int z)
         {
-            return world.shouldSuffocate(var1, var2, var3);
+            return world.shouldSuffocate(x, y, z);
         }
 
         protected override bool pushOutOfBlocks(double posX, double posY, double posZ)
