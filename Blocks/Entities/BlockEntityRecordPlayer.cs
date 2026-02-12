@@ -6,13 +6,13 @@ namespace betareborn.Blocks.Entities
     {
         public int recordId;
 
-        public override void readNbt(NbtTagCompound nbt)
+        public override void readNbt(NBTTagCompound nbt)
         {
             base.readNbt(nbt);
             recordId = nbt.GetInteger("Record");
         }
 
-        public override void writeNbt(NbtTagCompound nbt)
+        public override void writeNbt(NBTTagCompound nbt)
         {
             base.writeNbt(nbt);
             if (recordId > 0)

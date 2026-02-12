@@ -274,9 +274,9 @@ namespace betareborn.Inventorys
                 if (main[slotIndex] != null)
                 {
                     itemTag = new NBTTagCompound();
-                    itemTag.setByte("Slot", (sbyte)slotIndex);
+                    itemTag.SetByte("Slot", (sbyte)slotIndex);
                     main[slotIndex].writeToNBT(itemTag);
-                    nbt.setTag(itemTag);
+                    nbt.SetTag(itemTag);
                 }
             }
 
@@ -285,9 +285,9 @@ namespace betareborn.Inventorys
                 if (armor[slotIndex] != null)
                 {
                     itemTag = new NBTTagCompound();
-                    itemTag.setByte("Slot", (sbyte)(slotIndex + 100));
+                    itemTag.SetByte("Slot", (sbyte)(slotIndex + 100));
                     armor[slotIndex].writeToNBT(itemTag);
-                    nbt.setTag(itemTag);
+                    nbt.SetTag(itemTag);
                 }
             }
 
@@ -299,10 +299,10 @@ namespace betareborn.Inventorys
             main = new ItemStack[36];
             armor = new ItemStack[4];
 
-            for (int i = 0; i < nbt.tagCount(); ++i)
+            for (int i = 0; i < nbt.TagCount(); ++i)
             {
-                NBTTagCompound itemTag = (NBTTagCompound)nbt.tagAt(i);
-                int slotIndex = itemTag.getByte("Slot") & 255;
+                NBTTagCompound itemTag = (NBTTagCompound)nbt.TagAt(i);
+                int slotIndex = itemTag.GetByte("Slot") & 255;
                 ItemStack itemStack = new ItemStack(itemTag);
                 if (itemStack.getItem() != null)
                 {

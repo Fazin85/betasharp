@@ -19,12 +19,12 @@ namespace betareborn.Entities
             return world.getBlockId(var1, var2 - 1, var3) == Block.GRASS_BLOCK.id ? 10.0F : world.getLuminance(var1, var2, var3) - 0.5F;
         }
 
-        public override void writeNbt(NbtTagCompound var1)
+        public override void writeNbt(NBTTagCompound var1)
         {
             base.writeNbt(var1);
         }
 
-        public override void readNbt(NbtTagCompound var1)
+        public override void readNbt(NBTTagCompound var1)
         {
             base.readNbt(var1);
         }

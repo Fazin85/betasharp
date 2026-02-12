@@ -12,7 +12,7 @@ namespace betareborn.NBT
 
         public NBTTagString(string value)
         {
-            stringValue = value;
+            Value = value;
         }
 
         public override void WriteTagContents(DataOutput output)

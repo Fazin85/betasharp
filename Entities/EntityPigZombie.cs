@@ -36,13 +36,13 @@ namespace betareborn.Entities
             return world.difficulty > 0 && world.canSpawnEntity(boundingBox) && world.getEntityCollisions(this, boundingBox).Count == 0 && !world.isBoxSubmergedInFluid(boundingBox);
         }
 
-        public override void writeNbt(NbtTagCompound var1)
+        public override void writeNbt(NBTTagCompound var1)
         {
             base.writeNbt(var1);
             var1.SetShort("Anger", (short)angerLevel);
         }
 
-        public override void readNbt(NbtTagCompound var1)
+        public override void readNbt(NBTTagCompound var1)
         {
             base.readNbt(var1);
             angerLevel = var1.GetShort("Anger");

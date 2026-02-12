@@ -13,7 +13,7 @@ namespace betareborn.Worlds
         private long worldTime;
         private readonly long lastTimePlayed;
         private long sizeOnDisk;
-        private NbtTagCompound playerTag;
+        private NBTTagCompound playerTag;
         private readonly int dimension;
         private string levelName;
         private int saveVersion;
@@ -22,7 +22,7 @@ namespace betareborn.Worlds
         private bool thundering;
         private int thunderTime;
 
-        public WorldProperties(NbtTagCompound var1)
+        public WorldProperties(NBTTagCompound var1)
         {
             randomSeed = var1.GetLong("RandomSeed");
             spawnX = var1.GetInteger("SpawnX");
@@ -69,18 +69,18 @@ namespace betareborn.Worlds
             thundering = var1.thundering;
         }
 
-        public NbtTagCompound getNBTTagCompound()
+        public NBTTagCompound getNBTTagCompound()
         {
-            NbtTagCompound var1 = new();
+            NBTTagCompound var1 = new();
             updateTagCompound(var1, playerTag);
             return var1;
         }
 
-        public NbtTagCompound getNBTTagCompoundWithPlayer(List var1)
+        public NBTTagCompound getNBTTagCompoundWithPlayer(List var1)
         {
-            NbtTagCompound var2 = new();
+            NBTTagCompound var2 = new();
             EntityPlayer var3 = null;
-            NbtTagCompound var4 = null;
+            NBTTagCompound var4 = null;
             if (var1.size() > 0)
             {
                 var3 = (EntityPlayer)var1.get(0);
@@ -88,7 +88,7 @@ namespace betareborn.Worlds
 
             if (var3 != null)
             {
-                var4 = new NbtTagCompound();
+                var4 = new NBTTagCompound();
                 var3.write(var4);
             }
 
@@ -96,7 +96,7 @@ namespace betareborn.Worlds
             return var2;
         }
 
-        private void updateTagCompound(NbtTagCompound var1, NbtTagCompound var2)
+        private void updateTagCompound(NBTTagCompound var1, NBTTagCompound var2)
         {
             var1.SetLong("RandomSeed", randomSeed);
             var1.SetInteger("SpawnX", spawnX);
@@ -148,7 +148,7 @@ namespace betareborn.Worlds
             return sizeOnDisk;
         }
 
-        public NbtTagCompound getPlayerNBTTagCompound()
+        public NBTTagCompound getPlayerNBTTagCompound()
         {
             return playerTag;
         }
@@ -183,7 +183,7 @@ namespace betareborn.Worlds
             sizeOnDisk = var1;
         }
 
-        public void setPlayerNBTTagCompound(NbtTagCompound var1)
+        public void setPlayerNBTTagCompound(NBTTagCompound var1)
         {
             playerTag = var1;
         }

@@ -45,7 +45,7 @@ namespace betareborn.Entities
             return var2;
         }
 
-        public static Entity getEntityFromNbt(NbtTagCompound nbt, World world)
+        public static Entity getEntityFromNbt(NBTTagCompound nbt, World world)
         {
             Entity var2 = null;
 

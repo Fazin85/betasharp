@@ -43,7 +43,7 @@ namespace betareborn.Entities
             return isWolfTamed() ? "/mob/wolf_tame.png" : (isWolfAngry() ? "/mob/wolf_angry.png" : base.getTexture());
         }
 
-        public override void writeNbt(NbtTagCompound var1)
+        public override void writeNbt(NBTTagCompound var1)
         {
             base.writeNbt(var1);
             var1.SetBoolean("Angry", isWolfAngry());
@@ -59,7 +59,7 @@ namespace betareborn.Entities
 
         }
 
-        public override void readNbt(NbtTagCompound var1)
+        public override void readNbt(NBTTagCompound var1)
         {
             base.readNbt(var1);
             setWolfAngry(var1.GetBoolean("Angry"));

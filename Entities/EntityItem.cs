@@ -117,18 +117,18 @@ namespace betareborn.Entities
             return false;
         }
 
-        public override void writeNbt(NbtTagCompound var1)
+        public override void writeNbt(NBTTagCompound var1)
         {
             var1.SetShort("Health", (short)((byte)health));
             var1.SetShort("Age", (short)age);
-            var1.SetCompoundTag("Item", stack.writeToNBT(new NbtTagCompound()));
+            var1.SetCompoundTag("Item", stack.writeToNBT(new NBTTagCompound()));
         }
 
-        public override void readNbt(NbtTagCompound var1)
+        public override void readNbt(NBTTagCompound var1)
         {
             health = var1.GetShort("Health") & 255;
             age = var1.GetShort("Age");
-            NbtTagCompound var2 = var1.GetCompoundTag("Item");
+            NBTTagCompound var2 = var1.GetCompoundTag("Item");
             stack = new ItemStack(var2);
         }
 

@@ -114,14 +114,14 @@ namespace betareborn.Blocks.Entities
             spawnDelay = 200 + world.random.nextInt(600);
         }
 
-        public override void readNbt(NbtTagCompound nbt)
+        public override void readNbt(NBTTagCompound nbt)
         {
             base.readNbt(nbt);
             spawnedEntityId = nbt.GetString("EntityId");
             spawnDelay = nbt.GetShort("Delay");
         }
 
-        public override void writeNbt(NbtTagCompound nbt)
+        public override void writeNbt(NBTTagCompound nbt)
         {
             base.writeNbt(nbt);
             nbt.SetString("EntityId", spawnedEntityId);

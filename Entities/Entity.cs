@@ -893,7 +893,7 @@ namespace betareborn.Entities
             return null;
         }
 
-        public bool saveSelfNbt(NbtTagCompound var1)
+        public bool saveSelfNbt(NBTTagCompound var1)
         {
             string var2 = getRegistryEntry();
             if (!dead && var2 != null)
@@ -908,7 +908,7 @@ namespace betareborn.Entities
             }
         }
 
-        public void write(NbtTagCompound var1)
+        public void write(NBTTagCompound var1)
         {
             var1.SetTag("Pos", newDoubleNBTList([x, y + (double)cameraOffset, z]));
             var1.SetTag("Motion", newDoubleNBTList([velocityX, velocityY, velocityZ]));
@@ -920,11 +920,11 @@ namespace betareborn.Entities
             writeNbt(var1);
         }
 
-        public void read(NbtTagCompound var1)
+        public void read(NBTTagCompound var1)
         {
-            NbtTagList var2 = var1.GetTagList("Pos");
-            NbtTagList var3 = var1.GetTagList("Motion");
-            NbtTagList var4 = var1.GetTagList("Rotation");
+            NBTTagList var2 = var1.GetTagList("Pos");
+            NBTTagList var3 = var1.GetTagList("Motion");
+            NBTTagList var4 = var1.GetTagList("Rotation");
             velocityX = ((NBTTagDouble)var3.TagAt(0)).Value;
             velocityY = ((NBTTagDouble)var3.TagAt(1)).Value;
             velocityZ = ((NBTTagDouble)var3.TagAt(2)).Value;
@@ -962,13 +962,13 @@ namespace betareborn.Entities
             return EntityRegistry.getId(this);
         }
 
-        public abstract void readNbt(NbtTagCompound var1);
+        public abstract void readNbt(NBTTagCompound var1);
 
-        public abstract void writeNbt(NbtTagCompound var1);
+        public abstract void writeNbt(NBTTagCompound var1);
 
-        protected NbtTagList newDoubleNBTList(params double[] var1)
+        protected NBTTagList newDoubleNBTList(params double[] var1)
         {
-            NbtTagList var2 = new();
+            NBTTagList var2 = new();
             double[] var3 = var1;
             int var4 = var1.Length;
 
@@ -981,9 +981,9 @@ namespace betareborn.Entities
             return var2;
         }
 
-        protected NbtTagList newFloatNBTList(params float[] var1)
+        protected NBTTagList newFloatNBTList(params float[] var1)
         {
-            NbtTagList var2 = new();
+            NBTTagList var2 = new();
             float[] var3 = var1;
             int var4 = var1.Length;
 

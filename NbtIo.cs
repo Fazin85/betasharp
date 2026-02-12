@@ -7,12 +7,12 @@ namespace betareborn
 {
     public static class NbtIo
     {
-        public static void Write(NbtTagCompound tag, DataOutput output)
+        public static void Write(NBTTagCompound tag, DataOutput output)
         {
             NBTBase.WriteTag(tag, output);
         }
 
-        public static void WriteCompressed(NbtTagCompound tag, OutputStream output)
+        public static void WriteCompressed(NBTTagCompound tag, OutputStream output)
         {
             var stream = new DataOutputStream(new GZIPOutputStream(output));
 
@@ -30,11 +30,11 @@ namespace betareborn
             }
         }
 
-        public static NbtTagCompound Read(InputStream input)
+        public static NBTTagCompound Read(InputStream input)
         {
             var stream = new DataInputStream(new GZIPInputStream(input));
 
-            NbtTagCompound tag;
+            NBTTagCompound tag;
 
             try
             {
@@ -48,11 +48,11 @@ namespace betareborn
             return tag;
         }
 
-        public static NbtTagCompound Read(DataInput input)
+        public static NBTTagCompound Read(DataInput input)
         {
             var tag = NBTBase.ReadTag(input);
 
-            if (tag is NbtTagCompound compound)
+            if (tag is NBTTagCompound compound)
             {
                 return compound;
             }

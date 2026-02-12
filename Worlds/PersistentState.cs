@@ -12,9 +12,9 @@ namespace betareborn.Worlds
             id = var1.value;
         }
 
-        public abstract void readNBT(NbtTagCompound var1);
+        public abstract void readNBT(NBTTagCompound var1);
 
-        public abstract void writeNBT(NbtTagCompound var1);
+        public abstract void writeNBT(NBTTagCompound var1);
 
         public void markDirty()
         {

@@ -236,7 +236,7 @@ namespace betareborn.Entities
             setPosition(x, y, z);
         }
 
-        public override void writeNbt(NbtTagCompound var1)
+        public override void writeNbt(NBTTagCompound var1)
         {
             var1.SetShort("xTile", (short)xTileSnowball);
             var1.SetShort("yTile", (short)yTileSnowball);
@@ -246,7 +246,7 @@ namespace betareborn.Entities
             var1.SetByte("inGround", (sbyte)(inGroundSnowball ? 1 : 0));
         }
 
-        public override void readNbt(NbtTagCompound var1)
+        public override void readNbt(NBTTagCompound var1)
         {
             xTileSnowball = var1.GetShort("xTile");
             yTileSnowball = var1.GetShort("yTile");

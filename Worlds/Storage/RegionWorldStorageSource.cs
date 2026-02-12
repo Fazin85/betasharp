@@ -99,8 +99,8 @@ namespace betareborn.Worlds.Storage
             else
             {
                 java.io.File var3 = new java.io.File(var2, "level.dat");
-                betareborn.NBT.NbtTagCompound var4;
-                betareborn.NBT.NbtTagCompound var5;
+                betareborn.NBT.NBTTagCompound var4;
+                betareborn.NBT.NBTTagCompound var5;
                 if (var3.exists())
                 {
                     try
@@ -150,8 +150,8 @@ namespace betareborn.Worlds.Storage
                 {
                     try
                     {
-                        betareborn.NBT.NbtTagCompound var5 = NbtIo.Read(new FileInputStream(var4));
-                        betareborn.NBT.NbtTagCompound var6 = var5.GetCompoundTag("Data");
+                        betareborn.NBT.NBTTagCompound var5 = NbtIo.Read(new FileInputStream(var4));
+                        betareborn.NBT.NBTTagCompound var6 = var5.GetCompoundTag("Data");
                         var6.SetString("LevelName", var2);
                         NbtIo.WriteCompressed(var5, new FileOutputStream(var4));
                     }

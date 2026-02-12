@@ -50,7 +50,7 @@ namespace betareborn.Items
             this.damage = damage;
         }
 
-        public ItemStack(NbtTagCompound nbt)
+        public ItemStack(NBTTagCompound nbt)
         {
             count = 0;
             readFromNBT(nbt);
@@ -93,7 +93,7 @@ namespace betareborn.Items
             return getItem().use(this, world, entityPlayer);
         }
 
-        public NbtTagCompound writeToNBT(NbtTagCompound nbt)
+        public NBTTagCompound writeToNBT(NBTTagCompound nbt)
         {
             nbt.SetShort("id", (short)itemId);
             nbt.SetByte("Count", (sbyte)count);
@@ -101,7 +101,7 @@ namespace betareborn.Items
             return nbt;
         }
 
-        public void readFromNBT(NbtTagCompound nbt)
+        public void readFromNBT(NBTTagCompound nbt)
         {
             itemId = nbt.GetShort("id");
             count = nbt.GetByte("Count");

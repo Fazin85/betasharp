@@ -124,8 +124,8 @@ namespace betareborn.Worlds.Storage
         {
             var1.setSaveVersion(19132);
 
-            NbtTagCompound var3 = var1.getNBTTagCompoundWithPlayer(var2);
-            NbtTagCompound var4 = new();
+            NBTTagCompound var3 = var1.getNBTTagCompoundWithPlayer(var2);
+            NBTTagCompound var4 = new();
             var4.SetTag("Data", var3);
 
             try
@@ -165,8 +165,8 @@ namespace betareborn.Worlds.Storage
         public WorldProperties loadProperties()
         {
             java.io.File var1 = new java.io.File(saveDirectory, "level.dat");
-            NbtTagCompound var2;
-            NbtTagCompound var3;
+            NBTTagCompound var2;
+            NBTTagCompound var3;
             if (var1.exists())
             {
                 try
@@ -203,8 +203,8 @@ namespace betareborn.Worlds.Storage
 
         public void save(WorldProperties var1)
         {
-            NbtTagCompound var2 = var1.getNBTTagCompound();
-            NbtTagCompound var3 = new NbtTagCompound();
+            NBTTagCompound var2 = var1.getNBTTagCompound();
+            NBTTagCompound var3 = new NBTTagCompound();
             var3.SetTag("Data", var2);
 
             try
@@ -246,7 +246,7 @@ namespace betareborn.Worlds.Storage
         {
             try
             {
-                NbtTagCompound var2 = new NbtTagCompound();
+                NBTTagCompound var2 = new NBTTagCompound();
                 player.write(var2);
                 java.io.File var3 = new java.io.File(playersDirectory, "_tmp_.dat");
                 java.io.File var4 = new java.io.File(playersDirectory, player.name + ".dat");
@@ -266,14 +266,14 @@ namespace betareborn.Worlds.Storage
 
         public void loadPlayerData(EntityPlayer player)
         {
-            NbtTagCompound var2 = loadPlayerData(player.name);
+            NBTTagCompound var2 = loadPlayerData(player.name);
             if (var2 != null)
             {
                 player.read(var2);
             }
         }
 
-        public NbtTagCompound loadPlayerData(String playerName)
+        public NBTTagCompound loadPlayerData(String playerName)
         {
             try
             {

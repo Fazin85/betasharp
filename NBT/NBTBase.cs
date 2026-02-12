@@ -55,8 +55,8 @@ namespace betareborn.NBT
                 6 => new NBTTagDouble(),
                 7 => new NBTTagByteArray(),
                 8 => new NBTTagString(),
-                9 => new NbtTagList(),
-                10 => new NbtTagCompound(),
+                9 => new NBTTagList(),
+                10 => new NBTTagCompound(),
                 _ => throw new ArgumentOutOfRangeException(nameof(identifier), identifier, "Unknown NBT identifier")
             };
         }

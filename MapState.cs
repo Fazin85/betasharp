@@ -23,7 +23,7 @@ namespace betareborn
         {
         }
 
-        public override void readNBT(NbtTagCompound nbt)
+        public override void readNBT(NBTTagCompound nbt)
         {
             dimension = nbt.GetByte("dimension");
             centerX = nbt.GetInteger("xCenter");
@@ -71,7 +71,7 @@ namespace betareborn
 
         }
 
-        public override void writeNBT(NbtTagCompound nbt)
+        public override void writeNBT(NBTTagCompound nbt)
         {
             nbt.SetByte("dimension", dimension);
             nbt.SetInteger("xCenter", centerX);

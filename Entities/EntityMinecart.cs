@@ -750,7 +750,7 @@ namespace betareborn.Entities
             }
         }
 
-        public override void writeNbt(NbtTagCompound var1)
+        public override void writeNbt(NBTTagCompound var1)
         {
             var1.SetInteger("Type", type);
             if (type == 2)
@@ -761,13 +761,13 @@ namespace betareborn.Entities
             }
             else if (type == 1)
             {
-                NbtTagList var2 = new NbtTagList();
+                NBTTagList var2 = new NBTTagList();
 
                 for (int var3 = 0; var3 < cargoItems.Length; ++var3)
                 {
                     if (cargoItems[var3] != null)
                     {
-                        NbtTagCompound var4 = new NbtTagCompound();
+                        NBTTagCompound var4 = new NBTTagCompound();
                         var4.SetByte("Slot", (sbyte)var3);
                         cargoItems[var3].writeToNBT(var4);
                         var2.SetTag(var4);
@@ -779,7 +779,7 @@ namespace betareborn.Entities
 
         }
 
-        public override void readNbt(NbtTagCompound var1)
+        public override void readNbt(NBTTagCompound var1)
         {
             type = var1.GetInteger("Type");
             if (type == 2)
@@ -790,12 +790,12 @@ namespace betareborn.Entities
             }
             else if (type == 1)
             {
-                NbtTagList var2 = var1.GetTagList("Items");
+                NBTTagList var2 = var1.GetTagList("Items");
                 cargoItems = new ItemStack[size()];
 
                 for (int var3 = 0; var3 < var2.TagCount(); ++var3)
                 {
-                    NbtTagCompound var4 = (NbtTagCompound)var2.TagAt(var3);
+                    NBTTagCompound var4 = (NBTTagCompound)var2.TagAt(var3);
                     int var5 = var4.GetByte("Slot") & 255;
                     if (var5 >= 0 && var5 < cargoItems.Length)
                     {

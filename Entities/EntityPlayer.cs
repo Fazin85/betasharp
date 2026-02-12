@@ -384,10 +384,10 @@ namespace betareborn.Entities
             return inventory.canHarvestBlock(block);
         }
 
-        public override void readNbt(NbtTagCompound nbt)
+        public override void readNbt(NBTTagCompound nbt)
         {
             base.readNbt(nbt);
-            NbtTagList var2 = nbt.GetTagList("Inventory");
+            NBTTagList var2 = nbt.GetTagList("Inventory");
             inventory.readFromNBT(var2);
             dimensionId = nbt.GetInteger("Dimension");
             sleeping = nbt.GetBoolean("Sleeping");
@@ -405,10 +405,10 @@ namespace betareborn.Entities
 
         }
 
-        public override void writeNbt(NbtTagCompound nbt)
+        public override void writeNbt(NBTTagCompound nbt)
         {
             base.writeNbt(nbt);
-            nbt.SetTag("Inventory", inventory.writeToNBT(new NbtTagList()));
+            nbt.SetTag("Inventory", inventory.writeToNBT(new NBTTagList()));
             nbt.SetInteger("Dimension", dimensionId);
             nbt.SetBoolean("Sleeping", sleeping);
             nbt.SetShort("SleepTimer", (short)sleepTimer);

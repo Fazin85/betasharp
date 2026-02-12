@@ -14,12 +14,12 @@ namespace betareborn.Entities
             this.setBoundingBoxSpacing(0.9F, 1.3F);
         }
 
-        public override void writeNbt(NbtTagCompound var1)
+        public override void writeNbt(NBTTagCompound var1)
         {
             base.writeNbt(var1);
         }
 
-        public override void readNbt(NbtTagCompound var1)
+        public override void readNbt(NBTTagCompound var1)
         {
             base.readNbt(var1);
         }

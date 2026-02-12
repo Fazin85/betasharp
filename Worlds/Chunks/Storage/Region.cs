@@ -366,7 +366,7 @@ namespace betareborn.Worlds.Chunks.Storage
                 return false;
             }
 
-            public NbtTagCompound? readChunkNBT(java.io.File file, int chunkX, int chunkZ)
+            public NBTTagCompound? readChunkNBT(java.io.File file, int chunkX, int chunkZ)
             {
                 int rx = chunkX >> 5;
                 int rz = chunkZ >> 5;
@@ -378,7 +378,7 @@ namespace betareborn.Worlds.Chunks.Storage
                 }
             }
 
-            public void writeChunkNBT(java.io.File file, int chunkX, int chunkZ, NbtTagCompound chunkNBT)
+            public void writeChunkNBT(java.io.File file, int chunkX, int chunkZ, NBTTagCompound chunkNBT)
             {
                 int rx = chunkX >> 5;
                 int rz = chunkZ >> 5;
@@ -678,7 +678,7 @@ namespace betareborn.Worlds.Chunks.Storage
             dataOutput.write(chunkData.compressedData);
         }
 
-        private static byte[] getNbtByteArray(NbtTagCompound nbt)
+        private static byte[] getNbtByteArray(NBTTagCompound nbt)
         {
             ByteArrayOutputStream outputStream = new();
             DataOutputStream dataOutput = new(outputStream);
@@ -687,7 +687,7 @@ namespace betareborn.Worlds.Chunks.Storage
             return outputStream.toByteArray();
         }
 
-        private static NbtTagCompound getTagCompoundFromBytes(byte[] bytes, int length)
+        private static NBTTagCompound getTagCompoundFromBytes(byte[] bytes, int length)
         {
             ByteArrayInputStream inputStream = new(bytes, 0, length);
             DataInputStream dataInput = new(inputStream);
@@ -695,7 +695,7 @@ namespace betareborn.Worlds.Chunks.Storage
         }
 
         //chunkX and chunkZ are not relative to region, they are world chunk coordinates
-        public NbtTagCompound? read(int chunkX, int chunkZ)
+        public NBTTagCompound? read(int chunkX, int chunkZ)
         {
             try
             {
@@ -726,7 +726,7 @@ namespace betareborn.Worlds.Chunks.Storage
         }
 
         //chunkX and chunkZ are not relative to region, they are world chunk coordinates
-        public void write(int chunkX, int chunkZ, NbtTagCompound nbt)
+        public void write(int chunkX, int chunkZ, NBTTagCompound nbt)
         {
             writeInternal(chunkX, chunkZ, nbt, true);
         }
@@ -738,7 +738,7 @@ namespace betareborn.Worlds.Chunks.Storage
             return chunk;
         }
 
-        private void writeInternal(int chunkX, int chunkZ, NbtTagCompound nbt, bool markModified)
+        private void writeInternal(int chunkX, int chunkZ, NBTTagCompound nbt, bool markModified)
         {
             byte[] nbtBytes = getNbtByteArray(nbt);
             ChunkPos chunkKey = new(chunkX, chunkZ);
@@ -788,7 +788,7 @@ namespace betareborn.Worlds.Chunks.Storage
             }
             else if (compressionType == 2)
             {
-                NbtTagCompound chunkNBT = NbtIo.Read((DataInput)chunkStream.getInputStream());
+                NBTTagCompound chunkNBT = NbtIo.Read((DataInput)chunkStream.getInputStream());
                 writeInternal(chunkPos.x, chunkPos.z, chunkNBT, false);
             }
             else

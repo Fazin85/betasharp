@@ -9,13 +9,13 @@ namespace betareborn.Blocks.Entities
         public sbyte note = 0;
         public bool powered = false;
 
-        public override void writeNbt(NbtTagCompound nbt)
+        public override void writeNbt(NBTTagCompound nbt)
         {
             base.writeNbt(nbt);
             nbt.SetByte("note", note);
         }
 
-        public override void readNbt(NbtTagCompound nbt)
+        public override void readNbt(NBTTagCompound nbt)
         {
             base.readNbt(nbt);
             note = nbt.GetByte("note");

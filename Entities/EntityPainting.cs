@@ -255,7 +255,7 @@ namespace betareborn.Entities
             return true;
         }
 
-        public override void writeNbt(NbtTagCompound var1)
+        public override void writeNbt(NBTTagCompound var1)
         {
             var1.SetByte("Dir", (sbyte)direction);
             var1.SetString("Motive", art.title);
@@ -264,7 +264,7 @@ namespace betareborn.Entities
             var1.SetInteger("TileZ", zPosition);
         }
 
-        public override void readNbt(NbtTagCompound var1)
+        public override void readNbt(NBTTagCompound var1)
         {
             direction = var1.GetByte("Dir");
             xPosition = var1.GetInteger("TileX");

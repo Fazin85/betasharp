@@ -46,7 +46,7 @@ namespace betareborn.Worlds.Storage
                             }
 
                             FileInputStream var5 = new(var4);
-                            NbtTagCompound var6 = NbtIo.Read(var5);
+                            NBTTagCompound var6 = NbtIo.Read(var5);
                             var5.close();
                             var3.readNBT(var6.GetCompoundTag("data"));
                         }
@@ -108,9 +108,9 @@ namespace betareborn.Worlds.Storage
                     java.io.File var2 = saveHandler.getWorldPropertiesFile(var1.id);
                     if (var2 != null)
                     {
-                        NbtTagCompound var3 = new();
+                        NBTTagCompound var3 = new();
                         var1.writeNBT(var3);
-                        NbtTagCompound var4 = new();
+                        NBTTagCompound var4 = new();
                         var4.SetCompoundTag("data", var3);
 
                         var saveTask = Task.Run(() =>
@@ -145,7 +145,7 @@ namespace betareborn.Worlds.Storage
                 if (var1 != null && var1.exists())
                 {
                     DataInputStream var2 = new(new FileInputStream(var1));
-                    NbtTagCompound var3 = NbtIo.Read((DataInput)var2);
+                    NBTTagCompound var3 = NbtIo.Read((DataInput)var2);
                     var2.close();
 
                     foreach (var var5 in var3.Values)
@@ -191,7 +191,7 @@ namespace betareborn.Worlds.Storage
                     java.io.File var3 = saveHandler.getWorldPropertiesFile("idcounts");
                     if (var3 != null)
                     {
-                        NbtTagCompound var4 = new();
+                        NBTTagCompound var4 = new();
                         Iterator var5 = idCounts.keySet().iterator();
 
                         while (var5.hasNext())

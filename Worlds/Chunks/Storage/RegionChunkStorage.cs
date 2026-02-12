@@ -26,7 +26,7 @@ namespace betareborn.Worlds.Chunks.Storage
 
             if (var4 != null)
             {
-                NbtTagCompound var5 = NbtIo.Read((DataInput)var4);
+                NBTTagCompound var5 = NbtIo.Read((DataInput)var4);
                 if (!var5.HasKey("Level"))
                 {
                     java.lang.System.@out.println("Chunk file at " + chunkX + "," + chunkZ + " is missing level data, skipping");
@@ -63,8 +63,8 @@ namespace betareborn.Worlds.Chunks.Storage
             try
             {
                 DataOutputStream var3 = RegionIo.getChunkOutputStream(dir, chunk.x, chunk.z);
-                NbtTagCompound var4 = new();
-                NbtTagCompound var5 = new();
+                NBTTagCompound var4 = new();
+                NBTTagCompound var5 = new();
                 var4.SetTag("Level", var5);
                 storeChunkInCompound(chunk, world, var5);
                 NbtIo.Write(var4, var3);
@@ -78,7 +78,7 @@ namespace betareborn.Worlds.Chunks.Storage
             }
         }
 
-        public static void storeChunkInCompound(Chunk chunk, World world, NbtTagCompound nbt)
+        public static void storeChunkInCompound(Chunk chunk, World world, NBTTagCompound nbt)
         {
             nbt.SetInteger("xPos", chunk.x);
             nbt.SetInteger("zPos", chunk.z);
@@ -90,15 +90,15 @@ namespace betareborn.Worlds.Chunks.Storage
             nbt.SetByteArray("HeightMap", chunk.heightmap);
             nbt.SetBoolean("TerrainPopulated", chunk.terrainPopulated);
             chunk.lastSaveHadEntities = false;
-            NbtTagList var3 = new();
+            NBTTagList var3 = new();
 
-            NbtTagCompound var7;
+            NBTTagCompound var7;
             for (int var4 = 0; var4 < chunk.entities.Length; ++var4)
             {
                 foreach (var var6 in chunk.entities[var4])
                 {
                     chunk.lastSaveHadEntities = true;
-                    var7 = new NbtTagCompound();
+                    var7 = new NBTTagCompound();
                     if (var6.saveSelfNbt(var7))
                     {
                         var3.SetTag(var7);
@@ -107,11 +107,11 @@ namespace betareborn.Worlds.Chunks.Storage
             }
 
             nbt.SetTag("Entities", var3);
-            NbtTagList var8 = new();
+            NBTTagList var8 = new();
 
             foreach (var var9 in chunk.blockEntities.Values)
             {
-                var7 = new NbtTagCompound();
+                var7 = new NBTTagCompound();
                 var9.writeNbt(var7);
                 var8.SetTag(var7);
             }
@@ -119,7 +119,7 @@ namespace betareborn.Worlds.Chunks.Storage
             nbt.SetTag("TileEntities", var8);
         }
 
-        public static Chunk loadChunkFromNbt(World world, NbtTagCompound nbt)
+        public static Chunk loadChunkFromNbt(World world, NBTTagCompound nbt)
         {
             int var2 = nbt.GetInteger("xPos");
             int var3 = nbt.GetInteger("zPos");
@@ -148,12 +148,12 @@ namespace betareborn.Worlds.Chunks.Storage
                 var4.populateLight();
             }
 
-            NbtTagList var5 = nbt.GetTagList("Entities");
+            NBTTagList var5 = nbt.GetTagList("Entities");
             if (var5 != null)
             {
                 for (int var6 = 0; var6 < var5.TagCount(); ++var6)
                 {
-                    NbtTagCompound var7 = (NbtTagCompound)var5.TagAt(var6);
+                    NBTTagCompound var7 = (NBTTagCompound)var5.TagAt(var6);
                     Entity var8 = EntityRegistry.getEntityFromNbt(var7, world);
                     var4.lastSaveHadEntities = true;
                     if (var8 != null)
@@ -163,12 +163,12 @@ namespace betareborn.Worlds.Chunks.Storage
                 }
             }
 
-            NbtTagList var10 = nbt.GetTagList("TileEntities");
+            NBTTagList var10 = nbt.GetTagList("TileEntities");
             if (var10 != null)
             {
                 for (int var11 = 0; var11 < var10.TagCount(); ++var11)
                 {
-                    NbtTagCompound var12 = (NbtTagCompound)var10.TagAt(var11);
+                    NBTTagCompound var12 = (NBTTagCompound)var10.TagAt(var11);
                     BlockEntity var9 = BlockEntity.createFromNbt(var12);
                     if (var9 != null)
                     {

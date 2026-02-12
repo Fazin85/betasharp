@@ -67,14 +67,14 @@ namespace betareborn.Entities
             return false;
         }
 
-        public override void writeNbt(NbtTagCompound var1)
+        public override void writeNbt(NBTTagCompound var1)
         {
             base.writeNbt(var1);
             var1.SetBoolean("Sheared", getSheared());
             var1.SetByte("Color", (sbyte)getFleeceColor());
         }
 
-        public override void readNbt(NbtTagCompound var1)
+        public override void readNbt(NBTTagCompound var1)
         {
             base.readNbt(var1);
             setSheared(var1.GetBoolean("Sheared"));

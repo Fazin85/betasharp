@@ -81,12 +81,12 @@ namespace betareborn.Entities
             return 0.5F - world.getLuminance(var1, var2, var3);
         }
 
-        public override void writeNbt(NbtTagCompound var1)
+        public override void writeNbt(NBTTagCompound var1)
         {
             base.writeNbt(var1);
         }
 
-        public override void readNbt(NbtTagCompound var1)
+        public override void readNbt(NBTTagCompound var1)
         {
             base.readNbt(var1);
         }

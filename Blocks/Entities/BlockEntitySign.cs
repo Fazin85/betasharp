@@ -12,7 +12,7 @@ namespace betareborn.Blocks.Entities
         public int currentRow = -1;
         private bool editable = true;
 
-        public override void writeNbt(NbtTagCompound nbt)
+        public override void writeNbt(NBTTagCompound nbt)
         {
             base.writeNbt(nbt);
             nbt.SetString("Text1", texts[0]);
@@ -21,7 +21,7 @@ namespace betareborn.Blocks.Entities
             nbt.SetString("Text4", texts[3]);
         }
 
-        public override void readNbt(NbtTagCompound nbt)
+        public override void readNbt(NBTTagCompound nbt)
         {
             editable = false;
             base.readNbt(nbt);

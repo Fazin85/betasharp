@@ -67,15 +67,15 @@ namespace betareborn.Blocks.Entities
             return "Furnace";
         }
 
-        public override void readNbt(NbtTagCompound nbt)
+        public override void readNbt(NBTTagCompound nbt)
         {
             base.readNbt(nbt);
-            NbtTagList itemList = nbt.GetTagList("Items");
+            NBTTagList itemList = nbt.GetTagList("Items");
             inventory = new ItemStack[size()];
 
             for (int itemIndex = 0; itemIndex < itemList.TagCount(); ++itemIndex)
             {
-                NbtTagCompound itemTag = (NbtTagCompound)itemList.TagAt(itemIndex);
+                NBTTagCompound itemTag = (NBTTagCompound)itemList.TagAt(itemIndex);
                 sbyte slot = itemTag.GetByte("Slot");
                 if (slot >= 0 && slot < inventory.Length)
                 {
@@ -88,18 +88,18 @@ namespace betareborn.Blocks.Entities
             fuelTime = getFuelTime(inventory[1]);
         }
 
-        public override void writeNbt(NbtTagCompound nbt)
+        public override void writeNbt(NBTTagCompound nbt)
         {
             base.writeNbt(nbt);
             nbt.SetShort("BurnTime", (short)burnTime);
             nbt.SetShort("CookTime", (short)cookTime);
-            NbtTagList itemList = new NbtTagList();
+            NBTTagList itemList = new NBTTagList();
 
             for (int slotIndex = 0; slotIndex < inventory.Length; ++slotIndex)
             {
                 if (inventory[slotIndex] != null)
                 {
-                    NbtTagCompound slotTag = new NbtTagCompound();
+                    NBTTagCompound slotTag = new NBTTagCompound();
                     slotTag.SetByte("Slot", (sbyte)slotIndex);
                     inventory[slotIndex].writeToNBT(slotTag);
                     itemList.SetTag(slotTag);

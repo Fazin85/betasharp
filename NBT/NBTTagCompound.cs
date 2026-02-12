@@ -2,7 +2,7 @@ using java.io;
 
 namespace betareborn.NBT
 {
-    public sealed class NbtTagCompound : NBTBase
+    public sealed class NBTTagCompound : NBTBase
     {
         public IEnumerable<NBTBase> Values => dictionary.Values;
         
@@ -110,7 +110,7 @@ namespace betareborn.NBT
             };
         }
 
-        public void SetCompoundTag(string key, NbtTagCompound value)
+        public void SetCompoundTag(string key, NBTTagCompound value)
         {
             value.Key = key;
             dictionary[key] = value;
@@ -166,14 +166,14 @@ namespace betareborn.NBT
             return !dictionary.TryGetValue(key, out var value) ? [] : ((NBTTagByteArray) value).Values;
         }
 
-        public NbtTagCompound GetCompoundTag(string key)
+        public NBTTagCompound GetCompoundTag(string key)
         {
-            return !dictionary.TryGetValue(key, out var value) ? new NbtTagCompound() : (NbtTagCompound) value;
+            return !dictionary.TryGetValue(key, out var value) ? new NBTTagCompound() : (NBTTagCompound) value;
         }
 
-        public NbtTagList GetTagList(string key)
+        public NBTTagList GetTagList(string key)
         {
-            return !dictionary.TryGetValue(key, out var value) ? new NbtTagList() : (NbtTagList) value;
+            return !dictionary.TryGetValue(key, out var value) ? new NBTTagList() : (NBTTagList) value;
         }
 
         public bool GetBoolean(string key)

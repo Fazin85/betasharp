@@ -252,7 +252,7 @@ namespace betareborn.Entities
             setPosition(x, y, z);
         }
 
-        public override void writeNbt(NbtTagCompound var1)
+        public override void writeNbt(NBTTagCompound var1)
         {
             var1.SetShort("xTile", (short)field_20056_b);
             var1.SetShort("yTile", (short)field_20055_c);
@@ -262,7 +262,7 @@ namespace betareborn.Entities
             var1.SetByte("inGround", (sbyte)(field_20052_f ? 1 : 0));
         }
 
-        public override void readNbt(NbtTagCompound var1)
+        public override void readNbt(NBTTagCompound var1)
         {
             field_20056_b = var1.GetShort("xTile");
             field_20055_c = var1.GetShort("yTile");

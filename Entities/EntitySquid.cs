@@ -32,12 +32,12 @@ namespace betareborn.Entities
             field_21080_l = 1.0F / (random.nextFloat() + 1.0F) * 0.2F;
         }
 
-        public override void writeNbt(NbtTagCompound var1)
+        public override void writeNbt(NBTTagCompound var1)
         {
             base.writeNbt(var1);
         }
 
-        public override void readNbt(NbtTagCompound var1)
+        public override void readNbt(NBTTagCompound var1)
         {
             base.readNbt(var1);
         }

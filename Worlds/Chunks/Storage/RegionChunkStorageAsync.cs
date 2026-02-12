@@ -14,7 +14,7 @@ namespace betareborn.Worlds.Chunks.Storage
 
         public Chunk loadChunk(World world, int chunkX, int chunkZ)
         {
-            NbtTagCompound? var4 = Region.RegionCache.readChunkNBT(worldDir, chunkX, chunkZ);
+            NBTTagCompound? var4 = Region.RegionCache.readChunkNBT(worldDir, chunkX, chunkZ);
             if (var4 != null)
             {
                 if (!var4.HasKey("Level"))
@@ -50,8 +50,8 @@ namespace betareborn.Worlds.Chunks.Storage
 
         public void saveChunk(World world, Chunk chunk, Action onSave, long _)
         {
-            NbtTagCompound var4 = new();
-            NbtTagCompound var5 = new();
+            NBTTagCompound var4 = new();
+            NBTTagCompound var5 = new();
             var4.SetTag("Level", var5);
             RegionChunkStorage.storeChunkInCompound(chunk, world, var5);
             Region.RegionCache.writeChunkNBT(worldDir, chunk.x, chunk.z, var4);

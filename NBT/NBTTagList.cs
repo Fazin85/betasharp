@@ -2,7 +2,7 @@ using java.io;
 
 namespace betareborn.NBT
 {
-    public sealed class NbtTagList : NBTBase
+    public sealed class NBTTagList : NBTBase
     {
         private List<NBTBase> list = [];
         private byte type;

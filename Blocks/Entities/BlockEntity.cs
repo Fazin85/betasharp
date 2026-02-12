@@ -30,14 +30,14 @@ namespace betareborn.Blocks.Entities
             }
         }
 
-        public virtual void readNbt(NbtTagCompound nbt)
+        public virtual void readNbt(NBTTagCompound nbt)
         {
             x = nbt.GetInteger("x");
             y = nbt.GetInteger("y");
             z = nbt.GetInteger("z");
         }
 
-        public virtual void writeNbt(NbtTagCompound nbt)
+        public virtual void writeNbt(NBTTagCompound nbt)
         {
             string entityId = (string)classToId.get(getClass());
             if (entityId == null)
@@ -57,7 +57,7 @@ namespace betareborn.Blocks.Entities
         {
         }
 
-        public static BlockEntity createFromNbt(NbtTagCompound nbt)
+        public static BlockEntity createFromNbt(NBTTagCompound nbt)
         {
             BlockEntity blockEntity = null;
 

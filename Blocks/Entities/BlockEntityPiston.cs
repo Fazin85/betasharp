@@ -157,7 +157,7 @@ namespace betareborn.Blocks.Entities
             }
         }
 
-        public override void readNbt(NbtTagCompound nbt)
+        public override void readNbt(NBTTagCompound nbt)
         {
             base.readNbt(nbt);
             pushedBlockId = nbt.GetInteger("blockId");
@@ -167,7 +167,7 @@ namespace betareborn.Blocks.Entities
             extending = nbt.GetBoolean("extending");
         }
 
-        public override void writeNbt(NbtTagCompound nbt)
+        public override void writeNbt(NBTTagCompound nbt)
         {
             base.writeNbt(nbt);
             nbt.SetInteger("blockId", pushedBlockId);

@@ -89,15 +89,15 @@ namespace betareborn.Blocks.Entities
             return "Trap";
         }
 
-        public override void readNbt(NbtTagCompound nbt)
+        public override void readNbt(NBTTagCompound nbt)
         {
             base.readNbt(nbt);
-            NbtTagList itemList = nbt.GetTagList("Items");
+            NBTTagList itemList = nbt.GetTagList("Items");
             inventory = new ItemStack[size()];
 
             for (int itemIndex = 0; itemIndex < itemList.TagCount(); ++itemIndex)
             {
-                NbtTagCompound itemTag = (NbtTagCompound)itemList.TagAt(itemIndex);
+                NBTTagCompound itemTag = (NBTTagCompound)itemList.TagAt(itemIndex);
                 int slotIndex = itemTag.GetByte("Slot") & 255;
                 if (slotIndex >= 0 && slotIndex < inventory.Length)
                 {
@@ -107,16 +107,16 @@ namespace betareborn.Blocks.Entities
 
         }
 
-        public override void writeNbt(NbtTagCompound nbt)
+        public override void writeNbt(NBTTagCompound nbt)
         {
             base.writeNbt(nbt);
-            NbtTagList itemList = new NbtTagList();
+            NBTTagList itemList = new NBTTagList();
 
             for (int slotIndex = 0; slotIndex < inventory.Length; ++slotIndex)
             {
                 if (inventory[slotIndex] != null)
                 {
-                    NbtTagCompound itemTag = new NbtTagCompound();
+                    NBTTagCompound itemTag = new NBTTagCompound();
                     itemTag.SetByte("Slot", (sbyte)slotIndex);
                     inventory[slotIndex].writeToNBT(itemTag);
                     itemList.SetTag(itemTag);
