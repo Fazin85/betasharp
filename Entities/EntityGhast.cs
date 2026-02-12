@@ -109,9 +109,9 @@ namespace betareborn.Entities
                         EntityFireball var17 = new EntityFireball(world, this, var11, var13, var15);
                         double var18 = 4.0D;
                         Vec3D var20 = getLook(1.0F);
-                        var17.x = x + var20.xCoord * var18;
+                        var17.x = x + var20.x * var18;
                         var17.y = y + (double)(height / 2.0F) + 0.5D;
-                        var17.z = z + var20.zCoord * var18;
+                        var17.z = z + var20.z * var18;
                         world.spawnEntity(var17);
                         attackCounter = -40;
                     }

@@ -70,7 +70,7 @@ namespace betareborn.Entities
                 Vec3D? var5 = pathToEntity.getPosition(this);
                 double var6 = (double)(width * 2.0F);
 
-                while (var5 != null && var5.Value.squareDistanceTo(new Vec3D(x, var5.Value.yCoord, z)) < var6 * var6)
+                while (var5 != null && var5.Value.squareDistanceTo(new Vec3D(x, var5.Value.y, z)) < var6 * var6)
                 {
                     pathToEntity.incrementPathIndex();
                     if (pathToEntity.isFinished())
@@ -87,9 +87,9 @@ namespace betareborn.Entities
                 jumping = false;
                 if (var5 != null)
                 {
-                    double var8 = var5.Value.xCoord - x;
-                    double var10 = var5.Value.zCoord - z;
-                    double var12 = var5.Value.yCoord - (double)var21;
+                    double var8 = var5.Value.x - x;
+                    double var10 = var5.Value.z - z;
+                    double var12 = var5.Value.y - (double)var21;
                     float var14 = (float)(java.lang.Math.atan2(var10, var8) * 180.0D / (double)((float)java.lang.Math.PI)) - 90.0F;
                     float var15 = var14 - yaw;
 

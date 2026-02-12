@@ -111,7 +111,7 @@ namespace betareborn.Entities
             {
                 Block.BLOCKS[var15].updateBoundingBox(world, xTile, yTile, zTile);
                 Box? var2 = Block.BLOCKS[var15].getCollisionShape(world, xTile, yTile, zTile);
-                if (var2 != null && var2.Value.contains(Vec3D.createVector(x, y, z)))
+                if (var2 != null && var2.Value.contains(new Vec3D(x, y, z)))
                 {
                     inGround = true;
                 }
@@ -148,14 +148,14 @@ namespace betareborn.Entities
             else
             {
                 ++ticksInAir;
-                Vec3D var16 = Vec3D.createVector(x, y, z);
-                Vec3D var17 = Vec3D.createVector(x + velocityX, y + velocityY, z + velocityZ);
+                Vec3D var16 = new Vec3D(x, y, z);
+                Vec3D var17 = new Vec3D(x + velocityX, y + velocityY, z + velocityZ);
                 HitResult var3 = world.raycast(var16, var17, false, true);
-                var16 = Vec3D.createVector(x, y, z);
-                var17 = Vec3D.createVector(x + velocityX, y + velocityY, z + velocityZ);
+                var16 = new Vec3D(x, y, z);
+                var17 = new Vec3D(x + velocityX, y + velocityY, z + velocityZ);
                 if (var3 != null)
                 {
-                    var17 = Vec3D.createVector(var3.pos.xCoord, var3.pos.yCoord, var3.pos.zCoord);
+                    var17 = new Vec3D(var3.pos.x, var3.pos.y, var3.pos.z);
                 }
 
                 Entity var4 = null;
@@ -215,9 +215,9 @@ namespace betareborn.Entities
                         zTile = var3.blockZ;
                         inTile = world.getBlockId(xTile, yTile, zTile);
                         field_28019_h = world.getBlockMeta(xTile, yTile, zTile);
-                        velocityX = (double)((float)(var3.pos.xCoord - x));
-                        velocityY = (double)((float)(var3.pos.yCoord - y));
-                        velocityZ = (double)((float)(var3.pos.zCoord - z));
+                        velocityX = (double)((float)(var3.pos.x - x));
+                        velocityY = (double)((float)(var3.pos.y - y));
+                        velocityZ = (double)((float)(var3.pos.z - z));
                         var19 = MathHelper.sqrt_double(velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
                         x -= velocityX / (double)var19 * (double)0.05F;
                         y -= velocityY / (double)var19 * (double)0.05F;

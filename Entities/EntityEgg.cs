@@ -133,14 +133,14 @@ namespace betareborn.Entities
                 ++field_20049_i;
             }
 
-            Vec3D var15 = Vec3D.createVector(x, y, z);
-            Vec3D var2 = Vec3D.createVector(x + velocityX, y + velocityY, z + velocityZ);
+            Vec3D var15 = new Vec3D(x, y, z);
+            Vec3D var2 = new Vec3D(x + velocityX, y + velocityY, z + velocityZ);
             HitResult var3 = world.raycast(var15, var2);
-            var15 = Vec3D.createVector(x, y, z);
-            var2 = Vec3D.createVector(x + velocityX, y + velocityY, z + velocityZ);
+            var15 = new Vec3D(x, y, z);
+            var2 = new Vec3D(x + velocityX, y + velocityY, z + velocityZ);
             if (var3 != null)
             {
-                var2 = Vec3D.createVector(var3.pos.xCoord, var3.pos.yCoord, var3.pos.zCoord);
+                var2 = new Vec3D(var3.pos.x, var3.pos.y, var3.pos.z);
             }
 
             if (!world.isRemote)

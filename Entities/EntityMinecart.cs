@@ -452,7 +452,7 @@ namespace betareborn.Entities
                     Vec3D? var52 = func_514_g(x, y, z);
                     if (var52 != null && var10 != null)
                     {
-                        double var40 = (var10.Value.yCoord - var52.Value.yCoord) * 0.05D;
+                        double var40 = (var10.Value.y - var52.Value.y) * 0.05D;
                         var23 = java.lang.Math.sqrt(velocityX * velocityX + velocityZ * velocityZ);
                         if (var23 > 0.0D)
                         {
@@ -460,7 +460,7 @@ namespace betareborn.Entities
                             velocityZ = velocityZ / var23 * (var23 + var40);
                         }
 
-                        setPosition(x, var52.Value.yCoord, z);
+                        setPosition(x, var52.Value.y, z);
                     }
 
                     int var53 = MathHelper.floor_double(x);
@@ -742,7 +742,7 @@ namespace betareborn.Entities
                     var3 += 0.5D;
                 }
 
-                return Vec3D.createVector(var1, var3, var5);
+                return new Vec3D(var1, var3, var5);
             }
             else
             {

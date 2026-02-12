@@ -210,7 +210,7 @@ namespace betareborn.Util.Maths
 
         public bool contains(Vec3D pos)
         {
-            return pos.xCoord > minX && pos.xCoord < maxX ? pos.yCoord > minY && pos.yCoord < maxY ? pos.zCoord > minZ && pos.zCoord < maxZ : false : false;
+            return pos.x > minX && pos.x < maxX ? pos.y > minY && pos.y < maxY ? pos.z > minZ && pos.z < maxZ : false : false;
         }
 
         public double getAverageSizeLength()
@@ -344,17 +344,17 @@ namespace betareborn.Util.Maths
 
         private bool isVecInsideYZBounds(Vec3D pos)
         {
-            return pos.yCoord >= minY && pos.yCoord <= maxY && pos.zCoord >= minZ && pos.zCoord <= maxZ;
+            return pos.y >= minY && pos.y <= maxY && pos.z >= minZ && pos.z <= maxZ;
         }
 
         private bool isVecInsideXZBounds(Vec3D pos)
         {
-            return pos.xCoord >= minX && pos.xCoord <= maxX && pos.zCoord >= minZ && pos.zCoord <= maxZ;
+            return pos.x >= minX && pos.x <= maxX && pos.z >= minZ && pos.z <= maxZ;
         }
 
         private bool isVecInsideXYBounds(Vec3D pos)
         {
-            return pos.xCoord >= minX && pos.xCoord <= maxX && pos.yCoord >= minY && pos.yCoord <= maxY;
+            return pos.x >= minX && pos.x <= maxX && pos.y >= minY && pos.y <= maxY;
         }
 
         public override string ToString()

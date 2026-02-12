@@ -26,7 +26,7 @@ namespace betareborn.Items
             double x = entityPlayer.prevX + (entityPlayer.x - entityPlayer.prevX) * (double)partialTick;
             double y = entityPlayer.prevY + (entityPlayer.y - entityPlayer.prevY) * (double)partialTick + 1.62D - (double)entityPlayer.standingEyeHeight;
             double z = entityPlayer.prevZ + (entityPlayer.z - entityPlayer.prevZ) * (double)partialTick;
-            Vec3D rayStart = Vec3D.createVector(x, y, z);
+            Vec3D rayStart = new Vec3D(x, y, z);
             float cosYaw = MathHelper.cos(-yaw * ((float)Math.PI / 180.0F) - (float)Math.PI);
             float sinYaw = MathHelper.sin(-yaw * ((float)Math.PI / 180.0F) - (float)Math.PI);
             float cosPitch = -MathHelper.cos(-pitch * ((float)Math.PI / 180.0F));

@@ -81,7 +81,7 @@ namespace betareborn.Entities
 
         public bool canSee(Entity var1)
         {
-            return world.raycast(Vec3D.createVector(x, y + (double)getEyeHeight(), z), Vec3D.createVector(var1.x, var1.y + (double)var1.getEyeHeight(), var1.z)) == null;
+            return world.raycast(new Vec3D(x, y + (double)getEyeHeight(), z), new Vec3D(var1.x, var1.y + (double)var1.getEyeHeight(), var1.z)) == null;
         }
 
         public override string getTexture()
@@ -986,14 +986,14 @@ namespace betareborn.Entities
         {
             if (var1 == 1.0F)
             {
-                return Vec3D.createVector(x, y, z);
+                return new Vec3D(x, y, z);
             }
             else
             {
                 double var2 = prevX + (x - prevX) * (double)var1;
                 double var4 = prevY + (y - prevY) * (double)var1;
                 double var6 = prevZ + (z - prevZ) * (double)var1;
-                return Vec3D.createVector(var2, var4, var6);
+                return new Vec3D(var2, var4, var6);
             }
         }
 
@@ -1014,7 +1014,7 @@ namespace betareborn.Entities
                 var3 = MathHelper.sin(-yaw * ((float)java.lang.Math.PI / 180.0F) - (float)java.lang.Math.PI);
                 var4 = -MathHelper.cos(-pitch * ((float)java.lang.Math.PI / 180.0F));
                 var5 = MathHelper.sin(-pitch * ((float)java.lang.Math.PI / 180.0F));
-                return Vec3D.createVector((double)(var3 * var4), (double)var5, (double)(var2 * var4));
+                return new Vec3D((double)(var3 * var4), (double)var5, (double)(var2 * var4));
             }
             else
             {
@@ -1024,7 +1024,7 @@ namespace betareborn.Entities
                 var5 = MathHelper.sin(-var3 * ((float)java.lang.Math.PI / 180.0F) - (float)java.lang.Math.PI);
                 float var6 = -MathHelper.cos(-var2 * ((float)java.lang.Math.PI / 180.0F));
                 float var7 = MathHelper.sin(-var2 * ((float)java.lang.Math.PI / 180.0F));
-                return Vec3D.createVector((double)(var5 * var6), (double)var7, (double)(var4 * var6));
+                return new Vec3D((double)(var5 * var6), (double)var7, (double)(var4 * var6));
             }
         }
 

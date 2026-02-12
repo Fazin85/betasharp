@@ -120,7 +120,7 @@ namespace betareborn.Client.Rendering
                     Vec3D var8 = var6 + var2 * var7;
                     targetedEntity = null;
                     float var9 = 1.0F;
-                    var var10 = client.world.getEntities(client.camera, client.camera.boundingBox.stretch(var7.xCoord * var2, var7.yCoord * var2, var7.zCoord * var2).expand((double)var9, (double)var9, (double)var9));
+                    var var10 = client.world.getEntities(client.camera, client.camera.boundingBox.stretch(var7.x * var2, var7.y * var2, var7.z * var2).expand((double)var9, (double)var9, (double)var9));
                     double var11 = 0.0D;
 
                     for (int var13 = 0; var13 < var10.Count; ++var13)
@@ -271,10 +271,10 @@ namespace betareborn.Client.Rendering
                         var21 *= 0.1F;
                         var22 *= 0.1F;
                         var23 *= 0.1F;
-                        HitResult var24 = client.world.raycast(Vec3D.createVector(var4 + (double)var21, var6 + (double)var22, var8 + (double)var23), Vec3D.createVector(var4 - var14 + (double)var21 + (double)var23, var6 - var18 + (double)var22, var8 - var16 + (double)var23));
+                        HitResult var24 = client.world.raycast(new Vec3D(var4 + (double)var21, var6 + (double)var22, var8 + (double)var23), new Vec3D(var4 - var14 + (double)var21 + (double)var23, var6 - var18 + (double)var22, var8 - var16 + (double)var23));
                         if (var24 != null)
                         {
-                            double var25 = var24.pos.distanceTo(Vec3D.createVector(var4, var6, var8));
+                            double var25 = var24.pos.distanceTo(new Vec3D(var4, var6, var8));
                             if (var25 < var27)
                             {
                                 var27 = var25;

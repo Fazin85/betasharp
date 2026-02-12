@@ -43,14 +43,14 @@ namespace betareborn.Client.Rendering.Entitys
                 double var23 = (double)MathHelper.cos(var20);
                 float var25 = var1.angler.getSwingProgress(var9);
                 float var26 = MathHelper.sin(MathHelper.sqrt_float(var25) * (float)Math.PI);
-                Vec3D var27 = Vec3D.createVector(-0.5D, 0.03D, 0.8D);
+                Vec3D var27 = new Vec3D(-0.5D, 0.03D, 0.8D);
                 var27.rotateAroundX(-(var1.angler.prevPitch + (var1.angler.pitch - var1.angler.prevPitch) * var9) * (float)Math.PI / 180.0F);
                 var27.rotateAroundY(-(var1.angler.prevYaw + (var1.angler.yaw - var1.angler.prevYaw) * var9) * (float)Math.PI / 180.0F);
                 var27.rotateAroundY(var26 * 0.5F);
                 var27.rotateAroundX(-var26 * 0.7F);
-                double var28 = var1.angler.prevX + (var1.angler.x - var1.angler.prevX) * (double)var9 + var27.xCoord;
-                double var30 = var1.angler.prevY + (var1.angler.y - var1.angler.prevY) * (double)var9 + var27.yCoord;
-                double var32 = var1.angler.prevZ + (var1.angler.z - var1.angler.prevZ) * (double)var9 + var27.zCoord;
+                double var28 = var1.angler.prevX + (var1.angler.x - var1.angler.prevX) * (double)var9 + var27.x;
+                double var30 = var1.angler.prevY + (var1.angler.y - var1.angler.prevY) * (double)var9 + var27.y;
+                double var32 = var1.angler.prevZ + (var1.angler.z - var1.angler.prevZ) * (double)var9 + var27.z;
                 if (dispatcher.options.thirdPersonView)
                 {
                     var20 = (var1.angler.lastBodyYaw + (var1.angler.bodyYaw - var1.angler.lastBodyYaw) * var9) * (float)Math.PI / 180.0F;

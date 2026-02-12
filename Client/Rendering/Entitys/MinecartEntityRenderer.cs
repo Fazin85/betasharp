@@ -31,15 +31,15 @@ namespace betareborn.Client.Rendering.Entitys
                 Vec3D var20 = var1.func_515_a(var10, var12, var14, var16) ?? var18.Value;
                 Vec3D var21 = var1.func_515_a(var10, var12, var14, -var16) ?? var18.Value;
 
-                var2 += var18.Value.xCoord - var10;
-                var4 += (var20.yCoord + var21.yCoord) / 2.0D - var12;
-                var6 += var18.Value.zCoord - var14;
+                var2 += var18.Value.x - var10;
+                var4 += (var20.y + var21.y) / 2.0D - var12;
+                var6 += var18.Value.z - var14;
                 Vec3D var22 = var21 - var20;
                 if (var22.magnitude() != 0.0D)
                 {
                     var22 = var22.normalize();
-                    var8 = (float)(java.lang.Math.atan2(var22.zCoord, var22.xCoord) * 180.0D / Math.PI);
-                    var19 = (float)(java.lang.Math.atan(var22.yCoord) * 73.0D);
+                    var8 = (float)(java.lang.Math.atan2(var22.z, var22.x) * 180.0D / Math.PI);
+                    var19 = (float)(java.lang.Math.atan(var22.y) * 73.0D);
                 }
             }
 

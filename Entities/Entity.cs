@@ -874,9 +874,9 @@ namespace betareborn.Entities
 
         public virtual bool shouldRender(Vec3D var1)
         {
-            double var2 = x - var1.xCoord;
-            double var4 = y - var1.yCoord;
-            double var6 = z - var1.zCoord;
+            double var2 = x - var1.x;
+            double var4 = y - var1.y;
+            double var6 = z - var1.z;
             double var8 = var2 * var2 + var4 * var4 + var6 * var6;
             return shouldRender(var8);
         }
