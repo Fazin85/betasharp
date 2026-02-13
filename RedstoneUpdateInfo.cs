@@ -1,18 +1,10 @@
 namespace betareborn
 {
-    public class RedstoneUpdateInfo : java.lang.Object
+    public class RedstoneUpdateInfo(int x, int y, int z, long updateTime)
     {
-        public int x;
-        public int y;
-        public int z;
-        public long updateTime;
-
-        public RedstoneUpdateInfo(int var1, int var2, int var3, long var4)
-        {
-            x = var1;
-            y = var2;
-            z = var3;
-            updateTime = var4;
-        }
+        public int x = x;
+        public int y = y;
+        public int z = z;
+        public long updateTime = updateTime;
     }
 }
