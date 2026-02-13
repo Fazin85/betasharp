@@ -42,7 +42,7 @@ namespace betareborn.Network.Packets.S2CPlay
             return 5;
         }
 
-        public List func_21047_b()
+        public List getWatchedObjects()
         {
             return trackedValues;
         }

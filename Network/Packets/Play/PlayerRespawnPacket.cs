@@ -7,7 +7,7 @@ namespace betareborn.Network.Packets.Play
     {
         public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayerRespawnPacket).TypeHandle);
 
-        public sbyte field_28048_a;
+        public sbyte dimensionId;
 
         public PlayerRespawnPacket()
         {
@@ -15,7 +15,7 @@ namespace betareborn.Network.Packets.Play
 
         public PlayerRespawnPacket(sbyte var1)
         {
-            field_28048_a = var1;
+            dimensionId = var1;
         }
 
         public override void apply(NetHandler var1)
@@ -25,12 +25,12 @@ namespace betareborn.Network.Packets.Play
 
         public override void read(DataInputStream var1)
         {
-            field_28048_a = (sbyte)var1.readByte();
+            dimensionId = (sbyte)var1.readByte();
         }
 
         public override void write(DataOutputStream var1)
         {
-            var1.writeByte(field_28048_a);
+            var1.writeByte(dimensionId);
         }
 
         public override int size()

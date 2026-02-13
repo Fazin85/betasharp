@@ -25,15 +25,15 @@ namespace betareborn.Client.Network
         public string field_1209_a;
         private Minecraft mc;
         private ClientWorld worldClient;
-        private bool field_1210_g = false;
+        private bool terrainLoaded = false;
         public PersistentStateManager clientPersistentStateManager = new PersistentStateManager(null);
         java.util.Random rand = new();
 
-        public ClientNetworkHandler(Minecraft var1, string var2, int var3)
+        public ClientNetworkHandler(Minecraft mc, string address, int port)
         {
 
-            mc = var1;
-            Socket socket = new Socket(InetAddress.getByName(var2), var3);
+            this.mc = mc;
+            Socket socket = new Socket(InetAddress.getByName(address), port);
             socket.setTcpNoDelay(true);
             netManager = new Connection(socket, "Client", this);
         }
@@ -48,420 +48,420 @@ namespace betareborn.Client.Network
             netManager.interrupt();
         }
 
-        public override void onHello(LoginHelloPacket var1)
+        public override void onHello(LoginHelloPacket packet)
         {
             mc.playerController = new PlayerControllerMP(mc, this);
             mc.statFileWriter.readStat(Stats.Stats.joinMultiplayerStat, 1);
-            worldClient = new ClientWorld(this, var1.worldSeed, var1.dimensionId);
+            worldClient = new ClientWorld(this, packet.worldSeed, packet.dimensionId);
             worldClient.isRemote = true;
             mc.changeWorld1(worldClient);
-            mc.player.dimensionId = var1.dimensionId;
+            mc.player.dimensionId = packet.dimensionId;
             mc.displayGuiScreen(new GuiDownloadTerrain(this));
-            mc.player.id = var1.protocolVersion;
+            mc.player.id = packet.protocolVersion;
         }
 
-        public override void onItemEntitySpawn(ItemEntitySpawnS2CPacket var1)
+        public override void onItemEntitySpawn(ItemEntitySpawnS2CPacket packet)
         {
-            double var2 = var1.x / 32.0D;
-            double var4 = var1.y / 32.0D;
-            double var6 = var1.z / 32.0D;
-            EntityItem var8 = new EntityItem(worldClient, var2, var4, var6, new ItemStack(var1.itemRawId, var1.itemCount, var1.itemDamage));
-            var8.velocityX = var1.velocityX / 128.0D;
-            var8.velocityY = var1.velocityY / 128.0D;
-            var8.velocityZ = var1.velocityZ / 128.0D;
-            var8.trackedPosX = var1.x;
-            var8.trackedPosY = var1.y;
-            var8.trackedPosZ = var1.z;
-            worldClient.forceEntity(var1.id, var8);
+            double x = packet.x / 32.0D;
+            double y = packet.y / 32.0D;
+            double z = packet.z / 32.0D;
+            EntityItem entityItem = new EntityItem(worldClient, x, y, z, new ItemStack(packet.itemRawId, packet.itemCount, packet.itemDamage));
+            entityItem.velocityX = packet.velocityX / 128.0D;
+            entityItem.velocityY = packet.velocityY / 128.0D;
+            entityItem.velocityZ = packet.velocityZ / 128.0D;
+            entityItem.trackedPosX = packet.x;
+            entityItem.trackedPosY = packet.y;
+            entityItem.trackedPosZ = packet.z;
+            worldClient.forceEntity(packet.id, entityItem);
         }
 
-        public override void onEntitySpawn(EntitySpawnS2CPacket var1)
+        public override void onEntitySpawn(EntitySpawnS2CPacket packet)
         {
-            double var2 = var1.x / 32.0D;
-            double var4 = var1.y / 32.0D;
-            double var6 = var1.z / 32.0D;
-            object var8 = null;
-            if (var1.entityType == 10)
+            double x = packet.x / 32.0D;
+            double y = packet.y / 32.0D;
+            double z = packet.z / 32.0D;
+            object entity = null;
+            if (packet.entityType == 10)
             {
-                var8 = new EntityMinecart(worldClient, var2, var4, var6, 0);
+                entity = new EntityMinecart(worldClient, x, y, z, 0);
             }
 
-            if (var1.entityType == 11)
+            if (packet.entityType == 11)
             {
-                var8 = new EntityMinecart(worldClient, var2, var4, var6, 1);
+                entity = new EntityMinecart(worldClient, x, y, z, 1);
             }
 
-            if (var1.entityType == 12)
+            if (packet.entityType == 12)
             {
-                var8 = new EntityMinecart(worldClient, var2, var4, var6, 2);
+                entity = new EntityMinecart(worldClient, x, y, z, 2);
             }
 
-            if (var1.entityType == 90)
+            if (packet.entityType == 90)
             {
-                var8 = new EntityFish(worldClient, var2, var4, var6);
+                entity = new EntityFish(worldClient, x, y, z);
             }
 
-            if (var1.entityType == 60)
+            if (packet.entityType == 60)
             {
-                var8 = new EntityArrow(worldClient, var2, var4, var6);
+                entity = new EntityArrow(worldClient, x, y, z);
             }
 
-            if (var1.entityType == 61)
+            if (packet.entityType == 61)
             {
-                var8 = new EntitySnowball(worldClient, var2, var4, var6);
+                entity = new EntitySnowball(worldClient, x, y, z);
             }
 
-            if (var1.entityType == 63)
+            if (packet.entityType == 63)
             {
-                var8 = new EntityFireball(worldClient, var2, var4, var6, var1.velocityX / 8000.0D, var1.velocityY / 8000.0D, var1.velocityZ / 8000.0D);
-                var1.entityData = 0;
+                entity = new EntityFireball(worldClient, x, y, z, packet.velocityX / 8000.0D, packet.velocityY / 8000.0D, packet.velocityZ / 8000.0D);
+                packet.entityData = 0;
             }
 
-            if (var1.entityType == 62)
+            if (packet.entityType == 62)
             {
-                var8 = new EntityEgg(worldClient, var2, var4, var6);
+                entity = new EntityEgg(worldClient, x, y, z);
             }
 
-            if (var1.entityType == 1)
+            if (packet.entityType == 1)
             {
-                var8 = new EntityBoat(worldClient, var2, var4, var6);
+                entity = new EntityBoat(worldClient, x, y, z);
             }
 
-            if (var1.entityType == 50)
+            if (packet.entityType == 50)
             {
-                var8 = new EntityTNTPrimed(worldClient, var2, var4, var6);
+                entity = new EntityTNTPrimed(worldClient, x, y, z);
             }
 
-            if (var1.entityType == 70)
+            if (packet.entityType == 70)
             {
-                var8 = new EntityFallingSand(worldClient, var2, var4, var6, Block.SAND.id);
+                entity = new EntityFallingSand(worldClient, x, y, z, Block.SAND.id);
             }
 
-            if (var1.entityType == 71)
+            if (packet.entityType == 71)
             {
-                var8 = new EntityFallingSand(worldClient, var2, var4, var6, Block.GRAVEL.id);
+                entity = new EntityFallingSand(worldClient, x, y, z, Block.GRAVEL.id);
             }
 
-            if (var8 != null)
+            if (entity != null)
             {
-                ((Entity)var8).trackedPosX = var1.x;
-                ((Entity)var8).trackedPosY = var1.y;
-                ((Entity)var8).trackedPosZ = var1.z;
-                ((Entity)var8).yaw = 0.0F;
-                ((Entity)var8).pitch = 0.0F;
-                ((Entity)var8).id = var1.id;
-                worldClient.forceEntity(var1.id, (Entity)var8);
-                if (var1.entityData > 0)
+                ((Entity)entity).trackedPosX = packet.x;
+                ((Entity)entity).trackedPosY = packet.y;
+                ((Entity)entity).trackedPosZ = packet.z;
+                ((Entity)entity).yaw = 0.0F;
+                ((Entity)entity).pitch = 0.0F;
+                ((Entity)entity).id = packet.id;
+                worldClient.forceEntity(packet.id, (Entity)entity);
+                if (packet.entityData > 0)
                 {
-                    if (var1.entityType == 60)
+                    if (packet.entityType == 60)
                     {
-                        Entity var9 = getEntityByID(var1.entityData);
-                        if (var9 is EntityLiving)
+                        Entity owner = getEntityByID(packet.entityData);
+                        if (owner is EntityLiving)
                         {
-                            ((EntityArrow)var8).owner = (EntityLiving)var9;
+                            ((EntityArrow)entity).owner = (EntityLiving)owner;
                         }
                     }
 
-                    ((Entity)var8).setVelocityClient(var1.velocityX / 8000.0D, var1.velocityY / 8000.0D, var1.velocityZ / 8000.0D);
+                    ((Entity)entity).setVelocityClient(packet.velocityX / 8000.0D, packet.velocityY / 8000.0D, packet.velocityZ / 8000.0D);
                 }
             }
 
         }
 
-        public override void onLightningEntitySpawn(GlobalEntitySpawnS2CPacket var1)
+        public override void onLightningEntitySpawn(GlobalEntitySpawnS2CPacket packet)
         {
-            double var2 = var1.x / 32.0D;
-            double var4 = var1.y / 32.0D;
-            double var6 = var1.z / 32.0D;
-            EntityLightningBolt var8 = null;
-            if (var1.type == 1)
+            double x = packet.x / 32.0D;
+            double y = packet.y / 32.0D;
+            double z = packet.z / 32.0D;
+            EntityLightningBolt ent = null;
+            if (packet.type == 1)
             {
-                var8 = new EntityLightningBolt(worldClient, var2, var4, var6);
+                ent = new EntityLightningBolt(worldClient, x, y, z);
             }
 
-            if (var8 != null)
+            if (ent != null)
             {
-                var8.trackedPosX = var1.x;
-                var8.trackedPosY = var1.y;
-                var8.trackedPosZ = var1.z;
-                var8.yaw = 0.0F;
-                var8.pitch = 0.0F;
-                var8.id = var1.id;
-                worldClient.spawnGlobalEntity(var8);
-            }
-
-        }
-
-        public override void onPaintingEntitySpawn(PaintingEntitySpawnS2CPacket var1)
-        {
-            EntityPainting var2 = new EntityPainting(worldClient, var1.xPosition, var1.yPosition, var1.zPosition, var1.direction, var1.title);
-            worldClient.forceEntity(var1.entityId, var2);
-        }
-
-        public override void onEntityVelocityUpdate(EntityVelocityUpdateS2CPacket var1)
-        {
-            Entity var2 = getEntityByID(var1.entityId);
-            if (var2 != null)
-            {
-                var2.setVelocityClient(var1.motionX / 8000.0D, var1.motionY / 8000.0D, var1.motionZ / 8000.0D);
-            }
-        }
-
-        public override void onEntityTrackerUpdate(EntityTrackerUpdateS2CPacket var1)
-        {
-            Entity var2 = getEntityByID(var1.id);
-            if (var2 != null && var1.func_21047_b() != null)
-            {
-                var2.getDataWatcher().updateWatchedObjectsFromList(var1.func_21047_b());
+                ent.trackedPosX = packet.x;
+                ent.trackedPosY = packet.y;
+                ent.trackedPosZ = packet.z;
+                ent.yaw = 0.0F;
+                ent.pitch = 0.0F;
+                ent.id = packet.id;
+                worldClient.spawnGlobalEntity(ent);
             }
 
         }
 
-        public override void onPlayerSpawn(PlayerSpawnS2CPacket var1)
+        public override void onPaintingEntitySpawn(PaintingEntitySpawnS2CPacket packet)
         {
-            double var2 = var1.xPosition / 32.0D;
-            double var4 = var1.yPosition / 32.0D;
-            double var6 = var1.zPosition / 32.0D;
-            float var8 = var1.rotation * 360 / 256.0F;
-            float var9 = var1.pitch * 360 / 256.0F;
-            OtherPlayerEntity var10 = new OtherPlayerEntity(mc.world, var1.name);
-            var10.prevX = var10.lastTickX = var10.trackedPosX = var1.xPosition;
-            var10.prevY = var10.lastTickY = var10.trackedPosY = var1.yPosition;
-            var10.prevZ = var10.lastTickZ = var10.trackedPosZ = var1.zPosition;
-            int var11 = var1.currentItem;
-            if (var11 == 0)
+            EntityPainting ent = new EntityPainting(worldClient, packet.xPosition, packet.yPosition, packet.zPosition, packet.direction, packet.title);
+            worldClient.forceEntity(packet.entityId, ent);
+        }
+
+        public override void onEntityVelocityUpdate(EntityVelocityUpdateS2CPacket packet)
+        {
+            Entity ent = getEntityByID(packet.entityId);
+            if (ent != null)
             {
-                var10.inventory.main[var10.inventory.selectedSlot] = null;
+                ent.setVelocityClient(packet.motionX / 8000.0D, packet.motionY / 8000.0D, packet.motionZ / 8000.0D);
+            }
+        }
+
+        public override void onEntityTrackerUpdate(EntityTrackerUpdateS2CPacket packet)
+        {
+            Entity ent = getEntityByID(packet.id);
+            if (ent != null && packet.getWatchedObjects() != null)
+            {
+                ent.getDataWatcher().updateWatchedObjectsFromList(packet.getWatchedObjects());
+            }
+
+        }
+
+        public override void onPlayerSpawn(PlayerSpawnS2CPacket packet)
+        {
+            double x = packet.xPosition / 32.0D;
+            double y = packet.yPosition / 32.0D;
+            double z = packet.zPosition / 32.0D;
+            float rotation = packet.rotation * 360 / 256.0F;
+            float pitch = packet.pitch * 360 / 256.0F;
+            OtherPlayerEntity ent = new OtherPlayerEntity(mc.world, packet.name);
+            ent.prevX = ent.lastTickX = ent.trackedPosX = packet.xPosition;
+            ent.prevY = ent.lastTickY = ent.trackedPosY = packet.yPosition;
+            ent.prevZ = ent.lastTickZ = ent.trackedPosZ = packet.zPosition;
+            int currentItem = packet.currentItem;
+            if (currentItem == 0)
+            {
+                ent.inventory.main[ent.inventory.selectedSlot] = null;
             }
             else
             {
-                var10.inventory.main[var10.inventory.selectedSlot] = new ItemStack(var11, 1, 0);
+                ent.inventory.main[ent.inventory.selectedSlot] = new ItemStack(currentItem, 1, 0);
             }
 
-            var10.setPositionAndAngles(var2, var4, var6, var8, var9);
-            worldClient.forceEntity(var1.entityId, var10);
+            ent.setPositionAndAngles(x, y, z, rotation, pitch);
+            worldClient.forceEntity(packet.entityId, ent);
         }
 
-        public override void onEntityPosition(EntityPositionS2CPacket var1)
+        public override void onEntityPosition(EntityPositionS2CPacket packet)
         {
-            Entity var2 = getEntityByID(var1.id);
-            if (var2 != null)
+            Entity ent = getEntityByID(packet.id);
+            if (ent != null)
             {
-                var2.trackedPosX = var1.x;
-                var2.trackedPosY = var1.y;
-                var2.trackedPosZ = var1.z;
-                double var3 = var2.trackedPosX / 32.0D;
-                double var5 = var2.trackedPosY / 32.0D + 1.0D / 64.0D;
-                double var7 = var2.trackedPosZ / 32.0D;
-                float var9 = var1.yaw * 360 / 256.0F;
-                float var10 = var1.pitch * 360 / 256.0F;
-                var2.setPositionAndAnglesAvoidEntities(var3, var5, var7, var9, var10, 3);
-            }
-        }
-
-        public override void onEntity(EntityS2CPacket var1)
-        {
-            Entity var2 = getEntityByID(var1.id);
-            if (var2 != null)
-            {
-                var2.trackedPosX += var1.deltaX;
-                var2.trackedPosY += var1.deltaY;
-                var2.trackedPosZ += var1.deltaZ;
-                double var3 = var2.trackedPosX / 32.0D;
-                double var5 = var2.trackedPosY / 32.0D;
-                double var7 = var2.trackedPosZ / 32.0D;
-                float var9 = var1.rotate ? var1.yaw * 360 / 256.0F : var2.yaw;
-                float var10 = var1.rotate ? var1.pitch * 360 / 256.0F : var2.pitch;
-                var2.setPositionAndAnglesAvoidEntities(var3, var5, var7, var9, var10, 3);
+                ent.trackedPosX = packet.x;
+                ent.trackedPosY = packet.y;
+                ent.trackedPosZ = packet.z;
+                double posX = ent.trackedPosX / 32.0D;
+                double posY = ent.trackedPosY / 32.0D + 1.0D / 64.0D;
+                double posZ = ent.trackedPosZ / 32.0D;
+                float yaw = packet.yaw * 360 / 256.0F;
+                float pitch = packet.pitch * 360 / 256.0F;
+                ent.setPositionAndAnglesAvoidEntities(posX, posY, posZ, yaw, pitch, 3);
             }
         }
 
-        public override void onEntityDestroy(EntityDestroyS2CPacket var1)
+        public override void onEntity(EntityS2CPacket packet)
         {
-            worldClient.removeEntityFromWorld(var1.entityId);
+            Entity ent = getEntityByID(packet.id);
+            if (ent != null)
+            {
+                ent.trackedPosX += packet.deltaX;
+                ent.trackedPosY += packet.deltaY;
+                ent.trackedPosZ += packet.deltaZ;
+                double posX = ent.trackedPosX / 32.0D;
+                double posY = ent.trackedPosY / 32.0D;
+                double posZ = ent.trackedPosZ / 32.0D;
+                float yaw = packet.rotate ? packet.yaw * 360 / 256.0F : ent.yaw;
+                float pitch = packet.rotate ? packet.pitch * 360 / 256.0F : ent.pitch;
+                ent.setPositionAndAnglesAvoidEntities(posX, posY, posZ, yaw, pitch, 3);
+            }
         }
 
-        public override void onPlayerMove(PlayerMovePacket var1)
+        public override void onEntityDestroy(EntityDestroyS2CPacket packet)
         {
-            ClientPlayerEntity var2 = mc.player;
-            double var3 = var2.x;
-            double var5 = var2.y;
-            double var7 = var2.z;
-            float var9 = var2.yaw;
-            float var10 = var2.pitch;
-            if (var1.changePosition)
+            worldClient.removeEntityFromWorld(packet.entityId);
+        }
+
+        public override void onPlayerMove(PlayerMovePacket packet)
+        {
+            ClientPlayerEntity ent = mc.player;
+            double x = ent.x;
+            double y = ent.y;
+            double z = ent.z;
+            float yaw = ent.yaw;
+            float pitch = ent.pitch;
+            if (packet.changePosition)
             {
-                var3 = var1.x;
-                var5 = var1.y;
-                var7 = var1.z;
+                x = packet.x;
+                y = packet.y;
+                z = packet.z;
             }
 
-            if (var1.changeLook)
+            if (packet.changeLook)
             {
-                var9 = var1.yaw;
-                var10 = var1.pitch;
+                yaw = packet.yaw;
+                pitch = packet.pitch;
             }
 
-            var2.cameraOffset = 0.0F;
-            var2.velocityX = var2.velocityY = var2.velocityZ = 0.0D;
-            var2.setPositionAndAngles(var3, var5, var7, var9, var10);
-            var1.x = var2.x;
-            var1.y = var2.boundingBox.minY;
-            var1.z = var2.z;
-            var1.eyeHeight = var2.y;
-            netManager.sendPacket(var1);
-            if (!field_1210_g)
+            ent.cameraOffset = 0.0F;
+            ent.velocityX = ent.velocityY = ent.velocityZ = 0.0D;
+            ent.setPositionAndAngles(x, y, z, yaw, pitch);
+            packet.x = ent.x;
+            packet.y = ent.boundingBox.minY;
+            packet.z = ent.z;
+            packet.eyeHeight = ent.y;
+            netManager.sendPacket(packet);
+            if (!terrainLoaded)
             {
                 mc.player.prevX = mc.player.x;
                 mc.player.prevY = mc.player.y;
                 mc.player.prevZ = mc.player.z;
-                field_1210_g = true;
+                terrainLoaded = true;
                 mc.displayGuiScreen(null);
             }
 
         }
 
-        public override void onChunkStatusUpdate(ChunkStatusUpdateS2CPacket var1)
+        public override void onChunkStatusUpdate(ChunkStatusUpdateS2CPacket packet)
         {
-            worldClient.updateChunk(var1.x, var1.z, var1.load);
+            worldClient.updateChunk(packet.x, packet.z, packet.load);
         }
 
-        public override void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket var1)
+        public override void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet)
         {
-            Chunk var2 = worldClient.getChunk(var1.x, var1.z);
-            int var3 = var1.x * 16;
-            int var4 = var1.z * 16;
+            Chunk chunk = worldClient.getChunk(packet.x, packet.z);
+            int x = packet.x * 16;
+            int y = packet.z * 16;
 
-            for (int var5 = 0; var5 < var1._size; ++var5)
+            for (int i = 0; i < packet._size; ++i)
             {
-                short var6 = var1.positions[var5];
-                int var7 = var1.blockRawIds[var5] & 255;
-                byte var8 = var1.blockMetadata[var5];
-                int var9 = var6 >> 12 & 15;
-                int var10 = var6 >> 8 & 15;
-                int var11 = var6 & 255;
-                var2.setBlock(var9, var11, var10, var7, var8);
-                worldClient.clearBlockResets(var9 + var3, var11, var10 + var4, var9 + var3, var11, var10 + var4);
-                worldClient.setBlocksDirty(var9 + var3, var11, var10 + var4, var9 + var3, var11, var10 + var4);
+                short positions = packet.positions[i];
+                int blockRawId = packet.blockRawIds[i] & 255;
+                byte metadata = packet.blockMetadata[i];
+                int blockX = positions >> 12 & 15;
+                int blockZ = positions >> 8 & 15;
+                int blockY = positions & 255;
+                chunk.setBlock(blockX, blockY, blockZ, blockRawId, metadata);
+                worldClient.clearBlockResets(blockX + x, blockY, blockZ + y, blockX + x, blockY, blockZ + y);
+                worldClient.setBlocksDirty(blockX + x, blockY, blockZ + y, blockX + x, blockY, blockZ + y);
             }
 
         }
 
-        public override void handleChunkData(ChunkDataS2CPacket var1)
+        public override void handleChunkData(ChunkDataS2CPacket packet)
         {
-            worldClient.clearBlockResets(var1.x, var1.y, var1.z, var1.x + var1.sizeX - 1, var1.y + var1.sizeY - 1, var1.z + var1.sizeZ - 1);
-            worldClient.handleChunkDataUpdate(var1.x, var1.y, var1.z, var1.sizeX, var1.sizeY, var1.sizeZ, var1.chunkData);
+            worldClient.clearBlockResets(packet.x, packet.y, packet.z, packet.x + packet.sizeX - 1, packet.y + packet.sizeY - 1, packet.z + packet.sizeZ - 1);
+            worldClient.handleChunkDataUpdate(packet.x, packet.y, packet.z, packet.sizeX, packet.sizeY, packet.sizeZ, packet.chunkData);
         }
 
-        public override void onBlockUpdate(BlockUpdateS2CPacket var1)
+        public override void onBlockUpdate(BlockUpdateS2CPacket packet)
         {
-            worldClient.setBlockWithMetaFromPacket(var1.x, var1.y, var1.z, var1.blockRawId, var1.blockMetadata);
+            worldClient.setBlockWithMetaFromPacket(packet.x, packet.y, packet.z, packet.blockRawId, packet.blockMetadata);
         }
 
-        public override void onDisconnect(DisconnectPacket var1)
+        public override void onDisconnect(DisconnectPacket packet)
         {
             netManager.disconnect("disconnect.kicked", new object[0]);
             disconnected = true;
             mc.changeWorld1(null);
-            mc.displayGuiScreen(new GuiConnectFailed("disconnect.disconnected", "disconnect.genericReason", new object[] { var1.reason }));
+            mc.displayGuiScreen(new GuiConnectFailed("disconnect.disconnected", "disconnect.genericReason", new object[] { packet.reason }));
         }
 
-        public override void onDisconnected(string var1, object[] var2)
+        public override void onDisconnected(string reason, object[] args)
         {
             if (!disconnected)
             {
                 disconnected = true;
                 mc.changeWorld1(null);
-                mc.displayGuiScreen(new GuiConnectFailed("disconnect.lost", var1, var2));
+                mc.displayGuiScreen(new GuiConnectFailed("disconnect.lost", reason, args));
             }
         }
 
-        public void sendPacketAndDisconnect(Packet var1)
+        public void sendPacketAndDisconnect(Packet packet)
         {
             if (!disconnected)
             {
-                netManager.sendPacket(var1);
+                netManager.sendPacket(packet);
                 netManager.disconnect();
             }
         }
 
-        public void addToSendQueue(Packet var1)
+        public void addToSendQueue(Packet packet)
         {
             if (!disconnected)
             {
-                netManager.sendPacket(var1);
+                netManager.sendPacket(packet);
             }
         }
 
-        public override void onItemPickupAnimation(ItemPickupAnimationS2CPacket var1)
+        public override void onItemPickupAnimation(ItemPickupAnimationS2CPacket packet)
         {
-            Entity var2 = getEntityByID(var1.entityId);
-            object var3 = (EntityLiving)getEntityByID(var1.collectorEntityId);
-            if (var3 == null)
+            Entity ent = getEntityByID(packet.entityId);
+            object collector = (EntityLiving)getEntityByID(packet.collectorEntityId);
+            if (collector == null)
             {
-                var3 = mc.player;
+                collector = mc.player;
             }
 
-            if (var2 != null)
+            if (ent != null)
             {
-                worldClient.playSound(var2, "random.pop", 0.2F, ((rand.nextFloat() - rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
-                mc.particleManager.addEffect(new EntityPickupFX(mc.world, var2, (Entity)var3, -0.5F));
-                worldClient.removeEntityFromWorld(var1.entityId);
+                worldClient.playSound(ent, "random.pop", 0.2F, ((rand.nextFloat() - rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                mc.particleManager.addEffect(new EntityPickupFX(mc.world, ent, (Entity)collector, -0.5F));
+                worldClient.removeEntityFromWorld(packet.entityId);
             }
 
         }
 
-        public override void onChatMessage(ChatMessagePacket var1)
+        public override void onChatMessage(ChatMessagePacket packet)
         {
-            mc.ingameGUI.addChatMessage(var1.chatMessage);
+            mc.ingameGUI.addChatMessage(packet.chatMessage);
         }
 
-        public override void onEntityAnimation(EntityAnimationPacket var1)
+        public override void onEntityAnimation(EntityAnimationPacket packet)
         {
-            Entity var2 = getEntityByID(var1.id);
-            if (var2 != null)
+            Entity ent = getEntityByID(packet.id);
+            if (ent != null)
             {
-                EntityPlayer var3;
-                if (var1.animationId == 1)
+                EntityPlayer player;
+                if (packet.animationId == 1)
                 {
-                    var3 = (EntityPlayer)var2;
-                    var3.swingHand();
+                    player = (EntityPlayer)ent;
+                    player.swingHand();
                 }
-                else if (var1.animationId == 2)
+                else if (packet.animationId == 2)
                 {
-                    var2.animateHurt();
+                    ent.animateHurt();
                 }
-                else if (var1.animationId == 3)
+                else if (packet.animationId == 3)
                 {
-                    var3 = (EntityPlayer)var2;
-                    var3.wakeUp(false, false, false);
+                    player = (EntityPlayer)ent;
+                    player.wakeUp(false, false, false);
                 }
-                else if (var1.animationId == 4)
+                else if (packet.animationId == 4)
                 {
-                    var3 = (EntityPlayer)var2;
-                    var3.spawn();
+                    player = (EntityPlayer)ent;
+                    player.spawn();
                 }
 
             }
         }
 
-        public override void onPlayerSleepUpdate(PlayerSleepUpdateS2CPacket var1)
+        public override void onPlayerSleepUpdate(PlayerSleepUpdateS2CPacket packet)
         {
-            Entity var2 = getEntityByID(var1.id);
-            if (var2 != null)
+            Entity ent = getEntityByID(packet.id);
+            if (ent != null)
             {
-                if (var1.status == 0)
+                if (packet.status == 0)
                 {
-                    EntityPlayer var3 = (EntityPlayer)var2;
-                    var3.trySleep(var1.x, var1.y, var1.z);
+                    EntityPlayer player = (EntityPlayer)ent;
+                    player.trySleep(packet.x, packet.y, packet.z);
                 }
 
             }
         }
 
-        public override void onHandshake(HandshakePacket var1)
+        public override void onHandshake(HandshakePacket packet)
         {
-            if (var1.username.Equals("-"))
+            if (packet.username.Equals("-"))
             {
                 addToSendQueue(new LoginHelloPacket(mc.session.username, 14));
             }
@@ -469,24 +469,24 @@ namespace betareborn.Client.Network
             {
                 try
                 {
-                    URL var2 = new URL("http://www.minecraft.net/game/joinserver.jsp?user=" + mc.session.username + "&sessionId=" + mc.session.sessionId + "&serverId=" + var1.username);
-                    BufferedReader var3 = new BufferedReader(new InputStreamReader(var2.openStream()));
-                    string var4 = var3.readLine();
-                    var3.close();
+                    URL authUrl = new URL("http://www.minecraft.net/game/joinserver.jsp?user=" + mc.session.username + "&sessionId=" + mc.session.sessionId + "&serverId=" + packet.username);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(authUrl.openStream()));
+                    string response = reader.readLine();
+                    reader.close();
                     //TODO: AUTH
-                    if (var4 == null || var4.Equals("ok", StringComparison.OrdinalIgnoreCase))
+                    if (response == null || response.Equals("ok", StringComparison.OrdinalIgnoreCase))
                     {
                         addToSendQueue(new LoginHelloPacket(mc.session.username, 14));
                     }
                     else
                     {
-                        netManager.disconnect("disconnect.loginFailedInfo", new object[] { var4 });
+                        netManager.disconnect("disconnect.loginFailedInfo", new object[] { response });
                     }
                 }
-                catch (java.lang.Exception var5)
+                catch (java.lang.Exception ex)
                 {
-                    var5.printStackTrace();
-                    netManager.disconnect("disconnect.genericReason", new object[] { "Internal client error: " + var5.toString() });
+                    ex.printStackTrace();
+                    netManager.disconnect("disconnect.genericReason", new object[] { "Internal client error: " + ex.toString() });
                 }
             }
 
@@ -499,253 +499,253 @@ namespace betareborn.Client.Network
             netManager.disconnect("disconnect.closed", new object[0]);
         }
 
-        public override void onLivingEntitySpawn(LivingEntitySpawnS2CPacket var1)
+        public override void onLivingEntitySpawn(LivingEntitySpawnS2CPacket packet)
         {
-            double var2 = var1.xPosition / 32.0D;
-            double var4 = var1.yPosition / 32.0D;
-            double var6 = var1.zPosition / 32.0D;
-            float var8 = var1.yaw * 360 / 256.0F;
-            float var9 = var1.pitch * 360 / 256.0F;
-            EntityLiving var10 = (EntityLiving)EntityRegistry.create(var1.type, mc.world);
-            var10.trackedPosX = var1.xPosition;
-            var10.trackedPosY = var1.yPosition;
-            var10.trackedPosZ = var1.zPosition;
-            var10.id = var1.entityId;
-            var10.setPositionAndAngles(var2, var4, var6, var8, var9);
-            var10.interpolateOnly = true;
-            worldClient.forceEntity(var1.entityId, var10);
-            java.util.List var11 = var1.getMetadata();
-            if (var11 != null)
+            double x = packet.xPosition / 32.0D;
+            double y = packet.yPosition / 32.0D;
+            double z = packet.zPosition / 32.0D;
+            float yaw = packet.yaw * 360 / 256.0F;
+            float pitch = packet.pitch * 360 / 256.0F;
+            EntityLiving ent = (EntityLiving)EntityRegistry.create(packet.type, mc.world);
+            ent.trackedPosX = packet.xPosition;
+            ent.trackedPosY = packet.yPosition;
+            ent.trackedPosZ = packet.zPosition;
+            ent.id = packet.entityId;
+            ent.setPositionAndAngles(x, y, z, yaw, pitch);
+            ent.interpolateOnly = true;
+            worldClient.forceEntity(packet.entityId, ent);
+            java.util.List metaData = packet.getMetadata();
+            if (metaData != null)
             {
-                var10.getDataWatcher().updateWatchedObjectsFromList(var11);
+                ent.getDataWatcher().updateWatchedObjectsFromList(metaData);
             }
 
         }
 
-        public override void onWorldTimeUpdate(WorldTimeUpdateS2CPacket var1)
+        public override void onWorldTimeUpdate(WorldTimeUpdateS2CPacket packet)
         {
-            mc.world.setTime(var1.time);
+            mc.world.setTime(packet.time);
         }
 
-        public override void onPlayerSpawnPosition(PlayerSpawnPositionS2CPacket var1)
+        public override void onPlayerSpawnPosition(PlayerSpawnPositionS2CPacket packet)
         {
-            mc.player.setSpawnPos(new Vec3i(var1.x, var1.y, var1.z));
-            mc.world.getProperties().setSpawn(var1.x, var1.y, var1.z);
+            mc.player.setSpawnPos(new Vec3i(packet.x, packet.y, packet.z));
+            mc.world.getProperties().setSpawn(packet.x, packet.y, packet.z);
         }
 
-        public override void onEntityVehicleSet(EntityVehicleSetS2CPacket var1)
+        public override void onEntityVehicleSet(EntityVehicleSetS2CPacket packet)
         {
-            object var2 = getEntityByID(var1.entityId);
-            Entity var3 = getEntityByID(var1.vehicleEntityId);
-            if (var1.entityId == mc.player.id)
+            object rider = getEntityByID(packet.entityId);
+            Entity ent = getEntityByID(packet.vehicleEntityId);
+            if (packet.entityId == mc.player.id)
             {
-                var2 = mc.player;
+                rider = mc.player;
             }
 
-            if (var2 != null)
+            if (rider != null)
             {
-                ((Entity)var2).setVehicle(var3);
+                ((Entity)rider).setVehicle(ent);
             }
         }
 
-        public override void onEntityStatus(EntityStatusS2CPacket var1)
+        public override void onEntityStatus(EntityStatusS2CPacket packet)
         {
-            Entity var2 = getEntityByID(var1.entityId);
-            if (var2 != null)
+            Entity ent = getEntityByID(packet.entityId);
+            if (ent != null)
             {
-                var2.processServerEntityStatus(var1.entityStatus);
+                ent.processServerEntityStatus(packet.entityStatus);
             }
 
         }
 
-        private Entity getEntityByID(int var1)
+        private Entity getEntityByID(int entityId)
         {
-            return var1 == mc.player.id ? mc.player : worldClient.getEntity(var1);
+            return entityId == mc.player.id ? mc.player : worldClient.getEntity(entityId);
         }
 
-        public override void onHealthUpdate(HealthUpdateS2CPacket var1)
+        public override void onHealthUpdate(HealthUpdateS2CPacket packet)
         {
-            mc.player.setHealth(var1.healthMP);
+            mc.player.setHealth(packet.healthMP);
         }
 
-        public override void onPlayerRespawn(PlayerRespawnPacket var1)
+        public override void onPlayerRespawn(PlayerRespawnPacket packet)
         {
-            if (var1.field_28048_a != mc.player.dimensionId)
+            if (packet.dimensionId != mc.player.dimensionId)
             {
-                field_1210_g = false;
-                worldClient = new ClientWorld(this, worldClient.getProperties().getRandomSeed(), var1.field_28048_a);
+                terrainLoaded = false;
+                worldClient = new ClientWorld(this, worldClient.getProperties().getRandomSeed(), packet.dimensionId);
                 worldClient.isRemote = true;
                 mc.changeWorld1(worldClient);
-                mc.player.dimensionId = var1.field_28048_a;
+                mc.player.dimensionId = packet.dimensionId;
                 mc.displayGuiScreen(new GuiDownloadTerrain(this));
             }
 
-            mc.respawn(true, var1.field_28048_a);
+            mc.respawn(true, packet.dimensionId);
         }
 
-        public override void onExplosion(ExplosionS2CPacket var1)
+        public override void onExplosion(ExplosionS2CPacket packet)
         {
-            Explosion var2 = new Explosion(mc.world, null, var1.explosionX, var1.explosionY, var1.explosionZ, var1.explosionSize);
-            var2.destroyedBlockPositions = var1.destroyedBlockPositions;
-            var2.doExplosionB(true);
+            Explosion explosion = new Explosion(mc.world, null, packet.explosionX, packet.explosionY, packet.explosionZ, packet.explosionSize);
+            explosion.destroyedBlockPositions = packet.destroyedBlockPositions;
+            explosion.doExplosionB(true);
         }
 
-        public override void onOpenScreen(OpenScreenS2CPacket var1)
+        public override void onOpenScreen(OpenScreenS2CPacket packet)
         {
-            if (var1.screenHandlerId == 0)
+            if (packet.screenHandlerId == 0)
             {
-                InventoryBasic var2 = new InventoryBasic(var1.name, var1.slotsCount);
-                mc.player.openChestScreen(var2);
-                mc.player.currentScreenHandler.syncId = var1.syncId;
+                InventoryBasic inventory = new InventoryBasic(packet.name, packet.slotsCount);
+                mc.player.openChestScreen(inventory);
+                mc.player.currentScreenHandler.syncId = packet.syncId;
             }
-            else if (var1.screenHandlerId == 2)
+            else if (packet.screenHandlerId == 2)
             {
-                BlockEntityFurnace var3 = new BlockEntityFurnace();
-                mc.player.openFurnaceScreen(var3);
-                mc.player.currentScreenHandler.syncId = var1.syncId;
+                BlockEntityFurnace furnace = new BlockEntityFurnace();
+                mc.player.openFurnaceScreen(furnace);
+                mc.player.currentScreenHandler.syncId = packet.syncId;
             }
-            else if (var1.screenHandlerId == 3)
+            else if (packet.screenHandlerId == 3)
             {
-                BlockEntityDispenser var4 = new BlockEntityDispenser();
-                mc.player.openDispenserScreen(var4);
-                mc.player.currentScreenHandler.syncId = var1.syncId;
+                BlockEntityDispenser dispenser = new BlockEntityDispenser();
+                mc.player.openDispenserScreen(dispenser);
+                mc.player.currentScreenHandler.syncId = packet.syncId;
             }
-            else if (var1.screenHandlerId == 1)
+            else if (packet.screenHandlerId == 1)
             {
-                ClientPlayerEntity var5 = mc.player;
-                mc.player.openCraftingScreen(MathHelper.floor_double(var5.x), MathHelper.floor_double(var5.y), MathHelper.floor_double(var5.z));
-                mc.player.currentScreenHandler.syncId = var1.syncId;
+                ClientPlayerEntity player = mc.player;
+                mc.player.openCraftingScreen(MathHelper.floor_double(player.x), MathHelper.floor_double(player.y), MathHelper.floor_double(player.z));
+                mc.player.currentScreenHandler.syncId = packet.syncId;
             }
 
         }
 
-        public override void onScreenHandlerSlotUpdate(ScreenHandlerSlotUpdateS2CPacket var1)
+        public override void onScreenHandlerSlotUpdate(ScreenHandlerSlotUpdateS2CPacket packet)
         {
-            if (var1.syncId == -1)
+            if (packet.syncId == -1)
             {
-                mc.player.inventory.setItemStack(var1.stack);
+                mc.player.inventory.setItemStack(packet.stack);
             }
-            else if (var1.syncId == 0 && var1.slot >= 36 && var1.slot < 45)
+            else if (packet.syncId == 0 && packet.slot >= 36 && packet.slot < 45)
             {
-                ItemStack var2 = mc.player.playerScreenHandler.getSlot(var1.slot).getStack();
-                if (var1.stack != null && (var2 == null || var2.count < var1.stack.count))
+                ItemStack itemStack = mc.player.playerScreenHandler.getSlot(packet.slot).getStack();
+                if (packet.stack != null && (itemStack == null || itemStack.count < packet.stack.count))
                 {
-                    var1.stack.bobbingAnimationTime = 5;
+                    packet.stack.bobbingAnimationTime = 5;
                 }
 
-                mc.player.playerScreenHandler.setStackInSlot(var1.slot, var1.stack);
+                mc.player.playerScreenHandler.setStackInSlot(packet.slot, packet.stack);
             }
-            else if (var1.syncId == mc.player.currentScreenHandler.syncId)
+            else if (packet.syncId == mc.player.currentScreenHandler.syncId)
             {
-                mc.player.currentScreenHandler.setStackInSlot(var1.slot, var1.stack);
+                mc.player.currentScreenHandler.setStackInSlot(packet.slot, packet.stack);
             }
 
         }
 
-        public override void onScreenHandlerAcknowledgement(ScreenHandlerAcknowledgementPacket var1)
+        public override void onScreenHandlerAcknowledgement(ScreenHandlerAcknowledgementPacket packet)
         {
-            ScreenHandler var2 = null;
-            if (var1.syncId == 0)
+            ScreenHandler screenHandler = null;
+            if (packet.syncId == 0)
             {
-                var2 = mc.player.playerScreenHandler;
+                screenHandler = mc.player.playerScreenHandler;
             }
-            else if (var1.syncId == mc.player.currentScreenHandler.syncId)
+            else if (packet.syncId == mc.player.currentScreenHandler.syncId)
             {
-                var2 = mc.player.currentScreenHandler;
+                screenHandler = mc.player.currentScreenHandler;
             }
 
-            if (var2 != null)
+            if (screenHandler != null)
             {
-                if (var1.accepted)
+                if (packet.accepted)
                 {
-                    var2.onAcknowledgementAccepted(var1.actionType);
+                    screenHandler.onAcknowledgementAccepted(packet.actionType);
                 }
                 else
                 {
-                    var2.onAcknowledgementDenied(var1.actionType);
-                    addToSendQueue(new ScreenHandlerAcknowledgementPacket(var1.syncId, var1.actionType, true));
+                    screenHandler.onAcknowledgementDenied(packet.actionType);
+                    addToSendQueue(new ScreenHandlerAcknowledgementPacket(packet.syncId, packet.actionType, true));
                 }
             }
 
         }
 
-        public override void onInventory(InventoryS2CPacket var1)
+        public override void onInventory(InventoryS2CPacket packet)
         {
-            if (var1.syncId == 0)
+            if (packet.syncId == 0)
             {
-                mc.player.playerScreenHandler.updateSlotStacks(var1.contents);
+                mc.player.playerScreenHandler.updateSlotStacks(packet.contents);
             }
-            else if (var1.syncId == mc.player.currentScreenHandler.syncId)
+            else if (packet.syncId == mc.player.currentScreenHandler.syncId)
             {
-                mc.player.currentScreenHandler.updateSlotStacks(var1.contents);
+                mc.player.currentScreenHandler.updateSlotStacks(packet.contents);
             }
 
         }
 
-        public override void handleUpdateSign(UpdateSignPacket var1)
+        public override void handleUpdateSign(UpdateSignPacket packet)
         {
-            if (mc.world.isPosLoaded(var1.x, var1.y, var1.z))
+            if (mc.world.isPosLoaded(packet.x, packet.y, packet.z))
             {
-                BlockEntity var2 = mc.world.getBlockEntity(var1.x, var1.y, var1.z);
-                if (var2 is BlockEntitySign)
+                BlockEntity blockEnt = mc.world.getBlockEntity(packet.x, packet.y, packet.z);
+                if (blockEnt is BlockEntitySign)
                 {
-                    BlockEntitySign var3 = (BlockEntitySign)var2;
+                    BlockEntitySign signEntity = (BlockEntitySign)blockEnt;
 
-                    for (int var4 = 0; var4 < 4; ++var4)
+                    for (int i = 0; i < 4; ++i)
                     {
-                        var3.texts[var4] = var1.text[var4];
+                        signEntity.texts[i] = packet.text[i];
                     }
 
-                    var3.markDirty();
+                    signEntity.markDirty();
                 }
             }
 
         }
 
-        public override void onScreenHandlerPropertyUpdate(ScreenHandlerPropertyUpdateS2CPacket var1)
+        public override void onScreenHandlerPropertyUpdate(ScreenHandlerPropertyUpdateS2CPacket packet)
         {
-            handle(var1);
-            if (mc.player.currentScreenHandler != null && mc.player.currentScreenHandler.syncId == var1.syncId)
+            handle(packet);
+            if (mc.player.currentScreenHandler != null && mc.player.currentScreenHandler.syncId == packet.syncId)
             {
-                mc.player.currentScreenHandler.setProperty(var1.propertyId, var1.value);
+                mc.player.currentScreenHandler.setProperty(packet.propertyId, packet.value);
             }
 
         }
 
-        public override void onEntityEquipmentUpdate(EntityEquipmentUpdateS2CPacket var1)
+        public override void onEntityEquipmentUpdate(EntityEquipmentUpdateS2CPacket packet)
         {
-            Entity var2 = getEntityByID(var1.id);
-            if (var2 != null)
+            Entity ent = getEntityByID(packet.id);
+            if (ent != null)
             {
-                var2.setEquipmentStack(var1.slot, var1.itemRawId, var1.itemDamage);
+                ent.setEquipmentStack(packet.slot, packet.itemRawId, packet.itemDamage);
             }
 
         }
 
-        public override void onCloseScreen(CloseScreenS2CPacket var1)
+        public override void onCloseScreen(CloseScreenS2CPacket packet)
         {
             mc.player.closeHandledScreen();
         }
 
-        public override void onPlayNoteSound(PlayNoteSoundS2CPacket var1)
+        public override void onPlayNoteSound(PlayNoteSoundS2CPacket packet)
         {
-            mc.world.playNoteBlockActionAt(var1.xLocation, var1.yLocation, var1.zLocation, var1.instrumentType, var1.pitch);
+            mc.world.playNoteBlockActionAt(packet.xLocation, packet.yLocation, packet.zLocation, packet.instrumentType, packet.pitch);
         }
 
-        public override void onGameStateChange(GameStateChangeS2CPacket var1)
+        public override void onGameStateChange(GameStateChangeS2CPacket packet)
         {
-            int var2 = var1.reason;
-            if (var2 >= 0 && var2 < GameStateChangeS2CPacket.REASONS.Length && GameStateChangeS2CPacket.REASONS[var2] != null)
+            int reason = packet.reason;
+            if (reason >= 0 && reason < GameStateChangeS2CPacket.REASONS.Length && GameStateChangeS2CPacket.REASONS[reason] != null)
             {
-                mc.player.sendMessage(GameStateChangeS2CPacket.REASONS[var2]);
+                mc.player.sendMessage(GameStateChangeS2CPacket.REASONS[reason]);
             }
 
-            if (var2 == 1)
+            if (reason == 1)
             {
                 worldClient.getProperties().setRaining(true);
                 worldClient.setRainGradient(1.0F);
             }
-            else if (var2 == 2)
+            else if (reason == 2)
             {
                 worldClient.getProperties().setRaining(false);
                 worldClient.setRainGradient(0.0F);
@@ -753,27 +753,27 @@ namespace betareborn.Client.Network
 
         }
 
-        public override void onMapUpdate(MapUpdateS2CPacket var1)
+        public override void onMapUpdate(MapUpdateS2CPacket packet)
         {
-            if (var1.itemRawId == Item.MAP.id)
+            if (packet.itemRawId == Item.MAP.id)
             {
-                ItemMap.getMapState(var1.id, mc.world).func_28171_a(var1.updateData);
+                ItemMap.getMapState(packet.id, mc.world).updateData(packet.updateData);
             }
             else
             {
-                java.lang.System.@out.println("Unknown itemid: " + var1.id);
+                java.lang.System.@out.println("Unknown itemid: " + packet.id);
             }
 
         }
 
-        public override void onWorldEvent(WorldEventS2CPacket var1)
+        public override void onWorldEvent(WorldEventS2CPacket packet)
         {
-            mc.world.worldEvent(var1.eventId, var1.x, var1.y, var1.z, var1.data);
+            mc.world.worldEvent(packet.eventId, packet.x, packet.y, packet.z, packet.data);
         }
 
-        public override void onIncreaseStat(IncreaseStatS2CPacket var1)
+        public override void onIncreaseStat(IncreaseStatS2CPacket packet)
         {
-            ((EntityClientPlayerMP)mc.player).func_27027_b(Stats.Stats.getStatById(var1.statId), var1.amount);
+            ((EntityClientPlayerMP)mc.player).func_27027_b(Stats.Stats.getStatById(packet.statId), packet.amount);
         }
 
         public override bool isServerSide()

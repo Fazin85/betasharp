@@ -15,12 +15,12 @@ namespace betareborn.Network.Packets.S2CPlay
 
         public BlockUpdateS2CPacket()
         {
-            worldPacket = true;
+            worldPacket = false;
         }
 
         public BlockUpdateS2CPacket(int x, int y, int z, World world)
         {
-            worldPacket = true;
+            worldPacket = false;
             this.x = x;
             this.y = y;
             this.z = z;

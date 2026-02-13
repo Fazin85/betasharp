@@ -13,29 +13,29 @@ namespace betareborn.Client.Network
         public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityClientPlayerMP).TypeHandle);
 
         public ClientNetworkHandler sendQueue;
-        private int field_9380_bx = 0;
-        private bool field_21093_bH = false;
+        private int inventorySyncTickCounter = 0;
+        private bool hasReceivedInitialHealth = false;
         private double oldPosX;
-        private double field_9378_bz;
+        private double lastSentMinY;
         private double oldPosY;
         private double oldPosZ;
         private float oldRotationYaw;
         private float oldRotationPitch;
-        private bool field_9382_bF = false;
+        private bool lastOnGround = false;
         private bool wasSneaking = false;
-        private int field_12242_bI = 0;
+        private int positionOnlyPacketCount = 0;
 
-        public EntityClientPlayerMP(Minecraft var1, World var2, Session var3, ClientNetworkHandler var4) : base(var1, var2, var3, 0)
+        public EntityClientPlayerMP(Minecraft mc, World world, Session session, ClientNetworkHandler clientNetworkHandler) : base(mc, world, session, 0)
         {
-            sendQueue = var4;
+            sendQueue = clientNetworkHandler;
         }
 
-        public override bool damage(Entity var1, int var2)
+        public override bool damage(Entity ent, int amount)
         {
             return false;
         }
 
-        public override void heal(int var1)
+        public override void heal(int amount)
         {
         }
 
@@ -50,16 +50,16 @@ namespace betareborn.Client.Network
 
         public void func_4056_N()
         {
-            if (field_9380_bx++ == 20)
+            if (inventorySyncTickCounter++ == 20)
             {
                 sendInventoryChanged();
-                field_9380_bx = 0;
+                inventorySyncTickCounter = 0;
             }
 
-            bool var1 = isSneaking();
-            if (var1 != wasSneaking)
+            bool isSneaking = base.isSneaking();
+            if (isSneaking != wasSneaking)
             {
-                if (var1)
+                if (isSneaking)
                 {
                     sendQueue.addToSendQueue(new ClientCommandC2SPacket(this, 1));
                 }
@@ -68,20 +68,20 @@ namespace betareborn.Client.Network
                     sendQueue.addToSendQueue(new ClientCommandC2SPacket(this, 2));
                 }
 
-                wasSneaking = var1;
+                wasSneaking = isSneaking;
             }
 
-            double var2 = x - oldPosX;
-            double var4 = boundingBox.minY - field_9378_bz;
-            double var6 = y - oldPosY;
-            double var8 = z - oldPosZ;
-            double var10 = (double)(yaw - oldRotationYaw);
-            double var12 = (double)(pitch - oldRotationPitch);
-            bool var14 = var4 != 0.0D || var6 != 0.0D || var2 != 0.0D || var8 != 0.0D;
-            bool var15 = var10 != 0.0D || var12 != 0.0D;
+            double dx = x - oldPosX;
+            double dMinY = boundingBox.minY - lastSentMinY;
+            double dy = y - oldPosY;
+            double dz = z - oldPosZ;
+            double dYaw = (double)(yaw - oldRotationYaw);
+            double yPitch = (double)(pitch - oldRotationPitch);
+            bool positionChanged = dMinY != 0.0D || dy != 0.0D || dx != 0.0D || dz != 0.0D;
+            bool rotationChanged = dYaw != 0.0D || yPitch != 0.0D;
             if (vehicle != null)
             {
-                if (var15)
+                if (rotationChanged)
                 {
                     sendQueue.addToSendQueue(new PlayerMovePositionAndOnGroundPacket(velocityX, -999.0D, -999.0D, velocityZ, onGround));
                 }
@@ -90,46 +90,46 @@ namespace betareborn.Client.Network
                     sendQueue.addToSendQueue(new PlayerMoveFullPacket(velocityX, -999.0D, -999.0D, velocityZ, yaw, pitch, onGround));
                 }
 
-                var14 = false;
+                positionChanged = false;
             }
-            else if (var14 && var15)
+            else if (positionChanged && rotationChanged)
             {
                 sendQueue.addToSendQueue(new PlayerMoveFullPacket(x, boundingBox.minY, y, z, yaw, pitch, onGround));
-                field_12242_bI = 0;
+                positionOnlyPacketCount = 0;
             }
-            else if (var14)
+            else if (positionChanged)
             {
                 sendQueue.addToSendQueue(new PlayerMovePositionAndOnGroundPacket(x, boundingBox.minY, y, z, onGround));
-                field_12242_bI = 0;
+                positionOnlyPacketCount = 0;
             }
-            else if (var15)
+            else if (rotationChanged)
             {
                 sendQueue.addToSendQueue(new PlayerMoveLookAndOnGroundPacket(yaw, pitch, onGround));
-                field_12242_bI = 0;
+                positionOnlyPacketCount = 0;
             }
             else
             {
                 sendQueue.addToSendQueue(new PlayerMovePacket(onGround));
-                if (field_9382_bF == onGround && field_12242_bI <= 200)
+                if (lastOnGround == onGround && positionOnlyPacketCount <= 200)
                 {
-                    ++field_12242_bI;
+                    ++positionOnlyPacketCount;
                 }
                 else
                 {
-                    field_12242_bI = 0;
+                    positionOnlyPacketCount = 0;
                 }
             }
 
-            field_9382_bF = onGround;
-            if (var14)
+            lastOnGround = onGround;
+            if (positionChanged)
             {
                 oldPosX = x;
-                field_9378_bz = boundingBox.minY;
+                lastSentMinY = boundingBox.minY;
                 oldPosY = y;
                 oldPosZ = z;
             }
 
-            if (var15)
+            if (rotationChanged)
             {
                 oldRotationYaw = yaw;
                 oldRotationPitch = pitch;
@@ -146,13 +146,13 @@ namespace betareborn.Client.Network
         {
         }
 
-        protected override void spawnItem(EntityItem var1)
+        protected override void spawnItem(EntityItem ent)
         {
         }
 
-        public override void sendChatMessage(string var1)
+        public override void sendChatMessage(string message)
         {
-            sendQueue.addToSendQueue(new ChatMessagePacket(var1));
+            sendQueue.addToSendQueue(new ChatMessagePacket(message));
         }
 
         public override void swingHand()
@@ -167,9 +167,9 @@ namespace betareborn.Client.Network
             sendQueue.addToSendQueue(new PlayerRespawnPacket((sbyte)dimensionId));
         }
 
-        protected override void applyDamage(int var1)
+        protected override void applyDamage(int amount)
         {
-            health -= var1;
+            health -= amount;
         }
 
         public override void closeHandledScreen()
@@ -179,39 +179,39 @@ namespace betareborn.Client.Network
             base.closeHandledScreen();
         }
 
-        public override void setHealth(int var1)
+        public override void setHealth(int amount)
         {
-            if (field_21093_bH)
+            if (hasReceivedInitialHealth)
             {
-                base.setHealth(var1);
+                base.setHealth(amount);
             }
             else
             {
-                health = var1;
-                field_21093_bH = true;
+                health = amount;
+                hasReceivedInitialHealth = true;
             }
 
         }
 
-        public override void increaseStat(StatBase var1, int var2)
+        public override void increaseStat(StatBase stat, int amount)
         {
-            if (var1 != null)
+            if (stat != null)
             {
-                if (var1.localOnly)
+                if (stat.localOnly)
                 {
-                    base.increaseStat(var1, var2);
+                    base.increaseStat(stat, amount);
                 }
 
             }
         }
 
-        public void func_27027_b(StatBase var1, int var2)
+        public void func_27027_b(StatBase stat, int amount)
         {
-            if (var1 != null)
+            if (stat != null)
             {
-                if (!var1.localOnly)
+                if (!stat.localOnly)
                 {
-                    base.increaseStat(var1, var2);
+                    base.increaseStat(stat, amount);
                 }
 
             }

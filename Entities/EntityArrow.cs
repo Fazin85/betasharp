@@ -154,7 +154,7 @@ namespace betareborn.Entities
                 HitResult hit = world.raycast(rayStart, rayEnd, false, true);
                 if (hit != null)
                 {
-                    rayEnd = hit.pos;
+                    rayEnd = new Vec3D(hit.pos.x, hit.pos.y, hit.pos.z);
                 }
 
                 Entity hitEntity = null;
