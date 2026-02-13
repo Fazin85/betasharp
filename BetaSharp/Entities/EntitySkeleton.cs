@@ -1,0 +1,110 @@
+using BetaSharp.Items;
+using BetaSharp.NBT;
+using BetaSharp.Util.Maths;
+using BetaSharp.Worlds;
+
+namespace BetaSharp.Entities;
+
+public class EntitySkeleton : EntityMonster
+{
+    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntitySkeleton).TypeHandle);
+
+    private static readonly ItemStack defaultHeldItem = new ItemStack(Item.BOW, 1);
+
+    public EntitySkeleton(World world) : base(world)
+    {
+        texture = "/mob/skeleton.png";
+    }
+
+    protected override String getLivingSound()
+    {
+        return "mob.skeleton";
+    }
+
+    protected override String getHurtSound()
+    {
+        return "mob.skeletonhurt";
+    }
+
+    protected override String getDeathSound()
+    {
+        return "mob.skeletonhurt";
+    }
+
+    public override void tickMovement()
+    {
+        if (world.canMonsterSpawn())
+        {
+            float brightness = getBrightnessAtEyes(1.0F);
+            if (brightness > 0.5F && world.hasSkyLight(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z)) && random.nextFloat() * 30.0F < (brightness - 0.4F) * 2.0F)
+            {
+                fireTicks = 300;
+            }
+        }
+
+        base.tickMovement();
+    }
+
+    protected override void attackEntity(Entity entity, float distance)
+    {
+        if (distance < 10.0F)
+        {
+            double dx = entity.x - x;
+            double dy = entity.z - z;
+            if (attackTime == 0)
+            {
+                EntityArrow arrow = new EntityArrow(world, this);
+                arrow.y += (double)1.4F;
+                double targetHeightOffset = entity.y + (double)entity.getEyeHeight() - (double)0.2F - arrow.y;
+                float distanceFactor = MathHelper.sqrt_double(dx * dx + dy * dy) * 0.2F;
+                world.playSound(this, "random.bow", 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
+                world.spawnEntity(arrow);
+                arrow.setArrowHeading(dx, targetHeightOffset + (double)distanceFactor, dy, 0.6F, 12.0F);
+                attackTime = 30;
+            }
+
+            yaw = (float)(System.Math.Atan2(dy, dx) * 180.0D / (double)((float)Math.PI)) - 90.0F;
+            hasAttacked = true;
+        }
+
+    }
+
+    public override void writeNbt(NBTTagCompound nbt)
+    {
+        base.writeNbt(nbt);
+    }
+
+    public override void readNbt(NBTTagCompound nbt)
+    {
+        base.readNbt(nbt);
+    }
+
+    protected override int getDropItemId()
+    {
+        return Item.ARROW.id;
+    }
+
+    protected override void dropFewItems()
+    {
+        int amount = random.nextInt(3);
+
+        int i;
+        for (i = 0; i < amount; ++i)
+        {
+            dropItem(Item.ARROW.id, 1);
+        }
+
+        amount = random.nextInt(3);
+
+        for (i = 0; i < amount; ++i)
+        {
+            dropItem(Item.BONE.id, 1);
+        }
+
+    }
+
+    public override ItemStack getHeldItem()
+    {
+        return defaultHeldItem;
+    }
+}

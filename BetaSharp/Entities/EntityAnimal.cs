@@ -1,0 +1,44 @@
+using BetaSharp.Blocks;
+using BetaSharp.NBT;
+using BetaSharp.Util.Maths;
+using BetaSharp.Worlds;
+using java.lang;
+
+namespace BetaSharp.Entities;
+
+public abstract class EntityAnimal : EntityCreature, SpawnableEntity
+{
+    public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityAnimal).TypeHandle);
+
+    public EntityAnimal(World world) : base(world)
+    {
+    }
+
+    protected override float getBlockPathWeight(int x, int y, int z)
+    {
+        return world.getBlockId(x, y - 1, z) == Block.GRASS_BLOCK.id ? 10.0F : world.getLuminance(x, y, z) - 0.5F;
+    }
+
+    public override void writeNbt(NBTTagCompound nbt)
+    {
+        base.writeNbt(nbt);
+    }
+
+    public override void readNbt(NBTTagCompound nbt)
+    {
+        base.readNbt(nbt);
+    }
+
+    public override bool canSpawn()
+    {
+        int x = MathHelper.floor_double(base.x);
+        int y = MathHelper.floor_double(boundingBox.minY);
+        int z = MathHelper.floor_double(base.z);
+        return world.getBlockId(x, y - 1, z) == Block.GRASS_BLOCK.id && world.getBrightness(x, y, z) > 8 && base.canSpawn();
+    }
+
+    public override int getTalkInterval()
+    {
+        return 120;
+    }
+}

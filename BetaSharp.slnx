@@ -1,0 +1,10 @@
+<Solution>
+    <Configurations>
+        <BuildType Name="ClientDebug"/>
+        <BuildType Name="ClientRelease"/>
+        <BuildType Name="ServerDebug"/>
+        <BuildType Name="ServerRelease"/>
+    </Configurations>
+    
+    <Project Path="BetaSharp/BetaSharp.csproj"/>
+</Solution>

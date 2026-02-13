@@ -1,0 +1,694 @@
+﻿using BetaSharp.Blocks.Entities;
+using BetaSharp.Entities;
+using BetaSharp.Inventorys;
+using BetaSharp.Items;
+using BetaSharp.Network;
+using BetaSharp.Network.Packets;
+using BetaSharp.Network.Packets.C2SPlay;
+using BetaSharp.Network.Packets.Play;
+using BetaSharp.Network.Packets.S2CPlay;
+using BetaSharp.Screens.Slots;
+using BetaSharp.Server.Commands;
+using BetaSharp.Server.Internal;
+using BetaSharp.Util;
+using BetaSharp.Util.Maths;
+using BetaSharp.Worlds;
+using java.lang;
+using java.util;
+using java.util.logging;
+
+namespace BetaSharp.Server.Network;
+
+public class ServerPlayNetworkHandler : NetHandler, CommandOutput
+{
+    public static Logger LOGGER = Logger.getLogger("Minecraft");
+    public Connection connection;
+    public bool disconnected = false;
+    private MinecraftServer server;
+    private ServerPlayerEntity player;
+    private int ticks;
+    private int lastKeepAliveTime;
+    private int floatingTime;
+    private bool moved;
+    private double teleportTargetX;
+    private double teleportTargetY;
+    private double teleportTargetZ;
+    private bool teleported = true;
+    private Map transactions = new HashMap();
+
+    public ServerPlayNetworkHandler(MinecraftServer server, Connection connection, ServerPlayerEntity player)
+    {
+        this.server = server;
+        this.connection = connection;
+        connection.setNetworkHandler(this);
+        this.player = player;
+        player.networkHandler = this;
+    }
+
+    public void tick()
+    {
+        moved = false;
+        connection.tick();
+        if (ticks - lastKeepAliveTime > 20)
+        {
+            sendPacket(new KeepAlivePacket());
+        }
+    }
+
+    public void disconnect(string reason)
+    {
+        player.onDisconnect();
+        sendPacket(new DisconnectPacket(reason));
+        connection.disconnect();
+        server.playerManager.sendToAll(new ChatMessagePacket("§e" + player.name + " left the game."));
+        server.playerManager.disconnect(player);
+        disconnected = true;
+    }
+
+
+    public override void onPlayerInput(PlayerInputC2SPacket packet)
+    {
+        player.updateInput(packet.getSideways(), packet.getForward(), packet.isJumping(), packet.isSneaking(), packet.getPitch(), packet.getYaw());
+    }
+
+    public override void onPlayerMove(PlayerMovePacket packet)
+    {
+        ServerWorld var2 = server.getWorld(player.dimensionId);
+        moved = true;
+        if (!teleported)
+        {
+            double var3 = packet.y - teleportTargetY;
+            if (packet.x == teleportTargetX && var3 * var3 < 0.01 && packet.z == teleportTargetZ)
+            {
+                teleported = true;
+            }
+        }
+
+        if (teleported)
+        {
+            if (player.vehicle != null)
+            {
+                float var27 = player.yaw;
+                float var4 = player.pitch;
+                player.vehicle.updatePassengerPosition();
+                double var28 = player.x;
+                double var29 = player.y;
+                double var30 = player.z;
+                double var31 = 0.0;
+                double var34 = 0.0;
+                if (packet.changeLook)
+                {
+                    var27 = packet.yaw;
+                    var4 = packet.pitch;
+                }
+
+                if (packet.changePosition && packet.y == -999.0 && packet.eyeHeight == -999.0)
+                {
+                    var31 = packet.x;
+                    var34 = packet.z;
+                }
+
+                player.onGround = packet.onGround;
+                player.playerTick(true);
+                player.move(var31, 0.0, var34);
+                player.setPositionAndAngles(var28, var29, var30, var27, var4);
+                player.velocityX = var31;
+                player.velocityZ = var34;
+                if (player.vehicle != null)
+                {
+                    var2.tickVehicle(player.vehicle, true);
+                }
+
+                if (player.vehicle != null)
+                {
+                    player.vehicle.updatePassengerPosition();
+                }
+
+                server.playerManager.updatePlayerChunks(player);
+                teleportTargetX = player.x;
+                teleportTargetY = player.y;
+                teleportTargetZ = player.z;
+                var2.updateEntity(player);
+                return;
+            }
+
+            if (player.isSleeping())
+            {
+                player.playerTick(true);
+                player.setPositionAndAngles(teleportTargetX, teleportTargetY, teleportTargetZ, player.yaw, player.pitch);
+                var2.updateEntity(player);
+                return;
+            }
+
+            double var26 = player.y;
+            teleportTargetX = player.x;
+            teleportTargetY = player.y;
+            teleportTargetZ = player.z;
+            double var5 = player.x;
+            double var7 = player.y;
+            double var9 = player.z;
+            float var11 = player.yaw;
+            float var12 = player.pitch;
+            if (packet.changePosition && packet.y == -999.0 && packet.eyeHeight == -999.0)
+            {
+                packet.changePosition = false;
+            }
+
+            if (packet.changePosition)
+            {
+                var5 = packet.x;
+                var7 = packet.y;
+                var9 = packet.z;
+                double var13 = packet.eyeHeight - packet.y;
+                if (!player.isSleeping() && (var13 > 1.65 || var13 < 0.1))
+                {
+                    disconnect("Illegal stance");
+                    LOGGER.warning(player.name + " had an illegal stance: " + var13);
+                    return;
+                }
+
+                if (java.lang.Math.abs(packet.x) > 3.2E7 || java.lang.Math.abs(packet.z) > 3.2E7)
+                {
+                    disconnect("Illegal position");
+                    return;
+                }
+            }
+
+            if (packet.changeLook)
+            {
+                var11 = packet.yaw;
+                var12 = packet.pitch;
+            }
+
+            player.playerTick(true);
+            player.cameraOffset = 0.0F;
+            player.setPositionAndAngles(teleportTargetX, teleportTargetY, teleportTargetZ, var11, var12);
+            if (!teleported)
+            {
+                return;
+            }
+
+            double var32 = var5 - player.x;
+            double var15 = var7 - player.y;
+            double var17 = var9 - player.z;
+            double var19 = var32 * var32 + var15 * var15 + var17 * var17;
+            if (var19 > 100.0)
+            {
+                LOGGER.warning(player.name + " moved too quickly!");
+                disconnect("You moved too quickly :( (Hacking?)");
+                return;
+            }
+
+            float var21 = 0.0625F;
+            bool var22 = var2.getEntityCollisions(player, player.boundingBox.contract(var21, var21, var21)).Count == 0;
+            player.move(var32, var15, var17);
+            var32 = var5 - player.x;
+            var15 = var7 - player.y;
+            if (var15 > -0.5 || var15 < 0.5)
+            {
+                var15 = 0.0;
+            }
+
+            var17 = var9 - player.z;
+            var19 = var32 * var32 + var15 * var15 + var17 * var17;
+            bool var23 = false;
+            if (var19 > 0.0625 && !player.isSleeping())
+            {
+                var23 = true;
+                LOGGER.warning(player.name + " moved wrongly!");
+                java.lang.System.@out.println("Got position " + var5 + ", " + var7 + ", " + var9);
+                java.lang.System.@out.println("Expected " + player.x + ", " + player.y + ", " + player.z);
+            }
+
+            player.setPositionAndAngles(var5, var7, var9, var11, var12);
+            bool var24 = var2.getEntityCollisions(player, player.boundingBox.contract(var21, var21, var21)).Count == 0;
+            if (var22 && (var23 || !var24) && !player.isSleeping())
+            {
+                teleport(teleportTargetX, teleportTargetY, teleportTargetZ, var11, var12);
+                return;
+            }
+
+            Box var25 = player.boundingBox.expand(var21, var21, var21).stretch(0.0, -0.55, 0.0);
+            if (server.flightEnabled || var2.isAnyBlockInBox(var25))
+            {
+                floatingTime = 0;
+            }
+            else if (var15 >= -0.03125)
+            {
+                floatingTime++;
+                if (floatingTime > 80)
+                {
+                    LOGGER.warning(player.name + " was kicked for floating too long!");
+                    disconnect("Flying is not enabled on this server");
+                    return;
+                }
+            }
+
+            player.onGround = packet.onGround;
+            server.playerManager.updatePlayerChunks(player);
+            player.handleFall(player.y - var26, packet.onGround);
+        }
+    }
+
+    public void teleport(double x, double y, double z, float yaw, float pitch)
+    {
+        teleported = false;
+        teleportTargetX = x;
+        teleportTargetY = y;
+        teleportTargetZ = z;
+        player.setPositionAndAngles(x, y, z, yaw, pitch);
+        player.networkHandler.sendPacket(new PlayerMoveFullPacket(x, y + 1.62F, y, z, yaw, pitch, false));
+    }
+
+
+    public override void handlePlayerAction(PlayerActionC2SPacket packet)
+    {
+        ServerWorld var2 = server.getWorld(player.dimensionId);
+        if (packet.action == 4)
+        {
+            player.dropSelectedItem();
+        }
+        else
+        {
+            bool var3 = var2.bypassSpawnProtection = var2.dimension.id != 0 || server.playerManager.isOperator(player.name);
+            bool var4 = false;
+            if (packet.action == 0)
+            {
+                var4 = true;
+            }
+
+            if (packet.action == 2)
+            {
+                var4 = true;
+            }
+
+            int var5 = packet.x;
+            int var6 = packet.y;
+            int var7 = packet.z;
+            if (var4)
+            {
+                double var8 = player.x - (var5 + 0.5);
+                double var10 = player.y - (var6 + 0.5);
+                double var12 = player.z - (var7 + 0.5);
+                double var14 = var8 * var8 + var10 * var10 + var12 * var12;
+                if (var14 > 36.0)
+                {
+                    return;
+                }
+            }
+
+            Vec3i var19 = var2.getSpawnPos();
+            int var9 = (int)MathHelper.abs(var5 - var19.x);
+            int var20 = (int)MathHelper.abs(var7 - var19.z);
+            if (var9 > var20)
+            {
+                var20 = var9;
+            }
+
+            if (packet.action == 0)
+            {
+                if (var20 <= 16 && !var3)
+                {
+                    player.networkHandler.sendPacket(new BlockUpdateS2CPacket(var5, var6, var7, var2));
+                }
+                else
+                {
+                    player.interactionManager.onBlockBreakingAction(var5, var6, var7, packet.direction);
+                }
+            }
+            else if (packet.action == 2)
+            {
+                player.interactionManager.continueMining(var5, var6, var7);
+                if (var2.getBlockId(var5, var6, var7) != 0)
+                {
+                    player.networkHandler.sendPacket(new BlockUpdateS2CPacket(var5, var6, var7, var2));
+                }
+            }
+            else if (packet.action == 3)
+            {
+                double var11 = player.x - (var5 + 0.5);
+                double var13 = player.y - (var6 + 0.5);
+                double var15 = player.z - (var7 + 0.5);
+                double var17 = var11 * var11 + var13 * var13 + var15 * var15;
+                if (var17 < 256.0)
+                {
+                    player.networkHandler.sendPacket(new BlockUpdateS2CPacket(var5, var6, var7, var2));
+                }
+            }
+
+            var2.bypassSpawnProtection = false;
+        }
+    }
+
+    public override void onPlayerInteractBlock(PlayerInteractBlockC2SPacket packet)
+    {
+        ServerWorld var2 = server.getWorld(player.dimensionId);
+        ItemStack var3 = player.inventory.getSelectedItem();
+        bool var4 = var2.bypassSpawnProtection = var2.dimension.id != 0 || server.playerManager.isOperator(player.name);
+        if (packet.side == 255)
+        {
+            if (var3 == null)
+            {
+                return;
+            }
+
+            player.interactionManager.interactItem(player, var2, var3);
+        }
+        else
+        {
+            int var5 = packet.x;
+            int var6 = packet.y;
+            int var7 = packet.z;
+            int var8 = packet.side;
+            Vec3i var9 = var2.getSpawnPos();
+            int var10 = (int)MathHelper.abs(var5 - var9.x);
+            int var11 = (int)MathHelper.abs(var7 - var9.z);
+            if (var10 > var11)
+            {
+                var11 = var10;
+            }
+
+            if (teleported && player.getSquaredDistance(var5 + 0.5, var6 + 0.5, var7 + 0.5) < 64.0 && (var11 > 16 || var4))
+            {
+                player.interactionManager.interactBlock(player, var2, var3, var5, var6, var7, var8);
+            }
+
+            player.networkHandler.sendPacket(new BlockUpdateS2CPacket(var5, var6, var7, var2));
+            if (var8 == 0)
+            {
+                var6--;
+            }
+
+            if (var8 == 1)
+            {
+                var6++;
+            }
+
+            if (var8 == 2)
+            {
+                var7--;
+            }
+
+            if (var8 == 3)
+            {
+                var7++;
+            }
+
+            if (var8 == 4)
+            {
+                var5--;
+            }
+
+            if (var8 == 5)
+            {
+                var5++;
+            }
+
+            player.networkHandler.sendPacket(new BlockUpdateS2CPacket(var5, var6, var7, var2));
+        }
+
+        var3 = player.inventory.getSelectedItem();
+        if (var3 != null && var3.count == 0)
+        {
+            player.inventory.main[player.inventory.selectedSlot] = null;
+        }
+
+        player.skipPacketSlotUpdates = true;
+        player.inventory.main[player.inventory.selectedSlot] = ItemStack.clone(player.inventory.main[player.inventory.selectedSlot]);
+        Slot var13 = player.currentScreenHandler.getSlot(player.inventory, player.inventory.selectedSlot);
+        player.currentScreenHandler.sendContentUpdates();
+        player.skipPacketSlotUpdates = false;
+        if (!ItemStack.areEqual(player.inventory.getSelectedItem(), packet.stack))
+        {
+            sendPacket(new ScreenHandlerSlotUpdateS2CPacket(player.currentScreenHandler.syncId, var13.id, player.inventory.getSelectedItem()));
+        }
+
+        var2.bypassSpawnProtection = false;
+    }
+
+    public override void onDisconnected(string reason, object[] objects)
+    {
+        LOGGER.info(player.name + " lost connection: " + reason);
+        server.playerManager.sendToAll(new ChatMessagePacket("§e" + player.name + " left the game."));
+        server.playerManager.disconnect(player);
+        disconnected = true;
+    }
+
+    public override void handle(Packet packet)
+    {
+        LOGGER.warning(getClass() + " wasn't prepared to deal with a " + packet.getClass());
+        disconnect("Protocol error, unexpected packet");
+    }
+
+    public void sendPacket(Packet packet)
+    {
+        connection.sendPacket(packet);
+        lastKeepAliveTime = ticks;
+    }
+
+    public override void onUpdateSelectedSlot(UpdateSelectedSlotC2SPacket packet)
+    {
+        if (packet.selectedSlot >= 0 && packet.selectedSlot <= InventoryPlayer.getHotbarSize())
+        {
+            player.inventory.selectedSlot = packet.selectedSlot;
+        }
+        else
+        {
+            LOGGER.warning(player.name + " tried to set an invalid carried item");
+        }
+    }
+
+    public override void onChatMessage(ChatMessagePacket packet)
+    {
+        string var2 = packet.chatMessage;
+        if (var2.Length > 100)
+        {
+            disconnect("Chat message too long");
+        }
+        else
+        {
+            var2 = var2.Trim();
+
+            for (int var3 = 0; var3 < var2.Length; var3++)
+            {
+                if (ChatAllowedCharacters.allowedCharacters.IndexOf(var2[var3]) < 0)
+                {
+                    disconnect("Illegal characters in chat");
+                    return;
+                }
+            }
+
+            if (var2.StartsWith("/"))
+            {
+                handleCommand(var2);
+            }
+            else
+            {
+                var2 = "<" + player.name + "> " + var2;
+                LOGGER.info(var2);
+                server.playerManager.sendToAll(new ChatMessagePacket(var2));
+            }
+        }
+    }
+
+    private void handleCommand(string message)
+    {
+        if (message.ToLower().StartsWith("/me "))
+        {
+            string emote = "* " + player.name + " " + message[message.IndexOf(" ")..].Trim();
+            LOGGER.info(emote);
+            server.playerManager.sendToAll(new ChatMessagePacket(emote));
+        }
+        else if (server is InternalServer || server.playerManager.isOperator(player.name))
+        {
+            string commandText = message[1..];
+            LOGGER.info(player.name + " issued server command: " + commandText);
+            server.queueCommands(commandText, this);
+        }
+        else
+        {
+            string commandText = message[1..];
+            LOGGER.info(player.name + " tried command: " + commandText);
+            sendPacket(new ChatMessagePacket("§cYou do not have permission to use this command."));
+        }
+    }
+
+    public override void onEntityAnimation(EntityAnimationPacket packet)
+    {
+        if (packet.animationId == 1)
+        {
+            player.swingHand();
+        }
+    }
+
+    public override void handleClientCommand(ClientCommandC2SPacket packet)
+    {
+        if (packet.mode == 1)
+        {
+            player.setSneaking(true);
+        }
+        else if (packet.mode == 2)
+        {
+            player.setSneaking(false);
+        }
+        else if (packet.mode == 3)
+        {
+            player.wakeUp(false, true, true);
+            teleported = false;
+        }
+    }
+
+    public override void onDisconnect(DisconnectPacket packet)
+    {
+        connection.disconnect("disconnect.quitting");
+    }
+
+    public int getBlockDataSendQueueSize()
+    {
+        return connection.getDelayedSendQueueSize();
+    }
+
+    public void SendMessage(string message)
+    {
+        sendPacket(new ChatMessagePacket("§7" + message));
+    }
+
+    public string GetName()
+    {
+        return player.name;
+    }
+
+    public override void handleInteractEntity(PlayerInteractEntityC2SPacket packet)
+    {
+        ServerWorld var2 = server.getWorld(player.dimensionId);
+        Entity var3 = var2.getEntity(packet.entityId);
+        if (var3 != null && player.canSee(var3) && player.getSquaredDistance(var3) < 36.0)
+        {
+            if (packet.isLeftClick == 0)
+            {
+                player.interact(var3);
+            }
+            else if (packet.isLeftClick == 1)
+            {
+                player.attack(var3);
+            }
+        }
+    }
+
+    public override void onPlayerRespawn(PlayerRespawnPacket packet)
+    {
+        if (player.health <= 0)
+        {
+            player = server.playerManager.respawnPlayer(player, 0);
+        }
+    }
+
+    public override void onCloseScreen(CloseScreenS2CPacket packet)
+    {
+        player.onHandledScreenClosed();
+    }
+
+    public override void onClickSlot(ClickSlotC2SPacket packet)
+    {
+        if (player.currentScreenHandler.syncId == packet.syncId && player.currentScreenHandler.canOpen(player))
+        {
+            ItemStack var2 = player.currentScreenHandler.onSlotClick(packet.slot, packet.button, packet.holdingShift, player);
+            if (ItemStack.areEqual(packet.stack, var2))
+            {
+                player.networkHandler.sendPacket(new ScreenHandlerAcknowledgementPacket(packet.syncId, packet.actionType, true));
+                player.skipPacketSlotUpdates = true;
+                player.currentScreenHandler.sendContentUpdates();
+                player.updateCursorStack();
+                player.skipPacketSlotUpdates = false;
+            }
+            else
+            {
+                transactions.put(player.currentScreenHandler.syncId, packet.actionType);
+                player.networkHandler.sendPacket(new ScreenHandlerAcknowledgementPacket(packet.syncId, packet.actionType, false));
+                player.currentScreenHandler.updatePlayerList(player, false);
+                ArrayList var3 = new ArrayList();
+
+                for (int var4 = 0; var4 < player.currentScreenHandler.slots.size(); var4++)
+                {
+                    var3.add(((Slot)player.currentScreenHandler.slots.get(var4)).getStack());
+                }
+
+                player.onContentsUpdate(player.currentScreenHandler, var3);
+            }
+        }
+    }
+
+    public override void onScreenHandlerAcknowledgement(ScreenHandlerAcknowledgementPacket packet)
+    {
+        Short var2 = (Short)transactions.get(player.currentScreenHandler.syncId);
+        if (var2 != null
+            && packet.actionType == var2.shortValue()
+            && player.currentScreenHandler.syncId == packet.syncId
+            && !player.currentScreenHandler.canOpen(player))
+        {
+            player.currentScreenHandler.updatePlayerList(player, true);
+        }
+    }
+
+    public override void handleUpdateSign(UpdateSignPacket packet)
+    {
+        ServerWorld var2 = server.getWorld(player.dimensionId);
+        if (var2.isPosLoaded(packet.x, packet.y, packet.z))
+        {
+            BlockEntity var3 = var2.getBlockEntity(packet.x, packet.y, packet.z);
+            if (var3 is BlockEntitySign var4)
+            {
+                if (!var4.isEditable())
+                {
+                    server.Warn("Player " + player.name + " just tried to change non-editable sign");
+                    return;
+                }
+            }
+
+            for (int var9 = 0; var9 < 4; var9++)
+            {
+                bool var5 = true;
+                if (packet.text[var9].Length > 15)
+                {
+                    var5 = false;
+                }
+                else
+                {
+                    for (int var6 = 0; var6 < packet.text[var9].Length; var6++)
+                    {
+                        if (ChatAllowedCharacters.allowedCharacters.IndexOf(packet.text[var9][var6]) < 0)
+                        {
+                            var5 = false;
+                        }
+                    }
+                }
+
+                if (!var5)
+                {
+                    packet.text[var9] = "!?";
+                }
+            }
+
+            if (var3 is BlockEntitySign var7)
+            {
+                int var10 = packet.x;
+                int var11 = packet.y;
+                int var12 = packet.z;
+
+                for (int var8 = 0; var8 < 4; var8++)
+                {
+                    var7.texts[var8] = packet.text[var8];
+                }
+
+                var7.setEditable(false);
+                var7.markDirty();
+                var2.blockUpdateEvent(var10, var11, var12);
+            }
+        }
+    }
+
+    public override bool isServerSide()
+    {
+        return true;
+    }
+}

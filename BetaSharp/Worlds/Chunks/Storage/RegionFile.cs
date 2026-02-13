@@ -1,0 +1,343 @@
+using java.io;
+using java.util;
+using java.util.zip;
+
+namespace BetaSharp.Worlds.Chunks.Storage;
+
+public class RegionFile : java.lang.Object
+{
+    private static readonly byte[] emptySector = new byte[4096];
+    private readonly java.io.File fileName;
+    private readonly RandomAccessFile dataFile;
+    private readonly int[] offsets = new int[1024];
+    private readonly int[] chunkSaveTimes = new int[1024];
+    private readonly ArrayList sectorFree;
+    private int sizeDelta;
+
+    public RegionFile(java.io.File var1)
+    {
+        fileName = var1;
+        debugln("REGION LOAD " + fileName);
+        sizeDelta = 0;
+
+        try
+        {
+            dataFile = new RandomAccessFile(var1, "rw");
+            int var2;
+            if (dataFile.length() < 4096L)
+            {
+                for (var2 = 0; var2 < 1024; ++var2)
+                {
+                    dataFile.writeInt(0);
+                }
+
+                for (var2 = 0; var2 < 1024; ++var2)
+                {
+                    dataFile.writeInt(0);
+                }
+
+                sizeDelta += 8192;
+            }
+
+            if ((dataFile.length() & 4095L) != 0L)
+            {
+                for (var2 = 0; var2 < (dataFile.length() & 4095L); ++var2)
+                {
+                    dataFile.write(0);
+                }
+            }
+
+            var2 = (int)dataFile.length() / 4096;
+            sectorFree = new ArrayList(var2);
+
+            int var3;
+            for (var3 = 0; var3 < var2; ++var3)
+            {
+                sectorFree.add(java.lang.Boolean.TRUE);
+            }
+
+            sectorFree.set(0, java.lang.Boolean.FALSE);
+            sectorFree.set(1, java.lang.Boolean.FALSE);
+            dataFile.seek(0L);
+
+            int var4;
+            for (var3 = 0; var3 < 1024; ++var3)
+            {
+                var4 = dataFile.readInt();
+                offsets[var3] = var4;
+                if (var4 != 0 && (var4 >> 8) + (var4 & 255) <= sectorFree.size())
+                {
+                    for (int var5 = 0; var5 < (var4 & 255); ++var5)
+                    {
+                        sectorFree.set((var4 >> 8) + var5, java.lang.Boolean.FALSE);
+                    }
+                }
+            }
+
+            for (var3 = 0; var3 < 1024; ++var3)
+            {
+                var4 = dataFile.readInt();
+                chunkSaveTimes[var3] = var4;
+            }
+        }
+        catch (java.io.IOException var6)
+        {
+            var6.printStackTrace();
+        }
+
+    }
+
+    public int func_22209_a()
+    {
+        lock (this)
+        {
+            int var1 = sizeDelta;
+            sizeDelta = 0;
+            return var1;
+        }
+    }
+
+    private void func_22211_a(string var1)
+    {
+    }
+
+    private void debugln(string var1)
+    {
+        func_22211_a(var1 + "\n");
+    }
+
+    private void func_22199_a(string var1, int var2, int var3, string var4)
+    {
+        func_22211_a("REGION " + var1 + " " + fileName.getName() + "[" + var2 + "," + var3 + "] = " + var4);
+    }
+
+    private void func_22197_a(string var1, int var2, int var3, int var4, string var5)
+    {
+        func_22211_a("REGION " + var1 + " " + fileName.getName() + "[" + var2 + "," + var3 + "] " + var4 + "B = " + var5);
+    }
+
+    private void debugln(string var1, int var2, int var3, string var4)
+    {
+        func_22199_a(var1, var2, var3, var4 + "\n");
+    }
+
+    public ChunkDataStream getChunkDataInputStream(int var1, int var2)
+    {
+        lock (this)
+        {
+            if (outOfBounds(var1, var2))
+            {
+                debugln("READ", var1, var2, "out of bounds");
+                return null;
+            }
+            else
+            {
+                try
+                {
+                    int var3 = getOffset(var1, var2);
+                    if (var3 == 0)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        int var4 = var3 >> 8;
+                        int var5 = var3 & 255;
+                        if (var4 + var5 > sectorFree.size())
+                        {
+                            debugln("READ", var1, var2, "invalid sector");
+                            return null;
+                        }
+                        else
+                        {
+                            dataFile.seek(var4 * 4096);
+                            int var6 = dataFile.readInt();
+                            if (var6 > 4096 * var5)
+                            {
+                                debugln("READ", var1, var2, "invalid length: " + var6 + " > 4096 * " + var5);
+                                return null;
+                            }
+                            else
+                            {
+                                byte var7 = dataFile.readByte();
+                                byte[] var8;
+                                DataInputStream var9;
+                                if (var7 == 1)
+                                {
+                                    var8 = new byte[var6 - 1];
+                                    dataFile.read(var8);
+                                    var9 = new DataInputStream(new GZIPInputStream(new ByteArrayInputStream(var8)));
+                                    return new(var9, var7);
+                                }
+                                else if (var7 == 2 || var7 == 3)
+                                {
+                                    var8 = new byte[var6 - 1];
+                                    dataFile.read(var8);
+                                    var9 = new DataInputStream(new InflaterInputStream(new ByteArrayInputStream(var8)));
+                                    return new(var9, var7);
+                                }
+                                else
+                                {
+                                    debugln("READ", var1, var2, "unknown version " + var7);
+                                    return null;
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (java.io.IOException var10)
+                {
+                    debugln("READ", var1, var2, "exception");
+                    return null;
+                }
+            }
+        }
+    }
+
+    public DataOutputStream getChunkDataOutputStream(int var1, int var2)
+    {
+        return outOfBounds(var1, var2) ? null : new DataOutputStream(new DeflaterOutputStream(new RegionFileChunkBuffer(this, var1, var2)));
+    }
+
+    public void write(int var1, int var2, byte[] var3, int var4)
+    {
+        lock (this)
+        {
+            try
+            {
+                int var5 = getOffset(var1, var2);
+                int var6 = var5 >> 8;
+                int var7 = var5 & 255;
+                int var8 = (var4 + 5) / 4096 + 1;
+                if (var8 >= 256)
+                {
+                    return;
+                }
+
+                if (var6 != 0 && var7 == var8)
+                {
+                    func_22197_a("SAVE", var1, var2, var4, "rewrite");
+                    write(var6, var3, var4);
+                }
+                else
+                {
+                    int var9;
+                    for (var9 = 0; var9 < var7; ++var9)
+                    {
+                        sectorFree.set(var6 + var9, java.lang.Boolean.TRUE);
+                    }
+
+                    var9 = sectorFree.indexOf(java.lang.Boolean.TRUE);
+                    int var10 = 0;
+                    int var11;
+                    if (var9 != -1)
+                    {
+                        for (var11 = var9; var11 < sectorFree.size(); ++var11)
+                        {
+                            if (var10 != 0)
+                            {
+                                if (((java.lang.Boolean)sectorFree.get(var11)).booleanValue())
+                                {
+                                    ++var10;
+                                }
+                                else
+                                {
+                                    var10 = 0;
+                                }
+                            }
+                            else if (((java.lang.Boolean)sectorFree.get(var11)).booleanValue())
+                            {
+                                var9 = var11;
+                                var10 = 1;
+                            }
+
+                            if (var10 >= var8)
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+                    if (var10 >= var8)
+                    {
+                        func_22197_a("SAVE", var1, var2, var4, "reuse");
+                        var6 = var9;
+                        setOffset(var1, var2, var9 << 8 | var8);
+
+                        for (var11 = 0; var11 < var8; ++var11)
+                        {
+                            sectorFree.set(var6 + var11, java.lang.Boolean.FALSE);
+                        }
+
+                        write(var6, var3, var4);
+                    }
+                    else
+                    {
+                        func_22197_a("SAVE", var1, var2, var4, "grow");
+                        dataFile.seek(dataFile.length());
+                        var6 = sectorFree.size();
+
+                        for (var11 = 0; var11 < var8; ++var11)
+                        {
+                            dataFile.write(emptySector);
+                            sectorFree.add(java.lang.Boolean.FALSE);
+                        }
+
+                        sizeDelta += 4096 * var8;
+                        write(var6, var3, var4);
+                        setOffset(var1, var2, var6 << 8 | var8);
+                    }
+                }
+
+                func_22208_b(var1, var2, (int)(java.lang.System.currentTimeMillis() / 1000L));
+            }
+            catch (java.io.IOException var12)
+            {
+                var12.printStackTrace();
+            }
+        }
+    }
+
+    private void write(int var1, byte[] var2, int var3)
+    {
+        debugln(" " + var1);
+        dataFile.seek(var1 * 4096);
+        dataFile.writeInt(var3 + 1);
+        dataFile.writeByte(3);
+        dataFile.write(var2, 0, var3);
+    }
+
+    private bool outOfBounds(int var1, int var2)
+    {
+        return var1 < 0 || var1 >= 32 || var2 < 0 || var2 >= 32;
+    }
+
+    private int getOffset(int var1, int var2)
+    {
+        return offsets[var1 + var2 * 32];
+    }
+
+    public bool func_22202_c(int var1, int var2)
+    {
+        return getOffset(var1, var2) != 0;
+    }
+
+    private void setOffset(int var1, int var2, int var3)
+    {
+        offsets[var1 + var2 * 32] = var3;
+        dataFile.seek((var1 + var2 * 32) * 4);
+        dataFile.writeInt(var3);
+    }
+
+    private void func_22208_b(int var1, int var2, int var3)
+    {
+        chunkSaveTimes[var1 + var2 * 32] = var3;
+        dataFile.seek(4096 + (var1 + var2 * 32) * 4);
+        dataFile.writeInt(var3);
+    }
+
+    public void func_22196_b()
+    {
+        dataFile.close();
+    }
+}

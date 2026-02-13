@@ -1,0 +1,105 @@
+using BetaSharp.Items;
+using BetaSharp.NBT;
+using BetaSharp.Worlds;
+
+namespace BetaSharp.Entities;
+
+public class EntityPig : EntityAnimal
+{
+    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityPig).TypeHandle);
+
+    public EntityPig(World world) : base(world)
+    {
+        texture = "/mob/pig.png";
+        setBoundingBoxSpacing(0.9F, 0.9F);
+    }
+
+    protected override void initDataTracker()
+    {
+        dataWatcher.addObject(16, java.lang.Byte.valueOf((byte)0));
+    }
+
+    public override void writeNbt(NBTTagCompound nbt)
+    {
+        base.writeNbt(nbt);
+        nbt.SetBoolean("Saddle", getSaddled());
+    }
+
+    public override void readNbt(NBTTagCompound nbt)
+    {
+        base.readNbt(nbt);
+        setSaddled(nbt.GetBoolean("Saddle"));
+    }
+
+    protected override string getLivingSound()
+    {
+        return "mob.pig";
+    }
+
+    protected override string getHurtSound()
+    {
+        return "mob.pig";
+    }
+
+    protected override string getDeathSound()
+    {
+        return "mob.pigdeath";
+    }
+
+    public override bool interact(EntityPlayer player)
+    {
+        if (!getSaddled() || world.isRemote || passenger != null && passenger != player)
+        {
+            return false;
+        }
+        else
+        {
+            player.setVehicle(this);
+            return true;
+        }
+    }
+
+    protected override int getDropItemId()
+    {
+        return fireTicks > 0 ? Item.COOKED_PORKCHOP.id : Item.RAW_PORKCHOP.id;
+    }
+
+    public bool getSaddled()
+    {
+        return (dataWatcher.getWatchableObjectByte(16) & 1) != 0;
+    }
+
+    public void setSaddled(bool isSaddled)
+    {
+        if (isSaddled)
+        {
+            dataWatcher.updateObject(16, java.lang.Byte.valueOf((byte)1));
+        }
+        else
+        {
+            dataWatcher.updateObject(16, java.lang.Byte.valueOf((byte)0));
+        }
+
+    }
+
+    public override void onStruckByLightning(EntityLightningBolt bolt)
+    {
+        if (!world.isRemote)
+        {
+            EntityPigZombie pigZombie = new EntityPigZombie(world);
+            pigZombie.setPositionAndAnglesKeepPrevAngles(x, y, z, yaw, pitch);
+            world.spawnEntity(pigZombie);
+            markDead();
+        }
+    }
+
+    protected override void onLanding(float fallDistance)
+    {
+        base.onLanding(fallDistance);
+        if (fallDistance > 5.0F && passenger is EntityPlayer)
+        {
+            ((EntityPlayer)passenger).incrementStat(Achievements.KillPig);
+        }
+
+    }
+}

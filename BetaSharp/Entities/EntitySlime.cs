@@ -1,0 +1,178 @@
+using BetaSharp.Items;
+using BetaSharp.NBT;
+using BetaSharp.Util.Maths;
+using BetaSharp.Worlds;
+using BetaSharp.Worlds.Chunks;
+
+namespace BetaSharp.Entities;
+
+public class EntitySlime : EntityLiving, Monster
+{
+    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntitySlime).TypeHandle);
+
+    public float squishAmount;
+    public float prevSquishAmount;
+    private int slimeJumpDelay = 0;
+
+    public EntitySlime(World world) : base(world)
+    {
+        texture = "/mob/slime.png";
+        int size = 1 << random.nextInt(3);
+        standingEyeHeight = 0.0F;
+        slimeJumpDelay = random.nextInt(20) + 10;
+        setSlimeSize(size);
+    }
+
+    protected override void initDataTracker()
+    {
+        base.initDataTracker();
+        dataWatcher.addObject(16, new java.lang.Byte((byte)1));
+    }
+
+    public void setSlimeSize(int size)
+    {
+        dataWatcher.updateObject(16, new java.lang.Byte((byte)size));
+        setBoundingBoxSpacing(0.6F * (float)size, 0.6F * (float)size);
+        health = size * size;
+        setPosition(x, y, z);
+    }
+
+    public int getSlimeSize()
+    {
+        return dataWatcher.getWatchableObjectByte(16);
+    }
+
+    public override void writeNbt(NBTTagCompound nbt)
+    {
+        base.writeNbt(nbt);
+        nbt.SetInteger("Size", getSlimeSize() - 1);
+    }
+
+    public override void readNbt(NBTTagCompound nbt)
+    {
+        base.readNbt(nbt);
+        setSlimeSize(nbt.GetInteger("Size") + 1);
+    }
+
+    public override void tick()
+    {
+        prevSquishAmount = squishAmount;
+        bool wasOnGround = onGround;
+        base.tick();
+        if (onGround && !wasOnGround)
+        {
+            int size = getSlimeSize();
+
+            for (int _ = 0; _ < size * 8; ++_)
+            {
+                float angle = random.nextFloat() * (float)Math.PI * 2.0F;
+                float spread = random.nextFloat() * 0.5F + 0.5F;
+                float offsetX = MathHelper.sin(angle) * (float)size * 0.5F * spread;
+                float offsetY = MathHelper.cos(angle) * (float)size * 0.5F * spread;
+                world.addParticle("slime", base.x + (double)offsetX, boundingBox.minY, z + (double)offsetY, 0.0D, 0.0D, 0.0D);
+            }
+
+            if (size > 2)
+            {
+                world.playSound(this, "mob.slime", getSoundVolume(), ((random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F) / 0.8F);
+            }
+
+            squishAmount = -0.5F;
+        }
+
+        squishAmount *= 0.6F;
+    }
+
+    public override void tickLiving()
+    {
+        func_27021_X();
+        EntityPlayer player = world.getClosestPlayer(this, 16.0D);
+        if (player != null)
+        {
+            faceEntity(player, 10.0F, 20.0F);
+        }
+
+        if (onGround && slimeJumpDelay-- <= 0)
+        {
+            slimeJumpDelay = random.nextInt(20) + 10;
+            if (player != null)
+            {
+                slimeJumpDelay /= 3;
+            }
+
+            jumping = true;
+            if (getSlimeSize() > 1)
+            {
+                world.playSound(this, "mob.slime", getSoundVolume(), ((random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F) * 0.8F);
+            }
+
+            squishAmount = 1.0F;
+            sidewaysSpeed = 1.0F - random.nextFloat() * 2.0F;
+            forwardSpeed = (float)(1 * getSlimeSize());
+        }
+        else
+        {
+            jumping = false;
+            if (onGround)
+            {
+                sidewaysSpeed = forwardSpeed = 0.0F;
+            }
+        }
+
+    }
+
+    public override void markDead()
+    {
+        int size = getSlimeSize();
+        if (!world.isRemote && size > 1 && health == 0)
+        {
+            for (int i = 0; i < 4; ++i)
+            {
+                float offsetX = ((float)(i % 2) - 0.5F) * (float)size / 4.0F;
+                float offsetY = ((float)(i / 2) - 0.5F) * (float)size / 4.0F;
+                EntitySlime slime = new EntitySlime(world);
+                slime.setSlimeSize(size / 2);
+                slime.setPositionAndAnglesKeepPrevAngles(x + (double)offsetX, y + 0.5D, z + (double)offsetY, random.nextFloat() * 360.0F, 0.0F);
+                world.spawnEntity(slime);
+            }
+        }
+
+        base.markDead();
+    }
+
+    public override void onPlayerInteraction(EntityPlayer player)
+    {
+        int size = getSlimeSize();
+        if (size > 1 && canSee(player) && (double)getDistance(player) < 0.6D * (double)size && player.damage(this, size))
+        {
+            world.playSound(this, "mob.slimeattack", 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
+        }
+
+    }
+
+    protected override String getHurtSound()
+    {
+        return "mob.slime";
+    }
+
+    protected override String getDeathSound()
+    {
+        return "mob.slime";
+    }
+
+    protected override int getDropItemId()
+    {
+        return getSlimeSize() == 1 ? Item.SLIMEBALL.id : 0;
+    }
+
+    public override bool canSpawn()
+    {
+        Chunk chunk = world.getChunkFromPos(MathHelper.floor_double(x), MathHelper.floor_double(z));
+        return (getSlimeSize() == 1 || world.difficulty > 0) && random.nextInt(10) == 0 && chunk.getSlimeRandom(987234911L).nextInt(10) == 0 && y < 16.0D;
+    }
+
+    protected override float getSoundVolume()
+    {
+        return 0.6F;
+    }
+}

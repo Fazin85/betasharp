@@ -1,0 +1,1082 @@
+using BetaSharp.Blocks;
+using BetaSharp.Blocks.Materials;
+using BetaSharp.Items;
+using BetaSharp.NBT;
+using BetaSharp.Util.Hit;
+using BetaSharp.Util.Maths;
+using BetaSharp.Worlds;
+using java.lang;
+
+namespace BetaSharp.Entities;
+
+public abstract class EntityLiving : Entity
+{
+    public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityLiving).TypeHandle);
+    public int maxHealth = 20;
+    public float limbSwingPhase;
+    public float limbSwingScale;
+    public float bodyYaw = 0.0F;
+    public float lastBodyYaw = 0.0F;
+    protected float lastWalkProgress;
+    protected float walkProgress;
+    protected float totalWalkDistance;
+    protected float lastTotalWalkDistance;
+    protected bool canLookAround = true;
+    protected string texture = "/mob/char.png";
+    protected bool field_9355_A = true;
+    protected float rotationOffset = 0.0F;
+    protected string modelName = null;
+    protected float modelScale = 1.0F;
+    protected int scoreAmount = 0;
+    protected float field_9345_F = 0.0F;
+    public bool interpolateOnly = false;
+    public float lastSwingAnimationProgress;
+    public float swingAnimationProgress;
+    public int health = 10;
+    public int lastHealth;
+    private int livingSoundTime;
+    public int hurtTime;
+    public int maxHurtTime;
+    public float attackedAtYaw = 0.0F;
+    public int deathTime = 0;
+    public int attackTime = 0;
+    public float cameraPitch;
+    public float tilt;
+    protected bool unused_flag = false;
+    public int field_9326_T = -1;
+    public float field_9325_U = (float)(java.lang.Math.random() * (double)0.9F + (double)0.1F);
+    public float lastWalkAnimationSpeed;
+    public float walkAnimationSpeed;
+    public float animationPhase;
+    protected int newPosRotationIncrements;
+    protected double newPosX;
+    protected double newPosY;
+    protected double newPosZ;
+    protected double newRotationYaw;
+    protected double newRotationPitch;
+    protected int damageForDisplay = 0;
+    protected int entityAge = 0;
+    protected float sidewaysSpeed;
+    protected float forwardSpeed;
+    protected float rotationSpeed;
+    protected bool jumping = false;
+    protected float defaultPitch = 0.0F;
+    protected float movementSpeed = 0.7F;
+    private Entity lookTarget;
+    protected int lookTimer = 0;
+
+    public EntityLiving(World world) : base(world)
+    {
+        preventEntitySpawning = true;
+        limbSwingScale = (float)(java.lang.Math.random() + 1.0D) * 0.01F;
+        setPosition(x, y, z);
+        limbSwingPhase = (float)java.lang.Math.random() * 12398.0F;
+        yaw = (float)(java.lang.Math.random() * (double)((float)System.Math.PI) * 2.0D);
+        stepHeight = 0.5F;
+    }
+
+    protected override void initDataTracker()
+    {
+    }
+
+    public bool canSee(Entity entity)
+    {
+        return world.raycast(new Vec3D(x, y + (double)getEyeHeight(), z), new Vec3D(entity.x, entity.y + (double)entity.getEyeHeight(), entity.z)) == null;
+    }
+
+    public override string getTexture()
+    {
+        return texture;
+    }
+
+    public override bool isCollidable()
+    {
+        return !dead;
+    }
+
+    public override bool isPushable()
+    {
+        return !dead;
+    }
+
+    public override float getEyeHeight()
+    {
+        return height * 0.85F;
+    }
+
+    public virtual int getTalkInterval()
+    {
+        return 80;
+    }
+
+    public void playLivingSound()
+    {
+        string sound = getLivingSound();
+        if (sound != null)
+        {
+            world.playSound(this, sound, getSoundVolume(), (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
+        }
+
+    }
+
+    public override void baseTick()
+    {
+        lastSwingAnimationProgress = swingAnimationProgress;
+        base.baseTick();
+        if (random.nextInt(1000) < livingSoundTime++)
+        {
+            livingSoundTime = -getTalkInterval();
+            playLivingSound();
+        }
+
+        if (isAlive() && isInsideWall())
+        {
+            damage(null, 1);
+        }
+
+        if (isImmuneToFire || world.isRemote)
+        {
+            fireTicks = 0;
+        }
+
+        int i;
+        if (isAlive() && isInFluid(Material.WATER) && !canBreatheUnderwater())
+        {
+            --air;
+            if (air == -20)
+            {
+                air = 0;
+
+                for (i = 0; i < 8; ++i)
+                {
+                    float offsetX = random.nextFloat() - random.nextFloat();
+                    float offsetY = random.nextFloat() - random.nextFloat();
+                    float offsetZ = random.nextFloat() - random.nextFloat();
+                    world.addParticle("bubble", x + (double)offsetX, y + (double)offsetY, z + (double)offsetZ, velocityX, velocityY, velocityZ);
+                }
+
+                damage(null, 2);
+            }
+
+            fireTicks = 0;
+        }
+        else
+        {
+            air = maxAir;
+        }
+
+        cameraPitch = tilt;
+        if (attackTime > 0)
+        {
+            --attackTime;
+        }
+
+        if (hurtTime > 0)
+        {
+            --hurtTime;
+        }
+
+        if (hearts > 0)
+        {
+            --hearts;
+        }
+
+        if (health <= 0)
+        {
+            ++deathTime;
+            if (deathTime > 20)
+            {
+                onEntityDeath();
+                markDead();
+
+                for (i = 0; i < 20; ++i)
+                {
+                    double velX = random.nextGaussian() * 0.02D;
+                    double velY = random.nextGaussian() * 0.02D;
+                    double velZ = random.nextGaussian() * 0.02D;
+                    world.addParticle("explode", x + (double)(random.nextFloat() * width * 2.0F) - (double)width, y + (double)(random.nextFloat() * height), z + (double)(random.nextFloat() * width * 2.0F) - (double)width, velX, velY, velZ);
+                }
+            }
+        }
+
+        lastTotalWalkDistance = totalWalkDistance;
+        lastBodyYaw = bodyYaw;
+        prevYaw = yaw;
+        prevPitch = pitch;
+    }
+
+    //TODO: will this still work properly when we implement the server?
+    public override void move(double x, double y, double z)
+    {
+        if (!interpolateOnly || this is ClientPlayerEntity) base.move(x, y, z);
+    }
+
+    public void animateSpawn()
+    {
+        for (int i = 0; i < 20; ++i)
+        {
+            double velX = random.nextGaussian() * 0.02D;
+            double velY = random.nextGaussian() * 0.02D;
+            double velZ = random.nextGaussian() * 0.02D;
+            double spread = 10.0D;
+            world.addParticle("explode", x + (double)(random.nextFloat() * width * 2.0F) - (double)width - velX * spread, y + (double)(random.nextFloat() * height) - velY * spread, z + (double)(random.nextFloat() * width * 2.0F) - (double)width - velZ * spread, velX, velY, velZ);
+        }
+
+    }
+
+    public override void tickRiding()
+    {
+        base.tickRiding();
+        lastWalkProgress = walkProgress;
+        walkProgress = 0.0F;
+    }
+
+    public override void setPositionAndAnglesAvoidEntities(double newPosX, double newPosY, double newPosZ, float newRotationYaw, float newRotationPitch, int newPosRotationIncrements)
+    {
+        standingEyeHeight = 0.0F;
+        this.newPosX = newPosX;
+        this.newPosY = newPosY;
+        this.newPosZ = newPosZ;
+        this.newRotationYaw = (double)newRotationYaw;
+        this.newRotationPitch = (double)newRotationPitch;
+        this.newPosRotationIncrements = newPosRotationIncrements;
+    }
+
+    public override void tick()
+    {
+        base.tick();
+        tickMovement();
+        double dx = x - prevX;
+        double dz = z - prevZ;
+        float horizontalDistance = MathHelper.sqrt_double(dx * dx + dz * dz);
+        float computedYaw = bodyYaw;
+        float walkSpeed = 0.0F;
+        lastWalkProgress = walkProgress;
+        float walkAmount = 0.0F;
+        if (horizontalDistance > 0.05F)
+        {
+            walkAmount = 1.0F;
+            walkSpeed = horizontalDistance * 3.0F;
+            computedYaw = (float)System.Math.Atan2(dz, dx) * 180.0F / (float)System.Math.PI - 90.0F;
+        }
+
+        if (swingAnimationProgress > 0.0F)
+        {
+            computedYaw = base.yaw;
+        }
+
+        if (!onGround)
+        {
+            walkAmount = 0.0F;
+        }
+
+        walkProgress += (walkAmount - walkProgress) * 0.3F;
+
+        float yawDelta;
+        for (yawDelta = computedYaw - bodyYaw; yawDelta < -180.0F; yawDelta += 360.0F)
+        {
+        }
+
+        while (yawDelta >= 180.0F)
+        {
+            yawDelta -= 360.0F;
+        }
+
+        bodyYaw += yawDelta * 0.3F;
+
+        float headYawDelta;
+        for (headYawDelta = base.yaw - bodyYaw; headYawDelta < -180.0F; headYawDelta += 360.0F)
+        {
+        }
+
+        while (headYawDelta >= 180.0F)
+        {
+            headYawDelta -= 360.0F;
+        }
+
+        bool headFacingBackward = headYawDelta < -90.0F || headYawDelta >= 90.0F;
+        if (headYawDelta < -75.0F)
+        {
+            headYawDelta = -75.0F;
+        }
+
+        if (headYawDelta >= 75.0F)
+        {
+            headYawDelta = 75.0F;
+        }
+
+        bodyYaw = base.yaw - headYawDelta;
+        if (headYawDelta * headYawDelta > 2500.0F)
+        {
+            bodyYaw += headYawDelta * 0.2F;
+        }
+
+        if (headFacingBackward)
+        {
+            walkSpeed *= -1.0F;
+        }
+
+        while (base.yaw - prevYaw < -180.0F)
+        {
+            prevYaw -= 360.0F;
+        }
+
+        while (base.yaw - prevYaw >= 180.0F)
+        {
+            prevYaw += 360.0F;
+        }
+
+        while (bodyYaw - lastBodyYaw < -180.0F)
+        {
+            lastBodyYaw -= 360.0F;
+        }
+
+        while (bodyYaw - lastBodyYaw >= 180.0F)
+        {
+            lastBodyYaw += 360.0F;
+        }
+
+        while (pitch - prevPitch < -180.0F)
+        {
+            prevPitch -= 360.0F;
+        }
+
+        while (pitch - prevPitch >= 180.0F)
+        {
+            prevPitch += 360.0F;
+        }
+
+        totalWalkDistance += walkSpeed;
+    }
+
+    protected override void setBoundingBoxSpacing(float widthOffset, float heightOffset)
+    {
+        base.setBoundingBoxSpacing(widthOffset, heightOffset);
+    }
+
+    public virtual void heal(int amount)
+    {
+        if (health > 0)
+        {
+            health += amount;
+            if (health > 20)
+            {
+                health = 20;
+            }
+
+            hearts = maxHealth / 2;
+        }
+    }
+
+    public override bool damage(Entity entity, int amount)
+    {
+        if (world.isRemote)
+        {
+            return false;
+        }
+        else
+        {
+            entityAge = 0;
+            if (health <= 0)
+            {
+                return false;
+            }
+            else
+            {
+                walkAnimationSpeed = 1.5F;
+                bool var3 = true;
+                if ((float)hearts > (float)maxHealth / 2.0F)
+                {
+                    if (amount <= damageForDisplay)
+                    {
+                        return false;
+                    }
+
+                    applyDamage(amount - damageForDisplay);
+                    damageForDisplay = amount;
+                    var3 = false;
+                }
+                else
+                {
+                    damageForDisplay = amount;
+                    lastHealth = health;
+                    hearts = maxHealth;
+                    applyDamage(amount);
+                    hurtTime = maxHurtTime = 10;
+                }
+
+                attackedAtYaw = 0.0F;
+                if (var3)
+                {
+                    world.broadcastEntityEvent(this, (byte)2);
+                    scheduleVelocityUpdate();
+                    if (entity != null)
+                    {
+                        double var4 = entity.x - x;
+
+                        double var6;
+                        for (var6 = entity.z - z; var4 * var4 + var6 * var6 < 1.0E-4D; var6 = (java.lang.Math.random() - java.lang.Math.random()) * 0.01D)
+                        {
+                            var4 = (java.lang.Math.random() - java.lang.Math.random()) * 0.01D;
+                        }
+
+                        attackedAtYaw = (float)(System.Math.Atan2(var6, var4) * 180.0D / (double)((float)System.Math.PI)) - yaw;
+                        knockBack(entity, amount, var4, var6);
+                    }
+                    else
+                    {
+                        attackedAtYaw = (float)((int)(java.lang.Math.random() * 2.0D) * 180);
+                    }
+                }
+
+                if (health <= 0)
+                {
+                    if (var3)
+                    {
+                        world.playSound(this, getDeathSound(), getSoundVolume(), (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
+                    }
+
+                    onKilledBy(entity);
+                }
+                else if (var3)
+                {
+                    world.playSound(this, getHurtSound(), getSoundVolume(), (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
+                }
+
+                return true;
+            }
+        }
+    }
+
+    public override void animateHurt()
+    {
+        hurtTime = maxHurtTime = 10;
+        attackedAtYaw = 0.0F;
+    }
+
+    protected virtual void applyDamage(int amount)
+    {
+        health -= amount;
+    }
+
+    protected virtual float getSoundVolume()
+    {
+        return 1.0F;
+    }
+
+    protected virtual string getLivingSound()
+    {
+        return null;
+    }
+
+    protected virtual string getHurtSound()
+    {
+        return "random.hurt";
+    }
+
+    protected virtual string getDeathSound()
+    {
+        return "random.hurt";
+    }
+
+    public void knockBack(Entity entity, int amount, double dx, double dy)
+    {
+        float var7 = MathHelper.sqrt_double(dx * dx + dy * dy);
+        float var8 = 0.4F;
+        velocityX /= 2.0D;
+        velocityY /= 2.0D;
+        velocityZ /= 2.0D;
+        velocityX -= dx / (double)var7 * (double)var8;
+        velocityY += (double)0.4F;
+        velocityZ -= dy / (double)var7 * (double)var8;
+        if (velocityY > (double)0.4F)
+        {
+            velocityY = (double)0.4F;
+        }
+
+    }
+
+    public virtual void onKilledBy(Entity var1)
+    {
+        if (scoreAmount >= 0 && var1 != null)
+        {
+            var1.updateKilledAchievement(this, scoreAmount);
+        }
+
+        if (var1 != null)
+        {
+            var1.onKillOther(this);
+        }
+
+        unused_flag = true;
+        if (!world.isRemote)
+        {
+            dropFewItems();
+        }
+
+        world.broadcastEntityEvent(this, (byte)3);
+    }
+
+    protected virtual void dropFewItems()
+    {
+        int var1 = getDropItemId();
+        if (var1 > 0)
+        {
+            int var2 = random.nextInt(3);
+
+            for (int var3 = 0; var3 < var2; ++var3)
+            {
+                dropItem(var1, 1);
+            }
+        }
+
+    }
+
+    protected virtual int getDropItemId()
+    {
+        return 0;
+    }
+
+    protected override void onLanding(float fallDistance)
+    {
+        base.onLanding(fallDistance);
+        int var2 = (int)java.lang.Math.ceil((double)(fallDistance - 3.0F));
+        if (var2 > 0)
+        {
+            damage(null, var2);
+            int var3 = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(y - (double)0.2F - (double)standingEyeHeight), MathHelper.floor_double(z));
+            if (var3 > 0)
+            {
+                BlockSoundGroup var4 = Block.BLOCKS[var3].soundGroup;
+                world.playSound(this, var4.func_1145_d(), var4.getVolume() * 0.5F, var4.getPitch() * (12.0F / 16.0F));
+            }
+        }
+
+    }
+
+    public virtual void travel(float strafe, float forward)
+    {
+        double previousY;
+        if (isInWater())
+        {
+            previousY = y;
+            moveNonSolid(strafe, forward, 0.02F);
+            move(velocityX, velocityY, velocityZ);
+            velocityX *= (double)0.8F;
+            velocityY *= (double)0.8F;
+            velocityZ *= (double)0.8F;
+            velocityY -= 0.02D;
+            if (horizontalCollison && getEntitiesInside(velocityX, velocityY + (double)0.6F - y + previousY, velocityZ))
+            {
+                velocityY = (double)0.3F;
+            }
+        }
+        else if (isTouchingLava())
+        {
+            previousY = y;
+            moveNonSolid(strafe, forward, 0.02F);
+            move(velocityX, velocityY, velocityZ);
+            velocityX *= 0.5D;
+            velocityY *= 0.5D;
+            velocityZ *= 0.5D;
+            velocityY -= 0.02D;
+            if (horizontalCollison && getEntitiesInside(velocityX, velocityY + (double)0.6F - y + previousY, velocityZ))
+            {
+                velocityY = (double)0.3F;
+            }
+        }
+        else
+        {
+            float friction = 0.91F;
+            if (onGround)
+            {
+                friction = 546.0F * 0.1F * 0.1F * 0.1F;
+                int groundBlockId = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
+                if (groundBlockId > 0)
+                {
+                    friction = Block.BLOCKS[groundBlockId].slipperiness * 0.91F;
+                }
+            }
+
+            float movementFactor = 0.16277136F / (friction * friction * friction);
+            moveNonSolid(strafe, forward, onGround ? 0.1F * movementFactor : 0.02F);
+            friction = 0.91F;
+            if (onGround)
+            {
+                friction = 546.0F * 0.1F * 0.1F * 0.1F;
+                int groundBlockId = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
+                if (groundBlockId > 0)
+                {
+                    friction = Block.BLOCKS[groundBlockId].slipperiness * 0.91F;
+                }
+            }
+
+            if (isOnLadder())
+            {
+                float ladderSpeedClamp = 0.15F;
+                if (velocityX < (double)(-ladderSpeedClamp))
+                {
+                    velocityX = (double)(-ladderSpeedClamp);
+                }
+
+                if (velocityX > (double)ladderSpeedClamp)
+                {
+                    velocityX = (double)ladderSpeedClamp;
+                }
+
+                if (velocityZ < (double)(-ladderSpeedClamp))
+                {
+                    velocityZ = (double)(-ladderSpeedClamp);
+                }
+
+                if (velocityZ > (double)ladderSpeedClamp)
+                {
+                    velocityZ = (double)ladderSpeedClamp;
+                }
+
+                fallDistance = 0.0F;
+                if (velocityY < -0.15D)
+                {
+                    velocityY = -0.15D;
+                }
+
+                if (isSneaking() && velocityY < 0.0D)
+                {
+                    velocityY = 0.0D;
+                }
+            }
+
+            move(velocityX, velocityY, velocityZ);
+            if (horizontalCollison && isOnLadder())
+            {
+                velocityY = 0.2D;
+            }
+
+            velocityY -= 0.08D;
+            velocityY *= (double)0.98F;
+            velocityX *= (double)friction;
+            velocityZ *= (double)friction;
+        }
+
+        lastWalkAnimationSpeed = walkAnimationSpeed;
+        previousY = x - prevX;
+        double deltaZ = z - prevZ;
+        float distanceMoved = MathHelper.sqrt_double(previousY * previousY + deltaZ * deltaZ) * 4.0F;
+        if (distanceMoved > 1.0F)
+        {
+            distanceMoved = 1.0F;
+        }
+
+        walkAnimationSpeed += (distanceMoved - walkAnimationSpeed) * 0.4F;
+        animationPhase += walkAnimationSpeed;
+    }
+
+    public virtual bool isOnLadder()
+    {
+        int x = MathHelper.floor_double(base.x);
+        int y = MathHelper.floor_double(boundingBox.minY);
+        int z = MathHelper.floor_double(base.z);
+        return world.getBlockId(x, y, z) == Block.LADDER.id;
+    }
+
+    public override void writeNbt(NBTTagCompound nbt)
+    {
+        nbt.SetShort("Health", (short)health);
+        nbt.SetShort("HurtTime", (short)hurtTime);
+        nbt.SetShort("DeathTime", (short)deathTime);
+        nbt.SetShort("AttackTime", (short)attackTime);
+    }
+
+    public override void readNbt(NBTTagCompound nbt)
+    {
+        health = nbt.GetShort("Health");
+        if (!nbt.HasKey("Health"))
+        {
+            health = 10;
+        }
+
+        hurtTime = nbt.GetShort("HurtTime");
+        deathTime = nbt.GetShort("DeathTime");
+        attackTime = nbt.GetShort("AttackTime");
+    }
+
+    public override bool isAlive()
+    {
+        return !dead && health > 0;
+    }
+
+    public virtual bool canBreatheUnderwater()
+    {
+        return false;
+    }
+
+    public virtual void tickMovement()
+    {
+        if (newPosRotationIncrements > 0)
+        {
+            double newX = x + (newPosX - x) / (double)newPosRotationIncrements;
+            double newY = y + (newPosY - y) / (double)newPosRotationIncrements;
+            double newZ = z + (newPosZ - z) / (double)newPosRotationIncrements;
+
+            double yawDelta;
+            for (yawDelta = newRotationYaw - (double)yaw; yawDelta < -180.0D; yawDelta += 360.0D)
+            {
+            }
+
+            while (yawDelta >= 180.0D)
+            {
+                yawDelta -= 360.0D;
+            }
+
+            yaw = (float)((double)yaw + yawDelta / (double)newPosRotationIncrements);
+            pitch = (float)((double)pitch + (newRotationPitch - (double)pitch) / (double)newPosRotationIncrements);
+            --newPosRotationIncrements;
+            setPosition(newX, newY, newZ);
+            setRotation(yaw, pitch);
+            var collisions = world.getEntityCollisions(this, boundingBox.contract(1.0D / 32.0D, 0.0D, 1.0D / 32.0D));
+            if (collisions.Count > 0)
+            {
+                double highestCollisionY = 0.0D;
+
+                for (int i = 0; i < collisions.Count; ++i)
+                {
+                    Box box = collisions[i];
+                    if (box.maxY > highestCollisionY)
+                    {
+                        highestCollisionY = box.maxY;
+                    }
+                }
+
+                newY += highestCollisionY - boundingBox.minY;
+                setPosition(newX, newY, newZ);
+            }
+        }
+
+        if (isMovementBlocked())
+        {
+            jumping = false;
+            sidewaysSpeed = 0.0F;
+            forwardSpeed = 0.0F;
+            rotationSpeed = 0.0F;
+        }
+        else if (!interpolateOnly)
+        {
+            tickLiving();
+        }
+
+        bool isInWater = base.isInWater();
+        bool isTouchingLava = base.isTouchingLava();
+        if (jumping)
+        {
+            if (isInWater)
+            {
+                velocityY += (double)0.04F;
+            }
+            else if (isTouchingLava)
+            {
+                velocityY += (double)0.04F;
+            }
+            else if (onGround)
+            {
+                jump();
+            }
+        }
+
+        sidewaysSpeed *= 0.98F;
+        forwardSpeed *= 0.98F;
+        rotationSpeed *= 0.9F;
+        travel(sidewaysSpeed, forwardSpeed);
+        var nearbyEntities = world.getEntities(this, boundingBox.expand((double)0.2F, 0.0D, (double)0.2F));
+        if (nearbyEntities != null && nearbyEntities.Count > 0)
+        {
+            for (int i = 0; i < nearbyEntities.Count; ++i)
+            {
+                Entity entity = nearbyEntities[i];
+                if (entity.isPushable())
+                {
+                    entity.onCollision(this);
+                }
+            }
+        }
+
+    }
+
+    protected virtual bool isMovementBlocked()
+    {
+        return health <= 0;
+    }
+
+    protected virtual void jump()
+    {
+        velocityY = (double)0.42F;
+    }
+
+    protected virtual bool canDespawn()
+    {
+        return true;
+    }
+
+    protected void func_27021_X()
+    {
+        EntityPlayer player = world.getClosestPlayer(this, -1.0D);
+        if (canDespawn() && player != null)
+        {
+            double dx = player.x - x;
+            double dy = player.y - y;
+            double dz = player.z - z;
+            double squaredDistance = dx * dx + dy * dy + dz * dz;
+            if (squaredDistance > 16384.0D)
+            {
+                markDead();
+            }
+
+            if (entityAge > 600 && random.nextInt(800) == 0)
+            {
+                if (squaredDistance < 1024.0D)
+                {
+                    entityAge = 0;
+                }
+                else
+                {
+                    markDead();
+                }
+            }
+        }
+
+    }
+
+    public virtual void tickLiving()
+    {
+        ++entityAge;
+        EntityPlayer closestPlayer = world.getClosestPlayer(this, -1.0D);
+        func_27021_X();
+        sidewaysSpeed = 0.0F;
+        forwardSpeed = 0.0F;
+        float lookRange = 8.0F;
+        if (random.nextFloat() < 0.02F)
+        {
+            closestPlayer = world.getClosestPlayer(this, (double)lookRange);
+            if (closestPlayer != null)
+            {
+                lookTarget = closestPlayer;
+                lookTimer = 10 + random.nextInt(20);
+            }
+            else
+            {
+                rotationSpeed = (random.nextFloat() - 0.5F) * 20.0F;
+            }
+        }
+
+        if (lookTarget != null)
+        {
+            faceEntity(lookTarget, 10.0F, (float)getMaxFallDistance());
+            if (lookTimer-- <= 0 || lookTarget.dead || lookTarget.getSquaredDistance(this) > (double)(lookRange * lookRange))
+            {
+                lookTarget = null;
+            }
+        }
+        else
+        {
+            if (random.nextFloat() < 0.05F)
+            {
+                rotationSpeed = (random.nextFloat() - 0.5F) * 20.0F;
+            }
+
+            yaw += rotationSpeed;
+            pitch = defaultPitch;
+        }
+
+        bool isInWater = base.isInWater();
+        bool isTouchingLava = base.isTouchingLava();
+        if (isInWater || isTouchingLava)
+        {
+            jumping = random.nextFloat() < 0.8F;
+        }
+
+    }
+
+    protected virtual int getMaxFallDistance()
+    {
+        return 40;
+    }
+
+    public void faceEntity(Entity entity, float yawSpeed, float pitchSpeed)
+    {
+        double dx = entity.x - x;
+        double dz = entity.z - z;
+        double dy;
+        if (entity is EntityLiving)
+        {
+            EntityLiving ent = (EntityLiving)entity;
+            dy = y + (double)getEyeHeight() - (ent.y + (double)ent.getEyeHeight());
+        }
+        else
+        {
+            dy = (entity.boundingBox.minY + entity.boundingBox.maxY) / 2.0D - (y + (double)getEyeHeight());
+        }
+
+        double horizontalDistance = (double)MathHelper.sqrt_double(dx * dx + dz * dz);
+        float targetYaw = (float)(System.Math.Atan2(dz, dx) * 180.0D / (double)((float)System.Math.PI)) - 90.0F;
+        float targetPitch = (float)(-(System.Math.Atan2(dy, horizontalDistance) * 180.0D / (double)((float)System.Math.PI)));
+        pitch = -updateRotation(pitch, targetPitch, pitchSpeed);
+        yaw = updateRotation(yaw, targetYaw, yawSpeed);
+    }
+
+    public bool hasCurrentTarget()
+    {
+        return lookTarget != null;
+    }
+
+    public Entity getCurrentTarget()
+    {
+        return lookTarget;
+    }
+
+    private float updateRotation(float var1, float var2, float var3)
+    {
+        float var4;
+        for (var4 = var2 - var1; var4 < -180.0F; var4 += 360.0F)
+        {
+        }
+
+        while (var4 >= 180.0F)
+        {
+            var4 -= 360.0F;
+        }
+
+        if (var4 > var3)
+        {
+            var4 = var3;
+        }
+
+        if (var4 < -var3)
+        {
+            var4 = -var3;
+        }
+
+        return var1 + var4;
+    }
+
+    public void onEntityDeath()
+    {
+    }
+
+    public virtual bool canSpawn()
+    {
+        return world.canSpawnEntity(boundingBox) && world.getEntityCollisions(this, boundingBox).Count == 0 && !world.isBoxSubmergedInFluid(boundingBox);
+    }
+
+    protected override void tickInVoid()
+    {
+        damage(null, 4);
+    }
+
+    public float getSwingProgress(float partialTick)
+    {
+        float var2 = swingAnimationProgress - lastSwingAnimationProgress;
+        if (var2 < 0.0F)
+        {
+            ++var2;
+        }
+
+        return lastSwingAnimationProgress + var2 * partialTick;
+    }
+
+    public Vec3D getPosition(float partialTick)
+    {
+        if (partialTick == 1.0F)
+        {
+            return new Vec3D(x, y, z);
+        }
+        else
+        {
+            double x = prevX + (base.x - prevX) * (double)partialTick;
+            double y = prevY + (base.y - prevY) * (double)partialTick;
+            double z = prevZ + (base.z - prevZ) * (double)partialTick;
+            return new Vec3D(x, y, z);
+        }
+    }
+
+    public override Vec3D? getLookVector()
+    {
+        return getLook(1.0F);
+    }
+
+    public Vec3D getLook(float partialTick)
+    {
+        float cosYaw;
+        float sinYaw;
+        float cosPitch;
+        float sinPitch;
+        if (partialTick == 1.0F)
+        {
+            cosYaw = MathHelper.cos(-yaw * ((float)System.Math.PI / 180.0F) - (float)System.Math.PI);
+            sinYaw = MathHelper.sin(-yaw * ((float)System.Math.PI / 180.0F) - (float)System.Math.PI);
+            cosPitch = -MathHelper.cos(-pitch * ((float)System.Math.PI / 180.0F));
+            sinPitch = MathHelper.sin(-pitch * ((float)System.Math.PI / 180.0F));
+            return new Vec3D((double)(sinYaw * cosPitch), (double)sinPitch, (double)(cosYaw * cosPitch));
+        }
+        else
+        {
+            cosYaw = prevPitch + (pitch - prevPitch) * partialTick;
+            sinYaw = prevYaw + (yaw - prevYaw) * partialTick;
+            cosPitch = MathHelper.cos(-sinYaw * ((float)System.Math.PI / 180.0F) - (float)System.Math.PI);
+            sinPitch = MathHelper.sin(-sinYaw * ((float)System.Math.PI / 180.0F) - (float)System.Math.PI);
+            float var6 = -MathHelper.cos(-cosYaw * ((float)System.Math.PI / 180.0F));
+            float var7 = MathHelper.sin(-cosYaw * ((float)System.Math.PI / 180.0F));
+            return new Vec3D((double)(sinPitch * var6), (double)var7, (double)(cosPitch * var6));
+        }
+    }
+
+    public HitResult rayTrace(double range, float partialTick)
+    {
+        Vec3D startPos = getPosition(partialTick);
+        Vec3D lookDir = getLook(partialTick);
+        Vec3D endPos = startPos + range * lookDir;
+        return world.raycast(startPos, endPos);
+    }
+
+    public virtual int getMaxSpawnedInChunk()
+    {
+        return 4;
+    }
+
+    public virtual ItemStack getHeldItem()
+    {
+        return null;
+    }
+
+    public override void processServerEntityStatus(sbyte statusId)
+    {
+        if (statusId == 2)
+        {
+            walkAnimationSpeed = 1.5F;
+            hearts = maxHealth;
+            hurtTime = maxHurtTime = 10;
+            attackedAtYaw = 0.0F;
+            world.playSound(this, getHurtSound(), getSoundVolume(), (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
+            damage(null, 0);
+        }
+        else if (statusId == 3)
+        {
+            world.playSound(this, getDeathSound(), getSoundVolume(), (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
+            health = 0;
+            onKilledBy(null);
+        }
+        else
+        {
+            base.processServerEntityStatus(statusId);
+        }
+
+    }
+
+    public virtual bool isSleeping()
+    {
+        return false;
+    }
+
+    public virtual int getItemStackTextureId(ItemStack item)
+    {
+        return item.getTextureId();
+    }
+}

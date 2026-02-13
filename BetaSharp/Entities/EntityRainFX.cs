@@ -1,0 +1,68 @@
+using BetaSharp.Blocks;
+using BetaSharp.Blocks.Materials;
+using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Util.Maths;
+using BetaSharp.Worlds;
+
+namespace BetaSharp.Entities;
+
+public class EntityRainFX : EntityFX
+{
+
+    public EntityRainFX(World world, double x, double y, double z) : base(world, x, y, z, 0.0D, 0.0D, 0.0D)
+    {
+        velocityX *= (double)0.3F;
+        velocityY = (double)((float)java.lang.Math.random() * 0.2F + 0.1F);
+        velocityZ *= (double)0.3F;
+        particleRed = 1.0F;
+        particleGreen = 1.0F;
+        particleBlue = 1.0F;
+        particleTextureIndex = 19 + random.nextInt(4);
+        setBoundingBoxSpacing(0.01F, 0.01F);
+        particleGravity = 0.06F;
+        particleMaxAge = (int)(8.0D / (java.lang.Math.random() * 0.8D + 0.2D));
+    }
+
+    public override void renderParticle(Tessellator t, float partialTick, float rotX, float rotY, float rotZ, float upX, float upZ)
+    {
+        base.renderParticle(t, partialTick, rotX, rotY, rotZ, upX, upZ);
+    }
+
+    public override void tick()
+    {
+        prevX = x;
+        prevY = y;
+        prevZ = z;
+        velocityY -= (double)particleGravity;
+        move(velocityX, velocityY, velocityZ);
+        velocityX *= (double)0.98F;
+        velocityY *= (double)0.98F;
+        velocityZ *= (double)0.98F;
+        if (particleMaxAge-- <= 0)
+        {
+            markDead();
+        }
+
+        if (onGround)
+        {
+            if (java.lang.Math.random() < 0.5D)
+            {
+                markDead();
+            }
+
+            velocityX *= (double)0.7F;
+            velocityZ *= (double)0.7F;
+        }
+
+        Material material = world.getMaterial(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z));
+        if (material.isFluid() || material.isSolid())
+        {
+            double height = (double)((float)(MathHelper.floor_double(y) + 1) - BlockFluid.getFluidHeightFromMeta(world.getBlockMeta(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z))));
+            if (y < height)
+            {
+                markDead();
+            }
+        }
+
+    }
+}

@@ -1,0 +1,62 @@
+using BetaSharp.Blocks;
+using BetaSharp.Entities;
+using BetaSharp.Util.Hit;
+using BetaSharp.Util.Maths;
+using BetaSharp.Worlds;
+
+namespace BetaSharp.Items;
+
+public class ItemBoat : Item
+{
+
+    public ItemBoat(int id) : base(id)
+    {
+        maxCount = 1;
+    }
+
+    public override ItemStack use(ItemStack itemStack, World world, EntityPlayer entityPlayer)
+    {
+        float partialTick = 1.0F;
+        float pitch = entityPlayer.prevPitch + (entityPlayer.pitch - entityPlayer.prevPitch) * partialTick;
+        float yaw = entityPlayer.prevYaw + (entityPlayer.yaw - entityPlayer.prevYaw) * partialTick;
+        double x = entityPlayer.prevX + (entityPlayer.x - entityPlayer.prevX) * (double)partialTick;
+        double y = entityPlayer.prevY + (entityPlayer.y - entityPlayer.prevY) * (double)partialTick + 1.62D - (double)entityPlayer.standingEyeHeight;
+        double z = entityPlayer.prevZ + (entityPlayer.z - entityPlayer.prevZ) * (double)partialTick;
+        Vec3D rayStart = new Vec3D(x, y, z);
+        float cosYaw = MathHelper.cos(-yaw * ((float)Math.PI / 180.0F) - (float)Math.PI);
+        float sinYaw = MathHelper.sin(-yaw * ((float)Math.PI / 180.0F) - (float)Math.PI);
+        float cosPitch = -MathHelper.cos(-pitch * ((float)Math.PI / 180.0F));
+        float sinPitch = MathHelper.sin(-pitch * ((float)Math.PI / 180.0F));
+        float dirX = sinYaw * cosPitch;
+        float dirZ = cosYaw * cosPitch;
+        double rayLength = 5.0D;
+        Vec3D rayEnd = rayStart + new Vec3D((double)dirX * rayLength, (double)sinPitch * rayLength, (double)dirZ * rayLength);
+        HitResult hitResult = world.raycast(rayStart, rayEnd, true);
+        if (hitResult == null)
+        {
+            return itemStack;
+        }
+        else
+        {
+            if (hitResult.type == HitResultType.TILE)
+            {
+                int hitX = hitResult.blockX;
+                int hitY = hitResult.blockY;
+                int hitZ = hitResult.blockZ;
+                if (!world.isRemote)
+                {
+                    if (world.getBlockId(hitX, hitY, hitZ) == Block.SNOW.id)
+                    {
+                        --hitY;
+                    }
+
+                    world.spawnEntity(new EntityBoat(world, (double)((float)hitX + 0.5F), (double)((float)hitY + 1.0F), (double)((float)hitZ + 0.5F)));
+                }
+
+                --itemStack.count;
+            }
+
+            return itemStack;
+        }
+    }
+}

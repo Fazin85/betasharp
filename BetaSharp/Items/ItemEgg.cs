@@ -1,0 +1,25 @@
+using BetaSharp.Entities;
+using BetaSharp.Worlds;
+
+namespace BetaSharp.Items;
+
+public class ItemEgg : Item
+{
+
+    public ItemEgg(int id) : base(id)
+    {
+        maxCount = 16;
+    }
+
+    public override ItemStack use(ItemStack itemStack, World world, EntityPlayer entityPlayer)
+    {
+        --itemStack.count;
+        world.playSound(entityPlayer, "random.bow", 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
+        if (!world.isRemote)
+        {
+            world.spawnEntity(new EntityEgg(world, entityPlayer));
+        }
+
+        return itemStack;
+    }
+}

@@ -1,0 +1,48 @@
+using BetaSharp.Blocks.Materials;
+using BetaSharp.Worlds;
+
+namespace BetaSharp.Blocks;
+
+public class BlockSponge : Block
+{
+    public BlockSponge(int id) : base(id, Material.SPONGE)
+    {
+        textureId = 48;
+    }
+
+    public override void onPlaced(World world, int x, int y, int z)
+    {
+        sbyte radius = 2;
+
+        for (int checkX = x - radius; checkX <= x + radius; ++checkX)
+        {
+            for (int checkY = y - radius; checkY <= y + radius; ++checkY)
+            {
+                for (int checkZ = z - radius; checkZ <= z + radius; ++checkZ)
+                {
+                    if (world.getMaterial(checkX, checkY, checkZ) == Material.WATER)
+                    {
+                    }
+                }
+            }
+        }
+
+    }
+
+    public override void onBreak(World world, int x, int y, int z)
+    {
+        sbyte radius = 2;
+
+        for (int checkX = x - radius; checkX <= x + radius; ++checkX)
+        {
+            for (int checkY = y - radius; checkY <= y + radius; ++checkY)
+            {
+                for (int checkZ = z - radius; checkZ <= z + radius; ++checkZ)
+                {
+                    world.notifyNeighbors(checkX, checkY, checkZ, world.getBlockId(checkX, checkY, checkZ));
+                }
+            }
+        }
+
+    }
+}

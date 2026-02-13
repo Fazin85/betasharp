@@ -1,0 +1,783 @@
+using BetaSharp.Blocks;
+using BetaSharp.Blocks.Entities;
+using BetaSharp.Client.Guis;
+using BetaSharp.Entities;
+using BetaSharp.Inventorys;
+using BetaSharp.Items;
+using BetaSharp.Network;
+using BetaSharp.Network.Packets;
+using BetaSharp.Network.Packets.Play;
+using BetaSharp.Network.Packets.S2CPlay;
+using BetaSharp.Screens;
+using BetaSharp.Util.Maths;
+using BetaSharp.Worlds;
+using BetaSharp.Worlds.Chunks;
+using BetaSharp.Worlds.Storage;
+using java.io;
+using java.net;
+
+namespace BetaSharp.Client.Network;
+
+public class ClientNetworkHandler : NetHandler
+{
+    private bool disconnected = false;
+    private Connection netManager;
+    public string field_1209_a;
+    private Minecraft mc;
+    private ClientWorld worldClient;
+    private bool terrainLoaded = false;
+    public PersistentStateManager clientPersistentStateManager = new PersistentStateManager(null);
+    java.util.Random rand = new();
+
+    public ClientNetworkHandler(Minecraft mc, string address, int port)
+    {
+
+        this.mc = mc;
+        Socket socket = new Socket(InetAddress.getByName(address), port);
+        socket.setTcpNoDelay(true);
+        netManager = new Connection(socket, "Client", this);
+    }
+
+    public void tick()
+    {
+        if (!disconnected)
+        {
+            netManager.tick();
+        }
+
+        netManager.interrupt();
+    }
+
+    public override void onHello(LoginHelloPacket packet)
+    {
+        mc.playerController = new PlayerControllerMP(mc, this);
+        mc.statFileWriter.readStat(Stats.Stats.joinMultiplayerStat, 1);
+        worldClient = new ClientWorld(this, packet.worldSeed, packet.dimensionId);
+        worldClient.isRemote = true;
+        mc.changeWorld1(worldClient);
+        mc.player.dimensionId = packet.dimensionId;
+        mc.displayGuiScreen(new GuiDownloadTerrain(this));
+        mc.player.id = packet.protocolVersion;
+    }
+
+    public override void onItemEntitySpawn(ItemEntitySpawnS2CPacket packet)
+    {
+        double x = packet.x / 32.0D;
+        double y = packet.y / 32.0D;
+        double z = packet.z / 32.0D;
+        EntityItem entityItem = new EntityItem(worldClient, x, y, z, new ItemStack(packet.itemRawId, packet.itemCount, packet.itemDamage));
+        entityItem.velocityX = packet.velocityX / 128.0D;
+        entityItem.velocityY = packet.velocityY / 128.0D;
+        entityItem.velocityZ = packet.velocityZ / 128.0D;
+        entityItem.trackedPosX = packet.x;
+        entityItem.trackedPosY = packet.y;
+        entityItem.trackedPosZ = packet.z;
+        worldClient.forceEntity(packet.id, entityItem);
+    }
+
+    public override void onEntitySpawn(EntitySpawnS2CPacket packet)
+    {
+        double x = packet.x / 32.0D;
+        double y = packet.y / 32.0D;
+        double z = packet.z / 32.0D;
+        object entity = null;
+        if (packet.entityType == 10)
+        {
+            entity = new EntityMinecart(worldClient, x, y, z, 0);
+        }
+
+        if (packet.entityType == 11)
+        {
+            entity = new EntityMinecart(worldClient, x, y, z, 1);
+        }
+
+        if (packet.entityType == 12)
+        {
+            entity = new EntityMinecart(worldClient, x, y, z, 2);
+        }
+
+        if (packet.entityType == 90)
+        {
+            entity = new EntityFish(worldClient, x, y, z);
+        }
+
+        if (packet.entityType == 60)
+        {
+            entity = new EntityArrow(worldClient, x, y, z);
+        }
+
+        if (packet.entityType == 61)
+        {
+            entity = new EntitySnowball(worldClient, x, y, z);
+        }
+
+        if (packet.entityType == 63)
+        {
+            entity = new EntityFireball(worldClient, x, y, z, packet.velocityX / 8000.0D, packet.velocityY / 8000.0D, packet.velocityZ / 8000.0D);
+            packet.entityData = 0;
+        }
+
+        if (packet.entityType == 62)
+        {
+            entity = new EntityEgg(worldClient, x, y, z);
+        }
+
+        if (packet.entityType == 1)
+        {
+            entity = new EntityBoat(worldClient, x, y, z);
+        }
+
+        if (packet.entityType == 50)
+        {
+            entity = new EntityTNTPrimed(worldClient, x, y, z);
+        }
+
+        if (packet.entityType == 70)
+        {
+            entity = new EntityFallingSand(worldClient, x, y, z, Block.SAND.id);
+        }
+
+        if (packet.entityType == 71)
+        {
+            entity = new EntityFallingSand(worldClient, x, y, z, Block.GRAVEL.id);
+        }
+
+        if (entity != null)
+        {
+            ((Entity)entity).trackedPosX = packet.x;
+            ((Entity)entity).trackedPosY = packet.y;
+            ((Entity)entity).trackedPosZ = packet.z;
+            ((Entity)entity).yaw = 0.0F;
+            ((Entity)entity).pitch = 0.0F;
+            ((Entity)entity).id = packet.id;
+            worldClient.forceEntity(packet.id, (Entity)entity);
+            if (packet.entityData > 0)
+            {
+                if (packet.entityType == 60)
+                {
+                    Entity owner = getEntityByID(packet.entityData);
+                    if (owner is EntityLiving)
+                    {
+                        ((EntityArrow)entity).owner = (EntityLiving)owner;
+                    }
+                }
+
+                ((Entity)entity).setVelocityClient(packet.velocityX / 8000.0D, packet.velocityY / 8000.0D, packet.velocityZ / 8000.0D);
+            }
+        }
+
+    }
+
+    public override void onLightningEntitySpawn(GlobalEntitySpawnS2CPacket packet)
+    {
+        double x = packet.x / 32.0D;
+        double y = packet.y / 32.0D;
+        double z = packet.z / 32.0D;
+        EntityLightningBolt ent = null;
+        if (packet.type == 1)
+        {
+            ent = new EntityLightningBolt(worldClient, x, y, z);
+        }
+
+        if (ent != null)
+        {
+            ent.trackedPosX = packet.x;
+            ent.trackedPosY = packet.y;
+            ent.trackedPosZ = packet.z;
+            ent.yaw = 0.0F;
+            ent.pitch = 0.0F;
+            ent.id = packet.id;
+            worldClient.spawnGlobalEntity(ent);
+        }
+
+    }
+
+    public override void onPaintingEntitySpawn(PaintingEntitySpawnS2CPacket packet)
+    {
+        EntityPainting ent = new EntityPainting(worldClient, packet.xPosition, packet.yPosition, packet.zPosition, packet.direction, packet.title);
+        worldClient.forceEntity(packet.entityId, ent);
+    }
+
+    public override void onEntityVelocityUpdate(EntityVelocityUpdateS2CPacket packet)
+    {
+        Entity ent = getEntityByID(packet.entityId);
+        if (ent != null)
+        {
+            ent.setVelocityClient(packet.motionX / 8000.0D, packet.motionY / 8000.0D, packet.motionZ / 8000.0D);
+        }
+    }
+
+    public override void onEntityTrackerUpdate(EntityTrackerUpdateS2CPacket packet)
+    {
+        Entity ent = getEntityByID(packet.id);
+        if (ent != null && packet.getWatchedObjects() != null)
+        {
+            ent.getDataWatcher().updateWatchedObjectsFromList(packet.getWatchedObjects());
+        }
+
+    }
+
+    public override void onPlayerSpawn(PlayerSpawnS2CPacket packet)
+    {
+        double x = packet.xPosition / 32.0D;
+        double y = packet.yPosition / 32.0D;
+        double z = packet.zPosition / 32.0D;
+        float rotation = packet.rotation * 360 / 256.0F;
+        float pitch = packet.pitch * 360 / 256.0F;
+        OtherPlayerEntity ent = new OtherPlayerEntity(mc.world, packet.name);
+        ent.prevX = ent.lastTickX = ent.trackedPosX = packet.xPosition;
+        ent.prevY = ent.lastTickY = ent.trackedPosY = packet.yPosition;
+        ent.prevZ = ent.lastTickZ = ent.trackedPosZ = packet.zPosition;
+        int currentItem = packet.currentItem;
+        if (currentItem == 0)
+        {
+            ent.inventory.main[ent.inventory.selectedSlot] = null;
+        }
+        else
+        {
+            ent.inventory.main[ent.inventory.selectedSlot] = new ItemStack(currentItem, 1, 0);
+        }
+
+        ent.setPositionAndAngles(x, y, z, rotation, pitch);
+        worldClient.forceEntity(packet.entityId, ent);
+    }
+
+    public override void onEntityPosition(EntityPositionS2CPacket packet)
+    {
+        Entity ent = getEntityByID(packet.id);
+        if (ent != null)
+        {
+            ent.trackedPosX = packet.x;
+            ent.trackedPosY = packet.y;
+            ent.trackedPosZ = packet.z;
+            double posX = ent.trackedPosX / 32.0D;
+            double posY = ent.trackedPosY / 32.0D + 1.0D / 64.0D;
+            double posZ = ent.trackedPosZ / 32.0D;
+            float yaw = packet.yaw * 360 / 256.0F;
+            float pitch = packet.pitch * 360 / 256.0F;
+            ent.setPositionAndAnglesAvoidEntities(posX, posY, posZ, yaw, pitch, 3);
+        }
+    }
+
+    public override void onEntity(EntityS2CPacket packet)
+    {
+        Entity ent = getEntityByID(packet.id);
+        if (ent != null)
+        {
+            ent.trackedPosX += packet.deltaX;
+            ent.trackedPosY += packet.deltaY;
+            ent.trackedPosZ += packet.deltaZ;
+            double posX = ent.trackedPosX / 32.0D;
+            double posY = ent.trackedPosY / 32.0D;
+            double posZ = ent.trackedPosZ / 32.0D;
+            float yaw = packet.rotate ? packet.yaw * 360 / 256.0F : ent.yaw;
+            float pitch = packet.rotate ? packet.pitch * 360 / 256.0F : ent.pitch;
+            ent.setPositionAndAnglesAvoidEntities(posX, posY, posZ, yaw, pitch, 3);
+        }
+    }
+
+    public override void onEntityDestroy(EntityDestroyS2CPacket packet)
+    {
+        worldClient.removeEntityFromWorld(packet.entityId);
+    }
+
+    public override void onPlayerMove(PlayerMovePacket packet)
+    {
+        ClientPlayerEntity ent = mc.player;
+        double x = ent.x;
+        double y = ent.y;
+        double z = ent.z;
+        float yaw = ent.yaw;
+        float pitch = ent.pitch;
+        if (packet.changePosition)
+        {
+            x = packet.x;
+            y = packet.y;
+            z = packet.z;
+        }
+
+        if (packet.changeLook)
+        {
+            yaw = packet.yaw;
+            pitch = packet.pitch;
+        }
+
+        ent.cameraOffset = 0.0F;
+        ent.velocityX = ent.velocityY = ent.velocityZ = 0.0D;
+        ent.setPositionAndAngles(x, y, z, yaw, pitch);
+        packet.x = ent.x;
+        packet.y = ent.boundingBox.minY;
+        packet.z = ent.z;
+        packet.eyeHeight = ent.y;
+        netManager.sendPacket(packet);
+        if (!terrainLoaded)
+        {
+            mc.player.prevX = mc.player.x;
+            mc.player.prevY = mc.player.y;
+            mc.player.prevZ = mc.player.z;
+            terrainLoaded = true;
+            mc.displayGuiScreen(null);
+        }
+
+    }
+
+    public override void onChunkStatusUpdate(ChunkStatusUpdateS2CPacket packet)
+    {
+        worldClient.updateChunk(packet.x, packet.z, packet.load);
+    }
+
+    public override void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet)
+    {
+        Chunk chunk = worldClient.getChunk(packet.x, packet.z);
+        int x = packet.x * 16;
+        int y = packet.z * 16;
+
+        for (int i = 0; i < packet._size; ++i)
+        {
+            short positions = packet.positions[i];
+            int blockRawId = packet.blockRawIds[i] & 255;
+            byte metadata = packet.blockMetadata[i];
+            int blockX = positions >> 12 & 15;
+            int blockZ = positions >> 8 & 15;
+            int blockY = positions & 255;
+            chunk.setBlock(blockX, blockY, blockZ, blockRawId, metadata);
+            worldClient.clearBlockResets(blockX + x, blockY, blockZ + y, blockX + x, blockY, blockZ + y);
+            worldClient.setBlocksDirty(blockX + x, blockY, blockZ + y, blockX + x, blockY, blockZ + y);
+        }
+
+    }
+
+    public override void handleChunkData(ChunkDataS2CPacket packet)
+    {
+        worldClient.clearBlockResets(packet.x, packet.y, packet.z, packet.x + packet.sizeX - 1, packet.y + packet.sizeY - 1, packet.z + packet.sizeZ - 1);
+        worldClient.handleChunkDataUpdate(packet.x, packet.y, packet.z, packet.sizeX, packet.sizeY, packet.sizeZ, packet.chunkData);
+    }
+
+    public override void onBlockUpdate(BlockUpdateS2CPacket packet)
+    {
+        worldClient.setBlockWithMetaFromPacket(packet.x, packet.y, packet.z, packet.blockRawId, packet.blockMetadata);
+    }
+
+    public override void onDisconnect(DisconnectPacket packet)
+    {
+        netManager.disconnect("disconnect.kicked", new object[0]);
+        disconnected = true;
+        mc.changeWorld1(null);
+        mc.displayGuiScreen(new GuiConnectFailed("disconnect.disconnected", "disconnect.genericReason", new object[] { packet.reason }));
+    }
+
+    public override void onDisconnected(string reason, object[] args)
+    {
+        if (!disconnected)
+        {
+            disconnected = true;
+            mc.changeWorld1(null);
+            mc.displayGuiScreen(new GuiConnectFailed("disconnect.lost", reason, args));
+        }
+    }
+
+    public void sendPacketAndDisconnect(Packet packet)
+    {
+        if (!disconnected)
+        {
+            netManager.sendPacket(packet);
+            netManager.disconnect();
+        }
+    }
+
+    public void addToSendQueue(Packet packet)
+    {
+        if (!disconnected)
+        {
+            netManager.sendPacket(packet);
+        }
+    }
+
+    public override void onItemPickupAnimation(ItemPickupAnimationS2CPacket packet)
+    {
+        Entity ent = getEntityByID(packet.entityId);
+        object collector = (EntityLiving)getEntityByID(packet.collectorEntityId);
+        if (collector == null)
+        {
+            collector = mc.player;
+        }
+
+        if (ent != null)
+        {
+            worldClient.playSound(ent, "random.pop", 0.2F, ((rand.nextFloat() - rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+            mc.particleManager.addEffect(new EntityPickupFX(mc.world, ent, (Entity)collector, -0.5F));
+            worldClient.removeEntityFromWorld(packet.entityId);
+        }
+
+    }
+
+    public override void onChatMessage(ChatMessagePacket packet)
+    {
+        mc.ingameGUI.addChatMessage(packet.chatMessage);
+    }
+
+    public override void onEntityAnimation(EntityAnimationPacket packet)
+    {
+        Entity ent = getEntityByID(packet.id);
+        if (ent != null)
+        {
+            EntityPlayer player;
+            if (packet.animationId == 1)
+            {
+                player = (EntityPlayer)ent;
+                player.swingHand();
+            }
+            else if (packet.animationId == 2)
+            {
+                ent.animateHurt();
+            }
+            else if (packet.animationId == 3)
+            {
+                player = (EntityPlayer)ent;
+                player.wakeUp(false, false, false);
+            }
+            else if (packet.animationId == 4)
+            {
+                player = (EntityPlayer)ent;
+                player.spawn();
+            }
+
+        }
+    }
+
+    public override void onPlayerSleepUpdate(PlayerSleepUpdateS2CPacket packet)
+    {
+        Entity ent = getEntityByID(packet.id);
+        if (ent != null)
+        {
+            if (packet.status == 0)
+            {
+                EntityPlayer player = (EntityPlayer)ent;
+                player.trySleep(packet.x, packet.y, packet.z);
+            }
+
+        }
+    }
+
+    public override void onHandshake(HandshakePacket packet)
+    {
+        if (packet.username.Equals("-"))
+        {
+            addToSendQueue(new LoginHelloPacket(mc.session.username, 14));
+        }
+        else
+        {
+            try
+            {
+                URL authUrl = new URL("http://www.minecraft.net/game/joinserver.jsp?user=" + mc.session.username + "&sessionId=" + mc.session.sessionId + "&serverId=" + packet.username);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(authUrl.openStream()));
+                string response = reader.readLine();
+                reader.close();
+                //TODO: AUTH
+                if (response == null || response.Equals("ok", StringComparison.OrdinalIgnoreCase))
+                {
+                    addToSendQueue(new LoginHelloPacket(mc.session.username, 14));
+                }
+                else
+                {
+                    netManager.disconnect("disconnect.loginFailedInfo", new object[] { response });
+                }
+            }
+            catch (java.lang.Exception ex)
+            {
+                ex.printStackTrace();
+                netManager.disconnect("disconnect.genericReason", new object[] { "Internal client error: " + ex.toString() });
+            }
+        }
+
+    }
+
+    public void disconnect()
+    {
+        disconnected = true;
+        netManager.interrupt();
+        netManager.disconnect("disconnect.closed", new object[0]);
+    }
+
+    public override void onLivingEntitySpawn(LivingEntitySpawnS2CPacket packet)
+    {
+        double x = packet.xPosition / 32.0D;
+        double y = packet.yPosition / 32.0D;
+        double z = packet.zPosition / 32.0D;
+        float yaw = packet.yaw * 360 / 256.0F;
+        float pitch = packet.pitch * 360 / 256.0F;
+        EntityLiving ent = (EntityLiving)EntityRegistry.create(packet.type, mc.world);
+        ent.trackedPosX = packet.xPosition;
+        ent.trackedPosY = packet.yPosition;
+        ent.trackedPosZ = packet.zPosition;
+        ent.id = packet.entityId;
+        ent.setPositionAndAngles(x, y, z, yaw, pitch);
+        ent.interpolateOnly = true;
+        worldClient.forceEntity(packet.entityId, ent);
+        java.util.List metaData = packet.getMetadata();
+        if (metaData != null)
+        {
+            ent.getDataWatcher().updateWatchedObjectsFromList(metaData);
+        }
+
+    }
+
+    public override void onWorldTimeUpdate(WorldTimeUpdateS2CPacket packet)
+    {
+        mc.world.setTime(packet.time);
+    }
+
+    public override void onPlayerSpawnPosition(PlayerSpawnPositionS2CPacket packet)
+    {
+        mc.player.setSpawnPos(new Vec3i(packet.x, packet.y, packet.z));
+        mc.world.getProperties().setSpawn(packet.x, packet.y, packet.z);
+    }
+
+    public override void onEntityVehicleSet(EntityVehicleSetS2CPacket packet)
+    {
+        object rider = getEntityByID(packet.entityId);
+        Entity ent = getEntityByID(packet.vehicleEntityId);
+        if (packet.entityId == mc.player.id)
+        {
+            rider = mc.player;
+        }
+
+        if (rider != null)
+        {
+            ((Entity)rider).setVehicle(ent);
+        }
+    }
+
+    public override void onEntityStatus(EntityStatusS2CPacket packet)
+    {
+        Entity ent = getEntityByID(packet.entityId);
+        if (ent != null)
+        {
+            ent.processServerEntityStatus(packet.entityStatus);
+        }
+
+    }
+
+    private Entity getEntityByID(int entityId)
+    {
+        return entityId == mc.player.id ? mc.player : worldClient.getEntity(entityId);
+    }
+
+    public override void onHealthUpdate(HealthUpdateS2CPacket packet)
+    {
+        mc.player.setHealth(packet.healthMP);
+    }
+
+    public override void onPlayerRespawn(PlayerRespawnPacket packet)
+    {
+        if (packet.dimensionId != mc.player.dimensionId)
+        {
+            terrainLoaded = false;
+            worldClient = new ClientWorld(this, worldClient.getProperties().getRandomSeed(), packet.dimensionId);
+            worldClient.isRemote = true;
+            mc.changeWorld1(worldClient);
+            mc.player.dimensionId = packet.dimensionId;
+            mc.displayGuiScreen(new GuiDownloadTerrain(this));
+        }
+
+        mc.respawn(true, packet.dimensionId);
+    }
+
+    public override void onExplosion(ExplosionS2CPacket packet)
+    {
+        Explosion explosion = new Explosion(mc.world, null, packet.explosionX, packet.explosionY, packet.explosionZ, packet.explosionSize);
+        explosion.destroyedBlockPositions = packet.destroyedBlockPositions;
+        explosion.doExplosionB(true);
+    }
+
+    public override void onOpenScreen(OpenScreenS2CPacket packet)
+    {
+        if (packet.screenHandlerId == 0)
+        {
+            InventoryBasic inventory = new InventoryBasic(packet.name, packet.slotsCount);
+            mc.player.openChestScreen(inventory);
+            mc.player.currentScreenHandler.syncId = packet.syncId;
+        }
+        else if (packet.screenHandlerId == 2)
+        {
+            BlockEntityFurnace furnace = new BlockEntityFurnace();
+            mc.player.openFurnaceScreen(furnace);
+            mc.player.currentScreenHandler.syncId = packet.syncId;
+        }
+        else if (packet.screenHandlerId == 3)
+        {
+            BlockEntityDispenser dispenser = new BlockEntityDispenser();
+            mc.player.openDispenserScreen(dispenser);
+            mc.player.currentScreenHandler.syncId = packet.syncId;
+        }
+        else if (packet.screenHandlerId == 1)
+        {
+            ClientPlayerEntity player = mc.player;
+            mc.player.openCraftingScreen(MathHelper.floor_double(player.x), MathHelper.floor_double(player.y), MathHelper.floor_double(player.z));
+            mc.player.currentScreenHandler.syncId = packet.syncId;
+        }
+
+    }
+
+    public override void onScreenHandlerSlotUpdate(ScreenHandlerSlotUpdateS2CPacket packet)
+    {
+        if (packet.syncId == -1)
+        {
+            mc.player.inventory.setItemStack(packet.stack);
+        }
+        else if (packet.syncId == 0 && packet.slot >= 36 && packet.slot < 45)
+        {
+            ItemStack itemStack = mc.player.playerScreenHandler.getSlot(packet.slot).getStack();
+            if (packet.stack != null && (itemStack == null || itemStack.count < packet.stack.count))
+            {
+                packet.stack.bobbingAnimationTime = 5;
+            }
+
+            mc.player.playerScreenHandler.setStackInSlot(packet.slot, packet.stack);
+        }
+        else if (packet.syncId == mc.player.currentScreenHandler.syncId)
+        {
+            mc.player.currentScreenHandler.setStackInSlot(packet.slot, packet.stack);
+        }
+
+    }
+
+    public override void onScreenHandlerAcknowledgement(ScreenHandlerAcknowledgementPacket packet)
+    {
+        ScreenHandler screenHandler = null;
+        if (packet.syncId == 0)
+        {
+            screenHandler = mc.player.playerScreenHandler;
+        }
+        else if (packet.syncId == mc.player.currentScreenHandler.syncId)
+        {
+            screenHandler = mc.player.currentScreenHandler;
+        }
+
+        if (screenHandler != null)
+        {
+            if (packet.accepted)
+            {
+                screenHandler.onAcknowledgementAccepted(packet.actionType);
+            }
+            else
+            {
+                screenHandler.onAcknowledgementDenied(packet.actionType);
+                addToSendQueue(new ScreenHandlerAcknowledgementPacket(packet.syncId, packet.actionType, true));
+            }
+        }
+
+    }
+
+    public override void onInventory(InventoryS2CPacket packet)
+    {
+        if (packet.syncId == 0)
+        {
+            mc.player.playerScreenHandler.updateSlotStacks(packet.contents);
+        }
+        else if (packet.syncId == mc.player.currentScreenHandler.syncId)
+        {
+            mc.player.currentScreenHandler.updateSlotStacks(packet.contents);
+        }
+
+    }
+
+    public override void handleUpdateSign(UpdateSignPacket packet)
+    {
+        if (mc.world.isPosLoaded(packet.x, packet.y, packet.z))
+        {
+            BlockEntity blockEnt = mc.world.getBlockEntity(packet.x, packet.y, packet.z);
+            if (blockEnt is BlockEntitySign)
+            {
+                BlockEntitySign signEntity = (BlockEntitySign)blockEnt;
+
+                for (int i = 0; i < 4; ++i)
+                {
+                    signEntity.texts[i] = packet.text[i];
+                }
+
+                signEntity.markDirty();
+            }
+        }
+
+    }
+
+    public override void onScreenHandlerPropertyUpdate(ScreenHandlerPropertyUpdateS2CPacket packet)
+    {
+        handle(packet);
+        if (mc.player.currentScreenHandler != null && mc.player.currentScreenHandler.syncId == packet.syncId)
+        {
+            mc.player.currentScreenHandler.setProperty(packet.propertyId, packet.value);
+        }
+
+    }
+
+    public override void onEntityEquipmentUpdate(EntityEquipmentUpdateS2CPacket packet)
+    {
+        Entity ent = getEntityByID(packet.id);
+        if (ent != null)
+        {
+            ent.setEquipmentStack(packet.slot, packet.itemRawId, packet.itemDamage);
+        }
+
+    }
+
+    public override void onCloseScreen(CloseScreenS2CPacket packet)
+    {
+        mc.player.closeHandledScreen();
+    }
+
+    public override void onPlayNoteSound(PlayNoteSoundS2CPacket packet)
+    {
+        mc.world.playNoteBlockActionAt(packet.xLocation, packet.yLocation, packet.zLocation, packet.instrumentType, packet.pitch);
+    }
+
+    public override void onGameStateChange(GameStateChangeS2CPacket packet)
+    {
+        int reason = packet.reason;
+        if (reason >= 0 && reason < GameStateChangeS2CPacket.REASONS.Length && GameStateChangeS2CPacket.REASONS[reason] != null)
+        {
+            mc.player.sendMessage(GameStateChangeS2CPacket.REASONS[reason]);
+        }
+
+        if (reason == 1)
+        {
+            worldClient.getProperties().setRaining(true);
+            worldClient.setRainGradient(1.0F);
+        }
+        else if (reason == 2)
+        {
+            worldClient.getProperties().setRaining(false);
+            worldClient.setRainGradient(0.0F);
+        }
+
+    }
+
+    public override void onMapUpdate(MapUpdateS2CPacket packet)
+    {
+        if (packet.itemRawId == Item.MAP.id)
+        {
+            ItemMap.getMapState(packet.id, mc.world).updateData(packet.updateData);
+        }
+        else
+        {
+            java.lang.System.@out.println("Unknown itemid: " + packet.id);
+        }
+
+    }
+
+    public override void onWorldEvent(WorldEventS2CPacket packet)
+    {
+        mc.world.worldEvent(packet.eventId, packet.x, packet.y, packet.z, packet.data);
+    }
+
+    public override void onIncreaseStat(IncreaseStatS2CPacket packet)
+    {
+        ((EntityClientPlayerMP)mc.player).func_27027_b(Stats.Stats.getStatById(packet.statId), packet.amount);
+    }
+
+    public override bool isServerSide()
+    {
+        return false;
+    }
+}

@@ -1,0 +1,160 @@
+using BetaSharp.Blocks;
+using BetaSharp.Blocks.Materials;
+using BetaSharp.Items;
+using BetaSharp.NBT;
+using BetaSharp.Util.Maths;
+using BetaSharp.Worlds;
+
+namespace BetaSharp.Entities;
+
+public class EntityItem : Entity
+{
+
+    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityItem).TypeHandle);
+    public ItemStack stack;
+    public int itemAge = 0;
+    public int delayBeforeCanPickup;
+    private int health = 5;
+    public float bobPhase = (float)(java.lang.Math.random() * System.Math.PI * 2.0D);
+
+    public EntityItem(World world, double x, double y, double z, ItemStack stack) : base(world)
+    {
+        setBoundingBoxSpacing(0.25F, 0.25F);
+        standingEyeHeight = height / 2.0F;
+        setPosition(x, y, z);
+        this.stack = stack;
+        yaw = (float)(java.lang.Math.random() * 360.0D);
+        velocityX = (double)((float)(java.lang.Math.random() * (double)0.2F - (double)0.1F));
+        velocityY = (double)0.2F;
+        velocityZ = (double)((float)(java.lang.Math.random() * (double)0.2F - (double)0.1F));
+    }
+
+    protected override bool bypassesSteppingEffects()
+    {
+        return false;
+    }
+
+    public EntityItem(World world) : base(world)
+    {
+        setBoundingBoxSpacing(0.25F, 0.25F);
+        standingEyeHeight = height / 2.0F;
+    }
+
+    protected override void initDataTracker()
+    {
+    }
+
+    public override void tick()
+    {
+        base.tick();
+        if (delayBeforeCanPickup > 0)
+        {
+            --delayBeforeCanPickup;
+        }
+
+        prevX = x;
+        prevY = y;
+        prevZ = z;
+        velocityY -= (double)0.04F;
+        if (world.getMaterial(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z)) == Material.LAVA)
+        {
+            velocityY = (double)0.2F;
+            velocityX = (double)((random.nextFloat() - random.nextFloat()) * 0.2F);
+            velocityZ = (double)((random.nextFloat() - random.nextFloat()) * 0.2F);
+            world.playSound(this, "random.fizz", 0.4F, 2.0F + random.nextFloat() * 0.4F);
+        }
+
+        pushOutOfBlocks(x, (boundingBox.minY + boundingBox.maxY) / 2.0D, z);
+        move(velocityX, velocityY, velocityZ);
+        float friction = 0.98F;
+        if (onGround)
+        {
+            friction = 0.1F * 0.1F * 58.8F;
+            int groundBlockId = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
+            if (groundBlockId > 0)
+            {
+                friction = Block.BLOCKS[groundBlockId].slipperiness * 0.98F;
+            }
+        }
+
+        velocityX *= (double)friction;
+        velocityY *= (double)0.98F;
+        velocityZ *= (double)friction;
+        if (onGround)
+        {
+            velocityY *= -0.5D;
+        }
+
+        ++itemAge;
+        if (itemAge >= 6000)
+        {
+            markDead();
+        }
+
+    }
+
+    public override bool checkWaterCollisions()
+    {
+        return world.updateMovementInFluid(boundingBox, Material.WATER, this);
+    }
+
+    protected override void damage(int amount)
+    {
+        damage((Entity)null, amount);
+    }
+
+    public override bool damage(Entity entity, int amount)
+    {
+        scheduleVelocityUpdate();
+        health -= amount;
+        if (health <= 0)
+        {
+            markDead();
+        }
+
+        return false;
+    }
+
+    public override void writeNbt(NBTTagCompound nbt)
+    {
+        nbt.SetShort("Health", (short)((byte)health));
+        nbt.SetShort("Age", (short)itemAge);
+        nbt.SetCompoundTag("Item", stack.writeToNBT(new NBTTagCompound()));
+    }
+
+    public override void readNbt(NBTTagCompound nbt)
+    {
+        health = nbt.GetShort("Health") & 255;
+        itemAge = nbt.GetShort("Age");
+        NBTTagCompound itemTag = nbt.GetCompoundTag("Item");
+        stack = new ItemStack(itemTag);
+    }
+
+    public override void onPlayerInteraction(EntityPlayer player)
+    {
+        if (!world.isRemote)
+        {
+            int pickedUpCount = stack.count;
+            if (delayBeforeCanPickup == 0 && player.inventory.addItemStackToInventory(stack))
+            {
+                if (stack.itemId == Block.LOG.id)
+                {
+                    player.incrementStat(Achievements.MineWood);
+                }
+
+                if (stack.itemId == Item.LEATHER.id)
+                {
+                    player.incrementStat(Achievements.KillCow);
+                }
+
+                world.playSound(this, "random.pop", 0.2F, ((random.nextFloat() - random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                player.sendPickup(this, pickedUpCount);
+                if (stack.count <= 0)
+                {
+                    markDead();
+                }
+            }
+
+        }
+    }
+}

@@ -1,0 +1,45 @@
+using BetaSharp.Client.Colors;
+using BetaSharp.Items;
+using BetaSharp.Worlds;
+
+namespace BetaSharp.Blocks;
+
+public class BlockTallGrass : BlockPlant
+{
+    public BlockTallGrass(int i, int j) : base(i, j)
+    {
+        float halfSize = 0.4F;
+        setBoundingBox(0.5F - halfSize, 0.0F, 0.5F - halfSize, 0.5F + halfSize, 0.8F, 0.5F + halfSize);
+    }
+
+    public override int getTexture(int side, int meta)
+    {
+        return meta == 1 ? textureId : (meta == 2 ? textureId + 16 + 1 : (meta == 0 ? textureId + 16 : textureId));
+    }
+
+    public override int getColorMultiplier(BlockView blockView, int x, int y, int z)
+    {
+        int meta = blockView.getBlockMeta(x, y, z);
+        if (meta == 0)
+        {
+            return 16777215;
+        }
+        else
+        {
+            long positionSeed = (long)(x * 3129871 + z * 6129781 + y);
+            positionSeed = positionSeed * positionSeed * 42317861L + positionSeed * 11L;
+            x = (int)((long)x + (positionSeed >> 14 & 31L));
+            y = (int)((long)y + (positionSeed >> 19 & 31L));
+            z = (int)((long)z + (positionSeed >> 24 & 31L));
+            blockView.getBiomeSource().getBiomesInArea(x, z, 1, 1);
+            double temperature = blockView.getBiomeSource().temperatureMap[0];
+            double downfall = blockView.getBiomeSource().downfallMap[0];
+            return GrassColors.getColor(temperature, downfall);
+        }
+    }
+
+    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    {
+        return random.nextInt(8) == 0 ? Item.SEEDS.id : -1;
+    }
+}

@@ -1,0 +1,217 @@
+﻿using System.Net;
+using System.Xml;
+
+namespace BetaSharp.Client.Resource;
+
+public class MinecraftResourceDownloader : IDisposable
+{
+    private const string RESOURCE_URL = "http://s3.amazonaws.com/MinecraftResources/";
+    private const string BETACRAFT_PROXY_HOST = "betacraft.uk";
+    private const int BETACRAFT_PROXY_PORT = 11705;
+
+    private readonly HttpClient _httpClient;
+    private readonly string _resourcesDirectory;
+    private readonly Minecraft mc;
+    private bool _cancelled = false;
+
+    public MinecraftResourceDownloader(Minecraft mc, string baseDirectory)
+    {
+        this.mc = mc;
+        _resourcesDirectory = System.IO.Path.Combine(baseDirectory, "resources");
+        Directory.CreateDirectory(_resourcesDirectory);
+
+        var handler = new HttpClientHandler
+        {
+            Proxy = new WebProxy(BETACRAFT_PROXY_HOST, BETACRAFT_PROXY_PORT),
+            UseProxy = true
+        };
+
+        _httpClient = new HttpClient(handler)
+        {
+            Timeout = TimeSpan.FromMinutes(10)
+        };
+    }
+
+    private bool DoManifestStuff(string manifestFilePath)
+    {
+        if (File.Exists(manifestFilePath))
+        {
+            var lines = File.ReadAllLines(manifestFilePath);
+            int loaded = 0;
+
+            foreach (var line in lines)
+            {
+                var localFile = System.IO.Path.Combine(_resourcesDirectory, line);
+                if (File.Exists(localFile))
+                {
+                    loaded++;
+                    mc.installResource(line, new java.io.File(localFile));
+                }
+            }
+
+            if (lines.Length == loaded)
+            {
+                Console.WriteLine($"{loaded} resources");
+                return true;
+            }
+            else
+            {
+                Console.WriteLine($"resource count mismatch, expected {lines.Length}, loaded {loaded}");
+            }
+        }
+
+        return false;
+    }
+
+    public async Task DownloadResourcesAsync()
+    {
+        string manifestFilePath = System.IO.Path.Combine(_resourcesDirectory, "resourceManifest.txt");
+
+        if (DoManifestStuff(manifestFilePath))
+        {
+            return;
+        }
+
+        try
+        {
+            Console.WriteLine("Fetching resource list...");
+
+            var response = await _httpClient.GetAsync(RESOURCE_URL);
+            response.EnsureSuccessStatusCode();
+
+            var xmlContent = await response.Content.ReadAsStringAsync();
+
+            var resources = ParseResourceXml(xmlContent);
+
+            List<string> resourceFileNames = [];
+
+            foreach (var resource in resources)
+            {
+                resourceFileNames.Add(resource.Key);
+            }
+
+            File.WriteAllLines(manifestFilePath, resourceFileNames);
+
+            Console.WriteLine($"Found {resources.Count} resources to download");
+
+            for (int pass = 0; pass < 2; pass++)
+            {
+                foreach (var resource in resources)
+                {
+                    if (_cancelled) return;
+
+                    await LoadFromUrl(resource.Key, resource.Size, pass);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error downloading resources: {ex.Message}");
+        }
+    }
+
+    private static List<ResourceEntry> ParseResourceXml(string xmlContent)
+    {
+        var resources = new List<ResourceEntry>();
+        var doc = new XmlDocument();
+        doc.LoadXml(xmlContent);
+
+        var contents = doc.GetElementsByTagName("Contents");
+
+        foreach (XmlNode node in contents)
+        {
+            if (node.NodeType == XmlNodeType.Element)
+            {
+                var element = (XmlElement)node;
+
+                var keyNode = element.GetElementsByTagName("Key")[0];
+                var sizeNode = element.GetElementsByTagName("Size")[0];
+
+                string key = keyNode.InnerText;
+                long size = long.Parse(sizeNode.InnerText);
+
+                if (size > 0)
+                {
+                    resources.Add(new ResourceEntry { Key = key, Size = size });
+                }
+            }
+        }
+
+        return resources;
+    }
+
+    private async Task LoadFromUrl(string path, long size, int pass)
+    {
+        try
+        {
+            int slashIndex = path.IndexOf('/');
+            if (slashIndex < 0) return;
+
+            string category = path.Substring(0, slashIndex);
+
+            bool isSoundFile = category == "sound" || category == "newsound";
+
+            if (isSoundFile && pass != 0) return;
+            if (!isSoundFile && pass != 1) return;
+
+            var localFile = new FileInfo(System.IO.Path.Combine(_resourcesDirectory, path));
+
+            if (localFile.Exists && localFile.Length == size)
+            {
+                mc.installResource(path, new java.io.File(localFile.FullName));
+                return;
+            }
+
+            localFile.Directory?.Create();
+
+            string urlPath = path.Replace(" ", "%20");
+            string fullUrl = RESOURCE_URL + urlPath;
+
+            await DownloadFile(fullUrl, localFile.FullName);
+
+            if (!_cancelled)
+            {
+                mc.installResource(path, new java.io.File(localFile.FullName));
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to download {path}: {ex.Message}");
+        }
+    }
+
+    private async Task DownloadFile(string url, string destinationPath)
+    {
+        var response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+        response.EnsureSuccessStatusCode();
+
+        using var stream = await response.Content.ReadAsStreamAsync();
+        using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None);
+        byte[] buffer = new byte[4096];
+        int bytesRead;
+
+        while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+        {
+            if (_cancelled) return;
+
+            await fileStream.WriteAsync(buffer, 0, bytesRead);
+        }
+    }
+
+    public void Cancel()
+    {
+        _cancelled = true;
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        _httpClient?.Dispose();
+    }
+
+    private class ResourceEntry
+    {
+        public string Key { get; set; }
+        public long Size { get; set; }
+    }
+}
