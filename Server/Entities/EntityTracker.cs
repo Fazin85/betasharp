@@ -111,7 +111,7 @@ namespace betareborn.Server.Entities
                 EntityTrackerEntry var5 = new(entity, trackedDistance, tracingFrequency, alwaysUpdateVelocity);
                 entries.Add(var5);
                 entriesById.put(entity.id, var5);
-                var5.updateListeners(world.getWorld(dimensionId).players.Cast<ServerPlayerEntity>().ToList());
+                var5.updateListeners(world.getWorld(dimensionId).players.Cast<ServerPlayerEntity>());
             }
         }
 
@@ -141,7 +141,7 @@ namespace betareborn.Server.Entities
 
             foreach (EntityTrackerEntry var3 in entries)
             {
-                var3.notifyNewLocation(world.getWorld(dimensionId).players.Cast<ServerPlayerEntity>().ToList());
+                var3.notifyNewLocation(world.getWorld(dimensionId).players.Cast<ServerPlayerEntity>());
                 if (var3.newPlayerDataUpdated && var3.currentTrackedEntity is ServerPlayerEntity)
                 {
                     var1.add((ServerPlayerEntity)var3.currentTrackedEntity);
