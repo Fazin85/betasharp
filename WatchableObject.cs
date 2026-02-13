@@ -1,18 +1,10 @@
 namespace betareborn
 {
-    public class WatchableObject
+    public class WatchableObject(int objectType, int dataValueId, object watchedObject)
     {
-        public readonly int objectType;
-        public readonly int dataValueId;
-        public java.lang.Object watchedObject;
-        public bool dirty;
-
-        public WatchableObject(int objectType, int dataValueId, java.lang.Object watchedObject)
-        {
-            this.dataValueId = dataValueId;
-            this.watchedObject = watchedObject;
-            this.objectType = objectType;
-            dirty = true;
-        }
+        public readonly int objectType = objectType;
+        public readonly int dataValueId = dataValueId;
+        public object watchedObject = watchedObject;
+        public bool dirty = true;
     }
 }
