@@ -77,7 +77,7 @@ namespace betareborn.Entities
                     velocityZ *= (double)0.7F;
                     velocityY *= -0.5D;
                     markDead();
-                    if ((!world.canPlace(blockId, floorX, floorY, floorZ, true, 1) || BlockSand.canFallThrough(world, floorX, floorY - 1, floorZ) || !world.setBlock(floorX, floorY, floorZ, blockId)) && !world.isRemote)
+                    if ((!world.canPlace(blockId, floorX, floorY, floorZ, true, 1) || BlockSand.CanFallThrough(world, floorX, floorY - 1, floorZ) || !world.setBlock(floorX, floorY, floorZ, blockId)) && !world.isRemote)
                     {
                         dropItem(blockId, 1);
                     }

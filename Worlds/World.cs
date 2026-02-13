@@ -641,7 +641,7 @@ namespace betareborn.Worlds
                 Block var5 = Block.BLOCKS[getBlockId(x, y, z)];
                 if (var5 != null)
                 {
-                    var5.neighborUpdate(this, x, y, z, blockId);
+                    var5.NeighborUpdate(this, x, y, z, blockId);
                 }
 
             }
@@ -1498,7 +1498,7 @@ namespace betareborn.Worlds
                     int var8 = getBlockId(var6.x, var6.y, var6.z);
                     if (var8 == var6.blockId && var8 > 0)
                     {
-                        Block.BLOCKS[var8].onTick(this, var6.x, var6.y, var6.z, random);
+                        Block.BLOCKS[var8].OnTick(this, var6.x, var6.y, var6.z, random);
                     }
                 }
 
@@ -2569,7 +2569,7 @@ namespace betareborn.Worlds
                     var15 = var14.blocks[var8 << 11 | var9 << 7 | var10] & 255;
                     if (Block.BLOCKS_RANDOM_TICK[var15])
                     {
-                        Block.BLOCKS[var15].onTick(this, var8 + var3, var10, var9 + var4, random);
+                        Block.BLOCKS[var15].OnTick(this, var8 + var3, var10, var9 + var4, random);
                     }
                 }
             }
@@ -2606,7 +2606,7 @@ namespace betareborn.Worlds
                         int var6 = getBlockId(var4.x, var4.y, var4.z);
                         if (var6 == var4.blockId && var6 > 0)
                         {
-                            Block.BLOCKS[var6].onTick(this, var4.x, var4.y, var4.z, random);
+                            Block.BLOCKS[var6].OnTick(this, var4.x, var4.y, var4.z, random);
                         }
                     }
                 }

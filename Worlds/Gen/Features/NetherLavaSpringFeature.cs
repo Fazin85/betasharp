@@ -80,7 +80,7 @@ namespace betareborn.Worlds.Gen.Features
                 {
                     var1.setBlock(var3, var4, var5, lavaBlockId);
                     var1.instantBlockUpdateEnabled = true;
-                    Block.BLOCKS[lavaBlockId].onTick(var1, var3, var4, var5, var2);
+                    Block.BLOCKS[lavaBlockId].OnTick(var1, var3, var4, var5, var2);
                     var1.instantBlockUpdateEnabled = false;
                 }
 

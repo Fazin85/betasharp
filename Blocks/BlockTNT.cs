@@ -16,9 +16,9 @@ namespace betareborn.Blocks
             return side == 0 ? textureId + 2 : (side == 1 ? textureId + 1 : textureId);
         }
 
-        public override void onPlaced(World world, int x, int y, int z)
+        public override void OnPlaced(World world, int x, int y, int z)
         {
-            base.onPlaced(world, x, y, z);
+            base.OnPlaced(world, x, y, z);
             if (world.isPowered(x, y, z))
             {
                 onMetadataChange(world, x, y, z, 1);
@@ -27,7 +27,7 @@ namespace betareborn.Blocks
 
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
             if (id > 0 && Block.BLOCKS[id].canEmitRedstonePower() && world.isPowered(x, y, z))
             {

@@ -16,7 +16,7 @@ namespace betareborn.Blocks
             return textureId;
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
             if (id > 0 && Block.BLOCKS[id].canEmitRedstonePower())
             {

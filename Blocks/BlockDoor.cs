@@ -174,7 +174,7 @@ namespace betareborn.Blocks
             }
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
             int meta = world.getBlockMeta(x, y, z);
             if ((meta & 8) != 0)
@@ -186,7 +186,7 @@ namespace betareborn.Blocks
 
                 if (id > 0 && Block.BLOCKS[id].canEmitRedstonePower())
                 {
-                    neighborUpdate(world, x, y - 1, z, id);
+                    NeighborUpdate(world, x, y - 1, z, id);
                 }
             }
             else

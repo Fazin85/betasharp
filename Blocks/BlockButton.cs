@@ -17,7 +17,7 @@ namespace betareborn.Blocks
             return null;
         }
 
-        public override int getTickRate()
+        public override int GetTickRate()
         {
             return 20;
         }
@@ -76,7 +76,7 @@ namespace betareborn.Blocks
             return world.shouldSuffocate(x - 1, y, z) ? 1 : (world.shouldSuffocate(x + 1, y, z) ? 2 : (world.shouldSuffocate(x, y, z - 1) ? 3 : (world.shouldSuffocate(x, y, z + 1) ? 4 : 1)));
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
             if (breakIfCannotPlaceAt(world, x, y, z))
             {
@@ -199,7 +199,7 @@ namespace betareborn.Blocks
                     world.notifyNeighbors(x, y - 1, z, id);
                 }
 
-                world.scheduleBlockUpdate(x, y, z, id, getTickRate());
+                world.scheduleBlockUpdate(x, y, z, id, GetTickRate());
                 return true;
             }
         }
@@ -260,7 +260,7 @@ namespace betareborn.Blocks
             return true;
         }
 
-        public override void onTick(World world, int x, int y, int z, java.util.Random random)
+        public override void OnTick(World world, int x, int y, int z, java.util.Random random)
         {
             if (!world.isRemote)
             {

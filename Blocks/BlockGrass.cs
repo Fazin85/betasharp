@@ -37,7 +37,7 @@ namespace betareborn.Blocks
             return GrassColors.getColor(temperature, downfall);
         }
 
-        public override void onTick(World world, int x, int y, int z, java.util.Random random)
+        public override void OnTick(World world, int x, int y, int z, java.util.Random random)
         {
             if (!world.isRemote)
             {

@@ -16,7 +16,7 @@ namespace betareborn.Blocks
             setTickRandomly(true);
         }
 
-        public override void onTick(World world, int x, int y, int z, java.util.Random random)
+        public override void OnTick(World world, int x, int y, int z, java.util.Random random)
         {
             if (world.isAir(x, y + 1, z))
             {
@@ -48,7 +48,7 @@ namespace betareborn.Blocks
             return blockBelowId == id ? true : (blockBelowId != Block.GRASS_BLOCK.id && blockBelowId != Block.DIRT.id ? false : (world.getMaterial(x - 1, y - 1, z) == Material.WATER ? true : (world.getMaterial(x + 1, y - 1, z) == Material.WATER ? true : (world.getMaterial(x, y - 1, z - 1) == Material.WATER ? true : world.getMaterial(x, y - 1, z + 1) == Material.WATER))));
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
             breakIfCannotGrow(world, x, y, z);
         }

@@ -222,7 +222,7 @@ namespace betareborn.Blocks
             velocity.z += flowVec.Z;
         }
 
-        public override int getTickRate()
+        public override int GetTickRate()
         {
             return material == Material.WATER ? 5 : (material == Material.LAVA ? 30 : 0);
         }
@@ -234,9 +234,9 @@ namespace betareborn.Blocks
             return luminance > luminanceAbove ? luminance : luminanceAbove;
         }
 
-        public override void onTick(World world, int x, int y, int z, java.util.Random random)
+        public override void OnTick(World world, int x, int y, int z, java.util.Random random)
         {
-            base.onTick(world, x, y, z, random);
+            base.OnTick(world, x, y, z, random);
         }
 
         public override int getRenderLayer()
@@ -281,12 +281,12 @@ namespace betareborn.Blocks
             return flowVec.X == 0.0D && flowVec.Z == 0.0D ? -1000.0D : java.lang.Math.atan2(flowVec.Z, flowVec.X) - Math.PI * 0.5D;
         }
 
-        public override void onPlaced(World world, int x, int y, int z)
+        public override void OnPlaced(World world, int x, int y, int z)
         {
             checkBlockCollisions(world, x, y, z);
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int var5)
+        public override void NeighborUpdate(World world, int x, int y, int z, int var5)
         {
             checkBlockCollisions(world, x, y, z);
         }

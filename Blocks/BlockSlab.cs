@@ -34,11 +34,11 @@ namespace betareborn.Blocks
             return doubleSlab;
         }
 
-        public override void onPlaced(World world, int x, int y, int z)
+        public override void OnPlaced(World world, int x, int y, int z)
         {
             if (this != Block.SLAB)
             {
-                base.onPlaced(world, x, y, z);
+                base.OnPlaced(world, x, y, z);
             }
 
             int blockBelowId = world.getBlockId(x, y - 1, z);

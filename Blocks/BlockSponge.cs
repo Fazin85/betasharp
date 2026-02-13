@@ -10,7 +10,7 @@ namespace betareborn.Blocks
             textureId = 48;
         }
 
-        public override void onPlaced(World world, int x, int y, int z)
+        public override void OnPlaced(World world, int x, int y, int z)
         {
             sbyte radius = 2;
 

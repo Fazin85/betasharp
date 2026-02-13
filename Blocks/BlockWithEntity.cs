@@ -17,9 +17,9 @@ namespace betareborn.Blocks
             BLOCKS_WITH_ENTITY[id] = true;
         }
 
-        public override void onPlaced(World world, int x, int y, int z)
+        public override void OnPlaced(World world, int x, int y, int z)
         {
-            base.onPlaced(world, x, y, z);
+            base.OnPlaced(world, x, y, z);
             world.setBlockEntity(x, y, z, getBlockEntity());
         }
 

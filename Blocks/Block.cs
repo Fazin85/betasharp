@@ -10,7 +10,7 @@ using betareborn.Blocks.Entities;
 
 namespace betareborn.Blocks
 {
-    public class Block : java.lang.Object
+    public class Block
     {
         public static readonly BlockSoundGroup soundPowderFootstep = new("stone", 1.0F, 1.0F);
         public static readonly BlockSoundGroup soundWoodFootstep = new("wood", 1.0F, 1.0F);
@@ -315,7 +315,7 @@ namespace betareborn.Blocks
             return true;
         }
 
-        public virtual void onTick(World world, int x, int y, int z, java.util.Random random)
+        public virtual void OnTick(World world, int x, int y, int z, java.util.Random random)
         {
         }
 
@@ -327,16 +327,16 @@ namespace betareborn.Blocks
         {
         }
 
-        public virtual void neighborUpdate(World world, int x, int y, int z, int id)
+        public virtual void NeighborUpdate(World world, int x, int y, int z, int id)
         {
         }
 
-        public virtual int getTickRate()
+        public virtual int GetTickRate()
         {
             return 10;
         }
 
-        public virtual void onPlaced(World world, int x, int y, int z)
+        public virtual void OnPlaced(World world, int x, int y, int z)
         {
         }
 

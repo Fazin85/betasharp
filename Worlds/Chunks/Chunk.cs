@@ -321,7 +321,7 @@ namespace betareborn.Worlds.Chunks
                 this.meta.setNibble(x, y, z, meta);
                 if (rawId != 0)
                 {
-                    Block.BLOCKS[rawId].onPlaced(world, var9, y, var10);
+                    Block.BLOCKS[rawId].OnPlaced(world, var9, y, var10);
                 }
 
                 dirty = true;
@@ -366,7 +366,7 @@ namespace betareborn.Worlds.Chunks
                 lightGaps(x, z);
                 if (rawId != 0 && !world.isRemote)
                 {
-                    Block.BLOCKS[rawId].onPlaced(world, var8, y, var9);
+                    Block.BLOCKS[rawId].OnPlaced(world, var8, y, var9);
                 }
 
                 dirty = true;
@@ -494,7 +494,7 @@ namespace betareborn.Worlds.Chunks
                 }
 
                 BlockWithEntity var7 = (BlockWithEntity)Block.BLOCKS[var6];
-                var7.onPlaced(world, this.x * 16 + x, y, this.z * 16 + z);
+                var7.OnPlaced(world, this.x * 16 + x, y, this.z * 16 + z);
                 blockEntities.TryGetValue(var4, out var5);
             }
 

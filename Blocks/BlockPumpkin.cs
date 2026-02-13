@@ -46,9 +46,9 @@ namespace betareborn.Blocks
             return side == 1 ? textureId : (side == 0 ? textureId : (side == 3 ? textureId + 1 + 16 : textureId + 16));
         }
 
-        public override void onPlaced(World world, int x, int y, int z)
+        public override void OnPlaced(World world, int x, int y, int z)
         {
-            base.onPlaced(world, x, y, z);
+            base.OnPlaced(world, x, y, z);
         }
 
         public override bool canPlaceAt(World world, int x, int y, int z)

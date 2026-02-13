@@ -142,7 +142,7 @@ namespace betareborn.Blocks
             setDefaultShape();
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
             int blockMeta = world.getBlockMeta(x, y, z);
             int direction = getDirection(blockMeta);

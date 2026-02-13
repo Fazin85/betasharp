@@ -44,16 +44,16 @@ namespace betareborn.Blocks
             setTickRandomly(true);
         }
 
-        public override int getTickRate()
+        public override int GetTickRate()
         {
             return 2;
         }
 
-        public override void onPlaced(World world, int x, int y, int z)
+        public override void OnPlaced(World world, int x, int y, int z)
         {
             if (world.getBlockMeta(x, y, z) == 0)
             {
-                base.onPlaced(world, x, y, z);
+                base.OnPlaced(world, x, y, z);
             }
 
             if (lit)
@@ -101,7 +101,7 @@ namespace betareborn.Blocks
             return meta == 5 && world.isPoweringSide(x, y - 1, z, 0) ? true : (meta == 3 && world.isPoweringSide(x, y, z - 1, 2) ? true : (meta == 4 && world.isPoweringSide(x, y, z + 1, 3) ? true : (meta == 1 && world.isPoweringSide(x - 1, y, z, 4) ? true : meta == 2 && world.isPoweringSide(x + 1, y, z, 5))));
         }
 
-        public override void onTick(World world, int x, int y, int z, java.util.Random random)
+        public override void OnTick(World world, int x, int y, int z, java.util.Random random)
         {
             bool shouldTurnOff = shouldUnpower(world, x, y, z);
 
@@ -136,10 +136,10 @@ namespace betareborn.Blocks
 
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
-            base.neighborUpdate(world, x, y, z, id);
-            world.scheduleBlockUpdate(x, y, z, base.id, getTickRate());
+            base.NeighborUpdate(world, x, y, z, id);
+            world.scheduleBlockUpdate(x, y, z, base.id, GetTickRate());
         }
 
         public override bool isStrongPoweringSide(World world, int x, int y, int z, int side)

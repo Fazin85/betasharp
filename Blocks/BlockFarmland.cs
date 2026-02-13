@@ -36,7 +36,7 @@ namespace betareborn.Blocks
             return side == 1 && meta > 0 ? textureId - 1 : (side == 1 ? textureId : 2);
         }
 
-        public override void onTick(World world, int x, int y, int z, java.util.Random random)
+        public override void OnTick(World world, int x, int y, int z, java.util.Random random)
         {
             if (random.nextInt(5) == 0)
             {
@@ -106,9 +106,9 @@ namespace betareborn.Blocks
             return false;
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
-            base.neighborUpdate(world, x, y, z, id);
+            base.NeighborUpdate(world, x, y, z, id);
             Material material = world.getMaterial(x, y + 1, z);
             if (material.isSolid())
             {

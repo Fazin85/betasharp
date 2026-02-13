@@ -21,7 +21,7 @@ namespace betareborn.Blocks
             world.blockUpdateEvent(x, y, z);
         }
 
-        public override void onTick(World world, int x, int y, int z, java.util.Random random)
+        public override void OnTick(World world, int x, int y, int z, java.util.Random random)
         {
             int currentState = getLiquidState(world, x, y, z);
             sbyte spreadRate = 1;
@@ -87,7 +87,7 @@ namespace betareborn.Blocks
                     else
                     {
                         world.setBlockMeta(x, y, z, newLevel);
-                        world.scheduleBlockUpdate(x, y, z, id, getTickRate());
+                        world.scheduleBlockUpdate(x, y, z, id, GetTickRate());
                         world.notifyNeighbors(x, y, z, id);
                     }
                 }
@@ -333,12 +333,12 @@ namespace betareborn.Blocks
             return material == base.material ? false : (material == Material.LAVA ? false : !isLiquidBreaking(world, x, y, z));
         }
 
-        public override void onPlaced(World world, int x, int y, int z)
+        public override void OnPlaced(World world, int x, int y, int z)
         {
-            base.onPlaced(world, x, y, z);
+            base.OnPlaced(world, x, y, z);
             if (world.getBlockId(x, y, z) == id)
             {
-                world.scheduleBlockUpdate(x, y, z, id, getTickRate());
+                world.scheduleBlockUpdate(x, y, z, id, GetTickRate());
             }
 
         }

@@ -46,7 +46,7 @@ namespace betareborn.Blocks
             return blockBelowId != 0 && Block.BLOCKS[blockBelowId].isOpaque() ? world.getMaterial(x, y - 1, z).blocksMovement() : false;
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
             breakIfCannotPlace(world, x, y, z);
         }
@@ -89,7 +89,7 @@ namespace betareborn.Blocks
             return 0;
         }
 
-        public override void onTick(World world, int x, int y, int z, java.util.Random random)
+        public override void OnTick(World world, int x, int y, int z, java.util.Random random)
         {
             if (world.getBrightness(LightType.Block, x, y, z) > 11)
             {

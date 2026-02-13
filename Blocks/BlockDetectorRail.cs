@@ -11,7 +11,7 @@ namespace betareborn.Blocks
             setTickRandomly(true);
         }
 
-        public override int getTickRate()
+        public override int GetTickRate()
         {
             return 20;
         }
@@ -33,7 +33,7 @@ namespace betareborn.Blocks
             }
         }
 
-        public override void onTick(World world, int x, int y, int z, java.util.Random random)
+        public override void OnTick(World world, int x, int y, int z, java.util.Random random)
         {
             if (!world.isRemote)
             {
@@ -84,7 +84,7 @@ namespace betareborn.Blocks
 
             if (hasMinecart)
             {
-                world.scheduleBlockUpdate(x, y, z, id, getTickRate());
+                world.scheduleBlockUpdate(x, y, z, id, GetTickRate());
             }
 
         }

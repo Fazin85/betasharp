@@ -58,12 +58,12 @@ namespace betareborn.Blocks
             return 0;
         }
 
-        public override int getTickRate()
+        public override int GetTickRate()
         {
             return 40;
         }
 
-        public override void onTick(World world, int x, int y, int z, java.util.Random random)
+        public override void OnTick(World world, int x, int y, int z, java.util.Random random)
         {
             bool isOnNetherrack = world.getBlockId(x, y - 1, z) == Block.NETHERRACK.id;
             if (!canPlaceAt(world, x, y, z))
@@ -79,7 +79,7 @@ namespace betareborn.Blocks
                     world.setBlockMetaWithoutNotifyingNeighbors(x, y, z, fireAge + random.nextInt(3) / 2);
                 }
 
-                world.scheduleBlockUpdate(x, y, z, id, getTickRate());
+                world.scheduleBlockUpdate(x, y, z, id, GetTickRate());
                 if (!isOnNetherrack && !areBlocksAroundFlammable(world, x, y, z))
                 {
                     if (!world.shouldSuffocate(x, y - 1, z) || fireAge > 3)
@@ -217,7 +217,7 @@ namespace betareborn.Blocks
             return world.shouldSuffocate(x, y - 1, z) || areBlocksAroundFlammable(world, x, y, z);
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
             if (!world.shouldSuffocate(x, y - 1, z) && !areBlocksAroundFlammable(world, x, y, z))
             {
@@ -225,7 +225,7 @@ namespace betareborn.Blocks
             }
         }
 
-        public override void onPlaced(World world, int x, int y, int z)
+        public override void OnPlaced(World world, int x, int y, int z)
         {
             if (world.getBlockId(x, y - 1, z) != Block.OBSIDIAN.id || !Block.NETHER_PORTAL.create(world, x, y, z))
             {
@@ -235,7 +235,7 @@ namespace betareborn.Blocks
                 }
                 else
                 {
-                    world.scheduleBlockUpdate(x, y, z, id, getTickRate());
+                    world.scheduleBlockUpdate(x, y, z, id, GetTickRate());
                 }
             }
         }

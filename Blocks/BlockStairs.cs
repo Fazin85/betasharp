@@ -138,9 +138,9 @@ namespace betareborn.Blocks
             return baseBlock.getTextureId(blockView, x, y, z, side);
         }
 
-        public override int getTickRate()
+        public override int GetTickRate()
         {
-            return baseBlock.getTickRate();
+            return baseBlock.GetTickRate();
         }
 
         public override Box getBoundingBox(World world, int x, int y, int z)
@@ -168,10 +168,10 @@ namespace betareborn.Blocks
             return baseBlock.canPlaceAt(world, x, y, z);
         }
 
-        public override void onPlaced(World world, int x, int y, int z)
+        public override void OnPlaced(World world, int x, int y, int z)
         {
-            neighborUpdate(world, x, y, z, 0);
-            baseBlock.onPlaced(world, x, y, z);
+            NeighborUpdate(world, x, y, z, 0);
+            baseBlock.OnPlaced(world, x, y, z);
         }
 
         public override void onBreak(World world, int x, int y, int z)
@@ -189,9 +189,9 @@ namespace betareborn.Blocks
             baseBlock.onSteppedOn(world, x, y, z, entity);
         }
 
-        public override void onTick(World world, int x, int y, int z, java.util.Random random)
+        public override void OnTick(World world, int x, int y, int z, java.util.Random random)
         {
-            baseBlock.onTick(world, x, y, z, random);
+            baseBlock.OnTick(world, x, y, z, random);
         }
 
         public override bool onUse(World world, int x, int y, int z, EntityPlayer player)

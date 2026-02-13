@@ -55,7 +55,7 @@ namespace betareborn.Blocks
 
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
             if (!world.isRemote && !deaf)
             {
@@ -64,7 +64,7 @@ namespace betareborn.Blocks
 
         }
 
-        public override void onPlaced(World world, int x, int y, int z)
+        public override void OnPlaced(World world, int x, int y, int z)
         {
             if (!world.isRemote && world.getBlockEntity(x, y, z) == null)
             {

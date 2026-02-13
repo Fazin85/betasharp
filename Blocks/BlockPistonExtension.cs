@@ -154,7 +154,7 @@ namespace betareborn.Blocks
 
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
             int var6 = getFacing(world.getBlockMeta(x, y, z));
             int var7 = world.getBlockId(x - PistonConstants.HEAD_OFFSET_X[var6], y - PistonConstants.HEAD_OFFSET_Y[var6], z - PistonConstants.HEAD_OFFSET_Z[var6]);
@@ -164,7 +164,7 @@ namespace betareborn.Blocks
             }
             else
             {
-                Block.BLOCKS[var7].neighborUpdate(world, x - PistonConstants.HEAD_OFFSET_X[var6], y - PistonConstants.HEAD_OFFSET_Y[var6], z - PistonConstants.HEAD_OFFSET_Z[var6], id);
+                Block.BLOCKS[var7].NeighborUpdate(world, x - PistonConstants.HEAD_OFFSET_X[var6], y - PistonConstants.HEAD_OFFSET_Y[var6], z - PistonConstants.HEAD_OFFSET_Z[var6], id);
             }
 
         }

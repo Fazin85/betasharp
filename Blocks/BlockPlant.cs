@@ -24,13 +24,13 @@ namespace betareborn.Blocks
             return id == Block.GRASS_BLOCK.id || id == Block.DIRT.id || id == Block.FARMLAND.id;
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
-            base.neighborUpdate(world, x, y, z, id);
+            base.NeighborUpdate(world, x, y, z, id);
             breakIfCannotGrow(world, x, y, z);
         }
 
-        public override void onTick(World world, int x, int y, int z, java.util.Random random)
+        public override void OnTick(World world, int x, int y, int z, java.util.Random random)
         {
             breakIfCannotGrow(world, x, y, z);
         }

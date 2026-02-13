@@ -16,7 +16,7 @@ namespace betareborn.Blocks
             textureId = 45;
         }
 
-        public override int getTickRate()
+        public override int GetTickRate()
         {
             return 4;
         }
@@ -26,9 +26,9 @@ namespace betareborn.Blocks
             return Block.DISPENSER.id;
         }
 
-        public override void onPlaced(World world, int x, int y, int z)
+        public override void OnPlaced(World world, int x, int y, int z)
         {
-            base.onPlaced(world, x, y, z);
+            base.OnPlaced(world, x, y, z);
             updateDirection(world, x, y, z);
         }
 
@@ -175,20 +175,20 @@ namespace betareborn.Blocks
 
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
             if (id > 0 && Block.BLOCKS[id].canEmitRedstonePower())
             {
                 bool isPowered = world.isPowered(x, y, z) || world.isPowered(x, y + 1, z);
                 if (isPowered)
                 {
-                    world.scheduleBlockUpdate(x, y, z, base.id, getTickRate());
+                    world.scheduleBlockUpdate(x, y, z, base.id, GetTickRate());
                 }
             }
 
         }
 
-        public override void onTick(World world, int x, int y, int z, java.util.Random random)
+        public override void OnTick(World world, int x, int y, int z, java.util.Random random)
         {
             if (world.isPowered(x, y, z) || world.isPowered(x, y + 1, z))
             {

@@ -74,7 +74,7 @@ namespace betareborn.Worlds.Gen.Features
                 {
                     var1.setBlock(var3, var4, var5, liquidBlockId);
                     var1.instantBlockUpdateEnabled = true;
-                    Block.BLOCKS[liquidBlockId].onTick(var1, var3, var4, var5, var2);
+                    Block.BLOCKS[liquidBlockId].OnTick(var1, var3, var4, var5, var2);
                     var1.instantBlockUpdateEnabled = false;
                 }
 

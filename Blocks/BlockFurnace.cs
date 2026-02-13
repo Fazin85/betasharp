@@ -25,9 +25,9 @@ namespace betareborn.Blocks
             return Block.FURNACE.id;
         }
 
-        public override void onPlaced(World world, int x, int y, int z)
+        public override void OnPlaced(World world, int x, int y, int z)
         {
-            base.onPlaced(world, x, y, z);
+            base.OnPlaced(world, x, y, z);
             updateDirection(world, x, y, z);
         }
 

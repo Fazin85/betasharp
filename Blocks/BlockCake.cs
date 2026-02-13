@@ -102,7 +102,7 @@ namespace betareborn.Blocks
             return !base.canPlaceAt(world, x, y, z) ? false : canGrow(world, x, y, z);
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
             if (!canGrow(world, x, y, z))
             {

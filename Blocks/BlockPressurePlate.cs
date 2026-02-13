@@ -18,7 +18,7 @@ namespace betareborn.Blocks
             setBoundingBox(edgeInset, 0.0F, edgeInset, 1.0F - edgeInset, 0.03125F, 1.0F - edgeInset);
         }
 
-        public override int getTickRate()
+        public override int GetTickRate()
         {
             return 20;
         }
@@ -43,11 +43,11 @@ namespace betareborn.Blocks
             return world.shouldSuffocate(x, y - 1, z);
         }
 
-        public override void onPlaced(World world, int x, int y, int z)
+        public override void OnPlaced(World world, int x, int y, int z)
         {
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
             bool shouldBreak = false;
             if (!world.shouldSuffocate(x, y - 1, z))
@@ -63,7 +63,7 @@ namespace betareborn.Blocks
 
         }
 
-        public override void onTick(World world, int x, int y, int z, java.util.Random random)
+        public override void OnTick(World world, int x, int y, int z, java.util.Random random)
         {
             if (!world.isRemote)
             {
@@ -131,7 +131,7 @@ namespace betareborn.Blocks
 
             if (shouldBePressed)
             {
-                world.scheduleBlockUpdate(x, y, z, id, getTickRate());
+                world.scheduleBlockUpdate(x, y, z, id, GetTickRate());
             }
 
         }

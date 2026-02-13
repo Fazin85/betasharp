@@ -12,70 +12,60 @@ namespace betareborn.Blocks
         {
         }
 
-        public override void onPlaced(World world, int x, int y, int z)
+        public override void OnPlaced(World world, int x, int y, int z)
         {
-            world.scheduleBlockUpdate(x, y, z, id, getTickRate());
+            world.scheduleBlockUpdate(x, y, z, id, GetTickRate());
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
-            world.scheduleBlockUpdate(x, y, z, base.id, getTickRate());
+            world.scheduleBlockUpdate(x, y, z, base.id, GetTickRate());
         }
 
-        public override void onTick(World world, int x, int y, int z, java.util.Random random)
+        public override void OnTick(World world, int x, int y, int z, java.util.Random random)
         {
-            processFall(world, x, y, z);
+            _ProcessFall(world, x, y, z);
         }
 
-        private void processFall(World world, int x, int y, int z)
+        private void _ProcessFall(World world, int x, int y, int z)
         {
-            if (canFallThrough(world, x, y - 1, z) && y >= 0)
+            if (!(CanFallThrough(world, x, y - 1, z) && y >= 0)) return;
+
+            const sbyte checkRadius = 32;
+            if (!fallInstantly && world.isRegionLoaded(x - checkRadius, y - checkRadius, z - checkRadius, x + checkRadius, y + checkRadius, z + checkRadius))
             {
-                sbyte checkRadius = 32;
-                if (!fallInstantly && world.isRegionLoaded(x - checkRadius, y - checkRadius, z - checkRadius, x + checkRadius, y + checkRadius, z + checkRadius))
+                var fallingSand = new EntityFallingSand(world, x + 0.5f, y + 0.5f, z + 0.5f, id);
+                world.spawnEntity(fallingSand);
+            }
+            else
+            {
+                world.setBlock(x, y, z, 0);
+
+                while (CanFallThrough(world, x, y - 1, z) && y > 0)
                 {
-                    EntityFallingSand fallingSand = new EntityFallingSand(world, (double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), id);
-                    world.spawnEntity(fallingSand);
+                    --y;
                 }
-                else
+
+                if (y > 0)
                 {
-                    world.setBlock(x, y, z, 0);
-
-                    while (canFallThrough(world, x, y - 1, z) && y > 0)
-                    {
-                        --y;
-                    }
-
-                    if (y > 0)
-                    {
-                        world.setBlock(x, y, z, id);
-                    }
+                    world.setBlock(x, y, z, id);
                 }
             }
-
         }
 
-        public override int getTickRate()
+        public override int GetTickRate()
         {
             return 3;
         }
 
-        public static bool canFallThrough(World world, int x, int y, int z)
+        public static bool CanFallThrough(World world, int x, int y, int z)
         {
             int blockId = world.getBlockId(x, y, z);
-            if (blockId == 0)
-            {
+            if (blockId == 0 || blockId == FIRE.id) 
                 return true;
-            }
-            else if (blockId == Block.FIRE.id)
-            {
-                return true;
-            }
-            else
-            {
-                Material material = Block.BLOCKS[blockId].material;
-                return material == Material.WATER ? true : material == Material.LAVA;
-            }
+
+            var material = BLOCKS[blockId].material;
+            return material == Material.WATER || material == Material.LAVA;
         }
     }
 

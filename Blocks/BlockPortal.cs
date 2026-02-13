@@ -112,7 +112,7 @@ namespace betareborn.Blocks
             }
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
             sbyte offsetX = 0;
             sbyte offsetZ = 1;

@@ -15,9 +15,9 @@ namespace betareborn.Blocks
 
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
-            base.neighborUpdate(world, x, y, z, id);
+            base.NeighborUpdate(world, x, y, z, id);
             if (world.getBlockId(x, y, z) == base.id)
             {
                 convertToFlowing(world, x, y, z);
@@ -31,11 +31,11 @@ namespace betareborn.Blocks
             world.pauseTicking = true;
             world.setBlockWithoutNotifyingNeighbors(x, y, z, id - 1, meta);
             world.setBlocksDirty(x, y, z, x, y, z);
-            world.scheduleBlockUpdate(x, y, z, id - 1, getTickRate());
+            world.scheduleBlockUpdate(x, y, z, id - 1, GetTickRate());
             world.pauseTicking = false;
         }
 
-        public override void onTick(World world, int x, int y, int z, java.util.Random random)
+        public override void OnTick(World world, int x, int y, int z, java.util.Random random)
         {
             if (material == Material.LAVA)
             {

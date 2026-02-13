@@ -224,9 +224,9 @@ namespace betareborn.Blocks
             }
         }
 
-        public override void onPlaced(World var1, int var2, int var3, int var4)
+        public override void OnPlaced(World var1, int var2, int var3, int var4)
         {
-            base.onPlaced(var1, var2, var3, var4);
+            base.OnPlaced(var1, var2, var3, var4);
             if (!var1.isRemote)
             {
                 updateAndPropagateCurrentStrength(var1, var2, var3, var4);
@@ -339,7 +339,7 @@ namespace betareborn.Blocks
             }
         }
 
-        public override void neighborUpdate(World var1, int var2, int var3, int var4, int var5)
+        public override void NeighborUpdate(World var1, int var2, int var3, int var4, int var5)
         {
             if (!var1.isRemote)
             {
@@ -355,7 +355,7 @@ namespace betareborn.Blocks
                     updateAndPropagateCurrentStrength(var1, var2, var3, var4);
                 }
 
-                base.neighborUpdate(var1, var2, var3, var4, var5);
+                base.NeighborUpdate(var1, var2, var3, var4, var5);
             }
         }
 

@@ -100,7 +100,7 @@ namespace betareborn.Blocks
             return Item.SIGN.id;
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
             bool shouldBreak = false;
             if (standing)
@@ -141,7 +141,7 @@ namespace betareborn.Blocks
                 world.setBlock(x, y, z, 0);
             }
 
-            base.neighborUpdate(world, x, y, z, id);
+            base.NeighborUpdate(world, x, y, z, id);
         }
     }
 

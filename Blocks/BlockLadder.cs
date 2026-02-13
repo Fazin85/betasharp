@@ -111,7 +111,7 @@ namespace betareborn.Blocks
             world.setBlockMeta(x, y, z, meta);
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
             int meta = world.getBlockMeta(x, y, z);
             bool hasSupport = false;
@@ -141,7 +141,7 @@ namespace betareborn.Blocks
                 world.setBlock(x, y, z, 0);
             }
 
-            base.neighborUpdate(world, x, y, z, id);
+            base.NeighborUpdate(world, x, y, z, id);
         }
 
         public override int getDroppedItemCount(java.util.Random random)

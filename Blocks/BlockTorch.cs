@@ -74,17 +74,17 @@ namespace betareborn.Blocks
             world.setBlockMeta(x, y, z, meta);
         }
 
-        public override void onTick(World world, int x, int y, int z, java.util.Random random)
+        public override void OnTick(World world, int x, int y, int z, java.util.Random random)
         {
-            base.onTick(world, x, y, z, random);
+            base.OnTick(world, x, y, z, random);
             if (world.getBlockMeta(x, y, z) == 0)
             {
-                onPlaced(world, x, y, z);
+                OnPlaced(world, x, y, z);
             }
 
         }
 
-        public override void onPlaced(World world, int x, int y, int z)
+        public override void OnPlaced(World world, int x, int y, int z)
         {
             if (world.shouldSuffocate(x - 1, y, z))
             {
@@ -110,7 +110,7 @@ namespace betareborn.Blocks
             breakIfCannotPlaceAt(world, x, y, z);
         }
 
-        public override void neighborUpdate(World world, int x, int y, int z, int id)
+        public override void NeighborUpdate(World world, int x, int y, int z, int id)
         {
             if (breakIfCannotPlaceAt(world, x, y, z))
             {

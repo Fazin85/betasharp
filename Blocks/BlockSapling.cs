@@ -12,11 +12,11 @@ namespace betareborn.Blocks
             setBoundingBox(0.5F - halfSize, 0.0F, 0.5F - halfSize, 0.5F + halfSize, halfSize * 2.0F, 0.5F + halfSize);
         }
 
-        public override void onTick(World world, int x, int y, int z, java.util.Random random)
+        public override void OnTick(World world, int x, int y, int z, java.util.Random random)
         {
             if (!world.isRemote)
             {
-                base.onTick(world, x, y, z, random);
+                base.OnTick(world, x, y, z, random);
                 if (world.getLightLevel(x, y + 1, z) >= 9 && random.nextInt(30) == 0)
                 {
                     int saplingMeta = world.getBlockMeta(x, y, z);
