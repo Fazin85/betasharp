@@ -13,20 +13,19 @@ namespace betareborn
             field_1064_b = true;
         }
 
-        public override void func_6473_b(EntityPlayer var1)
+        public override void func_6473_b(EntityPlayer entityPlayer)
         {
-            for (int var2 = 0; var2 < 9; ++var2)
+            for (int i = 0; i < 9; ++i)
             {
-                if (var1.inventory.main[var2] == null)
+                if (entityPlayer.inventory.main[i] == null)
                 {
-                    mc.player.inventory.main[var2] = new ItemStack((Block)Session.registeredBlocksList.get(var2));
+                    mc.player.inventory.main[i] = new ItemStack((Block)Session.RegisteredBlocksList[i]);
                 }
                 else
                 {
-                    mc.player.inventory.main[var2].count = 1;
+                    mc.player.inventory.main[i].count = 1;
                 }
             }
-
         }
 
         public override bool shouldDrawHUD()
