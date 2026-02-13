@@ -1687,7 +1687,7 @@ namespace betareborn
 
         public static void Main(string[] args)
         {
-            bool valid = false; // JarValidator.ValidateJar("b1.7.3.jar");
+            bool valid = JarValidator.ValidateJar("b1.7.3.jar");
             string playerName = null;
             string sessionToken = null;
             playerName = "Player" + java.lang.System.currentTimeMillis() % 1000L;
