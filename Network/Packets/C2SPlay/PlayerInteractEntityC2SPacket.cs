@@ -14,30 +14,30 @@ namespace betareborn.Network.Packets.C2SPlay
         {
         }
 
-        public PlayerInteractEntityC2SPacket(int var1, int var2, int var3)
+        public PlayerInteractEntityC2SPacket(int playerId, int entityId, int isLeftClick)
         {
-            playerId = var1;
-            entityId = var2;
-            isLeftClick = var3;
+            this.playerId = playerId;
+            this.entityId = entityId;
+            this.isLeftClick = isLeftClick;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            playerId = var1.readInt();
-            entityId = var1.readInt();
-            isLeftClick = (sbyte)var1.readByte();
+            playerId = stream.readInt();
+            entityId = stream.readInt();
+            isLeftClick = (sbyte)stream.readByte();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(playerId);
-            var1.writeInt(entityId);
-            var1.writeByte(isLeftClick);
+            stream.writeInt(playerId);
+            stream.writeInt(entityId);
+            stream.writeByte(isLeftClick);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.handleInteractEntity(this);
+            handler.handleInteractEntity(this);
         }
 
         public override int size()

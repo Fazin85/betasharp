@@ -50,12 +50,12 @@ namespace betareborn.Network.Packets
         {
             try
             {
-                Class var1 = (Class)IO_TO_TYPE.get(Integer.valueOf(rawId));
-                return var1 == null ? null : (Packet)var1.newInstance();
+                Class packetClass = (Class)IO_TO_TYPE.get(Integer.valueOf(rawId));
+                return packetClass == null ? null : (Packet)packetClass.newInstance();
             }
-            catch (java.lang.Exception var2)
+            catch (java.lang.Exception ex)
             {
-                var2.printStackTrace();
+                ex.printStackTrace();
                 java.lang.System.@out.println("Skipping packet with id " + rawId);
                 return null;
             }
@@ -68,103 +68,102 @@ namespace betareborn.Network.Packets
 
         public static Packet read(DataInputStream stream, bool server)
         {
-            bool var2 = false;
-            Packet var3 = null;
+            Packet packet = null;
 
 
-            int var6;
+            int rawId;
             try
             {
-                var6 = stream.read();
-                if (var6 == -1)
+                rawId = stream.read();
+                if (rawId == -1)
                 {
                     return null;
                 }
 
-                if (server && !C2S.contains(Integer.valueOf(var6)) || !server && !S2C.contains(Integer.valueOf(var6)))
+                if (server && !C2S.contains(Integer.valueOf(rawId)) || !server && !S2C.contains(Integer.valueOf(rawId)))
                 {
-                    throw new java.io.IOException("Bad packet id " + var6);
+                    throw new java.io.IOException("Bad packet id " + rawId);
                 }
 
-                var3 = create(var6);
-                if (var3 == null)
+                packet = create(rawId);
+                if (packet == null)
                 {
-                    throw new java.io.IOException("Bad packet id " + var6);
+                    throw new java.io.IOException("Bad packet id " + rawId);
                 }
 
-                var3.read(stream);
+                packet.read(stream);
             }
-            catch (EOFException var5)
+            catch (EOFException ex)
             {
                 java.lang.System.@out.println("Reached end of stream");
                 return null;
             }
 
-            PacketTracker var4 = (PacketTracker)trackers.get(Integer.valueOf(var6));
-            if (var4 == null)
+            PacketTracker tracker = (PacketTracker)trackers.get(Integer.valueOf(rawId));
+            if (tracker == null)
             {
-                var4 = new PacketTracker();
-                trackers.put(Integer.valueOf(var6), var4);
+                tracker = new PacketTracker();
+                trackers.put(Integer.valueOf(rawId), tracker);
             }
 
-            var4.update(var3.size());
+            tracker.update(packet.size());
             ++incomingCount;
             if (incomingCount % 1000 == 0)
             {
             }
 
-            return var3;
+            return packet;
         }
 
-        public static void write(Packet var0, DataOutputStream var1)
+        public static void write(Packet packet, DataOutputStream stream)
         {
-            var1.write(var0.getRawId());
-            var0.write(var1);
+            stream.write(packet.getRawId());
+            packet.write(stream);
         }
 
-        public static void writeString(string var0, DataOutputStream var1)
+        public static void writeString(string packetData, DataOutputStream stream)
         {
-            if (var0.Length > Short.MAX_VALUE)
+            if (packetData.Length > Short.MAX_VALUE)
             {
                 throw new java.io.IOException("String too big");
             }
             else
             {
-                var1.writeShort(var0.Length);
-                var1.writeChars(var0);
+                stream.writeShort(packetData.Length);
+                stream.writeChars(packetData);
             }
         }
 
-        public static string readString(DataInputStream var0, int var1)
+        public static string readString(DataInputStream stream, int maxLength)
         {
 
-            short var2 = var0.readShort();
-            if (var2 > var1)
+            short length = stream.readShort();
+            if (length > maxLength)
             {
-                throw new java.io.IOException("Received string length longer than maximum allowed (" + var2 + " > " + var1 + ")");
+                throw new java.io.IOException("Received string length longer than maximum allowed (" + length + " > " + maxLength + ")");
             }
-            else if (var2 < 0)
+            else if (length < 0)
             {
                 throw new java.io.IOException("Received string length is less than zero! Weird string!");
             }
             else
             {
-                StringBuilder var3 = new StringBuilder();
+                StringBuilder sb = new StringBuilder();
 
-                for (int var4 = 0; var4 < var2; ++var4)
+                for (int var4 = 0; var4 < length; ++var4)
                 {
-                    var3.append(var0.readChar());
+                    sb.append(stream.readChar());
                 }
 
-                return var3.toString();
+                return sb.toString();
             }
         }
 
-        public abstract void read(DataInputStream var1);
+        public abstract void read(DataInputStream stream);
 
-        public abstract void write(DataOutputStream var1);
+        public abstract void write(DataOutputStream stream);
 
-        public abstract void apply(NetHandler var1);
+        public abstract void apply(NetHandler handler);
 
         public abstract int size();
 

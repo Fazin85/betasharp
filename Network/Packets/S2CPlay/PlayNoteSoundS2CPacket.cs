@@ -25,27 +25,27 @@ namespace betareborn.Network.Packets.S2CPlay
             this.pitch = pitch;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            xLocation = var1.readInt();
-            yLocation = var1.readShort();
-            zLocation = var1.readInt();
-            instrumentType = var1.read();
-            pitch = var1.read();
+            xLocation = stream.readInt();
+            yLocation = stream.readShort();
+            zLocation = stream.readInt();
+            instrumentType = stream.read();
+            pitch = stream.read();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(xLocation);
-            var1.writeShort(yLocation);
-            var1.writeInt(zLocation);
-            var1.write(instrumentType);
-            var1.write(pitch);
+            stream.writeInt(xLocation);
+            stream.writeShort(yLocation);
+            stream.writeInt(zLocation);
+            stream.write(instrumentType);
+            stream.write(pitch);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onPlayNoteSound(this);
+            handler.onPlayNoteSound(this);
         }
 
         public override int size()

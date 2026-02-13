@@ -13,24 +13,24 @@ namespace betareborn.Network.Packets.Play
         {
         }
 
-        public PlayerRespawnPacket(sbyte var1)
+        public PlayerRespawnPacket(sbyte dimensionId)
         {
-            dimensionId = var1;
+            this.dimensionId = dimensionId;
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onPlayerRespawn(this);
+            handler.onPlayerRespawn(this);
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            dimensionId = (sbyte)var1.readByte();
+            dimensionId = (sbyte)stream.readByte();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeByte(dimensionId);
+            stream.writeByte(dimensionId);
         }
 
         public override int size()

@@ -33,10 +33,10 @@ namespace betareborn.Network.Packets.Play
             z = stream.readInt();
             text = new string[4];
 
-            for (int var2 = 0; var2 < 4; ++var2)
+            for (int i = 0; i < 4; ++i)
             {
 
-                text[var2] = readString(stream, 15);
+                text[i] = readString(stream, 15);
             }
 
         }
@@ -47,9 +47,9 @@ namespace betareborn.Network.Packets.Play
             stream.writeShort(y);
             stream.writeInt(z);
 
-            for (int var2 = 0; var2 < 4; ++var2)
+            for (int i = 0; i < 4; ++i)
             {
-                writeString(text[var2], stream);
+                writeString(text[i], stream);
             }
 
         }
@@ -61,14 +61,14 @@ namespace betareborn.Network.Packets.Play
 
         public override int size()
         {
-            int var1 = 0;
+            int size = 0;
 
-            for (int var2 = 0; var2 < 4; ++var2)
+            for (int i = 0; i < 4; ++i)
             {
-                var1 += text[var2].Length;
+                size += text[i].Length;
             }
 
-            return var1;
+            return size;
         }
     }
 

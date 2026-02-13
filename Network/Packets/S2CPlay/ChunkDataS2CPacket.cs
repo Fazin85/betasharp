@@ -31,69 +31,69 @@ namespace betareborn.Network.Packets.S2CPlay
             this.sizeX = sizeX;
             this.sizeY = sizeY;
             this.sizeZ = sizeZ;
-            byte[] var8 = world.getChunkData(x, y, z, sizeX, sizeY, sizeZ);
-            Deflater var9 = new(1);
+            byte[] chunkData = world.getChunkData(x, y, z, sizeX, sizeY, sizeZ);
+            Deflater deflater = new(1);
 
             try
             {
-                var9.setInput(var8);
-                var9.finish();
-                chunkData = new byte[sizeX * sizeY * sizeZ * 5 / 2];
-                chunkDataSize = var9.deflate(chunkData);
+                deflater.setInput(chunkData);
+                deflater.finish();
+                this.chunkData = new byte[sizeX * sizeY * sizeZ * 5 / 2];
+                chunkDataSize = deflater.deflate(this.chunkData);
             }
             finally
             {
-                var9.end();
+                deflater.end();
             }
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            x = var1.readInt();
-            y = var1.readShort();
-            z = var1.readInt();
-            sizeX = var1.read() + 1;
-            sizeY = var1.read() + 1;
-            sizeZ = var1.read() + 1;
-            chunkDataSize = var1.readInt();
+            x = stream.readInt();
+            y = stream.readShort();
+            z = stream.readInt();
+            sizeX = stream.read() + 1;
+            sizeY = stream.read() + 1;
+            sizeZ = stream.read() + 1;
+            chunkDataSize = stream.readInt();
             byte[]
-            var2 = new byte[chunkDataSize];
-            var1.readFully(var2);
+            chunkData = new byte[chunkDataSize];
+            stream.readFully(chunkData);
 
-            chunkData = new byte[sizeX * sizeY * sizeZ * 5 / 2];
-            Inflater var3 = new Inflater();
-            var3.setInput(var2);
+            this.chunkData = new byte[sizeX * sizeY * sizeZ * 5 / 2];
+            Inflater inflater = new Inflater();
+            inflater.setInput(chunkData);
 
             try
             {
-                var3.inflate(chunkData);
+                inflater.inflate(this.chunkData);
             }
-            catch (DataFormatException var8)
+            catch (DataFormatException ex)
             {
                 throw new java.io.IOException("Bad compressed data format");
             }
             finally
             {
-                var3.end();
+                inflater.end();
             }
 
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(x);
-            var1.writeShort(y);
-            var1.writeInt(z);
-            var1.write(sizeX - 1);
-            var1.write(sizeY - 1);
-            var1.write(sizeZ - 1);
-            var1.writeInt(chunkDataSize);
-            var1.write(chunkData, 0, chunkDataSize);
+            stream.writeInt(x);
+            stream.writeShort(y);
+            stream.writeInt(z);
+            stream.write(sizeX - 1);
+            stream.write(sizeY - 1);
+            stream.write(sizeZ - 1);
+            stream.writeInt(chunkDataSize);
+            stream.write(chunkData, 0, chunkDataSize);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.handleChunkData(this);
+            handler.handleChunkData(this);
         }
 
         public override int size()

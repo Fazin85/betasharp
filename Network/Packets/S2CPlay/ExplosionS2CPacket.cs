@@ -27,53 +27,53 @@ namespace betareborn.Network.Packets.S2CPlay
             destroyedBlockPositions = new HashSet<BlockPos>(affectedBlocks);
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            explosionX = var1.readDouble();
-            explosionY = var1.readDouble();
-            explosionZ = var1.readDouble();
-            explosionSize = var1.readFloat();
-            int var2 = var1.readInt();
+            explosionX = stream.readDouble();
+            explosionY = stream.readDouble();
+            explosionZ = stream.readDouble();
+            explosionSize = stream.readFloat();
+            int blockCount = stream.readInt();
             destroyedBlockPositions = new HashSet<BlockPos>();
-            int var3 = (int)explosionX;
-            int var4 = (int)explosionY;
-            int var5 = (int)explosionZ;
+            int x = (int)explosionX;
+            int y = (int)explosionY;
+            int z = (int)explosionZ;
 
-            for (int var6 = 0; var6 < var2; ++var6)
+            for (int _ = 0; _ < blockCount; ++_)
             {
-                int var7 = (sbyte)var1.readByte() + var3;
-                int var8 = (sbyte)var1.readByte() + var4;
-                int var9 = (sbyte)var1.readByte() + var5;
+                int xOffset = (sbyte)stream.readByte() + x;
+                int yOffset = (sbyte)stream.readByte() + y;
+                int zOffset = (sbyte)stream.readByte() + z;
 
-                destroyedBlockPositions.Add(new BlockPos(var7, var8, var9));
+                destroyedBlockPositions.Add(new BlockPos(xOffset, yOffset, zOffset));
             }
 
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeDouble(explosionX);
-            var1.writeDouble(explosionY);
-            var1.writeDouble(explosionZ);
-            var1.writeFloat(explosionSize);
-            var1.writeInt(destroyedBlockPositions.Count);
-            int var2 = (int)explosionX;
-            int var3 = (int)explosionY;
-            int var4 = (int)explosionZ;
+            stream.writeDouble(explosionX);
+            stream.writeDouble(explosionY);
+            stream.writeDouble(explosionZ);
+            stream.writeFloat(explosionSize);
+            stream.writeInt(destroyedBlockPositions.Count);
+            int x = (int)explosionX;
+            int y = (int)explosionY;
+            int z = (int)explosionZ;
             foreach (var pos in destroyedBlockPositions)
             {
-                int var7 = pos.x - var2;
-                int var8 = pos.y - var3;
-                int var9 = pos.z - var4;
-                var1.writeByte(var7);
-                var1.writeByte(var8);
-                var1.writeByte(var9);
+                int xOffset = pos.x - x;
+                int yOffset = pos.y - y;
+                int zOffset = pos.z - z;
+                stream.writeByte(xOffset);
+                stream.writeByte(yOffset);
+                stream.writeByte(zOffset);
             }
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onExplosion(this);
+            handler.onExplosion(this);
         }
 
         public override int size()

@@ -18,18 +18,18 @@ namespace betareborn.Network.Packets.S2CPlay
             rotate = true;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            base.read(var1);
-            yaw = (sbyte)var1.readByte();
-            pitch = (sbyte)var1.readByte();
+            base.read(stream);
+            yaw = (sbyte)stream.readByte();
+            pitch = (sbyte)stream.readByte();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            base.write(var1);
-            var1.writeByte(yaw);
-            var1.writeByte(pitch);
+            base.write(stream);
+            stream.writeByte(yaw);
+            stream.writeByte(pitch);
         }
 
         public override int size()

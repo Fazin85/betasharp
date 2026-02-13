@@ -11,26 +11,26 @@ namespace betareborn.Network.Packets.Play
             changeLook = true;
         }
 
-        public PlayerMoveLookAndOnGroundPacket(float var1, float var2, bool var3)
+        public PlayerMoveLookAndOnGroundPacket(float yaw, float pitch, bool onGround)
         {
-            yaw = var1;
-            pitch = var2;
-            onGround = var3;
+            base.yaw = yaw;
+            base.pitch = pitch;
+            base.onGround = onGround;
             changeLook = true;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            yaw = var1.readFloat();
-            pitch = var1.readFloat();
-            base.read(var1);
+            yaw = stream.readFloat();
+            pitch = stream.readFloat();
+            base.read(stream);
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeFloat(yaw);
-            var1.writeFloat(pitch);
-            base.write(var1);
+            stream.writeFloat(yaw);
+            stream.writeFloat(pitch);
+            base.write(stream);
         }
 
         public override int size()

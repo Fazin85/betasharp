@@ -12,24 +12,24 @@ namespace betareborn.Network.Packets.C2SPlay
         {
         }
 
-        public UpdateSelectedSlotC2SPacket(int var1)
+        public UpdateSelectedSlotC2SPacket(int selectedSlot)
         {
-            selectedSlot = var1;
+            this.selectedSlot = selectedSlot;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            selectedSlot = var1.readShort();
+            selectedSlot = stream.readShort();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeShort(selectedSlot);
+            stream.writeShort(selectedSlot);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onUpdateSelectedSlot(this);
+            handler.onUpdateSelectedSlot(this);
         }
 
         public override int size()

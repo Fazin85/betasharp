@@ -19,21 +19,21 @@ namespace betareborn.Network.Packets.S2CPlay
             collectorEntityId = collectorId;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            entityId = var1.readInt();
-            collectorEntityId = var1.readInt();
+            entityId = stream.readInt();
+            collectorEntityId = stream.readInt();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(entityId);
-            var1.writeInt(collectorEntityId);
+            stream.writeInt(entityId);
+            stream.writeInt(collectorEntityId);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onItemPickupAnimation(this);
+            handler.onItemPickupAnimation(this);
         }
 
         public override int size()

@@ -23,25 +23,25 @@ namespace betareborn.Network.Packets.S2CPlay
             this.updateData = updateData;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            itemRawId = var1.readShort();
-            id = var1.readShort();
-            updateData = new byte[(sbyte)var1.readByte() & 255];
-            var1.readFully(updateData);
+            itemRawId = stream.readShort();
+            id = stream.readShort();
+            updateData = new byte[(sbyte)stream.readByte() & 255];
+            stream.readFully(updateData);
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeShort(itemRawId);
-            var1.writeShort(id);
-            var1.writeByte(updateData.Length);
-            var1.write(updateData);
+            stream.writeShort(itemRawId);
+            stream.writeShort(id);
+            stream.writeByte(updateData.Length);
+            stream.write(updateData);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onMapUpdate(this);
+            handler.onMapUpdate(this);
         }
 
         public override int size()

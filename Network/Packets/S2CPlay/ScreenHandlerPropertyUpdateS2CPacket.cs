@@ -21,23 +21,23 @@ namespace betareborn.Network.Packets.S2CPlay
             this.value = value;
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onScreenHandlerPropertyUpdate(this);
+            handler.onScreenHandlerPropertyUpdate(this);
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            syncId = (sbyte)var1.readByte();
-            propertyId = var1.readShort();
-            value = var1.readShort();
+            syncId = (sbyte)stream.readByte();
+            propertyId = stream.readShort();
+            value = stream.readShort();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeByte(syncId);
-            var1.writeShort(propertyId);
-            var1.writeShort(value);
+            stream.writeByte(syncId);
+            stream.writeShort(propertyId);
+            stream.writeShort(value);
         }
 
         public override int size()

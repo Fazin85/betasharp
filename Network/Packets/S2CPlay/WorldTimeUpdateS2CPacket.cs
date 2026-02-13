@@ -17,19 +17,19 @@ namespace betareborn.Network.Packets.S2CPlay
             this.time = time;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            time = var1.readLong();
+            time = stream.readLong();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeLong(time);
+            stream.writeLong(time);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onWorldTimeUpdate(this);
+            handler.onWorldTimeUpdate(this);
         }
 
         public override int size()
