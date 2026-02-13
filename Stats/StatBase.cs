@@ -56,9 +56,9 @@ namespace betareborn.Stats
             return false;
         }
 
-        public string format(int var1)
+        public string format(int value)
         {
-            return formatter.format(var1);
+            return formatter.Format(value);
         }
 
         public override string toString()
