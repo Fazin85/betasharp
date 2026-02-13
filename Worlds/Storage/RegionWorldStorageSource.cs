@@ -1,3 +1,4 @@
+using betareborn.NBT;
 using betareborn.Util.Maths;
 using betareborn.Worlds.Chunks.Storage;
 using java.io;
@@ -103,7 +104,7 @@ namespace betareborn.Worlds.Storage
                 {
                     try
                     {
-                        var4 = NbtIo.read(new FileInputStream(var3));
+                        var4 = NBTIo.read(new FileInputStream(var3));
                         var5 = var4.getCompoundTag("Data");
                         long sizeOnDisk = getFolderSizeMB(var2);
                         var wInfo = new WorldProperties(var5);
@@ -121,7 +122,7 @@ namespace betareborn.Worlds.Storage
                 {
                     try
                     {
-                        var4 = NbtIo.read(new FileInputStream(var3));
+                        var4 = NBTIo.read(new FileInputStream(var3));
                         var5 = var4.getCompoundTag("Data");
                         long sizeOnDisk = getFolderSizeMB(var2);
                         var wInfo = new WorldProperties(var5);
@@ -148,10 +149,10 @@ namespace betareborn.Worlds.Storage
                 {
                     try
                     {
-                        betareborn.NBT.NBTTagCompound var5 = NbtIo.read(new FileInputStream(var4));
+                        betareborn.NBT.NBTTagCompound var5 = NBTIo.read(new FileInputStream(var4));
                         betareborn.NBT.NBTTagCompound var6 = var5.getCompoundTag("Data");
                         var6.setString("LevelName", var2);
-                        NbtIo.writeGzippedCompoundToOutputStream(var5, new FileOutputStream(var4));
+                        NBTIo.writeGzippedCompoundToOutputStream(var5, new FileOutputStream(var4));
                     }
                     catch (java.lang.Exception var7)
                     {

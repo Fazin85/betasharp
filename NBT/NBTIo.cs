@@ -1,10 +1,9 @@
-using betareborn.NBT;
 using java.io;
 using java.util.zip;
 
-namespace betareborn
+namespace betareborn.NBT
 {
-    public class NbtIo : java.lang.Object
+    public class NBTIo : java.lang.Object
     {
         public static NBTTagCompound read(InputStream input)
         {
