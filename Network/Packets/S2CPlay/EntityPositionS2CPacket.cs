@@ -39,29 +39,29 @@ namespace betareborn.Network.Packets.S2CPlay
             pitch = (sbyte)(int)(var1.pitch * 256.0F / 360.0F);
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            id = var1.readInt();
-            x = var1.readInt();
-            y = var1.readInt();
-            z = var1.readInt();
-            yaw = (sbyte)var1.read();
-            pitch = (sbyte)var1.read();
+            id = stream.readInt();
+            x = stream.readInt();
+            y = stream.readInt();
+            z = stream.readInt();
+            yaw = (sbyte)stream.read();
+            pitch = (sbyte)stream.read();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(id);
-            var1.writeInt(x);
-            var1.writeInt(y);
-            var1.writeInt(z);
-            var1.write(yaw);
-            var1.write(pitch);
+            stream.writeInt(id);
+            stream.writeInt(x);
+            stream.writeInt(y);
+            stream.writeInt(z);
+            stream.write(yaw);
+            stream.write(pitch);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onEntityPosition(this);
+            handler.onEntityPosition(this);
         }
 
         public override int size()

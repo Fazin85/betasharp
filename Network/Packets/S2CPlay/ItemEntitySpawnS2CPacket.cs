@@ -37,37 +37,37 @@ namespace betareborn.Network.Packets.S2CPlay
             velocityZ = (sbyte)(int)(item.velocityZ * 128.0D);
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            id = var1.readInt();
-            itemRawId = var1.readShort();
-            itemCount = (sbyte)var1.readByte();
-            itemDamage = var1.readShort();
-            x = var1.readInt();
-            y = var1.readInt();
-            z = var1.readInt();
-            velocityX = (sbyte)var1.readByte();
-            velocityY = (sbyte)var1.readByte();
-            velocityZ = (sbyte)var1.readByte();
+            id = stream.readInt();
+            itemRawId = stream.readShort();
+            itemCount = (sbyte)stream.readByte();
+            itemDamage = stream.readShort();
+            x = stream.readInt();
+            y = stream.readInt();
+            z = stream.readInt();
+            velocityX = (sbyte)stream.readByte();
+            velocityY = (sbyte)stream.readByte();
+            velocityZ = (sbyte)stream.readByte();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(id);
-            var1.writeShort(itemRawId);
-            var1.writeByte(itemCount);
-            var1.writeShort(itemDamage);
-            var1.writeInt(x);
-            var1.writeInt(y);
-            var1.writeInt(z);
-            var1.writeByte(velocityX);
-            var1.writeByte(velocityY);
-            var1.writeByte(velocityZ);
+            stream.writeInt(id);
+            stream.writeShort(itemRawId);
+            stream.writeByte(itemCount);
+            stream.writeShort(itemDamage);
+            stream.writeInt(x);
+            stream.writeInt(y);
+            stream.writeInt(z);
+            stream.writeByte(velocityX);
+            stream.writeByte(velocityY);
+            stream.writeByte(velocityZ);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onItemEntitySpawn(this);
+            handler.onItemEntitySpawn(this);
         }
 
         public override int size()

@@ -5,50 +5,50 @@ namespace betareborn.Entities
 {
     public class EntityReddustFX : EntityFX
     {
-        float field_673_a;
+        float baseScale;
 
 
-        public EntityReddustFX(World var1, double var2, double var4, double var6, float var8, float var9, float var10) : this(var1, var2, var4, var6, 1.0F, var8, var9, var10)
+        public EntityReddustFX(World world, double x, double y, double z, float red, float green, float blue) : this(world, x, y, z, 1.0F, red, green, blue)
         {
         }
 
-        public EntityReddustFX(World var1, double var2, double var4, double var6, float var8, float var9, float var10, float var11) : base(var1, var2, var4, var6, 0.0D, 0.0D, 0.0D)
+        public EntityReddustFX(World world, double x, double y, double z, float particleScale, float red, float green, float blue) : base(world, x, y, z, 0.0D, 0.0D, 0.0D)
         {
             velocityX *= (double)0.1F;
             velocityY *= (double)0.1F;
             velocityZ *= (double)0.1F;
-            if (var9 == 0.0F)
+            if (red == 0.0F)
             {
-                var9 = 1.0F;
+                red = 1.0F;
             }
 
-            float var12 = (float)java.lang.Math.random() * 0.4F + 0.6F;
-            particleRed = ((float)(java.lang.Math.random() * (double)0.2F) + 0.8F) * var9 * var12;
-            particleGreen = ((float)(java.lang.Math.random() * (double)0.2F) + 0.8F) * var10 * var12;
-            particleBlue = ((float)(java.lang.Math.random() * (double)0.2F) + 0.8F) * var11 * var12;
-            particleScale *= 12.0F / 16.0F;
-            particleScale *= var8;
-            field_673_a = particleScale;
+            float colorVariation = (float)java.lang.Math.random() * 0.4F + 0.6F;
+            particleRed = ((float)(java.lang.Math.random() * (double)0.2F) + 0.8F) * red * colorVariation;
+            particleGreen = ((float)(java.lang.Math.random() * (double)0.2F) + 0.8F) * green * colorVariation;
+            particleBlue = ((float)(java.lang.Math.random() * (double)0.2F) + 0.8F) * blue * colorVariation;
+            base.particleScale *= 12.0F / 16.0F;
+            base.particleScale *= particleScale;
+            baseScale = base.particleScale;
             particleMaxAge = (int)(8.0D / (java.lang.Math.random() * 0.8D + 0.2D));
-            particleMaxAge = (int)((float)particleMaxAge * var8);
+            particleMaxAge = (int)((float)particleMaxAge * particleScale);
             noClip = false;
         }
 
-        public override void renderParticle(Tessellator var1, float var2, float var3, float var4, float var5, float var6, float var7)
+        public override void renderParticle(Tessellator t, float partialTick, float rotX, float rotY, float rotZ, float upX, float upZ)
         {
-            float var8 = ((float)particleAge + var2) / (float)particleMaxAge * 32.0F;
-            if (var8 < 0.0F)
+            float lifeProgress = ((float)particleAge + partialTick) / (float)particleMaxAge * 32.0F;
+            if (lifeProgress < 0.0F)
             {
-                var8 = 0.0F;
+                lifeProgress = 0.0F;
             }
 
-            if (var8 > 1.0F)
+            if (lifeProgress > 1.0F)
             {
-                var8 = 1.0F;
+                lifeProgress = 1.0F;
             }
 
-            particleScale = field_673_a * var8;
-            base.renderParticle(var1, var2, var3, var4, var5, var6, var7);
+            particleScale = baseScale * lifeProgress;
+            base.renderParticle(t, partialTick, rotX, rotY, rotZ, upX, upZ);
         }
 
         public override void tick()

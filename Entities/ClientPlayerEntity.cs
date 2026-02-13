@@ -1,12 +1,12 @@
+using betareborn.Blocks.Entities;
+using betareborn.Client.Guis;
+using betareborn.Client.Input;
+using betareborn.Inventorys;
 using betareborn.NBT;
 using betareborn.Stats;
+using betareborn.Util.Maths;
 using betareborn.Worlds;
 using java.lang;
-using betareborn.Inventorys;
-using betareborn.Util.Maths;
-using betareborn.Client.Guis;
-using betareborn.Blocks.Entities;
-using betareborn.Client.Input;
 
 namespace betareborn.Entities
 {
@@ -19,21 +19,21 @@ namespace betareborn.Entities
         private MouseFilter field_21904_bK = new MouseFilter();
         private MouseFilter field_21902_bL = new MouseFilter();
 
-        public ClientPlayerEntity(Minecraft var1, World var2, Session var3, int var4) : base(var2)
+        public ClientPlayerEntity(Minecraft mc, World world, Session session, int dimensionId) : base(world)
         {
-            mc = var1;
-            dimensionId = var4;
-            if (var3 != null && var3.username != null && var3.username.Length > 0)
+            this.mc = mc;
+            base.dimensionId = dimensionId;
+            if (session != null && session.username != null && session.username.Length > 0)
             {
-                skinUrl = "http://s3.amazonaws.com/MinecraftSkins/" + var3.username + ".png";
+                skinUrl = "http://s3.amazonaws.com/MinecraftSkins/" + session.username + ".png";
             }
 
-            name = var3.username;
+            name = session.username;
         }
 
-        public override void move(double var1, double var3, double var5)
+        public override void move(double x, double y, double z)
         {
-            base.move(var1, var3, var5);
+            base.move(x, y, z);
         }
 
         public override void tickLiving()
@@ -73,12 +73,6 @@ namespace betareborn.Entities
                 if (changeDimensionCooldown >= 1.0F)
                 {
                     changeDimensionCooldown = 1.0F;
-                    if (!world.isRemote)
-                    {
-                        portalCooldown = 10;
-                        mc.sndManager.playSoundFX("portal.travel", 1.0F, random.nextFloat() * 0.4F + 0.8F);
-                        mc.usePortal();
-                    }
                 }
 
                 inTeleportationState = false;
@@ -119,21 +113,21 @@ namespace betareborn.Entities
             movementInput.resetKeyState();
         }
 
-        public void handleKeyPress(int var1, bool var2)
+        public void handleKeyPress(int key, bool isPressed)
         {
-            movementInput.checkKeyForMovementInput(var1, var2);
+            movementInput.checkKeyForMovementInput(key, isPressed);
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            base.writeNbt(var1);
-            var1.SetInteger("Score", score);
+            base.writeNbt(nbt);
+            nbt.setInteger("Score", score);
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            base.readNbt(var1);
-            score = var1.GetInteger("Score");
+            base.readNbt(nbt);
+            score = nbt.getInteger("Score");
         }
 
         public override void closeHandledScreen()
@@ -142,34 +136,34 @@ namespace betareborn.Entities
             mc.displayGuiScreen(null);
         }
 
-        public override void openEditSignScreen(BlockEntitySign var1)
+        public override void openEditSignScreen(BlockEntitySign sign)
         {
-            mc.displayGuiScreen(new GuiEditSign(var1));
+            mc.displayGuiScreen(new GuiEditSign(sign));
         }
 
-        public override void openChestScreen(IInventory var1)
+        public override void openChestScreen(IInventory inventory)
         {
-            mc.displayGuiScreen(new GuiChest(inventory, var1));
+            mc.displayGuiScreen(new GuiChest(base.inventory, inventory));
         }
 
-        public override void openCraftingScreen(int var1, int var2, int var3)
+        public override void openCraftingScreen(int x, int y, int z)
         {
-            mc.displayGuiScreen(new GuiCrafting(inventory, world, var1, var2, var3));
+            mc.displayGuiScreen(new GuiCrafting(inventory, world, x, y, z));
         }
 
-        public override void openFurnaceScreen(BlockEntityFurnace var1)
+        public override void openFurnaceScreen(BlockEntityFurnace furnace)
         {
-            mc.displayGuiScreen(new GuiFurnace(inventory, var1));
+            mc.displayGuiScreen(new GuiFurnace(inventory, furnace));
         }
 
-        public override void openDispenserScreen(BlockEntityDispenser var1)
+        public override void openDispenserScreen(BlockEntityDispenser dispenser)
         {
-            mc.displayGuiScreen(new GuiDispenser(inventory, var1));
+            mc.displayGuiScreen(new GuiDispenser(inventory, dispenser));
         }
 
-        public override void sendPickup(Entity var1, int var2)
+        public override void sendPickup(Entity entity, int count)
         {
-            mc.particleManager.addEffect(new EntityPickupFX(mc.world, var1, this, -0.5F));
+            mc.particleManager.addEffect(new EntityPickupFX(mc.world, entity, this, -0.5F));
         }
 
         public int getPlayerArmorValue()
@@ -187,23 +181,23 @@ namespace betareborn.Entities
             return movementInput.sneak && !sleeping;
         }
 
-        public virtual void setHealth(int var1)
+        public virtual void setHealth(int newHealth)
         {
-            int var2 = health - var1;
-            if (var2 <= 0)
+            int damageAmount = health - newHealth;
+            if (damageAmount <= 0)
             {
-                health = var1;
-                if (var2 < 0)
+                health = newHealth;
+                if (damageAmount < 0)
                 {
                     hearts = maxHealth / 2;
                 }
             }
             else
             {
-                field_9346_af = var2;
+                damageForDisplay = damageAmount;
                 lastHealth = health;
                 hearts = maxHealth;
-                applyDamage(var2);
+                applyDamage(damageAmount);
                 hurtTime = maxHurtTime = 10;
             }
 
@@ -218,99 +212,99 @@ namespace betareborn.Entities
         {
         }
 
-        public override void sendMessage(string var1)
+        public override void sendMessage(string message)
         {
-            mc.ingameGUI.addChatMessageTranslate(var1);
+            mc.ingameGUI.addChatMessageTranslate(message);
         }
 
-        public override void increaseStat(StatBase var1, int var2)
+        public override void increaseStat(StatBase stat, int value)
         {
-            if (var1 != null)
+            if (stat != null)
             {
-                if (var1.isAchievement())
+                if (stat.isAchievement())
                 {
-                    Achievement var3 = (Achievement)var1;
-                    if (var3.parent == null || mc.statFileWriter.hasAchievementUnlocked(var3.parent))
+                    Achievement achievement = (Achievement)stat;
+                    if (achievement.parent == null || mc.statFileWriter.hasAchievementUnlocked(achievement.parent))
                     {
-                        if (!mc.statFileWriter.hasAchievementUnlocked(var3))
+                        if (!mc.statFileWriter.hasAchievementUnlocked(achievement))
                         {
-                            mc.guiAchievement.queueTakenAchievement(var3);
+                            mc.guiAchievement.queueTakenAchievement(achievement);
                         }
 
-                        mc.statFileWriter.readStat(var1, var2);
+                        mc.statFileWriter.readStat(stat, value);
                     }
                 }
                 else
                 {
-                    mc.statFileWriter.readStat(var1, var2);
+                    mc.statFileWriter.readStat(stat, value);
                 }
 
             }
         }
 
-        private bool isBlockTranslucent(int var1, int var2, int var3)
+        private bool isBlockTranslucent(int x, int y, int z)
         {
-            return world.shouldSuffocate(var1, var2, var3);
+            return world.shouldSuffocate(x, y, z);
         }
 
-        protected override bool pushOutOfBlocks(double var1, double var3, double var5)
+        protected override bool pushOutOfBlocks(double posX, double posY, double posZ)
         {
-            int var7 = MathHelper.floor_double(var1);
-            int var8 = MathHelper.floor_double(var3);
-            int var9 = MathHelper.floor_double(var5);
-            double var10 = var1 - (double)var7;
-            double var12 = var5 - (double)var9;
-            if (isBlockTranslucent(var7, var8, var9) || isBlockTranslucent(var7, var8 + 1, var9))
+            int floorX = MathHelper.floor_double(posX);
+            int floorY = MathHelper.floor_double(posY);
+            int floorZ = MathHelper.floor_double(posZ);
+            double fracX = posX - (double)floorX;
+            double fracZ = posZ - (double)floorZ;
+            if (isBlockTranslucent(floorX, floorY, floorZ) || isBlockTranslucent(floorX, floorY + 1, floorZ))
             {
-                bool var14 = !isBlockTranslucent(var7 - 1, var8, var9) && !isBlockTranslucent(var7 - 1, var8 + 1, var9);
-                bool var15 = !isBlockTranslucent(var7 + 1, var8, var9) && !isBlockTranslucent(var7 + 1, var8 + 1, var9);
-                bool var16 = !isBlockTranslucent(var7, var8, var9 - 1) && !isBlockTranslucent(var7, var8 + 1, var9 - 1);
-                bool var17 = !isBlockTranslucent(var7, var8, var9 + 1) && !isBlockTranslucent(var7, var8 + 1, var9 + 1);
-                int var18 = -1;
-                double var19 = 9999.0D;
-                if (var14 && var10 < var19)
+                bool canPushWest = !isBlockTranslucent(floorX - 1, floorY, floorZ) && !isBlockTranslucent(floorX - 1, floorY + 1, floorZ);
+                bool canPushEast = !isBlockTranslucent(floorX + 1, floorY, floorZ) && !isBlockTranslucent(floorX + 1, floorY + 1, floorZ);
+                bool canPushNorth = !isBlockTranslucent(floorX, floorY, floorZ - 1) && !isBlockTranslucent(floorX, floorY + 1, floorZ - 1);
+                bool canPushSouth = !isBlockTranslucent(floorX, floorY, floorZ + 1) && !isBlockTranslucent(floorX, floorY + 1, floorZ + 1);
+                int pushDirection = -1;
+                double closestEdgeDistance = 9999.0D;
+                if (canPushWest && fracX < closestEdgeDistance)
                 {
-                    var19 = var10;
-                    var18 = 0;
+                    closestEdgeDistance = fracX;
+                    pushDirection = 0;
                 }
 
-                if (var15 && 1.0D - var10 < var19)
+                if (canPushEast && 1.0D - fracX < closestEdgeDistance)
                 {
-                    var19 = 1.0D - var10;
-                    var18 = 1;
+                    closestEdgeDistance = 1.0D - fracX;
+                    pushDirection = 1;
                 }
 
-                if (var16 && var12 < var19)
+                if (canPushNorth && fracZ < closestEdgeDistance)
                 {
-                    var19 = var12;
-                    var18 = 4;
+                    closestEdgeDistance = fracZ;
+                    pushDirection = 4;
                 }
 
-                if (var17 && 1.0D - var12 < var19)
+                if (canPushSouth && 1.0D - fracZ < closestEdgeDistance)
                 {
-                    var19 = 1.0D - var12;
-                    var18 = 5;
+                    closestEdgeDistance = 1.0D - fracZ;
+                    pushDirection = 5;
                 }
 
-                float var21 = 0.1F;
-                if (var18 == 0)
+                float pushStrength = 0.1F;
+                if (pushDirection == 0)
                 {
-                    velocityX = (double)(-var21);
+                    velocityX = (double)(-pushStrength);
                 }
 
-                if (var18 == 1)
+                if (pushDirection == 1)
                 {
-                    velocityX = (double)var21;
+                    velocityX = (double)pushStrength;
                 }
 
-                if (var18 == 4)
+                if (pushDirection == 4)
                 {
-                    velocityZ = (double)(-var21);
+                    velocityZ = (double)(-pushStrength);
                 }
 
-                if (var18 == 5)
+                if (pushDirection == 5)
                 {
-                    velocityZ = (double)var21;
+                    velocityZ = (double)pushStrength;
                 }
             }
 

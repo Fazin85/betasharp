@@ -8,7 +8,7 @@ namespace betareborn.Entities
     {
         public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityPig).TypeHandle);
 
-        public EntityPig(World var1) : base(var1)
+        public EntityPig(World world) : base(world)
         {
             texture = "/mob/pig.png";
             setBoundingBoxSpacing(0.9F, 0.9F);
@@ -19,16 +19,16 @@ namespace betareborn.Entities
             dataWatcher.addObject(16, java.lang.Byte.valueOf((byte)0));
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            base.writeNbt(var1);
-            var1.SetBoolean("Saddle", getSaddled());
+            base.writeNbt(nbt);
+            nbt.setBoolean("Saddle", getSaddled());
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            base.readNbt(var1);
-            setSaddled(var1.GetBoolean("Saddle"));
+            base.readNbt(nbt);
+            setSaddled(nbt.getBoolean("Saddle"));
         }
 
         protected override string getLivingSound()
@@ -46,15 +46,15 @@ namespace betareborn.Entities
             return "mob.pigdeath";
         }
 
-        public override bool interact(EntityPlayer var1)
+        public override bool interact(EntityPlayer player)
         {
-            if (!getSaddled() || world.isRemote || passenger != null && passenger != var1)
+            if (!getSaddled() || world.isRemote || passenger != null && passenger != player)
             {
                 return false;
             }
             else
             {
-                var1.setVehicle(this);
+                player.setVehicle(this);
                 return true;
             }
         }
@@ -69,9 +69,9 @@ namespace betareborn.Entities
             return (dataWatcher.getWatchableObjectByte(16) & 1) != 0;
         }
 
-        public void setSaddled(bool var1)
+        public void setSaddled(bool isSaddled)
         {
-            if (var1)
+            if (isSaddled)
             {
                 dataWatcher.updateObject(16, java.lang.Byte.valueOf((byte)1));
             }
@@ -82,21 +82,21 @@ namespace betareborn.Entities
 
         }
 
-        public override void onStruckByLightning(EntityLightningBolt var1)
+        public override void onStruckByLightning(EntityLightningBolt bolt)
         {
             if (!world.isRemote)
             {
-                EntityPigZombie var2 = new EntityPigZombie(world);
-                var2.setPositionAndAnglesKeepPrevAngles(x, y, z, yaw, pitch);
-                world.spawnEntity(var2);
+                EntityPigZombie pigZombie = new EntityPigZombie(world);
+                pigZombie.setPositionAndAnglesKeepPrevAngles(x, y, z, yaw, pitch);
+                world.spawnEntity(pigZombie);
                 markDead();
             }
         }
 
-        protected override void onLanding(float var1)
+        protected override void onLanding(float fallDistance)
         {
-            base.onLanding(var1);
-            if (var1 > 5.0F && passenger is EntityPlayer)
+            base.onLanding(fallDistance);
+            if (fallDistance > 5.0F && passenger is EntityPlayer)
             {
                 ((EntityPlayer)passenger).incrementStat(Achievements.KILL_PIG);
             }

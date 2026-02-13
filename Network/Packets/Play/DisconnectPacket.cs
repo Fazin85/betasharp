@@ -13,24 +13,24 @@ namespace betareborn.Network.Packets.Play
         {
         }
 
-        public DisconnectPacket(string var1)
+        public DisconnectPacket(string reason)
         {
-            reason = var1;
+            this.reason = reason;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            reason = readString(var1, 100);
+            reason = readString(stream, 100);
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            writeString(reason, var1);
+            writeString(reason, stream);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onDisconnect(this);
+            handler.onDisconnect(this);
         }
 
         public override int size()

@@ -10,7 +10,6 @@ using betareborn.Worlds.Biomes;
 using betareborn.Worlds.Biomes.Source;
 using betareborn.Worlds.Chunks;
 using betareborn.Worlds.Chunks.Light;
-using betareborn.Worlds.Chunks.Storage;
 using betareborn.Worlds.Dimensions;
 using betareborn.Worlds.Storage;
 using java.lang;
@@ -20,7 +19,7 @@ using System.Runtime.InteropServices;
 
 namespace betareborn.Worlds
 {
-    public class World : java.lang.Object, BlockView
+    public abstract class World : java.lang.Object, BlockView
     {
         public static readonly Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(World).TypeHandle);
         private const int AUTOSAVE_PERIOD = 40;
@@ -63,7 +62,7 @@ namespace betareborn.Worlds
         private int lightingUpdatesCounter;
         private bool spawnHostileMobs;
         private bool spawnPeacefulMobs;
-        static int lightingUpdatesScheduled = 0;
+        private int lightingUpdatesScheduled = 0;
         private readonly HashSet<ChunkPos> activeChunks;
         private int soundCounter;
         private readonly List<Entity> tempEntityList;
@@ -240,11 +239,7 @@ namespace betareborn.Worlds
             prepareWeather();
         }
 
-        protected virtual ChunkSource createChunkCache()
-        {
-            ChunkStorage var1 = storage.getChunkStorage(dimension);
-            return new ChunkCache(this, (RegionChunkStorageAsync)var1, dimension.createChunkGenerator());
-        }
+        protected abstract ChunkSource createChunkCache();
 
         protected void initializeSpawnPoint()
         {
@@ -910,16 +905,16 @@ namespace betareborn.Worlds
 
         public HitResult raycast(Vec3D start, Vec3D pos, bool bl, bool bl2)
         {
-            if (!java.lang.Double.isNaN(start.xCoord) && !java.lang.Double.isNaN(start.yCoord) && !java.lang.Double.isNaN(start.zCoord))
+            if (!java.lang.Double.isNaN(start.x) && !java.lang.Double.isNaN(start.y) && !java.lang.Double.isNaN(start.z))
             {
-                if (!java.lang.Double.isNaN(pos.xCoord) && !java.lang.Double.isNaN(pos.yCoord) && !java.lang.Double.isNaN(pos.zCoord))
+                if (!java.lang.Double.isNaN(pos.x) && !java.lang.Double.isNaN(pos.y) && !java.lang.Double.isNaN(pos.z))
                 {
-                    int var5 = MathHelper.floor_double(pos.xCoord);
-                    int var6 = MathHelper.floor_double(pos.yCoord);
-                    int var7 = MathHelper.floor_double(pos.zCoord);
-                    int var8 = MathHelper.floor_double(start.xCoord);
-                    int var9 = MathHelper.floor_double(start.yCoord);
-                    int var10 = MathHelper.floor_double(start.zCoord);
+                    int var5 = MathHelper.floor_double(pos.x);
+                    int var6 = MathHelper.floor_double(pos.y);
+                    int var7 = MathHelper.floor_double(pos.z);
+                    int var8 = MathHelper.floor_double(start.x);
+                    int var9 = MathHelper.floor_double(start.y);
+                    int var10 = MathHelper.floor_double(start.z);
                     int var11 = getBlockId(var8, var9, var10);
                     int var12 = getBlockMeta(var8, var9, var10);
                     Block var13 = Block.BLOCKS[var11];
@@ -936,7 +931,7 @@ namespace betareborn.Worlds
 
                     while (var11-- >= 0)
                     {
-                        if (java.lang.Double.isNaN(start.xCoord) || java.lang.Double.isNaN(start.yCoord) || java.lang.Double.isNaN(start.zCoord))
+                        if (java.lang.Double.isNaN(start.x) || java.lang.Double.isNaN(start.y) || java.lang.Double.isNaN(start.z))
                         {
                             return null;
                         }
@@ -994,22 +989,22 @@ namespace betareborn.Worlds
                         double var21 = 999.0D;
                         double var23 = 999.0D;
                         double var25 = 999.0D;
-                        double var27 = pos.xCoord - start.xCoord;
-                        double var29 = pos.yCoord - start.yCoord;
-                        double var31 = pos.zCoord - start.zCoord;
+                        double var27 = pos.x - start.x;
+                        double var29 = pos.y - start.y;
+                        double var31 = pos.z - start.z;
                         if (var39)
                         {
-                            var21 = (var15 - start.xCoord) / var27;
+                            var21 = (var15 - start.x) / var27;
                         }
 
                         if (var40)
                         {
-                            var23 = (var17 - start.yCoord) / var29;
+                            var23 = (var17 - start.y) / var29;
                         }
 
                         if (var41)
                         {
-                            var25 = (var19 - start.zCoord) / var31;
+                            var25 = (var19 - start.z) / var31;
                         }
 
                         bool var33 = false;
@@ -1025,9 +1020,9 @@ namespace betareborn.Worlds
                                 var42 = 5;
                             }
 
-                            start.xCoord = var15;
-                            start.yCoord += var29 * var21;
-                            start.zCoord += var31 * var21;
+                            start.x = var15;
+                            start.y += var29 * var21;
+                            start.z += var31 * var21;
                         }
                         else if (var23 < var25)
                         {
@@ -1040,9 +1035,9 @@ namespace betareborn.Worlds
                                 var42 = 1;
                             }
 
-                            start.xCoord += var27 * var23;
-                            start.yCoord = var17;
-                            start.zCoord += var31 * var23;
+                            start.x += var27 * var23;
+                            start.y = var17;
+                            start.z += var31 * var23;
                         }
                         else
                         {
@@ -1055,31 +1050,31 @@ namespace betareborn.Worlds
                                 var42 = 3;
                             }
 
-                            start.xCoord += var27 * var25;
-                            start.yCoord += var29 * var25;
-                            start.zCoord = var19;
+                            start.x += var27 * var25;
+                            start.y += var29 * var25;
+                            start.z = var19;
                         }
 
-                        Vec3D var34 = Vec3D.createVector(start.xCoord, start.yCoord, start.zCoord);
-                        var8 = (int)(var34.xCoord = (double)MathHelper.floor_double(start.xCoord));
+                        Vec3D var34 = new Vec3D(start.x, start.y, start.z);
+                        var8 = (int)(var34.x = (double)MathHelper.floor_double(start.x));
                         if (var42 == 5)
                         {
                             --var8;
-                            ++var34.xCoord;
+                            ++var34.x;
                         }
 
-                        var9 = (int)(var34.yCoord = (double)MathHelper.floor_double(start.yCoord));
+                        var9 = (int)(var34.y = (double)MathHelper.floor_double(start.y));
                         if (var42 == 1)
                         {
                             --var9;
-                            ++var34.yCoord;
+                            ++var34.y;
                         }
 
-                        var10 = (int)(var34.zCoord = (double)MathHelper.floor_double(start.zCoord));
+                        var10 = (int)(var34.z = (double)MathHelper.floor_double(start.z));
                         if (var42 == 3)
                         {
                             --var10;
-                            ++var34.zCoord;
+                            ++var34.z;
                         }
 
                         int var35 = getBlockId(var8, var9, var10);
@@ -1902,7 +1897,7 @@ namespace betareborn.Worlds
             else
             {
                 bool var10 = false;
-                Vec3D var11 = Vec3D.createVector(0.0D, 0.0D, 0.0D);
+                Vec3D var11 = new Vec3D(0.0D, 0.0D, 0.0D);
 
                 for (int var12 = var4; var12 < var5; ++var12)
                 {
@@ -1924,13 +1919,13 @@ namespace betareborn.Worlds
                     }
                 }
 
-                if (var11.lengthVector() > 0.0D)
+                if (var11.magnitude() > 0.0D)
                 {
                     var11 = var11.normalize();
                     double var18 = 0.014D;
-                    entity.velocityX += var11.xCoord * var18;
-                    entity.velocityY += var11.yCoord * var18;
-                    entity.velocityZ += var11.zCoord * var18;
+                    entity.velocityX += var11.x * var18;
+                    entity.velocityY += var11.y * var18;
+                    entity.velocityZ += var11.z * var18;
                 }
 
                 return var10;
@@ -2032,7 +2027,7 @@ namespace betareborn.Worlds
                         double var14 = box.minX + (box.maxX - box.minX) * (double)var11;
                         double var16 = box.minY + (box.maxY - box.minY) * (double)var12;
                         double var18 = box.minZ + (box.maxZ - box.minZ) * (double)var13;
-                        if (raycast(Vec3D.createVector(var14, var16, var18), vec) == null)
+                        if (raycast(new Vec3D(var14, var16, var18), vec) == null)
                         {
                             ++var9;
                         }
@@ -2496,7 +2491,7 @@ namespace betareborn.Worlds
             {
                 --soundCounter;
             }
-            
+
             foreach (var p in activeChunks)
             {
                 var3 = p.x * 16;

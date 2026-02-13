@@ -5,24 +5,26 @@ namespace betareborn.Client.Guis
 {
     public class GuiTexturePacks : GuiScreen
     {
+        private const int BUTTON_OPEN_FOLDER = 5;
+        private const int BUTTON_DONE = 6;
 
-        protected GuiScreen guiScreen;
-        private int field_6454_o = -1;
-        private string fileLocation = "";
+        protected GuiScreen parentScreen;
+        private int refreshTimer = -1;
+        private string texturePackFolder = "";
         private GuiTexturePackSlot guiTexturePackSlot;
 
-        public GuiTexturePacks(GuiScreen var1)
+        public GuiTexturePacks(GuiScreen parent)
         {
-            guiScreen = var1;
+            parentScreen = parent;
         }
 
         public override void initGui()
         {
-            TranslationStorage var1 = TranslationStorage.getInstance();
-            controlList.add(new GuiSmallButton(5, width / 2 - 154, height - 48, var1.translateKey("texturePack.openFolder")));
-            controlList.add(new GuiSmallButton(6, width / 2 + 4, height - 48, var1.translateKey("gui.done")));
+            TranslationStorage translations = TranslationStorage.getInstance();
+            controlList.add(new GuiSmallButton(BUTTON_OPEN_FOLDER, width / 2 - 154, height - 48, translations.translateKey("texturePack.openFolder")));
+            controlList.add(new GuiSmallButton(BUTTON_DONE, width / 2 + 4, height - 48, translations.translateKey("gui.done")));
             mc.texturePackList.updateAvaliableTexturePacks();
-            fileLocation = new java.io.File(Minecraft.getMinecraftDir(), "texturepacks").getAbsolutePath();
+            texturePackFolder = new java.io.File(Minecraft.getMinecraftDir(), "texturepacks").getAbsolutePath();
             guiTexturePackSlot = new GuiTexturePackSlot(this);
             guiTexturePackSlot.registerScrollButtons(controlList, 7, 8);
         }
@@ -31,64 +33,63 @@ namespace betareborn.Client.Guis
         {
             if (var1.enabled)
             {
-                if (var1.id == 5)
+                switch (var1.id)
                 {
-                    //THIS SHOULD WORK THE SAME?
-                    try
-                    {
-                        Process.Start(new ProcessStartInfo
+                    case BUTTON_OPEN_FOLDER:
+                        try
                         {
-                            FileName = "file://" + fileLocation,
-                            UseShellExecute = true
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Failed to open URL: {ex.Message}");
-                    }
-                }
-                else if (var1.id == 6)
-                {
-                    mc.textureManager.reload();
-                    mc.displayGuiScreen(guiScreen);
-                }
-                else
-                {
-                    guiTexturePackSlot.actionPerformed(var1);
+                            Process.Start(new ProcessStartInfo
+                            {
+                                FileName = "file://" + texturePackFolder,
+                                UseShellExecute = true
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Failed to open URL: {ex.Message}");
+                        }
+                        break;
+                    case BUTTON_DONE:
+                        mc.textureManager.reload();
+                        mc.displayGuiScreen(parentScreen);
+                        break;
+                    default:
+                        guiTexturePackSlot.actionPerformed(var1);
+                        break;
                 }
 
             }
         }
 
-        protected override void mouseClicked(int var1, int var2, int var3)
+        protected override void mouseClicked(int mouseX, int mouseY, int button)
         {
-            base.mouseClicked(var1, var2, var3);
+            base.mouseClicked(mouseX, mouseY, button);
         }
 
-        protected override void mouseMovedOrUp(int var1, int var2, int var3)
+        protected override void mouseMovedOrUp(int mouseX, int mouseY, int button)
         {
-            base.mouseMovedOrUp(var1, var2, var3);
+            base.mouseMovedOrUp(mouseX, mouseY, button);
         }
 
-        public override void render(int var1, int var2, float var3)
+        public override void render(int mouseX, int mouseY, float partialTicks)
         {
-            guiTexturePackSlot.drawScreen(var1, var2, var3);
-            if (field_6454_o <= 0)
+            guiTexturePackSlot.drawScreen(mouseX, mouseY, partialTicks);
+            if (refreshTimer <= 0)
             {
                 mc.texturePackList.updateAvaliableTexturePacks();
-                field_6454_o += 20;
+                refreshTimer += 20;
             }
 
-            TranslationStorage var4 = TranslationStorage.getInstance();
-            drawCenteredString(fontRenderer, var4.translateKey("texturePack.title"), width / 2, 16, 16777215);
-            drawCenteredString(fontRenderer, var4.translateKey("texturePack.folderInfo"), width / 2 - 77, height - 26, 8421504);
-            base.render(var1, var2, var3);
+            TranslationStorage translations = TranslationStorage.getInstance();
+            drawCenteredString(fontRenderer, translations.translateKey("texturePack.title"), width / 2, 16, 16777215);
+            drawCenteredString(fontRenderer, translations.translateKey("texturePack.folderInfo"), width / 2 - 77, height - 26, 8421504);
+            base.render(mouseX, mouseY, partialTicks);
         }
 
         public override void updateScreen()
         {
             base.updateScreen();
-            --field_6454_o;
+            --refreshTimer;
         }
 
         public static Minecraft func_22124_a(GuiTexturePacks var0)

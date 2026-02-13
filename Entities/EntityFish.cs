@@ -33,7 +33,7 @@ namespace betareborn.Entities
         private double vY;
         private double vZ;
 
-        public EntityFish(World var1) : base(var1)
+        public EntityFish(World world) : base(world)
         {
             xTile = -1;
             yTile = -1;
@@ -48,13 +48,13 @@ namespace betareborn.Entities
             ignoreFrustumCheck = true;
         }
 
-        public EntityFish(World var1, double var2, double var4, double var6) : this(var1)
+        public EntityFish(World world, double var2, double var4, double var6) : this(world)
         {
             setPosition(var2, var4, var6);
             ignoreFrustumCheck = true;
         }
 
-        public EntityFish(World var1, EntityPlayer var2) : base(var1)
+        public EntityFish(World world, EntityPlayer player) : base(world)
         {
             xTile = -1;
             yTile = -1;
@@ -66,19 +66,19 @@ namespace betareborn.Entities
             ticksCatchable = 0;
             bobber = null;
             ignoreFrustumCheck = true;
-            angler = var2;
+            angler = player;
             angler.fishHook = this;
             setBoundingBoxSpacing(0.25F, 0.25F);
-            setPositionAndAnglesKeepPrevAngles(var2.x, var2.y + 1.62D - (double)var2.standingEyeHeight, var2.z, var2.yaw, var2.pitch);
-            x -= (double)(MathHelper.cos(yaw / 180.0F * (float)java.lang.Math.PI) * 0.16F);
+            setPositionAndAnglesKeepPrevAngles(player.x, player.y + 1.62D - (double)player.standingEyeHeight, player.z, player.yaw, player.pitch);
+            x -= (double)(MathHelper.cos(yaw / 180.0F * (float)System.Math.PI) * 0.16F);
             y -= (double)0.1F;
-            z -= (double)(MathHelper.sin(yaw / 180.0F * (float)java.lang.Math.PI) * 0.16F);
+            z -= (double)(MathHelper.sin(yaw / 180.0F * (float)System.Math.PI) * 0.16F);
             setPosition(x, y, z);
             standingEyeHeight = 0.0F;
             float var3 = 0.4F;
-            base.velocityX = (double)(-MathHelper.sin(yaw / 180.0F * (float)java.lang.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)java.lang.Math.PI) * var3);
-            base.velocityZ = (double)(MathHelper.cos(yaw / 180.0F * (float)java.lang.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)java.lang.Math.PI) * var3);
-            base.velocityY = (double)(-MathHelper.sin(pitch / 180.0F * (float)java.lang.Math.PI) * var3);
+            base.velocityX = (double)(-MathHelper.sin(yaw / 180.0F * (float)System.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)System.Math.PI) * var3);
+            base.velocityZ = (double)(MathHelper.cos(yaw / 180.0F * (float)System.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)System.Math.PI) * var3);
+            base.velocityY = (double)(-MathHelper.sin(pitch / 180.0F * (float)System.Math.PI) * var3);
             func_4042_a(base.velocityX, base.velocityY, base.velocityZ, 1.5F, 1.0F);
         }
 
@@ -109,8 +109,8 @@ namespace betareborn.Entities
             base.velocityY = var3;
             base.velocityZ = var5;
             float var10 = MathHelper.sqrt_double(var1 * var1 + var5 * var5);
-            prevYaw = yaw = (float)(java.lang.Math.atan2(var1, var5) * 180.0D / (double)((float)java.lang.Math.PI));
-            prevPitch = pitch = (float)(java.lang.Math.atan2(var3, (double)var10) * 180.0D / (double)((float)java.lang.Math.PI));
+            prevYaw = yaw = (float)(System.Math.Atan2(var1, var5) * 180.0D / (double)((float)System.Math.PI));
+            prevPitch = pitch = (float)(System.Math.Atan2(var3, (double)var10) * 180.0D / (double)((float)System.Math.PI));
             ticksInGround = 0;
         }
 
@@ -216,14 +216,14 @@ namespace betareborn.Entities
                     ++ticksInAir;
                 }
 
-                Vec3D var20 = Vec3D.createVector(x, y, z);
-                Vec3D var2 = Vec3D.createVector(x + base.velocityX, y + base.velocityY, z + base.velocityZ);
+                Vec3D var20 = new Vec3D(x, y, z);
+                Vec3D var2 = new Vec3D(x + base.velocityX, y + base.velocityY, z + base.velocityZ);
                 HitResult var3 = world.raycast(var20, var2);
-                var20 = Vec3D.createVector(x, y, z);
-                var2 = Vec3D.createVector(x + base.velocityX, y + base.velocityY, z + base.velocityZ);
+                var20 = new Vec3D(x, y, z);
+                var2 = new Vec3D(x + base.velocityX, y + base.velocityY, z + base.velocityZ);
                 if (var3 != null)
                 {
-                    var2 = Vec3D.createVector(var3.pos.xCoord, var3.pos.yCoord, var3.pos.zCoord);
+                    var2 = new Vec3D(var3.pos.x, var3.pos.y, var3.pos.z);
                 }
 
                 Entity var4 = null;
@@ -275,9 +275,9 @@ namespace betareborn.Entities
                 {
                     base.move(base.velocityX, base.velocityY, base.velocityZ);
                     float var24 = MathHelper.sqrt_double(base.velocityX * base.velocityX + base.velocityZ * base.velocityZ);
-                    yaw = (float)(java.lang.Math.atan2(base.velocityX, base.velocityZ) * 180.0D / (double)((float)java.lang.Math.PI));
+                    yaw = (float)(System.Math.Atan2(base.velocityX, base.velocityZ) * 180.0D / (double)((float)System.Math.PI));
 
-                    for (pitch = (float)(java.lang.Math.atan2(base.velocityY, (double)var24) * 180.0D / (double)((float)java.lang.Math.PI)); pitch - prevPitch < -180.0F; prevPitch -= 360.0F)
+                    for (pitch = (float)(System.Math.Atan2(base.velocityY, (double)var24) * 180.0D / (double)((float)System.Math.PI)); pitch - prevPitch < -180.0F; prevPitch -= 360.0F)
                     {
                     }
 
@@ -380,24 +380,24 @@ namespace betareborn.Entities
             }
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            var1.SetShort("xTile", (short)xTile);
-            var1.SetShort("yTile", (short)yTile);
-            var1.SetShort("zTile", (short)zTile);
-            var1.SetByte("inTile", (sbyte)inTile);
-            var1.SetByte("shake", (sbyte)shake);
-            var1.SetByte("inGround", (sbyte)(inGround ? 1 : 0));
+            nbt.setShort("xTile", (short)xTile);
+            nbt.setShort("yTile", (short)yTile);
+            nbt.setShort("zTile", (short)zTile);
+            nbt.setByte("inTile", (sbyte)inTile);
+            nbt.setByte("shake", (sbyte)shake);
+            nbt.setByte("inGround", (sbyte)(inGround ? 1 : 0));
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            xTile = var1.GetShort("xTile");
-            yTile = var1.GetShort("yTile");
-            zTile = var1.GetShort("zTile");
-            inTile = var1.GetByte("inTile") & 255;
-            shake = var1.GetByte("shake") & 255;
-            inGround = var1.GetByte("inGround") == 1;
+            xTile = nbt.getShort("xTile");
+            yTile = nbt.getShort("yTile");
+            zTile = nbt.getShort("zTile");
+            inTile = nbt.getByte("inTile") & 255;
+            shake = nbt.getByte("shake") & 255;
+            inGround = nbt.getByte("inGround") == 1;
         }
 
         public override float getShadowRadius()

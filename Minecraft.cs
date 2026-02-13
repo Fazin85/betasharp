@@ -23,9 +23,6 @@ using betareborn.Stats;
 using betareborn.Util.Hit;
 using betareborn.Util.Maths;
 using betareborn.Worlds;
-using betareborn.Worlds.Chunks;
-using betareborn.Worlds.Chunks.Storage;
-using betareborn.Worlds.Dimensions;
 using betareborn.Worlds.Storage;
 using ImGuiNET;
 using java.lang;
@@ -45,7 +42,7 @@ namespace betareborn
         private bool hasCrashed = false;
         public int displayWidth;
         public int displayHeight;
-        private Timer timer = new Timer(20.0F);
+        private readonly Client.Timer timer = new(20.0F);
         public World world;
         public WorldRenderer terrainRenderer;
         public ClientPlayerEntity player;
@@ -59,20 +56,17 @@ namespace betareborn
         public TextRenderer fontRenderer;
         public GuiScreen currentScreen = null;
         public LoadingScreenRenderer loadingScreen;
-
         public GameRenderer gameRenderer;
-
-        //private ThreadDownloadResources downloadResourcesThread;
         private int ticksRan = 0;
         private int leftClickCounter = 0;
-        private int tempDisplayWidth;
-        private int tempDisplayHeight;
+        private readonly int tempDisplayWidth;
+        private readonly int tempDisplayHeight;
         public GuiAchievement guiAchievement;
         public GuiIngame ingameGUI;
         public bool skipRenderWorld = false;
         public HitResult objectMouseOver = null;
         public GameOptions options;
-        public SoundManager sndManager = new SoundManager();
+        public SoundManager sndManager = new();
         public MouseHelper mouseHelper;
         public TexturePacks texturePackList;
         private java.io.File mcDataDir;
@@ -84,8 +78,8 @@ namespace betareborn
         public StatFileWriter statFileWriter;
         private string serverName;
         private int serverPort;
-        private WaterSprite textureWaterFX = new WaterSprite();
-        private LavaSprite textureLavaFX = new LavaSprite();
+        private readonly WaterSprite textureWaterFX = new();
+        private readonly LavaSprite textureLavaFX = new();
         private static java.io.File minecraftDir = null;
         public volatile bool running = true;
         public string debug = "";
@@ -99,15 +93,14 @@ namespace betareborn
         private ImGuiController imGuiController;
         public InternalServer? internalServer;
 
-        public Minecraft(int var4, int var5, bool var6)
+        public Minecraft(int width, int height, bool isFullscreen)
         {
             loadingScreen = new LoadingScreenRenderer(this);
             guiAchievement = new GuiAchievement(this);
-            tempDisplayHeight = var5;
-            fullscreen = var6;
-            displayWidth = var4;
-            displayHeight = var5;
-            fullscreen = var6;
+            tempDisplayHeight = height;
+            fullscreen = isFullscreen;
+            displayWidth = width;
+            displayHeight = height;
 
             INSTANCE = this;
         }
@@ -136,21 +129,21 @@ namespace betareborn
             }
         }
 
-        public void onMinecraftCrash(UnexpectedThrowable var1)
+        public void onMinecraftCrash(UnexpectedThrowable crashInfo)
         {
             hasCrashed = true;
-            displayUnexpectedThrowable(var1);
+            displayUnexpectedThrowable(crashInfo);
         }
 
-        public void displayUnexpectedThrowable(UnexpectedThrowable var1)
+        public void displayUnexpectedThrowable(UnexpectedThrowable unexpectedThrowable)
         {
-            var1.exception.printStackTrace();
+            unexpectedThrowable.exception.printStackTrace();
         }
 
-        public void setServer(string var1, int var2)
+        public void setServer(string name, int port)
         {
-            serverName = var1;
-            serverPort = var2;
+            serverName = name;
+            serverPort = port;
         }
 
         public unsafe void startGame()
@@ -180,7 +173,7 @@ namespace betareborn
             Display.setTitle("Minecraft Beta 1.7.3");
 
             mcDataDir = getMinecraftDir();
-            saveLoader = new RegionWorldStorageSource(new java.io.File(mcDataDir, "saves"), true);
+            saveLoader = new RegionWorldStorageSource(new java.io.File(mcDataDir, "saves"));
             options = new GameOptions(this, mcDataDir);
             Profiler.Enabled = options.debugMode;
 
@@ -283,7 +276,7 @@ namespace betareborn
 
         private void loadScreen()
         {
-            ScaledResolution var1 = new ScaledResolution(options, displayWidth, displayHeight);
+            ScaledResolution var1 = new(options, displayWidth, displayHeight);
             GLManager.GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
             GLManager.GL.MatrixMode(GLEnum.Projection);
             GLManager.GL.LoadIdentity();
@@ -293,22 +286,22 @@ namespace betareborn
             GLManager.GL.Translate(0.0F, 0.0F, -2000.0F);
             GLManager.GL.Viewport(0, 0, (uint)displayWidth, (uint)displayHeight);
             GLManager.GL.ClearColor(0.0F, 0.0F, 0.0F, 0.0F);
-            Tessellator var2 = Tessellator.instance;
+            Tessellator tessellator = Tessellator.instance;
             GLManager.GL.Disable(GLEnum.Lighting);
             GLManager.GL.Enable(GLEnum.Texture2D);
             GLManager.GL.Disable(GLEnum.Fog);
             GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)textureManager.getTextureId("/title/mojang.png"));
-            var2.startDrawingQuads();
-            var2.setColorOpaque_I(16777215);
-            var2.addVertexWithUV(0.0D, (double)displayHeight, 0.0D, 0.0D, 0.0D);
-            var2.addVertexWithUV((double)displayWidth, (double)displayHeight, 0.0D, 0.0D, 0.0D);
-            var2.addVertexWithUV((double)displayWidth, 0.0D, 0.0D, 0.0D, 0.0D);
-            var2.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
-            var2.draw();
+            tessellator.startDrawingQuads();
+            tessellator.setColorOpaque_I(16777215);
+            tessellator.addVertexWithUV(0.0D, (double)displayHeight, 0.0D, 0.0D, 0.0D);
+            tessellator.addVertexWithUV((double)displayWidth, (double)displayHeight, 0.0D, 0.0D, 0.0D);
+            tessellator.addVertexWithUV((double)displayWidth, 0.0D, 0.0D, 0.0D, 0.0D);
+            tessellator.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
+            tessellator.draw();
             short var3 = 256;
             short var4 = 256;
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-            var2.setColorOpaque_I(16777215);
+            tessellator.setColorOpaque_I(16777215);
             func_6274_a((var1.getScaledWidth() - var3) / 2, (var1.getScaledHeight() - var4) / 2, 0, 0, var3, var4);
             GLManager.GL.Disable(GLEnum.Lighting);
             GLManager.GL.Disable(GLEnum.Fog);
@@ -405,43 +398,40 @@ namespace betareborn
             return saveLoader;
         }
 
-        public void displayGuiScreen(GuiScreen var1)
+        public void displayGuiScreen(GuiScreen newScreen)
         {
             if (!(currentScreen is GuiUnused))
             {
-                if (currentScreen != null)
-                {
-                    currentScreen.onGuiClosed();
-                }
+                currentScreen?.onGuiClosed();
 
-                if (var1 is GuiMainMenu)
+                if (newScreen is GuiMainMenu)
                 {
                     statFileWriter.func_27175_b();
                 }
 
                 statFileWriter.syncStats();
-                if (var1 == null && world == null)
+                if (newScreen == null && world == null)
                 {
-                    var1 = new GuiMainMenu();
+                    newScreen = new GuiMainMenu();
                 }
-                else if (var1 == null && player.health <= 0)
+                else if (newScreen == null && player.health <= 0)
                 {
-                    var1 = new GuiGameOver();
+                    newScreen = new GuiGameOver();
                 }
 
-                if (var1 is GuiMainMenu)
+                if (newScreen is GuiMainMenu)
                 {
                     ingameGUI.clearChatMessages();
                 }
 
-                currentScreen = (GuiScreen)var1;
-                if (var1 != null)
+                currentScreen = (GuiScreen)newScreen;
+                if (newScreen != null)
                 {
                     setIngameNotInFocus();
-                    ScaledResolution var2 = new ScaledResolution(options, displayWidth, displayHeight);
-                    int var3 = var2.getScaledWidth();
-                    int var4 = var2.getScaledHeight();
-                    ((GuiScreen)var1).setWorldAndResolution(this, var3, var4);
+                    ScaledResolution scaledResolution = new(options, displayWidth, displayHeight);
+                    int scaledWidth = scaledResolution.getScaledWidth();
+                    int scaledHeight = scaledResolution.getScaledHeight();
+                    ((GuiScreen)newScreen).setWorldAndResolution(this, scaledWidth, scaledHeight);
                     skipRenderWorld = false;
                 }
                 else
@@ -452,14 +442,14 @@ namespace betareborn
         }
 
         [Conditional("DEBUG")]
-        private void checkGLError(string var1)
+        private void checkGLError(string location)
         {
-            GLEnum var2 = GLManager.GL.GetError();
-            if (var2 != 0)
+            GLEnum glError = GLManager.GL.GetError();
+            if (glError != 0)
             {
                 Console.WriteLine($"#### GL ERROR ####");
-                Console.WriteLine($"@ {var1}");
-                Console.WriteLine($"> {var2.ToString()}");
+                Console.WriteLine($"@ {location}");
+                Console.WriteLine($"> {glError.ToString()}");
                 Console.WriteLine($"");
             }
         }
@@ -478,7 +468,7 @@ namespace betareborn
                 {
                     changeWorld1((World)null);
                 }
-                catch (Throwable var8)
+                catch (Throwable worldChangeException)
                 {
                 }
 
@@ -486,7 +476,7 @@ namespace betareborn
                 {
                     GLAllocation.deleteTexturesAndDisplayLists();
                 }
-                catch (Throwable var7)
+                catch (Throwable textureCleanupException)
                 {
                 }
 
@@ -516,17 +506,17 @@ namespace betareborn
             {
                 startGame();
             }
-            catch (java.lang.Exception var17)
+            catch (java.lang.Exception startupException)
             {
-                var17.printStackTrace();
-                onMinecraftCrash(new UnexpectedThrowable("Failed to start game", var17));
+                startupException.printStackTrace();
+                onMinecraftCrash(new UnexpectedThrowable("Failed to start game", startupException));
                 return;
             }
 
             try
             {
-                long var1 = java.lang.System.currentTimeMillis();
-                int var3 = 0;
+                long lastFpsCheckTime = java.lang.System.currentTimeMillis();
+                int frameCounter = 0;
 
                 while (running)
                 {
@@ -545,22 +535,22 @@ namespace betareborn
 
                         if (isGamePaused && world != null)
                         {
-                            float var4 = timer.renderPartialTicks;
+                            float previousRenderPartialTicks = timer.renderPartialTicks;
                             timer.updateTimer();
-                            timer.renderPartialTicks = var4;
+                            timer.renderPartialTicks = previousRenderPartialTicks;
                         }
                         else
                         {
                             timer.updateTimer();
                         }
 
-                        long var23 = java.lang.System.nanoTime();
+                        long tickStartTime = java.lang.System.nanoTime();
                         if (options.debugMode)
                         {
                             Profiler.PushGroup("runTicks");
                         }
 
-                        for (int var6 = 0; var6 < timer.elapsedTicks; ++var6)
+                        for (int tickIndex = 0; tickIndex < timer.elapsedTicks; ++tickIndex)
                         {
                             ++ticksRan;
 
@@ -568,7 +558,7 @@ namespace betareborn
                             {
                                 runTick(timer.renderPartialTicks);
                             }
-                            catch (MinecraftException var16)
+                            catch (MinecraftException tickException)
                             {
                                 world = null;
                                 changeWorld1((World)null);
@@ -581,7 +571,7 @@ namespace betareborn
                             Profiler.PopGroup();
                         }
 
-                        long var24 = java.lang.System.nanoTime() - var23;
+                        long tickElapsedTime = java.lang.System.nanoTime() - tickStartTime;
                         checkGLError("Pre render");
                         BlockRenderer.fancyGrass = true;
                         sndManager.updateListener(player, timer.renderPartialTicks);
@@ -605,10 +595,7 @@ namespace betareborn
 
                         if (!skipRenderWorld)
                         {
-                            if (playerController != null)
-                            {
-                                playerController.setPartialTime(timer.renderPartialTicks);
-                            }
+                            playerController?.setPartialTime(timer.renderPartialTicks);
 
                             if (options.debugMode) Profiler.PushGroup("render");
                             gameRenderer.onFrameUpdate(timer.renderPartialTicks);
@@ -620,14 +607,6 @@ namespace betareborn
                             imGuiController.Update(timer.deltaTime);
                             ProfilerRenderer.Draw();
                             ProfilerRenderer.DrawGraph();
-
-                            ImGui.Begin("Region Info");
-                            long rls = Region.RegionCache.getRegionsLoadedSync();
-                            long rla = Region.RegionCache.getRegionsLoadedAsync();
-                            ImGui.Text($"Regions loaded sync: {rls}");
-                            ImGui.Text($"Regions loaded async: {rla}");
-                            ImGui.Text($"Regions loaded total: {rls + rla}");
-                            ImGui.End();
 
                             ImGui.Begin("IO");
                             ImGui.Text($"Async IO ops: {AsyncIO.activeTaskCount()}");
@@ -652,7 +631,7 @@ namespace betareborn
 
                         if (options.showDebugInfo)
                         {
-                            displayDebugInfo(var24);
+                            displayDebugInfo(tickElapsedTime);
                         }
                         else
                         {
@@ -686,25 +665,25 @@ namespace betareborn
                         }
 
                         checkGLError("Post render");
-                        ++var3;
+                        ++frameCounter;
 
                         for (isGamePaused = !isMultiplayerWorld() && currentScreen != null &&
                                             currentScreen.doesGuiPauseGame();
-                             java.lang.System.currentTimeMillis() >= var1 + 1000L;
-                             var3 = 0)
+                             java.lang.System.currentTimeMillis() >= lastFpsCheckTime + 1000L;
+                             frameCounter = 0)
                         {
-                            debug = var3 + " fps, "/* + WorldRenderer.chunksUpdated*/ + "0 chunk updates";
+                            debug = frameCounter + " fps, "/* + WorldRenderer.chunksUpdated*/ + "0 chunk updates";
                             //WorldRenderer.chunksUpdated = 0;
-                            var1 += 1000L;
+                            lastFpsCheckTime += 1000L;
                         }
                     }
-                    catch (MinecraftException var18)
+                    catch (MinecraftException mainLoopException)
                     {
                         world = null;
                         changeWorld1((World)null);
                         displayGuiScreen(new GuiConflictWarning());
                     }
-                    catch (OutOfMemoryError var19)
+                    catch (OutOfMemoryError outOfMemoryException)
                     {
                         crashCleanup();
                         displayGuiScreen(new GuiErrorScreen());
@@ -720,14 +699,14 @@ namespace betareborn
                     }
                 }
             }
-            catch (MinecraftError var20)
+            catch (MinecraftError minecraftError)
             {
             }
-            catch (Throwable var21)
+            catch (Throwable unexpectedException)
             {
                 crashCleanup();
-                var21.printStackTrace();
-                onMinecraftCrash(new UnexpectedThrowable("Unexpected error", var21));
+                unexpectedException.printStackTrace();
+                onMinecraftCrash(new UnexpectedThrowable("Unexpected error", unexpectedException));
             }
             catch (System.Exception e)
             {
@@ -744,9 +723,8 @@ namespace betareborn
             try
             {
                 java.lang.System.gc();
-                Vec3D.cleanUp();
             }
-            catch (Throwable var3)
+            catch (Throwable vec3dCleanupException)
             {
             }
 
@@ -755,7 +733,7 @@ namespace betareborn
                 java.lang.System.gc();
                 changeWorld1((World)null);
             }
-            catch (Throwable var2)
+            catch (Throwable worldCleanupException)
             {
             }
 
@@ -779,18 +757,18 @@ namespace betareborn
             }
         }
 
-        private void displayDebugInfo(long var1)
+        private void displayDebugInfo(long tickElapsedTime)
         {
-            long var3 = 16666666L;
+            long targetFrameTime = 16666666L;
             if (prevFrameTime == -1L)
             {
                 prevFrameTime = java.lang.System.nanoTime();
             }
 
-            long var5 = java.lang.System.nanoTime();
-            tickTimes[numRecordedFrameTimes & frameTimes.Length - 1] = var1;
-            frameTimes[numRecordedFrameTimes++ & frameTimes.Length - 1] = var5 - prevFrameTime;
-            prevFrameTime = var5;
+            long currentNanoTime = java.lang.System.nanoTime();
+            tickTimes[numRecordedFrameTimes & frameTimes.Length - 1] = tickElapsedTime;
+            frameTimes[numRecordedFrameTimes++ & frameTimes.Length - 1] = currentNanoTime - prevFrameTime;
+            prevFrameTime = currentNanoTime;
             GLManager.GL.Clear(ClearBufferMask.DepthBufferBit);
             GLManager.GL.MatrixMode(GLEnum.Projection);
             GLManager.GL.LoadIdentity();
@@ -800,67 +778,67 @@ namespace betareborn
             GLManager.GL.Translate(0.0F, 0.0F, -2000.0F);
             GLManager.GL.LineWidth(1.0F);
             GLManager.GL.Disable(GLEnum.Texture2D);
-            Tessellator var7 = Tessellator.instance;
-            var7.startDrawing(7);
-            int var8 = (int)(var3 / 200000L);
-            var7.setColorOpaque_I(536870912);
-            var7.addVertex(0.0D, (double)(displayHeight - var8), 0.0D);
-            var7.addVertex(0.0D, (double)displayHeight, 0.0D);
-            var7.addVertex((double)frameTimes.Length, (double)displayHeight, 0.0D);
-            var7.addVertex((double)frameTimes.Length, (double)(displayHeight - var8), 0.0D);
-            var7.setColorOpaque_I(538968064);
-            var7.addVertex(0.0D, (double)(displayHeight - var8 * 2), 0.0D);
-            var7.addVertex(0.0D, (double)(displayHeight - var8), 0.0D);
-            var7.addVertex((double)frameTimes.Length, (double)(displayHeight - var8), 0.0D);
-            var7.addVertex((double)frameTimes.Length, (double)(displayHeight - var8 * 2), 0.0D);
-            var7.draw();
-            long var9 = 0L;
+            Tessellator tessellator = Tessellator.instance;
+            tessellator.startDrawing(7);
+            int barHeightPixels = (int)(targetFrameTime / 200000L);
+            tessellator.setColorOpaque_I(536870912);
+            tessellator.addVertex(0.0D, (double)(displayHeight - barHeightPixels), 0.0D);
+            tessellator.addVertex(0.0D, (double)displayHeight, 0.0D);
+            tessellator.addVertex((double)frameTimes.Length, (double)displayHeight, 0.0D);
+            tessellator.addVertex((double)frameTimes.Length, (double)(displayHeight - barHeightPixels), 0.0D);
+            tessellator.setColorOpaque_I(538968064);
+            tessellator.addVertex(0.0D, (double)(displayHeight - barHeightPixels * 2), 0.0D);
+            tessellator.addVertex(0.0D, (double)(displayHeight - barHeightPixels), 0.0D);
+            tessellator.addVertex((double)frameTimes.Length, (double)(displayHeight - barHeightPixels), 0.0D);
+            tessellator.addVertex((double)frameTimes.Length, (double)(displayHeight - barHeightPixels * 2), 0.0D);
+            tessellator.draw();
+            long totalFrameTimesSum = 0L;
 
-            int var11;
-            for (var11 = 0; var11 < frameTimes.Length; ++var11)
+            int averageFrameTimePixels;
+            for (averageFrameTimePixels = 0; averageFrameTimePixels < frameTimes.Length; ++averageFrameTimePixels)
             {
-                var9 += frameTimes[var11];
+                totalFrameTimesSum += frameTimes[averageFrameTimePixels];
             }
 
-            var11 = (int)(var9 / 200000L / (long)frameTimes.Length);
-            var7.startDrawing(7);
-            var7.setColorOpaque_I(541065216);
-            var7.addVertex(0.0D, (double)(displayHeight - var11), 0.0D);
-            var7.addVertex(0.0D, (double)displayHeight, 0.0D);
-            var7.addVertex((double)frameTimes.Length, (double)displayHeight, 0.0D);
-            var7.addVertex((double)frameTimes.Length, (double)(displayHeight - var11), 0.0D);
-            var7.draw();
-            var7.startDrawing(1);
+            averageFrameTimePixels = (int)(totalFrameTimesSum / 200000L / (long)frameTimes.Length);
+            tessellator.startDrawing(7);
+            tessellator.setColorOpaque_I(541065216);
+            tessellator.addVertex(0.0D, (double)(displayHeight - averageFrameTimePixels), 0.0D);
+            tessellator.addVertex(0.0D, (double)displayHeight, 0.0D);
+            tessellator.addVertex((double)frameTimes.Length, (double)displayHeight, 0.0D);
+            tessellator.addVertex((double)frameTimes.Length, (double)(displayHeight - averageFrameTimePixels), 0.0D);
+            tessellator.draw();
+            tessellator.startDrawing(1);
 
-            for (int var12 = 0; var12 < frameTimes.Length; ++var12)
+            for (int frameIndex = 0; frameIndex < frameTimes.Length; ++frameIndex)
             {
-                int var13 = (var12 - numRecordedFrameTimes & frameTimes.Length - 1) * 255 / frameTimes.Length;
-                int var14 = var13 * var13 / 255;
-                var14 = var14 * var14 / 255;
-                int var15 = var14 * var14 / 255;
-                var15 = var15 * var15 / 255;
-                if (frameTimes[var12] > var3)
+                int colorBrightnessPercent = (frameIndex - numRecordedFrameTimes & frameTimes.Length - 1) * 255 / frameTimes.Length;
+                int colorBrightness = colorBrightnessPercent * colorBrightnessPercent / 255;
+                colorBrightness = colorBrightness * colorBrightness / 255;
+                int colorValue = colorBrightness * colorBrightness / 255;
+                colorValue = colorValue * colorValue / 255;
+                if (frameTimes[frameIndex] > targetFrameTime)
                 {
-                    var7.setColorOpaque_I(-16777216 + var14 * 65536);
+                    tessellator.setColorOpaque_I(-16777216 + colorBrightness * 65536);
                 }
                 else
                 {
-                    var7.setColorOpaque_I(-16777216 + var14 * 256);
+                    tessellator.setColorOpaque_I(-16777216 + colorBrightness * 256);
                 }
 
-                long var16 = frameTimes[var12] / 200000L;
-                long var18 = tickTimes[var12] / 200000L;
-                var7.addVertex((double)((float)var12 + 0.5F), (double)((float)((long)displayHeight - var16) + 0.5F),
+                long frameTimePixels = frameTimes[frameIndex] / 200000L;
+                long tickTimePixels = tickTimes[frameIndex] / 200000L;
+                tessellator.addVertex((double)((float)frameIndex + 0.5F), (double)((float)((long)displayHeight - frameTimePixels) + 0.5F),
                     0.0D);
-                var7.addVertex((double)((float)var12 + 0.5F), (double)((float)displayHeight + 0.5F), 0.0D);
-                var7.setColorOpaque_I(-16777216 + var14 * 65536 + var14 * 256 + var14 * 1);
-                var7.addVertex((double)((float)var12 + 0.5F), (double)((float)((long)displayHeight - var16) + 0.5F),
+                tessellator.addVertex((double)((float)frameIndex + 0.5F), (double)((float)displayHeight + 0.5F), 0.0D);
+                tessellator.setColorOpaque_I(-16777216 + colorBrightness * 65536 + colorBrightness * 256 + colorBrightness * 1);
+                tessellator.addVertex((double)((float)frameIndex + 0.5F), (double)((float)((long)displayHeight - frameTimePixels) + 0.5F),
                     0.0D);
-                var7.addVertex((double)((float)var12 + 0.5F),
-                    (double)((float)((long)displayHeight - (var16 - var18)) + 0.5F), 0.0D);
+                tessellator.addVertex((double)((float)frameIndex + 0.5F),
+                    (double)((float)((long)displayHeight - (frameTimePixels - tickTimePixels)) + 0.5F), 0.0D);
             }
 
-            var7.draw();
+            tessellator.draw();
             GLManager.GL.Enable(GLEnum.Texture2D);
         }
 
@@ -901,10 +879,7 @@ namespace betareborn
         {
             if (inGameHasFocus)
             {
-                if (player != null)
-                {
-                    player.resetPlayerKeyState();
-                }
+                player?.resetPlayerKeyState();
 
                 inGameHasFocus = false;
                 mouseHelper.ungrabMouseCursor();
@@ -919,25 +894,25 @@ namespace betareborn
             }
         }
 
-        private void func_6254_a(int var1, bool var2)
+        private void func_6254_a(int mouseButton, bool isHoldingMouse)
         {
             if (!playerController.field_1064_b)
             {
-                if (!var2)
+                if (!isHoldingMouse)
                 {
                     leftClickCounter = 0;
                 }
 
-                if (var1 != 0 || leftClickCounter <= 0)
+                if (mouseButton != 0 || leftClickCounter <= 0)
                 {
-                    if (var2 && objectMouseOver != null && objectMouseOver.type == HitResultType.TILE &&
-                        var1 == 0)
+                    if (isHoldingMouse && objectMouseOver != null && objectMouseOver.type == HitResultType.TILE &&
+                        mouseButton == 0)
                     {
-                        int var3 = objectMouseOver.blockX;
-                        int var4 = objectMouseOver.blockY;
-                        int var5 = objectMouseOver.blockZ;
-                        playerController.sendBlockRemoving(var3, var4, var5, objectMouseOver.side);
-                        particleManager.addBlockHitEffects(var3, var4, var5, objectMouseOver.side);
+                        int blockX = objectMouseOver.blockX;
+                        int blockY = objectMouseOver.blockY;
+                        int blockZ = objectMouseOver.blockZ;
+                        playerController.sendBlockRemoving(blockX, blockY, blockZ, objectMouseOver.side);
+                        particleManager.addBlockHitEffects(blockX, blockY, blockZ, objectMouseOver.side);
                     }
                     else
                     {
@@ -947,75 +922,75 @@ namespace betareborn
             }
         }
 
-        private void clickMouse(int var1)
+        private void clickMouse(int mouseButton)
         {
-            if (var1 != 0 || leftClickCounter <= 0)
+            if (mouseButton != 0 || leftClickCounter <= 0)
             {
-                if (var1 == 0)
+                if (mouseButton == 0)
                 {
                     player.swingHand();
                 }
 
-                bool var2 = true;
+                bool shouldPerformSecondaryAction = true;
                 if (objectMouseOver == null)
                 {
-                    if (var1 == 0 && !(playerController is PlayerControllerTest))
+                    if (mouseButton == 0 && !(playerController is PlayerControllerTest))
                     {
                         leftClickCounter = 10;
                     }
                 }
                 else if (objectMouseOver.type == HitResultType.ENTITY)
                 {
-                    if (var1 == 0)
+                    if (mouseButton == 0)
                     {
                         playerController.attackEntity(player, objectMouseOver.entity);
                     }
 
-                    if (var1 == 1)
+                    if (mouseButton == 1)
                     {
                         playerController.interactWithEntity(player, objectMouseOver.entity);
                     }
                 }
                 else if (objectMouseOver.type == HitResultType.TILE)
                 {
-                    int var3 = objectMouseOver.blockX;
-                    int var4 = objectMouseOver.blockY;
-                    int var5 = objectMouseOver.blockZ;
-                    int var6 = objectMouseOver.side;
-                    if (var1 == 0)
+                    int blockX = objectMouseOver.blockX;
+                    int blockY = objectMouseOver.blockY;
+                    int blockZ = objectMouseOver.blockZ;
+                    int blockSide = objectMouseOver.side;
+                    if (mouseButton == 0)
                     {
-                        playerController.clickBlock(var3, var4, var5, objectMouseOver.side);
+                        playerController.clickBlock(blockX, blockY, blockZ, objectMouseOver.side);
                     }
                     else
                     {
-                        ItemStack var7 = player.inventory.getSelectedItem();
-                        int var8 = var7 != null ? var7.count : 0;
-                        if (playerController.sendPlaceBlock(player, world, var7, var3, var4, var5, var6))
+                        ItemStack selectedItem = player.inventory.getSelectedItem();
+                        int itemCountBefore = selectedItem != null ? selectedItem.count : 0;
+                        if (playerController.sendPlaceBlock(player, world, selectedItem, blockX, blockY, blockZ, blockSide))
                         {
-                            var2 = false;
+                            shouldPerformSecondaryAction = false;
                             player.swingHand();
                         }
 
-                        if (var7 == null)
+                        if (selectedItem == null)
                         {
                             return;
                         }
 
-                        if (var7.count == 0)
+                        if (selectedItem.count == 0)
                         {
                             player.inventory.main[player.inventory.selectedSlot] = null;
                         }
-                        else if (var7.count != var8)
+                        else if (selectedItem.count != itemCountBefore)
                         {
                             gameRenderer.itemRenderer.func_9449_b();
                         }
                     }
                 }
 
-                if (var2 && var1 == 1)
+                if (shouldPerformSecondaryAction && mouseButton == 1)
                 {
-                    ItemStack var9 = player.inventory.getSelectedItem();
-                    if (var9 != null && playerController.sendUseItem(player, world, var9))
+                    ItemStack selectedItem = player.inventory.getSelectedItem();
+                    if (selectedItem != null && playerController.sendUseItem(player, world, selectedItem))
                     {
                         gameRenderer.itemRenderer.func_9450_c();
                     }
@@ -1066,34 +1041,34 @@ namespace betareborn
                 Display.setFullscreen(fullscreen);
                 Display.update();
             }
-            catch (System.Exception var2)
+            catch (System.Exception displayException)
             {
-                Console.WriteLine(var2);
+                Console.WriteLine(displayException);
             }
         }
 
-        private void resize(int var1, int var2)
+        private void resize(int newWidth, int newHeight)
         {
-            if (var1 <= 0)
+            if (newWidth <= 0)
             {
-                var1 = 1;
+                newWidth = 1;
             }
 
-            if (var2 <= 0)
+            if (newHeight <= 0)
             {
-                var2 = 1;
+                newHeight = 1;
             }
 
-            displayWidth = var1;
-            displayHeight = var2;
+            displayWidth = newWidth;
+            displayHeight = newHeight;
             Mouse.setDisplayDimensions(displayWidth, displayHeight);
 
             if (currentScreen != null)
             {
-                ScaledResolution var3 = new ScaledResolution(options, var1, var2);
-                int var4 = var3.getScaledWidth();
-                int var5 = var3.getScaledHeight();
-                currentScreen.setWorldAndResolution(this, var4, var5);
+                ScaledResolution scaledResolution = new(options, newWidth, newHeight);
+                int scaledWidth = scaledResolution.getScaledWidth();
+                int scaledHeight = scaledResolution.getScaledHeight();
+                currentScreen.setWorldAndResolution(this, scaledWidth, scaledHeight);
             }
         }
 
@@ -1101,23 +1076,23 @@ namespace betareborn
         {
             if (objectMouseOver != null)
             {
-                int var1 = world.getBlockId(objectMouseOver.blockX, objectMouseOver.blockY, objectMouseOver.blockZ);
-                if (var1 == Block.GRASS_BLOCK.id)
+                int blockId = world.getBlockId(objectMouseOver.blockX, objectMouseOver.blockY, objectMouseOver.blockZ);
+                if (blockId == Block.GRASS_BLOCK.id)
                 {
-                    var1 = Block.DIRT.id;
+                    blockId = Block.DIRT.id;
                 }
 
-                if (var1 == Block.DOUBLE_SLAB.id)
+                if (blockId == Block.DOUBLE_SLAB.id)
                 {
-                    var1 = Block.SLAB.id;
+                    blockId = Block.SLAB.id;
                 }
 
-                if (var1 == Block.BEDROCK.id)
+                if (blockId == Block.BEDROCK.id)
                 {
-                    var1 = Block.STONE.id;
+                    blockId = Block.STONE.id;
                 }
 
-                player.inventory.setCurrentItem(var1, playerController is PlayerControllerTest);
+                player.inventory.setCurrentItem(blockId, playerController is PlayerControllerTest);
             }
         }
 
@@ -1185,7 +1160,7 @@ namespace betareborn
                 currentScreen.handleInput();
                 if (currentScreen != null)
                 {
-                    currentScreen.particlesGui.func_25088_a();
+                    currentScreen.particlesGui.updateParticles();
                     currentScreen.updateScreen();
                 }
             }
@@ -1276,26 +1251,26 @@ namespace betareborn
         {
             while (Mouse.next())
             {
-                long var5 = java.lang.System.currentTimeMillis() - systemTime;
-                if (var5 <= 200L)
+                long timeSinceLastMouseEvent = java.lang.System.currentTimeMillis() - systemTime;
+                if (timeSinceLastMouseEvent <= 200L)
                 {
-                    int var3 = Mouse.getEventDWheel();
-                    if (var3 != 0)
+                    int mouseWheelDelta = Mouse.getEventDWheel();
+                    if (mouseWheelDelta != 0)
                     {
-                        player.inventory.changeCurrentItem(var3);
+                        player.inventory.changeCurrentItem(mouseWheelDelta);
                         if (options.field_22275_C)
                         {
-                            if (var3 > 0)
+                            if (mouseWheelDelta > 0)
                             {
-                                var3 = 1;
+                                mouseWheelDelta = 1;
                             }
 
-                            if (var3 < 0)
+                            if (mouseWheelDelta < 0)
                             {
-                                var3 = -1;
+                                mouseWheelDelta = -1;
                             }
 
-                            options.field_22272_F += (float)var3 * 0.25F;
+                            options.field_22272_F += (float)mouseWheelDelta * 0.25F;
                         }
                     }
 
@@ -1325,9 +1300,9 @@ namespace betareborn
                             }
                         }
                     }
-                    else if (currentScreen != null)
+                    else
                     {
-                        currentScreen.handleMouseInput();
+                        currentScreen?.handleMouseInput();
                     }
                 }
             }
@@ -1406,11 +1381,11 @@ namespace betareborn
                             }
                         }
 
-                        for (int var6 = 0; var6 < 9; ++var6)
+                        for (int slotIndex = 0; slotIndex < 9; ++slotIndex)
                         {
-                            if (Keyboard.getEventKey() == Keyboard.KEY_1 + var6)
+                            if (Keyboard.getEventKey() == Keyboard.KEY_1 + slotIndex)
                             {
-                                player.inventory.selectedSlot = var6;
+                                player.inventory.selectedSlot = slotIndex;
                             }
                         }
 
@@ -1456,204 +1431,71 @@ namespace betareborn
             return world != null && world.isRemote;
         }
 
-        public void startWorld(string var1, string var2, long var3)
+        public void startWorld(string worldName, string mainMenuText, long seed)
         {
             changeWorld1((World)null);
             java.lang.System.gc();
-            displayGuiScreen(new GuiLevelLoading(var1, var2, var3));
+            displayGuiScreen(new GuiLevelLoading(worldName, mainMenuText, seed));
         }
 
-
-        public void usePortal()
+        public void changeWorld1(World newWorld)
         {
-            java.lang.System.@out.println("Toggling dimension!!");
-            if (player.dimensionId == -1)
-            {
-                player.dimensionId = 0;
-            }
-            else
-            {
-                player.dimensionId = -1;
-            }
-
-            world.remove(player);
-            player.dead = false;
-            double var1 = player.x;
-            double var3 = player.z;
-            double var5 = 8.0D;
-            World var7;
-            if (player.dimensionId == -1)
-            {
-                var1 /= var5;
-                var3 /= var5;
-                player.setPositionAndAnglesKeepPrevAngles(var1, player.y, var3, player.yaw,
-                    player.pitch);
-                if (player.isAlive())
-                {
-                    world.updateEntity(player, false);
-                }
-
-                var7 = null;
-                var7 = new World(world, Dimension.fromId(-1));
-                changeWorld(var7, "Entering the Nether", player);
-            }
-            else
-            {
-                var1 *= var5;
-                var3 *= var5;
-                player.setPositionAndAnglesKeepPrevAngles(var1, player.y, var3, player.yaw,
-                    player.pitch);
-                if (player.isAlive())
-                {
-                    world.updateEntity(player, false);
-                }
-
-                var7 = null;
-                var7 = new World(world, Dimension.fromId(0));
-                changeWorld(var7, "Leaving the Nether", player);
-            }
-
-            player.world = world;
-            if (player.isAlive())
-            {
-                player.setPositionAndAnglesKeepPrevAngles(var1, player.y, var3, player.yaw,
-                    player.pitch);
-                world.updateEntity(player, false);
-                (new PortalForcer()).moveToPortal(world, player);
-            }
+            changeWorld2(newWorld, "");
         }
 
-        public void changeWorld1(World var1)
+        public void changeWorld2(World newWorld, string loadingMessage)
         {
-            changeWorld2(var1, "");
+            changeWorld(newWorld, loadingMessage, (EntityPlayer)null);
         }
 
-        public void changeWorld2(World var1, string var2)
-        {
-            changeWorld(var1, var2, (EntityPlayer)null);
-        }
-
-        private enum BlockedReason
-        {
-            Chunks,
-            Level
-        }
-
-        private static bool isBlocked(out BlockedReason reason, out int toSave)
-        {
-            bool blockedByChunks = Region.RegionCache.isBlocked(out toSave);
-
-            if (blockedByChunks)
-            {
-                reason = BlockedReason.Chunks;
-                return true;
-            }
-
-            bool blockedByLevel = AsyncIO.isBlocked();
-
-            if (blockedByLevel)
-            {
-                reason = BlockedReason.Level;
-                return true;
-            }
-
-            toSave = 0;
-            reason = BlockedReason.Chunks;
-            return false;
-        }
-
-        public void changeWorld(World var1, string var2, EntityPlayer var3)
+        public void changeWorld(World newWorld, string loadingText, EntityPlayer targetEntity)
         {
             statFileWriter.func_27175_b();
             statFileWriter.syncStats();
             camera = null;
-            loadingScreen.printText(var2);
+            loadingScreen.printText(loadingText);
             loadingScreen.progressStage("");
             sndManager.playStreaming((string)null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 
-            if (world != null)
+            world = newWorld;
+            if (newWorld != null)
             {
-                world.savingProgress(loadingScreen);
-
-                while (true)
-                {
-                    bool blocked = isBlocked(out BlockedReason reason, out int toSave);
-
-                    if (!blocked)
-                    {
-                        break;
-                    }
-
-                    loadingScreen.printText(var2);
-
-                    string loadingString = reason == BlockedReason.Chunks
-                        ? $"Saving chunks ({toSave} left)"
-                        : "Saving level data";
-
-                    loadingScreen.progressStage(loadingString);
-
-                    java.lang.Thread.sleep(33);
-                }
-
-                Console.WriteLine("Saved chunks");
-                saveLoader.flush();
-
-                Region.RegionCache.deleteSaveHandler();
-            }
-
-            world = var1;
-            if (var1 != null)
-            {
-                playerController.func_717_a(var1);
+                playerController.func_717_a(newWorld);
                 if (!isMultiplayerWorld())
                 {
-                    if (var3 == null)
+                    if (targetEntity == null)
                     {
-                        player = (ClientPlayerEntity)var1.getPlayerForProxy(ClientPlayerEntity.Class);
+                        player = (ClientPlayerEntity)newWorld.getPlayerForProxy(ClientPlayerEntity.Class);
                     }
                 }
                 else if (player != null)
                 {
                     player.teleportToTop();
-                    if (var1 != null)
-                    {
-                        var1.spawnEntity(player);
-                    }
-                }
-
-                if (!var1.isRemote)
-                {
-                    func_6255_d(var2);
+                    newWorld?.spawnEntity(player);
                 }
 
                 if (player == null)
                 {
-                    player = (ClientPlayerEntity)playerController.createPlayer(var1);
+                    player = (ClientPlayerEntity)playerController.createPlayer(newWorld);
                     player.teleportToTop();
                     playerController.flipPlayer(player);
                 }
 
                 player.movementInput = new MovementInputFromOptions(options);
-                if (terrainRenderer != null)
-                {
-                    terrainRenderer.changeWorld(var1);
-                }
+                terrainRenderer?.changeWorld(newWorld);
 
-                if (particleManager != null)
-                {
-                    particleManager.clearEffects(var1);
-                }
+                particleManager?.clearEffects(newWorld);
 
                 playerController.func_6473_b(player);
-                if (var3 != null)
+                if (targetEntity != null)
                 {
-                    var1.saveWorldData();
+                    newWorld.saveWorldData();
                 }
 
-                var1.addPlayer(player);
-                if (var1.isNewWorld)
+                newWorld.addPlayer(player);
+                if (newWorld.isNewWorld)
                 {
-                    var1.savingProgress(loadingScreen);
+                    newWorld.savingProgress(loadingScreen);
                 }
 
                 camera = player;
@@ -1663,34 +1505,30 @@ namespace betareborn
                 player = null;
             }
 
-            java.lang.System.gc();
             systemTime = 0L;
         }
 
-
-
-        private void func_6255_d(string var1)
+        private void showText(string loadingText)
         {
-            loadingScreen.printText(var1);
+            loadingScreen.printText(loadingText);
             loadingScreen.progressStage("Building terrain");
-            short var2 = 128;
-            int var3 = 0;
-            int var4 = var2 * 2 / 16 + 1;
-            var4 *= var4;
-            ChunkSource var5 = world.getChunkSource();
-            Vec3i var6 = world.getSpawnPos();
+            short loadingRadius = 128;
+            int loadedChunkCount = 0;
+            int totalChunksToLoad = loadingRadius * 2 / 16 + 1;
+            totalChunksToLoad *= totalChunksToLoad;
+            Vec3i centerPos = world.getSpawnPos();
             if (player != null)
             {
-                var6.x = (int)player.x;
-                var6.z = (int)player.z;
+                centerPos.x = (int)player.x;
+                centerPos.z = (int)player.z;
             }
 
-            for (int var10 = -var2; var10 <= var2; var10 += 16)
+            for (int xOffset = -loadingRadius; xOffset <= loadingRadius; xOffset += 16)
             {
-                for (int var8 = -var2; var8 <= var2; var8 += 16)
+                for (int zOffset = -loadingRadius; zOffset <= loadingRadius; zOffset += 16)
                 {
-                    loadingScreen.setLoadingProgress(var3++ * 100 / var4);
-                    world.getBlockId(var6.x + var10, 64, var6.z + var8);
+                    loadingScreen.setLoadingProgress(loadedChunkCount++ * 100 / totalChunksToLoad);
+                    world.getBlockId(centerPos.x + xOffset, 64, centerPos.z + zOffset);
 
                     while (world.doLightingUpdates())
                     {
@@ -1699,40 +1537,39 @@ namespace betareborn
             }
 
             loadingScreen.progressStage("Simulating world for a bit");
-            bool var9 = true;
             world.tickChunks();
         }
 
-        public void installResource(string var1, java.io.File var2)
+        public void installResource(string resourcePath, java.io.File resourceFile)
         {
-            if (!var2.getPath().EndsWith("ogg"))
+            if (!resourceFile.getPath().EndsWith("ogg"))
             {
                 //TODO: ADD SUPPORT FOR MUS SFX?
                 return;
             }
 
-            int var3 = var1.IndexOf("/");
-            string var4 = var1.Substring(0, var3);
-            var1 = var1.Substring(var3 + 1);
-            if (var4.Equals("sound", StringComparison.OrdinalIgnoreCase))
+            int slashIndex = resourcePath.IndexOf("/");
+            string category = resourcePath.Substring(0, slashIndex);
+            resourcePath = resourcePath.Substring(slashIndex + 1);
+            if (category.Equals("sound", StringComparison.OrdinalIgnoreCase))
             {
-                sndManager.addSound(var1, var2);
+                sndManager.addSound(resourcePath, resourceFile);
             }
-            else if (var4.Equals("newsound", StringComparison.OrdinalIgnoreCase))
+            else if (category.Equals("newsound", StringComparison.OrdinalIgnoreCase))
             {
-                sndManager.addSound(var1, var2);
+                sndManager.addSound(resourcePath, resourceFile);
             }
-            else if (var4.Equals("streaming", StringComparison.OrdinalIgnoreCase))
+            else if (category.Equals("streaming", StringComparison.OrdinalIgnoreCase))
             {
-                sndManager.addStreaming(var1, var2);
+                sndManager.addStreaming(resourcePath, resourceFile);
             }
-            else if (var4.Equals("music", StringComparison.OrdinalIgnoreCase))
+            else if (category.Equals("music", StringComparison.OrdinalIgnoreCase))
             {
-                sndManager.addMusic(var1, var2);
+                sndManager.addMusic(resourcePath, resourceFile);
             }
-            else if (var4.Equals("newmusic", StringComparison.OrdinalIgnoreCase))
+            else if (category.Equals("newmusic", StringComparison.OrdinalIgnoreCase))
             {
-                sndManager.addMusic(var1, var2);
+                sndManager.addMusic(resourcePath, resourceFile);
             }
         }
 
@@ -1751,63 +1588,58 @@ namespace betareborn
             return "P: " + particleManager.getStatistics() + ". T: " + world.getEntityCount();
         }
 
-        public void respawn(bool var1, int var2)
+        public void respawn(bool ignoreSpawnPosition, int newDimensionId)
         {
-            if (!world.isRemote && !world.dimension.hasWorldSpawn())
+            Vec3i playerSpawnPos = null;
+            Vec3i respawnPos = null;
+            bool useBedSpawn = true;
+            if (player != null && !ignoreSpawnPosition)
             {
-                usePortal();
-            }
-
-            Vec3i var3 = null;
-            Vec3i var4 = null;
-            bool var5 = true;
-            if (player != null && !var1)
-            {
-                var3 = player.getSpawnPos();
-                if (var3 != null)
+                playerSpawnPos = player.getSpawnPos();
+                if (playerSpawnPos != null)
                 {
-                    var4 = EntityPlayer.findRespawnPosition(world, var3);
-                    if (var4 == null)
+                    respawnPos = EntityPlayer.findRespawnPosition(world, playerSpawnPos);
+                    if (respawnPos == null)
                     {
                         player.sendMessage("tile.bed.notValid");
                     }
                 }
             }
 
-            if (var4 == null)
+            if (respawnPos == null)
             {
-                var4 = world.getSpawnPos();
-                var5 = false;
+                respawnPos = world.getSpawnPos();
+                useBedSpawn = false;
             }
 
             world.updateSpawnPosition();
             world.updateEntityLists();
-            int var8 = 0;
+            int previousPlayerId = 0;
             if (player != null)
             {
-                var8 = player.id;
+                previousPlayerId = player.id;
                 world.remove(player);
             }
 
             camera = null;
             player = (ClientPlayerEntity)playerController.createPlayer(world);
-            player.dimensionId = var2;
+            player.dimensionId = newDimensionId;
             camera = player;
             player.teleportToTop();
-            if (var5)
+            if (useBedSpawn)
             {
-                player.setSpawnPos(var3);
-                player.setPositionAndAnglesKeepPrevAngles((double)((float)var4.x + 0.5F), (double)((float)var4.y + 0.1F),
-                    (double)((float)var4.z + 0.5F), 0.0F, 0.0F);
+                player.setSpawnPos(playerSpawnPos);
+                player.setPositionAndAnglesKeepPrevAngles((double)((float)respawnPos.x + 0.5F), (double)((float)respawnPos.y + 0.1F),
+                    (double)((float)respawnPos.z + 0.5F), 0.0F, 0.0F);
             }
 
             playerController.flipPlayer(player);
             world.addPlayer(player);
             player.movementInput = new MovementInputFromOptions(options);
-            player.id = var8;
+            player.id = previousPlayerId;
             player.spawn();
             playerController.func_6473_b(player);
-            func_6255_d("Respawning");
+            showText("Respawning");
             if (currentScreen is GuiGameOver)
             {
                 displayGuiScreen((GuiScreen)null);
@@ -1819,28 +1651,28 @@ namespace betareborn
             startMainThread(var0, var1, (string)null);
         }
 
-        public static void startMainThread(string var0, string var1, string var2)
+        public static void startMainThread(string playerName, string sessionToken, string serverAddress)
         {
             Minecraft mc = new(1920, 1080, false);
-            java.lang.Thread var8 = new(mc, "Minecraft main thread");
-            var8.setPriority(10);
+            java.lang.Thread mainThread = new(mc, "Minecraft main thread");
+            mainThread.setPriority(10);
             mc.minecraftUri = "www.minecraft.net";
-            if (var0 != null && var1 != null)
+            if (playerName != null && sessionToken != null)
             {
-                mc.session = new Session(var0, var1);
+                mc.session = new Session(playerName, sessionToken);
             }
             else
             {
                 mc.session = new Session("Player" + java.lang.System.currentTimeMillis() % 1000L, "");
             }
 
-            if (var2 != null)
+            if (serverAddress != null)
             {
-                string[] var9 = var2.Split(":");
-                mc.setServer(var9[0], Integer.parseInt(var9[1]));
+                string[] serverParts = serverAddress.Split(":");
+                mc.setServer(serverParts[0], Integer.parseInt(serverParts[1]));
             }
 
-            var8.start();
+            mainThread.start();
         }
 
         public ClientNetworkHandler getSendQueue()
@@ -1853,37 +1685,37 @@ namespace betareborn
                 .UsePlatformDetect()
                 .LogToTrace();
 
-        public static void Main(string[] var0)
+        public static void Main(string[] args)
         {
             bool valid = JarValidator.ValidateJar("b1.7.3.jar");
-            string var1 = null;
-            string var2 = null;
-            var1 = "Player" + java.lang.System.currentTimeMillis() % 1000L;
-            if (var0.Length > 0)
+            string playerName = null;
+            string sessionToken = null;
+            playerName = "Player" + java.lang.System.currentTimeMillis() % 1000L;
+            if (args.Length > 0)
             {
-                var1 = var0[0];
+                playerName = args[0];
             }
 
-            var2 = "-";
-            if (var0.Length > 1)
+            sessionToken = "-";
+            if (args.Length > 1)
             {
-                var2 = var0[1];
+                sessionToken = args[1];
             }
 
             if (!valid)
             {
                 var app = BuildAvaloniaApp();
 
-                app.StartWithClassicDesktopLifetime(var0, ShutdownMode.OnMainWindowClose);
+                app.StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);
 
                 if (LauncherWindow.Result != null && LauncherWindow.Result.Success)
                 {
-                    startup(var1, var2);
+                    startup(playerName, sessionToken);
                 }
             }
             else
             {
-                startup(var1, var2);
+                startup(playerName, sessionToken);
             }
         }
 

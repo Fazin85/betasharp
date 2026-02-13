@@ -19,21 +19,21 @@ namespace betareborn.Network.Packets.S2CPlay
             entityStatus = (sbyte)status;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            entityId = var1.readInt();
-            entityStatus = (sbyte)var1.readByte();
+            entityId = stream.readInt();
+            entityStatus = (sbyte)stream.readByte();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(entityId);
-            var1.writeByte(entityStatus);
+            stream.writeInt(entityId);
+            stream.writeByte(entityStatus);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onEntityStatus(this);
+            handler.onEntityStatus(this);
         }
 
         public override int size()

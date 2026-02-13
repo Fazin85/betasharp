@@ -1,4 +1,4 @@
-namespace betareborn
+namespace betareborn.Client
 {
     public class Timer : java.lang.Object
     {

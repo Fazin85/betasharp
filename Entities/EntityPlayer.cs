@@ -49,13 +49,13 @@ namespace betareborn.Entities
         private int damageSpill = 0;
         public EntityFish fishHook = null;
 
-        public EntityPlayer(World var1) : base(var1)
+        public EntityPlayer(World world) : base(world)
         {
             inventory = new InventoryPlayer(this);
-            playerScreenHandler = new PlayerScreenHandler(inventory, !var1.isRemote);
+            playerScreenHandler = new PlayerScreenHandler(inventory, !world.isRemote);
             currentScreenHandler = playerScreenHandler;
             standingEyeHeight = 1.62F;
-            Vec3i var2 = var1.getSpawnPos();
+            Vec3i var2 = world.getSpawnPos();
             setPositionAndAnglesKeepPrevAngles((double)var2.x + 0.5D, (double)(var2.y + 1), (double)var2.z + 0.5D, 0.0F, 0.0F);
             health = 20;
             modelName = "humanoid";
@@ -227,7 +227,7 @@ namespace betareborn.Entities
             prevStepBobbingAmount = stepBobbingAmount;
             base.tickMovement();
             float var1 = MathHelper.sqrt_double(velocityX * velocityX + velocityZ * velocityZ);
-            float var2 = (float)java.lang.Math.atan(-velocityY * (double)0.2F) * 15.0F;
+            float var2 = (float)System.Math.Atan(-velocityY * (double)0.2F) * 15.0F;
             if (var1 > 0.1F)
             {
                 var1 = 0.1F;
@@ -287,8 +287,8 @@ namespace betareborn.Entities
             inventory.dropInventory();
             if (adversary != null)
             {
-                velocityX = (double)(-MathHelper.cos((attackedAtYaw + yaw) * (float)java.lang.Math.PI / 180.0F) * 0.1F);
-                velocityZ = (double)(-MathHelper.sin((attackedAtYaw + yaw) * (float)java.lang.Math.PI / 180.0F) * 0.1F);
+                velocityX = (double)(-MathHelper.cos((attackedAtYaw + yaw) * (float)System.Math.PI / 180.0F) * 0.1F);
+                velocityZ = (double)(-MathHelper.sin((attackedAtYaw + yaw) * (float)System.Math.PI / 180.0F) * 0.1F);
             }
             else
             {
@@ -334,7 +334,7 @@ namespace betareborn.Entities
                 if (throwRandomly)
                 {
                     var5 = random.nextFloat() * 0.5F;
-                    float var6 = random.nextFloat() * (float)java.lang.Math.PI * 2.0F;
+                    float var6 = random.nextFloat() * (float)System.Math.PI * 2.0F;
                     var3.velocityX = (double)(-MathHelper.sin(var6) * var5);
                     var3.velocityZ = (double)(MathHelper.cos(var6) * var5);
                     var3.velocityY = (double)0.2F;
@@ -342,11 +342,11 @@ namespace betareborn.Entities
                 else
                 {
                     var4 = 0.3F;
-                    var3.velocityX = (double)(-MathHelper.sin(yaw / 180.0F * (float)java.lang.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)java.lang.Math.PI) * var4);
-                    var3.velocityZ = (double)(MathHelper.cos(yaw / 180.0F * (float)java.lang.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)java.lang.Math.PI) * var4);
-                    var3.velocityY = (double)(-MathHelper.sin(pitch / 180.0F * (float)java.lang.Math.PI) * var4 + 0.1F);
+                    var3.velocityX = (double)(-MathHelper.sin(yaw / 180.0F * (float)System.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)System.Math.PI) * var4);
+                    var3.velocityZ = (double)(MathHelper.cos(yaw / 180.0F * (float)System.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)System.Math.PI) * var4);
+                    var3.velocityY = (double)(-MathHelper.sin(pitch / 180.0F * (float)System.Math.PI) * var4 + 0.1F);
                     var4 = 0.02F;
-                    var5 = random.nextFloat() * (float)java.lang.Math.PI * 2.0F;
+                    var5 = random.nextFloat() * (float)System.Math.PI * 2.0F;
                     var4 *= random.nextFloat();
                     var3.velocityX += java.lang.Math.cos((double)var5) * (double)var4;
                     var3.velocityY += (double)((random.nextFloat() - random.nextFloat()) * 0.1F);
@@ -457,7 +457,7 @@ namespace betareborn.Entities
                     wakeUp(true, true, false);
                 }
 
-                if (damageSource is EntityMob || damageSource is EntityArrow)
+                if (damageSource is EntityMonster || damageSource is EntityArrow)
                 {
                     if (world.difficulty == 0)
                     {
@@ -982,7 +982,7 @@ namespace betareborn.Entities
 
         public override void onKillOther(EntityLiving other)
         {
-            if (other is EntityMob)
+            if (other is EntityMonster)
             {
                 incrementStat(Achievements.KILL_ENEMY);
             }

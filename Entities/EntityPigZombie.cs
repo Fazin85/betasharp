@@ -12,7 +12,7 @@ namespace betareborn.Entities
         private int randomSoundDelay = 0;
         private static readonly ItemStack defaultHeldItem = new ItemStack(Item.GOLDEN_SWORD, 1);
 
-        public EntityPigZombie(World var1) : base(var1)
+        public EntityPigZombie(World world) : base(world)
         {
             texture = "/mob/pigzombie.png";
             movementSpeed = 0.5F;
@@ -36,16 +36,16 @@ namespace betareborn.Entities
             return world.difficulty > 0 && world.canSpawnEntity(boundingBox) && world.getEntityCollisions(this, boundingBox).Count == 0 && !world.isBoxSubmergedInFluid(boundingBox);
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            base.writeNbt(var1);
-            var1.SetShort("Anger", (short)angerLevel);
+            base.writeNbt(nbt);
+            nbt.setShort("Anger", (short)angerLevel);
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            base.readNbt(var1);
-            angerLevel = var1.GetShort("Anger");
+            base.readNbt(nbt);
+            angerLevel = nbt.getShort("Anger");
         }
 
         protected override Entity findPlayerToAttack()
@@ -58,31 +58,31 @@ namespace betareborn.Entities
             base.tickMovement();
         }
 
-        public override bool damage(Entity var1, int var2)
+        public override bool damage(Entity entity, int amount)
         {
-            if (var1 is EntityPlayer)
+            if (entity is EntityPlayer)
             {
-                var var3 = world.getEntities(this, boundingBox.expand(32.0D, 32.0D, 32.0D));
+                var entities = world.getEntities(this, boundingBox.expand(32.0D, 32.0D, 32.0D));
 
-                for (int var4 = 0; var4 < var3.Count; ++var4)
+                for (int i = 0; i < entities.Count; ++i)
                 {
-                    Entity var5 = var3[var4];
-                    if (var5 is EntityPigZombie)
+                    Entity inBoundEntity = entities[i];
+                    if (inBoundEntity is EntityPigZombie)
                     {
-                        EntityPigZombie var6 = (EntityPigZombie)var5;
-                        var6.becomeAngryAt(var1);
+                        EntityPigZombie pigZombie = (EntityPigZombie)inBoundEntity;
+                        pigZombie.becomeAngryAt(entity);
                     }
                 }
 
-                becomeAngryAt(var1);
+                becomeAngryAt(entity);
             }
 
-            return base.damage(var1, var2);
+            return base.damage(entity, amount);
         }
 
-        private void becomeAngryAt(Entity var1)
+        private void becomeAngryAt(Entity entity)
         {
-            playerToAttack = var1;
+            playerToAttack = entity;
             angerLevel = 400 + random.nextInt(400);
             randomSoundDelay = random.nextInt(40);
         }

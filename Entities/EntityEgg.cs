@@ -20,7 +20,7 @@ namespace betareborn.Entities
         private int field_20050_h;
         private int field_20049_i = 0;
 
-        public EntityEgg(World var1) : base(var1)
+        public EntityEgg(World world) : base(world)
         {
             setBoundingBoxSpacing(0.25F, 0.25F);
         }
@@ -36,7 +36,7 @@ namespace betareborn.Entities
             return var1 < var3 * var3;
         }
 
-        public EntityEgg(World var1, EntityLiving var2) : base(var1)
+        public EntityEgg(World world, EntityLiving var2) : base(world)
         {
             field_20051_g = var2;
             setBoundingBoxSpacing(0.25F, 0.25F);
@@ -53,11 +53,11 @@ namespace betareborn.Entities
             setEggHeading(velocityX, velocityY, velocityZ, 1.5F, 1.0F);
         }
 
-        public EntityEgg(World var1, double var2, double var4, double var6) : base(var1)
+        public EntityEgg(World world, double x, double y, double z) : base(world)
         {
             field_20050_h = 0;
             setBoundingBoxSpacing(0.25F, 0.25F);
-            setPosition(var2, var4, var6);
+            setPosition(x, y, z);
             standingEyeHeight = 0.0F;
         }
 
@@ -77,8 +77,8 @@ namespace betareborn.Entities
             velocityY = var3;
             velocityZ = var5;
             float var10 = MathHelper.sqrt_double(var1 * var1 + var5 * var5);
-            prevYaw = yaw = (float)(java.lang.Math.atan2(var1, var5) * 180.0D / (double)((float)Math.PI));
-            prevPitch = pitch = (float)(java.lang.Math.atan2(var3, (double)var10) * 180.0D / (double)((float)Math.PI));
+            prevYaw = yaw = (float)(System.Math.Atan2(var1, var5) * 180.0D / (double)((float)Math.PI));
+            prevPitch = pitch = (float)(System.Math.Atan2(var3, (double)var10) * 180.0D / (double)((float)Math.PI));
             field_20050_h = 0;
         }
 
@@ -90,8 +90,8 @@ namespace betareborn.Entities
             if (prevPitch == 0.0F && prevYaw == 0.0F)
             {
                 float var7 = MathHelper.sqrt_double(var1 * var1 + var5 * var5);
-                prevYaw = yaw = (float)(java.lang.Math.atan2(var1, var5) * 180.0D / (double)((float)Math.PI));
-                prevPitch = pitch = (float)(java.lang.Math.atan2(var3, (double)var7) * 180.0D / (double)((float)Math.PI));
+                prevYaw = yaw = (float)(System.Math.Atan2(var1, var5) * 180.0D / (double)((float)Math.PI));
+                prevPitch = pitch = (float)(System.Math.Atan2(var3, (double)var7) * 180.0D / (double)((float)Math.PI));
             }
 
         }
@@ -133,14 +133,14 @@ namespace betareborn.Entities
                 ++field_20049_i;
             }
 
-            Vec3D var15 = Vec3D.createVector(x, y, z);
-            Vec3D var2 = Vec3D.createVector(x + velocityX, y + velocityY, z + velocityZ);
+            Vec3D var15 = new Vec3D(x, y, z);
+            Vec3D var2 = new Vec3D(x + velocityX, y + velocityY, z + velocityZ);
             HitResult var3 = world.raycast(var15, var2);
-            var15 = Vec3D.createVector(x, y, z);
-            var2 = Vec3D.createVector(x + velocityX, y + velocityY, z + velocityZ);
+            var15 = new Vec3D(x, y, z);
+            var2 = new Vec3D(x + velocityX, y + velocityY, z + velocityZ);
             if (var3 != null)
             {
-                var2 = Vec3D.createVector(var3.pos.xCoord, var3.pos.yCoord, var3.pos.zCoord);
+                var2 = new Vec3D(var3.pos.x, var3.pos.y, var3.pos.z);
             }
 
             if (!world.isRemote)
@@ -209,9 +209,9 @@ namespace betareborn.Entities
             y += velocityY;
             z += velocityZ;
             float var20 = MathHelper.sqrt_double(velocityX * velocityX + velocityZ * velocityZ);
-            yaw = (float)(java.lang.Math.atan2(velocityX, velocityZ) * 180.0D / (double)((float)Math.PI));
+            yaw = (float)(System.Math.Atan2(velocityX, velocityZ) * 180.0D / (double)((float)Math.PI));
 
-            for (pitch = (float)(java.lang.Math.atan2(velocityY, (double)var20) * 180.0D / (double)((float)Math.PI)); pitch - prevPitch < -180.0F; prevPitch -= 360.0F)
+            for (pitch = (float)(System.Math.Atan2(velocityY, (double)var20) * 180.0D / (double)((float)Math.PI)); pitch - prevPitch < -180.0F; prevPitch -= 360.0F)
             {
             }
 
@@ -252,32 +252,32 @@ namespace betareborn.Entities
             setPosition(x, y, z);
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            var1.SetShort("xTile", (short)field_20056_b);
-            var1.SetShort("yTile", (short)field_20055_c);
-            var1.SetShort("zTile", (short)field_20054_d);
-            var1.SetByte("inTile", (sbyte)field_20053_e);
-            var1.SetByte("shake", (sbyte)field_20057_a);
-            var1.SetByte("inGround", (sbyte)(field_20052_f ? 1 : 0));
+            nbt.setShort("xTile", (short)field_20056_b);
+            nbt.setShort("yTile", (short)field_20055_c);
+            nbt.setShort("zTile", (short)field_20054_d);
+            nbt.setByte("inTile", (sbyte)field_20053_e);
+            nbt.setByte("shake", (sbyte)field_20057_a);
+            nbt.setByte("inGround", (sbyte)(field_20052_f ? 1 : 0));
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            field_20056_b = var1.GetShort("xTile");
-            field_20055_c = var1.GetShort("yTile");
-            field_20054_d = var1.GetShort("zTile");
-            field_20053_e = var1.GetByte("inTile") & 255;
-            field_20057_a = var1.GetByte("shake") & 255;
-            field_20052_f = var1.GetByte("inGround") == 1;
+            field_20056_b = nbt.getShort("xTile");
+            field_20055_c = nbt.getShort("yTile");
+            field_20054_d = nbt.getShort("zTile");
+            field_20053_e = nbt.getByte("inTile") & 255;
+            field_20057_a = nbt.getByte("shake") & 255;
+            field_20052_f = nbt.getByte("inGround") == 1;
         }
 
-        public override void onPlayerInteraction(EntityPlayer var1)
+        public override void onPlayerInteraction(EntityPlayer player)
         {
-            if (field_20052_f && field_20051_g == var1 && field_20057_a <= 0 && var1.inventory.addItemStackToInventory(new ItemStack(Item.ARROW, 1)))
+            if (field_20052_f && field_20051_g == player && field_20057_a <= 0 && player.inventory.addItemStackToInventory(new ItemStack(Item.ARROW, 1)))
             {
                 world.playSound(this, "random.pop", 0.2F, ((random.nextFloat() - random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
-                var1.sendPickup(this, 1);
+                player.sendPickup(this, 1);
                 markDead();
             }
 

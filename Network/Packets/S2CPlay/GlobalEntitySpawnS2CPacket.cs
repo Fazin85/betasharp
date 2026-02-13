@@ -18,40 +18,40 @@ namespace betareborn.Network.Packets.S2CPlay
         {
         }
 
-        public GlobalEntitySpawnS2CPacket(Entity var1)
+        public GlobalEntitySpawnS2CPacket(Entity ent)
         {
-            id = var1.id;
-            x = MathHelper.floor_double(var1.x * 32.0D);
-            y = MathHelper.floor_double(var1.y * 32.0D);
-            z = MathHelper.floor_double(var1.z * 32.0D);
-            if (var1 is EntityLightningBolt)
+            id = ent.id;
+            x = MathHelper.floor_double(ent.x * 32.0D);
+            y = MathHelper.floor_double(ent.y * 32.0D);
+            z = MathHelper.floor_double(ent.z * 32.0D);
+            if (ent is EntityLightningBolt)
             {
                 type = 1;
             }
 
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            id = var1.readInt();
-            type = (sbyte)var1.readByte();
-            x = var1.readInt();
-            y = var1.readInt();
-            z = var1.readInt();
+            id = stream.readInt();
+            type = (sbyte)stream.readByte();
+            x = stream.readInt();
+            y = stream.readInt();
+            z = stream.readInt();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(id);
-            var1.writeByte(type);
-            var1.writeInt(x);
-            var1.writeInt(y);
-            var1.writeInt(z);
+            stream.writeInt(id);
+            stream.writeByte(type);
+            stream.writeInt(x);
+            stream.writeInt(y);
+            stream.writeInt(z);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onLightningEntitySpawn(this);
+            handler.onLightningEntitySpawn(this);
         }
 
         public override int size()

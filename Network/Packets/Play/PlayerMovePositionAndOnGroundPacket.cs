@@ -11,32 +11,32 @@ namespace betareborn.Network.Packets.Play
             changePosition = true;
         }
 
-        public PlayerMovePositionAndOnGroundPacket(double var1, double var3, double var5, double var7, bool var9)
+        public PlayerMovePositionAndOnGroundPacket(double x, double y, double eyeHeight, double z, bool onGround)
         {
-            x = var1;
-            y = var3;
-            eyeHeight = var5;
-            z = var7;
-            onGround = var9;
+            base.x = x;
+            base.y = y;
+            base.eyeHeight = eyeHeight;
+            base.z = z;
+            base.onGround = onGround;
             changePosition = true;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            x = var1.readDouble();
-            y = var1.readDouble();
-            eyeHeight = var1.readDouble();
-            z = var1.readDouble();
-            base.read(var1);
+            x = stream.readDouble();
+            y = stream.readDouble();
+            eyeHeight = stream.readDouble();
+            z = stream.readDouble();
+            base.read(stream);
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeDouble(x);
-            var1.writeDouble(y);
-            var1.writeDouble(eyeHeight);
-            var1.writeDouble(z);
-            base.write(var1);
+            stream.writeDouble(x);
+            stream.writeDouble(y);
+            stream.writeDouble(eyeHeight);
+            stream.writeDouble(z);
+            base.write(stream);
         }
 
         public override int size()

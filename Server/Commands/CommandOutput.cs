@@ -2,9 +2,9 @@
 {
     public interface CommandOutput
     {
-        void sendMessage(string message);
+        void SendMessage(string message);
 
-        string getName();
+        string GetName();
     }
 
 }

@@ -1,5 +1,6 @@
 using betareborn.Client.Resource.Pack;
 using betareborn.Client.Textures;
+using betareborn.Util;
 using java.awt;
 using java.awt.image;
 using java.io;

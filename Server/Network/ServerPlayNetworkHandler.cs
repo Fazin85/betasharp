@@ -9,6 +9,7 @@ using betareborn.Network.Packets.Play;
 using betareborn.Network.Packets.S2CPlay;
 using betareborn.Screens.Slots;
 using betareborn.Server.Commands;
+using betareborn.Server.Internal;
 using betareborn.Util;
 using betareborn.Util.Maths;
 using betareborn.Worlds;
@@ -494,39 +495,21 @@ namespace betareborn.Server.Network
         {
             if (message.ToLower().StartsWith("/me "))
             {
-                message = "* " + player.name + " " + message[message.IndexOf(" ")..].Trim();
-                LOGGER.info(message);
-                server.playerManager.sendToAll(new ChatMessagePacket(message));
+                string emote = "* " + player.name + " " + message[message.IndexOf(" ")..].Trim();
+                LOGGER.info(emote);
+                server.playerManager.sendToAll(new ChatMessagePacket(emote));
             }
-            else if (message.ToLower().StartsWith("/kill"))
+            else if (server is InternalServer || server.playerManager.isOperator(player.name))
             {
-                player.damage(null, 1000);
-            }
-            else if (message.ToLower().StartsWith("/tell "))
-            {
-                string[] var2 = message.Split(" ");
-                if (var2.Length >= 3)
-                {
-                    message = message[message.IndexOf(" ")..].Trim();
-                    message = message[message.IndexOf(" ")..].Trim();
-                    message = "§7" + player.name + " whispers " + message;
-                    LOGGER.info(message + " to " + var2[1]);
-                    if (!server.playerManager.sendPacket(var2[1], new ChatMessagePacket(message)))
-                    {
-                        sendPacket(new ChatMessagePacket("§cThere's no player by that name online."));
-                    }
-                }
-            }
-            else if (server.playerManager.isOperator(player.name))
-            {
-                string var7 = message[1..];
-                LOGGER.info(player.name + " issued server command: " + var7);
-                server.queueCommands(var7, this);
+                string commandText = message[1..];
+                LOGGER.info(player.name + " issued server command: " + commandText);
+                server.queueCommands(commandText, this);
             }
             else
             {
-                string var8 = message[1..];
-                LOGGER.info(player.name + " tried command: " + var8);
+                string commandText = message[1..];
+                LOGGER.info(player.name + " tried command: " + commandText);
+                sendPacket(new ChatMessagePacket("§cYou do not have permission to use this command."));
             }
         }
 
@@ -565,12 +548,12 @@ namespace betareborn.Server.Network
             return connection.getDelayedSendQueueSize();
         }
 
-        public void sendMessage(string message)
+        public void SendMessage(string message)
         {
             sendPacket(new ChatMessagePacket("§7" + message));
         }
 
-        public string getName()
+        public string GetName()
         {
             return player.name;
         }
@@ -657,7 +640,7 @@ namespace betareborn.Server.Network
                 {
                     if (!var4.isEditable())
                     {
-                        server.warn("Player " + player.name + " just tried to change non-editable sign");
+                        server.Warn("Player " + player.name + " just tried to change non-editable sign");
                         return;
                     }
                 }

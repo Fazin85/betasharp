@@ -23,45 +23,45 @@ namespace betareborn.Network.Packets.S2CPlay
         {
         }
 
-        public LivingEntitySpawnS2CPacket(EntityLiving var1)
+        public LivingEntitySpawnS2CPacket(EntityLiving ent)
         {
-            entityId = var1.id;
-            type = (sbyte)EntityRegistry.getRawId(var1);
-            xPosition = MathHelper.floor_double(var1.x * 32.0D);
-            yPosition = MathHelper.floor_double(var1.y * 32.0D);
-            zPosition = MathHelper.floor_double(var1.z * 32.0D);
-            yaw = (sbyte)(int)(var1.yaw * 256.0F / 360.0F);
-            pitch = (sbyte)(int)(var1.pitch * 256.0F / 360.0F);
-            metaData = var1.getDataWatcher();
+            entityId = ent.id;
+            type = (sbyte)EntityRegistry.getRawId(ent);
+            xPosition = MathHelper.floor_double(ent.x * 32.0D);
+            yPosition = MathHelper.floor_double(ent.y * 32.0D);
+            zPosition = MathHelper.floor_double(ent.z * 32.0D);
+            yaw = (sbyte)(int)(ent.yaw * 256.0F / 360.0F);
+            pitch = (sbyte)(int)(ent.pitch * 256.0F / 360.0F);
+            metaData = ent.getDataWatcher();
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            entityId = var1.readInt();
-            type = (sbyte)var1.readByte();
-            xPosition = var1.readInt();
-            yPosition = var1.readInt();
-            zPosition = var1.readInt();
-            yaw = (sbyte)var1.readByte();
-            pitch = (sbyte)var1.readByte();
-            receivedMetadata = DataWatcher.readWatchableObjects(var1);
+            entityId = stream.readInt();
+            type = (sbyte)stream.readByte();
+            xPosition = stream.readInt();
+            yPosition = stream.readInt();
+            zPosition = stream.readInt();
+            yaw = (sbyte)stream.readByte();
+            pitch = (sbyte)stream.readByte();
+            receivedMetadata = DataWatcher.readWatchableObjects(stream);
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(entityId);
-            var1.writeByte(type);
-            var1.writeInt(xPosition);
-            var1.writeInt(yPosition);
-            var1.writeInt(zPosition);
-            var1.writeByte(yaw);
-            var1.writeByte(pitch);
-            metaData.writeWatchableObjects(var1);
+            stream.writeInt(entityId);
+            stream.writeByte(type);
+            stream.writeInt(xPosition);
+            stream.writeInt(yPosition);
+            stream.writeInt(zPosition);
+            stream.writeByte(yaw);
+            stream.writeByte(pitch);
+            metaData.writeWatchableObjects(stream);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onLivingEntitySpawn(this);
+            handler.onLivingEntitySpawn(this);
         }
 
         public override int size()

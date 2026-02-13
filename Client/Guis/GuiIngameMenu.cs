@@ -43,16 +43,9 @@ namespace betareborn.Client.Guis
                     mc.world.disconnect();
                 }
 
+                mc.stopInternalServer();
                 mc.changeWorld1(null);
-
-                if (mc.internalServer != null)
-                {
-                    mc.displayGuiScreen(new GuiStoppingServer());
-                }
-                else
-                {
-                    mc.displayGuiScreen(new GuiMainMenu());
-                }
+                mc.displayGuiScreen(new GuiMainMenu());
             }
 
             if (var1.id == 4)

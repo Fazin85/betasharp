@@ -1,6 +1,11 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using Avalonia.Media;
+using Microsoft.Win32;
+using System;
+using System.IO;
+using System.Runtime.InteropServices;
 
 namespace betareborn.Launcher
 {
@@ -8,10 +13,87 @@ namespace betareborn.Launcher
     {
         public static LaunchResult? Result { get; private set; }
         private readonly MicrosoftAuthService _authService = new();
+        private bool _isDarkMode;
 
         public LauncherWindow()
         {
             InitializeComponent();
+            DetectSystemTheme();
+            ApplyTheme();
+        }
+
+        private void DetectSystemTheme()
+        {
+            // Only detect system theme on Windows
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                _isDarkMode = true; // Default to dark mode on non-Windows systems
+                return;
+            }
+
+            try
+            {
+                var key = Registry.CurrentUser.OpenSubKey(
+                    @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+                if (key != null)
+                {
+                    object? value = key.GetValue("AppsUseLightTheme");
+                    if (value is int intValue)
+                    {
+                        _isDarkMode = intValue == 0; // 0 = dark mode, 1 = light mode
+                    }
+                    else
+                    {
+                        _isDarkMode = true; // Default to dark if can't read
+                    }
+                }
+                else
+                {
+                    _isDarkMode = true; // Default to dark if registry key not found
+                }
+            }
+            catch
+            {
+                _isDarkMode = true; // Default to dark if any error
+            }
+        }
+
+        private void OnToggleTheme(object sender, RoutedEventArgs e)
+        {
+            _isDarkMode = !_isDarkMode;
+            ApplyTheme();
+        }
+
+        private void ApplyTheme()
+        {
+            if (_isDarkMode)
+            {
+                // Dark mode
+                Background = new SolidColorBrush(Color.FromRgb(30, 30, 30));
+                Foreground = new SolidColorBrush(Color.FromRgb(220, 220, 220));
+                ThemeToggleButton.Content = "☀️";
+                
+                // Set text colors to light for dark mode
+                var lightColor = new SolidColorBrush(Color.FromRgb(220, 220, 220));
+                StatusText.Foreground = lightColor;
+                MicrosoftLoginButton.Foreground = lightColor;
+                ProvideJar.Foreground = lightColor;
+                ThemeToggleButton.Foreground = lightColor;
+            }
+            else
+            {
+                // Light mode
+                Background = new SolidColorBrush(Color.FromRgb(240, 240, 240));
+                Foreground = new SolidColorBrush(Color.FromRgb(30, 30, 30));
+                ThemeToggleButton.Content = "🌙";
+                
+                // Set text colors to dark for light mode
+                var darkColor = new SolidColorBrush(Color.FromRgb(30, 30, 30));
+                StatusText.Foreground = darkColor;
+                MicrosoftLoginButton.Foreground = darkColor;
+                ProvideJar.Foreground = darkColor;
+                ThemeToggleButton.Foreground = darkColor;
+            }
         }
 
         private async void OnMicrosoftLogin(object sender, RoutedEventArgs e)
@@ -64,6 +146,8 @@ namespace betareborn.Launcher
         {
             await PromptForJar();
         }
+
+
 
         private async Task PromptForJar()
         {

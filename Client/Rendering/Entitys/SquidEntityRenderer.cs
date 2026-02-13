@@ -18,8 +18,8 @@ namespace betareborn.Client.Rendering.Entitys
 
         protected void func_21007_a(EntitySquid var1, float var2, float var3, float var4)
         {
-            float var5 = var1.field_21088_b + (var1.field_21089_a - var1.field_21088_b) * var4;
-            float var6 = var1.field_21086_f + (var1.field_21087_c - var1.field_21086_f) * var4;
+            float var5 = var1.prevTiltAngle + (var1.tiltAngle - var1.prevTiltAngle) * var4;
+            float var6 = var1.prevTentaclePhase + (var1.tentaclePhase - var1.prevTentaclePhase) * var4;
             GLManager.GL.Translate(0.0F, 0.5F, 0.0F);
             GLManager.GL.Rotate(180.0F - var3, 0.0F, 1.0F, 0.0F);
             GLManager.GL.Rotate(var5, 1.0F, 0.0F, 0.0F);
@@ -33,7 +33,7 @@ namespace betareborn.Client.Rendering.Entitys
 
         protected float func_21006_b(EntitySquid var1, float var2)
         {
-            float var3 = var1.field_21082_j + (var1.field_21083_i - var1.field_21082_j) * var2;
+            float var3 = var1.prevTentacleSpread + (var1.tentacleSpread - var1.prevTentacleSpread) * var2;
             return var3;
         }
 

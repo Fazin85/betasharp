@@ -43,13 +43,7 @@ namespace betareborn.Network
                     {
                     }
 
-                    try
-                    {
-                        sleep(100L);
-                    }
-                    catch (InterruptedException var15)
-                    {
-                    }
+                    netManager.waitForSignal(10);
                 }
                 finally
                 {

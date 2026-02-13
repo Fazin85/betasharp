@@ -20,7 +20,7 @@ namespace betareborn.Entities
         private int ticksInGroundSnowball;
         private int ticksInAirSnowball = 0;
 
-        public EntitySnowball(World var1) : base(var1)
+        public EntitySnowball(World world) : base(world)
         {
             setBoundingBoxSpacing(0.25F, 0.25F);
         }
@@ -36,28 +36,28 @@ namespace betareborn.Entities
             return var1 < var3 * var3;
         }
 
-        public EntitySnowball(World var1, EntityLiving var2) : base(var1)
+        public EntitySnowball(World world, EntityLiving var2) : base(world)
         {
             thrower = var2;
             setBoundingBoxSpacing(0.25F, 0.25F);
             setPositionAndAnglesKeepPrevAngles(var2.x, var2.y + (double)var2.getEyeHeight(), var2.z, var2.yaw, var2.pitch);
-            x -= (double)(MathHelper.cos(yaw / 180.0F * (float)java.lang.Math.PI) * 0.16F);
+            x -= (double)(MathHelper.cos(yaw / 180.0F * (float)System.Math.PI) * 0.16F);
             y -= (double)0.1F;
-            z -= (double)(MathHelper.sin(yaw / 180.0F * (float)java.lang.Math.PI) * 0.16F);
+            z -= (double)(MathHelper.sin(yaw / 180.0F * (float)System.Math.PI) * 0.16F);
             setPosition(x, y, z);
             standingEyeHeight = 0.0F;
             float var3 = 0.4F;
-            velocityX = (double)(-MathHelper.sin(yaw / 180.0F * (float)java.lang.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)java.lang.Math.PI) * var3);
-            velocityZ = (double)(MathHelper.cos(yaw / 180.0F * (float)java.lang.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)java.lang.Math.PI) * var3);
-            velocityY = (double)(-MathHelper.sin(pitch / 180.0F * (float)java.lang.Math.PI) * var3);
+            velocityX = (double)(-MathHelper.sin(yaw / 180.0F * (float)System.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)System.Math.PI) * var3);
+            velocityZ = (double)(MathHelper.cos(yaw / 180.0F * (float)System.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)System.Math.PI) * var3);
+            velocityY = (double)(-MathHelper.sin(pitch / 180.0F * (float)System.Math.PI) * var3);
             setSnowballHeading(velocityX, velocityY, velocityZ, 1.5F, 1.0F);
         }
 
-        public EntitySnowball(World var1, double var2, double var4, double var6) : base(var1)
+        public EntitySnowball(World world, double x, double y, double z) : base(world)
         {
             ticksInGroundSnowball = 0;
             setBoundingBoxSpacing(0.25F, 0.25F);
-            setPosition(var2, var4, var6);
+            setPosition(x, y, z);
             standingEyeHeight = 0.0F;
         }
 
@@ -77,8 +77,8 @@ namespace betareborn.Entities
             velocityY = var3;
             velocityZ = var5;
             float var10 = MathHelper.sqrt_double(var1 * var1 + var5 * var5);
-            prevYaw = yaw = (float)(java.lang.Math.atan2(var1, var5) * 180.0D / (double)((float)java.lang.Math.PI));
-            prevPitch = pitch = (float)(java.lang.Math.atan2(var3, (double)var10) * 180.0D / (double)((float)java.lang.Math.PI));
+            prevYaw = yaw = (float)(System.Math.Atan2(var1, var5) * 180.0D / (double)((float)System.Math.PI));
+            prevPitch = pitch = (float)(System.Math.Atan2(var3, (double)var10) * 180.0D / (double)((float)System.Math.PI));
             ticksInGroundSnowball = 0;
         }
 
@@ -90,8 +90,8 @@ namespace betareborn.Entities
             if (prevPitch == 0.0F && prevYaw == 0.0F)
             {
                 float var7 = MathHelper.sqrt_double(var1 * var1 + var5 * var5);
-                prevYaw = yaw = (float)(java.lang.Math.atan2(var1, var5) * 180.0D / (double)((float)java.lang.Math.PI));
-                prevPitch = pitch = (float)(java.lang.Math.atan2(var3, (double)var7) * 180.0D / (double)((float)java.lang.Math.PI));
+                prevYaw = yaw = (float)(System.Math.Atan2(var1, var5) * 180.0D / (double)((float)System.Math.PI));
+                prevPitch = pitch = (float)(System.Math.Atan2(var3, (double)var7) * 180.0D / (double)((float)System.Math.PI));
             }
 
         }
@@ -133,14 +133,14 @@ namespace betareborn.Entities
                 ++ticksInAirSnowball;
             }
 
-            Vec3D var15 = Vec3D.createVector(x, y, z);
-            Vec3D var2 = Vec3D.createVector(x + velocityX, y + velocityY, z + velocityZ);
+            Vec3D var15 = new Vec3D(x, y, z);
+            Vec3D var2 = new Vec3D(x + velocityX, y + velocityY, z + velocityZ);
             HitResult var3 = world.raycast(var15, var2);
-            var15 = Vec3D.createVector(x, y, z);
-            var2 = Vec3D.createVector(x + velocityX, y + velocityY, z + velocityZ);
+            var15 = new Vec3D(x, y, z);
+            var2 = new Vec3D(x + velocityX, y + velocityY, z + velocityZ);
             if (var3 != null)
             {
-                var2 = Vec3D.createVector(var3.pos.xCoord, var3.pos.yCoord, var3.pos.zCoord);
+                var2 = new Vec3D(var3.pos.x, var3.pos.y, var3.pos.z);
             }
 
             if (!world.isRemote)
@@ -193,9 +193,9 @@ namespace betareborn.Entities
             y += velocityY;
             z += velocityZ;
             float var17 = MathHelper.sqrt_double(velocityX * velocityX + velocityZ * velocityZ);
-            yaw = (float)(java.lang.Math.atan2(velocityX, velocityZ) * 180.0D / (double)((float)java.lang.Math.PI));
+            yaw = (float)(System.Math.Atan2(velocityX, velocityZ) * 180.0D / (double)((float)System.Math.PI));
 
-            for (pitch = (float)(java.lang.Math.atan2(velocityY, (double)var17) * 180.0D / (double)((float)java.lang.Math.PI)); pitch - prevPitch < -180.0F; prevPitch -= 360.0F)
+            for (pitch = (float)(System.Math.Atan2(velocityY, (double)var17) * 180.0D / (double)((float)System.Math.PI)); pitch - prevPitch < -180.0F; prevPitch -= 360.0F)
             {
             }
 
@@ -236,32 +236,32 @@ namespace betareborn.Entities
             setPosition(x, y, z);
         }
 
-        public override void writeNbt(NBTTagCompound var1)
+        public override void writeNbt(NBTTagCompound nbt)
         {
-            var1.SetShort("xTile", (short)xTileSnowball);
-            var1.SetShort("yTile", (short)yTileSnowball);
-            var1.SetShort("zTile", (short)zTileSnowball);
-            var1.SetByte("inTile", (sbyte)inTileSnowball);
-            var1.SetByte("shake", (sbyte)shakeSnowball);
-            var1.SetByte("inGround", (sbyte)(inGroundSnowball ? 1 : 0));
+            nbt.setShort("xTile", (short)xTileSnowball);
+            nbt.setShort("yTile", (short)yTileSnowball);
+            nbt.setShort("zTile", (short)zTileSnowball);
+            nbt.setByte("inTile", (sbyte)inTileSnowball);
+            nbt.setByte("shake", (sbyte)shakeSnowball);
+            nbt.setByte("inGround", (sbyte)(inGroundSnowball ? 1 : 0));
         }
 
-        public override void readNbt(NBTTagCompound var1)
+        public override void readNbt(NBTTagCompound nbt)
         {
-            xTileSnowball = var1.GetShort("xTile");
-            yTileSnowball = var1.GetShort("yTile");
-            zTileSnowball = var1.GetShort("zTile");
-            inTileSnowball = var1.GetByte("inTile") & 255;
-            shakeSnowball = var1.GetByte("shake") & 255;
-            inGroundSnowball = var1.GetByte("inGround") == 1;
+            xTileSnowball = nbt.getShort("xTile");
+            yTileSnowball = nbt.getShort("yTile");
+            zTileSnowball = nbt.getShort("zTile");
+            inTileSnowball = nbt.getByte("inTile") & 255;
+            shakeSnowball = nbt.getByte("shake") & 255;
+            inGroundSnowball = nbt.getByte("inGround") == 1;
         }
 
-        public override void onPlayerInteraction(EntityPlayer var1)
+        public override void onPlayerInteraction(EntityPlayer player)
         {
-            if (inGroundSnowball && thrower == var1 && shakeSnowball <= 0 && var1.inventory.addItemStackToInventory(new ItemStack(Item.ARROW, 1)))
+            if (inGroundSnowball && thrower == player && shakeSnowball <= 0 && player.inventory.addItemStackToInventory(new ItemStack(Item.ARROW, 1)))
             {
                 world.playSound(this, "random.pop", 0.2F, ((random.nextFloat() - random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
-                var1.sendPickup(this, 1);
+                player.sendPickup(this, 1);
                 markDead();
             }
 

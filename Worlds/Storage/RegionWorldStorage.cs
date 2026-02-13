@@ -14,13 +14,12 @@ namespace betareborn.Worlds.Storage
     {
         private static readonly Logger LOGGER = Logger.getLogger("Minecraft");
 
-        private readonly bool async;
         private readonly java.io.File saveDirectory;
         private readonly java.io.File playersDirectory;
         private readonly java.io.File dataDir;
         private readonly long now = java.lang.System.currentTimeMillis();
 
-        public RegionWorldStorage(java.io.File var1, string var2, bool var3, bool async = false)
+        public RegionWorldStorage(java.io.File var1, string var2, bool var3)
         {
             saveDirectory = new java.io.File(var1, var2);
             saveDirectory.mkdirs();
@@ -33,7 +32,6 @@ namespace betareborn.Worlds.Storage
             }
 
             writeSessionLock();
-            this.async = async;
         }
 
         private void writeSessionLock()
@@ -98,25 +96,12 @@ namespace betareborn.Worlds.Storage
             {
                 java.io.File var3 = new(var2, "DIM-1");
                 var3.mkdirs();
-                if (async)
-                {
-                    return new RegionChunkStorageAsync(var3);
-                }
-                else
-                {
-                    return new RegionChunkStorage(var3);
-                }
+
+                return new RegionChunkStorage(var3);
             }
             else
             {
-                if (async)
-                {
-                    return new RegionChunkStorageAsync(var2);
-                }
-                else
-                {
-                    return new RegionChunkStorage(var2);
-                }
+                return new RegionChunkStorage(var2);
             }
         }
 

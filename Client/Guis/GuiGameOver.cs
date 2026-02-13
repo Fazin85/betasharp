@@ -5,15 +5,25 @@ namespace betareborn.Client.Guis
 {
     public class GuiGameOver : GuiScreen
     {
+        private const int BUTTON_RESPAWN = 1;
+        private const int BUTTON_TITLE = 2;
 
         public override void initGui()
         {
             controlList.clear();
-            controlList.add(new GuiButton(1, width / 2 - 100, height / 4 + 72, "Respawn"));
-            controlList.add(new GuiButton(2, width / 2 - 100, height / 4 + 96, "Title menu"));
+            controlList.add(new GuiButton(BUTTON_RESPAWN, width / 2 - 100, height / 4 + 72, "Respawn"));
+            controlList.add(new GuiButton(BUTTON_TITLE, width / 2 - 100, height / 4 + 96, "Title menu"));
             if (mc.session == null)
             {
-                ((GuiButton)controlList.get(1)).enabled = false;
+                for (int i = 0; i < controlList.size(); ++i)
+                {
+                    GuiButton btn = (GuiButton)controlList.get(i);
+                    if (btn.id == BUTTON_RESPAWN)
+                    {
+                        btn.enabled = false;
+                        break;
+                    }
+                }
             }
 
         }
@@ -22,27 +32,23 @@ namespace betareborn.Client.Guis
         {
         }
 
-        protected override void actionPerformed(GuiButton var1)
+        protected override void actionPerformed(GuiButton button)
         {
-            if (var1.id == 0)
+            switch (button.id)
             {
-            }
-
-            if (var1.id == 1)
-            {
-                mc.player.respawn();
-                mc.displayGuiScreen(null);
-            }
-
-            if (var1.id == 2)
-            {
-                mc.changeWorld1(null);
-                mc.displayGuiScreen(new GuiMainMenu());
+                case BUTTON_RESPAWN:
+                    mc.player.respawn();
+                    mc.displayGuiScreen(null);
+                    break;
+                case BUTTON_TITLE:
+                    mc.changeWorld1(null);
+                    mc.displayGuiScreen(new GuiMainMenu());
+                    break;
             }
 
         }
 
-        public override void render(int var1, int var2, float var3)
+        public override void render(int mouseX, int mouseY, float partialTicks)
         {
             drawGradientRect(0, 0, width, height, 1615855616, -1602211792);
             GLManager.GL.PushMatrix();
@@ -50,7 +56,7 @@ namespace betareborn.Client.Guis
             drawCenteredString(fontRenderer, "Game over!", width / 2 / 2, 30, 16777215);
             GLManager.GL.PopMatrix();
             drawCenteredString(fontRenderer, "Score: &e" + mc.player.getScore(), width / 2, 100, 16777215);
-            base.render(var1, var2, var3);
+            base.render(mouseX, mouseY, partialTicks);
         }
 
         public override bool doesGuiPauseGame()

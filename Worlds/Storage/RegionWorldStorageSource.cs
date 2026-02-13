@@ -8,16 +8,14 @@ namespace betareborn.Worlds.Storage
     public class RegionWorldStorageSource : WorldStorageSource
     {
         protected readonly java.io.File dir;
-        private readonly bool async;
 
-        public RegionWorldStorageSource(java.io.File file, bool async = false)
+        public RegionWorldStorageSource(java.io.File file)
         {
             if (!file.exists())
             {
                 file.mkdirs();
             }
             dir = file;
-            this.async = async;
         }
 
         public virtual string getName()
@@ -63,7 +61,7 @@ namespace betareborn.Worlds.Storage
 
         public virtual WorldStorage get(string var1, bool var2)
         {
-            return new RegionWorldStorage(dir, var1, var2, async);
+            return new RegionWorldStorage(dir, var1, var2);
         }
 
         private static long getFolderSizeMB(java.io.File folder)

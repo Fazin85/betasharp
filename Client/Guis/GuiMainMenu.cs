@@ -10,6 +10,11 @@ namespace betareborn.Client.Guis
 {
     public class GuiMainMenu : GuiScreen
     {
+        private const int BUTTON_OPTIONS = 0;
+        private const int BUTTON_SINGLEPLAYER = 1;
+        private const int BUTTON_MULTIPLAYER = 2;
+        private const int BUTTON_MODS = 3;
+        private const int BUTTON_QUIT = 4;
 
         private static readonly java.util.Random rand = new();
         private string splashText = "missingno";
@@ -19,29 +24,29 @@ namespace betareborn.Client.Guis
         {
             try
             {
-                List<string> var1 = [];
+                List<string> splashLines = [];
                 BufferedReader reader =
                     new(new java.io.StringReader(AssetManager.Instance.getAsset("title/splashes.txt")
                         .getTextContent()));
-                string var3 = "";
+                string line = "";
 
                 while (true)
                 {
-                    var3 = reader.readLine();
-                    if (var3 == null)
+                    line = reader.readLine();
+                    if (line == null)
                     {
-                        splashText = var1[rand.nextInt(var1.Count)];
+                        splashText = splashLines[rand.nextInt(splashLines.Count)];
                         break;
                     }
 
-                    var3 = var3.Trim();
-                    if (var3.Length > 0)
+                    line = line.Trim();
+                    if (line.Length > 0)
                     {
-                        var1.Add(var3);
+                        splashLines.Add(line);
                     }
                 }
             }
-            catch (Exception var4)
+            catch (Exception exception)
             {
             }
         }
@@ -78,23 +83,23 @@ namespace betareborn.Client.Guis
             }
 
             TranslationStorage translator = TranslationStorage.getInstance();
-            int var4 = height / 4 + 48;
+            int buttonTopY = height / 4 + 48;
 
-            controlList.add(new GuiButton(1, width / 2 - 100, var4, translator.translateKey("menu.singleplayer")));
+            controlList.add(new GuiButton(BUTTON_SINGLEPLAYER, width / 2 - 100, buttonTopY, translator.translateKey("menu.singleplayer")));
             controlList.add(multiplayerButton =
-                new GuiButton(2, width / 2 - 100, var4 + 24, translator.translateKey("menu.multiplayer")));
-            controlList.add(new GuiButton(3, width / 2 - 100, var4 + 48, translator.translateKey("menu.mods")));
+                new GuiButton(BUTTON_MULTIPLAYER, width / 2 - 100, buttonTopY + 24, translator.translateKey("menu.multiplayer")));
+            controlList.add(new GuiButton(BUTTON_MODS, width / 2 - 100, buttonTopY + 48, translator.translateKey("menu.mods")));
 
             if (mc.hideQuitButton)
             {
-                controlList.add(new GuiButton(0, width / 2 - 100, var4 + 72, translator.translateKey("menu.options")));
+                controlList.add(new GuiButton(BUTTON_OPTIONS, width / 2 - 100, buttonTopY + 72, translator.translateKey("menu.options")));
             }
             else
             {
-                controlList.add(new GuiButton(0, width / 2 - 100, var4 + 72 + 12, 98, 20,
+                controlList.add(new GuiButton(BUTTON_OPTIONS, width / 2 - 100, buttonTopY + 72 + 12, 98, 20,
                     translator.translateKey("menu.options")));
 
-                controlList.add(new GuiButton(4, width / 2 + 2, var4 + 72 + 12, 98, 20,
+                controlList.add(new GuiButton(BUTTON_QUIT, width / 2 + 2, buttonTopY + 72 + 12, 98, 20,
                     translator.translateKey("menu.quit")));
             }
 
@@ -104,61 +109,55 @@ namespace betareborn.Client.Guis
             }
         }
 
-        protected override void actionPerformed(GuiButton var1)
+        protected override void actionPerformed(GuiButton button)
         {
-            if (var1.id == 0)
+            switch (button.id)
             {
-                mc.displayGuiScreen(new GuiOptions(this, mc.options));
-            }
-
-            if (var1.id == 1)
-            {
-                mc.displayGuiScreen(new GuiSelectWorld(this));
-            }
-
-            if (var1.id == 2)
-            {
-                mc.displayGuiScreen(new GuiMultiplayer(this));
-            }
-
-            if (var1.id == 3)
-            {
-                mc.displayGuiScreen(new GuiTexturePacks(this));
-            }
-
-            if (var1.id == 4)
-            {
-                mc.shutdown();
+                case BUTTON_OPTIONS:
+                    mc.displayGuiScreen(new GuiOptions(this, mc.options));
+                    break;
+                case BUTTON_SINGLEPLAYER:
+                    mc.displayGuiScreen(new GuiSelectWorld(this));
+                    break;
+                case BUTTON_MULTIPLAYER:
+                    mc.displayGuiScreen(new GuiMultiplayer(this));
+                    break;
+                case BUTTON_MODS:
+                    mc.displayGuiScreen(new GuiTexturePacks(this));
+                    break;
+                case BUTTON_QUIT:
+                    mc.shutdown();
+                    break;
             }
         }
 
-        public override void render(int var1, int var2, float var3)
+        public override void render(int mouseX, int mouseY, float partialTicks)
         {
             drawDefaultBackground();
-            Tessellator var4 = Tessellator.instance;
-            short var5 = 274;
-            int var6 = width / 2 - var5 / 2;
-            byte var7 = 30;
+            Tessellator tessellator = Tessellator.instance;
+            short logoWidth = 274;
+            int logoX = width / 2 - logoWidth / 2;
+            byte logoY = 30;
             GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/title/mclogo.png"));
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-            drawTexturedModalRect(var6 + 0, var7 + 0, 0, 0, 155, 44);
-            drawTexturedModalRect(var6 + 155, var7 + 0, 0, 45, 155, 44);
-            var4.setColorOpaque_I(16777215);
+            drawTexturedModalRect(logoX + 0, logoY + 0, 0, 0, 155, 44);
+            drawTexturedModalRect(logoX + 155, logoY + 0, 0, 45, 155, 44);
+            tessellator.setColorOpaque_I(16777215);
             GLManager.GL.PushMatrix();
             GLManager.GL.Translate(width / 2 + 90, 70.0F, 0.0F);
             GLManager.GL.Rotate(-20.0F, 0.0F, 0.0F, 1.0F);
-            float var8 = 1.8F - MathHelper.abs(MathHelper.sin(java.lang.System.currentTimeMillis() % 1000L /
+            float splashScale = 1.8F - MathHelper.abs(MathHelper.sin(java.lang.System.currentTimeMillis() % 1000L /
                 1000.0F * (float)Math.PI * 2.0F) * 0.1F);
-            var8 = var8 * 100.0F / (fontRenderer.getStringWidth(splashText) + 32);
-            GLManager.GL.Scale(var8, var8, var8);
+            splashScale = splashScale * 100.0F / (fontRenderer.getStringWidth(splashText) + 32);
+            GLManager.GL.Scale(splashScale, splashScale, splashScale);
             drawCenteredString(fontRenderer, splashText, 0, -8, 16776960);
             GLManager.GL.PopMatrix();
             drawString(fontRenderer, "Minecraft Beta 1.7.3", 2, 2, 5263440);
-            string var9 = "Copyright Mojang Studios. Not an official Minecraft product.";
-            drawString(fontRenderer, var9, width - fontRenderer.getStringWidth(var9) - 2, height - 20, 16777215);
-            string var10 = "Not approved by or associated with Mojang Studios or Microsoft.";
-            drawString(fontRenderer, var10, width - fontRenderer.getStringWidth(var10) - 2, height - 10, 16777215);
-            base.render(var1, var2, var3);
+            string copyrightText = "Copyright Mojang Studios. Not an official Minecraft product.";
+            drawString(fontRenderer, copyrightText, width - fontRenderer.getStringWidth(copyrightText) - 2, height - 20, 16777215);
+            string disclaimerText = "Not approved by or associated with Mojang Studios or Microsoft.";
+            drawString(fontRenderer, disclaimerText, width - fontRenderer.getStringWidth(disclaimerText) - 2, height - 10, 16777215);
+            base.render(mouseX, mouseY, partialTicks);
         }
     }
 

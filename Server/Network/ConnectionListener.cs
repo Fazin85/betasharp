@@ -47,48 +47,48 @@ namespace betareborn.Server.Network
 
         public void tick()
         {
-            for (int var1 = 0; var1 < pendingConnections.Count; var1++)
+            for (int i = 0; i < pendingConnections.Count; i++)
             {
-                ServerLoginNetworkHandler var2 = pendingConnections[var1];
+                ServerLoginNetworkHandler connection = pendingConnections[i];
 
                 try
                 {
-                    var2.tick();
+                    connection.tick();
                 }
-                catch (java.lang.Exception var5)
+                catch (java.lang.Exception ex)
                 {
-                    var2.disconnect("Internal server error");
-                    LOGGER.log(Level.WARNING, "Failed to handle packet: " + var5, var5);
+                    connection.disconnect("Internal server error");
+                    LOGGER.log(Level.WARNING, "Failed to handle packet: " + ex, ex);
                 }
 
-                if (var2.closed)
+                if (connection.closed)
                 {
-                    pendingConnections.RemoveAt(var1--);
+                    pendingConnections.RemoveAt(i--);
                 }
 
-                var2.connection.interrupt();
+                connection.connection.interrupt();
             }
 
-            for (int var6 = 0; var6 < connections.Count; var6++)
+            for (int i = 0; i < connections.Count; i++)
             {
-                ServerPlayNetworkHandler var7 = connections[var6];
+                ServerPlayNetworkHandler connection = connections[i];
 
                 try
                 {
-                    var7.tick();
+                    connection.tick();
                 }
-                catch (java.lang.Exception var4)
+                catch (java.lang.Exception ex)
                 {
-                    LOGGER.log(Level.WARNING, "Failed to handle packet: " + var4, (Throwable)var4);
-                    var7.disconnect("Internal server error");
+                    LOGGER.log(Level.WARNING, "Failed to handle packet: " + ex, (Throwable)ex);
+                    connection.disconnect("Internal server error");
                 }
 
-                if (var7.disconnected)
+                if (connection.disconnected)
                 {
-                    connections.RemoveAt(var6--);
+                    connections.RemoveAt(i--);
                 }
 
-                var7.connection.interrupt();
+                connection.connection.interrupt();
             }
         }
     }

@@ -17,27 +17,27 @@ namespace betareborn.Network.Packets.C2SPlay
         {
         }
 
-        public PlayerInteractBlockC2SPacket(int var1, int var2, int var3, int var4, ItemStack var5)
+        public PlayerInteractBlockC2SPacket(int x, int y, int z, int side, ItemStack stack)
         {
-            x = var1;
-            y = var2;
-            z = var3;
-            side = var4;
-            stack = var5;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.side = side;
+            this.stack = stack;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            x = var1.readInt();
-            y = var1.read();
-            z = var1.readInt();
-            side = var1.read();
-            short var2 = var1.readShort();
-            if (var2 >= 0)
+            x = stream.readInt();
+            y = stream.read();
+            z = stream.readInt();
+            side = stream.read();
+            short itemId = stream.readShort();
+            if (itemId >= 0)
             {
-                sbyte var3 = (sbyte)var1.readByte();
-                short var4 = var1.readShort();
-                stack = new ItemStack(var2, var3, var4);
+                sbyte count = (sbyte)stream.readByte();
+                short damage = stream.readShort();
+                stack = new ItemStack(itemId, count, damage);
             }
             else
             {
@@ -46,28 +46,28 @@ namespace betareborn.Network.Packets.C2SPlay
 
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(x);
-            var1.write(y);
-            var1.writeInt(z);
-            var1.write(side);
+            stream.writeInt(x);
+            stream.write(y);
+            stream.writeInt(z);
+            stream.write(side);
             if (stack == null)
             {
-                var1.writeShort(-1);
+                stream.writeShort(-1);
             }
             else
             {
-                var1.writeShort(stack.itemId);
-                var1.writeByte(stack.count);
-                var1.writeShort(stack.getDamage());
+                stream.writeShort(stack.itemId);
+                stream.writeByte(stack.count);
+                stream.writeShort(stack.getDamage());
             }
 
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onPlayerInteractBlock(this);
+            handler.onPlayerInteractBlock(this);
         }
 
         public override int size()

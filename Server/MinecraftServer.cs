@@ -25,7 +25,7 @@ namespace betareborn.Server
         private ServerCommandHandler commandHandler;
         public bool running = true;
         public bool stopped = false;
-        int ticks = 0;
+        private int ticks = 0;
         public string progressMessage;
         public int progress;
         private List tickables = new ArrayList();
@@ -36,6 +36,22 @@ namespace betareborn.Server
         public bool pvpEnabled;
         public bool flightEnabled;
         protected bool logHelp = true;
+
+        private readonly Lock _tpsLock = new();
+        private long _lastTpsTime;
+        private int _ticksThisSecond;
+        private float _currentTps;
+
+        public float Tps
+        {
+            get
+            {
+                lock (_tpsLock)
+                {
+                    return _currentTps;
+                }
+            }
+        }
 
         public MinecraftServer(IServerConfiguration config)
         {
@@ -211,6 +227,8 @@ namespace betareborn.Server
                 if (Init())
                 {
                     long var1 = java.lang.System.currentTimeMillis();
+                    _lastTpsTime = var1;
+                    _ticksThisSecond = 0;
 
                     for (long var3 = 0L; running; java.lang.Thread.sleep(1L))
                     {
@@ -233,6 +251,7 @@ namespace betareborn.Server
                         if (worlds[0].canSkipNight())
                         {
                             tick();
+                            _ticksThisSecond++;
                             var3 = 0L;
                         }
                         else
@@ -241,7 +260,20 @@ namespace betareborn.Server
                             {
                                 var3 -= 50L;
                                 tick();
+                                _ticksThisSecond++;
                             }
+                        }
+
+                        long tpsNow = java.lang.System.currentTimeMillis();
+                        long tpsElapsed = tpsNow - _lastTpsTime;
+                        if (tpsElapsed >= 1000L)
+                        {
+                            lock (_tpsLock)
+                            {
+                                _currentTps = _ticksThisSecond * 1000.0f / tpsElapsed;
+                            }
+                            _ticksThisSecond = 0;
+                            _lastTpsTime = tpsNow;
                         }
                     }
                 }
@@ -327,7 +359,6 @@ namespace betareborn.Server
                 GIVE_COMMANDS_COOLDOWNS.remove(var1.get(var6));
             }
 
-            Vec3D.cleanUp();
             AsyncIO.tick();
             ticks++;
 
@@ -387,7 +418,7 @@ namespace betareborn.Server
             while (pendingCommands.size() > 0)
             {
                 Command var1 = (Command)pendingCommands.remove(0);
-                commandHandler.executeCommand(var1);
+                commandHandler.ExecuteCommand(var1);
             }
         }
 
@@ -398,17 +429,17 @@ namespace betareborn.Server
 
         public abstract java.io.File getFile(string path);
 
-        public void sendMessage(string message)
+        public void SendMessage(string message)
         {
             LOGGER.info(message);
         }
 
-        public void warn(string message)
+        public void Warn(string message)
         {
             LOGGER.warning(message);
         }
 
-        public string getName()
+        public string GetName()
         {
             return "CONSOLE";
         }

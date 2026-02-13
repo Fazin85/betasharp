@@ -5,42 +5,42 @@ namespace betareborn.Entities
 {
     public class EntityHeartFX : EntityFX
     {
-        float field_25022_a;
+        float baseScale;
 
 
-        public EntityHeartFX(World var1, double var2, double var4, double var6, double var8, double var10, double var12) : this(var1, var2, var4, var6, var8, var10, var12, 2.0F)
+        public EntityHeartFX(World world, double x, double y, double z, double motionX, double motionY, double motionZ) : this(world, x, y, z, motionX, motionY, motionZ, 2.0F)
         {
         }
 
-        public EntityHeartFX(World var1, double var2, double var4, double var6, double var8, double var10, double var12, float var14) : base(var1, var2, var4, var6, 0.0D, 0.0D, 0.0D)
+        public EntityHeartFX(World world, double x, double y, double z, double motionX, double motionY, double motionZ, float particleScale) : base(world, x, y, z, 0.0D, 0.0D, 0.0D)
         {
             velocityX *= (double)0.01F;
             velocityY *= (double)0.01F;
             velocityZ *= (double)0.01F;
             velocityY += 0.1D;
-            particleScale *= 12.0F / 16.0F;
-            particleScale *= var14;
-            field_25022_a = particleScale;
+            base.particleScale *= 12.0F / 16.0F;
+            base.particleScale *= particleScale;
+            baseScale = base.particleScale;
             particleMaxAge = 16;
             noClip = false;
             particleTextureIndex = 80;
         }
 
-        public override void renderParticle(Tessellator var1, float var2, float var3, float var4, float var5, float var6, float var7)
+        public override void renderParticle(Tessellator t, float partialTick, float rotX, float rotY, float rotZ, float upX, float upZ)
         {
-            float var8 = ((float)particleAge + var2) / (float)particleMaxAge * 32.0F;
-            if (var8 < 0.0F)
+            float lifeProgress = ((float)particleAge + partialTick) / (float)particleMaxAge * 32.0F;
+            if (lifeProgress < 0.0F)
             {
-                var8 = 0.0F;
+                lifeProgress = 0.0F;
             }
 
-            if (var8 > 1.0F)
+            if (lifeProgress > 1.0F)
             {
-                var8 = 1.0F;
+                lifeProgress = 1.0F;
             }
 
-            particleScale = field_25022_a * var8;
-            base.renderParticle(var1, var2, var3, var4, var5, var6, var7);
+            particleScale = baseScale * lifeProgress;
+            base.renderParticle(t, partialTick, rotX, rotY, rotZ, upX, upZ);
         }
 
         public override void tick()

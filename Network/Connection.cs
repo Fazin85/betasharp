@@ -32,28 +32,29 @@ namespace betareborn.Network
         public static int[] TOTAL_READ_SIZE = new int[256];
         public static int[] TOTAL_SEND_SIZE = new int[256];
         public int lag = 0;
-        private int delay = 50;
+        private int delay = 0;
+        private readonly ManualResetEventSlim wakeSignal = new ManualResetEventSlim(false);
 
-        public Connection(Socket var1, string var2, NetHandler var3)
+        public Connection(Socket socket, string address, NetHandler networkHandler)
         {
-            socket = var1;
-            address = var1.getRemoteSocketAddress();
-            networkHandler = var3;
+            this.socket = socket;
+            this.address = socket.getRemoteSocketAddress();
+            this.networkHandler = networkHandler;
 
             try
             {
-                var1.setSoTimeout(30000);
-                var1.setTrafficClass(24);
+                socket.setSoTimeout(30000);
+                socket.setTrafficClass(24);
             }
-            catch (SocketException var5)
+            catch (SocketException ex)
             {
-                java.lang.System.err.println(var5.getMessage());
+                java.lang.System.err.println(ex.getMessage());
             }
 
-            inputStream = new DataInputStream(var1.getInputStream());
-            outputStream = new DataOutputStream(new BufferedOutputStream(var1.getOutputStream(), 5120));
-            reader = new NetworkReaderThread(this, var2 + " read thread");
-            writer = new NetworkWriterThread(this, var2 + " write thread");
+            inputStream = new DataInputStream(socket.getInputStream());
+            outputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream(), 65536));
+            reader = new NetworkReaderThread(this, address + " read thread");
+            writer = new NetworkWriterThread(this, address + " write thread");
             reader.start();
             writer.start();
         }
@@ -67,8 +68,8 @@ namespace betareborn.Network
         {
             if (!closed)
             {
-                object var2 = lck;
-                lock (var2)
+                object lockObj = lck;
+                lock (lockObj)
                 {
                     sendQueueSize += packet.size() + 1;
                     if (packet.worldPacket)
@@ -86,54 +87,54 @@ namespace betareborn.Network
 
         private bool write()
         {
-            bool var1 = false;
+            bool wrotePacket = false;
 
             try
             {
-                int[] var10000;
-                int var10001;
-                Packet var2;
-                object var3;
+                int[] sizeStats;
+                int packetId;
+                Packet packet;
+                object lockObj;
                 if (!sendQueue.isEmpty() && (lag == 0 || java.lang.System.currentTimeMillis() - ((Packet)sendQueue.get(0)).creationTime >= lag))
                 {
-                    var3 = lck;
-                    lock (var3)
+                    lockObj = lck;
+                    lock (lockObj)
                     {
-                        var2 = (Packet)sendQueue.remove(0);
-                        sendQueueSize -= var2.size() + 1;
+                        packet = (Packet)sendQueue.remove(0);
+                        sendQueueSize -= packet.size() + 1;
                     }
 
-                    Packet.write(var2, outputStream);
-                    var10000 = TOTAL_SEND_SIZE;
-                    var10001 = var2.getRawId();
-                    var10000[var10001] += var2.size() + 1;
-                    var1 = true;
+                    Packet.write(packet, outputStream);
+                    sizeStats = TOTAL_SEND_SIZE;
+                    packetId = packet.getRawId();
+                    sizeStats[packetId] += packet.size() + 1;
+                    wrotePacket = true;
                 }
 
                 if (delay-- <= 0 && !delayedSendQueue.isEmpty() && (lag == 0 || java.lang.System.currentTimeMillis() - ((Packet)delayedSendQueue.get(0)).creationTime >= lag))
                 {
-                    var3 = lck;
-                    lock (var3)
+                    lockObj = lck;
+                    lock (lockObj)
                     {
-                        var2 = (Packet)delayedSendQueue.remove(0);
-                        sendQueueSize -= var2.size() + 1;
+                        packet = (Packet)delayedSendQueue.remove(0);
+                        sendQueueSize -= packet.size() + 1;
                     }
 
-                    Packet.write(var2, outputStream);
-                    var10000 = TOTAL_SEND_SIZE;
-                    var10001 = var2.getRawId();
-                    var10000[var10001] += var2.size() + 1;
+                    Packet.write(packet, outputStream);
+                    sizeStats = TOTAL_SEND_SIZE;
+                    packetId = packet.getRawId();
+                    sizeStats[packetId] += packet.size() + 1;
                     delay = 0;
-                    var1 = true;
+                    wrotePacket = true;
                 }
 
-                return var1;
+                return wrotePacket;
             }
-            catch (java.lang.Exception var8)
+            catch (java.lang.Exception ex)
             {
                 if (!disconnected)
                 {
-                    disconnect(var8);
+                    disconnect(ex);
                 }
 
                 return false;
@@ -142,56 +143,61 @@ namespace betareborn.Network
 
         public void interrupt()
         {
-            reader.interrupt();
-            writer.interrupt();
+            wakeSignal.Set();
+        }
+
+        public void waitForSignal(int timeoutMs)
+        {
+            wakeSignal.Wait(timeoutMs);
+            wakeSignal.Reset();
         }
 
         private bool read()
         {
-            bool var1 = false;
+            bool receivedPacket = false;
 
             try
             {
-                Packet var2 = Packet.read(inputStream, networkHandler.isServerSide());
-                if (var2 != null)
+                Packet packet = Packet.read(inputStream, networkHandler.isServerSide());
+                if (packet != null)
                 {
-                    int[] var10000 = TOTAL_READ_SIZE;
-                    int var10001 = var2.getRawId();
-                    var10000[var10001] += var2.size() + 1;
-                    readQueue.add(var2);
-                    var1 = true;
+                    int[] sizeStats = TOTAL_READ_SIZE;
+                    int packetId = packet.getRawId();
+                    sizeStats[packetId] += packet.size() + 1;
+                    readQueue.add(packet);
+                    receivedPacket = true;
                 }
                 else
                 {
                     disconnect("disconnect.endOfStream", new object[0]);
                 }
 
-                return var1;
+                return receivedPacket;
             }
-            catch (java.lang.Exception var3)
+            catch (java.lang.Exception ex)
             {
                 if (!disconnected)
                 {
-                    disconnect(var3);
+                    disconnect(ex);
                 }
 
                 return false;
             }
         }
 
-        private void disconnect(java.lang.Exception var1)
+        private void disconnect(java.lang.Exception ex)
         {
-            var1.printStackTrace();
-            disconnect("disconnect.genericReason", new object[] { "Internal exception: " + var1.toString() });
+            ex.printStackTrace();
+            disconnect("disconnect.genericReason", new object[] { "Internal exception: " + ex.toString() });
         }
 
-        public void disconnect(string var1, params object[] var2)
+        public void disconnect(string disconnectedReason, params object[] disconnectReasonArgs)
         {
             if (open)
             {
                 disconnected = true;
-                disconnectedReason = var1;
-                disconnectReasonArgs = var2;
+                this.disconnectedReason = disconnectedReason;
+                this.disconnectReasonArgs = disconnectReasonArgs;
                 new NetworkMasterThread(this).start();
                 open = false;
 
@@ -200,7 +206,7 @@ namespace betareborn.Network
                     inputStream.close();
                     inputStream = null;
                 }
-                catch (java.lang.Throwable var6)
+                catch (java.lang.Throwable ex)
                 {
                 }
 
@@ -209,7 +215,7 @@ namespace betareborn.Network
                     outputStream.close();
                     outputStream = null;
                 }
-                catch (java.lang.Throwable var5)
+                catch (java.lang.Throwable ex)
                 {
                 }
 
@@ -218,7 +224,7 @@ namespace betareborn.Network
                     socket.close();
                     socket = null;
                 }
-                catch (java.lang.Throwable var4)
+                catch (java.lang.Throwable ex)
                 {
                 }
 
@@ -244,12 +250,12 @@ namespace betareborn.Network
                 timeout = 0;
             }
 
-            int var1 = 100;
+            int maxPacketsPerTick = 100;
 
-            while (!readQueue.isEmpty() && var1-- >= 0)
+            while (!readQueue.isEmpty() && maxPacketsPerTick-- >= 0)
             {
-                Packet var2 = (Packet)readQueue.remove(0);
-                var2.apply(networkHandler);
+                Packet packet = (Packet)readQueue.remove(0);
+                packet.apply(networkHandler);
             }
 
             interrupt();
@@ -269,7 +275,6 @@ namespace betareborn.Network
         {
             interrupt();
             closed = true;
-            reader.interrupt();
             new ThreadCloseConnection(this).start();
         }
 
@@ -278,49 +283,49 @@ namespace betareborn.Network
             return delayedSendQueue.size();
         }
 
-        public static bool isOpen(Connection var0)
+        public static bool isOpen(Connection conn)
         {
-            return var0.open;
+            return conn.open;
         }
 
-        public static bool isClosed(Connection var0)
+        public static bool isClosed(Connection conn)
         {
-            return var0.closed;
+            return conn.closed;
         }
 
-        public static bool readPacket(Connection var0)
+        public static bool readPacket(Connection conn)
         {
-            return var0.read();
+            return conn.read();
         }
 
-        public static bool writePacket(Connection var0)
+        public static bool writePacket(Connection conn)
         {
-            return var0.write();
+            return conn.write();
         }
 
-        public static DataOutputStream getOutputStream(Connection var0)
+        public static DataOutputStream getOutputStream(Connection conn)
         {
-            return var0.outputStream;
+            return conn.outputStream;
         }
 
-        public static bool isDisconnected(Connection var0)
+        public static bool isDisconnected(Connection conn)
         {
-            return var0.disconnected;
+            return conn.disconnected;
         }
 
-        public static void disconnect(Connection var0, java.lang.Exception var1)
+        public static void disconnect(Connection conn, java.lang.Exception ex)
         {
-            var0.disconnect(var1);
+            conn.disconnect(ex);
         }
 
-        public static java.lang.Thread getReader(Connection var0)
+        public static java.lang.Thread getReader(Connection conn)
         {
-            return var0.reader;
+            return conn.reader;
         }
 
-        public static java.lang.Thread getWriter(Connection var0)
+        public static java.lang.Thread getWriter(Connection conn)
         {
-            return var0.writer;
+            return conn.writer;
         }
     }
 

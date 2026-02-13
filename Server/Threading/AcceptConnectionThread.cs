@@ -24,6 +24,7 @@ namespace betareborn.Server.Threading
                     Socket socket = listener.socket.accept();
                     if (socket != null)
                     {
+                        socket.setTcpNoDelay(true);
                         InetAddress addr = socket.getInetAddress();
                         if (map.containsKey(addr) && !"127.0.0.1".Equals(addr.getHostAddress()) && java.lang.System.currentTimeMillis() - (long)map.get(addr) < 5000L)
                         {

@@ -16,14 +16,14 @@ namespace betareborn.Client.Network
         private double lerpYaw;
         private double lerpPitch;
 
-        public OtherPlayerEntity(World var1, string var2) : base(var1)
+        public OtherPlayerEntity(World world, string name) : base(world)
         {
-            name = var2;
+            base.name = name;
             standingEyeHeight = 0.0F;
             stepHeight = 0.0F;
-            if (var2 != null && var2.Length > 0)
+            if (name != null && name.Length > 0)
             {
-                skinUrl = "http://s3.amazonaws.com/MinecraftSkins/" + var2 + ".png";
+                skinUrl = "http://s3.amazonaws.com/MinecraftSkins/" + name + ".png";
             }
 
             noClip = true;
@@ -36,19 +36,19 @@ namespace betareborn.Client.Network
             standingEyeHeight = 0.0F;
         }
 
-        public override bool damage(Entity var1, int var2)
+        public override bool damage(Entity ent, int amount)
         {
             return true;
         }
 
-        public override void setPositionAndAnglesAvoidEntities(double var1, double var3, double var5, float var7, float var8, int var9)
+        public override void setPositionAndAnglesAvoidEntities(double lerpX, double lerpY, double lerpZ, float lerpYaw, float lerpPitch, int lerpSteps)
         {
-            lerpX = var1;
-            lerpY = var3;
-            lerpZ = var5;
-            lerpYaw = var7;
-            lerpPitch = var8;
-            lerpSteps = var9;
+            this.lerpX = lerpX;
+            this.lerpY = lerpY;
+            this.lerpZ = lerpZ;
+            this.lerpYaw = lerpYaw;
+            this.lerpPitch = lerpPitch;
+            this.lerpSteps = lerpSteps;
         }
 
         public override void tick()
@@ -56,16 +56,16 @@ namespace betareborn.Client.Network
             sleepOffsetY = 0.0F;
             base.tick();
             lastWalkAnimationSpeed = walkAnimationSpeed;
-            double var1 = x - prevX;
-            double var3 = z - prevZ;
-            float var5 = MathHelper.sqrt_double(var1 * var1 + var3 * var3) * 4.0F;
-            if (var5 > 1.0F)
+            double dx = x - prevX;
+            double dz = z - prevZ;
+            float horizontalDistance = MathHelper.sqrt_double(dx * dx + dz * dz) * 4.0F;
+            if (horizontalDistance > 1.0F)
             {
-                var5 = 1.0F;
+                horizontalDistance = 1.0F;
             }
 
-            walkAnimationSpeed += (var5 - walkAnimationSpeed) * 0.4F;
-            field_703_S += walkAnimationSpeed;
+            walkAnimationSpeed += (horizontalDistance - walkAnimationSpeed) * 0.4F;
+            animationPhase += walkAnimationSpeed;
         }
 
         public override float getShadowRadius()
@@ -78,64 +78,64 @@ namespace betareborn.Client.Network
             base.tickLiving();
             if (lerpSteps > 0)
             {
-                double var1 = x + (lerpX - x) / lerpSteps;
-                double var3 = y + (lerpY - y) / lerpSteps;
-                double var5 = z + (lerpZ - z) / lerpSteps;
+                double newX = x + (lerpX - x) / lerpSteps;
+                double newY = y + (lerpY - y) / lerpSteps;
+                double newZ = z + (lerpZ - z) / lerpSteps;
 
-                double var7;
-                for (var7 = lerpYaw - yaw; var7 < -180.0D; var7 += 360.0D)
+                double dYaw;
+                for (dYaw = lerpYaw - yaw; dYaw < -180.0D; dYaw += 360.0D)
                 {
                 }
 
-                while (var7 >= 180.0D)
+                while (dYaw >= 180.0D)
                 {
-                    var7 -= 360.0D;
+                    dYaw -= 360.0D;
                 }
 
-                yaw = (float)(yaw + var7 / lerpSteps);
+                yaw = (float)(yaw + dYaw / lerpSteps);
                 pitch = (float)(pitch + (lerpPitch - pitch) / lerpSteps);
                 --lerpSteps;
-                setPosition(var1, var3, var5);
+                setPosition(newX, newY, newZ);
                 setRotation(yaw, pitch);
             }
 
             prevStepBobbingAmount = stepBobbingAmount;
-            float var9 = MathHelper.sqrt_double(velocityX * velocityX + velocityZ * velocityZ);
-            float var2 = (float)java.lang.Math.atan(-velocityY * (double)0.2F) * 15.0F;
-            if (var9 > 0.1F)
+            float horizontalSpeed = MathHelper.sqrt_double(velocityX * velocityX + velocityZ * velocityZ);
+            float tiltAmount = (float)java.lang.Math.atan(-velocityY * (double)0.2F) * 15.0F;
+            if (horizontalSpeed > 0.1F)
             {
-                var9 = 0.1F;
+                horizontalSpeed = 0.1F;
             }
 
             if (!onGround || health <= 0)
             {
-                var9 = 0.0F;
+                horizontalSpeed = 0.0F;
             }
 
             if (onGround || health <= 0)
             {
-                var2 = 0.0F;
+                tiltAmount = 0.0F;
             }
 
-            stepBobbingAmount += (var9 - stepBobbingAmount) * 0.4F;
-            tilt += (var2 - tilt) * 0.8F;
+            stepBobbingAmount += (horizontalSpeed - stepBobbingAmount) * 0.4F;
+            tilt += (tiltAmount - tilt) * 0.8F;
         }
 
-        public override void setEquipmentStack(int var1, int var2, int var3)
+        public override void setEquipmentStack(int slotIndex, int itemId, int damage)
         {
-            ItemStack var4 = null;
-            if (var2 >= 0)
+            ItemStack itemStack = null;
+            if (itemId >= 0)
             {
-                var4 = new ItemStack(var2, 1, var3);
+                itemStack = new ItemStack(itemId, 1, damage);
             }
 
-            if (var1 == 0)
+            if (slotIndex == 0)
             {
-                inventory.main[inventory.selectedSlot] = var4;
+                inventory.main[inventory.selectedSlot] = itemStack;
             }
             else
             {
-                inventory.armor[var1 - 1] = var4;
+                inventory.armor[slotIndex - 1] = itemStack;
             }
 
         }

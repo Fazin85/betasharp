@@ -25,53 +25,53 @@ namespace betareborn.Entities
 
         public static Entity create(string id, World world)
         {
-            Entity var2 = null;
+            Entity entity = null;
 
             try
             {
-                Class var3 = (Class)idToClass.get(id);
-                if (var3 != null)
+                Class entityClass = (Class)idToClass.get(id);
+                if (entityClass != null)
                 {
-                    var2 = (Entity)var3.getConstructor([World.Class]).newInstance([
+                    entity = (Entity)entityClass.getConstructor([World.Class]).newInstance([
                         world
                     ]);
                 }
             }
-            catch (java.lang.Exception var4)
+            catch (java.lang.Exception ex)
             {
-                var4.printStackTrace();
+                ex.printStackTrace();
             }
 
-            return var2;
+            return entity;
         }
 
         public static Entity getEntityFromNbt(NBTTagCompound nbt, World world)
         {
-            Entity var2 = null;
+            Entity entity = null;
 
             try
             {
-                Class var3 = (Class)idToClass.get(nbt.GetString("id"));
-                if (var3 != null)
+                Class entityClass = (Class)idToClass.get(nbt.getString("id"));
+                if (entityClass != null)
                 {
-                    var2 = (Entity)var3.getConstructor([World.Class]).newInstance([world]);
+                    entity = (Entity)entityClass.getConstructor([World.Class]).newInstance([world]);
                 }
             }
-            catch (java.lang.Exception var4)
+            catch (java.lang.Exception ex)
             {
-                var4.printStackTrace();
+                ex.printStackTrace();
             }
 
-            if (var2 != null)
+            if (entity != null)
             {
-                var2.read(nbt);
+                entity.read(nbt);
             }
             else
             {
-                java.lang.System.@out.println("Skipping Entity with id " + nbt.GetString("id"));
+                java.lang.System.@out.println("Skipping Entity with id " + nbt.getString("id"));
             }
 
-            return var2;
+            return entity;
         }
 
         public static Entity? createEntityAt(string name, World world, float x, float y, float z)
@@ -81,22 +81,22 @@ namespace betareborn.Entities
             {
                 if (namesToId.TryGetValue(name, out int id))
                 {
-                    Class cls = (Class)rawIdToClass.get(Integer.valueOf(id));
-                    if (cls != null)
+                    Class entityClass = (Class)rawIdToClass.get(Integer.valueOf(id));
+                    if (entityClass != null)
                     {
-                        var ent = (Entity)cls.getConstructor(World.Class).newInstance(world);
+                        var entity = (Entity)entityClass.getConstructor(World.Class).newInstance(world);
 
-                        if (ent != null)
+                        if (entity != null)
                         {
-                            ent.setPosition(x, y, z);
-                            ent.setPositionAndAngles(x, y, z, 0, 0);
-                            if (!world.spawnEntity(ent))
+                            entity.setPosition(x, y, z);
+                            entity.setPositionAndAngles(x, y, z, 0, 0);
+                            if (!world.spawnEntity(entity))
                             {
                                 Console.Error.WriteLine($"Entity `{name}` with ID:`{id}` failed to join world.");
                             }
                         }
 
-                        return ent;
+                        return entity;
                     }
                     else
                     {
@@ -118,27 +118,27 @@ namespace betareborn.Entities
 
         public static Entity create(int rawId, World world)
         {
-            Entity var2 = null;
+            Entity entity = null;
 
             try
             {
-                Class var3 = (Class)rawIdToClass.get(Integer.valueOf(rawId));
-                if (var3 != null)
+                Class entityClass = (Class)rawIdToClass.get(Integer.valueOf(rawId));
+                if (entityClass != null)
                 {
-                    var2 = (Entity)var3.getConstructor([World.Class]).newInstance([world]);
+                    entity = (Entity)entityClass.getConstructor([World.Class]).newInstance([world]);
                 }
             }
-            catch (java.lang.Exception var4)
+            catch (java.lang.Exception ex)
             {
-                var4.printStackTrace();
+                ex.printStackTrace();
             }
 
-            if (var2 == null)
+            if (entity == null)
             {
                 java.lang.System.@out.println("Skipping Entity with id " + rawId);
             }
 
-            return var2;
+            return entity;
         }
 
         public static int getRawId(Entity entity)
@@ -158,7 +158,7 @@ namespace betareborn.Entities
             register(EntityItem.Class, "Item", 1);
             register(EntityPainting.Class, "Painting", 9);
             register(EntityLiving.Class, "Mob", 48);
-            register(EntityMob.Class, "Monster", 49);
+            register(EntityMonster.Class, "Monster", 49);
             register(EntityCreeper.Class, "Creeper", 50);
             register(EntitySkeleton.Class, "Skeleton", 51);
             register(EntitySpider.Class, "Spider", 52);

@@ -4,134 +4,101 @@ using betareborn.Client.Rendering.Terrain;
 using betareborn.Util;
 using betareborn.Worlds;
 using Silk.NET.Maths;
-using System.Collections.Concurrent;
 
 namespace betareborn.Client.Rendering.Chunks
 {
-    public class ChunkMeshGenerator
+    public struct MeshBuildResult
     {
-        public class MeshBuildResult
+        public PooledList<ChunkVertex> Solid;
+        public PooledList<ChunkVertex> Translucent;
+        public bool IsLit;
+        public Vector3D<int> Pos;
+        public long Version;
+
+        public readonly void Dispose()
         {
-            public PooledList<ChunkVertex>? Solid;
-            public PooledList<ChunkVertex>? Translucent;
-            public bool IsLit;
-            public Vector3D<int> Pos;
-            public long Version;
+            Solid?.Dispose();
+            Translucent?.Dispose();
+        }
+    }
+
+    public class ChunkMeshGenerator : IDisposable
+    {
+        private readonly PooledQueue<MeshBuildResult> results = new();
+        private readonly ObjectPool<PooledList<ChunkVertex>> listPool =
+            new(() => new PooledList<ChunkVertex>(), 64);
+
+        private ushort maxConcurrentTasks;
+        private SemaphoreSlim? concurrencySemaphore;
+
+        public ChunkMeshGenerator(ushort maxConcurrentTasks = 0)
+        {
+            MaxConcurrentTasks = maxConcurrentTasks;
         }
 
-        private class MeshBuildTask
+        public MeshBuildResult? Mesh
         {
-            public required WorldRegionSnapshot Cache;
-            public Vector3D<int> Pos;
-            public long Version;
-        }
-
-        private readonly BlockingCollection<MeshBuildTask> buildTasks = [];
-        private readonly BlockingCollection<MeshBuildTask> priorityBuildTasks = [];
-        private readonly BlockingCollection<MeshBuildResult> results = [];
-        private readonly Thread[] workers;
-        private readonly CancellationTokenSource cancellationTokenSource = new();
-
-        public int PendingTaskCount => buildTasks.Count + priorityBuildTasks.Count;
-        public int CompletedMeshCount => results.Count;
-
-        public ChunkMeshGenerator(int workerCount)
-        {
-            workers = new Thread[workerCount];
-
-            for (int i = 0; i < workerCount; i++)
+            get
             {
-                workers[i] = new Thread(WorkerThread)
+                lock (results)
                 {
-                    IsBackground = true
-                };
-                workers[i].Start();
-            }
-        }
-
-        public void MeshChunk(World world, Vector3D<int> pos, long version, bool priority = false)
-        {
-            if (buildTasks.IsAddingCompleted)
-            {
-                return;
-            }
-
-            WorldRegionSnapshot cache = new(world, pos.X - 1, pos.Y - 1, pos.Z - 1,
-                pos.X + SubChunkRenderer.SIZE + 1, pos.Y + SubChunkRenderer.SIZE + 1, pos.Z + SubChunkRenderer.SIZE + 1);
-
-            MeshBuildTask task = new() { Cache = cache, Pos = pos, Version = version };
-
-            try
-            {
-                if (priority)
-                {
-                    priorityBuildTasks.Add(task);
-                }
-                else
-                {
-                    buildTasks.Add(task);
+                    if (results.IsEmpty) return null;
+                    return results.Dequeue();
                 }
             }
-            catch (InvalidOperationException)
+        }
+
+        public ushort MaxConcurrentTasks
+        {
+            get => maxConcurrentTasks;
+            set
             {
-                // Collection was marked as complete, dispose the cache
-                cache.Dispose();
+                maxConcurrentTasks = value;
+
+                concurrencySemaphore?.Dispose();
+                concurrencySemaphore = maxConcurrentTasks > 0
+                    ? new SemaphoreSlim(maxConcurrentTasks, maxConcurrentTasks)
+                    : null;
             }
         }
 
-        public void Stop()
+        public void MeshChunk(World world, Vector3D<int> pos, long version)
         {
-            buildTasks.CompleteAdding();
-            priorityBuildTasks.CompleteAdding();
+            WorldRegionSnapshot cache = new(
+                world,
+                pos.X - 1, pos.Y - 1, pos.Z - 1,
+                pos.X + SubChunkRenderer.Size + 1,
+                pos.Y + SubChunkRenderer.Size + 1,
+                pos.Z + SubChunkRenderer.Size + 1
+            );
 
-            cancellationTokenSource.Cancel();
-
-            foreach (var thread in workers)
+            Task.Run(async () =>
             {
-                thread.Join();
-            }
+                if (concurrencySemaphore != null)
+                    await concurrencySemaphore.WaitAsync();
 
-            buildTasks.Dispose();
-            priorityBuildTasks.Dispose();
-            results.Dispose();
-            cancellationTokenSource.Dispose();
-        }
-
-        public MeshBuildResult? GetMesh()
-        {
-            results.TryTake(out MeshBuildResult? result);
-            return result;
-        }
-
-        private void WorkerThread()
-        {
-            try
-            {
-                while (!cancellationTokenSource.Token.IsCancellationRequested)
+                try
                 {
-                    if (priorityBuildTasks.TryTake(out MeshBuildTask? task, 0, cancellationTokenSource.Token))
-                    {
-                        results.Add(MeshChunk(task.Pos, task.Version, task.Cache), cancellationTokenSource.Token);
-                    }
-                    else if (buildTasks.TryTake(out task, 100, cancellationTokenSource.Token))
-                    {
-                        results.Add(MeshChunk(task.Pos, task.Version, task.Cache), cancellationTokenSource.Token);
-                    }
+                    var mesh = GenerateMesh(pos, version, cache);
+                    lock (results)
+                        results.Enqueue(mesh);
                 }
-            }
-            catch (OperationCanceledException)
-            {
-            }
+                finally
+                {
+                    cache.Dispose();
+                    concurrencySemaphore?.Release();
+                }
+            });
         }
 
-        private static MeshBuildResult MeshChunk(Vector3D<int> pos, long version, WorldRegionSnapshot cache)
+        private MeshBuildResult GenerateMesh(Vector3D<int> pos, long version, WorldRegionSnapshot cache)
         {
             int minX = pos.X;
             int minY = pos.Y;
             int minZ = pos.Z;
-            int maxX = pos.X + SubChunkRenderer.SIZE;
-            int maxY = pos.Y + SubChunkRenderer.SIZE;
-            int maxZ = pos.Z + SubChunkRenderer.SIZE;
+            int maxX = pos.X + SubChunkRenderer.Size;
+            int maxY = pos.Y + SubChunkRenderer.Size;
+            int maxZ = pos.Z + SubChunkRenderer.Size;
 
             var result = new MeshBuildResult
             {
@@ -163,13 +130,9 @@ namespace betareborn.Client.Rendering.Chunks
                             int blockPass = b.getRenderLayer();
 
                             if (blockPass != pass)
-                            {
                                 hasNextPass = true;
-                            }
                             else
-                            {
                                 rb.renderBlockByRenderType(b, x, y, z);
-                            }
                         }
                     }
                 }
@@ -180,25 +143,26 @@ namespace betareborn.Client.Rendering.Chunks
                 var verts = tess.endCaptureChunkVertices();
                 if (verts.Count > 0)
                 {
+                    var list = listPool.Get();
+                    list.AddRange(verts.Span);
+
                     if (pass == 0)
-                    {
-                        result.Solid = verts;
-                    }
+                        result.Solid = list;
                     else
-                    {
-                        result.Translucent = verts;
-                    }
+                        result.Translucent = list;
                 }
 
-                if (!hasNextPass)
-                {
-                    break;
-                }
+                if (!hasNextPass) break;
             }
 
             result.IsLit = cache.getIsLit();
-            cache.Dispose();
             return result;
+        }
+
+        public void Dispose()
+        {
+            results.Dispose();
+            listPool.Dispose();
         }
     }
 }

@@ -198,7 +198,7 @@ namespace betareborn
                     var8 = (double)var1 + var6.maxX + (double)var7;
                 }
 
-                addEffect((new EntityDiggingFX(worldObj, var8, var10, var12, 0.0D, 0.0D, 0.0D, var6, var4, worldObj.getBlockMeta(var1, var2, var3))).func_4041_a(var1, var2, var3).func_407_b(0.2F).func_405_d(0.6F));
+                addEffect((new EntityDiggingFX(worldObj, var8, var10, var12, 0.0D, 0.0D, 0.0D, var6, var4, worldObj.getBlockMeta(var1, var2, var3))).func_4041_a(var1, var2, var3).scaleVelocity(0.2F).scaleSize(0.6F));
             }
         }
 

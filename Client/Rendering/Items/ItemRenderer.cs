@@ -26,8 +26,8 @@ namespace betareborn.Client.Rendering.Items
             random.setSeed(187L);
             ItemStack var10 = var1.stack;
             GLManager.GL.PushMatrix();
-            float var11 = MathHelper.sin((var1.age + var9) / 10.0F + var1.field_804_d) * 0.1F + 0.1F;
-            float var12 = ((var1.age + var9) / 20.0F + var1.field_804_d) * (180.0F / (float)java.lang.Math.PI);
+            float var11 = MathHelper.sin((var1.age + var9) / 10.0F + var1.bobPhase) * 0.1F + 0.1F;
+            float var12 = ((var1.age + var9) / 20.0F + var1.bobPhase) * (180.0F / (float)java.lang.Math.PI);
             byte var13 = 1;
             if (var1.stack.count > 1)
             {

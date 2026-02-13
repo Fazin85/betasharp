@@ -7,18 +7,19 @@ namespace betareborn.Client.Guis
 
         private string errorMessage;
         private string errorDetail;
+        private const int BUTTON_TO_MENU = 0;
 
-        public GuiConnectFailed(string var1, string var2, params object[] var3)
+        public GuiConnectFailed(string messageKey, string detailKey, params object[] formatArgs)
         {
-            TranslationStorage var4 = TranslationStorage.getInstance();
-            errorMessage = var4.translateKey(var1);
-            if (var3 != null)
+            TranslationStorage translations = TranslationStorage.getInstance();
+            errorMessage = translations.translateKey(messageKey);
+            if (formatArgs != null)
             {
-                errorDetail = var4.translateKeyFormat(var2, var3);
+                errorDetail = translations.translateKeyFormat(detailKey, formatArgs);
             }
             else
             {
-                errorDetail = var4.translateKey(var2);
+                errorDetail = translations.translateKey(detailKey);
             }
 
         }
@@ -34,16 +35,18 @@ namespace betareborn.Client.Guis
         public override void initGui()
         {
             mc.stopInternalServer();
-            TranslationStorage var1 = TranslationStorage.getInstance();
+            TranslationStorage translations = TranslationStorage.getInstance();
             controlList.clear();
-            controlList.add(new GuiButton(0, width / 2 - 100, height / 4 + 120 + 12, var1.translateKey("gui.toMenu")));
+            controlList.add(new GuiButton(BUTTON_TO_MENU, width / 2 - 100, height / 4 + 120 + 12, translations.translateKey("gui.toMenu")));
         }
 
         protected override void actionPerformed(GuiButton var1)
         {
-            if (var1.id == 0)
+            switch (var1.id)
             {
-                mc.displayGuiScreen(new GuiMainMenu());
+                case BUTTON_TO_MENU:
+                    mc.displayGuiScreen(new GuiMainMenu());
+                    break;
             }
 
         }

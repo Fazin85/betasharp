@@ -1,7 +1,7 @@
 ﻿using java.nio;
 using System.Reflection;
 
-namespace betareborn
+namespace betareborn.Util
 {
     public static class BufferHelper
     {

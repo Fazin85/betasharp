@@ -21,24 +21,24 @@ namespace betareborn.Network.Packets.Play
         {
         }
 
-        public PlayerMovePacket(bool var1)
+        public PlayerMovePacket(bool onGround)
         {
-            onGround = var1;
+            this.onGround = onGround;
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onPlayerMove(this);
+            handler.onPlayerMove(this);
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            onGround = var1.read() != 0;
+            onGround = stream.read() != 0;
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.write(onGround ? 1 : 0);
+            stream.write(onGround ? 1 : 0);
         }
 
         public override int size()

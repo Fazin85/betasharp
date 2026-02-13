@@ -29,56 +29,56 @@ namespace betareborn.Network.Packets.S2CPlay
             this.positions = new short[size];
             blockRawIds = new byte[size];
             blockMetadata = new byte[size];
-            Chunk var6 = world.getChunk(x, z);
+            Chunk chunk = world.getChunk(x, z);
 
-            for (int var7 = 0; var7 < size; var7++)
+            for (int i = 0; i < size; i++)
             {
-                int var8 = positions[var7] >> 12 & 15;
-                int var9 = positions[var7] >> 8 & 15;
-                int var10 = positions[var7] & 255;
-                this.positions[var7] = positions[var7];
-                blockRawIds[var7] = (byte)var6.getBlockId(var8, var10, var9);
-                blockMetadata[var7] = (byte)var6.getBlockMeta(var8, var10, var9);
+                int blockX = positions[i] >> 12 & 15;
+                int blockZ = positions[i] >> 8 & 15;
+                int blockY = positions[i] & 255;
+                this.positions[i] = positions[i];
+                blockRawIds[i] = (byte)chunk.getBlockId(blockX, blockY, blockZ);
+                blockMetadata[i] = (byte)chunk.getBlockMeta(blockX, blockY, blockZ);
             }
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            x = var1.readInt();
-            z = var1.readInt();
-            _size = var1.readShort() & '\uffff';
+            x = stream.readInt();
+            z = stream.readInt();
+            _size = stream.readShort() & '\uffff';
             positions = new short[_size];
 
             blockRawIds = new byte[_size];
             blockMetadata = new byte[_size];
 
-            for (int var2 = 0; var2 < _size; ++var2)
+            for (int i = 0; i < _size; ++i)
             {
-                positions[var2] = var1.readShort();
+                positions[i] = stream.readShort();
             }
 
-            var1.readFully(blockRawIds);
-            var1.readFully(blockMetadata);
+            stream.readFully(blockRawIds);
+            stream.readFully(blockMetadata);
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(x);
-            var1.writeInt(z);
-            var1.writeShort((short)_size);
+            stream.writeInt(x);
+            stream.writeInt(z);
+            stream.writeShort((short)_size);
 
-            for (int var2 = 0; var2 < _size; ++var2)
+            for (int i = 0; i < _size; ++i)
             {
-                var1.writeShort(positions[var2]);
+                stream.writeShort(positions[i]);
             }
 
-            var1.write(blockRawIds);
-            var1.write(blockMetadata);
+            stream.write(blockRawIds);
+            stream.write(blockMetadata);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onChunkDeltaUpdate(this);
+            handler.onChunkDeltaUpdate(this);
         }
 
         public override int size()

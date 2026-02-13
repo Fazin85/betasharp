@@ -31,13 +31,13 @@ namespace betareborn.Server.Network
             tickCounter++;
             if (mining)
             {
-                int var1 = tickCounter - startMiningTime;
-                int var2 = world.getBlockId(miningX, miningY, miningZ);
-                if (var2 != 0)
+                int miningTicks = tickCounter - startMiningTime;
+                int blockId = world.getBlockId(miningX, miningY, miningZ);
+                if (blockId != 0)
                 {
-                    Block var3 = Block.BLOCKS[var2];
-                    float var4 = var3.getHardness(player) * (var1 + 1);
-                    if (var4 >= 1.0F)
+                    Block block = Block.BLOCKS[blockId];
+                    float breakProgress = block.getHardness(player) * (miningTicks + 1);
+                    if (breakProgress >= 1.0F)
                     {
                         mining = false;
                         tryBreakBlock(miningX, miningY, miningZ);
@@ -54,13 +54,13 @@ namespace betareborn.Server.Network
         {
             world.extinguishFire(null, x, y, z, direction);
             failedMiningStartTime = tickCounter;
-            int var5 = world.getBlockId(x, y, z);
-            if (var5 > 0)
+            int blockId = world.getBlockId(x, y, z);
+            if (blockId > 0)
             {
-                Block.BLOCKS[var5].onBlockBreakStart(world, x, y, z, player);
+                Block.BLOCKS[blockId].onBlockBreakStart(world, x, y, z, player);
             }
 
-            if (var5 > 0 && Block.BLOCKS[var5].getHardness(player) >= 1.0F)
+            if (blockId > 0 && Block.BLOCKS[blockId].getHardness(player) >= 1.0F)
             {
                 tryBreakBlock(x, y, z);
             }
@@ -76,13 +76,13 @@ namespace betareborn.Server.Network
         {
             if (x == failedMiningX && y == failedMiningY && z == failedMiningZ)
             {
-                int var4 = tickCounter - failedMiningStartTime;
-                int var5 = world.getBlockId(x, y, z);
-                if (var5 != 0)
+                int ticksSinceFailedStart = tickCounter - failedMiningStartTime;
+                int blockId = world.getBlockId(x, y, z);
+                if (blockId != 0)
                 {
-                    Block var6 = Block.BLOCKS[var5];
-                    float var7 = var6.getHardness(player) * (var4 + 1);
-                    if (var7 >= 0.7F)
+                    Block block = Block.BLOCKS[blockId];
+                    float breakProgress = block.getHardness(player) * (ticksSinceFailedStart + 1);
+                    if (breakProgress >= 0.7F)
                     {
                         tryBreakBlock(x, y, z);
                     }
@@ -100,51 +100,51 @@ namespace betareborn.Server.Network
 
         public bool finishMining(int x, int y, int z)
         {
-            Block var4 = Block.BLOCKS[world.getBlockId(x, y, z)];
-            int var5 = world.getBlockMeta(x, y, z);
-            bool var6 = world.setBlock(x, y, z, 0);
-            if (var4 != null && var6)
+            Block block = Block.BLOCKS[world.getBlockId(x, y, z)];
+            int blockMeta = world.getBlockMeta(x, y, z);
+            bool success = world.setBlock(x, y, z, 0);
+            if (block != null && success)
             {
-                var4.onMetadataChange(world, x, y, z, var5);
+                block.onMetadataChange(world, x, y, z, blockMeta);
             }
 
-            return var6;
+            return success;
         }
 
         public bool tryBreakBlock(int x, int y, int z)
         {
             int blockId = world.getBlockId(x, y, z);
-            int var5 = world.getBlockMeta(x, y, z);
+            int blockMeta = world.getBlockMeta(x, y, z);
             world.worldEvent(player, 2001, x, y, z, blockId + world.getBlockMeta(x, y, z) * 256);
-            bool var6 = finishMining(x, y, z);
-            ItemStack var7 = player.getHand();
-            if (var7 != null)
+            bool success = finishMining(x, y, z);
+            ItemStack itemStack = player.getHand();
+            if (itemStack != null)
             {
-                var7.postMine(blockId, x, y, z, player);
-                if (var7.count == 0)
+                itemStack.postMine(blockId, x, y, z, player);
+                if (itemStack.count == 0)
                 {
-                    var7.onRemoved(player);
+                    itemStack.onRemoved(player);
                     player.clearStackInHand();
                 }
             }
 
-            if (var6 && player.canHarvest(Block.BLOCKS[blockId]))
+            if (success && player.canHarvest(Block.BLOCKS[blockId]))
             {
-                Block.BLOCKS[blockId].afterBreak(world, player, x, y, z, var5);
+                Block.BLOCKS[blockId].afterBreak(world, player, x, y, z, blockMeta);
                 ((ServerPlayerEntity)player).networkHandler.sendPacket(new BlockUpdateS2CPacket(x, y, z, world));
             }
 
-            return var6;
+            return success;
         }
 
         public bool interactItem(EntityPlayer player, World world, ItemStack stack)
         {
-            int var4 = stack.count;
-            ItemStack var5 = stack.use(world, player);
-            if (var5 != stack || var5 != null && var5.count != var4)
+            int count = stack.count;
+            ItemStack itemStack = stack.use(world, player);
+            if (itemStack != stack || itemStack != null && itemStack.count != count)
             {
-                player.inventory.main[player.inventory.selectedSlot] = var5;
-                if (var5.count == 0)
+                player.inventory.main[player.inventory.selectedSlot] = itemStack;
+                if (itemStack.count == 0)
                 {
                     player.inventory.main[player.inventory.selectedSlot] = null;
                 }
@@ -159,8 +159,8 @@ namespace betareborn.Server.Network
 
         public bool interactBlock(EntityPlayer player, World world, ItemStack stack, int x, int y, int z, int side)
         {
-            int var8 = world.getBlockId(x, y, z);
-            if (var8 > 0 && Block.BLOCKS[var8].onUse(world, x, y, z, player))
+            int blockId = world.getBlockId(x, y, z);
+            if (blockId > 0 && Block.BLOCKS[blockId].onUse(world, x, y, z, player))
             {
                 return true;
             }

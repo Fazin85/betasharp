@@ -5,15 +5,15 @@ namespace betareborn.Entities
     public class EntitySplashFX : EntityRainFX
     {
 
-        public EntitySplashFX(World var1, double var2, double var4, double var6, double var8, double var10, double var12) : base(var1, var2, var4, var6)
+        public EntitySplashFX(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) : base(world, x, y, z)
         {
             particleGravity = 0.04F;
             ++particleTextureIndex;
-            if (var10 == 0.0D && (var8 != 0.0D || var12 != 0.0D))
+            if (velocityY == 0.0D && (velocityX != 0.0D || velocityZ != 0.0D))
             {
-                velocityX = var8;
-                velocityY = var10 + 0.1D;
-                velocityZ = var12;
+                base.velocityX = velocityX;
+                base.velocityY = velocityY + 0.1D;
+                base.velocityZ = velocityZ;
             }
 
         }

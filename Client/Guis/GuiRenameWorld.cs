@@ -7,35 +7,37 @@ namespace betareborn.Client.Guis
 {
     public class GuiRenameWorld : GuiScreen
     {
+        private const int BUTTON_RENAME = 0;
+        private const int BUTTON_CANCEL = 1;
 
-        private GuiScreen field_22112_a;
-        private GuiTextField field_22114_h;
-        private readonly string field_22113_i;
+        private GuiScreen parentScreen;
+        private GuiTextField nameInputField;
+        private readonly string worldFolderName;
 
-        public GuiRenameWorld(GuiScreen var1, string var2)
+        public GuiRenameWorld(GuiScreen parentScreen, string worldFolderName)
         {
-            field_22112_a = var1;
-            field_22113_i = var2;
+            this.parentScreen = parentScreen;
+            this.worldFolderName = worldFolderName;
         }
 
         public override void updateScreen()
         {
-            field_22114_h.updateCursorCounter();
+            nameInputField.updateCursorCounter();
         }
 
         public override void initGui()
         {
-            TranslationStorage var1 = TranslationStorage.getInstance();
+            TranslationStorage translations = TranslationStorage.getInstance();
             Keyboard.enableRepeatEvents(true);
             controlList.clear();
-            controlList.add(new GuiButton(0, width / 2 - 100, height / 4 + 96 + 12, var1.translateKey("selectWorld.renameButton")));
-            controlList.add(new GuiButton(1, width / 2 - 100, height / 4 + 120 + 12, var1.translateKey("gui.cancel")));
-            WorldStorageSource var2 = mc.getSaveLoader();
-            WorldProperties var3 = var2.getProperties(field_22113_i);
-            string var4 = var3.getWorldName();
-            field_22114_h = new GuiTextField(this, fontRenderer, width / 2 - 100, 60, 200, 20, var4);
-            field_22114_h.isFocused = true;
-            field_22114_h.setMaxStringLength(32);
+            controlList.add(new GuiButton(BUTTON_RENAME, width / 2 - 100, height / 4 + 96 + 12, translations.translateKey("selectWorld.renameButton")));
+            controlList.add(new GuiButton(BUTTON_CANCEL, width / 2 - 100, height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
+            WorldStorageSource worldStorage = mc.getSaveLoader();
+            WorldProperties worldProperties = worldStorage.getProperties(worldFolderName);
+            string currentWorldName = worldProperties.getWorldName();
+            nameInputField = new GuiTextField(this, fontRenderer, width / 2 - 100, 60, 200, 20, currentWorldName);
+            nameInputField.isFocused = true;
+            nameInputField.setMaxStringLength(32);
         }
 
         public override void onGuiClosed()
@@ -43,28 +45,28 @@ namespace betareborn.Client.Guis
             Keyboard.enableRepeatEvents(false);
         }
 
-        protected override void actionPerformed(GuiButton var1)
+        protected override void actionPerformed(GuiButton button)
         {
-            if (var1.enabled)
+            if (button.enabled)
             {
-                if (var1.id == 1)
+                switch (button.id)
                 {
-                    mc.displayGuiScreen(field_22112_a);
+                    case BUTTON_CANCEL:
+                        mc.displayGuiScreen(parentScreen);
+                        break;
+                    case BUTTON_RENAME:
+                        WorldStorageSource worldStorage = mc.getSaveLoader();
+                        worldStorage.rename(worldFolderName, nameInputField.getText().Trim());
+                        mc.displayGuiScreen(parentScreen);
+                        break;
                 }
-                else if (var1.id == 0)
-                {
-                    WorldStorageSource var2 = mc.getSaveLoader();
-                    var2.rename(field_22113_i, field_22114_h.getText().Trim());
-                    mc.displayGuiScreen(field_22112_a);
-                }
-
             }
         }
 
         protected override void keyTyped(char eventChar, int eventKey)
         {
-            field_22114_h.textboxKeyTyped(eventChar, eventKey);
-            ((GuiButton)controlList.get(0)).enabled = field_22114_h.getText().Trim().Length > 0;
+            nameInputField.textboxKeyTyped(eventChar, eventKey);
+            ((GuiButton)controlList.get(0)).enabled = nameInputField.getText().Trim().Length > 0;
             if (eventChar == 13)
             {
                 actionPerformed((GuiButton)controlList.get(0));
@@ -72,20 +74,20 @@ namespace betareborn.Client.Guis
 
         }
 
-        protected override void mouseClicked(int var1, int var2, int var3)
+        protected override void mouseClicked(int x, int y, int button)
         {
-            base.mouseClicked(var1, var2, var3);
-            field_22114_h.mouseClicked(var1, var2, var3);
+            base.mouseClicked(x, y, button);
+            nameInputField.mouseClicked(x, y, button);
         }
 
-        public override void render(int var1, int var2, float var3)
+        public override void render(int mouseX, int mouseY, float partialTicks)
         {
-            TranslationStorage var4 = TranslationStorage.getInstance();
+            TranslationStorage translations = TranslationStorage.getInstance();
             drawDefaultBackground();
-            drawCenteredString(fontRenderer, var4.translateKey("selectWorld.renameTitle"), width / 2, height / 4 - 60 + 20, 16777215);
-            drawString(fontRenderer, var4.translateKey("selectWorld.enterName"), width / 2 - 100, 47, 10526880);
-            field_22114_h.drawTextBox();
-            base.render(var1, var2, var3);
+            drawCenteredString(fontRenderer, translations.translateKey("selectWorld.renameTitle"), width / 2, height / 4 - 60 + 20, 16777215);
+            drawString(fontRenderer, translations.translateKey("selectWorld.enterName"), width / 2 - 100, 47, 10526880);
+            nameInputField.drawTextBox();
+            base.render(mouseX, mouseY, partialTicks);
         }
     }
 

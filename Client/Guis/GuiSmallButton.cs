@@ -3,25 +3,25 @@ namespace betareborn.Client.Guis
     public class GuiSmallButton : GuiButton
     {
 
-        private readonly EnumOptions enumOptions;
+        private readonly EnumOptions optionEnum;
 
-        public GuiSmallButton(int x, int y, int width, string var4) : this(x, y, width, null, var4)
+        public GuiSmallButton(int id, int x, int y, string displayStr) : this(id, x, y, null, displayStr)
         {
         }
 
-        public GuiSmallButton(int x, int y, int width, int wid, int hei, string displayStr) : base(x, y, width, wid, hei, displayStr)
+        public GuiSmallButton(int id, int x, int y, int buttonWidth, int buttonHeight, string displayStr) : base(id, x, y, buttonWidth, buttonHeight, displayStr)
         {
-            enumOptions = null;
+            optionEnum = null;
         }
 
-        public GuiSmallButton(int x, int y, int width, EnumOptions var4, string var5) : base(x, y, width, 150, 20, var5)
+        public GuiSmallButton(int id, int x, int y, EnumOptions option, string displayStr) : base(id, x, y, 150, 20, displayStr)
         {
-            enumOptions = var4;
+            optionEnum = option;
         }
 
         public EnumOptions returnEnumOptions()
         {
-            return enumOptions;
+            return optionEnum;
         }
     }
 

@@ -10,12 +10,13 @@ namespace betareborn.Client.Guis
 
         private ClientNetworkHandler clientHandler;
         private bool cancelled = false;
+        private const int BUTTON_CANCEL = 0;
 
-        public GuiConnecting(Minecraft var1, string var2, int var3)
+        public GuiConnecting(Minecraft mc, string host, int port)
         {
-            java.lang.System.@out.println("Connecting to " + var2 + ", " + var3);
-            var1.changeWorld1(null);
-            new ThreadConnectToServer(this, var1, var2, var3).start();
+            java.lang.System.@out.println("Connecting to " + host + ", " + port);
+            mc.changeWorld1(null);
+            new ThreadConnectToServer(this, mc, host, port).start();
         }
 
         public override void updateScreen()
@@ -33,57 +34,59 @@ namespace betareborn.Client.Guis
 
         public override void initGui()
         {
-            TranslationStorage var1 = TranslationStorage.getInstance();
+            TranslationStorage translations = TranslationStorage.getInstance();
             controlList.clear();
-            controlList.add(new GuiButton(0, width / 2 - 100, height / 4 + 120 + 12, var1.translateKey("gui.cancel")));
+            controlList.add(new GuiButton(BUTTON_CANCEL, width / 2 - 100, height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
         }
 
-        protected override void actionPerformed(GuiButton var1)
+        protected override void actionPerformed(GuiButton button)
         {
-            if (var1.id == 0)
+            switch (button.id)
             {
-                cancelled = true;
-                if (clientHandler != null)
-                {
-                    clientHandler.disconnect();
-                }
+                case BUTTON_CANCEL:
+                    cancelled = true;
+                    if (clientHandler != null)
+                    {
+                        clientHandler.disconnect();
+                    }
 
-                mc.displayGuiScreen(new GuiMainMenu());
+                    mc.displayGuiScreen(new GuiMainMenu());
+                    break;
             }
 
         }
 
-        public override void render(int var1, int var2, float var3)
+        public override void render(int mouseX, int mouseY, float partialTicks)
         {
             drawDefaultBackground();
-            TranslationStorage var4 = TranslationStorage.getInstance();
+            TranslationStorage translations = TranslationStorage.getInstance();
             if (clientHandler == null)
             {
-                drawCenteredString(fontRenderer, var4.translateKey("connect.connecting"), width / 2, height / 2 - 50, 16777215);
+                drawCenteredString(fontRenderer, translations.translateKey("connect.connecting"), width / 2, height / 2 - 50, 16777215);
                 drawCenteredString(fontRenderer, "", width / 2, height / 2 - 10, 16777215);
             }
             else
             {
-                drawCenteredString(fontRenderer, var4.translateKey("connect.authorizing"), width / 2, height / 2 - 50, 16777215);
+                drawCenteredString(fontRenderer, translations.translateKey("connect.authorizing"), width / 2, height / 2 - 50, 16777215);
                 drawCenteredString(fontRenderer, clientHandler.field_1209_a, width / 2, height / 2 - 10, 16777215);
             }
 
-            base.render(var1, var2, var3);
+            base.render(mouseX, mouseY, partialTicks);
         }
 
-        public static ClientNetworkHandler setNetClientHandler(GuiConnecting var0, ClientNetworkHandler var1)
+        public static ClientNetworkHandler setNetClientHandler(GuiConnecting guiConnecting, ClientNetworkHandler handler)
         {
-            return var0.clientHandler = var1;
+            return guiConnecting.clientHandler = handler;
         }
 
-        public static bool isCancelled(GuiConnecting var0)
+        public static bool isCancelled(GuiConnecting guiConnecting)
         {
-            return var0.cancelled;
+            return guiConnecting.cancelled;
         }
 
-        public static ClientNetworkHandler getNetClientHandler(GuiConnecting var0)
+        public static ClientNetworkHandler getNetClientHandler(GuiConnecting guiConnecting)
         {
-            return var0.clientHandler;
+            return guiConnecting.clientHandler;
         }
     }
 

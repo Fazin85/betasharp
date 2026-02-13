@@ -47,25 +47,7 @@ namespace betareborn.Client.Guis
                         string msg = message.Trim();
                         if (msg.Length > 0)
                         {
-                            bool isCommand = Minecraft.lineIsCommand(msg);
-
-                            if (isCommand)
-                            {
-                                if (mc.world.isRemote)
-                                {
-                                    mc.ingameGUI.addChatMessage("Cannot execute commands in multiplayer!");
-                                    mc.displayGuiScreen(null);
-                                    break;
-                                }
-                                else
-                                {
-                                    CommandService.Execute(mc, msg);
-                                }
-                            }
-                            else
-                            {
-                                mc.player.sendChatMessage(msg);
-                            }
+                            mc.player.sendChatMessage(msg);
                         }
 
                         mc.displayGuiScreen(null);

@@ -14,27 +14,27 @@ namespace betareborn.Network.Packets.C2SPlay
         {
         }
 
-        public ClientCommandC2SPacket(Entity var1, int var2)
+        public ClientCommandC2SPacket(Entity ent, int mode)
         {
-            entityId = var1.id;
-            mode = var2;
+            entityId = ent.id;
+            this.mode = mode;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            entityId = var1.readInt();
-            mode = (sbyte)var1.readByte();
+            entityId = stream.readInt();
+            mode = (sbyte)stream.readByte();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(entityId);
-            var1.writeByte(mode);
+            stream.writeInt(entityId);
+            stream.writeByte(mode);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.handleClientCommand(this);
+            handler.handleClientCommand(this);
         }
 
         public override int size()

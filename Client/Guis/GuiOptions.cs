@@ -4,82 +4,82 @@ namespace betareborn.Client.Guis
 {
     public class GuiOptions : GuiScreen
     {
+        private const int BUTTON_VIDEO_SETTINGS = 101;
+        private const int BUTTON_CONTROLS = 100;
+        private const int BUTTON_DONE = 200;
 
         private GuiScreen parentScreen;
         protected string screenTitle = "Options";
         private GameOptions options;
-        private static EnumOptions[] field_22135_k = new EnumOptions[] { EnumOptions.MUSIC, EnumOptions.SOUND, EnumOptions.INVERT_MOUSE, EnumOptions.SENSITIVITY, EnumOptions.DIFFICULTY };
+        private static EnumOptions[] availableOptions = new EnumOptions[] { EnumOptions.MUSIC, EnumOptions.SOUND, EnumOptions.INVERT_MOUSE, EnumOptions.SENSITIVITY, EnumOptions.DIFFICULTY };
 
-        public GuiOptions(GuiScreen var1, GameOptions var2)
+        public GuiOptions(GuiScreen parentScreen, GameOptions gameOptions)
         {
-            parentScreen = var1;
-            options = var2;
+            this.parentScreen = parentScreen;
+            this.options = gameOptions;
         }
 
         public override void initGui()
         {
-            TranslationStorage var1 = TranslationStorage.getInstance();
-            screenTitle = var1.translateKey("options.title");
-            int var2 = 0;
-            EnumOptions[] var3 = field_22135_k;
-            int var4 = var3.Length;
+            TranslationStorage translations = TranslationStorage.getInstance();
+            screenTitle = translations.translateKey("options.title");
+            int rowIndex = 0;
+            EnumOptions[] optionsToDisplay = availableOptions;
+            int optionsLength = optionsToDisplay.Length;
 
-            for (int var5 = 0; var5 < var4; ++var5)
+            for (int i = 0; i < optionsLength; ++i)
             {
-                EnumOptions var6 = var3[var5];
-                if (!var6.getEnumFloat())
+                EnumOptions currentOption = optionsToDisplay[i];
+                if (!currentOption.getEnumFloat())
                 {
-                    controlList.add(new GuiSmallButton(var6.returnEnumOrdinal(), width / 2 - 155 + var2 % 2 * 160, height / 6 + 24 * (var2 >> 1), var6, options.getKeyBinding(var6)));
+                    controlList.add(new GuiSmallButton(currentOption.returnEnumOrdinal(), width / 2 - 155 + rowIndex % 2 * 160, height / 6 + 24 * (rowIndex >> 1), currentOption, options.getKeyBinding(currentOption)));
                 }
                 else
                 {
-                    controlList.add(new GuiSlider(var6.returnEnumOrdinal(), width / 2 - 155 + var2 % 2 * 160, height / 6 + 24 * (var2 >> 1), var6, options.getKeyBinding(var6), options.getOptionFloatValue(var6)));
+                    controlList.add(new GuiSlider(currentOption.returnEnumOrdinal(), width / 2 - 155 + rowIndex % 2 * 160, height / 6 + 24 * (rowIndex >> 1), currentOption, options.getKeyBinding(currentOption), options.getOptionFloatValue(currentOption)));
                 }
 
-                ++var2;
+                ++rowIndex;
             }
 
-            controlList.add(new GuiButton(101, width / 2 - 100, height / 6 + 96 + 12, var1.translateKey("options.video")));
-            controlList.add(new GuiButton(100, width / 2 - 100, height / 6 + 120 + 12, var1.translateKey("options.controls")));
-            controlList.add(new GuiButton(200, width / 2 - 100, height / 6 + 168, var1.translateKey("gui.done")));
+            controlList.add(new GuiButton(BUTTON_VIDEO_SETTINGS, width / 2 - 100, height / 6 + 96 + 12, translations.translateKey("options.video")));
+            controlList.add(new GuiButton(BUTTON_CONTROLS, width / 2 - 100, height / 6 + 120 + 12, translations.translateKey("options.controls")));
+            controlList.add(new GuiButton(BUTTON_DONE, width / 2 - 100, height / 6 + 168, translations.translateKey("gui.done")));
         }
 
-        protected override void actionPerformed(GuiButton var1)
+        protected override void actionPerformed(GuiButton button)
         {
-            if (var1.enabled)
+            if (button.enabled)
             {
-                if (var1.id < 100 && var1 is GuiSmallButton)
+                if (button.id < 100 && button is GuiSmallButton)
                 {
-                    options.setOptionValue(((GuiSmallButton)var1).returnEnumOptions(), 1);
-                    var1.displayString = options.getKeyBinding(EnumOptions.getEnumOptions(var1.id));
+                    options.setOptionValue(((GuiSmallButton)button).returnEnumOptions(), 1);
+                    button.displayString = options.getKeyBinding(EnumOptions.getEnumOptions(button.id));
                 }
 
-                if (var1.id == 101)
+                switch (button.id)
                 {
-                    mc.options.saveOptions();
-                    mc.displayGuiScreen(new GuiVideoSettings(this, options));
+                    case BUTTON_VIDEO_SETTINGS:
+                        mc.options.saveOptions();
+                        mc.displayGuiScreen(new GuiVideoSettings(this, options));
+                        break;
+                    case BUTTON_CONTROLS:
+                        mc.options.saveOptions();
+                        mc.displayGuiScreen(new GuiControls(this, options));
+                        break;
+                    case BUTTON_DONE:
+                        mc.options.saveOptions();
+                        mc.displayGuiScreen(parentScreen);
+                        break;
                 }
-
-                if (var1.id == 100)
-                {
-                    mc.options.saveOptions();
-                    mc.displayGuiScreen(new GuiControls(this, options));
-                }
-
-                if (var1.id == 200)
-                {
-                    mc.options.saveOptions();
-                    mc.displayGuiScreen(parentScreen);
-                }
-
             }
         }
 
-        public override void render(int var1, int var2, float var3)
+        public override void render(int mouseX, int mouseY, float partialTicks)
         {
             drawDefaultBackground();
             drawCenteredString(fontRenderer, screenTitle, width / 2, 20, 16777215);
-            base.render(var1, var2, var3);
+            base.render(mouseX, mouseY, partialTicks);
         }
     }
 

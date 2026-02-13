@@ -19,37 +19,37 @@ namespace betareborn.Client.Rendering
     public class GameRenderer
     {
         public static int anaglyphField;
-        private Minecraft client;
+        private readonly Minecraft client;
         private float viewDistane = 0.0F;
         public HeldItemRenderer itemRenderer;
         private int ticks;
         private Entity targetedEntity = null;
-        private MouseFilter mouseFilterXAxis = new MouseFilter();
-        private MouseFilter mouseFilterYAxis = new MouseFilter();
-        private float thirdPersonDistance = 4.0F;
+        private readonly MouseFilter mouseFilterXAxis = new();
+        private readonly MouseFilter mouseFilterYAxis = new();
+        private readonly float thirdPersonDistance = 4.0F;
         private float prevThirdPersonDistance = 4.0F;
-        private float thirdPersonYaw = 0.0F;
+        private readonly float thirdPersonYaw = 0.0F;
         private float prevThirdPersonYaw = 0.0F;
-        private float thirdPersonPitch = 0.0F;
+        private readonly float thirdPersonPitch = 0.0F;
         private float prevThirdPersonPitch = 0.0F;
-        private float cameraRoll = 0.0F;
+        private readonly float cameraRoll = 0.0F;
         private float prevCameraRoll = 0.0F;
-        private float cameraRollAmount = 0.0F;
+        private readonly float cameraRollAmount = 0.0F;
         private float prevCameraRollAmount = 0.0F;
-        private bool cloudFog = false;
-        private double cameraZoom = 1.0D;
-        private double cameraYaw = 0.0D;
-        private double cameraPitch = 0.0D;
+        private readonly bool cloudFog = false;
+        private readonly double cameraZoom = 1.0D;
+        private readonly double cameraYaw = 0.0D;
+        private readonly double cameraPitch = 0.0D;
         private long prevFrameTime = java.lang.System.currentTimeMillis();
-        private long lastFrameTime = 0L;
-        private java.util.Random random = new();
+        private readonly java.util.Random random = new();
         private int rainSoundCounter = 0;
-        float[] fogColorBuffer = new float[16];
-        float fogColorRed;
-        float fogColorGreen;
-        float fogColorBlue;
+        private readonly float[] fogColorBuffer = new float[16];
+        private float fogColorRed;
+        private float fogColorGreen;
+        private float fogColorBlue;
         private float lastViewBob;
         private float viewBob;
+        private readonly Stopwatch fpsTimer = Stopwatch.StartNew();
 
         public GameRenderer(Minecraft mc)
         {
@@ -117,10 +117,10 @@ namespace betareborn.Client.Rendering
                     }
 
                     Vec3D var7 = client.camera.getLook(tickDelta);
-                    Vec3D var8 = var6.addVector(var7.xCoord * var2, var7.yCoord * var2, var7.zCoord * var2);
+                    Vec3D var8 = var6 + var2 * var7;
                     targetedEntity = null;
                     float var9 = 1.0F;
-                    var var10 = client.world.getEntities(client.camera, client.camera.boundingBox.stretch(var7.xCoord * var2, var7.yCoord * var2, var7.zCoord * var2).expand((double)var9, (double)var9, (double)var9));
+                    var var10 = client.world.getEntities(client.camera, client.camera.boundingBox.stretch(var7.x * var2, var7.y * var2, var7.z * var2).expand((double)var9, (double)var9, (double)var9));
                     double var11 = 0.0D;
 
                     for (int var13 = 0; var13 < var10.Count; ++var13)
@@ -271,10 +271,10 @@ namespace betareborn.Client.Rendering
                         var21 *= 0.1F;
                         var22 *= 0.1F;
                         var23 *= 0.1F;
-                        HitResult var24 = client.world.raycast(Vec3D.createVector(var4 + (double)var21, var6 + (double)var22, var8 + (double)var23), Vec3D.createVector(var4 - var14 + (double)var21 + (double)var23, var6 - var18 + (double)var22, var8 - var16 + (double)var23));
+                        HitResult var24 = client.world.raycast(new Vec3D(var4 + (double)var21, var6 + (double)var22, var8 + (double)var23), new Vec3D(var4 - var14 + (double)var21 + (double)var23, var6 - var18 + (double)var22, var8 - var16 + (double)var23));
                         if (var24 != null)
                         {
-                            double var25 = var24.pos.distanceTo(Vec3D.createVector(var4, var6, var8));
+                            double var25 = var24.pos.distanceTo(new Vec3D(var4, var6, var8));
                             if (var25 < var27)
                             {
                                 var27 = var25;
@@ -420,7 +420,7 @@ namespace betareborn.Client.Rendering
 
             if (!client.skipRenderWorld)
             {
-                ScaledResolution var13 = new ScaledResolution(client.options, client.displayWidth, client.displayHeight);
+                ScaledResolution var13 = new(client.options, client.displayWidth, client.displayHeight);
                 int var14 = var13.getScaledWidth();
                 int var15 = var13.getScaledHeight();
                 int var16 = Mouse.getX() * var14 / client.displayWidth;
@@ -466,47 +466,29 @@ namespace betareborn.Client.Rendering
 
                 if (var7 < 240)
                 {
-                    long interval = 1000000000L / var7;
+                    //frametime in milliseconds
+                    double targetMs = 1000.0 / var7;
 
-                    if (targetTime == 0L)
+                    double elapsedMs = fpsTimer.Elapsed.TotalMilliseconds;
+                    double waitTime = targetMs - elapsedMs;
+
+                    if (waitTime > 0)
                     {
-                        targetTime = (Stopwatch.GetTimestamp() * 1000000000L) / Stopwatch.Frequency;
+                        if (waitTime > 2.0)
+                        {
+                            Thread.Sleep((int)(waitTime - 1.0));
+                        }
+
+                        while (fpsTimer.Elapsed.TotalMilliseconds < targetMs)
+                        {
+                            Thread.SpinWait(10);
+                        }
                     }
 
-                    long now = (Stopwatch.GetTimestamp() * 1000000000L) / Stopwatch.Frequency;
-                    long diff = targetTime - now;
-
-                    if (diff > 2000000L)
-                    {
-                        long sleepMs = (diff - 1000000L) / 1000000L;
-                        Thread.Sleep((int)sleepMs);
-                    }
-
-                    while (true)
-                    {
-                        now = (Stopwatch.GetTimestamp() * 1000000000L) / Stopwatch.Frequency;
-                        if (now >= targetTime) break;
-                        Thread.SpinWait(10);
-                    }
-
-                    targetTime += interval;
-
-                    long finalNow = (Stopwatch.GetTimestamp() * 1000000000L) / Stopwatch.Frequency;
-                    if (finalNow > targetTime + interval)
-                    {
-                        targetTime = finalNow;
-                    }
+                    fpsTimer.Restart();
                 }
-                else
-                {
-                    targetTime = 0L;
-                }
-
-                lastFrameTime = (Stopwatch.GetTimestamp() * 1000000000L) / Stopwatch.Frequency;
             }
         }
-
-        private long targetTime = 0L;
 
         public void renderFrame(float tickDelta, long time)
         {
@@ -850,7 +832,7 @@ namespace betareborn.Client.Rendering
 
         public void setupHudRender()
         {
-            ScaledResolution var1 = new ScaledResolution(client.options, client.displayWidth, client.displayHeight);
+            ScaledResolution var1 = new(client.options, client.displayWidth, client.displayHeight);
             GLManager.GL.Clear(ClearBufferMask.DepthBufferBit);
             GLManager.GL.MatrixMode(GLEnum.Projection);
             GLManager.GL.LoadIdentity();

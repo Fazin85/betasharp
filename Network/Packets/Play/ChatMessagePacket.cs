@@ -12,29 +12,29 @@ namespace betareborn.Network.Packets.Play
         {
         }
 
-        public ChatMessagePacket(string var1)
+        public ChatMessagePacket(string msg)
         {
-            if (var1.Length > 119)
+            if (msg.Length > 119)
             {
-                var1 = var1.Substring(0, 119);
+                msg = msg.Substring(0, 119);
             }
 
-            chatMessage = var1;
+            chatMessage = msg;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            chatMessage = readString(var1, 119);
+            chatMessage = readString(stream, 119);
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            writeString(chatMessage, var1);
+            writeString(chatMessage, stream);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onChatMessage(this);
+            handler.onChatMessage(this);
         }
 
         public override int size()

@@ -20,57 +20,57 @@ namespace betareborn.Network.Packets.S2CPlay
             this.syncId = syncId;
             this.contents = new ItemStack[contents.size()];
 
-            for (int var3 = 0; var3 < this.contents.Length; var3++)
+            for (int i = 0; i < this.contents.Length; i++)
             {
-                ItemStack var4 = (ItemStack)contents.get(var3);
-                this.contents[var3] = var4 == null ? null : var4.copy();
+                ItemStack itemStack = (ItemStack)contents.get(i);
+                this.contents[i] = itemStack == null ? null : itemStack.copy();
             }
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            syncId = (sbyte)var1.readByte();
-            short var2 = var1.readShort();
-            contents = new ItemStack[var2];
+            syncId = (sbyte)stream.readByte();
+            short itemsCount = stream.readShort();
+            contents = new ItemStack[itemsCount];
 
-            for (int var3 = 0; var3 < var2; ++var3)
+            for (int i = 0; i < itemsCount; ++i)
             {
-                short var4 = var1.readShort();
-                if (var4 >= 0)
+                short itemId = stream.readShort();
+                if (itemId >= 0)
                 {
-                    sbyte var5 = (sbyte)var1.readByte();
-                    short var6 = var1.readShort();
+                    sbyte count = (sbyte)stream.readByte();
+                    short damage = stream.readShort();
 
-                    contents[var3] = new ItemStack(var4, var5, var6);
+                    contents[i] = new ItemStack(itemId, count, damage);
                 }
             }
 
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeByte(syncId);
-            var1.writeShort(contents.Length);
+            stream.writeByte(syncId);
+            stream.writeShort(contents.Length);
 
-            for (int var2 = 0; var2 < contents.Length; ++var2)
+            for (int i = 0; i < contents.Length; ++i)
             {
-                if (contents[var2] == null)
+                if (contents[i] == null)
                 {
-                    var1.writeShort(-1);
+                    stream.writeShort(-1);
                 }
                 else
                 {
-                    var1.writeShort((short)contents[var2].itemId);
-                    var1.writeByte((byte)contents[var2].count);
-                    var1.writeShort((short)contents[var2].getDamage());
+                    stream.writeShort((short)contents[i].itemId);
+                    stream.writeByte((byte)contents[i].count);
+                    stream.writeShort((short)contents[i].getDamage());
                 }
             }
 
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onInventory(this);
+            handler.onInventory(this);
         }
 
         public override int size()

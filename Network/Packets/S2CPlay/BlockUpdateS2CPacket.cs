@@ -15,12 +15,12 @@ namespace betareborn.Network.Packets.S2CPlay
 
         public BlockUpdateS2CPacket()
         {
-            worldPacket = true;
+            worldPacket = false;
         }
 
         public BlockUpdateS2CPacket(int x, int y, int z, World world)
         {
-            worldPacket = true;
+            worldPacket = false;
             this.x = x;
             this.y = y;
             this.z = z;
@@ -28,27 +28,27 @@ namespace betareborn.Network.Packets.S2CPlay
             blockMetadata = world.getBlockMeta(x, y, z);
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            x = var1.readInt();
-            y = var1.read();
-            z = var1.readInt();
-            blockRawId = var1.read();
-            blockMetadata = var1.read();
+            x = stream.readInt();
+            y = stream.read();
+            z = stream.readInt();
+            blockRawId = stream.read();
+            blockMetadata = stream.read();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(x);
-            var1.write(y);
-            var1.writeInt(z);
-            var1.write(blockRawId);
-            var1.write(blockMetadata);
+            stream.writeInt(x);
+            stream.write(y);
+            stream.writeInt(z);
+            stream.write(blockRawId);
+            stream.write(blockMetadata);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onBlockUpdate(this);
+            handler.onBlockUpdate(this);
         }
 
         public override int size()

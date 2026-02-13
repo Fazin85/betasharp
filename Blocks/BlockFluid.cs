@@ -217,9 +217,9 @@ namespace betareborn.Blocks
         public override void applyVelocity(World world, int x, int y, int z, Entity entity, Vec3D velocity)
         {
             Vector3D<double> flowVec = getFlow(world, x, y, z);
-            velocity.xCoord += flowVec.X;
-            velocity.yCoord += flowVec.Y;
-            velocity.zCoord += flowVec.Z;
+            velocity.x += flowVec.X;
+            velocity.y += flowVec.Y;
+            velocity.z += flowVec.Z;
         }
 
         public override int getTickRate()

@@ -13,29 +13,29 @@ namespace betareborn.Network.Packets.C2SPlay
         private float pitch;
         private float yaw;
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            sideways = var1.readFloat();
-            forward = var1.readFloat();
-            pitch = var1.readFloat();
-            yaw = var1.readFloat();
-            jumping = var1.readBoolean();
-            sneaking = var1.readBoolean();
+            sideways = stream.readFloat();
+            forward = stream.readFloat();
+            pitch = stream.readFloat();
+            yaw = stream.readFloat();
+            jumping = stream.readBoolean();
+            sneaking = stream.readBoolean();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeFloat(sideways);
-            var1.writeFloat(forward);
-            var1.writeFloat(pitch);
-            var1.writeFloat(yaw);
-            var1.writeBoolean(jumping);
-            var1.writeBoolean(sneaking);
+            stream.writeFloat(sideways);
+            stream.writeFloat(forward);
+            stream.writeFloat(pitch);
+            stream.writeFloat(yaw);
+            stream.writeBoolean(jumping);
+            stream.writeBoolean(sneaking);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onPlayerInput(this);
+            handler.onPlayerInput(this);
         }
 
         public override int size()

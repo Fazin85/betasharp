@@ -23,25 +23,25 @@ namespace betareborn.Network.Packets.S2CPlay
             slotsCount = size;
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onOpenScreen(this);
+            handler.onOpenScreen(this);
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            syncId = (sbyte)var1.readByte();
-            screenHandlerId = (sbyte)var1.readByte();
-            name = var1.readUTF();
-            slotsCount = (sbyte)var1.readByte();
+            syncId = (sbyte)stream.readByte();
+            screenHandlerId = (sbyte)stream.readByte();
+            name = stream.readUTF();
+            slotsCount = (sbyte)stream.readByte();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeByte(syncId);
-            var1.writeByte(screenHandlerId);
-            var1.writeUTF(name);
-            var1.writeByte(slotsCount);
+            stream.writeByte(syncId);
+            stream.writeByte(screenHandlerId);
+            stream.writeUTF(name);
+            stream.writeByte(slotsCount);
         }
 
         public override int size()

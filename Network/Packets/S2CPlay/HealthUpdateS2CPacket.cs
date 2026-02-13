@@ -17,19 +17,19 @@ namespace betareborn.Network.Packets.S2CPlay
             healthMP = health;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            healthMP = var1.readShort();
+            healthMP = stream.readShort();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeShort(healthMP);
+            stream.writeShort(healthMP);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onHealthUpdate(this);
+            handler.onHealthUpdate(this);
         }
 
         public override int size()
