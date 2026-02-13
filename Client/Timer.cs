@@ -1,73 +1,63 @@
+using System.Diagnostics;
+
 namespace betareborn.Client
 {
-    public class Timer : java.lang.Object
+    public class Timer(float tps)
     {
-        public float ticksPerSecond;
+        public float DeltaTime { get; private set; }
+        public float ticksPerSecond = tps;
         private double lastHRTime;
         public int elapsedTicks;
         public float renderPartialTicks;
         public float timerSpeed = 1.0F;
         public float elapsedPartialTicks = 0.0F;
-        public float deltaTime;
-        private long lastSyncSysClock;
-        private long lastSyncHRClock;
-        private long field_28132_i;
+        private long lastSyncSysClock = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        private long lastSyncHRClock = Stopwatch.GetTimestamp();
+        private long accumulatedSysTime;
         private double timeSyncAdjustment = 1.0D;
 
-        public Timer(float var1)
+        public void UpdateTimer()
         {
-            ticksPerSecond = var1;
-            lastSyncSysClock = java.lang.System.currentTimeMillis();
-            lastSyncHRClock = java.lang.System.nanoTime() / 1000000L;
-        }
-
-        public void updateTimer()
-        {
-            long var1 = java.lang.System.currentTimeMillis();
-            long var3 = var1 - lastSyncSysClock;
-            long var5 = java.lang.System.nanoTime() / 1000000L;
-            double var7 = (double)var5 / 1000.0D;
-            if (var3 > 1000L)
+            long currentSysTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            long sysDelta = currentSysTime - lastSyncSysClock;
+            long currentHighResTime = Stopwatch.GetTimestamp();
+            double currentTimeSeconds = (double)currentHighResTime / Stopwatch.Frequency;
+            if (sysDelta > 1000L)
             {
-                lastHRTime = var7;
+                lastHRTime = currentTimeSeconds;
             }
-            else if (var3 < 0L)
+            else if (sysDelta < 0L)
             {
-                lastHRTime = var7;
+                lastHRTime = currentTimeSeconds;
             }
             else
             {
-                field_28132_i += var3;
-                if (field_28132_i > 1000L)
+                accumulatedSysTime += sysDelta;
+                if (accumulatedSysTime > 1000L)
                 {
-                    long var9 = var5 - lastSyncHRClock;
-                    double var11 = (double)field_28132_i / (double)var9;
-                    timeSyncAdjustment += (var11 - timeSyncAdjustment) * (double)0.2F;
-                    lastSyncHRClock = var5;
-                    field_28132_i = 0L;
+                    long highResDeltaTicks = currentHighResTime - lastSyncHRClock;
+                    double highResDelta = highResDeltaTicks / Stopwatch.Frequency;
+                    double adjustmentRatio = accumulatedSysTime / (highResDelta * 1000.0);
+                    timeSyncAdjustment += (adjustmentRatio - timeSyncAdjustment) * (double)0.2F;
+                    lastSyncHRClock = currentHighResTime;
+                    accumulatedSysTime = 0L;
                 }
 
-                if (field_28132_i < 0L)
+                if (accumulatedSysTime < 0L)
                 {
-                    lastSyncHRClock = var5;
+                    lastSyncHRClock = currentHighResTime;
                 }
             }
 
-            lastSyncSysClock = var1;
-            double var13 = (var7 - lastHRTime) * timeSyncAdjustment;
-            deltaTime = (float)Math.Clamp(var13, 1.0f / 1000.0f, 1.0f);
-            lastHRTime = var7;
-            if (var13 < 0.0D)
-            {
-                var13 = 0.0D;
-            }
+            lastSyncSysClock = currentSysTime;
+            double frameDelta = (currentTimeSeconds - lastHRTime) * timeSyncAdjustment;
+            DeltaTime = (float)Math.Clamp(frameDelta, 1.0f / 1000.0f, 1.0f);
+            lastHRTime = currentTimeSeconds;
 
-            if (var13 > 1.0D)
-            {
-                var13 = 1.0D;
-            }
+            if (frameDelta < 0.0D || frameDelta > 1.0D)
+                frameDelta = 0.0D;
 
-            elapsedPartialTicks = (float)((double)elapsedPartialTicks + var13 * (double)timerSpeed * (double)ticksPerSecond);
+            elapsedPartialTicks = (float)((double)elapsedPartialTicks + frameDelta * (double)timerSpeed * (double)ticksPerSecond);
             elapsedTicks = (int)elapsedPartialTicks;
             elapsedPartialTicks -= (float)elapsedTicks;
             if (elapsedTicks > 10)

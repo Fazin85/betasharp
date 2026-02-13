@@ -522,8 +522,8 @@ namespace betareborn
                 {
                     if (options.debugMode)
                     {
-                        Profiler.Update(timer.deltaTime);
-                        Profiler.Record("frame Time", timer.deltaTime * 1000.0f);
+                        Profiler.Update(timer.DeltaTime);
+                        Profiler.Record("frame Time", timer.DeltaTime * 1000.0f);
                         Profiler.PushGroup("run");
                     }
                     try
@@ -536,12 +536,12 @@ namespace betareborn
                         if (isGamePaused && world != null)
                         {
                             float previousRenderPartialTicks = timer.renderPartialTicks;
-                            timer.updateTimer();
+                            timer.UpdateTimer();
                             timer.renderPartialTicks = previousRenderPartialTicks;
                         }
                         else
                         {
-                            timer.updateTimer();
+                            timer.UpdateTimer();
                         }
 
                         long tickStartTime = java.lang.System.nanoTime();
@@ -602,9 +602,9 @@ namespace betareborn
                             if (options.debugMode) Profiler.PopGroup();
                         }
 
-                        if (imGuiController != null && timer.deltaTime > 0.0f && options.showDebugInfo && options.debugMode)
+                        if (imGuiController != null && timer.DeltaTime > 0.0f && options.showDebugInfo && options.debugMode)
                         {
-                            imGuiController.Update(timer.deltaTime);
+                            imGuiController.Update(timer.DeltaTime);
                             ProfilerRenderer.Draw();
                             ProfilerRenderer.DrawGraph();
 
