@@ -257,20 +257,20 @@ namespace betareborn.Entities
 
         public override void writeNbt(NBTTagCompound nbt)
         {
-            nbt.setByte("Dir", (sbyte)direction);
-            nbt.setString("Motive", art.title);
-            nbt.setInteger("TileX", xPosition);
-            nbt.setInteger("TileY", yPosition);
-            nbt.setInteger("TileZ", zPosition);
+            nbt.SetByte("Dir", (sbyte)direction);
+            nbt.SetString("Motive", art.title);
+            nbt.SetInteger("TileX", xPosition);
+            nbt.SetInteger("TileY", yPosition);
+            nbt.SetInteger("TileZ", zPosition);
         }
 
         public override void readNbt(NBTTagCompound nbt)
         {
-            direction = nbt.getByte("Dir");
-            xPosition = nbt.getInteger("TileX");
-            yPosition = nbt.getInteger("TileY");
-            zPosition = nbt.getInteger("TileZ");
-            String motiveTitle = nbt.getString("Motive");
+            direction = nbt.GetByte("Dir");
+            xPosition = nbt.GetInteger("TileX");
+            yPosition = nbt.GetInteger("TileY");
+            zPosition = nbt.GetInteger("TileZ");
+            String motiveTitle = nbt.GetString("Motive");
             EnumArt[] allArt = EnumArt.values;
             int artCount = allArt.Length;
 

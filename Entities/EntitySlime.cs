@@ -45,13 +45,13 @@ namespace betareborn.Entities
         public override void writeNbt(NBTTagCompound nbt)
         {
             base.writeNbt(nbt);
-            nbt.setInteger("Size", getSlimeSize() - 1);
+            nbt.SetInteger("Size", getSlimeSize() - 1);
         }
 
         public override void readNbt(NBTTagCompound nbt)
         {
             base.readNbt(nbt);
-            setSlimeSize(nbt.getInteger("Size") + 1);
+            setSlimeSize(nbt.GetInteger("Size") + 1);
         }
 
         public override void tick()

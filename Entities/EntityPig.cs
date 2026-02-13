@@ -22,13 +22,13 @@ namespace betareborn.Entities
         public override void writeNbt(NBTTagCompound nbt)
         {
             base.writeNbt(nbt);
-            nbt.setBoolean("Saddle", getSaddled());
+            nbt.SetBoolean("Saddle", getSaddled());
         }
 
         public override void readNbt(NBTTagCompound nbt)
         {
             base.readNbt(nbt);
-            setSaddled(nbt.getBoolean("Saddle"));
+            setSaddled(nbt.GetBoolean("Saddle"));
         }
 
         protected override string getLivingSound()

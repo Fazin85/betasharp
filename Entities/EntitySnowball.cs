@@ -238,22 +238,22 @@ namespace betareborn.Entities
 
         public override void writeNbt(NBTTagCompound nbt)
         {
-            nbt.setShort("xTile", (short)xTileSnowball);
-            nbt.setShort("yTile", (short)yTileSnowball);
-            nbt.setShort("zTile", (short)zTileSnowball);
-            nbt.setByte("inTile", (sbyte)inTileSnowball);
-            nbt.setByte("shake", (sbyte)shakeSnowball);
-            nbt.setByte("inGround", (sbyte)(inGroundSnowball ? 1 : 0));
+            nbt.SetShort("xTile", (short)xTileSnowball);
+            nbt.SetShort("yTile", (short)yTileSnowball);
+            nbt.SetShort("zTile", (short)zTileSnowball);
+            nbt.SetByte("inTile", (sbyte)inTileSnowball);
+            nbt.SetByte("shake", (sbyte)shakeSnowball);
+            nbt.SetByte("inGround", (sbyte)(inGroundSnowball ? 1 : 0));
         }
 
         public override void readNbt(NBTTagCompound nbt)
         {
-            xTileSnowball = nbt.getShort("xTile");
-            yTileSnowball = nbt.getShort("yTile");
-            zTileSnowball = nbt.getShort("zTile");
-            inTileSnowball = nbt.getByte("inTile") & 255;
-            shakeSnowball = nbt.getByte("shake") & 255;
-            inGroundSnowball = nbt.getByte("inGround") == 1;
+            xTileSnowball = nbt.GetShort("xTile");
+            yTileSnowball = nbt.GetShort("yTile");
+            zTileSnowball = nbt.GetShort("zTile");
+            inTileSnowball = nbt.GetByte("inTile") & 255;
+            shakeSnowball = nbt.GetByte("shake") & 255;
+            inGroundSnowball = nbt.GetByte("inGround") == 1;
         }
 
         public override void onPlayerInteraction(EntityPlayer player)

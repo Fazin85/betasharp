@@ -254,22 +254,22 @@ namespace betareborn.Entities
 
         public override void writeNbt(NBTTagCompound nbt)
         {
-            nbt.setShort("xTile", (short)field_20056_b);
-            nbt.setShort("yTile", (short)field_20055_c);
-            nbt.setShort("zTile", (short)field_20054_d);
-            nbt.setByte("inTile", (sbyte)field_20053_e);
-            nbt.setByte("shake", (sbyte)field_20057_a);
-            nbt.setByte("inGround", (sbyte)(field_20052_f ? 1 : 0));
+            nbt.SetShort("xTile", (short)field_20056_b);
+            nbt.SetShort("yTile", (short)field_20055_c);
+            nbt.SetShort("zTile", (short)field_20054_d);
+            nbt.SetByte("inTile", (sbyte)field_20053_e);
+            nbt.SetByte("shake", (sbyte)field_20057_a);
+            nbt.SetByte("inGround", (sbyte)(field_20052_f ? 1 : 0));
         }
 
         public override void readNbt(NBTTagCompound nbt)
         {
-            field_20056_b = nbt.getShort("xTile");
-            field_20055_c = nbt.getShort("yTile");
-            field_20054_d = nbt.getShort("zTile");
-            field_20053_e = nbt.getByte("inTile") & 255;
-            field_20057_a = nbt.getByte("shake") & 255;
-            field_20052_f = nbt.getByte("inGround") == 1;
+            field_20056_b = nbt.GetShort("xTile");
+            field_20055_c = nbt.GetShort("yTile");
+            field_20054_d = nbt.GetShort("zTile");
+            field_20053_e = nbt.GetByte("inTile") & 255;
+            field_20057_a = nbt.GetByte("shake") & 255;
+            field_20052_f = nbt.GetByte("inGround") == 1;
         }
 
         public override void onPlayerInteraction(EntityPlayer player)

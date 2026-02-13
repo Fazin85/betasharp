@@ -117,16 +117,16 @@ namespace betareborn.Entities
 
         public override void writeNbt(NBTTagCompound nbt)
         {
-            nbt.setShort("Health", (short)((byte)health));
-            nbt.setShort("Age", (short)itemAge);
-            nbt.setCompoundTag("Item", stack.writeToNBT(new NBTTagCompound()));
+            nbt.SetShort("Health", (short)((byte)health));
+            nbt.SetShort("Age", (short)itemAge);
+            nbt.SetCompoundTag("Item", stack.writeToNBT(new NBTTagCompound()));
         }
 
         public override void readNbt(NBTTagCompound nbt)
         {
-            health = nbt.getShort("Health") & 255;
-            itemAge = nbt.getShort("Age");
-            NBTTagCompound itemTag = nbt.getCompoundTag("Item");
+            health = nbt.GetShort("Health") & 255;
+            itemAge = nbt.GetShort("Age");
+            NBTTagCompound itemTag = nbt.GetCompoundTag("Item");
             stack = new ItemStack(itemTag);
         }
 

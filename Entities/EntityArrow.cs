@@ -277,26 +277,26 @@ namespace betareborn.Entities
 
         public override void writeNbt(NBTTagCompound nbt)
         {
-            nbt.setShort("xTile", (short)xTile);
-            nbt.setShort("yTile", (short)yTile);
-            nbt.setShort("zTile", (short)zTile);
-            nbt.setByte("inTile", (sbyte)inTile);
-            nbt.setByte("inData", (sbyte)inData);
-            nbt.setByte("shake", (sbyte)arrowShake);
-            nbt.setByte("inGround", (sbyte)(inGround ? 1 : 0));
-            nbt.setBoolean("player", doesArrowBelongToPlayer);
+            nbt.SetShort("xTile", (short)xTile);
+            nbt.SetShort("yTile", (short)yTile);
+            nbt.SetShort("zTile", (short)zTile);
+            nbt.SetByte("inTile", (sbyte)inTile);
+            nbt.SetByte("inData", (sbyte)inData);
+            nbt.SetByte("shake", (sbyte)arrowShake);
+            nbt.SetByte("inGround", (sbyte)(inGround ? 1 : 0));
+            nbt.SetBoolean("player", doesArrowBelongToPlayer);
         }
 
         public override void readNbt(NBTTagCompound nbt)
         {
-            xTile = nbt.getShort("xTile");
-            yTile = nbt.getShort("yTile");
-            zTile = nbt.getShort("zTile");
-            inTile = nbt.getByte("inTile") & 255;
-            inData = nbt.getByte("inData") & 255;
-            arrowShake = nbt.getByte("shake") & 255;
-            inGround = nbt.getByte("inGround") == 1;
-            doesArrowBelongToPlayer = nbt.getBoolean("player");
+            xTile = nbt.GetShort("xTile");
+            yTile = nbt.GetShort("yTile");
+            zTile = nbt.GetShort("zTile");
+            inTile = nbt.GetByte("inTile") & 255;
+            inData = nbt.GetByte("inData") & 255;
+            arrowShake = nbt.GetByte("shake") & 255;
+            inGround = nbt.GetByte("inGround") == 1;
+            doesArrowBelongToPlayer = nbt.GetBoolean("player");
         }
 
         public override void onPlayerInteraction(EntityPlayer player)

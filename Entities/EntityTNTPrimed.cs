@@ -88,12 +88,12 @@ namespace betareborn.Entities
 
         public override void writeNbt(NBTTagCompound nbt)
         {
-            nbt.setByte("Fuse", (sbyte)fuse);
+            nbt.SetByte("Fuse", (sbyte)fuse);
         }
 
         public override void readNbt(NBTTagCompound nbt)
         {
-            fuse = nbt.getByte("Fuse");
+            fuse = nbt.GetByte("Fuse");
         }
 
         public override float getShadowRadius()

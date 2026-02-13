@@ -29,7 +29,7 @@ namespace betareborn.Entities
             base.writeNbt(nbt);
             if (dataWatcher.getWatchableObjectByte(17) == 1)
             {
-                nbt.setBoolean("powered", true);
+                nbt.SetBoolean("powered", true);
             }
 
         }
@@ -37,7 +37,7 @@ namespace betareborn.Entities
         public override void readNbt(NBTTagCompound nbt)
         {
             base.readNbt(nbt);
-            dataWatcher.updateObject(17, java.lang.Byte.valueOf((byte)(nbt.getBoolean("powered") ? 1 : 0)));
+            dataWatcher.updateObject(17, java.lang.Byte.valueOf((byte)(nbt.GetBoolean("powered") ? 1 : 0)));
         }
 
         protected override void attackBlockedEntity(Entity entity, float distance)

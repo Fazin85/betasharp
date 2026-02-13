@@ -70,15 +70,15 @@ namespace betareborn.Entities
         public override void writeNbt(NBTTagCompound nbt)
         {
             base.writeNbt(nbt);
-            nbt.setBoolean("Sheared", getSheared());
-            nbt.setByte("Color", (sbyte)getFleeceColor());
+            nbt.SetBoolean("Sheared", getSheared());
+            nbt.SetByte("Color", (sbyte)getFleeceColor());
         }
 
         public override void readNbt(NBTTagCompound nbt)
         {
             base.readNbt(nbt);
-            setSheared(nbt.getBoolean("Sheared"));
-            setFleeceColor(nbt.getByte("Color"));
+            setSheared(nbt.GetBoolean("Sheared"));
+            setFleeceColor(nbt.GetByte("Color"));
         }
 
         protected override string getLivingSound()

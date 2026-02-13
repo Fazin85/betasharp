@@ -121,13 +121,13 @@ namespace betareborn.Entities
         public override void writeNbt(NBTTagCompound nbt)
         {
             base.writeNbt(nbt);
-            nbt.setInteger("Score", score);
+            nbt.SetInteger("Score", score);
         }
 
         public override void readNbt(NBTTagCompound nbt)
         {
             base.readNbt(nbt);
-            score = nbt.getInteger("Score");
+            score = nbt.GetInteger("Score");
         }
 
         public override void closeHandledScreen()

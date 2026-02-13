@@ -205,22 +205,22 @@ namespace betareborn.Entities
 
         public override void writeNbt(NBTTagCompound nbt)
         {
-            nbt.setShort("xTile", (short)blockX);
-            nbt.setShort("yTile", (short)blockY);
-            nbt.setShort("zTile", (short)blockZ);
-            nbt.setByte("inTile", (sbyte)blockId);
-            nbt.setByte("shake", (sbyte)shake);
-            nbt.setByte("inGround", (sbyte)(inGround ? 1 : 0));
+            nbt.SetShort("xTile", (short)blockX);
+            nbt.SetShort("yTile", (short)blockY);
+            nbt.SetShort("zTile", (short)blockZ);
+            nbt.SetByte("inTile", (sbyte)blockId);
+            nbt.SetByte("shake", (sbyte)shake);
+            nbt.SetByte("inGround", (sbyte)(inGround ? 1 : 0));
         }
 
         public override void readNbt(NBTTagCompound nbt)
         {
-            blockX = nbt.getShort("xTile");
-            blockY = nbt.getShort("yTile");
-            blockZ = nbt.getShort("zTile");
-            blockId = nbt.getByte("inTile") & 255;
-            shake = nbt.getByte("shake") & 255;
-            inGround = nbt.getByte("inGround") == 1;
+            blockX = nbt.GetShort("xTile");
+            blockY = nbt.GetShort("yTile");
+            blockZ = nbt.GetShort("zTile");
+            blockId = nbt.GetByte("inTile") & 255;
+            shake = nbt.GetByte("shake") & 255;
+            inGround = nbt.GetByte("inGround") == 1;
         }
 
         public override bool isCollidable()

@@ -39,13 +39,13 @@ namespace betareborn.Entities
         public override void writeNbt(NBTTagCompound nbt)
         {
             base.writeNbt(nbt);
-            nbt.setShort("Anger", (short)angerLevel);
+            nbt.SetShort("Anger", (short)angerLevel);
         }
 
         public override void readNbt(NBTTagCompound nbt)
         {
             base.readNbt(nbt);
-            angerLevel = nbt.getShort("Anger");
+            angerLevel = nbt.GetShort("Anger");
         }
 
         protected override Entity findPlayerToAttack()

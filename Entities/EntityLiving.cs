@@ -681,23 +681,23 @@ namespace betareborn.Entities
 
         public override void writeNbt(NBTTagCompound nbt)
         {
-            nbt.setShort("Health", (short)health);
-            nbt.setShort("HurtTime", (short)hurtTime);
-            nbt.setShort("DeathTime", (short)deathTime);
-            nbt.setShort("AttackTime", (short)attackTime);
+            nbt.SetShort("Health", (short)health);
+            nbt.SetShort("HurtTime", (short)hurtTime);
+            nbt.SetShort("DeathTime", (short)deathTime);
+            nbt.SetShort("AttackTime", (short)attackTime);
         }
 
         public override void readNbt(NBTTagCompound nbt)
         {
-            health = nbt.getShort("Health");
-            if (!nbt.hasKey("Health"))
+            health = nbt.GetShort("Health");
+            if (!nbt.HasKey("Health"))
             {
                 health = 10;
             }
 
-            hurtTime = nbt.getShort("HurtTime");
-            deathTime = nbt.getShort("DeathTime");
-            attackTime = nbt.getShort("AttackTime");
+            hurtTime = nbt.GetShort("HurtTime");
+            deathTime = nbt.GetShort("DeathTime");
+            attackTime = nbt.GetShort("AttackTime");
         }
 
         public override bool isAlive()

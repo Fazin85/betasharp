@@ -51,7 +51,7 @@ namespace betareborn.Entities
 
             try
             {
-                Class entityClass = (Class)idToClass.get(nbt.getString("id"));
+                Class entityClass = (Class)idToClass.get(nbt.GetString("id"));
                 if (entityClass != null)
                 {
                     entity = (Entity)entityClass.getConstructor([World.Class]).newInstance([world]);
@@ -68,7 +68,7 @@ namespace betareborn.Entities
             }
             else
             {
-                java.lang.System.@out.println("Skipping Entity with id " + nbt.getString("id"));
+                java.lang.System.@out.println("Skipping Entity with id " + nbt.GetString("id"));
             }
 
             return entity;

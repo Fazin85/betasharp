@@ -46,15 +46,15 @@ namespace betareborn.Entities
         public override void writeNbt(NBTTagCompound nbt)
         {
             base.writeNbt(nbt);
-            nbt.setBoolean("Angry", isWolfAngry());
-            nbt.setBoolean("Sitting", isWolfSitting());
+            nbt.SetBoolean("Angry", isWolfAngry());
+            nbt.SetBoolean("Sitting", isWolfSitting());
             if (getWolfOwner() == null)
             {
-                nbt.setString("Owner", "");
+                nbt.SetString("Owner", "");
             }
             else
             {
-                nbt.setString("Owner", getWolfOwner());
+                nbt.SetString("Owner", getWolfOwner());
             }
 
         }
@@ -62,9 +62,9 @@ namespace betareborn.Entities
         public override void readNbt(NBTTagCompound nbt)
         {
             base.readNbt(nbt);
-            setWolfAngry(nbt.getBoolean("Angry"));
-            setWolfSitting(nbt.getBoolean("Sitting"));
-            string ownerName = nbt.getString("Owner");
+            setWolfAngry(nbt.GetBoolean("Angry"));
+            setWolfSitting(nbt.GetBoolean("Sitting"));
+            string ownerName = nbt.GetString("Owner");
             if (ownerName.Length > 0)
             {
                 setWolfOwner(ownerName);

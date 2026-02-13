@@ -93,12 +93,12 @@ namespace betareborn.Entities
 
         public override void writeNbt(NBTTagCompound nbt)
         {
-            nbt.setByte("Tile", (sbyte)blockId);
+            nbt.SetByte("Tile", (sbyte)blockId);
         }
 
         public override void readNbt(NBTTagCompound nbt)
         {
-            blockId = nbt.getByte("Tile") & 255;
+            blockId = nbt.GetByte("Tile") & 255;
         }
 
         public override float getShadowRadius()
