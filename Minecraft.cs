@@ -197,7 +197,7 @@ namespace betareborn
             gameRenderer = new GameRenderer(this);
             EntityRenderDispatcher.instance.heldItemRenderer = new HeldItemRenderer(this);
             statFileWriter = new StatFileWriter(session, mcDataDir);
-            Achievements.OPEN_INVENTORY.setStatStringFormatter(new StatStringFormatKeyInv(this));
+            Achievements.OpenInventory.setStatStringFormatter(new StatStringFormatKeyInv(this));
             loadScreen();
 
             bool anisotropicFiltering = GLManager.GL.IsExtensionPresent("GL_EXT_texture_filter_anisotropic");

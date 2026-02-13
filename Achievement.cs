@@ -67,7 +67,7 @@ namespace betareborn
         public Achievement registerAchievement()
         {
             base.registerStat();
-            Achievements.ACHIEVEMENTS.add(this);
+            Achievements.AllAchievements.Add(this);
             return this;
         }
 

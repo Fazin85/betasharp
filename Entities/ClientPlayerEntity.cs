@@ -46,9 +46,9 @@ namespace betareborn.Entities
 
         public override void tickMovement()
         {
-            if (!mc.statFileWriter.hasAchievementUnlocked(Achievements.OPEN_INVENTORY))
+            if (!mc.statFileWriter.hasAchievementUnlocked(Achievements.OpenInventory))
             {
-                mc.guiAchievement.queueAchievementInformation(Achievements.OPEN_INVENTORY);
+                mc.guiAchievement.queueAchievementInformation(Achievements.OpenInventory);
             }
 
             lastScreenDistortion = changeDimensionCooldown;

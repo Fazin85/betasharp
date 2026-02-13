@@ -33,8 +33,8 @@ namespace betareborn.Client.Guis
             field_27120_x = var1;
             short var2 = 141;
             short var3 = 141;
-            field_27116_m = field_27114_o = field_27112_q = Achievements.OPEN_INVENTORY.column * 24 - var2 / 2 - 12;
-            field_27115_n = field_27113_p = field_27111_r = Achievements.OPEN_INVENTORY.row * 24 - var3 / 2;
+            field_27116_m = field_27114_o = field_27112_q = Achievements.OpenInventory.column * 24 - var2 / 2 - 12;
+            field_27115_n = field_27113_p = field_27111_r = Achievements.OpenInventory.row * 24 - var3 / 2;
         }
 
         public override void initGui()
@@ -257,9 +257,9 @@ namespace betareborn.Client.Guis
             int var17;
             int var33;
             int var38;
-            for (var12 = 0; var12 < Achievements.ACHIEVEMENTS.size(); ++var12)
+            for (var12 = 0; var12 < Achievements.AllAchievements.size(); ++var12)
             {
-                Achievement var28 = (Achievement)Achievements.ACHIEVEMENTS.get(var12);
+                Achievement var28 = (Achievement)Achievements.AllAchievements.get(var12);
                 if (var28.parent != null)
                 {
                     var14 = var28.column * 24 - var4 + 11 + var10;
@@ -299,9 +299,9 @@ namespace betareborn.Client.Guis
             GLManager.GL.Enable(GLEnum.ColorMaterial);
 
             int var34;
-            for (var14 = 0; var14 < Achievements.ACHIEVEMENTS.size(); ++var14)
+            for (var14 = 0; var14 < Achievements.AllAchievements.size(); ++var14)
             {
-                Achievement var30 = (Achievement)Achievements.ACHIEVEMENTS.get(var14);
+                Achievement var30 = (Achievement)Achievements.AllAchievements.get(var14);
                 var16 = var30.column * 24 - var4;
                 var17 = var30.row * 24 - var5;
                 if (var16 >= -24 && var17 >= -24 && var16 <= 224 && var17 <= 155)

@@ -27,35 +27,35 @@ namespace betareborn.Screens.Slots
             var1.onCraft(thePlayer.world, thePlayer);
             if (var1.itemId == Block.CRAFTING_TABLE.id)
             {
-                thePlayer.increaseStat(Achievements.BUILD_WORKBENCH, 1);
+                thePlayer.increaseStat(Achievements.BuildWorkbench, 1);
             }
             else if (var1.itemId == Item.WOODEN_PICKAXE.id)
             {
-                thePlayer.increaseStat(Achievements.BUILD_PICKAXE, 1);
+                thePlayer.increaseStat(Achievements.BuildPickaxe, 1);
             }
             else if (var1.itemId == Block.FURNACE.id)
             {
-                thePlayer.increaseStat(Achievements.BUILD_FURNACE, 1);
+                thePlayer.increaseStat(Achievements.BuildFurnace, 1);
             }
             else if (var1.itemId == Item.WOODEN_HOE.id)
             {
-                thePlayer.increaseStat(Achievements.BUILD_HOE, 1);
+                thePlayer.increaseStat(Achievements.BuildHoe, 1);
             }
             else if (var1.itemId == Item.BREAD.id)
             {
-                thePlayer.increaseStat(Achievements.MAKE_BREAD, 1);
+                thePlayer.increaseStat(Achievements.MakeBread, 1);
             }
             else if (var1.itemId == Item.CAKE.id)
             {
-                thePlayer.increaseStat(Achievements.BAKE_CAKE, 1);
+                thePlayer.increaseStat(Achievements.MakeCake, 1);
             }
             else if (var1.itemId == Item.STONE_PICKAXE.id)
             {
-                thePlayer.increaseStat(Achievements.CRAFT_STONE_PICKAXE, 1);
+                thePlayer.increaseStat(Achievements.CraftStonePickaxe, 1);
             }
             else if (var1.itemId == Item.WOODEN_SWORD.id)
             {
-                thePlayer.increaseStat(Achievements.CRAFT_SWORD, 1);
+                thePlayer.increaseStat(Achievements.CraftSword, 1);
             }
 
             for (int var2 = 0; var2 < craftMatrix.size(); ++var2)

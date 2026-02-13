@@ -139,12 +139,12 @@ namespace betareborn.Entities
                 {
                     if (stack.itemId == Block.LOG.id)
                     {
-                        player.incrementStat(Achievements.MINE_WOOD);
+                        player.incrementStat(Achievements.MineWood);
                     }
 
                     if (stack.itemId == Item.LEATHER.id)
                     {
-                        player.incrementStat(Achievements.KILL_COW);
+                        player.incrementStat(Achievements.KillCow);
                     }
 
                     world.playSound(this, "random.pop", 0.2F, ((random.nextFloat() - random.nextFloat()) * 0.7F + 1.0F) * 2.0F);

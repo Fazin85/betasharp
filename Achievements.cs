@@ -10,23 +10,24 @@ namespace betareborn
         public static int minRow;
         public static int maxColumn;
         public static int maxRow;
-        public static List ACHIEVEMENTS = new ArrayList();
-        public static Achievement OPEN_INVENTORY = new Achievement(0, "openInventory", 0, 0, Item.BOOK, null).m_66876377().registerAchievement();
-        public static Achievement MINE_WOOD = new Achievement(1, "mineWood", 2, 1, Block.LOG, OPEN_INVENTORY).registerAchievement();
-        public static Achievement BUILD_WORKBENCH = new Achievement(2, "buildWorkBench", 4, -1, Block.CRAFTING_TABLE, MINE_WOOD).registerAchievement();
-        public static Achievement BUILD_PICKAXE = new Achievement(3, "buildPickaxe", 4, 2, Item.WOODEN_PICKAXE, BUILD_WORKBENCH).registerAchievement();
-        public static Achievement BUILD_FURNACE = new Achievement(4, "buildFurnace", 3, 4, Block.LIT_FURNACE, BUILD_PICKAXE).registerAchievement();
-        public static Achievement ACQUIRE_IRON = new Achievement(5, "acquireIron", 1, 4, Item.IRON_INGOT, BUILD_FURNACE).registerAchievement();
-        public static Achievement BUILD_HOE = new Achievement(6, "buildHoe", 2, -3, Item.WOODEN_HOE, BUILD_WORKBENCH).registerAchievement();
-        public static Achievement MAKE_BREAD = new Achievement(7, "makeBread", -1, -3, Item.BREAD, BUILD_HOE).registerAchievement();
-        public static Achievement BAKE_CAKE = new Achievement(8, "bakeCake", 0, -5, Item.CAKE, BUILD_HOE).registerAchievement();
-        public static Achievement CRAFT_STONE_PICKAXE = new Achievement(9, "buildBetterPickaxe", 6, 2, Item.STONE_PICKAXE, BUILD_PICKAXE).registerAchievement();
-        public static Achievement COOK_FISH = new Achievement(10, "cookFish", 2, 6, Item.COOKED_FISH, BUILD_FURNACE).registerAchievement();
-        public static Achievement CRAFT_RAIL = new Achievement(11, "onARail", 2, 3, Block.RAIL, ACQUIRE_IRON).challenge().registerAchievement();
-        public static Achievement CRAFT_SWORD = new Achievement(12, "buildSword", 6, -1, Item.WOODEN_SWORD, BUILD_WORKBENCH).registerAchievement();
-        public static Achievement KILL_ENEMY = new Achievement(13, "killEnemy", 8, -1, Item.BONE, CRAFT_SWORD).registerAchievement();
-        public static Achievement KILL_COW = new Achievement(14, "killCow", 7, -3, Item.LEATHER, CRAFT_SWORD).registerAchievement();
-        public static Achievement KILL_PIG = new Achievement(15, "flyPig", 8, -4, Item.SADDLE, KILL_COW).challenge().registerAchievement();
+
+        public readonly static List<Achievement> AllAchievements = [];
+        public readonly static Achievement OpenInventory = new Achievement(0, "openInventory", 0, 0, Item.BOOK, null).m_66876377().registerAchievement();
+        public readonly static Achievement MineWood = new Achievement(1, "mineWood", 2, 1, Block.LOG, OpenInventory).registerAchievement();
+        public readonly static Achievement BuildWorkbench = new Achievement(2, "buildWorkBench", 4, -1, Block.CRAFTING_TABLE, MineWood).registerAchievement();
+        public readonly static Achievement BuildPickaxe = new Achievement(3, "buildPickaxe", 4, 2, Item.WOODEN_PICKAXE, BuildWorkbench).registerAchievement();
+        public readonly static Achievement BuildFurnace = new Achievement(4, "buildFurnace", 3, 4, Block.LIT_FURNACE, BuildPickaxe).registerAchievement();
+        public readonly static Achievement AcquireIron = new Achievement(5, "acquireIron", 1, 4, Item.IRON_INGOT, BuildFurnace).registerAchievement();
+        public readonly static Achievement BuildHoe = new Achievement(6, "buildHoe", 2, -3, Item.WOODEN_HOE, BuildWorkbench).registerAchievement();
+        public readonly static Achievement MakeBread = new Achievement(7, "makeBread", -1, -3, Item.BREAD, BuildHoe).registerAchievement();
+        public readonly static Achievement MakeCake = new Achievement(8, "bakeCake", 0, -5, Item.CAKE, BuildHoe).registerAchievement();
+        public readonly static Achievement CraftStonePickaxe = new Achievement(9, "buildBetterPickaxe", 6, 2, Item.STONE_PICKAXE, BuildPickaxe).registerAchievement();
+        public readonly static Achievement CookFish = new Achievement(10, "cookFish", 2, 6, Item.COOKED_FISH, BuildFurnace).registerAchievement();
+        public readonly static Achievement CraftRail = new Achievement(11, "onARail", 2, 3, Block.RAIL, AcquireIron).challenge().registerAchievement();
+        public readonly static Achievement CraftSword = new Achievement(12, "buildSword", 6, -1, Item.WOODEN_SWORD, BuildWorkbench).registerAchievement();
+        public readonly static Achievement KillEnemy = new Achievement(13, "killEnemy", 8, -1, Item.BONE, CraftSword).registerAchievement();
+        public readonly static Achievement KillCow = new Achievement(14, "killCow", 7, -3, Item.LEATHER, CraftSword).registerAchievement();
+        public readonly static Achievement KillPig = new Achievement(15, "flyPig", 8, -4, Item.SADDLE, KillCow).challenge().registerAchievement();
 
         public static void initialize()
         {
@@ -34,7 +35,7 @@ namespace betareborn
 
         static Achievements()
         {
-            java.lang.System.@out.println(ACHIEVEMENTS.size() + " achievements");
+            Console.WriteLine(AllAchievements.Count + " achievements");
         }
     }
 

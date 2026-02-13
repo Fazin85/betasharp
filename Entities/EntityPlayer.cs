@@ -954,7 +954,7 @@ namespace betareborn.Entities
                         }
                         else if (startMinecartRidingCoordinate.getSqDistanceTo(MathHelper.floor_double(base.x), MathHelper.floor_double(base.y), MathHelper.floor_double(base.z)) >= 1000.0D)
                         {
-                            increaseStat(Achievements.CRAFT_RAIL, 1);
+                            increaseStat(Achievements.CraftRail, 1);
                         }
                     }
                     else if (vehicle is EntityBoat)
@@ -984,7 +984,7 @@ namespace betareborn.Entities
         {
             if (other is EntityMonster)
             {
-                incrementStat(Achievements.KILL_ENEMY);
+                incrementStat(Achievements.KillEnemy);
             }
 
         }

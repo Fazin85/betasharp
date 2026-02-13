@@ -98,7 +98,7 @@ namespace betareborn.Entities
             base.onLanding(fallDistance);
             if (fallDistance > 5.0F && passenger is EntityPlayer)
             {
-                ((EntityPlayer)passenger).incrementStat(Achievements.KILL_PIG);
+                ((EntityPlayer)passenger).incrementStat(Achievements.KillPig);
             }
 
         }

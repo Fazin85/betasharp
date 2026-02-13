@@ -24,12 +24,12 @@ namespace betareborn.Screens.Slots
             var1.onCraft(thePlayer.world, thePlayer);
             if (var1.itemId == Item.IRON_INGOT.id)
             {
-                thePlayer.increaseStat(Achievements.ACQUIRE_IRON, 1);
+                thePlayer.increaseStat(Achievements.AcquireIron, 1);
             }
 
             if (var1.itemId == Item.COOKED_FISH.id)
             {
-                thePlayer.increaseStat(Achievements.COOK_FISH, 1);
+                thePlayer.increaseStat(Achievements.CookFish, 1);
             }
 
             base.onTakeItem(var1);

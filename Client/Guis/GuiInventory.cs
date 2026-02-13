@@ -14,7 +14,7 @@ namespace betareborn.Client.Guis
         public GuiInventory(EntityPlayer var1) : base(var1.playerScreenHandler)
         {
             field_948_f = true;
-            var1.increaseStat(Achievements.OPEN_INVENTORY, 1);
+            var1.increaseStat(Achievements.OpenInventory, 1);
         }
 
         public override void initGui()

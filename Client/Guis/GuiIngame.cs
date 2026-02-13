@@ -280,9 +280,9 @@ namespace betareborn.Client.Guis
 
             for (j = 0; j < chatMessageList.size() && j < linesToShow; ++j)
             {
-                if (((ChatLine)chatMessageList.get(j)).updateCounter < 200 || chatOpen)
+                if (((ChatLine)chatMessageList.get(j)).UpdateCounter < 200 || chatOpen)
                 {
-                    double d = ((ChatLine)chatMessageList.get(j)).updateCounter / 200.0D;
+                    double d = ((ChatLine)chatMessageList.get(j)).UpdateCounter / 200.0D;
                     d = 1.0D - d;
                     d *= 10.0D;
                     if (d < 0.0D)
@@ -440,7 +440,7 @@ namespace betareborn.Client.Guis
 
             for (int i = 0; i < chatMessageList.size(); ++i)
             {
-                ++((ChatLine)chatMessageList.get(i)).updateCounter;
+                ++((ChatLine)chatMessageList.get(i)).UpdateCounter;
             }
 
         }
