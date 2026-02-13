@@ -50,7 +50,7 @@ namespace betareborn.Client.Rendering.Blocks.Entities
             bindTextureByName("/item/sign.png");
             GLManager.GL.PushMatrix();
             GLManager.GL.Scale(var10, -var10, -var10);
-            signModel.func_887_a();
+            signModel.Render();
             GLManager.GL.PopMatrix();
             TextRenderer var17 = getFontRenderer();
             var12 = (float)(1.0D / 60.0D) * var10;
