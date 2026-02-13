@@ -181,7 +181,10 @@ namespace betareborn
             {
                 int[] msaaValues = [0, 2, 4, 8];
                 Display.MSAA_Samples = msaaValues[options.msaaLevel];
+
                 Display.create();
+                Display.getGlfw().SetWindowSizeLimits(Display.getWindowHandle(), 850, 480, 1280, 720);
+
                 GLManager.Init(Display.getGL()!);
             }
             catch (System.Exception var6)
@@ -1653,7 +1656,7 @@ namespace betareborn
 
         public static void startMainThread(string playerName, string sessionToken, string serverAddress)
         {
-            Minecraft mc = new(1920, 1080, false);
+            Minecraft mc = new(1280, 720, false);
             java.lang.Thread mainThread = new(mc, "Minecraft main thread");
             mainThread.setPriority(10);
             mc.minecraftUri = "www.minecraft.net";
