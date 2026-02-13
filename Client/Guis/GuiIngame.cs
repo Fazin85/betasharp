@@ -37,8 +37,8 @@ namespace betareborn.Client.Guis
         public void renderGameOverlay(float partialTicks, bool unusedFlag, int unusedA, int unusedB)
         {
             ScaledResolution scaled = new ScaledResolution(mc.options, mc.displayWidth, mc.displayHeight);
-            int scaledWidth = scaled.getScaledWidth();
-            int scaledHeight = scaled.getScaledHeight();
+            int scaledWidth = scaled.ScaledWidth;
+            int scaledHeight = scaled.ScaledHeight;
             TextRenderer font = mc.fontRenderer;
             mc.gameRenderer.setupHudRender();
             GLManager.GL.Enable(GLEnum.Blend);

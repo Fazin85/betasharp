@@ -421,8 +421,8 @@ namespace betareborn.Client.Rendering
             if (!client.skipRenderWorld)
             {
                 ScaledResolution var13 = new(client.options, client.displayWidth, client.displayHeight);
-                int var14 = var13.getScaledWidth();
-                int var15 = var13.getScaledHeight();
+                int var14 = var13.ScaledWidth;
+                int var15 = var13.ScaledHeight;
                 int var16 = Mouse.getX() * var14 / client.displayWidth;
                 int var17 = var15 - Mouse.getY() * var15 / client.displayHeight - 1;
                 int var7 = 30 + (int)(client.options.limitFramerate * 210.0f);
@@ -836,7 +836,7 @@ namespace betareborn.Client.Rendering
             GLManager.GL.Clear(ClearBufferMask.DepthBufferBit);
             GLManager.GL.MatrixMode(GLEnum.Projection);
             GLManager.GL.LoadIdentity();
-            GLManager.GL.Ortho(0.0D, var1.field_25121_a, var1.field_25120_b, 0.0D, 1000.0D, 3000.0D);
+            GLManager.GL.Ortho(0.0D, var1.ScaledWidthDouble, var1.ScaledHeightDouble, 0.0D, 1000.0D, 3000.0D);
             GLManager.GL.MatrixMode(GLEnum.Modelview);
             GLManager.GL.LoadIdentity();
             GLManager.GL.Translate(0.0F, 0.0F, -2000.0F);

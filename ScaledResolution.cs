@@ -2,43 +2,31 @@ namespace betareborn
 {
     public class ScaledResolution
     {
-        private int scaledWidth;
-        private int scaledHeight;
-        public double field_25121_a;
-        public double field_25120_b;
-        public int scaleFactor;
+        public int ScaledWidth { get; private set; }
+        public int ScaledHeight { get; private set; }
+        public double ScaledWidthDouble { get; private set; }
+        public double ScaledHeightDouble { get; private set; }
+        private readonly int scaleFactor;
 
-        public ScaledResolution(GameOptions var1, int var2, int var3)
+        public ScaledResolution(GameOptions options, int scaledWidth, int scaledHeight)
         {
-            scaledWidth = var2;
-            scaledHeight = var3;
+            ScaledWidth = scaledWidth;
+            ScaledHeight = scaledHeight;
+            int guiScale = options.guiScale;
             scaleFactor = 1;
-            int var4 = var1.guiScale;
-            if (var4 == 0)
-            {
-                var4 = 1000;
-            }
+            
+            if (guiScale == 0)
+                guiScale = 1000;
 
-            while (scaleFactor < var4 && scaledWidth / (scaleFactor + 1) >= 320 && scaledHeight / (scaleFactor + 1) >= 240)
+            while (scaleFactor < guiScale && ScaledWidth / (scaleFactor + 1) >= 320 && ScaledHeight / (scaleFactor + 1) >= 240)
             {
                 ++scaleFactor;
             }
 
-            field_25121_a = (double)scaledWidth / (double)scaleFactor;
-            field_25120_b = (double)scaledHeight / (double)scaleFactor;
-            scaledWidth = (int)java.lang.Math.ceil(field_25121_a);
-            scaledHeight = (int)java.lang.Math.ceil(field_25120_b);
-        }
-
-        public int getScaledWidth()
-        {
-            return scaledWidth;
-        }
-
-        public int getScaledHeight()
-        {
-            return scaledHeight;
+            ScaledWidthDouble = ScaledWidth / (double)scaleFactor;
+            ScaledHeightDouble = ScaledHeight / (double)scaleFactor;
+            ScaledWidth = (int)Math.Ceiling(ScaledWidthDouble);
+            ScaledHeight = (int)Math.Ceiling(ScaledHeightDouble);
         }
     }
-
 }

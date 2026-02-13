@@ -46,7 +46,7 @@ namespace betareborn
                 GLManager.GL.Clear(ClearBufferMask.DepthBufferBit);
                 GLManager.GL.MatrixMode(GLEnum.Projection);
                 GLManager.GL.LoadIdentity();
-                GLManager.GL.Ortho(0.0D, var2.field_25121_a, var2.field_25120_b, 0.0D, 100.0D, 300.0D);
+                GLManager.GL.Ortho(0.0D, var2.ScaledWidthDouble, var2.ScaledHeightDouble, 0.0D, 100.0D, 300.0D);
                 GLManager.GL.MatrixMode(GLEnum.Modelview);
                 GLManager.GL.LoadIdentity();
                 GLManager.GL.Translate(0.0F, 0.0F, -200.0F);
@@ -87,12 +87,12 @@ namespace betareborn
                 {
                     field_1006_d = var2;
                     ScaledResolution var4 = new ScaledResolution(mc.options, mc.displayWidth, mc.displayHeight);
-                    int var5 = var4.getScaledWidth();
-                    int var6 = var4.getScaledHeight();
+                    int var5 = var4.ScaledWidth;
+                    int var6 = var4.ScaledHeight;
                     GLManager.GL.Clear(ClearBufferMask.DepthBufferBit);
                     GLManager.GL.MatrixMode(GLEnum.Projection);
                     GLManager.GL.LoadIdentity();
-                    GLManager.GL.Ortho(0.0D, var4.field_25121_a, var4.field_25120_b, 0.0D, 100.0D, 300.0D);
+                    GLManager.GL.Ortho(0.0D, var4.ScaledWidthDouble, var4.ScaledHeightDouble, 0.0D, 100.0D, 300.0D);
                     GLManager.GL.MatrixMode(GLEnum.Modelview);
                     GLManager.GL.LoadIdentity();
                     GLManager.GL.Translate(0.0F, 0.0F, -200.0F);

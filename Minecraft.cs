@@ -280,7 +280,7 @@ namespace betareborn
             GLManager.GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
             GLManager.GL.MatrixMode(GLEnum.Projection);
             GLManager.GL.LoadIdentity();
-            GLManager.GL.Ortho(0.0D, var1.field_25121_a, var1.field_25120_b, 0.0D, 1000.0D, 3000.0D);
+            GLManager.GL.Ortho(0.0D, var1.ScaledWidthDouble, var1.ScaledHeightDouble, 0.0D, 1000.0D, 3000.0D);
             GLManager.GL.MatrixMode(GLEnum.Modelview);
             GLManager.GL.LoadIdentity();
             GLManager.GL.Translate(0.0F, 0.0F, -2000.0F);
@@ -302,7 +302,7 @@ namespace betareborn
             short var4 = 256;
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
             tessellator.setColorOpaque_I(16777215);
-            func_6274_a((var1.getScaledWidth() - var3) / 2, (var1.getScaledHeight() - var4) / 2, 0, 0, var3, var4);
+            func_6274_a((var1.ScaledWidth - var3) / 2, (var1.ScaledHeight - var4) / 2, 0, 0, var3, var4);
             GLManager.GL.Disable(GLEnum.Lighting);
             GLManager.GL.Disable(GLEnum.Fog);
             GLManager.GL.Enable(GLEnum.AlphaTest);
@@ -429,8 +429,8 @@ namespace betareborn
                 {
                     setIngameNotInFocus();
                     ScaledResolution scaledResolution = new(options, displayWidth, displayHeight);
-                    int scaledWidth = scaledResolution.getScaledWidth();
-                    int scaledHeight = scaledResolution.getScaledHeight();
+                    int scaledWidth = scaledResolution.ScaledWidth;
+                    int scaledHeight = scaledResolution.ScaledHeight;
                     ((GuiScreen)newScreen).setWorldAndResolution(this, scaledWidth, scaledHeight);
                     skipRenderWorld = false;
                 }
@@ -1066,8 +1066,8 @@ namespace betareborn
             if (currentScreen != null)
             {
                 ScaledResolution scaledResolution = new(options, newWidth, newHeight);
-                int scaledWidth = scaledResolution.getScaledWidth();
-                int scaledHeight = scaledResolution.getScaledHeight();
+                int scaledWidth = scaledResolution.ScaledWidth;
+                int scaledHeight = scaledResolution.ScaledHeight;
                 currentScreen.setWorldAndResolution(this, scaledWidth, scaledHeight);
             }
         }

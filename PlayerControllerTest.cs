@@ -1,4 +1,3 @@
-using betareborn.Blocks;
 using betareborn.Entities;
 using betareborn.Items;
 using betareborn.Worlds;
@@ -7,7 +6,6 @@ namespace betareborn
 {
     public class PlayerControllerTest : PlayerController
     {
-
         public PlayerControllerTest(Minecraft var1) : base(var1)
         {
             field_1064_b = true;
@@ -19,7 +17,7 @@ namespace betareborn
             {
                 if (entityPlayer.inventory.main[i] == null)
                 {
-                    mc.player.inventory.main[i] = new ItemStack((Block)Session.RegisteredBlocksList[i]);
+                    mc.player.inventory.main[i] = new ItemStack(Session.RegisteredBlocksList[i]);
                 }
                 else
                 {
@@ -42,5 +40,4 @@ namespace betareborn
         {
         }
     }
-
 }

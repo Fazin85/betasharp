@@ -61,8 +61,8 @@ namespace betareborn.Client.Guis
                 if (var1.id == (int)EnumOptions.GUI_SCALE.ordinal())
                 {
                     ScaledResolution var2 = new ScaledResolution(mc.options, mc.displayWidth, mc.displayHeight);
-                    int var3 = var2.getScaledWidth();
-                    int var4 = var2.getScaledHeight();
+                    int var3 = var2.ScaledWidth;
+                    int var4 = var2.ScaledHeight;
                     setWorldAndResolution(mc, var3, var4);
                 }
             }
