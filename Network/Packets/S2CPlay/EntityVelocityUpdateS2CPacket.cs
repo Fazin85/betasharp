@@ -16,68 +16,68 @@ namespace betareborn.Network.Packets.S2CPlay
         {
         }
 
-        public EntityVelocityUpdateS2CPacket(Entity var1) : this(var1.id, var1.velocityX, var1.velocityY, var1.velocityZ)
+        public EntityVelocityUpdateS2CPacket(Entity ent) : this(ent.id, ent.velocityX, ent.velocityY, ent.velocityZ)
         {
         }
 
-        public EntityVelocityUpdateS2CPacket(int var1, double var2, double var4, double var6)
+        public EntityVelocityUpdateS2CPacket(int entityId, double motionX, double motionY, double motionZ)
         {
-            entityId = var1;
-            double var8 = 3.9D;
-            if (var2 < -var8)
+            this.entityId = entityId;
+            double maxvelocity = 3.9D;
+            if (motionX < -maxvelocity)
             {
-                var2 = -var8;
+                motionX = -maxvelocity;
             }
 
-            if (var4 < -var8)
+            if (motionY < -maxvelocity)
             {
-                var4 = -var8;
+                motionY = -maxvelocity;
             }
 
-            if (var6 < -var8)
+            if (motionZ < -maxvelocity)
             {
-                var6 = -var8;
+                motionZ = -maxvelocity;
             }
 
-            if (var2 > var8)
+            if (motionX > maxvelocity)
             {
-                var2 = var8;
+                motionX = maxvelocity;
             }
 
-            if (var4 > var8)
+            if (motionY > maxvelocity)
             {
-                var4 = var8;
+                motionY = maxvelocity;
             }
 
-            if (var6 > var8)
+            if (motionZ > maxvelocity)
             {
-                var6 = var8;
+                motionZ = maxvelocity;
             }
 
-            motionX = (int)(var2 * 8000.0D);
-            motionY = (int)(var4 * 8000.0D);
-            motionZ = (int)(var6 * 8000.0D);
+            this.motionX = (int)(motionX * 8000.0D);
+            this.motionY = (int)(motionY * 8000.0D);
+            this.motionZ = (int)(motionZ * 8000.0D);
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            entityId = var1.readInt();
-            motionX = var1.readShort();
-            motionY = var1.readShort();
-            motionZ = var1.readShort();
+            entityId = stream.readInt();
+            motionX = stream.readShort();
+            motionY = stream.readShort();
+            motionZ = stream.readShort();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(entityId);
-            var1.writeShort(motionX);
-            var1.writeShort(motionY);
-            var1.writeShort(motionZ);
+            stream.writeInt(entityId);
+            stream.writeShort(motionX);
+            stream.writeShort(motionY);
+            stream.writeShort(motionZ);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onEntityVelocityUpdate(this);
+            handler.onEntityVelocityUpdate(this);
         }
 
         public override int size()

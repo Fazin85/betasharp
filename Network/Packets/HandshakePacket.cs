@@ -12,24 +12,24 @@ namespace betareborn.Network.Packets
         {
         }
 
-        public HandshakePacket(string var1)
+        public HandshakePacket(string username)
         {
-            username = var1;
+            this.username = username;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            username = readString(var1, 32);
+            username = readString(stream, 32);
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            writeString(username, var1);
+            writeString(username, stream);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onHandshake(this);
+            handler.onHandshake(this);
         }
 
         public override int size()

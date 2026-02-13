@@ -12,24 +12,24 @@ namespace betareborn.Network.Packets.S2CPlay
         {
         }
 
-        public CloseScreenS2CPacket(int var1)
+        public CloseScreenS2CPacket(int windowId)
         {
-            windowId = var1;
+            this.windowId = windowId;
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onCloseScreen(this);
+            handler.onCloseScreen(this);
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            windowId = (sbyte)var1.readByte();
+            windowId = (sbyte)stream.readByte();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeByte(windowId);
+            stream.writeByte(windowId);
         }
 
         public override int size()

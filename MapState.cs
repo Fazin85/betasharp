@@ -155,7 +155,7 @@ namespace betareborn
 
         }
 
-        public void func_28171_a(byte[] var1)
+        public void updateData(byte[] var1)
         {
             int var2;
             if (var1[0] == 0)

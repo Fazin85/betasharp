@@ -26,27 +26,27 @@ namespace betareborn.Network.Packets.S2CPlay
             this.data = data;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            eventId = var1.readInt();
-            x = var1.readInt();
-            y = (sbyte)var1.readByte();
-            z = var1.readInt();
-            data = var1.readInt();
+            eventId = stream.readInt();
+            x = stream.readInt();
+            y = (sbyte)stream.readByte();
+            z = stream.readInt();
+            data = stream.readInt();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(eventId);
-            var1.writeInt(x);
-            var1.writeByte(y);
-            var1.writeInt(z);
-            var1.writeInt(data);
+            stream.writeInt(eventId);
+            stream.writeInt(x);
+            stream.writeByte(y);
+            stream.writeInt(z);
+            stream.writeInt(data);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onWorldEvent(this);
+            handler.onWorldEvent(this);
         }
 
         public override int size()

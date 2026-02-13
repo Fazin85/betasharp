@@ -19,21 +19,21 @@ namespace betareborn.Network.Packets.S2CPlay
             this.amount = amount;
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onIncreaseStat(this);
+            handler.onIncreaseStat(this);
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            statId = var1.readInt();
-            amount = (sbyte)var1.readByte();
+            statId = stream.readInt();
+            amount = (sbyte)stream.readByte();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(statId);
-            var1.writeByte(amount);
+            stream.writeInt(statId);
+            stream.writeByte(amount);
         }
 
         public override int size()

@@ -18,34 +18,34 @@ namespace betareborn.Network.Packets.C2SPlay
         {
         }
 
-        public ClickSlotC2SPacket(int var1, int var2, int var3, bool var4, ItemStack var5, short var6)
+        public ClickSlotC2SPacket(int syncId, int slot, int button, bool holdingShift, ItemStack stack, short actionType)
         {
-            syncId = var1;
-            slot = var2;
-            button = var3;
-            stack = var5;
-            actionType = var6;
-            holdingShift = var4;
+            this.syncId = syncId;
+            this.slot = slot;
+            this.button = button;
+            this.stack = stack;
+            this.actionType = actionType;
+            this.holdingShift = holdingShift;
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onClickSlot(this);
+            handler.onClickSlot(this);
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            syncId = (sbyte)var1.readByte();
-            slot = var1.readShort();
-            button = (sbyte)var1.readByte();
-            actionType = var1.readShort();
-            holdingShift = var1.readBoolean();
-            short var2 = var1.readShort();
-            if (var2 >= 0)
+            syncId = (sbyte)stream.readByte();
+            slot = stream.readShort();
+            button = (sbyte)stream.readByte();
+            actionType = stream.readShort();
+            holdingShift = stream.readBoolean();
+            short itemId = stream.readShort();
+            if (itemId >= 0)
             {
-                sbyte var3 = (sbyte)var1.readByte();
-                short var4 = var1.readShort();
-                stack = new ItemStack(var2, var3, var4);
+                sbyte count = (sbyte)stream.readByte();
+                short damage = stream.readShort();
+                stack = new ItemStack(itemId, count, damage);
             }
             else
             {
@@ -54,22 +54,22 @@ namespace betareborn.Network.Packets.C2SPlay
 
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeByte(syncId);
-            var1.writeShort(slot);
-            var1.writeByte(button);
-            var1.writeShort(actionType);
-            var1.writeBoolean(holdingShift);
+            stream.writeByte(syncId);
+            stream.writeShort(slot);
+            stream.writeByte(button);
+            stream.writeShort(actionType);
+            stream.writeBoolean(holdingShift);
             if (stack == null)
             {
-                var1.writeShort(-1);
+                stream.writeShort(-1);
             }
             else
             {
-                var1.writeShort(stack.itemId);
-                var1.writeByte(stack.count);
-                var1.writeShort(stack.getDamage());
+                stream.writeShort(stack.itemId);
+                stream.writeByte(stack.count);
+                stream.writeShort(stack.getDamage());
             }
 
         }

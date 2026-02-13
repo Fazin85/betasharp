@@ -7,15 +7,15 @@ namespace betareborn.Network.Packets.Play
     {
         public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(KeepAlivePacket).TypeHandle);
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
         }
 

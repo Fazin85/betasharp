@@ -59,9 +59,9 @@ namespace betareborn.Server.Network
                 connection.disconnect();
                 closed = true;
             }
-            catch (java.lang.Exception var3)
+            catch (java.lang.Exception ex)
             {
-                var3.printStackTrace();
+                ex.printStackTrace();
             }
         }
 
@@ -113,24 +113,24 @@ namespace betareborn.Server.Network
 
         public void accept(LoginHelloPacket packet)
         {
-            ServerPlayerEntity var2 = server.playerManager.connectPlayer(this, packet.username);
-            if (var2 != null)
+            ServerPlayerEntity ent = server.playerManager.connectPlayer(this, packet.username);
+            if (ent != null)
             {
-                server.playerManager.loadPlayerData(var2);
-                var2.setWorld(server.getWorld(var2.dimensionId));
-                LOGGER.info(getConnectionInfo() + " logged in with entity id " + var2.id + " at (" + var2.x + ", " + var2.y + ", " + var2.z + ")");
-                ServerWorld var3 = server.getWorld(var2.dimensionId);
+                server.playerManager.loadPlayerData(ent);
+                ent.setWorld(server.getWorld(ent.dimensionId));
+                LOGGER.info(getConnectionInfo() + " logged in with entity id " + ent.id + " at (" + ent.x + ", " + ent.y + ", " + ent.z + ")");
+                ServerWorld var3 = server.getWorld(ent.dimensionId);
                 Vec3i var4 = var3.getSpawnPos();
-                ServerPlayNetworkHandler var5 = new ServerPlayNetworkHandler(server, connection, var2);
-                var5.sendPacket(new LoginHelloPacket("", var2.id, var3.getSeed(), (sbyte)var3.dimension.id));
-                var5.sendPacket(new PlayerSpawnPositionS2CPacket(var4.x, var4.y, var4.z));
-                server.playerManager.sendWorldInfo(var2, var3);
-                server.playerManager.sendToAll(new ChatMessagePacket("§e" + var2.name + " joined the game."));
-                server.playerManager.addPlayer(var2);
-                var5.teleport(var2.x, var2.y, var2.z, var2.yaw, var2.pitch);
-                server.connections.addConnection(var5);
-                var5.sendPacket(new WorldTimeUpdateS2CPacket(var3.getTime()));
-                var2.initScreenHandler();
+                ServerPlayNetworkHandler handler = new ServerPlayNetworkHandler(server, connection, ent);
+                handler.sendPacket(new LoginHelloPacket("", ent.id, var3.getSeed(), (sbyte)var3.dimension.id));
+                handler.sendPacket(new PlayerSpawnPositionS2CPacket(var4.x, var4.y, var4.z));
+                server.playerManager.sendWorldInfo(ent, var3);
+                server.playerManager.sendToAll(new ChatMessagePacket("§e" + ent.name + " joined the game."));
+                server.playerManager.addPlayer(ent);
+                handler.teleport(ent.x, ent.y, ent.z, ent.yaw, ent.pitch);
+                server.connections.addConnection(handler);
+                handler.sendPacket(new WorldTimeUpdateS2CPacket(var3.getTime()));
+                ent.initScreenHandler();
             }
 
             closed = true;

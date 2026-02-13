@@ -14,30 +14,30 @@ namespace betareborn.Network.Packets.Play
         {
         }
 
-        public ScreenHandlerAcknowledgementPacket(int var1, short var2, bool var3)
+        public ScreenHandlerAcknowledgementPacket(int syncId, short actionType, bool accepted)
         {
-            syncId = var1;
-            actionType = var2;
-            accepted = var3;
+            this.syncId = syncId;
+            this.actionType = actionType;
+            this.accepted = accepted;
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onScreenHandlerAcknowledgement(this);
+            handler.onScreenHandlerAcknowledgement(this);
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            syncId = (sbyte)var1.readByte();
-            actionType = var1.readShort();
-            accepted = (sbyte)var1.readByte() != 0;
+            syncId = (sbyte)stream.readByte();
+            actionType = stream.readShort();
+            accepted = (sbyte)stream.readByte() != 0;
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeByte(syncId);
-            var1.writeShort(actionType);
-            var1.writeByte(accepted ? 1 : 0);
+            stream.writeByte(syncId);
+            stream.writeShort(actionType);
+            stream.writeByte(accepted ? 1 : 0);
         }
 
         public override int size()

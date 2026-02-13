@@ -22,46 +22,46 @@ namespace betareborn.Network.Packets.S2CPlay
         {
         }
 
-        public PlayerSpawnS2CPacket(EntityPlayer var1)
+        public PlayerSpawnS2CPacket(EntityPlayer ent)
         {
-            entityId = var1.id;
-            name = var1.name;
-            xPosition = MathHelper.floor_double(var1.x * 32.0D);
-            yPosition = MathHelper.floor_double(var1.y * 32.0D);
-            zPosition = MathHelper.floor_double(var1.z * 32.0D);
-            rotation = (sbyte)(int)(var1.yaw * 256.0F / 360.0F);
-            pitch = (sbyte)(int)(var1.pitch * 256.0F / 360.0F);
-            ItemStack var2 = var1.inventory.getSelectedItem();
-            currentItem = var2 == null ? 0 : var2.itemId;
+            entityId = ent.id;
+            name = ent.name;
+            xPosition = MathHelper.floor_double(ent.x * 32.0D);
+            yPosition = MathHelper.floor_double(ent.y * 32.0D);
+            zPosition = MathHelper.floor_double(ent.z * 32.0D);
+            rotation = (sbyte)(int)(ent.yaw * 256.0F / 360.0F);
+            pitch = (sbyte)(int)(ent.pitch * 256.0F / 360.0F);
+            ItemStack itemStack = ent.inventory.getSelectedItem();
+            currentItem = itemStack == null ? 0 : itemStack.itemId;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            entityId = var1.readInt();
-            name = readString(var1, 16);
-            xPosition = var1.readInt();
-            yPosition = var1.readInt();
-            zPosition = var1.readInt();
-            rotation = (sbyte)var1.readByte();
-            pitch = (sbyte)var1.readByte();
-            currentItem = var1.readShort();
+            entityId = stream.readInt();
+            name = readString(stream, 16);
+            xPosition = stream.readInt();
+            yPosition = stream.readInt();
+            zPosition = stream.readInt();
+            rotation = (sbyte)stream.readByte();
+            pitch = (sbyte)stream.readByte();
+            currentItem = stream.readShort();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(entityId);
-            writeString(name, var1);
-            var1.writeInt(xPosition);
-            var1.writeInt(yPosition);
-            var1.writeInt(zPosition);
-            var1.writeByte(rotation);
-            var1.writeByte(pitch);
-            var1.writeShort(currentItem);
+            stream.writeInt(entityId);
+            writeString(name, stream);
+            stream.writeInt(xPosition);
+            stream.writeInt(yPosition);
+            stream.writeInt(zPosition);
+            stream.writeByte(rotation);
+            stream.writeByte(pitch);
+            stream.writeShort(currentItem);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onPlayerSpawn(this);
+            handler.onPlayerSpawn(this);
         }
 
         public override int size()

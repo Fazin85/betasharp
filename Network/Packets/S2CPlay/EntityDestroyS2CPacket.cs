@@ -17,19 +17,19 @@ namespace betareborn.Network.Packets.S2CPlay
             entityId = id;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            entityId = var1.readInt();
+            entityId = stream.readInt();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(entityId);
+            stream.writeInt(entityId);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onEntityDestroy(this);
+            handler.onEntityDestroy(this);
         }
 
         public override int size()

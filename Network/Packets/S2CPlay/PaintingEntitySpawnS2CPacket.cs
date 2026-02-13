@@ -18,39 +18,39 @@ namespace betareborn.Network.Packets.S2CPlay
         {
         }
 
-        public PaintingEntitySpawnS2CPacket(EntityPainting var1)
+        public PaintingEntitySpawnS2CPacket(EntityPainting paint)
         {
-            entityId = var1.id;
-            xPosition = var1.xPosition;
-            yPosition = var1.yPosition;
-            zPosition = var1.zPosition;
-            direction = var1.direction;
-            title = var1.art.title;
+            entityId = paint.id;
+            xPosition = paint.xPosition;
+            yPosition = paint.yPosition;
+            zPosition = paint.zPosition;
+            direction = paint.direction;
+            title = paint.art.title;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            entityId = var1.readInt();
-            title = readString(var1, EnumArt.maxArtTitleLength);
-            xPosition = var1.readInt();
-            yPosition = var1.readInt();
-            zPosition = var1.readInt();
-            direction = var1.readInt();
+            entityId = stream.readInt();
+            title = readString(stream, EnumArt.maxArtTitleLength);
+            xPosition = stream.readInt();
+            yPosition = stream.readInt();
+            zPosition = stream.readInt();
+            direction = stream.readInt();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(entityId);
-            writeString(title, var1);
-            var1.writeInt(xPosition);
-            var1.writeInt(yPosition);
-            var1.writeInt(zPosition);
-            var1.writeInt(direction);
+            stream.writeInt(entityId);
+            writeString(title, stream);
+            stream.writeInt(xPosition);
+            stream.writeInt(yPosition);
+            stream.writeInt(zPosition);
+            stream.writeInt(direction);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onPaintingEntitySpawn(this);
+            handler.onPaintingEntitySpawn(this);
         }
 
         public override int size()

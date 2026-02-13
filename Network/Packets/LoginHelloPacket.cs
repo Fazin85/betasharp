@@ -23,31 +23,31 @@ namespace betareborn.Network.Packets
             this.dimensionId = dimensionId;
         }
 
-        public LoginHelloPacket(string var1, int var2)
+        public LoginHelloPacket(string username, int protocolVersion)
         {
-            username = var1;
-            protocolVersion = var2;
+            this.username = username;
+            this.protocolVersion = protocolVersion;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            protocolVersion = var1.readInt();
-            username = readString(var1, 16);
-            worldSeed = var1.readLong();
-            dimensionId = (sbyte)var1.readByte();
+            protocolVersion = stream.readInt();
+            username = readString(stream, 16);
+            worldSeed = stream.readLong();
+            dimensionId = (sbyte)stream.readByte();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(protocolVersion);
-            writeString(username, var1);
-            var1.writeLong(worldSeed);
-            var1.writeByte(dimensionId);
+            stream.writeInt(protocolVersion);
+            writeString(username, stream);
+            stream.writeLong(worldSeed);
+            stream.writeByte(dimensionId);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onHello(this);
+            handler.onHello(this);
         }
 
         public override int size()

@@ -36,83 +36,83 @@ namespace betareborn.Network.Packets.S2CPlay
             this.entityData = entityData;
             if (entityData > 0)
             {
-                double var4 = entity.velocityX;
-                double var6 = entity.velocityY;
-                double var8 = entity.velocityZ;
-                double var10 = 3.9;
-                if (var4 < -var10)
+                double velocityX = entity.velocityX;
+                double velocityY = entity.velocityY;
+                double velocityZ = entity.velocityZ;
+                double maxVelocity = 3.9;
+                if (velocityX < -maxVelocity)
                 {
-                    var4 = -var10;
+                    velocityX = -maxVelocity;
                 }
 
-                if (var6 < -var10)
+                if (velocityY < -maxVelocity)
                 {
-                    var6 = -var10;
+                    velocityY = -maxVelocity;
                 }
 
-                if (var8 < -var10)
+                if (velocityZ < -maxVelocity)
                 {
-                    var8 = -var10;
+                    velocityZ = -maxVelocity;
                 }
 
-                if (var4 > var10)
+                if (velocityX > maxVelocity)
                 {
-                    var4 = var10;
+                    velocityX = maxVelocity;
                 }
 
-                if (var6 > var10)
+                if (velocityY > maxVelocity)
                 {
-                    var6 = var10;
+                    velocityY = maxVelocity;
                 }
 
-                if (var8 > var10)
+                if (velocityZ > maxVelocity)
                 {
-                    var8 = var10;
+                    velocityZ = maxVelocity;
                 }
 
-                velocityX = (int)(var4 * 8000.0);
-                velocityY = (int)(var6 * 8000.0);
-                velocityZ = (int)(var8 * 8000.0);
+                this.velocityX = (int)(velocityX * 8000.0);
+                this.velocityY = (int)(velocityY * 8000.0);
+                this.velocityZ = (int)(velocityZ * 8000.0);
             }
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            id = var1.readInt();
-            entityType = (sbyte)var1.readByte();
-            x = var1.readInt();
-            y = var1.readInt();
-            z = var1.readInt();
-            entityData = var1.readInt();
+            id = stream.readInt();
+            entityType = (sbyte)stream.readByte();
+            x = stream.readInt();
+            y = stream.readInt();
+            z = stream.readInt();
+            entityData = stream.readInt();
             if (entityData > 0)
             {
-                velocityX = var1.readShort();
-                velocityY = var1.readShort();
-                velocityZ = var1.readShort();
+                velocityX = stream.readShort();
+                velocityY = stream.readShort();
+                velocityZ = stream.readShort();
             }
 
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(id);
-            var1.writeByte(entityType);
-            var1.writeInt(x);
-            var1.writeInt(y);
-            var1.writeInt(z);
-            var1.writeInt(entityData);
+            stream.writeInt(id);
+            stream.writeByte(entityType);
+            stream.writeInt(x);
+            stream.writeInt(y);
+            stream.writeInt(z);
+            stream.writeInt(entityData);
             if (entityData > 0)
             {
-                var1.writeShort(velocityX);
-                var1.writeShort(velocityY);
-                var1.writeShort(velocityZ);
+                stream.writeShort(velocityX);
+                stream.writeShort(velocityY);
+                stream.writeShort(velocityZ);
             }
 
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onEntitySpawn(this);
+            handler.onEntitySpawn(this);
         }
 
         public override int size()

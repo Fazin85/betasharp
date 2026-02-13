@@ -14,27 +14,27 @@ namespace betareborn.Network.Packets.Play
         {
         }
 
-        public EntityAnimationPacket(Entity var1, int var2)
+        public EntityAnimationPacket(Entity ent, int animationId)
         {
-            id = var1.id;
-            animationId = var2;
+            id = ent.id;
+            this.animationId = animationId;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            id = var1.readInt();
-            animationId = (sbyte)var1.readByte();
+            id = stream.readInt();
+            animationId = (sbyte)stream.readByte();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(id);
-            var1.writeByte(animationId);
+            stream.writeInt(id);
+            stream.writeByte(animationId);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onEntityAnimation(this);
+            handler.onEntityAnimation(this);
         }
 
         public override int size()

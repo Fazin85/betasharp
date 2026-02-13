@@ -22,21 +22,21 @@ namespace betareborn.Network.Packets.S2CPlay
             this.stack = stack == null ? stack : stack.copy();
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onScreenHandlerSlotUpdate(this);
+            handler.onScreenHandlerSlotUpdate(this);
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            syncId = (sbyte)var1.readByte();
-            slot = var1.readShort();
-            short var2 = var1.readShort();
-            if (var2 >= 0)
+            syncId = (sbyte)stream.readByte();
+            slot = stream.readShort();
+            short itemId = stream.readShort();
+            if (itemId >= 0)
             {
-                sbyte var3 = (sbyte)var1.readByte();
-                short var4 = var1.readShort();
-                stack = new ItemStack(var2, var3, var4);
+                sbyte count = (sbyte)stream.readByte();
+                short damage = stream.readShort();
+                stack = new ItemStack(itemId, count, damage);
             }
             else
             {
@@ -45,19 +45,19 @@ namespace betareborn.Network.Packets.S2CPlay
 
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeByte(syncId);
-            var1.writeShort(slot);
+            stream.writeByte(syncId);
+            stream.writeShort(slot);
             if (stack == null)
             {
-                var1.writeShort(-1);
+                stream.writeShort(-1);
             }
             else
             {
-                var1.writeShort(stack.itemId);
-                var1.writeByte(stack.count);
-                var1.writeShort(stack.getDamage());
+                stream.writeShort(stack.itemId);
+                stream.writeByte(stack.count);
+                stream.writeShort(stack.getDamage());
             }
 
         }

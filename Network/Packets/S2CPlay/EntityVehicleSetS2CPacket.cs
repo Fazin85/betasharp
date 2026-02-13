@@ -25,21 +25,21 @@ namespace betareborn.Network.Packets.S2CPlay
             return 8;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            entityId = var1.readInt();
-            vehicleEntityId = var1.readInt();
+            entityId = stream.readInt();
+            vehicleEntityId = stream.readInt();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeInt(entityId);
-            var1.writeInt(vehicleEntityId);
+            stream.writeInt(entityId);
+            stream.writeInt(vehicleEntityId);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onEntityVehicleSet(this);
+            handler.onEntityVehicleSet(this);
         }
     }
 

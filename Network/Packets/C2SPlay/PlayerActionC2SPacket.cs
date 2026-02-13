@@ -16,36 +16,36 @@ namespace betareborn.Network.Packets.C2SPlay
         {
         }
 
-        public PlayerActionC2SPacket(int var1, int var2, int var3, int var4, int var5)
+        public PlayerActionC2SPacket(int action, int x, int y, int z, int direction)
         {
-            action = var1;
-            x = var2;
-            y = var3;
-            z = var4;
-            direction = var5;
+            this.action = action;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.direction = direction;
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            action = var1.read();
-            x = var1.readInt();
-            y = var1.read();
-            z = var1.readInt();
-            direction = var1.read();
+            action = stream.read();
+            x = stream.readInt();
+            y = stream.read();
+            z = stream.readInt();
+            direction = stream.read();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.write(action);
-            var1.writeInt(x);
-            var1.write(y);
-            var1.writeInt(z);
-            var1.write(direction);
+            stream.write(action);
+            stream.writeInt(x);
+            stream.write(y);
+            stream.writeInt(z);
+            stream.write(direction);
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.handlePlayerAction(this);
+            handler.handlePlayerAction(this);
         }
 
         public override int size()

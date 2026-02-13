@@ -7,30 +7,30 @@ namespace betareborn.Network.Packets.Play
     {
         public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayerRespawnPacket).TypeHandle);
 
-        public sbyte field_28048_a;
+        public sbyte dimensionId;
 
         public PlayerRespawnPacket()
         {
         }
 
-        public PlayerRespawnPacket(sbyte var1)
+        public PlayerRespawnPacket(sbyte dimensionId)
         {
-            field_28048_a = var1;
+            this.dimensionId = dimensionId;
         }
 
-        public override void apply(NetHandler var1)
+        public override void apply(NetHandler handler)
         {
-            var1.onPlayerRespawn(this);
+            handler.onPlayerRespawn(this);
         }
 
-        public override void read(DataInputStream var1)
+        public override void read(DataInputStream stream)
         {
-            field_28048_a = (sbyte)var1.readByte();
+            dimensionId = (sbyte)stream.readByte();
         }
 
-        public override void write(DataOutputStream var1)
+        public override void write(DataOutputStream stream)
         {
-            var1.writeByte(field_28048_a);
+            stream.writeByte(dimensionId);
         }
 
         public override int size()
