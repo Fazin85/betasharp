@@ -51,9 +51,8 @@ namespace betareborn.Network
                         if (!Connection.isDisconnected(this.netManager))
                         {
                             Connection.disconnect(this.netManager, var18);
+                            var18.printStackTrace();
                         }
-
-                        var18.printStackTrace();
                     }
                 }
                 finally

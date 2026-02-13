@@ -1531,35 +1531,6 @@ namespace betareborn
             changeWorld(newWorld, loadingMessage, (EntityPlayer)null);
         }
 
-        private enum BlockedReason
-        {
-            Chunks,
-            Level
-        }
-
-        private static bool isBlocked(out BlockedReason reason, out int toSave)
-        {
-            bool blockedByChunks = Region.RegionCache.isBlocked(out toSave);
-
-            if (blockedByChunks)
-            {
-                reason = BlockedReason.Chunks;
-                return true;
-            }
-
-            bool blockedByLevel = AsyncIO.isBlocked();
-
-            if (blockedByLevel)
-            {
-                reason = BlockedReason.Level;
-                return true;
-            }
-
-            toSave = 0;
-            reason = BlockedReason.Chunks;
-            return false;
-        }
-
         public void changeWorld(World newWorld, string loadingText, EntityPlayer targetEntity)
         {
             statFileWriter.func_27175_b();
@@ -1568,36 +1539,6 @@ namespace betareborn
             loadingScreen.printText(loadingText);
             loadingScreen.progressStage("");
             sndManager.playStreaming((string)null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
-
-            if (world != null)
-            {
-                world.savingProgress(loadingScreen);
-
-                while (true)
-                {
-                    bool blocked = isBlocked(out BlockedReason reason, out int toSave);
-
-                    if (!blocked)
-                    {
-                        break;
-                    }
-
-                    loadingScreen.printText(loadingText);
-
-                    string loadingString = reason == BlockedReason.Chunks
-                        ? $"Saving chunks ({toSave} left)"
-                        : "Saving level data";
-
-                    loadingScreen.progressStage(loadingString);
-
-                    java.lang.Thread.sleep(33);
-                }
-
-                Console.WriteLine("Saved chunks");
-                saveLoader.flush();
-
-                Region.RegionCache.deleteSaveHandler();
-            }
 
             world = newWorld;
             if (newWorld != null)
@@ -1661,7 +1602,6 @@ namespace betareborn
                 player = null;
             }
 
-            java.lang.System.gc();
             systemTime = 0L;
         }
 
@@ -1675,7 +1615,6 @@ namespace betareborn
             int loadedChunkCount = 0;
             int totalChunksToLoad = loadingRadius * 2 / 16 + 1;
             totalChunksToLoad *= totalChunksToLoad;
-            ChunkSource chunkSource = world.getChunkSource();
             Vec3i centerPos = world.getSpawnPos();
             if (player != null)
             {
