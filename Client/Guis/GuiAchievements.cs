@@ -257,9 +257,9 @@ namespace betareborn.Client.Guis
             int var17;
             int var33;
             int var38;
-            for (var12 = 0; var12 < Achievements.AllAchievements.size(); ++var12)
+            for (var12 = 0; var12 < Achievements.AllAchievements.Count; ++var12)
             {
-                Achievement var28 = (Achievement)Achievements.AllAchievements.get(var12);
+                Achievement var28 = (Achievement)Achievements.AllAchievements[var12];
                 if (var28.parent != null)
                 {
                     var14 = var28.column * 24 - var4 + 11 + var10;
@@ -299,9 +299,9 @@ namespace betareborn.Client.Guis
             GLManager.GL.Enable(GLEnum.ColorMaterial);
 
             int var34;
-            for (var14 = 0; var14 < Achievements.AllAchievements.size(); ++var14)
+            for (var14 = 0; var14 < Achievements.AllAchievements.Count; ++var14)
             {
-                Achievement var30 = (Achievement)Achievements.AllAchievements.get(var14);
+                Achievement var30 = Achievements.AllAchievements[var14];
                 var16 = var30.column * 24 - var4;
                 var17 = var30.row * 24 - var5;
                 if (var16 >= -24 && var17 >= -24 && var16 <= 224 && var17 <= 155)
