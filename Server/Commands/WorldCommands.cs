@@ -92,18 +92,46 @@ namespace betareborn.Server.Commands
 
         public static void Summon(MinecraftServer server, string senderName, string[] args, CommandOutput output)
         {
-            if (args.Length < 1) { output.SendMessage("Usage: summon <entity_name>"); return; }
+            if (args.Length < 1)
+            {
+                output.SendMessage("Usage: summon <entity_name> [count]");
+                return;
+            }
 
             ServerPlayerEntity player = server.playerManager.getPlayer(senderName);
-            if (player == null) { output.SendMessage("Could not find your player."); return; }
+            if (player == null)
+            {
+                output.SendMessage("Could not find your player.");
+                return;
+            }
 
             string entityName = args[0];
-            ServerWorld world = server.getWorld(player.dimensionId);
 
-            var entity = EntityRegistry.createEntityAt(entityName, world, (float)player.x, (float)player.y, (float)player.z);
-            if (entity != null)
+            int count = 1;
+            if (args.Length >= 2)
             {
-                output.SendMessage($"Summoned {entityName}");
+                if (!int.TryParse(args[1], out count) || count < 1)
+                {
+                    output.SendMessage("Invalid count. Must be a positive number.");
+                    return;
+                }
+            }
+
+            ServerWorld world = server.getWorld(player.dimensionId);
+            int summoned = 0;
+
+            for (int i = 0; i < count; i++)
+            {
+                var entity = EntityRegistry.createEntityAt(entityName, world, (float)player.x, (float)player.y, (float)player.z);
+                if (entity != null)
+                {
+                    summoned++;
+                }
+            }
+
+            if (summoned > 0)
+            {
+                output.SendMessage($"Summoned {summoned}x {entityName}");
             }
             else
             {
