@@ -280,7 +280,7 @@ public class AssetManager
         try
         {
             var assembly = Assembly.GetExecutingAssembly();
-            string resourceName = "betareborn." + embeddedAssetPathForPath;
+            string resourceName = $"{nameof(BetaSharp)}." + embeddedAssetPathForPath;
 
             using Stream? stream = assembly.GetManifestResourceStream(resourceName) ?? throw new Exception("Embedded resource not found: " + resourceName);
             switch (type)

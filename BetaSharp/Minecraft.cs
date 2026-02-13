@@ -335,7 +335,7 @@ public partial class Minecraft : java.lang.Object, Runnable
     {
         if (minecraftDir == null)
         {
-            minecraftDir = getAppDir("betareborn");
+            minecraftDir = getAppDir(nameof(BetaSharp));
         }
 
         return minecraftDir;
