@@ -26,7 +26,7 @@ namespace betareborn.Worlds.Chunks.Storage
 
             if (var4 != null)
             {
-                NBTTagCompound var5 = NBTIo.read((DataInput)var4);
+                NBTTagCompound var5 = NbtIo.read((DataInput)var4);
                 if (!var5.hasKey("Level"))
                 {
                     java.lang.System.@out.println("Chunk file at " + chunkX + "," + chunkZ + " is missing level data, skipping");
@@ -67,7 +67,7 @@ namespace betareborn.Worlds.Chunks.Storage
                 NBTTagCompound var5 = new();
                 var4.setTag("Level", var5);
                 storeChunkInCompound(chunk, world, var5);
-                NBTIo.write(var4, var3);
+                NbtIo.write(var4, var3);
                 var3.close();
                 WorldProperties var6 = world.getProperties();
                 var6.setSizeOnDisk(var6.getSizeOnDisk() + (long)RegionIo.getSizeDelta(dir, chunk.x, chunk.z));

@@ -46,7 +46,7 @@ namespace betareborn.Worlds.Storage
                             }
 
                             FileInputStream var5 = new(var4);
-                            NBTTagCompound var6 = NBTIo.read(var5);
+                            NBTTagCompound var6 = NbtIo.read(var5);
                             var5.close();
                             var3.readNBT(var6.getCompoundTag("data"));
                         }
@@ -116,7 +116,7 @@ namespace betareborn.Worlds.Storage
                         var saveTask = Task.Run(() =>
                         {
                             FileOutputStream var5 = new(var2);
-                            NBTIo.writeGzippedCompoundToOutputStream(var4, var5);
+                            NbtIo.writeGzippedCompoundToOutputStream(var4, var5);
                             var5.close();
                         });
 
@@ -145,7 +145,7 @@ namespace betareborn.Worlds.Storage
                 if (var1 != null && var1.exists())
                 {
                     DataInputStream var2 = new(new FileInputStream(var1));
-                    NBTTagCompound var3 = NBTIo.read((DataInput)var2);
+                    NBTTagCompound var3 = NbtIo.read((DataInput)var2);
                     var2.close();
                     Iterator var4 = var3.func_28110_c().iterator();
 
@@ -204,7 +204,7 @@ namespace betareborn.Worlds.Storage
                         }
 
                         DataOutputStream var9 = new(new FileOutputStream(var3));
-                        NBTIo.write(var4, var9);
+                        NbtIo.write(var4, var9);
                         var9.close();
                     }
                 }
