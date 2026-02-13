@@ -105,7 +105,7 @@ namespace betareborn.Worlds.Storage
             }
         }
 
-        public virtual void save(WorldProperties var1, List var2)
+        public virtual void save(WorldProperties var1, List<object> var2)
         {
             var1.setSaveVersion(19132);
 

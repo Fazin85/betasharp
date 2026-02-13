@@ -55,7 +55,7 @@ namespace betareborn.Server.Entities
             return currentTrackedEntity.id;
         }
 
-        public void notifyNewLocation(List players)
+        public void notifyNewLocation(List<ServerPlayerEntity> players)
         {
             newPlayerDataUpdated = false;
             if (!isInitialized || currentTrackedEntity.getSquaredDistance(x, y, z) > 16.0)
@@ -245,11 +245,11 @@ namespace betareborn.Server.Entities
             }
         }
 
-        public void updateListeners(List players)
+        public void updateListeners(List<ServerPlayerEntity> players)
         {
-            for (int var2 = 0; var2 < players.size(); var2++)
+            foreach (var player in players)
             {
-                updateListener((ServerPlayerEntity)players.get(var2));
+                updateListener(player);
             }
         }
 

@@ -63,11 +63,7 @@ namespace betareborn.Blocks
                     if (isBedOccupied(meta))
                     {
                         EntityPlayer occupant = null;
-                        Iterator playerIterator = world.players.iterator();
-
-                        while (playerIterator.hasNext())
-                        {
-                            EntityPlayer otherPlayer = (EntityPlayer)playerIterator.next();
+                        foreach (var otherPlayer in world.players) {
                             if (otherPlayer.isSleeping())
                             {
                                 Vec3i sleepingPos = otherPlayer.sleepingPos;

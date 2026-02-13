@@ -23,7 +23,7 @@ namespace betareborn.Worlds.Storage
             return null;
         }
 
-        public void save(WorldProperties var1, List var2)
+        public void save(WorldProperties var1, List<object> var2)
         {
         }
 

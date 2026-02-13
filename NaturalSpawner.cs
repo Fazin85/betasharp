@@ -34,9 +34,9 @@ namespace betareborn
 
                 int var3;
                 int var6;
-                for (var3 = 0; var3 < var0.players.size(); ++var3)
+                for (var3 = 0; var3 < var0.players.Count; ++var3)
                 {
-                    EntityPlayer var4 = (EntityPlayer)var0.players.get(var3);
+                    EntityPlayer var4 = var0.players[var3];
                     int var5 = MathHelper.floor_double(var4.x / 16.0D);
                     var6 = MathHelper.floor_double(var4.z / 16.0D);
                     byte var7 = 8;
@@ -191,12 +191,11 @@ namespace betareborn
 
         }
 
-        public static bool spawnMonstersAndWakePlayers(World var0, List var1)
+        public static bool spawnMonstersAndWakePlayers(World var0, List<EntityPlayer> players)
         {
-            bool var2 = false;
-            Pathfinder var3 = new Pathfinder(var0);
-            Iterator var4 = var1.iterator();
-
+            bool monstersSpawned = false;
+            var pathfinder = new Pathfinder(var0);
+            using var var4 = players.GetEnumerator();
             while (true)
             {
                 EntityPlayer var5;
@@ -205,12 +204,12 @@ namespace betareborn
                 {
                     do
                     {
-                        if (!var4.hasNext())
+                        if (!var4.MoveNext())
                         {
-                            return var2;
+                            return monstersSpawned;
                         }
 
-                        var5 = (EntityPlayer)var4.next();
+                        var5 = var4.Current;
                         var6 = nightSpawnEntities;
                     } while (var6 == null);
                 } while (var6.Length == 0);
@@ -257,13 +256,13 @@ namespace betareborn
                         catch (java.lang.Exception var21)
                         {
                             var21.printStackTrace();
-                            return var2;
+                            return monstersSpawned;
                         }
 
                         var17.setPositionAndAnglesKeepPrevAngles((double)var14, (double)var15, (double)var16, var0.random.nextFloat() * 360.0F, 0.0F);
                         if (var17.canSpawn())
                         {
-                            PathEntity var18 = var3.createEntityPathTo(var17, var5, 32.0F);
+                            PathEntity var18 = pathfinder.createEntityPathTo(var17, var5, 32.0F);
                             if (var18 != null && var18.pathLength > 1)
                             {
                                 PathPoint var19 = var18.func_22328_c();
@@ -280,7 +279,7 @@ namespace betareborn
                                     creatureSpecificInit(var17, var0, (float)var20.x + 0.5F, (float)var20.y, (float)var20.z + 0.5F);
                                     var5.wakeUp(true, false, false);
                                     var17.playLivingSound();
-                                    var2 = true;
+                                    monstersSpawned = true;
                                     var7 = true;
                                 }
                             }

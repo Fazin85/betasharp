@@ -1,7 +1,7 @@
 using betareborn.Server.Worlds;
 using betareborn.Worlds.Chunks.Storage;
 using betareborn.Worlds.Dimensions;
-using java.util;
+using System.Collections.Generic;
 
 namespace betareborn.Worlds.Storage
 {
@@ -13,7 +13,7 @@ namespace betareborn.Worlds.Storage
 
         ChunkStorage getChunkStorage(Dimension dim);
 
-        void save(WorldProperties var1, List var2);
+        void save(WorldProperties var1, List<object> var2);
 
         void save(WorldProperties var1);
         void forceSave();

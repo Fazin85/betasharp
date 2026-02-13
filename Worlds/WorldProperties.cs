@@ -76,14 +76,14 @@ namespace betareborn.Worlds
             return var1;
         }
 
-        public NBTTagCompound getNBTTagCompoundWithPlayer(List var1)
+        public NBTTagCompound getNBTTagCompoundWithPlayer(List<object> var1)
         {
             NBTTagCompound var2 = new();
             EntityPlayer var3 = null;
             NBTTagCompound var4 = null;
-            if (var1.size() > 0)
+            if (var1.Count > 0)
             {
-                var3 = (EntityPlayer)var1.get(0);
+                var3 = (EntityPlayer)var1[0];
             }
 
             if (var3 != null)

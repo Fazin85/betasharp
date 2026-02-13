@@ -31,7 +31,7 @@ namespace betareborn.Worlds
         private readonly Set scheduledUpdateSet;
         public List<BlockEntity> blockEntities;
         private readonly List<BlockEntity> blockEntityUpdateQueue;
-        public List players;
+        public List<EntityPlayer> players;
         public List globalEntities;
         private readonly long worldTimeMask;
         public int ambientDarkness;
@@ -89,7 +89,7 @@ namespace betareborn.Worlds
             scheduledUpdateSet = new HashSet();
             blockEntities = [];
             blockEntityUpdateQueue = [];
-            players = new ArrayList();
+            players = [];
             globalEntities = new ArrayList();
             worldTimeMask = 16777215L;
             ambientDarkness = 0;
@@ -131,7 +131,7 @@ namespace betareborn.Worlds
             scheduledUpdateSet = new HashSet();
             blockEntities = [];
             blockEntityUpdateQueue = [];
-            players = new ArrayList();
+            players = [];
             globalEntities = new ArrayList();
             worldTimeMask = 16777215L;
             ambientDarkness = 0;
@@ -178,7 +178,7 @@ namespace betareborn.Worlds
             scheduledUpdateSet = new HashSet();
             blockEntities = [];
             blockEntityUpdateQueue = [];
-            players = new ArrayList();
+            players = [];
             globalEntities = new ArrayList();
             worldTimeMask = 16777215L;
             ambientDarkness = 0;
@@ -339,7 +339,7 @@ namespace betareborn.Worlds
             //checkSessionLock();
             Profiler.Stop("checkSessionLock");
             Profiler.Start("saveWorldInfoAndPlayer");
-            storage.save(properties, players);
+            storage.save(properties, players.Cast<object>().ToList());
             Profiler.Stop("saveWorldInfoAndPlayer");
 
             Profiler.Start("saveAllData");
@@ -1164,7 +1164,7 @@ namespace betareborn.Worlds
                 if (entity is EntityPlayer)
                 {
                     EntityPlayer var5 = (EntityPlayer)entity;
-                    players.add(var5);
+                    players.Add(var5);
                     updateSleepingPlayers();
                 }
 
@@ -1208,7 +1208,7 @@ namespace betareborn.Worlds
             entity.markDead();
             if (entity is EntityPlayer)
             {
-                players.remove((EntityPlayer)entity);
+                players.Remove((EntityPlayer)entity);
                 updateSleepingPlayers();
             }
 
@@ -1219,7 +1219,7 @@ namespace betareborn.Worlds
             entity.markDead();
             if (entity is EntityPlayer player)
             {
-                players.remove(player);
+                players.Remove(player);
                 this.updateSleepingPlayers();
             }
 
@@ -2471,9 +2471,9 @@ namespace betareborn.Worlds
             int var4;
             int var6;
             int var7;
-            for (int var1 = 0; var1 < players.size(); ++var1)
+            for (int var1 = 0; var1 < players.Count; ++var1)
             {
-                EntityPlayer var2 = (EntityPlayer)players.get(var1);
+                EntityPlayer var2 = players[var1];
                 var3 = MathHelper.floor_double(var2.x / 16.0D);
                 var4 = MathHelper.floor_double(var2.z / 16.0D);
                 byte var5 = 9;
@@ -2834,9 +2834,9 @@ namespace betareborn.Worlds
             double var9 = -1.0D;
             EntityPlayer var11 = null;
 
-            for (int var12 = 0; var12 < players.size(); ++var12)
+            for (int var12 = 0; var12 < players.Count; ++var12)
             {
-                EntityPlayer var13 = (EntityPlayer)players.get(var12);
+                EntityPlayer var13 = players[var12];
                 double var14 = var13.getSquaredDistance(x, y, z);
                 if ((range < 0.0D || var14 < range * range) && (var9 == -1.0D || var14 < var9))
                 {
@@ -2850,11 +2850,11 @@ namespace betareborn.Worlds
 
         public EntityPlayer getPlayer(string name)
         {
-            for (int var2 = 0; var2 < players.size(); ++var2)
+            for (int var2 = 0; var2 < players.Count; ++var2)
             {
-                if (name.Equals(((EntityPlayer)players.get(var2)).name))
+                if (name.Equals(players[var2].name))
                 {
-                    return (EntityPlayer)players.get(var2);
+                    return players[var2];
                 }
             }
 
@@ -3129,13 +3129,9 @@ namespace betareborn.Worlds
 
         public void updateSleepingPlayers()
         {
-            allPlayersSleeping = !players.isEmpty();
-            Iterator var1 = players.iterator();
-
-            while (var1.hasNext())
-            {
-                EntityPlayer var2 = (EntityPlayer)var1.next();
-                if (!var2.isSleeping())
+            allPlayersSleeping = players.Count > 0;
+            foreach (var player in players) {
+                if (!player.isSleeping())
                 {
                     allPlayersSleeping = false;
                     break;
@@ -3147,14 +3143,10 @@ namespace betareborn.Worlds
         protected void afterSkipNight()
         {
             allPlayersSleeping = false;
-            Iterator var1 = players.iterator();
-
-            while (var1.hasNext())
-            {
-                EntityPlayer var2 = (EntityPlayer)var1.next();
-                if (var2.isSleeping())
+            foreach (var player in players) {
+                if (player.isSleeping())
                 {
-                    var2.wakeUp(false, false, true);
+                    player.wakeUp(false, false, true);
                 }
             }
 
@@ -3163,27 +3155,11 @@ namespace betareborn.Worlds
 
         public bool canSkipNight()
         {
-            if (allPlayersSleeping && !isRemote)
-            {
-                Iterator var1 = players.iterator();
-
-                EntityPlayer var2;
-                do
-                {
-                    if (!var1.hasNext())
-                    {
-                        return true;
-                    }
-
-                    var2 = (EntityPlayer)var1.next();
-                } while (var2.isPlayerFullyAsleep());
-
-                return false;
-            }
-            else
+            if (!allPlayersSleeping || isRemote)
             {
                 return false;
             }
+            return players.All(player => player.isPlayerFullyAsleep());
         }
 
         public float getThunderGradient(float delta)
