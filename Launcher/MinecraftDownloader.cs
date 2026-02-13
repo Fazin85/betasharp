@@ -2,7 +2,7 @@
 
 namespace betareborn.Launcher
 {
-    public class MinecraftDownloader
+    internal static class MinecraftDownloader
     {
         private static readonly HttpClient _httpClient = new();
         private const string VersionManifestUrl = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";

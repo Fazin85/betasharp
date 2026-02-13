@@ -8,7 +8,7 @@ using System.Web;
 
 namespace betareborn.Launcher
 {
-    public class MicrosoftAuthService
+    internal sealed class MicrosoftAuthService
     {
         private static readonly HttpClient _httpClient = new();
 

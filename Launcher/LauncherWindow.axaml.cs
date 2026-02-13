@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 
 namespace betareborn.Launcher
 {
-    public partial class LauncherWindow : Window
+    internal sealed partial class LauncherWindow : Window
     {
         public static LaunchResult? Result { get; private set; }
         private readonly MicrosoftAuthService _authService = new();

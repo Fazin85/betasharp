@@ -54,5 +54,12 @@
     <EmbeddedResource Include="shaders/chunk.vert" />
     <EmbeddedResource Include="shaders/chunk.frag" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="Launcher\icon.ico" />
+    <AvaloniaResource Include="Launcher\icon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AvaloniaResource>
+  </ItemGroup>
 
 </Project>

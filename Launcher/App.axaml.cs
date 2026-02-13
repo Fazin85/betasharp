@@ -1,11 +1,10 @@
 ﻿using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
 namespace betareborn.Launcher
 {
-    public class App : Application
+    internal sealed class App : Application
     {
         public override void Initialize()
         {
@@ -17,9 +16,6 @@ namespace betareborn.Launcher
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.MainWindow = new LauncherWindow();
-
-                // Set shutdown mode
-                desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
             }
 
             base.OnFrameworkInitializationCompleted();
