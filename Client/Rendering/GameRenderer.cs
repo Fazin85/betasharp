@@ -50,7 +50,7 @@ namespace betareborn.Client.Rendering
         float fogColorBlue;
         private float lastViewBob;
         private float viewBob;
-        private readonly Stopwatch fpsTimer;
+        private readonly Stopwatch fpsTimer = Stopwatch.StartNew();
 
         public GameRenderer(Minecraft mc)
         {
