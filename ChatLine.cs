@@ -1,14 +1,8 @@
 namespace betareborn
 {
-    public class ChatLine : java.lang.Object
+    public class ChatLine(string message)
     {
-        public string message;
-        public int updateCounter;
-
-        public ChatLine(string var1)
-        {
-            message = var1;
-            updateCounter = 0;
-        }
+        public string Message = message;
+        public int UpdateCounter = 0;
     }
 }

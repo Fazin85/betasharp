@@ -306,7 +306,7 @@ namespace betareborn.Client.Guis
                     {
                         byte left = 2;
                         int y = -j * 9;
-                        debugStr = ((ChatLine)chatMessageList.get(j)).message;
+                        debugStr = ((ChatLine)chatMessageList.get(j)).Message;
                         drawRect(left, y - 1, left + 320, y + 8, alpha / 2 << 24);
                         GLManager.GL.Enable(GLEnum.Blend);
                         font.drawStringWithShadow(debugStr, left, y, 16777215 + (alpha << 24));
