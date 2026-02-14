@@ -1,8 +1,9 @@
+using System.Collections;
 using java.io;
 
 namespace BetaSharp.NBT;
 
-public sealed class NBTTagList : NBTBase
+public sealed class NBTTagList : NBTBase, IEnumerable<NBTBase>
 {
     private List<NBTBase> list = [];
     private byte type;
@@ -60,4 +61,15 @@ public sealed class NBTTagList : NBTBase
     {
         return list.Count;
     }
+
+    public IEnumerator<NBTBase> GetEnumerator()
+    {
+        return ((IEnumerable<NBTBase>)list).GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return ((IEnumerable)list).GetEnumerator();
+    }
 }
+
