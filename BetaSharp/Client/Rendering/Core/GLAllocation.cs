@@ -87,11 +87,11 @@ public class GLAllocation : java.lang.Object
         }
     }
 
-    public static ByteBuffer createDirectByteBuffer(int var0)
+    public static ByteBuffer createDirectByteBuffer(int capacity)
     {
         lock (l)
         {
-            ByteBuffer var1 = ByteBuffer.allocateDirect(var0).order(ByteOrder.nativeOrder());
+            ByteBuffer var1 = ByteBuffer.allocateDirect(capacity).order(ByteOrder.nativeOrder());
             return var1;
         }
     }

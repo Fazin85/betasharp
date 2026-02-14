@@ -18,8 +18,8 @@ public class TextureManager : java.lang.Object
     private readonly HashMap textures = [];
     private readonly HashMap colors = [];
     private readonly HashMap images = [];
-    private readonly IntBuffer idbuffer = GLAllocation.createDirectIntBuffer(1);
-    private readonly ByteBuffer imageBuffer = GLAllocation.createDirectByteBuffer(1048576);
+    private readonly IntBuffer idBuffer = GLAllocation.createDirectIntBuffer(1);
+    private readonly ByteBuffer imageBuffer = ByteBuffer.wrap(new byte[1024*1024]); // 1MB
     private readonly List<DynamicTexture> dynamicTextures = [];
     private readonly Map downloadedImages = new HashMap();
     private readonly GameOptions gameOptions;
@@ -124,9 +124,9 @@ public class TextureManager : java.lang.Object
         {
             try
             {
-                idbuffer.clear();
-                GLAllocation.generateTextureNames(idbuffer);
-                int var6 = idbuffer.get(0);
+                idBuffer.clear();
+                GLAllocation.generateTextureNames(idBuffer);
+                int var6 = idBuffer.get(0);
                 if (var1.StartsWith("##"))
                 {
                     load(rescale(readImage(var2.getResourceAsStream(var1[2..]))), var6);
@@ -162,8 +162,8 @@ public class TextureManager : java.lang.Object
             catch (java.io.IOException var5)
             {
                 var5.printStackTrace();
-                GLAllocation.generateTextureNames(idbuffer);
-                int var4 = idbuffer.get(0);
+                GLAllocation.generateTextureNames(idBuffer);
+                int var4 = idBuffer.get(0);
                 load(missingTextureImage, var4);
                 textures.put(var1, Integer.valueOf(var4));
                 return var4;
@@ -188,9 +188,9 @@ public class TextureManager : java.lang.Object
 
     public int load(BufferedImage var1)
     {
-        idbuffer.clear();
-        GLAllocation.generateTextureNames(idbuffer);
-        int var2 = idbuffer.get(0);
+        idBuffer.clear();
+        GLAllocation.generateTextureNames(idBuffer);
+        int var2 = idBuffer.get(0);
         load(var1, var2);
         images.put(Integer.valueOf(var2), var1);
         return var2;
@@ -316,7 +316,7 @@ public class TextureManager : java.lang.Object
 
     public unsafe void bind(int[] var1, int var2, int var3, int var4)
     {
-        //TODO: this is probably wrong and will crash
+        //TODO: this is potentially wrong but shouldn't crash
 
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var4);
 
@@ -370,9 +370,9 @@ public class TextureManager : java.lang.Object
     public void delete(int var1)
     {
         images.remove(Integer.valueOf(var1));
-        idbuffer.clear();
-        idbuffer.put(var1);
-        idbuffer.flip();
+        idBuffer.clear();
+        idBuffer.put(var1);
+        idBuffer.flip();
         //GL11.glDeleteTextures(singleIntBuffer);
         GLManager.GL.DeleteTexture((uint)var1);
     }
