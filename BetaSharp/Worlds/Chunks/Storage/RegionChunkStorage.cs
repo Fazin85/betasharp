@@ -26,7 +26,7 @@ public class RegionChunkStorage : ChunkStorage
 
         if (var4 != null)
         {
-            NBTTagCompound var5 = NbtIo.Read(new JavaInputStreamWrapper(var4));
+            NBTTagCompound var5 = NbtIo.Read(var4);
             if (!var5.HasKey("Level"))
             {
                 java.lang.System.@out.println("Chunk file at " + chunkX + "," + chunkZ + " is missing level data, skipping");
