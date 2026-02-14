@@ -202,15 +202,7 @@ public class RegionFile : java.lang.Object
         }
 
         var buffer = new RegionFileChunkBuffer(this, var1, var2);
-        try
-        {
-            return new DeflateStream(buffer, CompressionMode.Compress);
-        }
-        catch
-        {
-            buffer.Dispose();
-            throw;
-        }
+        return new DeflateStream(buffer, CompressionMode.Compress);
     }
 
     public void write(int var1, int var2, byte[] var3, int var4)

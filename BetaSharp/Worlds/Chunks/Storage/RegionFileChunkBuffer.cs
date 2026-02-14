@@ -1,27 +1,18 @@
 namespace BetaSharp.Worlds.Chunks.Storage;
 
-public class RegionFileChunkBuffer : MemoryStream
+internal sealed class RegionFileChunkBuffer(RegionFile region, int var2, int var3) : MemoryStream(8096)
 {
-    private readonly int chunkX;
-    private readonly int chunkZ;
-    private readonly RegionFile regionFile;
-
-    public RegionFileChunkBuffer(RegionFile var1, int var2, int var3) : base(8096)
-    {
-        regionFile = var1;
-        chunkX = var2;
-        chunkZ = var3;
-    }
-
     protected override void Dispose(bool disposing)
     {
         try
         {
-            if (disposing)
+            if (!disposing)
             {
-                byte[] buffer = ToArray();
-                regionFile.write(chunkX, chunkZ, buffer, buffer.Length);
+                return;
             }
+            
+            var buffer = ToArray();
+            region.write(var2, var3, buffer, buffer.Length);
         }
         finally
         {

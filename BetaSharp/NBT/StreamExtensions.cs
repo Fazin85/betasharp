@@ -91,12 +91,12 @@ internal static class StreamExtensions
 
     public static string ReadString(this Stream stream)
     {
-        // This is not what Java uses.
         var length = stream.ReadShort();
         var buffer = new byte[length];
 
         stream.ReadExactly(buffer);
 
+        // This is not what Java uses.
         return Encoding.UTF8.GetString(buffer);
     }
 }

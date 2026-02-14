@@ -16,13 +16,13 @@ public class RegionChunkStorage : ChunkStorage
 
     public Chunk loadChunk(World world, int chunkX, int chunkZ)
     {
-        var s = RegionIo.getChunkInputStream(dir, chunkX, chunkZ);
+        using var s = RegionIo.getChunkInputStream(dir, chunkX, chunkZ);
         if (s == null)
         {
             return null;
         }
 
-        var var4 = s.getInputStream();
+        var var4 = s.Stream;
 
         if (var4 != null)
         {
@@ -62,14 +62,12 @@ public class RegionChunkStorage : ChunkStorage
     {
         try
         {
-            using (Stream var3 = RegionIo.getChunkOutputStream(dir, chunk.x, chunk.z))
-            {
-                NBTTagCompound var4 = new();
-                NBTTagCompound var5 = new();
-                var4.SetTag("Level", var5);
-                storeChunkInCompound(chunk, world, var5);
-                NbtIo.Write(var4, var3);
-            }
+            using var stream = RegionIo.getChunkOutputStream(dir, chunk.x, chunk.z);
+            NBTTagCompound tag = new();
+            NBTTagCompound var5 = new();
+            tag.SetTag("Level", var5);
+            storeChunkInCompound(chunk, world, var5);
+            NbtIo.Write(tag, stream);
             WorldProperties var6 = world.getProperties();
             var6.setSizeOnDisk(var6.getSizeOnDisk() + (long)RegionIo.getSizeDelta(dir, chunk.x, chunk.z));
         }
