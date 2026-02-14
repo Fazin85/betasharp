@@ -149,7 +149,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
         {
             try
             {
-                var2 = NbtIo.Read(new FileInputStream(var1));
+                var2 = NbtIo.ReadCompressed(new FileInputStream(var1));
                 var3 = var2.GetCompoundTag("Data");
                 WorldProperties wInfo = new(var3);
                 return wInfo;
@@ -165,7 +165,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
         {
             try
             {
-                var2 = NbtIo.Read(new FileInputStream(var1));
+                var2 = NbtIo.ReadCompressed(new FileInputStream(var1));
                 var3 = var2.GetCompoundTag("Data");
                 WorldProperties wInfo = new(var3);
                 return wInfo;
@@ -258,7 +258,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
             java.io.File var2 = new java.io.File(playersDirectory, playerName + ".dat");
             if (var2.exists())
             {
-                return NbtIo.Read(new FileInputStream(var2));
+                return NbtIo.ReadCompressed(new FileInputStream(var2));
             }
         }
         catch (Exception var3)

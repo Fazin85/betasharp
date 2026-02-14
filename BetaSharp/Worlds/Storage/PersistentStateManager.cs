@@ -44,7 +44,7 @@ public class PersistentStateManager : java.lang.Object
                     }
 
                     FileInputStream var5 = new(var4);
-                    NBTTagCompound var6 = NbtIo.Read(var5);
+                    NBTTagCompound var6 = NbtIo.ReadCompressed(var5);
                     var5.close();
                     var3.readNBT(var6.GetCompoundTag("data"));
                 }

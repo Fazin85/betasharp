@@ -104,7 +104,7 @@ public class RegionWorldStorageSource : WorldStorageSource
             {
                 try
                 {
-                    var4 = NbtIo.Read(new FileInputStream(var3));
+                    var4 = NbtIo.ReadCompressed(new FileInputStream(var3));
                     var5 = var4.GetCompoundTag("Data");
                     long sizeOnDisk = getFolderSizeMB(var2);
                     var wInfo = new WorldProperties(var5);
@@ -122,7 +122,7 @@ public class RegionWorldStorageSource : WorldStorageSource
             {
                 try
                 {
-                    var4 = NbtIo.Read(new FileInputStream(var3));
+                    var4 = NbtIo.ReadCompressed(new FileInputStream(var3));
                     var5 = var4.GetCompoundTag("Data");
                     long sizeOnDisk = getFolderSizeMB(var2);
                     var wInfo = new WorldProperties(var5);
@@ -149,7 +149,7 @@ public class RegionWorldStorageSource : WorldStorageSource
             {
                 try
                 {
-                    NBTTagCompound var5 = NbtIo.Read(new FileInputStream(var4));
+                    NBTTagCompound var5 = NbtIo.ReadCompressed(new FileInputStream(var4));
                     NBTTagCompound var6 = var5.GetCompoundTag("Data");
                     var6.SetString("LevelName", var2);
                     NbtIo.WriteCompressed(var5, new FileOutputStream(var4));

@@ -30,7 +30,7 @@ public static class NbtIo
         }
     }
 
-    public static NBTTagCompound Read(InputStream input)
+    public static NBTTagCompound ReadCompressed(InputStream input)
     {
         var stream = new DataInputStream(new GZIPInputStream(input));
 
