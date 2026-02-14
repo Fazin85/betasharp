@@ -26,7 +26,7 @@ public class RegionChunkStorage : ChunkStorage
 
         if (var4 != null)
         {
-            NBTTagCompound var5 = NbtIo.Read((DataInput)var4);
+            NBTTagCompound var5 = NbtIo.Read(var4);
             if (!var5.HasKey("Level"))
             {
                 java.lang.System.@out.println("Chunk file at " + chunkX + "," + chunkZ + " is missing level data, skipping");
@@ -62,13 +62,14 @@ public class RegionChunkStorage : ChunkStorage
     {
         try
         {
-            DataOutputStream var3 = RegionIo.getChunkOutputStream(dir, chunk.x, chunk.z);
-            NBTTagCompound var4 = new();
-            NBTTagCompound var5 = new();
-            var4.SetTag("Level", var5);
-            storeChunkInCompound(chunk, world, var5);
-            NbtIo.Write(var4, var3);
-            var3.close();
+            using (Stream var3 = RegionIo.getChunkOutputStream(dir, chunk.x, chunk.z))
+            {
+                NBTTagCompound var4 = new();
+                NBTTagCompound var5 = new();
+                var4.SetTag("Level", var5);
+                storeChunkInCompound(chunk, world, var5);
+                NbtIo.Write(var4, var3);
+            }
             WorldProperties var6 = world.getProperties();
             var6.setSizeOnDisk(var6.getSizeOnDisk() + (long)RegionIo.getSizeDelta(dir, chunk.x, chunk.z));
         }

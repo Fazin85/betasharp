@@ -1,6 +1,6 @@
 using java.io;
 using java.util;
-using java.util.zip;
+using System.IO.Compression;
 
 namespace BetaSharp.Worlds.Chunks.Storage;
 
@@ -161,19 +161,19 @@ public class RegionFile : java.lang.Object
                             {
                                 byte var7 = dataFile.readByte();
                                 byte[] var8;
-                                DataInputStream var9;
+                                Stream var9;
                                 if (var7 == 1)
                                 {
                                     var8 = new byte[var6 - 1];
                                     dataFile.read(var8);
-                                    var9 = new DataInputStream(new GZIPInputStream(new ByteArrayInputStream(var8)));
+                                    var9 = new GZipStream(new MemoryStream(var8), CompressionMode.Decompress);
                                     return new(var9, var7);
                                 }
                                 else if (var7 == 2 || var7 == 3)
                                 {
                                     var8 = new byte[var6 - 1];
                                     dataFile.read(var8);
-                                    var9 = new DataInputStream(new InflaterInputStream(new ByteArrayInputStream(var8)));
+                                    var9 = new DeflateStream(new MemoryStream(var8), CompressionMode.Decompress);
                                     return new(var9, var7);
                                 }
                                 else
@@ -194,9 +194,23 @@ public class RegionFile : java.lang.Object
         }
     }
 
-    public DataOutputStream getChunkDataOutputStream(int var1, int var2)
+    public Stream getChunkDataOutputStream(int var1, int var2)
     {
-        return outOfBounds(var1, var2) ? null : new DataOutputStream(new DeflaterOutputStream(new RegionFileChunkBuffer(this, var1, var2)));
+        if (outOfBounds(var1, var2))
+        {
+            return null;
+        }
+
+        var buffer = new RegionFileChunkBuffer(this, var1, var2);
+        try
+        {
+            return new DeflateStream(buffer, CompressionMode.Compress);
+        }
+        catch
+        {
+            buffer.Dispose();
+            throw;
+        }
     }
 
     public void write(int var1, int var2, byte[] var3, int var4)
