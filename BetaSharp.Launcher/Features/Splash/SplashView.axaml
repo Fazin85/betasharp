@@ -4,7 +4,7 @@
 
              x:Class="BetaSharp.Launcher.Features.Splash.SplashView" x:DataType="local:SplashViewModel">
 
-    <StackPanel VerticalAlignment="Center" Spacing="25">
+    <StackPanel Spacing="25" VerticalAlignment="Center">
         <Image Source="../../logo.png" Width="200" />
         <TextBlock Text="Checking for updates..." Opacity="0.5" HorizontalAlignment="Center" />
     </StackPanel>
