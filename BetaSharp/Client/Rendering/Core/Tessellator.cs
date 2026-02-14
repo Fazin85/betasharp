@@ -349,80 +349,80 @@ public class Tessellator : java.lang.Object
         }
     }
 
-    public void setTextureUV(double var1, double var3)
+    public void setTextureUV(double u, double v)
     {
         hasTexture = true;
-        textureU = var1;
-        textureV = var3;
+        textureU = u;
+        textureV = v;
     }
 
-    public void setColorOpaque_F(float var1, float var2, float var3)
+    public void setColorOpaque_F(float red, float green, float blue)
     {
-        setColorOpaque((int)(var1 * 255.0F), (int)(var2 * 255.0F), (int)(var3 * 255.0F));
+        setColorOpaque((int)(red * 255.0F), (int)(green * 255.0F), (int)(blue * 255.0F));
     }
 
-    public void setColorRGBA_F(float var1, float var2, float var3, float var4)
+    public void setColorRGBA_F(float red, float green, float blue, float alpha)
     {
-        setColorRGBA((int)(var1 * 255.0F), (int)(var2 * 255.0F), (int)(var3 * 255.0F), (int)(var4 * 255.0F));
+        setColorRGBA((int)(red * 255.0F), (int)(green * 255.0F), (int)(blue * 255.0F), (int)(alpha * 255.0F));
     }
 
-    public void setColorOpaque(int var1, int var2, int var3)
+    public void setColorOpaque(int red, int green, int blue)
     {
-        setColorRGBA(var1, var2, var3, 255);
+        setColorRGBA(red, green, blue, 255);
     }
 
-    public void setColorRGBA(int var1, int var2, int var3, int var4)
+    public void setColorRGBA(int red, int green, int blue, int alpha)
     {
         if (!isColorDisabled)
         {
-            if (var1 > 255)
+            if (red > 255)
             {
-                var1 = 255;
+                red = 255;
             }
 
-            if (var2 > 255)
+            if (green > 255)
             {
-                var2 = 255;
+                green = 255;
             }
 
-            if (var3 > 255)
+            if (blue > 255)
             {
-                var3 = 255;
+                blue = 255;
             }
 
-            if (var4 > 255)
+            if (alpha > 255)
             {
-                var4 = 255;
+                alpha = 255;
             }
 
-            if (var1 < 0)
+            if (red < 0)
             {
-                var1 = 0;
+                red = 0;
             }
 
-            if (var2 < 0)
+            if (green < 0)
             {
-                var2 = 0;
+                green = 0;
             }
 
-            if (var3 < 0)
+            if (blue < 0)
             {
-                var3 = 0;
+                blue = 0;
             }
 
-            if (var4 < 0)
+            if (alpha < 0)
             {
-                var4 = 0;
+                alpha = 0;
             }
 
             hasColor = true;
             if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN)
             {
-                color = var4 << 24 | var3 << 16 | var2 << 8 | var1;
+                color = alpha << 24 | blue << 16 | green << 8 | red;
             }
             else
             {
-                color = var1 << 24 | var2 << 16 | var3 << 8 | var4;
+                color = red << 24 | green << 16 | blue << 8 | alpha;
             }
 
         }

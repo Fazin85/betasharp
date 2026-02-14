@@ -48,9 +48,7 @@ public class ModelPart : java.lang.Object
         var10 += var7;
         if (mirror)
         {
-            float var11 = var8;
-            var8 = var1;
-            var1 = var11;
+            (var8, var1) = (var1, var8);
         }
 
         PositionTextureVertex var20 = new(var1, var2, var3, 0.0F, 0.0F);

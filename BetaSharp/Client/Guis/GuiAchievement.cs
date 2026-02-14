@@ -86,9 +86,9 @@ public class GuiAchievement : Gui
         GLManager.GL.DepthMask(false);
         Lighting.turnOff();
         updateAchievementWindowScale();
-        theGame.fontRenderer.drawStringWithShadow(LICENSE_WARNING_TEXT, 2, 2, 16777215);
-        theGame.fontRenderer.drawStringWithShadow(ALT_LOCATION_WARNING_TEXT, 2, 11, 16777215);
-        theGame.fontRenderer.drawStringWithShadow(PURCHASE_PROMPT_TEXT, 2, 20, 16777215);
+        theGame.fontRenderer.drawStringWithShadow(LICENSE_WARNING_TEXT, 2, 2, 0x00FFFFFF);
+        theGame.fontRenderer.drawStringWithShadow(ALT_LOCATION_WARNING_TEXT, 2, 11, 0x00FFFFFF);
+        theGame.fontRenderer.drawStringWithShadow(PURCHASE_PROMPT_TEXT, 2, 20, 0x00FFFFFF);
         GLManager.GL.DepthMask(true);
         GLManager.GL.Enable(GLEnum.DepthTest);
     }
@@ -161,12 +161,12 @@ public class GuiAchievement : Gui
     {
         if (isAchievementInformation)
         {
-            theGame.fontRenderer.func_27278_a(achievementDescription, achievementX + 30, achievementY + 7, 120, -1);
+            theGame.fontRenderer.func_27278_a(achievementDescription, achievementX + 30, achievementY + 7, 120, 0xFFFFFFFF);
         }
         else
         {
-            theGame.fontRenderer.drawString(achievementTitle, achievementX + 30, achievementY + 7, -256);
-            theGame.fontRenderer.drawString(achievementDescription, achievementX + 30, achievementY + 18, -1);
+            theGame.fontRenderer.drawString(achievementTitle, achievementX + 30, achievementY + 7, 0xFFFFFF00);
+            theGame.fontRenderer.drawString(achievementDescription, achievementX + 30, achievementY + 18, 0xFFFFFFFF);
         }
     }
 }

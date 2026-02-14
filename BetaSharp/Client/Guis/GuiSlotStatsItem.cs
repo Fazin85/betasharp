@@ -84,8 +84,13 @@ public class GuiSlotStatsItem : GuiSlotStats
         func_27265_a(stat, x + 215, y, index % 2 == 0);
     }
 
-    protected override string func_27263_a(int column)
+    protected override string getKeyForColumn(int column)
     {
-        return column == 1 ? "stat.crafted" : column == 2 ? "stat.used" : "stat.depleted";
+        return column switch
+        {
+            1 => "stat.crafted",
+            2 => "stat.used",
+            _ => "stat.depleted"
+        };
     }
 }

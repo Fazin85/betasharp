@@ -45,8 +45,8 @@ public class GuiYesNo : GuiScreen
     public override void render(int mouseX, int mouseY, float partialTicks)
     {
         drawDefaultBackground();
-        drawCenteredString(fontRenderer, message1, width / 2, 70, 16777215);
-        drawCenteredString(fontRenderer, message2, width / 2, 90, 16777215);
+        drawCenteredString(fontRenderer, message1, width / 2, 70, 0x00FFFFFF);
+        drawCenteredString(fontRenderer, message2, width / 2, 90, 0x00FFFFFF);
         base.render(mouseX, mouseY, partialTicks);
     }
 }

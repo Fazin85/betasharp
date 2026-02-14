@@ -130,8 +130,8 @@ public class LoadingScreenRenderer : LoadingDisplay
                     GLManager.GL.Enable(GLEnum.Texture2D);
                 }
 
-                mc.fontRenderer.drawStringWithShadow(field_1007_c, (var5 - mc.fontRenderer.getStringWidth(field_1007_c)) / 2, var6 / 2 - 4 - 16, 16777215);
-                mc.fontRenderer.drawStringWithShadow(field_1004_a, (var5 - mc.fontRenderer.getStringWidth(field_1004_a)) / 2, var6 / 2 - 4 + 8, 16777215);
+                mc.fontRenderer.drawStringWithShadow(field_1007_c, (var5 - mc.fontRenderer.getStringWidth(field_1007_c)) / 2, var6 / 2 - 4 - 16, 0x00FFFFFF);
+                mc.fontRenderer.drawStringWithShadow(field_1004_a, (var5 - mc.fontRenderer.getStringWidth(field_1004_a)) / 2, var6 / 2 - 4 + 8, 0x00FFFFFF);
                 Display.update();
 
                 try

@@ -56,9 +56,7 @@ public class WaterSprite : DynamicTexture
             }
         }
 
-        float[] var12 = next;
-        next = current;
-        current = var12;
+        (next, current) = (current, next);
 
         for (var2 = 0; var2 < 256; ++var2)
         {

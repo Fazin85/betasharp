@@ -309,7 +309,7 @@ public class Item : java.lang.Object
 
     public virtual int getColorMultiplier(int color)
     {
-        return 16777215;
+        return 0x00FFFFFF;
     }
 
     public virtual void inventoryTick(ItemStack itemStack, World world, Entity entity, int slotIndex, bool shouldUpdate)

@@ -2,34 +2,34 @@ namespace BetaSharp;
 
 public class BlockSoundGroup : java.lang.Object
 {
-    public readonly string field_1678_a;
-    public readonly float field_1677_b;
-    public readonly float field_1679_c;
+    public readonly string name;
+    public readonly float volume;
+    public readonly float pitch;
 
-    public BlockSoundGroup(string var1, float var2, float var3)
+    public BlockSoundGroup(string name, float volume, float pitch)
     {
-        field_1678_a = var1;
-        field_1677_b = var2;
-        field_1679_c = var3;
+        this.name = name;
+        this.volume = volume;
+        this.pitch = pitch;
     }
 
     public float getVolume()
     {
-        return field_1677_b;
+        return volume;
     }
 
     public float getPitch()
     {
-        return field_1679_c;
+        return pitch;
     }
 
     public virtual string stepSoundDir()
     {
-        return "step." + field_1678_a;
+        return "step." + name;
     }
 
     public string func_1145_d()
     {
-        return "step." + field_1678_a;
+        return "step." + name;
     }
 }

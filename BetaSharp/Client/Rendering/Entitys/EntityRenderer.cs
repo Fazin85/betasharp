@@ -92,9 +92,7 @@ public abstract class EntityRenderer
 
             if (var23 / 2 % 2 == 0)
             {
-                float var24 = var13;
-                var13 = var12;
-                var12 = var24;
+                (var13, var12) = (var12, var13);
             }
 
             var17.addVertexWithUV((double)(var18 - var19), (double)(0.0F - var21), (double)var22, (double)var13, (double)var15);

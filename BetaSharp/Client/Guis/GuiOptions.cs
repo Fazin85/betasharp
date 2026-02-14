@@ -78,7 +78,7 @@ public class GuiOptions : GuiScreen
     public override void render(int mouseX, int mouseY, float partialTicks)
     {
         drawDefaultBackground();
-        drawCenteredString(fontRenderer, screenTitle, width / 2, 20, 16777215);
+        drawCenteredString(fontRenderer, screenTitle, width / 2, 20, 0x00FFFFFF);
         base.render(mouseX, mouseY, partialTicks);
     }
 }

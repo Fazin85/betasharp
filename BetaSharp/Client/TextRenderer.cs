@@ -126,34 +126,33 @@ public class TextRenderer : java.lang.Object
 
     }
 
-    public void drawStringWithShadow(string var1, int var2, int var3, int var4)
+    public void drawStringWithShadow(string var1, int var2, int var3, uint color)
     {
-        renderString(var1, var2 + 1, var3 + 1, var4, true);
-        drawString(var1, var2, var3, var4);
+        renderString(var1, var2 + 1, var3 + 1, color, true);
+        drawString(var1, var2, var3, color);
     }
 
-    public void drawString(string var1, int var2, int var3, int var4)
+    public void drawString(string var1, int var2, int var3, uint color)
     {
-        renderString(var1, var2, var3, var4, false);
+        renderString(var1, var2, var3, color, false);
     }
 
-    public unsafe void renderString(string var1, int var2, int var3, int var4, bool var5)
+    public unsafe void renderString(string var1, int var2, int var3, uint color, bool var5)
     {
         if (var1 != null)
         {
-            int var6;
             if (var5)
             {
-                var6 = var4 & -16777216;
-                var4 = (var4 & 16579836) >> 2;
-                var4 += var6;
+                uint var6 = color & 0xFF000000;
+                color = (color & 0x00FCFCFC) >> 2;
+                color += var6;
             }
 
             GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)fontTextureName);
-            float var10 = (var4 >> 16 & 255) / 255.0F;
-            float var7 = (var4 >> 8 & 255) / 255.0F;
-            float var8 = (var4 & 255) / 255.0F;
-            float var9 = (var4 >> 24 & 255) / 255.0F;
+            float var10 = (color >> 16 & 255) / 255.0F;
+            float var7 = (color >> 8 & 255) / 255.0F;
+            float var8 = (color & 255) / 255.0F;
+            float var9 = (color >> 24 & 255) / 255.0F;
             if (var9 == 0.0F)
             {
                 var9 = 1.0F;
@@ -164,12 +163,12 @@ public class TextRenderer : java.lang.Object
             GLManager.GL.PushMatrix();
             GLManager.GL.Translate(var2, var3, 0.0F);
 
-            for (var6 = 0; var6 < var1.Length; ++var6)
+            for (int i = 0; i < var1.Length; ++i)
             {
                 int var11;
-                for (; var1.Length > var6 + 1 && var1[var6] == 167; var6 += 2)
+                for (; var1.Length > i + 1 && var1[i] == 167; i += 2)
                 {
-                    var11 = "0123456789abcdef".IndexOf(var1.ToLower()[var6 + 1]);
+                    var11 = "0123456789abcdef".IndexOf(var1.ToLower()[i + 1]);
                     if (var11 < 0 || var11 > 15)
                     {
                         var11 = 15;
@@ -184,9 +183,9 @@ public class TextRenderer : java.lang.Object
                     }
                 }
 
-                if (var6 < var1.Length)
+                if (i < var1.Length)
                 {
-                    var11 = ChatAllowedCharacters.allowedCharacters.IndexOf(var1[var6]);
+                    var11 = ChatAllowedCharacters.allowedCharacters.IndexOf(var1[i]);
                     if (var11 >= 0)
                     {
                         buffer.put(fontDisplayLists + var11 + 32);
@@ -245,14 +244,14 @@ public class TextRenderer : java.lang.Object
         }
     }
 
-    public void func_27278_a(string var1, int var2, int var3, int var4, int var5)
+    public void func_27278_a(string var1, int var2, int var3, int var4, uint color)
     {
         string[] var6 = var1.Split("\n");
         if (var6.Length > 1)
         {
             for (int var11 = 0; var11 < var6.Length; ++var11)
             {
-                func_27278_a(var6[var11], var2, var3, var4, var5);
+                func_27278_a(var6[var11], var2, var3, var4, color);
                 var3 += func_27277_a(var6[var11], var4);
             }
 
@@ -278,14 +277,14 @@ public class TextRenderer : java.lang.Object
 
                     if (var9[..var10].Trim().Length > 0)
                     {
-                        drawString(var9[..var10], var2, var3, var5);
+                        drawString(var9[..var10], var2, var3, color);
                         var3 += 8;
                     }
                 }
 
                 if (var9.Trim().Length > 0)
                 {
-                    drawString(var9, var2, var3, var5);
+                    drawString(var9, var2, var3, color);
                     var3 += 8;
                 }
             }

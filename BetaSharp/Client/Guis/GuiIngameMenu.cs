@@ -80,10 +80,10 @@ public class GuiIngameMenu : GuiScreen
             float var5 = (updateCounter % 10 + var3) / 10.0F;
             var5 = MathHelper.sin(var5 * (float)Math.PI * 2.0F) * 0.2F + 0.8F;
             int var6 = (int)(255.0F * var5);
-            drawString(fontRenderer, "Saving level..", 8, height - 16, var6 << 16 | var6 << 8 | var6);
+            drawString(fontRenderer, "Saving level..", 8, height - 16, (uint)(var6 << 16 | var6 << 8 | var6));
         }
 
-        drawCenteredString(fontRenderer, "Game menu", width / 2, 40, 16777215);
+        drawCenteredString(fontRenderer, "Game menu", width / 2, 40, 0x00FFFFFF);
         base.render(var1, var2, var3);
     }
 }

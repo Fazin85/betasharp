@@ -91,7 +91,7 @@ public abstract class World : java.lang.Object, BlockView
         blockEntityUpdateQueue = [];
         players = [];
         globalEntities = new ArrayList();
-        worldTimeMask = 16777215L;
+        worldTimeMask = 0x00FFFFFFL;
         ambientDarkness = 0;
         lcgBlockSeed = (new java.util.Random()).nextInt();
         lcgBlockSeedIncrement = 1013904223;
@@ -133,7 +133,7 @@ public abstract class World : java.lang.Object, BlockView
         blockEntityUpdateQueue = [];
         players = [];
         globalEntities = new ArrayList();
-        worldTimeMask = 16777215L;
+        worldTimeMask = 0x00FFFFFFL;
         ambientDarkness = 0;
         lcgBlockSeed = (new java.util.Random()).nextInt();
         lcgBlockSeedIncrement = 1013904223;
@@ -180,7 +180,7 @@ public abstract class World : java.lang.Object, BlockView
         blockEntityUpdateQueue = [];
         players = [];
         globalEntities = new ArrayList();
-        worldTimeMask = 16777215L;
+        worldTimeMask = 0x00FFFFFFL;
         ambientDarkness = 0;
         lcgBlockSeed = (new java.util.Random()).nextInt();
         lcgBlockSeedIncrement = 1013904223;
@@ -598,9 +598,7 @@ public abstract class World : java.lang.Object, BlockView
     {
         if (minY > maxY)
         {
-            int var5 = maxY;
-            maxY = minY;
-            minY = var5;
+            (maxY, minY) = (minY, maxY);
         }
 
         setBlocksDirty(x, minY, z, x, maxY, z);

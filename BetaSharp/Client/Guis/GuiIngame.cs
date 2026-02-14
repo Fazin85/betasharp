@@ -193,7 +193,7 @@ public class GuiIngame : Gui
             }
 
             j = (int)(220.0F * sleepAlpha) << 24 | 1052704;
-            drawRect(0, 0, scaledWidth, scaledHeight, j);
+            drawRect(0, 0, scaledWidth, scaledHeight, (uint)j);
             GLManager.GL.Enable(GLEnum.AlphaTest);
             GLManager.GL.Enable(GLEnum.DepthTest);
         }
@@ -206,10 +206,10 @@ public class GuiIngame : Gui
             if (Minecraft.hasPaidCheckTime > 0L)
                 GLManager.GL.Translate(0.0F, 32.0F, 0.0F);
 
-            font.drawStringWithShadow("Minecraft Beta 1.7.3 (" + mc.debug + ")", 2, 2, 16777215);
-            font.drawStringWithShadow(mc.func_6262_n(), 2, 22, 16777215);
-            font.drawStringWithShadow(mc.func_6245_o(), 2, 32, 16777215);
-            font.drawStringWithShadow(mc.func_21002_o(), 2, 42, 16777215);
+            font.drawStringWithShadow("Minecraft Beta 1.7.3 (" + mc.debug + ")", 2, 2, 0x00FFFFFF);
+            font.drawStringWithShadow(mc.func_6262_n(), 2, 22, 0x00FFFFFF);
+            font.drawStringWithShadow(mc.func_6245_o(), 2, 32, 0x00FFFFFF);
+            font.drawStringWithShadow(mc.func_21002_o(), 2, 42, 0x00FFFFFF);
             long maxMem = GCMonitor.MaxMemoryBytes;
             long usedMem = GCMonitor.UsedMemoryBytes;
             long heapMem = GCMonitor.UsedHeapBytes;
@@ -252,13 +252,13 @@ public class GuiIngame : Gui
                 GLManager.GL.Translate(scaledWidth / 2, scaledHeight - 48, 0.0F);
                 GLManager.GL.Enable(GLEnum.Blend);
                 GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
-                j = 16777215;
+                j = 0x00FFFFFF;
                 if (field_22065_l)
                 {
-                    j = Color.HSBtoRGB(t / 50.0F, 0.7F, 0.6F) & 16777215;
+                    j = Color.HSBtoRGB(t / 50.0F, 0.7F, 0.6F) & 0x00FFFFFF;
                 }
 
-                font.drawString(recordPlaying, -font.getStringWidth(recordPlaying) / 2, -4, j + (i << 24));
+                font.drawString(recordPlaying, -font.getStringWidth(recordPlaying) / 2, -4, (uint)(j + (i << 24)));
                 GLManager.GL.Disable(GLEnum.Blend);
                 GLManager.GL.PopMatrix();
             }
@@ -307,9 +307,9 @@ public class GuiIngame : Gui
                     byte left = 2;
                     int y = -j * 9;
                     debugStr = ((ChatLine)chatMessageList.get(j)).Message;
-                    drawRect(left, y - 1, left + 320, y + 8, alpha / 2 << 24);
+                    drawRect(left, y - 1, left + 320, y + 8, (uint)(alpha / 2 << 24));
                     GLManager.GL.Enable(GLEnum.Blend);
-                    font.drawStringWithShadow(debugStr, left, y, 16777215 + (alpha << 24));
+                    font.drawStringWithShadow(debugStr, left, y, 0x00FFFFFF + (uint)(alpha << 24));
                 }
             }
         }

@@ -259,32 +259,32 @@ public class GuiAchievements : GuiScreen
         int var38;
         for (var12 = 0; var12 < Achievements.AllAchievements.Count; ++var12)
         {
-            Achievement var28 = (Achievement)Achievements.AllAchievements[var12];
+            Achievement var28 = Achievements.AllAchievements[var12];
             if (var28.parent != null)
             {
                 var14 = var28.column * 24 - var4 + 11 + var10;
                 var15 = var28.row * 24 - var5 + 11 + var11;
                 var16 = var28.parent.column * 24 - var4 + 11 + var10;
                 var17 = var28.parent.row * 24 - var5 + 11 + var11;
-                bool var18 = false;
                 bool var19 = field_27120_x.hasAchievementUnlocked(var28);
                 bool var20 = field_27120_x.func_27181_b(var28);
                 var38 = java.lang.Math.sin(java.lang.System.currentTimeMillis() % 600L / 600.0D * Math.PI * 2.0D) > 0.6D ? 255 : 130;
+                uint color;
                 if (var19)
                 {
-                    var33 = -9408400;
+                    color = 0xFF707070U;
                 }
                 else if (var20)
                 {
-                    var33 = '\uff00' + (var38 << 24);
+                    color = 0xFF + (uint)(var38 << 24);
                 }
                 else
                 {
-                    var33 = -16777216;
+                    color = 0xFF000000U;
                 }
 
-                func_27100_a(var14, var16, var15, var33);
-                func_27099_b(var16, var15, var17, var33);
+                func_27100_a(var14, var16, var15, color);
+                func_27099_b(var16, var15, var17, color);
             }
         }
 
@@ -385,11 +385,11 @@ public class GuiAchievements : GuiScreen
                     var37 += 12;
                 }
 
-                drawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var37 + 3 + 12, -1073741824, -1073741824);
-                fontRenderer.func_27278_a(var32, var17, var33 + 12, var34, -6250336);
+                drawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var37 + 3 + 12, 0xC0000000U, 0xC0000000U);
+                fontRenderer.func_27278_a(var32, var17, var33 + 12, var34, 0xFFA0A0A0);
                 if (field_27120_x.hasAchievementUnlocked(var27))
                 {
-                    fontRenderer.drawStringWithShadow(StatCollector.translateToLocal("achievement.taken"), var17, var33 + var37 + 4, -7302913);
+                    fontRenderer.drawStringWithShadow(StatCollector.translateToLocal("achievement.taken"), var17, var33 + var37 + 4, 0xFF9090FF);
                 }
             }
             else
@@ -397,11 +397,11 @@ public class GuiAchievements : GuiScreen
                 var34 = java.lang.Math.max(fontRenderer.getStringWidth(var31), 120);
                 string var39 = StatCollector.translateToLocalFormatted("achievement.requires", new object[] { var27.parent.statName });
                 var38 = fontRenderer.func_27277_a(var39, var34);
-                drawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var38 + 12 + 3, -1073741824, -1073741824);
-                fontRenderer.func_27278_a(var39, var17, var33 + 12, var34, -9416624);
+                drawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var38 + 12 + 3, 0xC0000000, 0xC0000000);
+                fontRenderer.func_27278_a(var39, var17, var33 + 12, var34, 0xFF705050);
             }
 
-            fontRenderer.drawStringWithShadow(var31, var17, var33, field_27120_x.func_27181_b(var27) ? var27.isChallenge() ? -128 : -1 : var27.isChallenge() ? -8355776 : -8355712);
+            fontRenderer.drawStringWithShadow(var31, var17, var33, field_27120_x.func_27181_b(var27) ? var27.isChallenge() ? 0xFFFFFF80 : 0xFFFFFFFF : var27.isChallenge() ? 0xFF808040 : 0xFF808080);
         }
 
         GLManager.GL.Enable(GLEnum.DepthTest);

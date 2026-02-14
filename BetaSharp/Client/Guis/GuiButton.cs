@@ -66,7 +66,7 @@ public class GuiButton : Gui
             mouseDragged(mc, mouseX, mouseY);
             if (!enabled)
             {
-                drawCenteredString(font, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, -6250336);
+                drawCenteredString(font, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 0xFFA0A0A0);
             }
             else if (isHovered)
             {

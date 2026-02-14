@@ -71,7 +71,7 @@ public class GuiVideoSettings : GuiScreen
     public override void render(int var1, int var2, float var3)
     {
         drawDefaultBackground();
-        drawCenteredString(fontRenderer, field_22107_a, width / 2, 20, 16777215);
+        drawCenteredString(fontRenderer, field_22107_a, width / 2, 20, 0x00FFFFFF);
         base.render(var1, var2, var3);
     }
 }

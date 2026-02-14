@@ -74,12 +74,12 @@ public class GuiControls : GuiScreen
     public override void render(int mouseX, int mouseY, float partialTicks)
     {
         drawDefaultBackground();
-        drawCenteredString(fontRenderer, screenTitle, width / 2, 20, 16777215);
+        drawCenteredString(fontRenderer, screenTitle, width / 2, 20, 0x00FFFFFF);
         int leftX = getLeftColumnX();
 
         for (int i = 0; i < options.keyBindings.Length; ++i)
         {
-            drawString(fontRenderer, options.getKeyBindingDescription(i), leftX + i % 2 * 160 + 70 + 6, height / 6 + 24 * (i >> 1) + 7, -1);
+            drawString(fontRenderer, options.getKeyBindingDescription(i), leftX + i % 2 * 160 + 70 + 6, height / 6 + 24 * (i >> 1) + 7, 0xFFFFFFFF);
         }
 
         base.render(mouseX, mouseY, partialTicks);

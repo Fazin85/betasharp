@@ -142,7 +142,7 @@ public class GuiMainMenu : GuiScreen
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         drawTexturedModalRect(logoX + 0, logoY + 0, 0, 0, 155, 44);
         drawTexturedModalRect(logoX + 155, logoY + 0, 0, 45, 155, 44);
-        tessellator.setColorOpaque_I(16777215);
+        tessellator.setColorOpaque_I(0x00FFFFFF);
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(width / 2 + 90, 70.0F, 0.0F);
         GLManager.GL.Rotate(-20.0F, 0.0F, 0.0F, 1.0F);
@@ -154,9 +154,9 @@ public class GuiMainMenu : GuiScreen
         GLManager.GL.PopMatrix();
         drawString(fontRenderer, "Minecraft Beta 1.7.3", 2, 2, 5263440);
         string copyrightText = "Copyright Mojang Studios. Not an official Minecraft product.";
-        drawString(fontRenderer, copyrightText, width - fontRenderer.getStringWidth(copyrightText) - 2, height - 20, 16777215);
+        drawString(fontRenderer, copyrightText, width - fontRenderer.getStringWidth(copyrightText) - 2, height - 20, 0x00FFFFFF);
         string disclaimerText = "Not approved by or associated with Mojang Studios or Microsoft.";
-        drawString(fontRenderer, disclaimerText, width - fontRenderer.getStringWidth(disclaimerText) - 2, height - 10, 16777215);
+        drawString(fontRenderer, disclaimerText, width - fontRenderer.getStringWidth(disclaimerText) - 2, height - 10, 0x00FFFFFF);
         base.render(mouseX, mouseY, partialTicks);
     }
 }

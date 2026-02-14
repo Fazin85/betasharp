@@ -296,7 +296,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         GLManager.GL.Disable(GLEnum.Fog);
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)textureManager.getTextureId("/title/mojang.png"));
         tessellator.startDrawingQuads();
-        tessellator.setColorOpaque_I(16777215);
+        tessellator.setColorOpaque_I(0x00FFFFFF);
         tessellator.addVertexWithUV(0.0D, (double)displayHeight, 0.0D, 0.0D, 0.0D);
         tessellator.addVertexWithUV((double)displayWidth, (double)displayHeight, 0.0D, 0.0D, 0.0D);
         tessellator.addVertexWithUV((double)displayWidth, 0.0D, 0.0D, 0.0D, 0.0D);
@@ -305,7 +305,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         short var3 = 256;
         short var4 = 256;
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        tessellator.setColorOpaque_I(16777215);
+        tessellator.setColorOpaque_I(0x00FFFFFF);
         func_6274_a((var1.ScaledWidth - var3) / 2, (var1.ScaledHeight - var4) / 2, 0, 0, var3, var4);
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.Disable(GLEnum.Fog);
@@ -352,15 +352,8 @@ public partial class Minecraft : java.lang.Object, Runnable
                 var2 = new java.io.File(var1, '.' + var0 + '/');
                 break;
             case 3:
-                string var3 = java.lang.System.getenv("APPDATA");
-                if (var3 != null)
-                {
-                    var2 = new java.io.File(var3, "." + var0 + '/');
-                }
-                else
-                {
-                    var2 = new java.io.File(var1, '.' + var0 + '/');
-                }
+                string var3 = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                var2 = new java.io.File(var3, "." + var0 + '/');
 
                 break;
             case 4:
@@ -826,11 +819,11 @@ public partial class Minecraft : java.lang.Object, Runnable
             colorValue = colorValue * colorValue / 255;
             if (frameTimes[frameIndex] > targetFrameTime)
             {
-                tessellator.setColorOpaque_I(-16777216 + colorBrightness * 65536);
+                tessellator.setColorOpaque_I(unchecked((int)(0xFF000000u + (uint)colorBrightness * 65536u)));
             }
             else
             {
-                tessellator.setColorOpaque_I(-16777216 + colorBrightness * 256);
+                tessellator.setColorOpaque_I(unchecked((int)(0xFF000000u + (uint)colorBrightness * 256u)));
             }
 
             long frameTimePixels = frameTimes[frameIndex] / 200000L;
@@ -838,7 +831,7 @@ public partial class Minecraft : java.lang.Object, Runnable
             tessellator.addVertex((double)((float)frameIndex + 0.5F), (double)((float)((long)displayHeight - frameTimePixels) + 0.5F),
                 0.0D);
             tessellator.addVertex((double)((float)frameIndex + 0.5F), (double)((float)displayHeight + 0.5F), 0.0D);
-            tessellator.setColorOpaque_I(-16777216 + colorBrightness * 65536 + colorBrightness * 256 + colorBrightness * 1);
+            tessellator.setColorOpaque_I(unchecked((int)(0xFF000000u + (uint)colorBrightness * 65536u + (uint)colorBrightness * 256u + (uint)colorBrightness * 1u)));
             tessellator.addVertex((double)((float)frameIndex + 0.5F), (double)((float)((long)displayHeight - frameTimePixels) + 0.5F),
                 0.0D);
             tessellator.addVertex((double)((float)frameIndex + 0.5F),

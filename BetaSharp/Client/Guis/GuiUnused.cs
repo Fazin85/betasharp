@@ -12,9 +12,9 @@ public class GuiUnused : GuiScreen
 
     public override void render(int var1, int var2, float var3)
     {
-        drawGradientRect(0, 0, width, height, -12574688, -11530224);
-        drawCenteredString(fontRenderer, message1, width / 2, 90, 16777215);
-        drawCenteredString(fontRenderer, message2, width / 2, 110, 16777215);
+        drawGradientRect(0, 0, width, height, 0xFF402020, 0xFF501010);
+        drawCenteredString(fontRenderer, message1, width / 2, 90, 0x00FFFFFF);
+        drawCenteredString(fontRenderer, message2, width / 2, 110, 0x00FFFFFF);
         base.render(var1, var2, var3);
     }
 

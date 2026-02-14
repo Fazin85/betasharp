@@ -22,7 +22,7 @@ public class BlockTallGrass : BlockPlant
         int meta = blockView.getBlockMeta(x, y, z);
         if (meta == 0)
         {
-            return 16777215;
+            return 0x00FFFFFF;
         }
         else
         {

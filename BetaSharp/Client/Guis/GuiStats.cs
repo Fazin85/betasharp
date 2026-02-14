@@ -90,7 +90,7 @@ public class GuiStats : GuiScreen
     public override void render(int mouseX, int mouseY, float partialTicks)
     {
         currentSlot.drawScreen(mouseX, mouseY, partialTicks);
-        drawCenteredString(fontRenderer, screenTitle, width / 2, 20, 16777215);
+        drawCenteredString(fontRenderer, screenTitle, width / 2, 20, 0x00FFFFFF);
         base.render(mouseX, mouseY, partialTicks);
     }
 
@@ -156,9 +156,9 @@ public class GuiStats : GuiScreen
         return var0.mc;
     }
 
-    public static void func_27128_a(GuiStats var0, int var1, int var2, int var3, int var4)
+    public static void func_27128_a(GuiStats var0, int right, int bottom, int left, int top)
     {
-        var0.drawGradientRect(var1, var2, var3, var4, -1073741824, -1073741824);
+        var0.drawGradientRect(right, bottom, left, top, 0xC0000000, 0xC0000000);
     }
 
     public static Minecraft func_27149_g(GuiStats var0)
@@ -191,9 +191,9 @@ public class GuiStats : GuiScreen
         return var0.fontRenderer;
     }
 
-    public static void func_27129_a(GuiStats var0, int var1, int var2, int var3, int var4, int var5, int var6)
+    public static void func_27129_a(GuiStats var0, int var1, int var2, int var3, int var4, uint topColor, uint bottomColor)
     {
-        var0.drawGradientRect(var1, var2, var3, var4, var5, var6);
+        var0.drawGradientRect(var1, var2, var3, var4, topColor, bottomColor);
     }
 
     public static TextRenderer func_27144_m(GuiStats var0)
@@ -206,9 +206,9 @@ public class GuiStats : GuiScreen
         return var0.fontRenderer;
     }
 
-    public static void func_27135_b(GuiStats var0, int var1, int var2, int var3, int var4, int var5, int var6)
+    public static void func_27135_b(GuiStats var0, int var1, int var2, int var3, int var4, uint topColor, uint bottomColor)
     {
-        var0.drawGradientRect(var1, var2, var3, var4, var5, var6);
+        var0.drawGradientRect(var1, var2, var3, var4, topColor, bottomColor);
     }
 
     public static TextRenderer func_27131_o(GuiStats var0)
@@ -216,8 +216,8 @@ public class GuiStats : GuiScreen
         return var0.fontRenderer;
     }
 
-    public static void func_27148_a(GuiStats var0, int var1, int var2, int var3)
+    public static void func_27148_a(GuiStats var0, int var1, int var2, int itemId)
     {
-        var0.drawItemSlot(var1, var2, var3);
+        var0.drawItemSlot(var1, var2, itemId);
     }
 }

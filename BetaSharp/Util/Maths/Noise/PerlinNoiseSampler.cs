@@ -26,9 +26,7 @@ public class PerlinNoiseSampler : NoiseSampler
         for (var2 = 0; var2 < 256; ++var2)
         {
             int var3 = var1.nextInt(256 - var2) + var2;
-            int var4 = permutations[var2];
-            permutations[var2] = permutations[var3];
-            permutations[var3] = var4;
+            (permutations[var2], permutations[var3]) = (permutations[var3], permutations[var2]);
             permutations[var2 + 256] = permutations[var2];
         }
 

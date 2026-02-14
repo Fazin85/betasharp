@@ -82,7 +82,7 @@ public class GuiChat : GuiScreen
 
     public override void render(int var1, int var2, float var3)
     {
-        drawRect(2, height - 14, width - 2, height - 2, java.lang.Integer.MIN_VALUE);
+        drawRect(2, height - 14, width - 2, height - 2, 0x80000000);
         drawString(fontRenderer, "> " + message + (updateCounter / 6 % 2 == 0 ? "_" : ""), 4, height - 12,
             14737632);
         base.render(var1, var2, var3);

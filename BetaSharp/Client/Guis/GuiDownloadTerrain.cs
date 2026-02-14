@@ -52,7 +52,7 @@ public class GuiDownloadTerrain : GuiScreen
     {
         drawBackground(0);
         TranslationStorage translations = TranslationStorage.getInstance();
-        drawCenteredString(fontRenderer, translations.translateKey("multiplayer.downloadingTerrain"), width / 2, height / 2 - 50, 16777215);
+        drawCenteredString(fontRenderer, translations.translateKey("multiplayer.downloadingTerrain"), width / 2, height / 2 - 50, 0x00FFFFFF);
         base.render(mouseX, mouseY, partialTicks);
     }
 }

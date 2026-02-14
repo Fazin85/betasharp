@@ -31,7 +31,7 @@ public class GuiConflictWarning : GuiScreen
     public override void render(int var1, int var2, float var3)
     {
         drawDefaultBackground();
-        drawCenteredString(fontRenderer, "Level save conflict", width / 2, height / 4 - 60 + 20, 16777215);
+        drawCenteredString(fontRenderer, "Level save conflict", width / 2, height / 4 - 60 + 20, 0x00FFFFFF);
         drawString(fontRenderer, "Minecraft detected a conflict in the level save data.", width / 2 - 140, height / 4 - 60 + 60 + 0, 10526880);
         drawString(fontRenderer, "This could be caused by two copies of the game", width / 2 - 140, height / 4 - 60 + 60 + 18, 10526880);
         drawString(fontRenderer, "accessing the same level.", width / 2 - 140, height / 4 - 60 + 60 + 27, 10526880);

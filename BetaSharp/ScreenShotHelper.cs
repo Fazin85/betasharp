@@ -51,7 +51,7 @@ public class ScreenShotHelper
         //                        int var10 = pixelData[var9 * 3 + 0] & 255;
         //                        int var11 = pixelData[var9 * 3 + 1] & 255;
         //                        int var12 = pixelData[var9 * 3 + 2] & 255;
-        //                        int var13 = -16777216 | var10 << 16 | var11 << 8 | var12;
+        //                        int var13 = unchecked((int)(0xFF000000 | var10 << 16 | var11 << 8 | var12));
         //                        imageData[var7 + var8 * var1] = var13;
         //                    }
         //                }

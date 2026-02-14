@@ -68,7 +68,7 @@ public class DedicatedServer : MinecraftServer
         return base.Init();
     }
 
-    public static void Main(string[] args)
+    /*public static void Main(string[] args)
     {
         try
         {
@@ -98,7 +98,7 @@ public class DedicatedServer : MinecraftServer
         {
             LOGGER.log(Level.SEVERE, "Failed to start the minecraft server", (Throwable)var2);
         }
-    }
+    }*/
 
     public override java.io.File getFile(string path)
     {

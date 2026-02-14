@@ -29,9 +29,7 @@ public class SimplexNoiseSampler : java.lang.Object
         for (var2 = 0; var2 < 256; ++var2)
         {
             int var3 = var1.nextInt(256 - var2) + var2;
-            int var4 = perm[var2];
-            perm[var2] = perm[var3];
-            perm[var3] = var4;
+            (perm[var2], perm[var3]) = (perm[var3], perm[var2]);
             perm[var2 + 256] = perm[var2];
         }
 

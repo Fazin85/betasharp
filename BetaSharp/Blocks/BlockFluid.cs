@@ -18,7 +18,7 @@ public abstract class BlockFluid : Block
 
     public override int getColorMultiplier(BlockView blockView, int x, int y, int z)
     {
-        return 16777215;
+        return 0x00FFFFFF;
     }
 
     public static float getFluidHeightFromMeta(int meta)

@@ -103,8 +103,8 @@ public class GuiTextField : Gui
 
     public void drawTextBox()
     {
-        drawRect(xPos - 1, yPos - 1, xPos + width + 1, yPos + height + 1, -6250336);
-        drawRect(xPos, yPos, xPos + width, yPos + height, -16777216);
+        drawRect(xPos - 1, yPos - 1, xPos + width + 1, yPos + height + 1, 0xFFA0A0A0);
+        drawRect(xPos, yPos, xPos + width, yPos + height, 0xFF000000);
         if (isEnabled)
         {
             bool var1 = isFocused && cursorCounter / 6 % 2 == 0;

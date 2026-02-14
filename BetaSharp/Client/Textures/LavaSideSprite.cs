@@ -61,9 +61,7 @@ public class LavaSideSprite : DynamicTexture
             }
         }
 
-        float[] var11 = next;
-        next = current;
-        current = var11;
+        (next, current) = (current, next);
 
         for (var2 = 0; var2 < 256; ++var2)
         {

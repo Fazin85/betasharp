@@ -49,12 +49,12 @@ public class GuiGameOver : GuiScreen
 
     public override void render(int mouseX, int mouseY, float partialTicks)
     {
-        drawGradientRect(0, 0, width, height, 1615855616, -1602211792);
+        drawGradientRect(0, 0, width, height, 0x60500000, 0xA0803030);
         GLManager.GL.PushMatrix();
         GLManager.GL.Scale(2.0F, 2.0F, 2.0F);
-        drawCenteredString(fontRenderer, "Game over!", width / 2 / 2, 30, 16777215);
+        drawCenteredString(fontRenderer, "Game over!", width / 2 / 2, 30, 0x00FFFFFF);
         GLManager.GL.PopMatrix();
-        drawCenteredString(fontRenderer, "Score: &e" + mc.player.getScore(), width / 2, 100, 16777215);
+        drawCenteredString(fontRenderer, "Score: &e" + mc.player.getScore(), width / 2, 100, 0x00FFFFFF);
         base.render(mouseX, mouseY, partialTicks);
     }
 

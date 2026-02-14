@@ -37,8 +37,8 @@ public class GuiStoppingServer : GuiScreen
     {
         drawDefaultBackground();
         TranslationStorage translations = TranslationStorage.getInstance();
-        drawCenteredString(fontRenderer, "Saving level..", width / 2, height / 2 - 50, 16777215);
-        drawCenteredString(fontRenderer, "Stopping internal server", width / 2, height / 2 - 10, 16777215);
+        drawCenteredString(fontRenderer, "Saving level..", width / 2, height / 2 - 50, 0x00FFFFFF);
+        drawCenteredString(fontRenderer, "Stopping internal server", width / 2, height / 2 - 10, 0x00FFFFFF);
         base.render(mouseX, mouseY, partialTicks);
     }
 }

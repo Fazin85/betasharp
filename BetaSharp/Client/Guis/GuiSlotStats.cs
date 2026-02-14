@@ -132,7 +132,7 @@ public abstract class GuiSlotStats : GuiSlot
         return (StatCrafting)field_27273_c.get(var1);
     }
 
-    protected abstract string func_27263_a(int var1);
+    protected abstract string getKeyForColumn(int column);
 
     protected void func_27265_a(StatCrafting var1, int var2, int var3, bool var4)
     {
@@ -140,12 +140,12 @@ public abstract class GuiSlotStats : GuiSlot
         if (var1 != null)
         {
             var5 = var1.format(GuiStats.func_27142_c(field_27269_g).writeStat(var1));
-            field_27269_g.drawString(GuiStats.func_27133_h(field_27269_g), var5, var2 - GuiStats.func_27137_i(field_27269_g).getStringWidth(var5), var3 + 5, var4 ? 16777215 : 9474192);
+            field_27269_g.drawString(GuiStats.func_27133_h(field_27269_g), var5, var2 - GuiStats.func_27137_i(field_27269_g).getStringWidth(var5), var3 + 5, var4 ? 0x00FFFFFFu : 0x00909090u);
         }
         else
         {
             var5 = "-";
-            field_27269_g.drawString(GuiStats.func_27132_j(field_27269_g), var5, var2 - GuiStats.func_27134_k(field_27269_g).getStringWidth(var5), var3 + 5, var4 ? 16777215 : 9474192);
+            field_27269_g.drawString(GuiStats.func_27132_j(field_27269_g), var5, var2 - GuiStats.func_27134_k(field_27269_g).getStringWidth(var5), var3 + 5, var4 ? 0x00FFFFFFu : 0x00909090u);
         }
 
     }
@@ -168,14 +168,14 @@ public abstract class GuiSlotStats : GuiSlot
             }
             else
             {
-                string var5 = "";
+                string var5;
                 if (var1 >= var4 + 115 - 18 && var1 <= var4 + 115)
                 {
-                    var5 = func_27263_a(0);
+                    var5 = getKeyForColumn(0);
                 }
                 else if (var1 >= var4 + 165 - 18 && var1 <= var4 + 165)
                 {
-                    var5 = func_27263_a(1);
+                    var5 = getKeyForColumn(1);
                 }
                 else
                 {
@@ -184,7 +184,7 @@ public abstract class GuiSlotStats : GuiSlot
                         return;
                     }
 
-                    var5 = func_27263_a(2);
+                    var5 = getKeyForColumn(2);
                 }
 
                 var5 = ("" + TranslationStorage.getInstance().translateKey(var5)).Trim();
@@ -193,8 +193,8 @@ public abstract class GuiSlotStats : GuiSlot
                     int var6 = var1 + 12;
                     int var7 = var2 - 12;
                     int var8 = GuiStats.func_27139_l(field_27269_g).getStringWidth(var5);
-                    GuiStats.func_27129_a(field_27269_g, var6 - 3, var7 - 3, var6 + var8 + 3, var7 + 8 + 3, -1073741824, -1073741824);
-                    GuiStats.func_27144_m(field_27269_g).drawStringWithShadow(var5, var6, var7, -1);
+                    GuiStats.func_27129_a(field_27269_g, var6 - 3, var7 - 3, var6 + var8 + 3, var7 + 8 + 3, 0xC0000000, 0xC0000000);
+                    GuiStats.func_27144_m(field_27269_g).drawStringWithShadow(var5, var6, var7, 0xFFFFFFFF);
                 }
             }
 
@@ -212,8 +212,8 @@ public abstract class GuiSlotStats : GuiSlot
                 int var6 = var2 + 12;
                 int var7 = var3 - 12;
                 int var8 = GuiStats.func_27127_n(field_27269_g).getStringWidth(var5);
-                GuiStats.func_27135_b(field_27269_g, var6 - 3, var7 - 3, var6 + var8 + 3, var7 + 8 + 3, -1073741824, -1073741824);
-                GuiStats.func_27131_o(field_27269_g).drawStringWithShadow(var5, var6, var7, -1);
+                GuiStats.func_27135_b(field_27269_g, var6 - 3, var7 - 3, var6 + var8 + 3, var7 + 8 + 3, 0xC0000000, 0xC0000000);
+                GuiStats.func_27131_o(field_27269_g).drawStringWithShadow(var5, var6, var7, 0xFFFFFFFF);
             }
 
         }

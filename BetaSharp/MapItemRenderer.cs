@@ -38,9 +38,9 @@ public class MapItemRenderer
             }
             else
             {
-                int var6 = MapColor.mapColorArray[var5 / 4].colorValue;
+                uint var6 = MapColor.mapColorArray[var5 / 4].colorValue;
                 int var7 = var5 & 3;
-                short var8 = 220;
+                byte var8 = 220;
                 if (var7 == 2)
                 {
                     var8 = 255;
@@ -51,11 +51,11 @@ public class MapItemRenderer
                     var8 = 180;
                 }
 
-                int var9 = (var6 >> 16 & 255) * var8 / 255;
-                int var10 = (var6 >> 8 & 255) * var8 / 255;
-                int var11 = (var6 & 255) * var8 / 255;
+                uint var9 = (var6 >> 16 & 255) * var8 / 255;
+                uint var10 = (var6 >> 8 & 255) * var8 / 255;
+                uint var11 = (var6 & 255) * var8 / 255;
 
-                field_28159_a[var4] = -16777216 | var9 << 16 | var10 << 8 | var11;
+                field_28159_a[var4] = unchecked((int)(0xFF000000u | var9 << 16 | var10 << 8 | var11));
             }
         }
 
@@ -102,7 +102,7 @@ public class MapItemRenderer
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(0.0F, 0.0F, -0.04F);
         GLManager.GL.Scale(1.0F, 1.0F, 1.0F);
-        field_28160_d.drawString(var3.id, var15, var16, -16777216);
+        field_28160_d.drawString(var3.id, var15, var16, 0xFF000000);
         GLManager.GL.PopMatrix();
     }
 }

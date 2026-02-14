@@ -152,7 +152,7 @@ public class GuiCreateWorld : GuiScreen
     {
         TranslationStorage translations = TranslationStorage.getInstance();
         drawDefaultBackground();
-        drawCenteredString(fontRenderer, translations.translateKey("selectWorld.create"), width / 2, height / 4 - 60 + 20, 16777215);
+        drawCenteredString(fontRenderer, translations.translateKey("selectWorld.create"), width / 2, height / 4 - 60 + 20, 0x00FFFFFF);
         drawString(fontRenderer, translations.translateKey("selectWorld.enterName"), width / 2 - 100, 47, 10526880);
         drawString(fontRenderer, translations.translateKey("selectWorld.resultFolder") + " " + folderName, width / 2 - 100, 85, 10526880);
         drawString(fontRenderer, translations.translateKey("selectWorld.enterSeed"), width / 2 - 100, 104, 10526880);

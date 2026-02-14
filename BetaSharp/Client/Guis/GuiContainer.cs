@@ -58,7 +58,7 @@ public abstract class GuiContainer : GuiScreen
                 GLManager.GL.Disable(GLEnum.DepthTest);
                 var9 = var8.xDisplayPosition;
                 var10 = var8.yDisplayPosition;
-                drawGradientRect(var9, var10, var9 + 16, var10 + 16, -2130706433, -2130706433);
+                drawGradientRect(var9, var10, var9 + 16, var10 + 16, 0x80FFFFFF, 0x80FFFFFF);
                 GLManager.GL.Enable(GLEnum.Lighting);
                 GLManager.GL.Enable(GLEnum.DepthTest);
             }
@@ -85,8 +85,8 @@ public abstract class GuiContainer : GuiScreen
                 var9 = var1 - var4 + 12;
                 var10 = var2 - var5 - 12;
                 int var11 = fontRenderer.getStringWidth(var13);
-                drawGradientRect(var9 - 3, var10 - 3, var9 + var11 + 3, var10 + 8 + 3, -1073741824, -1073741824);
-                fontRenderer.drawStringWithShadow(var13, var9, var10, -1);
+                drawGradientRect(var9 - 3, var10 - 3, var9 + var11 + 3, var10 + 8 + 3, 0xC0000000, 0xC0000000);
+                fontRenderer.drawStringWithShadow(var13, var9, var10, 0xFFFFFFFF);
             }
         }
 
