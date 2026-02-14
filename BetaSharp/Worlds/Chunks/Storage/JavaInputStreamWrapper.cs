@@ -58,20 +58,10 @@ public class JavaInputStreamWrapper : Stream
     {
         if (!disposed)
         {
+            disposed = true;
             if (disposing)
             {
-                try
-                {
-                    javaStream.close();
-                }
-                finally
-                {
-                    disposed = true;
-                }
-            }
-            else
-            {
-                disposed = true;
+                javaStream.close();
             }
         }
         base.Dispose(disposing);
