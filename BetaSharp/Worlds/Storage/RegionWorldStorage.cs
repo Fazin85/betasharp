@@ -113,31 +113,26 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
 
         try
         {
-            var saveTask = Task.Run(() =>
+            java.io.File var5 = new java.io.File(saveDirectory, "level.dat_new");
+            java.io.File var6 = new java.io.File(saveDirectory, "level.dat_old");
+            java.io.File var7 = new java.io.File(saveDirectory, "level.dat");
+            NbtIo.WriteCompressed(var4, new FileOutputStream(var5));
+            if (var6.exists())
             {
-                java.io.File var5 = new java.io.File(saveDirectory, "level.dat_new");
-                java.io.File var6 = new java.io.File(saveDirectory, "level.dat_old");
-                java.io.File var7 = new java.io.File(saveDirectory, "level.dat");
-                NbtIo.WriteCompressed(var4, new FileOutputStream(var5));
-                if (var6.exists())
-                {
-                    var6.delete();
-                }
+                var6.delete();
+            }
 
-                var7.renameTo(var6);
-                if (var7.exists())
-                {
-                    var7.delete();
-                }
+            var7.renameTo(var6);
+            if (var7.exists())
+            {
+                var7.delete();
+            }
 
-                var5.renameTo(var7);
-                if (var5.exists())
-                {
-                    var5.delete();
-                }
-            });
-
-            AsyncIO.addTask(saveTask);
+            var5.renameTo(var7);
+            if (var5.exists())
+            {
+                var5.delete();
+            }
         }
         catch (System.Exception e)
         {

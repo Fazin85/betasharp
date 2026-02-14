@@ -4,19 +4,11 @@ using BetaSharp.Server.Threading;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiLevelLoading : GuiScreen
+public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
 {
-    private readonly string worldName;
-    private readonly string worldDir;
-    private readonly long seed;
+    private readonly string worldDir = worldDir;
+    private readonly long seed = seed;
     private bool serverStarted = false;
-
-    public GuiLevelLoading(string worldDir, string worldName, long seed)
-    {
-        this.worldDir = worldDir;
-        this.worldName = worldName;
-        this.seed = seed;
-    }
 
     public override void initGui()
     {
@@ -45,6 +37,11 @@ public class GuiLevelLoading : GuiScreen
                 mc.displayGuiScreen(new GuiConnecting(mc, "localhost", mc.internalServer.Port));
             }
         }
+    }
+
+    public override bool doesGuiPauseGame()
+    {
+        return false;
     }
 
     public override void render(int var1, int var2, float var3)

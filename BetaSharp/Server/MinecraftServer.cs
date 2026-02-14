@@ -42,6 +42,8 @@ public abstract class MinecraftServer : Runnable, CommandOutput
     private int _ticksThisSecond;
     private float _currentTps;
 
+    private volatile bool _isPaused = false;
+
     public float Tps
     {
         get
@@ -51,6 +53,11 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                 return _currentTps;
             }
         }
+    }
+
+    public void SetPaused(bool paused)
+    {
+        _isPaused = paused;
     }
 
     public MinecraftServer(IServerConfiguration config)
@@ -248,6 +255,17 @@ public abstract class MinecraftServer : Runnable, CommandOutput
 
                     var3 += var7;
                     var1 = var5;
+
+                    if (_isPaused)
+                    {
+                        var3 = 0L;
+                        lock (_tpsLock)
+                        {
+                            _currentTps = 0.0f;
+                        }
+                        continue;
+                    }
+
                     if (worlds[0].canSkipNight())
                     {
                         tick();

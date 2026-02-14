@@ -73,6 +73,11 @@ public class GuiConnecting : GuiScreen
         base.render(mouseX, mouseY, partialTicks);
     }
 
+    public override bool doesGuiPauseGame()
+    {
+        return false;
+    }
+
     public static ClientNetworkHandler setNetClientHandler(GuiConnecting guiConnecting, ClientNetworkHandler handler)
     {
         return guiConnecting.clientHandler = handler;

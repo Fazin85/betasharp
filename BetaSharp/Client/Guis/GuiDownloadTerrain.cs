@@ -39,6 +39,11 @@ public class GuiDownloadTerrain : GuiScreen
 
     }
 
+    public override bool doesGuiPauseGame()
+    {
+        return false;
+    }
+
     protected override void actionPerformed(GuiButton button)
     {
     }
