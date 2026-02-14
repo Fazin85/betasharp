@@ -1,4 +1,5 @@
 ﻿using System;
+using BetaSharp.Launcher.Features.New;
 using BetaSharp.Launcher.Features.Shell;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,6 +14,10 @@ internal static class Bootstrapper
         builder
             .AddTransient<ShellView>()
             .AddTransient<ShellViewModel>();
+
+        builder
+            .AddTransient<NewView>()
+            .AddTransient<NewViewModel>();
 
         return builder.BuildServiceProvider();
     }
