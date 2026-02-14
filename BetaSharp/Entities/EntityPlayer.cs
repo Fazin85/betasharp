@@ -366,7 +366,7 @@ public abstract class EntityPlayer : EntityLiving
     public float getBlockBreakingSpeed(Block block)
     {
         float var2 = inventory.getStrVsBlock(block);
-        if (isInFluid(Material.WATER))
+        if (isInFluid(Material.Water))
         {
             var2 /= 5.0F;
         }
@@ -895,7 +895,7 @@ public abstract class EntityPlayer : EntityLiving
         if (vehicle == null)
         {
             int var7;
-            if (isInFluid(Material.WATER))
+            if (isInFluid(Material.Water))
             {
                 var7 = java.lang.Math.round(MathHelper.sqrt_double(x * x + y * y + z * z) * 100.0F);
                 if (var7 > 0)

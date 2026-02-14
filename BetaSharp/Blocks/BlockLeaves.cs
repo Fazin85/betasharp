@@ -11,7 +11,7 @@ public class BlockLeaves : BlockLeavesBase
     private int spriteIndex;
     int[] decayRegion;
 
-    public BlockLeaves(int id, int textureId) : base(id, textureId, Material.LEAVES, false)
+    public BlockLeaves(int id, int textureId) : base(id, textureId, Material.Leaves, false)
     {
         spriteIndex = textureId;
         setTickRandomly(true);

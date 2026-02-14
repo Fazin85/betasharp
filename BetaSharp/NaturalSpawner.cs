@@ -171,7 +171,7 @@ public class NaturalSpawner
 
     private static bool canCreatureTypeSpawnAtLocation(EnumCreatureType var0, World var1, int var2, int var3, int var4)
     {
-        return var0.getCreatureMaterial() == Material.WATER ? var1.getMaterial(var2, var3, var4).isFluid() && !var1.shouldSuffocate(var2, var3 + 1, var4) : var1.shouldSuffocate(var2, var3 - 1, var4) && !var1.shouldSuffocate(var2, var3, var4) && !var1.getMaterial(var2, var3, var4).isFluid() && !var1.shouldSuffocate(var2, var3 + 1, var4);
+        return var0.getCreatureMaterial() == Material.Water ? var1.getMaterial(var2, var3, var4).IsFluid && !var1.shouldSuffocate(var2, var3 + 1, var4) : var1.shouldSuffocate(var2, var3 - 1, var4) && !var1.shouldSuffocate(var2, var3, var4) && !var1.getMaterial(var2, var3, var4).IsFluid && !var1.shouldSuffocate(var2, var3 + 1, var4);
     }
 
     private static void creatureSpecificInit(EntityLiving var0, World var1, float var2, float var3, float var4)

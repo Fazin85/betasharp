@@ -159,7 +159,7 @@ public class PortalForcer
                                         var27 = var14 + (var25 - 1) * var22 + var24 * var23;
                                         var28 = var20 + var26;
                                         int var29 = var17 + (var25 - 1) * var23 - var24 * var22;
-                                        if (var26 < 0 && !world.getMaterial(var27, var28, var29).isSolid() || var26 >= 0 && !world.isAir(var27, var28, var29))
+                                        if (var26 < 0 && !world.getMaterial(var27, var28, var29).IsSolid || var26 >= 0 && !world.isAir(var27, var28, var29))
                                         {
                                             validLocation = false;
                                         }
@@ -218,7 +218,7 @@ public class PortalForcer
                                         var26 = var14 + (var24 - 1) * var22;
                                         var27 = var20 + var25;
                                         var28 = var17 + (var24 - 1) * var23;
-                                        if (var25 < 0 && !world.getMaterial(var26, var27, var28).isSolid() || var25 >= 0 && !world.isAir(var26, var27, var28))
+                                        if (var25 < 0 && !world.getMaterial(var26, var27, var28).IsSolid || var25 >= 0 && !world.isAir(var26, var27, var28))
                                         {
                                             validLocation = false;
                                         }

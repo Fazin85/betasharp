@@ -11,7 +11,7 @@ public class BlockDispenser : BlockWithEntity
 {
     private java.util.Random random = new();
 
-    public BlockDispenser(int id) : base(id, Material.STONE)
+    public BlockDispenser(int id) : base(id, Material.Stone)
     {
         textureId = 45;
     }

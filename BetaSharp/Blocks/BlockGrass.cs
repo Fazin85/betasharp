@@ -6,7 +6,7 @@ namespace BetaSharp.Blocks;
 
 public class BlockGrass : Block
 {
-    public BlockGrass(int id) : base(id, Material.SOLID_ORGANIC)
+    public BlockGrass(int id) : base(id, Material.SolidOrganic)
     {
         textureId = 3;
         setTickRandomly(true);
@@ -25,7 +25,7 @@ public class BlockGrass : Block
         else
         {
             Material materialAbove = blockView.getMaterial(x, y + 1, z);
-            return materialAbove != Material.SNOW_LAYER && materialAbove != Material.SNOW_BLOCK ? 3 : 68;
+            return materialAbove != Material.SnowLayer && materialAbove != Material.SnowBlock ? 3 : 68;
         }
     }
 

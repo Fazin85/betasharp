@@ -7,7 +7,7 @@ namespace BetaSharp.Blocks;
 public class BlockLadder : Block
 {
 
-    public BlockLadder(int id, int textureId) : base(id, textureId, Material.PISTON_BREAKABLE)
+    public BlockLadder(int id, int textureId) : base(id, textureId, Material.PistonBreakable)
     {
     }
 

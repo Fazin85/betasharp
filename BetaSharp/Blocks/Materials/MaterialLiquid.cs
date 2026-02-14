@@ -1,26 +1,18 @@
-namespace BetaSharp.Blocks.Materials;
-
-public class MaterialLiquid : Material
+namespace BetaSharp.Blocks.Materials
 {
-
-    public MaterialLiquid(MapColor var1) : base(var1)
+    public class MaterialLiquid : Material
     {
-        setReplaceable();
-        setDestroyPistonBehavior();
+
+        public override bool IsFluid => true;
+        public override bool IsSolid => false;
+        public override bool BlocksMovement => false;
+
+        public MaterialLiquid(MapColor mapColor) : base(mapColor)
+        {
+            SetReplaceable();
+            SetDestroyPistonBehavior();
+        }
+
     }
 
-    public override bool isFluid()
-    {
-        return true;
-    }
-
-    public override bool blocksMovement()
-    {
-        return false;
-    }
-
-    public override bool isSolid()
-    {
-        return false;
-    }
 }

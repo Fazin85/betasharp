@@ -85,13 +85,13 @@ public class Item : java.lang.Object
     public static Item PAINTING = (new ItemPainting(65)).setTexturePosition(10, 1).setItemName("painting");
     public static Item GOLDEN_APPLE = (new ItemFood(66, 42, false)).setTexturePosition(11, 0).setItemName("appleGold");
     public static Item SIGN = (new ItemSign(67)).setTexturePosition(10, 2).setItemName("sign");
-    public static Item WOODEN_DOOR = (new ItemDoor(68, Material.WOOD)).setTexturePosition(11, 2).setItemName("doorWood");
+    public static Item WOODEN_DOOR = (new ItemDoor(68, Material.Wood)).setTexturePosition(11, 2).setItemName("doorWood");
     public static Item BUCKET = (new ItemBucket(69, 0)).setTexturePosition(10, 4).setItemName("bucket");
     public static Item WATER_BUCKET = (new ItemBucket(70, Block.FLOWING_WATER.id)).setTexturePosition(11, 4).setItemName("bucketWater").setCraftingReturnItem(BUCKET);
     public static Item LAVA_BUCKET = (new ItemBucket(71, Block.FLOWING_LAVA.id)).setTexturePosition(12, 4).setItemName("bucketLava").setCraftingReturnItem(BUCKET);
     public static Item MINECART = (new ItemMinecart(72, 0)).setTexturePosition(7, 8).setItemName("minecart");
     public static Item SADDLE = (new ItemSaddle(73)).setTexturePosition(8, 6).setItemName("saddle");
-    public static Item IRON_DOOR = (new ItemDoor(74, Material.METAL)).setTexturePosition(12, 2).setItemName("doorIron");
+    public static Item IRON_DOOR = (new ItemDoor(74, Material.Metal)).setTexturePosition(12, 2).setItemName("doorIron");
     public static Item REDSTONE = (new ItemRedstone(75)).setTexturePosition(8, 3).setItemName("redstone");
     public static Item SNOWBALL = (new ItemSnowball(76)).setTexturePosition(14, 0).setItemName("snowball");
     public static Item BOAT = (new ItemBoat(77)).setTexturePosition(8, 8).setItemName("boat");

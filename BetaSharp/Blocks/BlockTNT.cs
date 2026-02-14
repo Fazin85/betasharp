@@ -7,7 +7,7 @@ namespace BetaSharp.Blocks;
 
 public class BlockTNT : Block
 {
-    public BlockTNT(int id, int textureId) : base(id, textureId, Material.TNT)
+    public BlockTNT(int id, int textureId) : base(id, textureId, Material.Tnt)
     {
     }
 

@@ -27,7 +27,7 @@ public class ItemDoor : Item
         {
             ++y;
             Block block;
-            if (doorMaterial == Material.WOOD)
+            if (doorMaterial == Material.Wood)
             {
                 block = Block.DOOR;
             }

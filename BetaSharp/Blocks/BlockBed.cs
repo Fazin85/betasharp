@@ -10,7 +10,7 @@ public class BlockBed : Block
 {
     public static readonly int[][] BED_OFFSETS = [[0, 1], [-1, 0], [0, -1], [1, 0]];
 
-    public BlockBed(int id) : base(id, 134, Material.WOOL)
+    public BlockBed(int id) : base(id, 134, Material.Wool)
     {
         setDefaultShape();
     }

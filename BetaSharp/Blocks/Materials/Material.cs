@@ -1,125 +1,92 @@
-namespace BetaSharp.Blocks.Materials;
-
-public class Material : java.lang.Object
+namespace BetaSharp.Blocks.Materials
 {
-    public static readonly Material AIR = new MaterialTransparent(MapColor.airColor);
-    public static readonly Material SOLID_ORGANIC = new(MapColor.grassColor);
-    public static readonly Material SOIL = new(MapColor.dirtColor);
-    public static readonly Material WOOD = new Material(MapColor.woodColor).setBurning();
-    public static readonly Material STONE = new Material(MapColor.stoneColor).setRequiresTool();
-    public static readonly Material METAL = new Material(MapColor.ironColor).setRequiresTool();
-    public static readonly Material WATER = new MaterialLiquid(MapColor.waterColor).setDestroyPistonBehavior();
-    public static readonly Material LAVA = new MaterialLiquid(MapColor.tntColor).setDestroyPistonBehavior();
-    public static readonly Material LEAVES = new Material(MapColor.foliageColor).setBurning().setTransparent().setDestroyPistonBehavior();
-    public static readonly Material PLANT = new MaterialLogic(MapColor.foliageColor).setDestroyPistonBehavior();
-    public static readonly Material SPONGE = new(MapColor.clothColor);
-    public static readonly Material WOOL = new Material(MapColor.clothColor).setBurning();
-    public static readonly Material FIRE = new MaterialTransparent(MapColor.airColor).setDestroyPistonBehavior();
-    public static readonly Material SAND = new(MapColor.sandColor);
-    public static readonly Material PISTON_BREAKABLE = new MaterialLogic(MapColor.airColor).setDestroyPistonBehavior();
-    public static readonly Material GLASS = new Material(MapColor.airColor).setTransparent();
-    public static readonly Material TNT = new Material(MapColor.tntColor).setBurning().setTransparent();
-    public static readonly Material field_4262_q = new Material(MapColor.foliageColor).setDestroyPistonBehavior();
-    public static readonly Material ICE = new Material(MapColor.iceColor).setTransparent();
-    public static readonly Material SNOW_LAYER = new MaterialLogic(MapColor.snowColor).setReplaceable().setTransparent().setRequiresTool().setDestroyPistonBehavior();
-    public static readonly Material SNOW_BLOCK = new Material(MapColor.snowColor).setRequiresTool();
-    public static readonly Material CACTUS = new Material(MapColor.foliageColor).setTransparent().setDestroyPistonBehavior();
-    public static readonly Material CLAY = new(MapColor.clayColor);
-    public static readonly Material PUMPKIN = new Material(MapColor.foliageColor).setDestroyPistonBehavior();
-    public static readonly Material NETHER_PORTAL = new MaterialPortal(MapColor.airColor).setUnpushablePistonBehavior();
-    public static readonly Material CAKE = new Material(MapColor.airColor).setDestroyPistonBehavior();
-    public static readonly Material COBWEB = new Material(MapColor.clothColor).setRequiresTool().setDestroyPistonBehavior();
-    public static readonly Material PISTON = new Material(MapColor.stoneColor).setUnpushablePistonBehavior();
-    private bool burnable;
-    private bool replaceable;
-    private bool transparent;
-    public readonly MapColor mapColor;
-    private bool handHarvestable = true;
-    private int pistonBehavior;
-
-    public Material(MapColor mapColor)
+    public class Material
     {
-        this.mapColor = mapColor;
+        public static readonly Material Air = new MaterialTransparent(MapColor.airColor);
+        public static readonly Material SolidOrganic = new(MapColor.grassColor);
+        public static readonly Material Soil = new(MapColor.dirtColor);
+        public static readonly Material Wood = new Material(MapColor.woodColor).SetBurning();
+        public static readonly Material Stone = new Material(MapColor.stoneColor).SetRequiresTool();
+        public static readonly Material Metal = new Material(MapColor.ironColor).SetRequiresTool();
+        public static readonly Material Water = new MaterialLiquid(MapColor.waterColor).SetDestroyPistonBehavior();
+        public static readonly Material Lava = new MaterialLiquid(MapColor.tntColor).SetDestroyPistonBehavior();
+        public static readonly Material Leaves = new Material(MapColor.foliageColor).SetBurning().SetTransparent().SetDestroyPistonBehavior();
+        public static readonly Material Plant = new MaterialLogic(MapColor.foliageColor).SetDestroyPistonBehavior();
+        public static readonly Material Sponge = new(MapColor.clothColor);
+        public static readonly Material Wool = new Material(MapColor.clothColor).SetBurning();
+        public static readonly Material Fire = new MaterialTransparent(MapColor.airColor).SetDestroyPistonBehavior();
+        public static readonly Material Sand = new(MapColor.sandColor);
+        public static readonly Material PistonBreakable = new MaterialLogic(MapColor.airColor).SetDestroyPistonBehavior();
+        public static readonly Material Glass = new Material(MapColor.airColor).SetTransparent();
+        public static readonly Material Tnt = new Material(MapColor.tntColor).SetBurning().SetTransparent();
+        public static readonly Material Foliage = new Material(MapColor.foliageColor).SetDestroyPistonBehavior();
+        public static readonly Material Ice = new Material(MapColor.iceColor).SetTransparent();
+        public static readonly Material SnowLayer = new MaterialLogic(MapColor.snowColor).SetReplaceable().SetTransparent().SetRequiresTool().SetDestroyPistonBehavior();
+        public static readonly Material SnowBlock = new Material(MapColor.snowColor).SetRequiresTool();
+        public static readonly Material Cactus = new Material(MapColor.foliageColor).SetTransparent().SetDestroyPistonBehavior();
+        public static readonly Material Clay = new(MapColor.clayColor);
+        public static readonly Material Pumpkin = new Material(MapColor.foliageColor).SetDestroyPistonBehavior();
+        public static readonly Material NetherPortal = new MaterialPortal(MapColor.airColor).SetUnpushablePistonBehavior();
+        public static readonly Material Cake = new Material(MapColor.airColor).SetDestroyPistonBehavior();
+        public static readonly Material Cobweb = new Material(MapColor.clothColor).SetRequiresTool().SetDestroyPistonBehavior();
+        public static readonly Material Piston = new Material(MapColor.stoneColor).SetUnpushablePistonBehavior();
+
+        private bool _burnable;
+        private bool _replaceable;
+        private bool _transparent;
+        private bool _handHarvestable = true;
+        private int _pistonBehavior;
+
+        public MapColor MapColor { get; }
+        public virtual bool IsFluid => false;
+        public virtual bool IsSolid => true;
+        public virtual bool BlocksVision => true;
+        public virtual bool BlocksMovement => true;
+        public bool IsBurnable => _burnable;
+        public bool IsReplaceable => _replaceable;
+        public bool IsHandHarvestable => _handHarvestable;
+        public int PistonBehavior => _pistonBehavior;
+        public bool Suffocates => _transparent ? false : BlocksMovement;
+        public Material(MapColor mapColor)
+        {
+            MapColor = mapColor;
+        }
+
+        private Material SetTransparent()
+        {
+            _transparent = true;
+            return this;
+        }
+
+        private Material SetRequiresTool()
+        {
+            _handHarvestable = false;
+            return this;
+        }
+
+        private Material SetBurning()
+        {
+            _burnable = true;
+            return this;
+        }
+
+        public Material SetReplaceable()
+        {
+            _replaceable = true;
+            return this;
+        }
+
+        protected Material SetDestroyPistonBehavior()
+        {
+            _pistonBehavior = 1;
+            return this;
+        }
+
+        protected Material SetUnpushablePistonBehavior()
+        {
+            _pistonBehavior = 2;
+            return this;
+        }
     }
 
-    public virtual bool isFluid()
-    {
-        return false;
-    }
-
-    public virtual bool isSolid()
-    {
-        return true;
-    }
-
-    public virtual bool blocksVision()
-    {
-        return true;
-    }
-
-    public virtual bool blocksMovement()
-    {
-        return true;
-    }
-
-    private Material setTransparent()
-    {
-        transparent = true;
-        return this;
-    }
-
-    private Material setRequiresTool()
-    {
-        handHarvestable = false;
-        return this;
-    }
-
-    private Material setBurning()
-    {
-        burnable = true;
-        return this;
-    }
-
-    public bool isBurnable()
-    {
-        return burnable;
-    }
-
-    public Material setReplaceable()
-    {
-        replaceable = true;
-        return this;
-    }
-
-    public bool isReplaceable()
-    {
-        return replaceable;
-    }
-
-    public bool suffocates()
-    {
-        return transparent ? false : blocksMovement();
-    }
-
-    public bool isHandHarvestable()
-    {
-        return handHarvestable;
-    }
-
-    public int getPistonBehavior()
-    {
-        return pistonBehavior;
-    }
-
-    protected Material setDestroyPistonBehavior()
-    {
-        pistonBehavior = 1;
-        return this;
-    }
-
-    protected Material setUnpushablePistonBehavior()
-    {
-        pistonBehavior = 2;
-        return this;
-    }
 }

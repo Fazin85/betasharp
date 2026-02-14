@@ -21,7 +21,7 @@ public class BlockRail : Block
         return id == Block.RAIL.id || id == Block.POWERED_RAIL.id || id == Block.DETECTOR_RAIL.id;
     }
 
-    public BlockRail(int id, int textureId, bool alwaysStraight) : base(id, textureId, Material.PISTON_BREAKABLE)
+    public BlockRail(int id, int textureId, bool alwaysStraight) : base(id, textureId, Material.PistonBreakable)
     {
         this.alwaysStraight = alwaysStraight;
         setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 2.0F / 16.0F, 1.0F);

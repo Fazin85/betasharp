@@ -12,7 +12,7 @@ public class BlockTrapDoor : Block
     public BlockTrapDoor(int id, Material material) : base(id, material)
     {
         textureId = 84;
-        if (material == Material.METAL)
+        if (material == Material.Metal)
         {
             ++textureId;
         }
@@ -96,7 +96,7 @@ public class BlockTrapDoor : Block
 
     public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
     {
-        if (material == Material.METAL)
+        if (material == Material.Metal)
         {
             return true;
         }

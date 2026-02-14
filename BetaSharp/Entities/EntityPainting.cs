@@ -217,7 +217,7 @@ public class EntityPainting : Entity
                         material = world.getMaterial(startX + dx, startY + dy, zPosition);
                     }
 
-                    if (!material.isSolid())
+                    if (!material.IsSolid)
                     {
                         return false;
                     }

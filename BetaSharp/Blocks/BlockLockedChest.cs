@@ -6,7 +6,7 @@ namespace BetaSharp.Blocks;
 public class BlockLockedChest : Block
 {
 
-    public BlockLockedChest(int id) : base(id, Material.WOOD)
+    public BlockLockedChest(int id) : base(id, Material.Wood)
     {
         textureId = 26;
     }

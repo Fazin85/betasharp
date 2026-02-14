@@ -311,7 +311,7 @@ public class EntityFish : Entity
                     double var14 = boundingBox.minY + (boundingBox.maxY - boundingBox.minY) * (double)(var28 + 0) / (double)var26 - 0.125D + 0.125D;
                     double var16 = boundingBox.minY + (boundingBox.maxY - boundingBox.minY) * (double)(var28 + 1) / (double)var26 - 0.125D + 0.125D;
                     Box var18 = new Box(boundingBox.minX, var14, boundingBox.minZ, boundingBox.maxX, var16, boundingBox.maxZ);
-                    if (world.isFluidInBox(var18, Material.WATER))
+                    if (world.isFluidInBox(var18, Material.Water))
                     {
                         var27 += 1.0D / (double)var26;
                     }

@@ -168,7 +168,7 @@ public class EntityBoat : Entity
             double var5 = boundingBox.minY + (boundingBox.maxY - boundingBox.minY) * (double)(i + 0) / (double)var1 - 0.125D;
             double var7 = boundingBox.minY + (boundingBox.maxY - boundingBox.minY) * (double)(i + 1) / (double)var1 - 0.125D;
             Box var9 = new Box(boundingBox.minX, var5, boundingBox.minZ, boundingBox.maxX, var7, boundingBox.maxZ);
-            if (world.isFluidInBox(var9, Material.WATER))
+            if (world.isFluidInBox(var9, Material.Water))
             {
                 var2 += 1.0D / (double)var1;
             }

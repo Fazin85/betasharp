@@ -8,7 +8,7 @@ namespace BetaSharp.Blocks;
 public class BlockReed : Block
 {
 
-    public BlockReed(int id, int textureId) : base(id, Material.PLANT)
+    public BlockReed(int id, int textureId) : base(id, Material.Plant)
     {
         base.textureId = textureId;
         float halfWidth = 6.0F / 16.0F;
@@ -45,7 +45,7 @@ public class BlockReed : Block
     public override bool canPlaceAt(World world, int x, int y, int z)
     {
         int blockBelowId = world.getBlockId(x, y - 1, z);
-        return blockBelowId == id ? true : (blockBelowId != Block.GRASS_BLOCK.id && blockBelowId != Block.DIRT.id ? false : (world.getMaterial(x - 1, y - 1, z) == Material.WATER ? true : (world.getMaterial(x + 1, y - 1, z) == Material.WATER ? true : (world.getMaterial(x, y - 1, z - 1) == Material.WATER ? true : world.getMaterial(x, y - 1, z + 1) == Material.WATER))));
+        return blockBelowId == id ? true : (blockBelowId != Block.GRASS_BLOCK.id && blockBelowId != Block.DIRT.id ? false : (world.getMaterial(x - 1, y - 1, z) == Material.Water ? true : (world.getMaterial(x + 1, y - 1, z) == Material.Water ? true : (world.getMaterial(x, y - 1, z - 1) == Material.Water ? true : world.getMaterial(x, y - 1, z + 1) == Material.Water))));
     }
 
     public override void neighborUpdate(World world, int x, int y, int z, int id)

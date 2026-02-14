@@ -11,7 +11,7 @@ public class BlockPistonBase : Block
     private bool sticky;
     private bool deaf;
 
-    public BlockPistonBase(int id, int textureId, bool sticky) : base(id, textureId, Material.PISTON)
+    public BlockPistonBase(int id, int textureId, bool sticky) : base(id, textureId, Material.Piston)
     {
         this.sticky = sticky;
         setSoundGroup(soundStoneFootstep);

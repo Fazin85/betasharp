@@ -11,7 +11,7 @@ public class BlockChest : BlockWithEntity
 {
     private java.util.Random random = new();
 
-    public BlockChest(int id) : base(id, Material.WOOD)
+    public BlockChest(int id) : base(id, Material.Wood)
     {
         textureId = 26;
     }

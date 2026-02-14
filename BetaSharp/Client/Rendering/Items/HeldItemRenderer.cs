@@ -355,7 +355,7 @@ public class HeldItemRenderer
             }
         }
 
-        if (mc.player.isInFluid(Material.WATER))
+        if (mc.player.isInFluid(Material.Water))
         {
             var2 = mc.textureManager.getTextureId("/misc/water.png");
             GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var2);

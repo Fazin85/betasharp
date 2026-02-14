@@ -56,7 +56,7 @@ public class EntityItem : Entity
         prevY = y;
         prevZ = z;
         velocityY -= (double)0.04F;
-        if (world.getMaterial(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z)) == Material.LAVA)
+        if (world.getMaterial(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z)) == Material.Lava)
         {
             velocityY = (double)0.2F;
             velocityX = (double)((random.nextFloat() - random.nextFloat()) * 0.2F);
@@ -95,7 +95,7 @@ public class EntityItem : Entity
 
     public override bool checkWaterCollisions()
     {
-        return world.updateMovementInFluid(boundingBox, Material.WATER, this);
+        return world.updateMovementInFluid(boundingBox, Material.Water, this);
     }
 
     protected override void damage(int amount)

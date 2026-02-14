@@ -5,7 +5,7 @@ namespace BetaSharp.Blocks;
 
 public class BlockSponge : Block
 {
-    public BlockSponge(int id) : base(id, Material.SPONGE)
+    public BlockSponge(int id) : base(id, Material.Sponge)
     {
         textureId = 48;
     }
@@ -20,7 +20,7 @@ public class BlockSponge : Block
             {
                 for (int checkZ = z - radius; checkZ <= z + radius; ++checkZ)
                 {
-                    if (world.getMaterial(checkX, checkY, checkZ) == Material.WATER)
+                    if (world.getMaterial(checkX, checkY, checkZ) == Material.Water)
                     {
                     }
                 }

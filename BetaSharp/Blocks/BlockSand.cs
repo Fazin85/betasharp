@@ -8,7 +8,7 @@ public class BlockSand : Block
 {
     public static bool fallInstantly = false;
 
-    public BlockSand(int id, int textureId) : base(id, textureId, Material.SAND)
+    public BlockSand(int id, int textureId) : base(id, textureId, Material.Sand)
     {
     }
 
@@ -74,7 +74,7 @@ public class BlockSand : Block
         else
         {
             Material material = Block.BLOCKS[blockId].material;
-            return material == Material.WATER ? true : material == Material.LAVA;
+            return material == Material.Water ? true : material == Material.Lava;
         }
     }
 }

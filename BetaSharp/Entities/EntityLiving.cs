@@ -140,7 +140,7 @@ public abstract class EntityLiving : Entity
         }
 
         int i;
-        if (isAlive() && isInFluid(Material.WATER) && !canBreatheUnderwater())
+        if (isAlive() && isInFluid(Material.Water) && !canBreatheUnderwater())
         {
             --air;
             if (air == -20)

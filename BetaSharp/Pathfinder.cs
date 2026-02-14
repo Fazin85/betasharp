@@ -209,17 +209,17 @@ public class Pathfinder : java.lang.Object
                         if (var9 != Block.IRON_DOOR.id && var9 != Block.DOOR.id)
                         {
                             Material var11 = Block.BLOCKS[var9].material;
-                            if (var11.blocksMovement())
+                            if (var11.BlocksMovement)
                             {
                                 return 0;
                             }
 
-                            if (var11 == Material.WATER)
+                            if (var11 == Material.Water)
                             {
                                 return -1;
                             }
 
-                            if (var11 == Material.LAVA)
+                            if (var11 == Material.Lava)
                             {
                                 return -2;
                             }

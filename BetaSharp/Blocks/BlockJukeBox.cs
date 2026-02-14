@@ -9,7 +9,7 @@ namespace BetaSharp.Blocks;
 public class BlockJukeBox : BlockWithEntity
 {
 
-    public BlockJukeBox(int id, int textureId) : base(id, textureId, Material.WOOD)
+    public BlockJukeBox(int id, int textureId) : base(id, textureId, Material.Wood)
     {
     }
 

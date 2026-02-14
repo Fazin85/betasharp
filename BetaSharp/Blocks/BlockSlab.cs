@@ -8,7 +8,7 @@ public class BlockSlab : Block
     public static readonly string[] names = ["stone", "sand", "wood", "cobble"];
     private bool doubleSlab;
 
-    public BlockSlab(int id, bool doubleSlab) : base(id, 6, Material.STONE)
+    public BlockSlab(int id, bool doubleSlab) : base(id, 6, Material.Stone)
     {
         this.doubleSlab = doubleSlab;
         if (!doubleSlab)

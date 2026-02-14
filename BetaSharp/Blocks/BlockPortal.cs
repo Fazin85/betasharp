@@ -8,7 +8,7 @@ namespace BetaSharp.Blocks;
 public class BlockPortal : BlockBreakable
 {
 
-    public BlockPortal(int id, int textureId) : base(id, textureId, Material.NETHER_PORTAL, false)
+    public BlockPortal(int id, int textureId) : base(id, textureId, Material.NetherPortal, false)
     {
     }
 

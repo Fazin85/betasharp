@@ -13,7 +13,7 @@ public class BlockRedstoneRepeater : Block
     private static readonly int[] DELAY = new int[] { 1, 2, 3, 4 };
     private readonly bool lit;
 
-    public BlockRedstoneRepeater(int id, bool lit) : base(id, 6, Material.PISTON_BREAKABLE)
+    public BlockRedstoneRepeater(int id, bool lit) : base(id, 6, Material.PistonBreakable)
     {
         this.lit = lit;
         setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 2.0F / 16.0F, 1.0F);

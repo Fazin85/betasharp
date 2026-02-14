@@ -1878,7 +1878,7 @@ public class BlockRenderer
             Material var11 = blockAccess.getMaterial(var8, var2, var10);
             if (var11 != var4)
             {
-                if (!var11.isSolid())
+                if (!var11.IsSolid)
                 {
                     ++var6;
                     ++var5;
@@ -2614,7 +2614,7 @@ public class BlockRenderer
         if (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3 + 1, var4, 1))
         {
             var27 = var1.getLuminance(blockAccess, var2, var3 + 1, var4);
-            if (var1.maxY != 1.0D && !var1.material.isFluid())
+            if (var1.maxY != 1.0D && !var1.material.IsFluid)
             {
                 var27 = var26;
             }
@@ -2752,7 +2752,7 @@ public class BlockRenderer
         if (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3 + 1, var4, 1))
         {
             var28 = var1.getLuminance(blockAccess, var2, var3 + 1, var4);
-            if (var1.maxY != 1.0D && !var1.material.isFluid())
+            if (var1.maxY != 1.0D && !var1.material.IsFluid)
             {
                 var28 = var27;
             }

@@ -4,7 +4,7 @@ namespace BetaSharp.Blocks;
 
 public class BlockSandStone : Block
 {
-    public BlockSandStone(int id) : base(id, 192, Material.STONE)
+    public BlockSandStone(int id) : base(id, 192, Material.Stone)
     {
     }
 

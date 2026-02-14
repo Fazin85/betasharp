@@ -7,7 +7,7 @@ namespace BetaSharp.Blocks;
 public class BlockIce : BlockBreakable
 {
 
-    public BlockIce(int id, int textureId) : base(id, textureId, Material.ICE, false)
+    public BlockIce(int id, int textureId) : base(id, textureId, Material.Ice, false)
     {
         slipperiness = 0.98F;
         setTickRandomly(true);
@@ -27,7 +27,7 @@ public class BlockIce : BlockBreakable
     {
         base.afterBreak(world, player, x, y, z, meta);
         Material materialBelow = world.getMaterial(x, y - 1, z);
-        if (materialBelow.blocksMovement() || materialBelow.isFluid())
+        if (materialBelow.BlocksMovement || materialBelow.IsFluid)
         {
             world.setBlock(x, y, z, Block.FLOWING_WATER.id);
         }

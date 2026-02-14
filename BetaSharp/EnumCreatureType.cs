@@ -6,9 +6,9 @@ namespace BetaSharp;
 
 public class EnumCreatureType
 {
-    public static readonly EnumCreatureType monster = new EnumCreatureType(Monster.Class, 70, Material.AIR, false);
-    public static readonly EnumCreatureType creature = new EnumCreatureType(typeof(EntityAnimal), 15, Material.AIR, true);
-    public static readonly EnumCreatureType waterCreature = new EnumCreatureType(typeof(EntityWaterMob), 5, Material.WATER, true);
+    public static readonly EnumCreatureType monster = new EnumCreatureType(Monster.Class, 70, Material.Air, false);
+    public static readonly EnumCreatureType creature = new EnumCreatureType(typeof(EntityAnimal), 15, Material.Air, true);
+    public static readonly EnumCreatureType waterCreature = new EnumCreatureType(typeof(EntityWaterMob), 5, Material.Water, true);
 
     private readonly Class creatureClass;
     private readonly int maxNumberOfCreature;

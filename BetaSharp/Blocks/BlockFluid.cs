@@ -8,7 +8,7 @@ namespace BetaSharp.Blocks;
 
 public abstract class BlockFluid : Block
 {
-    protected BlockFluid(int id, Material material) : base(id, (material == Material.LAVA ? 14 : 12) * 16 + 13, material)
+    protected BlockFluid(int id, Material material) : base(id, (material == Material.Lava ? 14 : 12) * 16 + 13, material)
     {
         float var3 = 0.0F;
         float var4 = 0.0F;
@@ -80,7 +80,7 @@ public abstract class BlockFluid : Block
         Material material = blockView.getMaterial(x, y, z);
         return material == base.material ?
             false :
-            (material == Material.ICE ? false : (face == 1 ? true : base.isSolidFace(blockView, x, y, z, face)));
+            (material == Material.Ice ? false : (face == 1 ? true : base.isSolidFace(blockView, x, y, z, face)));
     }
 
     public override bool isSideVisible(BlockView blockView, int x, int y, int z, int side)
@@ -88,7 +88,7 @@ public abstract class BlockFluid : Block
         Material material = blockView.getMaterial(x, y, z);
         return material == base.material ?
             false :
-            (material == Material.ICE ? false : (side == 1 ? true : base.isSideVisible(blockView, x, y, z, side)));
+            (material == Material.Ice ? false : (side == 1 ? true : base.isSideVisible(blockView, x, y, z, side)));
     }
 
     public override Box? getCollisionShape(World world, int x, int y, int z)
@@ -144,7 +144,7 @@ public abstract class BlockFluid : Block
             int depthDiff;
             if (neighborDepth < 0)
             {
-                if (!blockView.getMaterial(neighborX, y, neighborZ).blocksMovement())
+                if (!blockView.getMaterial(neighborX, y, neighborZ).BlocksMovement)
                 {
                     neighborDepth = getLiquidDepth(blockView, neighborX, y - 1, neighborZ);
                     if (neighborDepth >= 0)
@@ -224,7 +224,7 @@ public abstract class BlockFluid : Block
 
     public override int getTickRate()
     {
-        return material == Material.WATER ? 5 : (material == Material.LAVA ? 30 : 0);
+        return material == Material.Water ? 5 : (material == Material.Lava ? 30 : 0);
     }
 
     public override float getLuminance(BlockView blockView, int x, int y, int z)
@@ -241,12 +241,12 @@ public abstract class BlockFluid : Block
 
     public override int getRenderLayer()
     {
-        return material == Material.WATER ? 1 : 0;
+        return material == Material.Water ? 1 : 0;
     }
 
     public override void randomDisplayTick(World world, int x, int y, int z, java.util.Random random)
     {
-        if (material == Material.WATER && random.nextInt(64) == 0)
+        if (material == Material.Water && random.nextInt(64) == 0)
         {
             int meta = world.getBlockMeta(x, y, z);
             if (meta > 0 && meta < 8)
@@ -255,7 +255,7 @@ public abstract class BlockFluid : Block
             }
         }
 
-        if (material == Material.LAVA && world.getMaterial(x, y + 1, z) == Material.AIR && !world.isOpaque(x, y + 1, z) && random.nextInt(100) == 0)
+        if (material == Material.Lava && world.getMaterial(x, y + 1, z) == Material.Air && !world.isOpaque(x, y + 1, z) && random.nextInt(100) == 0)
         {
             double particleX = (double)((float)x + random.nextFloat());
             double particleY = (double)y + maxY;
@@ -268,12 +268,12 @@ public abstract class BlockFluid : Block
     public static double getFlowingAngle(BlockView blockView, int x, int y, int z, Material material)
     {
         Vector3D<double> flowVec = new(0.0);
-        if (material == Material.WATER)
+        if (material == Material.Water)
         {
             flowVec = ((BlockFluid)FLOWING_WATER).getFlow(blockView, x, y, z);
         }
 
-        if (material == Material.LAVA)
+        if (material == Material.Lava)
         {
             flowVec = ((BlockFluid)FLOWING_LAVA).getFlow(blockView, x, y, z);
         }
@@ -295,30 +295,30 @@ public abstract class BlockFluid : Block
     {
         if (world.getBlockId(x, y, z) == id)
         {
-            if (material == Material.LAVA)
+            if (material == Material.Lava)
             {
                 bool hasWaterAdjacent = false;
-                if (hasWaterAdjacent || world.getMaterial(x, y, z - 1) == Material.WATER)
+                if (hasWaterAdjacent || world.getMaterial(x, y, z - 1) == Material.Water)
                 {
                     hasWaterAdjacent = true;
                 }
 
-                if (hasWaterAdjacent || world.getMaterial(x, y, z + 1) == Material.WATER)
+                if (hasWaterAdjacent || world.getMaterial(x, y, z + 1) == Material.Water)
                 {
                     hasWaterAdjacent = true;
                 }
 
-                if (hasWaterAdjacent || world.getMaterial(x - 1, y, z) == Material.WATER)
+                if (hasWaterAdjacent || world.getMaterial(x - 1, y, z) == Material.Water)
                 {
                     hasWaterAdjacent = true;
                 }
 
-                if (hasWaterAdjacent || world.getMaterial(x + 1, y, z) == Material.WATER)
+                if (hasWaterAdjacent || world.getMaterial(x + 1, y, z) == Material.Water)
                 {
                     hasWaterAdjacent = true;
                 }
 
-                if (hasWaterAdjacent || world.getMaterial(x, y + 1, z) == Material.WATER)
+                if (hasWaterAdjacent || world.getMaterial(x, y + 1, z) == Material.Water)
                 {
                     hasWaterAdjacent = true;
                 }

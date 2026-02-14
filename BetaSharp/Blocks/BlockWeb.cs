@@ -8,7 +8,7 @@ namespace BetaSharp.Blocks;
 
 public class BlockWeb : Block
 {
-    public BlockWeb(int id, int texturePosition) : base(id, texturePosition, Material.COBWEB)
+    public BlockWeb(int id, int texturePosition) : base(id, texturePosition, Material.Cobweb)
     {
     }
 

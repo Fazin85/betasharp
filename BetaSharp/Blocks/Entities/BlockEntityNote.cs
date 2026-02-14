@@ -39,26 +39,26 @@ public class BlockEntityNote : BlockEntity
 
     public void playNote(World world, int x, int y, int z)
     {
-        if (world.getMaterial(x, y + 1, z) == Material.AIR)
+        if (world.getMaterial(x, y + 1, z) == Material.Air)
         {
             Material material = world.getMaterial(x, y - 1, z);
             byte instrument = 0;
-            if (material == Material.STONE)
+            if (material == Material.Stone)
             {
                 instrument = 1;
             }
 
-            if (material == Material.SAND)
+            if (material == Material.Sand)
             {
                 instrument = 2;
             }
 
-            if (material == Material.GLASS)
+            if (material == Material.Glass)
             {
                 instrument = 3;
             }
 
-            if (material == Material.WOOD)
+            if (material == Material.Wood)
             {
                 instrument = 4;
             }

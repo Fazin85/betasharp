@@ -9,7 +9,7 @@ public class BlockFire : Block
     private int[] burnChances = new int[256];
     private int[] spreadChances = new int[256];
 
-    public BlockFire(int id, int textureId) : base(id, textureId, Material.FIRE)
+    public BlockFire(int id, int textureId) : base(id, textureId, Material.Fire)
     {
         setTickRandomly(true);
     }
@@ -201,7 +201,7 @@ public class BlockFire : Block
         return false;
     }
 
-    public bool isFlammable(BlockView blockView, int x, int y, int z)
+    public override bool isFlammable(BlockView blockView, int x, int y, int z)
     {
         return burnChances[blockView.getBlockId(x, y, z)] > 0;
     }

@@ -7,7 +7,7 @@ namespace BetaSharp.Blocks;
 
 public class BlockButton : Block
 {
-    public BlockButton(int id, int textureId) : base(id, textureId, Material.PISTON_BREAKABLE)
+    public BlockButton(int id, int textureId) : base(id, textureId, Material.PistonBreakable)
     {
         setTickRandomly(true);
     }

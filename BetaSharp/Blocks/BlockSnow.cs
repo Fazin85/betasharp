@@ -9,7 +9,7 @@ namespace BetaSharp.Blocks;
 public class BlockSnow : Block
 {
 
-    public BlockSnow(int id, int textureId) : base(id, textureId, Material.SNOW_LAYER)
+    public BlockSnow(int id, int textureId) : base(id, textureId, Material.SnowLayer)
     {
         setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 2.0F / 16.0F, 1.0F);
         setTickRandomly(true);
@@ -43,7 +43,7 @@ public class BlockSnow : Block
     public override bool canPlaceAt(World world, int x, int y, int z)
     {
         int blockBelowId = world.getBlockId(x, y - 1, z);
-        return blockBelowId != 0 && Block.BLOCKS[blockBelowId].isOpaque() ? world.getMaterial(x, y - 1, z).blocksMovement() : false;
+        return blockBelowId != 0 && Block.BLOCKS[blockBelowId].isOpaque() ? world.getMaterial(x, y - 1, z).BlocksMovement : false;
     }
 
     public override void neighborUpdate(World world, int x, int y, int z, int id)

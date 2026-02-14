@@ -12,7 +12,7 @@ public class BlockDoor : Block
     public BlockDoor(int id, Material material) : base(id, material)
     {
         textureId = 97;
-        if (material == Material.METAL)
+        if (material == Material.Metal)
         {
             ++textureId;
         }
@@ -115,7 +115,7 @@ public class BlockDoor : Block
 
     public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
     {
-        if (material == Material.METAL)
+        if (material == Material.Metal)
         {
             return true;
         }
@@ -226,7 +226,7 @@ public class BlockDoor : Block
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
-        return (blockMeta & 8) != 0 ? 0 : (material == Material.METAL ? Item.IRON_DOOR.id : Item.WOODEN_DOOR.id);
+        return (blockMeta & 8) != 0 ? 0 : (material == Material.Metal ? Item.IRON_DOOR.id : Item.WOODEN_DOOR.id);
     }
 
     public override HitResult raycast(World world, int x, int y, int z, Vec3D startPos, Vec3D endPos)

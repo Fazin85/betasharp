@@ -1,24 +1,15 @@
-namespace BetaSharp.Blocks.Materials;
-
-public class MaterialPortal : Material
+namespace BetaSharp.Blocks.Materials
 {
-
-    public MaterialPortal(MapColor var1) : base(var1)
+    public class MaterialPortal : Material
     {
+        public override bool IsSolid => false;
+        public override bool BlocksVision => false;
+        public override bool BlocksMovement => false;
+
+        public MaterialPortal(MapColor mapColor) : base(mapColor)
+        {
+        }
+
     }
 
-    public override bool isSolid()
-    {
-        return false;
-    }
-
-    public override bool blocksVision()
-    {
-        return false;
-    }
-
-    public override bool blocksMovement()
-    {
-        return false;
-    }
 }

@@ -1,25 +1,18 @@
-namespace BetaSharp.Blocks.Materials;
-
-public class MaterialTransparent : Material
+namespace BetaSharp.Blocks.Materials
 {
-
-    public MaterialTransparent(MapColor var1) : base(var1)
+    public class MaterialTransparent : Material
     {
-        setReplaceable();
+        public override bool IsSolid => false;
+
+        public override bool BlocksVision => false;
+
+        public override bool BlocksMovement => false;
+
+        public MaterialTransparent(MapColor mapColor) : base(mapColor)
+        {
+            SetReplaceable();
+        }
+
     }
 
-    public override bool isSolid()
-    {
-        return false;
-    }
-
-    public override bool blocksVision()
-    {
-        return false;
-    }
-
-    public override bool blocksMovement()
-    {
-        return false;
-    }
 }

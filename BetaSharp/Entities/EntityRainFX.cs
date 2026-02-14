@@ -55,7 +55,7 @@ public class EntityRainFX : EntityFX
         }
 
         Material material = world.getMaterial(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z));
-        if (material.isFluid() || material.isSolid())
+        if (material.IsFluid || material.IsSolid)
         {
             double height = (double)((float)(MathHelper.floor_double(y) + 1) - BlockFluid.getFluidHeightFromMeta(world.getBlockMeta(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z))));
             if (y < height)

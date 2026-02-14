@@ -480,7 +480,7 @@ public abstract class World : java.lang.Object, BlockView
     public Material getMaterial(int x, int y, int z)
     {
         int var4 = getBlockId(x, y, z);
-        return var4 == 0 ? Material.AIR : Block.BLOCKS[var4].material;
+        return var4 == 0 ? Material.Air : Block.BLOCKS[var4].material;
     }
 
     public int getBlockMeta(int x, int y, int z)
@@ -1442,8 +1442,8 @@ public abstract class World : java.lang.Object, BlockView
         for (z &= 15; var4 > 0; --var4)
         {
             int var5 = var3.getBlockId(x, var4, z);
-            Material var6 = var5 == 0 ? Material.AIR : Block.BLOCKS[var5].material;
-            if (var6.blocksMovement() || var6.isFluid())
+            Material var6 = var5 == 0 ? Material.Air : Block.BLOCKS[var5].material;
+            if (var6.BlocksMovement || var6.IsFluid)
             {
                 return var4 + 1;
             }
@@ -1478,7 +1478,7 @@ public abstract class World : java.lang.Object, BlockView
         for (int var7 = z & 15; var4 > 0; var4--)
         {
             int var5 = var3.getBlockId(x, var4, var7);
-            if (var5 != 0 && Block.BLOCKS[var5].material.blocksMovement())
+            if (var5 != 0 && Block.BLOCKS[var5].material.BlocksMovement)
             {
                 return var4 + 1;
             }
@@ -1842,7 +1842,7 @@ public abstract class World : java.lang.Object, BlockView
                 for (int var10 = var6; var10 < var7; ++var10)
                 {
                     Block var11 = Block.BLOCKS[getBlockId(var8, var9, var10)];
-                    if (var11 != null && var11.material.isFluid())
+                    if (var11 != null && var11.material.IsFluid)
                     {
                         return true;
                     }
@@ -2157,7 +2157,7 @@ public abstract class World : java.lang.Object, BlockView
     public bool shouldSuffocate(int x, int y, int z)
     {
         Block var4 = Block.BLOCKS[getBlockId(x, y, z)];
-        return var4 == null ? false : var4.material.suffocates() && var4.isFullCube();
+        return var4 == null ? false : var4.material.Suffocates && var4.isFullCube();
     }
 
     public void savingProgress(LoadingDisplay display)
@@ -2547,7 +2547,7 @@ public abstract class World : java.lang.Object, BlockView
                 {
                     var10 = var14.getBlockId(var7, var9 - 1, var8);
                     var15 = var14.getBlockId(var7, var9, var8);
-                    if (isRaining() && var15 == 0 && Block.SNOW.canPlaceAt(this, var7 + var3, var9, var8 + var4) && var10 != 0 && var10 != Block.ICE.id && Block.BLOCKS[var10].material.blocksMovement())
+                    if (isRaining() && var15 == 0 && Block.SNOW.canPlaceAt(this, var7 + var3, var9, var8 + var4) && var10 != 0 && var10 != Block.ICE.id && Block.BLOCKS[var10].material.BlocksMovement)
                     {
                         setBlock(var7 + var3, var9, var8 + var4, Block.SNOW.id);
                     }

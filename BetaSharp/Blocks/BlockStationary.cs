@@ -8,7 +8,7 @@ public class BlockStationary : BlockFluid
     public BlockStationary(int id, Material material) : base(id, material)
     {
         setTickRandomly(false);
-        if (material == Material.LAVA)
+        if (material == Material.Lava)
         {
             setTickRandomly(true);
         }
@@ -37,7 +37,7 @@ public class BlockStationary : BlockFluid
 
     public override void onTick(World world, int x, int y, int z, java.util.Random random)
     {
-        if (material == Material.LAVA)
+        if (material == Material.Lava)
         {
             int attempts = random.nextInt(3);
 
@@ -55,7 +55,7 @@ public class BlockStationary : BlockFluid
                         return;
                     }
                 }
-                else if (Block.BLOCKS[neighborBlockId].material.blocksMovement())
+                else if (Block.BLOCKS[neighborBlockId].material.BlocksMovement)
                 {
                     return;
                 }
@@ -66,6 +66,6 @@ public class BlockStationary : BlockFluid
 
     private bool isFlammable(World world, int x, int y, int z)
     {
-        return world.getMaterial(x, y, z).isBurnable();
+        return world.getMaterial(x, y, z).IsBurnable;
     }
 }

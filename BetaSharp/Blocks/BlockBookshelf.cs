@@ -4,7 +4,7 @@ namespace BetaSharp.Blocks;
 
 public class BlockBookshelf : Block
 {
-    public BlockBookshelf(int id, int textureId) : base(id, textureId, Material.WOOD)
+    public BlockBookshelf(int id, int textureId) : base(id, textureId, Material.Wood)
     {
     }
 

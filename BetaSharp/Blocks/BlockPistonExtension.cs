@@ -8,7 +8,7 @@ public class BlockPistonExtension : Block
 {
     private int pistonHeadSprite = -1;
 
-    public BlockPistonExtension(int id, int textureId) : base(id, textureId, Material.PISTON)
+    public BlockPistonExtension(int id, int textureId) : base(id, textureId, Material.Piston)
     {
         setSoundGroup(soundStoneFootstep);
         setHardness(0.5F);

@@ -7,7 +7,7 @@ namespace BetaSharp.Blocks;
 public class BlockWorkbench : Block
 {
 
-    public BlockWorkbench(int id) : base(id, Material.WOOD)
+    public BlockWorkbench(int id) : base(id, Material.Wood)
     {
         textureId = 59;
     }

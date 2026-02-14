@@ -355,7 +355,7 @@ public class InventoryPlayer : java.lang.Object, IInventory
 
     public bool canHarvestBlock(Block block)
     {
-        if (block.material.isHandHarvestable())
+        if (block.material.IsHandHarvestable)
         {
             return true;
         }

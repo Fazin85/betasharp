@@ -544,7 +544,7 @@ public abstract class Entity : java.lang.Object
                         var29 = Block.SNOW.soundGroup;
                         world.playSound(this, var29.func_1145_d(), var29.getVolume() * 0.15F, var29.getPitch());
                     }
-                    else if (!Block.BLOCKS[var28].material.isFluid())
+                    else if (!Block.BLOCKS[var28].material.IsFluid)
                     {
                         world.playSound(this, var29.func_1145_d(), var29.getVolume() * 0.15F, var29.getPitch());
                     }
@@ -661,7 +661,7 @@ public abstract class Entity : java.lang.Object
 
     public virtual bool checkWaterCollisions()
     {
-        return world.updateMovementInFluid(boundingBox.expand(0.0D, (double)-0.4F, 0.0D).contract(0.001D, 0.001D, 0.001D), Material.WATER, this);
+        return world.updateMovementInFluid(boundingBox.expand(0.0D, (double)-0.4F, 0.0D).contract(0.001D, 0.001D, 0.001D), Material.Water, this);
     }
 
     public bool isInFluid(Material var1)
@@ -690,7 +690,7 @@ public abstract class Entity : java.lang.Object
 
     public bool isTouchingLava()
     {
-        return world.isMaterialInBox(boundingBox.expand((double)-0.1F, (double)-0.4F, (double)-0.1F), Material.LAVA);
+        return world.isMaterialInBox(boundingBox.expand((double)-0.1F, (double)-0.4F, (double)-0.1F), Material.Lava);
     }
 
     public void moveNonSolid(float strafe, float forward, float speed)

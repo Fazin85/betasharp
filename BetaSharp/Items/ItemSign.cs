@@ -20,7 +20,7 @@ public class ItemSign : Item
         {
             return false;
         }
-        else if (!world.getMaterial(x, y, z).isSolid())
+        else if (!world.getMaterial(x, y, z).IsSolid)
         {
             return false;
         }

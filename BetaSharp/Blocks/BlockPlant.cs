@@ -6,7 +6,7 @@ namespace BetaSharp.Blocks;
 
 public class BlockPlant : Block
 {
-    public BlockPlant(int id, int textureId) : base(id, Material.PLANT)
+    public BlockPlant(int id, int textureId) : base(id, Material.Plant)
     {
         base.textureId = textureId;
         setTickRandomly(true);

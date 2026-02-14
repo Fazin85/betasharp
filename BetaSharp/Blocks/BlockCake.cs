@@ -8,7 +8,7 @@ namespace BetaSharp.Blocks;
 public class BlockCake : Block
 {
 
-    public BlockCake(int id, int textureId) : base(id, textureId, Material.CAKE)
+    public BlockCake(int id, int textureId) : base(id, textureId, Material.Cake)
     {
         setTickRandomly(true);
     }
@@ -114,7 +114,7 @@ public class BlockCake : Block
 
     public override bool canGrow(World world, int x, int y, int z)
     {
-        return world.getMaterial(x, y - 1, z).isSolid();
+        return world.getMaterial(x, y - 1, z).IsSolid;
     }
 
     public override int getDroppedItemCount(java.util.Random random)

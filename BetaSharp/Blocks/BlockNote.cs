@@ -7,7 +7,7 @@ namespace BetaSharp.Blocks;
 
 public class BlockNote : BlockWithEntity
 {
-    public BlockNote(int id) : base(id, 74, Material.WOOD)
+    public BlockNote(int id) : base(id, 74, Material.Wood)
     {
     }
 

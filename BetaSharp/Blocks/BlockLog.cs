@@ -6,7 +6,7 @@ namespace BetaSharp.Blocks;
 
 public class BlockLog : Block
 {
-    public BlockLog(int id) : base(id, Material.WOOD)
+    public BlockLog(int id) : base(id, Material.Wood)
     {
         textureId = 20;
     }

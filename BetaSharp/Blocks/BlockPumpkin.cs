@@ -10,7 +10,7 @@ public class BlockPumpkin : Block
 
     private bool lit;
 
-    public BlockPumpkin(int id, int textureId, bool lit) : base(id, Material.PUMPKIN)
+    public BlockPumpkin(int id, int textureId, bool lit) : base(id, Material.Pumpkin)
     {
         this.textureId = textureId;
         setTickRandomly(true);
@@ -54,7 +54,7 @@ public class BlockPumpkin : Block
     public override bool canPlaceAt(World world, int x, int y, int z)
     {
         int blockId = world.getBlockId(x, y, z);
-        return (blockId == 0 || Block.BLOCKS[blockId].material.isReplaceable()) && world.shouldSuffocate(x, y - 1, z);
+        return (blockId == 0 || Block.BLOCKS[blockId].material.IsReplaceable) && world.shouldSuffocate(x, y - 1, z);
     }
 
     public override void onPlaced(World world, int x, int y, int z, EntityLiving placer)

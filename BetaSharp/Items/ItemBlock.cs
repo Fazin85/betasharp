@@ -58,7 +58,7 @@ public class ItemBlock : Item
         {
             return false;
         }
-        else if (y == 127 && Block.BLOCKS[blockID].material.isSolid())
+        else if (y == 127 && Block.BLOCKS[blockID].material.IsSolid)
         {
             return false;
         }

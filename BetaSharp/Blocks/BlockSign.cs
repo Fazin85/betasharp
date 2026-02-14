@@ -13,7 +13,7 @@ public class BlockSign : BlockWithEntity
     private Class blockEntityClazz;
     private bool standing;
 
-    public BlockSign(int id, Class blockEntityClazz, bool standing) : base(id, Material.WOOD)
+    public BlockSign(int id, Class blockEntityClazz, bool standing) : base(id, Material.Wood)
     {
         this.standing = standing;
         textureId = 4;
@@ -105,7 +105,7 @@ public class BlockSign : BlockWithEntity
         bool shouldBreak = false;
         if (standing)
         {
-            if (!world.getMaterial(x, y - 1, z).isSolid())
+            if (!world.getMaterial(x, y - 1, z).IsSolid)
             {
                 shouldBreak = true;
             }
@@ -114,22 +114,22 @@ public class BlockSign : BlockWithEntity
         {
             int facing = world.getBlockMeta(x, y, z);
             shouldBreak = true;
-            if (facing == 2 && world.getMaterial(x, y, z + 1).isSolid())
+            if (facing == 2 && world.getMaterial(x, y, z + 1).IsSolid)
             {
                 shouldBreak = false;
             }
 
-            if (facing == 3 && world.getMaterial(x, y, z - 1).isSolid())
+            if (facing == 3 && world.getMaterial(x, y, z - 1).IsSolid)
             {
                 shouldBreak = false;
             }
 
-            if (facing == 4 && world.getMaterial(x + 1, y, z).isSolid())
+            if (facing == 4 && world.getMaterial(x + 1, y, z).IsSolid)
             {
                 shouldBreak = false;
             }
 
-            if (facing == 5 && world.getMaterial(x - 1, y, z).isSolid())
+            if (facing == 5 && world.getMaterial(x - 1, y, z).IsSolid)
             {
                 shouldBreak = false;
             }

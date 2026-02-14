@@ -25,7 +25,7 @@ public class BlockFlowing : BlockFluid
     {
         int currentState = getLiquidState(world, x, y, z);
         sbyte spreadRate = 1;
-        if (material == Material.LAVA && !world.dimension.evaporatesWater)
+        if (material == Material.Lava && !world.dimension.evaporatesWater)
         {
             spreadRate = 2;
         }
@@ -59,9 +59,9 @@ public class BlockFlowing : BlockFluid
                 }
             }
 
-            if (adjacentSources >= 2 && material == Material.WATER)
+            if (adjacentSources >= 2 && material == Material.Water)
             {
-                if (world.getMaterial(x, y - 1, z).isSolid())
+                if (world.getMaterial(x, y - 1, z).IsSolid)
                 {
                     newLevel = 0;
                 }
@@ -71,7 +71,7 @@ public class BlockFlowing : BlockFluid
                 }
             }
 
-            if (material == Material.LAVA && currentState < 8 && newLevel < 8 && newLevel > currentState && random.nextInt(4) != 0)
+            if (material == Material.Lava && currentState < 8 && newLevel < 8 && newLevel > currentState && random.nextInt(4) != 0)
             {
                 newLevel = currentState;
                 convertToSource = false;
@@ -156,7 +156,7 @@ public class BlockFlowing : BlockFluid
             int blockId = world.getBlockId(x, y, z);
             if (blockId > 0)
             {
-                if (material == Material.LAVA)
+                if (material == Material.Lava)
                 {
                     fizz(world, x, y, z);
                 }
@@ -295,7 +295,7 @@ public class BlockFlowing : BlockFluid
             else
             {
                 Material material = Block.BLOCKS[blockId].material;
-                return material.blocksMovement();
+                return material.BlocksMovement;
             }
         }
         else
@@ -330,7 +330,7 @@ public class BlockFlowing : BlockFluid
     private bool canSpreadTo(World world, int x, int y, int z)
     {
         Material material = world.getMaterial(x, y, z);
-        return material == base.material ? false : (material == Material.LAVA ? false : !isLiquidBreaking(world, x, y, z));
+        return material == base.material ? false : (material == Material.Lava ? false : !isLiquidBreaking(world, x, y, z));
     }
 
     public override void onPlaced(World world, int x, int y, int z)

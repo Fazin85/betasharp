@@ -25,12 +25,12 @@ public class DungeonFeature : Feature
                 for (var12 = var5 - var8 - 1; var12 <= var5 + var8 + 1; ++var12)
                 {
                     Material var13 = var1.getMaterial(var10, var11, var12);
-                    if (var11 == var4 - 1 && !var13.isSolid())
+                    if (var11 == var4 - 1 && !var13.IsSolid)
                     {
                         return false;
                     }
 
-                    if (var11 == var4 + var6 + 1 && !var13.isSolid())
+                    if (var11 == var4 + var6 + 1 && !var13.IsSolid)
                     {
                         return false;
                     }
@@ -55,11 +55,11 @@ public class DungeonFeature : Feature
                         {
                             var1.setBlock(var10, var11, var12, 0);
                         }
-                        else if (var11 >= 0 && !var1.getMaterial(var10, var11 - 1, var12).isSolid())
+                        else if (var11 >= 0 && !var1.getMaterial(var10, var11 - 1, var12).IsSolid)
                         {
                             var1.setBlock(var10, var11, var12, 0);
                         }
-                        else if (var1.getMaterial(var10, var11, var12).isSolid())
+                        else if (var1.getMaterial(var10, var11, var12).IsSolid)
                         {
                             if (var11 == var4 - 1 && var2.nextInt(4) != 0)
                             {
@@ -83,19 +83,19 @@ public class DungeonFeature : Feature
                     if (var1.isAir(var12, var4, var14))
                     {
                         int var15 = 0;
-                        if (var1.getMaterial(var12 - 1, var4, var14).isSolid())
+                        if (var1.getMaterial(var12 - 1, var4, var14).IsSolid)
                         {
                             ++var15;
                         }
-                        if (var1.getMaterial(var12 + 1, var4, var14).isSolid())
+                        if (var1.getMaterial(var12 + 1, var4, var14).IsSolid)
                         {
                             ++var15;
                         }
-                        if (var1.getMaterial(var12, var4, var14 - 1).isSolid())
+                        if (var1.getMaterial(var12, var4, var14 - 1).IsSolid)
                         {
                             ++var15;
                         }
-                        if (var1.getMaterial(var12, var4, var14 + 1).isSolid())
+                        if (var1.getMaterial(var12, var4, var14 + 1).IsSolid)
                         {
                             ++var15;
                         }

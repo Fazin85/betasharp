@@ -14,7 +14,7 @@ public class BlockFurnace : BlockWithEntity
     private readonly bool lit;
     private static bool ignoreBlockRemoval = false;
 
-    public BlockFurnace(int id, bool lit) : base(id, Material.STONE)
+    public BlockFurnace(int id, bool lit) : base(id, Material.Stone)
     {
         this.lit = lit;
         textureId = 45;

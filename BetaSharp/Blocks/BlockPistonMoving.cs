@@ -8,7 +8,7 @@ namespace BetaSharp.Blocks;
 
 public class BlockPistonMoving : BlockWithEntity
 {
-    public BlockPistonMoving(int id) : base(id, Material.PISTON)
+    public BlockPistonMoving(int id) : base(id, Material.Piston)
     {
         setHardness(-1.0F);
     }

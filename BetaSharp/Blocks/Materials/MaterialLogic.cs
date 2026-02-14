@@ -1,24 +1,15 @@
-namespace BetaSharp.Blocks.Materials;
-
-public class MaterialLogic : Material
+namespace BetaSharp.Blocks.Materials
 {
-
-    public MaterialLogic(MapColor var1) : base(var1)
+    public class MaterialLogic : Material
     {
+        public override bool IsSolid => false;
+        public override bool BlocksVision => false;
+        public override bool BlocksMovement => false;
+
+        public MaterialLogic(MapColor mapColor) : base(mapColor)
+        {
+        }
+
     }
 
-    public override bool isSolid()
-    {
-        return false;
-    }
-
-    public override bool blocksVision()
-    {
-        return false;
-    }
-
-    public override bool blocksMovement()
-    {
-        return false;
-    }
 }

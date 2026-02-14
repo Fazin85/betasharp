@@ -8,7 +8,7 @@ namespace BetaSharp.Blocks;
 public class BlockFarmland : Block
 {
 
-    public BlockFarmland(int id) : base(id, Material.SOIL)
+    public BlockFarmland(int id) : base(id, Material.Soil)
     {
         textureId = 87;
         setTickRandomly(true);
@@ -95,7 +95,7 @@ public class BlockFarmland : Block
             {
                 for (int checkZ = z - 4; checkZ <= z + 4; ++checkZ)
                 {
-                    if (world.getMaterial(checkX, checkY, checkZ) == Material.WATER)
+                    if (world.getMaterial(checkX, checkY, checkZ) == Material.Water)
                     {
                         return true;
                     }
@@ -110,7 +110,7 @@ public class BlockFarmland : Block
     {
         base.neighborUpdate(world, x, y, z, id);
         Material material = world.getMaterial(x, y + 1, z);
-        if (material.isSolid())
+        if (material.IsSolid)
         {
             world.setBlock(x, y, z, Block.DIRT.id);
         }

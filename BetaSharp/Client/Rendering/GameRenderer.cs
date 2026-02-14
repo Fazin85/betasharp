@@ -164,7 +164,7 @@ public class GameRenderer
     {
         EntityLiving var2 = client.camera;
         float var3 = isHand ? 70.0F : (30.0F + client.options.fov * 90.0F);
-        if (var2.isInFluid(Material.WATER))
+        if (var2.isInFluid(Material.Water))
         {
             var3 = 60.0F;
         }
@@ -557,7 +557,7 @@ public class GameRenderer
         Profiler.Stop("renderParticles");
 
         EntityPlayer var21;
-        if (client.objectMouseOver != null && var4.isInFluid(Material.WATER) && var4 is EntityPlayer)
+        if (client.objectMouseOver != null && var4.isInFluid(Material.Water) && var4 is EntityPlayer)
         {
             var21 = (EntityPlayer)var4;
             GLManager.GL.Disable(GLEnum.AlphaTest);
@@ -585,7 +585,7 @@ public class GameRenderer
         GLManager.GL.DepthMask(true);
         GLManager.GL.Enable(GLEnum.CullFace);
         GLManager.GL.Disable(GLEnum.Blend);
-        if (cameraZoom == 1.0D && var4 is EntityPlayer && client.objectMouseOver != null && !var4.isInFluid(Material.WATER))
+        if (cameraZoom == 1.0D && var4 is EntityPlayer && client.objectMouseOver != null && !var4.isInFluid(Material.Water))
         {
             var21 = (EntityPlayer)var4;
             GLManager.GL.Disable(GLEnum.AlphaTest);
@@ -642,7 +642,7 @@ public class GameRenderer
                     float var21 = random.nextFloat();
                     if (var19 > 0)
                     {
-                        if (Block.BLOCKS[var19].material == Material.LAVA)
+                        if (Block.BLOCKS[var19].material == Material.Lava)
                         {
                             client.particleManager.addEffect(new EntitySmokeFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.BLOCKS[var19].minY, (double)(var17 + var21), 0.0D, 0.0D, 0.0D));
                         }
@@ -887,13 +887,13 @@ public class GameRenderer
             fogColorGreen = (float)var16.Y;
             fogColorBlue = (float)var16.Z;
         }
-        else if (var3.isInFluid(Material.WATER))
+        else if (var3.isInFluid(Material.Water))
         {
             fogColorRed = 0.02F;
             fogColorGreen = 0.02F;
             fogColorBlue = 0.2F;
         }
-        else if (var3.isInFluid(Material.LAVA))
+        else if (var3.isInFluid(Material.Lava))
         {
             fogColorRed = 0.6F;
             fogColorGreen = 0.1F;
@@ -922,14 +922,14 @@ public class GameRenderer
             client.terrainRenderer.chunkRenderer.SetFogMode(1);
             client.terrainRenderer.chunkRenderer.SetFogDensity(0.1f);
         }
-        else if (var3.isInFluid(Material.WATER))
+        else if (var3.isInFluid(Material.Water))
         {
             GLManager.GL.Fog(GLEnum.FogMode, (int)GLEnum.Exp);
             GLManager.GL.Fog(GLEnum.FogDensity, 0.1F);
             client.terrainRenderer.chunkRenderer.SetFogMode(1);
             client.terrainRenderer.chunkRenderer.SetFogDensity(0.1f);
         }
-        else if (var3.isInFluid(Material.LAVA))
+        else if (var3.isInFluid(Material.Lava))
         {
             GLManager.GL.Fog(GLEnum.FogMode, (int)GLEnum.Exp);
             GLManager.GL.Fog(GLEnum.FogDensity, 2.0F);

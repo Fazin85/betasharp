@@ -8,7 +8,7 @@ namespace BetaSharp.Blocks;
 public class BlockTorch : Block
 {
 
-    public BlockTorch(int id, int textureId) : base(id, textureId, Material.PISTON_BREAKABLE)
+    public BlockTorch(int id, int textureId) : base(id, textureId, Material.PistonBreakable)
     {
         setTickRandomly(true);
     }

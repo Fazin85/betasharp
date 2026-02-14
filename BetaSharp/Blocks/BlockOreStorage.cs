@@ -5,7 +5,7 @@ namespace BetaSharp.Blocks;
 public class BlockOreStorage : Block
 {
 
-    public BlockOreStorage(int id, int textureId) : base(id, Material.METAL)
+    public BlockOreStorage(int id, int textureId) : base(id, Material.Metal)
     {
         base.textureId = textureId;
     }

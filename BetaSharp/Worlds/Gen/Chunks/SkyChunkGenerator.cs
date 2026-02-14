@@ -574,7 +574,7 @@ public class SkyChunkGenerator : ChunkSource
                 var19 = var17 - (var5 + 8);
                 int var20 = field_28081_p.getTopSolidBlockY(var16, var17);
                 double var21 = field_28074_w[var23 * 16 + var19] - (var20 - 64) / 64.0D * 0.3D;
-                if (var21 < 0.5D && var20 > 0 && var20 < 128 && field_28081_p.isAir(var16, var20, var17) && field_28081_p.getMaterial(var16, var20 - 1, var17).blocksMovement() && field_28081_p.getMaterial(var16, var20 - 1, var17) != Material.ICE)
+                if (var21 < 0.5D && var20 > 0 && var20 < 128 && field_28081_p.isAir(var16, var20, var17) && field_28081_p.getMaterial(var16, var20 - 1, var17).BlocksMovement && field_28081_p.getMaterial(var16, var20 - 1, var17) != Material.Ice)
                 {
                     field_28081_p.setBlock(var16, var20, var17, Block.SNOW.id);
                 }

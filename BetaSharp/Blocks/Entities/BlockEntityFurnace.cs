@@ -236,7 +236,7 @@ public class BlockEntityFurnace : BlockEntity, IInventory
         else
         {
             int itemId = itemStack.getItem().id;
-            return itemId < 256 && Block.BLOCKS[itemId].material == Material.WOOD ? 300 : itemId == Item.STICK.id ? 100 : itemId == Item.COAL.id ? 1600 : itemId == Item.LAVA_BUCKET.id ? 20000 : itemId == Block.SAPLING.id ? 100 : 0;
+            return itemId < 256 && Block.BLOCKS[itemId].material == Material.Wood ? 300 : itemId == Item.STICK.id ? 100 : itemId == Item.COAL.id ? 1600 : itemId == Item.LAVA_BUCKET.id ? 20000 : itemId == Block.SAPLING.id ? 100 : 0;
         }
     }
 

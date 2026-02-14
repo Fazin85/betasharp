@@ -6,7 +6,7 @@ namespace BetaSharp.Blocks;
 public class BlockMobSpawner : BlockWithEntity
 {
 
-    public BlockMobSpawner(int id, int textureId) : base(id, textureId, Material.STONE)
+    public BlockMobSpawner(int id, int textureId) : base(id, textureId, Material.Stone)
     {
     }
 
