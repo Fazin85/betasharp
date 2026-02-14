@@ -19,7 +19,7 @@ public class PersistentStateManager : java.lang.Object
         loadIdCounts();
     }
 
-    public PersistentState loadData(Class var1, JString var2)
+    public PersistentState loadData(Class var1, string var2)
     {
         PersistentState var3 = (PersistentState)loadedDataMap.get(var2);
         if (var3 != null)
@@ -31,7 +31,7 @@ public class PersistentStateManager : java.lang.Object
         {
             try
             {
-                java.io.File var4 = saveHandler.getWorldPropertiesFile(var2.value);
+                java.io.File var4 = saveHandler.getWorldPropertiesFile(var2);
                 if (var4 != null && var4.exists())
                 {
                     try
