@@ -38,9 +38,9 @@ public class PortalForcer
 
                 for (int var17 = 127; var17 >= 0; --var17)
                 {
-                    if (world.getBlockId(var11, var17, var14) == Block.NETHER_PORTAL.id)
+                    if (world.getBlockId(var11, var17, var14) == Block.NetherPortal.id)
                     {
-                        while (world.getBlockId(var11, var17 - 1, var14) == Block.NETHER_PORTAL.id)
+                        while (world.getBlockId(var11, var17 - 1, var14) == Block.NetherPortal.id)
                         {
                             --var17;
                         }
@@ -64,22 +64,22 @@ public class PortalForcer
             double var22 = var6 + 0.5D;
             double var16 = var7 + 0.5D;
             var18 = var8 + 0.5D;
-            if (world.getBlockId(var6 - 1, var7, var8) == Block.NETHER_PORTAL.id)
+            if (world.getBlockId(var6 - 1, var7, var8) == Block.NetherPortal.id)
             {
                 var22 -= 0.5D;
             }
 
-            if (world.getBlockId(var6 + 1, var7, var8) == Block.NETHER_PORTAL.id)
+            if (world.getBlockId(var6 + 1, var7, var8) == Block.NetherPortal.id)
             {
                 var22 += 0.5D;
             }
 
-            if (world.getBlockId(var6, var7, var8 - 1) == Block.NETHER_PORTAL.id)
+            if (world.getBlockId(var6, var7, var8 - 1) == Block.NetherPortal.id)
             {
                 var18 -= 0.5D;
             }
 
-            if (world.getBlockId(var6, var7, var8 + 1) == Block.NETHER_PORTAL.id)
+            if (world.getBlockId(var6, var7, var8 + 1) == Block.NetherPortal.id)
             {
                 var18 += 0.5D;
             }
@@ -281,7 +281,7 @@ public class PortalForcer
                         var24 = var16 + var22;
                         var25 = var17 + (var21 - 1) * var19 - var20 * var31;
                         var34 = var22 < 0;
-                        world.setBlock(var23, var24, var25, var34 ? Block.OBSIDIAN.id : 0);
+                        world.setBlock(var23, var24, var25, var34 ? Block.Obsidian.id : 0);
                     }
                 }
             }
@@ -299,7 +299,7 @@ public class PortalForcer
                     var24 = var16 + var22;
                     var25 = var17 + (var21 - 1) * var19;
                     var34 = var21 == 0 || var21 == 3 || var22 == -1 || var22 == 3;
-                    world.setBlock(var23, var24, var25, var34 ? Block.OBSIDIAN.id : Block.NETHER_PORTAL.id);
+                    world.setBlock(var23, var24, var25, var34 ? Block.Obsidian.id : Block.NetherPortal.id);
                 }
             }
 

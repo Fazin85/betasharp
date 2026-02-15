@@ -209,40 +209,40 @@ public class GuiAchievements : GuiScreen
                 var21.setSeed(1234 + var12 + var24);
                 var21.nextInt();
                 int var25 = var21.nextInt(1 + var13 + var22) + (var13 + var22) / 2;
-                int var26 = Block.SAND.textureId;
+                int var26 = Block.Sand.textureId;
                 if (var25 <= 37 && var13 + var22 != 35)
                 {
                     if (var25 == 22)
                     {
                         if (var21.nextInt(2) == 0)
                         {
-                            var26 = Block.DIAMOND_ORE.textureId;
+                            var26 = Block.DiamondOre.textureId;
                         }
                         else
                         {
-                            var26 = Block.REDSTONE_ORE.textureId;
+                            var26 = Block.RedstoneOre.textureId;
                         }
                     }
                     else if (var25 == 10)
                     {
-                        var26 = Block.IRON_ORE.textureId;
+                        var26 = Block.IronOre.textureId;
                     }
                     else if (var25 == 8)
                     {
-                        var26 = Block.COAL_ORE.textureId;
+                        var26 = Block.CoalOre.textureId;
                     }
                     else if (var25 > 4)
                     {
-                        var26 = Block.STONE.textureId;
+                        var26 = Block.Stone.textureId;
                     }
                     else if (var25 > 0)
                     {
-                        var26 = Block.DIRT.textureId;
+                        var26 = Block.Dirt.textureId;
                     }
                 }
                 else
                 {
-                    var26 = Block.BEDROCK.textureId;
+                    var26 = Block.Bedrock.textureId;
                 }
 
                 drawTexturedModalRect(var10 + var24 * 16 - var14, var11 + var22 * 16 - var15, var26 % 16 << 4, var26 >> 4 << 4, 16, 16);

@@ -73,7 +73,7 @@ public class EntityItem : Entity
             int groundBlockId = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
             if (groundBlockId > 0)
             {
-                friction = Block.BLOCKS[groundBlockId].slipperiness * 0.98F;
+                friction = Block.Blocks[groundBlockId].slipperiness * 0.98F;
             }
         }
 
@@ -137,7 +137,7 @@ public class EntityItem : Entity
             int pickedUpCount = stack.count;
             if (delayBeforeCanPickup == 0 && player.inventory.addItemStackToInventory(stack))
             {
-                if (stack.itemId == Block.LOG.id)
+                if (stack.itemId == Block.Log.id)
                 {
                     player.incrementStat(Achievements.MineWood);
                 }

@@ -65,12 +65,6 @@ public abstract class GuiContainer : GuiScreen
         }
 
         InventoryPlayer var12 = mc.player.inventory;
-        if (var12.getCursorStack() != null)
-        {
-            GLManager.GL.Translate(0.0F, 0.0F, 32.0F);
-            itemRenderer.renderItemIntoGUI(fontRenderer, mc.textureManager, var12.getCursorStack(), var1 - var4 - 8, var2 - var5 - 8);
-            itemRenderer.renderItemOverlayIntoGUI(fontRenderer, mc.textureManager, var12.getCursorStack(), var1 - var4 - 8, var2 - var5 - 8);
-        }
 
         GLManager.GL.Disable(GLEnum.RescaleNormal);
         Lighting.turnOff();
@@ -88,6 +82,22 @@ public abstract class GuiContainer : GuiScreen
                 drawGradientRect(var9 - 3, var10 - 3, var9 + var11 + 3, var10 + 8 + 3, 0xC0000000, 0xC0000000);
                 fontRenderer.drawStringWithShadow(var13, var9, var10, 0xFFFFFFFF);
             }
+        }
+
+        // Render the dragged cursor item last so it appears on top of foreground text
+        if (var12.getCursorStack() != null)
+        {
+            GLManager.GL.Enable(GLEnum.RescaleNormal);
+            Lighting.turnOn();
+            GLManager.GL.Enable(GLEnum.Lighting);
+            GLManager.GL.Enable(GLEnum.DepthTest);
+            GLManager.GL.Translate(0.0F, 0.0F, 32.0F);
+            itemRenderer.renderItemIntoGUI(fontRenderer, mc.textureManager, var12.getCursorStack(), var1 - var4 - 8, var2 - var5 - 8);
+            itemRenderer.renderItemOverlayIntoGUI(fontRenderer, mc.textureManager, var12.getCursorStack(), var1 - var4 - 8, var2 - var5 - 8);
+            Lighting.turnOff();
+            GLManager.GL.Disable(GLEnum.Lighting);
+            GLManager.GL.Disable(GLEnum.DepthTest);
+            GLManager.GL.Disable(GLEnum.RescaleNormal);
         }
 
         GLManager.GL.PopMatrix();

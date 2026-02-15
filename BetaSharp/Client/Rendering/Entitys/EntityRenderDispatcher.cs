@@ -98,7 +98,7 @@ public class EntityRenderDispatcher
         if (var4.isSleeping())
         {
             int var7 = var1.getBlockId(MathHelper.floor_double(var4.x), MathHelper.floor_double(var4.y), MathHelper.floor_double(var4.z));
-            if (var7 == Block.BED.id)
+            if (var7 == Block.Bed.id)
             {
                 int var8 = var1.getBlockMeta(MathHelper.floor_double(var4.x), MathHelper.floor_double(var4.y), MathHelper.floor_double(var4.z));
                 int var9 = var8 & 3;

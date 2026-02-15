@@ -15,16 +15,16 @@ public class SmeltingRecipeManager
 
     private SmeltingRecipeManager()
     {
-        AddSmelting(Block.IRON_ORE.id, new ItemStack(Item.IRON_INGOT));
-        AddSmelting(Block.GOLD_ORE.id, new ItemStack(Item.GOLD_INGOT));
-        AddSmelting(Block.DIAMOND_ORE.id, new ItemStack(Item.DIAMOND));
-        AddSmelting(Block.SAND.id, new ItemStack(Block.GLASS));
+        AddSmelting(Block.IronOre.id, new ItemStack(Item.IRON_INGOT));
+        AddSmelting(Block.GoldOre.id, new ItemStack(Item.GOLD_INGOT));
+        AddSmelting(Block.DiamondOre.id, new ItemStack(Item.DIAMOND));
+        AddSmelting(Block.Sand.id, new ItemStack(Block.Glass));
         AddSmelting(Item.RAW_PORKCHOP.id, new ItemStack(Item.COOKED_PORKCHOP));
         AddSmelting(Item.RAW_FISH.id, new ItemStack(Item.COOKED_FISH));
-        AddSmelting(Block.COBBLESTONE.id, new ItemStack(Block.STONE));
+        AddSmelting(Block.Cobblestone.id, new ItemStack(Block.Stone));
         AddSmelting(Item.CLAY.id, new ItemStack(Item.BRICK));
-        AddSmelting(Block.CACTUS.id, new ItemStack(Item.DYE, 1, 2));
-        AddSmelting(Block.LOG.id, new ItemStack(Item.COAL, 1, 1));
+        AddSmelting(Block.Cactus.id, new ItemStack(Item.DYE, 1, 2));
+        AddSmelting(Block.Log.id, new ItemStack(Item.COAL, 1, 1));
     }
 
     public void AddSmelting(int inputId, ItemStack output)

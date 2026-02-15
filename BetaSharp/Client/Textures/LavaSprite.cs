@@ -11,7 +11,7 @@ public class LavaSprite : DynamicTexture
     protected float[] head = new float[256];
     protected float[] heatDelta = new float[256];
 
-    public LavaSprite() : base(Block.FLOWING_LAVA.textureId)
+    public LavaSprite() : base(Block.FlowingLava.textureId)
     {
     }
 

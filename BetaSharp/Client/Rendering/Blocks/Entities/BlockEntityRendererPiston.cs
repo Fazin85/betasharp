@@ -13,7 +13,7 @@ public class BlockEntityRendererPiston : BlockEntitySpecialRenderer
 
     public void func_31070_a(BlockEntityPiston var1, double var2, double var4, double var6, float var8)
     {
-        Block var9 = Block.BLOCKS[var1.getPushedBlockId()];
+        Block var9 = Block.Blocks[var1.getPushedBlockId()];
         if (var9 != null && var1.getProgress(var8) < 1.0F)
         {
             Tessellator var10 = Tessellator.instance;
@@ -34,15 +34,15 @@ public class BlockEntityRendererPiston : BlockEntitySpecialRenderer
             var10.startDrawingQuads();
             var10.setTranslationD((double)((float)var2 - var1.x + var1.getRenderOffsetX(var8)), (double)((float)var4 - var1.y + var1.getRenderOffsetY(var8)), (double)((float)var6 - var1.z + var1.getRenderOffsetZ(var8)));
             var10.setColorOpaque(1, 1, 1);
-            if (var9 == Block.PISTON_HEAD && var1.getProgress(var8) < 0.5F)
+            if (var9 == Block.PistonHead && var1.getProgress(var8) < 0.5F)
             {
                 renderBlocks.func_31079_a(var9, var1.x, var1.y, var1.z, false);
             }
             else if (var1.isSource() && !var1.isExtending())
             {
-                Block.PISTON_HEAD.setSprite(((BlockPistonBase)var9).getTopTexture());
-                renderBlocks.func_31079_a(Block.PISTON_HEAD, var1.x, var1.y, var1.z, var1.getProgress(var8) < 0.5F);
-                Block.PISTON_HEAD.clearSprite();
+                Block.PistonHead.setSprite(((BlockPistonBase)var9).getTopTexture());
+                renderBlocks.func_31079_a(Block.PistonHead, var1.x, var1.y, var1.z, var1.getProgress(var8) < 0.5F);
+                Block.PistonHead.clearSprite();
                 var10.setTranslationD((double)((float)var2 - var1.x), (double)((float)var4 - var1.y), (double)((float)var6 - var1.z));
                 renderBlocks.func_31078_d(var9, var1.x, var1.y, var1.z);
             }

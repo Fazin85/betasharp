@@ -23,7 +23,7 @@ public class ItemSeeds : Item
         else
         {
             int blockId = world.getBlockId(x, y, z);
-            if (blockId == Block.FARMLAND.id && world.isAir(x, y + 1, z))
+            if (blockId == Block.Farmland.id && world.isAir(x, y + 1, z))
             {
                 world.setBlock(x, y + 1, z, this.blockId);
                 --itemStack.count;

@@ -43,7 +43,7 @@ public class EntityFlying : EntityLiving
                 int groundBlockId = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
                 if (groundBlockId > 0)
                 {
-                    friction = Block.BLOCKS[groundBlockId].slipperiness * 0.91F;
+                    friction = Block.Blocks[groundBlockId].slipperiness * 0.91F;
                 }
             }
 
@@ -56,7 +56,7 @@ public class EntityFlying : EntityLiving
                 int groundBlockId = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
                 if (groundBlockId > 0)
                 {
-                    friction = Block.BLOCKS[groundBlockId].slipperiness * 0.91F;
+                    friction = Block.Blocks[groundBlockId].slipperiness * 0.91F;
                 }
             }
 

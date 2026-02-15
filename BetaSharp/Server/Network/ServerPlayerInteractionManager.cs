@@ -35,7 +35,7 @@ public class ServerPlayerInteractionManager
             int blockId = world.getBlockId(miningX, miningY, miningZ);
             if (blockId != 0)
             {
-                Block block = Block.BLOCKS[blockId];
+                Block block = Block.Blocks[blockId];
                 float breakProgress = block.getHardness(player) * (miningTicks + 1);
                 if (breakProgress >= 1.0F)
                 {
@@ -57,10 +57,10 @@ public class ServerPlayerInteractionManager
         int blockId = world.getBlockId(x, y, z);
         if (blockId > 0)
         {
-            Block.BLOCKS[blockId].onBlockBreakStart(world, x, y, z, player);
+            Block.Blocks[blockId].onBlockBreakStart(world, x, y, z, player);
         }
 
-        if (blockId > 0 && Block.BLOCKS[blockId].getHardness(player) >= 1.0F)
+        if (blockId > 0 && Block.Blocks[blockId].getHardness(player) >= 1.0F)
         {
             tryBreakBlock(x, y, z);
         }
@@ -80,7 +80,7 @@ public class ServerPlayerInteractionManager
             int blockId = world.getBlockId(x, y, z);
             if (blockId != 0)
             {
-                Block block = Block.BLOCKS[blockId];
+                Block block = Block.Blocks[blockId];
                 float breakProgress = block.getHardness(player) * (ticksSinceFailedStart + 1);
                 if (breakProgress >= 0.7F)
                 {
@@ -100,7 +100,7 @@ public class ServerPlayerInteractionManager
 
     public bool finishMining(int x, int y, int z)
     {
-        Block block = Block.BLOCKS[world.getBlockId(x, y, z)];
+        Block block = Block.Blocks[world.getBlockId(x, y, z)];
         int blockMeta = world.getBlockMeta(x, y, z);
         bool success = world.setBlock(x, y, z, 0);
         if (block != null && success)
@@ -128,9 +128,9 @@ public class ServerPlayerInteractionManager
             }
         }
 
-        if (success && player.canHarvest(Block.BLOCKS[blockId]))
+        if (success && player.canHarvest(Block.Blocks[blockId]))
         {
-            Block.BLOCKS[blockId].afterBreak(world, player, x, y, z, blockMeta);
+            Block.Blocks[blockId].afterBreak(world, player, x, y, z, blockMeta);
             ((ServerPlayerEntity)player).networkHandler.sendPacket(new BlockUpdateS2CPacket(x, y, z, world));
         }
 
@@ -160,7 +160,7 @@ public class ServerPlayerInteractionManager
     public bool interactBlock(EntityPlayer player, World world, ItemStack stack, int x, int y, int z, int side)
     {
         int blockId = world.getBlockId(x, y, z);
-        if (blockId > 0 && Block.BLOCKS[blockId].onUse(world, x, y, z, player))
+        if (blockId > 0 && Block.Blocks[blockId].onUse(world, x, y, z, player))
         {
             return true;
         }

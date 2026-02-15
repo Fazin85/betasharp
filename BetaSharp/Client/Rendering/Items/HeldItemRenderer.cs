@@ -29,10 +29,10 @@ public class HeldItemRenderer
     public void renderItem(EntityLiving var1, ItemStack var2)
     {
         GLManager.GL.PushMatrix();
-        if (var2.itemId < 256 && BlockRenderer.isSideLit(Block.BLOCKS[var2.itemId].getRenderType()))
+        if (var2.itemId < 256 && BlockRenderer.isSideLit(Block.Blocks[var2.itemId].getRenderType()))
         {
             GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/terrain.png"));
-            renderBlocksInstance.renderBlockOnInventory(Block.BLOCKS[var2.itemId], var2.getDamage(), var1.getBrightnessAtEyes(1.0F));
+            renderBlocksInstance.renderBlockOnInventory(Block.Blocks[var2.itemId], var2.getDamage(), var1.getBrightnessAtEyes(1.0F));
         }
         else
         {
@@ -330,7 +330,7 @@ public class HeldItemRenderer
             int var6 = mc.world.getBlockId(var2, var3, var4);
             if (mc.world.shouldSuffocate(var2, var3, var4))
             {
-                renderInsideOfBlock(var1, Block.BLOCKS[var6].getTexture(2));
+                renderInsideOfBlock(var1, Block.Blocks[var6].getTexture(2));
             }
             else
             {
@@ -349,9 +349,9 @@ public class HeldItemRenderer
                 }
             }
 
-            if (Block.BLOCKS[var6] != null)
+            if (Block.Blocks[var6] != null)
             {
-                renderInsideOfBlock(var1, Block.BLOCKS[var6].getTexture(2));
+                renderInsideOfBlock(var1, Block.Blocks[var6].getTexture(2));
             }
         }
 
@@ -430,7 +430,7 @@ public class HeldItemRenderer
         for (int var4 = 0; var4 < 2; ++var4)
         {
             GLManager.GL.PushMatrix();
-            int var5 = Block.FIRE.textureId + var4 * 16;
+            int var5 = Block.Fire.textureId + var4 * 16;
             int var6 = (var5 & 15) << 4;
             int var7 = var5 & 240;
             float var8 = var6 / 256.0F;

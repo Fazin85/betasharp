@@ -14,37 +14,37 @@ public class SpringFeature : Feature
 
     public override bool generate(World var1, java.util.Random var2, int var3, int var4, int var5)
     {
-        if (var1.getBlockId(var3, var4 + 1, var5) != Block.STONE.id)
+        if (var1.getBlockId(var3, var4 + 1, var5) != Block.Stone.id)
         {
             return false;
         }
-        else if (var1.getBlockId(var3, var4 - 1, var5) != Block.STONE.id)
+        else if (var1.getBlockId(var3, var4 - 1, var5) != Block.Stone.id)
         {
             return false;
         }
-        else if (var1.getBlockId(var3, var4, var5) != 0 && var1.getBlockId(var3, var4, var5) != Block.STONE.id)
+        else if (var1.getBlockId(var3, var4, var5) != 0 && var1.getBlockId(var3, var4, var5) != Block.Stone.id)
         {
             return false;
         }
         else
         {
             int var6 = 0;
-            if (var1.getBlockId(var3 - 1, var4, var5) == Block.STONE.id)
+            if (var1.getBlockId(var3 - 1, var4, var5) == Block.Stone.id)
             {
                 ++var6;
             }
 
-            if (var1.getBlockId(var3 + 1, var4, var5) == Block.STONE.id)
+            if (var1.getBlockId(var3 + 1, var4, var5) == Block.Stone.id)
             {
                 ++var6;
             }
 
-            if (var1.getBlockId(var3, var4, var5 - 1) == Block.STONE.id)
+            if (var1.getBlockId(var3, var4, var5 - 1) == Block.Stone.id)
             {
                 ++var6;
             }
 
-            if (var1.getBlockId(var3, var4, var5 + 1) == Block.STONE.id)
+            if (var1.getBlockId(var3, var4, var5 + 1) == Block.Stone.id)
             {
                 ++var6;
             }
@@ -74,7 +74,7 @@ public class SpringFeature : Feature
             {
                 var1.setBlock(var3, var4, var5, liquidBlockId);
                 var1.instantBlockUpdateEnabled = true;
-                Block.BLOCKS[liquidBlockId].onTick(var1, var3, var4, var5, var2);
+                Block.Blocks[liquidBlockId].onTick(var1, var3, var4, var5, var2);
                 var1.instantBlockUpdateEnabled = false;
             }
 

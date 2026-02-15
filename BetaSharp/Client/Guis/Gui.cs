@@ -1,5 +1,6 @@
 using BetaSharp.Client.Rendering.Core;
 using Silk.NET.OpenGL.Legacy;
+using BetaSharp.Util;
 
 namespace BetaSharp.Client.Guis;
 
@@ -95,12 +96,201 @@ public class Gui : java.lang.Object
 
     public void drawCenteredString(TextRenderer var1, string var2, int var3, int var4, uint color)
     {
-        var1.drawStringWithShadow(var2, var3 - var1.getStringWidth(var2) / 2, var4, color);
+        // Check if text contains any color codes like &e, &8, &a, etc.
+        if (HasColorCodes(var2))
+        {
+            // Draw with color support
+            DrawStringWithColors(var1, var2, var3 - var1.getStringWidth(RemoveColorCodes(var2)) / 2, var4);
+        }
+        else
+        {
+            var1.drawStringWithShadow(var2, var3 - var1.getStringWidth(var2) / 2, var4, color);
+        }
     }
 
     public void drawString(TextRenderer var1, string var2, int var3, int var4, uint color)
     {
-        var1.drawStringWithShadow(var2, var3, var4, color);
+        // Check if text contains any color codes
+        if (HasColorCodes(var2))
+        {
+            DrawStringWithColors(var1, var2, var3, var4);
+        }
+        else
+        {
+            var1.drawStringWithShadow(var2, var3, var4, color);
+        }
+    }
+
+    private bool HasColorCodes(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return false;
+
+        for (int i = 0; i < text.Length - 1; i++)
+        {
+            if (text[i] == '&')
+            {
+                char nextChar = text[i + 1];
+                if ((nextChar >= '0' && nextChar <= '9') ||
+                    (nextChar >= 'a' && nextChar <= 'f') ||
+                    (nextChar >= 'A' && nextChar <= 'F') ||
+                    nextChar == 'r' || nextChar == 'R')
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private void DrawStringWithColors(TextRenderer renderer, string text, int x, int y)
+    {
+        int currentX = x;
+        uint currentColor = 0xFFFFFFFF; // Default white
+        bool bold = false;
+        bool italic = false; // not used for rendering, reserved
+        bool underline = false;
+        bool strikethrough = false;
+        bool obfuscated = false;
+
+        var sb = new System.Text.StringBuilder();
+
+        void FlushSegment()
+        {
+            if (sb.Length == 0) return;
+            string seg = sb.ToString();
+
+            // Apply obfuscation if needed
+            string drawText = seg;
+            if (obfuscated)
+            {
+                var rnd = new System.Random();
+                var allowed = ChatAllowedCharacters.allowedCharacters;
+                var ob = new System.Text.StringBuilder();
+                for (int k = 0; k < drawText.Length; k++)
+                {
+                    char rc = allowed[rnd.Next(allowed.Length)];
+                    ob.Append(rc);
+                }
+                drawText = ob.ToString();
+            }
+
+            // Draw the segment
+            renderer.drawStringWithShadow(drawText, currentX, y, currentColor);
+
+            // Bold: draw offset copy
+            if (bold)
+            {
+                renderer.drawString(drawText, currentX + 1, y, currentColor);
+            }
+
+            int segWidth = renderer.getStringWidth(drawText);
+
+            // Underline
+            if (underline)
+            {
+                drawRect(currentX, y + 9, currentX + segWidth, y + 10, currentColor);
+            }
+
+            // Strikethrough
+            if (strikethrough)
+            {
+                drawRect(currentX, y + 4, currentX + segWidth, y + 5, currentColor);
+            }
+
+            currentX += segWidth;
+            sb.Clear();
+        }
+
+        int i = 0;
+        while (i < text.Length)
+        {
+            if (i < text.Length - 1 && text[i] == '&')
+            {
+                // Flush any pending text before changing style/color
+                FlushSegment();
+
+                char code = char.ToLower(text[i + 1]);
+                // Color codes reset formatting
+                if ((code >= '0' && code <= '9') || (code >= 'a' && code <= 'f'))
+                {
+                    currentColor = code switch
+                    {
+                        '0' => 0xFF000000u,
+                        '1' => 0xFF0000AAu,
+                        '2' => 0xFF00AA00u,
+                        '3' => 0xFF00AAAAu,
+                        '4' => 0xFFAA0000u,
+                        '5' => 0xFFAA00AAu,
+                        '6' => 0xFFFFAA00u,
+                        '7' => 0xFFAAAAAAu,
+                        '8' => 0xFF555555u,
+                        '9' => 0xFF5555FFu,
+                        'a' => 0xFF55FF55u,
+                        'b' => 0xFF55FFFFu,
+                        'c' => 0xFFFF5555u,
+                        'd' => 0xFFFF55FFu,
+                        'e' => 0xFFFFFF55u,
+                        'f' => 0xFFFFFFFFu,
+                        _ => currentColor
+                    };
+                    // Reset formatting on color
+                    bold = italic = underline = strikethrough = obfuscated = false;
+                }
+                else
+                {
+                    switch (code)
+                    {
+                        case 'k': // obfuscated
+                            obfuscated = true; break;
+                        case 'l': // bold
+                            bold = true; break;
+                        case 'm': // strikethrough
+                            strikethrough = true; break;
+                        case 'n': // underline
+                            underline = true; break;
+                        case 'o': // italic
+                            italic = true; break;
+                        case 'r': // reset
+                            currentColor = 0xFFFFFFFFu;
+                            bold = italic = underline = strikethrough = obfuscated = false;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                i += 2;
+            }
+            else
+            {
+                sb.Append(text[i]);
+                i++;
+            }
+        }
+
+        // Flush remaining
+        FlushSegment();
+    }
+
+    private string RemoveColorCodes(string text)
+    {
+        if (text == null) return string.Empty;
+
+        string result = text;
+        // Remove all color codes (&0-&9, &a-&f, &r)
+        for (char c = '0'; c <= '9'; c++)
+        {
+            result = result.Replace("&" + c, "");
+        }
+        for (char c = 'a'; c <= 'f'; c++)
+        {
+            result = result.Replace("&" + c, "");
+            result = result.Replace("&" + char.ToUpper(c), "");
+        }
+        result = result.Replace("&r", "");
+        result = result.Replace("&R", "");
+        return result;
     }
 
     public void drawTexturedModalRect(int var1, int var2, int var3, int var4, int var5, int var6)

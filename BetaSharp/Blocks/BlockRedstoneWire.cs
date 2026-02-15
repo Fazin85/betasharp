@@ -455,7 +455,7 @@ public class BlockRedstoneWire : Block
     public static bool isPowerProviderOrWire(BlockView var0, int var1, int var2, int var3, int var4)
     {
         int var5 = var0.getBlockId(var1, var2, var3);
-        if (var5 == Block.REDSTONE_WIRE.id)
+        if (var5 == Block.RedstoneWire.id)
         {
             return true;
         }
@@ -463,11 +463,11 @@ public class BlockRedstoneWire : Block
         {
             return false;
         }
-        else if (Block.BLOCKS[var5].canEmitRedstonePower())
+        else if (Block.Blocks[var5].canEmitRedstonePower())
         {
             return true;
         }
-        else if (var5 != Block.REPEATER.id && var5 != Block.POWERED_REPEATER.id)
+        else if (var5 != Block.Repeater.id && var5 != Block.PoweredRepeater.id)
         {
             return false;
         }

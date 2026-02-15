@@ -28,22 +28,22 @@ public class BlockLockedChest : Block
             int var8 = blockView.getBlockId(x - 1, y, z);
             int var9 = blockView.getBlockId(x + 1, y, z);
             sbyte var10 = 3;
-            if (Block.BLOCKS_OPAQUE[var6] && !Block.BLOCKS_OPAQUE[var7])
+            if (Block.BlocksOpaque[var6] && !Block.BlocksOpaque[var7])
             {
                 var10 = 3;
             }
 
-            if (Block.BLOCKS_OPAQUE[var7] && !Block.BLOCKS_OPAQUE[var6])
+            if (Block.BlocksOpaque[var7] && !Block.BlocksOpaque[var6])
             {
                 var10 = 2;
             }
 
-            if (Block.BLOCKS_OPAQUE[var8] && !Block.BLOCKS_OPAQUE[var9])
+            if (Block.BlocksOpaque[var8] && !Block.BlocksOpaque[var9])
             {
                 var10 = 5;
             }
 
-            if (Block.BLOCKS_OPAQUE[var9] && !Block.BLOCKS_OPAQUE[var8])
+            if (Block.BlocksOpaque[var9] && !Block.BlocksOpaque[var8])
             {
                 var10 = 4;
             }

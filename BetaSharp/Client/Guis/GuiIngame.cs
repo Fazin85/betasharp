@@ -48,7 +48,7 @@ public class GuiIngame : Gui
         }
 
         ItemStack helmet = mc.player.inventory.armorItemInSlot(3);
-        if (!mc.options.thirdPersonView && helmet != null && helmet.itemId == Block.PUMPKIN.id)
+        if (!mc.options.thirdPersonView && helmet != null && helmet.itemId == Block.Pumpkin.id)
         {
             renderPumpkinBlur(scaledWidth, scaledHeight);
         }
@@ -387,10 +387,10 @@ public class GuiIngame : Gui
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, portalStrength);
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/terrain.png"));
-        float u1 = Block.NETHER_PORTAL.textureId % 16 / 16.0F;
-        float v1 = Block.NETHER_PORTAL.textureId / 16 / 16.0F;
-        float u2 = (Block.NETHER_PORTAL.textureId % 16 + 1) / 16.0F;
-        float v2 = (Block.NETHER_PORTAL.textureId / 16 + 1) / 16.0F;
+        float u1 = Block.NetherPortal.textureId % 16 / 16.0F;
+        float v1 = Block.NetherPortal.textureId / 16 / 16.0F;
+        float u2 = (Block.NetherPortal.textureId % 16 + 1) / 16.0F;
+        float v2 = (Block.NetherPortal.textureId / 16 + 1) / 16.0F;
         Tessellator tess = Tessellator.instance;
         tess.startDrawingQuads();
         tess.addVertexWithUV(0.0D, screenHeight, -90.0D, (double)u1, (double)v2);

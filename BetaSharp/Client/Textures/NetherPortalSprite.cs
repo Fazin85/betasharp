@@ -9,7 +9,7 @@ public class NetherPortalSprite : DynamicTexture
     private int ticks = 0;
     private byte[][] frames = new byte[32][];
 
-    public NetherPortalSprite() : base(Block.NETHER_PORTAL.textureId)
+    public NetherPortalSprite() : base(Block.NetherPortal.textureId)
     {
         java.util.Random var1 = new(100L);
         for (int i = 0; i < frames.Length; i++)
