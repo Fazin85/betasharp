@@ -47,22 +47,34 @@ public static class Profiler
     private static string GetCurrentPath(string name)
     {
         var stack = GetStack();
-        if (stack.Count == 0) return name;
+        lock (stack)
+        {
+            if (stack.Count == 0) return name;
 
-        return string.Join("/", stack.Reverse()) + "/" + name;
+            var arr = stack.ToArray();
+            Array.Reverse(arr);
+            return string.Join("/", arr) + "/" + name;
+        }
     }
 
     public static void PushGroup(string name)
     {
         if (!Enabled) return;
-        GetStack().Push(name);
+        var stack = GetStack();
+        lock (stack)
+        {
+            stack.Push(name);
+        }
     }
 
     public static void PopGroup()
     {
         var stack = GetStack();
-        if (stack.Count > 0)
-            stack.Pop();
+        lock (stack)
+        {
+            if (stack.Count > 0)
+                stack.Pop();
+        }
     }
 
     public static void Start(string name)

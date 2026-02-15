@@ -12,7 +12,7 @@ public class EntitySlimeFX : EntityFX
     {
         particleTextureIndex = item.getTextureId(0);
         particleRed = particleGreen = particleBlue = 1.0F;
-        particleGravity = Block.SNOW_BLOCK.particleFallSpeedModifier;
+        particleGravity = Block.SnowBlock.particleFallSpeedModifier;
         particleScale /= 2.0F;
     }
 

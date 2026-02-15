@@ -82,6 +82,22 @@ public static class ItemCommands
         return itemNameToId.TryGetValue(input.ToLower(), out itemId);
     }
 
+    /// <summary>
+    /// Gets all available item names that start with the given prefix (with underscores)
+    /// </summary>
+    public static List<string> GetAvailableItemNames(string prefix = "")
+    {
+        if (!lookupTablesBuilt)
+        {
+            BuildItemLookupTables();
+        }
+
+        return itemNameToId.Keys
+            .Where(name => string.IsNullOrEmpty(prefix) || name.StartsWith(prefix.ToLower()))
+            .OrderBy(name => name)
+            .ToList();
+    }
+
     private static void BuildItemLookupTables()
     {
         if (lookupTablesBuilt) return;

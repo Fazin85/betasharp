@@ -7,46 +7,46 @@ namespace BetaSharp.Recipes;
 public class ShapelessRecipes : IRecipe
 {
 
-    private readonly ItemStack recipeOutput;
-    private readonly List recipeItems;
+    private readonly ItemStack _output;
+    private readonly List<ItemStack> _recipeItems;
 
-    public ShapelessRecipes(ItemStack var1, List var2)
+    public ShapelessRecipes(ItemStack output, List<ItemStack> items)
     {
-        recipeOutput = var1;
-        recipeItems = var2;
+        _output = output;
+        _recipeItems = items;
     }
 
-    public ItemStack getRecipeOutput()
+    public ItemStack GetRecipeOutput()
     {
-        return recipeOutput;
+        return _output;
     }
 
-    public bool matches(InventoryCrafting var1)
+    public bool Matches(InventoryCrafting craftingInventory)
     {
-        ArrayList var2 = new ArrayList(recipeItems);
+        List<ItemStack> remainingIngredients = new List<ItemStack>(_recipeItems);
 
-        for (int var3 = 0; var3 < 3; ++var3)
+        for (int row = 0; row < 3; ++row)
         {
-            for (int var4 = 0; var4 < 3; ++var4)
+            for (int col = 0; col < 3; ++col)
             {
-                ItemStack var5 = var1.getStackAt(var4, var3);
-                if (var5 != null)
+                ItemStack gridStack = craftingInventory.getStackAt(col, row);
+                if (gridStack != null)
                 {
-                    bool var6 = false;
-                    Iterator var7 = var2.iterator();
+                    bool foundMatch = false;
+                    List<ItemStack>.Enumerator iterator = remainingIngredients.GetEnumerator();
 
-                    while (var7.hasNext())
+                    while (iterator.MoveNext())
                     {
-                        ItemStack var8 = (ItemStack)var7.next();
-                        if (var5.itemId == var8.itemId && (var8.getDamage() == -1 || var5.getDamage() == var8.getDamage()))
+                        ItemStack recipeItem = iterator.Current;
+                        if (gridStack.itemId == recipeItem.itemId && (recipeItem.getDamage() == -1 || gridStack.getDamage() == recipeItem.getDamage()))
                         {
-                            var6 = true;
-                            var2.remove(var8);
+                            foundMatch = true;
+                            remainingIngredients.Remove(recipeItem);
                             break;
                         }
                     }
 
-                    if (!var6)
+                    if (!foundMatch)
                     {
                         return false;
                     }
@@ -54,16 +54,16 @@ public class ShapelessRecipes : IRecipe
             }
         }
 
-        return var2.isEmpty();
+        return remainingIngredients.Count == 0;
     }
 
-    public ItemStack getCraftingResult(InventoryCrafting var1)
+    public ItemStack GetCraftingResult(InventoryCrafting craftingInventory)
     {
-        return recipeOutput.copy();
+        return _output.copy();
     }
 
-    public int getRecipeSize()
+    public int GetRecipeSize()
     {
-        return recipeItems.size();
+        return _recipeItems.Count;
     }
 }

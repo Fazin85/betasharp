@@ -162,7 +162,7 @@ public class BlockFlowing : BlockFluid
                 }
                 else
                 {
-                    Block.BLOCKS[blockId].dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
+                    Block.Blocks[blockId].dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
                 }
             }
 
@@ -286,7 +286,7 @@ public class BlockFlowing : BlockFluid
     private bool isLiquidBreaking(World world, int x, int y, int z)
     {
         int blockId = world.getBlockId(x, y, z);
-        if (blockId != Block.DOOR.id && blockId != Block.IRON_DOOR.id && blockId != Block.SIGN.id && blockId != Block.LADDER.id && blockId != Block.SUGAR_CANE.id)
+        if (blockId != Block.Door.id && blockId != Block.IronDoor.id && blockId != Block.Sign.id && blockId != Block.Ladder.id && blockId != Block.SugarCane.id)
         {
             if (blockId == 0)
             {
@@ -294,7 +294,7 @@ public class BlockFlowing : BlockFluid
             }
             else
             {
-                Material material = Block.BLOCKS[blockId].material;
+                Material material = Block.Blocks[blockId].material;
                 return material.BlocksMovement;
             }
         }

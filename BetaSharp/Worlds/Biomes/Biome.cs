@@ -7,108 +7,100 @@ namespace BetaSharp.Worlds.Biomes;
 
 public class Biome
 {
-    public static readonly Biome RAINFOREST = new BiomeGenRainforest().setColor(588342).setBiomeName("Rainforest").func_4124_a(2094168);
-    public static readonly Biome SWAMPLAND = new BiomeGenSwamp().setColor(522674).setBiomeName("Swampland").func_4124_a(9154376);
-    public static readonly Biome SEASONAL_FOREST = new Biome().setColor(10215459).setBiomeName("Seasonal Forest");
-    public static readonly Biome FOREST = new BiomeGenForest().setColor(353825).setBiomeName("Forest").func_4124_a(5159473);
-    public static readonly Biome SAVANNA = new BiomeGenDesert().setColor(14278691).setBiomeName("Savanna");
-    public static readonly Biome SHRUBLAND = new Biome().setColor(10595616).setBiomeName("Shrubland");
-    public static readonly Biome TAIGA = new BiomeGenTaiga().setColor(3060051).setBiomeName("Taiga").setEnableSnow().func_4124_a(8107825);
-    public static readonly Biome DESERT = new BiomeGenDesert().setColor(16421912).setBiomeName("Desert").setDisableRain();
-    public static readonly Biome PLAINS = new BiomeGenDesert().setColor(16767248).setBiomeName("Plains");
-    public static readonly Biome ICE_DESERT = new BiomeGenDesert().setColor(16772499).setBiomeName("Ice Desert").setEnableSnow().setDisableRain().func_4124_a(12899129);
-    public static readonly Biome TUNDRA = new Biome().setColor(5762041).setBiomeName("Tundra").setEnableSnow().func_4124_a(12899129);
-    public static readonly Biome HELL = new BiomeGenHell().setColor(16711680).setBiomeName("Hell").setDisableRain();
-    public static readonly Biome SKY = new BiomeGenSky().setColor(8421631).setBiomeName("Sky").setDisableRain();
-    public string name;
-    public int grassColor;
-    public byte topBlockId = (byte)Block.GRASS_BLOCK.id;
-    public byte soilBlockId = (byte)Block.DIRT.id;
-    public int foliageColor = 5169201;
-    protected List<SpawnListEntry> spawnableMonsterList = [];
-    protected List<SpawnListEntry> spawnableCreatureList = [];
-    protected List<SpawnListEntry> spawnableWaterCreatureList = [];
-    private bool hasSnow;
-    private bool hasRain = true;
-    private static Biome[] BIOMES = new Biome[4096];
+    public static readonly Biome Rainforest = new BiomeGenRainforest().SetColor(0x8FA360).SetName("Rainforest").SetFoliageColor(0x1FF458);
+    public static readonly Biome Swampland = new BiomeGenSwamp().SetColor(0x7F9B20).SetName("Swampland").SetFoliageColor(0x8BAF48);
+    public static readonly Biome SeasonalForest = new Biome().SetColor(0x9BE023).SetName("Seasonal Forest");
+    public static readonly Biome Forest = new BiomeGenForest().SetColor(0x566210).SetName("Forest").SetFoliageColor(0x4EBA31);
+    public static readonly Biome Savanna = new BiomeGenDesert().SetColor(0xD9E023).SetName("Savanna");
+    public static readonly Biome Shrubland = new Biome().SetColor(0xA1AD20).SetName("Shrubland");
+    public static readonly Biome Taiga = new BiomeGenTaiga().SetColor(0x2EB153).SetName("Taiga").EnableSnow().SetFoliageColor(0x7BB731);
+    public static readonly Biome Desert = new BiomeGenDesert().SetColor(0xFA9418).SetName("Desert").DisableRain();
+    public static readonly Biome Plains = new BiomeGenDesert().SetColor(0xFFD910).SetName("Plains");
+    public static readonly Biome IceDesert = new BiomeGenDesert().SetColor(0xFFED93).SetName("Ice Desert").EnableSnow().DisableRain().SetFoliageColor(0xC4D339);
+    public static readonly Biome Tundra = new Biome().SetColor(0x57EBF9).SetName("Tundra").EnableSnow().SetFoliageColor(0xC4D339);
+    public static readonly Biome Hell = new BiomeGenHell().SetColor(0xFF0000).SetName("Hell").DisableRain();
+    public static readonly Biome Sky = new BiomeGenSky().SetColor(0x8080FF).SetName("Sky").DisableRain();
+
+    private static Biome[] Biomes = new Biome[4096];
+
+    public string Name { get; private set; } = "";
+    public int GrassColor { get; private set; }
+    public byte TopBlockId = (byte)Block.GrassBlock.id;
+    public byte SoilBlockId = (byte)Block.Dirt.id;
+    public int FoliageColor { get; private set; } = 0x4EE031;
+    protected List<SpawnListEntry> MonsterList { get; } = [];
+    protected List<SpawnListEntry> CreatureList { get; } = [];
+    protected List<SpawnListEntry> WaterCreatureList { get; } = [];
+
+    public bool HasSnow { get; private set; }
+    public bool HasRain { get; private set; } = true;
 
     protected Biome()
     {
-        spawnableMonsterList.Add(new SpawnListEntry(EntitySpider.Class, 10));
-        spawnableMonsterList.Add(new SpawnListEntry(EntityZombie.Class, 10));
-        spawnableMonsterList.Add(new SpawnListEntry(EntitySkeleton.Class, 10));
-        spawnableMonsterList.Add(new SpawnListEntry(EntityCreeper.Class, 10));
-        spawnableMonsterList.Add(new SpawnListEntry(EntitySlime.Class, 10));
-        spawnableCreatureList.Add(new SpawnListEntry(EntitySheep.Class, 12));
-        spawnableCreatureList.Add(new SpawnListEntry(EntityPig.Class, 10));
-        spawnableCreatureList.Add(new SpawnListEntry(EntityChicken.Class, 10));
-        spawnableCreatureList.Add(new SpawnListEntry(EntityCow.Class, 8));
-        spawnableWaterCreatureList.Add(new SpawnListEntry(EntitySquid.Class, 10));
+        MonsterList.Add(new SpawnListEntry(EntitySpider.Class, 10));
+        MonsterList.Add(new SpawnListEntry(EntityZombie.Class, 10));
+        MonsterList.Add(new SpawnListEntry(EntitySkeleton.Class, 10));
+        MonsterList.Add(new SpawnListEntry(EntityCreeper.Class, 10));
+        MonsterList.Add(new SpawnListEntry(EntitySlime.Class, 10));
+
+        CreatureList.Add(new SpawnListEntry(EntitySheep.Class, 12));
+        CreatureList.Add(new SpawnListEntry(EntityPig.Class, 10));
+        CreatureList.Add(new SpawnListEntry(EntityChicken.Class, 10));
+        CreatureList.Add(new SpawnListEntry(EntityCow.Class, 8));
+
+        WaterCreatureList.Add(new SpawnListEntry(EntitySquid.Class, 10));
     }
 
-    private Biome setDisableRain()
-    {
-        hasRain = false;
-        return this;
-    }
+    protected Biome DisableRain() { HasRain = false; return this; }
+    protected Biome EnableSnow() { HasSnow = true; return this; }
+    protected Biome SetName(string name) { Name = name; return this; }
+    protected Biome SetFoliageColor(int color) { FoliageColor = color; return this; }
+    protected Biome SetColor(int color) { GrassColor = color; return this; }
 
-    public static void init()
+    public static void Init()
     {
-        for (int var0 = 0; var0 < 64; ++var0)
+        for (int i = 0; i < 64; ++i)
         {
-            for (int var1 = 0; var1 < 64; ++var1)
+            for (int j = 0; j < 64; ++j)
             {
-                BIOMES[var0 + var1 * 64] = locateBiome(var0 / 63.0F, var1 / 63.0F);
+                Biomes[i + j * 64] = LocateBiome(i / 63.0F, j / 63.0F);
             }
         }
 
-        DESERT.topBlockId = DESERT.soilBlockId = (byte)Block.SAND.id;
-        ICE_DESERT.topBlockId = ICE_DESERT.soilBlockId = (byte)Block.SAND.id;
+        Desert.TopBlockId = Desert.SoilBlockId = (byte)Block.Sand.id;
+        IceDesert.TopBlockId = IceDesert.SoilBlockId = (byte)Block.Sand.id;
     }
 
-    public virtual Feature getRandomWorldGenForTrees(java.util.Random var1)
+    public virtual Feature GetRandomWorldGenForTrees(java.util.Random rand)
     {
-        return var1.nextInt(10) == 0 ? new LargeOakTreeFeature() : new OakTreeFeature();
+        return rand.nextInt(10) == 0 ? new LargeOakTreeFeature() : new OakTreeFeature();
     }
 
-    protected Biome setEnableSnow()
+
+    public static Biome GetBiome(double temp, double downfall)
     {
-        hasSnow = true;
-        return this;
+        int x = (int)(temp * 63.0D);
+        int y = (int)(downfall * 63.0D);
+        return Biomes[x + y * 64];
     }
 
-    protected Biome setBiomeName(string var1)
+    public static Biome LocateBiome(float temperature, float downfall)
     {
-        name = var1;
-        return this;
+        downfall *= temperature;
+        if (temperature < 0.1f) return Tundra;
+        if (downfall < 0.2f)
+        {
+            if (temperature < 0.5f) return Tundra;
+            return temperature < 0.95f ? Savanna : Desert;
+        }
+        if (downfall > 0.5f && temperature < 0.7f) return Swampland;
+        if (temperature < 0.5f) return Taiga;
+        if (temperature < 0.97f) return downfall < 0.35f ? Shrubland : Forest;
+        if (downfall < 0.45f) return Plains;
+        return downfall < 0.9f ? SeasonalForest : Rainforest;
     }
 
-    protected Biome func_4124_a(int var1)
-    {
-        foliageColor = var1;
-        return this;
-    }
-
-    protected Biome setColor(int var1)
-    {
-        grassColor = var1;
-        return this;
-    }
-
-    public static Biome getBiome(double temp, double downfall)
-    {
-        int var4 = (int)(temp * 63.0D);
-        int var5 = (int)(downfall * 63.0D);
-        return BIOMES[var4 + var5 * 64];
-    }
-
-    public static Biome locateBiome(float temp, float downfall)
-    {
-        downfall *= temp;
-        return temp < 0.1F ? TUNDRA : downfall < 0.2F ? temp < 0.5F ? TUNDRA : temp < 0.95F ? SAVANNA : DESERT : downfall > 0.5F && temp < 0.7F ? SWAMPLAND : temp < 0.5F ? TAIGA : temp < 0.97F ? downfall < 0.35F ? SHRUBLAND : FOREST : downfall < 0.45F ? PLAINS : downfall < 0.9F ? SEASONAL_FOREST : RAINFOREST;
-    }
-
-    public virtual int getSkyColorByTemp(float var1)
+    public virtual int GetSkyColorByTemp(float var1)
     {
         var1 /= 3.0F;
         if (var1 < -1.0F)
@@ -124,24 +116,20 @@ public class Biome
         return Color.getHSBColor(224.0F / 360.0F - var1 * 0.05F, 0.5F + var1 * 0.1F, 1.0F).getRGB();
     }
 
-    public List<SpawnListEntry> getSpawnableList(EnumCreatureType var1)
+    public List<SpawnListEntry>? GetSpawnableList(EnumCreatureType type)
     {
-        return var1 == EnumCreatureType.monster ? spawnableMonsterList : var1 == EnumCreatureType.creature ? spawnableCreatureList : var1 == EnumCreatureType.waterCreature ? spawnableWaterCreatureList : null;
+        if (type == EnumCreatureType.monster) return MonsterList;
+        if (type == EnumCreatureType.creature) return CreatureList;
+        if (type == EnumCreatureType.waterCreature) return WaterCreatureList;
+        return null;
     }
 
-    public bool getEnableSnow()
+    public bool GetEnableSnow()
     {
-        return hasSnow;
+        return HasSnow;
     }
 
-    public bool canSpawnLightningBolt()
-    {
-        return hasSnow ? false : hasRain;
-    }
+    public bool CanSpawnLightningBolt() => !HasSnow && HasRain;
 
-
-    static Biome()
-    {
-        init();
-    }
+    static Biome() => Init();
 }

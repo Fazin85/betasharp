@@ -99,7 +99,7 @@ public class WorldRegion : java.lang.Object, BlockView
             if (useNeighborLight)
             {
                 var5 = getBlockId(x, y, z);
-                if (var5 == Block.SLAB.id || var5 == Block.FARMLAND.id || var5 == Block.WOODEN_STAIRS.id || var5 == Block.COBBLESTONE_STAIRS.id)
+                if (var5 == Block.Slab.id || var5 == Block.Farmland.id || var5 == Block.WoodenStairs.id || var5 == Block.CobblestoneStairs.id)
                 {
                     var6 = getRawBrightness(x, y + 1, z, false);
                     int var7 = getRawBrightness(x + 1, y, z, false);
@@ -178,7 +178,7 @@ public class WorldRegion : java.lang.Object, BlockView
     public Material getMaterial(int x, int y, int z)
     {
         int var4 = getBlockId(x, y, z);
-        return var4 == 0 ? Material.Air : Block.BLOCKS[var4].material;
+        return var4 == 0 ? Material.Air : Block.Blocks[var4].material;
     }
 
     public BiomeSource getBiomeSource()
@@ -188,13 +188,13 @@ public class WorldRegion : java.lang.Object, BlockView
 
     public bool isOpaque(int x, int y, int z)
     {
-        Block var4 = Block.BLOCKS[getBlockId(x, y, z)];
+        Block var4 = Block.Blocks[getBlockId(x, y, z)];
         return var4 == null ? false : var4.isOpaque();
     }
 
     public bool shouldSuffocate(int x, int y, int z)
     {
-        Block var4 = Block.BLOCKS[getBlockId(x, y, z)];
+        Block var4 = Block.Blocks[getBlockId(x, y, z)];
         return var4 == null ? false : var4.material.BlocksMovement && var4.isFullCube();
     }
 }

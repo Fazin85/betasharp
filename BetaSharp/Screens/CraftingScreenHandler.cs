@@ -55,7 +55,7 @@ public class CraftingScreenHandler : ScreenHandler
 
     public override void onSlotUpdate(IInventory inv)
     {
-        result.setStack(0, CraftingManager.getInstance().findMatchingRecipe(input));
+        result.setStack(0, CraftingManager.getInstance().FindMatchingRecipe(input));
     }
 
     public override void onClosed(EntityPlayer player)
@@ -77,7 +77,7 @@ public class CraftingScreenHandler : ScreenHandler
 
     public override bool canUse(EntityPlayer player)
     {
-        return world.getBlockId(x, y, z) != Block.CRAFTING_TABLE.id ? false : player.getSquaredDistance(x + 0.5D, y + 0.5D, z + 0.5D) <= 64.0D;
+        return world.getBlockId(x, y, z) != Block.CraftingTable.id ? false : player.getSquaredDistance(x + 0.5D, y + 0.5D, z + 0.5D) <= 64.0D;
     }
 
     public override ItemStack quickMove(int slot)

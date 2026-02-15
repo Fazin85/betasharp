@@ -16,7 +16,7 @@ public class ItemReed : Item
 
     public override bool useOnBlock(ItemStack itemStack, EntityPlayer entityPlayer, World world, int x, int y, int z, int meta)
     {
-        if (world.getBlockId(x, y, z) == Block.SNOW.id)
+        if (world.getBlockId(x, y, z) == Block.Snow.id)
         {
             meta = 0;
         }
@@ -61,11 +61,11 @@ public class ItemReed : Item
         {
             if (world.canPlace(field_320_a, x, y, z, false, meta))
             {
-                Block block = Block.BLOCKS[field_320_a];
+                Block block = Block.Blocks[field_320_a];
                 if (world.setBlock(x, y, z, field_320_a))
                 {
-                    Block.BLOCKS[field_320_a].onPlaced(world, x, y, z, meta);
-                    Block.BLOCKS[field_320_a].onPlaced(world, x, y, z, entityPlayer);
+                    Block.Blocks[field_320_a].onPlaced(world, x, y, z, meta);
+                    Block.Blocks[field_320_a].onPlaced(world, x, y, z, entityPlayer);
                     world.playSound((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), block.soundGroup.func_1145_d(), (block.soundGroup.getVolume() + 1.0F) / 2.0F, block.soundGroup.getPitch() * 0.8F);
                     --itemStack.count;
                 }

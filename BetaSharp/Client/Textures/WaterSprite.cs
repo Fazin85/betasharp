@@ -10,7 +10,7 @@ public class WaterSprite : DynamicTexture
     protected float[] heat = new float[256];
     protected float[] heatDelta = new float[256];
 
-    public WaterSprite() : base(Block.FLOWING_WATER.textureId)
+    public WaterSprite() : base(Block.FlowingWater.textureId)
     {
     }
 

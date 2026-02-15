@@ -231,7 +231,7 @@ public class GameRenderer
             if (!client.options.debugCamera)
             {
                 int var10 = client.world.getBlockId(MathHelper.floor_double(var2.x), MathHelper.floor_double(var2.y), MathHelper.floor_double(var2.z));
-                if (var10 == Block.BED.id)
+                if (var10 == Block.Bed.id)
                 {
                     int var11 = client.world.getBlockMeta(MathHelper.floor_double(var2.x), MathHelper.floor_double(var2.y), MathHelper.floor_double(var2.z));
                     int var12 = var11 & 3;
@@ -255,7 +255,7 @@ public class GameRenderer
                 GLManager.GL.Rotate(var13, 1.0F, 0.0F, 0.0F);
                 GLManager.GL.Rotate(var28, 0.0F, 1.0F, 0.0F);
             }
-            else
+                else
             {
                 var28 = var2.yaw;
                 var13 = var2.pitch;
@@ -636,15 +636,15 @@ public class GameRenderer
                 int var17 = var6 + random.nextInt(var7) - random.nextInt(var7);
                 int var18 = var3.getTopSolidBlockY(var16, var17);
                 int var19 = var3.getBlockId(var16, var18 - 1, var17);
-                if (var18 <= var5 + var7 && var18 >= var5 - var7 && var3.getBiomeSource().getBiome(var16, var17).canSpawnLightningBolt())
+                if (var18 <= var5 + var7 && var18 >= var5 - var7 && var3.getBiomeSource().GetBiome(var16, var17).CanSpawnLightningBolt())
                 {
                     float var20 = random.nextFloat();
                     float var21 = random.nextFloat();
                     if (var19 > 0)
                     {
-                        if (Block.BLOCKS[var19].material == Material.Lava)
+                        if (Block.Blocks[var19].material == Material.Lava)
                         {
-                            client.particleManager.addEffect(new EntitySmokeFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.BLOCKS[var19].minY, (double)(var17 + var21), 0.0D, 0.0D, 0.0D));
+                            client.particleManager.addEffect(new EntitySmokeFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].minY, (double)(var17 + var21), 0.0D, 0.0D, 0.0D));
                         }
                         else
                         {
@@ -652,11 +652,11 @@ public class GameRenderer
                             if (random.nextInt(var14) == 0)
                             {
                                 var8 = (double)(var16 + var20);
-                                var10 = (double)(var18 + 0.1F) - Block.BLOCKS[var19].minY;
+                                var10 = (double)(var18 + 0.1F) - Block.Blocks[var19].minY;
                                 var12 = (double)(var17 + var21);
                             }
 
-                            client.particleManager.addEffect(new EntityRainFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.BLOCKS[var19].minY, (double)(var17 + var21)));
+                            client.particleManager.addEffect(new EntityRainFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].minY, (double)(var17 + var21)));
                         }
                     }
                 }
@@ -701,7 +701,7 @@ public class GameRenderer
             int var15 = MathHelper.floor_double(var11);
             byte var16 = 10;
 
-            Biome[] var17 = var4.getBiomeSource().getBiomesInArea(var5 - var16, var7 - var16, var16 * 2 + 1, var16 * 2 + 1);
+            Biome[] var17 = var4.getBiomeSource().GetBiomesInArea(var5 - var16, var7 - var16, var16 * 2 + 1, var16 * 2 + 1);
             int var18 = 0;
 
             int var19;
@@ -716,7 +716,7 @@ public class GameRenderer
                 for (var20 = var7 - var16; var20 <= var7 + var16; ++var20)
                 {
                     var21 = var17[var18++];
-                    if (var21.getEnableSnow())
+                    if (var21.GetEnableSnow())
                     {
                         var22 = var4.getTopSolidBlockY(var19, var20);
                         if (var22 < 0)
@@ -782,7 +782,7 @@ public class GameRenderer
                 for (var20 = var7 - var16; var20 <= var7 + var16; ++var20)
                 {
                     var21 = var17[var18++];
-                    if (var21.canSpawnLightningBolt())
+                    if (var21.CanSpawnLightningBolt())
                     {
                         var22 = var4.getTopSolidBlockY(var19, var20);
                         var23 = var6 - var16;

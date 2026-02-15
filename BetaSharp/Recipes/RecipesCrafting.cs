@@ -6,11 +6,11 @@ namespace BetaSharp.Recipes;
 
 public class RecipesCrafting
 {
-    public void addRecipes(CraftingManager var1)
+    public void AddRecipes(CraftingManager manager)
     {
-        var1.addRecipe(new ItemStack(Block.CHEST), ["###", "# #", "###", Character.valueOf('#'), Block.PLANKS]);
-        var1.addRecipe(new ItemStack(Block.FURNACE), ["###", "# #", "###", Character.valueOf('#'), Block.COBBLESTONE]);
-        var1.addRecipe(new ItemStack(Block.CRAFTING_TABLE), ["##", "##", Character.valueOf('#'), Block.PLANKS]);
-        var1.addRecipe(new ItemStack(Block.SANDSTONE), ["##", "##", Character.valueOf('#'), Block.SAND]);
+        manager.AddRecipe(new ItemStack(Block.Chest), ["###", "# #", "###", '#', Block.Planks]);
+        manager.AddRecipe(new ItemStack(Block.Furnace), ["###", "# #", "###", '#', Block.Cobblestone]);
+        manager.AddRecipe(new ItemStack(Block.CraftingTable), ["##", "##", '#', Block.Planks]);
+        manager.AddRecipe(new ItemStack(Block.Sandstone), ["##", "##", '#', Block.Sand]);
     }
 }

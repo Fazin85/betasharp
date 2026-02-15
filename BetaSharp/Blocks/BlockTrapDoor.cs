@@ -153,7 +153,7 @@ public class BlockTrapDoor : Block
                 dropStacks(world, x, y, z, meta);
             }
 
-            if (id > 0 && Block.BLOCKS[id].canEmitRedstonePower())
+            if (id > 0 && Block.Blocks[id].canEmitRedstonePower())
             {
                 bool isPowered = world.isPowered(x, y, z);
                 setOpen(world, x, y, z, isPowered);

@@ -9,12 +9,12 @@ public abstract class BlockWithEntity : Block
 
     protected BlockWithEntity(int id, Material material) : base(id, material)
     {
-        BLOCKS_WITH_ENTITY[id] = true;
+        BlocksWithEntity[id] = true;
     }
 
     protected BlockWithEntity(int id, int textureId, Material material) : base(id, textureId, material)
     {
-        BLOCKS_WITH_ENTITY[id] = true;
+        BlocksWithEntity[id] = true;
     }
 
     public override void onPlaced(World world, int x, int y, int z)

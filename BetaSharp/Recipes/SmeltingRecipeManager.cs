@@ -1,14 +1,12 @@
 using BetaSharp.Blocks;
 using BetaSharp.Items;
-using java.lang;
-using java.util;
 
 namespace BetaSharp.Recipes;
 
 public class SmeltingRecipeManager
 {
     private static readonly SmeltingRecipeManager smeltingBase = new();
-    private Map smeltingList = new HashMap();
+    private Dictionary<int, ItemStack> smeltingList = new();
 
     public static SmeltingRecipeManager getInstance()
     {
@@ -17,29 +15,29 @@ public class SmeltingRecipeManager
 
     private SmeltingRecipeManager()
     {
-        addSmelting(Block.IRON_ORE.id, new ItemStack(Item.IRON_INGOT));
-        addSmelting(Block.GOLD_ORE.id, new ItemStack(Item.GOLD_INGOT));
-        addSmelting(Block.DIAMOND_ORE.id, new ItemStack(Item.DIAMOND));
-        addSmelting(Block.SAND.id, new ItemStack(Block.GLASS));
-        addSmelting(Item.RAW_PORKCHOP.id, new ItemStack(Item.COOKED_PORKCHOP));
-        addSmelting(Item.RAW_FISH.id, new ItemStack(Item.COOKED_FISH));
-        addSmelting(Block.COBBLESTONE.id, new ItemStack(Block.STONE));
-        addSmelting(Item.CLAY.id, new ItemStack(Item.BRICK));
-        addSmelting(Block.CACTUS.id, new ItemStack(Item.DYE, 1, 2));
-        addSmelting(Block.LOG.id, new ItemStack(Item.COAL, 1, 1));
+        AddSmelting(Block.IronOre.id, new ItemStack(Item.IRON_INGOT));
+        AddSmelting(Block.GoldOre.id, new ItemStack(Item.GOLD_INGOT));
+        AddSmelting(Block.DiamondOre.id, new ItemStack(Item.DIAMOND));
+        AddSmelting(Block.Sand.id, new ItemStack(Block.Glass));
+        AddSmelting(Item.RAW_PORKCHOP.id, new ItemStack(Item.COOKED_PORKCHOP));
+        AddSmelting(Item.RAW_FISH.id, new ItemStack(Item.COOKED_FISH));
+        AddSmelting(Block.Cobblestone.id, new ItemStack(Block.Stone));
+        AddSmelting(Item.CLAY.id, new ItemStack(Item.BRICK));
+        AddSmelting(Block.Cactus.id, new ItemStack(Item.DYE, 1, 2));
+        AddSmelting(Block.Log.id, new ItemStack(Item.COAL, 1, 1));
     }
 
-    public void addSmelting(int var1, ItemStack var2)
+    public void AddSmelting(int inputId, ItemStack output)
     {
-        smeltingList.put(Integer.valueOf(var1), var2);
+        smeltingList[inputId] = output;
     }
 
-    public ItemStack craft(int var1)
+    public ItemStack Craft(int inputId)
     {
-        return (ItemStack)smeltingList.get(Integer.valueOf(var1));
+        return smeltingList[inputId];
     }
 
-    public Map getSmeltingList()
+    public Dictionary<int, ItemStack> GetSmeltingList()
     {
         return smeltingList;
     }

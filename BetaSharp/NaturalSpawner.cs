@@ -61,8 +61,8 @@ public class NaturalSpawner
                 {
                     foreach (var chunk in eligibleChunksForSpawning)
                     {
-                        Biome var11 = var0.getBiomeSource().getBiome(chunk);
-                        var var12 = var11.getSpawnableList(var38);
+                        Biome var11 = var0.getBiomeSource().GetBiome(chunk);
+                        var var12 = var11.GetSpawnableList(var38);
 
                         if (var12 == null || var12.Count == 0)
                         {

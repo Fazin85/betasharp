@@ -36,7 +36,7 @@ public class BlockSlab : Block
 
     public override void onPlaced(World world, int x, int y, int z)
     {
-        if (this != Block.SLAB)
+        if (this != Block.Slab)
         {
             base.onPlaced(world, x, y, z);
         }
@@ -46,10 +46,10 @@ public class BlockSlab : Block
         int blockBelowMeta = world.getBlockMeta(x, y - 1, z);
         if (slabMeta == blockBelowMeta)
         {
-            if (blockBelowId == SLAB.id)
+            if (blockBelowId == Slab.id)
             {
                 world.setBlock(x, y, z, 0);
-                world.setBlock(x, y - 1, z, Block.DOUBLE_SLAB.id, slabMeta);
+                world.setBlock(x, y - 1, z, Block.DoubleSlab.id, slabMeta);
             }
 
         }
@@ -57,7 +57,7 @@ public class BlockSlab : Block
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
-        return Block.SLAB.id;
+        return Block.Slab.id;
     }
 
     public override int getDroppedItemCount(java.util.Random random)
@@ -77,7 +77,7 @@ public class BlockSlab : Block
 
     public override bool isSideVisible(BlockView blockView, int x, int y, int z, int side)
     {
-        if (this != Block.SLAB)
+        if (this != Block.Slab)
         {
             base.isSideVisible(blockView, x, y, z, side);
         }

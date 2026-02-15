@@ -45,7 +45,7 @@ public class BlockReed : Block
     public override bool canPlaceAt(World world, int x, int y, int z)
     {
         int blockBelowId = world.getBlockId(x, y - 1, z);
-        return blockBelowId == id ? true : (blockBelowId != Block.GRASS_BLOCK.id && blockBelowId != Block.DIRT.id ? false : (world.getMaterial(x - 1, y - 1, z) == Material.Water ? true : (world.getMaterial(x + 1, y - 1, z) == Material.Water ? true : (world.getMaterial(x, y - 1, z - 1) == Material.Water ? true : world.getMaterial(x, y - 1, z + 1) == Material.Water))));
+        return blockBelowId == id ? true : (blockBelowId != Block.GrassBlock.id && blockBelowId != Block.Dirt.id ? false : (world.getMaterial(x - 1, y - 1, z) == Material.Water ? true : (world.getMaterial(x + 1, y - 1, z) == Material.Water ? true : (world.getMaterial(x, y - 1, z - 1) == Material.Water ? true : world.getMaterial(x, y - 1, z + 1) == Material.Water))));
     }
 
     public override void neighborUpdate(World world, int x, int y, int z, int id)

@@ -110,7 +110,7 @@ public class BlockEntity : java.lang.Object
 
     public Block getBlock()
     {
-        return Block.BLOCKS[world.getBlockId(x, y, z)];
+        return Block.Blocks[world.getBlockId(x, y, z)];
     }
 
     public virtual Packet createUpdatePacket()

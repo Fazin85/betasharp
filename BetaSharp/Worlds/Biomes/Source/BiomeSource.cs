@@ -3,15 +3,15 @@ using BetaSharp.Util.Maths.Noise;
 
 namespace BetaSharp.Worlds.Biomes.Source;
 
-public class BiomeSource : java.lang.Object
+public class BiomeSource
 {
-    private readonly OctaveSimplexNoiseSampler temperatureSampler;
-    private readonly OctaveSimplexNoiseSampler downfallSampler;
-    private readonly OctaveSimplexNoiseSampler weirdnessSampler;
-    public double[] temperatureMap;
-    public double[] downfallMap;
-    public double[] weirdnessMap;
-    public Biome[] biomes;
+    private readonly OctaveSimplexNoiseSampler _temperatureSampler;
+    private readonly OctaveSimplexNoiseSampler _downfallSampler;
+    private readonly OctaveSimplexNoiseSampler _weirdnessSampler;
+    public double[] TemperatureMap;
+    public double[] DownfallMap;
+    public double[] WeirdnessMap;
+    public Biome[] Biomes;
 
     protected BiomeSource()
     {
@@ -19,118 +19,120 @@ public class BiomeSource : java.lang.Object
 
     public BiomeSource(World world)
     {
-        temperatureSampler = new OctaveSimplexNoiseSampler(new java.util.Random(world.getSeed() * 9871L), 4);
-        downfallSampler = new OctaveSimplexNoiseSampler(new java.util.Random(world.getSeed() * 39811L), 4);
-        weirdnessSampler = new OctaveSimplexNoiseSampler(new java.util.Random(world.getSeed() * 543321L), 2);
+        _temperatureSampler = new OctaveSimplexNoiseSampler(new java.util.Random(world.getSeed() * 9871L), 4);
+        _downfallSampler = new OctaveSimplexNoiseSampler(new java.util.Random(world.getSeed() * 39811L), 4);
+        _weirdnessSampler = new OctaveSimplexNoiseSampler(new java.util.Random(world.getSeed() * 543321L), 2);
     }
 
-    public virtual Biome getBiome(ChunkPos chunkPos)
+    public virtual Biome GetBiome(ChunkPos chunkPos)
     {
-        return getBiome(chunkPos.x << 4, chunkPos.z << 4);
+        return GetBiome(chunkPos.x << 4, chunkPos.z << 4);
     }
 
-    public virtual Biome getBiome(int x, int z)
+    public virtual Biome GetBiome(int x, int z)
     {
-        return getBiomesInArea(x, z, 1, 1)[0];
+        return GetBiomesInArea(x, z, 1, 1)[0];
     }
 
-    public virtual double getTemperature(int x, int z)
+    public virtual double GetTemperature(int x, int z)
     {
-        temperatureMap = temperatureSampler.sample(temperatureMap, x, z, 1, 1, (double)0.025F, (double)0.025F, 0.5D);
-        return temperatureMap[0];
+        TemperatureMap = _temperatureSampler.sample(TemperatureMap, x, z, 1, 1, (double)0.025F, (double)0.025F, 0.5D);
+        return TemperatureMap[0];
     }
 
-    public virtual Biome[] getBiomesInArea(int x, int z, int width, int depth)
+    public virtual Biome[] GetBiomesInArea(int x, int z, int width, int depth)
     {
-        biomes = getBiomesInArea(biomes, x, z, width, depth);
-        return biomes;
+        Biomes = GetBiomesInArea(Biomes, x, z, width, depth);
+        return Biomes;
     }
 
-    public virtual double[] getTemperatures(double[] map, int x, int z, int width, int depth)
+    public virtual double[] GetTemperatures(double[] map, int x, int z, int width, int depth)
     {
-        if (map == null || map.Length < width * depth)
+         int size = width * depth;
+        if (map == null || map.Length < size)
         {
-            map = new double[width * depth];
+            map = new double[size];
         }
 
-        map = temperatureSampler.sample(map, x, z, width, depth, (double)0.025F, (double)0.025F, 0.25D);
-        weirdnessMap = weirdnessSampler.sample(weirdnessMap, x, z, width, depth, 0.25D, 0.25D, 0.5882352941176471D);
-        int var6 = 0;
+        map = _temperatureSampler.sample(map, x, z, width, depth, (double)0.025F, (double)0.025F, 0.25D);
+        WeirdnessMap = _weirdnessSampler.sample(WeirdnessMap, x, z, width, depth, 0.25D, 0.25D, 0.5882352941176471D);
+        int index = 0;
 
-        for (int var7 = 0; var7 < width; ++var7)
+        for (int i = 0; i < width; ++i)
         {
-            for (int var8 = 0; var8 < depth; ++var8)
+            for (int j = 0; j < depth; ++j)
             {
-                double var9 = weirdnessMap[var6] * 1.1D + 0.5D;
-                double var11 = 0.01D;
-                double var13 = 1.0D - var11;
-                double var15 = (map[var6] * 0.15D + 0.7D) * var13 + var9 * var11;
-                var15 = 1.0D - (1.0D - var15) * (1.0D - var15);
-                if (var15 < 0.0D)
+                double weirdness = WeirdnessMap[index] * 1.1D + 0.5D;
+                double weight = 0.01D;
+                double oneMinusWeight = 1.0D - weight;
+                double temperature = (map[index] * 0.15D + 0.7D) * oneMinusWeight + weirdness * weight;
+                temperature = 1.0D - (1.0D - temperature) * (1.0D - temperature);
+                if (temperature < 0.0D)
                 {
-                    var15 = 0.0D;
+                    temperature = 0.0D;
                 }
 
-                if (var15 > 1.0D)
+                if (temperature > 1.0D)
                 {
-                    var15 = 1.0D;
+                    temperature = 1.0D;
                 }
 
-                map[var6] = var15;
-                ++var6;
+                map[index] = temperature;
+                ++index;
             }
         }
 
         return map;
     }
 
-    public virtual Biome[] getBiomesInArea(Biome[] biomes, int x, int z, int width, int depth)
+    public virtual Biome[] GetBiomesInArea(Biome[] biomes, int x, int z, int width, int depth)
     {
-        if (biomes == null || biomes.Length < width * depth)
+        int size = width * depth;
+        if (biomes == null || biomes.Length < size)
         {
-            biomes = new Biome[width * depth];
+            biomes = new Biome[size];
         }
 
-        temperatureMap = temperatureSampler.sample(temperatureMap, x, z, width, width, (double)0.025F, (double)0.025F, 0.25D);
-        downfallMap = downfallSampler.sample(downfallMap, x, z, width, width, (double)0.05F, (double)0.05F, 1.0D / 3.0D);
-        weirdnessMap = weirdnessSampler.sample(weirdnessMap, x, z, width, width, 0.25D, 0.25D, 0.5882352941176471D);
-        int var6 = 0;
+        TemperatureMap = _temperatureSampler.sample(TemperatureMap, x, z, width, width, (double)0.025F, (double)0.025F, 0.25D);
+        DownfallMap = _downfallSampler.sample(DownfallMap, x, z, width, width, (double)0.05F, (double)0.05F, 1.0D / 3.0D);
+        WeirdnessMap = _weirdnessSampler.sample(WeirdnessMap, x, z, width, width, 0.25D, 0.25D, 0.5882352941176471D);
+        int index = 0;
 
-        for (int var7 = 0; var7 < width; ++var7)
+        for (int i = 0; i < width; ++i)
         {
-            for (int var8 = 0; var8 < depth; ++var8)
+            for (int j = 0; j < depth; ++j)
             {
-                double var9 = weirdnessMap[var6] * 1.1D + 0.5D;
-                double var11 = 0.01D;
-                double var13 = 1.0D - var11;
-                double var15 = (temperatureMap[var6] * 0.15D + 0.7D) * var13 + var9 * var11;
-                var11 = 0.002D;
-                var13 = 1.0D - var11;
-                double var17 = (downfallMap[var6] * 0.15D + 0.5D) * var13 + var9 * var11;
-                var15 = 1.0D - (1.0D - var15) * (1.0D - var15);
-                if (var15 < 0.0D)
+                double weirdness = WeirdnessMap[index] * 1.1D + 0.5D;
+                double weight = 0.01D;
+                double oneMinusWeight = 1.0D - weight;
+                double temperature = (TemperatureMap[index] * 0.15D + 0.7D) * oneMinusWeight + weirdness * weight;
+                weight = 0.002D;
+                oneMinusWeight = 1.0D - weight;
+                double downfall = (DownfallMap[index] * 0.15D + 0.5D) * oneMinusWeight + weirdness * weight;
+                temperature = 1.0D - (1.0D - temperature) * (1.0D - temperature);
+                if (temperature < 0.0D)
                 {
-                    var15 = 0.0D;
+                    temperature = 0.0D;
                 }
 
-                if (var17 < 0.0D)
+                if (downfall < 0.0D)
                 {
-                    var17 = 0.0D;
+                    downfall = 0.0D;
                 }
 
-                if (var15 > 1.0D)
+                if (temperature > 1.0D)
                 {
-                    var15 = 1.0D;
+                    temperature = 1.0D;
                 }
 
-                if (var17 > 1.0D)
+                if (downfall > 1.0D)
                 {
-                    var17 = 1.0D;
+                    downfall = 1.0D;
                 }
 
-                temperatureMap[var6] = var15;
-                downfallMap[var6] = var17;
-                biomes[var6++] = Biome.getBiome(var15, var17);
+                TemperatureMap[index] = temperature;
+                DownfallMap[index] = downfall;
+                biomes[index++] = Biome.GetBiome(temperature, downfall);
             }
         }
 

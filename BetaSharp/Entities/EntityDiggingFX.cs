@@ -22,7 +22,7 @@ public class EntityDiggingFX : EntityFX
 
     public EntityDiggingFX func_4041_a(int x, int y, int z)
     {
-        if (targetedBlock == Block.GRASS_BLOCK)
+        if (targetedBlock == Block.GrassBlock)
         {
             return this;
         }

@@ -17,13 +17,13 @@ public class ItemHoe : Item
     {
         int targetBlockId = world.getBlockId(x, y, z);
         int blockAbove = world.getBlockId(x, y + 1, z);
-        if ((meta == 0 || blockAbove != 0 || targetBlockId != Block.GRASS_BLOCK.id) && targetBlockId != Block.DIRT.id)
+        if ((meta == 0 || blockAbove != 0 || targetBlockId != Block.GrassBlock.id) && targetBlockId != Block.Dirt.id)
         {
             return false;
         }
         else
         {
-            Block block = Block.FARMLAND;
+            Block block = Block.Farmland;
             world.playSound((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), block.soundGroup.func_1145_d(), (block.soundGroup.getVolume() + 1.0F) / 2.0F, block.soundGroup.getPitch() * 0.8F);
             if (world.isRemote)
             {

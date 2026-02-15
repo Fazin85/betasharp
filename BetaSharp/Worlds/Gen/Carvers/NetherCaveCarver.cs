@@ -126,7 +126,7 @@ public class NetherCaveCarver : Carver
                                 var43 = (var40 * 16 + var41) * 128 + var42;
                                 if (var42 >= 0 && var42 < 128)
                                 {
-                                    if (var3[var43] == Block.FLOWING_LAVA.id || var3[var43] == Block.LAVA.id)
+                                    if (var3[var43] == Block.FlowingLava.id || var3[var43] == Block.Lava.id)
                                     {
                                         var55 = true;
                                     }
@@ -157,7 +157,7 @@ public class NetherCaveCarver : Carver
                                     if (var48 > -0.7D && var56 * var56 + var48 * var48 + var44 * var44 < 1.0D)
                                     {
                                         byte var50 = var3[var46];
-                                        if (var50 == Block.NETHERRACK.id || var50 == Block.DIRT.id || var50 == Block.GRASS_BLOCK.id)
+                                        if (var50 == Block.Netherrack.id || var50 == Block.Dirt.id || var50 == Block.GrassBlock.id)
                                         {
                                             var3[var46] = 0;
                                         }

@@ -23,7 +23,7 @@ public class BlockDispenser : BlockWithEntity
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
-        return Block.DISPENSER.id;
+        return Block.Dispenser.id;
     }
 
     public override void onPlaced(World world, int x, int y, int z)
@@ -41,22 +41,22 @@ public class BlockDispenser : BlockWithEntity
             int blockWest = world.getBlockId(x - 1, y, z);
             int blockEast = world.getBlockId(x + 1, y, z);
             sbyte direction = 3;
-            if (Block.BLOCKS_OPAQUE[blockNorth] && !Block.BLOCKS_OPAQUE[blockSouth])
+            if (Block.BlocksOpaque[blockNorth] && !Block.BlocksOpaque[blockSouth])
             {
                 direction = 3;
             }
 
-            if (Block.BLOCKS_OPAQUE[blockSouth] && !Block.BLOCKS_OPAQUE[blockNorth])
+            if (Block.BlocksOpaque[blockSouth] && !Block.BlocksOpaque[blockNorth])
             {
                 direction = 2;
             }
 
-            if (Block.BLOCKS_OPAQUE[blockWest] && !Block.BLOCKS_OPAQUE[blockEast])
+            if (Block.BlocksOpaque[blockWest] && !Block.BlocksOpaque[blockEast])
             {
                 direction = 5;
             }
 
-            if (Block.BLOCKS_OPAQUE[blockEast] && !Block.BLOCKS_OPAQUE[blockWest])
+            if (Block.BlocksOpaque[blockEast] && !Block.BlocksOpaque[blockWest])
             {
                 direction = 4;
             }
@@ -177,7 +177,7 @@ public class BlockDispenser : BlockWithEntity
 
     public override void neighborUpdate(World world, int x, int y, int z, int id)
     {
-        if (id > 0 && Block.BLOCKS[id].canEmitRedstonePower())
+        if (id > 0 && Block.Blocks[id].canEmitRedstonePower())
         {
             bool isPowered = world.isPowered(x, y, z) || world.isPowered(x, y + 1, z);
             if (isPowered)

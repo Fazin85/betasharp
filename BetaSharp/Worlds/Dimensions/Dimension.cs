@@ -50,7 +50,7 @@ public abstract class Dimension : java.lang.Object
     public virtual bool isValidSpawnPoint(int var1, int var2)
     {
         int var3 = world.getSpawnBlockId(var1, var2);
-        return var3 == Block.SAND.id;
+        return var3 == Block.Sand.id;
     }
 
     public virtual float getTimeOfDay(long time, float tickDelta)

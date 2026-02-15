@@ -30,7 +30,7 @@ public class PlayerControllerSP : PlayerController
         int var6 = mc.world.getBlockMeta(x, y, z);
         bool var7 = base.sendBlockRemoved(x, y, z, var4);
         ItemStack var8 = mc.player.getHand();
-        bool var9 = mc.player.canHarvest(Block.BLOCKS[blockId]);
+        bool var9 = mc.player.canHarvest(Block.Blocks[blockId]);
         if (var8 != null)
         {
             var8.postMine(blockId, x, y, z, mc.player);
@@ -43,7 +43,7 @@ public class PlayerControllerSP : PlayerController
 
         if (var7 && var9)
         {
-            Block.BLOCKS[blockId].afterBreak(mc.world, mc.player, x, y, z, var6);
+            Block.Blocks[blockId].afterBreak(mc.world, mc.player, x, y, z, var6);
         }
 
         return var7;
@@ -55,10 +55,10 @@ public class PlayerControllerSP : PlayerController
         int var5 = mc.world.getBlockId(var1, var2, var3);
         if (var5 > 0 && curBlockDamage == 0.0F)
         {
-            Block.BLOCKS[var5].onBlockBreakStart(mc.world, var1, var2, var3, mc.player);
+            Block.Blocks[var5].onBlockBreakStart(mc.world, var1, var2, var3, mc.player);
         }
 
-        if (var5 > 0 && Block.BLOCKS[var5].getHardness(mc.player) >= 1.0F)
+        if (var5 > 0 && Block.Blocks[var5].getHardness(mc.player) >= 1.0F)
         {
             sendBlockRemoved(var1, var2, var3, var4);
         }
@@ -87,7 +87,7 @@ public class PlayerControllerSP : PlayerController
                     return;
                 }
 
-                Block var6 = Block.BLOCKS[var5];
+                Block var6 = Block.Blocks[var5];
                 curBlockDamage += var6.getHardness(mc.player);
                 if (field_1069_h % 4.0F == 0.0F && var6 != null)
                 {

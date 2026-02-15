@@ -10,33 +10,33 @@ public class Session(string username, string sessionId)
 
     static Session()
     {
-        RegisteredBlocksList.Add(Block.STONE);
-        RegisteredBlocksList.Add(Block.COBBLESTONE);
-        RegisteredBlocksList.Add(Block.BRICKS);
-        RegisteredBlocksList.Add(Block.DIRT);
-        RegisteredBlocksList.Add(Block.PLANKS);
-        RegisteredBlocksList.Add(Block.LOG);
-        RegisteredBlocksList.Add(Block.LEAVES);
-        RegisteredBlocksList.Add(Block.TORCH);
-        RegisteredBlocksList.Add(Block.SLAB);
-        RegisteredBlocksList.Add(Block.GLASS);
-        RegisteredBlocksList.Add(Block.MOSSY_COBBLESTONE);
-        RegisteredBlocksList.Add(Block.SAPLING);
-        RegisteredBlocksList.Add(Block.DANDELION);
-        RegisteredBlocksList.Add(Block.ROSE);
-        RegisteredBlocksList.Add(Block.BROWN_MUSHROOM);
-        RegisteredBlocksList.Add(Block.RED_MUSHROOM);
-        RegisteredBlocksList.Add(Block.SAND);
-        RegisteredBlocksList.Add(Block.GRAVEL);
-        RegisteredBlocksList.Add(Block.SPONGE);
-        RegisteredBlocksList.Add(Block.WOOL);
-        RegisteredBlocksList.Add(Block.COAL_ORE);
-        RegisteredBlocksList.Add(Block.IRON_ORE);
-        RegisteredBlocksList.Add(Block.GOLD_ORE);
-        RegisteredBlocksList.Add(Block.IRON_BLOCK);
-        RegisteredBlocksList.Add(Block.GOLD_BLOCK);
-        RegisteredBlocksList.Add(Block.BOOKSHELF);
+        RegisteredBlocksList.Add(Block.Stone);
+        RegisteredBlocksList.Add(Block.Cobblestone);
+        RegisteredBlocksList.Add(Block.Bricks);
+        RegisteredBlocksList.Add(Block.Dirt);
+        RegisteredBlocksList.Add(Block.Planks);
+        RegisteredBlocksList.Add(Block.Log);
+        RegisteredBlocksList.Add(Block.Leaves);
+        RegisteredBlocksList.Add(Block.Torch);
+        RegisteredBlocksList.Add(Block.Slab);
+        RegisteredBlocksList.Add(Block.Glass);
+        RegisteredBlocksList.Add(Block.MossyCobblestone);
+        RegisteredBlocksList.Add(Block.Sapling);
+        RegisteredBlocksList.Add(Block.Dandelion);
+        RegisteredBlocksList.Add(Block.Rose);
+        RegisteredBlocksList.Add(Block.BrownMushroom);
+        RegisteredBlocksList.Add(Block.RedMushroom);
+        RegisteredBlocksList.Add(Block.Sand);
+        RegisteredBlocksList.Add(Block.Gravel);
+        RegisteredBlocksList.Add(Block.Sponge);
+        RegisteredBlocksList.Add(Block.Wool);
+        RegisteredBlocksList.Add(Block.CoalOre);
+        RegisteredBlocksList.Add(Block.IronOre);
+        RegisteredBlocksList.Add(Block.GoldOre);
+        RegisteredBlocksList.Add(Block.IronBlock);
+        RegisteredBlocksList.Add(Block.GoldBlock);
+        RegisteredBlocksList.Add(Block.Bookshelf);
         RegisteredBlocksList.Add(Block.TNT);
-        RegisteredBlocksList.Add(Block.OBSIDIAN);
+        RegisteredBlocksList.Add(Block.Obsidian);
     }
 }

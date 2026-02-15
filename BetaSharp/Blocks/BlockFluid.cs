@@ -270,12 +270,11 @@ public abstract class BlockFluid : Block
         Vector3D<double> flowVec = new(0.0);
         if (material == Material.Water)
         {
-            flowVec = ((BlockFluid)FLOWING_WATER).getFlow(blockView, x, y, z);
+            flowVec = ((BlockFluid)FlowingWater).getFlow(blockView, x, y, z);
         }
-
-        if (material == Material.Lava)
+        else if (material == Material.Lava)
         {
-            flowVec = ((BlockFluid)FLOWING_LAVA).getFlow(blockView, x, y, z);
+            flowVec = ((BlockFluid)FlowingLava).getFlow(blockView, x, y, z);
         }
 
         return flowVec.X == 0.0D && flowVec.Z == 0.0D ? -1000.0D : java.lang.Math.atan2(flowVec.Z, flowVec.X) - Math.PI * 0.5D;
@@ -328,11 +327,11 @@ public abstract class BlockFluid : Block
                     int var6 = world.getBlockMeta(x, y, z);
                     if (var6 == 0)
                     {
-                        world.setBlock(x, y, z, Block.OBSIDIAN.id);
+                        world.setBlock(x, y, z, Block.Obsidian.id);
                     }
                     else if (var6 <= 4)
                     {
-                        world.setBlock(x, y, z, Block.COBBLESTONE.id);
+                        world.setBlock(x, y, z, Block.Cobblestone.id);
                     }
 
                     fizz(world, x, y, z);

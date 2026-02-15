@@ -13,7 +13,7 @@ public class ItemSlab : ItemBlock
 
     public override int getTextureId(int meta)
     {
-        return Block.SLAB.getTexture(2, meta);
+        return Block.Slab.getTexture(2, meta);
     }
 
     public override int getPlacementMetadata(int meta)

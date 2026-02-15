@@ -13,6 +13,6 @@ public class BlockObsidian : BlockStone
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
-        return Block.OBSIDIAN.id;
+        return Block.Obsidian.id;
     }
 }
