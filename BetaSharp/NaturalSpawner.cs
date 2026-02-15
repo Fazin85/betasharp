@@ -137,9 +137,9 @@ public class NaturalSpawner
                                             {
                                                 var43 = (EntityLiving)e!.entityClass.getConstructor(new Class[] { World.Class }).newInstance(new java.lang.Object[] { var0 });
                                             }
-                                            catch (java.lang.Exception var34)
+                                            catch (java.lang.Exception ex)
                                             {
-                                                var34.printStackTrace();
+                                                ex.printStackTrace();
                                                 return var3;
                                             }
 
@@ -252,9 +252,9 @@ public class NaturalSpawner
                     {
                         var17 = (EntityLiving)var6[var12].getConstructor(new Class[] { typeof(World) }).newInstance(new java.lang.Object[] { var0 });
                     }
-                    catch (java.lang.Exception var21)
+                    catch (java.lang.Exception ex)
                     {
-                        var21.printStackTrace();
+                        ex.printStackTrace();
                         return monstersSpawned;
                     }
 

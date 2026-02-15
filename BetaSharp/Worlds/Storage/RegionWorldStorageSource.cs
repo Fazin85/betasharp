@@ -111,9 +111,9 @@ public class RegionWorldStorageSource : WorldStorageSource
                     wInfo.setSizeOnDisk(sizeOnDisk);
                     return wInfo;
                 }
-                catch (java.lang.Exception var7)
+                catch (java.lang.Exception ex)
                 {
-                    var7.printStackTrace();
+                    ex.printStackTrace();
                 }
             }
 
@@ -129,9 +129,9 @@ public class RegionWorldStorageSource : WorldStorageSource
                     wInfo.setSizeOnDisk(sizeOnDisk);
                     return wInfo;
                 }
-                catch (java.lang.Exception var6)
+                catch (java.lang.Exception ex)
                 {
-                    var6.printStackTrace();
+                    ex.printStackTrace();
                 }
             }
 
@@ -154,9 +154,9 @@ public class RegionWorldStorageSource : WorldStorageSource
                     var6.SetString("LevelName", var2);
                     NbtIo.WriteCompressed(var5, new FileOutputStream(var4));
                 }
-                catch (java.lang.Exception var7)
+                catch (java.lang.Exception ex)
                 {
-                    var7.printStackTrace();
+                    ex.printStackTrace();
                 }
             }
 

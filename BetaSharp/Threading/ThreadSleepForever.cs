@@ -21,9 +21,7 @@ public class ThreadSleepForever : java.lang.Thread
             {
                 sleep(2147483647L);
             }
-            catch (InterruptedException var2)
-            {
-            }
+            catch (InterruptedException) { }
         }
     }
 }

@@ -138,9 +138,7 @@ public class LoadingScreenRenderer : LoadingDisplay
                 {
                     java.lang.Thread.yield();
                 }
-                catch (java.lang.Exception var14)
-                {
-                }
+                catch (java.lang.Exception) { }
 
             }
         }

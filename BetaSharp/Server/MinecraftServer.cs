@@ -301,17 +301,17 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                     {
                         java.lang.Thread.sleep(10L);
                     }
-                    catch (InterruptedException var57)
+                    catch (InterruptedException ex)
                     {
-                        var57.printStackTrace();
+                        ex.printStackTrace();
                     }
                 }
             }
         }
-        catch (System.Exception var58)
+        catch (System.Exception ex)
         {
-            Console.WriteLine(var58);
-            LOGGER.log(Level.SEVERE, "Unexpected exception", var58);
+            Console.WriteLine(ex);
+            LOGGER.log(Level.SEVERE, "Unexpected exception", ex);
 
             while (running)
             {
@@ -321,9 +321,9 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                 {
                     java.lang.Thread.sleep(10L);
                 }
-                catch (InterruptedException var56)
+                catch (InterruptedException interruptedEx)
                 {
-                    var56.printStackTrace();
+                    interruptedEx.printStackTrace();
                 }
             }
         }
@@ -415,9 +415,9 @@ public abstract class MinecraftServer : Runnable, CommandOutput
         {
             runPendingCommands();
         }
-        catch (java.lang.Exception var5)
+        catch (java.lang.Exception ex)
         {
-            LOGGER.log(Level.WARNING, "Unexpected exception while parsing console command", (Throwable)var5);
+            LOGGER.log(Level.WARNING, "Unexpected exception while parsing console command", (Throwable)ex);
         }
     }
 

@@ -38,10 +38,10 @@ public class SoundPool : java.lang.Object
             ++loadedSoundCount;
             return var4;
         }
-        catch (MalformedURLException var5)
+        catch (MalformedURLException ex)
         {
-            var5.printStackTrace();
-            throw new RuntimeException(var5);
+            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
     }
 

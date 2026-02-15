@@ -49,9 +49,9 @@ public class PersistentStateManager : java.lang.Object
                     var3.readNBT(var6.GetCompoundTag("data"));
                 }
             }
-            catch (java.lang.Exception var8)
+            catch (java.lang.Exception ex)
             {
-                var8.printStackTrace();
+                ex.printStackTrace();
             }
         }
 
@@ -115,9 +115,9 @@ public class PersistentStateManager : java.lang.Object
                     var5.close();
                 }
             }
-            catch (System.Exception var6)
+            catch (System.Exception ex)
             {
-                System.Console.WriteLine(var6);
+                System.Console.WriteLine(ex);
             }
 
         }
@@ -152,9 +152,9 @@ public class PersistentStateManager : java.lang.Object
                 }
             }
         }
-        catch (java.lang.Exception var9)
+        catch (java.lang.Exception ex)
         {
-            var9.printStackTrace();
+            ex.printStackTrace();
         }
 
     }
@@ -198,9 +198,9 @@ public class PersistentStateManager : java.lang.Object
                     var9.close();
                 }
             }
-            catch (java.lang.Exception var8)
+            catch (java.lang.Exception ex)
             {
-                var8.printStackTrace();
+                ex.printStackTrace();
             }
 
             return var2.shortValue();

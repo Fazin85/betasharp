@@ -27,9 +27,9 @@ public class TextRenderer : java.lang.Object
         {
             var4 = ImageIO.read(new ByteArrayInputStream(AssetManager.Instance.getAsset("font/default.png").getBinaryContent()));
         }
-        catch (java.io.IOException var18)
+        catch (java.io.IOException ex)
         {
-            throw new RuntimeException(var18);
+            throw new RuntimeException(ex);
         }
 
         int var5 = var4.getWidth();

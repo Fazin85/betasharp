@@ -49,9 +49,9 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
             }
 
         }
-        catch (java.io.IOException var7)
+        catch (java.io.IOException ex)
         {
-            var7.printStackTrace();
+            ex.printStackTrace();
             throw new java.lang.RuntimeException("Failed to check session lock, aborting");
         }
     }
@@ -81,7 +81,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
             }
 
         }
-        catch (java.io.IOException var7)
+        catch (java.io.IOException)
         {
             throw new MinecraftException("Failed to check session lock, aborting");
         }
@@ -154,9 +154,9 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
                 WorldProperties wInfo = new(var3);
                 return wInfo;
             }
-            catch (java.lang.Exception var5)
+            catch (java.lang.Exception ex)
             {
-                var5.printStackTrace();
+                ex.printStackTrace();
             }
         }
 
@@ -170,9 +170,9 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
                 WorldProperties wInfo = new(var3);
                 return wInfo;
             }
-            catch (java.lang.Exception var4)
+            catch (java.lang.Exception ex)
             {
-                var4.printStackTrace();
+                ex.printStackTrace();
             }
         }
 
@@ -208,9 +208,9 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
                 var4.delete();
             }
         }
-        catch (java.lang.Exception var7)
+        catch (java.lang.Exception ex)
         {
-            var7.printStackTrace();
+            ex.printStackTrace();
         }
 
     }

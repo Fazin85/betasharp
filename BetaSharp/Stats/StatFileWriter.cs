@@ -166,9 +166,9 @@ public class StatFileWriter
                 return null;
             }
         }
-        catch (JsonException var13)
+        catch (JsonException ex)
         {
-            java.lang.System.@out.println(var13.ToString());
+            java.lang.System.@out.println(ex.ToString());
         }
 
         return var1;

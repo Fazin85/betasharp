@@ -39,9 +39,9 @@ public class NetworkMasterThread : java.lang.Thread
                 }
             }
         }
-        catch (InterruptedException var4)
+        catch (InterruptedException ex)
         {
-            var4.printStackTrace();
+            ex.printStackTrace();
         }
 
     }

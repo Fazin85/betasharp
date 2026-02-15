@@ -47,10 +47,10 @@ public class DedicatedServer : MinecraftServer
         {
             connections = new ConnectionListener(this, var3, var4);
         }
-        catch (java.io.IOException var13)
+        catch (java.io.IOException ex)
         {
             LOGGER.warning("**** FAILED TO BIND TO PORT!");
-            LOGGER.log(Level.WARNING, "The exception was: " + var13.toString());
+            LOGGER.log(Level.WARNING, "The exception was: " + ex.toString());
             LOGGER.warning("Perhaps a server is already running on that port?");
             return false;
         }
@@ -68,7 +68,7 @@ public class DedicatedServer : MinecraftServer
         return base.Init();
     }
 
-    public static void Main(string[] args)
+    /*public static void Main(string[] args)
     {
         try
         {
@@ -94,11 +94,11 @@ public class DedicatedServer : MinecraftServer
 
             new RunServerThread(server, "Server thread").start();
         }
-        catch (java.lang.Exception var2)
+        catch (java.lang.Exception ex)
         {
-            LOGGER.log(Level.SEVERE, "Failed to start the minecraft server", (Throwable)var2);
+            LOGGER.log(Level.SEVERE, "Failed to start the minecraft server", (Throwable)ex);
         }
-    }
+    }*/
 
     public override java.io.File getFile(string path)
     {

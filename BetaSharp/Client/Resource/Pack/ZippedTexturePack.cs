@@ -48,9 +48,7 @@ public class ZippedTexturePack : TexturePack
                 var4.close();
                 var3.close();
             }
-            catch (java.lang.Exception var20)
-            {
-            }
+            catch (java.lang.Exception) { }
 
             try
             {
@@ -58,15 +56,13 @@ public class ZippedTexturePack : TexturePack
                 texturePackThumbnail = ImageIO.read(var3);
                 var3.close();
             }
-            catch (java.lang.Exception var19)
-            {
-            }
+            catch (java.lang.Exception) { }
 
             var2.close();
         }
-        catch (java.lang.Exception var21)
+        catch (java.lang.Exception ex)
         {
-            var21.printStackTrace();
+            ex.printStackTrace();
         }
         finally
         {
@@ -74,17 +70,13 @@ public class ZippedTexturePack : TexturePack
             {
                 var3.close();
             }
-            catch (java.lang.Exception var18)
-            {
-            }
+            catch (java.lang.Exception) { }
 
             try
             {
                 var2.close();
             }
-            catch (java.lang.Exception var17)
-            {
-            }
+            catch (java.lang.Exception) { }
 
         }
 
@@ -124,9 +116,7 @@ public class ZippedTexturePack : TexturePack
         {
             texturePackZipFile = new ZipFile(texturePackFile);
         }
-        catch (java.lang.Exception var2)
-        {
-        }
+        catch (java.lang.Exception) { }
 
     }
 
@@ -136,9 +126,7 @@ public class ZippedTexturePack : TexturePack
         {
             texturePackZipFile.close();
         }
-        catch (java.lang.Exception var2)
-        {
-        }
+        catch (java.lang.Exception) { }
 
         texturePackZipFile = null;
     }
@@ -153,9 +141,7 @@ public class ZippedTexturePack : TexturePack
                 return texturePackZipFile.getInputStream(var2);
             }
         }
-        catch (java.lang.Exception var3)
-        {
-        }
+        catch (java.lang.Exception) { }
 
         return base.getResourceAsStream(var1);
     }

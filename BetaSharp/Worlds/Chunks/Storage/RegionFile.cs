@@ -80,9 +80,9 @@ public class RegionFile : java.lang.Object
                 chunkSaveTimes[var3] = var4;
             }
         }
-        catch (java.io.IOException var6)
+        catch (java.io.IOException ex)
         {
-            var6.printStackTrace();
+            ex.printStackTrace();
         }
 
     }
@@ -185,7 +185,7 @@ public class RegionFile : java.lang.Object
                         }
                     }
                 }
-                catch (java.io.IOException var10)
+                catch (java.io.IOException)
                 {
                     debugln("READ", var1, var2, "exception");
                     return null;
@@ -291,9 +291,9 @@ public class RegionFile : java.lang.Object
 
                 func_22208_b(var1, var2, (int)(java.lang.System.currentTimeMillis() / 1000L));
             }
-            catch (java.io.IOException var12)
+            catch (java.io.IOException ex)
             {
-                var12.printStackTrace();
+                ex.printStackTrace();
             }
         }
     }

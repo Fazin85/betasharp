@@ -23,9 +23,9 @@ public class ThreadCloseConnection : java.lang.Thread
                 this.field_28109_a.disconnect("disconnect.closed", new Object[0]);
             }
         }
-        catch (java.lang.Exception var2)
+        catch (java.lang.Exception ex)
         {
-            var2.printStackTrace();
+            ex.printStackTrace();
         }
 
     }

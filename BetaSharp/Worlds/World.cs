@@ -303,9 +303,9 @@ public abstract class World : java.lang.Object, BlockView
 
             spawnEntity(player);
         }
-        catch (java.lang.Exception var6)
+        catch (java.lang.Exception ex)
         {
-            var6.printStackTrace();
+            ex.printStackTrace();
         }
 
     }

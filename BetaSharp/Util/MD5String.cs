@@ -22,9 +22,9 @@ public class MD5String
             var3.update(Encoding.UTF8.GetBytes(var2), 0, var2.Length);
             return new java.math.BigInteger(1, var3.digest()).toString(16);
         }
-        catch (NoSuchAlgorithmException var4)
+        catch (NoSuchAlgorithmException ex)
         {
-            throw new RuntimeException(var4);
+            throw new RuntimeException(ex);
         }
     }
 }

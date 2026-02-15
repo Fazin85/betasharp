@@ -86,9 +86,9 @@ public class StatsSyncer
                 var4.append(var3);
             }
         }
-        catch (java.lang.Exception var15)
+        catch (java.lang.Exception ex)
         {
-            var15.printStackTrace();
+            ex.printStackTrace();
         }
         finally
         {
@@ -98,9 +98,9 @@ public class StatsSyncer
                 {
                     var2.close();
                 }
-                catch (java.lang.Exception var14)
+                catch (java.lang.Exception ex)
                 {
-                    var14.printStackTrace();
+                    ex.printStackTrace();
                 }
             }
 
@@ -179,9 +179,9 @@ public class StatsSyncer
             {
                 java.lang.Thread.sleep(100L);
             }
-            catch (InterruptedException var10)
+            catch (InterruptedException ex)
             {
-                var10.printStackTrace();
+                ex.printStackTrace();
             }
         }
 
@@ -191,9 +191,9 @@ public class StatsSyncer
         {
             func_27410_a(var1, field_27434_e, field_27432_g, field_27430_i);
         }
-        catch (java.lang.Exception var8)
+        catch (java.lang.Exception ex)
         {
-            var8.printStackTrace();
+            ex.printStackTrace();
         }
         finally
         {

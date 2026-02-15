@@ -27,9 +27,9 @@ public class CompassSprite : DynamicTexture
             int var4 = sprite / 16 * 16;
             var2.getRGB(var3, var4, 16, 16, compass, 0, 16);
         }
-        catch (java.io.IOException var5)
+        catch (java.io.IOException ex)
         {
-            var5.printStackTrace();
+            ex.printStackTrace();
         }
 
     }

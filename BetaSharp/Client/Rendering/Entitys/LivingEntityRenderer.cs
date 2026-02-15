@@ -127,9 +127,9 @@ public class LivingEntityRenderer : EntityRenderer
 
             GLManager.GL.Disable(GLEnum.RescaleNormal);
         }
-        catch (java.lang.Exception var24)
+        catch (java.lang.Exception ex)
         {
-            var24.printStackTrace();
+            ex.printStackTrace();
         }
 
         GLManager.GL.Enable(GLEnum.CullFace);

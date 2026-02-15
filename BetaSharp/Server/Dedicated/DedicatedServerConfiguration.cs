@@ -20,9 +20,9 @@ public class DedicatedServerConfiguration : IServerConfiguration
             {
                 properties.load(new FileInputStream(file));
             }
-            catch (java.lang.Exception var3)
+            catch (java.lang.Exception ex)
             {
-                logger.log(Level.WARNING, "Failed to load " + file, (Throwable)var3);
+                logger.log(Level.WARNING, "Failed to load " + file, (Throwable)ex);
                 generateNew();
             }
         }
@@ -50,9 +50,9 @@ public class DedicatedServerConfiguration : IServerConfiguration
         {
             properties.store(new FileOutputStream(propertiesFile), "Minecraft server properties");
         }
-        catch (java.lang.Exception var2)
+        catch (java.lang.Exception ex)
         {
-            logger.log(Level.WARNING, "Failed to save " + propertiesFile, (Throwable)var2);
+            logger.log(Level.WARNING, "Failed to save " + propertiesFile, (Throwable)ex);
             generateNew();
         }
     }
@@ -84,7 +84,7 @@ public class DedicatedServerConfiguration : IServerConfiguration
         {
             return Integer.parseInt(getProperty(property, "" + fallback));
         }
-        catch (java.lang.Exception var4)
+        catch (java.lang.Exception)
         {
             properties.setProperty(property, "" + fallback);
             return fallback;
@@ -102,7 +102,7 @@ public class DedicatedServerConfiguration : IServerConfiguration
         {
             return java.lang.Boolean.parseBoolean(getProperty(property, "" + fallback));
         }
-        catch (java.lang.Exception var4)
+        catch (java.lang.Exception)
         {
             properties.setProperty(property, "" + fallback);
             return fallback;

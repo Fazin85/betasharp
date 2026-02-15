@@ -142,9 +142,9 @@ public class ServerChunkCache : ChunkSource
 
                 return var3;
             }
-            catch (java.lang.Exception var4)
+            catch (java.lang.Exception ex)
             {
-                var4.printStackTrace();
+                ex.printStackTrace();
                 return null;
             }
         }
@@ -158,9 +158,9 @@ public class ServerChunkCache : ChunkSource
             {
                 storage.saveEntities(world, chunk);
             }
-            catch (java.lang.Exception var3)
+            catch (java.lang.Exception ex)
             {
-                var3.printStackTrace();
+                ex.printStackTrace();
             }
         }
     }
@@ -174,9 +174,9 @@ public class ServerChunkCache : ChunkSource
                 chunk.lastSaveTime = world.getTime();
                 storage.saveChunk(world, chunk, null, -1);
             }
-            catch (java.io.IOException var3)
+            catch (java.io.IOException ex)
             {
-                var3.printStackTrace();
+                ex.printStackTrace();
             }
         }
     }

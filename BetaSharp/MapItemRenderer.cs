@@ -27,11 +27,11 @@ public class MapItemRenderer
 
     }
 
-    public void func_28157_a(EntityPlayer var1, TextureManager var2, MapState var3)
+    public void render(EntityPlayer player, TextureManager textureManager, MapState mapState)
     {
         for (int var4 = 0; var4 < 16384; ++var4)
         {
-            byte var5 = var3.colors[var4];
+            byte var5 = mapState.colors[var4];
             if (var5 / 4 == 0)
             {
                 field_28159_a[var4] = (var4 + var4 / 128 & 1) * 8 + 16 << 24;
@@ -59,7 +59,7 @@ public class MapItemRenderer
             }
         }
 
-        var2.bind(field_28159_a, 128, 128, field_28158_b);
+        textureManager.bind(field_28159_a, 128, 128, field_28158_b);
         byte var15 = 0;
         byte var16 = 0;
         Tessellator var17 = Tessellator.instance;
@@ -75,8 +75,8 @@ public class MapItemRenderer
         var17.draw();
         GLManager.GL.Enable(GLEnum.AlphaTest);
         GLManager.GL.Disable(GLEnum.Blend);
-        var2.bindTexture(var2.getTextureId("/misc/mapicons.png"));
-        Iterator var19 = var3.icons.iterator();
+        textureManager.bindTexture(textureManager.getTextureId("/misc/mapicons.png"));
+        Iterator var19 = mapState.icons.iterator();
 
         while (var19.hasNext())
         {
@@ -102,7 +102,7 @@ public class MapItemRenderer
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(0.0F, 0.0F, -0.04F);
         GLManager.GL.Scale(1.0F, 1.0F, 1.0F);
-        field_28160_d.drawString(var3.id, var15, var16, 0xFF000000);
+        field_28160_d.drawString(mapState.id, var15, var16, 0xFF000000);
         GLManager.GL.PopMatrix();
     }
 }

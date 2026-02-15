@@ -188,9 +188,9 @@ public partial class Minecraft : java.lang.Object, Runnable
 
             GLManager.Init(Display.getGL()!);
         }
-        catch (System.Exception var6)
+        catch (System.Exception ex)
         {
-            Console.WriteLine(var6);
+            Console.WriteLine(ex);
         }
         texturePackList = new TexturePacks(this, mcDataDir);
         textureManager = new TextureManager(texturePackList, options);
