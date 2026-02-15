@@ -13,7 +13,7 @@ public class ItemLog : ItemBlock
 
     public override int getTextureId(int meta)
     {
-        return Block.LOG.getTexture(2, meta);
+        return Block.Log.getTexture(2, meta);
     }
 
     public override int getPlacementMetadata(int meta)

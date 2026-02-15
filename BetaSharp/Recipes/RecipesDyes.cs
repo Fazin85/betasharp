@@ -9,11 +9,11 @@ public class RecipesDyes
     {
         for (int var2 = 0; var2 < 16; ++var2)
         {
-            var1.addShapelessRecipe(new ItemStack(Block.WOOL, 1, BlockCloth.getItemMeta(var2)), [new ItemStack(Item.DYE, 1, var2), new ItemStack(Item.ITEMS[Block.WOOL.id], 1, 0)]);
+            var1.addShapelessRecipe(new ItemStack(Block.Wool, 1, BlockCloth.getItemMeta(var2)), [new ItemStack(Item.DYE, 1, var2), new ItemStack(Item.ITEMS[Block.Wool.id], 1, 0)]);
         }
 
-        var1.addShapelessRecipe(new ItemStack(Item.DYE, 2, 11), new object[] { Block.DANDELION });
-        var1.addShapelessRecipe(new ItemStack(Item.DYE, 2, 1), new object[] { Block.ROSE });
+        var1.addShapelessRecipe(new ItemStack(Item.DYE, 2, 11), new object[] { Block.Dandelion });
+        var1.addShapelessRecipe(new ItemStack(Item.DYE, 2, 1), new object[] { Block.Rose });
         var1.addShapelessRecipe(new ItemStack(Item.DYE, 3, 15), [Item.BONE]);
         var1.addShapelessRecipe(new ItemStack(Item.DYE, 2, 9), [new ItemStack(Item.DYE, 1, 1), new ItemStack(Item.DYE, 1, 15)]);
         var1.addShapelessRecipe(new ItemStack(Item.DYE, 2, 14), [new ItemStack(Item.DYE, 1, 1), new ItemStack(Item.DYE, 1, 11)]);

@@ -29,7 +29,7 @@ public class BlockTNT : Block
 
     public override void neighborUpdate(World world, int x, int y, int z, int id)
     {
-        if (id > 0 && Block.BLOCKS[id].canEmitRedstonePower() && world.isPowered(x, y, z))
+        if (id > 0 && Block.Blocks[id].canEmitRedstonePower() && world.isPowered(x, y, z))
         {
             onMetadataChange(world, x, y, z, 1);
             world.setBlock(x, y, z, 0);

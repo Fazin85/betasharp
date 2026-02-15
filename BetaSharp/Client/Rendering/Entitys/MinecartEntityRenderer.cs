@@ -69,11 +69,11 @@ public class MinecartEntityRenderer : EntityRenderer
             //TODO: WTF WHY ARE WE MAKING A NEW RENDER BLOCKS EVERY TIME
             if (var1.type == 1)
             {
-                new BlockRenderer().renderBlockOnInventory(Block.CHEST, 0, var1.getBrightnessAtEyes(var9));
+                new BlockRenderer().renderBlockOnInventory(Block.Chest, 0, var1.getBrightnessAtEyes(var9));
             }
             else if (var1.type == 2)
             {
-                new BlockRenderer().renderBlockOnInventory(Block.FURNACE, 0, var1.getBrightnessAtEyes(var9));
+                new BlockRenderer().renderBlockOnInventory(Block.Furnace, 0, var1.getBrightnessAtEyes(var9));
             }
 
             GLManager.GL.Rotate(-90.0F, 0.0F, 1.0F, 0.0F);

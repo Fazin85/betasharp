@@ -8,9 +8,9 @@ public class RecipesCrafting
 {
     public void addRecipes(CraftingManager var1)
     {
-        var1.addRecipe(new ItemStack(Block.CHEST), ["###", "# #", "###", Character.valueOf('#'), Block.PLANKS]);
-        var1.addRecipe(new ItemStack(Block.FURNACE), ["###", "# #", "###", Character.valueOf('#'), Block.COBBLESTONE]);
-        var1.addRecipe(new ItemStack(Block.CRAFTING_TABLE), ["##", "##", Character.valueOf('#'), Block.PLANKS]);
-        var1.addRecipe(new ItemStack(Block.SANDSTONE), ["##", "##", Character.valueOf('#'), Block.SAND]);
+        var1.addRecipe(new ItemStack(Block.Chest), ["###", "# #", "###", Character.valueOf('#'), Block.Planks]);
+        var1.addRecipe(new ItemStack(Block.Furnace), ["###", "# #", "###", Character.valueOf('#'), Block.Cobblestone]);
+        var1.addRecipe(new ItemStack(Block.CraftingTable), ["##", "##", Character.valueOf('#'), Block.Planks]);
+        var1.addRecipe(new ItemStack(Block.Sandstone), ["##", "##", Character.valueOf('#'), Block.SAND]);
     }
 }

@@ -141,12 +141,12 @@ public class ClientNetworkHandler : NetHandler
 
         if (packet.entityType == 70)
         {
-            entity = new EntityFallingSand(worldClient, x, y, z, Block.SAND.id);
+            entity = new EntityFallingSand(worldClient, x, y, z, Block.Sand.id);
         }
 
         if (packet.entityType == 71)
         {
-            entity = new EntityFallingSand(worldClient, x, y, z, Block.GRAVEL.id);
+            entity = new EntityFallingSand(worldClient, x, y, z, Block.Gravel.id);
         }
 
         if (entity != null)

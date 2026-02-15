@@ -25,7 +25,7 @@ public class RailLogic
         trackZ = var5;
         int var6 = var2.getBlockId(var3, var4, var5);
         int var7 = var2.getBlockMeta(var3, var4, var5);
-        if (((BlockRail)Block.BLOCKS[var6]).isAlwaysStraight())
+        if (((BlockRail)Block.Blocks[var6]).isAlwaysStraight())
         {
             isPoweredRail = true;
             var7 &= -9;

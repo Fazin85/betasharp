@@ -16,15 +16,15 @@ public class BlockFire : Block
 
     protected override void init()
     {
-        registerFlammableBlock(Block.PLANKS.id, 5, 20);
+        registerFlammableBlock(Block.Planks.id, 5, 20);
         registerFlammableBlock(Block.FENCE.id, 5, 20);
-        registerFlammableBlock(Block.WOODEN_STAIRS.id, 5, 20);
-        registerFlammableBlock(Block.LOG.id, 5, 5);
-        registerFlammableBlock(Block.LEAVES.id, 30, 60);
-        registerFlammableBlock(Block.BOOKSHELF.id, 30, 20);
+        registerFlammableBlock(Block.WoodenStairs.id, 5, 20);
+        registerFlammableBlock(Block.Log.id, 5, 5);
+        registerFlammableBlock(Block.Leaves.id, 30, 60);
+        registerFlammableBlock(Block.Bookshelf.id, 30, 20);
         registerFlammableBlock(Block.TNT.id, 15, 100);
-        registerFlammableBlock(Block.GRASS.id, 60, 100);
-        registerFlammableBlock(Block.WOOL.id, 30, 60);
+        registerFlammableBlock(Block.Grass.id, 60, 100);
+        registerFlammableBlock(Block.Wool.id, 30, 60);
     }
 
     private void registerFlammableBlock(int block, int burnChange, int spreadChance)
@@ -227,7 +227,7 @@ public class BlockFire : Block
 
     public override void onPlaced(World world, int x, int y, int z)
     {
-        if (world.getBlockId(x, y - 1, z) != Block.OBSIDIAN.id || !Block.NETHER_PORTAL.create(world, x, y, z))
+        if (world.getBlockId(x, y - 1, z) != Block.Obsidian.id || !Block.NETHER_PORTAL.create(world, x, y, z))
         {
             if (!world.shouldSuffocate(x, y - 1, z) && !areBlocksAroundFlammable(world, x, y, z))
             {
@@ -251,9 +251,9 @@ public class BlockFire : Block
         float particleX;
         float particleY;
         float particleZ;
-        if (!world.shouldSuffocate(x, y - 1, z) && !Block.FIRE.isFlammable(world, x, y - 1, z))
+        if (!world.shouldSuffocate(x, y - 1, z) && !Block.Fire.isFlammable(world, x, y - 1, z))
         {
-            if (Block.FIRE.isFlammable(world, x - 1, y, z))
+            if (Block.Fire.isFlammable(world, x - 1, y, z))
             {
                 for (particleIndex = 0; particleIndex < 2; ++particleIndex)
                 {
@@ -264,7 +264,7 @@ public class BlockFire : Block
                 }
             }
 
-            if (Block.FIRE.isFlammable(world, x + 1, y, z))
+            if (Block.Fire.isFlammable(world, x + 1, y, z))
             {
                 for (particleIndex = 0; particleIndex < 2; ++particleIndex)
                 {
@@ -275,7 +275,7 @@ public class BlockFire : Block
                 }
             }
 
-            if (Block.FIRE.isFlammable(world, x, y, z - 1))
+            if (Block.Fire.isFlammable(world, x, y, z - 1))
             {
                 for (particleIndex = 0; particleIndex < 2; ++particleIndex)
                 {
@@ -286,7 +286,7 @@ public class BlockFire : Block
                 }
             }
 
-            if (Block.FIRE.isFlammable(world, x, y, z + 1))
+            if (Block.Fire.isFlammable(world, x, y, z + 1))
             {
                 for (particleIndex = 0; particleIndex < 2; ++particleIndex)
                 {
@@ -297,7 +297,7 @@ public class BlockFire : Block
                 }
             }
 
-            if (Block.FIRE.isFlammable(world, x, y + 1, z))
+            if (Block.Fire.isFlammable(world, x, y + 1, z))
             {
                 for (particleIndex = 0; particleIndex < 2; ++particleIndex)
                 {

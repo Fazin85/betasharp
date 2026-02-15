@@ -126,7 +126,7 @@ public class CaveCarver : Carver
                                 var43 = (var40 * 16 + var41) * 128 + var42;
                                 if (var42 >= 0 && var42 < 128)
                                 {
-                                    if (var3[var43] == Block.FLOWING_WATER.id || var3[var43] == Block.WATER.id)
+                                    if (var3[var43] == Block.FlowingWater.id || var3[var43] == Block.Water.id)
                                     {
                                         var56 = true;
                                     }
@@ -164,16 +164,16 @@ public class CaveCarver : Carver
                                                 var47 = true;
                                             }
 
-                                            if (var51 == Block.STONE.id || var51 == Block.DIRT.id || var51 == Block.GRASS_BLOCK.id)
+                                            if (var51 == Block.Stone.id || var51 == Block.Dirt.id || var51 == Block.GRASS_BLOCK.id)
                                             {
                                                 if (var48 < 10)
                                                 {
-                                                    var3[var46] = (byte)Block.FLOWING_LAVA.id;
+                                                    var3[var46] = (byte)Block.FlowingLava.id;
                                                 }
                                                 else
                                                 {
                                                     var3[var46] = 0;
-                                                    if (var47 && var3[var46 - 1] == Block.DIRT.id)
+                                                    if (var47 && var3[var46 - 1] == Block.Dirt.id)
                                                     {
                                                         var3[var46 - 1] = (byte)Block.GRASS_BLOCK.id;
                                                     }

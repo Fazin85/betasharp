@@ -31,20 +31,20 @@ public class ItemDye : Item
         if (itemStack.getDamage() == 15)
         {
             int blockId = world.getBlockId(x, y, z);
-            if (blockId == Block.SAPLING.id)
+            if (blockId == Block.Sapling.id)
             {
                 if (!world.isRemote)
                 {
-                    ((BlockSapling)Block.SAPLING).generate(world, x, y, z, world.random);
+                    ((BlockSapling)Block.Sapling).generate(world, x, y, z, world.random);
                     --itemStack.count;
                 }
                 return true;
             }
-            if (blockId == Block.WHEAT.id)
+            if (blockId == Block.Wheat.id)
             {
                 if (!world.isRemote)
                 {
-                    ((BlockCrops)Block.WHEAT).applyFullGrowth(world, x, y, z);
+                    ((BlockCrops)Block.Wheat).applyFullGrowth(world, x, y, z);
                     --itemStack.count;
                 }
                 return true;
@@ -77,15 +77,15 @@ public class ItemDye : Item
                         {
                             if (itemRand.nextInt(10) != 0)
                             {
-                                world.setBlock(spawnX, spawnY, spawnZ, Block.GRASS.id, 1);
+                                world.setBlock(spawnX, spawnY, spawnZ, Block.Grass.id, 1);
                             }
                             else if (itemRand.nextInt(3) != 0)
                             {
-                                world.setBlock(spawnX, spawnY, spawnZ, Block.DANDELION.id);
+                                world.setBlock(spawnX, spawnY, spawnZ, Block.Dandelion.id);
                             }
                             else
                             {
-                                world.setBlock(spawnX, spawnY, spawnZ, Block.ROSE.id);
+                                world.setBlock(spawnX, spawnY, spawnZ, Block.Rose.id);
                             }
                         }
                     }

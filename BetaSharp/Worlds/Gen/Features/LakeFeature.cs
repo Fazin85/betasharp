@@ -101,7 +101,7 @@ public class LakeFeature : Feature
             {
                 for (var10 = 4; var10 < 8; ++var10)
                 {
-                    if (var6[(var8 * 16 + var32) * 8 + var10] && var1.getBlockId(var3 + var8, var4 + var10 - 1, var5 + var32) == Block.DIRT.id && var1.getBrightness(LightType.Sky, var3 + var8, var4 + var10, var5 + var32) > 0)
+                    if (var6[(var8 * 16 + var32) * 8 + var10] && var1.getBlockId(var3 + var8, var4 + var10 - 1, var5 + var32) == Block.Dirt.id && var1.getBrightness(LightType.Sky, var3 + var8, var4 + var10, var5 + var32) > 0)
                     {
                         var1.setBlockWithoutNotifyingNeighbors(var3 + var8, var4 + var10 - 1, var5 + var32, Block.GRASS_BLOCK.id);
                     }
@@ -109,7 +109,7 @@ public class LakeFeature : Feature
             }
         }
 
-        if (Block.BLOCKS[waterBlockId].material == Material.Lava)
+        if (Block.Blocks[waterBlockId].material == Material.Lava)
         {
             for (var8 = 0; var8 < 16; ++var8)
             {
@@ -120,7 +120,7 @@ public class LakeFeature : Feature
                         var33 = !var6[(var8 * 16 + var32) * 8 + var10] && (var8 < 15 && var6[((var8 + 1) * 16 + var32) * 8 + var10] || var8 > 0 && var6[((var8 - 1) * 16 + var32) * 8 + var10] || var32 < 15 && var6[(var8 * 16 + var32 + 1) * 8 + var10] || var32 > 0 && var6[(var8 * 16 + (var32 - 1)) * 8 + var10] || var10 < 7 && var6[(var8 * 16 + var32) * 8 + var10 + 1] || var10 > 0 && var6[(var8 * 16 + var32) * 8 + (var10 - 1)]);
                         if (var33 && (var10 < 4 || var2.nextInt(2) != 0) && var1.getMaterial(var3 + var8, var4 + var10, var5 + var32).IsSolid)
                         {
-                            var1.setBlockWithoutNotifyingNeighbors(var3 + var8, var4 + var10, var5 + var32, Block.STONE.id);
+                            var1.setBlockWithoutNotifyingNeighbors(var3 + var8, var4 + var10, var5 + var32, Block.Stone.id);
                         }
                     }
                 }

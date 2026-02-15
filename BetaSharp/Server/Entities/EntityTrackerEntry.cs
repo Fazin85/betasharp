@@ -329,12 +329,12 @@ public class EntityTrackerEntry : java.lang.Object
             {
                 if (currentTrackedEntity is EntityFallingSand var3)
                 {
-                    if (var3.blockId == Block.SAND.id)
+                    if (var3.blockId == Block.Sand.id)
                     {
                         return new EntitySpawnS2CPacket(currentTrackedEntity, 70);
                     }
 
-                    if (var3.blockId == Block.GRAVEL.id)
+                    if (var3.blockId == Block.Gravel.id)
                     {
                         return new EntitySpawnS2CPacket(currentTrackedEntity, 71);
                     }

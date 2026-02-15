@@ -7,7 +7,7 @@ namespace BetaSharp.Recipes;
 public class RecipesWeapons
 {
     private string[][] recipePatterns = [["X", "X", "#"]];
-    private object[][] recipeItems = [[Block.PLANKS, Block.COBBLESTONE, Item.IRON_INGOT, Item.DIAMOND, Item.GOLD_INGOT], [Item.WOODEN_SWORD, Item.STONE_SWORD, Item.IRON_SWORD, Item.DIAMOND_SWORD, Item.GOLDEN_SWORD]];
+    private object[][] recipeItems = [[Block.Planks, Block.Cobblestone, Item.IRON_INGOT, Item.DIAMOND, Item.GOLD_INGOT], [Item.WOODEN_SWORD, Item.STONE_SWORD, Item.IRON_SWORD, Item.DIAMOND_SWORD, Item.GOLDEN_SWORD]];
 
     public void addRecipes(CraftingManager var1)
     {

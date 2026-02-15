@@ -480,7 +480,7 @@ public abstract class World : java.lang.Object, BlockView
     public Material getMaterial(int x, int y, int z)
     {
         int var4 = getBlockId(x, y, z);
-        return var4 == 0 ? Material.Air : Block.BLOCKS[var4].material;
+        return var4 == 0 ? Material.Air : Block.Blocks[var4].material;
     }
 
     public int getBlockMeta(int x, int y, int z)
@@ -514,7 +514,7 @@ public abstract class World : java.lang.Object, BlockView
         if (setBlockMetaWithoutNotifyingNeighbors(x, y, z, meta))
         {
             int var5 = getBlockId(x, y, z);
-            if (Block.BLOCKS_IGNORE_META_UPDATE[var5 & 255])
+            if (Block.BlocksIngoreMetaUpdate[var5 & 255])
             {
                 blockUpdate(x, y, z, var5);
             }
@@ -636,7 +636,7 @@ public abstract class World : java.lang.Object, BlockView
     {
         if (!pauseTicking && !isRemote)
         {
-            Block var5 = Block.BLOCKS[getBlockId(x, y, z)];
+            Block var5 = Block.Blocks[getBlockId(x, y, z)];
             if (var5 != null)
             {
                 var5.neighborUpdate(this, x, y, z, blockId);
@@ -679,7 +679,7 @@ public abstract class World : java.lang.Object, BlockView
             if (bl)
             {
                 int var5 = getBlockId(x, y, z);
-                if (var5 == Block.SLAB.id || var5 == Block.FARMLAND.id || var5 == Block.COBBLESTONE_STAIRS.id || var5 == Block.WOODEN_STAIRS.id)
+                if (var5 == Block.Slab.id || var5 == Block.Farmland.id || var5 == Block.CobblestoneStairs.id || var5 == Block.WoodenStairs.id)
                 {
                     int var6 = getLightLevel(x, y + 1, z, false);
                     int var7 = getLightLevel(x + 1, y, z, false);
@@ -799,9 +799,9 @@ public abstract class World : java.lang.Object, BlockView
                 else if (lightType == LightType.Block)
                 {
                     int var6 = getBlockId(x, y, z);
-                    if (Block.BLOCKS_LIGHT_LUMINANCE[var6] > l)
+                    if (Block.BlocksLightLuminance[var6] > l)
                     {
-                        l = Block.BLOCKS_LIGHT_LUMINANCE[var6];
+                        l = Block.BlocksLightLuminance[var6];
                     }
                 }
 
@@ -915,7 +915,7 @@ public abstract class World : java.lang.Object, BlockView
                 int var10 = MathHelper.floor_double(start.z);
                 int var11 = getBlockId(var8, var9, var10);
                 int var12 = getBlockMeta(var8, var9, var10);
-                Block var13 = Block.BLOCKS[var11];
+                Block var13 = Block.Blocks[var11];
                 if ((!bl2 || var13 == null || var13.getCollisionShape(this, var8, var9, var10) != null) && var11 > 0 && var13.hasCollision(var12, bl))
                 {
                     HitResult var14 = var13.raycast(this, var8, var9, var10, start, pos);
@@ -1077,7 +1077,7 @@ public abstract class World : java.lang.Object, BlockView
 
                     int var35 = getBlockId(var8, var9, var10);
                     int var36 = getBlockMeta(var8, var9, var10);
-                    Block var37 = Block.BLOCKS[var35];
+                    Block var37 = Block.Blocks[var35];
                     if ((!bl2 || var37 == null || var37.getCollisionShape(this, var8, var9, var10) != null) && var35 > 0 && var37.hasCollision(var36, bl))
                     {
                         HitResult var38 = var37.raycast(this, var8, var9, var10, start, pos);
@@ -1260,7 +1260,7 @@ public abstract class World : java.lang.Object, BlockView
                 {
                     for (int var11 = var5 - 1; var11 < var6; ++var11)
                     {
-                        Block var12 = Block.BLOCKS[getBlockId(var9, var11, var10)];
+                        Block var12 = Block.Blocks[getBlockId(var9, var11, var10)];
                         if (var12 != null)
                         {
                             var12.addIntersectingBoundingBox(this, var9, var11, var10, box, collidingBoundingBoxes);
@@ -1440,7 +1440,7 @@ public abstract class World : java.lang.Object, BlockView
         for (z &= 15; var4 > 0; --var4)
         {
             int var5 = var3.getBlockId(x, var4, z);
-            Material var6 = var5 == 0 ? Material.Air : Block.BLOCKS[var5].material;
+            Material var6 = var5 == 0 ? Material.Air : Block.Blocks[var5].material;
             if (var6.BlocksMovement || var6.IsFluid)
             {
                 return var4 + 1;
@@ -1476,7 +1476,7 @@ public abstract class World : java.lang.Object, BlockView
         for (int var7 = z & 15; var4 > 0; var4--)
         {
             int var5 = var3.getBlockId(x, var4, var7);
-            if (var5 != 0 && Block.BLOCKS[var5].material.BlocksMovement)
+            if (var5 != 0 && Block.Blocks[var5].material.BlocksMovement)
             {
                 return var4 + 1;
             }
@@ -1496,7 +1496,7 @@ public abstract class World : java.lang.Object, BlockView
                 int var8 = getBlockId(var6.x, var6.y, var6.z);
                 if (var8 == var6.blockId && var8 > 0)
                 {
-                    Block.BLOCKS[var8].onTick(this, var6.x, var6.y, var6.z, random);
+                    Block.Blocks[var8].onTick(this, var6.x, var6.y, var6.z, random);
                 }
             }
 
@@ -1798,7 +1798,7 @@ public abstract class World : java.lang.Object, BlockView
             {
                 for (int var10 = var6; var10 < var7; var10++)
                 {
-                    Block var11 = Block.BLOCKS[getBlockId(var8, var9, var10)];
+                    Block var11 = Block.Blocks[getBlockId(var8, var9, var10)];
                     if (var11 != null)
                     {
                         return true;
@@ -1839,7 +1839,7 @@ public abstract class World : java.lang.Object, BlockView
             {
                 for (int var10 = var6; var10 < var7; ++var10)
                 {
-                    Block var11 = Block.BLOCKS[getBlockId(var8, var9, var10)];
+                    Block var11 = Block.Blocks[getBlockId(var8, var9, var10)];
                     if (var11 != null && var11.material.IsFluid)
                     {
                         return true;
@@ -1868,7 +1868,7 @@ public abstract class World : java.lang.Object, BlockView
                     for (int var10 = var6; var10 < var7; ++var10)
                     {
                         int var11 = getBlockId(var8, var9, var10);
-                        if (var11 == Block.FIRE.id || var11 == Block.FLOWING_LAVA.id || var11 == Block.LAVA.id)
+                        if (var11 == Block.Fire.id || var11 == Block.FlowingLava.id || var11 == Block.Lava.id)
                         {
                             return true;
                         }
@@ -1903,7 +1903,7 @@ public abstract class World : java.lang.Object, BlockView
                 {
                     for (int var14 = var8; var14 < var9; ++var14)
                     {
-                        Block var15 = Block.BLOCKS[getBlockId(var12, var13, var14)];
+                        Block var15 = Block.Blocks[getBlockId(var12, var13, var14)];
                         if (var15 != null && var15.material == fluidMaterial)
                         {
                             double var16 = (double)((float)(var13 + 1) - BlockFluid.getFluidHeightFromMeta(getBlockMeta(var12, var13, var14)));
@@ -1945,7 +1945,7 @@ public abstract class World : java.lang.Object, BlockView
             {
                 for (int var11 = var7; var11 < var8; ++var11)
                 {
-                    Block var12 = Block.BLOCKS[getBlockId(var9, var10, var11)];
+                    Block var12 = Block.Blocks[getBlockId(var9, var10, var11)];
                     if (var12 != null && var12.material == material)
                     {
                         return true;
@@ -1972,7 +1972,7 @@ public abstract class World : java.lang.Object, BlockView
             {
                 for (int var11 = var7; var11 < var8; ++var11)
                 {
-                    Block var12 = Block.BLOCKS[getBlockId(var9, var10, var11)];
+                    Block var12 = Block.Blocks[getBlockId(var9, var10, var11)];
                     if (var12 != null && var12.material == fluid)
                     {
                         int var13 = getBlockMeta(var9, var10, var11);
@@ -2070,7 +2070,7 @@ public abstract class World : java.lang.Object, BlockView
             ++x;
         }
 
-        if (getBlockId(x, y, z) == Block.FIRE.id)
+        if (getBlockId(x, y, z) == Block.Fire.id)
         {
             worldEvent(player, 1004, x, y, z, 0);
             setBlock(x, y, z, 0);
@@ -2148,13 +2148,13 @@ public abstract class World : java.lang.Object, BlockView
 
     public bool isOpaque(int x, int y, int z)
     {
-        Block var4 = Block.BLOCKS[getBlockId(x, y, z)];
+        Block var4 = Block.Blocks[getBlockId(x, y, z)];
         return var4 == null ? false : var4.isOpaque();
     }
 
     public bool shouldSuffocate(int x, int y, int z)
     {
-        Block var4 = Block.BLOCKS[getBlockId(x, y, z)];
+        Block var4 = Block.Blocks[getBlockId(x, y, z)];
         return var4 == null ? false : var4.material.Suffocates && var4.isFullCube();
     }
 
@@ -2545,14 +2545,14 @@ public abstract class World : java.lang.Object, BlockView
                 {
                     var10 = var14.getBlockId(var7, var9 - 1, var8);
                     var15 = var14.getBlockId(var7, var9, var8);
-                    if (isRaining() && var15 == 0 && Block.SNOW.canPlaceAt(this, var7 + var3, var9, var8 + var4) && var10 != 0 && var10 != Block.ICE.id && Block.BLOCKS[var10].material.BlocksMovement)
+                    if (isRaining() && var15 == 0 && Block.Snow.canPlaceAt(this, var7 + var3, var9, var8 + var4) && var10 != 0 && var10 != Block.Ice.id && Block.Blocks[var10].material.BlocksMovement)
                     {
-                        setBlock(var7 + var3, var9, var8 + var4, Block.SNOW.id);
+                        setBlock(var7 + var3, var9, var8 + var4, Block.Snow.id);
                     }
 
-                    if (var10 == Block.WATER.id && var14.getBlockMeta(var7, var9 - 1, var8) == 0)
+                    if (var10 == Block.Water.id && var14.getBlockMeta(var7, var9 - 1, var8) == 0)
                     {
-                        setBlock(var7 + var3, var9 - 1, var8 + var4, Block.ICE.id);
+                        setBlock(var7 + var3, var9 - 1, var8 + var4, Block.Ice.id);
                     }
                 }
             }
@@ -2565,9 +2565,9 @@ public abstract class World : java.lang.Object, BlockView
                 var9 = var7 >> 8 & 15;
                 var10 = var7 >> 16 & 127;
                 var15 = var14.blocks[var8 << 11 | var9 << 7 | var10] & 255;
-                if (Block.BLOCKS_RANDOM_TICK[var15])
+                if (Block.BlocksRandomTick[var15])
                 {
-                    Block.BLOCKS[var15].onTick(this, var8 + var3, var10, var9 + var4, random);
+                    Block.Blocks[var15].onTick(this, var8 + var3, var10, var9 + var4, random);
                 }
             }
         }
@@ -2604,7 +2604,7 @@ public abstract class World : java.lang.Object, BlockView
                     int var6 = getBlockId(var4.x, var4.y, var4.z);
                     if (var6 == var4.blockId && var6 > 0)
                     {
-                        Block.BLOCKS[var6].onTick(this, var4.x, var4.y, var4.z, random);
+                        Block.Blocks[var6].onTick(this, var4.x, var4.y, var4.z, random);
                     }
                 }
             }
@@ -2626,7 +2626,7 @@ public abstract class World : java.lang.Object, BlockView
             int var10 = getBlockId(var7, var8, var9);
             if (var10 > 0)
             {
-                Block.BLOCKS[var10].randomDisplayTick(this, var7, var8, var9, var5);
+                Block.Blocks[var10].randomDisplayTick(this, var7, var8, var9, var5);
             }
         }
 
@@ -2738,8 +2738,8 @@ public abstract class World : java.lang.Object, BlockView
     public bool canPlace(int blockId, int x, int y, int z, bool fallingBlock, int side)
     {
         int var7 = getBlockId(x, y, z);
-        Block var8 = Block.BLOCKS[var7];
-        Block var9 = Block.BLOCKS[blockId];
+        Block var8 = Block.Blocks[var7];
+        Block var9 = Block.Blocks[blockId];
         Box? var10 = var9.getCollisionShape(this, x, y, z);
         if (fallingBlock)
         {
@@ -2752,7 +2752,7 @@ public abstract class World : java.lang.Object, BlockView
         }
         else
         {
-            if (var8 == Block.FLOWING_WATER || var8 == Block.WATER || var8 == Block.FLOWING_LAVA || var8 == Block.LAVA || var8 == Block.FIRE || var8 == Block.SNOW)
+            if (var8 == Block.FlowingWater || var8 == Block.Water || var8 == Block.FlowingLava || var8 == Block.LAVA || var8 == Block.Fire || var8 == Block.Snow)
             {
                 var8 = null;
             }
@@ -2796,7 +2796,7 @@ public abstract class World : java.lang.Object, BlockView
     public bool isStrongPoweringSide(int x, int y, int z, int side)
     {
         int var5 = getBlockId(x, y, z);
-        return var5 == 0 ? false : Block.BLOCKS[var5].isStrongPoweringSide(this, x, y, z, side);
+        return var5 == 0 ? false : Block.Blocks[var5].isStrongPoweringSide(this, x, y, z, side);
     }
 
     public bool isStrongPowered(int x, int y, int z)
@@ -2813,7 +2813,7 @@ public abstract class World : java.lang.Object, BlockView
         else
         {
             int var5 = getBlockId(x, y, z);
-            return var5 == 0 ? false : Block.BLOCKS[var5].isPoweringSide(this, x, y, z, side);
+            return var5 == 0 ? false : Block.Blocks[var5].isPoweringSide(this, x, y, z, side);
         }
     }
 
@@ -3115,7 +3115,7 @@ public abstract class World : java.lang.Object, BlockView
         int var6 = getBlockId(x, y, z);
         if (var6 > 0)
         {
-            Block.BLOCKS[var6].onBlockAction(this, x, y, z, soundType, pitch);
+            Block.Blocks[var6].onBlockAction(this, x, y, z, soundType, pitch);
         }
 
     }

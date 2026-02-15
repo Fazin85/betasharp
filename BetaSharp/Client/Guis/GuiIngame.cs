@@ -48,7 +48,7 @@ public class GuiIngame : Gui
         }
 
         ItemStack helmet = mc.player.inventory.armorItemInSlot(3);
-        if (!mc.options.thirdPersonView && helmet != null && helmet.itemId == Block.PUMPKIN.id)
+        if (!mc.options.thirdPersonView && helmet != null && helmet.itemId == Block.Pumpkin.id)
         {
             renderPumpkinBlur(scaledWidth, scaledHeight);
         }

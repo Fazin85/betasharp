@@ -750,7 +750,7 @@ public abstract class EntityPlayer : EntityLiving
         resetEyeHeight();
         Vec3i var4 = sleepingPos;
         Vec3i var5 = sleepingPos;
-        if (var4 != null && world.getBlockId(var4.x, var4.y, var4.z) == Block.BED.id)
+        if (var4 != null && world.getBlockId(var4.x, var4.y, var4.z) == Block.Bed.id)
         {
             BlockBed.updateState(world, var4.x, var4.y, var4.z, false);
             var5 = BlockBed.findWakeUpPosition(world, var4.x, var4.y, var4.z, 0);
@@ -786,7 +786,7 @@ public abstract class EntityPlayer : EntityLiving
 
     private bool isSleepingInBed()
     {
-        return world.getBlockId(sleepingPos.x, sleepingPos.y, sleepingPos.z) == Block.BED.id;
+        return world.getBlockId(sleepingPos.x, sleepingPos.y, sleepingPos.z) == Block.Bed.id;
     }
 
     public static Vec3i findRespawnPosition(World world, Vec3i spawnPos)
@@ -796,7 +796,7 @@ public abstract class EntityPlayer : EntityLiving
         var2.loadChunk(spawnPos.x + 3 >> 4, spawnPos.z - 3 >> 4);
         var2.loadChunk(spawnPos.x - 3 >> 4, spawnPos.z + 3 >> 4);
         var2.loadChunk(spawnPos.x + 3 >> 4, spawnPos.z + 3 >> 4);
-        if (world.getBlockId(spawnPos.x, spawnPos.y, spawnPos.z) != Block.BED.id)
+        if (world.getBlockId(spawnPos.x, spawnPos.y, spawnPos.z) != Block.Bed.id)
         {
             return null;
         }

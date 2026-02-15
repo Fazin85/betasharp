@@ -56,7 +56,7 @@ public class Item : java.lang.Object
     public static Item IRON_HOE = (new ItemHoe(36, EnumToolMaterial.IRON)).setTexturePosition(2, 8).setItemName("hoeIron");
     public static Item DIAMOND_HOE = (new ItemHoe(37, EnumToolMaterial.EMERALD)).setTexturePosition(3, 8).setItemName("hoeDiamond");
     public static Item GOLDEN_HOE = (new ItemHoe(38, EnumToolMaterial.GOLD)).setTexturePosition(4, 8).setItemName("hoeGold");
-    public static Item SEEDS = (new ItemSeeds(39, Block.WHEAT.id)).setTexturePosition(9, 0).setItemName("seeds");
+    public static Item SEEDS = (new ItemSeeds(39, Block.Wheat.id)).setTexturePosition(9, 0).setItemName("seeds");
     public static Item WHEAT = (new Item(40)).setTexturePosition(9, 1).setItemName("wheat");
     public static Item BREAD = (new ItemFood(41, 5, false)).setTexturePosition(9, 2).setItemName("bread");
     public static Item LEATHER_HELMET = (new ItemArmor(42, 0, 0, 0)).setTexturePosition(0, 0).setItemName("helmetCloth");
@@ -87,8 +87,8 @@ public class Item : java.lang.Object
     public static Item SIGN = (new ItemSign(67)).setTexturePosition(10, 2).setItemName("sign");
     public static Item WOODEN_DOOR = (new ItemDoor(68, Material.Wood)).setTexturePosition(11, 2).setItemName("doorWood");
     public static Item BUCKET = (new ItemBucket(69, 0)).setTexturePosition(10, 4).setItemName("bucket");
-    public static Item WATER_BUCKET = (new ItemBucket(70, Block.FLOWING_WATER.id)).setTexturePosition(11, 4).setItemName("bucketWater").setCraftingReturnItem(BUCKET);
-    public static Item LAVA_BUCKET = (new ItemBucket(71, Block.FLOWING_LAVA.id)).setTexturePosition(12, 4).setItemName("bucketLava").setCraftingReturnItem(BUCKET);
+    public static Item WATER_BUCKET = (new ItemBucket(70, Block.FlowingWater.id)).setTexturePosition(11, 4).setItemName("bucketWater").setCraftingReturnItem(BUCKET);
+    public static Item LAVA_BUCKET = (new ItemBucket(71, Block.FlowingLava.id)).setTexturePosition(12, 4).setItemName("bucketLava").setCraftingReturnItem(BUCKET);
     public static Item MINECART = (new ItemMinecart(72, 0)).setTexturePosition(7, 8).setItemName("minecart");
     public static Item SADDLE = (new ItemSaddle(73)).setTexturePosition(8, 6).setItemName("saddle");
     public static Item IRON_DOOR = (new ItemDoor(74, Material.Metal)).setTexturePosition(12, 2).setItemName("doorIron");
@@ -99,7 +99,7 @@ public class Item : java.lang.Object
     public static Item MILK_BUCKET = (new ItemBucket(79, -1)).setTexturePosition(13, 4).setItemName("milk").setCraftingReturnItem(BUCKET);
     public static Item BRICK = (new Item(80)).setTexturePosition(6, 1).setItemName("brick");
     public static Item CLAY = (new Item(81)).setTexturePosition(9, 3).setItemName("clay");
-    public static Item SUGAR_CANE = (new ItemReed(82, Block.SUGAR_CANE)).setTexturePosition(11, 1).setItemName("reeds");
+    public static Item SUGAR_CANE = (new ItemReed(82, Block.SugarCane)).setTexturePosition(11, 1).setItemName("reeds");
     public static Item PAPER = (new Item(83)).setTexturePosition(10, 3).setItemName("paper");
     public static Item BOOK = (new Item(84)).setTexturePosition(11, 3).setItemName("book");
     public static Item SLIMEBALL = (new Item(85)).setTexturePosition(14, 1).setItemName("slimeball");
@@ -117,7 +117,7 @@ public class Item : java.lang.Object
     public static Item SUGAR = (new Item(97)).setTexturePosition(13, 0).setItemName("sugar").setHandheld();
     public static Item CAKE = (new ItemReed(98, Block.CAKE)).setMaxCount(1).setTexturePosition(13, 1).setItemName("cake");
     public static Item BED = (new ItemBed(99)).setMaxCount(1).setTexturePosition(13, 2).setItemName("bed");
-    public static Item REPEATER = (new ItemReed(100, Block.REPEATER)).setTexturePosition(6, 5).setItemName("diode");
+    public static Item REPEATER = (new ItemReed(100, Block.Repeater)).setTexturePosition(6, 5).setItemName("diode");
     public static Item COOKIE = (new ItemCookie(101, 1, false, 8)).setTexturePosition(12, 5).setItemName("cookie");
     public static ItemMap MAP = (ItemMap)(new ItemMap(102)).setTexturePosition(12, 3).setItemName("map");
     public static ItemShears SHEARS = (ItemShears)(new ItemShears(103)).setTexturePosition(13, 5).setItemName("shears");

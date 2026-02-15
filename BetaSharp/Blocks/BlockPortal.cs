@@ -50,12 +50,12 @@ public class BlockPortal : BlockBreakable
     {
         sbyte extendsInZ = 0;
         sbyte extendsInX = 0;
-        if (world.getBlockId(x - 1, y, z) == Block.OBSIDIAN.id || world.getBlockId(x + 1, y, z) == Block.OBSIDIAN.id)
+        if (world.getBlockId(x - 1, y, z) == Block.Obsidian.id || world.getBlockId(x + 1, y, z) == Block.Obsidian.id)
         {
             extendsInZ = 1;
         }
 
-        if (world.getBlockId(x, y, z - 1) == Block.OBSIDIAN.id || world.getBlockId(x, y, z + 1) == Block.OBSIDIAN.id)
+        if (world.getBlockId(x, y, z - 1) == Block.Obsidian.id || world.getBlockId(x, y, z + 1) == Block.Obsidian.id)
         {
             extendsInX = 1;
         }
@@ -84,12 +84,12 @@ public class BlockPortal : BlockBreakable
                         int blockId = world.getBlockId(x + extendsInZ * horizontalOffset, y + verticalOffset, z + extendsInX * horizontalOffset);
                         if (isFrame)
                         {
-                            if (blockId != Block.OBSIDIAN.id)
+                            if (blockId != Block.Obsidian.id)
                             {
                                 return false;
                             }
                         }
-                        else if (blockId != 0 && blockId != Block.FIRE.id)
+                        else if (blockId != 0 && blockId != Block.Fire.id)
                         {
                             return false;
                         }
@@ -127,7 +127,7 @@ public class BlockPortal : BlockBreakable
         {
         }
 
-        if (world.getBlockId(x, portalBottomY - 1, z) != Block.OBSIDIAN.id)
+        if (world.getBlockId(x, portalBottomY - 1, z) != Block.Obsidian.id)
         {
             world.setBlock(x, y, z, 0);
         }
@@ -138,7 +138,7 @@ public class BlockPortal : BlockBreakable
             {
             }
 
-            if (blocksAbove == 3 && world.getBlockId(x, portalBottomY + blocksAbove, z) == Block.OBSIDIAN.id)
+            if (blocksAbove == 3 && world.getBlockId(x, portalBottomY + blocksAbove, z) == Block.Obsidian.id)
             {
                 bool hasXNeighbors = world.getBlockId(x - 1, y, z) == base.id || world.getBlockId(x + 1, y, z) == base.id;
                 bool hasZNeighbors = world.getBlockId(x, y, z - 1) == base.id || world.getBlockId(x, y, z + 1) == base.id;
@@ -146,7 +146,7 @@ public class BlockPortal : BlockBreakable
                 {
                     world.setBlock(x, y, z, 0);
                 }
-                else if ((world.getBlockId(x + offsetX, y, z + offsetZ) != Block.OBSIDIAN.id || world.getBlockId(x - offsetX, y, z - offsetZ) != base.id) && (world.getBlockId(x - offsetX, y, z - offsetZ) != Block.OBSIDIAN.id || world.getBlockId(x + offsetX, y, z + offsetZ) != base.id))
+                else if ((world.getBlockId(x + offsetX, y, z + offsetZ) != Block.Obsidian.id || world.getBlockId(x - offsetX, y, z - offsetZ) != base.id) && (world.getBlockId(x - offsetX, y, z - offsetZ) != Block.Obsidian.id || world.getBlockId(x + offsetX, y, z + offsetZ) != base.id))
                 {
                     world.setBlock(x, y, z, 0);
                 }

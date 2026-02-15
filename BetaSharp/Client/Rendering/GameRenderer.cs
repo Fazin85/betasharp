@@ -231,7 +231,7 @@ public class GameRenderer
             if (!client.options.debugCamera)
             {
                 int var10 = client.world.getBlockId(MathHelper.floor_double(var2.x), MathHelper.floor_double(var2.y), MathHelper.floor_double(var2.z));
-                if (var10 == Block.BED.id)
+                if (var10 == Block.Bed.id)
                 {
                     int var11 = client.world.getBlockMeta(MathHelper.floor_double(var2.x), MathHelper.floor_double(var2.y), MathHelper.floor_double(var2.z));
                     int var12 = var11 & 3;
@@ -642,9 +642,9 @@ public class GameRenderer
                     float var21 = random.nextFloat();
                     if (var19 > 0)
                     {
-                        if (Block.BLOCKS[var19].material == Material.Lava)
+                        if (Block.Blocks[var19].material == Material.Lava)
                         {
-                            client.particleManager.addEffect(new EntitySmokeFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.BLOCKS[var19].minY, (double)(var17 + var21), 0.0D, 0.0D, 0.0D));
+                            client.particleManager.addEffect(new EntitySmokeFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].minY, (double)(var17 + var21), 0.0D, 0.0D, 0.0D));
                         }
                         else
                         {
@@ -652,11 +652,11 @@ public class GameRenderer
                             if (random.nextInt(var14) == 0)
                             {
                                 var8 = (double)(var16 + var20);
-                                var10 = (double)(var18 + 0.1F) - Block.BLOCKS[var19].minY;
+                                var10 = (double)(var18 + 0.1F) - Block.Blocks[var19].minY;
                                 var12 = (double)(var17 + var21);
                             }
 
-                            client.particleManager.addEffect(new EntityRainFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.BLOCKS[var19].minY, (double)(var17 + var21)));
+                            client.particleManager.addEffect(new EntityRainFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].minY, (double)(var17 + var21)));
                         }
                     }
                 }

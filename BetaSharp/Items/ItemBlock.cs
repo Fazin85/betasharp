@@ -12,12 +12,12 @@ public class ItemBlock : Item
     public ItemBlock(int id) : base(id)
     {
         blockID = id + 256;
-        setTextureId(Block.BLOCKS[id + 256].getTexture(2));
+        setTextureId(Block.Blocks[id + 256].getTexture(2));
     }
 
     public override bool useOnBlock(ItemStack itemStack, EntityPlayer entityPlayer, World world, int x, int y, int z, int meta)
     {
-        if (world.getBlockId(x, y, z) == Block.SNOW.id)
+        if (world.getBlockId(x, y, z) == Block.Snow.id)
         {
             meta = 0;
         }
@@ -58,17 +58,17 @@ public class ItemBlock : Item
         {
             return false;
         }
-        else if (y == 127 && Block.BLOCKS[blockID].material.IsSolid)
+        else if (y == 127 && Block.Blocks[blockID].material.IsSolid)
         {
             return false;
         }
         else if (world.canPlace(blockID, x, y, z, false, meta))
         {
-            Block block = Block.BLOCKS[blockID];
+            Block block = Block.Blocks[blockID];
             if (world.setBlock(x, y, z, blockID, getPlacementMetadata(itemStack.getDamage())))
             {
-                Block.BLOCKS[blockID].onPlaced(world, x, y, z, meta);
-                Block.BLOCKS[blockID].onPlaced(world, x, y, z, entityPlayer);
+                Block.Blocks[blockID].onPlaced(world, x, y, z, meta);
+                Block.Blocks[blockID].onPlaced(world, x, y, z, entityPlayer);
                 world.playSound((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), block.soundGroup.func_1145_d(), (block.soundGroup.getVolume() + 1.0F) / 2.0F, block.soundGroup.getPitch() * 0.8F);
                 --itemStack.count;
             }
@@ -83,11 +83,11 @@ public class ItemBlock : Item
 
     public override String getItemNameIS(ItemStack itemStack)
     {
-        return Block.BLOCKS[blockID].getBlockName();
+        return Block.Blocks[blockID].getBlockName();
     }
 
     public override String getItemName()
     {
-        return Block.BLOCKS[blockID].getBlockName();
+        return Block.Blocks[blockID].getBlockName();
     }
 }

@@ -21,7 +21,7 @@ public class BlockPlant : Block
 
     protected virtual bool canPlantOnTop(int id)
     {
-        return id == Block.GRASS_BLOCK.id || id == Block.DIRT.id || id == Block.FARMLAND.id;
+        return id == Block.GRASS_BLOCK.id || id == Block.Dirt.id || id == Block.Farmland.id;
     }
 
     public override void neighborUpdate(World world, int x, int y, int z, int id)

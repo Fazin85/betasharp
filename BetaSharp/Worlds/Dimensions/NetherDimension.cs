@@ -43,7 +43,7 @@ public class NetherDimension : Dimension
     public override bool isValidSpawnPoint(int var1, int var2)
     {
         int var3 = world.getSpawnBlockId(var1, var2);
-        return var3 == Block.BEDROCK.id ? false : var3 == 0 ? false : Block.BLOCKS_OPAQUE[var3];
+        return var3 == Block.Bedrock.id ? false : var3 == 0 ? false : Block.BlocksOpaque[var3];
     }
 
     public override float getTimeOfDay(long var1, float var3)

@@ -88,7 +88,7 @@ public class NetherChunkGenerator : ChunkSource
                                 int var51 = 0;
                                 if (var11 * 8 + var30 < var5)
                                 {
-                                    var51 = Block.LAVA.id;
+                                    var51 = Block.Lava.id;
                                 }
 
                                 if (var46 > 0.0D)
@@ -140,11 +140,11 @@ public class NetherChunkGenerator : ChunkSource
                     int var16 = (var8 * 16 + var7) * 128 + var15;
                     if (var15 >= 127 - random.nextInt(5))
                     {
-                        blocks[var16] = (byte)Block.BEDROCK.id;
+                        blocks[var16] = (byte)Block.Bedrock.id;
                     }
                     else if (var15 <= 0 + random.nextInt(5))
                     {
-                        blocks[var16] = (byte)Block.BEDROCK.id;
+                        blocks[var16] = (byte)Block.Bedrock.id;
                     }
                     else
                     {
@@ -168,7 +168,7 @@ public class NetherChunkGenerator : ChunkSource
                                     var14 = (byte)Block.NETHERRACK.id;
                                     if (var10)
                                     {
-                                        var13 = (byte)Block.GRAVEL.id;
+                                        var13 = (byte)Block.Gravel.id;
                                     }
 
                                     if (var10)
@@ -178,18 +178,18 @@ public class NetherChunkGenerator : ChunkSource
 
                                     if (var9)
                                     {
-                                        var13 = (byte)Block.SOUL_SAND.id;
+                                        var13 = (byte)Block.Soulsand.id;
                                     }
 
                                     if (var9)
                                     {
-                                        var14 = (byte)Block.SOUL_SAND.id;
+                                        var14 = (byte)Block.Soulsand.id;
                                     }
                                 }
 
                                 if (var15 < var4 && var13 == 0)
                                 {
-                                    var13 = (byte)Block.LAVA.id;
+                                    var13 = (byte)Block.Lava.id;
                                 }
 
                                 var12 = var11;
@@ -383,7 +383,7 @@ public class NetherChunkGenerator : ChunkSource
             var7 = var4 + random.nextInt(16) + 8;
             var8 = random.nextInt(120) + 4;
             var9 = var5 + random.nextInt(16) + 8;
-            new NetherLavaSpringFeature(Block.FLOWING_LAVA.id).generate(world, random, var7, var8, var9);
+            new NetherLavaSpringFeature(Block.FlowingLava.id).generate(world, random, var7, var8, var9);
         }
 
         var6 = random.nextInt(random.nextInt(10) + 1) + 1;
@@ -420,7 +420,7 @@ public class NetherChunkGenerator : ChunkSource
             var7 = var4 + random.nextInt(16) + 8;
             var8 = random.nextInt(128);
             var9 = var5 + random.nextInt(16) + 8;
-            new PlantPatchFeature(Block.BROWN_MUSHROOM.id).generate(world, random, var7, var8, var9);
+            new PlantPatchFeature(Block.BrownMushroom.id).generate(world, random, var7, var8, var9);
         }
 
         if (random.nextInt(1) == 0)
@@ -428,7 +428,7 @@ public class NetherChunkGenerator : ChunkSource
             var7 = var4 + random.nextInt(16) + 8;
             var8 = random.nextInt(128);
             var9 = var5 + random.nextInt(16) + 8;
-            new PlantPatchFeature(Block.RED_MUSHROOM.id).generate(world, random, var7, var8, var9);
+            new PlantPatchFeature(Block.RedMushroom.id).generate(world, random, var7, var8, var9);
         }
 
         BlockSand.fallInstantly = false;

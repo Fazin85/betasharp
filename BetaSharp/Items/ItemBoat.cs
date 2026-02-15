@@ -45,7 +45,7 @@ public class ItemBoat : Item
                 int hitZ = hitResult.blockZ;
                 if (!world.isRemote)
                 {
-                    if (world.getBlockId(hitX, hitY, hitZ) == Block.SNOW.id)
+                    if (world.getBlockId(hitX, hitY, hitZ) == Block.Snow.id)
                     {
                         --hitY;
                     }

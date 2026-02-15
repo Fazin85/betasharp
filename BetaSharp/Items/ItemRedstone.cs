@@ -13,7 +13,7 @@ public class ItemRedstone : Item
 
     public override bool useOnBlock(ItemStack itemStack, EntityPlayer entityPlayer, World world, int x, int y, int z, int meta)
     {
-        if (world.getBlockId(x, y, z) != Block.SNOW.id)
+        if (world.getBlockId(x, y, z) != Block.Snow.id)
         {
             if (meta == 0)
             {
@@ -51,10 +51,10 @@ public class ItemRedstone : Item
             }
         }
 
-        if (Block.REDSTONE_WIRE.canPlaceAt(world, x, y, z))
+        if (Block.RedstoneWire.canPlaceAt(world, x, y, z))
         {
             --itemStack.count;
-            world.setBlock(x, y, z, Block.REDSTONE_WIRE.id);
+            world.setBlock(x, y, z, Block.RedstoneWire.id);
         }
 
         return true;

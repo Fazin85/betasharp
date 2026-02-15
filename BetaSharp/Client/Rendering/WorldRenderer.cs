@@ -172,7 +172,7 @@ public class WorldRenderer : IWorldAccess
 
     public void loadRenderers()
     {
-        Block.LEAVES.setGraphicsLevel(true);
+        Block.Leaves.setGraphicsLevel(true);
         renderDistance = mc.options.renderDistance;
 
         chunkRenderer?.Dispose();
@@ -578,7 +578,7 @@ public class WorldRenderer : IWorldAccess
                 GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 0.5F);
                 GLManager.GL.PushMatrix();
                 var8 = world.getBlockId(var2.blockX, var2.blockY, var2.blockZ);
-                Block var9 = var8 > 0 ? Block.BLOCKS[var8] : null;
+                Block var9 = var8 > 0 ? Block.Blocks[var8] : null;
                 GLManager.GL.Disable(GLEnum.AlphaTest);
                 GLManager.GL.PolygonOffset(-3.0F, -3.0F);
                 GLManager.GL.Enable(GLEnum.PolygonOffsetFill);
@@ -587,7 +587,7 @@ public class WorldRenderer : IWorldAccess
                 double var14 = var1.lastTickZ + (var1.z - var1.lastTickZ) * (double)var5;
                 if (var9 == null)
                 {
-                    var9 = Block.STONE;
+                    var9 = Block.Stone;
                 }
 
                 GLManager.GL.Enable(GLEnum.AlphaTest);
@@ -664,11 +664,11 @@ public class WorldRenderer : IWorldAccess
             int var7 = world.getBlockId(var2.blockX, var2.blockY, var2.blockZ);
             if (var7 > 0)
             {
-                Block.BLOCKS[var7].updateBoundingBox(world, var2.blockX, var2.blockY, var2.blockZ);
+                Block.Blocks[var7].updateBoundingBox(world, var2.blockX, var2.blockY, var2.blockZ);
                 double var8 = var1.lastTickX + (var1.x - var1.lastTickX) * (double)var5;
                 double var10 = var1.lastTickY + (var1.y - var1.lastTickY) * (double)var5;
                 double var12 = var1.lastTickZ + (var1.z - var1.lastTickZ) * (double)var5;
-                drawOutlinedBoundingBox(Block.BLOCKS[var7].getBoundingBox(world, var2.blockX, var2.blockY, var2.blockZ).expand((double)var6, (double)var6, (double)var6).offset(-var8, -var10, -var12));
+                drawOutlinedBoundingBox(Block.Blocks[var7].getBoundingBox(world, var2.blockX, var2.blockY, var2.blockZ).expand((double)var6, (double)var6, (double)var6).offset(-var8, -var10, -var12));
             }
 
             GLManager.GL.DepthMask(true);
@@ -940,7 +940,7 @@ public class WorldRenderer : IWorldAccess
                 var16 = var6 & 255;
                 if (var16 > 0)
                 {
-                    Block var17 = Block.BLOCKS[var16];
+                    Block var17 = Block.Blocks[var16];
                     mc.sndManager.playSound(var17.soundGroup.stepSoundDir(), var3 + 0.5F, var4 + 0.5F, var5 + 0.5F, (var17.soundGroup.getVolume() + 1.0F) / 2.0F, var17.soundGroup.getPitch() * 0.8F);
                 }
 

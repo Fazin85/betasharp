@@ -49,7 +49,7 @@ public abstract class EntityRenderer
     private void renderOnFire(Entity var1, double var2, double var4, double var6, float var8)
     {
         GLManager.GL.Disable(GLEnum.Lighting);
-        int var9 = Block.FIRE.textureId;
+        int var9 = Block.Fire.textureId;
         int var10 = (var9 & 15) << 4;
         int var11 = var9 & 240;
         float var12 = var10 / 256.0F;
@@ -144,7 +144,7 @@ public abstract class EntityRenderer
                     int var35 = var11.getBlockId(var32, var33 - 1, var34);
                     if (var35 > 0 && var11.getLightLevel(var32, var33, var34) > 3)
                     {
-                        renderShadowOnBlock(Block.BLOCKS[var35], var2, var4 + (double)var1.getShadowRadius(), var6, var32, var33, var34, var8, var12, var25, var27 + (double)var1.getShadowRadius(), var29);
+                        renderShadowOnBlock(Block.Blocks[var35], var2, var4 + (double)var1.getShadowRadius(), var6, var32, var33, var34, var8, var12, var25, var27 + (double)var1.getShadowRadius(), var29);
                     }
                 }
             }

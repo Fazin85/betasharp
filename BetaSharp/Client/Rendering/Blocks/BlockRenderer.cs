@@ -309,7 +309,7 @@ public class BlockRenderer
         int var5 = blockAccess.getBlockMeta(var2, var3, var4);
         Tessellator var6 = getTessellator();
         float var7 = var1.getLuminance(blockAccess, var2, var3, var4);
-        if (Block.BLOCKS_LIGHT_LUMINANCE[var1.id] > 0)
+        if (Block.BlocksLightLuminance[var1.id] > 0)
         {
             var7 = 1.0F;
         }
@@ -350,7 +350,7 @@ public class BlockRenderer
         renderStandardBlock(var1, var2, var3, var4);
         Tessellator var8 = getTessellator();
         float var9 = var1.getLuminance(blockAccess, var2, var3, var4);
-        if (Block.BLOCKS_LIGHT_LUMINANCE[var1.id] > 0)
+        if (Block.BlocksLightLuminance[var1.id] > 0)
         {
             var9 = (var9 + 1.0F) * 0.5F;
         }
@@ -722,7 +722,7 @@ public class BlockRenderer
         bool var9 = overrideBlockTexture >= 0;
         if (!var9)
         {
-            overrideBlockTexture = Block.COBBLESTONE.textureId;
+            overrideBlockTexture = Block.Cobblestone.textureId;
         }
 
         float var10 = 0.25F;
@@ -760,7 +760,7 @@ public class BlockRenderer
         }
 
         float var13 = var1.getLuminance(blockAccess, var2, var3, var4);
-        if (Block.BLOCKS_LIGHT_LUMINANCE[var1.id] > 0)
+        if (Block.BlocksLightLuminance[var1.id] > 0)
         {
             var13 = 1.0F;
         }
@@ -944,7 +944,7 @@ public class BlockRenderer
         double var29;
         double var31;
         double var33;
-        if (!blockAccess.shouldSuffocate(var2, var3 - 1, var4) && !Block.FIRE.isFlammable(blockAccess, var2, var3 - 1, var4))
+        if (!blockAccess.shouldSuffocate(var2, var3 - 1, var4) && !Block.Fire.isFlammable(blockAccess, var2, var3 - 1, var4))
         {
             float var37 = 0.2F;
             float var20 = 1.0F / 16.0F;
@@ -963,7 +963,7 @@ public class BlockRenderer
                 var10 = var21;
             }
 
-            if (Block.FIRE.isFlammable(blockAccess, var2 - 1, var3, var4))
+            if (Block.Fire.isFlammable(blockAccess, var2 - 1, var3, var4))
             {
                 var5.addVertexWithUV((double)(var2 + var37), (double)(var3 + var18 + var20), var4 + 1, var12, var14);
                 var5.addVertexWithUV(var2 + 0, (double)(var3 + 0 + var20), var4 + 1, var12, var16);
@@ -975,7 +975,7 @@ public class BlockRenderer
                 var5.addVertexWithUV((double)(var2 + var37), (double)(var3 + var18 + var20), var4 + 1, var12, var14);
             }
 
-            if (Block.FIRE.isFlammable(blockAccess, var2 + 1, var3, var4))
+            if (Block.Fire.isFlammable(blockAccess, var2 + 1, var3, var4))
             {
                 var5.addVertexWithUV((double)(var2 + 1 - var37), (double)(var3 + var18 + var20), var4 + 0, var10, var14);
                 var5.addVertexWithUV(var2 + 1 - 0, (double)(var3 + 0 + var20), var4 + 0, var10, var16);
@@ -987,7 +987,7 @@ public class BlockRenderer
                 var5.addVertexWithUV((double)(var2 + 1 - var37), (double)(var3 + var18 + var20), var4 + 0, var10, var14);
             }
 
-            if (Block.FIRE.isFlammable(blockAccess, var2, var3, var4 - 1))
+            if (Block.Fire.isFlammable(blockAccess, var2, var3, var4 - 1))
             {
                 var5.addVertexWithUV(var2 + 0, (double)(var3 + var18 + var20), (double)(var4 + var37), var12, var14);
                 var5.addVertexWithUV(var2 + 0, (double)(var3 + 0 + var20), var4 + 0, var12, var16);
@@ -999,7 +999,7 @@ public class BlockRenderer
                 var5.addVertexWithUV(var2 + 0, (double)(var3 + var18 + var20), (double)(var4 + var37), var12, var14);
             }
 
-            if (Block.FIRE.isFlammable(blockAccess, var2, var3, var4 + 1))
+            if (Block.Fire.isFlammable(blockAccess, var2, var3, var4 + 1))
             {
                 var5.addVertexWithUV(var2 + 1, (double)(var3 + var18 + var20), (double)(var4 + 1 - var37), var10, var14);
                 var5.addVertexWithUV(var2 + 1, (double)(var3 + 0 + var20), var4 + 1 - 0, var10, var16);
@@ -1011,7 +1011,7 @@ public class BlockRenderer
                 var5.addVertexWithUV(var2 + 1, (double)(var3 + var18 + var20), (double)(var4 + 1 - var37), var10, var14);
             }
 
-            if (Block.FIRE.isFlammable(blockAccess, var2, var3 + 1, var4))
+            if (Block.Fire.isFlammable(blockAccess, var2, var3 + 1, var4))
             {
                 var21 = var2 + 0.5D + 0.5D;
                 var23 = var2 + 0.5D - 0.5D;
@@ -1295,7 +1295,7 @@ public class BlockRenderer
             var17 = (double)((var13 + 16 + 15.99F) / 256.0F);
             var19 = (double)(var14 / 256.0F);
             var21 = (double)((var14 + 15.99F) / 256.0F);
-            if (blockAccess.shouldSuffocate(var2 - 1, var3, var4) && blockAccess.getBlockId(var2 - 1, var3 + 1, var4) == Block.REDSTONE_WIRE.id)
+            if (blockAccess.shouldSuffocate(var2 - 1, var3, var4) && blockAccess.getBlockId(var2 - 1, var3 + 1, var4) == Block.RedstoneWire.id)
             {
                 var5.setColorOpaque_F(var8 * var10, var8 * var11, var8 * var12);
                 var5.addVertexWithUV((double)(var2 + 0.015625F), (double)(var3 + 1 + 7.0F / 320.0F), var4 + 1, var17, var19);
@@ -1309,7 +1309,7 @@ public class BlockRenderer
                 var5.addVertexWithUV((double)(var2 + 0.015625F), (double)(var3 + 1 + 7.0F / 320.0F), var4 + 0, var17, var21 + 1.0D / 16.0D);
             }
 
-            if (blockAccess.shouldSuffocate(var2 + 1, var3, var4) && blockAccess.getBlockId(var2 + 1, var3 + 1, var4) == Block.REDSTONE_WIRE.id)
+            if (blockAccess.shouldSuffocate(var2 + 1, var3, var4) && blockAccess.getBlockId(var2 + 1, var3 + 1, var4) == Block.RedstoneWire.id)
             {
                 var5.setColorOpaque_F(var8 * var10, var8 * var11, var8 * var12);
                 var5.addVertexWithUV((double)(var2 + 1 - 0.015625F), var3 + 0, var4 + 1, var15, var21);
@@ -1323,7 +1323,7 @@ public class BlockRenderer
                 var5.addVertexWithUV((double)(var2 + 1 - 0.015625F), var3 + 0, var4 + 0, var15, var19 + 1.0D / 16.0D);
             }
 
-            if (blockAccess.shouldSuffocate(var2, var3, var4 - 1) && blockAccess.getBlockId(var2, var3 + 1, var4 - 1) == Block.REDSTONE_WIRE.id)
+            if (blockAccess.shouldSuffocate(var2, var3, var4 - 1) && blockAccess.getBlockId(var2, var3 + 1, var4 - 1) == Block.RedstoneWire.id)
             {
                 var5.setColorOpaque_F(var8 * var10, var8 * var11, var8 * var12);
                 var5.addVertexWithUV(var2 + 1, var3 + 0, (double)(var4 + 0.015625F), var15, var21);
@@ -1337,7 +1337,7 @@ public class BlockRenderer
                 var5.addVertexWithUV(var2 + 0, var3 + 0, (double)(var4 + 0.015625F), var15, var19 + 1.0D / 16.0D);
             }
 
-            if (blockAccess.shouldSuffocate(var2, var3, var4 + 1) && blockAccess.getBlockId(var2, var3 + 1, var4 + 1) == Block.REDSTONE_WIRE.id)
+            if (blockAccess.shouldSuffocate(var2, var3, var4 + 1) && blockAccess.getBlockId(var2, var3 + 1, var4 + 1) == Block.RedstoneWire.id)
             {
                 var5.setColorOpaque_F(var8 * var10, var8 * var11, var8 * var12);
                 var5.addVertexWithUV(var2 + 1, (double)(var3 + 1 + 7.0F / 320.0F), (double)(var4 + 1 - 0.015625F), var17, var19);
@@ -1992,18 +1992,18 @@ public class BlockRenderer
         aoLightValueXPos = var1.getLuminance(blockAccess, var2 + 1, var3, var4);
         aoLightValueYPos = var1.getLuminance(blockAccess, var2, var3 + 1, var4);
         aoLightValueZPos = var1.getLuminance(blockAccess, var2, var3, var4 + 1);
-        field_22338_U = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2 + 1, var3 + 1, var4)];
-        field_22359_ac = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2 + 1, var3 - 1, var4)];
-        field_22334_Y = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2 + 1, var3, var4 + 1)];
-        field_22363_aa = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2 + 1, var3, var4 - 1)];
-        field_22337_V = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2 - 1, var3 + 1, var4)];
-        field_22357_ad = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2 - 1, var3 - 1, var4)];
-        field_22335_X = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2 - 1, var3, var4 - 1)];
-        field_22333_Z = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2 - 1, var3, var4 + 1)];
-        field_22336_W = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2, var3 + 1, var4 + 1)];
-        field_22339_T = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2, var3 + 1, var4 - 1)];
-        field_22355_ae = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2, var3 - 1, var4 + 1)];
-        field_22361_ab = Block.BLOCKS_ALLOW_VISION[blockAccess.getBlockId(var2, var3 - 1, var4 - 1)];
+        field_22338_U = Block.BlocksAllowVision[blockAccess.getBlockId(var2 + 1, var3 + 1, var4)];
+        field_22359_ac = Block.BlocksAllowVision[blockAccess.getBlockId(var2 + 1, var3 - 1, var4)];
+        field_22334_Y = Block.BlocksAllowVision[blockAccess.getBlockId(var2 + 1, var3, var4 + 1)];
+        field_22363_aa = Block.BlocksAllowVision[blockAccess.getBlockId(var2 + 1, var3, var4 - 1)];
+        field_22337_V = Block.BlocksAllowVision[blockAccess.getBlockId(var2 - 1, var3 + 1, var4)];
+        field_22357_ad = Block.BlocksAllowVision[blockAccess.getBlockId(var2 - 1, var3 - 1, var4)];
+        field_22335_X = Block.BlocksAllowVision[blockAccess.getBlockId(var2 - 1, var3, var4 - 1)];
+        field_22333_Z = Block.BlocksAllowVision[blockAccess.getBlockId(var2 - 1, var3, var4 + 1)];
+        field_22336_W = Block.BlocksAllowVision[blockAccess.getBlockId(var2, var3 + 1, var4 + 1)];
+        field_22339_T = Block.BlocksAllowVision[blockAccess.getBlockId(var2, var3 + 1, var4 - 1)];
+        field_22355_ae = Block.BlocksAllowVision[blockAccess.getBlockId(var2, var3 - 1, var4 + 1)];
+        field_22361_ab = Block.BlocksAllowVision[blockAccess.getBlockId(var2, var3 - 1, var4 - 1)];
         if (var1.textureId == 3)
         {
             var18 = false;
@@ -2953,7 +2953,7 @@ public class BlockRenderer
             var13 = var12;
         }
 
-        if (Block.BLOCKS_LIGHT_LUMINANCE[var1.id] > 0)
+        if (Block.BlocksLightLuminance[var1.id] > 0)
         {
             var13 = 1.0F;
         }
@@ -2967,7 +2967,7 @@ public class BlockRenderer
             var13 = var12;
         }
 
-        if (Block.BLOCKS_LIGHT_LUMINANCE[var1.id] > 0)
+        if (Block.BlocksLightLuminance[var1.id] > 0)
         {
             var13 = 1.0F;
         }
@@ -2981,7 +2981,7 @@ public class BlockRenderer
             var13 = var12;
         }
 
-        if (Block.BLOCKS_LIGHT_LUMINANCE[var1.id] > 0)
+        if (Block.BlocksLightLuminance[var1.id] > 0)
         {
             var13 = 1.0F;
         }
@@ -3003,7 +3003,7 @@ public class BlockRenderer
             var13 = var12;
         }
 
-        if (Block.BLOCKS_LIGHT_LUMINANCE[var1.id] > 0)
+        if (Block.BlocksLightLuminance[var1.id] > 0)
         {
             var13 = 1.0F;
         }
@@ -3025,7 +3025,7 @@ public class BlockRenderer
             var13 = var12;
         }
 
-        if (Block.BLOCKS_LIGHT_LUMINANCE[var1.id] > 0)
+        if (Block.BlocksLightLuminance[var1.id] > 0)
         {
             var13 = 1.0F;
         }
@@ -3047,7 +3047,7 @@ public class BlockRenderer
             var13 = var12;
         }
 
-        if (Block.BLOCKS_LIGHT_LUMINANCE[var1.id] > 0)
+        if (Block.BlocksLightLuminance[var1.id] > 0)
         {
             var13 = 1.0F;
         }

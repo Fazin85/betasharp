@@ -94,7 +94,7 @@ public class GuiEditSign : GuiScreen
         GLManager.GL.Scale(-scale, -scale, -scale);
         GLManager.GL.Rotate(180.0F, 0.0F, 1.0F, 0.0F);
         Block signBlock = entitySign.getBlock();
-        if (signBlock == Block.SIGN)
+        if (signBlock == Block.Sign)
         {
             float rotation = entitySign.getPushedBlockData() * 360 / 16.0F;
             GLManager.GL.Rotate(rotation, 0.0F, 1.0F, 0.0F);

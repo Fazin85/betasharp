@@ -328,11 +328,11 @@ public abstract class BlockFluid : Block
                     int var6 = world.getBlockMeta(x, y, z);
                     if (var6 == 0)
                     {
-                        world.setBlock(x, y, z, Block.OBSIDIAN.id);
+                        world.setBlock(x, y, z, Block.Obsidian.id);
                     }
                     else if (var6 <= 4)
                     {
-                        world.setBlock(x, y, z, Block.COBBLESTONE.id);
+                        world.setBlock(x, y, z, Block.Cobblestone.id);
                     }
 
                     fizz(world, x, y, z);
