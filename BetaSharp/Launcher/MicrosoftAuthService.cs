@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http.Json;
+using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -14,7 +16,18 @@ public class MicrosoftAuthService
 
     //Prism Launcher client id
     private const string ClientId = "c36a9fb6-4f2a-41ff-90bd-ae7cc92031eb";
-    private const string RedirectUri = "http://localhost:8080";
+
+    [field: AllowNull, MaybeNull]
+    private string RedirectUri
+    {
+        get
+        {
+            if (field != null) return field;
+
+            field = $"http://localhost:{GetAvailablePort(8080)}";
+            return field;
+        }
+    }
 
     public async Task<Session?> AuthenticateAsync()
     {
@@ -334,6 +347,20 @@ public class MicrosoftAuthService
         if (!response.IsSuccessStatusCode) return null;
 
         return await response.Content.ReadFromJsonAsync<MinecraftProfile>();
+    }
+    
+    // Looks for the first available TCP port since startingPort
+    private static int GetAvailablePort(int startingPort)
+    {
+        if (startingPort > ushort.MaxValue) throw new ArgumentException($"Can't be greater than {ushort.MaxValue}", nameof(startingPort));
+        var ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
+
+        var connectionsEndpoints = ipGlobalProperties.GetActiveTcpConnections().Select(c => c.LocalEndPoint);
+        var tcpListenersEndpoints = ipGlobalProperties.GetActiveTcpListeners();
+        var portsInUse = connectionsEndpoints.Concat(tcpListenersEndpoints)
+            .Select(e => e.Port);
+
+        return Enumerable.Range(startingPort, ushort.MaxValue - startingPort + 1).Except(portsInUse).FirstOrDefault();
     }
 
     private class MinecraftProfile
