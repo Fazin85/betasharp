@@ -1375,7 +1375,8 @@ public partial class Minecraft : java.lang.Object, Runnable
 
                         if (Keyboard.getEventKey() == options.keyBindCommand.keyCode)
                         {
-                            displayGuiScreen(new GuiChat("/"));
+                            // Open chat with '/' and place the cursor after it
+                            displayGuiScreen(new GuiChat("/", true));
                         }
                     }
 

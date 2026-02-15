@@ -93,4 +93,12 @@ public class ServerCommandHandler
             output.SendMessage($"  {usage,-30} - {description}");
         }
     }
+
+    /// <summary>
+    /// Gets all available command names
+    /// </summary>
+    public List<string> GetAvailableCommandNames()
+    {
+        return commands.Keys.ToList();
+    }
 }

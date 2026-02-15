@@ -255,7 +255,7 @@ public class GameRenderer
                 GLManager.GL.Rotate(var13, 1.0F, 0.0F, 0.0F);
                 GLManager.GL.Rotate(var28, 0.0F, 1.0F, 0.0F);
             }
-            else
+                else
             {
                 var28 = var2.yaw;
                 var13 = var2.pitch;
