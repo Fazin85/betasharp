@@ -1328,8 +1328,8 @@ public abstract class World : java.lang.Object, BlockView
 
         int var5 = MathHelper.floor_double(entity.x);
         int var6 = MathHelper.floor_double(entity.z);
-        float var7 = (float)getBiomeSource().getTemperature(var5, var6);
-        int var8 = getBiomeSource().getBiome(var5, var6).getSkyColorByTemp(var7);
+        float var7 = (float)getBiomeSource().GetTemperature(var5, var6);
+        int var8 = getBiomeSource().GetBiome(var5, var6).GetSkyColorByTemp(var7);
         float var9 = (float)(var8 >> 16 & 255) / 255.0F;
         float var10 = (float)(var8 >> 8 & 255) / 255.0F;
         float var11 = (float)(var8 & 255) / 255.0F;
@@ -2541,7 +2541,7 @@ public abstract class World : java.lang.Object, BlockView
                 var7 = var6 & 15;
                 var8 = var6 >> 8 & 15;
                 var9 = getTopSolidBlockY(var7 + var3, var8 + var4);
-                if (getBiomeSource().getBiome(var7 + var3, var8 + var4).getEnableSnow() && var9 >= 0 && var9 < 128 && var14.getLight(LightType.Block, var7, var9, var8) < 10)
+                if (getBiomeSource().GetBiome(var7 + var3, var8 + var4).GetEnableSnow() && var9 >= 0 && var9 < 128 && var14.getLight(LightType.Block, var7, var9, var8) < 10)
                 {
                     var10 = var14.getBlockId(var7, var9 - 1, var8);
                     var15 = var14.getBlockId(var7, var9, var8);
@@ -3202,8 +3202,8 @@ public abstract class World : java.lang.Object, BlockView
         }
         else
         {
-            Biome var4 = getBiomeSource().getBiome(x, z);
-            return var4.getEnableSnow() ? false : var4.canSpawnLightningBolt();
+            Biome var4 = getBiomeSource().GetBiome(x, z);
+            return var4.GetEnableSnow() ? false : var4.CanSpawnLightningBolt();
         }
     }
 

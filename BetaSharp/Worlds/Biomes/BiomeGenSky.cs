@@ -7,14 +7,15 @@ public class BiomeGenSky : Biome
 
     public BiomeGenSky()
     {
-        spawnableMonsterList.Clear();
-        spawnableCreatureList.Clear();
-        spawnableWaterCreatureList.Clear();
-        spawnableCreatureList.Add(new SpawnListEntry(EntityChicken.Class, 10));
+        MonsterList.Clear();
+        CreatureList.Clear();
+        WaterCreatureList.Clear();
+
+        CreatureList.Add(new SpawnListEntry(EntityChicken.Class, 10));
     }
 
-    public override int getSkyColorByTemp(float var1)
+    public override int GetSkyColorByTemp(float rand)
     {
-        return 12632319;
+        return 0xC0C0FF;
     }
 }

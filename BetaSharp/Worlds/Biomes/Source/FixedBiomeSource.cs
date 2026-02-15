@@ -6,65 +6,59 @@ namespace BetaSharp.Worlds.Biomes.Source;
 public class FixedBiomeSource : BiomeSource
 {
 
-    private Biome field_4201_e;
-    private double field_4200_f;
-    private double field_4199_g;
+    private Biome _biome;
+    private double _temperature;
+    private double _downfall;
 
-    public FixedBiomeSource(Biome var1, double var2, double var4)
+    public FixedBiomeSource(Biome biome, double temperature, double downfall)
     {
-        field_4201_e = var1;
-        field_4200_f = var2;
-        field_4199_g = var4;
+        _biome = biome;
+        _temperature = temperature;
+        _downfall = downfall;
     }
 
-    public override Biome getBiome(ChunkPos var1)
+    public override Biome GetBiome(ChunkPos chunkPos) => _biome;
+
+    public override Biome GetBiome(int x, int y) => _biome;
+
+    public override double GetTemperature(int x, int y) => _temperature;
+
+    public override Biome[] GetBiomesInArea(int x, int y, int width, int depth)
     {
-        return field_4201_e;
+        Biomes = GetBiomesInArea(Biomes, x, y, width, depth);
+        return Biomes;
     }
 
-    public override Biome getBiome(int var1, int var2)
+    public override double[] GetTemperatures(double[] map, int x, int y, int width, int depth)
     {
-        return field_4201_e;
+        int size = width * depth;
+        if (map == null || map.Length < size)
+        {
+            map = new double[size];
+        }
+
+        Arrays.fill(map, 0, size, _temperature);
+        return map;
     }
 
-    public override double getTemperature(int var1, int var2)
+    public override Biome[] GetBiomesInArea(Biome[] biomes, int x, int y, int width, int depth)
     {
-        return field_4200_f;
-    }
+        int size = width * depth;
+        if (biomes == null || biomes.Length < size)
+        {
+            biomes = new Biome[size];
+        }
 
-    public override Biome[] getBiomesInArea(int var1, int var2, int var3, int var4)
-    {
-        biomes = getBiomesInArea(biomes, var1, var2, var3, var4);
+        if (TemperatureMap == null || TemperatureMap.Length < size)
+        {
+            TemperatureMap = new double[size];
+            DownfallMap = new double[size];
+        }
+
+        Arrays.fill(biomes, 0, size, _biome);
+        Arrays.fill(DownfallMap, 0, size, _downfall);
+        Arrays.fill(TemperatureMap, 0, size, _temperature);
+        
         return biomes;
-    }
-
-    public override double[] getTemperatures(double[] var1, int var2, int var3, int var4, int var5)
-    {
-        if (var1 == null || var1.Length < var4 * var5)
-        {
-            var1 = new double[var4 * var5];
-        }
-
-        Arrays.fill(var1, 0, var4 * var5, field_4200_f);
-        return var1;
-    }
-
-    public override Biome[] getBiomesInArea(Biome[] var1, int var2, int var3, int var4, int var5)
-    {
-        if (var1 == null || var1.Length < var4 * var5)
-        {
-            var1 = new Biome[var4 * var5];
-        }
-
-        if (temperatureMap == null || temperatureMap.Length < var4 * var5)
-        {
-            temperatureMap = new double[var4 * var5];
-            downfallMap = new double[var4 * var5];
-        }
-
-        Arrays.fill(var1, 0, var4 * var5, field_4201_e);
-        Arrays.fill(downfallMap, 0, var4 * var5, field_4199_g);
-        Arrays.fill(temperatureMap, 0, var4 * var5, field_4200_f);
-        return var1;
     }
 }

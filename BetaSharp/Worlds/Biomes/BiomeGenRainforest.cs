@@ -5,8 +5,8 @@ namespace BetaSharp.Worlds.Biomes;
 public class BiomeGenRainforest : Biome
 {
 
-    public override Feature getRandomWorldGenForTrees(java.util.Random var1)
+    public override Feature GetRandomWorldGenForTrees(java.util.Random rand)
     {
-        return var1.nextInt(3) == 0 ? new LargeOakTreeFeature() : new OakTreeFeature();
+        return rand.nextInt(3) == 0 ? new LargeOakTreeFeature() : new OakTreeFeature();
     }
 }

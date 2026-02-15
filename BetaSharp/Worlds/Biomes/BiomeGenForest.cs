@@ -8,11 +8,15 @@ public class BiomeGenForest : Biome
 
     public BiomeGenForest()
     {
-        spawnableCreatureList.Add(new SpawnListEntry(EntityWolf.Class, 2));
+        CreatureList.Add(new SpawnListEntry(EntityWolf.Class, 2));
     }
 
-    public override Feature getRandomWorldGenForTrees(java.util.Random var1)
+    public override Feature GetRandomWorldGenForTrees(java.util.Random rand)
     {
-        return var1.nextInt(5) == 0 ? new BirchTreeFeature() : var1.nextInt(3) == 0 ? new LargeOakTreeFeature() : new OakTreeFeature();
+        return rand.nextInt(5) == 0 ?
+            new BirchTreeFeature() :
+            rand.nextInt(3) == 0 ?
+                new LargeOakTreeFeature() :
+                new OakTreeFeature();
     }
 }

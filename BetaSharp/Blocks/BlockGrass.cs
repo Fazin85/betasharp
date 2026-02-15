@@ -31,9 +31,9 @@ public class BlockGrass : Block
 
     public override int getColorMultiplier(BlockView blockView, int x, int y, int z)
     {
-        blockView.getBiomeSource().getBiomesInArea(x, z, 1, 1);
-        double temperature = blockView.getBiomeSource().temperatureMap[0];
-        double downfall = blockView.getBiomeSource().downfallMap[0];
+        blockView.getBiomeSource().GetBiomesInArea(x, z, 1, 1);
+        double temperature = blockView.getBiomeSource().TemperatureMap[0];
+        double downfall = blockView.getBiomeSource().DownfallMap[0];
         return GrassColors.getColor(temperature, downfall);
     }
 
