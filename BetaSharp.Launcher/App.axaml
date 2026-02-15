@@ -1,6 +1,10 @@
-﻿<Application xmlns="https://github.com/avaloniaui"
+<Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="BetaSharp.Launcher.App">
+
+             x:Class="BetaSharp.Launcher.App"
+
+             RequestedThemeVariant="Default">
+
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>

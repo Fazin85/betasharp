@@ -1,6 +1,4 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Client;
 using BetaSharp.Client.Colors;
 using BetaSharp.Client.Guis;
@@ -17,7 +15,6 @@ using BetaSharp.Client.Sound;
 using BetaSharp.Client.Textures;
 using BetaSharp.Entities;
 using BetaSharp.Items;
-using BetaSharp.Launcher;
 using BetaSharp.Profiling;
 using BetaSharp.Server.Internal;
 using BetaSharp.Stats;
@@ -1676,43 +1673,23 @@ public partial class Minecraft : java.lang.Object, Runnable
         return player is EntityClientPlayerMP ? ((EntityClientPlayerMP)player).sendQueue : null;
     }
 
-    private static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
-            .UsePlatformDetect()
-            .LogToTrace();
-
+    // Needs better args validation
     public static void Main(string[] args)
     {
-        bool valid = JarValidator.ValidateJar("b1.7.3.jar");
-        string playerName = null;
-        string sessionToken = null;
-        playerName = "Player" + java.lang.System.currentTimeMillis() % 1000L;
+        var playerName = $"Player{Random.Shared.Next()}";
+        var sessionToken = "-";
+
         if (args.Length > 0)
         {
             playerName = args[0];
         }
 
-        sessionToken = "-";
         if (args.Length > 1)
         {
             sessionToken = args[1];
         }
 
-        if (!valid)
-        {
-            var app = BuildAvaloniaApp();
-
-            app.StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);
-
-            if (LauncherWindow.Result != null && LauncherWindow.Result.Success)
-            {
-                startup(playerName, sessionToken);
-            }
-        }
-        else
-        {
-            startup(playerName, sessionToken);
-        }
+        startup(playerName, sessionToken);
     }
 
     public static bool isGuiEnabled()

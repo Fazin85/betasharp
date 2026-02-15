@@ -1,0 +1,11 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:BetaSharp.Launcher.Features.Shell"
+
+        x:Class="BetaSharp.Launcher.Features.Shell.ShellView" x:DataType="local:ShellViewModel"
+
+        Icon="../../logo.ico" Title="BetaSharp Launcher"
+        Width="850" Height="480" MinWidth="850" MinHeight="480" WindowStartupLocation="CenterScreen">
+
+    <TransitioningContentControl Content="{CompiledBinding Current}" />
+</Window>

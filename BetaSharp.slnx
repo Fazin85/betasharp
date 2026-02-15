@@ -5,6 +5,7 @@
         <BuildType Name="ServerDebug"/>
         <BuildType Name="ServerRelease"/>
     </Configurations>
-    
+
     <Project Path="BetaSharp/BetaSharp.csproj"/>
+    <Project Path="BetaSharp.Launcher/BetaSharp.Launcher.csproj"/>
 </Solution>
