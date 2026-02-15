@@ -1,15 +1,13 @@
-using java.io;
-
 namespace BetaSharp.NBT;
 
 public sealed class NBTTagEnd : NBTBase
 {
-    public override void ReadTagContents(DataInput input)
+    public override void ReadTagContents(Stream input)
     {
         throw new InvalidOperationException("Cannot read end tag");
     }
 
-    public override void WriteTagContents(DataOutput output)
+    public override void WriteTagContents(Stream output)
     {
         throw new InvalidOperationException("Cannot write end tag");
     }

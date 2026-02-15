@@ -1,20 +1,18 @@
-using java.io;
-
 namespace BetaSharp.NBT;
 
 public abstract class NBTBase
 {
     public string Key { get; set; } = string.Empty;
 
-    public abstract void WriteTagContents(DataOutput output);
+    public abstract void WriteTagContents(Stream output);
 
-    public abstract void ReadTagContents(DataInput input);
+    public abstract void ReadTagContents(Stream input);
 
     public abstract byte GetTagType();
 
-    public static NBTBase ReadTag(DataInput input)
+    public static NBTBase ReadTag(Stream input)
     {
-        var identifier = input.readByte();
+        var identifier = input.ReadByte();
 
         if (identifier is 0)
         {
@@ -23,26 +21,26 @@ public abstract class NBTBase
 
         var tag = CreateTagOfType(identifier);
 
-        tag.Key = input.readUTF();
+        tag.Key = input.ReadString();
         tag.ReadTagContents(input);
 
         return tag;
     }
 
-    public static void WriteTag(NBTBase tag, DataOutput output)
+    public static void WriteTag(NBTBase tag, Stream output)
     {
-        output.writeByte(tag.GetTagType());
+        output.WriteByte(tag.GetTagType());
 
         if (tag.GetTagType() is 0)
         {
             return;
         }
 
-        output.writeUTF(tag.Key);
+        output.WriteString(tag.Key);
         tag.WriteTagContents(output);
     }
 
-    public static NBTBase CreateTagOfType(byte identifier)
+    public static NBTBase CreateTagOfType(int identifier)
     {
         return identifier switch
         {
@@ -61,7 +59,7 @@ public abstract class NBTBase
         };
     }
 
-    public static string GetTagName(byte identifier)
+    public static string GetTagName(int identifier)
     {
         return identifier switch
         {

@@ -1,5 +1,3 @@
-using java.io;
-
 namespace BetaSharp.NBT;
 
 public sealed class NBTTagList : NBTBase
@@ -7,12 +5,12 @@ public sealed class NBTTagList : NBTBase
     private List<NBTBase> list = [];
     private byte type;
 
-    public override void WriteTagContents(DataOutput output)
+    public override void WriteTagContents(Stream output)
     {
         type = list.Count > 0 ? list[0].GetTagType() : (byte) 1;
 
-        output.writeByte(type);
-        output.writeInt(list.Count);
+        output.WriteByte(type);
+        output.WriteInt(list.Count);
 
         foreach (var tag in list)
         {
@@ -20,12 +18,12 @@ public sealed class NBTTagList : NBTBase
         }
     }
 
-    public override void ReadTagContents(DataInput input)
+    public override void ReadTagContents(Stream input)
     {
         list = [];
-        type = input.readByte();
+        type = (byte) input.ReadByte();
 
-        var length = input.readInt();
+        var length = input.ReadInt();
 
         for (var index = 0; index < length; ++index)
         {
