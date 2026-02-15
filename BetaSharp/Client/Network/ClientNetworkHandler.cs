@@ -362,7 +362,7 @@ public class ClientNetworkHandler : NetHandler
 
     public override void onBlockUpdate(BlockUpdateS2CPacket packet)
     {
-        worldClient.setBlockWithMetaFromPacket(packet.x, packet.y, packet.z, packet.blockRawId, packet.blockMetadata);
+        worldClient.SetBlockWithMetaFromPacket(packet.x, packet.y, packet.z, packet.blockRawId, packet.blockMetadata);
     }
 
     public override void onDisconnect(DisconnectPacket packet)

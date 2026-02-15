@@ -2291,7 +2291,7 @@ public abstract class World : java.lang.Object, BlockView
 
     public virtual void tick(int renderDistance)
     {
-        updateWeatherCycles();
+        UpdateWeatherCycles();
         long var2;
         if (canSkipNight())
         {
@@ -2358,7 +2358,7 @@ public abstract class World : java.lang.Object, BlockView
 
     }
 
-    protected virtual void updateWeatherCycles()
+    protected virtual void UpdateWeatherCycles()
     {
         if (!dimension.hasCeiling)
         {
@@ -2913,7 +2913,7 @@ public abstract class World : java.lang.Object, BlockView
 
     }
 
-    public virtual void disconnect()
+    public virtual void Disconnect()
     {
     }
 

@@ -184,14 +184,14 @@ public class ClientWorld : World
 
     public Entity removeEntityFromWorld(int networkId)
     {
-        Entity var2 = (Entity)entitiesByNetworkId.remove(networkId);
-        if (var2 != null)
+        Entity ent = (Entity)entitiesByNetworkId.remove(networkId);
+        if (ent != null)
         {
-            forcedEntities.Remove(var2);
-            remove(var2);
+            forcedEntities.Remove(ent);
+            remove(ent);
         }
 
-        return var2;
+        return ent;
     }
 
     public override bool setBlockMetaWithoutNotifyingNeighbors(int x, int y, int z, int meta)
@@ -239,7 +239,7 @@ public class ClientWorld : World
         }
     }
 
-    public bool setBlockWithMetaFromPacket(int minX, int minY, int minZ, int blockId, int meta)
+    public bool SetBlockWithMetaFromPacket(int minX, int minY, int minZ, int blockId, int meta)
     {
         clearBlockResets(minX, minY, minZ, minX, minY, minZ);
         if (base.setBlockWithoutNotifyingNeighbors(minX, minY, minZ, blockId, meta))
@@ -253,12 +253,10 @@ public class ClientWorld : World
         }
     }
 
-    public override void disconnect()
-    {
-        _networkHandler.sendPacketAndDisconnect(new DisconnectPacket("Quitting"));
-    }
+    public override void Disconnect() =>_networkHandler.sendPacketAndDisconnect(new DisconnectPacket("Quitting"));
+    
 
-    protected override void updateWeatherCycles()
+    protected override void UpdateWeatherCycles()
     {
         if (dimension.hasCeiling) return;
 

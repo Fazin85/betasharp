@@ -148,10 +148,10 @@ public class ServerWorld : World
     }
 
 
-    protected override void updateWeatherCycles()
+    protected override void UpdateWeatherCycles()
     {
         bool var1 = isRaining();
-        base.updateWeatherCycles();
+        base.UpdateWeatherCycles();
         if (var1 != isRaining())
         {
             if (var1)
