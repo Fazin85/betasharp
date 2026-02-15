@@ -138,7 +138,7 @@ public class Explosion : java.lang.Object
     public void doExplosionB(bool var1)
     {
         worldObj.playSound(explosionX, explosionY, explosionZ, "random.explode", 4.0F, (1.0F + (worldObj.random.nextFloat() - worldObj.random.nextFloat()) * 0.2F) * 0.7F);
-        List<BlockPos> var2 = new (destroyedBlockPositions);
+        List<BlockPos> var2 = new(destroyedBlockPositions);
 
         for (int var3 = var2.Count - 1; var3 >= 0; --var3)
         {

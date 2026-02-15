@@ -54,7 +54,7 @@ public class BlockRedstoneWire : Block
     private void updateAndPropagateCurrentStrength(World var1, int var2, int var3, int var4)
     {
         func_21030_a(var1, var2, var3, var4, var2, var3, var4);
-        List<BlockPos> neighborsCopy = new (neighbors);
+        List<BlockPos> neighborsCopy = new(neighbors);
         neighbors.Clear();
 
         foreach (var n in neighborsCopy)

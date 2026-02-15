@@ -1,5 +1,5 @@
-﻿using System.Reflection;
-using java.nio;
+﻿using java.nio;
+using System.Reflection;
 
 namespace BetaSharp.Util;
 

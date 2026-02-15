@@ -88,35 +88,35 @@ public class GuiCreateWorld : GuiScreen
                     mc.displayGuiScreen(parentScreen);
                     break;
                 case BUTTON_CREATE:
-                {
-                    if (createClicked)
                     {
-                        return;
-                    }
-
-                    createClicked = true;
-                    long worldSeed = new java.util.Random().nextLong();
-                    string seedInput = textboxSeed.getText();
-                    if (!MathHelper.stringNullOrLengthZero(seedInput))
-                    {
-                        try
+                        if (createClicked)
                         {
-                            long parsedSeed = Long.parseLong(seedInput);
-                            if (parsedSeed != 0L)
+                            return;
+                        }
+
+                        createClicked = true;
+                        long worldSeed = new java.util.Random().nextLong();
+                        string seedInput = textboxSeed.getText();
+                        if (!MathHelper.stringNullOrLengthZero(seedInput))
+                        {
+                            try
                             {
-                                worldSeed = parsedSeed;
+                                long parsedSeed = Long.parseLong(seedInput);
+                                if (parsedSeed != 0L)
+                                {
+                                    worldSeed = parsedSeed;
+                                }
+                            }
+                            catch (NumberFormatException exception)
+                            {
+                                worldSeed = seedInput.GetHashCode();
                             }
                         }
-                        catch (NumberFormatException exception)
-                        {
-                            worldSeed = seedInput.GetHashCode();
-                        }
-                    }
 
-                    mc.playerController = new PlayerControllerSP(mc);
-                    mc.startWorld(folderName, textboxWorldName.getText(), worldSeed);
-                    break;
-                }
+                        mc.playerController = new PlayerControllerSP(mc);
+                        mc.startWorld(folderName, textboxWorldName.getText(), worldSeed);
+                        break;
+                    }
             }
         }
     }

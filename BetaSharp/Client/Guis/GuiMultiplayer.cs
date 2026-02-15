@@ -50,38 +50,38 @@ public class GuiMultiplayer : GuiScreen
                     mc.displayGuiScreen(parentScreen);
                     break;
                 case BUTTON_CONNECT:
-                {
-                    string serverAddress = serverAddressInputField.getText().Trim();
-                    mc.options.lastServer = serverAddress.Replace(":", "_");
-                    mc.options.saveOptions();
-                    string[] addressParts = serverAddress.Split(":");
-                    if (serverAddress.StartsWith("["))
                     {
-                        int bracketIndex = serverAddress.IndexOf("]");
-                        if (bracketIndex > 0)
+                        string serverAddress = serverAddressInputField.getText().Trim();
+                        mc.options.lastServer = serverAddress.Replace(":", "_");
+                        mc.options.saveOptions();
+                        string[] addressParts = serverAddress.Split(":");
+                        if (serverAddress.StartsWith("["))
                         {
-                            string ipv6Address = serverAddress.Substring(1, bracketIndex);
-                            string portPart = serverAddress.Substring(bracketIndex + 1).Trim();
-                            if (portPart.StartsWith(":") && portPart.Length > 0)
+                            int bracketIndex = serverAddress.IndexOf("]");
+                            if (bracketIndex > 0)
                             {
-                                portPart = portPart.Substring(1);
-                                addressParts = new string[] { ipv6Address, portPart };
-                            }
-                            else
-                            {
-                                addressParts = new string[] { ipv6Address };
+                                string ipv6Address = serverAddress.Substring(1, bracketIndex);
+                                string portPart = serverAddress.Substring(bracketIndex + 1).Trim();
+                                if (portPart.StartsWith(":") && portPart.Length > 0)
+                                {
+                                    portPart = portPart.Substring(1);
+                                    addressParts = new string[] { ipv6Address, portPart };
+                                }
+                                else
+                                {
+                                    addressParts = new string[] { ipv6Address };
+                                }
                             }
                         }
-                    }
 
-                    if (addressParts.Length > 2)
-                    {
-                        addressParts = new string[] { serverAddress };
-                    }
+                        if (addressParts.Length > 2)
+                        {
+                            addressParts = new string[] { serverAddress };
+                        }
 
-                    mc.displayGuiScreen(new GuiConnecting(mc, addressParts[0], addressParts.Length > 1 ? parseIntWithDefault(addressParts[1], 25565) : 25565));
-                    break;
-                }
+                        mc.displayGuiScreen(new GuiConnecting(mc, addressParts[0], addressParts.Length > 1 ? parseIntWithDefault(addressParts[1], 25565) : 25565));
+                        break;
+                    }
             }
         }
     }

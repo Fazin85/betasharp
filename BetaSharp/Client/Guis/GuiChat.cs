@@ -43,40 +43,40 @@ public class GuiChat : GuiScreen
                 break;
             // Enter key
             case Keyboard.KEY_RETURN:
-            {
-                string msg = message.Trim();
-                if (msg.Length > 0)
                 {
-                    mc.player.sendChatMessage(msg);
-                }
+                    string msg = message.Trim();
+                    if (msg.Length > 0)
+                    {
+                        mc.player.sendChatMessage(msg);
+                    }
 
-                mc.displayGuiScreen(null);
-                break;
-            }
+                    mc.displayGuiScreen(null);
+                    break;
+                }
             // Backspace
             case Keyboard.KEY_BACK:
-            {
-                if (message.Length > 0)
                 {
-                    message = message.Substring(0, message.Length - 1);
-                }
+                    if (message.Length > 0)
+                    {
+                        message = message.Substring(0, message.Length - 1);
+                    }
 
-                break;
-            }
+                    break;
+                }
             case Keyboard.KEY_NONE:
-            {
-                break;
-            }
+                {
+                    break;
+                }
             // All other keys
             default:
-            {
-                if (allowedChars.Contains(eventChar) && message.Length < 100)
                 {
-                    message += eventChar;
-                }
+                    if (allowedChars.Contains(eventChar) && message.Length < 100)
+                    {
+                        message += eventChar;
+                    }
 
-                break;
-            }
+                    break;
+                }
         }
     }
 

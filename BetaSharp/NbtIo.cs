@@ -38,7 +38,7 @@ public static class NbtIo
 
         try
         {
-            tag = Read((DataInput) stream);
+            tag = Read((DataInput)stream);
         }
         finally
         {

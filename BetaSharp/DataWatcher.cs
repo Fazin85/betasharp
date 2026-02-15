@@ -10,13 +10,13 @@ namespace BetaSharp;
 public class DataWatcher
 {
     private static readonly Dictionary<Type, int> dataTypes = [];
-        
+
     private readonly Dictionary<int, WatchableObject> watchedObjects = new();
     public bool dirty { get; private set; }
-    
+
     public void addObject(int id, java.lang.Object value)
     {
-        if (!dataTypes.TryGetValue(value.GetType(), out int typeId)) 
+        if (!dataTypes.TryGetValue(value.GetType(), out int typeId))
         {
             throw new ArgumentException("Unknown data type: " + value.GetType());
         }
@@ -44,7 +44,7 @@ public class DataWatcher
                 if (obj.dirty)
                 {
                     if (res == null) res = new ArrayList();
-                        
+
                     obj.dirty = false;
                     res.add(obj);
                 }
@@ -64,7 +64,7 @@ public class DataWatcher
     {
         return ((Integer)watchedObjects[id].watchedObject).intValue();
     }
-        
+
     public string getWatchableObjectString(int id)
     {
         return ((JString)watchedObjects[id].watchedObject).value;
@@ -206,12 +206,12 @@ public class DataWatcher
 
     static DataWatcher()
     {
-        dataTypes[typeof(java.lang.Byte)] =  0;
-        dataTypes[typeof(Short)] =  1;
-        dataTypes[typeof(Integer)] =  2;
-        dataTypes[typeof(Float)] =  3;
-        dataTypes[typeof(JString)] =  4;
-        dataTypes[typeof(ItemStack)] =  5;
-        dataTypes[typeof(Vec3i)] =  6;
+        dataTypes[typeof(java.lang.Byte)] = 0;
+        dataTypes[typeof(Short)] = 1;
+        dataTypes[typeof(Integer)] = 2;
+        dataTypes[typeof(Float)] = 3;
+        dataTypes[typeof(JString)] = 4;
+        dataTypes[typeof(ItemStack)] = 5;
+        dataTypes[typeof(Vec3i)] = 6;
     }
 }

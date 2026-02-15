@@ -1,5 +1,5 @@
-using System.Globalization;
 using java.io;
+using System.Globalization;
 
 namespace BetaSharp.NBT;
 

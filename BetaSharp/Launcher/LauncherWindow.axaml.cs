@@ -1,9 +1,9 @@
-﻿using System.Runtime.InteropServices;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Microsoft.Win32;
+using System.Runtime.InteropServices;
 
 namespace BetaSharp.Launcher;
 
@@ -70,7 +70,7 @@ public partial class LauncherWindow : Window
             Background = new SolidColorBrush(Color.FromRgb(30, 30, 30));
             Foreground = new SolidColorBrush(Color.FromRgb(220, 220, 220));
             ThemeToggleButton.Content = "☀️";
-                
+
             // Set text colors to light for dark mode
             var lightColor = new SolidColorBrush(Color.FromRgb(220, 220, 220));
             StatusText.Foreground = lightColor;
@@ -84,7 +84,7 @@ public partial class LauncherWindow : Window
             Background = new SolidColorBrush(Color.FromRgb(240, 240, 240));
             Foreground = new SolidColorBrush(Color.FromRgb(30, 30, 30));
             ThemeToggleButton.Content = "🌙";
-                
+
             // Set text colors to dark for light mode
             var darkColor = new SolidColorBrush(Color.FromRgb(30, 30, 30));
             StatusText.Foreground = darkColor;

@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Blocks.Materials;
@@ -16,6 +15,7 @@ using BetaSharp.Worlds.Storage;
 using java.lang;
 using java.util;
 using Silk.NET.Maths;
+using System.Runtime.InteropServices;
 
 namespace BetaSharp.Worlds;
 
@@ -717,9 +717,7 @@ public abstract class World : java.lang.Object, BlockView
             else
             {
                 if (y >= 128)
-                {
                     y = 127;
-                }
 
                 Chunk var11 = getChunk(x >> 4, z >> 4);
                 x &= 15;
@@ -3128,7 +3126,8 @@ public abstract class World : java.lang.Object, BlockView
     public void updateSleepingPlayers()
     {
         allPlayersSleeping = players.Count > 0;
-        foreach (var player in players) {
+        foreach (var player in players)
+        {
             if (!player.isSleeping())
             {
                 allPlayersSleeping = false;
@@ -3141,7 +3140,8 @@ public abstract class World : java.lang.Object, BlockView
     protected void afterSkipNight()
     {
         allPlayersSleeping = false;
-        foreach (var player in players) {
+        foreach (var player in players)
+        {
             if (player.isSleeping())
             {
                 player.wakeUp(false, false, true);

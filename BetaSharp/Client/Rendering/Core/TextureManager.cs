@@ -19,7 +19,7 @@ public class TextureManager : java.lang.Object
     private readonly HashMap colors = [];
     private readonly HashMap images = [];
     private readonly IntBuffer idBuffer = GLAllocation.createDirectIntBuffer(1);
-    private readonly ByteBuffer imageBuffer = ByteBuffer.wrap(new byte[1024*1024]); // 1MB
+    private readonly ByteBuffer imageBuffer = ByteBuffer.wrap(new byte[1024 * 1024]); // 1MB
     private readonly List<DynamicTexture> dynamicTextures = [];
     private readonly Map downloadedImages = new HashMap();
     private readonly GameOptions gameOptions;

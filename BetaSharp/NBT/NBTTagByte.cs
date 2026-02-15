@@ -22,7 +22,7 @@ public sealed class NBTTagByte : NBTBase
 
     public override void ReadTagContents(DataInput input)
     {
-        Value = (sbyte) input.readByte();
+        Value = (sbyte)input.readByte();
     }
 
     public override byte GetTagType()

@@ -200,7 +200,7 @@ public class GameOptions : java.lang.Object
     {
         TranslationStorage translations = TranslationStorage.getInstance();
         string label = GetOptionLabel(option, translations) + ": ";
-            
+
         if (option.getEnumFloat())
         {
             return FormatFloatValue(option, label, translations);
@@ -219,18 +219,18 @@ public class GameOptions : java.lang.Object
             return FormatEnumValue(option, label, translations);
         }
     }
-        
+
     private string GetOptionLabel(EnumOptions option, TranslationStorage translations)
     {
         if (option == EnumOptions.FRAMERATE_LIMIT) return "Max FPS";
         if (option == EnumOptions.FOV) return "FOV";
         return translations.translateKey(option.getEnumString());
     }
-        
+
     private string FormatFloatValue(EnumOptions option, string label, TranslationStorage translations)
     {
         float value = getOptionFloatValue(option);
-            
+
         if (option == EnumOptions.SENSITIVITY)
         {
             return value == 0.0F ? label + translations.translateKey("options.sensitivity.min") : (value == 1.0F ? label + translations.translateKey("options.sensitivity.max") : label + (int)(value * 200.0F) + "%");
@@ -248,13 +248,13 @@ public class GameOptions : java.lang.Object
             return (value == 0.0F ? label + translations.translateKey("options.off") : label + (int)(value * 100.0F) + "%");
         }
     }
-        
+
     private string FormatFramerateValue(string label, float value)
     {
         int fps = 30 + (int)(value * 210.0f);
         return label + (fps == 240 ? "Unlimited" : fps + " FPS");
     }
-        
+
     private string FormatMsaaValue(string label, TranslationStorage translations)
     {
         string result = label + (msaaLevel == 0 ? translations.translateKey("options.off") : MSAA_LEVELS[msaaLevel]);
@@ -264,7 +264,7 @@ public class GameOptions : java.lang.Object
         }
         return result;
     }
-        
+
     private string FormatEnumValue(EnumOptions option, string label, TranslationStorage translations)
     {
         if (option == EnumOptions.RENDER_DISTANCE) return label + translations.translateKey(RENDER_DISTANCES[renderDistance]);
@@ -311,7 +311,7 @@ public class GameOptions : java.lang.Object
             System.Console.WriteLine("Failed to load options");
         }
     }
-        
+
     private void LoadOptionFromParts(string[] parts)
     {
         switch (parts[0])
@@ -369,7 +369,7 @@ public class GameOptions : java.lang.Object
                 environmentAnimation = parts[1].Equals("true");
                 break;
         }
-            
+
         // Load keybindings
         for (int i = 0; i < keyBindings.Length; ++i)
         {

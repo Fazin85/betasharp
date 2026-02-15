@@ -9,7 +9,7 @@ public sealed class NBTTagList : NBTBase
 
     public override void WriteTagContents(DataOutput output)
     {
-        type = list.Count > 0 ? list[0].GetTagType() : (byte) 1;
+        type = list.Count > 0 ? list[0].GetTagType() : (byte)1;
 
         output.writeByte(type);
         output.writeInt(list.Count);

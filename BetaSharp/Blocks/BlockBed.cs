@@ -62,7 +62,8 @@ public class BlockBed : Block
                 if (isBedOccupied(meta))
                 {
                     EntityPlayer occupant = null;
-                    foreach (var otherPlayer in world.players) {
+                    foreach (var otherPlayer in world.players)
+                    {
                         if (otherPlayer.isSleeping())
                         {
                             Vec3i sleepingPos = otherPlayer.sleepingPos;

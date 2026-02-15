@@ -115,14 +115,14 @@ public class GuiAchievement : Gui
         int achievementX = achievementWindowWidth - 160;
         int achievementY = 0 - (int)(animationProgress * 36.0D);
         int achievementTextureId = theGame.textureManager.getTextureId("/achievement/bg.png");
-            
+
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         GLManager.GL.Enable(GLEnum.Lighting);
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)achievementTextureId);
         GLManager.GL.Disable(GLEnum.Lighting);
         drawTexturedModalRect(achievementX, achievementY, 96, 202, 160, 32);
         drawAchievementText(achievementX, achievementY);
-            
+
         GLManager.GL.PushMatrix();
         GLManager.GL.Rotate(180.0F, 1.0F, 0.0F, 0.0F);
         Lighting.turnOn();
