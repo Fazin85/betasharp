@@ -22,9 +22,7 @@ public class MicrosoftAuthService
     {
         get
         {
-            if (field != null) return field;
-
-            field = $"http://localhost:{GetAvailablePort(8080)}";
+            field ??= $"http://localhost:{GetAvailablePort(8080)}";
             return field;
         }
     }
