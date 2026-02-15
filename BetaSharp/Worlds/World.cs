@@ -2752,7 +2752,7 @@ public abstract class World : java.lang.Object, BlockView
         }
         else
         {
-            if (var8 == Block.FlowingWater || var8 == Block.Water || var8 == Block.FlowingLava || var8 == Block.LAVA || var8 == Block.Fire || var8 == Block.Snow)
+            if (var8 == Block.FlowingWater || var8 == Block.Water || var8 == Block.FlowingLava || var8 == Block.Lava || var8 == Block.Fire || var8 == Block.Snow)
             {
                 var8 = null;
             }

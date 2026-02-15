@@ -22,7 +22,7 @@ public class Biome
     public static readonly Biome SKY = new BiomeGenSky().setColor(8421631).setBiomeName("Sky").setDisableRain();
     public string name;
     public int grassColor;
-    public byte topBlockId = (byte)Block.GRASS_BLOCK.id;
+    public byte topBlockId = (byte)Block.GrassBlock.id;
     public byte soilBlockId = (byte)Block.Dirt.id;
     public int foliageColor = 5169201;
     protected List<SpawnListEntry> spawnableMonsterList = [];

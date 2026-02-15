@@ -17,7 +17,7 @@ public class ItemHoe : Item
     {
         int targetBlockId = world.getBlockId(x, y, z);
         int blockAbove = world.getBlockId(x, y + 1, z);
-        if ((meta == 0 || blockAbove != 0 || targetBlockId != Block.GRASS_BLOCK.id) && targetBlockId != Block.Dirt.id)
+        if ((meta == 0 || blockAbove != 0 || targetBlockId != Block.GrassBlock.id) && targetBlockId != Block.Dirt.id)
         {
             return false;
         }

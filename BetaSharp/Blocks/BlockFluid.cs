@@ -270,12 +270,11 @@ public abstract class BlockFluid : Block
         Vector3D<double> flowVec = new(0.0);
         if (material == Material.Water)
         {
-            flowVec = ((BlockFluid)FLOWING_WATER).getFlow(blockView, x, y, z);
+            flowVec = ((BlockFluid)FlowingWater).getFlow(blockView, x, y, z);
         }
-
-        if (material == Material.Lava)
+        else if (material == Material.Lava)
         {
-            flowVec = ((BlockFluid)FLOWING_LAVA).getFlow(blockView, x, y, z);
+            flowVec = ((BlockFluid)FlowingLava).getFlow(blockView, x, y, z);
         }
 
         return flowVec.X == 0.0D && flowVec.Z == 0.0D ? -1000.0D : java.lang.Math.atan2(flowVec.Z, flowVec.X) - Math.PI * 0.5D;

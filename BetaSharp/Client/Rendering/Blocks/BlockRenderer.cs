@@ -1521,7 +1521,7 @@ public class BlockRenderer
         double var19 = var2;
         double var20 = var3;
         double var15 = var4;
-        if (var1 == Block.GRASS)
+        if (var1 == Block.Grass)
         {
             long var17 = var2 * 3129871 ^ var4 * 116129781L ^ var3;
             var17 = var17 * var17 * 42317861L + var17 * 11L;
@@ -2588,7 +2588,7 @@ public class BlockRenderer
         float var23 = var10;
         float var24 = var12;
         float var25 = var13;
-        if (var1 != Block.GRASS_BLOCK)
+        if (var1 != Block.GrassBlock)
         {
             var17 = var10 * var5;
             var18 = var12 * var5;

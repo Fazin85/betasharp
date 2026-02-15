@@ -17,7 +17,7 @@ public class BlockFire : Block
     protected override void init()
     {
         registerFlammableBlock(Block.Planks.id, 5, 20);
-        registerFlammableBlock(Block.FENCE.id, 5, 20);
+        registerFlammableBlock(Block.Fence.id, 5, 20);
         registerFlammableBlock(Block.WoodenStairs.id, 5, 20);
         registerFlammableBlock(Block.Log.id, 5, 5);
         registerFlammableBlock(Block.Leaves.id, 30, 60);
@@ -65,7 +65,7 @@ public class BlockFire : Block
 
     public override void onTick(World world, int x, int y, int z, java.util.Random random)
     {
-        bool isOnNetherrack = world.getBlockId(x, y - 1, z) == Block.NETHERRACK.id;
+        bool isOnNetherrack = world.getBlockId(x, y - 1, z) == Block.Netherrack.id;
         if (!canPlaceAt(world, x, y, z))
         {
             world.setBlock(x, y, z, 0);
@@ -227,7 +227,7 @@ public class BlockFire : Block
 
     public override void onPlaced(World world, int x, int y, int z)
     {
-        if (world.getBlockId(x, y - 1, z) != Block.Obsidian.id || !Block.NETHER_PORTAL.create(world, x, y, z))
+        if (world.getBlockId(x, y - 1, z) != Block.Obsidian.id || !Block.NetherPortal.create(world, x, y, z))
         {
             if (!world.shouldSuffocate(x, y - 1, z) && !areBlocksAroundFlammable(world, x, y, z))
             {

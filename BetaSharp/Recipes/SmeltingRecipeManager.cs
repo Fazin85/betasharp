@@ -25,7 +25,7 @@ public class SmeltingRecipeManager
         addSmelting(Item.RAW_FISH.id, new ItemStack(Item.COOKED_FISH));
         addSmelting(Block.Cobblestone.id, new ItemStack(Block.Stone));
         addSmelting(Item.CLAY.id, new ItemStack(Item.BRICK));
-        addSmelting(Block.CACTUS.id, new ItemStack(Item.DYE, 1, 2));
+        addSmelting(Block.Cactus.id, new ItemStack(Item.DYE, 1, 2));
         addSmelting(Block.Log.id, new ItemStack(Item.COAL, 1, 1));
     }
 

@@ -103,7 +103,7 @@ public class LakeFeature : Feature
                 {
                     if (var6[(var8 * 16 + var32) * 8 + var10] && var1.getBlockId(var3 + var8, var4 + var10 - 1, var5 + var32) == Block.Dirt.id && var1.getBrightness(LightType.Sky, var3 + var8, var4 + var10, var5 + var32) > 0)
                     {
-                        var1.setBlockWithoutNotifyingNeighbors(var3 + var8, var4 + var10 - 1, var5 + var32, Block.GRASS_BLOCK.id);
+                        var1.setBlockWithoutNotifyingNeighbors(var3 + var8, var4 + var10 - 1, var5 + var32, Block.GrassBlock.id);
                     }
                 }
             }

@@ -93,7 +93,7 @@ public class NetherChunkGenerator : ChunkSource
 
                                 if (var46 > 0.0D)
                                 {
-                                    var51 = Block.NETHERRACK.id;
+                                    var51 = Block.Netherrack.id;
                                 }
 
                                 blocks[var42] = (byte)var51;
@@ -132,8 +132,8 @@ public class NetherChunkGenerator : ChunkSource
                 bool var10 = gravelBuffer[var7 + var8 * 16] + random.nextDouble() * 0.2D > 0.0D;
                 int var11 = (int)(depthBuffer[var7 + var8 * 16] / 3.0D + 3.0D + random.nextDouble() * 0.25D);
                 int var12 = -1;
-                byte var13 = (byte)Block.NETHERRACK.id;
-                byte var14 = (byte)Block.NETHERRACK.id;
+                byte var13 = (byte)Block.Netherrack.id;
+                byte var14 = (byte)Block.Netherrack.id;
 
                 for (int var15 = 127; var15 >= 0; --var15)
                 {
@@ -153,19 +153,19 @@ public class NetherChunkGenerator : ChunkSource
                         {
                             var12 = -1;
                         }
-                        else if (var17 == Block.NETHERRACK.id)
+                        else if (var17 == Block.Netherrack.id)
                         {
                             if (var12 == -1)
                             {
                                 if (var11 <= 0)
                                 {
                                     var13 = 0;
-                                    var14 = (byte)Block.NETHERRACK.id;
+                                    var14 = (byte)Block.Netherrack.id;
                                 }
                                 else if (var15 >= var4 - 4 && var15 <= var4 + 1)
                                 {
-                                    var13 = (byte)Block.NETHERRACK.id;
-                                    var14 = (byte)Block.NETHERRACK.id;
+                                    var13 = (byte)Block.Netherrack.id;
+                                    var14 = (byte)Block.Netherrack.id;
                                     if (var10)
                                     {
                                         var13 = (byte)Block.Gravel.id;
@@ -173,7 +173,7 @@ public class NetherChunkGenerator : ChunkSource
 
                                     if (var10)
                                     {
-                                        var14 = (byte)Block.NETHERRACK.id;
+                                        var14 = (byte)Block.Netherrack.id;
                                     }
 
                                     if (var9)

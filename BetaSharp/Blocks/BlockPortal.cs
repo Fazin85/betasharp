@@ -103,7 +103,7 @@ public class BlockPortal : BlockBreakable
             {
                 for (verticalOffset = 0; verticalOffset < 3; ++verticalOffset)
                 {
-                    world.setBlock(x + extendsInZ * horizontalOffset, y + verticalOffset, z + extendsInX * horizontalOffset, Block.NETHER_PORTAL.id);
+                    world.setBlock(x + extendsInZ * horizontalOffset, y + verticalOffset, z + extendsInX * horizontalOffset, Block.NetherPortal.id);
                 }
             }
 

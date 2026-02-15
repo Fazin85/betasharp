@@ -18,7 +18,7 @@ public class Session(string username, string sessionId)
         RegisteredBlocksList.Add(Block.Log);
         RegisteredBlocksList.Add(Block.Leaves);
         RegisteredBlocksList.Add(Block.Torch);
-        RegisteredBlocksList.Add(Block.Slab.);
+        RegisteredBlocksList.Add(Block.Slab);
         RegisteredBlocksList.Add(Block.Glass);
         RegisteredBlocksList.Add(Block.MossyCobblestone);
         RegisteredBlocksList.Add(Block.Sapling);
@@ -26,7 +26,7 @@ public class Session(string username, string sessionId)
         RegisteredBlocksList.Add(Block.Rose);
         RegisteredBlocksList.Add(Block.BrownMushroom);
         RegisteredBlocksList.Add(Block.RedMushroom);
-        RegisteredBlocksList.Add(Block.SAND);
+        RegisteredBlocksList.Add(Block.Sand);
         RegisteredBlocksList.Add(Block.Gravel);
         RegisteredBlocksList.Add(Block.Sponge);
         RegisteredBlocksList.Add(Block.Wool);

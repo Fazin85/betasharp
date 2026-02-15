@@ -159,12 +159,12 @@ public class CaveCarver : Carver
                                         if (var49 > -0.7D && var57 * var57 + var49 * var49 + var44 * var44 < 1.0D)
                                         {
                                             byte var51 = var3[var46];
-                                            if (var51 == Block.GRASS_BLOCK.id)
+                                            if (var51 == Block.GrassBlock.id)
                                             {
                                                 var47 = true;
                                             }
 
-                                            if (var51 == Block.Stone.id || var51 == Block.Dirt.id || var51 == Block.GRASS_BLOCK.id)
+                                            if (var51 == Block.Stone.id || var51 == Block.Dirt.id || var51 == Block.GrassBlock.id)
                                             {
                                                 if (var48 < 10)
                                                 {
@@ -175,7 +175,7 @@ public class CaveCarver : Carver
                                                     var3[var46] = 0;
                                                     if (var47 && var3[var46 - 1] == Block.Dirt.id)
                                                     {
-                                                        var3[var46 - 1] = (byte)Block.GRASS_BLOCK.id;
+                                                        var3[var46 - 1] = (byte)Block.GrassBlock.id;
                                                     }
                                                 }
                                             }

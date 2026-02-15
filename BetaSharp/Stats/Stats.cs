@@ -45,16 +45,16 @@ public class Stats : java.lang.Object
 
     public static void initializeItemStats()
     {
-        USED = initItemUsedStats(USED, "stat.useItem", 16908288, 0, Block.BLOCKS.Length);
-        BROKEN = initializeBrokenItemStats(BROKEN, "stat.breakItem", 16973824, 0, Block.BLOCKS.Length);
+        USED = initItemUsedStats(USED, "stat.useItem", 16908288, 0, Block.Blocks.Length);
+        BROKEN = initializeBrokenItemStats(BROKEN, "stat.breakItem", 16973824, 0, Block.Blocks.Length);
         hasBasicItemStatsInitialized = true;
         initializeCraftedItemStats();
     }
 
     public static void initializeExtendedItemStats()
     {
-        USED = initItemUsedStats(USED, "stat.useItem", 16908288, Block.BLOCKS.Length, 32000);
-        BROKEN = initializeBrokenItemStats(BROKEN, "stat.breakItem", 16973824, Block.BLOCKS.Length, 32000);
+        USED = initItemUsedStats(USED, "stat.useItem", 16908288, Block.Blocks.Length, 32000);
+        BROKEN = initializeBrokenItemStats(BROKEN, "stat.breakItem", 16973824, Block.Blocks.Length, 32000);
         hasExtendedItemStatsInitialized = true;
         initializeCraftedItemStats();
     }
@@ -128,7 +128,7 @@ public class Stats : java.lang.Object
             {
                 string var6 = StatCollector.translateToLocalFormatted(var1, [Item.ITEMS[var5].getStatName()]);
                 var0[var5] = (new StatCrafting(var2 + var5, var6, var5)).registerStat();
-                if (var5 >= Block.BLOCKS.Length)
+                if (var5 >= Block.Blocks.Length)
                 {
                     ITEM_STATS.add((StatCrafting)var0[var5]);
                 }
@@ -170,7 +170,7 @@ public class Stats : java.lang.Object
         replaceSimilarBlocks(var0, Block.LitRedstoneTorch.id, Block.RedstoneTorch.id);
         replaceSimilarBlocks(var0, Block.RedMushroom.id, Block.BrownMushroom.id);
         replaceSimilarBlocks(var0, Block.DoubleSlab.id, Block.Slab.id);
-        replaceSimilarBlocks(var0, Block.GRASS_BLOCK.id, Block.Dirt.id);
+        replaceSimilarBlocks(var0, Block.GrassBlock.id, Block.Dirt.id);
         replaceSimilarBlocks(var0, Block.Farmland.id, Block.Dirt.id);
     }
 

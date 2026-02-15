@@ -58,7 +58,7 @@ public class PineTreeFeature : Feature
             else
             {
                 var11 = var1.getBlockId(var3, var4 - 1, var5);
-                if ((var11 == Block.GRASS_BLOCK.id || var11 == Block.Dirt.id) && var4 < 128 - var6 - 1)
+                if ((var11 == Block.GrassBlock.id || var11 == Block.Dirt.id) && var4 < 128 - var6 - 1)
                 {
                     var1.setBlockWithoutNotifyingNeighbors(var3, var4 - 1, var5, Block.Dirt.id);
                     var18 = 0;

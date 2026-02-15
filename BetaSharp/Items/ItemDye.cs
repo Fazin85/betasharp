@@ -49,7 +49,7 @@ public class ItemDye : Item
                 }
                 return true;
             }
-            if (blockId == Block.GRASS_BLOCK.id)
+            if (blockId == Block.GrassBlock.id)
             {
                 if (!world.isRemote)
                 {
@@ -67,7 +67,7 @@ public class ItemDye : Item
                             spawnX += itemRand.nextInt(3) - 1;
                             spawnY += (itemRand.nextInt(3) - 1) * itemRand.nextInt(3) / 2;
                             spawnZ += itemRand.nextInt(3) - 1;
-                            if (world.getBlockId(spawnX, spawnY - 1, spawnZ) != Block.GRASS_BLOCK.id || world.shouldSuffocate(spawnX, spawnY, spawnZ))
+                            if (world.getBlockId(spawnX, spawnY - 1, spawnZ) != Block.GrassBlock.id || world.shouldSuffocate(spawnX, spawnY, spawnZ))
                             {
                                 validPosition = false;
                             }

@@ -55,7 +55,7 @@ public class OakTreeFeature : Feature
             else
             {
                 var8 = var1.getBlockId(var3, var4 - 1, var5);
-                if ((var8 == Block.GRASS_BLOCK.id || var8 == Block.Dirt.id) && var4 < 128 - var6 - 1)
+                if ((var8 == Block.GrassBlock.id || var8 == Block.Dirt.id) && var4 < 128 - var6 - 1)
                 {
                     var1.setBlockWithoutNotifyingNeighbors(var3, var4 - 1, var5, Block.Dirt.id);
 

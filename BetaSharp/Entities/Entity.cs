@@ -530,7 +530,7 @@ public abstract class Entity : java.lang.Object
                 var26 = MathHelper.floor_double(this.y - (double)0.2F - (double)standingEyeHeight);
                 var39 = MathHelper.floor_double(this.z);
                 var28 = world.getBlockId(var38, var26, var39);
-                if (world.getBlockId(var38, var26 - 1, var39) == Block.FENCE.id)
+                if (world.getBlockId(var38, var26 - 1, var39) == Block.Fence.id)
                 {
                     var28 = world.getBlockId(var38, var26 - 1, var39);
                 }

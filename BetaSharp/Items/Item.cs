@@ -115,7 +115,7 @@ public class Item : java.lang.Object
     public static Item DYE = (new ItemDye(95)).setTexturePosition(14, 4).setItemName("dyePowder");
     public static Item BONE = (new Item(96)).setTexturePosition(12, 1).setItemName("bone").setHandheld();
     public static Item SUGAR = (new Item(97)).setTexturePosition(13, 0).setItemName("sugar").setHandheld();
-    public static Item CAKE = (new ItemReed(98, Block.CAKE)).setMaxCount(1).setTexturePosition(13, 1).setItemName("cake");
+    public static Item CAKE = (new ItemReed(98, Block.Cake)).setMaxCount(1).setTexturePosition(13, 1).setItemName("cake");
     public static Item BED = (new ItemBed(99)).setMaxCount(1).setTexturePosition(13, 2).setItemName("bed");
     public static Item REPEATER = (new ItemReed(100, Block.Repeater)).setTexturePosition(6, 5).setItemName("diode");
     public static Item COOKIE = (new ItemCookie(101, 1, false, 8)).setTexturePosition(12, 5).setItemName("cookie");

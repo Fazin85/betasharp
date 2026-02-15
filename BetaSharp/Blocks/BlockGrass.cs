@@ -58,10 +58,9 @@ public class BlockGrass : Block
                 int blockAboveId = world.getBlockId(spreadX, spreadY + 1, spreadZ);
                 if (world.getBlockId(spreadX, spreadY, spreadZ) == Block.Dirt.id && world.getLightLevel(spreadX, spreadY + 1, spreadZ) >= 4 && Block.BlockLightOpacity[blockAboveId] <= 2)
                 {
-                    world.setBlock(spreadX, spreadY, spreadZ, Block.GRASS_BLOCK.id);
+                    world.setBlock(spreadX, spreadY, spreadZ, Block.GrassBlock.id);
                 }
             }
-
         }
     }
 

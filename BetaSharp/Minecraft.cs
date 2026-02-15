@@ -1077,7 +1077,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         if (objectMouseOver != null)
         {
             int blockId = world.getBlockId(objectMouseOver.blockX, objectMouseOver.blockY, objectMouseOver.blockZ);
-            if (blockId == Block.GRASS_BLOCK.id)
+            if (blockId == Block.GrassBlock.id)
             {
                 blockId = Block.Dirt.id;
             }

@@ -107,7 +107,7 @@ public class BlockCactus : Block
         else
         {
             int blockBelowId = world.getBlockId(x, y - 1, z);
-            return blockBelowId == Block.CACTUS.id || blockBelowId == Block.Sand.id;
+            return blockBelowId == Block.Cactus.id || blockBelowId == Block.Sand.id;
         }
     }
 

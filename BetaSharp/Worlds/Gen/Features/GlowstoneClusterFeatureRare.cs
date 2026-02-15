@@ -11,7 +11,7 @@ public class GlowstoneClusterFeatureRare : Feature
         {
             return false;
         }
-        else if (var1.getBlockId(var3, var4 + 1, var5) != Block.NETHERRACK.id)
+        else if (var1.getBlockId(var3, var4 + 1, var5) != Block.Netherrack.id)
         {
             return false;
         }
