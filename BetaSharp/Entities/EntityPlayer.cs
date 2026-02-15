@@ -459,19 +459,17 @@ public abstract class EntityPlayer : EntityLiving
 
             if (damageSource is EntityMonster || damageSource is EntityArrow)
             {
-                if (world.difficulty == 0)
+                switch(world.difficulty)
                 {
-                    amount = 0;
-                }
-
-                if (world.difficulty == 1)
-                {
-                    amount = amount / 3 + 1;
-                }
-
-                if (world.difficulty == 3)
-                {
-                    amount = amount * 3 / 2;
+                    case 0:
+                        amount = 0;
+                        break;
+                    case 1:
+                        amount = amount / 3 + 1;
+                        break;
+                    case 3:
+                        amount = amount * 3 / 2;
+                        break;
                 }
             }
 
