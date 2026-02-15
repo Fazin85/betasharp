@@ -7,11 +7,11 @@ public class BiomeGenHell : Biome
 
     public BiomeGenHell()
     {
-        spawnableMonsterList.Clear();
-        spawnableCreatureList.Clear();
-        spawnableWaterCreatureList.Clear();
-        spawnableMonsterList.Add(new SpawnListEntry(EntityGhast.Class, 10));
+        MonsterList.Clear();
+        CreatureList.Clear();
+        WaterCreatureList.Clear();
 
-        spawnableMonsterList.Add(new SpawnListEntry(EntityPigZombie.Class, 10));
+        MonsterList.Add(new SpawnListEntry(EntityGhast.Class, 10));
+        MonsterList.Add(new SpawnListEntry(EntityPigZombie.Class, 10));
     }
 }

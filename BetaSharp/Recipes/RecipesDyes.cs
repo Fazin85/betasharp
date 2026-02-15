@@ -5,7 +5,7 @@ namespace BetaSharp.Recipes;
 
 public class RecipesDyes
 {
-    public void addRecipes(CraftingManager var1)
+    public void AddRecipes(CraftingManager m)
     {
         for (int var2 = 0; var2 < 16; ++var2)
         {

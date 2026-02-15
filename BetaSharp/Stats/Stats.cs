@@ -64,32 +64,29 @@ public class Stats : java.lang.Object
         if (hasBasicItemStatsInitialized && hasExtendedItemStatsInitialized)
         {
             HashSet var0 = new HashSet();
-            Iterator var1 = CraftingManager.getInstance().getRecipeList().iterator();
+            object var1 = CraftingManager.getInstance().Recipes.GetEnumerator();
 
-            while (var1.hasNext())
+            while (var1 is IRecipe recipe)
             {
-                IRecipe var2 = (IRecipe)var1.next();
-                var0.add(Integer.valueOf(var2.getRecipeOutput().itemId));
+                var0.add(Integer.valueOf(recipe.GetRecipeOutput().itemId));
             }
 
-            var1 = SmeltingRecipeManager.getInstance().getSmeltingList().values().iterator();
+            var1 = SmeltingRecipeManager.getInstance().GetSmeltingList().Values.GetEnumerator();
 
-            while (var1.hasNext())
+            while (var1 is ItemStack itemStack)
             {
-                ItemStack var4 = (ItemStack)var1.next();
-                var0.add(Integer.valueOf(var4.itemId));
+                var0.add(Integer.valueOf(itemStack.itemId));
             }
 
             CRAFTED = new StatBase[32000];
             var1 = var0.iterator();
 
-            while (var1.hasNext())
+            while (var1 is Integer integer)
             {
-                Integer var5 = (Integer)var1.next();
-                if (Item.ITEMS[var5.intValue()] != null)
+                if (Item.ITEMS[integer.intValue()] != null)
                 {
-                    string var3 = StatCollector.translateToLocalFormatted("stat.craftItem", [Item.ITEMS[var5.intValue()].getStatName()]);
-                    CRAFTED[var5.intValue()] = (new StatCrafting(16842752 + var5.intValue(), var3, var5.intValue())).registerStat();
+                    string var3 = StatCollector.translateToLocalFormatted("stat.craftItem", [Item.ITEMS[integer.intValue()].getStatName()]);
+                    CRAFTED[integer.intValue()] = (new StatCrafting(16842752 + integer.intValue(), var3, integer.intValue())).registerStat();
                 }
             }
 

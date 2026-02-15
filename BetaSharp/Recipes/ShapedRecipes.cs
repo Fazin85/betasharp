@@ -3,84 +3,75 @@ using BetaSharp.Items;
 
 namespace BetaSharp.Recipes;
 
-public class ShapedRecipes : java.lang.Object, IRecipe
+public class ShapedRecipes : IRecipe
 {
-    private int recipeWidth;
-    private int recipeHeight;
-    private ItemStack[] recipeItems;
-    private ItemStack recipeOutput;
-    public readonly int recipeOutputItemID;
+    private int _width;
+    private int _height;
+    private ItemStack?[] _items;
+    private ItemStack _output;
+    public readonly int RecipeOutputItemID;
 
-    public ShapedRecipes(int var1, int var2, ItemStack[] var3, ItemStack var4)
+    public ShapedRecipes(int width, int height, ItemStack?[] items, ItemStack output)
     {
-        recipeOutputItemID = var4.itemId;
-        recipeWidth = var1;
-        recipeHeight = var2;
-        recipeItems = var3;
-        recipeOutput = var4;
+        RecipeOutputItemID = output.itemId;
+        _width = width;
+        _height = height;
+        _items = items;
+        _output = output;
     }
 
-    public ItemStack getRecipeOutput()
+    public ItemStack GetRecipeOutput()
     {
-        return recipeOutput;
+        return _output;
     }
 
-    public bool matches(InventoryCrafting var1)
+    public bool Matches(InventoryCrafting craftingInventory)
     {
-        for (int var2 = 0; var2 <= 3 - recipeWidth; ++var2)
+        for (int offsetX = 0; offsetX <= 3 - _width; ++offsetX)
         {
-            for (int var3 = 0; var3 <= 3 - recipeHeight; ++var3)
+            for (int offsetY = 0; offsetY <= 3 - _height; ++offsetY)
             {
-                if (func_21137_a(var1, var2, var3, true))
-                {
+                if (matchesAtOffset(craftingInventory, offsetX, offsetY, true))
                     return true;
-                }
-
-                if (func_21137_a(var1, var2, var3, false))
-                {
+                if (matchesAtOffset(craftingInventory, offsetX, offsetY, false))
                     return true;
-                }
             }
         }
 
         return false;
     }
 
-    private bool func_21137_a(InventoryCrafting var1, int var2, int var3, bool var4)
+    private bool matchesAtOffset(InventoryCrafting craftingInventory, int offsetX, int offsetY, bool mirrored)
     {
-        for (int var5 = 0; var5 < 3; ++var5)
+        for (int gridX = 0; gridX < 3; ++gridX)
         {
-            for (int var6 = 0; var6 < 3; ++var6)
+            for (int gridY = 0; gridY < 3; ++gridY)
             {
-                int var7 = var5 - var2;
-                int var8 = var6 - var3;
-                ItemStack var9 = null;
-                if (var7 >= 0 && var8 >= 0 && var7 < recipeWidth && var8 < recipeHeight)
+                int recipeX = gridX - offsetX;
+                int recipeY = gridY - offsetY;
+                ItemStack expected = null;
+                if (recipeX >= 0 && recipeY >= 0 && recipeX < _width && recipeY < _height)
                 {
-                    if (var4)
-                    {
-                        var9 = recipeItems[recipeWidth - var7 - 1 + var8 * recipeWidth];
-                    }
+                    if (mirrored)
+                        expected = _items[_width - recipeX - 1 + recipeY * _width];
                     else
-                    {
-                        var9 = recipeItems[var7 + var8 * recipeWidth];
-                    }
+                        expected = _items[recipeX + recipeY * _width];
                 }
 
-                ItemStack var10 = var1.getStackAt(var5, var6);
-                if (var10 != null || var9 != null)
+                ItemStack actual = craftingInventory.getStackAt(gridX, gridY);
+                if (actual != null || expected != null)
                 {
-                    if (var10 == null && var9 != null || var10 != null && var9 == null)
+                    if (actual == null && expected != null || actual != null && expected == null)
                     {
                         return false;
                     }
 
-                    if (var9.itemId != var10.itemId)
+                    if (expected.itemId != actual.itemId)
                     {
                         return false;
                     }
 
-                    if (var9.getDamage() != -1 && var9.getDamage() != var10.getDamage())
+                    if (expected.getDamage() != -1 && expected.getDamage() != actual.getDamage())
                     {
                         return false;
                     }
@@ -91,13 +82,13 @@ public class ShapedRecipes : java.lang.Object, IRecipe
         return true;
     }
 
-    public ItemStack getCraftingResult(InventoryCrafting var1)
+    public ItemStack GetCraftingResult(InventoryCrafting var1)
     {
-        return new ItemStack(recipeOutput.itemId, recipeOutput.count, recipeOutput.getDamage());
+        return new ItemStack(_output.itemId, _output.count, _output.getDamage());
     }
 
-    public int getRecipeSize()
+    public int GetRecipeSize()
     {
-        return recipeWidth * recipeHeight;
+        return _width * _height;
     }
 }

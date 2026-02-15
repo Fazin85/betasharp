@@ -11,7 +11,7 @@ public class NetherDimension : Dimension
 {
     public override void initBiomeSource()
     {
-        biomeSource = new FixedBiomeSource(Biome.HELL, 1.0D, 0.0D);
+        biomeSource = new FixedBiomeSource(Biome.Hell, 1.0D, 0.0D);
         isNether = true;
         evaporatesWater = true;
         hasCeiling = true;

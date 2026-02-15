@@ -636,7 +636,7 @@ public class GameRenderer
                 int var17 = var6 + random.nextInt(var7) - random.nextInt(var7);
                 int var18 = var3.getTopSolidBlockY(var16, var17);
                 int var19 = var3.getBlockId(var16, var18 - 1, var17);
-                if (var18 <= var5 + var7 && var18 >= var5 - var7 && var3.getBiomeSource().getBiome(var16, var17).canSpawnLightningBolt())
+                if (var18 <= var5 + var7 && var18 >= var5 - var7 && var3.getBiomeSource().GetBiome(var16, var17).CanSpawnLightningBolt())
                 {
                     float var20 = random.nextFloat();
                     float var21 = random.nextFloat();
@@ -701,7 +701,7 @@ public class GameRenderer
             int var15 = MathHelper.floor_double(var11);
             byte var16 = 10;
 
-            Biome[] var17 = var4.getBiomeSource().getBiomesInArea(var5 - var16, var7 - var16, var16 * 2 + 1, var16 * 2 + 1);
+            Biome[] var17 = var4.getBiomeSource().GetBiomesInArea(var5 - var16, var7 - var16, var16 * 2 + 1, var16 * 2 + 1);
             int var18 = 0;
 
             int var19;
@@ -716,7 +716,7 @@ public class GameRenderer
                 for (var20 = var7 - var16; var20 <= var7 + var16; ++var20)
                 {
                     var21 = var17[var18++];
-                    if (var21.getEnableSnow())
+                    if (var21.GetEnableSnow())
                     {
                         var22 = var4.getTopSolidBlockY(var19, var20);
                         if (var22 < 0)
@@ -782,7 +782,7 @@ public class GameRenderer
                 for (var20 = var7 - var16; var20 <= var7 + var16; ++var20)
                 {
                     var21 = var17[var18++];
-                    if (var21.canSpawnLightningBolt())
+                    if (var21.CanSpawnLightningBolt())
                     {
                         var22 = var4.getTopSolidBlockY(var19, var20);
                         var23 = var6 - var16;

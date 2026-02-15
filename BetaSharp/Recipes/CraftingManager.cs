@@ -7,8 +7,9 @@ namespace BetaSharp.Recipes;
 
 public class CraftingManager
 {
-    private static readonly CraftingManager instance = new CraftingManager();
-    private List recipes = new ArrayList();
+    private static CraftingManager instance { get; } = new();
+    private List<IRecipe> _recipes = new();
+    public List<IRecipe> Recipes => _recipes;
 
     public static CraftingManager getInstance()
     {
@@ -85,121 +86,85 @@ public class CraftingManager
         java.lang.System.@out.println(recipes.size() + " recipes");
     }
 
-    public void addRecipe(ItemStack var1, params object[] var2)
+    public void AddRecipe(ItemStack result, params object[] pattern)
     {
-        string var3 = "";
-        int var4 = 0;
-        int var5 = 0;
-        int var6 = 0;
-        if (var2[var4] is string[])
+        string patternString = "";
+        int index = 0;
+        int width = 0;
+        int height = 0;
+
+        while (index < pattern.Length && (pattern[index] is string || pattern[index] is string[]))
         {
-            string[] var11 = (string[])var2[var4++];
-
-            for (int var8 = 0; var8 < var11.Length; ++var8)
+            object current = pattern[index++];
+            if (current is string[] rows)
             {
-                string var9 = var11[var8];
-                ++var6;
-                var5 = var9.Length;
-                var3 = var3 + var9;
-            }
-        }
-        else
-        {
-            while (var2[var4] is string)
-            {
-                string var7 = (string)var2[var4++];
-                ++var6;
-                var5 = var7.Length;
-                var3 = var3 + var7;
-            }
-        }
-
-        HashMap var12;
-        for (var12 = new HashMap(); var4 < var2.Length; var4 += 2)
-        {
-            java.lang.Character var13 = (java.lang.Character)var2[var4];
-            ItemStack var15 = null;
-            if (var2[var4 + 1] is Item)
-            {
-                var15 = new ItemStack((Item)var2[var4 + 1]);
-            }
-            else if (var2[var4 + 1] is Block)
-            {
-                var15 = new ItemStack((Block)var2[var4 + 1], 1, -1);
-            }
-            else if (var2[var4 + 1] is ItemStack)
-            {
-                var15 = (ItemStack)var2[var4 + 1];
-            }
-
-            var12.put(var13, var15);
-        }
-
-        ItemStack[] var14 = new ItemStack[var5 * var6];
-
-        for (int var16 = 0; var16 < var5 * var6; ++var16)
-        {
-            char var10 = var3[var16];
-            if (var12.containsKey(java.lang.Character.valueOf(var10)))
-            {
-                var14[var16] = ((ItemStack)var12.get(java.lang.Character.valueOf(var10))).copy();
-            }
-            else
-            {
-                var14[var16] = null;
-            }
-        }
-
-        recipes.add(new ShapedRecipes(var5, var6, var14, var1));
-    }
-
-    public void addShapelessRecipe(ItemStack var1, params object[] var2)
-    {
-        ArrayList var3 = new ArrayList();
-        object[] var4 = var2;
-        int var5 = var2.Length;
-
-        for (int var6 = 0; var6 < var5; ++var6)
-        {
-            object var7 = var4[var6];
-            if (var7 is ItemStack)
-            {
-                var3.add(((ItemStack)var7).copy());
-            }
-            else if (var7 is Item)
-            {
-                var3.add(new ItemStack((Item)var7));
-            }
-            else
-            {
-                if (!(var7 is Block))
+                foreach (var row in rows)
                 {
-                    throw new java.lang.RuntimeException("Invalid shapeless recipy!");
+                    height++;
+                    width = row.Length;
+                    patternString += row;
                 }
-
-                var3.add(new ItemStack((Block)var7));
             }
-        }
-
-        recipes.add(new ShapelessRecipes(var1, var3));
-    }
-
-    public ItemStack findMatchingRecipe(InventoryCrafting var1)
-    {
-        for (int var2 = 0; var2 < recipes.size(); ++var2)
-        {
-            IRecipe var3 = (IRecipe)recipes.get(var2);
-            if (var3.matches(var1))
+            else if (current is string row)
             {
-                return var3.getCraftingResult(var1);
+                height++;
+                width = row.Length;
+                patternString += row;
             }
         }
 
-        return null;
+        var ingredients = new Dictionary<char, ItemStack?>();
+        for (; index < pattern.Length; index += 2)
+        {
+            char key = (char)pattern[index];
+            object input = pattern[index + 1];
+
+            ItemStack? value = input switch
+            {
+                Item item       => new ItemStack(item),
+                Block block     => new ItemStack(block, 1, -1),
+                ItemStack stack => stack,
+                _               => null // Thowing some Exception here would be ideal, but the original game does not do this
+            };
+
+            ingredients[key] = value;
+        }
+
+        var ingredientGrid = new ItemStack?[width * height];
+
+        for (int i = 0; i < patternString.Length; i++)
+        {
+            char c = patternString[i];
+            ingredients.TryGetValue(c, out var stack);
+            ingredientGrid[i] = stack?.copy() ?? null;
+        }
+
+        _recipes.Add(new ShapedRecipes(width, height, ingredientGrid, result));
     }
 
-    public List getRecipeList()
+    public void AddShapelessRecipe(ItemStack result, params object[] pattern)
     {
-        return recipes;
+        List<ItemStack> stacks = new();
+
+        foreach (var ingredient in pattern)
+        {
+            switch (ingredient)
+            {
+                case ItemStack s: stacks.Add(s.copy()); break;
+                case Item i: stacks.Add(new ItemStack(i)); break;
+                case Block b: stacks.Add(new ItemStack(b)); break;
+                default:
+                    throw new InvalidOperationException("Invalid shapeless recipy!"); // This typo is intentional to match the original game
+            }
+        }
+
+        _recipes.Add(new ShapelessRecipes(result, stacks));
+    }
+
+    public ItemStack? FindMatchingRecipe(InventoryCrafting craftingInventory)
+    {
+        return _recipes
+            .FirstOrDefault(r => r.Matches(craftingInventory))
+            ?.GetCraftingResult(craftingInventory);
     }
 }

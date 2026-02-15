@@ -130,8 +130,8 @@ public class SkyChunkGenerator : ChunkSource
                 Biome var9 = var4[var7 + var8 * 16];
                 int var10 = (int)(field_28077_t[var7 + var8 * 16] / 3.0D + 3.0D + field_28087_j.nextDouble() * 0.25D);
                 int var11 = -1;
-                byte var12 = var9.topBlockId;
-                byte var13 = var9.soilBlockId;
+                byte var12 = var9.TopBlockId;
+                byte var13 = var9.SoilBlockId;
 
                 for (int var14 = 127; var14 >= 0; --var14)
                 {
@@ -188,8 +188,8 @@ public class SkyChunkGenerator : ChunkSource
         field_28087_j.setSeed(var1 * 341873128712L + var2 * 132897987541L);
         byte[] var3 = new byte[-java.lang.Short.MIN_VALUE];
         Chunk var4 = new Chunk(field_28081_p, var3, var1, var2);
-        field_28075_v = field_28081_p.getBiomeSource().getBiomesInArea(field_28075_v, var1 * 16, var2 * 16, 16, 16);
-        double[] var5 = field_28081_p.getBiomeSource().temperatureMap;
+        field_28075_v = field_28081_p.getBiomeSource().GetBiomesInArea(field_28075_v, var1 * 16, var2 * 16, 16, 16);
+        double[] var5 = field_28081_p.getBiomeSource().TemperatureMap;
         func_28071_a(var1, var2, var3, field_28075_v, var5);
         func_28072_a(var1, var2, var3, field_28075_v);
         field_28076_u.carve(this, field_28081_p, var1, var2, var3);
@@ -206,8 +206,8 @@ public class SkyChunkGenerator : ChunkSource
 
         double var8 = 684.412D;
         double var10 = 684.412D;
-        double[] var12 = field_28081_p.getBiomeSource().temperatureMap;
-        double[] var13 = field_28081_p.getBiomeSource().downfallMap;
+        double[] var12 = field_28081_p.getBiomeSource().TemperatureMap;
+        double[] var13 = field_28081_p.getBiomeSource().DownfallMap;
         field_28090_g = field_28096_a.create(field_28090_g, var2, var4, var5, var7, 1.121D, 1.121D, 0.5D);
         field_28089_h = field_28095_b.create(field_28089_h, var2, var4, var5, var7, 200.0D, 200.0D, 0.5D);
         var8 *= 2.0D;
@@ -322,7 +322,7 @@ public class SkyChunkGenerator : ChunkSource
         BlockSand.fallInstantly = true;
         int var4 = var2 * 16;
         int var5 = var3 * 16;
-        Biome var6 = field_28081_p.getBiomeSource().getBiome(var4 + 16, var5 + 16);
+        Biome var6 = field_28081_p.getBiomeSource().GetBiome(var4 + 16, var5 + 16);
         field_28087_j.setSeed(field_28081_p.getSeed());
         long var7 = field_28087_j.nextLong() / 2L * 2L + 1L;
         long var9 = field_28087_j.nextLong() / 2L * 2L + 1L;
@@ -439,37 +439,37 @@ public class SkyChunkGenerator : ChunkSource
             ++var14;
         }
 
-        if (var6 == Biome.FOREST)
+        if (var6 == Biome.Forest)
         {
             var14 += var13 + 5;
         }
 
-        if (var6 == Biome.RAINFOREST)
+        if (var6 == Biome.Rainforest)
         {
             var14 += var13 + 5;
         }
 
-        if (var6 == Biome.SEASONAL_FOREST)
+        if (var6 == Biome.SeasonalForest)
         {
             var14 += var13 + 2;
         }
 
-        if (var6 == Biome.TAIGA)
+        if (var6 == Biome.Taiga)
         {
             var14 += var13 + 5;
         }
 
-        if (var6 == Biome.DESERT)
+        if (var6 == Biome.Desert)
         {
             var14 -= 20;
         }
 
-        if (var6 == Biome.TUNDRA)
+        if (var6 == Biome.Tundra)
         {
             var14 -= 20;
         }
 
-        if (var6 == Biome.PLAINS)
+        if (var6 == Biome.Plains)
         {
             var14 -= 20;
         }
@@ -479,7 +479,7 @@ public class SkyChunkGenerator : ChunkSource
         {
             var16 = var4 + field_28087_j.nextInt(16) + 8;
             var17 = var5 + field_28087_j.nextInt(16) + 8;
-            Feature var18 = var6.getRandomWorldGenForTrees(field_28087_j);
+            Feature var18 = var6.GetRandomWorldGenForTrees(field_28087_j);
             var18.prepare(1.0D, 1.0D, 1.0D);
             var18.generate(field_28081_p, field_28087_j, var16, field_28081_p.getTopY(var16, var17), var17);
         }
@@ -534,7 +534,7 @@ public class SkyChunkGenerator : ChunkSource
         }
 
         var15 = 0;
-        if (var6 == Biome.DESERT)
+        if (var6 == Biome.Desert)
         {
             var15 += 10;
         }
@@ -564,7 +564,7 @@ public class SkyChunkGenerator : ChunkSource
             new SpringFeature(Block.FlowingLava.id).generate(field_28081_p, field_28087_j, var17, var23, var19);
         }
 
-        field_28074_w = field_28081_p.getBiomeSource().getTemperatures(field_28074_w, var4 + 8, var5 + 8, 16, 16);
+        field_28074_w = field_28081_p.getBiomeSource().GetTemperatures(field_28074_w, var4 + 8, var5 + 8, 16, 16);
 
         for (var16 = var4 + 8; var16 < var4 + 8 + 16; ++var16)
         {
