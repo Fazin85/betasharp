@@ -71,7 +71,8 @@ public class ClientWorld : World
         for (int i = 0; i < _blockResets.Count; ++i)
         {
             BlockReset br = _blockResets[i];
-            if (br.X >= minX && br.Y >= minY && br.Z >= minZ && br.X <= maxX && br.Y <= maxY && br.Z <= maxZ)
+            if (br.X >= minX && br.Y >= minY && br.Z >= minZ &&
+                br.X <= maxX && br.Y <= maxY && br.Z <= maxZ)
             {
                 _blockResets.RemoveAt(i--);
             }
@@ -88,7 +89,7 @@ public class ClientWorld : World
 
     protected override void ManageChunkUpdatesAndEvents() { }
 
-    public override void ScheduleBlockUpdate(int x, int y, int z, int blockId, int delay){}
+    public override void ScheduleBlockUpdate(int x, int y, int z, int blockId, int delay) { }
 
     public override bool ProcessScheduledTicks(bool flush) => false;
 
@@ -112,14 +113,14 @@ public class ClientWorld : World
 
     public override bool SpawnEntity(Entity entity)
     {
-        bool var2 = base.SpawnEntity(entity);
+        bool spawned = base.SpawnEntity(entity);
         forcedEntities.Add(entity);
-        if (!var2)
+        if (!spawned)
         {
             pendingEntities.Add(entity);
         }
 
-        return var2;
+        return spawned;
     }
 
     public override void Remove(Entity ent)
@@ -158,6 +159,7 @@ public class ClientWorld : World
 
         forcedEntities.Add(ent);
         ent.id = networkId;
+
         if (!SpawnEntity(ent))
         {
             pendingEntities.Add(ent);
@@ -192,10 +194,8 @@ public class ClientWorld : World
             _blockResets.Add(new BlockReset(this, x, y, z, blockId, previousMeta));
             return true;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
 
     public override bool SetBlockWithoutNotifyingNeighbors(int x, int y, int z, int blockId, int meta)
@@ -207,10 +207,8 @@ public class ClientWorld : World
             _blockResets.Add(new BlockReset(this, x, y, z, previousBlockId, previousMeta));
             return true;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
 
     public override bool SetBlockWithoutNotifyingNeighbors(int x, int y, int z, int blockId)
@@ -222,10 +220,8 @@ public class ClientWorld : World
             _blockResets.Add(new BlockReset(this, x, y, z, previousBlockId, previousMeta));
             return true;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
 
     public bool SetBlockWithMetaFromPacket(int minX, int minY, int minZ, int blockId, int meta)
@@ -236,10 +232,8 @@ public class ClientWorld : World
             blockUpdate(minX, minY, minZ, blockId);
             return true;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
 
     public override void Disconnect() => _networkHandler.sendPacketAndDisconnect(new DisconnectPacket("Quitting"));
