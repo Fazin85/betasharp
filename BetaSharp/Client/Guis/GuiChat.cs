@@ -9,10 +9,13 @@ public class GuiChat : GuiScreen
     protected string message = "";
     private int updateCounter = 0;
     private static readonly string allowedChars = ChatAllowedCharacters.allowedCharacters;
+    private static readonly System.Collections.Generic.List<string> history = new();
+    private int historyIndex = 0;
 
     public override void initGui()
     {
         Keyboard.enableRepeatEvents(true);
+        historyIndex = history.Count;
     }
 
     public override void onGuiClosed()
@@ -43,40 +46,74 @@ public class GuiChat : GuiScreen
                 break;
             // Enter key
             case Keyboard.KEY_RETURN:
-            {
-                string msg = message.Trim();
-                if (msg.Length > 0)
                 {
-                    mc.player.sendChatMessage(msg);
-                }
+                    string msg = message.Trim();
+                    if (msg.Length > 0)
+                    {
+                        mc.player.sendChatMessage(msg);
+                        history.Add(msg);
+                        if (history.Count > 100)
+                        {
+                            history.RemoveAt(0);
+                        }
+                    }
 
-                mc.displayGuiScreen(null);
-                break;
-            }
+                    mc.displayGuiScreen(null);
+                    break;
+                }
+            case Keyboard.KEY_UP:
+                {
+                    if (Keyboard.isKeyDown(Keyboard.KEY_LMENU) || Keyboard.isKeyDown(Keyboard.KEY_RMENU))
+                    {
+                        if (historyIndex > 0)
+                        {
+                            --historyIndex;
+                            message = history[historyIndex];
+                        }
+                    }
+                    break;
+                }
+            case Keyboard.KEY_DOWN:
+                {
+                    if (Keyboard.isKeyDown(Keyboard.KEY_LMENU) || Keyboard.isKeyDown(Keyboard.KEY_RMENU))
+                    {
+                        if (historyIndex < history.Count - 1)
+                        {
+                            ++historyIndex;
+                            message = history[historyIndex];
+                        }
+                        else if (historyIndex == history.Count - 1)
+                        {
+                            historyIndex = history.Count;
+                            message = "";
+                        }
+                    }
+                    break;
+                }
             // Backspace
             case Keyboard.KEY_BACK:
-            {
-                if (message.Length > 0)
                 {
-                    message = message.Substring(0, message.Length - 1);
-                }
+                    if (message.Length > 0)
+                    {
+                        message = message.Substring(0, message.Length - 1);
+                    }
 
-                break;
-            }
+                    break;
+                }
             case Keyboard.KEY_NONE:
-            {
-                break;
-            }
+                {
+                    break;
+                }
             // All other keys
             default:
-            {
-                if (allowedChars.Contains(eventChar) && message.Length < 100)
                 {
-                    message += eventChar;
-                }
+                    if (allowedChars.Contains(eventChar) && message.Length < 100)
+                    {
+                        message += eventChar;
+                    }
 
-                break;
-            }
+                    break;
+                }
         }
     }
 

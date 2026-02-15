@@ -147,8 +147,8 @@ public class OverworldChunkGenerator : ChunkSource
                 bool var12 = gravelBuffer[var8 + var9 * 16] + random.nextDouble() * 0.2D > 3.0D;
                 int var13 = (int)(depthBuffer[var8 + var9 * 16] / 3.0D + 3.0D + random.nextDouble() * 0.25D);
                 int var14 = -1;
-                byte var15 = var10.topBlockId;
-                byte var16 = var10.soilBlockId;
+                byte var15 = var10.TopBlockId;
+                byte var16 = var10.SoilBlockId;
 
                 for (int var17 = 127; var17 >= 0; --var17)
                 {
@@ -175,8 +175,8 @@ public class OverworldChunkGenerator : ChunkSource
                                 }
                                 else if (var17 >= var5 - 4 && var17 <= var5 + 1)
                                 {
-                                    var15 = var10.topBlockId;
-                                    var16 = var10.soilBlockId;
+                                    var15 = var10.TopBlockId;
+                                    var16 = var10.SoilBlockId;
                                     if (var12)
                                     {
                                         var15 = 0;
@@ -241,8 +241,8 @@ public class OverworldChunkGenerator : ChunkSource
         random.setSeed(chunkX * 341873128712L + chunkZ * 132897987541L);
         byte[] var3 = new byte[-java.lang.Short.MIN_VALUE];
         Chunk var4 = new Chunk(world, var3, chunkX, chunkZ);
-        biomes = world.getBiomeSource().getBiomesInArea(biomes, chunkX * 16, chunkZ * 16, 16, 16);
-        double[] var5 = world.getBiomeSource().temperatureMap;
+        biomes = world.getBiomeSource().GetBiomesInArea(biomes, chunkX * 16, chunkZ * 16, 16, 16);
+        double[] var5 = world.getBiomeSource().TemperatureMap;
         buildTerrain(chunkX, chunkZ, var3, biomes, var5);
         buildSurfaces(chunkX, chunkZ, var3, biomes);
         cave.carve(this, world, chunkX, chunkZ, var3);
@@ -259,8 +259,8 @@ public class OverworldChunkGenerator : ChunkSource
 
         double var8 = 684.412D;
         double var10 = 684.412D;
-        double[] var12 = world.getBiomeSource().temperatureMap;
-        double[] var13 = world.getBiomeSource().downfallMap;
+        double[] var12 = world.getBiomeSource().TemperatureMap;
+        double[] var13 = world.getBiomeSource().DownfallMap;
         scaleNoiseBuffer = floatingIslandScale.create(scaleNoiseBuffer, x, z, sizeX, sizeZ, 1.121D, 1.121D, 0.5D);
         depthNoiseBuffer = floatingIslandNoise.create(depthNoiseBuffer, x, z, sizeX, sizeZ, 200.0D, 200.0D, 0.5D);
         perlinNoiseBuffer = perlinNoise1.create(perlinNoiseBuffer, x, y, z, sizeX, sizeY, sizeZ, var8 / 80.0D, var10 / 160.0D, var8 / 80.0D);
@@ -380,7 +380,7 @@ public class OverworldChunkGenerator : ChunkSource
         BlockSand.fallInstantly = true;
         int var4 = x * 16;
         int var5 = z * 16;
-        Biome var6 = world.getBiomeSource().getBiome(var4 + 16, var5 + 16);
+        Biome var6 = world.getBiomeSource().GetBiome(var4 + 16, var5 + 16);
         random.setSeed(world.getSeed());
         long var7 = random.nextLong() / 2L * 2L + 1L;
         long var9 = random.nextLong() / 2L * 2L + 1L;
@@ -497,37 +497,37 @@ public class OverworldChunkGenerator : ChunkSource
             ++var14;
         }
 
-        if (var6 == Biome.FOREST)
+        if (var6 == Biome.Forest)
         {
             var14 += var13 + 5;
         }
 
-        if (var6 == Biome.RAINFOREST)
+        if (var6 == Biome.Rainforest)
         {
             var14 += var13 + 5;
         }
 
-        if (var6 == Biome.SEASONAL_FOREST)
+        if (var6 == Biome.SeasonalForest)
         {
             var14 += var13 + 2;
         }
 
-        if (var6 == Biome.TAIGA)
+        if (var6 == Biome.Taiga)
         {
             var14 += var13 + 5;
         }
 
-        if (var6 == Biome.DESERT)
+        if (var6 == Biome.Desert)
         {
             var14 -= 20;
         }
 
-        if (var6 == Biome.TUNDRA)
+        if (var6 == Biome.Tundra)
         {
             var14 -= 20;
         }
 
-        if (var6 == Biome.PLAINS)
+        if (var6 == Biome.Plains)
         {
             var14 -= 20;
         }
@@ -537,28 +537,28 @@ public class OverworldChunkGenerator : ChunkSource
         {
             var16 = var4 + random.nextInt(16) + 8;
             var17 = var5 + random.nextInt(16) + 8;
-            Feature var18 = var6.getRandomWorldGenForTrees(random);
+            Feature var18 = var6.GetRandomWorldGenForTrees(random);
             var18.prepare(1.0D, 1.0D, 1.0D);
             var18.generate(world, random, var16, world.getTopY(var16, var17), var17);
         }
 
         byte var27 = 0;
-        if (var6 == Biome.FOREST)
+        if (var6 == Biome.Forest)
         {
             var27 = 2;
         }
 
-        if (var6 == Biome.SEASONAL_FOREST)
+        if (var6 == Biome.SeasonalForest)
         {
             var27 = 4;
         }
 
-        if (var6 == Biome.TAIGA)
+        if (var6 == Biome.Taiga)
         {
             var27 = 2;
         }
 
-        if (var6 == Biome.PLAINS)
+        if (var6 == Biome.Plains)
         {
             var27 = 3;
         }
@@ -574,27 +574,27 @@ public class OverworldChunkGenerator : ChunkSource
         }
 
         byte var28 = 0;
-        if (var6 == Biome.FOREST)
+        if (var6 == Biome.Forest)
         {
             var28 = 2;
         }
 
-        if (var6 == Biome.RAINFOREST)
+        if (var6 == Biome.Rainforest)
         {
             var28 = 10;
         }
 
-        if (var6 == Biome.SEASONAL_FOREST)
+        if (var6 == Biome.SeasonalForest)
         {
             var28 = 2;
         }
 
-        if (var6 == Biome.TAIGA)
+        if (var6 == Biome.Taiga)
         {
             var28 = 1;
         }
 
-        if (var6 == Biome.PLAINS)
+        if (var6 == Biome.Plains)
         {
             var28 = 10;
         }
@@ -604,7 +604,7 @@ public class OverworldChunkGenerator : ChunkSource
         for (var17 = 0; var17 < var28; ++var17)
         {
             byte var26 = 1;
-            if (var6 == Biome.RAINFOREST && random.nextInt(3) != 0)
+            if (var6 == Biome.Rainforest && random.nextInt(3) != 0)
             {
                 var26 = 2;
             }
@@ -616,7 +616,7 @@ public class OverworldChunkGenerator : ChunkSource
         }
 
         var28 = 0;
-        if (var6 == Biome.DESERT)
+        if (var6 == Biome.Desert)
         {
             var28 = 2;
         }
@@ -670,7 +670,7 @@ public class OverworldChunkGenerator : ChunkSource
         }
 
         var17 = 0;
-        if (var6 == Biome.DESERT)
+        if (var6 == Biome.Desert)
         {
             var17 += 10;
         }
@@ -699,7 +699,7 @@ public class OverworldChunkGenerator : ChunkSource
             new SpringFeature(Block.FLOWING_LAVA.id).generate(world, random, var19, var20, var21);
         }
 
-        temperatures = world.getBiomeSource().getTemperatures(temperatures, var4 + 8, var5 + 8, 16, 16);
+        temperatures = world.getBiomeSource().GetTemperatures(temperatures, var4 + 8, var5 + 8, 16, 16);
 
         for (var25 = var4 + 8; var25 < var4 + 8 + 16; ++var25)
         {

@@ -199,7 +199,7 @@ public class BlockEntityFurnace : BlockEntity, IInventory
         }
         else
         {
-            ItemStack outputStack = SmeltingRecipeManager.getInstance().craft(inventory[0].getItem().id);
+            ItemStack outputStack = SmeltingRecipeManager.getInstance().Craft(inventory[0].getItem().id);
             return outputStack == null ? false : inventory[2] == null ? true : !inventory[2].isItemEqual(outputStack) ? false : inventory[2].count < getMaxCountPerStack() && inventory[2].count < inventory[2].getMaxCount() ? true : inventory[2].count < outputStack.getMaxCount();
         }
     }
@@ -208,7 +208,7 @@ public class BlockEntityFurnace : BlockEntity, IInventory
     {
         if (canAcceptRecipeOutput())
         {
-            ItemStack outputStack = SmeltingRecipeManager.getInstance().craft(inventory[0].getItem().id);
+            ItemStack outputStack = SmeltingRecipeManager.getInstance().Craft(inventory[0].getItem().id);
             if (inventory[2] == null)
             {
                 inventory[2] = outputStack.copy();

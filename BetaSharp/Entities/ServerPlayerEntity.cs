@@ -13,7 +13,6 @@ using BetaSharp.Server.Network;
 using BetaSharp.Stats;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using BetaSharp.Worlds.Chunks;
 using java.util;
 
 namespace BetaSharp.Entities;
@@ -32,6 +31,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     private ItemStack[] equipment = [null, null, null, null, null];
     private int screenHandlerSyncId = 0;
     public bool skipPacketSlotUpdates;
+
 
     public ServerPlayerEntity(MinecraftServer server, World world, String name, ServerPlayerInteractionManager interactionManager) : base(world)
     {
@@ -177,31 +177,25 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
         {
             ServerWorld world = server.getWorld(dimensionId);
             Iterator iterator = pendingChunkUpdates.iterator();
+
             while (iterator.hasNext())
             {
                 ChunkPos chunkPos = (ChunkPos)iterator.next();
-                bool canSendChunkData = false;
-                if (networkHandler.getBlockDataSendQueueSize() < 4)
+
+                if (!CanSendMoreChunkData())
                 {
-                    canSendChunkData = true;
+                    continue;
                 }
 
-                if (canSendChunkData)
+                if (!world.chunkCache.getChunk(chunkPos.x, chunkPos.z).terrainPopulated)
                 {
-                    Chunk chunk = world.getChunk(chunkPos.x, chunkPos.z);
-                    if (chunk.terrainPopulated)
-                    {
-                        iterator.remove();
-                        networkHandler.sendPacket(new ChunkDataS2CPacket(chunkPos.x * 16, 0, chunkPos.z * 16, 16, 128, 16, world));
-                        var blockEntities = world.getBlockEntities(chunkPos.x * 16, 0, chunkPos.z * 16, chunkPos.x * 16 + 16, 128, chunkPos.z * 16 + 16);
-
-                        for (int i = 0; i < blockEntities.Count; i++)
-                        {
-                            updateBlockEntity(blockEntities[i]);
-                        }
-                        break;
-                    }
+                    continue;
                 }
+
+                iterator.remove();
+                SendChunkData(world, chunkPos);
+                SendBlockEntityUpdates(world, chunkPos);
+                break;
             }
         }
 
@@ -254,6 +248,32 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
         {
             networkHandler.sendPacket(new HealthUpdateS2CPacket(health));
             lastHealthScore = health;
+        }
+    }
+
+    private bool CanSendMoreChunkData()
+    {
+        return networkHandler.getBlockDataSendQueueSize() < 4;
+    }
+
+    private void SendChunkData(ServerWorld world, ChunkPos chunkPos)
+    {
+        int worldX = chunkPos.x * 16;
+        int worldZ = chunkPos.z * 16;
+        networkHandler.sendPacket(new ChunkDataS2CPacket(worldX, 0, worldZ, 16, 128, 16, world));
+    }
+
+    private void SendBlockEntityUpdates(ServerWorld world, ChunkPos chunkPos)
+    {
+        int startX = chunkPos.x * 16;
+        int startZ = chunkPos.z * 16;
+        int endX = startX + 16;
+        int endZ = startZ + 16;
+
+        var blockEntities = world.getBlockEntities(startX, 0, startZ, endX, 128, endZ);
+        foreach (BlockEntity blockEntity in blockEntities)
+        {
+            updateBlockEntity(blockEntity);
         }
     }
 
@@ -382,7 +402,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     {
         incrementScreenHandlerSyncId();
         networkHandler.sendPacket(new OpenScreenS2CPacket(screenHandlerSyncId, 0, inventory.getName(), inventory.size()));
-        currentScreenHandler = new GenericContainerScreenHandler(inventory, inventory);
+        currentScreenHandler = new GenericContainerScreenHandler(this.inventory, inventory);
         currentScreenHandler.syncId = screenHandlerSyncId;
         currentScreenHandler.addListener(this);
     }

@@ -48,7 +48,8 @@ public class SoundManager : java.lang.Object
             path = path[1..];
         }
 
-        return path.Replace("/", "\\");
+        char separator = System.IO.Path.DirectorySeparatorChar;
+        return path.Replace('/', separator).Replace('\\', separator);
     }
 
     private void tryToSetLibraryAndCodecs()
@@ -144,7 +145,7 @@ public class SoundManager : java.lang.Object
     {
         try
         {
-            string filepath = file.getPath();
+            string filepath = sanitizePath(file.getPath());
 
             string originalName = name;
             string resourceName = name;
