@@ -1,0 +1,1 @@
+﻿BetaSharp.Minecraft.Startup(args);

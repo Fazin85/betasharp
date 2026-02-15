@@ -3,13 +3,13 @@ using java.lang;
 using java.util;
 using java.util.logging;
 
-namespace BetaSharp.Server.Dedicated;
+namespace BetaSharp.Server;
 
 public class DedicatedServerConfiguration : IServerConfiguration
 {
     public static Logger logger = Logger.getLogger("Minecraft");
-    private Properties properties = new Properties();
-    private java.io.File propertiesFile;
+    private readonly Properties properties = new();
+    private readonly java.io.File propertiesFile;
 
     public DedicatedServerConfiguration(java.io.File file)
     {

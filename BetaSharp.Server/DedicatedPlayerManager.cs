@@ -1,6 +1,6 @@
 using java.io;
 
-namespace BetaSharp.Server.Dedicated;
+namespace BetaSharp.Server;
 
 public class DedicatedPlayerManager : PlayerManager
 {
