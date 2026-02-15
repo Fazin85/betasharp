@@ -23,10 +23,10 @@ public class Biome
 
     private static Biome[] Biomes = new Biome[4096];
 
-    public string Name { get; private set; }
+    public string Name { get; private set; } = "";
     public int GrassColor { get; private set; }
-    public byte TopBlockId = (byte)Block.GRASS_BLOCK.id;
-    public byte SoilBlockId = (byte)Block.DIRT.id;
+    public byte TopBlockId = (byte)Block.GrassBlock.id;
+    public byte SoilBlockId = (byte)Block.Dirt.id;
     public int FoliageColor { get; private set; } = 0x4EE031;
     protected List<SpawnListEntry> MonsterList { get; } = [];
     protected List<SpawnListEntry> CreatureList { get; } = [];
