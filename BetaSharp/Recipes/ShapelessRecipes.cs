@@ -8,9 +8,9 @@ public class ShapelessRecipes : IRecipe
 {
 
     private readonly ItemStack _output;
-    private readonly List _recipeItems;
+    private readonly List<ItemStack> _recipeItems;
 
-    public ShapelessRecipes(ItemStack output, List items)
+    public ShapelessRecipes(ItemStack output, List<ItemStack> items)
     {
         _output = output;
         _recipeItems = items;
@@ -23,7 +23,7 @@ public class ShapelessRecipes : IRecipe
 
     public bool Matches(InventoryCrafting craftingInventory)
     {
-        ArrayList remainingIngredients = new ArrayList(_recipeItems);
+        List<ItemStack> remainingIngredients = new List<ItemStack>(_recipeItems);
 
         for (int row = 0; row < 3; ++row)
         {
@@ -33,15 +33,15 @@ public class ShapelessRecipes : IRecipe
                 if (gridStack != null)
                 {
                     bool foundMatch = false;
-                    Iterator iterator = remainingIngredients.iterator();
+                    List<ItemStack>.Enumerator iterator = remainingIngredients.GetEnumerator();
 
-                    while (iterator.hasNext())
+                    while (iterator.MoveNext())
                     {
-                        ItemStack recipeItem = (ItemStack)iterator.next();
+                        ItemStack recipeItem = iterator.Current;
                         if (gridStack.itemId == recipeItem.itemId && (recipeItem.getDamage() == -1 || gridStack.getDamage() == recipeItem.getDamage()))
                         {
                             foundMatch = true;
-                            remainingIngredients.remove(recipeItem);
+                            remainingIngredients.Remove(recipeItem);
                             break;
                         }
                     }
@@ -54,7 +54,7 @@ public class ShapelessRecipes : IRecipe
             }
         }
 
-        return remainingIngredients.isEmpty();
+        return remainingIngredients.Count == 0;
     }
 
     public ItemStack GetCraftingResult(InventoryCrafting craftingInventory)
@@ -64,6 +64,6 @@ public class ShapelessRecipes : IRecipe
 
     public int GetRecipeSize()
     {
-        return _recipeItems.size();
+        return _recipeItems.Count;
     }
 }

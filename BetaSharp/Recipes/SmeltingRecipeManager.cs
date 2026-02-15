@@ -1,14 +1,12 @@
 using BetaSharp.Blocks;
 using BetaSharp.Items;
-using java.lang;
-using java.util;
 
 namespace BetaSharp.Recipes;
 
 public class SmeltingRecipeManager
 {
     private static readonly SmeltingRecipeManager smeltingBase = new();
-    private Map smeltingList = new HashMap();
+    private Dictionary<int, ItemStack> smeltingList = new();
 
     public static SmeltingRecipeManager getInstance()
     {
@@ -31,15 +29,15 @@ public class SmeltingRecipeManager
 
     public void AddSmelting(int inputId, ItemStack output)
     {
-        smeltingList.put(Integer.valueOf(inputId), output);
+        smeltingList[inputId] = output;
     }
 
     public ItemStack Craft(int inputId)
     {
-        return (ItemStack)smeltingList.get(Integer.valueOf(inputId));
+        return smeltingList[inputId];
     }
 
-    public Map GetSmeltingList()
+    public Dictionary<int, ItemStack> GetSmeltingList()
     {
         return smeltingList;
     }

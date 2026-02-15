@@ -3,7 +3,7 @@ using BetaSharp.Items;
 
 namespace BetaSharp.Recipes;
 
-public class ShapedRecipes : java.lang.Object, IRecipe
+public class ShapedRecipes : IRecipe
 {
     private int _width;
     private int _height;
@@ -32,14 +32,9 @@ public class ShapedRecipes : java.lang.Object, IRecipe
             for (int offsetY = 0; offsetY <= 3 - _height; ++offsetY)
             {
                 if (matchesAtOffset(craftingInventory, offsetX, offsetY, true))
-                {
                     return true;
-                }
-
                 if (matchesAtOffset(craftingInventory, offsetX, offsetY, false))
-                {
                     return true;
-                }
             }
         }
 
@@ -58,13 +53,9 @@ public class ShapedRecipes : java.lang.Object, IRecipe
                 if (recipeX >= 0 && recipeY >= 0 && recipeX < _width && recipeY < _height)
                 {
                     if (mirrored)
-                    {
                         expected = _items[_width - recipeX - 1 + recipeY * _width];
-                    }
                     else
-                    {
                         expected = _items[recipeX + recipeY * _width];
-                    }
                 }
 
                 ItemStack actual = craftingInventory.getStackAt(gridX, gridY);
