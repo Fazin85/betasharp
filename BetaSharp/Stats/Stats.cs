@@ -64,15 +64,15 @@ public class Stats : java.lang.Object
         if (hasBasicItemStatsInitialized && hasExtendedItemStatsInitialized)
         {
             HashSet var0 = new HashSet();
-            Iterator var1 = CraftingManager.getInstance().getRecipeList().iterator();
+            Iterator var1 = CraftingManager.getInstance().GetRecipeList().iterator();
 
             while (var1.hasNext())
             {
                 IRecipe var2 = (IRecipe)var1.next();
-                var0.add(Integer.valueOf(var2.getRecipeOutput().itemId));
+                var0.add(Integer.valueOf(var2.GetRecipeOutput().itemId));
             }
 
-            var1 = SmeltingRecipeManager.getInstance().getSmeltingList().values().iterator();
+            var1 = SmeltingRecipeManager.getInstance().GetSmeltingList().values().iterator();
 
             while (var1.hasNext())
             {

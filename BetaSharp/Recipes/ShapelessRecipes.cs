@@ -16,12 +16,12 @@ public class ShapelessRecipes : IRecipe
         _recipeItems = items;
     }
 
-    public ItemStack getRecipeOutput()
+    public ItemStack GetRecipeOutput()
     {
         return _output;
     }
 
-    public bool matches(InventoryCrafting craftingInventory)
+    public bool Matches(InventoryCrafting craftingInventory)
     {
         ArrayList remainingIngredients = new ArrayList(_recipeItems);
 
@@ -57,12 +57,12 @@ public class ShapelessRecipes : IRecipe
         return remainingIngredients.isEmpty();
     }
 
-    public ItemStack getCraftingResult(InventoryCrafting craftingInventory)
+    public ItemStack GetCraftingResult(InventoryCrafting craftingInventory)
     {
         return _output.copy();
     }
 
-    public int getRecipeSize()
+    public int GetRecipeSize()
     {
         return _recipeItems.size();
     }

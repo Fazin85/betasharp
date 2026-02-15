@@ -5,11 +5,11 @@ namespace BetaSharp.Recipes;
 
 public interface IRecipe
 {
-    bool matches(InventoryCrafting InventoryCrafting);
+    bool Matches(InventoryCrafting InventoryCrafting);
 
-    ItemStack getCraftingResult(InventoryCrafting InventoryCrafting);
+    ItemStack GetCraftingResult(InventoryCrafting InventoryCrafting);
 
-    int getRecipeSize();
+    int GetRecipeSize();
 
-    ItemStack getRecipeOutput();
+    ItemStack GetRecipeOutput();
 }

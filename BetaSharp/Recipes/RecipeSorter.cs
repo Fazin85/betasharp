@@ -7,7 +7,7 @@ public class RecipeSorter : Comparator
 {
     private static int compareRecipes(IRecipe a, IRecipe b)
     {
-        return a is ShapelessRecipes && b is ShapedRecipes ? 1 : (b is ShapelessRecipes && a is ShapedRecipes ? -1 : (b.getRecipeSize() < a.getRecipeSize() ? -1 : (b.getRecipeSize() > a.getRecipeSize() ? 1 : 0)));
+        return a is ShapelessRecipes && b is ShapedRecipes ? 1 : (b is ShapelessRecipes && a is ShapedRecipes ? -1 : (b.GetRecipeSize() < a.GetRecipeSize() ? -1 : (b.GetRecipeSize() > a.GetRecipeSize() ? 1 : 0)));
     }
 
     public int compare(object a, object b)

@@ -20,12 +20,12 @@ public class ShapedRecipes : java.lang.Object, IRecipe
         _output = output;
     }
 
-    public ItemStack getRecipeOutput()
+    public ItemStack GetRecipeOutput()
     {
         return _output;
     }
 
-    public bool matches(InventoryCrafting craftingInventory)
+    public bool Matches(InventoryCrafting craftingInventory)
     {
         for (int offsetX = 0; offsetX <= 3 - _width; ++offsetX)
         {
@@ -91,12 +91,12 @@ public class ShapedRecipes : java.lang.Object, IRecipe
         return true;
     }
 
-    public ItemStack getCraftingResult(InventoryCrafting var1)
+    public ItemStack GetCraftingResult(InventoryCrafting var1)
     {
         return new ItemStack(_output.itemId, _output.count, _output.getDamage());
     }
 
-    public int getRecipeSize()
+    public int GetRecipeSize()
     {
         return _width * _height;
     }
