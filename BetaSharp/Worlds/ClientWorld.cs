@@ -265,19 +265,9 @@ public class ClientWorld : World
         if (ticksSinceLightning > 0) --ticksSinceLightning;
 
         prevRainingStrength = rainingStrength;
-        if (properties.IsRaining) rainingStrength = (float)((double)rainingStrength + 0.01D);
-        else rainingStrength = (float)((double)rainingStrength - 0.01D);
-
-        if (rainingStrength < 0.0F) rainingStrength = 0.0F;
-
-        if (rainingStrength > 1.0F) rainingStrength = 1.0F;
+        rainingStrength = Math.Clamp(rainingStrength + (properties.IsRaining ? 0.01f : -0.01f), 0.0f, 1.0f);
 
         prevThunderingStrength = thunderingStrength;
-        if (properties.IsThundering) thunderingStrength = (float)((double)thunderingStrength + 0.01D);
-        else thunderingStrength = (float)((double)thunderingStrength - 0.01D);
-
-        if (thunderingStrength < 0.0F) thunderingStrength = 0.0F;
-
-        if (thunderingStrength > 1.0F) thunderingStrength = 1.0F;
+        thunderingStrength = Math.Clamp(thunderingStrength + (properties.IsThundering ? 0.01f : -0.01f), 0.0f, 1.0f);
     }
 }
