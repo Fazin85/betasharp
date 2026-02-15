@@ -5,14 +5,10 @@ using java.lang;
 using java.net;
 using java.util.logging;
 
-namespace BetaSharp.Server.Dedicated;
+namespace BetaSharp.Server;
 
-public class DedicatedServer : MinecraftServer
+public class DedicatedServer(IServerConfiguration config) : MinecraftServer(config)
 {
-    public DedicatedServer(IServerConfiguration config) : base(config)
-    {
-    }
-
     protected override PlayerManager CreatePlayerManager()
     {
         return new DedicatedPlayerManager(this);

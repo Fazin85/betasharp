@@ -1643,12 +1643,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         }
     }
 
-    public static void startup(string var0, string var1)
-    {
-        startMainThread(var0, var1, (string)null);
-    }
-
-    public static void startMainThread(string playerName, string sessionToken, string serverAddress)
+    private static void StartMainThread(string playerName, string sessionToken)
     {
         Minecraft mc = new(1280, 720, false);
         java.lang.Thread mainThread = new(mc, "Minecraft main thread");
@@ -1661,12 +1656,6 @@ public partial class Minecraft : java.lang.Object, Runnable
         else
         {
             mc.session = new Session("Player" + java.lang.System.currentTimeMillis() % 1000L, "");
-        }
-
-        if (serverAddress != null)
-        {
-            string[] serverParts = serverAddress.Split(":");
-            mc.setServer(serverParts[0], Integer.parseInt(serverParts[1]));
         }
 
         mainThread.start();
@@ -1682,7 +1671,7 @@ public partial class Minecraft : java.lang.Object, Runnable
             .UsePlatformDetect()
             .LogToTrace();
 
-    public static void Main(string[] args)
+    public static void Startup(string[] args)
     {
         bool valid = JarValidator.ValidateJar("b1.7.3.jar");
         string playerName = null;
@@ -1707,12 +1696,12 @@ public partial class Minecraft : java.lang.Object, Runnable
 
             if (LauncherWindow.Result != null && LauncherWindow.Result.Success)
             {
-                startup(playerName, sessionToken);
+                StartMainThread(playerName, sessionToken);
             }
         }
         else
         {
-            startup(playerName, sessionToken);
+            StartMainThread(playerName, sessionToken);
         }
     }
 
