@@ -97,17 +97,17 @@ public class OverworldChunkGenerator : ChunkSource
                                 {
                                     if (var53 < 0.5D && var13 * 8 + var32 >= var7 - 1)
                                     {
-                                        var55 = Block.ICE.id;
+                                        var55 = Block.Ice.id;
                                     }
                                     else
                                     {
-                                        var55 = Block.WATER.id;
+                                        var55 = Block.Water.id;
                                     }
                                 }
 
                                 if (var48 > 0.0D)
                                 {
-                                    var55 = Block.STONE.id;
+                                    var55 = Block.Stone.id;
                                 }
 
                                 blocks[var44] = (byte)var55;
@@ -147,15 +147,15 @@ public class OverworldChunkGenerator : ChunkSource
                 bool var12 = gravelBuffer[var8 + var9 * 16] + random.nextDouble() * 0.2D > 3.0D;
                 int var13 = (int)(depthBuffer[var8 + var9 * 16] / 3.0D + 3.0D + random.nextDouble() * 0.25D);
                 int var14 = -1;
-                byte var15 = var10.topBlockId;
-                byte var16 = var10.soilBlockId;
+                byte var15 = var10.TopBlockId;
+                byte var16 = var10.SoilBlockId;
 
                 for (int var17 = 127; var17 >= 0; --var17)
                 {
                     int var18 = (var9 * 16 + var8) * 128 + var17;
                     if (var17 <= 0 + random.nextInt(5))
                     {
-                        blocks[var18] = (byte)Block.BEDROCK.id;
+                        blocks[var18] = (byte)Block.Bedrock.id;
                     }
                     else
                     {
@@ -164,19 +164,19 @@ public class OverworldChunkGenerator : ChunkSource
                         {
                             var14 = -1;
                         }
-                        else if (var19 == Block.STONE.id)
+                        else if (var19 == Block.Stone.id)
                         {
                             if (var14 == -1)
                             {
                                 if (var13 <= 0)
                                 {
                                     var15 = 0;
-                                    var16 = (byte)Block.STONE.id;
+                                    var16 = (byte)Block.Stone.id;
                                 }
                                 else if (var17 >= var5 - 4 && var17 <= var5 + 1)
                                 {
-                                    var15 = var10.topBlockId;
-                                    var16 = var10.soilBlockId;
+                                    var15 = var10.TopBlockId;
+                                    var16 = var10.SoilBlockId;
                                     if (var12)
                                     {
                                         var15 = 0;
@@ -184,23 +184,23 @@ public class OverworldChunkGenerator : ChunkSource
 
                                     if (var12)
                                     {
-                                        var16 = (byte)Block.GRAVEL.id;
+                                        var16 = (byte)Block.Gravel.id;
                                     }
 
                                     if (var11)
                                     {
-                                        var15 = (byte)Block.SAND.id;
+                                        var15 = (byte)Block.Sand.id;
                                     }
 
                                     if (var11)
                                     {
-                                        var16 = (byte)Block.SAND.id;
+                                        var16 = (byte)Block.Sand.id;
                                     }
                                 }
 
                                 if (var17 < var5 && var15 == 0)
                                 {
-                                    var15 = (byte)Block.WATER.id;
+                                    var15 = (byte)Block.Water.id;
                                 }
 
                                 var14 = var13;
@@ -217,10 +217,10 @@ public class OverworldChunkGenerator : ChunkSource
                             {
                                 --var14;
                                 blocks[var18] = var16;
-                                if (var14 == 0 && var16 == Block.SAND.id)
+                                if (var14 == 0 && var16 == Block.Sand.id)
                                 {
                                     var14 = random.nextInt(4);
-                                    var16 = (byte)Block.SANDSTONE.id;
+                                    var16 = (byte)Block.Sandstone.id;
                                 }
                             }
                         }
@@ -241,8 +241,8 @@ public class OverworldChunkGenerator : ChunkSource
         random.setSeed(chunkX * 341873128712L + chunkZ * 132897987541L);
         byte[] var3 = new byte[-java.lang.Short.MIN_VALUE];
         Chunk var4 = new Chunk(world, var3, chunkX, chunkZ);
-        biomes = world.getBiomeSource().getBiomesInArea(biomes, chunkX * 16, chunkZ * 16, 16, 16);
-        double[] var5 = world.getBiomeSource().temperatureMap;
+        biomes = world.getBiomeSource().GetBiomesInArea(biomes, chunkX * 16, chunkZ * 16, 16, 16);
+        double[] var5 = world.getBiomeSource().TemperatureMap;
         buildTerrain(chunkX, chunkZ, var3, biomes, var5);
         buildSurfaces(chunkX, chunkZ, var3, biomes);
         cave.carve(this, world, chunkX, chunkZ, var3);
@@ -259,8 +259,8 @@ public class OverworldChunkGenerator : ChunkSource
 
         double var8 = 684.412D;
         double var10 = 684.412D;
-        double[] var12 = world.getBiomeSource().temperatureMap;
-        double[] var13 = world.getBiomeSource().downfallMap;
+        double[] var12 = world.getBiomeSource().TemperatureMap;
+        double[] var13 = world.getBiomeSource().DownfallMap;
         scaleNoiseBuffer = floatingIslandScale.create(scaleNoiseBuffer, x, z, sizeX, sizeZ, 1.121D, 1.121D, 0.5D);
         depthNoiseBuffer = floatingIslandNoise.create(depthNoiseBuffer, x, z, sizeX, sizeZ, 200.0D, 200.0D, 0.5D);
         perlinNoiseBuffer = perlinNoise1.create(perlinNoiseBuffer, x, y, z, sizeX, sizeY, sizeZ, var8 / 80.0D, var10 / 160.0D, var8 / 80.0D);
@@ -380,7 +380,7 @@ public class OverworldChunkGenerator : ChunkSource
         BlockSand.fallInstantly = true;
         int var4 = x * 16;
         int var5 = z * 16;
-        Biome var6 = world.getBiomeSource().getBiome(var4 + 16, var5 + 16);
+        Biome var6 = world.getBiomeSource().GetBiome(var4 + 16, var5 + 16);
         random.setSeed(world.getSeed());
         long var7 = random.nextLong() / 2L * 2L + 1L;
         long var9 = random.nextLong() / 2L * 2L + 1L;
@@ -394,7 +394,7 @@ public class OverworldChunkGenerator : ChunkSource
             var13 = var4 + random.nextInt(16) + 8;
             var14 = random.nextInt(128);
             var15 = var5 + random.nextInt(16) + 8;
-            new LakeFeature(Block.WATER.id).generate(world, random, var13, var14, var15);
+            new LakeFeature(Block.Water.id).generate(world, random, var13, var14, var15);
         }
 
         if (random.nextInt(8) == 0)
@@ -404,7 +404,7 @@ public class OverworldChunkGenerator : ChunkSource
             var15 = var5 + random.nextInt(16) + 8;
             if (var14 < 64 || random.nextInt(10) == 0)
             {
-                new LakeFeature(Block.LAVA.id).generate(world, random, var13, var14, var15);
+                new LakeFeature(Block.Lava.id).generate(world, random, var13, var14, var15);
             }
         }
 
@@ -430,7 +430,7 @@ public class OverworldChunkGenerator : ChunkSource
             var14 = var4 + random.nextInt(16);
             var15 = random.nextInt(128);
             var16 = var5 + random.nextInt(16);
-            new OreFeature(Block.DIRT.id, 32).generate(world, random, var14, var15, var16);
+            new OreFeature(Block.Dirt.id, 32).generate(world, random, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 10; ++var13)
@@ -438,7 +438,7 @@ public class OverworldChunkGenerator : ChunkSource
             var14 = var4 + random.nextInt(16);
             var15 = random.nextInt(128);
             var16 = var5 + random.nextInt(16);
-            new OreFeature(Block.GRAVEL.id, 32).generate(world, random, var14, var15, var16);
+            new OreFeature(Block.Gravel.id, 32).generate(world, random, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 20; ++var13)
@@ -446,7 +446,7 @@ public class OverworldChunkGenerator : ChunkSource
             var14 = var4 + random.nextInt(16);
             var15 = random.nextInt(128);
             var16 = var5 + random.nextInt(16);
-            new OreFeature(Block.COAL_ORE.id, 16).generate(world, random, var14, var15, var16);
+            new OreFeature(Block.CoalOre.id, 16).generate(world, random, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 20; ++var13)
@@ -454,7 +454,7 @@ public class OverworldChunkGenerator : ChunkSource
             var14 = var4 + random.nextInt(16);
             var15 = random.nextInt(64);
             var16 = var5 + random.nextInt(16);
-            new OreFeature(Block.IRON_ORE.id, 8).generate(world, random, var14, var15, var16);
+            new OreFeature(Block.IronOre.id, 8).generate(world, random, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 2; ++var13)
@@ -462,7 +462,7 @@ public class OverworldChunkGenerator : ChunkSource
             var14 = var4 + random.nextInt(16);
             var15 = random.nextInt(32);
             var16 = var5 + random.nextInt(16);
-            new OreFeature(Block.GOLD_ORE.id, 8).generate(world, random, var14, var15, var16);
+            new OreFeature(Block.GoldOre.id, 8).generate(world, random, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 8; ++var13)
@@ -470,7 +470,7 @@ public class OverworldChunkGenerator : ChunkSource
             var14 = var4 + random.nextInt(16);
             var15 = random.nextInt(16);
             var16 = var5 + random.nextInt(16);
-            new OreFeature(Block.REDSTONE_ORE.id, 7).generate(world, random, var14, var15, var16);
+            new OreFeature(Block.RedstoneOre.id, 7).generate(world, random, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 1; ++var13)
@@ -478,7 +478,7 @@ public class OverworldChunkGenerator : ChunkSource
             var14 = var4 + random.nextInt(16);
             var15 = random.nextInt(16);
             var16 = var5 + random.nextInt(16);
-            new OreFeature(Block.DIAMOND_ORE.id, 7).generate(world, random, var14, var15, var16);
+            new OreFeature(Block.DiamondOre.id, 7).generate(world, random, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 1; ++var13)
@@ -486,7 +486,7 @@ public class OverworldChunkGenerator : ChunkSource
             var14 = var4 + random.nextInt(16);
             var15 = random.nextInt(16) + random.nextInt(16);
             var16 = var5 + random.nextInt(16);
-            new OreFeature(Block.LAPIS_ORE.id, 6).generate(world, random, var14, var15, var16);
+            new OreFeature(Block.LapisOre.id, 6).generate(world, random, var14, var15, var16);
         }
 
         var11 = 0.5D;
@@ -497,37 +497,37 @@ public class OverworldChunkGenerator : ChunkSource
             ++var14;
         }
 
-        if (var6 == Biome.FOREST)
+        if (var6 == Biome.Forest)
         {
             var14 += var13 + 5;
         }
 
-        if (var6 == Biome.RAINFOREST)
+        if (var6 == Biome.Rainforest)
         {
             var14 += var13 + 5;
         }
 
-        if (var6 == Biome.SEASONAL_FOREST)
+        if (var6 == Biome.SeasonalForest)
         {
             var14 += var13 + 2;
         }
 
-        if (var6 == Biome.TAIGA)
+        if (var6 == Biome.Taiga)
         {
             var14 += var13 + 5;
         }
 
-        if (var6 == Biome.DESERT)
+        if (var6 == Biome.Desert)
         {
             var14 -= 20;
         }
 
-        if (var6 == Biome.TUNDRA)
+        if (var6 == Biome.Tundra)
         {
             var14 -= 20;
         }
 
-        if (var6 == Biome.PLAINS)
+        if (var6 == Biome.Plains)
         {
             var14 -= 20;
         }
@@ -537,28 +537,28 @@ public class OverworldChunkGenerator : ChunkSource
         {
             var16 = var4 + random.nextInt(16) + 8;
             var17 = var5 + random.nextInt(16) + 8;
-            Feature var18 = var6.getRandomWorldGenForTrees(random);
+            Feature var18 = var6.GetRandomWorldGenForTrees(random);
             var18.prepare(1.0D, 1.0D, 1.0D);
             var18.generate(world, random, var16, world.getTopY(var16, var17), var17);
         }
 
         byte var27 = 0;
-        if (var6 == Biome.FOREST)
+        if (var6 == Biome.Forest)
         {
             var27 = 2;
         }
 
-        if (var6 == Biome.SEASONAL_FOREST)
+        if (var6 == Biome.SeasonalForest)
         {
             var27 = 4;
         }
 
-        if (var6 == Biome.TAIGA)
+        if (var6 == Biome.Taiga)
         {
             var27 = 2;
         }
 
-        if (var6 == Biome.PLAINS)
+        if (var6 == Biome.Plains)
         {
             var27 = 3;
         }
@@ -570,31 +570,31 @@ public class OverworldChunkGenerator : ChunkSource
             var17 = var4 + random.nextInt(16) + 8;
             var25 = random.nextInt(128);
             var19 = var5 + random.nextInt(16) + 8;
-            new PlantPatchFeature(Block.DANDELION.id).generate(world, random, var17, var25, var19);
+            new PlantPatchFeature(Block.Dandelion.id).generate(world, random, var17, var25, var19);
         }
 
         byte var28 = 0;
-        if (var6 == Biome.FOREST)
+        if (var6 == Biome.Forest)
         {
             var28 = 2;
         }
 
-        if (var6 == Biome.RAINFOREST)
+        if (var6 == Biome.Rainforest)
         {
             var28 = 10;
         }
 
-        if (var6 == Biome.SEASONAL_FOREST)
+        if (var6 == Biome.SeasonalForest)
         {
             var28 = 2;
         }
 
-        if (var6 == Biome.TAIGA)
+        if (var6 == Biome.Taiga)
         {
             var28 = 1;
         }
 
-        if (var6 == Biome.PLAINS)
+        if (var6 == Biome.Plains)
         {
             var28 = 10;
         }
@@ -604,7 +604,7 @@ public class OverworldChunkGenerator : ChunkSource
         for (var17 = 0; var17 < var28; ++var17)
         {
             byte var26 = 1;
-            if (var6 == Biome.RAINFOREST && random.nextInt(3) != 0)
+            if (var6 == Biome.Rainforest && random.nextInt(3) != 0)
             {
                 var26 = 2;
             }
@@ -612,11 +612,11 @@ public class OverworldChunkGenerator : ChunkSource
             var19 = var4 + random.nextInt(16) + 8;
             var20 = random.nextInt(128);
             var21 = var5 + random.nextInt(16) + 8;
-            new GrassPatchFeature(Block.GRASS.id, var26).generate(world, random, var19, var20, var21);
+            new GrassPatchFeature(Block.Grass.id, var26).generate(world, random, var19, var20, var21);
         }
 
         var28 = 0;
-        if (var6 == Biome.DESERT)
+        if (var6 == Biome.Desert)
         {
             var28 = 2;
         }
@@ -626,7 +626,7 @@ public class OverworldChunkGenerator : ChunkSource
             var25 = var4 + random.nextInt(16) + 8;
             var19 = random.nextInt(128);
             var20 = var5 + random.nextInt(16) + 8;
-            new DeadBushPatchFeature(Block.DEAD_BUSH.id).generate(world, random, var25, var19, var20);
+            new DeadBushPatchFeature(Block.DeadBush.id).generate(world, random, var25, var19, var20);
         }
 
         if (random.nextInt(2) == 0)
@@ -634,7 +634,7 @@ public class OverworldChunkGenerator : ChunkSource
             var17 = var4 + random.nextInt(16) + 8;
             var25 = random.nextInt(128);
             var19 = var5 + random.nextInt(16) + 8;
-            new PlantPatchFeature(Block.ROSE.id).generate(world, random, var17, var25, var19);
+            new PlantPatchFeature(Block.Rose.id).generate(world, random, var17, var25, var19);
         }
 
         if (random.nextInt(4) == 0)
@@ -642,7 +642,7 @@ public class OverworldChunkGenerator : ChunkSource
             var17 = var4 + random.nextInt(16) + 8;
             var25 = random.nextInt(128);
             var19 = var5 + random.nextInt(16) + 8;
-            new PlantPatchFeature(Block.BROWN_MUSHROOM.id).generate(world, random, var17, var25, var19);
+            new PlantPatchFeature(Block.BrownMushroom.id).generate(world, random, var17, var25, var19);
         }
 
         if (random.nextInt(8) == 0)
@@ -650,7 +650,7 @@ public class OverworldChunkGenerator : ChunkSource
             var17 = var4 + random.nextInt(16) + 8;
             var25 = random.nextInt(128);
             var19 = var5 + random.nextInt(16) + 8;
-            new PlantPatchFeature(Block.RED_MUSHROOM.id).generate(world, random, var17, var25, var19);
+            new PlantPatchFeature(Block.RedMushroom.id).generate(world, random, var17, var25, var19);
         }
 
         for (var17 = 0; var17 < 10; ++var17)
@@ -670,7 +670,7 @@ public class OverworldChunkGenerator : ChunkSource
         }
 
         var17 = 0;
-        if (var6 == Biome.DESERT)
+        if (var6 == Biome.Desert)
         {
             var17 += 10;
         }
@@ -688,7 +688,7 @@ public class OverworldChunkGenerator : ChunkSource
             var19 = var4 + random.nextInt(16) + 8;
             var20 = random.nextInt(random.nextInt(120) + 8);
             var21 = var5 + random.nextInt(16) + 8;
-            new SpringFeature(Block.FLOWING_WATER.id).generate(world, random, var19, var20, var21);
+            new SpringFeature(Block.FlowingWater.id).generate(world, random, var19, var20, var21);
         }
 
         for (var25 = 0; var25 < 20; ++var25)
@@ -696,10 +696,10 @@ public class OverworldChunkGenerator : ChunkSource
             var19 = var4 + random.nextInt(16) + 8;
             var20 = random.nextInt(random.nextInt(random.nextInt(112) + 8) + 8);
             var21 = var5 + random.nextInt(16) + 8;
-            new SpringFeature(Block.FLOWING_LAVA.id).generate(world, random, var19, var20, var21);
+            new SpringFeature(Block.FlowingLava.id).generate(world, random, var19, var20, var21);
         }
 
-        temperatures = world.getBiomeSource().getTemperatures(temperatures, var4 + 8, var5 + 8, 16, 16);
+        temperatures = world.getBiomeSource().GetTemperatures(temperatures, var4 + 8, var5 + 8, 16, 16);
 
         for (var25 = var4 + 8; var25 < var4 + 8 + 16; ++var25)
         {
@@ -711,7 +711,7 @@ public class OverworldChunkGenerator : ChunkSource
                 double var23 = temperatures[var20 * 16 + var21] - (var22 - 64) / 64.0D * 0.3D;
                 if (var23 < 0.5D && var22 > 0 && var22 < 128 && world.isAir(var25, var22, var19) && world.getMaterial(var25, var22 - 1, var19).BlocksMovement && world.getMaterial(var25, var22 - 1, var19) != Material.Ice)
                 {
-                    world.setBlock(var25, var22, var19, Block.SNOW.id);
+                    world.setBlock(var25, var22, var19, Block.Snow.id);
                 }
             }
         }

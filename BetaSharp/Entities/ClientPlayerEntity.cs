@@ -198,7 +198,7 @@ public class ClientPlayerEntity : EntityPlayer
             lastHealth = health;
             hearts = maxHealth;
             applyDamage(damageAmount);
-            hurtTime = maxHurtTime = 10;
+
         }
 
     }

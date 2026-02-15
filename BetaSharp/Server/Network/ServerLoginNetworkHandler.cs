@@ -91,6 +91,11 @@ public class ServerLoginNetworkHandler : NetHandler
         {
             packet.username = "player";
         }
+        if (packet.worldSeed == LoginHelloPacket.BETASHARP_CLIENT_SIGNATURE)
+        {
+            // This is a BetaSharp client. We can use this for future protocol extensions.
+        }
+
         username = packet.username;
         if (packet.protocolVersion != 14)
         {

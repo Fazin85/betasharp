@@ -43,7 +43,7 @@ public class BlockSnow : Block
     public override bool canPlaceAt(World world, int x, int y, int z)
     {
         int blockBelowId = world.getBlockId(x, y - 1, z);
-        return blockBelowId != 0 && Block.BLOCKS[blockBelowId].isOpaque() ? world.getMaterial(x, y - 1, z).BlocksMovement : false;
+        return blockBelowId != 0 && Block.Blocks[blockBelowId].isOpaque() ? world.getMaterial(x, y - 1, z).BlocksMovement : false;
     }
 
     public override void neighborUpdate(World world, int x, int y, int z, int id)

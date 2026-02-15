@@ -67,13 +67,13 @@ public class BlockSand : Block
         {
             return true;
         }
-        else if (blockId == Block.FIRE.id)
+        else if (blockId == Block.Fire.id)
         {
             return true;
         }
         else
         {
-            Material material = Block.BLOCKS[blockId].material;
+            Material material = Block.Blocks[blockId].material;
             return material == Material.Water ? true : material == Material.Lava;
         }
     }

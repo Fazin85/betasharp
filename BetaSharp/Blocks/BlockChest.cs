@@ -7,6 +7,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
+//NOTE: CHESTS DON'T ROTATE BASED ON PLAYER ORIENTATION, THIS IS VANILLA BEHAVIOR, NOT A BUG
 public class BlockChest : BlockWithEntity
 {
     private java.util.Random random = new();
@@ -41,22 +42,22 @@ public class BlockChest : BlockWithEntity
                 if (blockWest != id && blockEast != id)
                 {
                     sbyte facing = 3;
-                    if (Block.BLOCKS_OPAQUE[blockNorth] && !Block.BLOCKS_OPAQUE[blockSouth])
+                    if (Block.BlocksOpaque[blockNorth] && !Block.BlocksOpaque[blockSouth])
                     {
                         facing = 3;
                     }
 
-                    if (Block.BLOCKS_OPAQUE[blockSouth] && !Block.BLOCKS_OPAQUE[blockNorth])
+                    if (Block.BlocksOpaque[blockSouth] && !Block.BlocksOpaque[blockNorth])
                     {
                         facing = 2;
                     }
 
-                    if (Block.BLOCKS_OPAQUE[blockWest] && !Block.BLOCKS_OPAQUE[blockEast])
+                    if (Block.BlocksOpaque[blockWest] && !Block.BlocksOpaque[blockEast])
                     {
                         facing = 5;
                     }
 
-                    if (Block.BLOCKS_OPAQUE[blockEast] && !Block.BLOCKS_OPAQUE[blockWest])
+                    if (Block.BlocksOpaque[blockEast] && !Block.BlocksOpaque[blockWest])
                     {
                         facing = 4;
                     }
@@ -79,12 +80,12 @@ public class BlockChest : BlockWithEntity
                     }
 
                     facingSide = 3;
-                    if ((Block.BLOCKS_OPAQUE[blockNorth] || Block.BLOCKS_OPAQUE[cornerBlock1]) && !Block.BLOCKS_OPAQUE[blockSouth] && !Block.BLOCKS_OPAQUE[cornerBlock2])
+                    if ((Block.BlocksOpaque[blockNorth] || Block.BlocksOpaque[cornerBlock1]) && !Block.BlocksOpaque[blockSouth] && !Block.BlocksOpaque[cornerBlock2])
                     {
                         facingSide = 3;
                     }
 
-                    if ((Block.BLOCKS_OPAQUE[blockSouth] || Block.BLOCKS_OPAQUE[cornerBlock2]) && !Block.BLOCKS_OPAQUE[blockNorth] && !Block.BLOCKS_OPAQUE[cornerBlock1])
+                    if ((Block.BlocksOpaque[blockSouth] || Block.BlocksOpaque[cornerBlock2]) && !Block.BlocksOpaque[blockNorth] && !Block.BlocksOpaque[cornerBlock1])
                     {
                         facingSide = 2;
                     }
@@ -112,12 +113,12 @@ public class BlockChest : BlockWithEntity
                 }
 
                 facingSide = 5;
-                if ((Block.BLOCKS_OPAQUE[blockWest] || Block.BLOCKS_OPAQUE[cornerBlock1]) && !Block.BLOCKS_OPAQUE[blockEast] && !Block.BLOCKS_OPAQUE[cornerBlock2])
+                if ((Block.BlocksOpaque[blockWest] || Block.BlocksOpaque[cornerBlock1]) && !Block.BlocksOpaque[blockEast] && !Block.BlocksOpaque[cornerBlock2])
                 {
                     facingSide = 5;
                 }
 
-                if ((Block.BLOCKS_OPAQUE[blockEast] || Block.BLOCKS_OPAQUE[cornerBlock2]) && !Block.BLOCKS_OPAQUE[blockWest] && !Block.BLOCKS_OPAQUE[cornerBlock1])
+                if ((Block.BlocksOpaque[blockEast] || Block.BlocksOpaque[cornerBlock2]) && !Block.BlocksOpaque[blockWest] && !Block.BlocksOpaque[cornerBlock1])
                 {
                     facingSide = 4;
                 }

@@ -106,7 +106,7 @@ public class BlockBed : Block
     {
         if (side == 0)
         {
-            return Block.PLANKS.textureId;
+            return Block.Planks.textureId;
         }
         else
         {

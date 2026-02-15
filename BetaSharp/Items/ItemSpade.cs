@@ -5,7 +5,7 @@ namespace BetaSharp.Items;
 public class ItemSpade : ItemTool
 {
 
-    private static Block[] blocksEffectiveAgainst = new Block[] { Block.GRASS_BLOCK, Block.DIRT, Block.SAND, Block.GRAVEL, Block.SNOW, Block.SNOW_BLOCK, Block.CLAY, Block.FARMLAND };
+    private static Block[] blocksEffectiveAgainst = new Block[] { Block.GrassBlock, Block.Dirt, Block.Sand, Block.Gravel, Block.Snow, Block.SnowBlock, Block.Clay, Block.Farmland };
 
     public ItemSpade(int id, EnumToolMaterial enumToolMaterial) : base(id, 1, enumToolMaterial, blocksEffectiveAgainst)
     {
@@ -13,6 +13,6 @@ public class ItemSpade : ItemTool
 
     public override bool isSuitableFor(Block block)
     {
-        return block == Block.SNOW ? true : block == Block.SNOW_BLOCK;
+        return block == Block.Snow ? true : block == Block.SnowBlock;
     }
 }

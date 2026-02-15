@@ -141,12 +141,12 @@ public class ClientNetworkHandler : NetHandler
 
         if (packet.entityType == 70)
         {
-            entity = new EntityFallingSand(worldClient, x, y, z, Block.SAND.id);
+            entity = new EntityFallingSand(worldClient, x, y, z, Block.Sand.id);
         }
 
         if (packet.entityType == 71)
         {
-            entity = new EntityFallingSand(worldClient, x, y, z, Block.GRAVEL.id);
+            entity = new EntityFallingSand(worldClient, x, y, z, Block.Gravel.id);
         }
 
         if (entity != null)
@@ -470,7 +470,7 @@ public class ClientNetworkHandler : NetHandler
     {
         if (packet.username.Equals("-"))
         {
-            addToSendQueue(new LoginHelloPacket(mc.session.username, 14));
+            addToSendQueue(new LoginHelloPacket(mc.session.username, 14, LoginHelloPacket.BETASHARP_CLIENT_SIGNATURE, 0));
         }
         else
         {
@@ -483,7 +483,7 @@ public class ClientNetworkHandler : NetHandler
                 //TODO: AUTH
                 if (response == null || response.Equals("ok", StringComparison.OrdinalIgnoreCase))
                 {
-                    addToSendQueue(new LoginHelloPacket(mc.session.username, 14));
+                    addToSendQueue(new LoginHelloPacket(mc.session.username, 14, LoginHelloPacket.BETASHARP_CLIENT_SIGNATURE, 0));
                 }
                 else
                 {

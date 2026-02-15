@@ -547,7 +547,7 @@ public abstract class EntityLiving : Entity
             int var3 = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(y - (double)0.2F - (double)standingEyeHeight), MathHelper.floor_double(z));
             if (var3 > 0)
             {
-                BlockSoundGroup var4 = Block.BLOCKS[var3].soundGroup;
+                BlockSoundGroup var4 = Block.Blocks[var3].soundGroup;
                 world.playSound(this, var4.func_1145_d(), var4.getVolume() * 0.5F, var4.getPitch() * (12.0F / 16.0F));
             }
         }
@@ -594,7 +594,7 @@ public abstract class EntityLiving : Entity
                 int groundBlockId = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
                 if (groundBlockId > 0)
                 {
-                    friction = Block.BLOCKS[groundBlockId].slipperiness * 0.91F;
+                    friction = Block.Blocks[groundBlockId].slipperiness * 0.91F;
                 }
             }
 
@@ -607,7 +607,7 @@ public abstract class EntityLiving : Entity
                 int groundBlockId = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
                 if (groundBlockId > 0)
                 {
-                    friction = Block.BLOCKS[groundBlockId].slipperiness * 0.91F;
+                    friction = Block.Blocks[groundBlockId].slipperiness * 0.91F;
                 }
             }
 
@@ -676,7 +676,7 @@ public abstract class EntityLiving : Entity
         int x = MathHelper.floor_double(base.x);
         int y = MathHelper.floor_double(boundingBox.minY);
         int z = MathHelper.floor_double(base.z);
-        return world.getBlockId(x, y, z) == Block.LADDER.id;
+        return world.getBlockId(x, y, z) == Block.Ladder.id;
     }
 
     public override void writeNbt(NBTTagCompound nbt)

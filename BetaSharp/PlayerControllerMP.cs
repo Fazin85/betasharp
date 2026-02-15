@@ -57,10 +57,10 @@ public class PlayerControllerMP : PlayerController
             int var5 = mc.world.getBlockId(var1, var2, var3);
             if (var5 > 0 && curBlockDamageMP == 0.0F)
             {
-                Block.BLOCKS[var5].onBlockBreakStart(mc.world, var1, var2, var3, mc.player);
+                Block.Blocks[var5].onBlockBreakStart(mc.world, var1, var2, var3, mc.player);
             }
 
-            if (var5 > 0 && Block.BLOCKS[var5].getHardness(mc.player) >= 1.0F)
+            if (var5 > 0 && Block.Blocks[var5].getHardness(mc.player) >= 1.0F)
             {
                 sendBlockRemoved(var1, var2, var3, var4);
             }
@@ -104,7 +104,7 @@ public class PlayerControllerMP : PlayerController
                         return;
                     }
 
-                    Block var6 = Block.BLOCKS[var5];
+                    Block var6 = Block.Blocks[var5];
                     curBlockDamageMP += var6.getHardness(mc.player);
                     if (field_9441_h % 4.0F == 0.0F && var6 != null)
                     {

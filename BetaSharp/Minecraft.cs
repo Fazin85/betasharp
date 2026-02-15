@@ -1077,19 +1077,19 @@ public partial class Minecraft : java.lang.Object, Runnable
         if (objectMouseOver != null)
         {
             int blockId = world.getBlockId(objectMouseOver.blockX, objectMouseOver.blockY, objectMouseOver.blockZ);
-            if (blockId == Block.GRASS_BLOCK.id)
+            if (blockId == Block.GrassBlock.id)
             {
-                blockId = Block.DIRT.id;
+                blockId = Block.Dirt.id;
             }
 
-            if (blockId == Block.DOUBLE_SLAB.id)
+            if (blockId == Block.DoubleSlab.id)
             {
-                blockId = Block.SLAB.id;
+                blockId = Block.Slab.id;
             }
 
-            if (blockId == Block.BEDROCK.id)
+            if (blockId == Block.Bedrock.id)
             {
-                blockId = Block.STONE.id;
+                blockId = Block.Stone.id;
             }
 
             player.inventory.setCurrentItem(blockId, playerController is PlayerControllerTest);
@@ -1375,7 +1375,8 @@ public partial class Minecraft : java.lang.Object, Runnable
 
                         if (Keyboard.getEventKey() == options.keyBindCommand.keyCode)
                         {
-                            displayGuiScreen(new GuiChat("/"));
+                            // Open chat with '/' and place the cursor after it
+                            displayGuiScreen(new GuiChat("/", true));
                         }
                     }
 

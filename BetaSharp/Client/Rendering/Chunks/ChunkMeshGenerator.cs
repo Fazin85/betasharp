@@ -126,7 +126,7 @@ public class ChunkMeshGenerator : IDisposable
                         int id = cache.getBlockId(x, y, z);
                         if (id <= 0) continue;
 
-                        Block b = Block.BLOCKS[id];
+                        Block b = Block.Blocks[id];
                         int blockPass = b.getRenderLayer();
 
                         if (blockPass != pass)

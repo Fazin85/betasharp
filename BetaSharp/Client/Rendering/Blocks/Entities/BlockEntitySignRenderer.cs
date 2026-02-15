@@ -15,7 +15,7 @@ public class BlockEntitySignRenderer : BlockEntitySpecialRenderer
         GLManager.GL.PushMatrix();
         float var10 = 2.0F / 3.0F;
         float var12;
-        if (var9 == Block.SIGN)
+        if (var9 == Block.Sign)
         {
             GLManager.GL.Translate((float)var2 + 0.5F, (float)var4 + 12.0F / 16.0F * var10, (float)var6 + 0.5F);
             float var11 = var1.getPushedBlockData() * 360 / 16.0F;

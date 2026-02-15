@@ -45,16 +45,16 @@ public class Stats : java.lang.Object
 
     public static void initializeItemStats()
     {
-        USED = initItemUsedStats(USED, "stat.useItem", 16908288, 0, Block.BLOCKS.Length);
-        BROKEN = initializeBrokenItemStats(BROKEN, "stat.breakItem", 16973824, 0, Block.BLOCKS.Length);
+        USED = initItemUsedStats(USED, "stat.useItem", 16908288, 0, Block.Blocks.Length);
+        BROKEN = initializeBrokenItemStats(BROKEN, "stat.breakItem", 16973824, 0, Block.Blocks.Length);
         hasBasicItemStatsInitialized = true;
         initializeCraftedItemStats();
     }
 
     public static void initializeExtendedItemStats()
     {
-        USED = initItemUsedStats(USED, "stat.useItem", 16908288, Block.BLOCKS.Length, 32000);
-        BROKEN = initializeBrokenItemStats(BROKEN, "stat.breakItem", 16973824, Block.BLOCKS.Length, 32000);
+        USED = initItemUsedStats(USED, "stat.useItem", 16908288, Block.Blocks.Length, 32000);
+        BROKEN = initializeBrokenItemStats(BROKEN, "stat.breakItem", 16973824, Block.Blocks.Length, 32000);
         hasExtendedItemStatsInitialized = true;
         initializeCraftedItemStats();
     }
@@ -64,32 +64,29 @@ public class Stats : java.lang.Object
         if (hasBasicItemStatsInitialized && hasExtendedItemStatsInitialized)
         {
             HashSet var0 = new HashSet();
-            Iterator var1 = CraftingManager.getInstance().getRecipeList().iterator();
+            object var1 = CraftingManager.getInstance().Recipes.GetEnumerator();
 
-            while (var1.hasNext())
+            while (var1 is IRecipe recipe)
             {
-                IRecipe var2 = (IRecipe)var1.next();
-                var0.add(Integer.valueOf(var2.getRecipeOutput().itemId));
+                var0.add(Integer.valueOf(recipe.GetRecipeOutput().itemId));
             }
 
-            var1 = SmeltingRecipeManager.getInstance().getSmeltingList().values().iterator();
+            var1 = SmeltingRecipeManager.getInstance().GetSmeltingList().Values.GetEnumerator();
 
-            while (var1.hasNext())
+            while (var1 is ItemStack itemStack)
             {
-                ItemStack var4 = (ItemStack)var1.next();
-                var0.add(Integer.valueOf(var4.itemId));
+                var0.add(Integer.valueOf(itemStack.itemId));
             }
 
             CRAFTED = new StatBase[32000];
             var1 = var0.iterator();
 
-            while (var1.hasNext())
+            while (var1 is Integer integer)
             {
-                Integer var5 = (Integer)var1.next();
-                if (Item.ITEMS[var5.intValue()] != null)
+                if (Item.ITEMS[integer.intValue()] != null)
                 {
-                    string var3 = StatCollector.translateToLocalFormatted("stat.craftItem", [Item.ITEMS[var5.intValue()].getStatName()]);
-                    CRAFTED[var5.intValue()] = (new StatCrafting(16842752 + var5.intValue(), var3, var5.intValue())).registerStat();
+                    string var3 = StatCollector.translateToLocalFormatted("stat.craftItem", [Item.ITEMS[integer.intValue()].getStatName()]);
+                    CRAFTED[integer.intValue()] = (new StatCrafting(16842752 + integer.intValue(), var3, integer.intValue())).registerStat();
                 }
             }
 
@@ -103,9 +100,9 @@ public class Stats : java.lang.Object
 
         for (int var3 = 0; var3 < 256; ++var3)
         {
-            if (Block.BLOCKS[var3] != null && Block.BLOCKS[var3].getEnableStats())
+            if (Block.Blocks[var3] != null && Block.Blocks[var3].getEnableStats())
             {
-                string var4 = StatCollector.translateToLocalFormatted(var0, [Block.BLOCKS[var3].translateBlockName()]);
+                string var4 = StatCollector.translateToLocalFormatted(var0, [Block.Blocks[var3].translateBlockName()]);
                 var2[var3] = (new StatCrafting(var1 + var3, var4, var3)).registerStat();
                 BLOCKS_MINED_STATS.add((StatCrafting)var2[var3]);
             }
@@ -128,7 +125,7 @@ public class Stats : java.lang.Object
             {
                 string var6 = StatCollector.translateToLocalFormatted(var1, [Item.ITEMS[var5].getStatName()]);
                 var0[var5] = (new StatCrafting(var2 + var5, var6, var5)).registerStat();
-                if (var5 >= Block.BLOCKS.Length)
+                if (var5 >= Block.Blocks.Length)
                 {
                     ITEM_STATS.add((StatCrafting)var0[var5]);
                 }
@@ -161,17 +158,17 @@ public class Stats : java.lang.Object
 
     private static void replaceAllSimilarBlocks(StatBase[] var0)
     {
-        replaceSimilarBlocks(var0, Block.WATER.id, Block.FLOWING_WATER.id);
-        replaceSimilarBlocks(var0, Block.LAVA.id, Block.LAVA.id);
-        replaceSimilarBlocks(var0, Block.JACK_O_LANTERN.id, Block.PUMPKIN.id);
-        replaceSimilarBlocks(var0, Block.LIT_FURNACE.id, Block.FURNACE.id);
-        replaceSimilarBlocks(var0, Block.LIT_REDSTONE_ORE.id, Block.REDSTONE_ORE.id);
-        replaceSimilarBlocks(var0, Block.POWERED_REPEATER.id, Block.REPEATER.id);
-        replaceSimilarBlocks(var0, Block.LIT_REDSTONE_TORCH.id, Block.REDSTONE_TORCH.id);
-        replaceSimilarBlocks(var0, Block.RED_MUSHROOM.id, Block.BROWN_MUSHROOM.id);
-        replaceSimilarBlocks(var0, Block.DOUBLE_SLAB.id, Block.SLAB.id);
-        replaceSimilarBlocks(var0, Block.GRASS_BLOCK.id, Block.DIRT.id);
-        replaceSimilarBlocks(var0, Block.FARMLAND.id, Block.DIRT.id);
+        replaceSimilarBlocks(var0, Block.Water.id, Block.FlowingWater.id);
+        replaceSimilarBlocks(var0, Block.Lava.id, Block.Lava.id);
+        replaceSimilarBlocks(var0, Block.JackLantern.id, Block.Pumpkin.id);
+        replaceSimilarBlocks(var0, Block.LitFurnace.id, Block.Furnace.id);
+        replaceSimilarBlocks(var0, Block.LitRedstoneOre.id, Block.RedstoneOre.id);
+        replaceSimilarBlocks(var0, Block.PoweredRepeater.id, Block.Repeater.id);
+        replaceSimilarBlocks(var0, Block.LitRedstoneTorch.id, Block.RedstoneTorch.id);
+        replaceSimilarBlocks(var0, Block.RedMushroom.id, Block.BrownMushroom.id);
+        replaceSimilarBlocks(var0, Block.DoubleSlab.id, Block.Slab.id);
+        replaceSimilarBlocks(var0, Block.GrassBlock.id, Block.Dirt.id);
+        replaceSimilarBlocks(var0, Block.Farmland.id, Block.Dirt.id);
     }
 
     private static void replaceSimilarBlocks(StatBase[] var0, int var1, int var2)

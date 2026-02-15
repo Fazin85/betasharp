@@ -10,6 +10,6 @@ public class BlockStone : Block
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
-        return Block.COBBLESTONE.id;
+        return Block.Cobblestone.id;
     }
 }

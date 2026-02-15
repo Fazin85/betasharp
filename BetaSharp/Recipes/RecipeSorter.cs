@@ -1,57 +1,21 @@
-using java.util;
-using java.util.function;
-
 namespace BetaSharp.Recipes;
 
-public class RecipeSorter : Comparator
+public class RecipeSorter : IComparer<IRecipe>
 {
-    private static int compareRecipes(IRecipe var1, IRecipe var2)
+    public int Compare(IRecipe x, IRecipe y)
     {
-        return var1 is ShapelessRecipes && var2 is ShapedRecipes ? 1 : (var2 is ShapelessRecipes && var1 is ShapedRecipes ? -1 : (var2.getRecipeSize() < var1.getRecipeSize() ? -1 : (var2.getRecipeSize() > var1.getRecipeSize() ? 1 : 0)));
-    }
+        if (x == null || y == null) return 0;
 
-    public int compare(object var1, object var2)
-    {
-        return compareRecipes((IRecipe)var1, (IRecipe)var2);
-    }
+        // 1. Check types (Shapeless vs Shaped)
+        // Using C# pattern matching (is)
+        if (x is ShapelessRecipes && y is ShapedRecipes) return 1;
+        if (y is ShapelessRecipes && x is ShapedRecipes) return -1;
 
-    public Comparator thenComparing(Comparator other)
-    {
-        throw new NotImplementedException();
-    }
+        // 2. Compare Sizes
+        int xSize = x.GetRecipeSize();
+        int ySize = y.GetRecipeSize();
 
-    public bool equals(object obj)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Comparator reversed()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Comparator thenComparing(Function keyExtractor, Comparator keyComparator)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Comparator thenComparing(Function keyExtractor)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Comparator thenComparingInt(ToIntFunction keyExtractor)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Comparator thenComparingLong(ToLongFunction keyExtractor)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Comparator thenComparingDouble(ToDoubleFunction keyExtractor)
-    {
-        throw new NotImplementedException();
+        // Standard C# comparison (returns -1, 0, or 1)
+        return ySize.CompareTo(xSize); 
     }
 }

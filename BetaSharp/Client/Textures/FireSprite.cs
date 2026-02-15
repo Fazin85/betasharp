@@ -8,7 +8,7 @@ public class FireSprite : DynamicTexture
     protected float[] current = new float[320];
     protected float[] next = new float[320];
 
-    public FireSprite(int var1) : base(Block.FIRE.textureId + var1 * 16)
+    public FireSprite(int var1) : base(Block.Fire.textureId + var1 * 16)
     {
     }
 

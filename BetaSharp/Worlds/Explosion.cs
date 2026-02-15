@@ -65,7 +65,7 @@ public class Explosion : java.lang.Object
                             int var25 = worldObj.getBlockId(var22, var23, var24);
                             if (var25 > 0)
                             {
-                                var14 -= (Block.BLOCKS[var25].getBlastResistance(exploder) + 0.3F) * var21;
+                                var14 -= (Block.Blocks[var25].getBlastResistance(exploder) + 0.3F) * var21;
                             }
 
                             if (var14 > 0.0F)
@@ -126,9 +126,9 @@ public class Explosion : java.lang.Object
                 int var16 = var35.z;
                 int var38 = worldObj.getBlockId(var36, var37, var16);
                 int var18 = worldObj.getBlockId(var36, var37 - 1, var16);
-                if (var38 == 0 && Block.BLOCKS_OPAQUE[var18] && ExplosionRNG.nextInt(3) == 0)
+                if (var38 == 0 && Block.BlocksOpaque[var18] && ExplosionRNG.nextInt(3) == 0)
                 {
-                    worldObj.setBlock(var36, var37, var16, Block.FIRE.id);
+                    worldObj.setBlock(var36, var37, var16, Block.Fire.id);
                 }
             }
         }
@@ -170,9 +170,9 @@ public class Explosion : java.lang.Object
 
             if (var8 > 0)
             {
-                Block.BLOCKS[var8].dropStacks(worldObj, var5, var6, var7, worldObj.getBlockMeta(var5, var6, var7), 0.3F);
+                Block.Blocks[var8].dropStacks(worldObj, var5, var6, var7, worldObj.getBlockMeta(var5, var6, var7), 0.3F);
                 worldObj.setBlock(var5, var6, var7, 0);
-                Block.BLOCKS[var8].onDestroyedByExplosion(worldObj, var5, var6, var7);
+                Block.Blocks[var8].onDestroyedByExplosion(worldObj, var5, var6, var7);
             }
         }
 
