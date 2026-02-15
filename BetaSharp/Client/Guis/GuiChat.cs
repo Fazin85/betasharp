@@ -2,6 +2,8 @@ using BetaSharp.Client.Input;
 using BetaSharp.Util;
 using BetaSharp.Server;
 using BetaSharp.Server.Commands;
+using java.awt;
+using java.awt.datatransfer;
 
 namespace BetaSharp.Client.Guis;
 
@@ -17,6 +19,8 @@ public class GuiChat : GuiScreen
     private int tabCompletionIndex = 0;
     private string lastTabPrefix = "";
     private int cursorPosition = 0;
+    private int selectionStart = -1;
+    private int selectionEnd = -1;
 
     public override void initGui()
     {
@@ -50,6 +54,35 @@ public class GuiChat : GuiScreen
 
     protected override void keyTyped(char eventChar, int eventKey)
     {
+        // Check for Ctrl combos first
+        bool ctrlDown = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
+        bool shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
+
+        if (ctrlDown)
+        {
+            switch (eventKey)
+            {
+                case Keyboard.KEY_A:
+                    // Select all
+                    selectionStart = 0;
+                    selectionEnd = message?.Length ?? 0;
+                    cursorPosition = selectionEnd;
+                    return;
+                case Keyboard.KEY_C:
+                    // Copy
+                    CopySelectionToClipboard();
+                    return;
+                case Keyboard.KEY_X:
+                    // Cut
+                    CutSelectionToClipboard();
+                    return;
+                case Keyboard.KEY_V:
+                    // Paste
+                    PasteClipboardAtCursor();
+                    return;
+            }
+        }
+
         switch (eventKey)
         {
             // Tab key for command completion
@@ -140,17 +173,43 @@ public class GuiChat : GuiScreen
                 }
             case Keyboard.KEY_LEFT:
                 {
-                    if (cursorPosition > 0)
+                    if (shiftDown)
                     {
-                        cursorPosition--;
+                        if (selectionStart == -1)
+                        {
+                            selectionStart = cursorPosition;
+                        }
+                        if (cursorPosition > 0) cursorPosition--;
+                        selectionEnd = cursorPosition;
+                    }
+                    else
+                    {
+                        if (cursorPosition > 0)
+                        {
+                            cursorPosition--;
+                        }
+                        ClearSelection();
                     }
                     break;
                 }
             case Keyboard.KEY_RIGHT:
                 {
-                    if (cursorPosition < message.Length)
+                    if (shiftDown)
                     {
-                        cursorPosition++;
+                        if (selectionStart == -1)
+                        {
+                            selectionStart = cursorPosition;
+                        }
+                        if (cursorPosition < message.Length) cursorPosition++;
+                        selectionEnd = cursorPosition;
+                    }
+                    else
+                    {
+                        if (cursorPosition < message.Length)
+                        {
+                            cursorPosition++;
+                        }
+                        ClearSelection();
                     }
                     break;
                 }
@@ -163,8 +222,14 @@ public class GuiChat : GuiScreen
                 {
                     if (allowedChars.Contains(eventChar) && message.Length < 100)
                     {
+                        if (HasSelection())
+                        {
+                            DeleteSelection();
+                        }
+
                         message = message.Substring(0, cursorPosition) + eventChar + message.Substring(cursorPosition);
                         cursorPosition++;
+                        ClearSelection();
                         lastTabCompletions.Clear();  // Reset tab completions when user types
                         lastTabPrefix = "";
                         tabCompletionIndex = 0;
@@ -218,7 +283,7 @@ public class GuiChat : GuiScreen
             return;
         }
 
-        // Check if this is a continuation of the previous tab completion
+        // Check if this is a continuation of the previous tab completion (case-insensitive)
         bool isContinuation = (lastTabPrefix == prefix && lastTabCompletions.Count > 0);
 
         if (matchingCommands.Count == 1)
@@ -236,6 +301,8 @@ public class GuiChat : GuiScreen
             tabCompletionIndex = (tabCompletionIndex + 1) % matchingCommands.Count;
             message = "/" + matchingCommands[tabCompletionIndex];
             cursorPosition = message.Length;
+            // keep lastTabPrefix as the original typed prefix so cycling continues
+            // lastTabPrefix remains unchanged
         }
         else
         {
@@ -295,15 +362,15 @@ public class GuiChat : GuiScreen
             return;
         }
 
-        // Check if this is a continuation of the previous tab completion
-        bool isContinuation = (lastTabPrefix == currentArgPrefix && lastTabCompletions.Count > 0);
+        // Check if this is a continuation of the previous tab completion (case-insensitive)
+        bool isContinuation = (lastTabCompletions.Count > 0 && lastTabPrefix == (currentArgPrefix ?? "").ToLower());
 
         if (matchingCompletions.Count == 1)
         {
             // Exactly one match - auto-complete it
             ReplaceCurrentArgument(allParts, matchingCompletions[0], argIndex);
             lastTabCompletions = matchingCompletions;
-            lastTabPrefix = currentArgPrefix;
+            lastTabPrefix = (currentArgPrefix ?? "").ToLower();
             tabCompletionIndex = 0;
         }
         else if (isContinuation)
@@ -311,12 +378,13 @@ public class GuiChat : GuiScreen
             // User pressed Tab again with same prefix - cycle to next completion
             tabCompletionIndex = (tabCompletionIndex + 1) % matchingCompletions.Count;
             ReplaceCurrentArgument(allParts, matchingCompletions[tabCompletionIndex], argIndex);
+            // keep lastTabPrefix as the original typed prefix so cycling continues
         }
         else
         {
             // New Tab press or different prefix - show all options and set first one
             lastTabCompletions = matchingCompletions;
-            lastTabPrefix = currentArgPrefix;
+            lastTabPrefix = (currentArgPrefix ?? "").ToLower();
             tabCompletionIndex = 0;
 
             // Display available completions in chat
@@ -363,6 +431,84 @@ public class GuiChat : GuiScreen
         cursorPosition = message.Length;
     }
 
+    private bool HasSelection()
+    {
+        return selectionStart != -1 && selectionEnd != -1 && selectionStart != selectionEnd;
+    }
+
+    private (int start, int end) GetSelectionRange()
+    {
+        if (!HasSelection()) return (0, 0);
+        int s = Math.Min(selectionStart, selectionEnd);
+        int e = Math.Max(selectionStart, selectionEnd);
+        return (s, e);
+    }
+
+    private string GetSelectedText()
+    {
+        if (!HasSelection()) return "";
+        var (s, e) = GetSelectionRange();
+        return message.Substring(s, e - s);
+    }
+
+    private void DeleteSelection()
+    {
+        if (!HasSelection()) return;
+        var (s, e) = GetSelectionRange();
+        message = message.Substring(0, s) + message.Substring(e);
+        cursorPosition = s;
+        ClearSelection();
+    }
+
+    private void ClearSelection()
+    {
+        selectionStart = -1;
+        selectionEnd = -1;
+    }
+
+    private void CopySelectionToClipboard()
+    {
+        if (!HasSelection()) return;
+        try
+        {
+            string sel = GetSelectedText();
+            StringSelection ss = new StringSelection(sel);
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
+        }
+        catch (Exception)
+        {
+        }
+    }
+
+    private void CutSelectionToClipboard()
+    {
+        if (!HasSelection()) return;
+        CopySelectionToClipboard();
+        DeleteSelection();
+    }
+
+    private void PasteClipboardAtCursor()
+    {
+        try
+        {
+            Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+            if (t != null && t.isDataFlavorSupported(DataFlavor.stringFlavor))
+            {
+                string clip = (string)t.getTransferData(DataFlavor.stringFlavor);
+                if (clip == null) clip = "";
+                if (HasSelection()) DeleteSelection();
+                int maxInsert = Math.Max(0, 100 - message.Length);
+                if (clip.Length > maxInsert) clip = clip.Substring(0, maxInsert);
+                message = message.Substring(0, cursorPosition) + clip + message.Substring(cursorPosition);
+                cursorPosition += clip.Length;
+                ClearSelection();
+            }
+        }
+        catch (Exception)
+        {
+        }
+    }
+
     public override void render(int var1, int var2, float var3)
     {
         drawRect(2, height - 14, width - 2, height - 2, 0x80000000);
@@ -372,8 +518,40 @@ public class GuiChat : GuiScreen
         string afterCursor = message.Substring(Math.Min(cursorPosition, message.Length));
         string cursor = (updateCounter / 6 % 2 == 0 ? "|" : "");
 
-        // Render the input literally (do not apply color codes while typing)
-        fontRenderer.drawStringWithShadow("> " + beforeCursor + cursor + afterCursor, 4, height - 12, 14737632);
+        int y = height - 12;
+        int xBase = 4;
+        uint normalColor = 14737632u;
+
+        if (HasSelection())
+        {
+            var (s, e) = GetSelectionRange();
+            string beforeSel = message.Substring(0, s);
+            string sel = message.Substring(s, e - s);
+            string afterSel = message.Substring(e);
+
+            // Draw before selection
+            fontRenderer.drawStringWithShadow("> " + beforeSel, xBase, y, normalColor);
+
+            // Compute widths and draw selection background
+            int beforeWidth = fontRenderer.getStringWidth("> " + beforeSel);
+            int selWidth = fontRenderer.getStringWidth(sel);
+            drawRect(xBase + beforeWidth, y - 1, xBase + beforeWidth + selWidth, y + 9, 0x80FFFFFFu);
+
+            // Draw selected text in contrasting color
+            fontRenderer.drawString(sel, xBase + beforeWidth, y, 0xFF000000u);
+
+            // Draw after selection
+            fontRenderer.drawStringWithShadow(afterSel, xBase + beforeWidth + selWidth, y, normalColor);
+
+            // Draw caret at cursor position
+            int caretX = xBase + fontRenderer.getStringWidth("> " + message.Substring(0, cursorPosition));
+            drawRect(caretX, y - 1, caretX + 1, y + 9, 0xFF000000u);
+        }
+        else
+        {
+            // Render the input literally (do not apply color codes while typing)
+            fontRenderer.drawStringWithShadow("> " + beforeCursor + cursor + afterCursor, xBase, y, normalColor);
+        }
         base.render(var1, var2, var3);
     }
 
