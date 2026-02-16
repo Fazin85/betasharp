@@ -8,135 +8,146 @@ namespace BetaSharp.Worlds.Gen.Features;
 public class DungeonFeature : Feature
 {
 
-    public override bool generate(World var1, java.util.Random var2, int var3, int var4, int var5)
+    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
     {
-        byte var6 = 3;
-        int var7 = var2.nextInt(2) + 2;
-        int var8 = var2.nextInt(2) + 2;
-        int var9 = 0;
+        byte height = 3;
+        int radiusX = rand.nextInt(2) + 2;
+        int radiusZ = rand.nextInt(2) + 2;
+        int openingsCount = 0;
 
-        int var10;
-        int var11;
-        int var12;
-        for (var10 = var3 - var7 - 1; var10 <= var3 + var7 + 1; ++var10)
+
+        for (int cx = x - radiusX - 1; cx <= x + radiusX + 1; ++cx)
         {
-            for (var11 = var4 - 1; var11 <= var4 + var6 + 1; ++var11)
+            for (int cy = y - 1; cy <= y + height + 1; ++cy)
             {
-                for (var12 = var5 - var8 - 1; var12 <= var5 + var8 + 1; ++var12)
+                for (int cz = z - radiusZ - 1; cz <= z + radiusZ + 1; ++cz)
                 {
-                    Material var13 = var1.getMaterial(var10, var11, var12);
-                    if (var11 == var4 - 1 && !var13.IsSolid)
+                    Material mat = world.getMaterial(cx, cy, cz);
+                    if ((cy == y - 1 || cy == y + height + 1) && !mat.IsSolid)
                     {
                         return false;
                     }
 
-                    if (var11 == var4 + var6 + 1 && !var13.IsSolid)
-                    {
-                        return false;
-                    }
+                    bool isWall = cx == x - radiusX - 1 ||
+                                  cx == x + radiusX + 1 ||
+                                  cz == z - radiusZ - 1 ||
+                                  cz == z + radiusZ + 1;
 
-                    if ((var10 == var3 - var7 - 1 || var10 == var3 + var7 + 1 || var12 == var5 - var8 - 1 || var12 == var5 + var8 + 1) && var11 == var4 && var1.isAir(var10, var11, var12) && var1.isAir(var10, var11 + 1, var12))
+                    if (isWall && cy == y && world.isAir(cx, cy, cz) && world.isAir(cx, cy + 1, cz))
                     {
-                        ++var9;
+                        ++openingsCount;
                     }
                 }
             }
         }
 
-        if (var9 >= 1 && var9 <= 5)
+        if (openingsCount < 1 || openingsCount > 5) return false;
+
+
+
+
+        for (int cx = x - radiusX - 1; cx <= x + radiusX + 1; ++cx)
         {
-            for (var10 = var3 - var7 - 1; var10 <= var3 + var7 + 1; ++var10)
+            for (int cy = y + height; cy >= y - 1; --cy)
             {
-                for (var11 = var4 + var6; var11 >= var4 - 1; --var11)
+                for (int cz = z - radiusZ - 1; cz <= z + radiusZ + 1; ++cz)
                 {
-                    for (var12 = var5 - var8 - 1; var12 <= var5 + var8 + 1; ++var12)
+                    bool isInside = cx != x - radiusX - 1 &&
+                                    cy != y - 1 &&
+                                    cz != z - radiusZ - 1 &&
+                                    cx != x + radiusX + 1 &&
+                                    cy != y + height + 1 &&
+                                    cz != z + radiusZ + 1;
+                    if (isInside)
                     {
-                        if (var10 != var3 - var7 - 1 && var11 != var4 - 1 && var12 != var5 - var8 - 1 && var10 != var3 + var7 + 1 && var11 != var4 + var6 + 1 && var12 != var5 + var8 + 1)
-                        {
-                            var1.setBlock(var10, var11, var12, 0);
-                        }
-                        else if (var11 >= 0 && !var1.getMaterial(var10, var11 - 1, var12).IsSolid)
-                        {
-                            var1.setBlock(var10, var11, var12, 0);
-                        }
-                        else if (var1.getMaterial(var10, var11, var12).IsSolid)
-                        {
-                            if (var11 == var4 - 1 && var2.nextInt(4) != 0)
-                            {
-                                var1.setBlock(var10, var11, var12, Block.MossyCobblestone.id);
-                            }
-                            else
-                            {
-                                var1.setBlock(var10, var11, var12, Block.Cobblestone.id);
-                            }
-                        }
+                        world.setBlock(cx, cy, cz, 0);
+                    }
+                    else if (cy >= 0 && !world.getMaterial(cx, cy - 1, cz).IsSolid)
+                    {
+                        world.setBlock(cx, cy, cz, 0);
+                    }
+                    else if (world.getMaterial(cx, cy, cz).IsSolid)
+                    {
+                        if (cy == y - 1 && rand.nextInt(4) != 0)
+                            world.setBlock(cx, cy, cz, Block.MossyCobblestone.id);
+                        else
+                            world.setBlock(cx, cy, cz, Block.Cobblestone.id);
                     }
                 }
             }
-
-            for (var10 = 0; var10 < 2; ++var10)
-            {
-                for (var11 = 0; var11 < 3; ++var11)
-                {
-                    var12 = var3 + var2.nextInt(var7 * 2 + 1) - var7;
-                    int var14 = var5 + var2.nextInt(var8 * 2 + 1) - var8;
-                    if (var1.isAir(var12, var4, var14))
-                    {
-                        int var15 = 0;
-                        if (var1.getMaterial(var12 - 1, var4, var14).IsSolid)
-                        {
-                            ++var15;
-                        }
-                        if (var1.getMaterial(var12 + 1, var4, var14).IsSolid)
-                        {
-                            ++var15;
-                        }
-                        if (var1.getMaterial(var12, var4, var14 - 1).IsSolid)
-                        {
-                            ++var15;
-                        }
-                        if (var1.getMaterial(var12, var4, var14 + 1).IsSolid)
-                        {
-                            ++var15;
-                        }
-                        if (var15 == 1)
-                        {
-                            var1.setBlock(var12, var4, var14, Block.Chest.id);
-                            BlockEntityChest var16 = (BlockEntityChest)var1.getBlockEntity(var12, var4, var14);
-
-                            for (int var17 = 0; var17 < 8; ++var17)
-                            {
-                                ItemStack var18 = pickCheckLootItem(var2);
-                                if (var18 != null)
-                                {
-                                    var16.setStack(var2.nextInt(var16.size()), var18);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            var1.setBlock(var3, var4, var5, Block.Spawner.id);
-            BlockEntityMobSpawner var19 = (BlockEntityMobSpawner)var1.getBlockEntity(var3, var4, var5);
-            var19.setSpawnedEntityId(pickMobSpawner(var2));
-            return true;
         }
-        else
+
+
+        for (int i = 0; i < 2; ++i)
         {
-            return false;
+            for (int j = 0; j < 3; ++j)
+            {
+                int chestX = x + rand.nextInt(radiusX * 2 + 1) - radiusX;
+                int chestZ = z + rand.nextInt(radiusZ * 2 + 1) - radiusZ;
+                if (world.isAir(chestX, y, chestZ))
+                {
+                    int neighbors = 0;
+                    if (world.getMaterial(chestX - 1, y, chestZ).IsSolid) ++neighbors;
+                    if (world.getMaterial(chestX + 1, y, chestZ).IsSolid) ++neighbors;
+                    if (world.getMaterial(chestX, y, chestZ - 1).IsSolid) ++neighbors;
+                    if (world.getMaterial(chestX, y, chestZ + 1).IsSolid) ++neighbors;
+
+                    if (neighbors > 1) continue;
+
+                    world.setBlock(chestX, y, chestZ, Block.Chest.id);
+
+                    BlockEntityChest chest = (BlockEntityChest)world.getBlockEntity(chestX, y, chestZ);
+                    for (int k = 0; k < 8; ++k)
+                    {
+                        ItemStack? loot = PickCheckLootItem(rand);
+                        if (loot != null)
+                        {
+                            chest.setStack(rand.nextInt(chest.size()), loot);
+                        }
+                    }
+
+                }
+            }
         }
+
+        world.setBlock(x, y, z, Block.Spawner.id);
+        BlockEntityMobSpawner var19 = (BlockEntityMobSpawner)world.getBlockEntity(x, y, z);
+        var19.setSpawnedEntityId(PickMobSpawner(rand));
+        return true;
+
+
     }
 
-    private ItemStack pickCheckLootItem(java.util.Random var1)
+    private ItemStack? PickCheckLootItem(java.util.Random rand)
     {
-        int var2 = var1.nextInt(11);
-        return var2 == 0 ? new ItemStack(Item.SADDLE) : var2 == 1 ? new ItemStack(Item.IRON_INGOT, var1.nextInt(4) + 1) : var2 == 2 ? new ItemStack(Item.BREAD) : var2 == 3 ? new ItemStack(Item.WHEAT, var1.nextInt(4) + 1) : var2 == 4 ? new ItemStack(Item.GUNPOWDER, var1.nextInt(4) + 1) : var2 == 5 ? new ItemStack(Item.STRING, var1.nextInt(4) + 1) : var2 == 6 ? new ItemStack(Item.BUCKET) : var2 == 7 && var1.nextInt(100) == 0 ? new ItemStack(Item.GOLDEN_APPLE) : var2 == 8 && var1.nextInt(2) == 0 ? new ItemStack(Item.REDSTONE, var1.nextInt(4) + 1) : var2 == 9 && var1.nextInt(10) == 0 ? new ItemStack(Item.ITEMS[Item.RECORD_THIRTEEN.id + var1.nextInt(2)]) : var2 == 10 ? new ItemStack(Item.DYE, 1, 3) : null;
+        int chance = rand.nextInt(11);
+
+        return chance switch
+        {
+            0 => new ItemStack(Item.SADDLE),
+            1 => new ItemStack(Item.IRON_INGOT, rand.nextInt(4) + 1),
+            2 => new ItemStack(Item.BREAD),
+            3 => new ItemStack(Item.WHEAT, rand.nextInt(4) + 1),
+            4 => new ItemStack(Item.GUNPOWDER, rand.nextInt(4) + 1),
+            5 => new ItemStack(Item.STRING, rand.nextInt(4) + 1),
+            6 => new ItemStack(Item.BUCKET),
+            7 => rand.nextInt(100) == 0 ? new ItemStack(Item.GOLDEN_APPLE) : null,
+            8 => rand.nextInt(2) == 0 ? new ItemStack(Item.REDSTONE, rand.nextInt(4) + 1) : null,
+            9 => rand.nextInt(10) == 0 ? new ItemStack(Item.ITEMS[Item.RECORD_THIRTEEN.id + rand.nextInt(2)]) : null,
+            10 => new ItemStack(Item.DYE, 1, 3),
+            _ => null,
+        };
     }
 
-    private string pickMobSpawner(java.util.Random var1)
+    private string PickMobSpawner(java.util.Random rand)
     {
-        int var2 = var1.nextInt(4);
-        return var2 == 0 ? "Skeleton" : var2 == 1 ? "Zombie" : var2 == 2 ? "Zombie" : var2 == 3 ? "Spider" : "";
+        return rand.nextInt(4) switch
+        {
+            0 => "Skeleton",
+            1 => "Zombie",
+            2 => "Zombie",
+            3 => "Spider",
+            _ => "Zombie"
+        };
     }
 }

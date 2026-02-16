@@ -5,22 +5,22 @@ namespace BetaSharp.Worlds.Gen.Features;
 public class CactusPatchFeature : Feature
 {
 
-    public override bool generate(World var1, java.util.Random var2, int var3, int var4, int var5)
+    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
     {
-        for (int var6 = 0; var6 < 10; ++var6)
+        for (int i = 0; i < 10; ++i)
         {
-            int var7 = var3 + var2.nextInt(8) - var2.nextInt(8);
-            int var8 = var4 + var2.nextInt(4) - var2.nextInt(4);
-            int var9 = var5 + var2.nextInt(8) - var2.nextInt(8);
-            if (var1.isAir(var7, var8, var9))
+            int genX = x + rand.nextInt(8) - rand.nextInt(8);
+            int genY = y + rand.nextInt(4) - rand.nextInt(4);
+            int genZ = z + rand.nextInt(8) - rand.nextInt(8);
+            if (world.isAir(genX, genY, genZ))
             {
-                int var10 = 1 + var2.nextInt(var2.nextInt(3) + 1);
+                int height = 1 + rand.nextInt(rand.nextInt(3) + 1);
 
-                for (int var11 = 0; var11 < var10; ++var11)
+                for (int h = 0; h < height; ++h)
                 {
-                    if (Block.Cactus.canGrow(var1, var7, var8 + var11, var9))
+                    if (Block.Cactus.canGrow(world, genX, genY + h, genZ))
                     {
-                        var1.setBlockWithoutNotifyingNeighbors(var7, var8 + var11, var9, Block.Cactus.id);
+                        world.setBlockWithoutNotifyingNeighbors(genX, genY + h, genZ, Block.Cactus.id);
                     }
                 }
             }

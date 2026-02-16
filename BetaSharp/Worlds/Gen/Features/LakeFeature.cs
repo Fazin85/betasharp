@@ -6,73 +6,75 @@ namespace BetaSharp.Worlds.Gen.Features;
 public class LakeFeature : Feature
 {
 
-    private int waterBlockId;
+    private readonly int _waterBlockId;
 
-    public LakeFeature(int var1)
+    public LakeFeature(int waterBlockId)
     {
-        waterBlockId = var1;
+        _waterBlockId = waterBlockId;
     }
 
-    public override bool generate(World var1, java.util.Random var2, int var3, int var4, int var5)
+    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
     {
-        var3 -= 8;
+        x -= 8;
 
-        for (var5 -= 8; var4 > 0 && var1.isAir(var3, var4, var5); --var4)
+        while (y > 0 && world.isAir(x, y, z))
         {
+            y--;
         }
 
-        var4 -= 4;
-        bool[] var6 = new bool[2048];
-        int var7 = var2.nextInt(4) + 4;
+        y -= 4;
+        bool[] lakeMask = new bool[2048];
+        int blobCount = rand.nextInt(4) + 4;
 
-        int var8;
-        for (var8 = 0; var8 < var7; ++var8)
+
+        for (int i = 0; i < blobCount; ++i)
         {
-            double var9 = var2.nextDouble() * 6.0D + 3.0D;
-            double var11 = var2.nextDouble() * 4.0D + 2.0D;
-            double var13 = var2.nextDouble() * 6.0D + 3.0D;
-            double var15 = var2.nextDouble() * (16.0D - var9 - 2.0D) + 1.0D + var9 / 2.0D;
-            double var17 = var2.nextDouble() * (8.0D - var11 - 4.0D) + 2.0D + var11 / 2.0D;
-            double var19 = var2.nextDouble() * (16.0D - var13 - 2.0D) + 1.0D + var13 / 2.0D;
+            double radiusH = rand.nextDouble() * 6.0D + 3.0D;
+            double radiusV = rand.nextDouble() * 4.0D + 2.0D;
+            double radiusH2 = rand.nextDouble() * 6.0D + 3.0D;
 
-            for (int var21 = 1; var21 < 15; ++var21)
+            double centerX = rand.nextDouble() * (16.0D - radiusH - 2.0D) + 1.0D + radiusH / 2.0D;
+            double centerY = rand.nextDouble() * (8.0D - radiusV - 4.0D) + 2.0D + radiusV / 2.0D;
+            double centerZ = rand.nextDouble() * (16.0D - radiusH2 - 2.0D) + 1.0D + radiusH2 / 2.0D;
+
+            for (int dx = 1; dx < 15; ++dx)
             {
-                for (int var22 = 1; var22 < 15; ++var22)
+                for (int dy = 1; dy < 15; ++dy)
                 {
-                    for (int var23 = 1; var23 < 7; ++var23)
+                    for (int dz = 1; dz < 7; ++dz)
                     {
-                        double var24 = (var21 - var15) / (var9 / 2.0D);
-                        double var26 = (var23 - var17) / (var11 / 2.0D);
-                        double var28 = (var22 - var19) / (var13 / 2.0D);
-                        double var30 = var24 * var24 + var26 * var26 + var28 * var28;
-                        if (var30 < 1.0D)
+                        double normX = (dx - centerX) / (radiusH / 2.0D);
+                        double normY = (dz - centerY) / (radiusV / 2.0D);
+                        double normZ = (dy - centerZ) / (radiusH2 / 2.0D);
+
+                        double distSq = normX * normX + normY * normY + normZ * normZ;
+                        if (distSq < 1.0D)
                         {
-                            var6[(var21 * 16 + var22) * 8 + var23] = true;
+                            lakeMask[(dx * 16 + dy) * 8 + dz] = true;
                         }
                     }
                 }
             }
         }
 
-        int var10;
-        int var32;
-        bool var33;
-        for (var8 = 0; var8 < 16; ++var8)
+
+
+        for (int dx = 0; dx < 16; ++dx)
         {
-            for (var32 = 0; var32 < 16; ++var32)
+            for (int dz = 0; dz < 16; ++dz)
             {
-                for (var10 = 0; var10 < 8; ++var10)
+                for (int dy = 0; dy < 8; ++dy)
                 {
-                    var33 = !var6[(var8 * 16 + var32) * 8 + var10] && (var8 < 15 && var6[((var8 + 1) * 16 + var32) * 8 + var10] || var8 > 0 && var6[((var8 - 1) * 16 + var32) * 8 + var10] || var32 < 15 && var6[(var8 * 16 + var32 + 1) * 8 + var10] || var32 > 0 && var6[(var8 * 16 + (var32 - 1)) * 8 + var10] || var10 < 7 && var6[(var8 * 16 + var32) * 8 + var10 + 1] || var10 > 0 && var6[(var8 * 16 + var32) * 8 + (var10 - 1)]);
-                    if (var33)
+                    bool isEdge = !lakeMask[(dx * 16 + dz) * 8 + dy] && (dx < 15 && lakeMask[((dx + 1) * 16 + dz) * 8 + dy] || dx > 0 && lakeMask[((dx - 1) * 16 + dz) * 8 + dy] || dz < 15 && lakeMask[(dx * 16 + dz + 1) * 8 + dy] || dz > 0 && lakeMask[(dx * 16 + (dz - 1)) * 8 + dy] || dy < 7 && lakeMask[(dx * 16 + dz) * 8 + dy + 1] || dy > 0 && lakeMask[(dx * 16 + dz) * 8 + (dy - 1)]);
+                    if (isEdge)
                     {
-                        Material var12 = var1.getMaterial(var3 + var8, var4 + var10, var5 + var32);
-                        if (var10 >= 4 && var12.IsFluid)
+                        Material mat = world.getMaterial(x + dx, y + dy, z + dz);
+                        if (dy >= 4 && mat.IsFluid)
                         {
                             return false;
                         }
 
-                        if (var10 < 4 && !var12.IsSolid && var1.getBlockId(var3 + var8, var4 + var10, var5 + var32) != waterBlockId)
+                        if (dy < 4 && !mat.IsSolid && world.getBlockId(x + dx, y + dy, z + dz) != _waterBlockId)
                         {
                             return false;
                         }
@@ -81,46 +83,57 @@ public class LakeFeature : Feature
             }
         }
 
-        for (var8 = 0; var8 < 16; ++var8)
+        for (int dx = 0; dx < 16; ++dx)
         {
-            for (var32 = 0; var32 < 16; ++var32)
+            for (int dy = 0; dy < 16; ++dy)
             {
-                for (var10 = 0; var10 < 8; ++var10)
+                for (int dz = 0; dz < 8; ++dz)
                 {
-                    if (var6[(var8 * 16 + var32) * 8 + var10])
+                    if (lakeMask[(dx * 16 + dy) * 8 + dz])
                     {
-                        var1.setBlockWithoutNotifyingNeighbors(var3 + var8, var4 + var10, var5 + var32, var10 >= 4 ? 0 : waterBlockId);
+                        var blockId = dz >= 4 ? 0 : _waterBlockId;
+                        world.setBlockWithoutNotifyingNeighbors(x + dx, y + dz, z + dy, blockId);
                     }
                 }
             }
         }
 
-        for (var8 = 0; var8 < 16; ++var8)
+        for (int dx = 0; dx < 16; ++dx)
         {
-            for (var32 = 0; var32 < 16; ++var32)
+            for (int dy = 0; dy < 16; ++dy)
             {
-                for (var10 = 4; var10 < 8; ++var10)
+                for (int dz = 4; dz < 8; ++dz)
                 {
-                    if (var6[(var8 * 16 + var32) * 8 + var10] && var1.getBlockId(var3 + var8, var4 + var10 - 1, var5 + var32) == Block.Dirt.id && var1.getBrightness(LightType.Sky, var3 + var8, var4 + var10, var5 + var32) > 0)
+                    if (lakeMask[(dx * 16 + dy) * 8 + dz] &&
+                        world.getBlockId(x + dx, y + dz - 1, z + dy) == Block.Dirt.id &&
+                        world.getBrightness(LightType.Sky, x + dx, y + dz, z + dy) > 0)
                     {
-                        var1.setBlockWithoutNotifyingNeighbors(var3 + var8, var4 + var10 - 1, var5 + var32, Block.GrassBlock.id);
+                        world.setBlockWithoutNotifyingNeighbors(x + dx, y + dz - 1, z + dy, Block.GrassBlock.id);
                     }
                 }
             }
         }
 
-        if (Block.Blocks[waterBlockId].material == Material.Lava)
+        if (Block.Blocks[_waterBlockId].material == Material.Lava)
         {
-            for (var8 = 0; var8 < 16; ++var8)
+            for (int dx = 0; dx < 16; ++dx)
             {
-                for (var32 = 0; var32 < 16; ++var32)
+                for (int dy = 0; dy < 16; ++dy)
                 {
-                    for (var10 = 0; var10 < 8; ++var10)
+                    for (int dz = 0; dz < 8; ++dz)
                     {
-                        var33 = !var6[(var8 * 16 + var32) * 8 + var10] && (var8 < 15 && var6[((var8 + 1) * 16 + var32) * 8 + var10] || var8 > 0 && var6[((var8 - 1) * 16 + var32) * 8 + var10] || var32 < 15 && var6[(var8 * 16 + var32 + 1) * 8 + var10] || var32 > 0 && var6[(var8 * 16 + (var32 - 1)) * 8 + var10] || var10 < 7 && var6[(var8 * 16 + var32) * 8 + var10 + 1] || var10 > 0 && var6[(var8 * 16 + var32) * 8 + (var10 - 1)]);
-                        if (var33 && (var10 < 4 || var2.nextInt(2) != 0) && var1.getMaterial(var3 + var8, var4 + var10, var5 + var32).IsSolid)
+                        bool isEdge = !lakeMask[(dx * 16 + dy) * 8 + dz] &&
+                            (
+                                dx < 15 && lakeMask[((dx + 1) * 16 + dy) * 8 + dz] ||
+                                dx > 0 && lakeMask[((dx - 1) * 16 + dy) * 8 + dz] ||
+                                dy < 15 && lakeMask[(dx * 16 + dy + 1) * 8 + dz] ||
+                                dy > 0 && lakeMask[(dx * 16 + (dy - 1)) * 8 + dz] ||
+                                dz < 7 && lakeMask[(dx * 16 + dy) * 8 + dz + 1] ||
+                                dz > 0 && lakeMask[(dx * 16 + dy) * 8 + (dz - 1)]
+                            );
+                        if (isEdge && (dz < 4 || rand.nextInt(2) != 0) && world.getMaterial(x + dx, y + dz, z + dy).IsSolid)
                         {
-                            var1.setBlockWithoutNotifyingNeighbors(var3 + var8, var4 + var10, var5 + var32, Block.Stone.id);
+                            world.setBlockWithoutNotifyingNeighbors(x + dx, y + dz, z + dy, Block.Stone.id);
                         }
                     }
                 }

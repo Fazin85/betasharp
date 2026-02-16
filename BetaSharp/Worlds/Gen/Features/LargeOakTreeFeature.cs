@@ -403,14 +403,14 @@ public class LargeOakTreeFeature : Feature
         foliageDensity = var5;
     }
 
-    public override bool generate(World var1, java.util.Random var2, int var3, int var4, int var5)
+    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
     {
-        world = var1;
-        long var6 = var2.nextLong();
+        this.world = world;
+        long var6 = rand.nextLong();
         random.setSeed(var6);
-        origin[0] = var3;
-        origin[1] = var4;
-        origin[2] = var5;
+        origin[0] = x;
+        origin[1] = y;
+        origin[2] = z;
         if (height == 0)
         {
             height = 5 + random.nextInt(maxTrunkHeight);

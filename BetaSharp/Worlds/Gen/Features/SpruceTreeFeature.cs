@@ -5,123 +5,100 @@ namespace BetaSharp.Worlds.Gen.Features;
 public class SpruceTreeFeature : Feature
 {
 
-    public override bool generate(World var1, java.util.Random var2, int var3, int var4, int var5)
+    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
     {
-        int var6 = var2.nextInt(4) + 6;
-        int var7 = 1 + var2.nextInt(2);
-        int var8 = var6 - var7;
-        int var9 = 2 + var2.nextInt(2);
-        bool var10 = true;
-        if (var4 >= 1 && var4 + var6 + 1 <= 128)
-        {
-            int var11;
-            int var13;
-            int var15;
-            int var21;
-            for (var11 = var4; var11 <= var4 + 1 + var6 && var10; ++var11)
-            {
-                bool var12 = true;
-                if (var11 - var4 < var7)
-                {
-                    var21 = 0;
-                }
-                else
-                {
-                    var21 = var9;
-                }
+        int totalHeight = rand.nextInt(4) + 6;
+        int topTrunkNoLeaves = 1 + rand.nextInt(2);
+        int leafStartOffset = totalHeight - topTrunkNoLeaves;
+        int maxLeafRadius = 2 + rand.nextInt(2);
 
-                for (var13 = var3 - var21; var13 <= var3 + var21 && var10; ++var13)
+        bool canPlace = true;
+
+        if (!(y >= 1 && y + totalHeight + 1 <= 128)) return false;
+
+        for (int cy = y; cy <= y + 1 + totalHeight && canPlace; ++cy)
+        {
+            int checkRadius;
+            if (cy - y < topTrunkNoLeaves) checkRadius = 0;
+            else checkRadius = maxLeafRadius;
+
+            for (int cx = x - checkRadius; cx <= x + checkRadius && canPlace; ++cx)
+            {
+                for (int cz = z - checkRadius; cz <= z + checkRadius && canPlace; ++cz)
                 {
-                    for (int var14 = var5 - var21; var14 <= var5 + var21 && var10; ++var14)
+                    if (cy >= 0 && cy < 128)
                     {
-                        if (var11 >= 0 && var11 < 128)
+                        int blockId = world.getBlockId(cx, cy, cz);
+                        if (blockId != 0 && blockId != Block.Leaves.id)
                         {
-                            var15 = var1.getBlockId(var13, var11, var14);
-                            if (var15 != 0 && var15 != Block.Leaves.id)
-                            {
-                                var10 = false;
-                            }
+                            canPlace = false;
                         }
-                        else
-                        {
-                            var10 = false;
-                        }
+                    }
+                    else
+                    {
+                        canPlace = false;
+                    }
+                }
+            }
+        }
+
+        if (!canPlace) return false;
+
+        int groundId = world.getBlockId(x, y - 1, z);
+        if (!((groundId == Block.GrassBlock.id || groundId == Block.Dirt.id) && y < 128 - totalHeight - 1)) return false;
+
+        world.setBlockWithoutNotifyingNeighbors(x, y - 1, z, Block.Dirt.id);
+        int currentRadius = rand.nextInt(2);
+        int radiusTarget = 1;
+        byte radiusStep = 0;
+
+
+        for (int h = 0; h <= leafStartOffset; ++h)
+        {
+            int leafY = y + totalHeight - h;
+
+            for (int cx = x - currentRadius; cx <= x + currentRadius; ++cx)
+            {
+                int offsetX = cx - x;
+                for (int cz = z - currentRadius; cz <= z + currentRadius; ++cz)
+                {
+                    int offsetZ = cz - z;
+
+                    if ((Math.Abs(offsetX) != currentRadius || Math.Abs(offsetZ) != currentRadius || currentRadius <= 0) && !Block.BlocksOpaque[world.getBlockId(cx, leafY, cz)])
+                    {
+                        world.setBlockWithoutNotifyingNeighbors(cx, leafY, cz, Block.Leaves.id, 1);
                     }
                 }
             }
 
-            if (!var10)
+            if (currentRadius >= radiusTarget)
             {
-                return false;
+                currentRadius = radiusStep;
+                radiusStep = 1;
+                ++radiusTarget;
+                if (radiusTarget > maxLeafRadius)
+                {
+                    radiusTarget = maxLeafRadius;
+                }
             }
             else
             {
-                var11 = var1.getBlockId(var3, var4 - 1, var5);
-                if ((var11 == Block.GrassBlock.id || var11 == Block.Dirt.id) && var4 < 128 - var6 - 1)
-                {
-                    var1.setBlockWithoutNotifyingNeighbors(var3, var4 - 1, var5, Block.Dirt.id);
-                    var21 = var2.nextInt(2);
-                    var13 = 1;
-                    byte var22 = 0;
-
-                    int var16;
-                    int var17;
-                    for (var15 = 0; var15 <= var8; ++var15)
-                    {
-                        var16 = var4 + var6 - var15;
-
-                        for (var17 = var3 - var21; var17 <= var3 + var21; ++var17)
-                        {
-                            int var18 = var17 - var3;
-
-                            for (int var19 = var5 - var21; var19 <= var5 + var21; ++var19)
-                            {
-                                int var20 = var19 - var5;
-                                if ((java.lang.Math.abs(var18) != var21 || java.lang.Math.abs(var20) != var21 || var21 <= 0) && !Block.BlocksOpaque[var1.getBlockId(var17, var16, var19)])
-                                {
-                                    var1.setBlockWithoutNotifyingNeighbors(var17, var16, var19, Block.Leaves.id, 1);
-                                }
-                            }
-                        }
-
-                        if (var21 >= var13)
-                        {
-                            var21 = var22;
-                            var22 = 1;
-                            ++var13;
-                            if (var13 > var9)
-                            {
-                                var13 = var9;
-                            }
-                        }
-                        else
-                        {
-                            ++var21;
-                        }
-                    }
-
-                    var15 = var2.nextInt(3);
-
-                    for (var16 = 0; var16 < var6 - var15; ++var16)
-                    {
-                        var17 = var1.getBlockId(var3, var4 + var16, var5);
-                        if (var17 == 0 || var17 == Block.Leaves.id)
-                        {
-                            var1.setBlockWithoutNotifyingNeighbors(var3, var4 + var16, var5, Block.Log.id, 1);
-                        }
-                    }
-
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                ++currentRadius;
             }
         }
-        else
+
+        int trunkVariability = rand.nextInt(3);
+
+        for (int trunkY = 0; trunkY < totalHeight - trunkVariability; ++trunkY)
         {
-            return false;
+            int blockAtTrunk = world.getBlockId(x, y + trunkY, z);
+            if (blockAtTrunk == 0 || blockAtTrunk == Block.Leaves.id)
+            {
+                world.setBlockWithoutNotifyingNeighbors(x, y + trunkY, z, Block.Log.id, 1);
+            }
         }
+
+        return true;
     }
+
 }

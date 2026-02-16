@@ -4,111 +4,89 @@ namespace BetaSharp.Worlds.Gen.Features;
 
 public class PineTreeFeature : Feature
 {
-
-    public override bool generate(World var1, java.util.Random var2, int var3, int var4, int var5)
+    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
     {
-        int var6 = var2.nextInt(5) + 7;
-        int var7 = var6 - var2.nextInt(2) - 3;
-        int var8 = var6 - var7;
-        int var9 = 1 + var2.nextInt(var8 + 1);
-        bool var10 = true;
-        if (var4 >= 1 && var4 + var6 + 1 <= 128)
+        int treeHeight = rand.nextInt(5) + 7;
+        int trunkWithNoLeaves = treeHeight - rand.nextInt(2) - 3;
+        int canopyHeight = treeHeight - trunkWithNoLeaves;
+        int maxLeafRadius = 1 + rand.nextInt(canopyHeight + 1);
+
+        bool canPlace = true;
+
+        if (!(y >= 1 && y + treeHeight + 1 <= 128)) return false;
+
+
+        for (int cy = y; cy <= y + 1 + treeHeight && canPlace; ++cy)
         {
-            int var11;
-            int var13;
-            int var14;
-            int var15;
-            int var18;
-            for (var11 = var4; var11 <= var4 + 1 + var6 && var10; ++var11)
-            {
-                bool var12 = true;
-                if (var11 - var4 < var7)
-                {
-                    var18 = 0;
-                }
-                else
-                {
-                    var18 = var9;
-                }
+            int checkRadius;
+            if (cy - y < trunkWithNoLeaves) checkRadius = 0;
+            else checkRadius = maxLeafRadius;
 
-                for (var13 = var3 - var18; var13 <= var3 + var18 && var10; ++var13)
+            for (int cx = x - checkRadius; cx <= x + checkRadius && canPlace; ++cx)
+            {
+                for (int cz = z - checkRadius; cz <= z + checkRadius && canPlace; ++cz)
                 {
-                    for (var14 = var5 - var18; var14 <= var5 + var18 && var10; ++var14)
+                    if (cy >= 0 && cy < 128)
                     {
-                        if (var11 >= 0 && var11 < 128)
+                        int blockId = world.getBlockId(cx, cy, cz);
+                        if (blockId != 0 && blockId != Block.Leaves.id)
                         {
-                            var15 = var1.getBlockId(var13, var11, var14);
-                            if (var15 != 0 && var15 != Block.Leaves.id)
-                            {
-                                var10 = false;
-                            }
-                        }
-                        else
-                        {
-                            var10 = false;
+                            canPlace = false;
                         }
                     }
-                }
-            }
-
-            if (!var10)
-            {
-                return false;
-            }
-            else
-            {
-                var11 = var1.getBlockId(var3, var4 - 1, var5);
-                if ((var11 == Block.GrassBlock.id || var11 == Block.Dirt.id) && var4 < 128 - var6 - 1)
-                {
-                    var1.setBlockWithoutNotifyingNeighbors(var3, var4 - 1, var5, Block.Dirt.id);
-                    var18 = 0;
-
-                    for (var13 = var4 + var6; var13 >= var4 + var7; --var13)
+                    else
                     {
-                        for (var14 = var3 - var18; var14 <= var3 + var18; ++var14)
-                        {
-                            var15 = var14 - var3;
-
-                            for (int var16 = var5 - var18; var16 <= var5 + var18; ++var16)
-                            {
-                                int var17 = var16 - var5;
-                                if ((java.lang.Math.abs(var15) != var18 || java.lang.Math.abs(var17) != var18 || var18 <= 0) && !Block.BlocksOpaque[var1.getBlockId(var14, var13, var16)])
-                                {
-                                    var1.setBlockWithoutNotifyingNeighbors(var14, var13, var16, Block.Leaves.id, 1);
-                                }
-                            }
-                        }
-
-                        if (var18 >= 1 && var13 == var4 + var7 + 1)
-                        {
-                            --var18;
-                        }
-                        else if (var18 < var9)
-                        {
-                            ++var18;
-                        }
+                        canPlace = false;
                     }
-
-                    for (var13 = 0; var13 < var6 - 1; ++var13)
-                    {
-                        var14 = var1.getBlockId(var3, var4 + var13, var5);
-                        if (var14 == 0 || var14 == Block.Leaves.id)
-                        {
-                            var1.setBlockWithoutNotifyingNeighbors(var3, var4 + var13, var5, Block.Log.id, 1);
-                        }
-                    }
-
-                    return true;
-                }
-                else
-                {
-                    return false;
                 }
             }
         }
-        else
+
+        if (!canPlace) return false;
+
+        int groundId = world.getBlockId(x, y - 1, z);
+        if ((groundId == Block.GrassBlock.id || groundId == Block.Dirt.id) && y < 128 - treeHeight - 1)
         {
-            return false;
+            world.setBlockWithoutNotifyingNeighbors(x, y - 1, z, Block.Dirt.id);
+            int currentLeafRadius = 0;
+
+            for (int cy = y + treeHeight; cy >= y + trunkWithNoLeaves; --cy)
+            {
+                for (int cx = x - currentLeafRadius; cx <= x + currentLeafRadius; ++cx)
+                {
+                    int offsetX = cx - x;
+
+                    for (int cz = z - currentLeafRadius; cz <= z + currentLeafRadius; ++cz)
+                    {
+                        int offsetZ = cz - z;
+                        if ((Math.Abs(offsetX) != currentLeafRadius || Math.Abs(offsetZ) != currentLeafRadius || currentLeafRadius <= 0) && !Block.BlocksOpaque[world.getBlockId(cx, cy, cz)])
+                        {
+                            world.setBlockWithoutNotifyingNeighbors(cx, cy, cz, Block.Leaves.id, 1);
+                        }
+                    }
+                }
+
+                if (currentLeafRadius >= 1 && cy == y + trunkWithNoLeaves + 1)
+                {
+                    --currentLeafRadius;
+                }
+                else if (currentLeafRadius < maxLeafRadius)
+                {
+                    ++currentLeafRadius;
+                }
+            };
+
+            for (int trunkY = 0; trunkY < treeHeight - 1; ++trunkY)
+            {
+                int blockAtTrunk = world.getBlockId(x, y + trunkY, z);
+                if (blockAtTrunk == 0 || blockAtTrunk == Block.Leaves.id)
+                {
+                    world.setBlockWithoutNotifyingNeighbors(x, y + trunkY, z, Block.Log.id, 1);
+                }
+            }
+
+            return true;
         }
+        return false;
     }
 }
