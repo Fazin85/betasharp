@@ -44,7 +44,7 @@ public class BlockLog : Block
                             int leavesMeta = world.getBlockMeta(x + offsetX, y + offsetY, z + offsetZ);
                             if ((leavesMeta & 8) == 0)
                             {
-                                world.setBlockMetaWithoutNotifyingNeighbors(x + offsetX, y + offsetY, z + offsetZ, leavesMeta | 8);
+                                world.SetBlockMetaWithoutNotifyingNeighbors(x + offsetX, y + offsetY, z + offsetZ, leavesMeta | 8);
                             }
                         }
                     }

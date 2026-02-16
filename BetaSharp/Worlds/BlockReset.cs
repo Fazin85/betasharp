@@ -2,22 +2,24 @@ namespace BetaSharp.Worlds;
 
 public class BlockReset
 {
-    public int x;
-    public int y;
-    public int z;
-    public int delay;
-    public int block;
-    public int meta;
-    public readonly ClientWorld world;
+    public int X { get; set; }
+    public int Y { get; set; }
+    public int Z { get; set; }
+    public int Delay { get; set; }
+    public int BlockId { get; set; }
+    public int Meta { get; set; }
+    
+    public ClientWorld World { get; }
 
-    public BlockReset(ClientWorld var1, int var2, int var3, int var4, int var5, int var6)
+    public BlockReset(ClientWorld world, int x, int y, int z, int blockId, int meta)
     {
-        world = var1;
-        x = var2;
-        y = var3;
-        z = var4;
-        delay = 80;
-        block = var5;
-        meta = var6;
+        World = world;
+        X = x;
+        Y = y;
+        Z = z;
+        BlockId = blockId;
+        Meta = meta;
+        
+        Delay = 80; 
     }
 }

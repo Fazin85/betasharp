@@ -76,10 +76,10 @@ public class BlockFire : Block
             int fireAge = world.getBlockMeta(x, y, z);
             if (fireAge < 15)
             {
-                world.setBlockMetaWithoutNotifyingNeighbors(x, y, z, fireAge + random.nextInt(3) / 2);
+                world.SetBlockMetaWithoutNotifyingNeighbors(x, y, z, fireAge + random.nextInt(3) / 2);
             }
 
-            world.scheduleBlockUpdate(x, y, z, id, getTickRate());
+            world.ScheduleBlockUpdate(x, y, z, id, getTickRate());
             if (!isOnNetherrack && !areBlocksAroundFlammable(world, x, y, z))
             {
                 if (!world.shouldSuffocate(x, y - 1, z) || fireAge > 3)
@@ -235,7 +235,7 @@ public class BlockFire : Block
             }
             else
             {
-                world.scheduleBlockUpdate(x, y, z, id, getTickRate());
+                world.ScheduleBlockUpdate(x, y, z, id, getTickRate());
             }
         }
     }

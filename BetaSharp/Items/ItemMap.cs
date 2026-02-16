@@ -41,8 +41,8 @@ public class ItemMap : NetworkSyncedItem
             stack.setDamage(world.getIdCount("map"));
             string mapName = "map_" + stack.getDamage();
             mapState = new MapState(mapName);
-            mapState.centerX = world.getProperties().getSpawnX();
-            mapState.centerZ = world.getProperties().getSpawnZ();
+            mapState.centerX = world.getProperties().SpawnX;
+            mapState.centerZ = world.getProperties().SpawnZ;
             mapState.scale = 3;
             mapState.dimension = (sbyte)world.dimension.id;
             mapState.markDirty();

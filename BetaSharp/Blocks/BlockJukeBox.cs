@@ -61,7 +61,7 @@ public class BlockJukeBox : BlockWithEntity
                 double offsetZ = (double)(world.random.nextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
                 EntityItem entityItem = new EntityItem(world, (double)x + offsetX, (double)y + offsetY, (double)z + offsetZ, new ItemStack(recordId, 1, 0));
                 entityItem.delayBeforeCanPickup = 10;
-                world.spawnEntity(entityItem);
+                world.SpawnEntity(entityItem);
             }
         }
     }

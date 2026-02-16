@@ -139,21 +139,21 @@ public class BlockDispenser : BlockWithEntity
                 EntityArrow arrow = new EntityArrow(world, spawnX, spawnY, spawnZ);
                 arrow.setArrowHeading((double)dirX, (double)0.1F, (double)dirZ, 1.1F, 6.0F);
                 arrow.doesArrowBelongToPlayer = true;
-                world.spawnEntity(arrow);
+                world.SpawnEntity(arrow);
                 world.worldEvent(1002, x, y, z, 0);
             }
             else if (itemStack.itemId == Item.EGG.id)
             {
                 EntityEgg egg = new EntityEgg(world, spawnX, spawnY, spawnZ);
                 egg.setEggHeading((double)dirX, (double)0.1F, (double)dirZ, 1.1F, 6.0F);
-                world.spawnEntity(egg);
+                world.SpawnEntity(egg);
                 world.worldEvent(1002, x, y, z, 0);
             }
             else if (itemStack.itemId == Item.SNOWBALL.id)
             {
                 EntitySnowball snowball = new EntitySnowball(world, spawnX, spawnY, spawnZ);
                 snowball.setSnowballHeading((double)dirX, (double)0.1F, (double)dirZ, 1.1F, 6.0F);
-                world.spawnEntity(snowball);
+                world.SpawnEntity(snowball);
                 world.worldEvent(1002, x, y, z, 0);
             }
             else
@@ -166,7 +166,7 @@ public class BlockDispenser : BlockWithEntity
                 item.velocityX += random.nextGaussian() * (double)0.0075F * 6.0D;
                 item.velocityY += random.nextGaussian() * (double)0.0075F * 6.0D;
                 item.velocityZ += random.nextGaussian() * (double)0.0075F * 6.0D;
-                world.spawnEntity(item);
+                world.SpawnEntity(item);
                 world.worldEvent(1000, x, y, z, 0);
             }
 
@@ -182,7 +182,7 @@ public class BlockDispenser : BlockWithEntity
             bool isPowered = world.isPowered(x, y, z) || world.isPowered(x, y + 1, z);
             if (isPowered)
             {
-                world.scheduleBlockUpdate(x, y, z, base.id, getTickRate());
+                world.ScheduleBlockUpdate(x, y, z, base.id, getTickRate());
             }
         }
 
@@ -254,7 +254,7 @@ public class BlockDispenser : BlockWithEntity
                     entityItem.velocityX = (double)((float)random.nextGaussian() * var13);
                     entityItem.velocityY = (double)((float)random.nextGaussian() * var13 + 0.2F);
                     entityItem.velocityZ = (double)((float)random.nextGaussian() * var13);
-                    world.spawnEntity(entityItem);
+                    world.SpawnEntity(entityItem);
                 }
             }
         }

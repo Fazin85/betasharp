@@ -34,7 +34,7 @@ public class GuiRenameWorld : GuiScreen
         controlList.add(new GuiButton(BUTTON_CANCEL, width / 2 - 100, height / 4 + 120 + 12, translations.TranslateKey("gui.cancel")));
         WorldStorageSource worldStorage = mc.getSaveLoader();
         WorldProperties worldProperties = worldStorage.getProperties(worldFolderName);
-        string currentWorldName = worldProperties.getWorldName();
+        string currentWorldName = worldProperties.LevelName;
         nameInputField = new GuiTextField(this, fontRenderer, width / 2 - 100, 60, 200, 20, currentWorldName);
         nameInputField.isFocused = true;
         nameInputField.setMaxStringLength(32);

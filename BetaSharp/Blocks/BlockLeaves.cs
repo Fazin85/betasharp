@@ -58,7 +58,7 @@ public class BlockLeaves : BlockLeavesBase
                         if (blockId == Block.Leaves.id)
                         {
                             int leavesMeta = world.getBlockMeta(x + offsetX, y + offsetY, z + offsetZ);
-                            world.setBlockMetaWithoutNotifyingNeighbors(x + offsetX, y + offsetY, z + offsetZ, leavesMeta | 8);
+                            world.SetBlockMetaWithoutNotifyingNeighbors(x + offsetX, y + offsetY, z + offsetZ, leavesMeta | 8);
                         }
                     }
                 }
@@ -171,7 +171,7 @@ public class BlockLeaves : BlockLeavesBase
                 distanceToLog = decayRegion[centerOffset * planeSize + centerOffset * regionSize + centerOffset];
                 if (distanceToLog >= 0)
                 {
-                    world.setBlockMetaWithoutNotifyingNeighbors(x, y, z, meta & -9);
+                    world.SetBlockMetaWithoutNotifyingNeighbors(x, y, z, meta & -9);
                 }
                 else
                 {

@@ -57,7 +57,7 @@ public class OakTreeFeature : Feature
                 var8 = var1.getBlockId(var3, var4 - 1, var5);
                 if ((var8 == Block.GrassBlock.id || var8 == Block.Dirt.id) && var4 < 128 - var6 - 1)
                 {
-                    var1.setBlockWithoutNotifyingNeighbors(var3, var4 - 1, var5, Block.Dirt.id);
+                    var1.SetBlockWithoutNotifyingNeighbors(var3, var4 - 1, var5, Block.Dirt.id);
 
                     int var16;
                     for (var16 = var4 - 3 + var6; var16 <= var4 + var6; ++var16)
@@ -74,7 +74,7 @@ public class OakTreeFeature : Feature
                                 int var15 = var14 - var5;
                                 if ((java.lang.Math.abs(var13) != var11 || java.lang.Math.abs(var15) != var11 || var2.nextInt(2) != 0 && var10 != 0) && !Block.BlocksOpaque[var1.getBlockId(var12, var16, var14)])
                                 {
-                                    var1.setBlockWithoutNotifyingNeighbors(var12, var16, var14, Block.Leaves.id);
+                                    var1.SetBlockWithoutNotifyingNeighbors(var12, var16, var14, Block.Leaves.id);
                                 }
                             }
                         }
@@ -85,7 +85,7 @@ public class OakTreeFeature : Feature
                         var10 = var1.getBlockId(var3, var4 + var16, var5);
                         if (var10 == 0 || var10 == Block.Leaves.id)
                         {
-                            var1.setBlockWithoutNotifyingNeighbors(var3, var4 + var16, var5, Block.Log.id);
+                            var1.SetBlockWithoutNotifyingNeighbors(var3, var4 + var16, var5, Block.Log.id);
                         }
                     }
 

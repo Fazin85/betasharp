@@ -20,7 +20,7 @@ public class CactusPatchFeature : Feature
                 {
                     if (Block.Cactus.canGrow(var1, var7, var8 + var11, var9))
                     {
-                        var1.setBlockWithoutNotifyingNeighbors(var7, var8 + var11, var9, Block.Cactus.id);
+                        var1.SetBlockWithoutNotifyingNeighbors(var7, var8 + var11, var9, Block.Cactus.id);
                     }
                 }
             }

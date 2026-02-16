@@ -79,7 +79,7 @@ public class ClientNetworkHandler : NetHandler
         entityItem.trackedPosX = packet.x;
         entityItem.trackedPosY = packet.y;
         entityItem.trackedPosZ = packet.z;
-        worldClient.forceEntity(packet.id, entityItem);
+        worldClient.ForceEntity(packet.id, entityItem);
     }
 
     public override void onEntitySpawn(EntitySpawnS2CPacket packet)
@@ -157,7 +157,7 @@ public class ClientNetworkHandler : NetHandler
             ((Entity)entity).yaw = 0.0F;
             ((Entity)entity).pitch = 0.0F;
             ((Entity)entity).id = packet.id;
-            worldClient.forceEntity(packet.id, (Entity)entity);
+            worldClient.ForceEntity(packet.id, (Entity)entity);
             if (packet.entityData > 0)
             {
                 if (packet.entityType == 60)
@@ -202,7 +202,7 @@ public class ClientNetworkHandler : NetHandler
     public override void onPaintingEntitySpawn(PaintingEntitySpawnS2CPacket packet)
     {
         EntityPainting ent = new EntityPainting(worldClient, packet.xPosition, packet.yPosition, packet.zPosition, packet.direction, packet.title);
-        worldClient.forceEntity(packet.entityId, ent);
+        worldClient.ForceEntity(packet.entityId, ent);
     }
 
     public override void onEntityVelocityUpdate(EntityVelocityUpdateS2CPacket packet)
@@ -246,7 +246,7 @@ public class ClientNetworkHandler : NetHandler
         }
 
         ent.setPositionAndAngles(x, y, z, rotation, pitch);
-        worldClient.forceEntity(packet.entityId, ent);
+        worldClient.ForceEntity(packet.entityId, ent);
     }
 
     public override void onEntityPosition(EntityPositionS2CPacket packet)
@@ -285,7 +285,7 @@ public class ClientNetworkHandler : NetHandler
 
     public override void onEntityDestroy(EntityDestroyS2CPacket packet)
     {
-        worldClient.removeEntityFromWorld(packet.entityId);
+        worldClient.RemoveEntityFromWorld(packet.entityId);
     }
 
     public override void onPlayerMove(PlayerMovePacket packet)
@@ -330,7 +330,7 @@ public class ClientNetworkHandler : NetHandler
 
     public override void onChunkStatusUpdate(ChunkStatusUpdateS2CPacket packet)
     {
-        worldClient.updateChunk(packet.x, packet.z, packet.load);
+        worldClient.UpdateChunk(packet.x, packet.z, packet.load);
     }
 
     public override void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet)
@@ -348,7 +348,7 @@ public class ClientNetworkHandler : NetHandler
             int blockZ = positions >> 8 & 15;
             int blockY = positions & 255;
             chunk.setBlock(blockX, blockY, blockZ, blockRawId, metadata);
-            worldClient.clearBlockResets(blockX + x, blockY, blockZ + y, blockX + x, blockY, blockZ + y);
+            worldClient.ClearBlockResets(blockX + x, blockY, blockZ + y, blockX + x, blockY, blockZ + y);
             worldClient.setBlocksDirty(blockX + x, blockY, blockZ + y, blockX + x, blockY, blockZ + y);
         }
 
@@ -356,13 +356,13 @@ public class ClientNetworkHandler : NetHandler
 
     public override void handleChunkData(ChunkDataS2CPacket packet)
     {
-        worldClient.clearBlockResets(packet.x, packet.y, packet.z, packet.x + packet.sizeX - 1, packet.y + packet.sizeY - 1, packet.z + packet.sizeZ - 1);
+        worldClient.ClearBlockResets(packet.x, packet.y, packet.z, packet.x + packet.sizeX - 1, packet.y + packet.sizeY - 1, packet.z + packet.sizeZ - 1);
         worldClient.handleChunkDataUpdate(packet.x, packet.y, packet.z, packet.sizeX, packet.sizeY, packet.sizeZ, packet.chunkData);
     }
 
     public override void onBlockUpdate(BlockUpdateS2CPacket packet)
     {
-        worldClient.setBlockWithMetaFromPacket(packet.x, packet.y, packet.z, packet.blockRawId, packet.blockMetadata);
+        worldClient.SetBlockWithMetaFromPacket(packet.x, packet.y, packet.z, packet.blockRawId, packet.blockMetadata);
     }
 
     public override void onDisconnect(DisconnectPacket packet)
@@ -413,7 +413,7 @@ public class ClientNetworkHandler : NetHandler
         {
             worldClient.playSound(ent, "random.pop", 0.2F, ((rand.nextFloat() - rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
             mc.particleManager.addEffect(new EntityPickupFX(mc.world, ent, (Entity)collector, -0.5F));
-            worldClient.removeEntityFromWorld(packet.entityId);
+            worldClient.RemoveEntityFromWorld(packet.entityId);
         }
 
     }
@@ -520,7 +520,7 @@ public class ClientNetworkHandler : NetHandler
         ent.id = packet.entityId;
         ent.setPositionAndAngles(x, y, z, yaw, pitch);
         ent.interpolateOnly = true;
-        worldClient.forceEntity(packet.entityId, ent);
+        worldClient.ForceEntity(packet.entityId, ent);
         java.util.List metaData = packet.getMetadata();
         if (metaData != null)
         {
@@ -537,7 +537,7 @@ public class ClientNetworkHandler : NetHandler
     public override void onPlayerSpawnPosition(PlayerSpawnPositionS2CPacket packet)
     {
         mc.player.setSpawnPos(new Vec3i(packet.x, packet.y, packet.z));
-        mc.world.getProperties().setSpawn(packet.x, packet.y, packet.z);
+        mc.world.getProperties().SetSpawn(packet.x, packet.y, packet.z);
     }
 
     public override void onEntityVehicleSet(EntityVehicleSetS2CPacket packet)
@@ -567,7 +567,7 @@ public class ClientNetworkHandler : NetHandler
 
     private Entity getEntityByID(int entityId)
     {
-        return entityId == mc.player.id ? mc.player : worldClient.getEntity(entityId);
+        return entityId == mc.player.id ? mc.player : worldClient.GetEntity(entityId);
     }
 
     public override void onHealthUpdate(HealthUpdateS2CPacket packet)
@@ -580,7 +580,7 @@ public class ClientNetworkHandler : NetHandler
         if (packet.dimensionId != mc.player.dimensionId)
         {
             terrainLoaded = false;
-            worldClient = new ClientWorld(this, worldClient.getProperties().getRandomSeed(), packet.dimensionId);
+            worldClient = new ClientWorld(this, worldClient.getProperties().RandomSeed, packet.dimensionId);
             worldClient.isRemote = true;
             mc.changeWorld1(worldClient);
             mc.player.dimensionId = packet.dimensionId;
@@ -749,12 +749,12 @@ public class ClientNetworkHandler : NetHandler
 
         if (reason == 1)
         {
-            worldClient.getProperties().setRaining(true);
+            worldClient.getProperties().IsRaining = true;
             worldClient.setRainGradient(1.0F);
         }
         else if (reason == 2)
         {
-            worldClient.getProperties().setRaining(false);
+            worldClient.getProperties().IsRaining = false;
             worldClient.setRainGradient(0.0F);
         }
 

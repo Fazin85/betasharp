@@ -1015,7 +1015,7 @@ public abstract class Entity : java.lang.Object
     {
         EntityItem var3 = new EntityItem(world, x, y + (double)var2, z, var1);
         var3.delayBeforeCanPickup = 10;
-        world.spawnEntity(var3);
+        world.SpawnEntity(var3);
         return var3;
     }
 

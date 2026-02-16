@@ -1,3 +1,4 @@
+using BetaSharp.Entities;
 using BetaSharp.Server.Worlds;
 using BetaSharp.Worlds.Chunks.Storage;
 using BetaSharp.Worlds.Dimensions;
@@ -21,7 +22,7 @@ public class EmptyWorldStorage : WorldStorage
         return null;
     }
 
-    public void save(WorldProperties var1, List<object> var2)
+    public void save(WorldProperties var1, List<EntityPlayer> var2)
     {
     }
 

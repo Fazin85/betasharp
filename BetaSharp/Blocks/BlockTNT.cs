@@ -46,7 +46,7 @@ public class BlockTNT : Block
     {
         EntityTNTPrimed entityTNTPrimed = new EntityTNTPrimed(world, (double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F));
         entityTNTPrimed.fuse = world.random.nextInt(entityTNTPrimed.fuse / 4) + entityTNTPrimed.fuse / 8;
-        world.spawnEntity(entityTNTPrimed);
+        world.SpawnEntity(entityTNTPrimed);
     }
 
     public override void onMetadataChange(World world, int x, int y, int z, int meta)
@@ -60,7 +60,7 @@ public class BlockTNT : Block
             else
             {
                 EntityTNTPrimed entityTNTPrimed = new EntityTNTPrimed(world, (double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F));
-                world.spawnEntity(entityTNTPrimed);
+                world.SpawnEntity(entityTNTPrimed);
                 world.playSound(entityTNTPrimed, "random.fuse", 1.0F, 1.0F);
             }
 
@@ -71,7 +71,7 @@ public class BlockTNT : Block
     {
         if (player.getHand() != null && player.getHand().itemId == Item.FLINT_AND_STEEL.id)
         {
-            world.setBlockMetaWithoutNotifyingNeighbors(x, y, z, 1);
+            world.SetBlockMetaWithoutNotifyingNeighbors(x, y, z, 1);
         }
 
         base.onBlockBreakStart(world, x, y, z, player);

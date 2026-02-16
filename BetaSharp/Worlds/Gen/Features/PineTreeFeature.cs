@@ -60,7 +60,7 @@ public class PineTreeFeature : Feature
                 var11 = var1.getBlockId(var3, var4 - 1, var5);
                 if ((var11 == Block.GrassBlock.id || var11 == Block.Dirt.id) && var4 < 128 - var6 - 1)
                 {
-                    var1.setBlockWithoutNotifyingNeighbors(var3, var4 - 1, var5, Block.Dirt.id);
+                    var1.SetBlockWithoutNotifyingNeighbors(var3, var4 - 1, var5, Block.Dirt.id);
                     var18 = 0;
 
                     for (var13 = var4 + var6; var13 >= var4 + var7; --var13)
@@ -74,7 +74,7 @@ public class PineTreeFeature : Feature
                                 int var17 = var16 - var5;
                                 if ((java.lang.Math.abs(var15) != var18 || java.lang.Math.abs(var17) != var18 || var18 <= 0) && !Block.BlocksOpaque[var1.getBlockId(var14, var13, var16)])
                                 {
-                                    var1.setBlockWithoutNotifyingNeighbors(var14, var13, var16, Block.Leaves.id, 1);
+                                    var1.SetBlockWithoutNotifyingNeighbors(var14, var13, var16, Block.Leaves.id, 1);
                                 }
                             }
                         }
@@ -94,7 +94,7 @@ public class PineTreeFeature : Feature
                         var14 = var1.getBlockId(var3, var4 + var13, var5);
                         if (var14 == 0 || var14 == Block.Leaves.id)
                         {
-                            var1.setBlockWithoutNotifyingNeighbors(var3, var4 + var13, var5, Block.Log.id, 1);
+                            var1.SetBlockWithoutNotifyingNeighbors(var3, var4 + var13, var5, Block.Log.id, 1);
                         }
                     }
 

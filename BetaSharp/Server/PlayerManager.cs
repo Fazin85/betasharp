@@ -78,7 +78,7 @@ public class PlayerManager
             player.setPosition(player.x, player.y + 1.0, player.z);
         }
 
-        var2.spawnEntity(player);
+        var2.SpawnEntity(player);
         getChunkMap(player.dimensionId).addPlayer(player);
     }
 
@@ -90,7 +90,7 @@ public class PlayerManager
     public void disconnect(ServerPlayerEntity player)
     {
         saveHandler.savePlayerData(player);
-        server.getWorld(player.dimensionId).remove(player);
+        server.getWorld(player.dimensionId).Remove(player);
         players.Remove(player);
         getChunkMap(player.dimensionId).removePlayer(player);
     }
@@ -180,7 +180,7 @@ public class PlayerManager
         var4.networkHandler.teleport(var4.x, var4.y, var4.z, var4.yaw, var4.pitch);
         sendWorldInfo(var4, var5);
         getChunkMap(var4.dimensionId).addPlayer(var4);
-        var5.spawnEntity(var4);
+        var5.SpawnEntity(var4);
         players.Add(var4);
         var4.initScreenHandler();
         var4.m_41544513();
@@ -231,7 +231,7 @@ public class PlayerManager
 
         if (player.isAlive())
         {
-            var4.spawnEntity(player);
+            var4.SpawnEntity(player);
             player.setPositionAndAnglesKeepPrevAngles(var5, player.y, var7, player.yaw, player.pitch);
             var4.updateEntity(player, false);
             var4.chunkCache.forceLoad = true;

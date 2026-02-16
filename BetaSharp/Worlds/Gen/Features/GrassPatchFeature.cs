@@ -30,7 +30,7 @@ public class GrassPatchFeature : Feature
                     int var10 = var5 + var2.nextInt(8) - var2.nextInt(8);
                     if (var1.isAir(var8, var9, var10) && ((BlockPlant)Block.Blocks[tallGrassBlockId]).canGrow(var1, var8, var9, var10))
                     {
-                        var1.setBlockWithoutNotifyingNeighbors(var8, var9, var10, tallGrassBlockId, tallGrassBlockMeta);
+                        var1.SetBlockWithoutNotifyingNeighbors(var8, var9, var10, tallGrassBlockId, tallGrassBlockMeta);
                     }
                 }
 

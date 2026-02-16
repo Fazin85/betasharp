@@ -87,7 +87,7 @@ public class BlockEntityMobSpawner : BlockEntity
                         entityLiving.setPositionAndAnglesKeepPrevAngles(posX, posY, posZ, world.random.nextFloat() * 360.0F, 0.0F);
                         if (entityLiving.canSpawn())
                         {
-                            world.spawnEntity(entityLiving);
+                            world.SpawnEntity(entityLiving);
 
                             for (int particleIndex = 0; particleIndex < 20; ++particleIndex)
                             {

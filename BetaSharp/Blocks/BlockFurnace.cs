@@ -213,7 +213,7 @@ public class BlockFurnace : BlockWithEntity
                         droppedItem.velocityX = (double)((float)random.nextGaussian() * var13);
                         droppedItem.velocityY = (double)((float)random.nextGaussian() * var13 + 0.2F);
                         droppedItem.velocityZ = (double)((float)random.nextGaussian() * var13);
-                        world.spawnEntity(droppedItem);
+                        world.SpawnEntity(droppedItem);
                     }
                 }
             }
