@@ -9,14 +9,14 @@ public class Gui : java.lang.Object
 {
     protected float zLevel = 0.0F;
 
-    protected void func_27100_a(int var1, int var2, int var3, uint color)
+    protected void func_27100_a(int x, int y, int x2, uint y2)
     {
-        if (var2 < var1)
+        if (y < x)
         {
-            (var1, var2) = (var2, var1);
+            (x, y) = (y, x);
         }
 
-        drawRect(var1, var3, var2 + 1, var3 + 1, color);
+        drawRect(x, x2, y + 1, x2 + 1, y2);
     }
 
     protected void func_27099_b(int var1, int var2, int var3, uint color)
