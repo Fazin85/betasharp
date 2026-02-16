@@ -12,6 +12,7 @@ using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL.Legacy;
+using BetaSharp.Profiling;
 
 namespace BetaSharp.Client.Rendering;
 
@@ -26,6 +27,7 @@ public class WorldRenderer : IWorldAccess
     private readonly int starGLCallList;
     private readonly int glSkyList;
     private readonly int glSkyList2;
+    private int glCloudsList = -1;
     private int renderDistance = -1;
     private int renderEntitiesStartupCounter = 2;
     private int countEntitiesTotal;
@@ -89,6 +91,7 @@ public class WorldRenderer : IWorldAccess
 
         var4.draw();
         GLManager.GL.EndList();
+        buildCloudDisplayLists();
     }
 
     private void renderStars()
@@ -412,9 +415,111 @@ public class WorldRenderer : IWorldAccess
 
     public void renderClouds(float var1)
     {
+        Profiler.Start("renderClouds");
         if (!mc.world.dimension.isNether)
         {
             renderCloudsFancy(var1);
+        }
+        Profiler.Stop("renderClouds");
+    }
+
+    private void buildCloudDisplayLists()
+    {
+        glCloudsList = GLAllocation.generateDisplayLists(4);
+        Tessellator tessellator = Tessellator.instance;
+
+        for (int i = 0; i < 4; ++i)
+        {
+            GLManager.GL.NewList((uint)(glCloudsList + i), GLEnum.Compile);
+            tessellator.startDrawingQuads();
+            float cloudHeight = 4.0F;
+            float uvScale = 1.0F / 256.0F;
+            float var24 = 1.0F / 1024.0F;
+            byte var22 = 8;
+            byte var23 = 3;
+
+            for (int var26 = -var23 + 1; var26 <= var23; ++var26)
+            {
+                for (int var27 = -var23 + 1; var27 <= var23; ++var27)
+                {
+                    float var28 = var26 * var22;
+                    float var29 = var27 * var22;
+                    float var30 = var28;
+                    float var31 = var29;
+
+                    if (i == 0)
+                    {
+                        tessellator.setNormal(0.0F, -1.0F, 0.0F);
+                        tessellator.addVertexWithUV((double)(var30 + 0.0F), (double)(0.0F), (double)(var31 + var22), (double)((var28 + 0.0F) * uvScale), (double)((var29 + var22) * uvScale));
+                        tessellator.addVertexWithUV((double)(var30 + var22), (double)(0.0F), (double)(var31 + var22), (double)((var28 + var22) * uvScale), (double)((var29 + var22) * uvScale));
+                        tessellator.addVertexWithUV((double)(var30 + var22), (double)(0.0F), (double)(var31 + 0.0F), (double)((var28 + var22) * uvScale), (double)((var29 + 0.0F) * uvScale));
+                        tessellator.addVertexWithUV((double)(var30 + 0.0F), (double)(0.0F), (double)(var31 + 0.0F), (double)((var28 + 0.0F) * uvScale), (double)((var29 + 0.0F) * uvScale));
+                    }
+
+                    else if (i == 1)
+                    {
+                        tessellator.setNormal(0.0F, 1.0F, 0.0F);
+                        tessellator.addVertexWithUV((double)(var30 + 0.0F), (double)(cloudHeight - var24), (double)(var31 + var22), (double)((var28 + 0.0F) * uvScale), (double)((var29 + var22) * uvScale));
+                        tessellator.addVertexWithUV((double)(var30 + var22), (double)(cloudHeight - var24), (double)(var31 + var22), (double)((var28 + var22) * uvScale), (double)((var29 + var22) * uvScale));
+                        tessellator.addVertexWithUV((double)(var30 + var22), (double)(cloudHeight - var24), (double)(var31 + 0.0F), (double)((var28 + var22) * uvScale), (double)((var29 + 0.0F) * uvScale));
+                        tessellator.addVertexWithUV((double)(var30 + 0.0F), (double)(cloudHeight - var24), (double)(var31 + 0.0F), (double)((var28 + 0.0F) * uvScale), (double)((var29 + 0.0F) * uvScale));
+                    }
+
+                    else if (i == 2)
+                    {
+                        if (var26 > -1)
+                        {
+                            tessellator.setNormal(-1.0F, 0.0F, 0.0F);
+                            for (int var32 = 0; var32 < var22; ++var32)
+                            {
+                                tessellator.addVertexWithUV((double)(var30 + var32 + 0.0F), (double)(0.0F), (double)(var31 + var22), (double)((var28 + var32 + 0.5F) * uvScale), (double)((var29 + var22) * uvScale));
+                                tessellator.addVertexWithUV((double)(var30 + var32 + 0.0F), (double)(cloudHeight), (double)(var31 + var22), (double)((var28 + var32 + 0.5F) * uvScale), (double)((var29 + var22) * uvScale));
+                                tessellator.addVertexWithUV((double)(var30 + var32 + 0.0F), (double)(cloudHeight), (double)(var31 + 0.0F), (double)((var28 + var32 + 0.5F) * uvScale), (double)((var29 + 0.0F) * uvScale));
+                                tessellator.addVertexWithUV((double)(var30 + var32 + 0.0F), (double)(0.0F), (double)(var31 + 0.0F), (double)((var28 + var32 + 0.5F) * uvScale), (double)((var29 + 0.0F) * uvScale));
+                            }
+                        }
+                        if (var26 <= 1)
+                        {
+                            tessellator.setNormal(1.0F, 0.0F, 0.0F);
+                            for (int var32 = 0; var32 < var22; ++var32)
+                            {
+                                tessellator.addVertexWithUV((double)(var30 + var32 + 1.0F - var24), (double)(0.0F), (double)(var31 + var22), (double)((var28 + var32 + 0.5F) * uvScale), (double)((var29 + var22) * uvScale));
+                                tessellator.addVertexWithUV((double)(var30 + var32 + 1.0F - var24), (double)(cloudHeight), (double)(var31 + var22), (double)((var28 + var32 + 0.5F) * uvScale), (double)((var29 + var22) * uvScale));
+                                tessellator.addVertexWithUV((double)(var30 + var32 + 1.0F - var24), (double)(cloudHeight), (double)(var31 + 0.0F), (double)((var28 + var32 + 0.5F) * uvScale), (double)((var29 + 0.0F) * uvScale));
+                                tessellator.addVertexWithUV((double)(var30 + var32 + 1.0F - var24), (double)(0.0F), (double)(var31 + 0.0F), (double)((var28 + var32 + 0.5F) * uvScale), (double)((var29 + 0.0F) * uvScale));
+                            }
+                        }
+                    }
+
+                    else if (i == 3)
+                    {
+                        if (var27 > -1)
+                        {
+                            tessellator.setNormal(0.0F, 0.0F, -1.0F);
+                            for (int var32 = 0; var32 < var22; ++var32)
+                            {
+                                tessellator.addVertexWithUV((double)(var30 + 0.0F), (double)(cloudHeight), (double)(var31 + var32 + 0.0F), (double)((var28 + 0.0F) * uvScale), (double)((var29 + var32 + 0.5F) * uvScale));
+                                tessellator.addVertexWithUV((double)(var30 + var22), (double)(cloudHeight), (double)(var31 + var32 + 0.0F), (double)((var28 + var22) * uvScale), (double)((var29 + var32 + 0.5F) * uvScale));
+                                tessellator.addVertexWithUV((double)(var30 + var22), (double)(0.0F), (double)(var31 + var32 + 0.0F), (double)((var28 + var22) * uvScale), (double)((var29 + var32 + 0.5F) * uvScale));
+                                tessellator.addVertexWithUV((double)(var30 + 0.0F), (double)(0.0F), (double)(var31 + var32 + 0.0F), (double)((var28 + 0.0F) * uvScale), (double)((var29 + var32 + 0.5F) * uvScale));
+                            }
+                        }
+                        if (var27 <= 1)
+                        {
+                            tessellator.setNormal(0.0F, 0.0F, 1.0F);
+                            for (int var32 = 0; var32 < var22; ++var32)
+                            {
+                                tessellator.addVertexWithUV((double)(var30 + 0.0F), (double)(cloudHeight), (double)(var31 + var32 + 1.0F - var24), (double)((var28 + 0.0F) * uvScale), (double)((var29 + var32 + 0.5F) * uvScale));
+                                tessellator.addVertexWithUV((double)(var30 + var22), (double)(cloudHeight), (double)(var31 + var32 + 1.0F - var24), (double)((var28 + var22) * uvScale), (double)((var29 + var32 + 0.5F) * uvScale));
+                                tessellator.addVertexWithUV((double)(var30 + var22), (double)(0.0F), (double)(var31 + var32 + 1.0F - var24), (double)((var28 + var22) * uvScale), (double)((var29 + var32 + 0.5F) * uvScale));
+                                tessellator.addVertexWithUV((double)(var30 + 0.0F), (double)(0.0F), (double)(var31 + var32 + 1.0F - var24), (double)((var28 + 0.0F) * uvScale), (double)((var29 + var32 + 0.5F) * uvScale));
+                            }
+                        }
+                    }
+                }
+            }
+            tessellator.draw();
+            GLManager.GL.EndList();
         }
     }
 
@@ -422,7 +527,6 @@ public class WorldRenderer : IWorldAccess
     {
         GLManager.GL.Disable(GLEnum.CullFace);
         float var2 = (float)(mc.camera.lastTickY + (mc.camera.y - mc.camera.lastTickY) * (double)var1);
-        Tessellator var3 = Tessellator.instance;
         float var4 = 12.0F;
         float var5 = 4.0F;
         double var6 = (mc.camera.prevX + (mc.camera.x - mc.camera.prevX) * (double)var1 + (double)((cloudOffsetX + var1) * 0.03F)) / (double)var4;
@@ -439,20 +543,13 @@ public class WorldRenderer : IWorldAccess
         float var14 = (float)var13.X;
         float var15 = (float)var13.Y;
         float var16 = (float)var13.Z;
-        float var17;
-        float var18;
-        float var19;
 
-        var17 = (float)(var6 * 0.0D);
-        var18 = (float)(var8 * 0.0D);
-        var19 = 0.00390625F;
-        var17 = MathHelper.floor_double(var6) * var19;
-        var18 = MathHelper.floor_double(var8) * var19;
+        float var19 = 0.00390625F;
+        float var17 = MathHelper.floor_double(var6) * var19;
+        float var18 = MathHelper.floor_double(var8) * var19;
         float var20 = (float)(var6 - MathHelper.floor_double(var6));
         float var21 = (float)(var8 - MathHelper.floor_double(var8));
-        byte var22 = 8;
-        byte var23 = 3;
-        float var24 = 1.0F / 1024.0F;
+
         GLManager.GL.Scale(var4, 1.0F, var4);
 
         for (int var25 = 0; var25 < 2; ++var25)
@@ -466,93 +563,37 @@ public class WorldRenderer : IWorldAccess
                 GLManager.GL.ColorMask(true, true, true, true);
             }
 
-            for (int var26 = -var23 + 1; var26 <= var23; ++var26)
+            GLManager.GL.PushMatrix();
+            GLManager.GL.Translate(-var20, var10, -var21);
+
+            GLManager.GL.MatrixMode(GLEnum.Texture);
+            GLManager.GL.PushMatrix();
+            GLManager.GL.Translate(var17, var18, 0.0F);
+            GLManager.GL.MatrixMode(GLEnum.Modelview);
+
+            if (var10 > -var5 - 1.0F)
             {
-                for (int var27 = -var23 + 1; var27 <= var23; ++var27)
-                {
-                    var3.startDrawingQuads();
-                    float var28 = var26 * var22;
-                    float var29 = var27 * var22;
-                    float var30 = var28 - var20;
-                    float var31 = var29 - var21;
-                    if (var10 > -var5 - 1.0F)
-                    {
-                        var3.setColorRGBA_F(var14 * 0.7F, var15 * 0.7F, var16 * 0.7F, 0.8F);
-                        var3.setNormal(0.0F, -1.0F, 0.0F);
-                        var3.addVertexWithUV((double)(var30 + 0.0F), (double)(var10 + 0.0F), (double)(var31 + var22), (double)((var28 + 0.0F) * var19 + var17), (double)((var29 + var22) * var19 + var18));
-                        var3.addVertexWithUV((double)(var30 + var22), (double)(var10 + 0.0F), (double)(var31 + var22), (double)((var28 + var22) * var19 + var17), (double)((var29 + var22) * var19 + var18));
-                        var3.addVertexWithUV((double)(var30 + var22), (double)(var10 + 0.0F), (double)(var31 + 0.0F), (double)((var28 + var22) * var19 + var17), (double)((var29 + 0.0F) * var19 + var18));
-                        var3.addVertexWithUV((double)(var30 + 0.0F), (double)(var10 + 0.0F), (double)(var31 + 0.0F), (double)((var28 + 0.0F) * var19 + var17), (double)((var29 + 0.0F) * var19 + var18));
-                    }
-
-                    if (var10 <= var5 + 1.0F)
-                    {
-                        var3.setColorRGBA_F(var14, var15, var16, 0.8F);
-                        var3.setNormal(0.0F, 1.0F, 0.0F);
-                        var3.addVertexWithUV((double)(var30 + 0.0F), (double)(var10 + var5 - var24), (double)(var31 + var22), (double)((var28 + 0.0F) * var19 + var17), (double)((var29 + var22) * var19 + var18));
-                        var3.addVertexWithUV((double)(var30 + var22), (double)(var10 + var5 - var24), (double)(var31 + var22), (double)((var28 + var22) * var19 + var17), (double)((var29 + var22) * var19 + var18));
-                        var3.addVertexWithUV((double)(var30 + var22), (double)(var10 + var5 - var24), (double)(var31 + 0.0F), (double)((var28 + var22) * var19 + var17), (double)((var29 + 0.0F) * var19 + var18));
-                        var3.addVertexWithUV((double)(var30 + 0.0F), (double)(var10 + var5 - var24), (double)(var31 + 0.0F), (double)((var28 + 0.0F) * var19 + var17), (double)((var29 + 0.0F) * var19 + var18));
-                    }
-
-                    var3.setColorRGBA_F(var14 * 0.9F, var15 * 0.9F, var16 * 0.9F, 0.8F);
-                    int var32;
-                    if (var26 > -1)
-                    {
-                        var3.setNormal(-1.0F, 0.0F, 0.0F);
-
-                        for (var32 = 0; var32 < var22; ++var32)
-                        {
-                            var3.addVertexWithUV((double)(var30 + var32 + 0.0F), (double)(var10 + 0.0F), (double)(var31 + var22), (double)((var28 + var32 + 0.5F) * var19 + var17), (double)((var29 + var22) * var19 + var18));
-                            var3.addVertexWithUV((double)(var30 + var32 + 0.0F), (double)(var10 + var5), (double)(var31 + var22), (double)((var28 + var32 + 0.5F) * var19 + var17), (double)((var29 + var22) * var19 + var18));
-                            var3.addVertexWithUV((double)(var30 + var32 + 0.0F), (double)(var10 + var5), (double)(var31 + 0.0F), (double)((var28 + var32 + 0.5F) * var19 + var17), (double)((var29 + 0.0F) * var19 + var18));
-                            var3.addVertexWithUV((double)(var30 + var32 + 0.0F), (double)(var10 + 0.0F), (double)(var31 + 0.0F), (double)((var28 + var32 + 0.5F) * var19 + var17), (double)((var29 + 0.0F) * var19 + var18));
-                        }
-                    }
-
-                    if (var26 <= 1)
-                    {
-                        var3.setNormal(1.0F, 0.0F, 0.0F);
-
-                        for (var32 = 0; var32 < var22; ++var32)
-                        {
-                            var3.addVertexWithUV((double)(var30 + var32 + 1.0F - var24), (double)(var10 + 0.0F), (double)(var31 + var22), (double)((var28 + var32 + 0.5F) * var19 + var17), (double)((var29 + var22) * var19 + var18));
-                            var3.addVertexWithUV((double)(var30 + var32 + 1.0F - var24), (double)(var10 + var5), (double)(var31 + var22), (double)((var28 + var32 + 0.5F) * var19 + var17), (double)((var29 + var22) * var19 + var18));
-                            var3.addVertexWithUV((double)(var30 + var32 + 1.0F - var24), (double)(var10 + var5), (double)(var31 + 0.0F), (double)((var28 + var32 + 0.5F) * var19 + var17), (double)((var29 + 0.0F) * var19 + var18));
-                            var3.addVertexWithUV((double)(var30 + var32 + 1.0F - var24), (double)(var10 + 0.0F), (double)(var31 + 0.0F), (double)((var28 + var32 + 0.5F) * var19 + var17), (double)((var29 + 0.0F) * var19 + var18));
-                        }
-                    }
-
-                    var3.setColorRGBA_F(var14 * 0.8F, var15 * 0.8F, var16 * 0.8F, 0.8F);
-                    if (var27 > -1)
-                    {
-                        var3.setNormal(0.0F, 0.0F, -1.0F);
-
-                        for (var32 = 0; var32 < var22; ++var32)
-                        {
-                            var3.addVertexWithUV((double)(var30 + 0.0F), (double)(var10 + var5), (double)(var31 + var32 + 0.0F), (double)((var28 + 0.0F) * var19 + var17), (double)((var29 + var32 + 0.5F) * var19 + var18));
-                            var3.addVertexWithUV((double)(var30 + var22), (double)(var10 + var5), (double)(var31 + var32 + 0.0F), (double)((var28 + var22) * var19 + var17), (double)((var29 + var32 + 0.5F) * var19 + var18));
-                            var3.addVertexWithUV((double)(var30 + var22), (double)(var10 + 0.0F), (double)(var31 + var32 + 0.0F), (double)((var28 + var22) * var19 + var17), (double)((var29 + var32 + 0.5F) * var19 + var18));
-                            var3.addVertexWithUV((double)(var30 + 0.0F), (double)(var10 + 0.0F), (double)(var31 + var32 + 0.0F), (double)((var28 + 0.0F) * var19 + var17), (double)((var29 + var32 + 0.5F) * var19 + var18));
-                        }
-                    }
-
-                    if (var27 <= 1)
-                    {
-                        var3.setNormal(0.0F, 0.0F, 1.0F);
-
-                        for (var32 = 0; var32 < var22; ++var32)
-                        {
-                            var3.addVertexWithUV((double)(var30 + 0.0F), (double)(var10 + var5), (double)(var31 + var32 + 1.0F - var24), (double)((var28 + 0.0F) * var19 + var17), (double)((var29 + var32 + 0.5F) * var19 + var18));
-                            var3.addVertexWithUV((double)(var30 + var22), (double)(var10 + var5), (double)(var31 + var32 + 1.0F - var24), (double)((var28 + var22) * var19 + var17), (double)((var29 + var32 + 0.5F) * var19 + var18));
-                            var3.addVertexWithUV((double)(var30 + var22), (double)(var10 + 0.0F), (double)(var31 + var32 + 1.0F - var24), (double)((var28 + var22) * var19 + var17), (double)((var29 + var32 + 0.5F) * var19 + var18));
-                            var3.addVertexWithUV((double)(var30 + 0.0F), (double)(var10 + 0.0F), (double)(var31 + var32 + 1.0F - var24), (double)((var28 + 0.0F) * var19 + var17), (double)((var29 + var32 + 0.5F) * var19 + var18));
-                        }
-                    }
-
-                    var3.draw();
-                }
+                GLManager.GL.Color4(var14 * 0.7F, var15 * 0.7F, var16 * 0.7F, 0.8F);
+                GLManager.GL.CallList((uint)(glCloudsList + 0)); // Bottom
             }
+
+            if (var10 <= var5 + 1.0F)
+            {
+                GLManager.GL.Color4(var14, var15, var16, 0.8F);
+                GLManager.GL.CallList((uint)(glCloudsList + 1)); // Top
+            }
+
+            GLManager.GL.Color4(var14 * 0.9F, var15 * 0.9F, var16 * 0.9F, 0.8F);
+            GLManager.GL.CallList((uint)(glCloudsList + 2)); // Side X
+
+            GLManager.GL.Color4(var14 * 0.8F, var15 * 0.8F, var16 * 0.8F, 0.8F);
+            GLManager.GL.CallList((uint)(glCloudsList + 3)); // Side Z
+
+            GLManager.GL.MatrixMode(GLEnum.Texture);
+            GLManager.GL.PopMatrix();
+            GLManager.GL.MatrixMode(GLEnum.Modelview);
+
+            GLManager.GL.PopMatrix();
         }
 
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
@@ -707,7 +748,7 @@ public class WorldRenderer : IWorldAccess
         var2.draw();
     }
 
-    public void func_949_a(int var1, int var2, int var3, int var4, int var5, int var6)
+    public void MarkBlocksDirty(int var1, int var2, int var3, int var4, int var5, int var6)
     {
         int var7 = MathHelper.bucketInt(var1, SubChunkRenderer.Size);
         int var8 = MathHelper.bucketInt(var2, SubChunkRenderer.Size);
@@ -730,12 +771,12 @@ public class WorldRenderer : IWorldAccess
 
     public void blockUpdate(int var1, int var2, int var3)
     {
-        func_949_a(var1 - 1, var2 - 1, var3 - 1, var1 + 1, var2 + 1, var3 + 1);
+        MarkBlocksDirty(var1 - 1, var2 - 1, var3 - 1, var1 + 1, var2 + 1, var3 + 1);
     }
 
     public void setBlocksDirty(int var1, int var2, int var3, int var4, int var5, int var6)
     {
-        func_949_a(var1 - 1, var2 - 1, var3 - 1, var4 + 1, var5 + 1, var6 + 1);
+        MarkBlocksDirty(var1 - 1, var2 - 1, var3 - 1, var4 + 1, var5 + 1, var6 + 1);
     }
 
     public void playStreaming(string var1, int var2, int var3, int var4)
