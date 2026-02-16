@@ -274,16 +274,15 @@ public class Gui
         return result;
     }
 
-    public void DrawTexturedModalRect(int var1, int var2, int var3, int var4, int var5, int var6)
+    public void DrawTexturedModalRect(int x, int y, int u, int v, int width, int height)
     {
-        float f1 = 0.00390625F;
-        float f2 = 0.00390625F;
+        float f = 0.00390625F; // 1/256
         Tessellator tess = Tessellator.instance;
         tess.startDrawingQuads();
-        tess.addVertexWithUV(var1 + 0, var2 + var6, _zLevel, (double)((var3 + 0) * f1), (double)((var4 + var6) * f2));
-        tess.addVertexWithUV(var1 + var5, var2 + var6, _zLevel, (double)((var3 + var5) * f1), (double)((var4 + var6) * f2));
-        tess.addVertexWithUV(var1 + var5, var2 + 0, _zLevel, (double)((var3 + var5) * f1), (double)((var4 + 0) * f2));
-        tess.addVertexWithUV(var1 + 0, var2 + 0, _zLevel, (double)((var3 + 0) * f1), (double)((var4 + 0) * f2));
+        tess.addVertexWithUV(x + 0, y + height, _zLevel, (double)((u + 0) * f), (double)((v + height) * f));
+        tess.addVertexWithUV(x + width, y + height, _zLevel, (double)((u + width) * f), (double)((v + height) * f));
+        tess.addVertexWithUV(x + width, y + 0, _zLevel, (double)((u + width) * f), (double)((v + 0) * f));
+        tess.addVertexWithUV(x + 0, y + 0, _zLevel, (double)((u + 0) * f), (double)((v + 0) * f));
         tess.draw();
     }
 }
