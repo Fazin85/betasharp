@@ -16,7 +16,7 @@ public abstract class GuiSlotStats : GuiSlot
     public int field_27270_f;
     readonly GuiStats field_27269_g;
 
-    protected GuiSlotStats(GuiStats var1) : base(GuiStats.func_27143_f(var1), var1.width, var1.height, 32, var1.height - 64, 20)
+    protected GuiSlotStats(GuiStats var1) : base(GuiStats.func_27143_f(var1), var1.Width, var1.Height, 32, var1.Height - 64, 20)
     {
         field_27269_g = var1;
         field_27268_b = -1;
@@ -37,7 +37,7 @@ public abstract class GuiSlotStats : GuiSlot
 
     protected override void drawBackground()
     {
-        field_27269_g.drawDefaultBackground();
+        field_27269_g.DrawDefaultBackground();
     }
 
     protected override void func_27260_a(int var1, int var2, Tessellator var3)
@@ -154,7 +154,7 @@ public abstract class GuiSlotStats : GuiSlot
         if (var2 >= top && var2 <= bottom)
         {
             int var3 = func_27256_c(var1, var2);
-            int var4 = field_27269_g.width / 2 - 92 - 16;
+            int var4 = field_27269_g.Width / 2 - 92 - 16;
             if (var3 >= 0)
             {
                 if (var1 < var4 + 40 || var1 > var4 + 40 + 20)

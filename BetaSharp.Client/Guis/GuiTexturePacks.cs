@@ -18,18 +18,18 @@ public class GuiTexturePacks : GuiScreen
         parentScreen = parent;
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
         TranslationStorage translations = TranslationStorage.getInstance();
-        controlList.add(new GuiSmallButton(BUTTON_OPEN_FOLDER, width / 2 - 154, height - 48, translations.translateKey("texturePack.openFolder")));
-        controlList.add(new GuiSmallButton(BUTTON_DONE, width / 2 + 4, height - 48, translations.translateKey("gui.done")));
+        controlList.Add(new GuiSmallButton(BUTTON_OPEN_FOLDER, Width / 2 - 154, Height - 48, translations.translateKey("texturePack.openFolder")));
+        controlList.Add(new GuiSmallButton(BUTTON_DONE, Width / 2 + 4, Height - 48, translations.translateKey("gui.done")));
         mc.texturePackList.updateAvaliableTexturePacks();
         texturePackFolder = new java.io.File(Minecraft.getMinecraftDir(), "texturepacks").getAbsolutePath();
         guiTexturePackSlot = new GuiTexturePackSlot(this);
-        guiTexturePackSlot.registerScrollButtons(controlList, 7, 8);
+        guiTexturePackSlot.RegisterScrollButtons(controlList, 7, 8);
     }
 
-    protected override void actionPerformed(GuiButton var1)
+    protected override void ActionPerformed(GuiButton var1)
     {
         if (var1.Enabled)
         {
@@ -61,17 +61,17 @@ public class GuiTexturePacks : GuiScreen
         }
     }
 
-    protected override void mouseClicked(int mouseX, int mouseY, int button)
+    protected override void MouseClicked(int mouseX, int mouseY, int button)
     {
-        base.mouseClicked(mouseX, mouseY, button);
+        base.MouseClicked(mouseX, mouseY, button);
     }
 
-    protected override void mouseMovedOrUp(int mouseX, int mouseY, int button)
+    protected override void MouseMovedOrUp(int mouseX, int mouseY, int button)
     {
-        base.mouseMovedOrUp(mouseX, mouseY, button);
+        base.MouseMovedOrUp(mouseX, mouseY, button);
     }
 
-    public override void render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         guiTexturePackSlot.drawScreen(mouseX, mouseY, partialTicks);
         if (refreshTimer <= 0)
@@ -81,14 +81,14 @@ public class GuiTexturePacks : GuiScreen
         }
 
         TranslationStorage translations = TranslationStorage.getInstance();
-        DrawCenteredString(fontRenderer, translations.translateKey("texturePack.title"), width / 2, 16, 0x00FFFFFF);
-        DrawCenteredString(fontRenderer, translations.translateKey("texturePack.folderInfo"), width / 2 - 77, height - 26, 8421504);
-        base.render(mouseX, mouseY, partialTicks);
+        DrawCenteredString(fontRenderer, translations.translateKey("texturePack.title"), Width / 2, 16, 0x00FFFFFF);
+        DrawCenteredString(fontRenderer, translations.translateKey("texturePack.folderInfo"), Width / 2 - 77, Height - 26, 8421504);
+        base.Render(mouseX, mouseY, partialTicks);
     }
 
-    public override void updateScreen()
+    public override void UpdateScreen()
     {
-        base.updateScreen();
+        base.UpdateScreen();
         --refreshTimer;
     }
 

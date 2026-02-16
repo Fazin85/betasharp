@@ -33,8 +33,8 @@ public class GuiChest : GuiContainer
         int textureId = mc.textureManager.getTextureId("/gui/container.png");
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.bindTexture(textureId);
-        int guiLeft = (width - xSize) / 2;
-        int guiTop = (height - ySize) / 2;
+        int guiLeft = (Width - xSize) / 2;
+        int guiTop = (Height - ySize) / 2;
         DrawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, inventoryRows * 18 + 17);
         DrawTexturedModalRect(guiLeft, guiTop + inventoryRows * 18 + 17, 0, 126, xSize, 96);
     }

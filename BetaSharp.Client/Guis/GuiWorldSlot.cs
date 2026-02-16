@@ -10,7 +10,7 @@ public class GuiWorldSlot : GuiSlot
     readonly GuiSelectWorld parentWorldGui;
 
 
-    public GuiWorldSlot(GuiSelectWorld parent) : base(parent.mc, parent.width, parent.height, 32, parent.height - 64, 36)
+    public GuiWorldSlot(GuiSelectWorld parent) : base(parent.mc, parent.Width, parent.Height, 32, parent.Height - 64, 36)
     {
         parentWorldGui = parent;
     }
@@ -47,7 +47,7 @@ public class GuiWorldSlot : GuiSlot
 
     protected override void drawBackground()
     {
-        parentWorldGui.drawDefaultBackground();
+        parentWorldGui.DrawDefaultBackground();
     }
 
     protected override void drawSlot(int slotIndex, int x, int y, int slotHeight, Tessellator tessellator)

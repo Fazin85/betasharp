@@ -90,7 +90,7 @@ public abstract class GuiSlot
         return var1 >= var3 && var1 <= var4 && var6 >= 0 && var5 >= 0 && var6 < getSize() ? var6 : -1;
     }
 
-    public void registerScrollButtons(List var1, int var2, int var3)
+    public void RegisterScrollButtons(List<GuiButton> var1, int var2, int var3)
     {
         scrollUpButtonID = var2;
         scrollDownButtonID = var3;

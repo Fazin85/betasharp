@@ -22,23 +22,23 @@ public class GuiConnectFailed : GuiScreen
 
     }
 
-    public override void updateScreen()
+    public override void UpdateScreen()
     {
     }
 
-    protected override void keyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, int eventKey)
     {
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
         mc.stopInternalServer();
         TranslationStorage translations = TranslationStorage.getInstance();
-        controlList.clear();
-        controlList.add(new GuiButton(BUTTON_TO_MENU, width / 2 - 100, height / 4 + 120 + 12, translations.translateKey("gui.toMenu")));
+        controlList.Clear();
+        controlList.Add(new GuiButton(BUTTON_TO_MENU, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.toMenu")));
     }
 
-    protected override void actionPerformed(GuiButton var1)
+    protected override void ActionPerformed(GuiButton var1)
     {
         switch (var1.Id)
         {
@@ -49,11 +49,11 @@ public class GuiConnectFailed : GuiScreen
 
     }
 
-    public override void render(int var1, int var2, float var3)
+    public override void Render(int var1, int var2, float var3)
     {
-        drawDefaultBackground();
-        DrawCenteredString(fontRenderer, errorMessage, width / 2, height / 2 - 50, 0x00FFFFFF);
-        DrawCenteredString(fontRenderer, errorDetail, width / 2, height / 2 - 10, 0x00FFFFFF);
-        base.render(var1, var2, var3);
+        DrawDefaultBackground();
+        DrawCenteredString(fontRenderer, errorMessage, Width / 2, Height / 2 - 50, 0x00FFFFFF);
+        DrawCenteredString(fontRenderer, errorDetail, Width / 2, Height / 2 - 10, 0x00FFFFFF);
+        base.Render(var1, var2, var3);
     }
 }

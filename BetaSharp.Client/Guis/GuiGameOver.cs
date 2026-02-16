@@ -7,16 +7,16 @@ public class GuiGameOver : GuiScreen
     private const int BUTTON_RESPAWN = 1;
     private const int BUTTON_TITLE = 2;
 
-    public override void initGui()
+    public override void InitGui()
     {
-        controlList.clear();
-        controlList.add(new GuiButton(BUTTON_RESPAWN, width / 2 - 100, height / 4 + 72, "Respawn"));
-        controlList.add(new GuiButton(BUTTON_TITLE, width / 2 - 100, height / 4 + 96, "Title menu"));
+        controlList.Clear();
+        controlList.Add(new GuiButton(BUTTON_RESPAWN, Width / 2 - 100, Height / 4 + 72, "Respawn"));
+        controlList.Add(new GuiButton(BUTTON_TITLE, Width / 2 - 100, Height / 4 + 96, "Title menu"));
         if (mc.session == null)
         {
-            for (int i = 0; i < controlList.size(); ++i)
+            for (int i = 0; i < controlList.Count; ++i)
             {
-                GuiButton btn = (GuiButton)controlList.get(i);
+                GuiButton btn = controlList[i];
                 if (btn.Id == BUTTON_RESPAWN)
                 {
                     btn.Enabled = false;
@@ -27,11 +27,11 @@ public class GuiGameOver : GuiScreen
 
     }
 
-    protected override void keyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, int eventKey)
     {
     }
 
-    protected override void actionPerformed(GuiButton button)
+    protected override void ActionPerformed(GuiButton button)
     {
         switch (button.Id)
         {
@@ -47,18 +47,18 @@ public class GuiGameOver : GuiScreen
 
     }
 
-    public override void render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        DrawGradientRect(0, 0, width, height, 0x60500000, 0xA0803030);
+        DrawGradientRect(0, 0, Width, Height, 0x60500000, 0xA0803030);
         GLManager.GL.PushMatrix();
         GLManager.GL.Scale(2.0F, 2.0F, 2.0F);
-        DrawCenteredString(fontRenderer, "Game over!", width / 2 / 2, 30, 0x00FFFFFF);
+        DrawCenteredString(fontRenderer, "Game over!", Width / 2 / 2, 30, 0x00FFFFFF);
         GLManager.GL.PopMatrix();
-        DrawCenteredString(fontRenderer, "Score: &e" + mc.player.getScore(), width / 2, 100, 0x00FFFFFF);
-        base.render(mouseX, mouseY, partialTicks);
+        DrawCenteredString(fontRenderer, "Score: &e" + mc.player.getScore(), Width / 2, 100, 0x00FFFFFF);
+        base.Render(mouseX, mouseY, partialTicks);
     }
 
-    public override bool doesGuiPauseGame()
+    public override bool DoesGuiPauseGame()
     {
         return false;
     }

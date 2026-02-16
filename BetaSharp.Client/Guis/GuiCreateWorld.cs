@@ -22,25 +22,25 @@ public class GuiCreateWorld : GuiScreen
         this.parentScreen = parentScreen;
     }
 
-    public override void updateScreen()
+    public override void UpdateScreen()
     {
         textboxWorldName.updateCursorCounter();
         textboxSeed.updateCursorCounter();
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
         TranslationStorage translations = TranslationStorage.getInstance();
         Keyboard.enableRepeatEvents(true);
-        controlList.clear();
-        controlList.add(new GuiButton(BUTTON_CREATE, width / 2 - 100, height / 4 + 96 + 12, translations.translateKey("selectWorld.create")));
-        controlList.add(new GuiButton(BUTTON_CANCEL, width / 2 - 100, height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
-        textboxWorldName = new GuiTextField(this, fontRenderer, width / 2 - 100, 60, 200, 20, translations.translateKey("selectWorld.newWorld"))
+        controlList.Clear();
+        controlList.Add(new GuiButton(BUTTON_CREATE, Width / 2 - 100, Height / 4 + 96 + 12, translations.translateKey("selectWorld.create")));
+        controlList.Add(new GuiButton(BUTTON_CANCEL, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
+        textboxWorldName = new GuiTextField(this, fontRenderer, Width / 2 - 100, 60, 200, 20, translations.translateKey("selectWorld.newWorld"))
         {
             isFocused = true
         };
         textboxWorldName.setMaxStringLength(32);
-        textboxSeed = new GuiTextField(this, fontRenderer, width / 2 - 100, 116, 200, 20, "");
+        textboxSeed = new GuiTextField(this, fontRenderer, Width / 2 - 100, 116, 200, 20, "");
         updateFolderName();
     }
 
@@ -74,12 +74,12 @@ public class GuiCreateWorld : GuiScreen
         return baseFolderName;
     }
 
-    public override void onGuiClosed()
+    public override void OnGuiClosed()
     {
         Keyboard.enableRepeatEvents(false);
     }
 
-    protected override void actionPerformed(GuiButton button)
+    protected override void ActionPerformed(GuiButton button)
     {
         if (button.Enabled)
         {
@@ -128,7 +128,7 @@ public class GuiCreateWorld : GuiScreen
         }
     }
 
-    protected override void keyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, int eventKey)
     {
         if (textboxWorldName.isFocused)
         {
@@ -141,35 +141,35 @@ public class GuiCreateWorld : GuiScreen
 
         if (eventChar == 13)
         {
-            actionPerformed((GuiButton)controlList.get(0));
+            ActionPerformed(controlList[0]);
         }
 
-        ((GuiButton)controlList.get(0)).Enabled = textboxWorldName.getText().Length > 0;
+        controlList[0].Enabled = textboxWorldName.getText().Length > 0;
         updateFolderName();
     }
 
-    protected override void mouseClicked(int x, int y, int button)
+    protected override void MouseClicked(int x, int y, int button)
     {
-        base.mouseClicked(x, y, button);
+        base.MouseClicked(x, y, button);
         textboxWorldName.mouseClicked(x, y, button);
         textboxSeed.mouseClicked(x, y, button);
     }
 
-    public override void render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         TranslationStorage translations = TranslationStorage.getInstance();
-        drawDefaultBackground();
-        DrawCenteredString(fontRenderer, translations.translateKey("selectWorld.create"), width / 2, height / 4 - 60 + 20, 0x00FFFFFF);
-        DrawString(fontRenderer, translations.translateKey("selectWorld.enterName"), width / 2 - 100, 47, 10526880);
-        DrawString(fontRenderer, translations.translateKey("selectWorld.resultFolder") + " " + folderName, width / 2 - 100, 85, 10526880);
-        DrawString(fontRenderer, translations.translateKey("selectWorld.enterSeed"), width / 2 - 100, 104, 10526880);
-        DrawString(fontRenderer, translations.translateKey("selectWorld.seedInfo"), width / 2 - 100, 140, 10526880);
+        DrawDefaultBackground();
+        DrawCenteredString(fontRenderer, translations.translateKey("selectWorld.create"), Width / 2, Height / 4 - 60 + 20, 0x00FFFFFF);
+        DrawString(fontRenderer, translations.translateKey("selectWorld.enterName"), Width / 2 - 100, 47, 10526880);
+        DrawString(fontRenderer, translations.translateKey("selectWorld.resultFolder") + " " + folderName, Width / 2 - 100, 85, 10526880);
+        DrawString(fontRenderer, translations.translateKey("selectWorld.enterSeed"), Width / 2 - 100, 104, 10526880);
+        DrawString(fontRenderer, translations.translateKey("selectWorld.seedInfo"), Width / 2 - 100, 140, 10526880);
         textboxWorldName.drawTextBox();
         textboxSeed.drawTextBox();
-        base.render(mouseX, mouseY, partialTicks);
+        base.Render(mouseX, mouseY, partialTicks);
     }
 
-    public override void selectNextField()
+    public override void SelectNextField()
     {
         if (textboxWorldName.isFocused)
         {

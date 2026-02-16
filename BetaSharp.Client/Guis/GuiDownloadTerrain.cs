@@ -14,16 +14,16 @@ public class GuiDownloadTerrain : GuiScreen
         this.networkHandler = networkHandler;
     }
 
-    protected override void keyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, int eventKey)
     {
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
-        controlList.clear();
+        controlList.Clear();
     }
 
-    public override void updateScreen()
+    public override void UpdateScreen()
     {
         ++tickCounter;
         if (tickCounter % 20 == 0)
@@ -38,20 +38,20 @@ public class GuiDownloadTerrain : GuiScreen
 
     }
 
-    public override bool doesGuiPauseGame()
+    public override bool DoesGuiPauseGame()
     {
         return false;
     }
 
-    protected override void actionPerformed(GuiButton button)
+    protected override void ActionPerformed(GuiButton button)
     {
     }
 
-    public override void render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        drawBackground(0);
+        DrawBackground(0);
         TranslationStorage translations = TranslationStorage.getInstance();
-        DrawCenteredString(fontRenderer, translations.translateKey("multiplayer.downloadingTerrain"), width / 2, height / 2 - 50, 0x00FFFFFF);
-        base.render(mouseX, mouseY, partialTicks);
+        DrawCenteredString(fontRenderer, translations.translateKey("multiplayer.downloadingTerrain"), Width / 2, Height / 2 - 50, 0x00FFFFFF);
+        base.Render(mouseX, mouseY, partialTicks);
     }
 }

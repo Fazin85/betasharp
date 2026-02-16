@@ -37,13 +37,13 @@ public class GuiAchievements : GuiScreen
         field_27115_n = field_27113_p = field_27111_r = BetaSharp.Achievements.OpenInventory.row * 24 - var3 / 2;
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
-        controlList.clear();
-        controlList.add(new GuiSmallButton(1, width / 2 + 24, height / 2 + 74, 80, 20, StatCollector.translateToLocal("gui.done")));
+        controlList.Clear();
+        controlList.Add(new GuiSmallButton(1, Width / 2 + 24, Height / 2 + 74, 80, 20, StatCollector.translateToLocal("gui.done")));
     }
 
-    protected override void actionPerformed(GuiButton var1)
+    protected override void ActionPerformed(GuiButton var1)
     {
         if (var1.Id == 1)
         {
@@ -51,10 +51,10 @@ public class GuiAchievements : GuiScreen
             mc.setIngameFocus();
         }
 
-        base.actionPerformed(var1);
+        base.ActionPerformed(var1);
     }
 
-    protected override void keyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, int eventKey)
     {
         if (eventKey == mc.options.keyBindInventory.keyCode)
         {
@@ -63,17 +63,17 @@ public class GuiAchievements : GuiScreen
         }
         else
         {
-            base.keyTyped(eventChar, eventKey);
+            base.KeyTyped(eventChar, eventKey);
         }
 
     }
 
-    public override void render(int var1, int var2, float var3)
+    public override void Render(int var1, int var2, float var3)
     {
         if (Mouse.isButtonDown(0))
         {
-            int var4 = (width - field_27121_a) / 2;
-            int var5 = (height - field_27119_i) / 2;
+            int var4 = (Width - field_27121_a) / 2;
+            int var5 = (Height - field_27119_i) / 2;
             int var6 = var4 + 8;
             int var7 = var5 + 17;
             if ((field_27122_w == 0 || field_27122_w == 1) && var1 >= var6 && var1 < var6 + 224 && var2 >= var7 && var2 < var7 + 155)
@@ -119,7 +119,7 @@ public class GuiAchievements : GuiScreen
             field_27122_w = 0;
         }
 
-        drawDefaultBackground();
+        DrawDefaultBackground();
         func_27109_b(var1, var2, var3);
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.Disable(GLEnum.DepthTest);
@@ -128,7 +128,7 @@ public class GuiAchievements : GuiScreen
         GLManager.GL.Enable(GLEnum.DepthTest);
     }
 
-    public override void updateScreen()
+    public override void UpdateScreen()
     {
         field_27116_m = field_27114_o;
         field_27115_n = field_27113_p;
@@ -149,8 +149,8 @@ public class GuiAchievements : GuiScreen
 
     protected void func_27110_k()
     {
-        int var1 = (width - field_27121_a) / 2;
-        int var2 = (height - field_27119_i) / 2;
+        int var1 = (Width - field_27121_a) / 2;
+        int var2 = (Height - field_27119_i) / 2;
         fontRenderer.drawString("Achievements", var1 + 15, var2 + 5, 4210752);
     }
 
@@ -180,8 +180,8 @@ public class GuiAchievements : GuiScreen
 
         int var6 = mc.textureManager.getTextureId("/terrain.png");
         int var7 = mc.textureManager.getTextureId("/achievement/bg.png");
-        int var8 = (width - field_27121_a) / 2;
-        int var9 = (height - field_27119_i) / 2;
+        int var8 = (Width - field_27121_a) / 2;
+        int var9 = (Height - field_27119_i) / 2;
         int var10 = var8 + 16;
         int var11 = var9 + 17;
         _zLevel = 0.0F;
@@ -369,7 +369,7 @@ public class GuiAchievements : GuiScreen
         GLManager.GL.DepthFunc(GLEnum.Lequal);
         GLManager.GL.Disable(GLEnum.DepthTest);
         GLManager.GL.Enable(GLEnum.Texture2D);
-        base.render(var1, var2, var3);
+        base.Render(var1, var2, var3);
         if (var27 != null)
         {
             string? var32 = var27.getTranslatedDescription();
@@ -409,7 +409,7 @@ public class GuiAchievements : GuiScreen
         Lighting.turnOff();
     }
 
-    public override bool doesGuiPauseGame()
+    public override bool DoesGuiPauseGame()
     {
         return true;
     }

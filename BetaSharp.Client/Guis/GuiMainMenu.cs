@@ -49,15 +49,15 @@ public class GuiMainMenu : GuiScreen
         }
     }
 
-    public override void updateScreen()
+    public override void UpdateScreen()
     {
     }
 
-    protected override void keyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, int eventKey)
     {
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
         Calendar calendar = Calendar.getInstance();
 
@@ -81,23 +81,23 @@ public class GuiMainMenu : GuiScreen
         }
 
         TranslationStorage translator = TranslationStorage.getInstance();
-        int buttonTopY = height / 4 + 48;
+        int buttonTopY = Height / 4 + 48;
 
-        controlList.add(new GuiButton(BUTTON_SINGLEPLAYER, width / 2 - 100, buttonTopY, translator.translateKey("menu.singleplayer")));
-        controlList.add(_multiplayerButton =
-            new GuiButton(BUTTON_MULTIPLAYER, width / 2 - 100, buttonTopY + 24, translator.translateKey("menu.multiplayer")));
-        controlList.add(new GuiButton(BUTTON_MODS, width / 2 - 100, buttonTopY + 48, translator.translateKey("menu.mods")));
+        controlList.Add(new GuiButton(BUTTON_SINGLEPLAYER, Width / 2 - 100, buttonTopY, translator.translateKey("menu.singleplayer")));
+        controlList.Add(_multiplayerButton =
+            new GuiButton(BUTTON_MULTIPLAYER, Width / 2 - 100, buttonTopY + 24, translator.translateKey("menu.multiplayer")));
+        controlList.Add(new GuiButton(BUTTON_MODS, Width / 2 - 100, buttonTopY + 48, translator.translateKey("menu.mods")));
 
         if (mc.hideQuitButton)
         {
-            controlList.add(new GuiButton(BUTTON_OPTIONS, width / 2 - 100, buttonTopY + 72, translator.translateKey("menu.options")));
+            controlList.Add(new GuiButton(BUTTON_OPTIONS, Width / 2 - 100, buttonTopY + 72, translator.translateKey("menu.options")));
         }
         else
         {
-            controlList.add(new GuiButton(BUTTON_OPTIONS, width / 2 - 100, buttonTopY + 72 + 12, 98, 20,
+            controlList.Add(new GuiButton(BUTTON_OPTIONS, Width / 2 - 100, buttonTopY + 72 + 12, 98, 20,
                 translator.translateKey("menu.options")));
 
-            controlList.add(new GuiButton(BUTTON_QUIT, width / 2 + 2, buttonTopY + 72 + 12, 98, 20,
+            controlList.Add(new GuiButton(BUTTON_QUIT, Width / 2 + 2, buttonTopY + 72 + 12, 98, 20,
                 translator.translateKey("menu.quit")));
         }
 
@@ -107,7 +107,7 @@ public class GuiMainMenu : GuiScreen
         }
     }
 
-    protected override void actionPerformed(GuiButton button)
+    protected override void ActionPerformed(GuiButton button)
     {
         switch (button.Id)
         {
@@ -129,12 +129,12 @@ public class GuiMainMenu : GuiScreen
         }
     }
 
-    public override void render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        drawDefaultBackground();
+        DrawDefaultBackground();
         Tessellator tessellator = Tessellator.instance;
         short logoWidth = 274;
-        int logoX = width / 2 - logoWidth / 2;
+        int logoX = Width / 2 - logoWidth / 2;
         byte logoY = 30;
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/title/mclogo.png"));
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
@@ -142,7 +142,7 @@ public class GuiMainMenu : GuiScreen
         DrawTexturedModalRect(logoX + 155, logoY + 0, 0, 45, 155, 44);
         tessellator.setColorOpaque_I(0x00FFFFFF);
         GLManager.GL.PushMatrix();
-        GLManager.GL.Translate(width / 2 + 90, 70.0F, 0.0F);
+        GLManager.GL.Translate(Width / 2 + 90, 70.0F, 0.0F);
         GLManager.GL.Rotate(-20.0F, 0.0F, 0.0F, 1.0F);
         float splashScale = 1.8F - MathHelper.abs(MathHelper.sin(java.lang.System.currentTimeMillis() % 1000L /
             1000.0F * (float)Math.PI * 2.0F) * 0.1F);
@@ -152,9 +152,9 @@ public class GuiMainMenu : GuiScreen
         GLManager.GL.PopMatrix();
         DrawString(fontRenderer, "Minecraft Beta 1.7.3", 2, 2, 5263440);
         string copyrightText = "Copyright Mojang Studios. Not an official Minecraft product.";
-        DrawString(fontRenderer, copyrightText, width - fontRenderer.getStringWidth(copyrightText) - 2, height - 20, 0x00FFFFFF);
+        DrawString(fontRenderer, copyrightText, Width - fontRenderer.getStringWidth(copyrightText) - 2, Height - 20, 0x00FFFFFF);
         string disclaimerText = "Not approved by or associated with Mojang Studios or Microsoft.";
-        DrawString(fontRenderer, disclaimerText, width - fontRenderer.getStringWidth(disclaimerText) - 2, height - 10, 0x00FFFFFF);
-        base.render(mouseX, mouseY, partialTicks);
+        DrawString(fontRenderer, disclaimerText, Width - fontRenderer.getStringWidth(disclaimerText) - 2, Height - 10, 0x00FFFFFF);
+        base.Render(mouseX, mouseY, partialTicks);
     }
 }

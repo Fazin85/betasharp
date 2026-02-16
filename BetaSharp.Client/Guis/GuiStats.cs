@@ -24,15 +24,15 @@ public class GuiStats : GuiScreen
         statFileWriter = stats;
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
         screenTitle = StatCollector.translateToLocal("gui.stats");
         slotGeneral = new GuiSlotStatsGeneral(this);
-        slotGeneral.registerScrollButtons(controlList, 1, 1);
+        slotGeneral.RegisterScrollButtons(controlList, 1, 1);
         slotItem = new GuiSlotStatsItem(this);
-        slotItem.registerScrollButtons(controlList, 1, 1);
+        slotItem.RegisterScrollButtons(controlList, 1, 1);
         slotBlock = new GuiSlotStatsBlock(this);
-        slotBlock.registerScrollButtons(controlList, 1, 1);
+        slotBlock.RegisterScrollButtons(controlList, 1, 1);
         currentSlot = slotGeneral;
         initButtons();
     }
@@ -44,12 +44,12 @@ public class GuiStats : GuiScreen
         const int BUTTON_ITEMS = 3;
 
         TranslationStorage translations = TranslationStorage.getInstance();
-        controlList.add(new GuiButton(BUTTON_DONE, width / 2 + 4, height - 28, 150, 20, translations.translateKey("gui.done")));
-        controlList.add(new GuiButton(BUTTON_GENERAL, width / 2 - 154, height - 52, 100, 20, translations.translateKey("stat.generalButton")));
-        GuiButton blocksButton = new(BUTTON_BLOCKS, width / 2 - 46, height - 52, 100, 20, translations.translateKey("stat.blocksButton"));
-        controlList.add(blocksButton);
-        GuiButton itemsButton = new(BUTTON_ITEMS, width / 2 + 62, height - 52, 100, 20, translations.translateKey("stat.itemsButton"));
-        controlList.add(itemsButton);
+        controlList.Add(new GuiButton(BUTTON_DONE, Width / 2 + 4, Height - 28, 150, 20, translations.translateKey("gui.done")));
+        controlList.Add(new GuiButton(BUTTON_GENERAL, Width / 2 - 154, Height - 52, 100, 20, translations.translateKey("stat.generalButton")));
+        GuiButton blocksButton = new(BUTTON_BLOCKS, Width / 2 - 46, Height - 52, 100, 20, translations.translateKey("stat.blocksButton"));
+        controlList.Add(blocksButton);
+        GuiButton itemsButton = new(BUTTON_ITEMS, Width / 2 + 62, Height - 52, 100, 20, translations.translateKey("stat.itemsButton"));
+        controlList.Add(itemsButton);
         if (slotBlock.getSize() == 0)
         {
             blocksButton.Enabled = false;
@@ -61,7 +61,7 @@ public class GuiStats : GuiScreen
         }
     }
 
-    protected override void actionPerformed(GuiButton button)
+    protected override void ActionPerformed(GuiButton button)
     {
         if (button.Enabled)
         {
@@ -87,11 +87,11 @@ public class GuiStats : GuiScreen
         }
     }
 
-    public override void render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         currentSlot.drawScreen(mouseX, mouseY, partialTicks);
-        DrawCenteredString(fontRenderer, screenTitle, width / 2, 20, 0x00FFFFFF);
-        base.render(mouseX, mouseY, partialTicks);
+        DrawCenteredString(fontRenderer, screenTitle, Width / 2, 20, 0x00FFFFFF);
+        base.Render(mouseX, mouseY, partialTicks);
     }
 
     private void drawItemSlot(int x, int y, int itemId)

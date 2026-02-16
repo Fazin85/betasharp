@@ -22,17 +22,17 @@ public abstract class GuiContainer : GuiScreen
         inventorySlots = var1;
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
-        base.initGui();
+        base.InitGui();
         mc.player.currentScreenHandler = inventorySlots;
     }
 
-    public override void render(int var1, int var2, float var3)
+    public override void Render(int var1, int var2, float var3)
     {
-        drawDefaultBackground();
-        int var4 = (width - xSize) / 2;
-        int var5 = (height - ySize) / 2;
+        DrawDefaultBackground();
+        int var4 = (Width - xSize) / 2;
+        int var5 = (Height - ySize) / 2;
         drawGuiContainerBackgroundLayer(var3);
         GLManager.GL.PushMatrix();
         GLManager.GL.Rotate(120.0F, 1.0F, 0.0F, 0.0F);
@@ -100,7 +100,7 @@ public abstract class GuiContainer : GuiScreen
         }
 
         GLManager.GL.PopMatrix();
-        base.render(var1, var2, var3);
+        base.Render(var1, var2, var3);
         GLManager.GL.Enable(GLEnum.Lighting);
         GLManager.GL.Enable(GLEnum.DepthTest);
     }
@@ -149,21 +149,21 @@ public abstract class GuiContainer : GuiScreen
 
     private bool getIsMouseOverSlot(Slot var1, int var2, int var3)
     {
-        int var4 = (width - xSize) / 2;
-        int var5 = (height - ySize) / 2;
+        int var4 = (Width - xSize) / 2;
+        int var5 = (Height - ySize) / 2;
         var2 -= var4;
         var3 -= var5;
         return var2 >= var1.xDisplayPosition - 1 && var2 < var1.xDisplayPosition + 16 + 1 && var3 >= var1.yDisplayPosition - 1 && var3 < var1.yDisplayPosition + 16 + 1;
     }
 
-    protected override void mouseClicked(int var1, int var2, int var3)
+    protected override void MouseClicked(int var1, int var2, int var3)
     {
-        base.mouseClicked(var1, var2, var3);
+        base.MouseClicked(var1, var2, var3);
         if (var3 == 0 || var3 == 1)
         {
             Slot var4 = getSlotAtPosition(var1, var2);
-            int var5 = (width - xSize) / 2;
-            int var6 = (height - ySize) / 2;
+            int var5 = (Width - xSize) / 2;
+            int var6 = (Height - ySize) / 2;
             bool var7 = var1 < var5 || var2 < var6 || var1 >= var5 + xSize || var2 >= var6 + ySize;
             int var8 = -1;
             if (var4 != null)
@@ -185,7 +185,7 @@ public abstract class GuiContainer : GuiScreen
 
     }
 
-    protected override void mouseMovedOrUp(int var1, int var2, int var3)
+    protected override void MouseMovedOrUp(int var1, int var2, int var3)
     {
         if (var3 == 0)
         {
@@ -193,7 +193,7 @@ public abstract class GuiContainer : GuiScreen
 
     }
 
-    protected override void keyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, int eventKey)
     {
         if (eventKey == 1 || eventKey == mc.options.keyBindInventory.keyCode)
         {
@@ -202,7 +202,7 @@ public abstract class GuiContainer : GuiScreen
 
     }
 
-    public override void onGuiClosed()
+    public override void OnGuiClosed()
     {
         if (mc.player != null)
         {
@@ -210,14 +210,14 @@ public abstract class GuiContainer : GuiScreen
         }
     }
 
-    public override bool doesGuiPauseGame()
+    public override bool DoesGuiPauseGame()
     {
         return false;
     }
 
-    public override void updateScreen()
+    public override void UpdateScreen()
     {
-        base.updateScreen();
+        base.UpdateScreen();
         if (!mc.player.isAlive() || mc.player.dead)
         {
             mc.player.closeHandledScreen();

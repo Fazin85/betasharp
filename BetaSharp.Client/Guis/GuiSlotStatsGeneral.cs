@@ -8,7 +8,7 @@ public class GuiSlotStatsGeneral : GuiSlot
     readonly GuiStats parentStatsGui;
 
 
-    public GuiSlotStatsGeneral(GuiStats parent) : base(GuiStats.func_27141_a(parent), parent.width, parent.height, 32, parent.height - 64, 10)
+    public GuiSlotStatsGeneral(GuiStats parent) : base(GuiStats.func_27141_a(parent), parent.Width, parent.Height, 32, parent.Height - 64, 10)
     {
         parentStatsGui = parent;
         func_27258_a(false);
@@ -35,7 +35,7 @@ public class GuiSlotStatsGeneral : GuiSlot
 
     protected override void drawBackground()
     {
-        parentStatsGui.drawDefaultBackground();
+        parentStatsGui.DrawDefaultBackground();
     }
 
     protected override void drawSlot(int index, int x, int y, int rowHeight, Tessellator tessellator)

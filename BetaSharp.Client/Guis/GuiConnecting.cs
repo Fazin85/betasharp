@@ -17,7 +17,7 @@ public class GuiConnecting : GuiScreen
         new ThreadConnectToServer(this, mc, host, port).start();
     }
 
-    public override void updateScreen()
+    public override void UpdateScreen()
     {
         if (clientHandler != null)
         {
@@ -26,18 +26,18 @@ public class GuiConnecting : GuiScreen
 
     }
 
-    protected override void keyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, int eventKey)
     {
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
         TranslationStorage translations = TranslationStorage.getInstance();
-        controlList.clear();
-        controlList.add(new GuiButton(BUTTON_CANCEL, width / 2 - 100, height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
+        controlList.Clear();
+        controlList.Add(new GuiButton(BUTTON_CANCEL, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
     }
 
-    protected override void actionPerformed(GuiButton button)
+    protected override void ActionPerformed(GuiButton button)
     {
         switch (button.Id)
         {
@@ -54,25 +54,25 @@ public class GuiConnecting : GuiScreen
 
     }
 
-    public override void render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        drawDefaultBackground();
+        DrawDefaultBackground();
         TranslationStorage translations = TranslationStorage.getInstance();
         if (clientHandler == null)
         {
-            DrawCenteredString(fontRenderer, translations.translateKey("connect.connecting"), width / 2, height / 2 - 50, 0x00FFFFFF);
-            DrawCenteredString(fontRenderer, "", width / 2, height / 2 - 10, 0x00FFFFFF);
+            DrawCenteredString(fontRenderer, translations.translateKey("connect.connecting"), Width / 2, Height / 2 - 50, 0x00FFFFFF);
+            DrawCenteredString(fontRenderer, "", Width / 2, Height / 2 - 10, 0x00FFFFFF);
         }
         else
         {
-            DrawCenteredString(fontRenderer, translations.translateKey("connect.authorizing"), width / 2, height / 2 - 50, 0x00FFFFFF);
-            DrawCenteredString(fontRenderer, clientHandler.field_1209_a, width / 2, height / 2 - 10, 0x00FFFFFF);
+            DrawCenteredString(fontRenderer, translations.translateKey("connect.authorizing"), Width / 2, Height / 2 - 50, 0x00FFFFFF);
+            DrawCenteredString(fontRenderer, clientHandler.field_1209_a, Width / 2, Height / 2 - 10, 0x00FFFFFF);
         }
 
-        base.render(mouseX, mouseY, partialTicks);
+        base.Render(mouseX, mouseY, partialTicks);
     }
 
-    public override bool doesGuiPauseGame()
+    public override bool DoesGuiPauseGame()
     {
         return false;
     }

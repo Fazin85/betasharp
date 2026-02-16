@@ -12,9 +12,9 @@ public class GuiCrafting : GuiContainer
     {
     }
 
-    public override void onGuiClosed()
+    public override void OnGuiClosed()
     {
-        base.onGuiClosed();
+        base.OnGuiClosed();
         inventorySlots.onClosed(mc.player);
     }
 
@@ -29,8 +29,8 @@ public class GuiCrafting : GuiContainer
         int textureId = mc.textureManager.getTextureId("/gui/crafting.png");
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.bindTexture(textureId);
-        int guiLeft = (width - xSize) / 2;
-        int guiTop = (height - ySize) / 2;
+        int guiLeft = (Width - xSize) / 2;
+        int guiTop = (Height - ySize) / 2;
         DrawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 }

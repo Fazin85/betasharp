@@ -16,7 +16,7 @@ public class GuiVideoSettings : GuiScreen
         guiGameSettings = var2;
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
         TranslationStorage var1 = TranslationStorage.getInstance();
         field_22107_a = var1.translateKey("options.videoTitle");
@@ -29,20 +29,20 @@ public class GuiVideoSettings : GuiScreen
             EnumOptions var6 = var3[var5];
             if (!var6.getEnumFloat())
             {
-                controlList.add(new GuiSmallButton(var6.returnEnumOrdinal(), width / 2 - 155 + var2 % 2 * 160, height / 6 + 24 * (var2 >> 1), var6, guiGameSettings.getKeyBinding(var6)));
+                controlList.Add(new GuiSmallButton(var6.returnEnumOrdinal(), Width / 2 - 155 + var2 % 2 * 160, Height / 6 + 24 * (var2 >> 1), var6, guiGameSettings.getKeyBinding(var6)));
             }
             else
             {
-                controlList.add(new GuiSlider(var6.returnEnumOrdinal(), width / 2 - 155 + var2 % 2 * 160, height / 6 + 24 * (var2 >> 1), var6, guiGameSettings.getKeyBinding(var6), guiGameSettings.getOptionFloatValue(var6)));
+                controlList.Add(new GuiSlider(var6.returnEnumOrdinal(), Width / 2 - 155 + var2 % 2 * 160, Height / 6 + 24 * (var2 >> 1), var6, guiGameSettings.getKeyBinding(var6), guiGameSettings.getOptionFloatValue(var6)));
             }
 
             ++var2;
         }
 
-        controlList.add(new GuiButton(200, width / 2 - 100, height / 6 + 168, var1.translateKey("gui.done")));
+        controlList.Add(new GuiButton(200, Width / 2 - 100, Height / 6 + 168, var1.translateKey("gui.done")));
     }
 
-    protected override void actionPerformed(GuiButton var1)
+    protected override void ActionPerformed(GuiButton var1)
     {
         if (var1.Enabled)
         {
@@ -63,15 +63,15 @@ public class GuiVideoSettings : GuiScreen
                 ScaledResolution var2 = new(mc.options, mc.displayWidth, mc.displayHeight);
                 int var3 = var2.ScaledWidth;
                 int var4 = var2.ScaledHeight;
-                setWorldAndResolution(mc, var3, var4);
+                SetWorldAndResolution(mc, var3, var4);
             }
         }
     }
 
-    public override void render(int var1, int var2, float var3)
+    public override void Render(int var1, int var2, float var3)
     {
-        drawDefaultBackground();
-        DrawCenteredString(fontRenderer, field_22107_a, width / 2, 20, 0x00FFFFFF);
-        base.render(var1, var2, var3);
+        DrawDefaultBackground();
+        DrawCenteredString(fontRenderer, field_22107_a, Width / 2, 20, 0x00FFFFFF);
+        base.Render(var1, var2, var3);
     }
 }

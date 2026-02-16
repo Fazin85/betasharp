@@ -50,12 +50,12 @@ public class GuiTextField : Gui
         {
             if (var1 == 9)
             {
-                parentGuiScreen.selectNextField();
+                parentGuiScreen.SelectNextField();
             }
 
             if (var1 == 22)
             {
-                string var3 = GuiScreen.getClipboardString();
+                string var3 = GuiScreen.GetClipboardString();
                 var3 ??= "";
 
                 int var4 = 32 - text.Length;

@@ -19,28 +19,28 @@ public class GuiControls : GuiScreen
 
     private int getLeftColumnX()
     {
-        return width / 2 - 155;
+        return Width / 2 - 155;
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
         TranslationStorage translations = TranslationStorage.getInstance();
         int leftX = getLeftColumnX();
 
         for (int i = 0; i < options.keyBindings.Length; ++i)
         {
-            controlList.add(new GuiSmallButton(i, leftX + i % 2 * 160, height / 6 + 24 * (i >> 1), 70, 20, options.getOptionDisplayString(i)));
+            controlList.Add(new GuiSmallButton(i, leftX + i % 2 * 160, Height / 6 + 24 * (i >> 1), 70, 20, options.getOptionDisplayString(i)));
         }
 
-        controlList.add(new GuiButton(BUTTON_DONE, width / 2 - 100, height / 6 + 168, translations.translateKey("gui.done")));
+        controlList.Add(new GuiButton(BUTTON_DONE, Width / 2 - 100, Height / 6 + 168, translations.translateKey("gui.done")));
         screenTitle = translations.translateKey("controls.title");
     }
 
-    protected override void actionPerformed(GuiButton button)
+    protected override void ActionPerformed(GuiButton button)
     {
         for (int i = 0; i < options.keyBindings.Length; ++i)
         {
-            ((GuiButton)controlList.get(i)).DisplayString = options.getOptionDisplayString(i);
+            controlList[i].DisplayString = options.getOptionDisplayString(i);
         }
 
         switch (button.Id)
@@ -56,32 +56,32 @@ public class GuiControls : GuiScreen
 
     }
 
-    protected override void keyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, int eventKey)
     {
         if (selectedKey >= 0)
         {
             options.setKeyBinding(selectedKey, eventKey);
-            ((GuiButton)controlList.get(selectedKey)).DisplayString = options.getOptionDisplayString(selectedKey);
+            controlList[selectedKey].DisplayString = options.getOptionDisplayString(selectedKey);
             selectedKey = -1;
         }
         else
         {
-            base.keyTyped(eventChar, eventKey);
+            base.KeyTyped(eventChar, eventKey);
         }
 
     }
 
-    public override void render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        drawDefaultBackground();
-        DrawCenteredString(fontRenderer, screenTitle, width / 2, 20, 0x00FFFFFF);
+        DrawDefaultBackground();
+        DrawCenteredString(fontRenderer, screenTitle, Width / 2, 20, 0x00FFFFFF);
         int leftX = getLeftColumnX();
 
         for (int i = 0; i < options.keyBindings.Length; ++i)
         {
-            DrawString(fontRenderer, options.getKeyBindingDescription(i), leftX + i % 2 * 160 + 70 + 6, height / 6 + 24 * (i >> 1) + 7, 0xFFFFFFFF);
+            DrawString(fontRenderer, options.getKeyBindingDescription(i), leftX + i % 2 * 160 + 70 + 6, Height / 6 + 24 * (i >> 1) + 7, 0xFFFFFFFF);
         }
 
-        base.render(mouseX, mouseY, partialTicks);
+        base.Render(mouseX, mouseY, partialTicks);
     }
 }

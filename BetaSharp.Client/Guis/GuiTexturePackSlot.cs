@@ -9,7 +9,7 @@ public class GuiTexturePackSlot : GuiSlot
     public readonly GuiTexturePacks parentTexturePackGui;
 
 
-    public GuiTexturePackSlot(GuiTexturePacks var1) : base(GuiTexturePacks.func_22124_a(var1), var1.width, var1.height, 32, var1.height - 55 + 4, 36)
+    public GuiTexturePackSlot(GuiTexturePacks var1) : base(GuiTexturePacks.func_22124_a(var1), var1.Width, var1.Height, 32, var1.Height - 55 + 4, 36)
     {
         parentTexturePackGui = var1;
     }
@@ -40,7 +40,7 @@ public class GuiTexturePackSlot : GuiSlot
 
     protected override void drawBackground()
     {
-        parentTexturePackGui.drawDefaultBackground();
+        parentTexturePackGui.DrawDefaultBackground();
     }
 
     protected override void drawSlot(int var1, int var2, int var3, int var4, Tessellator var5)

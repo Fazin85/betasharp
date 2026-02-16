@@ -9,26 +9,26 @@ public class GuiIngameMenu : GuiScreen
     private int updateCounter2 = 0;
     private int updateCounter = 0;
 
-    public override void initGui()
+    public override void InitGui()
     {
         updateCounter2 = 0;
-        controlList.clear();
+        controlList.Clear();
         int var1 = -16;
-        controlList.add(new GuiButton(1, width / 2 - 100, height / 4 + 120 + var1, "Save and quit to title"));
+        controlList.Add(new GuiButton(1, Width / 2 - 100, Height / 4 + 120 + var1, "Save and quit to title"));
         if (mc.isMultiplayerWorld() && mc.internalServer == null)
         {
-            ((GuiButton)controlList.get(0)).DisplayString = "Disconnect";
+            controlList[0].DisplayString = "Disconnect";
         }
 
-        controlList.add(new GuiButton(4, width / 2 - 100, height / 4 + 24 + var1, "Back to game"));
-        controlList.add(new GuiButton(0, width / 2 - 100, height / 4 + 96 + var1, "Options..."));
-        controlList.add(new GuiButton(5, width / 2 - 100, height / 4 + 48 + var1, 98, 20,
+        controlList.Add(new GuiButton(4, Width / 2 - 100, Height / 4 + 24 + var1, "Back to game"));
+        controlList.Add(new GuiButton(0, Width / 2 - 100, Height / 4 + 96 + var1, "Options..."));
+        controlList.Add(new GuiButton(5, Width / 2 - 100, Height / 4 + 48 + var1, 98, 20,
             StatCollector.translateToLocal("gui.achievements")));
-        controlList.add(new GuiButton(6, width / 2 + 2, height / 4 + 48 + var1, 98, 20,
+        controlList.Add(new GuiButton(6, Width / 2 + 2, Height / 4 + 48 + var1, 98, 20,
             StatCollector.translateToLocal("gui.stats")));
     }
 
-    protected override void actionPerformed(GuiButton var1)
+    protected override void ActionPerformed(GuiButton var1)
     {
         if (var1.Id == 0)
         {
@@ -65,25 +65,25 @@ public class GuiIngameMenu : GuiScreen
         }
     }
 
-    public override void updateScreen()
+    public override void UpdateScreen()
     {
-        base.updateScreen();
+        base.UpdateScreen();
         ++updateCounter;
     }
 
-    public override void render(int var1, int var2, float var3)
+    public override void Render(int var1, int var2, float var3)
     {
-        drawDefaultBackground();
+        DrawDefaultBackground();
         bool var4 = !mc.world.attemptSaving(updateCounter2++);
         if (var4 || updateCounter < 20)
         {
             float var5 = (updateCounter % 10 + var3) / 10.0F;
             var5 = MathHelper.sin(var5 * (float)Math.PI * 2.0F) * 0.2F + 0.8F;
             int var6 = (int)(255.0F * var5);
-            DrawString(fontRenderer, "Saving level..", 8, height - 16, (uint)(var6 << 16 | var6 << 8 | var6));
+            DrawString(fontRenderer, "Saving level..", 8, Height - 16, (uint)(var6 << 16 | var6 << 8 | var6));
         }
 
-        DrawCenteredString(fontRenderer, "Game menu", width / 2, 40, 0x00FFFFFF);
-        base.render(var1, var2, var3);
+        DrawCenteredString(fontRenderer, "Game menu", Width / 2, 40, 0x00FFFFFF);
+        base.Render(var1, var2, var3);
     }
 }

@@ -17,9 +17,9 @@ public class GuiInventory : GuiContainer
         var1.increaseStat(BetaSharp.Achievements.OpenInventory, 1);
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
-        controlList.clear();
+        controlList.Clear();
     }
 
     protected override void drawGuiContainerForegroundLayer()
@@ -27,9 +27,9 @@ public class GuiInventory : GuiContainer
         fontRenderer.drawString("Crafting", 86, 16, 4210752);
     }
 
-    public override void render(int var1, int var2, float var3)
+    public override void Render(int var1, int var2, float var3)
     {
-        base.render(var1, var2, var3);
+        base.Render(var1, var2, var3);
         xSize_lo = var1;
         ySize_lo = var2;
     }
@@ -39,8 +39,8 @@ public class GuiInventory : GuiContainer
         int var2 = mc.textureManager.getTextureId("/gui/inventory.png");
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.bindTexture(var2);
-        int var3 = (width - xSize) / 2;
-        int var4 = (height - ySize) / 2;
+        int var3 = (Width - xSize) / 2;
+        int var4 = (Height - ySize) / 2;
         DrawTexturedModalRect(var3, var4, 0, 0, xSize, ySize);
         GLManager.GL.Enable(GLEnum.RescaleNormal);
         GLManager.GL.Enable(GLEnum.ColorMaterial);
@@ -74,7 +74,7 @@ public class GuiInventory : GuiContainer
         GLManager.GL.Disable(GLEnum.RescaleNormal);
     }
 
-    protected override void actionPerformed(GuiButton var1)
+    protected override void ActionPerformed(GuiButton var1)
     {
         if (var1.Id == 0)
         {

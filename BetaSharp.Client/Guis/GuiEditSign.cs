@@ -24,14 +24,14 @@ public class GuiEditSign : GuiScreen
 
     private const int BUTTON_DONE = 0;
 
-    public override void initGui()
+    public override void InitGui()
     {
-        controlList.clear();
+        controlList.Clear();
         Keyboard.enableRepeatEvents(true);
-        controlList.add(new GuiButton(BUTTON_DONE, width / 2 - 100, height / 4 + 120, "Done"));
+        controlList.Add(new GuiButton(BUTTON_DONE, Width / 2 - 100, Height / 4 + 120, "Done"));
     }
 
-    public override void onGuiClosed()
+    public override void OnGuiClosed()
     {
         Keyboard.enableRepeatEvents(false);
         if (mc.world.isRemote)
@@ -41,12 +41,12 @@ public class GuiEditSign : GuiScreen
 
     }
 
-    public override void updateScreen()
+    public override void UpdateScreen()
     {
         ++updateCounter;
     }
 
-    protected override void actionPerformed(GuiButton button)
+    protected override void ActionPerformed(GuiButton button)
     {
         if (button.Enabled)
         {
@@ -60,7 +60,7 @@ public class GuiEditSign : GuiScreen
         }
     }
 
-    protected override void keyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, int eventKey)
     {
         if (eventKey == 200)
         {
@@ -84,12 +84,12 @@ public class GuiEditSign : GuiScreen
 
     }
 
-    public override void render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        drawDefaultBackground();
-        DrawCenteredString(fontRenderer, screenTitle, width / 2, 40, 0x00FFFFFF);
+        DrawDefaultBackground();
+        DrawCenteredString(fontRenderer, screenTitle, Width / 2, 40, 0x00FFFFFF);
         GLManager.GL.PushMatrix();
-        GLManager.GL.Translate(width / 2, 0.0F, 50.0F);
+        GLManager.GL.Translate(Width / 2, 0.0F, 50.0F);
         float scale = 93.75F;
         GLManager.GL.Scale(-scale, -scale, -scale);
         GLManager.GL.Rotate(180.0F, 0.0F, 1.0F, 0.0F);
@@ -131,6 +131,6 @@ public class GuiEditSign : GuiScreen
         BlockEntityRenderer.instance.renderTileEntityAt(entitySign, -0.5D, -0.75D, -0.5D, 0.0F);
         entitySign.currentRow = -1;
         GLManager.GL.PopMatrix();
-        base.render(mouseX, mouseY, partialTicks);
+        base.Render(mouseX, mouseY, partialTicks);
     }
 }

@@ -22,18 +22,18 @@ public class GuiChat : GuiScreen
     private int selectionStart = -1;
     private int selectionEnd = -1;
 
-    public override void initGui()
+    public override void InitGui()
     {
         Keyboard.enableRepeatEvents(true);
         historyIndex = history.Count;
     }
 
-    public override void onGuiClosed()
+    public override void OnGuiClosed()
     {
         Keyboard.enableRepeatEvents(false);
     }
 
-    public override void updateScreen()
+    public override void UpdateScreen()
     {
         ++updateCounter;
     }
@@ -52,7 +52,7 @@ public class GuiChat : GuiScreen
         cursorPosition = message?.Length ?? 0;
     }
 
-    protected override void keyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, int eventKey)
     {
         // Check for Ctrl combos first
         bool ctrlDown = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
@@ -509,16 +509,16 @@ public class GuiChat : GuiScreen
         }
     }
 
-    public override void render(int var1, int var2, float var3)
+    public override void Render(int var1, int var2, float var3)
     {
-        DrawRect(2, height - 14, width - 2, height - 2, 0x80000000);
+        DrawRect(2, Height - 14, Width - 2, Height - 2, 0x80000000);
         
         // Display message with cursor at correct position
         string beforeCursor = message.Substring(0, Math.Min(cursorPosition, message.Length));
         string afterCursor = message.Substring(Math.Min(cursorPosition, message.Length));
         string cursor = (updateCounter / 6 % 2 == 0 ? "|" : "");
 
-        int y = height - 12;
+        int y = Height - 12;
         int xBase = 4;
         uint normalColor = 14737632u;
 
@@ -552,10 +552,10 @@ public class GuiChat : GuiScreen
             // Render the input literally (do not apply color codes while typing)
             fontRenderer.drawStringWithShadow("> " + beforeCursor + cursor + afterCursor, xBase, y, normalColor);
         }
-        base.render(var1, var2, var3);
+        base.Render(var1, var2, var3);
     }
 
-    protected override void mouseClicked(int var1, int var2, int var3)
+    protected override void MouseClicked(int var1, int var2, int var3)
     {
         if (var3 == 0)
         {
@@ -575,7 +575,7 @@ public class GuiChat : GuiScreen
             }
             else
             {
-                base.mouseClicked(var1, var2, var3);
+                base.MouseClicked(var1, var2, var3);
             }
         }
     }

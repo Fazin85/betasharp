@@ -3,7 +3,6 @@ using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Core;
 using java.awt;
 using java.awt.datatransfer;
-using java.util;
 using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
@@ -12,25 +11,25 @@ public class GuiScreen : Gui
 {
 
     public Minecraft mc;
-    public int width;
-    public int height;
-    protected java.util.List controlList = new ArrayList();
+    public int Width;
+    public int Height;
+    protected List<GuiButton> controlList = new();
     public bool field_948_f = false;
     public TextRenderer fontRenderer;
     public GuiParticle particlesGui;
     private GuiButton selectedButton = null;
 
-    public virtual void render(int var1, int var2, float var3)
+    public virtual void Render(int var1, int var2, float var3)
     {
-        for (int var4 = 0; var4 < controlList.size(); ++var4)
+        for (int var4 = 0; var4 < controlList.Count; ++var4)
         {
-            GuiButton var5 = (GuiButton)controlList.get(var4);
+            GuiButton var5 = controlList[var4];
             var5.DrawButton(mc, var1, var2);
         }
 
     }
 
-    protected virtual void keyTyped(char eventChar, int eventKey)
+    protected virtual void KeyTyped(char eventChar, int eventKey)
     {
         if (eventKey == 1)
         {
@@ -40,7 +39,7 @@ public class GuiScreen : Gui
 
     }
 
-    public static string getClipboardString()
+    public static string GetClipboardString()
     {
         try
         {
@@ -51,32 +50,32 @@ public class GuiScreen : Gui
                 return var1;
             }
         }
-        catch (Exception var2)
+        catch (Exception)
         {
         }
 
         return null;
     }
 
-    protected virtual void mouseClicked(int var1, int var2, int var3)
+    protected virtual void MouseClicked(int var1, int var2, int var3)
     {
         if (var3 == 0)
         {
-            for (int var4 = 0; var4 < controlList.size(); ++var4)
+            for (int var4 = 0; var4 < controlList.Count; ++var4)
             {
-                GuiButton var5 = (GuiButton)controlList.get(var4);
+                GuiButton var5 = controlList[var4];
                 if (var5.MousePressed(mc, var1, var2))
                 {
                     selectedButton = var5;
                     mc.sndManager.playSoundFX("random.click", 1.0F, 1.0F);
-                    actionPerformed(var5);
+                    ActionPerformed(var5);
                 }
             }
         }
 
     }
 
-    protected virtual void mouseMovedOrUp(int var1, int var2, int var3)
+    protected virtual void MouseMovedOrUp(int var1, int var2, int var3)
     {
         if (selectedButton != null && var3 == 0)
         {
@@ -86,59 +85,59 @@ public class GuiScreen : Gui
 
     }
 
-    protected virtual void actionPerformed(GuiButton var1)
+    protected virtual void ActionPerformed(GuiButton var1)
     {
     }
 
-    public void setWorldAndResolution(Minecraft var1, int var2, int var3)
+    public void SetWorldAndResolution(Minecraft var1, int var2, int var3)
     {
         particlesGui = new GuiParticle(var1);
         mc = var1;
         fontRenderer = var1.fontRenderer;
-        width = var2;
-        height = var3;
-        controlList.clear();
-        initGui();
+        Width = var2;
+        Height = var3;
+        controlList.Clear();
+        InitGui();
     }
 
-    public virtual void initGui()
+    public virtual void InitGui()
     {
     }
 
-    public void handleInput()
+    public void HandleInput()
     {
         while (Mouse.next())
         {
-            handleMouseInput();
+            HandleMouseInput();
         }
 
         while (Keyboard.next())
         {
-            handleKeyboardInput();
+            HandleKeyboardInput();
         }
 
     }
 
-    public void handleMouseInput()
+    public void HandleMouseInput()
     {
         int var1;
         int var2;
         if (Mouse.getEventButtonState())
         {
-            var1 = Mouse.getEventX() * width / mc.displayWidth;
-            var2 = height - Mouse.getEventY() * height / mc.displayHeight - 1;
-            mouseClicked(var1, var2, Mouse.getEventButton());
+            var1 = Mouse.getEventX() * Width / mc.displayWidth;
+            var2 = Height - Mouse.getEventY() * Height / mc.displayHeight - 1;
+            MouseClicked(var1, var2, Mouse.getEventButton());
         }
         else
         {
-            var1 = Mouse.getEventX() * width / mc.displayWidth;
-            var2 = height - Mouse.getEventY() * height / mc.displayHeight - 1;
-            mouseMovedOrUp(var1, var2, Mouse.getEventButton());
+            var1 = Mouse.getEventX() * Width / mc.displayWidth;
+            var2 = Height - Mouse.getEventY() * Height / mc.displayHeight - 1;
+            MouseMovedOrUp(var1, var2, Mouse.getEventButton());
         }
 
     }
 
-    public void handleKeyboardInput()
+    public void HandleKeyboardInput()
     {
         if (Keyboard.getEventKeyState())
         {
@@ -148,38 +147,38 @@ public class GuiScreen : Gui
                 return;
             }
 
-            keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
+            KeyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
         }
 
     }
 
-    public virtual void updateScreen()
+    public virtual void UpdateScreen()
     {
     }
 
-    public virtual void onGuiClosed()
+    public virtual void OnGuiClosed()
     {
     }
 
-    public void drawDefaultBackground()
+    public void DrawDefaultBackground()
     {
-        drawWorldBackground(0);
+        DrawWorldBackground(0);
     }
 
-    public void drawWorldBackground(int var1)
+    public void DrawWorldBackground(int var1)
     {
         if (mc.world != null)
         {
-            DrawGradientRect(0, 0, width, height, 0xC0101010, 0xD0101010);
+            DrawGradientRect(0, 0, Width, Height, 0xC0101010, 0xD0101010);
         }
         else
         {
-            drawBackground(var1);
+            DrawBackground(var1);
         }
 
     }
 
-    public void drawBackground(int var1)
+    public void DrawBackground(int var1)
     {
         GLManager.GL.Disable(EnableCap.Lighting);
         GLManager.GL.Disable(EnableCap.Fog);
@@ -189,23 +188,23 @@ public class GuiScreen : Gui
         float var3 = 32.0F;
         var2.startDrawingQuads();
         var2.setColorOpaque_I(4210752);
-        var2.addVertexWithUV(0.0D, height, 0.0D, 0.0D, (double)(height / var3 + var1));
-        var2.addVertexWithUV(width, height, 0.0D, (double)(width / var3), (double)(height / var3 + var1));
-        var2.addVertexWithUV(width, 0.0D, 0.0D, (double)(width / var3), 0 + var1);
+        var2.addVertexWithUV(0.0D, Height, 0.0D, 0.0D, (double)(Height / var3 + var1));
+        var2.addVertexWithUV(Width, Height, 0.0D, (double)(Width / var3), (double)(Height / var3 + var1));
+        var2.addVertexWithUV(Width, 0.0D, 0.0D, (double)(Width / var3), 0 + var1);
         var2.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0 + var1);
         var2.draw();
     }
 
-    public virtual bool doesGuiPauseGame()
+    public virtual bool DoesGuiPauseGame()
     {
         return true;
     }
 
-    public virtual void deleteWorld(bool var1, int var2)
+    public virtual void DeleteWorld(bool var1, int var2)
     {
     }
 
-    public virtual void selectNextField()
+    public virtual void SelectNextField()
     {
     }
 }

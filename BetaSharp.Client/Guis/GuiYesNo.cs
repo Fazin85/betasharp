@@ -23,30 +23,30 @@ public class GuiYesNo : GuiScreen
         this.worldNumber = worldNumber;
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
-        controlList.add(new GuiSmallButton(BUTTON_CONFIRM, width / 2 - 155 + 0, height / 6 + 96, confirmButtonText));
-        controlList.add(new GuiSmallButton(BUTTON_CANCEL, width / 2 - 155 + 160, height / 6 + 96, cancelButtonText));
+        controlList.Add(new GuiSmallButton(BUTTON_CONFIRM, Width / 2 - 155 + 0, Height / 6 + 96, confirmButtonText));
+        controlList.Add(new GuiSmallButton(BUTTON_CANCEL, Width / 2 - 155 + 160, Height / 6 + 96, cancelButtonText));
     }
 
-    protected override void actionPerformed(GuiButton button)
+    protected override void ActionPerformed(GuiButton button)
     {
         switch (button.Id)
         {
             case BUTTON_CONFIRM:
-                parentScreen.deleteWorld(true, worldNumber);
+                parentScreen.DeleteWorld(true, worldNumber);
                 break;
             case BUTTON_CANCEL:
-                parentScreen.deleteWorld(false, worldNumber);
+                parentScreen.DeleteWorld(false, worldNumber);
                 break;
         }
     }
 
-    public override void render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        drawDefaultBackground();
-        DrawCenteredString(fontRenderer, message1, width / 2, 70, 0x00FFFFFF);
-        DrawCenteredString(fontRenderer, message2, width / 2, 90, 0x00FFFFFF);
-        base.render(mouseX, mouseY, partialTicks);
+        DrawDefaultBackground();
+        DrawCenteredString(fontRenderer, message1, Width / 2, 70, 0x00FFFFFF);
+        DrawCenteredString(fontRenderer, message2, Width / 2, 90, 0x00FFFFFF);
+        base.Render(mouseX, mouseY, partialTicks);
     }
 }
