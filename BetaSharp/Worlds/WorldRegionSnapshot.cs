@@ -1,6 +1,8 @@
 ﻿using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Blocks.Materials;
+using BetaSharp.NBT;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Biomes.Source;
 using BetaSharp.Worlds.Chunks;
 
@@ -15,6 +17,7 @@ public class WorldRegionSnapshot : BlockView, IDisposable
     private readonly int _skylightSubtracted;
     private readonly BiomeSource _biomeSource;
     private bool _isLit = false;
+    private readonly Dictionary<BlockPos, BlockEntity> _tileEntityCache = [];
 
     public WorldRegionSnapshot(World world, int minX, int var3, int minZ, int maxX, int var6, int maxZ)
     {
@@ -39,7 +42,7 @@ public class WorldRegionSnapshot : BlockView, IDisposable
         {
             for (int cz = _chunkZ; cz <= maxChunkZ; ++cz)
             {
-                var originalChunk = world.getChunk(cx, cz);
+                Chunk originalChunk = world.getChunk(cx, cz);
                 _chunks[cx - _chunkX][cz - _chunkZ] = new(originalChunk);
             }
         }
@@ -80,7 +83,39 @@ public class WorldRegionSnapshot : BlockView, IDisposable
         return _chunks[chunkIdxX][chunkIdxZ].getBlockMetadata(x & 15, y, z & 15);
     }
 
-    public BlockEntity getBlockEntity(int x, int y, int z) => throw new NotImplementedException();
+    public BlockEntity? getBlockEntity(int x, int y, int z)
+    {
+        if (y is < 0 or >= 128) return null;
+
+        var pos = new BlockPos(x, y, z);
+        if (_tileEntityCache.TryGetValue(pos, out BlockEntity? entity))
+        {
+            return entity;
+        }
+
+        int chunkIdxX = (x >> 4) - _chunkX;
+        int chunkIdxZ = (z >> 4) - _chunkZ;
+
+        if (chunkIdxX >= 0 && chunkIdxX < _chunks.Length &&
+            chunkIdxZ >= 0 && chunkIdxZ < _chunks[chunkIdxX].Length)
+        {
+            ChunkSnapshot chunk = _chunks[chunkIdxX][chunkIdxZ];
+            if (chunk == null) return null;
+
+            NBTTagCompound? nbt = chunk.GetTileEntityNbt(x & 15, y, z & 15);
+            if (nbt != null)
+            {
+                var newEntity = BlockEntity.createFromNbt(nbt);
+                if (newEntity != null)
+                {
+                    _tileEntityCache[pos] = newEntity;
+                    return newEntity;
+                }
+            }
+        }
+
+        return null;
+    }
 
     public float getNaturalBrightness(int x, int y, int z, int minLight)
     {
@@ -104,7 +139,7 @@ public class WorldRegionSnapshot : BlockView, IDisposable
             int blockId = getBlockId(x, y, z);
             if (blockId == Block.Slab.id || blockId == Block.Farmland.id || blockId == Block.WoodenStairs.id || blockId == Block.CobblestoneStairs.id)
             {
-                var maxLight = GetLightValueExt(x, y + 1, z, false);
+                int maxLight = GetLightValueExt(x, y + 1, z, false);
                 maxLight = Math.Max(maxLight, GetLightValueExt(x + 1, y, z, false)); // East
                 maxLight = Math.Max(maxLight, GetLightValueExt(x - 1, y, z, false)); // West
                 maxLight = Math.Max(maxLight, GetLightValueExt(x, y, z + 1, false)); // South
@@ -123,7 +158,7 @@ public class WorldRegionSnapshot : BlockView, IDisposable
         int chunkIdxZ = (z >> 4) - _chunkZ;
 
         ChunkSnapshot chunk = _chunks[chunkIdxX][chunkIdxZ];
-        
+
         int lightValue = chunk.getBlockLightValue(x & 15, y, z & 15, _skylightSubtracted);
 
         if (chunk.getIsLit())
@@ -141,14 +176,14 @@ public class WorldRegionSnapshot : BlockView, IDisposable
 
     public bool shouldSuffocate(int x, int y, int z)
     {
-        var block = Block.Blocks[getBlockId(x, y, z)];
-        return block == null ? false : block.material.BlocksMovement && block.isFullCube();
+        Block block = Block.Blocks[getBlockId(x, y, z)];
+        return block != null && block.material.BlocksMovement && block.isFullCube();
     }
 
     public bool isOpaque(int x, int y, int z)
     {
-        var block = Block.Blocks[getBlockId(x, y, z)];
-        return block == null ? false : block.isOpaque();
+        Block block = Block.Blocks[getBlockId(x, y, z)];
+        return block != null && block.isOpaque();
     }
 
     public bool getIsLit()
@@ -160,11 +195,11 @@ public class WorldRegionSnapshot : BlockView, IDisposable
     {
         GC.SuppressFinalize(this);
 
-        foreach (var column in _chunks)
+        foreach (ChunkSnapshot[] column in _chunks)
         {
             if (column == null) continue;
 
-            foreach (var snapshot in column)
+            foreach (ChunkSnapshot snapshot in column)
             {
                 snapshot?.Dispose();
             }
