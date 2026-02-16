@@ -7,7 +7,7 @@ namespace BetaSharp.Client.Rendering.Entitys;
 public class LightningEntityRenderer : EntityRenderer
 {
 
-    public void render(EntityLightningBolt var1, double var2, double var4, double var6, float var8, float var9)
+    public void render(EntityLightningBolt var1, double x, double y, double z, float yaw, float tickDelta)
     {
         Tessellator var10 = Tessellator.instance;
         GLManager.GL.Disable(GLEnum.Texture2D);
@@ -81,8 +81,8 @@ public class LightningEntityRenderer : EntityRenderer
 
                     for (int var36 = 0; var36 < 5; ++var36)
                     {
-                        double var37 = var2 + 0.5D - var32;
-                        double var39 = var6 + 0.5D - var32;
+                        double var37 = x + 0.5D - var32;
+                        double var39 = z + 0.5D - var32;
                         if (var36 == 1 || var36 == 2)
                         {
                             var37 += var32 * 2.0D;
@@ -93,8 +93,8 @@ public class LightningEntityRenderer : EntityRenderer
                             var39 += var32 * 2.0D;
                         }
 
-                        double var41 = var2 + 0.5D - var34;
-                        double var43 = var6 + 0.5D - var34;
+                        double var41 = x + 0.5D - var34;
+                        double var43 = z + 0.5D - var34;
                         if (var36 == 1 || var36 == 2)
                         {
                             var41 += var34 * 2.0D;
@@ -105,8 +105,8 @@ public class LightningEntityRenderer : EntityRenderer
                             var43 += var34 * 2.0D;
                         }
 
-                        var10.addVertex(var41 + var22, var4 + var26 * 16, var43 + var24);
-                        var10.addVertex(var37 + var27, var4 + (var26 + 1) * 16, var39 + var29);
+                        var10.addVertex(var41 + var22, y + var26 * 16, var43 + var24);
+                        var10.addVertex(var37 + var27, y + (var26 + 1) * 16, var39 + var29);
                     }
 
                     var10.draw();
@@ -119,8 +119,8 @@ public class LightningEntityRenderer : EntityRenderer
         GLManager.GL.Enable(GLEnum.Texture2D);
     }
 
-    public override void render(Entity var1, double var2, double var4, double var6, float var8, float var9)
+    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
     {
-        render((EntityLightningBolt)var1, var2, var4, var6, var8, var9);
+        render((EntityLightningBolt)target, x, y, z, yaw, tickDelta);
     }
 }

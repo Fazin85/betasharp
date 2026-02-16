@@ -16,13 +16,13 @@ public class BoatEntityRenderer : EntityRenderer
         modelBoat = new ModelBoat();
     }
 
-    public void render(EntityBoat var1, double var2, double var4, double var6, float var8, float var9)
+    public void render(EntityBoat var1, double x, double y, double z, float yaw, float tickDelta)
     {
         GLManager.GL.PushMatrix();
-        GLManager.GL.Translate((float)var2, (float)var4, (float)var6);
-        GLManager.GL.Rotate(180.0F - var8, 0.0F, 1.0F, 0.0F);
-        float var10 = var1.boatTimeSinceHit - var9;
-        float var11 = var1.boatCurrentDamage - var9;
+        GLManager.GL.Translate((float)x, (float)y, (float)z);
+        GLManager.GL.Rotate(180.0F - yaw, 0.0F, 1.0F, 0.0F);
+        float var10 = var1.boatTimeSinceHit - tickDelta;
+        float var11 = var1.boatCurrentDamage - tickDelta;
         if (var11 < 0.0F)
         {
             var11 = 0.0F;
@@ -43,8 +43,8 @@ public class BoatEntityRenderer : EntityRenderer
         GLManager.GL.PopMatrix();
     }
 
-    public override void render(Entity var1, double var2, double var4, double var6, float var8, float var9)
+    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
     {
-        render((EntityBoat)var1, var2, var4, var6, var8, var9);
+        render((EntityBoat)target, x, y, z, yaw, tickDelta);
     }
 }

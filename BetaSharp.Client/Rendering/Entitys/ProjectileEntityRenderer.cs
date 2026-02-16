@@ -14,10 +14,10 @@ public class ProjectileEntityRenderer : EntityRenderer
         itemIconIndex = var1;
     }
 
-    public override void render(Entity var1, double var2, double var4, double var6, float var8, float var9)
+    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
     {
         GLManager.GL.PushMatrix();
-        GLManager.GL.Translate((float)var2, (float)var4, (float)var6);
+        GLManager.GL.Translate((float)x, (float)y, (float)z);
         GLManager.GL.Enable(GLEnum.RescaleNormal);
         GLManager.GL.Scale(0.5F, 0.5F, 0.5F);
         loadTexture("/gui/items.png");

@@ -19,7 +19,7 @@ public class ItemRenderer : EntityRenderer
     public ItemRenderer()
     {
         shadowRadius = 0.15F;
-        shadowDarkness = 12.0F / 16.0F;
+        shadowStrength = 12.0F / 16.0F;
     }
 
     public void doRenderItem(EntityItem var1, double var2, double var4, double var6, float var8, float var9)
@@ -265,8 +265,8 @@ public class ItemRenderer : EntityRenderer
         var10.draw();
     }
 
-    public override void render(Entity var1, double var2, double var4, double var6, float var8, float var9)
+    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
     {
-        doRenderItem((EntityItem)var1, var2, var4, var6, var8, var9);
+        doRenderItem((EntityItem)target, x, y, z, yaw, tickDelta);
     }
 }

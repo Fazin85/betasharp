@@ -89,19 +89,19 @@ public class EntityRenderDispatcher
         return getEntityClassRenderObject(var1.getClass());
     }
 
-    public void cacheActiveRenderInfo(World var1, TextureManager var2, TextRenderer var3, EntityLiving var4, GameOptions var5, float var6)
+    public void cacheActiveRenderInfo(World world, TextureManager textureManager, TextRenderer textRenderer, EntityLiving camera, GameOptions options, float tickDelta)
     {
-        world = var1;
-        textureManager = var2;
-        options = var5;
-        cameraEntity = var4;
-        fontRenderer = var3;
-        if (var4.isSleeping())
+        this.world = world;
+        this.textureManager = textureManager;
+        this.options = options;
+        cameraEntity = camera;
+        fontRenderer = textRenderer;
+        if (camera.isSleeping())
         {
-            int var7 = var1.getBlockId(MathHelper.floor_double(var4.x), MathHelper.floor_double(var4.y), MathHelper.floor_double(var4.z));
+            int var7 = world.getBlockId(MathHelper.floor_double(camera.x), MathHelper.floor_double(camera.y), MathHelper.floor_double(camera.z));
             if (var7 == Block.Bed.id)
             {
-                int var8 = var1.getBlockMeta(MathHelper.floor_double(var4.x), MathHelper.floor_double(var4.y), MathHelper.floor_double(var4.z));
+                int var8 = world.getBlockMeta(MathHelper.floor_double(camera.x), MathHelper.floor_double(camera.y), MathHelper.floor_double(camera.z));
                 int var9 = var8 & 3;
                 playerViewY = var9 * 90 + 180;
                 playerViewX = 0.0F;
@@ -109,33 +109,33 @@ public class EntityRenderDispatcher
         }
         else
         {
-            playerViewY = var4.prevYaw + (var4.yaw - var4.prevYaw) * var6;
-            playerViewX = var4.prevPitch + (var4.pitch - var4.prevPitch) * var6;
+            playerViewY = camera.prevYaw + (camera.yaw - camera.prevYaw) * tickDelta;
+            playerViewX = camera.prevPitch + (camera.pitch - camera.prevPitch) * tickDelta;
         }
 
-        x = var4.lastTickX + (var4.x - var4.lastTickX) * (double)var6;
-        y = var4.lastTickY + (var4.y - var4.lastTickY) * (double)var6;
-        z = var4.lastTickZ + (var4.z - var4.lastTickZ) * (double)var6;
+        x = camera.lastTickX + (camera.x - camera.lastTickX) * (double)tickDelta;
+        y = camera.lastTickY + (camera.y - camera.lastTickY) * (double)tickDelta;
+        z = camera.lastTickZ + (camera.z - camera.lastTickZ) * (double)tickDelta;
     }
 
-    public void renderEntity(Entity var1, float var2)
+    public void renderEntity(Entity target, float tickDelta)
     {
-        double var3 = var1.lastTickX + (var1.x - var1.lastTickX) * (double)var2;
-        double var5 = var1.lastTickY + (var1.y - var1.lastTickY) * (double)var2;
-        double var7 = var1.lastTickZ + (var1.z - var1.lastTickZ) * (double)var2;
-        float var9 = var1.prevYaw + (var1.yaw - var1.prevYaw) * var2;
-        float var10 = var1.getBrightnessAtEyes(var2);
-        GLManager.GL.Color3(var10, var10, var10);
-        renderEntityWithPosYaw(var1, var3 - offsetX, var5 - offsetY, var7 - offsetZ, var9, var2);
+        double x = target.lastTickX + (target.x - target.lastTickX) * (double)tickDelta;
+        double y = target.lastTickY + (target.y - target.lastTickY) * (double)tickDelta;
+        double z = target.lastTickZ + (target.z - target.lastTickZ) * (double)tickDelta;
+        float yaw = target.prevYaw + (target.yaw - target.prevYaw) * tickDelta;
+        float brightness = target.getBrightnessAtEyes(tickDelta);
+        GLManager.GL.Color3(brightness, brightness, brightness);
+        renderEntityWithPosYaw(target, x - offsetX, y - offsetY, z - offsetZ, yaw, tickDelta);
     }
 
-    public void renderEntityWithPosYaw(Entity var1, double var2, double var4, double var6, float var8, float var9)
+    public void renderEntityWithPosYaw(Entity target, double x, double y, double z, float yaw, float tickDelta)
     {
-        EntityRenderer var10 = getEntityRenderObject(var1);
+        EntityRenderer var10 = getEntityRenderObject(target);
         if (var10 != null)
         {
-            var10.render(var1, var2, var4, var6, var8, var9);
-            var10.postRender(var1, var2, var4, var6, var8, var9);
+            var10.render(target, x, y, z, yaw, tickDelta);
+            var10.postRender(target, x, y, z, yaw, tickDelta);
         }
 
     }
