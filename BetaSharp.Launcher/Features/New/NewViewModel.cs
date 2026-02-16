@@ -1,12 +1,13 @@
-﻿using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using BetaSharp.Launcher.Features.Home;
 using BetaSharp.Launcher.Features.New.Authentication;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace BetaSharp.Launcher.Features.New;
 
-internal sealed partial class NewViewModel(AuthenticationService authenticationService, DownloadingService downloadingService) : ObservableObject
+internal sealed partial class NewViewModel(AuthenticationService authenticationService, DownloadingService downloadingService, HomeViewModel homeViewModel) : ObservableObject
 {
     [RelayCommand]
     private async Task AuthenticateAsync()
@@ -17,6 +18,6 @@ internal sealed partial class NewViewModel(AuthenticationService authenticationS
 
         var session = await authentication;
 
-        Debug.WriteLine($"{session.Name}, {session.Token}");
+        WeakReferenceMessenger.Default.Send(new NavigationMessage(homeViewModel));
     }
 }

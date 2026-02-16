@@ -1,4 +1,5 @@
 ﻿using System;
+using BetaSharp.Launcher.Features.Home;
 using BetaSharp.Launcher.Features.New;
 using BetaSharp.Launcher.Features.New.Authentication;
 using BetaSharp.Launcher.Features.Shell;
@@ -13,6 +14,7 @@ internal static class Bootstrapper
     {
         var builder = new ServiceCollection();
 
+        builder.AddHttpClient();
         builder.AddSingleton<ViewLocator>();
 
         builder
@@ -21,7 +23,12 @@ internal static class Bootstrapper
 
         builder
             .AddTransient<SplashView>()
-            .AddTransient<SplashViewModel>();
+            .AddTransient<SplashViewModel>()
+            .AddTransient<GitHubService>();
+
+        builder
+            .AddTransient<HomeView>()
+            .AddTransient<HomeViewModel>();
 
         builder
             .AddTransient<NewView>()
@@ -30,8 +37,7 @@ internal static class Bootstrapper
             .AddTransient<DownloadingService>()
             .AddTransient<LauncherService>()
             .AddTransient<MinecraftService>()
-            .AddTransient<XboxService>()
-            .AddHttpClient();
+            .AddTransient<XboxService>();
 
         return builder.BuildServiceProvider();
     }
