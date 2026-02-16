@@ -14,7 +14,7 @@ public class GuiScreen : Gui
     public int Width;
     public int Height;
     protected List<GuiButton> controlList = new();
-    public bool field_948_f = false;
+    public bool allowUserInput = false;
     public TextRenderer fontRenderer;
     public GuiParticle particlesGui;
     private GuiButton selectedButton = null;

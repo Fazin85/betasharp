@@ -13,7 +13,7 @@ public class GuiInventory : GuiContainer
 
     public GuiInventory(EntityPlayer var1) : base(var1.playerScreenHandler)
     {
-        field_948_f = true;
+        allowUserInput = true;
         var1.increaseStat(BetaSharp.Achievements.OpenInventory, 1);
     }
 
