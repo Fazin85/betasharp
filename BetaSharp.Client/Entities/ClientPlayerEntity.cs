@@ -1,0 +1,316 @@
+﻿using BetaSharp.Blocks.Entities;
+using BetaSharp.Client.Achievements;
+using BetaSharp.Client.Entities.FX;
+using BetaSharp.Client.Guis;
+using BetaSharp.Client.Input;
+using BetaSharp.Entities;
+using BetaSharp.Inventorys;
+using BetaSharp.NBT;
+using BetaSharp.Stats;
+using BetaSharp.Util.Maths;
+using BetaSharp.Worlds;
+using java.lang;
+
+namespace BetaSharp.Client.Entities;
+
+public class ClientPlayerEntity : EntityPlayer
+{
+    public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ClientPlayerEntity).TypeHandle);
+    public MovementInput movementInput;
+    protected Minecraft mc;
+    private readonly MouseFilter field_21903_bJ = new();
+    private readonly MouseFilter field_21904_bK = new();
+    private readonly MouseFilter field_21902_bL = new();
+
+    public ClientPlayerEntity(Minecraft mc, World world, Session session, int dimensionId) : base(world)
+    {
+        this.mc = mc;
+        base.dimensionId = dimensionId;
+        if (session != null && session.username != null && session.username.Length > 0)
+        {
+            skinUrl = "http://s3.amazonaws.com/MinecraftSkins/" + session.username + ".png";
+        }
+
+        name = session.username;
+    }
+
+    public override void move(double x, double y, double z)
+    {
+        base.move(x, y, z);
+    }
+
+    public override void tickLiving()
+    {
+        base.tickLiving();
+        sidewaysSpeed = movementInput.moveStrafe;
+        forwardSpeed = movementInput.moveForward;
+        jumping = movementInput.jump;
+    }
+
+    public override void tickMovement()
+    {
+        if (!mc.statFileWriter.hasAchievementUnlocked(BetaSharp.Achievements.OpenInventory))
+        {
+            mc.guiAchievement.queueAchievementInformation(BetaSharp.Achievements.OpenInventory);
+        }
+
+        lastScreenDistortion = changeDimensionCooldown;
+        if (inTeleportationState)
+        {
+            if (!world.isRemote && vehicle != null)
+            {
+                setVehicle((Entity)null);
+            }
+
+            if (mc.currentScreen != null)
+            {
+                mc.displayGuiScreen((GuiScreen)null);
+            }
+
+            if (changeDimensionCooldown == 0.0F)
+            {
+                mc.sndManager.playSoundFX("portal.trigger", 1.0F, random.nextFloat() * 0.4F + 0.8F);
+            }
+
+            changeDimensionCooldown += 0.0125F;
+            if (changeDimensionCooldown >= 1.0F)
+            {
+                changeDimensionCooldown = 1.0F;
+            }
+
+            inTeleportationState = false;
+        }
+        else
+        {
+            if (changeDimensionCooldown > 0.0F)
+            {
+                changeDimensionCooldown -= 0.05F;
+            }
+
+            if (changeDimensionCooldown < 0.0F)
+            {
+                changeDimensionCooldown = 0.0F;
+            }
+        }
+
+        if (portalCooldown > 0)
+        {
+            --portalCooldown;
+        }
+
+        movementInput.updatePlayerMoveState(this);
+        if (movementInput.sneak && cameraOffset < 0.2F)
+        {
+            cameraOffset = 0.2F;
+        }
+
+        pushOutOfBlocks(x - (double)width * 0.35D, boundingBox.minY + 0.5D, z + (double)width * 0.35D);
+        pushOutOfBlocks(x - (double)width * 0.35D, boundingBox.minY + 0.5D, z - (double)width * 0.35D);
+        pushOutOfBlocks(x + (double)width * 0.35D, boundingBox.minY + 0.5D, z - (double)width * 0.35D);
+        pushOutOfBlocks(x + (double)width * 0.35D, boundingBox.minY + 0.5D, z + (double)width * 0.35D);
+        base.tickMovement();
+    }
+
+    public void resetPlayerKeyState()
+    {
+        movementInput.resetKeyState();
+    }
+
+    public void handleKeyPress(int key, bool isPressed)
+    {
+        movementInput.checkKeyForMovementInput(key, isPressed);
+    }
+
+    public override void writeNbt(NBTTagCompound nbt)
+    {
+        base.writeNbt(nbt);
+        nbt.SetInteger("Score", score);
+    }
+
+    public override void readNbt(NBTTagCompound nbt)
+    {
+        base.readNbt(nbt);
+        score = nbt.GetInteger("Score");
+    }
+
+    public override void closeHandledScreen()
+    {
+        base.closeHandledScreen();
+        mc.displayGuiScreen(null);
+    }
+
+    public override void openEditSignScreen(BlockEntitySign sign)
+    {
+        mc.displayGuiScreen(new GuiEditSign(sign));
+    }
+
+    public override void openChestScreen(IInventory inventory)
+    {
+        mc.displayGuiScreen(new GuiChest(base.inventory, inventory));
+    }
+
+    public override void openCraftingScreen(int x, int y, int z)
+    {
+        mc.displayGuiScreen(new GuiCrafting(inventory, world, x, y, z));
+    }
+
+    public override void openFurnaceScreen(BlockEntityFurnace furnace)
+    {
+        mc.displayGuiScreen(new GuiFurnace(inventory, furnace));
+    }
+
+    public override void openDispenserScreen(BlockEntityDispenser dispenser)
+    {
+        mc.displayGuiScreen(new GuiDispenser(inventory, dispenser));
+    }
+
+    public override void sendPickup(Entity entity, int count)
+    {
+        mc.particleManager.addEffect(new EntityPickupFX(mc.world, entity, this, -0.5F));
+    }
+
+    public int getPlayerArmorValue()
+    {
+        return inventory.getTotalArmorValue();
+    }
+
+    public virtual void sendChatMessage(string message)
+    {
+        mc.ingameGUI.addChatMessage($"<{name}> {message}");
+    }
+
+    public override bool isSneaking()
+    {
+        return movementInput.sneak && !sleeping;
+    }
+
+    public virtual void setHealth(int newHealth)
+    {
+        int damageAmount = health - newHealth;
+        if (damageAmount <= 0)
+        {
+            health = newHealth;
+            if (damageAmount < 0)
+            {
+                hearts = maxHealth / 2;
+            }
+        }
+        else
+        {
+            damageForDisplay = damageAmount;
+            lastHealth = health;
+            hearts = maxHealth;
+            applyDamage(damageAmount);
+
+        }
+
+    }
+
+    public override void respawn()
+    {
+        mc.respawn(false, 0);
+    }
+
+    public override void spawn()
+    {
+    }
+
+    public override void sendMessage(string message)
+    {
+        mc.ingameGUI.addChatMessageTranslate(message);
+    }
+
+    public override void increaseStat(StatBase stat, int value)
+    {
+        if (stat != null)
+        {
+            if (stat.isAchievement())
+            {
+                Achievement achievement = (Achievement)stat;
+                if (achievement.parent == null || mc.statFileWriter.hasAchievementUnlocked(achievement.parent))
+                {
+                    if (!mc.statFileWriter.hasAchievementUnlocked(achievement))
+                    {
+                        mc.guiAchievement.queueTakenAchievement(achievement);
+                    }
+
+                    mc.statFileWriter.readStat(stat, value);
+                }
+            }
+            else
+            {
+                mc.statFileWriter.readStat(stat, value);
+            }
+
+        }
+    }
+
+    private bool isBlockTranslucent(int x, int y, int z)
+    {
+        return world.shouldSuffocate(x, y, z);
+    }
+
+    protected override bool pushOutOfBlocks(double posX, double posY, double posZ)
+    {
+        int floorX = MathHelper.floor_double(posX);
+        int floorY = MathHelper.floor_double(posY);
+        int floorZ = MathHelper.floor_double(posZ);
+        double fracX = posX - (double)floorX;
+        double fracZ = posZ - (double)floorZ;
+        if (isBlockTranslucent(floorX, floorY, floorZ) || isBlockTranslucent(floorX, floorY + 1, floorZ))
+        {
+            bool canPushWest = !isBlockTranslucent(floorX - 1, floorY, floorZ) && !isBlockTranslucent(floorX - 1, floorY + 1, floorZ);
+            bool canPushEast = !isBlockTranslucent(floorX + 1, floorY, floorZ) && !isBlockTranslucent(floorX + 1, floorY + 1, floorZ);
+            bool canPushNorth = !isBlockTranslucent(floorX, floorY, floorZ - 1) && !isBlockTranslucent(floorX, floorY + 1, floorZ - 1);
+            bool canPushSouth = !isBlockTranslucent(floorX, floorY, floorZ + 1) && !isBlockTranslucent(floorX, floorY + 1, floorZ + 1);
+            int pushDirection = -1;
+            double closestEdgeDistance = 9999.0D;
+            if (canPushWest && fracX < closestEdgeDistance)
+            {
+                closestEdgeDistance = fracX;
+                pushDirection = 0;
+            }
+
+            if (canPushEast && 1.0D - fracX < closestEdgeDistance)
+            {
+                closestEdgeDistance = 1.0D - fracX;
+                pushDirection = 1;
+            }
+
+            if (canPushNorth && fracZ < closestEdgeDistance)
+            {
+                closestEdgeDistance = fracZ;
+                pushDirection = 4;
+            }
+
+            if (canPushSouth && 1.0D - fracZ < closestEdgeDistance)
+            {
+                closestEdgeDistance = 1.0D - fracZ;
+                pushDirection = 5;
+            }
+
+            float pushStrength = 0.1F;
+            if (pushDirection == 0)
+            {
+                velocityX = (double)(-pushStrength);
+            }
+
+            if (pushDirection == 1)
+            {
+                velocityX = (double)pushStrength;
+            }
+
+            if (pushDirection == 4)
+            {
+                velocityZ = (double)(-pushStrength);
+            }
+
+            if (pushDirection == 5)
+            {
+                velocityZ = (double)pushStrength;
+            }
+        }
+
+        return false;
+    }
+}
