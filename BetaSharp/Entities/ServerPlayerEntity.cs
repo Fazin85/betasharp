@@ -1,5 +1,4 @@
 ﻿using BetaSharp.Blocks.Entities;
-using BetaSharp.Client.Resource.Language;
 using BetaSharp.Inventorys;
 using BetaSharp.Items;
 using BetaSharp.Network.Packets;
@@ -25,7 +24,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     public double lastX;
     public double lastZ;
     public List pendingChunkUpdates = new LinkedList();
-    public HashSet<ChunkPos> activeChunks = new HashSet<ChunkPos>();
+    public HashSet<ChunkPos> activeChunks = new();
     private int lastHealthScore = -99999999;
     private int joinInvulnerabilityTicks = 60;
     private ItemStack[] equipment = [null, null, null, null, null];
@@ -339,7 +338,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
         if (sleepAttemptResult == SleepAttemptResult.OK)
         {
             EntityTracker et = server.getEntityTracker(dimensionId);
-            PlayerSleepUpdateS2CPacket packet = new PlayerSleepUpdateS2CPacket(this, 0, x, y, z);
+            PlayerSleepUpdateS2CPacket packet = new(this, 0, x, y, z);
             et.sendToListeners(this, packet);
             networkHandler.teleport(x, y, z, yaw, pitch);
             networkHandler.sendPacket(packet);
