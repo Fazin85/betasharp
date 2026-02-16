@@ -14,7 +14,6 @@ using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL.Legacy;
-using BetaSharp.Profiling;
 
 namespace BetaSharp.Client.Rendering;
 
