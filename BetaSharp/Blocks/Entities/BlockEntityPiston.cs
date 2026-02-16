@@ -91,7 +91,7 @@ public class BlockEntityPiston : BlockEntity
             collisionShapeSizeMultiplier = 1.0F - collisionShapeSizeMultiplier;
         }
 
-        Box? pushCollisionBox = Block.MOVING_PISTON.getPushedBlockCollisionShape(world, x, y, z, pushedBlockId, collisionShapeSizeMultiplier, facing);
+        Box? pushCollisionBox = Block.MovingPiston.getPushedBlockCollisionShape(world, x, y, z, pushedBlockId, collisionShapeSizeMultiplier, facing);
         if (pushCollisionBox != null)
         {
             var entitiesToPush = world.getEntities(null, pushCollisionBox.Value);
@@ -119,7 +119,7 @@ public class BlockEntityPiston : BlockEntity
             progress = lastProgess = 1.0F;
             world.removeBlockEntity(x, y, z);
             markRemoved();
-            if (world.getBlockId(x, y, z) == Block.MOVING_PISTON.id)
+            if (world.getBlockId(x, y, z) == Block.MovingPiston.id)
             {
                 world.setBlock(x, y, z, pushedBlockId, pushedBlockData);
             }
@@ -135,7 +135,7 @@ public class BlockEntityPiston : BlockEntity
             pushEntities(1.0F, 0.25F);
             world.removeBlockEntity(x, y, z);
             markRemoved();
-            if (world.getBlockId(x, y, z) == Block.MOVING_PISTON.id)
+            if (world.getBlockId(x, y, z) == Block.MovingPiston.id)
             {
                 world.setBlock(x, y, z, pushedBlockId, pushedBlockData);
             }

@@ -17,7 +17,7 @@ public class BlockCrops : BlockPlant
 
     protected override bool canPlantOnTop(int id)
     {
-        return id == Block.FARMLAND.id;
+        return id == Block.Farmland.id;
     }
 
     public override void onTick(World world, int x, int y, int z, java.util.Random random)
@@ -65,7 +65,7 @@ public class BlockCrops : BlockPlant
             {
                 int blockBelow = world.getBlockId(dx, y - 1, dz);
                 float cellMoisture = 0.0F;
-                if (blockBelow == Block.FARMLAND.id)
+                if (blockBelow == Block.Farmland.id)
                 {
                     cellMoisture = 1.0F;
                     if (world.getBlockMeta(dx, y - 1, dz) > 0)
@@ -121,7 +121,7 @@ public class BlockCrops : BlockPlant
                     float offsetZ = world.random.nextFloat() * spreadFactor + (1.0F - spreadFactor) * 0.5F;
                     EntityItem entityItem = new EntityItem(world, (double)((float)x + offsetX), (double)((float)y + offsetY), (double)((float)z + offsetZ), new ItemStack(Item.SEEDS));
                     entityItem.delayBeforeCanPickup = 10;
-                    world.spawnEntity(entityItem);
+                    world.SpawnEntity(entityItem);
                 }
             }
 

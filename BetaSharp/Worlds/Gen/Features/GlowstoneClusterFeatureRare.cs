@@ -11,13 +11,13 @@ public class GlowstoneClusterFeatureRare : Feature
         {
             return false;
         }
-        else if (var1.getBlockId(var3, var4 + 1, var5) != Block.NETHERRACK.id)
+        else if (var1.getBlockId(var3, var4 + 1, var5) != Block.Netherrack.id)
         {
             return false;
         }
         else
         {
-            var1.setBlock(var3, var4, var5, Block.GLOWSTONE.id);
+            var1.setBlock(var3, var4, var5, Block.Glowstone.id);
 
             for (int var6 = 0; var6 < 1500; ++var6)
             {
@@ -61,7 +61,7 @@ public class GlowstoneClusterFeatureRare : Feature
                             var12 = var1.getBlockId(var7, var8, var9 + 1);
                         }
 
-                        if (var12 == Block.GLOWSTONE.id)
+                        if (var12 == Block.Glowstone.id)
                         {
                             ++var10;
                         }
@@ -69,7 +69,7 @@ public class GlowstoneClusterFeatureRare : Feature
 
                     if (var10 == 1)
                     {
-                        var1.setBlock(var7, var8, var9, Block.GLOWSTONE.id);
+                        var1.setBlock(var7, var8, var9, Block.Glowstone.id);
                     }
                 }
             }

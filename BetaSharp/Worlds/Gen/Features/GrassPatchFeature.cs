@@ -21,16 +21,16 @@ public class GrassPatchFeature : Feature
         while (true)
         {
             int var11 = var1.getBlockId(var3, var4, var5);
-            if (var11 != 0 && var11 != Block.LEAVES.id || var4 <= 0)
+            if (var11 != 0 && var11 != Block.Leaves.id || var4 <= 0)
             {
                 for (int var7 = 0; var7 < 128; ++var7)
                 {
                     int var8 = var3 + var2.nextInt(8) - var2.nextInt(8);
                     int var9 = var4 + var2.nextInt(4) - var2.nextInt(4);
                     int var10 = var5 + var2.nextInt(8) - var2.nextInt(8);
-                    if (var1.isAir(var8, var9, var10) && ((BlockPlant)Block.BLOCKS[tallGrassBlockId]).canGrow(var1, var8, var9, var10))
+                    if (var1.isAir(var8, var9, var10) && ((BlockPlant)Block.Blocks[tallGrassBlockId]).canGrow(var1, var8, var9, var10))
                     {
-                        var1.setBlockWithoutNotifyingNeighbors(var8, var9, var10, tallGrassBlockId, tallGrassBlockMeta);
+                        var1.SetBlockWithoutNotifyingNeighbors(var8, var9, var10, tallGrassBlockId, tallGrassBlockMeta);
                     }
                 }
 

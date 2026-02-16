@@ -37,7 +37,7 @@ public class SpruceTreeFeature : Feature
                         if (var11 >= 0 && var11 < 128)
                         {
                             var15 = var1.getBlockId(var13, var11, var14);
-                            if (var15 != 0 && var15 != Block.LEAVES.id)
+                            if (var15 != 0 && var15 != Block.Leaves.id)
                             {
                                 var10 = false;
                             }
@@ -57,9 +57,9 @@ public class SpruceTreeFeature : Feature
             else
             {
                 var11 = var1.getBlockId(var3, var4 - 1, var5);
-                if ((var11 == Block.GRASS_BLOCK.id || var11 == Block.DIRT.id) && var4 < 128 - var6 - 1)
+                if ((var11 == Block.GrassBlock.id || var11 == Block.Dirt.id) && var4 < 128 - var6 - 1)
                 {
-                    var1.setBlockWithoutNotifyingNeighbors(var3, var4 - 1, var5, Block.DIRT.id);
+                    var1.SetBlockWithoutNotifyingNeighbors(var3, var4 - 1, var5, Block.Dirt.id);
                     var21 = var2.nextInt(2);
                     var13 = 1;
                     byte var22 = 0;
@@ -77,9 +77,9 @@ public class SpruceTreeFeature : Feature
                             for (int var19 = var5 - var21; var19 <= var5 + var21; ++var19)
                             {
                                 int var20 = var19 - var5;
-                                if ((java.lang.Math.abs(var18) != var21 || java.lang.Math.abs(var20) != var21 || var21 <= 0) && !Block.BLOCKS_OPAQUE[var1.getBlockId(var17, var16, var19)])
+                                if ((java.lang.Math.abs(var18) != var21 || java.lang.Math.abs(var20) != var21 || var21 <= 0) && !Block.BlocksOpaque[var1.getBlockId(var17, var16, var19)])
                                 {
-                                    var1.setBlockWithoutNotifyingNeighbors(var17, var16, var19, Block.LEAVES.id, 1);
+                                    var1.SetBlockWithoutNotifyingNeighbors(var17, var16, var19, Block.Leaves.id, 1);
                                 }
                             }
                         }
@@ -105,9 +105,9 @@ public class SpruceTreeFeature : Feature
                     for (var16 = 0; var16 < var6 - var15; ++var16)
                     {
                         var17 = var1.getBlockId(var3, var4 + var16, var5);
-                        if (var17 == 0 || var17 == Block.LEAVES.id)
+                        if (var17 == 0 || var17 == Block.Leaves.id)
                         {
-                            var1.setBlockWithoutNotifyingNeighbors(var3, var4 + var16, var5, Block.LOG.id, 1);
+                            var1.SetBlockWithoutNotifyingNeighbors(var3, var4 + var16, var5, Block.Log.id, 1);
                         }
                     }
 

@@ -13,12 +13,12 @@ public class BlockRail : Block
     public static bool isRail(World world, int x, int y, int z)
     {
         int blockId = world.getBlockId(x, y, z);
-        return blockId == Block.RAIL.id || blockId == Block.POWERED_RAIL.id || blockId == Block.DETECTOR_RAIL.id;
+        return blockId == Block.Rail.id || blockId == Block.PoweredRail.id || blockId == Block.DetectorRail.id;
     }
 
     public static bool isRail(int id)
     {
-        return id == Block.RAIL.id || id == Block.POWERED_RAIL.id || id == Block.DETECTOR_RAIL.id;
+        return id == Block.Rail.id || id == Block.PoweredRail.id || id == Block.DetectorRail.id;
     }
 
     public BlockRail(int id, int textureId, bool alwaysStraight) : base(id, textureId, Material.PistonBreakable)
@@ -66,7 +66,7 @@ public class BlockRail : Block
     {
         if (alwaysStraight)
         {
-            if (id == Block.POWERED_RAIL.id && (meta & 8) == 0)
+            if (id == Block.PoweredRail.id && (meta & 8) == 0)
             {
                 return textureId - 16;
             }
@@ -145,7 +145,7 @@ public class BlockRail : Block
                 dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
                 world.setBlock(x, y, z, 0);
             }
-            else if (base.id == Block.POWERED_RAIL.id)
+            else if (base.id == Block.PoweredRail.id)
             {
                 bool isPowered = world.isPowered(x, y, z) || world.isPowered(x, y + 1, z);
                 isPowered = isPowered || isPoweredByConnectedRails(world, x, y, z, meta, true, 0) || isPoweredByConnectedRails(world, x, y, z, meta, false, 0);
@@ -170,7 +170,7 @@ public class BlockRail : Block
                     }
                 }
             }
-            else if (id > 0 && Block.BLOCKS[id].canEmitRedstonePower() && !alwaysStraight && RailLogic.getNAdjacentTracks(new RailLogic(this, world, x, y, z)) == 3)
+            else if (id > 0 && Block.Blocks[id].canEmitRedstonePower() && !alwaysStraight && RailLogic.getNAdjacentTracks(new RailLogic(this, world, x, y, z)) == 3)
             {
                 updateShape(world, x, y, z, false);
             }
@@ -283,7 +283,7 @@ public class BlockRail : Block
     private bool isPoweredByRail(World world, int x, int y, int z, bool towardsNegative, int depth, int shape)
     {
         int blockId = world.getBlockId(x, y, z);
-        if (blockId == Block.POWERED_RAIL.id)
+        if (blockId == Block.PoweredRail.id)
         {
             int meta = world.getBlockMeta(x, y, z);
             int railMeta = meta & 7;

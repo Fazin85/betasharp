@@ -35,7 +35,7 @@ public class BirchTreeFeature : Feature
                         if (var8 >= 0 && var8 < 128)
                         {
                             var12 = var1.getBlockId(var10, var8, var11);
-                            if (var12 != 0 && var12 != Block.LEAVES.id)
+                            if (var12 != 0 && var12 != Block.Leaves.id)
                             {
                                 var7 = false;
                             }
@@ -55,9 +55,9 @@ public class BirchTreeFeature : Feature
             else
             {
                 var8 = var1.getBlockId(var3, var4 - 1, var5);
-                if ((var8 == Block.GRASS_BLOCK.id || var8 == Block.DIRT.id) && var4 < 128 - var6 - 1)
+                if ((var8 == Block.GrassBlock.id || var8 == Block.Dirt.id) && var4 < 128 - var6 - 1)
                 {
-                    var1.setBlockWithoutNotifyingNeighbors(var3, var4 - 1, var5, Block.DIRT.id);
+                    var1.SetBlockWithoutNotifyingNeighbors(var3, var4 - 1, var5, Block.Dirt.id);
 
                     int var16;
                     for (var16 = var4 - 3 + var6; var16 <= var4 + var6; ++var16)
@@ -72,9 +72,9 @@ public class BirchTreeFeature : Feature
                             for (int var14 = var5 - var11; var14 <= var5 + var11; ++var14)
                             {
                                 int var15 = var14 - var5;
-                                if ((java.lang.Math.abs(var13) != var11 || java.lang.Math.abs(var15) != var11 || var2.nextInt(2) != 0 && var10 != 0) && !Block.BLOCKS_OPAQUE[var1.getBlockId(var12, var16, var14)])
+                                if ((java.lang.Math.abs(var13) != var11 || java.lang.Math.abs(var15) != var11 || var2.nextInt(2) != 0 && var10 != 0) && !Block.BlocksOpaque[var1.getBlockId(var12, var16, var14)])
                                 {
-                                    var1.setBlockWithoutNotifyingNeighbors(var12, var16, var14, Block.LEAVES.id, 2);
+                                    var1.SetBlockWithoutNotifyingNeighbors(var12, var16, var14, Block.Leaves.id, 2);
                                 }
                             }
                         }
@@ -83,9 +83,9 @@ public class BirchTreeFeature : Feature
                     for (var16 = 0; var16 < var6; ++var16)
                     {
                         var10 = var1.getBlockId(var3, var4 + var16, var5);
-                        if (var10 == 0 || var10 == Block.LEAVES.id)
+                        if (var10 == 0 || var10 == Block.Leaves.id)
                         {
-                            var1.setBlockWithoutNotifyingNeighbors(var3, var4 + var16, var5, Block.LOG.id, 2);
+                            var1.SetBlockWithoutNotifyingNeighbors(var3, var4 + var16, var5, Block.Log.id, 2);
                         }
                     }
 

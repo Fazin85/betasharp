@@ -530,7 +530,7 @@ public abstract class Entity : java.lang.Object
                 var26 = MathHelper.floor_double(this.y - (double)0.2F - (double)standingEyeHeight);
                 var39 = MathHelper.floor_double(this.z);
                 var28 = world.getBlockId(var38, var26, var39);
-                if (world.getBlockId(var38, var26 - 1, var39) == Block.FENCE.id)
+                if (world.getBlockId(var38, var26 - 1, var39) == Block.Fence.id)
                 {
                     var28 = world.getBlockId(var38, var26 - 1, var39);
                 }
@@ -538,18 +538,18 @@ public abstract class Entity : java.lang.Object
                 if (horizontalSpeed > (float)nextStepSoundDistance && var28 > 0)
                 {
                     ++nextStepSoundDistance;
-                    BlockSoundGroup var29 = Block.BLOCKS[var28].soundGroup;
-                    if (world.getBlockId(var38, var26 + 1, var39) == Block.SNOW.id)
+                    BlockSoundGroup var29 = Block.Blocks[var28].soundGroup;
+                    if (world.getBlockId(var38, var26 + 1, var39) == Block.Snow.id)
                     {
-                        var29 = Block.SNOW.soundGroup;
+                        var29 = Block.Snow.soundGroup;
                         world.playSound(this, var29.func_1145_d(), var29.getVolume() * 0.15F, var29.getPitch());
                     }
-                    else if (!Block.BLOCKS[var28].material.IsFluid)
+                    else if (!Block.Blocks[var28].material.IsFluid)
                     {
                         world.playSound(this, var29.func_1145_d(), var29.getVolume() * 0.15F, var29.getPitch());
                     }
 
-                    Block.BLOCKS[var28].onSteppedOn(world, var38, var26, var39, this);
+                    Block.Blocks[var28].onSteppedOn(world, var38, var26, var39, this);
                 }
             }
 
@@ -570,7 +570,7 @@ public abstract class Entity : java.lang.Object
                             int var34 = world.getBlockId(var31, var32, var33);
                             if (var34 > 0)
                             {
-                                Block.BLOCKS[var34].onEntityCollision(world, var31, var32, var33, this);
+                                Block.Blocks[var34].onEntityCollision(world, var31, var32, var33, this);
                             }
                         }
                     }
@@ -671,7 +671,7 @@ public abstract class Entity : java.lang.Object
         int var5 = MathHelper.floor_float((float)MathHelper.floor_double(var2));
         int var6 = MathHelper.floor_double(z);
         int var7 = world.getBlockId(var4, var5, var6);
-        if (var7 != 0 && Block.BLOCKS[var7].material == var1)
+        if (var7 != 0 && Block.Blocks[var7].material == var1)
         {
             float var8 = BlockFluid.getFluidHeightFromMeta(world.getBlockMeta(var4, var5, var6)) - 1.0F / 9.0F;
             float var9 = (float)(var5 + 1) - var8;
@@ -1015,7 +1015,7 @@ public abstract class Entity : java.lang.Object
     {
         EntityItem var3 = new EntityItem(world, x, y + (double)var2, z, var1);
         var3.delayBeforeCanPickup = 10;
-        world.spawnEntity(var3);
+        world.SpawnEntity(var3);
         return var3;
     }
 

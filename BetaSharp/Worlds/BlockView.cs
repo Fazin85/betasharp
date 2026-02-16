@@ -8,7 +8,7 @@ public interface BlockView
 {
     int getBlockId(int x, int y, int z);
 
-    BlockEntity getBlockEntity(int x, int y, int z);
+    BlockEntity? getBlockEntity(int x, int y, int z);
 
     float getNaturalBrightness(int x, int y, int z, int blockLight);
 

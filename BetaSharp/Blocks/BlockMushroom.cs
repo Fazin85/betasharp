@@ -31,7 +31,7 @@ public class BlockMushroom : BlockPlant
 
     protected override bool canPlantOnTop(int id)
     {
-        return Block.BLOCKS_OPAQUE[id];
+        return Block.BlocksOpaque[id];
     }
 
     public override bool canGrow(World world, int x, int y, int z)

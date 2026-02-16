@@ -10,7 +10,7 @@ public class BlockRedstoneTorch : BlockTorch
 
     public override int getTexture(int side, int meta)
     {
-        return side == 1 ? Block.REDSTONE_WIRE.getTexture(side, meta) : base.getTexture(side, meta);
+        return side == 1 ? Block.RedstoneWire.getTexture(side, meta) : base.getTexture(side, meta);
     }
 
     private bool isBurnedOut(World world, int x, int y, int z, bool recordUpdate)
@@ -114,7 +114,7 @@ public class BlockRedstoneTorch : BlockTorch
         {
             if (shouldTurnOff)
             {
-                world.setBlock(x, y, z, Block.REDSTONE_TORCH.id, world.getBlockMeta(x, y, z));
+                world.setBlock(x, y, z, Block.RedstoneTorch.id, world.getBlockMeta(x, y, z));
                 if (isBurnedOut(world, x, y, z, true))
                 {
                     world.playSound((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "random.fizz", 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
@@ -131,7 +131,7 @@ public class BlockRedstoneTorch : BlockTorch
         }
         else if (!shouldTurnOff && !isBurnedOut(world, x, y, z, false))
         {
-            world.setBlock(x, y, z, Block.LIT_REDSTONE_TORCH.id, world.getBlockMeta(x, y, z));
+            world.setBlock(x, y, z, Block.LitRedstoneTorch.id, world.getBlockMeta(x, y, z));
         }
 
     }
@@ -139,7 +139,7 @@ public class BlockRedstoneTorch : BlockTorch
     public override void neighborUpdate(World world, int x, int y, int z, int id)
     {
         base.neighborUpdate(world, x, y, z, id);
-        world.scheduleBlockUpdate(x, y, z, base.id, getTickRate());
+        world.ScheduleBlockUpdate(x, y, z, base.id, getTickRate());
     }
 
     public override bool isStrongPoweringSide(World world, int x, int y, int z, int side)
@@ -149,7 +149,7 @@ public class BlockRedstoneTorch : BlockTorch
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
-        return Block.LIT_REDSTONE_TORCH.id;
+        return Block.LitRedstoneTorch.id;
     }
 
     public override bool canEmitRedstonePower()

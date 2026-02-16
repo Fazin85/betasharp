@@ -40,15 +40,15 @@ public class BlockRedstoneRepeater : Block
         bool powered = isPowered(world, x, y, z, meta);
         if (lit && !powered)
         {
-            world.setBlock(x, y, z, Block.REPEATER.id, meta);
+            world.setBlock(x, y, z, Block.Repeater.id, meta);
         }
         else if (!lit)
         {
-            world.setBlock(x, y, z, Block.POWERED_REPEATER.id, meta);
+            world.setBlock(x, y, z, Block.PoweredRepeater.id, meta);
             if (!powered)
             {
                 int delaySetting = (meta & 12) >> 2;
-                world.scheduleBlockUpdate(x, y, z, Block.POWERED_REPEATER.id, DELAY[delaySetting] * 2);
+                world.ScheduleBlockUpdate(x, y, z, PoweredRepeater.id, DELAY[delaySetting] * 2);
             }
         }
 
@@ -106,11 +106,11 @@ public class BlockRedstoneRepeater : Block
             int delaySetting = (meta & 12) >> 2;
             if (lit && !powered)
             {
-                world.scheduleBlockUpdate(x, y, z, base.id, DELAY[delaySetting] * 2);
+                world.ScheduleBlockUpdate(x, y, z, base.id, DELAY[delaySetting] * 2);
             }
             else if (!lit && powered)
             {
-                world.scheduleBlockUpdate(x, y, z, base.id, DELAY[delaySetting] * 2);
+                world.ScheduleBlockUpdate(x, y, z, base.id, DELAY[delaySetting] * 2);
             }
 
         }
@@ -122,13 +122,13 @@ public class BlockRedstoneRepeater : Block
         switch (facing)
         {
             case 0:
-                return world.isPoweringSide(x, y, z + 1, 3) || world.getBlockId(x, y, z + 1) == Block.REDSTONE_WIRE.id && world.getBlockMeta(x, y, z + 1) > 0;
+                return world.isPoweringSide(x, y, z + 1, 3) || world.getBlockId(x, y, z + 1) == Block.RedstoneWire.id && world.getBlockMeta(x, y, z + 1) > 0;
             case 1:
-                return world.isPoweringSide(x - 1, y, z, 4) || world.getBlockId(x - 1, y, z) == Block.REDSTONE_WIRE.id && world.getBlockMeta(x - 1, y, z) > 0;
+                return world.isPoweringSide(x - 1, y, z, 4) || world.getBlockId(x - 1, y, z) == Block.RedstoneWire.id && world.getBlockMeta(x - 1, y, z) > 0;
             case 2:
-                return world.isPoweringSide(x, y, z - 1, 2) || world.getBlockId(x, y, z - 1) == Block.REDSTONE_WIRE.id && world.getBlockMeta(x, y, z - 1) > 0;
+                return world.isPoweringSide(x, y, z - 1, 2) || world.getBlockId(x, y, z - 1) == Block.RedstoneWire.id && world.getBlockMeta(x, y, z - 1) > 0;
             case 3:
-                return world.isPoweringSide(x + 1, y, z, 5) || world.getBlockId(x + 1, y, z) == Block.REDSTONE_WIRE.id && world.getBlockMeta(x + 1, y, z) > 0;
+                return world.isPoweringSide(x + 1, y, z, 5) || world.getBlockId(x + 1, y, z) == Block.RedstoneWire.id && world.getBlockMeta(x + 1, y, z) > 0;
             default:
                 return false;
         }
@@ -155,7 +155,7 @@ public class BlockRedstoneRepeater : Block
         bool powered = isPowered(world, x, y, z, facing);
         if (powered)
         {
-            world.scheduleBlockUpdate(x, y, z, id, 1);
+            world.ScheduleBlockUpdate(x, y, z, id, 1);
         }
 
     }

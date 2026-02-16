@@ -17,7 +17,7 @@ public class ItemEgg : Item
         world.playSound(entityPlayer, "random.bow", 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
         if (!world.isRemote)
         {
-            world.spawnEntity(new EntityEgg(world, entityPlayer));
+            world.SpawnEntity(new EntityEgg(world, entityPlayer));
         }
 
         return itemStack;

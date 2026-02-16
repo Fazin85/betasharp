@@ -93,7 +93,7 @@ public class EntityBoat : Entity
                 int i;
                 for (i = 0; i < 3; ++i)
                 {
-                    dropItem(Block.PLANKS.id, 1, 0.0F);
+                    dropItem(Block.Planks.id, 1, 0.0F);
                 }
 
                 for (i = 0; i < 2; ++i)
@@ -308,7 +308,7 @@ public class EntityBoat : Entity
                     int j;
                     for (j = 0; j < 3; ++j)
                     {
-                        dropItem(Block.PLANKS.id, 1, 0.0F);
+                        dropItem(Block.Planks.id, 1, 0.0F);
                     }
 
                     for (j = 0; j < 2; ++j)
@@ -374,7 +374,7 @@ public class EntityBoat : Entity
                 int x = MathHelper.floor_double(base.x + ((double)(i % 2) - 0.5D) * 0.8D);
                 int y = MathHelper.floor_double(base.y);
                 int z = MathHelper.floor_double(base.z + ((double)(i / 2) - 0.5D) * 0.8D);
-                if (world.getBlockId(x, y, z) == Block.SNOW.id)
+                if (world.getBlockId(x, y, z) == Block.Snow.id)
                 {
                     world.setBlock(x, y, z, 0);
                 }

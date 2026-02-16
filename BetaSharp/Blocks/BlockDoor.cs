@@ -184,7 +184,7 @@ public class BlockDoor : Block
                 world.setBlock(x, y, z, 0);
             }
 
-            if (id > 0 && Block.BLOCKS[id].canEmitRedstonePower())
+            if (id > 0 && Block.Blocks[id].canEmitRedstonePower())
             {
                 neighborUpdate(world, x, y - 1, z, id);
             }
@@ -215,7 +215,7 @@ public class BlockDoor : Block
                     dropStacks(world, x, y, z, meta);
                 }
             }
-            else if (id > 0 && Block.BLOCKS[id].canEmitRedstonePower())
+            else if (id > 0 && Block.Blocks[id].canEmitRedstonePower())
             {
                 bool isPowered = world.isPowered(x, y, z) || world.isPowered(x, y + 1, z);
                 setOpen(world, x, y, z, isPowered);

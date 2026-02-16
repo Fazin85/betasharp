@@ -78,7 +78,7 @@ public class Chunk : java.lang.Object
             {
                 int var4 = 127;
 
-                for (int var5 = var2 << 11 | var3 << 7; var4 > 0 && Block.BLOCK_LIGHT_OPACITY[blocks[var5 + var4 - 1] & 255] == 0; --var4)
+                for (int var5 = var2 << 11 | var3 << 7; var4 > 0 && Block.BlockLightOpacity[blocks[var5 + var4 - 1] & 255] == 0; --var4)
                 {
                 }
 
@@ -107,7 +107,7 @@ public class Chunk : java.lang.Object
                 int var4 = 127;
 
                 int var5;
-                for (var5 = var2 << 11 | var3 << 7; var4 > 0 && Block.BLOCK_LIGHT_OPACITY[blocks[var5 + var4 - 1] & 255] == 0; --var4)
+                for (var5 = var2 << 11 | var3 << 7; var4 > 0 && Block.BlockLightOpacity[blocks[var5 + var4 - 1] & 255] == 0; --var4)
                 {
                 }
 
@@ -124,7 +124,7 @@ public class Chunk : java.lang.Object
 
                     do
                     {
-                        var6 -= Block.BLOCK_LIGHT_OPACITY[blocks[var5 + var7] & 255];
+                        var6 -= Block.BlockLightOpacity[blocks[var5 + var7] & 255];
                         if (var6 > 0)
                         {
                             skyLight.setNibble(var2, var7, var3, var6);
@@ -189,7 +189,7 @@ public class Chunk : java.lang.Object
             var5 = y;
         }
 
-        for (int var6 = localX << 11 | localZ << 7; var5 > 0 && Block.BLOCK_LIGHT_OPACITY[blocks[var6 + var5 - 1] & 255] == 0; --var5)
+        for (int var6 = localX << 11 | localZ << 7; var5 > 0 && Block.BlockLightOpacity[blocks[var6 + var5 - 1] & 255] == 0; --var5)
         {
         }
 
@@ -247,7 +247,7 @@ public class Chunk : java.lang.Object
             for (var10 = var5; var5 > 0 && var9 > 0; skyLight.setNibble(localX, var5, localZ, var9))
             {
                 --var5;
-                int var11 = Block.BLOCK_LIGHT_OPACITY[getBlockId(localX, var5, localZ)];
+                int var11 = Block.BlockLightOpacity[getBlockId(localX, var5, localZ)];
                 if (var11 == 0)
                 {
                     var11 = 1;
@@ -260,7 +260,7 @@ public class Chunk : java.lang.Object
                 }
             }
 
-            while (var5 > 0 && Block.BLOCK_LIGHT_OPACITY[getBlockId(localX, var5 - 1, localZ)] == 0)
+            while (var5 > 0 && Block.BlockLightOpacity[getBlockId(localX, var5 - 1, localZ)] == 0)
             {
                 --var5;
             }
@@ -295,13 +295,13 @@ public class Chunk : java.lang.Object
             blocks[x << 11 | z << 7 | y] = (byte)(var6 & 255);
             if (var8 != 0 && !world.isRemote)
             {
-                Block.BLOCKS[var8].onBreak(world, var9, y, var10);
+                Block.Blocks[var8].onBreak(world, var9, y, var10);
             }
 
             this.meta.setNibble(x, y, z, meta);
             if (!world.dimension.hasCeiling)
             {
-                if (Block.BLOCK_LIGHT_OPACITY[var6 & 255] != 0)
+                if (Block.BlockLightOpacity[var6 & 255] != 0)
                 {
                     if (y >= var7)
                     {
@@ -321,7 +321,7 @@ public class Chunk : java.lang.Object
             this.meta.setNibble(x, y, z, meta);
             if (rawId != 0)
             {
-                Block.BLOCKS[rawId].onPlaced(world, var9, y, var10);
+                Block.Blocks[rawId].onPlaced(world, var9, y, var10);
             }
 
             dirty = true;
@@ -345,11 +345,11 @@ public class Chunk : java.lang.Object
             blocks[x << 11 | z << 7 | y] = (byte)(var5 & 255);
             if (var7 != 0)
             {
-                Block.BLOCKS[var7].onBreak(world, var8, y, var9);
+                Block.Blocks[var7].onBreak(world, var8, y, var9);
             }
 
             meta.setNibble(x, y, z, 0);
-            if (Block.BLOCK_LIGHT_OPACITY[var5 & 255] != 0)
+            if (Block.BlockLightOpacity[var5 & 255] != 0)
             {
                 if (y >= var6)
                 {
@@ -366,7 +366,7 @@ public class Chunk : java.lang.Object
             lightGaps(x, z);
             if (rawId != 0 && !world.isRemote)
             {
-                Block.BLOCKS[rawId].onPlaced(world, var8, y, var9);
+                Block.Blocks[rawId].onPlaced(world, var8, y, var9);
             }
 
             dirty = true;
@@ -488,12 +488,12 @@ public class Chunk : java.lang.Object
         if (var5 == null)
         {
             int var6 = getBlockId(x, y, z);
-            if (!Block.BLOCKS_WITH_ENTITY[var6])
+            if (!Block.BlocksWithEntity[var6])
             {
                 return null;
             }
 
-            BlockWithEntity var7 = (BlockWithEntity)Block.BLOCKS[var6];
+            BlockWithEntity var7 = (BlockWithEntity)Block.Blocks[var6];
             var7.onPlaced(world, this.x * 16 + x, y, this.z * 16 + z);
             blockEntities.TryGetValue(var4, out var5);
         }
@@ -529,7 +529,7 @@ public class Chunk : java.lang.Object
         blockEntity.x = this.x * 16 + x;
         blockEntity.y = y;
         blockEntity.z = this.z * 16 + z;
-        if (getBlockId(x, y, z) != 0 && Block.BLOCKS[getBlockId(x, y, z)] is BlockWithEntity)
+        if (getBlockId(x, y, z) != 0 && Block.Blocks[getBlockId(x, y, z)] is BlockWithEntity)
         {
             blockEntity.cancelRemoval();
             blockEntities[var5] = blockEntity;

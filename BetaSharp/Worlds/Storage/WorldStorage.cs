@@ -1,3 +1,4 @@
+using BetaSharp.Entities;
 using BetaSharp.Server.Worlds;
 using BetaSharp.Worlds.Chunks.Storage;
 using BetaSharp.Worlds.Dimensions;
@@ -12,7 +13,7 @@ public interface WorldStorage
 
     ChunkStorage getChunkStorage(Dimension dim);
 
-    void save(WorldProperties var1, List<object> var2);
+    void save(WorldProperties var1, List<EntityPlayer> var2);
 
     void save(WorldProperties var1);
     void forceSave();

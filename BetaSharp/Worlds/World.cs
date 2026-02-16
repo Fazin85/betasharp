@@ -116,7 +116,7 @@ public abstract class World : java.lang.Object, BlockView
         dimension = var3;
         persistentStateManager = new PersistentStateManager(var1);
         var3.setWorld(this);
-        chunkSource = createChunkCache();
+        chunkSource = CreateChunkCache();
         updateSkyBrightness();
         prepareWeather();
     }
@@ -159,7 +159,7 @@ public abstract class World : java.lang.Object, BlockView
         persistentStateManager = new PersistentStateManager(storage);
         dimension = var2;
         var2.setWorld(this);
-        chunkSource = createChunkCache();
+        chunkSource = CreateChunkCache();
         updateSkyBrightness();
         prepareWeather();
     }
@@ -208,7 +208,7 @@ public abstract class World : java.lang.Object, BlockView
         {
             dimension = var5;
         }
-        else if (properties != null && properties.getDimension() == -1)
+        else if (properties != null && properties.Dimension == -1)
         {
             dimension = Dimension.fromId(-1);
         }
@@ -225,11 +225,11 @@ public abstract class World : java.lang.Object, BlockView
         }
         else
         {
-            properties.setWorldName(var2);
+            properties.LevelName = var2;
         }
 
         dimension.setWorld(this);
-        chunkSource = createChunkCache();
+        chunkSource = CreateChunkCache();
         if (var6)
         {
             initializeSpawnPoint();
@@ -239,7 +239,7 @@ public abstract class World : java.lang.Object, BlockView
         prepareWeather();
     }
 
-    protected abstract ChunkSource createChunkCache();
+    protected abstract ChunkSource CreateChunkCache();
 
     protected void initializeSpawnPoint()
     {
@@ -253,27 +253,27 @@ public abstract class World : java.lang.Object, BlockView
             var1 += random.nextInt(64) - random.nextInt(64);
         }
 
-        properties.setSpawn(var1, var2, var3);
+        properties.SetSpawn(var1, var2, var3);
         eventProcessingEnabled = false;
     }
 
-    public virtual void updateSpawnPosition()
+    public virtual void UpdateSpawnPosition()
     {
-        if (properties.getSpawnY() <= 0)
+        if (properties.SpawnY <= 0)
         {
-            properties.setSpawnY(64);
+            properties.SpawnY = 64;
         }
 
-        int var1 = properties.getSpawnX();
+        int var1 = properties.SpawnX;
 
         int var2;
-        for (var2 = properties.getSpawnZ(); getSpawnBlockId(var1, var2) == 0; var2 += random.nextInt(8) - random.nextInt(8))
+        for (var2 = properties.SpawnZ; getSpawnBlockId(var1, var2) == 0; var2 += random.nextInt(8) - random.nextInt(8))
         {
             var1 += random.nextInt(8) - random.nextInt(8);
         }
 
-        properties.setSpawnX(var1);
-        properties.setSpawnZ(var2);
+        properties.SpawnX = var1;
+        properties.SpawnZ = var2;
     }
 
     public int getSpawnBlockId(int var1, int var2)
@@ -294,14 +294,14 @@ public abstract class World : java.lang.Object, BlockView
     {
         try
         {
-            NBTTagCompound var2 = properties.getPlayerNBTTagCompound();
+            NBTTagCompound? var2 = properties.PlayerTag;
             if (var2 != null)
             {
                 player.read(var2);
-                properties.setPlayerNBTTagCompound((NBTTagCompound)null);
+                properties.PlayerTag = null;
             }
 
-            spawnEntity(player);
+            SpawnEntity(player);
         }
         catch (java.lang.Exception var6)
         {
@@ -339,7 +339,7 @@ public abstract class World : java.lang.Object, BlockView
         //checkSessionLock();
         Profiler.Stop("checkSessionLock");
         Profiler.Start("saveWorldInfoAndPlayer");
-        storage.save(properties, players.Cast<object>().ToList());
+        storage.save(properties, players.Cast<EntityPlayer>().ToList());
         Profiler.Stop("saveWorldInfoAndPlayer");
 
         Profiler.Start("saveAllData");
@@ -429,7 +429,7 @@ public abstract class World : java.lang.Object, BlockView
         return chunkSource.getChunk(chunkX, chunkZ);
     }
 
-    public virtual bool setBlockWithoutNotifyingNeighbors(int x, int y, int z, int blockId, int meta)
+    public virtual bool SetBlockWithoutNotifyingNeighbors(int x, int y, int z, int blockId, int meta)
     {
         if (x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
         {
@@ -453,7 +453,7 @@ public abstract class World : java.lang.Object, BlockView
         }
     }
 
-    public virtual bool setBlockWithoutNotifyingNeighbors(int x, int y, int z, int blockId)
+    public virtual bool SetBlockWithoutNotifyingNeighbors(int x, int y, int z, int blockId)
     {
         if (x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
         {
@@ -480,7 +480,7 @@ public abstract class World : java.lang.Object, BlockView
     public Material getMaterial(int x, int y, int z)
     {
         int var4 = getBlockId(x, y, z);
-        return var4 == 0 ? Material.Air : Block.BLOCKS[var4].material;
+        return var4 == 0 ? Material.Air : Block.Blocks[var4].material;
     }
 
     public int getBlockMeta(int x, int y, int z)
@@ -511,10 +511,10 @@ public abstract class World : java.lang.Object, BlockView
 
     public void setBlockMeta(int x, int y, int z, int meta)
     {
-        if (setBlockMetaWithoutNotifyingNeighbors(x, y, z, meta))
+        if (SetBlockMetaWithoutNotifyingNeighbors(x, y, z, meta))
         {
             int var5 = getBlockId(x, y, z);
-            if (Block.BLOCKS_IGNORE_META_UPDATE[var5 & 255])
+            if (Block.BlocksIngoreMetaUpdate[var5 & 255])
             {
                 blockUpdate(x, y, z, var5);
             }
@@ -526,7 +526,7 @@ public abstract class World : java.lang.Object, BlockView
 
     }
 
-    public virtual bool setBlockMetaWithoutNotifyingNeighbors(int x, int y, int z, int meta)
+    public virtual bool SetBlockMetaWithoutNotifyingNeighbors(int x, int y, int z, int meta)
     {
         if (x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
         {
@@ -555,7 +555,7 @@ public abstract class World : java.lang.Object, BlockView
 
     public bool setBlock(int x, int y, int z, int blockId)
     {
-        if (setBlockWithoutNotifyingNeighbors(x, y, z, blockId))
+        if (SetBlockWithoutNotifyingNeighbors(x, y, z, blockId))
         {
             blockUpdate(x, y, z, blockId);
             return true;
@@ -568,7 +568,7 @@ public abstract class World : java.lang.Object, BlockView
 
     public bool setBlock(int x, int y, int z, int blockId, int meta)
     {
-        if (setBlockWithoutNotifyingNeighbors(x, y, z, blockId, meta))
+        if (SetBlockWithoutNotifyingNeighbors(x, y, z, blockId, meta))
         {
             blockUpdate(x, y, z, blockId);
             return true;
@@ -636,7 +636,7 @@ public abstract class World : java.lang.Object, BlockView
     {
         if (!pauseTicking && !isRemote)
         {
-            Block var5 = Block.BLOCKS[getBlockId(x, y, z)];
+            Block var5 = Block.Blocks[getBlockId(x, y, z)];
             if (var5 != null)
             {
                 var5.neighborUpdate(this, x, y, z, blockId);
@@ -679,7 +679,7 @@ public abstract class World : java.lang.Object, BlockView
             if (bl)
             {
                 int var5 = getBlockId(x, y, z);
-                if (var5 == Block.SLAB.id || var5 == Block.FARMLAND.id || var5 == Block.COBBLESTONE_STAIRS.id || var5 == Block.WOODEN_STAIRS.id)
+                if (var5 == Block.Slab.id || var5 == Block.Farmland.id || var5 == Block.CobblestoneStairs.id || var5 == Block.WoodenStairs.id)
                 {
                     int var6 = getLightLevel(x, y + 1, z, false);
                     int var7 = getLightLevel(x + 1, y, z, false);
@@ -799,9 +799,9 @@ public abstract class World : java.lang.Object, BlockView
                 else if (lightType == LightType.Block)
                 {
                     int var6 = getBlockId(x, y, z);
-                    if (Block.BLOCKS_LIGHT_LUMINANCE[var6] > l)
+                    if (Block.BlocksLightLuminance[var6] > l)
                     {
-                        l = Block.BLOCKS_LIGHT_LUMINANCE[var6];
+                        l = Block.BlocksLightLuminance[var6];
                     }
                 }
 
@@ -915,7 +915,7 @@ public abstract class World : java.lang.Object, BlockView
                 int var10 = MathHelper.floor_double(start.z);
                 int var11 = getBlockId(var8, var9, var10);
                 int var12 = getBlockMeta(var8, var9, var10);
-                Block var13 = Block.BLOCKS[var11];
+                Block var13 = Block.Blocks[var11];
                 if ((!bl2 || var13 == null || var13.getCollisionShape(this, var8, var9, var10) != null) && var11 > 0 && var13.hasCollision(var12, bl))
                 {
                     HitResult var14 = var13.raycast(this, var8, var9, var10, start, pos);
@@ -1077,7 +1077,7 @@ public abstract class World : java.lang.Object, BlockView
 
                     int var35 = getBlockId(var8, var9, var10);
                     int var36 = getBlockMeta(var8, var9, var10);
-                    Block var37 = Block.BLOCKS[var35];
+                    Block var37 = Block.Blocks[var35];
                     if ((!bl2 || var37 == null || var37.getCollisionShape(this, var8, var9, var10) != null) && var35 > 0 && var37.hasCollision(var36, bl))
                     {
                         HitResult var38 = var37.raycast(this, var8, var9, var10, start, pos);
@@ -1143,7 +1143,7 @@ public abstract class World : java.lang.Object, BlockView
         return true;
     }
 
-    public virtual bool spawnEntity(Entity entity)
+    public virtual bool SpawnEntity(Entity entity)
     {
         int var2 = MathHelper.floor_double(entity.x / 16.0D);
         int var3 = MathHelper.floor_double(entity.z / 16.0D);
@@ -1168,12 +1168,12 @@ public abstract class World : java.lang.Object, BlockView
 
             getChunk(var2, var3).addEntity(entity);
             entities.Add(entity);
-            notifyEntityAdded(entity);
+            NotifyEntityAdded(entity);
             return true;
         }
     }
 
-    protected virtual void notifyEntityAdded(Entity entity)
+    protected virtual void NotifyEntityAdded(Entity entity)
     {
         for (int var2 = 0; var2 < eventListeners.Count; ++var2)
         {
@@ -1182,7 +1182,7 @@ public abstract class World : java.lang.Object, BlockView
 
     }
 
-    protected virtual void notifyEntityRemoved(Entity entity)
+    protected virtual void NotifyEntityRemoved(Entity entity)
     {
         for (int var2 = 0; var2 < eventListeners.Count; ++var2)
         {
@@ -1191,7 +1191,7 @@ public abstract class World : java.lang.Object, BlockView
 
     }
 
-    public virtual void remove(Entity entity)
+    public virtual void Remove(Entity entity)
     {
         if (entity.passenger != null)
         {
@@ -1229,7 +1229,7 @@ public abstract class World : java.lang.Object, BlockView
         }
 
         entities.Remove(entity);
-        notifyEntityRemoved(entity);
+        NotifyEntityRemoved(entity);
     }
 
     public void addWorldAccess(IWorldAccess worldAccess)
@@ -1260,7 +1260,7 @@ public abstract class World : java.lang.Object, BlockView
                 {
                     for (int var11 = var5 - 1; var11 < var6; ++var11)
                     {
-                        Block var12 = Block.BLOCKS[getBlockId(var9, var11, var10)];
+                        Block var12 = Block.Blocks[getBlockId(var9, var11, var10)];
                         if (var12 != null)
                         {
                             var12.addIntersectingBoundingBox(this, var9, var11, var10, box, collidingBoundingBoxes);
@@ -1377,7 +1377,7 @@ public abstract class World : java.lang.Object, BlockView
 
     public float getTime(float var1)
     {
-        return dimension.getTimeOfDay(properties.getTime(), var1);
+        return dimension.getTimeOfDay(properties.WorldTime, var1);
     }
 
     public Vector3D<double> getCloudColor(float partialTicks)
@@ -1440,7 +1440,7 @@ public abstract class World : java.lang.Object, BlockView
         for (z &= 15; var4 > 0; --var4)
         {
             int var5 = var3.getBlockId(x, var4, z);
-            Material var6 = var5 == 0 ? Material.Air : Block.BLOCKS[var5].material;
+            Material var6 = var5 == 0 ? Material.Air : Block.Blocks[var5].material;
             if (var6.BlocksMovement || var6.IsFluid)
             {
                 return var4 + 1;
@@ -1476,7 +1476,7 @@ public abstract class World : java.lang.Object, BlockView
         for (int var7 = z & 15; var4 > 0; var4--)
         {
             int var5 = var3.getBlockId(x, var4, var7);
-            if (var5 != 0 && Block.BLOCKS[var5].material.BlocksMovement)
+            if (var5 != 0 && Block.Blocks[var5].material.BlocksMovement)
             {
                 return var4 + 1;
             }
@@ -1485,7 +1485,7 @@ public abstract class World : java.lang.Object, BlockView
         return -1;
     }
 
-    public virtual void scheduleBlockUpdate(int x, int y, int z, int id, int tickRate)
+    public virtual void ScheduleBlockUpdate(int x, int y, int z, int id, int tickRate)
     {
         BlockEvent var6 = new(x, y, z, id);
         byte var7 = 8;
@@ -1496,7 +1496,7 @@ public abstract class World : java.lang.Object, BlockView
                 int var8 = getBlockId(var6.x, var6.y, var6.z);
                 if (var8 == var6.blockId && var8 > 0)
                 {
-                    Block.BLOCKS[var8].onTick(this, var6.x, var6.y, var6.z, random);
+                    Block.Blocks[var8].onTick(this, var6.x, var6.y, var6.z, random);
                 }
             }
 
@@ -1507,7 +1507,7 @@ public abstract class World : java.lang.Object, BlockView
             {
                 if (id > 0)
                 {
-                    var6.setScheduledTime((long)tickRate + properties.getTime());
+                    var6.setScheduledTime((long)tickRate + properties.WorldTime);
                 }
 
                 if (!scheduledUpdateSet.contains(var6))
@@ -1559,7 +1559,7 @@ public abstract class World : java.lang.Object, BlockView
 
         for (var1 = 0; var1 < entitiesToUnload.Count; ++var1)
         {
-            notifyEntityRemoved(entitiesToUnload[var1]);
+            NotifyEntityRemoved(entitiesToUnload[var1]);
         }
 
         entitiesToUnload.Clear();
@@ -1597,7 +1597,7 @@ public abstract class World : java.lang.Object, BlockView
                 }
 
                 entities.RemoveAt(var1--);
-                notifyEntityRemoved(var2);
+                NotifyEntityRemoved(var2);
             }
         }
         Profiler.Stop("updateEntites.updateLoadedEntities");
@@ -1798,7 +1798,7 @@ public abstract class World : java.lang.Object, BlockView
             {
                 for (int var10 = var6; var10 < var7; var10++)
                 {
-                    Block var11 = Block.BLOCKS[getBlockId(var8, var9, var10)];
+                    Block var11 = Block.Blocks[getBlockId(var8, var9, var10)];
                     if (var11 != null)
                     {
                         return true;
@@ -1839,7 +1839,7 @@ public abstract class World : java.lang.Object, BlockView
             {
                 for (int var10 = var6; var10 < var7; ++var10)
                 {
-                    Block var11 = Block.BLOCKS[getBlockId(var8, var9, var10)];
+                    Block var11 = Block.Blocks[getBlockId(var8, var9, var10)];
                     if (var11 != null && var11.material.IsFluid)
                     {
                         return true;
@@ -1868,7 +1868,7 @@ public abstract class World : java.lang.Object, BlockView
                     for (int var10 = var6; var10 < var7; ++var10)
                     {
                         int var11 = getBlockId(var8, var9, var10);
-                        if (var11 == Block.FIRE.id || var11 == Block.FLOWING_LAVA.id || var11 == Block.LAVA.id)
+                        if (var11 == Block.Fire.id || var11 == Block.FlowingLava.id || var11 == Block.Lava.id)
                         {
                             return true;
                         }
@@ -1903,7 +1903,7 @@ public abstract class World : java.lang.Object, BlockView
                 {
                     for (int var14 = var8; var14 < var9; ++var14)
                     {
-                        Block var15 = Block.BLOCKS[getBlockId(var12, var13, var14)];
+                        Block var15 = Block.Blocks[getBlockId(var12, var13, var14)];
                         if (var15 != null && var15.material == fluidMaterial)
                         {
                             double var16 = (double)((float)(var13 + 1) - BlockFluid.getFluidHeightFromMeta(getBlockMeta(var12, var13, var14)));
@@ -1945,7 +1945,7 @@ public abstract class World : java.lang.Object, BlockView
             {
                 for (int var11 = var7; var11 < var8; ++var11)
                 {
-                    Block var12 = Block.BLOCKS[getBlockId(var9, var10, var11)];
+                    Block var12 = Block.Blocks[getBlockId(var9, var10, var11)];
                     if (var12 != null && var12.material == material)
                     {
                         return true;
@@ -1972,7 +1972,7 @@ public abstract class World : java.lang.Object, BlockView
             {
                 for (int var11 = var7; var11 < var8; ++var11)
                 {
-                    Block var12 = Block.BLOCKS[getBlockId(var9, var10, var11)];
+                    Block var12 = Block.Blocks[getBlockId(var9, var10, var11)];
                     if (var12 != null && var12.material == fluid)
                     {
                         int var13 = getBlockMeta(var9, var10, var11);
@@ -2070,7 +2070,7 @@ public abstract class World : java.lang.Object, BlockView
             ++x;
         }
 
-        if (getBlockId(x, y, z) == Block.FIRE.id)
+        if (getBlockId(x, y, z) == Block.Fire.id)
         {
             worldEvent(player, 1004, x, y, z, 0);
             setBlock(x, y, z, 0);
@@ -2148,13 +2148,13 @@ public abstract class World : java.lang.Object, BlockView
 
     public bool isOpaque(int x, int y, int z)
     {
-        Block var4 = Block.BLOCKS[getBlockId(x, y, z)];
+        Block var4 = Block.Blocks[getBlockId(x, y, z)];
         return var4 == null ? false : var4.isOpaque();
     }
 
     public bool shouldSuffocate(int x, int y, int z)
     {
-        Block var4 = Block.BLOCKS[getBlockId(x, y, z)];
+        Block var4 = Block.Blocks[getBlockId(x, y, z)];
         return var4 == null ? false : var4.material.Suffocates && var4.isFullCube();
     }
 
@@ -2289,9 +2289,9 @@ public abstract class World : java.lang.Object, BlockView
         spawnPeacefulMobs = allowMobSpawning;
     }
 
-    public virtual void tick(int renderDistance)
+    public virtual void Tick(int renderDistance)
     {
-        updateWeatherCycles();
+        UpdateWeatherCycles();
         long var2;
         if (canSkipNight())
         {
@@ -2303,8 +2303,8 @@ public abstract class World : java.lang.Object, BlockView
 
             if (!var1)
             {
-                var2 = properties.getTime() + 24000L;
-                properties.setWorldTime(var2 - var2 % 24000L);
+                var2 = properties.WorldTime + 24000L;
+                properties.WorldTime = var2 - var2 % 24000L;
                 afterSkipNight();
             }
         }
@@ -2328,7 +2328,7 @@ public abstract class World : java.lang.Object, BlockView
         }
         Profiler.Stop("updateSkylightSubtracted");
 
-        var2 = properties.getTime() + 1L;
+        var2 = properties.WorldTime + 1L;
         if (var2 % (long)autosavePeriod == 0L)
         {
             Profiler.PushGroup("autosave");
@@ -2338,19 +2338,19 @@ public abstract class World : java.lang.Object, BlockView
             chunkSource.markChunksForUnload(renderDistance);
         }
 
-        properties.setWorldTime(var2);
+        properties.WorldTime = var2;
         Profiler.Start("tickUpdates");
-        processScheduledTicks(false);
+        ProcessScheduledTicks(false);
         Profiler.Stop("tickUpdates");
-        manageChunkUpdatesAndEvents();
+        ManageChunkUpdatesAndEvents();
     }
 
     private void prepareWeather()
     {
-        if (properties.getRaining())
+        if (properties.IsRaining)
         {
             rainingStrength = 1.0F;
-            if (properties.getThundering())
+            if (properties.IsThundering)
             {
                 thunderingStrength = 1.0F;
             }
@@ -2358,7 +2358,7 @@ public abstract class World : java.lang.Object, BlockView
 
     }
 
-    protected virtual void updateWeatherCycles()
+    protected virtual void UpdateWeatherCycles()
     {
         if (!dimension.hasCeiling)
         {
@@ -2367,52 +2367,52 @@ public abstract class World : java.lang.Object, BlockView
                 --ticksSinceLightning;
             }
 
-            int var1 = properties.getThunderTime();
+            int var1 = properties.ThunderTime;
             if (var1 <= 0)
             {
-                if (properties.getThundering())
+                if (properties.IsThundering)
                 {
-                    properties.setThunderTime(random.nextInt(12000) + 3600);
+                    properties.ThunderTime = random.nextInt(12000) + 3600;
                 }
                 else
                 {
-                    properties.setThunderTime(random.nextInt(168000) + 12000);
+                    properties.ThunderTime = random.nextInt(168000) + 12000;
                 }
             }
             else
             {
                 --var1;
-                properties.setThunderTime(var1);
+                properties.ThunderTime = var1;
                 if (var1 <= 0)
                 {
-                    properties.setThundering(!properties.getThundering());
+                    properties.IsThundering = !properties.IsThundering;
                 }
             }
 
-            int var2 = properties.getRainTime();
+            int var2 = properties.RainTime;
             if (var2 <= 0)
             {
-                if (properties.getRaining())
+                if (properties.IsRaining)
                 {
-                    properties.setRainTime(random.nextInt(12000) + 12000);
+                    properties.RainTime = random.nextInt(12000) + 12000;
                 }
                 else
                 {
-                    properties.setRainTime(random.nextInt(168000) + 12000);
+                    properties.RainTime = random.nextInt(168000) + 12000;
                 }
             }
             else
             {
                 --var2;
-                properties.setRainTime(var2);
+                properties.RainTime = var2;
                 if (var2 <= 0)
                 {
-                    properties.setRaining(!properties.getRaining());
+                    properties.IsRaining = !properties.IsRaining;
                 }
             }
 
             prevRainingStrength = rainingStrength;
-            if (properties.getRaining())
+            if (properties.IsRaining)
             {
                 rainingStrength = (float)((double)rainingStrength + 0.01D);
             }
@@ -2432,7 +2432,7 @@ public abstract class World : java.lang.Object, BlockView
             }
 
             prevThunderingStrength = thunderingStrength;
-            if (properties.getThundering())
+            if (properties.IsThundering)
             {
                 thunderingStrength = (float)((double)thunderingStrength + 0.01D);
             }
@@ -2456,13 +2456,13 @@ public abstract class World : java.lang.Object, BlockView
 
     private void clearWeather()
     {
-        properties.setRainTime(0);
-        properties.setRaining(false);
-        properties.setThunderTime(0);
-        properties.setThundering(false);
+        properties.RainTime = 0;
+        properties.IsRaining = false;
+        properties.ThunderTime = 0;
+        properties.IsThundering = false;
     }
 
-    protected virtual void manageChunkUpdatesAndEvents()
+    protected virtual void ManageChunkUpdatesAndEvents()
     {
         activeChunks.Clear();
         int var3;
@@ -2545,14 +2545,14 @@ public abstract class World : java.lang.Object, BlockView
                 {
                     var10 = var14.getBlockId(var7, var9 - 1, var8);
                     var15 = var14.getBlockId(var7, var9, var8);
-                    if (isRaining() && var15 == 0 && Block.SNOW.canPlaceAt(this, var7 + var3, var9, var8 + var4) && var10 != 0 && var10 != Block.ICE.id && Block.BLOCKS[var10].material.BlocksMovement)
+                    if (isRaining() && var15 == 0 && Block.Snow.canPlaceAt(this, var7 + var3, var9, var8 + var4) && var10 != 0 && var10 != Block.Ice.id && Block.Blocks[var10].material.BlocksMovement)
                     {
-                        setBlock(var7 + var3, var9, var8 + var4, Block.SNOW.id);
+                        setBlock(var7 + var3, var9, var8 + var4, Block.Snow.id);
                     }
 
-                    if (var10 == Block.WATER.id && var14.getBlockMeta(var7, var9 - 1, var8) == 0)
+                    if (var10 == Block.Water.id && var14.getBlockMeta(var7, var9 - 1, var8) == 0)
                     {
-                        setBlock(var7 + var3, var9 - 1, var8 + var4, Block.ICE.id);
+                        setBlock(var7 + var3, var9 - 1, var8 + var4, Block.Ice.id);
                     }
                 }
             }
@@ -2565,16 +2565,16 @@ public abstract class World : java.lang.Object, BlockView
                 var9 = var7 >> 8 & 15;
                 var10 = var7 >> 16 & 127;
                 var15 = var14.blocks[var8 << 11 | var9 << 7 | var10] & 255;
-                if (Block.BLOCKS_RANDOM_TICK[var15])
+                if (Block.BlocksRandomTick[var15])
                 {
-                    Block.BLOCKS[var15].onTick(this, var8 + var3, var10, var9 + var4, random);
+                    Block.Blocks[var15].onTick(this, var8 + var3, var10, var9 + var4, random);
                 }
             }
         }
 
     }
 
-    public virtual bool processScheduledTicks(bool flush)
+    public virtual bool ProcessScheduledTicks(bool flush)
     {
         int var2 = scheduledUpdates.size();
         if (var2 != scheduledUpdateSet.size())
@@ -2591,7 +2591,7 @@ public abstract class World : java.lang.Object, BlockView
             for (int var3 = 0; var3 < var2; ++var3)
             {
                 BlockEvent var4 = (BlockEvent)scheduledUpdates.first();
-                if (!flush && var4.ticks > properties.getTime())
+                if (!flush && var4.ticks > properties.WorldTime)
                 {
                     break;
                 }
@@ -2604,7 +2604,7 @@ public abstract class World : java.lang.Object, BlockView
                     int var6 = getBlockId(var4.x, var4.y, var4.z);
                     if (var6 == var4.blockId && var6 > 0)
                     {
-                        Block.BLOCKS[var6].onTick(this, var4.x, var4.y, var4.z, random);
+                        Block.Blocks[var6].onTick(this, var4.x, var4.y, var4.z, random);
                     }
                 }
             }
@@ -2626,7 +2626,7 @@ public abstract class World : java.lang.Object, BlockView
             int var10 = getBlockId(var7, var8, var9);
             if (var10 > 0)
             {
-                Block.BLOCKS[var10].randomDisplayTick(this, var7, var8, var9, var5);
+                Block.Blocks[var10].randomDisplayTick(this, var7, var8, var9, var5);
             }
         }
 
@@ -2717,7 +2717,7 @@ public abstract class World : java.lang.Object, BlockView
 
         for (int var2 = 0; var2 < entities.Count; ++var2)
         {
-            notifyEntityAdded(entities[var2]);
+            NotifyEntityAdded(entities[var2]);
         }
 
     }
@@ -2738,8 +2738,8 @@ public abstract class World : java.lang.Object, BlockView
     public bool canPlace(int blockId, int x, int y, int z, bool fallingBlock, int side)
     {
         int var7 = getBlockId(x, y, z);
-        Block var8 = Block.BLOCKS[var7];
-        Block var9 = Block.BLOCKS[blockId];
+        Block var8 = Block.Blocks[var7];
+        Block var9 = Block.Blocks[blockId];
         Box? var10 = var9.getCollisionShape(this, x, y, z);
         if (fallingBlock)
         {
@@ -2752,7 +2752,7 @@ public abstract class World : java.lang.Object, BlockView
         }
         else
         {
-            if (var8 == Block.FLOWING_WATER || var8 == Block.WATER || var8 == Block.FLOWING_LAVA || var8 == Block.LAVA || var8 == Block.FIRE || var8 == Block.SNOW)
+            if (var8 == Block.FlowingWater || var8 == Block.Water || var8 == Block.FlowingLava || var8 == Block.Lava || var8 == Block.Fire || var8 == Block.Snow)
             {
                 var8 = null;
             }
@@ -2796,7 +2796,7 @@ public abstract class World : java.lang.Object, BlockView
     public bool isStrongPoweringSide(int x, int y, int z, int side)
     {
         int var5 = getBlockId(x, y, z);
-        return var5 == 0 ? false : Block.BLOCKS[var5].isStrongPoweringSide(this, x, y, z, side);
+        return var5 == 0 ? false : Block.Blocks[var5].isStrongPoweringSide(this, x, y, z, side);
     }
 
     public bool isStrongPowered(int x, int y, int z)
@@ -2813,7 +2813,7 @@ public abstract class World : java.lang.Object, BlockView
         else
         {
             int var5 = getBlockId(x, y, z);
-            return var5 == 0 ? false : Block.BLOCKS[var5].isPoweringSide(this, x, y, z, side);
+            return var5 == 0 ? false : Block.Blocks[var5].isPoweringSide(this, x, y, z, side);
         }
     }
 
@@ -2913,7 +2913,7 @@ public abstract class World : java.lang.Object, BlockView
 
     }
 
-    public virtual void disconnect()
+    public virtual void Disconnect()
     {
     }
 
@@ -2979,12 +2979,12 @@ public abstract class World : java.lang.Object, BlockView
 
     public void setTime(long time)
     {
-        properties.setWorldTime(time);
+        properties.WorldTime = time;
     }
 
     public void synchronizeTimeAndUpdates(long time)
     {
-        long var3 = time - properties.getTime();
+        long var3 = time - properties.WorldTime;
 
         var iter = scheduledUpdateSet.iterator();
         while (iter.hasNext())
@@ -2998,22 +2998,22 @@ public abstract class World : java.lang.Object, BlockView
 
     public long getSeed()
     {
-        return properties.getRandomSeed();
+        return properties.RandomSeed;
     }
 
     public long getTime()
     {
-        return properties.getTime();
+        return properties.WorldTime;
     }
 
     public Vec3i getSpawnPos()
     {
-        return new Vec3i(properties.getSpawnX(), properties.getSpawnY(), properties.getSpawnZ());
+        return new Vec3i(properties.SpawnX, properties.SpawnY, properties.SpawnZ);
     }
 
     public void setSpawnPos(Vec3i pos)
     {
-        properties.setSpawn(pos.x, pos.y, pos.z);
+        properties.SetSpawn(pos.x, pos.y, pos.z);
     }
 
     public void loadChunksNearEntity(Entity entity)
@@ -3070,7 +3070,7 @@ public abstract class World : java.lang.Object, BlockView
 
         for (var1 = 0; var1 < entitiesToUnload.Count; ++var1)
         {
-            notifyEntityRemoved(entitiesToUnload[var1]);
+            NotifyEntityRemoved(entitiesToUnload[var1]);
         }
 
         entitiesToUnload.Clear();
@@ -3099,7 +3099,7 @@ public abstract class World : java.lang.Object, BlockView
                 }
 
                 entities.RemoveAt(var1--);
-                notifyEntityRemoved(var2);
+                NotifyEntityRemoved(var2);
             }
         }
 
@@ -3115,7 +3115,7 @@ public abstract class World : java.lang.Object, BlockView
         int var6 = getBlockId(x, y, z);
         if (var6 > 0)
         {
-            Block.BLOCKS[var6].onBlockAction(this, x, y, z, soundType, pitch);
+            Block.Blocks[var6].onBlockAction(this, x, y, z, soundType, pitch);
         }
 
     }

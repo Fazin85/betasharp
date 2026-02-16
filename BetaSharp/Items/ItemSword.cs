@@ -17,7 +17,7 @@ public class ItemSword : Item
 
     public override float getMiningSpeedMultiplier(ItemStack itemStack, Block block)
     {
-        return block.id == Block.COBWEB.id ? 15.0F : 1.5F;
+        return block.id == Block.Cobweb.id ? 15.0F : 1.5F;
     }
 
     public override bool postHit(ItemStack itemStack, EntityLiving a, EntityLiving b)
@@ -44,6 +44,6 @@ public class ItemSword : Item
 
     public override bool isSuitableFor(Block block)
     {
-        return block.id == Block.COBWEB.id;
+        return block.id == Block.Cobweb.id;
     }
 }

@@ -53,9 +53,9 @@ public class OreFeature : Feature
                             for (int var44 = var34; var44 <= var37; ++var44)
                             {
                                 double var45 = (var44 + 0.5D - var24) / (var28 / 2.0D);
-                                if (var39 * var39 + var42 * var42 + var45 * var45 < 1.0D && var1.getBlockId(var38, var41, var44) == Block.STONE.id)
+                                if (var39 * var39 + var42 * var42 + var45 * var45 < 1.0D && var1.getBlockId(var38, var41, var44) == Block.Stone.id)
                                 {
-                                    var1.setBlockWithoutNotifyingNeighbors(var38, var41, var44, minableBlockId);
+                                    var1.SetBlockWithoutNotifyingNeighbors(var38, var41, var44, minableBlockId);
                                 }
                             }
                         }

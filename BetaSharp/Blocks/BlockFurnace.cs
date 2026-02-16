@@ -22,7 +22,7 @@ public class BlockFurnace : BlockWithEntity
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
-        return Block.FURNACE.id;
+        return Block.Furnace.id;
     }
 
     public override void onPlaced(World world, int x, int y, int z)
@@ -40,22 +40,22 @@ public class BlockFurnace : BlockWithEntity
             int westBlockId = world.getBlockId(x - 1, y, z);
             int eastBlockId = world.getBlockId(x + 1, y, z);
             sbyte direction = 3;
-            if (Block.BLOCKS_OPAQUE[blockNorth] && !Block.BLOCKS_OPAQUE[blockSouth])
+            if (Block.BlocksOpaque[blockNorth] && !Block.BlocksOpaque[blockSouth])
             {
                 direction = 3;
             }
 
-            if (Block.BLOCKS_OPAQUE[blockSouth] && !Block.BLOCKS_OPAQUE[blockNorth])
+            if (Block.BlocksOpaque[blockSouth] && !Block.BlocksOpaque[blockNorth])
             {
                 direction = 2;
             }
 
-            if (Block.BLOCKS_OPAQUE[westBlockId] && !Block.BLOCKS_OPAQUE[eastBlockId])
+            if (Block.BlocksOpaque[westBlockId] && !Block.BlocksOpaque[eastBlockId])
             {
                 direction = 5;
             }
 
-            if (Block.BLOCKS_OPAQUE[eastBlockId] && !Block.BLOCKS_OPAQUE[westBlockId])
+            if (Block.BlocksOpaque[eastBlockId] && !Block.BlocksOpaque[westBlockId])
             {
                 direction = 4;
             }
@@ -141,11 +141,11 @@ public class BlockFurnace : BlockWithEntity
         ignoreBlockRemoval = true;
         if (lit)
         {
-            world.setBlock(x, y, z, Block.LIT_FURNACE.id);
+            world.setBlock(x, y, z, Block.LitFurnace.id);
         }
         else
         {
-            world.setBlock(x, y, z, Block.FURNACE.id);
+            world.setBlock(x, y, z, Block.Furnace.id);
         }
 
         ignoreBlockRemoval = false;
@@ -213,7 +213,7 @@ public class BlockFurnace : BlockWithEntity
                         droppedItem.velocityX = (double)((float)random.nextGaussian() * var13);
                         droppedItem.velocityY = (double)((float)random.nextGaussian() * var13 + 0.2F);
                         droppedItem.velocityZ = (double)((float)random.nextGaussian() * var13);
-                        world.spawnEntity(droppedItem);
+                        world.SpawnEntity(droppedItem);
                     }
                 }
             }

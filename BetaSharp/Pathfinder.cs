@@ -206,9 +206,9 @@ public class Pathfinder : java.lang.Object
                     int var9 = worldMap.getBlockId(var6, var7, var8);
                     if (var9 > 0)
                     {
-                        if (var9 != Block.IRON_DOOR.id && var9 != Block.DOOR.id)
+                        if (var9 != Block.IronDoor.id && var9 != Block.Door.id)
                         {
-                            Material var11 = Block.BLOCKS[var9].material;
+                            Material var11 = Block.Blocks[var9].material;
                             if (var11.BlocksMovement)
                             {
                                 return 0;

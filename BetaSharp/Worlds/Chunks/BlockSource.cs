@@ -22,7 +22,7 @@ public class BlockSource
             for (int var0 = 0; var0 < 256; ++var0)
             {
                 byte var1 = (byte)var0;
-                if (var1 != 0 && Block.BLOCKS[var1 & 255] == null)
+                if (var1 != 0 && Block.Blocks[var1 & 255] == null)
                 {
                     var1 = 0;
                 }

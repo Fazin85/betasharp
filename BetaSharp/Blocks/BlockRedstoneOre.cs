@@ -46,18 +46,18 @@ public class BlockRedstoneOre : Block
     private void light(World world, int x, int y, int z)
     {
         spawnParticles(world, x, y, z);
-        if (id == Block.REDSTONE_ORE.id)
+        if (id == Block.RedstoneOre.id)
         {
-            world.setBlock(x, y, z, Block.LIT_REDSTONE_ORE.id);
+            world.setBlock(x, y, z, Block.LitRedstoneOre.id);
         }
 
     }
 
     public override void onTick(World world, int x, int y, int z, java.util.Random random)
     {
-        if (id == Block.LIT_REDSTONE_ORE.id)
+        if (id == Block.LitRedstoneOre.id)
         {
-            world.setBlock(x, y, z, Block.REDSTONE_ORE.id);
+            world.setBlock(x, y, z, Block.RedstoneOre.id);
         }
 
     }

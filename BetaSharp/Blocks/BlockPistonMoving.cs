@@ -1,4 +1,4 @@
-using BetaSharp.Blocks.Entities;
+﻿using BetaSharp.Blocks.Entities;
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
@@ -86,7 +86,7 @@ public class BlockPistonMoving : BlockWithEntity
             BlockEntityPiston var7 = getPistonBlockEntity(world, x, y, z);
             if (var7 != null)
             {
-                Block.BLOCKS[var7.getPushedBlockId()].dropStacks(world, x, y, z, var7.getPushedBlockData());
+                Block.Blocks[var7.getPushedBlockId()].dropStacks(world, x, y, z, var7.getPushedBlockData());
             }
         }
     }
@@ -128,7 +128,7 @@ public class BlockPistonMoving : BlockWithEntity
         BlockEntityPiston var5 = getPistonBlockEntity(blockView, x, y, z);
         if (var5 != null)
         {
-            Block var6 = Block.BLOCKS[var5.getPushedBlockId()];
+            Block var6 = Block.Blocks[var5.getPushedBlockId()];
             if (var6 == null || var6 == this)
             {
                 return;
@@ -156,7 +156,7 @@ public class BlockPistonMoving : BlockWithEntity
     {
         if (blockId != 0 && blockId != id)
         {
-            Box? shape = Block.BLOCKS[blockId].getCollisionShape(world, x, y, z);
+            Box? shape = Block.Blocks[blockId].getCollisionShape(world, x, y, z);
             if (shape == null)
             {
                 return null;
@@ -181,7 +181,7 @@ public class BlockPistonMoving : BlockWithEntity
 
     private BlockEntityPiston getPistonBlockEntity(BlockView blockView, int x, int y, int z)
     {
-        BlockEntity var5 = blockView.getBlockEntity(x, y, z);
+        BlockEntity? var5 = blockView.getBlockEntity(x, y, z);
         return var5 != null && var5 is BlockEntityPiston ? (BlockEntityPiston)var5 : null;
     }
 }

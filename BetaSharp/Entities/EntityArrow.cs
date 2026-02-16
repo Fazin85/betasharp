@@ -109,8 +109,8 @@ public class EntityArrow : Entity
         int blockId = world.getBlockId(xTile, yTile, zTile);
         if (blockId > 0)
         {
-            Block.BLOCKS[blockId].updateBoundingBox(world, xTile, yTile, zTile);
-            Box? box = Block.BLOCKS[blockId].getCollisionShape(world, xTile, yTile, zTile);
+            Block.Blocks[blockId].updateBoundingBox(world, xTile, yTile, zTile);
+            Box? box = Block.Blocks[blockId].getCollisionShape(world, xTile, yTile, zTile);
             if (box != null && box.Value.contains(new Vec3D(x, y, z)))
             {
                 inGround = true;

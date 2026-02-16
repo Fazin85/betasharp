@@ -41,8 +41,8 @@ public class ItemMap : NetworkSyncedItem
             stack.setDamage(world.getIdCount("map"));
             string mapName = "map_" + stack.getDamage();
             mapState = new MapState(mapName);
-            mapState.centerX = world.getProperties().getSpawnX();
-            mapState.centerZ = world.getProperties().getSpawnZ();
+            mapState.centerX = world.getProperties().SpawnX;
+            mapState.centerZ = world.getProperties().SpawnZ;
             mapState.scale = 3;
             mapState.dimension = (sbyte)world.dimension.id;
             mapState.markDirty();
@@ -107,11 +107,11 @@ public class ItemMap : NetworkSyncedItem
                                 sampleX = sampleX * sampleX * 31287121 + sampleX * 11;
                                 if ((sampleX >> 20 & 1) == 0)
                                 {
-                                    blockHistogram[Block.DIRT.id] += 10;
+                                    blockHistogram[Block.Dirt.id] += 10;
                                 }
                                 else
                                 {
-                                    blockHistogram[Block.STONE.id] += 10;
+                                    blockHistogram[Block.Stone.id] += 10;
                                 }
 
                                 avgHeight = 100.0D;
@@ -166,7 +166,7 @@ public class ItemMap : NetworkSyncedItem
                             colorIndex = 0;
                             if (sampleZ > 0)
                             {
-                                MapColor mapColor = Block.BLOCKS[sampleZ].material.MapColor;
+                                MapColor mapColor = Block.Blocks[sampleZ].material.MapColor;
                                 if (mapColor == MapColor.waterColor)
                                 {
                                     shadeFactor = (double)fluidDepth * 0.1D + (double)(pixelX + pixelZ & 1) * 0.2D;
@@ -232,7 +232,7 @@ public class ItemMap : NetworkSyncedItem
             {
                 foundSurface = false;
             }
-            else if (scanY > 0 && blockId > 0 && Block.BLOCKS[blockId].material.MapColor == MapColor.airColor)
+            else if (scanY > 0 && blockId > 0 && Block.Blocks[blockId].material.MapColor == MapColor.airColor)
             {
                 foundSurface = false;
             }
@@ -245,7 +245,7 @@ public class ItemMap : NetworkSyncedItem
 
             if (foundSurface)
             {
-                if (blockId == 0 || !Block.BLOCKS[blockId].material.IsFluid)
+                if (blockId == 0 || !Block.Blocks[blockId].material.IsFluid)
                 {
                     exitLoop = true;
                 }
@@ -257,7 +257,7 @@ public class ItemMap : NetworkSyncedItem
                     {
                         int fluidBlockId = chunk.getBlockId(chunkX + dx, depthCheckY--, chunkZ + dz);
                         ++fluidDepth;
-                        if (depthCheckY <= 0 || fluidBlockId == 0 || !Block.BLOCKS[fluidBlockId].material.IsFluid)
+                        if (depthCheckY <= 0 || fluidBlockId == 0 || !Block.Blocks[fluidBlockId].material.IsFluid)
                         {
                             exitLoop = true;
                             break;

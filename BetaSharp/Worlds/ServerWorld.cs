@@ -45,7 +45,7 @@ public class ServerWorld : World
     }
 
 
-    protected override ChunkSource createChunkCache()
+    protected override ChunkSource CreateChunkCache()
     {
         ChunkStorage var1 = storage.getChunkStorage(dimension);
         chunkCache = new ServerChunkCache(this, var1, dimension.createChunkGenerator());
@@ -71,8 +71,8 @@ public class ServerWorld : World
 
     public override bool canInteract(EntityPlayer player, int x, int y, int z)
     {
-        int var5 = (int)MathHelper.abs(x - properties.getSpawnX());
-        int var6 = (int)MathHelper.abs(z - properties.getSpawnZ());
+        int var5 = (int)MathHelper.abs(x - properties.SpawnX);
+        int var6 = (int)MathHelper.abs(z - properties.SpawnZ);
         if (var5 > var6)
         {
             var6 = var5;
@@ -82,16 +82,16 @@ public class ServerWorld : World
     }
 
 
-    protected override void notifyEntityAdded(Entity entity)
+    protected override void NotifyEntityAdded(Entity entity)
     {
-        base.notifyEntityAdded(entity);
+        base.NotifyEntityAdded(entity);
         entitiesById.Add(entity.id, entity);
     }
 
 
-    protected override void notifyEntityRemoved(Entity entity)
+    protected override void NotifyEntityRemoved(Entity entity)
     {
-        base.notifyEntityRemoved(entity);
+        base.NotifyEntityRemoved(entity);
         entitiesById.Remove(entity.id);
     }
 
@@ -148,10 +148,10 @@ public class ServerWorld : World
     }
 
 
-    protected override void updateWeatherCycles()
+    protected override void UpdateWeatherCycles()
     {
         bool var1 = isRaining();
-        base.updateWeatherCycles();
+        base.UpdateWeatherCycles();
         if (var1 != isRaining())
         {
             if (var1)

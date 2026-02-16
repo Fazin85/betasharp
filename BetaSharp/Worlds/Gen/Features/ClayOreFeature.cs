@@ -7,7 +7,7 @@ namespace BetaSharp.Worlds.Gen.Features;
 public class ClayOreFeature : Feature
 {
 
-    private int clayBlockId = Block.CLAY.id;
+    private int clayBlockId = Block.Clay.id;
     private int numberOfBlocks;
 
     public ClayOreFeature(int var1)
@@ -58,9 +58,9 @@ public class ClayOreFeature : Feature
                             if (var41 * var41 + var43 * var43 + var45 * var45 < 1.0D)
                             {
                                 int var47 = var1.getBlockId(var38, var39, var40);
-                                if (var47 == Block.SAND.id)
+                                if (var47 == Block.Sand.id)
                                 {
-                                    var1.setBlockWithoutNotifyingNeighbors(var38, var39, var40, clayBlockId);
+                                    var1.SetBlockWithoutNotifyingNeighbors(var38, var39, var40, clayBlockId);
                                 }
                             }
                         }

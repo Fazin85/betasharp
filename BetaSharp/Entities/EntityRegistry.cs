@@ -90,7 +90,7 @@ public class EntityRegistry
                     {
                         entity.setPosition(x, y, z);
                         entity.setPositionAndAngles(x, y, z, 0, 0);
-                        if (!world.spawnEntity(entity))
+                        if (!world.SpawnEntity(entity))
                         {
                             Console.Error.WriteLine($"Entity `{name}` with ID:`{id}` failed to join world.");
                         }

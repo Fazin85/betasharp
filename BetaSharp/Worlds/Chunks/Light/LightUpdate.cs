@@ -86,7 +86,7 @@ public struct LightUpdate
                             int var16 = world.getBrightness(lightType, var10, var27, var11);
                             bool var17 = false;
                             int var18 = world.getBlockId(var10, var27, var11);
-                            int var19 = Block.BLOCK_LIGHT_OPACITY[var18];
+                            int var19 = Block.BlockLightOpacity[var18];
                             if (var19 == 0)
                             {
                                 var19 = 1;
@@ -102,7 +102,7 @@ public struct LightUpdate
                             }
                             else if (lightType == LightType.Block)
                             {
-                                var20 = Block.BLOCKS_LIGHT_LUMINANCE[var18];
+                                var20 = Block.BlocksLightLuminance[var18];
                             }
 
                             int var21;

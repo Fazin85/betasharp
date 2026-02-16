@@ -112,7 +112,7 @@ public class EntityGhast : EntityFlying, Monster
                     fireball.x = x + lookDir.x * spawnOffset;
                     fireball.y = y + (double)(height / 2.0F) + 0.5D;
                     fireball.z = z + lookDir.z * spawnOffset;
-                    world.spawnEntity(fireball);
+                    world.SpawnEntity(fireball);
                     attackCounter = -40;
                 }
             }

@@ -1,8 +1,8 @@
-using BetaSharp.Blocks.Materials;
-using BetaSharp.Client.Colors;
+﻿using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Worlds;
+using BetaSharp.Worlds.Colors;
 
 namespace BetaSharp.Blocks;
 
@@ -55,10 +55,10 @@ public class BlockLeaves : BlockLeavesBase
                     for (int offsetZ = -searchRadius; offsetZ <= searchRadius; ++offsetZ)
                     {
                         int blockId = world.getBlockId(x + offsetX, y + offsetY, z + offsetZ);
-                        if (blockId == Block.LEAVES.id)
+                        if (blockId == Block.Leaves.id)
                         {
                             int leavesMeta = world.getBlockMeta(x + offsetX, y + offsetY, z + offsetZ);
-                            world.setBlockMetaWithoutNotifyingNeighbors(x + offsetX, y + offsetY, z + offsetZ, leavesMeta | 8);
+                            world.SetBlockMetaWithoutNotifyingNeighbors(x + offsetX, y + offsetY, z + offsetZ, leavesMeta | 8);
                         }
                     }
                 }
@@ -100,11 +100,11 @@ public class BlockLeaves : BlockLeavesBase
                             for (dy = -decayRadius; dy <= decayRadius; ++dy)
                             {
                                 dz = world.getBlockId(x + distanceToLog, y + dx, z + dy);
-                                if (dz == Block.LOG.id)
+                                if (dz == Block.Log.id)
                                 {
                                     decayRegion[(distanceToLog + centerOffset) * planeSize + (dx + centerOffset) * regionSize + dy + centerOffset] = 0;
                                 }
-                                else if (dz == Block.LEAVES.id)
+                                else if (dz == Block.Leaves.id)
                                 {
                                     decayRegion[(distanceToLog + centerOffset) * planeSize + (dx + centerOffset) * regionSize + dy + centerOffset] = -2;
                                 }
@@ -171,7 +171,7 @@ public class BlockLeaves : BlockLeavesBase
                 distanceToLog = decayRegion[centerOffset * planeSize + centerOffset * regionSize + centerOffset];
                 if (distanceToLog >= 0)
                 {
-                    world.setBlockMetaWithoutNotifyingNeighbors(x, y, z, meta & -9);
+                    world.SetBlockMetaWithoutNotifyingNeighbors(x, y, z, meta & -9);
                 }
                 else
                 {
@@ -195,7 +195,7 @@ public class BlockLeaves : BlockLeavesBase
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
-        return Block.SAPLING.id;
+        return Block.Sapling.id;
     }
 
     public override void afterBreak(World world, EntityPlayer player, int x, int y, int z, int meta)
@@ -203,7 +203,7 @@ public class BlockLeaves : BlockLeavesBase
         if (!world.isRemote && player.getHand() != null && player.getHand().itemId == Item.SHEARS.id)
         {
             player.increaseStat(Stats.Stats.mineBlockStatArray[id], 1);
-            dropStack(world, x, y, z, new ItemStack(Block.LEAVES.id, 1, meta & 3));
+            dropStack(world, x, y, z, new ItemStack(Block.Leaves.id, 1, meta & 3));
         }
         else
         {

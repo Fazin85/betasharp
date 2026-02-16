@@ -1,6 +1,4 @@
-using BetaSharp.Client.Resource.Language;
-
-namespace BetaSharp.Stats;
+﻿namespace BetaSharp.Stats;
 
 public class StatCollector
 {

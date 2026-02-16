@@ -18,7 +18,7 @@ public class BlockLog : Block
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
-        return Block.LOG.id;
+        return Block.Log.id;
     }
 
     public override void afterBreak(World world, EntityPlayer player, int x, int y, int z, int meta)
@@ -39,12 +39,12 @@ public class BlockLog : Block
                     for (int offsetZ = -searchRadius; offsetZ <= searchRadius; ++offsetZ)
                     {
                         int neighborBlockId = world.getBlockId(x + offsetX, y + offsetY, z + offsetZ);
-                        if (neighborBlockId == Block.LEAVES.id)
+                        if (neighborBlockId == Block.Leaves.id)
                         {
                             int leavesMeta = world.getBlockMeta(x + offsetX, y + offsetY, z + offsetZ);
                             if ((leavesMeta & 8) == 0)
                             {
-                                world.setBlockMetaWithoutNotifyingNeighbors(x + offsetX, y + offsetY, z + offsetZ, leavesMeta | 8);
+                                world.SetBlockMetaWithoutNotifyingNeighbors(x + offsetX, y + offsetY, z + offsetZ, leavesMeta | 8);
                             }
                         }
                     }

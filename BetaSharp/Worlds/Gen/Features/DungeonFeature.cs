@@ -63,11 +63,11 @@ public class DungeonFeature : Feature
                         {
                             if (var11 == var4 - 1 && var2.nextInt(4) != 0)
                             {
-                                var1.setBlock(var10, var11, var12, Block.MOSSY_COBBLESTONE.id);
+                                var1.setBlock(var10, var11, var12, Block.MossyCobblestone.id);
                             }
                             else
                             {
-                                var1.setBlock(var10, var11, var12, Block.COBBLESTONE.id);
+                                var1.setBlock(var10, var11, var12, Block.Cobblestone.id);
                             }
                         }
                     }
@@ -101,7 +101,7 @@ public class DungeonFeature : Feature
                         }
                         if (var15 == 1)
                         {
-                            var1.setBlock(var12, var4, var14, Block.CHEST.id);
+                            var1.setBlock(var12, var4, var14, Block.Chest.id);
                             BlockEntityChest var16 = (BlockEntityChest)var1.getBlockEntity(var12, var4, var14);
 
                             for (int var17 = 0; var17 < 8; ++var17)
@@ -117,7 +117,7 @@ public class DungeonFeature : Feature
                 }
             }
 
-            var1.setBlock(var3, var4, var5, Block.SPAWNER.id);
+            var1.setBlock(var3, var4, var5, Block.Spawner.id);
             BlockEntityMobSpawner var19 = (BlockEntityMobSpawner)var1.getBlockEntity(var3, var4, var5);
             var19.setSpawnedEntityId(pickMobSpawner(var2));
             return true;

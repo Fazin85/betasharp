@@ -14,38 +14,38 @@ public class NetherLavaSpringFeature : Feature
 
     public override bool generate(World var1, java.util.Random var2, int var3, int var4, int var5)
     {
-        if (var1.getBlockId(var3, var4 + 1, var5) != Block.NETHERRACK.id)
+        if (var1.getBlockId(var3, var4 + 1, var5) != Block.Netherrack.id)
         {
             return false;
         }
-        else if (var1.getBlockId(var3, var4, var5) != 0 && var1.getBlockId(var3, var4, var5) != Block.NETHERRACK.id)
+        else if (var1.getBlockId(var3, var4, var5) != 0 && var1.getBlockId(var3, var4, var5) != Block.Netherrack.id)
         {
             return false;
         }
         else
         {
             int var6 = 0;
-            if (var1.getBlockId(var3 - 1, var4, var5) == Block.NETHERRACK.id)
+            if (var1.getBlockId(var3 - 1, var4, var5) == Block.Netherrack.id)
             {
                 ++var6;
             }
 
-            if (var1.getBlockId(var3 + 1, var4, var5) == Block.NETHERRACK.id)
+            if (var1.getBlockId(var3 + 1, var4, var5) == Block.Netherrack.id)
             {
                 ++var6;
             }
 
-            if (var1.getBlockId(var3, var4, var5 - 1) == Block.NETHERRACK.id)
+            if (var1.getBlockId(var3, var4, var5 - 1) == Block.Netherrack.id)
             {
                 ++var6;
             }
 
-            if (var1.getBlockId(var3, var4, var5 + 1) == Block.NETHERRACK.id)
+            if (var1.getBlockId(var3, var4, var5 + 1) == Block.Netherrack.id)
             {
                 ++var6;
             }
 
-            if (var1.getBlockId(var3, var4 - 1, var5) == Block.NETHERRACK.id)
+            if (var1.getBlockId(var3, var4 - 1, var5) == Block.Netherrack.id)
             {
                 ++var6;
             }
@@ -80,7 +80,7 @@ public class NetherLavaSpringFeature : Feature
             {
                 var1.setBlock(var3, var4, var5, lavaBlockId);
                 var1.instantBlockUpdateEnabled = true;
-                Block.BLOCKS[lavaBlockId].onTick(var1, var3, var4, var5, var2);
+                Block.Blocks[lavaBlockId].onTick(var1, var3, var4, var5, var2);
                 var1.instantBlockUpdateEnabled = false;
             }
 

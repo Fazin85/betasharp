@@ -141,16 +141,16 @@ public class EntityMinecart : Entity, IInventory
                                 entityItem.velocityX = (double)((float)random.nextGaussian() * scatterSpeed);
                                 entityItem.velocityY = (double)((float)random.nextGaussian() * scatterSpeed + 0.2F);
                                 entityItem.velocityZ = (double)((float)random.nextGaussian() * scatterSpeed);
-                                world.spawnEntity(entityItem);
+                                world.SpawnEntity(entityItem);
                             }
                         }
                     }
 
-                    dropItem(Block.CHEST.id, 1, 0.0F);
+                    dropItem(Block.Chest.id, 1, 0.0F);
                 }
                 else if (type == 2)
                 {
-                    dropItem(Block.FURNACE.id, 1, 0.0F);
+                    dropItem(Block.Furnace.id, 1, 0.0F);
                 }
             }
 
@@ -200,7 +200,7 @@ public class EntityMinecart : Entity, IInventory
                     entityItem.velocityX = (double)((float)random.nextGaussian() * scatterSpeed);
                     entityItem.velocityY = (double)((float)random.nextGaussian() * scatterSpeed + 0.2F);
                     entityItem.velocityZ = (double)((float)random.nextGaussian() * scatterSpeed);
-                    world.spawnEntity(entityItem);
+                    world.SpawnEntity(entityItem);
                 }
             }
         }
@@ -276,13 +276,13 @@ public class EntityMinecart : Entity, IInventory
                 y = (double)floorY;
                 bool var12 = false;
                 bool var13 = false;
-                if (var9 == Block.POWERED_RAIL.id)
+                if (var9 == Block.PoweredRail.id)
                 {
                     var12 = (var11 & 8) != 0;
                     var13 = !var12;
                 }
 
-                if (((BlockRail)Block.BLOCKS[var9]).isAlwaysStraight())
+                if (((BlockRail)Block.Blocks[var9]).isAlwaysStraight())
                 {
                     var11 &= 7;
                 }
@@ -643,7 +643,7 @@ public class EntityMinecart : Entity, IInventory
         else
         {
             int var13 = world.getBlockMeta(var9, var10, var11);
-            if (((BlockRail)Block.BLOCKS[var12]).isAlwaysStraight())
+            if (((BlockRail)Block.Blocks[var12]).isAlwaysStraight())
             {
                 var13 &= 7;
             }
@@ -690,7 +690,7 @@ public class EntityMinecart : Entity, IInventory
         {
             int meta = world.getBlockMeta(floorX, floorY, floorZ);
             y = (double)floorY;
-            if (((BlockRail)Block.BLOCKS[blockId]).isAlwaysStraight())
+            if (((BlockRail)Block.Blocks[blockId]).isAlwaysStraight())
             {
                 meta &= 7;
             }

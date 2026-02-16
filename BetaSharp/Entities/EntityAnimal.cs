@@ -16,7 +16,7 @@ public abstract class EntityAnimal : EntityCreature, SpawnableEntity
 
     protected override float getBlockPathWeight(int x, int y, int z)
     {
-        return world.getBlockId(x, y - 1, z) == Block.GRASS_BLOCK.id ? 10.0F : world.getLuminance(x, y, z) - 0.5F;
+        return world.getBlockId(x, y - 1, z) == Block.GrassBlock.id ? 10.0F : world.getLuminance(x, y, z) - 0.5F;
     }
 
     public override void writeNbt(NBTTagCompound nbt)
@@ -34,7 +34,7 @@ public abstract class EntityAnimal : EntityCreature, SpawnableEntity
         int x = MathHelper.floor_double(base.x);
         int y = MathHelper.floor_double(boundingBox.minY);
         int z = MathHelper.floor_double(base.z);
-        return world.getBlockId(x, y - 1, z) == Block.GRASS_BLOCK.id && world.getBrightness(x, y, z) > 8 && base.canSpawn();
+        return world.getBlockId(x, y - 1, z) == Block.GrassBlock.id && world.getBrightness(x, y, z) > 8 && base.canSpawn();
     }
 
     public override int getTalkInterval()

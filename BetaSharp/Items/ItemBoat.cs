@@ -45,12 +45,12 @@ public class ItemBoat : Item
                 int hitZ = hitResult.blockZ;
                 if (!world.isRemote)
                 {
-                    if (world.getBlockId(hitX, hitY, hitZ) == Block.SNOW.id)
+                    if (world.getBlockId(hitX, hitY, hitZ) == Block.Snow.id)
                     {
                         --hitY;
                     }
 
-                    world.spawnEntity(new EntityBoat(world, (double)((float)hitX + 0.5F), (double)((float)hitY + 1.0F), (double)((float)hitZ + 0.5F)));
+                    world.SpawnEntity(new EntityBoat(world, (double)((float)hitX + 0.5F), (double)((float)hitY + 1.0F), (double)((float)hitZ + 0.5F)));
                 }
 
                 --itemStack.count;

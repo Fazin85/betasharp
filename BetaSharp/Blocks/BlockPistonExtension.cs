@@ -10,7 +10,7 @@ public class BlockPistonExtension : Block
 
     public BlockPistonExtension(int id, int textureId) : base(id, textureId, Material.Piston)
     {
-        setSoundGroup(soundStoneFootstep);
+        setSoundGroup(SoundStoneFootstep);
         setHardness(0.5F);
     }
 
@@ -33,12 +33,12 @@ public class BlockPistonExtension : Block
         y += PistonConstants.HEAD_OFFSET_Y[var6];
         z += PistonConstants.HEAD_OFFSET_Z[var6];
         int var7 = world.getBlockId(x, y, z);
-        if (var7 == Block.PISTON.id || var7 == Block.STICKY_PISTON.id)
+        if (var7 == Block.Piston.id || var7 == Block.StickyPiston.id)
         {
             var5 = world.getBlockMeta(x, y, z);
             if (BlockPistonBase.isExtended(var5))
             {
-                Block.BLOCKS[var7].dropStacks(world, x, y, z, var5);
+                Block.Blocks[var7].dropStacks(world, x, y, z, var5);
                 world.setBlock(x, y, z, 0);
             }
         }
@@ -158,13 +158,13 @@ public class BlockPistonExtension : Block
     {
         int var6 = getFacing(world.getBlockMeta(x, y, z));
         int var7 = world.getBlockId(x - PistonConstants.HEAD_OFFSET_X[var6], y - PistonConstants.HEAD_OFFSET_Y[var6], z - PistonConstants.HEAD_OFFSET_Z[var6]);
-        if (var7 != Block.PISTON.id && var7 != Block.STICKY_PISTON.id)
+        if (var7 != Block.Piston.id && var7 != Block.StickyPiston.id)
         {
             world.setBlock(x, y, z, 0);
         }
         else
         {
-            Block.BLOCKS[var7].neighborUpdate(world, x - PistonConstants.HEAD_OFFSET_X[var6], y - PistonConstants.HEAD_OFFSET_Y[var6], z - PistonConstants.HEAD_OFFSET_Z[var6], id);
+            Block.Blocks[var7].neighborUpdate(world, x - PistonConstants.HEAD_OFFSET_X[var6], y - PistonConstants.HEAD_OFFSET_Y[var6], z - PistonConstants.HEAD_OFFSET_Z[var6], id);
         }
 
     }
