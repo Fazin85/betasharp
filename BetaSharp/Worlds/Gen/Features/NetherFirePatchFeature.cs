@@ -5,16 +5,16 @@ namespace BetaSharp.Worlds.Gen.Features;
 public class NetherFirePatchFeature : Feature
 {
 
-    public override bool generate(World var1, java.util.Random var2, int var3, int var4, int var5)
+    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
     {
-        for (int var6 = 0; var6 < 64; ++var6)
+        for (int i = 0; i < 64; ++i)
         {
-            int var7 = var3 + var2.nextInt(8) - var2.nextInt(8);
-            int var8 = var4 + var2.nextInt(4) - var2.nextInt(4);
-            int var9 = var5 + var2.nextInt(8) - var2.nextInt(8);
-            if (var1.isAir(var7, var8, var9) && var1.getBlockId(var7, var8 - 1, var9) == Block.Netherrack.id)
+            int genX = x + rand.nextInt(8) - rand.nextInt(8);
+            int genY = y + rand.nextInt(4) - rand.nextInt(4);
+            int genZ = z + rand.nextInt(8) - rand.nextInt(8);
+            if (world.isAir(genX, genY, genZ) && world.getBlockId(genX, genY - 1, genZ) == Block.Netherrack.id)
             {
-                var1.setBlock(var7, var8, var9, Block.Fire.id);
+                world.setBlock(genX, genY, genZ, Block.Fire.id);
             }
         }
 

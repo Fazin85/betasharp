@@ -383,7 +383,7 @@ public class NetherChunkGenerator : ChunkSource
             var7 = var4 + random.nextInt(16) + 8;
             var8 = random.nextInt(120) + 4;
             var9 = var5 + random.nextInt(16) + 8;
-            new NetherLavaSpringFeature(Block.FlowingLava.id).generate(world, random, var7, var8, var9);
+            new NetherLavaSpringFeature(Block.FlowingLava.id).Generate(world, random, var7, var8, var9);
         }
 
         var6 = random.nextInt(random.nextInt(10) + 1) + 1;
@@ -394,7 +394,7 @@ public class NetherChunkGenerator : ChunkSource
             var8 = var4 + random.nextInt(16) + 8;
             var9 = random.nextInt(120) + 4;
             var10 = var5 + random.nextInt(16) + 8;
-            new NetherFirePatchFeature().generate(world, random, var8, var9, var10);
+            new NetherFirePatchFeature().Generate(world, random, var8, var9, var10);
         }
 
         var6 = random.nextInt(random.nextInt(10) + 1);
@@ -404,7 +404,7 @@ public class NetherChunkGenerator : ChunkSource
             var8 = var4 + random.nextInt(16) + 8;
             var9 = random.nextInt(120) + 4;
             var10 = var5 + random.nextInt(16) + 8;
-            new GlowstoneClusterFeature().generate(world, random, var8, var9, var10);
+            new GlowstoneClusterFeature().Generate(world, random, var8, var9, var10);
         }
 
         for (var7 = 0; var7 < 10; ++var7)
@@ -412,7 +412,7 @@ public class NetherChunkGenerator : ChunkSource
             var8 = var4 + random.nextInt(16) + 8;
             var9 = random.nextInt(128);
             var10 = var5 + random.nextInt(16) + 8;
-            new GlowstoneClusterFeatureRare().generate(world, random, var8, var9, var10);
+            new GlowstoneClusterFeatureRare().Generate(world, random, var8, var9, var10);
         }
 
         if (random.nextInt(1) == 0)
@@ -420,7 +420,7 @@ public class NetherChunkGenerator : ChunkSource
             var7 = var4 + random.nextInt(16) + 8;
             var8 = random.nextInt(128);
             var9 = var5 + random.nextInt(16) + 8;
-            new PlantPatchFeature(Block.BrownMushroom.id).generate(world, random, var7, var8, var9);
+            new PlantPatchFeature(Block.BrownMushroom.id).Generate(world, random, var7, var8, var9);
         }
 
         if (random.nextInt(1) == 0)
@@ -428,7 +428,7 @@ public class NetherChunkGenerator : ChunkSource
             var7 = var4 + random.nextInt(16) + 8;
             var8 = random.nextInt(128);
             var9 = var5 + random.nextInt(16) + 8;
-            new PlantPatchFeature(Block.RedMushroom.id).generate(world, random, var7, var8, var9);
+            new PlantPatchFeature(Block.RedMushroom.id).Generate(world, random, var7, var8, var9);
         }
 
         BlockSand.fallInstantly = false;

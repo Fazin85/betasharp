@@ -60,7 +60,7 @@ public class BlockSapling : BlockPlant
             }
         }
 
-        if (!((Feature)treeFeature).generate(world, random, x, y, z))
+        if (!((Feature)treeFeature).Generate(world, random, x, y, z))
         {
             world.SetBlockWithoutNotifyingNeighbors(x, y, z, id, saplingType);
         }
