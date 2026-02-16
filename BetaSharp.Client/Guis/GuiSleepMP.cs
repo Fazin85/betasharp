@@ -1,4 +1,4 @@
-﻿using BetaSharp.Client.Input;
+using BetaSharp.Client.Input;
 using BetaSharp.Client.Network;
 using BetaSharp.Network.Packets.C2SPlay;
 

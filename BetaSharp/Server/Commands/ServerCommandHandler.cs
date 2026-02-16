@@ -1,4 +1,4 @@
-﻿namespace BetaSharp.Server.Commands;
+namespace BetaSharp.Server.Commands;
 
 public class ServerCommandHandler
 {

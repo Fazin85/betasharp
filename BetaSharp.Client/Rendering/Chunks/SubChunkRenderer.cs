@@ -1,4 +1,4 @@
-﻿using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Util;
 using BetaSharp.Util.Maths;
 using Silk.NET.Maths;

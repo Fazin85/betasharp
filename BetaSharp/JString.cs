@@ -1,4 +1,4 @@
-﻿namespace BetaSharp;
+namespace BetaSharp;
 
 public class JString : java.lang.Object
 {

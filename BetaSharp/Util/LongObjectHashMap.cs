@@ -1,4 +1,4 @@
-﻿using java.lang;
+using java.lang;
 
 namespace BetaSharp.Util;
 

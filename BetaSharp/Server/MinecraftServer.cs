@@ -1,4 +1,4 @@
-﻿using BetaSharp.Network.Packets.S2CPlay;
+using BetaSharp.Network.Packets.S2CPlay;
 using BetaSharp.Server.Commands;
 using BetaSharp.Server.Entities;
 using BetaSharp.Server.Internal;

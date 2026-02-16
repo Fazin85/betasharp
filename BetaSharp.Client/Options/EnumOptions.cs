@@ -1,4 +1,4 @@
-﻿namespace BetaSharp.Client.Options;
+namespace BetaSharp.Client.Options;
 
 public class EnumOptions : java.lang.Object
 {

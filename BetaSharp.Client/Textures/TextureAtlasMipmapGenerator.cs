@@ -1,4 +1,4 @@
-﻿namespace BetaSharp.Client.Textures;
+namespace BetaSharp.Client.Textures;
 
 public class TextureAtlasMipmapGenerator
 {

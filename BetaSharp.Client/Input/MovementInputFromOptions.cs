@@ -1,4 +1,4 @@
-﻿using BetaSharp.Client.Options;
+using BetaSharp.Client.Options;
 using BetaSharp.Entities;
 
 namespace BetaSharp.Client.Input;

@@ -1,4 +1,4 @@
-﻿namespace BetaSharp.Worlds.Colors;
+namespace BetaSharp.Worlds.Colors;
 
 public class GrassColors : java.lang.Object
 {
