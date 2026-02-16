@@ -131,7 +131,7 @@ public class GuiMainMenu : GuiScreen
                 mc.shutdown();
                 break;
             case ButtonLanguage:
-                //mc.displayGuiScreen(new GuiLanguage(this));
+                mc.displayGuiScreen(new GuiLanguage(this));
                 break;
         }
     }
