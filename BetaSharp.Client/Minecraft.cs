@@ -187,7 +187,7 @@ public partial class Minecraft : java.lang.Object, Runnable
             Display.MSAA_Samples = msaaValues[options.msaaLevel];
 
             Display.create();
-            Display.getGlfw().SetWindowSizeLimits(Display.getWindowHandle(), 850, 480, 1280, 720);
+            Display.getGlfw().SetWindowSizeLimits(Display.getWindowHandle(), 850, 480, 3840, 2160);
 
             GLManager.Init(Display.getGL()!);
         }
