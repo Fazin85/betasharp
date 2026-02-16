@@ -1,4 +1,4 @@
-﻿namespace BetaSharp.Server.Threading;
+namespace BetaSharp.Server.Threading;
 
 public class RunServerThread : java.lang.Thread
 {

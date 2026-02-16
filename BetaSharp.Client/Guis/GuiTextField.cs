@@ -1,4 +1,4 @@
-﻿using BetaSharp.Client.Rendering;
+using BetaSharp.Client.Rendering;
 using BetaSharp.Util;
 
 namespace BetaSharp.Client.Guis;

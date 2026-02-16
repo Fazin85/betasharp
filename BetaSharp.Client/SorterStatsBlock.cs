@@ -1,4 +1,4 @@
-﻿using BetaSharp.Client.Guis;
+using BetaSharp.Client.Guis;
 using BetaSharp.Stats;
 using java.util;
 using java.util.function;

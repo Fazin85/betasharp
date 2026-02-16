@@ -1,4 +1,4 @@
-﻿namespace BetaSharp.Client.Rendering.Core;
+namespace BetaSharp.Client.Rendering.Core;
 
 public class VertexArray : IDisposable
 {

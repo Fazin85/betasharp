@@ -1,4 +1,4 @@
-﻿using BetaSharp.Worlds;
+using BetaSharp.Worlds;
 
 namespace BetaSharp.Client.Entities.FX;
 

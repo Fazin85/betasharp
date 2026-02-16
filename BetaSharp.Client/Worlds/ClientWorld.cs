@@ -1,4 +1,4 @@
-﻿using BetaSharp.Client.Chunks;
+using BetaSharp.Client.Chunks;
 using BetaSharp.Client.Network;
 using BetaSharp.Entities;
 using BetaSharp.Network.Packets.Play;

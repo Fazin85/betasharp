@@ -1,4 +1,4 @@
-﻿using BetaSharp.Client.Entities;
+using BetaSharp.Client.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Network.Packets.C2SPlay;
 using BetaSharp.Network.Packets.Play;

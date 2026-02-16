@@ -1,4 +1,4 @@
-﻿using BetaSharp.Server.Internal;
+using BetaSharp.Server.Internal;
 using BetaSharp.Server.Threading;
 
 namespace BetaSharp.Client.Guis;

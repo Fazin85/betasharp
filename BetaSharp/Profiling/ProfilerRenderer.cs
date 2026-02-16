@@ -1,4 +1,4 @@
-﻿using ImGuiNET;
+using ImGuiNET;
 
 namespace BetaSharp.Profiling;
 

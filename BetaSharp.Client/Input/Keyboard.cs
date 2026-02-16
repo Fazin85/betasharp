@@ -1,4 +1,4 @@
-﻿using Silk.NET.GLFW;
+using Silk.NET.GLFW;
 
 namespace BetaSharp.Client.Input;
 

@@ -1,0 +1,34 @@
+name: Code Quality Check
+
+on:
+  workflow_dispatch:
+#  push:
+#    branches:
+#      - main
+#  pull_request:
+#    branches:
+#      - main
+
+
+jobs:
+  format-check:
+    name: Check Code Formatting & Style
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Check code formatting & analyzers
+        run: |
+          dotnet tool restore || true
+          dotnet format --verify-no-changes --verbosity minimal
+          dotnet format analyzers --verify-no-changes --verbosity minimal

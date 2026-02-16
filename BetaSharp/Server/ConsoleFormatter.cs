@@ -1,4 +1,4 @@
-﻿using java.io;
+using java.io;
 using java.lang;
 using java.text;
 using java.util;

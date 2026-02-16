@@ -1,4 +1,4 @@
-﻿using BetaSharp.Client.Input;
+using BetaSharp.Client.Input;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Storage;
 using java.text;

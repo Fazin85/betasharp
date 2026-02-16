@@ -1,4 +1,4 @@
-﻿using BetaSharp.Client.Input;
+using BetaSharp.Client.Input;
 using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Core;
 using java.awt;

@@ -1,4 +1,4 @@
-﻿namespace BetaSharp.Stats;
+namespace BetaSharp.Stats;
 
 public class StatCollector
 {
