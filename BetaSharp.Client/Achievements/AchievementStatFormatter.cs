@@ -1,4 +1,4 @@
-namespace BetaSharp.Stats.Achievements;
+﻿namespace BetaSharp.Client.Achievements;
 
 public interface AchievementStatFormatter
 {

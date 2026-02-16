@@ -147,7 +147,7 @@ public class NaturalSpawner
                                             if (var43.canSpawn())
                                             {
                                                 ++var20;
-                                                var0.spawnEntity(var43);
+                                                var0.SpawnEntity(var43);
                                                 creatureSpecificInit(var43, var0, var27, var28, var29);
                                                 if (var20 >= var43.getMaxSpawnedInChunk())
                                                 {
@@ -180,7 +180,7 @@ public class NaturalSpawner
         {
             EntitySkeleton var5 = new EntitySkeleton(var1);
             var5.setPositionAndAnglesKeepPrevAngles((double)var2, (double)var3, (double)var4, var0.yaw, 0.0F);
-            var1.spawnEntity(var5);
+            var1.SpawnEntity(var5);
             var5.setVehicle(var0);
         }
         else if (var0 is EntitySheep)
@@ -274,7 +274,7 @@ public class NaturalSpawner
                                 }
 
                                 var17.setPositionAndAnglesKeepPrevAngles((double)((float)var20.x + 0.5F), (double)var20.y, (double)((float)var20.z + 0.5F), 0.0F, 0.0F);
-                                var0.spawnEntity(var17);
+                                var0.SpawnEntity(var17);
                                 creatureSpecificInit(var17, var0, (float)var20.x + 0.5F, (float)var20.y, (float)var20.z + 0.5F);
                                 var5.wakeUp(true, false, false);
                                 var17.playLivingSound();

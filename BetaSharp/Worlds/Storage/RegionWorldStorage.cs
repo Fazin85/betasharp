@@ -103,9 +103,9 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
         }
     }
 
-    public virtual void save(WorldProperties var1, List<object> var2)
+    public virtual void save(WorldProperties var1, List<EntityPlayer> var2)
     {
-        var1.setSaveVersion(19132);
+        var1.SaveVersion = 19132;
 
         NBTTagCompound var3 = var1.getNBTTagCompoundWithPlayer(var2);
         NBTTagCompound var4 = new();

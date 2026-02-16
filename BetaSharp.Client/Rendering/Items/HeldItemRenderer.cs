@@ -1,5 +1,6 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Blocks.Materials;
+using BetaSharp.Client.Entities;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Entitys;
@@ -12,12 +13,12 @@ namespace BetaSharp.Client.Rendering.Items;
 
 public class HeldItemRenderer
 {
-    private Minecraft mc;
+    private readonly Minecraft mc;
     private ItemStack itemToRender = null;
     private float equippedProgress = 0.0F;
     private float prevEquippedProgress = 0.0F;
-    private BlockRenderer renderBlocksInstance = new BlockRenderer();
-    private MapItemRenderer field_28131_f;
+    private readonly BlockRenderer renderBlocksInstance = new();
+    private readonly MapItemRenderer field_28131_f;
     private int field_20099_f = -1;
 
     public HeldItemRenderer(Minecraft var1)

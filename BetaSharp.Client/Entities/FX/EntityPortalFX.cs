@@ -1,15 +1,15 @@
-using BetaSharp.Client.Rendering.Core;
+﻿using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Worlds;
 
-namespace BetaSharp.Entities;
+namespace BetaSharp.Client.Entities.FX;
 
 public class EntityPortalFX : EntityFX
 {
 
-    private float baseScale;
-    private double spawnX;
-    private double spawnY;
-    private double spawnZ;
+    private readonly float baseScale;
+    private readonly double spawnX;
+    private readonly double spawnY;
+    private readonly double spawnZ;
 
     public EntityPortalFX(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) : base(world, x, y, z, velocityX, velocityY, velocityZ)
     {

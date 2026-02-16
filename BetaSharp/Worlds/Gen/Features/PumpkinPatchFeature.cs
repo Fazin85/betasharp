@@ -14,7 +14,7 @@ public class PumpkinPatchFeature : Feature
             int var9 = z + rand.nextInt(8) - rand.nextInt(8);
             if (world.isAir(var7, var8, var9) && world.getBlockId(var7, var8 - 1, var9) == Block.GrassBlock.id && Block.Pumpkin.canPlaceAt(world, var7, var8, var9))
             {
-                world.setBlockWithoutNotifyingNeighbors(var7, var8, var9, Block.Pumpkin.id, rand.nextInt(4));
+                world.SetBlockWithoutNotifyingNeighbors(var7, var8, var9, Block.Pumpkin.id, rand.nextInt(4));
             }
         }
 

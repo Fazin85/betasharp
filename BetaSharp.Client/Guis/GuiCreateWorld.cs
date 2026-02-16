@@ -1,5 +1,4 @@
-using BetaSharp.Client.Input;
-using BetaSharp.Client.Resource.Language;
+﻿using BetaSharp.Client.Input;
 using BetaSharp.Util;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Storage;
@@ -12,7 +11,7 @@ public class GuiCreateWorld : GuiScreen
     private const int BUTTON_CREATE = 0;
     private const int BUTTON_CANCEL = 1;
 
-    private GuiScreen parentScreen;
+    private readonly GuiScreen parentScreen;
     private GuiTextField textboxWorldName;
     private GuiTextField textboxSeed;
     private string folderName;
@@ -36,8 +35,10 @@ public class GuiCreateWorld : GuiScreen
         controlList.clear();
         controlList.add(new GuiButton(BUTTON_CREATE, width / 2 - 100, height / 4 + 96 + 12, translations.translateKey("selectWorld.create")));
         controlList.add(new GuiButton(BUTTON_CANCEL, width / 2 - 100, height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
-        textboxWorldName = new GuiTextField(this, fontRenderer, width / 2 - 100, 60, 200, 20, translations.translateKey("selectWorld.newWorld"));
-        textboxWorldName.isFocused = true;
+        textboxWorldName = new GuiTextField(this, fontRenderer, width / 2 - 100, 60, 200, 20, translations.translateKey("selectWorld.newWorld"))
+        {
+            isFocused = true
+        };
         textboxWorldName.setMaxStringLength(32);
         textboxSeed = new GuiTextField(this, fontRenderer, width / 2 - 100, 116, 200, 20, "");
         updateFolderName();
@@ -88,35 +89,35 @@ public class GuiCreateWorld : GuiScreen
                     mc.displayGuiScreen(parentScreen);
                     break;
                 case BUTTON_CREATE:
-                {
-                    if (createClicked)
                     {
-                        return;
-                    }
-
-                    createClicked = true;
-                    long worldSeed = new java.util.Random().nextLong();
-                    string seedInput = textboxSeed.getText();
-                    if (!MathHelper.stringNullOrLengthZero(seedInput))
-                    {
-                        try
+                        if (createClicked)
                         {
-                            long parsedSeed = Long.parseLong(seedInput);
-                            if (parsedSeed != 0L)
+                            return;
+                        }
+
+                        createClicked = true;
+                        long worldSeed = new java.util.Random().nextLong();
+                        string seedInput = textboxSeed.getText();
+                        if (!MathHelper.stringNullOrLengthZero(seedInput))
+                        {
+                            try
                             {
-                                worldSeed = parsedSeed;
+                                long parsedSeed = Long.parseLong(seedInput);
+                                if (parsedSeed != 0L)
+                                {
+                                    worldSeed = parsedSeed;
+                                }
+                            }
+                            catch (NumberFormatException exception)
+                            {
+                                worldSeed = seedInput.GetHashCode();
                             }
                         }
-                        catch (NumberFormatException exception)
-                        {
-                            worldSeed = seedInput.GetHashCode();
-                        }
-                    }
 
-                    mc.playerController = new PlayerControllerSP(mc);
-                    mc.startWorld(folderName, textboxWorldName.getText(), worldSeed);
-                    break;
-                }
+                        mc.playerController = new PlayerControllerSP(mc);
+                        mc.startWorld(folderName, textboxWorldName.getText(), worldSeed);
+                        break;
+                    }
             }
         }
     }

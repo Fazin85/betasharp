@@ -1,4 +1,4 @@
-﻿using BetaSharp.Network.Packets.S2CPlay;
+using BetaSharp.Network.Packets.S2CPlay;
 using BetaSharp.Server.Commands;
 using BetaSharp.Server.Entities;
 using BetaSharp.Server.Internal;
@@ -231,7 +231,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                 long accumulatedTime = 0L;
                 _lastTpsTime = lastTime;
                 _ticksThisSecond = 0;
-                
+
                 while (running)
                 {
                     long currentTime = java.lang.System.currentTimeMillis();
@@ -386,7 +386,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                     playerManager.sendToDimension(new WorldTimeUpdateS2CPacket(world.getTime()), world.dimension.id);
                 }
 
-                world.tick(-1);
+                world.Tick(-1);
 
                 while (world.doLightingUpdates())
                 {

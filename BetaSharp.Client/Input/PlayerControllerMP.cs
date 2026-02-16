@@ -1,11 +1,11 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Client.Network;
 using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Network.Packets.C2SPlay;
 using BetaSharp.Worlds;
 
-namespace BetaSharp;
+namespace BetaSharp.Client.Input;
 
 public class PlayerControllerMP : PlayerController
 {
@@ -18,7 +18,7 @@ public class PlayerControllerMP : PlayerController
     private float field_9441_h = 0.0F;
     private int blockHitDelay = 0;
     private bool isHittingBlock = false;
-    private ClientNetworkHandler netClientHandler;
+    private readonly ClientNetworkHandler netClientHandler;
     private int currentPlayerItem = 0;
 
     public PlayerControllerMP(Minecraft var1, ClientNetworkHandler var2) : base(var1)

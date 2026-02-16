@@ -1,12 +1,13 @@
+﻿using BetaSharp.Client.Options;
 using BetaSharp.Entities;
 
-namespace BetaSharp;
+namespace BetaSharp.Client.Input;
 
 public class MovementInputFromOptions : MovementInput
 {
 
-    private bool[] movementKeyStates = new bool[10];
-    private GameOptions gameSettings;
+    private readonly bool[] movementKeyStates = new bool[10];
+    private readonly GameOptions gameSettings;
 
     public MovementInputFromOptions(GameOptions var1)
     {

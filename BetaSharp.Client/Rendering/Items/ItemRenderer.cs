@@ -1,4 +1,4 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Entitys;
@@ -12,8 +12,8 @@ namespace BetaSharp.Client.Rendering.Items;
 public class ItemRenderer : EntityRenderer
 {
 
-    private BlockRenderer renderBlocks = new BlockRenderer();
-    private java.util.Random random = new();
+    private readonly BlockRenderer renderBlocks = new();
+    private readonly java.util.Random random = new();
     public bool useCustomDisplayColor = true;
 
     public ItemRenderer()

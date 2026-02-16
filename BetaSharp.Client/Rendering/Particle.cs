@@ -1,6 +1,6 @@
-using BetaSharp.Client.Guis;
+﻿using BetaSharp.Client.Guis;
 
-namespace BetaSharp;
+namespace BetaSharp.Client.Rendering;
 
 public class Particle : java.lang.Object
 {

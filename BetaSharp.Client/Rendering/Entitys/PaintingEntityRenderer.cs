@@ -1,4 +1,4 @@
-using BetaSharp.Client.Rendering.Core;
+﻿using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 using Silk.NET.OpenGL.Legacy;
@@ -7,7 +7,7 @@ namespace BetaSharp.Client.Rendering.Entitys;
 
 public class PaintingEntityRenderer : EntityRenderer
 {
-    private java.util.Random rand = new();
+    private readonly java.util.Random rand = new();
 
     public void func_158_a(EntityPainting var1, double var2, double var4, double var6, float var8, float var9)
     {

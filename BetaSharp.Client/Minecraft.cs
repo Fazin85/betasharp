@@ -1,11 +1,14 @@
-﻿using Avalonia;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using Avalonia;
 using Avalonia.Controls;
 using BetaSharp.Blocks;
-using BetaSharp.Client;
-using BetaSharp.Client.Colors;
+using BetaSharp.Client.Achievements;
+using BetaSharp.Client.Entities;
 using BetaSharp.Client.Guis;
 using BetaSharp.Client.Input;
 using BetaSharp.Client.Network;
+using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
@@ -24,16 +27,15 @@ using BetaSharp.Stats;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
+using BetaSharp.Worlds.Colors;
 using BetaSharp.Worlds.Storage;
 using ImGuiNET;
 using java.lang;
 using Silk.NET.Input;
 using Silk.NET.OpenGL.Legacy;
 using Silk.NET.OpenGL.Legacy.Extensions.ImGui;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 
-namespace BetaSharp;
+namespace BetaSharp.Client;
 
 public partial class Minecraft : java.lang.Object, Runnable
 {
@@ -43,7 +45,7 @@ public partial class Minecraft : java.lang.Object, Runnable
     private bool hasCrashed = false;
     public int displayWidth;
     public int displayHeight;
-    private readonly Client.Timer timer = new(20.0F);
+    private readonly Timer timer = new(20.0F);
     public World world;
     public WorldRenderer terrainRenderer;
     public ClientPlayerEntity player;
@@ -113,6 +115,7 @@ public partial class Minecraft : java.lang.Object, Runnable
     private static partial uint TimeEndPeriod(uint period);
 
     private static readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
 
     public void InitializeTimer()
     {
@@ -201,7 +204,13 @@ public partial class Minecraft : java.lang.Object, Runnable
         gameRenderer = new GameRenderer(this);
         EntityRenderDispatcher.instance.heldItemRenderer = new HeldItemRenderer(this);
         statFileWriter = new StatFileWriter(session, mcDataDir);
-        Achievements.OpenInventory.setStatStringFormatter(new StatStringFormatKeyInv(this));
+
+        StatStringFormatKeyInv format = new(this);
+        BetaSharp.Achievements.OpenInventory.GetTranslatedDescription = () =>
+        {
+            return format.formatString(BetaSharp.Achievements.OpenInventory.TranslationKey);
+        };
+
         loadScreen();
 
         bool anisotropicFiltering = GLManager.GL.IsExtensionPresent("GL_EXT_texture_filter_anisotropic");
@@ -330,10 +339,7 @@ public partial class Minecraft : java.lang.Object, Runnable
 
     public static java.io.File getMinecraftDir()
     {
-        if (minecraftDir == null)
-        {
-            minecraftDir = getAppDir(nameof(BetaSharp));
-        }
+        minecraftDir ??= getAppDir(nameof(BetaSharp));
 
         return minecraftDir;
     }
@@ -923,7 +929,7 @@ public partial class Minecraft : java.lang.Object, Runnable
             bool shouldPerformSecondaryAction = true;
             if (objectMouseOver == null)
             {
-                if (mouseButton == 0 && playerController is not PlayerControllerTest)
+                if (mouseButton == 0)
                 {
                     leftClickCounter = 10;
                 }
@@ -1081,7 +1087,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                 blockId = Block.Stone.id;
             }
 
-            player.inventory.setCurrentItem(blockId, playerController is PlayerControllerTest);
+            player.inventory.setCurrentItem(blockId, false);
         }
     }
 
@@ -1213,7 +1219,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                     3 => 2,
                     _ => 999,
                 };
-                world.tick(renderDistance);
+                world.Tick(renderDistance);
             }
 
             Profiler.PopGroup();
@@ -1457,7 +1463,7 @@ public partial class Minecraft : java.lang.Object, Runnable
             else if (player != null)
             {
                 player.teleportToTop();
-                newWorld?.spawnEntity(player);
+                newWorld?.SpawnEntity(player);
             }
 
             if (player == null)
@@ -1598,13 +1604,13 @@ public partial class Minecraft : java.lang.Object, Runnable
             useBedSpawn = false;
         }
 
-        world.updateSpawnPosition();
+        world.UpdateSpawnPosition();
         world.updateEntityLists();
         int previousPlayerId = 0;
         if (player != null)
         {
             previousPlayerId = player.id;
-            world.remove(player);
+            world.Remove(player);
         }
 
         camera = null;
@@ -1632,12 +1638,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         }
     }
 
-    public static void startup(string var0, string var1)
-    {
-        startMainThread(var0, var1, (string)null);
-    }
-
-    public static void startMainThread(string playerName, string sessionToken, string serverAddress)
+    private static void StartMainThread(string playerName, string sessionToken)
     {
         Minecraft mc = new(1280, 720, false);
         java.lang.Thread mainThread = new(mc, "Minecraft main thread");
@@ -1650,12 +1651,6 @@ public partial class Minecraft : java.lang.Object, Runnable
         else
         {
             mc.session = new Session("Player" + java.lang.System.currentTimeMillis() % 1000L, "");
-        }
-
-        if (serverAddress != null)
-        {
-            string[] serverParts = serverAddress.Split(":");
-            mc.setServer(serverParts[0], Integer.parseInt(serverParts[1]));
         }
 
         mainThread.start();
@@ -1671,7 +1666,7 @@ public partial class Minecraft : java.lang.Object, Runnable
             .UsePlatformDetect()
             .LogToTrace();
 
-    public static void Main(string[] args)
+    public static void Startup(string[] args)
     {
         bool valid = JarValidator.ValidateJar("b1.7.3.jar");
         string playerName = null;
@@ -1696,12 +1691,12 @@ public partial class Minecraft : java.lang.Object, Runnable
 
             if (LauncherWindow.Result != null && LauncherWindow.Result.Success)
             {
-                startup(playerName, sessionToken);
+                StartMainThread(playerName, sessionToken);
             }
         }
         else
         {
-            startup(playerName, sessionToken);
+            StartMainThread(playerName, sessionToken);
         }
     }
 

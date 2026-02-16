@@ -1,12 +1,10 @@
-using BetaSharp.Client.Resource.Language;
-
-namespace BetaSharp.Client.Guis;
+﻿namespace BetaSharp.Client.Guis;
 
 public class GuiConnectFailed : GuiScreen
 {
 
-    private string errorMessage;
-    private string errorDetail;
+    private readonly string errorMessage;
+    private readonly string errorDetail;
     private const int BUTTON_TO_MENU = 0;
 
     public GuiConnectFailed(string messageKey, string detailKey, params object[] formatArgs)

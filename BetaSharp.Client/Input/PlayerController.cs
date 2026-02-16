@@ -1,9 +1,10 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
+using BetaSharp.Client.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Worlds;
 
-namespace BetaSharp;
+namespace BetaSharp.Client.Input;
 
 public class PlayerController
 {

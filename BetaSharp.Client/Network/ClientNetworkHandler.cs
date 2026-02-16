@@ -1,6 +1,10 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
+using BetaSharp.Client.Entities;
+using BetaSharp.Client.Entities.FX;
 using BetaSharp.Client.Guis;
+using BetaSharp.Client.Input;
+using BetaSharp.Client.Worlds;
 using BetaSharp.Entities;
 using BetaSharp.Inventorys;
 using BetaSharp.Items;
@@ -21,19 +25,19 @@ namespace BetaSharp.Client.Network;
 public class ClientNetworkHandler : NetHandler
 {
     private bool disconnected = false;
-    private Connection netManager;
+    private readonly Connection netManager;
     public string field_1209_a;
-    private Minecraft mc;
+    private readonly Minecraft mc;
     private ClientWorld worldClient;
     private bool terrainLoaded = false;
-    public PersistentStateManager clientPersistentStateManager = new PersistentStateManager(null);
-    java.util.Random rand = new();
+    public PersistentStateManager clientPersistentStateManager = new(null);
+    readonly java.util.Random rand = new();
 
     public ClientNetworkHandler(Minecraft mc, string address, int port)
     {
 
         this.mc = mc;
-        Socket socket = new Socket(InetAddress.getByName(address), port);
+        Socket socket = new(InetAddress.getByName(address), port);
         socket.setTcpNoDelay(true);
         netManager = new Connection(socket, "Client", this);
     }
@@ -59,8 +63,10 @@ public class ClientNetworkHandler : NetHandler
     {
         mc.playerController = new PlayerControllerMP(mc, this);
         mc.statFileWriter.readStat(Stats.Stats.joinMultiplayerStat, 1);
-        worldClient = new ClientWorld(this, packet.worldSeed, packet.dimensionId);
-        worldClient.isRemote = true;
+        worldClient = new ClientWorld(this, packet.worldSeed, packet.dimensionId)
+        {
+            isRemote = true
+        };
         mc.changeWorld1(worldClient);
         mc.player.dimensionId = packet.dimensionId;
         mc.displayGuiScreen(new GuiDownloadTerrain(this));
@@ -72,14 +78,16 @@ public class ClientNetworkHandler : NetHandler
         double x = packet.x / 32.0D;
         double y = packet.y / 32.0D;
         double z = packet.z / 32.0D;
-        EntityItem entityItem = new EntityItem(worldClient, x, y, z, new ItemStack(packet.itemRawId, packet.itemCount, packet.itemDamage));
-        entityItem.velocityX = packet.velocityX / 128.0D;
-        entityItem.velocityY = packet.velocityY / 128.0D;
-        entityItem.velocityZ = packet.velocityZ / 128.0D;
-        entityItem.trackedPosX = packet.x;
-        entityItem.trackedPosY = packet.y;
-        entityItem.trackedPosZ = packet.z;
-        worldClient.forceEntity(packet.id, entityItem);
+        EntityItem entityItem = new(worldClient, x, y, z, new ItemStack(packet.itemRawId, packet.itemCount, packet.itemDamage))
+        {
+            velocityX = packet.velocityX / 128.0D,
+            velocityY = packet.velocityY / 128.0D,
+            velocityZ = packet.velocityZ / 128.0D,
+            trackedPosX = packet.x,
+            trackedPosY = packet.y,
+            trackedPosZ = packet.z
+        };
+        worldClient.ForceEntity(packet.id, entityItem);
     }
 
     public override void onEntitySpawn(EntitySpawnS2CPacket packet)
@@ -157,7 +165,7 @@ public class ClientNetworkHandler : NetHandler
             ((Entity)entity).yaw = 0.0F;
             ((Entity)entity).pitch = 0.0F;
             ((Entity)entity).id = packet.id;
-            worldClient.forceEntity(packet.id, (Entity)entity);
+            worldClient.ForceEntity(packet.id, (Entity)entity);
             if (packet.entityData > 0)
             {
                 if (packet.entityType == 60)
@@ -201,8 +209,8 @@ public class ClientNetworkHandler : NetHandler
 
     public override void onPaintingEntitySpawn(PaintingEntitySpawnS2CPacket packet)
     {
-        EntityPainting ent = new EntityPainting(worldClient, packet.xPosition, packet.yPosition, packet.zPosition, packet.direction, packet.title);
-        worldClient.forceEntity(packet.entityId, ent);
+        EntityPainting ent = new(worldClient, packet.xPosition, packet.yPosition, packet.zPosition, packet.direction, packet.title);
+        worldClient.ForceEntity(packet.entityId, ent);
     }
 
     public override void onEntityVelocityUpdate(EntityVelocityUpdateS2CPacket packet)
@@ -231,7 +239,7 @@ public class ClientNetworkHandler : NetHandler
         double z = packet.zPosition / 32.0D;
         float rotation = packet.rotation * 360 / 256.0F;
         float pitch = packet.pitch * 360 / 256.0F;
-        OtherPlayerEntity ent = new OtherPlayerEntity(mc.world, packet.name);
+        OtherPlayerEntity ent = new(mc.world, packet.name);
         ent.prevX = ent.lastTickX = ent.trackedPosX = packet.xPosition;
         ent.prevY = ent.lastTickY = ent.trackedPosY = packet.yPosition;
         ent.prevZ = ent.lastTickZ = ent.trackedPosZ = packet.zPosition;
@@ -246,7 +254,7 @@ public class ClientNetworkHandler : NetHandler
         }
 
         ent.setPositionAndAngles(x, y, z, rotation, pitch);
-        worldClient.forceEntity(packet.entityId, ent);
+        worldClient.ForceEntity(packet.entityId, ent);
     }
 
     public override void onEntityPosition(EntityPositionS2CPacket packet)
@@ -285,7 +293,7 @@ public class ClientNetworkHandler : NetHandler
 
     public override void onEntityDestroy(EntityDestroyS2CPacket packet)
     {
-        worldClient.removeEntityFromWorld(packet.entityId);
+        worldClient.RemoveEntityFromWorld(packet.entityId);
     }
 
     public override void onPlayerMove(PlayerMovePacket packet)
@@ -330,7 +338,7 @@ public class ClientNetworkHandler : NetHandler
 
     public override void onChunkStatusUpdate(ChunkStatusUpdateS2CPacket packet)
     {
-        worldClient.updateChunk(packet.x, packet.z, packet.load);
+        worldClient.UpdateChunk(packet.x, packet.z, packet.load);
     }
 
     public override void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet)
@@ -348,7 +356,7 @@ public class ClientNetworkHandler : NetHandler
             int blockZ = positions >> 8 & 15;
             int blockY = positions & 255;
             chunk.setBlock(blockX, blockY, blockZ, blockRawId, metadata);
-            worldClient.clearBlockResets(blockX + x, blockY, blockZ + y, blockX + x, blockY, blockZ + y);
+            worldClient.ClearBlockResets(blockX + x, blockY, blockZ + y, blockX + x, blockY, blockZ + y);
             worldClient.setBlocksDirty(blockX + x, blockY, blockZ + y, blockX + x, blockY, blockZ + y);
         }
 
@@ -356,13 +364,13 @@ public class ClientNetworkHandler : NetHandler
 
     public override void handleChunkData(ChunkDataS2CPacket packet)
     {
-        worldClient.clearBlockResets(packet.x, packet.y, packet.z, packet.x + packet.sizeX - 1, packet.y + packet.sizeY - 1, packet.z + packet.sizeZ - 1);
+        worldClient.ClearBlockResets(packet.x, packet.y, packet.z, packet.x + packet.sizeX - 1, packet.y + packet.sizeY - 1, packet.z + packet.sizeZ - 1);
         worldClient.handleChunkDataUpdate(packet.x, packet.y, packet.z, packet.sizeX, packet.sizeY, packet.sizeZ, packet.chunkData);
     }
 
     public override void onBlockUpdate(BlockUpdateS2CPacket packet)
     {
-        worldClient.setBlockWithMetaFromPacket(packet.x, packet.y, packet.z, packet.blockRawId, packet.blockMetadata);
+        worldClient.SetBlockWithMetaFromPacket(packet.x, packet.y, packet.z, packet.blockRawId, packet.blockMetadata);
     }
 
     public override void onDisconnect(DisconnectPacket packet)
@@ -404,16 +412,13 @@ public class ClientNetworkHandler : NetHandler
     {
         Entity ent = getEntityByID(packet.entityId);
         object collector = (EntityLiving)getEntityByID(packet.collectorEntityId);
-        if (collector == null)
-        {
-            collector = mc.player;
-        }
+        collector ??= mc.player;
 
         if (ent != null)
         {
             worldClient.playSound(ent, "random.pop", 0.2F, ((rand.nextFloat() - rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
             mc.particleManager.addEffect(new EntityPickupFX(mc.world, ent, (Entity)collector, -0.5F));
-            worldClient.removeEntityFromWorld(packet.entityId);
+            worldClient.RemoveEntityFromWorld(packet.entityId);
         }
 
     }
@@ -476,8 +481,8 @@ public class ClientNetworkHandler : NetHandler
         {
             try
             {
-                URL authUrl = new URL("http://www.minecraft.net/game/joinserver.jsp?user=" + mc.session.username + "&sessionId=" + mc.session.sessionId + "&serverId=" + packet.username);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(authUrl.openStream()));
+                URL authUrl = new("http://www.minecraft.net/game/joinserver.jsp?user=" + mc.session.username + "&sessionId=" + mc.session.sessionId + "&serverId=" + packet.username);
+                BufferedReader reader = new(new InputStreamReader(authUrl.openStream()));
                 string response = reader.readLine();
                 reader.close();
                 //TODO: AUTH
@@ -520,7 +525,7 @@ public class ClientNetworkHandler : NetHandler
         ent.id = packet.entityId;
         ent.setPositionAndAngles(x, y, z, yaw, pitch);
         ent.interpolateOnly = true;
-        worldClient.forceEntity(packet.entityId, ent);
+        worldClient.ForceEntity(packet.entityId, ent);
         java.util.List metaData = packet.getMetadata();
         if (metaData != null)
         {
@@ -537,7 +542,7 @@ public class ClientNetworkHandler : NetHandler
     public override void onPlayerSpawnPosition(PlayerSpawnPositionS2CPacket packet)
     {
         mc.player.setSpawnPos(new Vec3i(packet.x, packet.y, packet.z));
-        mc.world.getProperties().setSpawn(packet.x, packet.y, packet.z);
+        mc.world.getProperties().SetSpawn(packet.x, packet.y, packet.z);
     }
 
     public override void onEntityVehicleSet(EntityVehicleSetS2CPacket packet)
@@ -567,7 +572,7 @@ public class ClientNetworkHandler : NetHandler
 
     private Entity getEntityByID(int entityId)
     {
-        return entityId == mc.player.id ? mc.player : worldClient.getEntity(entityId);
+        return entityId == mc.player.id ? mc.player : worldClient.GetEntity(entityId);
     }
 
     public override void onHealthUpdate(HealthUpdateS2CPacket packet)
@@ -580,8 +585,10 @@ public class ClientNetworkHandler : NetHandler
         if (packet.dimensionId != mc.player.dimensionId)
         {
             terrainLoaded = false;
-            worldClient = new ClientWorld(this, worldClient.getProperties().getRandomSeed(), packet.dimensionId);
-            worldClient.isRemote = true;
+            worldClient = new ClientWorld(this, worldClient.getProperties().RandomSeed, packet.dimensionId)
+            {
+                isRemote = true
+            };
             mc.changeWorld1(worldClient);
             mc.player.dimensionId = packet.dimensionId;
             mc.displayGuiScreen(new GuiDownloadTerrain(this));
@@ -592,8 +599,10 @@ public class ClientNetworkHandler : NetHandler
 
     public override void onExplosion(ExplosionS2CPacket packet)
     {
-        Explosion explosion = new Explosion(mc.world, null, packet.explosionX, packet.explosionY, packet.explosionZ, packet.explosionSize);
-        explosion.destroyedBlockPositions = packet.destroyedBlockPositions;
+        Explosion explosion = new(mc.world, null, packet.explosionX, packet.explosionY, packet.explosionZ, packet.explosionSize)
+        {
+            destroyedBlockPositions = packet.destroyedBlockPositions
+        };
         explosion.doExplosionB(true);
     }
 
@@ -601,19 +610,19 @@ public class ClientNetworkHandler : NetHandler
     {
         if (packet.screenHandlerId == 0)
         {
-            InventoryBasic inventory = new InventoryBasic(packet.name, packet.slotsCount);
+            InventoryBasic inventory = new(packet.name, packet.slotsCount);
             mc.player.openChestScreen(inventory);
             mc.player.currentScreenHandler.syncId = packet.syncId;
         }
         else if (packet.screenHandlerId == 2)
         {
-            BlockEntityFurnace furnace = new BlockEntityFurnace();
+            BlockEntityFurnace furnace = new();
             mc.player.openFurnaceScreen(furnace);
             mc.player.currentScreenHandler.syncId = packet.syncId;
         }
         else if (packet.screenHandlerId == 3)
         {
-            BlockEntityDispenser dispenser = new BlockEntityDispenser();
+            BlockEntityDispenser dispenser = new();
             mc.player.openDispenserScreen(dispenser);
             mc.player.currentScreenHandler.syncId = packet.syncId;
         }
@@ -749,12 +758,12 @@ public class ClientNetworkHandler : NetHandler
 
         if (reason == 1)
         {
-            worldClient.getProperties().setRaining(true);
+            worldClient.getProperties().IsRaining = true;
             worldClient.setRainGradient(1.0F);
         }
         else if (reason == 2)
         {
-            worldClient.getProperties().setRaining(false);
+            worldClient.getProperties().IsRaining = false;
             worldClient.setRainGradient(0.0F);
         }
 

@@ -1,6 +1,6 @@
+﻿using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Items;
-using BetaSharp.Client.Resource.Language;
 using BetaSharp.Items;
 using BetaSharp.Stats;
 using Silk.NET.OpenGL.Legacy;
@@ -9,13 +9,13 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiStats : GuiScreen
 {
-    private static ItemRenderer itemRenderer = new ItemRenderer();
+    private static readonly ItemRenderer itemRenderer = new();
     protected GuiScreen parentScreen;
     protected string screenTitle = "Select world";
     private GuiSlotStatsGeneral slotGeneral;
     private GuiSlotStatsItem slotItem;
     private GuiSlotStatsBlock slotBlock;
-    private StatFileWriter statFileWriter;
+    private readonly StatFileWriter statFileWriter;
     private GuiSlot currentSlot = null;
 
     public GuiStats(GuiScreen parent, StatFileWriter stats)
@@ -46,9 +46,9 @@ public class GuiStats : GuiScreen
         TranslationStorage translations = TranslationStorage.getInstance();
         controlList.add(new GuiButton(BUTTON_DONE, width / 2 + 4, height - 28, 150, 20, translations.translateKey("gui.done")));
         controlList.add(new GuiButton(BUTTON_GENERAL, width / 2 - 154, height - 52, 100, 20, translations.translateKey("stat.generalButton")));
-        GuiButton blocksButton = new GuiButton(BUTTON_BLOCKS, width / 2 - 46, height - 52, 100, 20, translations.translateKey("stat.blocksButton"));
+        GuiButton blocksButton = new(BUTTON_BLOCKS, width / 2 - 46, height - 52, 100, 20, translations.translateKey("stat.blocksButton"));
         controlList.add(blocksButton);
-        GuiButton itemsButton = new GuiButton(BUTTON_ITEMS, width / 2 + 62, height - 52, 100, 20, translations.translateKey("stat.itemsButton"));
+        GuiButton itemsButton = new(BUTTON_ITEMS, width / 2 + 62, height - 52, 100, 20, translations.translateKey("stat.itemsButton"));
         controlList.add(itemsButton);
         if (slotBlock.getSize() == 0)
         {

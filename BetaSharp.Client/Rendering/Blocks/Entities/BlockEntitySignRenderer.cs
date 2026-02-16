@@ -1,13 +1,14 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Entitys.Models;
 
 namespace BetaSharp.Client.Rendering.Blocks.Entities;
 
 public class BlockEntitySignRenderer : BlockEntitySpecialRenderer
 {
 
-    private SignModel signModel = new SignModel();
+    private readonly SignModel signModel = new();
 
     public void renderTileEntitySignAt(BlockEntitySign var1, double var2, double var4, double var6, float var8)
     {

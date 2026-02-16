@@ -40,7 +40,7 @@ public class GuiIngameMenu : GuiScreen
             mc.statFileWriter.readStat(Stats.Stats.leaveGameStat, 1);
             if (mc.isMultiplayerWorld())
             {
-                mc.world.disconnect();
+                mc.world.Disconnect();
             }
 
             mc.stopInternalServer();

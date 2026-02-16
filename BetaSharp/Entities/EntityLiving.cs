@@ -1,4 +1,4 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Items;
 using BetaSharp.NBT;
@@ -205,10 +205,9 @@ public abstract class EntityLiving : Entity
         prevPitch = pitch;
     }
 
-    //TODO: will this still work properly when we implement the server?
     public override void move(double x, double y, double z)
     {
-        if (!interpolateOnly || this is ClientPlayerEntity) base.move(x, y, z);
+        if (!interpolateOnly/* || this is ClientPlayerEntity*/) base.move(x, y, z);
     }
 
     public void animateSpawn()

@@ -1,6 +1,5 @@
-using BetaSharp.Client.Input;
+﻿using BetaSharp.Client.Input;
 using BetaSharp.Client.Network;
-using BetaSharp.Client.Resource.Language;
 using BetaSharp.Network.Packets.C2SPlay;
 
 namespace BetaSharp.Client.Guis;

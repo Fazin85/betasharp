@@ -1,11 +1,11 @@
-using BetaSharp.Client.Rendering.Core;
+﻿using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Worlds;
 
-namespace BetaSharp.Entities;
+namespace BetaSharp.Client.Entities.FX;
 
 public class EntityReddustFX : EntityFX
 {
-    float baseScale;
+    readonly float baseScale;
 
 
     public EntityReddustFX(World world, double x, double y, double z, float red, float green, float blue) : this(world, x, y, z, 1.0F, red, green, blue)

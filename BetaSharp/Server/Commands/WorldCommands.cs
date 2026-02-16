@@ -70,16 +70,16 @@ public static class WorldCommands
             {
                 case "clear":
                     world.globalEntities.clear();
-                    world.getProperties().setRaining(false);
-                    world.getProperties().setThundering(false);
+                    world.getProperties().IsRaining = false;
+                    world.getProperties().IsThundering = false;
                     break;
                 case "rain":
-                    world.getProperties().setRaining(true);
-                    world.getProperties().setThundering(false);
+                    world.getProperties().IsRaining = true;
+                    world.getProperties().IsThundering = false;
                     break;
                 case "storm":
-                    world.getProperties().setRaining(true);
-                    world.getProperties().setThundering(true);
+                    world.getProperties().IsRaining = true;
+                    world.getProperties().IsThundering = true;
                     break;
                 default:
                     output.SendMessage("Unknown weather type. Use: clear, rain, or storm");
@@ -166,7 +166,7 @@ public static class WorldCommands
 
                 if (shouldKill)
                 {
-                    world.remove(entity);
+                    world.Remove(entity);
                     count++;
                 }
             }

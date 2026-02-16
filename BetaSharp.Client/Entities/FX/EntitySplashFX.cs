@@ -1,6 +1,6 @@
-using BetaSharp.Worlds;
+﻿using BetaSharp.Worlds;
 
-namespace BetaSharp.Entities;
+namespace BetaSharp.Client.Entities.FX;
 
 public class EntitySplashFX : EntityRainFX
 {

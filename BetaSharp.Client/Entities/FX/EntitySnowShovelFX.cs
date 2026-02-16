@@ -1,11 +1,11 @@
-using BetaSharp.Client.Rendering.Core;
+﻿using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Worlds;
 
-namespace BetaSharp.Entities;
+namespace BetaSharp.Client.Entities.FX;
 
 public class EntitySnowShovelFX : EntityFX
 {
-    float baseScale;
+    readonly float baseScale;
 
 
     public EntitySnowShovelFX(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) : this(world, x, y, z, velocityX, velocityY, velocityZ, 1.0F)

@@ -1,4 +1,4 @@
-using BetaSharp.Client.Rendering.Core;
+﻿using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Entities;
 using Silk.NET.OpenGL.Legacy;
 
@@ -7,7 +7,7 @@ namespace BetaSharp.Client.Rendering.Entitys;
 public class ProjectileEntityRenderer : EntityRenderer
 {
 
-    private int itemIconIndex;
+    private readonly int itemIconIndex;
 
     public ProjectileEntityRenderer(int var1)
     {

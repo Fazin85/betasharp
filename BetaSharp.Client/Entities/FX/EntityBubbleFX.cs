@@ -1,8 +1,8 @@
-using BetaSharp.Blocks.Materials;
+﻿using BetaSharp.Blocks.Materials;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
-namespace BetaSharp.Entities;
+namespace BetaSharp.Client.Entities.FX;
 
 public class EntityBubbleFX : EntityFX
 {

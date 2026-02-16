@@ -1,4 +1,4 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Client.Textures;
@@ -7,7 +7,7 @@ public class NetherPortalSprite : DynamicTexture
 {
 
     private int ticks = 0;
-    private byte[][] frames = new byte[32][];
+    private readonly byte[][] frames = new byte[32][];
 
     public NetherPortalSprite() : base(Block.NetherPortal.textureId)
     {

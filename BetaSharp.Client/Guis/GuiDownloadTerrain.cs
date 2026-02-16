@@ -1,5 +1,4 @@
-using BetaSharp.Client.Network;
-using BetaSharp.Client.Resource.Language;
+﻿using BetaSharp.Client.Network;
 using BetaSharp.Network.Packets.Play;
 
 namespace BetaSharp.Client.Guis;
@@ -7,7 +6,7 @@ namespace BetaSharp.Client.Guis;
 public class GuiDownloadTerrain : GuiScreen
 {
 
-    private ClientNetworkHandler networkHandler;
+    private readonly ClientNetworkHandler networkHandler;
     private int tickCounter = 0;
 
     public GuiDownloadTerrain(ClientNetworkHandler networkHandler)

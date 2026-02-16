@@ -1,3 +1,4 @@
+﻿using BetaSharp.Client.Rendering;
 using BetaSharp.Util;
 
 namespace BetaSharp.Client.Guis;
@@ -15,7 +16,7 @@ public class GuiTextField : Gui
     private int cursorCounter;
     public bool isFocused = false;
     public bool isEnabled = true;
-    private GuiScreen parentGuiScreen;
+    private readonly GuiScreen parentGuiScreen;
 
     public GuiTextField(GuiScreen var1, TextRenderer var2, int var3, int var4, int var5, int var6, string var7)
     {
@@ -55,10 +56,7 @@ public class GuiTextField : Gui
             if (var1 == 22)
             {
                 string var3 = GuiScreen.getClipboardString();
-                if (var3 == null)
-                {
-                    var3 = "";
-                }
+                var3 ??= "";
 
                 int var4 = 32 - text.Length;
                 if (var4 > var3.Length)

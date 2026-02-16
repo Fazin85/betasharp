@@ -1,4 +1,5 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
+using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Entitys.Models;
 using BetaSharp.Client.Rendering.Items;
@@ -12,8 +13,8 @@ namespace BetaSharp.Client.Rendering.Entitys;
 
 public class EntityRenderDispatcher
 {
-    private Dictionary<Class, EntityRenderer> entityRenderMap = [];
-    public static EntityRenderDispatcher instance = new EntityRenderDispatcher();
+    private readonly Dictionary<Class, EntityRenderer> entityRenderMap = [];
+    public static EntityRenderDispatcher instance = new();
     private TextRenderer fontRenderer;
     public static double offsetX;
     public static double offsetY;

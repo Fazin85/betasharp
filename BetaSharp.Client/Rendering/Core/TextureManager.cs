@@ -1,3 +1,4 @@
+﻿using BetaSharp.Client.Options;
 using BetaSharp.Client.Resource.Pack;
 using BetaSharp.Client.Textures;
 using BetaSharp.Util;
@@ -652,7 +653,7 @@ public class TextureManager : java.lang.Object
         int width = bufferedImage.getWidth();
         int height = bufferedImage.getHeight();
 
-        TextureAtlas atlas = new TextureAtlas(width, height);
+        TextureAtlas atlas = new(width, height);
 
         // Get the raw pixel data from BufferedImage
         int[] pixels = new int[width * height];

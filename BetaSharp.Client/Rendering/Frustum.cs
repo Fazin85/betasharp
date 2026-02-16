@@ -1,4 +1,4 @@
-using BetaSharp.Client.Rendering.Core;
+﻿using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Util.Maths;
 using Silk.NET.OpenGL.Legacy;
 
@@ -7,7 +7,7 @@ namespace BetaSharp.Client.Rendering;
 public class Frustum : FrustumData
 {
 
-    private static Frustum instance = new Frustum();
+    private static readonly Frustum instance = new();
 
     public static FrustumData getInstance()
     {

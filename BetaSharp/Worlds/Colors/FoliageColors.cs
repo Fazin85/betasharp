@@ -1,4 +1,4 @@
-namespace BetaSharp.Client.Colors;
+﻿namespace BetaSharp.Worlds.Colors;
 
 public class FoliageColors : java.lang.Object
 {

@@ -1,4 +1,4 @@
-using BetaSharp.Client.Rendering.Core;
+﻿using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 
@@ -13,11 +13,11 @@ public class ModelWolf : ModelBase
     public ModelPart wolfLeg2;
     public ModelPart wolfLeg3;
     public ModelPart wolfLeg4;
-    ModelPart wolfRightEar;
-    ModelPart wolfLeftEar;
-    ModelPart wolfSnout;
-    ModelPart wolfTail;
-    ModelPart wolfMane;
+    readonly ModelPart wolfRightEar;
+    readonly ModelPart wolfLeftEar;
+    readonly ModelPart wolfSnout;
+    readonly ModelPart wolfTail;
+    readonly ModelPart wolfMane;
 
     public ModelWolf()
     {

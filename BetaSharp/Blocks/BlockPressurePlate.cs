@@ -131,7 +131,7 @@ public class BlockPressurePlate : Block
 
         if (shouldBePressed)
         {
-            world.scheduleBlockUpdate(x, y, z, id, getTickRate());
+            world.ScheduleBlockUpdate(x, y, z, id, getTickRate());
         }
 
     }

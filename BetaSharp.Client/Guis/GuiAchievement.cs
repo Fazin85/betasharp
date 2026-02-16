@@ -1,4 +1,4 @@
-using BetaSharp.Client.Rendering.Core;
+﻿using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Items;
 using BetaSharp.Stats;
 using Silk.NET.OpenGL.Legacy;
@@ -12,14 +12,14 @@ public class GuiAchievement : Gui
     private const string ALT_LOCATION_WARNING_TEXT = "(Or logged in from another location)";
     private const string PURCHASE_PROMPT_TEXT = "Purchase at minecraft.net";
 
-    private Minecraft theGame;
+    private readonly Minecraft theGame;
     private int achievementWindowWidth;
     private int achievementWindowHeight;
     private string achievementTitle;
-    private string achievementDescription;
+    private string? achievementDescription;
     private Achievement theAchievement;
     private long achievementDisplayStartTime;
-    private ItemRenderer itemRender;
+    private readonly ItemRenderer itemRender;
     private bool isAchievementInformation;
 
     public GuiAchievement(Minecraft mc)
@@ -55,7 +55,7 @@ public class GuiAchievement : Gui
         GLManager.GL.LoadIdentity();
         achievementWindowWidth = theGame.displayWidth;
         achievementWindowHeight = theGame.displayHeight;
-        ScaledResolution scaledResolution = new ScaledResolution(theGame.options, theGame.displayWidth, theGame.displayHeight);
+        ScaledResolution scaledResolution = new(theGame.options, theGame.displayWidth, theGame.displayHeight);
         achievementWindowWidth = scaledResolution.ScaledWidth;
         achievementWindowHeight = scaledResolution.ScaledHeight;
         GLManager.GL.Clear(ClearBufferMask.DepthBufferBit);
@@ -115,14 +115,14 @@ public class GuiAchievement : Gui
         int achievementX = achievementWindowWidth - 160;
         int achievementY = 0 - (int)(animationProgress * 36.0D);
         int achievementTextureId = theGame.textureManager.getTextureId("/achievement/bg.png");
-            
+
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         GLManager.GL.Enable(GLEnum.Lighting);
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)achievementTextureId);
         GLManager.GL.Disable(GLEnum.Lighting);
         drawTexturedModalRect(achievementX, achievementY, 96, 202, 160, 32);
         drawAchievementText(achievementX, achievementY);
-            
+
         GLManager.GL.PushMatrix();
         GLManager.GL.Rotate(180.0F, 1.0F, 0.0F, 0.0F);
         Lighting.turnOn();
@@ -161,12 +161,12 @@ public class GuiAchievement : Gui
     {
         if (isAchievementInformation)
         {
-            theGame.fontRenderer.func_27278_a(achievementDescription, achievementX + 30, achievementY + 7, 120, 0xFFFFFFFF);
+            theGame.fontRenderer.func_27278_a(achievementDescription ?? "", achievementX + 30, achievementY + 7, 120, 0xFFFFFFFF);
         }
         else
         {
             theGame.fontRenderer.drawString(achievementTitle, achievementX + 30, achievementY + 7, 0xFFFFFF00);
-            theGame.fontRenderer.drawString(achievementDescription, achievementX + 30, achievementY + 18, 0xFFFFFFFF);
+            theGame.fontRenderer.drawString(achievementDescription ?? "", achievementX + 30, achievementY + 18, 0xFFFFFFFF);
         }
     }
 }

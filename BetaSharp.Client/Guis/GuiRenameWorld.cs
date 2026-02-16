@@ -1,5 +1,4 @@
-using BetaSharp.Client.Input;
-using BetaSharp.Client.Resource.Language;
+﻿using BetaSharp.Client.Input;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Storage;
 
@@ -10,7 +9,7 @@ public class GuiRenameWorld : GuiScreen
     private const int BUTTON_RENAME = 0;
     private const int BUTTON_CANCEL = 1;
 
-    private GuiScreen parentScreen;
+    private readonly GuiScreen parentScreen;
     private GuiTextField nameInputField;
     private readonly string worldFolderName;
 
@@ -34,9 +33,11 @@ public class GuiRenameWorld : GuiScreen
         controlList.add(new GuiButton(BUTTON_CANCEL, width / 2 - 100, height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
         WorldStorageSource worldStorage = mc.getSaveLoader();
         WorldProperties worldProperties = worldStorage.getProperties(worldFolderName);
-        string currentWorldName = worldProperties.getWorldName();
-        nameInputField = new GuiTextField(this, fontRenderer, width / 2 - 100, 60, 200, 20, currentWorldName);
-        nameInputField.isFocused = true;
+        string currentWorldName = worldProperties.LevelName;
+        nameInputField = new GuiTextField(this, fontRenderer, width / 2 - 100, 60, 200, 20, currentWorldName)
+        {
+            isFocused = true
+        };
         nameInputField.setMaxStringLength(32);
     }
 

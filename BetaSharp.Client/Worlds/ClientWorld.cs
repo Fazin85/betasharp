@@ -4,115 +4,104 @@ using BetaSharp.Entities;
 using BetaSharp.Network.Packets.Play;
 using BetaSharp.Util;
 using BetaSharp.Util.Maths;
+using BetaSharp.Worlds;
 using BetaSharp.Worlds.Chunks;
 using BetaSharp.Worlds.Dimensions;
 using BetaSharp.Worlds.Storage;
-using java.util;
 
-namespace BetaSharp.Worlds;
+namespace BetaSharp.Client.Worlds;
 
 public class ClientWorld : World
 {
 
-    private readonly LinkedList blockResets = new LinkedList();
-    private readonly ClientNetworkHandler networkHandler;
-    private MultiplayerChunkCache chunkCache;
-    private readonly IntHashMap entitiesByNetworkId = new IntHashMap();
-    private readonly Set forcedEntities = new HashSet();
-    private readonly Set pendingEntities = new HashSet();
+    private readonly List<BlockReset> _blockResets = [];
+    private readonly ClientNetworkHandler _networkHandler;
+    private MultiplayerChunkCache _chunkCache;
+    private readonly IntHashMap entitiesByNetworkId = new();
+    private readonly HashSet<Entity> forcedEntities = [];
+    private readonly HashSet<Entity> pendingEntities = [];
 
     public ClientWorld(ClientNetworkHandler netHandler, long seed, int dimId) : base(new EmptyWorldStorage(), "MpServer", Dimension.fromId(dimId), seed)
     {
-        networkHandler = netHandler;
+        _networkHandler = netHandler;
         setSpawnPos(new Vec3i(8, 64, 8));
         persistentStateManager = netHandler.clientPersistentStateManager;
     }
 
-    public override void tick(int _)
+    public override void Tick(int _)
     {
         setTime(getTime() + 1L);
-        int var1 = getAmbientDarkness(1.0F);
-        int var2;
-        if (var1 != ambientDarkness)
-        {
-            ambientDarkness = var1;
+        int ambient = getAmbientDarkness(1.0F);
 
-            for (var2 = 0; var2 < eventListeners.Count; ++var2)
+        if (ambient != ambientDarkness)
+        {
+            ambientDarkness = ambient;
+            for (int j = 0; j < eventListeners.Count; ++j)
             {
-                eventListeners[var2].notifyAmbientDarknessChanged();
+                eventListeners[j].notifyAmbientDarknessChanged();
             }
         }
 
-        for (var2 = 0; var2 < 10 && !pendingEntities.isEmpty(); ++var2)
+        for (int i = 0; i < 10 && pendingEntities.Count > 0; ++i)
         {
-            Entity var3 = (Entity)pendingEntities.iterator().next();
-            if (!entities.Contains(var3))
+            Entity entity = pendingEntities.First();
+            if (!entities.Contains(entity))
             {
-                spawnEntity(var3);
+                SpawnEntity(entity);
             }
         }
 
-        networkHandler.tick();
+        _networkHandler.tick();
 
-        for (var2 = 0; var2 < blockResets.size(); ++var2)
+        for (int i = 0; i < _blockResets.Count; ++i)
         {
-            BlockReset var4 = (BlockReset)blockResets.get(var2);
-            if (--var4.delay == 0)
+            BlockReset blockReset = _blockResets[i];
+            if (--blockReset.Delay == 0)
             {
-                base.setBlockWithoutNotifyingNeighbors(var4.x, var4.y, var4.z, var4.block, var4.meta);
-                base.blockUpdateEvent(var4.x, var4.y, var4.z);
-                blockResets.remove(var2--);
-            }
-        }
-
-    }
-
-    public void clearBlockResets(int var1, int var2, int var3, int var4, int var5, int var6)
-    {
-        for (int var7 = 0; var7 < blockResets.size(); ++var7)
-        {
-            BlockReset var8 = (BlockReset)blockResets.get(var7);
-            if (var8.x >= var1 && var8.y >= var2 && var8.z >= var3 && var8.x <= var4 && var8.y <= var5 && var8.z <= var6)
-            {
-                blockResets.remove(var7--);
+                base.SetBlockWithoutNotifyingNeighbors(blockReset.X, blockReset.Y, blockReset.Z, blockReset.BlockId, blockReset.Meta);
+                blockUpdateEvent(blockReset.X, blockReset.Y, blockReset.Z);
+                _blockResets.RemoveAt(i--);
             }
         }
 
     }
 
-    protected override ChunkSource createChunkCache()
+    public void ClearBlockResets(int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
     {
-        chunkCache = new MultiplayerChunkCache(this);
-        return chunkCache;
+        for (int i = 0; i < _blockResets.Count; ++i)
+        {
+            BlockReset br = _blockResets[i];
+            if (br.X >= minX && br.Y >= minY && br.Z >= minZ &&
+                br.X <= maxX && br.Y <= maxY && br.Z <= maxZ)
+            {
+                _blockResets.RemoveAt(i--);
+            }
+        }
     }
 
-    public override void updateSpawnPosition()
+    protected override ChunkSource CreateChunkCache()
     {
-        setSpawnPos(new Vec3i(8, 64, 8));
+        _chunkCache = new MultiplayerChunkCache(this);
+        return _chunkCache;
     }
 
-    protected override void manageChunkUpdatesAndEvents()
-    {
-    }
+    public override void UpdateSpawnPosition() => setSpawnPos(new Vec3i(8, 64, 8));
 
-    public override void scheduleBlockUpdate(int var1, int var2, int var3, int var4, int var5)
-    {
-    }
+    protected override void ManageChunkUpdatesAndEvents() { }
 
-    public override bool processScheduledTicks(bool flush)
-    {
-        return false;
-    }
+    public override void ScheduleBlockUpdate(int x, int y, int z, int blockId, int delay) { }
 
-    public void updateChunk(int chunkX, int chunkZ, bool load)
+    public override bool ProcessScheduledTicks(bool flush) => false;
+
+    public void UpdateChunk(int chunkX, int chunkZ, bool load)
     {
         if (load)
         {
-            chunkCache.loadChunk(chunkX, chunkZ);
+            _chunkCache.loadChunk(chunkX, chunkZ);
         }
         else
         {
-            chunkCache.unloadChunk(chunkX, chunkZ);
+            _chunkCache.unloadChunk(chunkX, chunkZ);
         }
 
         if (!load)
@@ -122,192 +111,144 @@ public class ClientWorld : World
 
     }
 
-    public override bool spawnEntity(Entity entity)
+    public override bool SpawnEntity(Entity entity)
     {
-        bool var2 = base.spawnEntity(entity);
-        forcedEntities.add(entity);
-        if (!var2)
+        bool spawned = base.SpawnEntity(entity);
+        forcedEntities.Add(entity);
+        if (!spawned)
         {
-            pendingEntities.add(entity);
+            pendingEntities.Add(entity);
         }
 
-        return var2;
+        return spawned;
     }
 
-    public override void remove(Entity var1)
+    public override void Remove(Entity ent)
     {
-        base.remove(var1);
-        forcedEntities.remove(var1);
+        base.Remove(ent);
+        forcedEntities.Remove(ent);
     }
 
-    protected override void notifyEntityAdded(Entity var1)
+    protected override void NotifyEntityAdded(Entity ent)
     {
-        base.notifyEntityAdded(var1);
-        if (pendingEntities.contains(var1))
+        base.NotifyEntityAdded(ent);
+        if (pendingEntities.Contains(ent))
         {
-            pendingEntities.remove(var1);
-        }
-
-    }
-
-    protected override void notifyEntityRemoved(Entity var1)
-    {
-        base.notifyEntityRemoved(var1);
-        if (forcedEntities.contains(var1))
-        {
-            pendingEntities.add(var1);
+            pendingEntities.Remove(ent);
         }
 
     }
 
-    public void forceEntity(int var1, Entity var2)
+    protected override void NotifyEntityRemoved(Entity ent)
     {
-        Entity var3 = getEntity(var1);
-        if (var3 != null)
+        base.NotifyEntityRemoved(ent);
+        if (forcedEntities.Contains(ent))
         {
-            remove(var3);
+            pendingEntities.Add(ent);
         }
 
-        forcedEntities.add(var2);
-        var2.id = var1;
-        if (!spawnEntity(var2))
+    }
+
+    public void ForceEntity(int networkId, Entity ent)
+    {
+        Entity existingEnt = GetEntity(networkId);
+        if (existingEnt != null)
         {
-            pendingEntities.add(var2);
+            Remove(existingEnt);
         }
 
-        entitiesByNetworkId.put(var1, var2);
-    }
+        forcedEntities.Add(ent);
+        ent.id = networkId;
 
-    public Entity getEntity(int var1)
-    {
-        return (Entity)entitiesByNetworkId.get(var1);
-    }
-
-    public Entity removeEntityFromWorld(int var1)
-    {
-        Entity var2 = (Entity)entitiesByNetworkId.remove(var1);
-        if (var2 != null)
+        if (!SpawnEntity(ent))
         {
-            forcedEntities.remove(var2);
-            remove(var2);
+            pendingEntities.Add(ent);
         }
 
-        return var2;
+        entitiesByNetworkId.put(networkId, ent);
     }
 
-    public override bool setBlockMetaWithoutNotifyingNeighbors(int var1, int var2, int var3, int var4)
+    public Entity GetEntity(int networkId)
     {
-        int var5 = getBlockId(var1, var2, var3);
-        int var6 = getBlockMeta(var1, var2, var3);
-        if (base.setBlockMetaWithoutNotifyingNeighbors(var1, var2, var3, var4))
+        return (Entity)entitiesByNetworkId.get(networkId);
+    }
+
+    public Entity RemoveEntityFromWorld(int networkId)
+    {
+        Entity ent = (Entity)entitiesByNetworkId.remove(networkId);
+        if (ent != null)
         {
-            blockResets.add(new BlockReset(this, var1, var2, var3, var5, var6));
+            forcedEntities.Remove(ent);
+            Remove(ent);
+        }
+
+        return ent;
+    }
+
+    public override bool SetBlockMetaWithoutNotifyingNeighbors(int x, int y, int z, int meta)
+    {
+        int blockId = getBlockId(x, y, z);
+        int previousMeta = getBlockMeta(x, y, z);
+        if (base.SetBlockMetaWithoutNotifyingNeighbors(x, y, z, meta))
+        {
+            _blockResets.Add(new BlockReset(this, x, y, z, blockId, previousMeta));
             return true;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
 
-    public override bool setBlockWithoutNotifyingNeighbors(int var1, int var2, int var3, int var4, int var5)
+    public override bool SetBlockWithoutNotifyingNeighbors(int x, int y, int z, int blockId, int meta)
     {
-        int var6 = getBlockId(var1, var2, var3);
-        int var7 = getBlockMeta(var1, var2, var3);
-        if (base.setBlockWithoutNotifyingNeighbors(var1, var2, var3, var4, var5))
+        int previousBlockId = getBlockId(x, y, z);
+        int previousMeta = getBlockMeta(x, y, z);
+        if (base.SetBlockWithoutNotifyingNeighbors(x, y, z, blockId, meta))
         {
-            blockResets.add(new BlockReset(this, var1, var2, var3, var6, var7));
+            _blockResets.Add(new BlockReset(this, x, y, z, previousBlockId, previousMeta));
             return true;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
 
-    public override bool setBlockWithoutNotifyingNeighbors(int var1, int var2, int var3, int var4)
+    public override bool SetBlockWithoutNotifyingNeighbors(int x, int y, int z, int blockId)
     {
-        int var5 = getBlockId(var1, var2, var3);
-        int var6 = getBlockMeta(var1, var2, var3);
-        if (base.setBlockWithoutNotifyingNeighbors(var1, var2, var3, var4))
+        int previousBlockId = getBlockId(x, y, z);
+        int previousMeta = getBlockMeta(x, y, z);
+        if (base.SetBlockWithoutNotifyingNeighbors(x, y, z, blockId))
         {
-            blockResets.add(new BlockReset(this, var1, var2, var3, var5, var6));
+            _blockResets.Add(new BlockReset(this, x, y, z, previousBlockId, previousMeta));
             return true;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
 
-    public bool setBlockWithMetaFromPacket(int var1, int var2, int var3, int var4, int var5)
+    public bool SetBlockWithMetaFromPacket(int minX, int minY, int minZ, int blockId, int meta)
     {
-        clearBlockResets(var1, var2, var3, var1, var2, var3);
-        if (base.setBlockWithoutNotifyingNeighbors(var1, var2, var3, var4, var5))
+        ClearBlockResets(minX, minY, minZ, minX, minY, minZ);
+        if (base.SetBlockWithoutNotifyingNeighbors(minX, minY, minZ, blockId, meta))
         {
-            blockUpdate(var1, var2, var3, var4);
+            blockUpdate(minX, minY, minZ, blockId);
             return true;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
 
-    public override void disconnect()
+    public override void Disconnect() => _networkHandler.sendPacketAndDisconnect(new DisconnectPacket("Quitting"));
+
+
+    protected override void UpdateWeatherCycles()
     {
-        networkHandler.sendPacketAndDisconnect(new DisconnectPacket("Quitting"));
-    }
+        if (dimension.hasCeiling) return;
 
-    protected override void updateWeatherCycles()
-    {
-        if (!dimension.hasCeiling)
-        {
-            if (ticksSinceLightning > 0)
-            {
-                --ticksSinceLightning;
-            }
+        if (ticksSinceLightning > 0) --ticksSinceLightning;
 
-            prevRainingStrength = rainingStrength;
-            if (properties.getRaining())
-            {
-                rainingStrength = (float)((double)rainingStrength + 0.01D);
-            }
-            else
-            {
-                rainingStrength = (float)((double)rainingStrength - 0.01D);
-            }
+        prevRainingStrength = rainingStrength;
+        rainingStrength = Math.Clamp(rainingStrength + (properties.IsRaining ? 0.01f : -0.01f), 0.0f, 1.0f);
 
-            if (rainingStrength < 0.0F)
-            {
-                rainingStrength = 0.0F;
-            }
-
-            if (rainingStrength > 1.0F)
-            {
-                rainingStrength = 1.0F;
-            }
-
-            prevThunderingStrength = thunderingStrength;
-            if (properties.getThundering())
-            {
-                thunderingStrength = (float)((double)thunderingStrength + 0.01D);
-            }
-            else
-            {
-                thunderingStrength = (float)((double)thunderingStrength - 0.01D);
-            }
-
-            if (thunderingStrength < 0.0F)
-            {
-                thunderingStrength = 0.0F;
-            }
-
-            if (thunderingStrength > 1.0F)
-            {
-                thunderingStrength = 1.0F;
-            }
-
-        }
+        prevThunderingStrength = thunderingStrength;
+        thunderingStrength = Math.Clamp(thunderingStrength + (properties.IsThundering ? 0.01f : -0.01f), 0.0f, 1.0f);
     }
 }

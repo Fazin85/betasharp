@@ -1,4 +1,4 @@
-namespace BetaSharp.Client.Resource.Language;
+﻿namespace BetaSharp;
 
 public class TranslationStorage : java.lang.Object
 {

@@ -1,14 +1,13 @@
-using BetaSharp.Client;
-using BetaSharp.Client.Rendering.Core;
+﻿using BetaSharp.Client.Rendering.Core;
 using Silk.NET.OpenGL.Legacy;
 
-namespace BetaSharp;
+namespace BetaSharp.Client.Rendering;
 
 public class LoadingScreenRenderer : LoadingDisplay
 {
 
     private string field_1004_a = "";
-    private Minecraft mc;
+    private readonly Minecraft mc;
     private string field_1007_c = "";
     private long field_1006_d = java.lang.System.currentTimeMillis();
     private bool field_1005_e = false;
@@ -42,7 +41,7 @@ public class LoadingScreenRenderer : LoadingDisplay
         else
         {
             field_1007_c = var1;
-            ScaledResolution var2 = new ScaledResolution(mc.options, mc.displayWidth, mc.displayHeight);
+            ScaledResolution var2 = new(mc.options, mc.displayWidth, mc.displayHeight);
             GLManager.GL.Clear(ClearBufferMask.DepthBufferBit);
             GLManager.GL.MatrixMode(GLEnum.Projection);
             GLManager.GL.LoadIdentity();
@@ -86,7 +85,7 @@ public class LoadingScreenRenderer : LoadingDisplay
             if (var2 - field_1006_d >= 20L)
             {
                 field_1006_d = var2;
-                ScaledResolution var4 = new ScaledResolution(mc.options, mc.displayWidth, mc.displayHeight);
+                ScaledResolution var4 = new(mc.options, mc.displayWidth, mc.displayHeight);
                 int var5 = var4.ScaledWidth;
                 int var6 = var4.ScaledHeight;
                 GLManager.GL.Clear(ClearBufferMask.DepthBufferBit);

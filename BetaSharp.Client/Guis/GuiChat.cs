@@ -1,4 +1,4 @@
-using BetaSharp.Client.Input;
+﻿using BetaSharp.Client.Input;
 using BetaSharp.Util;
 using BetaSharp.Server;
 using BetaSharp.Server.Commands;
@@ -472,7 +472,7 @@ public class GuiChat : GuiScreen
         try
         {
             string sel = GetSelectedText();
-            StringSelection ss = new StringSelection(sel);
+            StringSelection ss = new(sel);
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
         }
         catch (Exception)
@@ -495,7 +495,7 @@ public class GuiChat : GuiScreen
             if (t != null && t.isDataFlavorSupported(DataFlavor.stringFlavor))
             {
                 string clip = (string)t.getTransferData(DataFlavor.stringFlavor);
-                if (clip == null) clip = "";
+                clip ??= "";
                 if (HasSelection()) DeleteSelection();
                 int maxInsert = Math.Max(0, 100 - message.Length);
                 if (clip.Length > maxInsert) clip = clip.Substring(0, maxInsert);

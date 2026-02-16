@@ -1,7 +1,6 @@
-using BetaSharp.Client.Input;
+﻿using BetaSharp.Client.Input;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Items;
-using BetaSharp.Client.Resource.Language;
 using BetaSharp.Inventorys;
 using BetaSharp.Items;
 using BetaSharp.Screens;
@@ -13,7 +12,7 @@ namespace BetaSharp.Client.Guis;
 public abstract class GuiContainer : GuiScreen
 {
 
-    private static ItemRenderer itemRenderer = new ItemRenderer();
+    private static readonly ItemRenderer itemRenderer = new();
     protected int xSize = 176;
     protected int ySize = 166;
     public ScreenHandler inventorySlots;

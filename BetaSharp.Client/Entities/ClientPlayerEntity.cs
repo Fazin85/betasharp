@@ -1,6 +1,9 @@
-using BetaSharp.Blocks.Entities;
+﻿using BetaSharp.Blocks.Entities;
+using BetaSharp.Client.Achievements;
+using BetaSharp.Client.Entities.FX;
 using BetaSharp.Client.Guis;
 using BetaSharp.Client.Input;
+using BetaSharp.Entities;
 using BetaSharp.Inventorys;
 using BetaSharp.NBT;
 using BetaSharp.Stats;
@@ -8,16 +11,16 @@ using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using java.lang;
 
-namespace BetaSharp.Entities;
+namespace BetaSharp.Client.Entities;
 
 public class ClientPlayerEntity : EntityPlayer
 {
     public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ClientPlayerEntity).TypeHandle);
     public MovementInput movementInput;
     protected Minecraft mc;
-    private MouseFilter field_21903_bJ = new MouseFilter();
-    private MouseFilter field_21904_bK = new MouseFilter();
-    private MouseFilter field_21902_bL = new MouseFilter();
+    private readonly MouseFilter field_21903_bJ = new();
+    private readonly MouseFilter field_21904_bK = new();
+    private readonly MouseFilter field_21902_bL = new();
 
     public ClientPlayerEntity(Minecraft mc, World world, Session session, int dimensionId) : base(world)
     {
@@ -46,9 +49,9 @@ public class ClientPlayerEntity : EntityPlayer
 
     public override void tickMovement()
     {
-        if (!mc.statFileWriter.hasAchievementUnlocked(Achievements.OpenInventory))
+        if (!mc.statFileWriter.hasAchievementUnlocked(BetaSharp.Achievements.OpenInventory))
         {
-            mc.guiAchievement.queueAchievementInformation(Achievements.OpenInventory);
+            mc.guiAchievement.queueAchievementInformation(BetaSharp.Achievements.OpenInventory);
         }
 
         lastScreenDistortion = changeDimensionCooldown;

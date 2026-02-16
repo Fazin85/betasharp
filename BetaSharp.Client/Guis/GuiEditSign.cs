@@ -1,4 +1,4 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Input;
 using BetaSharp.Client.Rendering.Blocks.Entities;
@@ -12,7 +12,7 @@ public class GuiEditSign : GuiScreen
 {
 
     protected string screenTitle = "Edit sign message:";
-    private BlockEntitySign entitySign;
+    private readonly BlockEntitySign entitySign;
     private int updateCounter;
     private int editLine = 0;
     private static readonly string allowedCharacters = ChatAllowedCharacters.allowedCharacters;

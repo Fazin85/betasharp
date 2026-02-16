@@ -1,6 +1,5 @@
-using BetaSharp.Client.Input;
+﻿using BetaSharp.Client.Input;
 using BetaSharp.Client.Rendering.Core;
-using BetaSharp.Client.Resource.Language;
 using BetaSharp.Items;
 using BetaSharp.Stats;
 using java.util;

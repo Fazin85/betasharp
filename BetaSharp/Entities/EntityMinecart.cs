@@ -141,7 +141,7 @@ public class EntityMinecart : Entity, IInventory
                                 entityItem.velocityX = (double)((float)random.nextGaussian() * scatterSpeed);
                                 entityItem.velocityY = (double)((float)random.nextGaussian() * scatterSpeed + 0.2F);
                                 entityItem.velocityZ = (double)((float)random.nextGaussian() * scatterSpeed);
-                                world.spawnEntity(entityItem);
+                                world.SpawnEntity(entityItem);
                             }
                         }
                     }
@@ -200,7 +200,7 @@ public class EntityMinecart : Entity, IInventory
                     entityItem.velocityX = (double)((float)random.nextGaussian() * scatterSpeed);
                     entityItem.velocityY = (double)((float)random.nextGaussian() * scatterSpeed + 0.2F);
                     entityItem.velocityZ = (double)((float)random.nextGaussian() * scatterSpeed);
-                    world.spawnEntity(entityItem);
+                    world.SpawnEntity(entityItem);
                 }
             }
         }

@@ -1,14 +1,14 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Worlds;
 
-namespace BetaSharp.Entities;
+namespace BetaSharp.Client.Entities.FX;
 
 public class EntityDiggingFX : EntityFX
 {
 
-    private Block targetedBlock;
-    private int hitFace = 0;
+    private readonly Block targetedBlock;
+    private readonly int hitFace = 0;
 
     public EntityDiggingFX(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, Block targetedBlock, int hitFace, int meta) : base(world, x, y, z, velocityX, velocityY, velocityZ)
     {

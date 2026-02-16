@@ -48,7 +48,7 @@ public class BlockRedstoneRepeater : Block
             if (!powered)
             {
                 int delaySetting = (meta & 12) >> 2;
-                world.scheduleBlockUpdate(x, y, z, Block.PoweredRepeater.id, DELAY[delaySetting] * 2);
+                world.ScheduleBlockUpdate(x, y, z, PoweredRepeater.id, DELAY[delaySetting] * 2);
             }
         }
 
@@ -106,11 +106,11 @@ public class BlockRedstoneRepeater : Block
             int delaySetting = (meta & 12) >> 2;
             if (lit && !powered)
             {
-                world.scheduleBlockUpdate(x, y, z, base.id, DELAY[delaySetting] * 2);
+                world.ScheduleBlockUpdate(x, y, z, base.id, DELAY[delaySetting] * 2);
             }
             else if (!lit && powered)
             {
-                world.scheduleBlockUpdate(x, y, z, base.id, DELAY[delaySetting] * 2);
+                world.ScheduleBlockUpdate(x, y, z, base.id, DELAY[delaySetting] * 2);
             }
 
         }
@@ -155,7 +155,7 @@ public class BlockRedstoneRepeater : Block
         bool powered = isPowered(world, x, y, z, facing);
         if (powered)
         {
-            world.scheduleBlockUpdate(x, y, z, id, 1);
+            world.ScheduleBlockUpdate(x, y, z, id, 1);
         }
 
     }

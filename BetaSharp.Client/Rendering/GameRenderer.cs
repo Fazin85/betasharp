@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Materials;
+using BetaSharp.Client.Entities.FX;
 using BetaSharp.Client.Input;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Items;
@@ -65,10 +66,7 @@ public class GameRenderer
         prevThirdPersonPitch = thirdPersonPitch;
         prevCameraRoll = cameraRoll;
         prevCameraRollAmount = cameraRollAmount;
-        if (client.camera == null)
-        {
-            client.camera = client.player;
-        }
+        client.camera ??= client.player;
 
         float var1 = client.world.getLuminance(MathHelper.floor_double(client.camera.x), MathHelper.floor_double(client.camera.y), MathHelper.floor_double(client.camera.z));
         float var2 = (3 - client.options.renderDistance) / 3.0F;
@@ -102,19 +100,12 @@ public class GameRenderer
                     var4 = client.objectMouseOver.pos.distanceTo(var6);
                 }
 
-                if (client.playerController is PlayerControllerTest)
+                if (var4 > 3.0D)
                 {
-                    var2 = 32.0D;
+                    var4 = 3.0D;
                 }
-                else
-                {
-                    if (var4 > 3.0D)
-                    {
-                        var4 = 3.0D;
-                    }
 
-                    var2 = var4;
-                }
+                var2 = var4;
 
                 Vec3D var7 = client.camera.getLook(tickDelta);
                 Vec3D var8 = var6 + var2 * var7;
@@ -151,7 +142,7 @@ public class GameRenderer
                     }
                 }
 
-                if (targetedEntity != null && client.playerController is not PlayerControllerTest)
+                if (targetedEntity != null)
                 {
                     client.objectMouseOver = new HitResult(targetedEntity);
                 }
@@ -255,7 +246,7 @@ public class GameRenderer
                 GLManager.GL.Rotate(var13, 1.0F, 0.0F, 0.0F);
                 GLManager.GL.Rotate(var28, 0.0F, 1.0F, 0.0F);
             }
-                else
+            else
             {
                 var28 = var2.yaw;
                 var13 = var2.pitch;
@@ -494,10 +485,7 @@ public class GameRenderer
     {
         GLManager.GL.Enable(GLEnum.CullFace);
         GLManager.GL.Enable(GLEnum.DepthTest);
-        if (client.camera == null)
-        {
-            client.camera = client.player;
-        }
+        client.camera ??= client.player;
 
         Profiler.Start("getMouseOver");
         updateTargetedEntity(tickDelta);

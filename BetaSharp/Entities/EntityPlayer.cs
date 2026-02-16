@@ -360,7 +360,7 @@ public abstract class EntityPlayer : EntityLiving
 
     protected virtual void spawnItem(EntityItem itemEntity)
     {
-        world.spawnEntity(itemEntity);
+        world.SpawnEntity(itemEntity);
     }
 
     public float getBlockBreakingSpeed(Block block)

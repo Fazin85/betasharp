@@ -2,7 +2,8 @@
 
 namespace BetaSharp.Client.Input;
 
-public class Keyboard {
+public class Keyboard
+{
     public const int EVENT_SIZE = 4 + 1 + 4 + 8 + 1;
 
     public const int CHAR_NONE = '\0';
@@ -156,7 +157,8 @@ public class Keyboard {
     private static Dictionary<Keys, int> keyMap;
     private static string[] keyNames;
 
-    public static unsafe void create(Glfw glfwApi, WindowHandle* windowHandle) {
+    public static unsafe void create(Glfw glfwApi, WindowHandle* windowHandle)
+    {
         if (created) return;
 
         glfw = glfwApi;
@@ -175,19 +177,24 @@ public class Keyboard {
             System.Reflection.BindingFlags.FlattenHierarchy
         );
 
-        foreach (var field in fields) {
-            if (field.IsLiteral && !field.IsInitOnly && field.Name.StartsWith("KEY_")) {
+        foreach (var field in fields)
+        {
+            if (field.IsLiteral && !field.IsInitOnly && field.Name.StartsWith("KEY_"))
+            {
                 int keyCode = (int)field.GetValue(null);
                 string keyName = field.Name[4..];
 
-                if (keyCode >= 0 && keyCode < keyNames.Length) {
+                if (keyCode >= 0 && keyCode < keyNames.Length)
+                {
                     keyNames[keyCode] = keyName;
                 }
             }
         }
 
-        for (int i = 0; i < keyNames.Length; i++) {
-            if (keyNames[i] == null) {
+        for (int i = 0; i < keyNames.Length; i++)
+        {
+            if (keyNames[i] == null)
+            {
                 keyNames[i] = "UNKNOWN";
             }
         }
@@ -195,7 +202,8 @@ public class Keyboard {
         created = true;
     }
 
-    private static void InitializeKeyMap() {
+    private static void InitializeKeyMap()
+    {
         keyMap = new Dictionary<Keys, int> {
             { Keys.Escape, KEY_ESCAPE },
             { Keys.Number1, KEY_1 },
@@ -310,14 +318,16 @@ public class Keyboard {
         { '\\', '|' }, { ';', ':' }, { '\'', '"' }, { ',', '<' }, { '.', '>' }, { '/', '?' }
     };
 
-    private static char ShiftUp(char c) {
+    private static char ShiftUp(char c)
+    {
         if (char.IsLetter(c)) return char.ToUpper(c);
         if (ShiftMap.TryGetValue(c, out char up)) return up;
         return c;
     }
 
     private static unsafe void OnKey(WindowHandle* window, Keys key, int scancode, InputAction action,
-        KeyModifiers mods) {
+        KeyModifiers mods)
+    {
         if (!created) return;
 
         if (!keyMap.TryGetValue(key, out int lwjglKey)) lwjglKey = KEY_NONE;
@@ -329,7 +339,8 @@ public class Keyboard {
 
 
         char character = '\0';
-        if (pressed) {
+        if (pressed)
+        {
             // Get name of keyboard key and assign it (this feels stupid)
             string? name = glfw.GetKeyName((int)key, scancode);
             if (!string.IsNullOrEmpty(name)) character = name[0];
@@ -340,7 +351,8 @@ public class Keyboard {
             if (key == Keys.Space) character = ' ';
         }
 
-        eventQueue.Enqueue(new KeyEvent {
+        eventQueue.Enqueue(new KeyEvent
+        {
             Key = lwjglKey,
             Character = character,
             State = pressed,
@@ -354,10 +366,12 @@ public class Keyboard {
     public static event Action<char>? OnCharacterTyped;
 
 
-    public static bool next() {
+    public static bool next()
+    {
         if (!created) throw new InvalidOperationException("Keyboard must be created before you can read events");
 
-        while (eventQueue.Count > 0) {
+        while (eventQueue.Count > 0)
+        {
             KeyEvent evt = eventQueue.Dequeue();
 
             // Skip repeat events if not enabled
@@ -377,13 +391,15 @@ public class Keyboard {
     public static long getEventNanoseconds() => current_event.Nanos;
     public static bool isRepeatEvent() => current_event.Repeat;
 
-    public static bool isKeyDown(int key) {
+    public static bool isKeyDown(int key)
+    {
         if (!created) throw new InvalidOperationException("Keyboard must be created before you can poll it");
         if (key >= KEYBOARD_SIZE || key < 0) return false;
         return keyDownBuffer[key];
     }
 
-    public static void enableRepeatEvents(bool enable) {
+    public static void enableRepeatEvents(bool enable)
+    {
         repeat_enabled = enable;
     }
 
@@ -391,25 +407,30 @@ public class Keyboard {
 
     public static bool isCreated() => created;
 
-    public static void destroy() {
+    public static void destroy()
+    {
         if (!created) return;
         created = false;
         eventQueue.Clear();
     }
 
-    private static long GetNanos() {
+    private static long GetNanos()
+    {
         return DateTime.UtcNow.Ticks * 100;
     }
 
-    public static string getKeyName(int keyCode) {
-        if (keyCode >= 0 && keyCode < keyNames.Length) {
+    public static string getKeyName(int keyCode)
+    {
+        if (keyCode >= 0 && keyCode < keyNames.Length)
+        {
             return keyNames[keyCode];
         }
 
         return "UNKNOWN";
     }
 
-    private class KeyEvent {
+    private class KeyEvent
+    {
         public int Character;
         public int Key;
         public bool State;

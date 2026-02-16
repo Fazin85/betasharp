@@ -11,10 +11,10 @@ namespace BetaSharp.Client.Guis;
 public class GuiAchievements : GuiScreen
 {
 
-    private static readonly int field_27126_s = Achievements.minColumn * 24 - 112;
-    private static readonly int field_27125_t = Achievements.minRow * 24 - 112;
-    private static readonly int field_27124_u = Achievements.maxColumn * 24 - 77;
-    private static readonly int field_27123_v = Achievements.maxRow * 24 - 77;
+    private static readonly int field_27126_s = BetaSharp.Achievements.minColumn * 24 - 112;
+    private static readonly int field_27125_t = BetaSharp.Achievements.minRow * 24 - 112;
+    private static readonly int field_27124_u = BetaSharp.Achievements.maxColumn * 24 - 77;
+    private static readonly int field_27123_v = BetaSharp.Achievements.maxRow * 24 - 77;
     protected int field_27121_a = 256;
     protected int field_27119_i = 202;
     protected int field_27118_j = 0;
@@ -26,15 +26,15 @@ public class GuiAchievements : GuiScreen
     protected double field_27112_q;
     protected double field_27111_r;
     private int field_27122_w = 0;
-    private StatFileWriter statFileWriter;
+    private readonly StatFileWriter statFileWriter;
 
     public GuiAchievements(StatFileWriter statFileWriter)
     {
         this.statFileWriter = statFileWriter;
         short var2 = 141;
         short var3 = 141;
-        field_27116_m = field_27114_o = field_27112_q = Achievements.OpenInventory.column * 24 - var2 / 2 - 12;
-        field_27115_n = field_27113_p = field_27111_r = Achievements.OpenInventory.row * 24 - var3 / 2;
+        field_27116_m = field_27114_o = field_27112_q = BetaSharp.Achievements.OpenInventory.column * 24 - var2 / 2 - 12;
+        field_27115_n = field_27113_p = field_27111_r = BetaSharp.Achievements.OpenInventory.row * 24 - var3 / 2;
     }
 
     public override void initGui()
@@ -257,9 +257,9 @@ public class GuiAchievements : GuiScreen
         int var17;
         int var33;
         int var38;
-        for (var12 = 0; var12 < Achievements.AllAchievements.Count; ++var12)
+        for (var12 = 0; var12 < BetaSharp.Achievements.AllAchievements.Count; ++var12)
         {
-            Achievement var28 = Achievements.AllAchievements[var12];
+            Achievement var28 = BetaSharp.Achievements.AllAchievements[var12];
             if (var28.parent != null)
             {
                 var14 = var28.column * 24 - var4 + 11 + var10;
@@ -289,7 +289,7 @@ public class GuiAchievements : GuiScreen
         }
 
         Achievement var27 = null;
-        ItemRenderer var29 = new ItemRenderer();
+        ItemRenderer var29 = new();
         GLManager.GL.PushMatrix();
         GLManager.GL.Rotate(180.0F, 1.0F, 0.0F, 0.0F);
         Lighting.turnOn();
@@ -299,9 +299,9 @@ public class GuiAchievements : GuiScreen
         GLManager.GL.Enable(GLEnum.ColorMaterial);
 
         int var34;
-        for (var14 = 0; var14 < Achievements.AllAchievements.Count; ++var14)
+        for (var14 = 0; var14 < BetaSharp.Achievements.AllAchievements.Count; ++var14)
         {
-            Achievement var30 = Achievements.AllAchievements[var14];
+            Achievement var30 = BetaSharp.Achievements.AllAchievements[var14];
             var16 = var30.column * 24 - var4;
             var17 = var30.row * 24 - var5;
             if (var16 >= -24 && var17 >= -24 && var16 <= 224 && var17 <= 155)
@@ -372,14 +372,14 @@ public class GuiAchievements : GuiScreen
         base.render(var1, var2, var3);
         if (var27 != null)
         {
+            string? var32 = var27.getTranslatedDescription();
             string var31 = var27.statName;
-            string var32 = var27.getTranslatedDescription();
             var17 = var1 + 12;
             var33 = var2 - 4;
             if (statFileWriter.func_27181_b(var27))
             {
                 var34 = java.lang.Math.max(fontRenderer.getStringWidth(var31), 120);
-                int var37 = fontRenderer.func_27277_a(var32, var34);
+                int var37 = fontRenderer.func_27277_a(var32 ?? "", var34);
                 if (statFileWriter.hasAchievementUnlocked(var27))
                 {
                     var37 += 12;

@@ -1,18 +1,18 @@
-using BetaSharp.Client;
+using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Entities;
 using java.awt.image;
 using java.util;
 using Silk.NET.OpenGL.Legacy;
 
-namespace BetaSharp;
+namespace BetaSharp.Client.Rendering;
 
 public class MapItemRenderer
 {
-    private int[] field_28159_a = new int[128*128];
-    private int field_28158_b;
-    private GameOptions field_28161_c;
-    private TextRenderer field_28160_d;
+    private readonly int[] field_28159_a = new int[128*128];
+    private readonly int field_28158_b;
+    private readonly GameOptions field_28161_c;
+    private readonly TextRenderer field_28160_d;
 
     public MapItemRenderer(TextRenderer var1, GameOptions var2, TextureManager var3)
     {

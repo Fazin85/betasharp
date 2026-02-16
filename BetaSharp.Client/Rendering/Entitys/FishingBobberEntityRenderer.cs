@@ -1,4 +1,4 @@
-using BetaSharp.Client.Rendering.Core;
+﻿using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 using Silk.NET.OpenGL.Legacy;
@@ -43,7 +43,7 @@ public class FishingBobberEntityRenderer : EntityRenderer
             double var23 = (double)MathHelper.cos(var20);
             float var25 = var1.angler.getSwingProgress(var9);
             float var26 = MathHelper.sin(MathHelper.sqrt_float(var25) * (float)Math.PI);
-            Vec3D var27 = new Vec3D(-0.5D, 0.03D, 0.8D);
+            Vec3D var27 = new(-0.5D, 0.03D, 0.8D);
             var27.rotateAroundX(-(var1.angler.prevPitch + (var1.angler.pitch - var1.angler.prevPitch) * var9) * (float)Math.PI / 180.0F);
             var27.rotateAroundY(-(var1.angler.prevYaw + (var1.angler.yaw - var1.angler.prevYaw) * var9) * (float)Math.PI / 180.0F);
             var27.rotateAroundY(var26 * 0.5F);

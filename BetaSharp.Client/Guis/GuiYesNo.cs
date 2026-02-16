@@ -1,14 +1,14 @@
-namespace BetaSharp.Client.Guis;
+﻿namespace BetaSharp.Client.Guis;
 
 public class GuiYesNo : GuiScreen
 {
 
-    private GuiScreen parentScreen;
-    private string message1;
-    private string message2;
-    private string confirmButtonText;
-    private string cancelButtonText;
-    private int worldNumber;
+    private readonly GuiScreen parentScreen;
+    private readonly string message1;
+    private readonly string message2;
+    private readonly string confirmButtonText;
+    private readonly string cancelButtonText;
+    private readonly int worldNumber;
 
     private const int BUTTON_CONFIRM = 0;
     private const int BUTTON_CANCEL = 1;

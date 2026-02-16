@@ -1,4 +1,4 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Util.Maths;
@@ -9,8 +9,8 @@ namespace BetaSharp.Client.Rendering.Blocks;
 
 public class BlockRenderer
 {
-    private BlockView blockAccess;
-    private Tessellator? tessellator;
+    private readonly BlockView blockAccess;
+    private readonly Tessellator? tessellator;
     private int overrideBlockTexture = -1;
     private bool flipTexture = false;
     private bool renderAllFaces = false;
@@ -50,7 +50,7 @@ public class BlockRenderer
     private float field_22356_D;
     private float field_22354_E;
     private float field_22353_F;
-    private int field_22352_G = 1;
+    private readonly int field_22352_G = 1;
     private float colorRedTopLeft;
     private float colorRedBottomLeft;
     private float colorRedBottomRight;

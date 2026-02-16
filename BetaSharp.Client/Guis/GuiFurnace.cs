@@ -1,4 +1,4 @@
-using BetaSharp.Blocks.Entities;
+﻿using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Inventorys;
 using BetaSharp.Screens;
@@ -8,7 +8,7 @@ namespace BetaSharp.Client.Guis;
 public class GuiFurnace : GuiContainer
 {
 
-    private BlockEntityFurnace furnaceInventory;
+    private readonly BlockEntityFurnace furnaceInventory;
 
     public GuiFurnace(InventoryPlayer playerInventory, BlockEntityFurnace furnace) : base(new FurnaceScreenHandler(playerInventory, furnace))
     {

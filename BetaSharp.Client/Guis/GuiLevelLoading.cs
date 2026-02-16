@@ -1,22 +1,21 @@
-using BetaSharp.Client.Resource.Language;
-using BetaSharp.Server.Internal;
+﻿using BetaSharp.Server.Internal;
 using BetaSharp.Server.Threading;
 
 namespace BetaSharp.Client.Guis;
 
 public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
 {
-    private readonly string worldDir = worldDir;
-    private readonly long seed = seed;
-    private bool serverStarted = false;
+    private readonly string _worldDir = worldDir;
+    private readonly long _seed = seed;
+    private bool _serverStarted = false;
 
     public override void initGui()
     {
         controlList.clear();
-        if (!serverStarted)
+        if (!_serverStarted)
         {
-            serverStarted = true;
-            mc.internalServer = new InternalServer(System.IO.Path.Combine(Minecraft.getMinecraftDir().getAbsolutePath(), "saves"), worldDir, seed.ToString(), 10);
+            _serverStarted = true;
+            mc.internalServer = new InternalServer(System.IO.Path.Combine(Minecraft.getMinecraftDir().getAbsolutePath(), "saves"), _worldDir, _seed.ToString(), 10);
             new RunServerThread(mc.internalServer, "InternalServer").start();
         }
     }

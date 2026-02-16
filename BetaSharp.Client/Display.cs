@@ -11,14 +11,14 @@ namespace BetaSharp.Client;
 /// </summary>
 public static unsafe class Display
 {
-    private static readonly object _lock = new object();
+    private static readonly object _lock = new();
     private static IWindow? _window;
     private static GL? _gl;
-    private static Glfw? _glfw;
+    private static readonly Glfw? _glfw;
 
     // Display properties
     private static DisplayMode _currentMode;
-    private static DisplayMode _initialMode;
+    private static readonly DisplayMode _initialMode;
     private static string _title = "Game";
     private static bool _fullscreen = false;
     private static int _swapInterval = 0;

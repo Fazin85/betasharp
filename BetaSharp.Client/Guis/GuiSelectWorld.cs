@@ -1,4 +1,4 @@
-using BetaSharp.Client.Resource.Language;
+﻿using BetaSharp.Client.Input;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Storage;
 using java.text;
@@ -94,7 +94,7 @@ public class GuiSelectWorld : GuiScreen
             string deleteWarning = "'" + worldName + "' " + translations.translateKey("selectWorld.deleteWarning");
             string deleteButtonText = translations.translateKey("selectWorld.deleteButton");
             string cancelButtonText = translations.translateKey("gui.cancel");
-            GuiYesNo confirmDialog = new GuiYesNo(this, deleteQuestion, deleteWarning, deleteButtonText, cancelButtonText, worldIndex);
+            GuiYesNo confirmDialog = new(this, deleteQuestion, deleteWarning, deleteButtonText, cancelButtonText, worldIndex);
             mc.displayGuiScreen(confirmDialog);
         }
     }
@@ -134,10 +134,7 @@ public class GuiSelectWorld : GuiScreen
             selected = true;
             mc.playerController = new PlayerControllerSP(mc);
             string worldFileName = getSaveFileName(worldIndex);
-            if (worldFileName == null)
-            {
-                worldFileName = "World" + worldIndex;
-            }
+            worldFileName ??= "World" + worldIndex;
 
             mc.startWorld(worldFileName, getSaveName(worldIndex), 0L);
         }

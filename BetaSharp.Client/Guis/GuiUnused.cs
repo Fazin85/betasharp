@@ -1,10 +1,10 @@
-namespace BetaSharp.Client.Guis;
+﻿namespace BetaSharp.Client.Guis;
 
 public class GuiUnused : GuiScreen
 {
 
-    private string message1;
-    private string message2;
+    private readonly string message1;
+    private readonly string message2;
 
     public override void initGui()
     {

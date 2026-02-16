@@ -1,4 +1,4 @@
-using BetaSharp.Client.Rendering.Core;
+﻿using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Entitys.Models;
 using BetaSharp.Entities;
 using Silk.NET.OpenGL.Legacy;
@@ -8,7 +8,7 @@ namespace BetaSharp.Client.Rendering.Entitys;
 public class SlimeEntityRenderer : LivingEntityRenderer
 {
 
-    private ModelBase scaleAmount;
+    private readonly ModelBase scaleAmount;
 
     public SlimeEntityRenderer(ModelBase mainModel, ModelBase var2, float var3) : base(mainModel, var3)
     {

@@ -1,4 +1,4 @@
-using BetaSharp.Blocks.Entities;
+﻿using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Entities;
 using BetaSharp.Worlds;
@@ -9,8 +9,8 @@ namespace BetaSharp.Client.Rendering.Blocks.Entities;
 
 public class BlockEntityRenderer
 {
-    private Map specialRendererMap = new HashMap();
-    public static BlockEntityRenderer instance = new BlockEntityRenderer();
+    private readonly Map specialRendererMap = new HashMap();
+    public static BlockEntityRenderer instance = new();
     private TextRenderer fontRenderer;
     public static double staticPlayerX;
     public static double staticPlayerY;

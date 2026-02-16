@@ -1,6 +1,5 @@
-using BetaSharp.Client.Network;
-using BetaSharp.Client.Resource.Language;
-using BetaSharp.Threading;
+﻿using BetaSharp.Client.Network;
+using BetaSharp.Client.Threading;
 
 namespace BetaSharp.Client.Guis;
 

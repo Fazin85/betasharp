@@ -1,4 +1,4 @@
-using BetaSharp.Blocks.Entities;
+﻿using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Entitys;
 using BetaSharp.Entities;
@@ -9,7 +9,7 @@ namespace BetaSharp.Client.Rendering.Blocks.Entities;
 public class BlockEntityMobSpawnerRenderer : BlockEntitySpecialRenderer
 {
 
-    private Map entityHashMap = new HashMap();
+    private readonly Map entityHashMap = new HashMap();
 
     public void renderTileEntityMobSpawner(BlockEntityMobSpawner var1, double var2, double var4, double var6, float var8)
     {

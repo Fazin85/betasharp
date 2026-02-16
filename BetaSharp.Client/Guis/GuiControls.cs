@@ -1,13 +1,13 @@
-using BetaSharp.Client.Resource.Language;
+﻿using BetaSharp.Client.Options;
 
 namespace BetaSharp.Client.Guis;
 
 public class GuiControls : GuiScreen
 {
 
-    private GuiScreen parentScreen;
+    private readonly GuiScreen parentScreen;
     protected string screenTitle = "Controls";
-    private GameOptions options;
+    private readonly GameOptions options;
     private int selectedKey = -1;
     private const int BUTTON_DONE = 200;
 

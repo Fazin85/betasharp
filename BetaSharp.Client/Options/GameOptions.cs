@@ -1,8 +1,7 @@
-using BetaSharp.Client.Input;
-using BetaSharp.Client.Resource.Language;
+﻿using BetaSharp.Client.Input;
 using java.io;
 
-namespace BetaSharp;
+namespace BetaSharp.Client.Options;
 
 public class GameOptions : java.lang.Object
 {
@@ -22,17 +21,17 @@ public class GameOptions : java.lang.Object
     public float limitFramerate = 0.42857143f; // 0.428... = 120, 1.0 = 240, 0.0 = 30
     public float fov = 0.44444445F; // (70 - 30) / 90
     public string skin = "Default";
-    public KeyBinding keyBindForward = new KeyBinding("key.forward", 17);
-    public KeyBinding keyBindLeft = new KeyBinding("key.left", 30);
-    public KeyBinding keyBindBack = new KeyBinding("key.back", 31);
-    public KeyBinding keyBindRight = new KeyBinding("key.right", 32);
-    public KeyBinding keyBindJump = new KeyBinding("key.jump", 57);
-    public KeyBinding keyBindInventory = new KeyBinding("key.inventory", 18);
-    public KeyBinding keyBindDrop = new KeyBinding("key.drop", 16);
-    public KeyBinding keyBindChat = new KeyBinding("key.chat", 20);
-    public KeyBinding keyBindCommand = new KeyBinding("key.command", Keyboard.KEY_SLASH);
-    public KeyBinding keyBindToggleFog = new KeyBinding("key.fog", 33);
-    public KeyBinding keyBindSneak = new KeyBinding("key.sneak", 42);
+    public KeyBinding keyBindForward = new("key.forward", 17);
+    public KeyBinding keyBindLeft = new("key.left", 30);
+    public KeyBinding keyBindBack = new("key.back", 31);
+    public KeyBinding keyBindRight = new("key.right", 32);
+    public KeyBinding keyBindJump = new("key.jump", 57);
+    public KeyBinding keyBindInventory = new("key.inventory", 18);
+    public KeyBinding keyBindDrop = new("key.drop", 16);
+    public KeyBinding keyBindChat = new("key.chat", 20);
+    public KeyBinding keyBindCommand = new("key.command", Keyboard.KEY_SLASH);
+    public KeyBinding keyBindToggleFog = new("key.fog", 33);
+    public KeyBinding keyBindSneak = new("key.sneak", 42);
     public KeyBinding[] keyBindings;
     protected Minecraft mc;
     private readonly java.io.File optionsFile;
@@ -200,7 +199,7 @@ public class GameOptions : java.lang.Object
     {
         TranslationStorage translations = TranslationStorage.getInstance();
         string label = GetOptionLabel(option, translations) + ": ";
-            
+
         if (option.getEnumFloat())
         {
             return FormatFloatValue(option, label, translations);
@@ -219,18 +218,18 @@ public class GameOptions : java.lang.Object
             return FormatEnumValue(option, label, translations);
         }
     }
-        
+
     private string GetOptionLabel(EnumOptions option, TranslationStorage translations)
     {
         if (option == EnumOptions.FRAMERATE_LIMIT) return "Max FPS";
         if (option == EnumOptions.FOV) return "FOV";
         return translations.translateKey(option.getEnumString());
     }
-        
+
     private string FormatFloatValue(EnumOptions option, string label, TranslationStorage translations)
     {
         float value = getOptionFloatValue(option);
-            
+
         if (option == EnumOptions.SENSITIVITY)
         {
             return value == 0.0F ? label + translations.translateKey("options.sensitivity.min") : (value == 1.0F ? label + translations.translateKey("options.sensitivity.max") : label + (int)(value * 200.0F) + "%");
@@ -248,13 +247,13 @@ public class GameOptions : java.lang.Object
             return (value == 0.0F ? label + translations.translateKey("options.off") : label + (int)(value * 100.0F) + "%");
         }
     }
-        
+
     private string FormatFramerateValue(string label, float value)
     {
         int fps = 30 + (int)(value * 210.0f);
         return label + (fps == 240 ? "Unlimited" : fps + " FPS");
     }
-        
+
     private string FormatMsaaValue(string label, TranslationStorage translations)
     {
         string result = label + (msaaLevel == 0 ? translations.translateKey("options.off") : MSAA_LEVELS[msaaLevel]);
@@ -264,7 +263,7 @@ public class GameOptions : java.lang.Object
         }
         return result;
     }
-        
+
     private string FormatEnumValue(EnumOptions option, string label, TranslationStorage translations)
     {
         if (option == EnumOptions.RENDER_DISTANCE) return label + translations.translateKey(RENDER_DISTANCES[renderDistance]);
@@ -283,7 +282,7 @@ public class GameOptions : java.lang.Object
                 return;
             }
 
-            BufferedReader reader = new BufferedReader(new FileReader(optionsFile));
+            BufferedReader reader = new(new FileReader(optionsFile));
             string line = "";
 
             while (true)
@@ -311,7 +310,7 @@ public class GameOptions : java.lang.Object
             System.Console.WriteLine("Failed to load options");
         }
     }
-        
+
     private void LoadOptionFromParts(string[] parts)
     {
         switch (parts[0])
@@ -369,7 +368,7 @@ public class GameOptions : java.lang.Object
                 environmentAnimation = parts[1].Equals("true");
                 break;
         }
-            
+
         // Load keybindings
         for (int i = 0; i < keyBindings.Length; ++i)
         {
@@ -394,7 +393,7 @@ public class GameOptions : java.lang.Object
     {
         try
         {
-            using System.IO.StreamWriter writer = new System.IO.StreamWriter(optionsFile.getAbsolutePath());
+            using System.IO.StreamWriter writer = new(optionsFile.getAbsolutePath());
             writer.WriteLine("music:" + musicVolume);
             writer.WriteLine("sound:" + soundVolume);
             writer.WriteLine("invertYMouse:" + invertMouse);

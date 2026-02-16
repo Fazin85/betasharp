@@ -1,5 +1,4 @@
-using BetaSharp.Client.Input;
-using BetaSharp.Client.Resource.Language;
+﻿using BetaSharp.Client.Input;
 
 namespace BetaSharp.Client.Guis;
 
@@ -8,7 +7,7 @@ public class GuiMultiplayer : GuiScreen
     private const int BUTTON_CONNECT = 0;
     private const int BUTTON_CANCEL = 1;
 
-    private GuiScreen parentScreen;
+    private readonly GuiScreen parentScreen;
     private GuiTextField serverAddressInputField;
 
     public GuiMultiplayer(GuiScreen parentScreen)
@@ -30,8 +29,10 @@ public class GuiMultiplayer : GuiScreen
         controlList.add(new GuiButton(BUTTON_CANCEL, width / 2 - 100, height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
         string lastServerAddress = mc.options.lastServer.Replace("_", ":");
         ((GuiButton)controlList.get(0)).enabled = lastServerAddress.Length > 0;
-        serverAddressInputField = new GuiTextField(this, fontRenderer, width / 2 - 100, height / 4 - 10 + 50 + 18, 200, 20, lastServerAddress);
-        serverAddressInputField.isFocused = true;
+        serverAddressInputField = new GuiTextField(this, fontRenderer, width / 2 - 100, height / 4 - 10 + 50 + 18, 200, 20, lastServerAddress)
+        {
+            isFocused = true
+        };
         serverAddressInputField.setMaxStringLength(128);
     }
 
@@ -50,38 +51,38 @@ public class GuiMultiplayer : GuiScreen
                     mc.displayGuiScreen(parentScreen);
                     break;
                 case BUTTON_CONNECT:
-                {
-                    string serverAddress = serverAddressInputField.getText().Trim();
-                    mc.options.lastServer = serverAddress.Replace(":", "_");
-                    mc.options.saveOptions();
-                    string[] addressParts = serverAddress.Split(":");
-                    if (serverAddress.StartsWith("["))
                     {
-                        int bracketIndex = serverAddress.IndexOf("]");
-                        if (bracketIndex > 0)
+                        string serverAddress = serverAddressInputField.getText().Trim();
+                        mc.options.lastServer = serverAddress.Replace(":", "_");
+                        mc.options.saveOptions();
+                        string[] addressParts = serverAddress.Split(":");
+                        if (serverAddress.StartsWith("["))
                         {
-                            string ipv6Address = serverAddress.Substring(1, bracketIndex);
-                            string portPart = serverAddress.Substring(bracketIndex + 1).Trim();
-                            if (portPart.StartsWith(":") && portPart.Length > 0)
+                            int bracketIndex = serverAddress.IndexOf("]");
+                            if (bracketIndex > 0)
                             {
-                                portPart = portPart.Substring(1);
-                                addressParts = new string[] { ipv6Address, portPart };
-                            }
-                            else
-                            {
-                                addressParts = new string[] { ipv6Address };
+                                string ipv6Address = serverAddress.Substring(1, bracketIndex);
+                                string portPart = serverAddress.Substring(bracketIndex + 1).Trim();
+                                if (portPart.StartsWith(":") && portPart.Length > 0)
+                                {
+                                    portPart = portPart.Substring(1);
+                                    addressParts = new string[] { ipv6Address, portPart };
+                                }
+                                else
+                                {
+                                    addressParts = new string[] { ipv6Address };
+                                }
                             }
                         }
-                    }
 
-                    if (addressParts.Length > 2)
-                    {
-                        addressParts = new string[] { serverAddress };
-                    }
+                        if (addressParts.Length > 2)
+                        {
+                            addressParts = new string[] { serverAddress };
+                        }
 
-                    mc.displayGuiScreen(new GuiConnecting(mc, addressParts[0], addressParts.Length > 1 ? parseIntWithDefault(addressParts[1], 25565) : 25565));
-                    break;
-                }
+                        mc.displayGuiScreen(new GuiConnecting(mc, addressParts[0], addressParts.Length > 1 ? parseIntWithDefault(addressParts[1], 25565) : 25565));
+                        break;
+                    }
             }
         }
     }

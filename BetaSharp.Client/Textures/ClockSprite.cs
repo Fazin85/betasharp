@@ -1,5 +1,4 @@
-using BetaSharp.Client.Resource;
-using BetaSharp.Items;
+﻿using BetaSharp.Items;
 using java.awt.image;
 using java.io;
 using javax.imageio;
@@ -9,9 +8,9 @@ namespace BetaSharp.Client.Textures;
 public class ClockSprite : DynamicTexture
 {
 
-    private Minecraft mc;
-    private int[] clock = new int[256];
-    private int[] dial = new int[256];
+    private readonly Minecraft mc;
+    private readonly int[] clock = new int[256];
+    private readonly int[] dial = new int[256];
     private double angle;
     private double angleDelta;
 

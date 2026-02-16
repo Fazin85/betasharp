@@ -1,4 +1,4 @@
-using BetaSharp.Client.Rendering.Core;
+﻿using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Entitys.Models;
 using BetaSharp.Entities;
 
@@ -7,7 +7,7 @@ namespace BetaSharp.Client.Rendering.Entitys;
 public class GiantEntityRenderer : LivingEntityRenderer
 {
 
-    private float scale;
+    private readonly float scale;
 
     public GiantEntityRenderer(ModelBase mainModel, float var2, float var3) : base(mainModel, var2 * var3)
     {

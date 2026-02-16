@@ -1,4 +1,6 @@
-namespace BetaSharp;
+﻿using BetaSharp.Client.Options;
+
+namespace BetaSharp.Client;
 
 public class ScaledResolution
 {
@@ -14,7 +16,7 @@ public class ScaledResolution
         ScaledHeight = scaledHeight;
         int guiScale = options.guiScale;
         scaleFactor = 1;
-            
+
         if (guiScale == 0)
             guiScale = 1000;
 

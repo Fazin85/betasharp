@@ -57,7 +57,7 @@ public class OakTreeFeature : Feature
                 var8 = world.getBlockId(x, y - 1, z);
                 if ((var8 == Block.GrassBlock.id || var8 == Block.Dirt.id) && y < 128 - var6 - 1)
                 {
-                    world.setBlockWithoutNotifyingNeighbors(x, y - 1, z, Block.Dirt.id);
+                    world.SetBlockWithoutNotifyingNeighbors(x, y - 1, z, Block.Dirt.id);
 
                     int var16;
                     for (var16 = y - 3 + var6; var16 <= y + var6; ++var16)
@@ -74,7 +74,7 @@ public class OakTreeFeature : Feature
                                 int var15 = var14 - z;
                                 if ((java.lang.Math.abs(var13) != var11 || java.lang.Math.abs(var15) != var11 || rand.nextInt(2) != 0 && var10 != 0) && !Block.BlocksOpaque[world.getBlockId(var12, var16, var14)])
                                 {
-                                    world.setBlockWithoutNotifyingNeighbors(var12, var16, var14, Block.Leaves.id);
+                                    world.SetBlockWithoutNotifyingNeighbors(var12, var16, var14, Block.Leaves.id);
                                 }
                             }
                         }
@@ -85,7 +85,7 @@ public class OakTreeFeature : Feature
                         var10 = world.getBlockId(x, y + var16, z);
                         if (var10 == 0 || var10 == Block.Leaves.id)
                         {
-                            world.setBlockWithoutNotifyingNeighbors(x, y + var16, z, Block.Log.id);
+                            world.SetBlockWithoutNotifyingNeighbors(x, y + var16, z, Block.Log.id);
                         }
                     }
 

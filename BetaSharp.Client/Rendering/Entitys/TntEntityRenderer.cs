@@ -1,4 +1,4 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Entities;
@@ -9,7 +9,7 @@ namespace BetaSharp.Client.Rendering.Entitys;
 public class TntEntityRenderer : EntityRenderer
 {
 
-    private BlockRenderer blockRenderer = new BlockRenderer();
+    private readonly BlockRenderer blockRenderer = new();
 
     public TntEntityRenderer()
     {

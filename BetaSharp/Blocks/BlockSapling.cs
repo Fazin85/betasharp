@@ -41,7 +41,7 @@ public class BlockSapling : BlockPlant
     public void generate(World world, int x, int y, int z, java.util.Random random)
     {
         int saplingType = world.getBlockMeta(x, y, z) & 3;
-        world.setBlockWithoutNotifyingNeighbors(x, y, z, 0);
+        world.SetBlockWithoutNotifyingNeighbors(x, y, z, 0);
         object treeFeature = null;
         if (saplingType == 1)
         {
@@ -62,7 +62,7 @@ public class BlockSapling : BlockPlant
 
         if (!((Feature)treeFeature).generate(world, random, x, y, z))
         {
-            world.setBlockWithoutNotifyingNeighbors(x, y, z, id, saplingType);
+            world.SetBlockWithoutNotifyingNeighbors(x, y, z, id, saplingType);
         }
 
     }

@@ -1,8 +1,8 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Blocks.Materials;
+using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Items;
-using BetaSharp.Client.Resource.Language;
 using BetaSharp.Inventorys;
 using BetaSharp.Items;
 using BetaSharp.Util;
@@ -16,7 +16,7 @@ namespace BetaSharp.Client.Guis;
 public class GuiIngame : Gui
 {
     private readonly GCMonitor GCMonitor;
-    private static readonly ItemRenderer itemRenderer = new ItemRenderer();
+    private static readonly ItemRenderer itemRenderer = new();
     private readonly java.util.List chatMessageList = new ArrayList();
     private readonly java.util.Random rand = new();
     private readonly Minecraft mc;
@@ -36,7 +36,7 @@ public class GuiIngame : Gui
 
     public void renderGameOverlay(float partialTicks, bool unusedFlag, int unusedA, int unusedB)
     {
-        ScaledResolution scaled = new ScaledResolution(mc.options, mc.displayWidth, mc.displayHeight);
+        ScaledResolution scaled = new(mc.options, mc.displayWidth, mc.displayHeight);
         int scaledWidth = scaled.ScaledWidth;
         int scaledHeight = scaled.ScaledHeight;
         TextRenderer font = mc.fontRenderer;

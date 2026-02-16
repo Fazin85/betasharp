@@ -1,6 +1,4 @@
-using BetaSharp.Client.Rendering.Core;
-using BetaSharp.Client.Resource;
-using BetaSharp.Client.Resource.Language;
+﻿using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Util.Maths;
 using java.io;
 using java.util;
@@ -16,9 +14,9 @@ public class GuiMainMenu : GuiScreen
     private const int BUTTON_MODS = 3;
     private const int BUTTON_QUIT = 4;
 
-    private static readonly java.util.Random rand = new();
-    private string splashText = "missingno";
-    private GuiButton multiplayerButton;
+    private static readonly java.util.Random s_rand = new();
+    private string _splashText = "missingno";
+    private GuiButton _multiplayerButton;
 
     public GuiMainMenu()
     {
@@ -35,7 +33,7 @@ public class GuiMainMenu : GuiScreen
                 line = reader.readLine();
                 if (line == null)
                 {
-                    splashText = splashLines[rand.nextInt(splashLines.Count)];
+                    _splashText = splashLines[s_rand.nextInt(splashLines.Count)];
                     break;
                 }
 
@@ -46,7 +44,7 @@ public class GuiMainMenu : GuiScreen
                 }
             }
         }
-        catch (Exception exception)
+        catch (Exception)
         {
         }
     }
@@ -67,26 +65,26 @@ public class GuiMainMenu : GuiScreen
         calendar.setTime(new Date());
         if (calendar.get(2) + 1 == 11 && calendar.get(5) == 9)
         {
-            splashText = "Happy birthday, ez!";
+            _splashText = "Happy birthday, ez!";
         }
         else if (calendar.get(2) + 1 == 6 && calendar.get(5) == 1)
         {
-            splashText = "Happy birthday, Notch!";
+            _splashText = "Happy birthday, Notch!";
         }
         else if (calendar.get(2) + 1 == 12 && calendar.get(5) == 24)
         {
-            splashText = "Merry X-mas!";
+            _splashText = "Merry X-mas!";
         }
         else if (calendar.get(2) + 1 == 1 && calendar.get(5) == 1)
         {
-            splashText = "Happy new year!";
+            _splashText = "Happy new year!";
         }
 
         TranslationStorage translator = TranslationStorage.getInstance();
         int buttonTopY = height / 4 + 48;
 
         controlList.add(new GuiButton(BUTTON_SINGLEPLAYER, width / 2 - 100, buttonTopY, translator.translateKey("menu.singleplayer")));
-        controlList.add(multiplayerButton =
+        controlList.add(_multiplayerButton =
             new GuiButton(BUTTON_MULTIPLAYER, width / 2 - 100, buttonTopY + 24, translator.translateKey("menu.multiplayer")));
         controlList.add(new GuiButton(BUTTON_MODS, width / 2 - 100, buttonTopY + 48, translator.translateKey("menu.mods")));
 
@@ -105,7 +103,7 @@ public class GuiMainMenu : GuiScreen
 
         if (mc.session == null)
         {
-            multiplayerButton.enabled = false;
+            _multiplayerButton.enabled = false;
         }
     }
 
@@ -148,9 +146,9 @@ public class GuiMainMenu : GuiScreen
         GLManager.GL.Rotate(-20.0F, 0.0F, 0.0F, 1.0F);
         float splashScale = 1.8F - MathHelper.abs(MathHelper.sin(java.lang.System.currentTimeMillis() % 1000L /
             1000.0F * (float)Math.PI * 2.0F) * 0.1F);
-        splashScale = splashScale * 100.0F / (fontRenderer.getStringWidth(splashText) + 32);
+        splashScale = splashScale * 100.0F / (fontRenderer.getStringWidth(_splashText) + 32);
         GLManager.GL.Scale(splashScale, splashScale, splashScale);
-        drawCenteredString(fontRenderer, splashText, 0, -8, 16776960);
+        drawCenteredString(fontRenderer, _splashText, 0, -8, 16776960);
         GLManager.GL.PopMatrix();
         drawString(fontRenderer, "Minecraft Beta 1.7.3", 2, 2, 5263440);
         string copyrightText = "Copyright Mojang Studios. Not an official Minecraft product.";

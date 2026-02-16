@@ -1,34 +1,34 @@
-namespace BetaSharp;
+namespace BetaSharp.Client.Options;
 
 public class EnumOptions : java.lang.Object
 {
-    public static readonly EnumOptions MUSIC = new EnumOptions("options.music", true, false, 0);
-    public static readonly EnumOptions SOUND = new EnumOptions("options.sound", true, false, 1);
-    public static readonly EnumOptions INVERT_MOUSE = new EnumOptions("options.invertMouse", false, true, 2);
-    public static readonly EnumOptions SENSITIVITY = new EnumOptions("options.sensitivity", true, false, 3);
-    public static readonly EnumOptions RENDER_DISTANCE = new EnumOptions("options.renderDistance", false, false, 4);
-    public static readonly EnumOptions VIEW_BOBBING = new EnumOptions("options.viewBobbing", false, true, 5);
-    public static readonly EnumOptions FRAMERATE_LIMIT = new EnumOptions("options.framerateLimit", true, false, 8);
-    public static readonly EnumOptions FOV = new EnumOptions("options.fov", true, false, 18);
-    public static readonly EnumOptions DIFFICULTY = new EnumOptions("options.difficulty", false, false, 9);
-    public static readonly EnumOptions GUI_SCALE = new EnumOptions("options.guiScale", false, false, 12);
-    public static readonly EnumOptions ANISOTROPIC = new EnumOptions("Aniso Level", false, false, 13);
-    public static readonly EnumOptions MIPMAPS = new EnumOptions("Mipmaps", false, true, 14);
-    public static readonly EnumOptions DEBUG_MODE = new EnumOptions("Debug Mode", false, true, 15);
-    public static readonly EnumOptions MSAA = new EnumOptions("MSAA", false, false, 16);
-    public static readonly EnumOptions ENVIRONMENT_ANIMATION = new EnumOptions("Environment Anim", false, true, 17);
+    public static readonly EnumOptions MUSIC = new("options.music", true, false, 0);
+    public static readonly EnumOptions SOUND = new("options.sound", true, false, 1);
+    public static readonly EnumOptions INVERT_MOUSE = new("options.invertMouse", false, true, 2);
+    public static readonly EnumOptions SENSITIVITY = new("options.sensitivity", true, false, 3);
+    public static readonly EnumOptions RENDER_DISTANCE = new("options.renderDistance", false, false, 4);
+    public static readonly EnumOptions VIEW_BOBBING = new("options.viewBobbing", false, true, 5);
+    public static readonly EnumOptions FRAMERATE_LIMIT = new("options.framerateLimit", true, false, 8);
+    public static readonly EnumOptions FOV = new("options.fov", true, false, 18);
+    public static readonly EnumOptions DIFFICULTY = new("options.difficulty", false, false, 9);
+    public static readonly EnumOptions GUI_SCALE = new("options.guiScale", false, false, 12);
+    public static readonly EnumOptions ANISOTROPIC = new("Aniso Level", false, false, 13);
+    public static readonly EnumOptions MIPMAPS = new("Mipmaps", false, true, 14);
+    public static readonly EnumOptions DEBUG_MODE = new("Debug Mode", false, true, 15);
+    public static readonly EnumOptions MSAA = new("MSAA", false, false, 16);
+    public static readonly EnumOptions ENVIRONMENT_ANIMATION = new("Environment Anim", false, true, 17);
 
-    private static readonly EnumOptions[] allValues = new EnumOptions[]
-    {
+    private static readonly EnumOptions[] s_allValues =
+    [
         MUSIC, SOUND, INVERT_MOUSE, SENSITIVITY, RENDER_DISTANCE, VIEW_BOBBING, FRAMERATE_LIMIT, FOV, DIFFICULTY, GUI_SCALE, ANISOTROPIC, MIPMAPS, DEBUG_MODE, MSAA, ENVIRONMENT_ANIMATION
-    };
+    ];
 
     private readonly bool enumFloat;
     private readonly bool enumBoolean;
     private readonly string enumString;
     private readonly int ordinalValue;
 
-    public static EnumOptions getEnumOptions(int ordinal)
+    public static EnumOptions? getEnumOptions(int ordinal)
     {
         foreach (EnumOptions option in values())
         {
@@ -76,6 +76,6 @@ public class EnumOptions : java.lang.Object
 
     public static EnumOptions[] values()
     {
-        return allValues;
+        return s_allValues;
     }
 }

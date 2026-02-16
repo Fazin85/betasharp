@@ -1,4 +1,4 @@
-using BetaSharp.Client.Rendering.Core;
+﻿using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Inventorys;
 using BetaSharp.Screens;
 
@@ -7,9 +7,9 @@ namespace BetaSharp.Client.Guis;
 public class GuiChest : GuiContainer
 {
 
-    private IInventory upperChestInventory;
-    private IInventory lowerChestInventory;
-    private int inventoryRows = 0;
+    private readonly IInventory upperChestInventory;
+    private readonly IInventory lowerChestInventory;
+    private readonly int inventoryRows = 0;
 
     public GuiChest(IInventory upper, IInventory lower) : base(new GenericContainerScreenHandler(upper, lower))
     {

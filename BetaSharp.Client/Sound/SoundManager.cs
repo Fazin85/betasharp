@@ -1,3 +1,4 @@
+﻿using BetaSharp.Client.Options;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 using SFML.Audio;
@@ -250,11 +251,10 @@ public class SoundManager : java.lang.Object
                         currentMusic = new Music(musicName)
                         {
                             Volume = options.musicVolume * 100.0F,
-                            IsLooping = false
+                            IsLooping = false,
+                            RelativeToListener = true,
+                            Position = new Vector3f(0, 0, 0)
                         };
-
-                        currentMusic.RelativeToListener = true;
-                        currentMusic.Position = new Vector3f(0, 0, 0);
 
                         Console.WriteLine($"Playing random music: {musicName}");
 

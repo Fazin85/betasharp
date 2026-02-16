@@ -16,7 +16,7 @@ public class BlockFlowing : BlockFluid
     private void convertToSource(World world, int x, int y, int z)
     {
         int meta = world.getBlockMeta(x, y, z);
-        world.setBlockWithoutNotifyingNeighbors(x, y, z, id + 1, meta);
+        world.SetBlockWithoutNotifyingNeighbors(x, y, z, id + 1, meta);
         world.setBlocksDirty(x, y, z, x, y, z);
         world.blockUpdateEvent(x, y, z);
     }
@@ -87,7 +87,7 @@ public class BlockFlowing : BlockFluid
                 else
                 {
                     world.setBlockMeta(x, y, z, newLevel);
-                    world.scheduleBlockUpdate(x, y, z, id, getTickRate());
+                    world.ScheduleBlockUpdate(x, y, z, id, getTickRate());
                     world.notifyNeighbors(x, y, z, id);
                 }
             }
@@ -338,7 +338,7 @@ public class BlockFlowing : BlockFluid
         base.onPlaced(world, x, y, z);
         if (world.getBlockId(x, y, z) == id)
         {
-            world.scheduleBlockUpdate(x, y, z, id, getTickRate());
+            world.ScheduleBlockUpdate(x, y, z, id, getTickRate());
         }
 
     }

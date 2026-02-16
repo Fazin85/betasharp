@@ -1,10 +1,10 @@
-using BetaSharp.Client.Guis;
+﻿using BetaSharp.Client.Guis;
 using BetaSharp.Client.Network;
 using BetaSharp.Network;
 using BetaSharp.Network.Packets;
 using java.net;
 
-namespace BetaSharp.Threading;
+namespace BetaSharp.Client.Threading;
 
 public class ThreadConnectToServer(GuiConnecting var1, Minecraft var2, string var3, int var4) : java.lang.Thread
 {

@@ -59,7 +59,7 @@ public class SpruceTreeFeature : Feature
                 var11 = world.getBlockId(x, y - 1, z);
                 if ((var11 == Block.GrassBlock.id || var11 == Block.Dirt.id) && y < 128 - var6 - 1)
                 {
-                    world.setBlockWithoutNotifyingNeighbors(x, y - 1, z, Block.Dirt.id);
+                    world.SetBlockWithoutNotifyingNeighbors(x, y - 1, z, Block.Dirt.id);
                     var21 = rand.nextInt(2);
                     var13 = 1;
                     byte var22 = 0;
@@ -79,7 +79,7 @@ public class SpruceTreeFeature : Feature
                                 int var20 = var19 - z;
                                 if ((java.lang.Math.abs(var18) != var21 || java.lang.Math.abs(var20) != var21 || var21 <= 0) && !Block.BlocksOpaque[world.getBlockId(var17, var16, var19)])
                                 {
-                                    world.setBlockWithoutNotifyingNeighbors(var17, var16, var19, Block.Leaves.id, 1);
+                                    world.SetBlockWithoutNotifyingNeighbors(var17, var16, var19, Block.Leaves.id, 1);
                                 }
                             }
                         }
@@ -107,7 +107,7 @@ public class SpruceTreeFeature : Feature
                         var17 = world.getBlockId(x, y + var16, z);
                         if (var17 == 0 || var17 == Block.Leaves.id)
                         {
-                            world.setBlockWithoutNotifyingNeighbors(x, y + var16, z, Block.Log.id, 1);
+                            world.SetBlockWithoutNotifyingNeighbors(x, y + var16, z, Block.Log.id, 1);
                         }
                     }
 

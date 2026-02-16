@@ -21,7 +21,7 @@ public class SugarCanePatchFeature : Feature
                 {
                     if (Block.SugarCane.canGrow(world, var7, var8 + var11, var9))
                     {
-                        world.setBlockWithoutNotifyingNeighbors(var7, var8 + var11, var9, Block.SugarCane.id);
+                        world.SetBlockWithoutNotifyingNeighbors(var7, var8 + var11, var9, Block.SugarCane.id);
                     }
                 }
             }

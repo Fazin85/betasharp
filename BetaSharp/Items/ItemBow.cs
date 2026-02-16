@@ -18,7 +18,7 @@ public class ItemBow : Item
             world.playSound(entityPlayer, "random.bow", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
             if (!world.isRemote)
             {
-                world.spawnEntity(new EntityArrow(world, entityPlayer));
+                world.SpawnEntity(new EntityArrow(world, entityPlayer));
             }
         }
 

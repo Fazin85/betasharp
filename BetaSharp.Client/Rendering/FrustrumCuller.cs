@@ -1,11 +1,11 @@
-using BetaSharp.Util.Maths;
+﻿using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Client.Rendering;
 
 public class FrustrumCuller : Culler
 {
 
-    private FrustumData frustum = Frustum.getInstance();
+    private readonly FrustumData frustum = Frustum.getInstance();
     private double xPosition;
     private double yPosition;
     private double zPosition;

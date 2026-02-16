@@ -1,18 +1,19 @@
-using BetaSharp.Client.Rendering.Core;
+﻿using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Entitys;
+using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
-namespace BetaSharp.Entities;
+namespace BetaSharp.Client.Entities.FX;
 
 public class EntityPickupFX : EntityFX
 {
 
-    private Entity target;
-    private Entity source;
+    private readonly Entity target;
+    private readonly Entity source;
     private int currentAge = 0;
-    private int maxAge = 0;
-    private float yOffset;
+    private readonly int maxAge = 0;
+    private readonly float yOffset;
 
     public EntityPickupFX(World world, Entity target, Entity source, float yOffset) : base(world, target.x, target.y, target.z, target.velocityX, target.velocityY, target.velocityZ)
     {

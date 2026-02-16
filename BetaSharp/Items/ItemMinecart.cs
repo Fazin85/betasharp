@@ -22,7 +22,7 @@ public class ItemMinecart : Item
         {
             if (!world.isRemote)
             {
-                world.spawnEntity(new EntityMinecart(world, (double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), minecartType));
+                world.SpawnEntity(new EntityMinecart(world, (double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), minecartType));
             }
 
             --itemStack.count;

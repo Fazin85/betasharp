@@ -1,6 +1,6 @@
-using BetaSharp.Entities;
+﻿using BetaSharp.Entities;
 
-namespace BetaSharp;
+namespace BetaSharp.Client.Input;
 
 public class MovementInput
 {

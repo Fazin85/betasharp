@@ -1,5 +1,4 @@
-using BetaSharp.Client.Resource;
-using BetaSharp.Items;
+﻿using BetaSharp.Items;
 using BetaSharp.Util.Maths;
 using java.awt.image;
 using java.io;
@@ -10,8 +9,8 @@ namespace BetaSharp.Client.Textures;
 public class CompassSprite : DynamicTexture
 {
 
-    private Minecraft mc;
-    private int[] compass = new int[256];
+    private readonly Minecraft mc;
+    private readonly int[] compass = new int[256];
     private double angle;
     private double angleDelta;
 

@@ -9,7 +9,6 @@ public class BlockRedstoneWire : Block
 {
 
     private bool wiresProvidePower = true;
-    private HashSet<BlockPos> neighbors;
 
     public BlockRedstoneWire(int id, int textureId) : base(id, textureId, Material.PistonBreakable)
     {
@@ -53,8 +52,9 @@ public class BlockRedstoneWire : Block
 
     private void updateAndPropagateCurrentStrength(World var1, int var2, int var3, int var4)
     {
-        func_21030_a(var1, var2, var3, var4, var2, var3, var4);
-        List<BlockPos> neighborsCopy = new (neighbors);
+        HashSet<BlockPos> neighbors = new();
+        func_21030_a(var1, var2, var3, var4, var2, var3, var4, neighbors);
+        List<BlockPos> neighborsCopy = new(neighbors);
         neighbors.Clear();
 
         foreach (var n in neighborsCopy)
@@ -64,7 +64,7 @@ public class BlockRedstoneWire : Block
 
     }
 
-    private void func_21030_a(World var1, int var2, int var3, int var4, int var5, int var6, int var7)
+    private void func_21030_a(World var1, int var2, int var3, int var4, int var5, int var6, int var7, HashSet<BlockPos> neighbors)
     {
         int var8 = var1.getBlockMeta(var2, var3, var4);
         int var9 = 0;
@@ -179,7 +179,7 @@ public class BlockRedstoneWire : Block
 
                 if (var16 >= 0 && var16 != var9)
                 {
-                    func_21030_a(var1, var12, var3, var13, var2, var3, var4);
+                    func_21030_a(var1, var12, var3, var13, var2, var3, var4, neighbors);
                 }
 
                 var16 = getMaxCurrentStrength(var1, var12, var14, var13, -1);
@@ -191,7 +191,7 @@ public class BlockRedstoneWire : Block
 
                 if (var16 >= 0 && var16 != var9)
                 {
-                    func_21030_a(var1, var12, var14, var13, var2, var3, var4);
+                    func_21030_a(var1, var12, var14, var13, var2, var3, var4, neighbors);
                 }
             }
 

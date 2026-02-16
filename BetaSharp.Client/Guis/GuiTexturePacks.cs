@@ -1,5 +1,5 @@
-using System.Diagnostics;
-using BetaSharp.Client.Resource.Language;
+﻿using System.Diagnostics;
+using BetaSharp.Client.Rendering;
 
 namespace BetaSharp.Client.Guis;
 

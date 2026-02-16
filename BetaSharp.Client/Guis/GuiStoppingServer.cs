@@ -1,6 +1,4 @@
-using BetaSharp.Client.Resource.Language;
-
-namespace BetaSharp.Client.Guis;
+﻿namespace BetaSharp.Client.Guis;
 
 public class GuiStoppingServer : GuiScreen
 {

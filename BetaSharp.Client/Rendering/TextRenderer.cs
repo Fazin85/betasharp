@@ -1,5 +1,5 @@
+﻿using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering.Core;
-using BetaSharp.Client.Resource;
 using BetaSharp.Util;
 using java.awt.image;
 using java.io;
@@ -8,7 +8,7 @@ using java.nio;
 using javax.imageio;
 using Silk.NET.OpenGL.Legacy;
 
-namespace BetaSharp.Client;
+namespace BetaSharp.Client.Rendering;
 
 public class TextRenderer : java.lang.Object
 {

@@ -1,4 +1,4 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Entities;
@@ -11,7 +11,7 @@ namespace BetaSharp.Client.Rendering.Entitys;
 public class FallingBlockEntityRenderer : EntityRenderer
 {
 
-    private BlockRenderer renderBlocks = new BlockRenderer();
+    private readonly BlockRenderer renderBlocks = new();
 
     public FallingBlockEntityRenderer()
     {
