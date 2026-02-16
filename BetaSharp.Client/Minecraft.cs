@@ -1169,7 +1169,7 @@ public partial class Minecraft : java.lang.Object, Runnable
             }
         }
 
-        if (currentScreen == null || currentScreen.allowUserInput)
+        if (currentScreen == null || currentScreen.AllowUserInput)
         {
             processInputEvents();
         }
