@@ -80,22 +80,28 @@ public abstract class MinecraftServer : Runnable, CommandOutput
         entityTrackers[1] = new EntityTracker(this, -1);
         long var5 = java.lang.System.nanoTime();
         string var7 = config.GetLevelName("world");
-        string var8 = config.GetLevelSeed("");
-        long var9 = new java.util.Random().nextLong();
-        if (var8.Length > 0)
+        string seedInput = config.GetLevelSeed("");
+        long worldSeed = new java.util.Random().nextLong();
+        if (seedInput.Length > 0)
         {
             try
             {
-                var9 = Long.parseLong(var8);
+                worldSeed = Long.parseLong(seedInput);
             }
             catch (NumberFormatException)
             {
-                var9 = var8.GetHashCode();
+                // Java based string hashing
+                int hash = 0;
+                foreach (char c in seedInput)
+                {
+                    hash = 31 * hash + c;
+                }
+                worldSeed = hash;
             }
         }
 
         LOGGER.info("Preparing level \"" + var7 + "\"");
-        loadWorld(new RegionWorldStorageSource(getFile(".")), var7, var9);
+        loadWorld(new RegionWorldStorageSource(getFile(".")), var7, worldSeed);
 
         if (logHelp)
         {

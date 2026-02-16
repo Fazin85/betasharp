@@ -106,9 +106,15 @@ public class GuiCreateWorld : GuiScreen
                                     worldSeed = parsedSeed;
                                 }
                             }
-                            catch (NumberFormatException exception)
+                            catch (NumberFormatException)
                             {
-                                worldSeed = seedInput.GetHashCode();
+                                // Java based string hashing
+                                int hash = 0;
+                                foreach (char c in seedInput)
+                                {
+                                    hash = 31 * hash + c;
+                                }
+                                worldSeed = hash;
                             }
                         }
 
