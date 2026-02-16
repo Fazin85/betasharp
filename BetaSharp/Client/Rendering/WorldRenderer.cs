@@ -1,4 +1,4 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Blocks.Entities;
@@ -7,18 +7,17 @@ using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Entitys;
 using BetaSharp.Entities;
 using BetaSharp.Items;
+using BetaSharp.Profiling;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL.Legacy;
-using BetaSharp.Profiling;
 
 namespace BetaSharp.Client.Rendering;
 
 public class WorldRenderer : IWorldAccess
 {
-    public List<BlockEntity> tileEntities = [];
     private World world;
     private readonly TextureManager renderEngine;
     private readonly Minecraft mc;
@@ -181,7 +180,7 @@ public class WorldRenderer : IWorldAccess
         chunkRenderer?.Dispose();
         chunkRenderer = new(world);
 
-        tileEntities.Clear();
+
 
         if (renderDistance == 0)
         {
@@ -195,7 +194,7 @@ public class WorldRenderer : IWorldAccess
         renderEntitiesStartupCounter = 2;
     }
 
-    public void renderEntities(Vec3D var1, Culler var2, float var3)
+    public void renderEntities(Vec3D var1, Culler culler, float var3)
     {
         if (renderEntitiesStartupCounter > 0)
         {
@@ -233,7 +232,7 @@ public class WorldRenderer : IWorldAccess
             for (var6 = 0; var6 < var5.Count; ++var6)
             {
                 var7 = var5[var6];
-                if (var7.shouldRender(var1) && (var7.ignoreFrustumCheck || var2.isBoundingBoxInFrustum(var7.boundingBox)) && (var7 != mc.camera || mc.options.thirdPersonView || mc.camera.isSleeping()))
+                if (var7.shouldRender(var1) && (var7.ignoreFrustumCheck || culler.isBoundingBoxInFrustum(var7.boundingBox)) && (var7 != mc.camera || mc.options.thirdPersonView || mc.camera.isSleeping()))
                 {
                     int var8 = MathHelper.floor_double(var7.y);
                     if (var8 < 0)
@@ -254,11 +253,14 @@ public class WorldRenderer : IWorldAccess
                 }
             }
 
-            for (var6 = 0; var6 < tileEntities.Count; ++var6)
+            for (var6 = 0; var6 < world.blockEntities.Count; ++var6)
             {
-                BlockEntityRenderer.instance.renderTileEntity(tileEntities[var6], var3);
+                BlockEntity entity = world.blockEntities[var6];
+                if (culler.isBoundingBoxInFrustum(new Box(entity.x, entity.y, entity.z, entity.x + 1, entity.y + 1, entity.z + 1)))
+                {
+                    BlockEntityRenderer.instance.renderTileEntity(entity, var3);
+                }
             }
-
         }
     }
 
