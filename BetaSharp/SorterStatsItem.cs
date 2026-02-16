@@ -19,8 +19,8 @@ public class SorterStatsItem : Comparator
 
     public int func_27371_a(StatCrafting var1, StatCrafting var2)
     {
-        int var3 = var1.func_25072_b();
-        int var4 = var2.func_25072_b();
+        int var3 = var1.getItemId();
+        int var4 = var2.getItemId();
         StatBase var5 = null;
         StatBase var6 = null;
         if (field_27372_b.field_27271_e == 0)

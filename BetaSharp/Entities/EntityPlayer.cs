@@ -498,7 +498,7 @@ public abstract class EntityPlayer : EntityLiving
 
     protected void commandWolvesToAttack(EntityLiving entity, bool sitting)
     {
-        if (!(entity is EntityCreeper) && !(entity is EntityGhast))
+        if (entity is not EntityCreeper && entity is not EntityGhast)
         {
             if (entity is EntityWolf)
             {
@@ -509,7 +509,7 @@ public abstract class EntityPlayer : EntityLiving
                 }
             }
 
-            if (!(entity is EntityPlayer) || isPvpEnabled())
+            if (entity is not EntityPlayer || isPvpEnabled())
             {
                 var var7 = world.collectEntitiesByClass(EntityWolf.Class, new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(16.0D, 4.0D, 16.0D));
 

@@ -520,7 +520,7 @@ public class GuiChat : GuiScreen
 
         int y = height - 12;
         int xBase = 4;
-        uint normalColor = 14737632u;
+        uint normalColor = 0x00E0E0E0u;
 
         if (HasSelection())
         {

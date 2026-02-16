@@ -391,26 +391,26 @@ public class LargeOakTreeFeature : Feature
         }
     }
 
-    public override void prepare(double var1, double var3, double var5)
+    public override void prepare(double d0, double d1, double d2)
     {
-        maxTrunkHeight = (int)(var1 * 12.0D);
-        if (var1 > 0.5D)
+        maxTrunkHeight = (int)(d0 * 12.0D);
+        if (d0 > 0.5D)
         {
             foliageClusterHeight = 5;
         }
 
-        branchLengthScale = var3;
-        foliageDensity = var5;
+        branchLengthScale = d1;
+        foliageDensity = d2;
     }
 
-    public override bool generate(World var1, java.util.Random var2, int var3, int var4, int var5)
+    public override bool generate(World world, java.util.Random rand, int x, int y, int z)
     {
-        world = var1;
-        long var6 = var2.nextLong();
+        this.world = world;
+        long var6 = rand.nextLong();
         random.setSeed(var6);
-        origin[0] = var3;
-        origin[1] = var4;
-        origin[2] = var5;
+        origin[0] = x;
+        origin[1] = y;
+        origin[2] = z;
         if (height == 0)
         {
             height = 5 + random.nextInt(maxTrunkHeight);

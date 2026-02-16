@@ -14,30 +14,30 @@ public class GrassPatchFeature : Feature
         tallGrassBlockMeta = var2;
     }
 
-    public override bool generate(World var1, java.util.Random var2, int var3, int var4, int var5)
+    public override bool generate(World world, java.util.Random rand, int x, int y, int z)
     {
         bool var6 = false;
 
         while (true)
         {
-            int var11 = var1.getBlockId(var3, var4, var5);
-            if (var11 != 0 && var11 != Block.Leaves.id || var4 <= 0)
+            int var11 = world.getBlockId(x, y, z);
+            if (var11 != 0 && var11 != Block.Leaves.id || y <= 0)
             {
                 for (int var7 = 0; var7 < 128; ++var7)
                 {
-                    int var8 = var3 + var2.nextInt(8) - var2.nextInt(8);
-                    int var9 = var4 + var2.nextInt(4) - var2.nextInt(4);
-                    int var10 = var5 + var2.nextInt(8) - var2.nextInt(8);
-                    if (var1.isAir(var8, var9, var10) && ((BlockPlant)Block.Blocks[tallGrassBlockId]).canGrow(var1, var8, var9, var10))
+                    int var8 = x + rand.nextInt(8) - rand.nextInt(8);
+                    int var9 = y + rand.nextInt(4) - rand.nextInt(4);
+                    int var10 = z + rand.nextInt(8) - rand.nextInt(8);
+                    if (world.isAir(var8, var9, var10) && ((BlockPlant)Block.Blocks[tallGrassBlockId]).canGrow(world, var8, var9, var10))
                     {
-                        var1.setBlockWithoutNotifyingNeighbors(var8, var9, var10, tallGrassBlockId, tallGrassBlockMeta);
+                        world.setBlockWithoutNotifyingNeighbors(var8, var9, var10, tallGrassBlockId, tallGrassBlockMeta);
                     }
                 }
 
                 return true;
             }
 
-            --var4;
+            --y;
         }
     }
 }

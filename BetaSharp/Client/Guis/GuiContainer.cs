@@ -18,9 +18,9 @@ public abstract class GuiContainer : GuiScreen
     protected int ySize = 166;
     public ScreenHandler inventorySlots;
 
-    public GuiContainer(ScreenHandler var1)
+    public GuiContainer(ScreenHandler inventorySlots)
     {
-        inventorySlots = var1;
+        this.inventorySlots = inventorySlots;
     }
 
     public override void initGui()

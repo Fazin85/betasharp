@@ -11,23 +11,23 @@ public class PerlinNoiseSampler : NoiseSampler
     {
     }
 
-    public PerlinNoiseSampler(java.util.Random var1)
+    public PerlinNoiseSampler(java.util.Random rand)
     {
         permutations = new int[512];
-        xCoord = var1.nextDouble() * 256.0D;
-        yCoord = var1.nextDouble() * 256.0D;
-        zCoord = var1.nextDouble() * 256.0D;
+        xCoord = rand.nextDouble() * 256.0D;
+        yCoord = rand.nextDouble() * 256.0D;
+        zCoord = rand.nextDouble() * 256.0D;
 
-        int var2;
-        for (var2 = 0; var2 < 256; permutations[var2] = var2++)
+        for (int i = 0; i < 256; i++)
         {
+            permutations[i] = i;
         }
 
-        for (var2 = 0; var2 < 256; ++var2)
+        for (int i = 0; i < 256; ++i)
         {
-            int var3 = var1.nextInt(256 - var2) + var2;
-            (permutations[var2], permutations[var3]) = (permutations[var3], permutations[var2]);
-            permutations[var2 + 256] = permutations[var2];
+            int var3 = rand.nextInt(256 - i) + i;
+            (permutations[i], permutations[var3]) = (permutations[var3], permutations[i]);
+            permutations[i + 256] = permutations[i];
         }
 
     }

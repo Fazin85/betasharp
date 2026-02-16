@@ -66,9 +66,9 @@ public class SoundManager : java.lang.Object
             options.musicVolume = var2;
             options.saveOptions();
         }
-        catch (java.lang.Throwable var3)
+        catch (java.lang.Throwable ex)
         {
-            var3.printStackTrace();
+            ex.printStackTrace();
             java.lang.System.err.println("error initializing audio system");
         }
 

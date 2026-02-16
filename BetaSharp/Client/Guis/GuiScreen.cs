@@ -14,7 +14,7 @@ public class GuiScreen : Gui
     public int width;
     public int height;
     protected java.util.List controlList = new ArrayList();
-    public bool field_948_f = false;
+    public bool isInventoryScreen = false;
     public TextRenderer fontRenderer;
     public GuiParticle particlesGui;
     private GuiButton selectedButton = null;
@@ -26,7 +26,6 @@ public class GuiScreen : Gui
             GuiButton var5 = (GuiButton)controlList.get(var4);
             var5.drawButton(mc, var1, var2);
         }
-
     }
 
     protected virtual void keyTyped(char eventChar, int eventKey)

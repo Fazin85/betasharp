@@ -13,27 +13,27 @@ public class LakeFeature : Feature
         waterBlockId = var1;
     }
 
-    public override bool generate(World var1, java.util.Random var2, int var3, int var4, int var5)
+    public override bool generate(World world, java.util.Random rand, int x, int y, int z)
     {
-        var3 -= 8;
+        x -= 8;
 
-        for (var5 -= 8; var4 > 0 && var1.isAir(var3, var4, var5); --var4)
+        for (z -= 8; y > 0 && world.isAir(x, y, z); --y)
         {
         }
 
-        var4 -= 4;
+        y -= 4;
         bool[] var6 = new bool[2048];
-        int var7 = var2.nextInt(4) + 4;
+        int var7 = rand.nextInt(4) + 4;
 
         int var8;
         for (var8 = 0; var8 < var7; ++var8)
         {
-            double var9 = var2.nextDouble() * 6.0D + 3.0D;
-            double var11 = var2.nextDouble() * 4.0D + 2.0D;
-            double var13 = var2.nextDouble() * 6.0D + 3.0D;
-            double var15 = var2.nextDouble() * (16.0D - var9 - 2.0D) + 1.0D + var9 / 2.0D;
-            double var17 = var2.nextDouble() * (8.0D - var11 - 4.0D) + 2.0D + var11 / 2.0D;
-            double var19 = var2.nextDouble() * (16.0D - var13 - 2.0D) + 1.0D + var13 / 2.0D;
+            double var9 = rand.nextDouble() * 6.0D + 3.0D;
+            double var11 = rand.nextDouble() * 4.0D + 2.0D;
+            double var13 = rand.nextDouble() * 6.0D + 3.0D;
+            double var15 = rand.nextDouble() * (16.0D - var9 - 2.0D) + 1.0D + var9 / 2.0D;
+            double var17 = rand.nextDouble() * (8.0D - var11 - 4.0D) + 2.0D + var11 / 2.0D;
+            double var19 = rand.nextDouble() * (16.0D - var13 - 2.0D) + 1.0D + var13 / 2.0D;
 
             for (int var21 = 1; var21 < 15; ++var21)
             {
@@ -66,13 +66,13 @@ public class LakeFeature : Feature
                     var33 = !var6[(var8 * 16 + var32) * 8 + var10] && (var8 < 15 && var6[((var8 + 1) * 16 + var32) * 8 + var10] || var8 > 0 && var6[((var8 - 1) * 16 + var32) * 8 + var10] || var32 < 15 && var6[(var8 * 16 + var32 + 1) * 8 + var10] || var32 > 0 && var6[(var8 * 16 + (var32 - 1)) * 8 + var10] || var10 < 7 && var6[(var8 * 16 + var32) * 8 + var10 + 1] || var10 > 0 && var6[(var8 * 16 + var32) * 8 + (var10 - 1)]);
                     if (var33)
                     {
-                        Material var12 = var1.getMaterial(var3 + var8, var4 + var10, var5 + var32);
+                        Material var12 = world.getMaterial(x + var8, y + var10, z + var32);
                         if (var10 >= 4 && var12.IsFluid)
                         {
                             return false;
                         }
 
-                        if (var10 < 4 && !var12.IsSolid && var1.getBlockId(var3 + var8, var4 + var10, var5 + var32) != waterBlockId)
+                        if (var10 < 4 && !var12.IsSolid && world.getBlockId(x + var8, y + var10, z + var32) != waterBlockId)
                         {
                             return false;
                         }
@@ -89,7 +89,7 @@ public class LakeFeature : Feature
                 {
                     if (var6[(var8 * 16 + var32) * 8 + var10])
                     {
-                        var1.setBlockWithoutNotifyingNeighbors(var3 + var8, var4 + var10, var5 + var32, var10 >= 4 ? 0 : waterBlockId);
+                        world.setBlockWithoutNotifyingNeighbors(x + var8, y + var10, z + var32, var10 >= 4 ? 0 : waterBlockId);
                     }
                 }
             }
@@ -101,9 +101,9 @@ public class LakeFeature : Feature
             {
                 for (var10 = 4; var10 < 8; ++var10)
                 {
-                    if (var6[(var8 * 16 + var32) * 8 + var10] && var1.getBlockId(var3 + var8, var4 + var10 - 1, var5 + var32) == Block.Dirt.id && var1.getBrightness(LightType.Sky, var3 + var8, var4 + var10, var5 + var32) > 0)
+                    if (var6[(var8 * 16 + var32) * 8 + var10] && world.getBlockId(x + var8, y + var10 - 1, z + var32) == Block.Dirt.id && world.getBrightness(LightType.Sky, x + var8, y + var10, z + var32) > 0)
                     {
-                        var1.setBlockWithoutNotifyingNeighbors(var3 + var8, var4 + var10 - 1, var5 + var32, Block.GrassBlock.id);
+                        world.setBlockWithoutNotifyingNeighbors(x + var8, y + var10 - 1, z + var32, Block.GrassBlock.id);
                     }
                 }
             }
@@ -118,9 +118,9 @@ public class LakeFeature : Feature
                     for (var10 = 0; var10 < 8; ++var10)
                     {
                         var33 = !var6[(var8 * 16 + var32) * 8 + var10] && (var8 < 15 && var6[((var8 + 1) * 16 + var32) * 8 + var10] || var8 > 0 && var6[((var8 - 1) * 16 + var32) * 8 + var10] || var32 < 15 && var6[(var8 * 16 + var32 + 1) * 8 + var10] || var32 > 0 && var6[(var8 * 16 + (var32 - 1)) * 8 + var10] || var10 < 7 && var6[(var8 * 16 + var32) * 8 + var10 + 1] || var10 > 0 && var6[(var8 * 16 + var32) * 8 + (var10 - 1)]);
-                        if (var33 && (var10 < 4 || var2.nextInt(2) != 0) && var1.getMaterial(var3 + var8, var4 + var10, var5 + var32).IsSolid)
+                        if (var33 && (var10 < 4 || rand.nextInt(2) != 0) && world.getMaterial(x + var8, y + var10, z + var32).IsSolid)
                         {
-                            var1.setBlockWithoutNotifyingNeighbors(var3 + var8, var4 + var10, var5 + var32, Block.Stone.id);
+                            world.setBlockWithoutNotifyingNeighbors(x + var8, y + var10, z + var32, Block.Stone.id);
                         }
                     }
                 }

@@ -19,7 +19,7 @@ public class GuiSlotStatsItem : GuiSlotStats
         {
             StatCrafting stat = (StatCrafting)iterator.next();
             bool hasStat = false;
-            int id = stat.func_25072_b();
+            int id = stat.getItemId();
             if (GuiStats.func_27142_c(parent).writeStat(stat) > 0)
             {
                 hasStat = true;
@@ -77,7 +77,7 @@ public class GuiSlotStatsItem : GuiSlotStats
     protected override void drawSlot(int index, int x, int y, int rowHeight, Tessellator tessellator)
     {
         StatCrafting stat = func_27264_b(index);
-        int id = stat.func_25072_b();
+        int id = stat.getItemId();
         GuiStats.func_27148_a(parentStatsGui, x + 40, y, id);
         func_27265_a((StatCrafting)Stats.Stats.BROKEN[id], x + 115, y, index % 2 == 0);
         func_27265_a((StatCrafting)Stats.Stats.CRAFTED[id], x + 165, y, index % 2 == 0);

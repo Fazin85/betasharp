@@ -295,8 +295,8 @@ public class Gui : java.lang.Object
 
     public void drawTexturedModalRect(int var1, int var2, int var3, int var4, int var5, int var6)
     {
-        float var7 = 0.00390625F;
-        float var8 = 0.00390625F;
+        float var7 = 1 / 256f;
+        float var8 = 1 / 256f;
         Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
         var9.addVertexWithUV(var1 + 0, var2 + var6, zLevel, (double)((var3 + 0) * var7), (double)((var4 + var6) * var8));

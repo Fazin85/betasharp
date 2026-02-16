@@ -74,7 +74,7 @@ public class GuiButton : Gui
             }
             else
             {
-                drawCenteredString(font, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 14737632);
+                drawCenteredString(font, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 0x00E0E0E0u);
             }
 
         }

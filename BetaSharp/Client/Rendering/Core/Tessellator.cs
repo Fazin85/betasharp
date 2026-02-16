@@ -428,19 +428,19 @@ public class Tessellator : java.lang.Object
         }
     }
 
-    public void addVertexWithUV(double var1, double var3, double var5, double var7, double var9)
+    public void addVertexWithUV(double x, double y, double z, double u, double v)
     {
-        setTextureUV(var7, var9);
-        addVertex(var1, var3, var5);
+        setTextureUV(u, v);
+        addVertex(x, y, z);
     }
 
-    public void addVertex(double var1, double var3, double var5)
+    public void addVertex(double x, double y, double z)
     {
         if (isCaptureMode)
         {
-            scratchBuffer[scratchBufferIndex + 0] = Float.floatToRawIntBits((float)(var1 + xOffset));
-            scratchBuffer[scratchBufferIndex + 1] = Float.floatToRawIntBits((float)(var3 + yOffset));
-            scratchBuffer[scratchBufferIndex + 2] = Float.floatToRawIntBits((float)(var5 + zOffset));
+            scratchBuffer[scratchBufferIndex + 0] = Float.floatToRawIntBits((float)(x + xOffset));
+            scratchBuffer[scratchBufferIndex + 1] = Float.floatToRawIntBits((float)(y + yOffset));
+            scratchBuffer[scratchBufferIndex + 2] = Float.floatToRawIntBits((float)(z + zOffset));
 
             if (hasTexture)
             {
@@ -539,9 +539,9 @@ public class Tessellator : java.lang.Object
                 rawBuffer[rawBufferIndex + 6] = normal;
             }
 
-            rawBuffer[rawBufferIndex + 0] = Float.floatToRawIntBits((float)(var1 + xOffset));
-            rawBuffer[rawBufferIndex + 1] = Float.floatToRawIntBits((float)(var3 + yOffset));
-            rawBuffer[rawBufferIndex + 2] = Float.floatToRawIntBits((float)(var5 + zOffset));
+            rawBuffer[rawBufferIndex + 0] = Float.floatToRawIntBits((float)(x + xOffset));
+            rawBuffer[rawBufferIndex + 1] = Float.floatToRawIntBits((float)(y + yOffset));
+            rawBuffer[rawBufferIndex + 2] = Float.floatToRawIntBits((float)(z + zOffset));
             rawBufferIndex += 8;
             ++vertexCount;
 

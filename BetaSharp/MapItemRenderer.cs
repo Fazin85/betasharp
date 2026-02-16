@@ -9,7 +9,7 @@ namespace BetaSharp;
 
 public class MapItemRenderer
 {
-    private int[] field_28159_a = new int[16384];
+    private int[] field_28159_a = new int[128*128];
     private int field_28158_b;
     private GameOptions field_28161_c;
     private TextRenderer field_28160_d;
@@ -20,21 +20,21 @@ public class MapItemRenderer
         field_28160_d = var1;
         field_28158_b = var3.load(new BufferedImage(128, 128, 2));
 
-        for (int var4 = 0; var4 < 16384; ++var4)
+        for (int i = 0; i < 128*128; ++i)
         {
-            field_28159_a[var4] = 0;
+            field_28159_a[i] = 0;
         }
 
     }
 
     public void render(EntityPlayer player, TextureManager textureManager, MapState mapState)
     {
-        for (int var4 = 0; var4 < 16384; ++var4)
+        for (int i = 0; i < 128*128; ++i)
         {
-            byte var5 = mapState.colors[var4];
+            byte var5 = mapState.colors[i];
             if (var5 / 4 == 0)
             {
-                field_28159_a[var4] = (var4 + var4 / 128 & 1) * 8 + 16 << 24;
+                field_28159_a[i] = (i + i / 128 & 1) * 8 + 16 << 24;
             }
             else
             {
@@ -55,7 +55,7 @@ public class MapItemRenderer
                 uint var10 = (var6 >> 8 & 255) * var8 / 255;
                 uint var11 = (var6 & 255) * var8 / 255;
 
-                field_28159_a[var4] = unchecked((int)(0xFF000000u | var9 << 16 | var10 << 8 | var11));
+                field_28159_a[i] = unchecked((int)(0xFF000000u | var9 << 16 | var10 << 8 | var11));
             }
         }
 

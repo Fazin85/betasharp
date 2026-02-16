@@ -51,8 +51,8 @@ public class PaintingEntityRenderer : EntityRenderer
                 float var23 = 1.0F / 16.0F;
                 float var24 = 12.0F / 16.0F;
                 float var25 = 13.0F / 16.0F;
-                float var26 = 0.001953125F;
-                float var27 = 0.001953125F;
+                float var26 = (1 / 512f);
+                float var27 = (1 / 512f);
                 float var28 = 385.0F / 512.0F;
                 float var29 = 385.0F / 512.0F;
                 float var30 = 0.0F;

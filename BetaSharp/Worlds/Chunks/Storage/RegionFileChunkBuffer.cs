@@ -8,11 +8,11 @@ public class RegionFileChunkBuffer : ByteArrayOutputStream
     private readonly int chunkZ;
     private readonly RegionFile regionFile;
 
-    public RegionFileChunkBuffer(RegionFile var1, int var2, int var3) : base(8096)
+    public RegionFileChunkBuffer(RegionFile regionFile, int chunkX, int chunkZ) : base(8096)
     {
-        regionFile = var1;
-        chunkX = var2;
-        chunkZ = var3;
+        this.regionFile = regionFile;
+        this.chunkX = chunkX;
+        this.chunkZ = chunkZ;
     }
 
     public override void close()

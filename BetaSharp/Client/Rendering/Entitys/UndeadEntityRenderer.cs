@@ -12,9 +12,9 @@ public class UndeadEntityRenderer : LivingEntityRenderer
 
     protected ModelBiped modelBipedMain;
 
-    public UndeadEntityRenderer(ModelBiped var1, float var2) : base(var1, var2)
+    public UndeadEntityRenderer(ModelBiped mainModel, float shadowRadius) : base(mainModel, shadowRadius)
     {
-        modelBipedMain = var1;
+        modelBipedMain = mainModel;
     }
 
     protected override void renderMore(EntityLiving var1, float var2)

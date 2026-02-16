@@ -41,10 +41,10 @@ public class GameOptions : java.lang.Object
     public bool thirdPersonView = false;
     public bool showDebugInfo = false;
     public string lastServer = "";
-    public bool field_22275_C = false;
+    public bool invertScrolling = false;
     public bool smoothCamera = false;
     public bool debugCamera = false;
-    public float field_22272_F = 1.0F;
+    public float amountScrolled = 1.0F;
     public float field_22271_G = 1.0F;
     public int guiScale = 0;
     public int anisotropicLevel = 0;
@@ -54,11 +54,11 @@ public class GameOptions : java.lang.Object
     public bool debugMode = false;
     public bool environmentAnimation = true;
 
-    public GameOptions(Minecraft var1, java.io.File var2)
+    public GameOptions(Minecraft mc, java.io.File mcDataDir)
     {
         keyBindings = new KeyBinding[] { keyBindForward, keyBindLeft, keyBindBack, keyBindRight, keyBindJump, keyBindSneak, keyBindDrop, keyBindInventory, keyBindChat, keyBindToggleFog };
-        mc = var1;
-        optionsFile = new java.io.File(var2, "options.txt");
+        this.mc = mc;
+        this.optionsFile = new java.io.File(mcDataDir, "options.txt");
         loadOptions();
         INITIAL_MSAA = msaaLevel;
     }

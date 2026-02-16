@@ -108,11 +108,11 @@ public class GuiTextField : Gui
         if (isEnabled)
         {
             bool var1 = isFocused && cursorCounter / 6 % 2 == 0;
-            drawString(fontRenderer, text + (var1 ? "_" : ""), xPos + 4, yPos + (height - 8) / 2, 14737632);
+            drawString(fontRenderer, text + (var1 ? "_" : ""), xPos + 4, yPos + (height - 8) / 2, 0x00E0E0E0u);
         }
         else
         {
-            drawString(fontRenderer, text, xPos + 4, yPos + (height - 8) / 2, 7368816);
+            drawString(fontRenderer, text, xPos + 4, yPos + (height - 8) / 2, 0x00707070);
         }
 
     }

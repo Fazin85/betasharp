@@ -542,11 +542,11 @@ public abstract class Entity : java.lang.Object
                     if (world.getBlockId(var38, var26 + 1, var39) == Block.Snow.id)
                     {
                         var29 = Block.Snow.soundGroup;
-                        world.playSound(this, var29.func_1145_d(), var29.getVolume() * 0.15F, var29.getPitch());
+                        world.playSound(this, var29.getName(), var29.getVolume() * 0.15F, var29.getPitch());
                     }
                     else if (!Block.Blocks[var28].material.IsFluid)
                     {
-                        world.playSound(this, var29.func_1145_d(), var29.getVolume() * 0.15F, var29.getPitch());
+                        world.playSound(this, var29.getName(), var29.getVolume() * 0.15F, var29.getPitch());
                     }
 
                     Block.Blocks[var28].onSteppedOn(world, var38, var26, var39, this);

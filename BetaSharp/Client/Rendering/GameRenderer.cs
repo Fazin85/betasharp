@@ -151,7 +151,7 @@ public class GameRenderer
                     }
                 }
 
-                if (targetedEntity != null && !(client.playerController is PlayerControllerTest))
+                if (targetedEntity != null && client.playerController is not PlayerControllerTest)
                 {
                     client.objectMouseOver = new HitResult(targetedEntity);
                 }

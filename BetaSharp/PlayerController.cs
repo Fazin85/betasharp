@@ -8,7 +8,7 @@ namespace BetaSharp;
 public class PlayerController
 {
     protected readonly Minecraft mc;
-    public bool field_1064_b = false;
+    public bool IsTestPlayer = false;
 
     public PlayerController(Minecraft var1)
     {
@@ -90,7 +90,7 @@ public class PlayerController
         return true;
     }
 
-    public virtual void func_6473_b(EntityPlayer var1)
+    public virtual void fillHotbar(EntityPlayer var1)
     {
     }
 

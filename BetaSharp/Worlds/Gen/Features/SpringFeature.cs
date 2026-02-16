@@ -12,70 +12,70 @@ public class SpringFeature : Feature
         liquidBlockId = var1;
     }
 
-    public override bool generate(World var1, java.util.Random var2, int var3, int var4, int var5)
+    public override bool generate(World world, java.util.Random rand, int x, int y, int z)
     {
-        if (var1.getBlockId(var3, var4 + 1, var5) != Block.Stone.id)
+        if (world.getBlockId(x, y + 1, z) != Block.Stone.id)
         {
             return false;
         }
-        else if (var1.getBlockId(var3, var4 - 1, var5) != Block.Stone.id)
+        else if (world.getBlockId(x, y - 1, z) != Block.Stone.id)
         {
             return false;
         }
-        else if (var1.getBlockId(var3, var4, var5) != 0 && var1.getBlockId(var3, var4, var5) != Block.Stone.id)
+        else if (world.getBlockId(x, y, z) != 0 && world.getBlockId(x, y, z) != Block.Stone.id)
         {
             return false;
         }
         else
         {
             int var6 = 0;
-            if (var1.getBlockId(var3 - 1, var4, var5) == Block.Stone.id)
+            if (world.getBlockId(x - 1, y, z) == Block.Stone.id)
             {
                 ++var6;
             }
 
-            if (var1.getBlockId(var3 + 1, var4, var5) == Block.Stone.id)
+            if (world.getBlockId(x + 1, y, z) == Block.Stone.id)
             {
                 ++var6;
             }
 
-            if (var1.getBlockId(var3, var4, var5 - 1) == Block.Stone.id)
+            if (world.getBlockId(x, y, z - 1) == Block.Stone.id)
             {
                 ++var6;
             }
 
-            if (var1.getBlockId(var3, var4, var5 + 1) == Block.Stone.id)
+            if (world.getBlockId(x, y, z + 1) == Block.Stone.id)
             {
                 ++var6;
             }
 
             int var7 = 0;
-            if (var1.isAir(var3 - 1, var4, var5))
+            if (world.isAir(x - 1, y, z))
             {
                 ++var7;
             }
 
-            if (var1.isAir(var3 + 1, var4, var5))
+            if (world.isAir(x + 1, y, z))
             {
                 ++var7;
             }
 
-            if (var1.isAir(var3, var4, var5 - 1))
+            if (world.isAir(x, y, z - 1))
             {
                 ++var7;
             }
 
-            if (var1.isAir(var3, var4, var5 + 1))
+            if (world.isAir(x, y, z + 1))
             {
                 ++var7;
             }
 
             if (var6 == 3 && var7 == 1)
             {
-                var1.setBlock(var3, var4, var5, liquidBlockId);
-                var1.instantBlockUpdateEnabled = true;
-                Block.Blocks[liquidBlockId].onTick(var1, var3, var4, var5, var2);
-                var1.instantBlockUpdateEnabled = false;
+                world.setBlock(x, y, z, liquidBlockId);
+                world.instantBlockUpdateEnabled = true;
+                Block.Blocks[liquidBlockId].onTick(world, x, y, z, rand);
+                world.instantBlockUpdateEnabled = false;
             }
 
             return true;

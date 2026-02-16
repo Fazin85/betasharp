@@ -11,18 +11,18 @@ public class EnumCreatureType
     public static readonly EnumCreatureType waterCreature = new EnumCreatureType(typeof(EntityWaterMob), 5, Material.Water, true);
 
     private readonly Class creatureClass;
-    private readonly int maxNumberOfCreature;
-    private readonly Material creatureMaterial;
-    private readonly bool isPeacefulCreature;
+    private readonly int maxAllowed;
+    private readonly Material material;
+    private readonly bool peaceful;
 
     public static readonly EnumCreatureType[] values = [monster, creature, waterCreature];
 
-    private EnumCreatureType(Class var3, int var4, Material var5, bool var6)
+    private EnumCreatureType(Class creatureClass, int maxAllowed, Material material, bool peaceful)
     {
-        creatureClass = var3;
-        maxNumberOfCreature = var4;
-        creatureMaterial = var5;
-        isPeacefulCreature = var6;
+        this.creatureClass = creatureClass;
+        this.maxAllowed = maxAllowed;
+        this.material = material;
+        this.peaceful = peaceful;
     }
 
     public Class getCreatureClass()
@@ -30,18 +30,18 @@ public class EnumCreatureType
         return creatureClass;
     }
 
-    public int getMaxNumberOfCreature()
+    public int getMaxAllowed()
     {
-        return maxNumberOfCreature;
+        return maxAllowed;
     }
 
-    public Material getCreatureMaterial()
+    public Material getMaterial()
     {
-        return creatureMaterial;
+        return material;
     }
 
-    public bool getPeacefulCreature()
+    public bool isPeaceful()
     {
-        return isPeacefulCreature;
+        return peaceful;
     }
 }

@@ -4,18 +4,17 @@ public class OctavePerlinNoiseSampler : NoiseSampler
 {
 
     private PerlinNoiseSampler[] generatorCollection;
-    private int field_1191_b;
+    private int octaves;
 
-    public OctavePerlinNoiseSampler(java.util.Random var1, int var2)
+    public OctavePerlinNoiseSampler(java.util.Random rand, int octaves)
     {
-        field_1191_b = var2;
-        generatorCollection = new PerlinNoiseSampler[var2];
+        this.octaves = octaves;
+        generatorCollection = new PerlinNoiseSampler[octaves];
 
-        for (int var3 = 0; var3 < var2; ++var3)
+        for (int i = 0; i < octaves; ++i)
         {
-            generatorCollection[var3] = new PerlinNoiseSampler(var1);
+            generatorCollection[i] = new PerlinNoiseSampler(rand);
         }
-
     }
 
     public double func_806_a(double var1, double var3)
@@ -23,9 +22,9 @@ public class OctavePerlinNoiseSampler : NoiseSampler
         double var5 = 0.0D;
         double var7 = 1.0D;
 
-        for (int var9 = 0; var9 < field_1191_b; ++var9)
+        for (int i = 0; i < octaves; ++i)
         {
-            var5 += generatorCollection[var9].func_801_a(var1 * var7, var3 * var7) / var7;
+            var5 += generatorCollection[i].func_801_a(var1 * var7, var3 * var7) / var7;
             var7 /= 2.0D;
         }
 
@@ -40,17 +39,14 @@ public class OctavePerlinNoiseSampler : NoiseSampler
         }
         else
         {
-            for (int var17 = 0; var17 < var1.Length; ++var17)
-            {
-                var1[var17] = 0.0D;
-            }
+            Array.Fill(var1, 0);
         }
 
         double var20 = 1.0D;
 
-        for (int var19 = 0; var19 < field_1191_b; ++var19)
+        for (int i = 0; i < octaves; ++i)
         {
-            generatorCollection[var19].func_805_a(var1, var2, var4, var6, var8, var9, var10, var11 * var20, var13 * var20, var15 * var20, var20);
+            generatorCollection[i].func_805_a(var1, var2, var4, var6, var8, var9, var10, var11 * var20, var13 * var20, var15 * var20, var20);
             var20 /= 2.0D;
         }
 

@@ -15,7 +15,7 @@ public class GuiChest : GuiContainer
     {
         upperChestInventory = upper;
         lowerChestInventory = lower;
-        field_948_f = false;
+        isInventoryScreen = false;
         short baseHeight = 222;
         int guiHeightMinus = baseHeight - 108;
         inventoryRows = lower.size() / 9;

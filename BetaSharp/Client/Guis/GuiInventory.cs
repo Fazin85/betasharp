@@ -11,10 +11,10 @@ public class GuiInventory : GuiContainer
     private float xSize_lo;
     private float ySize_lo;
 
-    public GuiInventory(EntityPlayer var1) : base(var1.playerScreenHandler)
+    public GuiInventory(EntityPlayer player) : base(player.playerScreenHandler)
     {
-        field_948_f = true;
-        var1.increaseStat(Achievements.OpenInventory, 1);
+        isInventoryScreen = true;
+        player.increaseStat(Achievements.OpenInventory, 1);
     }
 
     public override void initGui()

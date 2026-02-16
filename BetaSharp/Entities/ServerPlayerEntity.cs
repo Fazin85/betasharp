@@ -430,7 +430,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
 
     public void onSlotUpdate(ScreenHandler handler, int slot, ItemStack stack)
     {
-        if (!(handler.getSlot(slot) is CraftingResultSlot))
+        if (handler.getSlot(slot) is not CraftingResultSlot)
         {
             if (!skipPacketSlotUpdates)
             {

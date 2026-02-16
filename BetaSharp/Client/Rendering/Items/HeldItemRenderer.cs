@@ -86,7 +86,7 @@ public class HeldItemRenderer
             for (var14 = 0; var14 < 16; ++var14)
             {
                 var15 = var14 / 16.0F;
-                var16 = var6 + (var5 - var6) * var15 - 0.001953125F;
+                var16 = var6 + (var5 - var6) * var15 - (1 / 512f);
                 var17 = var9 * var15;
                 var3.addVertexWithUV((double)var17, 0.0D, (double)(0.0F - var13), (double)var16, (double)var8);
                 var3.addVertexWithUV((double)var17, 0.0D, 0.0D, (double)var16, (double)var8);
@@ -101,7 +101,7 @@ public class HeldItemRenderer
             for (var14 = 0; var14 < 16; ++var14)
             {
                 var15 = var14 / 16.0F;
-                var16 = var6 + (var5 - var6) * var15 - 0.001953125F;
+                var16 = var6 + (var5 - var6) * var15 - (1 / 512f);
                 var17 = var9 * var15 + 1.0F / 16.0F;
                 var3.addVertexWithUV((double)var17, 1.0D, (double)(0.0F - var13), (double)var16, (double)var7);
                 var3.addVertexWithUV((double)var17, 1.0D, 0.0D, (double)var16, (double)var7);
@@ -116,7 +116,7 @@ public class HeldItemRenderer
             for (var14 = 0; var14 < 16; ++var14)
             {
                 var15 = var14 / 16.0F;
-                var16 = var8 + (var7 - var8) * var15 - 0.001953125F;
+                var16 = var8 + (var7 - var8) * var15 - (1 / 512f);
                 var17 = var9 * var15 + 1.0F / 16.0F;
                 var3.addVertexWithUV(0.0D, (double)var17, 0.0D, (double)var6, (double)var16);
                 var3.addVertexWithUV((double)var9, (double)var17, 0.0D, (double)var5, (double)var16);
@@ -131,7 +131,7 @@ public class HeldItemRenderer
             for (var14 = 0; var14 < 16; ++var14)
             {
                 var15 = var14 / 16.0F;
-                var16 = var8 + (var7 - var8) * var15 - 0.001953125F;
+                var16 = var8 + (var7 - var8) * var15 - (1 / 512f);
                 var17 = var9 * var15;
                 var3.addVertexWithUV((double)var9, (double)var17, 0.0D, (double)var5, (double)var16);
                 var3.addVertexWithUV(0.0D, (double)var17, 0.0D, (double)var6, (double)var16);
@@ -230,7 +230,7 @@ public class HeldItemRenderer
             GLManager.GL.Rotate(90.0F, 0.0F, 1.0F, 0.0F);
             GLManager.GL.Rotate(180.0F, 0.0F, 0.0F, 1.0F);
             GLManager.GL.Translate(-1.0F, -1.0F, 0.0F);
-            var10 = 0.015625F;
+            var10 = (1 / 64f);
             GLManager.GL.Scale(var10, var10, var10);
             mc.textureManager.bindTexture(mc.textureManager.getTextureId("/misc/mapbg.png"));
             Tessellator var19 = Tessellator.instance;
@@ -377,7 +377,7 @@ public class HeldItemRenderer
         float var7 = -1.0F;
         float var8 = 1.0F;
         float var9 = -0.5F;
-        float var10 = 0.0078125F;
+        float var10 = (1 / 128f);
         float var11 = var2 % 16 / 256.0F - var10;
         float var12 = (var2 % 16 + 15.99F) / 256.0F + var10;
         float var13 = var2 / 16 / 256.0F - var10;

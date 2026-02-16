@@ -7,7 +7,7 @@ namespace BetaSharp.Client.Rendering.Entitys;
 public class SquidEntityRenderer : LivingEntityRenderer
 {
 
-    public SquidEntityRenderer(ModelBase var1, float var2) : base(var1, var2)
+    public SquidEntityRenderer(ModelBase mainModel, float shadowRadius) : base(mainModel, shadowRadius)
     {
     }
 

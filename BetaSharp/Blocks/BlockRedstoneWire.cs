@@ -11,7 +11,7 @@ public class BlockRedstoneWire : Block
     private bool wiresProvidePower = true;
     private HashSet<BlockPos> neighbors;
 
-    public BlockRedstoneWire(int var1, int var2) : base(var1, var2, Material.PistonBreakable)
+    public BlockRedstoneWire(int id, int textureId) : base(id, textureId, Material.PistonBreakable)
     {
         setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F / 16.0F, 1.0F);
     }

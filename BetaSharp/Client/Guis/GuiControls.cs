@@ -11,10 +11,10 @@ public class GuiControls : GuiScreen
     private int selectedKey = -1;
     private const int BUTTON_DONE = 200;
 
-    public GuiControls(GuiScreen var1, GameOptions var2)
+    public GuiControls(GuiScreen parentScreen, GameOptions options)
     {
-        parentScreen = var1;
-        options = var2;
+        this.parentScreen = parentScreen;
+        this.options = options;
     }
 
     private int getLeftColumnX()

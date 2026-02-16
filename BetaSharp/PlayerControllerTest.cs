@@ -8,10 +8,10 @@ public class PlayerControllerTest : PlayerController
 {
     public PlayerControllerTest(Minecraft var1) : base(var1)
     {
-        field_1064_b = true;
+        IsTestPlayer = true;
     }
 
-    public override void func_6473_b(EntityPlayer entityPlayer)
+    public override void fillHotbar(EntityPlayer entityPlayer)
     {
         for (int i = 0; i < 9; ++i)
         {

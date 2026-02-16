@@ -312,7 +312,7 @@ public class EntityWolf : EntityAnimal
     public override bool damage(Entity entity, int amount)
     {
         setWolfSitting(false);
-        if (entity != null && !(entity is EntityPlayer) && !(entity is EntityArrow))
+        if (entity != null && entity is not EntityPlayer && entity is not EntityArrow)
         {
             amount = (amount + 1) / 2;
         }

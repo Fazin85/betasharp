@@ -306,7 +306,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         short var4 = 256;
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         tessellator.setColorOpaque_I(0x00FFFFFF);
-        func_6274_a((var1.ScaledWidth - var3) / 2, (var1.ScaledHeight - var4) / 2, 0, 0, var3, var4);
+        drawTextureRegion((var1.ScaledWidth - var3) / 2, (var1.ScaledHeight - var4) / 2, 0, 0, var3, var4);
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.Disable(GLEnum.Fog);
         GLManager.GL.Enable(GLEnum.AlphaTest);
@@ -314,21 +314,18 @@ public partial class Minecraft : java.lang.Object, Runnable
         Display.swapBuffers();
     }
 
-    public void func_6274_a(int var1, int var2, int var3, int var4, int var5, int var6)
+    public void drawTextureRegion(int x, int y, int texX, int texY, int width, int height)
     {
-        float var7 = 0.00390625F;
-        float var8 = 0.00390625F;
-        Tessellator var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV((double)(var1 + 0), (double)(var2 + var6), 0.0D, (double)((float)(var3 + 0) * var7),
-            (double)((float)(var4 + var6) * var8));
-        var9.addVertexWithUV((double)(var1 + var5), (double)(var2 + var6), 0.0D,
-            (double)((float)(var3 + var5) * var7), (double)((float)(var4 + var6) * var8));
-        var9.addVertexWithUV((double)(var1 + var5), (double)(var2 + 0), 0.0D, (double)((float)(var3 + var5) * var7),
-            (double)((float)(var4 + 0) * var8));
-        var9.addVertexWithUV((double)(var1 + 0), (double)(var2 + 0), 0.0D, (double)((float)(var3 + 0) * var7),
-            (double)((float)(var4 + 0) * var8));
-        var9.draw();
+        float uScale = 1 / 256f;
+        float vScale = 1 / 256f;
+        
+        Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
+        tess.addVertexWithUV(x + 0,     y + height, 0,  (texX + 0) * uScale,        (texY + height) * vScale);
+        tess.addVertexWithUV(x + width, y + height, 0,  (texX + width) * uScale,    (texY + height) * vScale);
+        tess.addVertexWithUV(x + width, y + 0,      0,  (texX + width) * uScale,    (texY + 0) * vScale);
+        tess.addVertexWithUV(x + 0,     y + 0,      0,  (texX + 0) * uScale,        (texY + 0) * vScale);
+        tess.draw();
     }
 
     public static java.io.File getMinecraftDir()
@@ -376,18 +373,18 @@ public partial class Minecraft : java.lang.Object, Runnable
 
     private static Util.OperatingSystem getOs()
     {
-        string var0 = java.lang.System.getProperty("os.name").ToLower();
-        return var0.Contains("win")
-            ? Util.OperatingSystem.windows
-            : (var0.Contains("mac")
-                ? Util.OperatingSystem.macos
-                : (var0.Contains("solaris")
-                    ? Util.OperatingSystem.solaris
-                    : (var0.Contains("sunos")
-                        ? Util.OperatingSystem.solaris
-                        : (var0.Contains("linux")
-                            ? Util.OperatingSystem.linux
-                            : (var0.Contains("unix") ? Util.OperatingSystem.linux : Util.OperatingSystem.unknown)))));
+        string osName = java.lang.System.getProperty("os.name").ToLower();
+        
+        if (osName.Contains("win"))
+            return Util.OperatingSystem.windows;
+        if (osName.Contains("mac"))
+            return Util.OperatingSystem.macos;
+        if (osName.Contains("solaris") || osName.Contains("sunos"))
+            return Util.OperatingSystem.solaris;
+        if (osName.Contains("linux") || osName.Contains("unix"))
+            return Util.OperatingSystem.linux;
+        
+        return Util.OperatingSystem.unknown;
     }
 
     public WorldStorageSource getSaveLoader()
@@ -397,7 +394,7 @@ public partial class Minecraft : java.lang.Object, Runnable
 
     public void displayGuiScreen(GuiScreen newScreen)
     {
-        if (!(currentScreen is GuiUnused))
+        if (currentScreen is not GuiUnused)
         {
             currentScreen?.onGuiClosed();
 
@@ -472,17 +469,13 @@ public partial class Minecraft : java.lang.Object, Runnable
             {
                 changeWorld1((World)null);
             }
-            catch (Throwable worldChangeException)
-            {
-            }
+            catch (Throwable worldChangeException) { }
 
             try
             {
                 GLAllocation.deleteTexturesAndDisplayLists();
             }
-            catch (Throwable textureCleanupException)
-            {
-            }
+            catch (Throwable textureCleanupException) { }
 
             sndManager.closeMinecraft();
             Mouse.destroy();
@@ -724,18 +717,14 @@ public partial class Minecraft : java.lang.Object, Runnable
         {
             java.lang.System.gc();
         }
-        catch (Throwable vec3dCleanupException)
-        {
-        }
+        catch (Throwable vec3dCleanupException) { }
 
         try
         {
             java.lang.System.gc();
             changeWorld1((World)null);
         }
-        catch (Throwable worldCleanupException)
-        {
-        }
+        catch (Throwable worldCleanupException) { }
 
         java.lang.System.gc();
     }
@@ -896,7 +885,7 @@ public partial class Minecraft : java.lang.Object, Runnable
 
     private void func_6254_a(int mouseButton, bool isHoldingMouse)
     {
-        if (!playerController.field_1064_b)
+        if (!playerController.IsTestPlayer)
         {
             if (!isHoldingMouse)
             {
@@ -934,7 +923,7 @@ public partial class Minecraft : java.lang.Object, Runnable
             bool shouldPerformSecondaryAction = true;
             if (objectMouseOver == null)
             {
-                if (mouseButton == 0 && !(playerController is PlayerControllerTest))
+                if (mouseButton == 0 && playerController is not PlayerControllerTest)
                 {
                     leftClickCounter = 10;
                 }
@@ -1163,7 +1152,7 @@ public partial class Minecraft : java.lang.Object, Runnable
             }
         }
 
-        if (currentScreen == null || currentScreen.field_948_f)
+        if (currentScreen == null || currentScreen.isInventoryScreen)
         {
             processInputEvents();
         }
@@ -1256,7 +1245,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                 if (mouseWheelDelta != 0)
                 {
                     player.inventory.changeCurrentItem(mouseWheelDelta);
-                    if (options.field_22275_C)
+                    if (options.invertScrolling)
                     {
                         if (mouseWheelDelta > 0)
                         {
@@ -1268,7 +1257,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                             mouseWheelDelta = -1;
                         }
 
-                        options.field_22272_F += (float)mouseWheelDelta * 0.25F;
+                        options.amountScrolled += (float)mouseWheelDelta * 0.25F;
                     }
                 }
 
@@ -1483,7 +1472,7 @@ public partial class Minecraft : java.lang.Object, Runnable
 
             particleManager?.clearEffects(newWorld);
 
-            playerController.func_6473_b(player);
+            playerController.fillHotbar(player);
             if (targetEntity != null)
             {
                 newWorld.saveWorldData();
@@ -1570,17 +1559,17 @@ public partial class Minecraft : java.lang.Object, Runnable
         }
     }
 
-    public string func_6262_n()
+    public string getEntityDebugInfo()
     {
         return terrainRenderer.getDebugInfoEntities();
     }
 
-    public string func_21002_o()
+    public string getWorldDebugInfo()
     {
         return world.getDebugInfo();
     }
 
-    public string func_6245_o()
+    public string getParticleAndEntityCountDebugInfo()
     {
         return "P: " + particleManager.getStatistics() + ". T: " + world.getEntityCount();
     }
@@ -1635,7 +1624,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         player.movementInput = new MovementInputFromOptions(options);
         player.id = previousPlayerId;
         player.spawn();
-        playerController.func_6473_b(player);
+        playerController.fillHotbar(player);
         showText("Respawning");
         if (currentScreen is GuiGameOver)
         {

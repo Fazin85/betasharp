@@ -119,10 +119,10 @@ public class GuiStats : GuiScreen
         mc.textureManager.bindTexture(textureId);
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
-        tessellator.addVertexWithUV(x + 0, y + 18, zLevel, (double)((u + 0) * 0.0078125F), (double)((v + 18) * 0.0078125F));
-        tessellator.addVertexWithUV(x + 18, y + 18, zLevel, (double)((u + 18) * 0.0078125F), (double)((v + 18) * 0.0078125F));
-        tessellator.addVertexWithUV(x + 18, y + 0, zLevel, (double)((u + 18) * 0.0078125F), (double)((v + 0) * 0.0078125F));
-        tessellator.addVertexWithUV(x + 0, y + 0, zLevel, (double)((u + 0) * 0.0078125F), (double)((v + 0) * 0.0078125F));
+        tessellator.addVertexWithUV(x + 0, y + 18, zLevel, (double)((u + 0) * (1 / 128f)), (double)((v + 18) * (1 / 128f)));
+        tessellator.addVertexWithUV(x + 18, y + 18, zLevel, (double)((u + 18) * (1 / 128f)), (double)((v + 18) * (1 / 128f)));
+        tessellator.addVertexWithUV(x + 18, y + 0, zLevel, (double)((u + 18) * (1 / 128f)), (double)((v + 0) * (1 / 128f)));
+        tessellator.addVertexWithUV(x + 0, y + 0, zLevel, (double)((u + 0) * (1 / 128f)), (double)((v + 0) * (1 / 128f)));
         tessellator.draw();
     }
 

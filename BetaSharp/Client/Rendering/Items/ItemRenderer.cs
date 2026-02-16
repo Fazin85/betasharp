@@ -254,8 +254,8 @@ public class ItemRenderer : EntityRenderer
     public void renderTexturedQuad(int var1, int var2, int var3, int var4, int var5, int var6)
     {
         float var7 = 0.0F;
-        float var8 = 0.00390625F;
-        float var9 = 0.00390625F;
+        float var8 = 1 / 256f;
+        float var9 = 1 / 256f;
         Tessellator var10 = Tessellator.instance;
         var10.startDrawingQuads();
         var10.addVertexWithUV(var1 + 0, var2 + var6, (double)var7, (double)((var3 + 0) * var8), (double)((var4 + var6) * var9));

@@ -16,16 +16,14 @@ public class NetworkMasterThread : java.lang.Thread
     {
         try
         {
-            java.lang.Thread.sleep(5000L);
+            sleep(5000L);
             if (Connection.getReader(this.netManager).isAlive())
             {
                 try
                 {
                     Connection.getReader(this.netManager).stop();
                 }
-                catch (Throwable var3)
-                {
-                }
+                catch (Throwable) { }
             }
 
             if (Connection.getWriter(this.netManager).isAlive())
@@ -34,9 +32,7 @@ public class NetworkMasterThread : java.lang.Thread
                 {
                     Connection.getWriter(this.netManager).stop();
                 }
-                catch (Throwable var2)
-                {
-                }
+                catch (Throwable) { }
             }
         }
         catch (InterruptedException ex)

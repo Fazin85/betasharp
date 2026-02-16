@@ -26,16 +26,16 @@ public abstract class GuiSlot
     private bool field_27262_q;
     private int field_27261_r;
 
-    public GuiSlot(Minecraft var1, int var2, int var3, int var4, int var5, int var6)
+    public GuiSlot(Minecraft mc, int width, int height, int top, int bottom, int posZ)
     {
-        mc = var1;
-        width = var2;
-        height = var3;
-        top = var4;
-        bottom = var5;
-        posZ = var6;
+        this.mc = mc;
+        this.width = width;
+        this.height = height;
+        this.top = top;
+        this.bottom = bottom;
+        this.posZ = posZ;
         left = 0;
-        right = var2;
+        right = width;
     }
 
     public void func_27258_a(bool var1)

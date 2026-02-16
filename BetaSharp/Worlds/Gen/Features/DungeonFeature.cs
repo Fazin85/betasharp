@@ -8,34 +8,34 @@ namespace BetaSharp.Worlds.Gen.Features;
 public class DungeonFeature : Feature
 {
 
-    public override bool generate(World var1, java.util.Random var2, int var3, int var4, int var5)
+    public override bool generate(World world, java.util.Random rand, int x, int y, int z)
     {
         byte var6 = 3;
-        int var7 = var2.nextInt(2) + 2;
-        int var8 = var2.nextInt(2) + 2;
+        int var7 = rand.nextInt(2) + 2;
+        int var8 = rand.nextInt(2) + 2;
         int var9 = 0;
 
         int var10;
         int var11;
         int var12;
-        for (var10 = var3 - var7 - 1; var10 <= var3 + var7 + 1; ++var10)
+        for (var10 = x - var7 - 1; var10 <= x + var7 + 1; ++var10)
         {
-            for (var11 = var4 - 1; var11 <= var4 + var6 + 1; ++var11)
+            for (var11 = y - 1; var11 <= y + var6 + 1; ++var11)
             {
-                for (var12 = var5 - var8 - 1; var12 <= var5 + var8 + 1; ++var12)
+                for (var12 = z - var8 - 1; var12 <= z + var8 + 1; ++var12)
                 {
-                    Material var13 = var1.getMaterial(var10, var11, var12);
-                    if (var11 == var4 - 1 && !var13.IsSolid)
+                    Material var13 = world.getMaterial(var10, var11, var12);
+                    if (var11 == y - 1 && !var13.IsSolid)
                     {
                         return false;
                     }
 
-                    if (var11 == var4 + var6 + 1 && !var13.IsSolid)
+                    if (var11 == y + var6 + 1 && !var13.IsSolid)
                     {
                         return false;
                     }
 
-                    if ((var10 == var3 - var7 - 1 || var10 == var3 + var7 + 1 || var12 == var5 - var8 - 1 || var12 == var5 + var8 + 1) && var11 == var4 && var1.isAir(var10, var11, var12) && var1.isAir(var10, var11 + 1, var12))
+                    if ((var10 == x - var7 - 1 || var10 == x + var7 + 1 || var12 == z - var8 - 1 || var12 == z + var8 + 1) && var11 == y && world.isAir(var10, var11, var12) && world.isAir(var10, var11 + 1, var12))
                     {
                         ++var9;
                     }
@@ -45,29 +45,29 @@ public class DungeonFeature : Feature
 
         if (var9 >= 1 && var9 <= 5)
         {
-            for (var10 = var3 - var7 - 1; var10 <= var3 + var7 + 1; ++var10)
+            for (var10 = x - var7 - 1; var10 <= x + var7 + 1; ++var10)
             {
-                for (var11 = var4 + var6; var11 >= var4 - 1; --var11)
+                for (var11 = y + var6; var11 >= y - 1; --var11)
                 {
-                    for (var12 = var5 - var8 - 1; var12 <= var5 + var8 + 1; ++var12)
+                    for (var12 = z - var8 - 1; var12 <= z + var8 + 1; ++var12)
                     {
-                        if (var10 != var3 - var7 - 1 && var11 != var4 - 1 && var12 != var5 - var8 - 1 && var10 != var3 + var7 + 1 && var11 != var4 + var6 + 1 && var12 != var5 + var8 + 1)
+                        if (var10 != x - var7 - 1 && var11 != y - 1 && var12 != z - var8 - 1 && var10 != x + var7 + 1 && var11 != y + var6 + 1 && var12 != z + var8 + 1)
                         {
-                            var1.setBlock(var10, var11, var12, 0);
+                            world.setBlock(var10, var11, var12, 0);
                         }
-                        else if (var11 >= 0 && !var1.getMaterial(var10, var11 - 1, var12).IsSolid)
+                        else if (var11 >= 0 && !world.getMaterial(var10, var11 - 1, var12).IsSolid)
                         {
-                            var1.setBlock(var10, var11, var12, 0);
+                            world.setBlock(var10, var11, var12, 0);
                         }
-                        else if (var1.getMaterial(var10, var11, var12).IsSolid)
+                        else if (world.getMaterial(var10, var11, var12).IsSolid)
                         {
-                            if (var11 == var4 - 1 && var2.nextInt(4) != 0)
+                            if (var11 == y - 1 && rand.nextInt(4) != 0)
                             {
-                                var1.setBlock(var10, var11, var12, Block.MossyCobblestone.id);
+                                world.setBlock(var10, var11, var12, Block.MossyCobblestone.id);
                             }
                             else
                             {
-                                var1.setBlock(var10, var11, var12, Block.Cobblestone.id);
+                                world.setBlock(var10, var11, var12, Block.Cobblestone.id);
                             }
                         }
                     }
@@ -78,38 +78,38 @@ public class DungeonFeature : Feature
             {
                 for (var11 = 0; var11 < 3; ++var11)
                 {
-                    var12 = var3 + var2.nextInt(var7 * 2 + 1) - var7;
-                    int var14 = var5 + var2.nextInt(var8 * 2 + 1) - var8;
-                    if (var1.isAir(var12, var4, var14))
+                    var12 = x + rand.nextInt(var7 * 2 + 1) - var7;
+                    int var14 = z + rand.nextInt(var8 * 2 + 1) - var8;
+                    if (world.isAir(var12, y, var14))
                     {
                         int var15 = 0;
-                        if (var1.getMaterial(var12 - 1, var4, var14).IsSolid)
+                        if (world.getMaterial(var12 - 1, y, var14).IsSolid)
                         {
                             ++var15;
                         }
-                        if (var1.getMaterial(var12 + 1, var4, var14).IsSolid)
+                        if (world.getMaterial(var12 + 1, y, var14).IsSolid)
                         {
                             ++var15;
                         }
-                        if (var1.getMaterial(var12, var4, var14 - 1).IsSolid)
+                        if (world.getMaterial(var12, y, var14 - 1).IsSolid)
                         {
                             ++var15;
                         }
-                        if (var1.getMaterial(var12, var4, var14 + 1).IsSolid)
+                        if (world.getMaterial(var12, y, var14 + 1).IsSolid)
                         {
                             ++var15;
                         }
                         if (var15 == 1)
                         {
-                            var1.setBlock(var12, var4, var14, Block.Chest.id);
-                            BlockEntityChest var16 = (BlockEntityChest)var1.getBlockEntity(var12, var4, var14);
+                            world.setBlock(var12, y, var14, Block.Chest.id);
+                            BlockEntityChest var16 = (BlockEntityChest)world.getBlockEntity(var12, y, var14);
 
                             for (int var17 = 0; var17 < 8; ++var17)
                             {
-                                ItemStack var18 = pickCheckLootItem(var2);
+                                ItemStack var18 = pickCheckLootItem(rand);
                                 if (var18 != null)
                                 {
-                                    var16.setStack(var2.nextInt(var16.size()), var18);
+                                    var16.setStack(rand.nextInt(var16.size()), var18);
                                 }
                             }
                         }
@@ -117,9 +117,9 @@ public class DungeonFeature : Feature
                 }
             }
 
-            var1.setBlock(var3, var4, var5, Block.Spawner.id);
-            BlockEntityMobSpawner var19 = (BlockEntityMobSpawner)var1.getBlockEntity(var3, var4, var5);
-            var19.setSpawnedEntityId(pickMobSpawner(var2));
+            world.setBlock(x, y, z, Block.Spawner.id);
+            BlockEntityMobSpawner var19 = (BlockEntityMobSpawner)world.getBlockEntity(x, y, z);
+            var19.setSpawnedEntityId(pickMobSpawner(rand));
             return true;
         }
         else

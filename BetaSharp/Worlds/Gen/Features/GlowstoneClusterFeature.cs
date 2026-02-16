@@ -5,26 +5,26 @@ namespace BetaSharp.Worlds.Gen.Features;
 public class GlowstoneClusterFeature : Feature
 {
 
-    public override bool generate(World var1, java.util.Random var2, int var3, int var4, int var5)
+    public override bool generate(World world, java.util.Random rand, int x, int y, int z)
     {
-        if (!var1.isAir(var3, var4, var5))
+        if (!world.isAir(x, y, z))
         {
             return false;
         }
-        else if (var1.getBlockId(var3, var4 + 1, var5) != Block.Netherrack.id)
+        else if (world.getBlockId(x, y + 1, z) != Block.Netherrack.id)
         {
             return false;
         }
         else
         {
-            var1.setBlock(var3, var4, var5, Block.Glowstone.id);
+            world.setBlock(x, y, z, Block.Glowstone.id);
 
             for (int var6 = 0; var6 < 1500; ++var6)
             {
-                int var7 = var3 + var2.nextInt(8) - var2.nextInt(8);
-                int var8 = var4 - var2.nextInt(12);
-                int var9 = var5 + var2.nextInt(8) - var2.nextInt(8);
-                if (var1.getBlockId(var7, var8, var9) == 0)
+                int var7 = x + rand.nextInt(8) - rand.nextInt(8);
+                int var8 = y - rand.nextInt(12);
+                int var9 = z + rand.nextInt(8) - rand.nextInt(8);
+                if (world.getBlockId(var7, var8, var9) == 0)
                 {
                     int var10 = 0;
 
@@ -33,32 +33,32 @@ public class GlowstoneClusterFeature : Feature
                         int var12 = 0;
                         if (var11 == 0)
                         {
-                            var12 = var1.getBlockId(var7 - 1, var8, var9);
+                            var12 = world.getBlockId(var7 - 1, var8, var9);
                         }
 
                         if (var11 == 1)
                         {
-                            var12 = var1.getBlockId(var7 + 1, var8, var9);
+                            var12 = world.getBlockId(var7 + 1, var8, var9);
                         }
 
                         if (var11 == 2)
                         {
-                            var12 = var1.getBlockId(var7, var8 - 1, var9);
+                            var12 = world.getBlockId(var7, var8 - 1, var9);
                         }
 
                         if (var11 == 3)
                         {
-                            var12 = var1.getBlockId(var7, var8 + 1, var9);
+                            var12 = world.getBlockId(var7, var8 + 1, var9);
                         }
 
                         if (var11 == 4)
                         {
-                            var12 = var1.getBlockId(var7, var8, var9 - 1);
+                            var12 = world.getBlockId(var7, var8, var9 - 1);
                         }
 
                         if (var11 == 5)
                         {
-                            var12 = var1.getBlockId(var7, var8, var9 + 1);
+                            var12 = world.getBlockId(var7, var8, var9 + 1);
                         }
 
                         if (var12 == Block.Glowstone.id)
@@ -69,7 +69,7 @@ public class GlowstoneClusterFeature : Feature
 
                     if (var10 == 1)
                     {
-                        var1.setBlock(var7, var8, var9, Block.Glowstone.id);
+                        world.setBlock(var7, var8, var9, Block.Glowstone.id);
                     }
                 }
             }

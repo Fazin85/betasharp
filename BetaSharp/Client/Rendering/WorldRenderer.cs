@@ -445,7 +445,7 @@ public class WorldRenderer : IWorldAccess
 
         var17 = (float)(var6 * 0.0D);
         var18 = (float)(var8 * 0.0D);
-        var19 = 0.00390625F;
+        var19 = 1 / 256f;
         var17 = MathHelper.floor_double(var6) * var19;
         var18 = MathHelper.floor_double(var8) * var19;
         float var20 = (float)(var6 - MathHelper.floor_double(var6));
