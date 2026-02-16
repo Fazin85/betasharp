@@ -16,18 +16,18 @@ public class GuiSlider : GuiButton
         sliderValue = var6;
     }
 
-    protected override int getHoverState(bool var1)
+    protected override int GetHoverState(bool var1)
     {
         return 0;
     }
 
-    protected override void mouseDragged(Minecraft var1, int var2, int var3)
+    protected override void MouseDragged(Minecraft var1, int var2, int var3)
     {
-        if (enabled)
+        if (Enabled)
         {
             if (dragging)
             {
-                sliderValue = (var2 - (xPosition + 4)) / (float)(width - 8);
+                sliderValue = (var2 - (XPosition + 4)) / (float)(_width - 8);
                 if (sliderValue < 0.0F)
                 {
                     sliderValue = 0.0F;
@@ -39,20 +39,20 @@ public class GuiSlider : GuiButton
                 }
 
                 var1.options.setOptionFloatValue(_idFloat, sliderValue);
-                displayString = var1.options.getKeyBinding(_idFloat);
+                DisplayString = var1.options.getKeyBinding(_idFloat);
             }
 
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-            DrawTexturedModalRect(xPosition + (int)(sliderValue * (width - 8)), yPosition, 0, 66, 4, 20);
-            DrawTexturedModalRect(xPosition + (int)(sliderValue * (width - 8)) + 4, yPosition, 196, 66, 4, 20);
+            DrawTexturedModalRect(XPosition + (int)(sliderValue * (_width - 8)), YPosition, 0, 66, 4, 20);
+            DrawTexturedModalRect(XPosition + (int)(sliderValue * (_width - 8)) + 4, YPosition, 196, 66, 4, 20);
         }
     }
 
-    public override bool mousePressed(Minecraft var1, int var2, int var3)
+    public override bool MousePressed(Minecraft var1, int var2, int var3)
     {
-        if (base.mousePressed(var1, var2, var3))
+        if (base.MousePressed(var1, var2, var3))
         {
-            sliderValue = (var2 - (xPosition + 4)) / (float)(width - 8);
+            sliderValue = (var2 - (XPosition + 4)) / (float)(_width - 8);
             if (sliderValue < 0.0F)
             {
                 sliderValue = 0.0F;
@@ -64,7 +64,7 @@ public class GuiSlider : GuiButton
             }
 
             var1.options.setOptionFloatValue(_idFloat, sliderValue);
-            displayString = var1.options.getKeyBinding(_idFloat);
+            DisplayString = var1.options.getKeyBinding(_idFloat);
             dragging = true;
             return true;
         }
@@ -74,7 +74,7 @@ public class GuiSlider : GuiButton
         }
     }
 
-    public override void mouseReleased(int var1, int var2)
+    public override void MouseReleased(int var1, int var2)
     {
         dragging = false;
     }

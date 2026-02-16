@@ -49,15 +49,15 @@ public class GuiOptions : GuiScreen
 
     protected override void actionPerformed(GuiButton button)
     {
-        if (button.enabled)
+        if (button.Enabled)
         {
-            if (button.id < 100 && button is GuiSmallButton)
+            if (button.Id < 100 && button is GuiSmallButton)
             {
                 options.setOptionValue(((GuiSmallButton)button).returnEnumOptions(), 1);
-                button.displayString = options.getKeyBinding(EnumOptions.getEnumOptions(button.id));
+                button.DisplayString = options.getKeyBinding(EnumOptions.getEnumOptions(button.Id));
             }
 
-            switch (button.id)
+            switch (button.Id)
             {
                 case BUTTON_VIDEO_SETTINGS:
                     mc.options.saveOptions();

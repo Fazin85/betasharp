@@ -48,9 +48,9 @@ public class GuiRenameWorld : GuiScreen
 
     protected override void actionPerformed(GuiButton button)
     {
-        if (button.enabled)
+        if (button.Enabled)
         {
-            switch (button.id)
+            switch (button.Id)
             {
                 case BUTTON_CANCEL:
                     mc.displayGuiScreen(parentScreen);
@@ -67,7 +67,7 @@ public class GuiRenameWorld : GuiScreen
     protected override void keyTyped(char eventChar, int eventKey)
     {
         nameInputField.textboxKeyTyped(eventChar, eventKey);
-        ((GuiButton)controlList.get(0)).enabled = nameInputField.getText().Trim().Length > 0;
+        ((GuiButton)controlList.get(0)).Enabled = nameInputField.getText().Trim().Length > 0;
         if (eventChar == 13)
         {
             actionPerformed((GuiButton)controlList.get(0));

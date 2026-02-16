@@ -48,9 +48,9 @@ public class GuiEditSign : GuiScreen
 
     protected override void actionPerformed(GuiButton button)
     {
-        if (button.enabled)
+        if (button.Enabled)
         {
-            switch (button.id)
+            switch (button.Id)
             {
                 case BUTTON_DONE:
                     entitySign.markDirty();

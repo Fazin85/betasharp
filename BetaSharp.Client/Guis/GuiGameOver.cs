@@ -17,9 +17,9 @@ public class GuiGameOver : GuiScreen
             for (int i = 0; i < controlList.size(); ++i)
             {
                 GuiButton btn = (GuiButton)controlList.get(i);
-                if (btn.id == BUTTON_RESPAWN)
+                if (btn.Id == BUTTON_RESPAWN)
                 {
-                    btn.enabled = false;
+                    btn.Enabled = false;
                     break;
                 }
             }
@@ -33,7 +33,7 @@ public class GuiGameOver : GuiScreen
 
     protected override void actionPerformed(GuiButton button)
     {
-        switch (button.id)
+        switch (button.Id)
         {
             case BUTTON_RESPAWN:
                 mc.player.respawn();

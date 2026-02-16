@@ -31,7 +31,7 @@ public class GuiYesNo : GuiScreen
 
     protected override void actionPerformed(GuiButton button)
     {
-        switch (button.id)
+        switch (button.Id)
         {
             case BUTTON_CONFIRM:
                 parentScreen.deleteWorld(true, worldNumber);

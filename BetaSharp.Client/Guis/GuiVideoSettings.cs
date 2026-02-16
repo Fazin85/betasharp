@@ -44,21 +44,21 @@ public class GuiVideoSettings : GuiScreen
 
     protected override void actionPerformed(GuiButton var1)
     {
-        if (var1.enabled)
+        if (var1.Enabled)
         {
-            if (var1.id < 100 && var1 is GuiSmallButton)
+            if (var1.Id < 100 && var1 is GuiSmallButton)
             {
                 guiGameSettings.setOptionValue(((GuiSmallButton)var1).returnEnumOptions(), 1);
-                var1.displayString = guiGameSettings.getKeyBinding(EnumOptions.getEnumOptions(var1.id));
+                var1.DisplayString = guiGameSettings.getKeyBinding(EnumOptions.getEnumOptions(var1.Id));
             }
 
-            if (var1.id == 200)
+            if (var1.Id == 200)
             {
                 mc.options.saveOptions();
                 mc.displayGuiScreen(field_22110_h);
             }
 
-            if (var1.id == (int)EnumOptions.GUI_SCALE.ordinal())
+            if (var1.Id == (int)EnumOptions.GUI_SCALE.ordinal())
             {
                 ScaledResolution var2 = new(mc.options, mc.displayWidth, mc.displayHeight);
                 int var3 = var2.ScaledWidth;

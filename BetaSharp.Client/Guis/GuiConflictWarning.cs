@@ -18,9 +18,9 @@ public class GuiConflictWarning : GuiScreen
 
     protected override void actionPerformed(GuiButton var1)
     {
-        if (var1.enabled)
+        if (var1.Enabled)
         {
-            if (var1.id == 0)
+            if (var1.Id == 0)
             {
                 mc.displayGuiScreen(new GuiMainMenu());
             }

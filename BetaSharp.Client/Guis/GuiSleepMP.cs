@@ -50,7 +50,7 @@ public class GuiSleepMP : GuiChat
 
     protected override void actionPerformed(GuiButton button)
     {
-        switch (button.id)
+        switch (button.Id)
         {
             case BUTTON_STOP_SLEEP:
                 sendStopSleepingCommand();

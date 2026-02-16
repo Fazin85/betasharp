@@ -25,7 +25,7 @@ public class GuiScreen : Gui
         for (int var4 = 0; var4 < controlList.size(); ++var4)
         {
             GuiButton var5 = (GuiButton)controlList.get(var4);
-            var5.drawButton(mc, var1, var2);
+            var5.DrawButton(mc, var1, var2);
         }
 
     }
@@ -65,7 +65,7 @@ public class GuiScreen : Gui
             for (int var4 = 0; var4 < controlList.size(); ++var4)
             {
                 GuiButton var5 = (GuiButton)controlList.get(var4);
-                if (var5.mousePressed(mc, var1, var2))
+                if (var5.MousePressed(mc, var1, var2))
                 {
                     selectedButton = var5;
                     mc.sndManager.playSoundFX("random.click", 1.0F, 1.0F);
@@ -80,7 +80,7 @@ public class GuiScreen : Gui
     {
         if (selectedButton != null && var3 == 0)
         {
-            selectedButton.mouseReleased(var1, var2);
+            selectedButton.MouseReleased(var1, var2);
             selectedButton = null;
         }
 

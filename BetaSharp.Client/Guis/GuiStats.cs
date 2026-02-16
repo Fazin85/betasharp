@@ -52,20 +52,20 @@ public class GuiStats : GuiScreen
         controlList.add(itemsButton);
         if (slotBlock.getSize() == 0)
         {
-            blocksButton.enabled = false;
+            blocksButton.Enabled = false;
         }
 
         if (slotItem.getSize() == 0)
         {
-            itemsButton.enabled = false;
+            itemsButton.Enabled = false;
         }
     }
 
     protected override void actionPerformed(GuiButton button)
     {
-        if (button.enabled)
+        if (button.Enabled)
         {
-            switch (button.id)
+            switch (button.Id)
             {
                 case 0: // DONE
                     mc.displayGuiScreen(parentScreen);

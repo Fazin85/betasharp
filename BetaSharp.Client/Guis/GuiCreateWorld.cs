@@ -81,9 +81,9 @@ public class GuiCreateWorld : GuiScreen
 
     protected override void actionPerformed(GuiButton button)
     {
-        if (button.enabled)
+        if (button.Enabled)
         {
-            switch (button.id)
+            switch (button.Id)
             {
                 case BUTTON_CANCEL:
                     mc.displayGuiScreen(parentScreen);
@@ -144,7 +144,7 @@ public class GuiCreateWorld : GuiScreen
             actionPerformed((GuiButton)controlList.get(0));
         }
 
-        ((GuiButton)controlList.get(0)).enabled = textboxWorldName.getText().Length > 0;
+        ((GuiButton)controlList.get(0)).Enabled = textboxWorldName.getText().Length > 0;
         updateFolderName();
     }
 

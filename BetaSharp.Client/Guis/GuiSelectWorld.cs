@@ -78,9 +78,9 @@ public class GuiSelectWorld : GuiScreen
         controlList.add(buttonDelete = new GuiButton(BUTTON_DELETE, width / 2 - 74, height - 28, 70, 20, translations.translateKey("selectWorld.delete")));
         controlList.add(new GuiButton(BUTTON_CREATE, width / 2 + 4, height - 52, 150, 20, translations.translateKey("selectWorld.create")));
         controlList.add(new GuiButton(BUTTON_CANCEL, width / 2 + 4, height - 28, 150, 20, translations.translateKey("gui.cancel")));
-        buttonSelect.enabled = false;
-        buttonRename.enabled = false;
-        buttonDelete.enabled = false;
+        buttonSelect.Enabled = false;
+        buttonRename.Enabled = false;
+        buttonDelete.Enabled = false;
     }
 
     private void deleteWorld(int worldIndex)
@@ -101,9 +101,9 @@ public class GuiSelectWorld : GuiScreen
 
     protected override void actionPerformed(GuiButton button)
     {
-        if (button.enabled)
+        if (button.Enabled)
         {
-            switch (button.id)
+            switch (button.Id)
             {
                 case BUTTON_DELETE:
                     deleteWorld(selectedWorld);

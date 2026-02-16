@@ -31,9 +31,9 @@ public class GuiTexturePacks : GuiScreen
 
     protected override void actionPerformed(GuiButton var1)
     {
-        if (var1.enabled)
+        if (var1.Enabled)
         {
-            switch (var1.id)
+            switch (var1.Id)
             {
                 case BUTTON_OPEN_FOLDER:
                     try

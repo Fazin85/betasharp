@@ -28,7 +28,7 @@ public class GuiMultiplayer : GuiScreen
         controlList.add(new GuiButton(BUTTON_CONNECT, width / 2 - 100, height / 4 + 96 + 12, translations.translateKey("multiplayer.connect")));
         controlList.add(new GuiButton(BUTTON_CANCEL, width / 2 - 100, height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
         string lastServerAddress = mc.options.lastServer.Replace("_", ":");
-        ((GuiButton)controlList.get(0)).enabled = lastServerAddress.Length > 0;
+        ((GuiButton)controlList.get(0)).Enabled = lastServerAddress.Length > 0;
         serverAddressInputField = new GuiTextField(this, fontRenderer, width / 2 - 100, height / 4 - 10 + 50 + 18, 200, 20, lastServerAddress)
         {
             isFocused = true
@@ -43,9 +43,9 @@ public class GuiMultiplayer : GuiScreen
 
     protected override void actionPerformed(GuiButton button)
     {
-        if (button.enabled)
+        if (button.Enabled)
         {
-            switch (button.id)
+            switch (button.Id)
             {
                 case BUTTON_CANCEL:
                     mc.displayGuiScreen(parentScreen);
@@ -107,7 +107,7 @@ public class GuiMultiplayer : GuiScreen
             actionPerformed((GuiButton)controlList.get(0));
         }
 
-        ((GuiButton)controlList.get(0)).enabled = serverAddressInputField.getText().Length > 0;
+        ((GuiButton)controlList.get(0)).Enabled = serverAddressInputField.getText().Length > 0;
     }
 
     protected override void mouseClicked(int x, int y, int button)

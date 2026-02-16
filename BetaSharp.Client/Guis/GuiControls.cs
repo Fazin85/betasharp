@@ -40,17 +40,17 @@ public class GuiControls : GuiScreen
     {
         for (int i = 0; i < options.keyBindings.Length; ++i)
         {
-            ((GuiButton)controlList.get(i)).displayString = options.getOptionDisplayString(i);
+            ((GuiButton)controlList.get(i)).DisplayString = options.getOptionDisplayString(i);
         }
 
-        switch (button.id)
+        switch (button.Id)
         {
             case BUTTON_DONE:
                 mc.displayGuiScreen(parentScreen);
                 break;
             default:
-                selectedKey = button.id;
-                button.displayString = "> " + options.getOptionDisplayString(button.id) + " <";
+                selectedKey = button.Id;
+                button.DisplayString = "> " + options.getOptionDisplayString(button.Id) + " <";
                 break;
         }
 
@@ -61,7 +61,7 @@ public class GuiControls : GuiScreen
         if (selectedKey >= 0)
         {
             options.setKeyBinding(selectedKey, eventKey);
-            ((GuiButton)controlList.get(selectedKey)).displayString = options.getOptionDisplayString(selectedKey);
+            ((GuiButton)controlList.get(selectedKey)).DisplayString = options.getOptionDisplayString(selectedKey);
             selectedKey = -1;
         }
         else

@@ -17,7 +17,7 @@ public class GuiIngameMenu : GuiScreen
         controlList.add(new GuiButton(1, width / 2 - 100, height / 4 + 120 + var1, "Save and quit to title"));
         if (mc.isMultiplayerWorld() && mc.internalServer == null)
         {
-            ((GuiButton)controlList.get(0)).displayString = "Disconnect";
+            ((GuiButton)controlList.get(0)).DisplayString = "Disconnect";
         }
 
         controlList.add(new GuiButton(4, width / 2 - 100, height / 4 + 24 + var1, "Back to game"));
@@ -30,12 +30,12 @@ public class GuiIngameMenu : GuiScreen
 
     protected override void actionPerformed(GuiButton var1)
     {
-        if (var1.id == 0)
+        if (var1.Id == 0)
         {
             mc.displayGuiScreen(new GuiOptions(this, mc.options));
         }
 
-        if (var1.id == 1)
+        if (var1.Id == 1)
         {
             mc.statFileWriter.readStat(Stats.Stats.leaveGameStat, 1);
             if (mc.isMultiplayerWorld())
@@ -48,18 +48,18 @@ public class GuiIngameMenu : GuiScreen
             mc.displayGuiScreen(new GuiMainMenu());
         }
 
-        if (var1.id == 4)
+        if (var1.Id == 4)
         {
             mc.displayGuiScreen(null);
             mc.setIngameFocus();
         }
 
-        if (var1.id == 5)
+        if (var1.Id == 5)
         {
             mc.displayGuiScreen(new GuiAchievements(mc.statFileWriter));
         }
 
-        if (var1.id == 6)
+        if (var1.Id == 6)
         {
             mc.displayGuiScreen(new GuiStats(this, mc.statFileWriter));
         }

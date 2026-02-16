@@ -25,9 +25,9 @@ public class GuiWorldSlot : GuiSlot
         GuiSelectWorld.onElementSelected(parentWorldGui, slotIndex);
         WorldSaveInfo worldInfo = (WorldSaveInfo)GuiSelectWorld.getSize(parentWorldGui).get(slotIndex);
         bool canSelect = GuiSelectWorld.getSelectedWorld(parentWorldGui) >= 0 && GuiSelectWorld.getSelectedWorld(parentWorldGui) < getSize() && !worldInfo.getIsUnsupported();
-        GuiSelectWorld.getSelectButton(parentWorldGui).enabled = canSelect;
-        GuiSelectWorld.getRenameButton(parentWorldGui).enabled = canSelect;
-        GuiSelectWorld.getDeleteButton(parentWorldGui).enabled = canSelect;
+        GuiSelectWorld.getSelectButton(parentWorldGui).Enabled = canSelect;
+        GuiSelectWorld.getRenameButton(parentWorldGui).Enabled = canSelect;
+        GuiSelectWorld.getDeleteButton(parentWorldGui).Enabled = canSelect;
         if (doubleClick && canSelect)
         {
             parentWorldGui.selectWorld(slotIndex);

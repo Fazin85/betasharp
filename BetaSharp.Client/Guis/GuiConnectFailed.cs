@@ -40,7 +40,7 @@ public class GuiConnectFailed : GuiScreen
 
     protected override void actionPerformed(GuiButton var1)
     {
-        switch (var1.id)
+        switch (var1.Id)
         {
             case BUTTON_TO_MENU:
                 mc.displayGuiScreen(new GuiMainMenu());

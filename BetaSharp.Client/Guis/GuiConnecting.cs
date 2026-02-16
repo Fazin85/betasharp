@@ -39,7 +39,7 @@ public class GuiConnecting : GuiScreen
 
     protected override void actionPerformed(GuiButton button)
     {
-        switch (button.id)
+        switch (button.Id)
         {
             case BUTTON_CANCEL:
                 cancelled = true;

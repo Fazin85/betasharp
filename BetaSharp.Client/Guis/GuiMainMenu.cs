@@ -103,13 +103,13 @@ public class GuiMainMenu : GuiScreen
 
         if (mc.session == null)
         {
-            _multiplayerButton.enabled = false;
+            _multiplayerButton.Enabled = false;
         }
     }
 
     protected override void actionPerformed(GuiButton button)
     {
-        switch (button.id)
+        switch (button.Id)
         {
             case BUTTON_OPTIONS:
                 mc.displayGuiScreen(new GuiOptions(this, mc.options));

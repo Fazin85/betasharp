@@ -118,15 +118,15 @@ public abstract class GuiSlot
 
     public void actionPerformed(GuiButton var1)
     {
-        if (var1.enabled)
+        if (var1.Enabled)
         {
-            if (var1.id == scrollUpButtonID)
+            if (var1.Id == scrollUpButtonID)
             {
                 amountScrolled -= posZ * 2 / 3;
                 initialClickY = -2.0F;
                 bindAmountScrolled();
             }
-            else if (var1.id == scrollDownButtonID)
+            else if (var1.Id == scrollDownButtonID)
             {
                 amountScrolled += posZ * 2 / 3;
                 initialClickY = -2.0F;

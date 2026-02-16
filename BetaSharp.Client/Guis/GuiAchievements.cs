@@ -45,7 +45,7 @@ public class GuiAchievements : GuiScreen
 
     protected override void actionPerformed(GuiButton var1)
     {
-        if (var1.id == 1)
+        if (var1.Id == 1)
         {
             mc.displayGuiScreen(null);
             mc.setIngameFocus();

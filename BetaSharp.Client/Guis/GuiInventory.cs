@@ -76,12 +76,12 @@ public class GuiInventory : GuiContainer
 
     protected override void actionPerformed(GuiButton var1)
     {
-        if (var1.id == 0)
+        if (var1.Id == 0)
         {
             mc.displayGuiScreen(new GuiAchievements(mc.statFileWriter));
         }
 
-        if (var1.id == 1)
+        if (var1.Id == 1)
         {
             mc.displayGuiScreen(new GuiStats(this, mc.statFileWriter));
         }
