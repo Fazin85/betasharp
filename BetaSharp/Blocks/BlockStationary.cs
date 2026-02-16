@@ -29,9 +29,9 @@ public class BlockStationary : BlockFluid
     {
         int meta = world.getBlockMeta(x, y, z);
         world.pauseTicking = true;
-        world.setBlockWithoutNotifyingNeighbors(x, y, z, id - 1, meta);
+        world.SetBlockWithoutNotifyingNeighbors(x, y, z, id - 1, meta);
         world.setBlocksDirty(x, y, z, x, y, z);
-        world.scheduleBlockUpdate(x, y, z, id - 1, getTickRate());
+        world.ScheduleBlockUpdate(x, y, z, id - 1, getTickRate());
         world.pauseTicking = false;
     }
 

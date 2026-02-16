@@ -35,7 +35,7 @@ public class ItemFishingRod : Item
             world.playSound(entityPlayer, "random.bow", 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
             if (!world.isRemote)
             {
-                world.spawnEntity(new EntityFish(world, entityPlayer));
+                world.SpawnEntity(new EntityFish(world, entityPlayer));
             }
 
             entityPlayer.swingHand();

@@ -40,14 +40,14 @@ public class RegionWorldStorageSource : WorldStorageSource
                 WorldProperties var8 = getProperties(var7);
                 if (var8 != null)
                 {
-                    bool var9 = var8.getSaveVersion() != 19132;
-                    string var10 = var8.getWorldName();
+                    bool var9 = var8.SaveVersion != 19132;
+                    string var10 = var8.LevelName;
                     if (var10 == null || MathHelper.stringNullOrLengthZero(var10))
                     {
                         var10 = var7;
                     }
 
-                    var1.add(new WorldSaveInfo(var7, var10, var8.getLastTimePlayed(), var8.getSizeOnDisk(), var9));
+                    var1.add(new WorldSaveInfo(var7, var10, var8.LastTimePlayed, var8.SizeOnDisk, var9));
                 }
             }
         }
@@ -108,7 +108,7 @@ public class RegionWorldStorageSource : WorldStorageSource
                     var5 = var4.GetCompoundTag("Data");
                     long sizeOnDisk = getFolderSizeMB(var2);
                     var wInfo = new WorldProperties(var5);
-                    wInfo.setSizeOnDisk(sizeOnDisk);
+                    wInfo.SizeOnDisk = sizeOnDisk;
                     return wInfo;
                 }
                 catch (java.lang.Exception var7)
@@ -126,7 +126,7 @@ public class RegionWorldStorageSource : WorldStorageSource
                     var5 = var4.GetCompoundTag("Data");
                     long sizeOnDisk = getFolderSizeMB(var2);
                     var wInfo = new WorldProperties(var5);
-                    wInfo.setSizeOnDisk(sizeOnDisk);
+                    wInfo.SizeOnDisk = sizeOnDisk;
                     return wInfo;
                 }
                 catch (java.lang.Exception var6)

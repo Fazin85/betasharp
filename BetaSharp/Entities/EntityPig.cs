@@ -88,7 +88,7 @@ public class EntityPig : EntityAnimal
         {
             EntityPigZombie pigZombie = new EntityPigZombie(world);
             pigZombie.setPositionAndAnglesKeepPrevAngles(x, y, z, yaw, pitch);
-            world.spawnEntity(pigZombie);
+            world.SpawnEntity(pigZombie);
             markDead();
         }
     }

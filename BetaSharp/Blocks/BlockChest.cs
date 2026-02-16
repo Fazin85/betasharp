@@ -195,7 +195,7 @@ public class BlockChest : BlockWithEntity
                     entityItem.velocityX = (double)((float)random.nextGaussian() * var13);
                     entityItem.velocityY = (double)((float)random.nextGaussian() * var13 + 0.2F);
                     entityItem.velocityZ = (double)((float)random.nextGaussian() * var13);
-                    world.spawnEntity(entityItem);
+                    world.SpawnEntity(entityItem);
                 }
             }
         }

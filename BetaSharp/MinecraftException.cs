@@ -1,8 +1,5 @@
-namespace BetaSharp;
+﻿namespace BetaSharp;
 
-public class MinecraftException : java.lang.RuntimeException
+public class MinecraftException(string var1) : java.lang.RuntimeException(var1)
 {
-    public MinecraftException(string var1) : base(var1)
-    {
-    }
 }

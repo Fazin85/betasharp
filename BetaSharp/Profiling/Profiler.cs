@@ -10,7 +10,7 @@ public static class Profiler
 
     private class ProfilerData
     {
-        public string Name;
+        public required string Name;
         public double LastExecutionTime;
         public double AverageExecutionTime;
 
@@ -31,65 +31,68 @@ public static class Profiler
 
             if (time > CurrentPeriodMax) CurrentPeriodMax = time;
         }
-
     }
 
-    private static readonly ConcurrentDictionary<string, ProfilerData> _sections = new();
-    private static double _maxResetTimer = 0;
-
-    private static readonly AsyncLocal<Stack<string>> _groupStack = new();
-
-    private static Stack<string> GetStack()
+    private class ThreadProfiler(string name)
     {
-        return _groupStack.Value ??= new Stack<string>();
-    }
+        public readonly string ThreadName = name;
+        public readonly ConcurrentDictionary<string, ProfilerData> Sections = new();
+        public readonly Stack<string> GroupStack = new();
 
-    private static string GetCurrentPath(string name)
-    {
-        var stack = GetStack();
-        lock (stack)
+        public string GetCurrentPath(string name)
         {
-            if (stack.Count == 0) return name;
+            if (GroupStack.Count == 0) return name;
 
-            var arr = stack.ToArray();
+            string[] arr = [.. GroupStack];
             Array.Reverse(arr);
             return string.Join("/", arr) + "/" + name;
         }
     }
 
+    private static readonly ConcurrentBag<ThreadProfiler> s_allProfilers = [];
+
+    private static readonly ThreadLocal<ThreadProfiler> s_localProfiler = new(() =>
+    {
+        Thread thread = Thread.CurrentThread;
+        string name = !string.IsNullOrEmpty(thread.Name) ? thread.Name
+                 : $"Thread-{thread.ManagedThreadId}";
+        var p = new ThreadProfiler(name);
+        s_allProfilers.Add(p);
+        return p;
+    });
+
+    private static double s_maxResetTimer = 0;
+
     public static void PushGroup(string name)
     {
         if (!Enabled) return;
-        var stack = GetStack();
-        lock (stack)
-        {
-            stack.Push(name);
-        }
+        s_localProfiler.Value!.GroupStack.Push(name);
     }
 
     public static void PopGroup()
     {
-        var stack = GetStack();
-        lock (stack)
+        Stack<string> stack = s_localProfiler.Value!.GroupStack;
+        if (stack.Count > 0)
         {
-            if (stack.Count > 0)
-                stack.Pop();
+            stack.Pop();
         }
     }
 
     public static void Start(string name)
     {
         if (!Enabled) return;
-        string fullName = GetCurrentPath(name);
-        var data = _sections.GetOrAdd(fullName, n => new ProfilerData { Name = n });
+        ThreadProfiler profiler = s_localProfiler.Value!;
+        string fullName = profiler.GetCurrentPath(name);
+        ProfilerData data = profiler.Sections.GetOrAdd(fullName, n => new ProfilerData { Name = n });
         data.Stopwatch.Restart();
     }
 
     public static void Stop(string name)
     {
         if (!Enabled) return;
-        string fullName = GetCurrentPath(name);
-        if (_sections.TryGetValue(fullName, out var data))
+        ThreadProfiler profiler = s_localProfiler.Value!;
+        string fullName = profiler.GetCurrentPath(name);
+        if (profiler.Sections.TryGetValue(fullName, out ProfilerData? data))
         {
             data.Stopwatch.Stop();
             data.Update(data.Stopwatch.Elapsed.TotalMilliseconds);
@@ -99,43 +102,59 @@ public static class Profiler
     public static void Record(string name, double milliseconds)
     {
         if (!Enabled) return;
-        string fullName = GetCurrentPath(name);
-        var data = _sections.GetOrAdd(fullName, n => new ProfilerData { Name = n });
+        ThreadProfiler profiler = s_localProfiler.Value!;
+        string fullName = profiler.GetCurrentPath(name);
+        ProfilerData data = profiler.Sections.GetOrAdd(fullName, n => new ProfilerData { Name = n });
         data.Update(milliseconds);
     }
-
 
     public static void Update(double dt)
     {
         if (!Enabled) return;
-        _maxResetTimer += dt;
-        if (_maxResetTimer >= 1.0)
+        s_maxResetTimer += dt;
+        if (s_maxResetTimer >= 1.0)
         {
-            _maxResetTimer = 0;
-            foreach (var section in _sections.Values)
+            s_maxResetTimer = 0;
+
+            foreach (ThreadProfiler profiler in s_allProfilers)
             {
-                section.PreviousPeriodMax = section.CurrentPeriodMax;
-                section.CurrentPeriodMax = 0;
+                foreach (ProfilerData section in profiler.Sections.Values)
+                {
+                    section.PreviousPeriodMax = section.CurrentPeriodMax;
+                    section.CurrentPeriodMax = 0;
+                }
             }
         }
     }
 
-
-
     public static void CaptureFrame()
     {
         if (!Enabled) return;
-        foreach (var section in _sections.Values)
-        {
-            section.History[section.HistoryIndex] = section.LastExecutionTime;
-            section.HistoryIndex = (section.HistoryIndex + 1) % Profiler.HistoryLength;
-        }
 
+        foreach (ThreadProfiler profiler in s_allProfilers)
+        {
+            foreach (ProfilerData section in profiler.Sections.Values)
+            {
+                section.History[section.HistoryIndex] = section.LastExecutionTime;
+                section.HistoryIndex = (section.HistoryIndex + 1) % HistoryLength;
+            }
+        }
     }
 
     public static IEnumerable<(string Name, double Last, double Avg, double Max, double[] History, int HistoryIndex)> GetStats()
     {
-        return _sections.Values.OrderBy(x => x.Name)
-            .Select(x => (x.Name, x.LastExecutionTime, x.AverageExecutionTime, Math.Max(x.CurrentPeriodMax, x.PreviousPeriodMax), x.History, x.HistoryIndex));
+        var allStats = new List<(string Name, double Last, double Avg, double Max, double[] History, int HistoryIndex)>();
+
+        foreach (ThreadProfiler profiler in s_allProfilers)
+        {
+            foreach (ProfilerData x in profiler.Sections.Values)
+            {
+                string displayName = $"[{profiler.ThreadName}] {x.Name}";
+
+                allStats.Add((displayName, x.LastExecutionTime, x.AverageExecutionTime, Math.Max(x.CurrentPeriodMax, x.PreviousPeriodMax), x.History, x.HistoryIndex));
+            }
+        }
+
+        return allStats.OrderBy(x => x.Name);
     }
 }

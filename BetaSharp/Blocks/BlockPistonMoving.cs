@@ -1,4 +1,4 @@
-using BetaSharp.Blocks.Entities;
+﻿using BetaSharp.Blocks.Entities;
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
@@ -181,7 +181,7 @@ public class BlockPistonMoving : BlockWithEntity
 
     private BlockEntityPiston getPistonBlockEntity(BlockView blockView, int x, int y, int z)
     {
-        BlockEntity var5 = blockView.getBlockEntity(x, y, z);
+        BlockEntity? var5 = blockView.getBlockEntity(x, y, z);
         return var5 != null && var5 is BlockEntityPiston ? (BlockEntityPiston)var5 : null;
     }
 }

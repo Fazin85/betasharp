@@ -6,31 +6,35 @@ using BetaSharp.Worlds.Chunks;
 
 namespace BetaSharp.Worlds;
 
-public class WorldRegion : java.lang.Object, BlockView
+public class WorldRegion : BlockView
 {
-    private readonly int chunkX;
-    private readonly int chunkZ;
-    private readonly Chunk[][] chunks;
-    private readonly World world;
+    private readonly int _chunkX;
+    private readonly int _chunkZ;
+    private readonly Chunk[][] _chunks;
+    private readonly World _world;
 
     public WorldRegion(World world, int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
     {
-        this.world = world;
-        chunkX = minX >> 4;
-        chunkZ = minZ >> 4;
-        int var8 = maxX >> 4;
-        int var9 = maxZ >> 4;
-        chunks = new Chunk[var8 - chunkX + 1][];
-        for (int i = 0; i < chunks.Length; i++)
+        _world = world;
+        _chunkX = minX >> 4;
+        _chunkZ = minZ >> 4;
+        int endX = maxX >> 4;
+        int endZ = maxZ >> 4;
+
+        int width = endX - _chunkX + 1;
+        int depth = endZ - _chunkZ + 1;
+
+        _chunks = new Chunk[width][];
+        for (int i = 0; i < _chunks.Length; i++)
         {
-            chunks[i] = new Chunk[var9 - chunkZ + 1];
+            _chunks[i] = new Chunk[depth];
         }
 
-        for (int var10 = chunkX; var10 <= var8; ++var10)
+        for (int cx = _chunkX; cx <= endX; ++cx)
         {
-            for (int var11 = chunkZ; var11 <= var9; ++var11)
+            for (int cz = _chunkZ; cz <= endZ; ++cz)
             {
-                chunks[var10 - chunkX][var11 - chunkZ] = world.getChunk(var10, var11);
+                _chunks[cx - _chunkX][cz - _chunkZ] = world.getChunk(cx, cz);
             }
         }
 
@@ -38,51 +42,40 @@ public class WorldRegion : java.lang.Object, BlockView
 
     public int getBlockId(int x, int y, int z)
     {
-        if (y < 0)
+        if (y is < 0 or >= 128) return 0;
+
+        int cx = (x >> 4) - _chunkX;
+        int cz = (z >> 4) - _chunkZ;
+
+        if (cx >= 0 && cx < _chunks.Length && cz >= 0 && cz < _chunks[cx].Length)
         {
-            return 0;
+            Chunk chunk = _chunks[cx][cz];
+            return chunk?.getBlockId(x & 15, y, z & 15) ?? 0;
         }
-        else if (y >= 128)
-        {
-            return 0;
-        }
-        else
-        {
-            int var4 = (x >> 4) - chunkX;
-            int var5 = (z >> 4) - chunkZ;
-            if (var4 >= 0 && var4 < chunks.Length && var5 >= 0 && var5 < chunks[var4].Length)
-            {
-                Chunk var6 = chunks[var4][var5];
-                return var6 == null ? 0 : var6.getBlockId(x & 15, y, z & 15);
-            }
-            else
-            {
-                return 0;
-            }
-        }
+
+        return 0;
     }
 
-    public BlockEntity getBlockEntity(int x, int y, int z)
+    public BlockEntity? getBlockEntity(int x, int y, int z)
     {
-        int var4 = (x >> 4) - chunkX;
-        int var5 = (z >> 4) - chunkZ;
-        return chunks[var4][var5].getBlockEntity(x & 15, y, z & 15);
+        int cx = (x >> 4) - _chunkX;
+        int cz = (z >> 4) - _chunkZ;
+
+        if (cx < 0 || cx >= _chunks.Length || cz < 0 || cz < 0 || cz >= _chunks[cx].Length)
+            return null;
+
+        return _chunks[cx][cz]?.getBlockEntity(x & 15, y, z & 15);
     }
 
     public float getNaturalBrightness(int x, int y, int z, int blockLight)
     {
-        int var5 = getRawBrightness(x, y, z);
-        if (var5 < blockLight)
-        {
-            var5 = blockLight;
-        }
-
-        return world.dimension.lightLevelToLuminance[var5];
+        int finalLight = Math.Max(getRawBrightness(x, y, z), blockLight);
+        return _world.dimension.lightLevelToLuminance[finalLight];
     }
 
     public float getLuminance(int x, int y, int z)
     {
-        return world.dimension.lightLevelToLuminance[getRawBrightness(x, y, z)];
+        return _world.dimension.lightLevelToLuminance[getRawBrightness(x, y, z)];
     }
 
     public int getRawBrightness(int x, int y, int z)
@@ -92,87 +85,38 @@ public class WorldRegion : java.lang.Object, BlockView
 
     public int getRawBrightness(int x, int y, int z, bool useNeighborLight)
     {
-        if (x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
+        // World bounds check
+        if (x < -32000000 || z < -32000000 || x >= 32000000 || z > 32000000) return 15;
+        if (useNeighborLight)
         {
-            int var5;
-            int var6;
-            if (useNeighborLight)
+            int id = getBlockId(x, y, z);
+            if (id == Block.Slab.id || id == Block.Farmland.id || id == Block.WoodenStairs.id || id == Block.CobblestoneStairs.id)
             {
-                var5 = getBlockId(x, y, z);
-                if (var5 == Block.Slab.id || var5 == Block.Farmland.id || var5 == Block.WoodenStairs.id || var5 == Block.CobblestoneStairs.id)
-                {
-                    var6 = getRawBrightness(x, y + 1, z, false);
-                    int var7 = getRawBrightness(x + 1, y, z, false);
-                    int var8 = getRawBrightness(x - 1, y, z, false);
-                    int var9 = getRawBrightness(x, y, z + 1, false);
-                    int var10 = getRawBrightness(x, y, z - 1, false);
-                    if (var7 > var6)
-                    {
-                        var6 = var7;
-                    }
-
-                    if (var8 > var6)
-                    {
-                        var6 = var8;
-                    }
-
-                    if (var9 > var6)
-                    {
-                        var6 = var9;
-                    }
-
-                    if (var10 > var6)
-                    {
-                        var6 = var10;
-                    }
-
-                    return var6;
-                }
-            }
-
-            if (y < 0)
-            {
-                return 0;
-            }
-            else if (y >= 128)
-            {
-                var5 = 15 - world.ambientDarkness;
-                if (var5 < 0)
-                {
-                    var5 = 0;
-                }
-
-                return var5;
-            }
-            else
-            {
-                var5 = (x >> 4) - chunkX;
-                var6 = (z >> 4) - chunkZ;
-                return chunks[var5][var6].getLight(x & 15, y, z & 15, world.ambientDarkness);
+                int max = getRawBrightness(x, y + 1, z, false);
+                max = Math.Max(max, getRawBrightness(x + 1, y, z, false));
+                max = Math.Max(max, getRawBrightness(x - 1, y, z, false));
+                max = Math.Max(max, getRawBrightness(x, y, z + 1, false));
+                max = Math.Max(max, getRawBrightness(x, y, z - 1, false));
+                return max;
             }
         }
-        else
-        {
-            return 15;
-        }
+
+        if (y < 0) return 0;
+        if (y >= 128) return Math.Max(0, 15 - _world.ambientDarkness);
+
+        int cIdxX = (x >> 4) - _chunkX;
+        int cIdxZ = (z >> 4) - _chunkZ;
+
+        return _chunks[cIdxX][cIdxZ].getLight(x & 15, y, z & 15, _world.ambientDarkness);
     }
 
     public int getBlockMeta(int x, int y, int z)
     {
-        if (y < 0)
-        {
-            return 0;
-        }
-        else if (y >= 128)
-        {
-            return 0;
-        }
-        else
-        {
-            int var4 = (x >> 4) - chunkX;
-            int var5 = (z >> 4) - chunkZ;
-            return chunks[var4][var5].getBlockMeta(x & 15, y, z & 15);
-        }
+        if (y is < 0 or >= 128) return 0;
+
+        int cx = (x >> 4) - _chunkX;
+        int cz = (z >> 4) - _chunkZ;
+        return _chunks[cx][cz].getBlockMeta(x & 15, y, z & 15);
     }
 
     public Material getMaterial(int x, int y, int z)
@@ -181,20 +125,17 @@ public class WorldRegion : java.lang.Object, BlockView
         return var4 == 0 ? Material.Air : Block.Blocks[var4].material;
     }
 
-    public BiomeSource getBiomeSource()
-    {
-        return world.getBiomeSource();
-    }
+    public BiomeSource getBiomeSource() => _world.getBiomeSource();
 
     public bool isOpaque(int x, int y, int z)
     {
-        Block var4 = Block.Blocks[getBlockId(x, y, z)];
-        return var4 == null ? false : var4.isOpaque();
+        Block block = Block.Blocks[getBlockId(x, y, z)];
+        return block != null && block.isOpaque();
     }
 
     public bool shouldSuffocate(int x, int y, int z)
     {
-        Block var4 = Block.Blocks[getBlockId(x, y, z)];
-        return var4 == null ? false : var4.material.BlocksMovement && var4.isFullCube();
+        Block block = Block.Blocks[getBlockId(x, y, z)];
+        return block != null && block.material.BlocksMovement && block.isFullCube();
     }
 }

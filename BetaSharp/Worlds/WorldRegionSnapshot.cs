@@ -1,6 +1,8 @@
 ﻿using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Blocks.Materials;
+using BetaSharp.NBT;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Biomes.Source;
 using BetaSharp.Worlds.Chunks;
 
@@ -8,225 +10,196 @@ namespace BetaSharp.Worlds;
 
 public class WorldRegionSnapshot : BlockView, IDisposable
 {
-    private readonly int chunkX;
-    private readonly int chunkZ;
-    private readonly ChunkSnapshot[][] chunkArray;
-    private readonly float[] lightTable;
-    private readonly int skylightSubtracted;
-    private readonly BiomeSource biomeSource;
-    private bool isLit = false;
+    private readonly int _chunkX;
+    private readonly int _chunkZ;
+    private readonly ChunkSnapshot[][] _chunks;
+    private readonly float[] _lightTable;
+    private readonly int _skylightSubtracted;
+    private readonly BiomeSource _biomeSource;
+    private bool _isLit = false;
+    private readonly Dictionary<BlockPos, BlockEntity> _tileEntityCache = [];
 
-    public WorldRegionSnapshot(World var1, int var2, int var3, int var4, int var5, int var6, int var7)
+    public WorldRegionSnapshot(World world, int minX, int var3, int minZ, int maxX, int var6, int maxZ)
     {
         //TODO: OPTIMIZE THIS
-        biomeSource = new(var1);
+        _biomeSource = new(world);
 
-        chunkX = var2 >> 4;
-        chunkZ = var4 >> 4;
-        int var8 = var5 >> 4;
-        int var9 = var7 >> 4;
-        chunkArray = new ChunkSnapshot[var8 - chunkX + 1][];
-        for (int i = 0; i < chunkArray.Length; i++)
+        _chunkX = minX >> 4;
+        _chunkZ = minZ >> 4;
+        int maxChunkX = maxX >> 4;
+        int maxChunkZ = maxZ >> 4;
+
+        int width = maxChunkX - _chunkX + 1;
+        int depth = maxChunkZ - _chunkZ + 1;
+
+        _chunks = new ChunkSnapshot[width][];
+        for (int i = 0; i < _chunks.Length; i++)
         {
-            chunkArray[i] = new ChunkSnapshot[var9 - chunkZ + 1];
+            _chunks[i] = new ChunkSnapshot[depth];
         }
 
-        for (int var10 = chunkX; var10 <= var8; ++var10)
+        for (int cx = _chunkX; cx <= maxChunkX; ++cx)
         {
-            for (int var11 = chunkZ; var11 <= var9; ++var11)
+            for (int cz = _chunkZ; cz <= maxChunkZ; ++cz)
             {
-                chunkArray[var10 - chunkX][var11 - chunkZ] = new(var1.getChunk(var10, var11));
+                Chunk originalChunk = world.getChunk(cx, cz);
+                _chunks[cx - _chunkX][cz - _chunkZ] = new(originalChunk);
             }
         }
 
-        lightTable = new float[var1.dimension.lightLevelToLuminance.Length];
-        Buffer.BlockCopy(var1.dimension.lightLevelToLuminance, 0, lightTable, 0, sizeof(float) * lightTable.Length);
-        skylightSubtracted = var1.ambientDarkness;
+        _lightTable = (float[])world.dimension.lightLevelToLuminance.Clone();
+        _skylightSubtracted = world.ambientDarkness;
     }
 
-    public int getBlockId(int var1, int var2, int var3)
+    public int getBlockId(int x, int y, int z)
     {
-        if (var2 < 0)
+        if (y is < 0 or >= 128) return 0;
+
+        int chunkIdxX = (x >> 4) - _chunkX;
+        int chunkIdxZ = (z >> 4) - _chunkZ;
+
+        if (chunkIdxX >= 0 && chunkIdxX < _chunks.Length &&
+            chunkIdxZ >= 0 && chunkIdxZ < _chunks[chunkIdxX].Length)
         {
-            return 0;
+            ChunkSnapshot chunk = _chunks[chunkIdxX][chunkIdxZ];
+            return chunk == null ? 0 : chunk.getBlockID(x & 15, y, z & 15);
         }
-        else if (var2 >= 128)
+
+        return 0;
+    }
+
+    public Material getMaterial(int x, int y, int z)
+    {
+        int blockId = getBlockId(x, y, z);
+        return blockId == 0 ? Material.Air : Block.Blocks[blockId].material;
+    }
+
+    public int getBlockMeta(int x, int y, int z)
+    {
+        if (y is < 0 or >= 128) return 0;
+
+        int chunkIdxX = (x >> 4) - _chunkX;
+        int chunkIdxZ = (z >> 4) - _chunkZ;
+        return _chunks[chunkIdxX][chunkIdxZ].getBlockMetadata(x & 15, y, z & 15);
+    }
+
+    public BlockEntity? getBlockEntity(int x, int y, int z)
+    {
+        if (y is < 0 or >= 128) return null;
+
+        var pos = new BlockPos(x, y, z);
+        if (_tileEntityCache.TryGetValue(pos, out BlockEntity? entity))
         {
-            return 0;
+            return entity;
         }
-        else
+
+        int chunkIdxX = (x >> 4) - _chunkX;
+        int chunkIdxZ = (z >> 4) - _chunkZ;
+
+        if (chunkIdxX >= 0 && chunkIdxX < _chunks.Length &&
+            chunkIdxZ >= 0 && chunkIdxZ < _chunks[chunkIdxX].Length)
         {
-            int var4 = (var1 >> 4) - chunkX;
-            int var5 = (var3 >> 4) - chunkZ;
-            if (var4 >= 0 && var4 < chunkArray.Length && var5 >= 0 && var5 < chunkArray[var4].Length)
+            ChunkSnapshot chunk = _chunks[chunkIdxX][chunkIdxZ];
+            if (chunk == null) return null;
+
+            NBTTagCompound? nbt = chunk.GetTileEntityNbt(x & 15, y, z & 15);
+            if (nbt != null)
             {
-                ChunkSnapshot var6 = chunkArray[var4][var5];
-                return var6 == null ? 0 : var6.getBlockID(var1 & 15, var2, var3 & 15);
-            }
-            else
-            {
-                return 0;
-            }
-        }
-    }
-
-    public Material getMaterial(int var1, int var2, int var3)
-    {
-        int var4 = getBlockId(var1, var2, var3);
-        return var4 == 0 ? Material.Air : Block.Blocks[var4].material;
-    }
-
-    public int getBlockMeta(int var1, int var2, int var3)
-    {
-        if (var2 < 0)
-        {
-            return 0;
-        }
-        else if (var2 >= 128)
-        {
-            return 0;
-        }
-        else
-        {
-            int var4 = (var1 >> 4) - chunkX;
-            int var5 = (var3 >> 4) - chunkZ;
-            return chunkArray[var4][var5].getBlockMetadata(var1 & 15, var2, var3 & 15);
-        }
-    }
-
-    public BlockEntity getBlockEntity(int var1, int var2, int var3)
-    {
-        throw new NotImplementedException();
-    }
-
-    public float getNaturalBrightness(int var1, int var2, int var3, int var4)
-    {
-        int var5 = getLightValue(var1, var2, var3);
-        if (var5 < var4)
-        {
-            var5 = var4;
-        }
-
-        return lightTable[var5];
-    }
-
-    public float getLuminance(int var1, int var2, int var3)
-    {
-        return lightTable[getLightValue(var1, var2, var3)];
-    }
-
-    public int getLightValue(int var1, int var2, int var3)
-    {
-        return getLightValueExt(var1, var2, var3, true);
-    }
-
-    public int getLightValueExt(int var1, int var2, int var3, bool var4)
-    {
-        if (var1 >= -32000000 && var3 >= -32000000 && var1 < 32000000 && var3 <= 32000000)
-        {
-            int var5;
-            int var6;
-            if (var4)
-            {
-                var5 = getBlockId(var1, var2, var3);
-                if (var5 == Block.Slab.id || var5 == Block.Farmland.id || var5 == Block.WoodenStairs.id || var5 == Block.CobblestoneStairs.id)
+                var newEntity = BlockEntity.createFromNbt(nbt);
+                if (newEntity != null)
                 {
-                    var6 = getLightValueExt(var1, var2 + 1, var3, false);
-                    int var7 = getLightValueExt(var1 + 1, var2, var3, false);
-                    int var8 = getLightValueExt(var1 - 1, var2, var3, false);
-                    int var9 = getLightValueExt(var1, var2, var3 + 1, false);
-                    int var10 = getLightValueExt(var1, var2, var3 - 1, false);
-                    if (var7 > var6)
-                    {
-                        var6 = var7;
-                    }
-
-                    if (var8 > var6)
-                    {
-                        var6 = var8;
-                    }
-
-                    if (var9 > var6)
-                    {
-                        var6 = var9;
-                    }
-
-                    if (var10 > var6)
-                    {
-                        var6 = var10;
-                    }
-
-                    return var6;
+                    _tileEntityCache[pos] = newEntity;
+                    return newEntity;
                 }
             }
-
-            if (var2 < 0)
-            {
-                return 0;
-            }
-            else if (var2 >= 128)
-            {
-                var5 = 15 - skylightSubtracted;
-                if (var5 < 0)
-                {
-                    var5 = 0;
-                }
-
-                return var5;
-            }
-            else
-            {
-                var5 = (var1 >> 4) - chunkX;
-                var6 = (var3 >> 4) - chunkZ;
-
-                ChunkSnapshot chunk = chunkArray[var5][var6];
-                int lightValue = chunk.getBlockLightValue(var1 & 15, var2, var3 & 15, skylightSubtracted);
-
-                if (chunk.getIsLit())
-                {
-                    isLit = true;
-                }
-
-                return lightValue;
-            }
         }
-        else
+
+        return null;
+    }
+
+    public float getNaturalBrightness(int x, int y, int z, int minLight)
+    {
+        int light = getLightValue(x, y, z);
+        return _lightTable[Math.Max(light, minLight)];
+    }
+
+    public float getLuminance(int x, int y, int z)
+    {
+        return _lightTable[getLightValue(x, y, z)];
+    }
+
+    public int getLightValue(int x, int y, int z) => GetLightValueExt(x, y, z, true);
+
+    public int GetLightValueExt(int x, int y, int z, bool checkStairs)
+    {
+        // World bounds check
+        if (x < -32000000 || z < -32000000 || x >= 32000000 || z > 32000000) return 15;
+        if (checkStairs)
         {
-            return 15;
+            int blockId = getBlockId(x, y, z);
+            if (blockId == Block.Slab.id || blockId == Block.Farmland.id || blockId == Block.WoodenStairs.id || blockId == Block.CobblestoneStairs.id)
+            {
+                int maxLight = GetLightValueExt(x, y + 1, z, false);
+                maxLight = Math.Max(maxLight, GetLightValueExt(x + 1, y, z, false)); // East
+                maxLight = Math.Max(maxLight, GetLightValueExt(x - 1, y, z, false)); // West
+                maxLight = Math.Max(maxLight, GetLightValueExt(x, y, z + 1, false)); // South
+                maxLight = Math.Max(maxLight, GetLightValueExt(x, y, z - 1, false)); // North
+                return maxLight;
+            }
         }
+
+        if (y < 0) return 0;
+        if (y >= 128)
+        {
+            return Math.Max(0, 15 - _skylightSubtracted);
+        }
+
+        int chunkIdxX = (x >> 4) - _chunkX;
+        int chunkIdxZ = (z >> 4) - _chunkZ;
+
+        ChunkSnapshot chunk = _chunks[chunkIdxX][chunkIdxZ];
+
+        int lightValue = chunk.getBlockLightValue(x & 15, y, z & 15, _skylightSubtracted);
+
+        if (chunk.getIsLit())
+        {
+            _isLit = true;
+        }
+
+        return lightValue;
     }
 
     public BiomeSource getBiomeSource()
     {
-        return biomeSource;
+        return _biomeSource;
     }
 
-    public bool shouldSuffocate(int var1, int var2, int var3)
+    public bool shouldSuffocate(int x, int y, int z)
     {
-        Block var4 = Block.Blocks[getBlockId(var1, var2, var3)];
-        return var4 == null ? false : var4.material.BlocksMovement && var4.isFullCube();
+        Block block = Block.Blocks[getBlockId(x, y, z)];
+        return block != null && block.material.BlocksMovement && block.isFullCube();
     }
 
-    public bool isOpaque(int var1, int var2, int var3)
+    public bool isOpaque(int x, int y, int z)
     {
-        Block var4 = Block.Blocks[getBlockId(var1, var2, var3)];
-        return var4 == null ? false : var4.isOpaque();
+        Block block = Block.Blocks[getBlockId(x, y, z)];
+        return block != null && block.isOpaque();
     }
 
     public bool getIsLit()
     {
-        return isLit;
+        return _isLit;
     }
 
     public void Dispose()
     {
         GC.SuppressFinalize(this);
 
-        foreach (var column in chunkArray)
+        foreach (ChunkSnapshot[] column in _chunks)
         {
             if (column == null) continue;
 
-            foreach (var snapshot in column)
+            foreach (ChunkSnapshot snapshot in column)
             {
                 snapshot?.Dispose();
             }

@@ -43,7 +43,7 @@ public class ItemPainting : Item
             {
                 if (!world.isRemote)
                 {
-                    world.spawnEntity(painting);
+                    world.SpawnEntity(painting);
                 }
 
                 --itemStack.count;

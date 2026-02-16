@@ -396,7 +396,7 @@ public class Block : java.lang.Object
             double offsetZ = (double)(world.random.nextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
             EntityItem droppedItem = new EntityItem(world, (double)x + offsetX, (double)y + offsetY, (double)z + offsetZ, itemStack);
             droppedItem.delayBeforeCanPickup = 10;
-            world.spawnEntity(droppedItem);
+            world.SpawnEntity(droppedItem);
         }
     }
 

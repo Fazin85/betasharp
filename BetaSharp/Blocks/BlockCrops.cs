@@ -121,7 +121,7 @@ public class BlockCrops : BlockPlant
                     float offsetZ = world.random.nextFloat() * spreadFactor + (1.0F - spreadFactor) * 0.5F;
                     EntityItem entityItem = new EntityItem(world, (double)((float)x + offsetX), (double)((float)y + offsetY), (double)((float)z + offsetZ), new ItemStack(Item.SEEDS));
                     entityItem.delayBeforeCanPickup = 10;
-                    world.spawnEntity(entityItem);
+                    world.SpawnEntity(entityItem);
                 }
             }
 

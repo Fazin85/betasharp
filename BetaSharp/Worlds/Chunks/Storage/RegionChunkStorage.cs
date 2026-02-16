@@ -70,7 +70,7 @@ public class RegionChunkStorage : ChunkStorage
             NbtIo.Write(var4, var3);
             var3.close();
             WorldProperties var6 = world.getProperties();
-            var6.setSizeOnDisk(var6.getSizeOnDisk() + (long)RegionIo.getSizeDelta(dir, chunk.x, chunk.z));
+            var6.SizeOnDisk = var6.SizeOnDisk + (long)RegionIo.getSizeDelta(dir, chunk.x, chunk.z);
         }
         catch (Exception var7)
         {
