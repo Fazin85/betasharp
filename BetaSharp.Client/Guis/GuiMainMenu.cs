@@ -8,11 +8,12 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiMainMenu : GuiScreen
 {
-    private const int BUTTON_OPTIONS = 0;
-    private const int BUTTON_SINGLEPLAYER = 1;
-    private const int BUTTON_MULTIPLAYER = 2;
-    private const int BUTTON_MODS = 3;
-    private const int BUTTON_QUIT = 4;
+    private const int ButtonOptions = 0;
+    private const int ButtonSingleplayer = 1;
+    private const int ButtonMultiplayer = 2;
+    private const int ButtonMods = 3;
+    private const int ButtonQuit = 4;
+    private const int ButtonLanguage = 5;
 
     private static readonly java.util.Random s_rand = new();
     private string _splashText = "missingno";
@@ -83,21 +84,24 @@ public class GuiMainMenu : GuiScreen
         TranslationStorage translator = TranslationStorage.Instance;
         int buttonTopY = height / 4 + 48;
 
-        controlList.add(new GuiButton(BUTTON_SINGLEPLAYER, width / 2 - 100, buttonTopY, translator.TranslateKey("menu.singleplayer")));
+        controlList.add(new GuiButton(ButtonSingleplayer, width / 2 - 100, buttonTopY, translator.TranslateKey("menu.singleplayer")));
         controlList.add(_multiplayerButton =
-            new GuiButton(BUTTON_MULTIPLAYER, width / 2 - 100, buttonTopY + 24, translator.TranslateKey("menu.multiplayer")));
-        controlList.add(new GuiButton(BUTTON_MODS, width / 2 - 100, buttonTopY + 48, translator.TranslateKey("menu.mods")));
+            new GuiButton(ButtonMultiplayer, width / 2 - 100, buttonTopY + 24, translator.TranslateKey("menu.multiplayer")));
+        controlList.add(new GuiButton(ButtonMods, width / 2 - 100, buttonTopY + 48, translator.TranslateKey("menu.mods")));
+
+        controlList.add(new GuiButton(ButtonLanguage, 2, height - 22, 98, 20,
+        translator.TranslateKey("menu.language")));
 
         if (mc.hideQuitButton)
         {
-            controlList.add(new GuiButton(BUTTON_OPTIONS, width / 2 - 100, buttonTopY + 72, translator.TranslateKey("menu.options")));
+            controlList.add(new GuiButton(ButtonOptions, width / 2 - 100, buttonTopY + 72, translator.TranslateKey("menu.options")));
         }
         else
         {
-            controlList.add(new GuiButton(BUTTON_OPTIONS, width / 2 - 100, buttonTopY + 72 + 12, 98, 20,
+            controlList.add(new GuiButton(ButtonOptions, width / 2 - 100, buttonTopY + 72 + 12, 98, 20,
                 translator.TranslateKey("menu.options")));
 
-            controlList.add(new GuiButton(BUTTON_QUIT, width / 2 + 2, buttonTopY + 72 + 12, 98, 20,
+            controlList.add(new GuiButton(ButtonQuit, width / 2 + 2, buttonTopY + 72 + 12, 98, 20,
                 translator.TranslateKey("menu.quit")));
         }
 
@@ -111,20 +115,23 @@ public class GuiMainMenu : GuiScreen
     {
         switch (button.id)
         {
-            case BUTTON_OPTIONS:
+            case ButtonOptions:
                 mc.displayGuiScreen(new GuiOptions(this, mc.options));
                 break;
-            case BUTTON_SINGLEPLAYER:
+            case ButtonSingleplayer:
                 mc.displayGuiScreen(new GuiSelectWorld(this));
                 break;
-            case BUTTON_MULTIPLAYER:
+            case ButtonMultiplayer:
                 mc.displayGuiScreen(new GuiMultiplayer(this));
                 break;
-            case BUTTON_MODS:
+            case ButtonMods:
                 mc.displayGuiScreen(new GuiTexturePacks(this));
                 break;
-            case BUTTON_QUIT:
+            case ButtonQuit:
                 mc.shutdown();
+                break;
+            case ButtonLanguage:
+                //mc.displayGuiScreen(new GuiLanguage(this));
                 break;
         }
     }
@@ -140,10 +147,12 @@ public class GuiMainMenu : GuiScreen
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         drawTexturedModalRect(logoX + 0, logoY + 0, 0, 0, 155, 44);
         drawTexturedModalRect(logoX + 155, logoY + 0, 0, 45, 155, 44);
+
         tessellator.setColorOpaque_I(0x00FFFFFF);
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(width / 2 + 90, 70.0F, 0.0F);
         GLManager.GL.Rotate(-20.0F, 0.0F, 0.0F, 1.0F);
+
         float splashScale = 1.8F - MathHelper.abs(MathHelper.sin(java.lang.System.currentTimeMillis() % 1000L /
             1000.0F * (float)Math.PI * 2.0F) * 0.1F);
         splashScale = splashScale * 100.0F / (fontRenderer.getStringWidth(_splashText) + 32);
@@ -155,6 +164,8 @@ public class GuiMainMenu : GuiScreen
         drawString(fontRenderer, copyrightText, width - fontRenderer.getStringWidth(copyrightText) - 2, height - 20, 0x00FFFFFF);
         string disclaimerText = "Not approved by or associated with Mojang Studios or Microsoft.";
         drawString(fontRenderer, disclaimerText, width - fontRenderer.getStringWidth(disclaimerText) - 2, height - 10, 0x00FFFFFF);
+
+
         base.render(mouseX, mouseY, partialTicks);
     }
 }
