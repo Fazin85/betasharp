@@ -1,4 +1,5 @@
 ﻿using BetaSharp.Blocks;
+using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Entitys.Models;
 using BetaSharp.Client.Rendering.Items;

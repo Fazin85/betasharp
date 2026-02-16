@@ -1,4 +1,6 @@
-﻿namespace BetaSharp.Client;
+﻿using BetaSharp.Client.Options;
+
+namespace BetaSharp.Client;
 
 public class ScaledResolution
 {

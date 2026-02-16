@@ -1,6 +1,6 @@
-using java.lang;
+﻿using java.lang;
 
-namespace BetaSharp;
+namespace BetaSharp.Client.Options;
 
 public class EnumOptionsMappingHelper : java.lang.Object
 {

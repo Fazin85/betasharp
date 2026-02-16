@@ -1,4 +1,5 @@
-﻿using BetaSharp.Client.Rendering.Core;
+﻿using BetaSharp.Client.Options;
+using BetaSharp.Client.Rendering.Core;
 
 namespace BetaSharp.Client.Guis;
 
@@ -7,11 +8,11 @@ public class GuiSlider : GuiButton
 
     public float sliderValue = 1.0F;
     public bool dragging = false;
-    private readonly EnumOptions idFloat = null;
+    private readonly EnumOptions _idFloat = null;
 
     public GuiSlider(int var1, int var2, int var3, EnumOptions var4, string var5, float var6) : base(var1, var2, var3, 150, 20, var5)
     {
-        idFloat = var4;
+        _idFloat = var4;
         sliderValue = var6;
     }
 
@@ -37,8 +38,8 @@ public class GuiSlider : GuiButton
                     sliderValue = 1.0F;
                 }
 
-                var1.options.setOptionFloatValue(idFloat, sliderValue);
-                displayString = var1.options.getKeyBinding(idFloat);
+                var1.options.setOptionFloatValue(_idFloat, sliderValue);
+                displayString = var1.options.getKeyBinding(_idFloat);
             }
 
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
@@ -62,8 +63,8 @@ public class GuiSlider : GuiButton
                 sliderValue = 1.0F;
             }
 
-            var1.options.setOptionFloatValue(idFloat, sliderValue);
-            displayString = var1.options.getKeyBinding(idFloat);
+            var1.options.setOptionFloatValue(_idFloat, sliderValue);
+            displayString = var1.options.getKeyBinding(_idFloat);
             dragging = true;
             return true;
         }

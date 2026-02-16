@@ -1,7 +1,7 @@
 ﻿using System.IO.Compression;
 using System.Reflection;
 
-namespace BetaSharp.Client.Resource;
+namespace BetaSharp;
 
 public class AssetManager
 {

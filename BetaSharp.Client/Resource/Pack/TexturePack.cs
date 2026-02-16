@@ -1,4 +1,4 @@
-namespace BetaSharp.Client.Resource.Pack;
+﻿namespace BetaSharp.Client.Resource.Pack;
 
 public abstract class TexturePack : java.lang.Object
 {

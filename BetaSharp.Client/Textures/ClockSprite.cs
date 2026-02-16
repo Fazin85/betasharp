@@ -1,5 +1,4 @@
-﻿using BetaSharp.Client.Resource;
-using BetaSharp.Items;
+﻿using BetaSharp.Items;
 using java.awt.image;
 using java.io;
 using javax.imageio;

@@ -1,5 +1,4 @@
 ﻿using BetaSharp.Client.Rendering.Core;
-using BetaSharp.Client.Resource;
 using BetaSharp.Util.Maths;
 using java.io;
 using java.util;

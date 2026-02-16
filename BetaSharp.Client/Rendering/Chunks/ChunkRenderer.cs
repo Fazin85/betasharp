@@ -1,5 +1,4 @@
-using BetaSharp.Client.Rendering.Core;
-using BetaSharp.Client.Resource;
+﻿using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Profiling;
 using BetaSharp.Util;
 using BetaSharp.Util.Maths;

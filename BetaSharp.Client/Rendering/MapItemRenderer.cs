@@ -1,4 +1,5 @@
-﻿using BetaSharp.Client.Rendering.Core;
+﻿using BetaSharp.Client.Options;
+using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Entities;
 using java.awt.image;
 using java.util;

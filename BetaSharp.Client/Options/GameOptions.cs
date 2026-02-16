@@ -1,7 +1,7 @@
 ﻿using BetaSharp.Client.Input;
 using java.io;
 
-namespace BetaSharp.Client;
+namespace BetaSharp.Client.Options;
 
 public class GameOptions : java.lang.Object
 {

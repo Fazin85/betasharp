@@ -1,4 +1,6 @@
-﻿namespace BetaSharp.Client.Guis;
+﻿using BetaSharp.Client.Options;
+
+namespace BetaSharp.Client.Guis;
 
 public class GuiVideoSettings : GuiScreen
 {

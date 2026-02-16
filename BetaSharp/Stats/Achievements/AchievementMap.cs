@@ -1,5 +1,4 @@
-using BetaSharp.Client.Resource;
-using java.io;
+﻿using java.io;
 using java.lang;
 using java.util;
 

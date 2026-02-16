@@ -1,4 +1,5 @@
-﻿using BetaSharp.Entities;
+﻿using BetaSharp.Client.Options;
+using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 using SFML.Audio;
 using SFML.System;
