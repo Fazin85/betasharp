@@ -43,9 +43,6 @@ public class DungeonFeature : Feature
 
         if (openingsCount < 1 || openingsCount > 5) return false;
 
-
-
-
         for (int cx = x - radiusX - 1; cx <= x + radiusX + 1; ++cx)
         {
             for (int cy = y + height; cy >= y - 1; --cy)
@@ -92,7 +89,7 @@ public class DungeonFeature : Feature
                     if (world.getMaterial(chestX, y, chestZ - 1).IsSolid) ++neighbors;
                     if (world.getMaterial(chestX, y, chestZ + 1).IsSolid) ++neighbors;
 
-                    if (neighbors > 1) continue;
+                    if (neighbors != 1) continue;
 
                     world.setBlock(chestX, y, chestZ, Block.Chest.id);
 
