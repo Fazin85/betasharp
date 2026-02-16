@@ -21,10 +21,10 @@ public class GuiIngame : Gui
     private readonly java.util.Random rand = new();
     private readonly Minecraft mc;
     public string field_933_a = null;
-    private int updateCounter = 0;
+    private int updateCounter;
     private string recordPlaying = "";
-    private int recordPlayingUpFor = 0;
-    private bool field_22065_l = false;
+    private int recordPlayingUpFor;
+    private bool field_22065_l;
     public float damageGuiPartialTime;
     float prevVignetteBrightness = 1.0F;
 

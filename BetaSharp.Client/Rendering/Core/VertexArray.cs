@@ -2,8 +2,8 @@
 
 public class VertexArray : IDisposable
 {
-    private uint id = 0;
-    private bool disposed = false;
+    private uint id;
+    private bool disposed;
 
     public VertexArray()
     {

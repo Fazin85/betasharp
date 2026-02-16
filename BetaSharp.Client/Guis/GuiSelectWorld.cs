@@ -17,7 +17,7 @@ public class GuiSelectWorld : GuiScreen
     private readonly DateFormat dateFormatter = new SimpleDateFormat();
     protected GuiScreen parentScreen;
     protected string screenTitle = "Select world";
-    private bool selected = false;
+    private bool selected;
     private int selectedWorld;
     private List saveList;
     private GuiWorldSlot worldSlotContainer;

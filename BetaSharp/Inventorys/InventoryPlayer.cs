@@ -10,10 +10,10 @@ public class InventoryPlayer : java.lang.Object, IInventory
 
     public ItemStack[] main = new ItemStack[36];
     public ItemStack[] armor = new ItemStack[4];
-    public int selectedSlot = 0;
+    public int selectedSlot;
     public EntityPlayer player;
     private ItemStack cursorStack;
-    public bool dirty = false;
+    public bool dirty;
 
     public InventoryPlayer(EntityPlayer player)
     {

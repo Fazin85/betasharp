@@ -5,7 +5,7 @@ namespace BetaSharp.Blocks;
 public class BlockRedstoneTorch : BlockTorch
 {
 
-    private bool lit = false;
+    private bool lit;
     private static List<RedstoneUpdateInfo> torchUpdates = [];
 
     public override int getTexture(int side, int meta)

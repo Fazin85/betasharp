@@ -11,7 +11,7 @@ public class EntityFallingSand : Entity
     public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityFallingSand).TypeHandle);
 
     public int blockId;
-    public int fallTime = 0;
+    public int fallTime;
 
     public EntityFallingSand(World world) : base(world)
     {

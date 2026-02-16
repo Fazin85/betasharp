@@ -5,51 +5,50 @@ namespace BetaSharp.Util;
 
 public sealed class PooledList<T>(int initialCapacity = 16) : IDisposable where T : unmanaged
 {
-    private T[] _buffer = ArrayPool<T>.Shared.Rent(initialCapacity);
-    private int _count = 0;
+    public int Count { get; private set; }
 
-    public int Count => _count;
-    public T[] Buffer => _buffer;
-    public Span<T> Span => _buffer.AsSpan(0, _count);
+    public T[] Buffer { get; private set; } = ArrayPool<T>.Shared.Rent(initialCapacity);
+
+    public Span<T> Span => Buffer.AsSpan(0, Count);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Add(T value)
     {
-        if (_count == _buffer.Length)
-            Grow(_count + 1);
+        if (Count == Buffer.Length)
+            Grow(Count + 1);
 
-        _buffer[_count++] = value;
+        Buffer[Count++] = value;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AddRange(ReadOnlySpan<T> values)
     {
-        if (_count + values.Length > _buffer.Length)
-            Grow(_count + values.Length);
+        if (Count + values.Length > Buffer.Length)
+            Grow(Count + values.Length);
 
-        values.CopyTo(_buffer.AsSpan(_count));
-        _count += values.Length;
+        values.CopyTo(Buffer.AsSpan(Count));
+        Count += values.Length;
     }
 
     private void Grow(int minCapacity)
     {
-        int newSize = _buffer.Length * 2;
+        int newSize = Buffer.Length * 2;
         if (newSize < minCapacity)
             newSize = minCapacity;
 
         var newBuffer = ArrayPool<T>.Shared.Rent(newSize);
-        Array.Copy(_buffer, newBuffer, _count);
-        ArrayPool<T>.Shared.Return(_buffer, clearArray: false);
-        _buffer = newBuffer;
+        Array.Copy(Buffer, newBuffer, Count);
+        ArrayPool<T>.Shared.Return(Buffer, clearArray: false);
+        Buffer = newBuffer;
     }
 
     public void Dispose()
     {
-        if (_buffer != null)
+        if (Buffer != null)
         {
-            ArrayPool<T>.Shared.Return(_buffer, clearArray: false);
-            _buffer = null!;
-            _count = 0;
+            ArrayPool<T>.Shared.Return(Buffer, clearArray: false);
+            Buffer = null!;
+            Count = 0;
         }
     }
 }

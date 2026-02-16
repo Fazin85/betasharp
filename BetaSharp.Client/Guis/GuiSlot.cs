@@ -21,7 +21,7 @@ public abstract class GuiSlot
     private float scrollMultiplier;
     private float amountScrolled;
     private int selectedElement = -1;
-    private long lastClicked = 0L;
+    private long lastClicked;
     private bool field_25123_p = true;
     private bool field_27262_q;
     private int field_27261_r;

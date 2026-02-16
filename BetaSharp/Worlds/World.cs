@@ -62,7 +62,7 @@ public abstract class World : java.lang.Object, BlockView
     private int lightingUpdatesCounter;
     private bool spawnHostileMobs;
     private bool spawnPeacefulMobs;
-    private int lightingUpdatesScheduled = 0;
+    private int lightingUpdatesScheduled;
     private readonly HashSet<ChunkPos> activeChunks;
     private int soundCounter;
     private readonly List<Entity> tempEntityList;

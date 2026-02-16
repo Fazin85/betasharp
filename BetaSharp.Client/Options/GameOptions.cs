@@ -15,8 +15,8 @@ public class GameOptions : java.lang.Object
     public float musicVolume = 1.0F;
     public float soundVolume = 1.0F;
     public float mouseSensitivity = 0.5F;
-    public bool invertMouse = false;
-    public int renderDistance = 0;
+    public bool invertMouse;
+    public int renderDistance;
     public bool viewBobbing = true;
     public float limitFramerate = 0.42857143f; // 0.428... = 120, 1.0 = 240, 0.0 = 30
     public float fov = 0.44444445F; // (70 - 30) / 90
@@ -45,12 +45,12 @@ public class GameOptions : java.lang.Object
     public bool debugCamera = false;
     public float amountScrolled = 1.0F;
     public float field_22271_G = 1.0F;
-    public int guiScale = 0;
-    public int anisotropicLevel = 0;
-    public int msaaLevel = 0;
-    public int INITIAL_MSAA = 0;
+    public int guiScale;
+    public int anisotropicLevel;
+    public int msaaLevel;
+    public int INITIAL_MSAA;
     public bool useMipmaps = true;
-    public bool debugMode = false;
+    public bool debugMode;
     public bool environmentAnimation = true;
 
     public GameOptions(Minecraft mc, java.io.File mcDataDir)

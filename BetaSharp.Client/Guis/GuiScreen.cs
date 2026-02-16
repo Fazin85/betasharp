@@ -18,7 +18,7 @@ public class GuiScreen : Gui
     public bool isInventoryScreen = false;
     public TextRenderer fontRenderer;
     public GuiParticle particlesGui;
-    private GuiButton selectedButton = null;
+    private GuiButton selectedButton;
 
     public virtual void render(int var1, int var2, float var3)
     {

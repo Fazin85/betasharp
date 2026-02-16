@@ -9,7 +9,7 @@ public class LargeOakTreeFeature : Feature
     java.util.Random random = new();
     World world;
     int[] origin = new int[] { 0, 0, 0 };
-    int height = 0;
+    int height;
     int trunkHeight;
     double trunkScale = 0.618D;
     double branchSlope = 0.381D;

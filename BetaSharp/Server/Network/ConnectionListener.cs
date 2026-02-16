@@ -11,7 +11,7 @@ public class ConnectionListener
     public static Logger LOGGER = Logger.getLogger("Minecraft");
     public ServerSocket socket;
     private java.lang.Thread thread;
-    public volatile bool open = false;
+    public volatile bool open;
     public int connectionCounter = 0;
     private List<ServerLoginNetworkHandler> pendingConnections = [];
     private List<ServerPlayNetworkHandler> connections = [];

@@ -23,7 +23,7 @@ public class WorldRenderer : IWorldAccess
     private readonly TextureManager renderEngine;
     private readonly Minecraft mc;
     private BlockRenderer globalRenderBlocks;
-    private int cloudOffsetX = 0;
+    private int cloudOffsetX;
     private readonly int starGLCallList;
     private readonly int glSkyList;
     private readonly int glSkyList2;

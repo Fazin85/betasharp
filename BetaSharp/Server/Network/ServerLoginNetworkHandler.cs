@@ -17,11 +17,11 @@ public class ServerLoginNetworkHandler : NetHandler
     public static Logger LOGGER = Logger.getLogger("Minecraft");
     private static java.util.Random random = new();
     public Connection connection;
-    public bool closed = false;
+    public bool closed;
     private MinecraftServer server;
-    private int loginTicks = 0;
-    private string username = null;
-    private LoginHelloPacket loginPacket = null;
+    private int loginTicks;
+    private string username;
+    private LoginHelloPacket loginPacket;
     private string serverId = "";
 
     public ServerLoginNetworkHandler(MinecraftServer server, Socket socket, string name)

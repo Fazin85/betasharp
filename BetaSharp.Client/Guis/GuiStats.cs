@@ -16,7 +16,7 @@ public class GuiStats : GuiScreen
     private GuiSlotStatsItem slotItem;
     private GuiSlotStatsBlock slotBlock;
     private readonly StatFileWriter statFileWriter;
-    private GuiSlot currentSlot = null;
+    private GuiSlot currentSlot;
 
     public GuiStats(GuiScreen parent, StatFileWriter stats)
     {

@@ -21,18 +21,18 @@ public class Connection
     protected List sendQueue = Collections.synchronizedList(new ArrayList());
     protected List delayedSendQueue = Collections.synchronizedList(new ArrayList());
     protected NetHandler networkHandler;
-    protected bool closed = false;
+    protected bool closed;
     private java.lang.Thread writer;
     private java.lang.Thread reader;
-    protected bool disconnected = false;
+    protected bool disconnected;
     protected string disconnectedReason = "";
     protected object[] disconnectReasonArgs;
-    protected int timeout = 0;
-    protected int sendQueueSize = 0;
+    protected int timeout;
+    protected int sendQueueSize;
     public static int[] TOTAL_READ_SIZE = new int[256];
     public static int[] TOTAL_SEND_SIZE = new int[256];
     public int lag = 0;
-    private int delay = 0;
+    private int delay;
     protected readonly ManualResetEventSlim wakeSignal = new ManualResetEventSlim(false);
 
     public Connection(Socket socket, string address, NetHandler networkHandler)

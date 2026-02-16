@@ -14,7 +14,7 @@ public class GuiTextField : Gui
     private string text;
     private int maxStringLength;
     private int cursorCounter;
-    public bool isFocused = false;
+    public bool isFocused;
     public bool isEnabled = true;
     private readonly GuiScreen parentGuiScreen;
 

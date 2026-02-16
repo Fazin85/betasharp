@@ -9,7 +9,7 @@ public class SoundPool : java.lang.Object
     private readonly java.util.Random rand = new();
     private readonly Map weightedSoundSet = new HashMap();
     private readonly List loadedSounds = new ArrayList();
-    public int loadedSoundCount = 0;
+    public int loadedSoundCount;
     public bool isRandom = true;
 
     public SoundPoolEntry addSound(string var1, java.io.File var2)

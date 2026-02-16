@@ -16,8 +16,8 @@ public class ModelPart : java.lang.Object
     public float rotateAngleX;
     public float rotateAngleY;
     public float rotateAngleZ;
-    private bool compiled = false;
-    private uint displayList = 0;
+    private bool compiled;
+    private uint displayList;
     public bool mirror = false;
     public bool visible = true;
     public bool hidden = false;

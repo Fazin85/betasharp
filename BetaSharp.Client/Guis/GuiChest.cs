@@ -9,7 +9,7 @@ public class GuiChest : GuiContainer
 
     private readonly IInventory upperChestInventory;
     private readonly IInventory lowerChestInventory;
-    private readonly int inventoryRows = 0;
+    private readonly int inventoryRows;
 
     public GuiChest(IInventory upper, IInventory lower) : base(new GenericContainerScreenHandler(upper, lower))
     {

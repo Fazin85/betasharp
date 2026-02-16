@@ -20,11 +20,11 @@ public abstract class EntityPlayer : EntityLiving
     public ScreenHandler playerScreenHandler;
     public ScreenHandler currentScreenHandler;
     public byte unused = 0;
-    public int score = 0;
+    public int score;
     public float prevStepBobbingAmount;
     public float stepBobbingAmount;
-    public bool handSwinging = false;
-    public int handSwingTicks = 0;
+    public bool handSwinging;
+    public int handSwingTicks;
     public string name;
     public int dimensionId;
     public string playerCloakUrl;
@@ -43,10 +43,10 @@ public abstract class EntityPlayer : EntityLiving
     private Vec3i playerSpawnCoordinate;
     private Vec3i startMinecartRidingCoordinate;
     public int portalCooldown = 20;
-    protected bool inTeleportationState = false;
+    protected bool inTeleportationState;
     public float changeDimensionCooldown;
     public float lastScreenDistortion;
-    private int damageSpill = 0;
+    private int damageSpill;
     public EntityFish fishHook = null;
 
     public EntityPlayer(World world) : base(world)

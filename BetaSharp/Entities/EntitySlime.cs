@@ -12,7 +12,7 @@ public class EntitySlime : EntityLiving, Monster
 
     public float squishAmount;
     public float prevSquishAmount;
-    private int slimeJumpDelay = 0;
+    private int slimeJumpDelay;
 
     public EntitySlime(World world) : base(world)
     {

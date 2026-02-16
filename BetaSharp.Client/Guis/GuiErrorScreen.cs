@@ -3,7 +3,7 @@ namespace BetaSharp.Client.Guis;
 public class GuiErrorScreen : GuiScreen
 {
 
-    private int tickCounter = 0;
+    private int tickCounter;
 
     public override void updateScreen()
     {

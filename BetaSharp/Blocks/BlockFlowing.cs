@@ -5,7 +5,7 @@ namespace BetaSharp.Blocks;
 
 public class BlockFlowing : BlockFluid
 {
-    int adjacentSources = 0;
+    int adjacentSources;
     bool[] spread = new bool[4];
     int[] distanceToGap = new int[4];
 

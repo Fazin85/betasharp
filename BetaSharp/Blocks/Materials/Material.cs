@@ -31,21 +31,21 @@ namespace BetaSharp.Blocks.Materials
         public static readonly Material Cobweb = new Material(MapColor.clothColor).SetRequiresTool().SetDestroyPistonBehavior();
         public static readonly Material Piston = new Material(MapColor.stoneColor).SetUnpushablePistonBehavior();
 
-        private bool _burnable;
-        private bool _replaceable;
         private bool _transparent;
-        private bool _handHarvestable = true;
-        private int _pistonBehavior;
 
         public MapColor MapColor { get; }
         public virtual bool IsFluid => false;
         public virtual bool IsSolid => true;
         public virtual bool BlocksVision => true;
         public virtual bool BlocksMovement => true;
-        public bool IsBurnable => _burnable;
-        public bool IsReplaceable => _replaceable;
-        public bool IsHandHarvestable => _handHarvestable;
-        public int PistonBehavior => _pistonBehavior;
+        public bool IsBurnable { get; private set; }
+
+        public bool IsReplaceable { get; private set; }
+
+        public bool IsHandHarvestable { get; private set; } = true;
+
+        public int PistonBehavior { get; private set; }
+
         public bool Suffocates => _transparent ? false : BlocksMovement;
         public Material(MapColor mapColor)
         {
@@ -60,31 +60,31 @@ namespace BetaSharp.Blocks.Materials
 
         private Material SetRequiresTool()
         {
-            _handHarvestable = false;
+            IsHandHarvestable = false;
             return this;
         }
 
         private Material SetBurning()
         {
-            _burnable = true;
+            IsBurnable = true;
             return this;
         }
 
         public Material SetReplaceable()
         {
-            _replaceable = true;
+            IsReplaceable = true;
             return this;
         }
 
         protected Material SetDestroyPistonBehavior()
         {
-            _pistonBehavior = 1;
+            PistonBehavior = 1;
             return this;
         }
 
         protected Material SetUnpushablePistonBehavior()
         {
-            _pistonBehavior = 2;
+            PistonBehavior = 2;
             return this;
         }
     }

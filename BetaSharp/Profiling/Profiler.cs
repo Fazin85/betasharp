@@ -18,7 +18,7 @@ public static class Profiler
         public double PreviousPeriodMax;
 
         public double[] History = new double[HistoryLength];
-        public int HistoryIndex = 0;
+        public int HistoryIndex;
 
         public Stopwatch Stopwatch = new();
 
@@ -61,7 +61,7 @@ public static class Profiler
         return p;
     });
 
-    private static double s_maxResetTimer = 0;
+    private static double s_maxResetTimer;
 
     public static void PushGroup(string name)
     {

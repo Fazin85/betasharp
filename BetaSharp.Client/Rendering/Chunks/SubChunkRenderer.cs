@@ -21,7 +21,7 @@ public class SubChunkRenderer : IDisposable
     private readonly VertexBuffer<ChunkVertex>[] vertexBuffers = new VertexBuffer<ChunkVertex>[2];
     private readonly VertexArray[] vertexArrays = new VertexArray[2];
     private readonly int[] vertexCounts = new int[2];
-    private bool disposed = false;
+    private bool disposed;
 
     public SubChunkRenderer(Vector3D<int> position)
     {

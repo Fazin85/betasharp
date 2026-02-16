@@ -7,7 +7,7 @@ public class GuiDownloadTerrain : GuiScreen
 {
 
     private readonly ClientNetworkHandler networkHandler;
-    private int tickCounter = 0;
+    private int tickCounter;
 
     public GuiDownloadTerrain(ClientNetworkHandler networkHandler)
     {

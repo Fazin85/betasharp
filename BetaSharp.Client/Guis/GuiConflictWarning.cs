@@ -3,7 +3,7 @@ namespace BetaSharp.Client.Guis;
 public class GuiConflictWarning : GuiScreen
 {
 
-    private int updateCounter = 0;
+    private int updateCounter;
 
     public override void updateScreen()
     {

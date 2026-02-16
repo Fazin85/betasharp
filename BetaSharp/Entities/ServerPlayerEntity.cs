@@ -28,7 +28,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     private int lastHealthScore = -99999999;
     private int joinInvulnerabilityTicks = 60;
     private ItemStack[] equipment = [null, null, null, null, null];
-    private int screenHandlerSyncId = 0;
+    private int screenHandlerSyncId;
     public bool skipPacketSlotUpdates;
 
 

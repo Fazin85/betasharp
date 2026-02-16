@@ -40,8 +40,8 @@ public class Stats : java.lang.Object
     public static StatBase[] CRAFTED;
     public static StatBase[] USED;
     public static StatBase[] BROKEN;
-    private static bool hasBasicItemStatsInitialized = false;
-    private static bool hasExtendedItemStatsInitialized = false;
+    private static bool hasBasicItemStatsInitialized;
+    private static bool hasExtendedItemStatsInitialized;
 
     public static void initializeItemStats()
     {

@@ -13,7 +13,7 @@ namespace BetaSharp.Client.Rendering;
 public class TextRenderer : java.lang.Object
 {
     private readonly int[] charWidth = new int[256];
-    public int fontTextureName = 0;
+    public int fontTextureName;
     private readonly int fontDisplayLists;
     private readonly IntBuffer buffer;
     private readonly ByteBuffer byteBuffer = GLAllocation.createDirectByteBuffer(1024 * sizeof(int));

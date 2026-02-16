@@ -12,7 +12,7 @@ public class BlockFurnace : BlockWithEntity
 
     private java.util.Random random = new();
     private readonly bool lit;
-    private static bool ignoreBlockRemoval = false;
+    private static bool ignoreBlockRemoval;
 
     public BlockFurnace(int id, bool lit) : base(id, Material.Stone)
     {

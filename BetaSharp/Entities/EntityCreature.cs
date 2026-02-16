@@ -9,7 +9,7 @@ public class EntityCreature : EntityLiving
     public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityCreature).TypeHandle);
     private PathEntity pathToEntity;
     protected Entity playerToAttack;
-    protected bool hasAttacked = false;
+    protected bool hasAttacked;
 
     public EntityCreature(World world) : base(world)
     {

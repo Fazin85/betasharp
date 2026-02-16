@@ -24,12 +24,12 @@ namespace BetaSharp.Client.Network;
 
 public class ClientNetworkHandler : NetHandler
 {
-    private bool disconnected = false;
+    private bool disconnected;
     private readonly Connection netManager;
     public string field_1209_a;
     private readonly Minecraft mc;
     private ClientWorld worldClient;
-    private bool terrainLoaded = false;
+    private bool terrainLoaded;
     public PersistentStateManager clientPersistentStateManager = new(null);
     readonly java.util.Random rand = new();
 

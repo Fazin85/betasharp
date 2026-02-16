@@ -7,7 +7,7 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
 {
     private readonly string _worldDir = worldDir;
     private readonly long _seed = seed;
-    private bool _serverStarted = false;
+    private bool _serverStarted;
 
     public override void initGui()
     {

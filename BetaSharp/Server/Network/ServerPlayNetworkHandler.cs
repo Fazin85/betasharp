@@ -23,7 +23,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
 {
     public static Logger LOGGER = Logger.getLogger("Minecraft");
     public Connection connection;
-    public bool disconnected = false;
+    public bool disconnected;
     private MinecraftServer server;
     private ServerPlayerEntity player;
     private int ticks;

@@ -7,9 +7,9 @@ namespace BetaSharp.Stats;
 
 public class StatsSyncer
 {
-    private volatile bool busy = false;
-    private volatile Map field_27437_b = null;
-    private volatile Map field_27436_c = null;
+    private volatile bool busy;
+    private volatile Map field_27437_b;
+    private volatile Map field_27436_c;
     private StatFileWriter statFileWriter;
     private java.io.File unsentStatsFile;
     private java.io.File statsFile;
@@ -18,8 +18,8 @@ public class StatsSyncer
     private java.io.File oldUnsentStatsFile;
     private java.io.File oldStatsFile;
     private Session session;
-    private int field_27427_l = 0;
-    private int field_27426_m = 0;
+    private int field_27427_l;
+    private int field_27426_m;
 
     public StatsSyncer(Session session, StatFileWriter statFileWriter, java.io.File statsFolder)
     {

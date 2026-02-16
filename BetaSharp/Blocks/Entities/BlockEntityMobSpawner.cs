@@ -11,7 +11,7 @@ public class BlockEntityMobSpawner : BlockEntity
     public int spawnDelay = -1;
     private string spawnedEntityId = "Pig";
     public double rotation;
-    public double lastRotation = 0.0D;
+    public double lastRotation;
 
     public BlockEntityMobSpawner()
     {

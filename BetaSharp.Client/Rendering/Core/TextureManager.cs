@@ -24,8 +24,8 @@ public class TextureManager : java.lang.Object
     private readonly List<DynamicTexture> dynamicTextures = [];
     private readonly Map downloadedImages = new HashMap();
     private readonly GameOptions gameOptions;
-    private bool clamp = false;
-    private bool blur = false;
+    private bool clamp;
+    private bool blur;
     private readonly TexturePacks texturePacks;
     private readonly BufferedImage missingTextureImage = new(64, 64, 2);
 

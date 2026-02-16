@@ -9,7 +9,7 @@ namespace BetaSharp.Entities;
 public class EntityWolf : EntityAnimal
 {
     public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityWolf).TypeHandle);
-    private bool looksWithInterest = false;
+    private bool looksWithInterest;
     private float headTiltAmount;
     private float prevHeadTiltAmount;
     private bool isWolfShaking;

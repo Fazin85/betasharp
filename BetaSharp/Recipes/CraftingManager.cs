@@ -8,8 +8,7 @@ namespace BetaSharp.Recipes;
 public class CraftingManager
 {
     private static CraftingManager instance { get; } = new();
-    private List<IRecipe> _recipes = new();
-    public List<IRecipe> Recipes => _recipes;
+    public List<IRecipe> Recipes { get; } = new();
 
     public static CraftingManager getInstance()
     {
@@ -82,8 +81,8 @@ public class CraftingManager
         AddRecipe(new ItemStack(Block.Piston, 1), ["TTT", "#X#", "#R#", '#', Block.Cobblestone, 'X', Item.IRON_INGOT, 'R', Item.REDSTONE, 'T', Block.Planks]);
         AddRecipe(new ItemStack(Block.StickyPiston, 1), ["S", "P", 'S', Item.SLIMEBALL, 'P', Block.Piston]);
         AddRecipe(new ItemStack(Item.BED, 1), ["###", "XXX", '#', Block.Wool, 'X', Block.Planks]);
-        _recipes.Sort(new RecipeSorter());
-        java.lang.System.@out.println(_recipes.Count + " recipes");
+        Recipes.Sort(new RecipeSorter());
+        java.lang.System.@out.println(Recipes.Count + " recipes");
     }
 
     public void AddRecipe(ItemStack result, params object[] pattern)
@@ -139,7 +138,7 @@ public class CraftingManager
             ingredientGrid[i] = stack?.copy() ?? null;
         }
 
-        _recipes.Add(new ShapedRecipes(width, height, ingredientGrid, result));
+        Recipes.Add(new ShapedRecipes(width, height, ingredientGrid, result));
     }
 
     public void AddShapelessRecipe(ItemStack result, params object[] pattern)
@@ -158,12 +157,12 @@ public class CraftingManager
             }
         }
 
-        _recipes.Add(new ShapelessRecipes(result, stacks));
+        Recipes.Add(new ShapelessRecipes(result, stacks));
     }
 
     public ItemStack? FindMatchingRecipe(InventoryCrafting craftingInventory)
     {
-        return _recipes
+        return Recipes
             .FirstOrDefault(r => r.Matches(craftingInventory))
             ?.GetCraftingResult(craftingInventory);
     }

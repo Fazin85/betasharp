@@ -4,10 +4,10 @@ namespace BetaSharp.Client.Rendering.Core;
 
 public class VertexBuffer<T> : IDisposable where T : unmanaged
 {
-    public static long Allocated = 0;
-    private uint id = 0;
-    private bool disposed = false;
-    private int size = 0;
+    public static long Allocated;
+    private uint id;
+    private bool disposed;
+    private int size;
 
     public unsafe VertexBuffer(Span<T> data)
     {

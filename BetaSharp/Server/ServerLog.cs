@@ -5,7 +5,7 @@ namespace BetaSharp.Server;
 public class ServerLog
 {
     public static Logger LOGGER = Logger.getLogger("Minecraft");
-    private static bool initialized = false;
+    private static bool initialized;
 
     public static void init()
     {

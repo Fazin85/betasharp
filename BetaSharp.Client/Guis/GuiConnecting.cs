@@ -7,7 +7,7 @@ public class GuiConnecting : GuiScreen
 {
 
     private ClientNetworkHandler clientHandler;
-    private bool cancelled = false;
+    private bool cancelled;
     private const int BUTTON_CANCEL = 0;
 
     public GuiConnecting(Minecraft mc, string host, int port)

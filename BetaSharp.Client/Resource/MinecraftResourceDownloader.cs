@@ -12,7 +12,7 @@ public class MinecraftResourceDownloader : IDisposable
     private readonly HttpClient _httpClient;
     private readonly string _resourcesDirectory;
     private readonly Minecraft mc;
-    private bool _cancelled = false;
+    private bool _cancelled;
 
     public MinecraftResourceDownloader(Minecraft mc, string baseDirectory)
     {

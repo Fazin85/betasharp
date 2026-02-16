@@ -14,7 +14,7 @@ public class GuiEditSign : GuiScreen
     protected string screenTitle = "Edit sign message:";
     private readonly BlockEntitySign entitySign;
     private int updateCounter;
-    private int editLine = 0;
+    private int editLine;
     private static readonly string allowedCharacters = ChatAllowedCharacters.allowedCharacters;
 
     public GuiEditSign(BlockEntitySign sign)

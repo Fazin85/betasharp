@@ -10,7 +10,7 @@ public class LoadingScreenRenderer : LoadingDisplay
     private readonly Minecraft mc;
     private string field_1007_c = "";
     private long field_1006_d = java.lang.System.currentTimeMillis();
-    private bool field_1005_e = false;
+    private bool field_1005_e;
 
     public LoadingScreenRenderer(Minecraft var1)
     {

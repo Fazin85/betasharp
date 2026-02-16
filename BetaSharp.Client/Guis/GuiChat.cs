@@ -11,14 +11,14 @@ public class GuiChat : GuiScreen
 {
 
     protected string message = "";
-    private int updateCounter = 0;
+    private int updateCounter;
     private static readonly string allowedChars = ChatAllowedCharacters.allowedCharacters;
     private static readonly System.Collections.Generic.List<string> history = new();
-    private int historyIndex = 0;
+    private int historyIndex;
     private List<string> lastTabCompletions = new();
-    private int tabCompletionIndex = 0;
+    private int tabCompletionIndex;
     private string lastTabPrefix = "";
-    private int cursorPosition = 0;
+    private int cursorPosition;
     private int selectionStart = -1;
     private int selectionEnd = -1;
 

@@ -17,13 +17,13 @@ public class SoundManager : java.lang.Object
     private const int MAX_CHANNELS = 32;
     private readonly SFML.Audio.Sound[] soundChannels = new SFML.Audio.Sound[MAX_CHANNELS];
 
-    private int soundSourceSuffix = 0;
+    private int soundSourceSuffix;
     private GameOptions options;
-    private static bool started = false;
+    private static bool started;
     private readonly java.util.Random rand = new();
-    private int ticksBeforeMusic = 0;
-    private Music currentMusic = null;
-    private Music currentStreaming = null;
+    private int ticksBeforeMusic;
+    private Music currentMusic;
+    private Music currentStreaming;
 
     public SoundManager()
     {

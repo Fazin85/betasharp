@@ -10,9 +10,9 @@ public class FurnaceScreenHandler : ScreenHandler
 {
 
     private BlockEntityFurnace furnaceBlockEntity;
-    private int cookTime = 0;
-    private int burnTime = 0;
-    private int fuelTime = 0;
+    private int cookTime;
+    private int burnTime;
+    private int fuelTime;
 
     public FurnaceScreenHandler(InventoryPlayer playerInventory, BlockEntityFurnace furnace)
     {

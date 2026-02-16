@@ -10,7 +10,7 @@ public class StatFileWriter
 {
     private Map field_25102_a = new HashMap();
     private Map field_25101_b = new HashMap();
-    private bool statsExist = false;
+    private bool statsExist;
     private StatsSyncer _statsSyncer;
 
     public StatFileWriter(Session session, java.io.File mcDataDir)

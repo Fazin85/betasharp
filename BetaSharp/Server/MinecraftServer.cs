@@ -42,7 +42,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
     private int _ticksThisSecond;
     private float _currentTps;
 
-    private volatile bool _isPaused = false;
+    private volatile bool _isPaused;
 
     public float Tps
     {

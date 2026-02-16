@@ -20,11 +20,11 @@ public static unsafe class Display
     private static DisplayMode _currentMode;
     private static readonly DisplayMode _initialMode;
     private static string _title = "Game";
-    private static bool _fullscreen = false;
-    private static int _swapInterval = 0;
+    private static bool _fullscreen;
+    private static int _swapInterval;
     private static bool _resizable = true;
-    private static bool _wasResized = false;
-    private static bool _closeRequested = false;
+    private static bool _wasResized;
+    private static bool _closeRequested;
     public static int MSAA_Samples = 0;
 
     // Window position
@@ -32,7 +32,7 @@ public static unsafe class Display
     private static int _y = -1;
 
     // Background color
-    private static float _r = 0f, _g = 0f, _b = 0f;
+    private static float _r, _g, _b;
 
     static Display()
     {

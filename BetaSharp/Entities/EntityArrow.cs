@@ -15,14 +15,14 @@ public class EntityArrow : Entity
     private int xTile = -1;
     private int yTile = -1;
     private int zTile = -1;
-    private int inTile = 0;
-    private int inData = 0;
-    private bool inGround = false;
-    public bool doesArrowBelongToPlayer = false;
-    public int arrowShake = 0;
+    private int inTile;
+    private int inData;
+    private bool inGround;
+    public bool doesArrowBelongToPlayer;
+    public int arrowShake;
     public EntityLiving owner;
     private int ticksInGround;
-    private int ticksInAir = 0;
+    private int ticksInAir;
 
     public EntityArrow(World world) : base(world)
     {

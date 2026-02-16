@@ -17,15 +17,15 @@ public class GuiAchievements : GuiScreen
     private static readonly int field_27123_v = BetaSharp.Achievements.maxRow * 24 - 77;
     protected int field_27121_a = 256;
     protected int field_27119_i = 202;
-    protected int field_27118_j = 0;
-    protected int field_27117_l = 0;
+    protected int field_27118_j;
+    protected int field_27117_l;
     protected double field_27116_m;
     protected double field_27115_n;
     protected double field_27114_o;
     protected double field_27113_p;
     protected double field_27112_q;
     protected double field_27111_r;
-    private int field_27122_w = 0;
+    private int field_27122_w;
     private readonly StatFileWriter statFileWriter;
 
     public GuiAchievements(StatFileWriter statFileWriter)

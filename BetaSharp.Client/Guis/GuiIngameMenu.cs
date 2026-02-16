@@ -6,8 +6,8 @@ namespace BetaSharp.Client.Guis;
 public class GuiIngameMenu : GuiScreen
 {
 
-    private int updateCounter2 = 0;
-    private int updateCounter = 0;
+    private int updateCounter2;
+    private int updateCounter;
 
     public override void initGui()
     {

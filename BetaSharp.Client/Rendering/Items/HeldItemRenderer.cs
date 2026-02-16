@@ -14,9 +14,9 @@ namespace BetaSharp.Client.Rendering.Items;
 public class HeldItemRenderer
 {
     private readonly Minecraft mc;
-    private ItemStack itemToRender = null;
-    private float equippedProgress = 0.0F;
-    private float prevEquippedProgress = 0.0F;
+    private ItemStack itemToRender;
+    private float equippedProgress;
+    private float prevEquippedProgress;
     private readonly BlockRenderer renderBlocksInstance = new();
     private readonly MapItemRenderer field_28131_f;
     private int field_20099_f = -1;

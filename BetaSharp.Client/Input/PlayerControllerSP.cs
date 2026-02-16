@@ -10,10 +10,10 @@ public class PlayerControllerSP : PlayerController
     private int field_1074_c = -1;
     private int field_1073_d = -1;
     private int field_1072_e = -1;
-    private float curBlockDamage = 0.0F;
-    private float prevBlockDamage = 0.0F;
-    private float field_1069_h = 0.0F;
-    private int blockHitWait = 0;
+    private float curBlockDamage;
+    private float prevBlockDamage;
+    private float field_1069_h;
+    private int blockHitWait;
 
     public PlayerControllerSP(Minecraft var1) : base(var1)
     {
