@@ -8,53 +8,53 @@ namespace BetaSharp.Blocks;
 
 public class BlockBed : Block
 {
-    public static readonly int[][] BED_OFFSETS = [[0, 1], [-1, 0], [0, -1], [1, 0]];
+    public static readonly int[][] BedOffests = [[0, 1], [-1, 0], [0, -1], [1, 0]];
 
     public BlockBed(int id) : base(id, 134, Material.Wool)
     {
         setDefaultShape();
     }
 
-    public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
+    public override bool onUse(World World, int X, int Y, int Z, EntityPlayer Player)
     {
-        if (world.isRemote)
+        if (World.isRemote)
         {
             return true;
         }
         else
         {
-            int meta = world.getBlockMeta(x, y, z);
+            int meta = World.getBlockMeta(X, Y, Z);
             if (!isHeadOfBed(meta))
             {
                 int direction = getDirection(meta);
-                x += BED_OFFSETS[direction][0];
-                z += BED_OFFSETS[direction][1];
-                if (world.getBlockId(x, y, z) != id)
+                int x = X + BedOffests[direction][0];
+                int z = Z + BedOffests[direction][1];
+                if (World.getBlockId(x, Y, z) != id)
                 {
                     return true;
                 }
 
-                meta = world.getBlockMeta(x, y, z);
+                meta = World.getBlockMeta(x, Y, z);
             }
 
-            if (!world.dimension.hasWorldSpawn())
+            if (!World.Dimension.hasWorldSpawn())
             {
-                double posX = (double)x + 0.5D;
-                double posY = (double)y + 0.5D;
-                double posZ = (double)z + 0.5D;
-                world.setBlock(x, y, z, 0);
+                double posX = (double)X + 0.5D;
+                double posY = (double)Y + 0.5D;
+                double posZ = (double)Z + 0.5D;
+                World.setBlock(X, Y, Z, 0);
                 int direction = getDirection(meta);
-                x += BED_OFFSETS[direction][0];
-                z += BED_OFFSETS[direction][1];
-                if (world.getBlockId(x, y, z) == id)
+                X += BedOffests[direction][0];
+                Z += BedOffests[direction][1];
+                if (World.getBlockId(X, Y, Z) == id)
                 {
-                    world.setBlock(x, y, z, 0);
-                    posX = (posX + (double)x + 0.5D) / 2.0D;
-                    posY = (posY + (double)y + 0.5D) / 2.0D;
-                    posZ = (posZ + (double)z + 0.5D) / 2.0D;
+                    World.setBlock(X, Y, Z, 0);
+                    posX = (posX + (double)X + 0.5D) / 2.0D;
+                    posY = (posY + (double)Y + 0.5D) / 2.0D;
+                    posZ = (posZ + (double)Z + 0.5D) / 2.0D;
                 }
 
-                world.createExplosion((Entity)null, (double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), 5.0F, true);
+                World.createExplosion((Entity)null, (double)((float)X + 0.5F), (double)((float)Y + 0.5F), (double)((float)Z + 0.5F), 5.0F, true);
                 return true;
             }
             else
@@ -62,11 +62,11 @@ public class BlockBed : Block
                 if (isBedOccupied(meta))
                 {
                     EntityPlayer occupant = null;
-                    foreach (var otherPlayer in world.players) {
+                    foreach (var otherPlayer in World.players) {
                         if (otherPlayer.isSleeping())
                         {
                             Vec3i sleepingPos = otherPlayer.sleepingPos;
-                            if (sleepingPos.x == x && sleepingPos.y == y && sleepingPos.z == z)
+                            if (sleepingPos.x == X && sleepingPos.y == Y && sleepingPos.z == Z)
                             {
                                 occupant = otherPlayer;
                             }
@@ -75,24 +75,24 @@ public class BlockBed : Block
 
                     if (occupant != null)
                     {
-                        player.sendMessage("tile.bed.occupied");
+                        Player.sendMessage("tile.bed.occupied");
                         return true;
                     }
 
-                    updateState(world, x, y, z, false);
+                    updateState(World, X, Y, Z, false);
                 }
 
-                SleepAttemptResult result = player.trySleep(x, y, z);
+                SleepAttemptResult result = Player.trySleep(X, Y, Z);
                 if (result == SleepAttemptResult.OK)
                 {
-                    updateState(world, x, y, z, true);
+                    updateState(World, X, Y, Z, true);
                     return true;
                 }
                 else
                 {
                     if (result == SleepAttemptResult.NOT_POSSIBLE_NOW)
                     {
-                        player.sendMessage("tile.bed.noSleep");
+                        Player.sendMessage("tile.bed.noSleep");
                     }
 
                     return true;
@@ -101,17 +101,17 @@ public class BlockBed : Block
         }
     }
 
-    public override int getTexture(int side, int meta)
+    public override int getTexture(int Side, int Meta)
     {
-        if (side == 0)
+        if (Side == 0)
         {
             return Block.Planks.textureId;
         }
         else
         {
-            int direction = getDirection(meta);
-            int sideFacing = Facings.BED_FACINGS[direction][side];
-            return isHeadOfBed(meta) ?
+            int direction = getDirection(Meta);
+            int sideFacing = Facings.BedFacings[direction][Side];
+            return isHeadOfBed(Meta) ?
                 (sideFacing == 2 ? textureId + 2 + 16 : (sideFacing != 5 && sideFacing != 4 ? textureId + 1 : textureId + 1 + 16)) :
                 (sideFacing == 3 ? textureId - 1 + 16 : (sideFacing != 5 && sideFacing != 4 ? textureId : textureId + 16));
         }
@@ -132,36 +132,36 @@ public class BlockBed : Block
         return false;
     }
 
-    public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
+    public override void updateBoundingBox(BlockView BlockView, int X, int Y, int Z)
     {
         setDefaultShape();
     }
 
-    public override void neighborUpdate(World world, int x, int y, int z, int id)
+    public override void neighborUpdate(World World, int X, int Y, int Z, int id)
     {
-        int blockMeta = world.getBlockMeta(x, y, z);
+        int blockMeta = World.getBlockMeta(X, Y, Z);
         int direction = getDirection(blockMeta);
         if (isHeadOfBed(blockMeta))
         {
-            if (world.getBlockId(x - BED_OFFSETS[direction][0], y, z - BED_OFFSETS[direction][1]) != this.id)
+            if (World.getBlockId(X - BedOffests[direction][0], Y, Z - BedOffests[direction][1]) != this.id)
             {
-                world.setBlock(x, y, z, 0);
+                World.setBlock(X, Y, Z, 0);
             }
         }
-        else if (world.getBlockId(x + BED_OFFSETS[direction][0], y, z + BED_OFFSETS[direction][1]) != this.id)
+        else if (World.getBlockId(X + BedOffests[direction][0], Y, Z + BedOffests[direction][1]) != this.id)
         {
-            world.setBlock(x, y, z, 0);
-            if (!world.isRemote)
+            World.setBlock(X, Y, Z, 0);
+            if (!World.isRemote)
             {
-                dropStacks(world, x, y, z, blockMeta);
+                dropStacks(World, X, Y, Z, blockMeta);
             }
         }
 
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int BlockMeta, java.util.Random Random)
     {
-        return isHeadOfBed(blockMeta) ? 0 : Item.BED.id;
+        return isHeadOfBed(BlockMeta) ? 0 : Item.BED.id;
     }
 
     private void setDefaultShape()
@@ -169,60 +169,60 @@ public class BlockBed : Block
         setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 9.0F / 16.0F, 1.0F);
     }
 
-    public static int getDirection(int meta)
+    public static int getDirection(int Meta)
     {
-        return meta & 3;
+        return Meta & 3;
     }
 
-    public static bool isHeadOfBed(int meta)
+    public static bool isHeadOfBed(int Meta)
     {
-        return (meta & 8) != 0;
+        return (Meta & 8) != 0;
     }
 
-    public static bool isBedOccupied(int meta)
+    public static bool isBedOccupied(int Meta)
     {
-        return (meta & 4) != 0;
+        return (Meta & 4) != 0;
     }
 
-    public static void updateState(World world, int x, int y, int z, bool occupied)
+    public static void updateState(World World, int X, int Y, int Z, bool Occupied)
     {
-        int blockMeta = world.getBlockMeta(x, y, z);
-        if (occupied)
+        int BlockMeta = World.getBlockMeta(X, Y, Z);
+        if (Occupied)
         {
-            blockMeta |= 4;
+            BlockMeta |= 4;
         }
         else
         {
-            blockMeta &= -5;
+            BlockMeta &= -5;
         }
 
-        world.setBlockMeta(x, y, z, blockMeta);
+        World.setBlockMeta(X, Y, Z, BlockMeta);
     }
 
-    public static Vec3i findWakeUpPosition(World world, int x, int y, int z, int skip)
+    public static Vec3i findWakeUpPosition(World World, int X, int Y, int Z, int Skip)
     {
-        int blockMeta = world.getBlockMeta(x, y, z);
-        int direction = getDirection(blockMeta);
+        int BlockMeta = World.getBlockMeta(X, Y, Z);
+        int direction = getDirection(BlockMeta);
 
-        for (int bedHalf = 0; bedHalf <= 1; ++bedHalf)
+        for (int BedHalf = 0; BedHalf <= 1; ++BedHalf)
         {
-            int searchMinX = x - BED_OFFSETS[direction][0] * bedHalf - 1;
-            int searchMinZ = z - BED_OFFSETS[direction][1] * bedHalf - 1;
-            int searchMaxX = searchMinX + 2;
-            int searchMaxZ = searchMinZ + 2;
+            int SearchMinX = X - BedOffests[direction][0] * BedHalf - 1;
+            int SearchMinZ = Z - BedOffests[direction][1] * BedHalf - 1;
+            int SearchMaxX = SearchMinX + 2;
+            int SearchMaxZ = SearchMinZ + 2;
 
-            for (int checkX = searchMinX; checkX <= searchMaxX; ++checkX)
+            for (int checkX = SearchMinX; checkX <= SearchMaxX; ++checkX)
             {
-                for (int checkZ = searchMinZ; checkZ <= searchMaxZ; ++checkZ)
+                for (int checkZ = SearchMinZ; checkZ <= SearchMaxZ; ++checkZ)
                 {
-                    if (world.shouldSuffocate(checkX, y - 1, checkZ) && world.isAir(checkX, y, checkZ) && world.isAir(checkX, y + 1, checkZ))
+                    if (World.shouldSuffocate(checkX, Y - 1, checkZ) && World.isAir(checkX, Y, checkZ) && World.isAir(checkX, Y + 1, checkZ))
                     {
-                        if (skip <= 0)
+                        if (Skip <= 0)
                         {
-                            return new Vec3i(checkX, y, checkZ);
+                            return new Vec3i(checkX, Y, checkZ);
                         }
 
-                        --skip;
+                        --Skip;
                     }
                 }
             }
@@ -231,11 +231,11 @@ public class BlockBed : Block
         return null;
     }
 
-    public override void dropStacks(World world, int x, int y, int z, int meta, float luck)
+    public override void dropStacks(World World, int X, int Y, int Z, int Meta, float Luck)
     {
-        if (!isHeadOfBed(meta))
+        if (!isHeadOfBed(Meta))
         {
-            base.dropStacks(world, x, y, z, meta, luck);
+            base.dropStacks(World, X, Y, Z, Meta, Luck);
         }
 
     }

@@ -20,8 +20,8 @@ namespace BetaSharp.Client.Rendering;
 public class GameRenderer
 {
     public static int anaglyphField;
-    private readonly Minecraft client;
-    private float viewDistane = 0.0F;
+    private readonly Minecraft mc;
+    private float ViewDistance = 0.0F;
     public HeldItemRenderer itemRenderer;
     private int ticks;
     private Entity targetedEntity = null;
@@ -54,7 +54,7 @@ public class GameRenderer
 
     public GameRenderer(Minecraft mc)
     {
-        client = mc;
+        this.mc = mc;
         itemRenderer = new HeldItemRenderer(mc);
     }
 
@@ -66,10 +66,10 @@ public class GameRenderer
         prevThirdPersonPitch = thirdPersonPitch;
         prevCameraRoll = cameraRoll;
         prevCameraRollAmount = cameraRollAmount;
-        client.camera ??= client.player;
+        mc.camera ??= mc.player;
 
-        float var1 = client.world.getLuminance(MathHelper.floor_double(client.camera.x), MathHelper.floor_double(client.camera.y), MathHelper.floor_double(client.camera.z));
-        float var2 = (3 - client.options.renderDistance) / 3.0F;
+        float var1 = mc.world.getLuminance(MathHelper.floor_double(mc.camera.x), MathHelper.floor_double(mc.camera.y), MathHelper.floor_double(mc.camera.z));
+        float var2 = (3 - mc.options.renderDistance) / 3.0F;
         float var3 = var1 * (1.0F - var2) + var2;
         viewBob += (var3 - viewBob) * 0.1F;
         ++ticks;
@@ -79,25 +79,25 @@ public class GameRenderer
 
     public void tick(float var1)
     {
-        if (client.terrainRenderer != null)
+        if (mc.terrainRenderer != null)
         {
-            client.terrainRenderer.tick(client.camera, var1);
+            mc.terrainRenderer.tick(mc.camera, var1);
         }
     }
 
     public void updateTargetedEntity(float tickDelta)
     {
-        if (client.camera != null)
+        if (mc.camera != null)
         {
-            if (client.world != null)
+            if (mc.world != null)
             {
-                double var2 = (double)client.playerController.getBlockReachDistance();
-                client.objectMouseOver = client.camera.rayTrace(var2, tickDelta);
+                double var2 = (double)mc.playerController.getBlockReachDistance();
+                mc.objectMouseOver = mc.camera.rayTrace(var2, tickDelta);
                 double var4 = var2;
-                Vec3D var6 = client.camera.getPosition(tickDelta);
-                if (client.objectMouseOver != null)
+                Vec3D var6 = mc.camera.getPosition(tickDelta);
+                if (mc.objectMouseOver != null)
                 {
-                    var4 = client.objectMouseOver.pos.distanceTo(var6);
+                    var4 = mc.objectMouseOver.pos.distanceTo(var6);
                 }
 
                 if (var4 > 3.0D)
@@ -107,11 +107,11 @@ public class GameRenderer
 
                 var2 = var4;
 
-                Vec3D var7 = client.camera.getLook(tickDelta);
+                Vec3D var7 = mc.camera.getLook(tickDelta);
                 Vec3D var8 = var6 + var2 * var7;
                 targetedEntity = null;
                 float var9 = 1.0F;
-                var var10 = client.world.getEntities(client.camera, client.camera.boundingBox.stretch(var7.x * var2, var7.y * var2, var7.z * var2).expand((double)var9, (double)var9, (double)var9));
+                var var10 = mc.world.getEntities(mc.camera, mc.camera.boundingBox.stretch(var7.x * var2, var7.y * var2, var7.z * var2).expand((double)var9, (double)var9, (double)var9));
                 double var11 = 0.0D;
 
                 for (int var13 = 0; var13 < var10.Count; ++var13)
@@ -144,7 +144,7 @@ public class GameRenderer
 
                 if (targetedEntity != null)
                 {
-                    client.objectMouseOver = new HitResult(targetedEntity);
+                    mc.objectMouseOver = new HitResult(targetedEntity);
                 }
 
             }
@@ -153,8 +153,8 @@ public class GameRenderer
 
     private float getFov(float tickDelta, bool isHand = false)
     {
-        EntityLiving var2 = client.camera;
-        float var3 = isHand ? 70.0F : (30.0F + client.options.fov * 90.0F);
+        EntityLiving var2 = mc.camera;
+        float var3 = isHand ? 70.0F : (30.0F + mc.options.fov * 90.0F);
         if (var2.isInFluid(Material.Water))
         {
             var3 = 60.0F;
@@ -171,7 +171,7 @@ public class GameRenderer
 
     private void applyDamageTiltEffect(float tickDelta)
     {
-        EntityLiving var2 = client.camera;
+        EntityLiving var2 = mc.camera;
         float var3 = var2.hurtTime - tickDelta;
         float var4;
         if (var2.health <= 0)
@@ -193,9 +193,9 @@ public class GameRenderer
 
     private void applyViewBobbing(float tickDelta)
     {
-        if (client.camera is EntityPlayer)
+        if (mc.camera is EntityPlayer)
         {
-            EntityPlayer var2 = (EntityPlayer)client.camera;
+            EntityPlayer var2 = (EntityPlayer)mc.camera;
             float var3 = var2.horizontalSpeed - var2.prevHorizontalSpeed;
             float var4 = -(var2.horizontalSpeed + var3 * tickDelta);
             float var5 = var2.prevStepBobbingAmount + (var2.stepBobbingAmount - var2.prevStepBobbingAmount) * tickDelta;
@@ -209,7 +209,7 @@ public class GameRenderer
 
     private void applyCameraTransform(float tickDelta)
     {
-        EntityLiving var2 = client.camera;
+        EntityLiving var2 = mc.camera;
         float var3 = var2.standingEyeHeight - 1.62F;
         double var4 = var2.prevX + (var2.x - var2.prevX) * (double)tickDelta;
         double var6 = var2.prevY + (var2.y - var2.prevY) * (double)tickDelta - (double)var3;
@@ -219,12 +219,12 @@ public class GameRenderer
         {
             var3 = (float)((double)var3 + 1.0D);
             GLManager.GL.Translate(0.0F, 0.3F, 0.0F);
-            if (!client.options.debugCamera)
+            if (!mc.options.debugCamera)
             {
-                int var10 = client.world.getBlockId(MathHelper.floor_double(var2.x), MathHelper.floor_double(var2.y), MathHelper.floor_double(var2.z));
+                int var10 = mc.world.getBlockId(MathHelper.floor_double(var2.x), MathHelper.floor_double(var2.y), MathHelper.floor_double(var2.z));
                 if (var10 == Block.Bed.id)
                 {
-                    int var11 = client.world.getBlockMeta(MathHelper.floor_double(var2.x), MathHelper.floor_double(var2.y), MathHelper.floor_double(var2.z));
+                    int var11 = mc.world.getBlockMeta(MathHelper.floor_double(var2.x), MathHelper.floor_double(var2.y), MathHelper.floor_double(var2.z));
                     int var12 = var11 & 3;
                     GLManager.GL.Rotate(var12 * 90, 0.0F, 1.0F, 0.0F);
                 }
@@ -233,12 +233,12 @@ public class GameRenderer
                 GLManager.GL.Rotate(var2.prevPitch + (var2.pitch - var2.prevPitch) * tickDelta, -1.0F, 0.0F, 0.0F);
             }
         }
-        else if (client.options.thirdPersonView)
+        else if (mc.options.thirdPersonView)
         {
             double var27 = (double)(prevThirdPersonDistance + (thirdPersonDistance - prevThirdPersonDistance) * tickDelta);
             float var13;
             float var28;
-            if (client.options.debugCamera)
+            if (mc.options.debugCamera)
             {
                 var28 = prevThirdPersonYaw + (thirdPersonYaw - prevThirdPersonYaw) * tickDelta;
                 var13 = prevThirdPersonPitch + (thirdPersonPitch - prevThirdPersonPitch) * tickDelta;
@@ -262,7 +262,7 @@ public class GameRenderer
                     var21 *= 0.1F;
                     var22 *= 0.1F;
                     var23 *= 0.1F;
-                    HitResult var24 = client.world.raycast(new Vec3D(var4 + (double)var21, var6 + (double)var22, var8 + (double)var23), new Vec3D(var4 - var14 + (double)var21 + (double)var23, var6 - var18 + (double)var22, var8 - var16 + (double)var23));
+                    HitResult var24 = mc.world.raycast(new Vec3D(var4 + (double)var21, var6 + (double)var22, var8 + (double)var23), new Vec3D(var4 - var14 + (double)var21 + (double)var23, var6 - var18 + (double)var22, var8 - var16 + (double)var23));
                     if (var24 != null)
                     {
                         double var25 = var24.pos.distanceTo(new Vec3D(var4, var6, var8));
@@ -285,7 +285,7 @@ public class GameRenderer
             GLManager.GL.Translate(0.0F, 0.0F, -0.1F);
         }
 
-        if (!client.options.debugCamera)
+        if (!mc.options.debugCamera)
         {
             GLManager.GL.Rotate(var2.prevPitch + (var2.pitch - var2.prevPitch) * tickDelta, 1.0F, 0.0F, 0.0F);
             GLManager.GL.Rotate(var2.prevYaw + (var2.yaw - var2.prevYaw) * tickDelta + 180.0F, 0.0F, 1.0F, 0.0F);
@@ -299,7 +299,7 @@ public class GameRenderer
 
     private void renderWorld(float tickDelta)
     {
-        viewDistane = 256 >> client.options.renderDistance;
+        ViewDistance = 256 >> mc.options.renderDistance;
         GLManager.GL.MatrixMode(GLEnum.Projection);
         GLManager.GL.LoadIdentity();
 
@@ -307,23 +307,23 @@ public class GameRenderer
         {
             GLManager.GL.Translate((float)cameraYaw, (float)-cameraPitch, 0.0F);
             GLManager.GL.Scale(cameraZoom, cameraZoom, 1.0D);
-            GLU.gluPerspective(getFov(tickDelta), client.displayWidth / (float)client.displayHeight, 0.05F, viewDistane * 2.0F);
+            GLU.gluPerspective(getFov(tickDelta), mc.displayWidth / (float)mc.displayHeight, 0.05F, ViewDistance * 2.0F);
         }
         else
         {
-            GLU.gluPerspective(getFov(tickDelta), client.displayWidth / (float)client.displayHeight, 0.05F, viewDistane * 2.0F);
+            GLU.gluPerspective(getFov(tickDelta), mc.displayWidth / (float)mc.displayHeight, 0.05F, ViewDistance * 2.0F);
         }
 
         GLManager.GL.MatrixMode(GLEnum.Modelview);
         GLManager.GL.LoadIdentity();
 
         applyDamageTiltEffect(tickDelta);
-        if (client.options.viewBobbing)
+        if (mc.options.viewBobbing)
         {
             applyViewBobbing(tickDelta);
         }
 
-        float var4 = client.player.lastScreenDistortion + (client.player.changeDimensionCooldown - client.player.lastScreenDistortion) * tickDelta;
+        float var4 = mc.player.lastScreenDistortion + (mc.player.changeDimensionCooldown - mc.player.lastScreenDistortion) * tickDelta;
         if (var4 > 0.0F)
         {
             float var5 = 5.0F / (var4 * var4 + 5.0F) - var4 * 0.04F;
@@ -345,30 +345,30 @@ public class GameRenderer
             GLManager.GL.Translate((float)cameraYaw, (float)-cameraPitch, 0.0F);
             GLManager.GL.Scale(cameraZoom, cameraZoom, 1.0D);
         }
-        GLU.gluPerspective(getFov(tickDelta, true), client.displayWidth / (float)client.displayHeight, 0.05F, viewDistane * 2.0F);
+        GLU.gluPerspective(getFov(tickDelta, true), mc.displayWidth / (float)mc.displayHeight, 0.05F, ViewDistance * 2.0F);
         GLManager.GL.MatrixMode(GLEnum.Modelview);
         GLManager.GL.LoadIdentity();
 
         GLManager.GL.PushMatrix();
         applyDamageTiltEffect(tickDelta);
-        if (client.options.viewBobbing)
+        if (mc.options.viewBobbing)
         {
             applyViewBobbing(tickDelta);
         }
 
-        if (!client.options.thirdPersonView && !client.camera.isSleeping() && !client.options.hideGUI)
+        if (!mc.options.thirdPersonView && !mc.camera.isSleeping() && !mc.options.hideGUI)
         {
             itemRenderer.renderItemInFirstPerson(tickDelta);
         }
 
         GLManager.GL.PopMatrix();
-        if (!client.options.thirdPersonView && !client.camera.isSleeping())
+        if (!mc.options.thirdPersonView && !mc.camera.isSleeping())
         {
             itemRenderer.renderOverlays(tickDelta);
             applyDamageTiltEffect(tickDelta);
         }
 
-        if (client.options.viewBobbing)
+        if (mc.options.viewBobbing)
         {
             applyViewBobbing(tickDelta);
         }
@@ -381,7 +381,7 @@ public class GameRenderer
         {
             if (java.lang.System.currentTimeMillis() - prevFrameTime > 500L)
             {
-                client.displayInGameMenu();
+                mc.displayInGameMenu();
             }
         }
         else
@@ -389,55 +389,55 @@ public class GameRenderer
             prevFrameTime = java.lang.System.currentTimeMillis();
         }
 
-        if (client.inGameHasFocus)
+        if (mc.inGameHasFocus)
         {
-            client.mouseHelper.mouseXYChange();
-            float var2 = client.options.mouseSensitivity * 0.6F + 0.2F;
+            mc.mouseHelper.mouseXYChange();
+            float var2 = mc.options.mouseSensitivity * 0.6F + 0.2F;
             float var3 = var2 * var2 * var2 * 8.0F;
-            float var4 = client.mouseHelper.deltaX * var3;
-            float var5 = client.mouseHelper.deltaY * var3;
+            float var4 = mc.mouseHelper.deltaX * var3;
+            float var5 = mc.mouseHelper.deltaY * var3;
             int var6 = -1;
-            if (client.options.invertMouse)
+            if (mc.options.invertMouse)
             {
                 var6 = 1;
             }
-            if (client.options.smoothCamera)
+            if (mc.options.smoothCamera)
             {
                 var4 = mouseFilterXAxis.Smooth(var4, 0.05F * var3);
                 var5 = mouseFilterYAxis.Smooth(var5, 0.05F * var3);
             }
-            client.player.changeLookDirection(var4, var5 * var6);
+            mc.player.changeLookDirection(var4, var5 * var6);
         }
 
-        if (!client.skipRenderWorld)
+        if (!mc.skipRenderWorld)
         {
-            ScaledResolution var13 = new(client.options, client.displayWidth, client.displayHeight);
+            ScaledResolution var13 = new(mc.options, mc.displayWidth, mc.displayHeight);
             int var14 = var13.ScaledWidth;
             int var15 = var13.ScaledHeight;
-            int var16 = Mouse.getX() * var14 / client.displayWidth;
-            int var17 = var15 - Mouse.getY() * var15 / client.displayHeight - 1;
-            int var7 = 30 + (int)(client.options.limitFramerate * 210.0f);
+            int var16 = Mouse.getX() * var14 / mc.displayWidth;
+            int var17 = var15 - Mouse.getY() * var15 / mc.displayHeight - 1;
+            int var7 = 30 + (int)(mc.options.limitFramerate * 210.0f);
 
             if (var7 < 240)
             {
                 Display.setVSyncEnabled(false);
             }
 
-            if (client.world != null)
+            if (mc.world != null)
             {
                 Profiler.PushGroup("renderWorld");
                 renderFrame(tickDelta, 0L);
                 Profiler.PopGroup();
                 Profiler.Start("renderGameOverlay");
-                if (!client.options.hideGUI || client.currentScreen != null)
+                if (!mc.options.hideGUI || mc.currentScreen != null)
                 {
-                    client.ingameGUI.renderGameOverlay(tickDelta, client.currentScreen != null, var16, var17);
+                    mc.ingameGUI.renderGameOverlay(tickDelta, mc.currentScreen != null, var16, var17);
                 }
                 Profiler.Stop("renderGameOverlay");
             }
             else
             {
-                GLManager.GL.Viewport(0, 0, (uint)client.displayWidth, (uint)client.displayHeight);
+                GLManager.GL.Viewport(0, 0, (uint)mc.displayWidth, (uint)mc.displayHeight);
                 GLManager.GL.MatrixMode(GLEnum.Projection);
                 GLManager.GL.LoadIdentity();
                 GLManager.GL.MatrixMode(GLEnum.Modelview);
@@ -445,13 +445,13 @@ public class GameRenderer
                 setupHudRender();
             }
 
-            if (client.currentScreen != null)
+            if (mc.currentScreen != null)
             {
                 GLManager.GL.Clear(ClearBufferMask.DepthBufferBit);
-                client.currentScreen.render(var16, var17, tickDelta);
-                if (client.currentScreen != null && client.currentScreen.particlesGui != null)
+                mc.currentScreen.render(var16, var17, tickDelta);
+                if (mc.currentScreen != null && mc.currentScreen.particlesGui != null)
                 {
-                    client.currentScreen.particlesGui.render(tickDelta);
+                    mc.currentScreen.particlesGui.render(tickDelta);
                 }
             }
 
@@ -485,29 +485,29 @@ public class GameRenderer
     {
         GLManager.GL.Enable(GLEnum.CullFace);
         GLManager.GL.Enable(GLEnum.DepthTest);
-        client.camera ??= client.player;
+        mc.camera ??= mc.player;
 
         Profiler.Start("getMouseOver");
         updateTargetedEntity(tickDelta);
         Profiler.Stop("getMouseOver");
 
-        EntityLiving var4 = client.camera;
-        WorldRenderer var5 = client.terrainRenderer;
-        ParticleManager var6 = client.particleManager;
+        EntityLiving var4 = mc.camera;
+        WorldRenderer var5 = mc.terrainRenderer;
+        ParticleManager var6 = mc.particleManager;
         double var7 = var4.lastTickX + (var4.x - var4.lastTickX) * (double)tickDelta;
         double var9 = var4.lastTickY + (var4.y - var4.lastTickY) * (double)tickDelta;
         double var11 = var4.lastTickZ + (var4.z - var4.lastTickZ) * (double)tickDelta;
-        ChunkSource var13 = client.world.getChunkSource();
+        ChunkSource var13 = mc.world.getChunkSource();
 
         Profiler.Start("updateFog");
-        GLManager.GL.Viewport(0, 0, (uint)client.displayWidth, (uint)client.displayHeight);
+        GLManager.GL.Viewport(0, 0, (uint)mc.displayWidth, (uint)mc.displayHeight);
         updateSkyAndFogColors(tickDelta);
         Profiler.Stop("updateFog");
         GLManager.GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         GLManager.GL.Enable(GLEnum.CullFace);
         renderWorld(tickDelta);
         Frustum.getInstance();
-        if (client.options.renderDistance < 2)
+        if (mc.options.renderDistance < 2)
         {
             applyFog(-1);
             var5.renderSky(tickDelta);
@@ -521,7 +521,7 @@ public class GameRenderer
 
         applyFog(0);
         GLManager.GL.Enable(GLEnum.Fog);
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)client.textureManager.getTextureId("/terrain.png"));
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/terrain.png"));
         Lighting.turnOff();
 
         Profiler.Start("sortAndRender");
@@ -545,12 +545,12 @@ public class GameRenderer
         Profiler.Stop("renderParticles");
 
         EntityPlayer var21;
-        if (client.objectMouseOver != null && var4.isInFluid(Material.Water) && var4 is EntityPlayer)
+        if (mc.objectMouseOver != null && var4.isInFluid(Material.Water) && var4 is EntityPlayer)
         {
             var21 = (EntityPlayer)var4;
             GLManager.GL.Disable(GLEnum.AlphaTest);
-            var5.drawBlockBreaking(var21, client.objectMouseOver, 0, var21.inventory.getSelectedItem(), tickDelta);
-            var5.drawSelectionBox(var21, client.objectMouseOver, 0, var21.inventory.getSelectedItem(), tickDelta);
+            var5.drawBlockBreaking(var21, mc.objectMouseOver, 0, var21.inventory.getSelectedItem(), tickDelta);
+            var5.drawSelectionBox(var21, mc.objectMouseOver, 0, var21.inventory.getSelectedItem(), tickDelta);
             GLManager.GL.Enable(GLEnum.AlphaTest);
         }
 
@@ -558,7 +558,7 @@ public class GameRenderer
         applyFog(0);
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.Disable(GLEnum.CullFace);
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)client.textureManager.getTextureId("/terrain.png"));
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/terrain.png"));
 
         Profiler.Start("sortAndRender2");
 
@@ -573,12 +573,12 @@ public class GameRenderer
         GLManager.GL.DepthMask(true);
         GLManager.GL.Enable(GLEnum.CullFace);
         GLManager.GL.Disable(GLEnum.Blend);
-        if (cameraZoom == 1.0D && var4 is EntityPlayer && client.objectMouseOver != null && !var4.isInFluid(Material.Water))
+        if (cameraZoom == 1.0D && var4 is EntityPlayer && mc.objectMouseOver != null && !var4.isInFluid(Material.Water))
         {
             var21 = (EntityPlayer)var4;
             GLManager.GL.Disable(GLEnum.AlphaTest);
-            var5.drawBlockBreaking(var21, client.objectMouseOver, 0, var21.inventory.getSelectedItem(), tickDelta);
-            var5.drawSelectionBox(var21, client.objectMouseOver, 0, var21.inventory.getSelectedItem(), tickDelta);
+            var5.drawBlockBreaking(var21, mc.objectMouseOver, 0, var21.inventory.getSelectedItem(), tickDelta);
+            var5.drawSelectionBox(var21, mc.objectMouseOver, 0, var21.inventory.getSelectedItem(), tickDelta);
             GLManager.GL.Enable(GLEnum.AlphaTest);
         }
 
@@ -602,13 +602,13 @@ public class GameRenderer
 
     private void renderRain()
     {
-        float var1 = client.world.getRainGradient(1.0F);
+        float var1 = mc.world.getRainGradient(1.0F);
 
         if (var1 != 0.0F)
         {
             random.setSeed(ticks * 312987231L);
-            EntityLiving var2 = client.camera;
-            World var3 = client.world;
+            EntityLiving var2 = mc.camera;
+            World var3 = mc.world;
             int var4 = MathHelper.floor_double(var2.x);
             int var5 = MathHelper.floor_double(var2.y);
             int var6 = MathHelper.floor_double(var2.z);
@@ -632,7 +632,7 @@ public class GameRenderer
                     {
                         if (Block.Blocks[var19].material == Material.Lava)
                         {
-                            client.particleManager.addEffect(new EntitySmokeFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].minY, (double)(var17 + var21), 0.0D, 0.0D, 0.0D));
+                            mc.particleManager.addEffect(new EntitySmokeFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].minY, (double)(var17 + var21), 0.0D, 0.0D, 0.0D));
                         }
                         else
                         {
@@ -644,7 +644,7 @@ public class GameRenderer
                                 var12 = (double)(var17 + var21);
                             }
 
-                            client.particleManager.addEffect(new EntityRainFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].minY, (double)(var17 + var21)));
+                            mc.particleManager.addEffect(new EntityRainFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].minY, (double)(var17 + var21)));
                         }
                     }
                 }
@@ -655,11 +655,11 @@ public class GameRenderer
                 rainSoundCounter = 0;
                 if (var10 > var2.y + 1.0D && var3.getTopSolidBlockY(MathHelper.floor_double(var2.x), MathHelper.floor_double(var2.z)) > MathHelper.floor_double(var2.y))
                 {
-                    client.world.playSound(var8, var10, var12, "ambient.weather.rain", 0.1F, 0.5F);
+                    mc.world.playSound(var8, var10, var12, "ambient.weather.rain", 0.1F, 0.5F);
                 }
                 else
                 {
-                    client.world.playSound(var8, var10, var12, "ambient.weather.rain", 0.2F, 1.0F);
+                    mc.world.playSound(var8, var10, var12, "ambient.weather.rain", 0.2F, 1.0F);
                 }
             }
 
@@ -668,11 +668,11 @@ public class GameRenderer
 
     protected void renderSnow(float tickDelta)
     {
-        float var2 = client.world.getRainGradient(tickDelta);
+        float var2 = mc.world.getRainGradient(tickDelta);
         if (var2 > 0.0F)
         {
-            EntityLiving var3 = client.camera;
-            World var4 = client.world;
+            EntityLiving var3 = mc.camera;
+            World var4 = mc.world;
             int var5 = MathHelper.floor_double(var3.x);
             int var6 = MathHelper.floor_double(var3.y);
             int var7 = MathHelper.floor_double(var3.z);
@@ -682,7 +682,7 @@ public class GameRenderer
             GLManager.GL.Enable(GLEnum.Blend);
             GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
             GLManager.GL.AlphaFunc(GLEnum.Greater, 0.01F);
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)client.textureManager.getTextureId("/environment/snow.png"));
+            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/environment/snow.png"));
             double var9 = var3.lastTickX + (var3.x - var3.lastTickX) * (double)tickDelta;
             double var11 = var3.lastTickY + (var3.y - var3.lastTickY) * (double)tickDelta;
             double var13 = var3.lastTickZ + (var3.z - var3.lastTickZ) * (double)tickDelta;
@@ -760,7 +760,7 @@ public class GameRenderer
                 }
             }
 
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)client.textureManager.getTextureId("/environment/rain.png"));
+            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/environment/rain.png"));
             var16 = 10;
 
             var18 = 0;
@@ -820,7 +820,7 @@ public class GameRenderer
 
     public void setupHudRender()
     {
-        ScaledResolution var1 = new(client.options, client.displayWidth, client.displayHeight);
+        ScaledResolution var1 = new(mc.options, mc.displayWidth, mc.displayHeight);
         GLManager.GL.Clear(ClearBufferMask.DepthBufferBit);
         GLManager.GL.MatrixMode(GLEnum.Projection);
         GLManager.GL.LoadIdentity();
@@ -832,11 +832,11 @@ public class GameRenderer
 
     private void updateSkyAndFogColors(float tickDelta)
     {
-        World var2 = client.world;
-        EntityLiving var3 = client.camera;
-        float var4 = 1.0F / (4 - client.options.renderDistance);
+        World var2 = mc.world;
+        EntityLiving var3 = mc.camera;
+        float var4 = 1.0F / (4 - mc.options.renderDistance);
         var4 = 1.0F - (float)java.lang.Math.pow((double)var4, 0.25D);
-        Vector3D<double> var5 = var2.getSkyColor(client.camera, tickDelta);
+        Vector3D<double> var5 = var2.getSkyColor(mc.camera, tickDelta);
         float var6 = (float)var5.X;
         float var7 = (float)var5.Y;
         float var8 = (float)var5.Z;
@@ -898,52 +898,52 @@ public class GameRenderer
 
     private void applyFog(int mode)
     {
-        EntityLiving var3 = client.camera;
+        EntityLiving var3 = mc.camera;
         GLManager.GL.Fog(GLEnum.FogColor, updateFogColorBuffer(fogColorRed, fogColorGreen, fogColorBlue, 1.0F));
-        client.terrainRenderer.chunkRenderer.SetFogColor(fogColorRed, fogColorGreen, fogColorBlue, 1.0f);
+        mc.terrainRenderer.chunkRenderer.SetFogColor(fogColorRed, fogColorGreen, fogColorBlue, 1.0f);
         GLManager.GL.Normal3(0.0F, -1.0F, 0.0F);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         if (cloudFog)
         {
             GLManager.GL.Fog(GLEnum.FogMode, (int)GLEnum.Exp);
             GLManager.GL.Fog(GLEnum.FogDensity, 0.1F);
-            client.terrainRenderer.chunkRenderer.SetFogMode(1);
-            client.terrainRenderer.chunkRenderer.SetFogDensity(0.1f);
+            mc.terrainRenderer.chunkRenderer.SetFogMode(1);
+            mc.terrainRenderer.chunkRenderer.SetFogDensity(0.1f);
         }
         else if (var3.isInFluid(Material.Water))
         {
             GLManager.GL.Fog(GLEnum.FogMode, (int)GLEnum.Exp);
             GLManager.GL.Fog(GLEnum.FogDensity, 0.1F);
-            client.terrainRenderer.chunkRenderer.SetFogMode(1);
-            client.terrainRenderer.chunkRenderer.SetFogDensity(0.1f);
+            mc.terrainRenderer.chunkRenderer.SetFogMode(1);
+            mc.terrainRenderer.chunkRenderer.SetFogDensity(0.1f);
         }
         else if (var3.isInFluid(Material.Lava))
         {
             GLManager.GL.Fog(GLEnum.FogMode, (int)GLEnum.Exp);
             GLManager.GL.Fog(GLEnum.FogDensity, 2.0F);
-            client.terrainRenderer.chunkRenderer.SetFogMode(1);
-            client.terrainRenderer.chunkRenderer.SetFogDensity(2.0f);
+            mc.terrainRenderer.chunkRenderer.SetFogMode(1);
+            mc.terrainRenderer.chunkRenderer.SetFogDensity(2.0f);
         }
         else
         {
             GLManager.GL.Fog(GLEnum.FogMode, (int)GLEnum.Linear);
-            GLManager.GL.Fog(GLEnum.FogStart, viewDistane * 0.25F);
-            GLManager.GL.Fog(GLEnum.FogEnd, viewDistane);
-            client.terrainRenderer.chunkRenderer.SetFogMode(0);
-            client.terrainRenderer.chunkRenderer.SetFogStart(viewDistane * 0.25f);
-            client.terrainRenderer.chunkRenderer.SetFogEnd(viewDistane);
+            GLManager.GL.Fog(GLEnum.FogStart, ViewDistance * 0.25F);
+            GLManager.GL.Fog(GLEnum.FogEnd, ViewDistance);
+            mc.terrainRenderer.chunkRenderer.SetFogMode(0);
+            mc.terrainRenderer.chunkRenderer.SetFogStart(ViewDistance * 0.25f);
+            mc.terrainRenderer.chunkRenderer.SetFogEnd(ViewDistance);
             if (mode < 0)
             {
                 GLManager.GL.Fog(GLEnum.FogStart, 0.0F);
-                GLManager.GL.Fog(GLEnum.FogEnd, viewDistane * 0.8F);
-                client.terrainRenderer.chunkRenderer.SetFogStart(0.0f);
-                client.terrainRenderer.chunkRenderer.SetFogEnd(viewDistane * 0.8f);
+                GLManager.GL.Fog(GLEnum.FogEnd, ViewDistance * 0.8F);
+                mc.terrainRenderer.chunkRenderer.SetFogStart(0.0f);
+                mc.terrainRenderer.chunkRenderer.SetFogEnd(ViewDistance * 0.8f);
             }
 
-            if (client.world.dimension.isNether)
+            if (mc.world.Dimension.isNether)
             {
                 GLManager.GL.Fog(GLEnum.FogStart, 0.0F);
-                client.terrainRenderer.chunkRenderer.SetFogStart(0.0f);
+                mc.terrainRenderer.chunkRenderer.SetFogStart(0.0f);
             }
         }
 

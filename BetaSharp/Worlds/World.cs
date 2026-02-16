@@ -49,7 +49,7 @@ public abstract class World : java.lang.Object, BlockView
     public int difficulty;
     public java.util.Random random;
     public bool isNewWorld;
-    public readonly Dimension dimension;
+    public readonly Dimension Dimension;
     protected List<IWorldAccess> eventListeners;
     protected ChunkSource chunkSource;
     protected readonly WorldStorage storage;
@@ -70,7 +70,7 @@ public abstract class World : java.lang.Object, BlockView
 
     public BiomeSource getBiomeSource()
     {
-        return dimension.biomeSource;
+        return Dimension.biomeSource;
     }
 
     public WorldStorage getWorldStorage()
@@ -79,7 +79,7 @@ public abstract class World : java.lang.Object, BlockView
     }
 
 
-    public World(WorldStorage var1, string var2, Dimension var3, long var4)
+    public World(WorldStorage WorldStorage, string LevelName, Dimension Dimension, long Seed)
     {
         instantBlockUpdateEnabled = false;
         lightingQueue = [];
@@ -111,64 +111,64 @@ public abstract class World : java.lang.Object, BlockView
         soundCounter = random.nextInt(12000);
         tempEntityList = [];
         isRemote = false;
-        storage = var1;
-        properties = new WorldProperties(var4, var2);
-        dimension = var3;
-        persistentStateManager = new PersistentStateManager(var1);
-        var3.setWorld(this);
-        chunkSource = CreateChunkCache();
-        updateSkyBrightness();
-        prepareWeather();
-    }
-
-    public World(World var1, Dimension var2)
-    {
-        instantBlockUpdateEnabled = false;
-        lightingQueue = [];
-        entities = [];
-        entitiesToUnload = [];
-        scheduledUpdates = new TreeSet();
-        scheduledUpdateSet = new HashSet();
-        blockEntities = [];
-        blockEntityUpdateQueue = [];
-        players = [];
-        globalEntities = new ArrayList();
-        worldTimeMask = 0x00FFFFFFL;
-        ambientDarkness = 0;
-        lcgBlockSeed = (new java.util.Random()).nextInt();
-        lcgBlockSeedIncrement = 1013904223;
-        ticksSinceLightning = 0;
-        lightningTicksLeft = 0;
-        pauseTicking = false;
-        lockTimestamp = java.lang.System.currentTimeMillis();
-        autosavePeriod = AUTOSAVE_PERIOD;
-        random = new();
-        isNewWorld = false;
-        eventListeners = [];
-        collidingBoundingBoxes = [];
-        lightingUpdatesCounter = 0;
-        spawnHostileMobs = true;
-        spawnPeacefulMobs = true;
-        activeChunks = new HashSet<ChunkPos>();
-        soundCounter = random.nextInt(12000);
-        tempEntityList = [];
-        isRemote = false;
-        lockTimestamp = var1.lockTimestamp;
-        storage = var1.storage;
-        properties = new WorldProperties(var1.properties);
+        this.storage = storage;
+        properties = new WorldProperties(Seed, LevelName);
+        this.Dimension = Dimension;
         persistentStateManager = new PersistentStateManager(storage);
-        dimension = var2;
-        var2.setWorld(this);
+        Dimension.setWorld(this);
         chunkSource = CreateChunkCache();
         updateSkyBrightness();
         prepareWeather();
     }
 
-    public World(WorldStorage var1, string var2, long var3) : this(var1, var2, var3, null)
+    public World(World World, Dimension Dimension)
+    {
+        instantBlockUpdateEnabled = false;
+        lightingQueue = [];
+        entities = [];
+        entitiesToUnload = [];
+        scheduledUpdates = new TreeSet();
+        scheduledUpdateSet = new HashSet();
+        blockEntities = [];
+        blockEntityUpdateQueue = [];
+        players = [];
+        globalEntities = new ArrayList();
+        worldTimeMask = 0x00FFFFFFL;
+        ambientDarkness = 0;
+        lcgBlockSeed = (new java.util.Random()).nextInt();
+        lcgBlockSeedIncrement = 1013904223;
+        ticksSinceLightning = 0;
+        lightningTicksLeft = 0;
+        pauseTicking = false;
+        lockTimestamp = java.lang.System.currentTimeMillis();
+        autosavePeriod = AUTOSAVE_PERIOD;
+        random = new();
+        isNewWorld = false;
+        eventListeners = [];
+        collidingBoundingBoxes = [];
+        lightingUpdatesCounter = 0;
+        spawnHostileMobs = true;
+        spawnPeacefulMobs = true;
+        activeChunks = new HashSet<ChunkPos>();
+        soundCounter = random.nextInt(12000);
+        tempEntityList = [];
+        isRemote = false;
+        lockTimestamp = World.lockTimestamp;
+        storage = World.storage;
+        properties = new WorldProperties(World.properties);
+        persistentStateManager = new PersistentStateManager(storage);
+        this.Dimension = Dimension;
+        Dimension.setWorld(this);
+        chunkSource = CreateChunkCache();
+        updateSkyBrightness();
+        prepareWeather();
+    }
+
+    public World(WorldStorage Storage, string LevelName, long Seed) : this(Storage, LevelName, Seed, null)
     {
     }
 
-    public World(WorldStorage var1, string var2, long var3, Dimension var5)
+    public World(WorldStorage Storage, string LevelName, long Seed, Dimension ProvidedDimension)
     {
         instantBlockUpdateEnabled = false;
         lightingQueue = [];
@@ -200,37 +200,31 @@ public abstract class World : java.lang.Object, BlockView
         soundCounter = random.nextInt(12000);
         tempEntityList = [];
         isRemote = false;
-        storage = var1;
-        persistentStateManager = new PersistentStateManager(var1);
-        properties = var1.loadProperties();
+        storage = Storage;
+        persistentStateManager = new PersistentStateManager(Storage);
+        properties = Storage.loadProperties();
         isNewWorld = properties == null;
-        if (var5 != null)
+        Dimension = (ProvidedDimension, properties?.Dimension) switch
         {
-            dimension = var5;
-        }
-        else if (properties != null && properties.Dimension == -1)
-        {
-            dimension = Dimension.fromId(-1);
-        }
-        else
-        {
-            dimension = Dimension.fromId(0);
-        }
+            (not null, _) => ProvidedDimension,
+            (null, -1) => Dimension.fromId(-1),
+            _ => Dimension.fromId(0),
+        };
 
-        bool var6 = false;
+        bool ShouldInitializeSpawn = false;
         if (properties == null)
         {
-            properties = new WorldProperties(var3, var2);
-            var6 = true;
+            properties = new WorldProperties(Seed, LevelName);
+            ShouldInitializeSpawn = true;
         }
         else
         {
-            properties.LevelName = var2;
+            properties.LevelName = LevelName;
         }
 
-        dimension.setWorld(this);
+        Dimension.setWorld(this);
         chunkSource = CreateChunkCache();
-        if (var6)
+        if (ShouldInitializeSpawn)
         {
             initializeSpawnPoint();
         }
@@ -244,16 +238,16 @@ public abstract class World : java.lang.Object, BlockView
     protected void initializeSpawnPoint()
     {
         eventProcessingEnabled = true;
-        int var1 = 0;
-        byte var2 = 64;
+        int SpawnX = 0;
+        byte SpawnY = 64;
 
-        int var3;
-        for (var3 = 0; !dimension.isValidSpawnPoint(var1, var3); var3 += random.nextInt(64) - random.nextInt(64))
+        int SpawnZ;
+        for (SpawnZ = 0; !Dimension.isValidSpawnPoint(SpawnX, SpawnZ); SpawnZ += random.nextInt(64) - random.nextInt(64))
         {
-            var1 += random.nextInt(64) - random.nextInt(64);
+            SpawnX += random.nextInt(64) - random.nextInt(64);
         }
 
-        properties.SetSpawn(var1, var2, var3);
+        properties.SetSpawn(SpawnX, SpawnY, SpawnZ);
         eventProcessingEnabled = false;
     }
 
@@ -264,50 +258,49 @@ public abstract class World : java.lang.Object, BlockView
             properties.SpawnY = 64;
         }
 
-        int var1 = properties.SpawnX;
+        int SpawnX = properties.SpawnX;
 
-        int var2;
-        for (var2 = properties.SpawnZ; getSpawnBlockId(var1, var2) == 0; var2 += random.nextInt(8) - random.nextInt(8))
+        int SpawnZ;
+        for (SpawnZ = properties.SpawnZ; getSpawnBlockId(SpawnX, SpawnZ) == 0; SpawnZ += random.nextInt(8) - random.nextInt(8))
         {
-            var1 += random.nextInt(8) - random.nextInt(8);
+            SpawnX += random.nextInt(8) - random.nextInt(8);
         }
 
-        properties.SpawnX = var1;
-        properties.SpawnZ = var2;
+        properties.SpawnX = SpawnX;
+        properties.SpawnZ = SpawnZ;
     }
 
-    public int getSpawnBlockId(int var1, int var2)
+    public int getSpawnBlockId(int X, int Z)
     {
-        int var3;
-        for (var3 = 63; !isAir(var1, var3 + 1, var2); ++var3)
+        int Y;
+        for (Y = 63; !isAir(X, Y + 1, Z); ++Y)
         {
         }
 
-        return getBlockId(var1, var3, var2);
+        return getBlockId(X, Y, Z);
     }
 
     public void saveWorldData()
     {
     }
 
-    public void addPlayer(EntityPlayer player)
+    public void addPlayer(EntityPlayer Player)
     {
         try
         {
-            NBTTagCompound? var2 = properties.PlayerTag;
-            if (var2 != null)
+            NBTTagCompound? PlayerNbtData = properties.PlayerTag;
+            if (PlayerNbtData != null)
             {
-                player.read(var2);
+                Player.read(PlayerNbtData);
                 properties.PlayerTag = null;
             }
 
-            SpawnEntity(player);
+            SpawnEntity(Player);
         }
-        catch (java.lang.Exception var6)
+        catch (java.lang.Exception LoadException)
         {
-            var6.printStackTrace();
+            LoadException.printStackTrace();
         }
-
     }
 
     public void saveWithLoadingDisplay(bool saveEntities, LoadingDisplay loadingDisplay)
@@ -364,42 +357,47 @@ public abstract class World : java.lang.Object, BlockView
         }
     }
 
-    public int getBlockId(int x, int y, int z)
+    private bool IsWithinWorldBounds(int x, int z)
     {
-        return x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000 ? (y < 0 ? 0 : (y >= 128 ? 0 : getChunk(x >> 4, z >> 4).getBlockId(x & 15, y, z & 15))) : 0;
+        return x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000;
     }
 
-    public bool isAir(int x, int y, int z)
+    public int getBlockId(int X, int Y, int Z)
     {
-        return getBlockId(x, y, z) == 0;
+        return IsWithinWorldBounds(X, Z) ? (Y < 0 ? 0 : (Y >= 128 ? 0 : getChunk(X >> 4, Z >> 4).getBlockId(X & 15, Y, Z & 15))) : 0;
     }
 
-    public bool isPosLoaded(int x, int y, int z)
+    public bool isAir(int X, int Y, int Z)
     {
-        return y >= 0 && y < 128 ? hasChunk(x >> 4, z >> 4) : false;
+        return getBlockId(X, Y, Z) == 0;
     }
 
-    public bool isRegionLoaded(int x, int y, int z, int range)
+    public bool isPosLoaded(int X, int Y, int Z)
     {
-        return isRegionLoaded(x - range, y - range, z - range, x + range, y + range, z + range);
+        return Y >= 0 && Y < 128 ? hasChunk(X >> 4, Z >> 4) : false;
     }
 
-    public bool isRegionLoaded(int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
+    public bool isRegionLoaded(int X, int Y, int Z, int Range)
     {
-        if (maxY >= 0 && minY < 128)
+        return isRegionLoaded(X - Range, Y - Range, Z - Range, X + Range, Y + Range, Z + Range);
+    }
+
+    public bool isRegionLoaded(int MinX, int MinY, int MinZ, int MaxX, int MaxY, int MaxZ)
+    {
+        if (MaxY >= 0 && MinY < 128)
         {
-            minX >>= 4;
-            minY >>= 4;
-            minZ >>= 4;
-            maxX >>= 4;
-            maxY >>= 4;
-            maxZ >>= 4;
+            MinX >>= 4;
+            MinY >>= 4;
+            MinZ >>= 4;
+            MaxX >>= 4;
+            MaxY >>= 4;
+            MaxZ >>= 4;
 
-            for (int var7 = minX; var7 <= maxX; ++var7)
+            for (int i = MinX; i <= MaxX; ++i)
             {
-                for (int var8 = minZ; var8 <= maxZ; ++var8)
+                for (int j = MinZ; j <= MaxZ; ++j)
                 {
-                    if (!hasChunk(var7, var8))
+                    if (!hasChunk(i, j))
                     {
                         return false;
                     }
@@ -429,22 +427,18 @@ public abstract class World : java.lang.Object, BlockView
         return chunkSource.getChunk(chunkX, chunkZ);
     }
 
-    public virtual bool SetBlockWithoutNotifyingNeighbors(int x, int y, int z, int blockId, int meta)
+    public virtual bool SetBlockWithoutNotifyingNeighbors(int X, int Y, int Z, int blockId, int meta)
     {
-        if (x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
+        if (IsWithinWorldBounds(X, Z))
         {
-            if (y < 0)
+            switch (Y)
             {
-                return false;
-            }
-            else if (y >= 128)
-            {
-                return false;
-            }
-            else
-            {
-                Chunk var6 = getChunk(x >> 4, z >> 4);
-                return var6.setBlock(x & 15, y, z & 15, blockId, meta);
+                case < 0:
+                case >= 128:
+                    return false;
+                default:
+                    Chunk TargetChunk = getChunk(X >> 4, Z >> 4);
+                    return TargetChunk.setBlock(X & 15, Y, Z & 15, blockId, meta);
             }
         }
         else
@@ -453,22 +447,18 @@ public abstract class World : java.lang.Object, BlockView
         }
     }
 
-    public virtual bool SetBlockWithoutNotifyingNeighbors(int x, int y, int z, int blockId)
+    public virtual bool SetBlockWithoutNotifyingNeighbors(int X, int Y, int Z, int blockId)
     {
-        if (x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
+        if (IsWithinWorldBounds(X, Z))
         {
-            if (y < 0)
+            switch (Y)
             {
-                return false;
-            }
-            else if (y >= 128)
-            {
-                return false;
-            }
-            else
-            {
-                Chunk var5 = getChunk(x >> 4, z >> 4);
-                return var5.setBlock(x & 15, y, z & 15, blockId);
+                case < 0:
+                case >= 128:
+                    return false;
+                default:
+                    Chunk TargetChunk = getChunk(X >> 4, Z >> 4);
+                    return TargetChunk.setBlock(X & 15, Y, Z & 15, blockId);
             }
         }
         else
@@ -477,30 +467,26 @@ public abstract class World : java.lang.Object, BlockView
         }
     }
 
-    public Material getMaterial(int x, int y, int z)
+    public Material getMaterial(int X, int Y, int Z)
     {
-        int var4 = getBlockId(x, y, z);
-        return var4 == 0 ? Material.Air : Block.Blocks[var4].material;
+        int BlockId = getBlockId(X, Y, Z);
+        return BlockId == 0 ? Material.Air : Block.Blocks[BlockId].material;
     }
 
-    public int getBlockMeta(int x, int y, int z)
+    public int getBlockMeta(int X, int Y, int Z)
     {
-        if (x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
+        if (IsWithinWorldBounds(X, Z))
         {
-            if (y < 0)
+            switch (Y)
             {
-                return 0;
-            }
-            else if (y >= 128)
-            {
-                return 0;
-            }
-            else
-            {
-                Chunk var4 = getChunk(x >> 4, z >> 4);
-                x &= 15;
-                z &= 15;
-                return var4.getBlockMeta(x, y, z);
+                case < 0:
+                case >= 128:
+                    return 0;
+                default:
+                    Chunk TargetChunk = getChunk(X >> 4, Z >> 4);
+                    X &= 15;
+                    Z &= 15;
+                    return TargetChunk.getBlockMeta(X, Y, Z);
             }
         }
         else
@@ -509,42 +495,38 @@ public abstract class World : java.lang.Object, BlockView
         }
     }
 
-    public void setBlockMeta(int x, int y, int z, int meta)
+    public void setBlockMeta(int X, int Y, int Z, int meta)
     {
-        if (SetBlockMetaWithoutNotifyingNeighbors(x, y, z, meta))
+        if (SetBlockMetaWithoutNotifyingNeighbors(X, Y, Z, meta))
         {
-            int var5 = getBlockId(x, y, z);
-            if (Block.BlocksIngoreMetaUpdate[var5 & 255])
+            int CurrentBlockId = getBlockId(X, Y, Z);
+            if (Block.BlocksIngoreMetaUpdate[CurrentBlockId & 255])
             {
-                blockUpdate(x, y, z, var5);
+                blockUpdate(X, Y, Z, CurrentBlockId);
             }
             else
             {
-                notifyNeighbors(x, y, z, var5);
+                notifyNeighbors(X, Y, Z, CurrentBlockId);
             }
         }
 
     }
 
-    public virtual bool SetBlockMetaWithoutNotifyingNeighbors(int x, int y, int z, int meta)
+    public virtual bool SetBlockMetaWithoutNotifyingNeighbors(int X, int Y, int Z, int Meta)
     {
-        if (x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
+        if (IsWithinWorldBounds(X, Z))
         {
-            if (y < 0)
+            switch (Y)
             {
-                return false;
-            }
-            else if (y >= 128)
-            {
-                return false;
-            }
-            else
-            {
-                Chunk var5 = getChunk(x >> 4, z >> 4);
-                x &= 15;
-                z &= 15;
-                var5.setBlockMeta(x, y, z, meta);
-                return true;
+                case < 0:
+                case >= 128:
+                    return false;
+                default:
+                    Chunk TargetChunk = getChunk(X >> 4, Z >> 4);
+                    X &= 15;
+                    Z &= 15;
+                    TargetChunk.setBlockMeta(X, Y, Z, Meta);
+                    return true;
             }
         }
         else
@@ -553,11 +535,11 @@ public abstract class World : java.lang.Object, BlockView
         }
     }
 
-    public bool setBlock(int x, int y, int z, int blockId)
+    public bool setBlock(int X, int Y, int Z, int blockId)
     {
-        if (SetBlockWithoutNotifyingNeighbors(x, y, z, blockId))
+        if (SetBlockWithoutNotifyingNeighbors(X, Y, Z, blockId))
         {
-            blockUpdate(x, y, z, blockId);
+            blockUpdate(X, Y, Z, blockId);
             return true;
         }
         else
@@ -566,11 +548,11 @@ public abstract class World : java.lang.Object, BlockView
         }
     }
 
-    public bool setBlock(int x, int y, int z, int blockId, int meta)
+    public bool setBlock(int X, int Y, int Z, int blockId, int meta)
     {
-        if (SetBlockWithoutNotifyingNeighbors(x, y, z, blockId, meta))
+        if (SetBlockWithoutNotifyingNeighbors(X, Y, Z, blockId, meta))
         {
-            blockUpdate(x, y, z, blockId);
+            blockUpdate(X, Y, Z, blockId);
             return true;
         }
         else
@@ -579,19 +561,19 @@ public abstract class World : java.lang.Object, BlockView
         }
     }
 
-    public void blockUpdateEvent(int x, int y, int z)
+    public void blockUpdateEvent(int X, int Y, int Z)
     {
-        for (int var4 = 0; var4 < eventListeners.Count; ++var4)
+        for (int ListenerIndex = 0; ListenerIndex < eventListeners.Count; ++ListenerIndex)
         {
-            eventListeners[var4].blockUpdate(x, y, z);
+            eventListeners[ListenerIndex].blockUpdate(X, Y, Z);
         }
 
     }
 
-    protected void blockUpdate(int x, int y, int z, int blockId)
+    protected void blockUpdate(int X, int Y, int Z, int blockId)
     {
-        blockUpdateEvent(x, y, z);
-        notifyNeighbors(x, y, z, blockId);
+        blockUpdateEvent(X, Y, Z);
+        notifyNeighbors(X, Y, Z, blockId);
     }
 
     public void setBlocksDirty(int x, int z, int minY, int maxY)
@@ -604,127 +586,127 @@ public abstract class World : java.lang.Object, BlockView
         setBlocksDirty(x, minY, z, x, maxY, z);
     }
 
-    public void setBlocksDirty(int x, int y, int z)
+    public void setBlocksDirty(int X, int Y, int Z)
     {
-        for (int var4 = 0; var4 < eventListeners.Count; ++var4)
+        for (int ListenerIndex = 0; ListenerIndex < eventListeners.Count; ++ListenerIndex)
         {
-            eventListeners[var4].setBlocksDirty(x, y, z, x, y, z);
+            eventListeners[ListenerIndex].setBlocksDirty(X, Y, Z, X, Y, Z);
         }
 
     }
 
     public void setBlocksDirty(int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
     {
-        for (int var7 = 0; var7 < eventListeners.Count; ++var7)
+        for (int ListenerIndex = 0; ListenerIndex < eventListeners.Count; ++ListenerIndex)
         {
-            eventListeners[var7].setBlocksDirty(minX, minY, minZ, maxX, maxY, maxZ);
+            eventListeners[ListenerIndex].setBlocksDirty(minX, minY, minZ, maxX, maxY, maxZ);
         }
 
     }
 
-    public void notifyNeighbors(int x, int y, int z, int blockId)
+    public void notifyNeighbors(int X, int Y, int Z, int BlockId)
     {
-        notifyUpdate(x - 1, y, z, blockId);
-        notifyUpdate(x + 1, y, z, blockId);
-        notifyUpdate(x, y - 1, z, blockId);
-        notifyUpdate(x, y + 1, z, blockId);
-        notifyUpdate(x, y, z - 1, blockId);
-        notifyUpdate(x, y, z + 1, blockId);
+        notifyUpdate(X - 1, Y, Z, BlockId);
+        notifyUpdate(X + 1, Y, Z, BlockId);
+        notifyUpdate(X, Y - 1, Z, BlockId);
+        notifyUpdate(X, Y + 1, Z, BlockId);
+        notifyUpdate(X, Y, Z - 1, BlockId);
+        notifyUpdate(X, Y, Z + 1, BlockId);
     }
 
-    private void notifyUpdate(int x, int y, int z, int blockId)
+    private void notifyUpdate(int X, int Y, int Z, int blockId)
     {
         if (!pauseTicking && !isRemote)
         {
-            Block var5 = Block.Blocks[getBlockId(x, y, z)];
-            if (var5 != null)
+            Block TargetBlock = Block.Blocks[getBlockId(X, Y, Z)];
+            if (TargetBlock != null)
             {
-                var5.neighborUpdate(this, x, y, z, blockId);
+                TargetBlock.neighborUpdate(this, X, Y, Z, blockId);
             }
 
         }
     }
 
-    public bool hasSkyLight(int x, int y, int z)
+    public bool hasSkyLight(int X, int Y, int Z)
     {
-        return getChunk(x >> 4, z >> 4).isAboveMaxHeight(x & 15, y, z & 15);
+        return getChunk(X >> 4, Z >> 4).isAboveMaxHeight(X & 15, Y, Z & 15);
     }
 
-    public int getBrightness(int x, int y, int z)
+    public int getBrightness(int X, int Y, int Z)
     {
-        if (y < 0)
+        if (Y < 0)
         {
             return 0;
         }
         else
         {
-            if (y >= 128)
+            if (Y >= 128)
             {
-                y = 127;
+                Y = 127;
             }
 
-            return getChunk(x >> 4, z >> 4).getLight(x & 15, y, z & 15, 0);
+            return getChunk(X >> 4, Z >> 4).getLight(X & 15, Y, Z & 15, 0);
         }
     }
 
-    public int getLightLevel(int x, int y, int z)
+    public int getLightLevel(int X, int Y, int Z)
     {
-        return getLightLevel(x, y, z, true);
+        return getLightLevel(X, Y, Z, true);
     }
 
-    public int getLightLevel(int x, int y, int z, bool bl)
+    public int getLightLevel(int X, int Y, int Z, bool bl)
     {
-        if (x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
+        if (IsWithinWorldBounds(X, Z))
         {
             if (bl)
             {
-                int var5 = getBlockId(x, y, z);
-                if (var5 == Block.Slab.id || var5 == Block.Farmland.id || var5 == Block.CobblestoneStairs.id || var5 == Block.WoodenStairs.id)
+                int BlockIdAt = getBlockId(X, Y, Z);
+                if (BlockIdAt == Block.Slab.id || BlockIdAt == Block.Farmland.id || BlockIdAt == Block.CobblestoneStairs.id || BlockIdAt == Block.WoodenStairs.id)
                 {
-                    int var6 = getLightLevel(x, y + 1, z, false);
-                    int var7 = getLightLevel(x + 1, y, z, false);
-                    int var8 = getLightLevel(x - 1, y, z, false);
-                    int var9 = getLightLevel(x, y, z + 1, false);
-                    int var10 = getLightLevel(x, y, z - 1, false);
-                    if (var7 > var6)
+                    int UpLight = getLightLevel(X, Y + 1, Z, false);
+                    int EastLight = getLightLevel(X + 1, Y, Z, false);
+                    int WestLight = getLightLevel(X - 1, Y, Z, false);
+                    int SouthLight = getLightLevel(X, Y, Z + 1, false);
+                    int NorthLight = getLightLevel(X, Y, Z - 1, false);
+                    if (EastLight > UpLight)
                     {
-                        var6 = var7;
+                        UpLight = EastLight;
                     }
 
-                    if (var8 > var6)
+                    if (WestLight > UpLight)
                     {
-                        var6 = var8;
+                        UpLight = WestLight;
                     }
 
-                    if (var9 > var6)
+                    if (SouthLight > UpLight)
                     {
-                        var6 = var9;
+                        UpLight = SouthLight;
                     }
 
-                    if (var10 > var6)
+                    if (NorthLight > UpLight)
                     {
-                        var6 = var10;
+                        UpLight = NorthLight;
                     }
 
-                    return var6;
+                    return UpLight;
                 }
             }
 
-            if (y < 0)
+            if (Y < 0)
             {
                 return 0;
             }
             else
             {
-                if (y >= 128)
+                if (Y >= 128)
                 {
-                    y = 127;
+                    Y = 127;
                 }
 
-                Chunk var11 = getChunk(x >> 4, z >> 4);
-                x &= 15;
-                z &= 15;
-                return var11.getLight(x, y, z, ambientDarkness);
+                Chunk TargetChunk = getChunk(X >> 4, Z >> 4);
+                X &= 15;
+                Z &= 15;
+                return TargetChunk.getLight(X, Y, Z, ambientDarkness);
             }
         }
         else
@@ -733,39 +715,29 @@ public abstract class World : java.lang.Object, BlockView
         }
     }
 
-    public bool isTopY(int x, int y, int z)
+    public bool isTopY(int X, int Y, int Z)
     {
-        if (x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
-        {
-            if (y < 0)
-            {
-                return false;
-            }
-            else if (y >= 128)
-            {
-                return true;
-            }
-            else if (!hasChunk(x >> 4, z >> 4))
-            {
-                return false;
-            }
-            else
-            {
-                Chunk var4 = getChunk(x >> 4, z >> 4);
-                x &= 15;
-                z &= 15;
-                return var4.isAboveMaxHeight(x, y, z);
-            }
-        }
-        else
-        {
+        if (!IsWithinWorldBounds(X, Z))
             return false;
-        }
+        
+        if (Y < 0)
+            return false;
+        
+        if (Y >= 128)
+            return true;
+        
+        if (!hasChunk(X >> 4, Z >> 4))
+            return false;
+        
+        Chunk TargetChunk = getChunk(X >> 4, Z >> 4);
+        X &= 15;
+        Z &= 15;
+        return TargetChunk.isAboveMaxHeight(X, Y, Z);
     }
 
     public int getTopY(int x, int z)
     {
-        if (x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
+        if (IsWithinWorldBounds(x, z))
         {
             if (!hasChunk(x >> 4, z >> 4))
             {
@@ -773,8 +745,8 @@ public abstract class World : java.lang.Object, BlockView
             }
             else
             {
-                Chunk var3 = getChunk(x >> 4, z >> 4);
-                return var3.getHeight(x & 15, z & 15);
+                Chunk TargetChunk = getChunk(x >> 4, z >> 4);
+                return TargetChunk.getHeight(x & 15, z & 15);
             }
         }
         else
@@ -783,107 +755,87 @@ public abstract class World : java.lang.Object, BlockView
         }
     }
 
-    public void updateLight(LightType lightType, int x, int y, int z, int l)
+    public void updateLight(LightType lightType, int X, int Y, int Z, int l)
     {
-        if (!dimension.hasCeiling || lightType != LightType.Sky)
+        if (!Dimension.hasCeiling || lightType != LightType.Sky)
         {
-            if (isPosLoaded(x, y, z))
+            if (isPosLoaded(X, Y, Z))
             {
                 if (lightType == LightType.Sky)
                 {
-                    if (isTopY(x, y, z))
+                    if (isTopY(X, Y, Z))
                     {
                         l = 15;
                     }
                 }
                 else if (lightType == LightType.Block)
                 {
-                    int var6 = getBlockId(x, y, z);
-                    if (Block.BlocksLightLuminance[var6] > l)
+                    int BlockIdAt = getBlockId(X, Y, Z);
+                    if (Block.BlocksLightLuminance[BlockIdAt] > l)
                     {
-                        l = Block.BlocksLightLuminance[var6];
+                        l = Block.BlocksLightLuminance[BlockIdAt];
                     }
                 }
 
-                if (getBrightness(lightType, x, y, z) != l)
+                if (getBrightness(lightType, X, Y, Z) != l)
                 {
-                    queueLightUpdate(lightType, x, y, z, x, y, z);
+                    queueLightUpdate(lightType, X, Y, Z, X, Y, Z);
                 }
 
             }
         }
     }
 
-    public int getBrightness(LightType type, int x, int y, int z)
+    public int getBrightness(LightType LightType, int X, int Y, int Z)
     {
-        if (y < 0)
-        {
-            y = 0;
-        }
+        // Clamp Y to valid range [0, 127]
+        if (Y < 0) Y = 0;
+        if (Y >= 128) Y = 127;
+        
+        if (!IsWithinWorldBounds(X, Z))
+            return LightType.lightValue;
+        
+        int chunkX = X >> 4;
+        int chunkZ = Z >> 4;
+        
+        if (!hasChunk(chunkX, chunkZ))
+            return 0;
+        
+        Chunk TargetChunk = getChunk(chunkX, chunkZ);
+        return TargetChunk.getLight(LightType, X & 15, Y, Z & 15);
+    }
 
-        if (y >= 128)
-        {
-            y = 127;
-        }
+    public void setLight(LightType LightType, int X, int Y, int Z, int Value)
+    {
+        if (!IsWithinWorldBounds(X, Z) || Y < 0 || Y >= 128)
+            return;
+        
+        if (!hasChunk(X >> 4, Z >> 4))
+            return;
+        
+        Chunk TargetChunk = getChunk(X >> 4, Z >> 4);
+        TargetChunk.setLight(LightType, X & 15, Y, Z & 15, Value);
 
-        if (y >= 0 && y < 128 && x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
+        for (int ListenerIndex = 0; ListenerIndex < eventListeners.Count; ++ListenerIndex)
         {
-            int var5 = x >> 4;
-            int var6 = z >> 4;
-            if (!hasChunk(var5, var6))
-            {
-                return 0;
-            }
-            else
-            {
-                Chunk var7 = getChunk(var5, var6);
-                return var7.getLight(type, x & 15, y, z & 15);
-            }
-        }
-        else
-        {
-            return type.lightValue;
+            eventListeners[ListenerIndex].blockUpdate(X, Y, Z);
         }
     }
 
-    public void setLight(LightType lightType, int x, int y, int z, int value)
+    public float getNaturalBrightness(int X, int Y, int Z, int BlockLight)
     {
-        if (x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
+        int CurrentLightLevel = getLightLevel(X, Y, Z);
+        if (CurrentLightLevel < BlockLight)
         {
-            if (y >= 0)
-            {
-                if (y < 128)
-                {
-                    if (hasChunk(x >> 4, z >> 4))
-                    {
-                        Chunk var6 = getChunk(x >> 4, z >> 4);
-                        var6.setLight(lightType, x & 15, y, z & 15, value);
-
-                        for (int var7 = 0; var7 < eventListeners.Count; ++var7)
-                        {
-                            eventListeners[var7].blockUpdate(x, y, z);
-                        }
-
-                    }
-                }
-            }
-        }
-    }
-
-    public float getNaturalBrightness(int x, int y, int z, int blockLight)
-    {
-        int var5 = getLightLevel(x, y, z);
-        if (var5 < blockLight)
-        {
-            var5 = blockLight;
+            CurrentLightLevel = BlockLight;
         }
 
-        return dimension.lightLevelToLuminance[var5];
+        return Dimension.lightLevelToLuminance[CurrentLightLevel];
     }
 
-    public float getLuminance(int x, int y, int z)
+    public float getLuminance(int X, int Y, int Z)
     {
-        return dimension.lightLevelToLuminance[getLightLevel(x, y, z)];
+        return Dimension.lightLevelToLuminance[getLightLevel(X, Y, Z)];
     }
 
     public bool canMonsterSpawn()
@@ -903,388 +855,350 @@ public abstract class World : java.lang.Object, BlockView
 
     public HitResult raycast(Vec3D start, Vec3D pos, bool bl, bool bl2)
     {
-        if (!java.lang.Double.isNaN(start.x) && !java.lang.Double.isNaN(start.y) && !java.lang.Double.isNaN(start.z))
-        {
-            if (!java.lang.Double.isNaN(pos.x) && !java.lang.Double.isNaN(pos.y) && !java.lang.Double.isNaN(pos.z))
-            {
-                int var5 = MathHelper.floor_double(pos.x);
-                int var6 = MathHelper.floor_double(pos.y);
-                int var7 = MathHelper.floor_double(pos.z);
-                int var8 = MathHelper.floor_double(start.x);
-                int var9 = MathHelper.floor_double(start.y);
-                int var10 = MathHelper.floor_double(start.z);
-                int var11 = getBlockId(var8, var9, var10);
-                int var12 = getBlockMeta(var8, var9, var10);
-                Block var13 = Block.Blocks[var11];
-                if ((!bl2 || var13 == null || var13.getCollisionShape(this, var8, var9, var10) != null) && var11 > 0 && var13.hasCollision(var12, bl))
-                {
-                    HitResult var14 = var13.raycast(this, var8, var9, var10, start, pos);
-                    if (var14 != null)
-                    {
-                        return var14;
-                    }
-                }
-
-                var11 = 200;
-
-                while (var11-- >= 0)
-                {
-                    if (java.lang.Double.isNaN(start.x) || java.lang.Double.isNaN(start.y) || java.lang.Double.isNaN(start.z))
-                    {
-                        return null;
-                    }
-
-                    if (var8 == var5 && var9 == var6 && var10 == var7)
-                    {
-                        return null;
-                    }
-
-                    bool var39 = true;
-                    bool var40 = true;
-                    bool var41 = true;
-                    double var15 = 999.0D;
-                    double var17 = 999.0D;
-                    double var19 = 999.0D;
-                    if (var5 > var8)
-                    {
-                        var15 = (double)var8 + 1.0D;
-                    }
-                    else if (var5 < var8)
-                    {
-                        var15 = (double)var8 + 0.0D;
-                    }
-                    else
-                    {
-                        var39 = false;
-                    }
-
-                    if (var6 > var9)
-                    {
-                        var17 = (double)var9 + 1.0D;
-                    }
-                    else if (var6 < var9)
-                    {
-                        var17 = (double)var9 + 0.0D;
-                    }
-                    else
-                    {
-                        var40 = false;
-                    }
-
-                    if (var7 > var10)
-                    {
-                        var19 = (double)var10 + 1.0D;
-                    }
-                    else if (var7 < var10)
-                    {
-                        var19 = (double)var10 + 0.0D;
-                    }
-                    else
-                    {
-                        var41 = false;
-                    }
-
-                    double var21 = 999.0D;
-                    double var23 = 999.0D;
-                    double var25 = 999.0D;
-                    double var27 = pos.x - start.x;
-                    double var29 = pos.y - start.y;
-                    double var31 = pos.z - start.z;
-                    if (var39)
-                    {
-                        var21 = (var15 - start.x) / var27;
-                    }
-
-                    if (var40)
-                    {
-                        var23 = (var17 - start.y) / var29;
-                    }
-
-                    if (var41)
-                    {
-                        var25 = (var19 - start.z) / var31;
-                    }
-
-                    bool var33 = false;
-                    byte var42;
-                    if (var21 < var23 && var21 < var25)
-                    {
-                        if (var5 > var8)
-                        {
-                            var42 = 4;
-                        }
-                        else
-                        {
-                            var42 = 5;
-                        }
-
-                        start.x = var15;
-                        start.y += var29 * var21;
-                        start.z += var31 * var21;
-                    }
-                    else if (var23 < var25)
-                    {
-                        if (var6 > var9)
-                        {
-                            var42 = 0;
-                        }
-                        else
-                        {
-                            var42 = 1;
-                        }
-
-                        start.x += var27 * var23;
-                        start.y = var17;
-                        start.z += var31 * var23;
-                    }
-                    else
-                    {
-                        if (var7 > var10)
-                        {
-                            var42 = 2;
-                        }
-                        else
-                        {
-                            var42 = 3;
-                        }
-
-                        start.x += var27 * var25;
-                        start.y += var29 * var25;
-                        start.z = var19;
-                    }
-
-                    Vec3D var34 = new Vec3D(start.x, start.y, start.z);
-                    var8 = (int)(var34.x = (double)MathHelper.floor_double(start.x));
-                    if (var42 == 5)
-                    {
-                        --var8;
-                        ++var34.x;
-                    }
-
-                    var9 = (int)(var34.y = (double)MathHelper.floor_double(start.y));
-                    if (var42 == 1)
-                    {
-                        --var9;
-                        ++var34.y;
-                    }
-
-                    var10 = (int)(var34.z = (double)MathHelper.floor_double(start.z));
-                    if (var42 == 3)
-                    {
-                        --var10;
-                        ++var34.z;
-                    }
-
-                    int var35 = getBlockId(var8, var9, var10);
-                    int var36 = getBlockMeta(var8, var9, var10);
-                    Block var37 = Block.Blocks[var35];
-                    if ((!bl2 || var37 == null || var37.getCollisionShape(this, var8, var9, var10) != null) && var35 > 0 && var37.hasCollision(var36, bl))
-                    {
-                        HitResult var38 = var37.raycast(this, var8, var9, var10, start, pos);
-                        if (var38 != null)
-                        {
-                            return var38;
-                        }
-                    }
-                }
-
-                return null;
-            }
-            else
-            {
-                return null;
-            }
-        }
-        else
+        if (java.lang.Double.isNaN(start.x) || java.lang.Double.isNaN(start.y) || java.lang.Double.isNaN(start.z))
         {
             return null;
         }
+
+        if (java.lang.Double.isNaN(pos.x) || java.lang.Double.isNaN(pos.y) || java.lang.Double.isNaN(pos.z))
+        {
+            return null;
+        }
+
+        int endX = MathHelper.floor_double(pos.x);
+        int endY = MathHelper.floor_double(pos.y);
+        int endZ = MathHelper.floor_double(pos.z);
+        int startX = MathHelper.floor_double(start.x);
+        int startY = MathHelper.floor_double(start.y);
+        int startZ = MathHelper.floor_double(start.z);
+
+        int initialBlockId = getBlockId(startX, startY, startZ);
+        int initialMeta = getBlockMeta(startX, startY, startZ);
+        Block initialBlock = Block.Blocks[initialBlockId];
+        if ((!bl2 || initialBlock == null || initialBlock.getCollisionShape(this, startX, startY, startZ) != null) && initialBlockId > 0 && initialBlock.hasCollision(initialMeta, bl))
+        {
+            HitResult hit = initialBlock.raycast(this, startX, startY, startZ, start, pos);
+            if (hit != null)
+            {
+                return hit;
+            }
+        }
+
+        int stepsRemaining = 200;
+        while (stepsRemaining-- >= 0)
+        {
+            if (java.lang.Double.isNaN(start.x) || java.lang.Double.isNaN(start.y) || java.lang.Double.isNaN(start.z))
+            {
+                return null;
+            }
+
+            if (startX == endX && startY == endY && startZ == endZ)
+            {
+                return null;
+            }
+
+            bool stepX = true;
+            bool stepY = true;
+            bool stepZ = true;
+            double nextPlaneX = 999.0D;
+            double nextPlaneY = 999.0D;
+            double nextPlaneZ = 999.0D;
+
+            if (endX > startX)
+            {
+                nextPlaneX = (double)startX + 1.0D;
+            }
+            else if (endX < startX)
+            {
+                nextPlaneX = (double)startX + 0.0D;
+            }
+            else
+            {
+                stepX = false;
+            }
+
+            if (endY > startY)
+            {
+                nextPlaneY = (double)startY + 1.0D;
+            }
+            else if (endY < startY)
+            {
+                nextPlaneY = (double)startY + 0.0D;
+            }
+            else
+            {
+                stepY = false;
+            }
+
+            if (endZ > startZ)
+            {
+                nextPlaneZ = (double)startZ + 1.0D;
+            }
+            else if (endZ < startZ)
+            {
+                nextPlaneZ = (double)startZ + 0.0D;
+            }
+            else
+            {
+                stepZ = false;
+            }
+
+            double tX = 999.0D;
+            double tY = 999.0D;
+            double tZ = 999.0D;
+            double deltaX = pos.x - start.x;
+            double deltaY = pos.y - start.y;
+            double deltaZ = pos.z - start.z;
+            if (stepX)
+            {
+                tX = (nextPlaneX - start.x) / deltaX;
+            }
+
+            if (stepY)
+            {
+                tY = (nextPlaneY - start.y) / deltaY;
+            }
+
+            if (stepZ)
+            {
+                tZ = (nextPlaneZ - start.z) / deltaZ;
+            }
+
+            byte side;
+            if (tX < tY && tX < tZ)
+            {
+                side = (byte)(endX > startX ? 4 : 5);
+                start.x = nextPlaneX;
+                start.y += deltaY * tX;
+                start.z += deltaZ * tX;
+            }
+            else if (tY < tZ)
+            {
+                side = (byte)(endY > startY ? 0 : 1);
+                start.x += deltaX * tY;
+                start.y = nextPlaneY;
+                start.z += deltaZ * tY;
+            }
+            else
+            {
+                side = (byte)(endZ > startZ ? 2 : 3);
+                start.x += deltaX * tZ;
+                start.y += deltaY * tZ;
+                start.z = nextPlaneZ;
+            }
+
+            Vec3D hitVec = new Vec3D(start.x, start.y, start.z);
+            startX = (int)(hitVec.x = (double)MathHelper.floor_double(start.x));
+            if (side == 5)
+            {
+                --startX;
+                ++hitVec.x;
+            }
+
+            startY = (int)(hitVec.y = (double)MathHelper.floor_double(start.y));
+            if (side == 1)
+            {
+                --startY;
+                ++hitVec.y;
+            }
+
+            startZ = (int)(hitVec.z = (double)MathHelper.floor_double(start.z));
+            if (side == 3)
+            {
+                --startZ;
+                ++hitVec.z;
+            }
+
+            int blockIdAt = getBlockId(startX, startY, startZ);
+            int blockMetaAt = getBlockMeta(startX, startY, startZ);
+            Block blockAt = Block.Blocks[blockIdAt];
+            if ((!bl2 || blockAt == null || blockAt.getCollisionShape(this, startX, startY, startZ) != null) && blockIdAt > 0 && blockAt.hasCollision(blockMetaAt, bl))
+            {
+                HitResult hit = blockAt.raycast(this, startX, startY, startZ, start, pos);
+                if (hit != null)
+                {
+                    return hit;
+                }
+            }
+        }
+
+        return null;
     }
 
-    public void playSound(Entity entity, string sound, float volume, float pitch)
+    public void playSound(Entity Entity, string Sound, float Volume, float Pitch)
     {
-        for (int var5 = 0; var5 < eventListeners.Count; ++var5)
+        for (int i = 0; i < eventListeners.Count; ++i)
         {
-            eventListeners[var5].playSound(sound, entity.x, entity.y - (double)entity.standingEyeHeight, entity.z, volume, pitch);
+            eventListeners[i].playSound(Sound, Entity.x, Entity.y - (double)Entity.standingEyeHeight, Entity.z, Volume, Pitch);
         }
 
     }
 
     public void playSound(double x, double y, double z, string sound, float volume, float pitch)
     {
-        for (int var10 = 0; var10 < eventListeners.Count; ++var10)
+        for (int i = 0; i < eventListeners.Count; ++i)
         {
-            eventListeners[var10].playSound(sound, x, y, z, volume, pitch);
+            eventListeners[i].playSound(sound, x, y, z, volume, pitch);
         }
 
     }
 
-    public void playStreaming(string music, int x, int y, int z)
+    public void playStreaming(string music, int X, int Y, int Z)
     {
-        for (int var5 = 0; var5 < eventListeners.Count; ++var5)
+        for (int i = 0; i < eventListeners.Count; ++i)
         {
-            eventListeners[var5].playStreaming(music, x, y, z);
+            eventListeners[i].playStreaming(music, X, Y, Z);
         }
 
     }
 
-    public void addParticle(string particle, double x, double y, double z, double velocityX, double velocityY, double velocityZ)
+    public void addParticle(string Particle, double X, double Y, double Z, double VelocityX, double VelocityY, double VelocityZ)
     {
-        for (int var14 = 0; var14 < eventListeners.Count; ++var14)
+        for (int i = 0; i < eventListeners.Count; ++i)
         {
-            eventListeners[var14].spawnParticle(particle, x, y, z, velocityX, velocityY, velocityZ);
+            eventListeners[i].spawnParticle(Particle, X, Y, Z, VelocityX, VelocityY, VelocityZ);
         }
 
     }
 
-    public virtual bool spawnGlobalEntity(Entity entity)
+    public virtual bool spawnGlobalEntity(Entity Entity)
     {
-        globalEntities.add(entity);
+        globalEntities.add(Entity);
         return true;
     }
 
-    public virtual bool SpawnEntity(Entity entity)
+    public virtual bool SpawnEntity(Entity Entity)
     {
-        int var2 = MathHelper.floor_double(entity.x / 16.0D);
-        int var3 = MathHelper.floor_double(entity.z / 16.0D);
-        bool var4 = false;
-        if (entity is EntityPlayer)
-        {
-            var4 = true;
-        }
+        int chunkX = MathHelper.floor_double(Entity.x / 16.0D);
+        int chunkZ = MathHelper.floor_double(Entity.z / 16.0D);
+        bool isPlayerEntity = false;
+        if (Entity is EntityPlayer) isPlayerEntity = true;
 
-        if (!var4 && !hasChunk(var2, var3))
+        if (!isPlayerEntity && !hasChunk(chunkX, chunkZ))
         {
             return false;
         }
         else
         {
-            if (entity is EntityPlayer)
+            if (Entity is EntityPlayer)
             {
-                EntityPlayer var5 = (EntityPlayer)entity;
-                players.Add(var5);
+                EntityPlayer Player = (EntityPlayer)Entity;
+                players.Add(Player);
                 updateSleepingPlayers();
             }
 
-            getChunk(var2, var3).addEntity(entity);
-            entities.Add(entity);
-            NotifyEntityAdded(entity);
+            getChunk(chunkX, chunkZ).addEntity(Entity);
+            entities.Add(Entity);
+            NotifyEntityAdded(Entity);
             return true;
         }
     }
 
-    protected virtual void NotifyEntityAdded(Entity entity)
+    protected virtual void NotifyEntityAdded(Entity Entity)
     {
-        for (int var2 = 0; var2 < eventListeners.Count; ++var2)
+        for (int ListenerIndex = 0; ListenerIndex < eventListeners.Count; ++ListenerIndex)
         {
-            eventListeners[var2].notifyEntityAdded(entity);
+            eventListeners[ListenerIndex].notifyEntityAdded(Entity);
         }
 
     }
 
-    protected virtual void NotifyEntityRemoved(Entity entity)
+    protected virtual void NotifyEntityRemoved(Entity Entity)
     {
-        for (int var2 = 0; var2 < eventListeners.Count; ++var2)
+        for (int ListenerIndex = 0; ListenerIndex < eventListeners.Count; ++ListenerIndex)
         {
-            eventListeners[var2].notifyEntityRemoved(entity);
+            eventListeners[ListenerIndex].notifyEntityRemoved(Entity);
         }
 
     }
 
-    public virtual void Remove(Entity entity)
+    public virtual void Remove(Entity Entity)
     {
-        if (entity.passenger != null)
-        {
-            entity.passenger.setVehicle((Entity)null);
-        }
+        Entity.passenger?.setVehicle(null);
+        Entity.vehicle?.setVehicle(null);
 
-        if (entity.vehicle != null)
-        {
-            entity.setVehicle((Entity)null);
-        }
-
-        entity.markDead();
-        if (entity is EntityPlayer)
-        {
-            players.Remove((EntityPlayer)entity);
-            updateSleepingPlayers();
-        }
-
-    }
-
-    public void serverRemove(Entity entity)
-    {
-        entity.markDead();
-        if (entity is EntityPlayer player)
+        Entity.markDead();
+        
+        if (Entity is EntityPlayer player)
         {
             players.Remove(player);
+            updateSleepingPlayers();
+        }
+    }
+
+    public void serverRemove(Entity Entity)
+    {
+        Entity.markDead();
+        if (Entity is EntityPlayer Player)
+        {
+            players.Remove(Player);
             this.updateSleepingPlayers();
         }
 
-        int var2 = entity.chunkX;
-        int var3 = entity.chunkZ;
-        if (entity.isPersistent && hasChunk(var2, var3))
+        int chunkX = Entity.chunkX;
+        int chunkZ = Entity.chunkZ;
+        if (Entity.isPersistent && hasChunk(chunkX, chunkZ))
         {
-            getChunk(var2, var3).removeEntity(entity);
+            getChunk(chunkX, chunkZ).removeEntity(Entity);
         }
 
-        entities.Remove(entity);
-        NotifyEntityRemoved(entity);
+        entities.Remove(Entity);
+        NotifyEntityRemoved(Entity);
     }
 
-    public void addWorldAccess(IWorldAccess worldAccess)
+    public void addWorldAccess(IWorldAccess WorldAccess)
     {
-        eventListeners.Add(worldAccess);
+        eventListeners.Add(WorldAccess);
     }
 
-    public void removeWorldAccess(IWorldAccess worldAccess)
+    public void removeWorldAccess(IWorldAccess WorldAccess)
     {
-        eventListeners.Remove(worldAccess);
+        eventListeners.Remove(WorldAccess);
     }
 
     public List<Box> getEntityCollisions(Entity entity, Box box)
     {
         collidingBoundingBoxes.Clear();
-        int var3 = MathHelper.floor_double(box.minX);
-        int var4 = MathHelper.floor_double(box.maxX + 1.0D);
-        int var5 = MathHelper.floor_double(box.minY);
-        int var6 = MathHelper.floor_double(box.maxY + 1.0D);
-        int var7 = MathHelper.floor_double(box.minZ);
-        int var8 = MathHelper.floor_double(box.maxZ + 1.0D);
+        int minX = MathHelper.floor_double(box.minX);
+        int maxX = MathHelper.floor_double(box.maxX + 1.0D);
+        int minY = MathHelper.floor_double(box.minY);
+        int maxY = MathHelper.floor_double(box.maxY + 1.0D);
+        int minZ = MathHelper.floor_double(box.minZ);
+        int maxZ = MathHelper.floor_double(box.maxZ + 1.0D);
 
-        for (int var9 = var3; var9 < var4; ++var9)
+        for (int x = minX; x < maxX; ++x)
         {
-            for (int var10 = var7; var10 < var8; ++var10)
+            for (int z = minZ; z < maxZ; ++z)
             {
-                if (isPosLoaded(var9, 64, var10))
+                if (isPosLoaded(x, 64, z))
                 {
-                    for (int var11 = var5 - 1; var11 < var6; ++var11)
+                    for (int y = minY - 1; y < maxY; ++y)
                     {
-                        Block var12 = Block.Blocks[getBlockId(var9, var11, var10)];
-                        if (var12 != null)
+                        Block block = Block.Blocks[getBlockId(x, y, z)];
+                        if (block != null)
                         {
-                            var12.addIntersectingBoundingBox(this, var9, var11, var10, box, collidingBoundingBoxes);
+                            block.addIntersectingBoundingBox(this, x, y, z, box, collidingBoundingBoxes);
                         }
                     }
                 }
             }
         }
 
-        double var14 = 0.25D;
-        List<Entity> var15 = getEntities(entity, box.expand(var14, var14, var14));
+        double expand = 0.25D;
+        List<Entity> nearbyEntities = getEntities(entity, box.expand(expand, expand, expand));
 
-        for (int var16 = 0; var16 < var15.Count; ++var16)
+        for (int idx = 0; idx < nearbyEntities.Count; ++idx)
         {
-            Box? var13 = var15[var16].getBoundingBox();
-            if (var13 != null && var13.Value.intersects(box))
+            Box? entityBox = nearbyEntities[idx].getBoundingBox();
+            if (entityBox != null && entityBox.Value.intersects(box))
             {
-                collidingBoundingBoxes.Add(var13.Value);
+                collidingBoundingBoxes.Add(entityBox.Value);
             }
 
-            var13 = entity.getCollisionAgainstShape(var15[var16]);
-            if (var13 != null && var13.Value.intersects(box))
+            entityBox = entity.getCollisionAgainstShape(nearbyEntities[idx]);
+            if (entityBox != null && entityBox.Value.intersects(box))
             {
-                collidingBoundingBoxes.Add(var13.Value);
+                collidingBoundingBoxes.Add(entityBox.Value);
             }
         }
 
@@ -1293,157 +1207,157 @@ public abstract class World : java.lang.Object, BlockView
 
     public int getAmbientDarkness(float partialTicks)
     {
-        float var2 = getTime(partialTicks);
-        float var3 = 1.0F - (MathHelper.cos(var2 * (float)java.lang.Math.PI * 2.0F) * 2.0F + 0.5F);
-        if (var3 < 0.0F)
+        float timeOfDay = getTime(partialTicks);
+        float timeFactor = 1.0F - (MathHelper.cos(timeOfDay * (float)java.lang.Math.PI * 2.0F) * 2.0F + 0.5F);
+        if (timeFactor < 0.0F)
         {
-            var3 = 0.0F;
+            timeFactor = 0.0F;
         }
 
-        if (var3 > 1.0F)
+        if (timeFactor > 1.0F)
         {
-            var3 = 1.0F;
+            timeFactor = 1.0F;
         }
 
-        var3 = 1.0F - var3;
-        var3 = (float)((double)var3 * (1.0D - (double)(getRainGradient(partialTicks) * 5.0F) / 16.0D));
-        var3 = (float)((double)var3 * (1.0D - (double)(getThunderGradient(partialTicks) * 5.0F) / 16.0D));
-        var3 = 1.0F - var3;
-        return (int)(var3 * 11.0F);
+        timeFactor = 1.0F - timeFactor;
+        timeFactor = (float)((double)timeFactor * (1.0D - (double)(getRainGradient(partialTicks) * 5.0F) / 16.0D));
+        timeFactor = (float)((double)timeFactor * (1.0D - (double)(getThunderGradient(partialTicks) * 5.0F) / 16.0D));
+        timeFactor = 1.0F - timeFactor;
+        return (int)(timeFactor * 11.0F);
     }
 
     public Vector3D<double> getSkyColor(Entity entity, float partialTicks)
     {
-        float var3 = getTime(partialTicks);
-        float var4 = MathHelper.cos(var3 * (float)java.lang.Math.PI * 2.0F) * 2.0F + 0.5F;
-        if (var4 < 0.0F)
+        float timeOfDay = getTime(partialTicks);
+        float brightnessFactor = MathHelper.cos(timeOfDay * (float)java.lang.Math.PI * 2.0F) * 2.0F + 0.5F;
+        if (brightnessFactor < 0.0F)
         {
-            var4 = 0.0F;
+            brightnessFactor = 0.0F;
         }
 
-        if (var4 > 1.0F)
+        if (brightnessFactor > 1.0F)
         {
-            var4 = 1.0F;
+            brightnessFactor = 1.0F;
         }
 
-        int var5 = MathHelper.floor_double(entity.x);
-        int var6 = MathHelper.floor_double(entity.z);
-        float var7 = (float)getBiomeSource().GetTemperature(var5, var6);
-        int var8 = getBiomeSource().GetBiome(var5, var6).GetSkyColorByTemp(var7);
-        float var9 = (float)(var8 >> 16 & 255) / 255.0F;
-        float var10 = (float)(var8 >> 8 & 255) / 255.0F;
-        float var11 = (float)(var8 & 255) / 255.0F;
-        var9 *= var4;
-        var10 *= var4;
-        var11 *= var4;
-        float var12 = getRainGradient(partialTicks);
-        float var13;
-        float var14;
-        if (var12 > 0.0F)
+        int posX = MathHelper.floor_double(entity.x);
+        int posZ = MathHelper.floor_double(entity.z);
+        float temperature = (float)getBiomeSource().GetTemperature(posX, posZ);
+        int skyColor = getBiomeSource().GetBiome(posX, posZ).GetSkyColorByTemp(temperature);
+        float r = (float)(skyColor >> 16 & 255) / 255.0F;
+        float g = (float)(skyColor >> 8 & 255) / 255.0F;
+        float b = (float)(skyColor & 255) / 255.0F;
+        r *= brightnessFactor;
+        g *= brightnessFactor;
+        b *= brightnessFactor;
+        float rainGradient = getRainGradient(partialTicks);
+        float mixA;
+        float mixB;
+        if (rainGradient > 0.0F)
         {
-            var13 = (var9 * 0.3F + var10 * 0.59F + var11 * 0.11F) * 0.6F;
-            var14 = 1.0F - var12 * (12.0F / 16.0F);
-            var9 = var9 * var14 + var13 * (1.0F - var14);
-            var10 = var10 * var14 + var13 * (1.0F - var14);
-            var11 = var11 * var14 + var13 * (1.0F - var14);
+            mixA = (r * 0.3F + g * 0.59F + b * 0.11F) * 0.6F;
+            mixB = 1.0F - rainGradient * (12.0F / 16.0F);
+            r = r * mixB + mixA * (1.0F - mixB);
+            g = g * mixB + mixA * (1.0F - mixB);
+            b = b * mixB + mixA * (1.0F - mixB);
         }
 
-        var13 = getThunderGradient(partialTicks);
-        if (var13 > 0.0F)
+        mixA = getThunderGradient(partialTicks);
+        if (mixA > 0.0F)
         {
-            var14 = (var9 * 0.3F + var10 * 0.59F + var11 * 0.11F) * 0.2F;
-            float var15 = 1.0F - var13 * (12.0F / 16.0F);
-            var9 = var9 * var15 + var14 * (1.0F - var15);
-            var10 = var10 * var15 + var14 * (1.0F - var15);
-            var11 = var11 * var15 + var14 * (1.0F - var15);
+            mixB = (r * 0.3F + g * 0.59F + b * 0.11F) * 0.2F;
+            float thunderBlend = 1.0F - mixA * (12.0F / 16.0F);
+            r = r * thunderBlend + mixB * (1.0F - thunderBlend);
+            g = g * thunderBlend + mixB * (1.0F - thunderBlend);
+            b = b * thunderBlend + mixB * (1.0F - thunderBlend);
         }
 
         if (lightningTicksLeft > 0)
         {
-            var14 = (float)lightningTicksLeft - partialTicks;
-            if (var14 > 1.0F)
+            float lightningFactor = (float)lightningTicksLeft - partialTicks;
+            if (lightningFactor > 1.0F)
             {
-                var14 = 1.0F;
+                lightningFactor = 1.0F;
             }
 
-            var14 *= 0.45F;
-            var9 = var9 * (1.0F - var14) + 0.8F * var14;
-            var10 = var10 * (1.0F - var14) + 0.8F * var14;
-            var11 = var11 * (1.0F - var14) + 1.0F * var14;
+            lightningFactor *= 0.45F;
+            r = r * (1.0F - lightningFactor) + 0.8F * lightningFactor;
+            g = g * (1.0F - lightningFactor) + 0.8F * lightningFactor;
+            b = b * (1.0F - lightningFactor) + 1.0F * lightningFactor;
         }
 
-        return new((double)var9, (double)var10, (double)var11);
+        return new((double)r, (double)g, (double)b);
     }
 
-    public float getTime(float var1)
+    public float getTime(float partialTicks)
     {
-        return dimension.getTimeOfDay(properties.WorldTime, var1);
+        return Dimension.getTimeOfDay(properties.WorldTime, partialTicks);
     }
 
     public Vector3D<double> getCloudColor(float partialTicks)
     {
-        float var2 = getTime(partialTicks);
-        float var3 = MathHelper.cos(var2 * (float)java.lang.Math.PI * 2.0F) * 2.0F + 0.5F;
-        if (var3 < 0.0F)
+        float timeOfDay = getTime(partialTicks);
+        float cloudFactor = MathHelper.cos(timeOfDay * (float)java.lang.Math.PI * 2.0F) * 2.0F + 0.5F;
+        if (cloudFactor < 0.0F)
         {
-            var3 = 0.0F;
+            cloudFactor = 0.0F;
         }
 
-        if (var3 > 1.0F)
+        if (cloudFactor > 1.0F)
         {
-            var3 = 1.0F;
+            cloudFactor = 1.0F;
         }
 
-        float var4 = (float)(worldTimeMask >> 16 & 255L) / 255.0F;
-        float var5 = (float)(worldTimeMask >> 8 & 255L) / 255.0F;
-        float var6 = (float)(worldTimeMask & 255L) / 255.0F;
-        float var7 = getRainGradient(partialTicks);
-        float var8;
-        float var9;
-        if (var7 > 0.0F)
+        float r = (float)(worldTimeMask >> 16 & 255L) / 255.0F;
+        float g = (float)(worldTimeMask >> 8 & 255L) / 255.0F;
+        float b = (float)(worldTimeMask & 255L) / 255.0F;
+        float rainGrad = getRainGradient(partialTicks);
+        float mixA;
+        float mixB;
+        if (rainGrad > 0.0F)
         {
-            var8 = (var4 * 0.3F + var5 * 0.59F + var6 * 0.11F) * 0.6F;
-            var9 = 1.0F - var7 * 0.95F;
-            var4 = var4 * var9 + var8 * (1.0F - var9);
-            var5 = var5 * var9 + var8 * (1.0F - var9);
-            var6 = var6 * var9 + var8 * (1.0F - var9);
+            mixA = (r * 0.3F + g * 0.59F + b * 0.11F) * 0.6F;
+            mixB = 1.0F - rainGrad * 0.95F;
+            r = r * mixB + mixA * (1.0F - mixB);
+            g = g * mixB + mixA * (1.0F - mixB);
+            b = b * mixB + mixA * (1.0F - mixB);
         }
 
-        var4 *= var3 * 0.9F + 0.1F;
-        var5 *= var3 * 0.9F + 0.1F;
-        var6 *= var3 * 0.85F + 0.15F;
-        var8 = getThunderGradient(partialTicks);
-        if (var8 > 0.0F)
+        r *= cloudFactor * 0.9F + 0.1F;
+        g *= cloudFactor * 0.9F + 0.1F;
+        b *= cloudFactor * 0.85F + 0.15F;
+        mixA = getThunderGradient(partialTicks);
+        if (mixA > 0.0F)
         {
-            var9 = (var4 * 0.3F + var5 * 0.59F + var6 * 0.11F) * 0.2F;
-            float var10 = 1.0F - var8 * 0.95F;
-            var4 = var4 * var10 + var9 * (1.0F - var10);
-            var5 = var5 * var10 + var9 * (1.0F - var10);
-            var6 = var6 * var10 + var9 * (1.0F - var10);
+            mixB = (r * 0.3F + g * 0.59F + b * 0.11F) * 0.2F;
+            float thunderBlend = 1.0F - mixA * 0.95F;
+            r = r * thunderBlend + mixB * (1.0F - thunderBlend);
+            g = g * thunderBlend + mixB * (1.0F - thunderBlend);
+            b = b * thunderBlend + mixB * (1.0F - thunderBlend);
         }
 
-        return new((double)var4, (double)var5, (double)var6);
+        return new((double)r, (double)g, (double)b);
     }
 
-    public Vector3D<double> getFogColor(float var1)
+    public Vector3D<double> getFogColor(float partialTicks)
     {
-        float var2 = getTime(var1);
-        return dimension.getFogColor(var2, var1);
+        float timeOfDay = getTime(partialTicks);
+        return Dimension.getFogColor(timeOfDay, partialTicks);
     }
 
     public int getTopSolidBlockY(int x, int z)
     {
-        Chunk var3 = getChunkFromPos(x, z);
-        int var4 = 127;
+        Chunk chunk = getChunkFromPos(x, z);
+        int y = 127;
         x &= 15;
 
-        for (z &= 15; var4 > 0; --var4)
+        for (z &= 15; y > 0; --y)
         {
-            int var5 = var3.getBlockId(x, var4, z);
-            Material var6 = var5 == 0 ? Material.Air : Block.Blocks[var5].material;
-            if (var6.BlocksMovement || var6.IsFluid)
+            int blockId = chunk.getBlockId(x, y, z);
+            Material material = blockId == 0 ? Material.Air : Block.Blocks[blockId].material;
+            if (material.BlocksMovement || material.IsFluid)
             {
-                return var4 + 1;
+                return y + 1;
             }
         }
 
@@ -1452,68 +1366,68 @@ public abstract class World : java.lang.Object, BlockView
 
     public float calcualteSkyLightIntensity(float partialTicks)
     {
-        float var2 = getTime(partialTicks);
-        float var3 = 1.0F - (MathHelper.cos(var2 * (float)java.lang.Math.PI * 2.0F) * 2.0F + 12.0F / 16.0F);
-        if (var3 < 0.0F)
+        float timeOfDay = getTime(partialTicks);
+        float intensityFactor = 1.0F - (MathHelper.cos(timeOfDay * (float)java.lang.Math.PI * 2.0F) * 2.0F + 12.0F / 16.0F);
+        if (intensityFactor < 0.0F)
         {
-            var3 = 0.0F;
+            intensityFactor = 0.0F;
         }
 
-        if (var3 > 1.0F)
+        if (intensityFactor > 1.0F)
         {
-            var3 = 1.0F;
+            intensityFactor = 1.0F;
         }
 
-        return var3 * var3 * 0.5F;
+        return intensityFactor * intensityFactor * 0.5F;
     }
 
     public int getSpawnPositionValidityY(int x, int z)
     {
-        Chunk var3 = getChunkFromPos(x, z);
-        int var4 = 127;
+        Chunk chunk = getChunkFromPos(x, z);
+        int y = 127;
         x &= 15;
 
-        for (int var7 = z & 15; var4 > 0; var4--)
+        for (int zLocal = z & 15; y > 0; y--)
         {
-            int var5 = var3.getBlockId(x, var4, var7);
-            if (var5 != 0 && Block.Blocks[var5].material.BlocksMovement)
+            int blockId = chunk.getBlockId(x, y, zLocal);
+            if (blockId != 0 && Block.Blocks[blockId].material.BlocksMovement)
             {
-                return var4 + 1;
+                return y + 1;
             }
         }
 
         return -1;
     }
 
-    public virtual void ScheduleBlockUpdate(int x, int y, int z, int id, int tickRate)
+    public virtual void ScheduleBlockUpdate(int X, int Y, int Z, int Id, int TickRate)
     {
-        BlockEvent var6 = new(x, y, z, id);
-        byte var7 = 8;
+        BlockEvent blockEvent = new(X, Y, Z, Id);
+        byte range = 8;
         if (instantBlockUpdateEnabled)
         {
-            if (isRegionLoaded(var6.x - var7, var6.y - var7, var6.z - var7, var6.x + var7, var6.y + var7, var6.z + var7))
+            if (isRegionLoaded(blockEvent.x - range, blockEvent.y - range, blockEvent.z - range, blockEvent.x + range, blockEvent.y + range, blockEvent.z + range))
             {
-                int var8 = getBlockId(var6.x, var6.y, var6.z);
-                if (var8 == var6.blockId && var8 > 0)
+                int currentBlockId = getBlockId(blockEvent.x, blockEvent.y, blockEvent.z);
+                if (currentBlockId == blockEvent.blockId && currentBlockId > 0)
                 {
-                    Block.Blocks[var8].onTick(this, var6.x, var6.y, var6.z, random);
+                    Block.Blocks[currentBlockId].onTick(this, blockEvent.x, blockEvent.y, blockEvent.z, random);
                 }
             }
 
         }
         else
         {
-            if (isRegionLoaded(x - var7, y - var7, z - var7, x + var7, y + var7, z + var7))
+            if (isRegionLoaded(X - range, Y - range, Z - range, X + range, Y + range, Z + range))
             {
-                if (id > 0)
+                if (Id > 0)
                 {
-                    var6.setScheduledTime((long)tickRate + properties.WorldTime);
+                    blockEvent.setScheduledTime((long)TickRate + properties.WorldTime);
                 }
 
-                if (!scheduledUpdateSet.contains(var6))
+                if (!scheduledUpdateSet.contains(blockEvent))
                 {
-                    scheduledUpdateSet.add(var6);
-                    scheduledUpdates.add(var6);
+                    scheduledUpdateSet.add(blockEvent);
+                    scheduledUpdates.add(blockEvent);
                 }
             }
 
@@ -1524,42 +1438,42 @@ public abstract class World : java.lang.Object, BlockView
     {
         Profiler.Start("updateEntites.updateWeatherEffects");
 
-        int var1;
-        Entity var2;
-        for (var1 = 0; var1 < globalEntities.size(); ++var1)
+        int globalIndex;
+        Entity currentEntity;
+        for (globalIndex = 0; globalIndex < globalEntities.size(); ++globalIndex)
         {
-            var2 = (Entity)globalEntities.get(var1);
-            var2.tick();
-            if (var2.dead)
+            currentEntity = (Entity)globalEntities.get(globalIndex);
+            currentEntity.tick();
+            if (currentEntity.dead)
             {
-                globalEntities.remove(var1--);
+                globalEntities.remove(globalIndex--);
             }
         }
         Profiler.Stop("updateEntites.updateWeatherEffects");
 
-        foreach (var entity in entitiesToUnload)
+        foreach (Entity UnloadedEntity in entitiesToUnload)
         {
-            entities.Remove(entity);
+            entities.Remove(UnloadedEntity);
         }
 
         Profiler.Start("updateEntites.clearUnloadedEntities");
 
-        int var3;
-        int var4;
-        for (var1 = 0; var1 < entitiesToUnload.Count; ++var1)
+        int chunkX;
+        int chunkZ;
+        for (globalIndex = 0; globalIndex < entitiesToUnload.Count; ++globalIndex)
         {
-            var2 = entitiesToUnload[var1];
-            var3 = var2.chunkX;
-            var4 = var2.chunkZ;
-            if (var2.isPersistent && hasChunk(var3, var4))
+            currentEntity = entitiesToUnload[globalIndex];
+            chunkX = currentEntity.chunkX;
+            chunkZ = currentEntity.chunkZ;
+            if (currentEntity.isPersistent && hasChunk(chunkX, chunkZ))
             {
-                getChunk(var3, var4).removeEntity(var2);
+                getChunk(chunkX, chunkZ).removeEntity(currentEntity);
             }
         }
 
-        for (var1 = 0; var1 < entitiesToUnload.Count; ++var1)
+        for (globalIndex = 0; globalIndex < entitiesToUnload.Count; ++globalIndex)
         {
-            NotifyEntityRemoved(entitiesToUnload[var1]);
+            NotifyEntityRemoved(entitiesToUnload[globalIndex]);
         }
 
         entitiesToUnload.Clear();
@@ -1568,36 +1482,36 @@ public abstract class World : java.lang.Object, BlockView
 
         Profiler.Start("updateEntites.updateLoadedEntities");
 
-        for (var1 = 0; var1 < entities.Count; ++var1)
+        for (globalIndex = 0; globalIndex < entities.Count; ++globalIndex)
         {
-            var2 = entities[var1];
-            if (var2.vehicle != null)
+            currentEntity = entities[globalIndex];
+            if (currentEntity.vehicle != null)
             {
-                if (!var2.vehicle.dead && var2.vehicle.passenger == var2)
+                if (!currentEntity.vehicle.dead && currentEntity.vehicle.passenger == currentEntity)
                 {
                     continue;
                 }
 
-                var2.vehicle.passenger = null;
-                var2.vehicle = null;
+                currentEntity.vehicle.passenger = null;
+                currentEntity.vehicle = null;
             }
 
-            if (!var2.dead)
+            if (!currentEntity.dead)
             {
-                updateEntity(var2);
+                updateEntity(currentEntity);
             }
 
-            if (var2.dead)
+            if (currentEntity.dead)
             {
-                var3 = var2.chunkX;
-                var4 = var2.chunkZ;
-                if (var2.isPersistent && hasChunk(var3, var4))
+                chunkX = currentEntity.chunkX;
+                chunkZ = currentEntity.chunkZ;
+                if (currentEntity.isPersistent && hasChunk(chunkX, chunkZ))
                 {
-                    getChunk(var3, var4).removeEntity(var2);
+                    getChunk(chunkX, chunkZ).removeEntity(currentEntity);
                 }
 
-                entities.RemoveAt(var1--);
-                NotifyEntityRemoved(var2);
+                entities.RemoveAt(globalIndex--);
+                NotifyEntityRemoved(currentEntity);
             }
         }
         Profiler.Stop("updateEntites.updateLoadedEntities");
@@ -1608,18 +1522,18 @@ public abstract class World : java.lang.Object, BlockView
 
         for (int i = blockEntities.Count - 1; i >= 0; i--)
         {
-            BlockEntity var5 = blockEntities[i];
-            if (!var5.isRemoved())
+            BlockEntity blockEntity = blockEntities[i];
+            if (!blockEntity.isRemoved())
             {
-                var5.tick();
+                blockEntity.tick();
             }
-            if (var5.isRemoved())
+            if (blockEntity.isRemoved())
             {
                 blockEntities.RemoveAt(i);
-                Chunk var7 = getChunk(var5.x >> 4, var5.z >> 4);
-                if (var7 != null)
+                Chunk chunk = getChunk(blockEntity.x >> 4, blockEntity.z >> 4);
+                if (chunk != null)
                 {
-                    var7.removeBlockEntityAt(var5.x & 15, var5.y, var5.z & 15);
+                    chunk.removeBlockEntityAt(blockEntity.x & 15, blockEntity.y, blockEntity.z & 15);
                 }
             }
         }
@@ -1627,20 +1541,20 @@ public abstract class World : java.lang.Object, BlockView
         processingDeferred = false;
         if (blockEntityUpdateQueue.Count > 0)
         {
-            foreach (BlockEntity var8 in blockEntityUpdateQueue)
+            foreach (BlockEntity queuedBlockEntity in blockEntityUpdateQueue)
             {
-                if (!var8.isRemoved())
+                if (!queuedBlockEntity.isRemoved())
                 {
-                    if (!blockEntities.Contains(var8))
+                    if (!blockEntities.Contains(queuedBlockEntity))
                     {
-                        blockEntities.Add(var8);
+                        blockEntities.Add(queuedBlockEntity);
                     }
-                    Chunk var9 = getChunk(var8.x >> 4, var8.z >> 4);
-                    if (var9 != null)
+                    Chunk targetChunk = getChunk(queuedBlockEntity.x >> 4, queuedBlockEntity.z >> 4);
+                    if (targetChunk != null)
                     {
-                        var9.setBlockEntity(var8.x & 15, var8.y, var8.z & 15, var8);
+                        targetChunk.setBlockEntity(queuedBlockEntity.x & 15, queuedBlockEntity.y, queuedBlockEntity.z & 15, queuedBlockEntity);
                     }
-                    blockUpdateEvent(var8.x, var8.y, var8.z);
+                    blockUpdateEvent(queuedBlockEntity.x, queuedBlockEntity.y, queuedBlockEntity.z);
                 }
             }
             blockEntityUpdateQueue.Clear();
@@ -1669,10 +1583,10 @@ public abstract class World : java.lang.Object, BlockView
 
     public virtual void updateEntity(Entity entity, bool requireLoaded)
     {
-        int var3 = MathHelper.floor_double(entity.x);
-        int var4 = MathHelper.floor_double(entity.z);
-        byte var5 = 32;
-        if (!requireLoaded || isRegionLoaded(var3 - var5, 0, var4 - var5, var3 + var5, 128, var4 + var5))
+        int posX = MathHelper.floor_double(entity.x);
+        int posZ = MathHelper.floor_double(entity.z);
+        byte range = 32;
+        if (!requireLoaded || isRegionLoaded(posX - range, 0, posZ - range, posX + range, 128, posZ + range))
         {
             entity.lastTickX = entity.x;
             entity.lastTickY = entity.y;
@@ -1716,20 +1630,20 @@ public abstract class World : java.lang.Object, BlockView
                 entity.yaw = entity.prevYaw;
             }
 
-            int var6 = MathHelper.floor_double(entity.x / 16.0D);
-            int var7 = MathHelper.floor_double(entity.y / 16.0D);
-            int var8 = MathHelper.floor_double(entity.z / 16.0D);
-            if (!entity.isPersistent || entity.chunkX != var6 || entity.chunkSlice != var7 || entity.chunkZ != var8)
+            int chunkX = MathHelper.floor_double(entity.x / 16.0D);
+            int chunkSlice = MathHelper.floor_double(entity.y / 16.0D);
+            int chunkZ = MathHelper.floor_double(entity.z / 16.0D);
+            if (!entity.isPersistent || entity.chunkX != chunkX || entity.chunkSlice != chunkSlice || entity.chunkZ != chunkZ)
             {
                 if (entity.isPersistent && hasChunk(entity.chunkX, entity.chunkZ))
                 {
                     getChunk(entity.chunkX, entity.chunkZ).removeEntity(entity, entity.chunkSlice);
                 }
 
-                if (hasChunk(var6, var8))
+                if (hasChunk(chunkX, chunkZ))
                 {
                     entity.isPersistent = true;
-                    getChunk(var6, var8).addEntity(entity);
+                    getChunk(chunkX, chunkZ).addEntity(entity);
                 }
                 else
                 {
@@ -1755,12 +1669,12 @@ public abstract class World : java.lang.Object, BlockView
 
     public bool canSpawnEntity(Box box)
     {
-        List<Entity> var2 = getEntities((Entity)null, box);
+        List<Entity> nearby = getEntities((Entity)null, box);
 
-        for (int var3 = 0; var3 < var2.Count; ++var3)
+        for (int i = 0; i < nearby.Count; ++i)
         {
-            Entity var4 = var2[var3];
-            if (!var4.dead && var4.preventEntitySpawning)
+            Entity e = nearby[i];
+            if (!e.dead && e.preventEntitySpawning)
             {
                 return false;
             }
@@ -1771,35 +1685,35 @@ public abstract class World : java.lang.Object, BlockView
 
     public bool isAnyBlockInBox(Box box)
     {
-        int var2 = MathHelper.floor(box.minX);
-        int var3 = MathHelper.floor(box.maxX + 1.0);
-        int var4 = MathHelper.floor(box.minY);
-        int var5 = MathHelper.floor(box.maxY + 1.0);
-        int var6 = MathHelper.floor(box.minZ);
-        int var7 = MathHelper.floor(box.maxZ + 1.0);
+        int minX = MathHelper.floor(box.minX);
+        int maxX = MathHelper.floor(box.maxX + 1.0);
+        int minY = MathHelper.floor(box.minY);
+        int maxY = MathHelper.floor(box.maxY + 1.0);
+        int minZ = MathHelper.floor(box.minZ);
+        int maxZ = MathHelper.floor(box.maxZ + 1.0);
         if (box.minX < 0.0)
         {
-            var2--;
+            minX--;
         }
 
         if (box.minY < 0.0)
         {
-            var4--;
+            minY--;
         }
 
         if (box.minZ < 0.0)
         {
-            var6--;
+            minZ--;
         }
 
-        for (int var8 = var2; var8 < var3; var8++)
+        for (int x = minX; x < maxX; x++)
         {
-            for (int var9 = var4; var9 < var5; var9++)
+            for (int y = minY; y < maxY; y++)
             {
-                for (int var10 = var6; var10 < var7; var10++)
+                for (int z = minZ; z < maxZ; z++)
                 {
-                    Block var11 = Block.Blocks[getBlockId(var8, var9, var10)];
-                    if (var11 != null)
+                    Block block = Block.Blocks[getBlockId(x, y, z)];
+                    if (block != null)
                     {
                         return true;
                     }
@@ -1812,35 +1726,35 @@ public abstract class World : java.lang.Object, BlockView
 
     public bool isBoxSubmergedInFluid(Box box)
     {
-        int var2 = MathHelper.floor_double(box.minX);
-        int var3 = MathHelper.floor_double(box.maxX + 1.0D);
-        int var4 = MathHelper.floor_double(box.minY);
-        int var5 = MathHelper.floor_double(box.maxY + 1.0D);
-        int var6 = MathHelper.floor_double(box.minZ);
-        int var7 = MathHelper.floor_double(box.maxZ + 1.0D);
+        int minX = MathHelper.floor_double(box.minX);
+        int maxX = MathHelper.floor_double(box.maxX + 1.0D);
+        int minY = MathHelper.floor_double(box.minY);
+        int maxY = MathHelper.floor_double(box.maxY + 1.0D);
+        int minZ = MathHelper.floor_double(box.minZ);
+        int maxZ = MathHelper.floor_double(box.maxZ + 1.0D);
         if (box.minX < 0.0D)
         {
-            --var2;
+            --minX;
         }
 
         if (box.minY < 0.0D)
         {
-            --var4;
+            --minY;
         }
 
         if (box.minZ < 0.0D)
         {
-            --var6;
+            --minZ;
         }
 
-        for (int var8 = var2; var8 < var3; ++var8)
+        for (int x = minX; x < maxX; ++x)
         {
-            for (int var9 = var4; var9 < var5; ++var9)
+            for (int y = minY; y < maxY; ++y)
             {
-                for (int var10 = var6; var10 < var7; ++var10)
+                for (int z = minZ; z < maxZ; ++z)
                 {
-                    Block var11 = Block.Blocks[getBlockId(var8, var9, var10)];
-                    if (var11 != null && var11.material.IsFluid)
+                    Block block = Block.Blocks[getBlockId(x, y, z)];
+                    if (block != null && block.material.IsFluid)
                     {
                         return true;
                     }
@@ -1853,22 +1767,22 @@ public abstract class World : java.lang.Object, BlockView
 
     public bool isFireOrLavaInBox(Box box)
     {
-        int var2 = MathHelper.floor_double(box.minX);
-        int var3 = MathHelper.floor_double(box.maxX + 1.0D);
-        int var4 = MathHelper.floor_double(box.minY);
-        int var5 = MathHelper.floor_double(box.maxY + 1.0D);
-        int var6 = MathHelper.floor_double(box.minZ);
-        int var7 = MathHelper.floor_double(box.maxZ + 1.0D);
-        if (isRegionLoaded(var2, var4, var6, var3, var5, var7))
+        int MinX = MathHelper.floor_double(box.minX);
+        int MaxX = MathHelper.floor_double(box.maxX + 1.0D);
+        int MinY = MathHelper.floor_double(box.minY);
+        int MaxY = MathHelper.floor_double(box.maxY + 1.0D);
+        int MinZ = MathHelper.floor_double(box.minZ);
+        int MaxZ = MathHelper.floor_double(box.maxZ + 1.0D);
+        if (isRegionLoaded(MinX, MinY, MinZ, MaxX, MaxY, MaxZ))
         {
-            for (int var8 = var2; var8 < var3; ++var8)
+            for (int X = MinX; X < MaxX; ++X)
             {
-                for (int var9 = var4; var9 < var5; ++var9)
+                for (int Y = MinY; Y < MaxY; ++Y)
                 {
-                    for (int var10 = var6; var10 < var7; ++var10)
+                    for (int Z = MinZ; Z < MaxZ; ++Z)
                     {
-                        int var11 = getBlockId(var8, var9, var10);
-                        if (var11 == Block.Fire.id || var11 == Block.FlowingLava.id || var11 == Block.Lava.id)
+                        int blockId = getBlockId(X, Y, Z);
+                        if (blockId == Block.Fire.id || blockId == Block.FlowingLava.id || blockId == Block.Lava.id)
                         {
                             return true;
                         }
@@ -1882,71 +1796,71 @@ public abstract class World : java.lang.Object, BlockView
 
     public bool updateMovementInFluid(Box entityBox, Material fluidMaterial, Entity entity)
     {
-        int var4 = MathHelper.floor_double(entityBox.minX);
-        int var5 = MathHelper.floor_double(entityBox.maxX + 1.0D);
-        int var6 = MathHelper.floor_double(entityBox.minY);
-        int var7 = MathHelper.floor_double(entityBox.maxY + 1.0D);
-        int var8 = MathHelper.floor_double(entityBox.minZ);
-        int var9 = MathHelper.floor_double(entityBox.maxZ + 1.0D);
-        if (!isRegionLoaded(var4, var6, var8, var5, var7, var9))
+        int MinX = MathHelper.floor_double(entityBox.minX);
+        int MaxX = MathHelper.floor_double(entityBox.maxX + 1.0D);
+        int MinY = MathHelper.floor_double(entityBox.minY);
+        int MaxY = MathHelper.floor_double(entityBox.maxY + 1.0D);
+        int MinZ = MathHelper.floor_double(entityBox.minZ);
+        int MaxZ = MathHelper.floor_double(entityBox.maxZ + 1.0D);
+        if (!isRegionLoaded(MinX, MinY, MinZ, MaxX, MaxY, MaxZ))
         {
             return false;
         }
         else
         {
-            bool var10 = false;
-            Vec3D var11 = new Vec3D(0.0D, 0.0D, 0.0D);
+            bool FoundFluid = false;
+            Vec3D FlowVector = new Vec3D(0.0D, 0.0D, 0.0D);
 
-            for (int var12 = var4; var12 < var5; ++var12)
+            for (int X = MinX; X < MaxX; ++X)
             {
-                for (int var13 = var6; var13 < var7; ++var13)
+                for (int Y = MinY; Y < MaxY; ++Y)
                 {
-                    for (int var14 = var8; var14 < var9; ++var14)
+                    for (int Z = MinZ; Z < MaxZ; ++Z)
                     {
-                        Block var15 = Block.Blocks[getBlockId(var12, var13, var14)];
-                        if (var15 != null && var15.material == fluidMaterial)
+                        Block BlockAt = Block.Blocks[getBlockId(X, Y, Z)];
+                        if (BlockAt != null && BlockAt.material == fluidMaterial)
                         {
-                            double var16 = (double)((float)(var13 + 1) - BlockFluid.getFluidHeightFromMeta(getBlockMeta(var12, var13, var14)));
-                            if ((double)var7 >= var16)
+                            double FluidHeight = (double)((float)(Y + 1) - BlockFluid.getFluidHeightFromMeta(getBlockMeta(X, Y, Z)));
+                            if ((double)MaxY >= FluidHeight)
                             {
-                                var10 = true;
-                                var15.applyVelocity(this, var12, var13, var14, entity, var11);
+                                FoundFluid = true;
+                                BlockAt.applyVelocity(this, X, Y, Z, entity, FlowVector);
                             }
                         }
                     }
                 }
             }
 
-            if (var11.magnitude() > 0.0D)
+            if (FlowVector.magnitude() > 0.0D)
             {
-                var11 = var11.normalize();
-                double var18 = 0.014D;
-                entity.velocityX += var11.x * var18;
-                entity.velocityY += var11.y * var18;
-                entity.velocityZ += var11.z * var18;
+                FlowVector = FlowVector.normalize();
+                double PushFactor = 0.014D;
+                entity.velocityX += FlowVector.x * PushFactor;
+                entity.velocityY += FlowVector.y * PushFactor;
+                entity.velocityZ += FlowVector.z * PushFactor;
             }
 
-            return var10;
+            return FoundFluid;
         }
     }
 
     public bool isMaterialInBox(Box box, Material material)
     {
-        int var3 = MathHelper.floor_double(box.minX);
-        int var4 = MathHelper.floor_double(box.maxX + 1.0D);
-        int var5 = MathHelper.floor_double(box.minY);
-        int var6 = MathHelper.floor_double(box.maxY + 1.0D);
-        int var7 = MathHelper.floor_double(box.minZ);
-        int var8 = MathHelper.floor_double(box.maxZ + 1.0D);
+        int MinX = MathHelper.floor_double(box.minX);
+        int MaxX = MathHelper.floor_double(box.maxX + 1.0D);
+        int MinY = MathHelper.floor_double(box.minY);
+        int MaxY = MathHelper.floor_double(box.maxY + 1.0D);
+        int MinZ = MathHelper.floor_double(box.minZ);
+        int MaxZ = MathHelper.floor_double(box.maxZ + 1.0D);
 
-        for (int var9 = var3; var9 < var4; ++var9)
+        for (int X = MinX; X < MaxX; ++X)
         {
-            for (int var10 = var5; var10 < var6; ++var10)
+            for (int Y = MinY; Y < MaxY; ++Y)
             {
-                for (int var11 = var7; var11 < var8; ++var11)
+                for (int Z = MinZ; Z < MaxZ; ++Z)
                 {
-                    Block var12 = Block.Blocks[getBlockId(var9, var10, var11)];
-                    if (var12 != null && var12.material == material)
+                    Block BlockAt = Block.Blocks[getBlockId(X, Y, Z)];
+                    if (BlockAt != null && BlockAt.material == material)
                     {
                         return true;
                     }
@@ -1959,30 +1873,30 @@ public abstract class World : java.lang.Object, BlockView
 
     public bool isFluidInBox(Box box, Material fluid)
     {
-        int var3 = MathHelper.floor_double(box.minX);
-        int var4 = MathHelper.floor_double(box.maxX + 1.0D);
-        int var5 = MathHelper.floor_double(box.minY);
-        int var6 = MathHelper.floor_double(box.maxY + 1.0D);
-        int var7 = MathHelper.floor_double(box.minZ);
-        int var8 = MathHelper.floor_double(box.maxZ + 1.0D);
+        int MinX = MathHelper.floor_double(box.minX);
+        int MaxX = MathHelper.floor_double(box.maxX + 1.0D);
+        int MinY = MathHelper.floor_double(box.minY);
+        int MaxY = MathHelper.floor_double(box.maxY + 1.0D);
+        int MinZ = MathHelper.floor_double(box.minZ);
+        int MaxZ = MathHelper.floor_double(box.maxZ + 1.0D);
 
-        for (int var9 = var3; var9 < var4; ++var9)
+        for (int X = MinX; X < MaxX; ++X)
         {
-            for (int var10 = var5; var10 < var6; ++var10)
+            for (int Y = MinY; Y < MaxY; ++Y)
             {
-                for (int var11 = var7; var11 < var8; ++var11)
+                for (int Z = MinZ; Z < MaxZ; ++Z)
                 {
-                    Block var12 = Block.Blocks[getBlockId(var9, var10, var11)];
-                    if (var12 != null && var12.material == fluid)
+                    Block BlockAt = Block.Blocks[getBlockId(X, Y, Z)];
+                    if (BlockAt != null && BlockAt.material == fluid)
                     {
-                        int var13 = getBlockMeta(var9, var10, var11);
-                        double var14 = (double)(var10 + 1);
-                        if (var13 < 8)
+                        int Meta = getBlockMeta(X, Y, Z);
+                        double FluidTop = (double)(Y + 1);
+                        if (Meta < 8)
                         {
-                            var14 = (double)(var10 + 1) - (double)var13 / 8.0D;
+                            FluidTop = (double)(Y + 1) - (double)Meta / 8.0D;
                         }
 
-                        if (var14 >= box.minY)
+                        if (FluidTop >= box.minY)
                         {
                             return true;
                         }
@@ -1994,80 +1908,78 @@ public abstract class World : java.lang.Object, BlockView
         return false;
     }
 
-    public Explosion createExplosion(Entity source, double x, double y, double z, float power)
+    public Explosion createExplosion(Entity EntitySource, double X, double Y, double Z, float Power)
     {
-        return createExplosion(source, x, y, z, power, false);
+        return createExplosion(EntitySource, X, Y, Z, Power, false);
     }
 
-    public virtual Explosion createExplosion(Entity source, double x, double y, double z, float power, bool fire)
+    public virtual Explosion createExplosion(Entity source, double X, double Y, double Z, float Power, bool IsFire)
     {
-        Explosion var10 = new(this, source, x, y, z, power);
-        var10.isFlaming = fire;
-        var10.doExplosionA();
-        var10.doExplosionB(true);
-        return var10;
+        Explosion Explosion = new(this, source, X, Y, Z, Power);
+        Explosion.isFlaming = IsFire;
+        Explosion.doExplosionA();
+        Explosion.doExplosionB(true);
+        return Explosion;
     }
 
     public float getVisibilityRatio(Vec3D vec, Box box)
     {
-        double var3 = 1.0D / ((box.maxX - box.minX) * 2.0D + 1.0D);
-        double var5 = 1.0D / ((box.maxY - box.minY) * 2.0D + 1.0D);
-        double var7 = 1.0D / ((box.maxZ - box.minZ) * 2.0D + 1.0D);
-        int var9 = 0;
-        int var10 = 0;
-
-        for (float var11 = 0.0F; var11 <= 1.0F; var11 = (float)((double)var11 + var3))
+        double StepX = 1.0D / ((box.maxX - box.minX) * 2.0D + 1.0D);
+        double StepY = 1.0D / ((box.maxY - box.minY) * 2.0D + 1.0D);
+        double StepZ = 1.0D / ((box.maxZ - box.minZ) * 2.0D + 1.0D);
+        int VisibleCount = 0;
+        int TotalCount = 0;
+        for (float sampleX = 0.0F; sampleX <= 1.0F; sampleX = (float)((double)sampleX + StepX))
         {
-            for (float var12 = 0.0F; var12 <= 1.0F; var12 = (float)((double)var12 + var5))
+            for (float sampleY = 0.0F; sampleY <= 1.0F; sampleY = (float)((double)sampleY + StepY))
             {
-                for (float var13 = 0.0F; var13 <= 1.0F; var13 = (float)((double)var13 + var7))
+                for (float sampleZ = 0.0F; sampleZ <= 1.0F; sampleZ = (float)((double)sampleZ + StepZ))
                 {
-                    double var14 = box.minX + (box.maxX - box.minX) * (double)var11;
-                    double var16 = box.minY + (box.maxY - box.minY) * (double)var12;
-                    double var18 = box.minZ + (box.maxZ - box.minZ) * (double)var13;
-                    if (raycast(new Vec3D(var14, var16, var18), vec) == null)
+                    double sampleXCoord = box.minX + (box.maxX - box.minX) * (double)sampleX;
+                    double sampleYCoord = box.minY + (box.maxY - box.minY) * (double)sampleY;
+                    double sampleZCoord = box.minZ + (box.maxZ - box.minZ) * (double)sampleZ;
+                    if (raycast(new Vec3D(sampleXCoord, sampleYCoord, sampleZCoord), vec) == null)
                     {
-                        ++var9;
+                        ++VisibleCount;
                     }
 
-                    ++var10;
+                    ++TotalCount;
                 }
             }
         }
 
-        return (float)var9 / (float)var10;
+        if (TotalCount == 0)
+        {
+            return 0.0F;
+        }
+
+        return (float)VisibleCount / (float)TotalCount;
     }
 
     public void extinguishFire(EntityPlayer player, int x, int y, int z, int direction)
     {
-        if (direction == 0)
+        switch (direction)
         {
-            --y;
-        }
-
-        if (direction == 1)
-        {
-            ++y;
-        }
-
-        if (direction == 2)
-        {
-            --z;
-        }
-
-        if (direction == 3)
-        {
-            ++z;
-        }
-
-        if (direction == 4)
-        {
-            --x;
-        }
-
-        if (direction == 5)
-        {
-            ++x;
+            case 0:
+                --y;
+                break;
+            case 1:
+                ++y;
+                break;
+            case 2:
+                --z;
+                break;
+            case 3:
+                ++z;
+                break;
+            case 4:
+                --x;
+                break;
+            case 5:
+                ++x;
+                break;
+            default:
+                break;
         }
 
         if (getBlockId(x, y, z) == Block.Fire.id)
@@ -2093,69 +2005,69 @@ public abstract class World : java.lang.Object, BlockView
         return chunkSource.getDebugInfo();
     }
 
-    public BlockEntity getBlockEntity(int x, int y, int z)
+    public BlockEntity getBlockEntity(int X, int Y, int Z)
     {
-        Chunk var4 = getChunk(x >> 4, z >> 4);
-        return var4 != null ? var4.getBlockEntity(x & 15, y, z & 15) : null;
+        Chunk chunk = getChunk(X >> 4, Z >> 4);
+        return chunk != null ? chunk.getBlockEntity(X & 15, Y, Z & 15) : null;
     }
 
-    public void setBlockEntity(int x, int y, int z, BlockEntity blockEntity)
+    public void setBlockEntity(int X, int Y, int Z, BlockEntity blockEntity)
     {
         if (!blockEntity.isRemoved())
         {
             if (processingDeferred)
             {
-                blockEntity.x = x;
-                blockEntity.y = y;
-                blockEntity.z = z;
+                blockEntity.x = X;
+                blockEntity.y = Y;
+                blockEntity.z = Z;
                 blockEntityUpdateQueue.Add(blockEntity);
             }
             else
             {
                 blockEntities.Add(blockEntity);
-                Chunk var5 = getChunk(x >> 4, z >> 4);
-                if (var5 != null)
+                Chunk chunk = getChunk(X >> 4, Z >> 4);
+                if (chunk != null)
                 {
-                    var5.setBlockEntity(x & 15, y, z & 15, blockEntity);
+                    chunk.setBlockEntity(X & 15, Y, Z & 15, blockEntity);
                 }
             }
         }
 
     }
 
-    public void removeBlockEntity(int x, int y, int z)
+    public void removeBlockEntity(int X, int Y, int Z)
     {
-        BlockEntity var4 = getBlockEntity(x, y, z);
-        if (var4 != null && processingDeferred)
+        BlockEntity blockEntityAt = getBlockEntity(X, Y, Z);
+        if (blockEntityAt != null && processingDeferred)
         {
-            var4.markRemoved();
+            blockEntityAt.markRemoved();
         }
         else
         {
-            if (var4 != null)
+            if (blockEntityAt != null)
             {
-                blockEntities.Remove(var4);
+                blockEntities.Remove(blockEntityAt);
             }
 
-            Chunk var5 = getChunk(x >> 4, z >> 4);
-            if (var5 != null)
+            Chunk chunk = getChunk(X >> 4, Z >> 4);
+            if (chunk != null)
             {
-                var5.removeBlockEntityAt(x & 15, y, z & 15);
+                chunk.removeBlockEntityAt(X & 15, Y, Z & 15);
             }
         }
 
     }
 
-    public bool isOpaque(int x, int y, int z)
+    public bool isOpaque(int X, int Y, int Z)
     {
-        Block var4 = Block.Blocks[getBlockId(x, y, z)];
-        return var4 == null ? false : var4.isOpaque();
+        Block block = Block.Blocks[getBlockId(X, Y, Z)];
+        return block == null ? false : block.isOpaque();
     }
 
-    public bool shouldSuffocate(int x, int y, int z)
+    public bool shouldSuffocate(int X, int Y, int Z)
     {
-        Block var4 = Block.Blocks[getBlockId(x, y, z)];
-        return var4 == null ? false : var4.material.Suffocates && var4.isFullCube();
+        Block Block = Block.Blocks[getBlockId(X, Y, Z)];
+        return Block == null ? false : Block.material.Suffocates && Block.isFullCube();
     }
 
     public void savingProgress(LoadingDisplay display)
@@ -2173,18 +2085,18 @@ public abstract class World : java.lang.Object, BlockView
         {
             ++lightingUpdatesCounter;
 
-            bool var2;
+            bool Result;
             try
             {
-                int var1 = 500;
+                int iterations = 500;
 
                 while (lightingQueue.Count > 0)
                 {
-                    --var1;
-                    if (var1 <= 0)
+                    --iterations;
+                    if (iterations <= 0)
                     {
-                        var2 = true;
-                        return var2;
+                        Result = true;
+                        return Result;
                     }
 
                     int lastIndex = lightingQueue.Count - 1;
@@ -2194,14 +2106,14 @@ public abstract class World : java.lang.Object, BlockView
                     mcb.updateLight(this);
                 }
 
-                var2 = false;
+                Result = false;
             }
             finally
             {
                 --lightingUpdatesCounter;
             }
 
-            return var2;
+            return Result;
         }
     }
 
@@ -2212,7 +2124,7 @@ public abstract class World : java.lang.Object, BlockView
 
     public void queueLightUpdate(LightType type, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, bool bl)
     {
-        if (!dimension.hasCeiling || type != LightType.Sky)
+        if (!Dimension.hasCeiling || type != LightType.Sky)
         {
             ++lightingUpdatesScheduled;
 
@@ -2223,31 +2135,31 @@ public abstract class World : java.lang.Object, BlockView
                     return;
                 }
 
-                int var9 = (maxX + minX) / 2;
-                int var10 = (maxZ + minZ) / 2;
-                if (isPosLoaded(var9, 64, var10))
+                int centerX = (maxX + minX) / 2;
+                int centerZ = (maxZ + minZ) / 2;
+                if (isPosLoaded(centerX, 64, centerZ))
                 {
-                    if (getChunkFromPos(var9, var10).isEmpty())
+                    if (getChunkFromPos(centerX, centerZ).isEmpty())
                     {
                         return;
                     }
 
-                    int var11 = lightingQueue.Count;
-                    int var12;
-                    var span = CollectionsMarshal.AsSpan(lightingQueue);
+                    int queueCount = lightingQueue.Count;
+                    int spanCount;
+                    Span<LightUpdate> LightingQueueSpan = CollectionsMarshal.AsSpan(lightingQueue);
 
                     if (bl)
                     {
-                        var12 = 5;
-                        if (var12 > var11)
+                        spanCount = 5;
+                        if (spanCount > queueCount)
                         {
-                            var12 = var11;
+                            spanCount = queueCount;
                         }
 
-                        for (int var13 = 0; var13 < var12; ++var13)
+                        for (int i = 0; i < spanCount; ++i)
                         {
-                            ref LightUpdate var14 = ref span[lightingQueue.Count - var13 - 1];
-                            if (var14.lightType == type && var14.expand(minX, minY, minZ, maxX, maxY, maxZ))
+                            ref LightUpdate updateRef = ref LightingQueueSpan[lightingQueue.Count - i - 1];
+                            if (updateRef.lightType == type && updateRef.expand(minX, minY, minZ, maxX, maxY, maxZ))
                             {
                                 return;
                             }
@@ -2255,10 +2167,10 @@ public abstract class World : java.lang.Object, BlockView
                     }
 
                     lightingQueue.Add(new LightUpdate(type, minX, minY, minZ, maxX, maxY, maxZ));
-                    var12 = 1000000;
+                    spanCount = 1000000;
                     if (lightingQueue.Count > 1000000)
                     {
-                        java.lang.System.@out.println("More than " + var12 + " updates, aborting lighting updates");
+                        java.lang.System.@out.println("More than " + spanCount + " updates, aborting lighting updates");
                         lightingQueue.Clear();
                     }
 
@@ -2275,10 +2187,10 @@ public abstract class World : java.lang.Object, BlockView
 
     public void updateSkyBrightness()
     {
-        int var1 = getAmbientDarkness(1.0F);
-        if (var1 != ambientDarkness)
+        int ambient = getAmbientDarkness(1.0F);
+        if (ambient != ambientDarkness)
         {
-            ambientDarkness = var1;
+            ambientDarkness = ambient;
         }
 
     }
@@ -2292,19 +2204,19 @@ public abstract class World : java.lang.Object, BlockView
     public virtual void Tick(int renderDistance)
     {
         UpdateWeatherCycles();
-        long var2;
+        long newWorldTime;
         if (canSkipNight())
         {
-            bool var1 = false;
+            bool monstersSpawned = false;
             if (spawnHostileMobs && difficulty >= 1)
             {
-                var1 = NaturalSpawner.spawnMonstersAndWakePlayers(this, players);
+                monstersSpawned = NaturalSpawner.spawnMonstersAndWakePlayers(this, players);
             }
 
-            if (!var1)
+            if (!monstersSpawned)
             {
-                var2 = properties.WorldTime + 24000L;
-                properties.WorldTime = var2 - var2 % 24000L;
+                newWorldTime = properties.WorldTime + 24000L;
+                properties.WorldTime = newWorldTime - newWorldTime % 24000L;
                 afterSkipNight();
             }
         }
@@ -2316,20 +2228,20 @@ public abstract class World : java.lang.Object, BlockView
         Profiler.Stop("unload100OldestChunks");
 
         Profiler.Start("updateSkylightSubtracted");
-        int var4 = getAmbientDarkness(1.0F);
-        if (var4 != ambientDarkness)
+        int newAmbient = getAmbientDarkness(1.0F);
+        if (newAmbient != ambientDarkness)
         {
-            ambientDarkness = var4;
+            ambientDarkness = newAmbient;
 
-            for (int var5 = 0; var5 < eventListeners.Count; ++var5)
+            for (int listenerIndex = 0; listenerIndex < eventListeners.Count; ++listenerIndex)
             {
-                eventListeners[var5].notifyAmbientDarknessChanged();
+                eventListeners[listenerIndex].notifyAmbientDarknessChanged();
             }
         }
         Profiler.Stop("updateSkylightSubtracted");
 
-        var2 = properties.WorldTime + 1L;
-        if (var2 % (long)autosavePeriod == 0L)
+        newWorldTime = properties.WorldTime + 1L;
+        if (newWorldTime % (long)autosavePeriod == 0L)
         {
             Profiler.PushGroup("autosave");
             saveWithLoadingDisplay(false, (LoadingDisplay)null);
@@ -2338,7 +2250,7 @@ public abstract class World : java.lang.Object, BlockView
             chunkSource.markChunksForUnload(renderDistance);
         }
 
-        properties.WorldTime = var2;
+        properties.WorldTime = newWorldTime;
         Profiler.Start("tickUpdates");
         ProcessScheduledTicks(false);
         Profiler.Stop("tickUpdates");
@@ -2360,15 +2272,15 @@ public abstract class World : java.lang.Object, BlockView
 
     protected virtual void UpdateWeatherCycles()
     {
-        if (!dimension.hasCeiling)
+        if (!Dimension.hasCeiling)
         {
             if (ticksSinceLightning > 0)
             {
                 --ticksSinceLightning;
             }
 
-            int var1 = properties.ThunderTime;
-            if (var1 <= 0)
+            int thunderTimeRemaining = properties.ThunderTime;
+            if (thunderTimeRemaining <= 0)
             {
                 if (properties.IsThundering)
                 {
@@ -2381,16 +2293,16 @@ public abstract class World : java.lang.Object, BlockView
             }
             else
             {
-                --var1;
-                properties.ThunderTime = var1;
-                if (var1 <= 0)
+                --thunderTimeRemaining;
+                properties.ThunderTime = thunderTimeRemaining;
+                if (thunderTimeRemaining <= 0)
                 {
                     properties.IsThundering = !properties.IsThundering;
                 }
             }
 
-            int var2 = properties.RainTime;
-            if (var2 <= 0)
+            int rainTimeRemaining = properties.RainTime;
+            if (rainTimeRemaining <= 0)
             {
                 if (properties.IsRaining)
                 {
@@ -2403,9 +2315,9 @@ public abstract class World : java.lang.Object, BlockView
             }
             else
             {
-                --var2;
-                properties.RainTime = var2;
-                if (var2 <= 0)
+                --rainTimeRemaining;
+                properties.RainTime = rainTimeRemaining;
+                if (rainTimeRemaining <= 0)
                 {
                     properties.IsRaining = !properties.IsRaining;
                 }
@@ -2469,11 +2381,11 @@ public abstract class World : java.lang.Object, BlockView
         int var4;
         int var6;
         int var7;
-        for (int var1 = 0; var1 < players.Count; ++var1)
+        for (int i = 0; i < players.Count; ++i)
         {
-            EntityPlayer var2 = players[var1];
-            var3 = MathHelper.floor_double(var2.x / 16.0D);
-            var4 = MathHelper.floor_double(var2.z / 16.0D);
+            EntityPlayer Player = players[i];
+            var3 = MathHelper.floor_double(Player.x / 16.0D);
+            var4 = MathHelper.floor_double(Player.z / 16.0D);
             byte var5 = 9;
 
             for (var6 = -var5; var6 <= var5; ++var6)
@@ -2613,16 +2525,16 @@ public abstract class World : java.lang.Object, BlockView
         }
     }
 
-    public void displayTick(int x, int y, int z)
+    public void displayTick(int X, int Y, int Z)
     {
         byte var4 = 16;
         java.util.Random var5 = new();
 
         for (int var6 = 0; var6 < 1000; ++var6)
         {
-            int var7 = x + random.nextInt(var4) - random.nextInt(var4);
-            int var8 = y + random.nextInt(var4) - random.nextInt(var4);
-            int var9 = z + random.nextInt(var4) - random.nextInt(var4);
+            int var7 = X + random.nextInt(var4) - random.nextInt(var4);
+            int var8 = Y + random.nextInt(var4) - random.nextInt(var4);
+            int var9 = Z + random.nextInt(var4) - random.nextInt(var4);
             int var10 = getBlockId(var7, var8, var9);
             if (var10 > 0)
             {
@@ -2681,16 +2593,16 @@ public abstract class World : java.lang.Object, BlockView
         return entities;
     }
 
-    public void updateBlockEntity(int x, int y, int z, BlockEntity blockEntity)
+    public void updateBlockEntity(int X, int Y, int Z, BlockEntity blockEntity)
     {
-        if (isPosLoaded(x, y, z))
+        if (isPosLoaded(X, Y, Z))
         {
-            getChunkFromPos(x, z).markDirty();
+            getChunkFromPos(X, Z).markDirty();
         }
 
         for (int var5 = 0; var5 < eventListeners.Count; ++var5)
         {
-            eventListeners[var5].updateBlockEntity(x, y, z, blockEntity);
+            eventListeners[var5].updateBlockEntity(X, Y, Z, blockEntity);
         }
 
     }
@@ -2735,179 +2647,179 @@ public abstract class World : java.lang.Object, BlockView
 
     }
 
-    public bool canPlace(int blockId, int x, int y, int z, bool fallingBlock, int side)
+    public bool canPlace(int blockId, int X, int Y, int Z, bool fallingBlock, int side)
     {
-        int var7 = getBlockId(x, y, z);
-        Block var8 = Block.Blocks[var7];
-        Block var9 = Block.Blocks[blockId];
-        Box? var10 = var9.getCollisionShape(this, x, y, z);
+        int ExistingBlockId = getBlockId(X, Y, Z);
+        Block ExistingBlock = Block.Blocks[ExistingBlockId];
+        Block BlockToPlace = Block.Blocks[blockId];
+        Box? CollisionShape = BlockToPlace.getCollisionShape(this, X, Y, Z);
         if (fallingBlock)
         {
-            var10 = null;
+            CollisionShape = null;
         }
 
-        if (var10 != null && !canSpawnEntity(var10.Value))
+        if (CollisionShape != null && !canSpawnEntity(CollisionShape.Value))
         {
             return false;
         }
         else
         {
-            if (var8 == Block.FlowingWater || var8 == Block.Water || var8 == Block.FlowingLava || var8 == Block.Lava || var8 == Block.Fire || var8 == Block.Snow)
+            if (ExistingBlock == Block.FlowingWater || ExistingBlock == Block.Water || ExistingBlock == Block.FlowingLava || ExistingBlock == Block.Lava || ExistingBlock == Block.Fire || ExistingBlock == Block.Snow)
             {
-                var8 = null;
+                ExistingBlock = null;
             }
 
-            return blockId > 0 && var8 == null && var9.canPlaceAt(this, x, y, z, side);
+            return blockId > 0 && ExistingBlock == null && BlockToPlace.canPlaceAt(this, X, Y, Z, side);
         }
     }
 
-    public PathEntity findPath(Entity entity, Entity target, float range)
+    public PathEntity findPath(Entity entity, Entity target, float Range)
     {
-        int var4 = MathHelper.floor_double(entity.x);
-        int var5 = MathHelper.floor_double(entity.y);
-        int var6 = MathHelper.floor_double(entity.z);
-        int var7 = (int)(range + 16.0F);
-        int var8 = var4 - var7;
-        int var9 = var5 - var7;
-        int var10 = var6 - var7;
-        int var11 = var4 + var7;
-        int var12 = var5 + var7;
-        int var13 = var6 + var7;
-        WorldRegion var14 = new(this, var8, var9, var10, var11, var12, var13);
-        return (new Pathfinder(var14)).createEntityPathTo(entity, target, range);
+        int EntityX = MathHelper.floor_double(entity.x);
+        int EntityY = MathHelper.floor_double(entity.y);
+        int EntityZ = MathHelper.floor_double(entity.z);
+        int RangeMargin = (int)(Range + 16.0F);
+        int MinX = EntityX - RangeMargin;
+        int MinY = EntityY - RangeMargin;
+        int MinZ = EntityZ - RangeMargin;
+        int MaxX = EntityX + RangeMargin;
+        int MaxY = EntityY + RangeMargin;
+        int MaxZ = EntityZ + RangeMargin;
+        WorldRegion SearchRegion = new(this, MinX, MinY, MinZ, MaxX, MaxY, MaxZ);
+        return (new Pathfinder(SearchRegion)).createEntityPathTo(entity, target, Range);
     }
 
-    public PathEntity findPath(Entity entity, int x, int y, int z, float range)
+    public PathEntity findPath(Entity entity, int X, int Y, int Z, float Range)
     {
-        int var6 = MathHelper.floor_double(entity.x);
-        int var7 = MathHelper.floor_double(entity.y);
-        int var8 = MathHelper.floor_double(entity.z);
-        int var9 = (int)(range + 8.0F);
-        int var10 = var6 - var9;
-        int var11 = var7 - var9;
-        int var12 = var8 - var9;
-        int var13 = var6 + var9;
-        int var14 = var7 + var9;
-        int var15 = var8 + var9;
-        WorldRegion var16 = new(this, var10, var11, var12, var13, var14, var15);
-        return (new Pathfinder(var16)).createEntityPathTo(entity, x, y, z, range);
+        int EntityX = MathHelper.floor_double(entity.x);
+        int EntityY = MathHelper.floor_double(entity.y);
+        int EntityZ = MathHelper.floor_double(entity.z);
+        int RangeMargin = (int)(Range + 8.0F);
+        int MinX = EntityX - RangeMargin;
+        int MinY = EntityY - RangeMargin;
+        int MinZ = EntityZ - RangeMargin;
+        int MaxX = EntityX + RangeMargin;
+        int MaxY = EntityY + RangeMargin;
+        int MaxZ = EntityZ + RangeMargin;
+        WorldRegion SearchRegion = new(this, MinX, MinY, MinZ, MaxX, MaxY, MaxZ);
+        return (new Pathfinder(SearchRegion)).createEntityPathTo(entity, X, Y, Z, Range);
     }
 
-    public bool isStrongPoweringSide(int x, int y, int z, int side)
+    public bool isStrongPoweringSide(int X, int Y, int Z, int Side)
     {
-        int var5 = getBlockId(x, y, z);
-        return var5 == 0 ? false : Block.Blocks[var5].isStrongPoweringSide(this, x, y, z, side);
+        int BlockId = getBlockId(X, Y, Z);
+        return BlockId == 0 ? false : Block.Blocks[BlockId].isStrongPoweringSide(this, X, Y, Z, Side);
     }
 
-    public bool isStrongPowered(int x, int y, int z)
+    public bool isStrongPowered(int X, int Y, int Z)
     {
-        return isStrongPoweringSide(x, y - 1, z, 0) ? true : (isStrongPoweringSide(x, y + 1, z, 1) ? true : (isStrongPoweringSide(x, y, z - 1, 2) ? true : (isStrongPoweringSide(x, y, z + 1, 3) ? true : (isStrongPoweringSide(x - 1, y, z, 4) ? true : isStrongPoweringSide(x + 1, y, z, 5)))));
+        return isStrongPoweringSide(X, Y - 1, Z, 0) ? true : (isStrongPoweringSide(X, Y + 1, Z, 1) ? true : (isStrongPoweringSide(X, Y, Z - 1, 2) ? true : (isStrongPoweringSide(X, Y, Z + 1, 3) ? true : (isStrongPoweringSide(X - 1, Y, Z, 4) ? true : isStrongPoweringSide(X + 1, Y, Z, 5)))));
     }
 
-    public bool isPoweringSide(int x, int y, int z, int side)
+    public bool isPoweringSide(int X, int Y, int Z, int Side)
     {
-        if (shouldSuffocate(x, y, z))
+        if (shouldSuffocate(X, Y, Z))
         {
-            return isStrongPowered(x, y, z);
+            return isStrongPowered(X, Y, Z);
         }
         else
         {
-            int var5 = getBlockId(x, y, z);
-            return var5 == 0 ? false : Block.Blocks[var5].isPoweringSide(this, x, y, z, side);
+            int BlockId = getBlockId(X, Y, Z);
+            return BlockId == 0 ? false : Block.Blocks[BlockId].isPoweringSide(this, X, Y, Z, Side);
         }
     }
 
-    public bool isPowered(int x, int y, int z)
+    public bool isPowered(int X, int Y, int Z)
     {
-        return isPoweringSide(x, y - 1, z, 0) ? true : (isPoweringSide(x, y + 1, z, 1) ? true : (isPoweringSide(x, y, z - 1, 2) ? true : (isPoweringSide(x, y, z + 1, 3) ? true : (isPoweringSide(x - 1, y, z, 4) ? true : isPoweringSide(x + 1, y, z, 5)))));
+        return isPoweringSide(X, Y - 1, Z, 0) ? true : (isPoweringSide(X, Y + 1, Z, 1) ? true : (isPoweringSide(X, Y, Z - 1, 2) ? true : (isPoweringSide(X, Y, Z + 1, 3) ? true : (isPoweringSide(X - 1, Y, Z, 4) ? true : isPoweringSide(X + 1, Y, Z, 5)))));
     }
 
-    public EntityPlayer getClosestPlayer(Entity entity, double range)
+    public EntityPlayer getClosestPlayer(Entity entity, double Range)
     {
-        return getClosestPlayer(entity.x, entity.y, entity.z, range);
+        return getClosestPlayer(entity.x, entity.y, entity.z, Range);
     }
 
-    public EntityPlayer getClosestPlayer(double x, double y, double z, double range)
+    public EntityPlayer getClosestPlayer(double X, double Y, double Z, double Range)
     {
-        double var9 = -1.0D;
-        EntityPlayer var11 = null;
+        double MinDistance = -1.0D;
+        EntityPlayer ClosestPlayer = null;
 
-        for (int var12 = 0; var12 < players.Count; ++var12)
+        for (int i = 0; i < players.Count; ++i)
         {
-            EntityPlayer var13 = players[var12];
-            double var14 = var13.getSquaredDistance(x, y, z);
-            if ((range < 0.0D || var14 < range * range) && (var9 == -1.0D || var14 < var9))
+            EntityPlayer CurrentPlayer = players[i];
+            double SquaredDistance = CurrentPlayer.getSquaredDistance(X, Y, Z);
+            if ((Range < 0.0D || SquaredDistance < Range * Range) && (MinDistance == -1.0D || SquaredDistance < MinDistance))
             {
-                var9 = var14;
-                var11 = var13;
+                MinDistance = SquaredDistance;
+                ClosestPlayer = CurrentPlayer;
             }
         }
 
-        return var11;
+        return ClosestPlayer;
     }
 
-    public EntityPlayer getPlayer(string name)
+    public EntityPlayer getPlayer(string Name)
     {
-        for (int var2 = 0; var2 < players.Count; ++var2)
+        for (int PlayerIndex = 0; PlayerIndex < players.Count; ++PlayerIndex)
         {
-            if (name.Equals(players[var2].name))
+            if (Name.Equals(players[PlayerIndex].name))
             {
-                return players[var2];
+                return players[PlayerIndex];
             }
         }
 
         return null;
     }
 
-    public void handleChunkDataUpdate(int x, int y, int z, int sideX, int sideY, int sideZ, byte[] chunkData)
+    public void handleChunkDataUpdate(int X, int Y, int Z, int SideX, int SideY, int SideZ, byte[] ChunkData)
     {
-        int var8 = x >> 4;
-        int var9 = z >> 4;
-        int var10 = x + sideX - 1 >> 4;
-        int var11 = z + sideZ - 1 >> 4;
-        int var12 = 0;
-        int var13 = y;
-        int var14 = y + sideY;
-        if (y < 0)
+        int StartChunkX = X >> 4;
+        int StartChunkZ = Z >> 4;
+        int EndChunkX = X + SideX - 1 >> 4;
+        int EndChunkZ = Z + SideZ - 1 >> 4;
+        int DataOffset = 0;
+        int MinY = Y;
+        int MaxY = Y + SideY;
+        if (Y < 0)
         {
-            var13 = 0;
+            MinY = 0;
         }
 
-        if (var14 > 128)
+        if (MaxY > 128)
         {
-            var14 = 128;
+            MaxY = 128;
         }
 
-        for (int var15 = var8; var15 <= var10; ++var15)
+        for (int CurrentChunkX = StartChunkX; CurrentChunkX <= EndChunkX; ++CurrentChunkX)
         {
-            int var16 = x - var15 * 16;
-            int var17 = x + sideX - var15 * 16;
-            if (var16 < 0)
+            int MinLocalX = X - CurrentChunkX * 16;
+            int MaxLocalX = X + SideX - CurrentChunkX * 16;
+            if (MinLocalX < 0)
             {
-                var16 = 0;
+                MinLocalX = 0;
             }
 
-            if (var17 > 16)
+            if (MaxLocalX > 16)
             {
-                var17 = 16;
+                MaxLocalX = 16;
             }
 
-            for (int var18 = var9; var18 <= var11; ++var18)
+            for (int CurrentChunkZ = StartChunkZ; CurrentChunkZ <= EndChunkZ; ++CurrentChunkZ)
             {
-                int var19 = z - var18 * 16;
-                int var20 = z + sideZ - var18 * 16;
-                if (var19 < 0)
+                int MinLocalZ = Z - CurrentChunkZ * 16;
+                int MaxLocalZ = Z + SideZ - CurrentChunkZ * 16;
+                if (MinLocalZ < 0)
                 {
-                    var19 = 0;
+                    MinLocalZ = 0;
                 }
 
-                if (var20 > 16)
+                if (MaxLocalZ > 16)
                 {
-                    var20 = 16;
+                    MaxLocalZ = 16;
                 }
 
-                var12 = getChunk(var15, var18).loadFromPacket(chunkData, var16, var13, var19, var17, var14, var20, var12);
-                setBlocksDirty(var15 * 16 + var16, var13, var18 * 16 + var19, var15 * 16 + var17, var14, var18 * 16 + var20);
+                DataOffset = getChunk(CurrentChunkX, CurrentChunkZ).loadFromPacket(ChunkData, MinLocalX, MinY, MinLocalZ, MaxLocalX, MaxY, MaxLocalZ, DataOffset);
+                setBlocksDirty(CurrentChunkX * 16 + MinLocalX, MinY, CurrentChunkZ * 16 + MinLocalZ, CurrentChunkX * 16 + MaxLocalX, MaxY, CurrentChunkZ * 16 + MaxLocalZ);
             }
         }
 
@@ -2917,59 +2829,59 @@ public abstract class World : java.lang.Object, BlockView
     {
     }
 
-    public byte[] getChunkData(int x, int y, int z, int sizeX, int sizeY, int sizeZ)
+    public byte[] getChunkData(int X, int Y, int Z, int sizeX, int SizeY, int SizeZ)
     {
-        byte[] var7 = new byte[sizeX * sizeY * sizeZ * 5 / 2];
-        int var8 = x >> 4;
-        int var9 = z >> 4;
-        int var10 = x + sizeX - 1 >> 4;
-        int var11 = z + sizeZ - 1 >> 4;
-        int var12 = 0;
-        int var13 = y;
-        int var14 = y + sizeY;
-        if (y < 0)
+        byte[] ChunkDataBuffer = new byte[sizeX * SizeY * SizeZ * 5 / 2];
+        int StartChunkX = X >> 4;
+        int StartChunkZ = Z >> 4;
+        int EndChunkX = X + sizeX - 1 >> 4;
+        int EndChunkZ = Z + SizeZ - 1 >> 4;
+        int DataOffset = 0;
+        int AdjustedMinY = Y;
+        int AdjustedMaxY = Y + SizeY;
+        if (Y < 0)
         {
-            var13 = 0;
+            AdjustedMinY = 0;
         }
 
-        if (var14 > 128)
+        if (AdjustedMaxY > 128)
         {
-            var14 = 128;
+            AdjustedMaxY = 128;
         }
 
-        for (int var15 = var8; var15 <= var10; var15++)
+        for (int CurrentChunkX = StartChunkX; CurrentChunkX <= EndChunkX; CurrentChunkX++)
         {
-            int var16 = x - var15 * 16;
-            int var17 = x + sizeX - var15 * 16;
-            if (var16 < 0)
+            int AdjustedMinLocalX = X - CurrentChunkX * 16;
+            int AdjustedMaxLocalX = X + sizeX - CurrentChunkX * 16;
+            if (AdjustedMinLocalX < 0)
             {
-                var16 = 0;
+                AdjustedMinLocalX = 0;
             }
 
-            if (var17 > 16)
+            if (AdjustedMaxLocalX > 16)
             {
-                var17 = 16;
+                AdjustedMaxLocalX = 16;
             }
 
-            for (int var18 = var9; var18 <= var11; var18++)
+            for (int CurrentChunkZ = StartChunkZ; CurrentChunkZ <= EndChunkZ; CurrentChunkZ++)
             {
-                int var19 = z - var18 * 16;
-                int var20 = z + sizeZ - var18 * 16;
-                if (var19 < 0)
+                int AdjustedMinLocalZ = Z - CurrentChunkZ * 16;
+                int AdjustedMaxLocalZ = Z + SizeZ - CurrentChunkZ * 16;
+                if (AdjustedMinLocalZ < 0)
                 {
-                    var19 = 0;
+                    AdjustedMinLocalZ = 0;
                 }
 
-                if (var20 > 16)
+                if (AdjustedMaxLocalZ > 16)
                 {
-                    var20 = 16;
+                    AdjustedMaxLocalZ = 16;
                 }
 
-                var12 = getChunk(var15, var18).toPacket(var7, var16, var13, var19, var17, var14, var20, var12);
+                DataOffset = getChunk(CurrentChunkX, CurrentChunkZ).toPacket(ChunkDataBuffer, AdjustedMinLocalX, AdjustedMinY, AdjustedMinLocalZ, AdjustedMaxLocalX, AdjustedMaxY, AdjustedMaxLocalZ, DataOffset);
             }
         }
 
-        return var7;
+        return ChunkDataBuffer;
     }
 
     public void checkSessionLock()
@@ -2984,13 +2896,13 @@ public abstract class World : java.lang.Object, BlockView
 
     public void synchronizeTimeAndUpdates(long time)
     {
-        long var3 = time - properties.WorldTime;
+        long TimeDifference = time - properties.WorldTime;
 
-        var iter = scheduledUpdateSet.iterator();
-        while (iter.hasNext())
+        Iterator ScheduledUpdateIterator = scheduledUpdateSet.iterator();
+        while (ScheduledUpdateIterator.hasNext())
         {
-            var obj = (BlockEvent)iter.next();
-            obj.ticks += var3;
+            BlockEvent ScheduledBlockEvent = (BlockEvent)ScheduledUpdateIterator.next();
+            ScheduledBlockEvent.ticks += TimeDifference;
         }
 
         setTime(time);
@@ -3018,15 +2930,15 @@ public abstract class World : java.lang.Object, BlockView
 
     public void loadChunksNearEntity(Entity entity)
     {
-        int var2 = MathHelper.floor_double(entity.x / 16.0D);
-        int var3 = MathHelper.floor_double(entity.z / 16.0D);
-        byte var4 = 2;
+        int EntityChunkX = MathHelper.floor_double(entity.x / 16.0D);
+        int EntityChunkZ = MathHelper.floor_double(entity.z / 16.0D);
+        byte LoadRadius = 2;
 
-        for (int var5 = var2 - var4; var5 <= var2 + var4; ++var5)
+        for (int CurrentChunkX = EntityChunkX - LoadRadius; CurrentChunkX <= EntityChunkX + LoadRadius; ++CurrentChunkX)
         {
-            for (int var6 = var3 - var4; var6 <= var3 + var4; ++var6)
+            for (int CurrentChunkZ = EntityChunkZ - LoadRadius; CurrentChunkZ <= EntityChunkZ + LoadRadius; ++CurrentChunkZ)
             {
-                getChunk(var5, var6);
+                getChunk(CurrentChunkX, CurrentChunkZ);
             }
         }
 
@@ -3037,7 +2949,7 @@ public abstract class World : java.lang.Object, BlockView
 
     }
 
-    public virtual bool canInteract(EntityPlayer player, int x, int y, int z)
+    public virtual bool canInteract(EntityPlayer player, int X, int Y, int Z)
     {
         return true;
     }
@@ -3048,9 +2960,9 @@ public abstract class World : java.lang.Object, BlockView
 
     public void updateEntityLists()
     {
-        foreach (var entity in entitiesToUnload)
+        foreach (Entity EntityToUnload in entitiesToUnload)
         {
-            entities.Remove(entity);
+            entities.Remove(EntityToUnload);
         }
 
         int var1;
@@ -3110,12 +3022,12 @@ public abstract class World : java.lang.Object, BlockView
         return chunkSource;
     }
 
-    public virtual void playNoteBlockActionAt(int x, int y, int z, int soundType, int pitch)
+    public virtual void playNoteBlockActionAt(int X, int Y, int Z, int SoundType, int Pitch)
     {
-        int var6 = getBlockId(x, y, z);
+        int var6 = getBlockId(X, Y, Z);
         if (var6 > 0)
         {
-            Block.Blocks[var6].onBlockAction(this, x, y, z, soundType, pitch);
+            Block.Blocks[var6].onBlockAction(this, X, Y, Z, SoundType, Pitch);
         }
 
     }
@@ -3128,8 +3040,8 @@ public abstract class World : java.lang.Object, BlockView
     public void updateSleepingPlayers()
     {
         allPlayersSleeping = players.Count > 0;
-        foreach (var player in players) {
-            if (!player.isSleeping())
+        foreach (EntityPlayer CurrentPlayer in players) {
+            if (!CurrentPlayer.isSleeping())
             {
                 allPlayersSleeping = false;
                 break;
@@ -3141,10 +3053,10 @@ public abstract class World : java.lang.Object, BlockView
     protected void afterSkipNight()
     {
         allPlayersSleeping = false;
-        foreach (var player in players) {
-            if (player.isSleeping())
+        foreach (EntityPlayer SleepingPlayer in players) {
+            if (SleepingPlayer.isSleeping())
             {
-                player.wakeUp(false, false, true);
+                SleepingPlayer.wakeUp(false, false, true);
             }
         }
 
@@ -3160,20 +3072,20 @@ public abstract class World : java.lang.Object, BlockView
         return players.All(player => player.isPlayerFullyAsleep());
     }
 
-    public float getThunderGradient(float delta)
+    public float getThunderGradient(float Delta)
     {
-        return (prevThunderingStrength + (thunderingStrength - prevThunderingStrength) * delta) * getRainGradient(delta);
+        return (prevThunderingStrength + (thunderingStrength - prevThunderingStrength) * Delta) * getRainGradient(Delta);
     }
 
-    public float getRainGradient(float delta)
+    public float getRainGradient(float Delta)
     {
-        return prevRainingStrength + (rainingStrength - prevRainingStrength) * delta;
+        return prevRainingStrength + (rainingStrength - prevRainingStrength) * Delta;
     }
 
-    public void setRainGradient(float rainGradient)
+    public void setRainGradient(float RainGradient)
     {
-        prevRainingStrength = rainGradient;
-        rainingStrength = rainGradient;
+        prevRainingStrength = RainGradient;
+        rainingStrength = RainGradient;
     }
 
     public bool isThundering()
@@ -3186,52 +3098,52 @@ public abstract class World : java.lang.Object, BlockView
         return (double)getRainGradient(1.0F) > 0.2D;
     }
 
-    public bool isRaining(int x, int y, int z)
+    public bool isRaining(int X, int Y, int Z)
     {
         if (!isRaining())
         {
             return false;
         }
-        else if (!hasSkyLight(x, y, z))
+        else if (!hasSkyLight(X, Y, Z))
         {
             return false;
         }
-        else if (getTopSolidBlockY(x, z) > y)
+        else if (getTopSolidBlockY(X, Z) > Y)
         {
             return false;
         }
         else
         {
-            Biome var4 = getBiomeSource().GetBiome(x, z);
+            Biome var4 = getBiomeSource().GetBiome(X, Z);
             return var4.GetEnableSnow() ? false : var4.CanSpawnLightningBolt();
         }
     }
 
-    public void setState(string id, PersistentState state)
+    public void setState(string Id, PersistentState State)
     {
-        persistentStateManager.setData(id, state);
+        persistentStateManager.setData(Id, State);
     }
 
-    public PersistentState getOrCreateState(Class @class, string id)
+    public PersistentState getOrCreateState(Class @class, string Id)
     {
-        return persistentStateManager.loadData(@class, id);
+        return persistentStateManager.loadData(@class, Id);
     }
 
-    public int getIdCount(string id)
+    public int getIdCount(string Id)
     {
-        return persistentStateManager.getUniqueDataId(id);
+        return persistentStateManager.getUniqueDataId(Id);
     }
 
-    public void worldEvent(int @event, int x, int y, int z, int data)
+    public void worldEvent(int @event, int X, int Y, int Z, int Data)
     {
-        worldEvent(null, @event, x, y, z, data);
+        worldEvent(null, @event, X, Y, Z, Data);
     }
 
-    public void worldEvent(EntityPlayer player, int @event, int x, int y, int z, int data)
+    public void worldEvent(EntityPlayer player, int @event, int X, int Y, int Z, int Data)
     {
         for (int var7 = 0; var7 < eventListeners.Count; ++var7)
         {
-            eventListeners[var7].worldEvent(player, @event, x, y, z, data);
+            eventListeners[var7].worldEvent(player, @event, X, Y, Z, Data);
         }
 
     }

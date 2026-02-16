@@ -12,31 +12,31 @@ public class TexturePacks : java.lang.Object
     private readonly java.io.File texturePackDir;
     private string currentTexturePack;
 
-    public TexturePacks(Minecraft var1, java.io.File var2)
+    public TexturePacks(Minecraft mc, java.io.File var2)
     {
-        mc = var1;
+        this.mc = mc;
         texturePackDir = new java.io.File(var2, "texturepacks");
         if (!texturePackDir.exists())
         {
             texturePackDir.mkdirs();
         }
 
-        currentTexturePack = var1.options.skin;
+        currentTexturePack = mc.options.skin;
         updateAvaliableTexturePacks();
         selectedTexturePack.func_6482_a();
     }
 
-    public bool setTexturePack(TexturePack var1)
+    public bool setTexturePack(TexturePack TexturePack)
     {
-        if (var1 == selectedTexturePack)
+        if (TexturePack == selectedTexturePack)
         {
             return false;
         }
         else
         {
             selectedTexturePack.closeTexturePackFile();
-            currentTexturePack = var1.texturePackFileName;
-            selectedTexturePack = var1;
+            currentTexturePack = TexturePack.texturePackFileName;
+            selectedTexturePack = TexturePack;
             mc.options.skin = currentTexturePack;
             mc.options.saveOptions();
             selectedTexturePack.func_6482_a();

@@ -8,20 +8,20 @@ namespace BetaSharp.Entities;
 public class EntityChicken : EntityAnimal
 {
     public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityChicken).TypeHandle);
-    public bool field_753_a = false;
-    public float field_752_b = 0.0F;
-    public float destPos = 0.0F;
-    public float field_757_d;
-    public float field_756_e;
-    public float field_755_h = 1.0F;
-    public int timeUntilNextEgg;
+    public bool IsWingFlapping = false;
+    public float WingRotation = 0.0F;
+    public float DestPos = 0.0F;
+    public float PreviousDestPos;
+    public float PreviousWingRotation;
+    public float WingRotationSpeed = 1.0F;
+    public int TimeUntilNextEgg;
 
-    public EntityChicken(World world) : base(world)
+    public EntityChicken(World World) : base(World)
     {
         texture = "/mob/chicken.png";
         setBoundingBoxSpacing(0.3F, 0.4F);
         health = 4;
-        timeUntilNextEgg = random.nextInt(6000) + 6000;
+        TimeUntilNextEgg = random.nextInt(6000) + 6000;
     }
 
     public override void tickMovement()
@@ -31,52 +31,52 @@ public class EntityChicken : EntityAnimal
         {
             onGround = System.Math.Abs(y - prevY) < 0.02D;
         }
-        field_756_e = field_752_b;
-        field_757_d = destPos;
-        destPos = (float)((double)destPos + (double)(onGround ? -1 : 4) * 0.3D);
-        if (destPos < 0.0F)
+        PreviousWingRotation = WingRotation;
+        PreviousDestPos = DestPos;
+        DestPos = (float)((double)DestPos + (double)(onGround ? -1 : 4) * 0.3D);
+        if (DestPos < 0.0F)
         {
-            destPos = 0.0F;
+            DestPos = 0.0F;
         }
 
-        if (destPos > 1.0F)
+        if (DestPos > 1.0F)
         {
-            destPos = 1.0F;
+            DestPos = 1.0F;
         }
 
-        if (!onGround && field_755_h < 1.0F)
+        if (!onGround && WingRotationSpeed < 1.0F)
         {
-            field_755_h = 1.0F;
+            WingRotationSpeed = 1.0F;
         }
 
-        field_755_h = (float)((double)field_755_h * 0.9D);
+        WingRotationSpeed = (float)((double)WingRotationSpeed * 0.9D);
         if (!onGround && velocityY < 0.0D)
         {
             velocityY *= 0.6D;
         }
 
-        field_752_b += field_755_h * 2.0F;
-        if (!world.isRemote && --timeUntilNextEgg <= 0)
+        WingRotation += WingRotationSpeed * 2.0F;
+        if (!world.isRemote && --TimeUntilNextEgg <= 0)
         {
             world.playSound(this, "mob.chickenplop", 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
             dropItem(Item.EGG.id, 1);
-            timeUntilNextEgg = random.nextInt(6000) + 6000;
+            TimeUntilNextEgg = random.nextInt(6000) + 6000;
         }
 
     }
 
-    protected override void onLanding(float fallDistance)
+    protected override void onLanding(float FallDistance)
     {
     }
 
-    public override void writeNbt(NBTTagCompound nbt)
+    public override void writeNbt(NBTTagCompound NBT)
     {
-        base.writeNbt(nbt);
+        base.writeNbt(NBT);
     }
 
-    public override void readNbt(NBTTagCompound nbt)
+    public override void readNbt(NBTTagCompound NBT)
     {
-        base.readNbt(nbt);
+        base.readNbt(NBT);
     }
 
     protected override string getLivingSound()

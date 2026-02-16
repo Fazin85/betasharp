@@ -10,106 +10,112 @@ namespace BetaSharp.Worlds;
 
 public class WorldRegionSnapshot : BlockView, IDisposable
 {
-    private readonly int _chunkX;
-    private readonly int _chunkZ;
-    private readonly ChunkSnapshot[][] _chunks;
-    private readonly float[] _lightTable;
-    private readonly int _skylightSubtracted;
-    private readonly BiomeSource _biomeSource;
-    private bool _isLit = false;
-    private readonly Dictionary<BlockPos, BlockEntity> _tileEntityCache = [];
+    private readonly int ChunkX;
+    private readonly int ChunkZ;
+    private readonly ChunkSnapshot[][] Chunks;
+    private readonly float[] LightTable;
+    private readonly int SkylightSubtracted;
+    private readonly BiomeSource BiomeSource;
+    private bool IsLit = false;
+    private readonly Dictionary<BlockPos, BlockEntity> TileEntityCache = [];
 
-    public WorldRegionSnapshot(World world, int minX, int var3, int minZ, int maxX, int var6, int maxZ)
+    public WorldRegionSnapshot(World World, int MinX, int var3, int MinZ, int MaxX, int var6, int MaxZ)
     {
-        //TODO: OPTIMIZE THIS
-        _biomeSource = new(world);
+        BiomeSource = new(World);
 
-        _chunkX = minX >> 4;
-        _chunkZ = minZ >> 4;
-        int maxChunkX = maxX >> 4;
-        int maxChunkZ = maxZ >> 4;
+        ChunkX = MinX >> 4;
+        ChunkZ = MinZ >> 4;
+        int MaxChunkX = MaxX >> 4;
+        int MaxChunkZ = MaxZ >> 4;
 
-        int width = maxChunkX - _chunkX + 1;
-        int depth = maxChunkZ - _chunkZ + 1;
+        int Width = MaxChunkX - ChunkX + 1;
+        int Depth = MaxChunkZ - ChunkZ + 1;
 
-        _chunks = new ChunkSnapshot[width][];
-        for (int i = 0; i < _chunks.Length; i++)
+        Chunks = new ChunkSnapshot[Width][];
+        for (int i = 0; i < Width; i++)
         {
-            _chunks[i] = new ChunkSnapshot[depth];
-        }
-
-        for (int cx = _chunkX; cx <= maxChunkX; ++cx)
-        {
-            for (int cz = _chunkZ; cz <= maxChunkZ; ++cz)
+            ChunkSnapshot[] row = new ChunkSnapshot[Depth];
+            for (int j = 0; j < Depth; j++)
             {
-                Chunk originalChunk = world.getChunk(cx, cz);
-                _chunks[cx - _chunkX][cz - _chunkZ] = new(originalChunk);
+                int cx = ChunkX + i;
+                int cz = ChunkZ + j;
+                Chunk originalChunk = World.getChunk(cx, cz);
+                row[j] = new(originalChunk);
             }
+            Chunks[i] = row;
         }
 
-        _lightTable = (float[])world.dimension.lightLevelToLuminance.Clone();
-        _skylightSubtracted = world.ambientDarkness;
+        LightTable = (float[])World.Dimension.lightLevelToLuminance.Clone();
+        SkylightSubtracted = World.ambientDarkness;
     }
 
     public int getBlockId(int x, int y, int z)
     {
         if (y is < 0 or >= 128) return 0;
 
-        int chunkIdxX = (x >> 4) - _chunkX;
-        int chunkIdxZ = (z >> 4) - _chunkZ;
+        int ChunkIdX = (x >> 4) - ChunkX;
+        int ChunkIdZ = (z >> 4) - ChunkZ;
 
-        if (chunkIdxX >= 0 && chunkIdxX < _chunks.Length &&
-            chunkIdxZ >= 0 && chunkIdxZ < _chunks[chunkIdxX].Length)
+        if (ChunkIdX >= 0 && ChunkIdX < Chunks.Length &&
+            ChunkIdZ >= 0 && ChunkIdZ < Chunks[ChunkIdX].Length)
         {
-            ChunkSnapshot chunk = _chunks[chunkIdxX][chunkIdxZ];
-            return chunk == null ? 0 : chunk.getBlockID(x & 15, y, z & 15);
+            ChunkSnapshot Chunk = Chunks[ChunkIdX][ChunkIdZ];
+            return Chunk == null ? 0 : Chunk.getBlockID(x & 15, y, z & 15);
         }
 
         return 0;
     }
 
-    public Material getMaterial(int x, int y, int z)
+    public Material getMaterial(int X, int Y, int Z)
     {
-        int blockId = getBlockId(x, y, z);
-        return blockId == 0 ? Material.Air : Block.Blocks[blockId].material;
+        int BlockId = getBlockId(X, Y, Z);
+        return BlockId == 0 ? Material.Air : Block.Blocks[BlockId].material;
     }
 
-    public int getBlockMeta(int x, int y, int z)
+    public int getBlockMeta(int X, int Y, int Z)
     {
-        if (y is < 0 or >= 128) return 0;
+        if (Y is < 0 or >= 128) return 0;
 
-        int chunkIdxX = (x >> 4) - _chunkX;
-        int chunkIdxZ = (z >> 4) - _chunkZ;
-        return _chunks[chunkIdxX][chunkIdxZ].getBlockMetadata(x & 15, y, z & 15);
+        int chunkIdxX = (X >> 4) - ChunkX;
+        int chunkIdxZ = (Z >> 4) - ChunkZ;
+        
+        if (chunkIdxX >= 0 && chunkIdxX < Chunks.Length &&
+            chunkIdxZ >= 0 && chunkIdxZ < Chunks[chunkIdxX].Length)
+        {
+            ChunkSnapshot chunk = Chunks[chunkIdxX][chunkIdxZ];
+            return chunk == null ? 0 : chunk.getBlockMetadata(X & 15, Y, Z & 15);
+        }
+        
+        return 0;
     }
 
-    public BlockEntity? getBlockEntity(int x, int y, int z)
+    public BlockEntity? getBlockEntity(int X, int Y, int Z)
     {
-        if (y is < 0 or >= 128) return null;
+        if (Y is < 0 or >= 128) return null;
 
-        var pos = new BlockPos(x, y, z);
-        if (_tileEntityCache.TryGetValue(pos, out BlockEntity? entity))
+        var pos = new BlockPos(X, Y, Z);
+        if (TileEntityCache.TryGetValue(pos, out BlockEntity? entity))
         {
             return entity;
         }
 
-        int chunkIdxX = (x >> 4) - _chunkX;
-        int chunkIdxZ = (z >> 4) - _chunkZ;
+        int ChunkIdX = (X >> 4) - ChunkX;
+        int ChunkIdZ = (Z >> 4) - ChunkZ;
 
-        if (chunkIdxX >= 0 && chunkIdxX < _chunks.Length &&
-            chunkIdxZ >= 0 && chunkIdxZ < _chunks[chunkIdxX].Length)
+        if (ChunkIdX >= 0 && ChunkIdX < Chunks.Length &&
+            ChunkIdZ >= 0 && ChunkIdZ < Chunks[ChunkIdX].Length)
         {
-            ChunkSnapshot chunk = _chunks[chunkIdxX][chunkIdxZ];
+            ChunkSnapshot chunk = Chunks[ChunkIdX][ChunkIdZ];
             if (chunk == null) return null;
 
-            NBTTagCompound? nbt = chunk.GetTileEntityNbt(x & 15, y, z & 15);
-            if (nbt != null)
+            NBTTagCompound? NBT = chunk.GetTileEntityNbt(X & 15, Y, Z & 15);
+            if (NBT != null)
             {
-                var newEntity = BlockEntity.createFromNbt(nbt);
-                if (newEntity != null)
+                var NewEntity = BlockEntity.createFromNbt(NBT);
+                if (NewEntity != null)
                 {
-                    _tileEntityCache[pos] = newEntity;
-                    return newEntity;
+                    TileEntityCache[pos] = NewEntity;
+                    return NewEntity;
                 }
             }
         }
@@ -117,85 +123,97 @@ public class WorldRegionSnapshot : BlockView, IDisposable
         return null;
     }
 
-    public float getNaturalBrightness(int x, int y, int z, int minLight)
+    public float getNaturalBrightness(int X, int Y, int Z, int MinLight)
     {
-        int light = getLightValue(x, y, z);
-        return _lightTable[Math.Max(light, minLight)];
+        int light = getLightValue(X, Y, Z);
+        return LightTable[Math.Max(light, MinLight)];
     }
 
-    public float getLuminance(int x, int y, int z)
+    public float getLuminance(int X, int Y, int Z)
     {
-        return _lightTable[getLightValue(x, y, z)];
+        return LightTable[getLightValue(X, Y, Z)];
     }
 
-    public int getLightValue(int x, int y, int z) => GetLightValueExt(x, y, z, true);
+    public int getLightValue(int X, int Y, int Z) => GetLightValueExt(X, Y, Z, true);
 
-    public int GetLightValueExt(int x, int y, int z, bool checkStairs)
+    private bool IsOutsideWorldLimits(int x, int z)
     {
-        // World bounds check
-        if (x < -32000000 || z < -32000000 || x >= 32000000 || z > 32000000) return 15;
-        if (checkStairs)
-        {
-            int blockId = getBlockId(x, y, z);
-            if (blockId == Block.Slab.id || blockId == Block.Farmland.id || blockId == Block.WoodenStairs.id || blockId == Block.CobblestoneStairs.id)
-            {
-                int maxLight = GetLightValueExt(x, y + 1, z, false);
-                maxLight = Math.Max(maxLight, GetLightValueExt(x + 1, y, z, false)); // East
-                maxLight = Math.Max(maxLight, GetLightValueExt(x - 1, y, z, false)); // West
-                maxLight = Math.Max(maxLight, GetLightValueExt(x, y, z + 1, false)); // South
-                maxLight = Math.Max(maxLight, GetLightValueExt(x, y, z - 1, false)); // North
-                return maxLight;
-            }
-        }
+        return x < -32000000 || z < -32000000 || x >= 32000000 || z > 32000000;
+    }
 
+    public int GetLightValueExt(int X, int y, int Z, bool CheckStairs)
+    {
+        if (IsOutsideWorldLimits(X, Z)) return 15;
+        
         if (y < 0) return 0;
         if (y >= 128)
         {
-            return Math.Max(0, 15 - _skylightSubtracted);
+            return Math.Max(0, 15 - SkylightSubtracted);
         }
 
-        int chunkIdxX = (x >> 4) - _chunkX;
-        int chunkIdxZ = (z >> 4) - _chunkZ;
-
-        ChunkSnapshot chunk = _chunks[chunkIdxX][chunkIdxZ];
-
-        int lightValue = chunk.getBlockLightValue(x & 15, y, z & 15, _skylightSubtracted);
-
-        if (chunk.getIsLit())
+        if (CheckStairs)
         {
-            _isLit = true;
+            int BlockId = getBlockId(X, y, Z);
+            if (BlockId == Block.Slab.id || BlockId == Block.Farmland.id || BlockId == Block.WoodenStairs.id || BlockId == Block.CobblestoneStairs.id)
+            {
+                int MaxLight = GetLightValueExt(X, y + 1, Z, false);
+                MaxLight = Math.Max(MaxLight, GetLightValueExt(X + 1, y, Z, false)); // East
+                MaxLight = Math.Max(MaxLight, GetLightValueExt(X - 1, y, Z, false)); // West
+                MaxLight = Math.Max(MaxLight, GetLightValueExt(X, y, Z + 1, false)); // South
+                MaxLight = Math.Max(MaxLight, GetLightValueExt(X, y, Z - 1, false)); // North
+                return MaxLight;
+            }
         }
 
-        return lightValue;
+        int ChunkIdX = (X >> 4) - ChunkX;
+        int ChunkIdZ = (Z >> 4) - ChunkZ;
+
+        if (ChunkIdX >= 0 && ChunkIdX < Chunks.Length &&
+            ChunkIdZ >= 0 && ChunkIdZ < Chunks[ChunkIdX].Length)
+        {
+            ChunkSnapshot chunk = Chunks[ChunkIdX][ChunkIdZ];
+            if (chunk == null) return 0;
+
+            int lightValue = chunk.getBlockLightValue(X & 15, y, Z & 15, SkylightSubtracted);
+
+            if (chunk.getIsLit())
+            {
+                IsLit = true;
+            }
+
+            return lightValue;
+        }
+
+        return 0;
     }
 
     public BiomeSource getBiomeSource()
     {
-        return _biomeSource;
+        return BiomeSource;
     }
 
-    public bool shouldSuffocate(int x, int y, int z)
+    public bool shouldSuffocate(int X, int Y, int Z)
     {
-        Block block = Block.Blocks[getBlockId(x, y, z)];
+        Block block = Block.Blocks[getBlockId(X, Y, Z)];
         return block != null && block.material.BlocksMovement && block.isFullCube();
     }
 
-    public bool isOpaque(int x, int y, int z)
+    public bool isOpaque(int X, int Y, int Z)
     {
-        Block block = Block.Blocks[getBlockId(x, y, z)];
+        Block block = Block.Blocks[getBlockId(X, Y, Z)];
         return block != null && block.isOpaque();
     }
 
     public bool getIsLit()
     {
-        return _isLit;
+        return IsLit;
     }
 
     public void Dispose()
     {
         GC.SuppressFinalize(this);
 
-        foreach (ChunkSnapshot[] column in _chunks)
+        foreach (ChunkSnapshot[] column in Chunks)
         {
             if (column == null) continue;
 

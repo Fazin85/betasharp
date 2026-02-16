@@ -11,7 +11,7 @@ namespace BetaSharp.Worlds.Gen.Chunks;
 public class SkyChunkGenerator : ChunkSource
 {
 
-    private java.util.Random field_28087_j;
+    private java.util.Random Random;
     private OctavePerlinNoiseSampler field_28086_k;
     private OctavePerlinNoiseSampler field_28085_l;
     private OctavePerlinNoiseSampler field_28084_m;
@@ -20,7 +20,7 @@ public class SkyChunkGenerator : ChunkSource
     public OctavePerlinNoiseSampler field_28096_a;
     public OctavePerlinNoiseSampler field_28095_b;
     public OctavePerlinNoiseSampler field_28094_c;
-    private World field_28081_p;
+    private World World;
     private double[] field_28080_q;
     private double[] field_28079_r = new double[256];
     private double[] field_28078_s = new double[256];
@@ -34,81 +34,81 @@ public class SkyChunkGenerator : ChunkSource
     double[] field_28089_h;
     private double[] field_28074_w;
 
-    public SkyChunkGenerator(World var1, long var2)
+    public SkyChunkGenerator(World World, long Seed)
     {
-        field_28081_p = var1;
-        field_28087_j = new java.util.Random(var2);
-        field_28086_k = new OctavePerlinNoiseSampler(field_28087_j, 16);
-        field_28085_l = new OctavePerlinNoiseSampler(field_28087_j, 16);
-        field_28084_m = new OctavePerlinNoiseSampler(field_28087_j, 8);
-        field_28083_n = new OctavePerlinNoiseSampler(field_28087_j, 4);
-        field_28082_o = new OctavePerlinNoiseSampler(field_28087_j, 4);
-        field_28096_a = new OctavePerlinNoiseSampler(field_28087_j, 10);
-        field_28095_b = new OctavePerlinNoiseSampler(field_28087_j, 16);
-        field_28094_c = new OctavePerlinNoiseSampler(field_28087_j, 8);
+        this.World = World;
+        Random = new java.util.Random(Seed);
+        field_28086_k = new OctavePerlinNoiseSampler(Random, 16);
+        field_28085_l = new OctavePerlinNoiseSampler(Random, 16);
+        field_28084_m = new OctavePerlinNoiseSampler(Random, 8);
+        field_28083_n = new OctavePerlinNoiseSampler(Random, 4);
+        field_28082_o = new OctavePerlinNoiseSampler(Random, 4);
+        field_28096_a = new OctavePerlinNoiseSampler(Random, 10);
+        field_28095_b = new OctavePerlinNoiseSampler(Random, 16);
+        field_28094_c = new OctavePerlinNoiseSampler(Random, 8);
     }
 
-    public void func_28071_a(int var1, int var2, byte[] var3, Biome[] var4, double[] var5)
+    public void func_28071_a(int ChunkX, int ChunkZ, byte[] Buffer, Biome[] Biomes, double[] TemperatureMap)
     {
-        byte var6 = 2;
-        int var7 = var6 + 1;
-        byte var8 = 33;
-        int var9 = var6 + 1;
-        field_28080_q = func_28073_a(field_28080_q, var1 * var6, 0, var2 * var6, var7, var8, var9);
+        byte SectionCount = 2;
+        int SectionCountPlusOne = SectionCount + 1;
+        byte Height = 33;
+        int Depth = SectionCount + 1;
+        field_28080_q = func_28073_a(field_28080_q, ChunkX * SectionCount, 0, ChunkZ * SectionCount, SectionCountPlusOne, Height, Depth);
 
-        for (int var10 = 0; var10 < var6; ++var10)
+        for (int SectionX = 0; SectionX < SectionCount; ++SectionX)
         {
-            for (int var11 = 0; var11 < var6; ++var11)
+            for (int SectionZ = 0; SectionZ < SectionCount; ++SectionZ)
             {
-                for (int var12 = 0; var12 < 32; ++var12)
+                for (int SubY = 0; SubY < 32; ++SubY)
                 {
-                    double var13 = 0.25D;
-                    double var15 = field_28080_q[((var10 + 0) * var9 + var11 + 0) * var8 + var12 + 0];
-                    double var17 = field_28080_q[((var10 + 0) * var9 + var11 + 1) * var8 + var12 + 0];
-                    double var19 = field_28080_q[((var10 + 1) * var9 + var11 + 0) * var8 + var12 + 0];
-                    double var21 = field_28080_q[((var10 + 1) * var9 + var11 + 1) * var8 + var12 + 0];
-                    double var23 = (field_28080_q[((var10 + 0) * var9 + var11 + 0) * var8 + var12 + 1] - var15) * var13;
-                    double var25 = (field_28080_q[((var10 + 0) * var9 + var11 + 1) * var8 + var12 + 1] - var17) * var13;
-                    double var27 = (field_28080_q[((var10 + 1) * var9 + var11 + 0) * var8 + var12 + 1] - var19) * var13;
-                    double var29 = (field_28080_q[((var10 + 1) * var9 + var11 + 1) * var8 + var12 + 1] - var21) * var13;
+                    double InterpScale = 0.25D;
+                    double a00 = field_28080_q[((SectionX + 0) * Depth + SectionZ + 0) * Height + SubY + 0];
+                    double a01 = field_28080_q[((SectionX + 0) * Depth + SectionZ + 1) * Height + SubY + 0];
+                    double a10 = field_28080_q[((SectionX + 1) * Depth + SectionZ + 0) * Height + SubY + 0];
+                    double a11 = field_28080_q[((SectionX + 1) * Depth + SectionZ + 1) * Height + SubY + 0];
+                    double da00 = (field_28080_q[((SectionX + 0) * Depth + SectionZ + 0) * Height + SubY + 1] - a00) * InterpScale;
+                    double da01 = (field_28080_q[((SectionX + 0) * Depth + SectionZ + 1) * Height + SubY + 1] - a01) * InterpScale;
+                    double da10 = (field_28080_q[((SectionX + 1) * Depth + SectionZ + 0) * Height + SubY + 1] - a10) * InterpScale;
+                    double da11 = (field_28080_q[((SectionX + 1) * Depth + SectionZ + 1) * Height + SubY + 1] - a11) * InterpScale;
 
-                    for (int var31 = 0; var31 < 4; ++var31)
+                    for (int SubSection = 0; SubSection < 4; ++SubSection)
                     {
-                        double var32 = 0.125D;
-                        double var34 = var15;
-                        double var36 = var17;
-                        double var38 = (var19 - var15) * var32;
-                        double var40 = (var21 - var17) * var32;
+                        double innerScale = 0.125D;
+                        double val00 = a00;
+                        double val01 = a01;
+                        double stepX = (a10 - a00) * innerScale;
+                        double stepZ = (a11 - a01) * innerScale;
 
-                        for (int var42 = 0; var42 < 8; ++var42)
+                        for (int Quarter = 0; Quarter < 8; ++Quarter)
                         {
-                            int var43 = var42 + var10 * 8 << 11 | 0 + var11 * 8 << 7 | var12 * 4 + var31;
-                            short var44 = 128;
-                            double var45 = 0.125D;
-                            double var47 = var34;
-                            double var49 = (var36 - var34) * var45;
+                            int index = Quarter + SectionX * 8 << 11 | 0 + SectionZ * 8 << 7 | SubY * 4 + SubSection;
+                            short indexStep = 128;
+                            double innerInterp = 0.125D;
+                            double current = val00;
+                            double delta = (val01 - val00) * innerInterp;
 
-                            for (int var51 = 0; var51 < 8; ++var51)
+                            for (int i = 0; i < 8; ++i)
                             {
-                                int var52 = 0;
-                                if (var47 > 0.0D)
+                                int blockId = 0;
+                                if (current > 0.0D)
                                 {
-                                    var52 = Block.Stone.id;
+                                    blockId = Block.Stone.id;
                                 }
 
-                                var3[var43] = (byte)var52;
-                                var43 += var44;
-                                var47 += var49;
+                                Buffer[index] = (byte)blockId;
+                                index += indexStep;
+                                current += delta;
                             }
 
-                            var34 += var38;
-                            var36 += var40;
+                            val00 += stepX;
+                            val01 += stepZ;
                         }
 
-                        var15 += var23;
-                        var17 += var25;
-                        var19 += var27;
-                        var21 += var29;
+                        a00 += da00;
+                        a01 += da01;
+                        a10 += da10;
+                        a11 += da11;
                     }
                 }
             }
@@ -116,59 +116,59 @@ public class SkyChunkGenerator : ChunkSource
 
     }
 
-    public void func_28072_a(int var1, int var2, byte[] var3, Biome[] var4)
+    public void func_28072_a(int ChunkX, int ChunkZ, byte[] Buffer, Biome[] Biomes)
     {
-        double var5 = 1.0D / 32.0D;
-        field_28079_r = field_28083_n.create(field_28079_r, var1 * 16, var2 * 16, 0.0D, 16, 16, 1, var5, var5, 1.0D);
-        field_28078_s = field_28083_n.create(field_28078_s, var1 * 16, 109.0134D, var2 * 16, 16, 1, 16, var5, 1.0D, var5);
-        field_28077_t = field_28082_o.create(field_28077_t, var1 * 16, var2 * 16, 0.0D, 16, 16, 1, var5 * 2.0D, var5 * 2.0D, var5 * 2.0D);
+        double NoiseScale = 1.0D / 32.0D;
+        field_28079_r = field_28083_n.create(field_28079_r, ChunkX * 16, ChunkZ * 16, 0.0D, 16, 16, 1, NoiseScale, NoiseScale, 1.0D);
+        field_28078_s = field_28083_n.create(field_28078_s, ChunkX * 16, 109.0134D, ChunkZ * 16, 16, 1, 16, NoiseScale, 1.0D, NoiseScale);
+        field_28077_t = field_28082_o.create(field_28077_t, ChunkX * 16, ChunkZ * 16, 0.0D, 16, 16, 1, NoiseScale * 2.0D, NoiseScale * 2.0D, NoiseScale * 2.0D);
 
-        for (int var7 = 0; var7 < 16; ++var7)
+        for (int LocalX = 0; LocalX < 16; ++LocalX)
         {
-            for (int var8 = 0; var8 < 16; ++var8)
+            for (int LocalZ = 0; LocalZ < 16; ++LocalZ)
             {
-                Biome var9 = var4[var7 + var8 * 16];
-                int var10 = (int)(field_28077_t[var7 + var8 * 16] / 3.0D + 3.0D + field_28087_j.nextDouble() * 0.25D);
-                int var11 = -1;
-                byte var12 = var9.TopBlockId;
-                byte var13 = var9.SoilBlockId;
+                Biome biome = Biomes[LocalX + LocalZ * 16];
+                int surfaceDepth = (int)(field_28077_t[LocalX + LocalZ * 16] / 3.0D + 3.0D + Random.nextDouble() * 0.25D);
+                int depthCounter = -1;
+                byte topBlock = biome.TopBlockId;
+                byte soilBlock = biome.SoilBlockId;
 
-                for (int var14 = 127; var14 >= 0; --var14)
+                for (int y = 127; y >= 0; --y)
                 {
-                    int var15 = (var8 * 16 + var7) * 128 + var14;
-                    byte var16 = var3[var15];
-                    if (var16 == 0)
+                    int idx = (LocalZ * 16 + LocalX) * 128 + y;
+                    byte blockId = Buffer[idx];
+                    if (blockId == 0)
                     {
-                        var11 = -1;
+                        depthCounter = -1;
                     }
-                    else if (var16 == Block.Stone.id)
+                    else if (blockId == Block.Stone.id)
                     {
-                        if (var11 == -1)
+                        if (depthCounter == -1)
                         {
-                            if (var10 <= 0)
+                            if (surfaceDepth <= 0)
                             {
-                                var12 = 0;
-                                var13 = (byte)Block.Stone.id;
+                                topBlock = 0;
+                                soilBlock = (byte)Block.Stone.id;
                             }
 
-                            var11 = var10;
-                            if (var14 >= 0)
+                            depthCounter = surfaceDepth;
+                            if (y >= 0)
                             {
-                                var3[var15] = var12;
+                                Buffer[idx] = topBlock;
                             }
                             else
                             {
-                                var3[var15] = var13;
+                                Buffer[idx] = soilBlock;
                             }
                         }
-                        else if (var11 > 0)
+                        else if (depthCounter > 0)
                         {
-                            --var11;
-                            var3[var15] = var13;
-                            if (var11 == 0 && var13 == Block.Sand.id)
+                            --depthCounter;
+                            Buffer[idx] = soilBlock;
+                            if (depthCounter == 0 && soilBlock == Block.Sand.id)
                             {
-                                var11 = field_28087_j.nextInt(4);
-                                var13 = (byte)Block.Sandstone.id;
+                                depthCounter = Random.nextInt(4);
+                                soilBlock = (byte)Block.Sandstone.id;
                             }
                         }
                     }
@@ -178,405 +178,402 @@ public class SkyChunkGenerator : ChunkSource
 
     }
 
-    public Chunk loadChunk(int var1, int var2)
+    public Chunk loadChunk(int ChunkX, int ChunkZ)
     {
-        return getChunk(var1, var2);
+        return getChunk(ChunkX, ChunkZ);
     }
 
-    public Chunk getChunk(int var1, int var2)
+    public Chunk getChunk(int ChunkX, int ChunkZ)
     {
-        field_28087_j.setSeed(var1 * 341873128712L + var2 * 132897987541L);
-        byte[] var3 = new byte[-java.lang.Short.MIN_VALUE];
-        Chunk var4 = new Chunk(field_28081_p, var3, var1, var2);
-        field_28075_v = field_28081_p.getBiomeSource().GetBiomesInArea(field_28075_v, var1 * 16, var2 * 16, 16, 16);
-        double[] var5 = field_28081_p.getBiomeSource().TemperatureMap;
-        func_28071_a(var1, var2, var3, field_28075_v, var5);
-        func_28072_a(var1, var2, var3, field_28075_v);
-        field_28076_u.carve(this, field_28081_p, var1, var2, var3);
-        var4.populateHeightMap();
-        return var4;
+        Random.setSeed(ChunkX * 341873128712L + ChunkZ * 132897987541L);
+        byte[] chunkData = new byte[-java.lang.Short.MIN_VALUE];
+        Chunk chunk = new Chunk(World, chunkData, ChunkX, ChunkZ);
+        field_28075_v = World.getBiomeSource().GetBiomesInArea(field_28075_v, ChunkX * 16, ChunkZ * 16, 16, 16);
+        double[] tempMap = World.getBiomeSource().TemperatureMap;
+        func_28071_a(ChunkX, ChunkZ, chunkData, field_28075_v, tempMap);
+        func_28072_a(ChunkX, ChunkZ, chunkData, field_28075_v);
+        field_28076_u.carve(this, World, ChunkX, ChunkZ, chunkData);
+        chunk.populateHeightMap();
+        return chunk;
     }
 
-    private double[] func_28073_a(double[] var1, int var2, int var3, int var4, int var5, int var6, int var7)
+    private double[] func_28073_a(double[] NoiseArray, int X, int Y, int Z, int SizeX, int SizeY, int SizeZ)
     {
-        if (var1 == null)
+        if (NoiseArray == null)
         {
-            var1 = new double[var5 * var6 * var7];
+            NoiseArray = new double[SizeX * SizeY * SizeZ];
         }
 
-        double var8 = 684.412D;
-        double var10 = 684.412D;
-        double[] var12 = field_28081_p.getBiomeSource().TemperatureMap;
-        double[] var13 = field_28081_p.getBiomeSource().DownfallMap;
-        field_28090_g = field_28096_a.create(field_28090_g, var2, var4, var5, var7, 1.121D, 1.121D, 0.5D);
-        field_28089_h = field_28095_b.create(field_28089_h, var2, var4, var5, var7, 200.0D, 200.0D, 0.5D);
-        var8 *= 2.0D;
-        field_28093_d = field_28084_m.create(field_28093_d, var2, var3, var4, var5, var6, var7, var8 / 80.0D, var10 / 160.0D, var8 / 80.0D);
-        field_28092_e = field_28086_k.create(field_28092_e, var2, var3, var4, var5, var6, var7, var8, var10, var8);
-        field_28091_f = field_28085_l.create(field_28091_f, var2, var3, var4, var5, var6, var7, var8, var10, var8);
-        int var14 = 0;
-        int var15 = 0;
-        int var16 = 16 / var5;
+        double scaleA = 684.412D;
+        double scaleB = 684.412D;
+        double[] tempMap = World.getBiomeSource().TemperatureMap;
+        double[] downfallMap = World.getBiomeSource().DownfallMap;
+        field_28090_g = field_28096_a.create(field_28090_g, X, Z, SizeX, SizeZ, 1.121D, 1.121D, 0.5D);
+        field_28089_h = field_28095_b.create(field_28089_h, X, Z, SizeX, SizeZ, 200.0D, 200.0D, 0.5D);
+        scaleA *= 2.0D;
+        field_28093_d = field_28084_m.create(field_28093_d, X, Y, Z, SizeX, SizeY, SizeZ, scaleA / 80.0D, scaleB / 160.0D, scaleA / 80.0D);
+        field_28092_e = field_28086_k.create(field_28092_e, X, Y, Z, SizeX, SizeY, SizeZ, scaleA, scaleB, scaleA);
+        field_28091_f = field_28085_l.create(field_28091_f, X, Y, Z, SizeX, SizeY, SizeZ, scaleA, scaleB, scaleA);
+        int index = 0;
+        int noiseIndex = 0;
+        int step = 16 / SizeX;
 
-        for (int var17 = 0; var17 < var5; ++var17)
+        for (int sx = 0; sx < SizeX; ++sx)
         {
-            int var18 = var17 * var16 + var16 / 2;
+            int sampleX = sx * step + step / 2;
 
-            for (int var19 = 0; var19 < var7; ++var19)
+            for (int sz = 0; sz < SizeZ; ++sz)
             {
-                int var20 = var19 * var16 + var16 / 2;
-                double var21 = var12[var18 * 16 + var20];
-                double var23 = var13[var18 * 16 + var20] * var21;
-                double var25 = 1.0D - var23;
-                var25 *= var25;
-                var25 *= var25;
-                var25 = 1.0D - var25;
-                double var27 = (field_28090_g[var15] + 256.0D) / 512.0D;
-                var27 *= var25;
-                if (var27 > 1.0D)
+                int sampleZ = sz * step + step / 2;
+                double temp = tempMap[sampleX * 16 + sampleZ];
+                double down = downfallMap[sampleX * 16 + sampleZ] * temp;
+                double blendMask = 1.0D - down;
+                blendMask *= blendMask;
+                blendMask *= blendMask;
+                blendMask = 1.0D - blendMask;
+                double noiseMix = (field_28090_g[noiseIndex] + 256.0D) / 512.0D;
+                noiseMix *= blendMask;
+                if (noiseMix > 1.0D)
                 {
-                    var27 = 1.0D;
+                    noiseMix = 1.0D;
                 }
 
-                double var29 = field_28089_h[var15] / 8000.0D;
-                if (var29 < 0.0D)
+                double heightAdj = field_28089_h[noiseIndex] / 8000.0D;
+                if (heightAdj < 0.0D)
                 {
-                    var29 = -var29 * 0.3D;
+                    heightAdj = -heightAdj * 0.3D;
                 }
 
-                var29 = var29 * 3.0D - 2.0D;
-                if (var29 > 1.0D)
+                heightAdj = heightAdj * SizeY / 8.0D;
+                heightAdj = 0.0D;
+                if (noiseMix < 0.0D)
                 {
-                    var29 = 1.0D;
+                    noiseMix = 0.0D;
                 }
 
-                var29 /= 8.0D;
-                var29 = 0.0D;
-                if (var27 < 0.0D)
-                {
-                    var27 = 0.0D;
-                }
+                noiseMix += 0.5D;
+                heightAdj = heightAdj * SizeY / 16.0D;
+                ++noiseIndex;
+                double halfY = SizeY / 2.0D;
 
-                var27 += 0.5D;
-                var29 = var29 * var6 / 16.0D;
-                ++var15;
-                double var31 = var6 / 2.0D;
-
-                for (int var33 = 0; var33 < var6; ++var33)
+                for (int sy = 0; sy < SizeY; ++sy)
                 {
-                    double var34 = 0.0D;
-                    double var36 = (var33 - var31) * 8.0D / var27;
-                    if (var36 < 0.0D)
+                    double value = 0.0D;
+                    double absDist = (sy - halfY) * 8.0D / noiseMix;
+                    if (absDist < 0.0D)
                     {
-                        var36 *= -1.0D;
+                        absDist *= -1.0D;
                     }
 
-                    double var38 = field_28092_e[var14] / 512.0D;
-                    double var40 = field_28091_f[var14] / 512.0D;
-                    double var42 = (field_28093_d[var14] / 10.0D + 1.0D) / 2.0D;
-                    if (var42 < 0.0D)
+                    double sampleA = field_28092_e[index] / 512.0D;
+                    double sampleB = field_28091_f[index] / 512.0D;
+                    double blend = (field_28093_d[index] / 10.0D + 1.0D) / 2.0D;
+                    if (blend < 0.0D)
                     {
-                        var34 = var38;
+                        value = sampleA;
                     }
-                    else if (var42 > 1.0D)
+                    else if (blend > 1.0D)
                     {
-                        var34 = var40;
+                        value = sampleB;
                     }
                     else
                     {
-                        var34 = var38 + (var40 - var38) * var42;
+                        value = sampleA + (sampleB - sampleA) * blend;
                     }
 
-                    var34 -= 8.0D;
-                    byte var44 = 32;
-                    double var45;
-                    if (var33 > var6 - var44)
+                    value -= 8.0D;
+                    byte top = 32;
+                    double edgeBlend;
+                    if (sy > SizeY - top)
                     {
-                        var45 = (double)((var33 - (var6 - var44)) / (var44 - 1.0F));
-                        var34 = var34 * (1.0D - var45) + -30.0D * var45;
+                        edgeBlend = (double)((sy - (SizeY - top)) / (top - 1.0F));
+                        value = value * (1.0D - edgeBlend) + -30.0D * edgeBlend;
                     }
 
-                    var44 = 8;
-                    if (var33 < var44)
+                    top = 8;
+                    if (sy < top)
                     {
-                        var45 = (double)((var44 - var33) / (var44 - 1.0F));
-                        var34 = var34 * (1.0D - var45) + -30.0D * var45;
+                        edgeBlend = (double)((top - sy) / (top - 1.0F));
+                        value = value * (1.0D - edgeBlend) + -30.0D * edgeBlend;
                     }
 
-                    var1[var14] = var34;
-                    ++var14;
+                    NoiseArray[index] = value;
+                    ++index;
                 }
             }
         }
 
-        return var1;
+        return NoiseArray;
     }
 
-    public bool isChunkLoaded(int var1, int var2)
+    public bool isChunkLoaded(int ChunkX, int ChunkZ)
     {
         return true;
     }
 
-    public void decorate(ChunkSource var1, int var2, int var3)
+    public void decorate(ChunkSource Source, int ChunkX, int ChunkZ)
     {
         BlockSand.fallInstantly = true;
-        int var4 = var2 * 16;
-        int var5 = var3 * 16;
-        Biome var6 = field_28081_p.getBiomeSource().GetBiome(var4 + 16, var5 + 16);
-        field_28087_j.setSeed(field_28081_p.getSeed());
-        long var7 = field_28087_j.nextLong() / 2L * 2L + 1L;
-        long var9 = field_28087_j.nextLong() / 2L * 2L + 1L;
-        field_28087_j.setSeed(var2 * var7 + var3 * var9 ^ field_28081_p.getSeed());
-        double var11 = 0.25D;
-        int var13;
-        int var14;
-        int var15;
-        if (field_28087_j.nextInt(4) == 0)
+        int baseX = ChunkX * 16;
+        int baseZ = ChunkZ * 16;
+        Biome biome = World.getBiomeSource().GetBiome(baseX + 16, baseZ + 16);
+        Random.setSeed(World.getSeed());
+        long randA = Random.nextLong() / 2L * 2L + 1L;
+        long randB = Random.nextLong() / 2L * 2L + 1L;
+        Random.setSeed(ChunkX * randA + ChunkZ * randB ^ World.getSeed());
+        double TreeNoiseScale = 0.5D;
+        int randX;
+        int randY;
+        int randZ;
+        if (Random.nextInt(4) == 0)
         {
-            var13 = var4 + field_28087_j.nextInt(16) + 8;
-            var14 = field_28087_j.nextInt(128);
-            var15 = var5 + field_28087_j.nextInt(16) + 8;
-            new LakeFeature(Block.Water.id).generate(field_28081_p, field_28087_j, var13, var14, var15);
+            randX = baseX + Random.nextInt(16) + 8;
+            randY = Random.nextInt(128);
+            randZ = baseZ + Random.nextInt(16) + 8;
+            new LakeFeature(Block.Water.id).generate(World, Random, randX, randY, randZ);
         }
 
-        if (field_28087_j.nextInt(8) == 0)
+        if (Random.nextInt(8) == 0)
         {
-            var13 = var4 + field_28087_j.nextInt(16) + 8;
-            var14 = field_28087_j.nextInt(field_28087_j.nextInt(120) + 8);
-            var15 = var5 + field_28087_j.nextInt(16) + 8;
-            if (var14 < 64 || field_28087_j.nextInt(10) == 0)
+            randX = baseX + Random.nextInt(16) + 8;
+            randY = Random.nextInt(Random.nextInt(120) + 8);
+            randZ = baseZ + Random.nextInt(16) + 8;
+            if (randY < 64 || Random.nextInt(10) == 0)
             {
-                new LakeFeature(Block.Lava.id).generate(field_28081_p, field_28087_j, var13, var14, var15);
+                new LakeFeature(Block.Lava.id).generate(World, Random, randX, randY, randZ);
             }
         }
 
-        int var16;
-        for (var13 = 0; var13 < 8; ++var13)
+        int tempVar;
+        for (randX = 0; randX < 8; ++randX)
         {
-            var14 = var4 + field_28087_j.nextInt(16) + 8;
-            var15 = field_28087_j.nextInt(128);
-            var16 = var5 + field_28087_j.nextInt(16) + 8;
-            new DungeonFeature().generate(field_28081_p, field_28087_j, var14, var15, var16);
+            randY = baseX + Random.nextInt(16) + 8;
+            randZ = Random.nextInt(128);
+            tempVar = baseZ + Random.nextInt(16) + 8;
+            new DungeonFeature().generate(World, Random, randY, randZ, tempVar);
         }
 
-        for (var13 = 0; var13 < 10; ++var13)
+        for (randX = 0; randX < 10; ++randX)
         {
-            var14 = var4 + field_28087_j.nextInt(16);
-            var15 = field_28087_j.nextInt(128);
-            var16 = var5 + field_28087_j.nextInt(16);
-            new ClayOreFeature(32).generate(field_28081_p, field_28087_j, var14, var15, var16);
+            randY = baseX + Random.nextInt(16);
+            randZ = Random.nextInt(128);
+            tempVar = baseZ + Random.nextInt(16);
+            new ClayOreFeature(32).generate(World, Random, randY, randZ, tempVar);
         }
 
-        for (var13 = 0; var13 < 20; ++var13)
+        for (randX = 0; randX < 20; ++randX)
         {
-            var14 = var4 + field_28087_j.nextInt(16);
-            var15 = field_28087_j.nextInt(128);
-            var16 = var5 + field_28087_j.nextInt(16);
-            new OreFeature(Block.Dirt.id, 32).generate(field_28081_p, field_28087_j, var14, var15, var16);
+            randY = baseX + Random.nextInt(16);
+            randZ = Random.nextInt(128);
+            tempVar = baseZ + Random.nextInt(16);
+            new OreFeature(Block.Dirt.id, 32).generate(World, Random, randY, randZ, tempVar);
         }
 
-        for (var13 = 0; var13 < 10; ++var13)
+        for (randX = 0; randX < 10; ++randX)
         {
-            var14 = var4 + field_28087_j.nextInt(16);
-            var15 = field_28087_j.nextInt(128);
-            var16 = var5 + field_28087_j.nextInt(16);
-            new OreFeature(Block.Gravel.id, 32).generate(field_28081_p, field_28087_j, var14, var15, var16);
+            randY = baseX + Random.nextInt(16);
+            randZ = Random.nextInt(128);
+            tempVar = baseZ + Random.nextInt(16);
+            new OreFeature(Block.Gravel.id, 32).generate(World, Random, randY, randZ, tempVar);
         }
 
-        for (var13 = 0; var13 < 20; ++var13)
+        for (randX = 0; randX < 20; ++randX)
         {
-            var14 = var4 + field_28087_j.nextInt(16);
-            var15 = field_28087_j.nextInt(128);
-            var16 = var5 + field_28087_j.nextInt(16);
-            new OreFeature(Block.CoalOre.id, 16).generate(field_28081_p, field_28087_j, var14, var15, var16);
+            randY = baseX + Random.nextInt(16);
+            randZ = Random.nextInt(128);
+            tempVar = baseZ + Random.nextInt(16);
+            new OreFeature(Block.CoalOre.id, 16).generate(World, Random, randY, randZ, tempVar);
         }
 
-        for (var13 = 0; var13 < 20; ++var13)
+        for (randX = 0; randX < 20; ++randX)
         {
-            var14 = var4 + field_28087_j.nextInt(16);
-            var15 = field_28087_j.nextInt(64);
-            var16 = var5 + field_28087_j.nextInt(16);
-            new OreFeature(Block.IronOre.id, 8).generate(field_28081_p, field_28087_j, var14, var15, var16);
+            randY = baseX + Random.nextInt(16);
+            randZ = Random.nextInt(64);
+            tempVar = baseZ + Random.nextInt(16);
+            new OreFeature(Block.IronOre.id, 8).generate(World, Random, randY, randZ, tempVar);
         }
 
-        for (var13 = 0; var13 < 2; ++var13)
+        for (randX = 0; randX < 2; ++randX)
         {
-            var14 = var4 + field_28087_j.nextInt(16);
-            var15 = field_28087_j.nextInt(32);
-            var16 = var5 + field_28087_j.nextInt(16);
-            new OreFeature(Block.GoldOre.id, 8).generate(field_28081_p, field_28087_j, var14, var15, var16);
+            randY = baseX + Random.nextInt(16);
+            randZ = Random.nextInt(32);
+            tempVar = baseZ + Random.nextInt(16);
+            new OreFeature(Block.GoldOre.id, 8).generate(World, Random, randY, randZ, tempVar);
         }
 
-        for (var13 = 0; var13 < 8; ++var13)
+        for (randX = 0; randX < 8; ++randX)
         {
-            var14 = var4 + field_28087_j.nextInt(16);
-            var15 = field_28087_j.nextInt(16);
-            var16 = var5 + field_28087_j.nextInt(16);
-            new OreFeature(Block.RedstoneOre.id, 7).generate(field_28081_p, field_28087_j, var14, var15, var16);
+            randY = baseX + Random.nextInt(16);
+            randZ = Random.nextInt(16);
+            tempVar = baseZ + Random.nextInt(16);
+            new OreFeature(Block.RedstoneOre.id, 7).generate(World, Random, randY, randZ, tempVar);
         }
 
-        for (var13 = 0; var13 < 1; ++var13)
+        for (randX = 0; randX < 1; ++randX)
         {
-            var14 = var4 + field_28087_j.nextInt(16);
-            var15 = field_28087_j.nextInt(16);
-            var16 = var5 + field_28087_j.nextInt(16);
-            new OreFeature(Block.DiamondOre.id, 7).generate(field_28081_p, field_28087_j, var14, var15, var16);
+            randY = baseX + Random.nextInt(16);
+            randZ = Random.nextInt(16);
+            tempVar = baseZ + Random.nextInt(16);
+            new OreFeature(Block.DiamondOre.id, 7).generate(World, Random, randY, randZ, tempVar);
         }
 
-        for (var13 = 0; var13 < 1; ++var13)
+        for (randX = 0; randX < 1; ++randX)
         {
-            var14 = var4 + field_28087_j.nextInt(16);
-            var15 = field_28087_j.nextInt(16) + field_28087_j.nextInt(16);
-            var16 = var5 + field_28087_j.nextInt(16);
-            new OreFeature(Block.LapisOre.id, 6).generate(field_28081_p, field_28087_j, var14, var15, var16);
+            randY = baseX + Random.nextInt(16);
+            randZ = Random.nextInt(16) + Random.nextInt(16);
+            tempVar = baseZ + Random.nextInt(16);
+            new OreFeature(Block.LapisOre.id, 6).generate(World, Random, randY, randZ, tempVar);
         }
 
-        var11 = 0.5D;
-        var13 = (int)((field_28094_c.func_806_a(var4 * var11, var5 * var11) / 8.0D + field_28087_j.nextDouble() * 4.0D + 4.0D) / 3.0D);
-        var14 = 0;
-        if (field_28087_j.nextInt(10) == 0)
+        TreeNoiseScale = 0.5D;
+        int treeCount = (int)((field_28094_c.func_806_a(baseX * TreeNoiseScale, baseZ * TreeNoiseScale) / 8.0D + Random.nextDouble() * 4.0D + 4.0D) / 3.0D);
+        int treesToGenerate = 0;
+        if (Random.nextInt(10) == 0)
         {
-            ++var14;
+            ++treesToGenerate;
         }
 
-        if (var6 == Biome.Forest)
+        if (biome == Biome.Forest)
         {
-            var14 += var13 + 5;
+            treesToGenerate += treeCount + 5;
         }
 
-        if (var6 == Biome.Rainforest)
+        if (biome == Biome.Rainforest)
         {
-            var14 += var13 + 5;
+            treesToGenerate += treeCount + 5;
         }
 
-        if (var6 == Biome.SeasonalForest)
+        if (biome == Biome.SeasonalForest)
         {
-            var14 += var13 + 2;
+            treesToGenerate += treeCount + 2;
         }
 
-        if (var6 == Biome.Taiga)
+        if (biome == Biome.Taiga)
         {
-            var14 += var13 + 5;
+            treesToGenerate += treeCount + 5;
         }
 
-        if (var6 == Biome.Desert)
+        if (biome == Biome.Desert)
         {
-            var14 -= 20;
+            treesToGenerate -= 20;
         }
 
-        if (var6 == Biome.Tundra)
+        if (biome == Biome.Tundra)
         {
-            var14 -= 20;
+            treesToGenerate -= 20;
         }
 
-        if (var6 == Biome.Plains)
+        if (biome == Biome.Plains)
         {
-            var14 -= 20;
+            treesToGenerate -= 20;
         }
 
-        int var17;
-        for (var15 = 0; var15 < var14; ++var15)
+        int treeX;
+        for (randZ = 0; randZ < treesToGenerate; ++randZ)
         {
-            var16 = var4 + field_28087_j.nextInt(16) + 8;
-            var17 = var5 + field_28087_j.nextInt(16) + 8;
-            Feature var18 = var6.GetRandomWorldGenForTrees(field_28087_j);
-            var18.prepare(1.0D, 1.0D, 1.0D);
-            var18.generate(field_28081_p, field_28087_j, var16, field_28081_p.getTopY(var16, var17), var17);
+            tempVar = baseX + Random.nextInt(16) + 8;
+            treeX = baseZ + Random.nextInt(16) + 8;
+            Feature treeFeature = biome.GetRandomWorldGenForTrees(Random);
+            treeFeature.prepare(1.0D, 1.0D, 1.0D);
+            treeFeature.generate(World, Random, tempVar, World.getTopY(tempVar, treeX), treeX);
         }
 
-        int var23;
-        for (var15 = 0; var15 < 2; ++var15)
+        int tempZ;
+        int rx;
+        int ry;
+        int rz;
+        for (rx = 0; rx < 2; ++rx)
         {
-            var16 = var4 + field_28087_j.nextInt(16) + 8;
-            var17 = field_28087_j.nextInt(128);
-            var23 = var5 + field_28087_j.nextInt(16) + 8;
-            new PlantPatchFeature(Block.Dandelion.id).generate(field_28081_p, field_28087_j, var16, var17, var23);
+            ry = baseX + Random.nextInt(16) + 8;
+            rz = Random.nextInt(128);
+            tempZ = baseZ + Random.nextInt(16) + 8;
+            new PlantPatchFeature(Block.Dandelion.id).generate(World, Random, ry, rz, tempZ);
         }
 
-        if (field_28087_j.nextInt(2) == 0)
+        if (Random.nextInt(2) == 0)
         {
-            var15 = var4 + field_28087_j.nextInt(16) + 8;
-            var16 = field_28087_j.nextInt(128);
-            var17 = var5 + field_28087_j.nextInt(16) + 8;
-            new PlantPatchFeature(Block.Rose.id).generate(field_28081_p, field_28087_j, var15, var16, var17);
+            rx = baseX + Random.nextInt(16) + 8;
+            ry = Random.nextInt(128);
+            rz = baseZ + Random.nextInt(16) + 8;
+            new PlantPatchFeature(Block.Rose.id).generate(World, Random, rx, ry, rz);
         }
 
-        if (field_28087_j.nextInt(4) == 0)
+        if (Random.nextInt(4) == 0)
         {
-            var15 = var4 + field_28087_j.nextInt(16) + 8;
-            var16 = field_28087_j.nextInt(128);
-            var17 = var5 + field_28087_j.nextInt(16) + 8;
-            new PlantPatchFeature(Block.BrownMushroom.id).generate(field_28081_p, field_28087_j, var15, var16, var17);
+            rx = baseX + Random.nextInt(16) + 8;
+            ry = Random.nextInt(128);
+            rz = baseZ + Random.nextInt(16) + 8;
+            new PlantPatchFeature(Block.BrownMushroom.id).generate(World, Random, rx, ry, rz);
         }
 
-        if (field_28087_j.nextInt(8) == 0)
+        if (Random.nextInt(8) == 0)
         {
-            var15 = var4 + field_28087_j.nextInt(16) + 8;
-            var16 = field_28087_j.nextInt(128);
-            var17 = var5 + field_28087_j.nextInt(16) + 8;
-            new PlantPatchFeature(Block.RedMushroom.id).generate(field_28081_p, field_28087_j, var15, var16, var17);
+            rx = baseX + Random.nextInt(16) + 8;
+            ry = Random.nextInt(128);
+            rz = baseZ + Random.nextInt(16) + 8;
+            new PlantPatchFeature(Block.RedMushroom.id).generate(World, Random, rx, ry, rz);
         }
 
-        for (var15 = 0; var15 < 10; ++var15)
+        for (rx = 0; rx < 10; ++rx)
         {
-            var16 = var4 + field_28087_j.nextInt(16) + 8;
-            var17 = field_28087_j.nextInt(128);
-            var23 = var5 + field_28087_j.nextInt(16) + 8;
-            new SugarCanePatchFeature().generate(field_28081_p, field_28087_j, var16, var17, var23);
+            ry = baseX + Random.nextInt(16) + 8;
+            rz = Random.nextInt(128);
+            tempZ = baseZ + Random.nextInt(16) + 8;
+            new SugarCanePatchFeature().generate(World, Random, ry, rz, tempZ);
         }
 
-        if (field_28087_j.nextInt(32) == 0)
+        if (Random.nextInt(32) == 0)
         {
-            var15 = var4 + field_28087_j.nextInt(16) + 8;
-            var16 = field_28087_j.nextInt(128);
-            var17 = var5 + field_28087_j.nextInt(16) + 8;
-            new PumpkinPatchFeature().generate(field_28081_p, field_28087_j, var15, var16, var17);
+            rx = baseX + Random.nextInt(16) + 8;
+            ry = Random.nextInt(128);
+            rz = baseZ + Random.nextInt(16) + 8;
+            new PumpkinPatchFeature().generate(World, Random, rx, ry, rz);
         }
 
-        var15 = 0;
-        if (var6 == Biome.Desert)
+        int cactusAttempts = 0;
+        if (biome == Biome.Desert)
         {
-            var15 += 10;
+            cactusAttempts += 10;
         }
 
-        int var19;
-        for (var16 = 0; var16 < var15; ++var16)
+        int yPos;
+        for (int i = 0; i < cactusAttempts; ++i)
         {
-            var17 = var4 + field_28087_j.nextInt(16) + 8;
-            var23 = field_28087_j.nextInt(128);
-            var19 = var5 + field_28087_j.nextInt(16) + 8;
-            new CactusPatchFeature().generate(field_28081_p, field_28087_j, var17, var23, var19);
+            ry = baseX + Random.nextInt(16) + 8;
+            yPos = Random.nextInt(128);
+            rz = baseZ + Random.nextInt(16) + 8;
+            new CactusPatchFeature().generate(World, Random, ry, yPos, rz);
         }
 
-        for (var16 = 0; var16 < 50; ++var16)
+        for (int i = 0; i < 50; ++i)
         {
-            var17 = var4 + field_28087_j.nextInt(16) + 8;
-            var23 = field_28087_j.nextInt(field_28087_j.nextInt(120) + 8);
-            var19 = var5 + field_28087_j.nextInt(16) + 8;
-            new SpringFeature(Block.FlowingWater.id).generate(field_28081_p, field_28087_j, var17, var23, var19);
+            ry = baseX + Random.nextInt(16) + 8;
+            tempZ = Random.nextInt(Random.nextInt(120) + 8);
+            rz = baseZ + Random.nextInt(16) + 8;
+            new SpringFeature(Block.FlowingWater.id).generate(World, Random, ry, tempZ, rz);
         }
 
-        for (var16 = 0; var16 < 20; ++var16)
+        for (int i = 0; i < 20; ++i)
         {
-            var17 = var4 + field_28087_j.nextInt(16) + 8;
-            var23 = field_28087_j.nextInt(field_28087_j.nextInt(field_28087_j.nextInt(112) + 8) + 8);
-            var19 = var5 + field_28087_j.nextInt(16) + 8;
-            new SpringFeature(Block.FlowingLava.id).generate(field_28081_p, field_28087_j, var17, var23, var19);
+            ry = baseX + Random.nextInt(16) + 8;
+            tempZ = Random.nextInt(Random.nextInt(Random.nextInt(112) + 8) + 8);
+            rz = baseZ + Random.nextInt(16) + 8;
+            new SpringFeature(Block.FlowingLava.id).generate(World, Random, ry, tempZ, rz);
         }
 
-        field_28074_w = field_28081_p.getBiomeSource().GetTemperatures(field_28074_w, var4 + 8, var5 + 8, 16, 16);
+        field_28074_w = World.getBiomeSource().GetTemperatures(field_28074_w, baseX + 8, baseZ + 8, 16, 16);
 
-        for (var16 = var4 + 8; var16 < var4 + 8 + 16; ++var16)
+        for (int gx = baseX + 8; gx < baseX + 8 + 16; ++gx)
         {
-            for (var17 = var5 + 8; var17 < var5 + 8 + 16; ++var17)
+            for (int gz = baseZ + 8; gz < baseZ + 8 + 16; ++gz)
             {
-                var23 = var16 - (var4 + 8);
-                var19 = var17 - (var5 + 8);
-                int var20 = field_28081_p.getTopSolidBlockY(var16, var17);
-                double var21 = field_28074_w[var23 * 16 + var19] - (var20 - 64) / 64.0D * 0.3D;
-                if (var21 < 0.5D && var20 > 0 && var20 < 128 && field_28081_p.isAir(var16, var20, var17) && field_28081_p.getMaterial(var16, var20 - 1, var17).BlocksMovement && field_28081_p.getMaterial(var16, var20 - 1, var17) != Material.Ice)
+                tempZ = gx - (baseX + 8);
+                int relZ = gz - (baseZ + 8);
+                int topY = World.getTopSolidBlockY(gx, gz);
+                double tempVal = field_28074_w[tempZ * 16 + relZ] - (topY - 64) / 64.0D * 0.3D;
+                if (tempVal < 0.5D && topY > 0 && topY < 128 && World.isAir(gx, topY, gz) && World.getMaterial(gx, topY - 1, gz).BlocksMovement && World.getMaterial(gx, topY - 1, gz) != Material.Ice)
                 {
-                    field_28081_p.setBlock(var16, var20, var17, Block.Snow.id);
+                    World.setBlock(gx, topY, gz, Block.Snow.id);
                 }
             }
         }
@@ -584,7 +581,7 @@ public class SkyChunkGenerator : ChunkSource
         BlockSand.fallInstantly = false;
     }
 
-    public bool save(bool var1, LoadingDisplay var2)
+    public bool save(bool SaveAll, LoadingDisplay Display)
     {
         return true;
     }

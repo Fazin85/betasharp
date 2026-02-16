@@ -4,14 +4,14 @@ namespace BetaSharp.Server;
 
 public class DedicatedPlayerManager : PlayerManager
 {
-    private readonly java.io.File BANNED_PLAYERS_FILE;
+    private readonly java.io.File BannedPlayersFile;
     private readonly java.io.File BANNED_IPS_FILE;
     private readonly java.io.File OPERATORS_FILE;
     private readonly java.io.File WHITELIST_FILE;
 
     public DedicatedPlayerManager(MinecraftServer server) : base(server)
     {
-        BANNED_PLAYERS_FILE = server.getFile("banned-players.txt");
+        BannedPlayersFile = server.getFile("banned-players.txt");
         BANNED_IPS_FILE = server.getFile("banned-ips.txt");
         OPERATORS_FILE = server.getFile("ops.txt");
         WHITELIST_FILE = server.getFile("white-list.txt");
@@ -31,19 +31,19 @@ public class DedicatedPlayerManager : PlayerManager
         try
         {
             bannedPlayers.Clear();
-            BufferedReader var1 = new(new FileReader(BANNED_PLAYERS_FILE));
+            BufferedReader reader = new(new FileReader(BannedPlayersFile));
             string var2 = "";
 
-            while ((var2 = var1.readLine()) != null)
+            while ((var2 = reader.readLine()) != null)
             {
                 bannedPlayers.Add(var2.Trim().ToLower());
             }
 
-            var1.close();
+            reader.close();
         }
-        catch (Exception var3)
+        catch (Exception exception)
         {
-            LOGGER.warning("Failed to load ban list: " + var3);
+            LOGGER.warning("Failed to load ban list: " + exception);
         }
     }
 
@@ -51,18 +51,18 @@ public class DedicatedPlayerManager : PlayerManager
     {
         try
         {
-            PrintWriter var1 = new(new FileWriter(BANNED_PLAYERS_FILE, false));
+            PrintWriter writer = new(new FileWriter(BannedPlayersFile, false));
 
             foreach (string var3 in bannedPlayers)
             {
-                var1.println(var3);
+                writer.println(var3);
             }
 
-            var1.close();
+            writer.close();
         }
-        catch (Exception var4)
+        catch (Exception exception)
         {
-            LOGGER.warning("Failed to save ban list: " + var4);
+            LOGGER.warning("Failed to save ban list: " + exception);
         }
     }
 
@@ -71,19 +71,19 @@ public class DedicatedPlayerManager : PlayerManager
         try
         {
             bannedIps.Clear();
-            BufferedReader var1 = new(new FileReader(BANNED_IPS_FILE));
+            BufferedReader reader = new(new FileReader(BANNED_IPS_FILE));
             string var2 = "";
 
-            while ((var2 = var1.readLine()) != null)
+            while ((var2 = reader.readLine()) != null)
             {
                 bannedIps.Add(var2.Trim().ToLower());
             }
 
-            var1.close();
+            reader.close();
         }
-        catch (Exception var3)
+        catch (Exception exception)
         {
-            LOGGER.warning("Failed to load ip ban list: " + var3);
+            LOGGER.warning("Failed to load ip ban list: " + exception);
         }
     }
 
@@ -91,18 +91,18 @@ public class DedicatedPlayerManager : PlayerManager
     {
         try
         {
-            PrintWriter var1 = new(new FileWriter(BANNED_IPS_FILE, false));
+            PrintWriter writer = new(new FileWriter(BANNED_IPS_FILE, false));
 
             foreach (string var3 in bannedIps)
             {
-                var1.println(var3);
+                writer.println(var3);
             }
 
-            var1.close();
+            writer.close();
         }
-        catch (Exception var4)
+        catch (Exception exception)
         {
-            LOGGER.warning("Failed to save ip ban list: " + var4);
+            LOGGER.warning("Failed to save ip ban list: " + exception);
         }
     }
 
@@ -111,19 +111,19 @@ public class DedicatedPlayerManager : PlayerManager
         try
         {
             ops.Clear();
-            BufferedReader var1 = new(new FileReader(OPERATORS_FILE));
+            BufferedReader reader = new(new FileReader(OPERATORS_FILE));
             string var2 = "";
 
-            while ((var2 = var1.readLine()) != null)
+            while ((var2 = reader.readLine()) != null)
             {
                 ops.Add(var2.Trim().ToLower());
             }
 
-            var1.close();
+            reader.close();
         }
-        catch (Exception var3)
+        catch (Exception exception)
         {
-            LOGGER.warning("Failed to load ip ban list: " + var3);
+            LOGGER.warning("Failed to load operators list: " + exception);
         }
     }
 
@@ -131,18 +131,18 @@ public class DedicatedPlayerManager : PlayerManager
     {
         try
         {
-            PrintWriter var1 = new(new FileWriter(OPERATORS_FILE, false));
+            PrintWriter writer = new(new FileWriter(OPERATORS_FILE, false));
 
             foreach (string var3 in ops)
             {
-                var1.println(var3);
+                writer.println(var3);
             }
 
-            var1.close();
+            writer.close();
         }
-        catch (Exception var4)
+        catch (Exception exception)
         {
-            LOGGER.warning("Failed to save ip ban list: " + var4);
+            LOGGER.warning("Failed to save operators list: " + exception);
         }
     }
 
@@ -151,15 +151,15 @@ public class DedicatedPlayerManager : PlayerManager
         try
         {
             whitelist.Clear();
-            BufferedReader var1 = new(new FileReader(WHITELIST_FILE));
+            BufferedReader reader = new(new FileReader(WHITELIST_FILE));
             string var2 = "";
 
-            while ((var2 = var1.readLine()) != null)
+            while ((var2 = reader.readLine()) != null)
             {
                 whitelist.Add(var2.Trim().ToLower());
             }
 
-            var1.close();
+            reader.close();
         }
         catch (Exception var3)
         {
@@ -171,18 +171,18 @@ public class DedicatedPlayerManager : PlayerManager
     {
         try
         {
-            PrintWriter var1 = new(new FileWriter(WHITELIST_FILE, false));
+            PrintWriter writer = new(new FileWriter(WHITELIST_FILE, false));
 
-            foreach (String var3 in whitelist)
+            foreach (string var3 in whitelist)
             {
-                var1.println(var3);
+                writer.println(var3);
             }
 
-            var1.close();
+            writer.close();
         }
-        catch (Exception var4)
+        catch (Exception exception)
         {
-            LOGGER.warning("Failed to save white-list: " + var4);
+            LOGGER.warning("Failed to save white-list: " + exception);
         }
     }
 }

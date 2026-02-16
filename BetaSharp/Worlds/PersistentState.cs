@@ -4,13 +4,16 @@ namespace BetaSharp.Worlds;
 
 public abstract class PersistentState : java.lang.Object
 {
-    public readonly string id;
-    private bool dirty;
+    public readonly string Id;
+    private bool IsDirty;
 
     public PersistentState(JString var1)
     {
-        id = var1.value;
+        Id = var1.value;
     }
+
+    // Lowercase alias for compatibility
+    public string id => Id;
 
     public abstract void readNBT(NBTTagCompound var1);
 
@@ -21,13 +24,13 @@ public abstract class PersistentState : java.lang.Object
         setDirty(true);
     }
 
-    public void setDirty(bool var1)
+    public void setDirty(bool IsDirty)
     {
-        dirty = var1;
+        this.IsDirty = IsDirty;
     }
 
     public bool isDirty()
     {
-        return dirty;
+        return IsDirty;
     }
 }

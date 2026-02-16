@@ -382,7 +382,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                 ServerWorld var10 = worlds[var7];
                 if (ticks % 20 == 0)
                 {
-                    playerManager.sendToDimension(new WorldTimeUpdateS2CPacket(var10.getTime()), var10.dimension.id);
+                    playerManager.sendToDimension(new WorldTimeUpdateS2CPacket(var10.getTime()), var10.Dimension.id);
                 }
 
                 var10.Tick(-1);

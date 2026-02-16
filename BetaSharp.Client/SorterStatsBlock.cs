@@ -1,4 +1,5 @@
 ﻿using BetaSharp.Client.Guis;
+using BetaSharp.Client.Util;
 using BetaSharp.Stats;
 using java.util;
 using java.util.function;
@@ -41,21 +42,10 @@ public class SorterStatsBlock : Comparator
 
         if (var5 != null || var6 != null)
         {
-            if (var5 == null)
+            int? comparisonResult = StatsComparerHelper.CompareStats(var5, var6, field_27299_a, field_27298_b.field_27270_f);
+            if (comparisonResult.HasValue)
             {
-                return 1;
-            }
-
-            if (var6 == null)
-            {
-                return -1;
-            }
-
-            int var7 = GuiStats.func_27142_c(field_27299_a).writeStat(var5);
-            int var8 = GuiStats.func_27142_c(field_27299_a).writeStat(var6);
-            if (var7 != var8)
-            {
-                return (var7 - var8) * field_27298_b.field_27270_f;
+                return comparisonResult.Value;
             }
         }
 

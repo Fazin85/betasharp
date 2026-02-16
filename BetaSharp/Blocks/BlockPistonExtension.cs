@@ -6,49 +6,49 @@ namespace BetaSharp.Blocks;
 
 public class BlockPistonExtension : Block
 {
-    private int pistonHeadSprite = -1;
+    private int PistonHeadSprite = -1;
 
-    public BlockPistonExtension(int id, int textureId) : base(id, textureId, Material.Piston)
+    public BlockPistonExtension(int Id, int TextureId) : base(Id, TextureId, Material.Piston)
     {
         setSoundGroup(SoundStoneFootstep);
         setHardness(0.5F);
     }
 
-    public void setSprite(int sprite)
+    public void setSprite(int Sprite)
     {
-        pistonHeadSprite = sprite;
+        PistonHeadSprite = Sprite;
     }
 
     public void clearSprite()
     {
-        pistonHeadSprite = -1;
+        PistonHeadSprite = -1;
     }
 
-    public override void onBreak(World world, int x, int y, int z)
+    public override void onBreak(World World, int x, int y, int z)
     {
-        base.onBreak(world, x, y, z);
-        int var5 = world.getBlockMeta(x, y, z);
-        int var6 = PistonConstants.field_31057_a[getFacing(var5)];
-        x += PistonConstants.HEAD_OFFSET_X[var6];
-        y += PistonConstants.HEAD_OFFSET_Y[var6];
-        z += PistonConstants.HEAD_OFFSET_Z[var6];
-        int var7 = world.getBlockId(x, y, z);
-        if (var7 == Block.Piston.id || var7 == Block.StickyPiston.id)
+        base.onBreak(World, x, y, z);
+        int Meta = World.getBlockMeta(x, y, z);
+        int HeadFacing = PistonConstants.OppositeSide[getFacing(Meta)];
+        x += PistonConstants.HeadOffsetX[HeadFacing];
+        y += PistonConstants.HeadOffsetY[HeadFacing];
+        z += PistonConstants.HeadOffsetZ[HeadFacing];
+        int PistonBaseId = World.getBlockId(x, y, z);
+        if (PistonBaseId == Block.Piston.id || PistonBaseId == Block.StickyPiston.id)
         {
-            var5 = world.getBlockMeta(x, y, z);
-            if (BlockPistonBase.isExtended(var5))
+            Meta = World.getBlockMeta(x, y, z);
+            if (BlockPistonBase.isExtended(Meta))
             {
-                Block.Blocks[var7].dropStacks(world, x, y, z, var5);
-                world.setBlock(x, y, z, 0);
+                Block.Blocks[PistonBaseId].dropStacks(World, x, y, z, Meta);
+                World.setBlock(x, y, z, 0);
             }
         }
 
     }
 
-    public override int getTexture(int side, int meta)
+    public override int getTexture(int Side, int Meta)
     {
-        int var3 = getFacing(meta);
-        return side == var3 ? (pistonHeadSprite >= 0 ? pistonHeadSprite : ((meta & 8) != 0 ? textureId - 1 : textureId)) : (side == PistonConstants.field_31057_a[var3] ? 107 : 108);
+        int Facing = getFacing(Meta);
+        return Side == Facing ? (PistonHeadSprite >= 0 ? PistonHeadSprite : ((Meta & 8) != 0 ? textureId - 1 : textureId)) : (Side == PistonConstants.OppositeSide[Facing] ? 107 : 108);
     }
 
     public override int getRenderType()
@@ -66,71 +66,71 @@ public class BlockPistonExtension : Block
         return false;
     }
 
-    public override bool canPlaceAt(World world, int x, int y, int z)
+    public override bool canPlaceAt(World World, int X, int Y, int Z)
     {
         return false;
     }
 
-    public override bool canPlaceAt(World world, int x, int y, int z, int side)
+    public override bool canPlaceAt(World World, int X, int Y, int Z, int Side)
     {
         return false;
     }
 
-    public override int getDroppedItemCount(java.util.Random random)
+    public override int getDroppedItemCount(java.util.Random Random)
     {
         return 0;
     }
 
-    public override void addIntersectingBoundingBox(World world, int x, int y, int z, Box box, List<Box> boxes)
+    public override void addIntersectingBoundingBox(World World, int X, int Y, int Z, Box Box, List<Box> Boxes)
     {
-        int var7 = world.getBlockMeta(x, y, z);
-        switch (getFacing(var7))
+        int Meta = World.getBlockMeta(X, Y, Z);
+        switch (getFacing(Meta))
         {
             case 0:
                 setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 0.25F, 1.0F);
-                base.addIntersectingBoundingBox(world, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(World, X, Y, Z, Box, Boxes);
                 setBoundingBox(6.0F / 16.0F, 0.25F, 6.0F / 16.0F, 10.0F / 16.0F, 1.0F, 10.0F / 16.0F);
-                base.addIntersectingBoundingBox(world, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(World, X, Y, Z, Box, Boxes);
                 break;
             case 1:
                 setBoundingBox(0.0F, 12.0F / 16.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-                base.addIntersectingBoundingBox(world, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(World, X, Y, Z, Box, Boxes);
                 setBoundingBox(6.0F / 16.0F, 0.0F, 6.0F / 16.0F, 10.0F / 16.0F, 12.0F / 16.0F, 10.0F / 16.0F);
-                base.addIntersectingBoundingBox(world, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(World, X, Y, Z, Box, Boxes);
                 break;
             case 2:
                 setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.25F);
-                base.addIntersectingBoundingBox(world, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(World, X, Y, Z, Box, Boxes);
                 setBoundingBox(0.25F, 6.0F / 16.0F, 0.25F, 12.0F / 16.0F, 10.0F / 16.0F, 1.0F);
-                base.addIntersectingBoundingBox(world, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(World, X, Y, Z, Box, Boxes);
                 break;
             case 3:
                 setBoundingBox(0.0F, 0.0F, 12.0F / 16.0F, 1.0F, 1.0F, 1.0F);
-                base.addIntersectingBoundingBox(world, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(World, X, Y, Z, Box, Boxes);
                 setBoundingBox(0.25F, 6.0F / 16.0F, 0.0F, 12.0F / 16.0F, 10.0F / 16.0F, 12.0F / 16.0F);
-                base.addIntersectingBoundingBox(world, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(World, X, Y, Z, Box, Boxes);
                 break;
             case 4:
                 setBoundingBox(0.0F, 0.0F, 0.0F, 0.25F, 1.0F, 1.0F);
-                base.addIntersectingBoundingBox(world, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(World, X, Y, Z, Box, Boxes);
                 setBoundingBox(6.0F / 16.0F, 0.25F, 0.25F, 10.0F / 16.0F, 12.0F / 16.0F, 1.0F);
-                base.addIntersectingBoundingBox(world, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(World, X, Y, Z, Box, Boxes);
                 break;
             case 5:
                 setBoundingBox(12.0F / 16.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-                base.addIntersectingBoundingBox(world, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(World, X, Y, Z, Box, Boxes);
                 setBoundingBox(0.0F, 6.0F / 16.0F, 0.25F, 12.0F / 16.0F, 10.0F / 16.0F, 12.0F / 16.0F);
-                base.addIntersectingBoundingBox(world, x, y, z, box, boxes);
+                base.addIntersectingBoundingBox(World, X, Y, Z, Box, Boxes);
                 break;
         }
 
         setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
     }
 
-    public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
+    public override void updateBoundingBox(BlockView BlockView, int X, int Y, int Z)
     {
-        int var5 = blockView.getBlockMeta(x, y, z);
-        switch (getFacing(var5))
+        int Meta = BlockView.getBlockMeta(X, Y, Z);
+        switch (getFacing(Meta))
         {
             case 0:
                 setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 0.25F, 1.0F);
@@ -154,23 +154,23 @@ public class BlockPistonExtension : Block
 
     }
 
-    public override void neighborUpdate(World world, int x, int y, int z, int id)
+    public override void neighborUpdate(World World, int X, int Y, int Z, int id)
     {
-        int var6 = getFacing(world.getBlockMeta(x, y, z));
-        int var7 = world.getBlockId(x - PistonConstants.HEAD_OFFSET_X[var6], y - PistonConstants.HEAD_OFFSET_Y[var6], z - PistonConstants.HEAD_OFFSET_Z[var6]);
-        if (var7 != Block.Piston.id && var7 != Block.StickyPiston.id)
+        int Facing = getFacing(World.getBlockMeta(X, Y, Z));
+        int BaseId = World.getBlockId(X - PistonConstants.HeadOffsetX[Facing], Y - PistonConstants.HeadOffsetY[Facing], Z - PistonConstants.HeadOffsetZ[Facing]);
+        if (BaseId != Block.Piston.id && BaseId != Block.StickyPiston.id)
         {
-            world.setBlock(x, y, z, 0);
+            World.setBlock(X, Y, Z, 0);
         }
         else
         {
-            Block.Blocks[var7].neighborUpdate(world, x - PistonConstants.HEAD_OFFSET_X[var6], y - PistonConstants.HEAD_OFFSET_Y[var6], z - PistonConstants.HEAD_OFFSET_Z[var6], id);
+            Block.Blocks[BaseId].neighborUpdate(World, X - PistonConstants.HeadOffsetX[Facing], Y - PistonConstants.HeadOffsetY[Facing], Z - PistonConstants.HeadOffsetZ[Facing], id);
         }
 
     }
 
-    public static int getFacing(int meta)
+    public static int getFacing(int Meta)
     {
-        return meta & 7;
+        return Meta & 7;
     }
 }

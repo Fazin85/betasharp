@@ -14,9 +14,9 @@ public class CompassSprite : DynamicTexture
     private double angle;
     private double angleDelta;
 
-    public CompassSprite(Minecraft var1) : base(Item.COMPASS.getTextureId(0))
+    public CompassSprite(Minecraft mc) : base(Item.COMPASS.getTextureId(0))
     {
-        mc = var1;
+        this.mc = mc;
         atlas = FXImage.Items;
 
         try
@@ -35,126 +35,126 @@ public class CompassSprite : DynamicTexture
 
     public override void tick()
     {
-        for (int var1 = 0; var1 < 256; ++var1)
+        for (int PixelIndex = 0; PixelIndex < 256; ++PixelIndex)
         {
-            int var2 = compass[var1] >> 24 & 255;
-            int var3 = compass[var1] >> 16 & 255;
-            int var4 = compass[var1] >> 8 & 255;
-            int var5 = compass[var1] >> 0 & 255;
+            int PixelAlpha = compass[PixelIndex] >> 24 & 255;
+            int Red = compass[PixelIndex] >> 16 & 255;
+            int Green = compass[PixelIndex] >> 8 & 255;
+            int Blue = compass[PixelIndex] >> 0 & 255;
             if (anaglyphEnabled)
             {
-                int var6 = (var3 * 30 + var4 * 59 + var5 * 11) / 100;
-                int var7 = (var3 * 30 + var4 * 70) / 100;
-                int var8 = (var3 * 30 + var5 * 70) / 100;
-                var3 = var6;
-                var4 = var7;
-                var5 = var8;
+                int PixelAnaglyphRed = (Red * 30 + Green * 59 + Blue * 11) / 100;
+                int PixelAnaglyphGreen = (Red * 30 + Green * 70) / 100;
+                int PixelAnaglyphBlue = (Red * 30 + Blue * 70) / 100;
+                Red = PixelAnaglyphRed;
+                Green = PixelAnaglyphGreen;
+                Blue = PixelAnaglyphBlue;
             }
 
-            pixels[var1 * 4 + 0] = (byte)var3;
-            pixels[var1 * 4 + 1] = (byte)var4;
-            pixels[var1 * 4 + 2] = (byte)var5;
-            pixels[var1 * 4 + 3] = (byte)var2;
+            pixels[PixelIndex * 4 + 0] = (byte)Red;
+            pixels[PixelIndex * 4 + 1] = (byte)Green;
+            pixels[PixelIndex * 4 + 2] = (byte)Blue;
+            pixels[PixelIndex * 4 + 3] = (byte)PixelAlpha;
         }
 
-        double var20 = 0.0D;
+        double AngleToSpawn = 0.0D;
         if (mc.world != null && mc.player != null)
         {
-            Vec3i var21 = mc.world.getSpawnPos();
-            double var23 = var21.x - mc.player.x;
-            double var25 = var21.z - mc.player.z;
-            var20 = (double)(mc.player.yaw - 90.0F) * Math.PI / 180.0D - java.lang.Math.atan2(var25, var23);
-            if (mc.world.dimension.isNether)
+            Vec3i SpawnPos = mc.world.getSpawnPos();
+            double XDistToSpawn = SpawnPos.x - mc.player.x;
+            double ZDistToSpawn = SpawnPos.z - mc.player.z;
+            AngleToSpawn = (double)(mc.player.yaw - 90.0F) * Math.PI / 180.0D - java.lang.Math.atan2(ZDistToSpawn, XDistToSpawn);
+            if (mc.world.Dimension.isNether)
             {
-                var20 = java.lang.Math.random() * (double)(float)Math.PI * 2.0D;
+                AngleToSpawn = java.lang.Math.random() * (double)(float)Math.PI * 2.0D;
             }
         }
 
-        double var22;
-        for (var22 = var20 - angle; var22 < -Math.PI; var22 += Math.PI * 2.0D)
+        double AngleAdjustment;
+        for (AngleAdjustment = AngleToSpawn - angle; AngleAdjustment < -Math.PI; AngleAdjustment += Math.PI * 2.0D)
         {
         }
 
-        while (var22 >= Math.PI)
+        while (AngleAdjustment >= Math.PI)
         {
-            var22 -= Math.PI * 2.0D;
+            AngleAdjustment -= Math.PI * 2.0D;
         }
 
-        if (var22 < -1.0D)
+        if (AngleAdjustment < -1.0D)
         {
-            var22 = -1.0D;
+            AngleAdjustment = -1.0D;
         }
 
-        if (var22 > 1.0D)
+        if (AngleAdjustment > 1.0D)
         {
-            var22 = 1.0D;
+            AngleAdjustment = 1.0D;
         }
 
-        angleDelta += var22 * 0.1D;
+        angleDelta += AngleAdjustment * 0.1D;
         angleDelta *= 0.8D;
         angle += angleDelta;
-        double var24 = java.lang.Math.sin(angle);
-        double var26 = java.lang.Math.cos(angle);
+        double SinAngle = java.lang.Math.sin(angle);
+        double CosAngle = java.lang.Math.cos(angle);
 
-        int var9;
-        int var10;
-        int var11;
-        int var12;
-        int var13;
-        int var14;
-        int var15;
-        short var16;
-        int var17;
-        int var18;
-        int var19;
-        for (var9 = -4; var9 <= 4; ++var9)
+        int NeedleOffset;
+        int PixelX;
+        int PixelY;
+        int PixelIdx;
+        int NeedleRed;
+        int NeedleGreen;
+        int NeedleBlue;
+        short Alpha;
+        int AnaglyphRed;
+        int AnaglyphGreen;
+        int AnaglyphBlue;
+        for (NeedleOffset = -4; NeedleOffset <= 4; ++NeedleOffset)
         {
-            var10 = (int)(8.5D + var26 * var9 * 0.3D);
-            var11 = (int)(7.5D - var24 * var9 * 0.3D * 0.5D);
-            var12 = var11 * 16 + var10;
-            var13 = 100;
-            var14 = 100;
-            var15 = 100;
-            var16 = 255;
+            PixelX = (int)(8.5D + CosAngle * NeedleOffset * 0.3D);
+            PixelY = (int)(7.5D - SinAngle * NeedleOffset * 0.3D * 0.5D);
+            PixelIdx = PixelY * 16 + PixelX;
+            NeedleRed = 100;
+            NeedleGreen = 100;
+            NeedleBlue = 100;
+            Alpha = 255;
             if (anaglyphEnabled)
             {
-                var17 = (var13 * 30 + var14 * 59 + var15 * 11) / 100;
-                var18 = (var13 * 30 + var14 * 70) / 100;
-                var19 = (var13 * 30 + var15 * 70) / 100;
-                var13 = var17;
-                var14 = var18;
-                var15 = var19;
+                AnaglyphRed = (NeedleRed * 30 + NeedleGreen * 59 + NeedleBlue * 11) / 100;
+                AnaglyphGreen = (NeedleRed * 30 + NeedleGreen * 70) / 100;
+                AnaglyphBlue = (NeedleRed * 30 + NeedleBlue * 70) / 100;
+                NeedleRed = AnaglyphRed;
+                NeedleGreen = AnaglyphGreen;
+                NeedleBlue = AnaglyphBlue;
             }
 
-            pixels[var12 * 4 + 0] = (byte)var13;
-            pixels[var12 * 4 + 1] = (byte)var14;
-            pixels[var12 * 4 + 2] = (byte)var15;
-            pixels[var12 * 4 + 3] = (byte)var16;
+            pixels[PixelIdx * 4 + 0] = (byte)NeedleRed;
+            pixels[PixelIdx * 4 + 1] = (byte)NeedleGreen;
+            pixels[PixelIdx * 4 + 2] = (byte)NeedleBlue;
+            pixels[PixelIdx * 4 + 3] = (byte)Alpha;
         }
 
-        for (var9 = -8; var9 <= 16; ++var9)
+        for (NeedleOffset = -8; NeedleOffset <= 16; ++NeedleOffset)
         {
-            var10 = (int)(8.5D + var24 * var9 * 0.3D);
-            var11 = (int)(7.5D + var26 * var9 * 0.3D * 0.5D);
-            var12 = var11 * 16 + var10;
-            var13 = var9 >= 0 ? 255 : 100;
-            var14 = var9 >= 0 ? 20 : 100;
-            var15 = var9 >= 0 ? 20 : 100;
-            var16 = 255;
+            PixelX = (int)(8.5D + SinAngle * NeedleOffset * 0.3D);
+            PixelY = (int)(7.5D + CosAngle * NeedleOffset * 0.3D * 0.5D);
+            PixelIdx = PixelY * 16 + PixelX;
+            NeedleRed = NeedleOffset >= 0 ? 255 : 100;
+            NeedleGreen = NeedleOffset >= 0 ? 20 : 100;
+            NeedleBlue = NeedleOffset >= 0 ? 20 : 100;
+            Alpha = 255;
             if (anaglyphEnabled)
             {
-                var17 = (var13 * 30 + var14 * 59 + var15 * 11) / 100;
-                var18 = (var13 * 30 + var14 * 70) / 100;
-                var19 = (var13 * 30 + var15 * 70) / 100;
-                var13 = var17;
-                var14 = var18;
-                var15 = var19;
+                AnaglyphRed = (NeedleRed * 30 + NeedleGreen * 59 + NeedleBlue * 11) / 100;
+                AnaglyphGreen = (NeedleRed * 30 + NeedleGreen * 70) / 100;
+                AnaglyphBlue = (NeedleRed * 30 + NeedleBlue * 70) / 100;
+                NeedleRed = AnaglyphRed;
+                NeedleGreen = AnaglyphGreen;
+                NeedleBlue = AnaglyphBlue;
             }
 
-            pixels[var12 * 4 + 0] = (byte)var13;
-            pixels[var12 * 4 + 1] = (byte)var14;
-            pixels[var12 * 4 + 2] = (byte)var15;
-            pixels[var12 * 4 + 3] = (byte)var16;
+            pixels[PixelIdx * 4 + 0] = (byte)NeedleRed;
+            pixels[PixelIdx * 4 + 1] = (byte)NeedleGreen;
+            pixels[PixelIdx * 4 + 2] = (byte)NeedleBlue;
+            pixels[PixelIdx * 4 + 3] = (byte)Alpha;
         }
 
     }

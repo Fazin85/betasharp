@@ -16,9 +16,9 @@ public class DedicatedServer(IServerConfiguration config) : MinecraftServer(conf
 
     protected override bool Init()
     {
-        ConsoleInputThread var1 = new(this);
-        var1.setDaemon(true);
-        var1.start();
+        ConsoleInputThread Console = new(this);
+        Console.setDaemon(true);
+        Console.start();
 
         LOGGER.info("Starting minecraft server version Beta 1.7.3");
         if (Runtime.getRuntime().maxMemory() / 1024L / 1024L < 512L)
@@ -43,10 +43,10 @@ public class DedicatedServer(IServerConfiguration config) : MinecraftServer(conf
         {
             connections = new ConnectionListener(this, var3, var4);
         }
-        catch (java.io.IOException var13)
+        catch (java.io.IOException exception)
         {
             LOGGER.warning("**** FAILED TO BIND TO PORT!");
-            LOGGER.log(Level.WARNING, "The exception was: " + var13.toString());
+            LOGGER.log(Level.WARNING, "The exception was: " + exception.toString());
             LOGGER.warning("Perhaps a server is already running on that port?");
             return false;
         }

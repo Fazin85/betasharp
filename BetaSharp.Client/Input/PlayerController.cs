@@ -9,14 +9,14 @@ namespace BetaSharp.Client.Input;
 public class PlayerController
 {
     protected readonly Minecraft mc;
-    public bool field_1064_b = false;
+    public bool IsHittingBlock = false;
 
-    public PlayerController(Minecraft var1)
+    public PlayerController(Minecraft mc)
     {
-        mc = var1;
+        this.mc = mc;
     }
 
-    public virtual void func_717_a(World var1)
+    public virtual void func_717_a(World World1)
     {
     }
 
@@ -58,16 +58,16 @@ public class PlayerController
         return 5.0F;
     }
 
-    public virtual bool sendUseItem(EntityPlayer var1, World var2, ItemStack var3)
+    public virtual bool sendUseItem(EntityPlayer Player, World World, ItemStack ItemStack)
     {
-        int var4 = var3.count;
-        ItemStack var5 = var3.use(var2, var1);
-        if (var5 != var3 || var5 != null && var5.count != var4)
+        int var4 = ItemStack.count;
+        ItemStack var5 = ItemStack.use(World, Player);
+        if (var5 != ItemStack || var5 != null && var5.count != var4)
         {
-            var1.inventory.main[var1.inventory.selectedSlot] = var5;
+            Player.inventory.main[Player.inventory.selectedSlot] = var5;
             if (var5.count == 0)
             {
-                var1.inventory.main[var1.inventory.selectedSlot] = null;
+                Player.inventory.main[Player.inventory.selectedSlot] = null;
             }
 
             return true;
@@ -78,7 +78,7 @@ public class PlayerController
         }
     }
 
-    public virtual void flipPlayer(EntityPlayer var1)
+    public virtual void flipPlayer(EntityPlayer Player)
     {
     }
 
@@ -91,7 +91,7 @@ public class PlayerController
         return true;
     }
 
-    public virtual void func_6473_b(EntityPlayer var1)
+    public virtual void onPlayerJoinWorld(EntityPlayer player)
     {
     }
 
@@ -101,29 +101,29 @@ public class PlayerController
         return var8 > 0 && Block.Blocks[var8].onUse(var2, var4, var5, var6, var1) ? true : (var3 == null ? false : var3.useOnBlock(var1, var2, var4, var5, var6, var7));
     }
 
-    public virtual EntityPlayer createPlayer(World var1)
+    public virtual EntityPlayer createPlayer(World World)
     {
-        return new ClientPlayerEntity(mc, var1, mc.session, var1.dimension.id);
+        return new ClientPlayerEntity(mc, World, mc.session, World.Dimension.id);
     }
 
-    public virtual void interactWithEntity(EntityPlayer var1, Entity var2)
+    public virtual void interactWithEntity(EntityPlayer Player, Entity Entity)
     {
-        var1.interact(var2);
+        Player.interact(Entity);
     }
 
-    public virtual void attackEntity(EntityPlayer var1, Entity var2)
+    public virtual void attackEntity(EntityPlayer Player, Entity Entity)
     {
-        var1.attack(var2);
+        Player.attack(Entity);
     }
 
-    public virtual ItemStack func_27174_a(int var1, int var2, int var3, bool var4, EntityPlayer var5)
+    public virtual ItemStack func_27174_a(int var1, int var2, int var3, bool var4, EntityPlayer Player)
     {
-        return var5.currentScreenHandler.onSlotClick(var2, var3, var4, var5);
+        return Player.currentScreenHandler.onSlotClick(var2, var3, var4, Player);
     }
 
-    public virtual void func_20086_a(int var1, EntityPlayer var2)
+    public virtual void func_20086_a(int var1, EntityPlayer Player)
     {
-        var2.currentScreenHandler.onClosed(var2);
-        var2.currentScreenHandler = var2.playerScreenHandler;
+        Player.currentScreenHandler.onClosed(Player);
+        Player.currentScreenHandler = Player.playerScreenHandler;
     }
 }

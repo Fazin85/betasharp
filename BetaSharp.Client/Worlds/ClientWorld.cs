@@ -241,7 +241,7 @@ public class ClientWorld : World
 
     protected override void UpdateWeatherCycles()
     {
-        if (dimension.hasCeiling) return;
+        if (Dimension.hasCeiling) return;
 
         if (ticksSinceLightning > 0) --ticksSinceLightning;
 

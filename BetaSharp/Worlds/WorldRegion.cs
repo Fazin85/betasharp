@@ -8,49 +8,49 @@ namespace BetaSharp.Worlds;
 
 public class WorldRegion : BlockView
 {
-    private readonly int _chunkX;
-    private readonly int _chunkZ;
-    private readonly Chunk[][] _chunks;
-    private readonly World _world;
+    private readonly int ChunkX;
+    private readonly int ChunkZ;
+    private readonly Chunk[][] Chunks;
+    private readonly World World;
 
-    public WorldRegion(World world, int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
+    public WorldRegion(World World, int MinX, int MinY, int MinZ, int MaxX, int MaxY, int MaxZ)
     {
-        _world = world;
-        _chunkX = minX >> 4;
-        _chunkZ = minZ >> 4;
-        int endX = maxX >> 4;
-        int endZ = maxZ >> 4;
+        this.World = World;
+        ChunkX = MinX >> 4;
+        ChunkZ = MinZ >> 4;
+        int EndX = MaxX >> 4;
+        int EndZ = MaxZ >> 4;
 
-        int width = endX - _chunkX + 1;
-        int depth = endZ - _chunkZ + 1;
+        int Width = EndX - ChunkX + 1;
+        int Depth = EndZ - ChunkZ + 1;
 
-        _chunks = new Chunk[width][];
-        for (int i = 0; i < _chunks.Length; i++)
+        Chunks = new Chunk[Width][];
+        for (int i = 0; i < Chunks.Length; i++)
         {
-            _chunks[i] = new Chunk[depth];
+            Chunks[i] = new Chunk[Depth];
         }
 
-        for (int cx = _chunkX; cx <= endX; ++cx)
+        for (int cx = ChunkX; cx <= EndX; ++cx)
         {
-            for (int cz = _chunkZ; cz <= endZ; ++cz)
+            for (int cz = ChunkZ; cz <= EndZ; ++cz)
             {
-                _chunks[cx - _chunkX][cz - _chunkZ] = world.getChunk(cx, cz);
+                Chunks[cx - ChunkX][cz - ChunkZ] = World.getChunk(cx, cz);
             }
         }
 
     }
 
-    public int getBlockId(int x, int y, int z)
+    public int getBlockId(int X, int Y, int Z)
     {
-        if (y is < 0 or >= 128) return 0;
+        if (Y is < 0 or >= 128) return 0;
 
-        int cx = (x >> 4) - _chunkX;
-        int cz = (z >> 4) - _chunkZ;
+        int cx = (X >> 4) - ChunkX;
+        int cz = (Z >> 4) - ChunkZ;
 
-        if (cx >= 0 && cx < _chunks.Length && cz >= 0 && cz < _chunks[cx].Length)
+        if (cx >= 0 && cx < Chunks.Length && cz >= 0 && cz < Chunks[cx].Length)
         {
-            Chunk chunk = _chunks[cx][cz];
-            return chunk?.getBlockId(x & 15, y, z & 15) ?? 0;
+            Chunk Chunk = Chunks[cx][cz];
+            return Chunk?.getBlockId(X & 15, Y, Z & 15) ?? 0;
         }
 
         return 0;
@@ -58,24 +58,24 @@ public class WorldRegion : BlockView
 
     public BlockEntity? getBlockEntity(int x, int y, int z)
     {
-        int cx = (x >> 4) - _chunkX;
-        int cz = (z >> 4) - _chunkZ;
+        int cx = (x >> 4) - ChunkX;
+        int cz = (z >> 4) - ChunkZ;
 
-        if (cx < 0 || cx >= _chunks.Length || cz < 0 || cz < 0 || cz >= _chunks[cx].Length)
+        if (cx < 0 || cx >= Chunks.Length || cz < 0 || cz < 0 || cz >= Chunks[cx].Length)
             return null;
 
-        return _chunks[cx][cz]?.getBlockEntity(x & 15, y, z & 15);
+        return Chunks[cx][cz]?.getBlockEntity(x & 15, y, z & 15);
     }
 
-    public float getNaturalBrightness(int x, int y, int z, int blockLight)
+    public float getNaturalBrightness(int X, int Y, int Z, int BlockLight)
     {
-        int finalLight = Math.Max(getRawBrightness(x, y, z), blockLight);
-        return _world.dimension.lightLevelToLuminance[finalLight];
+        int FinalLight = Math.Max(getRawBrightness(X, Y, Z), BlockLight);
+        return World.Dimension.lightLevelToLuminance[FinalLight];
     }
 
-    public float getLuminance(int x, int y, int z)
+    public float getLuminance(int X, int Y, int Z)
     {
-        return _world.dimension.lightLevelToLuminance[getRawBrightness(x, y, z)];
+        return World.Dimension.lightLevelToLuminance[getRawBrightness(X, Y, Z)];
     }
 
     public int getRawBrightness(int x, int y, int z)
@@ -83,10 +83,10 @@ public class WorldRegion : BlockView
         return getRawBrightness(x, y, z, true);
     }
 
+
     public int getRawBrightness(int x, int y, int z, bool useNeighborLight)
     {
-        // World bounds check
-        if (x < -32000000 || z < -32000000 || x >= 32000000 || z > 32000000) return 15;
+        if (IsOutsideWorldLimits(x, z)) return 15;
         if (useNeighborLight)
         {
             int id = getBlockId(x, y, z);
@@ -102,21 +102,21 @@ public class WorldRegion : BlockView
         }
 
         if (y < 0) return 0;
-        if (y >= 128) return Math.Max(0, 15 - _world.ambientDarkness);
+        if (y >= 128) return Math.Max(0, 15 - World.ambientDarkness);
 
-        int cIdxX = (x >> 4) - _chunkX;
-        int cIdxZ = (z >> 4) - _chunkZ;
+        int ChunkIdX = (x >> 4) - ChunkX;
+        int chunkIdZ = (z >> 4) - ChunkZ;
 
-        return _chunks[cIdxX][cIdxZ].getLight(x & 15, y, z & 15, _world.ambientDarkness);
+        return Chunks[ChunkIdX][chunkIdZ].getLight(x & 15, y, z & 15, World.ambientDarkness);
     }
 
     public int getBlockMeta(int x, int y, int z)
     {
         if (y is < 0 or >= 128) return 0;
 
-        int cx = (x >> 4) - _chunkX;
-        int cz = (z >> 4) - _chunkZ;
-        return _chunks[cx][cz].getBlockMeta(x & 15, y, z & 15);
+        int cx = (x >> 4) - ChunkX;
+        int cz = (z >> 4) - ChunkZ;
+        return Chunks[cx][cz].getBlockMeta(x & 15, y, z & 15);
     }
 
     public Material getMaterial(int x, int y, int z)
@@ -125,7 +125,7 @@ public class WorldRegion : BlockView
         return var4 == 0 ? Material.Air : Block.Blocks[var4].material;
     }
 
-    public BiomeSource getBiomeSource() => _world.getBiomeSource();
+    public BiomeSource getBiomeSource() => World.getBiomeSource();
 
     public bool isOpaque(int x, int y, int z)
     {
@@ -137,5 +137,10 @@ public class WorldRegion : BlockView
     {
         Block block = Block.Blocks[getBlockId(x, y, z)];
         return block != null && block.material.BlocksMovement && block.isFullCube();
+    }
+    
+    private bool IsOutsideWorldLimits(int x, int z)
+    {
+        return x < -32000000 || z < -32000000 || x >= 32000000 || z > 32000000;
     }
 }

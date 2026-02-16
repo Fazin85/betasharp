@@ -32,18 +32,18 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     public bool skipPacketSlotUpdates;
 
 
-    public ServerPlayerEntity(MinecraftServer server, World world, String name, ServerPlayerInteractionManager interactionManager) : base(world)
+    public ServerPlayerEntity(MinecraftServer server, World World, String name, ServerPlayerInteractionManager interactionManager) : base(World)
     {
         interactionManager.player = this;
         this.interactionManager = interactionManager;
-        Vec3i spawnPos = world.getSpawnPos();
+        Vec3i spawnPos = World.getSpawnPos();
         int x = spawnPos.x;
         int y = spawnPos.z;
         int z = spawnPos.y;
-        if (!world.dimension.hasCeiling)
+        if (!World.Dimension.hasCeiling)
         {
             x += random.nextInt(20) - 10;
-            z = world.getSpawnPositionValidityY(x, y);
+            z = World.getSpawnPositionValidityY(x, y);
             y += random.nextInt(20) - 10;
         }
 
@@ -55,9 +55,9 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     }
 
 
-    public override void setWorld(World world)
+    public override void setWorld(World World)
     {
-        base.setWorld(world);
+        base.setWorld(World);
         interactionManager = new ServerPlayerInteractionManager((ServerWorld)world);
         interactionManager.player = this;
     }

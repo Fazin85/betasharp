@@ -42,7 +42,7 @@ public class ClockSprite : DynamicTexture
         {
             float var3 = mc.world.getTime(1.0F);
             var1 = (double)(-var3 * (float)Math.PI * 2.0F);
-            if (mc.world.dimension.isNether)
+            if (mc.world.Dimension.isNether)
             {
                 var1 = java.lang.Math.random() * (double)(float)Math.PI * 2.0D;
             }

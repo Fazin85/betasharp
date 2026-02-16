@@ -14,52 +14,57 @@ namespace BetaSharp.Worlds;
 
 public class ServerWorld : World
 {
-    public ServerChunkCache chunkCache;
-    public bool bypassSpawnProtection = false;
-    public bool savingDisabled;
-    private readonly MinecraftServer server;
-    private readonly Dictionary<int, Entity> entitiesById = [];
+    public ServerChunkCache ChunkCache;
+    public bool BypassSpawnProtection = false;
+    public bool IsSavingDisabled;
+    private readonly MinecraftServer Server;
+    private readonly Dictionary<int, Entity> EntitiesById = [];
 
-    public ServerWorld(MinecraftServer server, WorldStorage storage, String name, int dimensionId, long seed) : base(storage, name, seed, Dimension.fromId(dimensionId))
+    // Lowercase aliases for compatibility
+    public ServerChunkCache chunkCache { get => ChunkCache; set => ChunkCache = value; }
+    public bool bypassSpawnProtection { get => BypassSpawnProtection; set => BypassSpawnProtection = value; }
+    public bool savingDisabled { get => IsSavingDisabled; set => IsSavingDisabled = value; }
+
+    public ServerWorld(MinecraftServer Server, WorldStorage Storage, String Name, int DimensionId, long Seed) : base(Storage, Name, Seed, Dimension.fromId(DimensionId))
     {
-        this.server = server;
+        this.Server = Server;
     }
 
 
-    public override void updateEntity(Entity entity, bool requireLoaded)
+    public override void updateEntity(Entity Entity, bool RequireLoaded)
     {
-        if (!server.spawnAnimals && (entity is EntityAnimal || entity is EntityWaterMob))
+        if (!Server.spawnAnimals && (Entity is EntityAnimal || Entity is EntityWaterMob))
         {
-            entity.markDead();
+            Entity.markDead();
         }
 
-        if (entity.passenger == null || !(entity.passenger is EntityPlayer))
+        if (Entity.passenger == null || !(Entity.passenger is EntityPlayer))
         {
-            base.updateEntity(entity, requireLoaded);
+            base.updateEntity(Entity, RequireLoaded);
         }
     }
 
-    public void tickVehicle(Entity vehicle, bool requireLoaded)
+    public void tickVehicle(Entity Vehicle, bool RequireLoaded)
     {
-        base.updateEntity(vehicle, requireLoaded);
+        base.updateEntity(Vehicle, RequireLoaded);
     }
 
 
     protected override ChunkSource CreateChunkCache()
     {
-        ChunkStorage var1 = storage.getChunkStorage(dimension);
-        chunkCache = new ServerChunkCache(this, var1, dimension.createChunkGenerator());
-        return chunkCache;
+        ChunkStorage Chunkstorage = storage.getChunkStorage(Dimension);
+        ChunkCache = new ServerChunkCache(this, Chunkstorage, Dimension.createChunkGenerator());
+        return ChunkCache;
     }
 
-    public List<BlockEntity> getBlockEntities(int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
+    public List<BlockEntity> getBlockEntities(int MinX, int MinY, int MinZ, int MaxX, int MaxY, int MaxZ)
     {
         List<BlockEntity> var7 = [];
 
         for (int var8 = 0; var8 < blockEntities.Count; var8++)
         {
             BlockEntity var9 = blockEntities[var8];
-            if (var9.x >= minX && var9.y >= minY && var9.z >= minZ && var9.x < maxX && var9.y < maxY && var9.z < maxZ)
+            if (var9.x >= MinX && var9.y >= MinY && var9.z >= MinZ && var9.x < MaxX && var9.y < MaxY && var9.z < MaxZ)
             {
                 var7.Add(var9);
             }
@@ -69,36 +74,36 @@ public class ServerWorld : World
     }
 
 
-    public override bool canInteract(EntityPlayer player, int x, int y, int z)
+    public override bool canInteract(EntityPlayer Player, int X, int Y, int Z)
     {
-        int var5 = (int)MathHelper.abs(x - properties.SpawnX);
-        int var6 = (int)MathHelper.abs(z - properties.SpawnZ);
+        int var5 = (int)MathHelper.abs(X - properties.SpawnX);
+        int var6 = (int)MathHelper.abs(Z - properties.SpawnZ);
         if (var5 > var6)
         {
             var6 = var5;
         }
 
-        return var6 > 16 || server.playerManager.isOperator(player.name) || server is InternalServer;
+        return var6 > 16 || Server.playerManager.isOperator(Player.name) || Server is InternalServer;
     }
 
 
-    protected override void NotifyEntityAdded(Entity entity)
+    protected override void NotifyEntityAdded(Entity Entity)
     {
-        base.NotifyEntityAdded(entity);
-        entitiesById.Add(entity.id, entity);
+        base.NotifyEntityAdded(Entity);
+        EntitiesById.Add(Entity.id, Entity);
     }
 
 
-    protected override void NotifyEntityRemoved(Entity entity)
+    protected override void NotifyEntityRemoved(Entity Entity)
     {
-        base.NotifyEntityRemoved(entity);
-        entitiesById.Remove(entity.id);
+        base.NotifyEntityRemoved(Entity);
+        EntitiesById.Remove(Entity.id);
     }
 
-    public Entity getEntity(int id)
+    public Entity getEntity(int Id)
     {
-        entitiesById.TryGetValue(id, out Entity? entity);
-        return entity;
+        EntitiesById.TryGetValue(Id, out Entity? Entity);
+        return Entity;
     }
 
 
@@ -106,7 +111,7 @@ public class ServerWorld : World
     {
         if (base.spawnGlobalEntity(entity))
         {
-            server.playerManager.sendToAround(entity.x, entity.y, entity.z, 512.0, dimension.id, new GlobalEntitySpawnS2CPacket(entity));
+            Server.playerManager.sendToAround(entity.x, entity.y, entity.z, 512.0, Dimension.id, new GlobalEntitySpawnS2CPacket(entity));
             return true;
         }
         else
@@ -116,30 +121,30 @@ public class ServerWorld : World
     }
 
 
-    public override void broadcastEntityEvent(Entity entity, byte @event)
+    public override void broadcastEntityEvent(Entity Entity, byte Event)
     {
-        EntityStatusS2CPacket var3 = new EntityStatusS2CPacket(entity.id, @event);
-        server.getEntityTracker(dimension.id).sendToAround(entity, var3);
+        EntityStatusS2CPacket var3 = new EntityStatusS2CPacket(Entity.id, Event);
+        Server.getEntityTracker(Dimension.id).sendToAround(Entity, var3);
     }
 
 
-    public override Explosion createExplosion(Entity source, double x, double y, double z, float power, bool fire)
+    public override Explosion createExplosion(Entity Source, double X, double Y, double Z, float Power, bool Fire)
     {
-        Explosion var10 = new Explosion(this, source, x, y, z, power)
+        Explosion var10 = new Explosion(this, Source, X, Y, Z, Power)
         {
-            isFlaming = fire
+            isFlaming = Fire
         };
         var10.doExplosionA();
         var10.doExplosionB(false);
-        server.playerManager.sendToAround(x, y, z, 64.0, dimension.id, new ExplosionS2CPacket(x, y, z, power, var10.destroyedBlockPositions));
+        Server.playerManager.sendToAround(X, Y, Z, 64.0, Dimension.id, new ExplosionS2CPacket(X, Y, Z, Power, var10.destroyedBlockPositions));
         return var10;
     }
 
 
-    public override void playNoteBlockActionAt(int x, int y, int z, int soundType, int pitch)
+    public override void playNoteBlockActionAt(int X, int Y, int Z, int SoundType, int Pitch)
     {
-        base.playNoteBlockActionAt(x, y, z, soundType, pitch);
-        server.playerManager.sendToAround(x, y, z, 64.0, dimension.id, new PlayNoteSoundS2CPacket(x, y, z, soundType, pitch));
+        base.playNoteBlockActionAt(X, Y, Z, SoundType, Pitch);
+        Server.playerManager.sendToAround(X, Y, Z, 64.0, Dimension.id, new PlayNoteSoundS2CPacket(X, Y, Z, SoundType, Pitch));
     }
 
     public void forceSave()
@@ -150,17 +155,18 @@ public class ServerWorld : World
 
     protected override void UpdateWeatherCycles()
     {
-        bool var1 = isRaining();
+        bool wasRaining = isRaining();
         base.UpdateWeatherCycles();
-        if (var1 != isRaining())
+        if (wasRaining != isRaining())
         {
-            if (var1)
+            switch (wasRaining)
             {
-                server.playerManager.sendToAll(new GameStateChangeS2CPacket(2));
-            }
-            else
-            {
-                server.playerManager.sendToAll(new GameStateChangeS2CPacket(1));
+                case true:
+                    Server.playerManager.sendToAll(new GameStateChangeS2CPacket(2));
+                    break;
+                default:
+                    Server.playerManager.sendToAll(new GameStateChangeS2CPacket(1));
+                    break;
             }
         }
     }

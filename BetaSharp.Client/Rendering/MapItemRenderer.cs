@@ -9,32 +9,32 @@ namespace BetaSharp.Client.Rendering;
 
 public class MapItemRenderer
 {
-    private readonly int[] field_28159_a = new int[16384];
-    private readonly int field_28158_b;
-    private readonly GameOptions field_28161_c;
-    private readonly TextRenderer field_28160_d;
+    private readonly int[] MapPixels = new int[16384];
+    private readonly int MapTextureId;
+    private readonly GameOptions GameOptions;
+    private readonly TextRenderer TextRenderer;
 
-    public MapItemRenderer(TextRenderer var1, GameOptions var2, TextureManager var3)
+    public MapItemRenderer(TextRenderer TextRenderer, GameOptions GameOptions, TextureManager TextureManager)
     {
-        field_28161_c = var2;
-        field_28160_d = var1;
-        field_28158_b = var3.load(new BufferedImage(128, 128, 2));
+        this.GameOptions = GameOptions;
+        this.TextRenderer = TextRenderer;
+        MapTextureId = TextureManager.load(new BufferedImage(128, 128, 2));
 
         for (int var4 = 0; var4 < 16384; ++var4)
         {
-            field_28159_a[var4] = 0;
+            MapPixels[var4] = 0;
         }
 
     }
 
-    public void func_28157_a(EntityPlayer var1, TextureManager var2, MapState var3)
+    public void func_28157_a(EntityPlayer Player, TextureManager TextureManager, MapState MapState)
     {
         for (int var4 = 0; var4 < 16384; ++var4)
         {
-            byte var5 = var3.colors[var4];
+            byte var5 = MapState.colors[var4];
             if (var5 / 4 == 0)
             {
-                field_28159_a[var4] = (var4 + var4 / 128 & 1) * 8 + 16 << 24;
+                MapPixels[var4] = (var4 + var4 / 128 & 1) * 8 + 16 << 24;
             }
             else
             {
@@ -55,16 +55,16 @@ public class MapItemRenderer
                 uint var10 = (var6 >> 8 & 255) * var8 / 255;
                 uint var11 = (var6 & 255) * var8 / 255;
 
-                field_28159_a[var4] = unchecked((int)(0xFF000000u | var9 << 16 | var10 << 8 | var11));
+                MapPixels[var4] = unchecked((int)(0xFF000000u | var9 << 16 | var10 << 8 | var11));
             }
         }
 
-        var2.bind(field_28159_a, 128, 128, field_28158_b);
+        TextureManager.bind(MapPixels, 128, 128, MapTextureId);
         byte var15 = 0;
         byte var16 = 0;
         Tessellator var17 = Tessellator.instance;
         float var18 = 0.0F;
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)field_28158_b);
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)MapTextureId);
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.Disable(GLEnum.AlphaTest);
         var17.startDrawingQuads();
@@ -75,8 +75,8 @@ public class MapItemRenderer
         var17.draw();
         GLManager.GL.Enable(GLEnum.AlphaTest);
         GLManager.GL.Disable(GLEnum.Blend);
-        var2.bindTexture(var2.getTextureId("/misc/mapicons.png"));
-        Iterator var19 = var3.icons.iterator();
+        TextureManager.bindTexture(TextureManager.getTextureId("/misc/mapicons.png"));
+        Iterator var19 = MapState.icons.iterator();
 
         while (var19.hasNext())
         {
@@ -102,7 +102,7 @@ public class MapItemRenderer
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(0.0F, 0.0F, -0.04F);
         GLManager.GL.Scale(1.0F, 1.0F, 1.0F);
-        field_28160_d.drawString(var3.id, var15, var16, 0xFF000000);
+        TextRenderer.drawString(MapState.id, var15, var16, 0xFF000000);
         GLManager.GL.PopMatrix();
     }
 }

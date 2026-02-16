@@ -142,12 +142,12 @@ public class BlockPistonMoving : BlockWithEntity
             }
 
             int var8 = var5.getFacing();
-            minX = var6.minX - (double)((float)PistonConstants.HEAD_OFFSET_X[var8] * var7);
-            minY = var6.minY - (double)((float)PistonConstants.HEAD_OFFSET_Y[var8] * var7);
-            minZ = var6.minZ - (double)((float)PistonConstants.HEAD_OFFSET_Z[var8] * var7);
-            maxX = var6.maxX - (double)((float)PistonConstants.HEAD_OFFSET_X[var8] * var7);
-            maxY = var6.maxY - (double)((float)PistonConstants.HEAD_OFFSET_Y[var8] * var7);
-            maxZ = var6.maxZ - (double)((float)PistonConstants.HEAD_OFFSET_Z[var8] * var7);
+            minX = var6.minX - (double)((float)PistonConstants.HeadOffsetX[var8] * var7);
+            minY = var6.minY - (double)((float)PistonConstants.HeadOffsetY[var8] * var7);
+            minZ = var6.minZ - (double)((float)PistonConstants.HeadOffsetZ[var8] * var7);
+            maxX = var6.maxX - (double)((float)PistonConstants.HeadOffsetX[var8] * var7);
+            maxY = var6.maxY - (double)((float)PistonConstants.HeadOffsetY[var8] * var7);
+            maxZ = var6.maxZ - (double)((float)PistonConstants.HeadOffsetZ[var8] * var7);
         }
 
     }
@@ -164,12 +164,12 @@ public class BlockPistonMoving : BlockWithEntity
             else
             {
                 Box res = shape.Value;
-                res.minX -= (double)((float)PistonConstants.HEAD_OFFSET_X[facing] * sizeMultiplier);
-                res.maxX -= (double)((float)PistonConstants.HEAD_OFFSET_X[facing] * sizeMultiplier);
-                res.minY -= (double)((float)PistonConstants.HEAD_OFFSET_Y[facing] * sizeMultiplier);
-                res.maxY -= (double)((float)PistonConstants.HEAD_OFFSET_Y[facing] * sizeMultiplier);
-                res.minZ -= (double)((float)PistonConstants.HEAD_OFFSET_Z[facing] * sizeMultiplier);
-                res.maxZ -= (double)((float)PistonConstants.HEAD_OFFSET_Z[facing] * sizeMultiplier);
+                res.minX -= (double)((float)PistonConstants.HeadOffsetX[facing] * sizeMultiplier);
+                res.maxX -= (double)((float)PistonConstants.HeadOffsetX[facing] * sizeMultiplier);
+                res.minY -= (double)((float)PistonConstants.HeadOffsetY[facing] * sizeMultiplier);
+                res.maxY -= (double)((float)PistonConstants.HeadOffsetY[facing] * sizeMultiplier);
+                res.minZ -= (double)((float)PistonConstants.HeadOffsetZ[facing] * sizeMultiplier);
+                res.maxZ -= (double)((float)PistonConstants.HeadOffsetZ[facing] * sizeMultiplier);
                 return res;
             }
         }

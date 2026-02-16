@@ -21,32 +21,32 @@ public class WorldProperties
     public bool IsThundering { get; set; }
     public int ThunderTime { get; set; }
 
-    public WorldProperties(NBTTagCompound nbt)
+    public WorldProperties(NBTTagCompound WorldNBT)
     {
-        RandomSeed = nbt.GetLong("RandomSeed");
-        SpawnX = nbt.GetInteger("SpawnX");
-        SpawnY = nbt.GetInteger("SpawnY");
-        SpawnZ = nbt.GetInteger("SpawnZ");
-        WorldTime = nbt.GetLong("Time");
-        LastTimePlayed = nbt.GetLong("LastPlayed");
-        LevelName = nbt.GetString("LevelName");
-        SaveVersion = nbt.GetInteger("version");
-        RainTime = nbt.GetInteger("rainTime");
-        IsRaining = nbt.GetBoolean("raining");
-        ThunderTime = nbt.GetInteger("thunderTime");
-        IsThundering = nbt.GetBoolean("thundering");
-        if (nbt.HasKey("Player"))
+        RandomSeed = WorldNBT.GetLong("RandomSeed");
+        SpawnX = WorldNBT.GetInteger("SpawnX");
+        SpawnY = WorldNBT.GetInteger("SpawnY");
+        SpawnZ = WorldNBT.GetInteger("SpawnZ");
+        WorldTime = WorldNBT.GetLong("Time");
+        LastTimePlayed = WorldNBT.GetLong("LastPlayed");
+        LevelName = WorldNBT.GetString("LevelName");
+        SaveVersion = WorldNBT.GetInteger("version");
+        RainTime = WorldNBT.GetInteger("rainTime");
+        IsRaining = WorldNBT.GetBoolean("raining");
+        ThunderTime = WorldNBT.GetInteger("thunderTime");
+        IsThundering = WorldNBT.GetBoolean("thundering");
+        if (WorldNBT.HasKey("Player"))
         {
-            PlayerTag = nbt.GetCompoundTag("Player");
+            PlayerTag = WorldNBT.GetCompoundTag("Player");
             Dimension = PlayerTag.GetInteger("Dimension");
         }
 
     }
 
-    public WorldProperties(long randomSeed, string levelName)
+    public WorldProperties(long RandomSeed, string LevelName)
     {
-        RandomSeed = randomSeed;
-        LevelName = levelName;
+        this.RandomSeed = RandomSeed;
+        this.LevelName = LevelName;
     }
 
     public WorldProperties(WorldProperties WorldProp)
@@ -70,52 +70,52 @@ public class WorldProperties
 
     public NBTTagCompound getNBTTagCompound()
     {
-        NBTTagCompound nbt = new();
-        UpdateTagCompound(nbt, PlayerTag);
-        return nbt;
+        NBTTagCompound NBT = new();
+        UpdateTagCompound(NBT, PlayerTag);
+        return NBT;
     }
 
-    public NBTTagCompound getNBTTagCompoundWithPlayer(List<EntityPlayer> players)
+    public NBTTagCompound getNBTTagCompoundWithPlayer(List<EntityPlayer> Players)
     {
-        NBTTagCompound nbt = new();
-        NBTTagCompound? playerNbt = null;
+        NBTTagCompound NBT = new();
+        NBTTagCompound? PlayerNBT = null;
 
-        if (players.Count > 0 && players[0] is EntityPlayer player)
+        if (Players.Count > 0 && Players[0] is EntityPlayer player)
         {
-            playerNbt = new NBTTagCompound();
-            player.write(playerNbt); // Assuming write is the NBT save method
+            PlayerNBT = new NBTTagCompound();
+            player.write(PlayerNBT); // Assuming write is the NBT save method
         }
 
-        UpdateTagCompound(nbt, playerNbt);
-        return nbt;
+        UpdateTagCompound(NBT, PlayerNBT);
+        return NBT;
     }
 
-    private void UpdateTagCompound(NBTTagCompound worldNbt, NBTTagCompound playerNbt)
+    private void UpdateTagCompound(NBTTagCompound WorldNBT, NBTTagCompound PlayerNBT)
     {
-        worldNbt.SetLong("RandomSeed", RandomSeed);
-        worldNbt.SetInteger("SpawnX", SpawnX);
-        worldNbt.SetInteger("SpawnY", SpawnY);
-        worldNbt.SetInteger("SpawnZ", SpawnZ);
-        worldNbt.SetLong("Time", WorldTime);
-        worldNbt.SetLong("SizeOnDisk", SizeOnDisk);
+        WorldNBT.SetLong("RandomSeed", RandomSeed);
+        WorldNBT.SetInteger("SpawnX", SpawnX);
+        WorldNBT.SetInteger("SpawnY", SpawnY);
+        WorldNBT.SetInteger("SpawnZ", SpawnZ);
+        WorldNBT.SetLong("Time", WorldTime);
+        WorldNBT.SetLong("SizeOnDisk", SizeOnDisk);
 
-        worldNbt.SetLong("LastPlayed", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        WorldNBT.SetLong("LastPlayed", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
 
-        worldNbt.SetString("LevelName", LevelName);
-        worldNbt.SetInteger("version", SaveVersion);
-        worldNbt.SetInteger("rainTime", RainTime);
-        worldNbt.SetBoolean("raining", IsRaining);
-        worldNbt.SetInteger("thunderTime", ThunderTime);
-        worldNbt.SetBoolean("thundering", IsThundering);
+        WorldNBT.SetString("LevelName", LevelName);
+        WorldNBT.SetInteger("version", SaveVersion);
+        WorldNBT.SetInteger("rainTime", RainTime);
+        WorldNBT.SetBoolean("raining", IsRaining);
+        WorldNBT.SetInteger("thunderTime", ThunderTime);
+        WorldNBT.SetBoolean("thundering", IsThundering);
 
-        if (playerNbt != null)
-            worldNbt.SetCompoundTag("Player", playerNbt);
+        if (PlayerNBT != null)
+            WorldNBT.SetCompoundTag("Player", PlayerNBT);
     }
 
-    public void SetSpawn(int x, int y, int z)
+    public void SetSpawn(int X, int Y, int Z)
     {
-        SpawnX = x;
-        SpawnY = y;
-        SpawnZ = z;
+        SpawnX = X;
+        SpawnY = Y;
+        SpawnZ = Z;
     }
 }

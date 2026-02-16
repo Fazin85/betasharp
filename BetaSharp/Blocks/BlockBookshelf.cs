@@ -4,16 +4,16 @@ namespace BetaSharp.Blocks;
 
 public class BlockBookshelf : Block
 {
-    public BlockBookshelf(int id, int textureId) : base(id, textureId, Material.Wood)
+    public BlockBookshelf(int Id, int TextureId) : base(Id, TextureId, Material.Wood)
     {
     }
 
-    public override int getTexture(int side)
+    public override int getTexture(int Side)
     {
-        return side <= 1 ? 4 : textureId;
+        return Side <= 1 ? 4 : textureId;
     }
 
-    public override int getDroppedItemCount(java.util.Random random)
+    public override int getDroppedItemCount(java.util.Random Random)
     {
         return 0;
     }

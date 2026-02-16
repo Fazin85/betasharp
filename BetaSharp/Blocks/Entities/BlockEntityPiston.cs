@@ -67,17 +67,17 @@ public class BlockEntityPiston : BlockEntity
 
     public float getRenderOffsetX(float tickDelta)
     {
-        return extending ? (getProgress(tickDelta) - 1.0F) * PistonConstants.HEAD_OFFSET_X[facing] : (1.0F - getProgress(tickDelta)) * PistonConstants.HEAD_OFFSET_X[facing];
+        return extending ? (getProgress(tickDelta) - 1.0F) * PistonConstants.HeadOffsetX[facing] : (1.0F - getProgress(tickDelta)) * PistonConstants.HeadOffsetX[facing];
     }
 
     public float getRenderOffsetY(float tickDelta)
     {
-        return extending ? (getProgress(tickDelta) - 1.0F) * PistonConstants.HEAD_OFFSET_Y[facing] : (1.0F - getProgress(tickDelta)) * PistonConstants.HEAD_OFFSET_Y[facing];
+        return extending ? (getProgress(tickDelta) - 1.0F) * PistonConstants.HeadOffsetY[facing] : (1.0F - getProgress(tickDelta)) * PistonConstants.HeadOffsetY[facing];
     }
 
     public float getRenderOffsetZ(float tickDelta)
     {
-        return extending ? (getProgress(tickDelta) - 1.0F) * PistonConstants.HEAD_OFFSET_Z[facing] : (1.0F - getProgress(tickDelta)) * PistonConstants.HEAD_OFFSET_Z[facing];
+        return extending ? (getProgress(tickDelta) - 1.0F) * PistonConstants.HeadOffsetZ[facing] : (1.0F - getProgress(tickDelta)) * PistonConstants.HeadOffsetZ[facing];
     }
 
     private void pushEntities(float collisionShapeSizeMultiplier, float entityMoveMultiplier)
@@ -101,9 +101,9 @@ public class BlockEntityPiston : BlockEntity
                 foreach (Entity entity in pushedEntities)
                 {
                     entity.move(
-                        (double)(entityMoveMultiplier * PistonConstants.HEAD_OFFSET_X[facing]),
-                        (double)(entityMoveMultiplier * PistonConstants.HEAD_OFFSET_Y[facing]),
-                        (double)(entityMoveMultiplier * PistonConstants.HEAD_OFFSET_Z[facing])
+                        (double)(entityMoveMultiplier * PistonConstants.HeadOffsetX[facing]),
+                        (double)(entityMoveMultiplier * PistonConstants.HeadOffsetY[facing]),
+                        (double)(entityMoveMultiplier * PistonConstants.HeadOffsetZ[facing])
                     );
                 }
                 pushedEntities.Clear();

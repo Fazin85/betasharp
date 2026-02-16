@@ -44,7 +44,7 @@ public class ItemMap : NetworkSyncedItem
             mapState.centerX = world.getProperties().SpawnX;
             mapState.centerZ = world.getProperties().SpawnZ;
             mapState.scale = 3;
-            mapState.dimension = (sbyte)world.dimension.id;
+            mapState.dimension = (sbyte)world.Dimension.id;
             mapState.markDirty();
             world.setState(mapName, mapState);
         }
@@ -54,7 +54,7 @@ public class ItemMap : NetworkSyncedItem
 
     public void update(World world, Entity entity, MapState map)
     {
-        if (world.dimension.id == map.dimension)
+        if (world.Dimension.id == map.dimension)
         {
             short mapWidth = 128;
             short mapHeight = 128;
@@ -64,7 +64,7 @@ public class ItemMap : NetworkSyncedItem
             int entityPosX = MathHelper.floor_double(entity.x - (double)centerX) / blocksPerPixel + mapWidth / 2;
             int entityPosZ = MathHelper.floor_double(entity.z - (double)centerZ) / blocksPerPixel + mapHeight / 2;
             int scanRadius = 128 / blocksPerPixel;
-            if (world.dimension.hasCeiling)
+            if (world.Dimension.hasCeiling)
             {
                 scanRadius /= 2;
             }
@@ -101,7 +101,7 @@ public class ItemMap : NetworkSyncedItem
                             int sampleZ;
                             int currentY;
                             int colorIndex;
-                            if (world.dimension.hasCeiling)
+                                if (world.Dimension.hasCeiling)
                             {
                                 sampleX = worldX + worldZ * 231871;
                                 sampleX = sampleX * sampleX * 31287121 + sampleX * 11;
@@ -296,7 +296,7 @@ public class ItemMap : NetworkSyncedItem
         mapState.centerX = MathHelper.floor_double(entityPlayer.x);
         mapState.centerZ = MathHelper.floor_double(entityPlayer.z);
         mapState.scale = 3;
-        mapState.dimension = (sbyte)world.dimension.id;
+        mapState.dimension = (sbyte)world.Dimension.id;
         mapState.markDirty();
     }
 

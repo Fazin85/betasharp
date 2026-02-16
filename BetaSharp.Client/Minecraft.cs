@@ -315,7 +315,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         short var4 = 256;
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         tessellator.setColorOpaque_I(0x00FFFFFF);
-        func_6274_a((var1.ScaledWidth - var3) / 2, (var1.ScaledHeight - var4) / 2, 0, 0, var3, var4);
+        drawTexturedRect((var1.ScaledWidth - var3) / 2, (var1.ScaledHeight - var4) / 2, 0, 0, var3, var4);
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.Disable(GLEnum.Fog);
         GLManager.GL.Enable(GLEnum.AlphaTest);
@@ -323,21 +323,21 @@ public partial class Minecraft : java.lang.Object, Runnable
         Display.swapBuffers();
     }
 
-    public void func_6274_a(int var1, int var2, int var3, int var4, int var5, int var6)
+    public void drawTexturedRect(int x, int y, int texU, int texV, int width, int height)
     {
-        float var7 = 0.00390625F;
-        float var8 = 0.00390625F;
-        Tessellator var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV((double)(var1 + 0), (double)(var2 + var6), 0.0D, (double)((float)(var3 + 0) * var7),
-            (double)((float)(var4 + var6) * var8));
-        var9.addVertexWithUV((double)(var1 + var5), (double)(var2 + var6), 0.0D,
-            (double)((float)(var3 + var5) * var7), (double)((float)(var4 + var6) * var8));
-        var9.addVertexWithUV((double)(var1 + var5), (double)(var2 + 0), 0.0D, (double)((float)(var3 + var5) * var7),
-            (double)((float)(var4 + 0) * var8));
-        var9.addVertexWithUV((double)(var1 + 0), (double)(var2 + 0), 0.0D, (double)((float)(var3 + 0) * var7),
-            (double)((float)(var4 + 0) * var8));
-        var9.draw();
+        float uScale = 0.00390625F;
+        float vScale = 0.00390625F;
+        Tessellator tessellator = Tessellator.instance;
+        tessellator.startDrawingQuads();
+        tessellator.addVertexWithUV((double)(x + 0), (double)(y + height), 0.0D, (double)((float)(texU + 0) * uScale),
+            (double)((float)(texV + height) * vScale));
+        tessellator.addVertexWithUV((double)(x + width), (double)(y + height), 0.0D,
+            (double)((float)(texU + width) * uScale), (double)((float)(texV + height) * vScale));
+        tessellator.addVertexWithUV((double)(x + width), (double)(y + 0), 0.0D, (double)((float)(texU + width) * uScale),
+            (double)((float)(texV + 0) * vScale));
+        tessellator.addVertexWithUV((double)(x + 0), (double)(y + 0), 0.0D, (double)((float)(texU + 0) * uScale),
+            (double)((float)(texV + 0) * vScale));
+        tessellator.draw();
     }
 
     public static java.io.File getMinecraftDir()
@@ -380,20 +380,20 @@ public partial class Minecraft : java.lang.Object, Runnable
         }
     }
 
-    private static Util.OperatingSystem getOs()
+    private static BetaSharp.Util.OperatingSystem getOs()
     {
         string var0 = java.lang.System.getProperty("os.name").ToLower();
         return var0.Contains("win")
-            ? Util.OperatingSystem.windows
+            ? BetaSharp.Util.OperatingSystem.windows
             : (var0.Contains("mac")
-                ? Util.OperatingSystem.macos
+                ? BetaSharp.Util.OperatingSystem.macos
                 : (var0.Contains("solaris")
-                    ? Util.OperatingSystem.solaris
+                    ? BetaSharp.Util.OperatingSystem.solaris
                     : (var0.Contains("sunos")
-                        ? Util.OperatingSystem.solaris
+                        ? BetaSharp.Util.OperatingSystem.solaris
                         : (var0.Contains("linux")
-                            ? Util.OperatingSystem.linux
-                            : (var0.Contains("unix") ? Util.OperatingSystem.linux : Util.OperatingSystem.unknown)))));
+                            ? BetaSharp.Util.OperatingSystem.linux
+                            : (var0.Contains("unix") ? BetaSharp.Util.OperatingSystem.linux : BetaSharp.Util.OperatingSystem.unknown)))));
     }
 
     public WorldStorageSource getSaveLoader()
@@ -902,7 +902,7 @@ public partial class Minecraft : java.lang.Object, Runnable
 
     private void func_6254_a(int mouseButton, bool isHoldingMouse)
     {
-        if (!playerController.field_1064_b)
+        if (!playerController.IsHittingBlock)
         {
             if (!isHoldingMouse)
             {
@@ -1489,7 +1489,7 @@ public partial class Minecraft : java.lang.Object, Runnable
 
             particleManager?.clearEffects(newWorld);
 
-            playerController.func_6473_b(player);
+            playerController.onPlayerJoinWorld(player);
             if (targetEntity != null)
             {
                 newWorld.saveWorldData();
@@ -1641,7 +1641,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         player.movementInput = new MovementInputFromOptions(options);
         player.id = previousPlayerId;
         player.spawn();
-        playerController.func_6473_b(player);
+        playerController.onPlayerJoinWorld(player);
         showText("Respawning");
         if (currentScreen is GuiGameOver)
         {

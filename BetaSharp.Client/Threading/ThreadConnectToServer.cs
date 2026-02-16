@@ -6,12 +6,12 @@ using java.net;
 
 namespace BetaSharp.Client.Threading;
 
-public class ThreadConnectToServer(GuiConnecting var1, Minecraft var2, string var3, int var4) : java.lang.Thread
+public class ThreadConnectToServer(GuiConnecting GUI, Minecraft mc, string var3, int var4) : java.lang.Thread
 {
-    readonly Minecraft mc = var2;
+    readonly Minecraft mc = mc;
     readonly string hostName = var3;
     readonly int port = var4;
-    readonly GuiConnecting connectingGui = var1;
+    readonly GuiConnecting connectingGui = GUI;
 
     public override void run()
     {

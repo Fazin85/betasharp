@@ -660,7 +660,7 @@ public abstract class EntityPlayer : EntityLiving
                 return SleepAttemptResult.OTHER_PROBLEM;
             }
 
-            if (world.dimension.isNether)
+            if (world.Dimension.isNether)
             {
                 return SleepAttemptResult.NOT_POSSIBLE_HERE;
             }

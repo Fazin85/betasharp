@@ -89,7 +89,7 @@ public class ServerLoginNetworkHandler : NetHandler
     {
         if (server is InternalServer)
         {
-            packet.username = "player";
+            packet.username = "Player_BetaSharp";
         }
         if (packet.worldSeed == LoginHelloPacket.BETASHARP_CLIENT_SIGNATURE)
         {
@@ -125,24 +125,24 @@ public class ServerLoginNetworkHandler : NetHandler
 
     public void accept(LoginHelloPacket packet)
     {
-        ServerPlayerEntity ent = server.playerManager.connectPlayer(this, packet.username);
-        if (ent != null)
+        ServerPlayerEntity entity = server.playerManager.connectPlayer(this, packet.username);
+        if (entity  != null)
         {
-            server.playerManager.loadPlayerData(ent);
-            ent.setWorld(server.getWorld(ent.dimensionId));
-            LOGGER.info(getConnectionInfo() + " logged in with entity id " + ent.id + " at (" + ent.x + ", " + ent.y + ", " + ent.z + ")");
-            ServerWorld var3 = server.getWorld(ent.dimensionId);
-            Vec3i var4 = var3.getSpawnPos();
-            ServerPlayNetworkHandler handler = new ServerPlayNetworkHandler(server, connection, ent);
-            handler.sendPacket(new LoginHelloPacket("", ent.id, var3.getSeed(), (sbyte)var3.dimension.id));
-            handler.sendPacket(new PlayerSpawnPositionS2CPacket(var4.x, var4.y, var4.z));
-            server.playerManager.sendWorldInfo(ent, var3);
-            server.playerManager.sendToAll(new ChatMessagePacket("§e" + ent.name + " joined the game."));
-            server.playerManager.addPlayer(ent);
-            handler.teleport(ent.x, ent.y, ent.z, ent.yaw, ent.pitch);
+            server.playerManager.loadPlayerData(entity);
+            entity.setWorld(server.getWorld(entity.dimensionId));
+            LOGGER.info(getConnectionInfo() + " logged in with entity id " + entity.id + " at (" + entity.x + ", " + entity.y + ", " + entity.z + ")");
+            ServerWorld ServerWorld = server.getWorld(entity.dimensionId);
+            Vec3i Spawn = ServerWorld.getSpawnPos();
+            ServerPlayNetworkHandler handler = new ServerPlayNetworkHandler(server, connection, entity);
+            handler.sendPacket(new LoginHelloPacket("", entity.id, ServerWorld.getSeed(), (sbyte)ServerWorld.Dimension.id));
+            handler.sendPacket(new PlayerSpawnPositionS2CPacket(Spawn.x, Spawn.y, Spawn.z));
+            server.playerManager.sendWorldInfo(entity, ServerWorld);
+            server.playerManager.sendToAll(new ChatMessagePacket("§e" + entity.name + " joined the game."));
+            server.playerManager.addPlayer(entity);
+            handler.teleport(entity.x, entity.y, entity.z, entity.yaw, entity.pitch);
             server.connections.addConnection(handler);
-            handler.sendPacket(new WorldTimeUpdateS2CPacket(var3.getTime()));
-            ent.initScreenHandler();
+            handler.sendPacket(new WorldTimeUpdateS2CPacket(ServerWorld.getTime()));
+            entity.initScreenHandler();
         }
 
         closed = true;

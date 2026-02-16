@@ -117,7 +117,7 @@ public class Chunk : java.lang.Object
                     var1 = var4;
                 }
 
-                if (!world.dimension.hasCeiling)
+                if (!world.Dimension.hasCeiling)
                 {
                     int var6 = 15;
                     int var7 = 127;
@@ -299,7 +299,7 @@ public class Chunk : java.lang.Object
             }
 
             this.meta.setNibble(x, y, z, meta);
-            if (!world.dimension.hasCeiling)
+            if (!world.Dimension.hasCeiling)
             {
                 if (Block.BlockLightOpacity[var6 & 255] != 0)
                 {
