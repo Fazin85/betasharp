@@ -60,13 +60,13 @@ public class GuiConnecting : GuiScreen
         TranslationStorage translations = TranslationStorage.getInstance();
         if (clientHandler == null)
         {
-            drawCenteredString(fontRenderer, translations.translateKey("connect.connecting"), width / 2, height / 2 - 50, 0x00FFFFFF);
-            drawCenteredString(fontRenderer, "", width / 2, height / 2 - 10, 0x00FFFFFF);
+            DrawCenteredString(fontRenderer, translations.translateKey("connect.connecting"), width / 2, height / 2 - 50, 0x00FFFFFF);
+            DrawCenteredString(fontRenderer, "", width / 2, height / 2 - 10, 0x00FFFFFF);
         }
         else
         {
-            drawCenteredString(fontRenderer, translations.translateKey("connect.authorizing"), width / 2, height / 2 - 50, 0x00FFFFFF);
-            drawCenteredString(fontRenderer, clientHandler.field_1209_a, width / 2, height / 2 - 10, 0x00FFFFFF);
+            DrawCenteredString(fontRenderer, translations.translateKey("connect.authorizing"), width / 2, height / 2 - 50, 0x00FFFFFF);
+            DrawCenteredString(fontRenderer, clientHandler.field_1209_a, width / 2, height / 2 - 10, 0x00FFFFFF);
         }
 
         base.render(mouseX, mouseY, partialTicks);

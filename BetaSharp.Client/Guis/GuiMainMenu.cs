@@ -138,8 +138,8 @@ public class GuiMainMenu : GuiScreen
         byte logoY = 30;
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/title/mclogo.png"));
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        drawTexturedModalRect(logoX + 0, logoY + 0, 0, 0, 155, 44);
-        drawTexturedModalRect(logoX + 155, logoY + 0, 0, 45, 155, 44);
+        DrawTexturedModalRect(logoX + 0, logoY + 0, 0, 0, 155, 44);
+        DrawTexturedModalRect(logoX + 155, logoY + 0, 0, 45, 155, 44);
         tessellator.setColorOpaque_I(0x00FFFFFF);
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(width / 2 + 90, 70.0F, 0.0F);
@@ -148,13 +148,13 @@ public class GuiMainMenu : GuiScreen
             1000.0F * (float)Math.PI * 2.0F) * 0.1F);
         splashScale = splashScale * 100.0F / (fontRenderer.getStringWidth(_splashText) + 32);
         GLManager.GL.Scale(splashScale, splashScale, splashScale);
-        drawCenteredString(fontRenderer, _splashText, 0, -8, 16776960);
+        DrawCenteredString(fontRenderer, _splashText, 0, -8, 16776960);
         GLManager.GL.PopMatrix();
-        drawString(fontRenderer, "Minecraft Beta 1.7.3", 2, 2, 5263440);
+        DrawString(fontRenderer, "Minecraft Beta 1.7.3", 2, 2, 5263440);
         string copyrightText = "Copyright Mojang Studios. Not an official Minecraft product.";
-        drawString(fontRenderer, copyrightText, width - fontRenderer.getStringWidth(copyrightText) - 2, height - 20, 0x00FFFFFF);
+        DrawString(fontRenderer, copyrightText, width - fontRenderer.getStringWidth(copyrightText) - 2, height - 20, 0x00FFFFFF);
         string disclaimerText = "Not approved by or associated with Mojang Studios or Microsoft.";
-        drawString(fontRenderer, disclaimerText, width - fontRenderer.getStringWidth(disclaimerText) - 2, height - 10, 0x00FFFFFF);
+        DrawString(fontRenderer, disclaimerText, width - fontRenderer.getStringWidth(disclaimerText) - 2, height - 10, 0x00FFFFFF);
         base.render(mouseX, mouseY, partialTicks);
     }
 }

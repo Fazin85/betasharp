@@ -62,13 +62,13 @@ public class GuiIngame : Gui
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/gui/gui.png"));
         InventoryPlayer inventory = mc.player.inventory;
-        zLevel = -90.0F;
-        drawTexturedModalRect(scaledWidth / 2 - 91, scaledHeight - 22, 0, 0, 182, 22);
-        drawTexturedModalRect(scaledWidth / 2 - 91 - 1 + inventory.selectedSlot * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
+        _zLevel = -90.0F;
+        DrawTexturedModalRect(scaledWidth / 2 - 91, scaledHeight - 22, 0, 0, 182, 22);
+        DrawTexturedModalRect(scaledWidth / 2 - 91 - 1 + inventory.selectedSlot * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/gui/icons.png"));
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.BlendFunc(GLEnum.OneMinusDstColor, GLEnum.OneMinusSrcColor);
-        drawTexturedModalRect(scaledWidth / 2 - 7, scaledHeight / 2 - 7, 0, 0, 16, 16);
+        DrawTexturedModalRect(scaledWidth / 2 - 7, scaledHeight / 2 - 7, 0, 0, 16, 16);
         GLManager.GL.Disable(GLEnum.Blend);
         bool heartBlink = mc.player.hearts / 3 % 2 == 1;
         if (mc.player.hearts < 10)
@@ -95,17 +95,17 @@ public class GuiIngame : Gui
                     k = scaledWidth / 2 + 91 - i * 8 - 9;
                     if (i * 2 + 1 < armorValue)
                     {
-                        drawTexturedModalRect(k, j, 34, 9, 9, 9);
+                        DrawTexturedModalRect(k, j, 34, 9, 9, 9);
                     }
 
                     if (i * 2 + 1 == armorValue)
                     {
-                        drawTexturedModalRect(k, j, 25, 9, 9, 9);
+                        DrawTexturedModalRect(k, j, 25, 9, 9, 9);
                     }
 
                     if (i * 2 + 1 > armorValue)
                     {
-                        drawTexturedModalRect(k, j, 16, 9, 9, 9);
+                        DrawTexturedModalRect(k, j, 16, 9, 9, 9);
                     }
                 }
 
@@ -121,28 +121,28 @@ public class GuiIngame : Gui
                     j += rand.nextInt(2);
                 }
 
-                drawTexturedModalRect(x, j, 16 + blinkIndex * 9, 0, 9, 9);
+                DrawTexturedModalRect(x, j, 16 + blinkIndex * 9, 0, 9, 9);
                 if (heartBlink)
                 {
                     if (i * 2 + 1 < lastHealth)
                     {
-                        drawTexturedModalRect(x, j, 70, 0, 9, 9);
+                        DrawTexturedModalRect(x, j, 70, 0, 9, 9);
                     }
 
                     if (i * 2 + 1 == lastHealth)
                     {
-                        drawTexturedModalRect(x, j, 79, 0, 9, 9);
+                        DrawTexturedModalRect(x, j, 79, 0, 9, 9);
                     }
                 }
 
                 if (i * 2 + 1 < health)
                 {
-                    drawTexturedModalRect(x, j, 52, 0, 9, 9);
+                    DrawTexturedModalRect(x, j, 52, 0, 9, 9);
                 }
 
                 if (i * 2 + 1 == health)
                 {
-                    drawTexturedModalRect(x, j, 61, 0, 9, 9);
+                    DrawTexturedModalRect(x, j, 61, 0, 9, 9);
                 }
             }
 
@@ -155,11 +155,11 @@ public class GuiIngame : Gui
                 {
                     if (k < i)
                     {
-                        drawTexturedModalRect(scaledWidth / 2 - 91 + k * 8, scaledHeight - 32 - 9, 16, 18, 9, 9);
+                        DrawTexturedModalRect(scaledWidth / 2 - 91 + k * 8, scaledHeight - 32 - 9, 16, 18, 9, 9);
                     }
                     else
                     {
-                        drawTexturedModalRect(scaledWidth / 2 - 91 + k * 8, scaledHeight - 32 - 9, 25, 18, 9, 9);
+                        DrawTexturedModalRect(scaledWidth / 2 - 91 + k * 8, scaledHeight - 32 - 9, 25, 18, 9, 9);
                     }
                 }
             }
@@ -193,7 +193,7 @@ public class GuiIngame : Gui
             }
 
             j = (int)(220.0F * sleepAlpha) << 24 | 1052704;
-            drawRect(0, 0, scaledWidth, scaledHeight, (uint)j);
+            DrawRect(0, 0, scaledWidth, scaledHeight, (uint)j);
             GLManager.GL.Enable(GLEnum.AlphaTest);
             GLManager.GL.Enable(GLEnum.DepthTest);
         }
@@ -214,22 +214,22 @@ public class GuiIngame : Gui
             long usedMem = GCMonitor.UsedMemoryBytes;
             long heapMem = GCMonitor.UsedHeapBytes;
             debugStr = "Used memory: " + usedMem * 100L / maxMem + "% (" + usedMem / 1024L / 1024L + "MB) of " + maxMem / 1024L / 1024L + "MB";
-            drawString(font, debugStr, scaledWidth - font.getStringWidth(debugStr) - 2, 2, 14737632);
+            DrawString(font, debugStr, scaledWidth - font.getStringWidth(debugStr) - 2, 2, 14737632);
             debugStr = "GC heap: " + heapMem * 100L / maxMem + "% (" + heapMem / 1024L / 1024L + "MB)";
-            drawString(font, debugStr, scaledWidth - font.getStringWidth(debugStr) - 2, 12, 14737632);
-            drawString(font, "x: " + mc.player.x, 2, 64, 14737632);
-            drawString(font, "y: " + mc.player.y, 2, 72, 14737632);
-            drawString(font, "z: " + mc.player.z, 2, 80, 14737632);
-            drawString(font, "f: " + (MathHelper.floor_double((double)(mc.player.yaw * 4.0F / 360.0F) + 0.5D) & 3), 2, 88, 14737632);
+            DrawString(font, debugStr, scaledWidth - font.getStringWidth(debugStr) - 2, 12, 14737632);
+            DrawString(font, "x: " + mc.player.x, 2, 64, 14737632);
+            DrawString(font, "y: " + mc.player.y, 2, 72, 14737632);
+            DrawString(font, "z: " + mc.player.z, 2, 80, 14737632);
+            DrawString(font, "f: " + (MathHelper.floor_double((double)(mc.player.yaw * 4.0F / 360.0F) + 0.5D) & 3), 2, 88, 14737632);
 
             if (mc.internalServer != null)
             {
-                drawString(font, $"Server TPS: {mc.internalServer.Tps:F1}", 2, 104, 14737632);
+                DrawString(font, $"Server TPS: {mc.internalServer.Tps:F1}", 2, 104, 14737632);
             }
 
             int meshY = mc.internalServer != null ? 120 : 104;
             var cr = mc.terrainRenderer.chunkRenderer;
-            drawString(font, $"Meshes: S: {cr.LoadedMeshes} T: {cr.TranslucentMeshes}", 2, meshY, 14737632);
+            DrawString(font, $"Meshes: S: {cr.LoadedMeshes} T: {cr.TranslucentMeshes}", 2, meshY, 14737632);
             GLManager.GL.PopMatrix();
         }
         else
@@ -307,7 +307,7 @@ public class GuiIngame : Gui
                     byte left = 2;
                     int y = -j * 9;
                     debugStr = ((ChatLine)chatMessageList.get(j)).Message;
-                    drawRect(left, y - 1, left + 320, y + 8, (uint)(alpha / 2 << 24));
+                    DrawRect(left, y - 1, left + 320, y + 8, (uint)(alpha / 2 << 24));
                     GLManager.GL.Enable(GLEnum.Blend);
                     font.drawStringWithShadow(debugStr, left, y, 0x00FFFFFF + (uint)(alpha << 24));
                 }

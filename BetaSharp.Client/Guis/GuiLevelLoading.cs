@@ -58,8 +58,8 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
             progress = mc.internalServer.progress;
         }
 
-        drawCenteredString(fontRenderer, title, width / 2, height / 2 - 50, 0x00FFFFFF);
-        drawCenteredString(fontRenderer, progressMsg + " (" + progress + "%)", width / 2, height / 2 - 10, 0x00FFFFFF);
+        DrawCenteredString(fontRenderer, title, width / 2, height / 2 - 50, 0x00FFFFFF);
+        DrawCenteredString(fontRenderer, progressMsg + " (" + progress + "%)", width / 2, height / 2 - 10, 0x00FFFFFF);
 
         base.render(var1, var2, var3);
     }

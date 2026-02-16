@@ -62,20 +62,20 @@ public class GuiButton : Gui
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
             bool isHovered = mouseX >= xPosition && mouseY >= yPosition && mouseX < xPosition + width && mouseY < yPosition + height;
             int hoverState = getHoverState(isHovered);
-            drawTexturedModalRect(xPosition, yPosition, 0, 46 + hoverState * 20, width / 2, height);
-            drawTexturedModalRect(xPosition + width / 2, yPosition, 200 - width / 2, 46 + hoverState * 20, width / 2, height);
+            DrawTexturedModalRect(xPosition, yPosition, 0, 46 + hoverState * 20, width / 2, height);
+            DrawTexturedModalRect(xPosition + width / 2, yPosition, 200 - width / 2, 46 + hoverState * 20, width / 2, height);
             mouseDragged(mc, mouseX, mouseY);
             if (!enabled)
             {
-                drawCenteredString(font, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 0xFFA0A0A0);
+                DrawCenteredString(font, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 0xFFA0A0A0);
             }
             else if (isHovered)
             {
-                drawCenteredString(font, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 16777120);
+                DrawCenteredString(font, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 16777120);
             }
             else
             {
-                drawCenteredString(font, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 14737632);
+                DrawCenteredString(font, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 14737632);
             }
 
         }

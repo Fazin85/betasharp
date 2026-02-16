@@ -101,16 +101,16 @@ public class GuiTextField : Gui
 
     public void drawTextBox()
     {
-        drawRect(xPos - 1, yPos - 1, xPos + width + 1, yPos + height + 1, 0xFFA0A0A0);
-        drawRect(xPos, yPos, xPos + width, yPos + height, 0xFF000000);
+        DrawRect(xPos - 1, yPos - 1, xPos + width + 1, yPos + height + 1, 0xFFA0A0A0);
+        DrawRect(xPos, yPos, xPos + width, yPos + height, 0xFF000000);
         if (isEnabled)
         {
             bool var1 = isFocused && cursorCounter / 6 % 2 == 0;
-            drawString(fontRenderer, text + (var1 ? "_" : ""), xPos + 4, yPos + (height - 8) / 2, 14737632);
+            DrawString(fontRenderer, text + (var1 ? "_" : ""), xPos + 4, yPos + (height - 8) / 2, 14737632);
         }
         else
         {
-            drawString(fontRenderer, text, xPos + 4, yPos + (height - 8) / 2, 7368816);
+            DrawString(fontRenderer, text, xPos + 4, yPos + (height - 8) / 2, 7368816);
         }
 
     }

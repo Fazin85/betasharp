@@ -81,8 +81,8 @@ public class GuiTexturePacks : GuiScreen
         }
 
         TranslationStorage translations = TranslationStorage.getInstance();
-        drawCenteredString(fontRenderer, translations.translateKey("texturePack.title"), width / 2, 16, 0x00FFFFFF);
-        drawCenteredString(fontRenderer, translations.translateKey("texturePack.folderInfo"), width / 2 - 77, height - 26, 8421504);
+        DrawCenteredString(fontRenderer, translations.translateKey("texturePack.title"), width / 2, 16, 0x00FFFFFF);
+        DrawCenteredString(fontRenderer, translations.translateKey("texturePack.folderInfo"), width / 2 - 77, height - 26, 8421504);
         base.render(mouseX, mouseY, partialTicks);
     }
 

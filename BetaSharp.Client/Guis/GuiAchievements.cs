@@ -184,7 +184,7 @@ public class GuiAchievements : GuiScreen
         int var9 = (height - field_27119_i) / 2;
         int var10 = var8 + 16;
         int var11 = var9 + 17;
-        zLevel = 0.0F;
+        _zLevel = 0.0F;
         GLManager.GL.DepthFunc(GLEnum.Gequal);
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(0.0F, 0.0F, -200.0F);
@@ -245,7 +245,7 @@ public class GuiAchievements : GuiScreen
                     var26 = Block.Bedrock.textureId;
                 }
 
-                drawTexturedModalRect(var10 + var24 * 16 - var14, var11 + var22 * 16 - var15, var26 % 16 << 4, var26 >> 4 << 4, 16, 16);
+                DrawTexturedModalRect(var10 + var24 * 16 - var14, var11 + var22 * 16 - var15, var26 % 16 << 4, var26 >> 4 << 4, 16, 16);
             }
         }
 
@@ -283,8 +283,8 @@ public class GuiAchievements : GuiScreen
                     color = 0xFF000000U;
                 }
 
-                func_27100_a(var14, var16, var15, color);
-                func_27099_b(var16, var15, var17, color);
+                DrawHorizontalLine(var14, var16, var15, color);
+                DrawVerticalLine(var16, var15, var17, color);
             }
         }
 
@@ -328,11 +328,11 @@ public class GuiAchievements : GuiScreen
                 var34 = var11 + var17;
                 if (var30.isChallenge())
                 {
-                    drawTexturedModalRect(var33 - 2, var34 - 2, 26, 202, 26, 26);
+                    DrawTexturedModalRect(var33 - 2, var34 - 2, 26, 202, 26, 26);
                 }
                 else
                 {
-                    drawTexturedModalRect(var33 - 2, var34 - 2, 0, 202, 26, 26);
+                    DrawTexturedModalRect(var33 - 2, var34 - 2, 0, 202, 26, 26);
                 }
 
                 if (!field_27120_x.func_27181_b(var30))
@@ -363,9 +363,9 @@ public class GuiAchievements : GuiScreen
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.bindTexture(var7);
-        drawTexturedModalRect(var8, var9, 0, 0, field_27121_a, field_27119_i);
+        DrawTexturedModalRect(var8, var9, 0, 0, field_27121_a, field_27119_i);
         GLManager.GL.PopMatrix();
-        zLevel = 0.0F;
+        _zLevel = 0.0F;
         GLManager.GL.DepthFunc(GLEnum.Lequal);
         GLManager.GL.Disable(GLEnum.DepthTest);
         GLManager.GL.Enable(GLEnum.Texture2D);
@@ -385,7 +385,7 @@ public class GuiAchievements : GuiScreen
                     var37 += 12;
                 }
 
-                drawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var37 + 3 + 12, 0xC0000000U, 0xC0000000U);
+                DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var37 + 3 + 12, 0xC0000000U, 0xC0000000U);
                 fontRenderer.func_27278_a(var32, var17, var33 + 12, var34, 0xFFA0A0A0);
                 if (field_27120_x.hasAchievementUnlocked(var27))
                 {
@@ -397,7 +397,7 @@ public class GuiAchievements : GuiScreen
                 var34 = java.lang.Math.max(fontRenderer.getStringWidth(var31), 120);
                 string var39 = StatCollector.translateToLocalFormatted("achievement.requires", new object[] { var27.parent.statName });
                 var38 = fontRenderer.func_27277_a(var39, var34);
-                drawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var38 + 12 + 3, 0xC0000000, 0xC0000000);
+                DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var38 + 12 + 3, 0xC0000000, 0xC0000000);
                 fontRenderer.func_27278_a(var39, var17, var33 + 12, var34, 0xFF705050);
             }
 

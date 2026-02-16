@@ -28,15 +28,15 @@ public class GuiFurnace : GuiContainer
         mc.textureManager.bindTexture(textureId);
         int guiLeft = (width - xSize) / 2;
         int guiTop = (height - ySize) / 2;
-        drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
+        DrawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
         int progress;
         if (furnaceInventory.isBurning())
         {
             progress = furnaceInventory.getFuelTimeDelta(12);
-            drawTexturedModalRect(guiLeft + 56, guiTop + 36 + 12 - progress, 176, 12 - progress, 14, progress + 2);
+            DrawTexturedModalRect(guiLeft + 56, guiTop + 36 + 12 - progress, 176, 12 - progress, 14, progress + 2);
         }
 
         progress = furnaceInventory.getCookTimeDelta(24);
-        drawTexturedModalRect(guiLeft + 79, guiTop + 34, 176, 14, progress + 1, 16);
+        DrawTexturedModalRect(guiLeft + 79, guiTop + 34, 176, 14, progress + 1, 16);
     }
 }

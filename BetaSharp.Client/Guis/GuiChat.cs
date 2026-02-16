@@ -511,7 +511,7 @@ public class GuiChat : GuiScreen
 
     public override void render(int var1, int var2, float var3)
     {
-        drawRect(2, height - 14, width - 2, height - 2, 0x80000000);
+        DrawRect(2, height - 14, width - 2, height - 2, 0x80000000);
         
         // Display message with cursor at correct position
         string beforeCursor = message.Substring(0, Math.Min(cursorPosition, message.Length));
@@ -535,7 +535,7 @@ public class GuiChat : GuiScreen
             // Compute widths and draw selection background
             int beforeWidth = fontRenderer.getStringWidth("> " + beforeSel);
             int selWidth = fontRenderer.getStringWidth(sel);
-            drawRect(xBase + beforeWidth, y - 1, xBase + beforeWidth + selWidth, y + 9, 0x80FFFFFFu);
+            DrawRect(xBase + beforeWidth, y - 1, xBase + beforeWidth + selWidth, y + 9, 0x80FFFFFFu);
 
             // Draw selected text in contrasting color
             fontRenderer.drawString(sel, xBase + beforeWidth, y, 0xFF000000u);
@@ -545,7 +545,7 @@ public class GuiChat : GuiScreen
 
             // Draw caret at cursor position
             int caretX = xBase + fontRenderer.getStringWidth("> " + message.Substring(0, cursorPosition));
-            drawRect(caretX, y - 1, caretX + 1, y + 9, 0xFF000000u);
+            DrawRect(caretX, y - 1, caretX + 1, y + 9, 0xFF000000u);
         }
         else
         {

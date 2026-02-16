@@ -25,6 +25,6 @@ public class GuiDispenser : GuiContainer
         mc.textureManager.bindTexture(textureId);
         int guiLeft = (width - xSize) / 2;
         int guiTop = (height - ySize) / 2;
-        drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
+        DrawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 }

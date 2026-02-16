@@ -120,7 +120,7 @@ public class GuiAchievement : Gui
         GLManager.GL.Enable(GLEnum.Lighting);
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)achievementTextureId);
         GLManager.GL.Disable(GLEnum.Lighting);
-        drawTexturedModalRect(achievementX, achievementY, 96, 202, 160, 32);
+        DrawTexturedModalRect(achievementX, achievementY, 96, 202, 160, 32);
         drawAchievementText(achievementX, achievementY);
 
         GLManager.GL.PushMatrix();

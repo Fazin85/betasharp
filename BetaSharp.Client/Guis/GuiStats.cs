@@ -90,7 +90,7 @@ public class GuiStats : GuiScreen
     public override void render(int mouseX, int mouseY, float partialTicks)
     {
         currentSlot.drawScreen(mouseX, mouseY, partialTicks);
-        drawCenteredString(fontRenderer, screenTitle, width / 2, 20, 0x00FFFFFF);
+        DrawCenteredString(fontRenderer, screenTitle, width / 2, 20, 0x00FFFFFF);
         base.render(mouseX, mouseY, partialTicks);
     }
 
@@ -119,10 +119,10 @@ public class GuiStats : GuiScreen
         mc.textureManager.bindTexture(textureId);
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
-        tessellator.addVertexWithUV(x + 0, y + 18, zLevel, (double)((u + 0) * 0.0078125F), (double)((v + 18) * 0.0078125F));
-        tessellator.addVertexWithUV(x + 18, y + 18, zLevel, (double)((u + 18) * 0.0078125F), (double)((v + 18) * 0.0078125F));
-        tessellator.addVertexWithUV(x + 18, y + 0, zLevel, (double)((u + 18) * 0.0078125F), (double)((v + 0) * 0.0078125F));
-        tessellator.addVertexWithUV(x + 0, y + 0, zLevel, (double)((u + 0) * 0.0078125F), (double)((v + 0) * 0.0078125F));
+        tessellator.addVertexWithUV(x + 0, y + 18, _zLevel, (double)((u + 0) * 0.0078125F), (double)((v + 18) * 0.0078125F));
+        tessellator.addVertexWithUV(x + 18, y + 18, _zLevel, (double)((u + 18) * 0.0078125F), (double)((v + 18) * 0.0078125F));
+        tessellator.addVertexWithUV(x + 18, y + 0, _zLevel, (double)((u + 18) * 0.0078125F), (double)((v + 0) * 0.0078125F));
+        tessellator.addVertexWithUV(x + 0, y + 0, _zLevel, (double)((u + 0) * 0.0078125F), (double)((v + 0) * 0.0078125F));
         tessellator.draw();
     }
 
@@ -158,7 +158,7 @@ public class GuiStats : GuiScreen
 
     public static void func_27128_a(GuiStats var0, int right, int bottom, int left, int top)
     {
-        var0.drawGradientRect(right, bottom, left, top, 0xC0000000, 0xC0000000);
+        var0.DrawGradientRect(right, bottom, left, top, 0xC0000000, 0xC0000000);
     }
 
     public static Minecraft func_27149_g(GuiStats var0)
@@ -193,7 +193,7 @@ public class GuiStats : GuiScreen
 
     public static void func_27129_a(GuiStats var0, int var1, int var2, int var3, int var4, uint topColor, uint bottomColor)
     {
-        var0.drawGradientRect(var1, var2, var3, var4, topColor, bottomColor);
+        var0.DrawGradientRect(var1, var2, var3, var4, topColor, bottomColor);
     }
 
     public static TextRenderer func_27144_m(GuiStats var0)
@@ -208,7 +208,7 @@ public class GuiStats : GuiScreen
 
     public static void func_27135_b(GuiStats var0, int var1, int var2, int var3, int var4, uint topColor, uint bottomColor)
     {
-        var0.drawGradientRect(var1, var2, var3, var4, topColor, bottomColor);
+        var0.DrawGradientRect(var1, var2, var3, var4, topColor, bottomColor);
     }
 
     public static TextRenderer func_27131_o(GuiStats var0)

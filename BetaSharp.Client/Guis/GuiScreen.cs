@@ -170,7 +170,7 @@ public class GuiScreen : Gui
     {
         if (mc.world != null)
         {
-            drawGradientRect(0, 0, width, height, 0xC0101010, 0xD0101010);
+            DrawGradientRect(0, 0, width, height, 0xC0101010, 0xD0101010);
         }
         else
         {

@@ -55,8 +55,8 @@ public class GuiTexturePackSlot : GuiSlot
         var5.addVertexWithUV(var2 + 32, var3, 0.0D, 1.0D, 0.0D);
         var5.addVertexWithUV(var2, var3, 0.0D, 0.0D, 0.0D);
         var5.draw();
-        parentTexturePackGui.drawString(GuiTexturePacks.func_22127_j(parentTexturePackGui), var6.texturePackFileName, var2 + 32 + 2, var3 + 1, 0x00FFFFFF);
-        parentTexturePackGui.drawString(GuiTexturePacks.func_22120_k(parentTexturePackGui), var6.firstDescriptionLine, var2 + 32 + 2, var3 + 12, 8421504);
-        parentTexturePackGui.drawString(GuiTexturePacks.func_22125_l(parentTexturePackGui), var6.secondDescriptionLine, var2 + 32 + 2, var3 + 12 + 10, 8421504);
+        parentTexturePackGui.DrawString(GuiTexturePacks.func_22127_j(parentTexturePackGui), var6.texturePackFileName, var2 + 32 + 2, var3 + 1, 0x00FFFFFF);
+        parentTexturePackGui.DrawString(GuiTexturePacks.func_22120_k(parentTexturePackGui), var6.firstDescriptionLine, var2 + 32 + 2, var3 + 12, 8421504);
+        parentTexturePackGui.DrawString(GuiTexturePacks.func_22125_l(parentTexturePackGui), var6.secondDescriptionLine, var2 + 32 + 2, var3 + 12 + 10, 8421504);
     }
 }

@@ -85,8 +85,8 @@ public class GuiRenameWorld : GuiScreen
     {
         TranslationStorage translations = TranslationStorage.getInstance();
         drawDefaultBackground();
-        drawCenteredString(fontRenderer, translations.translateKey("selectWorld.renameTitle"), width / 2, height / 4 - 60 + 20, 0x00FFFFFF);
-        drawString(fontRenderer, translations.translateKey("selectWorld.enterName"), width / 2 - 100, 47, 10526880);
+        DrawCenteredString(fontRenderer, translations.translateKey("selectWorld.renameTitle"), width / 2, height / 4 - 60 + 20, 0x00FFFFFF);
+        DrawString(fontRenderer, translations.translateKey("selectWorld.enterName"), width / 2 - 100, 47, 10526880);
         nameInputField.drawTextBox();
         base.render(mouseX, mouseY, partialTicks);
     }

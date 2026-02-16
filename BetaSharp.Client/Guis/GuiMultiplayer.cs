@@ -120,10 +120,10 @@ public class GuiMultiplayer : GuiScreen
     {
         TranslationStorage translations = TranslationStorage.getInstance();
         drawDefaultBackground();
-        drawCenteredString(fontRenderer, translations.translateKey("multiplayer.title"), width / 2, height / 4 - 60 + 20, 0x00FFFFFF);
-        drawString(fontRenderer, translations.translateKey("multiplayer.info1"), width / 2 - 140, height / 4 - 60 + 60 + 0, 10526880);
-        drawString(fontRenderer, translations.translateKey("multiplayer.info2"), width / 2 - 140, height / 4 - 60 + 60 + 9, 10526880);
-        drawString(fontRenderer, translations.translateKey("multiplayer.ipinfo"), width / 2 - 140, height / 4 - 60 + 60 + 36, 10526880);
+        DrawCenteredString(fontRenderer, translations.translateKey("multiplayer.title"), width / 2, height / 4 - 60 + 20, 0x00FFFFFF);
+        DrawString(fontRenderer, translations.translateKey("multiplayer.info1"), width / 2 - 140, height / 4 - 60 + 60 + 0, 10526880);
+        DrawString(fontRenderer, translations.translateKey("multiplayer.info2"), width / 2 - 140, height / 4 - 60 + 60 + 9, 10526880);
+        DrawString(fontRenderer, translations.translateKey("multiplayer.ipinfo"), width / 2 - 140, height / 4 - 60 + 60 + 36, 10526880);
         serverAddressInputField.drawTextBox();
         base.render(mouseX, mouseY, partialTicks);
     }

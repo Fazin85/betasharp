@@ -41,7 +41,7 @@ public class GuiInventory : GuiContainer
         mc.textureManager.bindTexture(var2);
         int var3 = (width - xSize) / 2;
         int var4 = (height - ySize) / 2;
-        drawTexturedModalRect(var3, var4, 0, 0, xSize, ySize);
+        DrawTexturedModalRect(var3, var4, 0, 0, xSize, ySize);
         GLManager.GL.Enable(GLEnum.RescaleNormal);
         GLManager.GL.Enable(GLEnum.ColorMaterial);
         GLManager.GL.PushMatrix();
