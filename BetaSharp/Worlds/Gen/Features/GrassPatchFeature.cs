@@ -28,7 +28,7 @@ public class GrassPatchFeature : Feature
                     int genZ = z + rand.nextInt(8) - rand.nextInt(8);
                     if (world.isAir(genX, genY, genZ) && ((BlockPlant)Block.Blocks[_tallGrassBlockId]).canGrow(world, genX, genY, genZ))
                     {
-                        world.setBlockWithoutNotifyingNeighbors(genX, genY, genZ, _tallGrassBlockId, _tallGrassBlockMeta);
+                        world.SetBlockWithoutNotifyingNeighbors(genX, genY, genZ, _tallGrassBlockId, _tallGrassBlockMeta);
                     }
                 }
 

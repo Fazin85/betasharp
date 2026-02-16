@@ -21,7 +21,7 @@ public class PlantPatchFeature : Feature
             int genZ = z + rand.nextInt(8) - rand.nextInt(8);
             if (world.isAir(genX, genY, genZ) && ((BlockPlant)Block.Blocks[plantBlockId]).canGrow(world, genX, genY, genZ))
             {
-                world.setBlockWithoutNotifyingNeighbors(genX, genY, genZ, plantBlockId);
+                world.SetBlockWithoutNotifyingNeighbors(genX, genY, genZ, plantBlockId);
             }
         }
 

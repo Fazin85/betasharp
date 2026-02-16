@@ -45,7 +45,7 @@ public class BirchTreeFeature : Feature
         int soilId = world.getBlockId(x, y - 1, z);
         if ((soilId == Block.GrassBlock.id || soilId == Block.Dirt.id) && y < 128 - treeHeight - 1)
         {
-            world.setBlockWithoutNotifyingNeighbors(x, y - 1, z, Block.Dirt.id);
+            world.SetBlockWithoutNotifyingNeighbors(x, y - 1, z, Block.Dirt.id);
 
 
             for (int leafY = y - 3 + treeHeight; leafY <= y + treeHeight; ++leafY)
@@ -64,7 +64,7 @@ public class BirchTreeFeature : Feature
                                         rand.nextInt(2) != 0 && relativeY != 0) && !Block.BlocksOpaque[world.getBlockId(leafX, leafY, leafZ)];
                         if (isCorner)
                         {
-                            world.setBlockWithoutNotifyingNeighbors(leafX, leafY, leafZ, Block.Leaves.id, 2);
+                            world.SetBlockWithoutNotifyingNeighbors(leafX, leafY, leafZ, Block.Leaves.id, 2);
                         }
                     }
                 }
@@ -75,7 +75,7 @@ public class BirchTreeFeature : Feature
                 var blockAtTrunk = world.getBlockId(x, y + trunkY, z);
                 if (blockAtTrunk == 0 || blockAtTrunk == Block.Leaves.id)
                 {
-                    world.setBlockWithoutNotifyingNeighbors(x, y + trunkY, z, Block.Log.id, 2);
+                    world.SetBlockWithoutNotifyingNeighbors(x, y + trunkY, z, Block.Log.id, 2);
                 }
             }
 

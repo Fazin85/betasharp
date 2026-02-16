@@ -47,7 +47,7 @@ public class SpruceTreeFeature : Feature
         int groundId = world.getBlockId(x, y - 1, z);
         if (!((groundId == Block.GrassBlock.id || groundId == Block.Dirt.id) && y < 128 - totalHeight - 1)) return false;
 
-        world.setBlockWithoutNotifyingNeighbors(x, y - 1, z, Block.Dirt.id);
+        world.SetBlockWithoutNotifyingNeighbors(x, y - 1, z, Block.Dirt.id);
         int currentRadius = rand.nextInt(2);
         int radiusTarget = 1;
         byte radiusStep = 0;
@@ -66,7 +66,7 @@ public class SpruceTreeFeature : Feature
 
                     if ((Math.Abs(offsetX) != currentRadius || Math.Abs(offsetZ) != currentRadius || currentRadius <= 0) && !Block.BlocksOpaque[world.getBlockId(cx, leafY, cz)])
                     {
-                        world.setBlockWithoutNotifyingNeighbors(cx, leafY, cz, Block.Leaves.id, 1);
+                        world.SetBlockWithoutNotifyingNeighbors(cx, leafY, cz, Block.Leaves.id, 1);
                     }
                 }
             }
@@ -94,7 +94,7 @@ public class SpruceTreeFeature : Feature
             int blockAtTrunk = world.getBlockId(x, y + trunkY, z);
             if (blockAtTrunk == 0 || blockAtTrunk == Block.Leaves.id)
             {
-                world.setBlockWithoutNotifyingNeighbors(x, y + trunkY, z, Block.Log.id, 1);
+                world.SetBlockWithoutNotifyingNeighbors(x, y + trunkY, z, Block.Log.id, 1);
             }
         }
 

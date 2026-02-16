@@ -92,7 +92,7 @@ public class LakeFeature : Feature
                     if (lakeMask[(dx * 16 + dy) * 8 + dz])
                     {
                         var blockId = dz >= 4 ? 0 : _waterBlockId;
-                        world.setBlockWithoutNotifyingNeighbors(x + dx, y + dz, z + dy, blockId);
+                        world.SetBlockWithoutNotifyingNeighbors(x + dx, y + dz, z + dy, blockId);
                     }
                 }
             }
@@ -108,7 +108,7 @@ public class LakeFeature : Feature
                         world.getBlockId(x + dx, y + dz - 1, z + dy) == Block.Dirt.id &&
                         world.getBrightness(LightType.Sky, x + dx, y + dz, z + dy) > 0)
                     {
-                        world.setBlockWithoutNotifyingNeighbors(x + dx, y + dz - 1, z + dy, Block.GrassBlock.id);
+                        world.SetBlockWithoutNotifyingNeighbors(x + dx, y + dz - 1, z + dy, Block.GrassBlock.id);
                     }
                 }
             }
@@ -133,7 +133,7 @@ public class LakeFeature : Feature
                             );
                         if (isEdge && (dz < 4 || rand.nextInt(2) != 0) && world.getMaterial(x + dx, y + dz, z + dy).IsSolid)
                         {
-                            world.setBlockWithoutNotifyingNeighbors(x + dx, y + dz, z + dy, Block.Stone.id);
+                            world.SetBlockWithoutNotifyingNeighbors(x + dx, y + dz, z + dy, Block.Stone.id);
                         }
                     }
                 }

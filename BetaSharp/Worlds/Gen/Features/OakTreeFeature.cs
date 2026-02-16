@@ -43,7 +43,7 @@ public class OakTreeFeature : Feature
         int groundId = world.getBlockId(x, y - 1, z);
         if ((groundId == Block.GrassBlock.id || groundId == Block.Dirt.id) && y < 128 - treeHeight - 1)
         {
-            world.setBlockWithoutNotifyingNeighbors(x, y - 1, z, Block.Dirt.id);
+            world.SetBlockWithoutNotifyingNeighbors(x, y - 1, z, Block.Dirt.id);
 
             for (int leafY = y - 3 + treeHeight; leafY <= y + treeHeight; ++leafY)
             {
@@ -59,7 +59,7 @@ public class OakTreeFeature : Feature
                         int offsetZ = leafZ - z;
                         if ((Math.Abs(offsetX) != leafRadius || Math.Abs(offsetZ) != leafRadius || rand.nextInt(2) != 0 && relativeY != 0) && !Block.BlocksOpaque[world.getBlockId(leafX, leafY, leafZ)])
                         {
-                            world.setBlockWithoutNotifyingNeighbors(leafX, leafY, leafZ, Block.Leaves.id);
+                            world.SetBlockWithoutNotifyingNeighbors(leafX, leafY, leafZ, Block.Leaves.id);
                         }
                     }
                 }
@@ -70,7 +70,7 @@ public class OakTreeFeature : Feature
                 int blockAtTrunk = world.getBlockId(x, y + trunkY, z);
                 if (blockAtTrunk == 0 || blockAtTrunk == Block.Leaves.id)
                 {
-                    world.setBlockWithoutNotifyingNeighbors(x, y + trunkY, z, Block.Log.id);
+                    world.SetBlockWithoutNotifyingNeighbors(x, y + trunkY, z, Block.Log.id);
                 }
             }
 

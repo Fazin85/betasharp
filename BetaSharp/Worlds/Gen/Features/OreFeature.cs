@@ -61,7 +61,7 @@ public class OreFeature : Feature
 
                         if (dx * dx + dy * dy + dz * dz < 1.0 && world.getBlockId(blockX, blockY, blockZ) == Block.Stone.id)
                         {
-                            world.setBlockWithoutNotifyingNeighbors(blockX, blockY, blockZ, _minableBlockId);
+                            world.SetBlockWithoutNotifyingNeighbors(blockX, blockY, blockZ, _minableBlockId);
                         }
                     }
                 }

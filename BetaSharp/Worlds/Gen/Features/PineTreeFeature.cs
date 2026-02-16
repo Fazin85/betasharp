@@ -47,7 +47,7 @@ public class PineTreeFeature : Feature
         int groundId = world.getBlockId(x, y - 1, z);
         if ((groundId == Block.GrassBlock.id || groundId == Block.Dirt.id) && y < 128 - treeHeight - 1)
         {
-            world.setBlockWithoutNotifyingNeighbors(x, y - 1, z, Block.Dirt.id);
+            world.SetBlockWithoutNotifyingNeighbors(x, y - 1, z, Block.Dirt.id);
             int currentLeafRadius = 0;
 
             for (int cy = y + treeHeight; cy >= y + trunkWithNoLeaves; --cy)
@@ -61,7 +61,7 @@ public class PineTreeFeature : Feature
                         int offsetZ = cz - z;
                         if ((Math.Abs(offsetX) != currentLeafRadius || Math.Abs(offsetZ) != currentLeafRadius || currentLeafRadius <= 0) && !Block.BlocksOpaque[world.getBlockId(cx, cy, cz)])
                         {
-                            world.setBlockWithoutNotifyingNeighbors(cx, cy, cz, Block.Leaves.id, 1);
+                            world.SetBlockWithoutNotifyingNeighbors(cx, cy, cz, Block.Leaves.id, 1);
                         }
                     }
                 }
@@ -81,7 +81,7 @@ public class PineTreeFeature : Feature
                 int blockAtTrunk = world.getBlockId(x, y + trunkY, z);
                 if (blockAtTrunk == 0 || blockAtTrunk == Block.Leaves.id)
                 {
-                    world.setBlockWithoutNotifyingNeighbors(x, y + trunkY, z, Block.Log.id, 1);
+                    world.SetBlockWithoutNotifyingNeighbors(x, y + trunkY, z, Block.Log.id, 1);
                 }
             }
 

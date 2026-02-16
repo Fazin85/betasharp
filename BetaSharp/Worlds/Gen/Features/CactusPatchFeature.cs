@@ -20,7 +20,7 @@ public class CactusPatchFeature : Feature
                 {
                     if (Block.Cactus.canGrow(world, genX, genY + h, genZ))
                     {
-                        world.setBlockWithoutNotifyingNeighbors(genX, genY + h, genZ, Block.Cactus.id);
+                        world.SetBlockWithoutNotifyingNeighbors(genX, genY + h, genZ, Block.Cactus.id);
                     }
                 }
             }
