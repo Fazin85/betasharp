@@ -29,7 +29,7 @@ internal static class Bootstrapper
                 .MinimumLevel.Warning()
                 .WriteTo.Debug(outputTemplate: template)
                 .WriteTo.File(
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BetaSharp Launcher", "Logs", ".log"),
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BetaSharp Launcher", "Logs", ".txt"),
                     rollingInterval: RollingInterval.Day,
                     retainedFileCountLimit: 5,
                     outputTemplate: template)

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -14,7 +15,6 @@ internal sealed class AuthenticationService
     private readonly SystemWebViewOptions _webViewOptions;
     private readonly IPublicClientApplication _application;
 
-    // Need better way for storing the HTML responses.
     public AuthenticationService(ILogger<AuthenticationService> logger)
     {
         _logger = logger;
@@ -27,6 +27,7 @@ internal sealed class AuthenticationService
                                <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BetaSharp</title><style>body{margin:0;padding:0;background-color:#000;display:flex;justify-content:center;align-items:center;height:100vh;font-family:Arial,sans-serif}p{color:orange;font-size:1rem;font-weight:400;text-align:center}a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}</style></head><body><p>Failed to authenticate please raise an issue <a href="https://github.com/Fazin85/betasharp/issues" target="_blank">here</a></p></body></html>
                                """;
 
+        // Need better way for storing the HTML responses.
         _webViewOptions = new SystemWebViewOptions { HtmlMessageSuccess = success, HtmlMessageError = failure };
 
         // Probably not the best idea to use Prism's ID?
@@ -48,8 +49,8 @@ internal sealed class AuthenticationService
                 "betasharp.launcher",
                 MsalCacheHelper.LinuxKeyRingDefaultCollection,
                 "MSAL cache for BetaSharp's launcher",
-                default,
-                default)
+                new KeyValuePair<string, string>("Version", "1"),
+                new KeyValuePair<string, string>("ProductGroup", "MyApps"))
             .WithMacKeyChain("betasharp.launcher", "betasharp")
             .Build();
 
