@@ -14,7 +14,7 @@ public class GuiErrorScreen : GuiScreen
     {
     }
 
-    protected override void ActionPerformed(GuiButton var1)
+    protected override void ActionPerformed(GuiButton btt)
     {
     }
 

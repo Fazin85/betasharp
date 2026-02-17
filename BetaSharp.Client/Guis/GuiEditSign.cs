@@ -11,24 +11,24 @@ namespace BetaSharp.Client.Guis;
 public class GuiEditSign : GuiScreen
 {
 
-    protected string screenTitle = "Edit sign message:";
-    private readonly BlockEntitySign entitySign;
-    private int updateCounter;
-    private int editLine = 0;
-    private static readonly string allowedCharacters = ChatAllowedCharacters.allowedCharacters;
+    protected string _screenTitle = "Edit sign message:";
+    private readonly BlockEntitySign _entitySign;
+    private int _updateCounter;
+    private int _editLine = 0;
+    private static readonly string _allowedCharacters = ChatAllowedCharacters.allowedCharacters;
 
     public GuiEditSign(BlockEntitySign sign)
     {
-        entitySign = sign;
+        _entitySign = sign;
     }
 
-    private const int BUTTON_DONE = 0;
+    private const int ButtonDone = 0;
 
     public override void InitGui()
     {
         controlList.Clear();
         Keyboard.enableRepeatEvents(true);
-        controlList.Add(new GuiButton(BUTTON_DONE, Width / 2 - 100, Height / 4 + 120, "Done"));
+        controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 4 + 120, "Done"));
     }
 
     public override void OnGuiClosed()
@@ -36,14 +36,14 @@ public class GuiEditSign : GuiScreen
         Keyboard.enableRepeatEvents(false);
         if (mc.world.isRemote)
         {
-            mc.getSendQueue().addToSendQueue(new UpdateSignPacket(entitySign.x, entitySign.y, entitySign.z, entitySign.texts));
+            mc.getSendQueue().addToSendQueue(new UpdateSignPacket(_entitySign.x, _entitySign.y, _entitySign.z, _entitySign.texts));
         }
 
     }
 
     public override void UpdateScreen()
     {
-        ++updateCounter;
+        ++_updateCounter;
     }
 
     protected override void ActionPerformed(GuiButton button)
@@ -52,8 +52,8 @@ public class GuiEditSign : GuiScreen
         {
             switch (button.Id)
             {
-                case BUTTON_DONE:
-                    entitySign.markDirty();
+                case ButtonDone:
+                    _entitySign.markDirty();
                     mc.displayGuiScreen(null);
                     break;
             }
@@ -64,22 +64,22 @@ public class GuiEditSign : GuiScreen
     {
         if (eventKey == 200)
         {
-            editLine = editLine - 1 & 3;
+            _editLine = _editLine - 1 & 3;
         }
 
         if (eventKey == 208 || eventKey == 28)
         {
-            editLine = editLine + 1 & 3;
+            _editLine = _editLine + 1 & 3;
         }
 
-        if (eventKey == 14 && entitySign.texts[editLine].Length > 0)
+        if (eventKey == 14 && _entitySign.texts[_editLine].Length > 0)
         {
-            entitySign.texts[editLine] = entitySign.texts[editLine].Substring(0, entitySign.texts[editLine].Length - 1);
+            _entitySign.texts[_editLine] = _entitySign.texts[_editLine].Substring(0, _entitySign.texts[_editLine].Length - 1);
         }
 
-        if (allowedCharacters.IndexOf(eventChar) >= 0 && entitySign.texts[editLine].Length < 15)
+        if (_allowedCharacters.IndexOf(eventChar) >= 0 && _entitySign.texts[_editLine].Length < 15)
         {
-            entitySign.texts[editLine] = entitySign.texts[editLine] + eventChar;
+            _entitySign.texts[_editLine] = _entitySign.texts[_editLine] + eventChar;
         }
 
     }
@@ -87,22 +87,22 @@ public class GuiEditSign : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         DrawDefaultBackground();
-        DrawCenteredString(fontRenderer, screenTitle, Width / 2, 40, 0x00FFFFFF);
+        DrawCenteredString(fontRenderer, _screenTitle, Width / 2, 40, 0x00FFFFFF);
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(Width / 2, 0.0F, 50.0F);
         float scale = 93.75F;
         GLManager.GL.Scale(-scale, -scale, -scale);
         GLManager.GL.Rotate(180.0F, 0.0F, 1.0F, 0.0F);
-        Block signBlock = entitySign.getBlock();
+        Block signBlock = _entitySign.getBlock();
         if (signBlock == Block.Sign)
         {
-            float rotation = entitySign.getPushedBlockData() * 360 / 16.0F;
+            float rotation = _entitySign.getPushedBlockData() * 360 / 16.0F;
             GLManager.GL.Rotate(rotation, 0.0F, 1.0F, 0.0F);
             GLManager.GL.Translate(0.0F, -1.0625F, 0.0F);
         }
         else
         {
-            int rotationIndex = entitySign.getPushedBlockData();
+            int rotationIndex = _entitySign.getPushedBlockData();
             float angle = 0.0F;
             if (rotationIndex == 2)
             {
@@ -123,13 +123,13 @@ public class GuiEditSign : GuiScreen
             GLManager.GL.Translate(0.0F, -1.0625F, 0.0F);
         }
 
-        if (updateCounter / 6 % 2 == 0)
+        if (_updateCounter / 6 % 2 == 0)
         {
-            entitySign.currentRow = editLine;
+            _entitySign.currentRow = _editLine;
         }
 
-        BlockEntityRenderer.instance.renderTileEntityAt(entitySign, -0.5D, -0.75D, -0.5D, 0.0F);
-        entitySign.currentRow = -1;
+        BlockEntityRenderer.instance.renderTileEntityAt(_entitySign, -0.5D, -0.75D, -0.5D, 0.0F);
+        _entitySign.currentRow = -1;
         GLManager.GL.PopMatrix();
         base.Render(mouseX, mouseY, partialTicks);
     }
