@@ -469,7 +469,7 @@ public partial class Minecraft : java.lang.Object, Runnable
             statFileWriter.func_27175_b();
             statFileWriter.syncStats();
 
-            java.lang.System.@out.println("Stopping!");
+            Console.WriteLine("Stopping!");
 
             try
             {
@@ -1414,7 +1414,7 @@ public partial class Minecraft : java.lang.Object, Runnable
 
     private void forceReload()
     {
-        java.lang.System.@out.println("FORCING RELOAD!");
+        Console.WriteLine("FORCING RELOAD!");
         sndManager = new SoundManager();
         sndManager.loadSoundSettings(options);
     }

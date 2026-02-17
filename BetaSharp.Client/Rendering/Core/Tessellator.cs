@@ -615,7 +615,7 @@ public class Tessellator : java.lang.Object
     {
         if (!IsDrawing)
         {
-            java.lang.System.@out.println("But..");
+            Console.WriteLine("But..");
         }
 
         hasNormals = true;

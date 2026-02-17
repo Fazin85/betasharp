@@ -1,7 +1,6 @@
-using BetaSharp.Blocks.Entities;
+﻿using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
 using BetaSharp.NBT;
-using java.io;
 
 namespace BetaSharp.Worlds.Chunks.Storage;
 
@@ -26,15 +25,15 @@ public class RegionChunkStorage : ChunkStorage
 
         if (var4 != null)
         {
-            NBTTagCompound var5 = NbtIo.Read((DataInput)var4);
+            NBTTagCompound var5 = NbtIo.Read((java.io.DataInput)var4);
             if (!var5.HasKey("Level"))
             {
-                java.lang.System.@out.println("Chunk file at " + chunkX + "," + chunkZ + " is missing level data, skipping");
+                Console.WriteLine($"Chunk file at {chunkX},{chunkZ} is missing level data, skipping");
                 return null;
             }
             else if (!var5.GetCompoundTag("Level").HasKey("Blocks"))
             {
-                java.lang.System.@out.println("Chunk file at " + chunkX + "," + chunkZ + " is missing block data, skipping");
+                Console.WriteLine($"Chunk file at {chunkX},{chunkZ} is missing block data, skipping");
                 return null;
             }
             else
@@ -42,7 +41,7 @@ public class RegionChunkStorage : ChunkStorage
                 Chunk var6 = loadChunkFromNbt(world, var5.GetCompoundTag("Level"));
                 if (!var6.chunkPosEquals(chunkX, chunkZ))
                 {
-                    java.lang.System.@out.println("Chunk file at " + chunkX + "," + chunkZ + " is in the wrong location; relocating. (Expected " + chunkX + ", " + chunkZ + ", got " + var6.x + ", " + var6.z + ")");
+                    Console.WriteLine($"Chunk file at {chunkX},{chunkZ} is in the wrong location; relocating. (Expected {chunkX}, {chunkZ}, got {var6.x}, {var6.z})");
                     var5.SetInteger("xPos", chunkX);
                     var5.SetInteger("zPos", chunkZ);
                     var6 = loadChunkFromNbt(world, var5.GetCompoundTag("Level"));
@@ -62,7 +61,7 @@ public class RegionChunkStorage : ChunkStorage
     {
         try
         {
-            DataOutputStream var3 = RegionIo.getChunkOutputStream(dir, chunk.x, chunk.z);
+            java.io.DataOutputStream var3 = RegionIo.getChunkOutputStream(dir, chunk.x, chunk.z);
             NBTTagCompound var4 = new();
             NBTTagCompound var5 = new();
             var4.SetTag("Level", var5);

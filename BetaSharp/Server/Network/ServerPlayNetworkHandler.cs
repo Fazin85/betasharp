@@ -216,8 +216,8 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             {
                 var23 = true;
                 LOGGER.warning(player.name + " moved wrongly!");
-                java.lang.System.@out.println("Got position " + var5 + ", " + var7 + ", " + var9);
-                java.lang.System.@out.println("Expected " + player.x + ", " + player.y + ", " + player.z);
+                Console.WriteLine($"Got position {var5}, {var7}, {var9}");
+                Console.WriteLine($"Expected {player.x}, {player.y}, {player.z}");
             }
 
             player.setPositionAndAngles(var5, var7, var9, var11, var12);

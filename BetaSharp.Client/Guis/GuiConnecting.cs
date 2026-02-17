@@ -1,4 +1,4 @@
-using BetaSharp.Client.Network;
+﻿using BetaSharp.Client.Network;
 using BetaSharp.Client.Threading;
 
 namespace BetaSharp.Client.Guis;
@@ -12,7 +12,7 @@ public class GuiConnecting : GuiScreen
 
     public GuiConnecting(Minecraft mc, string host, int port)
     {
-        java.lang.System.@out.println("Connecting to " + host + ", " + port);
+        Console.WriteLine($"Connecting to {host}, {port}");
         mc.changeWorld1(null);
         new ThreadConnectToServer(this, mc, host, port).start();
     }

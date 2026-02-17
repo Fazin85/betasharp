@@ -2258,7 +2258,7 @@ public abstract class World : java.lang.Object, BlockView
                     var12 = 1000000;
                     if (lightingQueue.Count > 1000000)
                     {
-                        java.lang.System.@out.println("More than " + var12 + " updates, aborting lighting updates");
+                        Console.WriteLine($"More than {var12} updates, aborting lighting updates");
                         lightingQueue.Clear();
                     }
 

@@ -435,7 +435,7 @@ public class Chunk : java.lang.Object
         int var3 = MathHelper.floor_double(entity.z / 16.0D);
         if (var2 != x || var3 != z)
         {
-            java.lang.System.@out.println("Wrong location! " + entity);
+            Console.WriteLine($"Wrong location! {entity}");
             java.lang.Thread.dumpStack();
         }
 
@@ -537,7 +537,7 @@ public class Chunk : java.lang.Object
         }
         else
         {
-            java.lang.System.@out.println("Attempted to place a tile entity where there was no entity tile!");
+            Console.WriteLine("Attempted to place a tile entity where there was no entity tile!");
         }
     }
 

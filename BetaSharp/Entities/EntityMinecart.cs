@@ -164,7 +164,7 @@ public class EntityMinecart : Entity, IInventory
 
     public override void animateHurt()
     {
-        java.lang.System.@out.println("Animating hurt");
+        Console.WriteLine("Animating hurt");
         minecartRockDirection = -minecartRockDirection;
         minecartTimeSinceHit = 10;
         minecartCurrentDamage += minecartCurrentDamage * 10;

@@ -68,7 +68,7 @@ public class EntityRegistry
         }
         else
         {
-            java.lang.System.@out.println("Skipping Entity with id " + nbt.GetString("id"));
+            Console.WriteLine($"Skipping Entity with id {nbt.GetString("id")}");
         }
 
         return entity;
@@ -135,7 +135,7 @@ public class EntityRegistry
 
         if (entity == null)
         {
-            java.lang.System.@out.println("Skipping Entity with id " + rawId);
+            Console.WriteLine($"Skipping Entity with id {rawId}");
         }
 
         return entity;
