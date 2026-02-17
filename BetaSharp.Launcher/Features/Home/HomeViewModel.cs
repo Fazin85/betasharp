@@ -1,14 +1,5 @@
-﻿using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace BetaSharp.Launcher.Features.Home;
 
-internal sealed partial class HomeViewModel(AuthenticationService authenticationService) : ObservableObject
-{
-    [RelayCommand]
-    private async Task SignOutAsync()
-    {
-        await authenticationService.SignOutAsync();
-    }
-}
+internal sealed partial class HomeViewModel : ObservableObject;

@@ -4,5 +4,6 @@
 
              x:Class="BetaSharp.Launcher.Features.Home.HomeView" x:DataType="local:HomeViewModel">
 
-    <Button Content="Sign out" Command="{CompiledBinding SignOutCommand}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
+    </StackPanel>
 </UserControl>
