@@ -3,21 +3,21 @@ namespace BetaSharp.Client.Guis;
 public class GuiConnectFailed : GuiScreen
 {
 
-    private readonly string errorMessage;
-    private readonly string errorDetail;
-    private const int BUTTON_TO_MENU = 0;
+    private readonly string _errorMessage;
+    private readonly string _errorDetail;
+    private const int _buttonToMenu = 0;
 
     public GuiConnectFailed(string messageKey, string detailKey, params object[] formatArgs)
     {
         TranslationStorage translations = TranslationStorage.getInstance();
-        errorMessage = translations.translateKey(messageKey);
+        _errorMessage = translations.translateKey(messageKey);
         if (formatArgs != null)
         {
-            errorDetail = translations.translateKeyFormat(detailKey, formatArgs);
+            _errorDetail = translations.translateKeyFormat(detailKey, formatArgs);
         }
         else
         {
-            errorDetail = translations.translateKey(detailKey);
+            _errorDetail = translations.translateKey(detailKey);
         }
 
     }
@@ -35,25 +35,25 @@ public class GuiConnectFailed : GuiScreen
         mc.stopInternalServer();
         TranslationStorage translations = TranslationStorage.getInstance();
         controlList.Clear();
-        controlList.Add(new GuiButton(BUTTON_TO_MENU, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.toMenu")));
+        controlList.Add(new GuiButton(_buttonToMenu, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.toMenu")));
     }
 
-    protected override void ActionPerformed(GuiButton var1)
+    protected override void ActionPerformed(GuiButton btt)
     {
-        switch (var1.Id)
+        switch (btt.Id)
         {
-            case BUTTON_TO_MENU:
+            case _buttonToMenu:
                 mc.displayGuiScreen(new GuiMainMenu());
                 break;
         }
 
     }
 
-    public override void Render(int var1, int var2, float var3)
+    public override void Render(int mouseX, int mouseY, float parcialTick)
     {
         DrawDefaultBackground();
-        DrawCenteredString(fontRenderer, errorMessage, Width / 2, Height / 2 - 50, 0x00FFFFFF);
-        DrawCenteredString(fontRenderer, errorDetail, Width / 2, Height / 2 - 10, 0x00FFFFFF);
-        base.Render(var1, var2, var3);
+        DrawCenteredString(fontRenderer, _errorMessage, Width / 2, Height / 2 - 50, 0x00FFFFFF);
+        DrawCenteredString(fontRenderer, _errorDetail, Width / 2, Height / 2 - 10, 0x00FFFFFF);
+        base.Render(mouseX, mouseY, parcialTick);
     }
 }

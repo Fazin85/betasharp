@@ -8,24 +8,24 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiCreateWorld : GuiScreen
 {
-    private const int BUTTON_CREATE = 0;
-    private const int BUTTON_CANCEL = 1;
+    private const int ButtonCreate = 0;
+    private const int ButtonCancel = 1;
 
-    private readonly GuiScreen parentScreen;
-    private GuiTextField textboxWorldName;
-    private GuiTextField textboxSeed;
-    private string folderName;
-    private bool createClicked;
+    private readonly GuiScreen _parentScreen;
+    private GuiTextField _textboxWorldName;
+    private GuiTextField _textboxSeed;
+    private string _folderName;
+    private bool _createClicked;
 
     public GuiCreateWorld(GuiScreen parentScreen)
     {
-        this.parentScreen = parentScreen;
+        this._parentScreen = parentScreen;
     }
 
     public override void UpdateScreen()
     {
-        textboxWorldName.updateCursorCounter();
-        textboxSeed.updateCursorCounter();
+        _textboxWorldName.updateCursorCounter();
+        _textboxSeed.updateCursorCounter();
     }
 
     public override void InitGui()
@@ -33,38 +33,38 @@ public class GuiCreateWorld : GuiScreen
         TranslationStorage translations = TranslationStorage.getInstance();
         Keyboard.enableRepeatEvents(true);
         controlList.Clear();
-        controlList.Add(new GuiButton(BUTTON_CREATE, Width / 2 - 100, Height / 4 + 96 + 12, translations.translateKey("selectWorld.create")));
-        controlList.Add(new GuiButton(BUTTON_CANCEL, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
-        textboxWorldName = new GuiTextField(this, fontRenderer, Width / 2 - 100, 60, 200, 20, translations.translateKey("selectWorld.newWorld"))
+        controlList.Add(new GuiButton(ButtonCreate, Width / 2 - 100, Height / 4 + 96 + 12, translations.translateKey("selectWorld.create")));
+        controlList.Add(new GuiButton(ButtonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
+        _textboxWorldName = new GuiTextField(this, fontRenderer, Width / 2 - 100, 60, 200, 20, translations.translateKey("selectWorld.newWorld"))
         {
             isFocused = true
         };
-        textboxWorldName.setMaxStringLength(32);
-        textboxSeed = new GuiTextField(this, fontRenderer, Width / 2 - 100, 116, 200, 20, "");
-        updateFolderName();
+        _textboxWorldName.setMaxStringLength(32);
+        _textboxSeed = new GuiTextField(this, fontRenderer, Width / 2 - 100, 116, 200, 20, "");
+        UpdateFolderName();
     }
 
-    private void updateFolderName()
+    private void UpdateFolderName()
     {
-        folderName = textboxWorldName.getText().Trim();
+        _folderName = _textboxWorldName.getText().Trim();
         char[] invalidCharacters = ChatAllowedCharacters.allowedCharactersArray;
         int charCount = invalidCharacters.Length;
 
         for (int i = 0; i < charCount; ++i)
         {
             char invalidChar = invalidCharacters[i];
-            folderName = folderName.Replace(invalidChar, '_');
+            _folderName = _folderName.Replace(invalidChar, '_');
         }
 
-        if (MathHelper.stringNullOrLengthZero(folderName))
+        if (MathHelper.stringNullOrLengthZero(_folderName))
         {
-            folderName = "World";
+            _folderName = "World";
         }
 
-        folderName = generateUnusedFolderName(mc.getSaveLoader(), folderName);
+        _folderName = GenerateUnusedFolderName(mc.getSaveLoader(), _folderName);
     }
 
-    public static string generateUnusedFolderName(WorldStorageSource worldStorage, string baseFolderName)
+    public static string GenerateUnusedFolderName(WorldStorageSource worldStorage, string baseFolderName)
     {
         while (worldStorage.getProperties(baseFolderName) != null)
         {
@@ -85,19 +85,19 @@ public class GuiCreateWorld : GuiScreen
         {
             switch (button.Id)
             {
-                case BUTTON_CANCEL:
-                    mc.displayGuiScreen(parentScreen);
+                case ButtonCancel:
+                    mc.displayGuiScreen(_parentScreen);
                     break;
-                case BUTTON_CREATE:
+                case ButtonCreate:
                     {
-                        if (createClicked)
+                        if (_createClicked)
                         {
                             return;
                         }
 
-                        createClicked = true;
+                        _createClicked = true;
                         long worldSeed = new java.util.Random().nextLong();
-                        string seedInput = textboxSeed.getText();
+                        string seedInput = _textboxSeed.getText();
                         if (!MathHelper.stringNullOrLengthZero(seedInput))
                         {
                             try
@@ -121,7 +121,7 @@ public class GuiCreateWorld : GuiScreen
                         }
 
                         mc.playerController = new PlayerControllerSP(mc);
-                        mc.startWorld(folderName, textboxWorldName.getText(), worldSeed);
+                        mc.startWorld(_folderName, _textboxWorldName.getText(), worldSeed);
                         break;
                     }
             }
@@ -130,13 +130,13 @@ public class GuiCreateWorld : GuiScreen
 
     protected override void KeyTyped(char eventChar, int eventKey)
     {
-        if (textboxWorldName.isFocused)
+        if (_textboxWorldName.isFocused)
         {
-            textboxWorldName.textboxKeyTyped(eventChar, eventKey);
+            _textboxWorldName.textboxKeyTyped(eventChar, eventKey);
         }
         else
         {
-            textboxSeed.textboxKeyTyped(eventChar, eventKey);
+            _textboxSeed.textboxKeyTyped(eventChar, eventKey);
         }
 
         if (eventChar == 13)
@@ -144,15 +144,15 @@ public class GuiCreateWorld : GuiScreen
             ActionPerformed(controlList[0]);
         }
 
-        controlList[0].Enabled = textboxWorldName.getText().Length > 0;
-        updateFolderName();
+        controlList[0].Enabled = _textboxWorldName.getText().Length > 0;
+        UpdateFolderName();
     }
 
     protected override void MouseClicked(int x, int y, int button)
     {
         base.MouseClicked(x, y, button);
-        textboxWorldName.mouseClicked(x, y, button);
-        textboxSeed.mouseClicked(x, y, button);
+        _textboxWorldName.mouseClicked(x, y, button);
+        _textboxSeed.mouseClicked(x, y, button);
     }
 
     public override void Render(int mouseX, int mouseY, float partialTicks)
@@ -161,25 +161,25 @@ public class GuiCreateWorld : GuiScreen
         DrawDefaultBackground();
         DrawCenteredString(fontRenderer, translations.translateKey("selectWorld.create"), Width / 2, Height / 4 - 60 + 20, 0x00FFFFFF);
         DrawString(fontRenderer, translations.translateKey("selectWorld.enterName"), Width / 2 - 100, 47, 10526880);
-        DrawString(fontRenderer, translations.translateKey("selectWorld.resultFolder") + " " + folderName, Width / 2 - 100, 85, 10526880);
+        DrawString(fontRenderer, translations.translateKey("selectWorld.resultFolder") + " " + _folderName, Width / 2 - 100, 85, 10526880);
         DrawString(fontRenderer, translations.translateKey("selectWorld.enterSeed"), Width / 2 - 100, 104, 10526880);
         DrawString(fontRenderer, translations.translateKey("selectWorld.seedInfo"), Width / 2 - 100, 140, 10526880);
-        textboxWorldName.drawTextBox();
-        textboxSeed.drawTextBox();
+        _textboxWorldName.drawTextBox();
+        _textboxSeed.drawTextBox();
         base.Render(mouseX, mouseY, partialTicks);
     }
 
     public override void SelectNextField()
     {
-        if (textboxWorldName.isFocused)
+        if (_textboxWorldName.isFocused)
         {
-            textboxWorldName.setFocused(false);
-            textboxSeed.setFocused(true);
+            _textboxWorldName.setFocused(false);
+            _textboxSeed.setFocused(true);
         }
         else
         {
-            textboxWorldName.setFocused(true);
-            textboxSeed.setFocused(false);
+            _textboxWorldName.setFocused(true);
+            _textboxSeed.setFocused(false);
         }
 
     }

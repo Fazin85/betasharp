@@ -6,9 +6,9 @@ namespace BetaSharp.Client.Guis;
 public class GuiConnecting : GuiScreen
 {
 
-    private ClientNetworkHandler clientHandler;
-    private bool cancelled = false;
-    private const int BUTTON_CANCEL = 0;
+    private ClientNetworkHandler _clientHandler;
+    private bool _cancelled = false;
+    private const int _buttonCancel = 0;
 
     public GuiConnecting(Minecraft mc, string host, int port)
     {
@@ -19,9 +19,9 @@ public class GuiConnecting : GuiScreen
 
     public override void UpdateScreen()
     {
-        if (clientHandler != null)
+        if (_clientHandler != null)
         {
-            clientHandler.tick();
+            _clientHandler.tick();
         }
 
     }
@@ -34,18 +34,18 @@ public class GuiConnecting : GuiScreen
     {
         TranslationStorage translations = TranslationStorage.getInstance();
         controlList.Clear();
-        controlList.Add(new GuiButton(BUTTON_CANCEL, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
+        controlList.Add(new GuiButton(_buttonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
     }
 
     protected override void ActionPerformed(GuiButton button)
     {
         switch (button.Id)
         {
-            case BUTTON_CANCEL:
-                cancelled = true;
-                if (clientHandler != null)
+            case _buttonCancel:
+                _cancelled = true;
+                if (_clientHandler != null)
                 {
-                    clientHandler.disconnect();
+                    _clientHandler.disconnect();
                 }
 
                 mc.displayGuiScreen(new GuiMainMenu());
@@ -58,7 +58,7 @@ public class GuiConnecting : GuiScreen
     {
         DrawDefaultBackground();
         TranslationStorage translations = TranslationStorage.getInstance();
-        if (clientHandler == null)
+        if (_clientHandler == null)
         {
             DrawCenteredString(fontRenderer, translations.translateKey("connect.connecting"), Width / 2, Height / 2 - 50, 0x00FFFFFF);
             DrawCenteredString(fontRenderer, "", Width / 2, Height / 2 - 10, 0x00FFFFFF);
@@ -66,7 +66,7 @@ public class GuiConnecting : GuiScreen
         else
         {
             DrawCenteredString(fontRenderer, translations.translateKey("connect.authorizing"), Width / 2, Height / 2 - 50, 0x00FFFFFF);
-            DrawCenteredString(fontRenderer, clientHandler.field_1209_a, Width / 2, Height / 2 - 10, 0x00FFFFFF);
+            DrawCenteredString(fontRenderer, _clientHandler.field_1209_a, Width / 2, Height / 2 - 10, 0x00FFFFFF);
         }
 
         base.Render(mouseX, mouseY, partialTicks);
@@ -79,16 +79,16 @@ public class GuiConnecting : GuiScreen
 
     public static ClientNetworkHandler setNetClientHandler(GuiConnecting guiConnecting, ClientNetworkHandler handler)
     {
-        return guiConnecting.clientHandler = handler;
+        return guiConnecting._clientHandler = handler;
     }
 
     public static bool isCancelled(GuiConnecting guiConnecting)
     {
-        return guiConnecting.cancelled;
+        return guiConnecting._cancelled;
     }
 
     public static ClientNetworkHandler getNetClientHandler(GuiConnecting guiConnecting)
     {
-        return guiConnecting.clientHandler;
+        return guiConnecting._clientHandler;
     }
 }

@@ -16,19 +16,18 @@ public class GuiConflictWarning : GuiScreen
         controlList.Add(new GuiButton(0, Width / 2 - 100, Height / 4 + 120 + 12, "Back to title screen"));
     }
 
-    protected override void ActionPerformed(GuiButton var1)
+    protected override void ActionPerformed(GuiButton btt)
     {
-        if (var1.Enabled)
+        if (btt.Enabled)
         {
-            if (var1.Id == 0)
+            if (btt.Id == 0)
             {
                 mc.displayGuiScreen(new GuiMainMenu());
             }
-
         }
     }
 
-    public override void Render(int var1, int var2, float var3)
+    public override void Render(int mouseX, int mouseY, float parcialTick)
     {
         DrawDefaultBackground();
         DrawCenteredString(fontRenderer, "Level save conflict", Width / 2, Height / 4 - 60 + 20, 0x00FFFFFF);
@@ -36,6 +35,6 @@ public class GuiConflictWarning : GuiScreen
         DrawString(fontRenderer, "This could be caused by two copies of the game", Width / 2 - 140, Height / 4 - 60 + 60 + 18, 10526880);
         DrawString(fontRenderer, "accessing the same level.", Width / 2 - 140, Height / 4 - 60 + 60 + 27, 10526880);
         DrawString(fontRenderer, "To prevent level corruption, the current game has quit.", Width / 2 - 140, Height / 4 - 60 + 60 + 45, 10526880);
-        base.Render(var1, var2, var3);
+        base.Render(mouseX, mouseY, parcialTick);
     }
 }
