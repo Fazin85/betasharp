@@ -1,4 +1,4 @@
-﻿namespace BetaSharp.Util;
+namespace BetaSharp.Util;
 
 public static class StringExtensions
 {

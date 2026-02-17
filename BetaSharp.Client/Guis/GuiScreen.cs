@@ -1,8 +1,6 @@
-﻿using BetaSharp.Client.Input;
+using BetaSharp.Client.Input;
 using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Core;
-using java.awt;
-using java.awt.datatransfer;
 using java.util;
 using Silk.NET.OpenGL.Legacy;
 
@@ -44,18 +42,19 @@ public class GuiScreen : Gui
     {
         try
         {
-            Transferable var0 = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
-            if (var0 != null && var0.isDataFlavorSupported(DataFlavor.stringFlavor))
+            unsafe
             {
-                string var1 = (string)var0.getTransferData(DataFlavor.stringFlavor);
-                return var1;
+                if (Display.isCreated())
+                {
+                    return Display.getGlfw().GetClipboardString(Display.getWindowHandle());
+                }
             }
         }
-        catch (Exception var2)
+        catch (Exception)
         {
         }
 
-        return null;
+        return "";
     }
 
     protected virtual void mouseClicked(int var1, int var2, int var3)

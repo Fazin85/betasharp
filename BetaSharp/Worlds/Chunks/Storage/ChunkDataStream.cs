@@ -1,4 +1,5 @@
 ﻿namespace BetaSharp.Worlds.Chunks.Storage;
+using java.io;
 
 public class ChunkDataStream(Stream stream, byte compressionType) : IDisposable
 {

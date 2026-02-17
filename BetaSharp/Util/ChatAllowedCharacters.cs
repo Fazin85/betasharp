@@ -1,4 +1,4 @@
-﻿using java.io;
+using java.io;
 
 namespace BetaSharp.Util;
 

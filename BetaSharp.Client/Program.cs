@@ -1,3 +1,3 @@
-﻿using BetaSharp.Client;
+using BetaSharp.Client;
 
 Minecraft.Startup(args);

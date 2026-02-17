@@ -1,4 +1,4 @@
-﻿namespace BetaSharp.Util;
+namespace BetaSharp.Util;
 
 public class LongObjectHashMapEntry : java.lang.Object
 {

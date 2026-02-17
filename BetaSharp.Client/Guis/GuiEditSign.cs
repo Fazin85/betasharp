@@ -1,4 +1,4 @@
-﻿using BetaSharp.Blocks;
+using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Input;
 using BetaSharp.Client.Rendering.Blocks.Entities;
@@ -36,7 +36,7 @@ public class GuiEditSign : GuiScreen
         Keyboard.enableRepeatEvents(false);
         if (mc.world.isRemote)
         {
-            mc.getSendQueue().addToSendQueue(new UpdateSignPacket(entitySign.x, entitySign.y, entitySign.z, entitySign.texts));
+            mc.getSendQueue().addToSendQueue(new UpdateSignPacket(entitySign.x, entitySign.y, entitySign.z, entitySign.Texts));
         }
 
     }
@@ -72,14 +72,14 @@ public class GuiEditSign : GuiScreen
             editLine = editLine + 1 & 3;
         }
 
-        if (eventKey == 14 && entitySign.texts[editLine].Length > 0)
+        if (eventKey == 14 && entitySign.Texts[editLine].Length > 0)
         {
-            entitySign.texts[editLine] = entitySign.texts[editLine].Substring(0, entitySign.texts[editLine].Length - 1);
+            entitySign.Texts[editLine] = entitySign.Texts[editLine].Substring(0, entitySign.Texts[editLine].Length - 1);
         }
 
-        if (allowedCharacters.IndexOf(eventChar) >= 0 && entitySign.texts[editLine].Length < 15)
+        if (allowedCharacters.IndexOf(eventChar) >= 0 && entitySign.Texts[editLine].Length < 15)
         {
-            entitySign.texts[editLine] = entitySign.texts[editLine] + eventChar;
+            entitySign.Texts[editLine] = entitySign.Texts[editLine] + eventChar;
         }
 
     }
@@ -125,11 +125,11 @@ public class GuiEditSign : GuiScreen
 
         if (updateCounter / 6 % 2 == 0)
         {
-            entitySign.currentRow = editLine;
+            entitySign.CurrentRow = editLine;
         }
 
-        BlockEntityRenderer.instance.renderTileEntityAt(entitySign, -0.5D, -0.75D, -0.5D, 0.0F);
-        entitySign.currentRow = -1;
+        BlockEntityRenderer.Instance.RenderTileEntityAt(entitySign, -0.5D, -0.75D, -0.5D, 0.0F);
+        entitySign.CurrentRow = -1;
         GLManager.GL.PopMatrix();
         base.render(mouseX, mouseY, partialTicks);
     }

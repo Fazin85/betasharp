@@ -7,68 +7,73 @@ namespace BetaSharp.Worlds.Gen.Features;
 public class ClayOreFeature : Feature
 {
 
-    private int clayBlockId = Block.Clay.id;
-    private int numberOfBlocks;
+    private readonly int _clayBlockId = Block.Clay.id;
+    private readonly int _numberOfBlocks;
 
-    public ClayOreFeature(int var1)
+    public ClayOreFeature(int numberOfBlocks)
     {
-        numberOfBlocks = var1;
+        _numberOfBlocks = numberOfBlocks;
     }
 
-    public override bool generate(World var1, java.util.Random var2, int var3, int var4, int var5)
+    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
     {
-        if (var1.getMaterial(var3, var4, var5) != Material.Water)
+        if (world.getMaterial(x, y, z) != Material.Water)
         {
             return false;
         }
-        else
+
+        float angle = rand.nextFloat() * (float)Math.PI;
+        double spread = _numberOfBlocks / 8.0;
+
+        double startX = x + 8 + MathHelper.sin(angle) * spread;
+        double endX = x + 8 - MathHelper.sin(angle) * spread;
+        double startZ = z + 8 + MathHelper.cos(angle) * spread;
+        double enZ = z + 8 - MathHelper.cos(angle) * spread;
+
+        double startY = y + rand.nextInt(3) + 2;
+        double endY = y + rand.nextInt(3) + 2;
+
+        for (int i = 0; i <= _numberOfBlocks; ++i)
         {
-            float var6 = var2.nextFloat() * (float)Math.PI;
-            double var7 = (double)(var3 + 8 + MathHelper.sin(var6) * numberOfBlocks / 8.0F);
-            double var9 = (double)(var3 + 8 - MathHelper.sin(var6) * numberOfBlocks / 8.0F);
-            double var11 = (double)(var5 + 8 + MathHelper.cos(var6) * numberOfBlocks / 8.0F);
-            double var13 = (double)(var5 + 8 - MathHelper.cos(var6) * numberOfBlocks / 8.0F);
-            double var15 = var4 + var2.nextInt(3) + 2;
-            double var17 = var4 + var2.nextInt(3) + 2;
+            float lerp = i * _numberOfBlocks;
+            double centerX = startX + (endX - startX) * lerp;
+            double centerY = startY + (endY - startY) * lerp;
+            double centerZ = startZ + (enZ - startZ) * lerp;
 
-            for (int var19 = 0; var19 <= numberOfBlocks; ++var19)
+            double sizeMultiplier = rand.nextDouble() * _numberOfBlocks / 16.0D;
+            double radiusH = (double)(MathHelper.sin(i * (float)Math.PI / _numberOfBlocks) + 1.0F) * sizeMultiplier + 1.0D;
+            double radiusV = (double)(MathHelper.sin(i * (float)Math.PI / _numberOfBlocks) + 1.0F) * sizeMultiplier + 1.0D;
+
+            int minX = MathHelper.floor_double(centerX - radiusH / 2.0D);
+            int minY = MathHelper.floor_double(centerY - radiusV / 2.0D);
+            int minZ = MathHelper.floor_double(centerZ - radiusH / 2.0D);
+
+            int maxX = MathHelper.floor_double(centerX + radiusH / 2.0D);
+            int maxY = MathHelper.floor_double(centerY + radiusV / 2.0D);
+            int maxZ = MathHelper.floor_double(centerZ + radiusH / 2.0D);
+
+            for (int blockX = minX; blockX <= maxX; ++blockX)
             {
-                double var20 = var7 + (var9 - var7) * var19 / numberOfBlocks;
-                double var22 = var15 + (var17 - var15) * var19 / numberOfBlocks;
-                double var24 = var11 + (var13 - var11) * var19 / numberOfBlocks;
-                double var26 = var2.nextDouble() * numberOfBlocks / 16.0D;
-                double var28 = (double)(MathHelper.sin(var19 * (float)Math.PI / numberOfBlocks) + 1.0F) * var26 + 1.0D;
-                double var30 = (double)(MathHelper.sin(var19 * (float)Math.PI / numberOfBlocks) + 1.0F) * var26 + 1.0D;
-                int var32 = MathHelper.floor_double(var20 - var28 / 2.0D);
-                int var33 = MathHelper.floor_double(var20 + var28 / 2.0D);
-                int var34 = MathHelper.floor_double(var22 - var30 / 2.0D);
-                int var35 = MathHelper.floor_double(var22 + var30 / 2.0D);
-                int var36 = MathHelper.floor_double(var24 - var28 / 2.0D);
-                int var37 = MathHelper.floor_double(var24 + var28 / 2.0D);
-
-                for (int var38 = var32; var38 <= var33; ++var38)
+                for (int blockY = minY; blockY <= maxY; ++blockY)
                 {
-                    for (int var39 = var34; var39 <= var35; ++var39)
+                    for (int blockZ = minZ; blockZ <= maxZ; ++blockZ)
                     {
-                        for (int var40 = var36; var40 <= var37; ++var40)
+                        double dx = (blockX + 0.5D - centerX) / (radiusH / 2.0D);
+                        double dy = (blockY + 0.5D - centerY) / (radiusV / 2.0D);
+                        double dz = (blockZ + 0.5D - centerZ) / (radiusH / 2.0D);
+                        if (dx * dx + dy * dy + dz * dz < 1.0D)
                         {
-                            double var41 = (var38 + 0.5D - var20) / (var28 / 2.0D);
-                            double var43 = (var39 + 0.5D - var22) / (var30 / 2.0D);
-                            double var45 = (var40 + 0.5D - var24) / (var28 / 2.0D);
-                            if (var41 * var41 + var43 * var43 + var45 * var45 < 1.0D)
+                            int var47 = world.getBlockId(blockX, blockY, blockZ);
+                            if (var47 == Block.Sand.id)
                             {
-                                int var47 = var1.getBlockId(var38, var39, var40);
-                                if (var47 == Block.Sand.id)
-                                {
-                                    var1.SetBlockWithoutNotifyingNeighbors(var38, var39, var40, clayBlockId);
-                                }
+                                world.SetBlockWithoutNotifyingNeighbors(blockX, blockY, blockZ, _clayBlockId);
                             }
                         }
                     }
                 }
             }
-
-            return true;
         }
+
+        return true;
     }
 }

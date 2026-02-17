@@ -9,15 +9,15 @@ namespace BetaSharp.Client.Resource.Pack;
 
 public class ZippedTexturePack : TexturePack
 {
-    private ZipFile texturePackZipFile;
-    private int texturePackName = -1;
-    private BufferedImage texturePackThumbnail;
-    private readonly java.io.File texturePackFile;
+    private ZipFile? _texturePackZipFile;
+    private int _texturePackName = -1;
+    private BufferedImage _texturePackThumbnail;
+    private readonly java.io.File _texturePackFile;
 
     public ZippedTexturePack(java.io.File var1)
     {
         texturePackFileName = var1.getName();
-        texturePackFile = var1;
+        _texturePackFile = var1;
     }
 
     private static string truncateString(string var1)
@@ -32,12 +32,12 @@ public class ZippedTexturePack : TexturePack
 
     public override void func_6485_a(Minecraft var1)
     {
-        ZipFile var2 = null;
-        InputStream var3 = null;
+        ZipFile? var2 = null;
+        InputStream? var3 = null;
 
         try
         {
-            var2 = new ZipFile(texturePackFile);
+            var2 = new ZipFile(_texturePackFile);
 
             try
             {
@@ -48,17 +48,17 @@ public class ZippedTexturePack : TexturePack
                 var4.close();
                 var3.close();
             }
-            catch (java.lang.Exception var20)
+            catch (java.lang.Exception)
             {
             }
 
             try
             {
                 var3 = var2.getInputStream(var2.getEntry("pack.png"));
-                texturePackThumbnail = ImageIO.read(var3);
+                _texturePackThumbnail = ImageIO.read(var3);
                 var3.close();
             }
-            catch (java.lang.Exception var19)
+            catch (java.lang.Exception)
             {
             }
 
@@ -72,17 +72,17 @@ public class ZippedTexturePack : TexturePack
         {
             try
             {
-                var3.close();
+                var3?.close();
             }
-            catch (java.lang.Exception var18)
+            catch (java.lang.Exception)
             {
             }
 
             try
             {
-                var2.close();
+                var2?.close();
             }
-            catch (java.lang.Exception var17)
+            catch (java.lang.Exception)
             {
             }
 
@@ -92,9 +92,9 @@ public class ZippedTexturePack : TexturePack
 
     public override void unload(Minecraft var1)
     {
-        if (texturePackThumbnail != null)
+        if (_texturePackThumbnail != null)
         {
-            var1.textureManager.delete(texturePackName);
+            var1.textureManager.delete(_texturePackName);
         }
 
         closeTexturePackFile();
@@ -102,14 +102,14 @@ public class ZippedTexturePack : TexturePack
 
     public override void bindThumbnailTexture(Minecraft var1)
     {
-        if (texturePackThumbnail != null && texturePackName < 0)
+        if (_texturePackThumbnail != null && _texturePackName < 0)
         {
-            texturePackName = var1.textureManager.load(texturePackThumbnail);
+            _texturePackName = var1.textureManager.load(_texturePackThumbnail);
         }
 
-        if (texturePackThumbnail != null)
+        if (_texturePackThumbnail != null)
         {
-            var1.textureManager.bindTexture(texturePackName);
+            var1.textureManager.bindTexture(_texturePackName);
         }
         else
         {
@@ -122,9 +122,9 @@ public class ZippedTexturePack : TexturePack
     {
         try
         {
-            texturePackZipFile = new ZipFile(texturePackFile);
+            _texturePackZipFile = new ZipFile(_texturePackFile);
         }
-        catch (java.lang.Exception var2)
+        catch (Exception)
         {
         }
 
@@ -134,26 +134,26 @@ public class ZippedTexturePack : TexturePack
     {
         try
         {
-            texturePackZipFile.close();
+            _texturePackZipFile?.close();
         }
-        catch (java.lang.Exception var2)
+        catch (Exception)
         {
         }
 
-        texturePackZipFile = null;
+        _texturePackZipFile = null;
     }
 
     public override InputStream getResourceAsStream(string var1)
     {
         try
         {
-            ZipEntry var2 = texturePackZipFile.getEntry(var1[1..]);
+            ZipEntry var2 = _texturePackZipFile!.getEntry(var1[1..]);
             if (var2 != null)
             {
-                return texturePackZipFile.getInputStream(var2);
+                return _texturePackZipFile.getInputStream(var2);
             }
         }
-        catch (java.lang.Exception var3)
+        catch (Exception)
         {
         }
 

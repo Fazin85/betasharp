@@ -1,4 +1,4 @@
-﻿namespace BetaSharp.Client.Rendering.Entitys.Models;
+namespace BetaSharp.Client.Rendering.Entitys.Models;
 
 public class SignModel
 {

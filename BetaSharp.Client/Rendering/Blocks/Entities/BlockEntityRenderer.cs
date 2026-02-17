@@ -1,122 +1,103 @@
-﻿using BetaSharp.Blocks.Entities;
+using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Entities;
 using BetaSharp.Worlds;
 using java.lang;
-using java.util;
 
 namespace BetaSharp.Client.Rendering.Blocks.Entities;
 
 public class BlockEntityRenderer
 {
-    private readonly Map specialRendererMap = new HashMap();
-    public static BlockEntityRenderer instance = new();
-    private TextRenderer fontRenderer;
-    public static double staticPlayerX;
-    public static double staticPlayerY;
-    public static double staticPlayerZ;
-    public TextureManager renderEngine;
-    public World worldObj;
-    public EntityLiving entityLivingPlayer;
-    public float playerYaw;
-    public float playerPitch;
-    public double playerX;
-    public double playerY;
-    public double playerZ;
+    private readonly Dictionary<Class, BlockEntitySpecialRenderer?> _specialRendererMap = [];
+    public static BlockEntityRenderer Instance { get; } = new();
+    private TextRenderer _fontRenderer;
+    public static double StaticPlayerX;
+    public static double StaticPlayerY;
+    public static double StaticPlayerZ;
+    public TextureManager TextureManager { get; set; }
+    public World World { get; set; }
+    public EntityLiving PlayerEntity { get; set; }
+    public float PlayerYaw { get; set; }
+    public float PlayerPitch { get; set; }
+    public double PlayerX { get; set; }
+    public double PlayerY { get; set; }
+    public double PlayerZ { get; set; }
 
     private BlockEntityRenderer()
     {
-        specialRendererMap.put(BlockEntitySign.Class, new BlockEntitySignRenderer());
-        specialRendererMap.put(BlockEntityMobSpawner.Class, new BlockEntityMobSpawnerRenderer());
-        specialRendererMap.put(BlockEntityPiston.Class, new BlockEntityRendererPiston());
-        Iterator var1 = specialRendererMap.values().iterator();
+        _specialRendererMap.Add(typeof(BlockEntitySign), new BlockEntitySignRenderer());
+        _specialRendererMap.Add(typeof(BlockEntityMobSpawner), new BlockEntityMobSpawnerRenderer());
+        _specialRendererMap.Add(typeof(BlockEntityPiston), new BlockEntityRendererPiston());
 
-        while (var1.hasNext())
+        foreach (BlockEntitySpecialRenderer? renderer in _specialRendererMap.Values)
         {
-            BlockEntitySpecialRenderer var2 = (BlockEntitySpecialRenderer)var1.next();
-            var2.setTileEntityRenderer(this);
+            renderer!.setTileEntityRenderer(this);
+        }
+    }
+
+    public BlockEntitySpecialRenderer? GetSpecialRendererForClass(Class clazz)
+    {
+        _specialRendererMap.TryGetValue(clazz, out BlockEntitySpecialRenderer? renderer);
+        if (renderer == null && clazz != BlockEntity.Class)
+        {
+            renderer = GetSpecialRendererForClass(clazz.getSuperclass());
+            _specialRendererMap[clazz] = renderer;
         }
 
+        return renderer;
     }
 
-    public BlockEntitySpecialRenderer getSpecialRendererForClass(Class var1)
+    public BlockEntitySpecialRenderer? GetSpecialRendererForEntity(BlockEntity var1)
     {
-        BlockEntitySpecialRenderer var2 = (BlockEntitySpecialRenderer)specialRendererMap.get(var1);
-        if (var2 == null && var1 != BlockEntity.Class)
-        {
-            var2 = getSpecialRendererForClass(var1.getSuperclass());
-            specialRendererMap.put(var1, var2);
-        }
-
-        return var2;
+        return var1 == null ? null : GetSpecialRendererForClass(var1.getClass());
     }
 
-    public bool hasSpecialRenderer(BlockEntity var1)
+    public void CacheActiveRenderInfo(World var1, TextureManager var2, TextRenderer var3, EntityLiving var4, float var5)
     {
-        return getSpecialRendererForEntity(var1) != null;
-    }
-
-    public BlockEntitySpecialRenderer getSpecialRendererForEntity(BlockEntity var1)
-    {
-        return var1 == null ? null : getSpecialRendererForClass(var1.getClass());
-    }
-
-    public void cacheActiveRenderInfo(World var1, TextureManager var2, TextRenderer var3, EntityLiving var4, float var5)
-    {
-        if (worldObj != var1)
+        if (World != var1)
         {
             func_31072_a(var1);
         }
 
-        renderEngine = var2;
-        entityLivingPlayer = var4;
-        fontRenderer = var3;
-        playerYaw = var4.prevYaw + (var4.yaw - var4.prevYaw) * var5;
-        playerPitch = var4.prevPitch + (var4.pitch - var4.prevPitch) * var5;
-        playerX = var4.lastTickX + (var4.x - var4.lastTickX) * (double)var5;
-        playerY = var4.lastTickY + (var4.y - var4.lastTickY) * (double)var5;
-        playerZ = var4.lastTickZ + (var4.z - var4.lastTickZ) * (double)var5;
+        TextureManager = var2;
+        PlayerEntity = var4;
+        _fontRenderer = var3;
+        PlayerYaw = var4.prevYaw + (var4.yaw - var4.prevYaw) * var5;
+        PlayerPitch = var4.prevPitch + (var4.pitch - var4.prevPitch) * var5;
+        PlayerX = var4.lastTickX + (var4.x - var4.lastTickX) * (double)var5;
+        PlayerY = var4.lastTickY + (var4.y - var4.lastTickY) * (double)var5;
+        PlayerZ = var4.lastTickZ + (var4.z - var4.lastTickZ) * (double)var5;
     }
 
-    public void renderTileEntity(BlockEntity var1, float var2)
+    public void RenderTileEntity(BlockEntity var1, float var2)
     {
-        if (var1.distanceFrom(playerX, playerY, playerZ) < 4096.0D)
+        if (var1.distanceFrom(PlayerX, PlayerY, PlayerZ) < 4096.0D)
         {
-            float var3 = worldObj.getLuminance(var1.x, var1.y, var1.z);
+            float var3 = World.getLuminance(var1.x, var1.y, var1.z);
             GLManager.GL.Color3(var3, var3, var3);
-            renderTileEntityAt(var1, var1.x - staticPlayerX, var1.y - staticPlayerY, var1.z - staticPlayerZ, var2);
+            RenderTileEntityAt(var1, var1.x - StaticPlayerX, var1.y - StaticPlayerY, var1.z - StaticPlayerZ, var2);
         }
 
     }
 
-    public void renderTileEntityAt(BlockEntity var1, double var2, double var4, double var6, float var8)
+    public void RenderTileEntityAt(BlockEntity var1, double var2, double var4, double var6, float var8)
     {
-        BlockEntitySpecialRenderer var9 = getSpecialRendererForEntity(var1);
-        if (var9 != null)
+        BlockEntitySpecialRenderer? var9 = GetSpecialRendererForEntity(var1);
+        var9?.renderTileEntityAt(var1, var2, var4, var6, var8);
+
+    }
+
+    public void func_31072_a(World world)
+    {
+        World = world;
+        foreach (BlockEntitySpecialRenderer? renderer in _specialRendererMap.Values)
         {
-            var9.renderTileEntityAt(var1, var2, var4, var6, var8);
+            renderer?.func_31069_a(world);
         }
-
     }
 
-    public void func_31072_a(World var1)
+    public TextRenderer GetFontRenderer()
     {
-        worldObj = var1;
-        Iterator var2 = specialRendererMap.values().iterator();
-
-        while (var2.hasNext())
-        {
-            BlockEntitySpecialRenderer var3 = (BlockEntitySpecialRenderer)var2.next();
-            if (var3 != null)
-            {
-                var3.func_31069_a(var1);
-            }
-        }
-
-    }
-
-    public TextRenderer getFontRenderer()
-    {
-        return fontRenderer;
+        return _fontRenderer;
     }
 }

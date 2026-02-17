@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using BetaSharp.Client.Rendering;
 
 namespace BetaSharp.Client.Guis;

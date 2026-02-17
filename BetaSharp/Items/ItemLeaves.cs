@@ -1,4 +1,4 @@
-﻿using BetaSharp.Blocks;
+using BetaSharp.Blocks;
 using BetaSharp.Worlds.Colors;
 
 namespace BetaSharp.Items;

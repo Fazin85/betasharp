@@ -1,4 +1,4 @@
-﻿using BetaSharp.Client.Input;
+using BetaSharp.Client.Input;
 using java.io;
 
 namespace BetaSharp.Client.Options;

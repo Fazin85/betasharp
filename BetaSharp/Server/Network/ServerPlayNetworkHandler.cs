@@ -1,4 +1,4 @@
-﻿using BetaSharp.Blocks.Entities;
+using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Inventorys;
 using BetaSharp.Items;
@@ -644,7 +644,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             BlockEntity var3 = var2.getBlockEntity(packet.x, packet.y, packet.z);
             if (var3 is BlockEntitySign var4)
             {
-                if (!var4.isEditable())
+                if (!var4.IsEditable())
                 {
                     server.Warn("Player " + player.name + " just tried to change non-editable sign");
                     return;
@@ -683,10 +683,10 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
 
                 for (int var8 = 0; var8 < 4; var8++)
                 {
-                    var7.texts[var8] = packet.text[var8];
+                    var7.Texts[var8] = packet.text[var8];
                 }
 
-                var7.setEditable(false);
+                var7.SetEditable(false);
                 var7.markDirty();
                 var2.blockUpdateEvent(var10, var11, var12);
             }

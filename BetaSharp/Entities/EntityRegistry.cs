@@ -25,7 +25,7 @@ public class EntityRegistry
 
     public static Entity create(string id, World world)
     {
-        Entity entity = null;
+        Entity? entity = null;
 
         try
         {
@@ -37,7 +37,7 @@ public class EntityRegistry
                 ]);
             }
         }
-        catch (java.lang.Exception ex)
+        catch (Exception ex)
         {
             ex.printStackTrace();
         }

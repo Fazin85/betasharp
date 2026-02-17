@@ -5,37 +5,35 @@ namespace BetaSharp.Worlds.Gen.Features;
 public class DeadBushPatchFeature : Feature
 {
 
-    private int deadBushBlockId;
+    private readonly int _deadBushBlockId;
 
-    public DeadBushPatchFeature(int var1)
+    public DeadBushPatchFeature(int deadBushBlockId)
     {
-        deadBushBlockId = var1;
+        _deadBushBlockId = deadBushBlockId;
     }
 
-    public override bool generate(World var1, java.util.Random var2, int var3, int var4, int var5)
+    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
     {
-        bool var6 = false;
-
         while (true)
         {
-            int var11 = var1.getBlockId(var3, var4, var5);
-            if (var11 != 0 && var11 != Block.Leaves.id || var4 <= 0)
+            int blockId = world.getBlockId(x, y, z);
+            if (blockId != 0 && blockId != Block.Leaves.id || y <= 0)
             {
-                for (int var7 = 0; var7 < 4; ++var7)
+                for (int i = 0; i < 4; ++i)
                 {
-                    int var8 = var3 + var2.nextInt(8) - var2.nextInt(8);
-                    int var9 = var4 + var2.nextInt(4) - var2.nextInt(4);
-                    int var10 = var5 + var2.nextInt(8) - var2.nextInt(8);
-                    if (var1.isAir(var8, var9, var10) && ((BlockPlant)Block.Blocks[deadBushBlockId]).canGrow(var1, var8, var9, var10))
+                    int genX = x + rand.nextInt(8) - rand.nextInt(8);
+                    int genY = y + rand.nextInt(4) - rand.nextInt(4);
+                    int genZ = z + rand.nextInt(8) - rand.nextInt(8);
+                    if (world.isAir(genX, genY, genZ) && ((BlockPlant)Block.Blocks[_deadBushBlockId]).canGrow(world, genX, genY, genZ))
                     {
-                        var1.SetBlockWithoutNotifyingNeighbors(var8, var9, var10, deadBushBlockId);
+                        world.SetBlockWithoutNotifyingNeighbors(genX, genY, genZ, _deadBushBlockId);
                     }
                 }
 
                 return true;
             }
 
-            --var4;
+            --y;
         }
     }
 }

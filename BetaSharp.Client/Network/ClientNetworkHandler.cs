@@ -1,4 +1,4 @@
-﻿using BetaSharp.Blocks;
+using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Entities;
 using BetaSharp.Client.Entities.FX;
@@ -709,7 +709,7 @@ public class ClientNetworkHandler : NetHandler
 
                 for (int i = 0; i < 4; ++i)
                 {
-                    signEntity.texts[i] = packet.text[i];
+                    signEntity.Texts[i] = packet.text[i];
                 }
 
                 signEntity.markDirty();

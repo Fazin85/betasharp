@@ -1,4 +1,4 @@
-﻿using BetaSharp.Blocks.Entities;
+using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Worlds;
 
@@ -12,7 +12,7 @@ public abstract class BlockEntitySpecialRenderer
 
     protected void bindTextureByName(string var1)
     {
-        TextureManager var2 = tileEntityRenderer.renderEngine;
+        TextureManager var2 = tileEntityRenderer.TextureManager;
         var2.bindTexture(var2.getTextureId(var1));
     }
 
@@ -27,6 +27,6 @@ public abstract class BlockEntitySpecialRenderer
 
     public TextRenderer getFontRenderer()
     {
-        return tileEntityRenderer.getFontRenderer();
+        return tileEntityRenderer.GetFontRenderer();
     }
 }

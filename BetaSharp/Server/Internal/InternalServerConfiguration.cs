@@ -1,4 +1,4 @@
-﻿namespace BetaSharp.Server.Internal;
+namespace BetaSharp.Server.Internal;
 
 public class InternalServerConfiguration : IServerConfiguration
 {

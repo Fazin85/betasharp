@@ -1,37 +1,35 @@
 using BetaSharp.NBT;
 using BetaSharp.Network.Packets;
 using BetaSharp.Network.Packets.Play;
-using java.lang;
 
 namespace BetaSharp.Blocks.Entities;
 
 public class BlockEntitySign : BlockEntity
 {
-    public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(BlockEntitySign).TypeHandle);
-    public string[] texts = ["", "", "", ""];
-    public int currentRow = -1;
-    private bool editable = true;
+    public string[] Texts { get; set; } = ["", "", "", ""];
+    public int CurrentRow { get; set; } = -1;
+    private bool _editable = true;
 
     public override void writeNbt(NBTTagCompound nbt)
     {
         base.writeNbt(nbt);
-        nbt.SetString("Text1", texts[0]);
-        nbt.SetString("Text2", texts[1]);
-        nbt.SetString("Text3", texts[2]);
-        nbt.SetString("Text4", texts[3]);
+        nbt.SetString("Text1", Texts[0]);
+        nbt.SetString("Text2", Texts[1]);
+        nbt.SetString("Text3", Texts[2]);
+        nbt.SetString("Text4", Texts[3]);
     }
 
     public override void readNbt(NBTTagCompound nbt)
     {
-        editable = false;
+        _editable = false;
         base.readNbt(nbt);
 
         for (int line = 0; line < 4; ++line)
         {
-            texts[line] = nbt.GetString("Text" + (line + 1));
-            if (texts[line].Length > 15)
+            Texts[line] = nbt.GetString("Text" + (line + 1));
+            if (Texts[line].Length > 15)
             {
-                texts[line] = texts[line].Substring(0, 15);
+                Texts[line] = Texts[line].Substring(0, 15);
             }
         }
 
@@ -43,19 +41,19 @@ public class BlockEntitySign : BlockEntity
 
         for (int lineIndex = 0; lineIndex < 4; lineIndex++)
         {
-            lines[lineIndex] = texts[lineIndex];
+            lines[lineIndex] = Texts[lineIndex];
         }
 
         return new UpdateSignPacket(x, y, z, lines);
     }
 
-    public bool isEditable()
+    public bool IsEditable()
     {
-        return editable;
+        return _editable;
     }
 
-    public void setEditable(bool editable)
+    public void SetEditable(bool editable)
     {
-        this.editable = editable;
+        _editable = editable;
     }
 }

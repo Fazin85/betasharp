@@ -1,6 +1,7 @@
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
+using BetaSharp.Profiling;
 using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Chunks;
@@ -674,6 +675,19 @@ public class Chunk : java.lang.Object
 
     public virtual int loadFromPacket(byte[] bytes, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, int offset)
     {
+        int sizeX = maxX - minX;
+        int sizeY = maxY - minY;
+        int sizeZ = maxZ - minZ;
+
+        if (sizeX == 16 && sizeY == 128 && sizeZ == 16)
+        {
+            Profiler.Start("loadFromPacketFull");
+        }
+        else
+        {
+            Profiler.Start("loadFromPacketSmall");
+        }
+
         int var9;
         int var10;
         int var11;
@@ -722,6 +736,30 @@ public class Chunk : java.lang.Object
                 Buffer.BlockCopy(bytes, offset, skyLight.bytes, var11, var12);
                 offset += var12;
             }
+        }
+
+        for (var9 = minX; var9 < maxX; ++var9)
+        {
+            for (var10 = minZ; var10 < maxZ; ++var10)
+            {
+                for (int y = minY; y < maxY; y++)
+                {
+                    int id = getBlockId(var9, y, var10);
+                    if (id > 0 && Block.BlocksWithEntity[id])
+                    {
+                        getBlockEntity(var9, y, var10);
+                    }
+                }
+            }
+        }
+
+        if (sizeX == 16 && sizeY == 128 && sizeZ == 16)
+        {
+            Profiler.Stop("loadFromPacketFull");
+        }
+        else
+        {
+            Profiler.Stop("loadFromPacketSmall");
         }
 
         return offset;
