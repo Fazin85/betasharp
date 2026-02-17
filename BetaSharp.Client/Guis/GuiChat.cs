@@ -559,14 +559,14 @@ public class GuiChat : GuiScreen
     {
         if (var3 == 0)
         {
-            if (mc.ingameGUI.field_933_a != null)
+            if (mc.ingameGUI._hoveredItemName != null)
             {
                 if (message.Length > 0 && !message.EndsWith(" "))
                 {
                     message = message + " ";
                 }
 
-                message = message + mc.ingameGUI.field_933_a;
+                message = message + mc.ingameGUI._hoveredItemName;
                 byte var4 = 100;
                 if (message.Length > var4)
                 {
