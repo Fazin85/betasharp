@@ -57,20 +57,20 @@ public class ItemBucket : Item
                     if (world.getMaterial(hitX, hitY, hitZ) == Material.Water && world.getBlockMeta(hitX, hitY, hitZ) == 0)
                     {
                         world.setBlock(hitX, hitY, hitZ, 0);
-                        return new ItemStack(Item.WATER_BUCKET);
+                        return new ItemStack(Item.WaterBucket);
                     }
 
                     if (world.getMaterial(hitX, hitY, hitZ) == Material.Lava && world.getBlockMeta(hitX, hitY, hitZ) == 0)
                     {
                         world.setBlock(hitX, hitY, hitZ, 0);
-                        return new ItemStack(Item.LAVA_BUCKET);
+                        return new ItemStack(Item.LavaBucket);
                     }
                 }
                 else
                 {
                     if (isFull < 0)
                     {
-                        return new ItemStack(Item.BUCKET);
+                        return new ItemStack(Item.Bucket);
                     }
 
                     if (hitResult.side == 0)
@@ -119,13 +119,13 @@ public class ItemBucket : Item
                             world.setBlock(hitX, hitY, hitZ, isFull, 0);
                         }
 
-                        return new ItemStack(Item.BUCKET);
+                        return new ItemStack(Item.Bucket);
                     }
                 }
             }
             else if (isFull == 0 && hitResult.entity is EntityCow)
             {
-                return new ItemStack(Item.MILK_BUCKET);
+                return new ItemStack(Item.MilkBucket);
             }
 
             return itemStack;

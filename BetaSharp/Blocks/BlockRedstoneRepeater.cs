@@ -177,7 +177,7 @@ public class BlockRedstoneRepeater : Block
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
-        return Item.REPEATER.id;
+        return Item.Repeater.id;
     }
 
     public override void randomDisplayTick(World world, int x, int y, int z, java.util.Random random)

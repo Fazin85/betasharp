@@ -14,7 +14,7 @@ public class BlockSnowBlock : Block
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
-        return Item.SNOWBALL.id;
+        return Item.Snowball.id;
     }
 
     public override int getDroppedItemCount(java.util.Random random)

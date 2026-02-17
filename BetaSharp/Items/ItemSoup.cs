@@ -13,6 +13,6 @@ public class ItemSoup : ItemFood
     public override ItemStack use(ItemStack itemStack, World world, EntityPlayer entityPlayer)
     {
         base.use(itemStack, world, entityPlayer);
-        return new ItemStack(Item.BOWL);
+        return new ItemStack(Item.Bowl);
     }
 }

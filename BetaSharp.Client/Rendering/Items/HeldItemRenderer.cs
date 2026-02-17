@@ -176,7 +176,7 @@ public class HeldItemRenderer
         }
 
         float var14;
-        if (var5 != null && var5.itemId == Item.MAP.id)
+        if (var5 != null && var5.itemId == Item.Map.id)
         {
             GLManager.GL.PushMatrix();
             var14 = 0.8F;
@@ -243,7 +243,7 @@ public class HeldItemRenderer
             var19.addVertexWithUV(128 + var20, 0 - var20, 0.0D, 1.0D, 0.0D);
             var19.addVertexWithUV(0 - var20, 0 - var20, 0.0D, 0.0D, 0.0D);
             var19.draw();
-            MapState var22 = Item.MAP.getSavedMapState(var5, mc.world);
+            MapState var22 = Item.Map.getSavedMapState(var5, mc.world);
             field_28131_f.func_28157_a(mc.player, mc.textureManager, var22);
             GLManager.GL.PopMatrix();
         }

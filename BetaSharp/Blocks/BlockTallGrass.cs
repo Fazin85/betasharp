@@ -40,6 +40,6 @@ public class BlockTallGrass : BlockPlant
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
-        return random.nextInt(8) == 0 ? Item.SEEDS.id : -1;
+        return random.nextInt(8) == 0 ? Item.Seeds.id : -1;
     }
 }

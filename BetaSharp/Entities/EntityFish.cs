@@ -163,7 +163,7 @@ public class EntityFish : Entity
             if (!world.isRemote)
             {
                 ItemStack var1 = angler.getHand();
-                if (angler.dead || !angler.isAlive() || var1 == null || var1.getItem() != Item.FISHING_ROD || getSquaredDistance(angler) > 1024.0D)
+                if (angler.dead || !angler.isAlive() || var1 == null || var1.getItem() != Item.FishingRod || getSquaredDistance(angler) > 1024.0D)
                 {
                     markDead();
                     angler.fishHook = null;
@@ -421,7 +421,7 @@ public class EntityFish : Entity
         }
         else if (ticksCatchable > 0)
         {
-            EntityItem var13 = new EntityItem(world, x, y, z, new ItemStack(Item.RAW_FISH));
+            EntityItem var13 = new EntityItem(world, x, y, z, new ItemStack(Item.RawFish));
             double var3 = angler.x - x;
             double var5 = angler.y - y;
             double var7 = angler.z - z;

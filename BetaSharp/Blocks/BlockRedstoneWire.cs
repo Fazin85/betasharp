@@ -360,7 +360,7 @@ public class BlockRedstoneWire : Block
 
     public override int getDroppedItemId(int var1, java.util.Random var2)
     {
-        return Item.REDSTONE.id;
+        return Item.Redstone.id;
     }
 
     public override bool isStrongPoweringSide(World var1, int var2, int var3, int var4, int var5)

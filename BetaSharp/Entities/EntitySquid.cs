@@ -73,7 +73,7 @@ public class EntitySquid : EntityWaterMob
 
         for (int _ = 0; _ < dropCount; ++_)
         {
-            dropItem(new ItemStack(Item.DYE, 1, 0), 0.0F);
+            dropItem(new ItemStack(Item.Dye, 1, 0), 0.0F);
         }
 
     }

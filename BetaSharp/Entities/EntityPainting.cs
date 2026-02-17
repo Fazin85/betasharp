@@ -161,7 +161,7 @@ public class EntityPainting : Entity
             if (!canHangOnWall())
             {
                 markDead();
-                world.SpawnEntity(new EntityItem(world, x, y, z, new ItemStack(Item.PAINTING)));
+                world.SpawnEntity(new EntityItem(world, x, y, z, new ItemStack(Item.Painting)));
             }
         }
 
@@ -249,7 +249,7 @@ public class EntityPainting : Entity
         {
             markDead();
             scheduleVelocityUpdate();
-            world.SpawnEntity(new EntityItem(world, x, y, z, new ItemStack(Item.PAINTING)));
+            world.SpawnEntity(new EntityItem(world, x, y, z, new ItemStack(Item.Painting)));
         }
 
         return true;
@@ -296,7 +296,7 @@ public class EntityPainting : Entity
         if (!world.isRemote && dx * dx + dy * dy + dz * dz > 0.0D)
         {
             markDead();
-            world.SpawnEntity(new EntityItem(world, x, y, z, new ItemStack(Item.PAINTING)));
+            world.SpawnEntity(new EntityItem(world, x, y, z, new ItemStack(Item.Painting)));
         }
 
     }
@@ -306,7 +306,7 @@ public class EntityPainting : Entity
         if (!world.isRemote && dx * dx + dy * dy + dz * dz > 0.0D)
         {
             markDead();
-            world.SpawnEntity(new EntityItem(world, x, y, z, new ItemStack(Item.PAINTING)));
+            world.SpawnEntity(new EntityItem(world, x, y, z, new ItemStack(Item.Painting)));
         }
 
     }

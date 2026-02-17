@@ -59,7 +59,7 @@ public class EntityChicken : EntityAnimal
         if (!world.isRemote && --timeUntilNextEgg <= 0)
         {
             world.playSound(this, "mob.chickenplop", 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
-            dropItem(Item.EGG.id, 1);
+            dropItem(Item.Egg.id, 1);
             timeUntilNextEgg = random.nextInt(6000) + 6000;
         }
 
@@ -96,6 +96,6 @@ public class EntityChicken : EntityAnimal
 
     protected override int getDropItemId()
     {
-        return Item.FEATHER.id;
+        return Item.Feather.id;
     }
 }

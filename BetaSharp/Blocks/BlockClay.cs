@@ -12,7 +12,7 @@ public class BlockClay : Block
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
-        return Item.CLAY.id;
+        return Item.Clay.id;
     }
 
     public override int getDroppedItemCount(java.util.Random random)

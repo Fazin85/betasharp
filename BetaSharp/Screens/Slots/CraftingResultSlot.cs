@@ -29,7 +29,7 @@ public class CraftingResultSlot : Slot
         {
             thePlayer.increaseStat(Achievements.BuildWorkbench, 1);
         }
-        else if (var1.itemId == Item.WOODEN_PICKAXE.id)
+        else if (var1.itemId == Item.WoodenPickaxe.id)
         {
             thePlayer.increaseStat(Achievements.BuildPickaxe, 1);
         }
@@ -37,23 +37,23 @@ public class CraftingResultSlot : Slot
         {
             thePlayer.increaseStat(Achievements.BuildFurnace, 1);
         }
-        else if (var1.itemId == Item.WOODEN_HOE.id)
+        else if (var1.itemId == Item.WoodenHoe.id)
         {
             thePlayer.increaseStat(Achievements.BuildHoe, 1);
         }
-        else if (var1.itemId == Item.BREAD.id)
+        else if (var1.itemId == Item.Bread.id)
         {
             thePlayer.increaseStat(Achievements.MakeBread, 1);
         }
-        else if (var1.itemId == Item.CAKE.id)
+        else if (var1.itemId == Item.Cake.id)
         {
             thePlayer.increaseStat(Achievements.MakeCake, 1);
         }
-        else if (var1.itemId == Item.STONE_PICKAXE.id)
+        else if (var1.itemId == Item.StonePickaxe.id)
         {
             thePlayer.increaseStat(Achievements.CraftStonePickaxe, 1);
         }
-        else if (var1.itemId == Item.WOODEN_SWORD.id)
+        else if (var1.itemId == Item.WoodenSword.id)
         {
             thePlayer.increaseStat(Achievements.CraftSword, 1);
         }

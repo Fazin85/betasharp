@@ -142,14 +142,14 @@ public class BlockDispenser : BlockWithEntity
                 world.SpawnEntity(arrow);
                 world.worldEvent(1002, x, y, z, 0);
             }
-            else if (itemStack.itemId == Item.EGG.id)
+            else if (itemStack.itemId == Item.Egg.id)
             {
                 EntityEgg egg = new EntityEgg(world, spawnX, spawnY, spawnZ);
                 egg.setEggHeading((double)dirX, (double)0.1F, (double)dirZ, 1.1F, 6.0F);
                 world.SpawnEntity(egg);
                 world.worldEvent(1002, x, y, z, 0);
             }
-            else if (itemStack.itemId == Item.SNOWBALL.id)
+            else if (itemStack.itemId == Item.Snowball.id)
             {
                 EntitySnowball snowball = new EntitySnowball(world, spawnX, spawnY, spawnZ);
                 snowball.setSnowballHeading((double)dirX, (double)0.1F, (double)dirZ, 1.1F, 6.0F);

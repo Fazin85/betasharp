@@ -200,7 +200,7 @@ public class BlockLeaves : BlockLeavesBase
 
     public override void afterBreak(World world, EntityPlayer player, int x, int y, int z, int meta)
     {
-        if (!world.isRemote && player.getHand() != null && player.getHand().itemId == Item.SHEARS.id)
+        if (!world.isRemote && player.getHand() != null && player.getHand().itemId == Item.Shears.id)
         {
             player.increaseStat(Stats.Stats.mineBlockStatArray[id], 1);
             dropStack(world, x, y, z, new ItemStack(Block.Leaves.id, 1, meta & 3));

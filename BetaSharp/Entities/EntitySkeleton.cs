@@ -98,7 +98,7 @@ public class EntitySkeleton : EntityMonster
 
         for (i = 0; i < amount; ++i)
         {
-            dropItem(Item.BONE.id, 1);
+            dropItem(Item.Bone.id, 1);
         }
 
     }

@@ -67,7 +67,7 @@ public class BlockSnow : Block
 
     public override void afterBreak(World world, EntityPlayer player, int x, int y, int z, int meta)
     {
-        int snowballId = Item.SNOWBALL.id;
+        int snowballId = Item.Snowball.id;
         float spreadFactor = 0.7F;
         double offsetX = (double)(world.random.nextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
         double offsetY = (double)(world.random.nextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
@@ -81,7 +81,7 @@ public class BlockSnow : Block
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
-        return Item.SNOWBALL.id;
+        return Item.Snowball.id;
     }
 
     public override int getDroppedItemCount(java.util.Random random)

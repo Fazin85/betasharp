@@ -10,7 +10,7 @@ public class EntityPigZombie : EntityZombie
 
     private int angerLevel = 0;
     private int randomSoundDelay = 0;
-    private static readonly ItemStack defaultHeldItem = new ItemStack(Item.GOLDEN_SWORD, 1);
+    private static readonly ItemStack defaultHeldItem = new ItemStack(Item.GoldenSword, 1);
 
     public EntityPigZombie(World world) : base(world)
     {
@@ -104,7 +104,7 @@ public class EntityPigZombie : EntityZombie
 
     protected override int getDropItemId()
     {
-        return Item.COOKED_PORKCHOP.id;
+        return Item.CookedPorkchop.id;
     }
 
     public override ItemStack getHeldItem()
