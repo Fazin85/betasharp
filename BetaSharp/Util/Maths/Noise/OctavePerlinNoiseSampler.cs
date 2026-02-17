@@ -3,17 +3,17 @@ namespace BetaSharp.Util.Maths.Noise;
 public class OctavePerlinNoiseSampler : NoiseSampler
 {
 
-    private PerlinNoiseSampler[] generatorCollection;
-    private int octaves;
+    private readonly PerlinNoiseSampler[] _octaves;
+    private readonly int _octaveCount;
 
-    public OctavePerlinNoiseSampler(java.util.Random rand, int octaves)
+    public OctavePerlinNoiseSampler(java.util.Random rand, int octaveCount)
     {
-        this.octaves = octaves;
-        generatorCollection = new PerlinNoiseSampler[octaves];
+        _octaveCount = octaveCount;
+        _octaves = new PerlinNoiseSampler[octaveCount];
 
-        for (int i = 0; i < octaves; ++i)
+        for (int i = 0; i < octaveCount; ++i)
         {
-            generatorCollection[i] = new PerlinNoiseSampler(rand);
+            _octaves[i] = new PerlinNoiseSampler(rand);
         }
     }
 
@@ -22,39 +22,39 @@ public class OctavePerlinNoiseSampler : NoiseSampler
         double var5 = 0.0D;
         double var7 = 1.0D;
 
-        for (int i = 0; i < octaves; ++i)
+        for (int i = 0; i < _octaveCount; ++i)
         {
-            var5 += generatorCollection[i].func_801_a(var1 * var7, var3 * var7) / var7;
+            var5 += _octaves[i].func_801_a(var1 * var7, var3 * var7) / var7;
             var7 /= 2.0D;
         }
 
         return var5;
     }
 
-    public double[] create(double[] var1, double var2, double var4, double var6, int var8, int var9, int var10, double var11, double var13, double var15)
+    public double[] create(double[] map, double var2, double var4, double var6, int var8, int var9, int var10, double var11, double var13, double var15)
     {
-        if (var1 == null)
+        if (map == null)
         {
-            var1 = new double[var8 * var9 * var10];
+            map = new double[var8 * var9 * var10];
         }
         else
         {
-            Array.Fill(var1, 0);
+            Array.Fill(map, 0);
         }
 
         double var20 = 1.0D;
 
-        for (int i = 0; i < octaves; ++i)
+        for (int i = 0; i < _octaveCount; ++i)
         {
-            generatorCollection[i].func_805_a(var1, var2, var4, var6, var8, var9, var10, var11 * var20, var13 * var20, var15 * var20, var20);
+            _octaves[i].func_805_a(map, var2, var4, var6, var8, var9, var10, var11 * var20, var13 * var20, var15 * var20, var20);
             var20 /= 2.0D;
         }
 
-        return var1;
+        return map;
     }
 
-    public double[] create(double[] var1, int var2, int var3, int var4, int var5, double var6, double var8, double var10)
+    public double[] create(double[] map, int var2, int var3, int var4, int var5, double var6, double var8, double var10)
     {
-        return create(var1, var2, 10.0D, var3, var4, 1, var5, var6, 1.0D, var8);
+        return create(map, var2, 10.0D, var3, var4, 1, var5, var6, 1.0D, var8);
     }
 }

@@ -480,7 +480,7 @@ public class SkyChunkGenerator : ChunkSource
             var16 = var4 + rand.nextInt(16) + 8;
             var17 = var5 + rand.nextInt(16) + 8;
             Feature var18 = var6.GetRandomWorldGenForTrees(rand);
-            var18.Prepare(1.0D, 1.0D, 1.0D);
+            var18.prepare(1.0D, 1.0D, 1.0D);
             var18.Generate(world, rand, var16, world.getTopY(var16, var17), var17);
         }
 
