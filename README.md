@@ -62,16 +62,16 @@ If you'd like to use the client, run the following command.
 cd BetaSharp.Client
 dotnet run -c ClientDebug
 ```
-This automatically builds a Debug Binary of BetaSharp. Replace `ClientDebug` with `ClientRelease` if you'd like a faster, but less debuggable, binary.
+This automatically builds a Debug Binary of BetaSharp. Replace `ClientDebug` with `ClientRelease` if you'd like a more performant but less debuggable binary.
 
 #### Server
-If you'd like to use the server, instead of the client, the same rough structure applies, just with `Client` swapped out with `Server`.
+If you'd like to run a server, instead of a client, use the same command, just by swapping `Client` out with `Server`, e.g.
 ```bash
 cd BetaSharp.Server
 dotnet run -c ServerDebug
 ```
+For a more performant but less debuggable build, replace `ServerDebug` with `ServerRelease`.
 
-If you're not looking to Debug anything and want significantly improved performance, replace `ClientDebug` in all the previous commands with `ClientRelease`
 ## License
 
 This project is shared openly for collaboration. All code is derivative of Minecraft and subject to Mojang's rights.
