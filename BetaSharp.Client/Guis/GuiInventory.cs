@@ -19,7 +19,7 @@ public class GuiInventory : GuiContainer
 
     public override void InitGui()
     {
-        controlList.Clear();
+        _controlList.Clear();
     }
 
     protected override void DrawGuiContainerForegroundLayer()

@@ -33,8 +33,8 @@ public class GuiConnecting : GuiScreen
     public override void InitGui()
     {
         TranslationStorage translations = TranslationStorage.getInstance();
-        controlList.Clear();
-        controlList.Add(new GuiButton(_buttonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
+        _controlList.Clear();
+        _controlList.Add(new GuiButton(_buttonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
     }
 
     protected override void ActionPerformed(GuiButton button)

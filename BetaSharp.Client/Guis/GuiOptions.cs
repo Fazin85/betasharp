@@ -32,19 +32,19 @@ public class GuiOptions : GuiScreen
             EnumOptions currentOption = optionsToDisplay[i];
             if (!currentOption.getEnumFloat())
             {
-                controlList.Add(new GuiSmallButton(currentOption.returnEnumOrdinal(), Width / 2 - 155 + rowIndex % 2 * 160, Height / 6 + 24 * (rowIndex >> 1), currentOption, options.getKeyBinding(currentOption)));
+                _controlList.Add(new GuiSmallButton(currentOption.returnEnumOrdinal(), Width / 2 - 155 + rowIndex % 2 * 160, Height / 6 + 24 * (rowIndex >> 1), currentOption, options.getKeyBinding(currentOption)));
             }
             else
             {
-                controlList.Add(new GuiSlider(currentOption.returnEnumOrdinal(), Width / 2 - 155 + rowIndex % 2 * 160, Height / 6 + 24 * (rowIndex >> 1), currentOption, options.getKeyBinding(currentOption), options.getOptionFloatValue(currentOption)));
+                _controlList.Add(new GuiSlider(currentOption.returnEnumOrdinal(), Width / 2 - 155 + rowIndex % 2 * 160, Height / 6 + 24 * (rowIndex >> 1), currentOption, options.getKeyBinding(currentOption), options.getOptionFloatValue(currentOption)));
             }
 
             ++rowIndex;
         }
 
-        controlList.Add(new GuiButton(BUTTON_VIDEO_SETTINGS, Width / 2 - 100, Height / 6 + 96 + 12, translations.translateKey("options.video")));
-        controlList.Add(new GuiButton(BUTTON_CONTROLS, Width / 2 - 100, Height / 6 + 120 + 12, translations.translateKey("options.controls")));
-        controlList.Add(new GuiButton(BUTTON_DONE, Width / 2 - 100, Height / 6 + 168, translations.translateKey("gui.done")));
+        _controlList.Add(new GuiButton(BUTTON_VIDEO_SETTINGS, Width / 2 - 100, Height / 6 + 96 + 12, translations.translateKey("options.video")));
+        _controlList.Add(new GuiButton(BUTTON_CONTROLS, Width / 2 - 100, Height / 6 + 120 + 12, translations.translateKey("options.controls")));
+        _controlList.Add(new GuiButton(BUTTON_DONE, Width / 2 - 100, Height / 6 + 168, translations.translateKey("gui.done")));
     }
 
     protected override void ActionPerformed(GuiButton button)

@@ -41,7 +41,7 @@ public class GuiSelectWorld : GuiScreen
         unsupportedFormatMessage = "Unsupported Format!";
         loadSaves();
         worldSlotContainer = new GuiWorldSlot(this);
-        worldSlotContainer.RegisterScrollButtons(controlList, 4, 5);
+        worldSlotContainer.RegisterScrollButtons(_controlList, 4, 5);
         initButtons();
     }
 
@@ -73,11 +73,11 @@ public class GuiSelectWorld : GuiScreen
     public void initButtons()
     {
         TranslationStorage translations = TranslationStorage.getInstance();
-        controlList.Add(buttonSelect = new GuiButton(BUTTON_SELECT, Width / 2 - 154, Height - 52, 150, 20, translations.translateKey("selectWorld.select")));
-        controlList.Add(buttonRename = new GuiButton(BUTTON_RENAME, Width / 2 - 154, Height - 28, 70, 20, translations.translateKey("selectWorld.rename")));
-        controlList.Add(buttonDelete = new GuiButton(BUTTON_DELETE, Width / 2 - 74, Height - 28, 70, 20, translations.translateKey("selectWorld.delete")));
-        controlList.Add(new GuiButton(BUTTON_CREATE, Width / 2 + 4, Height - 52, 150, 20, translations.translateKey("selectWorld.create")));
-        controlList.Add(new GuiButton(BUTTON_CANCEL, Width / 2 + 4, Height - 28, 150, 20, translations.translateKey("gui.cancel")));
+        _controlList.Add(buttonSelect = new GuiButton(BUTTON_SELECT, Width / 2 - 154, Height - 52, 150, 20, translations.translateKey("selectWorld.select")));
+        _controlList.Add(buttonRename = new GuiButton(BUTTON_RENAME, Width / 2 - 154, Height - 28, 70, 20, translations.translateKey("selectWorld.rename")));
+        _controlList.Add(buttonDelete = new GuiButton(BUTTON_DELETE, Width / 2 - 74, Height - 28, 70, 20, translations.translateKey("selectWorld.delete")));
+        _controlList.Add(new GuiButton(BUTTON_CREATE, Width / 2 + 4, Height - 52, 150, 20, translations.translateKey("selectWorld.create")));
+        _controlList.Add(new GuiButton(BUTTON_CANCEL, Width / 2 + 4, Height - 28, 150, 20, translations.translateKey("gui.cancel")));
         buttonSelect.Enabled = false;
         buttonRename.Enabled = false;
         buttonDelete.Enabled = false;

@@ -11,7 +11,7 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
 
     public override void InitGui()
     {
-        controlList.Clear();
+        _controlList.Clear();
         if (!_serverStarted)
         {
             _serverStarted = true;

@@ -26,9 +26,9 @@ public class GuiEditSign : GuiScreen
 
     public override void InitGui()
     {
-        controlList.Clear();
+        _controlList.Clear();
         Keyboard.enableRepeatEvents(true);
-        controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 4 + 120, "Done"));
+        _controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 4 + 120, "Done"));
     }
 
     public override void OnGuiClosed()

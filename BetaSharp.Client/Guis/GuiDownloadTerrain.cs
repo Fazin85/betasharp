@@ -20,7 +20,7 @@ public class GuiDownloadTerrain : GuiScreen
 
     public override void InitGui()
     {
-        controlList.Clear();
+        _controlList.Clear();
     }
 
     public override void UpdateScreen()

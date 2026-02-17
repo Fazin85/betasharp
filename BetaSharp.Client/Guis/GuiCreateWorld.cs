@@ -32,9 +32,9 @@ public class GuiCreateWorld : GuiScreen
     {
         TranslationStorage translations = TranslationStorage.getInstance();
         Keyboard.enableRepeatEvents(true);
-        controlList.Clear();
-        controlList.Add(new GuiButton(ButtonCreate, Width / 2 - 100, Height / 4 + 96 + 12, translations.translateKey("selectWorld.create")));
-        controlList.Add(new GuiButton(ButtonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
+        _controlList.Clear();
+        _controlList.Add(new GuiButton(ButtonCreate, Width / 2 - 100, Height / 4 + 96 + 12, translations.translateKey("selectWorld.create")));
+        _controlList.Add(new GuiButton(ButtonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
         _textboxWorldName = new GuiTextField(this, fontRenderer, Width / 2 - 100, 60, 200, 20, translations.translateKey("selectWorld.newWorld"))
         {
             isFocused = true
@@ -141,10 +141,10 @@ public class GuiCreateWorld : GuiScreen
 
         if (eventChar == 13)
         {
-            ActionPerformed(controlList[0]);
+            ActionPerformed(_controlList[0]);
         }
 
-        controlList[0].Enabled = _textboxWorldName.getText().Length > 0;
+        _controlList[0].Enabled = _textboxWorldName.getText().Length > 0;
         UpdateFolderName();
     }
 

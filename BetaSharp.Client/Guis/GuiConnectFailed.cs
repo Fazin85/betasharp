@@ -34,8 +34,8 @@ public class GuiConnectFailed : GuiScreen
     {
         mc.stopInternalServer();
         TranslationStorage translations = TranslationStorage.getInstance();
-        controlList.Clear();
-        controlList.Add(new GuiButton(_buttonToMenu, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.toMenu")));
+        _controlList.Clear();
+        _controlList.Add(new GuiButton(_buttonToMenu, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.toMenu")));
     }
 
     protected override void ActionPerformed(GuiButton btt)

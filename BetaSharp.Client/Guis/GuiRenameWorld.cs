@@ -28,9 +28,9 @@ public class GuiRenameWorld : GuiScreen
     {
         TranslationStorage translations = TranslationStorage.getInstance();
         Keyboard.enableRepeatEvents(true);
-        controlList.Clear();
-        controlList.Add(new GuiButton(BUTTON_RENAME, Width / 2 - 100, Height / 4 + 96 + 12, translations.translateKey("selectWorld.renameButton")));
-        controlList.Add(new GuiButton(BUTTON_CANCEL, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
+        _controlList.Clear();
+        _controlList.Add(new GuiButton(BUTTON_RENAME, Width / 2 - 100, Height / 4 + 96 + 12, translations.translateKey("selectWorld.renameButton")));
+        _controlList.Add(new GuiButton(BUTTON_CANCEL, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
         WorldStorageSource worldStorage = mc.getSaveLoader();
         WorldProperties worldProperties = worldStorage.getProperties(worldFolderName);
         string currentWorldName = worldProperties.LevelName;
@@ -67,10 +67,10 @@ public class GuiRenameWorld : GuiScreen
     protected override void KeyTyped(char eventChar, int eventKey)
     {
         nameInputField.textboxKeyTyped(eventChar, eventKey);
-        controlList[0].Enabled = nameInputField.getText().Trim().Length > 0;
+        _controlList[0].Enabled = nameInputField.getText().Trim().Length > 0;
         if (eventChar == 13)
         {
-            ActionPerformed(controlList[0]);
+            ActionPerformed(_controlList[0]);
         }
 
     }

@@ -9,14 +9,14 @@ public class GuiGameOver : GuiScreen
 
     public override void InitGui()
     {
-        controlList.Clear();
-        controlList.Add(new GuiButton(BUTTON_RESPAWN, Width / 2 - 100, Height / 4 + 72, "Respawn"));
-        controlList.Add(new GuiButton(BUTTON_TITLE, Width / 2 - 100, Height / 4 + 96, "Title menu"));
+        _controlList.Clear();
+        _controlList.Add(new GuiButton(BUTTON_RESPAWN, Width / 2 - 100, Height / 4 + 72, "Respawn"));
+        _controlList.Add(new GuiButton(BUTTON_TITLE, Width / 2 - 100, Height / 4 + 96, "Title menu"));
         if (mc.session == null)
         {
-            for (int i = 0; i < controlList.Count; ++i)
+            for (int i = 0; i < _controlList.Count; ++i)
             {
-                GuiButton btn = controlList[i];
+                GuiButton btn = _controlList[i];
                 if (btn.Id == BUTTON_RESPAWN)
                 {
                     btn.Enabled = false;

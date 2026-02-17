@@ -24,11 +24,11 @@ public class GuiMultiplayer : GuiScreen
     {
         TranslationStorage translations = TranslationStorage.getInstance();
         Keyboard.enableRepeatEvents(true);
-        controlList.Clear();
-        controlList.Add(new GuiButton(BUTTON_CONNECT, Width / 2 - 100, Height / 4 + 96 + 12, translations.translateKey("multiplayer.connect")));
-        controlList.Add(new GuiButton(BUTTON_CANCEL, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
+        _controlList.Clear();
+        _controlList.Add(new GuiButton(BUTTON_CONNECT, Width / 2 - 100, Height / 4 + 96 + 12, translations.translateKey("multiplayer.connect")));
+        _controlList.Add(new GuiButton(BUTTON_CANCEL, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
         string lastServerAddress = mc.options.lastServer.Replace("_", ":");
-        controlList[0].Enabled = lastServerAddress.Length > 0;
+        _controlList[0].Enabled = lastServerAddress.Length > 0;
         serverAddressInputField = new GuiTextField(this, fontRenderer, Width / 2 - 100, Height / 4 - 10 + 50 + 18, 200, 20, lastServerAddress)
         {
             isFocused = true
@@ -104,10 +104,10 @@ public class GuiMultiplayer : GuiScreen
         serverAddressInputField.textboxKeyTyped(eventChar, eventKey);
         if (eventChar == 13)
         {
-            ActionPerformed(controlList[0]);
+            ActionPerformed(_controlList[0]);
         }
 
-        controlList[0].Enabled = serverAddressInputField.getText().Length > 0;
+        _controlList[0].Enabled = serverAddressInputField.getText().Length > 0;
     }
 
     protected override void MouseClicked(int x, int y, int button)

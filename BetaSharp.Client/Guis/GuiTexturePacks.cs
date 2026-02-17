@@ -21,12 +21,12 @@ public class GuiTexturePacks : GuiScreen
     public override void InitGui()
     {
         TranslationStorage translations = TranslationStorage.getInstance();
-        controlList.Add(new GuiSmallButton(BUTTON_OPEN_FOLDER, Width / 2 - 154, Height - 48, translations.translateKey("texturePack.openFolder")));
-        controlList.Add(new GuiSmallButton(BUTTON_DONE, Width / 2 + 4, Height - 48, translations.translateKey("gui.done")));
+        _controlList.Add(new GuiSmallButton(BUTTON_OPEN_FOLDER, Width / 2 - 154, Height - 48, translations.translateKey("texturePack.openFolder")));
+        _controlList.Add(new GuiSmallButton(BUTTON_DONE, Width / 2 + 4, Height - 48, translations.translateKey("gui.done")));
         mc.texturePackList.updateAvaliableTexturePacks();
         texturePackFolder = new java.io.File(Minecraft.getMinecraftDir(), "texturepacks").getAbsolutePath();
         guiTexturePackSlot = new GuiTexturePackSlot(this);
-        guiTexturePackSlot.RegisterScrollButtons(controlList, 7, 8);
+        guiTexturePackSlot.RegisterScrollButtons(_controlList, 7, 8);
     }
 
     protected override void ActionPerformed(GuiButton var1)

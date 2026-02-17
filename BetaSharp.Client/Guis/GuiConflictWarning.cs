@@ -12,8 +12,8 @@ public class GuiConflictWarning : GuiScreen
 
     public override void InitGui()
     {
-        controlList.Clear();
-        controlList.Add(new GuiButton(0, Width / 2 - 100, Height / 4 + 120 + 12, "Back to title screen"));
+        _controlList.Clear();
+        _controlList.Add(new GuiButton(0, Width / 2 - 100, Height / 4 + 120 + 12, "Back to title screen"));
     }
 
     protected override void ActionPerformed(GuiButton btt)

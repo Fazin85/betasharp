@@ -25,8 +25,8 @@ public class GuiYesNo : GuiScreen
 
     public override void InitGui()
     {
-        controlList.Add(new GuiSmallButton(BUTTON_CONFIRM, Width / 2 - 155 + 0, Height / 6 + 96, confirmButtonText));
-        controlList.Add(new GuiSmallButton(BUTTON_CANCEL, Width / 2 - 155 + 160, Height / 6 + 96, cancelButtonText));
+        _controlList.Add(new GuiSmallButton(BUTTON_CONFIRM, Width / 2 - 155 + 0, Height / 6 + 96, confirmButtonText));
+        _controlList.Add(new GuiSmallButton(BUTTON_CANCEL, Width / 2 - 155 + 160, Height / 6 + 96, cancelButtonText));
     }
 
     protected override void ActionPerformed(GuiButton button)

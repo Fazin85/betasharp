@@ -29,10 +29,10 @@ public class GuiControls : GuiScreen
 
         for (int i = 0; i < _options.keyBindings.Length; ++i)
         {
-            controlList.Add(new GuiSmallButton(i, leftX + i % 2 * 160, Height / 6 + 24 * (i >> 1), 70, 20, _options.getOptionDisplayString(i)));
+            _controlList.Add(new GuiSmallButton(i, leftX + i % 2 * 160, Height / 6 + 24 * (i >> 1), 70, 20, _options.getOptionDisplayString(i)));
         }
 
-        controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 6 + 168, translations.translateKey("gui.done")));
+        _controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 6 + 168, translations.translateKey("gui.done")));
         _screenTitle = translations.translateKey("controls.title");
     }
 
@@ -40,7 +40,7 @@ public class GuiControls : GuiScreen
     {
         for (int i = 0; i < _options.keyBindings.Length; ++i)
         {
-            controlList[i].DisplayString = _options.getOptionDisplayString(i);
+            _controlList[i].DisplayString = _options.getOptionDisplayString(i);
         }
 
         switch (button.Id)
@@ -61,7 +61,7 @@ public class GuiControls : GuiScreen
         if (_selectedKey >= 0)
         {
             _options.setKeyBinding(_selectedKey, eventKey);
-            controlList[_selectedKey].DisplayString = _options.getOptionDisplayString(_selectedKey);
+            _controlList[_selectedKey].DisplayString = _options.getOptionDisplayString(_selectedKey);
             _selectedKey = -1;
         }
         else

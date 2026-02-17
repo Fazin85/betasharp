@@ -12,7 +12,7 @@ public class GuiIngameMenu : GuiScreen
     public override void InitGui()
     {
         _saveStepTimer = 0;
-        controlList.Clear();
+        _controlList.Clear();
 
         int verticalOffset = -16;
         int centerX = Width / 2;
@@ -20,11 +20,11 @@ public class GuiIngameMenu : GuiScreen
 
         string quitText = (mc.isMultiplayerWorld() && mc.internalServer == null) ? "Disconnect" : "Save and quit to title";
 
-        controlList.Add(new GuiButton(1, centerX - 100, centerY + 120 + verticalOffset, quitText));
-        controlList.Add(new GuiButton(4, centerX - 100, centerY + 24 + verticalOffset, "Back to game"));
-        controlList.Add(new GuiButton(0, centerX - 100, centerY + 96 + verticalOffset, "Options..."));
-        controlList.Add(new GuiButton(5, centerX - 100, centerY + 48 + verticalOffset, 98, 20, StatCollector.translateToLocal("gui.achievements")));
-        controlList.Add(new GuiButton(6, centerX + 2, centerY + 48 + verticalOffset, 98, 20, StatCollector.translateToLocal("gui.stats")));
+        _controlList.Add(new GuiButton(1, centerX - 100, centerY + 120 + verticalOffset, quitText));
+        _controlList.Add(new GuiButton(4, centerX - 100, centerY + 24 + verticalOffset, "Back to game"));
+        _controlList.Add(new GuiButton(0, centerX - 100, centerY + 96 + verticalOffset, "Options..."));
+        _controlList.Add(new GuiButton(5, centerX - 100, centerY + 48 + verticalOffset, 98, 20, StatCollector.translateToLocal("gui.achievements")));
+        _controlList.Add(new GuiButton(6, centerX + 2, centerY + 48 + verticalOffset, 98, 20, StatCollector.translateToLocal("gui.stats")));
     }
 
     protected override void ActionPerformed(GuiButton btt)

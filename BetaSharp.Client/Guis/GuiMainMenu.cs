@@ -83,21 +83,21 @@ public class GuiMainMenu : GuiScreen
         TranslationStorage translator = TranslationStorage.getInstance();
         int buttonTopY = Height / 4 + 48;
 
-        controlList.Add(new GuiButton(BUTTON_SINGLEPLAYER, Width / 2 - 100, buttonTopY, translator.translateKey("menu.singleplayer")));
-        controlList.Add(_multiplayerButton =
+        _controlList.Add(new GuiButton(BUTTON_SINGLEPLAYER, Width / 2 - 100, buttonTopY, translator.translateKey("menu.singleplayer")));
+        _controlList.Add(_multiplayerButton =
             new GuiButton(BUTTON_MULTIPLAYER, Width / 2 - 100, buttonTopY + 24, translator.translateKey("menu.multiplayer")));
-        controlList.Add(new GuiButton(BUTTON_MODS, Width / 2 - 100, buttonTopY + 48, translator.translateKey("menu.mods")));
+        _controlList.Add(new GuiButton(BUTTON_MODS, Width / 2 - 100, buttonTopY + 48, translator.translateKey("menu.mods")));
 
         if (mc.hideQuitButton)
         {
-            controlList.Add(new GuiButton(BUTTON_OPTIONS, Width / 2 - 100, buttonTopY + 72, translator.translateKey("menu.options")));
+            _controlList.Add(new GuiButton(BUTTON_OPTIONS, Width / 2 - 100, buttonTopY + 72, translator.translateKey("menu.options")));
         }
         else
         {
-            controlList.Add(new GuiButton(BUTTON_OPTIONS, Width / 2 - 100, buttonTopY + 72 + 12, 98, 20,
+            _controlList.Add(new GuiButton(BUTTON_OPTIONS, Width / 2 - 100, buttonTopY + 72 + 12, 98, 20,
                 translator.translateKey("menu.options")));
 
-            controlList.Add(new GuiButton(BUTTON_QUIT, Width / 2 + 2, buttonTopY + 72 + 12, 98, 20,
+            _controlList.Add(new GuiButton(BUTTON_QUIT, Width / 2 + 2, buttonTopY + 72 + 12, 98, 20,
                 translator.translateKey("menu.quit")));
         }
 

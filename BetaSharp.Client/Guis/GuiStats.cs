@@ -28,11 +28,11 @@ public class GuiStats : GuiScreen
     {
         screenTitle = StatCollector.translateToLocal("gui.stats");
         slotGeneral = new GuiSlotStatsGeneral(this);
-        slotGeneral.RegisterScrollButtons(controlList, 1, 1);
+        slotGeneral.RegisterScrollButtons(_controlList, 1, 1);
         slotItem = new GuiSlotStatsItem(this);
-        slotItem.RegisterScrollButtons(controlList, 1, 1);
+        slotItem.RegisterScrollButtons(_controlList, 1, 1);
         slotBlock = new GuiSlotStatsBlock(this);
-        slotBlock.RegisterScrollButtons(controlList, 1, 1);
+        slotBlock.RegisterScrollButtons(_controlList, 1, 1);
         currentSlot = slotGeneral;
         initButtons();
     }
@@ -44,12 +44,12 @@ public class GuiStats : GuiScreen
         const int BUTTON_ITEMS = 3;
 
         TranslationStorage translations = TranslationStorage.getInstance();
-        controlList.Add(new GuiButton(BUTTON_DONE, Width / 2 + 4, Height - 28, 150, 20, translations.translateKey("gui.done")));
-        controlList.Add(new GuiButton(BUTTON_GENERAL, Width / 2 - 154, Height - 52, 100, 20, translations.translateKey("stat.generalButton")));
+        _controlList.Add(new GuiButton(BUTTON_DONE, Width / 2 + 4, Height - 28, 150, 20, translations.translateKey("gui.done")));
+        _controlList.Add(new GuiButton(BUTTON_GENERAL, Width / 2 - 154, Height - 52, 100, 20, translations.translateKey("stat.generalButton")));
         GuiButton blocksButton = new(BUTTON_BLOCKS, Width / 2 - 46, Height - 52, 100, 20, translations.translateKey("stat.blocksButton"));
-        controlList.Add(blocksButton);
+        _controlList.Add(blocksButton);
         GuiButton itemsButton = new(BUTTON_ITEMS, Width / 2 + 62, Height - 52, 100, 20, translations.translateKey("stat.itemsButton"));
-        controlList.Add(itemsButton);
+        _controlList.Add(itemsButton);
         if (slotBlock.getSize() == 0)
         {
             blocksButton.Enabled = false;

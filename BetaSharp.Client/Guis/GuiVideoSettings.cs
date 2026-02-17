@@ -29,17 +29,17 @@ public class GuiVideoSettings : GuiScreen
             EnumOptions var6 = var3[var5];
             if (!var6.getEnumFloat())
             {
-                controlList.Add(new GuiSmallButton(var6.returnEnumOrdinal(), Width / 2 - 155 + var2 % 2 * 160, Height / 6 + 24 * (var2 >> 1), var6, guiGameSettings.getKeyBinding(var6)));
+                _controlList.Add(new GuiSmallButton(var6.returnEnumOrdinal(), Width / 2 - 155 + var2 % 2 * 160, Height / 6 + 24 * (var2 >> 1), var6, guiGameSettings.getKeyBinding(var6)));
             }
             else
             {
-                controlList.Add(new GuiSlider(var6.returnEnumOrdinal(), Width / 2 - 155 + var2 % 2 * 160, Height / 6 + 24 * (var2 >> 1), var6, guiGameSettings.getKeyBinding(var6), guiGameSettings.getOptionFloatValue(var6)));
+                _controlList.Add(new GuiSlider(var6.returnEnumOrdinal(), Width / 2 - 155 + var2 % 2 * 160, Height / 6 + 24 * (var2 >> 1), var6, guiGameSettings.getKeyBinding(var6), guiGameSettings.getOptionFloatValue(var6)));
             }
 
             ++var2;
         }
 
-        controlList.Add(new GuiButton(200, Width / 2 - 100, Height / 6 + 168, var1.translateKey("gui.done")));
+        _controlList.Add(new GuiButton(200, Width / 2 - 100, Height / 6 + 168, var1.translateKey("gui.done")));
     }
 
     protected override void ActionPerformed(GuiButton var1)

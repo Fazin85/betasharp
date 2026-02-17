@@ -14,7 +14,7 @@ public class GuiScreen : Gui
     public Minecraft mc;
     public int Width;
     public int Height;
-    protected List<GuiButton> controlList = new();
+    protected List<GuiButton> _controlList = new();
     public bool AllowUserInput = false;
     public TextRenderer fontRenderer;
     public GuiParticle ParticlesGui;
@@ -22,7 +22,7 @@ public class GuiScreen : Gui
 
     public virtual void Render(int mouseX, int mouseY, float partialTicks)
     {
-        foreach (var control in controlList)
+        foreach (var control in _controlList)
         {
             control.DrawButton(mc, mouseX, mouseY);
         }
@@ -62,7 +62,7 @@ public class GuiScreen : Gui
     {
         if (button == 0)
         {
-            foreach (var control in controlList)
+            foreach (var control in _controlList)
             {
                 if (control.MousePressed(mc, x, y))
                 {
@@ -96,7 +96,7 @@ public class GuiScreen : Gui
         fontRenderer = mc.fontRenderer;
         Width = width;
         Height = height;
-        controlList.Clear();
+        _controlList.Clear();
         InitGui();
     }
 
