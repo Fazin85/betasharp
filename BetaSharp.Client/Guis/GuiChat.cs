@@ -101,6 +101,24 @@ public class GuiChat : GuiScreen
                     string msg = message.Trim();
                     if (msg.Length > 0)
                     {
+                        // Special test trigger: send 64 random messages locally
+                        if (msg == "!/!")
+                        {
+                            java.util.Random r = new java.util.Random();
+                            for (int i = 0; i < 64; ++i)
+                            {
+                                int len = 8 + (int)(r.nextDouble() * 40);
+                                var sb = new System.Text.StringBuilder();
+                                for (int k = 0; k < len; ++k)
+                                {
+                                    char c = (char)('!' + (int)(r.nextDouble() * 90));
+                                    sb.Append(c);
+                                }
+                                mc?.ingameGUI?.addChatMessage(sb.ToString());
+                            }
+                        }
+                        else
+                        {
                         // Convert '&' color codes to section (§) codes for display in chat
                         string sendMsg = ConvertAmpersandToSection(msg);
                         mc.player.sendChatMessage(sendMsg);
@@ -108,6 +126,7 @@ public class GuiChat : GuiScreen
                         if (history.Count > 100)
                         {
                             history.RemoveAt(0);
+                        }
                         }
                     }
 
@@ -559,6 +578,21 @@ public class GuiChat : GuiScreen
     {
         if (var3 == 0)
         {
+            // Check if clicking the small chat scrollbar
+            int left = 2;
+            int chatWidth = 320;
+            int scrollbarX = left + chatWidth - 5;
+            int scrollbarWidth = 6;
+            int linesToShow = 20;
+            int bottom = height - 48 + 6;
+            int top = height - 48 - (linesToShow - 1) * 9;
+
+            if (var1 >= scrollbarX && var1 <= scrollbarX + scrollbarWidth && var2 >= top && var2 <= bottom)
+            {
+                mc.ingameGUI?.startChatScrollbarDrag(var2, height);
+                return;
+            }
+
             if (mc.ingameGUI.field_933_a != null)
             {
                 if (message.Length > 0 && !message.EndsWith(" "))
@@ -577,6 +611,19 @@ public class GuiChat : GuiScreen
             {
                 base.mouseClicked(var1, var2, var3);
             }
+        }
+    }
+
+    protected override void mouseMovedOrUp(int var1, int var2, int var3)
+    {
+        if (var3 == -1)
+        {
+            mc.ingameGUI?.updateChatScrollbarDrag(var2, height);
+        }
+        else
+        {
+            mc.ingameGUI?.stopChatScrollbarDrag();
+            base.mouseMovedOrUp(var1, var2, var3);
         }
     }
 
