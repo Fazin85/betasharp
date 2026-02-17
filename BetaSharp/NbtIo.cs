@@ -1,58 +1,30 @@
+using System.IO.Compression;
 using BetaSharp.NBT;
-using java.io;
-using java.util.zip;
-using Console = System.Console;
 
 namespace BetaSharp;
 
 public static class NbtIo
 {
-    public static void Write(NBTTagCompound tag, DataOutput output)
+    public static void Write(NBTTagCompound tag, Stream output)
     {
         NBTBase.WriteTag(tag, output);
     }
 
-    public static void WriteCompressed(NBTTagCompound tag, OutputStream output)
+    public static void WriteCompressed(NBTTagCompound tag, Stream output)
     {
-        var stream = new DataOutputStream(new GZIPOutputStream(output));
-
-        try
-        {
-            Write(tag, stream);
-        }
-        catch (Exception exception)
-        {
-            Console.WriteLine($"Failed to write a compressed NBT; {exception.Message}");
-        }
-        finally
-        {
-            stream.close();
-        }
+        using var compressor = new GZipStream(output, CompressionMode.Compress);
+        Write(tag, compressor);
     }
 
-    public static NBTTagCompound Read(InputStream input)
+    public static NBTTagCompound ReadCompressed(Stream input)
     {
-        var stream = new DataInputStream(new GZIPInputStream(input));
-
-        NBTTagCompound tag;
-
-        try
-        {
-            tag = Read((DataInput) stream);
-        }
-        finally
-        {
-            stream.close();
-        }
-
-        return tag;
+        using var stream = new GZipStream(input, CompressionMode.Decompress);
+        return Read(stream);
     }
 
-    public static NBTTagCompound Read(DataInput input)
+    public static NBTTagCompound Read(Stream input)
     {
-        var tag = NBTBase.ReadTag(input);
-
-        if (tag is NBTTagCompound compound)
+        if (NBTBase.ReadTag(input) is NBTTagCompound compound)
         {
             return compound;
         }

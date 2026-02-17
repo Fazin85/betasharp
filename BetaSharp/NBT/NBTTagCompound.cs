@@ -1,5 +1,3 @@
-using java.io;
-
 namespace BetaSharp.NBT;
 
 public sealed class NBTTagCompound : NBTBase
@@ -8,17 +6,17 @@ public sealed class NBTTagCompound : NBTBase
         
     private readonly Dictionary<string, NBTBase> dictionary = [];
 
-    public override void WriteTagContents(DataOutput output)
+    public override void WriteTagContents(Stream output)
     {
         foreach (var value in dictionary.Values)
         {
             WriteTag(value, output);
         }
 
-        output.writeByte(0);
+        output.WriteByte(0);
     }
 
-    public override void ReadTagContents(DataInput input)
+    public override void ReadTagContents(Stream input)
     {
         dictionary.Clear();
 

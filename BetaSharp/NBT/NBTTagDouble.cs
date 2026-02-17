@@ -1,5 +1,4 @@
 using System.Globalization;
-using java.io;
 
 namespace BetaSharp.NBT;
 
@@ -16,14 +15,14 @@ public sealed class NBTTagDouble : NBTBase
         Value = value;
     }
 
-    public override void WriteTagContents(DataOutput output)
+    public override void WriteTagContents(Stream output)
     {
-        output.writeDouble(Value);
+        output.WriteDouble(Value);
     }
 
-    public override void ReadTagContents(DataInput input)
+    public override void ReadTagContents(Stream input)
     {
-        Value = input.readDouble();
+        Value = input.ReadDouble();
     }
 
     public override byte GetTagType()
