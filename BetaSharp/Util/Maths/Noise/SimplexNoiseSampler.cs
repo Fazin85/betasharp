@@ -3,10 +3,10 @@ namespace BetaSharp.Util.Maths.Noise;
 public class SimplexNoiseSampler : java.lang.Object
 {
     private static readonly int[][] grads = [[1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0], [1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1], [0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]];
-    private readonly int[] perm;
-    public double offsetX;
-    public double offsetY;
-    public double offsetZ;
+    private readonly int[] _permutations;
+    private readonly double _xCoord;
+    private readonly double _yCoord;
+    private readonly double _zCoord;
     private static readonly double F2 = 0.5D * (java.lang.Math.sqrt(3.0D) - 1.0D);
     private static readonly double G2 = (3.0D - java.lang.Math.sqrt(3.0D)) / 6.0D;
 
@@ -16,22 +16,22 @@ public class SimplexNoiseSampler : java.lang.Object
 
     public SimplexNoiseSampler(java.util.Random rand)
     {
-        perm = new int[512];
-        offsetX = rand.nextDouble() * 256.0D;
-        offsetY = rand.nextDouble() * 256.0D;
-        offsetZ = rand.nextDouble() * 256.0D;
+        _permutations = new int[512];
+        _xCoord = rand.nextDouble() * 256.0D;
+        _yCoord = rand.nextDouble() * 256.0D;
+        _zCoord = rand.nextDouble() * 256.0D;
 
         // Fill perm with values from 0 to 255 in random order, duplicating the first 256 values to the end of the array
         for (int i = 0; i < 256; i++)
         {
-            perm[i] = i;
+            _permutations[i] = i;
         }
 
         for (int i = 0; i < 256; ++i)
         {
             int j = rand.nextInt(256 - i) + i;
-            (perm[i], perm[j]) = (perm[j], perm[i]);
-            perm[i + 256] = perm[i];
+            (_permutations[i], _permutations[j]) = (_permutations[j], _permutations[i]);
+            _permutations[i + 256] = _permutations[i];
         }
 
     }
@@ -46,17 +46,17 @@ public class SimplexNoiseSampler : java.lang.Object
         return gradient[0] * dx + gradient[1] * dy;
     }
 
-    public void sample(double[] map, double x, double z, int width, int depth, double xFrequency, double zFrequency, double amplitude)
+    public void sample(double[] buffer, double x, double z, int width, int depth, double xFrequency, double zFrequency, double amplitude)
     {
         int counter = 0;
 
         for (int x1 = 0; x1 < width; ++x1)
         {
-            double x2 = (x + x1) * xFrequency + offsetX;
+            double x2 = (x + x1) * xFrequency + _xCoord;
 
             for (int z1 = 0; z1 < depth; ++z1)
             {
-                double z2 = (z + z1) * zFrequency + offsetY;
+                double z2 = (z + z1) * zFrequency + _yCoord;
                 double s = (x2 + z2) * F2;
                 int i = floor(x2 + s);
                 int j = floor(z2 + s);
@@ -84,9 +84,9 @@ public class SimplexNoiseSampler : java.lang.Object
                 double z6 = z4 - 1.0D + 2.0D * G2;
                 int ii = i & 255;
                 int jj = j & 255;
-                int gi0 = perm[ii + perm[jj]] % 12;
-                int gi1 = perm[ii + i1 + perm[jj + j1]] % 12;
-                int gi2 = perm[ii + 1 + perm[jj + 1]] % 12;
+                int gi0 = _permutations[ii + _permutations[jj]] % 12;
+                int gi1 = _permutations[ii + i1 + _permutations[jj + j1]] % 12;
+                int gi2 = _permutations[ii + 1 + _permutations[jj + 1]] % 12;
                 double t0 = 0.5D - x4 * x4 - z4 * z4;
                 double n0;
                 if (t0 < 0.0D)
@@ -123,7 +123,7 @@ public class SimplexNoiseSampler : java.lang.Object
                     n2 = t2 * t2 * dot(grads[gi2], x6, z6);
                 }
 
-                map[++counter] += 70.0D * (n0 + n1 + n2) * amplitude;
+                buffer[counter++] += 70.0D * (n0 + n1 + n2) * amplitude;
             }
         }
     }

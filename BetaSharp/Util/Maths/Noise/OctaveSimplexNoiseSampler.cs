@@ -17,25 +17,25 @@ public class OctaveSimplexNoiseSampler : NoiseSampler
 
     }
 
-    public double[] sample(double[] map, double x, double z, int width, int depth, double xFrequency, double zFrequency, double frequencyScaler)
+    public double[] sample(double[] buffer, double x, double z, int width, int depth, double xFrequency, double zFrequency, double frequencyScaler)
     {
-        return sample(map, x, z, width, depth, xFrequency, zFrequency, frequencyScaler, 0.5D);
+        return sample(buffer, x, z, width, depth, xFrequency, zFrequency, frequencyScaler, 0.5D);
     }
 
-    public double[] sample(double[] map, double x, double z, int width, int depth, double xFrequency, double zFrequency, double frequencyScaler, double amplitudeScaler)
+    public double[] sample(double[] buffer, double x, double z, int width, int depth, double xFrequency, double zFrequency, double frequencyScaler, double amplitudeScaler)
     {
         xFrequency /= 1.5D;
         zFrequency /= 1.5D;
-        if (map != null && map.Length >= width * depth)
+        if (buffer != null && buffer.Length >= width * depth)
         {
-            for (int i = 0; i < map.Length; ++i)
+            for (int i = 0; i < buffer.Length; ++i)
             {
-                map[i] = 0.0D;
+                buffer[i] = 0.0D;
             }
         }
         else
         {
-            map = new double[width * depth];
+            buffer = new double[width * depth];
         }
 
         double amplitudeDivisor = 1.0D;
@@ -43,7 +43,7 @@ public class OctaveSimplexNoiseSampler : NoiseSampler
 
         for (int i = 0; i < _octaveCount; ++i)
         {
-            _octaves[i].sample(map,
+            _octaves[i].sample(buffer,
                 x, z, width, depth,
                 xFrequency * frequencyMultiplier,
                 zFrequency * frequencyMultiplier,
@@ -52,6 +52,6 @@ public class OctaveSimplexNoiseSampler : NoiseSampler
             amplitudeDivisor *= amplitudeScaler;
         }
 
-        return map;
+        return buffer;
     }
 }

@@ -490,7 +490,7 @@ public class OverworldChunkGenerator : ChunkSource
         }
 
         var11 = 0.5D;
-        var13 = (int)((forestNoise.func_806_a(var4 * var11, var5 * var11) / 8.0D + random.nextDouble() * 4.0D + 4.0D) / 3.0D);
+        var13 = (int)((forestNoise.generateNoise(var4 * var11, var5 * var11) / 8.0D + random.nextDouble() * 4.0D + 4.0D) / 3.0D);
         var14 = 0;
         if (random.nextInt(10) == 0)
         {

@@ -432,7 +432,7 @@ public class SkyChunkGenerator : ChunkSource
         }
 
         var11 = 0.5D;
-        var13 = (int)((field_28094_c.func_806_a(var4 * var11, var5 * var11) / 8.0D + rand.nextDouble() * 4.0D + 4.0D) / 3.0D);
+        var13 = (int)((field_28094_c.generateNoise(var4 * var11, var5 * var11) / 8.0D + rand.nextDouble() * 4.0D + 4.0D) / 3.0D);
         var14 = 0;
         if (rand.nextInt(10) == 0)
         {
