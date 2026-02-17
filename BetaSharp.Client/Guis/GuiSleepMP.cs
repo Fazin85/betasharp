@@ -28,13 +28,13 @@ public class GuiSleepMP : GuiChat
         }
         else if (eventKey == 28)
         {
-            string trimmed = message.Trim();
+            string trimmed = _message.Trim();
             if (trimmed.Length > 0)
             {
                 mc.player.sendChatMessage(trimmed);
             }
 
-            message = "";
+            _message = "";
         }
         else
         {
