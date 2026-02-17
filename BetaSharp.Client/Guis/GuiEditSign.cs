@@ -36,7 +36,7 @@ public class GuiEditSign : GuiScreen
         Keyboard.enableRepeatEvents(false);
         if (mc.world.isRemote)
         {
-            mc.getSendQueue().addToSendQueue(new UpdateSignPacket(_entitySign.x, _entitySign.y, _entitySign.z, _entitySign.texts));
+            mc.getSendQueue().addToSendQueue(new UpdateSignPacket(_entitySign.x, _entitySign.y, _entitySign.z, _entitySign.Texts));
         }
 
     }
@@ -72,14 +72,14 @@ public class GuiEditSign : GuiScreen
             _editLine = _editLine + 1 & 3;
         }
 
-        if (eventKey == 14 && _entitySign.texts[_editLine].Length > 0)
+        if (eventKey == 14 && _entitySign.Texts[_editLine].Length > 0)
         {
-            _entitySign.texts[_editLine] = _entitySign.texts[_editLine].Substring(0, _entitySign.texts[_editLine].Length - 1);
+            _entitySign.Texts[_editLine] = _entitySign.Texts[_editLine].Substring(0, _entitySign.Texts[_editLine].Length - 1);
         }
 
-        if (_allowedCharacters.IndexOf(eventChar) >= 0 && _entitySign.texts[_editLine].Length < 15)
+        if (_allowedCharacters.IndexOf(eventChar) >= 0 && _entitySign.Texts[_editLine].Length < 15)
         {
-            _entitySign.texts[_editLine] = _entitySign.texts[_editLine] + eventChar;
+            _entitySign.Texts[_editLine] = _entitySign.Texts[_editLine] + eventChar;
         }
 
     }
@@ -125,11 +125,11 @@ public class GuiEditSign : GuiScreen
 
         if (_updateCounter / 6 % 2 == 0)
         {
-            _entitySign.currentRow = _editLine;
+            _entitySign.CurrentRow = _editLine;
         }
 
-        BlockEntityRenderer.instance.renderTileEntityAt(_entitySign, -0.5D, -0.75D, -0.5D, 0.0F);
-        _entitySign.currentRow = -1;
+        BlockEntityRenderer.Instance.RenderTileEntityAt(_entitySign, -0.5D, -0.75D, -0.5D, 0.0F);
+        _entitySign.CurrentRow = -1;
         GLManager.GL.PopMatrix();
         base.Render(mouseX, mouseY, partialTicks);
     }
