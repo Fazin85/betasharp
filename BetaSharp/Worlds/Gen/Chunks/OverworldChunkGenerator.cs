@@ -51,7 +51,7 @@ public class OverworldChunkGenerator : ChunkSource
     /// <summary>
     /// Generate the base terrain
     /// </summary>
-    /// <param name="chunkX">X-Coordinmate of this chunk</param>
+    /// <param name="chunkX">X-Coordinate of this chunk</param>
     /// <param name="chunkZ">Z-Coordinate of this chunk</param>
     /// <param name="blocks">1D Array of Blocks within this chunk</param>
     /// <param name="biomes">1D Array of Biome values within this chunk</param>
