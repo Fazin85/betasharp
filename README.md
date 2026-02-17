@@ -50,17 +50,28 @@ sudo dnf install dotnet-sdk-10.0 dotnet-runtime-10.0
 ```
 
 ### Building
-Clone the source code and build it.
+Clone the source code.
 ```bash
 git clone https://github.com/Fazin85/betasharp
 cd betasharp
-dotnet build -c ClientDebug
 ```
 
-The compiled binary can then be run by running the desired configuration.
+#### Client
+If you'd like to use the client, run the following command.
 ```bash
+cd BetaSharp.Client
 dotnet run -c ClientDebug
 ```
+This automatically builds a Debug Binary of BetaSharp. Replace `ClientDebug` with `ClientRelease` if you'd like a faster, but less debuggable, binary.
+
+#### Server
+If you'd like to use the server, instead of the client, the same rough structure applies, just with `Client` swapped out with `Server`.
+```bash
+cd BetaSharp.Server
+dotnet run -c ServerDebug
+```
+
+If you're not looking to Debug anything and want significantly improved performance, replace `ClientDebug` in all the previous commands with `ClientRelease`
 ## License
 
 This project is shared openly for collaboration. All code is derivative of Minecraft and subject to Mojang's rights.
