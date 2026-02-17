@@ -60,17 +60,17 @@ cd betasharp
 If you'd like to use the client, run the following command.
 ```bash
 cd BetaSharp.Client
-dotnet run -c ClientDebug
+dotnet run -c Debug
 ```
-This automatically builds a Debug Binary of BetaSharp. Replace `ClientDebug` with `ClientRelease` if you'd like a more performant but less debuggable binary.
+Use `Release` instead of `Debug` if you'd like a more performant but less debuggable binary.
 
 #### Server
-If you'd like to run a server, instead of a client, use the same command, just by swapping `Client` out with `Server`, e.g.
+If you'd like to run a server, instead of a client, move over into the `BetaSharp.Server` directory, then build from there.
 ```bash
 cd BetaSharp.Server
-dotnet run -c ServerDebug
+dotnet run -c Debug
 ```
-For a more performant but less debuggable build, replace `ServerDebug` with `ServerRelease`.
+Use `Release` instead of `Debug` if you'd like a more performant but less debuggable binary.
 
 ## License
 
