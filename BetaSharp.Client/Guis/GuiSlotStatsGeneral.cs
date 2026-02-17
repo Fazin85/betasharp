@@ -14,12 +14,12 @@ public class GuiSlotStatsGeneral : GuiSlot
         func_27258_a(false);
     }
 
-    public override int getSize()
+    public override int GetSize()
     {
         return Stats.Stats.GENERAL_STATS.size();
     }
 
-    protected override void elementClicked(int var1, bool var2)
+    protected override void ElementClicked(int var1, bool var2)
     {
     }
 
@@ -30,7 +30,7 @@ public class GuiSlotStatsGeneral : GuiSlot
 
     protected override int getContentHeight()
     {
-        return getSize() * 10;
+        return GetSize() * 10;
     }
 
     protected override void drawBackground()

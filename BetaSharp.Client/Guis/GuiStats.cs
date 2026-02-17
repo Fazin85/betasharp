@@ -50,12 +50,12 @@ public class GuiStats : GuiScreen
         _controlList.Add(blocksButton);
         GuiButton itemsButton = new(BUTTON_ITEMS, Width / 2 + 62, Height - 52, 100, 20, translations.translateKey("stat.itemsButton"));
         _controlList.Add(itemsButton);
-        if (slotBlock.getSize() == 0)
+        if (slotBlock.GetSize() == 0)
         {
             blocksButton.Enabled = false;
         }
 
-        if (slotItem.getSize() == 0)
+        if (slotItem.GetSize() == 0)
         {
             itemsButton.Enabled = false;
         }

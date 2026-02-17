@@ -170,7 +170,7 @@ public class GuiSelectWorld : GuiScreen
         base.Render(mouseX, mouseY, partialTicks);
     }
 
-    public static List getSize(GuiSelectWorld screen)
+    public static List GetSize(GuiSelectWorld screen)
     {
         return screen.saveList;
     }

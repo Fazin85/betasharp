@@ -5,42 +5,42 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiTexturePacks : GuiScreen
 {
-    private const int BUTTON_OPEN_FOLDER = 5;
-    private const int BUTTON_DONE = 6;
+    private const int ButtonOpenFolder = 5;
+    private const int ButtonDone = 6;
 
-    protected GuiScreen parentScreen;
-    private int refreshTimer = -1;
-    private string texturePackFolder = "";
-    private GuiTexturePackSlot guiTexturePackSlot;
+    protected GuiScreen _parentScreen;
+    private int _refreshTimer = -1;
+    private string _texturePackFolder = "";
+    private GuiTexturePackSlot _guiTexturePackSlot;
 
     public GuiTexturePacks(GuiScreen parent)
     {
-        parentScreen = parent;
+        _parentScreen = parent;
     }
 
     public override void InitGui()
     {
         TranslationStorage translations = TranslationStorage.getInstance();
-        _controlList.Add(new GuiSmallButton(BUTTON_OPEN_FOLDER, Width / 2 - 154, Height - 48, translations.translateKey("texturePack.openFolder")));
-        _controlList.Add(new GuiSmallButton(BUTTON_DONE, Width / 2 + 4, Height - 48, translations.translateKey("gui.done")));
+        _controlList.Add(new GuiSmallButton(ButtonOpenFolder, Width / 2 - 154, Height - 48, translations.translateKey("texturePack.openFolder")));
+        _controlList.Add(new GuiSmallButton(ButtonDone, Width / 2 + 4, Height - 48, translations.translateKey("gui.done")));
         mc.texturePackList.updateAvaliableTexturePacks();
-        texturePackFolder = new java.io.File(Minecraft.getMinecraftDir(), "texturepacks").getAbsolutePath();
-        guiTexturePackSlot = new GuiTexturePackSlot(this);
-        guiTexturePackSlot.RegisterScrollButtons(_controlList, 7, 8);
+        _texturePackFolder = new java.io.File(Minecraft.getMinecraftDir(), "texturepacks").getAbsolutePath();
+        _guiTexturePackSlot = new GuiTexturePackSlot(this);
+        _guiTexturePackSlot.RegisterScrollButtons(_controlList, 7, 8);
     }
 
-    protected override void ActionPerformed(GuiButton var1)
+    protected override void ActionPerformed(GuiButton btn)
     {
-        if (var1.Enabled)
+        if (btn.Enabled)
         {
-            switch (var1.Id)
+            switch (btn.Id)
             {
-                case BUTTON_OPEN_FOLDER:
+                case ButtonOpenFolder:
                     try
                     {
                         Process.Start(new ProcessStartInfo
                         {
-                            FileName = "file://" + texturePackFolder,
+                            FileName = "file://" + _texturePackFolder,
                             UseShellExecute = true
                         });
                     }
@@ -49,12 +49,12 @@ public class GuiTexturePacks : GuiScreen
                         Console.WriteLine($"Failed to open URL: {ex.Message}");
                     }
                     break;
-                case BUTTON_DONE:
+                case ButtonDone:
                     mc.textureManager.reload();
-                    mc.displayGuiScreen(parentScreen);
+                    mc.displayGuiScreen(_parentScreen);
                     break;
                 default:
-                    guiTexturePackSlot.actionPerformed(var1);
+                    _guiTexturePackSlot.actionPerformed(btn);
                     break;
             }
 
@@ -73,11 +73,11 @@ public class GuiTexturePacks : GuiScreen
 
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        guiTexturePackSlot.drawScreen(mouseX, mouseY, partialTicks);
-        if (refreshTimer <= 0)
+        _guiTexturePackSlot.drawScreen(mouseX, mouseY, partialTicks);
+        if (_refreshTimer <= 0)
         {
             mc.texturePackList.updateAvaliableTexturePacks();
-            refreshTimer += 20;
+            _refreshTimer += 20;
         }
 
         TranslationStorage translations = TranslationStorage.getInstance();
@@ -89,66 +89,6 @@ public class GuiTexturePacks : GuiScreen
     public override void UpdateScreen()
     {
         base.UpdateScreen();
-        --refreshTimer;
-    }
-
-    public static Minecraft func_22124_a(GuiTexturePacks var0)
-    {
-        return var0.mc;
-    }
-
-    public static Minecraft func_22126_b(GuiTexturePacks var0)
-    {
-        return var0.mc;
-    }
-
-    public static Minecraft func_22119_c(GuiTexturePacks var0)
-    {
-        return var0.mc;
-    }
-
-    public static Minecraft func_22122_d(GuiTexturePacks var0)
-    {
-        return var0.mc;
-    }
-
-    public static Minecraft func_22117_e(GuiTexturePacks var0)
-    {
-        return var0.mc;
-    }
-
-    public static Minecraft func_22118_f(GuiTexturePacks var0)
-    {
-        return var0.mc;
-    }
-
-    public static Minecraft func_22116_g(GuiTexturePacks var0)
-    {
-        return var0.mc;
-    }
-
-    public static Minecraft func_22121_h(GuiTexturePacks var0)
-    {
-        return var0.mc;
-    }
-
-    public static Minecraft func_22123_i(GuiTexturePacks var0)
-    {
-        return var0.mc;
-    }
-
-    public static TextRenderer func_22127_j(GuiTexturePacks var0)
-    {
-        return var0.fontRenderer;
-    }
-
-    public static TextRenderer func_22120_k(GuiTexturePacks var0)
-    {
-        return var0.fontRenderer;
-    }
-
-    public static TextRenderer func_22125_l(GuiTexturePacks var0)
-    {
-        return var0.fontRenderer;
+        --_refreshTimer;
     }
 }

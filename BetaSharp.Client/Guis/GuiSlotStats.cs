@@ -26,7 +26,7 @@ public abstract class GuiSlotStats : GuiSlot
         func_27259_a(true, 20);
     }
 
-    protected override void elementClicked(int var1, bool var2)
+    protected override void ElementClicked(int var1, bool var2)
     {
     }
 
@@ -121,7 +121,7 @@ public abstract class GuiSlotStats : GuiSlot
 
     }
 
-    public override int getSize()
+    public override int GetSize()
     {
         return field_27273_c.size();
     }
