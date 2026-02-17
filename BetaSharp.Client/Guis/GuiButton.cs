@@ -21,7 +21,7 @@ public class GuiButton : Gui
     public bool Enabled;
     public bool Visible;
 
-    public GuiButton(int _id, int xPos, int yPos, string displayStr) : this(_id, xPos, yPos, 200, 20, displayStr)
+    public GuiButton(int id, int xPos, int yPos, string displayStr) : this(id, xPos, yPos, 200, 20, displayStr)
     {
 
     }

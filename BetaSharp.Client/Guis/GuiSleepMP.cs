@@ -6,13 +6,13 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiSleepMP : GuiChat
 {
-    private const int BUTTON_STOP_SLEEP = 1;
+    private const int ButtonStopSleep = 1;
 
     public override void InitGui()
     {
         Keyboard.enableRepeatEvents(true);
         TranslationStorage translations = TranslationStorage.getInstance();
-        _controlList.Add(new GuiButton(BUTTON_STOP_SLEEP, Width / 2 - 100, Height - 40, translations.translateKey("multiplayer.stopSleeping")));
+        _controlList.Add(new GuiButton(ButtonStopSleep, Width / 2 - 100, Height - 40, translations.translateKey("multiplayer.stopSleeping")));
     }
 
     public override void OnGuiClosed()
@@ -43,16 +43,16 @@ public class GuiSleepMP : GuiChat
 
     }
 
-    public override void Render(int var1, int var2, float var3)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        base.Render(var1, var2, var3);
+        base.Render(mouseX, mouseY, partialTicks);
     }
 
     protected override void ActionPerformed(GuiButton button)
     {
         switch (button.Id)
         {
-            case BUTTON_STOP_SLEEP:
+            case ButtonStopSleep:
                 sendStopSleepingCommand();
                 break;
             default:

@@ -10,10 +10,10 @@ public class GuiSlider : GuiButton
     public bool dragging = false;
     private readonly EnumOptions _idFloat = null;
 
-    public GuiSlider(int var1, int var2, int var3, EnumOptions var4, string var5, float var6) : base(var1, var2, var3, 150, 20, var5)
+    public GuiSlider(int id, int x, int y, EnumOptions option, string displayString, float value) : base(id, x, y, 150, 20, displayString)
     {
-        _idFloat = var4;
-        sliderValue = var6;
+        _idFloat = option;
+        sliderValue = value;
     }
 
     protected override int GetHoverState(bool var1)
@@ -21,13 +21,13 @@ public class GuiSlider : GuiButton
         return 0;
     }
 
-    protected override void MouseDragged(Minecraft var1, int var2, int var3)
+    protected override void MouseDragged(Minecraft mc, int mouseX, int mouseY)
     {
         if (Enabled)
         {
             if (dragging)
             {
-                sliderValue = (var2 - (XPosition + 4)) / (float)(_width - 8);
+                sliderValue = (mouseX - (XPosition + 4)) / (float)(_width - 8);
                 if (sliderValue < 0.0F)
                 {
                     sliderValue = 0.0F;
@@ -38,8 +38,8 @@ public class GuiSlider : GuiButton
                     sliderValue = 1.0F;
                 }
 
-                var1.options.setOptionFloatValue(_idFloat, sliderValue);
-                DisplayString = var1.options.getKeyBinding(_idFloat);
+                mc.options.setOptionFloatValue(_idFloat, sliderValue);
+                DisplayString = mc.options.getKeyBinding(_idFloat);
             }
 
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
@@ -48,11 +48,11 @@ public class GuiSlider : GuiButton
         }
     }
 
-    public override bool MousePressed(Minecraft var1, int var2, int var3)
+    public override bool MousePressed(Minecraft mc, int mouseX, int mouseY)
     {
-        if (base.MousePressed(var1, var2, var3))
+        if (base.MousePressed(mc, mouseX, mouseY))
         {
-            sliderValue = (var2 - (XPosition + 4)) / (float)(_width - 8);
+            sliderValue = (mouseX - (XPosition + 4)) / (float)(_width - 8);
             if (sliderValue < 0.0F)
             {
                 sliderValue = 0.0F;
@@ -63,8 +63,8 @@ public class GuiSlider : GuiButton
                 sliderValue = 1.0F;
             }
 
-            var1.options.setOptionFloatValue(_idFloat, sliderValue);
-            DisplayString = var1.options.getKeyBinding(_idFloat);
+            mc.options.setOptionFloatValue(_idFloat, sliderValue);
+            DisplayString = mc.options.getKeyBinding(_idFloat);
             dragging = true;
             return true;
         }
@@ -74,7 +74,7 @@ public class GuiSlider : GuiButton
         }
     }
 
-    public override void MouseReleased(int var1, int var2)
+    public override void MouseReleased(int x, int y)
     {
         dragging = false;
     }
