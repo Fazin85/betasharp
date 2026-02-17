@@ -36,9 +36,9 @@ public class GuiRenameWorld : GuiScreen
         string currentWorldName = worldProperties.LevelName;
         nameInputField = new GuiTextField(this, FontRenderer, Width / 2 - 100, 60, 200, 20, currentWorldName)
         {
-            isFocused = true
+            IsFocused = true
         };
-        nameInputField.setMaxStringLength(32);
+        nameInputField.SetMaxStringLength(32);
     }
 
     public override void OnGuiClosed()
@@ -57,7 +57,7 @@ public class GuiRenameWorld : GuiScreen
                     break;
                 case ButtonRename:
                     WorldStorageSource worldStorage = mc.getSaveLoader();
-                    worldStorage.rename(worldFolderName, nameInputField.getText().Trim());
+                    worldStorage.rename(worldFolderName, nameInputField.GetText().Trim());
                     mc.displayGuiScreen(parentScreen);
                     break;
             }
@@ -67,7 +67,7 @@ public class GuiRenameWorld : GuiScreen
     protected override void KeyTyped(char eventChar, int eventKey)
     {
         nameInputField.textboxKeyTyped(eventChar, eventKey);
-        _controlList[0].Enabled = nameInputField.getText().Trim().Length > 0;
+        _controlList[0].Enabled = nameInputField.GetText().Trim().Length > 0;
         if (eventChar == 13)
         {
             ActionPerformed(_controlList[0]);
@@ -78,7 +78,7 @@ public class GuiRenameWorld : GuiScreen
     protected override void MouseClicked(int x, int y, int button)
     {
         base.MouseClicked(x, y, button);
-        nameInputField.mouseClicked(x, y, button);
+        nameInputField.MouseClicked(x, y, button);
     }
 
     public override void Render(int mouseX, int mouseY, float partialTicks)
@@ -87,7 +87,7 @@ public class GuiRenameWorld : GuiScreen
         DrawDefaultBackground();
         DrawCenteredString(FontRenderer, translations.translateKey("selectWorld.renameTitle"), Width / 2, Height / 4 - 60 + 20, 0x00FFFFFF);
         DrawString(FontRenderer, translations.translateKey("selectWorld.enterName"), Width / 2 - 100, 47, 0xA0A0A0);
-        nameInputField.drawTextBox();
+        nameInputField.DrawTextBox();
         base.Render(mouseX, mouseY, partialTicks);
     }
 }

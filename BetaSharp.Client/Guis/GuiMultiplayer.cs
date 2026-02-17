@@ -31,9 +31,9 @@ public class GuiMultiplayer : GuiScreen
         _controlList[0].Enabled = lastServerAddress.Length > 0;
         _serverAddressInputField = new GuiTextField(this, FontRenderer, Width / 2 - 100, Height / 4 - 10 + 50 + 18, 200, 20, lastServerAddress)
         {
-            isFocused = true
+            IsFocused = true
         };
-        _serverAddressInputField.setMaxStringLength(128);
+        _serverAddressInputField.SetMaxStringLength(128);
     }
 
     public override void OnGuiClosed()
@@ -52,7 +52,7 @@ public class GuiMultiplayer : GuiScreen
                     break;
                 case ButtonConnect:
                     {
-                        string serverAddress = _serverAddressInputField.getText().Trim();
+                        string serverAddress = _serverAddressInputField.GetText().Trim();
                         mc.options.lastServer = serverAddress.Replace(":", "_");
                         mc.options.saveOptions();
                         string[] addressParts = serverAddress.Split(":");
@@ -103,13 +103,13 @@ public class GuiMultiplayer : GuiScreen
             ActionPerformed(_controlList[0]);
         }
 
-        _controlList[0].Enabled = _serverAddressInputField.getText().Length > 0;
+        _controlList[0].Enabled = _serverAddressInputField.GetText().Length > 0;
     }
 
     protected override void MouseClicked(int x, int y, int button)
     {
         base.MouseClicked(x, y, button);
-        _serverAddressInputField.mouseClicked(x, y, button);
+        _serverAddressInputField.MouseClicked(x, y, button);
     }
 
     public override void Render(int mouseX, int mouseY, float partialTicks)
@@ -126,7 +126,7 @@ public class GuiMultiplayer : GuiScreen
         DrawString(FontRenderer, translations.translateKey("multiplayer.info2"), centerX - 140, centerY - 60 + 60 + 9, 0xA0A0A0);
         DrawString(FontRenderer, translations.translateKey("multiplayer.ipinfo"), centerX - 140, centerY - 60 + 60 + 36, 0xA0A0A0);
 
-        _serverAddressInputField.drawTextBox();
+        _serverAddressInputField.DrawTextBox();
         base.Render(mouseX, mouseY, partialTicks);
     }
 }
