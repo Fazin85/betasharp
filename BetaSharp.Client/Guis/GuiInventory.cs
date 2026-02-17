@@ -22,7 +22,7 @@ public class GuiInventory : GuiContainer
         controlList.Clear();
     }
 
-    protected override void drawGuiContainerForegroundLayer()
+    protected override void DrawGuiContainerForegroundLayer()
     {
         fontRenderer.drawString("Crafting", 86, 16, 4210752);
     }
@@ -34,14 +34,14 @@ public class GuiInventory : GuiContainer
         ySize_lo = var2;
     }
 
-    protected override void drawGuiContainerBackgroundLayer(float var1)
+    protected override void DrawGuiContainerBackgroundLayer(float var1)
     {
         int var2 = mc.textureManager.getTextureId("/gui/inventory.png");
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.bindTexture(var2);
-        int var3 = (Width - xSize) / 2;
-        int var4 = (Height - ySize) / 2;
-        DrawTexturedModalRect(var3, var4, 0, 0, xSize, ySize);
+        int var3 = (Width - _xSize) / 2;
+        int var4 = (Height - _ySize) / 2;
+        DrawTexturedModalRect(var3, var4, 0, 0, _xSize, _ySize);
         GLManager.GL.Enable(GLEnum.RescaleNormal);
         GLManager.GL.Enable(GLEnum.ColorMaterial);
         GLManager.GL.PushMatrix();

@@ -1164,7 +1164,7 @@ public partial class Minecraft : java.lang.Object, Runnable
             currentScreen.HandleInput();
             if (currentScreen != null)
             {
-                currentScreen.particlesGui.updateParticles();
+                currentScreen.ParticlesGui.updateParticles();
                 currentScreen.UpdateScreen();
             }
         }

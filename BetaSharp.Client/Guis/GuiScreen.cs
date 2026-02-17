@@ -16,22 +16,21 @@ public class GuiScreen : Gui
     protected List<GuiButton> controlList = new();
     public bool AllowUserInput = false;
     public TextRenderer fontRenderer;
-    public GuiParticle particlesGui;
-    private GuiButton selectedButton = null;
+    public GuiParticle ParticlesGui;
+    private GuiButton SelectedButton = null;
 
-    public virtual void Render(int var1, int var2, float var3)
+    public virtual void Render(int mouseX, int mouseY, float partialTicks)
     {
-        for (int var4 = 0; var4 < controlList.Count; ++var4)
+        foreach (var control in controlList)
         {
-            GuiButton var5 = controlList[var4];
-            var5.DrawButton(mc, var1, var2);
+            control.DrawButton(mc, mouseX, mouseY);
         }
 
     }
 
     protected virtual void KeyTyped(char eventChar, int eventKey)
     {
-        if (eventKey == 1)
+        if (eventKey == Keyboard.KEY_ESCAPE)
         {
             mc.displayGuiScreen(null);
             mc.setIngameFocus();
@@ -57,30 +56,29 @@ public class GuiScreen : Gui
         return null;
     }
 
-    protected virtual void MouseClicked(int var1, int var2, int var3)
+    protected virtual void MouseClicked(int x, int y, int button)
     {
-        if (var3 == 0)
+        if (button == 0)
         {
-            for (int var4 = 0; var4 < controlList.Count; ++var4)
+            foreach (var control in controlList)
             {
-                GuiButton var5 = controlList[var4];
-                if (var5.MousePressed(mc, var1, var2))
+                if (control.MousePressed(mc, x, y))
                 {
-                    selectedButton = var5;
+                    SelectedButton = control;
                     mc.sndManager.playSoundFX("random.click", 1.0F, 1.0F);
-                    ActionPerformed(var5);
+                    ActionPerformed(control);
                 }
             }
         }
 
     }
 
-    protected virtual void MouseMovedOrUp(int var1, int var2, int var3)
+    protected virtual void MouseMovedOrUp(int x, int y, int button)
     {
-        if (selectedButton != null && var3 == 0)
+        if (SelectedButton != null && button == 0)
         {
-            selectedButton.MouseReleased(var1, var2);
-            selectedButton = null;
+            SelectedButton.MouseReleased(x, y);
+            SelectedButton = null;
         }
 
     }
@@ -89,13 +87,13 @@ public class GuiScreen : Gui
     {
     }
 
-    public void SetWorldAndResolution(Minecraft var1, int var2, int var3)
+    public void SetWorldAndResolution(Minecraft mc, int width, int height)
     {
-        particlesGui = new GuiParticle(var1);
-        mc = var1;
-        fontRenderer = var1.fontRenderer;
-        Width = var2;
-        Height = var3;
+        ParticlesGui = new GuiParticle(mc);
+        this.mc = mc;
+        fontRenderer = mc.fontRenderer;
+        Width = width;
+        Height = height;
         controlList.Clear();
         InitGui();
     }
@@ -120,21 +118,16 @@ public class GuiScreen : Gui
 
     public void HandleMouseInput()
     {
-        int var1;
-        int var2;
+        int x = Mouse.getEventX() * Width / mc.displayWidth;
+        int y = Height - Mouse.getEventY() * Height / mc.displayHeight - 1;
         if (Mouse.getEventButtonState())
         {
-            var1 = Mouse.getEventX() * Width / mc.displayWidth;
-            var2 = Height - Mouse.getEventY() * Height / mc.displayHeight - 1;
-            MouseClicked(var1, var2, Mouse.getEventButton());
+            MouseClicked(x, y, Mouse.getEventButton());
         }
         else
         {
-            var1 = Mouse.getEventX() * Width / mc.displayWidth;
-            var2 = Height - Mouse.getEventY() * Height / mc.displayHeight - 1;
-            MouseMovedOrUp(var1, var2, Mouse.getEventButton());
+            MouseMovedOrUp(x, y, Mouse.getEventButton());
         }
-
     }
 
     public void HandleKeyboardInput()
@@ -182,29 +175,25 @@ public class GuiScreen : Gui
     {
         GLManager.GL.Disable(EnableCap.Lighting);
         GLManager.GL.Disable(EnableCap.Fog);
-        Tessellator var2 = Tessellator.instance;
+
+        Tessellator tess = Tessellator.instance;
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/gui/background.png"));
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        float var3 = 32.0F;
-        var2.startDrawingQuads();
-        var2.setColorOpaque_I(4210752);
-        var2.addVertexWithUV(0.0D, Height, 0.0D, 0.0D, (double)(Height / var3 + var1));
-        var2.addVertexWithUV(Width, Height, 0.0D, (double)(Width / var3), (double)(Height / var3 + var1));
-        var2.addVertexWithUV(Width, 0.0D, 0.0D, (double)(Width / var3), 0 + var1);
-        var2.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0 + var1);
-        var2.draw();
+
+        float scale = 32.0F;
+        tess.startDrawingQuads();
+        tess.setColorOpaque_I(0x404040);
+
+        tess.addVertexWithUV(0.0D, Height, 0.0D, 0.0D, (double)(Height / scale + var1));
+        tess.addVertexWithUV(Width, Height, 0.0D, (double)(Width / scale), (double)(Height / scale + var1));
+        tess.addVertexWithUV(Width, 0.0D, 0.0D, (double)(Width / scale), 0 + var1);
+        tess.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0 + var1);
+        tess.draw();
     }
 
-    public virtual bool DoesGuiPauseGame()
-    {
-        return true;
-    }
+    public virtual bool DoesGuiPauseGame() => true;
 
-    public virtual void DeleteWorld(bool var1, int var2)
-    {
-    }
+    public virtual void DeleteWorld(bool var1, int var2) { }
 
-    public virtual void SelectNextField()
-    {
-    }
+    public virtual void SelectNextField() { }
 }
