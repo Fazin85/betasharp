@@ -59,7 +59,9 @@ public class OverworldChunkGenerator : ChunkSource
     /// <returns>The interpolated result.</returns>
     public void buildTerrain(int chunkX, int chunkZ, byte[] blocks, Biome[] biomes, double[] temperatures)
     {
-        const byte horiScale = 4; // ChunkWidth / 4
+        // TODO: Replace some of these with global-constants
+        //const byte vertScale = 8; // ChunkHeight / 8 = 16 (?)
+        const byte horiScale = 4; // ChunkWidth / 4 = 4
         const byte halfChunkHeight = 64;
         const int  xMax = horiScale + 1; // ChunkWidth / 4 + 1
         const byte yMax = 17; // ChunkHeight / 8 + 1
@@ -73,6 +75,7 @@ public class OverworldChunkGenerator : ChunkSource
         {
             for (int sampleZ = 0; sampleZ < horiScale; ++sampleZ)
             {
+                // Chunk Height / 8 = 16
                 for (int sampleY = 0; sampleY < 16; ++sampleY)
                 {
                     const double verticalLerpStep = 0.125D;
