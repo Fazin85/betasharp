@@ -49,6 +49,12 @@ sudo apt-get install -y dotnet-sdk-1.0 dotnet-runtime-10.0
 sudo dnf install dotnet-sdk-10.0 dotnet-runtime-10.0
 ```
 
+#### Linux (Gentoo)
+``` bash
+sudo emerge -av "=dev-dotnet/dotnet-sdk-bin-10.0.101" "=dev-dotnet/dotnet-runtime-nugets-10.0
+.1"
+```
+
 ### Building
 Clone the source code.
 ```bash
