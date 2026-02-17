@@ -92,12 +92,12 @@ public class Block : java.lang.Object
     public static readonly Block Farmland = (new BlockFarmland(60)).setHardness(0.6F).setSoundGroup(SoundGravelFootstep).setBlockName("farmland");
     public static readonly Block Furnace = (new BlockFurnace(61, false)).setHardness(3.5F).setSoundGroup(SoundStoneFootstep).setBlockName("furnace").ignoreMetaUpdates();
     public static readonly Block LitFurnace = (new BlockFurnace(62, true)).setHardness(3.5F).setSoundGroup(SoundStoneFootstep).setLuminance(14.0F / 16.0F).setBlockName("furnace").ignoreMetaUpdates();
-    public static readonly Block Sign = (new BlockSign(63, BlockEntitySign.Class, true)).setHardness(1.0F).setSoundGroup(SoundWoodFootstep).setBlockName("sign").disableStats().ignoreMetaUpdates();
+    public static readonly Block Sign = (new BlockSign(63, typeof(BlockEntitySign), true)).setHardness(1.0F).setSoundGroup(SoundWoodFootstep).setBlockName("sign").disableStats().ignoreMetaUpdates();
     public static readonly Block Door = (new BlockDoor(64, Material.Wood)).setHardness(3.0F).setSoundGroup(SoundWoodFootstep).setBlockName("doorWood").disableStats().ignoreMetaUpdates();
     public static readonly Block Ladder = (new BlockLadder(65, 83)).setHardness(0.4F).setSoundGroup(SoundWoodFootstep).setBlockName("ladder").ignoreMetaUpdates();
     public static readonly Block Rail = (new BlockRail(66, 128, false)).setHardness(0.7F).setSoundGroup(SoundMetalFootstep).setBlockName("rail").ignoreMetaUpdates();
     public static readonly Block CobblestoneStairs = (new BlockStairs(67, Cobblestone)).setBlockName("stairsStone").ignoreMetaUpdates();
-    public static readonly Block WallSign = (new BlockSign(68, BlockEntitySign.Class, false)).setHardness(1.0F).setSoundGroup(SoundWoodFootstep).setBlockName("sign").disableStats().ignoreMetaUpdates();
+    public static readonly Block WallSign = (new BlockSign(68, typeof(BlockEntitySign), false)).setHardness(1.0F).setSoundGroup(SoundWoodFootstep).setBlockName("sign").disableStats().ignoreMetaUpdates();
     public static readonly Block Lever = (new BlockLever(69, 96)).setHardness(0.5F).setSoundGroup(SoundWoodFootstep).setBlockName("lever").ignoreMetaUpdates();
     public static readonly Block StonePressurePlate = (new BlockPressurePlate(70, Stone.textureId, PressurePlateActiviationRule.MOBS, Material.Stone)).setHardness(0.5F).setSoundGroup(SoundStoneFootstep).setBlockName("pressurePlate").ignoreMetaUpdates();
     public static readonly Block IronDoor = (new BlockDoor(71, Material.Metal)).setHardness(5.0F).setSoundGroup(SoundMetalFootstep).setBlockName("doorIron").disableStats().ignoreMetaUpdates();

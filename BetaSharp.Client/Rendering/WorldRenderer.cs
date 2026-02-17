@@ -203,7 +203,7 @@ public class WorldRenderer : IWorldAccess
         }
         else
         {
-            BlockEntityRenderer.instance.cacheActiveRenderInfo(world, renderEngine, mc.fontRenderer, mc.camera, var3);
+            BlockEntityRenderer.Instance.CacheActiveRenderInfo(world, renderEngine, mc.fontRenderer, mc.camera, var3);
             EntityRenderDispatcher.instance.cacheActiveRenderInfo(world, renderEngine, mc.fontRenderer, mc.camera, mc.options, var3);
             countEntitiesTotal = 0;
             countEntitiesRendered = 0;
@@ -212,9 +212,9 @@ public class WorldRenderer : IWorldAccess
             EntityRenderDispatcher.offsetX = var4.lastTickX + (var4.x - var4.lastTickX) * (double)var3;
             EntityRenderDispatcher.offsetY = var4.lastTickY + (var4.y - var4.lastTickY) * (double)var3;
             EntityRenderDispatcher.offsetZ = var4.lastTickZ + (var4.z - var4.lastTickZ) * (double)var3;
-            BlockEntityRenderer.staticPlayerX = var4.lastTickX + (var4.x - var4.lastTickX) * (double)var3;
-            BlockEntityRenderer.staticPlayerY = var4.lastTickY + (var4.y - var4.lastTickY) * (double)var3;
-            BlockEntityRenderer.staticPlayerZ = var4.lastTickZ + (var4.z - var4.lastTickZ) * (double)var3;
+            BlockEntityRenderer.StaticPlayerX = var4.lastTickX + (var4.x - var4.lastTickX) * (double)var3;
+            BlockEntityRenderer.StaticPlayerY = var4.lastTickY + (var4.y - var4.lastTickY) * (double)var3;
+            BlockEntityRenderer.StaticPlayerZ = var4.lastTickZ + (var4.z - var4.lastTickZ) * (double)var3;
             List<Entity> var5 = world.getEntities();
             countEntitiesTotal = var5.Count;
 
@@ -259,7 +259,7 @@ public class WorldRenderer : IWorldAccess
                 BlockEntity entity = world.blockEntities[var6];
                 if (culler.isBoundingBoxInFrustum(new Box(entity.x, entity.y, entity.z, entity.x + 1, entity.y + 1, entity.z + 1)))
                 {
-                    BlockEntityRenderer.instance.renderTileEntity(entity, var3);
+                    BlockEntityRenderer.Instance.RenderTileEntity(entity, var3);
                 }
             }
         }

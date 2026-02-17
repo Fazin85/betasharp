@@ -6,37 +6,35 @@ namespace BetaSharp.Blocks.Entities;
 
 public class BlockEntityMobSpawner : BlockEntity
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(BlockEntityMobSpawner).TypeHandle);
-
-    public int spawnDelay = -1;
-    private string spawnedEntityId = "Pig";
-    public double rotation;
-    public double lastRotation;
+    public int SpawnDelay { get; set; } = -1;
+    private string _spawnedEntityId = "Pig";
+    public double Rotation { get; set; }
+    public double LastRotation { get; set; } = 0.0D;
 
     public BlockEntityMobSpawner()
     {
-        spawnDelay = 20;
+        SpawnDelay = 20;
     }
 
-    public string getSpawnedEntityId()
+    public string GetSpawnedEntityId()
     {
-        return spawnedEntityId;
+        return _spawnedEntityId;
     }
 
-    public void setSpawnedEntityId(string spawnedEntityId)
+    public void SetSpawnedEntityId(string spawnedEntityId)
     {
-        this.spawnedEntityId = spawnedEntityId;
+        _spawnedEntityId = spawnedEntityId;
     }
 
-    public bool isPlayerInRange()
+    public bool IsPlayerInRange()
     {
         return world.getClosestPlayer(x + 0.5D, y + 0.5D, z + 0.5D, 16.0D) != null;
     }
 
     public override void tick()
     {
-        lastRotation = rotation;
-        if (isPlayerInRange())
+        LastRotation = Rotation;
+        if (IsPlayerInRange())
         {
             double particleX = (double)(x + world.random.nextFloat());
             double particleY = (double)(y + world.random.nextFloat());
@@ -44,21 +42,21 @@ public class BlockEntityMobSpawner : BlockEntity
             world.addParticle("smoke", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
             world.addParticle("flame", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
 
-            for (rotation += 1000.0F / (spawnDelay + 200.0F); rotation > 360.0D; lastRotation -= 360.0D)
+            for (Rotation += 1000.0F / (SpawnDelay + 200.0F); Rotation > 360.0D; LastRotation -= 360.0D)
             {
-                rotation -= 360.0D;
+                Rotation -= 360.0D;
             }
 
             if (!world.isRemote)
             {
-                if (spawnDelay == -1)
+                if (SpawnDelay == -1)
                 {
-                    resetDelay();
+                    ResetDelay();
                 }
 
-                if (spawnDelay > 0)
+                if (SpawnDelay > 0)
                 {
-                    --spawnDelay;
+                    --SpawnDelay;
                     return;
                 }
 
@@ -66,7 +64,7 @@ public class BlockEntityMobSpawner : BlockEntity
 
                 for (int spawnAttempt = 0; spawnAttempt < max; ++spawnAttempt)
                 {
-                    EntityLiving entityLiving = (EntityLiving)EntityRegistry.create(spawnedEntityId, world);
+                    EntityLiving entityLiving = (EntityLiving)EntityRegistry.create(_spawnedEntityId, world);
                     if (entityLiving == null)
                     {
                         return;
@@ -75,7 +73,7 @@ public class BlockEntityMobSpawner : BlockEntity
                     int count = world.collectEntitiesByClass(entityLiving.getClass(), new Box(x, y, z, x + 1, y + 1, z + 1).expand(8.0D, 4.0D, 8.0D)).Count;
                     if (count >= 6)
                     {
-                        resetDelay();
+                        ResetDelay();
                         return;
                     }
 
@@ -99,7 +97,7 @@ public class BlockEntityMobSpawner : BlockEntity
                             }
 
                             entityLiving.animateSpawn();
-                            resetDelay();
+                            ResetDelay();
                         }
                     }
                 }
@@ -109,22 +107,23 @@ public class BlockEntityMobSpawner : BlockEntity
         }
     }
 
-    private void resetDelay()
+    private void ResetDelay()
     {
-        spawnDelay = 200 + world.random.nextInt(600);
+        SpawnDelay = 200 + world.random.nextInt(600);
+        Console.WriteLine("Spawn Delay: " + SpawnDelay);
     }
 
     public override void readNbt(NBTTagCompound nbt)
     {
         base.readNbt(nbt);
-        spawnedEntityId = nbt.GetString("EntityId");
-        spawnDelay = nbt.GetShort("Delay");
+        _spawnedEntityId = nbt.GetString("EntityId");
+        SpawnDelay = nbt.GetShort("Delay");
     }
 
     public override void writeNbt(NBTTagCompound nbt)
     {
         base.writeNbt(nbt);
-        nbt.SetString("EntityId", spawnedEntityId);
-        nbt.SetShort("Delay", (short)spawnDelay);
+        nbt.SetString("EntityId", _spawnedEntityId);
+        nbt.SetShort("Delay", (short)SpawnDelay);
     }
 }

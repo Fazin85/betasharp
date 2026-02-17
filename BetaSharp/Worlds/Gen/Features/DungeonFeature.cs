@@ -109,7 +109,7 @@ public class DungeonFeature : Feature
 
         world.setBlock(x, y, z, Block.Spawner.id);
         BlockEntityMobSpawner var19 = (BlockEntityMobSpawner)world.getBlockEntity(x, y, z);
-        var19.setSpawnedEntityId(PickMobSpawner(rand));
+        var19.SetSpawnedEntityId(PickMobSpawner(rand));
         return true;
 
 
