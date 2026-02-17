@@ -6,12 +6,12 @@ namespace BetaSharp.Client.Guis;
 public class GuiDownloadTerrain : GuiScreen
 {
 
-    private readonly ClientNetworkHandler networkHandler;
-    private int tickCounter = 0;
+    private readonly ClientNetworkHandler _networkHandler;
+    private int _tickCounter = 0;
 
     public GuiDownloadTerrain(ClientNetworkHandler networkHandler)
     {
-        this.networkHandler = networkHandler;
+        this._networkHandler = networkHandler;
     }
 
     protected override void KeyTyped(char eventChar, int eventKey)
@@ -25,15 +25,15 @@ public class GuiDownloadTerrain : GuiScreen
 
     public override void UpdateScreen()
     {
-        ++tickCounter;
-        if (tickCounter % 20 == 0)
+        ++_tickCounter;
+        if (_tickCounter % 20 == 0)
         {
-            networkHandler.addToSendQueue(new KeepAlivePacket());
+            _networkHandler.addToSendQueue(new KeepAlivePacket());
         }
 
-        if (networkHandler != null)
+        if (_networkHandler != null)
         {
-            networkHandler.tick();
+            _networkHandler.tick();
         }
 
     }

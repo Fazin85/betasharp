@@ -3,11 +3,11 @@ namespace BetaSharp.Client.Guis;
 public class GuiConflictWarning : GuiScreen
 {
 
-    private int updateCounter = 0;
+    private int _updateCounter = 0;
 
     public override void UpdateScreen()
     {
-        ++updateCounter;
+        ++_updateCounter;
     }
 
     public override void InitGui()
