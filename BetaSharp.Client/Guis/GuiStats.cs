@@ -90,7 +90,7 @@ public class GuiStats : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         currentSlot.drawScreen(mouseX, mouseY, partialTicks);
-        DrawCenteredString(fontRenderer, screenTitle, Width / 2, 20, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0x00FFFFFF);
         base.Render(mouseX, mouseY, partialTicks);
     }
 
@@ -102,7 +102,7 @@ public class GuiStats : GuiScreen
         GLManager.GL.Rotate(180.0F, 1.0F, 0.0F, 0.0F);
         Lighting.turnOn();
         GLManager.GL.PopMatrix();
-        itemRenderer.drawItemIntoGui(fontRenderer, mc.textureManager, itemId, 0, Item.ITEMS[itemId].getTextureId(0), x + 2, y + 2);
+        itemRenderer.drawItemIntoGui(FontRenderer, mc.textureManager, itemId, 0, Item.ITEMS[itemId].getTextureId(0), x + 2, y + 2);
         Lighting.turnOff();
         GLManager.GL.Disable(GLEnum.RescaleNormal);
     }
@@ -133,7 +133,7 @@ public class GuiStats : GuiScreen
 
     public static TextRenderer func_27145_b(GuiStats var0)
     {
-        return var0.fontRenderer;
+        return var0.FontRenderer;
     }
 
     public static StatFileWriter func_27142_c(GuiStats var0)
@@ -143,12 +143,12 @@ public class GuiStats : GuiScreen
 
     public static TextRenderer func_27140_d(GuiStats var0)
     {
-        return var0.fontRenderer;
+        return var0.FontRenderer;
     }
 
     public static TextRenderer func_27146_e(GuiStats var0)
     {
-        return var0.fontRenderer;
+        return var0.FontRenderer;
     }
 
     public static Minecraft func_27143_f(GuiStats var0)
@@ -168,27 +168,27 @@ public class GuiStats : GuiScreen
 
     public static TextRenderer func_27133_h(GuiStats var0)
     {
-        return var0.fontRenderer;
+        return var0.FontRenderer;
     }
 
     public static TextRenderer func_27137_i(GuiStats var0)
     {
-        return var0.fontRenderer;
+        return var0.FontRenderer;
     }
 
     public static TextRenderer func_27132_j(GuiStats var0)
     {
-        return var0.fontRenderer;
+        return var0.FontRenderer;
     }
 
     public static TextRenderer func_27134_k(GuiStats var0)
     {
-        return var0.fontRenderer;
+        return var0.FontRenderer;
     }
 
     public static TextRenderer func_27139_l(GuiStats var0)
     {
-        return var0.fontRenderer;
+        return var0.FontRenderer;
     }
 
     public static void func_27129_a(GuiStats var0, int var1, int var2, int var3, int var4, uint topColor, uint bottomColor)
@@ -198,12 +198,12 @@ public class GuiStats : GuiScreen
 
     public static TextRenderer func_27144_m(GuiStats var0)
     {
-        return var0.fontRenderer;
+        return var0.FontRenderer;
     }
 
     public static TextRenderer func_27127_n(GuiStats var0)
     {
-        return var0.fontRenderer;
+        return var0.FontRenderer;
     }
 
     public static void func_27135_b(GuiStats var0, int var1, int var2, int var3, int var4, uint topColor, uint bottomColor)
@@ -213,7 +213,7 @@ public class GuiStats : GuiScreen
 
     public static TextRenderer func_27131_o(GuiStats var0)
     {
-        return var0.fontRenderer;
+        return var0.FontRenderer;
     }
 
     public static void func_27148_a(GuiStats var0, int var1, int var2, int itemId)

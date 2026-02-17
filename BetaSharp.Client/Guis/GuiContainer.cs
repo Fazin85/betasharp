@@ -83,10 +83,10 @@ public abstract class GuiContainer : GuiScreen
             {
                 int tipX = mouseX - guiLeft + 12;
                 int tipY = mouseY - guiTop - 12;
-                int textWidth = fontRenderer.getStringWidth(itemName);
+                int textWidth = FontRenderer.getStringWidth(itemName);
 
                 DrawGradientRect(tipX - 3, tipY - 3, tipX + textWidth + 3, tipY + 8 + 3, 0xC0000000, 0xC0000000);
-                fontRenderer.drawStringWithShadow(itemName, tipX, tipY, 0xFFFFFFFF);
+                FontRenderer.drawStringWithShadow(itemName, tipX, tipY, 0xFFFFFFFF);
             }
         }
 
@@ -99,8 +99,8 @@ public abstract class GuiContainer : GuiScreen
             GLManager.GL.Enable(GLEnum.DepthTest);
 
             GLManager.GL.Translate(0.0F, 0.0F, 32.0F);
-            _itemRenderer.renderItemIntoGUI(fontRenderer, mc.textureManager, playerInv.getCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8);
-            _itemRenderer.renderItemOverlayIntoGUI(fontRenderer, mc.textureManager, playerInv.getCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8);
+            _itemRenderer.renderItemIntoGUI(FontRenderer, mc.textureManager, playerInv.getCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8);
+            _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, mc.textureManager, playerInv.getCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8);
 
             Lighting.turnOff();
             GLManager.GL.Disable(GLEnum.Lighting);
@@ -137,8 +137,8 @@ public abstract class GuiContainer : GuiScreen
             }
         }
 
-        _itemRenderer.renderItemIntoGUI(fontRenderer, mc.textureManager, item, x, y);
-        _itemRenderer.renderItemOverlayIntoGUI(fontRenderer, mc.textureManager, item, x, y);
+        _itemRenderer.renderItemIntoGUI(FontRenderer, mc.textureManager, item, x, y);
+        _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, mc.textureManager, item, x, y);
     }
 
     private Slot GetSlotAtPosition(int mouseX, int mouseY)

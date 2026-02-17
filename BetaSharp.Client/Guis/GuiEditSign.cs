@@ -212,7 +212,7 @@ public class GuiEditSign : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         DrawDefaultBackground();
-        DrawCenteredString(fontRenderer, _screenTitle, Width / 2, 40, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, _screenTitle, Width / 2, 40, 0x00FFFFFF);
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(Width / 2, 0.0F, 50.0F);
         float scale = 93.75F;

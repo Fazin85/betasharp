@@ -24,8 +24,8 @@ public class GuiChest : GuiContainer
 
     protected override void DrawGuiContainerForegroundLayer()
     {
-        fontRenderer.drawString(_lowerChestInventory.getName(), 8, 6, 0x404040);
-        fontRenderer.drawString(_upperChestInventory.getName(), 8, _ySize - 96 + 2, 0x404040);
+        FontRenderer.drawString(_lowerChestInventory.getName(), 8, 6, 0x404040);
+        FontRenderer.drawString(_upperChestInventory.getName(), 8, _ySize - 96 + 2, 0x404040);
     }
 
     protected override void DrawGuiContainerBackgroundLayer(float partialTicks)

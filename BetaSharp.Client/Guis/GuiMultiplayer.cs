@@ -29,7 +29,7 @@ public class GuiMultiplayer : GuiScreen
         _controlList.Add(new GuiButton(ButtonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
         string lastServerAddress = mc.options.lastServer.Replace("_", ":");
         _controlList[0].Enabled = lastServerAddress.Length > 0;
-        _serverAddressInputField = new GuiTextField(this, fontRenderer, Width / 2 - 100, Height / 4 - 10 + 50 + 18, 200, 20, lastServerAddress)
+        _serverAddressInputField = new GuiTextField(this, FontRenderer, Width / 2 - 100, Height / 4 - 10 + 50 + 18, 200, 20, lastServerAddress)
         {
             isFocused = true
         };
@@ -120,11 +120,11 @@ public class GuiMultiplayer : GuiScreen
         int centerX = Width / 2;
         int centerY = Height / 4;
 
-        DrawCenteredString(fontRenderer, translations.translateKey("multiplayer.title"), centerX, centerY - 60 + 20, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, translations.translateKey("multiplayer.title"), centerX, centerY - 60 + 20, 0x00FFFFFF);
 
-        DrawString(fontRenderer, translations.translateKey("multiplayer.info1"), centerX - 140, centerY - 60 + 60 + 0, 0xA0A0A0);
-        DrawString(fontRenderer, translations.translateKey("multiplayer.info2"), centerX - 140, centerY - 60 + 60 + 9, 0xA0A0A0);
-        DrawString(fontRenderer, translations.translateKey("multiplayer.ipinfo"), centerX - 140, centerY - 60 + 60 + 36, 0xA0A0A0);
+        DrawString(FontRenderer, translations.translateKey("multiplayer.info1"), centerX - 140, centerY - 60 + 60 + 0, 0xA0A0A0);
+        DrawString(FontRenderer, translations.translateKey("multiplayer.info2"), centerX - 140, centerY - 60 + 60 + 9, 0xA0A0A0);
+        DrawString(FontRenderer, translations.translateKey("multiplayer.ipinfo"), centerX - 140, centerY - 60 + 60 + 36, 0xA0A0A0);
 
         _serverAddressInputField.drawTextBox();
         base.Render(mouseX, mouseY, partialTicks);

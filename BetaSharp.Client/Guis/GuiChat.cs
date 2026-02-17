@@ -527,27 +527,27 @@ public class GuiChat : GuiScreen
             string afterSel = _message.Substring(e);
 
             // Draw before selection
-            fontRenderer.drawStringWithShadow("> " + beforeSel, xBase, y, normalColor);
+            FontRenderer.drawStringWithShadow("> " + beforeSel, xBase, y, normalColor);
 
             // Compute widths and draw selection background
-            int beforeWidth = fontRenderer.getStringWidth("> " + beforeSel);
-            int selWidth = fontRenderer.getStringWidth(sel);
+            int beforeWidth = FontRenderer.getStringWidth("> " + beforeSel);
+            int selWidth = FontRenderer.getStringWidth(sel);
             DrawRect(xBase + beforeWidth, y - 1, xBase + beforeWidth + selWidth, y + 9, 0x80FFFFFFu);
 
             // Draw selected text in contrasting color
-            fontRenderer.drawString(sel, xBase + beforeWidth, y, 0xFF000000u);
+            FontRenderer.drawString(sel, xBase + beforeWidth, y, 0xFF000000u);
 
             // Draw after selection
-            fontRenderer.drawStringWithShadow(afterSel, xBase + beforeWidth + selWidth, y, normalColor);
+            FontRenderer.drawStringWithShadow(afterSel, xBase + beforeWidth + selWidth, y, normalColor);
 
             // Draw caret at cursor position
-            int caretX = xBase + fontRenderer.getStringWidth("> " + _message.Substring(0, _cursorPosition));
+            int caretX = xBase + FontRenderer.getStringWidth("> " + _message.Substring(0, _cursorPosition));
             DrawRect(caretX, y - 1, caretX + 1, y + 9, 0xFF000000u);
         }
         else
         {
             // Render the input literally (do not apply color codes while typing)
-            fontRenderer.drawStringWithShadow("> " + beforeCursor + cursor + afterCursor, xBase, y, normalColor);
+            FontRenderer.drawStringWithShadow("> " + beforeCursor + cursor + afterCursor, xBase, y, normalColor);
         }
         base.Render(mouseX, mouseY, partialTicks);
     }

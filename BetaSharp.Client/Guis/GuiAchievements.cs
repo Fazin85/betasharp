@@ -151,7 +151,7 @@ public class GuiAchievements : GuiScreen
     {
         int var1 = (Width - field_27121_a) / 2;
         int var2 = (Height - field_27119_i) / 2;
-        fontRenderer.drawString("Achievements", var1 + 15, var2 + 5, 0x404040);
+        FontRenderer.drawString("Achievements", var1 + 15, var2 + 5, 0x404040);
     }
 
     protected void func_27109_b(int var1, int var2, float var3)
@@ -378,30 +378,30 @@ public class GuiAchievements : GuiScreen
             var33 = var2 - 4;
             if (field_27120_x.func_27181_b(var27))
             {
-                var34 = java.lang.Math.max(fontRenderer.getStringWidth(var31), 120);
-                int var37 = fontRenderer.func_27277_a(var32 ?? "", var34);
+                var34 = java.lang.Math.max(FontRenderer.getStringWidth(var31), 120);
+                int var37 = FontRenderer.func_27277_a(var32 ?? "", var34);
                 if (field_27120_x.hasAchievementUnlocked(var27))
                 {
                     var37 += 12;
                 }
 
                 DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var37 + 3 + 12, 0xC0000000U, 0xC0000000U);
-                fontRenderer.func_27278_a(var32, var17, var33 + 12, var34, 0xFFA0A0A0);
+                FontRenderer.func_27278_a(var32, var17, var33 + 12, var34, 0xFFA0A0A0);
                 if (field_27120_x.hasAchievementUnlocked(var27))
                 {
-                    fontRenderer.drawStringWithShadow(StatCollector.translateToLocal("achievement.taken"), var17, var33 + var37 + 4, 0xFF9090FF);
+                    FontRenderer.drawStringWithShadow(StatCollector.translateToLocal("achievement.taken"), var17, var33 + var37 + 4, 0xFF9090FF);
                 }
             }
             else
             {
-                var34 = java.lang.Math.max(fontRenderer.getStringWidth(var31), 120);
+                var34 = java.lang.Math.max(FontRenderer.getStringWidth(var31), 120);
                 string var39 = StatCollector.translateToLocalFormatted("achievement.requires", new object[] { var27.parent.statName });
-                var38 = fontRenderer.func_27277_a(var39, var34);
+                var38 = FontRenderer.func_27277_a(var39, var34);
                 DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var38 + 12 + 3, 0xC0000000, 0xC0000000);
-                fontRenderer.func_27278_a(var39, var17, var33 + 12, var34, 0xFF705050);
+                FontRenderer.func_27278_a(var39, var17, var33 + 12, var34, 0xFF705050);
             }
 
-            fontRenderer.drawStringWithShadow(var31, var17, var33, field_27120_x.func_27181_b(var27) ? var27.isChallenge() ? 0xFFFFFF80 : 0xFFFFFFFF : var27.isChallenge() ? 0xFF808040 : 0xFF808080);
+            FontRenderer.drawStringWithShadow(var31, var17, var33, field_27120_x.func_27181_b(var27) ? var27.isChallenge() ? 0xFFFFFF80 : 0xFFFFFFFF : var27.isChallenge() ? 0xFF808040 : 0xFF808080);
         }
 
         GLManager.GL.Enable(GLEnum.DepthTest);

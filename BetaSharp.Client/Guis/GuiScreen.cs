@@ -16,7 +16,7 @@ public class GuiScreen : Gui
     public int Height;
     protected List<GuiButton> _controlList = new();
     public bool AllowUserInput = false;
-    public TextRenderer fontRenderer;
+    public TextRenderer FontRenderer;
     public GuiParticle ParticlesGui;
     private GuiButton SelectedButton = null;
 
@@ -93,7 +93,7 @@ public class GuiScreen : Gui
     {
         ParticlesGui = new GuiParticle(mc);
         this.mc = mc;
-        fontRenderer = mc.fontRenderer;
+        FontRenderer = mc.fontRenderer;
         Width = width;
         Height = height;
         _controlList.Clear();

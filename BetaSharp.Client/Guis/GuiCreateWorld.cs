@@ -36,12 +36,12 @@ public class GuiCreateWorld : GuiScreen
         int centerX = Width / 2;
         int centerY = Height / 4;
 
-        _textboxWorldName = new GuiTextField(this, fontRenderer, centerX - 100, centerY, 200, 20, translations.translateKey("selectWorld.newWorld"))
+        _textboxWorldName = new GuiTextField(this, FontRenderer, centerX - 100, centerY, 200, 20, translations.translateKey("selectWorld.newWorld"))
         {
             isFocused = true
         };
         _textboxWorldName.setMaxStringLength(32);
-        _textboxSeed = new GuiTextField(this, fontRenderer, centerX - 100, centerY + 56, 200, 20, "");
+        _textboxSeed = new GuiTextField(this, FontRenderer, centerX - 100, centerY + 56, 200, 20, "");
 
         _controlList.Clear();
         _controlList.Add(new GuiButton(ButtonCreate, centerX - 100, centerY + 96 + 12, translations.translateKey("selectWorld.create")));
@@ -169,11 +169,11 @@ public class GuiCreateWorld : GuiScreen
         int centerY = Height / 4;
 
         DrawDefaultBackground();
-        DrawCenteredString(fontRenderer, translations.translateKey("selectWorld.create"), centerX, centerY - 60 + 20, 0x00FFFFFF);
-        DrawString(fontRenderer, translations.translateKey("selectWorld.enterName"), centerX - 100, centerY - 10, 0xA0A0A0);
-        DrawString(fontRenderer, $"{translations.translateKey("selectWorld.resultFolder")} {_folderName}", centerX - 100, centerY + 24, 0xA0A0A0);
-        DrawString(fontRenderer, translations.translateKey("selectWorld.enterSeed"), centerX - 100, centerY + 56 - 12, 0xA0A0A0);
-        DrawString(fontRenderer, translations.translateKey("selectWorld.seedInfo"), centerX - 100, centerY + 56 + 24, 0xA0A0A0);
+        DrawCenteredString(FontRenderer, translations.translateKey("selectWorld.create"), centerX, centerY - 60 + 20, 0x00FFFFFF);
+        DrawString(FontRenderer, translations.translateKey("selectWorld.enterName"), centerX - 100, centerY - 10, 0xA0A0A0);
+        DrawString(FontRenderer, $"{translations.translateKey("selectWorld.resultFolder")} {_folderName}", centerX - 100, centerY + 24, 0xA0A0A0);
+        DrawString(FontRenderer, translations.translateKey("selectWorld.enterSeed"), centerX - 100, centerY + 56 - 12, 0xA0A0A0);
+        DrawString(FontRenderer, translations.translateKey("selectWorld.seedInfo"), centerX - 100, centerY + 56 + 24, 0xA0A0A0);
         _textboxWorldName.drawTextBox();
         _textboxSeed.drawTextBox();
         base.Render(mouseX, mouseY, partialTicks);

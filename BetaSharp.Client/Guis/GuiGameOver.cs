@@ -52,9 +52,9 @@ public class GuiGameOver : GuiScreen
         DrawGradientRect(0, 0, Width, Height, 0x60500000, 0xA0803030);
         GLManager.GL.PushMatrix();
         GLManager.GL.Scale(2.0F, 2.0F, 2.0F);
-        DrawCenteredString(fontRenderer, "Game over!", Width / 2 / 2, 30, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, "Game over!", Width / 2 / 2, 30, 0x00FFFFFF);
         GLManager.GL.PopMatrix();
-        DrawCenteredString(fontRenderer, "Score: &e" + mc.player.getScore(), Width / 2, 100, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, "Score: &e" + mc.player.getScore(), Width / 2, 100, 0x00FFFFFF);
         base.Render(mouseX, mouseY, partialTicks);
     }
 

@@ -166,7 +166,7 @@ public class GuiSelectWorld : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         worldSlotContainer.drawScreen(mouseX, mouseY, partialTicks);
-        DrawCenteredString(fontRenderer, screenTitle, Width / 2, 20, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0x00FFFFFF);
         base.Render(mouseX, mouseY, partialTicks);
     }
 

@@ -24,7 +24,7 @@ public class GuiInventory : GuiContainer
 
     protected override void DrawGuiContainerForegroundLayer()
     {
-        fontRenderer.drawString("Crafting", 86, 16, 0x404040);
+        FontRenderer.drawString("Crafting", 86, 16, 0x404040);
     }
 
     public override void Render(int mouseX, int mouseY, float partialTicks)

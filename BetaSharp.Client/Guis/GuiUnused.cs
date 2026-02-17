@@ -13,8 +13,8 @@ public class GuiUnused : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         DrawGradientRect(0, 0, Width, Height, 0xFF402020, 0xFF501010);
-        DrawCenteredString(fontRenderer, _primaryMessage, Width / 2, 90, 0x00FFFFFF);
-        DrawCenteredString(fontRenderer, _secondaryMessage, Width / 2, 110, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, _primaryMessage, Width / 2, 90, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, _secondaryMessage, Width / 2, 110, 0x00FFFFFF);
         base.Render(mouseX, mouseY, partialTicks);
     }
 

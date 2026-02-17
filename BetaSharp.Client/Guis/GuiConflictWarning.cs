@@ -30,11 +30,11 @@ public class GuiConflictWarning : GuiScreen
     public override void Render(int mouseX, int mouseY, float parcialTick)
     {
         DrawDefaultBackground();
-        DrawCenteredString(fontRenderer, "Level save conflict", Width / 2, Height / 4 - 60 + 20, 0x00FFFFFF);
-        DrawString(fontRenderer, "Minecraft detected a conflict in the level save data.", Width / 2 - 140, Height / 4 - 60 + 60 + 0, 0xA0A0A0);
-        DrawString(fontRenderer, "This could be caused by two copies of the game", Width / 2 - 140, Height / 4 - 60 + 60 + 18, 0xA0A0A0);
-        DrawString(fontRenderer, "accessing the same level.", Width / 2 - 140, Height / 4 - 60 + 60 + 27, 0xA0A0A0);
-        DrawString(fontRenderer, "To prevent level corruption, the current game has quit.", Width / 2 - 140, Height / 4 - 60 + 60 + 45, 0xA0A0A0);
+        DrawCenteredString(FontRenderer, "Level save conflict", Width / 2, Height / 4 - 60 + 20, 0x00FFFFFF);
+        DrawString(FontRenderer, "Minecraft detected a conflict in the level save data.", Width / 2 - 140, Height / 4 - 60 + 60 + 0, 0xA0A0A0);
+        DrawString(FontRenderer, "This could be caused by two copies of the game", Width / 2 - 140, Height / 4 - 60 + 60 + 18, 0xA0A0A0);
+        DrawString(FontRenderer, "accessing the same level.", Width / 2 - 140, Height / 4 - 60 + 60 + 27, 0xA0A0A0);
+        DrawString(FontRenderer, "To prevent level corruption, the current game has quit.", Width / 2 - 140, Height / 4 - 60 + 60 + 45, 0xA0A0A0);
         base.Render(mouseX, mouseY, parcialTick);
     }
 }
