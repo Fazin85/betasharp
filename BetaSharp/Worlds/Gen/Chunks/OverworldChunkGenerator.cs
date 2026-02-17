@@ -48,81 +48,99 @@ public class OverworldChunkGenerator : ChunkSource
         forestNoise = new OctavePerlinNoiseSampler(random, 8);
     }
 
+    /// <summary>
+    /// Generate the base terrain
+    /// </summary>
+    /// <param name="chunkX">X-Coordinmate of this chunk</param>
+    /// <param name="chunkZ">Z-Coordinate of this chunk</param>
+    /// <param name="blocks">1D Array of Blocks within this chunk</param>
+    /// <param name="biomes">1D Array of Biome values within this chunk</param>
+    /// <param name="temperatures">1D Array of Temperature values within this chunk</param>
+    /// <returns>The interpolated result.</returns>
     public void buildTerrain(int chunkX, int chunkZ, byte[] blocks, Biome[] biomes, double[] temperatures)
     {
-        byte var6 = 4;
-        byte var7 = 64;
-        int var8 = var6 + 1;
-        byte var9 = 17;
-        int var10 = var6 + 1;
-        heightMap = generateHeightMap(heightMap, chunkX * var6, 0, chunkZ * var6, var8, var9, var10);
+        const byte horiScale = 4; // ChunkWidth / 4
+        const byte halfChunkHeight = 64;
+        const int  xMax = horiScale + 1; // ChunkWidth / 4 + 1
+        const byte yMax = 17; // ChunkHeight / 8 + 1
+        const int  zMax = horiScale + 1; // ChunkWidth / 4 + 1
 
-        for (int var11 = 0; var11 < var6; ++var11)
+	    // Generate 4x16x4 low resolution noise map
+        heightMap = generateHeightMap(heightMap, chunkX * horiScale, 0, chunkZ * horiScale, xMax, yMax, zMax);
+
+	    // Terrain noise is trilinearly interpolated and only sampled every 4 blocks
+        for (int sampleX = 0; sampleX < horiScale; ++sampleX)
         {
-            for (int var12 = 0; var12 < var6; ++var12)
+            for (int sampleZ = 0; sampleZ < horiScale; ++sampleZ)
             {
-                for (int var13 = 0; var13 < 16; ++var13)
+                for (int sampleY = 0; sampleY < 16; ++sampleY)
                 {
-                    double var14 = 0.125D;
-                    double var16 = heightMap[((var11 + 0) * var10 + var12 + 0) * var9 + var13 + 0];
-                    double var18 = heightMap[((var11 + 0) * var10 + var12 + 1) * var9 + var13 + 0];
-                    double var20 = heightMap[((var11 + 1) * var10 + var12 + 0) * var9 + var13 + 0];
-                    double var22 = heightMap[((var11 + 1) * var10 + var12 + 1) * var9 + var13 + 0];
-                    double var24 = (heightMap[((var11 + 0) * var10 + var12 + 0) * var9 + var13 + 1] - var16) * var14;
-                    double var26 = (heightMap[((var11 + 0) * var10 + var12 + 1) * var9 + var13 + 1] - var18) * var14;
-                    double var28 = (heightMap[((var11 + 1) * var10 + var12 + 0) * var9 + var13 + 1] - var20) * var14;
-                    double var30 = (heightMap[((var11 + 1) * var10 + var12 + 1) * var9 + var13 + 1] - var22) * var14;
+                    const double verticalLerpStep = 0.125D;
+                    double corner000 = heightMap[((sampleX + 0) * zMax + sampleZ + 0) * yMax + sampleY + 0];
+                    double corner010 = heightMap[((sampleX + 0) * zMax + sampleZ + 1) * yMax + sampleY + 0];
+                    double corner100 = heightMap[((sampleX + 1) * zMax + sampleZ + 0) * yMax + sampleY + 0];
+                    double corner110 = heightMap[((sampleX + 1) * zMax + sampleZ + 1) * yMax + sampleY + 0];
+                    double corner001 = (heightMap[((sampleX + 0) * zMax + sampleZ + 0) * yMax + sampleY + 1] - corner000) * verticalLerpStep;
+                    double corner011 = (heightMap[((sampleX + 0) * zMax + sampleZ + 1) * yMax + sampleY + 1] - corner010) * verticalLerpStep;
+                    double corner101 = (heightMap[((sampleX + 1) * zMax + sampleZ + 0) * yMax + sampleY + 1] - corner100) * verticalLerpStep;
+                    double corner111 = (heightMap[((sampleX + 1) * zMax + sampleZ + 1) * yMax + sampleY + 1] - corner110) * verticalLerpStep;
 
-                    for (int var32 = 0; var32 < 8; ++var32)
+				    // Interpolate the 1/4th scale noise
+                    for (int subY = 0; subY < 8; ++subY)
                     {
-                        double var33 = 0.25D;
-                        double var35 = var16;
-                        double var37 = var18;
-                        double var39 = (var20 - var16) * var33;
-                        double var41 = (var22 - var18) * var33;
+                        const double horizontalLerpStep = 0.25D; // 1.0 / horiScale
+                        double terrainX0 = corner000;
+                        double terrainX1 = corner010;
+                        double terrainStepX0 = (corner100 - corner000) * horizontalLerpStep;
+                        double terrainStepX1 = (corner110 - corner010) * horizontalLerpStep;
 
-                        for (int var43 = 0; var43 < 4; ++var43)
+                        for (int subX = 0; subX < 4; ++subX)
                         {
-                            int var44 = var43 + var11 * 4 << 11 | 0 + var12 * 4 << 7 | var13 * 8 + var32;
-                            short var45 = 128;
-                            double var46 = 0.25D;
-                            double var48 = var35;
-                            double var50 = (var37 - var35) * var46;
+                            int blockIndex = (((subX + sampleX * 4) << 11) | ((sampleZ * 4) << 7) | ((sampleY * 8) + subY));
+                            const short chunkHeight = 128; // Chunk Height
+                            double terrainDensity = terrainX0;
+                            double densityStepZ = (terrainX1 - terrainX0) * horizontalLerpStep;
 
-                            for (int var52 = 0; var52 < 4; ++var52)
+                            for (int subZ = 0; subZ < 4; ++subZ)
                             {
-                                double var53 = temperatures[(var11 * 4 + var43) * 16 + var12 * 4 + var52];
-                                int var55 = 0;
-                                if (var13 * 8 + var32 < var7)
+                                // Here the actual block is determined
+                                // Default to air block
+                                int blockType = 0;
+                                
+							    // If water is too cold, turn into ice
+                                double temp = temperatures[(sampleX * 4 + subX) * 16 + sampleZ * 4 + subZ];
+                                if (sampleY * 8 + subY < halfChunkHeight)
                                 {
-                                    if (var53 < 0.5D && var13 * 8 + var32 >= var7 - 1)
+                                    if (temp < 0.5D && sampleY * 8 + subY >= halfChunkHeight - 1)
                                     {
-                                        var55 = Block.Ice.id;
+                                        blockType = Block.Ice.id;
                                     }
                                     else
                                     {
-                                        var55 = Block.Water.id;
+                                        blockType = Block.Water.id;
                                     }
                                 }
 
-                                if (var48 > 0.0D)
+                                // If the terrain density is above 0.0,
+                                // turn it into stone
+                                if (terrainDensity > 0.0D)
                                 {
-                                    var55 = Block.Stone.id;
+                                    blockType = Block.Stone.id;
                                 }
 
-                                blocks[var44] = (byte)var55;
-                                var44 += var45;
-                                var48 += var50;
+                                blocks[blockIndex] = (byte)blockType;
+                                blockIndex += chunkHeight;
+                                terrainDensity += densityStepZ;
                             }
 
-                            var35 += var39;
-                            var37 += var41;
+                            terrainX0 += terrainStepX0;
+                            terrainX1 += terrainStepX1;
                         }
 
-                        var16 += var24;
-                        var18 += var26;
-                        var20 += var28;
-                        var22 += var30;
+                        corner000 += corner001;
+                        corner010 += corner011;
+                        corner100 += corner101;
+                        corner110 += corner111;
                     }
                 }
             }
