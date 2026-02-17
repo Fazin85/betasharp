@@ -39,6 +39,6 @@ public class BlockWeb : Block
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
-        return Item.STRING.id;
+        return Item.String.id;
     }
 }

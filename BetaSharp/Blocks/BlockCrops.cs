@@ -119,7 +119,7 @@ public class BlockCrops : BlockPlant
                     float offsetX = world.random.nextFloat() * spreadFactor + (1.0F - spreadFactor) * 0.5F;
                     float offsetY = world.random.nextFloat() * spreadFactor + (1.0F - spreadFactor) * 0.5F;
                     float offsetZ = world.random.nextFloat() * spreadFactor + (1.0F - spreadFactor) * 0.5F;
-                    EntityItem entityItem = new EntityItem(world, (double)((float)x + offsetX), (double)((float)y + offsetY), (double)((float)z + offsetZ), new ItemStack(Item.SEEDS));
+                    EntityItem entityItem = new EntityItem(world, (double)((float)x + offsetX), (double)((float)y + offsetY), (double)((float)z + offsetZ), new ItemStack(Item.Seeds));
                     entityItem.delayBeforeCanPickup = 10;
                     world.SpawnEntity(entityItem);
                 }
@@ -130,7 +130,7 @@ public class BlockCrops : BlockPlant
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
-        return blockMeta == 7 ? Item.WHEAT.id : -1;
+        return blockMeta == 7 ? Item.Wheat.id : -1;
     }
 
     public override int getDroppedItemCount(java.util.Random random)

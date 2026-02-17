@@ -156,7 +156,7 @@ public class EntityWolf : EntityAnimal
                 ItemStack heldItem = targetPlayer.inventory.getSelectedItem();
                 if (heldItem != null)
                 {
-                    if (!isWolfTamed() && heldItem.itemId == Item.BONE.id)
+                    if (!isWolfTamed() && heldItem.itemId == Item.Bone.id)
                     {
                         looksWithInterest = true;
                     }
@@ -407,7 +407,7 @@ public class EntityWolf : EntityAnimal
         ItemStack heldItem = player.inventory.getSelectedItem();
         if (!isWolfTamed())
         {
-            if (heldItem != null && heldItem.itemId == Item.BONE.id && !isWolfAngry())
+            if (heldItem != null && heldItem.itemId == Item.Bone.id && !isWolfAngry())
             {
                 --heldItem.count;
                 if (heldItem.count <= 0)
@@ -450,7 +450,7 @@ public class EntityWolf : EntityAnimal
                         player.inventory.setStack(player.inventory.selectedSlot, (ItemStack)null);
                     }
 
-                    heal(((ItemFood)Item.RAW_PORKCHOP).getHealAmount());
+                    heal(((ItemFood)Item.RawPorkchop).getHealAmount());
                     return true;
                 }
             }

@@ -303,6 +303,6 @@ public class ItemMap : NetworkSyncedItem
     public override Packet getUpdatePacket(ItemStack stack, World world, EntityPlayer player)
     {
         byte[] updateData = getSavedMapState(stack, world).getPlayerMarkerPacket(player);
-        return updateData == null ? null : new MapUpdateS2CPacket((short)Item.MAP.id, (short)stack.getDamage(), updateData);
+        return updateData == null ? null : new MapUpdateS2CPacket((short)Item.Map.id, (short)stack.getDamage(), updateData);
     }
 }

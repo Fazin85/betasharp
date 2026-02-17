@@ -14,7 +14,7 @@ public class ClockSprite : DynamicTexture
     private double angle;
     private double angleDelta;
 
-    public ClockSprite(Minecraft var1) : base(Item.CLOCK.getTextureId(0))
+    public ClockSprite(Minecraft var1) : base(Item.Clock.getTextureId(0))
     {
         mc = var1;
         atlas = FXImage.Items;

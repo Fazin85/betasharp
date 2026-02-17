@@ -12,7 +12,7 @@ public class BlockOre : Block
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
-        return id == Block.CoalOre.id ? Item.COAL.id : (id == Block.DiamondOre.id ? Item.DIAMOND.id : (id == Block.LapisOre.id ? Item.DYE.id : id));
+        return id == Block.CoalOre.id ? Item.Coal.id : (id == Block.DiamondOre.id ? Item.Diamond.id : (id == Block.LapisOre.id ? Item.Dye.id : id));
     }
 
     public override int getDroppedItemCount(java.util.Random random)

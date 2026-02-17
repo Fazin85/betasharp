@@ -860,7 +860,7 @@ public class WorldRenderer : IWorldAccess
                 }
                 else if (var1.Equals("snowballpoof"))
                 {
-                    mc.particleManager.addEffect(new EntitySlimeFX(world, var2, var4, var6, Item.SNOWBALL));
+                    mc.particleManager.addEffect(new EntitySlimeFX(world, var2, var4, var6, Item.Snowball));
                 }
                 else if (var1.Equals("snowshovel"))
                 {
@@ -868,7 +868,7 @@ public class WorldRenderer : IWorldAccess
                 }
                 else if (var1.Equals("slime"))
                 {
-                    mc.particleManager.addEffect(new EntitySlimeFX(world, var2, var4, var6, Item.SLIMEBALL));
+                    mc.particleManager.addEffect(new EntitySlimeFX(world, var2, var4, var6, Item.Slimeball));
                 }
                 else if (var1.Equals("heart"))
                 {
