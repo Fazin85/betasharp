@@ -1,4 +1,4 @@
-﻿using BetaSharp.Entities;
+using BetaSharp.Entities;
 
 namespace BetaSharp.Server.Worlds;
 

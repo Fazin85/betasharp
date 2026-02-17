@@ -5,30 +5,28 @@ namespace BetaSharp.Worlds.Gen.Features;
 public class DeadBushPatchFeature : Feature
 {
 
-    private int deadBushBlockId;
+    private readonly int _deadBushBlockId;
 
     public DeadBushPatchFeature(int deadBushBlockId)
     {
-        this.deadBushBlockId = deadBushBlockId;
+        _deadBushBlockId = deadBushBlockId;
     }
 
-    public override bool generate(World world, java.util.Random rand, int x, int y, int z)
+    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
     {
-        bool var6 = false;
-
         while (true)
         {
-            int var11 = world.getBlockId(x, y, z);
-            if (var11 != 0 && var11 != Block.Leaves.id || y <= 0)
+            int blockId = world.getBlockId(x, y, z);
+            if (blockId != 0 && blockId != Block.Leaves.id || y <= 0)
             {
-                for (int var7 = 0; var7 < 4; ++var7)
+                for (int i = 0; i < 4; ++i)
                 {
-                    int var8 = x + rand.nextInt(8) - rand.nextInt(8);
-                    int var9 = y + rand.nextInt(4) - rand.nextInt(4);
-                    int var10 = z + rand.nextInt(8) - rand.nextInt(8);
-                    if (world.isAir(var8, var9, var10) && ((BlockPlant)Block.Blocks[deadBushBlockId]).canGrow(world, var8, var9, var10))
+                    int genX = x + rand.nextInt(8) - rand.nextInt(8);
+                    int genY = y + rand.nextInt(4) - rand.nextInt(4);
+                    int genZ = z + rand.nextInt(8) - rand.nextInt(8);
+                    if (world.isAir(genX, genY, genZ) && ((BlockPlant)Block.Blocks[_deadBushBlockId]).canGrow(world, genX, genY, genZ))
                     {
-                        world.SetBlockWithoutNotifyingNeighbors(var8, var9, var10, deadBushBlockId);
+                        world.SetBlockWithoutNotifyingNeighbors(genX, genY, genZ, _deadBushBlockId);
                     }
                 }
 

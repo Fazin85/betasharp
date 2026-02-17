@@ -5,32 +5,30 @@ namespace BetaSharp.Worlds.Gen.Features;
 public class GrassPatchFeature : Feature
 {
 
-    private int tallGrassBlockId;
-    private int tallGrassBlockMeta;
+    private readonly int _tallGrassBlockId;
+    private readonly int _tallGrassBlockMeta;
 
-    public GrassPatchFeature(int var1, int var2)
+    public GrassPatchFeature(int tallGrassBlockId, int tallGrassBlockMeta)
     {
-        tallGrassBlockId = var1;
-        tallGrassBlockMeta = var2;
+        _tallGrassBlockId = tallGrassBlockId;
+        _tallGrassBlockMeta = tallGrassBlockMeta;
     }
 
-    public override bool generate(World world, java.util.Random rand, int x, int y, int z)
+    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
     {
-        bool var6 = false;
-
         while (true)
         {
-            int var11 = world.getBlockId(x, y, z);
-            if (var11 != 0 && var11 != Block.Leaves.id || y <= 0)
+            int blockId = world.getBlockId(x, y, z);
+            if (blockId != 0 && blockId != Block.Leaves.id || y <= 0)
             {
-                for (int var7 = 0; var7 < 128; ++var7)
+                for (int i = 0; i < 128; ++i)
                 {
-                    int var8 = x + rand.nextInt(8) - rand.nextInt(8);
-                    int var9 = y + rand.nextInt(4) - rand.nextInt(4);
-                    int var10 = z + rand.nextInt(8) - rand.nextInt(8);
-                    if (world.isAir(var8, var9, var10) && ((BlockPlant)Block.Blocks[tallGrassBlockId]).canGrow(world, var8, var9, var10))
+                    int genX = x + rand.nextInt(8) - rand.nextInt(8);
+                    int genY = y + rand.nextInt(4) - rand.nextInt(4);
+                    int genZ = z + rand.nextInt(8) - rand.nextInt(8);
+                    if (world.isAir(genX, genY, genZ) && ((BlockPlant)Block.Blocks[_tallGrassBlockId]).canGrow(world, genX, genY, genZ))
                     {
-                        world.SetBlockWithoutNotifyingNeighbors(var8, var9, var10, tallGrassBlockId, tallGrassBlockMeta);
+                        world.SetBlockWithoutNotifyingNeighbors(genX, genY, genZ, _tallGrassBlockId, _tallGrassBlockMeta);
                     }
                 }
 

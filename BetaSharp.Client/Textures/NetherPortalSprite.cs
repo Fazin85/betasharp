@@ -1,4 +1,4 @@
-﻿using BetaSharp.Blocks;
+using BetaSharp.Blocks;
 using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Client.Textures;

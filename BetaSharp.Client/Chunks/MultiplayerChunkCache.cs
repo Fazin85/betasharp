@@ -1,4 +1,4 @@
-﻿using BetaSharp.Util.Maths;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Chunks;
 using java.lang;

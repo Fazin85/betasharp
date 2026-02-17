@@ -6,22 +6,29 @@ namespace BetaSharp.Worlds.Gen.Features;
 public class SugarCanePatchFeature : Feature
 {
 
-    public override bool generate(World world, java.util.Random rand, int x, int y, int z)
+    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
     {
-        for (int var6 = 0; var6 < 20; ++var6)
+        for (int i = 0; i < 20; ++i)
         {
-            int var7 = x + rand.nextInt(4) - rand.nextInt(4);
-            int var8 = y;
-            int var9 = z + rand.nextInt(4) - rand.nextInt(4);
-            if (world.isAir(var7, y, var9) && (world.getMaterial(var7 - 1, y - 1, var9) == Material.Water || world.getMaterial(var7 + 1, y - 1, var9) == Material.Water || world.getMaterial(var7, y - 1, var9 - 1) == Material.Water || world.getMaterial(var7, y - 1, var9 + 1) == Material.Water))
-            {
-                int var10 = 2 + rand.nextInt(rand.nextInt(3) + 1);
+            int genX = x + rand.nextInt(4) - rand.nextInt(4);
+            int genZ = z + rand.nextInt(4) - rand.nextInt(4);
 
-                for (int var11 = 0; var11 < var10; ++var11)
+            if (!world.isAir(genX, y, genZ)) continue;
+
+            bool hasWaterNearby = world.getMaterial(genX - 1, y - 1, genZ) == Material.Water ||
+                world.getMaterial(genX + 1, y - 1, genZ) == Material.Water ||
+                world.getMaterial(genX, y - 1, genZ - 1) == Material.Water ||
+                world.getMaterial(genX, y - 1, genZ + 1) == Material.Water;
+
+            if (hasWaterNearby)
+            {
+                int height = 2 + rand.nextInt(rand.nextInt(3) + 1);
+
+                for (int h = 0; h < height; ++h)
                 {
-                    if (Block.SugarCane.canGrow(world, var7, var8 + var11, var9))
+                    if (Block.SugarCane.canGrow(world, genX, y + h, genZ))
                     {
-                        world.SetBlockWithoutNotifyingNeighbors(var7, var8 + var11, var9, Block.SugarCane.id);
+                        world.SetBlockWithoutNotifyingNeighbors(genX, y + h, genZ, Block.SugarCane.id);
                     }
                 }
             }

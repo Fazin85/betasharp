@@ -5,16 +5,18 @@ namespace BetaSharp.Worlds.Gen.Features;
 public class PumpkinPatchFeature : Feature
 {
 
-    public override bool generate(World world, java.util.Random rand, int x, int y, int z)
+    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
     {
-        for (int var6 = 0; var6 < 64; ++var6)
+        for (int i = 0; i < 64; ++i)
         {
-            int var7 = x + rand.nextInt(8) - rand.nextInt(8);
-            int var8 = y + rand.nextInt(4) - rand.nextInt(4);
-            int var9 = z + rand.nextInt(8) - rand.nextInt(8);
-            if (world.isAir(var7, var8, var9) && world.getBlockId(var7, var8 - 1, var9) == Block.GrassBlock.id && Block.Pumpkin.canPlaceAt(world, var7, var8, var9))
+            int genX = x + rand.nextInt(8) - rand.nextInt(8);
+            int genY = y + rand.nextInt(4) - rand.nextInt(4);
+            int genZ = z + rand.nextInt(8) - rand.nextInt(8);
+            if (world.isAir(genX, genY, genZ) &&
+                world.getBlockId(genX, genY - 1, genZ) == Block.GrassBlock.id &&
+                Block.Pumpkin.canPlaceAt(world, genX, genY, genZ))
             {
-                world.SetBlockWithoutNotifyingNeighbors(var7, var8, var9, Block.Pumpkin.id, rand.nextInt(4));
+                world.SetBlockWithoutNotifyingNeighbors(genX, genY, genZ, Block.Pumpkin.id, rand.nextInt(4));
             }
         }
 

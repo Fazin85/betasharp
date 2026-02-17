@@ -1,4 +1,4 @@
-﻿using BetaSharp.Client.Network;
+using BetaSharp.Client.Network;
 using BetaSharp.Network.Packets.Play;
 
 namespace BetaSharp.Client.Guis;

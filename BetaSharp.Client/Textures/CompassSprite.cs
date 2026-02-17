@@ -1,4 +1,4 @@
-﻿using BetaSharp.Items;
+using BetaSharp.Items;
 using BetaSharp.Util.Maths;
 using java.awt.image;
 using java.io;

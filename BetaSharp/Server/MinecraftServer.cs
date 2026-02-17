@@ -90,7 +90,13 @@ public abstract class MinecraftServer : Runnable, CommandOutput
             }
             catch (NumberFormatException)
             {
-                seed = seedString.GetHashCode();
+                // Java based string hashing
+                int hash = 0;
+                foreach (char c in seedString)
+                {
+                    hash = 31 * hash + c;
+                }
+                seed = hash;
             }
         }
 

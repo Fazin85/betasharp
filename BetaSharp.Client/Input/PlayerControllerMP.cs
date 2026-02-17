@@ -1,4 +1,4 @@
-﻿using BetaSharp.Blocks;
+using BetaSharp.Blocks;
 using BetaSharp.Client.Network;
 using BetaSharp.Entities;
 using BetaSharp.Items;

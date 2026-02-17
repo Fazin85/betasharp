@@ -1,4 +1,4 @@
-﻿using Silk.NET.GLFW;
+using Silk.NET.GLFW;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL.Legacy;
 using Silk.NET.Windowing;

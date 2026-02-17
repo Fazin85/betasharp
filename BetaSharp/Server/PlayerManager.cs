@@ -1,4 +1,4 @@
-﻿using BetaSharp.Blocks.Entities;
+using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Network.Packets;
 using BetaSharp.Network.Packets.Play;

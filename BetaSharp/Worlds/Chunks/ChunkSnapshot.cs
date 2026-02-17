@@ -1,4 +1,4 @@
-﻿using System.Buffers;
+using System.Buffers;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;

@@ -1,4 +1,4 @@
-﻿using BetaSharp.Network;
+using BetaSharp.Network;
 using BetaSharp.Server.Threading;
 using java.lang;
 using java.net;

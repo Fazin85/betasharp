@@ -403,7 +403,7 @@ public class LargeOakTreeFeature : Feature
         foliageDensity = d2;
     }
 
-    public override bool generate(World world, java.util.Random rand, int x, int y, int z)
+    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
     {
         this.world = world;
         long var6 = rand.nextLong();

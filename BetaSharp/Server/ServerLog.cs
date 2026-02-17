@@ -1,4 +1,4 @@
-﻿using java.util.logging;
+using java.util.logging;
 
 namespace BetaSharp.Server;
 

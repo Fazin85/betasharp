@@ -1,4 +1,4 @@
-﻿using BetaSharp.Client.Options;
+using BetaSharp.Client.Options;
 using BetaSharp.Client.Resource.Pack;
 using BetaSharp.Client.Textures;
 using BetaSharp.Util;

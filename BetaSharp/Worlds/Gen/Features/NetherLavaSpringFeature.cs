@@ -5,86 +5,42 @@ namespace BetaSharp.Worlds.Gen.Features;
 public class NetherLavaSpringFeature : Feature
 {
 
-    private int lavaBlockId;
+    private int _lavaBlockId;
 
-    public NetherLavaSpringFeature(int var1)
+    public NetherLavaSpringFeature(int lavaBlockId)
     {
-        lavaBlockId = var1;
+        _lavaBlockId = lavaBlockId;
     }
 
-    public override bool generate(World world, java.util.Random rand, int x, int y, int z)
+    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
     {
-        if (world.getBlockId(x, y + 1, z) != Block.Netherrack.id)
+        if (world.getBlockId(x, y + 1, z) != Block.Netherrack.id) return false;
+        if (world.getBlockId(x, y, z) != 0 && world.getBlockId(x, y, z) != Block.Netherrack.id) return false;
+
+        int netherrackNeighbors = 0;
+        if (world.getBlockId(x - 1, y, z) == Block.Netherrack.id) ++netherrackNeighbors;
+        if (world.getBlockId(x + 1, y, z) == Block.Netherrack.id) ++netherrackNeighbors;
+        if (world.getBlockId(x, y, z - 1) == Block.Netherrack.id) ++netherrackNeighbors;
+        if (world.getBlockId(x, y, z + 1) == Block.Netherrack.id) ++netherrackNeighbors;
+        if (world.getBlockId(x, y - 1, z) == Block.Netherrack.id) ++netherrackNeighbors;
+
+
+        int airNeighbors = 0;
+        if (world.isAir(x - 1, y, z)) ++airNeighbors;
+        if (world.isAir(x + 1, y, z)) ++airNeighbors;
+        if (world.isAir(x, y, z - 1)) ++airNeighbors;
+        if (world.isAir(x, y, z + 1)) ++airNeighbors;
+        if (world.isAir(x, y - 1, z)) ++airNeighbors;
+
+        if (netherrackNeighbors == 4 && airNeighbors == 1)
         {
-            return false;
+            world.setBlock(x, y, z, _lavaBlockId);
+
+            world.instantBlockUpdateEnabled = true;
+            Block.Blocks[_lavaBlockId].onTick(world, x, y, z, rand);
+            world.instantBlockUpdateEnabled = false;
         }
-        else if (world.getBlockId(x, y, z) != 0 && world.getBlockId(x, y, z) != Block.Netherrack.id)
-        {
-            return false;
-        }
-        else
-        {
-            int var6 = 0;
-            if (world.getBlockId(x - 1, y, z) == Block.Netherrack.id)
-            {
-                ++var6;
-            }
 
-            if (world.getBlockId(x + 1, y, z) == Block.Netherrack.id)
-            {
-                ++var6;
-            }
-
-            if (world.getBlockId(x, y, z - 1) == Block.Netherrack.id)
-            {
-                ++var6;
-            }
-
-            if (world.getBlockId(x, y, z + 1) == Block.Netherrack.id)
-            {
-                ++var6;
-            }
-
-            if (world.getBlockId(x, y - 1, z) == Block.Netherrack.id)
-            {
-                ++var6;
-            }
-
-            int var7 = 0;
-            if (world.isAir(x - 1, y, z))
-            {
-                ++var7;
-            }
-
-            if (world.isAir(x + 1, y, z))
-            {
-                ++var7;
-            }
-
-            if (world.isAir(x, y, z - 1))
-            {
-                ++var7;
-            }
-
-            if (world.isAir(x, y, z + 1))
-            {
-                ++var7;
-            }
-
-            if (world.isAir(x, y - 1, z))
-            {
-                ++var7;
-            }
-
-            if (var6 == 4 && var7 == 1)
-            {
-                world.setBlock(x, y, z, lavaBlockId);
-                world.instantBlockUpdateEnabled = true;
-                Block.Blocks[lavaBlockId].onTick(world, x, y, z, rand);
-                world.instantBlockUpdateEnabled = false;
-            }
-
-            return true;
-        }
+        return true;
     }
 }

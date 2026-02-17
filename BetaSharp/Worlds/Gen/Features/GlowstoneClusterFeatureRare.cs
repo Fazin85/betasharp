@@ -5,76 +5,45 @@ namespace BetaSharp.Worlds.Gen.Features;
 public class GlowstoneClusterFeatureRare : Feature
 {
 
-    public override bool generate(World world, java.util.Random rand, int x, int y, int z)
+    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
     {
-        if (!world.isAir(x, y, z))
-        {
-            return false;
-        }
-        else if (world.getBlockId(x, y + 1, z) != Block.Netherrack.id)
-        {
-            return false;
-        }
-        else
-        {
-            world.setBlock(x, y, z, Block.Glowstone.id);
+        if (!world.isAir(x, y, z)) return false;
+        if (world.getBlockId(x, y + 1, z) != Block.Netherrack.id) return false;
+        
 
-            for (int var6 = 0; var6 < 1500; ++var6)
+        world.setBlock(x, y, z, Block.Glowstone.id);
+
+        for (int i = 0; i < 1500; ++i)
+        {
+            int genX = x + rand.nextInt(8) - rand.nextInt(8);
+            int genY = y - rand.nextInt(12);
+            int genZ = z + rand.nextInt(8) - rand.nextInt(8);
+            if (world.getBlockId(genX, genY, genZ) == 0)
             {
-                int var7 = x + rand.nextInt(8) - rand.nextInt(8);
-                int var8 = y - rand.nextInt(12);
-                int var9 = z + rand.nextInt(8) - rand.nextInt(8);
-                if (world.getBlockId(var7, var8, var9) == 0)
+                int glowstoneNeighbors = 0;
+
+                for (int j = 0; j < 6; ++j)
                 {
-                    int var10 = 0;
+                    int blockId = 0;
+                    if (j == 0) blockId = world.getBlockId(genX - 1, genY, genZ);
+                    if (j == 1) blockId = world.getBlockId(genX + 1, genY, genZ);
+                    if (j == 2) blockId = world.getBlockId(genX, genY - 1, genZ);
+                    if (j == 3) blockId = world.getBlockId(genX, genY + 1, genZ);
+                    if (j == 4) blockId = world.getBlockId(genX, genY, genZ - 1);
+                    if (j == 5) blockId = world.getBlockId(genX, genY, genZ + 1);
 
-                    for (int var11 = 0; var11 < 6; ++var11)
-                    {
-                        int var12 = 0;
-                        if (var11 == 0)
-                        {
-                            var12 = world.getBlockId(var7 - 1, var8, var9);
-                        }
+                    if (blockId == Block.Glowstone.id)
+                        ++glowstoneNeighbors;
+                    
+                }
 
-                        if (var11 == 1)
-                        {
-                            var12 = world.getBlockId(var7 + 1, var8, var9);
-                        }
-
-                        if (var11 == 2)
-                        {
-                            var12 = world.getBlockId(var7, var8 - 1, var9);
-                        }
-
-                        if (var11 == 3)
-                        {
-                            var12 = world.getBlockId(var7, var8 + 1, var9);
-                        }
-
-                        if (var11 == 4)
-                        {
-                            var12 = world.getBlockId(var7, var8, var9 - 1);
-                        }
-
-                        if (var11 == 5)
-                        {
-                            var12 = world.getBlockId(var7, var8, var9 + 1);
-                        }
-
-                        if (var12 == Block.Glowstone.id)
-                        {
-                            ++var10;
-                        }
-                    }
-
-                    if (var10 == 1)
-                    {
-                        world.setBlock(var7, var8, var9, Block.Glowstone.id);
-                    }
+                if (glowstoneNeighbors == 1)
+                {
+                    world.setBlock(genX, genY, genZ, Block.Glowstone.id);
                 }
             }
-
-            return true;
         }
+
+        return true;
     }
 }

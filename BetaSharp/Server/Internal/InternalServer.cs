@@ -1,4 +1,4 @@
-﻿using BetaSharp.Server.Network;
+using BetaSharp.Server.Network;
 using java.net;
 using java.util.logging;
 

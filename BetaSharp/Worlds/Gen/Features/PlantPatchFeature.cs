@@ -7,21 +7,21 @@ public class PlantPatchFeature : Feature
 
     private int plantBlockId;
 
-    public PlantPatchFeature(int var1)
+    public PlantPatchFeature(int plantBlockId)
     {
-        plantBlockId = var1;
+        this.plantBlockId = plantBlockId;
     }
 
-    public override bool generate(World world, java.util.Random rand, int x, int y, int z)
+    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
     {
-        for (int var6 = 0; var6 < 64; ++var6)
+        for (int i = 0; i < 64; ++i)
         {
-            int var7 = x + rand.nextInt(8) - rand.nextInt(8);
-            int var8 = y + rand.nextInt(4) - rand.nextInt(4);
-            int var9 = z + rand.nextInt(8) - rand.nextInt(8);
-            if (world.isAir(var7, var8, var9) && ((BlockPlant)Block.Blocks[plantBlockId]).canGrow(world, var7, var8, var9))
+            int genX = x + rand.nextInt(8) - rand.nextInt(8);
+            int genY = y + rand.nextInt(4) - rand.nextInt(4);
+            int genZ = z + rand.nextInt(8) - rand.nextInt(8);
+            if (world.isAir(genX, genY, genZ) && ((BlockPlant)Block.Blocks[plantBlockId]).canGrow(world, genX, genY, genZ))
             {
-                world.SetBlockWithoutNotifyingNeighbors(var7, var8, var9, plantBlockId);
+                world.SetBlockWithoutNotifyingNeighbors(genX, genY, genZ, plantBlockId);
             }
         }
 

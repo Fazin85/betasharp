@@ -17,7 +17,8 @@ indent_size = 2
 
 # C# and Visual Basic files
 [*.{cs,vb}]
-charset = utf-8-bom
+charset = utf-8
+end_of_line = lf
 
 # Analyzers
 dotnet_analyzer_diagnostic.category-Security.severity = error

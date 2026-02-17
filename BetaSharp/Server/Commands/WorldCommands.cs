@@ -36,9 +36,9 @@ public static class WorldCommands
                 }
             }
 
-            string verb = mode == "add" ? "Added " + timeValue + " to" : "Set time to " + timeValue + " for";
-            output.SendMessage(verb + " time");
-            AdminCommands.LogCommand(server, senderName, verb + " time");
+            string message = mode == "add" ? $"Added {timeValue} to time" : $"Set time to {timeValue}";
+            output.SendMessage(message);
+            AdminCommands.LogCommand(server, senderName, message);
             return;
         }
 

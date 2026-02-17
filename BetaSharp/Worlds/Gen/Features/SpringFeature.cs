@@ -5,80 +5,45 @@ namespace BetaSharp.Worlds.Gen.Features;
 public class SpringFeature : Feature
 {
 
-    private int liquidBlockId;
+    private readonly int _liquidBlockId;
 
-    public SpringFeature(int var1)
+    public SpringFeature(int liquidBlockId)
     {
-        liquidBlockId = var1;
+        _liquidBlockId = liquidBlockId;
     }
 
-    public override bool generate(World world, java.util.Random rand, int x, int y, int z)
+    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
     {
-        if (world.getBlockId(x, y + 1, z) != Block.Stone.id)
+        if (world.getBlockId(x, y + 1, z) != Block.Stone.id) return false;
+
+        if (world.getBlockId(x, y - 1, z) != Block.Stone.id) return false;
+
+        int targetId = world.getBlockId(x, y, z);
+        if (targetId != 0 && targetId != Block.Stone.id) return false;
+
+        int stoneNeighbors = 0;
+        if (world.getBlockId(x - 1, y, z) == Block.Stone.id) ++stoneNeighbors;
+        if (world.getBlockId(x + 1, y, z) == Block.Stone.id) ++stoneNeighbors;
+        if (world.getBlockId(x, y, z - 1) == Block.Stone.id) ++stoneNeighbors;
+        if (world.getBlockId(x, y, z + 1) == Block.Stone.id) ++stoneNeighbors;
+
+
+        int airNeighbors = 0;
+        if (world.isAir(x - 1, y, z)) ++airNeighbors;
+        if (world.isAir(x + 1, y, z)) ++airNeighbors;
+        if (world.isAir(x, y, z - 1)) ++airNeighbors;
+        if (world.isAir(x, y, z + 1)) ++airNeighbors;
+
+
+        if (stoneNeighbors == 3 && airNeighbors == 1)
         {
-            return false;
+            world.setBlock(x, y, z, _liquidBlockId);
+            
+            world.instantBlockUpdateEnabled = true;
+            Block.Blocks[_liquidBlockId].onTick(world, x, y, z, rand);
+            world.instantBlockUpdateEnabled = false;
         }
-        else if (world.getBlockId(x, y - 1, z) != Block.Stone.id)
-        {
-            return false;
-        }
-        else if (world.getBlockId(x, y, z) != 0 && world.getBlockId(x, y, z) != Block.Stone.id)
-        {
-            return false;
-        }
-        else
-        {
-            int var6 = 0;
-            if (world.getBlockId(x - 1, y, z) == Block.Stone.id)
-            {
-                ++var6;
-            }
 
-            if (world.getBlockId(x + 1, y, z) == Block.Stone.id)
-            {
-                ++var6;
-            }
-
-            if (world.getBlockId(x, y, z - 1) == Block.Stone.id)
-            {
-                ++var6;
-            }
-
-            if (world.getBlockId(x, y, z + 1) == Block.Stone.id)
-            {
-                ++var6;
-            }
-
-            int var7 = 0;
-            if (world.isAir(x - 1, y, z))
-            {
-                ++var7;
-            }
-
-            if (world.isAir(x + 1, y, z))
-            {
-                ++var7;
-            }
-
-            if (world.isAir(x, y, z - 1))
-            {
-                ++var7;
-            }
-
-            if (world.isAir(x, y, z + 1))
-            {
-                ++var7;
-            }
-
-            if (var6 == 3 && var7 == 1)
-            {
-                world.setBlock(x, y, z, liquidBlockId);
-                world.instantBlockUpdateEnabled = true;
-                Block.Blocks[liquidBlockId].onTick(world, x, y, z, rand);
-                world.instantBlockUpdateEnabled = false;
-            }
-
-            return true;
-        }
+        return true;
     }
 }
