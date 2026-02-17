@@ -358,10 +358,10 @@ public abstract class GuiSlot
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         float var6 = 32.0F;
         var5.startDrawingQuads();
-        var5.setColorRGBA_I(4210752, var4);
+        var5.setColorRGBA_I(0x404040, var4);
         var5.addVertexWithUV(0.0D, var2, 0.0D, 0.0D, (double)(var2 / var6));
         var5.addVertexWithUV(width, var2, 0.0D, (double)(width / var6), (double)(var2 / var6));
-        var5.setColorRGBA_I(4210752, var3);
+        var5.setColorRGBA_I(0x404040, var3);
         var5.addVertexWithUV(width, var1, 0.0D, (double)(width / var6), (double)(var1 / var6));
         var5.addVertexWithUV(0.0D, var1, 0.0D, 0.0D, (double)(var1 / var6));
         var5.draw();

@@ -8,11 +8,11 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiMainMenu : GuiScreen
 {
-    private const int BUTTON_OPTIONS = 0;
-    private const int BUTTON_SINGLEPLAYER = 1;
-    private const int BUTTON_MULTIPLAYER = 2;
-    private const int BUTTON_MODS = 3;
-    private const int BUTTON_QUIT = 4;
+    private const int ButtonOptions = 0;
+    private const int ButtonSingleplayer = 1;
+    private const int ButtonMultiplayer = 2;
+    private const int ButtonTexturePacksAndMods = 3;
+    private const int ButtonQuit = 4;
 
     private static readonly java.util.Random s_rand = new();
     private string _splashText = "missingno";
@@ -59,45 +59,31 @@ public class GuiMainMenu : GuiScreen
 
     public override void InitGui()
     {
-        Calendar calendar = Calendar.getInstance();
-
         // Special days
-        calendar.setTime(new Date());
-        if (calendar.get(2) + 1 == 11 && calendar.get(5) == 9)
-        {
-            _splashText = "Happy birthday, ez!";
-        }
-        else if (calendar.get(2) + 1 == 6 && calendar.get(5) == 1)
-        {
-            _splashText = "Happy birthday, Notch!";
-        }
-        else if (calendar.get(2) + 1 == 12 && calendar.get(5) == 24)
-        {
-            _splashText = "Merry X-mas!";
-        }
-        else if (calendar.get(2) + 1 == 1 && calendar.get(5) == 1)
-        {
-            _splashText = "Happy new year!";
-        }
+        DateTime now = DateTime.Now;
+        if (now.Month == 11 && now.Day == 9) _splashText = "Happy birthday, ez!";
+        else if (now.Month == 6 && now.Day == 1) _splashText = "Happy birthday, Notch!";
+        else if (now.Month == 12 && now.Day == 24) _splashText = "Merry X-mas!";
+        else if (now.Month == 1 && now.Day == 1) _splashText = "Happy new year!";
 
         TranslationStorage translator = TranslationStorage.getInstance();
         int buttonTopY = Height / 4 + 48;
 
-        _controlList.Add(new GuiButton(BUTTON_SINGLEPLAYER, Width / 2 - 100, buttonTopY, translator.translateKey("menu.singleplayer")));
+        _controlList.Add(new GuiButton(ButtonSingleplayer, Width / 2 - 100, buttonTopY, translator.translateKey("menu.singleplayer")));
         _controlList.Add(_multiplayerButton =
-            new GuiButton(BUTTON_MULTIPLAYER, Width / 2 - 100, buttonTopY + 24, translator.translateKey("menu.multiplayer")));
-        _controlList.Add(new GuiButton(BUTTON_MODS, Width / 2 - 100, buttonTopY + 48, translator.translateKey("menu.mods")));
+            new GuiButton(ButtonMultiplayer, Width / 2 - 100, buttonTopY + 24, translator.translateKey("menu.multiplayer")));
+        _controlList.Add(new GuiButton(ButtonTexturePacksAndMods, Width / 2 - 100, buttonTopY + 48, translator.translateKey("menu.mods")));
 
         if (mc.hideQuitButton)
         {
-            _controlList.Add(new GuiButton(BUTTON_OPTIONS, Width / 2 - 100, buttonTopY + 72, translator.translateKey("menu.options")));
+            _controlList.Add(new GuiButton(ButtonOptions, Width / 2 - 100, buttonTopY + 72, translator.translateKey("menu.options")));
         }
         else
         {
-            _controlList.Add(new GuiButton(BUTTON_OPTIONS, Width / 2 - 100, buttonTopY + 72 + 12, 98, 20,
+            _controlList.Add(new GuiButton(ButtonOptions, Width / 2 - 100, buttonTopY + 72 + 12, 98, 20,
                 translator.translateKey("menu.options")));
 
-            _controlList.Add(new GuiButton(BUTTON_QUIT, Width / 2 + 2, buttonTopY + 72 + 12, 98, 20,
+            _controlList.Add(new GuiButton(ButtonQuit, Width / 2 + 2, buttonTopY + 72 + 12, 98, 20,
                 translator.translateKey("menu.quit")));
         }
 
@@ -111,19 +97,19 @@ public class GuiMainMenu : GuiScreen
     {
         switch (button.Id)
         {
-            case BUTTON_OPTIONS:
+            case ButtonOptions:
                 mc.displayGuiScreen(new GuiOptions(this, mc.options));
                 break;
-            case BUTTON_SINGLEPLAYER:
+            case ButtonSingleplayer:
                 mc.displayGuiScreen(new GuiSelectWorld(this));
                 break;
-            case BUTTON_MULTIPLAYER:
+            case ButtonMultiplayer:
                 mc.displayGuiScreen(new GuiMultiplayer(this));
                 break;
-            case BUTTON_MODS:
+            case ButtonTexturePacksAndMods:
                 mc.displayGuiScreen(new GuiTexturePacks(this));
                 break;
-            case BUTTON_QUIT:
+            case ButtonQuit:
                 mc.shutdown();
                 break;
         }
@@ -132,7 +118,7 @@ public class GuiMainMenu : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         DrawDefaultBackground();
-        Tessellator tessellator = Tessellator.instance;
+        Tessellator tess = Tessellator.instance;
         short logoWidth = 274;
         int logoX = Width / 2 - logoWidth / 2;
         byte logoY = 30;
@@ -140,7 +126,7 @@ public class GuiMainMenu : GuiScreen
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         DrawTexturedModalRect(logoX + 0, logoY + 0, 0, 0, 155, 44);
         DrawTexturedModalRect(logoX + 155, logoY + 0, 0, 45, 155, 44);
-        tessellator.setColorOpaque_I(0x00FFFFFF);
+        tess.setColorOpaque_I(0x00FFFFFF);
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(Width / 2 + 90, 70.0F, 0.0F);
         GLManager.GL.Rotate(-20.0F, 0.0F, 0.0F, 1.0F);

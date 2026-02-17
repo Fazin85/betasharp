@@ -4,20 +4,20 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiMultiplayer : GuiScreen
 {
-    private const int BUTTON_CONNECT = 0;
-    private const int BUTTON_CANCEL = 1;
+    private const int ButtonConnect = 0;
+    private const int ButtonCancel = 1;
 
-    private readonly GuiScreen parentScreen;
-    private GuiTextField serverAddressInputField;
+    private readonly GuiScreen _parentScreen;
+    private GuiTextField _serverAddressInputField;
 
     public GuiMultiplayer(GuiScreen parentScreen)
     {
-        this.parentScreen = parentScreen;
+        _parentScreen = parentScreen;
     }
 
     public override void UpdateScreen()
     {
-        serverAddressInputField.updateCursorCounter();
+        _serverAddressInputField.updateCursorCounter();
     }
 
     public override void InitGui()
@@ -25,15 +25,15 @@ public class GuiMultiplayer : GuiScreen
         TranslationStorage translations = TranslationStorage.getInstance();
         Keyboard.enableRepeatEvents(true);
         _controlList.Clear();
-        _controlList.Add(new GuiButton(BUTTON_CONNECT, Width / 2 - 100, Height / 4 + 96 + 12, translations.translateKey("multiplayer.connect")));
-        _controlList.Add(new GuiButton(BUTTON_CANCEL, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
+        _controlList.Add(new GuiButton(ButtonConnect, Width / 2 - 100, Height / 4 + 96 + 12, translations.translateKey("multiplayer.connect")));
+        _controlList.Add(new GuiButton(ButtonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
         string lastServerAddress = mc.options.lastServer.Replace("_", ":");
         _controlList[0].Enabled = lastServerAddress.Length > 0;
-        serverAddressInputField = new GuiTextField(this, fontRenderer, Width / 2 - 100, Height / 4 - 10 + 50 + 18, 200, 20, lastServerAddress)
+        _serverAddressInputField = new GuiTextField(this, fontRenderer, Width / 2 - 100, Height / 4 - 10 + 50 + 18, 200, 20, lastServerAddress)
         {
             isFocused = true
         };
-        serverAddressInputField.setMaxStringLength(128);
+        _serverAddressInputField.setMaxStringLength(128);
     }
 
     public override void OnGuiClosed()
@@ -47,12 +47,12 @@ public class GuiMultiplayer : GuiScreen
         {
             switch (button.Id)
             {
-                case BUTTON_CANCEL:
-                    mc.displayGuiScreen(parentScreen);
+                case ButtonCancel:
+                    mc.displayGuiScreen(_parentScreen);
                     break;
-                case BUTTON_CONNECT:
+                case ButtonConnect:
                     {
-                        string serverAddress = serverAddressInputField.getText().Trim();
+                        string serverAddress = _serverAddressInputField.getText().Trim();
                         mc.options.lastServer = serverAddress.Replace(":", "_");
                         mc.options.saveOptions();
                         string[] addressParts = serverAddress.Split(":");
@@ -66,65 +66,67 @@ public class GuiMultiplayer : GuiScreen
                                 if (portPart.StartsWith(":") && portPart.Length > 0)
                                 {
                                     portPart = portPart.Substring(1);
-                                    addressParts = new string[] { ipv6Address, portPart };
+                                    addressParts = [ipv6Address, portPart];
                                 }
                                 else
                                 {
-                                    addressParts = new string[] { ipv6Address };
+                                    addressParts = [ipv6Address];
                                 }
                             }
                         }
 
                         if (addressParts.Length > 2)
                         {
-                            addressParts = new string[] { serverAddress };
+                            addressParts = [serverAddress];
                         }
 
-                        mc.displayGuiScreen(new GuiConnecting(mc, addressParts[0], addressParts.Length > 1 ? parseIntWithDefault(addressParts[1], 25565) : 25565));
+                        mc.displayGuiScreen(new GuiConnecting(mc, addressParts[0], addressParts.Length > 1 ? ParseIntWithDefault(addressParts[1], 25565) : 25565));
                         break;
                     }
             }
         }
     }
 
-    private int parseIntWithDefault(string value, int defaultValue)
+    private int ParseIntWithDefault(string value, int defaultValue)
     {
-        try
-        {
-            return java.lang.Integer.parseInt(value.Trim());
-        }
-        catch (Exception exception)
-        {
-            return defaultValue;
-        }
+        if (int.TryParse(value?.Trim(), out var result))
+            return result;
+
+        return defaultValue;
     }
 
     protected override void KeyTyped(char eventChar, int eventKey)
     {
-        serverAddressInputField.textboxKeyTyped(eventChar, eventKey);
-        if (eventChar == 13)
+        _serverAddressInputField.textboxKeyTyped(eventChar, eventKey);
+        if (eventChar == Keyboard.KEY_RETURN)
         {
             ActionPerformed(_controlList[0]);
         }
 
-        _controlList[0].Enabled = serverAddressInputField.getText().Length > 0;
+        _controlList[0].Enabled = _serverAddressInputField.getText().Length > 0;
     }
 
     protected override void MouseClicked(int x, int y, int button)
     {
         base.MouseClicked(x, y, button);
-        serverAddressInputField.mouseClicked(x, y, button);
+        _serverAddressInputField.mouseClicked(x, y, button);
     }
 
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         TranslationStorage translations = TranslationStorage.getInstance();
         DrawDefaultBackground();
-        DrawCenteredString(fontRenderer, translations.translateKey("multiplayer.title"), Width / 2, Height / 4 - 60 + 20, 0x00FFFFFF);
-        DrawString(fontRenderer, translations.translateKey("multiplayer.info1"), Width / 2 - 140, Height / 4 - 60 + 60 + 0, 10526880);
-        DrawString(fontRenderer, translations.translateKey("multiplayer.info2"), Width / 2 - 140, Height / 4 - 60 + 60 + 9, 10526880);
-        DrawString(fontRenderer, translations.translateKey("multiplayer.ipinfo"), Width / 2 - 140, Height / 4 - 60 + 60 + 36, 10526880);
-        serverAddressInputField.drawTextBox();
+
+        int centerX = Width / 2;
+        int centerY = Height / 4;
+
+        DrawCenteredString(fontRenderer, translations.translateKey("multiplayer.title"), centerX, centerY - 60 + 20, 0x00FFFFFF);
+
+        DrawString(fontRenderer, translations.translateKey("multiplayer.info1"), centerX - 140, centerY - 60 + 60 + 0, 0xA0A0A0);
+        DrawString(fontRenderer, translations.translateKey("multiplayer.info2"), centerX - 140, centerY - 60 + 60 + 9, 0xA0A0A0);
+        DrawString(fontRenderer, translations.translateKey("multiplayer.ipinfo"), centerX - 140, centerY - 60 + 60 + 36, 0xA0A0A0);
+
+        _serverAddressInputField.drawTextBox();
         base.Render(mouseX, mouseY, partialTicks);
     }
 }

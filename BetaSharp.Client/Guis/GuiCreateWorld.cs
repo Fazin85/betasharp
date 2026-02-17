@@ -160,10 +160,10 @@ public class GuiCreateWorld : GuiScreen
         TranslationStorage translations = TranslationStorage.getInstance();
         DrawDefaultBackground();
         DrawCenteredString(fontRenderer, translations.translateKey("selectWorld.create"), Width / 2, Height / 4 - 60 + 20, 0x00FFFFFF);
-        DrawString(fontRenderer, translations.translateKey("selectWorld.enterName"), Width / 2 - 100, 47, 10526880);
-        DrawString(fontRenderer, translations.translateKey("selectWorld.resultFolder") + " " + _folderName, Width / 2 - 100, 85, 10526880);
-        DrawString(fontRenderer, translations.translateKey("selectWorld.enterSeed"), Width / 2 - 100, 104, 10526880);
-        DrawString(fontRenderer, translations.translateKey("selectWorld.seedInfo"), Width / 2 - 100, 140, 10526880);
+        DrawString(fontRenderer, translations.translateKey("selectWorld.enterName"), Width / 2 - 100, 47, 0xA0A0A0);
+        DrawString(fontRenderer, translations.translateKey("selectWorld.resultFolder") + " " + _folderName, Width / 2 - 100, 85, 0xA0A0A0);
+        DrawString(fontRenderer, translations.translateKey("selectWorld.enterSeed"), Width / 2 - 100, 104, 0xA0A0A0);
+        DrawString(fontRenderer, translations.translateKey("selectWorld.seedInfo"), Width / 2 - 100, 140, 0xA0A0A0);
         _textboxWorldName.drawTextBox();
         _textboxSeed.drawTextBox();
         base.Render(mouseX, mouseY, partialTicks);

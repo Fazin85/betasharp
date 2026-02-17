@@ -14,8 +14,8 @@ public class GuiDispenser : GuiContainer
 
     protected override void DrawGuiContainerForegroundLayer()
     {
-        fontRenderer.drawString("Dispenser", 60, 6, 4210752);
-        fontRenderer.drawString("Inventory", 8, _ySize - 96 + 2, 4210752);
+        fontRenderer.drawString("Dispenser", 60, 6, 0x404040);
+        fontRenderer.drawString("Inventory", 8, _ySize - 96 + 2, 0x404040);
     }
 
     protected override void DrawGuiContainerBackgroundLayer(float partialTicks)

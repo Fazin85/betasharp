@@ -4,20 +4,20 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiGameOver : GuiScreen
 {
-    private const int BUTTON_RESPAWN = 1;
-    private const int BUTTON_TITLE = 2;
+    private const int ButtonRespawn = 1;
+    private const int ButtonTitle = 2;
 
     public override void InitGui()
     {
         _controlList.Clear();
-        _controlList.Add(new GuiButton(BUTTON_RESPAWN, Width / 2 - 100, Height / 4 + 72, "Respawn"));
-        _controlList.Add(new GuiButton(BUTTON_TITLE, Width / 2 - 100, Height / 4 + 96, "Title menu"));
+        _controlList.Add(new GuiButton(ButtonRespawn, Width / 2 - 100, Height / 4 + 72, "Respawn"));
+        _controlList.Add(new GuiButton(ButtonTitle, Width / 2 - 100, Height / 4 + 96, "Title menu"));
         if (mc.session == null)
         {
             for (int i = 0; i < _controlList.Count; ++i)
             {
                 GuiButton btn = _controlList[i];
-                if (btn.Id == BUTTON_RESPAWN)
+                if (btn.Id == ButtonRespawn)
                 {
                     btn.Enabled = false;
                     break;
@@ -35,11 +35,11 @@ public class GuiGameOver : GuiScreen
     {
         switch (button.Id)
         {
-            case BUTTON_RESPAWN:
+            case ButtonRespawn:
                 mc.player.respawn();
                 mc.displayGuiScreen(null);
                 break;
-            case BUTTON_TITLE:
+            case ButtonTitle:
                 mc.changeWorld1(null);
                 mc.displayGuiScreen(new GuiMainMenu());
                 break;
