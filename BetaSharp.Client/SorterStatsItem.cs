@@ -1,4 +1,4 @@
-using BetaSharp.Client.Guis;
+﻿using BetaSharp.Client.Guis;
 using BetaSharp.Stats;
 using java.util;
 using java.util.function;
@@ -51,8 +51,8 @@ public class SorterStatsItem : Comparator
                 return -1;
             }
 
-            int var7 = GuiStats.func_27142_c(field_27373_a).writeStat(var5);
-            int var8 = GuiStats.func_27142_c(field_27373_a).writeStat(var6);
+            int var7 = field_27373_a.statFileWriter.writeStat(var5);
+            int var8 = field_27373_a.statFileWriter.writeStat(var6);
             if (var7 != var8)
             {
                 return (var7 - var8) * field_27372_b.field_27270_f;

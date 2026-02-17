@@ -1,4 +1,4 @@
-using BetaSharp.Client.Input;
+﻿using BetaSharp.Client.Input;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Items;
 using BetaSharp.Stats;
@@ -14,11 +14,12 @@ public abstract class GuiSlotStats : GuiSlot
     protected Comparator field_27272_d;
     public int field_27271_e;
     public int field_27270_f;
-    readonly GuiStats field_27269_g;
+    private readonly GuiStats _gui;
 
-    protected GuiSlotStats(GuiStats var1) : base(GuiStats.func_27143_f(var1), var1.width, var1.height, 32, var1.height - 64, 20)
+    protected GuiSlotStats(GuiStats statsGui)
+        : base(statsGui.mc, statsGui.width, statsGui.height, 32, statsGui.height - 64, 20)
     {
-        field_27269_g = var1;
+        _gui = statsGui;
         field_27268_b = -1;
         field_27271_e = -1;
         field_27270_f = 0;
@@ -37,7 +38,7 @@ public abstract class GuiSlotStats : GuiSlot
 
     protected override void drawBackground()
     {
-        field_27269_g.drawDefaultBackground();
+        _gui.drawDefaultBackground();
     }
 
     protected override void func_27260_a(int var1, int var2, Tessellator var3)
@@ -49,29 +50,29 @@ public abstract class GuiSlotStats : GuiSlot
 
         if (field_27268_b == 0)
         {
-            GuiStats.func_27128_a(field_27269_g, var1 + 115 - 18, var2 + 1, 0, 0);
+            _gui.drawTranslucentRect(var1 + 115 - 18, var2 + 1, 0, 0);
         }
         else
         {
-            GuiStats.func_27128_a(field_27269_g, var1 + 115 - 18, var2 + 1, 0, 18);
+            _gui.drawTranslucentRect(var1 + 115 - 18, var2 + 1, 0, 18);
         }
 
         if (field_27268_b == 1)
         {
-            GuiStats.func_27128_a(field_27269_g, var1 + 165 - 18, var2 + 1, 0, 0);
+            _gui.drawTranslucentRect(var1 + 165 - 18, var2 + 1, 0, 0);
         }
         else
         {
-            GuiStats.func_27128_a(field_27269_g, var1 + 165 - 18, var2 + 1, 0, 18);
+            _gui.drawTranslucentRect(var1 + 165 - 18, var2 + 1, 0, 18);
         }
 
         if (field_27268_b == 2)
         {
-            GuiStats.func_27128_a(field_27269_g, var1 + 215 - 18, var2 + 1, 0, 0);
+            _gui.drawTranslucentRect(var1 + 215 - 18, var2 + 1, 0, 0);
         }
         else
         {
-            GuiStats.func_27128_a(field_27269_g, var1 + 215 - 18, var2 + 1, 0, 18);
+            _gui.drawTranslucentRect(var1 + 215 - 18, var2 + 1, 0, 18);
         }
 
         if (field_27271_e != -1)
@@ -92,7 +93,7 @@ public abstract class GuiSlotStats : GuiSlot
                 var5 = 36;
             }
 
-            GuiStats.func_27128_a(field_27269_g, var1 + var4, var2 + 1, var5, 0);
+            _gui.drawTranslucentRect(var1 + var4, var2 + 1, var5, 0);
         }
 
     }
@@ -116,7 +117,7 @@ public abstract class GuiSlotStats : GuiSlot
         if (field_27268_b >= 0)
         {
             func_27266_c(field_27268_b);
-            GuiStats.func_27149_g(field_27269_g).sndManager.playSoundFX("random.click", 1.0F, 1.0F);
+            _gui.mc.sndManager.playSoundFX("random.click", 1.0F, 1.0F);
         }
 
     }
@@ -138,13 +139,17 @@ public abstract class GuiSlotStats : GuiSlot
         string var5;
         if (var1 != null)
         {
-            var5 = var1.format(GuiStats.func_27142_c(field_27269_g).writeStat(var1));
-            field_27269_g.drawString(GuiStats.func_27133_h(field_27269_g), var5, var2 - GuiStats.func_27137_i(field_27269_g).getStringWidth(var5), var3 + 5, var4 ? 0x00FFFFFFu : 0x00909090u);
+            var5 = var1.format(_gui.statFileWriter.writeStat(var1));
+            _gui.drawString(_gui.fontRenderer, var5,
+                var2 - _gui.fontRenderer.getStringWidth(var5), var3 + 5,
+                var4 ? 0x00FFFFFFu : 0x00909090u);
         }
         else
         {
             var5 = "-";
-            field_27269_g.drawString(GuiStats.func_27132_j(field_27269_g), var5, var2 - GuiStats.func_27134_k(field_27269_g).getStringWidth(var5), var3 + 5, var4 ? 0x00FFFFFFu : 0x00909090u);
+            _gui.drawString(_gui.fontRenderer, var5,
+                var2 - _gui.fontRenderer.getStringWidth(var5), var3 + 5,
+                var4 ? 0x00FFFFFFu : 0x00909090u);
         }
 
     }
@@ -154,7 +159,7 @@ public abstract class GuiSlotStats : GuiSlot
         if (var2 >= top && var2 <= bottom)
         {
             int var3 = func_27256_c(var1, var2);
-            int var4 = field_27269_g.width / 2 - 92 - 16;
+            int var4 = _gui.width / 2 - 92 - 16;
             if (var3 >= 0)
             {
                 if (var1 < var4 + 40 || var1 > var4 + 40 + 20)
@@ -191,9 +196,9 @@ public abstract class GuiSlotStats : GuiSlot
                 {
                     int var6 = var1 + 12;
                     int var7 = var2 - 12;
-                    int var8 = GuiStats.func_27139_l(field_27269_g).getStringWidth(var5);
-                    GuiStats.func_27129_a(field_27269_g, var6 - 3, var7 - 3, var6 + var8 + 3, var7 + 8 + 3, 0xC0000000, 0xC0000000);
-                    GuiStats.func_27144_m(field_27269_g).drawStringWithShadow(var5, var6, var7, 0xFFFFFFFF);
+                    int var8 = _gui.fontRenderer.getStringWidth(var5);
+                    _gui.drawTranslucentRect(var6 - 3, var7 - 3, var6 + var8 + 3, var7 + 8 + 3);
+                    _gui.fontRenderer.drawStringWithShadow(var5, var6, var7, 0xFFFFFFFF);
                 }
             }
 
@@ -210,9 +215,9 @@ public abstract class GuiSlotStats : GuiSlot
             {
                 int var6 = var2 + 12;
                 int var7 = var3 - 12;
-                int var8 = GuiStats.func_27127_n(field_27269_g).getStringWidth(var5);
-                GuiStats.func_27135_b(field_27269_g, var6 - 3, var7 - 3, var6 + var8 + 3, var7 + 8 + 3, 0xC0000000, 0xC0000000);
-                GuiStats.func_27131_o(field_27269_g).drawStringWithShadow(var5, var6, var7, 0xFFFFFFFF);
+                int var8 = _gui.fontRenderer.getStringWidth(var5);
+                _gui.drawTranslucentRect(var6 - 3, var7 - 3, var6 + var8 + 3, var7 + 8 + 3);
+                _gui.fontRenderer.drawStringWithShadow(var5, var6, var7, 0xFFFFFFFF);
             }
 
         }
