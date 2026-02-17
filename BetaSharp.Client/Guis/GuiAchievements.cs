@@ -151,7 +151,7 @@ public class GuiAchievements : GuiScreen
     {
         int var1 = (width - field_27121_a) / 2;
         int var2 = (height - field_27119_i) / 2;
-        fontRenderer.drawString("Achievements", var1 + 15, var2 + 5, 4210752);
+        fontRenderer.drawString("Achievements", var1 + 15, var2 + 5, 0x404040);
     }
 
     protected void func_27109_b(int var1, int var2, float var3)

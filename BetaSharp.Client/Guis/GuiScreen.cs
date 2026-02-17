@@ -186,7 +186,7 @@ public class GuiScreen : Gui
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         float var3 = 32.0F;
         var2.startDrawingQuads();
-        var2.setColorOpaque_I(4210752);
+        var2.setColorOpaque_I(0x404040);
         var2.addVertexWithUV(0.0D, height, 0.0D, 0.0D, (double)(height / var3 + var1));
         var2.addVertexWithUV(width, height, 0.0D, (double)(width / var3), (double)(height / var3 + var1));
         var2.addVertexWithUV(width, 0.0D, 0.0D, (double)(width / var3), 0 + var1);

@@ -1,4 +1,4 @@
-using BetaSharp.Client.Input;
+﻿using BetaSharp.Client.Input;
 using BetaSharp.Util;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Storage;
@@ -160,10 +160,10 @@ public class GuiCreateWorld : GuiScreen
         TranslationStorage translations = TranslationStorage.getInstance();
         drawDefaultBackground();
         drawCenteredString(fontRenderer, translations.translateKey("selectWorld.create"), width / 2, height / 4 - 60 + 20, 0x00FFFFFF);
-        drawString(fontRenderer, translations.translateKey("selectWorld.enterName"), width / 2 - 100, 47, 10526880);
-        drawString(fontRenderer, translations.translateKey("selectWorld.resultFolder") + " " + folderName, width / 2 - 100, 85, 10526880);
-        drawString(fontRenderer, translations.translateKey("selectWorld.enterSeed"), width / 2 - 100, 104, 10526880);
-        drawString(fontRenderer, translations.translateKey("selectWorld.seedInfo"), width / 2 - 100, 140, 10526880);
+        drawString(fontRenderer, translations.translateKey("selectWorld.enterName"), width / 2 - 100, 47, 0xA0A0A0);
+        drawString(fontRenderer, translations.translateKey("selectWorld.resultFolder") + " " + folderName, width / 2 - 100, 85, 0xA0A0A0);
+        drawString(fontRenderer, translations.translateKey("selectWorld.enterSeed"), width / 2 - 100, 104, 0xA0A0A0);
+        drawString(fontRenderer, translations.translateKey("selectWorld.seedInfo"), width / 2 - 100, 140, 0xA0A0A0);
         textboxWorldName.drawTextBox();
         textboxSeed.drawTextBox();
         base.render(mouseX, mouseY, partialTicks);

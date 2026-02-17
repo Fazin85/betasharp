@@ -1,4 +1,4 @@
-using BetaSharp.Client.Rendering.Core;
+﻿using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Items;
 using BetaSharp.Stats;
 using Silk.NET.OpenGL.Legacy;
@@ -86,9 +86,9 @@ public class GuiAchievement : Gui
         GLManager.GL.DepthMask(false);
         Lighting.turnOff();
         updateAchievementWindowScale();
-        theGame.fontRenderer.drawStringWithShadow(LICENSE_WARNING_TEXT, 2, 2, 0x00FFFFFF);
-        theGame.fontRenderer.drawStringWithShadow(ALT_LOCATION_WARNING_TEXT, 2, 11, 0x00FFFFFF);
-        theGame.fontRenderer.drawStringWithShadow(PURCHASE_PROMPT_TEXT, 2, 20, 0x00FFFFFF);
+        theGame.fontRenderer.drawStringWithShadow(LICENSE_WARNING_TEXT, 2, 2, 0xFFFFFF);
+        theGame.fontRenderer.drawStringWithShadow(ALT_LOCATION_WARNING_TEXT, 2, 11, 0xFFFFFF);
+        theGame.fontRenderer.drawStringWithShadow(PURCHASE_PROMPT_TEXT, 2, 20, 0xFFFFFF);
         GLManager.GL.DepthMask(true);
         GLManager.GL.Enable(GLEnum.DepthTest);
     }

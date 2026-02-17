@@ -1,4 +1,4 @@
-using BetaSharp.Client.Rendering.Core;
+﻿using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 using Silk.NET.OpenGL.Legacy;
@@ -70,7 +70,7 @@ public class FishingBobberEntityRenderer : EntityRenderer
             GLManager.GL.Disable(GLEnum.Texture2D);
             GLManager.GL.Disable(GLEnum.Lighting);
             var12.startDrawing(3);
-            var12.setColorOpaque_I(0);
+            var12.setColorOpaque_I(0x000000);
             byte var46 = 16;
 
             for (int var47 = 0; var47 <= var46; ++var47)

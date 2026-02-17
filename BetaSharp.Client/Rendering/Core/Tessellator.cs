@@ -590,20 +590,20 @@ public class Tessellator : java.lang.Object
     }
 
 
-    public void setColorOpaque_I(int var1)
+    public void setColorOpaque_I(int color)
     {
-        int var2 = var1 >> 16 & 255;
-        int var3 = var1 >> 8 & 255;
-        int var4 = var1 & 255;
-        setColorOpaque(var2, var3, var4);
+        int red = color >> 16 & 255;
+        int green = color >> 8 & 255;
+        int blue = color & 255;
+        setColorOpaque(red, green, blue);
     }
 
-    public void setColorRGBA_I(int var1, int var2)
+    public void setColorRGBA_I(int color, int alpha)
     {
-        int var3 = var1 >> 16 & 255;
-        int var4 = var1 >> 8 & 255;
-        int var5 = var1 & 255;
-        setColorRGBA(var3, var4, var5, var2);
+        int red = color >> 16 & 255;
+        int green = color >> 8 & 255;
+        int blue = color & 255;
+        setColorRGBA(red, green, blue, alpha);
     }
 
     public void disableColor()

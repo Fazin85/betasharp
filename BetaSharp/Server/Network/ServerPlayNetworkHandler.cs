@@ -1,4 +1,4 @@
-using BetaSharp.Blocks.Entities;
+﻿using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Inventorys;
 using BetaSharp.Items;

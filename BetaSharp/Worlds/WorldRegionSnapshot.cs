@@ -1,4 +1,4 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Blocks.Materials;
 using BetaSharp.NBT;

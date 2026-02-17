@@ -1,4 +1,4 @@
-using BetaSharp.Client.Input;
+﻿using BetaSharp.Client.Input;
 using BetaSharp.Util;
 using BetaSharp.Server;
 using BetaSharp.Server.Commands;
@@ -256,7 +256,7 @@ public class GuiChat : GuiScreen
         }
 
         string commandName = allParts[0]; // e.g., "/give"
-        
+
         // If we're only completing the command name (no space yet)
         if (allParts.Length == 1 || (allParts.Length == 2 && message.EndsWith(" ") == false && allParts[1] == ""))
         {
@@ -326,11 +326,11 @@ public class GuiChat : GuiScreen
         // Determine which argument we're currently completing
         // If message ends with space, we're completing a new argument
         bool completingNewArg = message.EndsWith(" ");
-        
+
         // Get the current argument prefix and index
         string currentArgPrefix = "";
         int argIndex; // Index relative to command (0 = first arg after command)
-        
+
         if (completingNewArg)
         {
             // User pressed Tab after a space - completing new argument
@@ -351,7 +351,7 @@ public class GuiChat : GuiScreen
         // Get completions from provider
         MinecraftServer server = mc?.internalServer;
         List<string> matchingCompletions = [];
-        
+
         if (server != null && argIndex >= 0)
         {
             matchingCompletions = CommandCompletionProvider.GetCompletions(commandName, argIndex, currentArgPrefix, server);
@@ -401,7 +401,7 @@ public class GuiChat : GuiScreen
         // argIndex is relative to command (0 = first arg after command)
         // parts[0] is the command, parts[1] is first arg, etc.
         int partIndex = argIndex + 1;
-        
+
         if (argIndex < 0 || partIndex > parts.Length)
         {
             return;
@@ -426,7 +426,7 @@ public class GuiChat : GuiScreen
             parts[partIndex] = replacement;
             message = string.Join(" ", parts);
         }
-        
+
         // Move cursor to end of message
         cursorPosition = message.Length;
     }
@@ -512,7 +512,7 @@ public class GuiChat : GuiScreen
     public override void render(int var1, int var2, float var3)
     {
         drawRect(2, height - 14, width - 2, height - 2, 0x80000000);
-        
+
         // Display message with cursor at correct position
         string beforeCursor = message.Substring(0, Math.Min(cursorPosition, message.Length));
         string afterCursor = message.Substring(Math.Min(cursorPosition, message.Length));
@@ -538,7 +538,7 @@ public class GuiChat : GuiScreen
             drawRect(xBase + beforeWidth, y - 1, xBase + beforeWidth + selWidth, y + 9, 0x80FFFFFFu);
 
             // Draw selected text in contrasting color
-            fontRenderer.drawString(sel, xBase + beforeWidth, y, 0xFF000000u);
+            fontRenderer.drawString(sel, xBase + beforeWidth, y, 0xFF000000);
 
             // Draw after selection
             fontRenderer.drawStringWithShadow(afterSel, xBase + beforeWidth + selWidth, y, normalColor);

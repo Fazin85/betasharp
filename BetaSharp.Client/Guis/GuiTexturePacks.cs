@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using BetaSharp.Client.Rendering;
 
 namespace BetaSharp.Client.Guis;
@@ -82,7 +82,7 @@ public class GuiTexturePacks : GuiScreen
 
         TranslationStorage translations = TranslationStorage.getInstance();
         drawCenteredString(fontRenderer, translations.translateKey("texturePack.title"), width / 2, 16, 0x00FFFFFF);
-        drawCenteredString(fontRenderer, translations.translateKey("texturePack.folderInfo"), width / 2 - 77, height - 26, 8421504);
+        drawCenteredString(fontRenderer, translations.translateKey("texturePack.folderInfo"), width / 2 - 77, height - 26, 0x00808080u);
         base.render(mouseX, mouseY, partialTicks);
     }
 

@@ -1,4 +1,4 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Core;
@@ -206,30 +206,30 @@ public class GuiIngame : Gui
             if (Minecraft.hasPaidCheckTime > 0L)
                 GLManager.GL.Translate(0.0F, 32.0F, 0.0F);
 
-            font.drawStringWithShadow("Minecraft Beta 1.7.3 (" + mc.debug + ")", 2, 2, 0x00FFFFFF);
-            font.drawStringWithShadow(mc.getEntityDebugInfo(), 2, 22, 0x00FFFFFF);
-            font.drawStringWithShadow(mc.getParticleAndEntityCountDebugInfo(), 2, 32, 0x00FFFFFF);
-            font.drawStringWithShadow(mc.getWorldDebugInfo(), 2, 42, 0x00FFFFFF);
+            font.drawStringWithShadow("Minecraft Beta 1.7.3 (" + mc.debug + ")", 2, 2, 0xFFFFFF);
+            font.drawStringWithShadow(mc.getEntityDebugInfo(), 2, 22, 0xFFFFFF);
+            font.drawStringWithShadow(mc.getParticleAndEntityCountDebugInfo(), 2, 32, 0xFFFFFF);
+            font.drawStringWithShadow(mc.getWorldDebugInfo(), 2, 42, 0xFFFFFF);
             long maxMem = GCMonitor.MaxMemoryBytes;
             long usedMem = GCMonitor.UsedMemoryBytes;
             long heapMem = GCMonitor.UsedHeapBytes;
             debugStr = "Used memory: " + usedMem * 100L / maxMem + "% (" + usedMem / 1024L / 1024L + "MB) of " + maxMem / 1024L / 1024L + "MB";
-            drawString(font, debugStr, scaledWidth - font.getStringWidth(debugStr) - 2, 2, 0x00E0E0E0u);
+            drawString(font, debugStr, scaledWidth - font.getStringWidth(debugStr) - 2, 2, 0xE0E0E0);
             debugStr = "GC heap: " + heapMem * 100L / maxMem + "% (" + heapMem / 1024L / 1024L + "MB)";
-            drawString(font, debugStr, scaledWidth - font.getStringWidth(debugStr) - 2, 12, 0x00E0E0E0u);
-            drawString(font, "x: " + mc.player.x, 2, 64, 0x00E0E0E0u);
-            drawString(font, "y: " + mc.player.y, 2, 72, 0x00E0E0E0u);
-            drawString(font, "z: " + mc.player.z, 2, 80, 0x00E0E0E0u);
-            drawString(font, "f: " + (MathHelper.floor_double((double)(mc.player.yaw * 4.0F / 360.0F) + 0.5D) & 3), 2, 88, 0x00E0E0E0u);
+            drawString(font, debugStr, scaledWidth - font.getStringWidth(debugStr) - 2, 12, 0xE0E0E0);
+            drawString(font, "x: " + mc.player.x, 2, 64, 0xE0E0E0);
+            drawString(font, "y: " + mc.player.y, 2, 72, 0xE0E0E0);
+            drawString(font, "z: " + mc.player.z, 2, 80, 0xE0E0E0);
+            drawString(font, "f: " + (MathHelper.floor_double((double)(mc.player.yaw * 4.0F / 360.0F) + 0.5D) & 3), 2, 88, 0xE0E0E0);
 
             if (mc.internalServer != null)
             {
-                drawString(font, $"Server TPS: {mc.internalServer.Tps:F1}", 2, 104, 0x00E0E0E0u);
+                drawString(font, $"Server TPS: {mc.internalServer.Tps:F1}", 2, 104, 0xE0E0E0);
             }
 
             int meshY = mc.internalServer != null ? 120 : 104;
             var cr = mc.terrainRenderer.chunkRenderer;
-            drawString(font, $"Meshes: S: {cr.LoadedMeshes} T: {cr.TranslucentMeshes}", 2, meshY, 0x00E0E0E0u);
+            drawString(font, $"Meshes: S: {cr.LoadedMeshes} T: {cr.TranslucentMeshes}", 2, meshY, 0xE0E0E0);
             GLManager.GL.PopMatrix();
         }
         else
@@ -255,7 +255,7 @@ public class GuiIngame : Gui
                 j = 0x00FFFFFF;
                 if (field_22065_l)
                 {
-                    j = Color.HSBtoRGB(t / 50.0F, 0.7F, 0.6F) & 0x00FFFFFF;
+                    j = Color.HSBtoRGB(t / 50.0F, 0.7F, 0.6F) & 0xFFFFFF;
                 }
 
                 font.drawString(recordPlaying, -font.getStringWidth(recordPlaying) / 2, -4, (uint)(j + (i << 24)));
@@ -309,7 +309,7 @@ public class GuiIngame : Gui
                     debugStr = ((ChatLine)chatMessageList.get(j)).Message;
                     drawRect(left, y - 1, left + 320, y + 8, (uint)(alpha / 2 << 24));
                     GLManager.GL.Enable(GLEnum.Blend);
-                    font.drawStringWithShadow(debugStr, left, y, 0x00FFFFFF + (uint)(alpha << 24));
+                    font.drawStringWithShadow(debugStr, left, y, 0xFFFFFF + (uint)(alpha << 24));
                 }
             }
         }

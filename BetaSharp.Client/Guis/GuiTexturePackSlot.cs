@@ -27,10 +27,10 @@ public class GuiTexturePackSlot : GuiSlot
         GuiTexturePacks.func_22117_e(parentTexturePackGui).textureManager.reload();
     }
 
-    protected override bool isSelected(int var1)
+    protected override bool isSelected(int slotIndex)
     {
         List var2 = GuiTexturePacks.func_22118_f(parentTexturePackGui).texturePackList.availableTexturePacks();
-        return GuiTexturePacks.func_22116_g(parentTexturePackGui).texturePackList.selectedTexturePack == var2.get(var1);
+        return GuiTexturePacks.func_22116_g(parentTexturePackGui).texturePackList.selectedTexturePack == var2.get(slotIndex);
     }
 
     protected override int getContentHeight()
@@ -49,14 +49,14 @@ public class GuiTexturePackSlot : GuiSlot
         var6.bindThumbnailTexture(GuiTexturePacks.func_22123_i(parentTexturePackGui));
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         var5.startDrawingQuads();
-        var5.setColorOpaque_I(0x00FFFFFF);
+        var5.setColorOpaque_I(0xFFFFFF);
         var5.addVertexWithUV(var2, var3 + var4, 0.0D, 0.0D, 1.0D);
         var5.addVertexWithUV(var2 + 32, var3 + var4, 0.0D, 1.0D, 1.0D);
         var5.addVertexWithUV(var2 + 32, var3, 0.0D, 1.0D, 0.0D);
         var5.addVertexWithUV(var2, var3, 0.0D, 0.0D, 0.0D);
         var5.draw();
-        parentTexturePackGui.drawString(GuiTexturePacks.func_22127_j(parentTexturePackGui), var6.texturePackFileName, var2 + 32 + 2, var3 + 1, 0x00FFFFFF);
-        parentTexturePackGui.drawString(GuiTexturePacks.func_22120_k(parentTexturePackGui), var6.firstDescriptionLine, var2 + 32 + 2, var3 + 12, 8421504);
-        parentTexturePackGui.drawString(GuiTexturePacks.func_22125_l(parentTexturePackGui), var6.secondDescriptionLine, var2 + 32 + 2, var3 + 12 + 10, 8421504);
+        parentTexturePackGui.drawString(GuiTexturePacks.func_22127_j(parentTexturePackGui), var6.texturePackFileName, var2 + 32 + 2, var3 + 1, 0xFFFFFF);
+        parentTexturePackGui.drawString(GuiTexturePacks.func_22120_k(parentTexturePackGui), var6.firstDescriptionLine, var2 + 32 + 2, var3 + 12, 0x808080);
+        parentTexturePackGui.drawString(GuiTexturePacks.func_22125_l(parentTexturePackGui), var6.secondDescriptionLine, var2 + 32 + 2, var3 + 12 + 10, 0x808080);
     }
 }

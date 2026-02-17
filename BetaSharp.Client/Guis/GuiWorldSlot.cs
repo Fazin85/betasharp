@@ -69,8 +69,8 @@ public class GuiWorldSlot : GuiSlot
             extraStatus = GuiSelectWorld.getUnsupportedFormatMessage(parentWorldGui) + " " + extraStatus;
         }
 
-        parentWorldGui.drawString(parentWorldGui.fontRenderer, displayName, x + 2, y + 1, 0x00FFFFFF);
-        parentWorldGui.drawString(parentWorldGui.fontRenderer, fileInfo, x + 2, y + 12, 8421504);
-        parentWorldGui.drawString(parentWorldGui.fontRenderer, extraStatus, x + 2, y + 12 + 10, 8421504);
+        parentWorldGui.drawString(parentWorldGui.fontRenderer, displayName, x + 2, y + 1, 0xFFFFFF);
+        parentWorldGui.drawString(parentWorldGui.fontRenderer, fileInfo, x + 2, y + 12, 0x808080);
+        parentWorldGui.drawString(parentWorldGui.fontRenderer, extraStatus, x + 2, y + 12 + 10, 0x808080);
     }
 }

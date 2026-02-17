@@ -95,34 +95,34 @@ public class Gui : java.lang.Object
         GLManager.GL.Enable(GLEnum.Texture2D);
     }
 
-    public void drawCenteredString(TextRenderer var1, string var2, int var3, int var4, uint color)
+    public void drawCenteredString(TextRenderer textRenderer, string text, int x, int y, uint color)
     {
         // Check if text contains any color codes like &e, &8, &a, etc.
-        if (HasColorCodes(var2))
+        if (HasColorCodes(text))
         {
             // Draw with color support
-            DrawStringWithColors(var1, var2, var3 - var1.getStringWidth(RemoveColorCodes(var2)) / 2, var4);
+            DrawStringWithColors(textRenderer, text, x - textRenderer.getStringWidth(RemoveColorCodes(text)) / 2, y);
         }
         else
         {
-            var1.drawStringWithShadow(var2, var3 - var1.getStringWidth(var2) / 2, var4, color);
+            textRenderer.drawStringWithShadow(text, x - textRenderer.getStringWidth(text) / 2, y, color);
         }
     }
 
-    public void drawString(TextRenderer var1, string var2, int var3, int var4, uint color)
+    public void drawString(TextRenderer renderer, string text, int x, int y, uint color)
     {
         // Check if text contains any color codes
-        if (HasColorCodes(var2))
+        if (HasColorCodes(text))
         {
-            DrawStringWithColors(var1, var2, var3, var4);
+            DrawStringWithColors(renderer, text, x, y);
         }
         else
         {
-            var1.drawStringWithShadow(var2, var3, var4, color);
+            renderer.drawStringWithShadow(text, x, y, color);
         }
     }
 
-    private bool HasColorCodes(string text)
+    private static bool HasColorCodes(string text)
     {
         if (string.IsNullOrEmpty(text)) return false;
 

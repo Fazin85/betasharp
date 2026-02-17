@@ -1,4 +1,4 @@
-using BetaSharp.Client.Input;
+﻿using BetaSharp.Client.Input;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Storage;
 
@@ -86,7 +86,7 @@ public class GuiRenameWorld : GuiScreen
         TranslationStorage translations = TranslationStorage.getInstance();
         drawDefaultBackground();
         drawCenteredString(fontRenderer, translations.translateKey("selectWorld.renameTitle"), width / 2, height / 4 - 60 + 20, 0x00FFFFFF);
-        drawString(fontRenderer, translations.translateKey("selectWorld.enterName"), width / 2 - 100, 47, 10526880);
+        drawString(fontRenderer, translations.translateKey("selectWorld.enterName"), width / 2 - 100, 47, 0xA0A0A0);
         nameInputField.drawTextBox();
         base.render(mouseX, mouseY, partialTicks);
     }

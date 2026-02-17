@@ -31,7 +31,7 @@ public abstract class GuiSlotStats : GuiSlot
     {
     }
 
-    protected override bool isSelected(int var1)
+    protected override bool isSelected(int slotIndex)
     {
         return false;
     }

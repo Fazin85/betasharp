@@ -305,7 +305,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         GLManager.GL.Disable(GLEnum.Fog);
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)textureManager.getTextureId("/title/mojang.png"));
         tessellator.startDrawingQuads();
-        tessellator.setColorOpaque_I(0x00FFFFFF);
+        tessellator.setColorOpaque_I(0xFFFFFF);
         tessellator.addVertexWithUV(0.0D, (double)displayHeight, 0.0D, 0.0D, 0.0D);
         tessellator.addVertexWithUV((double)displayWidth, (double)displayHeight, 0.0D, 0.0D, 0.0D);
         tessellator.addVertexWithUV((double)displayWidth, 0.0D, 0.0D, 0.0D, 0.0D);
@@ -314,7 +314,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         short var3 = 256;
         short var4 = 256;
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        tessellator.setColorOpaque_I(0x00FFFFFF);
+        tessellator.setColorOpaque_I(0xFFFFFF);
         drawTextureRegion((var1.ScaledWidth - var3) / 2, (var1.ScaledHeight - var4) / 2, 0, 0, var3, var4);
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.Disable(GLEnum.Fog);
@@ -327,7 +327,7 @@ public partial class Minecraft : java.lang.Object, Runnable
     {
         float uScale = 1 / 256f;
         float vScale = 1 / 256f;
-        
+
         Tessellator tess = Tessellator.instance;
         tess.startDrawingQuads();
         tess.addVertexWithUV(x + 0,     y + height, 0,  (texX + 0) * uScale,        (texY + height) * vScale);
@@ -380,7 +380,7 @@ public partial class Minecraft : java.lang.Object, Runnable
     private static Util.OperatingSystem getOs()
     {
         string osName = java.lang.System.getProperty("os.name").ToLower();
-        
+
         if (osName.Contains("win"))
             return Util.OperatingSystem.windows;
         if (osName.Contains("mac"))
@@ -389,7 +389,7 @@ public partial class Minecraft : java.lang.Object, Runnable
             return Util.OperatingSystem.solaris;
         if (osName.Contains("linux") || osName.Contains("unix"))
             return Util.OperatingSystem.linux;
-        
+
         return Util.OperatingSystem.unknown;
     }
 
@@ -776,12 +776,12 @@ public partial class Minecraft : java.lang.Object, Runnable
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawing(7);
         int barHeightPixels = (int)(targetFrameTime / 200000L);
-        tessellator.setColorOpaque_I(536870912);
+        tessellator.setColorOpaque_I(0x20000000); // BUG: tries to set alpha, which is ignored by setColorOpaque_I
         tessellator.addVertex(0.0D, (double)(displayHeight - barHeightPixels), 0.0D);
         tessellator.addVertex(0.0D, (double)displayHeight, 0.0D);
         tessellator.addVertex((double)frameTimes.Length, (double)displayHeight, 0.0D);
         tessellator.addVertex((double)frameTimes.Length, (double)(displayHeight - barHeightPixels), 0.0D);
-        tessellator.setColorOpaque_I(538968064);
+        tessellator.setColorOpaque_I(0x20200000); // BUG: tries to set alpha, which is ignored by setColorOpaque_I
         tessellator.addVertex(0.0D, (double)(displayHeight - barHeightPixels * 2), 0.0D);
         tessellator.addVertex(0.0D, (double)(displayHeight - barHeightPixels), 0.0D);
         tessellator.addVertex((double)frameTimes.Length, (double)(displayHeight - barHeightPixels), 0.0D);
@@ -797,7 +797,7 @@ public partial class Minecraft : java.lang.Object, Runnable
 
         averageFrameTimePixels = (int)(totalFrameTimesSum / 200000L / (long)frameTimes.Length);
         tessellator.startDrawing(7);
-        tessellator.setColorOpaque_I(541065216);
+        tessellator.setColorOpaque_I(0x20400000); // BUG: tries to set alpha, which is ignored by setColorOpaque_I
         tessellator.addVertex(0.0D, (double)(displayHeight - averageFrameTimePixels), 0.0D);
         tessellator.addVertex(0.0D, (double)displayHeight, 0.0D);
         tessellator.addVertex((double)frameTimes.Length, (double)displayHeight, 0.0D);

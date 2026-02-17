@@ -23,7 +23,7 @@ public class GuiSlotStatsGeneral : GuiSlot
     {
     }
 
-    protected override bool isSelected(int var1)
+    protected override bool isSelected(int slotIndex)
     {
         return false;
     }
@@ -41,7 +41,7 @@ public class GuiSlotStatsGeneral : GuiSlot
     protected override void drawSlot(int index, int x, int y, int rowHeight, Tessellator tessellator)
     {
         StatBase stat = (StatBase)Stats.Stats.GENERAL_STATS.get(index);
-        parentStatsGui.drawString(parentStatsGui.fontRenderer, stat.statName, x + 2, y + 1, index % 2 == 0 ? 0x00FFFFFFu : 0x00909090u);
+        parentStatsGui.drawString(parentStatsGui.fontRenderer, stat.statName, x + 2, y + 1, index % 2 == 0 ? 0xFFFFFFu : 0x909090u);
         string formatted = stat.format(parentStatsGui.statFileWriter.writeStat(stat));
         parentStatsGui.drawString(parentStatsGui.fontRenderer, formatted, x + 2 + 213 - parentStatsGui.fontRenderer.getStringWidth(formatted), y + 1, index % 2 == 0 ? 0x00FFFFFFu : 0x00909090u);
     }
