@@ -33,8 +33,8 @@ public class GuiCreateWorld : GuiScreen
         TranslationStorage translations = TranslationStorage.getInstance();
         Keyboard.enableRepeatEvents(true);
         controlList.clear();
-        controlList.add(new GuiButton(BUTTON_CREATE, width / 2 - 100, 200, translations.translateKey("selectWorld.create")));
-        controlList.add(new GuiButton(BUTTON_CANCEL, width / 2 - 100, 224, translations.translateKey("gui.cancel")));
+        controlList.add(new GuiButton(BUTTON_CREATE, width / 2 - 100, 190, translations.translateKey("selectWorld.create")));
+        controlList.add(new GuiButton(BUTTON_CANCEL, width / 2 - 100, 214, translations.translateKey("gui.cancel")));
         textboxWorldName = new GuiTextField(this, fontRenderer, width / 2 - 100, 100, 200, 20, translations.translateKey("selectWorld.newWorld"))
         {
             isFocused = true
