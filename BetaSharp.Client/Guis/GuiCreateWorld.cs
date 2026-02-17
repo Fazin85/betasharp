@@ -32,15 +32,21 @@ public class GuiCreateWorld : GuiScreen
     {
         TranslationStorage translations = TranslationStorage.getInstance();
         Keyboard.enableRepeatEvents(true);
-        controlList.clear();
-        controlList.add(new GuiButton(BUTTON_CREATE, width / 2 - 100, 190, translations.translateKey("selectWorld.create")));
-        controlList.add(new GuiButton(BUTTON_CANCEL, width / 2 - 100, 214, translations.translateKey("gui.cancel")));
-        textboxWorldName = new GuiTextField(this, fontRenderer, width / 2 - 100, 100, 200, 20, translations.translateKey("selectWorld.newWorld"))
+
+        int centerX = width / 2;
+        int centerY = height / 4;
+
+        textboxWorldName = new GuiTextField(this, fontRenderer, centerX - 100, centerY, 200, 20, translations.translateKey("selectWorld.newWorld"))
         {
             isFocused = true
         };
         textboxWorldName.setMaxStringLength(32);
-        textboxSeed = new GuiTextField(this, fontRenderer, width / 2 - 100, 156, 200, 20, "");
+        textboxSeed = new GuiTextField(this, fontRenderer, centerX - 100, centerY + 56, 200, 20, "");
+
+        controlList.clear();
+        controlList.add(new GuiButton(BUTTON_CREATE, centerX - 100, centerY + 96 + 12, translations.translateKey("selectWorld.create")));
+        controlList.add(new GuiButton(BUTTON_CANCEL, centerX - 100, centerY + 120 + 12, translations.translateKey("gui.cancel")));
+
         updateFolderName();
     }
 
@@ -158,12 +164,16 @@ public class GuiCreateWorld : GuiScreen
     public override void render(int mouseX, int mouseY, float partialTicks)
     {
         TranslationStorage translations = TranslationStorage.getInstance();
+
+        int centerX = width / 2;
+        int centerY = height / 4;
+
         drawDefaultBackground();
-        drawCenteredString(fontRenderer, translations.translateKey("selectWorld.create"), width / 2, 20, 0x00FFFFFF);
-        drawString(fontRenderer, translations.translateKey("selectWorld.enterName"), width / 2 - 100, 87, 10526880);
-        drawString(fontRenderer, translations.translateKey("selectWorld.resultFolder") + " " + folderName, width / 2 - 100, 125, 10526880);
-        drawString(fontRenderer, translations.translateKey("selectWorld.enterSeed"), width / 2 - 100, 144, 10526880);
-        drawString(fontRenderer, translations.translateKey("selectWorld.seedInfo"), width / 2 - 100, 180, 10526880);
+        drawCenteredString(fontRenderer, translations.translateKey("selectWorld.create"), centerX, centerY - 60 + 20, 0x00FFFFFF);
+        drawString(fontRenderer, translations.translateKey("selectWorld.enterName"), centerX - 100, centerY - 10, 0xA0A0A0);
+        drawString(fontRenderer, $"{translations.translateKey("selectWorld.resultFolder")} {folderName}", centerX - 100, centerY + 24, 0xA0A0A0);
+        drawString(fontRenderer, translations.translateKey("selectWorld.enterSeed"), centerX - 100, centerY + 56 - 12, 0xA0A0A0);
+        drawString(fontRenderer, translations.translateKey("selectWorld.seedInfo"), centerX - 100, centerY + 56 + 24, 0xA0A0A0);
         textboxWorldName.drawTextBox();
         textboxSeed.drawTextBox();
         base.render(mouseX, mouseY, partialTicks);
