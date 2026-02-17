@@ -66,7 +66,7 @@ public class GuiTextField : Gui
 
                 if (var4 > 0)
                 {
-                    text = text + var3.Substring(0, var4);
+                    text = string.Concat(text, var3.AsSpan(0, var4));
                 }
             }
 

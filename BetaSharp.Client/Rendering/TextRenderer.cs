@@ -246,6 +246,11 @@ public class TextRenderer : java.lang.Object
 
     public void func_27278_a(string var1, int var2, int var3, int var4, uint color)
     {
+        if (var1 == null)
+        {
+            return;
+        }
+
         string[] var6 = var1.Split("\n");
         if (var6.Length > 1)
         {
@@ -294,6 +299,11 @@ public class TextRenderer : java.lang.Object
 
     public int func_27277_a(string var1, int var2)
     {
+        if (var1 == null)
+        {
+            return 0;
+        }
+
         string[] var3 = var1.Split("\n");
         int var5;
         if (var3.Length > 1)

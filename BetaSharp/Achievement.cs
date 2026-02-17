@@ -79,7 +79,7 @@ public class Achievement : StatBase
     {
         if (GetTranslatedDescription == null)
         {
-            return null;
+            return TranslationKey;
         }
 
         return GetTranslatedDescription();

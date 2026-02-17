@@ -17,8 +17,8 @@ public abstract class EntityRenderer
 
     protected void loadTexture(string var1)
     {
-        TextureManager var2 = dispatcher.textureManager;
-        var2.bindTexture(var2.getTextureId(var1));
+        TextureManager? var2 = dispatcher.textureManager;
+        var2?.bindTexture(var2.getTextureId(var1));
     }
 
     protected bool loadDownloadableImageTexture(string var1, string var2)
