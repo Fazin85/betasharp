@@ -1,5 +1,5 @@
-﻿using System.Buffers.Binary;
-using System.Text;
+using System.Buffers.Binary;
+using BetaSharp.Util;
 
 namespace BetaSharp.NBT;
 
@@ -9,6 +9,13 @@ internal static class StreamExtensions
     {
         Span<byte> span = stackalloc byte[sizeof(short)];
         BinaryPrimitives.WriteInt16BigEndian(span, value);
+        stream.Write(span);
+    }
+
+    public static void WriteUShort(this Stream stream, ushort value)
+    {
+        Span<byte> span = stackalloc byte[sizeof(ushort)];
+        BinaryPrimitives.WriteUInt16BigEndian(span, value);
         stream.Write(span);
     }
 
@@ -42,10 +49,9 @@ internal static class StreamExtensions
 
     public static void WriteString(this Stream stream, string value)
     {
-        // This is not what Java uses.
-        var buffer = Encoding.UTF8.GetBytes(value);
+        byte[] buffer = ModifiedUtf8.GetBytes(value);
 
-        stream.WriteShort((short) buffer.Length);
+        stream.WriteUShort((ushort)buffer.Length);
         stream.Write(buffer);
     }
 
@@ -55,6 +61,14 @@ internal static class StreamExtensions
         stream.ReadExactly(span);
 
         return BinaryPrimitives.ReadInt16BigEndian(span);
+    }
+
+    public static ushort ReadUShort(this Stream stream)
+    {
+        Span<byte> span = stackalloc byte[sizeof(ushort)];
+        stream.ReadExactly(span);
+
+        return BinaryPrimitives.ReadUInt16BigEndian(span);
     }
 
     public static int ReadInt(this Stream stream)
@@ -91,12 +105,11 @@ internal static class StreamExtensions
 
     public static string ReadString(this Stream stream)
     {
-        var length = stream.ReadShort();
-        var buffer = new byte[length];
+        ushort length = stream.ReadUShort();
+        byte[] buffer = new byte[length];
 
         stream.ReadExactly(buffer);
 
-        // This is not what Java uses.
-        return Encoding.UTF8.GetString(buffer);
+        return ModifiedUtf8.GetString(buffer);
     }
 }

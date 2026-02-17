@@ -16,13 +16,13 @@ public class RegionChunkStorage : ChunkStorage
 
     public Chunk loadChunk(World world, int chunkX, int chunkZ)
     {
-        using var s = RegionIo.getChunkInputStream(dir, chunkX, chunkZ);
+        using ChunkDataStream s = RegionIo.getChunkInputStream(dir, chunkX, chunkZ);
         if (s == null)
         {
             return null;
         }
 
-        var var4 = s.Stream;
+        Stream var4 = s.Stream;
 
         if (var4 != null)
         {
@@ -62,7 +62,7 @@ public class RegionChunkStorage : ChunkStorage
     {
         try
         {
-            using var stream = RegionIo.getChunkOutputStream(dir, chunk.x, chunk.z);
+            using Stream stream = RegionIo.getChunkOutputStream(dir, chunk.x, chunk.z);
             NBTTagCompound tag = new();
             NBTTagCompound var5 = new();
             tag.SetTag("Level", var5);
@@ -94,7 +94,7 @@ public class RegionChunkStorage : ChunkStorage
         NBTTagCompound var7;
         for (int var4 = 0; var4 < chunk.entities.Length; ++var4)
         {
-            foreach (var var6 in chunk.entities[var4])
+            foreach (Entity var6 in chunk.entities[var4])
             {
                 chunk.lastSaveHadEntities = true;
                 var7 = new NBTTagCompound();
@@ -108,7 +108,7 @@ public class RegionChunkStorage : ChunkStorage
         nbt.SetTag("Entities", var3);
         NBTTagList var8 = new();
 
-        foreach (var var9 in chunk.blockEntities.Values)
+        foreach (BlockEntity var9 in chunk.blockEntities.Values)
         {
             var7 = new NBTTagCompound();
             var9.writeNbt(var7);

@@ -1,13 +1,13 @@
-﻿namespace BetaSharp.Worlds.Chunks.Storage;
-using java.io;
+namespace BetaSharp.Worlds.Chunks.Storage;
 
-public class ChunkDataStream(Stream stream, byte compressionType) : IDisposable
+public class ChunkDataStream(Stream stream, RegionFile.CompressionType compressionType) : IDisposable
 {
     public Stream Stream => stream;
-    public byte CompressionType => compressionType;
+    public RegionFile.CompressionType CompressionType => compressionType;
 
     public void Dispose()
     {
+        GC.SuppressFinalize(this);
         stream.Dispose();
     }
 }
