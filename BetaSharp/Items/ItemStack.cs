@@ -56,7 +56,7 @@ public class ItemStack : java.lang.Object
         readFromNBT(nbt);
     }
 
-    public ItemStack split(int splitAmount)
+    public ItemStack Split(int splitAmount)
     {
         count -= splitAmount;
         return new ItemStack(itemId, splitAmount, damage);

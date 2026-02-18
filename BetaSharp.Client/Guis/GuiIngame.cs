@@ -3,7 +3,7 @@ using BetaSharp.Blocks.Materials;
 using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Items;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Items;
 using BetaSharp.Util;
 using BetaSharp.Util.Maths;

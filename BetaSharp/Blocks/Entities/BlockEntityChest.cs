@@ -1,5 +1,5 @@
 using BetaSharp.Entities;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Items;
 using BetaSharp.NBT;
 
@@ -9,17 +9,19 @@ public class BlockEntityChest : BlockEntity, IInventory
 {
     private ItemStack[] inventory = new ItemStack[36];
 
-    public int size()
+    public int Size
     {
-        return 27;
+        get => 27; // realize i can do this now
     }
 
-    public ItemStack getStack(int stackIndex)
+    public void MarkDirty() => markDirty(); // todo: fix
+
+    public ItemStack GetStack(int stackIndex)
     {
         return inventory[stackIndex];
     }
 
-    public ItemStack removeStack(int slot, int amount)
+    public ItemStack RemoveStack(int slot, int amount)
     {
         if (inventory[slot] != null)
         {
@@ -33,7 +35,7 @@ public class BlockEntityChest : BlockEntity, IInventory
             }
             else
             {
-                itemStack = inventory[slot].split(amount);
+                itemStack = inventory[slot].Split(amount);
                 if (inventory[slot].count == 0)
                 {
                     inventory[slot] = null;
@@ -49,27 +51,28 @@ public class BlockEntityChest : BlockEntity, IInventory
         }
     }
 
-    public void setStack(int slot, ItemStack stack)
+    public void SetStack(int slot, ItemStack? stack)
     {
         inventory[slot] = stack;
-        if (stack != null && stack.count > getMaxCountPerStack())
+        if (stack != null && stack.count > MaxCountPerStack)
         {
-            stack.count = getMaxCountPerStack();
+            stack.count = MaxCountPerStack;
         }
 
         markDirty();
     }
 
-    public string getName()
+    public string Name
     {
-        return "Chest";
+        get => "Chest";
     }
+
 
     public override void readNbt(NBTTagCompound nbt)
     {
         base.readNbt(nbt);
         NBTTagList itemList = nbt.GetTagList("Items");
-        inventory = new ItemStack[size()];
+        inventory = new ItemStack[this.Size];
 
         for (int itemIndex = 0; itemIndex < itemList.TagCount(); ++itemIndex)
         {
@@ -102,12 +105,13 @@ public class BlockEntityChest : BlockEntity, IInventory
         nbt.SetTag("Items", itemList);
     }
 
-    public int getMaxCountPerStack()
+
+    public int MaxCountPerStack
     {
-        return 64;
+        get => 64;
     }
 
-    public bool canPlayerUse(EntityPlayer player)
+    public bool CanPlayerUse(EntityPlayer player)
     {
         return world.getBlockEntity(x, y, z) != this ? false : player.getSquaredDistance(x + 0.5D, y + 0.5D, z + 0.5D) <= 64.0D;
     }

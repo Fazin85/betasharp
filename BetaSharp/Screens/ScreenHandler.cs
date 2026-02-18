@@ -1,5 +1,5 @@
 using BetaSharp.Entities;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Items;
 using BetaSharp.Screens.Slots;
 using java.lang;
@@ -112,7 +112,7 @@ public abstract class ScreenHandler : java.lang.Object
 
                     if (button == 1)
                     {
-                        player.dropItem(var6.getCursorStack().split(1));
+                        player.dropItem(var6.getCursorStack().Split(1));
                         if (var6.getCursorStack().count == 0)
                         {
                             var6.setItemStack(null);
@@ -164,7 +164,7 @@ public abstract class ScreenHandler : java.lang.Object
                                     var10 = var12.getMaxItemCount();
                                 }
 
-                                var12.setStack(var14.split(var10));
+                                var12.setStack(var14.Split(var10));
                                 if (var14.count == 0)
                                 {
                                     var6.setItemStack(null);
@@ -206,7 +206,7 @@ public abstract class ScreenHandler : java.lang.Object
                                     var10 = var14.getMaxCount() - var13.count;
                                 }
 
-                                var14.split(var10);
+                                var14.Split(var10);
                                 if (var14.count == 0)
                                 {
                                     var6.setItemStack(null);
@@ -221,7 +221,7 @@ public abstract class ScreenHandler : java.lang.Object
                             if (var10 > 0 && var10 + var14.count <= var14.getMaxCount())
                             {
                                 var14.count += var10;
-                                var13.split(var10);
+                                var13.Split(var10);
                                 if (var13.count == 0)
                                 {
                                     var12.setStack(null);

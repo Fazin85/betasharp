@@ -3,7 +3,7 @@ using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.NBT;
 
-namespace BetaSharp.Inventorys;
+namespace BetaSharp.Inventories;
 
 public class InventoryPlayer : java.lang.Object, IInventory
 {
@@ -47,7 +47,7 @@ public class InventoryPlayer : java.lang.Object, IInventory
     {
         for (int slotIndex = 0; slotIndex < main.Length; ++slotIndex)
         {
-            if (main[slotIndex] != null && main[slotIndex].itemId == itemStack.itemId && main[slotIndex].isStackable() && main[slotIndex].count < main[slotIndex].getMaxCount() && main[slotIndex].count < getMaxCountPerStack() && (!main[slotIndex].getHasSubtypes() || main[slotIndex].getDamage() == itemStack.getDamage()))
+            if (main[slotIndex] != null && main[slotIndex].itemId == itemStack.itemId && main[slotIndex].isStackable() && main[slotIndex].count < main[slotIndex].getMaxCount() && main[slotIndex].count < this.MaxCountPerStack && (!main[slotIndex].getHasSubtypes() || main[slotIndex].getDamage() == itemStack.getDamage()))
             {
                 return slotIndex;
             }
@@ -128,9 +128,9 @@ public class InventoryPlayer : java.lang.Object, IInventory
                 spaceAvailable = main[slotIndex].getMaxCount() - main[slotIndex].count;
             }
 
-            if (spaceAvailable > getMaxCountPerStack() - main[slotIndex].count)
+            if (spaceAvailable > this.MaxCountPerStack - main[slotIndex].count)
             {
-                spaceAvailable = getMaxCountPerStack() - main[slotIndex].count;
+                spaceAvailable = this.MaxCountPerStack - main[slotIndex].count;
             }
 
             if (spaceAvailable == 0)
@@ -207,7 +207,7 @@ public class InventoryPlayer : java.lang.Object, IInventory
         }
     }
 
-    public ItemStack removeStack(int slotIndex, int amount)
+    public ItemStack? RemoveStack(int slotIndex, int amount)
     {
         ItemStack[] targetArray = main;
         if (slotIndex >= main.Length)
@@ -227,7 +227,7 @@ public class InventoryPlayer : java.lang.Object, IInventory
             }
             else
             {
-                removeStack = targetArray[slotIndex].split(amount);
+                removeStack = targetArray[slotIndex].Split(amount);
                 if (targetArray[slotIndex].count == 0)
                 {
                     targetArray[slotIndex] = null;
@@ -242,7 +242,7 @@ public class InventoryPlayer : java.lang.Object, IInventory
         }
     }
 
-    public void setStack(int slotIndex, ItemStack itemStack)
+    public void SetStack(int slotIndex, ItemStack? itemStack)
     {
         ItemStack[] targetArray = main;
         if (slotIndex >= targetArray.Length)
@@ -320,12 +320,12 @@ public class InventoryPlayer : java.lang.Object, IInventory
 
     }
 
-    public int size()
+    public int Size
     {
-        return main.Length + 4;
+        get => main.Length + 4;
     }
 
-    public ItemStack getStack(int slotIndex)
+    public ItemStack? GetStack(int slotIndex)
     {
         ItemStack[] targetArray = main;
         if (slotIndex >= targetArray.Length)
@@ -337,19 +337,20 @@ public class InventoryPlayer : java.lang.Object, IInventory
         return targetArray[slotIndex];
     }
 
-    public string getName()
+
+    public string Name
     {
-        return "Inventory";
+        get => "Inventory";
     }
 
-    public int getMaxCountPerStack()
+    public int MaxCountPerStack
     {
-        return 64;
+        get => 64;
     }
 
     public int getDamageVsEntity(Entity entity)
     {
-        ItemStack itemStack = getStack(selectedSlot);
+        ItemStack itemStack = GetStack(selectedSlot);
         return itemStack != null ? itemStack.getAttackDamage(entity) : 1;
     }
 
@@ -361,7 +362,7 @@ public class InventoryPlayer : java.lang.Object, IInventory
         }
         else
         {
-            ItemStack itemStack = getStack(selectedSlot);
+            ItemStack itemStack = GetStack(selectedSlot);
             return itemStack != null ? itemStack.isSuitableFor(block) : false;
         }
     }
@@ -441,7 +442,7 @@ public class InventoryPlayer : java.lang.Object, IInventory
 
     }
 
-    public void markDirty()
+    public void MarkDirty()
     {
         dirty = true;
     }
@@ -457,7 +458,7 @@ public class InventoryPlayer : java.lang.Object, IInventory
         return cursorStack;
     }
 
-    public bool canPlayerUse(EntityPlayer entityPlayer)
+    public bool CanPlayerUse(EntityPlayer entityPlayer)
     {
         return player.dead ? false : entityPlayer.getSquaredDistance(player) <= 64.0D;
     }

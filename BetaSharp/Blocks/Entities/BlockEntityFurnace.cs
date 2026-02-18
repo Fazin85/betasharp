@@ -1,6 +1,6 @@
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Recipes;
@@ -14,17 +14,19 @@ public class BlockEntityFurnace : BlockEntity, IInventory
     public int fuelTime = 0;
     public int cookTime = 0;
 
-    public int size()
+    public int Size
     {
-        return inventory.Length;
+        get => inventory.Length;
     }
 
-    public ItemStack getStack(int slot)
+    public ItemStack GetStack(int slot)
     {
         return inventory[slot];
     }
 
-    public ItemStack removeStack(int slot, int stack)
+    public void MarkDirty() => markDirty(); // todo: fix
+
+    public ItemStack RemoveStack(int slot, int stack)
     {
         if (inventory[slot] != null)
         {
@@ -37,7 +39,7 @@ public class BlockEntityFurnace : BlockEntity, IInventory
             }
             else
             {
-                removedStack = inventory[slot].split(stack);
+                removedStack = inventory[slot].Split(stack);
                 if (inventory[slot].count == 0)
                 {
                     inventory[slot] = null;
@@ -52,26 +54,26 @@ public class BlockEntityFurnace : BlockEntity, IInventory
         }
     }
 
-    public void setStack(int slot, ItemStack stack)
+    public void SetStack(int slot, ItemStack? stack)
     {
         inventory[slot] = stack;
-        if (stack != null && stack.count > getMaxCountPerStack())
+        if (stack != null && stack.count > MaxCountPerStack)
         {
-            stack.count = getMaxCountPerStack();
+            stack.count = MaxCountPerStack;
         }
 
     }
 
-    public string getName()
+    public string Name
     {
-        return "Furnace";
+        get => "Furnace";
     }
 
     public override void readNbt(NBTTagCompound nbt)
     {
         base.readNbt(nbt);
         NBTTagList itemList = nbt.GetTagList("Items");
-        inventory = new ItemStack[size()];
+        inventory = new ItemStack[Size];
 
         for (int itemIndex = 0; itemIndex < itemList.TagCount(); ++itemIndex)
         {
@@ -109,9 +111,9 @@ public class BlockEntityFurnace : BlockEntity, IInventory
         nbt.SetTag("Items", itemList);
     }
 
-    public int getMaxCountPerStack()
+    public int MaxCountPerStack
     {
-        return 64;
+        get => 64;
     }
 
     public int getCookTimeDelta(int multiplier)
@@ -200,7 +202,7 @@ public class BlockEntityFurnace : BlockEntity, IInventory
         else
         {
             ItemStack outputStack = SmeltingRecipeManager.getInstance().Craft(inventory[0].getItem().id);
-            return outputStack == null ? false : inventory[2] == null ? true : !inventory[2].isItemEqual(outputStack) ? false : inventory[2].count < getMaxCountPerStack() && inventory[2].count < inventory[2].getMaxCount() ? true : inventory[2].count < outputStack.getMaxCount();
+            return outputStack == null ? false : inventory[2] == null ? true : !inventory[2].isItemEqual(outputStack) ? false : inventory[2].count < MaxCountPerStack && inventory[2].count < inventory[2].getMaxCount() ? true : inventory[2].count < outputStack.getMaxCount();
         }
     }
 
@@ -240,7 +242,7 @@ public class BlockEntityFurnace : BlockEntity, IInventory
         }
     }
 
-    public bool canPlayerUse(EntityPlayer player)
+    public bool CanPlayerUse(EntityPlayer player)
     {
         return world.getBlockEntity(x, y, z) != this ? false : player.getSquaredDistance(x + 0.5D, y + 0.5D, z + 0.5D) <= 64.0D;
     }

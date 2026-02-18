@@ -1,6 +1,6 @@
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Items;
 using BetaSharp.Screens.Slots;
 
@@ -94,7 +94,7 @@ public class FurnaceScreenHandler : ScreenHandler
 
     public override bool canUse(EntityPlayer player)
     {
-        return furnaceBlockEntity.canPlayerUse(player);
+        return furnaceBlockEntity.CanPlayerUse(player);
     }
 
     public override ItemStack quickMove(int slot)

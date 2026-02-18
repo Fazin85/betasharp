@@ -233,9 +233,9 @@ public class BlockDispenser : BlockWithEntity
 
         java.util.Random random = s_random.Value!;
 
-        for (int slotIndex = 0; slotIndex < dispenser.size(); ++slotIndex)
+        for (int slotIndex = 0; slotIndex < dispenser.Size; ++slotIndex)
         {
-            ItemStack stack = dispenser.getStack(slotIndex);
+            ItemStack stack = dispenser.GetStack(slotIndex);
             if (stack != null)
             {
                 float offsetX = random.nextFloat() * 0.8F + 0.1F;

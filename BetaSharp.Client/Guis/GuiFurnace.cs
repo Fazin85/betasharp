@@ -1,6 +1,6 @@
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Rendering.Core;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Screens;
 
 namespace BetaSharp.Client.Guis;

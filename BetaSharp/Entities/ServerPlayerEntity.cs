@@ -1,5 +1,5 @@
 using BetaSharp.Blocks.Entities;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Items;
 using BetaSharp.Network.Packets;
 using BetaSharp.Network.Packets.Play;
@@ -159,9 +159,9 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     {
         base.tick();
 
-        for (int slotIndex = 0; slotIndex < inventory.size(); slotIndex++)
+        for (int slotIndex = 0; slotIndex < inventory.Size; slotIndex++)
         {
-            ItemStack itemStack = inventory.getStack(slotIndex);
+            ItemStack itemStack = inventory.GetStack(slotIndex);
             if (itemStack != null && Item.ITEMS[itemStack.itemId].isNetworkSynced() && networkHandler.getBlockDataSendQueueSize() <= 2)
             {
                 Packet packet = ((NetworkSyncedItem)Item.ITEMS[itemStack.itemId]).getUpdatePacket(itemStack, world, this);
@@ -400,7 +400,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     public override void openChestScreen(IInventory inventory)
     {
         incrementScreenHandlerSyncId();
-        networkHandler.sendPacket(new OpenScreenS2CPacket(screenHandlerSyncId, 0, inventory.getName(), inventory.size()));
+        networkHandler.sendPacket(new OpenScreenS2CPacket(screenHandlerSyncId, 0, inventory.Name, inventory.Size));
         currentScreenHandler = new GenericContainerScreenHandler(this.inventory, inventory);
         currentScreenHandler.syncId = screenHandlerSyncId;
         currentScreenHandler.addListener(this);
@@ -410,7 +410,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     public override void openFurnaceScreen(BlockEntityFurnace furnace)
     {
         incrementScreenHandlerSyncId();
-        networkHandler.sendPacket(new OpenScreenS2CPacket(screenHandlerSyncId, 2, furnace.getName(), furnace.size()));
+        networkHandler.sendPacket(new OpenScreenS2CPacket(screenHandlerSyncId, 2, furnace.Name, furnace.Size));
         currentScreenHandler = new FurnaceScreenHandler(inventory, furnace);
         currentScreenHandler.syncId = screenHandlerSyncId;
         currentScreenHandler.addListener(this);
@@ -420,7 +420,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     public override void openDispenserScreen(BlockEntityDispenser dispenser)
     {
         incrementScreenHandlerSyncId();
-        networkHandler.sendPacket(new OpenScreenS2CPacket(screenHandlerSyncId, 3, dispenser.getName(), dispenser.size()));
+        networkHandler.sendPacket(new OpenScreenS2CPacket(screenHandlerSyncId, 3, dispenser.Name, dispenser.Size));
         currentScreenHandler = new DispenserScreenHandler(inventory, dispenser);
         currentScreenHandler.syncId = screenHandlerSyncId;
         currentScreenHandler.addListener(this);

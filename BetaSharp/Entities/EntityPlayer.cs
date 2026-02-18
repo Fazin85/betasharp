@@ -1,7 +1,7 @@
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Blocks.Materials;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Screens;
@@ -315,7 +315,7 @@ public abstract class EntityPlayer : EntityLiving
 
     public virtual void dropSelectedItem()
     {
-        dropItem(inventory.removeStack(inventory.selectedSlot, 1), false);
+        dropItem(inventory.RemoveStack(inventory.selectedSlot, 1), false);
     }
 
     public void dropItem(ItemStack stack)
@@ -576,7 +576,7 @@ public abstract class EntityPlayer : EntityLiving
 
     public void clearStackInHand()
     {
-        inventory.setStack(inventory.selectedSlot, (ItemStack)null);
+        inventory.SetStack(inventory.selectedSlot, null);
     }
 
     public override double getStandingEyeHeight()

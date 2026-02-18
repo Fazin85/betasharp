@@ -1,5 +1,5 @@
 using BetaSharp.Entities;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Items;
 using BetaSharp.Recipes;
 using BetaSharp.Screens.Slots;
@@ -37,7 +37,7 @@ public class PlayerScreenHandler : ScreenHandler
 
         for (var3 = 0; var3 < 4; ++var3)
         {
-            addSlot(new SlotArmor(this, inventoryPlayer, inventoryPlayer.size() - 1 - var3, 8, 8 + var3 * 18, var3));
+            addSlot(new SlotArmor(this, inventoryPlayer, inventoryPlayer.Size - 1 - var3, 8, 8 + var3 * 18, var3));
         }
 
         for (var3 = 0; var3 < 3; ++var3)
@@ -58,7 +58,7 @@ public class PlayerScreenHandler : ScreenHandler
 
     public override void onSlotUpdate(IInventory inv)
     {
-        craftingResult.setStack(0, CraftingManager.getInstance().FindMatchingRecipe(craftingInput));
+        craftingResult.SetStack(0, CraftingManager.getInstance().FindMatchingRecipe(craftingInput));
     }
 
     public override void onClosed(EntityPlayer player)
@@ -67,11 +67,11 @@ public class PlayerScreenHandler : ScreenHandler
 
         for (int var2 = 0; var2 < 4; ++var2)
         {
-            ItemStack var3 = craftingInput.getStack(var2);
+            ItemStack var3 = craftingInput.GetStack(var2);
             if (var3 != null)
             {
                 player.dropItem(var3);
-                craftingInput.setStack(var2, null);
+                craftingInput.SetStack(var2, null);
             }
         }
 

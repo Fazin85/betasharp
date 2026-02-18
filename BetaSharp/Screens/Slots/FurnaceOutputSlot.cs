@@ -1,5 +1,5 @@
 using BetaSharp.Entities;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Items;
 
 namespace BetaSharp.Screens.Slots;

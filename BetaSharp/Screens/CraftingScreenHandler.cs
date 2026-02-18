@@ -1,6 +1,6 @@
 using BetaSharp.Blocks;
 using BetaSharp.Entities;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Items;
 using BetaSharp.Recipes;
 using BetaSharp.Screens.Slots;
@@ -55,7 +55,7 @@ public class CraftingScreenHandler : ScreenHandler
 
     public override void onSlotUpdate(IInventory inv)
     {
-        result.setStack(0, CraftingManager.getInstance().FindMatchingRecipe(input));
+        result.SetStack(0, CraftingManager.getInstance().FindMatchingRecipe(input));
     }
 
     public override void onClosed(EntityPlayer player)
@@ -65,7 +65,7 @@ public class CraftingScreenHandler : ScreenHandler
         {
             for (int var2 = 0; var2 < 9; ++var2)
             {
-                ItemStack var3 = input.getStack(var2);
+                ItemStack var3 = input.GetStack(var2);
                 if (var3 != null)
                 {
                     player.dropItem(var3);

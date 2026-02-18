@@ -1,5 +1,5 @@
 using BetaSharp.Blocks;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Items;
 using BetaSharp.Screens;
 using BetaSharp.Screens.Slots;

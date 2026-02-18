@@ -190,9 +190,9 @@ public class BlockFurnace : BlockWithEntity
         {
             BlockEntityFurnace furnace = (BlockEntityFurnace)world.getBlockEntity(x, y, z);
 
-            for (int slotIndex = 0; slotIndex < furnace.size(); ++slotIndex)
+            for (int slotIndex = 0; slotIndex < furnace.Size; ++slotIndex)
             {
-                ItemStack stack = furnace.getStack(slotIndex);
+                ItemStack stack = furnace.GetStack(slotIndex);
                 if (stack != null)
                 {
                     float offsetX = _random.nextFloat() * 0.8F + 0.1F;

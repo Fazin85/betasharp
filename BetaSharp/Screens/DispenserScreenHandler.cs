@@ -1,6 +1,6 @@
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Screens.Slots;
 
 namespace BetaSharp.Screens;
@@ -40,6 +40,6 @@ public class DispenserScreenHandler : ScreenHandler
 
     public override bool canUse(EntityPlayer player)
     {
-        return dispenserBlockEntity.canPlayerUse(player);
+        return dispenserBlockEntity.CanPlayerUse(player);
     }
 }

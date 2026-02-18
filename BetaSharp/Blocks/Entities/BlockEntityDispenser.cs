@@ -1,5 +1,5 @@
 using BetaSharp.Entities;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Items;
 using BetaSharp.NBT;
 
@@ -10,17 +10,19 @@ public class BlockEntityDispenser : BlockEntity, IInventory
     private ItemStack[] inventory = new ItemStack[9];
     private readonly java.util.Random random = new();
 
-    public int size()
+    public int Size
     {
-        return 9;
+        get { return 9; }
     }
 
-    public ItemStack getStack(int slot)
+    public void MarkDirty() => markDirty(); // todo: fix
+
+    public ItemStack GetStack(int slot)
     {
         return inventory[slot];
     }
 
-    public ItemStack removeStack(int slot, int amount)
+    public ItemStack RemoveStack(int slot, int amount)
     {
         if (inventory[slot] != null)
         {
@@ -34,7 +36,7 @@ public class BlockEntityDispenser : BlockEntity, IInventory
             }
             else
             {
-                removedStack = inventory[slot].split(amount);
+                removedStack = inventory[slot].Split(amount);
                 if (inventory[slot].count == 0)
                 {
                     inventory[slot] = null;
@@ -65,7 +67,7 @@ public class BlockEntityDispenser : BlockEntity, IInventory
 
         if (selectedSlot >= 0)
         {
-            return removeStack(selectedSlot, 1);
+            return RemoveStack(selectedSlot, 1);
         }
         else
         {
@@ -73,27 +75,28 @@ public class BlockEntityDispenser : BlockEntity, IInventory
         }
     }
 
-    public void setStack(int slot, ItemStack stack)
+    public void SetStack(int slot, ItemStack? stack)
     {
         inventory[slot] = stack;
-        if (stack != null && stack.count > getMaxCountPerStack())
+        if (stack != null && stack.count > this.MaxCountPerStack)
         {
-            stack.count = getMaxCountPerStack();
+            stack.count = this.MaxCountPerStack;
         }
 
         markDirty();
     }
 
-    public string getName()
+
+    public string Name
     {
-        return "Trap";
+        get { return "Trap"; }
     }
 
     public override void readNbt(NBTTagCompound nbt)
     {
         base.readNbt(nbt);
         NBTTagList itemList = nbt.GetTagList("Items");
-        inventory = new ItemStack[size()];
+        inventory = new ItemStack[this.Size];
 
         for (int itemIndex = 0; itemIndex < itemList.TagCount(); ++itemIndex)
         {
@@ -126,12 +129,13 @@ public class BlockEntityDispenser : BlockEntity, IInventory
         nbt.SetTag("Items", itemList);
     }
 
-    public int getMaxCountPerStack()
+
+    public int MaxCountPerStack
     {
-        return 64;
+        get { return 64; }
     }
 
-    public bool canPlayerUse(EntityPlayer player)
+    public bool CanPlayerUse(EntityPlayer player)
     {
         return world.getBlockEntity(x, y, z) != this ? false : player.getSquaredDistance(x + 0.5D, y + 0.5D, z + 0.5D) <= 64.0D;
     }

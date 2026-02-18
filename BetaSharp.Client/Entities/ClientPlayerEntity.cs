@@ -4,7 +4,7 @@ using BetaSharp.Client.Entities.FX;
 using BetaSharp.Client.Guis;
 using BetaSharp.Client.Input;
 using BetaSharp.Entities;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.NBT;
 using BetaSharp.Stats;
 using BetaSharp.Util.Maths;

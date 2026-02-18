@@ -1,4 +1,4 @@
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Items;
 using java.util;
 
@@ -29,7 +29,7 @@ public class ShapelessRecipes : IRecipe
         {
             for (int col = 0; col < 3; ++col)
             {
-                ItemStack gridStack = craftingInventory.getStackAt(col, row);
+                ItemStack gridStack = craftingInventory.GetStackAt(col, row);
                 if (gridStack != null)
                 {
                     bool foundMatch = false;

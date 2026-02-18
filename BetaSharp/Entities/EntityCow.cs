@@ -54,7 +54,7 @@ public class EntityCow : EntityAnimal
         ItemStack heldBucket = player.inventory.getSelectedItem();
         if (heldBucket != null && heldBucket.itemId == Item.Bucket.id)
         {
-            player.inventory.setStack(player.inventory.selectedSlot, new ItemStack(Item.MilkBucket));
+            player.inventory.SetStack(player.inventory.selectedSlot, new ItemStack(Item.MilkBucket));
             return true;
         }
         else

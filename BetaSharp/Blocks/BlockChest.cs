@@ -1,7 +1,7 @@
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Items;
 using BetaSharp.Worlds;
 
@@ -172,9 +172,9 @@ public class BlockChest : BlockWithEntity
     {
         BlockEntityChest chest = (BlockEntityChest)world.getBlockEntity(x, y, z);
 
-        for (int slot = 0; slot < chest.size(); ++slot)
+        for (int slot = 0; slot < chest.Size; ++slot)
         {
-            ItemStack stack = chest.getStack(slot);
+            ItemStack stack = chest.GetStack(slot);
             if (stack != null)
             {
                 float offsetX = random.nextFloat() * 0.8F + 0.1F;

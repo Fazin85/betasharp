@@ -1,6 +1,6 @@
 using BetaSharp.Blocks;
 using BetaSharp.Entities;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Items;
 
 namespace BetaSharp.Screens.Slots;
@@ -58,15 +58,15 @@ public class CraftingResultSlot : Slot
             thePlayer.increaseStat(Achievements.CraftSword, 1);
         }
 
-        for (int var2 = 0; var2 < craftMatrix.size(); ++var2)
+        for (int var2 = 0; var2 < craftMatrix.Size; ++var2)
         {
-            ItemStack var3 = craftMatrix.getStack(var2);
+            ItemStack var3 = craftMatrix.GetStack(var2);
             if (var3 != null)
             {
-                craftMatrix.removeStack(var2, 1);
+                craftMatrix.RemoveStack(var2, 1);
                 if (var3.getItem().hasContainerItem())
                 {
-                    craftMatrix.setStack(var2, new ItemStack(var3.getItem().getContainerItem()));
+                    craftMatrix.SetStack(var2, new ItemStack(var3.getItem().getContainerItem()));
                 }
             }
         }

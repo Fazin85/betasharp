@@ -1,4 +1,4 @@
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Items;
 
 namespace BetaSharp.Screens.Slots;
@@ -31,7 +31,7 @@ public class Slot : java.lang.Object
 
     public ItemStack getStack()
     {
-        return inventory.getStack(slotIndex);
+        return inventory.GetStack(slotIndex);
     }
 
     public bool hasStack()
@@ -41,18 +41,18 @@ public class Slot : java.lang.Object
 
     public void setStack(ItemStack var1)
     {
-        inventory.setStack(slotIndex, var1);
+        inventory.SetStack(slotIndex, var1);
         markDirty();
     }
 
     public void markDirty()
     {
-        inventory.markDirty();
+        inventory.MarkDirty();
     }
 
     public virtual int getMaxItemCount()
     {
-        return inventory.getMaxCountPerStack();
+        return inventory.MaxCountPerStack;
     }
 
     public int getBackgroundTextureId()
@@ -62,7 +62,7 @@ public class Slot : java.lang.Object
 
     public ItemStack takeStack(int amount)
     {
-        return inventory.removeStack(slotIndex, amount);
+        return inventory.RemoveStack(slotIndex, amount);
     }
 
     public bool equals(IInventory inventory, int index)

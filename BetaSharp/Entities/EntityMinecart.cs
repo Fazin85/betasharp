@@ -1,5 +1,5 @@
 using BetaSharp.Blocks;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
@@ -118,9 +118,9 @@ public class EntityMinecart : Entity, IInventory
                 {
                     EntityMinecart minecart = this;
 
-                    for (int slotIndex = 0; slotIndex < minecart.size(); ++slotIndex)
+                    for (int slotIndex = 0; slotIndex < minecart.Size; ++slotIndex)
                     {
-                        ItemStack itemStack = minecart.getStack(slotIndex);
+                        ItemStack itemStack = minecart.GetStack(slotIndex);
                         if (itemStack != null)
                         {
                             float offsetX = random.nextFloat() * 0.8F + 0.1F;
@@ -177,9 +177,9 @@ public class EntityMinecart : Entity, IInventory
 
     public override void markDead()
     {
-        for (int slotIndex = 0; slotIndex < size(); ++slotIndex)
+        for (int slotIndex = 0; slotIndex < Size; ++slotIndex)
         {
-            ItemStack itemStack = getStack(slotIndex);
+            ItemStack itemStack = GetStack(slotIndex);
             if (itemStack != null)
             {
                 float offsetX = random.nextFloat() * 0.8F + 0.1F;
@@ -791,7 +791,7 @@ public class EntityMinecart : Entity, IInventory
         else if (type == 1)
         {
             NBTTagList items = nbt.GetTagList("Items");
-            cargoItems = new ItemStack[size()];
+            cargoItems = new ItemStack[Size];
 
             for (int i = 0; i < items.TagCount(); ++i)
             {
@@ -896,17 +896,18 @@ public class EntityMinecart : Entity, IInventory
         }
     }
 
-    public int size()
+
+    public int Size
     {
-        return 27;
+        get { return 27; }
     }
 
-    public ItemStack getStack(int slotIndex)
+    public ItemStack GetStack(int slotIndex)
     {
         return cargoItems[slotIndex];
     }
 
-    public ItemStack removeStack(int slotIndex, int amount)
+    public ItemStack RemoveStack(int slotIndex, int amount)
     {
         if (cargoItems[slotIndex] != null)
         {
@@ -919,7 +920,7 @@ public class EntityMinecart : Entity, IInventory
             }
             else
             {
-                itemStack = cargoItems[slotIndex].split(amount);
+                itemStack = cargoItems[slotIndex].Split(amount);
                 if (cargoItems[slotIndex].count == 0)
                 {
                     cargoItems[slotIndex] = null;
@@ -934,27 +935,27 @@ public class EntityMinecart : Entity, IInventory
         }
     }
 
-    public void setStack(int slotIndex, ItemStack itemStack)
+    public void SetStack(int slotIndex, ItemStack? itemStack)
     {
         cargoItems[slotIndex] = itemStack;
-        if (itemStack != null && itemStack.count > getMaxCountPerStack())
+        if (itemStack != null && itemStack.count > MaxCountPerStack)
         {
-            itemStack.count = getMaxCountPerStack();
+            itemStack.count = MaxCountPerStack;
         }
 
     }
 
-    public string getName()
+    public string Name
     {
-        return "Minecart";
+        get { return "Minecart"; }
     }
 
-    public int getMaxCountPerStack()
+    public int MaxCountPerStack
     {
-        return 64;
+        get { return 64; }
     }
 
-    public void markDirty()
+    public void MarkDirty()
     {
     }
 
@@ -986,7 +987,7 @@ public class EntityMinecart : Entity, IInventory
             {
                 if (--heldItem.count == 0)
                 {
-                    player.inventory.setStack(player.inventory.selectedSlot, (ItemStack)null);
+                    player.inventory.SetStack(player.inventory.selectedSlot, null);
                 }
 
                 fuel += 1200;
@@ -1019,7 +1020,7 @@ public class EntityMinecart : Entity, IInventory
         cartVelocityZ = base.velocityZ = velocityZ;
     }
 
-    public bool canPlayerUse(EntityPlayer player)
+    public bool CanPlayerUse(EntityPlayer player)
     {
         return dead ? false : player.getSquaredDistance(this) <= 64.0D;
     }

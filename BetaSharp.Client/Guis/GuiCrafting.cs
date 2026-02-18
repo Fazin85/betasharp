@@ -1,5 +1,5 @@
 using BetaSharp.Client.Rendering.Core;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Screens;
 using BetaSharp.Worlds;
 

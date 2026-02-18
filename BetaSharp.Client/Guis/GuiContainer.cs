@@ -1,7 +1,7 @@
 using BetaSharp.Client.Input;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Items;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Items;
 using BetaSharp.Screens;
 using BetaSharp.Screens.Slots;
@@ -211,7 +211,7 @@ public abstract class GuiContainer : GuiScreen
     }
 
     public override bool DoesGuiPauseGame() => false;
-    
+
 
     public override void UpdateScreen()
     {

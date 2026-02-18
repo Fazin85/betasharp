@@ -1,5 +1,5 @@
 using BetaSharp.Entities;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Items;
 using BetaSharp.Screens.Slots;
 
@@ -14,7 +14,7 @@ public class GenericContainerScreenHandler : ScreenHandler
     public GenericContainerScreenHandler(IInventory playerInventory, IInventory inventory)
     {
         this.inventory = inventory;
-        rows = inventory.size() / 9;
+        rows = inventory.Size / 9;
         int var3 = (rows - 4) * 18;
 
         int var4;
@@ -44,7 +44,7 @@ public class GenericContainerScreenHandler : ScreenHandler
 
     public override bool canUse(EntityPlayer player)
     {
-        return inventory.canPlayerUse(player);
+        return inventory.CanPlayerUse(player);
     }
 
     public override ItemStack quickMove(int slot)

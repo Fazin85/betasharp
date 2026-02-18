@@ -1,5 +1,5 @@
 using BetaSharp.Client.Rendering.Core;
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Screens;
 
 namespace BetaSharp.Client.Guis;
@@ -18,14 +18,14 @@ public class GuiChest : GuiContainer
         AllowUserInput = false;
         short baseHeight = 222;
         int guiHeightMinus = baseHeight - 108;
-        _inventoryRows = lower.size() / 9;
+        _inventoryRows = lower.Size / 9;
         _ySize = guiHeightMinus + _inventoryRows * 18;
     }
 
     protected override void DrawGuiContainerForegroundLayer()
     {
-        FontRenderer.drawString(_lowerChestInventory.getName(), 8, 6, 0x404040);
-        FontRenderer.drawString(_upperChestInventory.getName(), 8, _ySize - 96 + 2, 0x404040);
+        FontRenderer.drawString(_lowerChestInventory.Name, 8, 6, 0x404040);
+        FontRenderer.drawString(_upperChestInventory.Name, 8, _ySize - 96 + 2, 0x404040);
     }
 
     protected override void DrawGuiContainerBackgroundLayer(float partialTicks)

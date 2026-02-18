@@ -1,4 +1,4 @@
-using BetaSharp.Inventorys;
+using BetaSharp.Inventories;
 using BetaSharp.Items;
 
 namespace BetaSharp.Recipes;
@@ -58,7 +58,7 @@ public class ShapedRecipes : IRecipe
                         expected = _items[recipeX + recipeY * _width];
                 }
 
-                ItemStack actual = craftingInventory.getStackAt(gridX, gridY);
+                ItemStack actual = craftingInventory.GetStackAt(gridX, gridY);
                 if (actual != null || expected != null)
                 {
                     if (actual == null && expected != null || actual != null && expected == null)

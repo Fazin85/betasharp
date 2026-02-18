@@ -99,7 +99,7 @@ public class DungeonFeature : Feature
                         ItemStack? loot = PickCheckLootItem(rand);
                         if (loot != null)
                         {
-                            chest.setStack(rand.nextInt(chest.size()), loot);
+                            chest.SetStack(rand.nextInt(chest.Size), loot);
                         }
                     }
 
