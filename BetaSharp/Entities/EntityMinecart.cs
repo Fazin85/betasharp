@@ -113,7 +113,7 @@ public class EntityMinecart : Entity, IInventory
                 }
 
                 markDead();
-                dropItem(Item.MINECART.id, 1, 0.0F);
+                dropItem(Item.Minecart.id, 1, 0.0F);
                 if (type == 1)
                 {
                     EntityMinecart minecart = this;
@@ -982,7 +982,7 @@ public class EntityMinecart : Entity, IInventory
         else if (type == 2)
         {
             ItemStack heldItem = player.inventory.getSelectedItem();
-            if (heldItem != null && heldItem.itemId == Item.COAL.id)
+            if (heldItem != null && heldItem.itemId == Item.Coal.id)
             {
                 if (--heldItem.count == 0)
                 {

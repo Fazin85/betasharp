@@ -75,7 +75,7 @@ public class BlockReed : Block
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
-        return Item.SUGAR_CANE.id;
+        return Item.SugarCane.id;
     }
 
     public override bool isOpaque()

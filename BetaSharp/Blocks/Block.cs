@@ -118,7 +118,7 @@ public class Block : java.lang.Object
     public static readonly Block Pumpkin = (new BlockPumpkin(86, 102, false)).setHardness(1.0F).setSoundGroup(SoundWoodFootstep).setBlockName("pumpkin").ignoreMetaUpdates();
     public static readonly Block Netherrack = (new BlockNetherrack(87, 103)).setHardness(0.4F).setSoundGroup(SoundStoneFootstep).setBlockName("hellrock");
     public static readonly Block Soulsand = (new BlockSoulSand(88, 104)).setHardness(0.5F).setSoundGroup(SoundSandFootstep).setBlockName("hellsand");
-    public static readonly Block Glowstone = (new BlockGlowStone(89, 105, Material.Stone)).setHardness(0.3F).setSoundGroup(SoundGlassFootstep).setLuminance(1.0F).setBlockName("lightgem");
+    public static readonly Block Glowstone = (new BlockGlowstone(89, 105, Material.Stone)).setHardness(0.3F).setSoundGroup(SoundGlassFootstep).setLuminance(1.0F).setBlockName("lightgem");
     public static readonly BlockPortal NetherPortal = (BlockPortal)(new BlockPortal(90, 14)).setHardness(-1.0F).setSoundGroup(SoundGlassFootstep).setLuminance(12.0F / 16.0F).setBlockName("portal");
     public static readonly Block JackLantern = (new BlockPumpkin(91, 102, true)).setHardness(1.0F).setSoundGroup(SoundWoodFootstep).setLuminance(1.0F).setBlockName("litpumpkin").ignoreMetaUpdates();
     public static readonly Block Cake = (new BlockCake(92, 121)).setHardness(0.5F).setSoundGroup(SoundClothFootstep).setBlockName("cake").disableStats().ignoreMetaUpdates();

@@ -20,7 +20,7 @@ public class GlowstoneClusterFeatureRare : Feature
             int genZ = z + rand.nextInt(8) - rand.nextInt(8);
             if (world.getBlockId(genX, genY, genZ) == 0)
             {
-                int glowstoneNeighbors = 0;
+                int GlowstoneNeighbors = 0;
 
                 for (int j = 0; j < 6; ++j)
                 {
@@ -33,11 +33,11 @@ public class GlowstoneClusterFeatureRare : Feature
                     if (j == 5) blockId = world.getBlockId(genX, genY, genZ + 1);
 
                     if (blockId == Block.Glowstone.id)
-                        ++glowstoneNeighbors;
+                        ++GlowstoneNeighbors;
                     
                 }
 
-                if (glowstoneNeighbors == 1)
+                if (GlowstoneNeighbors == 1)
                 {
                     world.setBlock(genX, genY, genZ, Block.Glowstone.id);
                 }

@@ -69,7 +69,7 @@ public class BlockTNT : Block
 
     public override void onBlockBreakStart(World world, int x, int y, int z, EntityPlayer player)
     {
-        if (player.getHand() != null && player.getHand().itemId == Item.FLINT_AND_STEEL.id)
+        if (player.getHand() != null && player.getHand().itemId == Item.FlintAndSteel.id)
         {
             world.SetBlockMetaWithoutNotifyingNeighbors(x, y, z, 1);
         }

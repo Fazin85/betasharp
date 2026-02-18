@@ -14,7 +14,7 @@ public class CompassSprite : DynamicTexture
     private double angle;
     private double angleDelta;
 
-    public CompassSprite(Minecraft var1) : base(Item.COMPASS.getTextureId(0))
+    public CompassSprite(Minecraft var1) : base(Item.Compass.getTextureId(0))
     {
         mc = var1;
         atlas = FXImage.Items;

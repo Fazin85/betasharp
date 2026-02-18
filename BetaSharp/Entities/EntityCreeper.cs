@@ -108,7 +108,7 @@ public class EntityCreeper : EntityMonster
         base.onKilledBy(entity);
         if (entity is EntitySkeleton)
         {
-            dropItem(Item.RECORD_THIRTEEN.id + random.nextInt(2), 1);
+            dropItem(Item.RecordThirteen.id + random.nextInt(2), 1);
         }
 
     }
@@ -168,7 +168,7 @@ public class EntityCreeper : EntityMonster
 
     protected override int getDropItemId()
     {
-        return Item.GUNPOWDER.id;
+        return Item.Gunpowder.id;
     }
 
     private int getCreeperState()

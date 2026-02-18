@@ -64,7 +64,7 @@ public class BlockRedstoneOre : Block
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
-        return Item.REDSTONE.id;
+        return Item.Redstone.id;
     }
 
     public override int getDroppedItemCount(java.util.Random random)

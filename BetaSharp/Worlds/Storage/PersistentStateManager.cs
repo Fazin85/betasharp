@@ -1,5 +1,4 @@
 using BetaSharp.NBT;
-using java.io;
 using java.lang;
 using java.util;
 
@@ -31,8 +30,8 @@ public class PersistentStateManager : java.lang.Object
         {
             try
             {
-                java.io.File var4 = saveHandler.getWorldPropertiesFile(var2);
-                if (var4 != null && var4.exists())
+                java.io.File file = saveHandler.getWorldPropertiesFile(var2);
+                if (file != null && file.exists())
                 {
                     try
                     {
@@ -43,9 +42,8 @@ public class PersistentStateManager : java.lang.Object
                         throw new RuntimeException("Failed to instantiate " + var1.toString(), e);
                     }
 
-                    FileInputStream var5 = new(var4);
-                    NBTTagCompound var6 = NbtIo.Read(var5);
-                    var5.close();
+                    using var stream = File.OpenRead(file.getAbsolutePath());
+                    NBTTagCompound var6 = NbtIo.ReadCompressed(stream);
                     var3.readNBT(var6.GetCompoundTag("data"));
                 }
             }
@@ -102,17 +100,17 @@ public class PersistentStateManager : java.lang.Object
         {
             try
             {
-                java.io.File var2 = saveHandler.getWorldPropertiesFile(var1.id);
-                if (var2 != null)
+                java.io.File file = saveHandler.getWorldPropertiesFile(var1.id);
+                if (file != null)
                 {
                     NBTTagCompound var3 = new();
                     var1.writeNBT(var3);
-                    NBTTagCompound var4 = new();
-                    var4.SetCompoundTag("data", var3);
+                    NBTTagCompound tag = new();
+                    tag.SetCompoundTag("data", var3);
 
-                    FileOutputStream var5 = new(var2);
-                    NbtIo.WriteCompressed(var4, var5);
-                    var5.close();
+
+                    using var stream = File.OpenWrite(file.getAbsolutePath());
+                    NbtIo.WriteCompressed(tag, stream);
                 }
             }
             catch (System.Exception ex)
@@ -133,12 +131,11 @@ public class PersistentStateManager : java.lang.Object
                 return;
             }
 
-            java.io.File var1 = saveHandler.getWorldPropertiesFile("idcounts");
-            if (var1 != null && var1.exists())
+            java.io.File file = saveHandler.getWorldPropertiesFile("idcounts");
+            if (file != null && file.exists())
             {
-                DataInputStream var2 = new(new FileInputStream(var1));
-                NBTTagCompound var3 = NbtIo.Read((DataInput)var2);
-                var2.close();
+                using var stream = File.OpenRead(file.getAbsolutePath());
+                NBTTagCompound var3 = NbtIo.Read(stream);
 
                 foreach (var var5 in var3.Values)
                 {
@@ -180,22 +177,21 @@ public class PersistentStateManager : java.lang.Object
         {
             try
             {
-                java.io.File var3 = saveHandler.getWorldPropertiesFile("idcounts");
-                if (var3 != null)
+                java.io.File file = saveHandler.getWorldPropertiesFile("idcounts");
+                if (file != null)
                 {
-                    NBTTagCompound var4 = new();
+                    NBTTagCompound tag = new();
                     Iterator var5 = idCounts.keySet().iterator();
 
                     while (var5.hasNext())
                     {
                         string var6 = (string)var5.next();
                         short var7 = ((Short)idCounts.get(var6)).shortValue();
-                        var4.SetShort(var6, var7);
+                        tag.SetShort(var6, var7);
                     }
 
-                    DataOutputStream var9 = new(new FileOutputStream(var3));
-                    NbtIo.Write(var4, var9);
-                    var9.close();
+                    using var stream = File.OpenWrite(file.getAbsolutePath());
+                    NbtIo.Write(tag, stream);
                 }
             }
             catch (java.lang.Exception ex)

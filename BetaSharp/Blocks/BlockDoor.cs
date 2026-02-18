@@ -226,7 +226,7 @@ public class BlockDoor : Block
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
-        return (blockMeta & 8) != 0 ? 0 : (material == Material.Metal ? Item.IRON_DOOR.id : Item.WOODEN_DOOR.id);
+        return (blockMeta & 8) != 0 ? 0 : (material == Material.Metal ? Item.IronDoor.id : Item.WoodenDoor.id);
     }
 
     public override HitResult raycast(World world, int x, int y, int z, Vec3D startPos, Vec3D endPos)

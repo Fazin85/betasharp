@@ -121,17 +121,17 @@ public class DungeonFeature : Feature
 
         return chance switch
         {
-            0 => new ItemStack(Item.SADDLE),
-            1 => new ItemStack(Item.IRON_INGOT, rand.nextInt(4) + 1),
-            2 => new ItemStack(Item.BREAD),
-            3 => new ItemStack(Item.WHEAT, rand.nextInt(4) + 1),
-            4 => new ItemStack(Item.GUNPOWDER, rand.nextInt(4) + 1),
-            5 => new ItemStack(Item.STRING, rand.nextInt(4) + 1),
-            6 => new ItemStack(Item.BUCKET),
-            7 => rand.nextInt(100) == 0 ? new ItemStack(Item.GOLDEN_APPLE) : null,
-            8 => rand.nextInt(2) == 0 ? new ItemStack(Item.REDSTONE, rand.nextInt(4) + 1) : null,
-            9 => rand.nextInt(10) == 0 ? new ItemStack(Item.ITEMS[Item.RECORD_THIRTEEN.id + rand.nextInt(2)]) : null,
-            10 => new ItemStack(Item.DYE, 1, 3),
+            0 => new ItemStack(Item.Saddle),
+            1 => new ItemStack(Item.IronIngot, rand.nextInt(4) + 1),
+            2 => new ItemStack(Item.Bread),
+            3 => new ItemStack(Item.Wheat, rand.nextInt(4) + 1),
+            4 => new ItemStack(Item.Gunpowder, rand.nextInt(4) + 1),
+            5 => new ItemStack(Item.String, rand.nextInt(4) + 1),
+            6 => new ItemStack(Item.Bucket),
+            7 => rand.nextInt(100) == 0 ? new ItemStack(Item.GoldenApple) : null,
+            8 => rand.nextInt(2) == 0 ? new ItemStack(Item.Redstone, rand.nextInt(4) + 1) : null,
+            9 => rand.nextInt(10) == 0 ? new ItemStack(Item.ITEMS[Item.RecordThirteen.id + rand.nextInt(2)]) : null,
+            10 => new ItemStack(Item.Dye, 1, 3),
             _ => null,
         };
     }

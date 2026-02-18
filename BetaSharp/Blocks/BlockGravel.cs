@@ -10,6 +10,6 @@ public class BlockGravel : BlockSand
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
-        return random.nextInt(10) == 0 ? Item.FLINT.id : id;
+        return random.nextInt(10) == 0 ? Item.Flint.id : id;
     }
 }

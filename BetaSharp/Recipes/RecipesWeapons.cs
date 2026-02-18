@@ -6,7 +6,7 @@ namespace BetaSharp.Recipes;
 public class RecipesWeapons
 {
     private string[][] recipePatterns = [["X", "X", "#"]];
-    private object[][] recipeItems = [[Block.Planks, Block.Cobblestone, Item.IRON_INGOT, Item.DIAMOND, Item.GOLD_INGOT], [Item.WOODEN_SWORD, Item.STONE_SWORD, Item.IRON_SWORD, Item.DIAMOND_SWORD, Item.GOLDEN_SWORD]];
+    private object[][] recipeItems = [[Block.Planks, Block.Cobblestone, Item.IronIngot, Item.Diamond, Item.GoldIngot], [Item.WoodenSword, Item.StoneSword, Item.IronSword, Item.DiamondSword, Item.GoldenSword]];
 
     public void AddRecipes(CraftingManager m)
     {
@@ -17,11 +17,11 @@ public class RecipesWeapons
             {
                 Item swordResult = (Item)recipeItems[j + 1][i];
                 m.AddRecipe(new ItemStack(swordResult), 
-                    [ recipePatterns[j], '#', Item.STICK, 'X', material ]);
+                    [ recipePatterns[j], '#', Item.Stick, 'X', material ]);
             }
         }
             
-        m.AddRecipe(new ItemStack(Item.BOW, 1), [" #X", "# X", " #X", 'X', Item.STRING, '#', Item.STICK]);
-        m.AddRecipe(new ItemStack(Item.ARROW, 4), ["X", "#", "Y", 'Y', Item.FEATHER, 'X', Item.FLINT, '#', Item.STICK]);
+        m.AddRecipe(new ItemStack(Item.BOW, 1), [" #X", "# X", " #X", 'X', Item.String, '#', Item.Stick]);
+        m.AddRecipe(new ItemStack(Item.ARROW, 4), ["X", "#", "Y", 'Y', Item.Feather, 'X', Item.Flint, '#', Item.Stick]);
     }
 }

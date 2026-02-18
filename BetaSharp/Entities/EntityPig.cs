@@ -61,7 +61,7 @@ public class EntityPig : EntityAnimal
 
     protected override int getDropItemId()
     {
-        return fireTicks > 0 ? Item.COOKED_PORKCHOP.id : Item.RAW_PORKCHOP.id;
+        return fireTicks > 0 ? Item.CookedPorkchop.id : Item.RawPorkchop.id;
     }
 
     public bool getSaddled()

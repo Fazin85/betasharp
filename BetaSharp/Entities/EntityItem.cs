@@ -142,7 +142,7 @@ public class EntityItem : Entity
                     player.incrementStat(Achievements.MineWood);
                 }
 
-                if (stack.itemId == Item.LEATHER.id)
+                if (stack.itemId == Item.Leather.id)
                 {
                     player.incrementStat(Achievements.KillCow);
                 }
