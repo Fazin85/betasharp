@@ -5,8 +5,6 @@ using BetaSharp.Client.Rendering.Blocks.Entities;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Network.Packets.Play;
 using BetaSharp.Util;
-using java.awt;
-using java.awt.datatransfer;
 
 namespace BetaSharp.Client.Guis;
 
