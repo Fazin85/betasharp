@@ -45,7 +45,7 @@ public class MinecraftResourceDownloader : IDisposable
                 if (File.Exists(localFile))
                 {
                     loaded++;
-                    mc.installResource(line, new java.io.File(localFile));
+                    mc.installResource(line, new FileInfo(localFile));
                 }
             }
 
@@ -158,7 +158,7 @@ public class MinecraftResourceDownloader : IDisposable
 
             if (localFile.Exists && localFile.Length == size)
             {
-                mc.installResource(path, new java.io.File(localFile.FullName));
+                mc.installResource(path, new FileInfo(localFile.FullName));
                 return;
             }
 
@@ -171,7 +171,7 @@ public class MinecraftResourceDownloader : IDisposable
 
             if (!_cancelled)
             {
-                mc.installResource(path, new java.io.File(localFile.FullName));
+                mc.installResource(path, new FileInfo(localFile.FullName));
             }
         }
         catch (Exception ex)

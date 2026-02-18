@@ -116,7 +116,7 @@ public abstract class GuiSlotStats : GuiSlot
         if (field_27268_b >= 0)
         {
             func_27266_c(field_27268_b);
-            GuiStats.func_27149_g(field_27269_g).sndManager.playSoundFX("random.click", 1.0F, 1.0F);
+            GuiStats.func_27149_g(field_27269_g).sndManager.PlaySoundFX("random.click", 1.0F, 1.0F);
         }
 
     }
