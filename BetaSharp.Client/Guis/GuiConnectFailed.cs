@@ -7,7 +7,7 @@ public class GuiConnectFailed : GuiScreen
     private readonly string errorDetail;
     private const int BUTTON_TO_MENU = 0;
 
-    public GuiConnectFailed(string messageKey, string detailKey, params object[] formatArgs)
+    public GuiConnectFailed(string messageKey, string detailKey, params object[]? formatArgs)
     {
         TranslationStorage translations = TranslationStorage.getInstance();
         errorMessage = translations.translateKey(messageKey);

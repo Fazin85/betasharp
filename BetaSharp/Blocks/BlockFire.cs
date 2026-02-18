@@ -6,8 +6,8 @@ namespace BetaSharp.Blocks;
 
 public class BlockFire : Block
 {
-    private int[] burnChances = new int[256];
-    private int[] spreadChances = new int[256];
+    private readonly int[] _burnChances = new int[256];
+    private readonly int[] _spreadChances = new int[256];
 
     public BlockFire(int id, int textureId) : base(id, textureId, Material.Fire)
     {
@@ -29,8 +29,8 @@ public class BlockFire : Block
 
     private void registerFlammableBlock(int block, int burnChange, int spreadChance)
     {
-        burnChances[block] = burnChange;
-        spreadChances[block] = spreadChance;
+        _burnChances[block] = burnChange;
+        _spreadChances[block] = spreadChance;
     }
 
     public override Box? getCollisionShape(World world, int x, int y, int z)
@@ -145,7 +145,7 @@ public class BlockFire : Block
 
     private void trySpreadingFire(World world, int x, int y, int z, int spreadFactor, java.util.Random random, int currentAge)
     {
-        int targetSpreadChance = spreadChances[world.getBlockId(x, y, z)];
+        int targetSpreadChance = _spreadChances[world.getBlockId(x, y, z)];
         if (random.nextInt(spreadFactor) < targetSpreadChance)
         {
             bool isTnt = world.getBlockId(x, y, z) == Block.TNT.id;
@@ -203,12 +203,12 @@ public class BlockFire : Block
 
     public override bool isFlammable(BlockView blockView, int x, int y, int z)
     {
-        return burnChances[blockView.getBlockId(x, y, z)] > 0;
+        return _burnChances[blockView.getBlockId(x, y, z)] > 0;
     }
 
     public int getBurnChance(World world, int x, int y, int z, int currentChance)
     {
-        int blockBurnChance = burnChances[world.getBlockId(x, y, z)];
+        int blockBurnChance = _burnChances[world.getBlockId(x, y, z)];
         return blockBurnChance > currentChance ? blockBurnChance : currentChance;
     }
 

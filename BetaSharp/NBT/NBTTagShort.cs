@@ -1,5 +1,3 @@
-using java.io;
-
 namespace BetaSharp.NBT;
 
 public sealed class NBTTagShort : NBTBase
@@ -15,14 +13,14 @@ public sealed class NBTTagShort : NBTBase
         Value = value;
     }
 
-    public override void WriteTagContents(DataOutput output)
+    public override void WriteTagContents(Stream output)
     {
-        output.writeShort(Value);
+        output.WriteShort(Value);
     }
 
-    public override void ReadTagContents(DataInput input)
+    public override void ReadTagContents(Stream input)
     {
-        Value = input.readShort();
+        Value = input.ReadShort();
     }
 
     public override byte GetTagType()

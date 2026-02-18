@@ -1,30 +1,16 @@
 using BetaSharp.Server.Network;
-using java.net;
-using java.util.logging;
 
 namespace BetaSharp.Server.Internal;
 
 public class InternalServer : MinecraftServer
 {
-    private readonly string worldPath;
-
-    public int Port
-    {
-        get
-        {
-            lock (portLock)
-            {
-                return port;
-            }
-        }
-    }
-
-    private int port;
-    private readonly Lock portLock = new();
+    private readonly string _worldPath;
+    private readonly Lock _difficultyLock = new();
+    private int _lastDifficulty = -1;
 
     public InternalServer(string worldPath, string levelName, string seed, int viewDistance) : base(new InternalServerConfiguration(levelName, seed, viewDistance))
     {
-        this.worldPath = worldPath;
+        _worldPath = worldPath;
         logHelp = false;
     }
 
@@ -38,25 +24,14 @@ public class InternalServer : MinecraftServer
 
     protected override bool Init()
     {
-        try
-        {
-            connections = new ConnectionListener(this, InetAddress.getByName("127.0.0.1"), 0);
-            lock (portLock)
-            {
-                port = connections.port;
-            }
-        }
-        catch (java.io.IOException ex)
-        {
-            LOGGER.warning("**** FAILED TO BIND TO PORT!");
-            LOGGER.log(Level.WARNING, "The exception was: " + ex.toString());
-            LOGGER.warning("Perhaps a server is already running on that port?");
-            return false;
-        }
+        connections = new ConnectionListener(this);
 
-        LOGGER.info($"Starting internal server on port {port}");
+        LOGGER.info($"Starting internal server");
 
         bool result = base.Init();
+
+        _lastDifficulty = worlds[0].difficulty;
+
         if (result)
         {
             isReady = true;
@@ -66,6 +41,36 @@ public class InternalServer : MinecraftServer
 
     public override java.io.File getFile(string path)
     {
-        return new(System.IO.Path.Combine(worldPath, path));
+        return new(System.IO.Path.Combine(_worldPath, path));
+    }
+
+    public void SetDifficulty(int difficulty)
+    {
+        lock (_difficultyLock)
+        {
+            if (_lastDifficulty != difficulty)
+            {
+                _lastDifficulty = difficulty;
+                for (int i = 0; i < worlds.Length; ++i)
+                {
+                    if (worlds[i] != null)
+                    {
+                        worlds[i].difficulty = difficulty;
+                        worlds[i].allowSpawning(difficulty > 0, true);
+                    }
+                }
+
+                string difficultyName = difficulty switch
+                {
+                    0 => "Peaceful",
+                    1 => "Easy",
+                    2 => "Normal",
+                    3 => "Hard",
+                    _ => "Unknown"
+                };
+
+                playerManager?.sendToAll(new BetaSharp.Network.Packets.Play.ChatMessagePacket($"Difficulty set to {difficultyName}"));
+            }
+        }
     }
 }

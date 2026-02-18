@@ -501,11 +501,9 @@ public partial class Minecraft : java.lang.Object, Runnable
 
             if (!hasCrashed)
             {
-                java.lang.System.exit(0);
+                Environment.Exit(0);
             }
         }
-
-        java.lang.System.gc();
     }
 
     public void run()
@@ -673,27 +671,27 @@ public partial class Minecraft : java.lang.Object, Runnable
                     checkGLError("Post render");
                     ++frameCounter;
 
-                    for (isGamePaused = !isMultiplayerWorld() && currentScreen != null &&
-                                        currentScreen.doesGuiPauseGame();
+                    isGamePaused = (!isMultiplayerWorld() || internalServer != null) && currentScreen != null &&
+                                   currentScreen.doesGuiPauseGame();
+
+                    for (;
                          java.lang.System.currentTimeMillis() >= lastFpsCheckTime + 1000L;
                          frameCounter = 0)
                     {
-                        debug = frameCounter + " fps, "/* + WorldRenderer.chunksUpdated*/ + "0 chunk updates";
-                        //WorldRenderer.chunksUpdated = 0;
+                        debug = frameCounter + " fps";
                         lastFpsCheckTime += 1000L;
                     }
                 }
-                catch (MinecraftException mainLoopException)
+                catch (MinecraftException)
                 {
                     world = null;
-                    changeWorld1((World)null);
+                    changeWorld1(null);
                     displayGuiScreen(new GuiConflictWarning());
                 }
-                catch (OutOfMemoryError outOfMemoryException)
+                catch (OutOfMemoryError)
                 {
                     crashCleanup();
                     displayGuiScreen(new GuiErrorScreen());
-                    java.lang.System.gc();
                 }
                 finally
                 {
@@ -705,7 +703,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                 }
             }
         }
-        catch (MinecraftError minecraftError)
+        catch (MinecraftError)
         {
         }
         catch (Throwable unexpectedException)
@@ -728,22 +726,11 @@ public partial class Minecraft : java.lang.Object, Runnable
     {
         try
         {
-            java.lang.System.gc();
+            changeWorld1(null);
         }
-        catch (Throwable vec3dCleanupException)
+        catch (System.Exception)
         {
         }
-
-        try
-        {
-            java.lang.System.gc();
-            changeWorld1((World)null);
-        }
-        catch (Throwable worldCleanupException)
-        {
-        }
-
-        java.lang.System.gc();
     }
 
     private void screenshotListener()
@@ -1187,6 +1174,11 @@ public partial class Minecraft : java.lang.Object, Runnable
             }
 
             world.difficulty = options.difficulty;
+            if (internalServer != null)
+            {
+                internalServer.SetDifficulty(options.difficulty);
+            }
+
             if (world.isRemote)
             {
                 world.difficulty = 3;
@@ -1219,18 +1211,10 @@ public partial class Minecraft : java.lang.Object, Runnable
             Profiler.PopGroup();
 
             Profiler.PushGroup("theWorld.tick");
-            if (!isGamePaused || isMultiplayerWorld())
+            if (!isGamePaused || (isMultiplayerWorld() && internalServer == null))
             {
                 world.allowSpawning(options.difficulty > 0, true);
-                var renderDistance = options.renderDistance switch
-                {
-                    0 => 16,
-                    1 => 8,
-                    2 => 4,
-                    3 => 2,
-                    _ => 999,
-                };
-                world.Tick(renderDistance);
+                world.Tick();
             }
 
             Profiler.PopGroup();

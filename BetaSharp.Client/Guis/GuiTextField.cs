@@ -1,6 +1,8 @@
 using BetaSharp.Client.Input;
 using BetaSharp.Client.Rendering;
 using BetaSharp.Util;
+using java.awt;
+using java.awt.datatransfer;
 
 namespace BetaSharp.Client.Guis;
 

@@ -28,7 +28,7 @@ public class ClientWorld : World
         persistentStateManager = netHandler.clientPersistentStateManager;
     }
 
-    public override void Tick(int _)
+    public override void Tick()
     {
         setTime(getTime() + 1L);
         int ambient = getAmbientDarkness(1.0F);

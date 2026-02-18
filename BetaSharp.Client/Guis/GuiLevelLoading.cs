@@ -1,3 +1,5 @@
+using BetaSharp.Client.Network;
+using BetaSharp.Network;
 using BetaSharp.Server.Internal;
 using BetaSharp.Server.Threading;
 
@@ -26,14 +28,26 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
         {
             if (mc.internalServer.stopped)
             {
-                mc.displayGuiScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", new object[] { "Internal server stopped unexpectedly" }));
+                mc.displayGuiScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", ["Internal server stopped unexpectedly"]));
                 return;
             }
 
             if (mc.internalServer.isReady)
             {
-                java.lang.Thread.sleep(100);
-                mc.displayGuiScreen(new GuiConnecting(mc, "localhost", mc.internalServer.Port));
+                InternalConnection clientConnection = new(null, "Internal-Client");
+                InternalConnection serverConnection = new(null, "Internal-Server");
+
+                clientConnection.AssignRemote(serverConnection);
+                serverConnection.AssignRemote(clientConnection);
+
+                mc.internalServer.connections.AddInternalConnection(serverConnection);
+                Console.WriteLine("[Internal-Client] Created internal connection");
+
+                ClientNetworkHandler clientHandler = new(mc, clientConnection);
+                clientConnection.setNetworkHandler(clientHandler);
+                clientHandler.addToSendQueue(new BetaSharp.Network.Packets.HandshakePacket(mc.session.username));
+
+                mc.displayGuiScreen(new GuiConnecting(mc, clientHandler));
             }
         }
     }

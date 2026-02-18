@@ -426,7 +426,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
         var2.bypassSpawnProtection = false;
     }
 
-    public override void onDisconnected(string reason, object[] objects)
+    public override void onDisconnected(string reason, object[]? objects)
     {
         LOGGER.info(player.name + " lost connection: " + reason);
         server.playerManager.sendToAll(new ChatMessagePacket("§e" + player.name + " left the game."));

@@ -5,6 +5,7 @@ using BetaSharp.Worlds.Chunks.Storage;
 using BetaSharp.Worlds.Dimensions;
 using java.io;
 using java.util.logging;
+using File = System.IO.File;
 
 namespace BetaSharp.Worlds.Storage;
 
@@ -108,15 +109,18 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
         var1.SaveVersion = 19132;
 
         NBTTagCompound var3 = var1.getNBTTagCompoundWithPlayer(var2);
-        NBTTagCompound var4 = new();
-        var4.SetTag("Data", var3);
+        NBTTagCompound tag = new();
+        tag.SetTag("Data", var3);
 
         try
         {
-            java.io.File var5 = new java.io.File(saveDirectory, "level.dat_new");
+            java.io.File file = new java.io.File(saveDirectory, "level.dat_new");
             java.io.File var6 = new java.io.File(saveDirectory, "level.dat_old");
             java.io.File var7 = new java.io.File(saveDirectory, "level.dat");
-            NbtIo.WriteCompressed(var4, new FileOutputStream(var5));
+
+            using var stream = File.OpenWrite(file.getAbsolutePath());
+            NbtIo.WriteCompressed(tag, stream);
+
             if (var6.exists())
             {
                 var6.delete();
@@ -128,10 +132,10 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
                 var7.delete();
             }
 
-            var5.renameTo(var7);
-            if (var5.exists())
+            file.renameTo(var7);
+            if (file.exists())
             {
-                var5.delete();
+                file.delete();
             }
         }
         catch (System.Exception e)
@@ -142,14 +146,15 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
 
     public WorldProperties loadProperties()
     {
-        java.io.File var1 = new java.io.File(saveDirectory, "level.dat");
+        java.io.File file = new java.io.File(saveDirectory, "level.dat");
         NBTTagCompound var2;
         NBTTagCompound var3;
-        if (var1.exists())
+        if (file.exists())
         {
             try
             {
-                var2 = NbtIo.Read(new FileInputStream(var1));
+                using var stream = File.OpenRead(file.getAbsolutePath());
+                var2 = NbtIo.ReadCompressed(stream);
                 var3 = var2.GetCompoundTag("Data");
                 WorldProperties wInfo = new(var3);
                 return wInfo;
@@ -160,12 +165,13 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
             }
         }
 
-        var1 = new java.io.File(saveDirectory, "level.dat_old");
-        if (var1.exists())
+        file = new java.io.File(saveDirectory, "level.dat_old");
+        if (file.exists())
         {
             try
             {
-                var2 = NbtIo.Read(new FileInputStream(var1));
+                using var stream = File.OpenRead(file.getAbsolutePath());
+                var2 = NbtIo.ReadCompressed(stream);
                 var3 = var2.GetCompoundTag("Data");
                 WorldProperties wInfo = new(var3);
                 return wInfo;
@@ -182,15 +188,18 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
     public void save(WorldProperties var1)
     {
         NBTTagCompound var2 = var1.getNBTTagCompound();
-        NBTTagCompound var3 = new NBTTagCompound();
-        var3.SetTag("Data", var2);
+        NBTTagCompound tag = new NBTTagCompound();
+        tag.SetTag("Data", var2);
 
         try
         {
-            java.io.File var4 = new java.io.File(saveDirectory, "level.dat_new");
+            java.io.File file = new java.io.File(saveDirectory, "level.dat_new");
             java.io.File var5 = new java.io.File(saveDirectory, "level.dat_old");
             java.io.File var6 = new java.io.File(saveDirectory, "level.dat");
-            NbtIo.WriteCompressed(var3, new FileOutputStream(var4));
+
+            using var stream = File.OpenWrite(file.getAbsolutePath());
+            NbtIo.WriteCompressed(tag, stream);
+            
             if (var5.exists())
             {
                 var5.delete();
@@ -202,10 +211,10 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
                 var6.delete();
             }
 
-            var4.renameTo(var6);
-            if (var4.exists())
+            file.renameTo(var6);
+            if (file.exists())
             {
-                var4.delete();
+                file.delete();
             }
         }
         catch (java.lang.Exception var7)
@@ -224,17 +233,20 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
     {
         try
         {
-            NBTTagCompound var2 = new NBTTagCompound();
-            player.write(var2);
-            java.io.File var3 = new java.io.File(playersDirectory, "_tmp_.dat");
+            NBTTagCompound tag = new NBTTagCompound();
+            player.write(tag);
+            java.io.File file = new java.io.File(playersDirectory, "_tmp_.dat");
             java.io.File var4 = new java.io.File(playersDirectory, player.name + ".dat");
-            NbtIo.WriteCompressed(var2, new FileOutputStream(var3));
+
+            using var stream = File.OpenWrite(file.getAbsolutePath());
+            NbtIo.WriteCompressed(tag, stream);
+
             if (var4.exists())
             {
                 var4.delete();
             }
 
-            var3.renameTo(var4);
+            file.renameTo(var4);
         }
         catch (Exception var5)
         {
@@ -255,10 +267,11 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
     {
         try
         {
-            java.io.File var2 = new java.io.File(playersDirectory, playerName + ".dat");
-            if (var2.exists())
+            java.io.File file = new java.io.File(playersDirectory, playerName + ".dat");
+            if (file.exists())
             {
-                return NbtIo.Read(new FileInputStream(var2));
+                using var stream = File.OpenRead(file.getAbsolutePath());
+                return NbtIo.ReadCompressed(stream);
             }
         }
         catch (Exception var3)

@@ -16,17 +16,17 @@ public class RegionChunkStorage : ChunkStorage
 
     public Chunk loadChunk(World world, int chunkX, int chunkZ)
     {
-        var s = RegionIo.getChunkInputStream(dir, chunkX, chunkZ);
+        using ChunkDataStream s = RegionIo.getChunkInputStream(dir, chunkX, chunkZ);
         if (s == null)
         {
             return null;
         }
 
-        var var4 = s.getInputStream();
+        Stream var4 = s.Stream;
 
         if (var4 != null)
         {
-            NBTTagCompound var5 = NbtIo.Read((DataInput)var4);
+            NBTTagCompound var5 = NbtIo.Read(var4);
             if (!var5.HasKey("Level"))
             {
                 java.lang.System.@out.println("Chunk file at " + chunkX + "," + chunkZ + " is missing level data, skipping");
@@ -62,13 +62,12 @@ public class RegionChunkStorage : ChunkStorage
     {
         try
         {
-            DataOutputStream var3 = RegionIo.getChunkOutputStream(dir, chunk.x, chunk.z);
-            NBTTagCompound var4 = new();
+            using Stream stream = RegionIo.getChunkOutputStream(dir, chunk.x, chunk.z);
+            NBTTagCompound tag = new();
             NBTTagCompound var5 = new();
-            var4.SetTag("Level", var5);
+            tag.SetTag("Level", var5);
             storeChunkInCompound(chunk, world, var5);
-            NbtIo.Write(var4, var3);
-            var3.close();
+            NbtIo.Write(tag, stream);
             WorldProperties var6 = world.getProperties();
             var6.SizeOnDisk = var6.SizeOnDisk + (long)RegionIo.getSizeDelta(dir, chunk.x, chunk.z);
         }
@@ -95,7 +94,7 @@ public class RegionChunkStorage : ChunkStorage
         NBTTagCompound var7;
         for (int var4 = 0; var4 < chunk.entities.Length; ++var4)
         {
-            foreach (var var6 in chunk.entities[var4])
+            foreach (Entity var6 in chunk.entities[var4])
             {
                 chunk.lastSaveHadEntities = true;
                 var7 = new NBTTagCompound();
@@ -109,7 +108,7 @@ public class RegionChunkStorage : ChunkStorage
         nbt.SetTag("Entities", var3);
         NBTTagList var8 = new();
 
-        foreach (var var9 in chunk.blockEntities.Values)
+        foreach (BlockEntity var9 in chunk.blockEntities.Values)
         {
             var7 = new NBTTagCompound();
             var9.writeNbt(var7);

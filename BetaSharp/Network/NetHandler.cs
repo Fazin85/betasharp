@@ -17,7 +17,7 @@ public abstract class NetHandler : java.lang.Object
     {
     }
 
-    public virtual void onDisconnected(string var1, object[] var2)
+    public virtual void onDisconnected(string var1, object[]? var2)
     {
     }
 
