@@ -80,7 +80,7 @@ public class GuiScreen : Gui
     {
         if (button == 0)
         {
-            foreach (var control in _controlList)
+            foreach (var control in _controlList.ToArray())
             {
                 if (control.MousePressed(mc, mouseX, mouseY))
                 {
