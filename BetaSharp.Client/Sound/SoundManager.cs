@@ -85,7 +85,7 @@ public class SoundManager
             }
             else
             {
-                _currentMusic!.Volume = _options.musicVolume * 100.0F;
+                _currentMusic?.Volume = _options.musicVolume * 100.0F;
             }
         }
     }
@@ -228,7 +228,7 @@ public class SoundManager
         _currentMusic?.Stop();
         _currentMusic?.Dispose();
 
-        var musicName = SanitizePath(entry.SoundUrl.LocalPath);
+        string musicName = SanitizePath(entry.SoundUrl.LocalPath);
 
         _currentMusic = new Music(musicName)
         {
