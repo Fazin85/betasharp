@@ -987,7 +987,7 @@ public class EntityMinecart : Entity, IInventory
             {
                 if (--heldItem.count == 0)
                 {
-                    player.inventory.SetStack(player.inventory._selectedSlot, null);
+                    player.inventory.SetStack(player.inventory.SelectedSlot, null);
                 }
 
                 fuel += 1200;

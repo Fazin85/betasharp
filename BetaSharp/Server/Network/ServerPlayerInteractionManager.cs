@@ -143,10 +143,10 @@ public class ServerPlayerInteractionManager
         ItemStack itemStack = stack.use(world, player);
         if (itemStack != stack || itemStack != null && itemStack.count != count)
         {
-            player.inventory._main[player.inventory._selectedSlot] = itemStack;
+            player.inventory.Main[player.inventory.SelectedSlot] = itemStack;
             if (itemStack.count == 0)
             {
-                player.inventory._main[player.inventory._selectedSlot] = null;
+                player.inventory.Main[player.inventory.SelectedSlot] = null;
             }
 
             return true;

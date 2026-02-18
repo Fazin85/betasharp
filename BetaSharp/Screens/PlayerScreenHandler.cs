@@ -23,7 +23,7 @@ public class PlayerScreenHandler : ScreenHandler
         craftingResult = new InventoryCraftResult();
         this.isLocal = false;
         this.isLocal = isLocal;
-        addSlot(new CraftingResultSlot(inventoryPlayer._player, craftingInput, craftingResult, 0, 144, 36));
+        addSlot(new CraftingResultSlot(inventoryPlayer.Player, craftingInput, craftingResult, 0, 144, 36));
 
         int var3;
         int var4;

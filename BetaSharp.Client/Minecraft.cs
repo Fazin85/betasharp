@@ -981,7 +981,7 @@ public partial class Minecraft : java.lang.Object, Runnable
 
                     if (selectedItem.count == 0)
                     {
-                        player.inventory._main[player.inventory._selectedSlot] = null;
+                        player.inventory.Main[player.inventory.SelectedSlot] = null;
                     }
                     else if (selectedItem.count != itemCountBefore)
                     {
@@ -1384,7 +1384,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                     {
                         if (Keyboard.getEventKey() == Keyboard.KEY_1 + slotIndex)
                         {
-                            player.inventory._selectedSlot = slotIndex;
+                            player.inventory.SelectedSlot = slotIndex;
                         }
                     }
 

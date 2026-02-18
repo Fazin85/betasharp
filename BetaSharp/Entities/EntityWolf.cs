@@ -412,7 +412,7 @@ public class EntityWolf : EntityAnimal
                 --heldItem.count;
                 if (heldItem.count <= 0)
                 {
-                    player.inventory.SetStack(player.inventory._selectedSlot, null);
+                    player.inventory.SetStack(player.inventory.SelectedSlot, null);
                 }
 
                 if (!world.isRemote)
@@ -447,7 +447,7 @@ public class EntityWolf : EntityAnimal
                     --heldItem.count;
                     if (heldItem.count <= 0)
                     {
-                        player.inventory.SetStack(player.inventory._selectedSlot, null);
+                        player.inventory.SetStack(player.inventory.SelectedSlot, null);
                     }
 
                     heal(((ItemFood)Item.RawPorkchop).getHealAmount());

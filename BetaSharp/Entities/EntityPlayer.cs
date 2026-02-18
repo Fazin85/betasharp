@@ -315,7 +315,7 @@ public abstract class EntityPlayer : EntityLiving
 
     public virtual void dropSelectedItem()
     {
-        dropItem(inventory.RemoveStack(inventory._selectedSlot, 1), false);
+        dropItem(inventory.RemoveStack(inventory.SelectedSlot, 1), false);
     }
 
     public void dropItem(ItemStack stack)
@@ -576,7 +576,7 @@ public abstract class EntityPlayer : EntityLiving
 
     public void clearStackInHand()
     {
-        inventory.SetStack(inventory._selectedSlot, null);
+        inventory.SetStack(inventory.SelectedSlot, null);
     }
 
     public override double getStandingEyeHeight()

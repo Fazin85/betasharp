@@ -32,7 +32,7 @@ public static class PlayerCommands
         ServerPlayerEntity player = server.playerManager.getPlayer(senderName);
         if (player == null) { output.SendMessage("Could not find your player."); return; }
 
-        var inventory = player.inventory._main;
+        var inventory = player.inventory.Main;
         for (int i = 0; i < inventory.Length; i++)
         {
             inventory[i] = null;

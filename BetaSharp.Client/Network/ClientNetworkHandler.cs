@@ -246,11 +246,11 @@ public class ClientNetworkHandler : NetHandler
         int currentItem = packet.currentItem;
         if (currentItem == 0)
         {
-            ent.inventory._main[ent.inventory._selectedSlot] = null;
+            ent.inventory.Main[ent.inventory.SelectedSlot] = null;
         }
         else
         {
-            ent.inventory._main[ent.inventory._selectedSlot] = new ItemStack(currentItem, 1, 0);
+            ent.inventory.Main[ent.inventory.SelectedSlot] = new ItemStack(currentItem, 1, 0);
         }
 
         ent.setPositionAndAngles(x, y, z, rotation, pitch);

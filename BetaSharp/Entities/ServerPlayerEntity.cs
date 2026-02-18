@@ -105,7 +105,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
 
     public ItemStack getEquipment(int slot)
     {
-        return slot == 0 ? inventory.GetSelectedItem() : inventory._armor[slot - 1];
+        return slot == 0 ? inventory.GetSelectedItem() : inventory.Armor[slot - 1];
     }
 
 

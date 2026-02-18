@@ -5,14 +5,14 @@ namespace BetaSharp.Inventories;
 
 public class InventoryLargeChest : java.lang.Object, IInventory
 {
-    private IInventory _upperChest;
-    private IInventory _lowerChest;
+    private readonly IInventory _upperChest;
+    private readonly IInventory _lowerChest;
 
     public InventoryLargeChest(string name, IInventory upperChest, IInventory lowerChest)
     {
         Name = name;
-        this._upperChest = upperChest;
-        this._lowerChest = lowerChest;
+        _upperChest = upperChest;
+        _lowerChest = lowerChest;
     }
 
     public int Size

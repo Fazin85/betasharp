@@ -8,16 +8,16 @@ namespace BetaSharp.Inventories;
 public class InventoryPlayer : java.lang.Object, IInventory
 {
 
-    public ItemStack[] _main = new ItemStack[36];
-    public ItemStack[] _armor = new ItemStack[4];
-    public int _selectedSlot = 0;
-    public EntityPlayer _player;
-    private ItemStack _cursorStack;
-    public bool _dirty = false;
+    public ItemStack[] Main { get; set; } = new ItemStack[36];
+    public ItemStack[] Armor { get; set; } = new ItemStack[4];
+    public int SelectedSlot { get; set; }
+    public EntityPlayer Player { get; set; }
+    private ItemStack CursorStack { get; set; }
+    public bool Dirty = false;
 
     public InventoryPlayer(EntityPlayer player)
     {
-        this._player = player;
+        Player = player;
     }
 
     public static int GetHotbarSize()
@@ -27,14 +27,14 @@ public class InventoryPlayer : java.lang.Object, IInventory
 
     public ItemStack GetSelectedItem()
     {
-        return _selectedSlot < 9 && _selectedSlot >= 0 ? _main[_selectedSlot] : null;
+        return SelectedSlot < 9 && SelectedSlot >= 0 ? Main[SelectedSlot] : null;
     }
 
     private int GetInventorySlotContainItem(int itemId)
     {
-        for (int slotIndex = 0; slotIndex < _main.Length; ++slotIndex)
+        for (int slotIndex = 0; slotIndex < Main.Length; ++slotIndex)
         {
-            if (_main[slotIndex] != null && _main[slotIndex].itemId == itemId)
+            if (Main[slotIndex] != null && Main[slotIndex].itemId == itemId)
             {
                 return slotIndex;
             }
@@ -45,9 +45,9 @@ public class InventoryPlayer : java.lang.Object, IInventory
 
     private int StoreItemStack(ItemStack itemStack)
     {
-        for (int slotIndex = 0; slotIndex < _main.Length; ++slotIndex)
+        for (int slotIndex = 0; slotIndex < Main.Length; ++slotIndex)
         {
-            if (_main[slotIndex] != null && _main[slotIndex].itemId == itemStack.itemId && _main[slotIndex].isStackable() && _main[slotIndex].count < _main[slotIndex].getMaxCount() && _main[slotIndex].count < this.MaxCountPerStack && (!_main[slotIndex].getHasSubtypes() || _main[slotIndex].getDamage() == itemStack.getDamage()))
+            if (Main[slotIndex] != null && Main[slotIndex].itemId == itemStack.itemId && Main[slotIndex].isStackable() && Main[slotIndex].count < Main[slotIndex].getMaxCount() && Main[slotIndex].count < this.MaxCountPerStack && (!Main[slotIndex].getHasSubtypes() || Main[slotIndex].getDamage() == itemStack.getDamage()))
             {
                 return slotIndex;
             }
@@ -58,9 +58,9 @@ public class InventoryPlayer : java.lang.Object, IInventory
 
     private int GetFirstEmptyStack()
     {
-        for (int slotIndex = 0; slotIndex < _main.Length; ++slotIndex)
+        for (int slotIndex = 0; slotIndex < Main.Length; ++slotIndex)
         {
-            if (_main[slotIndex] == null)
+            if (Main[slotIndex] == null)
             {
                 return slotIndex;
             }
@@ -74,7 +74,7 @@ public class InventoryPlayer : java.lang.Object, IInventory
         int slotIndex = GetInventorySlotContainItem(itemId);
         if (slotIndex >= 0 && slotIndex < 9)
         {
-            _selectedSlot = slotIndex;
+            SelectedSlot = slotIndex;
         }
     }
 
@@ -90,13 +90,13 @@ public class InventoryPlayer : java.lang.Object, IInventory
             scrollDirection = -1;
         }
 
-        for (_selectedSlot -= scrollDirection; _selectedSlot < 0; _selectedSlot += 9)
+        for (SelectedSlot -= scrollDirection; SelectedSlot < 0; SelectedSlot += 9)
         {
         }
 
-        while (_selectedSlot >= 9)
+        while (SelectedSlot >= 9)
         {
-            _selectedSlot -= 9;
+            SelectedSlot -= 9;
         }
 
     }
@@ -117,20 +117,20 @@ public class InventoryPlayer : java.lang.Object, IInventory
         }
         else
         {
-            if (_main[slotIndex] == null)
+            if (Main[slotIndex] == null)
             {
-                _main[slotIndex] = new ItemStack(itemId, 0, itemStack.getDamage());
+                Main[slotIndex] = new ItemStack(itemId, 0, itemStack.getDamage());
             }
 
             int spaceAvailable = remainingCount;
-            if (remainingCount > _main[slotIndex].getMaxCount() - _main[slotIndex].count)
+            if (remainingCount > Main[slotIndex].getMaxCount() - Main[slotIndex].count)
             {
-                spaceAvailable = _main[slotIndex].getMaxCount() - _main[slotIndex].count;
+                spaceAvailable = Main[slotIndex].getMaxCount() - Main[slotIndex].count;
             }
 
-            if (spaceAvailable > this.MaxCountPerStack - _main[slotIndex].count)
+            if (spaceAvailable > this.MaxCountPerStack - Main[slotIndex].count)
             {
-                spaceAvailable = this.MaxCountPerStack - _main[slotIndex].count;
+                spaceAvailable = this.MaxCountPerStack - Main[slotIndex].count;
             }
 
             if (spaceAvailable == 0)
@@ -140,8 +140,8 @@ public class InventoryPlayer : java.lang.Object, IInventory
             else
             {
                 remainingCount -= spaceAvailable;
-                _main[slotIndex].count += spaceAvailable;
-                _main[slotIndex].bobbingAnimationTime = 5;
+                Main[slotIndex].count += spaceAvailable;
+                Main[slotIndex].bobbingAnimationTime = 5;
                 return remainingCount;
             }
         }
@@ -149,11 +149,11 @@ public class InventoryPlayer : java.lang.Object, IInventory
 
     public void InventoryTick()
     {
-        for (int slotIndex = 0; slotIndex < _main.Length; ++slotIndex)
+        for (int slotIndex = 0; slotIndex < Main.Length; ++slotIndex)
         {
-            if (_main[slotIndex] != null)
+            if (Main[slotIndex] != null)
             {
-                _main[slotIndex].inventoryTick(_player.world, _player, slotIndex, _selectedSlot == slotIndex);
+                Main[slotIndex].inventoryTick(Player.world, Player, slotIndex, SelectedSlot == slotIndex);
             }
         }
 
@@ -168,9 +168,9 @@ public class InventoryPlayer : java.lang.Object, IInventory
         }
         else
         {
-            if (--_main[slotIndex].count <= 0)
+            if (--Main[slotIndex].count <= 0)
             {
-                _main[slotIndex] = null;
+                Main[slotIndex] = null;
             }
 
             return true;
@@ -185,8 +185,8 @@ public class InventoryPlayer : java.lang.Object, IInventory
             slotIndex = GetFirstEmptyStack();
             if (slotIndex >= 0)
             {
-                _main[slotIndex] = ItemStack.clone(itemStack);
-                _main[slotIndex].bobbingAnimationTime = 5;
+                Main[slotIndex] = ItemStack.clone(itemStack);
+                Main[slotIndex].bobbingAnimationTime = 5;
                 itemStack.count = 0;
                 return true;
             }
@@ -209,11 +209,11 @@ public class InventoryPlayer : java.lang.Object, IInventory
 
     public ItemStack? RemoveStack(int slotIndex, int amount)
     {
-        ItemStack[] targetArray = _main;
-        if (slotIndex >= _main.Length)
+        ItemStack[] targetArray = Main;
+        if (slotIndex >= Main.Length)
         {
-            targetArray = _armor;
-            slotIndex -= _main.Length;
+            targetArray = Armor;
+            slotIndex -= Main.Length;
         }
 
         if (targetArray[slotIndex] != null)
@@ -244,11 +244,11 @@ public class InventoryPlayer : java.lang.Object, IInventory
 
     public void SetStack(int slotIndex, ItemStack? itemStack)
     {
-        ItemStack[] targetArray = _main;
+        ItemStack[] targetArray = Main;
         if (slotIndex >= targetArray.Length)
         {
             slotIndex -= targetArray.Length;
-            targetArray = _armor;
+            targetArray = Armor;
         }
 
         targetArray[slotIndex] = itemStack;
@@ -257,9 +257,9 @@ public class InventoryPlayer : java.lang.Object, IInventory
     public float GetStrVsBlock(Block block)
     {
         float miningSpeed = 1.0F;
-        if (_main[_selectedSlot] != null)
+        if (Main[SelectedSlot] != null)
         {
-            miningSpeed *= _main[_selectedSlot].getMiningSpeedMultiplier(block);
+            miningSpeed *= Main[SelectedSlot].getMiningSpeedMultiplier(block);
         }
 
         return miningSpeed;
@@ -269,24 +269,24 @@ public class InventoryPlayer : java.lang.Object, IInventory
     {
         int slotIndex;
         NBTTagCompound itemTag;
-        for (slotIndex = 0; slotIndex < _main.Length; ++slotIndex)
+        for (slotIndex = 0; slotIndex < Main.Length; ++slotIndex)
         {
-            if (_main[slotIndex] != null)
+            if (Main[slotIndex] != null)
             {
                 itemTag = new NBTTagCompound();
                 itemTag.SetByte("Slot", (sbyte)slotIndex);
-                _main[slotIndex].writeToNBT(itemTag);
+                Main[slotIndex].writeToNBT(itemTag);
                 nbt.SetTag(itemTag);
             }
         }
 
-        for (slotIndex = 0; slotIndex < _armor.Length; ++slotIndex)
+        for (slotIndex = 0; slotIndex < Armor.Length; ++slotIndex)
         {
-            if (_armor[slotIndex] != null)
+            if (Armor[slotIndex] != null)
             {
                 itemTag = new NBTTagCompound();
                 itemTag.SetByte("Slot", (sbyte)(slotIndex + 100));
-                _armor[slotIndex].writeToNBT(itemTag);
+                Armor[slotIndex].writeToNBT(itemTag);
                 nbt.SetTag(itemTag);
             }
         }
@@ -296,8 +296,8 @@ public class InventoryPlayer : java.lang.Object, IInventory
 
     public void ReadFromNBT(NBTTagList nbt)
     {
-        _main = new ItemStack[36];
-        _armor = new ItemStack[4];
+        Main = new ItemStack[36];
+        Armor = new ItemStack[4];
 
         for (int i = 0; i < nbt.TagCount(); ++i)
         {
@@ -306,14 +306,14 @@ public class InventoryPlayer : java.lang.Object, IInventory
             ItemStack itemStack = new ItemStack(itemTag);
             if (itemStack.getItem() != null)
             {
-                if (slotIndex >= 0 && slotIndex < _main.Length)
+                if (slotIndex >= 0 && slotIndex < Main.Length)
                 {
-                    _main[slotIndex] = itemStack;
+                    Main[slotIndex] = itemStack;
                 }
 
-                if (slotIndex >= 100 && slotIndex < _armor.Length + 100)
+                if (slotIndex >= 100 && slotIndex < Armor.Length + 100)
                 {
-                    _armor[slotIndex - 100] = itemStack;
+                    Armor[slotIndex - 100] = itemStack;
                 }
             }
         }
@@ -322,16 +322,16 @@ public class InventoryPlayer : java.lang.Object, IInventory
 
     public int Size
     {
-        get => _main.Length + 4;
+        get => Main.Length + 4;
     }
 
     public ItemStack? GetStack(int slotIndex)
     {
-        ItemStack[] targetArray = _main;
+        ItemStack[] targetArray = Main;
         if (slotIndex >= targetArray.Length)
         {
             slotIndex -= targetArray.Length;
-            targetArray = _armor;
+            targetArray = Armor;
         }
 
         return targetArray[slotIndex];
@@ -350,7 +350,7 @@ public class InventoryPlayer : java.lang.Object, IInventory
 
     public int GetDamageVsEntity(Entity entity)
     {
-        ItemStack itemStack = GetStack(_selectedSlot);
+        ItemStack itemStack = GetStack(SelectedSlot);
         return itemStack != null ? itemStack.getAttackDamage(entity) : 1;
     }
 
@@ -362,14 +362,14 @@ public class InventoryPlayer : java.lang.Object, IInventory
         }
         else
         {
-            ItemStack itemStack = GetStack(_selectedSlot);
+            ItemStack itemStack = GetStack(SelectedSlot);
             return itemStack != null ? itemStack.isSuitableFor(block) : false;
         }
     }
 
     public ItemStack ArmorItemInSlot(int slotIndex)
     {
-        return _armor[slotIndex];
+        return Armor[slotIndex];
     }
 
     public int GetTotalArmorValue()
@@ -378,16 +378,16 @@ public class InventoryPlayer : java.lang.Object, IInventory
         int durabilitySum = 0;
         int totalMaxDurability = 0;
 
-        for (int slotIndex = 0; slotIndex < _armor.Length; ++slotIndex)
+        for (int slotIndex = 0; slotIndex < Armor.Length; ++slotIndex)
         {
-            if (_armor[slotIndex] != null && _armor[slotIndex].getItem() is ItemArmor)
+            if (Armor[slotIndex] != null && Armor[slotIndex].getItem() is ItemArmor)
             {
-                int maxDurability = _armor[slotIndex].getMaxDamage();
-                int pieceDamage = _armor[slotIndex].getDamage2();
+                int maxDurability = Armor[slotIndex].getMaxDamage();
+                int pieceDamage = Armor[slotIndex].getDamage2();
                 int remainingDurability = maxDurability - pieceDamage;
                 durabilitySum += remainingDurability;
                 totalMaxDurability += maxDurability;
-                int armorValue = ((ItemArmor)_armor[slotIndex].getItem()).damageReduceAmount;
+                int armorValue = ((ItemArmor)Armor[slotIndex].getItem()).damageReduceAmount;
                 totalArmor += armorValue;
             }
         }
@@ -404,15 +404,15 @@ public class InventoryPlayer : java.lang.Object, IInventory
 
     public void DamageArmor(int durabilityLoss)
     {
-        for (int slotIndex = 0; slotIndex < _armor.Length; ++slotIndex)
+        for (int slotIndex = 0; slotIndex < Armor.Length; ++slotIndex)
         {
-            if (_armor[slotIndex] != null && _armor[slotIndex].getItem() is ItemArmor)
+            if (Armor[slotIndex] != null && Armor[slotIndex].getItem() is ItemArmor)
             {
-                _armor[slotIndex].damageItem(durabilityLoss, _player);
-                if (_armor[slotIndex].count == 0)
+                Armor[slotIndex].damageItem(durabilityLoss, Player);
+                if (Armor[slotIndex].count == 0)
                 {
-                    _armor[slotIndex].onRemoved(_player);
-                    _armor[slotIndex] = null;
+                    Armor[slotIndex].onRemoved(Player);
+                    Armor[slotIndex] = null;
                 }
             }
         }
@@ -422,21 +422,21 @@ public class InventoryPlayer : java.lang.Object, IInventory
     public void DropInventory()
     {
         int slotIndex;
-        for (slotIndex = 0; slotIndex < _main.Length; ++slotIndex)
+        for (slotIndex = 0; slotIndex < Main.Length; ++slotIndex)
         {
-            if (_main[slotIndex] != null)
+            if (Main[slotIndex] != null)
             {
-                _player.dropItem(_main[slotIndex], true);
-                _main[slotIndex] = null;
+                Player.dropItem(Main[slotIndex], true);
+                Main[slotIndex] = null;
             }
         }
 
-        for (slotIndex = 0; slotIndex < _armor.Length; ++slotIndex)
+        for (slotIndex = 0; slotIndex < Armor.Length; ++slotIndex)
         {
-            if (_armor[slotIndex] != null)
+            if (Armor[slotIndex] != null)
             {
-                _player.dropItem(_armor[slotIndex], true);
-                _armor[slotIndex] = null;
+                Player.dropItem(Armor[slotIndex], true);
+                Armor[slotIndex] = null;
             }
         }
 
@@ -444,39 +444,39 @@ public class InventoryPlayer : java.lang.Object, IInventory
 
     public void MarkDirty()
     {
-        _dirty = true;
+        Dirty = true;
     }
 
     public void SetItemStack(ItemStack itemStack)
     {
-        _cursorStack = itemStack;
-        _player.onCursorStackChanged(itemStack);
+        CursorStack = itemStack;
+        Player.onCursorStackChanged(itemStack);
     }
 
     public ItemStack GetCursorStack()
     {
-        return _cursorStack;
+        return CursorStack;
     }
 
     public bool CanPlayerUse(EntityPlayer entityPlayer)
     {
-        return _player.dead ? false : entityPlayer.getSquaredDistance(_player) <= 64.0D;
+        return Player.dead ? false : entityPlayer.getSquaredDistance(Player) <= 64.0D;
     }
 
     public bool Contains(ItemStack itemStack)
     {
         int slotIndex;
-        for (slotIndex = 0; slotIndex < _armor.Length; ++slotIndex)
+        for (slotIndex = 0; slotIndex < Armor.Length; ++slotIndex)
         {
-            if (_armor[slotIndex] != null && _armor[slotIndex].equals(itemStack))
+            if (Armor[slotIndex] != null && Armor[slotIndex].equals(itemStack))
             {
                 return true;
             }
         }
 
-        for (slotIndex = 0; slotIndex < _main.Length; ++slotIndex)
+        for (slotIndex = 0; slotIndex < Main.Length; ++slotIndex)
         {
-            if (_main[slotIndex] != null && _main[slotIndex].equals(itemStack))
+            if (Main[slotIndex] != null && Main[slotIndex].equals(itemStack))
             {
                 return true;
             }

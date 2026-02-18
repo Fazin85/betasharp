@@ -167,7 +167,7 @@ public class PlayerControllerMP : PlayerController
 
     private void syncCurrentPlayItem()
     {
-        int var1 = mc.player.inventory._selectedSlot;
+        int var1 = mc.player.inventory.SelectedSlot;
         if (var1 != currentPlayerItem)
         {
             currentPlayerItem = var1;

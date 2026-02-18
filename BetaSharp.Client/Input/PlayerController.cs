@@ -64,10 +64,10 @@ public class PlayerController
         ItemStack var5 = var3.use(var2, var1);
         if (var5 != var3 || var5 != null && var5.count != var4)
         {
-            var1.inventory._main[var1.inventory._selectedSlot] = var5;
+            var1.inventory.Main[var1.inventory.SelectedSlot] = var5;
             if (var5.count == 0)
             {
-                var1.inventory._main[var1.inventory._selectedSlot] = null;
+                var1.inventory.Main[var1.inventory.SelectedSlot] = null;
             }
 
             return true;

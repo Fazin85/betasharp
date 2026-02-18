@@ -410,12 +410,12 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
         var3 = player.inventory.GetSelectedItem();
         if (var3 != null && var3.count == 0)
         {
-            player.inventory._main[player.inventory._selectedSlot] = null;
+            player.inventory.Main[player.inventory.SelectedSlot] = null;
         }
 
         player.skipPacketSlotUpdates = true;
-        player.inventory._main[player.inventory._selectedSlot] = ItemStack.clone(player.inventory._main[player.inventory._selectedSlot]);
-        Slot var13 = player.currentScreenHandler.getSlot(player.inventory, player.inventory._selectedSlot);
+        player.inventory.Main[player.inventory.SelectedSlot] = ItemStack.clone(player.inventory.Main[player.inventory.SelectedSlot]);
+        Slot var13 = player.currentScreenHandler.getSlot(player.inventory, player.inventory.SelectedSlot);
         player.currentScreenHandler.sendContentUpdates();
         player.skipPacketSlotUpdates = false;
         if (!ItemStack.areEqual(player.inventory.GetSelectedItem(), packet.stack))
@@ -450,7 +450,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
     {
         if (packet.selectedSlot >= 0 && packet.selectedSlot <= InventoryPlayer.GetHotbarSize())
         {
-            player.inventory._selectedSlot = packet.selectedSlot;
+            player.inventory.SelectedSlot = packet.selectedSlot;
         }
         else
         {
