@@ -2289,7 +2289,7 @@ public abstract class World : java.lang.Object, BlockView
         spawnPeacefulMobs = allowMobSpawning;
     }
 
-    public virtual void Tick(int renderDistance)
+    public virtual void Tick()
     {
         UpdateWeatherCycles();
         long var2;
@@ -2334,8 +2334,6 @@ public abstract class World : java.lang.Object, BlockView
             Profiler.PushGroup("autosave");
             saveWithLoadingDisplay(false, (LoadingDisplay)null);
             Profiler.PopGroup();
-
-            chunkSource.markChunksForUnload(renderDistance);
         }
 
         properties.WorldTime = var2;
@@ -3128,7 +3126,8 @@ public abstract class World : java.lang.Object, BlockView
     public void updateSleepingPlayers()
     {
         allPlayersSleeping = players.Count > 0;
-        foreach (var player in players) {
+        foreach (var player in players)
+        {
             if (!player.isSleeping())
             {
                 allPlayersSleeping = false;
@@ -3141,7 +3140,8 @@ public abstract class World : java.lang.Object, BlockView
     protected void afterSkipNight()
     {
         allPlayersSleeping = false;
-        foreach (var player in players) {
+        foreach (var player in players)
+        {
             if (player.isSleeping())
             {
                 player.wakeUp(false, false, true);

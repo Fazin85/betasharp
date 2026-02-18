@@ -13,7 +13,7 @@ public class BlockEntityPiston : BlockEntity
     private readonly bool _source;
     private float _lastProgess;
     private float _progress;
-    private static readonly List<Entity> s_pushedEntities = [];
+    private static readonly ThreadLocal<List<Entity>> s_pushedEntities = new(() => []);
 
     public BlockEntityPiston()
     {
@@ -95,8 +95,9 @@ public class BlockEntityPiston : BlockEntity
             List<Entity> entitiesToPush = world.getEntities(null!, pushCollisionBox.Value);
             if (entitiesToPush.Count > 0)
             {
-                s_pushedEntities.AddRange(entitiesToPush);
-                foreach (Entity entity in s_pushedEntities)
+                List<Entity> pushedEntities = s_pushedEntities.Value!;
+                pushedEntities.AddRange(entitiesToPush);
+                foreach (Entity entity in pushedEntities)
                 {
                     entity.move(
                         (double)(entityMoveMultiplier * PistonConstants.HEAD_OFFSET_X[_facing]),
@@ -104,7 +105,7 @@ public class BlockEntityPiston : BlockEntity
                         (double)(entityMoveMultiplier * PistonConstants.HEAD_OFFSET_Z[_facing])
                     );
                 }
-                s_pushedEntities.Clear();
+                pushedEntities.Clear();
             }
         }
 

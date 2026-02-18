@@ -17,6 +17,12 @@ public class GuiConnecting : GuiScreen
         new ThreadConnectToServer(this, mc, host, port).start();
     }
 
+    public GuiConnecting(Minecraft mc, ClientNetworkHandler clientHandler)
+    {
+        _clientHandler = clientHandler;
+        mc.changeWorld1(null);
+    }
+
     public override void UpdateScreen()
     {
         if (_clientHandler != null)
@@ -43,10 +49,7 @@ public class GuiConnecting : GuiScreen
         {
             case _buttonCancel:
                 _cancelled = true;
-                if (_clientHandler != null)
-                {
-                    _clientHandler.disconnect();
-                }
+                _clientHandler?.disconnect();
 
                 mc.displayGuiScreen(new GuiMainMenu());
                 break;

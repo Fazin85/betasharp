@@ -8,7 +8,7 @@ public class InternalConnection : Connection
 
     public string Name { get; set; }
 
-    public InternalConnection(NetHandler networkHandler, string name)
+    public InternalConnection(NetHandler? networkHandler, string name)
     {
         this.networkHandler = networkHandler;
         Name = name;
@@ -39,6 +39,11 @@ public class InternalConnection : Connection
 
     protected override void processPackets()
     {
+        if (networkHandler == null)
+        {
+            throw new Exception($"InternalConnection is not initialized");
+        }
+
         int count = 0;
         while (!readQueue.isEmpty())
         {
@@ -101,7 +106,16 @@ public class InternalConnection : Connection
     {
     }
 
-    public override java.net.SocketAddress getAddress()
+    public override void tick()
+    {
+        processPackets();
+        if (disconnected && readQueue.isEmpty())
+        {
+            networkHandler?.onDisconnected(disconnectedReason, disconnectReasonArgs);
+        }
+    }
+
+    public override java.net.SocketAddress? getAddress()
     {
         return new java.net.InetSocketAddress("127.0.0.1", 12345);
     }

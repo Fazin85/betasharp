@@ -8,7 +8,7 @@ namespace BetaSharp.Blocks;
 public class BlockRedstoneWire : Block
 {
 
-    private bool wiresProvidePower = true;
+    private static readonly ThreadLocal<bool> s_wiresProvidePower = new(() => true);
 
     public BlockRedstoneWire(int var1, int var2) : base(var1, var2, Material.PistonBreakable)
     {
@@ -52,12 +52,12 @@ public class BlockRedstoneWire : Block
 
     private void updateAndPropagateCurrentStrength(World var1, int var2, int var3, int var4)
     {
-        HashSet<BlockPos> neighbors = new();
+        HashSet<BlockPos> neighbors = [];
         func_21030_a(var1, var2, var3, var4, var2, var3, var4, neighbors);
-        List<BlockPos> neighborsCopy = new(neighbors);
+        List<BlockPos> neighborsCopy = [.. neighbors];
         neighbors.Clear();
 
-        foreach (var n in neighborsCopy)
+        foreach (BlockPos n in neighborsCopy)
         {
             var1.notifyNeighbors(n.x, n.y, n.z, id);
         }
@@ -68,9 +68,9 @@ public class BlockRedstoneWire : Block
     {
         int var8 = var1.getBlockMeta(var2, var3, var4);
         int var9 = 0;
-        wiresProvidePower = false;
+        s_wiresProvidePower.Value = false;
         bool var10 = var1.isPowered(var2, var3, var4);
-        wiresProvidePower = true;
+        s_wiresProvidePower.Value = true;
         int var11;
         int var12;
         int var13;
@@ -365,12 +365,12 @@ public class BlockRedstoneWire : Block
 
     public override bool isStrongPoweringSide(World var1, int var2, int var3, int var4, int var5)
     {
-        return !wiresProvidePower ? false : isPoweringSide(var1, var2, var3, var4, var5);
+        return !s_wiresProvidePower.Value ? false : isPoweringSide(var1, var2, var3, var4, var5);
     }
 
     public override bool isPoweringSide(BlockView var1, int var2, int var3, int var4, int var5)
     {
-        if (!wiresProvidePower)
+        if (!s_wiresProvidePower.Value)
         {
             return false;
         }
@@ -417,7 +417,7 @@ public class BlockRedstoneWire : Block
 
     public override bool canEmitRedstonePower()
     {
-        return wiresProvidePower;
+        return s_wiresProvidePower.Value;
     }
 
     public override void randomDisplayTick(World var1, int var2, int var3, int var4, java.util.Random var5)

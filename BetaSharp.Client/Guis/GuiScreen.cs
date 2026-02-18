@@ -58,13 +58,31 @@ public class GuiScreen : Gui
         return "";
     }
 
-    protected virtual void MouseClicked(int x, int y, int button)
+    public static void SetClipboardString(string text)
+    {
+        try
+        {
+            unsafe
+            {
+                if (Display.isCreated())
+                {
+                    Display.getGlfw().SetClipboardString(Display.getWindowHandle(), text);
+                }
+            }
+        }
+        catch (Exception)
+        {
+            Console.WriteLine("Failed to set clipboard string: " + text);
+        }
+    }
+
+    protected virtual void MouseClicked(int mouseX, int mouseY, int button)
     {
         if (button == 0)
         {
             foreach (var control in _controlList)
             {
-                if (control.MousePressed(mc, x, y))
+                if (control.MousePressed(mc, mouseX, mouseY))
                 {
                     SelectedButton = control;
                     mc.sndManager.playSoundFX("random.click", 1.0F, 1.0F);
@@ -118,7 +136,7 @@ public class GuiScreen : Gui
 
     }
 
-    public void HandleMouseInput()
+    public virtual void HandleMouseInput()
     {
         int x = Mouse.getEventX() * Width / mc.displayWidth;
         int y = Height - Mouse.getEventY() * Height / mc.displayHeight - 1;

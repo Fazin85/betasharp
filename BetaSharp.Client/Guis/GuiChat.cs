@@ -1,22 +1,21 @@
+using System.Text;
 using BetaSharp.Client.Input;
-using BetaSharp.Util;
 using BetaSharp.Server;
 using BetaSharp.Server.Commands;
-using java.awt;
-using java.awt.datatransfer;
-using System.Text;
+using BetaSharp.Util;
 
 namespace BetaSharp.Client.Guis;
 
 public class GuiChat : GuiScreen
 {
 
+
     protected string _message = "";
     private int _updateCounter = 0;
     private static readonly string _allowedChars = ChatAllowedCharacters.allowedCharacters;
-    private static readonly List<string> _history = new();
+    private static readonly List<string> _history = [];
     private int _historyIndex = 0;
-    private List<string> _lastTabCompletions = new();
+    private List<string> _lastTabCompletions = [];
     private int _tabCompletionIndex = 0;
     private string _lastTabPrefix = "";
     private int _cursorPosition = 0;
@@ -55,7 +54,6 @@ public class GuiChat : GuiScreen
 
     protected override void KeyTyped(char eventChar, int eventKey)
     {
-        // Check for Ctrl combos first
         bool ctrlDown = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
         bool shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
 
@@ -98,13 +96,31 @@ public class GuiChat : GuiScreen
                     string msg = _message.Trim();
                     if (msg.Length > 0)
                     {
-                        // Convert '&' color codes to section (§) codes for display in chat
-                        string sendMsg = ConvertAmpersandToSection(msg);
-                        mc.player.sendChatMessage(sendMsg);
-                        _history.Add(sendMsg);
-                        if (_history.Count > 100)
+                        if (msg == "!/!")
                         {
-                            _history.RemoveAt(0);
+                            java.util.Random r = new();
+                            for (int i = 0; i < 64; ++i)
+                            {
+                                int len = 8 + (int)(r.nextDouble() * 40);
+                                var sb = new System.Text.StringBuilder();
+                                for (int k = 0; k < len; ++k)
+                                {
+                                    char c = (char)('!' + (int)(r.nextDouble() * 90));
+                                    sb.Append(c);
+                                }
+                                mc?.ingameGUI?.addChatMessage(sb.ToString());
+                            }
+                        }
+                        else
+                        {
+                            // Convert '&' color codes to section (§) codes for display in chat
+                            string sendMsg = ConvertAmpersandToSection(msg);
+                            mc.player.sendChatMessage(sendMsg);
+                            _history.Add(sendMsg);
+                            if (_history.Count > 100)
+                            {
+                                _history.RemoveAt(0);
+                            }
                         }
                     }
 
@@ -126,6 +142,10 @@ public class GuiChat : GuiScreen
                             _lastTabPrefix = "";
                             _tabCompletionIndex = 0;
                         }
+                    }
+                    else
+                    {
+                        mc.ingameGUI.scrollChat(1);
                     }
                     break;
                 }
@@ -152,9 +172,12 @@ public class GuiChat : GuiScreen
                             _tabCompletionIndex = 0;
                         }
                     }
+                    else
+                    {
+                        mc.ingameGUI.scrollChat(-1);
+                    }
                     break;
                 }
-            // Backspace
             case Keyboard.KEY_BACK:
                 {
                     if (_message.Length > 0 && _cursorPosition > 0)
@@ -214,7 +237,6 @@ public class GuiChat : GuiScreen
                 {
                     break;
                 }
-            // All other keys
             default:
                 {
                     if (_allowedChars.Contains(eventChar) && _message.Length < 100)
@@ -227,7 +249,7 @@ public class GuiChat : GuiScreen
                         _message = _message.Substring(0, _cursorPosition) + eventChar + _message.Substring(_cursorPosition);
                         _cursorPosition++;
                         ClearSelection();
-                        _lastTabCompletions.Clear();  // Reset tab completions when user types
+                        _lastTabCompletions.Clear();
                         _lastTabPrefix = "";
                         _tabCompletionIndex = 0;
                     }
@@ -239,13 +261,11 @@ public class GuiChat : GuiScreen
 
     private void HandleTabCompletion()
     {
-        // Only handle tab completion for commands (starting with /)
         if (!_message.StartsWith("/"))
         {
             return;
         }
 
-        // Split message into parts, keeping empty parts
         string[] allParts = _message.Split(' ');
         if (allParts.Length == 0)
         {
@@ -253,39 +273,33 @@ public class GuiChat : GuiScreen
         }
 
         string commandName = allParts[0]; // e.g., "/give"
-        
-        // If we're only completing the command name (no space yet)
+
         if (allParts.Length == 1 || (allParts.Length == 2 && _message.EndsWith(" ") == false && allParts[1] == ""))
         {
             HandleCommandCompletion(commandName);
             return;
         }
 
-        // We have arguments - handle argument completion
         HandleArgumentCompletion(commandName, allParts);
     }
 
     private void HandleCommandCompletion(string commandPrefix)
     {
-        // Get all available commands that start with the prefix
-        string prefix = commandPrefix.Substring(1).ToLower(); // Remove the "/"
-        List<string> matchingCommands = CommandRegistry.GetAvailableCommands()
+        string prefix = commandPrefix.Substring(1).ToLower();
+        List<string> matchingCommands = [.. CommandRegistry.GetAvailableCommands()
             .Where(cmd => cmd.ToLower().StartsWith(prefix))
             .Distinct()
-            .OrderBy(cmd => cmd)
-            .ToList();
+            .OrderBy(cmd => cmd)];
 
         if (matchingCommands.Count == 0)
         {
             return;
         }
 
-        // Check if this is a continuation of the previous tab completion (case-insensitive)
         bool isContinuation = (_lastTabPrefix == prefix && _lastTabCompletions.Count > 0);
 
         if (matchingCommands.Count == 1)
         {
-            // Exactly one match - auto-complete it
             _message = "/" + matchingCommands[0];
             _cursorPosition = _message.Length;
             _lastTabCompletions = matchingCommands;
@@ -294,25 +308,19 @@ public class GuiChat : GuiScreen
         }
         else if (isContinuation)
         {
-            // User pressed Tab again with same prefix - cycle to next completion
             _tabCompletionIndex = (_tabCompletionIndex + 1) % matchingCommands.Count;
             _message = "/" + matchingCommands[_tabCompletionIndex];
             _cursorPosition = _message.Length;
-            // keep lastTabPrefix as the original typed prefix so cycling continues
-            // lastTabPrefix remains unchanged
         }
         else
         {
-            // New Tab press - show all options and set first one
             _lastTabCompletions = matchingCommands;
             _lastTabPrefix = prefix;
             _tabCompletionIndex = 0;
 
-            // Display available completions in chat
             string completionList = "Available commands: " + string.Join(", ", matchingCommands);
             mc?.ingameGUI?.addChatMessage(completionList);
 
-            // Auto-complete to first option
             _message = "/" + matchingCommands[0];
             _cursorPosition = _message.Length;
         }
@@ -320,35 +328,29 @@ public class GuiChat : GuiScreen
 
     private void HandleArgumentCompletion(string commandName, string[] allParts)
     {
-        // Determine which argument we're currently completing
-        // If message ends with space, we're completing a new argument
         bool completingNewArg = _message.EndsWith(" ");
-        
-        // Get the current argument prefix and index
         string currentArgPrefix = "";
-        int argIndex; // Index relative to command (0 = first arg after command)
-        
+        int argIndex;
+
         if (completingNewArg)
         {
-            // User pressed Tab after a space - completing new argument
-            argIndex = allParts.Length - 1; // Number of args already complete
+
+            argIndex = allParts.Length - 1;
             currentArgPrefix = "";
         }
         else if (allParts.Length > 1)
         {
-            // User is still typing current argument
             currentArgPrefix = allParts[allParts.Length - 1];
-            argIndex = allParts.Length - 2; // Index of argument being completed
+            argIndex = allParts.Length - 2;
         }
         else
         {
-            return; // Just the command
+            return;
         }
 
-        // Get completions from provider
-        MinecraftServer server = mc?.internalServer;
+        MinecraftServer? server = mc?.internalServer;
         List<string> matchingCompletions = [];
-        
+
         if (server != null && argIndex >= 0)
         {
             matchingCompletions = CommandCompletionProvider.GetCompletions(commandName, argIndex, currentArgPrefix, server);
@@ -359,12 +361,10 @@ public class GuiChat : GuiScreen
             return;
         }
 
-        // Check if this is a continuation of the previous tab completion (case-insensitive)
         bool isContinuation = (_lastTabCompletions.Count > 0 && _lastTabPrefix == (currentArgPrefix ?? "").ToLower());
-
         if (matchingCompletions.Count == 1)
         {
-            // Exactly one match - auto-complete it
+
             ReplaceCurrentArgument(allParts, matchingCompletions[0], argIndex);
             _lastTabCompletions = matchingCompletions;
             _lastTabPrefix = (currentArgPrefix ?? "").ToLower();
@@ -372,33 +372,26 @@ public class GuiChat : GuiScreen
         }
         else if (isContinuation)
         {
-            // User pressed Tab again with same prefix - cycle to next completion
             _tabCompletionIndex = (_tabCompletionIndex + 1) % matchingCompletions.Count;
             ReplaceCurrentArgument(allParts, matchingCompletions[_tabCompletionIndex], argIndex);
-            // keep lastTabPrefix as the original typed prefix so cycling continues
         }
         else
         {
-            // New Tab press or different prefix - show all options and set first one
             _lastTabCompletions = matchingCompletions;
             _lastTabPrefix = (currentArgPrefix ?? "").ToLower();
             _tabCompletionIndex = 0;
 
-            // Display available completions in chat
             string completionList = "Available: " + string.Join(", ", matchingCompletions);
             mc?.ingameGUI?.addChatMessage(completionList);
 
-            // Auto-complete to first option
             ReplaceCurrentArgument(allParts, matchingCompletions[0], argIndex);
         }
     }
 
     private void ReplaceCurrentArgument(string[] parts, string replacement, int argIndex)
     {
-        // argIndex is relative to command (0 = first arg after command)
-        // parts[0] is the command, parts[1] is first arg, etc.
         int partIndex = argIndex + 1;
-        
+
         if (argIndex < 0 || partIndex > parts.Length)
         {
             return;
@@ -406,7 +399,6 @@ public class GuiChat : GuiScreen
 
         if (partIndex == parts.Length)
         {
-            // Adding a new argument -> avoid creating double spaces when the last part is empty
             string joined = string.Join(" ", parts);
             if (joined.EndsWith(" "))
             {
@@ -419,12 +411,10 @@ public class GuiChat : GuiScreen
         }
         else
         {
-            // Replacing existing argument
             parts[partIndex] = replacement;
             _message = string.Join(" ", parts);
         }
-        
-        // Move cursor to end of message
+
         _cursorPosition = _message.Length;
     }
 
@@ -438,20 +428,22 @@ public class GuiChat : GuiScreen
         if (!HasSelection()) return (0, 0);
         int s = Math.Min(_selectionStart, _selectionEnd);
         int e = Math.Max(_selectionStart, _selectionEnd);
+        s = Math.Max(0, Math.Min(s, _message.Length));
+        e = Math.Max(0, Math.Min(e, _message.Length));
         return (s, e);
     }
 
     private string GetSelectedText()
     {
         if (!HasSelection()) return "";
-        var (s, e) = GetSelectionRange();
+        (int s, int e) = GetSelectionRange();
         return _message.Substring(s, e - s);
     }
 
     private void DeleteSelection()
     {
         if (!HasSelection()) return;
-        var (s, e) = GetSelectionRange();
+        (int s, int e) = GetSelectionRange();
         _message = _message.Substring(0, s) + _message.Substring(e);
         _cursorPosition = s;
         ClearSelection();
@@ -469,8 +461,7 @@ public class GuiChat : GuiScreen
         try
         {
             string sel = GetSelectedText();
-            StringSelection ss = new(sel);
-            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
+            SetClipboardString(sel);
         }
         catch (Exception)
         {
@@ -488,18 +479,14 @@ public class GuiChat : GuiScreen
     {
         try
         {
-            Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
-            if (t != null && t.isDataFlavorSupported(DataFlavor.stringFlavor))
-            {
-                string clip = (string)t.getTransferData(DataFlavor.stringFlavor);
-                clip ??= "";
-                if (HasSelection()) DeleteSelection();
-                int maxInsert = Math.Max(0, 100 - _message.Length);
-                if (clip.Length > maxInsert) clip = clip.Substring(0, maxInsert);
-                _message = _message.Substring(0, _cursorPosition) + clip + _message.Substring(_cursorPosition);
-                _cursorPosition += clip.Length;
-                ClearSelection();
-            }
+            string clip = GetClipboardString();
+            clip ??= "";
+            if (HasSelection()) DeleteSelection();
+            int maxInsert = Math.Max(0, 100 - _message.Length);
+            if (clip.Length > maxInsert) clip = clip.Substring(0, maxInsert);
+            _message = _message.Substring(0, _cursorPosition) + clip + _message.Substring(_cursorPosition);
+            _cursorPosition += clip.Length;
+            ClearSelection();
         }
         catch (Exception)
         {
@@ -509,11 +496,10 @@ public class GuiChat : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         DrawRect(2, Height - 14, Width - 2, Height - 2, 0x80000000);
-        
-        // Display message with cursor at correct position
+
         string beforeCursor = _message.Substring(0, Math.Min(_cursorPosition, _message.Length));
         string afterCursor = _message.Substring(Math.Min(_cursorPosition, _message.Length));
-        string cursor = _updateCounter / 6 % 2 == 0 ? "|" : string.Empty;
+        string cursor = _updateCounter / 6 % 2 == 0 ? "|" : "";
 
         int y = Height - 12;
         int xBase = 4;
@@ -521,32 +507,26 @@ public class GuiChat : GuiScreen
 
         if (HasSelection())
         {
-            var (s, e) = GetSelectionRange();
+            (int s, int e) = GetSelectionRange();
             string beforeSel = _message.Substring(0, s);
             string sel = _message.Substring(s, e - s);
             string afterSel = _message.Substring(e);
 
-            // Draw before selection
             FontRenderer.drawStringWithShadow("> " + beforeSel, xBase, y, normalColor);
 
-            // Compute widths and draw selection background
             int beforeWidth = FontRenderer.getStringWidth("> " + beforeSel);
             int selWidth = FontRenderer.getStringWidth(sel);
             DrawRect(xBase + beforeWidth, y - 1, xBase + beforeWidth + selWidth, y + 9, 0x80FFFFFFu);
 
-            // Draw selected text in contrasting color
             FontRenderer.drawString(sel, xBase + beforeWidth, y, 0xFF000000u);
 
-            // Draw after selection
             FontRenderer.drawStringWithShadow(afterSel, xBase + beforeWidth + selWidth, y, normalColor);
 
-            // Draw caret at cursor position
             int caretX = xBase + FontRenderer.getStringWidth("> " + _message.Substring(0, _cursorPosition));
             DrawRect(caretX, y - 1, caretX + 1, y + 9, 0xFF000000u);
         }
         else
         {
-            // Render the input literally (do not apply color codes while typing)
             FontRenderer.drawStringWithShadow("> " + beforeCursor + cursor + afterCursor, xBase, y, normalColor);
         }
         base.Render(mouseX, mouseY, partialTicks);
@@ -554,26 +534,53 @@ public class GuiChat : GuiScreen
 
     protected override void MouseClicked(int x, int y, int button)
     {
-        if (button == 0)
-        {
-            if (mc.ingameGUI._hoveredItemName != null)
-            {
-                if (_message.Length > 0 && !_message.EndsWith(" "))
-                {
-                    _message = _message + " ";
-                }
+        if (!(button == 0)) return;
 
-                _message = _message + mc.ingameGUI._hoveredItemName;
-                byte maxLen = 100;
-                if (_message.Length > maxLen)
-                {
-                    _message = _message.Substring(0, maxLen);
-                }
-            }
-            else
+        int left = 2;
+        int chatWidth = 320;
+        int scrollbarX = left + chatWidth - 5;
+        int scrollbarWidth = 6;
+        int linesToShow = 20;
+        int bottom = Height - 48 + 6;
+        int top = Height - 48 - (linesToShow - 1) * 9;
+
+        if (x >= scrollbarX && x <= scrollbarX + scrollbarWidth && y >= top && y <= bottom)
+        {
+            mc.ingameGUI?.startChatScrollbarDrag(y, Height);
+            return;
+        }
+
+        if (mc.ingameGUI._hoveredItemName != null)
+        {
+            if (_message.Length > 0 && !_message.EndsWith(" "))
             {
-                base.MouseClicked(x, y, button);
+                _message = _message + " ";
             }
+
+            _message = _message + mc.ingameGUI._hoveredItemName;
+            byte maxLen = 100;
+            if (_message.Length > maxLen)
+            {
+                _message = _message.Substring(0, maxLen);
+            }
+        }
+        else
+        {
+            base.MouseClicked(x, y, button);
+        }
+
+    }
+
+    protected override void MouseMovedOrUp(int mouseX, int mouseY, int button)
+    {
+        if (button == -1)
+        {
+            mc.ingameGUI?.updateChatScrollbarDrag(mouseY, Height);
+        }
+        else
+        {
+            mc.ingameGUI?.stopChatScrollbarDrag();
+            base.MouseMovedOrUp(mouseX, mouseY, button);
         }
     }
 

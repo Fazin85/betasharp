@@ -9,7 +9,7 @@ namespace BetaSharp.Blocks;
 public class BlockLeaves : BlockLeavesBase
 {
     private int spriteIndex;
-    int[] decayRegion;
+    private readonly ThreadLocal<int[]> s_decayRegion = new(() => null);
 
     public BlockLeaves(int id, int textureId) : base(id, textureId, Material.Leaves, false)
     {
@@ -79,10 +79,12 @@ public class BlockLeaves : BlockLeavesBase
                 sbyte regionSize = 32;
                 int planeSize = regionSize * regionSize;
                 int centerOffset = regionSize / 2;
-                if (decayRegion == null)
+                if (s_decayRegion.Value == null)
                 {
-                    decayRegion = new int[regionSize * regionSize * regionSize];
+                    s_decayRegion.Value = new int[regionSize * regionSize * regionSize];
                 }
+
+                int[] decayRegion = s_decayRegion.Value;
 
                 int distanceToLog;
                 if (world.isRegionLoaded(x - loadCheckExtent, y - loadCheckExtent, z - loadCheckExtent, x + loadCheckExtent, y + loadCheckExtent, z + loadCheckExtent))

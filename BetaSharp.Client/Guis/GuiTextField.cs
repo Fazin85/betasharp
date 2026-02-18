@@ -230,6 +230,8 @@ public class GuiTextField : Gui
         if (!HasSelection()) return (0, 0);
         int s = Math.Min(_selectionStart, _selectionEnd);
         int e = Math.Max(_selectionStart, _selectionEnd);
+        s = Math.Max(0, Math.Min(s, _text.Length));
+        e = Math.Max(0, Math.Min(e, _text.Length));
         return (s, e);
     }
 
@@ -275,8 +277,7 @@ public class GuiTextField : Gui
         try
         {
             string sel = GetSelectedText();
-            StringSelection ss = new(sel);
-            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
+            GuiScreen.SetClipboardString(sel);
         }
         catch (Exception)
         {
@@ -294,18 +295,14 @@ public class GuiTextField : Gui
     {
         try
         {
-            Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
-            if (t != null && t.isDataFlavorSupported(DataFlavor.stringFlavor))
-            {
-                string clip = (string)t.getTransferData(DataFlavor.stringFlavor);
-                clip ??= "";
-                if (HasSelection()) DeleteSelection();
-                int maxInsert = Math.Max(0, (_maxStringLength > 0 ? _maxStringLength : 32) - _text.Length);
-                if (clip.Length > maxInsert) clip = clip.Substring(0, maxInsert);
-                _text = _text.Substring(0, _cursorPosition) + clip + _text.Substring(_cursorPosition);
-                _cursorPosition += clip.Length;
-                ClearSelection();
-            }
+            string clip = GuiScreen.GetClipboardString();
+            clip ??= "";
+            if (HasSelection()) DeleteSelection();
+            int maxInsert = Math.Max(0, (_maxStringLength > 0 ? _maxStringLength : 32) - _text.Length);
+            if (clip.Length > maxInsert) clip = clip.Substring(0, maxInsert);
+            _text = _text.Substring(0, _cursorPosition) + clip + _text.Substring(_cursorPosition);
+            _cursorPosition += clip.Length;
+            ClearSelection();
         }
         catch (Exception)
         {

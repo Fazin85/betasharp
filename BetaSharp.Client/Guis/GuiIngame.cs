@@ -14,10 +14,14 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiIngame : Gui
 {
-    private readonly GCMonitor _gcMonitor;
+ private readonly GCMonitor _gcMonitor;
     private static readonly ItemRenderer _itemRenderer = new();
     private readonly List<ChatLine> _chatMessageList = new();
     private readonly java.util.Random _rand = new();
+    private int _chatScrollPos = 0;
+    private bool _chatScrollbarDragging = false;
+    private int _chatScrollbarDragStartY = 0;
+    private int _chatScrollbarDragStartScroll = 0;
     private readonly Minecraft _mc;
     public string _hoveredItemName = null;
     private int _updateCounter = 0;
@@ -279,9 +283,13 @@ public class GuiIngame : Gui
 
         for (j = 0; j < _chatMessageList.Count && j < linesToShow; ++j)
         {
-            if (_chatMessageList[j].UpdateCounter < 200 || chatOpen)
+            int index = j + (chatOpen ? _chatScrollPos : 0);
+            if (index >= _chatMessageList.Count) break;
+
+            ChatLine cl = _chatMessageList[index];
+            if (cl.UpdateCounter < 200 || chatOpen)
             {
-                double d = _chatMessageList[j].UpdateCounter / 200.0D;
+                double d = cl.UpdateCounter / 200.0D;
                 d = 1.0D - d;
                 d *= 10.0D;
                 if (d < 0.0D)
@@ -305,7 +313,7 @@ public class GuiIngame : Gui
                 {
                     byte left = 2;
                     int y = -j * 9;
-                    debugStr = _chatMessageList[j].Message;
+                    debugStr = cl.Message;
                     DrawRect(left, y - 1, left + 320, y + 8, (uint)(alpha / 2 << 24));
                     GLManager.GL.Enable(GLEnum.Blend);
                     font.drawStringWithShadow(debugStr, left, y, 0x00FFFFFF + (uint)(alpha << 24));
@@ -313,9 +321,47 @@ public class GuiIngame : Gui
             }
         }
 
+        // Scrollbar rendering moved below (use absolute GUI coords)
+
         GLManager.GL.PopMatrix();
         GLManager.GL.Enable(GLEnum.AlphaTest);
         GLManager.GL.Disable(GLEnum.Blend);
+
+        // Absolute GUI-coordinate scrollbar (matches mouse input coordinates)
+        if (chatOpen)
+        {
+            int linesToShowAbs = 20;
+            int left = 2;
+            int chatWidth = 320;
+            int scrollbarX = left + chatWidth - 5;
+            int scrollbarWidth = 6;
+            int bottom = scaledHeight - 48 + 6; // 2 pixels before message end
+            int top = scaledHeight - 48 - (linesToShowAbs - 1) * 9;
+            int trackHeight = bottom - top;
+
+            int totalLines = _chatMessageList.Count;
+            int maxScroll = totalLines - linesToShowAbs;
+            if (maxScroll < 0) maxScroll = 0;
+
+            // Only draw scrollbar if there's something to scroll
+            if (maxScroll > 0)
+            {
+                int thumbHeight = 8;
+                if (totalLines > 0)
+                {
+                    int calc = trackHeight * linesToShowAbs / totalLines;
+                    if (calc > thumbHeight) thumbHeight = calc;
+                }
+
+                int thumbY = top;
+                int range = Math.Max(1, trackHeight - thumbHeight);
+                // Inverted: Bottom is newest (0), Top is oldest (maxScroll)
+                thumbY = top + (int)((long)(maxScroll - _chatScrollPos) * range / maxScroll);
+
+                uint thumbColor = _chatScrollbarDragging ? 0xFFAAAAAA : 0xFFCCCCCC;
+                DrawRect(scrollbarX + 1, thumbY, scrollbarX + scrollbarWidth - 1, thumbY + thumbHeight, thumbColor);
+            }
+        }
     }
 
     private void renderPumpkinBlur(int screenWidth, int screenHeight)
@@ -444,6 +490,68 @@ public class GuiIngame : Gui
 
     }
 
+    public void startChatScrollbarDrag(int mouseY, int scaledHeight)
+    {
+        // mouseY and scaledHeight are in scaled GUI coords coming from GuiChat
+        int linesToShow = 20;
+        int left = 2;
+        int chatWidth = 320;
+        int scrollbarX = left + chatWidth - 5;
+        int scrollbarWidth = 6;
+        int bottom = scaledHeight - 48 + 6; // 2 pixels before message end
+        int top = scaledHeight - 48 - (linesToShow - 1) * 9;
+        int scrollbarHeight = bottom - top;
+
+        if (mouseY < top || mouseY > bottom)
+        {
+            return;
+        }
+
+        _chatScrollbarDragging = true;
+        _chatScrollbarDragStartY = mouseY;
+        _chatScrollbarDragStartScroll = _chatScrollPos;
+    }
+
+    public void updateChatScrollbarDrag(int mouseY, int scaledHeight)
+    {
+        if (!_chatScrollbarDragging) return;
+
+        int linesToShow = 20;
+        int left = 2;
+        int chatWidth = 320;
+        int bottom = scaledHeight - 48 + 6; // 2 pixels before message end
+        int top = scaledHeight - 48 - (linesToShow - 1) * 9;
+        int scrollbarHeight = bottom - top;
+
+        int totalLines = _chatMessageList.Count;
+        int maxScroll = totalLines - linesToShow;
+        if (maxScroll < 0) maxScroll = 0;
+
+        int thumbHeight = 8;
+        if (totalLines > 0)
+        {
+            int calc = scrollbarHeight * linesToShow / totalLines;
+            if (calc > thumbHeight) thumbHeight = calc;
+        }
+
+        int range = Math.Max(1, scrollbarHeight - thumbHeight);
+
+        // Compute new scroll based on mouse position within scrollbar
+        int rel = mouseY - top;
+        if (rel < 0) rel = 0;
+        if (rel > scrollbarHeight - thumbHeight) rel = scrollbarHeight - thumbHeight;
+
+        // Inverted: Top is oldest (maxScroll), Bottom is newest (0)
+        int newScroll = maxScroll - (int)((long)rel * maxScroll / range);
+        if (newScroll < 0) newScroll = 0;
+        if (newScroll > maxScroll) newScroll = maxScroll;
+        _chatScrollPos = newScroll;
+    }
+
+    public void stopChatScrollbarDrag()
+    {
+        _chatScrollbarDragging = false;
+    }
     public void clearChatMessages()
     {
         _chatMessageList.Clear();
@@ -471,8 +579,11 @@ public class GuiIngame : Gui
         }
 
         _chatMessageList.Insert(0, new ChatLine(message));
+        // Reset scroll to show newest messages when new message arrives
+        _chatScrollPos = 0;
 
-        while (_chatMessageList.Count > 50)
+        // Keep recent history (increase to 64 messages)
+        while (_chatMessageList.Count > 64)
         {
             _chatMessageList.RemoveAt(_chatMessageList.Count - 1);
         }
@@ -491,4 +602,17 @@ public class GuiIngame : Gui
         string translated = translations.translateKey(key);
         addChatMessage(translated);
     }
+
+    public void scrollChat(int amount)
+    {
+        if (amount == 0) return;
+        // When scrolling, assume chat open with up to 20 visible lines
+        int linesToShow = 20;
+        int maxScroll = _chatMessageList.Count - linesToShow;
+        if (maxScroll < 0) maxScroll = 0;
+        _chatScrollPos += amount;
+        if (_chatScrollPos < 0) _chatScrollPos = 0;
+        if (_chatScrollPos > maxScroll) _chatScrollPos = maxScroll;
+    }
+
 }
