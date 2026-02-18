@@ -24,10 +24,8 @@ public class JavaRandom
         SetSeed(seed);
     }
 
-    public JavaRandom()
-        : this(SeedUniquifier() ^ DateTime.UtcNow.Ticks)
-    {
-    }
+    public JavaRandom() : this(SeedUniquifier() ^ DateTime.UtcNow.Ticks) { }
+
     public void SetSeed(long seed)
     {
         lock (_lock)
@@ -37,10 +35,7 @@ public class JavaRandom
         }
     }
 
-    private static long InitialScramble(long seed)
-    {
-        return (seed ^ Multiplier) & Mask;
-    }
+    private static long InitialScramble(long seed) => (seed ^ Multiplier) & Mask;
 
     private int Next(int bits)
     {
@@ -49,30 +44,21 @@ public class JavaRandom
         {
             oldSeed = Interlocked.Read(ref _seed);
             nextSeed = (oldSeed * Multiplier + Addend) & Mask;
-        } 
+        }
         while (Interlocked.CompareExchange(ref _seed, nextSeed, oldSeed) != oldSeed);
 
         return (int)((ulong)nextSeed >> (48 - bits));
     }
 
-    public int NextInt()
-    {
-        return Next(32);
-    }
-    public float NextFloat()
-    {
-        return Next(24) * FloatUnit;
-    }
+    public int NextInt() => Next(32);
 
-    public long NextLong()
-    {
-        return ((long)Next(32) << 32) + Next(32);
-    }
+    public float NextFloat() => Next(24) * FloatUnit;
 
-    public double NextDouble()
-    {
-        return (((long)Next(26) << 27) + Next(27)) * DoubleUnit;
-    }
+    public long NextLong() => ((long)Next(32) << 32) + Next(32);
+
+    public double NextDouble() => (((long)Next(26) << 27) + Next(27)) * DoubleUnit;
+
+    public bool NextBoolean() => Next(1) != 0;
 
     public int NextInt(int bound)
     {
@@ -88,13 +74,14 @@ public class JavaRandom
         }
         else
         {
-            for (int u = r; u - (r = u % bound) + m < 0; u = Next(31)){ }
+            for (int u = r; u - (r = u % bound) + m < 0; u = Next(31)) { }
         }
 
         return r;
     }
 
-    public bool NextBoolean() => Next(1) != 0;
+
+
     public double NextGaussian()
     {
         lock (_lock)
