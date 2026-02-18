@@ -9,14 +9,14 @@ namespace BetaSharp.Client.Guis;
 public class GuiScreen : Gui
 {
 
-    public Minecraft mc;
+    public Minecraft? mc;
     public int width;
     public int height;
     protected java.util.List controlList = new ArrayList();
     public bool isInventoryScreen = false;
-    public TextRenderer fontRenderer;
-    public GuiParticle particlesGui;
-    private GuiButton selectedButton;
+    public TextRenderer? fontRenderer;
+    public GuiParticle? particlesGui;
+    private GuiButton? selectedButton = null;
 
     public virtual void render(int var1, int var2, float var3)
     {
@@ -54,6 +54,24 @@ public class GuiScreen : Gui
         }
 
         return "";
+    }
+
+    public static void setClipboardString(string text)
+    {
+        try
+        {
+            unsafe
+            {
+                if (Display.isCreated())
+                {
+                    Display.getGlfw().SetClipboardString(Display.getWindowHandle(), text);
+                }
+            }
+        }
+        catch (Exception)
+        {
+            Console.WriteLine("Failed to set clipboard string: " + text);
+        }
     }
 
     protected virtual void mouseClicked(int var1, int var2, int var3)
@@ -117,7 +135,7 @@ public class GuiScreen : Gui
 
     }
 
-    public void handleMouseInput()
+    public virtual void handleMouseInput()
     {
         int var1;
         int var2;

@@ -6,7 +6,7 @@ public class NetworkWriterThread : java.lang.Thread
 
     public NetworkWriterThread(Connection var1, string var2) : base(var2)
     {
-        this.netManager = var1;
+        netManager = var1;
     }
 
 
@@ -25,13 +25,13 @@ public class NetworkWriterThread : java.lang.Thread
             try
             {
                 var13 = true;
-                if (!Connection.isOpen(this.netManager))
+                if (!Connection.isOpen(netManager))
                 {
                     var13 = false;
                     break;
                 }
 
-                while (Connection.writePacket(this.netManager))
+                while (Connection.writePacket(netManager))
                 {
                 }
 
@@ -39,14 +39,11 @@ public class NetworkWriterThread : java.lang.Thread
 
                 try
                 {
-                    if (Connection.getOutputStream(this.netManager) != null)
-                    {
-                        Connection.getOutputStream(this.netManager).flush();
-                    }
+                    Connection.getOutputStream(netManager)?.flush();
                 }
                 catch (java.io.IOException ex)
                 {
-                    if (!Connection.isDisconnected(this.netManager))
+                    if (!Connection.isDisconnected(netManager))
                     {
                         Connection.disconnect(this.netManager, ex);
                         ex.printStackTrace();

@@ -5,9 +5,9 @@ namespace BetaSharp.Blocks;
 
 public class BlockFlowing : BlockFluid
 {
-    int adjacentSources;
-    bool[] spread = new bool[4];
-    int[] distanceToGap = new int[4];
+    private readonly ThreadLocal<int> _adjacentSources = new(() => 0);
+    private readonly ThreadLocal<bool[]> _spread = new(() => new bool[4]);
+    private readonly ThreadLocal<int[]> _distanceToGap = new(() => new int[4]);
 
     public BlockFlowing(int id, Material material) : base(id, material)
     {
@@ -35,7 +35,7 @@ public class BlockFlowing : BlockFluid
         if (currentState > 0)
         {
             int minDepth = -100;
-            adjacentSources = 0;
+            _adjacentSources.Value = 0;
             int lowestNeighborDepth = getLowestDepth(world, x - 1, y, z, minDepth);
             lowestNeighborDepth = getLowestDepth(world, x + 1, y, z, lowestNeighborDepth);
             lowestNeighborDepth = getLowestDepth(world, x, y, z - 1, lowestNeighborDepth);
@@ -59,7 +59,7 @@ public class BlockFlowing : BlockFluid
                 }
             }
 
-            if (adjacentSources >= 2 && material == Material.Water)
+            if (_adjacentSources.Value >= 2 && material == Material.Water)
             {
                 if (world.getMaterial(x, y - 1, z).IsSolid)
                 {
@@ -227,6 +227,7 @@ public class BlockFlowing : BlockFluid
     {
         int direction;
         int neighborX;
+        int[] distanceToGap = _distanceToGap.Value!;
         for (direction = 0; direction < 4; ++direction)
         {
             distanceToGap[direction] = 1000;
@@ -275,6 +276,7 @@ public class BlockFlowing : BlockFluid
             }
         }
 
+        bool[] spread = _spread.Value!;
         for (neighborX = 0; neighborX < 4; ++neighborX)
         {
             spread[neighborX] = distanceToGap[neighborX] == direction;
@@ -315,7 +317,7 @@ public class BlockFlowing : BlockFluid
         {
             if (liquidState == 0)
             {
-                ++adjacentSources;
+                _adjacentSources.Value++;
             }
 
             if (liquidState >= 8)
@@ -330,7 +332,7 @@ public class BlockFlowing : BlockFluid
     private bool canSpreadTo(World world, int x, int y, int z)
     {
         Material material = world.getMaterial(x, y, z);
-        return material == base.material ? false : (material == Material.Lava ? false : !isLiquidBreaking(world, x, y, z));
+        return material != base.material && (material != Material.Lava && !isLiquidBreaking(world, x, y, z));
     }
 
     public override void onPlaced(World world, int x, int y, int z)

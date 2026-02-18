@@ -15,62 +15,62 @@ namespace BetaSharp.Server;
 
 public class PlayerManager
 {
-    public static Logger LOGGER = Logger.getLogger("Minecraft");
+    public static readonly Logger LOGGER = Logger.getLogger("Minecraft");
     public List<ServerPlayerEntity> players = [];
-    private readonly MinecraftServer server;
-    private readonly ChunkMap[] chunkMaps;
-    private readonly int maxPlayerCount;
+    private readonly MinecraftServer _server;
+    private readonly ChunkMap[] _chunkMaps;
+    private readonly int _maxPlayerCount;
     protected readonly HashSet<string> bannedPlayers = [];
     protected readonly HashSet<string> bannedIps = [];
     protected readonly HashSet<string> ops = [];
     protected readonly HashSet<string> whitelist = [];
-    private PlayerSaveHandler saveHandler;
-    private readonly bool whitelistEnabled;
+    private PlayerSaveHandler _saveHandler;
+    private readonly bool _whitelistEnabled;
 
     public PlayerManager(MinecraftServer server)
     {
-        chunkMaps = new ChunkMap[2];
-        this.server = server;
+        _chunkMaps = new ChunkMap[2];
+        _server = server;
         int var2 = server.config.GetViewDistance(10);
-        chunkMaps[0] = new ChunkMap(server, 0, var2);
-        chunkMaps[1] = new ChunkMap(server, -1, var2);
-        maxPlayerCount = server.config.GetMaxPlayers(20);
-        whitelistEnabled = server.config.GetWhiteList(false);
+        _chunkMaps[0] = new ChunkMap(server, 0, var2);
+        _chunkMaps[1] = new ChunkMap(server, -1, var2);
+        _maxPlayerCount = server.config.GetMaxPlayers(20);
+        _whitelistEnabled = server.config.GetWhiteList(false);
     }
 
     public void saveAllPlayers(ServerWorld[] world)
     {
-        saveHandler = world[0].getWorldStorage().getPlayerSaveHandler();
+        _saveHandler = world[0].getWorldStorage().getPlayerSaveHandler();
     }
 
     public void updatePlayerAfterDimensionChange(ServerPlayerEntity player)
     {
-        chunkMaps[0].removePlayer(player);
-        chunkMaps[1].removePlayer(player);
+        _chunkMaps[0].removePlayer(player);
+        _chunkMaps[1].removePlayer(player);
         getChunkMap(player.dimensionId).addPlayer(player);
-        ServerWorld var2 = server.getWorld(player.dimensionId);
+        ServerWorld var2 = _server.getWorld(player.dimensionId);
         var2.chunkCache.loadChunk((int)player.x >> 4, (int)player.z >> 4);
     }
 
     public int getBlockViewDistance()
     {
-        return chunkMaps[0].getBlockViewDistance();
+        return _chunkMaps[0].getBlockViewDistance();
     }
 
     private ChunkMap getChunkMap(int dimensionId)
     {
-        return dimensionId == -1 ? chunkMaps[1] : chunkMaps[0];
+        return dimensionId == -1 ? _chunkMaps[1] : _chunkMaps[0];
     }
 
     public void loadPlayerData(ServerPlayerEntity player)
     {
-        saveHandler.loadPlayerData(player);
+        _saveHandler.loadPlayerData(player);
     }
 
     public void addPlayer(ServerPlayerEntity player)
     {
         players.Add(player);
-        ServerWorld var2 = server.getWorld(player.dimensionId);
+        ServerWorld var2 = _server.getWorld(player.dimensionId);
         var2.chunkCache.loadChunk((int)player.x >> 4, (int)player.z >> 4);
 
         while (var2.getEntityCollisions(player, player.boundingBox).Count != 0)
@@ -89,8 +89,8 @@ public class PlayerManager
 
     public void disconnect(ServerPlayerEntity player)
     {
-        saveHandler.savePlayerData(player);
-        server.getWorld(player.dimensionId).Remove(player);
+        _saveHandler.savePlayerData(player);
+        _server.getWorld(player.dimensionId).Remove(player);
         players.Remove(player);
         getChunkMap(player.dimensionId).removePlayer(player);
     }
@@ -117,7 +117,7 @@ public class PlayerManager
                 loginNetworkHandler.disconnect("Your IP address is banned from this server!");
                 return null;
             }
-            else if (players.Count >= maxPlayerCount)
+            else if (players.Count >= _maxPlayerCount)
             {
                 loginNetworkHandler.disconnect("The server is full!");
                 return null;
@@ -133,31 +133,31 @@ public class PlayerManager
                     }
                 }
 
-                return new ServerPlayerEntity(server, server.getWorld(0), name, new ServerPlayerInteractionManager(server.getWorld(0)));
+                return new ServerPlayerEntity(_server, _server.getWorld(0), name, new ServerPlayerInteractionManager(_server.getWorld(0)));
             }
         }
     }
 
     public ServerPlayerEntity respawnPlayer(ServerPlayerEntity player, int dimensionId)
     {
-        server.getEntityTracker(player.dimensionId).removeListener(player);
-        server.getEntityTracker(player.dimensionId).onEntityRemoved(player);
+        _server.getEntityTracker(player.dimensionId).removeListener(player);
+        _server.getEntityTracker(player.dimensionId).onEntityRemoved(player);
         getChunkMap(player.dimensionId).removePlayer(player);
         players.Remove(player);
-        server.getWorld(player.dimensionId).serverRemove(player);
+        _server.getWorld(player.dimensionId).serverRemove(player);
         Vec3i var3 = player.getSpawnPos();
         player.dimensionId = dimensionId;
         ServerPlayerEntity var4 = new(
-            server, server.getWorld(player.dimensionId), player.name, new ServerPlayerInteractionManager(server.getWorld(player.dimensionId))
+            _server, _server.getWorld(player.dimensionId), player.name, new ServerPlayerInteractionManager(_server.getWorld(player.dimensionId))
         )
         {
             id = player.id,
             networkHandler = player.networkHandler
         };
-        ServerWorld var5 = server.getWorld(player.dimensionId);
+        ServerWorld var5 = _server.getWorld(player.dimensionId);
         if (var3 != null)
         {
-            Vec3i var6 = EntityPlayer.findRespawnPosition(server.getWorld(player.dimensionId), var3);
+            Vec3i var6 = EntityPlayer.findRespawnPosition(_server.getWorld(player.dimensionId), var3);
             if (var6 != null)
             {
                 var4.setPositionAndAnglesKeepPrevAngles(var6.x + 0.5F, var6.y + 0.1F, var6.z + 0.5F, 0.0F, 0.0F);
@@ -189,7 +189,7 @@ public class PlayerManager
 
     public void changePlayerDimension(ServerPlayerEntity player)
     {
-        ServerWorld var2 = server.getWorld(player.dimensionId);
+        ServerWorld var2 = _server.getWorld(player.dimensionId);
         sbyte var3 = 0;
         if (player.dimensionId == -1)
         {
@@ -201,7 +201,7 @@ public class PlayerManager
         }
 
         player.dimensionId = var3;
-        ServerWorld var4 = server.getWorld(player.dimensionId);
+        ServerWorld var4 = _server.getWorld(player.dimensionId);
         player.networkHandler.sendPacket(new PlayerRespawnPacket((sbyte)player.dimensionId));
         var2.serverRemove(player);
         player.dead = false;
@@ -248,9 +248,9 @@ public class PlayerManager
 
     public void updateAllChunks()
     {
-        for (int var1 = 0; var1 < chunkMaps.Length; var1++)
+        for (int var1 = 0; var1 < _chunkMaps.Length; var1++)
         {
-            chunkMaps[var1].updateChunks();
+            _chunkMaps[var1].updateChunks();
         }
     }
 
@@ -368,7 +368,7 @@ public class PlayerManager
     public bool isWhitelisted(string name)
     {
         name = name.Trim().ToLower();
-        return !whitelistEnabled || ops.Contains(name) || whitelist.Contains(name);
+        return !_whitelistEnabled || ops.Contains(name) || whitelist.Contains(name);
     }
 
     public bool isOperator(string name)
@@ -454,7 +454,7 @@ public class PlayerManager
     {
         for (int var1 = 0; var1 < players.Count; var1++)
         {
-            saveHandler.savePlayerData(players[var1]);
+            _saveHandler.savePlayerData(players[var1]);
         }
     }
 

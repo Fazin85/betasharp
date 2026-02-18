@@ -5,8 +5,8 @@ namespace BetaSharp.Blocks;
 public class BlockRedstoneTorch : BlockTorch
 {
 
-    private bool lit;
-    private static List<RedstoneUpdateInfo> torchUpdates = [];
+    private readonly bool _lit = false;
+    private static readonly ThreadLocal<List<RedstoneUpdateInfo>> s_torchUpdates = new(() => []);
 
     public override int getTexture(int side, int meta)
     {
@@ -15,16 +15,17 @@ public class BlockRedstoneTorch : BlockTorch
 
     private bool isBurnedOut(World world, int x, int y, int z, bool recordUpdate)
     {
+        List<RedstoneUpdateInfo> updates = s_torchUpdates.Value!;
         if (recordUpdate)
         {
-            torchUpdates.Add(new RedstoneUpdateInfo(x, y, z, world.getTime()));
+            updates.Add(new RedstoneUpdateInfo(x, y, z, world.getTime()));
         }
 
         int updateCount = 0;
 
-        for (int i = 0; i < torchUpdates.Capacity; ++i)
+        for (int i = 0; i < updates.Count; ++i)
         {
-            RedstoneUpdateInfo updateInfo = torchUpdates[i];
+            RedstoneUpdateInfo updateInfo = updates[i];
             if (updateInfo.x == x && updateInfo.y == y && updateInfo.z == z)
             {
                 ++updateCount;
@@ -40,7 +41,7 @@ public class BlockRedstoneTorch : BlockTorch
 
     public BlockRedstoneTorch(int id, int textureId, bool lit) : base(id, textureId)
     {
-        this.lit = lit;
+        _lit = lit;
         setTickRandomly(true);
     }
 
@@ -56,7 +57,7 @@ public class BlockRedstoneTorch : BlockTorch
             base.onPlaced(world, x, y, z);
         }
 
-        if (lit)
+        if (_lit)
         {
             world.notifyNeighbors(x, y - 1, z, id);
             world.notifyNeighbors(x, y + 1, z, id);
@@ -70,7 +71,7 @@ public class BlockRedstoneTorch : BlockTorch
 
     public override void onBreak(World world, int x, int y, int z)
     {
-        if (lit)
+        if (_lit)
         {
             world.notifyNeighbors(x, y - 1, z, id);
             world.notifyNeighbors(x, y + 1, z, id);
@@ -84,33 +85,34 @@ public class BlockRedstoneTorch : BlockTorch
 
     public override bool isPoweringSide(BlockView blockView, int x, int y, int z, int side)
     {
-        if (!lit)
+        if (!_lit)
         {
             return false;
         }
         else
         {
             int meta = blockView.getBlockMeta(x, y, z);
-            return meta == 5 && side == 1 ? false : (meta == 3 && side == 3 ? false : (meta == 4 && side == 2 ? false : (meta == 1 && side == 5 ? false : meta != 2 || side != 4)));
+            return (meta != 5 || side != 1) && ((meta != 3 || side != 3) && ((meta != 4 || side != 2) && ((meta != 1 || side != 5) && (meta != 2 || side != 4))));
         }
     }
 
     private bool shouldUnpower(World world, int x, int y, int z)
     {
         int meta = world.getBlockMeta(x, y, z);
-        return meta == 5 && world.isPoweringSide(x, y - 1, z, 0) ? true : (meta == 3 && world.isPoweringSide(x, y, z - 1, 2) ? true : (meta == 4 && world.isPoweringSide(x, y, z + 1, 3) ? true : (meta == 1 && world.isPoweringSide(x - 1, y, z, 4) ? true : meta == 2 && world.isPoweringSide(x + 1, y, z, 5))));
+        return meta == 5 && world.isPoweringSide(x, y - 1, z, 0) || (meta == 3 && world.isPoweringSide(x, y, z - 1, 2) || (meta == 4 && world.isPoweringSide(x, y, z + 1, 3) || (meta == 1 && world.isPoweringSide(x - 1, y, z, 4) || meta == 2 && world.isPoweringSide(x + 1, y, z, 5))));
     }
 
     public override void onTick(World world, int x, int y, int z, java.util.Random random)
     {
         bool shouldTurnOff = shouldUnpower(world, x, y, z);
+        List<RedstoneUpdateInfo> updates = s_torchUpdates.Value!;
 
-        while (torchUpdates.Count > 0 && world.getTime() - torchUpdates[0].updateTime > 100L)
+        while (updates.Count > 0 && world.getTime() - updates[0].updateTime > 100L)
         {
-            torchUpdates.RemoveAt(0);
+            updates.RemoveAt(0);
         }
 
-        if (lit)
+        if (_lit)
         {
             if (shouldTurnOff)
             {
@@ -144,7 +146,7 @@ public class BlockRedstoneTorch : BlockTorch
 
     public override bool isStrongPoweringSide(World world, int x, int y, int z, int side)
     {
-        return side == 0 ? isPoweringSide(world, x, y, z, side) : false;
+        return side == 0 && isPoweringSide(world, x, y, z, side);
     }
 
     public override int getDroppedItemId(int blockMeta, java.util.Random random)
@@ -159,7 +161,7 @@ public class BlockRedstoneTorch : BlockTorch
 
     public override void randomDisplayTick(World world, int x, int y, int z, java.util.Random random)
     {
-        if (lit)
+        if (_lit)
         {
             int meta = world.getBlockMeta(x, y, z);
             double particleX = (double)((float)x + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2D;

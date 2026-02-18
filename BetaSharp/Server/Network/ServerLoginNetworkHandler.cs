@@ -140,7 +140,7 @@ public class ServerLoginNetworkHandler : NetHandler
             server.playerManager.sendToAll(new ChatMessagePacket("§e" + ent.name + " joined the game."));
             server.playerManager.addPlayer(ent);
             handler.teleport(ent.x, ent.y, ent.z, ent.yaw, ent.pitch);
-            server.connections.addConnection(handler);
+            server.connections.AddConnection(handler);
             handler.sendPacket(new WorldTimeUpdateS2CPacket(var3.getTime()));
             ent.initScreenHandler();
         }
@@ -148,7 +148,7 @@ public class ServerLoginNetworkHandler : NetHandler
         closed = true;
     }
 
-    public override void onDisconnected(string reason, object[] objects)
+    public override void onDisconnected(string reason, object[]? objects)
     {
         LOGGER.info(getConnectionInfo() + " lost connection");
         closed = true;
@@ -162,7 +162,7 @@ public class ServerLoginNetworkHandler : NetHandler
     public string getConnectionInfo()
     {
         if (connection.getAddress() == null) return "Internal";
-        return username != null ? username + " [" + connection.getAddress().toString() + "]" : connection.getAddress().toString();
+        return username != null ? username + " [" + connection.getAddress()!.toString() + "]" : connection.getAddress()!.toString();
     }
 
     public override bool isServerSide()

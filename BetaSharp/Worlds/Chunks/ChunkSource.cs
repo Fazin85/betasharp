@@ -13,7 +13,6 @@ public interface ChunkSource
     bool save(bool var1, LoadingDisplay var2);
 
     bool tick();
-    void markChunksForUnload(int renderDistanceChunks);
 
     bool canSave();
 

@@ -392,7 +392,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                     playerManager.sendToDimension(new WorldTimeUpdateS2CPacket(world.getTime()), world.dimension.id);
                 }
 
-                world.Tick(-1);
+                world.Tick();
 
                 while (world.doLightingUpdates())
                 {
@@ -404,7 +404,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
 
         if (connections != null)
         {
-            connections.tick();
+            connections.Tick();
         }
         playerManager.updateAllChunks();
 

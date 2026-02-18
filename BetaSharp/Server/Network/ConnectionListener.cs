@@ -8,13 +8,13 @@ namespace BetaSharp.Server.Network;
 
 public class ConnectionListener
 {
-    public static Logger LOGGER = Logger.getLogger("Minecraft");
+    public static readonly Logger LOGGER = Logger.getLogger("Minecraft");
     public ServerSocket socket;
-    private java.lang.Thread thread;
+    private readonly java.lang.Thread _thread;
     public volatile bool open;
     public int connectionCounter = 0;
-    private List<ServerLoginNetworkHandler> pendingConnections = [];
-    private List<ServerPlayNetworkHandler> connections = [];
+    private readonly List<ServerLoginNetworkHandler> _pendingConnections = [];
+    private readonly List<ServerPlayNetworkHandler> _connections = [];
     public MinecraftServer server;
     public int port;
 
@@ -25,16 +25,25 @@ public class ConnectionListener
         socket.setPerformancePreferences(0, 2, 1);
         this.port = socket.getLocalPort();
         open = true;
-        thread = new AcceptConnectionThread(this, "Listen Thread");
-        thread.start();
+        _thread = new AcceptConnectionThread(this, "Listen Thread");
+        _thread.start();
     }
 
-    public void addConnection(ServerPlayNetworkHandler connection)
+    public ConnectionListener(MinecraftServer server)
     {
-        connections.Add(connection);
+        this.server = server;
+        socket = null;
+        port = 0;
+        open = true;
+        _thread = null;
     }
 
-    public void addPendingConnection(ServerLoginNetworkHandler connection)
+    public void AddConnection(ServerPlayNetworkHandler connection)
+    {
+        _connections.Add(connection);
+    }
+
+    public void AddPendingConnection(ServerLoginNetworkHandler connection)
     {
         if (connection == null)
         {
@@ -42,21 +51,21 @@ public class ConnectionListener
         }
         else
         {
-            pendingConnections.Add(connection);
+            _pendingConnections.Add(connection);
         }
     }
 
-    public void addInternalConnection(InternalConnection connection)
+    public void AddInternalConnection(InternalConnection connection)
     {
-        ServerLoginNetworkHandler loginHandler = new ServerLoginNetworkHandler(server, connection);
-        pendingConnections.Add(loginHandler);
+        ServerLoginNetworkHandler loginHandler = new(server, connection);
+        _pendingConnections.Add(loginHandler);
     }
 
-    public void tick()
+    public void Tick()
     {
-        for (int i = 0; i < pendingConnections.Count; i++)
+        for (int i = 0; i < _pendingConnections.Count; i++)
         {
-            ServerLoginNetworkHandler connection = pendingConnections[i];
+            ServerLoginNetworkHandler connection = _pendingConnections[i];
 
             try
             {
@@ -70,15 +79,15 @@ public class ConnectionListener
 
             if (connection.closed)
             {
-                pendingConnections.RemoveAt(i--);
+                _pendingConnections.RemoveAt(i--);
             }
 
             connection.connection.interrupt();
         }
 
-        for (int i = 0; i < connections.Count; i++)
+        for (int i = 0; i < _connections.Count; i++)
         {
-            ServerPlayNetworkHandler connection = connections[i];
+            ServerPlayNetworkHandler connection = _connections[i];
 
             try
             {
@@ -92,7 +101,7 @@ public class ConnectionListener
 
             if (connection.disconnected)
             {
-                connections.RemoveAt(i--);
+                _connections.RemoveAt(i--);
             }
 
             connection.connection.interrupt();

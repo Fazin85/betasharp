@@ -10,13 +10,13 @@ namespace BetaSharp.Blocks;
 public class BlockFurnace : BlockWithEntity
 {
 
-    private java.util.Random random = new();
-    private readonly bool lit;
-    private static bool ignoreBlockRemoval;
+    private readonly java.util.Random _random = new();
+    private readonly bool _lit;
+    private static readonly ThreadLocal<bool> s_ignoreBlockRemoval = new(() => false);
 
     public BlockFurnace(int id, bool lit) : base(id, Material.Stone)
     {
-        this.lit = lit;
+        _lit = lit;
         textureId = 45;
     }
 
@@ -77,13 +77,13 @@ public class BlockFurnace : BlockWithEntity
         else
         {
             int meta = blockView.getBlockMeta(x, y, z);
-            return side != meta ? textureId : (lit ? textureId + 16 : textureId - 1);
+            return side != meta ? textureId : (_lit ? textureId + 16 : textureId - 1);
         }
     }
 
     public override void randomDisplayTick(World world, int x, int y, int z, java.util.Random random)
     {
-        if (lit)
+        if (_lit)
         {
             int var6 = world.getBlockMeta(x, y, z);
             float particleX = (float)x + 0.5F;
@@ -138,7 +138,7 @@ public class BlockFurnace : BlockWithEntity
     {
         int meta = world.getBlockMeta(x, y, z);
         BlockEntity furnace = world.getBlockEntity(x, y, z);
-        ignoreBlockRemoval = true;
+        s_ignoreBlockRemoval.Value = true;
         if (lit)
         {
             world.setBlock(x, y, z, Block.LitFurnace.id);
@@ -148,7 +148,7 @@ public class BlockFurnace : BlockWithEntity
             world.setBlock(x, y, z, Block.Furnace.id);
         }
 
-        ignoreBlockRemoval = false;
+        s_ignoreBlockRemoval.Value = false;
         world.setBlockMeta(x, y, z, meta);
         furnace.cancelRemoval();
         world.setBlockEntity(x, y, z, furnace);
@@ -186,7 +186,7 @@ public class BlockFurnace : BlockWithEntity
 
     public override void onBreak(World world, int x, int y, int z)
     {
-        if (!ignoreBlockRemoval)
+        if (!s_ignoreBlockRemoval.Value)
         {
             BlockEntityFurnace furnace = (BlockEntityFurnace)world.getBlockEntity(x, y, z);
 
@@ -195,13 +195,13 @@ public class BlockFurnace : BlockWithEntity
                 ItemStack stack = furnace.getStack(slotIndex);
                 if (stack != null)
                 {
-                    float offsetX = random.nextFloat() * 0.8F + 0.1F;
-                    float offsetY = random.nextFloat() * 0.8F + 0.1F;
-                    float offsetZ = random.nextFloat() * 0.8F + 0.1F;
+                    float offsetX = _random.nextFloat() * 0.8F + 0.1F;
+                    float offsetY = _random.nextFloat() * 0.8F + 0.1F;
+                    float offsetZ = _random.nextFloat() * 0.8F + 0.1F;
 
                     while (stack.count > 0)
                     {
-                        int var11 = random.nextInt(21) + 10;
+                        int var11 = _random.nextInt(21) + 10;
                         if (var11 > stack.count)
                         {
                             var11 = stack.count;
@@ -210,9 +210,9 @@ public class BlockFurnace : BlockWithEntity
                         stack.count -= var11;
                         EntityItem droppedItem = new EntityItem(world, (double)((float)x + offsetX), (double)((float)y + offsetY), (double)((float)z + offsetZ), new ItemStack(stack.itemId, var11, stack.getDamage()));
                         float var13 = 0.05F;
-                        droppedItem.velocityX = (double)((float)random.nextGaussian() * var13);
-                        droppedItem.velocityY = (double)((float)random.nextGaussian() * var13 + 0.2F);
-                        droppedItem.velocityZ = (double)((float)random.nextGaussian() * var13);
+                        droppedItem.velocityX = (double)((float)_random.nextGaussian() * var13);
+                        droppedItem.velocityY = (double)((float)_random.nextGaussian() * var13 + 0.2F);
+                        droppedItem.velocityZ = (double)((float)_random.nextGaussian() * var13);
                         world.SpawnEntity(droppedItem);
                     }
                 }

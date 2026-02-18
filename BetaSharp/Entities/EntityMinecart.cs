@@ -80,7 +80,7 @@ public class EntityMinecart : Entity, IInventory
         return true;
     }
 
-    public EntityMinecart(World world, double x, double y, double z, int type) : base(world)
+    public EntityMinecart(World world, double x, double y, double z, int type) : this(world)
     {
         setPosition(x, y + (double)standingEyeHeight, z);
         velocityX = 0.0D;
