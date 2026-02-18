@@ -2,8 +2,6 @@ using BetaSharp.Client.Input;
 using BetaSharp.Util;
 using BetaSharp.Server;
 using BetaSharp.Server.Commands;
-using java.awt;
-using java.awt.datatransfer;
 
 namespace BetaSharp.Client.Guis;
 
@@ -368,7 +366,7 @@ public class GuiChat : GuiScreen
         }
 
         // Get completions from provider
-        MinecraftServer server = mc?.internalServer;
+        MinecraftServer? server = mc?.internalServer;
         List<string> matchingCompletions = [];
         
         if (server != null && argIndex >= 0)
@@ -460,6 +458,8 @@ public class GuiChat : GuiScreen
         if (!HasSelection()) return (0, 0);
         int s = Math.Min(selectionStart, selectionEnd);
         int e = Math.Max(selectionStart, selectionEnd);
+        s = Math.Max(0, Math.Min(s, message.Length));
+        e = Math.Max(0, Math.Min(e, message.Length));
         return (s, e);
     }
 
@@ -491,8 +491,7 @@ public class GuiChat : GuiScreen
         try
         {
             string sel = GetSelectedText();
-            StringSelection ss = new(sel);
-            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
+            setClipboardString(sel);
         }
         catch (Exception)
         {
@@ -510,18 +509,14 @@ public class GuiChat : GuiScreen
     {
         try
         {
-            Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
-            if (t != null && t.isDataFlavorSupported(DataFlavor.stringFlavor))
-            {
-                string clip = (string)t.getTransferData(DataFlavor.stringFlavor);
-                clip ??= "";
-                if (HasSelection()) DeleteSelection();
-                int maxInsert = Math.Max(0, 100 - message.Length);
-                if (clip.Length > maxInsert) clip = clip.Substring(0, maxInsert);
-                message = message.Substring(0, cursorPosition) + clip + message.Substring(cursorPosition);
-                cursorPosition += clip.Length;
-                ClearSelection();
-            }
+            string clip = getClipboardString();
+            clip ??= "";
+            if (HasSelection()) DeleteSelection();
+            int maxInsert = Math.Max(0, 100 - message.Length);
+            if (clip.Length > maxInsert) clip = clip.Substring(0, maxInsert);
+            message = message.Substring(0, cursorPosition) + clip + message.Substring(cursorPosition);
+            cursorPosition += clip.Length;
+            ClearSelection();
         }
         catch (Exception)
         {
@@ -593,7 +588,8 @@ public class GuiChat : GuiScreen
                 return;
             }
 
-            if (mc.ingameGUI.field_933_a != null)
+            if (mc.ingameGUI.field_933_a
+             != null)
             {
                 if (message.Length > 0 && !message.EndsWith(" "))
                 {
