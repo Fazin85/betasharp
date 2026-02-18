@@ -1,6 +1,6 @@
 ﻿# BetaSharp
 
-[![Join our Discord](https://img.shields.io/badge/chat%20on-discord-7289DA)](https://discord.gg/x9AGsjnWv4)
+[![Discord](https://img.shields.io/badge/chat%20on-discord-7289DA)](https://discord.gg/x9AGsjnWv4)
 ![C#](https://img.shields.io/badge/language-C%23-512BD4)
 ![.NET](https://img.shields.io/badge/framework-.NET-512BD4)
 ![Issues](https://img.shields.io/github/issues/Fazin85/betasharp)
@@ -15,7 +15,7 @@ We do not support or condone piracy. Please purchase Minecraft from https://www.
 
 ## Discord
 
-Join us on Discord! https://discord.gg/x9AGsjnWv4.
+Discuss BetaSharp's development and share us your feedback on our Discord! https://discord.gg/x9AGsjnWv4.
 
 ## Building
 
