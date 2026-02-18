@@ -1187,6 +1187,11 @@ public partial class Minecraft : java.lang.Object, Runnable
             }
 
             world.difficulty = options.difficulty;
+            if (internalServer != null)
+            {
+                internalServer.SetDifficulty(options.difficulty);
+            }
+
             if (world.isRemote)
             {
                 world.difficulty = 3;
