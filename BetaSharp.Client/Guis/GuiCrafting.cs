@@ -12,25 +12,25 @@ public class GuiCrafting : GuiContainer
     {
     }
 
-    public override void onGuiClosed()
+    public override void OnGuiClosed()
     {
-        base.onGuiClosed();
-        inventorySlots.onClosed(mc.player);
+        base.OnGuiClosed();
+        InventorySlots.onClosed(mc.player);
     }
 
-    protected override void drawGuiContainerForegroundLayer()
+    protected override void DrawGuiContainerForegroundLayer()
     {
-        fontRenderer.drawString("Crafting", 28, 6, 4210752);
-        fontRenderer.drawString("Inventory", 8, ySize - 96 + 2, 4210752);
+        FontRenderer.drawString("Crafting", 28, 6, 0x404040);
+        FontRenderer.drawString("Inventory", 8, _ySize - 96 + 2, 0x404040);
     }
 
-    protected override void drawGuiContainerBackgroundLayer(float partialTicks)
+    protected override void DrawGuiContainerBackgroundLayer(float partialTicks)
     {
         int textureId = mc.textureManager.getTextureId("/gui/crafting.png");
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.bindTexture(textureId);
-        int guiLeft = (width - xSize) / 2;
-        int guiTop = (height - ySize) / 2;
-        drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
+        int guiLeft = (Width - _xSize) / 2;
+        int guiTop = (Height - _ySize) / 2;
+        DrawTexturedModalRect(guiLeft, guiTop, 0, 0, _xSize, _ySize);
     }
 }

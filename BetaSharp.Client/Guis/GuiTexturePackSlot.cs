@@ -6,57 +6,61 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiTexturePackSlot : GuiSlot
 {
-    public readonly GuiTexturePacks parentTexturePackGui;
+    public readonly GuiTexturePacks _parentTexturePackGui;
 
 
-    public GuiTexturePackSlot(GuiTexturePacks var1) : base(GuiTexturePacks.func_22124_a(var1), var1.width, var1.height, 32, var1.height - 55 + 4, 36)
+    public GuiTexturePackSlot(GuiTexturePacks parent) 
+        : base(parent.mc, parent.Width, parent.Height, 32, parent.Height - 55 + 4, 36)
     {
-        parentTexturePackGui = var1;
+        _parentTexturePackGui = parent;
     }
 
-    public override int getSize()
+    public override int GetSize()
+{
+        return _parentTexturePackGui.mc.texturePackList.availableTexturePacks().size();
+    }
+    protected override void ElementClicked(int index, bool doubleClick)
     {
-        List var1 = GuiTexturePacks.func_22126_b(parentTexturePackGui).texturePackList.availableTexturePacks();
-        return var1.size();
+        var packs = _parentTexturePackGui.mc.texturePackList.availableTexturePacks();
+        var selectedPack = (TexturePack)packs.get(index);
+        
+        _parentTexturePackGui.mc.texturePackList.setTexturePack(selectedPack);
+        _parentTexturePackGui.mc.textureManager.reload();
     }
 
-    protected override void elementClicked(int var1, bool var2)
+    protected override bool isSelected(int index)
     {
-        List var3 = GuiTexturePacks.func_22119_c(parentTexturePackGui).texturePackList.availableTexturePacks();
-        GuiTexturePacks.func_22122_d(parentTexturePackGui).texturePackList.setTexturePack((TexturePack)var3.get(var1));
-        GuiTexturePacks.func_22117_e(parentTexturePackGui).textureManager.reload();
-    }
-
-    protected override bool isSelected(int var1)
-    {
-        List var2 = GuiTexturePacks.func_22118_f(parentTexturePackGui).texturePackList.availableTexturePacks();
-        return GuiTexturePacks.func_22116_g(parentTexturePackGui).texturePackList.selectedTexturePack == var2.get(var1);
+        var packs = _parentTexturePackGui.mc.texturePackList.availableTexturePacks();
+        return _parentTexturePackGui.mc.texturePackList.selectedTexturePack == packs.get(index);
     }
 
     protected override int getContentHeight()
     {
-        return getSize() * 36;
+        return GetSize() * 36;
     }
 
     protected override void drawBackground()
     {
-        parentTexturePackGui.drawDefaultBackground();
+        _parentTexturePackGui.DrawDefaultBackground();
     }
 
-    protected override void drawSlot(int var1, int var2, int var3, int var4, Tessellator var5)
+    protected override void drawSlot(int index, int x, int y, int slotHeight, Tessellator tess)
     {
-        TexturePack var6 = (TexturePack)GuiTexturePacks.func_22121_h(parentTexturePackGui).texturePackList.availableTexturePacks().get(var1);
-        var6.bindThumbnailTexture(GuiTexturePacks.func_22123_i(parentTexturePackGui));
+        var pack = (TexturePack)_parentTexturePackGui.mc.texturePackList.availableTexturePacks().get(index);
+        pack.bindThumbnailTexture(_parentTexturePackGui.mc);
+
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        var5.startDrawingQuads();
-        var5.setColorOpaque_I(0x00FFFFFF);
-        var5.addVertexWithUV(var2, var3 + var4, 0.0D, 0.0D, 1.0D);
-        var5.addVertexWithUV(var2 + 32, var3 + var4, 0.0D, 1.0D, 1.0D);
-        var5.addVertexWithUV(var2 + 32, var3, 0.0D, 1.0D, 0.0D);
-        var5.addVertexWithUV(var2, var3, 0.0D, 0.0D, 0.0D);
-        var5.draw();
-        parentTexturePackGui.drawString(GuiTexturePacks.func_22127_j(parentTexturePackGui), var6.texturePackFileName, var2 + 32 + 2, var3 + 1, 0x00FFFFFF);
-        parentTexturePackGui.drawString(GuiTexturePacks.func_22120_k(parentTexturePackGui), var6.firstDescriptionLine, var2 + 32 + 2, var3 + 12, 8421504);
-        parentTexturePackGui.drawString(GuiTexturePacks.func_22125_l(parentTexturePackGui), var6.secondDescriptionLine, var2 + 32 + 2, var3 + 12 + 10, 8421504);
+
+        tess.startDrawingQuads();
+        tess.setColorOpaque_I(0x00FFFFFF);
+        tess.addVertexWithUV(x, y + slotHeight, 0.0D, 0.0D, 1.0D);
+        tess.addVertexWithUV(x + 32, y + slotHeight, 0.0D, 1.0D, 1.0D);
+        tess.addVertexWithUV(x + 32, y, 0.0D, 1.0D, 0.0D);
+        tess.addVertexWithUV(x, y, 0.0D, 0.0D, 0.0D);
+        tess.draw();
+
+        _parentTexturePackGui.DrawString(_parentTexturePackGui.FontRenderer, pack.texturePackFileName, x + 32 + 2, y + 1, 0x00FFFFFF);
+        _parentTexturePackGui.DrawString(_parentTexturePackGui.FontRenderer, pack.firstDescriptionLine, x + 32 + 2, y + 12, 8421504);
+        _parentTexturePackGui.DrawString(_parentTexturePackGui.FontRenderer, pack.secondDescriptionLine, x + 32 + 2, y + 12 + 10, 8421504);
     }
 }

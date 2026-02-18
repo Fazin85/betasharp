@@ -5,120 +5,114 @@ using BetaSharp.Client.Rendering;
 
 namespace BetaSharp.Client.Guis;
 
-public class Gui : java.lang.Object
+public class Gui
 {
-    protected float zLevel = 0.0F;
+    protected float _zLevel = 0.0F;
 
-    protected void func_27100_a(int var1, int var2, int var3, uint color)
+    private static readonly uint[] _colorCodes =
     {
-        if (var2 < var1)
-        {
-            (var1, var2) = (var2, var1);
-        }
+        0xFF000000u, 0xFF0000AAu, 0xFF00AA00u, 0xFF00AAAAu,
+        0xFFAA0000u, 0xFFAA00AAu, 0xFFFFAA00u, 0xFFAAAAAAu,
+        0xFF555555u, 0xFF5555FFu, 0xFF55FF55u, 0xFF55FFFFu,
+        0xFFFF5555u, 0xFFFF55FFu, 0xFFFFFF55u, 0xFFFFFFFFu
+    };
 
-        drawRect(var1, var3, var2 + 1, var3 + 1, color);
+    protected void DrawHorizontalLine(int startX, int endX, int y, uint color)
+    {
+        if (endX < startX) (startX, endX) = (endX, startX);
+        DrawRect(startX, y, endX + 1, y + 1, color);
     }
 
-    protected void func_27099_b(int var1, int var2, int var3, uint color)
+    protected void DrawVerticalLine(int x, int startY, int endY, uint color)
     {
-        if (var3 < var2)
-        {
-            (var2, var3) = (var3, var2);
-        }
-
-        drawRect(var1, var2 + 1, var1 + 1, var3, color);
+        if (endY < startY) (startY, endY) = (endY, startY);
+        DrawRect(x, startY + 1, x + 1, endY, color);
     }
 
-    protected void drawRect(int var1, int var2, int var3, int var4, uint color)
+    protected void DrawRect(int x1, int y1, int x2, int y2, uint color)
     {
-        int var6;
-        if (var1 < var3)
-        {
-            var6 = var1;
-            var1 = var3;
-            var3 = var6;
-        }
+        if (x1 < x2) (x1, x2) = (x2, x1);
+        if (y1 < y2) (y1, y2) = (y2, y1);
 
-        if (var2 < var4)
-        {
-            var6 = var2;
-            var2 = var4;
-            var4 = var6;
-        }
+        float a = (color >> 24 & 255) / 255.0F;
+        float r = (color >> 16 & 255) / 255.0F;
+        float g = (color >> 8 & 255) / 255.0F;
+        float b = (color & 255) / 255.0F;
+        Tessellator tess = Tessellator.instance;
 
-        float var11 = (color >> 24 & 255) / 255.0F;
-        float var7 = (color >> 16 & 255) / 255.0F;
-        float var8 = (color >> 8 & 255) / 255.0F;
-        float var9 = (color & 255) / 255.0F;
-        Tessellator var10 = Tessellator.instance;
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.Disable(GLEnum.Texture2D);
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
-        GLManager.GL.Color4(var7, var8, var9, var11);
-        var10.startDrawingQuads();
-        var10.addVertex(var1, var4, 0.0D);
-        var10.addVertex(var3, var4, 0.0D);
-        var10.addVertex(var3, var2, 0.0D);
-        var10.addVertex(var1, var2, 0.0D);
-        var10.draw();
+        GLManager.GL.Color4(r, g, b, a);
+
+        tess.startDrawingQuads();
+        tess.addVertex(x1, y2, 0.0D);
+        tess.addVertex(x2, y2, 0.0D);
+        tess.addVertex(x2, y1, 0.0D);
+        tess.addVertex(x1, y1, 0.0D);
+        tess.draw();
+
         GLManager.GL.Enable(GLEnum.Texture2D);
         GLManager.GL.Disable(GLEnum.Blend);
     }
 
-    protected void drawGradientRect(int right, int bottom, int left, int top, uint topColor, uint bottomColor)
+    protected void DrawGradientRect(int right, int bottom, int left, int top, uint topColor, uint bottomColor)
     {
-        float var7 = (topColor >> 24 & 255) / 255.0F;
-        float var8 = (topColor >> 16 & 255) / 255.0F;
-        float var9 = (topColor >> 8 & 255) / 255.0F;
-        float var10 = (topColor & 255) / 255.0F;
-        float var11 = (bottomColor >> 24 & 255) / 255.0F;
-        float var12 = (bottomColor >> 16 & 255) / 255.0F;
-        float var13 = (bottomColor >> 8 & 255) / 255.0F;
-        float var14 = (bottomColor & 255) / 255.0F;
+        float a1 = (topColor >> 24 & 255) / 255.0F;
+        float r1 = (topColor >> 16 & 255) / 255.0F;
+        float g1 = (topColor >> 8 & 255) / 255.0F;
+        float b1 = (topColor & 255) / 255.0F;
+
+        float a2 = (bottomColor >> 24 & 255) / 255.0F;
+        float r2 = (bottomColor >> 16 & 255) / 255.0F;
+        float g2 = (bottomColor >> 8 & 255) / 255.0F;
+        float b2 = (bottomColor & 255) / 255.0F;
+
         GLManager.GL.Disable(GLEnum.Texture2D);
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.Disable(GLEnum.AlphaTest);
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
         GLManager.GL.ShadeModel(GLEnum.Smooth);
+
         Tessellator tess = Tessellator.instance;
         tess.startDrawingQuads();
-        tess.setColorRGBA_F(var8, var9, var10, var7);
+        tess.setColorRGBA_F(r1, g1, b1, a1);
         tess.addVertex(left, bottom, 0.0D);
         tess.addVertex(right, bottom, 0.0D);
-        tess.setColorRGBA_F(var12, var13, var14, var11);
+        tess.setColorRGBA_F(r2, g2, b2, a2);
         tess.addVertex(right, top, 0.0D);
         tess.addVertex(left, top, 0.0D);
         tess.draw();
+
         GLManager.GL.ShadeModel(GLEnum.Flat);
         GLManager.GL.Disable(GLEnum.Blend);
         GLManager.GL.Enable(GLEnum.AlphaTest);
         GLManager.GL.Enable(GLEnum.Texture2D);
     }
 
-    public void drawCenteredString(TextRenderer var1, string var2, int var3, int var4, uint color)
+    public void DrawCenteredString(TextRenderer renderer, string text, int x, int y, uint color)
     {
         // Check if text contains any color codes like &e, &8, &a, etc.
-        if (HasColorCodes(var2))
+        if (HasColorCodes(text))
         {
             // Draw with color support
-            DrawStringWithColors(var1, var2, var3 - var1.getStringWidth(RemoveColorCodes(var2)) / 2, var4);
+            DrawStringWithColors(renderer, text, x - renderer.getStringWidth(RemoveColorCodes(text)) / 2, y);
         }
         else
         {
-            var1.drawStringWithShadow(var2, var3 - var1.getStringWidth(var2) / 2, var4, color);
+            renderer.drawStringWithShadow(text, x - renderer.getStringWidth(text) / 2, y, color);
         }
     }
 
-    public void drawString(TextRenderer var1, string var2, int var3, int var4, uint color)
+    public void DrawString(TextRenderer renderer, string text, int x, int y, uint color)
     {
-        // Check if text contains any color codes
-        if (HasColorCodes(var2))
+        if (HasColorCodes(text))
         {
-            DrawStringWithColors(var1, var2, var3, var4);
+            DrawStringWithColors(renderer, text, x, y);
         }
         else
         {
-            var1.drawStringWithShadow(var2, var3, var4, color);
+            renderer.drawStringWithShadow(text, x, y, color);
         }
     }
 
@@ -190,13 +184,13 @@ public class Gui : java.lang.Object
             // Underline
             if (underline)
             {
-                drawRect(currentX, y + 9, currentX + segWidth, y + 10, currentColor);
+                DrawRect(currentX, y + 9, currentX + segWidth, y + 10, currentColor);
             }
 
             // Strikethrough
             if (strikethrough)
             {
-                drawRect(currentX, y + 4, currentX + segWidth, y + 5, currentColor);
+                DrawRect(currentX, y + 4, currentX + segWidth, y + 5, currentColor);
             }
 
             currentX += segWidth;
@@ -212,29 +206,15 @@ public class Gui : java.lang.Object
                 FlushSegment();
 
                 char code = char.ToLower(text[i + 1]);
+                int colorIdx = "0123456789abcdef".IndexOf(code);
                 // Color codes reset formatting
                 if ((code >= '0' && code <= '9') || (code >= 'a' && code <= 'f'))
                 {
-                    currentColor = code switch
+                    if (colorIdx != -1)
                     {
-                        '0' => 0xFF000000u,
-                        '1' => 0xFF0000AAu,
-                        '2' => 0xFF00AA00u,
-                        '3' => 0xFF00AAAAu,
-                        '4' => 0xFFAA0000u,
-                        '5' => 0xFFAA00AAu,
-                        '6' => 0xFFFFAA00u,
-                        '7' => 0xFFAAAAAAu,
-                        '8' => 0xFF555555u,
-                        '9' => 0xFF5555FFu,
-                        'a' => 0xFF55FF55u,
-                        'b' => 0xFF55FFFFu,
-                        'c' => 0xFFFF5555u,
-                        'd' => 0xFFFF55FFu,
-                        'e' => 0xFFFFFF55u,
-                        'f' => 0xFFFFFFFFu,
-                        _ => currentColor
-                    };
+                        currentColor = _colorCodes[colorIdx];
+                        bold = obfuscated = strikethrough = underline = false;
+                    }
                     // Reset formatting on color
                     bold = italic = underline = strikethrough = obfuscated = false;
                 }
@@ -294,16 +274,15 @@ public class Gui : java.lang.Object
         return result;
     }
 
-    public void drawTexturedModalRect(int var1, int var2, int var3, int var4, int var5, int var6)
+    public void DrawTexturedModalRect(int x, int y, int u, int v, int width, int height)
     {
-        float var7 = 0.00390625F;
-        float var8 = 0.00390625F;
-        Tessellator var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV(var1 + 0, var2 + var6, zLevel, (double)((var3 + 0) * var7), (double)((var4 + var6) * var8));
-        var9.addVertexWithUV(var1 + var5, var2 + var6, zLevel, (double)((var3 + var5) * var7), (double)((var4 + var6) * var8));
-        var9.addVertexWithUV(var1 + var5, var2 + 0, zLevel, (double)((var3 + var5) * var7), (double)((var4 + 0) * var8));
-        var9.addVertexWithUV(var1 + 0, var2 + 0, zLevel, (double)((var3 + 0) * var7), (double)((var4 + 0) * var8));
-        var9.draw();
+        float f = 0.00390625F; // 1/256
+        Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
+        tess.addVertexWithUV(x + 0, y + height, _zLevel, (double)((u + 0) * f), (double)((v + height) * f));
+        tess.addVertexWithUV(x + width, y + height, _zLevel, (double)((u + width) * f), (double)((v + height) * f));
+        tess.addVertexWithUV(x + width, y + 0, _zLevel, (double)((u + width) * f), (double)((v + 0) * f));
+        tess.addVertexWithUV(x + 0, y + 0, _zLevel, (double)((u + 0) * f), (double)((v + 0) * f));
+        tess.draw();
     }
 }

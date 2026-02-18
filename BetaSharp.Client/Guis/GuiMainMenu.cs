@@ -8,11 +8,11 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiMainMenu : GuiScreen
 {
-    private const int BUTTON_OPTIONS = 0;
-    private const int BUTTON_SINGLEPLAYER = 1;
-    private const int BUTTON_MULTIPLAYER = 2;
-    private const int BUTTON_MODS = 3;
-    private const int BUTTON_QUIT = 4;
+    private const int ButtonOptions = 0;
+    private const int ButtonSingleplayer = 1;
+    private const int ButtonMultiplayer = 2;
+    private const int ButtonTexturePacksAndMods = 3;
+    private const int ButtonQuit = 4;
 
     private static readonly JavaRandom s_rand = new();
     private string _splashText = "missingno";
@@ -49,112 +49,98 @@ public class GuiMainMenu : GuiScreen
         }
     }
 
-    public override void updateScreen()
+    public override void UpdateScreen()
     {
     }
 
-    protected override void keyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, int eventKey)
     {
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
-        Calendar calendar = Calendar.getInstance();
-
         // Special days
-        calendar.setTime(new Date());
-        if (calendar.get(2) + 1 == 11 && calendar.get(5) == 9)
-        {
-            _splashText = "Happy birthday, ez!";
-        }
-        else if (calendar.get(2) + 1 == 6 && calendar.get(5) == 1)
-        {
-            _splashText = "Happy birthday, Notch!";
-        }
-        else if (calendar.get(2) + 1 == 12 && calendar.get(5) == 24)
-        {
-            _splashText = "Merry X-mas!";
-        }
-        else if (calendar.get(2) + 1 == 1 && calendar.get(5) == 1)
-        {
-            _splashText = "Happy new year!";
-        }
+        DateTime now = DateTime.Now;
+        if (now.Month == 11 && now.Day == 9) _splashText = "Happy birthday, ez!";
+        else if (now.Month == 6 && now.Day == 1) _splashText = "Happy birthday, Notch!";
+        else if (now.Month == 12 && now.Day == 24) _splashText = "Merry X-mas!";
+        else if (now.Month == 1 && now.Day == 1) _splashText = "Happy new year!";
 
         TranslationStorage translator = TranslationStorage.getInstance();
-        int buttonTopY = height / 4 + 48;
+        int buttonTopY = Height / 4 + 48;
 
-        controlList.add(new GuiButton(BUTTON_SINGLEPLAYER, width / 2 - 100, buttonTopY, translator.translateKey("menu.singleplayer")));
-        controlList.add(_multiplayerButton =
-            new GuiButton(BUTTON_MULTIPLAYER, width / 2 - 100, buttonTopY + 24, translator.translateKey("menu.multiplayer")));
-        controlList.add(new GuiButton(BUTTON_MODS, width / 2 - 100, buttonTopY + 48, translator.translateKey("menu.mods")));
+        _controlList.Add(new GuiButton(ButtonSingleplayer, Width / 2 - 100, buttonTopY, translator.translateKey("menu.singleplayer")));
+        _controlList.Add(_multiplayerButton =
+            new GuiButton(ButtonMultiplayer, Width / 2 - 100, buttonTopY + 24, translator.translateKey("menu.multiplayer")));
+        _controlList.Add(new GuiButton(ButtonTexturePacksAndMods, Width / 2 - 100, buttonTopY + 48, translator.translateKey("menu.mods")));
 
         if (mc.hideQuitButton)
         {
-            controlList.add(new GuiButton(BUTTON_OPTIONS, width / 2 - 100, buttonTopY + 72, translator.translateKey("menu.options")));
+            _controlList.Add(new GuiButton(ButtonOptions, Width / 2 - 100, buttonTopY + 72, translator.translateKey("menu.options")));
         }
         else
         {
-            controlList.add(new GuiButton(BUTTON_OPTIONS, width / 2 - 100, buttonTopY + 72 + 12, 98, 20,
+            _controlList.Add(new GuiButton(ButtonOptions, Width / 2 - 100, buttonTopY + 72 + 12, 98, 20,
                 translator.translateKey("menu.options")));
 
-            controlList.add(new GuiButton(BUTTON_QUIT, width / 2 + 2, buttonTopY + 72 + 12, 98, 20,
+            _controlList.Add(new GuiButton(ButtonQuit, Width / 2 + 2, buttonTopY + 72 + 12, 98, 20,
                 translator.translateKey("menu.quit")));
         }
 
         if (mc.session == null)
         {
-            _multiplayerButton.enabled = false;
+            _multiplayerButton.Enabled = false;
         }
     }
 
-    protected override void actionPerformed(GuiButton button)
+    protected override void ActionPerformed(GuiButton button)
     {
-        switch (button.id)
+        switch (button.Id)
         {
-            case BUTTON_OPTIONS:
+            case ButtonOptions:
                 mc.displayGuiScreen(new GuiOptions(this, mc.options));
                 break;
-            case BUTTON_SINGLEPLAYER:
+            case ButtonSingleplayer:
                 mc.displayGuiScreen(new GuiSelectWorld(this));
                 break;
-            case BUTTON_MULTIPLAYER:
+            case ButtonMultiplayer:
                 mc.displayGuiScreen(new GuiMultiplayer(this));
                 break;
-            case BUTTON_MODS:
+            case ButtonTexturePacksAndMods:
                 mc.displayGuiScreen(new GuiTexturePacks(this));
                 break;
-            case BUTTON_QUIT:
+            case ButtonQuit:
                 mc.shutdown();
                 break;
         }
     }
 
-    public override void render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        drawDefaultBackground();
-        Tessellator tessellator = Tessellator.instance;
+        DrawDefaultBackground();
+        Tessellator tess = Tessellator.instance;
         short logoWidth = 274;
-        int logoX = width / 2 - logoWidth / 2;
+        int logoX = Width / 2 - logoWidth / 2;
         byte logoY = 30;
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/title/mclogo.png"));
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        drawTexturedModalRect(logoX + 0, logoY + 0, 0, 0, 155, 44);
-        drawTexturedModalRect(logoX + 155, logoY + 0, 0, 45, 155, 44);
-        tessellator.setColorOpaque_I(0x00FFFFFF);
+        DrawTexturedModalRect(logoX + 0, logoY + 0, 0, 0, 155, 44);
+        DrawTexturedModalRect(logoX + 155, logoY + 0, 0, 45, 155, 44);
+        tess.setColorOpaque_I(0x00FFFFFF);
         GLManager.GL.PushMatrix();
-        GLManager.GL.Translate(width / 2 + 90, 70.0F, 0.0F);
+        GLManager.GL.Translate(Width / 2 + 90, 70.0F, 0.0F);
         GLManager.GL.Rotate(-20.0F, 0.0F, 0.0F, 1.0F);
         float splashScale = 1.8F - MathHelper.abs(MathHelper.sin(java.lang.System.currentTimeMillis() % 1000L /
             1000.0F * (float)Math.PI * 2.0F) * 0.1F);
-        splashScale = splashScale * 100.0F / (fontRenderer.getStringWidth(_splashText) + 32);
+        splashScale = splashScale * 100.0F / (FontRenderer.getStringWidth(_splashText) + 32);
         GLManager.GL.Scale(splashScale, splashScale, splashScale);
-        drawCenteredString(fontRenderer, _splashText, 0, -8, 16776960);
+        DrawCenteredString(FontRenderer, _splashText, 0, -8, 16776960);
         GLManager.GL.PopMatrix();
-        drawString(fontRenderer, "Minecraft Beta 1.7.3", 2, 2, 5263440);
+        DrawString(FontRenderer, "Minecraft Beta 1.7.3", 2, 2, 5263440);
         string copyrightText = "Copyright Mojang Studios. Not an official Minecraft product.";
-        drawString(fontRenderer, copyrightText, width - fontRenderer.getStringWidth(copyrightText) - 2, height - 20, 0x00FFFFFF);
+        DrawString(FontRenderer, copyrightText, Width - FontRenderer.getStringWidth(copyrightText) - 2, Height - 20, 0x00FFFFFF);
         string disclaimerText = "Not approved by or associated with Mojang Studios or Microsoft.";
-        drawString(fontRenderer, disclaimerText, width - fontRenderer.getStringWidth(disclaimerText) - 2, height - 10, 0x00FFFFFF);
-        base.render(mouseX, mouseY, partialTicks);
+        DrawString(FontRenderer, disclaimerText, Width - FontRenderer.getStringWidth(disclaimerText) - 2, Height - 10, 0x00FFFFFF);
+        base.Render(mouseX, mouseY, partialTicks);
     }
 }

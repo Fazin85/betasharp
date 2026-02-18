@@ -54,15 +54,15 @@ public abstract class GuiSlot
 
     }
 
-    public abstract int getSize();
+    public abstract int GetSize();
 
-    protected abstract void elementClicked(int var1, bool var2);
+    protected abstract void ElementClicked(int var1, bool var2);
 
     protected abstract bool isSelected(int var1);
 
     protected virtual int getContentHeight()
     {
-        return getSize() * posZ + field_27261_r;
+        return GetSize() * posZ + field_27261_r;
     }
 
     protected abstract void drawBackground();
@@ -87,10 +87,10 @@ public abstract class GuiSlot
         int var4 = width / 2 + 110;
         int var5 = var2 - top - field_27261_r + (int)amountScrolled - 4;
         int var6 = var5 / posZ;
-        return var1 >= var3 && var1 <= var4 && var6 >= 0 && var5 >= 0 && var6 < getSize() ? var6 : -1;
+        return var1 >= var3 && var1 <= var4 && var6 >= 0 && var5 >= 0 && var6 < GetSize() ? var6 : -1;
     }
 
-    public void registerScrollButtons(List var1, int var2, int var3)
+    public void RegisterScrollButtons(List<GuiButton> var1, int var2, int var3)
     {
         scrollUpButtonID = var2;
         scrollDownButtonID = var3;
@@ -118,15 +118,15 @@ public abstract class GuiSlot
 
     public void actionPerformed(GuiButton var1)
     {
-        if (var1.enabled)
+        if (var1.Enabled)
         {
-            if (var1.id == scrollUpButtonID)
+            if (var1.Id == scrollUpButtonID)
             {
                 amountScrolled -= posZ * 2 / 3;
                 initialClickY = -2.0F;
                 bindAmountScrolled();
             }
-            else if (var1.id == scrollDownButtonID)
+            else if (var1.Id == scrollDownButtonID)
             {
                 amountScrolled += posZ * 2 / 3;
                 initialClickY = -2.0F;
@@ -139,7 +139,7 @@ public abstract class GuiSlot
     public void drawScreen(int var1, int var2, float var3)
     {
         drawBackground();
-        int var4 = getSize();
+        int var4 = GetSize();
         int var5 = width / 2 + 124;
         int var6 = var5 + 6;
         int var9;
@@ -161,7 +161,7 @@ public abstract class GuiSlot
                     if (var1 >= var8 && var1 <= var9 && var11 >= 0 && var10 >= 0 && var11 < var4)
                     {
                         bool var12 = var11 == selectedElement && java.lang.System.currentTimeMillis() - lastClicked < 250L;
-                        elementClicked(var11, var12);
+                        ElementClicked(var11, var12);
                         selectedElement = var11;
                         lastClicked = java.lang.System.currentTimeMillis();
                     }
@@ -358,10 +358,10 @@ public abstract class GuiSlot
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         float var6 = 32.0F;
         var5.startDrawingQuads();
-        var5.setColorRGBA_I(4210752, var4);
+        var5.setColorRGBA_I(0x404040, var4);
         var5.addVertexWithUV(0.0D, var2, 0.0D, 0.0D, (double)(var2 / var6));
         var5.addVertexWithUV(width, var2, 0.0D, (double)(width / var6), (double)(var2 / var6));
-        var5.setColorRGBA_I(4210752, var3);
+        var5.setColorRGBA_I(0x404040, var3);
         var5.addVertexWithUV(width, var1, 0.0D, (double)(width / var6), (double)(var1 / var6));
         var5.addVertexWithUV(0.0D, var1, 0.0D, 0.0D, (double)(var1 / var6));
         var5.draw();

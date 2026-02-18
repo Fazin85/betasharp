@@ -4,12 +4,12 @@ public class GuiStoppingServer : GuiScreen
 {
     private int tickCounter = 0;
 
-    public override void initGui()
+    public override void InitGui()
     {
-        controlList.clear();
+        _controlList.Clear();
     }
 
-    public override void updateScreen()
+    public override void UpdateScreen()
     {
         tickCounter++;
         if (mc.internalServer != null)
@@ -31,12 +31,12 @@ public class GuiStoppingServer : GuiScreen
         }
     }
 
-    public override void render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        drawDefaultBackground();
+        DrawDefaultBackground();
         TranslationStorage translations = TranslationStorage.getInstance();
-        drawCenteredString(fontRenderer, "Saving level..", width / 2, height / 2 - 50, 0x00FFFFFF);
-        drawCenteredString(fontRenderer, "Stopping internal server", width / 2, height / 2 - 10, 0x00FFFFFF);
-        base.render(mouseX, mouseY, partialTicks);
+        DrawCenteredString(FontRenderer, "Saving level..", Width / 2, Height / 2 - 50, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, "Stopping internal server", Width / 2, Height / 2 - 10, 0x00FFFFFF);
+        base.Render(mouseX, mouseY, partialTicks);
     }
 }

@@ -5,73 +5,76 @@ namespace BetaSharp.Client.Guis;
 public class GuiVideoSettings : GuiScreen
 {
 
-    private readonly GuiScreen field_22110_h;
-    protected string field_22107_a = "Video Settings";
-    private readonly GameOptions guiGameSettings;
-    private static readonly EnumOptions[] field_22108_k = new EnumOptions[] { EnumOptions.RENDER_DISTANCE, EnumOptions.FOV, EnumOptions.FRAMERATE_LIMIT, EnumOptions.VIEW_BOBBING, EnumOptions.GUI_SCALE, EnumOptions.ANISOTROPIC, EnumOptions.MIPMAPS, EnumOptions.MSAA, EnumOptions.ENVIRONMENT_ANIMATION, EnumOptions.DEBUG_MODE };
+    private readonly GuiScreen _parentScreen;
+    protected string _screenTitle = "Video Settings";
+    private readonly GameOptions _gameOptions;
+    private static readonly EnumOptions[] _videoOptions = { EnumOptions.RENDER_DISTANCE, EnumOptions.FOV, EnumOptions.FRAMERATE_LIMIT, EnumOptions.VIEW_BOBBING, EnumOptions.GUI_SCALE, EnumOptions.ANISOTROPIC, EnumOptions.MIPMAPS, EnumOptions.MSAA, EnumOptions.ENVIRONMENT_ANIMATION, EnumOptions.DEBUG_MODE };
 
-    public GuiVideoSettings(GuiScreen var1, GameOptions var2)
+    public GuiVideoSettings(GuiScreen parent, GameOptions options)
     {
-        field_22110_h = var1;
-        guiGameSettings = var2;
+        _parentScreen = parent;
+        _gameOptions = options;
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
-        TranslationStorage var1 = TranslationStorage.getInstance();
-        field_22107_a = var1.translateKey("options.videoTitle");
-        int var2 = 0;
-        EnumOptions[] var3 = field_22108_k;
-        int var4 = var3.Length;
-
-        for (int var5 = 0; var5 < var4; ++var5)
+        TranslationStorage translations = TranslationStorage.getInstance();
+        _screenTitle = translations.translateKey("options.videoTitle");
+        int optionIndex = 0;
+        
+        foreach (EnumOptions option in _videoOptions)
         {
-            EnumOptions var6 = var3[var5];
-            if (!var6.getEnumFloat())
+            int x = Width / 2 - 155 + (optionIndex % 2) * 160;
+            int y = Height / 6 + 24 * (optionIndex / 2);
+            int id = option.returnEnumOrdinal();
+
+            if (!option.getEnumFloat())
             {
-                controlList.add(new GuiSmallButton(var6.returnEnumOrdinal(), width / 2 - 155 + var2 % 2 * 160, height / 6 + 24 * (var2 >> 1), var6, guiGameSettings.getKeyBinding(var6)));
+                // Toggle-style button (e.g., Fancy/Fast or On/Off)
+                _controlList.Add(new GuiSmallButton(id, x, y, option, _gameOptions.getKeyBinding(option)));
             }
             else
             {
-                controlList.add(new GuiSlider(var6.returnEnumOrdinal(), width / 2 - 155 + var2 % 2 * 160, height / 6 + 24 * (var2 >> 1), var6, guiGameSettings.getKeyBinding(var6), guiGameSettings.getOptionFloatValue(var6)));
+                // Slider-style button (e.g., FOV or Render Distance)
+                _controlList.Add(new GuiSlider(id, x, y, option, _gameOptions.getKeyBinding(option), _gameOptions.getOptionFloatValue(option)));
             }
 
-            ++var2;
+            optionIndex++;
         }
 
-        controlList.add(new GuiButton(200, width / 2 - 100, height / 6 + 168, var1.translateKey("gui.done")));
+        _controlList.Add(new GuiButton(200, Width / 2 - 100, Height / 6 + 168, translations.translateKey("gui.done")));
     }
 
-    protected override void actionPerformed(GuiButton var1)
+    protected override void ActionPerformed(GuiButton btn)
     {
-        if (var1.enabled)
+        if (btn.Enabled)
         {
-            if (var1.id < 100 && var1 is GuiSmallButton)
+            if (btn.Id < 100 && btn is GuiSmallButton)
             {
-                guiGameSettings.setOptionValue(((GuiSmallButton)var1).returnEnumOptions(), 1);
-                var1.displayString = guiGameSettings.getKeyBinding(EnumOptions.getEnumOptions(var1.id));
+                _gameOptions.setOptionValue(((GuiSmallButton)btn).returnEnumOptions(), 1);
+                btn.DisplayString = _gameOptions.getKeyBinding(EnumOptions.getEnumOptions(btn.Id));
             }
 
-            if (var1.id == 200)
+            if (btn.Id == 200)
             {
                 mc.options.saveOptions();
-                mc.displayGuiScreen(field_22110_h);
+                mc.displayGuiScreen(_parentScreen);
             }
 
-            if (var1.id == (int)EnumOptions.GUI_SCALE.ordinal())
+            if (btn.Id == (int)EnumOptions.GUI_SCALE.ordinal())
             {
-                ScaledResolution var2 = new(mc.options, mc.displayWidth, mc.displayHeight);
-                int var3 = var2.ScaledWidth;
-                int var4 = var2.ScaledHeight;
-                setWorldAndResolution(mc, var3, var4);
+                ScaledResolution scaled = new(mc.options, mc.displayWidth, mc.displayHeight);
+                int scaledWidth = scaled.ScaledWidth;
+                int scaledHeight = scaled.ScaledHeight;
+                SetWorldAndResolution(mc, scaledWidth, scaledHeight);
             }
         }
     }
 
-    public override void render(int var1, int var2, float var3)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        drawDefaultBackground();
-        drawCenteredString(fontRenderer, field_22107_a, width / 2, 20, 0x00FFFFFF);
-        base.render(var1, var2, var3);
+        DrawDefaultBackground();
+        DrawCenteredString(FontRenderer, _screenTitle, Width / 2, 20, 0x00FFFFFF);
+        base.Render(mouseX, mouseY, partialTicks);
     }
 }

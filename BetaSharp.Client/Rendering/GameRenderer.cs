@@ -448,10 +448,10 @@ public class GameRenderer
             if (client.currentScreen != null)
             {
                 GLManager.GL.Clear(ClearBufferMask.DepthBufferBit);
-                client.currentScreen.render(var16, var17, tickDelta);
-                if (client.currentScreen != null && client.currentScreen.particlesGui != null)
+                client.currentScreen.Render(var16, var17, tickDelta);
+                if (client.currentScreen != null && client.currentScreen.ParticlesGui != null)
                 {
-                    client.currentScreen.particlesGui.render(tickDelta);
+                    client.currentScreen.ParticlesGui.render(tickDelta);
                 }
             }
 

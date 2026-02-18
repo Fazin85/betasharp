@@ -1,3 +1,4 @@
+using System;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Items;
 using BetaSharp.Stats;
@@ -7,61 +8,63 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiAchievement : Gui
 {
-    private const long ACHIEVEMENT_DISPLAY_DURATION = 3000L;
-    private const string LICENSE_WARNING_TEXT = "Minecraft Beta 1.7.3   Unlicensed Copy :(";
-    private const string ALT_LOCATION_WARNING_TEXT = "(Or logged in from another location)";
-    private const string PURCHASE_PROMPT_TEXT = "Purchase at minecraft.net";
+    private static readonly long AchievementDisplayDuration = 3000L;
+    private static readonly string LicenseWarningText = "Minecraft Beta 1.7.3   Unlicensed Copy :(";
+    private static readonly string AltLocationWarningText = "(Or logged in from another location)";
+    private static readonly string PurchasePromptText = "Purchase at minecraft.net";
 
-    private readonly Minecraft theGame;
-    private int achievementWindowWidth;
-    private int achievementWindowHeight;
-    private string achievementTitle;
-    private string? achievementDescription;
-    private Achievement theAchievement;
-    private long achievementDisplayStartTime;
-    private readonly ItemRenderer itemRender;
-    private bool isAchievementInformation;
+    private readonly Minecraft _theGame;
+    private int _achievementWindowWidth;
+    private int _achievementWindowHeight;
+    private string _achievementTitle;
+    private string? _achievementDescription;
+    private Achievement _theAchievement;
+    private long _achievementDisplayStartTime;
+    private readonly ItemRenderer _itemRender;
+    private bool _isAchievementInformation;
 
     public GuiAchievement(Minecraft mc)
     {
-        theGame = mc;
-        itemRender = new ItemRenderer();
+        _theGame = mc;
+        _itemRender = new ItemRenderer();
     }
 
     public void queueTakenAchievement(Achievement achievement)
     {
-        achievementTitle = StatCollector.translateToLocal("achievement.get");
-        achievementDescription = achievement.statName;
-        achievementDisplayStartTime = java.lang.System.currentTimeMillis();
-        theAchievement = achievement;
-        isAchievementInformation = false;
+        _achievementTitle = StatCollector.translateToLocal("achievement.get");
+        _achievementDescription = achievement.statName;
+        _achievementDisplayStartTime = GetCurrentTimeMillis();
+        _theAchievement = achievement;
+        _isAchievementInformation = false;
     }
 
     public void queueAchievementInformation(Achievement achievement)
     {
-        achievementTitle = achievement.statName;
-        achievementDescription = achievement.getTranslatedDescription();
-        achievementDisplayStartTime = java.lang.System.currentTimeMillis() - 2500L;
-        theAchievement = achievement;
-        isAchievementInformation = true;
+        _achievementTitle = achievement.statName;
+        _achievementDescription = achievement.getTranslatedDescription();
+        _achievementDisplayStartTime = GetCurrentTimeMillis() - 2500L;
+        _theAchievement = achievement;
+        _isAchievementInformation = true;
     }
 
     private void updateAchievementWindowScale()
     {
-        GLManager.GL.Viewport(0, 0, (uint)theGame.displayWidth, (uint)theGame.displayHeight);
+        GLManager.GL.Viewport(0, 0, (uint)_theGame.displayWidth, (uint)_theGame.displayHeight);
         GLManager.GL.MatrixMode(GLEnum.Projection);
         GLManager.GL.LoadIdentity();
         GLManager.GL.MatrixMode(GLEnum.Modelview);
         GLManager.GL.LoadIdentity();
-        achievementWindowWidth = theGame.displayWidth;
-        achievementWindowHeight = theGame.displayHeight;
-        ScaledResolution scaledResolution = new(theGame.options, theGame.displayWidth, theGame.displayHeight);
-        achievementWindowWidth = scaledResolution.ScaledWidth;
-        achievementWindowHeight = scaledResolution.ScaledHeight;
+
+        _achievementWindowWidth = _theGame.displayWidth;
+        _achievementWindowHeight = _theGame.displayHeight;
+        ScaledResolution scaledResolution = new(_theGame.options, _theGame.displayWidth, _theGame.displayHeight);
+        _achievementWindowWidth = scaledResolution.ScaledWidth;
+        _achievementWindowHeight = scaledResolution.ScaledHeight;
+
         GLManager.GL.Clear(ClearBufferMask.DepthBufferBit);
         GLManager.GL.MatrixMode(GLEnum.Projection);
         GLManager.GL.LoadIdentity();
-        GLManager.GL.Ortho(0.0D, achievementWindowWidth, achievementWindowHeight, 0.0D, 1000.0D, 3000.0D);
+        GLManager.GL.Ortho(0.0D, _achievementWindowWidth, _achievementWindowHeight, 0.0D, 1000.0D, 3000.0D);
         GLManager.GL.MatrixMode(GLEnum.Modelview);
         GLManager.GL.LoadIdentity();
         GLManager.GL.Translate(0.0F, 0.0F, -2000.0F);
@@ -74,7 +77,7 @@ public class GuiAchievement : Gui
             displayLicenseWarning();
         }
 
-        if (theAchievement != null && achievementDisplayStartTime != 0L)
+        if (_theAchievement != null && _achievementDisplayStartTime != 0L)
         {
             displayAchievementNotification();
         }
@@ -86,23 +89,26 @@ public class GuiAchievement : Gui
         GLManager.GL.DepthMask(false);
         Lighting.turnOff();
         updateAchievementWindowScale();
-        theGame.fontRenderer.drawStringWithShadow(LICENSE_WARNING_TEXT, 2, 2, 0x00FFFFFF);
-        theGame.fontRenderer.drawStringWithShadow(ALT_LOCATION_WARNING_TEXT, 2, 11, 0x00FFFFFF);
-        theGame.fontRenderer.drawStringWithShadow(PURCHASE_PROMPT_TEXT, 2, 20, 0x00FFFFFF);
+
+        _theGame.fontRenderer.drawStringWithShadow(LicenseWarningText, 2, 2, 0x00FFFFFF);
+        _theGame.fontRenderer.drawStringWithShadow(AltLocationWarningText, 2, 11, 0x00FFFFFF);
+        _theGame.fontRenderer.drawStringWithShadow(PurchasePromptText, 2, 20, 0x00FFFFFF);
+
         GLManager.GL.DepthMask(true);
         GLManager.GL.Enable(GLEnum.DepthTest);
     }
 
     private void displayAchievementNotification()
     {
-        double elapsedTime = (java.lang.System.currentTimeMillis() - achievementDisplayStartTime) / ACHIEVEMENT_DISPLAY_DURATION;
-        if (isAchievementInformation || isAchievementInformation || elapsedTime >= 0.0D && elapsedTime <= 1.0D)
+        double elapsedTime = (java.lang.System.currentTimeMillis() - _achievementDisplayStartTime) / AchievementDisplayDuration;
+
+        if (_isAchievementInformation || _isAchievementInformation || elapsedTime >= 0.0D && elapsedTime <= 1.0D)
         {
             renderAchievementNotification(elapsedTime);
         }
         else
         {
-            achievementDisplayStartTime = 0L;
+            _achievementDisplayStartTime = 0L;
         }
     }
 
@@ -111,27 +117,33 @@ public class GuiAchievement : Gui
         updateAchievementWindowScale();
         GLManager.GL.Disable(GLEnum.DepthTest);
         GLManager.GL.DepthMask(false);
+
         double animationProgress = calculateAnimationProgress(elapsedTime);
-        int achievementX = achievementWindowWidth - 160;
+        int achievementX = _achievementWindowWidth - 160;
         int achievementY = 0 - (int)(animationProgress * 36.0D);
-        int achievementTextureId = theGame.textureManager.getTextureId("/achievement/bg.png");
+        int achievementTextureId = _theGame.textureManager.getTextureId("/achievement/bg.png");
 
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         GLManager.GL.Enable(GLEnum.Lighting);
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)achievementTextureId);
         GLManager.GL.Disable(GLEnum.Lighting);
-        drawTexturedModalRect(achievementX, achievementY, 96, 202, 160, 32);
+
+        DrawTexturedModalRect(achievementX, achievementY, 96, 202, 160, 32);
         drawAchievementText(achievementX, achievementY);
 
         GLManager.GL.PushMatrix();
         GLManager.GL.Rotate(180.0F, 1.0F, 0.0F, 0.0F);
+
         Lighting.turnOn();
+
         GLManager.GL.PopMatrix();
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.Enable(GLEnum.RescaleNormal);
         GLManager.GL.Enable(GLEnum.ColorMaterial);
         GLManager.GL.Enable(GLEnum.Lighting);
-        itemRender.renderItemIntoGUI(theGame.fontRenderer, theGame.textureManager, theAchievement.icon, achievementX + 8, achievementY + 8);
+
+        _itemRender.renderItemIntoGUI(_theGame.fontRenderer, _theGame.textureManager, _theAchievement.icon, achievementX + 8, achievementY + 8);
+
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.DepthMask(true);
         GLManager.GL.Enable(GLEnum.DepthTest);
@@ -139,34 +151,36 @@ public class GuiAchievement : Gui
 
     private double calculateAnimationProgress(double elapsedTime)
     {
-        double animationProgress = elapsedTime * 2.0D;
-        if (animationProgress > 1.0D)
+        double progress = elapsedTime * 2.0D;
+        if (progress > 1.0D)
         {
-            animationProgress = 2.0D - animationProgress;
+            progress = 2.0D - progress;
         }
 
-        animationProgress *= 4.0D;
-        animationProgress = 1.0D - animationProgress;
-        if (animationProgress < 0.0D)
+        progress *= 4.0D;
+        progress = 1.0D - progress;
+        if (progress < 0.0D)
         {
-            animationProgress = 0.0D;
+            progress = 0.0D;
         }
 
-        animationProgress *= animationProgress;
-        animationProgress *= animationProgress;
-        return animationProgress;
+        progress *= progress;
+        progress *= progress;
+        return progress;
     }
 
     private void drawAchievementText(int achievementX, int achievementY)
     {
-        if (isAchievementInformation)
+        if (_isAchievementInformation)
         {
-            theGame.fontRenderer.func_27278_a(achievementDescription ?? "", achievementX + 30, achievementY + 7, 120, 0xFFFFFFFF);
+            _theGame.fontRenderer.func_27278_a(_achievementDescription ?? "", achievementX + 30, achievementY + 7, 120, 0xFFFFFFFF);
         }
         else
         {
-            theGame.fontRenderer.drawString(achievementTitle, achievementX + 30, achievementY + 7, 0xFFFFFF00);
-            theGame.fontRenderer.drawString(achievementDescription ?? "", achievementX + 30, achievementY + 18, 0xFFFFFFFF);
+            _theGame.fontRenderer.drawString(_achievementTitle, achievementX + 30, achievementY + 7, 0xFFFFFF00);
+            _theGame.fontRenderer.drawString(_achievementDescription ?? "", achievementX + 30, achievementY + 18, 0xFFFFFFFF);
         }
     }
+
+    private long GetCurrentTimeMillis() => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 }

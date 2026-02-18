@@ -101,7 +101,7 @@ public class LoadingScreenRenderer : LoadingDisplay
                 GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var8);
                 float var9 = 32.0F;
                 var7.startDrawingQuads();
-                var7.setColorOpaque_I(4210752);
+                var7.setColorOpaque_I(0x404040);
                 var7.addVertexWithUV(0.0D, (double)var6, 0.0D, 0.0D, (double)((float)var6 / var9));
                 var7.addVertexWithUV((double)var5, (double)var6, 0.0D, (double)((float)var5 / var9), (double)((float)var6 / var9));
                 var7.addVertexWithUV((double)var5, 0.0D, 0.0D, (double)((float)var5 / var9), 0.0D);

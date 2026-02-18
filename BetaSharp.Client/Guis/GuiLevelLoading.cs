@@ -11,9 +11,9 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
     private readonly long _seed = seed;
     private bool _serverStarted = false;
 
-    public override void initGui()
+    public override void InitGui()
     {
-        controlList.clear();
+        _controlList.Clear();
         if (!_serverStarted)
         {
             _serverStarted = true;
@@ -22,7 +22,7 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
         }
     }
 
-    public override void updateScreen()
+    public override void UpdateScreen()
     {
         if (mc.internalServer != null)
         {
@@ -52,14 +52,14 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
         }
     }
 
-    public override bool doesGuiPauseGame()
+    public override bool DoesGuiPauseGame()
     {
         return false;
     }
 
-    public override void render(int var1, int var2, float var3)
+    public override void Render(int var1, int var2, float var3)
     {
-        drawDefaultBackground();
+        DrawDefaultBackground();
         TranslationStorage var4 = TranslationStorage.getInstance();
 
         string title = "Loading level";
@@ -72,9 +72,9 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
             progress = mc.internalServer.progress;
         }
 
-        drawCenteredString(fontRenderer, title, width / 2, height / 2 - 50, 0x00FFFFFF);
-        drawCenteredString(fontRenderer, progressMsg + " (" + progress + "%)", width / 2, height / 2 - 10, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, title, Width / 2, Height / 2 - 50, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, progressMsg + " (" + progress + "%)", Width / 2, Height / 2 - 10, 0x00FFFFFF);
 
-        base.render(var1, var2, var3);
+        base.Render(var1, var2, var3);
     }
 }

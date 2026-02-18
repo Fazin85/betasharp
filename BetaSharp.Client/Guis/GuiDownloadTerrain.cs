@@ -6,52 +6,52 @@ namespace BetaSharp.Client.Guis;
 public class GuiDownloadTerrain : GuiScreen
 {
 
-    private readonly ClientNetworkHandler networkHandler;
-    private int tickCounter = 0;
+    private readonly ClientNetworkHandler _networkHandler;
+    private int _tickCounter = 0;
 
     public GuiDownloadTerrain(ClientNetworkHandler networkHandler)
     {
-        this.networkHandler = networkHandler;
+        this._networkHandler = networkHandler;
     }
 
-    protected override void keyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, int eventKey)
     {
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
-        controlList.clear();
+        _controlList.Clear();
     }
 
-    public override void updateScreen()
+    public override void UpdateScreen()
     {
-        ++tickCounter;
-        if (tickCounter % 20 == 0)
+        ++_tickCounter;
+        if (_tickCounter % 20 == 0)
         {
-            networkHandler.addToSendQueue(new KeepAlivePacket());
+            _networkHandler.addToSendQueue(new KeepAlivePacket());
         }
 
-        if (networkHandler != null)
+        if (_networkHandler != null)
         {
-            networkHandler.tick();
+            _networkHandler.tick();
         }
 
     }
 
-    public override bool doesGuiPauseGame()
+    public override bool DoesGuiPauseGame()
     {
         return false;
     }
 
-    protected override void actionPerformed(GuiButton button)
+    protected override void ActionPerformed(GuiButton button)
     {
     }
 
-    public override void render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        drawBackground(0);
+        DrawBackground(0);
         TranslationStorage translations = TranslationStorage.getInstance();
-        drawCenteredString(fontRenderer, translations.translateKey("multiplayer.downloadingTerrain"), width / 2, height / 2 - 50, 0x00FFFFFF);
-        base.render(mouseX, mouseY, partialTicks);
+        DrawCenteredString(FontRenderer, translations.translateKey("multiplayer.downloadingTerrain"), Width / 2, Height / 2 - 50, 0x00FFFFFF);
+        base.Render(mouseX, mouseY, partialTicks);
     }
 }

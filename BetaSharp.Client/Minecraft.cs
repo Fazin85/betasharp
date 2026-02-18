@@ -405,7 +405,7 @@ public partial class Minecraft : java.lang.Object, Runnable
     {
         if (!(currentScreen is GuiUnused))
         {
-            currentScreen?.onGuiClosed();
+            currentScreen?.OnGuiClosed();
 
             if (newScreen is GuiMainMenu)
             {
@@ -431,7 +431,7 @@ public partial class Minecraft : java.lang.Object, Runnable
 
             if (internalServer != null)
             {
-                bool shouldPause = newScreen?.doesGuiPauseGame() ?? false;
+                bool shouldPause = newScreen?.DoesGuiPauseGame() ?? false;
                 internalServer.SetPaused(shouldPause);
             }
 
@@ -441,7 +441,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                 ScaledResolution scaledResolution = new(options, displayWidth, displayHeight);
                 int scaledWidth = scaledResolution.ScaledWidth;
                 int scaledHeight = scaledResolution.ScaledHeight;
-                newScreen.setWorldAndResolution(this, scaledWidth, scaledHeight);
+                newScreen.SetWorldAndResolution(this, scaledWidth, scaledHeight);
                 skipRenderWorld = false;
             }
             else
@@ -672,7 +672,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                     ++frameCounter;
 
                     isGamePaused = (!isMultiplayerWorld() || internalServer != null) && currentScreen != null &&
-                                   currentScreen.doesGuiPauseGame();
+                                   currentScreen.DoesGuiPauseGame();
 
                     for (;
                          java.lang.System.currentTimeMillis() >= lastFpsCheckTime + 1000L;
@@ -1071,7 +1071,7 @@ public partial class Minecraft : java.lang.Object, Runnable
             ScaledResolution scaledResolution = new(options, newWidth, newHeight);
             int scaledWidth = scaledResolution.ScaledWidth;
             int scaledHeight = scaledResolution.ScaledHeight;
-            currentScreen.setWorldAndResolution(this, scaledWidth, scaledHeight);
+            currentScreen.SetWorldAndResolution(this, scaledWidth, scaledHeight);
         }
     }
 
@@ -1158,15 +1158,15 @@ public partial class Minecraft : java.lang.Object, Runnable
 
         if (currentScreen != null)
         {
-            currentScreen.handleInput();
+            currentScreen.HandleInput();
             if (currentScreen != null)
             {
-                currentScreen.particlesGui.updateParticles();
-                currentScreen.updateScreen();
+                currentScreen.ParticlesGui.updateParticles();
+                currentScreen.UpdateScreen();
             }
         }
 
-        if (currentScreen == null || currentScreen.field_948_f)
+        if (currentScreen == null || currentScreen.AllowUserInput)
         {
             processInputEvents();
         }
@@ -1300,7 +1300,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                 }
                 else
                 {
-                    currentScreen?.handleMouseInput();
+                    currentScreen?.HandleMouseInput();
                 }
             }
         }
@@ -1324,7 +1324,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                 {
                     if (currentScreen != null)
                     {
-                        currentScreen.handleKeyboardInput();
+                        currentScreen.HandleKeyboardInput();
                     }
                     else
                     {

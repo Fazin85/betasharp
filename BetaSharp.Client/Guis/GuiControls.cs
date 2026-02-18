@@ -5,83 +5,83 @@ namespace BetaSharp.Client.Guis;
 public class GuiControls : GuiScreen
 {
 
-    private readonly GuiScreen parentScreen;
-    protected string screenTitle = "Controls";
-    private readonly GameOptions options;
-    private int selectedKey = -1;
-    private const int BUTTON_DONE = 200;
+    private readonly GuiScreen _parentScreen;
+    protected string _screenTitle = "Controls";
+    private readonly GameOptions _options;
+    private int _selectedKey = -1;
+    private const int ButtonDone = 200;
 
-    public GuiControls(GuiScreen var1, GameOptions var2)
+    public GuiControls(GuiScreen parentScreen, GameOptions options)
     {
-        parentScreen = var1;
-        options = var2;
+        _parentScreen = parentScreen;
+        _options = options;
     }
 
     private int getLeftColumnX()
     {
-        return width / 2 - 155;
+        return Width / 2 - 155;
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
         TranslationStorage translations = TranslationStorage.getInstance();
         int leftX = getLeftColumnX();
 
-        for (int i = 0; i < options.keyBindings.Length; ++i)
+        for (int i = 0; i < _options.keyBindings.Length; ++i)
         {
-            controlList.add(new GuiSmallButton(i, leftX + i % 2 * 160, height / 6 + 24 * (i >> 1), 70, 20, options.getOptionDisplayString(i)));
+            _controlList.Add(new GuiSmallButton(i, leftX + i % 2 * 160, Height / 6 + 24 * (i >> 1), 70, 20, _options.getOptionDisplayString(i)));
         }
 
-        controlList.add(new GuiButton(BUTTON_DONE, width / 2 - 100, height / 6 + 168, translations.translateKey("gui.done")));
-        screenTitle = translations.translateKey("controls.title");
+        _controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 6 + 168, translations.translateKey("gui.done")));
+        _screenTitle = translations.translateKey("controls.title");
     }
 
-    protected override void actionPerformed(GuiButton button)
+    protected override void ActionPerformed(GuiButton button)
     {
-        for (int i = 0; i < options.keyBindings.Length; ++i)
+        for (int i = 0; i < _options.keyBindings.Length; ++i)
         {
-            ((GuiButton)controlList.get(i)).displayString = options.getOptionDisplayString(i);
+            _controlList[i].DisplayString = _options.getOptionDisplayString(i);
         }
 
-        switch (button.id)
+        switch (button.Id)
         {
-            case BUTTON_DONE:
-                mc.displayGuiScreen(parentScreen);
+            case ButtonDone:
+                mc.displayGuiScreen(_parentScreen);
                 break;
             default:
-                selectedKey = button.id;
-                button.displayString = "> " + options.getOptionDisplayString(button.id) + " <";
+                _selectedKey = button.Id;
+                button.DisplayString = "> " + _options.getOptionDisplayString(button.Id) + " <";
                 break;
         }
 
     }
 
-    protected override void keyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, int eventKey)
     {
-        if (selectedKey >= 0)
+        if (_selectedKey >= 0)
         {
-            options.setKeyBinding(selectedKey, eventKey);
-            ((GuiButton)controlList.get(selectedKey)).displayString = options.getOptionDisplayString(selectedKey);
-            selectedKey = -1;
+            _options.setKeyBinding(_selectedKey, eventKey);
+            _controlList[_selectedKey].DisplayString = _options.getOptionDisplayString(_selectedKey);
+            _selectedKey = -1;
         }
         else
         {
-            base.keyTyped(eventChar, eventKey);
+            base.KeyTyped(eventChar, eventKey);
         }
 
     }
 
-    public override void render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        drawDefaultBackground();
-        drawCenteredString(fontRenderer, screenTitle, width / 2, 20, 0x00FFFFFF);
+        DrawDefaultBackground();
+        DrawCenteredString(FontRenderer, _screenTitle, Width / 2, 20, 0x00FFFFFF);
         int leftX = getLeftColumnX();
 
-        for (int i = 0; i < options.keyBindings.Length; ++i)
+        for (int i = 0; i < _options.keyBindings.Length; ++i)
         {
-            drawString(fontRenderer, options.getKeyBindingDescription(i), leftX + i % 2 * 160 + 70 + 6, height / 6 + 24 * (i >> 1) + 7, 0xFFFFFFFF);
+            DrawString(FontRenderer, _options.getKeyBindingDescription(i), leftX + i % 2 * 160 + 70 + 6, Height / 6 + 24 * (i >> 1) + 7, 0xFFFFFFFF);
         }
 
-        base.render(mouseX, mouseY, partialTicks);
+        base.Render(mouseX, mouseY, partialTicks);
     }
 }

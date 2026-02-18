@@ -16,7 +16,7 @@ public abstract class GuiSlotStats : GuiSlot
     public int field_27270_f;
     readonly GuiStats field_27269_g;
 
-    protected GuiSlotStats(GuiStats var1) : base(GuiStats.func_27143_f(var1), var1.width, var1.height, 32, var1.height - 64, 20)
+    protected GuiSlotStats(GuiStats var1) : base(GuiStats.func_27143_f(var1), var1.Width, var1.Height, 32, var1.Height - 64, 20)
     {
         field_27269_g = var1;
         field_27268_b = -1;
@@ -26,7 +26,7 @@ public abstract class GuiSlotStats : GuiSlot
         func_27259_a(true, 20);
     }
 
-    protected override void elementClicked(int var1, bool var2)
+    protected override void ElementClicked(int var1, bool var2)
     {
     }
 
@@ -37,7 +37,7 @@ public abstract class GuiSlotStats : GuiSlot
 
     protected override void drawBackground()
     {
-        field_27269_g.drawDefaultBackground();
+        field_27269_g.DrawDefaultBackground();
     }
 
     protected override void func_27260_a(int var1, int var2, Tessellator var3)
@@ -121,7 +121,7 @@ public abstract class GuiSlotStats : GuiSlot
 
     }
 
-    public override int getSize()
+    public override int GetSize()
     {
         return field_27273_c.size();
     }
@@ -139,12 +139,12 @@ public abstract class GuiSlotStats : GuiSlot
         if (var1 != null)
         {
             var5 = var1.format(GuiStats.func_27142_c(field_27269_g).writeStat(var1));
-            field_27269_g.drawString(GuiStats.func_27133_h(field_27269_g), var5, var2 - GuiStats.func_27137_i(field_27269_g).getStringWidth(var5), var3 + 5, var4 ? 0x00FFFFFFu : 0x00909090u);
+            field_27269_g.DrawString(GuiStats.func_27133_h(field_27269_g), var5, var2 - GuiStats.func_27137_i(field_27269_g).getStringWidth(var5), var3 + 5, var4 ? 0x00FFFFFFu : 0x00909090u);
         }
         else
         {
             var5 = "-";
-            field_27269_g.drawString(GuiStats.func_27132_j(field_27269_g), var5, var2 - GuiStats.func_27134_k(field_27269_g).getStringWidth(var5), var3 + 5, var4 ? 0x00FFFFFFu : 0x00909090u);
+            field_27269_g.DrawString(GuiStats.func_27132_j(field_27269_g), var5, var2 - GuiStats.func_27134_k(field_27269_g).getStringWidth(var5), var3 + 5, var4 ? 0x00FFFFFFu : 0x00909090u);
         }
 
     }
@@ -154,7 +154,7 @@ public abstract class GuiSlotStats : GuiSlot
         if (var2 >= top && var2 <= bottom)
         {
             int var3 = func_27256_c(var1, var2);
-            int var4 = field_27269_g.width / 2 - 92 - 16;
+            int var4 = field_27269_g.Width / 2 - 92 - 16;
             if (var3 >= 0)
             {
                 if (var1 < var4 + 40 || var1 > var4 + 40 + 20)

@@ -3,22 +3,22 @@ namespace BetaSharp.Client.Guis;
 public class GuiUnused : GuiScreen
 {
 
-    private readonly string message1;
-    private readonly string message2;
+    private readonly string _primaryMessage;
+    private readonly string _secondaryMessage;
 
-    public override void initGui()
+    public override void InitGui()
     {
     }
 
-    public override void render(int var1, int var2, float var3)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        drawGradientRect(0, 0, width, height, 0xFF402020, 0xFF501010);
-        drawCenteredString(fontRenderer, message1, width / 2, 90, 0x00FFFFFF);
-        drawCenteredString(fontRenderer, message2, width / 2, 110, 0x00FFFFFF);
-        base.render(var1, var2, var3);
+        DrawGradientRect(0, 0, Width, Height, 0xFF402020, 0xFF501010);
+        DrawCenteredString(FontRenderer, _primaryMessage, Width / 2, 90, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, _secondaryMessage, Width / 2, 110, 0x00FFFFFF);
+        base.Render(mouseX, mouseY, partialTicks);
     }
 
-    protected override void keyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, int eventKey)
     {
     }
 }

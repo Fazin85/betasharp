@@ -5,77 +5,75 @@ using BetaSharp.Client.Rendering.Blocks.Entities;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Network.Packets.Play;
 using BetaSharp.Util;
-using java.awt;
-using java.awt.datatransfer;
 
 namespace BetaSharp.Client.Guis;
 
 public class GuiEditSign : GuiScreen
 {
 
-    protected string screenTitle = "Edit sign message:";
-    private readonly BlockEntitySign entitySign;
-    private int updateCounter;
-    private int editLine = 0;
-    private static readonly string allowedCharacters = ChatAllowedCharacters.allowedCharacters;
+    protected string _screenTitle = "Edit sign message:";
+    private readonly BlockEntitySign _entitySign;
+    private int _updateCounter;
+    private int _editLine = 0;
+    private static readonly string _allowedCharacters = ChatAllowedCharacters.allowedCharacters;
     
     // Selection tracking per line
-    private int[] cursorPosition = new int[4];
-    private int[] selectionStart = new int[4];
-    private int[] selectionEnd = new int[4];
+    private int[] _cursorPosition = new int[4];
+    private int[] _selectionStart = new int[4];
+    private int[] _selectionEnd = new int[4];
 
     public GuiEditSign(BlockEntitySign sign)
     {
-        entitySign = sign;
+        _entitySign = sign;
     }
 
-    private const int BUTTON_DONE = 0;
+    private const int ButtonDone = 0;
 
-    public override void initGui()
+    public override void InitGui()
     {
-        controlList.clear();
+        _controlList.Clear();
         Keyboard.enableRepeatEvents(true);
-        controlList.add(new GuiButton(BUTTON_DONE, width / 2 - 100, height / 4 + 120, "Done"));
+        _controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 4 + 120, "Done"));
         
         // Initialize cursor and selection arrays
         for (int i = 0; i < 4; i++)
         {
-            cursorPosition[i] = 0;
-            selectionStart[i] = -1;
-            selectionEnd[i] = -1;
+            _cursorPosition[i] = 0;
+            _selectionStart[i] = -1;
+            _selectionEnd[i] = -1;
         }
     }
 
-    public override void onGuiClosed()
+    public override void OnGuiClosed()
     {
         Keyboard.enableRepeatEvents(false);
         if (mc?.world?.isRemote ?? false)
         {
-            mc.getSendQueue().addToSendQueue(new UpdateSignPacket(entitySign.x, entitySign.y, entitySign.z, entitySign.Texts));
+            mc.getSendQueue().addToSendQueue(new UpdateSignPacket(_entitySign.x, _entitySign.y, _entitySign.z, _entitySign.Texts));
         }
 
     }
 
-    public override void updateScreen()
+    public override void UpdateScreen()
     {
-        ++updateCounter;
+        ++_updateCounter;
     }
 
-    protected override void actionPerformed(GuiButton button)
+    protected override void ActionPerformed(GuiButton button)
     {
-        if (button.enabled)
+        if (button.Enabled)
         {
-            switch (button.id)
+            switch (button.Id)
             {
-                case BUTTON_DONE:
-                    entitySign.markDirty();
+                case ButtonDone:
+                    _entitySign.markDirty();
                     mc?.displayGuiScreen(null);
                     break;
             }
         }
     }
 
-    protected override void keyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, int eventKey)
     {
         // Check for Ctrl combos first
         bool ctrlDown = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
@@ -87,9 +85,9 @@ public class GuiEditSign : GuiScreen
             {
                 case Keyboard.KEY_A:
                     // Select all on current line
-                    selectionStart[editLine] = 0;
-                    selectionEnd[editLine] = entitySign.Texts[editLine]?.Length ?? 0;
-                    cursorPosition[editLine] = selectionEnd[editLine];
+                    _selectionStart[_editLine] = 0;
+                    _selectionEnd[_editLine] = _entitySign.Texts[_editLine]?.Length ?? 0;
+                    _cursorPosition[_editLine] = _selectionEnd[_editLine];
                     return;
                 case Keyboard.KEY_C:
                     // Copy current line
@@ -112,20 +110,20 @@ public class GuiEditSign : GuiScreen
             switch (eventKey)
             {
                 case Keyboard.KEY_LEFT:
-                    if (selectionStart[editLine] == -1)
+                    if (_selectionStart[_editLine] == -1)
                     {
-                        selectionStart[editLine] = cursorPosition[editLine];
+                        _selectionStart[_editLine] = _cursorPosition[_editLine];
                     }
-                    if (cursorPosition[editLine] > 0) cursorPosition[editLine]--;
-                    selectionEnd[editLine] = cursorPosition[editLine];
+                    if (_cursorPosition[_editLine] > 0) _cursorPosition[_editLine]--;
+                    _selectionEnd[_editLine] = _cursorPosition[_editLine];
                     return;
                 case Keyboard.KEY_RIGHT:
-                    if (selectionStart[editLine] == -1)
+                    if (_selectionStart[_editLine] == -1)
                     {
-                        selectionStart[editLine] = cursorPosition[editLine];
+                        _selectionStart[_editLine] = _cursorPosition[_editLine];
                     }
-                    if (cursorPosition[editLine] < entitySign.Texts[editLine].Length) cursorPosition[editLine]++;
-                    selectionEnd[editLine] = cursorPosition[editLine];
+                    if (_cursorPosition[_editLine] < _entitySign.Texts[_editLine].Length) _cursorPosition[_editLine]++;
+                    _selectionEnd[_editLine] = _cursorPosition[_editLine];
                     return;
             }
         }
@@ -133,26 +131,26 @@ public class GuiEditSign : GuiScreen
         // Arrow keys for navigation
         if (eventKey == 200)  // Up
         {
-            editLine = editLine - 1 & 3;
+            _editLine = _editLine - 1 & 3;
             return;
         }
 
         if (eventKey == 208)  // Down
         {
-            editLine = editLine + 1 & 3;
+            _editLine = _editLine + 1 & 3;
             return;
         }
 
         if (eventKey == 203)  // Left
         {
-            if (cursorPosition[editLine] > 0) cursorPosition[editLine]--;
+            if (_cursorPosition[_editLine] > 0) _cursorPosition[_editLine]--;
             ClearLineSelection();
             return;
         }
 
         if (eventKey == 205)  // Right
         {
-            if (cursorPosition[editLine] < entitySign.Texts[editLine].Length) cursorPosition[editLine]++;
+            if (_cursorPosition[_editLine] < _entitySign.Texts[_editLine].Length) _cursorPosition[_editLine]++;
             ClearLineSelection();
             return;
         }
@@ -164,10 +162,10 @@ public class GuiEditSign : GuiScreen
             {
                 DeleteLineSelection();
             }
-            else if (entitySign.Texts[editLine].Length > 0 && cursorPosition[editLine] > 0)
+            else if (_entitySign.Texts[_editLine].Length > 0 && _cursorPosition[_editLine] > 0)
             {
-                cursorPosition[editLine]--;
-                entitySign.Texts[editLine] = entitySign.Texts[editLine].Substring(0, cursorPosition[editLine]) + entitySign.Texts[editLine].Substring(cursorPosition[editLine] + 1);
+                _cursorPosition[_editLine]--;
+                _entitySign.Texts[_editLine] = _entitySign.Texts[_editLine].Substring(0, _cursorPosition[_editLine]) + _entitySign.Texts[_editLine].Substring(_cursorPosition[_editLine] + 1);
             }
             ClearLineSelection();
             return;
@@ -180,9 +178,9 @@ public class GuiEditSign : GuiScreen
             {
                 DeleteLineSelection();
             }
-            else if (cursorPosition[editLine] < entitySign.Texts[editLine].Length)
+            else if (_cursorPosition[_editLine] < _entitySign.Texts[_editLine].Length)
             {
-                entitySign.Texts[editLine] = entitySign.Texts[editLine].Substring(0, cursorPosition[editLine]) + entitySign.Texts[editLine].Substring(cursorPosition[editLine] + 1);
+                _entitySign.Texts[_editLine] = _entitySign.Texts[_editLine].Substring(0, _cursorPosition[_editLine]) + _entitySign.Texts[_editLine].Substring(_cursorPosition[_editLine] + 1);
             }
             ClearLineSelection();
             return;
@@ -191,46 +189,46 @@ public class GuiEditSign : GuiScreen
         // Enter key switches to next line
         if (eventKey == 28)
         {
-            editLine = editLine + 1 & 3;
+            _editLine = _editLine + 1 & 3;
             return;
         }
 
         // Regular character input
-        if (allowedCharacters.IndexOf(eventChar) >= 0 && entitySign.Texts[editLine].Length < 15)
+        if (_allowedCharacters.IndexOf(eventChar) >= 0 && _entitySign.Texts[_editLine].Length < 15)
         {
             if (HasLineSelection())
             {
                 DeleteLineSelection();
             }
 
-            entitySign.Texts[editLine] = entitySign.Texts[editLine].Substring(0, cursorPosition[editLine]) + eventChar + entitySign.Texts[editLine].Substring(cursorPosition[editLine]);
-            cursorPosition[editLine]++;
+            _entitySign.Texts[_editLine] = _entitySign.Texts[_editLine].Substring(0, _cursorPosition[_editLine]) + eventChar + _entitySign.Texts[_editLine].Substring(_cursorPosition[_editLine]);
+            _cursorPosition[_editLine]++;
             ClearLineSelection();
         }
     }
 
-    public override void render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        drawDefaultBackground();
-        if (fontRenderer != null)
+        DrawDefaultBackground();
+        if (FontRenderer != null)
         {
-            drawCenteredString(fontRenderer, screenTitle, width / 2, 40, 0x00FFFFFF);
+            DrawCenteredString(FontRenderer, _screenTitle, Width / 2, 40, 0x00FFFFFF);
         }
         GLManager.GL.PushMatrix();
-        GLManager.GL.Translate(width / 2, 0.0F, 50.0F);
+        GLManager.GL.Translate(Width / 2, 0.0F, 50.0F);
         float scale = 93.75F;
         GLManager.GL.Scale(-scale, -scale, -scale);
         GLManager.GL.Rotate(180.0F, 0.0F, 1.0F, 0.0F);
-        Block signBlock = entitySign.getBlock();
+        Block signBlock = _entitySign.getBlock();
         if (signBlock == Block.Sign)
         {
-            float rotation = entitySign.getPushedBlockData() * 360 / 16.0F;
+            float rotation = _entitySign.getPushedBlockData() * 360 / 16.0F;
             GLManager.GL.Rotate(rotation, 0.0F, 1.0F, 0.0F);
             GLManager.GL.Translate(0.0F, -1.0625F, 0.0F);
         }
         else
         {
-            int rotationIndex = entitySign.getPushedBlockData();
+            int rotationIndex = _entitySign.getPushedBlockData();
             float angle = 0.0F;
             if (rotationIndex == 2)
             {
@@ -251,28 +249,28 @@ public class GuiEditSign : GuiScreen
             GLManager.GL.Translate(0.0F, -1.0625F, 0.0F);
         }
 
-        if (updateCounter / 6 % 2 == 0)
+        if (_updateCounter / 6 % 2 == 0)
         {
-            entitySign.CurrentRow = editLine;
+            _entitySign.CurrentRow = _editLine;
         }
 
-        BlockEntityRenderer.Instance.RenderTileEntityAt(entitySign, -0.5D, -0.75D, -0.5D, 0.0F);
-        entitySign.CurrentRow = -1;
+        BlockEntityRenderer.Instance.RenderTileEntityAt(_entitySign, -0.5D, -0.75D, -0.5D, 0.0F);
+        _entitySign.CurrentRow = -1;
         GLManager.GL.PopMatrix();
-        base.render(mouseX, mouseY, partialTicks);
+        base.Render(mouseX, mouseY, partialTicks);
     }
 
     private bool HasLineSelection()
     {
-        return selectionStart[editLine] != -1 && selectionEnd[editLine] != -1 && selectionStart[editLine] != selectionEnd[editLine];
+        return _selectionStart[_editLine] != -1 && _selectionEnd[_editLine] != -1 && _selectionStart[_editLine] != _selectionEnd[_editLine];
     }
 
     private (int start, int end) GetLineSelectionRange()
     {
         if (!HasLineSelection()) return (0, 0);
-        int s = Math.Min(selectionStart[editLine], selectionEnd[editLine]);
-        int e = Math.Max(selectionStart[editLine], selectionEnd[editLine]);
-        string lineText = entitySign.Texts[editLine] ?? "";
+        int s = Math.Min(_selectionStart[_editLine], _selectionEnd[_editLine]);
+        int e = Math.Max(_selectionStart[_editLine], _selectionEnd[_editLine]);
+        string lineText = _entitySign.Texts[_editLine] ?? "";
         s = Math.Max(0, Math.Min(s, lineText.Length));
         e = Math.Max(0, Math.Min(e, lineText.Length));
         return (s, e);
@@ -282,22 +280,22 @@ public class GuiEditSign : GuiScreen
     {
         if (!HasLineSelection()) return "";
         var (s, e) = GetLineSelectionRange();
-        return entitySign.Texts[editLine].Substring(s, e - s);
+        return _entitySign.Texts[_editLine].Substring(s, e - s);
     }
 
     private void DeleteLineSelection()
     {
         if (!HasLineSelection()) return;
         var (s, e) = GetLineSelectionRange();
-        entitySign.Texts[editLine] = entitySign.Texts[editLine].Substring(0, s) + entitySign.Texts[editLine].Substring(e);
-        cursorPosition[editLine] = s;
+        _entitySign.Texts[_editLine] = _entitySign.Texts[_editLine].Substring(0, s) + _entitySign.Texts[_editLine].Substring(e);
+        _cursorPosition[_editLine] = s;
         ClearLineSelection();
     }
 
     private void ClearLineSelection()
     {
-        selectionStart[editLine] = -1;
-        selectionEnd[editLine] = -1;
+        _selectionStart[_editLine] = -1;
+        _selectionEnd[_editLine] = -1;
     }
 
     private void CopyLineToClipboard()
@@ -306,7 +304,7 @@ public class GuiEditSign : GuiScreen
         try
         {
             string sel = GetSelectedLineText();
-            setClipboardString(sel);
+            SetClipboardString(sel);
         }
         catch (Exception)
         {
@@ -324,13 +322,13 @@ public class GuiEditSign : GuiScreen
     {
         try
         {
-            string clip = getClipboardString();
+            string clip = GetClipboardString();
             clip ??= "";
             if (HasLineSelection()) DeleteLineSelection();
-            int maxInsert = Math.Max(0, 15 - entitySign.Texts[editLine].Length);
+            int maxInsert = Math.Max(0, 15 - _entitySign.Texts[_editLine].Length);
             if (clip.Length > maxInsert) clip = clip.Substring(0, maxInsert);
-            entitySign.Texts[editLine] = entitySign.Texts[editLine].Substring(0, cursorPosition[editLine]) + clip + entitySign.Texts[editLine].Substring(cursorPosition[editLine]);
-            cursorPosition[editLine] += clip.Length;
+            _entitySign.Texts[_editLine] = _entitySign.Texts[_editLine].Substring(0, _cursorPosition[_editLine]) + clip + _entitySign.Texts[_editLine].Substring(_cursorPosition[_editLine]);
+            _cursorPosition[_editLine] += clip.Length;
             ClearLineSelection();
         }
         catch (Exception)

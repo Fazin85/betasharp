@@ -37,24 +37,24 @@ public class GuiAchievements : GuiScreen
         field_27115_n = field_27113_p = field_27111_r = BetaSharp.Achievements.OpenInventory.row * 24 - var3 / 2;
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
-        controlList.clear();
-        controlList.add(new GuiSmallButton(1, width / 2 + 24, height / 2 + 74, 80, 20, StatCollector.translateToLocal("gui.done")));
+        _controlList.Clear();
+        _controlList.Add(new GuiSmallButton(1, Width / 2 + 24, Height / 2 + 74, 80, 20, StatCollector.translateToLocal("gui.done")));
     }
 
-    protected override void actionPerformed(GuiButton var1)
+    protected override void ActionPerformed(GuiButton var1)
     {
-        if (var1.id == 1)
+        if (var1.Id == 1)
         {
             mc.displayGuiScreen(null);
             mc.setIngameFocus();
         }
 
-        base.actionPerformed(var1);
+        base.ActionPerformed(var1);
     }
 
-    protected override void keyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, int eventKey)
     {
         if (eventKey == mc.options.keyBindInventory.keyCode)
         {
@@ -63,17 +63,17 @@ public class GuiAchievements : GuiScreen
         }
         else
         {
-            base.keyTyped(eventChar, eventKey);
+            base.KeyTyped(eventChar, eventKey);
         }
 
     }
 
-    public override void render(int var1, int var2, float var3)
+    public override void Render(int var1, int var2, float var3)
     {
         if (Mouse.isButtonDown(0))
         {
-            int var4 = (width - field_27121_a) / 2;
-            int var5 = (height - field_27119_i) / 2;
+            int var4 = (Width - field_27121_a) / 2;
+            int var5 = (Height - field_27119_i) / 2;
             int var6 = var4 + 8;
             int var7 = var5 + 17;
             if ((field_27122_w == 0 || field_27122_w == 1) && var1 >= var6 && var1 < var6 + 224 && var2 >= var7 && var2 < var7 + 155)
@@ -119,7 +119,7 @@ public class GuiAchievements : GuiScreen
             field_27122_w = 0;
         }
 
-        drawDefaultBackground();
+        DrawDefaultBackground();
         func_27109_b(var1, var2, var3);
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.Disable(GLEnum.DepthTest);
@@ -128,7 +128,7 @@ public class GuiAchievements : GuiScreen
         GLManager.GL.Enable(GLEnum.DepthTest);
     }
 
-    public override void updateScreen()
+    public override void UpdateScreen()
     {
         field_27116_m = field_27114_o;
         field_27115_n = field_27113_p;
@@ -149,9 +149,9 @@ public class GuiAchievements : GuiScreen
 
     protected void func_27110_k()
     {
-        int var1 = (width - field_27121_a) / 2;
-        int var2 = (height - field_27119_i) / 2;
-        fontRenderer.drawString("Achievements", var1 + 15, var2 + 5, 4210752);
+        int var1 = (Width - field_27121_a) / 2;
+        int var2 = (Height - field_27119_i) / 2;
+        FontRenderer.drawString("Achievements", var1 + 15, var2 + 5, 0x404040);
     }
 
     protected void func_27109_b(int var1, int var2, float var3)
@@ -180,11 +180,11 @@ public class GuiAchievements : GuiScreen
 
         int var6 = mc.textureManager.getTextureId("/terrain.png");
         int var7 = mc.textureManager.getTextureId("/achievement/bg.png");
-        int var8 = (width - field_27121_a) / 2;
-        int var9 = (height - field_27119_i) / 2;
+        int var8 = (Width - field_27121_a) / 2;
+        int var9 = (Height - field_27119_i) / 2;
         int var10 = var8 + 16;
         int var11 = var9 + 17;
-        zLevel = 0.0F;
+        _zLevel = 0.0F;
         GLManager.GL.DepthFunc(GLEnum.Gequal);
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(0.0F, 0.0F, -200.0F);
@@ -245,7 +245,7 @@ public class GuiAchievements : GuiScreen
                     var26 = Block.Bedrock.textureId;
                 }
 
-                drawTexturedModalRect(var10 + var24 * 16 - var14, var11 + var22 * 16 - var15, var26 % 16 << 4, var26 >> 4 << 4, 16, 16);
+                DrawTexturedModalRect(var10 + var24 * 16 - var14, var11 + var22 * 16 - var15, var26 % 16 << 4, var26 >> 4 << 4, 16, 16);
             }
         }
 
@@ -283,8 +283,8 @@ public class GuiAchievements : GuiScreen
                     color = 0xFF000000U;
                 }
 
-                func_27100_a(var14, var16, var15, color);
-                func_27099_b(var16, var15, var17, color);
+                DrawHorizontalLine(var14, var16, var15, color);
+                DrawVerticalLine(var16, var15, var17, color);
             }
         }
 
@@ -328,11 +328,11 @@ public class GuiAchievements : GuiScreen
                 var34 = var11 + var17;
                 if (var30.isChallenge())
                 {
-                    drawTexturedModalRect(var33 - 2, var34 - 2, 26, 202, 26, 26);
+                    DrawTexturedModalRect(var33 - 2, var34 - 2, 26, 202, 26, 26);
                 }
                 else
                 {
-                    drawTexturedModalRect(var33 - 2, var34 - 2, 0, 202, 26, 26);
+                    DrawTexturedModalRect(var33 - 2, var34 - 2, 0, 202, 26, 26);
                 }
 
                 if (!field_27120_x.func_27181_b(var30))
@@ -363,13 +363,13 @@ public class GuiAchievements : GuiScreen
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.bindTexture(var7);
-        drawTexturedModalRect(var8, var9, 0, 0, field_27121_a, field_27119_i);
+        DrawTexturedModalRect(var8, var9, 0, 0, field_27121_a, field_27119_i);
         GLManager.GL.PopMatrix();
-        zLevel = 0.0F;
+        _zLevel = 0.0F;
         GLManager.GL.DepthFunc(GLEnum.Lequal);
         GLManager.GL.Disable(GLEnum.DepthTest);
         GLManager.GL.Enable(GLEnum.Texture2D);
-        base.render(var1, var2, var3);
+        base.Render(var1, var2, var3);
         if (var27 != null)
         {
             string? var32 = var27.getTranslatedDescription();
@@ -378,30 +378,30 @@ public class GuiAchievements : GuiScreen
             var33 = var2 - 4;
             if (field_27120_x.func_27181_b(var27))
             {
-                var34 = java.lang.Math.max(fontRenderer.getStringWidth(var31), 120);
-                int var37 = fontRenderer.func_27277_a(var32 ?? "", var34);
+                var34 = java.lang.Math.max(FontRenderer.getStringWidth(var31), 120);
+                int var37 = FontRenderer.func_27277_a(var32 ?? "", var34);
                 if (field_27120_x.hasAchievementUnlocked(var27))
                 {
                     var37 += 12;
                 }
 
-                drawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var37 + 3 + 12, 0xC0000000U, 0xC0000000U);
-                fontRenderer.func_27278_a(var32, var17, var33 + 12, var34, 0xFFA0A0A0);
+                DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var37 + 3 + 12, 0xC0000000U, 0xC0000000U);
+                FontRenderer.func_27278_a(var32, var17, var33 + 12, var34, 0xFFA0A0A0);
                 if (field_27120_x.hasAchievementUnlocked(var27))
                 {
-                    fontRenderer.drawStringWithShadow(StatCollector.translateToLocal("achievement.taken"), var17, var33 + var37 + 4, 0xFF9090FF);
+                    FontRenderer.drawStringWithShadow(StatCollector.translateToLocal("achievement.taken"), var17, var33 + var37 + 4, 0xFF9090FF);
                 }
             }
             else
             {
-                var34 = java.lang.Math.max(fontRenderer.getStringWidth(var31), 120);
+                var34 = java.lang.Math.max(FontRenderer.getStringWidth(var31), 120);
                 string var39 = StatCollector.translateToLocalFormatted("achievement.requires", new object[] { var27.parent.statName });
-                var38 = fontRenderer.func_27277_a(var39, var34);
-                drawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var38 + 12 + 3, 0xC0000000, 0xC0000000);
-                fontRenderer.func_27278_a(var39, var17, var33 + 12, var34, 0xFF705050);
+                var38 = FontRenderer.func_27277_a(var39, var34);
+                DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var38 + 12 + 3, 0xC0000000, 0xC0000000);
+                FontRenderer.func_27278_a(var39, var17, var33 + 12, var34, 0xFF705050);
             }
 
-            fontRenderer.drawStringWithShadow(var31, var17, var33, field_27120_x.func_27181_b(var27) ? var27.isChallenge() ? 0xFFFFFF80 : 0xFFFFFFFF : var27.isChallenge() ? 0xFF808040 : 0xFF808080);
+            FontRenderer.drawStringWithShadow(var31, var17, var33, field_27120_x.func_27181_b(var27) ? var27.isChallenge() ? 0xFFFFFF80 : 0xFFFFFFFF : var27.isChallenge() ? 0xFF808040 : 0xFF808080);
         }
 
         GLManager.GL.Enable(GLEnum.DepthTest);
@@ -409,7 +409,7 @@ public class GuiAchievements : GuiScreen
         Lighting.turnOff();
     }
 
-    public override bool doesGuiPauseGame()
+    public override bool DoesGuiPauseGame()
     {
         return true;
     }
