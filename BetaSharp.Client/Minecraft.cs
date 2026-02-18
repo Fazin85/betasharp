@@ -12,7 +12,7 @@ using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
-using BetaSharp.Client.Rendering.Entitys;
+using BetaSharp.Client.Rendering.Entities;
 using BetaSharp.Client.Rendering.Items;
 using BetaSharp.Client.Resource;
 using BetaSharp.Client.Resource.Pack;
