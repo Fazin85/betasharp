@@ -20,14 +20,14 @@ public class SoundManager : java.lang.Object
     private int soundSourceSuffix = 0;
     private GameOptions options;
     private static bool started = false;
-    private readonly java.util.Random rand = new();
+    private readonly JavaRandom rand = new();
     private int ticksBeforeMusic = 0;
     private Music currentMusic = null;
     private Music currentStreaming = null;
 
     public SoundManager()
     {
-        ticksBeforeMusic = rand.nextInt(12000);
+        ticksBeforeMusic = rand.NextInt(12000);
     }
 
     public void loadSoundSettings(GameOptions var1)
@@ -194,7 +194,7 @@ public class SoundManager : java.lang.Object
             return null;
         }
 
-        int index = rand.nextInt(value.Count);
+        int index = rand.NextInt(value.Count);
         return value[index];
     }
 
@@ -241,7 +241,7 @@ public class SoundManager : java.lang.Object
                 {
                     try
                     {
-                        ticksBeforeMusic = rand.nextInt(12000) + 12000;
+                        ticksBeforeMusic = rand.NextInt(12000) + 12000;
 
                         currentMusic?.Stop();
                         currentMusic?.Dispose();

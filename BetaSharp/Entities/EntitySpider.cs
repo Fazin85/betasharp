@@ -58,13 +58,13 @@ public class EntitySpider : EntityMonster
     protected override void attackEntity(Entity entity, float distance)
     {
         float brightness = getBrightnessAtEyes(1.0F);
-        if (brightness > 0.5F && random.nextInt(100) == 0)
+        if (brightness > 0.5F && random.NextInt(100) == 0)
         {
             playerToAttack = null;
         }
         else
         {
-            if (distance > 2.0F && distance < 6.0F && random.nextInt(10) == 0)
+            if (distance > 2.0F && distance < 6.0F && random.NextInt(10) == 0)
             {
                 if (onGround)
                 {

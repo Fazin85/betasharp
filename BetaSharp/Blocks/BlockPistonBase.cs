@@ -110,7 +110,7 @@ public class BlockPistonBase : Block
             if (push(world, x, y, z, data2))
             {
                 world.setBlockMeta(x, y, z, data2 | 8);
-                world.playSound((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "tile.piston.out", 0.5F, world.random.nextFloat() * 0.25F + 0.6F);
+                world.playSound((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "tile.piston.out", 0.5F, world.random.NextFloat() * 0.25F + 0.6F);
             }
         }
         else if (data1 == 1)
@@ -175,7 +175,7 @@ public class BlockPistonBase : Block
                 deaf = true;
             }
 
-            world.playSound((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "tile.piston.in", 0.5F, world.random.nextFloat() * 0.15F + 0.6F);
+            world.playSound((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "tile.piston.in", 0.5F, world.random.NextFloat() * 0.15F + 0.6F);
         }
 
         deaf = false;

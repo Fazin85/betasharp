@@ -1,4 +1,5 @@
 using BetaSharp.Blocks;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Gen.Features;
 
@@ -12,7 +13,7 @@ public class SpringFeature : Feature
         _liquidBlockId = liquidBlockId;
     }
 
-    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
+    public override bool Generate(World world, JavaRandom rand, int x, int y, int z)
     {
         if (world.getBlockId(x, y + 1, z) != Block.Stone.id) return false;
 

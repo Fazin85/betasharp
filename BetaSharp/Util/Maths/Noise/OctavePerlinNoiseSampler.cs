@@ -6,7 +6,7 @@ public class OctavePerlinNoiseSampler : NoiseSampler
     private PerlinNoiseSampler[] generatorCollection;
     private int field_1191_b;
 
-    public OctavePerlinNoiseSampler(java.util.Random var1, int var2)
+    public OctavePerlinNoiseSampler(JavaRandom var1, int var2)
     {
         field_1191_b = var2;
         generatorCollection = new PerlinNoiseSampler[var2];

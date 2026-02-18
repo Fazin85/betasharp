@@ -63,9 +63,9 @@ public class EntityArrow : Entity
         x /= (double)length;
         y /= (double)length;
         z /= (double)length;
-        x += random.nextGaussian() * (double)0.0075F * (double)spread;
-        y += random.nextGaussian() * (double)0.0075F * (double)spread;
-        z += random.nextGaussian() * (double)0.0075F * (double)spread;
+        x += random.NextGaussian() * (double)0.0075F * (double)spread;
+        y += random.NextGaussian() * (double)0.0075F * (double)spread;
+        z += random.NextGaussian() * (double)0.0075F * (double)spread;
         x *= (double)speed;
         y *= (double)speed;
         z *= (double)speed;
@@ -138,9 +138,9 @@ public class EntityArrow : Entity
             else
             {
                 inGround = false;
-                velocityX *= (double)(random.nextFloat() * 0.2F);
-                velocityY *= (double)(random.nextFloat() * 0.2F);
-                velocityZ *= (double)(random.nextFloat() * 0.2F);
+                velocityX *= (double)(random.NextFloat() * 0.2F);
+                velocityY *= (double)(random.NextFloat() * 0.2F);
+                velocityZ *= (double)(random.NextFloat() * 0.2F);
                 ticksInGround = 0;
                 ticksInAir = 0;
             }
@@ -193,7 +193,7 @@ public class EntityArrow : Entity
                 {
                     if (hit.entity.damage(owner, 4))
                     {
-                        world.playSound(this, "random.drr", 1.0F, 1.2F / (random.nextFloat() * 0.2F + 0.9F));
+                        world.playSound(this, "random.drr", 1.0F, 1.2F / (random.NextFloat() * 0.2F + 0.9F));
                         markDead();
                     }
                     else
@@ -220,7 +220,7 @@ public class EntityArrow : Entity
                     x -= velocityX / (double)horizontalSpeed * (double)0.05F;
                     y -= velocityY / (double)horizontalSpeed * (double)0.05F;
                     z -= velocityZ / (double)horizontalSpeed * (double)0.05F;
-                    world.playSound(this, "random.drr", 1.0F, 1.2F / (random.nextFloat() * 0.2F + 0.9F));
+                    world.playSound(this, "random.drr", 1.0F, 1.2F / (random.NextFloat() * 0.2F + 0.9F));
                     inGround = true;
                     arrowShake = 7;
                 }
@@ -304,7 +304,7 @@ public class EntityArrow : Entity
         {
             if (inGround && doesArrowBelongToPlayer && arrowShake <= 0 && player.inventory.addItemStackToInventory(new ItemStack(Item.ARROW, 1)))
             {
-                world.playSound(this, "random.pop", 0.2F, ((random.nextFloat() - random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                world.playSound(this, "random.pop", 0.2F, ((random.NextFloat() - random.NextFloat()) * 0.7F + 1.0F) * 2.0F);
                 player.sendPickup(this, 1);
                 markDead();
             }

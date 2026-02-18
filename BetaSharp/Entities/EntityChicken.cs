@@ -21,7 +21,7 @@ public class EntityChicken : EntityAnimal
         texture = "/mob/chicken.png";
         setBoundingBoxSpacing(0.3F, 0.4F);
         health = 4;
-        timeUntilNextEgg = random.nextInt(6000) + 6000;
+        timeUntilNextEgg = random.NextInt(6000) + 6000;
     }
 
     public override void tickMovement()
@@ -58,9 +58,9 @@ public class EntityChicken : EntityAnimal
         field_752_b += field_755_h * 2.0F;
         if (!world.isRemote && --timeUntilNextEgg <= 0)
         {
-            world.playSound(this, "mob.chickenplop", 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
+            world.playSound(this, "mob.chickenplop", 1.0F, (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
             dropItem(Item.Egg.id, 1);
-            timeUntilNextEgg = random.nextInt(6000) + 6000;
+            timeUntilNextEgg = random.NextInt(6000) + 6000;
         }
 
     }

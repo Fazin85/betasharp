@@ -1,5 +1,6 @@
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Items;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Blocks;
 
@@ -10,14 +11,14 @@ public class BlockOre : Block
     {
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
         return id == Block.CoalOre.id ? Item.Coal.id : (id == Block.DiamondOre.id ? Item.Diamond.id : (id == Block.LapisOre.id ? Item.Dye.id : id));
     }
 
-    public override int getDroppedItemCount(java.util.Random random)
+    public override int getDroppedItemCount(JavaRandom random)
     {
-        return id == Block.LapisOre.id ? 4 + random.nextInt(5) : 1;
+        return id == Block.LapisOre.id ? 4 + random.NextInt(5) : 1;
     }
 
     protected override int getDroppedItemMeta(int blockMeta)

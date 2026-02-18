@@ -1,20 +1,21 @@
 using BetaSharp.Blocks;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Gen.Features;
 
 public class CactusPatchFeature : Feature
 {
 
-    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
+    public override bool Generate(World world, JavaRandom rand, int x, int y, int z)
     {
         for (int i = 0; i < 10; ++i)
         {
-            int genX = x + rand.nextInt(8) - rand.nextInt(8);
-            int genY = y + rand.nextInt(4) - rand.nextInt(4);
-            int genZ = z + rand.nextInt(8) - rand.nextInt(8);
+            int genX = x + rand.NextInt(8) - rand.NextInt(8);
+            int genY = y + rand.NextInt(4) - rand.NextInt(4);
+            int genZ = z + rand.NextInt(8) - rand.NextInt(8);
             if (world.isAir(genX, genY, genZ))
             {
-                int height = 1 + rand.nextInt(rand.nextInt(3) + 1);
+                int height = 1 + rand.NextInt(rand.NextInt(3) + 1);
 
                 for (int h = 0; h < height; ++h)
                 {

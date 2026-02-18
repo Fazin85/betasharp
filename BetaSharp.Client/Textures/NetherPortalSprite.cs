@@ -11,7 +11,7 @@ public class NetherPortalSprite : DynamicTexture
 
     public NetherPortalSprite() : base(Block.NetherPortal.textureId)
     {
-        java.util.Random var1 = new(100L);
+        JavaRandom var1 = new(100L);
         for (int i = 0; i < frames.Length; i++)
         {
             frames[i] = new byte[1024];
@@ -59,7 +59,7 @@ public class NetherPortalSprite : DynamicTexture
                         var5 += var12 * 0.5F;
                     }
 
-                    var5 += var1.nextFloat() * 0.1F;
+                    var5 += var1.NextFloat() * 0.1F;
                     var6 = (int)(var5 * 100.0F + 155.0F);
                     int var13 = (int)(var5 * var5 * 200.0F + 55.0F);
                     int var14 = (int)(var5 * var5 * var5 * var5 * 255.0F);

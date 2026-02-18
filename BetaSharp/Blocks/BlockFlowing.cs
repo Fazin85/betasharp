@@ -1,4 +1,5 @@
 using BetaSharp.Blocks.Materials;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
@@ -21,7 +22,7 @@ public class BlockFlowing : BlockFluid
         world.blockUpdateEvent(x, y, z);
     }
 
-    public override void onTick(World world, int x, int y, int z, java.util.Random random)
+    public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
         int currentState = getLiquidState(world, x, y, z);
         sbyte spreadRate = 1;
@@ -71,7 +72,7 @@ public class BlockFlowing : BlockFluid
                 }
             }
 
-            if (material == Material.Lava && currentState < 8 && newLevel < 8 && newLevel > currentState && random.nextInt(4) != 0)
+            if (material == Material.Lava && currentState < 8 && newLevel < 8 && newLevel > currentState && random.NextInt(4) != 0)
             {
                 newLevel = currentState;
                 convertToSource = false;

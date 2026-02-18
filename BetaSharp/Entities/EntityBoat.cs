@@ -280,11 +280,11 @@ public class EntityBoat : Entity
 
                 for (int var12 = 0; (double)var12 < 1.0D + var6 * 60.0D; ++var12)
                 {
-                    double randomOffset = (double)(random.nextFloat() * 2.0F - 1.0F);
-                    double sideOffset = (double)(random.nextInt(2) * 2 - 1) * 0.7D;
+                    double randomOffset = (double)(random.NextFloat() * 2.0F - 1.0F);
+                    double sideOffset = (double)(random.NextInt(2) * 2 - 1) * 0.7D;
                     double particleX;
                     double particleZ;
-                    if (random.nextBoolean())
+                    if (random.NextBoolean())
                     {
                         particleX = x - var8 * randomOffset * 0.8D + var10 * sideOffset;
                         particleZ = z - var10 * randomOffset * 0.8D - var8 * sideOffset;

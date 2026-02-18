@@ -31,7 +31,7 @@ public class ClientNetworkHandler : NetHandler
     private ClientWorld worldClient;
     private bool terrainLoaded = false;
     public PersistentStateManager clientPersistentStateManager = new(null);
-    readonly java.util.Random rand = new();
+    readonly JavaRandom rand = new();
 
     public ClientNetworkHandler(Minecraft mc, string address, int port)
     {
@@ -416,7 +416,7 @@ public class ClientNetworkHandler : NetHandler
 
         if (ent != null)
         {
-            worldClient.playSound(ent, "random.pop", 0.2F, ((rand.nextFloat() - rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+            worldClient.playSound(ent, "random.pop", 0.2F, ((rand.NextFloat() - rand.NextFloat()) * 0.7F + 1.0F) * 2.0F);
             mc.particleManager.addEffect(new EntityPickupFX(mc.world, ent, (Entity)collector, -0.5F));
             worldClient.RemoveEntityFromWorld(packet.entityId);
         }

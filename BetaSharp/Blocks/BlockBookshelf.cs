@@ -1,4 +1,5 @@
 using BetaSharp.Blocks.Materials;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Blocks;
 
@@ -13,7 +14,7 @@ public class BlockBookshelf : Block
         return side <= 1 ? 4 : textureId;
     }
 
-    public override int getDroppedItemCount(java.util.Random random)
+    public override int getDroppedItemCount(JavaRandom random)
     {
         return 0;
     }

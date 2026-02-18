@@ -1,16 +1,17 @@
 using BetaSharp.Blocks;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Gen.Features;
 
 public class SpruceTreeFeature : Feature
 {
 
-    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
+    public override bool Generate(World world, JavaRandom rand, int x, int y, int z)
     {
-        int totalHeight = rand.nextInt(4) + 6;
-        int topTrunkNoLeaves = 1 + rand.nextInt(2);
+        int totalHeight = rand.NextInt(4) + 6;
+        int topTrunkNoLeaves = 1 + rand.NextInt(2);
         int leafStartOffset = totalHeight - topTrunkNoLeaves;
-        int maxLeafRadius = 2 + rand.nextInt(2);
+        int maxLeafRadius = 2 + rand.NextInt(2);
 
         bool canPlace = true;
 
@@ -48,7 +49,7 @@ public class SpruceTreeFeature : Feature
         if (!((groundId == Block.GrassBlock.id || groundId == Block.Dirt.id) && y < 128 - totalHeight - 1)) return false;
 
         world.SetBlockWithoutNotifyingNeighbors(x, y - 1, z, Block.Dirt.id);
-        int currentRadius = rand.nextInt(2);
+        int currentRadius = rand.NextInt(2);
         int radiusTarget = 1;
         byte radiusStep = 0;
 
@@ -87,7 +88,7 @@ public class SpruceTreeFeature : Feature
             }
         }
 
-        int trunkVariability = rand.nextInt(3);
+        int trunkVariability = rand.NextInt(3);
 
         for (int trunkY = 0; trunkY < totalHeight - trunkVariability; ++trunkY)
         {

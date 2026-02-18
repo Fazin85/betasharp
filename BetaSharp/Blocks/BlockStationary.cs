@@ -1,4 +1,5 @@
 using BetaSharp.Blocks.Materials;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
@@ -35,17 +36,17 @@ public class BlockStationary : BlockFluid
         world.pauseTicking = false;
     }
 
-    public override void onTick(World world, int x, int y, int z, java.util.Random random)
+    public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
         if (material == Material.Lava)
         {
-            int attempts = random.nextInt(3);
+            int attempts = random.NextInt(3);
 
             for (int attempt = 0; attempt < attempts; ++attempt)
             {
-                x += random.nextInt(3) - 1;
+                x += random.NextInt(3) - 1;
                 ++y;
-                z += random.nextInt(3) - 1;
+                z += random.NextInt(3) - 1;
                 int neighborBlockId = world.getBlockId(x, y, z);
                 if (neighborBlockId == 0)
                 {

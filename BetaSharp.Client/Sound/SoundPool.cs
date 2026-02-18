@@ -1,3 +1,4 @@
+using BetaSharp.Util.Maths;
 using java.lang;
 using java.net;
 using java.util;
@@ -6,7 +7,7 @@ namespace BetaSharp.Client.Sound;
 
 public class SoundPool : java.lang.Object
 {
-    private readonly java.util.Random rand = new();
+    private readonly JavaRandom rand = new();
     private readonly Map weightedSoundSet = new HashMap();
     private readonly List loadedSounds = new ArrayList();
     public int loadedSoundCount = 0;
@@ -48,11 +49,11 @@ public class SoundPool : java.lang.Object
     public SoundPoolEntry getRandomSoundFromSoundPool(string var1)
     {
         List var2 = (List)weightedSoundSet.get(var1);
-        return var2 == null ? null : (SoundPoolEntry)var2.get(rand.nextInt(var2.size()));
+        return var2 == null ? null : (SoundPoolEntry)var2.get(rand.NextInt(var2.size()));
     }
 
     public SoundPoolEntry getRandomSound()
     {
-        return loadedSounds.size() == 0 ? null : (SoundPoolEntry)loadedSounds.get(rand.nextInt(loadedSounds.size()));
+        return loadedSounds.size() == 0 ? null : (SoundPoolEntry)loadedSounds.get(rand.NextInt(loadedSounds.size()));
     }
 }

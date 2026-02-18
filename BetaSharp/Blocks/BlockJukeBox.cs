@@ -56,9 +56,9 @@ public class BlockJukeBox : BlockWithEntity
                 jukebox.markDirty();
                 world.setBlockMeta(x, y, z, 0);
                 float spreadFactor = 0.7F;
-                double offsetX = (double)(world.random.nextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
-                double offsetY = (double)(world.random.nextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.2D + 0.6D;
-                double offsetZ = (double)(world.random.nextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
+                double offsetX = (double)(world.random.NextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
+                double offsetY = (double)(world.random.NextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.2D + 0.6D;
+                double offsetZ = (double)(world.random.NextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
                 EntityItem entityItem = new EntityItem(world, (double)x + offsetX, (double)y + offsetY, (double)z + offsetZ, new ItemStack(recordId, 1, 0));
                 entityItem.delayBeforeCanPickup = 10;
                 world.SpawnEntity(entityItem);

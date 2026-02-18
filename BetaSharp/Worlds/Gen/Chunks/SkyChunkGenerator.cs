@@ -1,5 +1,6 @@
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Materials;
+using BetaSharp.Util.Maths;
 using BetaSharp.Util.Maths.Noise;
 using BetaSharp.Worlds.Biomes;
 using BetaSharp.Worlds.Chunks;
@@ -11,7 +12,7 @@ namespace BetaSharp.Worlds.Gen.Chunks;
 public class SkyChunkGenerator : ChunkSource
 {
 
-    private java.util.Random field_28087_j;
+    private JavaRandom field_28087_j;
     private OctavePerlinNoiseSampler field_28086_k;
     private OctavePerlinNoiseSampler field_28085_l;
     private OctavePerlinNoiseSampler field_28084_m;
@@ -37,7 +38,7 @@ public class SkyChunkGenerator : ChunkSource
     public SkyChunkGenerator(World var1, long var2)
     {
         field_28081_p = var1;
-        field_28087_j = new java.util.Random(var2);
+        field_28087_j = new JavaRandom(var2);
         field_28086_k = new OctavePerlinNoiseSampler(field_28087_j, 16);
         field_28085_l = new OctavePerlinNoiseSampler(field_28087_j, 16);
         field_28084_m = new OctavePerlinNoiseSampler(field_28087_j, 8);
@@ -128,7 +129,7 @@ public class SkyChunkGenerator : ChunkSource
             for (int var8 = 0; var8 < 16; ++var8)
             {
                 Biome var9 = var4[var7 + var8 * 16];
-                int var10 = (int)(field_28077_t[var7 + var8 * 16] / 3.0D + 3.0D + field_28087_j.nextDouble() * 0.25D);
+                int var10 = (int)(field_28077_t[var7 + var8 * 16] / 3.0D + 3.0D + field_28087_j.NextDouble() * 0.25D);
                 int var11 = -1;
                 byte var12 = var9.TopBlockId;
                 byte var13 = var9.SoilBlockId;
@@ -167,7 +168,7 @@ public class SkyChunkGenerator : ChunkSource
                             var3[var15] = var13;
                             if (var11 == 0 && var13 == Block.Sand.id)
                             {
-                                var11 = field_28087_j.nextInt(4);
+                                var11 = field_28087_j.NextInt(4);
                                 var13 = (byte)Block.Sandstone.id;
                             }
                         }
@@ -185,7 +186,7 @@ public class SkyChunkGenerator : ChunkSource
 
     public Chunk getChunk(int var1, int var2)
     {
-        field_28087_j.setSeed(var1 * 341873128712L + var2 * 132897987541L);
+        field_28087_j.SetSeed(var1 * 341873128712L + var2 * 132897987541L);
         byte[] var3 = new byte[-java.lang.Short.MIN_VALUE];
         Chunk var4 = new Chunk(field_28081_p, var3, var1, var2);
         field_28075_v = field_28081_p.getBiomeSource().GetBiomesInArea(field_28075_v, var1 * 16, var2 * 16, 16, 16);
@@ -323,28 +324,28 @@ public class SkyChunkGenerator : ChunkSource
         int var4 = var2 * 16;
         int var5 = var3 * 16;
         Biome var6 = field_28081_p.getBiomeSource().GetBiome(var4 + 16, var5 + 16);
-        field_28087_j.setSeed(field_28081_p.getSeed());
-        long var7 = field_28087_j.nextLong() / 2L * 2L + 1L;
-        long var9 = field_28087_j.nextLong() / 2L * 2L + 1L;
-        field_28087_j.setSeed(var2 * var7 + var3 * var9 ^ field_28081_p.getSeed());
+        field_28087_j.SetSeed(field_28081_p.getSeed());
+        long var7 = field_28087_j.NextLong() / 2L * 2L + 1L;
+        long var9 = field_28087_j.NextLong() / 2L * 2L + 1L;
+        field_28087_j.SetSeed(var2 * var7 + var3 * var9 ^ field_28081_p.getSeed());
         double var11 = 0.25D;
         int var13;
         int var14;
         int var15;
-        if (field_28087_j.nextInt(4) == 0)
+        if (field_28087_j.NextInt(4) == 0)
         {
-            var13 = var4 + field_28087_j.nextInt(16) + 8;
-            var14 = field_28087_j.nextInt(128);
-            var15 = var5 + field_28087_j.nextInt(16) + 8;
+            var13 = var4 + field_28087_j.NextInt(16) + 8;
+            var14 = field_28087_j.NextInt(128);
+            var15 = var5 + field_28087_j.NextInt(16) + 8;
             new LakeFeature(Block.Water.id).Generate(field_28081_p, field_28087_j, var13, var14, var15);
         }
 
-        if (field_28087_j.nextInt(8) == 0)
+        if (field_28087_j.NextInt(8) == 0)
         {
-            var13 = var4 + field_28087_j.nextInt(16) + 8;
-            var14 = field_28087_j.nextInt(field_28087_j.nextInt(120) + 8);
-            var15 = var5 + field_28087_j.nextInt(16) + 8;
-            if (var14 < 64 || field_28087_j.nextInt(10) == 0)
+            var13 = var4 + field_28087_j.NextInt(16) + 8;
+            var14 = field_28087_j.NextInt(field_28087_j.NextInt(120) + 8);
+            var15 = var5 + field_28087_j.NextInt(16) + 8;
+            if (var14 < 64 || field_28087_j.NextInt(10) == 0)
             {
                 new LakeFeature(Block.Lava.id).Generate(field_28081_p, field_28087_j, var13, var14, var15);
             }
@@ -353,88 +354,88 @@ public class SkyChunkGenerator : ChunkSource
         int var16;
         for (var13 = 0; var13 < 8; ++var13)
         {
-            var14 = var4 + field_28087_j.nextInt(16) + 8;
-            var15 = field_28087_j.nextInt(128);
-            var16 = var5 + field_28087_j.nextInt(16) + 8;
+            var14 = var4 + field_28087_j.NextInt(16) + 8;
+            var15 = field_28087_j.NextInt(128);
+            var16 = var5 + field_28087_j.NextInt(16) + 8;
             new DungeonFeature().Generate(field_28081_p, field_28087_j, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 10; ++var13)
         {
-            var14 = var4 + field_28087_j.nextInt(16);
-            var15 = field_28087_j.nextInt(128);
-            var16 = var5 + field_28087_j.nextInt(16);
+            var14 = var4 + field_28087_j.NextInt(16);
+            var15 = field_28087_j.NextInt(128);
+            var16 = var5 + field_28087_j.NextInt(16);
             new ClayOreFeature(32).Generate(field_28081_p, field_28087_j, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 20; ++var13)
         {
-            var14 = var4 + field_28087_j.nextInt(16);
-            var15 = field_28087_j.nextInt(128);
-            var16 = var5 + field_28087_j.nextInt(16);
+            var14 = var4 + field_28087_j.NextInt(16);
+            var15 = field_28087_j.NextInt(128);
+            var16 = var5 + field_28087_j.NextInt(16);
             new OreFeature(Block.Dirt.id, 32).Generate(field_28081_p, field_28087_j, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 10; ++var13)
         {
-            var14 = var4 + field_28087_j.nextInt(16);
-            var15 = field_28087_j.nextInt(128);
-            var16 = var5 + field_28087_j.nextInt(16);
+            var14 = var4 + field_28087_j.NextInt(16);
+            var15 = field_28087_j.NextInt(128);
+            var16 = var5 + field_28087_j.NextInt(16);
             new OreFeature(Block.Gravel.id, 32).Generate(field_28081_p, field_28087_j, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 20; ++var13)
         {
-            var14 = var4 + field_28087_j.nextInt(16);
-            var15 = field_28087_j.nextInt(128);
-            var16 = var5 + field_28087_j.nextInt(16);
+            var14 = var4 + field_28087_j.NextInt(16);
+            var15 = field_28087_j.NextInt(128);
+            var16 = var5 + field_28087_j.NextInt(16);
             new OreFeature(Block.CoalOre.id, 16).Generate(field_28081_p, field_28087_j, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 20; ++var13)
         {
-            var14 = var4 + field_28087_j.nextInt(16);
-            var15 = field_28087_j.nextInt(64);
-            var16 = var5 + field_28087_j.nextInt(16);
+            var14 = var4 + field_28087_j.NextInt(16);
+            var15 = field_28087_j.NextInt(64);
+            var16 = var5 + field_28087_j.NextInt(16);
             new OreFeature(Block.IronOre.id, 8).Generate(field_28081_p, field_28087_j, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 2; ++var13)
         {
-            var14 = var4 + field_28087_j.nextInt(16);
-            var15 = field_28087_j.nextInt(32);
-            var16 = var5 + field_28087_j.nextInt(16);
+            var14 = var4 + field_28087_j.NextInt(16);
+            var15 = field_28087_j.NextInt(32);
+            var16 = var5 + field_28087_j.NextInt(16);
             new OreFeature(Block.GoldOre.id, 8).Generate(field_28081_p, field_28087_j, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 8; ++var13)
         {
-            var14 = var4 + field_28087_j.nextInt(16);
-            var15 = field_28087_j.nextInt(16);
-            var16 = var5 + field_28087_j.nextInt(16);
+            var14 = var4 + field_28087_j.NextInt(16);
+            var15 = field_28087_j.NextInt(16);
+            var16 = var5 + field_28087_j.NextInt(16);
             new OreFeature(Block.RedstoneOre.id, 7).Generate(field_28081_p, field_28087_j, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 1; ++var13)
         {
-            var14 = var4 + field_28087_j.nextInt(16);
-            var15 = field_28087_j.nextInt(16);
-            var16 = var5 + field_28087_j.nextInt(16);
+            var14 = var4 + field_28087_j.NextInt(16);
+            var15 = field_28087_j.NextInt(16);
+            var16 = var5 + field_28087_j.NextInt(16);
             new OreFeature(Block.DiamondOre.id, 7).Generate(field_28081_p, field_28087_j, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 1; ++var13)
         {
-            var14 = var4 + field_28087_j.nextInt(16);
-            var15 = field_28087_j.nextInt(16) + field_28087_j.nextInt(16);
-            var16 = var5 + field_28087_j.nextInt(16);
+            var14 = var4 + field_28087_j.NextInt(16);
+            var15 = field_28087_j.NextInt(16) + field_28087_j.NextInt(16);
+            var16 = var5 + field_28087_j.NextInt(16);
             new OreFeature(Block.LapisOre.id, 6).Generate(field_28081_p, field_28087_j, var14, var15, var16);
         }
 
         var11 = 0.5D;
-        var13 = (int)((field_28094_c.func_806_a(var4 * var11, var5 * var11) / 8.0D + field_28087_j.nextDouble() * 4.0D + 4.0D) / 3.0D);
+        var13 = (int)((field_28094_c.func_806_a(var4 * var11, var5 * var11) / 8.0D + field_28087_j.NextDouble() * 4.0D + 4.0D) / 3.0D);
         var14 = 0;
-        if (field_28087_j.nextInt(10) == 0)
+        if (field_28087_j.NextInt(10) == 0)
         {
             ++var14;
         }
@@ -477,8 +478,8 @@ public class SkyChunkGenerator : ChunkSource
         int var17;
         for (var15 = 0; var15 < var14; ++var15)
         {
-            var16 = var4 + field_28087_j.nextInt(16) + 8;
-            var17 = var5 + field_28087_j.nextInt(16) + 8;
+            var16 = var4 + field_28087_j.NextInt(16) + 8;
+            var17 = var5 + field_28087_j.NextInt(16) + 8;
             Feature var18 = var6.GetRandomWorldGenForTrees(field_28087_j);
             var18.prepare(1.0D, 1.0D, 1.0D);
             var18.Generate(field_28081_p, field_28087_j, var16, field_28081_p.getTopY(var16, var17), var17);
@@ -487,49 +488,49 @@ public class SkyChunkGenerator : ChunkSource
         int var23;
         for (var15 = 0; var15 < 2; ++var15)
         {
-            var16 = var4 + field_28087_j.nextInt(16) + 8;
-            var17 = field_28087_j.nextInt(128);
-            var23 = var5 + field_28087_j.nextInt(16) + 8;
+            var16 = var4 + field_28087_j.NextInt(16) + 8;
+            var17 = field_28087_j.NextInt(128);
+            var23 = var5 + field_28087_j.NextInt(16) + 8;
             new PlantPatchFeature(Block.Dandelion.id).Generate(field_28081_p, field_28087_j, var16, var17, var23);
         }
 
-        if (field_28087_j.nextInt(2) == 0)
+        if (field_28087_j.NextInt(2) == 0)
         {
-            var15 = var4 + field_28087_j.nextInt(16) + 8;
-            var16 = field_28087_j.nextInt(128);
-            var17 = var5 + field_28087_j.nextInt(16) + 8;
+            var15 = var4 + field_28087_j.NextInt(16) + 8;
+            var16 = field_28087_j.NextInt(128);
+            var17 = var5 + field_28087_j.NextInt(16) + 8;
             new PlantPatchFeature(Block.Rose.id).Generate(field_28081_p, field_28087_j, var15, var16, var17);
         }
 
-        if (field_28087_j.nextInt(4) == 0)
+        if (field_28087_j.NextInt(4) == 0)
         {
-            var15 = var4 + field_28087_j.nextInt(16) + 8;
-            var16 = field_28087_j.nextInt(128);
-            var17 = var5 + field_28087_j.nextInt(16) + 8;
+            var15 = var4 + field_28087_j.NextInt(16) + 8;
+            var16 = field_28087_j.NextInt(128);
+            var17 = var5 + field_28087_j.NextInt(16) + 8;
             new PlantPatchFeature(Block.BrownMushroom.id).Generate(field_28081_p, field_28087_j, var15, var16, var17);
         }
 
-        if (field_28087_j.nextInt(8) == 0)
+        if (field_28087_j.NextInt(8) == 0)
         {
-            var15 = var4 + field_28087_j.nextInt(16) + 8;
-            var16 = field_28087_j.nextInt(128);
-            var17 = var5 + field_28087_j.nextInt(16) + 8;
+            var15 = var4 + field_28087_j.NextInt(16) + 8;
+            var16 = field_28087_j.NextInt(128);
+            var17 = var5 + field_28087_j.NextInt(16) + 8;
             new PlantPatchFeature(Block.RedMushroom.id).Generate(field_28081_p, field_28087_j, var15, var16, var17);
         }
 
         for (var15 = 0; var15 < 10; ++var15)
         {
-            var16 = var4 + field_28087_j.nextInt(16) + 8;
-            var17 = field_28087_j.nextInt(128);
-            var23 = var5 + field_28087_j.nextInt(16) + 8;
+            var16 = var4 + field_28087_j.NextInt(16) + 8;
+            var17 = field_28087_j.NextInt(128);
+            var23 = var5 + field_28087_j.NextInt(16) + 8;
             new SugarCanePatchFeature().Generate(field_28081_p, field_28087_j, var16, var17, var23);
         }
 
-        if (field_28087_j.nextInt(32) == 0)
+        if (field_28087_j.NextInt(32) == 0)
         {
-            var15 = var4 + field_28087_j.nextInt(16) + 8;
-            var16 = field_28087_j.nextInt(128);
-            var17 = var5 + field_28087_j.nextInt(16) + 8;
+            var15 = var4 + field_28087_j.NextInt(16) + 8;
+            var16 = field_28087_j.NextInt(128);
+            var17 = var5 + field_28087_j.NextInt(16) + 8;
             new PumpkinPatchFeature().Generate(field_28081_p, field_28087_j, var15, var16, var17);
         }
 
@@ -542,25 +543,25 @@ public class SkyChunkGenerator : ChunkSource
         int var19;
         for (var16 = 0; var16 < var15; ++var16)
         {
-            var17 = var4 + field_28087_j.nextInt(16) + 8;
-            var23 = field_28087_j.nextInt(128);
-            var19 = var5 + field_28087_j.nextInt(16) + 8;
+            var17 = var4 + field_28087_j.NextInt(16) + 8;
+            var23 = field_28087_j.NextInt(128);
+            var19 = var5 + field_28087_j.NextInt(16) + 8;
             new CactusPatchFeature().Generate(field_28081_p, field_28087_j, var17, var23, var19);
         }
 
         for (var16 = 0; var16 < 50; ++var16)
         {
-            var17 = var4 + field_28087_j.nextInt(16) + 8;
-            var23 = field_28087_j.nextInt(field_28087_j.nextInt(120) + 8);
-            var19 = var5 + field_28087_j.nextInt(16) + 8;
+            var17 = var4 + field_28087_j.NextInt(16) + 8;
+            var23 = field_28087_j.NextInt(field_28087_j.NextInt(120) + 8);
+            var19 = var5 + field_28087_j.NextInt(16) + 8;
             new SpringFeature(Block.FlowingWater.id).Generate(field_28081_p, field_28087_j, var17, var23, var19);
         }
 
         for (var16 = 0; var16 < 20; ++var16)
         {
-            var17 = var4 + field_28087_j.nextInt(16) + 8;
-            var23 = field_28087_j.nextInt(field_28087_j.nextInt(field_28087_j.nextInt(112) + 8) + 8);
-            var19 = var5 + field_28087_j.nextInt(16) + 8;
+            var17 = var4 + field_28087_j.NextInt(16) + 8;
+            var23 = field_28087_j.NextInt(field_28087_j.NextInt(field_28087_j.NextInt(112) + 8) + 8);
+            var19 = var5 + field_28087_j.NextInt(16) + 8;
             new SpringFeature(Block.FlowingLava.id).Generate(field_28081_p, field_28087_j, var17, var23, var19);
         }
 

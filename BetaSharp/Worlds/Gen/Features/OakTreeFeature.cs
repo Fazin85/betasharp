@@ -1,13 +1,14 @@
 using BetaSharp.Blocks;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Gen.Features;
 
 public class OakTreeFeature : Feature
 {
 
-    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
+    public override bool Generate(World world, JavaRandom rand, int x, int y, int z)
     {
-        int treeHeight = rand.nextInt(3) + 4;
+        int treeHeight = rand.NextInt(3) + 4;
         bool canPlace = true;
         if (!(y >= 1 && y + treeHeight + 1 <= 128)) return false;
 
@@ -57,7 +58,7 @@ public class OakTreeFeature : Feature
                     for (int leafZ = z - leafRadius; leafZ <= z + leafRadius; ++leafZ)
                     {
                         int offsetZ = leafZ - z;
-                        if ((Math.Abs(offsetX) != leafRadius || Math.Abs(offsetZ) != leafRadius || rand.nextInt(2) != 0 && relativeY != 0) && !Block.BlocksOpaque[world.getBlockId(leafX, leafY, leafZ)])
+                        if ((Math.Abs(offsetX) != leafRadius || Math.Abs(offsetZ) != leafRadius || rand.NextInt(2) != 0 && relativeY != 0) && !Block.BlocksOpaque[world.getBlockId(leafX, leafY, leafZ)])
                         {
                             world.SetBlockWithoutNotifyingNeighbors(leafX, leafY, leafZ, Block.Leaves.id);
                         }

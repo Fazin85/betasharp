@@ -81,7 +81,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
         long var5 = java.lang.System.nanoTime();
         string var7 = config.GetLevelName("world");
         string seedInput = config.GetLevelSeed("");
-        long worldSeed = new java.util.Random().nextLong();
+        long worldSeed = new JavaRandom().NextLong();
         if (seedInput.Length > 0)
         {
             try

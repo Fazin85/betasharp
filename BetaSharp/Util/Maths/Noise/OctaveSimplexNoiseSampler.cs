@@ -5,7 +5,7 @@ public class OctaveSimplexNoiseSampler : NoiseSampler
     private readonly SimplexNoiseSampler[] field_4234_a;
     private readonly int field_4233_b;
 
-    public OctaveSimplexNoiseSampler(java.util.Random var1, int var2)
+    public OctaveSimplexNoiseSampler(JavaRandom var1, int var2)
     {
         field_4233_b = var2;
         field_4234_a = new SimplexNoiseSampler[var2];

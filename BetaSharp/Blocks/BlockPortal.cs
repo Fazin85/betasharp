@@ -176,7 +176,7 @@ public class BlockPortal : BlockBreakable
         }
     }
 
-    public override int getDroppedItemCount(java.util.Random random)
+    public override int getDroppedItemCount(JavaRandom random)
     {
         return 0;
     }
@@ -195,34 +195,34 @@ public class BlockPortal : BlockBreakable
 
     }
 
-    public override void randomDisplayTick(World world, int x, int y, int z, java.util.Random random)
+    public override void randomDisplayTick(World world, int x, int y, int z, JavaRandom random)
     {
-        if (random.nextInt(100) == 0)
+        if (random.NextInt(100) == 0)
         {
-            world.playSound((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "portal.portal", 1.0F, random.nextFloat() * 0.4F + 0.8F);
+            world.playSound((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "portal.portal", 1.0F, random.NextFloat() * 0.4F + 0.8F);
         }
 
         for (int particleIndex = 0; particleIndex < 4; ++particleIndex)
         {
-            double particleX = (double)((float)x + random.nextFloat());
-            double particleY = (double)((float)y + random.nextFloat());
-            double particleZ = (double)((float)z + random.nextFloat());
+            double particleX = (double)((float)x + random.NextFloat());
+            double particleY = (double)((float)y + random.NextFloat());
+            double particleZ = (double)((float)z + random.NextFloat());
             double velocityX = 0.0D;
             double velocityY = 0.0D;
             double velocityZ = 0.0D;
-            int direction = random.nextInt(2) * 2 - 1;
-            velocityX = ((double)random.nextFloat() - 0.5D) * 0.5D;
-            velocityY = ((double)random.nextFloat() - 0.5D) * 0.5D;
-            velocityZ = ((double)random.nextFloat() - 0.5D) * 0.5D;
+            int direction = random.NextInt(2) * 2 - 1;
+            velocityX = ((double)random.NextFloat() - 0.5D) * 0.5D;
+            velocityY = ((double)random.NextFloat() - 0.5D) * 0.5D;
+            velocityZ = ((double)random.NextFloat() - 0.5D) * 0.5D;
             if (world.getBlockId(x - 1, y, z) != id && world.getBlockId(x + 1, y, z) != id)
             {
                 particleX = (double)x + 0.5D + 0.25D * (double)direction;
-                velocityX = (double)(random.nextFloat() * 2.0F * (float)direction);
+                velocityX = (double)(random.NextFloat() * 2.0F * (float)direction);
             }
             else
             {
                 particleZ = (double)z + 0.5D + 0.25D * (double)direction;
-                velocityZ = (double)(random.nextFloat() * 2.0F * (float)direction);
+                velocityZ = (double)(random.NextFloat() * 2.0F * (float)direction);
             }
 
             world.addParticle("portal", particleX, particleY, particleZ, velocityX, velocityY, velocityZ);

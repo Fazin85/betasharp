@@ -1,4 +1,5 @@
 using BetaSharp.Blocks.Materials;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Colors;
 
@@ -37,13 +38,13 @@ public class BlockGrass : Block
         return GrassColors.getColor(temperature, downfall);
     }
 
-    public override void onTick(World world, int x, int y, int z, java.util.Random random)
+    public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
         if (!world.isRemote)
         {
             if (world.getLightLevel(x, y + 1, z) < 4 && Block.BlockLightOpacity[world.getBlockId(x, y + 1, z)] > 2)
             {
-                if (random.nextInt(4) != 0)
+                if (random.NextInt(4) != 0)
                 {
                     return;
                 }
@@ -52,9 +53,9 @@ public class BlockGrass : Block
             }
             else if (world.getLightLevel(x, y + 1, z) >= 9)
             {
-                int spreadX = x + random.nextInt(3) - 1;
-                int spreadY = y + random.nextInt(5) - 3;
-                int spreadZ = z + random.nextInt(3) - 1;
+                int spreadX = x + random.NextInt(3) - 1;
+                int spreadY = y + random.NextInt(5) - 3;
+                int spreadZ = z + random.NextInt(3) - 1;
                 int blockAboveId = world.getBlockId(spreadX, spreadY + 1, spreadZ);
                 if (world.getBlockId(spreadX, spreadY, spreadZ) == Block.Dirt.id && world.getLightLevel(spreadX, spreadY + 1, spreadZ) >= 4 && Block.BlockLightOpacity[blockAboveId] <= 2)
                 {
@@ -64,7 +65,7 @@ public class BlockGrass : Block
         }
     }
 
-    public override int getDroppedItemId(int blocKMeta, java.util.Random random)
+    public override int getDroppedItemId(int blocKMeta, JavaRandom random)
     {
         return Block.Dirt.getDroppedItemId(0, random);
     }

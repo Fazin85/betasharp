@@ -2,6 +2,7 @@ using BetaSharp.Client.Input;
 using BetaSharp.Server;
 using BetaSharp.Server.Commands;
 using BetaSharp.Util;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Client.Guis;
 
@@ -118,14 +119,14 @@ public class GuiChat : GuiScreen
                         // Special test trigger: send 64 random messages locally
                         if (msg == "!/!")
                         {
-                            java.util.Random r = new();
+                            JavaRandom r = new();
                             for (int i = 0; i < 64; ++i)
                             {
-                                int len = 8 + (int)(r.nextDouble() * 40);
+                                int len = 8 + (int)(r.NextDouble() * 40);
                                 var sb = new System.Text.StringBuilder();
                                 for (int k = 0; k < len; ++k)
                                 {
-                                    char c = (char)('!' + (int)(r.nextDouble() * 90));
+                                    char c = (char)('!' + (int)(r.NextDouble() * 90));
                                     sb.Append(c);
                                 }
                                 mc?.ingameGUI?.addChatMessage(sb.ToString());

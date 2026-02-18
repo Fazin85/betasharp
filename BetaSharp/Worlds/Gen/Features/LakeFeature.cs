@@ -1,5 +1,6 @@
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Materials;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Gen.Features;
 
@@ -13,7 +14,7 @@ public class LakeFeature : Feature
         _waterBlockId = waterBlockId;
     }
 
-    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
+    public override bool Generate(World world, JavaRandom rand, int x, int y, int z)
     {
         x -= 8;
 
@@ -24,18 +25,18 @@ public class LakeFeature : Feature
 
         y -= 4;
         bool[] lakeMask = new bool[2048];
-        int blobCount = rand.nextInt(4) + 4;
+        int blobCount = rand.NextInt(4) + 4;
 
 
         for (int i = 0; i < blobCount; ++i)
         {
-            double radiusH = rand.nextDouble() * 6.0D + 3.0D;
-            double radiusV = rand.nextDouble() * 4.0D + 2.0D;
-            double radiusH2 = rand.nextDouble() * 6.0D + 3.0D;
+            double radiusH = rand.NextDouble() * 6.0D + 3.0D;
+            double radiusV = rand.NextDouble() * 4.0D + 2.0D;
+            double radiusH2 = rand.NextDouble() * 6.0D + 3.0D;
 
-            double centerX = rand.nextDouble() * (16.0D - radiusH - 2.0D) + 1.0D + radiusH / 2.0D;
-            double centerY = rand.nextDouble() * (8.0D - radiusV - 4.0D) + 2.0D + radiusV / 2.0D;
-            double centerZ = rand.nextDouble() * (16.0D - radiusH2 - 2.0D) + 1.0D + radiusH2 / 2.0D;
+            double centerX = rand.NextDouble() * (16.0D - radiusH - 2.0D) + 1.0D + radiusH / 2.0D;
+            double centerY = rand.NextDouble() * (8.0D - radiusV - 4.0D) + 2.0D + radiusV / 2.0D;
+            double centerZ = rand.NextDouble() * (16.0D - radiusH2 - 2.0D) + 1.0D + radiusH2 / 2.0D;
 
             for (int dx = 1; dx < 15; ++dx)
             {
@@ -131,7 +132,7 @@ public class LakeFeature : Feature
                                 dz < 7 && lakeMask[(dx * 16 + dy) * 8 + dz + 1] ||
                                 dz > 0 && lakeMask[(dx * 16 + dy) * 8 + (dz - 1)]
                             );
-                        if (isEdge && (dz < 4 || rand.nextInt(2) != 0) && world.getMaterial(x + dx, y + dz, z + dy).IsSolid)
+                        if (isEdge && (dz < 4 || rand.NextInt(2) != 0) && world.getMaterial(x + dx, y + dz, z + dy).IsSolid)
                         {
                             world.SetBlockWithoutNotifyingNeighbors(x + dx, y + dz, z + dy, Block.Stone.id);
                         }

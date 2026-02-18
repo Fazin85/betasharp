@@ -29,7 +29,7 @@ public class EntitySquid : EntityWaterMob
     {
         texture = "/mob/squid.png";
         setBoundingBoxSpacing(0.95F, 0.95F);
-        animationSpeed = 1.0F / (random.nextFloat() + 1.0F) * 0.2F;
+        animationSpeed = 1.0F / (random.NextFloat() + 1.0F) * 0.2F;
     }
 
     public override void writeNbt(NBTTagCompound nbt)
@@ -69,7 +69,7 @@ public class EntitySquid : EntityWaterMob
 
     protected override void dropFewItems()
     {
-        int dropCount = random.nextInt(3) + 1;
+        int dropCount = random.NextInt(3) + 1;
 
         for (int _ = 0; _ < dropCount; ++_)
         {
@@ -99,9 +99,9 @@ public class EntitySquid : EntityWaterMob
         if (swimPhase > (float)Math.PI * 2.0F)
         {
             swimPhase -= (float)Math.PI * 2.0F;
-            if (random.nextInt(10) == 0)
+            if (random.NextInt(10) == 0)
             {
-                animationSpeed = 1.0F / (random.nextFloat() + 1.0F) * 0.2F;
+                animationSpeed = 1.0F / (random.NextFloat() + 1.0F) * 0.2F;
             }
         }
 
@@ -165,11 +165,11 @@ public class EntitySquid : EntityWaterMob
 
     public override void tickLiving()
     {
-        if (random.nextInt(50) == 0 || !inWater || randomMotionVecX == 0.0F && randomMotionVecY == 0.0F && randomMotionVecZ == 0.0F)
+        if (random.NextInt(50) == 0 || !inWater || randomMotionVecX == 0.0F && randomMotionVecY == 0.0F && randomMotionVecZ == 0.0F)
         {
-            float randomAngle = random.nextFloat() * (float)Math.PI * 2.0F;
+            float randomAngle = random.NextFloat() * (float)Math.PI * 2.0F;
             randomMotionVecX = MathHelper.cos(randomAngle) * 0.2F;
-            randomMotionVecY = -0.1F + random.nextFloat() * 0.2F;
+            randomMotionVecY = -0.1F + random.NextFloat() * 0.2F;
             randomMotionVecZ = MathHelper.sin(randomAngle) * 0.2F;
         }
 

@@ -50,7 +50,7 @@ public class BlockLever : Block
         var6 = -1;
         if (direction == 1 && world.shouldSuffocate(x, y - 1, z))
         {
-            var6 = 5 + world.random.nextInt(2);
+            var6 = 5 + world.random.NextInt(2);
         }
 
         if (direction == 2 && world.shouldSuffocate(x, y, z + 1))

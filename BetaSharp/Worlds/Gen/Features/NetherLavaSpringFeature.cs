@@ -1,4 +1,5 @@
 using BetaSharp.Blocks;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Gen.Features;
 
@@ -12,7 +13,7 @@ public class NetherLavaSpringFeature : Feature
         _lavaBlockId = lavaBlockId;
     }
 
-    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
+    public override bool Generate(World world, JavaRandom rand, int x, int y, int z)
     {
         if (world.getBlockId(x, y + 1, z) != Block.Netherrack.id) return false;
         if (world.getBlockId(x, y, z) != 0 && world.getBlockId(x, y, z) != Block.Netherrack.id) return false;

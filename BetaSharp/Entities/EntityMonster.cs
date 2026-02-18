@@ -96,7 +96,7 @@ public class EntityMonster : EntityCreature, Monster
         int x = MathHelper.floor_double(base.x);
         int y = MathHelper.floor_double(boundingBox.minY);
         int z = MathHelper.floor_double(base.z);
-        if (world.getBrightness(LightType.Sky, x, y, z) > random.nextInt(32))
+        if (world.getBrightness(LightType.Sky, x, y, z) > random.NextInt(32))
         {
             return false;
         }
@@ -111,7 +111,7 @@ public class EntityMonster : EntityCreature, Monster
                 world.ambientDarkness = ambientDarkness;
             }
 
-            return lightLevel <= random.nextInt(8) && base.canSpawn();
+            return lightLevel <= random.NextInt(8) && base.canSpawn();
         }
     }
 }

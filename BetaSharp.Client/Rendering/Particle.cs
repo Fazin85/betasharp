@@ -1,10 +1,11 @@
 using BetaSharp.Client.Guis;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Client.Rendering;
 
 public class Particle : java.lang.Object
 {
-    private static readonly java.util.Random field_25128_s = new();
+    private static readonly JavaRandom field_25128_s = new();
     public double field_25146_a;
     public double field_25145_b;
     public double field_25144_c;

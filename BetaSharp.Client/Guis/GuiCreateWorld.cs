@@ -102,7 +102,7 @@ public class GuiCreateWorld : GuiScreen
                         }
 
                         createClicked = true;
-                        long worldSeed = new java.util.Random().nextLong();
+                        long worldSeed = new JavaRandom().NextLong();
                         string seedInput = textboxSeed.getText();
                         if (!MathHelper.stringNullOrLengthZero(seedInput))
                         {

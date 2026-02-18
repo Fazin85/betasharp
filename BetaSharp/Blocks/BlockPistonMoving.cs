@@ -74,7 +74,7 @@ public class BlockPistonMoving : BlockWithEntity
         }
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
         return 0;
     }

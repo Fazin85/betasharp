@@ -1,4 +1,5 @@
 using BetaSharp.Blocks.Materials;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Blocks;
 
@@ -8,7 +9,7 @@ public class BlockStone : Block
     {
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
         return Block.Cobblestone.id;
     }

@@ -47,7 +47,7 @@ public abstract class World : java.lang.Object, BlockView
     private readonly long lockTimestamp;
     protected int autosavePeriod;
     public int difficulty;
-    public java.util.Random random;
+    public JavaRandom random;
     public bool isNewWorld;
     public readonly Dimension dimension;
     protected List<IWorldAccess> eventListeners;
@@ -93,7 +93,7 @@ public abstract class World : java.lang.Object, BlockView
         globalEntities = new ArrayList();
         worldTimeMask = 0x00FFFFFFL;
         ambientDarkness = 0;
-        lcgBlockSeed = (new java.util.Random()).nextInt();
+        lcgBlockSeed = (new JavaRandom()).NextInt();
         lcgBlockSeedIncrement = 1013904223;
         ticksSinceLightning = 0;
         lightningTicksLeft = 0;
@@ -108,7 +108,7 @@ public abstract class World : java.lang.Object, BlockView
         spawnHostileMobs = true;
         spawnPeacefulMobs = true;
         activeChunks = new HashSet<ChunkPos>();
-        soundCounter = random.nextInt(12000);
+        soundCounter = random.NextInt(12000);
         tempEntityList = [];
         isRemote = false;
         storage = var1;
@@ -135,7 +135,7 @@ public abstract class World : java.lang.Object, BlockView
         globalEntities = new ArrayList();
         worldTimeMask = 0x00FFFFFFL;
         ambientDarkness = 0;
-        lcgBlockSeed = (new java.util.Random()).nextInt();
+        lcgBlockSeed = (new JavaRandom()).NextInt();
         lcgBlockSeedIncrement = 1013904223;
         ticksSinceLightning = 0;
         lightningTicksLeft = 0;
@@ -150,7 +150,7 @@ public abstract class World : java.lang.Object, BlockView
         spawnHostileMobs = true;
         spawnPeacefulMobs = true;
         activeChunks = new HashSet<ChunkPos>();
-        soundCounter = random.nextInt(12000);
+        soundCounter = random.NextInt(12000);
         tempEntityList = [];
         isRemote = false;
         lockTimestamp = var1.lockTimestamp;
@@ -182,14 +182,14 @@ public abstract class World : java.lang.Object, BlockView
         globalEntities = new ArrayList();
         worldTimeMask = 0x00FFFFFFL;
         ambientDarkness = 0;
-        lcgBlockSeed = (new java.util.Random()).nextInt();
+        lcgBlockSeed = (new JavaRandom()).NextInt();
         lcgBlockSeedIncrement = 1013904223;
         ticksSinceLightning = 0;
         lightningTicksLeft = 0;
         pauseTicking = false;
         lockTimestamp = java.lang.System.currentTimeMillis();
         autosavePeriod = AUTOSAVE_PERIOD;
-        random = new java.util.Random();
+        random = new JavaRandom();
         isNewWorld = false;
         eventListeners = [];
         collidingBoundingBoxes = [];
@@ -197,7 +197,7 @@ public abstract class World : java.lang.Object, BlockView
         spawnHostileMobs = true;
         spawnPeacefulMobs = true;
         activeChunks = new HashSet<ChunkPos>();
-        soundCounter = random.nextInt(12000);
+        soundCounter = random.NextInt(12000);
         tempEntityList = [];
         isRemote = false;
         storage = var1;
@@ -248,9 +248,9 @@ public abstract class World : java.lang.Object, BlockView
         byte var2 = 64;
 
         int var3;
-        for (var3 = 0; !dimension.isValidSpawnPoint(var1, var3); var3 += random.nextInt(64) - random.nextInt(64))
+        for (var3 = 0; !dimension.isValidSpawnPoint(var1, var3); var3 += random.NextInt(64) - random.NextInt(64))
         {
-            var1 += random.nextInt(64) - random.nextInt(64);
+            var1 += random.NextInt(64) - random.NextInt(64);
         }
 
         properties.SetSpawn(var1, var2, var3);
@@ -267,9 +267,9 @@ public abstract class World : java.lang.Object, BlockView
         int var1 = properties.SpawnX;
 
         int var2;
-        for (var2 = properties.SpawnZ; getSpawnBlockId(var1, var2) == 0; var2 += random.nextInt(8) - random.nextInt(8))
+        for (var2 = properties.SpawnZ; getSpawnBlockId(var1, var2) == 0; var2 += random.NextInt(8) - random.NextInt(8))
         {
-            var1 += random.nextInt(8) - random.nextInt(8);
+            var1 += random.NextInt(8) - random.NextInt(8);
         }
 
         properties.SpawnX = var1;
@@ -2370,11 +2370,11 @@ public abstract class World : java.lang.Object, BlockView
             {
                 if (properties.IsThundering)
                 {
-                    properties.ThunderTime = random.nextInt(12000) + 3600;
+                    properties.ThunderTime = random.NextInt(12000) + 3600;
                 }
                 else
                 {
-                    properties.ThunderTime = random.nextInt(168000) + 12000;
+                    properties.ThunderTime = random.NextInt(168000) + 12000;
                 }
             }
             else
@@ -2392,11 +2392,11 @@ public abstract class World : java.lang.Object, BlockView
             {
                 if (properties.IsRaining)
                 {
-                    properties.RainTime = random.nextInt(12000) + 12000;
+                    properties.RainTime = random.NextInt(12000) + 12000;
                 }
                 else
                 {
-                    properties.RainTime = random.nextInt(168000) + 12000;
+                    properties.RainTime = random.NextInt(168000) + 12000;
                 }
             }
             else
@@ -2506,18 +2506,18 @@ public abstract class World : java.lang.Object, BlockView
                 var10 = var14.getBlockId(var7, var9, var8);
                 var7 += var3;
                 var8 += var4;
-                if (var10 == 0 && getBrightness(var7, var9, var8) <= random.nextInt(8) && getBrightness(LightType.Sky, var7, var9, var8) <= 0)
+                if (var10 == 0 && getBrightness(var7, var9, var8) <= random.NextInt(8) && getBrightness(LightType.Sky, var7, var9, var8) <= 0)
                 {
                     EntityPlayer var11 = getClosestPlayer((double)var7 + 0.5D, (double)var9 + 0.5D, (double)var8 + 0.5D, 8.0D);
                     if (var11 != null && var11.getSquaredDistance((double)var7 + 0.5D, (double)var9 + 0.5D, (double)var8 + 0.5D) > 4.0D)
                     {
-                        playSound((double)var7 + 0.5D, (double)var9 + 0.5D, (double)var8 + 0.5D, "ambient.cave.cave", 0.7F, 0.8F + random.nextFloat() * 0.2F);
-                        soundCounter = random.nextInt(12000) + 6000;
+                        playSound((double)var7 + 0.5D, (double)var9 + 0.5D, (double)var8 + 0.5D, "ambient.cave.cave", 0.7F, 0.8F + random.NextFloat() * 0.2F);
+                        soundCounter = random.NextInt(12000) + 6000;
                     }
                 }
             }
 
-            if (random.nextInt(100000) == 0 && isRaining() && isThundering())
+            if (random.NextInt(100000) == 0 && isRaining() && isThundering())
             {
                 lcgBlockSeed = lcgBlockSeed * 3 + 1013904223;
                 var6 = lcgBlockSeed >> 2;
@@ -2532,7 +2532,7 @@ public abstract class World : java.lang.Object, BlockView
             }
 
             int var15;
-            if (random.nextInt(16) == 0)
+            if (random.NextInt(16) == 0)
             {
                 lcgBlockSeed = lcgBlockSeed * 3 + 1013904223;
                 var6 = lcgBlockSeed >> 2;
@@ -2614,13 +2614,13 @@ public abstract class World : java.lang.Object, BlockView
     public void displayTick(int x, int y, int z)
     {
         byte var4 = 16;
-        java.util.Random var5 = new();
+        JavaRandom var5 = new();
 
         for (int var6 = 0; var6 < 1000; ++var6)
         {
-            int var7 = x + random.nextInt(var4) - random.nextInt(var4);
-            int var8 = y + random.nextInt(var4) - random.nextInt(var4);
-            int var9 = z + random.nextInt(var4) - random.nextInt(var4);
+            int var7 = x + random.NextInt(var4) - random.NextInt(var4);
+            int var8 = y + random.NextInt(var4) - random.NextInt(var4);
+            int var9 = z + random.NextInt(var4) - random.NextInt(var4);
             int var10 = getBlockId(var7, var8, var9);
             if (var10 > 0)
             {

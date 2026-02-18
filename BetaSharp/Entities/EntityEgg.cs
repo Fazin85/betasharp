@@ -67,9 +67,9 @@ public class EntityEgg : Entity
         var1 /= (double)var9;
         var3 /= (double)var9;
         var5 /= (double)var9;
-        var1 += random.nextGaussian() * (double)0.0075F * (double)var8;
-        var3 += random.nextGaussian() * (double)0.0075F * (double)var8;
-        var5 += random.nextGaussian() * (double)0.0075F * (double)var8;
+        var1 += random.NextGaussian() * (double)0.0075F * (double)var8;
+        var3 += random.NextGaussian() * (double)0.0075F * (double)var8;
+        var5 += random.NextGaussian() * (double)0.0075F * (double)var8;
         var1 *= (double)var7;
         var3 *= (double)var7;
         var5 *= (double)var7;
@@ -122,9 +122,9 @@ public class EntityEgg : Entity
             }
 
             field_20052_f = false;
-            velocityX *= (double)(random.nextFloat() * 0.2F);
-            velocityY *= (double)(random.nextFloat() * 0.2F);
-            velocityZ *= (double)(random.nextFloat() * 0.2F);
+            velocityX *= (double)(random.NextFloat() * 0.2F);
+            velocityY *= (double)(random.NextFloat() * 0.2F);
+            velocityZ *= (double)(random.NextFloat() * 0.2F);
             field_20050_h = 0;
             field_20049_i = 0;
         }
@@ -181,10 +181,10 @@ public class EntityEgg : Entity
             {
             }
 
-            if (!world.isRemote && random.nextInt(8) == 0)
+            if (!world.isRemote && random.NextInt(8) == 0)
             {
                 byte var16 = 1;
-                if (random.nextInt(32) == 0)
+                if (random.NextInt(32) == 0)
                 {
                     var16 = 4;
                 }
@@ -276,7 +276,7 @@ public class EntityEgg : Entity
     {
         if (field_20052_f && field_20051_g == player && field_20057_a <= 0 && player.inventory.addItemStackToInventory(new ItemStack(Item.ARROW, 1)))
         {
-            world.playSound(this, "random.pop", 0.2F, ((random.nextFloat() - random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+            world.playSound(this, "random.pop", 0.2F, ((random.NextFloat() - random.NextFloat()) * 0.7F + 1.0F) * 2.0F);
             player.sendPickup(this, 1);
             markDead();
         }

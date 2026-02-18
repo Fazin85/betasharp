@@ -34,7 +34,7 @@ public class BlockRedstoneRepeater : Block
         return !world.shouldSuffocate(x, y - 1, z) ? false : base.canGrow(world, x, y, z);
     }
 
-    public override void onTick(World world, int x, int y, int z, java.util.Random random)
+    public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
         int meta = world.getBlockMeta(x, y, z);
         bool powered = isPowered(world, x, y, z, meta);
@@ -175,22 +175,22 @@ public class BlockRedstoneRepeater : Block
         return false;
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
         return Item.Repeater.id;
     }
 
-    public override void randomDisplayTick(World world, int x, int y, int z, java.util.Random random)
+    public override void randomDisplayTick(World world, int x, int y, int z, JavaRandom random)
     {
         if (lit)
         {
             int meta = world.getBlockMeta(x, y, z);
-            double particleX = (double)((float)x + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2D;
-            double particleY = (double)((float)y + 0.4F) + (double)(random.nextFloat() - 0.5F) * 0.2D;
-            double particleZ = (double)((float)z + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2D;
+            double particleX = (double)((float)x + 0.5F) + (double)(random.NextFloat() - 0.5F) * 0.2D;
+            double particleY = (double)((float)y + 0.4F) + (double)(random.NextFloat() - 0.5F) * 0.2D;
+            double particleZ = (double)((float)z + 0.5F) + (double)(random.NextFloat() - 0.5F) * 0.2D;
             double offsetX = 0.0D;
             double offsetY = 0.0D;
-            if (random.nextInt(2) == 0)
+            if (random.NextInt(2) == 0)
             {
                 switch (meta & 3)
                 {

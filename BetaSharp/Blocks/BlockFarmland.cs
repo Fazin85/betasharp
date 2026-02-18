@@ -36,9 +36,9 @@ public class BlockFarmland : Block
         return side == 1 && meta > 0 ? textureId - 1 : (side == 1 ? textureId : 2);
     }
 
-    public override void onTick(World world, int x, int y, int z, java.util.Random random)
+    public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
-        if (random.nextInt(5) == 0)
+        if (random.NextInt(5) == 0)
         {
             if (!isWaterNearby(world, x, y, z) && !world.isRaining(x, y + 1, z))
             {
@@ -62,7 +62,7 @@ public class BlockFarmland : Block
 
     public override void onSteppedOn(World world, int x, int y, int z, Entity entity)
     {
-        if (world.random.nextInt(4) == 0)
+        if (world.random.NextInt(4) == 0)
         {
             world.setBlock(x, y, z, Block.Dirt.id);
         }
@@ -117,7 +117,7 @@ public class BlockFarmland : Block
 
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
         return Block.Dirt.getDroppedItemId(0, random);
     }

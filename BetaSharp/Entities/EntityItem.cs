@@ -59,9 +59,9 @@ public class EntityItem : Entity
         if (world.getMaterial(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z)) == Material.Lava)
         {
             velocityY = (double)0.2F;
-            velocityX = (double)((random.nextFloat() - random.nextFloat()) * 0.2F);
-            velocityZ = (double)((random.nextFloat() - random.nextFloat()) * 0.2F);
-            world.playSound(this, "random.fizz", 0.4F, 2.0F + random.nextFloat() * 0.4F);
+            velocityX = (double)((random.NextFloat() - random.NextFloat()) * 0.2F);
+            velocityZ = (double)((random.NextFloat() - random.NextFloat()) * 0.2F);
+            world.playSound(this, "random.fizz", 0.4F, 2.0F + random.NextFloat() * 0.4F);
         }
 
         pushOutOfBlocks(x, (boundingBox.minY + boundingBox.maxY) / 2.0D, z);
@@ -147,7 +147,7 @@ public class EntityItem : Entity
                     player.incrementStat(Achievements.KillCow);
                 }
 
-                world.playSound(this, "random.pop", 0.2F, ((random.nextFloat() - random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                world.playSound(this, "random.pop", 0.2F, ((random.NextFloat() - random.NextFloat()) * 0.7F + 1.0F) * 2.0F);
                 player.sendPickup(this, pickedUpCount);
                 if (stack.count <= 0)
                 {

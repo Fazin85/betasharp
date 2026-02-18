@@ -14,12 +14,12 @@ public class SimplexNoiseSampler : java.lang.Object
     {
     }
 
-    public SimplexNoiseSampler(java.util.Random var1)
+    public SimplexNoiseSampler(JavaRandom var1)
     {
         perm = new int[512];
-        offsetX = var1.nextDouble() * 256.0D;
-        offsetY = var1.nextDouble() * 256.0D;
-        offsetZ = var1.nextDouble() * 256.0D;
+        offsetX = var1.NextDouble() * 256.0D;
+        offsetY = var1.NextDouble() * 256.0D;
+        offsetZ = var1.NextDouble() * 256.0D;
 
         int var2;
         for (var2 = 0; var2 < 256; perm[var2] = var2++)
@@ -28,7 +28,7 @@ public class SimplexNoiseSampler : java.lang.Object
 
         for (var2 = 0; var2 < 256; ++var2)
         {
-            int var3 = var1.nextInt(256 - var2) + var2;
+            int var3 = var1.NextInt(256 - var2) + var2;
             (perm[var2], perm[var3]) = (perm[var3], perm[var2]);
             perm[var2 + 256] = perm[var2];
         }

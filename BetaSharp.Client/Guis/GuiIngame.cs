@@ -18,7 +18,7 @@ public class GuiIngame : Gui
     private readonly GCMonitor GCMonitor;
     private static readonly ItemRenderer itemRenderer = new();
     private readonly java.util.List chatMessageList = new ArrayList();
-    private readonly java.util.Random rand = new();
+    private readonly JavaRandom rand = new();
     private int chatScrollPos = 0;
     private bool chatScrollbarDragging = false;
     private int chatScrollbarDragStartY = 0;
@@ -82,7 +82,7 @@ public class GuiIngame : Gui
 
         int health = mc.player.health;
         int lastHealth = mc.player.lastHealth;
-        rand.setSeed(updateCounter * 312871);
+        rand.SetSeed(updateCounter * 312871);
         int armorValue;
         int i;
         int j;
@@ -122,7 +122,7 @@ public class GuiIngame : Gui
                 int x = scaledWidth / 2 - 91 + i * 8;
                 if (health <= 4)
                 {
-                    j += rand.nextInt(2);
+                    j += rand.NextInt(2);
                 }
 
                 drawTexturedModalRect(x, j, 16 + blinkIndex * 9, 0, 9, 9);
