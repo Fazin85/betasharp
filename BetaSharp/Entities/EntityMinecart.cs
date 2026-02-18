@@ -80,7 +80,7 @@ public class EntityMinecart : Entity, IInventory
         return true;
     }
 
-    public EntityMinecart(World world, double x, double y, double z, int type) : base(world)
+    public EntityMinecart(World world, double x, double y, double z, int type) : this(world)
     {
         setPosition(x, y + (double)standingEyeHeight, z);
         velocityX = 0.0D;
@@ -674,7 +674,7 @@ public class EntityMinecart : Entity, IInventory
             return func_514_g(x, y, z);
         }
     }
-        
+
     public Vec3D? func_514_g(double x, double y, double z)
     {
         int floorX = MathHelper.floor_double(x);
@@ -741,7 +741,7 @@ public class EntityMinecart : Entity, IInventory
             {
                 y += 0.5D;
             }
-                
+
             return new Vec3D(x, y, z);
         }
         else

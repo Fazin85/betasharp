@@ -6,8 +6,8 @@ namespace BetaSharp.Client.Guis;
 public class GuiConnecting : GuiScreen
 {
 
-    private ClientNetworkHandler clientHandler;
-    private bool cancelled = false;
+    private ClientNetworkHandler _clientHandler;
+    private bool _cancelled = false;
     private const int BUTTON_CANCEL = 0;
 
     public GuiConnecting(Minecraft mc, string host, int port)
@@ -17,12 +17,15 @@ public class GuiConnecting : GuiScreen
         new ThreadConnectToServer(this, mc, host, port).start();
     }
 
+    public GuiConnecting(Minecraft mc, ClientNetworkHandler clientHandler)
+    {
+        _clientHandler = clientHandler;
+        mc.changeWorld1(null);
+    }
+
     public override void updateScreen()
     {
-        if (clientHandler != null)
-        {
-            clientHandler.tick();
-        }
+        _clientHandler?.tick();
 
     }
 
@@ -42,11 +45,8 @@ public class GuiConnecting : GuiScreen
         switch (button.id)
         {
             case BUTTON_CANCEL:
-                cancelled = true;
-                if (clientHandler != null)
-                {
-                    clientHandler.disconnect();
-                }
+                _cancelled = true;
+                _clientHandler?.disconnect();
 
                 mc.displayGuiScreen(new GuiMainMenu());
                 break;
@@ -58,7 +58,7 @@ public class GuiConnecting : GuiScreen
     {
         drawDefaultBackground();
         TranslationStorage translations = TranslationStorage.getInstance();
-        if (clientHandler == null)
+        if (_clientHandler == null)
         {
             drawCenteredString(fontRenderer, translations.translateKey("connect.connecting"), width / 2, height / 2 - 50, 0x00FFFFFF);
             drawCenteredString(fontRenderer, "", width / 2, height / 2 - 10, 0x00FFFFFF);
@@ -66,7 +66,7 @@ public class GuiConnecting : GuiScreen
         else
         {
             drawCenteredString(fontRenderer, translations.translateKey("connect.authorizing"), width / 2, height / 2 - 50, 0x00FFFFFF);
-            drawCenteredString(fontRenderer, clientHandler.field_1209_a, width / 2, height / 2 - 10, 0x00FFFFFF);
+            drawCenteredString(fontRenderer, _clientHandler.field_1209_a, width / 2, height / 2 - 10, 0x00FFFFFF);
         }
 
         base.render(mouseX, mouseY, partialTicks);
@@ -79,16 +79,16 @@ public class GuiConnecting : GuiScreen
 
     public static ClientNetworkHandler setNetClientHandler(GuiConnecting guiConnecting, ClientNetworkHandler handler)
     {
-        return guiConnecting.clientHandler = handler;
+        return guiConnecting._clientHandler = handler;
     }
 
     public static bool isCancelled(GuiConnecting guiConnecting)
     {
-        return guiConnecting.cancelled;
+        return guiConnecting._cancelled;
     }
 
     public static ClientNetworkHandler getNetClientHandler(GuiConnecting guiConnecting)
     {
-        return guiConnecting.clientHandler;
+        return guiConnecting._clientHandler;
     }
 }

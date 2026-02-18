@@ -14,7 +14,7 @@ public class GuiTextField : Gui
     private readonly int yPos;
     private readonly int width;
     private readonly int height;
-    private string text;
+    private string text = "";
     private int maxStringLength;
     private int cursorCounter;
     private int cursorPosition = 0;
@@ -260,6 +260,8 @@ public class GuiTextField : Gui
         if (!HasSelection()) return (0, 0);
         int s = Math.Min(selectionStart, selectionEnd);
         int e = Math.Max(selectionStart, selectionEnd);
+        s = Math.Max(0, Math.Min(s, text.Length));
+        e = Math.Max(0, Math.Min(e, text.Length));
         return (s, e);
     }
 
@@ -291,8 +293,7 @@ public class GuiTextField : Gui
         try
         {
             string sel = GetSelectedText();
-            StringSelection ss = new(sel);
-            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
+            GuiScreen.setClipboardString(sel);
         }
         catch (Exception)
         {
@@ -310,18 +311,14 @@ public class GuiTextField : Gui
     {
         try
         {
-            Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
-            if (t != null && t.isDataFlavorSupported(DataFlavor.stringFlavor))
-            {
-                string clip = (string)t.getTransferData(DataFlavor.stringFlavor);
-                clip ??= "";
-                if (HasSelection()) DeleteSelection();
-                int maxInsert = Math.Max(0, (maxStringLength > 0 ? maxStringLength : 32) - text.Length);
-                if (clip.Length > maxInsert) clip = clip.Substring(0, maxInsert);
-                text = text.Substring(0, cursorPosition) + clip + text.Substring(cursorPosition);
-                cursorPosition += clip.Length;
-                ClearSelection();
-            }
+            string clip = GuiScreen.getClipboardString();
+            clip ??= "";
+            if (HasSelection()) DeleteSelection();
+            int maxInsert = Math.Max(0, (maxStringLength > 0 ? maxStringLength : 32) - text.Length);
+            if (clip.Length > maxInsert) clip = clip.Substring(0, maxInsert);
+            text = text.Substring(0, cursorPosition) + clip + text.Substring(cursorPosition);
+            cursorPosition += clip.Length;
+            ClearSelection();
         }
         catch (Exception)
         {

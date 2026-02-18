@@ -49,7 +49,7 @@ public class GuiEditSign : GuiScreen
     public override void onGuiClosed()
     {
         Keyboard.enableRepeatEvents(false);
-        if (mc.world.isRemote)
+        if (mc?.world?.isRemote ?? false)
         {
             mc.getSendQueue().addToSendQueue(new UpdateSignPacket(entitySign.x, entitySign.y, entitySign.z, entitySign.Texts));
         }
@@ -69,7 +69,7 @@ public class GuiEditSign : GuiScreen
             {
                 case BUTTON_DONE:
                     entitySign.markDirty();
-                    mc.displayGuiScreen(null);
+                    mc?.displayGuiScreen(null);
                     break;
             }
         }
@@ -212,7 +212,10 @@ public class GuiEditSign : GuiScreen
     public override void render(int mouseX, int mouseY, float partialTicks)
     {
         drawDefaultBackground();
-        drawCenteredString(fontRenderer, screenTitle, width / 2, 40, 0x00FFFFFF);
+        if (fontRenderer != null)
+        {
+            drawCenteredString(fontRenderer, screenTitle, width / 2, 40, 0x00FFFFFF);
+        }
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(width / 2, 0.0F, 50.0F);
         float scale = 93.75F;
@@ -269,6 +272,9 @@ public class GuiEditSign : GuiScreen
         if (!HasLineSelection()) return (0, 0);
         int s = Math.Min(selectionStart[editLine], selectionEnd[editLine]);
         int e = Math.Max(selectionStart[editLine], selectionEnd[editLine]);
+        string lineText = entitySign.Texts[editLine] ?? "";
+        s = Math.Max(0, Math.Min(s, lineText.Length));
+        e = Math.Max(0, Math.Min(e, lineText.Length));
         return (s, e);
     }
 
@@ -300,8 +306,7 @@ public class GuiEditSign : GuiScreen
         try
         {
             string sel = GetSelectedLineText();
-            StringSelection ss = new(sel);
-            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
+            setClipboardString(sel);
         }
         catch (Exception)
         {
@@ -319,18 +324,14 @@ public class GuiEditSign : GuiScreen
     {
         try
         {
-            Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
-            if (t != null && t.isDataFlavorSupported(DataFlavor.stringFlavor))
-            {
-                string clip = (string)t.getTransferData(DataFlavor.stringFlavor);
-                clip ??= "";
-                if (HasLineSelection()) DeleteLineSelection();
-                int maxInsert = Math.Max(0, 15 - entitySign.Texts[editLine].Length);
-                if (clip.Length > maxInsert) clip = clip.Substring(0, maxInsert);
-                entitySign.Texts[editLine] = entitySign.Texts[editLine].Substring(0, cursorPosition[editLine]) + clip + entitySign.Texts[editLine].Substring(cursorPosition[editLine]);
-                cursorPosition[editLine] += clip.Length;
-                ClearLineSelection();
-            }
+            string clip = getClipboardString();
+            clip ??= "";
+            if (HasLineSelection()) DeleteLineSelection();
+            int maxInsert = Math.Max(0, 15 - entitySign.Texts[editLine].Length);
+            if (clip.Length > maxInsert) clip = clip.Substring(0, maxInsert);
+            entitySign.Texts[editLine] = entitySign.Texts[editLine].Substring(0, cursorPosition[editLine]) + clip + entitySign.Texts[editLine].Substring(cursorPosition[editLine]);
+            cursorPosition[editLine] += clip.Length;
+            ClearLineSelection();
         }
         catch (Exception)
         {

@@ -6,7 +6,13 @@ namespace BetaSharp.Blocks;
 
 public class BlockSand : Block
 {
-    public static bool fallInstantly = false;
+    private static readonly ThreadLocal<bool> s_fallInstantly = new(() => false);
+
+    public static bool fallInstantly
+    {
+        get => s_fallInstantly.Value;
+        set => s_fallInstantly.Value = value;
+    }
 
     public BlockSand(int id, int textureId) : base(id, textureId, Material.Sand)
     {
@@ -74,7 +80,7 @@ public class BlockSand : Block
         else
         {
             Material material = Block.Blocks[blockId].material;
-            return material == Material.Water ? true : material == Material.Lava;
+            return material == Material.Water || material == Material.Lava;
         }
     }
 }

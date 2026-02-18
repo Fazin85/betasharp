@@ -9,7 +9,7 @@ namespace BetaSharp.Blocks;
 
 public class BlockDispenser : BlockWithEntity
 {
-    private java.util.Random random = new();
+    private static readonly ThreadLocal<java.util.Random> s_random = new(() => new());
 
     public BlockDispenser(int id) : base(id, Material.Stone)
     {
@@ -231,6 +231,8 @@ public class BlockDispenser : BlockWithEntity
     {
         BlockEntityDispenser dispenser = (BlockEntityDispenser)world.getBlockEntity(x, y, z);
 
+        java.util.Random random = s_random.Value!;
+
         for (int slotIndex = 0; slotIndex < dispenser.size(); ++slotIndex)
         {
             ItemStack stack = dispenser.getStack(slotIndex);
@@ -249,7 +251,7 @@ public class BlockDispenser : BlockWithEntity
                     }
 
                     stack.count -= amount;
-                    EntityItem entityItem = new EntityItem(world, (double)((float)x + offsetX), (double)((float)y + offsetY), (double)((float)z + offsetZ), new ItemStack(stack.itemId, amount, stack.getDamage()));
+                    EntityItem entityItem = new(world, (double)((float)x + offsetX), (double)((float)y + offsetY), (double)((float)z + offsetZ), new ItemStack(stack.itemId, amount, stack.getDamage()));
                     float var13 = 0.05F;
                     entityItem.velocityX = (double)((float)random.nextGaussian() * var13);
                     entityItem.velocityY = (double)((float)random.nextGaussian() * var13 + 0.2F);

@@ -37,8 +37,8 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
     {
         try
         {
-            java.io.File var1 = new java.io.File(saveDirectory, "session.lock");
-            DataOutputStream var2 = new DataOutputStream(new FileOutputStream(var1));
+            java.io.File var1 = new(saveDirectory, "session.lock");
+            DataOutputStream var2 = new(new FileOutputStream(var1));
 
             try
             {
@@ -66,8 +66,8 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
     {
         try
         {
-            java.io.File var1 = new java.io.File(saveDirectory, "session.lock");
-            DataInputStream var2 = new DataInputStream(new FileInputStream(var1));
+            java.io.File var1 = new(saveDirectory, "session.lock");
+            DataInputStream var2 = new(new FileInputStream(var1));
 
             try
             {
@@ -114,11 +114,11 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
 
         try
         {
-            java.io.File file = new java.io.File(saveDirectory, "level.dat_new");
-            java.io.File var6 = new java.io.File(saveDirectory, "level.dat_old");
-            java.io.File var7 = new java.io.File(saveDirectory, "level.dat");
+            java.io.File file = new(saveDirectory, "level.dat_new");
+            java.io.File var6 = new(saveDirectory, "level.dat_old");
+            java.io.File var7 = new(saveDirectory, "level.dat");
 
-            using var stream = File.OpenWrite(file.getAbsolutePath());
+            using FileStream stream = File.OpenWrite(file.getAbsolutePath());
             NbtIo.WriteCompressed(tag, stream);
 
             if (var6.exists())
@@ -146,14 +146,14 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
 
     public WorldProperties loadProperties()
     {
-        java.io.File file = new java.io.File(saveDirectory, "level.dat");
+        java.io.File file = new(saveDirectory, "level.dat");
         NBTTagCompound var2;
         NBTTagCompound var3;
         if (file.exists())
         {
             try
             {
-                using var stream = File.OpenRead(file.getAbsolutePath());
+                using FileStream stream = File.OpenRead(file.getAbsolutePath());
                 var2 = NbtIo.ReadCompressed(stream);
                 var3 = var2.GetCompoundTag("Data");
                 WorldProperties wInfo = new(var3);
@@ -170,7 +170,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
         {
             try
             {
-                using var stream = File.OpenRead(file.getAbsolutePath());
+                using FileStream stream = File.OpenRead(file.getAbsolutePath());
                 var2 = NbtIo.ReadCompressed(stream);
                 var3 = var2.GetCompoundTag("Data");
                 WorldProperties wInfo = new(var3);
@@ -188,18 +188,18 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
     public void save(WorldProperties var1)
     {
         NBTTagCompound var2 = var1.getNBTTagCompound();
-        NBTTagCompound tag = new NBTTagCompound();
+        NBTTagCompound tag = new();
         tag.SetTag("Data", var2);
 
         try
         {
-            java.io.File file = new java.io.File(saveDirectory, "level.dat_new");
-            java.io.File var5 = new java.io.File(saveDirectory, "level.dat_old");
-            java.io.File var6 = new java.io.File(saveDirectory, "level.dat");
+            java.io.File file = new(saveDirectory, "level.dat_new");
+            java.io.File var5 = new(saveDirectory, "level.dat_old");
+            java.io.File var6 = new(saveDirectory, "level.dat");
 
-            using var stream = File.OpenWrite(file.getAbsolutePath());
+            using FileStream stream = File.OpenWrite(file.getAbsolutePath());
             NbtIo.WriteCompressed(tag, stream);
-            
+
             if (var5.exists())
             {
                 var5.delete();
@@ -233,12 +233,12 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
     {
         try
         {
-            NBTTagCompound tag = new NBTTagCompound();
+            NBTTagCompound tag = new();
             player.write(tag);
-            java.io.File file = new java.io.File(playersDirectory, "_tmp_.dat");
-            java.io.File var4 = new java.io.File(playersDirectory, player.name + ".dat");
+            java.io.File file = new(playersDirectory, "_tmp_.dat");
+            java.io.File var4 = new(playersDirectory, player.name + ".dat");
 
-            using var stream = File.OpenWrite(file.getAbsolutePath());
+            using FileStream stream = File.OpenWrite(file.getAbsolutePath());
             NbtIo.WriteCompressed(tag, stream);
 
             if (var4.exists())
@@ -263,15 +263,40 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
         }
     }
 
-    public NBTTagCompound loadPlayerData(String playerName)
+    public NBTTagCompound loadPlayerData(string playerName)
     {
         try
         {
-            java.io.File file = new java.io.File(playersDirectory, playerName + ".dat");
+            java.io.File file = new(playersDirectory, playerName + ".dat");
             if (file.exists())
             {
-                using var stream = File.OpenRead(file.getAbsolutePath());
+                using FileStream stream = File.OpenRead(file.getAbsolutePath());
                 return NbtIo.ReadCompressed(stream);
+            }
+
+            java.io.File levelFile = new(saveDirectory, "level.dat");
+            if (levelFile.exists())
+            {
+                try
+                {
+                    using FileStream stream = File.OpenRead(levelFile.getAbsolutePath());
+                    NBTTagCompound levelDat = NbtIo.ReadCompressed(stream);
+                    NBTTagCompound data = levelDat.GetCompoundTag("Data");
+                    if (data.HasKey("Player"))
+                    {
+                        NBTTagCompound playerTag = data.GetCompoundTag("Player");
+
+                        using FileStream writeStream = File.OpenWrite(file.getAbsolutePath());
+                        NbtIo.WriteCompressed(playerTag, writeStream);
+
+                        LOGGER.info("Migrated singleplayer player data from level.dat to " + file.getName());
+                        return playerTag;
+                    }
+                }
+                catch (Exception e)
+                {
+                    LOGGER.warning("Failed to migrate player data from level.dat: " + e);
+                }
             }
         }
         catch (Exception var3)
