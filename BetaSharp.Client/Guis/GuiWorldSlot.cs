@@ -69,8 +69,8 @@ public class GuiWorldSlot : GuiSlot
             extraStatus = GuiSelectWorld.getUnsupportedFormatMessage(_parentWorldGui) + " " + extraStatus;
         }
 
-        _parentWorldGui.DrawString(_parentWorldGui.FontRenderer, displayName, x + 2, y + 1, 0x00FFFFFF);
-        _parentWorldGui.DrawString(_parentWorldGui.FontRenderer, fileInfo, x + 2, y + 12, 8421504);
-        _parentWorldGui.DrawString(_parentWorldGui.FontRenderer, extraStatus, x + 2, y + 12 + 10, 8421504);
+        Gui.DrawString(_parentWorldGui.FontRenderer, displayName, x + 2, y + 1, 0x00FFFFFF);
+        Gui.DrawString(_parentWorldGui.FontRenderer, fileInfo, x + 2, y + 12, 8421504);
+        Gui.DrawString(_parentWorldGui.FontRenderer, extraStatus, x + 2, y + 12 + 10, 8421504);
     }
 }

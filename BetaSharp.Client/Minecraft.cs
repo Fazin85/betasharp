@@ -403,51 +403,48 @@ public partial class Minecraft : java.lang.Object, Runnable
 
     public void displayGuiScreen(GuiScreen newScreen)
     {
-        if (!(currentScreen is GuiUnused))
+        currentScreen?.OnGuiClosed();
+
+        if (newScreen is GuiMainMenu)
         {
-            currentScreen?.OnGuiClosed();
+            statFileWriter.func_27175_b();
+        }
 
-            if (newScreen is GuiMainMenu)
-            {
-                statFileWriter.func_27175_b();
-            }
+        statFileWriter.syncStats();
+        if (newScreen == null && world == null)
+        {
+            newScreen = new GuiMainMenu();
+        }
+        else if (newScreen == null && player.health <= 0)
+        {
+            newScreen = new GuiGameOver();
+        }
 
-            statFileWriter.syncStats();
-            if (newScreen == null && world == null)
-            {
-                newScreen = new GuiMainMenu();
-            }
-            else if (newScreen == null && player.health <= 0)
-            {
-                newScreen = new GuiGameOver();
-            }
+        if (newScreen is GuiMainMenu)
+        {
+            ingameGUI.clearChatMessages();
+        }
 
-            if (newScreen is GuiMainMenu)
-            {
-                ingameGUI.clearChatMessages();
-            }
+        currentScreen = newScreen;
 
-            currentScreen = newScreen;
+        if (internalServer != null)
+        {
+            bool shouldPause = newScreen?.DoesGuiPauseGame() ?? false;
+            internalServer.SetPaused(shouldPause);
+        }
 
-            if (internalServer != null)
-            {
-                bool shouldPause = newScreen?.DoesGuiPauseGame() ?? false;
-                internalServer.SetPaused(shouldPause);
-            }
-
-            if (newScreen != null)
-            {
-                setIngameNotInFocus();
-                ScaledResolution scaledResolution = new(options, displayWidth, displayHeight);
-                int scaledWidth = scaledResolution.ScaledWidth;
-                int scaledHeight = scaledResolution.ScaledHeight;
-                newScreen.SetWorldAndResolution(this, scaledWidth, scaledHeight);
-                skipRenderWorld = false;
-            }
-            else
-            {
-                setIngameFocus();
-            }
+        if (newScreen != null)
+        {
+            setIngameNotInFocus();
+            ScaledResolution scaledResolution = new(options, displayWidth, displayHeight);
+            int scaledWidth = scaledResolution.ScaledWidth;
+            int scaledHeight = scaledResolution.ScaledHeight;
+            newScreen.SetWorldAndResolution(this, scaledWidth, scaledHeight);
+            skipRenderWorld = false;
+        }
+        else
+        {
+            setIngameFocus();
         }
     }
 
@@ -1375,8 +1372,7 @@ public partial class Minecraft : java.lang.Object, Runnable
 
                         if (Keyboard.getEventKey() == options.keyBindCommand.keyCode)
                         {
-                            // Open chat with '/' and place the cursor after it
-                            displayGuiScreen(new GuiChat("/", true));
+                            displayGuiScreen(new GuiChat("/"));
                         }
                     }
 

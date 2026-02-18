@@ -16,9 +16,9 @@ public class GuiSlider : GuiButton
         sliderValue = value;
     }
 
-    protected override int GetHoverState(bool var1)
+    protected override HoverState GetHoverState(bool var1)
     {
-        return 0;
+        return HoverState.Disabled;
     }
 
     protected override void MouseDragged(Minecraft mc, int mouseX, int mouseY)

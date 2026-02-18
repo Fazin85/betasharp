@@ -2,12 +2,8 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiErrorScreen : GuiScreen
 {
-
-    private int _tickCounter = 0;
-
     public override void UpdateScreen()
     {
-        ++_tickCounter;
     }
 
     public override void InitGui()
