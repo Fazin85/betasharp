@@ -1,4 +1,4 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Client.Entities;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
@@ -16,7 +16,7 @@ public class PlayerEntityRenderer : LivingEntityRenderer
     private readonly ModelBiped modelBipedMain;
     private readonly ModelBiped modelArmorChestplate = new(1.0F);
     private readonly ModelBiped modelArmor = new(0.5F);
-    private static readonly string[] armorFilenamePrefix = new string[] { "cloth", "chain", "iron", "diamond", "gold" };
+    private static readonly string[] armorFilenamePrefix = ["cloth", "chain", "iron", "diamond", "gold"];
 
     public PlayerEntityRenderer() : base(new ModelBiped(0.0F), 0.5F)
     {

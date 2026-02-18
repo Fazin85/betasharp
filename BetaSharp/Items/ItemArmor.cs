@@ -3,8 +3,8 @@ namespace BetaSharp.Items;
 public class ItemArmor : Item
 {
 
-    private static readonly int[] damageReduceAmountArray = new int[] { 3, 8, 6, 3 };
-    private static readonly int[] maxDamageArray = new int[] { 11, 16, 15, 13 };
+    private static readonly int[] damageReduceAmountArray = [3, 8, 6, 3];
+    private static readonly int[] maxDamageArray = [11, 16, 15, 13];
     public readonly int armorLevel;
     public readonly int armorType;
     public readonly int damageReduceAmount;

@@ -7,8 +7,8 @@ public static class CommandRegistry
     /// </summary>
     public static List<string> GetAvailableCommands()
     {
-        return new List<string>
-        {
+        return
+        [
             "kill",
             "heal",
             "clear",
@@ -37,7 +37,7 @@ public static class CommandRegistry
             "save-off",
             "save-on",
             "help",
-            "?"
-        };
+            "?",
+        ];
     }
 }

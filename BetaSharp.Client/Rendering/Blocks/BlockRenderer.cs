@@ -1695,7 +1695,13 @@ public class BlockRenderer
         float var9 = (var6 & 255) / 255.0F;
         bool var10 = var1.isSideVisible(blockAccess, var2, var3 + 1, var4, 1);
         bool var11 = var1.isSideVisible(blockAccess, var2, var3 - 1, var4, 0);
-        bool[] var12 = new bool[] { var1.isSideVisible(blockAccess, var2, var3, var4 - 1, 2), var1.isSideVisible(blockAccess, var2, var3, var4 + 1, 3), var1.isSideVisible(blockAccess, var2 - 1, var3, var4, 4), var1.isSideVisible(blockAccess, var2 + 1, var3, var4, 5) };
+        bool[] var12 =
+        [
+            var1.isSideVisible(blockAccess, var2, var3, var4 - 1, 2),
+            var1.isSideVisible(blockAccess, var2, var3, var4 + 1, 3),
+            var1.isSideVisible(blockAccess, var2 - 1, var3, var4, 4),
+            var1.isSideVisible(blockAccess, var2 + 1, var3, var4, 5)
+        ];
         if (!var10 && !var11 && !var12[0] && !var12[1] && !var12[2] && !var12[3])
         {
             return false;

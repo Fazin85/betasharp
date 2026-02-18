@@ -1,16 +1,34 @@
-using BetaSharp.Client.Input;
+﻿using BetaSharp.Client.Input;
 using java.io;
 
 namespace BetaSharp.Client.Options;
 
 public class GameOptions : java.lang.Object
 {
-    private static readonly string[] RENDER_DISTANCES = new string[] { "options.renderDistance.far", "options.renderDistance.normal", "options.renderDistance.short", "options.renderDistance.tiny" };
-    private static readonly string[] DIFFICULTIES = new string[] { "options.difficulty.peaceful", "options.difficulty.easy", "options.difficulty.normal", "options.difficulty.hard" };
-    private static readonly string[] GUISCALES = new string[] { "options.guiScale.auto", "options.guiScale.small", "options.guiScale.normal", "options.guiScale.large" };
+    private static readonly string[] RENDER_DISTANCES =
+    [
+        "options.renderDistance.far",
+        "options.renderDistance.normal",
+        "options.renderDistance.short",
+        "options.renderDistance.tiny",
+    ];
+    private static readonly string[] DIFFICULTIES =
+    [
+        "options.difficulty.peaceful",
+        "options.difficulty.easy",
+        "options.difficulty.normal",
+        "options.difficulty.hard",
+    ];
+    private static readonly string[] GUISCALES =
+    [
+        "options.guiScale.auto",
+        "options.guiScale.small",
+        "options.guiScale.normal",
+        "options.guiScale.large",
+    ];
     // private static readonly string[] LIMIT_FRAMERATES = ["performance.max", "performance.balanced", "performance.powersaver"];
-    private static readonly string[] ANISO_LEVELS = new string[] { "options.off", "2x", "4x", "8x", "16x" };
-    private static readonly string[] MSAA_LEVELS = new string[] { "options.off", "2x", "4x", "8x" };
+    private static readonly string[] ANISO_LEVELS = ["options.off", "2x", "4x", "8x", "16x"];
+    private static readonly string[] MSAA_LEVELS = ["options.off", "2x", "4x", "8x"];
     public static float MaxAnisotropy = 1.0f;
     public float musicVolume = 1.0F;
     public float soundVolume = 1.0F;
@@ -55,9 +73,21 @@ public class GameOptions : java.lang.Object
 
     public GameOptions(Minecraft mc, java.io.File mcDataDir)
     {
-        keyBindings = new KeyBinding[] { keyBindForward, keyBindLeft, keyBindBack, keyBindRight, keyBindJump, keyBindSneak, keyBindDrop, keyBindInventory, keyBindChat, keyBindToggleFog };
+        keyBindings =
+        [
+            keyBindForward,
+            keyBindLeft,
+            keyBindBack,
+            keyBindRight,
+            keyBindJump,
+            keyBindSneak,
+            keyBindDrop,
+            keyBindInventory,
+            keyBindChat,
+            keyBindToggleFog,
+        ];
         this.mc = mc;
-        this.optionsFile = new java.io.File(mcDataDir, "options.txt");
+        optionsFile = new java.io.File(mcDataDir, "options.txt");
         loadOptions();
         INITIAL_MSAA = msaaLevel;
     }

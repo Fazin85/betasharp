@@ -66,18 +66,18 @@ public class GuiMultiplayer : GuiScreen
                                 if (portPart.StartsWith(":") && portPart.Length > 0)
                                 {
                                     portPart = portPart.Substring(1);
-                                    addressParts = new string[] { ipv6Address, portPart };
+                                    addressParts = [ipv6Address, portPart];
                                 }
                                 else
                                 {
-                                    addressParts = new string[] { ipv6Address };
+                                    addressParts = [ipv6Address];
                                 }
                             }
                         }
 
                         if (addressParts.Length > 2)
                         {
-                            addressParts = new string[] { serverAddress };
+                            addressParts = [serverAddress];
                         }
 
                         mc.displayGuiScreen(new GuiConnecting(mc, addressParts[0], addressParts.Length > 1 ? parseIntWithDefault(addressParts[1], 25565) : 25565));

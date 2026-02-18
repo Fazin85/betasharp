@@ -1,4 +1,4 @@
-using BetaSharp.Client.Options;
+﻿using BetaSharp.Client.Options;
 
 namespace BetaSharp.Client.Guis;
 
@@ -11,7 +11,14 @@ public class GuiOptions : GuiScreen
     private readonly GuiScreen parentScreen;
     protected string screenTitle = "Options";
     private readonly GameOptions options;
-    private static readonly EnumOptions[] availableOptions = new EnumOptions[] { EnumOptions.MUSIC, EnumOptions.SOUND, EnumOptions.INVERT_MOUSE, EnumOptions.SENSITIVITY, EnumOptions.DIFFICULTY };
+    private static readonly EnumOptions[] availableOptions =
+    [
+        EnumOptions.MUSIC,
+        EnumOptions.SOUND,
+        EnumOptions.INVERT_MOUSE,
+        EnumOptions.SENSITIVITY,
+        EnumOptions.DIFFICULTY,
+    ];
 
     public GuiOptions(GuiScreen parentScreen, GameOptions gameOptions)
     {

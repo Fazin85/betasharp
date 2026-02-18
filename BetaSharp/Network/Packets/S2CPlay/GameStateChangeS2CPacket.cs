@@ -6,7 +6,7 @@ public class GameStateChangeS2CPacket : Packet
 {
     public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(GameStateChangeS2CPacket).TypeHandle);
 
-    public static readonly string[] REASONS = new string[] { "tile.bed.notValid", null, null };
+    public static readonly string[] REASONS = ["tile.bed.notValid", null, null];
     public int reason;
 
     public GameStateChangeS2CPacket()

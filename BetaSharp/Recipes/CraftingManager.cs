@@ -8,7 +8,7 @@ namespace BetaSharp.Recipes;
 public class CraftingManager
 {
     private static CraftingManager instance { get; } = new();
-    public List<IRecipe> Recipes { get; } = new();
+    public List<IRecipe> Recipes { get; } = [];
 
     public static CraftingManager getInstance()
     {
@@ -143,7 +143,7 @@ public class CraftingManager
 
     public void AddShapelessRecipe(ItemStack result, params object[] pattern)
     {
-        List<ItemStack> stacks = new();
+        List<ItemStack> stacks = [];
 
         foreach (var ingredient in pattern)
         {

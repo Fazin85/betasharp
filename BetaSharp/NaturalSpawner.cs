@@ -10,8 +10,13 @@ namespace BetaSharp;
 
 public class NaturalSpawner
 {
-    private static HashSet<ChunkPos> eligibleChunksForSpawning = new HashSet<ChunkPos>();
-    protected static readonly Class[] nightSpawnEntities = new Class[] { EntitySpider.Class, EntityZombie.Class, EntitySkeleton.Class };
+    private static HashSet<ChunkPos> eligibleChunksForSpawning = [];
+    protected static readonly Class[] nightSpawnEntities =
+    [
+        EntitySpider.Class,
+        EntityZombie.Class,
+        EntitySkeleton.Class,
+    ];
 
     protected static BlockPos getRandomSpawningPointInChunk(World var0, int var1, int var2)
     {

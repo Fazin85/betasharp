@@ -1,4 +1,4 @@
-using BetaSharp.Client.Options;
+﻿using BetaSharp.Client.Options;
 
 namespace BetaSharp.Client.Guis;
 
@@ -6,9 +6,21 @@ public class GuiVideoSettings : GuiScreen
 {
 
     private readonly GuiScreen field_22110_h;
-    protected string field_22107_a = "Video Settings";
+    private string _screenTitle = "Video Settings";
     private readonly GameOptions guiGameSettings;
-    private static readonly EnumOptions[] field_22108_k = new EnumOptions[] { EnumOptions.RENDER_DISTANCE, EnumOptions.FOV, EnumOptions.FRAMERATE_LIMIT, EnumOptions.VIEW_BOBBING, EnumOptions.GUI_SCALE, EnumOptions.ANISOTROPIC, EnumOptions.MIPMAPS, EnumOptions.MSAA, EnumOptions.ENVIRONMENT_ANIMATION, EnumOptions.DEBUG_MODE };
+    private static readonly EnumOptions[] s_availableOptions =
+    [
+        EnumOptions.RENDER_DISTANCE,
+        EnumOptions.FOV,
+        EnumOptions.FRAMERATE_LIMIT,
+        EnumOptions.VIEW_BOBBING,
+        EnumOptions.GUI_SCALE,
+        EnumOptions.ANISOTROPIC,
+        EnumOptions.MIPMAPS,
+        EnumOptions.MSAA,
+        EnumOptions.ENVIRONMENT_ANIMATION,
+        EnumOptions.DEBUG_MODE,
+    ];
 
     public GuiVideoSettings(GuiScreen var1, GameOptions var2)
     {
@@ -19,9 +31,9 @@ public class GuiVideoSettings : GuiScreen
     public override void initGui()
     {
         TranslationStorage var1 = TranslationStorage.getInstance();
-        field_22107_a = var1.translateKey("options.videoTitle");
+        _screenTitle = var1.translateKey("options.videoTitle");
         int var2 = 0;
-        EnumOptions[] var3 = field_22108_k;
+        EnumOptions[] var3 = s_availableOptions;
         int var4 = var3.Length;
 
         for (int var5 = 0; var5 < var4; ++var5)
@@ -71,7 +83,7 @@ public class GuiVideoSettings : GuiScreen
     public override void render(int var1, int var2, float var3)
     {
         drawDefaultBackground();
-        drawCenteredString(fontRenderer, field_22107_a, width / 2, 20, 0x00FFFFFF);
+        drawCenteredString(fontRenderer, _screenTitle, width / 2, 20, 0x00FFFFFF);
         base.render(var1, var2, var3);
     }
 }
