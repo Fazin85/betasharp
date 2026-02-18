@@ -44,8 +44,15 @@ public class JavaRandom
 
     private int Next(int bits)
     {
-        _seed = (_seed * Multiplier + Addend) & Mask;
-        return (int)(_seed >> (48 - bits));
+        long oldSeed, nextSeed;
+        do
+        {
+            oldSeed = Interlocked.Read(ref _seed);
+            nextSeed = (oldSeed * Multiplier + Addend) & Mask;
+        } 
+        while (Interlocked.CompareExchange(ref _seed, nextSeed, oldSeed) != oldSeed);
+
+        return (int)((ulong)nextSeed >> (48 - bits));
     }
 
     public int NextInt()
