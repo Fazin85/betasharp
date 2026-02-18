@@ -42,8 +42,7 @@ dotnet build --configuration Release
 
 ## Contributing
 
-Contributions are welcome, but this is a personal project with no guarantees on review or merge timelines. Feel free to submit contributions, though they may or may not be reviewed or merged depending on the maintainer's availability and discretion.
+Contributions are welcome! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests.
 
-## AI Policy
+This is a personal project with no guarantees on review or merge timelines. Feel free to submit contributions, though they may or may not be reviewed or merged depending on the maintainer's availability and discretion.
 
-Small amounts of AI assistance are allowed, but low-quality or "vibe-coded" content is not. Please ensure all code is high-quality and fully understood before submitting.
