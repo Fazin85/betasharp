@@ -375,13 +375,13 @@ public class ClientNetworkHandler : NetHandler
 
     public override void onDisconnect(DisconnectPacket packet)
     {
-        netManager.disconnect("disconnect.kicked", new object[0]);
+        netManager.disconnect("disconnect.kicked", []);
         disconnected = true;
         mc.changeWorld1(null);
         mc.displayGuiScreen(new GuiConnectFailed("disconnect.disconnected", "disconnect.genericReason", new object[] { packet.reason }));
     }
 
-    public override void onDisconnected(string reason, object[] args)
+    public override void onDisconnected(string reason, object[]? args)
     {
         if (!disconnected)
         {

@@ -8,7 +8,7 @@ public class InternalConnection : Connection
 
     public string Name { get; set; }
 
-    public InternalConnection(NetHandler networkHandler, string name)
+    public InternalConnection(NetHandler? networkHandler, string name)
     {
         this.networkHandler = networkHandler;
         Name = name;
@@ -101,7 +101,7 @@ public class InternalConnection : Connection
     {
     }
 
-    public override java.net.SocketAddress getAddress()
+    public override java.net.SocketAddress? getAddress()
     {
         return new java.net.InetSocketAddress("127.0.0.1", 12345);
     }

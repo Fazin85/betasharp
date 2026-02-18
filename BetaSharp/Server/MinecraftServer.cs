@@ -403,7 +403,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
 
         if (connections != null)
         {
-            connections.tick();
+            connections.Tick();
         }
         playerManager.updateAllChunks();
 
