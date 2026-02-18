@@ -740,8 +740,18 @@ public partial class Minecraft : java.lang.Object, Runnable
             if (!isTakingScreenshot)
             {
                 isTakingScreenshot = true;
-                ingameGUI.addChatMessage(ScreenShotHelper.saveScreenshot(minecraftDir, displayWidth,
-                    displayHeight));
+                int size = displayWidth * displayHeight * 3;
+                byte[] pixels = new byte[size];
+                GLManager.GL.PixelStore(PixelStoreParameter.PackAlignment, 1);
+                unsafe
+                {
+                    fixed (byte* p = pixels)
+                    {
+                        GLManager.GL.ReadPixels(0, 0, (uint)displayWidth, (uint)displayHeight, PixelFormat.Rgb, PixelType.UnsignedByte, p);
+                    }
+                }
+                string result = ScreenShotHelper.saveScreenshot(minecraftDir.getAbsolutePath(), displayWidth, displayHeight, pixels);
+                ingameGUI.addChatMessage(result);
             }
         }
         else
