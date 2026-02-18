@@ -139,12 +139,12 @@ public abstract class GuiSlotStats : GuiSlot
         if (var1 != null)
         {
             var5 = var1.format(GuiStats.func_27142_c(field_27269_g).writeStat(var1));
-            field_27269_g.DrawString(GuiStats.func_27133_h(field_27269_g), var5, var2 - GuiStats.func_27137_i(field_27269_g).getStringWidth(var5), var3 + 5, var4 ? 0x00FFFFFFu : 0x00909090u);
+            Gui.DrawString(GuiStats.func_27133_h(field_27269_g), var5, var2 - GuiStats.func_27137_i(field_27269_g).getStringWidth(var5), var3 + 5, var4 ? 0x00FFFFFFu : 0x00909090u);
         }
         else
         {
             var5 = "-";
-            field_27269_g.DrawString(GuiStats.func_27132_j(field_27269_g), var5, var2 - GuiStats.func_27134_k(field_27269_g).getStringWidth(var5), var3 + 5, var4 ? 0x00FFFFFFu : 0x00909090u);
+            Gui.DrawString(GuiStats.func_27132_j(field_27269_g), var5, var2 - GuiStats.func_27134_k(field_27269_g).getStringWidth(var5), var3 + 5, var4 ? 0x00FFFFFFu : 0x00909090u);
         }
 
     }

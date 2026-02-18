@@ -158,7 +158,7 @@ public class GuiStats : GuiScreen
 
     public static void func_27128_a(GuiStats var0, int right, int bottom, int left, int top)
     {
-        var0.DrawGradientRect(right, bottom, left, top, 0xC0000000, 0xC0000000);
+        DrawGradientRect(right, bottom, left, top, 0xC0000000, 0xC0000000);
     }
 
     public static Minecraft func_27149_g(GuiStats var0)
@@ -193,7 +193,7 @@ public class GuiStats : GuiScreen
 
     public static void func_27129_a(GuiStats var0, int var1, int var2, int var3, int var4, uint topColor, uint bottomColor)
     {
-        var0.DrawGradientRect(var1, var2, var3, var4, topColor, bottomColor);
+        DrawGradientRect(var1, var2, var3, var4, topColor, bottomColor);
     }
 
     public static TextRenderer func_27144_m(GuiStats var0)
@@ -208,7 +208,7 @@ public class GuiStats : GuiScreen
 
     public static void func_27135_b(GuiStats var0, int var1, int var2, int var3, int var4, uint topColor, uint bottomColor)
     {
-        var0.DrawGradientRect(var1, var2, var3, var4, topColor, bottomColor);
+        DrawGradientRect(var1, var2, var3, var4, topColor, bottomColor);
     }
 
     public static TextRenderer func_27131_o(GuiStats var0)

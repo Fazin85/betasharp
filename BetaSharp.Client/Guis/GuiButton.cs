@@ -4,13 +4,14 @@ using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
 
-
-
 public class GuiButton : Gui
 {
-    protected static readonly int HoverStateDisabled = 0;
-    protected static readonly int HoverStateNormal = 1;
-    protected static readonly int HoverStateHovered = 2;
+    public enum HoverState
+    {
+        Disabled = 0,
+        Normal = 1,
+        Hovered = 2
+    }
 
     protected int _width;
     protected int _height;
@@ -40,12 +41,12 @@ public class GuiButton : Gui
         DisplayString = displayStr;
     }
 
-    protected virtual int GetHoverState(bool isMouseOver)
+    protected virtual HoverState GetHoverState(bool isMouseOver)
     {
-        if (!Enabled) return HoverStateDisabled;
-        if (isMouseOver) return HoverStateHovered;
+        if (!Enabled) return HoverState.Disabled;
+        if (isMouseOver) return HoverState.Hovered;
 
-        return HoverStateNormal;
+        return HoverState.Normal;
     }
 
     public void DrawButton(Minecraft mc, int mouseX, int mouseY)
@@ -58,10 +59,10 @@ public class GuiButton : Gui
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
 
         bool isHovered = mouseX >= XPosition && mouseY >= YPosition && mouseX < XPosition + _width && mouseY < YPosition + _height;
-        int hoverState = GetHoverState(isHovered);
+        HoverState hoverState = GetHoverState(isHovered);
 
-        DrawTexturedModalRect(XPosition, YPosition, 0, 46 + hoverState * 20, _width / 2, _height);
-        DrawTexturedModalRect(XPosition + _width / 2, YPosition, 200 - _width / 2, 46 + hoverState * 20, _width / 2, _height);
+        DrawTexturedModalRect(XPosition, YPosition, 0, 46 + (int)hoverState * 20, _width / 2, _height);
+        DrawTexturedModalRect(XPosition + _width / 2, YPosition, 200 - _width / 2, 46 + (int)hoverState * 20, _width / 2, _height);
 
         MouseDragged(mc, mouseX, mouseY);
 
@@ -73,8 +74,10 @@ public class GuiButton : Gui
         {
             DrawCenteredString(font, DisplayString, XPosition + _width / 2, YPosition + (_height - 8) / 2, 0xFFFFA0);
         }
-
+        else
+        {
             DrawCenteredString(font, DisplayString, XPosition + _width / 2, YPosition + (_height - 8) / 2, 0xE0E0E0);
+        }
     }
 
     protected virtual void MouseDragged(Minecraft mc, int mouseX, int mouseY)
