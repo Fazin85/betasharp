@@ -1,7 +1,7 @@
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Rendering.Core;
-using BetaSharp.Client.Rendering.Entitys.Models;
+using BetaSharp.Client.Rendering.Entities.Models;
 
 namespace BetaSharp.Client.Rendering.Blocks.Entities;
 
