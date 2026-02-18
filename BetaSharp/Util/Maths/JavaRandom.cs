@@ -32,10 +32,7 @@ public class JavaRandom
     {
         lock (_lock)
         {
-            // Atomically update the seed using the initial scramble
             Interlocked.Exchange(ref _seed, InitialScramble(seed));
-
-            // Reset the Gaussian flag (required for parity with Java's NextGaussian)
             _haveNextNextGaussian = false;
         }
     }
@@ -62,14 +59,11 @@ public class JavaRandom
 
     public long NextLong()
     {
-        // It's okay that the bottom word remains signed.
-        // We shift 32 bits from one call and add the 32 bits from the next.
         return ((long)Next(32) << 32) + Next(32);
     }
 
     public double NextDouble()
     {
-        // Combine 26 bits and 27 bits to get 53 bits of randomness
         return (((long)Next(26) << 27) + Next(27)) * DoubleUnit;
     }
 
@@ -78,24 +72,16 @@ public class JavaRandom
         if (bound <= 0)
             throw new ArgumentException("bound must be positive");
 
-        // Get 31 random bits (ensures a non-negative number)
         int r = Next(31);
         int m = bound - 1;
 
-        // Optimization: If bound is a power of 2
         if ((bound & m) == 0)
         {
             r = (int)((bound * (long)r) >> 31);
         }
         else
         {
-            // Rejection sampling to eliminate modulo bias
-            for (int u = r;
-                u - (r = u % bound) + m < 0;
-                u = Next(31))
-            {
-                // Loop until we find a value that doesn't over-represent certain candidates
-            }
+            for (int u = r; u - (r = u % bound) + m < 0; u = Next(31)){ }
         }
 
         return r;
