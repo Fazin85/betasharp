@@ -1,59 +1,68 @@
 using BetaSharp.Util.Maths;
-using java.lang;
-using java.net;
 using java.util;
 
 namespace BetaSharp.Client.Sound;
 
-public class SoundPool : java.lang.Object
+public class SoundPool
 {
-    private readonly JavaRandom rand = new();
+    private readonly JavaRandom _rand = new();
     private readonly Map weightedSoundSet = new HashMap();
     private readonly List loadedSounds = new ArrayList();
     public int loadedSoundCount = 0;
     public bool isRandom = true;
 
-    public SoundPoolEntry addSound(string var1, java.io.File var2)
+    private readonly Dictionary<string, List<SoundPoolEntry>> _weightedSoundSet = new();
+    private readonly List<SoundPoolEntry> _allLoadedSounds = new();
+
+    public int LoadedSoundCount = 0;
+    public bool IsRandom = true;
+
+    public SoundPoolEntry AddSound(string soundPath, FileInfo fileInfo)
     {
-        try
-        {
-            string var3 = var1;
-            var1 = var1[..var1.IndexOf('.')];
-            if (isRandom)
-            {
-                while (Character.isDigit(var1[var1.Length - 1]))
-                {
-                    var1 = var1[..^1];
-                }
-            }
+        string originalFileName = soundPath;
 
-            var1 = var1.Replace('/', '.');
-            if (!weightedSoundSet.containsKey(var1))
-            {
-                weightedSoundSet.put(var1, new ArrayList());
-            }
-
-            SoundPoolEntry var4 = new(var3, var2.toURI().toURL());
-            ((List)weightedSoundSet.get(var1)).add(var4);
-            loadedSounds.add(var4);
-            ++loadedSoundCount;
-            return var4;
-        }
-        catch (MalformedURLException var5)
+        string soundKey = soundPath;
+        int dotIndex = soundKey.IndexOf('.');
+        if (dotIndex != -1)
         {
-            var5.printStackTrace();
-            throw new RuntimeException(var5);
+            soundKey = soundKey[..dotIndex];
         }
+
+        if (IsRandom)
+        {
+            while (soundKey.Length > 0 && char.IsDigit(soundKey[^1]))
+            {
+                soundKey = soundKey[..^1];
+            }
+        }
+
+        soundKey = soundKey.Replace('/', '.');
+        if (!_weightedSoundSet.TryGetValue(soundKey, out List<SoundPoolEntry>? variations))
+        {
+            variations = new List<SoundPoolEntry>();
+            _weightedSoundSet[soundKey] = variations;
+        }
+
+        SoundPoolEntry entry = new(originalFileName, new Uri(fileInfo.FullName));
+
+        variations.Add(entry);
+        _allLoadedSounds.Add(entry);
+        LoadedSoundCount++;
+
+        return entry;
     }
 
-    public SoundPoolEntry getRandomSoundFromSoundPool(string var1)
+    public SoundPoolEntry? GetRandomSoundFromSoundPool(string soundKey)
     {
-        List var2 = (List)weightedSoundSet.get(var1);
-        return var2 == null ? null : (SoundPoolEntry)var2.get(rand.NextInt(var2.size()));
+        if (_weightedSoundSet.TryGetValue(soundKey, out List<SoundPoolEntry>? variations))
+        {
+            return variations[_rand.NextInt(variations.Count)];
+        }
+        return null;
     }
 
-    public SoundPoolEntry getRandomSound()
+    public SoundPoolEntry? GetRandomSound()
     {
-        return loadedSounds.size() == 0 ? null : (SoundPoolEntry)loadedSounds.get(rand.NextInt(loadedSounds.size()));
+        return _allLoadedSounds.Count == 0 ? null : _allLoadedSounds[_rand.NextInt(_allLoadedSounds.Count)];
     }
 }
