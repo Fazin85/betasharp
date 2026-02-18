@@ -17,10 +17,10 @@ public class RecipesTools
             for (int j = 0; j < recipeItems.Length - 1; ++j)
             {
                 Item toolItem = (Item)recipeItems[j + 1][i];
-                m.AddRecipe(new ItemStack(toolItem), [recipePatterns[j], '#', Item.Stick, 'X', material]);
+                m.AddRecipe(new ItemStack(toolItem), recipePatterns[j], '#', Item.Stick, 'X', material);
             }
         }
 
-        m.AddRecipe(new ItemStack(Item.Shears), [" #", "# ",'#', Item.IronIngot]);
+        m.AddRecipe(new ItemStack(Item.Shears), " #", "# ", '#', Item.IronIngot);
     }
 }

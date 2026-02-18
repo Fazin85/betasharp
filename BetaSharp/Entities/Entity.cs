@@ -910,9 +910,9 @@ public abstract class Entity : java.lang.Object
 
     public void write(NBTTagCompound nbt)
     {
-        nbt.SetTag("Pos", newDoubleNBTList([x, y + (double)cameraOffset, z]));
-        nbt.SetTag("Motion", newDoubleNBTList([velocityX, velocityY, velocityZ]));
-        nbt.SetTag("Rotation", newFloatNBTList([yaw, pitch]));
+        nbt.SetTag("Pos", newDoubleNBTList(x, y + (double)cameraOffset, z));
+        nbt.SetTag("Motion", newDoubleNBTList(velocityX, velocityY, velocityZ));
+        nbt.SetTag("Rotation", newFloatNBTList(yaw, pitch));
         nbt.SetFloat("FallDistance", fallDistance);
         nbt.SetShort("Fire", (short)fireTicks);
         nbt.SetShort("Air", (short)air);

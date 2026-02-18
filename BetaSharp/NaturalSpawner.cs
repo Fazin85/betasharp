@@ -140,7 +140,7 @@ public class NaturalSpawner
                                             EntityLiving var43;
                                             try
                                             {
-                                                var43 = (EntityLiving)e!.entityClass.getConstructor(new Class[] { World.Class }).newInstance(new java.lang.Object[] { var0 });
+                                                var43 = (EntityLiving)e!.entityClass.getConstructor(World.Class).newInstance(var0);
                                             }
                                             catch (java.lang.Exception ex)
                                             {
@@ -255,7 +255,7 @@ public class NaturalSpawner
                     EntityLiving var17;
                     try
                     {
-                        var17 = (EntityLiving)var6[var12].getConstructor(new Class[] { typeof(World) }).newInstance(new java.lang.Object[] { var0 });
+                        var17 = (EntityLiving)var6[var12].getConstructor(typeof(World)).newInstance(var0);
                     }
                     catch (java.lang.Exception ex)
                     {

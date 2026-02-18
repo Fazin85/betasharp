@@ -99,7 +99,7 @@ public class InternalConnection : Connection
 
     public override void disconnect()
     {
-        disconnect("Disconnecting", []);
+        disconnect("Disconnecting");
     }
 
     public override void interrupt()

@@ -184,7 +184,7 @@ public class Connection
             }
             else
             {
-                disconnect("disconnect.endOfStream", []);
+                disconnect("disconnect.endOfStream");
             }
 
             return receivedPacket;
@@ -203,7 +203,7 @@ public class Connection
     private void disconnect(java.lang.Exception ex)
     {
         ex.printStackTrace();
-        disconnect("disconnect.genericReason", ["Internal exception: " + ex.toString()]);
+        disconnect("disconnect.genericReason", "Internal exception: " + ex.toString());
     }
 
     public virtual void disconnect(string disconnectedReason, params object[] disconnectReasonArgs)
@@ -250,14 +250,14 @@ public class Connection
     {
         if (sendQueueSize > 1048576)
         {
-            disconnect("disconnect.overflow", []);
+            disconnect("disconnect.overflow");
         }
 
         if (readQueue.isEmpty())
         {
             if (timeout++ == 1200)
             {
-                disconnect("disconnect.timeout", []);
+                disconnect("disconnect.timeout");
             }
         }
         else

@@ -32,7 +32,7 @@ public class ThreadConnectToServer(GuiConnecting var1, Minecraft var2, string va
                 return;
             }
 
-            _mc.displayGuiScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", new Object[] { "Unknown host \'" + _hostName + "\'" }));
+            _mc.displayGuiScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", "Unknown host \'" + _hostName + "\'"));
         }
         catch (ConnectException ex)
         {

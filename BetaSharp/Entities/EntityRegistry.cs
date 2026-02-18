@@ -32,9 +32,7 @@ public class EntityRegistry
             Class entityClass = (Class)idToClass.get(id);
             if (entityClass != null)
             {
-                entity = (Entity)entityClass.getConstructor([World.Class]).newInstance([
-                    world
-                ]);
+                entity = (Entity)entityClass.getConstructor(World.Class).newInstance(world);
             }
         }
         catch (Exception ex)
@@ -54,7 +52,7 @@ public class EntityRegistry
             Class entityClass = (Class)idToClass.get(nbt.GetString("id"));
             if (entityClass != null)
             {
-                entity = (Entity)entityClass.getConstructor([World.Class]).newInstance([world]);
+                entity = (Entity)entityClass.getConstructor(World.Class).newInstance(world);
             }
         }
         catch (java.lang.Exception ex)
@@ -125,7 +123,7 @@ public class EntityRegistry
             Class entityClass = (Class)rawIdToClass.get(Integer.valueOf(rawId));
             if (entityClass != null)
             {
-                entity = (Entity)entityClass.getConstructor([World.Class]).newInstance([world]);
+                entity = (Entity)entityClass.getConstructor(World.Class).newInstance(world);
             }
         }
         catch (java.lang.Exception ex)

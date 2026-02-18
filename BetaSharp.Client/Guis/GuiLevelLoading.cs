@@ -1,4 +1,4 @@
-using BetaSharp.Client.Network;
+﻿using BetaSharp.Client.Network;
 using BetaSharp.Network;
 using BetaSharp.Server.Internal;
 using BetaSharp.Server.Threading;
@@ -28,7 +28,7 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
         {
             if (mc.internalServer.stopped)
             {
-                mc.displayGuiScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", ["Internal server stopped unexpectedly"]));
+                mc.displayGuiScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", "Internal server stopped unexpectedly"));
                 return;
             }
 

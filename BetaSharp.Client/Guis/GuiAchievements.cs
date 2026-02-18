@@ -395,7 +395,7 @@ public class GuiAchievements : GuiScreen
             else
             {
                 var34 = java.lang.Math.max(fontRenderer.getStringWidth(var31), 120);
-                string var39 = StatCollector.translateToLocalFormatted("achievement.requires", new object[] { var27.parent.statName });
+                string var39 = StatCollector.translateToLocalFormatted("achievement.requires", var27.parent.statName);
                 var38 = fontRenderer.func_27277_a(var39, var34);
                 drawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var38 + 12 + 3, 0xC0000000, 0xC0000000);
                 fontRenderer.func_27278_a(var39, var17, var33 + 12, var34, 0xFF705050);

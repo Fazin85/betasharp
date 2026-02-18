@@ -44,7 +44,7 @@ public class RecipesArmor
             for (int j = 0; j < recipeItems.Length - 1; ++j)
             {
                 Item armorItem = (Item)recipeItems[j + 1][i];
-                manager.AddRecipe(new ItemStack(armorItem), [recipePatterns[j], 'X', material]);
+                manager.AddRecipe(new ItemStack(armorItem), recipePatterns[j], 'X', material);
             }
         }
 

@@ -35,7 +35,7 @@ public class PersistentStateManager : java.lang.Object
                 {
                     try
                     {
-                        var3 = (PersistentState)var1.getConstructor([c]).newInstance([var2]);
+                        var3 = (PersistentState)var1.getConstructor(c).newInstance(var2);
                     }
                     catch (java.lang.Exception e)
                     {

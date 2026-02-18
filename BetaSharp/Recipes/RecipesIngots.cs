@@ -13,8 +13,8 @@ public class RecipesIngots
         {
             Block block = (Block)recipeItems[i][0];
             ItemStack ingot = (ItemStack)recipeItems[i][1];
-            m.AddRecipe(new ItemStack(block), ["###", "###", "###", '#', ingot]);
-            m.AddRecipe(ingot, ["#", '#', block]);
+            m.AddRecipe(new ItemStack(block), "###", "###", "###", '#', ingot);
+            m.AddRecipe(ingot, "#", '#', block);
         }
 
     }

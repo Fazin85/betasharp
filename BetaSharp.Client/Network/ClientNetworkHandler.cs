@@ -374,10 +374,10 @@ public class ClientNetworkHandler : NetHandler
 
     public override void onDisconnect(DisconnectPacket packet)
     {
-        netManager.disconnect("disconnect.kicked", []);
+        netManager.disconnect("disconnect.kicked");
         disconnected = true;
         mc.changeWorld1(null);
-        mc.displayGuiScreen(new GuiConnectFailed("disconnect.disconnected", "disconnect.genericReason", new object[] { packet.reason }));
+        mc.displayGuiScreen(new GuiConnectFailed("disconnect.disconnected", "disconnect.genericReason", packet.reason));
     }
 
     public override void onDisconnected(string reason, object[]? args)
@@ -491,13 +491,13 @@ public class ClientNetworkHandler : NetHandler
                 }
                 else
                 {
-                    netManager.disconnect("disconnect.loginFailedInfo", new object[] { response });
+                    netManager.disconnect("disconnect.loginFailedInfo", response);
                 }
             }
             catch (java.lang.Exception ex)
             {
                 ex.printStackTrace();
-                netManager.disconnect("disconnect.genericReason", new object[] { "Internal client error: " + ex.toString() });
+                netManager.disconnect("disconnect.genericReason", "Internal client error: " + ex.toString());
             }
         }
 
@@ -507,7 +507,7 @@ public class ClientNetworkHandler : NetHandler
     {
         disconnected = true;
         netManager.interrupt();
-        netManager.disconnect("disconnect.closed", new object[0]);
+        netManager.disconnect("disconnect.closed");
     }
 
     public override void onLivingEntitySpawn(LivingEntitySpawnS2CPacket packet)
