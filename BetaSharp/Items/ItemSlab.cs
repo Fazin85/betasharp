@@ -23,6 +23,9 @@ public class ItemSlab : ItemBlock
 
     public override String getItemNameIS(ItemStack itemStack)
     {
-        return base.getItemName() + "." + BlockSlab.names[itemStack.getDamage()];
+        if(BlockSlab.names.Length > itemStack.getDamage())
+            return base.getItemName() + "." + BlockSlab.names[itemStack.getDamage()];
+
+        return "";
     }
 }

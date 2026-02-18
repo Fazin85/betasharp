@@ -19,11 +19,11 @@ The Website lists instructions for downloading the SDK on Windows, macOS and Lin
 
 ### Client
 
-For building the client.
+For building the client. It is recommended to build with `--configuration Release` for better performance.
 
 ```
 cd BetaSharp.Client
-dotnet build
+dotnet build --configuration Release
 ```
 
 ### Server
@@ -32,9 +32,13 @@ For building the server.
 
 ```
 cd BetaSharp.Server
-dotnet build
+dotnet build --configuration Release
 ```
 
 ## Contributing
 
 Contributions are welcome, but this is a personal project with no guarantees on review or merge timelines. Feel free to submit contributions, though they may or may not be reviewed or merged depending on the maintainer's availability and discretion.
+
+## AI Policy
+
+Small amounts of AI assistance are allowed, but low-quality or "vibe-coded" content is not. Please ensure all code is high-quality and fully understood before submitting.

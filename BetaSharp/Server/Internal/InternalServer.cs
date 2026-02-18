@@ -35,6 +35,15 @@ public class InternalServer : MinecraftServer
 
         if (result)
         {
+            for (int i = 0; i < worlds.Length; ++i)
+            {
+                if (worlds[i] != null)
+                {
+                    worlds[i].difficulty = _initialDifficulty;
+                    worlds[i].allowSpawning(_initialDifficulty > 0, true);
+                }
+            }
+
             isReady = true;
         }
         return result;
