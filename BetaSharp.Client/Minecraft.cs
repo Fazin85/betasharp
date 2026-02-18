@@ -257,7 +257,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         GLManager.GL.LoadIdentity();
         GLManager.GL.MatrixMode(GLEnum.Modelview);
         checkGLError("Startup");
-        sndManager.loadSoundSettings(options);
+        sndManager.LoadSoundSettings(options);
         textureManager.addDynamicTexture(textureLavaFX);
         textureManager.addDynamicTexture(textureWaterFX);
         textureManager.addDynamicTexture(new NetherPortalSprite());
@@ -490,7 +490,7 @@ public partial class Minecraft : java.lang.Object, Runnable
             {
             }
 
-            sndManager.closeMinecraft();
+            sndManager.CloseMinecraft();
             Mouse.destroy();
             Keyboard.destroy();
         }
@@ -582,7 +582,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                     long tickElapsedTime = java.lang.System.nanoTime() - tickStartTime;
                     checkGLError("Pre render");
                     BlockRenderer.fancyGrass = true;
-                    sndManager.updateListener(player, timer.renderPartialTicks);
+                    sndManager.UpdateListener(player, timer.renderPartialTicks);
                     GLManager.GL.Enable(GLEnum.Texture2D);
                     if (world != null)
                     {
@@ -1421,7 +1421,7 @@ public partial class Minecraft : java.lang.Object, Runnable
     {
         java.lang.System.@out.println("FORCING RELOAD!");
         sndManager = new SoundManager();
-        sndManager.loadSoundSettings(options);
+        sndManager.LoadSoundSettings(options);
     }
 
     public bool isMultiplayerWorld()
@@ -1452,7 +1452,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         camera = null;
         loadingScreen.printText(loadingText);
         loadingScreen.progressStage("");
-        sndManager.playStreaming((string)null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+        sndManager.PlayStreaming((string)null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 
         world = newWorld;
         if (newWorld != null)
@@ -1537,9 +1537,9 @@ public partial class Minecraft : java.lang.Object, Runnable
         world.tickChunks();
     }
 
-    public void installResource(string resourcePath, java.io.File resourceFile)
+    public void installResource(string resourcePath, FileInfo resourceFile)
     {
-        if (!resourceFile.getPath().EndsWith("ogg"))
+        if (!resourceFile.FullName.EndsWith("ogg"))
         {
             //TODO: ADD SUPPORT FOR MUS SFX?
             return;
@@ -1550,23 +1550,23 @@ public partial class Minecraft : java.lang.Object, Runnable
         resourcePath = resourcePath.Substring(slashIndex + 1);
         if (category.Equals("sound", StringComparison.OrdinalIgnoreCase))
         {
-            sndManager.addSound(resourcePath, resourceFile);
+            sndManager.AddSound(resourcePath, resourceFile);
         }
         else if (category.Equals("newsound", StringComparison.OrdinalIgnoreCase))
         {
-            sndManager.addSound(resourcePath, resourceFile);
+            sndManager.AddSound(resourcePath, resourceFile);
         }
         else if (category.Equals("streaming", StringComparison.OrdinalIgnoreCase))
         {
-            sndManager.addStreaming(resourcePath, resourceFile);
+            sndManager.AddStreaming(resourcePath, resourceFile);
         }
         else if (category.Equals("music", StringComparison.OrdinalIgnoreCase))
         {
-            sndManager.addMusic(resourcePath, resourceFile);
+            sndManager.AddMusic(resourcePath, resourceFile);
         }
         else if (category.Equals("newmusic", StringComparison.OrdinalIgnoreCase))
         {
-            sndManager.addMusic(resourcePath, resourceFile);
+            sndManager.AddMusic(resourcePath, resourceFile);
         }
     }
 

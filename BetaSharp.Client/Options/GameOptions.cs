@@ -88,12 +88,12 @@ public class GameOptions : java.lang.Object
         if (option == EnumOptions.MUSIC)
         {
             musicVolume = value;
-            mc.sndManager.onSoundOptionsChanged();
+            mc.sndManager.OnSoundOptionsChanged();
         }
         else if (option == EnumOptions.SOUND)
         {
             soundVolume = value;
-            mc.sndManager.onSoundOptionsChanged();
+            mc.sndManager.OnSoundOptionsChanged();
         }
         else if (option == EnumOptions.SENSITIVITY)
         {
