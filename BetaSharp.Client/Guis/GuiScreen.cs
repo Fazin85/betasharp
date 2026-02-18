@@ -80,12 +80,12 @@ public class GuiScreen : Gui
     {
         if (button == 0)
         {
-            foreach (var control in _controlList)
+            foreach (var control in _controlList.ToArray())
             {
                 if (control.MousePressed(mc, mouseX, mouseY))
                 {
                     SelectedButton = control;
-                    mc.sndManager.playSoundFX("random.click", 1.0F, 1.0F);
+                    mc.sndManager.PlaySoundFX("random.click", 1.0F, 1.0F);
                     ActionPerformed(control);
                 }
             }
