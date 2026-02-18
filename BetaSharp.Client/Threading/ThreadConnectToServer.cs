@@ -41,7 +41,7 @@ public class ThreadConnectToServer(GuiConnecting var1, Minecraft var2, string va
                 return;
             }
 
-            _mc.displayGuiScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", new Object[] { var3.getMessage() }));
+            _mc.displayGuiScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", ex.getMessage()));
         }
         catch (java.lang.Exception ex)
         {
@@ -50,8 +50,8 @@ public class ThreadConnectToServer(GuiConnecting var1, Minecraft var2, string va
                 return;
             }
 
-            var4.printStackTrace();
-            _mc.displayGuiScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", new Object[] { var4.toString() }));
+            ex.printStackTrace();
+            _mc.displayGuiScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", ex.toString()));
         }
 
     }
