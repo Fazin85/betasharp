@@ -102,20 +102,20 @@ public abstract class ScreenHandler : java.lang.Object
             InventoryPlayer var6 = player.inventory;
             if (index == -999)
             {
-                if (var6.getCursorStack() != null && index == -999)
+                if (var6.GetCursorStack() != null && index == -999)
                 {
                     if (button == 0)
                     {
-                        player.dropItem(var6.getCursorStack());
-                        var6.setItemStack(null);
+                        player.dropItem(var6.GetCursorStack());
+                        var6.SetItemStack(null);
                     }
 
                     if (button == 1)
                     {
-                        player.dropItem(var6.getCursorStack().Split(1));
-                        if (var6.getCursorStack().count == 0)
+                        player.dropItem(var6.GetCursorStack().Split(1));
+                        if (var6.GetCursorStack().count == 0)
                         {
-                            var6.setItemStack(null);
+                            var6.SetItemStack(null);
                         }
                     }
                 }
@@ -148,7 +148,7 @@ public abstract class ScreenHandler : java.lang.Object
                     {
                         var12.markDirty();
                         ItemStack var13 = var12.getStack();
-                        ItemStack var14 = var6.getCursorStack();
+                        ItemStack var14 = var6.GetCursorStack();
                         if (var13 != null)
                         {
                             var5 = var13.copy();
@@ -167,7 +167,7 @@ public abstract class ScreenHandler : java.lang.Object
                                 var12.setStack(var14.Split(var10));
                                 if (var14.count == 0)
                                 {
-                                    var6.setItemStack(null);
+                                    var6.SetItemStack(null);
                                 }
                             }
                         }
@@ -175,13 +175,13 @@ public abstract class ScreenHandler : java.lang.Object
                         {
                             var10 = button == 0 ? var13.count : (var13.count + 1) / 2;
                             ItemStack var11 = var12.takeStack(var10);
-                            var6.setItemStack(var11);
+                            var6.SetItemStack(var11);
                             if (var13.count == 0)
                             {
                                 var12.setStack(null);
                             }
 
-                            var12.onTakeItem(var6.getCursorStack());
+                            var12.onTakeItem(var6.GetCursorStack());
                         }
                         else if (var12.canInsert(var14))
                         {
@@ -190,7 +190,7 @@ public abstract class ScreenHandler : java.lang.Object
                                 if (var14.count <= var12.getMaxItemCount())
                                 {
                                     var12.setStack(var14);
-                                    var6.setItemStack(var13);
+                                    var6.SetItemStack(var13);
                                 }
                             }
                             else
@@ -209,7 +209,7 @@ public abstract class ScreenHandler : java.lang.Object
                                 var14.Split(var10);
                                 if (var14.count == 0)
                                 {
-                                    var6.setItemStack(null);
+                                    var6.SetItemStack(null);
                                 }
 
                                 var13.count += var10;
@@ -227,7 +227,7 @@ public abstract class ScreenHandler : java.lang.Object
                                     var12.setStack(null);
                                 }
 
-                                var12.onTakeItem(var6.getCursorStack());
+                                var12.onTakeItem(var6.GetCursorStack());
                             }
                         }
                     }
@@ -241,10 +241,10 @@ public abstract class ScreenHandler : java.lang.Object
     public virtual void onClosed(EntityPlayer player)
     {
         InventoryPlayer var2 = player.inventory;
-        if (var2.getCursorStack() != null)
+        if (var2.GetCursorStack() != null)
         {
-            player.dropItem(var2.getCursorStack());
-            var2.setItemStack(null);
+            player.dropItem(var2.GetCursorStack());
+            var2.SetItemStack(null);
         }
 
     }

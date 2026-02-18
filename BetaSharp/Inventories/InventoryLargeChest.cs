@@ -5,62 +5,61 @@ namespace BetaSharp.Inventories;
 
 public class InventoryLargeChest : java.lang.Object, IInventory
 {
-    private string name;
-    private IInventory upperChest;
-    private IInventory lowerChest;
+    private IInventory _upperChest;
+    private IInventory _lowerChest;
 
     public InventoryLargeChest(string name, IInventory upperChest, IInventory lowerChest)
     {
-        this.name = name;
-        this.upperChest = upperChest;
-        this.lowerChest = lowerChest;
+        Name = name;
+        this._upperChest = upperChest;
+        this._lowerChest = lowerChest;
     }
 
     public int Size
     {
-        get => upperChest.Size + lowerChest.Size;
+        get => _upperChest.Size + _lowerChest.Size;
     }
 
     public string Name
     {
-        get => name;
+        get;
     }
 
     public ItemStack? GetStack(int slotIndex)
     {
-        return slotIndex >= upperChest.Size ? lowerChest.GetStack(slotIndex - upperChest.Size) : upperChest.GetStack(slotIndex);
+        return slotIndex >= _upperChest.Size ? _lowerChest.GetStack(slotIndex - _upperChest.Size) : _upperChest.GetStack(slotIndex);
     }
 
     public ItemStack? RemoveStack(int slotIndex, int amount)
     {
-        return slotIndex >= upperChest.Size ? lowerChest.RemoveStack(slotIndex - upperChest.Size, amount) : upperChest.RemoveStack(slotIndex, amount);
+        return slotIndex >= _upperChest.Size ? _lowerChest.RemoveStack(slotIndex - _upperChest.Size, amount) : _upperChest.RemoveStack(slotIndex, amount);
     }
 
     public void SetStack(int slotIndex, ItemStack? itemStack)
     {
-        if (slotIndex >= upperChest.Size)
+        if (slotIndex >= _upperChest.Size)
         {
-            lowerChest.SetStack(slotIndex - upperChest.Size, itemStack);
+            _lowerChest.SetStack(slotIndex - _upperChest.Size, itemStack);
         }
         else
         {
-            upperChest.SetStack(slotIndex, itemStack);
+            _upperChest.SetStack(slotIndex, itemStack);
         }
 
     }
     public int MaxCountPerStack
     {
-        get => upperChest.MaxCountPerStack;
+        get => _upperChest.MaxCountPerStack;
     }
 
     public void MarkDirty()
     {
-        upperChest.MarkDirty();
-        lowerChest.MarkDirty();
+        _upperChest.MarkDirty();
+        _lowerChest.MarkDirty();
     }
 
     public bool CanPlayerUse(EntityPlayer entityPlayer)
     {
-        return upperChest.CanPlayerUse(entityPlayer) && lowerChest.CanPlayerUse(entityPlayer);
+        return _upperChest.CanPlayerUse(entityPlayer) && _lowerChest.CanPlayerUse(entityPlayer);
     }
 }

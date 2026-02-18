@@ -167,7 +167,7 @@ public class PlayerControllerMP : PlayerController
 
     private void syncCurrentPlayItem()
     {
-        int var1 = mc.player.inventory.selectedSlot;
+        int var1 = mc.player.inventory._selectedSlot;
         if (var1 != currentPlayerItem)
         {
             currentPlayerItem = var1;
@@ -179,7 +179,7 @@ public class PlayerControllerMP : PlayerController
     public override bool sendPlaceBlock(EntityPlayer var1, World var2, ItemStack var3, int var4, int var5, int var6, int var7)
     {
         syncCurrentPlayItem();
-        netClientHandler.addToSendQueue(new PlayerInteractBlockC2SPacket(var4, var5, var6, var7, var1.inventory.getSelectedItem()));
+        netClientHandler.addToSendQueue(new PlayerInteractBlockC2SPacket(var4, var5, var6, var7, var1.inventory.GetSelectedItem()));
         bool var8 = base.sendPlaceBlock(var1, var2, var3, var4, var5, var6, var7);
         return var8;
     }
@@ -187,7 +187,7 @@ public class PlayerControllerMP : PlayerController
     public override bool sendUseItem(EntityPlayer var1, World var2, ItemStack var3)
     {
         syncCurrentPlayItem();
-        netClientHandler.addToSendQueue(new PlayerInteractBlockC2SPacket(-1, -1, -1, 255, var1.inventory.getSelectedItem()));
+        netClientHandler.addToSendQueue(new PlayerInteractBlockC2SPacket(-1, -1, -1, 255, var1.inventory.GetSelectedItem()));
         bool var4 = base.sendUseItem(var1, var2, var3);
         return var4;
     }

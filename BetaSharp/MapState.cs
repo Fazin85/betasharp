@@ -96,7 +96,7 @@ public class MapState : PersistentState
         for (int var14 = 0; var14 < updateTrackers.size(); ++var14)
         {
             MapInfo var4 = (MapInfo)updateTrackers.get(var14);
-            if (!var4.player.dead && var4.player.inventory.contains(var2))
+            if (!var4.player.dead && var4.player.inventory.Contains(var2))
             {
                 float var5 = (float)(var4.player.x - (double)centerX) / (float)(1 << scale);
                 float var6 = (float)(var4.player.z - (double)centerZ) / (float)(1 << scale);

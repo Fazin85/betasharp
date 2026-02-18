@@ -76,7 +76,7 @@ public abstract class GuiContainer : GuiScreen
         GLManager.GL.Disable(GLEnum.DepthTest);
         DrawGuiContainerForegroundLayer();
 
-        if (playerInv.getCursorStack() == null && hoveredSlot != null && hoveredSlot.hasStack())
+        if (playerInv.GetCursorStack() == null && hoveredSlot != null && hoveredSlot.hasStack())
         {
             string itemName = ("" + TranslationStorage.getInstance().translateNamedKey(hoveredSlot.getStack().getItemName())).Trim();
             if (itemName.Length > 0)
@@ -91,7 +91,7 @@ public abstract class GuiContainer : GuiScreen
         }
 
         // Render the dragged cursor item last so it appears on top of foreground text
-        if (playerInv.getCursorStack() != null)
+        if (playerInv.GetCursorStack() != null)
         {
             GLManager.GL.Enable(GLEnum.RescaleNormal);
             Lighting.turnOn();
@@ -99,8 +99,8 @@ public abstract class GuiContainer : GuiScreen
             GLManager.GL.Enable(GLEnum.DepthTest);
 
             GLManager.GL.Translate(0.0F, 0.0F, 32.0F);
-            _itemRenderer.renderItemIntoGUI(FontRenderer, mc.textureManager, playerInv.getCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8);
-            _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, mc.textureManager, playerInv.getCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8);
+            _itemRenderer.renderItemIntoGUI(FontRenderer, mc.textureManager, playerInv.GetCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8);
+            _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, mc.textureManager, playerInv.GetCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8);
 
             Lighting.turnOff();
             GLManager.GL.Disable(GLEnum.Lighting);

@@ -31,7 +31,7 @@ public class PlayerSpawnS2CPacket : Packet
         zPosition = MathHelper.floor_double(ent.z * 32.0D);
         rotation = (sbyte)(int)(ent.yaw * 256.0F / 360.0F);
         pitch = (sbyte)(int)(ent.pitch * 256.0F / 360.0F);
-        ItemStack itemStack = ent.inventory.getSelectedItem();
+        ItemStack itemStack = ent.inventory.GetSelectedItem();
         currentItem = itemStack == null ? 0 : itemStack.itemId;
     }
 

@@ -343,7 +343,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
     public override void onPlayerInteractBlock(PlayerInteractBlockC2SPacket packet)
     {
         ServerWorld var2 = server.getWorld(player.dimensionId);
-        ItemStack var3 = player.inventory.getSelectedItem();
+        ItemStack var3 = player.inventory.GetSelectedItem();
         bool var4 = var2.bypassSpawnProtection = var2.dimension.id != 0 || server.playerManager.isOperator(player.name) || server is InternalServer;
         if (packet.side == 255)
         {
@@ -407,20 +407,20 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             player.networkHandler.sendPacket(new BlockUpdateS2CPacket(var5, var6, var7, var2));
         }
 
-        var3 = player.inventory.getSelectedItem();
+        var3 = player.inventory.GetSelectedItem();
         if (var3 != null && var3.count == 0)
         {
-            player.inventory.main[player.inventory.selectedSlot] = null;
+            player.inventory._main[player.inventory._selectedSlot] = null;
         }
 
         player.skipPacketSlotUpdates = true;
-        player.inventory.main[player.inventory.selectedSlot] = ItemStack.clone(player.inventory.main[player.inventory.selectedSlot]);
-        Slot var13 = player.currentScreenHandler.getSlot(player.inventory, player.inventory.selectedSlot);
+        player.inventory._main[player.inventory._selectedSlot] = ItemStack.clone(player.inventory._main[player.inventory._selectedSlot]);
+        Slot var13 = player.currentScreenHandler.getSlot(player.inventory, player.inventory._selectedSlot);
         player.currentScreenHandler.sendContentUpdates();
         player.skipPacketSlotUpdates = false;
-        if (!ItemStack.areEqual(player.inventory.getSelectedItem(), packet.stack))
+        if (!ItemStack.areEqual(player.inventory.GetSelectedItem(), packet.stack))
         {
-            sendPacket(new ScreenHandlerSlotUpdateS2CPacket(player.currentScreenHandler.syncId, var13.id, player.inventory.getSelectedItem()));
+            sendPacket(new ScreenHandlerSlotUpdateS2CPacket(player.currentScreenHandler.syncId, var13.id, player.inventory.GetSelectedItem()));
         }
 
         var2.bypassSpawnProtection = false;
@@ -448,9 +448,9 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
 
     public override void onUpdateSelectedSlot(UpdateSelectedSlotC2SPacket packet)
     {
-        if (packet.selectedSlot >= 0 && packet.selectedSlot <= InventoryPlayer.getHotbarSize())
+        if (packet.selectedSlot >= 0 && packet.selectedSlot <= InventoryPlayer.GetHotbarSize())
         {
-            player.inventory.selectedSlot = packet.selectedSlot;
+            player.inventory._selectedSlot = packet.selectedSlot;
         }
         else
         {

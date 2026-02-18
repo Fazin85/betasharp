@@ -50,7 +50,7 @@ public class GuiIngame : Gui
             renderVignette(_mc.player.getBrightnessAtEyes(partialTicks), scaledWidth, scaledHeight);
         }
 
-        ItemStack helmet = _mc.player.inventory.armorItemInSlot(3);
+        ItemStack helmet = _mc.player.inventory.ArmorItemInSlot(3);
         if (!_mc.options.thirdPersonView && helmet != null && helmet.itemId == Block.Pumpkin.id)
         {
             renderPumpkinBlur(scaledWidth, scaledHeight);
@@ -67,7 +67,7 @@ public class GuiIngame : Gui
         InventoryPlayer inventory = _mc.player.inventory;
         _zLevel = -90.0F;
         DrawTexturedModalRect(scaledWidth / 2 - 91, scaledHeight - 22, 0, 0, 182, 22);
-        DrawTexturedModalRect(scaledWidth / 2 - 91 - 1 + inventory.selectedSlot * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
+        DrawTexturedModalRect(scaledWidth / 2 - 91 - 1 + inventory._selectedSlot * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_mc.textureManager.getTextureId("/gui/icons.png"));
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.BlendFunc(GLEnum.OneMinusDstColor, GLEnum.OneMinusSrcColor);
@@ -451,7 +451,7 @@ public class GuiIngame : Gui
 
     private void renderInventorySlot(int slotIndex, int x, int y, float partialTicks)
     {
-        ItemStack stack = _mc.player.inventory.main[slotIndex];
+        ItemStack stack = _mc.player.inventory._main[slotIndex];
         if (stack != null)
         {
             float bob = stack.bobbingAnimationTime - partialTicks;

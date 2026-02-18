@@ -223,7 +223,7 @@ public abstract class EntityPlayer : EntityLiving
             heal(1);
         }
 
-        inventory.inventoryTick();
+        inventory.InventoryTick();
         prevStepBobbingAmount = stepBobbingAmount;
         base.tickMovement();
         float var1 = MathHelper.sqrt_double(velocityX * velocityX + velocityZ * velocityZ);
@@ -284,7 +284,7 @@ public abstract class EntityPlayer : EntityLiving
             dropItem(new ItemStack(Item.Apple, 1), true);
         }
 
-        inventory.dropInventory();
+        inventory.DropInventory();
         if (adversary != null)
         {
             velocityX = (double)(-MathHelper.cos((attackedAtYaw + yaw) * (float)System.Math.PI / 180.0F) * 0.1F);
@@ -315,7 +315,7 @@ public abstract class EntityPlayer : EntityLiving
 
     public virtual void dropSelectedItem()
     {
-        dropItem(inventory.RemoveStack(inventory.selectedSlot, 1), false);
+        dropItem(inventory.RemoveStack(inventory._selectedSlot, 1), false);
     }
 
     public void dropItem(ItemStack stack)
@@ -365,7 +365,7 @@ public abstract class EntityPlayer : EntityLiving
 
     public float getBlockBreakingSpeed(Block block)
     {
-        float var2 = inventory.getStrVsBlock(block);
+        float var2 = inventory.GetStrVsBlock(block);
         if (isInFluid(Material.Water))
         {
             var2 /= 5.0F;
@@ -381,14 +381,14 @@ public abstract class EntityPlayer : EntityLiving
 
     public bool canHarvest(Block block)
     {
-        return inventory.canHarvestBlock(block);
+        return inventory.CanHarvestBlock(block);
     }
 
     public override void readNbt(NBTTagCompound nbt)
     {
         base.readNbt(nbt);
         NBTTagList var2 = nbt.GetTagList("Inventory");
-        inventory.readFromNBT(var2);
+        inventory.ReadFromNBT(var2);
         dimensionId = nbt.GetInteger("Dimension");
         sleeping = nbt.GetBoolean("Sleeping");
         sleepTimer = nbt.GetShort("SleepTimer");
@@ -408,7 +408,7 @@ public abstract class EntityPlayer : EntityLiving
     public override void writeNbt(NBTTagCompound nbt)
     {
         base.writeNbt(nbt);
-        nbt.SetTag("Inventory", inventory.writeToNBT(new NBTTagList()));
+        nbt.SetTag("Inventory", inventory.WriteToNBT(new NBTTagList()));
         nbt.SetInteger("Dimension", dimensionId);
         nbt.SetBoolean("Sleeping", sleeping);
         nbt.SetShort("SleepTimer", (short)sleepTimer);
@@ -531,9 +531,9 @@ public abstract class EntityPlayer : EntityLiving
 
     protected override void applyDamage(int amount)
     {
-        int var2 = 25 - inventory.getTotalArmorValue();
+        int var2 = 25 - inventory.GetTotalArmorValue();
         int var3 = amount * var2 + damageSpill;
-        inventory.damageArmor(amount);
+        inventory.DamageArmor(amount);
         amount = var3 / 25;
         damageSpill = var3 % 25;
         base.applyDamage(amount);
@@ -571,12 +571,12 @@ public abstract class EntityPlayer : EntityLiving
 
     public ItemStack getHand()
     {
-        return inventory.getSelectedItem();
+        return inventory.GetSelectedItem();
     }
 
     public void clearStackInHand()
     {
-        inventory.SetStack(inventory.selectedSlot, null);
+        inventory.SetStack(inventory._selectedSlot, null);
     }
 
     public override double getStandingEyeHeight()
@@ -592,7 +592,7 @@ public abstract class EntityPlayer : EntityLiving
 
     public void attack(Entity target)
     {
-        int var2 = inventory.getDamageVsEntity(target);
+        int var2 = inventory.GetDamageVsEntity(target);
         if (var2 > 0)
         {
             if (velocityY < 0.0D)

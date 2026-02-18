@@ -176,7 +176,7 @@ public class EntityClientPlayerMP : ClientPlayerEntity
     public override void closeHandledScreen()
     {
         sendQueue.addToSendQueue(new CloseScreenS2CPacket(currentScreenHandler.syncId));
-        inventory.setItemStack(null);
+        inventory.SetItemStack(null);
         base.closeHandledScreen();
     }
 

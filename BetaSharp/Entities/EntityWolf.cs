@@ -153,7 +153,7 @@ public class EntityWolf : EntityAnimal
             if (currentTarget is EntityPlayer)
             {
                 EntityPlayer targetPlayer = (EntityPlayer)currentTarget;
-                ItemStack heldItem = targetPlayer.inventory.getSelectedItem();
+                ItemStack heldItem = targetPlayer.inventory.GetSelectedItem();
                 if (heldItem != null)
                 {
                     if (!isWolfTamed() && heldItem.itemId == Item.Bone.id)
@@ -404,7 +404,7 @@ public class EntityWolf : EntityAnimal
 
     public override bool interact(EntityPlayer player)
     {
-        ItemStack heldItem = player.inventory.getSelectedItem();
+        ItemStack heldItem = player.inventory.GetSelectedItem();
         if (!isWolfTamed())
         {
             if (heldItem != null && heldItem.itemId == Item.Bone.id && !isWolfAngry())
@@ -412,7 +412,7 @@ public class EntityWolf : EntityAnimal
                 --heldItem.count;
                 if (heldItem.count <= 0)
                 {
-                    player.inventory.SetStack(player.inventory.selectedSlot, null);
+                    player.inventory.SetStack(player.inventory._selectedSlot, null);
                 }
 
                 if (!world.isRemote)
@@ -447,7 +447,7 @@ public class EntityWolf : EntityAnimal
                     --heldItem.count;
                     if (heldItem.count <= 0)
                     {
-                        player.inventory.SetStack(player.inventory.selectedSlot, null);
+                        player.inventory.SetStack(player.inventory._selectedSlot, null);
                     }
 
                     heal(((ItemFood)Item.RawPorkchop).getHealAmount());

@@ -105,13 +105,13 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
 
     public ItemStack getEquipment(int slot)
     {
-        return slot == 0 ? inventory.getSelectedItem() : inventory.armor[slot - 1];
+        return slot == 0 ? inventory.GetSelectedItem() : inventory._armor[slot - 1];
     }
 
 
     public override void onKilledBy(Entity adversary)
     {
-        inventory.dropInventory();
+        inventory.DropInventory();
     }
 
 
@@ -447,7 +447,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     public void onContentsUpdate(ScreenHandler handler, List stacks)
     {
         networkHandler.sendPacket(new InventoryS2CPacket(handler.syncId, stacks));
-        networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, inventory.getCursorStack()));
+        networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, inventory.GetCursorStack()));
     }
 
 
@@ -472,7 +472,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     {
         if (!skipPacketSlotUpdates)
         {
-            networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, inventory.getCursorStack()));
+            networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, inventory.GetCursorStack()));
         }
     }
 

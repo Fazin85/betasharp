@@ -462,8 +462,8 @@ public class HeldItemRenderer
     {
         prevEquippedProgress = equippedProgress;
         ClientPlayerEntity var1 = mc.player;
-        ItemStack var2 = var1.inventory.getSelectedItem();
-        bool var4 = field_20099_f == var1.inventory.selectedSlot && var2 == itemToRender;
+        ItemStack var2 = var1.inventory.GetSelectedItem();
+        bool var4 = field_20099_f == var1.inventory._selectedSlot && var2 == itemToRender;
         if (itemToRender == null && var2 == null)
         {
             var4 = true;
@@ -492,7 +492,7 @@ public class HeldItemRenderer
         if (equippedProgress < 0.1F)
         {
             itemToRender = var2;
-            field_20099_f = var1.inventory.selectedSlot;
+            field_20099_f = var1.inventory._selectedSlot;
         }
 
     }

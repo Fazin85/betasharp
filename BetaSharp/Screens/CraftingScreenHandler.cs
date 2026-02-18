@@ -25,7 +25,7 @@ public class CraftingScreenHandler : ScreenHandler
         this.x = x;
         this.y = y;
         this.z = z;
-        addSlot(new CraftingResultSlot(playerInventory.player, input, result, 0, 124, 35));
+        addSlot(new CraftingResultSlot(playerInventory._player, input, result, 0, 124, 35));
 
         int var6;
         int var7;

@@ -246,11 +246,11 @@ public class ClientNetworkHandler : NetHandler
         int currentItem = packet.currentItem;
         if (currentItem == 0)
         {
-            ent.inventory.main[ent.inventory.selectedSlot] = null;
+            ent.inventory._main[ent.inventory._selectedSlot] = null;
         }
         else
         {
-            ent.inventory.main[ent.inventory.selectedSlot] = new ItemStack(currentItem, 1, 0);
+            ent.inventory._main[ent.inventory._selectedSlot] = new ItemStack(currentItem, 1, 0);
         }
 
         ent.setPositionAndAngles(x, y, z, rotation, pitch);
@@ -639,7 +639,7 @@ public class ClientNetworkHandler : NetHandler
     {
         if (packet.syncId == -1)
         {
-            mc.player.inventory.setItemStack(packet.stack);
+            mc.player.inventory.SetItemStack(packet.stack);
         }
         else if (packet.syncId == 0 && packet.slot >= 36 && packet.slot < 45)
         {

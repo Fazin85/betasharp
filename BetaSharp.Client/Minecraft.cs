@@ -966,7 +966,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                 }
                 else
                 {
-                    ItemStack selectedItem = player.inventory.getSelectedItem();
+                    ItemStack selectedItem = player.inventory.GetSelectedItem();
                     int itemCountBefore = selectedItem != null ? selectedItem.count : 0;
                     if (playerController.sendPlaceBlock(player, world, selectedItem, blockX, blockY, blockZ, blockSide))
                     {
@@ -981,7 +981,7 @@ public partial class Minecraft : java.lang.Object, Runnable
 
                     if (selectedItem.count == 0)
                     {
-                        player.inventory.main[player.inventory.selectedSlot] = null;
+                        player.inventory._main[player.inventory._selectedSlot] = null;
                     }
                     else if (selectedItem.count != itemCountBefore)
                     {
@@ -992,7 +992,7 @@ public partial class Minecraft : java.lang.Object, Runnable
 
             if (shouldPerformSecondaryAction && mouseButton == 1)
             {
-                ItemStack selectedItem = player.inventory.getSelectedItem();
+                ItemStack selectedItem = player.inventory.GetSelectedItem();
                 if (selectedItem != null && playerController.sendUseItem(player, world, selectedItem))
                 {
                     gameRenderer.itemRenderer.func_9450_c();
@@ -1095,7 +1095,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                 blockId = Block.Stone.id;
             }
 
-            player.inventory.setCurrentItem(blockId, false);
+            player.inventory.SetCurrentItem(blockId, false);
         }
     }
 
@@ -1255,7 +1255,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                 int mouseWheelDelta = Mouse.getEventDWheel();
                 if (mouseWheelDelta != 0)
                 {
-                    player.inventory.changeCurrentItem(mouseWheelDelta);
+                    player.inventory.ChangeCurrentItem(mouseWheelDelta);
                     if (options.field_22275_C)
                     {
                         if (mouseWheelDelta > 0)
@@ -1384,7 +1384,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                     {
                         if (Keyboard.getEventKey() == Keyboard.KEY_1 + slotIndex)
                         {
-                            player.inventory.selectedSlot = slotIndex;
+                            player.inventory._selectedSlot = slotIndex;
                         }
                     }
 

@@ -171,7 +171,7 @@ public class ClientPlayerEntity : EntityPlayer
 
     public int getPlayerArmorValue()
     {
-        return inventory.getTotalArmorValue();
+        return inventory.GetTotalArmorValue();
     }
 
     public virtual void sendChatMessage(string message)

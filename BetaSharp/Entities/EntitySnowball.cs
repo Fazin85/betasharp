@@ -258,7 +258,7 @@ public class EntitySnowball : Entity
 
     public override void onPlayerInteraction(EntityPlayer player)
     {
-        if (inGroundSnowball && thrower == player && shakeSnowball <= 0 && player.inventory.addItemStackToInventory(new ItemStack(Item.ARROW, 1)))
+        if (inGroundSnowball && thrower == player && shakeSnowball <= 0 && player.inventory.AddItemStackToInventory(new ItemStack(Item.ARROW, 1)))
         {
             world.playSound(this, "random.pop", 0.2F, ((random.nextFloat() - random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
             player.sendPickup(this, 1);

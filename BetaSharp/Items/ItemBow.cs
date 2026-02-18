@@ -13,7 +13,7 @@ public class ItemBow : Item
 
     public override ItemStack use(ItemStack itemStack, World world, EntityPlayer entityPlayer)
     {
-        if (entityPlayer.inventory.consumeInventoryItem(Item.ARROW.id))
+        if (entityPlayer.inventory.ConsumeInventoryItem(Item.ARROW.id))
         {
             world.playSound(entityPlayer, "random.bow", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
             if (!world.isRemote)
