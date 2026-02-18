@@ -41,7 +41,7 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
                 serverConnection.AssignRemote(clientConnection);
 
                 mc.internalServer.connections.AddInternalConnection(serverConnection);
-                Console.WriteLine("[Internal-Client] Created internal connection");
+                Log.Info("[Internal-Client] Created internal connection");
 
                 ClientNetworkHandler clientHandler = new(mc, clientConnection);
                 clientConnection.setNetworkHandler(clientHandler);

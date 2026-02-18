@@ -34,6 +34,6 @@ public class Achievements
 
     static Achievements()
     {
-        Console.WriteLine(AllAchievements.Count + " achievements");
+        Log.Info($"{AllAchievements.Count} achievements");
     }
 }

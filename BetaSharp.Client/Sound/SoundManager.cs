@@ -178,7 +178,7 @@ public class SoundManager : java.lang.Object
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to load sound buffer {name}: {ex.Message}");
+            Log.Error($"Failed to load sound buffer {name}: {ex.Message}");
         }
     }
 
@@ -256,13 +256,13 @@ public class SoundManager : java.lang.Object
                             Position = new Vector3f(0, 0, 0)
                         };
 
-                        Console.WriteLine($"Playing random music: {musicName}");
+                        Log.Info($"Playing random music: {musicName}");
 
                         currentMusic.Play();
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Failed to play music: {ex.Message}");
+                        Log.Error($"Failed to play music: {ex.Message}");
                     }
                 }
             }
@@ -329,7 +329,7 @@ public class SoundManager : java.lang.Object
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Failed to play streaming audio: {ex.Message}");
+                        Log.Error($"Failed to play streaming audio: {ex.Message}");
                     }
                 }
             }

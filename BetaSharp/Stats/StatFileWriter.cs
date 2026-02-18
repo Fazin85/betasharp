@@ -31,7 +31,7 @@ public class StatFileWriter
                 java.io.File var8 = new(var3, var7.getName());
                 if (!var8.exists())
                 {
-                    java.lang.System.@out.println("Relocating " + var7.getName());
+                    Log.Info($"Relocating {var7.getName()}");
                     var7.renameTo(var8);
                 }
             }
@@ -137,7 +137,7 @@ public class StatFileWriter
                     StatBase var12 = Stats.getStatById(var10);
                     if (var12 == null)
                     {
-                        java.lang.System.@out.println(var10 + " is not a valid stat");
+                        Log.Info($"{var10} is not a valid stat");
                     }
                     else
                     {
@@ -156,19 +156,19 @@ public class StatFileWriter
                 string checksum = checksumElement.GetString();
                 if (!var15.Equals(checksum))
                 {
-                    java.lang.System.@out.println("CHECKSUM MISMATCH");
+                    Log.Info("CHECKSUM MISMATCH");
                     return null;
                 }
             }
             else
             {
-                java.lang.System.@out.println("CHECKSUM MISMATCH");
+                Log.Info("CHECKSUM MISMATCH");
                 return null;
             }
         }
         catch (JsonException var13)
         {
-            java.lang.System.@out.println(var13.ToString());
+            Log.Error(var13.ToString());
         }
 
         return var1;

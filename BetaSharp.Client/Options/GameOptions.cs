@@ -301,13 +301,13 @@ public class GameOptions : java.lang.Object
                 }
                 catch (System.Exception)
                 {
-                    System.Console.WriteLine("Skipping bad option: " + line);
+                    Log.Error($"Skipping bad option: {line}");
                 }
             }
         }
         catch (System.Exception)
         {
-            System.Console.WriteLine("Failed to load options");
+            Log.Error("Failed to load options");
         }
     }
 
@@ -421,7 +421,7 @@ public class GameOptions : java.lang.Object
         }
         catch (System.Exception exception)
         {
-            System.Console.WriteLine("Failed to save options: " + exception.Message);
+            Log.Error($"Failed to save options: {exception.Message}");
         }
     }
 }

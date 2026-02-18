@@ -54,8 +54,8 @@ public abstract class Packet : java.lang.Object
         }
         catch (java.lang.Exception ex)
         {
-            ex.printStackTrace();
-            java.lang.System.@out.println("Skipping packet with id " + rawId);
+            Log.Error(ex.ToString());
+            Log.Info($"Skipping packet with id {rawId}");
             return null;
         }
     }
@@ -94,7 +94,7 @@ public abstract class Packet : java.lang.Object
         }
         catch (EOFException ex)
         {
-            java.lang.System.@out.println("Reached end of stream");
+            Log.Info("Reached end of stream");
             return null;
         }
 

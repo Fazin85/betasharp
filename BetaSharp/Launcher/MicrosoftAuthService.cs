@@ -50,8 +50,7 @@ public class MicrosoftAuthService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine(ex);
-            Console.WriteLine(ex);
+            Log.Error(ex.ToString());
             return null;
         }
     }

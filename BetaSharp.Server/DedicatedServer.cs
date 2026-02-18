@@ -20,14 +20,14 @@ public class DedicatedServer(IServerConfiguration config) : MinecraftServer(conf
         var1.setDaemon(true);
         var1.start();
 
-        LOGGER.info("Starting minecraft server version Beta 1.7.3");
+        Log.Info("Starting minecraft server version Beta 1.7.3");
         if (Runtime.getRuntime().maxMemory() / 1024L / 1024L < 512L)
         {
-            LOGGER.warning("**** NOT ENOUGH RAM!");
-            LOGGER.warning("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
+            Log.Warn("**** NOT ENOUGH RAM!");
+            Log.Warn("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
         }
 
-        LOGGER.info("Loading properties");
+        Log.Info("Loading properties");
 
         string var2 = config.GetServerIp("");
         InetAddress var3 = null;
@@ -37,7 +37,7 @@ public class DedicatedServer(IServerConfiguration config) : MinecraftServer(conf
         }
 
         int var4 = config.GetServerPort(25565);
-        LOGGER.info("Starting Minecraft server on " + (var2.Length == 0 ? "*" : var2) + ":" + var4);
+        Log.Info($"Starting Minecraft server on {(var2.Length == 0 ? "*" : var2)}:{var4}");
 
         try
         {
@@ -45,20 +45,18 @@ public class DedicatedServer(IServerConfiguration config) : MinecraftServer(conf
         }
         catch (java.io.IOException var13)
         {
-            LOGGER.warning("**** FAILED TO BIND TO PORT!");
-            LOGGER.log(Level.WARNING, "The exception was: " + var13.toString());
-            LOGGER.warning("Perhaps a server is already running on that port?");
+            Log.Warn("**** FAILED TO BIND TO PORT!");
+            Log.Warn($"The exception was: {var13}");
+            Log.Warn("Perhaps a server is already running on that port?");
             return false;
         }
 
         if (!onlineMode)
         {
-            LOGGER.warning("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
-            LOGGER.warning("The server will make no attempt to authenticate usernames. Beware.");
-            LOGGER.warning(
-                "While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose."
-            );
-            LOGGER.warning("To change this, set \"online-mode\" to \"true\" in the server.settings file.");
+            Log.Warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
+            Log.Warn("The server will make no attempt to authenticate usernames. Beware.");
+            Log.Warn("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");
+            Log.Warn("To change this, set \"online-mode\" to \"true\" in the server.settings file.");
         }
 
         return base.Init();
@@ -66,21 +64,24 @@ public class DedicatedServer(IServerConfiguration config) : MinecraftServer(conf
 
     public static void Main(string[] args)
     {
+        Log.Initialize(new LogOptions(IsServer: true));
+        Log.AddCrashHandlers();
+
         try
         {
             if (!JarValidator.ValidateJar("b1.7.3.jar"))
             {
-                Console.WriteLine("Downloading b1.7.3.jar");
+                Log.Info("Downloading b1.7.3.jar");
                 var task = MinecraftDownloader.DownloadBeta173Async();
                 task.Wait();
 
                 if (task.Result)
                 {
-                    Console.WriteLine("Successfully downloaded b1.7.3.jar");
+                    Log.Info("Successfully downloaded b1.7.3.jar");
                 }
                 else
                 {
-                    Console.WriteLine("Failed to download b1.7.3.jar");
+                    Log.Error("Failed to download b1.7.3.jar");
                     return;
                 }
             }
@@ -92,7 +93,7 @@ public class DedicatedServer(IServerConfiguration config) : MinecraftServer(conf
         }
         catch (java.lang.Exception var2)
         {
-            LOGGER.log(Level.SEVERE, "Failed to start the minecraft server", (Throwable)var2);
+            Log.Error($"Failed to start the minecraft server: {var2}");
         }
     }
 
