@@ -48,7 +48,7 @@ public class MultiplayerChunkCache : ChunkSource
         ChunkPos key = new(x, z);
         byte[] blocks = new byte[-Short.MIN_VALUE];
         Chunk chunk = new(world, blocks, x, z);
-        Arrays.fill(chunk.skyLight.bytes, 255);
+        Arrays.fill(chunk.skyLight.Bytes, 255);
 
         if (chunkByPos.ContainsKey(key))
         {

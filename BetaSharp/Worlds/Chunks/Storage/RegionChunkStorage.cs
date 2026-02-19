@@ -83,9 +83,9 @@ public class RegionChunkStorage : ChunkStorage
         nbt.SetInteger("zPos", chunk.z);
         nbt.SetLong("LastUpdate", world.getTime());
         nbt.SetByteArray("Blocks", chunk.blocks);
-        nbt.SetByteArray("Data", chunk.meta.bytes);
-        nbt.SetByteArray("SkyLight", chunk.skyLight.bytes);
-        nbt.SetByteArray("BlockLight", chunk.blockLight.bytes);
+        nbt.SetByteArray("Data", chunk.meta.Bytes);
+        nbt.SetByteArray("SkyLight", chunk.skyLight.Bytes);
+        nbt.SetByteArray("BlockLight", chunk.blockLight.Bytes);
         nbt.SetByteArray("HeightMap", chunk.heightmap);
         nbt.SetBoolean("TerrainPopulated", chunk.terrainPopulated);
         chunk.lastSaveHadEntities = false;
@@ -129,19 +129,19 @@ public class RegionChunkStorage : ChunkStorage
         var4.blockLight = new ChunkNibbleArray(nbt.GetByteArray("BlockLight"));
         var4.heightmap = nbt.GetByteArray("HeightMap");
         var4.terrainPopulated = nbt.GetBoolean("TerrainPopulated");
-        if (!var4.meta.isArrayInitialized())
+        if (!var4.meta.IsArrayInitialized())
         {
             var4.meta = new ChunkNibbleArray(var4.blocks.Length);
         }
 
-        if (var4.heightmap == null || !var4.skyLight.isArrayInitialized())
+        if (var4.heightmap == null || !var4.skyLight.IsArrayInitialized())
         {
             var4.heightmap = new byte[256];
             var4.skyLight = new ChunkNibbleArray(var4.blocks.Length);
             var4.populateHeightMap();
         }
 
-        if (!var4.blockLight.isArrayInitialized())
+        if (!var4.blockLight.IsArrayInitialized())
         {
             var4.blockLight = new ChunkNibbleArray(var4.blocks.Length);
             var4.populateLight();

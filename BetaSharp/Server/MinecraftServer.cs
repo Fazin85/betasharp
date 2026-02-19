@@ -129,6 +129,10 @@ public abstract class MinecraftServer : Runnable, CommandOutput
             worlds[var6].addWorldAccess(new ServerWorldEventListener(this, worlds[var6]));
             worlds[var6].difficulty = config.GetSpawnMonsters(true) ? 1 : 0;
             worlds[var6].allowSpawning(config.GetSpawnMonsters(true), spawnAnimals);
+            
+            // Enable async lighting during world creation - doLightingUpdates will drain the queue
+            worlds[var6].EnableAsyncLighting();
+            
             playerManager.saveAllPlayers(worlds);
         }
 
@@ -163,6 +167,8 @@ public abstract class MinecraftServer : Runnable, CommandOutput
 
                         var10.chunkCache.loadChunk(var11.x + var12 >> 4, var11.z + var13 >> 4);
 
+                        // Drain all pending lighting updates during spawn preparation
+                        // This ensures proper lighting for initial chunks
                         while (var10.doLightingUpdates() && running)
                         {
                         }
@@ -211,6 +217,15 @@ public abstract class MinecraftServer : Runnable, CommandOutput
         if (playerManager != null)
         {
             playerManager.savePlayers();
+        }
+
+        // Disable async lighting and cleanup
+        if (worlds != null)
+        {
+            foreach (var world in worlds)
+            {
+                world?.DisableAsyncLighting();
+            }
         }
 
         saveWorlds();
@@ -381,7 +396,9 @@ public abstract class MinecraftServer : Runnable, CommandOutput
 
                 var10.Tick();
 
-                while (var10.doLightingUpdates())
+                // Cap lighting updates per tick to prevent stall during large terrain changes
+                int lightingBudget = 10; // Max 10 × 500 = 5000 updates per tick
+                while (lightingBudget-- > 0 && var10.doLightingUpdates())
                 {
                 }
 

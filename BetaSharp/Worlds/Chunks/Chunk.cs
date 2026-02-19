@@ -1,3 +1,4 @@
+
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
@@ -69,6 +70,19 @@ public class Chunk : java.lang.Object
     {
     }
 
+    public void deferredLighting()
+    {
+        // Queue light update for the entire chunk
+        int chunkStartX = x * 16;
+        int chunkStartZ = z * 16;
+        
+        // Queue sky light update for the whole chunk
+        world.queueLightUpdate(LightType.Sky, chunkStartX, 0, chunkStartZ, chunkStartX + 15, 127, chunkStartZ + 15);
+        
+        // Queue block light update for the whole chunk
+        world.queueLightUpdate(LightType.Block, chunkStartX, 0, chunkStartZ, chunkStartX + 15, 127, chunkStartZ + 15);
+    }
+
     public virtual void populateHeightMapOnly()
     {
         int var1 = 127;
@@ -128,7 +142,7 @@ public class Chunk : java.lang.Object
                         var6 -= Block.BlockLightOpacity[blocks[var5 + var7] & 255];
                         if (var6 > 0)
                         {
-                            skyLight.setNibble(var2, var7, var3, var6);
+                            skyLight.SetNibble(var2, var7, var3, var6);
                         }
 
                         --var7;
@@ -229,7 +243,7 @@ public class Chunk : java.lang.Object
             {
                 for (var9 = var5; var9 < var4; ++var9)
                 {
-                    skyLight.setNibble(localX, var9, localZ, 15);
+                    skyLight.SetNibble(localX, var9, localZ, 15);
                 }
             }
             else
@@ -238,14 +252,14 @@ public class Chunk : java.lang.Object
 
                 for (var9 = var4; var9 < var5; ++var9)
                 {
-                    skyLight.setNibble(localX, var9, localZ, 0);
+                    skyLight.SetNibble(localX, var9, localZ, 0);
                 }
             }
 
             var9 = 15;
 
             int var10;
-            for (var10 = var5; var5 > 0 && var9 > 0; skyLight.setNibble(localX, var5, localZ, var9))
+            for (var10 = var5; var5 > 0 && var9 > 0; skyLight.SetNibble(localX, var5, localZ, var9))
             {
                 --var5;
                 int var11 = Block.BlockLightOpacity[getBlockId(localX, var5, localZ)];
@@ -285,7 +299,7 @@ public class Chunk : java.lang.Object
         byte var6 = (byte)rawId;
         int var7 = heightmap[z << 4 | x] & 255;
         int var8 = blocks[x << 11 | z << 7 | y] & 255;
-        if (var8 == rawId && this.meta.getNibble(x, y, z) == meta)
+        if (var8 == rawId && this.meta.GetNibble(x, y, z) == meta)
         {
             return false;
         }
@@ -299,7 +313,8 @@ public class Chunk : java.lang.Object
                 Block.Blocks[var8].onBreak(world, var9, y, var10);
             }
 
-            this.meta.setNibble(x, y, z, meta);
+            this.meta.SetNibble(x, y, z, meta);
+            bool heightmapChanged = false;
             if (!world.dimension.hasCeiling)
             {
                 if (Block.BlockLightOpacity[var6 & 255] != 0)
@@ -307,19 +322,23 @@ public class Chunk : java.lang.Object
                     if (y >= var7)
                     {
                         updateHeightMap(x, y + 1, z);
+                        heightmapChanged = true;
                     }
                 }
                 else if (y == var7 - 1)
                 {
                     updateHeightMap(x, y, z);
+                    heightmapChanged = true;
                 }
 
                 world.queueLightUpdate(LightType.Sky, var9, y, var10, var9, y, var10);
             }
 
             world.queueLightUpdate(LightType.Block, var9, y, var10, var9, y, var10);
+            // Always call lightGaps when blocks change - transparent blocks (leaves, glass)
+            // can block light even without heightmap changes
             lightGaps(x, z);
-            this.meta.setNibble(x, y, z, meta);
+            this.meta.SetNibble(x, y, z, meta);
             if (rawId != 0)
             {
                 Block.Blocks[rawId].onPlaced(world, var9, y, var10);
@@ -349,21 +368,26 @@ public class Chunk : java.lang.Object
                 Block.Blocks[var7].onBreak(world, var8, y, var9);
             }
 
-            meta.setNibble(x, y, z, 0);
+            meta.SetNibble(x, y, z, 0);
+            bool heightmapChanged = false;
             if (Block.BlockLightOpacity[var5 & 255] != 0)
             {
                 if (y >= var6)
                 {
                     updateHeightMap(x, y + 1, z);
+                    heightmapChanged = true;
                 }
             }
             else if (y == var6 - 1)
             {
                 updateHeightMap(x, y, z);
+                heightmapChanged = true;
             }
 
             world.queueLightUpdate(LightType.Sky, var8, y, var9, var8, y, var9);
             world.queueLightUpdate(LightType.Block, var8, y, var9, var8, y, var9);
+            // Always call lightGaps when blocks change - transparent blocks (leaves, glass)
+            // can block light even without heightmap changes
             lightGaps(x, z);
             if (rawId != 0 && !world.isRemote)
             {
@@ -377,18 +401,18 @@ public class Chunk : java.lang.Object
 
     public virtual int getBlockMeta(int x, int y, int z)
     {
-        return meta.getNibble(x, y, z);
+        return meta.GetNibble(x, y, z);
     }
 
     public virtual void setBlockMeta(int x, int y, int z, int meta)
     {
         dirty = true;
-        this.meta.setNibble(x, y, z, meta);
+        this.meta.SetNibble(x, y, z, meta);
     }
 
     public virtual int getLight(LightType lightType, int x, int y, int z)
     {
-        return lightType == LightType.Sky ? skyLight.getNibble(x, y, z) : lightType == LightType.Block ? blockLight.getNibble(x, y, z) : 0;
+        return lightType == LightType.Sky ? skyLight.GetNibble(x, y, z) : lightType == LightType.Block ? blockLight.GetNibble(x, y, z) : 0;
     }
 
     public virtual void setLight(LightType lightType, int x, int y, int z, int value)
@@ -396,7 +420,7 @@ public class Chunk : java.lang.Object
         dirty = true;
         if (lightType == LightType.Sky)
         {
-            skyLight.setNibble(x, y, z, value);
+            skyLight.SetNibble(x, y, z, value);
         }
         else
         {
@@ -405,21 +429,21 @@ public class Chunk : java.lang.Object
                 return;
             }
 
-            blockLight.setNibble(x, y, z, value);
+            blockLight.SetNibble(x, y, z, value);
         }
 
     }
 
     public virtual int getLight(int x, int y, int z, int ambientDarkness)
     {
-        int var5 = skyLight.getNibble(x, y, z);
+        int var5 = skyLight.GetNibble(x, y, z);
         if (var5 > 0)
         {
             hasSkyLight = true;
         }
 
         var5 -= ambientDarkness;
-        int var6 = blockLight.getNibble(x, y, z);
+        int var6 = blockLight.GetNibble(x, y, z);
         if (var6 > var5)
         {
             var5 = var6;
@@ -711,7 +735,7 @@ public class Chunk : java.lang.Object
             {
                 var11 = (var9 << 11 | var10 << 7 | minY) >> 1;
                 var12 = (maxY - minY) / 2;
-                Buffer.BlockCopy(bytes, offset, meta.bytes, var11, var12);
+                Buffer.BlockCopy(bytes, offset, meta.Bytes, var11, var12);
                 offset += var12;
             }
         }
@@ -722,7 +746,7 @@ public class Chunk : java.lang.Object
             {
                 var11 = (var9 << 11 | var10 << 7 | minY) >> 1;
                 var12 = (maxY - minY) / 2;
-                Buffer.BlockCopy(bytes, offset, blockLight.bytes, var11, var12);
+                Buffer.BlockCopy(bytes, offset, blockLight.Bytes, var11, var12);
                 offset += var12;
             }
         }
@@ -733,7 +757,7 @@ public class Chunk : java.lang.Object
             {
                 var11 = (var9 << 11 | var10 << 7 | minY) >> 1;
                 var12 = (maxY - minY) / 2;
-                Buffer.BlockCopy(bytes, offset, skyLight.bytes, var11, var12);
+                Buffer.BlockCopy(bytes, offset, skyLight.Bytes, var11, var12);
                 offset += var12;
             }
         }
@@ -774,12 +798,12 @@ public class Chunk : java.lang.Object
         {
             Buffer.BlockCopy(blocks, 0, bytes, offset, blocks.Length);
             offset += blocks.Length;
-            Buffer.BlockCopy(meta.bytes, 0, bytes, offset, meta.bytes.Length);
-            offset += meta.bytes.Length;
-            Buffer.BlockCopy(blockLight.bytes, 0, bytes, offset, blockLight.bytes.Length);
-            offset += blockLight.bytes.Length;
-            Buffer.BlockCopy(skyLight.bytes, 0, bytes, offset, skyLight.bytes.Length);
-            return offset + skyLight.bytes.Length;
+            Buffer.BlockCopy(meta.Bytes, 0, bytes, offset, meta.Bytes.Length);
+            offset += meta.Bytes.Length;
+            Buffer.BlockCopy(blockLight.Bytes, 0, bytes, offset, blockLight.Bytes.Length);
+            offset += blockLight.Bytes.Length;
+            Buffer.BlockCopy(skyLight.Bytes, 0, bytes, offset, skyLight.Bytes.Length);
+            return offset + skyLight.Bytes.Length;
         }
         else
         {
@@ -800,7 +824,7 @@ public class Chunk : java.lang.Object
                 {
                     int var25 = (var19 << 11 | var22 << 7 | minY) >> 1;
                     int var28 = (maxY - minY) / 2;
-                    Buffer.BlockCopy(meta.bytes, var25, bytes, offset, var28);
+                    Buffer.BlockCopy(meta.Bytes, var25, bytes, offset, var28);
                     offset += var28;
                 }
             }
@@ -811,7 +835,7 @@ public class Chunk : java.lang.Object
                 {
                     int var26 = (var20 << 11 | var23 << 7 | minY) >> 1;
                     int var29 = (maxY - minY) / 2;
-                    Buffer.BlockCopy(blockLight.bytes, var26, bytes, offset, var29);
+                    Buffer.BlockCopy(blockLight.Bytes, var26, bytes, offset, var29);
                     offset += var29;
                 }
             }
@@ -822,7 +846,7 @@ public class Chunk : java.lang.Object
                 {
                     int var27 = (var21 << 11 | var24 << 7 | minY) >> 1;
                     int var30 = (maxY - minY) / 2;
-                    Buffer.BlockCopy(skyLight.bytes, var27, bytes, offset, var30);
+                    Buffer.BlockCopy(skyLight.Bytes, var27, bytes, offset, var30);
                     offset += var30;
                 }
             }

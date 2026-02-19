@@ -21,11 +21,11 @@ public class ChunkSnapshot : IDisposable
         _blocks = ArrayPool<byte>.Shared.Rent(32768);
         Buffer.BlockCopy(toSnapshot.blocks, 0, _blocks, 0, toSnapshot.blocks.Length);
 
-        _data = createNibbleArray(toSnapshot.meta.bytes);
-        SkylightMap = createNibbleArray(toSnapshot.skyLight.bytes);
-        _data = createNibbleArray(toSnapshot.meta.bytes);
-        SkylightMap = createNibbleArray(toSnapshot.skyLight.bytes);
-        BlocklightMap = createNibbleArray(toSnapshot.blockLight.bytes);
+        _data = createNibbleArray(toSnapshot.meta.Bytes);
+        SkylightMap = createNibbleArray(toSnapshot.skyLight.Bytes);
+        _data = createNibbleArray(toSnapshot.meta.Bytes);
+        SkylightMap = createNibbleArray(toSnapshot.skyLight.Bytes);
+        BlocklightMap = createNibbleArray(toSnapshot.blockLight.Bytes);
 
         foreach (KeyValuePair<BlockPos, BlockEntity> entry in toSnapshot.blockEntities)
         {
@@ -60,19 +60,19 @@ public class ChunkSnapshot : IDisposable
 
     public int getBlockMetadata(int x, int y, int z)
     {
-        return _data.getNibble(x, y, z);
+        return _data.GetNibble(x, y, z);
     }
 
     public int getBlockLightValue(int x, int y, int z, int var4)
     {
-        int var5 = SkylightMap.getNibble(x, y, z);
+        int var5 = SkylightMap.GetNibble(x, y, z);
         if (var5 > 0)
         {
             _isLit = true;
         }
 
         var5 -= var4;
-        int var6 = BlocklightMap.getNibble(x, y, z);
+        int var6 = BlocklightMap.GetNibble(x, y, z);
         if (var6 > var5)
         {
             var5 = var6;
@@ -101,9 +101,9 @@ public class ChunkSnapshot : IDisposable
 
         GC.SuppressFinalize(this);
         ArrayPool<byte>.Shared.Return(_blocks);
-        ArrayPool<byte>.Shared.Return(_data.bytes);
-        ArrayPool<byte>.Shared.Return(SkylightMap.bytes);
-        ArrayPool<byte>.Shared.Return(BlocklightMap.bytes);
+        ArrayPool<byte>.Shared.Return(_data.Bytes);
+        ArrayPool<byte>.Shared.Return(SkylightMap.Bytes);
+        ArrayPool<byte>.Shared.Return(BlocklightMap.Bytes);
         _disposed = true;
     }
 }

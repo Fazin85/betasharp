@@ -13,6 +13,7 @@ using BetaSharp.Worlds.Chunks;
 using BetaSharp.Worlds.Chunks.Light;
 using BetaSharp.Worlds.Dimensions;
 using BetaSharp.Worlds.Storage;
+using BetaSharp.Worlds.Threading;
 using java.lang;
 using java.util;
 using Silk.NET.Maths;
@@ -63,6 +64,13 @@ public abstract class World : java.lang.Object, BlockView
     private bool spawnHostileMobs;
     private bool spawnPeacefulMobs;
     private int lightingUpdatesScheduled = 0;
+    public bool suppressLightUpdates = false;
+    private LightingThread? _lightingThread;
+    
+    /// Lock object for thread-safe lighting updates.
+    /// Must be acquired when modifying chunk light data from async lighting thread.
+    public readonly object LightingLock = new();
+    
     private readonly HashSet<ChunkPos> activeChunks;
     private int soundCounter;
     private readonly List<Entity> tempEntityList;
@@ -427,6 +435,17 @@ public abstract class World : java.lang.Object, BlockView
     public Chunk getChunk(int chunkX, int chunkZ)
     {
         return chunkSource.getChunk(chunkX, chunkZ);
+    }
+
+    public bool TryGetChunk(int chunkX, int chunkZ, out Chunk chunk)
+    {
+        if (chunkSource.isChunkLoaded(chunkX, chunkZ))
+        {
+            chunk = chunkSource.getChunk(chunkX, chunkZ);
+            return chunk != null;
+        }
+        chunk = null;
+        return false;
     }
 
     public virtual bool SetBlockWithoutNotifyingNeighbors(int x, int y, int z, int blockId, int meta)
@@ -830,15 +849,11 @@ public abstract class World : java.lang.Object, BlockView
         {
             int var5 = x >> 4;
             int var6 = z >> 4;
-            if (!hasChunk(var5, var6))
+            if (TryGetChunk(var5, var6, out Chunk var7))
             {
-                return 0;
-            }
-            else
-            {
-                Chunk var7 = getChunk(var5, var6);
                 return var7.getLight(type, x & 15, y, z & 15);
             }
+            return 0;
         }
         else
         {
@@ -854,16 +869,14 @@ public abstract class World : java.lang.Object, BlockView
             {
                 if (y < 128)
                 {
-                    if (hasChunk(x >> 4, z >> 4))
+                    if (TryGetChunk(x >> 4, z >> 4, out Chunk var6))
                     {
-                        Chunk var6 = getChunk(x >> 4, z >> 4);
                         var6.setLight(lightType, x & 15, y, z & 15, value);
+                    }
 
-                        for (int var7 = 0; var7 < eventListeners.Count; ++var7)
-                        {
-                            eventListeners[var7].blockUpdate(x, y, z);
-                        }
-
+                    for (int var7 = 0; var7 < eventListeners.Count; ++var7)
+                    {
+                        eventListeners[var7].blockUpdate(x, y, z);
                     }
                 }
             }
@@ -2178,6 +2191,18 @@ public abstract class World : java.lang.Object, BlockView
             {
                 int var1 = 500;
 
+                // Process async lighting queue if available (for faster during spawn prep)
+                if (_lightingThread != null)
+                {
+                    // Process more aggressively when async is available
+                    int asyncProcessed = 0;
+                    while (asyncProcessed < 100 && _lightingThread.GetQueueSize() > 0)
+                    {
+                        _lightingThread.ProcessOneUpdate();
+                        asyncProcessed++;
+                    }
+                }
+
                 while (lightingQueue.Count > 0)
                 {
                     --var1;
@@ -2191,7 +2216,7 @@ public abstract class World : java.lang.Object, BlockView
                     LightUpdate mcb = lightingQueue[lastIndex];
 
                     lightingQueue.RemoveAt(lastIndex);
-                    mcb.updateLight(this);
+                    mcb.UpdateLight(this);
                 }
 
                 var2 = false;
@@ -2205,13 +2230,81 @@ public abstract class World : java.lang.Object, BlockView
         }
     }
 
+    // Flush all pending lighting updates (both sync and async queues).
+    // Call this before sending chunks to clients to ensure proper lighting.
+    public void FlushLighting()
+    {
+        // Process all pending async lighting updates
+        if (_lightingThread != null)
+        {
+            while (_lightingThread.GetQueueSize() > 0)
+            {
+                _lightingThread.ProcessOneUpdate();
+            }
+        }
+        
+        // Process all pending sync lighting updates
+        while (lightingQueue.Count > 0)
+        {
+            int lastIndex = lightingQueue.Count - 1;
+            LightUpdate mcb = lightingQueue[lastIndex];
+            lightingQueue.RemoveAt(lastIndex);
+            mcb.UpdateLight(this);
+        }
+    }
+
+    // Flush only the async lighting queue (not the sync queue).
+    // Less aggressive than FlushLighting() - use this for per-player chunk sends.
+    public void FlushAsyncLighting()
+    {
+        // Only process async lighting updates - sync queue is handled in regular tick
+        if (_lightingThread != null)
+        {
+            while (_lightingThread.GetQueueSize() > 0)
+            {
+                _lightingThread.ProcessOneUpdate();
+            }
+        }
+    }
+
     public void queueLightUpdate(LightType type, int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
     {
         queueLightUpdate(type, minX, minY, minZ, maxX, maxY, maxZ, true);
     }
 
+    // Enables async lighting. Should be called during world initialization.
+    public void EnableAsyncLighting()
+    {
+        if (_lightingThread == null)
+        {
+            _lightingThread = new LightingThread(this);
+            _lightingThread.Start();
+        }
+    }
+
+    // Disables async lighting and cleans up resources.
+    public void DisableAsyncLighting()
+    {
+        _lightingThread?.Stop();
+        _lightingThread = null;
+    }
+
     public void queueLightUpdate(LightType type, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, bool bl)
     {
+        // Skip light update queuing when suppressed (during chunk generation)
+        if (suppressLightUpdates)
+        {
+            return;
+        }
+
+        // If async lighting is enabled, queue to the async thread
+        if (_lightingThread != null)
+        {
+            _lightingThread.QueueLightUpdate(new LightUpdate(type, minX, minY, minZ, maxX, maxY, maxZ));
+            return;
+        }
+
+        // Original synchronous lighting logic
         if (!dimension.hasCeiling || type != LightType.Sky)
         {
             ++lightingUpdatesScheduled;

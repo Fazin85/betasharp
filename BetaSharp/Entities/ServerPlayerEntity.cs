@@ -175,6 +175,10 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
         if (shouldSendChunkUpdates && !pendingChunkUpdates.isEmpty())
         {
             ServerWorld world = server.getWorld(dimensionId);
+            
+            // Flush pending async lighting updates before sending chunks to ensure clients receive fully-lit chunks
+            // I don't think this helped D:
+            world.FlushAsyncLighting();
             Iterator iterator = pendingChunkUpdates.iterator();
 
             while (iterator.hasNext())

@@ -228,6 +228,8 @@ public class NetherChunkGenerator : ChunkSource
         buildSurfaces(chunkX, chunkZ, var3);
         cave.carve(this, world, chunkX, chunkZ, var3);
         Chunk var4 = new Chunk(world, var3, chunkX, chunkZ);
+        // I don't know honestly at somepoint I put this here it's late
+        var4.populateHeightMap();
         return var4;
     }
 

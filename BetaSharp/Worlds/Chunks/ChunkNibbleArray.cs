@@ -1,45 +1,42 @@
 namespace BetaSharp.Worlds.Chunks;
 
-public class ChunkNibbleArray : java.lang.Object
+public class ChunkNibbleArray
 {
-    public readonly byte[] bytes;
+    public readonly byte[] Bytes;
 
     public ChunkNibbleArray(int size)
     {
-        bytes = new byte[size >> 1];
+        Bytes = new byte[size >> 1];
     }
 
     public ChunkNibbleArray(byte[] bytes)
     {
-        this.bytes = bytes;
+        Bytes = bytes;
     }
 
-    public int getNibble(int x, int y, int z)
+    public int GetNibble(int x, int y, int z)
     {
-        int var4 = x << 11 | z << 7 | y;
-        int var5 = var4 >> 1;
-        int var6 = var4 & 1;
-        return var6 == 0 ? bytes[var5] & 15 : bytes[var5] >> 4 & 15;
+        int index = (x << 11 | z << 7 | y) >> 1;
+        int nibble = (x << 11 | z << 7 | y) & 1;
+        return nibble == 0 ? Bytes[index] & 15 : Bytes[index] >> 4 & 15;
     }
 
-    public void setNibble(int x, int y, int z, int value)
+    public void SetNibble(int x, int y, int z, int value)
     {
-        int var5 = x << 11 | z << 7 | y;
-        int var6 = var5 >> 1;
-        int var7 = var5 & 1;
-        if (var7 == 0)
+        int index = (x << 11 | z << 7 | y) >> 1;
+        int nibble = (x << 11 | z << 7 | y) & 1;
+        if (nibble == 0)
         {
-            bytes[var6] = (byte)(bytes[var6] & 240 | value & 15);
+            Bytes[index] = (byte)(Bytes[index] & 240 | value & 15);
         }
         else
         {
-            bytes[var6] = (byte)(bytes[var6] & 15 | (value & 15) << 4);
+            Bytes[index] = (byte)(Bytes[index] & 15 | (value & 15) << 4);
         }
-
     }
 
-    public bool isArrayInitialized()
+    public bool IsArrayInitialized()
     {
-        return bytes != null;
+        return Bytes != null;
     }
 }

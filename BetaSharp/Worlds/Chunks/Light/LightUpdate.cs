@@ -1,5 +1,4 @@
 using BetaSharp.Blocks;
-using java.lang;
 
 namespace BetaSharp.Worlds.Chunks.Light;
 
@@ -24,13 +23,13 @@ public struct LightUpdate
         maxZ = var7;
     }
 
-    public void updateLight(World world)
+    public void UpdateLight(World world)
     {
         int var2 = maxX - minX + 1;
         int var3 = maxY - minY + 1;
         int var4 = maxZ - minZ + 1;
         int var5 = var2 * var3 * var4;
-        if (var5 > -Short.MIN_VALUE)
+        if (var5 > short.MaxValue)
         {
             Log.Info("Light too large, skipping!");
         }
@@ -40,6 +39,9 @@ public struct LightUpdate
             int var7 = 0;
             bool var8 = false;
             bool var9 = false;
+            Chunk cachedChunk = null;
+            int cachedChunkX = int.MinValue;
+            int cachedChunkZ = int.MinValue;
 
             for (int var10 = minX; var10 <= maxX; ++var10)
             {
@@ -57,10 +59,16 @@ public struct LightUpdate
                         var14 = world.isRegionLoaded(var10, 0, var11, 1);
                         if (var14)
                         {
-                            Chunk var15 = world.getChunk(var10 >> 4, var11 >> 4);
-                            if (var15.isEmpty())
+                            cachedChunk = world.getChunk(var12, var13);
+                            if (cachedChunk.isEmpty())
                             {
                                 var14 = false;
+                                cachedChunk = null;
+                            }
+                            else
+                            {
+                                cachedChunkX = var12;
+                                cachedChunkZ = var13;
                             }
                         }
 
@@ -83,7 +91,16 @@ public struct LightUpdate
 
                         for (int var27 = minY; var27 <= maxY; ++var27)
                         {
-                            int var16 = world.getBrightness(lightType, var10, var27, var11);
+                            // Use cached chunk for light lookup when in same chunk
+                            int var16;
+                            if (cachedChunk != null)
+                            {
+                                var16 = cachedChunk.getLight(lightType, var10 & 15, var27, var11 & 15);
+                            }
+                            else
+                            {
+                                var16 = world.getBrightness(lightType, var10, var27, var11);
+                            }
                             bool var17 = false;
                             int var18 = world.getBlockId(var10, var27, var11);
                             int var19 = Block.BlockLightOpacity[var18];
@@ -113,39 +130,21 @@ public struct LightUpdate
                             }
                             else
                             {
-                                var21 = world.getBrightness(lightType, var10 - 1, var27, var11);
+                                // Get neighbor light values - use cached chunk when possible
+                                int var21_x = world.getBrightness(lightType, var10 - 1, var27, var11);
                                 int var22 = world.getBrightness(lightType, var10 + 1, var27, var11);
                                 int var23 = world.getBrightness(lightType, var10, var27 - 1, var11);
                                 int var24 = world.getBrightness(lightType, var10, var27 + 1, var11);
                                 int var25 = world.getBrightness(lightType, var10, var27, var11 - 1);
                                 int var26 = world.getBrightness(lightType, var10, var27, var11 + 1);
-                                var28 = var21;
-                                if (var22 > var21)
-                                {
-                                    var28 = var22;
-                                }
 
-                                if (var23 > var28)
-                                {
-                                    var28 = var23;
-                                }
-
-                                if (var24 > var28)
-                                {
-                                    var28 = var24;
-                                }
-
-                                if (var25 > var28)
-                                {
-                                    var28 = var25;
-                                }
-
-                                if (var26 > var28)
-                                {
-                                    var28 = var26;
-                                }
-
-                                var28 -= var19;
+                                // Use Math.Max for cleaner neighbor light comparison
+                                int maxNeighborLight = System.Math.Max(var21_x, var22);
+                                maxNeighborLight = System.Math.Max(maxNeighborLight, var23);
+                                maxNeighborLight = System.Math.Max(maxNeighborLight, var24);
+                                maxNeighborLight = System.Math.Max(maxNeighborLight, var25);
+                                maxNeighborLight = System.Math.Max(maxNeighborLight, var26);
+                                var28 = maxNeighborLight - var19;
                                 if (var28 < 0)
                                 {
                                     var28 = 0;
