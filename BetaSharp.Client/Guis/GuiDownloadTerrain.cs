@@ -9,6 +9,8 @@ public class GuiDownloadTerrain : GuiScreen
     private readonly ClientNetworkHandler _networkHandler;
     private int _tickCounter = 0;
 
+    public override bool PausesGame => false;
+
     public GuiDownloadTerrain(ClientNetworkHandler networkHandler)
     {
         this._networkHandler = networkHandler;
@@ -36,11 +38,6 @@ public class GuiDownloadTerrain : GuiScreen
             _networkHandler.tick();
         }
 
-    }
-
-    public override bool DoesGuiPauseGame()
-    {
-        return false;
     }
 
     protected override void ActionPerformed(GuiButton button)

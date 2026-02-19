@@ -408,9 +408,4 @@ public class GuiAchievements : GuiScreen
         GLManager.GL.Enable(GLEnum.Lighting);
         Lighting.turnOff();
     }
-
-    public override bool DoesGuiPauseGame()
-    {
-        return true;
-    }
 }

@@ -10,6 +10,8 @@ public class GuiConnecting : GuiScreen
     private bool _cancelled = false;
     private const int _buttonCancel = 0;
 
+    public override bool PausesGame=> false;
+
     public GuiConnecting(Minecraft mc, string host, int port)
     {
         Log.Info($"Connecting to {host}, {port}");
@@ -73,11 +75,6 @@ public class GuiConnecting : GuiScreen
         }
 
         base.Render(mouseX, mouseY, partialTicks);
-    }
-
-    public override bool DoesGuiPauseGame()
-    {
-        return false;
     }
 
     public static ClientNetworkHandler setNetClientHandler(GuiConnecting guiConnecting, ClientNetworkHandler handler)

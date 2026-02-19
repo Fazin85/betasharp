@@ -7,6 +7,8 @@ public class GuiGameOver : GuiScreen
     private const int ButtonRespawn = 1;
     private const int ButtonTitle = 2;
 
+    public override bool PausesGame => false;
+
     public override void InitGui()
     {
         _controlList.Clear();
@@ -56,10 +58,5 @@ public class GuiGameOver : GuiScreen
         GLManager.GL.PopMatrix();
         DrawCenteredString(FontRenderer, "Score: &e" + mc.player.getScore(), Width / 2, 100, 0xFFFFFF);
         base.Render(mouseX, mouseY, partialTicks);
-    }
-
-    public override bool DoesGuiPauseGame()
-    {
-        return false;
     }
 }

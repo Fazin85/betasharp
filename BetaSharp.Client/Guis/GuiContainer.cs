@@ -17,6 +17,8 @@ public abstract class GuiContainer : GuiScreen
     protected int _ySize = 166;
     public ScreenHandler InventorySlots;
 
+    public override bool PausesGame => false;
+
     public GuiContainer(ScreenHandler inventorySlots)
     {
         InventorySlots = inventorySlots;
@@ -210,8 +212,6 @@ public abstract class GuiContainer : GuiScreen
         }
     }
 
-    public override bool DoesGuiPauseGame() => false;
-    
 
     public override void UpdateScreen()
     {
