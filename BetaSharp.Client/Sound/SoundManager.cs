@@ -238,8 +238,6 @@ public class SoundManager
             Position = new Vector3f(0, 0, 0)
         };
 
-        Console.WriteLine($"Playing random music: {musicName}");
-
         _currentMusic.Play();
     }
 
