@@ -7,7 +7,7 @@ namespace BetaSharp.Worlds.Chunks.Storage;
 
 public static class RegionIo
 {
-    // Dictionary replaces HashMap. WeakReference replaces SoftReference.
+
     private static readonly Dictionary<string, WeakReference<RegionFile>> Cache = new();
     private static readonly object _lock = new();
 
@@ -16,7 +16,7 @@ public static class RegionIo
         lock (_lock)
         {
             string regionDirPath = Combine(baseDir, "region");
-            // Minecraft region files are named based on chunk coordinates divided by 32
+
             string fileName = $"r.{chunkX >> 5}.{chunkZ >> 5}.mcr";
             string filePath = Combine(regionDirPath, fileName);
 
@@ -38,7 +38,6 @@ public static class RegionIo
                 Flush();
             }
 
-            // You'll need to update RegionFile's constructor to take a string path
             RegionFile newRegionFile = new RegionFile(filePath);
             Cache[filePath] = new WeakReference<RegionFile>(newRegionFile);
 
@@ -56,7 +55,6 @@ public static class RegionIo
                 {
                     try
                     {
-                        // Assuming func_22196_b is the "close" or "sync" method
                         region.Close();
                     }
                     catch (IOException ex)
@@ -72,14 +70,12 @@ public static class RegionIo
     public static int GetSizeDelta(string baseDir, int chunkX, int chunkZ)
     {
         RegionFile region = GetRegionFile(baseDir, chunkX, chunkZ);
-        // Assuming func_22209_a is GetSizeDelta
         return region.GetSizeDelta();
     }
 
     public static ChunkDataStream GetChunkInputStream(string baseDir, int chunkX, int chunkZ)
     {
         RegionFile region = GetRegionFile(baseDir, chunkX, chunkZ);
-        // Chunks inside a region file are indexed 0-31
         return region.GetChunkDataInputStream(chunkX & 31, chunkZ & 31);
     }
 

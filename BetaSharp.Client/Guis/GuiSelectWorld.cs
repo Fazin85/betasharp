@@ -15,14 +15,12 @@ public class GuiSelectWorld : GuiScreen
     private const int BUTTON_CREATE = 3;
     private const int BUTTON_RENAME = 6;
 
-    // Use standard .NET formatting strings instead of Java DateFormat
     public string DateFormat { get; } = "dd/MM/yyyy HH:mm";
 
     protected GuiScreen parentScreen;
     protected string screenTitle = "Select world";
     private bool selected = false;
 
-    // Properties for easier access from GuiWorldSlot
     internal int SelectedWorldIndex { get; set; } = -1;
     internal List<WorldSaveInfo> SaveList { get; private set; } = new();
 
@@ -58,8 +56,6 @@ public class GuiSelectWorld : GuiScreen
     {
         var worldStorage = mc.getSaveLoader();
         SaveList = worldStorage.GetAllSaves();
-
-        // C# List<T>.Sort() uses the IComparable implementation on WorldSaveInfo
         SaveList.Sort();
         SelectedWorldIndex = -1;
     }
