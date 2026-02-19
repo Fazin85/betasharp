@@ -446,7 +446,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
 
     public override void onUpdateSelectedSlot(UpdateSelectedSlotC2SPacket packet)
     {
-        if (packet.selectedSlot >= 0 && packet.selectedSlot <= InventoryPlayer.GetHotbarSize())
+        if (packet.selectedSlot >= 0 && packet.selectedSlot <= InventoryPlayer.HotbarSize)
         {
             player.inventory.SelectedSlot = packet.selectedSlot;
         }

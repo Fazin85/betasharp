@@ -4,6 +4,26 @@ namespace BetaSharp.Client.Input;
 
 public static class Mouse
 {
+    public enum Direction
+    {
+        Left = 1,
+        Right = -1,
+        None = 0,
+    }
+
+    public static Direction FromDelta(int mouseWheelDelta)
+    {
+        // negative is right
+        // and positive is left
+        return mouseWheelDelta switch
+        {
+            > 0 => Direction.Left,
+            < 0 => Direction.Right,
+            0 => Direction.None,
+        };
+    }
+
+
     public const int EVENT_SIZE = 1 + 1 + 4 + 4 + 4 + 8;
 
     private static bool created;

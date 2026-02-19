@@ -43,7 +43,7 @@ public class GameOptions : java.lang.Object
     public bool field_22275_C = false;
     public bool smoothCamera = false;
     public bool debugCamera = false;
-    public float field_22272_F = 1.0F;
+    //public float field_22272_F = 1.0F;
     public float field_22271_G = 1.0F;
     public int guiScale = 0;
     public int anisotropicLevel = 0;

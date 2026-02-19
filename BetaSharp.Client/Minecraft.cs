@@ -67,7 +67,7 @@ public partial class Minecraft : java.lang.Object, Runnable
     public GuiAchievement guiAchievement;
     public GuiIngame ingameGUI;
     public bool skipRenderWorld = false;
-    public HitResult objectMouseOver = null;
+    public HitResult? objectMouseOver = null;
     public GameOptions options;
     public SoundManager sndManager = new();
     public MouseHelper mouseHelper;
@@ -1092,7 +1092,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                 blockId = Block.Stone.id;
             }
 
-            player.inventory.SetCurrentItem(blockId, false);
+            player.inventory.SetCurrentItem(blockId);
         }
     }
 
@@ -1165,7 +1165,7 @@ public partial class Minecraft : java.lang.Object, Runnable
 
         if (currentScreen == null || currentScreen.AllowUserInput)
         {
-            processInputEvents();
+            ProcessInputEvents();
         }
 
         if (world != null)
@@ -1242,32 +1242,30 @@ public partial class Minecraft : java.lang.Object, Runnable
         Profiler.PopGroup();
     }
 
-    private void processInputEvents()
+    private void ProcessInputEvents()
     {
         while (Mouse.next())
         {
-            long timeSinceLastMouseEvent = java.lang.System.currentTimeMillis() - systemTime;
+            long timeSinceLastMouseEvent = DateTimeOffset.Now.Millisecond - systemTime;
+
             if (timeSinceLastMouseEvent <= 200L)
             {
-                int mouseWheelDelta = Mouse.getEventDWheel();
-                if (mouseWheelDelta != 0)
+                // mouse scrolling logic
+                var mouseDirection = Mouse.FromDelta(Mouse.getEventDWheel());
+
+                if (mouseDirection != Mouse.Direction.None)
                 {
-                    player.inventory.ChangeCurrentItem(mouseWheelDelta);
+                    player.inventory.ChangeCurrentItem((int)mouseDirection);
+
+                    /*  // this doesnt even exist lol
                     if (options.field_22275_C)
                     {
-                        if (mouseWheelDelta > 0)
-                        {
-                            mouseWheelDelta = 1;
-                        }
-
-                        if (mouseWheelDelta < 0)
-                        {
-                            mouseWheelDelta = -1;
-                        }
-
-                        options.field_22272_F += (float)mouseWheelDelta * 0.25F;
+                        //options.field_22272_F += (float)mouseDirection * 0.25F;
                     }
+                    */
                 }
+
+                //Console.WriteLine($"delta: {mouseWheelDelta}"); // -120 to 120. left is positive and right is negative
 
                 if (currentScreen == null)
                 {
