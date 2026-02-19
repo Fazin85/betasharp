@@ -308,7 +308,7 @@ public class TextureManager
         foreach (var texture in _dynamicTextures)
         {
             texture.tick();
-            BindTexture(texture.copyTo > 0 ? texture.copyTo : GetTextureId(texture.atlas == DynamicTexture.FXImage.Terrain ? "terrain.png" : "items.png"));
+            BindTexture(texture.copyTo > 0 ? texture.copyTo : GetTextureId(texture.atlas == DynamicTexture.FXImage.Terrain ? "terrain.png" : "gui/items.png"));
 
             int fxSize = (int)Math.Sqrt(texture.pixels.Length / 4);
             fixed (byte* ptr = texture.pixels)
