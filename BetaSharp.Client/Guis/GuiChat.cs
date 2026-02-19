@@ -134,7 +134,7 @@ public class GuiChat : GuiScreen
         int y = Height - 12;
         int xBase = 4;
 
-        FontRenderer.DrawStringWithShadow(textToDraw, xBase, y, TextColorNormal);
+        FontRenderer.drawStringWithShadow(textToDraw, xBase, y, TextColorNormal);
 
         base.Render(mouseX, mouseY, partialTicks);
     }

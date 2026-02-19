@@ -1,103 +1,112 @@
+using java.util;
+
 namespace BetaSharp.Client.Resource.Pack;
 
-public class TexturePacks
+public class TexturePacks : java.lang.Object
 {
-    private List<TexturePack> _availTexturePacks = [];
-    private readonly TexturePack _defaultTexturePack = new BuiltInTexturePack();
-    public TexturePack SelectedTexturePack;
-    private readonly Dictionary<string, TexturePack> _texturePacks = [];
-    private readonly Minecraft _mc;
-    private readonly DirectoryInfo _texturePackDir;
-    private string? _currentTexturePack;
-    public List<TexturePack> AvailableTexturePacks => _availTexturePacks;
-    
-    public TexturePacks(Minecraft mc, DirectoryInfo texturePackDir)
+    private List availTexturePacks = new ArrayList();
+    private readonly TexturePack defaultTexturePack = new BuiltInTexturePack();
+    public TexturePack selectedTexturePack;
+    private readonly Map field_6538_d = new HashMap();
+    private readonly Minecraft mc;
+    private readonly java.io.File texturePackDir;
+    private string currentTexturePack;
+
+    public TexturePacks(Minecraft var1, java.io.File var2)
     {
-        _mc = mc;
-        _texturePackDir = new DirectoryInfo(System.IO.Path.Combine(texturePackDir.FullName, "texturepacks"));
-        if (!_texturePackDir.Exists)
+        mc = var1;
+        texturePackDir = new java.io.File(var2, "texturepacks");
+        if (!texturePackDir.exists())
         {
-            _texturePackDir.Create();
+            texturePackDir.mkdirs();
         }
 
-        _currentTexturePack = mc.options.skin;
+        currentTexturePack = var1.options.skin;
         updateAvaliableTexturePacks();
-        SelectedTexturePack.func_6482_a();
+        selectedTexturePack.func_6482_a();
     }
 
-    public bool setTexturePack(TexturePack texturePack)
+    public bool setTexturePack(TexturePack var1)
     {
-        if (texturePack == SelectedTexturePack)
+        if (var1 == selectedTexturePack)
         {
             return false;
         }
-
-        SelectedTexturePack.CloseTexturePackFile();
-        _currentTexturePack = texturePack.TexturePackFileName;
-        SelectedTexturePack = texturePack;
-
-        _mc.options.skin = _currentTexturePack;
-        _mc.options.saveOptions();
-
-        SelectedTexturePack.func_6482_a();
-        return true;
-
+        else
+        {
+            selectedTexturePack.closeTexturePackFile();
+            currentTexturePack = var1.texturePackFileName;
+            selectedTexturePack = var1;
+            mc.options.skin = currentTexturePack;
+            mc.options.saveOptions();
+            selectedTexturePack.func_6482_a();
+            return true;
+        }
     }
 
     public void updateAvaliableTexturePacks()
     {
-        List<TexturePack> availablePacks = [];
-        SelectedTexturePack = null!;
-        availablePacks.Add(_defaultTexturePack);
-
-        if (_texturePackDir.Exists)
+        ArrayList var1 = [];
+        selectedTexturePack = null;
+        var1.add(defaultTexturePack);
+        if (texturePackDir.exists() && texturePackDir.isDirectory())
         {
-            foreach (FileInfo file in _texturePackDir.GetFiles("*.zip"))
-            {
-                string signature = $"{file.Name}:{file.Length}:{file.LastWriteTimeUtc.Ticks}";
+            java.io.File[] var2 = texturePackDir.listFiles();
+            java.io.File[] var3 = var2;
+            int var4 = var2.Length;
 
-                try
+            for (int var5 = 0; var5 < var4; ++var5)
+            {
+                java.io.File var6 = var3[var5];
+                if (var6.isFile() && var6.getName().ToLower().EndsWith(".zip"))
                 {
-                    if (!_texturePacks.TryGetValue(signature, out TexturePack? cachedPack))
+                    string var7 = var6.getName() + ":" + var6.length() + ":" + var6.lastModified();
+
+                    try
                     {
-                        ZippedTexturePack newPack = new(file)
+                        if (!field_6538_d.containsKey(var7))
                         {
-                            Signature = signature
-                        };
-                        _texturePacks[signature] = newPack;
-                        newPack.func_6485_a(_mc);
-                        cachedPack = newPack;
-                    }
+                            ZippedTexturePack var8 = new(var6)
+                            {
+                                field_6488_d = var7
+                            };
+                            field_6538_d.put(var7, var8);
+                            var8.func_6485_a(mc);
+                        }
 
-                    if (cachedPack.TexturePackFileName == _currentTexturePack)
+                        TexturePack var12 = (TexturePack)field_6538_d.get(var7);
+                        if (var12.texturePackFileName.Equals(currentTexturePack))
+                        {
+                            selectedTexturePack = var12;
+                        }
+
+                        var1.add(var12);
+                    }
+                    catch (java.io.IOException ex)
                     {
-                        SelectedTexturePack = cachedPack;
+                        ex.printStackTrace();
                     }
-
-                    availablePacks.Add(cachedPack);
                 }
-                catch (Exception ex)
-                {
-                    Log.Error(ex);
-                }
-
             }
         }
 
-        SelectedTexturePack ??= _defaultTexturePack;
+        selectedTexturePack ??= defaultTexturePack;
 
-        foreach (TexturePack oldPack in _availTexturePacks)
+        availTexturePacks.removeAll(var1);
+        Iterator var10 = availTexturePacks.iterator();
+
+        while (var10.hasNext())
         {
-            if (!availablePacks.Contains(oldPack))
-            {
-                oldPack.Unload(_mc);
-                if (oldPack.Signature != null)
-                {
-                    _texturePacks.Remove(oldPack.Signature);
-                }
-            }
+            TexturePack var11 = (TexturePack)var10.next();
+            var11.unload(mc);
+            field_6538_d.remove(var11.field_6488_d);
         }
 
-        _availTexturePacks = availablePacks;
+        availTexturePacks = var1;
+    }
+
+    public List availableTexturePacks()
+    {
+        return new ArrayList(availTexturePacks);
     }
 }

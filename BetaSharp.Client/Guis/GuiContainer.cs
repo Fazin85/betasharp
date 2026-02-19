@@ -85,10 +85,10 @@ public abstract class GuiContainer : GuiScreen
             {
                 int tipX = mouseX - guiLeft + 12;
                 int tipY = mouseY - guiTop - 12;
-                int textWidth = FontRenderer.GetStringWidth(itemName);
+                int textWidth = FontRenderer.getStringWidth(itemName);
 
                 DrawGradientRect(tipX - 3, tipY - 3, tipX + textWidth + 3, tipY + 8 + 3, 0xC0000000, 0xC0000000);
-                FontRenderer.DrawStringWithShadow(itemName, tipX, tipY, 0xFFFFFFFF);
+                FontRenderer.drawStringWithShadow(itemName, tipX, tipY, 0xFFFFFFFF);
             }
         }
 
@@ -132,7 +132,7 @@ public abstract class GuiContainer : GuiScreen
             if (iconIdx >= 0)
             {
                 GLManager.GL.Disable(GLEnum.Lighting);
-                mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/items.png"));
+                mc.textureManager.bindTexture(mc.textureManager.getTextureId("/gui/items.png"));
                 DrawTexturedModalRect(x, y, iconIdx % 16 * 16, iconIdx / 16 * 16, 16, 16);
                 GLManager.GL.Enable(GLEnum.Lighting);
                 return;
