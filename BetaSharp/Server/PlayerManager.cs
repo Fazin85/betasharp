@@ -188,60 +188,76 @@ public class PlayerManager
 
     public void changePlayerDimension(ServerPlayerEntity player)
     {
-        ServerWorld var2 = _server.getWorld(player.dimensionId);
-        sbyte var3 = 0;
+        int targetDim = 0;
         if (player.dimensionId == -1)
         {
-            var3 = 0;
+            targetDim = 0;
         }
         else
         {
-            var3 = -1;
+            targetDim = -1;
         }
 
-        player.dimensionId = var3;
-        ServerWorld var4 = _server.getWorld(player.dimensionId);
+        sendPlayerToDimension(player, targetDim);
+    }
+
+    public void sendPlayerToDimension(ServerPlayerEntity player, int targetDim)
+    {
+        ServerWorld currentWorld = _server.getWorld(player.dimensionId);
+        ServerWorld targetWorld = _server.getWorld(targetDim);
+
+        if (targetWorld == null)
+        {
+            // Fallback or error handling if target world doesn't exist? 
+            // For now, assuming user will only request valid dims or we just return.
+            // But the prompt implies "id is a number", so potentially any number. 
+            // If null, we can't really do anything.
+            return;
+        }
+
+        player.dimensionId = targetDim;
         player.networkHandler.sendPacket(new PlayerRespawnPacket((sbyte)player.dimensionId));
-        var2.serverRemove(player);
+        currentWorld.serverRemove(player);
         player.dead = false;
-        double var5 = player.x;
-        double var7 = player.z;
-        double var9 = 8.0;
+        double x = player.x;
+        double z = player.z;
+        double scale = 8.0;
+
         if (player.dimensionId == -1)
         {
-            var5 /= var9;
-            var7 /= var9;
-            player.setPositionAndAnglesKeepPrevAngles(var5, player.y, var7, player.yaw, player.pitch);
+            x /= scale;
+            z /= scale;
+            player.setPositionAndAnglesKeepPrevAngles(x, player.y, z, player.yaw, player.pitch);
             if (player.isAlive())
             {
-                var2.updateEntity(player, false);
+                currentWorld.updateEntity(player, false);
             }
         }
         else
         {
-            var5 *= var9;
-            var7 *= var9;
-            player.setPositionAndAnglesKeepPrevAngles(var5, player.y, var7, player.yaw, player.pitch);
+            x *= scale;
+            z *= scale;
+            player.setPositionAndAnglesKeepPrevAngles(x, player.y, z, player.yaw, player.pitch);
             if (player.isAlive())
             {
-                var2.updateEntity(player, false);
+                currentWorld.updateEntity(player, false);
             }
         }
 
         if (player.isAlive())
         {
-            var4.SpawnEntity(player);
-            player.setPositionAndAnglesKeepPrevAngles(var5, player.y, var7, player.yaw, player.pitch);
-            var4.updateEntity(player, false);
-            var4.chunkCache.forceLoad = true;
-            new PortalForcer().moveToPortal(var4, player);
-            var4.chunkCache.forceLoad = false;
+            targetWorld.SpawnEntity(player);
+            player.setPositionAndAnglesKeepPrevAngles(x, player.y, z, player.yaw, player.pitch);
+            targetWorld.updateEntity(player, false);
+            targetWorld.chunkCache.forceLoad = true;
+            new PortalForcer().moveToPortal(targetWorld, player);
+            targetWorld.chunkCache.forceLoad = false;
         }
 
         updatePlayerAfterDimensionChange(player);
         player.networkHandler.teleport(player.x, player.y, player.z, player.yaw, player.pitch);
-        player.setWorld(var4);
-        sendWorldInfo(player, var4);
+        player.setWorld(targetWorld);
+        sendWorldInfo(player, targetWorld);
         sendPlayerStatus(player);
     }
 
