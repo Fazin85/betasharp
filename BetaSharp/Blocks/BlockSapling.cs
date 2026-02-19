@@ -1,3 +1,4 @@
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Gen.Features;
 
@@ -11,12 +12,12 @@ public class BlockSapling : BlockPlant
         setBoundingBox(0.5F - halfSize, 0.0F, 0.5F - halfSize, 0.5F + halfSize, halfSize * 2.0F, 0.5F + halfSize);
     }
 
-    public override void onTick(World world, int x, int y, int z, java.util.Random random)
+    public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
         if (!world.isRemote)
         {
             base.onTick(world, x, y, z, random);
-            if (world.getLightLevel(x, y + 1, z) >= 9 && random.nextInt(30) == 0)
+            if (world.getLightLevel(x, y + 1, z) >= 9 && random.NextInt(30) == 0)
             {
                 int saplingMeta = world.getBlockMeta(x, y, z);
                 if ((saplingMeta & 8) == 0)
@@ -38,7 +39,7 @@ public class BlockSapling : BlockPlant
         return meta == 1 ? 63 : (meta == 2 ? 79 : base.getTexture(side, meta));
     }
 
-    public void generate(World world, int x, int y, int z, java.util.Random random)
+    public void generate(World world, int x, int y, int z, JavaRandom random)
     {
         int saplingType = world.getBlockMeta(x, y, z) & 3;
         world.SetBlockWithoutNotifyingNeighbors(x, y, z, 0);
@@ -54,7 +55,7 @@ public class BlockSapling : BlockPlant
         else
         {
             treeFeature = new OakTreeFeature();
-            if (random.nextInt(10) == 0)
+            if (random.NextInt(10) == 0)
             {
                 treeFeature = new LargeOakTreeFeature();
             }

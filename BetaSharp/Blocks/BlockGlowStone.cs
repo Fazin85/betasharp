@@ -1,5 +1,6 @@
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Items;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Blocks;
 
@@ -10,12 +11,12 @@ public class BlockGlowstone : Block
     {
     }
 
-    public override int getDroppedItemCount(java.util.Random random)
+    public override int getDroppedItemCount(JavaRandom random)
     {
-        return 2 + random.nextInt(3);
+        return 2 + random.NextInt(3);
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
         return Item.GlowstoneDust.id;
     }

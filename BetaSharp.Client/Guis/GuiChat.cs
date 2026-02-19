@@ -1,6 +1,7 @@
 using System.Text;
 using BetaSharp.Client.Input;
 using BetaSharp.Util;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Client.Guis;
 

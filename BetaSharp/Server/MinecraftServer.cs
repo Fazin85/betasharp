@@ -10,7 +10,6 @@ using BetaSharp.Worlds;
 using BetaSharp.Worlds.Storage;
 using java.lang;
 using java.util;
-using java.util.logging;
 
 namespace BetaSharp.Server;
 

@@ -149,7 +149,7 @@ public class EmptyChunk : Chunk
         return var12 + var12 / 2 * 3;
     }
 
-    public override java.util.Random getSlimeRandom(long var1)
+    public override JavaRandom getSlimeRandom(long var1)
     {
         return new(world.getSeed() + x * x * 4987142 + x * 5947611 + z * z * 4392871L + z * 389711 ^ var1);
     }

@@ -1,5 +1,6 @@
 using BetaSharp.Blocks;
 using BetaSharp.Entities;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Gen.Features;
 using java.awt;
 
@@ -71,9 +72,9 @@ public class Biome
         IceDesert.TopBlockId = IceDesert.SoilBlockId = (byte)Block.Sand.id;
     }
 
-    public virtual Feature GetRandomWorldGenForTrees(java.util.Random rand)
+    public virtual Feature GetRandomWorldGenForTrees(JavaRandom rand)
     {
-        return rand.nextInt(10) == 0 ? new LargeOakTreeFeature() : new OakTreeFeature();
+        return rand.NextInt(10) == 0 ? new LargeOakTreeFeature() : new OakTreeFeature();
     }
 
 

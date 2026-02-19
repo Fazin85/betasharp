@@ -30,7 +30,7 @@ public class BlockPlant : Block
         breakIfCannotGrow(world, x, y, z);
     }
 
-    public override void onTick(World world, int x, int y, int z, java.util.Random random)
+    public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
         breakIfCannotGrow(world, x, y, z);
     }

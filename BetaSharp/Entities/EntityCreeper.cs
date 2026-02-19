@@ -108,7 +108,7 @@ public class EntityCreeper : EntityMonster
         base.onKilledBy(entity);
         if (entity is EntitySkeleton)
         {
-            dropItem(Item.RecordThirteen.id + random.nextInt(2), 1);
+            dropItem(Item.RecordThirteen.id + random.NextInt(2), 1);
         }
 
     }

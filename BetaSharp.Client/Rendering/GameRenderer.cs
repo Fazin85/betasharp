@@ -42,7 +42,7 @@ public class GameRenderer
     private readonly double cameraYaw = 0.0D;
     private readonly double cameraPitch = 0.0D;
     private long prevFrameTime = java.lang.System.currentTimeMillis();
-    private readonly java.util.Random random = new();
+    private readonly JavaRandom random = new();
     private int rainSoundCounter;
     private readonly float[] fogColorBuffer = new float[16];
     private float fogColorRed;
@@ -606,7 +606,7 @@ public class GameRenderer
 
         if (var1 != 0.0F)
         {
-            random.setSeed(ticks * 312987231L);
+            random.SetSeed(ticks * 312987231L);
             EntityLiving var2 = client.camera;
             World var3 = client.world;
             int var4 = MathHelper.floor_double(var2.x);
@@ -620,14 +620,14 @@ public class GameRenderer
 
             for (int var15 = 0; var15 < (int)(100.0F * var1 * var1); ++var15)
             {
-                int var16 = var4 + random.nextInt(var7) - random.nextInt(var7);
-                int var17 = var6 + random.nextInt(var7) - random.nextInt(var7);
+                int var16 = var4 + random.NextInt(var7) - random.NextInt(var7);
+                int var17 = var6 + random.NextInt(var7) - random.NextInt(var7);
                 int var18 = var3.getTopSolidBlockY(var16, var17);
                 int var19 = var3.getBlockId(var16, var18 - 1, var17);
                 if (var18 <= var5 + var7 && var18 >= var5 - var7 && var3.getBiomeSource().GetBiome(var16, var17).CanSpawnLightningBolt())
                 {
-                    float var20 = random.nextFloat();
-                    float var21 = random.nextFloat();
+                    float var20 = random.NextFloat();
+                    float var21 = random.NextFloat();
                     if (var19 > 0)
                     {
                         if (Block.Blocks[var19].material == Material.Lava)
@@ -637,7 +637,7 @@ public class GameRenderer
                         else
                         {
                             ++var14;
-                            if (random.nextInt(var14) == 0)
+                            if (random.NextInt(var14) == 0)
                             {
                                 var8 = (double)(var16 + var20);
                                 var10 = (double)(var18 + 0.1F) - Block.Blocks[var19].minY;
@@ -650,7 +650,7 @@ public class GameRenderer
                 }
             }
 
-            if (var14 > 0 && random.nextInt(3) < rainSoundCounter++)
+            if (var14 > 0 && random.NextInt(3) < rainSoundCounter++)
             {
                 rainSoundCounter = 0;
                 if (var10 > var2.y + 1.0D && var3.getTopSolidBlockY(MathHelper.floor_double(var2.x), MathHelper.floor_double(var2.z)) > MathHelper.floor_double(var2.y))
@@ -733,11 +733,11 @@ public class GameRenderer
                         var26 = 1.0F;
                         if (var24 != var25)
                         {
-                            random.setSeed(var19 * var19 * 3121 + var19 * 45238971 + var20 * var20 * 418711 + var20 * 13761);
+                            random.SetSeed(var19 * var19 * 3121 + var19 * 45238971 + var20 * var20 * 418711 + var20 * 13761);
                             float var27 = ticks + tickDelta;
                             float var28 = ((ticks & 511) + tickDelta) / 512.0F;
-                            float var29 = random.nextFloat() + var27 * 0.01F * (float)random.nextGaussian();
-                            float var30 = random.nextFloat() + var27 * (float)random.nextGaussian() * 0.001F;
+                            float var29 = random.NextFloat() + var27 * 0.01F * (float)random.NextGaussian();
+                            float var30 = random.NextFloat() + var27 * (float)random.NextGaussian() * 0.001F;
                             double var31 = (double)(var19 + 0.5F) - var3.x;
                             double var33 = (double)(var20 + 0.5F) - var3.z;
                             float var35 = MathHelper.sqrt_double(var31 * var31 + var33 * var33) / var16;
@@ -788,8 +788,8 @@ public class GameRenderer
                         float var37 = 1.0F;
                         if (var23 != var24)
                         {
-                            random.setSeed(var19 * var19 * 3121 + var19 * 45238971 + var20 * var20 * 418711 + var20 * 13761);
-                            var26 = ((ticks + var19 * var19 * 3121 + var19 * 45238971 + var20 * var20 * 418711 + var20 * 13761 & 31) + tickDelta) / 32.0F * (3.0F + random.nextFloat());
+                            random.SetSeed(var19 * var19 * 3121 + var19 * 45238971 + var20 * var20 * 418711 + var20 * 13761);
+                            var26 = ((ticks + var19 * var19 * 3121 + var19 * 45238971 + var20 * var20 * 418711 + var20 * 13761 & 31) + tickDelta) / 32.0F * (3.0F + random.NextFloat());
                             double var38 = (double)(var19 + 0.5F) - var3.x;
                             double var39 = (double)(var20 + 0.5F) - var3.z;
                             float var40 = MathHelper.sqrt_double(var38 * var38 + var39 * var39) / var16;

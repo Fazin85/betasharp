@@ -6,7 +6,7 @@ public class LargeOakTreeFeature : Feature
 {
 
     static readonly sbyte[] MINOR_AXES = [2, 0, 0, 1, 2, 1];
-    java.util.Random random = new();
+    JavaRandom random = new();
     World world;
     int[] origin = [0, 0, 0];
     int height;
@@ -65,8 +65,8 @@ public class LargeOakTreeFeature : Feature
                 {
                     for (double var9 = 0.5D; var7 < var1; ++var7)
                     {
-                        double var11 = branchLengthScale * (double)var8 * ((double)random.nextFloat() + 0.328D);
-                        double var13 = (double)random.nextFloat() * 2.0D * 3.14159D;
+                        double var11 = branchLengthScale * (double)var8 * ((double)random.NextFloat() + 0.328D);
+                        double var13 = (double)random.NextFloat() * 2.0D * 3.14159D;
                         int var15 = MathHelper.floor_double(var11 * java.lang.Math.sin(var13) + origin[0] + var9);
                         int var16 = MathHelper.floor_double(var11 * java.lang.Math.cos(var13) + origin[2] + var9);
                         int[] var17 = [var15, var3, var16];
@@ -403,17 +403,17 @@ public class LargeOakTreeFeature : Feature
         foliageDensity = d2;
     }
 
-    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
+    public override bool Generate(World world, JavaRandom rand, int x, int y, int z)
     {
         this.world = world;
-        long var6 = rand.nextLong();
-        random.setSeed(var6);
+        long var6 = rand.NextLong();
+        random.SetSeed(var6);
         origin[0] = x;
         origin[1] = y;
         origin[2] = z;
         if (height == 0)
         {
-            height = 5 + random.nextInt(maxTrunkHeight);
+            height = 5 + random.NextInt(maxTrunkHeight);
         }
 
         if (!canPlace())

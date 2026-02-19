@@ -1,6 +1,7 @@
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
 using BetaSharp.Items;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
@@ -37,7 +38,7 @@ public class BlockTNT : Block
 
     }
 
-    public override int getDroppedItemCount(java.util.Random random)
+    public override int getDroppedItemCount(JavaRandom random)
     {
         return 0;
     }
@@ -45,7 +46,7 @@ public class BlockTNT : Block
     public override void onDestroyedByExplosion(World world, int x, int y, int z)
     {
         EntityTNTPrimed entityTNTPrimed = new EntityTNTPrimed(world, (double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F));
-        entityTNTPrimed.fuse = world.random.nextInt(entityTNTPrimed.fuse / 4) + entityTNTPrimed.fuse / 8;
+        entityTNTPrimed.fuse = world.random.NextInt(entityTNTPrimed.fuse / 4) + entityTNTPrimed.fuse / 8;
         world.SpawnEntity(entityTNTPrimed);
     }
 

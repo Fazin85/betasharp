@@ -14,12 +14,12 @@ public class SimplexNoiseSampler : java.lang.Object
     {
     }
 
-    public SimplexNoiseSampler(java.util.Random rand)
+    public SimplexNoiseSampler(JavaRandom rand)
     {
         _permutations = new int[512];
-        _xCoord = rand.nextDouble() * 256.0D;
-        _yCoord = rand.nextDouble() * 256.0D;
-        _zCoord = rand.nextDouble() * 256.0D;
+        _xCoord = rand.NextDouble() * 256.0D;
+        _yCoord = rand.NextDouble() * 256.0D;
+        _zCoord = rand.NextDouble() * 256.0D;
 
         // Fill perm with values from 0 to 255 in random order, duplicating the first 256 values to the end of the array
         for (int i = 0; i < 256; i++)
@@ -29,7 +29,7 @@ public class SimplexNoiseSampler : java.lang.Object
 
         for (int i = 0; i < 256; ++i)
         {
-            int j = rand.nextInt(256 - i) + i;
+            int j = rand.NextInt(256 - i) + i;
             (_permutations[i], _permutations[j]) = (_permutations[j], _permutations[i]);
             _permutations[i + 256] = _permutations[i];
         }

@@ -19,8 +19,8 @@ public class EntityPortalFX : EntityFX
         spawnX = base.x = x;
         spawnY = base.y = y;
         spawnZ = base.z = z;
-        float brightnessVariation = random.nextFloat() * 0.6F + 0.4F;
-        baseScale = particleScale = random.nextFloat() * 0.2F + 0.5F;
+        float brightnessVariation = random.NextFloat() * 0.6F + 0.4F;
+        baseScale = particleScale = random.NextFloat() * 0.2F + 0.5F;
         particleRed = particleGreen = particleBlue = 1.0F * brightnessVariation;
         particleGreen *= 0.3F;
         particleRed *= 0.9F;

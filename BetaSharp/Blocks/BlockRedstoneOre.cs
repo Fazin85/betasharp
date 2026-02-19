@@ -1,6 +1,7 @@
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
 using BetaSharp.Items;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
@@ -53,7 +54,7 @@ public class BlockRedstoneOre : Block
 
     }
 
-    public override void onTick(World world, int x, int y, int z, java.util.Random random)
+    public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
         if (id == Block.LitRedstoneOre.id)
         {
@@ -62,17 +63,17 @@ public class BlockRedstoneOre : Block
 
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
         return Item.Redstone.id;
     }
 
-    public override int getDroppedItemCount(java.util.Random random)
+    public override int getDroppedItemCount(JavaRandom random)
     {
-        return 4 + random.nextInt(2);
+        return 4 + random.NextInt(2);
     }
 
-    public override void randomDisplayTick(World world, int x, int y, int z, java.util.Random random)
+    public override void randomDisplayTick(World world, int x, int y, int z, JavaRandom random)
     {
         if (lit)
         {
@@ -83,14 +84,14 @@ public class BlockRedstoneOre : Block
 
     private void spawnParticles(World world, int x, int y, int z)
     {
-        java.util.Random random = world.random;
+        JavaRandom random = world.random;
         double faceOffset = 1.0D / 16.0D;
 
         for (int direction = 0; direction < 6; ++direction)
         {
-            double particleX = (double)((float)x + random.nextFloat());
-            double particleY = (double)((float)y + random.nextFloat());
-            double particleZ = (double)((float)z + random.nextFloat());
+            double particleX = (double)((float)x + random.NextFloat());
+            double particleY = (double)((float)y + random.NextFloat());
+            double particleZ = (double)((float)z + random.NextFloat());
             if (direction == 0 && !world.isOpaque(x, y + 1, z))
             {
                 particleY = (double)(y + 1) + faceOffset;

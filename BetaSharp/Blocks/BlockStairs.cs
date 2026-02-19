@@ -83,7 +83,7 @@ public class BlockStairs : Block
         setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
     }
 
-    public override void randomDisplayTick(World world, int x, int y, int z, java.util.Random random)
+    public override void randomDisplayTick(World world, int x, int y, int z, JavaRandom random)
     {
         baseBlock.randomDisplayTick(world, x, y, z, random);
     }
@@ -113,12 +113,12 @@ public class BlockStairs : Block
         return baseBlock.getRenderLayer();
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
         return baseBlock.getDroppedItemId(blockMeta, random);
     }
 
-    public override int getDroppedItemCount(java.util.Random random)
+    public override int getDroppedItemCount(JavaRandom random)
     {
         return baseBlock.getDroppedItemCount(random);
     }
@@ -189,7 +189,7 @@ public class BlockStairs : Block
         baseBlock.onSteppedOn(world, x, y, z, entity);
     }
 
-    public override void onTick(World world, int x, int y, int z, java.util.Random random)
+    public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
         baseBlock.onTick(world, x, y, z, random);
     }

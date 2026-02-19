@@ -9,7 +9,7 @@ namespace BetaSharp.Blocks;
 
 public class BlockDispenser : BlockWithEntity
 {
-    private static readonly ThreadLocal<java.util.Random> s_random = new(() => new());
+    private static readonly ThreadLocal<JavaRandom> s_random = new(() => new());
 
     public BlockDispenser(int id) : base(id, Material.Stone)
     {
@@ -21,7 +21,7 @@ public class BlockDispenser : BlockWithEntity
         return 4;
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
         return Block.Dispenser.id;
     }
@@ -101,7 +101,7 @@ public class BlockDispenser : BlockWithEntity
         }
     }
 
-    private void dispense(World world, int x, int y, int z, java.util.Random random)
+    private void dispense(World world, int x, int y, int z, JavaRandom random)
     {
         int meta = world.getBlockMeta(x, y, z);
         int dirX = 0;
@@ -159,13 +159,13 @@ public class BlockDispenser : BlockWithEntity
             else
             {
                 EntityItem item = new EntityItem(world, spawnX, spawnY - 0.3D, spawnZ, itemStack);
-                double var20 = random.nextDouble() * 0.1D + 0.2D;
+                double var20 = random.NextDouble() * 0.1D + 0.2D;
                 item.velocityX = (double)dirX * var20;
                 item.velocityY = (double)0.2F;
                 item.velocityZ = (double)dirZ * var20;
-                item.velocityX += random.nextGaussian() * (double)0.0075F * 6.0D;
-                item.velocityY += random.nextGaussian() * (double)0.0075F * 6.0D;
-                item.velocityZ += random.nextGaussian() * (double)0.0075F * 6.0D;
+                item.velocityX += random.NextGaussian() * (double)0.0075F * 6.0D;
+                item.velocityY += random.NextGaussian() * (double)0.0075F * 6.0D;
+                item.velocityZ += random.NextGaussian() * (double)0.0075F * 6.0D;
                 world.SpawnEntity(item);
                 world.worldEvent(1000, x, y, z, 0);
             }
@@ -188,7 +188,7 @@ public class BlockDispenser : BlockWithEntity
 
     }
 
-    public override void onTick(World world, int x, int y, int z, java.util.Random random)
+    public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
         if (world.isPowered(x, y, z) || world.isPowered(x, y + 1, z))
         {
@@ -231,20 +231,20 @@ public class BlockDispenser : BlockWithEntity
     {
         BlockEntityDispenser dispenser = (BlockEntityDispenser)world.getBlockEntity(x, y, z);
 
-        java.util.Random random = s_random.Value!;
+        JavaRandom random = s_random.Value!;
 
         for (int slotIndex = 0; slotIndex < dispenser.size(); ++slotIndex)
         {
             ItemStack stack = dispenser.getStack(slotIndex);
             if (stack != null)
             {
-                float offsetX = random.nextFloat() * 0.8F + 0.1F;
-                float offsetY = random.nextFloat() * 0.8F + 0.1F;
-                float offsetZ = random.nextFloat() * 0.8F + 0.1F;
+                float offsetX = random.NextFloat() * 0.8F + 0.1F;
+                float offsetY = random.NextFloat() * 0.8F + 0.1F;
+                float offsetZ = random.NextFloat() * 0.8F + 0.1F;
 
                 while (stack.count > 0)
                 {
-                    int amount = random.nextInt(21) + 10;
+                    int amount = random.NextInt(21) + 10;
                     if (amount > stack.count)
                     {
                         amount = stack.count;
@@ -253,9 +253,9 @@ public class BlockDispenser : BlockWithEntity
                     stack.count -= amount;
                     EntityItem entityItem = new(world, (double)((float)x + offsetX), (double)((float)y + offsetY), (double)((float)z + offsetZ), new ItemStack(stack.itemId, amount, stack.getDamage()));
                     float var13 = 0.05F;
-                    entityItem.velocityX = (double)((float)random.nextGaussian() * var13);
-                    entityItem.velocityY = (double)((float)random.nextGaussian() * var13 + 0.2F);
-                    entityItem.velocityZ = (double)((float)random.nextGaussian() * var13);
+                    entityItem.velocityX = (double)((float)random.NextGaussian() * var13);
+                    entityItem.velocityY = (double)((float)random.NextGaussian() * var13 + 0.2F);
+                    entityItem.velocityZ = (double)((float)random.NextGaussian() * var13);
                     world.SpawnEntity(entityItem);
                 }
             }

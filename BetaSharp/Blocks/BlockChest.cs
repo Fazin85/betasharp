@@ -3,6 +3,7 @@ using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
 using BetaSharp.Inventorys;
 using BetaSharp.Items;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
@@ -10,7 +11,7 @@ namespace BetaSharp.Blocks;
 //NOTE: CHESTS DON'T ROTATE BASED ON PLAYER ORIENTATION, THIS IS VANILLA BEHAVIOR, NOT A BUG
 public class BlockChest : BlockWithEntity
 {
-    private java.util.Random random = new();
+    private JavaRandom random = new();
 
     public BlockChest(int id) : base(id, Material.Wood)
     {
@@ -177,13 +178,13 @@ public class BlockChest : BlockWithEntity
             ItemStack stack = chest.getStack(slot);
             if (stack != null)
             {
-                float offsetX = random.nextFloat() * 0.8F + 0.1F;
-                float offsetY = random.nextFloat() * 0.8F + 0.1F;
-                float offsetZ = random.nextFloat() * 0.8F + 0.1F;
+                float offsetX = random.NextFloat() * 0.8F + 0.1F;
+                float offsetY = random.NextFloat() * 0.8F + 0.1F;
+                float offsetZ = random.NextFloat() * 0.8F + 0.1F;
 
                 while (stack.count > 0)
                 {
-                    int amount = random.nextInt(21) + 10;
+                    int amount = random.NextInt(21) + 10;
                     if (amount > stack.count)
                     {
                         amount = stack.count;
@@ -192,9 +193,9 @@ public class BlockChest : BlockWithEntity
                     stack.count -= amount;
                     EntityItem entityItem = new EntityItem(world, (double)((float)x + offsetX), (double)((float)y + offsetY), (double)((float)z + offsetZ), new ItemStack(stack.itemId, amount, stack.getDamage()));
                     float var13 = 0.05F;
-                    entityItem.velocityX = (double)((float)random.nextGaussian() * var13);
-                    entityItem.velocityY = (double)((float)random.nextGaussian() * var13 + 0.2F);
-                    entityItem.velocityZ = (double)((float)random.nextGaussian() * var13);
+                    entityItem.velocityX = (double)((float)random.NextGaussian() * var13);
+                    entityItem.velocityY = (double)((float)random.NextGaussian() * var13 + 0.2F);
+                    entityItem.velocityZ = (double)((float)random.NextGaussian() * var13);
                     world.SpawnEntity(entityItem);
                 }
             }

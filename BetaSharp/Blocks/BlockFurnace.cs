@@ -10,7 +10,7 @@ namespace BetaSharp.Blocks;
 public class BlockFurnace : BlockWithEntity
 {
 
-    private readonly java.util.Random _random = new();
+    private readonly JavaRandom _random = new();
     private readonly bool _lit;
     private static readonly ThreadLocal<bool> s_ignoreBlockRemoval = new(() => false);
 
@@ -20,7 +20,7 @@ public class BlockFurnace : BlockWithEntity
         textureId = 45;
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
         return Block.Furnace.id;
     }
@@ -81,16 +81,16 @@ public class BlockFurnace : BlockWithEntity
         }
     }
 
-    public override void randomDisplayTick(World world, int x, int y, int z, java.util.Random random)
+    public override void randomDisplayTick(World world, int x, int y, int z, JavaRandom random)
     {
         if (_lit)
         {
             int var6 = world.getBlockMeta(x, y, z);
             float particleX = (float)x + 0.5F;
-            float particleY = (float)y + 0.0F + random.nextFloat() * 6.0F / 16.0F;
+            float particleY = (float)y + 0.0F + random.NextFloat() * 6.0F / 16.0F;
             float particleZ = (float)z + 0.5F;
             float flameOffset = 0.52F;
-            float randomOffset = random.nextFloat() * 0.6F - 0.3F;
+            float randomOffset = random.NextFloat() * 0.6F - 0.3F;
             if (var6 == 4)
             {
                 world.addParticle("smoke", (double)(particleX - flameOffset), (double)particleY, (double)(particleZ + randomOffset), 0.0D, 0.0D, 0.0D);
@@ -195,13 +195,13 @@ public class BlockFurnace : BlockWithEntity
                 ItemStack stack = furnace.getStack(slotIndex);
                 if (stack != null)
                 {
-                    float offsetX = _random.nextFloat() * 0.8F + 0.1F;
-                    float offsetY = _random.nextFloat() * 0.8F + 0.1F;
-                    float offsetZ = _random.nextFloat() * 0.8F + 0.1F;
+                    float offsetX = _random.NextFloat() * 0.8F + 0.1F;
+                    float offsetY = _random.NextFloat() * 0.8F + 0.1F;
+                    float offsetZ = _random.NextFloat() * 0.8F + 0.1F;
 
                     while (stack.count > 0)
                     {
-                        int var11 = _random.nextInt(21) + 10;
+                        int var11 = _random.NextInt(21) + 10;
                         if (var11 > stack.count)
                         {
                             var11 = stack.count;
@@ -210,9 +210,9 @@ public class BlockFurnace : BlockWithEntity
                         stack.count -= var11;
                         EntityItem droppedItem = new EntityItem(world, (double)((float)x + offsetX), (double)((float)y + offsetY), (double)((float)z + offsetZ), new ItemStack(stack.itemId, var11, stack.getDamage()));
                         float var13 = 0.05F;
-                        droppedItem.velocityX = (double)((float)_random.nextGaussian() * var13);
-                        droppedItem.velocityY = (double)((float)_random.nextGaussian() * var13 + 0.2F);
-                        droppedItem.velocityZ = (double)((float)_random.nextGaussian() * var13);
+                        droppedItem.velocityX = (double)((float)_random.NextGaussian() * var13);
+                        droppedItem.velocityY = (double)((float)_random.NextGaussian() * var13 + 0.2F);
+                        droppedItem.velocityZ = (double)((float)_random.NextGaussian() * var13);
                         world.SpawnEntity(droppedItem);
                     }
                 }

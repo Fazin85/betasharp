@@ -197,7 +197,7 @@ public class GuiAchievements : GuiScreen
         int var13 = var5 + 288 >> 4;
         int var14 = (var4 + 288) % 16;
         int var15 = (var5 + 288) % 16;
-        java.util.Random var21 = new();
+        JavaRandom var21 = new();
 
         for (int var22 = 0; var22 * 16 - var15 < 155; ++var22)
         {
@@ -206,15 +206,15 @@ public class GuiAchievements : GuiScreen
 
             for (int var24 = 0; var24 * 16 - var14 < 224; ++var24)
             {
-                var21.setSeed(1234 + var12 + var24);
-                var21.nextInt();
-                int var25 = var21.nextInt(1 + var13 + var22) + (var13 + var22) / 2;
+                var21.SetSeed(1234 + var12 + var24);
+                var21.NextInt();
+                int var25 = var21.NextInt(1 + var13 + var22) + (var13 + var22) / 2;
                 int var26 = Block.Sand.textureId;
                 if (var25 <= 37 && var13 + var22 != 35)
                 {
                     if (var25 == 22)
                     {
-                        if (var21.nextInt(2) == 0)
+                        if (var21.NextInt(2) == 0)
                         {
                             var26 = Block.DiamondOre.textureId;
                         }

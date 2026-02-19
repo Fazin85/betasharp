@@ -1,3 +1,5 @@
+using BetaSharp.Util.Maths;
+
 namespace BetaSharp.Blocks;
 
 public class BlockDeadBush : BlockPlant
@@ -19,7 +21,7 @@ public class BlockDeadBush : BlockPlant
         return textureId;
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
         return -1;
     }

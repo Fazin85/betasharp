@@ -358,7 +358,7 @@ public class BlockRedstoneWire : Block
         }
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int var1, JavaRandom var2)
     {
         return Item.Redstone.id;
     }
@@ -420,14 +420,14 @@ public class BlockRedstoneWire : Block
         return s_wiresProvidePower.Value;
     }
 
-    public override void randomDisplayTick(World var1, int var2, int var3, int var4, java.util.Random var5)
+    public override void randomDisplayTick(World var1, int var2, int var3, int var4, JavaRandom var5)
     {
         int var6 = var1.getBlockMeta(var2, var3, var4);
         if (var6 > 0)
         {
-            double var7 = (double)var2 + 0.5D + ((double)var5.nextFloat() - 0.5D) * 0.2D;
+            double var7 = (double)var2 + 0.5D + ((double)var5.NextFloat() - 0.5D) * 0.2D;
             double var9 = (double)((float)var3 + 1.0F / 16.0F);
-            double var11 = (double)var4 + 0.5D + ((double)var5.nextFloat() - 0.5D) * 0.2D;
+            double var11 = (double)var4 + 0.5D + ((double)var5.NextFloat() - 0.5D) * 0.2D;
             float var13 = (float)var6 / 15.0F;
             float var14 = var13 * 0.6F + 0.4F;
             if (var6 == 0)

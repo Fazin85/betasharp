@@ -1,6 +1,7 @@
 using BetaSharp.Blocks;
 using BetaSharp.Items;
 using BetaSharp.NBT;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using java.lang;
 
@@ -50,14 +51,14 @@ public class EntitySheep : EntityAnimal
             if (!world.isRemote)
             {
                 setSheared(true);
-                int woolCount = 2 + random.nextInt(3);
+                int woolCount = 2 + random.NextInt(3);
 
                 for (int i = 0; i < woolCount; ++i)
                 {
                     EntityItem woolItem = dropItem(new ItemStack(Block.Wool.id, 1, getFleeceColor()), 1.0F);
-                    woolItem.velocityY += (double)(random.nextFloat() * 0.05F);
-                    woolItem.velocityX += (double)((random.nextFloat() - random.nextFloat()) * 0.1F);
-                    woolItem.velocityZ += (double)((random.nextFloat() - random.nextFloat()) * 0.1F);
+                    woolItem.velocityY += (double)(random.NextFloat() * 0.05F);
+                    woolItem.velocityX += (double)((random.NextFloat() - random.NextFloat()) * 0.1F);
+                    woolItem.velocityZ += (double)((random.NextFloat() - random.NextFloat()) * 0.1F);
                 }
             }
 
@@ -126,9 +127,9 @@ public class EntitySheep : EntityAnimal
 
     }
 
-    public static int getRandomFleeceColor(java.util.Random random)
+    public static int getRandomFleeceColor(JavaRandom random)
     {
-        int roll = random.nextInt(100);
-        return roll < 5 ? 15 : (roll < 10 ? 7 : (roll < 15 ? 8 : (roll < 18 ? 12 : (random.nextInt(500) == 0 ? 6 : 0))));
+        int roll = random.NextInt(100);
+        return roll < 5 ? 15 : (roll < 10 ? 7 : (roll < 15 ? 8 : (roll < 18 ? 12 : (random.NextInt(500) == 0 ? 6 : 0))));
     }
 }

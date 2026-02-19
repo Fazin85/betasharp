@@ -2,13 +2,14 @@ using BetaSharp.Entities;
 using BetaSharp.Inventorys;
 using BetaSharp.Items;
 using BetaSharp.NBT;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Blocks.Entities;
 
 public class BlockEntityDispenser : BlockEntity, IInventory
 {
     private ItemStack[] inventory = new ItemStack[9];
-    private readonly java.util.Random random = new();
+    private readonly JavaRandom random = new();
 
     public int size()
     {
@@ -57,7 +58,7 @@ public class BlockEntityDispenser : BlockEntity, IInventory
 
         for (int slotIndex = 0; slotIndex < inventory.Length; ++slotIndex)
         {
-            if (inventory[slotIndex] != null && random.nextInt(nonNullCount++) == 0)
+            if (inventory[slotIndex] != null && random.NextInt(nonNullCount++) == 0)
             {
                 selectedSlot = slotIndex;
             }

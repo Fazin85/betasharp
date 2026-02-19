@@ -333,8 +333,8 @@ public abstract class EntityPlayer : EntityLiving
             float var5;
             if (throwRandomly)
             {
-                var5 = random.nextFloat() * 0.5F;
-                float var6 = random.nextFloat() * (float)System.Math.PI * 2.0F;
+                var5 = random.NextFloat() * 0.5F;
+                float var6 = random.NextFloat() * (float)System.Math.PI * 2.0F;
                 var3.velocityX = (double)(-MathHelper.sin(var6) * var5);
                 var3.velocityZ = (double)(MathHelper.cos(var6) * var5);
                 var3.velocityY = (double)0.2F;
@@ -346,10 +346,10 @@ public abstract class EntityPlayer : EntityLiving
                 var3.velocityZ = (double)(MathHelper.cos(yaw / 180.0F * (float)System.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)System.Math.PI) * var4);
                 var3.velocityY = (double)(-MathHelper.sin(pitch / 180.0F * (float)System.Math.PI) * var4 + 0.1F);
                 var4 = 0.02F;
-                var5 = random.nextFloat() * (float)System.Math.PI * 2.0F;
-                var4 *= random.nextFloat();
+                var5 = random.NextFloat() * (float)System.Math.PI * 2.0F;
+                var4 *= random.NextFloat();
                 var3.velocityX += java.lang.Math.cos((double)var5) * (double)var4;
-                var3.velocityY += (double)((random.nextFloat() - random.nextFloat()) * 0.1F);
+                var3.velocityY += (double)((random.NextFloat() - random.NextFloat()) * 0.1F);
                 var3.velocityZ += java.lang.Math.sin((double)var5) * (double)var4;
             }
 

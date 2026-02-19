@@ -13,14 +13,14 @@ public class ModelGhast : ModelBase
         body = new ModelPart(0, 0);
         body.addBox(-8.0F, -8.0F, -8.0F, 16, 16, 16);
         body.rotationPointY += 24 + var1;
-        java.util.Random var2 = new(1660);
+        JavaRandom var2 = new(1660);
 
         for (int var3 = 0; var3 < tentacles.Length; ++var3)
         {
             tentacles[var3] = new ModelPart(0, 0);
             float var4 = ((var3 % 3 - var3 / 3 % 2 * 0.5F + 0.25F) / 2.0F * 2.0F - 1.0F) * 5.0F;
             float var5 = (var3 / 3 / 2.0F * 2.0F - 1.0F) * 5.0F;
-            int var6 = var2.nextInt(7) + 8;
+            int var6 = var2.NextInt(7) + 8;
             tentacles[var3].addBox(-1.0F, 0.0F, -1.0F, 2, var6, 2);
             tentacles[var3].rotationPointX = var4;
             tentacles[var3].rotationPointZ = var5;

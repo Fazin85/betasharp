@@ -3,6 +3,7 @@ using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
 using BetaSharp.Stats;
 using BetaSharp.Worlds;
+using BetaSharp.Util.Maths;
 using java.lang;
 
 namespace BetaSharp.Items;
@@ -15,7 +16,7 @@ public class Item : java.lang.Object
         Stats.Stats.initializeExtendedItemStats();
     }
 
-    protected static java.util.Random itemRand = new();
+    protected static JavaRandom itemRand = new();
     public static Item[] ITEMS = new Item[32000];
     public static Item IronShovel = (new ItemSpade(0, EnumToolMaterial.IRON)).setTexturePosition(2, 5).setItemName("shovelIron");
     public static Item IronPickaxe = (new ItemPickaxe(1, EnumToolMaterial.IRON)).setTexturePosition(2, 6).setItemName("pickaxeIron");

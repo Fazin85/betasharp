@@ -921,7 +921,7 @@ public class WorldRenderer : IWorldAccess
 
     public void worldEvent(EntityPlayer var1, int var2, int var3, int var4, int var5, int var6)
     {
-        java.util.Random var7 = world.random;
+        JavaRandom var7 = world.random;
         int var16;
         switch (var2)
         {
@@ -937,15 +937,15 @@ public class WorldRenderer : IWorldAccess
             case 1003:
                 if (java.lang.Math.random() < 0.5D)
                 {
-                    world.playSound(var3 + 0.5D, var4 + 0.5D, var5 + 0.5D, "random.door_open", 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
+                    world.playSound(var3 + 0.5D, var4 + 0.5D, var5 + 0.5D, "random.door_open", 1.0F, world.random.NextFloat() * 0.1F + 0.9F);
                 }
                 else
                 {
-                    world.playSound(var3 + 0.5D, var4 + 0.5D, var5 + 0.5D, "random.door_close", 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
+                    world.playSound(var3 + 0.5D, var4 + 0.5D, var5 + 0.5D, "random.door_close", 1.0F, world.random.NextFloat() * 0.1F + 0.9F);
                 }
                 break;
             case 1004:
-                world.playSound((double)(var3 + 0.5F), (double)(var4 + 0.5F), (double)(var5 + 0.5F), "random.fizz", 0.5F, 2.6F + (var7.nextFloat() - var7.nextFloat()) * 0.8F);
+                world.playSound((double)(var3 + 0.5F), (double)(var4 + 0.5F), (double)(var5 + 0.5F), "random.fizz", 0.5F, 2.6F + (var7.NextFloat() - var7.NextFloat()) * 0.8F);
                 break;
             case 1005:
                 if (Item.ITEMS[var6] is ItemRecord)
@@ -966,13 +966,13 @@ public class WorldRenderer : IWorldAccess
 
                 for (var16 = 0; var16 < 10; ++var16)
                 {
-                    double var31 = var7.nextDouble() * 0.2D + 0.01D;
-                    double var19 = var10 + var8 * 0.01D + (var7.nextDouble() - 0.5D) * var9 * 0.5D;
-                    double var21 = var12 + (var7.nextDouble() - 0.5D) * 0.5D;
-                    double var23 = var14 + var9 * 0.01D + (var7.nextDouble() - 0.5D) * var8 * 0.5D;
-                    double var25 = var8 * var31 + var7.nextGaussian() * 0.01D;
-                    double var27 = -0.03D + var7.nextGaussian() * 0.01D;
-                    double var29 = var9 * var31 + var7.nextGaussian() * 0.01D;
+                    double var31 = var7.NextDouble() * 0.2D + 0.01D;
+                    double var19 = var10 + var8 * 0.01D + (var7.NextDouble() - 0.5D) * var9 * 0.5D;
+                    double var21 = var12 + (var7.NextDouble() - 0.5D) * 0.5D;
+                    double var23 = var14 + var9 * 0.01D + (var7.NextDouble() - 0.5D) * var8 * 0.5D;
+                    double var25 = var8 * var31 + var7.NextGaussian() * 0.01D;
+                    double var27 = -0.03D + var7.NextGaussian() * 0.01D;
+                    double var29 = var9 * var31 + var7.NextGaussian() * 0.01D;
                     spawnParticle("smoke", var19, var21, var23, var25, var27, var29);
                 }
 

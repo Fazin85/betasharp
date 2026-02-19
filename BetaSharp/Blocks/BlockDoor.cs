@@ -224,7 +224,7 @@ public class BlockDoor : Block
 
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
         return (blockMeta & 8) != 0 ? 0 : (material == Material.Metal ? Item.IronDoor.id : Item.WoodenDoor.id);
     }

@@ -1,3 +1,4 @@
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
@@ -11,13 +12,13 @@ public class BlockMushroom : BlockPlant
         setTickRandomly(true);
     }
 
-    public override void onTick(World world, int x, int y, int z, java.util.Random random)
+    public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
-        if (random.nextInt(100) == 0)
+        if (random.NextInt(100) == 0)
         {
-            int tryX = x + random.nextInt(3) - 1;
-            int tryY = y + random.nextInt(2) - random.nextInt(2);
-            int tryZ = z + random.nextInt(3) - 1;
+            int tryX = x + random.NextInt(3) - 1;
+            int tryY = y + random.NextInt(2) - random.NextInt(2);
+            int tryZ = z + random.NextInt(3) - 1;
             if (world.isAir(tryX, tryY, tryZ) && canGrow(world, tryX, tryY, tryZ))
             {
                 if (world.isAir(tryX, tryY, tryZ) && canGrow(world, tryX, tryY, tryZ))
