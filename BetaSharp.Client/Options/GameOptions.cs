@@ -173,7 +173,7 @@ public class GameOptions : java.lang.Object
             }
             if (Minecraft.INSTANCE?.textureManager != null)
             {
-                Minecraft.INSTANCE.textureManager.Reload();
+                Minecraft.INSTANCE.textureManager.reload();
             }
         }
         else if (option == EnumOptions.MIPMAPS)
@@ -181,7 +181,7 @@ public class GameOptions : java.lang.Object
             useMipmaps = !useMipmaps;
             if (Minecraft.INSTANCE?.textureManager != null)
             {
-                Minecraft.INSTANCE.textureManager.Reload();
+                Minecraft.INSTANCE.textureManager.reload();
             }
         }
         else if (option == EnumOptions.MSAA)

@@ -1,3 +1,4 @@
+using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -5,6 +6,11 @@ namespace BetaSharp;
 
 public class ScreenShotHelper
 {
+    public static string saveScreenshot(string gameDir, int width, int height)
+    {
+        return "Screenshots are not supported";
+    }
+
     public static string saveScreenshot(string gameDir, int width, int height, byte[] rgbPixels)
     {
         if (rgbPixels == null || rgbPixels.Length < width * height * 3)
