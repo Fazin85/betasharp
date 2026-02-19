@@ -15,6 +15,8 @@ public class GuiChat : GuiScreen
     private static readonly List<string> s_history = [];
     private int _historyIndex = 0;
 
+    public override bool PausesGame => false;
+
     public GuiChat()
     {
     }

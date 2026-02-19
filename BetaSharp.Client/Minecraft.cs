@@ -426,7 +426,7 @@ public partial class Minecraft
 
         if (internalServer != null)
         {
-            bool shouldPause = newScreen?.DoesGuiPauseGame() ?? false;
+            bool shouldPause = newScreen?.PausesGame ?? false;
             internalServer.SetPaused(shouldPause);
         }
 
@@ -661,8 +661,7 @@ public partial class Minecraft
                     checkGLError("Post render");
                     ++frameCounter;
 
-                    isGamePaused = (!isMultiplayerWorld() || internalServer != null) && currentScreen != null &&
-                                   currentScreen.DoesGuiPauseGame();
+                    isGamePaused = (!isMultiplayerWorld() || internalServer != null) && (currentScreen?.PausesGame ?? false);
 
                     for (;
                          java.lang.System.currentTimeMillis() >= lastFpsCheckTime + 1000L;

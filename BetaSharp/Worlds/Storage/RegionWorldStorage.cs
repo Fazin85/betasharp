@@ -112,28 +112,28 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
 
         try
         {
-            java.io.File file = new(saveDirectory, "level.dat_new");
-            java.io.File var6 = new(saveDirectory, "level.dat_old");
-            java.io.File var7 = new(saveDirectory, "level.dat");
+            java.io.File levelDatNew = new(saveDirectory, "level.dat_new");
+            java.io.File levelDatOld = new(saveDirectory, "level.dat_old");
+            java.io.File levelDat = new(saveDirectory, "level.dat");
 
-            using FileStream stream = File.OpenWrite(file.getAbsolutePath());
+            using FileStream stream = File.OpenWrite(levelDatNew.getAbsolutePath());
             NbtIo.WriteCompressed(tag, stream);
 
-            if (var6.exists())
+            if (levelDatOld.exists())
             {
-                var6.delete();
+                levelDatOld.delete();
             }
 
-            var7.renameTo(var6);
-            if (var7.exists())
+            levelDat.renameTo(levelDatOld);
+            if (levelDat.exists())
             {
-                var7.delete();
+                levelDat.delete();
             }
 
-            file.renameTo(var7);
-            if (file.exists())
+            levelDatNew.renameTo(levelDat);
+            if (levelDatNew.exists())
             {
-                file.delete();
+                levelDatNew.delete();
             }
         }
         catch (System.Exception e)
