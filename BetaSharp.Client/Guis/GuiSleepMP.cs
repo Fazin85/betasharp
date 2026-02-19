@@ -6,21 +6,21 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiSleepMP : GuiChat
 {
-    private const int BUTTON_STOP_SLEEP = 1;
+    private const int ButtonStopSleep = 1;
 
-    public override void initGui()
+    public override void InitGui()
     {
         Keyboard.enableRepeatEvents(true);
         TranslationStorage translations = TranslationStorage.getInstance();
-        controlList.add(new GuiButton(BUTTON_STOP_SLEEP, width / 2 - 100, height - 40, translations.translateKey("multiplayer.stopSleeping")));
+        _controlList.Add(new GuiButton(ButtonStopSleep, Width / 2 - 100, Height - 40, translations.translateKey("multiplayer.stopSleeping")));
     }
 
-    public override void onGuiClosed()
+    public override void OnGuiClosed()
     {
         Keyboard.enableRepeatEvents(false);
     }
 
-    protected override void keyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, int eventKey)
     {
         if (eventKey == 1)
         {
@@ -28,35 +28,35 @@ public class GuiSleepMP : GuiChat
         }
         else if (eventKey == 28)
         {
-            string trimmed = message.Trim();
+            string trimmed = _message.Trim();
             if (trimmed.Length > 0)
             {
                 mc.player.sendChatMessage(trimmed);
             }
 
-            message = "";
+            _message = "";
         }
         else
         {
-            base.keyTyped(eventChar, eventKey);
+            base.KeyTyped(eventChar, eventKey);
         }
 
     }
 
-    public override void render(int var1, int var2, float var3)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        base.render(var1, var2, var3);
+        base.Render(mouseX, mouseY, partialTicks);
     }
 
-    protected override void actionPerformed(GuiButton button)
+    protected override void ActionPerformed(GuiButton button)
     {
-        switch (button.id)
+        switch (button.Id)
         {
-            case BUTTON_STOP_SLEEP:
+            case ButtonStopSleep:
                 sendStopSleepingCommand();
                 break;
             default:
-                base.actionPerformed(button);
+                base.ActionPerformed(button);
                 break;
         }
 

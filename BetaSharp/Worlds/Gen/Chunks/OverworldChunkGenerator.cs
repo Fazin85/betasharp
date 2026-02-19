@@ -260,13 +260,13 @@ public class OverworldChunkGenerator : ChunkSource
     public Chunk getChunk(int chunkX, int chunkZ)
     {
         random.setSeed(chunkX * 341873128712L + chunkZ * 132897987541L);
-        byte[] var3 = new byte[-java.lang.Short.MIN_VALUE];
-        Chunk var4 = new Chunk(world, var3, chunkX, chunkZ);
+        byte[] blocks = new byte[-java.lang.Short.MIN_VALUE];
+        Chunk var4 = new Chunk(world, blocks, chunkX, chunkZ);
         biomes = world.getBiomeSource().GetBiomesInArea(biomes, chunkX * 16, chunkZ * 16, 16, 16);
         double[] var5 = world.getBiomeSource().TemperatureMap;
-        buildTerrain(chunkX, chunkZ, var3, biomes, var5);
-        buildSurfaces(chunkX, chunkZ, var3, biomes);
-        cave.carve(this, world, chunkX, chunkZ, var3);
+        buildTerrain(chunkX, chunkZ, blocks, biomes, var5);
+        buildSurfaces(chunkX, chunkZ, blocks, biomes);
+        cave.carve(this, world, chunkX, chunkZ, blocks);
         var4.populateHeightMap();
         return var4;
     }
@@ -511,7 +511,7 @@ public class OverworldChunkGenerator : ChunkSource
         }
 
         var11 = 0.5D;
-        var13 = (int)((forestNoise.func_806_a(var4 * var11, var5 * var11) / 8.0D + random.nextDouble() * 4.0D + 4.0D) / 3.0D);
+        var13 = (int)((forestNoise.generateNoise(var4 * var11, var5 * var11) / 8.0D + random.nextDouble() * 4.0D + 4.0D) / 3.0D);
         var14 = 0;
         if (random.nextInt(10) == 0)
         {

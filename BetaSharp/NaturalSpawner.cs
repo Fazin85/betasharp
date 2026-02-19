@@ -10,8 +10,13 @@ namespace BetaSharp;
 
 public class NaturalSpawner
 {
-    private static HashSet<ChunkPos> eligibleChunksForSpawning = new HashSet<ChunkPos>();
-    protected static readonly Class[] nightSpawnEntities = new Class[] { EntitySpider.Class, EntityZombie.Class, EntitySkeleton.Class };
+    private static HashSet<ChunkPos> eligibleChunksForSpawning = [];
+    protected static readonly Class[] nightSpawnEntities =
+    [
+        EntitySpider.Class,
+        EntityZombie.Class,
+        EntitySkeleton.Class,
+    ];
 
     protected static BlockPos getRandomSpawningPointInChunk(World var0, int var1, int var2)
     {
@@ -57,7 +62,7 @@ public class NaturalSpawner
             for (int var37 = 0; var37 < var6; ++var37)
             {
                 EnumCreatureType var38 = var36[var37];
-                if ((!var38.getPeacefulCreature() || var2) && (var38.getPeacefulCreature() || var1) && var0.countEntities(var38.getCreatureClass()) <= var38.getMaxNumberOfCreature() * eligibleChunksForSpawning.Count / 256)
+                if ((!var38.isPeaceful() || var2) && (var38.isPeaceful() || var1) && var0.countEntities(var38.getCreatureClass()) <= var38.getMaxAllowed() * eligibleChunksForSpawning.Count / 256)
                 {
                     foreach (var chunk in eligibleChunksForSpawning)
                     {
@@ -99,7 +104,7 @@ public class NaturalSpawner
                             continue;
                         }
 
-                        if (var0.getMaterial(var42, var18, var19) != var38.getCreatureMaterial())
+                        if (var0.getMaterial(var42, var18, var19) != var38.getMaterial())
                         {
                             continue;
                         }
@@ -135,11 +140,11 @@ public class NaturalSpawner
                                             EntityLiving var43;
                                             try
                                             {
-                                                var43 = (EntityLiving)e!.entityClass.getConstructor(new Class[] { World.Class }).newInstance(new java.lang.Object[] { var0 });
+                                                var43 = (EntityLiving)e!.entityClass.getConstructor(World.Class).newInstance(var0);
                                             }
-                                            catch (java.lang.Exception var34)
+                                            catch (java.lang.Exception ex)
                                             {
-                                                var34.printStackTrace();
+                                                ex.printStackTrace();
                                                 return var3;
                                             }
 
@@ -171,7 +176,7 @@ public class NaturalSpawner
 
     private static bool canCreatureTypeSpawnAtLocation(EnumCreatureType var0, World var1, int var2, int var3, int var4)
     {
-        return var0.getCreatureMaterial() == Material.Water ? var1.getMaterial(var2, var3, var4).IsFluid && !var1.shouldSuffocate(var2, var3 + 1, var4) : var1.shouldSuffocate(var2, var3 - 1, var4) && !var1.shouldSuffocate(var2, var3, var4) && !var1.getMaterial(var2, var3, var4).IsFluid && !var1.shouldSuffocate(var2, var3 + 1, var4);
+        return var0.getMaterial() == Material.Water ? var1.getMaterial(var2, var3, var4).IsFluid && !var1.shouldSuffocate(var2, var3 + 1, var4) : var1.shouldSuffocate(var2, var3 - 1, var4) && !var1.shouldSuffocate(var2, var3, var4) && !var1.getMaterial(var2, var3, var4).IsFluid && !var1.shouldSuffocate(var2, var3 + 1, var4);
     }
 
     private static void creatureSpecificInit(EntityLiving var0, World var1, float var2, float var3, float var4)
@@ -250,11 +255,11 @@ public class NaturalSpawner
                     EntityLiving var17;
                     try
                     {
-                        var17 = (EntityLiving)var6[var12].getConstructor(new Class[] { typeof(World) }).newInstance(new java.lang.Object[] { var0 });
+                        var17 = (EntityLiving)var6[var12].getConstructor(typeof(World)).newInstance(var0);
                     }
-                    catch (java.lang.Exception var21)
+                    catch (java.lang.Exception ex)
                     {
-                        var21.printStackTrace();
+                        ex.printStackTrace();
                         return monstersSpawned;
                     }
 

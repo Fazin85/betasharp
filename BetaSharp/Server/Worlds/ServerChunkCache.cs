@@ -141,7 +141,7 @@ public class ServerChunkCache : ChunkSource
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Log.Error(ex);
                 return null;
             }
         }
@@ -157,7 +157,7 @@ public class ServerChunkCache : ChunkSource
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Log.Error(ex);
             }
         }
     }
@@ -171,13 +171,13 @@ public class ServerChunkCache : ChunkSource
                 chunk.lastSaveTime = _world.getTime();
                 _storage.saveChunk(_world, chunk, null, -1);
             }
-            catch (java.io.IOException var3)
+            catch (java.io.IOException ex)
             {
-                var3.printStackTrace();
+                ex.printStackTrace();
             }
             catch (IOException ex)
             {
-                Console.WriteLine(ex);
+                Log.Error(ex);
             }
         }
     }

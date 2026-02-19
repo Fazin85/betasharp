@@ -1,7 +1,6 @@
 using BetaSharp.Network.Packets.C2SPlay;
 using BetaSharp.Network.Packets.Play;
 using BetaSharp.Network.Packets.S2CPlay;
-using java.io;
 using java.lang;
 using java.util;
 
@@ -54,8 +53,8 @@ public abstract class Packet : java.lang.Object
         }
         catch (java.lang.Exception ex)
         {
-            ex.printStackTrace();
-            java.lang.System.@out.println("Skipping packet with id " + rawId);
+            Log.Error(ex);
+            Log.Info($"Skipping packet with id {rawId}");
             return null;
         }
     }
@@ -65,7 +64,7 @@ public abstract class Packet : java.lang.Object
         return ((Integer)TYPE_TO_ID.get(getClass())).intValue();
     }
 
-    public static Packet read(DataInputStream stream, bool server)
+    public static Packet read(java.io.DataInputStream stream, bool server)
     {
         Packet packet = null;
 
@@ -92,9 +91,9 @@ public abstract class Packet : java.lang.Object
 
             packet.read(stream);
         }
-        catch (EOFException ex)
+        catch (java.io.EOFException)
         {
-            java.lang.System.@out.println("Reached end of stream");
+            Log.Info("Reached end of stream");
             return null;
         }
 
@@ -114,13 +113,13 @@ public abstract class Packet : java.lang.Object
         return packet;
     }
 
-    public static void write(Packet packet, DataOutputStream stream)
+    public static void write(Packet packet, java.io.DataOutputStream stream)
     {
         stream.write(packet.getRawId());
         packet.write(stream);
     }
 
-    public static void writeString(string packetData, DataOutputStream stream)
+    public static void writeString(string packetData, java.io.DataOutputStream stream)
     {
         if (packetData.Length > Short.MAX_VALUE)
         {
@@ -133,7 +132,7 @@ public abstract class Packet : java.lang.Object
         }
     }
 
-    public static string readString(DataInputStream stream, int maxLength)
+    public static string readString(java.io.DataInputStream stream, int maxLength)
     {
 
         short length = stream.readShort();
@@ -158,9 +157,9 @@ public abstract class Packet : java.lang.Object
         }
     }
 
-    public abstract void read(DataInputStream stream);
+    public abstract void read(java.io.DataInputStream stream);
 
-    public abstract void write(DataOutputStream stream);
+    public abstract void write(java.io.DataOutputStream stream);
 
     public abstract void apply(NetHandler handler);
 

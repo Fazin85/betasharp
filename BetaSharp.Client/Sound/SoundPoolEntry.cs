@@ -1,15 +1,13 @@
-using java.net;
-
 namespace BetaSharp.Client.Sound;
 
-public class SoundPoolEntry : java.lang.Object
+public class SoundPoolEntry
 {
-    public string soundName;
-    public URL soundUrl;
+    public string SoundName;
+    public Uri SoundUrl;
 
-    public SoundPoolEntry(string var1, URL var2)
+    public SoundPoolEntry(string soundName, Uri soundUrl)
     {
-        soundName = var1;
-        soundUrl = var2;
+        SoundName = soundName;
+        SoundUrl = soundUrl;
     }
 }

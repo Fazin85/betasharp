@@ -114,9 +114,9 @@ public class RegionWorldStorageSource : WorldStorageSource
                     wInfo.SizeOnDisk = sizeOnDisk;
                     return wInfo;
                 }
-                catch (java.lang.Exception var7)
+                catch (java.lang.Exception ex)
                 {
-                    var7.printStackTrace();
+                    ex.printStackTrace();
                 }
             }
 
@@ -134,9 +134,9 @@ public class RegionWorldStorageSource : WorldStorageSource
                     wInfo.SizeOnDisk = sizeOnDisk;
                     return wInfo;
                 }
-                catch (java.lang.Exception var6)
+                catch (java.lang.Exception ex)
                 {
-                    var6.printStackTrace();
+                    ex.printStackTrace();
                 }
             }
 
@@ -163,9 +163,9 @@ public class RegionWorldStorageSource : WorldStorageSource
                     using var writingStream = File.OpenWrite(file.getAbsolutePath());
                     NbtIo.WriteCompressed(tag, writingStream);
                 }
-                catch (java.lang.Exception var7)
+                catch (java.lang.Exception ex)
                 {
-                    var7.printStackTrace();
+                    ex.printStackTrace();
                 }
             }
 

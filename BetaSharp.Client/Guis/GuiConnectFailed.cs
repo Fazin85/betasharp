@@ -3,57 +3,57 @@ namespace BetaSharp.Client.Guis;
 public class GuiConnectFailed : GuiScreen
 {
 
-    private readonly string errorMessage;
-    private readonly string errorDetail;
-    private const int BUTTON_TO_MENU = 0;
+    private readonly string _errorMessage;
+    private readonly string _errorDetail;
+    private const int _buttonToMenu = 0;
 
     public GuiConnectFailed(string messageKey, string detailKey, params object[]? formatArgs)
     {
         TranslationStorage translations = TranslationStorage.getInstance();
-        errorMessage = translations.translateKey(messageKey);
+        _errorMessage = translations.translateKey(messageKey);
         if (formatArgs != null)
         {
-            errorDetail = translations.translateKeyFormat(detailKey, formatArgs);
+            _errorDetail = translations.translateKeyFormat(detailKey, formatArgs);
         }
         else
         {
-            errorDetail = translations.translateKey(detailKey);
+            _errorDetail = translations.translateKey(detailKey);
         }
 
     }
 
-    public override void updateScreen()
+    public override void UpdateScreen()
     {
     }
 
-    protected override void keyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, int eventKey)
     {
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
         mc.stopInternalServer();
         TranslationStorage translations = TranslationStorage.getInstance();
-        controlList.clear();
-        controlList.add(new GuiButton(BUTTON_TO_MENU, width / 2 - 100, height / 4 + 120 + 12, translations.translateKey("gui.toMenu")));
+        _controlList.Clear();
+        _controlList.Add(new GuiButton(_buttonToMenu, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.toMenu")));
     }
 
-    protected override void actionPerformed(GuiButton var1)
+    protected override void ActionPerformed(GuiButton btt)
     {
-        switch (var1.id)
+        switch (btt.Id)
         {
-            case BUTTON_TO_MENU:
+            case _buttonToMenu:
                 mc.displayGuiScreen(new GuiMainMenu());
                 break;
         }
 
     }
 
-    public override void render(int var1, int var2, float var3)
+    public override void Render(int mouseX, int mouseY, float parcialTick)
     {
-        drawDefaultBackground();
-        drawCenteredString(fontRenderer, errorMessage, width / 2, height / 2 - 50, 0x00FFFFFF);
-        drawCenteredString(fontRenderer, errorDetail, width / 2, height / 2 - 10, 0x00FFFFFF);
-        base.render(var1, var2, var3);
+        DrawDefaultBackground();
+        DrawCenteredString(FontRenderer, _errorMessage, Width / 2, Height / 2 - 50, 0xFFFFFF);
+        DrawCenteredString(FontRenderer, _errorDetail, Width / 2, Height / 2 - 10, 0xFFFFFF);
+        base.Render(mouseX, mouseY, parcialTick);
     }
 }

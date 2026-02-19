@@ -11,8 +11,6 @@ namespace BetaSharp.Worlds.Storage;
 
 public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
 {
-    private static readonly Logger LOGGER = Logger.getLogger("Minecraft");
-
     private readonly java.io.File saveDirectory;
     private readonly java.io.File playersDirectory;
     private readonly java.io.File dataDir;
@@ -50,9 +48,9 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
             }
 
         }
-        catch (java.io.IOException var7)
+        catch (java.io.IOException ex)
         {
-            var7.printStackTrace();
+            Log.Error($"Failed to check session lock, aborting: {ex}");
             throw new java.lang.RuntimeException("Failed to check session lock, aborting");
         }
     }
@@ -82,7 +80,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
             }
 
         }
-        catch (java.io.IOException var7)
+        catch (java.io.IOException)
         {
             throw new MinecraftException("Failed to check session lock, aborting");
         }
@@ -140,7 +138,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
         }
         catch (System.Exception e)
         {
-            System.Console.WriteLine(e);
+            Log.Error(e);
         }
     }
 
@@ -159,9 +157,9 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
                 WorldProperties wInfo = new(var3);
                 return wInfo;
             }
-            catch (java.lang.Exception var5)
+            catch (java.lang.Exception ex)
             {
-                var5.printStackTrace();
+                ex.printStackTrace();
             }
         }
 
@@ -176,9 +174,9 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
                 WorldProperties wInfo = new(var3);
                 return wInfo;
             }
-            catch (java.lang.Exception var4)
+            catch (java.lang.Exception ex)
             {
-                var4.printStackTrace();
+                Log.Error(ex);
             }
         }
 
@@ -217,9 +215,9 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
                 file.delete();
             }
         }
-        catch (java.lang.Exception var7)
+        catch (java.lang.Exception ex)
         {
-            var7.printStackTrace();
+            Log.Error(ex);
         }
 
     }
@@ -250,7 +248,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
         }
         catch (Exception var5)
         {
-            LOGGER.warning("Failed to save player data for " + player.name);
+            Log.Warn($"Failed to save player data for {player.name}");
         }
     }
 
@@ -289,19 +287,19 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
                         using FileStream writeStream = File.OpenWrite(file.getAbsolutePath());
                         NbtIo.WriteCompressed(playerTag, writeStream);
 
-                        LOGGER.info("Migrated singleplayer player data from level.dat to " + file.getName());
+                        Log.Info($"Migrated singleplayer player data from level.dat to {file.getName()}");
                         return playerTag;
                     }
                 }
                 catch (Exception e)
                 {
-                    LOGGER.warning("Failed to migrate player data from level.dat: " + e);
+                    Log.Warn($"Failed to migrate player data from level.dat: {e}");
                 }
             }
         }
         catch (Exception var3)
         {
-            LOGGER.warning("Failed to load player data for " + playerName);
+            Log.Warn($"Failed to load player data for {playerName}");
         }
 
         return null;

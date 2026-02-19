@@ -32,9 +32,7 @@ public class EntityRegistry
             Class entityClass = (Class)idToClass.get(id);
             if (entityClass != null)
             {
-                entity = (Entity)entityClass.getConstructor([World.Class]).newInstance([
-                    world
-                ]);
+                entity = (Entity)entityClass.getConstructor(World.Class).newInstance(world);
             }
         }
         catch (Exception ex)
@@ -54,7 +52,7 @@ public class EntityRegistry
             Class entityClass = (Class)idToClass.get(nbt.GetString("id"));
             if (entityClass != null)
             {
-                entity = (Entity)entityClass.getConstructor([World.Class]).newInstance([world]);
+                entity = (Entity)entityClass.getConstructor(World.Class).newInstance(world);
             }
         }
         catch (java.lang.Exception ex)
@@ -68,7 +66,7 @@ public class EntityRegistry
         }
         else
         {
-            java.lang.System.@out.println("Skipping Entity with id " + nbt.GetString("id"));
+            Log.Info($"Skipping Entity with id {nbt.GetString("id")}");
         }
 
         return entity;
@@ -92,7 +90,7 @@ public class EntityRegistry
                         entity.setPositionAndAngles(x, y, z, 0, 0);
                         if (!world.SpawnEntity(entity))
                         {
-                            Console.Error.WriteLine($"Entity `{name}` with ID:`{id}` failed to join world.");
+                            Log.Error($"Entity `{name}` with ID:`{id}` failed to join world.");
                         }
                     }
 
@@ -100,17 +98,17 @@ public class EntityRegistry
                 }
                 else
                 {
-                    Console.Error.WriteLine($"Failed to convert entity of name `{name}` and id `{id}` to a class.");
+                    Log.Error($"Failed to convert entity of name `{name}` and id `{id}` to a class.");
                 }
             }
             else
             {
-                Console.Error.WriteLine($"Unable to find entity of name `{name}`.");
+                Log.Error($"Unable to find entity of name `{name}`.");
             }
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine(ex);
+            Log.Error(ex);
         }
 
         return null;
@@ -125,17 +123,17 @@ public class EntityRegistry
             Class entityClass = (Class)rawIdToClass.get(Integer.valueOf(rawId));
             if (entityClass != null)
             {
-                entity = (Entity)entityClass.getConstructor([World.Class]).newInstance([world]);
+                entity = (Entity)entityClass.getConstructor(World.Class).newInstance(world);
             }
         }
         catch (java.lang.Exception ex)
         {
-            ex.printStackTrace();
+            Log.Error(ex);
         }
 
         if (entity == null)
         {
-            java.lang.System.@out.println("Skipping Entity with id " + rawId);
+            Log.Info($"Skipping Entity with id {rawId}");
         }
 
         return entity;

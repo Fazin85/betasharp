@@ -117,37 +117,37 @@ public class Tessellator : java.lang.Object
     private readonly ByteBuffer byteBuffer;
     private readonly IntBuffer intBuffer;
     private readonly int[] rawBuffer;
-    private int vertexCount = 0;
+    private int vertexCount;
     private double textureU;
     private double textureV;
     private int color;
-    private bool hasColor = false;
-    private bool hasTexture = false;
-    private bool hasNormals = false;
-    private byte skyLight = 0;
-    private byte blockLight = 0;
-    private bool hasLight = false;
-    private int rawBufferIndex = 0;
-    private int addedVertices = 0;
-    private bool isColorDisabled = false;
+    private bool hasColor;
+    private bool hasTexture;
+    private bool hasNormals;
+    private byte skyLight;
+    private byte blockLight;
+    private bool hasLight;
+    private int rawBufferIndex;
+    private int addedVertices;
+    private bool isColorDisabled;
     private int drawMode;
     private double xOffset;
     private double yOffset;
     private double zOffset;
     private int normal;
     public static readonly Tessellator instance = new(2097152);
-    public bool IsDrawing { get; private set; } = false;
+    public bool IsDrawing { get; private set; }
     private readonly IntBuffer vertexBuffers;
-    private int vboIndex = 0;
+    private int vboIndex;
     private readonly int vboCount = 10;
     private readonly int bufferSize;
-    private float uvCentroidU = 0f;
-    private float uvCentroidV = 0f;
-    private bool isCaptureMode = false;
-    private PooledList<Vertex> capturedVertices = null;
-    private PooledList<ChunkVertex> capturedChunkVertices = null;
-    private int[] scratchBuffer = null;
-    private int scratchBufferIndex = 0;
+    private float uvCentroidU;
+    private float uvCentroidV;
+    private bool isCaptureMode;
+    private PooledList<Vertex> capturedVertices;
+    private PooledList<ChunkVertex> capturedChunkVertices;
+    private int[] scratchBuffer;
+    private int scratchBufferIndex;
     private TesselatorCaptureVertexFormat vertexFormat;
 
     private Tessellator(int var1)
@@ -428,19 +428,19 @@ public class Tessellator : java.lang.Object
         }
     }
 
-    public void addVertexWithUV(double var1, double var3, double var5, double var7, double var9)
+    public void addVertexWithUV(double x, double y, double z, double u, double v)
     {
-        setTextureUV(var7, var9);
-        addVertex(var1, var3, var5);
+        setTextureUV(u, v);
+        addVertex(x, y, z);
     }
 
-    public void addVertex(double var1, double var3, double var5)
+    public void addVertex(double x, double y, double z)
     {
         if (isCaptureMode)
         {
-            scratchBuffer[scratchBufferIndex + 0] = Float.floatToRawIntBits((float)(var1 + xOffset));
-            scratchBuffer[scratchBufferIndex + 1] = Float.floatToRawIntBits((float)(var3 + yOffset));
-            scratchBuffer[scratchBufferIndex + 2] = Float.floatToRawIntBits((float)(var5 + zOffset));
+            scratchBuffer[scratchBufferIndex + 0] = Float.floatToRawIntBits((float)(x + xOffset));
+            scratchBuffer[scratchBufferIndex + 1] = Float.floatToRawIntBits((float)(y + yOffset));
+            scratchBuffer[scratchBufferIndex + 2] = Float.floatToRawIntBits((float)(z + zOffset));
 
             if (hasTexture)
             {
@@ -539,9 +539,9 @@ public class Tessellator : java.lang.Object
                 rawBuffer[rawBufferIndex + 6] = normal;
             }
 
-            rawBuffer[rawBufferIndex + 0] = Float.floatToRawIntBits((float)(var1 + xOffset));
-            rawBuffer[rawBufferIndex + 1] = Float.floatToRawIntBits((float)(var3 + yOffset));
-            rawBuffer[rawBufferIndex + 2] = Float.floatToRawIntBits((float)(var5 + zOffset));
+            rawBuffer[rawBufferIndex + 0] = Float.floatToRawIntBits((float)(x + xOffset));
+            rawBuffer[rawBufferIndex + 1] = Float.floatToRawIntBits((float)(y + yOffset));
+            rawBuffer[rawBufferIndex + 2] = Float.floatToRawIntBits((float)(z + zOffset));
             rawBufferIndex += 8;
             ++vertexCount;
 
@@ -590,20 +590,20 @@ public class Tessellator : java.lang.Object
     }
 
 
-    public void setColorOpaque_I(int var1)
+    public void setColorOpaque_I(int color)
     {
-        int var2 = var1 >> 16 & 255;
-        int var3 = var1 >> 8 & 255;
-        int var4 = var1 & 255;
-        setColorOpaque(var2, var3, var4);
+        int red = color >> 16 & 255;
+        int green = color >> 8 & 255;
+        int blue = color & 255;
+        setColorOpaque(red, green, blue);
     }
 
-    public void setColorRGBA_I(int var1, int var2)
+    public void setColorRGBA_I(int color, int alpha)
     {
-        int var3 = var1 >> 16 & 255;
-        int var4 = var1 >> 8 & 255;
-        int var5 = var1 & 255;
-        setColorRGBA(var3, var4, var5, var2);
+        int red = color >> 16 & 255;
+        int green = color >> 8 & 255;
+        int blue = color & 255;
+        setColorRGBA(red, green, blue, alpha);
     }
 
     public void disableColor()
@@ -615,7 +615,7 @@ public class Tessellator : java.lang.Object
     {
         if (!IsDrawing)
         {
-            java.lang.System.@out.println("But..");
+            Log.Info("But..");
         }
 
         hasNormals = true;

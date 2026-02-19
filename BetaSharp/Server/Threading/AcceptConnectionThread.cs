@@ -38,9 +38,9 @@ public class AcceptConnectionThread : java.lang.Thread
                     }
                 }
             }
-            catch (java.io.IOException var5)
+            catch (java.io.IOException ex)
             {
-                var5.printStackTrace();
+                ex.printStackTrace();
             }
         }
     }

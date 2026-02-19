@@ -12,12 +12,12 @@ public class EntityFireball : Entity
     private int blockX = -1;
     private int blockY = -1;
     private int blockZ = -1;
-    private int blockId = 0;
-    private bool inGround = false;
-    public int shake = 0;
+    private int blockId;
+    private bool inGround;
+    public int shake;
     public EntityLiving owner;
     private int removalTimer;
-    private int inAirTime = 0;
+    private int inAirTime;
     public double powerX;
     public double powerY;
     public double powerZ;

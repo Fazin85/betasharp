@@ -1,22 +1,40 @@
-using BetaSharp.Client.Input;
+﻿using BetaSharp.Client.Input;
 using java.io;
 
 namespace BetaSharp.Client.Options;
 
 public class GameOptions : java.lang.Object
 {
-    private static readonly string[] RENDER_DISTANCES = new string[] { "options.renderDistance.far", "options.renderDistance.normal", "options.renderDistance.short", "options.renderDistance.tiny" };
-    private static readonly string[] DIFFICULTIES = new string[] { "options.difficulty.peaceful", "options.difficulty.easy", "options.difficulty.normal", "options.difficulty.hard" };
-    private static readonly string[] GUISCALES = new string[] { "options.guiScale.auto", "options.guiScale.small", "options.guiScale.normal", "options.guiScale.large" };
+    private static readonly string[] RENDER_DISTANCES =
+    [
+        "options.renderDistance.far",
+        "options.renderDistance.normal",
+        "options.renderDistance.short",
+        "options.renderDistance.tiny",
+    ];
+    private static readonly string[] DIFFICULTIES =
+    [
+        "options.difficulty.peaceful",
+        "options.difficulty.easy",
+        "options.difficulty.normal",
+        "options.difficulty.hard",
+    ];
+    private static readonly string[] GUISCALES =
+    [
+        "options.guiScale.auto",
+        "options.guiScale.small",
+        "options.guiScale.normal",
+        "options.guiScale.large",
+    ];
     // private static readonly string[] LIMIT_FRAMERATES = ["performance.max", "performance.balanced", "performance.powersaver"];
-    private static readonly string[] ANISO_LEVELS = new string[] { "options.off", "2x", "4x", "8x", "16x" };
-    private static readonly string[] MSAA_LEVELS = new string[] { "options.off", "2x", "4x", "8x" };
+    private static readonly string[] ANISO_LEVELS = ["options.off", "2x", "4x", "8x", "16x"];
+    private static readonly string[] MSAA_LEVELS = ["options.off", "2x", "4x", "8x"];
     public static float MaxAnisotropy = 1.0f;
     public float musicVolume = 1.0F;
     public float soundVolume = 1.0F;
     public float mouseSensitivity = 0.5F;
-    public bool invertMouse = false;
-    public int renderDistance = 0;
+    public bool invertMouse;
+    public int renderDistance;
     public bool viewBobbing = true;
     public float limitFramerate = 0.42857143f; // 0.428... = 120, 1.0 = 240, 0.0 = 30
     public float fov = 0.44444445F; // (70 - 30) / 90
@@ -40,24 +58,36 @@ public class GameOptions : java.lang.Object
     public bool thirdPersonView = false;
     public bool showDebugInfo = false;
     public string lastServer = "";
-    public bool field_22275_C = false;
+    public bool invertScrolling = false;
     public bool smoothCamera = false;
     public bool debugCamera = false;
-    public float field_22272_F = 1.0F;
+    public float amountScrolled = 1.0F;
     public float field_22271_G = 1.0F;
-    public int guiScale = 0;
-    public int anisotropicLevel = 0;
-    public int msaaLevel = 0;
-    public int INITIAL_MSAA = 0;
+    public int guiScale;
+    public int anisotropicLevel;
+    public int msaaLevel;
+    public int INITIAL_MSAA;
     public bool useMipmaps = true;
-    public bool debugMode = false;
+    public bool debugMode;
     public bool environmentAnimation = true;
 
-    public GameOptions(Minecraft var1, java.io.File var2)
+    public GameOptions(Minecraft mc, java.io.File mcDataDir)
     {
-        keyBindings = new KeyBinding[] { keyBindForward, keyBindLeft, keyBindBack, keyBindRight, keyBindJump, keyBindSneak, keyBindDrop, keyBindInventory, keyBindChat, keyBindToggleFog };
-        mc = var1;
-        optionsFile = new java.io.File(var2, "options.txt");
+        keyBindings =
+        [
+            keyBindForward,
+            keyBindLeft,
+            keyBindBack,
+            keyBindRight,
+            keyBindJump,
+            keyBindSneak,
+            keyBindDrop,
+            keyBindInventory,
+            keyBindChat,
+            keyBindToggleFog,
+        ];
+        this.mc = mc;
+        optionsFile = new java.io.File(mcDataDir, "options.txt");
         loadOptions();
         INITIAL_MSAA = msaaLevel;
     }
@@ -88,12 +118,12 @@ public class GameOptions : java.lang.Object
         if (option == EnumOptions.MUSIC)
         {
             musicVolume = value;
-            mc.sndManager.onSoundOptionsChanged();
+            mc.sndManager.OnSoundOptionsChanged();
         }
         else if (option == EnumOptions.SOUND)
         {
             soundVolume = value;
-            mc.sndManager.onSoundOptionsChanged();
+            mc.sndManager.OnSoundOptionsChanged();
         }
         else if (option == EnumOptions.SENSITIVITY)
         {
@@ -301,13 +331,13 @@ public class GameOptions : java.lang.Object
                 }
                 catch (System.Exception)
                 {
-                    System.Console.WriteLine("Skipping bad option: " + line);
+                    Log.Error($"Skipping bad option: {line}");
                 }
             }
         }
         catch (System.Exception)
         {
-            System.Console.WriteLine("Failed to load options");
+            Log.Error("Failed to load options");
         }
     }
 
@@ -421,7 +451,7 @@ public class GameOptions : java.lang.Object
         }
         catch (System.Exception exception)
         {
-            System.Console.WriteLine("Failed to save options: " + exception.Message);
+            Log.Error($"Failed to save options: {exception.Message}");
         }
     }
 }

@@ -40,8 +40,8 @@ public class Stats : java.lang.Object
     public static StatBase[] CRAFTED;
     public static StatBase[] USED;
     public static StatBase[] BROKEN;
-    private static bool hasBasicItemStatsInitialized = false;
-    private static bool hasExtendedItemStatsInitialized = false;
+    private static bool hasBasicItemStatsInitialized;
+    private static bool hasExtendedItemStatsInitialized;
 
     public static void initializeItemStats()
     {
@@ -85,7 +85,7 @@ public class Stats : java.lang.Object
             {
                 if (Item.ITEMS[integer.intValue()] != null)
                 {
-                    string var3 = StatCollector.translateToLocalFormatted("stat.craftItem", [Item.ITEMS[integer.intValue()].getStatName()]);
+                    string var3 = StatCollector.translateToLocalFormatted("stat.craftItem", Item.ITEMS[integer.intValue()].getStatName());
                     CRAFTED[integer.intValue()] = (new StatCrafting(16842752 + integer.intValue(), var3, integer.intValue())).registerStat();
                 }
             }
@@ -102,7 +102,7 @@ public class Stats : java.lang.Object
         {
             if (Block.Blocks[var3] != null && Block.Blocks[var3].getEnableStats())
             {
-                string var4 = StatCollector.translateToLocalFormatted(var0, [Block.Blocks[var3].translateBlockName()]);
+                string var4 = StatCollector.translateToLocalFormatted(var0, Block.Blocks[var3].translateBlockName());
                 var2[var3] = (new StatCrafting(var1 + var3, var4, var3)).registerStat();
                 BLOCKS_MINED_STATS.add((StatCrafting)var2[var3]);
             }
@@ -123,7 +123,7 @@ public class Stats : java.lang.Object
         {
             if (Item.ITEMS[var5] != null)
             {
-                string var6 = StatCollector.translateToLocalFormatted(var1, [Item.ITEMS[var5].getStatName()]);
+                string var6 = StatCollector.translateToLocalFormatted(var1, Item.ITEMS[var5].getStatName());
                 var0[var5] = (new StatCrafting(var2 + var5, var6, var5)).registerStat();
                 if (var5 >= Block.Blocks.Length)
                 {
@@ -147,7 +147,7 @@ public class Stats : java.lang.Object
         {
             if (Item.ITEMS[var5] != null && Item.ITEMS[var5].isDamagable())
             {
-                string var6 = StatCollector.translateToLocalFormatted(var1, [Item.ITEMS[var5].getStatName()]);
+                string var6 = StatCollector.translateToLocalFormatted(var1, Item.ITEMS[var5].getStatName());
                 var0[var5] = (new StatCrafting(var2 + var5, var6, var5)).registerStat();
             }
         }

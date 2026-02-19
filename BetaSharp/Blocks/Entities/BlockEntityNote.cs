@@ -6,7 +6,7 @@ namespace BetaSharp.Blocks.Entities;
 
 public class BlockEntityNote : BlockEntity
 {
-    public sbyte note = 0;
+    public sbyte note;
     public bool powered = false;
 
     public override void writeNbt(NBTTagCompound nbt)

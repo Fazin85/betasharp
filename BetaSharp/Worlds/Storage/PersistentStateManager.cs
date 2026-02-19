@@ -35,7 +35,7 @@ public class PersistentStateManager : java.lang.Object
                 {
                     try
                     {
-                        var3 = (PersistentState)var1.getConstructor([c]).newInstance([var2]);
+                        var3 = (PersistentState)var1.getConstructor(c).newInstance(var2);
                     }
                     catch (java.lang.Exception e)
                     {
@@ -47,9 +47,9 @@ public class PersistentStateManager : java.lang.Object
                     var3.readNBT(var6.GetCompoundTag("data"));
                 }
             }
-            catch (java.lang.Exception var8)
+            catch (java.lang.Exception ex)
             {
-                var8.printStackTrace();
+                ex.printStackTrace();
             }
         }
 
@@ -113,9 +113,9 @@ public class PersistentStateManager : java.lang.Object
                     NbtIo.WriteCompressed(tag, stream);
                 }
             }
-            catch (System.Exception var6)
+            catch (System.Exception ex)
             {
-                System.Console.WriteLine(var6);
+                Log.Error(ex);
             }
 
         }
@@ -149,9 +149,9 @@ public class PersistentStateManager : java.lang.Object
                 }
             }
         }
-        catch (java.lang.Exception var9)
+        catch (java.lang.Exception ex)
         {
-            var9.printStackTrace();
+            ex.printStackTrace();
         }
 
     }
@@ -194,9 +194,9 @@ public class PersistentStateManager : java.lang.Object
                     NbtIo.Write(tag, stream);
                 }
             }
-            catch (java.lang.Exception var8)
+            catch (java.lang.Exception ex)
             {
-                var8.printStackTrace();
+                ex.printStackTrace();
             }
 
             return var2.shortValue();

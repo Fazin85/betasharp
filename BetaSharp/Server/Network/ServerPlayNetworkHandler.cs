@@ -15,15 +15,13 @@ using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using java.lang;
 using java.util;
-using java.util.logging;
 
 namespace BetaSharp.Server.Network;
 
 public class ServerPlayNetworkHandler : NetHandler, CommandOutput
 {
-    public static Logger LOGGER = Logger.getLogger("Minecraft");
     public Connection connection;
-    public bool disconnected = false;
+    public bool disconnected;
     private MinecraftServer server;
     private ServerPlayerEntity player;
     private int ticks;
@@ -163,7 +161,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
                 if (!player.isSleeping() && (var13 > 1.65 || var13 < 0.1))
                 {
                     disconnect("Illegal stance");
-                    LOGGER.warning(player.name + " had an illegal stance: " + var13);
+                    Log.Warn($"{player.name} had an illegal stance: {var13}");
                     return;
                 }
 
@@ -194,12 +192,12 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             double var19 = var32 * var32 + var15 * var15 + var17 * var17;
             if (var19 > 100.0)
             {
-                LOGGER.warning(player.name + " moved too quickly!");
+                Log.Warn($"{player.name} moved too quickly!");
                 disconnect("You moved too quickly :( (Hacking?)");
                 return;
             }
 
-            float var21 = 0.0625F;
+            float var21 = (1 / 16f);
             bool var22 = var2.getEntityCollisions(player, player.boundingBox.contract(var21, var21, var21)).Count == 0;
             player.move(var32, var15, var17);
             var32 = var5 - player.x;
@@ -215,9 +213,9 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             if (var19 > 0.0625 && !player.isSleeping())
             {
                 var23 = true;
-                LOGGER.warning(player.name + " moved wrongly!");
-                java.lang.System.@out.println("Got position " + var5 + ", " + var7 + ", " + var9);
-                java.lang.System.@out.println("Expected " + player.x + ", " + player.y + ", " + player.z);
+                Log.Warn($"{player.name} moved wrongly!");
+                Log.Info($"Got position {var5}, {var7}, {var9}");
+                Log.Info($"Expected {player.x}, {player.y}, {player.z}");
             }
 
             player.setPositionAndAngles(var5, var7, var9, var11, var12);
@@ -238,7 +236,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
                 floatingTime++;
                 if (floatingTime > 80)
                 {
-                    LOGGER.warning(player.name + " was kicked for floating too long!");
+                    Log.Warn($"{player.name} was kicked for floating too long!");
                     disconnect("Flying is not enabled on this server");
                     return;
                 }
@@ -428,7 +426,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
 
     public override void onDisconnected(string reason, object[]? objects)
     {
-        LOGGER.info(player.name + " lost connection: " + reason);
+        Log.Info($"{player.name} lost connection: {reason}");
         server.playerManager.sendToAll(new ChatMessagePacket("§e" + player.name + " left the game."));
         server.playerManager.disconnect(player);
         disconnected = true;
@@ -436,7 +434,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
 
     public override void handle(Packet packet)
     {
-        LOGGER.warning(getClass() + " wasn't prepared to deal with a " + packet.getClass());
+        Log.Warn($"{getClass()} wasn't prepared to deal with a {packet.getClass()}");
         disconnect("Protocol error, unexpected packet");
     }
 
@@ -454,7 +452,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
         }
         else
         {
-            LOGGER.warning(player.name + " tried to set an invalid carried item");
+            Log.Warn($"{player.name} tried to set an invalid carried item");
         }
     }
 
@@ -491,7 +489,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             else
             {
                 var2 = "<" + player.name + "> " + var2;
-                LOGGER.info(var2);
+                Log.Info(var2);
                 server.playerManager.sendToAll(new ChatMessagePacket(var2));
             }
         }
@@ -502,19 +500,19 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
         if (message.ToLower().StartsWith("/me "))
         {
             string emote = "* " + player.name + " " + message[message.IndexOf(" ")..].Trim();
-            LOGGER.info(emote);
+            Log.Info(emote);
             server.playerManager.sendToAll(new ChatMessagePacket(emote));
         }
         else if (server is InternalServer || server.playerManager.isOperator(player.name))
         {
             string commandText = message[1..];
-            LOGGER.info(player.name + " issued server command: " + commandText);
+            Log.Info($"{player.name} issued server command: {commandText}");
             server.queueCommands(commandText, this);
         }
         else
         {
             string commandText = message[1..];
-            LOGGER.info(player.name + " tried command: " + commandText);
+            Log.Info($"{player.name} tried command: {commandText}");
             sendPacket(new ChatMessagePacket("§cYou do not have permission to use this command."));
         }
     }

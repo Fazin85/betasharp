@@ -10,20 +10,20 @@ public class EntitySquid : EntityWaterMob
 {
     public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntitySquid).TypeHandle);
 
-    public float tiltAngle = 0.0F;
-    public float prevTiltAngle = 0.0F;
-    public float tentaclePhase = 0.0F;
-    public float prevTentaclePhase = 0.0F;
-    public float swimPhase = 0.0F;
-    public float prevSwimPhase = 0.0F;
-    public float tentacleSpread = 0.0F;
-    public float prevTentacleSpread = 0.0F;
-    private float randomMotionSpeed = 0.0F;
-    private float animationSpeed = 0.0F;
-    private float squidRotation = 0.0F;
-    private float randomMotionVecX = 0.0F;
-    private float randomMotionVecY = 0.0F;
-    private float randomMotionVecZ = 0.0F;
+    public float tiltAngle;
+    public float prevTiltAngle;
+    public float tentaclePhase;
+    public float prevTentaclePhase;
+    public float swimPhase;
+    public float prevSwimPhase;
+    public float tentacleSpread;
+    public float prevTentacleSpread;
+    private float randomMotionSpeed;
+    private float animationSpeed;
+    private float squidRotation;
+    private float randomMotionVecX;
+    private float randomMotionVecY;
+    private float randomMotionVecZ;
 
     public EntitySquid(World world) : base(world)
     {

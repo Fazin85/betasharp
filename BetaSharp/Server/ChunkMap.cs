@@ -1,4 +1,4 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Network.Packets;
@@ -245,16 +245,16 @@ public class ChunkMap
         private int maxY;
         private int maxZ;
 
-        public TrackedChunk(ChunkMap chunkMap, int chunkX, int chunkY)
+        public TrackedChunk(ChunkMap chunkMap, int chunkX, int chunkZ)
         {
             this.chunkMap = chunkMap;
             players = [];
             dirtyBlocks = new short[10];
             dirtyBlockCount = 0;
             this.chunkX = chunkX;
-            chunkZ = chunkY;
-            chunkPos = new ChunkPos(chunkX, chunkY);
-            chunkMap.getWorld().chunkCache.loadChunk(chunkX, chunkY);
+            this.chunkZ = chunkZ;
+            chunkPos = new ChunkPos(chunkX, chunkZ);
+            chunkMap.getWorld().chunkCache.loadChunk(chunkX, chunkZ);
         }
 
         public bool HasPlayer(ServerPlayerEntity player) => players.Contains(player);
@@ -413,7 +413,7 @@ public class ChunkMap
                         int var16 = chunkZ * 16 + (dirtyBlockCount >> 8 & 15);
                         if (Block.BlocksWithEntity[var1.getBlockId(var13, var15, var16)])
                         {
-                            java.lang.System.@out.println("Sending!");
+                            Log.Info("Sending!");
                             sendBlockEntityUpdate(var1.getBlockEntity(var13, var15, var16));
                         }
                     }

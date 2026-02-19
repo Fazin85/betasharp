@@ -1,4 +1,4 @@
-using BetaSharp.Client.Entities;
+﻿using BetaSharp.Client.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Network.Packets.C2SPlay;
 using BetaSharp.Network.Packets.Play;
@@ -14,17 +14,17 @@ public class EntityClientPlayerMP : ClientPlayerEntity
     public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityClientPlayerMP).TypeHandle);
 
     public ClientNetworkHandler sendQueue;
-    private int inventorySyncTickCounter = 0;
-    private bool hasReceivedInitialHealth = false;
+    private int inventorySyncTickCounter;
+    private bool hasReceivedInitialHealth;
     private double oldPosX;
     private double lastSentMinY;
     private double oldPosY;
     private double oldPosZ;
     private float oldRotationYaw;
     private float oldRotationPitch;
-    private bool lastOnGround = false;
-    private bool wasSneaking = false;
-    private int positionOnlyPacketCount = 0;
+    private bool lastOnGround;
+    private bool wasSneaking;
+    private int positionOnlyPacketCount;
 
     public EntityClientPlayerMP(Minecraft mc, World world, Session session, ClientNetworkHandler clientNetworkHandler) : base(mc, world, session, 0)
     {

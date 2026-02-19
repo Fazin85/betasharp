@@ -7,8 +7,44 @@ namespace BetaSharp.Items;
 public class ItemDye : Item
 {
 
-    public static readonly String[] dyeColors = new String[] { "black", "red", "green", "brown", "blue", "purple", "cyan", "silver", "gray", "pink", "lime", "yellow", "lightBlue", "magenta", "orange", "white" };
-    public static readonly int[] field_31002_bk = new int[] { 1973019, 11743532, 3887386, 5320730, 2437522, 8073150, 2651799, 2651799, 4408131, 14188952, 4312372, 14602026, 6719955, 12801229, 15435844, 15790320 };
+    public static readonly String[] DyeColorNames =
+    [
+        "black",
+        "red",
+        "green",
+        "brown",
+        "blue",
+        "purple",
+        "cyan",
+        "silver",
+        "gray",
+        "pink",
+        "lime",
+        "yellow",
+        "lightBlue",
+        "magenta",
+        "orange",
+        "white",
+    ];
+    public static readonly int[] DyeColorValues =
+    [
+        0x1E1B1B,
+        0xB3312C,
+        0x3B511A,
+        0x51301A,
+        0x253192,
+        0x7B2FBE,
+        0x287697,
+        0x287697,
+        0x434343,
+        0xD88198,
+        0x41CD34,
+        0xDECF2A,
+        0x6689D3,
+        0xC354CD,
+        0xEB8844,
+        0xF0F0F0,
+    ];
 
     public ItemDye(int id) : base(id)
     {
@@ -23,7 +59,7 @@ public class ItemDye : Item
 
     public override String getItemNameIS(ItemStack itemStack)
     {
-        return base.getItemName() + "." + dyeColors[itemStack.getDamage()];
+        return base.getItemName() + "." + DyeColorNames[itemStack.getDamage()];
     }
 
     public override bool useOnBlock(ItemStack itemStack, EntityPlayer entityPlayer, World world, int x, int y, int z, int meta)

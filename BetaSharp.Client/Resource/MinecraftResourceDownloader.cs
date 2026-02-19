@@ -12,7 +12,7 @@ public class MinecraftResourceDownloader : IDisposable
     private readonly HttpClient _httpClient;
     private readonly string _resourcesDirectory;
     private readonly Minecraft mc;
-    private bool _cancelled = false;
+    private bool _cancelled;
 
     public MinecraftResourceDownloader(Minecraft mc, string baseDirectory)
     {
@@ -45,18 +45,18 @@ public class MinecraftResourceDownloader : IDisposable
                 if (File.Exists(localFile))
                 {
                     loaded++;
-                    mc.installResource(line, new java.io.File(localFile));
+                    mc.installResource(line, new FileInfo(localFile));
                 }
             }
 
             if (lines.Length == loaded)
             {
-                Console.WriteLine($"{loaded} resources");
+                Log.Info($"{loaded} resources");
                 return true;
             }
             else
             {
-                Console.WriteLine($"resource count mismatch, expected {lines.Length}, loaded {loaded}");
+                Log.Error($"resource count mismatch, expected {lines.Length}, loaded {loaded}");
             }
         }
 
@@ -74,7 +74,7 @@ public class MinecraftResourceDownloader : IDisposable
 
         try
         {
-            Console.WriteLine("Fetching resource list...");
+            Log.Info("Fetching resource list...");
 
             var response = await _httpClient.GetAsync(RESOURCE_URL);
             response.EnsureSuccessStatusCode();
@@ -92,7 +92,7 @@ public class MinecraftResourceDownloader : IDisposable
 
             File.WriteAllLines(manifestFilePath, resourceFileNames);
 
-            Console.WriteLine($"Found {resources.Count} resources to download");
+            Log.Info($"Found {resources.Count} resources to download");
 
             for (int pass = 0; pass < 2; pass++)
             {
@@ -106,7 +106,7 @@ public class MinecraftResourceDownloader : IDisposable
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error downloading resources: {ex.Message}");
+            Log.Error($"Error downloading resources: {ex.Message}");
         }
     }
 
@@ -158,7 +158,7 @@ public class MinecraftResourceDownloader : IDisposable
 
             if (localFile.Exists && localFile.Length == size)
             {
-                mc.installResource(path, new java.io.File(localFile.FullName));
+                mc.installResource(path, new FileInfo(localFile.FullName));
                 return;
             }
 
@@ -171,12 +171,12 @@ public class MinecraftResourceDownloader : IDisposable
 
             if (!_cancelled)
             {
-                mc.installResource(path, new java.io.File(localFile.FullName));
+                mc.installResource(path, new FileInfo(localFile.FullName));
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to download {path}: {ex.Message}");
+            Log.Error($"Failed to download {path}: {ex.Message}");
         }
     }
 

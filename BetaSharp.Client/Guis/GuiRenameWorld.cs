@@ -6,8 +6,8 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiRenameWorld : GuiScreen
 {
-    private const int BUTTON_RENAME = 0;
-    private const int BUTTON_CANCEL = 1;
+    private const int ButtonRename = 0;
+    private const int ButtonCancel = 1;
 
     private readonly GuiScreen parentScreen;
     private GuiTextField nameInputField;
@@ -19,75 +19,75 @@ public class GuiRenameWorld : GuiScreen
         this.worldFolderName = worldFolderName;
     }
 
-    public override void updateScreen()
+    public override void UpdateScreen()
     {
         nameInputField.updateCursorCounter();
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
         TranslationStorage translations = TranslationStorage.getInstance();
         Keyboard.enableRepeatEvents(true);
-        controlList.clear();
-        controlList.add(new GuiButton(BUTTON_RENAME, width / 2 - 100, height / 4 + 96 + 12, translations.translateKey("selectWorld.renameButton")));
-        controlList.add(new GuiButton(BUTTON_CANCEL, width / 2 - 100, height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
+        _controlList.Clear();
+        _controlList.Add(new GuiButton(ButtonRename, Width / 2 - 100, Height / 4 + 96 + 12, translations.translateKey("selectWorld.renameButton")));
+        _controlList.Add(new GuiButton(ButtonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
         WorldStorageSource worldStorage = mc.getSaveLoader();
         WorldProperties worldProperties = worldStorage.getProperties(worldFolderName);
         string currentWorldName = worldProperties.LevelName;
-        nameInputField = new GuiTextField(this, fontRenderer, width / 2 - 100, 60, 200, 20, currentWorldName)
+        nameInputField = new GuiTextField(this, FontRenderer, Width / 2 - 100, 60, 200, 20, currentWorldName)
         {
-            isFocused = true
+            IsFocused = true
         };
-        nameInputField.setMaxStringLength(32);
+        nameInputField.SetMaxStringLength(32);
     }
 
-    public override void onGuiClosed()
+    public override void OnGuiClosed()
     {
         Keyboard.enableRepeatEvents(false);
     }
 
-    protected override void actionPerformed(GuiButton button)
+    protected override void ActionPerformed(GuiButton button)
     {
-        if (button.enabled)
+        if (button.Enabled)
         {
-            switch (button.id)
+            switch (button.Id)
             {
-                case BUTTON_CANCEL:
+                case ButtonCancel:
                     mc.displayGuiScreen(parentScreen);
                     break;
-                case BUTTON_RENAME:
+                case ButtonRename:
                     WorldStorageSource worldStorage = mc.getSaveLoader();
-                    worldStorage.rename(worldFolderName, nameInputField.getText().Trim());
+                    worldStorage.rename(worldFolderName, nameInputField.GetText().Trim());
                     mc.displayGuiScreen(parentScreen);
                     break;
             }
         }
     }
 
-    protected override void keyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, int eventKey)
     {
         nameInputField.textboxKeyTyped(eventChar, eventKey);
-        ((GuiButton)controlList.get(0)).enabled = nameInputField.getText().Trim().Length > 0;
+        _controlList[0].Enabled = nameInputField.GetText().Trim().Length > 0;
         if (eventChar == 13)
         {
-            actionPerformed((GuiButton)controlList.get(0));
+            ActionPerformed(_controlList[0]);
         }
 
     }
 
-    protected override void mouseClicked(int x, int y, int button)
+    protected override void MouseClicked(int x, int y, int button)
     {
-        base.mouseClicked(x, y, button);
-        nameInputField.mouseClicked(x, y, button);
+        base.MouseClicked(x, y, button);
+        nameInputField.MouseClicked(x, y, button);
     }
 
-    public override void render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         TranslationStorage translations = TranslationStorage.getInstance();
-        drawDefaultBackground();
-        drawCenteredString(fontRenderer, translations.translateKey("selectWorld.renameTitle"), width / 2, height / 4 - 60 + 20, 0x00FFFFFF);
-        drawString(fontRenderer, translations.translateKey("selectWorld.enterName"), width / 2 - 100, 47, 10526880);
-        nameInputField.drawTextBox();
-        base.render(mouseX, mouseY, partialTicks);
+        DrawDefaultBackground();
+        DrawCenteredString(FontRenderer, translations.translateKey("selectWorld.renameTitle"), Width / 2, Height / 4 - 60 + 20, 0xFFFFFF);
+        DrawString(FontRenderer, translations.translateKey("selectWorld.enterName"), Width / 2 - 100, 47, 0xA0A0A0);
+        nameInputField.DrawTextBox();
+        base.Render(mouseX, mouseY, partialTicks);
     }
 }

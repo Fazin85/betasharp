@@ -82,9 +82,9 @@ public class TexturePacks : java.lang.Object
 
                         var1.add(var12);
                     }
-                    catch (java.io.IOException var9)
+                    catch (java.io.IOException ex)
                     {
-                        var9.printStackTrace();
+                        ex.printStackTrace();
                     }
                 }
             }

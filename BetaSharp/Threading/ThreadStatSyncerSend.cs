@@ -21,9 +21,9 @@ public class ThreadStatSyncerSend : java.lang.Thread
         {
             StatsSyncer.func_27412_a(field_27232_b, field_27233_a, StatsSyncer.func_27414_e(field_27232_b), StatsSyncer.func_27417_f(field_27232_b), StatsSyncer.func_27419_g(field_27232_b));
         }
-        catch (java.lang.Exception var5)
+        catch (java.lang.Exception ex)
         {
-            var5.printStackTrace();
+            ex.printStackTrace();
         }
         finally
         {

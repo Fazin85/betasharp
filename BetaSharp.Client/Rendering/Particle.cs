@@ -1,63 +1,57 @@
-using BetaSharp.Client.Guis;
+﻿using BetaSharp.Client.Guis;
 
 namespace BetaSharp.Client.Rendering;
 
 public class Particle : java.lang.Object
 {
-    private static readonly java.util.Random field_25128_s = new();
-    public double field_25146_a;
-    public double field_25145_b;
-    public double field_25144_c;
-    public double field_25143_d;
-    public double field_25142_e;
-    public double field_25141_f;
-    public double field_25140_g;
-    public bool field_25139_h;
-    public int field_25138_i;
-    public int field_25137_j;
-    public double field_25136_k;
-    public double field_25135_l;
-    public double field_25134_m;
-    public double field_25133_n;
-    public double field_25132_o;
-    public double field_25131_p;
-    public double field_25130_q;
-    public double field_25129_r;
+    public double X;
+    public double Y;
+    public double PrevX;
+    public double PrevY;
+    public double VelocityX;
+    public double VelocityY;
+    public double Friction;
+    public bool PendingRemoval;
+    public int Age;
+    public int Lifetime;
+    public double R;
+    public double G;
+    public double B;
+    public double Alpha;
+    public double PrevR;
+    public double PrevG;
+    public double PrevB;
+    public double PrevAlpha;
 
-    public void func_25125_a(GuiParticle var1)
+    public void Update(GuiParticle particleGui)
     {
-        field_25146_a += field_25142_e;
-        field_25145_b += field_25141_f;
-        field_25142_e *= field_25140_g;
-        field_25141_f *= field_25140_g;
-        field_25141_f += 0.1D;
-        if (++field_25138_i > field_25137_j)
+        X += VelocityX;
+        Y += VelocityY;
+        VelocityX *= Friction;
+        VelocityY *= Friction;
+        VelocityY += 0.1;
+        if (++Age > Lifetime)
         {
-            func_25126_b();
+            PendingRemoval = true;
         }
 
-        field_25133_n = 2.0D - (double)field_25138_i / (double)field_25137_j * 2.0D;
-        if (field_25133_n > 1.0D)
+        Alpha = 2 - (double)Age / Lifetime * 2;
+        if (Alpha > 1)
         {
-            field_25133_n = 1.0D;
+            Alpha = 1;
         }
 
-        field_25133_n *= field_25133_n;
-        field_25133_n *= 0.5D;
+        Alpha *= Alpha;
+        Alpha *= 0.5;
     }
 
-    public void func_25127_a()
+    public void UpdatePrevious()
     {
-        field_25132_o = field_25136_k;
-        field_25131_p = field_25135_l;
-        field_25130_q = field_25134_m;
-        field_25129_r = field_25133_n;
-        field_25144_c = field_25146_a;
-        field_25143_d = field_25145_b;
-    }
-
-    public void func_25126_b()
-    {
-        field_25139_h = true;
+        PrevR = R;
+        PrevG = G;
+        PrevB = B;
+        PrevAlpha = Alpha;
+        PrevX = X;
+        PrevY = Y;
     }
 }

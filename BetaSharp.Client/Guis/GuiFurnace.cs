@@ -8,35 +8,35 @@ namespace BetaSharp.Client.Guis;
 public class GuiFurnace : GuiContainer
 {
 
-    private readonly BlockEntityFurnace furnaceInventory;
+    private readonly BlockEntityFurnace _furnaceInventory;
 
     public GuiFurnace(InventoryPlayer playerInventory, BlockEntityFurnace furnace) : base(new FurnaceScreenHandler(playerInventory, furnace))
     {
-        furnaceInventory = furnace;
+        _furnaceInventory = furnace;
     }
 
-    protected override void drawGuiContainerForegroundLayer()
+    protected override void DrawGuiContainerForegroundLayer()
     {
-        fontRenderer.drawString("Furnace", 60, 6, 4210752);
-        fontRenderer.drawString("Inventory", 8, ySize - 96 + 2, 4210752);
+        FontRenderer.drawString("Furnace", 60, 6, 0x404040);
+        FontRenderer.drawString("Inventory", 8, _ySize - 96 + 2, 0x404040);
     }
 
-    protected override void drawGuiContainerBackgroundLayer(float partialTicks)
+    protected override void DrawGuiContainerBackgroundLayer(float partialTicks)
     {
         int textureId = mc.textureManager.getTextureId("/gui/furnace.png");
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.bindTexture(textureId);
-        int guiLeft = (width - xSize) / 2;
-        int guiTop = (height - ySize) / 2;
-        drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
+        int guiLeft = (Width - _xSize) / 2;
+        int guiTop = (Height - _ySize) / 2;
+        DrawTexturedModalRect(guiLeft, guiTop, 0, 0, _xSize, _ySize);
         int progress;
-        if (furnaceInventory.isBurning())
+        if (_furnaceInventory.isBurning())
         {
-            progress = furnaceInventory.getFuelTimeDelta(12);
-            drawTexturedModalRect(guiLeft + 56, guiTop + 36 + 12 - progress, 176, 12 - progress, 14, progress + 2);
+            progress = _furnaceInventory.getFuelTimeDelta(12);
+            DrawTexturedModalRect(guiLeft + 56, guiTop + 36 + 12 - progress, 176, 12 - progress, 14, progress + 2);
         }
 
-        progress = furnaceInventory.getCookTimeDelta(24);
-        drawTexturedModalRect(guiLeft + 79, guiTop + 34, 176, 14, progress + 1, 16);
+        progress = _furnaceInventory.getCookTimeDelta(24);
+        DrawTexturedModalRect(guiLeft + 79, guiTop + 34, 176, 14, progress + 1, 16);
     }
 }

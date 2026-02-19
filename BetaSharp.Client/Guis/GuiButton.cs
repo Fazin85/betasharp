@@ -6,91 +6,90 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiButton : Gui
 {
-    protected const int HOVER_STATE_DISABLED = 0;
-    protected const int HOVER_STATE_NORMAL = 1;
-    protected const int HOVER_STATE_HOVERED = 2;
+    public enum HoverState
+    {
+        Disabled = 0,
+        Normal = 1,
+        Hovered = 2
+    }
 
-    protected int width;
-    protected int height;
-    public int xPosition;
-    public int yPosition;
-    public string displayString;
-    public int id;
-    public bool enabled;
-    public bool visible;
+    protected int _width;
+    protected int _height;
+    public int XPosition;
+    public int YPosition;
+    public string DisplayString;
+    public int Id;
+    public bool Enabled;
+    public bool Visible;
 
-    public GuiButton(int _id, int xPos, int yPos, string displayStr) : this(_id, xPos, yPos, 200, 20, displayStr)
+    public GuiButton(int id, int xPos, int yPos, string displayStr) : this(id, xPos, yPos, 200, 20, displayStr)
     {
 
     }
 
     public GuiButton(int _id, int xPos, int yPos, int wid, int hei, string displayStr)
     {
-        width = 200;
-        height = 20;
-        enabled = true;
-        visible = true;
-        id = _id;
-        xPosition = xPos;
-        yPosition = yPos;
-        width = wid;
-        height = hei;
-        displayString = displayStr;
+        _width = 200;
+        _height = 20;
+        Enabled = true;
+        Visible = true;
+        Id = _id;
+        XPosition = xPos;
+        YPosition = yPos;
+        _width = wid;
+        _height = hei;
+        DisplayString = displayStr;
     }
 
-    protected virtual int getHoverState(bool isMouseOver)
+    protected virtual HoverState GetHoverState(bool isMouseOver)
     {
-        int state = HOVER_STATE_NORMAL;
-        if (!enabled)
-        {
-            state = HOVER_STATE_DISABLED;
-        }
-        else if (isMouseOver)
-        {
-            state = HOVER_STATE_HOVERED;
-        }
+        if (!Enabled) return HoverState.Disabled;
+        if (isMouseOver) return HoverState.Hovered;
 
-        return state;
+        return HoverState.Normal;
     }
 
-    public void drawButton(Minecraft mc, int mouseX, int mouseY)
+    public void DrawButton(Minecraft mc, int mouseX, int mouseY)
     {
-        if (visible)
-        {
-            TextRenderer font = mc.fontRenderer;
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/gui/gui.png"));
-            GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-            bool isHovered = mouseX >= xPosition && mouseY >= yPosition && mouseX < xPosition + width && mouseY < yPosition + height;
-            int hoverState = getHoverState(isHovered);
-            drawTexturedModalRect(xPosition, yPosition, 0, 46 + hoverState * 20, width / 2, height);
-            drawTexturedModalRect(xPosition + width / 2, yPosition, 200 - width / 2, 46 + hoverState * 20, width / 2, height);
-            mouseDragged(mc, mouseX, mouseY);
-            if (!enabled)
-            {
-                drawCenteredString(font, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 0xFFA0A0A0);
-            }
-            else if (isHovered)
-            {
-                drawCenteredString(font, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 16777120);
-            }
-            else
-            {
-                drawCenteredString(font, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 14737632);
-            }
+        if (!Visible) return;
 
+        TextRenderer font = mc.fontRenderer;
+
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/gui/gui.png"));
+        GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
+
+        bool isHovered = mouseX >= XPosition && mouseY >= YPosition && mouseX < XPosition + _width && mouseY < YPosition + _height;
+        HoverState hoverState = GetHoverState(isHovered);
+
+        DrawTexturedModalRect(XPosition, YPosition, 0, 46 + (int)hoverState * 20, _width / 2, _height);
+        DrawTexturedModalRect(XPosition + _width / 2, YPosition, 200 - _width / 2, 46 + (int)hoverState * 20, _width / 2, _height);
+
+        MouseDragged(mc, mouseX, mouseY);
+
+        if (!Enabled)
+        {
+            DrawCenteredString(font, DisplayString, XPosition + _width / 2, YPosition + (_height - 8) / 2, 0xFFA0A0A0);
+        }
+        else if (isHovered)
+        {
+            DrawCenteredString(font, DisplayString, XPosition + _width / 2, YPosition + (_height - 8) / 2, 0xFFFFA0);
+        }
+        else
+        {
+            DrawCenteredString(font, DisplayString, XPosition + _width / 2, YPosition + (_height - 8) / 2, 0xE0E0E0);
         }
     }
 
-    protected virtual void mouseDragged(Minecraft mc, int mouseX, int mouseY)
+    protected virtual void MouseDragged(Minecraft mc, int mouseX, int mouseY)
     {
     }
 
-    public virtual void mouseReleased(int mouseX, int mouseY)
+    public virtual void MouseReleased(int mouseX, int mouseY)
     {
     }
 
-    public virtual bool mousePressed(Minecraft mc, int mouseX, int mouseY)
+    public virtual bool MousePressed(Minecraft mc, int mouseX, int mouseY)
     {
-        return enabled && mouseX >= xPosition && mouseY >= yPosition && mouseX < xPosition + width && mouseY < yPosition + height;
+        return Enabled && mouseX >= XPosition && mouseY >= YPosition && mouseX < XPosition + _width && mouseY < YPosition + _height;
     }
 }

@@ -64,7 +64,7 @@ public class BlockGrass : Block
         }
     }
 
-    public override int getDroppedItemId(int blocKMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, java.util.Random random)
     {
         return Block.Dirt.getDroppedItemId(0, random);
     }

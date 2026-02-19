@@ -5,7 +5,7 @@ namespace BetaSharp;
 public class Path : java.lang.Object
 {
     private PathPoint[] pathPoints = new PathPoint[1024];
-    private int count = 0;
+    private int count;
 
     public PathPoint addPoint(PathPoint var1)
     {

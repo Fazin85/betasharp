@@ -12,24 +12,24 @@ namespace BetaSharp.Client.Rendering;
 
 public class TextRenderer : java.lang.Object
 {
-    private readonly int[] charWidth = new int[256];
+    private readonly int[] _charWidth = new int[256];
     public int fontTextureName = 0;
-    private readonly int fontDisplayLists;
-    private readonly IntBuffer buffer;
-    private readonly ByteBuffer byteBuffer = GLAllocation.createDirectByteBuffer(1024 * sizeof(int));
+    private readonly int _fontDisplayLists;
+    private readonly IntBuffer _buffer;
+    private readonly ByteBuffer _byteBuffer = GLAllocation.createDirectByteBuffer(1024 * sizeof(int));
 
     public TextRenderer(GameOptions var1, TextureManager var3)
     {
-        buffer = byteBuffer.asIntBuffer();
+        _buffer = _byteBuffer.asIntBuffer();
 
         BufferedImage var4;
         try
         {
             var4 = ImageIO.read(new ByteArrayInputStream(AssetManager.Instance.getAsset("font/default.png").getBinaryContent()));
         }
-        catch (java.io.IOException var18)
+        catch (java.io.IOException ex)
         {
-            throw new RuntimeException(var18);
+            throw new RuntimeException(ex);
         }
 
         int var5 = var4.getWidth();
@@ -74,16 +74,16 @@ public class TextRenderer : java.lang.Object
                 var11 = 2;
             }
 
-            charWidth[var8] = var11 + 2;
+            _charWidth[var8] = var11 + 2;
         }
 
         fontTextureName = var3.load(var4);
-        fontDisplayLists = GLAllocation.generateDisplayLists(288);
+        _fontDisplayLists = GLAllocation.generateDisplayLists(288);
         Tessellator var19 = Tessellator.instance;
 
         for (var9 = 0; var9 < 256; ++var9)
         {
-            GLManager.GL.NewList((uint)(fontDisplayLists + var9), GLEnum.Compile);
+            GLManager.GL.NewList((uint)(_fontDisplayLists + var9), GLEnum.Compile);
             var19.startDrawingQuads();
             var10 = var9 % 16 * 8;
             var11 = var9 / 16 * 8;
@@ -95,7 +95,7 @@ public class TextRenderer : java.lang.Object
             var19.addVertexWithUV((double)(0.0F + var20), 0.0D, 0.0D, (double)((var10 + var20) / 128.0F + var21), (double)(var11 / 128.0F + var23));
             var19.addVertexWithUV(0.0D, 0.0D, 0.0D, (double)(var10 / 128.0F + var21), (double)(var11 / 128.0F + var23));
             var19.draw();
-            GLManager.GL.Translate(charWidth[var9], 0.0F, 0.0F);
+            GLManager.GL.Translate(_charWidth[var9], 0.0F, 0.0F);
             GLManager.GL.EndList();
         }
 
@@ -119,97 +119,98 @@ public class TextRenderer : java.lang.Object
                 var22 /= 4;
             }
 
-            GLManager.GL.NewList((uint)(fontDisplayLists + 256 + var9), GLEnum.Compile);
+            GLManager.GL.NewList((uint)(_fontDisplayLists + 256 + var9), GLEnum.Compile);
             GLManager.GL.Color3(var11 / 255.0F, var12 / 255.0F, var22 / 255.0F);
             GLManager.GL.EndList();
         }
 
     }
 
-    public void drawStringWithShadow(string var1, int var2, int var3, uint color)
+    public void drawStringWithShadow(string text, int x, int y, uint color)
     {
-        renderString(var1, var2 + 1, var3 + 1, color, true);
-        drawString(var1, var2, var3, color);
+        renderString(text, x + 1, y + 1, color, true);
+        drawString(text, x, y, color);
     }
 
-    public void drawString(string var1, int var2, int var3, uint color)
+    public void drawString(string text, int x, int y, uint color)
     {
-        renderString(var1, var2, var3, color, false);
+        renderString(text, x, y, color, false);
     }
 
-    public unsafe void renderString(string var1, int var2, int var3, uint color, bool var5)
+    public unsafe void renderString(string text, int x, int y, uint color, bool darken)
     {
-        if (var1 != null)
+        if (text != null)
         {
-            if (var5)
+            uint alpha = color & 0xFF000000;
+            if (darken)
             {
-                uint var6 = color & 0xFF000000;
-                color = (color & 0x00FCFCFC) >> 2;
-                color += var6;
+                color = (color & 0xFCFCFC) >> 2;
+                color |= alpha;
             }
+            // assume alpha was omitted and default to fully opaque
 
             GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)fontTextureName);
-            float var10 = (color >> 16 & 255) / 255.0F;
-            float var7 = (color >> 8 & 255) / 255.0F;
-            float var8 = (color & 255) / 255.0F;
-            float var9 = (color >> 24 & 255) / 255.0F;
-            if (var9 == 0.0F)
+            float a = (color >> 24 & 255) / 255.0F;
+            float r = (color >> 16 & 255) / 255.0F;
+            float g = (color >> 8 & 255) / 255.0F;
+            float b = (color & 255) / 255.0F;
+            if (a == 0.0F)
             {
-                var9 = 1.0F;
+                a = 1.0F;
             }
 
-            GLManager.GL.Color4(var10, var7, var8, var9);
-            buffer.clear();
+            GLManager.GL.Color4(r, g, b, a);
+            _buffer.clear();
             GLManager.GL.PushMatrix();
-            GLManager.GL.Translate(var2, var3, 0.0F);
+            GLManager.GL.Translate(x, y, 0.0F);
 
-            for (int i = 0; i < var1.Length; ++i)
+            for (int i = 0; i < text.Length; ++i)
             {
                 int var11;
-                for (; var1.Length > i + 1 && var1[i] == 167; i += 2)
+                for (; text.Length > i + 1 && text[i] == 167; i += 2)
                 {
-                    var11 = "0123456789abcdef".IndexOf(var1.ToLower()[i + 1]);
+                    var11 = "0123456789abcdef".IndexOf(text.ToLower()[i + 1]);
                     if (var11 < 0 || var11 > 15)
                     {
                         var11 = 15;
                     }
 
-                    buffer.put(fontDisplayLists + 256 + var11 + (var5 ? 16 : 0));
-                    if (buffer.remaining() == 0)
+                    _buffer.put(_fontDisplayLists + 256 + var11 + (darken ? 16 : 0));
+                    if (_buffer.remaining() == 0)
                     {
-                        buffer.flip();
+                        _buffer.flip();
                         CallLists();
-                        buffer.clear();
+                        _buffer.clear();
                     }
                 }
 
-                if (i < var1.Length)
+                if (i < text.Length)
                 {
-                    var11 = ChatAllowedCharacters.allowedCharacters.IndexOf(var1[i]);
+                    var11 = ChatAllowedCharacters.allowedCharacters.IndexOf(text[i]);
                     if (var11 >= 0)
                     {
-                        buffer.put(fontDisplayLists + var11 + 32);
+                        _buffer.put(_fontDisplayLists + var11 + 32);
                     }
                 }
 
-                if (buffer.remaining() == 0)
+                if (_buffer.remaining() == 0)
                 {
-                    buffer.flip();
+                    _buffer.flip();
                     CallLists();
-                    buffer.clear();
+                    _buffer.clear();
                 }
             }
 
-            buffer.flip();
+            _buffer.flip();
             CallLists();
             GLManager.GL.PopMatrix();
         }
 
         void CallLists()
         {
-            BufferHelper.UsePointer(byteBuffer, (ptr) =>
+            BufferHelper.UsePointer(_byteBuffer, (ptr) =>
             {
-                GLManager.GL.CallLists((uint)buffer.remaining(), GLEnum.UnsignedInt, (byte*)ptr);
+                GLManager.GL.CallLists((uint)_buffer.remaining(), GLEnum.UnsignedInt, (byte*)ptr);
             });
         }
     }
@@ -235,7 +236,7 @@ public class TextRenderer : java.lang.Object
                     int var4 = ChatAllowedCharacters.allowedCharacters.IndexOf(var1[var3]);
                     if (var4 >= 0)
                     {
-                        var2 += charWidth[var4 + 32];
+                        var2 += _charWidth[var4 + 32];
                     }
                 }
             }

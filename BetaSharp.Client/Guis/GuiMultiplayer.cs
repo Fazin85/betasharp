@@ -1,130 +1,290 @@
 using BetaSharp.Client.Input;
+using BetaSharp.NBT;
 
 namespace BetaSharp.Client.Guis;
 
+//TODO: Update multiplayer menu to use proper translations
+
 public class GuiMultiplayer : GuiScreen
 {
-    private const int BUTTON_CONNECT = 0;
-    private const int BUTTON_CANCEL = 1;
+    private GuiSlotServer _serverListSelector = null!;
+    private readonly List<ServerData> _serverList = [];
+    private int _selectedServerIndex = -1;
+    private GuiButton _btnEdit = null!;
+    private GuiButton _btnSelect = null!;
+    private GuiButton _btnDelete = null!;
+    private bool _deletingServer = false;
+    private bool _addingServer = false;
+    private bool _editingServer = false;
+    private bool _directConnect = false;
+    private ServerData _tempServer = null!;
 
-    private readonly GuiScreen parentScreen;
-    private GuiTextField serverAddressInputField;
+    private readonly GuiScreen _parentScreen;
 
     public GuiMultiplayer(GuiScreen parentScreen)
     {
-        this.parentScreen = parentScreen;
+        _parentScreen = parentScreen;
     }
 
-    public override void updateScreen()
+    public List<ServerData> GetServerList()
     {
-        serverAddressInputField.updateCursorCounter();
+        return _serverList;
     }
 
-    public override void initGui()
+    public void ConnectToServer(int index)
     {
-        TranslationStorage translations = TranslationStorage.getInstance();
+        JoinServer(_serverList[index]);
+    }
+
+    public void SelectServer(int index)
+    {
+        _selectedServerIndex = index;
+    }
+
+    public int GetSelectedServerIndex()
+    {
+        return _selectedServerIndex;
+    }
+
+    public override void InitGui()
+    {
+        LoadServerList();
         Keyboard.enableRepeatEvents(true);
-        controlList.clear();
-        controlList.add(new GuiButton(BUTTON_CONNECT, width / 2 - 100, height / 4 + 96 + 12, translations.translateKey("multiplayer.connect")));
-        controlList.add(new GuiButton(BUTTON_CANCEL, width / 2 - 100, height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
-        string lastServerAddress = mc.options.lastServer.Replace("_", ":");
-        ((GuiButton)controlList.get(0)).enabled = lastServerAddress.Length > 0;
-        serverAddressInputField = new GuiTextField(this, fontRenderer, width / 2 - 100, height / 4 - 10 + 50 + 18, 200, 20, lastServerAddress)
-        {
-            isFocused = true
-        };
-        serverAddressInputField.setMaxStringLength(128);
+        _controlList.Clear();
+        _serverListSelector = new GuiSlotServer(this);
+
+        _controlList.Add(_btnEdit = new GuiButton(7, Width / 2 - 154, Height - 28, 70, 20, "Edit"));
+        _controlList.Add(_btnDelete = new GuiButton(2, Width / 2 - 74, Height - 28, 70, 20, "Delete"));
+        _controlList.Add(_btnSelect = new GuiButton(1, Width / 2 - 154, Height - 52, 100, 20, "Join Server"));
+        _controlList.Add(new GuiButton(4, Width / 2 - 50, Height - 52, 100, 20, "Direct Connect"));
+        _controlList.Add(new GuiButton(3, Width / 2 + 4 + 50, Height - 52, 100, 20, "Add server"));
+        _controlList.Add(new GuiButton(8, Width / 2 + 4, Height - 28, 70, 20, "Refresh"));
+        _controlList.Add(new GuiButton(0, Width / 2 + 4 + 76, Height - 28, 75, 20, "Cancel"));
+
+        UpdateButtons();
     }
 
-    public override void onGuiClosed()
+    private void UpdateButtons()
+    {
+        bool hasSelection = _selectedServerIndex >= 0 && _selectedServerIndex < _serverList.Count;
+        _btnSelect.Enabled = hasSelection;
+        _btnEdit.Enabled = hasSelection;
+        _btnDelete.Enabled = hasSelection;
+    }
+
+    private void LoadServerList()
+    {
+        try
+        {
+            string path = System.IO.Path.Combine(Minecraft.getMinecraftDir().getAbsolutePath(), "servers.dat");
+            if (!File.Exists(path)) return;
+
+            using FileStream stream = File.OpenRead(path);
+            NBTTagCompound tag = NbtIo.ReadCompressed(stream);
+
+            NBTTagList list = tag.GetTagList("servers");
+            _serverList.Clear();
+            for (int i = 0; i < list.TagCount(); ++i)
+            {
+                _serverList.Add(ServerData.FromNBT((NBTTagCompound)list.TagAt(i)));
+            }
+        }
+        catch { }
+    }
+
+    private void SaveServerList()
+    {
+        try
+        {
+            NBTTagList list = new();
+            foreach (ServerData server in _serverList)
+            {
+                list.SetTag(server.ToNBT());
+            }
+            NBTTagCompound tag = new();
+            tag.SetTag("servers", list);
+
+            string path = System.IO.Path.Combine(Minecraft.getMinecraftDir().getAbsolutePath(), "servers.dat");
+            using FileStream stream = File.OpenWrite(path);
+            NbtIo.WriteCompressed(tag, stream);
+        }
+        catch { }
+    }
+
+    public override void OnGuiClosed()
     {
         Keyboard.enableRepeatEvents(false);
     }
 
-    protected override void actionPerformed(GuiButton button)
+    public override void UpdateScreen()
     {
-        if (button.enabled)
+        base.UpdateScreen();
+        UpdateButtons();
+    }
+
+    protected override void ActionPerformed(GuiButton button)
+    {
+        if (!button.Enabled) return;
+
+        if (button.Id == 2) // Delete
         {
-            switch (button.id)
+            string serverName = _serverList[_selectedServerIndex].Name;
+            if (serverName != null)
             {
-                case BUTTON_CANCEL:
-                    mc.displayGuiScreen(parentScreen);
-                    break;
-                case BUTTON_CONNECT:
-                    {
-                        string serverAddress = serverAddressInputField.getText().Trim();
-                        mc.options.lastServer = serverAddress.Replace(":", "_");
-                        mc.options.saveOptions();
-                        string[] addressParts = serverAddress.Split(":");
-                        if (serverAddress.StartsWith("["))
-                        {
-                            int bracketIndex = serverAddress.IndexOf("]");
-                            if (bracketIndex > 0)
-                            {
-                                string ipv6Address = serverAddress.Substring(1, bracketIndex);
-                                string portPart = serverAddress.Substring(bracketIndex + 1).Trim();
-                                if (portPart.StartsWith(":") && portPart.Length > 0)
-                                {
-                                    portPart = portPart.Substring(1);
-                                    addressParts = new string[] { ipv6Address, portPart };
-                                }
-                                else
-                                {
-                                    addressParts = new string[] { ipv6Address };
-                                }
-                            }
-                        }
-
-                        if (addressParts.Length > 2)
-                        {
-                            addressParts = new string[] { serverAddress };
-                        }
-
-                        mc.displayGuiScreen(new GuiConnecting(mc, addressParts[0], addressParts.Length > 1 ? parseIntWithDefault(addressParts[1], 25565) : 25565));
-                        break;
-                    }
+                _deletingServer = true;
+                string q = "Are you sure you want to remove this server?";
+                string w = "'" + serverName + "' " + "will be lost forever! (A long time!)";
+                string b = "Delete";
+                string c = "Cancel";
+                GuiYesNo yesNo = new(this, q, w, b, c, _selectedServerIndex);
+                mc.displayGuiScreen(yesNo);
             }
         }
-    }
-
-    private int parseIntWithDefault(string value, int defaultValue)
-    {
-        try
+        else if (button.Id == 1) // Select/Connect
         {
-            return java.lang.Integer.parseInt(value.Trim());
+            ConnectToServer(_selectedServerIndex);
         }
-        catch (Exception exception)
+        else if (button.Id == 4) // Direct Connect
         {
-            return defaultValue;
+            _directConnect = true;
+            _tempServer = new ServerData("Minecraft Server", "");
+            mc.displayGuiScreen(new GuiScreenAddServer(this, _tempServer));
         }
-    }
-
-    protected override void keyTyped(char eventChar, int eventKey)
-    {
-        serverAddressInputField.textboxKeyTyped(eventChar, eventKey);
-        if (eventChar == 13)
+        else if (button.Id == 3) // Add
         {
-            actionPerformed((GuiButton)controlList.get(0));
+            _addingServer = true;
+            _tempServer = new ServerData("Minecraft Server", "");
+            mc.displayGuiScreen(new GuiScreenAddServer(this, _tempServer));
+        }
+        else if (button.Id == 7) // Edit
+        {
+            _editingServer = true;
+            ServerData original = _serverList[_selectedServerIndex];
+            _tempServer = new ServerData(original.Name, original.Ip);
+            mc.displayGuiScreen(new GuiScreenAddServer(this, _tempServer));
+        }
+        else if (button.Id == 0) // Cancel
+        {
+            mc.displayGuiScreen(_parentScreen);
+        }
+        else if (button.Id == 8) // Refresh
+        {
+            LoadServerList();
+        }
+        else
+        {
+            _serverListSelector.actionPerformed(button);
+        }
+    }
+
+    public override void DeleteWorld(bool result, int id)
+    {
+        if (_deletingServer)
+        {
+            _deletingServer = false;
+            if (result)
+            {
+                _serverList.RemoveAt(id);
+                SaveServerList();
+                _selectedServerIndex = -1;
+            }
+            mc.displayGuiScreen(this);
+        }
+    }
+
+    public void ConfirmClicked(bool result, int id)
+    {
+        if (_directConnect)
+        {
+            _directConnect = false;
+
+            if (result)
+            {
+                JoinServer(_tempServer);
+            }
+            else
+            {
+                mc.displayGuiScreen(this);
+            }
+        }
+        else if (_addingServer)
+        {
+            _addingServer = false;
+            if (result)
+            {
+                _serverList.Add(_tempServer);
+                SaveServerList();
+            }
+            mc.displayGuiScreen(this);
+        }
+        else if (_editingServer)
+        {
+            _editingServer = false;
+            if (result)
+            {
+                ServerData server = _serverList[_selectedServerIndex];
+                server.Name = _tempServer.Name;
+                server.Ip = _tempServer.Ip;
+                SaveServerList();
+            }
+            mc.displayGuiScreen(this);
+        }
+    }
+
+    protected override void KeyTyped(char eventChar, int eventKey)
+    {
+        if (eventKey == 28) // Enter
+        {
+            if (_btnSelect != null && _btnSelect.Enabled) ActionPerformed(_btnSelect);
+        }
+    }
+
+    protected override void MouseClicked(int x, int y, int button)
+    {
+        base.MouseClicked(x, y, button);
+    }
+
+    public override void Render(int mouseX, int mouseY, float partialTicks)
+    {
+        DrawDefaultBackground();
+        _serverListSelector.drawScreen(mouseX, mouseY, partialTicks);
+        DrawCenteredString(FontRenderer, "Play Multiplayer", Width / 2, 20, 0xFFFFFF);
+        base.Render(mouseX, mouseY, partialTicks);
+    }
+
+    private void JoinServer(ServerData server)
+    {
+        JoinServer(server.Ip);
+    }
+
+    private void JoinServer(string ip)
+    {
+        string[] parts = ip.Split(':');
+        if (ip.StartsWith('['))
+        {
+            int end = ip.IndexOf(']');
+            if (end > 0)
+            {
+                string ipV6 = ip.Substring(1, end);
+                string port = ip.Substring(end + 1).Trim();
+                if (port.StartsWith(':') && port.Length > 0)
+                {
+                    parts = [ipV6, port.Substring(1)];
+                }
+                else
+                {
+                    parts = [ipV6];
+                }
+            }
         }
 
-        ((GuiButton)controlList.get(0)).enabled = serverAddressInputField.getText().Length > 0;
-    }
+        string host = parts[0];
+        int portNum = 25565;
+        if (parts.Length > 1)
+        {
+            _ = int.TryParse(parts[1], out portNum);
+        }
 
-    protected override void mouseClicked(int x, int y, int button)
-    {
-        base.mouseClicked(x, y, button);
-        serverAddressInputField.mouseClicked(x, y, button);
-    }
-
-    public override void render(int mouseX, int mouseY, float partialTicks)
-    {
-        TranslationStorage translations = TranslationStorage.getInstance();
-        drawDefaultBackground();
-        drawCenteredString(fontRenderer, translations.translateKey("multiplayer.title"), width / 2, height / 4 - 60 + 20, 0x00FFFFFF);
-        drawString(fontRenderer, translations.translateKey("multiplayer.info1"), width / 2 - 140, height / 4 - 60 + 60 + 0, 10526880);
-        drawString(fontRenderer, translations.translateKey("multiplayer.info2"), width / 2 - 140, height / 4 - 60 + 60 + 9, 10526880);
-        drawString(fontRenderer, translations.translateKey("multiplayer.ipinfo"), width / 2 - 140, height / 4 - 60 + 60 + 36, 10526880);
-        serverAddressInputField.drawTextBox();
-        base.render(mouseX, mouseY, partialTicks);
+        mc.displayGuiScreen(new GuiConnecting(mc, host, portNum));
     }
 }

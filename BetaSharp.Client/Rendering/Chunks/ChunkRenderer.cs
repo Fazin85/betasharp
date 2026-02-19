@@ -58,7 +58,7 @@ public class ChunkRenderer
     private readonly Core.Shader chunkShader;
     private int lastRenderDistance;
     private Vector3D<double> lastViewPos;
-    private int currentIndex = 0;
+    private int currentIndex;
     private Matrix4X4<float> modelView;
     private Matrix4X4<float> projection;
     private int fogMode;
@@ -76,7 +76,7 @@ public class ChunkRenderer
         this.world = world;
 
         chunkShader = new(AssetManager.Instance.getAsset("shaders/chunk.vert").getTextContent(), AssetManager.Instance.getAsset("shaders/chunk.frag").getTextContent());
-        Console.WriteLine("Loaded chunk shader");
+        Log.Info("Loaded chunk shader");
 
         GLManager.GL.UseProgram(0);
     }

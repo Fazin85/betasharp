@@ -7,27 +7,27 @@ public class GuiSlider : GuiButton
 {
 
     public float sliderValue = 1.0F;
-    public bool dragging = false;
-    private readonly EnumOptions _idFloat = null;
+    public bool dragging;
+    private readonly EnumOptions _idFloat;
 
-    public GuiSlider(int var1, int var2, int var3, EnumOptions var4, string var5, float var6) : base(var1, var2, var3, 150, 20, var5)
+    public GuiSlider(int id, int x, int y, EnumOptions option, string displayString, float value) : base(id, x, y, 150, 20, displayString)
     {
-        _idFloat = var4;
-        sliderValue = var6;
+        _idFloat = option;
+        sliderValue = value;
     }
 
-    protected override int getHoverState(bool var1)
+    protected override HoverState GetHoverState(bool var1)
     {
-        return 0;
+        return HoverState.Disabled;
     }
 
-    protected override void mouseDragged(Minecraft var1, int var2, int var3)
+    protected override void MouseDragged(Minecraft mc, int mouseX, int mouseY)
     {
-        if (enabled)
+        if (Enabled)
         {
             if (dragging)
             {
-                sliderValue = (var2 - (xPosition + 4)) / (float)(width - 8);
+                sliderValue = (mouseX - (XPosition + 4)) / (float)(_width - 8);
                 if (sliderValue < 0.0F)
                 {
                     sliderValue = 0.0F;
@@ -38,21 +38,21 @@ public class GuiSlider : GuiButton
                     sliderValue = 1.0F;
                 }
 
-                var1.options.setOptionFloatValue(_idFloat, sliderValue);
-                displayString = var1.options.getKeyBinding(_idFloat);
+                mc.options.setOptionFloatValue(_idFloat, sliderValue);
+                DisplayString = mc.options.getKeyBinding(_idFloat);
             }
 
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-            drawTexturedModalRect(xPosition + (int)(sliderValue * (width - 8)), yPosition, 0, 66, 4, 20);
-            drawTexturedModalRect(xPosition + (int)(sliderValue * (width - 8)) + 4, yPosition, 196, 66, 4, 20);
+            DrawTexturedModalRect(XPosition + (int)(sliderValue * (_width - 8)), YPosition, 0, 66, 4, 20);
+            DrawTexturedModalRect(XPosition + (int)(sliderValue * (_width - 8)) + 4, YPosition, 196, 66, 4, 20);
         }
     }
 
-    public override bool mousePressed(Minecraft var1, int var2, int var3)
+    public override bool MousePressed(Minecraft mc, int mouseX, int mouseY)
     {
-        if (base.mousePressed(var1, var2, var3))
+        if (base.MousePressed(mc, mouseX, mouseY))
         {
-            sliderValue = (var2 - (xPosition + 4)) / (float)(width - 8);
+            sliderValue = (mouseX - (XPosition + 4)) / (float)(_width - 8);
             if (sliderValue < 0.0F)
             {
                 sliderValue = 0.0F;
@@ -63,8 +63,8 @@ public class GuiSlider : GuiButton
                 sliderValue = 1.0F;
             }
 
-            var1.options.setOptionFloatValue(_idFloat, sliderValue);
-            displayString = var1.options.getKeyBinding(_idFloat);
+            mc.options.setOptionFloatValue(_idFloat, sliderValue);
+            DisplayString = mc.options.getKeyBinding(_idFloat);
             dragging = true;
             return true;
         }
@@ -74,7 +74,7 @@ public class GuiSlider : GuiButton
         }
     }
 
-    public override void mouseReleased(int var1, int var2)
+    public override void MouseReleased(int x, int y)
     {
         dragging = false;
     }

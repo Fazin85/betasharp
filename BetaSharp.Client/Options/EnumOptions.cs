@@ -28,17 +28,13 @@ public class EnumOptions : java.lang.Object
     private readonly string enumString;
     private readonly int ordinalValue;
 
-    public static EnumOptions? getEnumOptions(int var0)
+    public static EnumOptions? getEnumOptions(int ordinal)
     {
-        EnumOptions[] var1 = values();
-        int var2 = var1.Length;
-
-        for (int var3 = 0; var3 < var2; ++var3)
+        foreach (EnumOptions option in values())
         {
-            EnumOptions var4 = var1[var3];
-            if (var4.returnEnumOrdinal() == var0)
+            if (option.returnEnumOrdinal() == ordinal)
             {
-                return var4;
+                return option;
             }
         }
 

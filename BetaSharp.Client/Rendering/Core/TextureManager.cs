@@ -24,8 +24,8 @@ public class TextureManager : java.lang.Object
     private readonly List<DynamicTexture> dynamicTextures = [];
     private readonly Map downloadedImages = new HashMap();
     private readonly GameOptions gameOptions;
-    private bool clamp = false;
-    private bool blur = false;
+    private bool clamp;
+    private bool blur;
     private readonly TexturePacks texturePacks;
     private readonly BufferedImage missingTextureImage = new(64, 64, 2);
 
@@ -86,9 +86,9 @@ public class TextureManager : java.lang.Object
                 colors.put(var1, var3);
                 return var3;
             }
-            catch (java.io.IOException var5)
+            catch (java.io.IOException ex)
             {
-                var5.printStackTrace();
+                ex.printStackTrace();
                 int[] var4 = readColors(missingTextureImage);
                 colors.put(var1, var4);
                 return var4;
@@ -113,13 +113,13 @@ public class TextureManager : java.lang.Object
         return var2;
     }
 
-    public int getTextureId(string var1)
+    public int getTextureId(string path)
     {
-        TexturePack var2 = texturePacks.selectedTexturePack;
-        Integer var3 = (Integer)textures.get(var1);
-        if (var3 != null)
+        TexturePack texturePack = texturePacks.selectedTexturePack;
+        Integer textureId = (Integer)textures.get(path);
+        if (textureId != null)
         {
-            return var3.intValue();
+            return textureId.intValue();
         }
         else
         {
@@ -128,88 +128,88 @@ public class TextureManager : java.lang.Object
                 idBuffer.clear();
                 GLAllocation.generateTextureNames(idBuffer);
                 int var6 = idBuffer.get(0);
-                if (var1.StartsWith("##"))
+                if (path.StartsWith("##"))
                 {
-                    load(rescale(readImage(var2.getResourceAsStream(var1[2..]))), var6);
+                    load(rescale(readImage(texturePack.getResourceAsStream(path[2..]))), var6);
                 }
-                else if (var1.StartsWith("%clamp%"))
+                else if (path.StartsWith("%clamp%"))
                 {
                     clamp = true;
-                    load(readImage(var2.getResourceAsStream(var1[7..])), var6);
+                    load(readImage(texturePack.getResourceAsStream(path[7..])), var6);
                     clamp = false;
                 }
-                else if (var1.StartsWith("%blur%"))
+                else if (path.StartsWith("%blur%"))
                 {
                     blur = true;
-                    load(readImage(var2.getResourceAsStream(var1[6..])), var6);
+                    load(readImage(texturePack.getResourceAsStream(path[6..])), var6);
                     blur = false;
                 }
                 else
                 {
-                    InputStream var7 = var2.getResourceAsStream(var1);
-                    if (var7 == null)
+                    InputStream textureStream = texturePack.getResourceAsStream(path);
+                    if (textureStream == null)
                     {
                         load(missingTextureImage, var6);
                     }
                     else
                     {
-                        load(readImage(var7), var6, var1.Contains("terrain.png"));
+                        load(readImage(textureStream), var6, path.Contains("terrain.png"));
                     }
                 }
 
-                textures.put(var1, Integer.valueOf(var6));
+                textures.put(path, Integer.valueOf(var6));
                 return var6;
             }
-            catch (java.io.IOException var5)
+            catch (java.io.IOException ex)
             {
-                var5.printStackTrace();
+                ex.printStackTrace();
                 GLAllocation.generateTextureNames(idBuffer);
                 int var4 = idBuffer.get(0);
                 load(missingTextureImage, var4);
-                textures.put(var1, Integer.valueOf(var4));
+                textures.put(path, Integer.valueOf(var4));
                 return var4;
             }
         }
     }
 
-    private BufferedImage rescale(BufferedImage var1)
+    private BufferedImage rescale(BufferedImage image)
     {
-        int var2 = var1.getWidth() / 16;
-        BufferedImage var3 = new(16, var1.getHeight() * var2, 2);
-        Graphics var4 = var3.getGraphics();
+        int var2 = image.getWidth() / 16;
+        BufferedImage rescaledImage = new(16, image.getHeight() * var2, 2);
+        Graphics g = rescaledImage.getGraphics();
 
-        for (int var5 = 0; var5 < var2; ++var5)
+        for (int i = 0; i < var2; ++i)
         {
-            var4.drawImage(var1, -var5 * 16, var5 * var1.getHeight(), null);
+            g.drawImage(image, -i * 16, i * image.getHeight(), null);
         }
 
-        var4.dispose();
-        return var3;
+        g.dispose();
+        return rescaledImage;
     }
 
-    public int load(BufferedImage var1)
+    public int load(BufferedImage image)
     {
         idBuffer.clear();
         GLAllocation.generateTextureNames(idBuffer);
-        int var2 = idBuffer.get(0);
-        load(var1, var2);
-        images.put(Integer.valueOf(var2), var1);
-        return var2;
+        int firstId = idBuffer.get(0);
+        load(image, firstId);
+        images.put(Integer.valueOf(firstId), image);
+        return firstId;
     }
 
-    public unsafe void load(BufferedImage var1, int var2)
+    public void load(BufferedImage image, int textureName)
     {
-        load(var1, var2, false);
+        load(image, textureName, false);
     }
 
-    public unsafe void load(BufferedImage var1, int var2, bool isTerrain)
+    public unsafe void load(BufferedImage image, int textureName, bool isTerrain)
     {
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var2);
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)textureName);
 
         if (isTerrain)
         {
-            int tileSize = var1.getWidth() / 16;
-            TextureAtlas[] mips = GenerateMipmaps(bufferedImageToTextureAtlas(var1), tileSize);
+            int tileSize = image.getWidth() / 16;
+            TextureAtlas[] mips = GenerateMipmaps(bufferedImageToTextureAtlas(image), tileSize);
 
             int mipCount = gameOptions.useMipmaps ? mips.Length : 1;
 
@@ -280,42 +280,37 @@ public class TextureManager : java.lang.Object
             GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureWrapT, (int)GLEnum.Repeat);
         }
 
-        int var3 = var1.getWidth();
-        int var4 = var1.getHeight();
-        int[] var5 = new int[var3 * var4];
-        byte[] var6 = new byte[var3 * var4 * 4];
-        var1.getRGB(0, 0, var3, var4, var5, 0, var3);
+        int imageWidth = image.getWidth();
+        int imageHeight = image.getHeight();
+        int[] packedARGB = new int[imageWidth * imageHeight];
+        byte[] unpackedRGBA = new byte[imageWidth * imageHeight * 4];
+        image.getRGB(0, 0, imageWidth, imageHeight, packedARGB, 0, imageWidth);
 
-        int var7;
-        int var8;
-        int var9;
-        int var10;
-        int var11;
-        for (var7 = 0; var7 < var5.Length; ++var7)
+        for (int i = 0; i < packedARGB.Length; ++i)
         {
-            var8 = var5[var7] >> 24 & 255;
-            var9 = var5[var7] >> 16 & 255;
-            var10 = var5[var7] >> 8 & 255;
-            var11 = var5[var7] & 255;
+            int a = packedARGB[i] >> 24 & 255;
+            int r = packedARGB[i] >> 16 & 255;
+            int g = packedARGB[i] >> 8 & 255;
+            int b = packedARGB[i] & 255;
 
-            var6[var7 * 4 + 0] = (byte)var9;
-            var6[var7 * 4 + 1] = (byte)var10;
-            var6[var7 * 4 + 2] = (byte)var11;
-            var6[var7 * 4 + 3] = (byte)var8;
+            unpackedRGBA[i * 4 + 0] = (byte)r;
+            unpackedRGBA[i * 4 + 1] = (byte)g;
+            unpackedRGBA[i * 4 + 2] = (byte)b;
+            unpackedRGBA[i * 4 + 3] = (byte)a;
         }
 
         imageBuffer.clear();
-        imageBuffer.put(var6);
-        imageBuffer.position(0).limit(var6.Length);
+        imageBuffer.put(unpackedRGBA);
+        imageBuffer.position(0).limit(unpackedRGBA.Length);
 
         BufferHelper.UsePointer(imageBuffer, (p) =>
         {
             var ptr = (byte*)p;
-            GLManager.GL.TexImage2D(GLEnum.Texture2D, 0, (int)GLEnum.Rgba, (uint)var3, (uint)var4, 0, GLEnum.Rgba, GLEnum.UnsignedByte, ptr);
+            GLManager.GL.TexImage2D(GLEnum.Texture2D, 0, (int)GLEnum.Rgba, (uint)imageWidth, (uint)imageHeight, 0, GLEnum.Rgba, GLEnum.UnsignedByte, ptr);
         });
     }
 
-    public unsafe void bind(int[] var1, int var2, int var3, int var4)
+    public unsafe void bind(int[] packedARGB, int width, int height, int var4)
     {
         //TODO: this is potentially wrong but shouldn't crash
 
@@ -340,42 +335,41 @@ public class TextureManager : java.lang.Object
             GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureWrapT, (int)GLEnum.Repeat);
         }
 
-        byte[] var5 = new byte[var2 * var3 * 4];
+        byte[] unpackedRGBA = new byte[width * height * 4];
 
-        for (int var6 = 0; var6 < var1.Length; ++var6)
+        for (int i = 0; i < packedARGB.Length; ++i)
         {
-            int var7 = var1[var6] >> 24 & 255;
-            int var8 = var1[var6] >> 16 & 255;
-            int var9 = var1[var6] >> 8 & 255;
-            int var10 = var1[var6] & 255;
+            int a = packedARGB[i] >> 24 & 255;
+            int r = packedARGB[i] >> 16 & 255;
+            int g = packedARGB[i] >> 8 & 255;
+            int b = packedARGB[i] & 255;
 
-            var5[var6 * 4 + 0] = (byte)var8;
-            var5[var6 * 4 + 1] = (byte)var9;
-            var5[var6 * 4 + 2] = (byte)var10;
-            var5[var6 * 4 + 3] = (byte)var7;
+            unpackedRGBA[i * 4 + 0] = (byte)r;
+            unpackedRGBA[i * 4 + 1] = (byte)g;
+            unpackedRGBA[i * 4 + 2] = (byte)b;
+            unpackedRGBA[i * 4 + 3] = (byte)a;
         }
 
         imageBuffer.clear();
-        imageBuffer.put(var5);
-        imageBuffer.position(0).limit(var5.Length);
+        imageBuffer.put(unpackedRGBA);
+        imageBuffer.position(0).limit(unpackedRGBA.Length);
 
         byte[] imageArray = imageBuffer.array();
         int offset = imageBuffer.arrayOffset();
 
         fixed (byte* ptr = imageArray)
         {
-            GLManager.GL.TexSubImage2D(GLEnum.Texture2D, 0, 0, 0, (uint)var2, (uint)var3, GLEnum.Rgba, GLEnum.UnsignedByte, ptr + offset);
+            GLManager.GL.TexSubImage2D(GLEnum.Texture2D, 0, 0, 0, (uint)width, (uint)height, GLEnum.Rgba, GLEnum.UnsignedByte, ptr + offset);
         }
     }
 
-    public void delete(int var1)
+    public void delete(int textureName)
     {
-        images.remove(Integer.valueOf(var1));
+        images.remove(Integer.valueOf(textureName));
         idBuffer.clear();
-        idBuffer.put(var1);
+        idBuffer.put(textureName);
         idBuffer.flip();
-        //GL11.glDeleteTextures(singleIntBuffer);
-        GLManager.GL.DeleteTexture((uint)var1);
+        GLManager.GL.DeleteTexture((uint)textureName);
     }
 
     //public int getTextureForDownloadableImage(string var1, string var2)
@@ -432,62 +426,55 @@ public class TextureManager : java.lang.Object
 
     //}
 
-    public void addDynamicTexture(DynamicTexture var1)
+    public void addDynamicTexture(DynamicTexture texture)
     {
-        dynamicTextures.Add(var1);
-        var1.tick();
+        dynamicTextures.Add(texture);
+        texture.tick();
     }
 
     public unsafe void tick()
     {
-        int var1;
-        DynamicTexture var2;
-        int var3;
-        int var4;
-
-        for (var1 = 0; var1 < dynamicTextures.Count; ++var1)
+        foreach (DynamicTexture texture in dynamicTextures)
         {
-            var2 = dynamicTextures[var1];
-            var2.tick();
+            texture.tick();
             imageBuffer.clear();
-            imageBuffer.put(var2.pixels);
-            imageBuffer.position(0).limit(var2.pixels.Length);
-            var2.bind(this);
+            imageBuffer.put(texture.pixels);
+            imageBuffer.position(0).limit(texture.pixels.Length);
+            texture.bind(this);
             BufferHelper.UsePointer(imageBuffer, p =>
             {
                 var ptr = (byte*)p;
-                int fxPixelSize = (int)System.Math.Sqrt(var2.pixels.Length / 4);
-                for (var3 = 0; var3 < var2.replicate; ++var3)
+                int fxPixelSize = (int)System.Math.Sqrt(texture.pixels.Length / 4f);
+                for (var x = 0; x < texture.replicate; ++x)
                 {
-                    for (var4 = 0; var4 < var2.replicate; ++var4)
+                    for (var y = 0; y < texture.replicate; ++y)
                     {
                         GLManager.GL.TexSubImage2D(GLEnum.Texture2D, 0,
-                            var2.sprite % 16 * fxPixelSize + var3 * fxPixelSize,
-                            var2.sprite / 16 * fxPixelSize + var4 * fxPixelSize,
+                            texture.sprite % 16 * fxPixelSize + x * fxPixelSize,
+                            texture.sprite / 16 * fxPixelSize + y * fxPixelSize,
                             (uint)fxPixelSize, (uint)fxPixelSize, GLEnum.Rgba, GLEnum.UnsignedByte, ptr);
                     }
                 }
             });
 
-            if (var2.atlas == DynamicTexture.FXImage.Terrain)
+            if (texture.atlas == DynamicTexture.FXImage.Terrain)
             {
-                UpdateTileMipmaps(var2.sprite, var2.pixels, var2.replicate);
+                UpdateTileMipmaps(texture.sprite, texture.pixels, texture.replicate);
             }
         }
 
-        for (var1 = 0; var1 < dynamicTextures.Count; ++var1)
+        foreach (DynamicTexture texture in dynamicTextures)
         {
-            var2 = dynamicTextures[var1];
-            if (var2.copyTo > 0)
+            if (texture.copyTo > 0)
             {
                 imageBuffer.clear();
-                imageBuffer.put(var2.pixels);
-                imageBuffer.position(0).limit(var2.pixels.Length);
-                GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var2.copyTo);
+                imageBuffer.put(texture.pixels);
+                imageBuffer.position(0).limit(texture.pixels.Length);
+                GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)texture.copyTo);
                 BufferHelper.UsePointer(imageBuffer, p =>
                 {
                     var ptr = (byte*)p;
-                    int fxPixelSize = (int)System.Math.Sqrt(var2.pixels.Length / 4);
+                    int fxPixelSize = (int)System.Math.Sqrt(texture.pixels.Length / 4f);
                     GLManager.GL.TexSubImage2D(GLEnum.Texture2D, 0, 0, 0, (uint)fxPixelSize, (uint)fxPixelSize, GLEnum.Rgba, GLEnum.UnsignedByte, ptr);
                 });
             }
@@ -561,12 +548,11 @@ public class TextureManager : java.lang.Object
         TexturePack var1 = texturePacks.selectedTexturePack;
         Iterator var2 = images.keySet().iterator();
 
-        BufferedImage var4;
         while (var2.hasNext())
         {
             int var3 = ((Integer)var2.next()).intValue();
-            var4 = (BufferedImage)images.get(Integer.valueOf(var3));
-            load(var4, var3);
+            BufferedImage image = (BufferedImage)images.get(Integer.valueOf(var3));
+            load(image, var3);
         }
 
         //ThreadDownloadImageData var8;
@@ -584,33 +570,34 @@ public class TextureManager : java.lang.Object
 
             try
             {
+                BufferedImage image;
                 if (var9.StartsWith("##"))
                 {
-                    var4 = rescale(readImage(var1.getResourceAsStream(var9[2..])));
+                    image = rescale(readImage(var1.getResourceAsStream(var9[2..])));
                 }
                 else if (var9.StartsWith("%clamp%"))
                 {
                     clamp = true;
-                    var4 = readImage(var1.getResourceAsStream(var9[7..]));
+                    image = readImage(var1.getResourceAsStream(var9[7..]));
                 }
                 else if (var9.StartsWith("%blur%"))
                 {
                     blur = true;
-                    var4 = readImage(var1.getResourceAsStream(var9[6..]));
+                    image = readImage(var1.getResourceAsStream(var9[6..]));
                 }
                 else
                 {
-                    var4 = readImage(var1.getResourceAsStream(var9));
+                    image = readImage(var1.getResourceAsStream(var9));
                 }
 
                 int var5 = ((Integer)textures.get(var9)).intValue();
-                load(var4, var5, var9.Contains("terrain.png"));
+                load(image, var5, var9.Contains("terrain.png"));
                 blur = false;
                 clamp = false;
             }
-            catch (java.io.IOException var7)
+            catch (java.io.IOException ex)
             {
-                var7.printStackTrace();
+                ex.printStackTrace();
             }
         }
 
@@ -622,32 +609,33 @@ public class TextureManager : java.lang.Object
 
             try
             {
+                BufferedImage image;
                 if (var9.StartsWith("##"))
                 {
-                    var4 = rescale(readImage(var1.getResourceAsStream(var9[2..])));
+                    image = rescale(readImage(var1.getResourceAsStream(var9[2..])));
                 }
                 else if (var9.StartsWith("%clamp%"))
                 {
                     clamp = true;
-                    var4 = readImage(var1.getResourceAsStream(var9[7..]));
+                    image = readImage(var1.getResourceAsStream(var9[7..]));
                 }
                 else if (var9.StartsWith("%blur%"))
                 {
                     blur = true;
-                    var4 = readImage(var1.getResourceAsStream(var9[6..]));
+                    image = readImage(var1.getResourceAsStream(var9[6..]));
                 }
                 else
                 {
-                    var4 = readImage(var1.getResourceAsStream(var9));
+                    image = readImage(var1.getResourceAsStream(var9));
                 }
 
-                readColors(var4, (int[])colors.get(var9));
+                readColors(image, (int[])colors.get(var9));
                 blur = false;
                 clamp = false;
             }
-            catch (java.io.IOException var6)
+            catch (java.io.IOException ex)
             {
-                var6.printStackTrace();
+                ex.printStackTrace();
             }
         }
 

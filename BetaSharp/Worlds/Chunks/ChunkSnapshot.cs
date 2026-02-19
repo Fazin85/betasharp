@@ -13,8 +13,8 @@ public class ChunkSnapshot : IDisposable
     private readonly byte[] _blocks;
     private readonly ChunkNibbleArray _data;
     private readonly Dictionary<int, NBTTagCompound> _tileEntities = [];
-    private bool _disposed = false;
-    private bool _isLit = false;
+    private bool _disposed;
+    private bool _isLit;
 
     public ChunkSnapshot(Chunk toSnapshot)
     {

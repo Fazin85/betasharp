@@ -1,4 +1,4 @@
-using BetaSharp.Client.Rendering.Core;
+﻿using BetaSharp.Client.Rendering.Core;
 using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Rendering;
@@ -10,7 +10,7 @@ public class LoadingScreenRenderer : LoadingDisplay
     private readonly Minecraft mc;
     private string field_1007_c = "";
     private long field_1006_d = java.lang.System.currentTimeMillis();
-    private bool field_1005_e = false;
+    private bool field_1005_e;
 
     public LoadingScreenRenderer(Minecraft var1)
     {
@@ -101,7 +101,7 @@ public class LoadingScreenRenderer : LoadingDisplay
                 GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var8);
                 float var9 = 32.0F;
                 var7.startDrawingQuads();
-                var7.setColorOpaque_I(4210752);
+                var7.setColorOpaque_I(0x404040);
                 var7.addVertexWithUV(0.0D, (double)var6, 0.0D, 0.0D, (double)((float)var6 / var9));
                 var7.addVertexWithUV((double)var5, (double)var6, 0.0D, (double)((float)var5 / var9), (double)((float)var6 / var9));
                 var7.addVertexWithUV((double)var5, 0.0D, 0.0D, (double)((float)var5 / var9), 0.0D);
@@ -115,12 +115,12 @@ public class LoadingScreenRenderer : LoadingDisplay
                     int var13 = var6 / 2 + 16;
                     GLManager.GL.Disable(GLEnum.Texture2D);
                     var7.startDrawingQuads();
-                    var7.setColorOpaque_I(8421504);
+                    var7.setColorOpaque_I(0x808080);
                     var7.addVertex((double)var12, (double)var13, 0.0D);
                     var7.addVertex((double)var12, (double)(var13 + var11), 0.0D);
                     var7.addVertex((double)(var12 + var10), (double)(var13 + var11), 0.0D);
                     var7.addVertex((double)(var12 + var10), (double)var13, 0.0D);
-                    var7.setColorOpaque_I(8454016);
+                    var7.setColorOpaque_I(0x80FF80);
                     var7.addVertex((double)var12, (double)var13, 0.0D);
                     var7.addVertex((double)var12, (double)(var13 + var11), 0.0D);
                     var7.addVertex((double)(var12 + var1), (double)(var13 + var11), 0.0D);
@@ -129,17 +129,15 @@ public class LoadingScreenRenderer : LoadingDisplay
                     GLManager.GL.Enable(GLEnum.Texture2D);
                 }
 
-                mc.fontRenderer.drawStringWithShadow(field_1007_c, (var5 - mc.fontRenderer.getStringWidth(field_1007_c)) / 2, var6 / 2 - 4 - 16, 0x00FFFFFF);
-                mc.fontRenderer.drawStringWithShadow(field_1004_a, (var5 - mc.fontRenderer.getStringWidth(field_1004_a)) / 2, var6 / 2 - 4 + 8, 0x00FFFFFF);
+                mc.fontRenderer.drawStringWithShadow(field_1007_c, (var5 - mc.fontRenderer.getStringWidth(field_1007_c)) / 2, var6 / 2 - 4 - 16, 0xFFFFFF);
+                mc.fontRenderer.drawStringWithShadow(field_1004_a, (var5 - mc.fontRenderer.getStringWidth(field_1004_a)) / 2, var6 / 2 - 4 + 8, 0xFFFFFF);
                 Display.update();
 
                 try
                 {
                     java.lang.Thread.yield();
                 }
-                catch (java.lang.Exception var14)
-                {
-                }
+                catch (java.lang.Exception) { }
 
             }
         }

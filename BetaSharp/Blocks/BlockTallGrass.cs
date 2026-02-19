@@ -1,4 +1,4 @@
-using BetaSharp.Items;
+﻿using BetaSharp.Items;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Colors;
 
@@ -22,7 +22,7 @@ public class BlockTallGrass : BlockPlant
         int meta = blockView.getBlockMeta(x, y, z);
         if (meta == 0)
         {
-            return 0x00FFFFFF;
+            return 0xFFFFFF;
         }
         else
         {

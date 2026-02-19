@@ -12,7 +12,7 @@ using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
-using BetaSharp.Client.Rendering.Entitys;
+using BetaSharp.Client.Rendering.Entities;
 using BetaSharp.Client.Rendering.Items;
 using BetaSharp.Client.Resource;
 using BetaSharp.Client.Resource.Pack;
@@ -37,12 +37,12 @@ using Silk.NET.OpenGL.Legacy.Extensions.ImGui;
 
 namespace BetaSharp.Client;
 
-public partial class Minecraft : java.lang.Object, Runnable
+public partial class Minecraft
 {
     public static Minecraft INSTANCE;
     public PlayerController playerController;
-    private bool fullscreen = false;
-    private bool hasCrashed = false;
+    private bool fullscreen;
+    private bool hasCrashed;
     public int displayWidth;
     public int displayHeight;
     private readonly Timer timer = new(20.0F);
@@ -51,22 +51,22 @@ public partial class Minecraft : java.lang.Object, Runnable
     public ClientPlayerEntity player;
     public EntityLiving camera;
     public ParticleManager particleManager;
-    public Session session = null;
+    public Session session;
     public string minecraftUri;
     public bool hideQuitButton = false;
-    public volatile bool isGamePaused = false;
+    public volatile bool isGamePaused;
     public TextureManager textureManager;
     public TextRenderer fontRenderer;
-    public GuiScreen currentScreen = null;
+    public GuiScreen currentScreen;
     public LoadingScreenRenderer loadingScreen;
     public GameRenderer gameRenderer;
-    private int ticksRan = 0;
-    private int leftClickCounter = 0;
+    private int ticksRan;
+    private int leftClickCounter;
     private readonly int tempDisplayWidth;
     private readonly int tempDisplayHeight;
     public GuiAchievement guiAchievement;
     public GuiIngame ingameGUI;
-    public bool skipRenderWorld = false;
+    public bool skipRenderWorld;
     public HitResult objectMouseOver = null;
     public GameOptions options;
     public SoundManager sndManager = new();
@@ -76,23 +76,23 @@ public partial class Minecraft : java.lang.Object, Runnable
     private WorldStorageSource saveLoader;
     public static long[] frameTimes = new long[512];
     public static long[] tickTimes = new long[512];
-    public static int numRecordedFrameTimes = 0;
+    public static int numRecordedFrameTimes;
     public static long hasPaidCheckTime = 0L;
     public StatFileWriter statFileWriter;
     private string serverName;
     private int serverPort;
     private readonly WaterSprite textureWaterFX = new();
     private readonly LavaSprite textureLavaFX = new();
-    private static java.io.File minecraftDir = null;
+    private static java.io.File minecraftDir;
     public volatile bool running = true;
     public string debug = "";
-    bool isTakingScreenshot = false;
+    bool isTakingScreenshot;
     long prevFrameTime = -1L;
-    public bool inGameHasFocus = false;
-    private int mouseTicksRan = 0;
+    public bool inGameHasFocus;
+    private int mouseTicksRan;
     public bool isRaining = false;
     long systemTime = java.lang.System.currentTimeMillis();
-    private int joinPlayerCounter = 0;
+    private int joinPlayerCounter;
     private ImGuiController imGuiController;
     public InternalServer? internalServer;
 
@@ -191,9 +191,9 @@ public partial class Minecraft : java.lang.Object, Runnable
 
             GLManager.Init(Display.getGL()!);
         }
-        catch (System.Exception var6)
+        catch (System.Exception ex)
         {
-            Console.WriteLine(var6);
+            Log.Error(ex);
         }
         texturePackList = new TexturePacks(this, mcDataDir);
         textureManager = new TextureManager(texturePackList, options);
@@ -214,13 +214,13 @@ public partial class Minecraft : java.lang.Object, Runnable
         loadScreen();
 
         bool anisotropicFiltering = GLManager.GL.IsExtensionPresent("GL_EXT_texture_filter_anisotropic");
-        Console.WriteLine($"Anisotropic Filtering Supported: {anisotropicFiltering}");
+        Log.Info($"Anisotropic Filtering Supported: {anisotropicFiltering}");
 
         if (anisotropicFiltering)
         {
             GLManager.GL.GetFloat(GLEnum.MaxTextureMaxAnisotropy, out float maxAnisotropy);
             GameOptions.MaxAnisotropy = maxAnisotropy;
-            Console.WriteLine($"Max Anisotropy: {maxAnisotropy}");
+            Log.Info($"Max Anisotropy: {maxAnisotropy}");
         }
         else
         {
@@ -236,7 +236,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         }
         catch (System.Exception e)
         {
-            Console.WriteLine("Failed to initialize ImGui: " + e);
+            Log.Error($"Failed to initialize ImGui: {e}");
             imGuiController = null;
         }
 
@@ -257,7 +257,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         GLManager.GL.LoadIdentity();
         GLManager.GL.MatrixMode(GLEnum.Modelview);
         checkGLError("Startup");
-        sndManager.loadSoundSettings(options);
+        sndManager.LoadSoundSettings(options);
         textureManager.addDynamicTexture(textureLavaFX);
         textureManager.addDynamicTexture(textureWaterFX);
         textureManager.addDynamicTexture(new NetherPortalSprite());
@@ -305,7 +305,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         GLManager.GL.Disable(GLEnum.Fog);
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)textureManager.getTextureId("/title/mojang.png"));
         tessellator.startDrawingQuads();
-        tessellator.setColorOpaque_I(0x00FFFFFF);
+        tessellator.setColorOpaque_I(0xFFFFFF);
         tessellator.addVertexWithUV(0.0D, (double)displayHeight, 0.0D, 0.0D, 0.0D);
         tessellator.addVertexWithUV((double)displayWidth, (double)displayHeight, 0.0D, 0.0D, 0.0D);
         tessellator.addVertexWithUV((double)displayWidth, 0.0D, 0.0D, 0.0D, 0.0D);
@@ -314,8 +314,8 @@ public partial class Minecraft : java.lang.Object, Runnable
         short var3 = 256;
         short var4 = 256;
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        tessellator.setColorOpaque_I(0x00FFFFFF);
-        func_6274_a((var1.ScaledWidth - var3) / 2, (var1.ScaledHeight - var4) / 2, 0, 0, var3, var4);
+        tessellator.setColorOpaque_I(0xFFFFFF);
+        drawTextureRegion((var1.ScaledWidth - var3) / 2, (var1.ScaledHeight - var4) / 2, 0, 0, var3, var4);
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.Disable(GLEnum.Fog);
         GLManager.GL.Enable(GLEnum.AlphaTest);
@@ -323,21 +323,18 @@ public partial class Minecraft : java.lang.Object, Runnable
         Display.swapBuffers();
     }
 
-    public void func_6274_a(int var1, int var2, int var3, int var4, int var5, int var6)
+    public void drawTextureRegion(int x, int y, int texX, int texY, int width, int height)
     {
-        float var7 = 0.00390625F;
-        float var8 = 0.00390625F;
-        Tessellator var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV((double)(var1 + 0), (double)(var2 + var6), 0.0D, (double)((float)(var3 + 0) * var7),
-            (double)((float)(var4 + var6) * var8));
-        var9.addVertexWithUV((double)(var1 + var5), (double)(var2 + var6), 0.0D,
-            (double)((float)(var3 + var5) * var7), (double)((float)(var4 + var6) * var8));
-        var9.addVertexWithUV((double)(var1 + var5), (double)(var2 + 0), 0.0D, (double)((float)(var3 + var5) * var7),
-            (double)((float)(var4 + 0) * var8));
-        var9.addVertexWithUV((double)(var1 + 0), (double)(var2 + 0), 0.0D, (double)((float)(var3 + 0) * var7),
-            (double)((float)(var4 + 0) * var8));
-        var9.draw();
+        float uScale = 1 / 256f;
+        float vScale = 1 / 256f;
+
+        Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
+        tess.addVertexWithUV(x + 0,     y + height, 0,  (texX + 0) * uScale,        (texY + height) * vScale);
+        tess.addVertexWithUV(x + width, y + height, 0,  (texX + width) * uScale,    (texY + height) * vScale);
+        tess.addVertexWithUV(x + width, y + 0,      0,  (texX + width) * uScale,    (texY + 0) * vScale);
+        tess.addVertexWithUV(x + 0,     y + 0,      0,  (texX + 0) * uScale,        (texY + 0) * vScale);
+        tess.draw();
     }
 
     public static java.io.File getMinecraftDir()
@@ -382,18 +379,18 @@ public partial class Minecraft : java.lang.Object, Runnable
 
     private static Util.OperatingSystem getOs()
     {
-        string var0 = java.lang.System.getProperty("os.name").ToLower();
-        return var0.Contains("win")
-            ? Util.OperatingSystem.windows
-            : (var0.Contains("mac")
-                ? Util.OperatingSystem.macos
-                : (var0.Contains("solaris")
-                    ? Util.OperatingSystem.solaris
-                    : (var0.Contains("sunos")
-                        ? Util.OperatingSystem.solaris
-                        : (var0.Contains("linux")
-                            ? Util.OperatingSystem.linux
-                            : (var0.Contains("unix") ? Util.OperatingSystem.linux : Util.OperatingSystem.unknown)))));
+        string osName = java.lang.System.getProperty("os.name").ToLower();
+
+        if (osName.Contains("win"))
+            return Util.OperatingSystem.windows;
+        if (osName.Contains("mac"))
+            return Util.OperatingSystem.macos;
+        if (osName.Contains("solaris") || osName.Contains("sunos"))
+            return Util.OperatingSystem.solaris;
+        if (osName.Contains("linux") || osName.Contains("unix"))
+            return Util.OperatingSystem.linux;
+
+        return Util.OperatingSystem.unknown;
     }
 
     public WorldStorageSource getSaveLoader()
@@ -403,51 +400,48 @@ public partial class Minecraft : java.lang.Object, Runnable
 
     public void displayGuiScreen(GuiScreen newScreen)
     {
-        if (!(currentScreen is GuiUnused))
+        currentScreen?.OnGuiClosed();
+
+        if (newScreen is GuiMainMenu)
         {
-            currentScreen?.onGuiClosed();
+            statFileWriter.func_27175_b();
+        }
 
-            if (newScreen is GuiMainMenu)
-            {
-                statFileWriter.func_27175_b();
-            }
+        statFileWriter.syncStats();
+        if (newScreen == null && world == null)
+        {
+            newScreen = new GuiMainMenu();
+        }
+        else if (newScreen == null && player.health <= 0)
+        {
+            newScreen = new GuiGameOver();
+        }
 
-            statFileWriter.syncStats();
-            if (newScreen == null && world == null)
-            {
-                newScreen = new GuiMainMenu();
-            }
-            else if (newScreen == null && player.health <= 0)
-            {
-                newScreen = new GuiGameOver();
-            }
+        if (newScreen is GuiMainMenu)
+        {
+            ingameGUI.clearChatMessages();
+        }
 
-            if (newScreen is GuiMainMenu)
-            {
-                ingameGUI.clearChatMessages();
-            }
+        currentScreen = newScreen;
 
-            currentScreen = newScreen;
+        if (internalServer != null)
+        {
+            bool shouldPause = newScreen?.DoesGuiPauseGame() ?? false;
+            internalServer.SetPaused(shouldPause);
+        }
 
-            if (internalServer != null)
-            {
-                bool shouldPause = newScreen?.doesGuiPauseGame() ?? false;
-                internalServer.SetPaused(shouldPause);
-            }
-
-            if (newScreen != null)
-            {
-                setIngameNotInFocus();
-                ScaledResolution scaledResolution = new(options, displayWidth, displayHeight);
-                int scaledWidth = scaledResolution.ScaledWidth;
-                int scaledHeight = scaledResolution.ScaledHeight;
-                newScreen.setWorldAndResolution(this, scaledWidth, scaledHeight);
-                skipRenderWorld = false;
-            }
-            else
-            {
-                setIngameFocus();
-            }
+        if (newScreen != null)
+        {
+            setIngameNotInFocus();
+            ScaledResolution scaledResolution = new(options, displayWidth, displayHeight);
+            int scaledWidth = scaledResolution.ScaledWidth;
+            int scaledHeight = scaledResolution.ScaledHeight;
+            newScreen.SetWorldAndResolution(this, scaledWidth, scaledHeight);
+            skipRenderWorld = false;
+        }
+        else
+        {
+            setIngameFocus();
         }
     }
 
@@ -457,10 +451,10 @@ public partial class Minecraft : java.lang.Object, Runnable
         GLEnum glError = GLManager.GL.GetError();
         if (glError != 0)
         {
-            Console.WriteLine($"#### GL ERROR ####");
-            Console.WriteLine($"@ {location}");
-            Console.WriteLine($"> {glError.ToString()}");
-            Console.WriteLine($"");
+            Log.Error($"#### GL ERROR ####");
+            Log.Error($"@ {location}");
+            Log.Error($"> {glError.ToString()}");
+            Log.Error($"");
         }
     }
 
@@ -472,25 +466,21 @@ public partial class Minecraft : java.lang.Object, Runnable
             statFileWriter.func_27175_b();
             statFileWriter.syncStats();
 
-            java.lang.System.@out.println("Stopping!");
+            Log.Info("Stopping!");
 
             try
             {
                 changeWorld1((World)null);
             }
-            catch (Throwable worldChangeException)
-            {
-            }
+            catch (Throwable worldChangeException) { }
 
             try
             {
                 GLAllocation.deleteTexturesAndDisplayLists();
             }
-            catch (Throwable textureCleanupException)
-            {
-            }
+            catch (Throwable textureCleanupException) { }
 
-            sndManager.closeMinecraft();
+            sndManager.CloseMinecraft();
             Mouse.destroy();
             Keyboard.destroy();
         }
@@ -506,7 +496,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         }
     }
 
-    public void run()
+    public void Run()
     {
         running = true;
 
@@ -582,7 +572,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                     long tickElapsedTime = java.lang.System.nanoTime() - tickStartTime;
                     checkGLError("Pre render");
                     BlockRenderer.fancyGrass = true;
-                    sndManager.updateListener(player, timer.renderPartialTicks);
+                    sndManager.UpdateListener(player, timer.renderPartialTicks);
                     GLManager.GL.Enable(GLEnum.Texture2D);
                     if (world != null)
                     {
@@ -672,7 +662,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                     ++frameCounter;
 
                     isGamePaused = (!isMultiplayerWorld() || internalServer != null) && currentScreen != null &&
-                                   currentScreen.doesGuiPauseGame();
+                                   currentScreen.DoesGuiPauseGame();
 
                     for (;
                          java.lang.System.currentTimeMillis() >= lastFpsCheckTime + 1000L;
@@ -714,7 +704,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         }
         catch (System.Exception e)
         {
-            Console.WriteLine(e);
+            Log.Error(e.ToString());
         }
         finally
         {
@@ -740,8 +730,18 @@ public partial class Minecraft : java.lang.Object, Runnable
             if (!isTakingScreenshot)
             {
                 isTakingScreenshot = true;
-                ingameGUI.addChatMessage(ScreenShotHelper.saveScreenshot(minecraftDir, displayWidth,
-                    displayHeight));
+                int size = displayWidth * displayHeight * 3;
+                byte[] pixels = new byte[size];
+                GLManager.GL.PixelStore(PixelStoreParameter.PackAlignment, 1);
+                unsafe
+                {
+                    fixed (byte* p = pixels)
+                    {
+                        GLManager.GL.ReadPixels(0, 0, (uint)displayWidth, (uint)displayHeight, PixelFormat.Rgb, PixelType.UnsignedByte, p);
+                    }
+                }
+                string result = ScreenShotHelper.saveScreenshot(minecraftDir.getAbsolutePath(), displayWidth, displayHeight, pixels);
+                ingameGUI.addChatMessage(result);
             }
         }
         else
@@ -774,12 +774,12 @@ public partial class Minecraft : java.lang.Object, Runnable
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawing(7);
         int barHeightPixels = (int)(targetFrameTime / 200000L);
-        tessellator.setColorOpaque_I(536870912);
+        tessellator.setColorOpaque_I(0x20000000); // BUG: tries to set alpha, which is ignored by setColorOpaque_I
         tessellator.addVertex(0.0D, (double)(displayHeight - barHeightPixels), 0.0D);
         tessellator.addVertex(0.0D, (double)displayHeight, 0.0D);
         tessellator.addVertex((double)frameTimes.Length, (double)displayHeight, 0.0D);
         tessellator.addVertex((double)frameTimes.Length, (double)(displayHeight - barHeightPixels), 0.0D);
-        tessellator.setColorOpaque_I(538968064);
+        tessellator.setColorOpaque_I(0x20200000); // BUG: tries to set alpha, which is ignored by setColorOpaque_I
         tessellator.addVertex(0.0D, (double)(displayHeight - barHeightPixels * 2), 0.0D);
         tessellator.addVertex(0.0D, (double)(displayHeight - barHeightPixels), 0.0D);
         tessellator.addVertex((double)frameTimes.Length, (double)(displayHeight - barHeightPixels), 0.0D);
@@ -795,7 +795,7 @@ public partial class Minecraft : java.lang.Object, Runnable
 
         averageFrameTimePixels = (int)(totalFrameTimesSum / 200000L / (long)frameTimes.Length);
         tessellator.startDrawing(7);
-        tessellator.setColorOpaque_I(541065216);
+        tessellator.setColorOpaque_I(0x20400000); // BUG: tries to set alpha, which is ignored by setColorOpaque_I
         tessellator.addVertex(0.0D, (double)(displayHeight - averageFrameTimePixels), 0.0D);
         tessellator.addVertex(0.0D, (double)displayHeight, 0.0D);
         tessellator.addVertex((double)frameTimes.Length, (double)displayHeight, 0.0D);
@@ -889,7 +889,7 @@ public partial class Minecraft : java.lang.Object, Runnable
 
     private void func_6254_a(int mouseButton, bool isHoldingMouse)
     {
-        if (!playerController.field_1064_b)
+        if (!playerController.IsTestPlayer)
         {
             if (!isHoldingMouse)
             {
@@ -1036,7 +1036,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         }
         catch (System.Exception displayException)
         {
-            Console.WriteLine(displayException);
+            Log.Error(displayException.ToString());
         }
     }
 
@@ -1061,7 +1061,7 @@ public partial class Minecraft : java.lang.Object, Runnable
             ScaledResolution scaledResolution = new(options, newWidth, newHeight);
             int scaledWidth = scaledResolution.ScaledWidth;
             int scaledHeight = scaledResolution.ScaledHeight;
-            currentScreen.setWorldAndResolution(this, scaledWidth, scaledHeight);
+            currentScreen.SetWorldAndResolution(this, scaledWidth, scaledHeight);
         }
     }
 
@@ -1148,15 +1148,15 @@ public partial class Minecraft : java.lang.Object, Runnable
 
         if (currentScreen != null)
         {
-            currentScreen.handleInput();
+            currentScreen.HandleInput();
             if (currentScreen != null)
             {
-                currentScreen.particlesGui.updateParticles();
-                currentScreen.updateScreen();
+                currentScreen.ParticlesGui.updateParticles();
+                currentScreen.UpdateScreen();
             }
         }
 
-        if (currentScreen == null || currentScreen.field_948_f)
+        if (currentScreen == null || currentScreen.AllowUserInput)
         {
             processInputEvents();
         }
@@ -1246,7 +1246,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                 if (mouseWheelDelta != 0)
                 {
                     player.inventory.changeCurrentItem(mouseWheelDelta);
-                    if (options.field_22275_C)
+                    if (options.invertScrolling)
                     {
                         if (mouseWheelDelta > 0)
                         {
@@ -1258,7 +1258,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                             mouseWheelDelta = -1;
                         }
 
-                        options.field_22272_F += (float)mouseWheelDelta * 0.25F;
+                        options.amountScrolled += (float)mouseWheelDelta * 0.25F;
                     }
                 }
 
@@ -1290,7 +1290,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                 }
                 else
                 {
-                    currentScreen?.handleMouseInput();
+                    currentScreen?.HandleMouseInput();
                 }
             }
         }
@@ -1314,7 +1314,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                 {
                     if (currentScreen != null)
                     {
-                        currentScreen.handleKeyboardInput();
+                        currentScreen.HandleKeyboardInput();
                     }
                     else
                     {
@@ -1370,8 +1370,7 @@ public partial class Minecraft : java.lang.Object, Runnable
 
                         if (Keyboard.getEventKey() == options.keyBindCommand.keyCode)
                         {
-                            // Open chat with '/' and place the cursor after it
-                            displayGuiScreen(new GuiChat("/", true));
+                            displayGuiScreen(new GuiChat("/"));
                         }
                     }
 
@@ -1414,9 +1413,9 @@ public partial class Minecraft : java.lang.Object, Runnable
 
     private void forceReload()
     {
-        java.lang.System.@out.println("FORCING RELOAD!");
+        Log.Info("FORCING RELOAD!");
         sndManager = new SoundManager();
-        sndManager.loadSoundSettings(options);
+        sndManager.LoadSoundSettings(options);
     }
 
     public bool isMultiplayerWorld()
@@ -1447,7 +1446,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         camera = null;
         loadingScreen.printText(loadingText);
         loadingScreen.progressStage("");
-        sndManager.playStreaming((string)null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+        sndManager.PlayStreaming((string)null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 
         world = newWorld;
         if (newWorld != null)
@@ -1478,7 +1477,7 @@ public partial class Minecraft : java.lang.Object, Runnable
 
             particleManager?.clearEffects(newWorld);
 
-            playerController.func_6473_b(player);
+            playerController.fillHotbar(player);
             if (targetEntity != null)
             {
                 newWorld.saveWorldData();
@@ -1532,9 +1531,9 @@ public partial class Minecraft : java.lang.Object, Runnable
         world.tickChunks();
     }
 
-    public void installResource(string resourcePath, java.io.File resourceFile)
+    public void installResource(string resourcePath, FileInfo resourceFile)
     {
-        if (!resourceFile.getPath().EndsWith("ogg"))
+        if (!resourceFile.FullName.EndsWith("ogg"))
         {
             //TODO: ADD SUPPORT FOR MUS SFX?
             return;
@@ -1545,37 +1544,37 @@ public partial class Minecraft : java.lang.Object, Runnable
         resourcePath = resourcePath.Substring(slashIndex + 1);
         if (category.Equals("sound", StringComparison.OrdinalIgnoreCase))
         {
-            sndManager.addSound(resourcePath, resourceFile);
+            sndManager.AddSound(resourcePath, resourceFile);
         }
         else if (category.Equals("newsound", StringComparison.OrdinalIgnoreCase))
         {
-            sndManager.addSound(resourcePath, resourceFile);
+            sndManager.AddSound(resourcePath, resourceFile);
         }
         else if (category.Equals("streaming", StringComparison.OrdinalIgnoreCase))
         {
-            sndManager.addStreaming(resourcePath, resourceFile);
+            sndManager.AddStreaming(resourcePath, resourceFile);
         }
         else if (category.Equals("music", StringComparison.OrdinalIgnoreCase))
         {
-            sndManager.addMusic(resourcePath, resourceFile);
+            sndManager.AddMusic(resourcePath, resourceFile);
         }
         else if (category.Equals("newmusic", StringComparison.OrdinalIgnoreCase))
         {
-            sndManager.addMusic(resourcePath, resourceFile);
+            sndManager.AddMusic(resourcePath, resourceFile);
         }
     }
 
-    public string func_6262_n()
+    public string getEntityDebugInfo()
     {
         return terrainRenderer.getDebugInfoEntities();
     }
 
-    public string func_21002_o()
+    public string getWorldDebugInfo()
     {
         return world.getDebugInfo();
     }
 
-    public string func_6245_o()
+    public string getParticleAndEntityCountDebugInfo()
     {
         return "P: " + particleManager.getStatistics() + ". T: " + world.getEntityCount();
     }
@@ -1630,7 +1629,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         player.movementInput = new MovementInputFromOptions(options);
         player.id = previousPlayerId;
         player.spawn();
-        playerController.func_6473_b(player);
+        playerController.fillHotbar(player);
         showText("Respawning");
         if (currentScreen is GuiGameOver)
         {
@@ -1640,10 +1639,13 @@ public partial class Minecraft : java.lang.Object, Runnable
 
     private static void StartMainThread(string playerName, string sessionToken)
     {
-        Minecraft mc = new(1280, 720, false);
-        java.lang.Thread mainThread = new(mc, "Minecraft main thread");
-        mainThread.setPriority(10);
-        mc.minecraftUri = "www.minecraft.net";
+        System.Threading.Thread.CurrentThread.Name = "Minecraft Main Thread";
+
+        Minecraft mc = new(1280, 720, false)
+        {
+            minecraftUri = "www.minecraft.net"
+        };
+
         if (playerName != null && sessionToken != null)
         {
             mc.session = new Session(playerName, sessionToken);
@@ -1653,7 +1655,7 @@ public partial class Minecraft : java.lang.Object, Runnable
             mc.session = new Session("Player" + java.lang.System.currentTimeMillis() % 1000L, "");
         }
 
-        mainThread.start();
+        mc.Run();
     }
 
     public ClientNetworkHandler getSendQueue()

@@ -164,7 +164,7 @@ public class EntityMinecart : Entity, IInventory
 
     public override void animateHurt()
     {
-        java.lang.System.@out.println("Animating hurt");
+        Log.Info("Animating hurt");
         minecartRockDirection = -minecartRockDirection;
         minecartTimeSinceHit = 10;
         minecartCurrentDamage += minecartCurrentDamage * 10;
@@ -817,7 +817,7 @@ public class EntityMinecart : Entity, IInventory
         {
             if (entity != passenger)
             {
-                if (entity is EntityLiving && !(entity is EntityPlayer) && type == 0 && velocityX * velocityX + velocityZ * velocityZ > 0.01D && passenger == null && entity.vehicle == null)
+                if (entity is EntityLiving && entity is not EntityPlayer && type == 0 && velocityX * velocityX + velocityZ * velocityZ > 0.01D && passenger == null && entity.vehicle == null)
                 {
                     entity.setVehicle(this);
                 }

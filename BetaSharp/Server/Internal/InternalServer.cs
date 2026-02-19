@@ -23,13 +23,13 @@ public class InternalServer : MinecraftServer
         serverConfiguration.SetViewDistance(viewDistanceChunks);
     }
 
-    public volatile bool isReady = false;
+    public volatile bool isReady;
 
     protected override bool Init()
     {
         connections = new ConnectionListener(this);
 
-        LOGGER.info($"Starting internal server");
+        Log.Info("Starting internal server");
 
         bool result = base.Init();
 

@@ -1,4 +1,6 @@
 using BetaSharp.Entities;
+using BetaSharp.Items;
+using BetaSharp.Server.Internal;
 
 namespace BetaSharp.Server.Commands;
 
@@ -32,7 +34,7 @@ public static class PlayerCommands
         ServerPlayerEntity player = server.playerManager.getPlayer(senderName);
         if (player == null) { output.SendMessage("Could not find your player."); return; }
 
-        var inventory = player.inventory.main;
+        ItemStack[] inventory = player.inventory.main;
         for (int i = 0; i < inventory.Length; i++)
         {
             inventory[i] = null;
@@ -88,5 +90,55 @@ public static class PlayerCommands
         }
 
         output.SendMessage("Usage: tp <x> <y> <z>  or  tp <player1> <player2>");
+    }
+
+    public static void MoveToDimension(MinecraftServer server, string senderName, string[] args, CommandOutput output)
+    {
+        if (args.Length < 1)
+        {
+            output.SendMessage("Usage: /tpdim <dimension id> [player]");
+            return;
+        }
+
+        if (!int.TryParse(args[0], out int dim))
+        {
+            output.SendMessage("Invalid dimension ID.");
+            return;
+        }
+
+        if (dim != 0 && dim != -1)
+        {
+            output.SendMessage("Dimension " + dim + " does not exist.");
+            return;
+        }
+
+        ServerPlayerEntity targetPlayer;
+        if (args.Length >= 2)
+        {
+            targetPlayer = server.playerManager.getPlayer(args[1]);
+            if (targetPlayer == null)
+            {
+                output.SendMessage("Player " + args[1] + " not found.");
+                return;
+            }
+        }
+        else
+        {
+            targetPlayer = server.playerManager.getPlayer(senderName);
+            if (targetPlayer == null)
+            {
+                output.SendMessage("Could not find your player.");
+                return;
+            }
+        }
+
+        if (targetPlayer.dimensionId == dim)
+        {
+            output.SendMessage("Player is already in dimension " + dim);
+            return;
+        }
+
+        server.playerManager.sendPlayerToDimension(targetPlayer, dim);
+        output.SendMessage("Teleported " + targetPlayer.name + " to dimension " + dim);
     }
 }

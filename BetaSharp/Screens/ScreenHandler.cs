@@ -12,7 +12,7 @@ public abstract class ScreenHandler : java.lang.Object
     public List trackedStacks = new ArrayList();
     public List slots = new ArrayList();
     public int syncId = 0;
-    private short revision = 0;
+    private short revision;
     protected List listeners = new ArrayList();
     private Set players = new HashSet();
 

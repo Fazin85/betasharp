@@ -9,7 +9,7 @@ namespace BetaSharp.Entities;
 public class EntityWolf : EntityAnimal
 {
     public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityWolf).TypeHandle);
-    private bool looksWithInterest = false;
+    private bool looksWithInterest;
     private float headTiltAmount;
     private float prevHeadTiltAmount;
     private bool isWolfShaking;
@@ -312,7 +312,7 @@ public class EntityWolf : EntityAnimal
     public override bool damage(Entity entity, int amount)
     {
         setWolfSitting(false);
-        if (entity != null && !(entity is EntityPlayer) && !(entity is EntityArrow))
+        if (entity != null && entity is not EntityPlayer && entity is not EntityArrow)
         {
             amount = (amount + 1) / 2;
         }

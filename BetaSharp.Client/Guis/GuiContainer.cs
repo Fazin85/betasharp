@@ -12,87 +12,96 @@ namespace BetaSharp.Client.Guis;
 public abstract class GuiContainer : GuiScreen
 {
 
-    private static readonly ItemRenderer itemRenderer = new();
-    protected int xSize = 176;
-    protected int ySize = 166;
-    public ScreenHandler inventorySlots;
+    private static readonly ItemRenderer _itemRenderer = new();
+    protected int _xSize = 176;
+    protected int _ySize = 166;
+    public ScreenHandler InventorySlots;
 
-    public GuiContainer(ScreenHandler var1)
+    public GuiContainer(ScreenHandler inventorySlots)
     {
-        inventorySlots = var1;
+        InventorySlots = inventorySlots;
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
-        base.initGui();
-        mc.player.currentScreenHandler = inventorySlots;
+        base.InitGui();
+        mc.player.currentScreenHandler = InventorySlots;
     }
 
-    public override void render(int var1, int var2, float var3)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        drawDefaultBackground();
-        int var4 = (width - xSize) / 2;
-        int var5 = (height - ySize) / 2;
-        drawGuiContainerBackgroundLayer(var3);
+        DrawDefaultBackground();
+
+        int guiLeft = (Width - _xSize) / 2;
+        int guiTop = (Height - _ySize) / 2;
+
+        DrawGuiContainerBackgroundLayer(partialTicks);
+
         GLManager.GL.PushMatrix();
         GLManager.GL.Rotate(120.0F, 1.0F, 0.0F, 0.0F);
         Lighting.turnOn();
         GLManager.GL.PopMatrix();
+
         GLManager.GL.PushMatrix();
-        GLManager.GL.Translate(var4, var5, 0.0F);
+        GLManager.GL.Translate(guiLeft, guiTop, 0.0F);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         GLManager.GL.Enable(GLEnum.RescaleNormal);
-        Slot var6 = null;
 
-        int var9;
-        int var10;
-        for (int var7 = 0; var7 < inventorySlots.slots.size(); ++var7)
+        Slot hoveredSlot = null;
+
+
+        for (int i = 0; i < InventorySlots.slots.size(); ++i)
         {
-            Slot var8 = (Slot)inventorySlots.slots.get(var7);
-            drawSlotInventory(var8);
-            if (getIsMouseOverSlot(var8, var1, var2))
+            Slot slot = (Slot)InventorySlots.slots.get(i);
+            DrawSlotInventory(slot);
+            if (GetIsMouseOverSlot(slot, mouseX, mouseY))
             {
-                var6 = var8;
+                hoveredSlot = slot;
+
                 GLManager.GL.Disable(GLEnum.Lighting);
                 GLManager.GL.Disable(GLEnum.DepthTest);
-                var9 = var8.xDisplayPosition;
-                var10 = var8.yDisplayPosition;
-                drawGradientRect(var9, var10, var9 + 16, var10 + 16, 0x80FFFFFF, 0x80FFFFFF);
+                int sx = slot.xDisplayPosition;
+                int sy = slot.yDisplayPosition;
+                DrawGradientRect(sx, sy, sx + 16, sy + 16, 0x80FFFFFF, 0x80FFFFFF);
                 GLManager.GL.Enable(GLEnum.Lighting);
                 GLManager.GL.Enable(GLEnum.DepthTest);
             }
         }
 
-        InventoryPlayer var12 = mc.player.inventory;
+        InventoryPlayer playerInv = mc.player.inventory;
 
         GLManager.GL.Disable(GLEnum.RescaleNormal);
         Lighting.turnOff();
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.Disable(GLEnum.DepthTest);
-        drawGuiContainerForegroundLayer();
-        if (var12.getCursorStack() == null && var6 != null && var6.hasStack())
+        DrawGuiContainerForegroundLayer();
+
+        if (playerInv.getCursorStack() == null && hoveredSlot != null && hoveredSlot.hasStack())
         {
-            string var13 = ("" + TranslationStorage.getInstance().translateNamedKey(var6.getStack().getItemName())).Trim();
-            if (var13.Length > 0)
+            string itemName = ("" + TranslationStorage.getInstance().translateNamedKey(hoveredSlot.getStack().getItemName())).Trim();
+            if (itemName.Length > 0)
             {
-                var9 = var1 - var4 + 12;
-                var10 = var2 - var5 - 12;
-                int var11 = fontRenderer.getStringWidth(var13);
-                drawGradientRect(var9 - 3, var10 - 3, var9 + var11 + 3, var10 + 8 + 3, 0xC0000000, 0xC0000000);
-                fontRenderer.drawStringWithShadow(var13, var9, var10, 0xFFFFFFFF);
+                int tipX = mouseX - guiLeft + 12;
+                int tipY = mouseY - guiTop - 12;
+                int textWidth = FontRenderer.getStringWidth(itemName);
+
+                DrawGradientRect(tipX - 3, tipY - 3, tipX + textWidth + 3, tipY + 8 + 3, 0xC0000000, 0xC0000000);
+                FontRenderer.drawStringWithShadow(itemName, tipX, tipY, 0xFFFFFFFF);
             }
         }
 
         // Render the dragged cursor item last so it appears on top of foreground text
-        if (var12.getCursorStack() != null)
+        if (playerInv.getCursorStack() != null)
         {
             GLManager.GL.Enable(GLEnum.RescaleNormal);
             Lighting.turnOn();
             GLManager.GL.Enable(GLEnum.Lighting);
             GLManager.GL.Enable(GLEnum.DepthTest);
+
             GLManager.GL.Translate(0.0F, 0.0F, 32.0F);
-            itemRenderer.renderItemIntoGUI(fontRenderer, mc.textureManager, var12.getCursorStack(), var1 - var4 - 8, var2 - var5 - 8);
-            itemRenderer.renderItemOverlayIntoGUI(fontRenderer, mc.textureManager, var12.getCursorStack(), var1 - var4 - 8, var2 - var5 - 8);
+            _itemRenderer.renderItemIntoGUI(FontRenderer, mc.textureManager, playerInv.getCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8);
+            _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, mc.textureManager, playerInv.getCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8);
+
             Lighting.turnOff();
             GLManager.GL.Disable(GLEnum.Lighting);
             GLManager.GL.Disable(GLEnum.DepthTest);
@@ -100,124 +109,113 @@ public abstract class GuiContainer : GuiScreen
         }
 
         GLManager.GL.PopMatrix();
-        base.render(var1, var2, var3);
+        base.Render(mouseX, mouseY, partialTicks);
+
         GLManager.GL.Enable(GLEnum.Lighting);
         GLManager.GL.Enable(GLEnum.DepthTest);
     }
 
-    protected virtual void drawGuiContainerForegroundLayer()
-    {
-    }
+    protected virtual void DrawGuiContainerForegroundLayer() { }
 
-    protected abstract void drawGuiContainerBackgroundLayer(float var1);
+    protected abstract void DrawGuiContainerBackgroundLayer(float partialTicks);
 
-    private void drawSlotInventory(Slot var1)
+    private void DrawSlotInventory(Slot slot)
     {
-        int var2 = var1.xDisplayPosition;
-        int var3 = var1.yDisplayPosition;
-        ItemStack var4 = var1.getStack();
-        if (var4 == null)
+        int x = slot.xDisplayPosition;
+        int y = slot.yDisplayPosition;
+        ItemStack item = slot.getStack();
+        if (item == null)
         {
-            int var5 = var1.getBackgroundTextureId();
-            if (var5 >= 0)
+            int iconIdx = slot.getBackgroundTextureId();
+            if (iconIdx >= 0)
             {
                 GLManager.GL.Disable(GLEnum.Lighting);
                 mc.textureManager.bindTexture(mc.textureManager.getTextureId("/gui/items.png"));
-                drawTexturedModalRect(var2, var3, var5 % 16 * 16, var5 / 16 * 16, 16, 16);
+                DrawTexturedModalRect(x, y, iconIdx % 16 * 16, iconIdx / 16 * 16, 16, 16);
                 GLManager.GL.Enable(GLEnum.Lighting);
                 return;
             }
         }
 
-        itemRenderer.renderItemIntoGUI(fontRenderer, mc.textureManager, var4, var2, var3);
-        itemRenderer.renderItemOverlayIntoGUI(fontRenderer, mc.textureManager, var4, var2, var3);
+        _itemRenderer.renderItemIntoGUI(FontRenderer, mc.textureManager, item, x, y);
+        _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, mc.textureManager, item, x, y);
     }
 
-    private Slot getSlotAtPosition(int var1, int var2)
+    private Slot GetSlotAtPosition(int mouseX, int mouseY)
     {
-        for (int var3 = 0; var3 < inventorySlots.slots.size(); ++var3)
+        for (int i = 0; i < InventorySlots.slots.size(); ++i)
         {
-            Slot var4 = (Slot)inventorySlots.slots.get(var3);
-            if (getIsMouseOverSlot(var4, var1, var2))
+            Slot slot = (Slot)InventorySlots.slots.get(i);
+            if (GetIsMouseOverSlot(slot, mouseX, mouseY))
             {
-                return var4;
+                return slot;
             }
         }
 
         return null;
     }
 
-    private bool getIsMouseOverSlot(Slot var1, int var2, int var3)
+    private bool GetIsMouseOverSlot(Slot slot, int mouseX, int mouseY)
     {
-        int var4 = (width - xSize) / 2;
-        int var5 = (height - ySize) / 2;
-        var2 -= var4;
-        var3 -= var5;
-        return var2 >= var1.xDisplayPosition - 1 && var2 < var1.xDisplayPosition + 16 + 1 && var3 >= var1.yDisplayPosition - 1 && var3 < var1.yDisplayPosition + 16 + 1;
+        int guiLeft = (Width - _xSize) / 2;
+        int guiTop = (Height - _ySize) / 2;
+        mouseX -= guiLeft;
+        mouseY -= guiTop;
+
+        return mouseX >= slot.xDisplayPosition - 1 &&
+               mouseX < slot.xDisplayPosition + 16 + 1 &&
+               mouseY >= slot.yDisplayPosition - 1 &&
+               mouseY < slot.yDisplayPosition + 16 + 1;
     }
 
-    protected override void mouseClicked(int var1, int var2, int var3)
+    protected override void MouseClicked(int x, int y, int button)
     {
-        base.mouseClicked(var1, var2, var3);
-        if (var3 == 0 || var3 == 1)
+        base.MouseClicked(x, y, button);
+        if (button == 0 || button == 1)
         {
-            Slot var4 = getSlotAtPosition(var1, var2);
-            int var5 = (width - xSize) / 2;
-            int var6 = (height - ySize) / 2;
-            bool var7 = var1 < var5 || var2 < var6 || var1 >= var5 + xSize || var2 >= var6 + ySize;
-            int var8 = -1;
-            if (var4 != null)
-            {
-                var8 = var4.id;
-            }
+            Slot slot = GetSlotAtPosition(x, y);
+            int guiLeft = (Width - _xSize) / 2;
+            int guiTop = (Height - _ySize) / 2;
 
-            if (var7)
-            {
-                var8 = -999;
-            }
+            bool isOutside = x < guiLeft || y < guiTop || x >= guiLeft + _xSize || y >= guiTop + _ySize;
 
-            if (var8 != -1)
+            int slotId = -1;
+            if (slot != null) slotId = slot.id;
+            if (isOutside) slotId = -999;
+            if (slotId != -1)
             {
-                bool var9 = var8 != -999 && (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT));
-                mc.playerController.func_27174_a(inventorySlots.syncId, var8, var3, var9, mc.player);
+                bool isShiftClick = slotId != -999 && (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT));
+                mc.playerController.func_27174_a(InventorySlots.syncId, slotId, button, isShiftClick, mc.player);
             }
         }
 
     }
 
-    protected override void mouseMovedOrUp(int var1, int var2, int var3)
-    {
-        if (var3 == 0)
-        {
-        }
+    protected override void MouseMovedOrUp(int x, int y, int button) { }
 
-    }
-
-    protected override void keyTyped(char eventChar, int eventKey)
+    protected override void KeyTyped(char eventChar, int eventKey)
     {
-        if (eventKey == 1 || eventKey == mc.options.keyBindInventory.keyCode)
+        if (eventKey == Keyboard.KEY_ESCAPE || eventKey == mc.options.keyBindInventory.keyCode)
         {
             mc.player.closeHandledScreen();
         }
 
     }
 
-    public override void onGuiClosed()
+    public override void OnGuiClosed()
     {
         if (mc.player != null)
         {
-            mc.playerController.func_20086_a(inventorySlots.syncId, mc.player);
+            mc.playerController.func_20086_a(InventorySlots.syncId, mc.player);
         }
     }
 
-    public override bool doesGuiPauseGame()
-    {
-        return false;
-    }
+    public override bool DoesGuiPauseGame() => false;
+    
 
-    public override void updateScreen()
+    public override void UpdateScreen()
     {
-        base.updateScreen();
+        base.UpdateScreen();
         if (!mc.player.isAlive() || mc.player.dead)
         {
             mc.player.closeHandledScreen();

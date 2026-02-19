@@ -2,6 +2,7 @@ using System.Text.Json;
 using BetaSharp.Util;
 using java.lang;
 using java.util;
+using File = java.io.File;
 
 namespace BetaSharp.Stats;
 
@@ -9,49 +10,46 @@ public class StatFileWriter
 {
     private Map field_25102_a = new HashMap();
     private Map field_25101_b = new HashMap();
-    private bool field_27189_c = false;
+    private bool statsExist;
     private StatsSyncer _statsSyncer;
 
-    public StatFileWriter(Session var1, java.io.File var2)
+    public StatFileWriter(Session session, java.io.File mcDataDir)
     {
-        java.io.File var3 = new(var2, "stats");
-        if (!var3.exists())
+        java.io.File statsFolder = new(mcDataDir, "stats");
+        if (!statsFolder.exists())
         {
-            var3.mkdir();
+            statsFolder.mkdir();
         }
 
-        java.io.File[] var4 = var2.listFiles();
-        int var5 = var4.Length;
+        java.io.File[] mcFiles = mcDataDir.listFiles();
 
-        for (int var6 = 0; var6 < var5; ++var6)
+        foreach (File file in mcFiles)
         {
-            java.io.File var7 = var4[var6];
-            if (var7.getName().StartsWith("stats_") && var7.getName().EndsWith(".dat"))
+            if (file.getName().StartsWith("stats_") && file.getName().EndsWith(".dat"))
             {
-                java.io.File var8 = new(var3, var7.getName());
-                if (!var8.exists())
+                java.io.File statsFile = new(statsFolder, file.getName());
+                if (!statsFile.exists())
                 {
-                    java.lang.System.@out.println("Relocating " + var7.getName());
-                    var7.renameTo(var8);
+                    Log.Info($"Relocating {file.getName()}");
+                    file.renameTo(statsFile);
                 }
             }
         }
 
-        _statsSyncer = new StatsSyncer(var1, this, var3);
+        _statsSyncer = new StatsSyncer(session, this, statsFolder);
     }
 
-    public void readStat(StatBase var1, int var2)
+    public void readStat(StatBase stat, int increment)
     {
-        writeStatToMap(field_25101_b, var1, var2);
-        writeStatToMap(field_25102_a, var1, var2);
-        field_27189_c = true;
+        writeStatToMap(field_25101_b, stat, increment);
+        writeStatToMap(field_25102_a, stat, increment);
+        statsExist = true;
     }
 
-    private void writeStatToMap(Map var1, StatBase var2, int var3)
+    private void writeStatToMap(Map map, StatBase stat, int increment)
     {
-        Integer var4 = (Integer)var1.get(var2);
-        int var5 = var4 == null ? 0 : var4.intValue();
-        var1.put(var2, Integer.valueOf(var5 + var3));
+        int current = ((Integer)map.get(stat))?.intValue() ?? 0;
+        map.put(stat, Integer.valueOf(current + increment));
     }
 
     public Map func_27176_a()
@@ -59,20 +57,19 @@ public class StatFileWriter
         return new HashMap(field_25101_b);
     }
 
-    public void func_27179_a(Map var1)
+    public void loadStats(Map statsMap)
     {
-        if (var1 != null)
+        if (statsMap != null)
         {
-            field_27189_c = true;
-            Iterator var2 = var1.keySet().iterator();
+            statsExist = true;
+            Iterator keys = statsMap.keySet().iterator();
 
-            while (var2.hasNext())
+            while (keys.hasNext())
             {
-                StatBase var3 = (StatBase)var2.next();
-                writeStatToMap(field_25101_b, var3, ((Integer)var1.get(var3)).intValue());
-                writeStatToMap(field_25102_a, var3, ((Integer)var1.get(var3)).intValue());
+                StatBase stat = (StatBase)keys.next();
+                writeStatToMap(field_25101_b, stat, ((Integer)statsMap.get(stat)).intValue());
+                writeStatToMap(field_25102_a, stat, ((Integer)statsMap.get(stat)).intValue());
             }
-
         }
     }
 
@@ -97,7 +94,7 @@ public class StatFileWriter
     {
         if (var1 != null)
         {
-            field_27189_c = true;
+            statsExist = true;
             Iterator var2 = var1.keySet().iterator();
 
             while (var2.hasNext())
@@ -109,25 +106,24 @@ public class StatFileWriter
         }
     }
 
-    public static java.util.Map func_27177_a(string var0)
+    public static java.util.Map createStatsMap(string statsFileContents)
     {
-        java.util.HashMap var1 = new java.util.HashMap();
+        java.util.HashMap statsMap = new java.util.HashMap();
         try
         {
-            string var2 = "local";
-            java.lang.StringBuilder var3 = new java.lang.StringBuilder();
+            java.lang.StringBuilder sb = new java.lang.StringBuilder();
 
             // Parse JSON using System.Text.Json
-            using JsonDocument var4 = JsonDocument.Parse(var0);
-            JsonElement root = var4.RootElement;
+            using JsonDocument statsJson = JsonDocument.Parse(statsFileContents);
+            JsonElement root = statsJson.RootElement;
 
             // Get the "stats-change" array
             if (root.TryGetProperty("stats-change", out JsonElement statsChangeArray))
             {
-                foreach (JsonElement var7 in statsChangeArray.EnumerateArray())
+                foreach (JsonElement statJson in statsChangeArray.EnumerateArray())
                 {
                     // Each element should be an object with one key-value pair
-                    JsonProperty var9 = var7.EnumerateObject().First();
+                    JsonProperty var9 = statJson.EnumerateObject().First();
 
                     int var10 = java.lang.Integer.parseInt(var9.Name);
                     int var11 = var9.Value.ValueKind == JsonValueKind.Number
@@ -137,60 +133,59 @@ public class StatFileWriter
                     StatBase var12 = Stats.getStatById(var10);
                     if (var12 == null)
                     {
-                        java.lang.System.@out.println(var10 + " is not a valid stat");
+                        Log.Info($"{var10} is not a valid stat");
                     }
                     else
                     {
-                        var3.append(Stats.getStatById(var10).statGuid).append(",");
-                        var3.append(var11).append(",");
-                        var1.put(var12, java.lang.Integer.valueOf(var11));
+                        sb.append(Stats.getStatById(var10).statGuid).append(",");
+                        sb.append(var11).append(",");
+                        statsMap.put(var12, java.lang.Integer.valueOf(var11));
                     }
                 }
             }
 
-            MD5String var14 = new MD5String(var2);
-            string var15 = var14.func_27369_a(var3.toString());
+            string statsChecksum = new MD5String("local").hash(sb.toString());
 
             if (root.TryGetProperty("checksum", out JsonElement checksumElement))
             {
                 string checksum = checksumElement.GetString();
-                if (!var15.Equals(checksum))
+                if (!statsChecksum.Equals(checksum))
                 {
-                    java.lang.System.@out.println("CHECKSUM MISMATCH");
+                    Log.Info("CHECKSUM MISMATCH");
                     return null;
                 }
             }
             else
             {
-                java.lang.System.@out.println("CHECKSUM MISMATCH");
+                Log.Info("CHECKSUM MISMATCH");
                 return null;
             }
         }
-        catch (JsonException var13)
+        catch (JsonException ex)
         {
-            java.lang.System.@out.println(var13.ToString());
+            Log.Error(ex);
         }
 
-        return var1;
+        return statsMap;
     }
 
-    public static string func_27185_a(string var0, string var1, Map var2)
+    public static string func_27185_a(string username, string salt, Map statsMap)
     {
         StringBuilder var3 = new StringBuilder();
-        StringBuilder var4 = new StringBuilder();
         bool var5 = true;
         var3.append("{\r\n");
-        if (var0 != null && var1 != null)
+        if (username != null && salt != null)
         {
             var3.append("  \"user\":{\r\n");
-            var3.append("    \"name\":\"").append(var0).append("\",\r\n");
-            var3.append("    \"sessionid\":\"").append(var1).append("\"\r\n");
+            var3.append("    \"name\":\"").append(username).append("\",\r\n");
+            var3.append("    \"sessionid\":\"").append(salt).append("\"\r\n");
             var3.append("  },\r\n");
         }
 
         var3.append("  \"stats-change\":[");
-        Iterator var6 = var2.keySet().iterator();
+        Iterator var6 = statsMap.keySet().iterator();
 
+        StringBuilder var4 = new StringBuilder();
         while (var6.hasNext())
         {
             StatBase var7 = (StatBase)var6.next();
@@ -203,9 +198,9 @@ public class StatFileWriter
                 var5 = false;
             }
 
-            var3.append("\r\n    {\"").append(var7.id).append("\":").append(var2.get(var7));
+            var3.append("\r\n    {\"").append(var7.id).append("\":").append(statsMap.get(var7));
             var4.append(var7.statGuid).append(",");
-            var4.append(var2.get(var7)).append(",");
+            var4.append(statsMap.get(var7)).append(",");
         }
 
         if (!var5)
@@ -213,16 +208,16 @@ public class StatFileWriter
             var3.append("}");
         }
 
-        MD5String var8 = new MD5String(var1);
+        MD5String var8 = new MD5String(salt);
         var3.append("\r\n  ],\r\n");
-        var3.append("  \"checksum\":\"").append(var8.func_27369_a(var4.toString())).append("\"\r\n");
+        var3.append("  \"checksum\":\"").append(var8.hash(var4.toString())).append("\"\r\n");
         var3.append("}");
         return var3.toString();
     }
 
-    public bool hasAchievementUnlocked(Achievement var1)
+    public bool hasAchievementUnlocked(Achievement achievement)
     {
-        return field_25102_a.containsKey(var1);
+        return field_25102_a.containsKey(achievement);
     }
 
     public bool func_27181_b(Achievement var1)
@@ -247,9 +242,9 @@ public class StatFileWriter
 
     public void func_27178_d()
     {
-        if (field_27189_c && _statsSyncer.func_27420_b())
+        if (statsExist && _statsSyncer.func_27420_b())
         {
-            _statsSyncer.func_27424_a(func_27176_a());
+            _statsSyncer.sendStats(func_27176_a());
         }
 
         _statsSyncer.func_27425_c();

@@ -13,13 +13,13 @@ public class PlayerControllerMP : PlayerController
     private int currentBlockX = -1;
     private int currentBlockY = -1;
     private int currentblockZ = -1;
-    private float curBlockDamageMP = 0.0F;
-    private float prevBlockDamageMP = 0.0F;
-    private float field_9441_h = 0.0F;
-    private int blockHitDelay = 0;
-    private bool isHittingBlock = false;
+    private float curBlockDamageMP;
+    private float prevBlockDamageMP;
+    private float field_9441_h;
+    private int blockHitDelay;
+    private bool isHittingBlock;
     private readonly ClientNetworkHandler netClientHandler;
-    private int currentPlayerItem = 0;
+    private int currentPlayerItem;
 
     public PlayerControllerMP(Minecraft var1, ClientNetworkHandler var2) : base(var1)
     {
@@ -108,7 +108,7 @@ public class PlayerControllerMP : PlayerController
                     curBlockDamageMP += var6.getHardness(mc.player);
                     if (field_9441_h % 4.0F == 0.0F && var6 != null)
                     {
-                        mc.sndManager.playSound(var6.soundGroup.func_1145_d(), (float)var1 + 0.5F, (float)var2 + 0.5F, (float)var3 + 0.5F, (var6.soundGroup.getVolume() + 1.0F) / 8.0F, var6.soundGroup.getPitch() * 0.5F);
+                        mc.sndManager.PlaySound(var6.soundGroup.getName(), (float)var1 + 0.5F, (float)var2 + 0.5F, (float)var3 + 0.5F, (var6.soundGroup.getVolume() + 1.0F) / 8.0F, var6.soundGroup.getPitch() * 0.5F);
                     }
 
                     ++field_9441_h;
@@ -136,13 +136,13 @@ public class PlayerControllerMP : PlayerController
     {
         if (curBlockDamageMP <= 0.0F)
         {
-            mc.ingameGUI.damageGuiPartialTime = 0.0F;
+            mc.ingameGUI._damageGuiPartialTime = 0.0F;
             mc.terrainRenderer.damagePartialTime = 0.0F;
         }
         else
         {
             float var2 = prevBlockDamageMP + (curBlockDamageMP - prevBlockDamageMP) * var1;
-            mc.ingameGUI.damageGuiPartialTime = var2;
+            mc.ingameGUI._damageGuiPartialTime = var2;
             mc.terrainRenderer.damagePartialTime = var2;
         }
 
@@ -162,7 +162,7 @@ public class PlayerControllerMP : PlayerController
     {
         syncCurrentPlayItem();
         prevBlockDamageMP = curBlockDamageMP;
-        mc.sndManager.playRandomMusicIfReady();
+        mc.sndManager.PlayRandomMusicIfReady();
     }
 
     private void syncCurrentPlayItem()

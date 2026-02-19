@@ -1,4 +1,4 @@
-using BetaSharp.Blocks.Entities;
+﻿using BetaSharp.Blocks.Entities;
 using BetaSharp.Inventorys;
 using BetaSharp.Items;
 using BetaSharp.Network.Packets;
@@ -28,7 +28,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     private int lastHealthScore = -99999999;
     private int joinInvulnerabilityTicks = 60;
     private ItemStack[] equipment = [null, null, null, null, null];
-    private int screenHandlerSyncId = 0;
+    private int screenHandlerSyncId;
     public bool skipPacketSlotUpdates;
 
 
@@ -429,7 +429,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
 
     public void onSlotUpdate(ScreenHandler handler, int slot, ItemStack stack)
     {
-        if (!(handler.getSlot(slot) is CraftingResultSlot))
+        if (handler.getSlot(slot) is not CraftingResultSlot)
         {
             if (!skipPacketSlotUpdates)
             {

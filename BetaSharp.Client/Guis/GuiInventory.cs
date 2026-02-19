@@ -1,5 +1,5 @@
 using BetaSharp.Client.Rendering.Core;
-using BetaSharp.Client.Rendering.Entitys;
+using BetaSharp.Client.Rendering.Entities;
 using BetaSharp.Entities;
 using Silk.NET.OpenGL.Legacy;
 
@@ -8,80 +8,89 @@ namespace BetaSharp.Client.Guis;
 public class GuiInventory : GuiContainer
 {
 
-    private float xSize_lo;
-    private float ySize_lo;
+    private float _mouseX;
+    private float _mouseY;
 
-    public GuiInventory(EntityPlayer var1) : base(var1.playerScreenHandler)
+    public GuiInventory(EntityPlayer player) : base(player.playerScreenHandler)
     {
-        field_948_f = true;
-        var1.increaseStat(BetaSharp.Achievements.OpenInventory, 1);
+        AllowUserInput = true;
+        player.increaseStat(BetaSharp.Achievements.OpenInventory, 1);
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
-        controlList.clear();
+        _controlList.Clear();
     }
 
-    protected override void drawGuiContainerForegroundLayer()
+    protected override void DrawGuiContainerForegroundLayer()
     {
-        fontRenderer.drawString("Crafting", 86, 16, 4210752);
+        FontRenderer.drawString("Crafting", 86, 16, 0x404040);
     }
 
-    public override void render(int var1, int var2, float var3)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        base.render(var1, var2, var3);
-        xSize_lo = var1;
-        ySize_lo = var2;
+        base.Render(mouseX, mouseY, partialTicks);
+        _mouseX = mouseX;
+        _mouseY = mouseY;
     }
 
-    protected override void drawGuiContainerBackgroundLayer(float var1)
+    protected override void DrawGuiContainerBackgroundLayer(float partialTicks)
     {
-        int var2 = mc.textureManager.getTextureId("/gui/inventory.png");
+        int textureId = mc.textureManager.getTextureId("/gui/inventory.png");
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.textureManager.bindTexture(var2);
-        int var3 = (width - xSize) / 2;
-        int var4 = (height - ySize) / 2;
-        drawTexturedModalRect(var3, var4, 0, 0, xSize, ySize);
+        mc.textureManager.bindTexture(textureId);
+
+        int guiLeft = (Width - _xSize) / 2;
+        int guiTop = (Height - _ySize) / 2;
+
+        DrawTexturedModalRect(guiLeft, guiTop, 0, 0, _xSize, _ySize);
         GLManager.GL.Enable(GLEnum.RescaleNormal);
         GLManager.GL.Enable(GLEnum.ColorMaterial);
         GLManager.GL.PushMatrix();
-        GLManager.GL.Translate(var3 + 51, var4 + 75, 50.0F);
-        float var5 = 30.0F;
-        GLManager.GL.Scale(-var5, var5, var5);
+        GLManager.GL.Translate(guiLeft + 51, guiTop + 75, 50.0F);
+
+        float scale = 30.0F;
+        GLManager.GL.Scale(-scale, scale, scale);
         GLManager.GL.Rotate(180.0F, 0.0F, 0.0F, 1.0F);
-        float var6 = mc.player.bodyYaw;
-        float var7 = mc.player.yaw;
-        float var8 = mc.player.pitch;
-        float var9 = var3 + 51 - xSize_lo;
-        float var10 = var4 + 75 - 50 - ySize_lo;
+
+        float bodyYaw = mc.player.bodyYaw;
+        float headYaw = mc.player.yaw;
+        float headPitch = mc.player.pitch;
+        float lookX = guiLeft + 51 - _mouseX;
+        float lookY = guiTop + 75 - 50 - _mouseY;
+
         GLManager.GL.Rotate(135.0F, 0.0F, 1.0F, 0.0F);
         Lighting.turnOn();
         GLManager.GL.Rotate(-135.0F, 0.0F, 1.0F, 0.0F);
-        GLManager.GL.Rotate(-(float)java.lang.Math.atan((double)(var10 / 40.0F)) * 20.0F, 1.0F, 0.0F, 0.0F);
-        mc.player.bodyYaw = (float)java.lang.Math.atan((double)(var9 / 40.0F)) * 20.0F;
-        mc.player.yaw = (float)java.lang.Math.atan((double)(var9 / 40.0F)) * 40.0F;
-        mc.player.pitch = -(float)java.lang.Math.atan((double)(var10 / 40.0F)) * 20.0F;
+        GLManager.GL.Rotate(-(float)Math.Atan(lookY / 40.0F) * 20.0F, 1.0F, 0.0F, 0.0F);
+
+        mc.player.bodyYaw = (float)Math.Atan(lookX / 40.0F) * 20.0F;
+        mc.player.yaw = (float)Math.Atan(lookX / 40.0F) * 40.0F;
+        mc.player.pitch = -(float)Math.Atan(lookY / 40.0F) * 20.0F;
         mc.player.minBrightness = 1.0F;
+
         GLManager.GL.Translate(0.0F, mc.player.standingEyeHeight, 0.0F);
         EntityRenderDispatcher.instance.playerViewY = 180.0F;
         EntityRenderDispatcher.instance.renderEntityWithPosYaw(mc.player, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+
         mc.player.minBrightness = 0.0F;
-        mc.player.bodyYaw = var6;
-        mc.player.yaw = var7;
-        mc.player.pitch = var8;
+        mc.player.bodyYaw = bodyYaw;
+        mc.player.yaw = headYaw;
+        mc.player.pitch = headPitch;
+
         GLManager.GL.PopMatrix();
         Lighting.turnOff();
         GLManager.GL.Disable(GLEnum.RescaleNormal);
     }
 
-    protected override void actionPerformed(GuiButton var1)
+    protected override void ActionPerformed(GuiButton btt)
     {
-        if (var1.id == 0)
+        if (btt.Id == 0)
         {
             mc.displayGuiScreen(new GuiAchievements(mc.statFileWriter));
         }
 
-        if (var1.id == 1)
+        if (btt.Id == 1)
         {
             mc.displayGuiScreen(new GuiStats(this, mc.statFileWriter));
         }

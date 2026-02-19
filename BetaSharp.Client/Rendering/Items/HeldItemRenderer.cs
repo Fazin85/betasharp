@@ -3,7 +3,7 @@ using BetaSharp.Blocks.Materials;
 using BetaSharp.Client.Entities;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
-using BetaSharp.Client.Rendering.Entitys;
+using BetaSharp.Client.Rendering.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Util.Maths;
@@ -14,9 +14,9 @@ namespace BetaSharp.Client.Rendering.Items;
 public class HeldItemRenderer
 {
     private readonly Minecraft mc;
-    private ItemStack itemToRender = null;
-    private float equippedProgress = 0.0F;
-    private float prevEquippedProgress = 0.0F;
+    private ItemStack itemToRender;
+    private float equippedProgress;
+    private float prevEquippedProgress;
     private readonly BlockRenderer renderBlocksInstance = new();
     private readonly MapItemRenderer field_28131_f;
     private int field_20099_f = -1;
@@ -87,7 +87,7 @@ public class HeldItemRenderer
             for (var14 = 0; var14 < 16; ++var14)
             {
                 var15 = var14 / 16.0F;
-                var16 = var6 + (var5 - var6) * var15 - 0.001953125F;
+                var16 = var6 + (var5 - var6) * var15 - (1 / 512f);
                 var17 = var9 * var15;
                 var3.addVertexWithUV((double)var17, 0.0D, (double)(0.0F - var13), (double)var16, (double)var8);
                 var3.addVertexWithUV((double)var17, 0.0D, 0.0D, (double)var16, (double)var8);
@@ -102,7 +102,7 @@ public class HeldItemRenderer
             for (var14 = 0; var14 < 16; ++var14)
             {
                 var15 = var14 / 16.0F;
-                var16 = var6 + (var5 - var6) * var15 - 0.001953125F;
+                var16 = var6 + (var5 - var6) * var15 - (1 / 512f);
                 var17 = var9 * var15 + 1.0F / 16.0F;
                 var3.addVertexWithUV((double)var17, 1.0D, (double)(0.0F - var13), (double)var16, (double)var7);
                 var3.addVertexWithUV((double)var17, 1.0D, 0.0D, (double)var16, (double)var7);
@@ -117,7 +117,7 @@ public class HeldItemRenderer
             for (var14 = 0; var14 < 16; ++var14)
             {
                 var15 = var14 / 16.0F;
-                var16 = var8 + (var7 - var8) * var15 - 0.001953125F;
+                var16 = var8 + (var7 - var8) * var15 - (1 / 512f);
                 var17 = var9 * var15 + 1.0F / 16.0F;
                 var3.addVertexWithUV(0.0D, (double)var17, 0.0D, (double)var6, (double)var16);
                 var3.addVertexWithUV((double)var9, (double)var17, 0.0D, (double)var5, (double)var16);
@@ -132,7 +132,7 @@ public class HeldItemRenderer
             for (var14 = 0; var14 < 16; ++var14)
             {
                 var15 = var14 / 16.0F;
-                var16 = var8 + (var7 - var8) * var15 - 0.001953125F;
+                var16 = var8 + (var7 - var8) * var15 - (1 / 512f);
                 var17 = var9 * var15;
                 var3.addVertexWithUV((double)var9, (double)var17, 0.0D, (double)var5, (double)var16);
                 var3.addVertexWithUV(0.0D, (double)var17, 0.0D, (double)var6, (double)var16);
@@ -231,7 +231,7 @@ public class HeldItemRenderer
             GLManager.GL.Rotate(90.0F, 0.0F, 1.0F, 0.0F);
             GLManager.GL.Rotate(180.0F, 0.0F, 0.0F, 1.0F);
             GLManager.GL.Translate(-1.0F, -1.0F, 0.0F);
-            var10 = 0.015625F;
+            var10 = (1 / 64f);
             GLManager.GL.Scale(var10, var10, var10);
             mc.textureManager.bindTexture(mc.textureManager.getTextureId("/misc/mapbg.png"));
             Tessellator var19 = Tessellator.instance;
@@ -244,7 +244,7 @@ public class HeldItemRenderer
             var19.addVertexWithUV(0 - var20, 0 - var20, 0.0D, 0.0D, 0.0D);
             var19.draw();
             MapState var22 = Item.Map.getSavedMapState(var5, mc.world);
-            field_28131_f.func_28157_a(mc.player, mc.textureManager, var22);
+            field_28131_f.render(mc.player, mc.textureManager, var22);
             GLManager.GL.PopMatrix();
         }
         else if (var5 != null)
@@ -378,7 +378,7 @@ public class HeldItemRenderer
         float var7 = -1.0F;
         float var8 = 1.0F;
         float var9 = -0.5F;
-        float var10 = 0.0078125F;
+        float var10 = (1 / 128f);
         float var11 = var2 % 16 / 256.0F - var10;
         float var12 = (var2 % 16 + 15.99F) / 256.0F + var10;
         float var13 = var2 / 16 / 256.0F - var10;

@@ -13,12 +13,12 @@ public class EntitySnowball : Entity
     private int xTileSnowball = -1;
     private int yTileSnowball = -1;
     private int zTileSnowball = -1;
-    private int inTileSnowball = 0;
-    private bool inGroundSnowball = false;
-    public int shakeSnowball = 0;
+    private int inTileSnowball;
+    private bool inGroundSnowball;
+    public int shakeSnowball;
     private EntityLiving thrower;
     private int ticksInGroundSnowball;
-    private int ticksInAirSnowball = 0;
+    private int ticksInAirSnowball;
 
     public EntitySnowball(World world) : base(world)
     {

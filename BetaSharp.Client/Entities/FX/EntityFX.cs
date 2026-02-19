@@ -12,8 +12,8 @@ public class EntityFX : Entity
     protected int particleTextureIndex;
     protected float particleTextureJitterX;
     protected float particleTextureJitterY;
-    protected int particleAge = 0;
-    protected int particleMaxAge = 0;
+    protected int particleAge;
+    protected int particleMaxAge;
     protected float particleScale;
     protected float particleGravity;
     protected float particleRed;
