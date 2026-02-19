@@ -25,9 +25,9 @@ public class ThreadStatSyncerReceive : java.lang.Thread
                 StatsSyncer.func_27421_a(field_27231_a, StatsSyncer.func_27409_a(field_27231_a, StatsSyncer.func_27423_b(field_27231_a), StatsSyncer.func_27411_c(field_27231_a), StatsSyncer.func_27413_d(field_27231_a)));
             }
         }
-        catch (java.lang.Exception var5)
+        catch (java.lang.Exception ex)
         {
-            var5.printStackTrace();
+            ex.printStackTrace();
         }
         finally
         {

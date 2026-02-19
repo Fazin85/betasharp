@@ -1,19 +1,22 @@
 using System.Text;
 using BetaSharp.Client.Input;
 using BetaSharp.Util;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Client.Guis;
 
 public class GuiChat : GuiScreen
 {
     private const uint BackgroundColor = 0x80000000;
-    private const uint TextColorNormal = 14737632u;
+    private const uint TextColorNormal = 0xE0E0E0;
 
     protected string _message = "";
     private int _updateCounter = 0;
     private static readonly string s_allowedChars = ChatAllowedCharacters.allowedCharacters;
     private static readonly List<string> s_history = [];
     private int _historyIndex = 0;
+
+    public override bool PausesGame => false;
 
     public GuiChat()
     {

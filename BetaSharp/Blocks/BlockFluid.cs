@@ -18,7 +18,7 @@ public abstract class BlockFluid : Block
 
     public override int getColorMultiplier(BlockView blockView, int x, int y, int z)
     {
-        return 0x00FFFFFF;
+        return 0xFFFFFF;
     }
 
     public static float getFluidHeightFromMeta(int meta)
@@ -101,12 +101,12 @@ public abstract class BlockFluid : Block
         return 4;
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
         return 0;
     }
 
-    public override int getDroppedItemCount(java.util.Random random)
+    public override int getDroppedItemCount(JavaRandom random)
     {
         return 0;
     }
@@ -234,7 +234,7 @@ public abstract class BlockFluid : Block
         return luminance > luminanceAbove ? luminance : luminanceAbove;
     }
 
-    public override void onTick(World world, int x, int y, int z, java.util.Random random)
+    public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
         base.onTick(world, x, y, z, random);
     }
@@ -244,22 +244,22 @@ public abstract class BlockFluid : Block
         return material == Material.Water ? 1 : 0;
     }
 
-    public override void randomDisplayTick(World world, int x, int y, int z, java.util.Random random)
+    public override void randomDisplayTick(World world, int x, int y, int z, JavaRandom random)
     {
-        if (material == Material.Water && random.nextInt(64) == 0)
+        if (material == Material.Water && random.NextInt(64) == 0)
         {
             int meta = world.getBlockMeta(x, y, z);
             if (meta > 0 && meta < 8)
             {
-                world.playSound((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "liquid.water", random.nextFloat() * 0.25F + 12.0F / 16.0F, random.nextFloat() * 1.0F + 0.5F);
+                world.playSound((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "liquid.water", random.NextFloat() * 0.25F + 12.0F / 16.0F, random.NextFloat() * 1.0F + 0.5F);
             }
         }
 
-        if (material == Material.Lava && world.getMaterial(x, y + 1, z) == Material.Air && !world.isOpaque(x, y + 1, z) && random.nextInt(100) == 0)
+        if (material == Material.Lava && world.getMaterial(x, y + 1, z) == Material.Air && !world.isOpaque(x, y + 1, z) && random.NextInt(100) == 0)
         {
-            double particleX = (double)((float)x + random.nextFloat());
+            double particleX = (double)((float)x + random.NextFloat());
             double particleY = (double)y + maxY;
-            double particleZ = (double)((float)z + random.nextFloat());
+            double particleZ = (double)((float)z + random.NextFloat());
             world.addParticle("lava", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
         }
 
@@ -343,7 +343,7 @@ public abstract class BlockFluid : Block
 
     protected void fizz(World world, int x, int y, int z)
     {
-        world.playSound((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "random.fizz", 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
+        world.playSound((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "random.fizz", 0.5F, 2.6F + (world.random.NextFloat() - world.random.NextFloat()) * 0.8F);
 
         for (int particleIndex = 0; particleIndex < 8; ++particleIndex)
         {

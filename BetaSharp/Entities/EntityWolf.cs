@@ -9,7 +9,7 @@ namespace BetaSharp.Entities;
 public class EntityWolf : EntityAnimal
 {
     public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityWolf).TypeHandle);
-    private bool looksWithInterest = false;
+    private bool looksWithInterest;
     private float headTiltAmount;
     private float prevHeadTiltAmount;
     private bool isWolfShaking;
@@ -80,7 +80,7 @@ public class EntityWolf : EntityAnimal
 
     protected override string getLivingSound()
     {
-        return isWolfAngry() ? "mob.wolf.growl" : (random.nextInt(3) == 0 ? (isWolfTamed() && dataWatcher.getWatchableObjectInt(18) < 10 ? "mob.wolf.whine" : "mob.wolf.panting") : "mob.wolf.bark");
+        return isWolfAngry() ? "mob.wolf.growl" : (random.NextInt(3) == 0 ? (isWolfTamed() && dataWatcher.getWatchableObjectInt(18) < 10 ? "mob.wolf.whine" : "mob.wolf.panting") : "mob.wolf.bark");
     }
 
     protected override string getHurtSound()
@@ -122,12 +122,12 @@ public class EntityWolf : EntityAnimal
                 setWolfSitting(true);
             }
         }
-        else if (playerToAttack == null && !hasPath() && !isWolfTamed() && world.random.nextInt(100) == 0)
+        else if (playerToAttack == null && !hasPath() && !isWolfTamed() && world.random.NextInt(100) == 0)
         {
             var nearbySheep = world.collectEntitiesByClass(EntitySheep.Class, new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(16.0D, 4.0D, 16.0D));
             if (nearbySheep.Count > 0)
             {
-                setTarget(nearbySheep[world.random.nextInt(nearbySheep.Count)]);
+                setTarget(nearbySheep[world.random.NextInt(nearbySheep.Count)]);
             }
         }
 
@@ -207,7 +207,7 @@ public class EntityWolf : EntityAnimal
         {
             if (timeWolfIsShaking == 0.0F)
             {
-                world.playSound(this, "mob.wolf.shake", getSoundVolume(), (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
+                world.playSound(this, "mob.wolf.shake", getSoundVolume(), (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
             }
 
             prevTimeWolfIsShaking = timeWolfIsShaking;
@@ -227,8 +227,8 @@ public class EntityWolf : EntityAnimal
 
                 for (int _ = 0; _ < particleCount; ++_)
                 {
-                    float offsetX = (random.nextFloat() * 2.0F - 1.0F) * width * 0.5F;
-                    float offsetZ = (random.nextFloat() * 2.0F - 1.0F) * width * 0.5F;
+                    float offsetX = (random.NextFloat() * 2.0F - 1.0F) * width * 0.5F;
+                    float offsetZ = (random.NextFloat() * 2.0F - 1.0F) * width * 0.5F;
                     world.addParticle("splash", x + (double)offsetX, (double)(groundY + 0.8F), z + (double)offsetZ, velocityX, velocityY, velocityZ);
                 }
             }
@@ -312,7 +312,7 @@ public class EntityWolf : EntityAnimal
     public override bool damage(Entity entity, int amount)
     {
         setWolfSitting(false);
-        if (entity != null && !(entity is EntityPlayer) && !(entity is EntityArrow))
+        if (entity != null && entity is not EntityPlayer && entity is not EntityArrow)
         {
             amount = (amount + 1) / 2;
         }
@@ -376,7 +376,7 @@ public class EntityWolf : EntityAnimal
 
     protected override void attackEntity(Entity entity, float distance)
     {
-        if (distance > 2.0F && distance < 6.0F && random.nextInt(10) == 0)
+        if (distance > 2.0F && distance < 6.0F && random.NextInt(10) == 0)
         {
             if (onGround)
             {
@@ -417,7 +417,7 @@ public class EntityWolf : EntityAnimal
 
                 if (!world.isRemote)
                 {
-                    if (random.nextInt(3) == 0)
+                    if (random.NextInt(3) == 0)
                     {
                         setWolfTamed(true);
                         setPathToEntity((PathEntity)null);
@@ -481,10 +481,10 @@ public class EntityWolf : EntityAnimal
 
         for (int _ = 0; _ < 7; ++_)
         {
-            double paticleX = random.nextGaussian() * 0.02D;
-            double paticleY = random.nextGaussian() * 0.02D;
-            double paticleZ = random.nextGaussian() * 0.02D;
-            world.addParticle(particleName, x + (double)(random.nextFloat() * width * 2.0F) - (double)width, y + 0.5D + (double)(random.nextFloat() * height), z + (double)(random.nextFloat() * width * 2.0F) - (double)width, paticleX, paticleY, paticleZ);
+            double paticleX = random.NextGaussian() * 0.02D;
+            double paticleY = random.NextGaussian() * 0.02D;
+            double paticleZ = random.NextGaussian() * 0.02D;
+            world.addParticle(particleName, x + (double)(random.NextFloat() * width * 2.0F) - (double)width, y + 0.5D + (double)(random.NextFloat() * height), z + (double)(random.NextFloat() * width * 2.0F) - (double)width, paticleX, paticleY, paticleZ);
         }
 
     }

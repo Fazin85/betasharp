@@ -2,239 +2,247 @@ namespace BetaSharp.Util.Maths.Noise;
 
 public class PerlinNoiseSampler : NoiseSampler
 {
-    private readonly int[] permutations;
-    public double xCoord;
-    public double yCoord;
-    public double zCoord;
+    private readonly int[] _permutations;
+    private readonly double _xCoord;
+    private readonly double _yCoord;
+    private readonly double _zCoord;
 
     public PerlinNoiseSampler() : this(new())
     {
     }
 
-    public PerlinNoiseSampler(java.util.Random var1)
+    public PerlinNoiseSampler(JavaRandom rand)
     {
-        permutations = new int[512];
-        xCoord = var1.nextDouble() * 256.0D;
-        yCoord = var1.nextDouble() * 256.0D;
-        zCoord = var1.nextDouble() * 256.0D;
+        _permutations = new int[512];
+        _xCoord = rand.NextDouble() * 256.0D;
+        _yCoord = rand.NextDouble() * 256.0D;
+        _zCoord = rand.NextDouble() * 256.0D;
 
-        int var2;
-        for (var2 = 0; var2 < 256; permutations[var2] = var2++)
+        for (int i = 0; i < 256; i++)
         {
+            _permutations[i] = i;
         }
 
-        for (var2 = 0; var2 < 256; ++var2)
+        for (int i = 0; i < 256; ++i)
         {
-            int var3 = var1.nextInt(256 - var2) + var2;
-            (permutations[var2], permutations[var3]) = (permutations[var3], permutations[var2]);
-            permutations[var2 + 256] = permutations[var2];
+            int j = rand.NextInt(256 - i) + i;
+            (_permutations[i], _permutations[j]) = (_permutations[j], _permutations[i]);
+            _permutations[i + 256] = _permutations[i];
         }
 
     }
 
-    public double generateNoise(double var1, double var3, double var5)
+    public double generateNoise(double x, double y, double z)
     {
-        double var7 = var1 + xCoord;
-        double var9 = var3 + yCoord;
-        double var11 = var5 + zCoord;
-        int var13 = (int)var7;
-        int var14 = (int)var9;
-        int var15 = (int)var11;
-        if (var7 < var13)
+        x += _xCoord;
+        y += _yCoord;
+        z += _zCoord;
+        int xInt = (int)x;
+        int yInt = (int)y;
+        int zInt = (int)z;
+        if (x < xInt)
         {
-            --var13;
+            --xInt;
         }
 
-        if (var9 < var14)
+        if (y < yInt)
         {
-            --var14;
+            --yInt;
         }
 
-        if (var11 < var15)
+        if (z < zInt)
         {
-            --var15;
+            --zInt;
         }
 
-        int var16 = var13 & 255;
-        int var17 = var14 & 255;
-        int var18 = var15 & 255;
-        var7 -= var13;
-        var9 -= var14;
-        var11 -= var15;
-        double var19 = var7 * var7 * var7 * (var7 * (var7 * 6.0D - 15.0D) + 10.0D);
-        double var21 = var9 * var9 * var9 * (var9 * (var9 * 6.0D - 15.0D) + 10.0D);
-        double var23 = var11 * var11 * var11 * (var11 * (var11 * 6.0D - 15.0D) + 10.0D);
-        int var25 = permutations[var16] + var17;
-        int var26 = permutations[var25] + var18;
-        int var27 = permutations[var25 + 1] + var18;
-        int var28 = permutations[var16 + 1] + var17;
-        int var29 = permutations[var28] + var18;
-        int var30 = permutations[var28 + 1] + var18;
-        return lerp(var23, lerp(var21, lerp(var19, grad(permutations[var26], var7, var9, var11), grad(permutations[var29], var7 - 1.0D, var9, var11)), lerp(var19, grad(permutations[var27], var7, var9 - 1.0D, var11), grad(permutations[var30], var7 - 1.0D, var9 - 1.0D, var11))), lerp(var21, lerp(var19, grad(permutations[var26 + 1], var7, var9, var11 - 1.0D), grad(permutations[var29 + 1], var7 - 1.0D, var9, var11 - 1.0D)), lerp(var19, grad(permutations[var27 + 1], var7, var9 - 1.0D, var11 - 1.0D), grad(permutations[var30 + 1], var7 - 1.0D, var9 - 1.0D, var11 - 1.0D))));
+        int xMod255 = xInt & 255;
+        int yMod255 = yInt & 255;
+        int zMod255 = zInt & 255;
+        x -= xInt;
+        y -= yInt;
+        z -= zInt;
+        double sX = x * x * x * (x * (x * 6.0D - 15.0D) + 10.0D);
+        double sY = y * y * y * (y * (y * 6.0D - 15.0D) + 10.0D);
+        double sZ = z * z * z * (z * (z * 6.0D - 15.0D) + 10.0D);
+        int a = _permutations[xMod255] + yMod255;
+        int aa = _permutations[a] + zMod255;
+        int ab = _permutations[a + 1] + zMod255;
+        int b = _permutations[xMod255 + 1] + yMod255;
+        int ba = _permutations[b] + zMod255;
+        int bb = _permutations[b + 1] + zMod255;
+        return lerp(sZ, lerp(sY,    lerp(sX,    grad(_permutations[aa],     x,      y,      z),
+                                                grad(_permutations[ba],     x-1,    y,      z)),
+                                    lerp(sX,    grad(_permutations[ab],     x,      y-1,    z),
+                                                grad(_permutations[bb],     x-1,    y-1,    z))),
+                        lerp(sY,    lerp(sX,    grad(_permutations[aa+1],   x,      y,      z-1),
+                                                grad(_permutations[ba+1],   x-1,    y,      z-1)),
+                                    lerp(sX,    grad(_permutations[ab+1],   x,      y-1,    z-1),
+                                                grad(_permutations[bb+1],   x-1,    y-1,    z-1))));
     }
 
-    public double lerp(double var1, double var3, double var5)
+    public double lerp(double t, double a, double b)
     {
-        return var3 + var1 * (var5 - var3);
+        return a + t * (b - a);
     }
 
-    public double func_4110_a(int var1, double var2, double var4)
+    public double grad(int hash, double x, double y)
     {
-        int var6 = var1 & 15;
-        double var7 = (1 - ((var6 & 8) >> 3)) * var2;
-        double var9 = var6 < 4 ? 0.0D : var6 != 12 && var6 != 14 ? var4 : var2;
-        return ((var6 & 1) == 0 ? var7 : -var7) + ((var6 & 2) == 0 ? var9 : -var9);
+        int h = hash & 15;
+        double u = (1 - ((h & 8) >> 3)) * x;
+        double v = h < 4 ? 0.0D : h != 12 && h != 14 ? y : x;
+        return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
     }
 
-    public double grad(int var1, double var2, double var4, double var6)
+    public double grad(int hash, double x, double y, double z)
     {
-        int var8 = var1 & 15;
-        double var9 = var8 < 8 ? var2 : var4;
-        double var11 = var8 < 4 ? var4 : var8 != 12 && var8 != 14 ? var6 : var2;
-        return ((var8 & 1) == 0 ? var9 : -var9) + ((var8 & 2) == 0 ? var11 : -var11);
+        int h = hash & 15;
+        double u = h < 8 ? x : y;
+        double v = h < 4 ? y : h != 12 && h != 14 ? z : x;
+        return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
     }
 
-    public double func_801_a(double var1, double var3)
+    public double generateNoise(double x, double y)
     {
-        return generateNoise(var1, var3, 0.0D);
+        return generateNoise(x, y, 0.0D);
     }
 
-    public void func_805_a(double[] var1, double var2, double var4, double var6, int var8, int var9, int var10, double var11, double var13, double var15, double var17)
+    public void sample(double[] buffer,
+        double xStart,
+        double yStart,
+        double zStart,
+        int xSize,
+        int ySize,
+        int zSize,
+        double xFrequency,
+        double yFrequency,
+        double zFrequency,
+        double inverseAmplitude)
     {
-        int var10001;
-        int var19;
-        int var22;
-        double var31;
-        double var35;
-        int var37;
-        double var38;
-        int var40;
-        int var41;
-        double var42;
-        int var75;
-        if (var9 == 1)
+        int counter = 0;
+        double amplitude = 1.0D / inverseAmplitude;
+
+        if (ySize == 1) // 2d (xz)
         {
-            bool var64 = false;
-            bool var65 = false;
-            bool var21 = false;
-            bool var68 = false;
-            double var70 = 0.0D;
-            double var73 = 0.0D;
-            var75 = 0;
-            double var77 = 1.0D / var17;
-
-            for (int var30 = 0; var30 < var8; ++var30)
+            for (int x = 0; x < xSize; ++x)
             {
-                var31 = (var2 + var30) * var11 + xCoord;
-                int var78 = (int)var31;
-                if (var31 < var78)
+                double xCoord = (xStart + x) * xFrequency + _xCoord;
+                int xCoordInt = (int)xCoord;
+                if (xCoord < xCoordInt)
                 {
-                    --var78;
+                    --xCoordInt;
                 }
 
-                int var34 = var78 & 255;
-                var31 -= var78;
-                var35 = var31 * var31 * var31 * (var31 * (var31 * 6.0D - 15.0D) + 10.0D);
+                int xMod255 = xCoordInt & 255;
+                xCoord -= xCoordInt;
 
-                for (var37 = 0; var37 < var10; ++var37)
+                double xFinal = xCoord * xCoord * xCoord * (xCoord * (xCoord * 6.0D - 15.0D) + 10.0D);
+
+                for (int z = 0; z < zSize; ++z)
                 {
-                    var38 = (var6 + var37) * var15 + zCoord;
-                    var40 = (int)var38;
-                    if (var38 < var40)
+                    double zCoord = (zStart + z) * zFrequency + _zCoord;
+                    int zCoordInt = (int)zCoord;
+                    if (zCoord < zCoordInt)
                     {
-                        --var40;
+                        --zCoordInt;
                     }
 
-                    var41 = var40 & 255;
-                    var38 -= var40;
-                    var42 = var38 * var38 * var38 * (var38 * (var38 * 6.0D - 15.0D) + 10.0D);
-                    var19 = permutations[var34] + 0;
-                    int var66 = permutations[var19] + var41;
-                    int var67 = permutations[var34 + 1] + 0;
-                    var22 = permutations[var67] + var41;
-                    var70 = lerp(var35, func_4110_a(permutations[var66], var31, var38), grad(permutations[var22], var31 - 1.0D, 0.0D, var38));
-                    var73 = lerp(var35, grad(permutations[var66 + 1], var31, 0.0D, var38 - 1.0D), grad(permutations[var22 + 1], var31 - 1.0D, 0.0D, var38 - 1.0D));
-                    double var79 = lerp(var42, var70, var73);
-                    var10001 = var75++;
-                    var1[var10001] += var79 * var77;
+                    int zMod255 = zCoordInt & 255;
+                    zCoord -= zCoordInt;
+
+                    double zFinal = zCoord * zCoord * zCoord * (zCoord * (zCoord * 6.0D - 15.0D) + 10.0D);
+
+                    int aa = _permutations[xMod255];
+                    int ab = _permutations[aa] + zMod255;
+                    int ba = _permutations[xMod255 + 1];
+                    int bb = _permutations[ba] + zMod255;
+                    double xLerpZ0 = lerp(xFinal,   grad(_permutations[ab],     xCoord,         zCoord),
+                                                    grad(_permutations[bb],     xCoord-1,   0,  zCoord));
+                    double xLerpZ1 = lerp(xFinal,   grad(_permutations[ab+1],   xCoord,     0,  zCoord-1),
+                                                    grad(_permutations[bb+1],   xCoord-1,   0,  zCoord-1));
+                    double finalNoise = lerp(zFinal, xLerpZ0, xLerpZ1);
+                    buffer[counter++] += finalNoise * amplitude;
                 }
             }
 
         }
         else
         {
-            var19 = 0;
-            double var20 = 1.0D / var17;
-            var22 = -1;
-            bool var23 = false;
-            bool var24 = false;
-            bool var25 = false;
-            bool var26 = false;
-            bool var27 = false;
-            bool var28 = false;
-            double var29 = 0.0D;
-            var31 = 0.0D;
-            double var33 = 0.0D;
-            var35 = 0.0D;
+            int oldY = -1;
+            // Don't move these inside the loop
+            double xLerpY0Z0 = 0.0D;
+            double xLerpY1Z0 = 0.0D;
+            double xLerpY0Z1 = 0.0D;
+            double xLerpY1Z1 = 0.0D;
 
-            for (var37 = 0; var37 < var8; ++var37)
+            for (int x = 0; x < xSize; ++x)
             {
-                var38 = (var2 + var37) * var11 + xCoord;
-                var40 = (int)var38;
-                if (var38 < var40)
+                double xCoord = (xStart + x) * xFrequency + _xCoord;
+                int xCoordInt = (int)xCoord;
+                if (xCoord < xCoordInt)
                 {
-                    --var40;
+                    --xCoordInt;
                 }
 
-                var41 = var40 & 255;
-                var38 -= var40;
-                var42 = var38 * var38 * var38 * (var38 * (var38 * 6.0D - 15.0D) + 10.0D);
+                int xMod255 = xCoordInt & 255;
+                xCoord -= xCoordInt;
 
-                for (int var44 = 0; var44 < var10; ++var44)
+                double xFinal = xCoord * xCoord * xCoord * (xCoord * (xCoord * 6.0D - 15.0D) + 10.0D);
+
+                for (int z = 0; z < zSize; ++z)
                 {
-                    double var45 = (var6 + var44) * var15 + zCoord;
-                    int var47 = (int)var45;
-                    if (var45 < var47)
+                    double zCoord = (zStart + z) * zFrequency + _zCoord;
+                    int zCoordInt = (int)zCoord;
+                    if (zCoord < zCoordInt)
                     {
-                        --var47;
+                        --zCoordInt;
                     }
 
-                    int var48 = var47 & 255;
-                    var45 -= var47;
-                    double var49 = var45 * var45 * var45 * (var45 * (var45 * 6.0D - 15.0D) + 10.0D);
+                    int zMod255 = zCoordInt & 255;
+                    zCoord -= zCoordInt;
 
-                    for (int var51 = 0; var51 < var9; ++var51)
+                    double zFinal = zCoord * zCoord * zCoord * (zCoord * (zCoord * 6.0D - 15.0D) + 10.0D);
+
+                    for (int y = 0; y < ySize; ++y)
                     {
-                        double var52 = (var4 + var51) * var13 + yCoord;
-                        int var54 = (int)var52;
-                        if (var52 < var54)
+                        double yCoord = (yStart + y) * yFrequency + _yCoord;
+                        int yCoordInt = (int)yCoord;
+                        if (yCoord < yCoordInt)
                         {
-                            --var54;
+                            --yCoordInt;
                         }
 
-                        int var55 = var54 & 255;
-                        var52 -= var54;
-                        double var56 = var52 * var52 * var52 * (var52 * (var52 * 6.0D - 15.0D) + 10.0D);
-                        if (var51 == 0 || var55 != var22)
+                        int yMod255 = yCoordInt & 255;
+                        yCoord -= yCoordInt;
+
+                        double yFinal = yCoord * yCoord * yCoord * (yCoord * (yCoord * 6.0D - 15.0D) + 10.0D);
+
+                        if (y == 0 || yMod255 != oldY)
                         {
-                            var22 = var55;
-                            int var69 = permutations[var41] + var55;
-                            int var71 = permutations[var69] + var48;
-                            int var72 = permutations[var69 + 1] + var48;
-                            int var74 = permutations[var41 + 1] + var55;
-                            var75 = permutations[var74] + var48;
-                            int var76 = permutations[var74 + 1] + var48;
-                            var29 = lerp(var42, grad(permutations[var71], var38, var52, var45), grad(permutations[var75], var38 - 1.0D, var52, var45));
-                            var31 = lerp(var42, grad(permutations[var72], var38, var52 - 1.0D, var45), grad(permutations[var76], var38 - 1.0D, var52 - 1.0D, var45));
-                            var33 = lerp(var42, grad(permutations[var71 + 1], var38, var52, var45 - 1.0D), grad(permutations[var75 + 1], var38 - 1.0D, var52, var45 - 1.0D));
-                            var35 = lerp(var42, grad(permutations[var72 + 1], var38, var52 - 1.0D, var45 - 1.0D), grad(permutations[var76 + 1], var38 - 1.0D, var52 - 1.0D, var45 - 1.0D));
+                            oldY = yMod255;
+                            int a = _permutations[xMod255] + yMod255;
+                            int aa = _permutations[a] + zMod255;
+                            int ab = _permutations[a + 1] + zMod255;
+                            int b = _permutations[xMod255 + 1] + yMod255;
+                            int ba = _permutations[b] + zMod255;
+                            int bb = _permutations[b + 1] + zMod255;
+                            xLerpY0Z0 = lerp(xFinal,
+                                        grad(_permutations[aa],     xCoord,     yCoord,     zCoord),
+                                        grad(_permutations[ba],     xCoord-1,   yCoord,     zCoord));
+                            xLerpY1Z0 = lerp(xFinal,
+                                        grad(_permutations[ab],     xCoord,     yCoord-1,   zCoord),
+                                        grad(_permutations[bb],     xCoord-1,   yCoord-1,   zCoord));
+                            xLerpY0Z1 = lerp(xFinal,
+                                        grad(_permutations[aa+1],   xCoord,     yCoord,     zCoord-1),
+                                        grad(_permutations[ba+1],   xCoord-1,   yCoord,     zCoord-1));
+                            xLerpY1Z1 = lerp(xFinal,
+                                        grad(_permutations[ab+1],   xCoord,     yCoord-1,   zCoord-1),
+                                        grad(_permutations[bb+1],   xCoord-1,   yCoord-1,   zCoord-1));
                         }
 
-                        double var58 = lerp(var56, var29, var31);
-                        double var60 = lerp(var56, var33, var35);
-                        double var62 = lerp(var49, var58, var60);
-                        var10001 = var19++;
-                        var1[var10001] += var62 * var20;
+                        double yLerpZ0 = lerp(yFinal, xLerpY0Z0, xLerpY1Z0);
+                        double yLerpZ1 = lerp(yFinal, xLerpY0Z1, xLerpY1Z1);
+                        double finalNoise = lerp(zFinal, yLerpZ0, yLerpZ1);
+                        buffer[counter++] += finalNoise * amplitude;
                     }
                 }
             }

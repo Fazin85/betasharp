@@ -11,8 +11,8 @@ public class EntityPickupFX : EntityFX
 
     private readonly Entity target;
     private readonly Entity source;
-    private int currentAge = 0;
-    private readonly int maxAge = 0;
+    private int currentAge;
+    private readonly int maxAge;
     private readonly float yOffset;
 
     public EntityPickupFX(World world, Entity target, Entity source, float yOffset) : base(world, target.x, target.y, target.z, target.velocityX, target.velocityY, target.velocityZ)

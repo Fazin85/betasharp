@@ -207,11 +207,11 @@ public class GuiTextField : Gui
         if (IsEnabled)
         {
             bool var1 = IsFocused && _cursorCounter / 6 % 2 == 0;
-            DrawString(_fontRenderer, _text + (var1 ? "_" : ""), _xPos + 4, _yPos + (_height - 8) / 2, 14737632);
+            DrawString(_fontRenderer, _text + (var1 ? "_" : ""), _xPos + 4, _yPos + (_height - 8) / 2, 0xE0E0E0);
         }
         else
         {
-            DrawString(_fontRenderer, _text, _xPos + 4, _yPos + (_height - 8) / 2, 7368816);
+            DrawString(_fontRenderer, _text, _xPos + 4, _yPos + (_height - 8) / 2, 0x707070);
         }
     }
 

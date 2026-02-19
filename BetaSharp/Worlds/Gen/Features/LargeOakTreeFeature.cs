@@ -5,11 +5,11 @@ namespace BetaSharp.Worlds.Gen.Features;
 public class LargeOakTreeFeature : Feature
 {
 
-    static readonly sbyte[] MINOR_AXES = new sbyte[] { 2, 0, 0, 1, 2, 1 };
-    java.util.Random random = new();
+    static readonly sbyte[] MINOR_AXES = [2, 0, 0, 1, 2, 1];
+    JavaRandom random = new();
     World world;
-    int[] origin = new int[] { 0, 0, 0 };
-    int height = 0;
+    int[] origin = [0, 0, 0];
+    int height;
     int trunkHeight;
     double trunkScale = 0.618D;
     double branchSlope = 0.381D;
@@ -65,15 +65,15 @@ public class LargeOakTreeFeature : Feature
                 {
                     for (double var9 = 0.5D; var7 < var1; ++var7)
                     {
-                        double var11 = branchLengthScale * (double)var8 * ((double)random.nextFloat() + 0.328D);
-                        double var13 = (double)random.nextFloat() * 2.0D * 3.14159D;
+                        double var11 = branchLengthScale * (double)var8 * ((double)random.NextFloat() + 0.328D);
+                        double var13 = (double)random.NextFloat() * 2.0D * 3.14159D;
                         int var15 = MathHelper.floor_double(var11 * java.lang.Math.sin(var13) + origin[0] + var9);
                         int var16 = MathHelper.floor_double(var11 * java.lang.Math.cos(var13) + origin[2] + var9);
-                        int[] var17 = new int[] { var15, var3, var16 };
-                        int[] var18 = new int[] { var15, var3 + foliageClusterHeight, var16 };
+                        int[] var17 = [var15, var3, var16];
+                        int[] var18 = [var15, var3 + foliageClusterHeight, var16];
                         if (tryBranch(var17, var18) == -1)
                         {
-                            int[] var19 = new int[] { origin[0], origin[1], origin[2] };
+                            int[] var19 = [origin[0], origin[1], origin[2]];
                             double var20 = java.lang.Math.sqrt(java.lang.Math.pow(java.lang.Math.abs(origin[0] - var17[0]), 2.0D) + java.lang.Math.pow(java.lang.Math.abs(origin[2] - var17[2]), 2.0D));
                             double var22 = var20 * branchSlope;
                             if (var17[1] - var22 > var5)
@@ -117,8 +117,8 @@ public class LargeOakTreeFeature : Feature
         int var7 = (int)((double)var4 + 0.618D);
         sbyte var8 = MINOR_AXES[var5];
         sbyte var9 = MINOR_AXES[var5 + 3];
-        int[] var10 = new int[] { var1, var2, var3 };
-        int[] var11 = new int[] { 0, 0, 0 };
+        int[] var10 = [var1, var2, var3];
+        int[] var11 = [0, 0, 0];
         int var12 = -var7;
         int var13 = -var7;
 
@@ -203,7 +203,7 @@ public class LargeOakTreeFeature : Feature
 
     void placeBranch(int[] var1, int[] var2, int var3)
     {
-        int[] var4 = new int[] { 0, 0, 0 };
+        int[] var4 = [0, 0, 0];
         sbyte var5 = 0;
 
         sbyte var6;
@@ -232,7 +232,7 @@ public class LargeOakTreeFeature : Feature
 
             double var10 = var4[var7] / (double)var4[var6];
             double var12 = var4[var8] / (double)var4[var6];
-            int[] var14 = new int[] { 0, 0, 0 };
+            int[] var14 = [0, 0, 0];
             int var15 = 0;
 
             for (int var16 = var4[var6] + var9; var15 != var16; var15 += var9)
@@ -271,8 +271,8 @@ public class LargeOakTreeFeature : Feature
         int var2 = origin[1];
         int var3 = origin[1] + trunkHeight;
         int var4 = origin[2];
-        int[] var5 = new int[] { var1, var2, var4 };
-        int[] var6 = new int[] { var1, var3, var4 };
+        int[] var5 = [var1, var2, var4];
+        int[] var6 = [var1, var3, var4];
         placeBranch(var5, var6, 17);
         if (trunkWidth == 2)
         {
@@ -294,10 +294,10 @@ public class LargeOakTreeFeature : Feature
         int var1 = 0;
         int var2 = branches.Length;
 
-        for (int[] var3 = new int[] { origin[0], origin[1], origin[2] }; var1 < var2; ++var1)
+        for (int[] var3 = [origin[0], origin[1], origin[2]]; var1 < var2; ++var1)
         {
             int[] var4 = branches[var1];
-            int[] var5 = new int[] { var4[0], var4[1], var4[2] };
+            int[] var5 = [var4[0], var4[1], var4[2]];
             var3[1] = var4[3];
             int var6 = var3[1] - origin[1];
             if (shouldPlaceBranch(var6))
@@ -310,7 +310,7 @@ public class LargeOakTreeFeature : Feature
 
     int tryBranch(int[] var1, int[] var2)
     {
-        int[] var3 = new int[] { 0, 0, 0 };
+        int[] var3 = [0, 0, 0];
         sbyte var4 = 0;
 
         sbyte var5;
@@ -343,7 +343,7 @@ public class LargeOakTreeFeature : Feature
 
             double var9 = var3[var6] / (double)var3[var5];
             double var11 = var3[var7] / (double)var3[var5];
-            int[] var13 = new int[] { 0, 0, 0 };
+            int[] var13 = [0, 0, 0];
             int var14 = 0;
 
             int var15;
@@ -365,8 +365,8 @@ public class LargeOakTreeFeature : Feature
 
     bool canPlace()
     {
-        int[] var1 = new int[] { origin[0], origin[1], origin[2] };
-        int[] var2 = new int[] { origin[0], origin[1] + height - 1, origin[2] };
+        int[] var1 = [origin[0], origin[1], origin[2]];
+        int[] var2 = [origin[0], origin[1] + height - 1, origin[2]];
         int var3 = world.getBlockId(origin[0], origin[1] - 1, origin[2]);
         if (var3 != 2 && var3 != 3)
         {
@@ -391,29 +391,29 @@ public class LargeOakTreeFeature : Feature
         }
     }
 
-    public override void prepare(double var1, double var3, double var5)
+    public override void prepare(double d0, double d1, double d2)
     {
-        maxTrunkHeight = (int)(var1 * 12.0D);
-        if (var1 > 0.5D)
+        maxTrunkHeight = (int)(d0 * 12.0D);
+        if (d0 > 0.5D)
         {
             foliageClusterHeight = 5;
         }
 
-        branchLengthScale = var3;
-        foliageDensity = var5;
+        branchLengthScale = d1;
+        foliageDensity = d2;
     }
 
-    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
+    public override bool Generate(World world, JavaRandom rand, int x, int y, int z)
     {
         this.world = world;
-        long var6 = rand.nextLong();
-        random.setSeed(var6);
+        long var6 = rand.NextLong();
+        random.SetSeed(var6);
         origin[0] = x;
         origin[1] = y;
         origin[2] = z;
         if (height == 0)
         {
-            height = 5 + random.nextInt(maxTrunkHeight);
+            height = 5 + random.NextInt(maxTrunkHeight);
         }
 
         if (!canPlace())

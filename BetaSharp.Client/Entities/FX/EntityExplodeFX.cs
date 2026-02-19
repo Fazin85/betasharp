@@ -11,9 +11,9 @@ public class EntityExplodeFX : EntityFX
         base.velocityX = velocityX + (double)((float)(java.lang.Math.random() * 2.0D - 1.0D) * 0.05F);
         base.velocityY = velocityY + (double)((float)(java.lang.Math.random() * 2.0D - 1.0D) * 0.05F);
         base.velocityZ = velocityZ + (double)((float)(java.lang.Math.random() * 2.0D - 1.0D) * 0.05F);
-        particleRed = particleGreen = particleBlue = random.nextFloat() * 0.3F + 0.7F;
-        particleScale = random.nextFloat() * random.nextFloat() * 6.0F + 1.0F;
-        particleMaxAge = (int)(16.0D / ((double)random.nextFloat() * 0.8D + 0.2D)) + 2;
+        particleRed = particleGreen = particleBlue = random.NextFloat() * 0.3F + 0.7F;
+        particleScale = random.NextFloat() * random.NextFloat() * 6.0F + 1.0F;
+        particleMaxAge = (int)(16.0D / ((double)random.NextFloat() * 0.8D + 0.2D)) + 2;
     }
 
     public override void renderParticle(Tessellator t, float partialTick, float rotX, float rotY, float rotZ, float upX, float upZ)

@@ -98,9 +98,9 @@ public class EntityFish : Entity
         var1 /= (double)var9;
         var3 /= (double)var9;
         var5 /= (double)var9;
-        var1 += random.nextGaussian() * (double)0.0075F * (double)var8;
-        var3 += random.nextGaussian() * (double)0.0075F * (double)var8;
-        var5 += random.nextGaussian() * (double)0.0075F * (double)var8;
+        var1 += random.NextGaussian() * (double)0.0075F * (double)var8;
+        var3 += random.NextGaussian() * (double)0.0075F * (double)var8;
+        var5 += random.NextGaussian() * (double)0.0075F * (double)var8;
         var1 *= (double)var7;
         var3 *= (double)var7;
         var5 *= (double)var7;
@@ -204,9 +204,9 @@ public class EntityFish : Entity
                 }
 
                 inGround = false;
-                base.velocityX *= (double)(random.nextFloat() * 0.2F);
-                base.velocityY *= (double)(random.nextFloat() * 0.2F);
-                base.velocityZ *= (double)(random.nextFloat() * 0.2F);
+                base.velocityX *= (double)(random.NextFloat() * 0.2F);
+                base.velocityY *= (double)(random.NextFloat() * 0.2F);
+                base.velocityZ *= (double)(random.NextFloat() * 0.2F);
                 ticksInGround = 0;
                 ticksInAir = 0;
             }
@@ -331,11 +331,11 @@ public class EntityFish : Entity
                             var29 = 300;
                         }
 
-                        if (random.nextInt(var29) == 0)
+                        if (random.NextInt(var29) == 0)
                         {
-                            ticksCatchable = random.nextInt(30) + 10;
+                            ticksCatchable = random.NextInt(30) + 10;
                             base.velocityY -= (double)0.2F;
-                            world.playSound(this, "random.splash", 0.25F, 1.0F + (random.nextFloat() - random.nextFloat()) * 0.4F);
+                            world.playSound(this, "random.splash", 0.25F, 1.0F + (random.NextFloat() - random.NextFloat()) * 0.4F);
                             float var30 = (float)MathHelper.floor_double(boundingBox.minY);
 
                             int var15;
@@ -343,15 +343,15 @@ public class EntityFish : Entity
                             float var31;
                             for (var15 = 0; (float)var15 < 1.0F + width * 20.0F; ++var15)
                             {
-                                var31 = (random.nextFloat() * 2.0F - 1.0F) * width;
-                                var17 = (random.nextFloat() * 2.0F - 1.0F) * width;
-                                world.addParticle("bubble", x + (double)var31, (double)(var30 + 1.0F), z + (double)var17, base.velocityX, base.velocityY - (double)(random.nextFloat() * 0.2F), base.velocityZ);
+                                var31 = (random.NextFloat() * 2.0F - 1.0F) * width;
+                                var17 = (random.NextFloat() * 2.0F - 1.0F) * width;
+                                world.addParticle("bubble", x + (double)var31, (double)(var30 + 1.0F), z + (double)var17, base.velocityX, base.velocityY - (double)(random.NextFloat() * 0.2F), base.velocityZ);
                             }
 
                             for (var15 = 0; (float)var15 < 1.0F + width * 20.0F; ++var15)
                             {
-                                var31 = (random.nextFloat() * 2.0F - 1.0F) * width;
-                                var17 = (random.nextFloat() * 2.0F - 1.0F) * width;
+                                var31 = (random.NextFloat() * 2.0F - 1.0F) * width;
+                                var17 = (random.NextFloat() * 2.0F - 1.0F) * width;
                                 world.addParticle("splash", x + (double)var31, (double)(var30 + 1.0F), z + (double)var17, base.velocityX, base.velocityY, base.velocityZ);
                             }
                         }
@@ -360,7 +360,7 @@ public class EntityFish : Entity
 
                 if (ticksCatchable > 0)
                 {
-                    base.velocityY -= (double)(random.nextFloat() * random.nextFloat() * random.nextFloat()) * 0.2D;
+                    base.velocityY -= (double)(random.NextFloat() * random.NextFloat() * random.NextFloat()) * 0.2D;
                 }
 
                 var13 = var27 * 2.0D - 1.0D;

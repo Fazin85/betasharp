@@ -1,6 +1,7 @@
 using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Worlds;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Blocks;
 
@@ -20,7 +21,7 @@ public class BlockCrops : BlockPlant
         return id == Block.Farmland.id;
     }
 
-    public override void onTick(World world, int x, int y, int z, java.util.Random random)
+    public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
         base.onTick(world, x, y, z, random);
         if (world.getLightLevel(x, y + 1, z) >= 9)
@@ -29,7 +30,7 @@ public class BlockCrops : BlockPlant
             if (meta < 7)
             {
                 float var7 = getAvailableMoisture(world, x, y, z);
-                if (random.nextInt((int)(100.0F / var7)) == 0)
+                if (random.NextInt((int)(100.0F / var7)) == 0)
                 {
                     ++meta;
                     world.setBlockMeta(x, y, z, meta);
@@ -113,12 +114,12 @@ public class BlockCrops : BlockPlant
         {
             for (int attempt = 0; attempt < 3; ++attempt)
             {
-                if (world.random.nextInt(15) <= meta)
+                if (world.random.NextInt(15) <= meta)
                 {
                     float spreadFactor = 0.7F;
-                    float offsetX = world.random.nextFloat() * spreadFactor + (1.0F - spreadFactor) * 0.5F;
-                    float offsetY = world.random.nextFloat() * spreadFactor + (1.0F - spreadFactor) * 0.5F;
-                    float offsetZ = world.random.nextFloat() * spreadFactor + (1.0F - spreadFactor) * 0.5F;
+                    float offsetX = world.random.NextFloat() * spreadFactor + (1.0F - spreadFactor) * 0.5F;
+                    float offsetY = world.random.NextFloat() * spreadFactor + (1.0F - spreadFactor) * 0.5F;
+                    float offsetZ = world.random.NextFloat() * spreadFactor + (1.0F - spreadFactor) * 0.5F;
                     EntityItem entityItem = new EntityItem(world, (double)((float)x + offsetX), (double)((float)y + offsetY), (double)((float)z + offsetZ), new ItemStack(Item.Seeds));
                     entityItem.delayBeforeCanPickup = 10;
                     world.SpawnEntity(entityItem);
@@ -128,12 +129,12 @@ public class BlockCrops : BlockPlant
         }
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
         return blockMeta == 7 ? Item.Wheat.id : -1;
     }
 
-    public override int getDroppedItemCount(java.util.Random random)
+    public override int getDroppedItemCount(JavaRandom random)
     {
         return 1;
     }

@@ -7,8 +7,8 @@ public class GuiSlider : GuiButton
 {
 
     public float sliderValue = 1.0F;
-    public bool dragging = false;
-    private readonly EnumOptions _idFloat = null;
+    public bool dragging;
+    private readonly EnumOptions _idFloat;
 
     public GuiSlider(int id, int x, int y, EnumOptions option, string displayString, float value) : base(id, x, y, 150, 20, displayString)
     {

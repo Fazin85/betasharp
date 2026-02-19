@@ -1,4 +1,4 @@
-using BetaSharp.Blocks.Entities;
+﻿using BetaSharp.Blocks.Entities;
 using BetaSharp.Inventorys;
 using BetaSharp.Items;
 using BetaSharp.Network.Packets;
@@ -28,7 +28,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     private int lastHealthScore = -99999999;
     private int joinInvulnerabilityTicks = 60;
     private ItemStack[] equipment = [null, null, null, null, null];
-    private int screenHandlerSyncId = 0;
+    private int screenHandlerSyncId;
     public bool skipPacketSlotUpdates;
 
 
@@ -42,9 +42,9 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
         int z = spawnPos.y;
         if (!world.dimension.hasCeiling)
         {
-            x += random.nextInt(20) - 10;
+            x += random.NextInt(20) - 10;
             z = world.getSpawnPositionValidityY(x, y);
-            y += random.nextInt(20) - 10;
+            y += random.NextInt(20) - 10;
         }
 
         setPositionAndAnglesKeepPrevAngles(x + 0.5, z, y + 0.5, 0.0F, 0.0F);
@@ -429,7 +429,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
 
     public void onSlotUpdate(ScreenHandler handler, int slot, ItemStack stack)
     {
-        if (!(handler.getSlot(slot) is CraftingResultSlot))
+        if (handler.getSlot(slot) is not CraftingResultSlot)
         {
             if (!skipPacketSlotUpdates)
             {

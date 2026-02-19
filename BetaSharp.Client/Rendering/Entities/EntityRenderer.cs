@@ -11,14 +11,14 @@ public abstract class EntityRenderer
 {
     protected EntityRenderDispatcher dispatcher;
     protected float shadowRadius = 0.0F;
-    protected float shadowDarkness = 1.0F;
+    protected float shadowStrength = 1.0F;
 
-    public abstract void render(Entity var1, double var2, double var4, double var6, float var8, float var9);
+    public abstract void render(Entity target, double x, double y, double z, float yaw, float tickDelta);
 
-    protected void loadTexture(string var1)
+    protected void loadTexture(string path)
     {
         TextureManager? var2 = dispatcher.textureManager;
-        var2?.bindTexture(var2.getTextureId(var1));
+        var2?.bindTexture(var2.getTextureId(path));
     }
 
     protected bool loadDownloadableImageTexture(string var1, string var2)
@@ -111,7 +111,7 @@ public abstract class EntityRenderer
         GLManager.GL.Enable(GLEnum.Lighting);
     }
 
-    private void renderShadow(Entity var1, double var2, double var4, double var6, float var8, float var9)
+    private void renderShadow(Entity target, double x, double y, double z, float shadowiness, float tickDelta)
     {
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
@@ -119,38 +119,38 @@ public abstract class EntityRenderer
         var10.bindTexture(var10.getTextureId("%clamp%/misc/shadow.png"));
         World var11 = getWorld();
         GLManager.GL.DepthMask(false);
-        float var12 = shadowRadius;
-        double var13 = var1.lastTickX + (var1.x - var1.lastTickX) * (double)var9;
-        double var15 = var1.lastTickY + (var1.y - var1.lastTickY) * (double)var9 + (double)var1.getShadowRadius();
-        double var17 = var1.lastTickZ + (var1.z - var1.lastTickZ) * (double)var9;
-        int var19 = MathHelper.floor_double(var13 - (double)var12);
-        int var20 = MathHelper.floor_double(var13 + (double)var12);
-        int var21 = MathHelper.floor_double(var15 - (double)var12);
-        int var22 = MathHelper.floor_double(var15);
-        int var23 = MathHelper.floor_double(var17 - (double)var12);
-        int var24 = MathHelper.floor_double(var17 + (double)var12);
-        double var25 = var2 - var13;
-        double var27 = var4 - var15;
-        double var29 = var6 - var17;
-        Tessellator var31 = Tessellator.instance;
-        var31.startDrawingQuads();
+        float radius = shadowRadius;
+        double targetX = target.lastTickX + (target.x - target.lastTickX) * (double)tickDelta;
+        double targetY = target.lastTickY + (target.y - target.lastTickY) * (double)tickDelta + (double)target.getShadowRadius();
+        double targetZ = target.lastTickZ + (target.z - target.lastTickZ) * (double)tickDelta;
+        int minX = MathHelper.floor_double(targetX - (double)radius);
+        int maxX = MathHelper.floor_double(targetX + (double)radius);
+        int minY = MathHelper.floor_double(targetY - (double)radius);
+        int maxY = MathHelper.floor_double(targetY);
+        int minZ = MathHelper.floor_double(targetZ - (double)radius);
+        int maxZ = MathHelper.floor_double(targetZ + (double)radius);
+        double dx = x - targetX;
+        double dy = y - targetY;
+        double dz = z - targetZ;
+        Tessellator tess = Tessellator.instance;
+        tess.startDrawingQuads();
 
-        for (int var32 = var19; var32 <= var20; ++var32)
+        for (int blockX = minX; blockX <= maxX; ++blockX)
         {
-            for (int var33 = var21; var33 <= var22; ++var33)
+            for (int blockY = minY; blockY <= maxY; ++blockY)
             {
-                for (int var34 = var23; var34 <= var24; ++var34)
+                for (int blockZ = minZ; blockZ <= maxZ; ++blockZ)
                 {
-                    int var35 = var11.getBlockId(var32, var33 - 1, var34);
-                    if (var35 > 0 && var11.getLightLevel(var32, var33, var34) > 3)
+                    int var35 = var11.getBlockId(blockX, blockY - 1, blockZ);
+                    if (var35 > 0 && var11.getLightLevel(blockX, blockY, blockZ) > 3)
                     {
-                        renderShadowOnBlock(Block.Blocks[var35], var2, var4 + (double)var1.getShadowRadius(), var6, var32, var33, var34, var8, var12, var25, var27 + (double)var1.getShadowRadius(), var29);
+                        renderShadowOnBlock(Block.Blocks[var35], x, y + (double)target.getShadowRadius(), z, blockX, blockY, blockZ, shadowiness, radius, dx, dy + (double)target.getShadowRadius(), dz);
                     }
                 }
             }
         }
 
-        var31.draw();
+        tess.draw();
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         GLManager.GL.Disable(GLEnum.Blend);
         GLManager.GL.DepthMask(true);
@@ -161,107 +161,119 @@ public abstract class EntityRenderer
         return dispatcher.world;
     }
 
-    private void renderShadowOnBlock(Block var1, double var2, double var4, double var6, int var8, int var9, int var10, float var11, float var12, double var13, double var15, double var17)
+    private void renderShadowOnBlock(
+        Block block,
+        double x,
+        double y,
+        double z,
+        int blockX,
+        int blockY,
+        int blockZ,
+        float shadowiness,
+        float radius,
+        double dx,
+        double dy,
+        double dz)
     {
         Tessellator var19 = Tessellator.instance;
-        if (var1.isFullCube())
+        if (block.isFullCube())
         {
-            double var20 = ((double)var11 - (var4 - (var9 + var15)) / 2.0D) * 0.5D * (double)getWorld().getLuminance(var8, var9, var10);
-            if (var20 >= 0.0D)
+            double shadowDarkness = ((double)shadowiness - (y - (blockY + dy)) / 2.0D) * 0.5D * (double)getWorld().getLuminance(blockX, blockY, blockZ);
+            if (shadowDarkness >= 0.0D)
             {
-                if (var20 > 1.0D)
+                if (shadowDarkness > 1.0D)
                 {
-                    var20 = 1.0D;
+                    shadowDarkness = 1.0D;
                 }
 
-                var19.setColorRGBA_F(1.0F, 1.0F, 1.0F, (float)var20);
-                double var22 = var8 + var1.minX + var13;
-                double var24 = var8 + var1.maxX + var13;
-                double var26 = var9 + var1.minY + var15 + 1.0D / 64.0D;
-                double var28 = var10 + var1.minZ + var17;
-                double var30 = var10 + var1.maxZ + var17;
-                float var32 = (float)((var2 - var22) / 2.0D / (double)var12 + 0.5D);
-                float var33 = (float)((var2 - var24) / 2.0D / (double)var12 + 0.5D);
-                float var34 = (float)((var6 - var28) / 2.0D / (double)var12 + 0.5D);
-                float var35 = (float)((var6 - var30) / 2.0D / (double)var12 + 0.5D);
-                var19.addVertexWithUV(var22, var26, var28, (double)var32, (double)var34);
-                var19.addVertexWithUV(var22, var26, var30, (double)var32, (double)var35);
-                var19.addVertexWithUV(var24, var26, var30, (double)var33, (double)var35);
-                var19.addVertexWithUV(var24, var26, var28, (double)var33, (double)var34);
+                var19.setColorRGBA_F(1.0F, 1.0F, 1.0F, (float)shadowDarkness);
+                double minX = blockX + block.minX + dx;
+                double maxX = blockX + block.maxX + dx;
+                double minY = blockY + block.minY + dy + 1.0D / 64.0D;
+                double minZ = blockZ + block.minZ + dz;
+                double maxZ = blockZ + block.maxZ + dz;
+                float var32 = (float)((x - minX) / 2.0D / (double)radius + 0.5D);
+                float var33 = (float)((x - maxX) / 2.0D / (double)radius + 0.5D);
+                float var34 = (float)((z - minZ) / 2.0D / (double)radius + 0.5D);
+                float var35 = (float)((z - maxZ) / 2.0D / (double)radius + 0.5D);
+                var19.addVertexWithUV(minX, minY, minZ, (double)var32, (double)var34);
+                var19.addVertexWithUV(minX, minY, maxZ, (double)var32, (double)var35);
+                var19.addVertexWithUV(maxX, minY, maxZ, (double)var33, (double)var35);
+                var19.addVertexWithUV(maxX, minY, minZ, (double)var33, (double)var34);
             }
         }
     }
 
-    public static void renderShape(Box var0, double var1, double var3, double var5)
+    public static void renderShape(Box aabb, double x, double y, double z)
     {
         GLManager.GL.Disable(GLEnum.Texture2D);
         Tessellator var7 = Tessellator.instance;
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         var7.startDrawingQuads();
-        var7.setTranslationD(var1, var3, var5);
+        var7.setTranslationD(x, y, z);
         var7.setNormal(0.0F, 0.0F, -1.0F);
-        var7.addVertex(var0.minX, var0.maxY, var0.minZ);
-        var7.addVertex(var0.maxX, var0.maxY, var0.minZ);
-        var7.addVertex(var0.maxX, var0.minY, var0.minZ);
-        var7.addVertex(var0.minX, var0.minY, var0.minZ);
+        var7.addVertex(aabb.minX, aabb.maxY, aabb.minZ);
+        var7.addVertex(aabb.maxX, aabb.maxY, aabb.minZ);
+        var7.addVertex(aabb.maxX, aabb.minY, aabb.minZ);
+        var7.addVertex(aabb.minX, aabb.minY, aabb.minZ);
         var7.setNormal(0.0F, 0.0F, 1.0F);
-        var7.addVertex(var0.minX, var0.minY, var0.maxZ);
-        var7.addVertex(var0.maxX, var0.minY, var0.maxZ);
-        var7.addVertex(var0.maxX, var0.maxY, var0.maxZ);
-        var7.addVertex(var0.minX, var0.maxY, var0.maxZ);
+        var7.addVertex(aabb.minX, aabb.minY, aabb.maxZ);
+        var7.addVertex(aabb.maxX, aabb.minY, aabb.maxZ);
+        var7.addVertex(aabb.maxX, aabb.maxY, aabb.maxZ);
+        var7.addVertex(aabb.minX, aabb.maxY, aabb.maxZ);
         var7.setNormal(0.0F, -1.0F, 0.0F);
-        var7.addVertex(var0.minX, var0.minY, var0.minZ);
-        var7.addVertex(var0.maxX, var0.minY, var0.minZ);
-        var7.addVertex(var0.maxX, var0.minY, var0.maxZ);
-        var7.addVertex(var0.minX, var0.minY, var0.maxZ);
+        var7.addVertex(aabb.minX, aabb.minY, aabb.minZ);
+        var7.addVertex(aabb.maxX, aabb.minY, aabb.minZ);
+        var7.addVertex(aabb.maxX, aabb.minY, aabb.maxZ);
+        var7.addVertex(aabb.minX, aabb.minY, aabb.maxZ);
         var7.setNormal(0.0F, 1.0F, 0.0F);
-        var7.addVertex(var0.minX, var0.maxY, var0.maxZ);
-        var7.addVertex(var0.maxX, var0.maxY, var0.maxZ);
-        var7.addVertex(var0.maxX, var0.maxY, var0.minZ);
-        var7.addVertex(var0.minX, var0.maxY, var0.minZ);
+        var7.addVertex(aabb.minX, aabb.maxY, aabb.maxZ);
+        var7.addVertex(aabb.maxX, aabb.maxY, aabb.maxZ);
+        var7.addVertex(aabb.maxX, aabb.maxY, aabb.minZ);
+        var7.addVertex(aabb.minX, aabb.maxY, aabb.minZ);
         var7.setNormal(-1.0F, 0.0F, 0.0F);
-        var7.addVertex(var0.minX, var0.minY, var0.maxZ);
-        var7.addVertex(var0.minX, var0.maxY, var0.maxZ);
-        var7.addVertex(var0.minX, var0.maxY, var0.minZ);
-        var7.addVertex(var0.minX, var0.minY, var0.minZ);
+        var7.addVertex(aabb.minX, aabb.minY, aabb.maxZ);
+        var7.addVertex(aabb.minX, aabb.maxY, aabb.maxZ);
+        var7.addVertex(aabb.minX, aabb.maxY, aabb.minZ);
+        var7.addVertex(aabb.minX, aabb.minY, aabb.minZ);
         var7.setNormal(1.0F, 0.0F, 0.0F);
-        var7.addVertex(var0.maxX, var0.minY, var0.minZ);
-        var7.addVertex(var0.maxX, var0.maxY, var0.minZ);
-        var7.addVertex(var0.maxX, var0.maxY, var0.maxZ);
-        var7.addVertex(var0.maxX, var0.minY, var0.maxZ);
+        var7.addVertex(aabb.maxX, aabb.minY, aabb.minZ);
+        var7.addVertex(aabb.maxX, aabb.maxY, aabb.minZ);
+        var7.addVertex(aabb.maxX, aabb.maxY, aabb.maxZ);
+        var7.addVertex(aabb.maxX, aabb.minY, aabb.maxZ);
         var7.setTranslationD(0.0D, 0.0D, 0.0D);
         var7.draw();
         GLManager.GL.Enable(GLEnum.Texture2D);
     }
 
-    public static void renderShapeFlat(Box var0)
+    public static void renderShapeFlat(Box aabb)
     {
         Tessellator var1 = Tessellator.instance;
         var1.startDrawingQuads();
-        var1.addVertex(var0.minX, var0.maxY, var0.minZ);
-        var1.addVertex(var0.maxX, var0.maxY, var0.minZ);
-        var1.addVertex(var0.maxX, var0.minY, var0.minZ);
-        var1.addVertex(var0.minX, var0.minY, var0.minZ);
-        var1.addVertex(var0.minX, var0.minY, var0.maxZ);
-        var1.addVertex(var0.maxX, var0.minY, var0.maxZ);
-        var1.addVertex(var0.maxX, var0.maxY, var0.maxZ);
-        var1.addVertex(var0.minX, var0.maxY, var0.maxZ);
-        var1.addVertex(var0.minX, var0.minY, var0.minZ);
-        var1.addVertex(var0.maxX, var0.minY, var0.minZ);
-        var1.addVertex(var0.maxX, var0.minY, var0.maxZ);
-        var1.addVertex(var0.minX, var0.minY, var0.maxZ);
-        var1.addVertex(var0.minX, var0.maxY, var0.maxZ);
-        var1.addVertex(var0.maxX, var0.maxY, var0.maxZ);
-        var1.addVertex(var0.maxX, var0.maxY, var0.minZ);
-        var1.addVertex(var0.minX, var0.maxY, var0.minZ);
-        var1.addVertex(var0.minX, var0.minY, var0.maxZ);
-        var1.addVertex(var0.minX, var0.maxY, var0.maxZ);
-        var1.addVertex(var0.minX, var0.maxY, var0.minZ);
-        var1.addVertex(var0.minX, var0.minY, var0.minZ);
-        var1.addVertex(var0.maxX, var0.minY, var0.minZ);
-        var1.addVertex(var0.maxX, var0.maxY, var0.minZ);
-        var1.addVertex(var0.maxX, var0.maxY, var0.maxZ);
-        var1.addVertex(var0.maxX, var0.minY, var0.maxZ);
+        var1.addVertex(aabb.minX, aabb.maxY, aabb.minZ);
+        var1.addVertex(aabb.maxX, aabb.maxY, aabb.minZ);
+        var1.addVertex(aabb.maxX, aabb.minY, aabb.minZ);
+        var1.addVertex(aabb.minX, aabb.minY, aabb.minZ);
+        var1.addVertex(aabb.minX, aabb.minY, aabb.maxZ);
+        var1.addVertex(aabb.maxX, aabb.minY, aabb.maxZ);
+        var1.addVertex(aabb.maxX, aabb.maxY, aabb.maxZ);
+        var1.addVertex(aabb.minX, aabb.maxY, aabb.maxZ);
+        var1.addVertex(aabb.minX, aabb.minY, aabb.minZ);
+        var1.addVertex(aabb.maxX, aabb.minY, aabb.minZ);
+        var1.addVertex(aabb.maxX, aabb.minY, aabb.maxZ);
+        var1.addVertex(aabb.minX, aabb.minY, aabb.maxZ);
+        var1.addVertex(aabb.minX, aabb.maxY, aabb.maxZ);
+        var1.addVertex(aabb.maxX, aabb.maxY, aabb.maxZ);
+        var1.addVertex(aabb.maxX, aabb.maxY, aabb.minZ);
+        var1.addVertex(aabb.minX, aabb.maxY, aabb.minZ);
+        var1.addVertex(aabb.minX, aabb.minY, aabb.maxZ);
+        var1.addVertex(aabb.minX, aabb.maxY, aabb.maxZ);
+        var1.addVertex(aabb.minX, aabb.maxY, aabb.minZ);
+        var1.addVertex(aabb.minX, aabb.minY, aabb.minZ);
+        var1.addVertex(aabb.maxX, aabb.minY, aabb.minZ);
+        var1.addVertex(aabb.maxX, aabb.maxY, aabb.minZ);
+        var1.addVertex(aabb.maxX, aabb.maxY, aabb.maxZ);
+        var1.addVertex(aabb.maxX, aabb.minY, aabb.maxZ);
         var1.draw();
     }
 
@@ -270,21 +282,21 @@ public abstract class EntityRenderer
         dispatcher = var1;
     }
 
-    public void postRender(Entity var1, double var2, double var4, double var6, float var8, float var9)
+    public void postRender(Entity target, double x, double y, double z, float yaw, float tickDelta)
     {
         if (shadowRadius > 0.0F)
         {
-            double var10 = dispatcher.squareDistanceTo(var1.x, var1.y, var1.z);
-            float var12 = (float)((1.0D - var10 / 256.0D) * shadowDarkness);
-            if (var12 > 0.0F)
+            double distance = dispatcher.squareDistanceTo(target.x, target.y, target.z);
+            float shadowiness = (float)((1.0D - distance / 256.0D) * shadowStrength);
+            if (shadowiness > 0.0F)
             {
-                renderShadow(var1, var2, var4, var6, var12, var9);
+                renderShadow(target, x, y, z, shadowiness, tickDelta);
             }
         }
 
-        if (var1.isOnFire())
+        if (target.isOnFire())
         {
-            renderOnFire(var1, var2, var4, var6, var9);
+            renderOnFire(target, x, y, z, tickDelta);
         }
 
     }

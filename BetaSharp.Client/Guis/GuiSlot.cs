@@ -21,21 +21,21 @@ public abstract class GuiSlot
     private float scrollMultiplier;
     private float amountScrolled;
     private int selectedElement = -1;
-    private long lastClicked = 0L;
+    private long lastClicked;
     private bool field_25123_p = true;
     private bool field_27262_q;
     private int field_27261_r;
 
-    public GuiSlot(Minecraft var1, int var2, int var3, int var4, int var5, int var6)
+    public GuiSlot(Minecraft mc, int width, int height, int top, int bottom, int posZ)
     {
-        mc = var1;
-        width = var2;
-        height = var3;
-        top = var4;
-        bottom = var5;
-        posZ = var6;
+        this.mc = mc;
+        this.width = width;
+        this.height = height;
+        this.top = top;
+        this.bottom = bottom;
+        this.posZ = posZ;
         left = 0;
-        right = var2;
+        right = width;
     }
 
     public void func_27258_a(bool var1)
@@ -58,7 +58,7 @@ public abstract class GuiSlot
 
     protected abstract void ElementClicked(int var1, bool var2);
 
-    protected abstract bool isSelected(int var1);
+    protected abstract bool isSelected(int slotIndex);
 
     protected virtual int getContentHeight()
     {
@@ -231,7 +231,7 @@ public abstract class GuiSlot
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         float var17 = 32.0F;
         var16.startDrawingQuads();
-        var16.setColorOpaque_I(2105376);
+        var16.setColorOpaque_I(0x202020);
         var16.addVertexWithUV(left, bottom, 0.0D, (double)(left / var17), (double)((bottom + (int)amountScrolled) / var17));
         var16.addVertexWithUV(right, bottom, 0.0D, (double)(right / var17), (double)((bottom + (int)amountScrolled) / var17));
         var16.addVertexWithUV(right, top, 0.0D, (double)(right / var17), (double)((top + (int)amountScrolled) / var17));
@@ -258,12 +258,12 @@ public abstract class GuiSlot
                     GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
                     GLManager.GL.Disable(GLEnum.Texture2D);
                     var16.startDrawingQuads();
-                    var16.setColorOpaque_I(8421504);
+                    var16.setColorOpaque_I(0x808080);
                     var16.addVertexWithUV(var14, var19 + var13 + 2, 0.0D, 0.0D, 1.0D);
                     var16.addVertexWithUV(var15, var19 + var13 + 2, 0.0D, 1.0D, 1.0D);
                     var16.addVertexWithUV(var15, var19 - 2, 0.0D, 1.0D, 0.0D);
                     var16.addVertexWithUV(var14, var19 - 2, 0.0D, 0.0D, 0.0D);
-                    var16.setColorOpaque_I(0);
+                    var16.setColorOpaque_I(0x000000);
                     var16.addVertexWithUV(var14 + 1, var19 + var13 + 1, 0.0D, 0.0D, 1.0D);
                     var16.addVertexWithUV(var15 - 1, var19 + var13 + 1, 0.0D, 1.0D, 1.0D);
                     var16.addVertexWithUV(var15 - 1, var19 - 1, 0.0D, 1.0D, 0.0D);
@@ -286,18 +286,18 @@ public abstract class GuiSlot
         GLManager.GL.ShadeModel(GLEnum.Smooth);
         GLManager.GL.Disable(GLEnum.Texture2D);
         var16.startDrawingQuads();
-        var16.setColorRGBA_I(0, 0);
+        var16.setColorRGBA_I(0x000000, 0);
         var16.addVertexWithUV(left, top + var18, 0.0D, 0.0D, 1.0D);
         var16.addVertexWithUV(right, top + var18, 0.0D, 1.0D, 1.0D);
-        var16.setColorRGBA_I(0, 255);
+        var16.setColorOpaque_I(0x000000);
         var16.addVertexWithUV(right, top, 0.0D, 1.0D, 0.0D);
         var16.addVertexWithUV(left, top, 0.0D, 0.0D, 0.0D);
         var16.draw();
         var16.startDrawingQuads();
-        var16.setColorRGBA_I(0, 255);
+        var16.setColorOpaque_I(0x000000);
         var16.addVertexWithUV(left, bottom, 0.0D, 0.0D, 1.0D);
         var16.addVertexWithUV(right, bottom, 0.0D, 1.0D, 1.0D);
-        var16.setColorRGBA_I(0, 0);
+        var16.setColorRGBA_I(0x000000, 0);
         var16.addVertexWithUV(right, bottom - var18, 0.0D, 1.0D, 0.0D);
         var16.addVertexWithUV(left, bottom - var18, 0.0D, 0.0D, 0.0D);
         var16.draw();
@@ -322,21 +322,21 @@ public abstract class GuiSlot
             }
 
             var16.startDrawingQuads();
-            var16.setColorRGBA_I(0, 255);
+            var16.setColorOpaque_I(0x000000);
             var16.addVertexWithUV(var5, bottom, 0.0D, 0.0D, 1.0D);
             var16.addVertexWithUV(var6, bottom, 0.0D, 1.0D, 1.0D);
             var16.addVertexWithUV(var6, top, 0.0D, 1.0D, 0.0D);
             var16.addVertexWithUV(var5, top, 0.0D, 0.0D, 0.0D);
             var16.draw();
             var16.startDrawingQuads();
-            var16.setColorRGBA_I(8421504, 255);
+            var16.setColorOpaque_I(0x808080);
             var16.addVertexWithUV(var5, var14 + var13, 0.0D, 0.0D, 1.0D);
             var16.addVertexWithUV(var6, var14 + var13, 0.0D, 1.0D, 1.0D);
             var16.addVertexWithUV(var6, var14, 0.0D, 1.0D, 0.0D);
             var16.addVertexWithUV(var5, var14, 0.0D, 0.0D, 0.0D);
             var16.draw();
             var16.startDrawingQuads();
-            var16.setColorRGBA_I(12632256, 255);
+            var16.setColorOpaque_I(0xC0C0C0);
             var16.addVertexWithUV(var5, var14 + var13 - 1, 0.0D, 0.0D, 1.0D);
             var16.addVertexWithUV(var6 - 1, var14 + var13 - 1, 0.0D, 1.0D, 1.0D);
             var16.addVertexWithUV(var6 - 1, var14, 0.0D, 1.0D, 0.0D);

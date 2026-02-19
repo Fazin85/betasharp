@@ -19,9 +19,9 @@ public class BiomeSource
 
     public BiomeSource(World world)
     {
-        _temperatureSampler = new OctaveSimplexNoiseSampler(new java.util.Random(world.getSeed() * 9871L), 4);
-        _downfallSampler = new OctaveSimplexNoiseSampler(new java.util.Random(world.getSeed() * 39811L), 4);
-        _weirdnessSampler = new OctaveSimplexNoiseSampler(new java.util.Random(world.getSeed() * 543321L), 2);
+        _temperatureSampler = new OctaveSimplexNoiseSampler(new JavaRandom(world.getSeed() * 9871L), 4);
+        _downfallSampler = new OctaveSimplexNoiseSampler(new JavaRandom(world.getSeed() * 39811L), 4);
+        _weirdnessSampler = new OctaveSimplexNoiseSampler(new JavaRandom(world.getSeed() * 543321L), 2);
     }
 
     public virtual Biome GetBiome(ChunkPos chunkPos)
@@ -48,14 +48,14 @@ public class BiomeSource
 
     public virtual double[] GetTemperatures(double[] map, int x, int z, int width, int depth)
     {
-         int size = width * depth;
+        int size = width * depth;
         if (map == null || map.Length < size)
         {
             map = new double[size];
         }
 
         map = _temperatureSampler.sample(map, x, z, width, depth, (double)0.025F, (double)0.025F, 0.25D);
-        WeirdnessMap = _weirdnessSampler.sample(WeirdnessMap, x, z, width, depth, 0.25D, 0.25D, 0.5882352941176471D);
+        WeirdnessMap = _weirdnessSampler.sample(WeirdnessMap, x, z, width, depth, 0.25D, 0.25D, 10 / 17d);
         int index = 0;
 
         for (int i = 0; i < width; ++i)

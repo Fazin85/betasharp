@@ -12,8 +12,8 @@ public class EntityFX : Entity
     protected int particleTextureIndex;
     protected float particleTextureJitterX;
     protected float particleTextureJitterY;
-    protected int particleAge = 0;
-    protected int particleMaxAge = 0;
+    protected int particleAge;
+    protected int particleMaxAge;
     protected float particleScale;
     protected float particleGravity;
     protected float particleRed;
@@ -37,10 +37,10 @@ public class EntityFX : Entity
         base.velocityX = base.velocityX / (double)speed * (double)velocityScale * (double)0.4F;
         base.velocityY = base.velocityY / (double)speed * (double)velocityScale * (double)0.4F + (double)0.1F;
         base.velocityZ = base.velocityZ / (double)speed * (double)velocityScale * (double)0.4F;
-        particleTextureJitterX = random.nextFloat() * 3.0F;
-        particleTextureJitterY = random.nextFloat() * 3.0F;
-        particleScale = (random.nextFloat() * 0.5F + 0.5F) * 2.0F;
-        particleMaxAge = (int)(4.0F / (random.nextFloat() * 0.9F + 0.1F));
+        particleTextureJitterX = random.NextFloat() * 3.0F;
+        particleTextureJitterY = random.NextFloat() * 3.0F;
+        particleScale = (random.NextFloat() * 0.5F + 0.5F) * 2.0F;
+        particleMaxAge = (int)(4.0F / (random.NextFloat() * 0.9F + 0.1F));
         particleAge = 0;
     }
 

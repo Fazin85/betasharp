@@ -1,4 +1,5 @@
 using BetaSharp.Entities;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Gen.Features;
 
 namespace BetaSharp.Worlds.Biomes;
@@ -11,8 +12,8 @@ public class BiomeGenTaiga : Biome
         CreatureList.Add(new SpawnListEntry(EntityWolf.Class, 2));
     }
 
-    public override Feature GetRandomWorldGenForTrees(java.util.Random rand)
+    public override Feature GetRandomWorldGenForTrees(JavaRandom rand)
     {
-        return rand.nextInt(3) == 0 ? new PineTreeFeature() : new SpruceTreeFeature();
+        return rand.NextInt(3) == 0 ? new PineTreeFeature() : new SpruceTreeFeature();
     }
 }

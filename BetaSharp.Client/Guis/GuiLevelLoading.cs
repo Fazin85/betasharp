@@ -1,4 +1,4 @@
-using BetaSharp.Client.Network;
+﻿using BetaSharp.Client.Network;
 using BetaSharp.Network;
 using BetaSharp.Server.Internal;
 using BetaSharp.Server.Threading;
@@ -9,7 +9,9 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
 {
     private readonly string _worldDir = worldDir;
     private readonly long _seed = seed;
-    private bool _serverStarted = false;
+    private bool _serverStarted;
+
+    public override bool PausesGame=> false;
 
     public override void InitGui()
     {
@@ -28,7 +30,7 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
         {
             if (mc.internalServer.stopped)
             {
-                mc.displayGuiScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", ["Internal server stopped unexpectedly"]));
+                mc.displayGuiScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", "Internal server stopped unexpectedly"));
                 return;
             }
 
@@ -52,11 +54,6 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
         }
     }
 
-    public override bool DoesGuiPauseGame()
-    {
-        return false;
-    }
-
     public override void Render(int var1, int var2, float var3)
     {
         DrawDefaultBackground();
@@ -72,8 +69,8 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
             progress = mc.internalServer.progress;
         }
 
-        DrawCenteredString(FontRenderer, title, Width / 2, Height / 2 - 50, 0x00FFFFFF);
-        DrawCenteredString(FontRenderer, progressMsg + " (" + progress + "%)", Width / 2, Height / 2 - 10, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, title, Width / 2, Height / 2 - 50, 0xFFFFFF);
+        DrawCenteredString(FontRenderer, progressMsg + " (" + progress + "%)", Width / 2, Height / 2 - 10, 0xFFFFFF);
 
         base.Render(var1, var2, var3);
     }

@@ -32,7 +32,7 @@ public class ItemFishingRod : Item
         }
         else
         {
-            world.playSound(entityPlayer, "random.bow", 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
+            world.playSound(entityPlayer, "random.bow", 0.5F, 0.4F / (itemRand.NextFloat() * 0.4F + 0.8F));
             if (!world.isRemote)
             {
                 world.SpawnEntity(new EntityFish(world, entityPlayer));

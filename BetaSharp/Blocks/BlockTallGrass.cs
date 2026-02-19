@@ -1,4 +1,5 @@
 using BetaSharp.Items;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Colors;
 
@@ -22,7 +23,7 @@ public class BlockTallGrass : BlockPlant
         int meta = blockView.getBlockMeta(x, y, z);
         if (meta == 0)
         {
-            return 0x00FFFFFF;
+            return 0xFFFFFF;
         }
         else
         {
@@ -38,8 +39,8 @@ public class BlockTallGrass : BlockPlant
         }
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
-        return random.nextInt(8) == 0 ? Item.Seeds.id : -1;
+        return random.NextInt(8) == 0 ? Item.Seeds.id : -1;
     }
 }

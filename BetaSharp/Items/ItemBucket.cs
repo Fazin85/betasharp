@@ -107,7 +107,7 @@ public class ItemBucket : Item
                     {
                         if (world.dimension.evaporatesWater && isFull == Block.FlowingWater.id)
                         {
-                            world.playSound(x + 0.5D, y + 0.5D, z + 0.5D, "random.fizz", 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
+                            world.playSound(x + 0.5D, y + 0.5D, z + 0.5D, "random.fizz", 0.5F, 2.6F + (world.random.NextFloat() - world.random.NextFloat()) * 0.8F);
 
                             for (int particleIndex = 0; particleIndex < 8; ++particleIndex)
                             {

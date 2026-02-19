@@ -2,52 +2,56 @@ namespace BetaSharp.Util.Maths.Noise;
 
 public class OctaveSimplexNoiseSampler : NoiseSampler
 {
-    private readonly SimplexNoiseSampler[] field_4234_a;
-    private readonly int field_4233_b;
+    private readonly SimplexNoiseSampler[] _octaves;
+    private readonly int _octaveCount;
 
-    public OctaveSimplexNoiseSampler(java.util.Random var1, int var2)
+    public OctaveSimplexNoiseSampler(JavaRandom rand, int octaveCount)
     {
-        field_4233_b = var2;
-        field_4234_a = new SimplexNoiseSampler[var2];
+        _octaveCount = octaveCount;
+        _octaves = new SimplexNoiseSampler[octaveCount];
 
-        for (int var3 = 0; var3 < var2; ++var3)
+        for (int i = 0; i < octaveCount; ++i)
         {
-            field_4234_a[var3] = new SimplexNoiseSampler(var1);
+            _octaves[i] = new SimplexNoiseSampler(rand);
         }
 
     }
 
-    public double[] sample(double[] var1, double var2, double var4, int var6, int var7, double var8, double var10, double var12)
+    public double[] sample(double[] buffer, double x, double z, int width, int depth, double xFrequency, double zFrequency, double frequencyScaler)
     {
-        return func_4111_a(var1, var2, var4, var6, var7, var8, var10, var12, 0.5D);
+        return sample(buffer, x, z, width, depth, xFrequency, zFrequency, frequencyScaler, 0.5D);
     }
 
-    public double[] func_4111_a(double[] var1, double var2, double var4, int var6, int var7, double var8, double var10, double var12, double var14)
+    public double[] sample(double[] buffer, double x, double z, int width, int depth, double xFrequency, double zFrequency, double frequencyScaler, double amplitudeScaler)
     {
-        var8 /= 1.5D;
-        var10 /= 1.5D;
-        if (var1 != null && var1.Length >= var6 * var7)
+        xFrequency /= 1.5D;
+        zFrequency /= 1.5D;
+        if (buffer != null && buffer.Length >= width * depth)
         {
-            for (int var16 = 0; var16 < var1.Length; ++var16)
+            for (int i = 0; i < buffer.Length; ++i)
             {
-                var1[var16] = 0.0D;
+                buffer[i] = 0.0D;
             }
         }
         else
         {
-            var1 = new double[var6 * var7];
+            buffer = new double[width * depth];
         }
 
-        double var21 = 1.0D;
-        double var18 = 1.0D;
+        double amplitudeDivisor = 1.0D;
+        double frequencyMultiplier = 1.0D;
 
-        for (int var20 = 0; var20 < field_4233_b; ++var20)
+        for (int i = 0; i < _octaveCount; ++i)
         {
-            field_4234_a[var20].func_4157_a(var1, var2, var4, var6, var7, var8 * var18, var10 * var18, 0.55D / var21);
-            var18 *= var12;
-            var21 *= var14;
+            _octaves[i].sample(buffer,
+                x, z, width, depth,
+                xFrequency * frequencyMultiplier,
+                zFrequency * frequencyMultiplier,
+                0.55D / amplitudeDivisor);
+            frequencyMultiplier *= frequencyScaler;
+            amplitudeDivisor *= amplitudeScaler;
         }
 
-        return var1;
+        return buffer;
     }
 }

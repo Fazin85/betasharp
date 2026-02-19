@@ -1,31 +1,31 @@
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Chunks;
 
 namespace BetaSharp.Worlds.Gen.Carvers;
 
 public class Carver
 {
-    protected int field_1306_a = 8;
-    protected java.util.Random rand = new();
+    protected int radius = 8;
+    protected JavaRandom rand = new();
 
-    public virtual void carve(ChunkSource source, World world, int var3, int var4, byte[] var5)
+    public virtual void carve(ChunkSource source, World world, int chunkX, int chunkZ, byte[] blocks)
     {
-        int var6 = field_1306_a;
-        rand.setSeed(world.getSeed());
-        long var7 = rand.nextLong() / 2L * 2L + 1L;
-        long var9 = rand.nextLong() / 2L * 2L + 1L;
+        rand.SetSeed(world.getSeed());
+        long rand1 = rand.NextLong() / 2L * 2L + 1L;
+        long rand2 = rand.NextLong() / 2L * 2L + 1L;
 
-        for (int var11 = var3 - var6; var11 <= var3 + var6; ++var11)
+        for (int currentX = chunkX - radius; currentX <= chunkX + radius; ++currentX)
         {
-            for (int var12 = var4 - var6; var12 <= var4 + var6; ++var12)
+            for (int currentZ = chunkZ - radius; currentZ <= chunkZ + radius; ++currentZ)
             {
-                rand.setSeed(var11 * var7 + var12 * var9 ^ world.getSeed());
-                func_868_a(world, var11, var12, var3, var4, var5);
+                rand.SetSeed(currentX * rand1 + currentZ * rand2 ^ world.getSeed());
+                func_868_a(world, currentX, currentZ, chunkX, chunkZ, blocks);
             }
         }
 
     }
 
-    protected virtual void func_868_a(World var1, int var2, int var3, int var4, int var5, byte[] var6)
+    protected virtual void func_868_a(World world, int chunkX, int chunkZ, int centerChunkX, int centerChunkZ, byte[] blocks)
     {
     }
 }

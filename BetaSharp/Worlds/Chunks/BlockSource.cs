@@ -30,9 +30,9 @@ public class BlockSource
                 BLOCKS[var0] = var1;
             }
         }
-        catch (java.lang.Exception var2)
+        catch (java.lang.Exception ex)
         {
-            var2.printStackTrace();
+            ex.printStackTrace();
         }
 
     }

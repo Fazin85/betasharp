@@ -9,6 +9,8 @@ public class GuiDownloadTerrain : GuiScreen
     private readonly ClientNetworkHandler _networkHandler;
     private int _tickCounter = 0;
 
+    public override bool PausesGame => false;
+
     public GuiDownloadTerrain(ClientNetworkHandler networkHandler)
     {
         this._networkHandler = networkHandler;
@@ -38,11 +40,6 @@ public class GuiDownloadTerrain : GuiScreen
 
     }
 
-    public override bool DoesGuiPauseGame()
-    {
-        return false;
-    }
-
     protected override void ActionPerformed(GuiButton button)
     {
     }
@@ -51,7 +48,7 @@ public class GuiDownloadTerrain : GuiScreen
     {
         DrawBackground(0);
         TranslationStorage translations = TranslationStorage.getInstance();
-        DrawCenteredString(FontRenderer, translations.translateKey("multiplayer.downloadingTerrain"), Width / 2, Height / 2 - 50, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, translations.translateKey("multiplayer.downloadingTerrain"), Width / 2, Height / 2 - 50, 0xFFFFFF);
         base.Render(mouseX, mouseY, partialTicks);
     }
 }

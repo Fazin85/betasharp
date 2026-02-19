@@ -8,23 +8,23 @@ public class MD5String
 {
     private readonly string salt;
 
-    public MD5String(string var1)
+    public MD5String(string salt)
     {
-        salt = var1;
+        this.salt = salt;
     }
 
-    public string func_27369_a(string var1)
+    public string hash(string str)
     {
         try
         {
-            string var2 = salt + var1;
+            string saltedString = salt + str;
             MessageDigest var3 = MessageDigest.getInstance("MD5");
-            var3.update(Encoding.UTF8.GetBytes(var2), 0, var2.Length);
+            var3.update(Encoding.UTF8.GetBytes(saltedString), 0, saltedString.Length);
             return new java.math.BigInteger(1, var3.digest()).toString(16);
         }
-        catch (NoSuchAlgorithmException var4)
+        catch (NoSuchAlgorithmException ex)
         {
-            throw new RuntimeException(var4);
+            throw new RuntimeException(ex);
         }
     }
 }

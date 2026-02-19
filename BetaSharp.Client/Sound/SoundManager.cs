@@ -20,7 +20,7 @@ public class SoundManager
     private int _soundSourceSuffix = 0;
     private GameOptions _options;
     private static bool _started = false;
-    private readonly java.util.Random _rand = new();
+    private readonly JavaRandom _rand = new();
 
     private int _ticksBeforeMusic = 0;
     private Music _currentMusic = null;
@@ -28,7 +28,7 @@ public class SoundManager
 
     public SoundManager()
     {
-        _ticksBeforeMusic = _rand.nextInt(12000);
+        _ticksBeforeMusic = _rand.NextInt(12000);
     }
 
     public void LoadSoundSettings(GameOptions options)
@@ -176,7 +176,7 @@ public class SoundManager
             return null;
         }
 
-        int index = _rand.nextInt(value.Count);
+        int index = _rand.NextInt(value.Count);
         return value[index];
     }
 
@@ -223,7 +223,7 @@ public class SoundManager
         if (entry == null) return;
 
 
-        _ticksBeforeMusic = _rand.nextInt(12000) + 12000;
+        _ticksBeforeMusic = _rand.NextInt(12000) + 12000;
 
         _currentMusic?.Stop();
         _currentMusic?.Dispose();
@@ -237,8 +237,6 @@ public class SoundManager
             RelativeToListener = true,
             Position = new Vector3f(0, 0, 0)
         };
-
-        Console.WriteLine($"Playing random music: {musicName}");
 
         _currentMusic.Play();
     }

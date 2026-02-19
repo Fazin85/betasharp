@@ -13,7 +13,7 @@ public class MapState : PersistentState
     public int centerZ;
     public sbyte dimension;
     public sbyte scale;
-    public byte[] colors = new byte[16384];
+    public byte[] colors = new byte[128*128];
     public int inventoryTicks;
     public List updateTrackers = new ArrayList();
     private Map updateTrackersByPlayer = new HashMap();
@@ -48,7 +48,7 @@ public class MapState : PersistentState
         else
         {
             byte[] var4 = nbt.GetByteArray("colors");
-            colors = new byte[16384];
+            colors = new byte[128*128];
             int var5 = (128 - var2) / 2;
             int var6 = (128 - var3) / 2;
 

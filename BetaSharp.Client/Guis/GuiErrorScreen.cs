@@ -21,7 +21,7 @@ public class GuiErrorScreen : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, "Out of memory!", Width / 2, Height / 4 - 60 + 20, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, "Out of memory!", Width / 2, Height / 4 - 60 + 20, 0xFFFFFF);
         DrawString(FontRenderer, "Minecraft has run out of memory.", Width / 2 - 140, Height / 4 - 60 + 60 + 0, 0xA0A0A0);
         DrawString(FontRenderer, "This could be caused by a bug in the game or by the", Width / 2 - 140, Height / 4 - 60 + 60 + 18, 0xA0A0A0);
         DrawString(FontRenderer, "Java Virtual Machine not being allocated enough", Width / 2 - 140, Height / 4 - 60 + 60 + 27, 0xA0A0A0);

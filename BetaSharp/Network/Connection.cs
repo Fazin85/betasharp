@@ -21,14 +21,14 @@ public class Connection
     protected List sendQueue = Collections.synchronizedList(new ArrayList());
     protected List delayedSendQueue = Collections.synchronizedList(new ArrayList());
     protected NetHandler? networkHandler;
-    protected bool closed = false;
+    protected bool closed;
     private readonly java.lang.Thread _writer;
     private readonly java.lang.Thread _reader;
-    protected bool disconnected = false;
+    protected bool disconnected;
     protected string disconnectedReason = "";
     protected object[]? disconnectReasonArgs;
-    protected int timeout = 0;
-    protected int sendQueueSize = 0;
+    protected int timeout;
+    protected int sendQueueSize;
     public static readonly int[] TOTAL_READ_SIZE = new int[256];
     public static readonly int[] TOTAL_SEND_SIZE = new int[256];
     public int lag = 0;
@@ -184,7 +184,7 @@ public class Connection
             }
             else
             {
-                disconnect("disconnect.endOfStream", []);
+                disconnect("disconnect.endOfStream");
             }
 
             return receivedPacket;
@@ -203,7 +203,7 @@ public class Connection
     private void disconnect(java.lang.Exception ex)
     {
         ex.printStackTrace();
-        disconnect("disconnect.genericReason", ["Internal exception: " + ex.toString()]);
+        disconnect("disconnect.genericReason", "Internal exception: " + ex.toString());
     }
 
     public virtual void disconnect(string disconnectedReason, params object[] disconnectReasonArgs)
@@ -250,14 +250,14 @@ public class Connection
     {
         if (sendQueueSize > 1048576)
         {
-            disconnect("disconnect.overflow", []);
+            disconnect("disconnect.overflow");
         }
 
         if (readQueue.isEmpty())
         {
             if (timeout++ == 1200)
             {
-                disconnect("disconnect.timeout", []);
+                disconnect("disconnect.timeout");
             }
         }
         else

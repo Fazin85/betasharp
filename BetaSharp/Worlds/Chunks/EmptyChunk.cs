@@ -7,19 +7,19 @@ namespace BetaSharp.Worlds.Chunks;
 
 public class EmptyChunk : Chunk
 {
-    public EmptyChunk(World var1, int var2, int var3) : base(var1, var2, var3)
+    public EmptyChunk(World world, int x, int z) : base(world, x, z)
     {
         empty = true;
     }
 
-    public EmptyChunk(World var1, byte[] var2, int var3, int var4) : base(var1, var2, var3, var4)
+    public EmptyChunk(World world, byte[] blocks, int x, int z) : base(world, blocks, x, z)
     {
         empty = true;
     }
 
-    public override bool chunkPosEquals(int var1, int var2)
+    public override bool chunkPosEquals(int x, int z)
     {
-        return var1 == x && var2 == z;
+        return x == this.x && z == this.z;
     }
 
     public override int getHeight(int var1, int var2)
@@ -149,7 +149,7 @@ public class EmptyChunk : Chunk
         return var12 + var12 / 2 * 3;
     }
 
-    public override java.util.Random getSlimeRandom(long var1)
+    public override JavaRandom getSlimeRandom(long var1)
     {
         return new(world.getSeed() + x * x * 4987142 + x * 5947611 + z * z * 4392871L + z * 389711 ^ var1);
     }

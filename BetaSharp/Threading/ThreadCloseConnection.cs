@@ -20,12 +20,12 @@ public class ThreadCloseConnection : java.lang.Thread
             if (Connection.isOpen(this.field_28109_a))
             {
                 Connection.getWriter(this.field_28109_a).interrupt();
-                this.field_28109_a.disconnect("disconnect.closed", new Object[0]);
+                this.field_28109_a.disconnect("disconnect.closed");
             }
         }
-        catch (java.lang.Exception var2)
+        catch (java.lang.Exception ex)
         {
-            var2.printStackTrace();
+            ex.printStackTrace();
         }
 
     }

@@ -1,6 +1,7 @@
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
 using BetaSharp.Items;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Colors;
 
@@ -67,7 +68,7 @@ public class BlockLeaves : BlockLeavesBase
 
     }
 
-    public override void onTick(World world, int x, int y, int z, java.util.Random random)
+    public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
         if (!world.isRemote)
         {
@@ -190,12 +191,12 @@ public class BlockLeaves : BlockLeavesBase
         world.setBlock(x, y, z, 0);
     }
 
-    public override int getDroppedItemCount(java.util.Random random)
+    public override int getDroppedItemCount(JavaRandom random)
     {
-        return random.nextInt(20) == 0 ? 1 : 0;
+        return random.NextInt(20) == 0 ? 1 : 0;
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
         return Block.Sapling.id;
     }

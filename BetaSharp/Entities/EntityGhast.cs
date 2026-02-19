@@ -8,14 +8,14 @@ public class EntityGhast : EntityFlying, Monster
 {
     public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityGhast).TypeHandle);
 
-    public int courseChangeCooldown = 0;
+    public int courseChangeCooldown;
     public double waypointX;
     public double waypointY;
     public double waypointZ;
-    private Entity targetedEntity = null;
-    private int aggroCooldown = 0;
-    public int prevAttackCounter = 0;
-    public int attackCounter = 0;
+    private Entity targetedEntity;
+    private int aggroCooldown;
+    public int prevAttackCounter;
+    public int attackCounter;
 
     public EntityGhast(World world) : base(world)
     {
@@ -52,14 +52,14 @@ public class EntityGhast : EntityFlying, Monster
         double distance = (double)MathHelper.sqrt_double(dx1 * dx1 + dy1 * dy1 + dz1 * dz1);
         if (distance < 1.0D || distance > 60.0D)
         {
-            waypointX = x + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
-            waypointY = y + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
-            waypointZ = z + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
+            waypointX = x + (double)((random.NextFloat() * 2.0F - 1.0F) * 16.0F);
+            waypointY = y + (double)((random.NextFloat() * 2.0F - 1.0F) * 16.0F);
+            waypointZ = z + (double)((random.NextFloat() * 2.0F - 1.0F) * 16.0F);
         }
 
         if (courseChangeCooldown-- <= 0)
         {
-            courseChangeCooldown += random.nextInt(5) + 2;
+            courseChangeCooldown += random.NextInt(5) + 2;
             if (isCourseTraversable(waypointX, waypointY, waypointZ, distance))
             {
                 velocityX += dx1 / distance * 0.1D;
@@ -99,13 +99,13 @@ public class EntityGhast : EntityFlying, Monster
             {
                 if (attackCounter == 10)
                 {
-                    world.playSound(this, "mob.ghast.charge", getSoundVolume(), (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
+                    world.playSound(this, "mob.ghast.charge", getSoundVolume(), (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
                 }
 
                 ++attackCounter;
                 if (attackCounter == 20)
                 {
-                    world.playSound(this, "mob.ghast.fireball", getSoundVolume(), (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
+                    world.playSound(this, "mob.ghast.fireball", getSoundVolume(), (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
                     EntityFireball fireball = new EntityFireball(world, this, dx2, dy2, dz2);
                     double spawnOffset = 4.0D;
                     Vec3D lookDir = getLook(1.0F);
@@ -188,7 +188,7 @@ public class EntityGhast : EntityFlying, Monster
 
     public override bool canSpawn()
     {
-        return random.nextInt(20) == 0 && base.canSpawn() && world.difficulty > 0;
+        return random.NextInt(20) == 0 && base.canSpawn() && world.difficulty > 0;
     }
 
     public override int getMaxSpawnedInChunk()

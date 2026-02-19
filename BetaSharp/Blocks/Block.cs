@@ -316,11 +316,11 @@ public class Block : java.lang.Object
         return true;
     }
 
-    public virtual void onTick(World world, int x, int y, int z, java.util.Random random)
+    public virtual void onTick(World world, int x, int y, int z, JavaRandom random)
     {
     }
 
-    public virtual void randomDisplayTick(World world, int x, int y, int z, java.util.Random random)
+    public virtual void randomDisplayTick(World world, int x, int y, int z, JavaRandom random)
     {
     }
 
@@ -345,12 +345,12 @@ public class Block : java.lang.Object
     {
     }
 
-    public virtual int getDroppedItemCount(java.util.Random random)
+    public virtual int getDroppedItemCount(JavaRandom random)
     {
         return 1;
     }
 
-    public virtual int getDroppedItemId(int blockMeta, java.util.Random random)
+    public virtual int getDroppedItemId(int blockMeta, JavaRandom random)
     {
         return id;
     }
@@ -373,7 +373,7 @@ public class Block : java.lang.Object
 
             for (int attempt = 0; attempt < dropCount; ++attempt)
             {
-                if (world.random.nextFloat() <= luck)
+                if (world.random.NextFloat() <= luck)
                 {
                     int itemId = getDroppedItemId(meta, world.random);
                     if (itemId > 0)
@@ -391,9 +391,9 @@ public class Block : java.lang.Object
         if (!world.isRemote)
         {
             float spreadFactor = 0.7F;
-            double offsetX = (double)(world.random.nextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
-            double offsetY = (double)(world.random.nextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
-            double offsetZ = (double)(world.random.nextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
+            double offsetX = (double)(world.random.NextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
+            double offsetY = (double)(world.random.NextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
+            double offsetZ = (double)(world.random.NextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
             EntityItem droppedItem = new EntityItem(world, (double)x + offsetX, (double)y + offsetY, (double)z + offsetZ, itemStack);
             droppedItem.delayBeforeCanPickup = 10;
             world.SpawnEntity(droppedItem);
@@ -470,12 +470,12 @@ public class Block : java.lang.Object
 
     public virtual int getColor(int meta)
     {
-        return 0x00FFFFFF;
+        return 0xFFFFFF;
     }
 
     public virtual int getColorMultiplier(BlockView blockView, int x, int y, int z)
     {
-        return 0x00FFFFFF;
+        return 0xFFFFFF;
     }
 
     public virtual bool isPoweringSide(BlockView blockView, int x, int y, int z, int side)

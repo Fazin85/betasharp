@@ -10,6 +10,8 @@ public class GuiConnecting : GuiScreen
     private bool _cancelled = false;
     private const int _buttonCancel = 0;
 
+    public override bool PausesGame=> false;
+
     public GuiConnecting(Minecraft mc, string host, int port)
     {
         Log.Info($"Connecting to {host}, {port}");
@@ -63,21 +65,16 @@ public class GuiConnecting : GuiScreen
         TranslationStorage translations = TranslationStorage.getInstance();
         if (_clientHandler == null)
         {
-            DrawCenteredString(FontRenderer, translations.translateKey("connect.connecting"), Width / 2, Height / 2 - 50, 0x00FFFFFF);
-            DrawCenteredString(FontRenderer, "", Width / 2, Height / 2 - 10, 0x00FFFFFF);
+            DrawCenteredString(FontRenderer, translations.translateKey("connect.connecting"), Width / 2, Height / 2 - 50, 0xFFFFFF);
+            DrawCenteredString(FontRenderer, "", Width / 2, Height / 2 - 10, 0xFFFFFF);
         }
         else
         {
-            DrawCenteredString(FontRenderer, translations.translateKey("connect.authorizing"), Width / 2, Height / 2 - 50, 0x00FFFFFF);
-            DrawCenteredString(FontRenderer, _clientHandler.field_1209_a, Width / 2, Height / 2 - 10, 0x00FFFFFF);
+            DrawCenteredString(FontRenderer, translations.translateKey("connect.authorizing"), Width / 2, Height / 2 - 50, 0xFFFFFF);
+            DrawCenteredString(FontRenderer, _clientHandler.field_1209_a, Width / 2, Height / 2 - 10, 0xFFFFFF);
         }
 
         base.Render(mouseX, mouseY, partialTicks);
-    }
-
-    public override bool DoesGuiPauseGame()
-    {
-        return false;
     }
 
     public static ClientNetworkHandler setNetClientHandler(GuiConnecting guiConnecting, ClientNetworkHandler handler)

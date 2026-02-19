@@ -16,6 +16,7 @@ public class GuiScreen : Gui
     public int Height;
     protected List<GuiButton> _controlList = new();
     public bool AllowUserInput = false;
+    public virtual bool PausesGame => true;
     public TextRenderer FontRenderer;
     public GuiParticle ParticlesGui;
     private GuiButton SelectedButton = null;
@@ -26,7 +27,6 @@ public class GuiScreen : Gui
         {
             control.DrawButton(mc, mouseX, mouseY);
         }
-
     }
 
     protected virtual void KeyTyped(char eventChar, int eventKey)
@@ -210,8 +210,6 @@ public class GuiScreen : Gui
         tess.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0 + var1);
         tess.draw();
     }
-
-    public virtual bool DoesGuiPauseGame() => true;
 
     public virtual void DeleteWorld(bool var1, int var2) { }
 

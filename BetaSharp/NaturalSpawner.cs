@@ -10,14 +10,19 @@ namespace BetaSharp;
 
 public class NaturalSpawner
 {
-    private static HashSet<ChunkPos> eligibleChunksForSpawning = new HashSet<ChunkPos>();
-    protected static readonly Class[] nightSpawnEntities = new Class[] { EntitySpider.Class, EntityZombie.Class, EntitySkeleton.Class };
+    private static HashSet<ChunkPos> eligibleChunksForSpawning = [];
+    protected static readonly Class[] nightSpawnEntities =
+    [
+        EntitySpider.Class,
+        EntityZombie.Class,
+        EntitySkeleton.Class,
+    ];
 
     protected static BlockPos getRandomSpawningPointInChunk(World var0, int var1, int var2)
     {
-        int var3 = var1 + var0.random.nextInt(16);
-        int var4 = var0.random.nextInt(128);
-        int var5 = var2 + var0.random.nextInt(16);
+        int var3 = var1 + var0.random.NextInt(16);
+        int var4 = var0.random.NextInt(128);
+        int var5 = var2 + var0.random.NextInt(16);
         return new BlockPos(var3, var4, var5);
     }
 
@@ -57,7 +62,7 @@ public class NaturalSpawner
             for (int var37 = 0; var37 < var6; ++var37)
             {
                 EnumCreatureType var38 = var36[var37];
-                if ((!var38.getPeacefulCreature() || var2) && (var38.getPeacefulCreature() || var1) && var0.countEntities(var38.getCreatureClass()) <= var38.getMaxNumberOfCreature() * eligibleChunksForSpawning.Count / 256)
+                if ((!var38.isPeaceful() || var2) && (var38.isPeaceful() || var1) && var0.countEntities(var38.getCreatureClass()) <= var38.getMaxAllowed() * eligibleChunksForSpawning.Count / 256)
                 {
                     foreach (var chunk in eligibleChunksForSpawning)
                     {
@@ -75,7 +80,7 @@ public class NaturalSpawner
                             var13 += entry.spawnRarityRate;
                         }
 
-                        int var40 = var0.random.nextInt(var13);
+                        int var40 = var0.random.NextInt(var13);
                         SpawnListEntry? e = null;
 
                         foreach (var entry in var12)
@@ -99,7 +104,7 @@ public class NaturalSpawner
                             continue;
                         }
 
-                        if (var0.getMaterial(var42, var18, var19) != var38.getCreatureMaterial())
+                        if (var0.getMaterial(var42, var18, var19) != var38.getMaterial())
                         {
                             continue;
                         }
@@ -116,9 +121,9 @@ public class NaturalSpawner
 
                             for (int var26 = 0; var26 < 4 && !breakToNextChunk; ++var26)
                             {
-                                var22 += var0.random.nextInt(var25) - var0.random.nextInt(var25);
-                                var23 += var0.random.nextInt(1) - var0.random.nextInt(1);
-                                var24 += var0.random.nextInt(var25) - var0.random.nextInt(var25);
+                                var22 += var0.random.NextInt(var25) - var0.random.NextInt(var25);
+                                var23 += var0.random.NextInt(1) - var0.random.NextInt(1);
+                                var24 += var0.random.NextInt(var25) - var0.random.NextInt(var25);
                                 if (canCreatureTypeSpawnAtLocation(var38, var0, var22, var23, var24))
                                 {
                                     float var27 = (float)var22 + 0.5F;
@@ -135,15 +140,15 @@ public class NaturalSpawner
                                             EntityLiving var43;
                                             try
                                             {
-                                                var43 = (EntityLiving)e!.entityClass.getConstructor(new Class[] { World.Class }).newInstance(new java.lang.Object[] { var0 });
+                                                var43 = (EntityLiving)e!.entityClass.getConstructor(World.Class).newInstance(var0);
                                             }
-                                            catch (java.lang.Exception var34)
+                                            catch (java.lang.Exception ex)
                                             {
-                                                var34.printStackTrace();
+                                                ex.printStackTrace();
                                                 return var3;
                                             }
 
-                                            var43.setPositionAndAnglesKeepPrevAngles((double)var27, (double)var28, (double)var29, var0.random.nextFloat() * 360.0F, 0.0F);
+                                            var43.setPositionAndAnglesKeepPrevAngles((double)var27, (double)var28, (double)var29, var0.random.NextFloat() * 360.0F, 0.0F);
                                             if (var43.canSpawn())
                                             {
                                                 ++var20;
@@ -171,12 +176,12 @@ public class NaturalSpawner
 
     private static bool canCreatureTypeSpawnAtLocation(EnumCreatureType var0, World var1, int var2, int var3, int var4)
     {
-        return var0.getCreatureMaterial() == Material.Water ? var1.getMaterial(var2, var3, var4).IsFluid && !var1.shouldSuffocate(var2, var3 + 1, var4) : var1.shouldSuffocate(var2, var3 - 1, var4) && !var1.shouldSuffocate(var2, var3, var4) && !var1.getMaterial(var2, var3, var4).IsFluid && !var1.shouldSuffocate(var2, var3 + 1, var4);
+        return var0.getMaterial() == Material.Water ? var1.getMaterial(var2, var3, var4).IsFluid && !var1.shouldSuffocate(var2, var3 + 1, var4) : var1.shouldSuffocate(var2, var3 - 1, var4) && !var1.shouldSuffocate(var2, var3, var4) && !var1.getMaterial(var2, var3, var4).IsFluid && !var1.shouldSuffocate(var2, var3 + 1, var4);
     }
 
     private static void creatureSpecificInit(EntityLiving var0, World var1, float var2, float var3, float var4)
     {
-        if (var0 is EntitySpider && var1.random.nextInt(100) == 0)
+        if (var0 is EntitySpider && var1.random.NextInt(100) == 0)
         {
             EntitySkeleton var5 = new EntitySkeleton(var1);
             var5.setPositionAndAnglesKeepPrevAngles((double)var2, (double)var3, (double)var4, var0.yaw, 0.0F);
@@ -217,9 +222,9 @@ public class NaturalSpawner
 
             for (int var8 = 0; var8 < 20 && !var7; ++var8)
             {
-                int var9 = MathHelper.floor_double(var5.x) + var0.random.nextInt(32) - var0.random.nextInt(32);
-                int var10 = MathHelper.floor_double(var5.z) + var0.random.nextInt(32) - var0.random.nextInt(32);
-                int var11 = MathHelper.floor_double(var5.y) + var0.random.nextInt(16) - var0.random.nextInt(16);
+                int var9 = MathHelper.floor_double(var5.x) + var0.random.NextInt(32) - var0.random.NextInt(32);
+                int var10 = MathHelper.floor_double(var5.z) + var0.random.NextInt(32) - var0.random.NextInt(32);
+                int var11 = MathHelper.floor_double(var5.y) + var0.random.NextInt(16) - var0.random.NextInt(16);
                 if (var11 < 1)
                 {
                     var11 = 1;
@@ -229,7 +234,7 @@ public class NaturalSpawner
                     var11 = 128;
                 }
 
-                int var12 = var0.random.nextInt(var6.Length);
+                int var12 = var0.random.NextInt(var6.Length);
 
                 int var13;
                 for (var13 = var11; var13 > 2 && !var0.shouldSuffocate(var9, var13 - 1, var10); --var13)
@@ -250,15 +255,15 @@ public class NaturalSpawner
                     EntityLiving var17;
                     try
                     {
-                        var17 = (EntityLiving)var6[var12].getConstructor(new Class[] { typeof(World) }).newInstance(new java.lang.Object[] { var0 });
+                        var17 = (EntityLiving)var6[var12].getConstructor(typeof(World)).newInstance(var0);
                     }
-                    catch (java.lang.Exception var21)
+                    catch (java.lang.Exception ex)
                     {
-                        var21.printStackTrace();
+                        ex.printStackTrace();
                         return monstersSpawned;
                     }
 
-                    var17.setPositionAndAnglesKeepPrevAngles((double)var14, (double)var15, (double)var16, var0.random.nextFloat() * 360.0F, 0.0F);
+                    var17.setPositionAndAnglesKeepPrevAngles((double)var14, (double)var15, (double)var16, var0.random.NextFloat() * 360.0F, 0.0F);
                     if (var17.canSpawn())
                     {
                         PathEntity var18 = pathfinder.createEntityPathTo(var17, var5, 32.0F);

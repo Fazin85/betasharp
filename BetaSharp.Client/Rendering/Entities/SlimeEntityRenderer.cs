@@ -10,7 +10,7 @@ public class SlimeEntityRenderer : LivingEntityRenderer
 
     private readonly ModelBase scaleAmount;
 
-    public SlimeEntityRenderer(ModelBase var1, ModelBase var2, float var3) : base(var1, var3)
+    public SlimeEntityRenderer(ModelBase mainModel, ModelBase var2, float var3) : base(mainModel, var3)
     {
         scaleAmount = var2;
     }

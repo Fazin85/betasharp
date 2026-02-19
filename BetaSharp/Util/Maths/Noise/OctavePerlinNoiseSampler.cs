@@ -3,62 +3,70 @@ namespace BetaSharp.Util.Maths.Noise;
 public class OctavePerlinNoiseSampler : NoiseSampler
 {
 
-    private PerlinNoiseSampler[] generatorCollection;
-    private int field_1191_b;
+    private readonly PerlinNoiseSampler[] _octaves;
+    private readonly int _octaveCount;
 
-    public OctavePerlinNoiseSampler(java.util.Random var1, int var2)
+    public OctavePerlinNoiseSampler(JavaRandom rand, int octaveCount)
     {
-        field_1191_b = var2;
-        generatorCollection = new PerlinNoiseSampler[var2];
+        _octaveCount = octaveCount;
+        _octaves = new PerlinNoiseSampler[octaveCount];
 
-        for (int var3 = 0; var3 < var2; ++var3)
+        for (int i = 0; i < octaveCount; ++i)
         {
-            generatorCollection[var3] = new PerlinNoiseSampler(var1);
+            _octaves[i] = new PerlinNoiseSampler(rand);
         }
-
     }
 
-    public double func_806_a(double var1, double var3)
+    public double generateNoise(double x, double y)
     {
-        double var5 = 0.0D;
-        double var7 = 1.0D;
+        double value = 0.0D;
+        double amplitude = 1.0D;
 
-        for (int var9 = 0; var9 < field_1191_b; ++var9)
+        for (int i = 0; i < _octaveCount; ++i)
         {
-            var5 += generatorCollection[var9].func_801_a(var1 * var7, var3 * var7) / var7;
-            var7 /= 2.0D;
+            value += _octaves[i].generateNoise(x * amplitude, y * amplitude) / amplitude;
+            amplitude /= 2.0D;
         }
 
-        return var5;
+        return value;
     }
 
-    public double[] create(double[] var1, double var2, double var4, double var6, int var8, int var9, int var10, double var11, double var13, double var15)
+    public double[] create(double[] buffer, double xStart, double yStart, double zStart, int xSize, int ySize, int zSize, double xFrequency, double yFrequency, double zFrequency)
     {
-        if (var1 == null)
+        if (buffer == null)
         {
-            var1 = new double[var8 * var9 * var10];
+            buffer = new double[xSize * ySize * zSize];
         }
         else
         {
-            for (int var17 = 0; var17 < var1.Length; ++var17)
-            {
-                var1[var17] = 0.0D;
-            }
+            Array.Fill(buffer, 0);
         }
 
-        double var20 = 1.0D;
+        double octaveMultiplier = 1.0D;
 
-        for (int var19 = 0; var19 < field_1191_b; ++var19)
+        for (int i = 0; i < _octaveCount; ++i)
         {
-            generatorCollection[var19].func_805_a(var1, var2, var4, var6, var8, var9, var10, var11 * var20, var13 * var20, var15 * var20, var20);
-            var20 /= 2.0D;
+            _octaves[i]
+                .sample(buffer,
+                    xStart,
+                    yStart,
+                    zStart,
+                    xSize,
+                    ySize,
+                    zSize,
+                    xFrequency * octaveMultiplier,
+                    yFrequency * octaveMultiplier,
+                    zFrequency * octaveMultiplier,
+                    octaveMultiplier);
+            octaveMultiplier /= 2.0D;
         }
 
-        return var1;
+        return buffer;
     }
 
-    public double[] create(double[] var1, int var2, int var3, int var4, int var5, double var6, double var8, double var10)
+    // The last argument goes unused, but if it were used, it would definitely be that.
+    public double[] create(double[] buffer, int xStart, int zStart, int xSize, int zSize, double xFrequency, double zFrequency, double inverseAmplitude)
     {
-        return create(var1, var2, 10.0D, var3, var4, 1, var5, var6, 1.0D, var8);
+        return create(buffer, xStart, 10.0D, zStart, xSize, 1, zSize, xFrequency, 1.0D, zFrequency);
     }
 }

@@ -27,9 +27,9 @@ public class TextRenderer : java.lang.Object
         {
             var4 = ImageIO.read(new ByteArrayInputStream(AssetManager.Instance.getAsset("font/default.png").getBinaryContent()));
         }
-        catch (java.io.IOException var18)
+        catch (java.io.IOException ex)
         {
-            throw new RuntimeException(var18);
+            throw new RuntimeException(ex);
         }
 
         int var5 = var4.getWidth();
@@ -126,55 +126,56 @@ public class TextRenderer : java.lang.Object
 
     }
 
-    public void drawStringWithShadow(string var1, int var2, int var3, uint color)
+    public void drawStringWithShadow(string text, int x, int y, uint color)
     {
-        renderString(var1, var2 + 1, var3 + 1, color, true);
-        drawString(var1, var2, var3, color);
+        renderString(text, x + 1, y + 1, color, true);
+        drawString(text, x, y, color);
     }
 
-    public void drawString(string var1, int var2, int var3, uint color)
+    public void drawString(string text, int x, int y, uint color)
     {
-        renderString(var1, var2, var3, color, false);
+        renderString(text, x, y, color, false);
     }
 
-    public unsafe void renderString(string var1, int var2, int var3, uint color, bool var5)
+    public unsafe void renderString(string text, int x, int y, uint color, bool darken)
     {
-        if (var1 != null)
+        if (text != null)
         {
-            if (var5)
+            uint alpha = color & 0xFF000000;
+            if (darken)
             {
-                uint var6 = color & 0xFF000000;
-                color = (color & 0x00FCFCFC) >> 2;
-                color += var6;
+                color = (color & 0xFCFCFC) >> 2;
+                color |= alpha;
             }
+            // assume alpha was omitted and default to fully opaque
 
             GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)fontTextureName);
-            float var10 = (color >> 16 & 255) / 255.0F;
-            float var7 = (color >> 8 & 255) / 255.0F;
-            float var8 = (color & 255) / 255.0F;
-            float var9 = (color >> 24 & 255) / 255.0F;
-            if (var9 == 0.0F)
+            float a = (color >> 24 & 255) / 255.0F;
+            float r = (color >> 16 & 255) / 255.0F;
+            float g = (color >> 8 & 255) / 255.0F;
+            float b = (color & 255) / 255.0F;
+            if (a == 0.0F)
             {
-                var9 = 1.0F;
+                a = 1.0F;
             }
 
-            GLManager.GL.Color4(var10, var7, var8, var9);
+            GLManager.GL.Color4(r, g, b, a);
             _buffer.clear();
             GLManager.GL.PushMatrix();
-            GLManager.GL.Translate(var2, var3, 0.0F);
+            GLManager.GL.Translate(x, y, 0.0F);
 
-            for (int i = 0; i < var1.Length; ++i)
+            for (int i = 0; i < text.Length; ++i)
             {
                 int var11;
-                for (; var1.Length > i + 1 && var1[i] == 167; i += 2)
+                for (; text.Length > i + 1 && text[i] == 167; i += 2)
                 {
-                    var11 = "0123456789abcdef".IndexOf(var1.ToLower()[i + 1]);
+                    var11 = "0123456789abcdef".IndexOf(text.ToLower()[i + 1]);
                     if (var11 < 0 || var11 > 15)
                     {
                         var11 = 15;
                     }
 
-                    _buffer.put(_fontDisplayLists + 256 + var11 + (var5 ? 16 : 0));
+                    _buffer.put(_fontDisplayLists + 256 + var11 + (darken ? 16 : 0));
                     if (_buffer.remaining() == 0)
                     {
                         _buffer.flip();
@@ -183,9 +184,9 @@ public class TextRenderer : java.lang.Object
                     }
                 }
 
-                if (i < var1.Length)
+                if (i < text.Length)
                 {
-                    var11 = ChatAllowedCharacters.allowedCharacters.IndexOf(var1[i]);
+                    var11 = ChatAllowedCharacters.allowedCharacters.IndexOf(text[i]);
                     if (var11 >= 0)
                     {
                         _buffer.put(_fontDisplayLists + var11 + 32);

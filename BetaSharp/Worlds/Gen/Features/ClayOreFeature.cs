@@ -15,14 +15,14 @@ public class ClayOreFeature : Feature
         _numberOfBlocks = numberOfBlocks;
     }
 
-    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
+    public override bool Generate(World world, JavaRandom rand, int x, int y, int z)
     {
         if (world.getMaterial(x, y, z) != Material.Water)
         {
             return false;
         }
 
-        float angle = rand.nextFloat() * (float)Math.PI;
+        float angle = rand.NextFloat() * (float)Math.PI;
         double spread = _numberOfBlocks / 8.0;
 
         double startX = x + 8 + MathHelper.sin(angle) * spread;
@@ -30,8 +30,8 @@ public class ClayOreFeature : Feature
         double startZ = z + 8 + MathHelper.cos(angle) * spread;
         double enZ = z + 8 - MathHelper.cos(angle) * spread;
 
-        double startY = y + rand.nextInt(3) + 2;
-        double endY = y + rand.nextInt(3) + 2;
+        double startY = y + rand.NextInt(3) + 2;
+        double endY = y + rand.NextInt(3) + 2;
 
         for (int i = 0; i <= _numberOfBlocks; ++i)
         {
@@ -40,7 +40,7 @@ public class ClayOreFeature : Feature
             double centerY = startY + (endY - startY) * lerp;
             double centerZ = startZ + (enZ - startZ) * lerp;
 
-            double sizeMultiplier = rand.nextDouble() * _numberOfBlocks / 16.0D;
+            double sizeMultiplier = rand.NextDouble() * _numberOfBlocks / 16.0D;
             double radiusH = (double)(MathHelper.sin(i * (float)Math.PI / _numberOfBlocks) + 1.0F) * sizeMultiplier + 1.0D;
             double radiusV = (double)(MathHelper.sin(i * (float)Math.PI / _numberOfBlocks) + 1.0F) * sizeMultiplier + 1.0D;
 

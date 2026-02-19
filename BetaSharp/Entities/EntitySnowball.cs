@@ -13,12 +13,12 @@ public class EntitySnowball : Entity
     private int xTileSnowball = -1;
     private int yTileSnowball = -1;
     private int zTileSnowball = -1;
-    private int inTileSnowball = 0;
-    private bool inGroundSnowball = false;
-    public int shakeSnowball = 0;
+    private int inTileSnowball;
+    private bool inGroundSnowball;
+    public int shakeSnowball;
     private EntityLiving thrower;
     private int ticksInGroundSnowball;
-    private int ticksInAirSnowball = 0;
+    private int ticksInAirSnowball;
 
     public EntitySnowball(World world) : base(world)
     {
@@ -67,9 +67,9 @@ public class EntitySnowball : Entity
         var1 /= (double)var9;
         var3 /= (double)var9;
         var5 /= (double)var9;
-        var1 += random.nextGaussian() * (double)0.0075F * (double)var8;
-        var3 += random.nextGaussian() * (double)0.0075F * (double)var8;
-        var5 += random.nextGaussian() * (double)0.0075F * (double)var8;
+        var1 += random.NextGaussian() * (double)0.0075F * (double)var8;
+        var3 += random.NextGaussian() * (double)0.0075F * (double)var8;
+        var5 += random.NextGaussian() * (double)0.0075F * (double)var8;
         var1 *= (double)var7;
         var3 *= (double)var7;
         var5 *= (double)var7;
@@ -122,9 +122,9 @@ public class EntitySnowball : Entity
             }
 
             inGroundSnowball = false;
-            velocityX *= (double)(random.nextFloat() * 0.2F);
-            velocityY *= (double)(random.nextFloat() * 0.2F);
-            velocityZ *= (double)(random.nextFloat() * 0.2F);
+            velocityX *= (double)(random.NextFloat() * 0.2F);
+            velocityY *= (double)(random.NextFloat() * 0.2F);
+            velocityZ *= (double)(random.NextFloat() * 0.2F);
             ticksInGroundSnowball = 0;
             ticksInAirSnowball = 0;
         }
@@ -260,7 +260,7 @@ public class EntitySnowball : Entity
     {
         if (inGroundSnowball && thrower == player && shakeSnowball <= 0 && player.inventory.addItemStackToInventory(new ItemStack(Item.ARROW, 1)))
         {
-            world.playSound(this, "random.pop", 0.2F, ((random.nextFloat() - random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+            world.playSound(this, "random.pop", 0.2F, ((random.NextFloat() - random.NextFloat()) * 0.7F + 1.0F) * 2.0F);
             player.sendPickup(this, 1);
             markDead();
         }

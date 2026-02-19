@@ -9,8 +9,8 @@ namespace BetaSharp.Blocks;
 public class BlockRedstoneRepeater : Block
 {
 
-    public static readonly double[] RENDER_OFFSET = new double[] { -0.0625D, 1.0D / 16.0D, 0.1875D, 0.3125D };
-    private static readonly int[] DELAY = new int[] { 1, 2, 3, 4 };
+    public static readonly double[] RENDER_OFFSET = [-0.0625D, 1.0D / 16.0D, 0.1875D, 0.3125D];
+    private static readonly int[] DELAY = [1, 2, 3, 4];
     private readonly bool lit;
 
     public BlockRedstoneRepeater(int id, bool lit) : base(id, 6, Material.PistonBreakable)
@@ -34,7 +34,7 @@ public class BlockRedstoneRepeater : Block
         return !world.shouldSuffocate(x, y - 1, z) ? false : base.canGrow(world, x, y, z);
     }
 
-    public override void onTick(World world, int x, int y, int z, java.util.Random random)
+    public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
         int meta = world.getBlockMeta(x, y, z);
         bool powered = isPowered(world, x, y, z, meta);
@@ -175,22 +175,22 @@ public class BlockRedstoneRepeater : Block
         return false;
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
         return Item.Repeater.id;
     }
 
-    public override void randomDisplayTick(World world, int x, int y, int z, java.util.Random random)
+    public override void randomDisplayTick(World world, int x, int y, int z, JavaRandom random)
     {
         if (lit)
         {
             int meta = world.getBlockMeta(x, y, z);
-            double particleX = (double)((float)x + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2D;
-            double particleY = (double)((float)y + 0.4F) + (double)(random.nextFloat() - 0.5F) * 0.2D;
-            double particleZ = (double)((float)z + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2D;
+            double particleX = (double)((float)x + 0.5F) + (double)(random.NextFloat() - 0.5F) * 0.2D;
+            double particleY = (double)((float)y + 0.4F) + (double)(random.NextFloat() - 0.5F) * 0.2D;
+            double particleZ = (double)((float)z + 0.5F) + (double)(random.NextFloat() - 0.5F) * 0.2D;
             double offsetX = 0.0D;
             double offsetY = 0.0D;
-            if (random.nextInt(2) == 0)
+            if (random.NextInt(2) == 0)
             {
                 switch (meta & 3)
                 {

@@ -2,8 +2,8 @@ namespace BetaSharp.Util;
 
 public class ChunkMeshVersion
 {
-    private long epoch = 0;
-    private long lastMeshed = 0;
+    private long epoch;
+    private long lastMeshed;
     private long pendingMesh = -1;
 
     public void MarkDirty()

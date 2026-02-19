@@ -831,9 +831,9 @@ public class Chunk : java.lang.Object
         }
     }
 
-    public virtual java.util.Random getSlimeRandom(long scrambler)
+    public virtual JavaRandom getSlimeRandom(long scrambler)
     {
-        return new java.util.Random(world.getSeed() + x * x * 4987142 + x * 5947611 + z * z * 4392871L + z * 389711 ^ scrambler);
+        return new JavaRandom(world.getSeed() + x * x * 4987142 + x * 5947611 + z * z * 4392871L + z * 389711 ^ scrambler);
     }
 
     public virtual bool isEmpty()

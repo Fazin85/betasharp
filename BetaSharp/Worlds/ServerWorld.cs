@@ -33,7 +33,7 @@ public class ServerWorld : World
             entity.markDead();
         }
 
-        if (entity.passenger == null || !(entity.passenger is EntityPlayer))
+        if (entity.passenger == null || entity.passenger is not EntityPlayer)
         {
             base.updateEntity(entity, requireLoaded);
         }

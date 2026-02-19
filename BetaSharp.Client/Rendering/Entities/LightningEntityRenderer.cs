@@ -1,5 +1,6 @@
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Entities;
+using BetaSharp.Util.Maths;
 using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Rendering.Entities;
@@ -7,7 +8,7 @@ namespace BetaSharp.Client.Rendering.Entities;
 public class LightningEntityRenderer : EntityRenderer
 {
 
-    public void render(EntityLightningBolt var1, double var2, double var4, double var6, float var8, float var9)
+    public void render(EntityLightningBolt var1, double x, double y, double z, float yaw, float tickDelta)
     {
         Tessellator var10 = Tessellator.instance;
         GLManager.GL.Disable(GLEnum.Texture2D);
@@ -18,19 +19,19 @@ public class LightningEntityRenderer : EntityRenderer
         double[] var12 = new double[8];
         double var13 = 0.0D;
         double var15 = 0.0D;
-        java.util.Random var17 = new(var1.renderSeed);
+        JavaRandom var17 = new(var1.renderSeed);
 
         for (int var18 = 7; var18 >= 0; --var18)
         {
             var11[var18] = var13;
             var12[var18] = var15;
-            var13 += var17.nextInt(11) - 5;
-            var15 += var17.nextInt(11) - 5;
+            var13 += var17.NextInt(11) - 5;
+            var15 += var17.NextInt(11) - 5;
         }
 
         for (int var45 = 0; var45 < 4; ++var45)
         {
-            java.util.Random var46 = new(var1.renderSeed);
+            JavaRandom var46 = new(var1.renderSeed);
 
             for (int var19 = 0; var19 < 3; ++var19)
             {
@@ -55,13 +56,13 @@ public class LightningEntityRenderer : EntityRenderer
                     double var29 = var24;
                     if (var19 == 0)
                     {
-                        var22 += var46.nextInt(11) - 5;
-                        var24 += var46.nextInt(11) - 5;
+                        var22 += var46.NextInt(11) - 5;
+                        var24 += var46.NextInt(11) - 5;
                     }
                     else
                     {
-                        var22 += var46.nextInt(31) - 15;
-                        var24 += var46.nextInt(31) - 15;
+                        var22 += var46.NextInt(31) - 15;
+                        var24 += var46.NextInt(31) - 15;
                     }
 
                     var10.startDrawing(5);
@@ -81,8 +82,8 @@ public class LightningEntityRenderer : EntityRenderer
 
                     for (int var36 = 0; var36 < 5; ++var36)
                     {
-                        double var37 = var2 + 0.5D - var32;
-                        double var39 = var6 + 0.5D - var32;
+                        double var37 = x + 0.5D - var32;
+                        double var39 = z + 0.5D - var32;
                         if (var36 == 1 || var36 == 2)
                         {
                             var37 += var32 * 2.0D;
@@ -93,8 +94,8 @@ public class LightningEntityRenderer : EntityRenderer
                             var39 += var32 * 2.0D;
                         }
 
-                        double var41 = var2 + 0.5D - var34;
-                        double var43 = var6 + 0.5D - var34;
+                        double var41 = x + 0.5D - var34;
+                        double var43 = z + 0.5D - var34;
                         if (var36 == 1 || var36 == 2)
                         {
                             var41 += var34 * 2.0D;
@@ -105,8 +106,8 @@ public class LightningEntityRenderer : EntityRenderer
                             var43 += var34 * 2.0D;
                         }
 
-                        var10.addVertex(var41 + var22, var4 + var26 * 16, var43 + var24);
-                        var10.addVertex(var37 + var27, var4 + (var26 + 1) * 16, var39 + var29);
+                        var10.addVertex(var41 + var22, y + var26 * 16, var43 + var24);
+                        var10.addVertex(var37 + var27, y + (var26 + 1) * 16, var39 + var29);
                     }
 
                     var10.draw();
@@ -119,8 +120,8 @@ public class LightningEntityRenderer : EntityRenderer
         GLManager.GL.Enable(GLEnum.Texture2D);
     }
 
-    public override void render(Entity var1, double var2, double var4, double var6, float var8, float var9)
+    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
     {
-        render((EntityLightningBolt)var1, var2, var4, var6, var8, var9);
+        render((EntityLightningBolt)target, x, y, z, yaw, tickDelta);
     }
 }

@@ -15,7 +15,7 @@ public class BlockPressurePlate : Block
         activationRule = rule;
         setTickRandomly(true);
         float edgeInset = 1.0F / 16.0F;
-        setBoundingBox(edgeInset, 0.0F, edgeInset, 1.0F - edgeInset, 0.03125F, 1.0F - edgeInset);
+        setBoundingBox(edgeInset, 0.0F, edgeInset, 1.0F - edgeInset, (1 / 32f), 1.0F - edgeInset);
     }
 
     public override int getTickRate()
@@ -63,7 +63,7 @@ public class BlockPressurePlate : Block
 
     }
 
-    public override void onTick(World world, int x, int y, int z, java.util.Random random)
+    public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
         if (!world.isRemote)
         {
@@ -154,7 +154,7 @@ public class BlockPressurePlate : Block
         float edgeInset = 1.0F / 16.0F;
         if (isPressed)
         {
-            setBoundingBox(edgeInset, 0.0F, edgeInset, 1.0F - edgeInset, 0.03125F, 1.0F - edgeInset);
+            setBoundingBox(edgeInset, 0.0F, edgeInset, 1.0F - edgeInset, (1 / 32f), 1.0F - edgeInset);
         }
         else
         {

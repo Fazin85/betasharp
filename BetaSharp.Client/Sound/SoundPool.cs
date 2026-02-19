@@ -1,8 +1,15 @@
+using BetaSharp.Util.Maths;
+using java.util;
+
 namespace BetaSharp.Client.Sound;
 
 public class SoundPool
 {
-    private readonly java.util.Random _rand = new();
+    private readonly JavaRandom _rand = new();
+    private readonly Map weightedSoundSet = new HashMap();
+    private readonly List loadedSounds = new ArrayList();
+    public int loadedSoundCount = 0;
+    public bool isRandom = true;
 
     private readonly Dictionary<string, List<SoundPoolEntry>> _weightedSoundSet = new();
     private readonly List<SoundPoolEntry> _allLoadedSounds = new();
@@ -49,13 +56,13 @@ public class SoundPool
     {
         if (_weightedSoundSet.TryGetValue(soundKey, out List<SoundPoolEntry>? variations))
         {
-            return variations[_rand.nextInt(variations.Count)];
+            return variations[_rand.NextInt(variations.Count)];
         }
         return null;
     }
 
     public SoundPoolEntry? GetRandomSound()
     {
-        return _allLoadedSounds.Count == 0 ? null : _allLoadedSounds[_rand.nextInt(_allLoadedSounds.Count)];
+        return _allLoadedSounds.Count == 0 ? null : _allLoadedSounds[_rand.NextInt(_allLoadedSounds.Count)];
     }
 }

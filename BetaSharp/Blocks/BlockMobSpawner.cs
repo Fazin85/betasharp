@@ -1,5 +1,6 @@
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Blocks.Materials;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Blocks;
 
@@ -15,12 +16,12 @@ public class BlockMobSpawner : BlockWithEntity
         return new BlockEntityMobSpawner();
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
         return 0;
     }
 
-    public override int getDroppedItemCount(java.util.Random random)
+    public override int getDroppedItemCount(JavaRandom random)
     {
         return 0;
     }

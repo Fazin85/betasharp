@@ -14,13 +14,13 @@ namespace BetaSharp.Server.Network;
 
 public class ServerLoginNetworkHandler : NetHandler
 {
-    private static java.util.Random random = new();
+    private static JavaRandom random = new();
     public Connection connection;
-    public bool closed = false;
+    public bool closed;
     private MinecraftServer server;
-    private int loginTicks = 0;
-    private string username = null;
-    private LoginHelloPacket loginPacket = null;
+    private int loginTicks;
+    private string username;
+    private LoginHelloPacket loginPacket;
     private string serverId = "";
 
     public ServerLoginNetworkHandler(MinecraftServer server, Socket socket, string name)
@@ -75,7 +75,7 @@ public class ServerLoginNetworkHandler : NetHandler
     {
         if (server.onlineMode)
         {
-            serverId = Long.toHexString(random.nextLong());
+            serverId = Long.toHexString(random.NextLong());
             connection.sendPacket(new HandshakePacket(serverId));
         }
         else

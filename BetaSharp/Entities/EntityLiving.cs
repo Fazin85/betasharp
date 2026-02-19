@@ -1,4 +1,4 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Items;
 using BetaSharp.NBT;
@@ -15,8 +15,8 @@ public abstract class EntityLiving : Entity
     public int maxHealth = 20;
     public float limbSwingPhase;
     public float limbSwingScale;
-    public float bodyYaw = 0.0F;
-    public float lastBodyYaw = 0.0F;
+    public float bodyYaw;
+    public float lastBodyYaw;
     protected float lastWalkProgress;
     protected float walkProgress;
     protected float totalWalkDistance;
@@ -37,12 +37,12 @@ public abstract class EntityLiving : Entity
     private int livingSoundTime;
     public int hurtTime;
     public int maxHurtTime;
-    public float attackedAtYaw = 0.0F;
-    public int deathTime = 0;
-    public int attackTime = 0;
+    public float attackedAtYaw;
+    public int deathTime;
+    public int attackTime;
     public float cameraPitch;
     public float tilt;
-    protected bool unused_flag = false;
+    protected bool unused_flag;
     public int field_9326_T = -1;
     public float field_9325_U = (float)(java.lang.Math.random() * (double)0.9F + (double)0.1F);
     public float lastWalkAnimationSpeed;
@@ -54,16 +54,16 @@ public abstract class EntityLiving : Entity
     protected double newPosZ;
     protected double newRotationYaw;
     protected double newRotationPitch;
-    protected int damageForDisplay = 0;
-    protected int entityAge = 0;
+    protected int damageForDisplay;
+    protected int entityAge;
     protected float sidewaysSpeed;
     protected float forwardSpeed;
     protected float rotationSpeed;
-    protected bool jumping = false;
+    protected bool jumping;
     protected float defaultPitch = 0.0F;
     protected float movementSpeed = 0.7F;
     private Entity lookTarget;
-    protected int lookTimer = 0;
+    protected int lookTimer;
 
     public EntityLiving(World world) : base(world)
     {
@@ -114,7 +114,7 @@ public abstract class EntityLiving : Entity
         string sound = getLivingSound();
         if (sound != null)
         {
-            world.playSound(this, sound, getSoundVolume(), (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
+            world.playSound(this, sound, getSoundVolume(), (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
         }
 
     }
@@ -123,7 +123,7 @@ public abstract class EntityLiving : Entity
     {
         lastSwingAnimationProgress = swingAnimationProgress;
         base.baseTick();
-        if (random.nextInt(1000) < livingSoundTime++)
+        if (random.NextInt(1000) < livingSoundTime++)
         {
             livingSoundTime = -getTalkInterval();
             playLivingSound();
@@ -149,9 +149,9 @@ public abstract class EntityLiving : Entity
 
                 for (i = 0; i < 8; ++i)
                 {
-                    float offsetX = random.nextFloat() - random.nextFloat();
-                    float offsetY = random.nextFloat() - random.nextFloat();
-                    float offsetZ = random.nextFloat() - random.nextFloat();
+                    float offsetX = random.NextFloat() - random.NextFloat();
+                    float offsetY = random.NextFloat() - random.NextFloat();
+                    float offsetZ = random.NextFloat() - random.NextFloat();
                     world.addParticle("bubble", x + (double)offsetX, y + (double)offsetY, z + (double)offsetZ, velocityX, velocityY, velocityZ);
                 }
 
@@ -191,10 +191,10 @@ public abstract class EntityLiving : Entity
 
                 for (i = 0; i < 20; ++i)
                 {
-                    double velX = random.nextGaussian() * 0.02D;
-                    double velY = random.nextGaussian() * 0.02D;
-                    double velZ = random.nextGaussian() * 0.02D;
-                    world.addParticle("explode", x + (double)(random.nextFloat() * width * 2.0F) - (double)width, y + (double)(random.nextFloat() * height), z + (double)(random.nextFloat() * width * 2.0F) - (double)width, velX, velY, velZ);
+                    double velX = random.NextGaussian() * 0.02D;
+                    double velY = random.NextGaussian() * 0.02D;
+                    double velZ = random.NextGaussian() * 0.02D;
+                    world.addParticle("explode", x + (double)(random.NextFloat() * width * 2.0F) - (double)width, y + (double)(random.NextFloat() * height), z + (double)(random.NextFloat() * width * 2.0F) - (double)width, velX, velY, velZ);
                 }
             }
         }
@@ -214,11 +214,11 @@ public abstract class EntityLiving : Entity
     {
         for (int i = 0; i < 20; ++i)
         {
-            double velX = random.nextGaussian() * 0.02D;
-            double velY = random.nextGaussian() * 0.02D;
-            double velZ = random.nextGaussian() * 0.02D;
+            double velX = random.NextGaussian() * 0.02D;
+            double velY = random.NextGaussian() * 0.02D;
+            double velZ = random.NextGaussian() * 0.02D;
             double spread = 10.0D;
-            world.addParticle("explode", x + (double)(random.nextFloat() * width * 2.0F) - (double)width - velX * spread, y + (double)(random.nextFloat() * height) - velY * spread, z + (double)(random.nextFloat() * width * 2.0F) - (double)width - velZ * spread, velX, velY, velZ);
+            world.addParticle("explode", x + (double)(random.NextFloat() * width * 2.0F) - (double)width - velX * spread, y + (double)(random.NextFloat() * height) - velY * spread, z + (double)(random.NextFloat() * width * 2.0F) - (double)width - velZ * spread, velX, velY, velZ);
         }
 
     }
@@ -432,14 +432,14 @@ public abstract class EntityLiving : Entity
                 {
                     if (var3)
                     {
-                        world.playSound(this, getDeathSound(), getSoundVolume(), (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
+                        world.playSound(this, getDeathSound(), getSoundVolume(), (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
                     }
 
                     onKilledBy(entity);
                 }
                 else if (var3)
                 {
-                    world.playSound(this, getHurtSound(), getSoundVolume(), (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
+                    world.playSound(this, getHurtSound(), getSoundVolume(), (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
                 }
 
                 return true;
@@ -521,7 +521,7 @@ public abstract class EntityLiving : Entity
         int var1 = getDropItemId();
         if (var1 > 0)
         {
-            int var2 = random.nextInt(3);
+            int var2 = random.NextInt(3);
 
             for (int var3 = 0; var3 < var2; ++var3)
             {
@@ -547,7 +547,7 @@ public abstract class EntityLiving : Entity
             if (var3 > 0)
             {
                 BlockSoundGroup var4 = Block.Blocks[var3].soundGroup;
-                world.playSound(this, var4.func_1145_d(), var4.getVolume() * 0.5F, var4.getPitch() * (12.0F / 16.0F));
+                world.playSound(this, var4.getName(), var4.getVolume() * 0.5F, var4.getPitch() * (12.0F / 16.0F));
             }
         }
 
@@ -829,7 +829,7 @@ public abstract class EntityLiving : Entity
                 markDead();
             }
 
-            if (entityAge > 600 && random.nextInt(800) == 0)
+            if (entityAge > 600 && random.NextInt(800) == 0)
             {
                 if (squaredDistance < 1024.0D)
                 {
@@ -852,17 +852,17 @@ public abstract class EntityLiving : Entity
         sidewaysSpeed = 0.0F;
         forwardSpeed = 0.0F;
         float lookRange = 8.0F;
-        if (random.nextFloat() < 0.02F)
+        if (random.NextFloat() < 0.02F)
         {
             closestPlayer = world.getClosestPlayer(this, (double)lookRange);
             if (closestPlayer != null)
             {
                 lookTarget = closestPlayer;
-                lookTimer = 10 + random.nextInt(20);
+                lookTimer = 10 + random.NextInt(20);
             }
             else
             {
-                rotationSpeed = (random.nextFloat() - 0.5F) * 20.0F;
+                rotationSpeed = (random.NextFloat() - 0.5F) * 20.0F;
             }
         }
 
@@ -876,9 +876,9 @@ public abstract class EntityLiving : Entity
         }
         else
         {
-            if (random.nextFloat() < 0.05F)
+            if (random.NextFloat() < 0.05F)
             {
-                rotationSpeed = (random.nextFloat() - 0.5F) * 20.0F;
+                rotationSpeed = (random.NextFloat() - 0.5F) * 20.0F;
             }
 
             yaw += rotationSpeed;
@@ -889,7 +889,7 @@ public abstract class EntityLiving : Entity
         bool isTouchingLava = base.isTouchingLava();
         if (isInWater || isTouchingLava)
         {
-            jumping = random.nextFloat() < 0.8F;
+            jumping = random.NextFloat() < 0.8F;
         }
 
     }
@@ -1053,12 +1053,12 @@ public abstract class EntityLiving : Entity
             hearts = maxHealth;
             hurtTime = maxHurtTime = 10;
             attackedAtYaw = 0.0F;
-            world.playSound(this, getHurtSound(), getSoundVolume(), (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
+            world.playSound(this, getHurtSound(), getSoundVolume(), (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
             damage(null, 0);
         }
         else if (statusId == 3)
         {
-            world.playSound(this, getDeathSound(), getSoundVolume(), (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
+            world.playSound(this, getDeathSound(), getSoundVolume(), (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
             health = 0;
             onKilledBy(null);
         }

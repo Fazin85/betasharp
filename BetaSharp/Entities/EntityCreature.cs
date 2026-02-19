@@ -9,7 +9,7 @@ public class EntityCreature : EntityLiving
     public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityCreature).TypeHandle);
     private PathEntity pathToEntity;
     protected Entity playerToAttack;
-    protected bool hasAttacked = false;
+    protected bool hasAttacked;
 
     public EntityCreature(World world) : base(world)
     {
@@ -49,9 +49,9 @@ public class EntityCreature : EntityLiving
             }
         }
 
-        if (hasAttacked || playerToAttack == null || pathToEntity != null && random.nextInt(20) != 0)
+        if (hasAttacked || playerToAttack == null || pathToEntity != null && random.NextInt(20) != 0)
         {
-            if (!hasAttacked && (pathToEntity == null && random.nextInt(80) == 0 || random.nextInt(80) == 0))
+            if (!hasAttacked && (pathToEntity == null && random.NextInt(80) == 0 || random.NextInt(80) == 0))
             {
                 findRandomWanderTarget();
             }
@@ -65,7 +65,7 @@ public class EntityCreature : EntityLiving
         bool isInWater = base.isInWater();
         bool isTouchingLava = base.isTouchingLava();
         pitch = 0.0F;
-        if (pathToEntity != null && random.nextInt(100) != 0)
+        if (pathToEntity != null && random.NextInt(100) != 0)
         {
             Vec3D? pos = pathToEntity.getPosition(this);
             double distance = (double)(width * 2.0F);
@@ -140,7 +140,7 @@ public class EntityCreature : EntityLiving
                 jumping = true;
             }
 
-            if (random.nextFloat() < 0.8F && (isInWater || isTouchingLava))
+            if (random.NextFloat() < 0.8F && (isInWater || isTouchingLava))
             {
                 jumping = true;
             }
@@ -163,9 +163,9 @@ public class EntityCreature : EntityLiving
 
         for (int _ = 0; _ < 10; ++_)
         {
-            int floorX = MathHelper.floor_double(x + (double)random.nextInt(13) - 6.0D);
-            int floorY = MathHelper.floor_double(y + (double)random.nextInt(7) - 3.0D);
-            int floorZ = MathHelper.floor_double(z + (double)random.nextInt(13) - 6.0D);
+            int floorX = MathHelper.floor_double(x + (double)random.NextInt(13) - 6.0D);
+            int floorY = MathHelper.floor_double(y + (double)random.NextInt(7) - 3.0D);
+            int floorZ = MathHelper.floor_double(z + (double)random.NextInt(13) - 6.0D);
             float cost = getBlockPathWeight(floorX, floorY, floorZ);
             if (cost > bestCost)
             {

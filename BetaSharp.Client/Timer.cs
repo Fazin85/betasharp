@@ -10,7 +10,7 @@ public class Timer(float tps)
     public int elapsedTicks;
     public float renderPartialTicks;
     public float timerSpeed = 1.0F;
-    public float elapsedPartialTicks = 0.0F;
+    public float elapsedPartialTicks;
     private long lastSyncSysClock = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     private long lastSyncHRClock = Stopwatch.GetTimestamp();
     private long accumulatedSysTime;

@@ -11,7 +11,7 @@ namespace BetaSharp.Entities;
 public abstract class Entity : java.lang.Object
 {
     public static readonly Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(Entity).TypeHandle);
-    private static int nextEntityID = 0;
+    private static int nextEntityID;
     public int id = nextEntityID++;
     public double renderDistanceWeight = 1.0D;
     public bool preventEntitySpawning = false;
@@ -32,34 +32,34 @@ public abstract class Entity : java.lang.Object
     public float prevYaw;
     public float prevPitch;
     public Box boundingBox = new Box(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
-    public bool onGround = false;
+    public bool onGround;
     public bool horizontalCollison;
     public bool verticalCollision;
-    public bool hasCollided = false;
-    public bool velocityModified = false;
+    public bool hasCollided;
+    public bool velocityModified;
     public bool slowed;
     public bool keepVelocityOnCollision = true;
-    public bool dead = false;
+    public bool dead;
     public float standingEyeHeight = 0.0F;
     public float width = 0.6F;
     public float height = 1.8F;
-    public float prevHorizontalSpeed = 0.0F;
-    public float horizontalSpeed = 0.0F;
-    protected float fallDistance = 0.0F;
+    public float prevHorizontalSpeed;
+    public float horizontalSpeed;
+    protected float fallDistance;
     private int nextStepSoundDistance = 1;
     public double lastTickX;
     public double lastTickY;
     public double lastTickZ;
-    public float cameraOffset = 0.0F;
+    public float cameraOffset;
     public float stepHeight = 0.0F;
     public bool noClip = false;
     public float pushSpeedReduction = 0.0F;
-    protected java.util.Random random = new();
+    protected JavaRandom random = new();
     public int age = 0;
     public int fireImmunityTicks = 1;
-    public int fireTicks = 0;
+    public int fireTicks;
     protected int maxAir = 300;
-    protected bool inWater = false;
+    protected bool inWater;
     public int hearts = 0;
     public int air = 300;
     private bool firstTick = true;
@@ -200,7 +200,7 @@ public abstract class Entity : java.lang.Object
                     var1 = 1.0F;
                 }
 
-                world.playSound(this, "random.splash", var1, 1.0F + (random.nextFloat() - random.nextFloat()) * 0.4F);
+                world.playSound(this, "random.splash", var1, 1.0F + (random.NextFloat() - random.NextFloat()) * 0.4F);
                 float var2 = (float)MathHelper.floor_double(boundingBox.minY);
 
                 int var3;
@@ -208,15 +208,15 @@ public abstract class Entity : java.lang.Object
                 float var5;
                 for (var3 = 0; (float)var3 < 1.0F + width * 20.0F; ++var3)
                 {
-                    var4 = (random.nextFloat() * 2.0F - 1.0F) * width;
-                    var5 = (random.nextFloat() * 2.0F - 1.0F) * width;
-                    world.addParticle("bubble", x + (double)var4, (double)(var2 + 1.0F), z + (double)var5, velocityX, velocityY - (double)(random.nextFloat() * 0.2F), velocityZ);
+                    var4 = (random.NextFloat() * 2.0F - 1.0F) * width;
+                    var5 = (random.NextFloat() * 2.0F - 1.0F) * width;
+                    world.addParticle("bubble", x + (double)var4, (double)(var2 + 1.0F), z + (double)var5, velocityX, velocityY - (double)(random.NextFloat() * 0.2F), velocityZ);
                 }
 
                 for (var3 = 0; (float)var3 < 1.0F + width * 20.0F; ++var3)
                 {
-                    var4 = (random.nextFloat() * 2.0F - 1.0F) * width;
-                    var5 = (random.nextFloat() * 2.0F - 1.0F) * width;
+                    var4 = (random.NextFloat() * 2.0F - 1.0F) * width;
+                    var5 = (random.NextFloat() * 2.0F - 1.0F) * width;
                     world.addParticle("splash", x + (double)var4, (double)(var2 + 1.0F), z + (double)var5, velocityX, velocityY, velocityZ);
                 }
             }
@@ -542,11 +542,11 @@ public abstract class Entity : java.lang.Object
                     if (world.getBlockId(var38, var26 + 1, var39) == Block.Snow.id)
                     {
                         var29 = Block.Snow.soundGroup;
-                        world.playSound(this, var29.func_1145_d(), var29.getVolume() * 0.15F, var29.getPitch());
+                        world.playSound(this, var29.getName(), var29.getVolume() * 0.15F, var29.getPitch());
                     }
                     else if (!Block.Blocks[var28].material.IsFluid)
                     {
-                        world.playSound(this, var29.func_1145_d(), var29.getVolume() * 0.15F, var29.getPitch());
+                        world.playSound(this, var29.getName(), var29.getVolume() * 0.15F, var29.getPitch());
                     }
 
                     Block.Blocks[var28].onSteppedOn(world, var38, var26, var39, this);
@@ -597,7 +597,7 @@ public abstract class Entity : java.lang.Object
 
             if (var42 && fireTicks > 0)
             {
-                world.playSound(this, "random.fizz", 0.7F, 1.6F + (random.nextFloat() - random.nextFloat()) * 0.4F);
+                world.playSound(this, "random.fizz", 0.7F, 1.6F + (random.NextFloat() - random.NextFloat()) * 0.4F);
                 fireTicks = -fireImmunityTicks;
             }
 
@@ -910,9 +910,9 @@ public abstract class Entity : java.lang.Object
 
     public void write(NBTTagCompound nbt)
     {
-        nbt.SetTag("Pos", newDoubleNBTList([x, y + (double)cameraOffset, z]));
-        nbt.SetTag("Motion", newDoubleNBTList([velocityX, velocityY, velocityZ]));
-        nbt.SetTag("Rotation", newFloatNBTList([yaw, pitch]));
+        nbt.SetTag("Pos", newDoubleNBTList(x, y + (double)cameraOffset, z));
+        nbt.SetTag("Motion", newDoubleNBTList(velocityX, velocityY, velocityZ));
+        nbt.SetTag("Rotation", newFloatNBTList(yaw, pitch));
         nbt.SetFloat("FallDistance", fallDistance);
         nbt.SetShort("Fire", (short)fireTicks);
         nbt.SetShort("Air", (short)air);
@@ -1348,7 +1348,7 @@ public abstract class Entity : java.lang.Object
                 pushDirection = 5;
             }
 
-            float pushStrength = random.nextFloat() * 0.2F + 0.1F;
+            float pushStrength = random.NextFloat() * 0.2F + 0.1F;
             if (pushDirection == 0)
             {
                 velocityX = (double)(-pushStrength);

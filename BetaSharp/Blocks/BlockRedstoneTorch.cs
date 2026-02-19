@@ -1,3 +1,4 @@
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
@@ -102,7 +103,7 @@ public class BlockRedstoneTorch : BlockTorch
         return meta == 5 && world.isPoweringSide(x, y - 1, z, 0) || (meta == 3 && world.isPoweringSide(x, y, z - 1, 2) || (meta == 4 && world.isPoweringSide(x, y, z + 1, 3) || (meta == 1 && world.isPoweringSide(x - 1, y, z, 4) || meta == 2 && world.isPoweringSide(x + 1, y, z, 5))));
     }
 
-    public override void onTick(World world, int x, int y, int z, java.util.Random random)
+    public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
         bool shouldTurnOff = shouldUnpower(world, x, y, z);
         List<RedstoneUpdateInfo> updates = s_torchUpdates.Value!;
@@ -119,13 +120,13 @@ public class BlockRedstoneTorch : BlockTorch
                 world.setBlock(x, y, z, Block.RedstoneTorch.id, world.getBlockMeta(x, y, z));
                 if (isBurnedOut(world, x, y, z, true))
                 {
-                    world.playSound((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "random.fizz", 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
+                    world.playSound((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "random.fizz", 0.5F, 2.6F + (world.random.NextFloat() - world.random.NextFloat()) * 0.8F);
 
                     for (int particleIndex = 0; particleIndex < 5; ++particleIndex)
                     {
-                        double particleX = (double)x + random.nextDouble() * 0.6D + 0.2D;
-                        double particleY = (double)y + random.nextDouble() * 0.6D + 0.2D;
-                        double particleZ = (double)z + random.nextDouble() * 0.6D + 0.2D;
+                        double particleX = (double)x + random.NextDouble() * 0.6D + 0.2D;
+                        double particleY = (double)y + random.NextDouble() * 0.6D + 0.2D;
+                        double particleZ = (double)z + random.NextDouble() * 0.6D + 0.2D;
                         world.addParticle("smoke", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
                     }
                 }
@@ -149,7 +150,7 @@ public class BlockRedstoneTorch : BlockTorch
         return side == 0 && isPoweringSide(world, x, y, z, side);
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
         return Block.LitRedstoneTorch.id;
     }
@@ -159,14 +160,14 @@ public class BlockRedstoneTorch : BlockTorch
         return true;
     }
 
-    public override void randomDisplayTick(World world, int x, int y, int z, java.util.Random random)
+    public override void randomDisplayTick(World world, int x, int y, int z, JavaRandom random)
     {
         if (_lit)
         {
             int meta = world.getBlockMeta(x, y, z);
-            double particleX = (double)((float)x + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2D;
-            double particleY = (double)((float)y + 0.7F) + (double)(random.nextFloat() - 0.5F) * 0.2D;
-            double particleZ = (double)((float)z + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2D;
+            double particleX = (double)((float)x + 0.5F) + (double)(random.NextFloat() - 0.5F) * 0.2D;
+            double particleY = (double)((float)y + 0.7F) + (double)(random.NextFloat() - 0.5F) * 0.2D;
+            double particleZ = (double)((float)z + 0.5F) + (double)(random.NextFloat() - 0.5F) * 0.2D;
             double verticalOffset = (double)0.22F;
             double horizontalOffset = (double)0.27F;
             if (meta == 1)

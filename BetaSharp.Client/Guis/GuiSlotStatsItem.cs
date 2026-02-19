@@ -19,16 +19,16 @@ public class GuiSlotStatsItem : GuiSlotStats
         {
             StatCrafting stat = (StatCrafting)iterator.next();
             bool hasStat = false;
-            int id = stat.func_25072_b();
-            if (GuiStats.func_27142_c(parent).writeStat(stat) > 0)
+            int id = stat.getItemId();
+            if (parent.statFileWriter.writeStat(stat) > 0)
             {
                 hasStat = true;
             }
-            else if (Stats.Stats.BROKEN[id] != null && GuiStats.func_27142_c(parent).writeStat(Stats.Stats.BROKEN[id]) > 0)
+            else if (Stats.Stats.BROKEN[id] != null && parent.statFileWriter.writeStat(Stats.Stats.BROKEN[id]) > 0)
             {
                 hasStat = true;
             }
-            else if (Stats.Stats.CRAFTED[id] != null && GuiStats.func_27142_c(parent).writeStat(Stats.Stats.CRAFTED[id]) > 0)
+            else if (Stats.Stats.CRAFTED[id] != null && parent.statFileWriter.writeStat(Stats.Stats.CRAFTED[id]) > 0)
             {
                 hasStat = true;
             }
@@ -47,29 +47,29 @@ public class GuiSlotStatsItem : GuiSlotStats
         base.func_27260_a(x, y, tessellator);
         if (field_27268_b == 0)
         {
-            GuiStats.func_27128_a(parentStatsGui, x + 115 - 18 + 1, y + 1 + 1, 72, 18);
+            parentStatsGui.drawTranslucentRect(x + 115 - 18 + 1, y + 1 + 1, 72, 18);
         }
         else
         {
-            GuiStats.func_27128_a(parentStatsGui, x + 115 - 18, y + 1, 72, 18);
+            parentStatsGui.drawTranslucentRect(x + 115 - 18, y + 1, 72, 18);
         }
 
         if (field_27268_b == 1)
         {
-            GuiStats.func_27128_a(parentStatsGui, x + 165 - 18 + 1, y + 1 + 1, 18, 18);
+            parentStatsGui.drawTranslucentRect(x + 165 - 18 + 1, y + 1 + 1, 18, 18);
         }
         else
         {
-            GuiStats.func_27128_a(parentStatsGui, x + 165 - 18, y + 1, 18, 18);
+            parentStatsGui.drawTranslucentRect(x + 165 - 18, y + 1, 18, 18);
         }
 
         if (field_27268_b == 2)
         {
-            GuiStats.func_27128_a(parentStatsGui, x + 215 - 18 + 1, y + 1 + 1, 36, 18);
+            parentStatsGui.drawTranslucentRect(x + 215 - 18 + 1, y + 1 + 1, 36, 18);
         }
         else
         {
-            GuiStats.func_27128_a(parentStatsGui, x + 215 - 18, y + 1, 36, 18);
+            parentStatsGui.drawTranslucentRect(x + 215 - 18, y + 1, 36, 18);
         }
 
     }
@@ -77,8 +77,8 @@ public class GuiSlotStatsItem : GuiSlotStats
     protected override void drawSlot(int index, int x, int y, int rowHeight, Tessellator tessellator)
     {
         StatCrafting stat = func_27264_b(index);
-        int id = stat.func_25072_b();
-        GuiStats.func_27148_a(parentStatsGui, x + 40, y, id);
+        int id = stat.getItemId();
+        parentStatsGui.drawItemSlot(x + 40, y, id);
         func_27265_a((StatCrafting)Stats.Stats.BROKEN[id], x + 115, y, index % 2 == 0);
         func_27265_a((StatCrafting)Stats.Stats.CRAFTED[id], x + 165, y, index % 2 == 0);
         func_27265_a(stat, x + 215, y, index % 2 == 0);

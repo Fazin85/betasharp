@@ -76,7 +76,7 @@ public class BlockPistonExtension : Block
         return false;
     }
 
-    public override int getDroppedItemCount(java.util.Random random)
+    public override int getDroppedItemCount(JavaRandom random)
     {
         return 0;
     }

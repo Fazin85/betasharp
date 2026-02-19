@@ -28,7 +28,7 @@ public class BlockSoundGroup : java.lang.Object
         return "step." + name;
     }
 
-    public string func_1145_d()
+    public string getName()
     {
         return "step." + name;
     }

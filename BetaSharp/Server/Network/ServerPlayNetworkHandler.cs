@@ -21,7 +21,7 @@ namespace BetaSharp.Server.Network;
 public class ServerPlayNetworkHandler : NetHandler, CommandOutput
 {
     public Connection connection;
-    public bool disconnected = false;
+    public bool disconnected;
     private MinecraftServer server;
     private ServerPlayerEntity player;
     private int ticks;
@@ -197,7 +197,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
                 return;
             }
 
-            float var21 = 0.0625F;
+            float var21 = (1 / 16f);
             bool var22 = var2.getEntityCollisions(player, player.boundingBox.contract(var21, var21, var21)).Count == 0;
             player.move(var32, var15, var17);
             var32 = var5 - player.x;

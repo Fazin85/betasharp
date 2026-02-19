@@ -15,8 +15,8 @@ public class GuiStats : GuiScreen
     private GuiSlotStatsGeneral slotGeneral;
     private GuiSlotStatsItem slotItem;
     private GuiSlotStatsBlock slotBlock;
-    private readonly StatFileWriter statFileWriter;
-    private GuiSlot currentSlot = null;
+    public StatFileWriter statFileWriter { get; }
+    private GuiSlot currentSlot;
 
     public GuiStats(GuiScreen parent, StatFileWriter stats)
     {
@@ -90,11 +90,11 @@ public class GuiStats : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         currentSlot.drawScreen(mouseX, mouseY, partialTicks);
-        DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0xFFFFFF);
         base.Render(mouseX, mouseY, partialTicks);
     }
 
-    private void drawItemSlot(int x, int y, int itemId)
+    public void drawItemSlot(int x, int y, int itemId)
     {
         drawSlotBackground(x + 1, y + 1);
         GLManager.GL.Enable(GLEnum.RescaleNormal);
@@ -126,98 +126,8 @@ public class GuiStats : GuiScreen
         tessellator.draw();
     }
 
-    public static Minecraft func_27141_a(GuiStats var0)
-    {
-        return var0.mc;
-    }
-
-    public static TextRenderer func_27145_b(GuiStats var0)
-    {
-        return var0.FontRenderer;
-    }
-
-    public static StatFileWriter func_27142_c(GuiStats var0)
-    {
-        return var0.statFileWriter;
-    }
-
-    public static TextRenderer func_27140_d(GuiStats var0)
-    {
-        return var0.FontRenderer;
-    }
-
-    public static TextRenderer func_27146_e(GuiStats var0)
-    {
-        return var0.FontRenderer;
-    }
-
-    public static Minecraft func_27143_f(GuiStats var0)
-    {
-        return var0.mc;
-    }
-
-    public static void func_27128_a(GuiStats var0, int right, int bottom, int left, int top)
+    public void drawTranslucentRect(int right, int bottom, int left, int top)
     {
         DrawGradientRect(right, bottom, left, top, 0xC0000000, 0xC0000000);
-    }
-
-    public static Minecraft func_27149_g(GuiStats var0)
-    {
-        return var0.mc;
-    }
-
-    public static TextRenderer func_27133_h(GuiStats var0)
-    {
-        return var0.FontRenderer;
-    }
-
-    public static TextRenderer func_27137_i(GuiStats var0)
-    {
-        return var0.FontRenderer;
-    }
-
-    public static TextRenderer func_27132_j(GuiStats var0)
-    {
-        return var0.FontRenderer;
-    }
-
-    public static TextRenderer func_27134_k(GuiStats var0)
-    {
-        return var0.FontRenderer;
-    }
-
-    public static TextRenderer func_27139_l(GuiStats var0)
-    {
-        return var0.FontRenderer;
-    }
-
-    public static void func_27129_a(GuiStats var0, int var1, int var2, int var3, int var4, uint topColor, uint bottomColor)
-    {
-        DrawGradientRect(var1, var2, var3, var4, topColor, bottomColor);
-    }
-
-    public static TextRenderer func_27144_m(GuiStats var0)
-    {
-        return var0.FontRenderer;
-    }
-
-    public static TextRenderer func_27127_n(GuiStats var0)
-    {
-        return var0.FontRenderer;
-    }
-
-    public static void func_27135_b(GuiStats var0, int var1, int var2, int var3, int var4, uint topColor, uint bottomColor)
-    {
-        DrawGradientRect(var1, var2, var3, var4, topColor, bottomColor);
-    }
-
-    public static TextRenderer func_27131_o(GuiStats var0)
-    {
-        return var0.FontRenderer;
-    }
-
-    public static void func_27148_a(GuiStats var0, int var1, int var2, int itemId)
-    {
-        var0.drawItemSlot(var1, var2, itemId);
     }
 }

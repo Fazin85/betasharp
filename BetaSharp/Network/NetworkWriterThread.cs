@@ -41,12 +41,12 @@ public class NetworkWriterThread : java.lang.Thread
                 {
                     Connection.getOutputStream(netManager)?.flush();
                 }
-                catch (java.io.IOException var18)
+                catch (java.io.IOException ex)
                 {
                     if (!Connection.isDisconnected(netManager))
                     {
-                        Connection.disconnect(netManager, var18);
-                        var18.printStackTrace();
+                        Connection.disconnect(this.netManager, ex);
+                        ex.printStackTrace();
                     }
                 }
             }

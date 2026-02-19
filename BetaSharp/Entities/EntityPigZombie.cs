@@ -8,8 +8,8 @@ public class EntityPigZombie : EntityZombie
 {
     public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityPigZombie).TypeHandle);
 
-    private int angerLevel = 0;
-    private int randomSoundDelay = 0;
+    private int angerLevel;
+    private int randomSoundDelay;
     private static readonly ItemStack defaultHeldItem = new ItemStack(Item.GoldenSword, 1);
 
     public EntityPigZombie(World world) : base(world)
@@ -25,7 +25,7 @@ public class EntityPigZombie : EntityZombie
         movementSpeed = playerToAttack != null ? 0.95F : 0.5F;
         if (randomSoundDelay > 0 && --randomSoundDelay == 0)
         {
-            world.playSound(this, "mob.zombiepig.zpigangry", getSoundVolume() * 2.0F, ((random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F) * 1.8F);
+            world.playSound(this, "mob.zombiepig.zpigangry", getSoundVolume() * 2.0F, ((random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F) * 1.8F);
         }
 
         base.tick();
@@ -83,8 +83,8 @@ public class EntityPigZombie : EntityZombie
     private void becomeAngryAt(Entity entity)
     {
         playerToAttack = entity;
-        angerLevel = 400 + random.nextInt(400);
-        randomSoundDelay = random.nextInt(40);
+        angerLevel = 400 + random.NextInt(400);
+        randomSoundDelay = random.NextInt(40);
     }
 
     protected override String getLivingSound()

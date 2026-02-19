@@ -4,7 +4,7 @@ namespace BetaSharp.Client.Rendering;
 
 public interface Culler
 {
-    bool isBoundingBoxInFrustum(Box var1);
+    bool isBoundingBoxInFrustum(Box aabb);
 
-    void setPosition(double var1, double var3, double var5);
+    void setPosition(double x, double y, double z);
 }

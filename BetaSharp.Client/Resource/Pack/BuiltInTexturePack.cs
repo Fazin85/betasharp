@@ -20,9 +20,9 @@ public class BuiltInTexturePack : TexturePack
         {
             texturePackThumbnail = ImageIO.read(new ByteArrayInputStream(AssetManager.Instance.getAsset("pack.png").getBinaryContent()));
         }
-        catch (java.io.IOException var2)
+        catch (java.io.IOException ex)
         {
-            var2.printStackTrace();
+            ex.printStackTrace();
         }
 
     }

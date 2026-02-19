@@ -30,7 +30,7 @@ public class GuiConflictWarning : GuiScreen
     public override void Render(int mouseX, int mouseY, float parcialTick)
     {
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, "Level save conflict", Width / 2, Height / 4 - 60 + 20, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, "Level save conflict", Width / 2, Height / 4 - 60 + 20, 0xFFFFFF);
         DrawString(FontRenderer, "Minecraft detected a conflict in the level save data.", Width / 2 - 140, Height / 4 - 60 + 60 + 0, 0xA0A0A0);
         DrawString(FontRenderer, "This could be caused by two copies of the game", Width / 2 - 140, Height / 4 - 60 + 60 + 18, 0xA0A0A0);
         DrawString(FontRenderer, "accessing the same level.", Width / 2 - 140, Height / 4 - 60 + 60 + 27, 0xA0A0A0);
