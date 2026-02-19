@@ -37,7 +37,7 @@ using Silk.NET.OpenGL.Legacy.Extensions.ImGui;
 
 namespace BetaSharp.Client;
 
-public partial class Minecraft : java.lang.Object, Runnable
+public partial class Minecraft
 {
     public static Minecraft INSTANCE;
     public PlayerController playerController;
@@ -496,7 +496,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         }
     }
 
-    public void run()
+    public void Run()
     {
         running = true;
 
@@ -1634,10 +1634,13 @@ public partial class Minecraft : java.lang.Object, Runnable
 
     private static void StartMainThread(string playerName, string sessionToken)
     {
-        Minecraft mc = new(1280, 720, false);
-        java.lang.Thread mainThread = new(mc, "Minecraft main thread");
-        mainThread.setPriority(10);
-        mc.minecraftUri = "www.minecraft.net";
+        System.Threading.Thread.CurrentThread.Name = "Minecraft Main Thread";
+
+        Minecraft mc = new(1280, 720, false)
+        {
+            minecraftUri = "www.minecraft.net"
+        };
+
         if (playerName != null && sessionToken != null)
         {
             mc.session = new Session(playerName, sessionToken);
@@ -1647,7 +1650,7 @@ public partial class Minecraft : java.lang.Object, Runnable
             mc.session = new Session("Player" + java.lang.System.currentTimeMillis() % 1000L, "");
         }
 
-        mainThread.start();
+        mc.Run();
     }
 
     public ClientNetworkHandler getSendQueue()
