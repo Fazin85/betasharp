@@ -299,7 +299,7 @@ public class TextureManager
     {
         _textures.Clear();
         foreach (var entry in _images) Load(entry.Value, entry.Key);
-        foreach (var key in new List<string>(_textures.Keys)) GetTextureId(key); // Re-trigger Load logic
+        foreach (var key in new List<string>(_textures.Keys)) GetTextureId(key);
         foreach (var key in new List<string>(_colors.Keys)) GetColors(key);
     }
 
@@ -308,9 +308,12 @@ public class TextureManager
         foreach (var texture in _dynamicTextures)
         {
             texture.tick();
-            BindTexture(texture.copyTo > 0 ? texture.copyTo : GetTextureId(texture.atlas == DynamicTexture.FXImage.Terrain ? "terrain.png" : "gui/items.png"));
+            BindTexture(texture.copyTo > 0 
+                    ? texture.copyTo 
+                    : GetTextureId(texture.atlas == DynamicTexture.FXImage.Terrain ? "/terrain.png" : "/gui/items.png"));
 
             int fxSize = (int)Math.Sqrt(texture.pixels.Length / 4);
+                    
             fixed (byte* ptr = texture.pixels)
             {
                 for (int x = 0; x < texture.replicate; x++)
@@ -340,12 +343,11 @@ public class TextureManager
 
         for (int mipLevel = 1; mipLevel < maxMipLevels; mipLevel++)
         {
-            int newSize = currentSize >> 1; // Divide by 2
+            int newSize = currentSize >> 1;
             if (newSize <= 0) break;
 
             byte[] downsampled = new byte[newSize * newSize * 4];
 
-            // Fast Box Filter for raw RGBA bytes (averages 2x2 pixel blocks)
             for (int y = 0; y < newSize; y++)
             {
                 for (int x = 0; x < newSize; x++)
@@ -357,7 +359,6 @@ public class TextureManager
 
                     int dst = (y * newSize + x) * 4;
 
-                    // Average R, G, B, and A channels
                     downsampled[dst] = (byte)((currentData[src0] + currentData[src1] + currentData[src2] + currentData[src3]) >> 2);
                     downsampled[dst + 1] = (byte)((currentData[src0 + 1] + currentData[src1 + 1] + currentData[src2 + 1] + currentData[src3 + 1]) >> 2);
                     downsampled[dst + 2] = (byte)((currentData[src0 + 2] + currentData[src1 + 2] + currentData[src2 + 2] + currentData[src3 + 2]) >> 2);
@@ -365,8 +366,8 @@ public class TextureManager
                 }
             }
 
-            int mipTileX = (tileIndex % 16) * newSize;
-            int mipTileY = (tileIndex / 16) * newSize;
+            int mipTileX = tileIndex % 16 * newSize;
+            int mipTileY = tileIndex / 16 * newSize;
 
             fixed (byte* ptr = downsampled)
             {
@@ -376,7 +377,6 @@ public class TextureManager
                     GLEnum.Rgba, GLEnum.UnsignedByte, ptr);
             }
 
-            // Set the current data to the new downsampled version for the next mip level
             currentData = downsampled;
             currentSize = newSize;
         }
