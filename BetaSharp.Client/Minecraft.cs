@@ -1328,6 +1328,11 @@ public partial class Minecraft : java.lang.Object, Runnable
                             forceReload();
                         }
 
+                        if (Keyboard.getEventKey() == Keyboard.KEY_D && Keyboard.isKeyDown(Keyboard.KEY_F3))
+                        {
+                            ingameGUI.clearChatMessages();
+                        }
+
                         if (Keyboard.getEventKey() == Keyboard.KEY_F1)
                         {
                             options.hideGUI = !options.hideGUI;
