@@ -11,6 +11,8 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
     private readonly long _seed = seed;
     private bool _serverStarted;
 
+    public override bool PausesGame=> false;
+
     public override void InitGui()
     {
         _controlList.Clear();
@@ -50,11 +52,6 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
                 mc.displayGuiScreen(new GuiConnecting(mc, clientHandler));
             }
         }
-    }
-
-    public override bool DoesGuiPauseGame()
-    {
-        return false;
     }
 
     public override void Render(int var1, int var2, float var3)

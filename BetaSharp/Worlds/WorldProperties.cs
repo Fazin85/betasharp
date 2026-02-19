@@ -5,21 +5,25 @@ namespace BetaSharp.Worlds;
 
 public class WorldProperties
 {
-    public long RandomSeed { get; }
-    public int SpawnX { get; set; }
-    public int SpawnY { get; set; }
-    public int SpawnZ { get; set; }
-    public long WorldTime { get; set; }
-    public long LastTimePlayed { get; }
-    public long SizeOnDisk { get; set; }
-    public NBTTagCompound? PlayerTag { get; set; }
-    public int Dimension { get; }
-    public string LevelName { get; set; }
-    public int SaveVersion { get; set; }
-    public bool IsRaining { get; set; }
-    public int RainTime { get; set; }
-    public bool IsThundering { get; set; }
-    public int ThunderTime { get; set; }
+    public virtual long RandomSeed { get; }
+    public virtual int SpawnX { get; set; }
+    public virtual int SpawnY { get; set; }
+    public virtual int SpawnZ { get; set; }
+    public virtual long WorldTime { get; set; }
+    public virtual long LastTimePlayed { get; }
+    public virtual long SizeOnDisk { get; set; }
+    public virtual NBTTagCompound? PlayerTag { get; set; }
+    public virtual int Dimension { get; }
+    public virtual string LevelName { get; set; }
+    public virtual int SaveVersion { get; set; }
+    public virtual bool IsRaining { get; set; }
+    public virtual int RainTime { get; set; }
+    public virtual bool IsThundering { get; set; }
+    public virtual int ThunderTime { get; set; }
+
+    protected WorldProperties()
+    {
+    }
 
     public WorldProperties(NBTTagCompound nbt)
     {
@@ -112,7 +116,7 @@ public class WorldProperties
             worldNbt.SetCompoundTag("Player", playerNbt);
     }
 
-    public void SetSpawn(int x, int y, int z)
+    public virtual void SetSpawn(int x, int y, int z)
     {
         SpawnX = x;
         SpawnY = y;
