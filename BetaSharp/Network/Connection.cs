@@ -330,11 +330,6 @@ public class Connection
 
     public static DataOutputStream getOutputStream(Connection conn)
     {
-        if (conn._outputStream == null)
-        {
-            throw new Exception("Connection not initialized");
-        }
-
         return conn._outputStream;
     }
 

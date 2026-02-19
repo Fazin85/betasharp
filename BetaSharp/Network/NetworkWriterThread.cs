@@ -39,7 +39,11 @@ public class NetworkWriterThread : java.lang.Thread
 
                 try
                 {
-                    Connection.getOutputStream(netManager)?.flush();
+                    var outputStream = Connection.getOutputStream(netManager);
+                    if (outputStream != null)
+                    {
+                        outputStream.flush();
+                    }
                 }
                 catch (java.io.IOException var18)
                 {
