@@ -86,7 +86,7 @@ public class GuiOptions : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, _screenTitle, Width / 2, 20, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, _screenTitle, Width / 2, 20, 0xFFFFFF);
 
         base.Render(mouseX, mouseY, partialTicks);
     }

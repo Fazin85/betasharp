@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -153,10 +153,10 @@ public partial class LauncherWindow : Window
         {
             Title = "Select b1.7.3.jar",
             AllowMultiple = false,
-            FileTypeFilter = new[]
-            {
-                new FilePickerFileType("JAR Files") { Patterns = new[] { "*.jar" } }
-            }
+            FileTypeFilter =
+            [
+                new FilePickerFileType("JAR Files") { Patterns = ["*.jar"] },
+            ]
         });
 
         if (files.Count > 0)

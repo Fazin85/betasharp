@@ -108,9 +108,9 @@ public class BlockDoor : Block
 
     }
 
-    public override void onBlockBreakStart(World world, int x, int y, int z, EntityPlayer var5)
+    public override void onBlockBreakStart(World world, int x, int y, int z, EntityPlayer player)
     {
-        onUse(world, x, y, z, var5);
+        onUse(world, x, y, z, player);
     }
 
     public override bool onUse(World world, int x, int y, int z, EntityPlayer player)

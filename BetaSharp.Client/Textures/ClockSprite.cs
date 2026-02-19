@@ -1,4 +1,4 @@
-using BetaSharp.Items;
+﻿using BetaSharp.Items;
 using java.awt.image;
 using java.io;
 using javax.imageio;
@@ -28,9 +28,9 @@ public class ClockSprite : DynamicTexture
             var2 = ImageIO.read(new ByteArrayInputStream(AssetManager.Instance.getAsset("misc/dial.png").getBinaryContent()));
             var2.getRGB(0, 0, 16, 16, dial, 0, 16);
         }
-        catch (java.io.IOException var5)
+        catch (java.io.IOException ex)
         {
-            var5.printStackTrace();
+            ex.printStackTrace();
         }
 
     }

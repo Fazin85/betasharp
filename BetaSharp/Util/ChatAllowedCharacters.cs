@@ -31,9 +31,7 @@ public class ChatAllowedCharacters : java.lang.Object
                 }
             }
         }
-        catch (java.lang.Exception var3)
-        {
-        }
+        catch (java.lang.Exception) { }
 
         return var0;
     }

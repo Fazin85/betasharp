@@ -62,7 +62,7 @@ public abstract class World : java.lang.Object, BlockView
     private int lightingUpdatesCounter;
     private bool spawnHostileMobs;
     private bool spawnPeacefulMobs;
-    private int lightingUpdatesScheduled = 0;
+    private int lightingUpdatesScheduled;
     private readonly HashSet<ChunkPos> activeChunks;
     private int soundCounter;
     private readonly List<Entity> tempEntityList;
@@ -91,7 +91,7 @@ public abstract class World : java.lang.Object, BlockView
         blockEntityUpdateQueue = [];
         players = [];
         globalEntities = new ArrayList();
-        worldTimeMask = 0x00FFFFFFL;
+        worldTimeMask = 0xFFFFFFL;
         ambientDarkness = 0;
         lcgBlockSeed = (new JavaRandom()).NextInt();
         lcgBlockSeedIncrement = 1013904223;
@@ -133,7 +133,7 @@ public abstract class World : java.lang.Object, BlockView
         blockEntityUpdateQueue = [];
         players = [];
         globalEntities = new ArrayList();
-        worldTimeMask = 0x00FFFFFFL;
+        worldTimeMask = 0xFFFFFFL;
         ambientDarkness = 0;
         lcgBlockSeed = (new JavaRandom()).NextInt();
         lcgBlockSeedIncrement = 1013904223;
@@ -180,7 +180,7 @@ public abstract class World : java.lang.Object, BlockView
         blockEntityUpdateQueue = [];
         players = [];
         globalEntities = new ArrayList();
-        worldTimeMask = 0x00FFFFFFL;
+        worldTimeMask = 0xFFFFFFL;
         ambientDarkness = 0;
         lcgBlockSeed = (new JavaRandom()).NextInt();
         lcgBlockSeedIncrement = 1013904223;
@@ -303,9 +303,9 @@ public abstract class World : java.lang.Object, BlockView
 
             SpawnEntity(player);
         }
-        catch (java.lang.Exception var6)
+        catch (java.lang.Exception ex)
         {
-            var6.printStackTrace();
+            ex.printStackTrace();
         }
 
     }

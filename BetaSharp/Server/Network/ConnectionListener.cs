@@ -10,7 +10,7 @@ public class ConnectionListener
 {
     public ServerSocket socket;
     private readonly java.lang.Thread _thread;
-    public volatile bool open = false;
+    public volatile bool open;
     public int connectionCounter = 0;
     private readonly List<ServerLoginNetworkHandler> _pendingConnections = [];
     private readonly List<ServerPlayNetworkHandler> _connections = [];

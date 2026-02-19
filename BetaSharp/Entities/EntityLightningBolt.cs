@@ -10,7 +10,7 @@ public class EntityLightningBolt : EntityWeatherEffect
     public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityLightningBolt).TypeHandle);
 
     private int flashTimer;
-    public long renderSeed = 0L;
+    public long renderSeed;
     private int flashCount;
 
     public EntityLightningBolt(World world, double x, double y, double z) : base(world)

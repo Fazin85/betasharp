@@ -74,7 +74,7 @@ public class GuiControls : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, _screenTitle, Width / 2, 20, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, _screenTitle, Width / 2, 20, 0xFFFFFF);
         int leftX = getLeftColumnX();
 
         for (int i = 0; i < _options.keyBindings.Length; ++i)

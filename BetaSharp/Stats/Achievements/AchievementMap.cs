@@ -29,9 +29,9 @@ public class AchievementMap : java.lang.Object
                 guidMap.put(Integer.valueOf(var4), var3[1]);
             }
         }
-        catch (java.lang.Exception var5)
+        catch (java.lang.Exception ex)
         {
-            var5.printStackTrace();
+            ex.printStackTrace();
         }
 
     }

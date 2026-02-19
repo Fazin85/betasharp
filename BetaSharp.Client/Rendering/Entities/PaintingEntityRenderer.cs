@@ -51,8 +51,8 @@ public class PaintingEntityRenderer : EntityRenderer
                 float var23 = 1.0F / 16.0F;
                 float var24 = 12.0F / 16.0F;
                 float var25 = 13.0F / 16.0F;
-                float var26 = 0.001953125F;
-                float var27 = 0.001953125F;
+                float var26 = (1 / 512f);
+                float var27 = (1 / 512f);
                 float var28 = 385.0F / 512.0F;
                 float var29 = 385.0F / 512.0F;
                 float var30 = 0.0F;
@@ -124,8 +124,8 @@ public class PaintingEntityRenderer : EntityRenderer
         GLManager.GL.Color3(var7, var7, var7);
     }
 
-    public override void render(Entity var1, double var2, double var4, double var6, float var8, float var9)
+    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
     {
-        func_158_a((EntityPainting)var1, var2, var4, var6, var8, var9);
+        func_158_a((EntityPainting)target, x, y, z, yaw, tickDelta);
     }
 }

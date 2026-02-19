@@ -8,8 +8,8 @@ public class EntityPigZombie : EntityZombie
 {
     public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityPigZombie).TypeHandle);
 
-    private int angerLevel = 0;
-    private int randomSoundDelay = 0;
+    private int angerLevel;
+    private int randomSoundDelay;
     private static readonly ItemStack defaultHeldItem = new ItemStack(Item.GoldenSword, 1);
 
     public EntityPigZombie(World world) : base(world)

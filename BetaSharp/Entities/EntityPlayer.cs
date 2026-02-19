@@ -20,11 +20,11 @@ public abstract class EntityPlayer : EntityLiving
     public ScreenHandler playerScreenHandler;
     public ScreenHandler currentScreenHandler;
     public byte unused = 0;
-    public int score = 0;
+    public int score;
     public float prevStepBobbingAmount;
     public float stepBobbingAmount;
-    public bool handSwinging = false;
-    public int handSwingTicks = 0;
+    public bool handSwinging;
+    public int handSwingTicks;
     public string name;
     public int dimensionId;
     public string playerCloakUrl;
@@ -43,10 +43,10 @@ public abstract class EntityPlayer : EntityLiving
     private Vec3i playerSpawnCoordinate;
     private Vec3i startMinecartRidingCoordinate;
     public int portalCooldown = 20;
-    protected bool inTeleportationState = false;
+    protected bool inTeleportationState;
     public float changeDimensionCooldown;
     public float lastScreenDistortion;
-    private int damageSpill = 0;
+    private int damageSpill;
     public EntityFish fishHook = null;
 
     public EntityPlayer(World world) : base(world)
@@ -498,7 +498,7 @@ public abstract class EntityPlayer : EntityLiving
 
     protected void commandWolvesToAttack(EntityLiving entity, bool sitting)
     {
-        if (!(entity is EntityCreeper) && !(entity is EntityGhast))
+        if (entity is not EntityCreeper && entity is not EntityGhast)
         {
             if (entity is EntityWolf)
             {
@@ -509,7 +509,7 @@ public abstract class EntityPlayer : EntityLiving
                 }
             }
 
-            if (!(entity is EntityPlayer) || isPvpEnabled())
+            if (entity is not EntityPlayer || isPvpEnabled())
             {
                 var var7 = world.collectEntitiesByClass(EntityWolf.Class, new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(16.0D, 4.0D, 16.0D));
 

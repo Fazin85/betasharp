@@ -1,7 +1,6 @@
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
 using BetaSharp.NBT;
-using java.io;
 
 namespace BetaSharp.Worlds.Chunks.Storage;
 

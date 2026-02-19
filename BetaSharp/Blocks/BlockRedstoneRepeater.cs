@@ -9,8 +9,8 @@ namespace BetaSharp.Blocks;
 public class BlockRedstoneRepeater : Block
 {
 
-    public static readonly double[] RENDER_OFFSET = new double[] { -0.0625D, 1.0D / 16.0D, 0.1875D, 0.3125D };
-    private static readonly int[] DELAY = new int[] { 1, 2, 3, 4 };
+    public static readonly double[] RENDER_OFFSET = [-0.0625D, 1.0D / 16.0D, 0.1875D, 0.3125D];
+    private static readonly int[] DELAY = [1, 2, 3, 4];
     private readonly bool lit;
 
     public BlockRedstoneRepeater(int id, bool lit) : base(id, 6, Material.PistonBreakable)

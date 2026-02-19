@@ -7,7 +7,7 @@ namespace BetaSharp.Client.Rendering.Entities;
 public class SquidEntityRenderer : LivingEntityRenderer
 {
 
-    public SquidEntityRenderer(ModelBase var1, float var2) : base(var1, var2)
+    public SquidEntityRenderer(ModelBase mainModel, float shadowRadius) : base(mainModel, shadowRadius)
     {
     }
 
@@ -57,8 +57,8 @@ public class SquidEntityRenderer : LivingEntityRenderer
         func_21008_a((EntitySquid)var1, var2, var4, var6, var8, var9);
     }
 
-    public override void render(Entity var1, double var2, double var4, double var6, float var8, float var9)
+    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
     {
-        func_21008_a((EntitySquid)var1, var2, var4, var6, var8, var9);
+        func_21008_a((EntitySquid)target, x, y, z, yaw, tickDelta);
     }
 }

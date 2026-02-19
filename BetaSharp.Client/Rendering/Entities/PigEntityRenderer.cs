@@ -6,7 +6,7 @@ namespace BetaSharp.Client.Rendering.Entities;
 public class PigEntityRenderer : LivingEntityRenderer
 {
 
-    public PigEntityRenderer(ModelBase var1, ModelBase var2, float var3) : base(var1, var3)
+    public PigEntityRenderer(ModelBase mainModel, ModelBase var2, float var3) : base(mainModel, var3)
     {
         setRenderPassModel(var2);
     }

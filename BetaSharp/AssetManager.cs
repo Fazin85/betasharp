@@ -52,13 +52,12 @@ public class AssetManager
         }
     }
 
-    public static AssetManager Instance { get => instance; }
+    public static AssetManager Instance { get; } = new();
 
-    private static readonly AssetManager instance = new();
     private readonly Dictionary<string, AssetType> assetsToLoad = [];
     private readonly Dictionary<string, Asset> loadedAssets = [];
     private readonly HashSet<string> assetDirectories = [];
-    private int embeddedAssetsLoaded = 0;
+    private int embeddedAssetsLoaded;
 
     private AssetManager()
     {

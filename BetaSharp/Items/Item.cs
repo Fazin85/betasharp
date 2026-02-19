@@ -126,11 +126,11 @@ public class Item : java.lang.Object
     public static Item RecordCat = (new ItemRecord(2001, "cat")).setTexturePosition(1, 15).setItemName("record");
     public readonly int id;
     public int maxCount = 64;
-    private int maxDamage = 0;
+    private int maxDamage;
     protected int textureId;
-    protected bool handheld = false;
-    protected bool hasSubtypes = false;
-    private Item craftingReturnItem = null;
+    protected bool handheld;
+    protected bool hasSubtypes;
+    private Item craftingReturnItem;
     private string translationKey;
 
     protected Item(int id)
@@ -310,7 +310,7 @@ public class Item : java.lang.Object
 
     public virtual int getColorMultiplier(int color)
     {
-        return 0x00FFFFFF;
+        return 0xFFFFFF;
     }
 
     public virtual void inventoryTick(ItemStack itemStack, World world, Entity entity, int slotIndex, bool shouldUpdate)

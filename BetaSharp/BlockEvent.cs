@@ -4,7 +4,7 @@ namespace BetaSharp;
 
 public class BlockEvent : java.lang.Object, Comparable
 {
-    private static long nextTickEntryID = 0L;
+    private static long nextTickEntryID;
     public int x;
     public int y;
     public int z;

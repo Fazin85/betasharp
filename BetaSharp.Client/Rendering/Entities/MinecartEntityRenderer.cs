@@ -18,37 +18,37 @@ public class MinecartEntityRenderer : EntityRenderer
         modelMinecart = new ModelMinecart();
     }
 
-    public void render(EntityMinecart var1, double var2, double var4, double var6, float var8, float var9)
+    public void render(EntityMinecart var1, double x, double y, double z, float yaw, float tickDelta)
     {
         GLManager.GL.PushMatrix();
-        double var10 = var1.lastTickX + (var1.x - var1.lastTickX) * (double)var9;
-        double var12 = var1.lastTickY + (var1.y - var1.lastTickY) * (double)var9;
-        double var14 = var1.lastTickZ + (var1.z - var1.lastTickZ) * (double)var9;
+        double var10 = var1.lastTickX + (var1.x - var1.lastTickX) * (double)tickDelta;
+        double var12 = var1.lastTickY + (var1.y - var1.lastTickY) * (double)tickDelta;
+        double var14 = var1.lastTickZ + (var1.z - var1.lastTickZ) * (double)tickDelta;
         double var16 = (double)0.3F;
         Vec3D? var18 = var1.func_514_g(var10, var12, var14);
-        float var19 = var1.prevPitch + (var1.pitch - var1.prevPitch) * var9;
+        float var19 = var1.prevPitch + (var1.pitch - var1.prevPitch) * tickDelta;
         if (var18 != null)
         {
             Vec3D var20 = var1.func_515_a(var10, var12, var14, var16) ?? var18.Value;
             Vec3D var21 = var1.func_515_a(var10, var12, var14, -var16) ?? var18.Value;
 
-            var2 += var18.Value.x - var10;
-            var4 += (var20.y + var21.y) / 2.0D - var12;
-            var6 += var18.Value.z - var14;
+            x += var18.Value.x - var10;
+            y += (var20.y + var21.y) / 2.0D - var12;
+            z += var18.Value.z - var14;
             Vec3D var22 = var21 - var20;
             if (var22.magnitude() != 0.0D)
             {
                 var22 = var22.normalize();
-                var8 = (float)(java.lang.Math.atan2(var22.z, var22.x) * 180.0D / Math.PI);
+                yaw = (float)(java.lang.Math.atan2(var22.z, var22.x) * 180.0D / Math.PI);
                 var19 = (float)(java.lang.Math.atan(var22.y) * 73.0D);
             }
         }
 
-        GLManager.GL.Translate((float)var2, (float)var4, (float)var6);
-        GLManager.GL.Rotate(180.0F - var8, 0.0F, 1.0F, 0.0F);
+        GLManager.GL.Translate((float)x, (float)y, (float)z);
+        GLManager.GL.Rotate(180.0F - yaw, 0.0F, 1.0F, 0.0F);
         GLManager.GL.Rotate(-var19, 0.0F, 0.0F, 1.0F);
-        float var23 = var1.minecartTimeSinceHit - var9;
-        float var24 = var1.minecartCurrentDamage - var9;
+        float var23 = var1.minecartTimeSinceHit - tickDelta;
+        float var24 = var1.minecartCurrentDamage - tickDelta;
         if (var24 < 0.0F)
         {
             var24 = 0.0F;
@@ -69,11 +69,11 @@ public class MinecartEntityRenderer : EntityRenderer
             //TODO: WTF WHY ARE WE MAKING A NEW RENDER BLOCKS EVERY TIME
             if (var1.type == 1)
             {
-                new BlockRenderer().renderBlockOnInventory(Block.Chest, 0, var1.getBrightnessAtEyes(var9));
+                new BlockRenderer().renderBlockOnInventory(Block.Chest, 0, var1.getBrightnessAtEyes(tickDelta));
             }
             else if (var1.type == 2)
             {
-                new BlockRenderer().renderBlockOnInventory(Block.Furnace, 0, var1.getBrightnessAtEyes(var9));
+                new BlockRenderer().renderBlockOnInventory(Block.Furnace, 0, var1.getBrightnessAtEyes(tickDelta));
             }
 
             GLManager.GL.Rotate(-90.0F, 0.0F, 1.0F, 0.0F);
@@ -87,8 +87,8 @@ public class MinecartEntityRenderer : EntityRenderer
         GLManager.GL.PopMatrix();
     }
 
-    public override void render(Entity var1, double var2, double var4, double var6, float var8, float var9)
+    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
     {
-        render((EntityMinecart)var1, var2, var4, var6, var8, var9);
+        render((EntityMinecart)target, x, y, z, yaw, tickDelta);
     }
 }

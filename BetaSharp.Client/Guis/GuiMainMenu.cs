@@ -126,7 +126,7 @@ public class GuiMainMenu : GuiScreen
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         DrawTexturedModalRect(logoX + 0, logoY + 0, 0, 0, 155, 44);
         DrawTexturedModalRect(logoX + 155, logoY + 0, 0, 45, 155, 44);
-        tess.setColorOpaque_I(0x00FFFFFF);
+        tess.setColorOpaque_I(0xFFFFFF);
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(Width / 2 + 90, 70.0F, 0.0F);
         GLManager.GL.Rotate(-20.0F, 0.0F, 0.0F, 1.0F);
@@ -134,13 +134,13 @@ public class GuiMainMenu : GuiScreen
             1000.0F * (float)Math.PI * 2.0F) * 0.1F);
         splashScale = splashScale * 100.0F / (FontRenderer.getStringWidth(_splashText) + 32);
         GLManager.GL.Scale(splashScale, splashScale, splashScale);
-        DrawCenteredString(FontRenderer, _splashText, 0, -8, 16776960);
+        DrawCenteredString(FontRenderer, _splashText, 0, -8, 0xFFFF00);
         GLManager.GL.PopMatrix();
-        DrawString(FontRenderer, "Minecraft Beta 1.7.3", 2, 2, 5263440);
+        DrawString(FontRenderer, "Minecraft Beta 1.7.3", 2, 2, 0x505050);
         string copyrightText = "Copyright Mojang Studios. Not an official Minecraft product.";
-        DrawString(FontRenderer, copyrightText, Width - FontRenderer.getStringWidth(copyrightText) - 2, Height - 20, 0x00FFFFFF);
+        DrawString(FontRenderer, copyrightText, Width - FontRenderer.getStringWidth(copyrightText) - 2, Height - 20, 0xFFFFFF);
         string disclaimerText = "Not approved by or associated with Mojang Studios or Microsoft.";
-        DrawString(FontRenderer, disclaimerText, Width - FontRenderer.getStringWidth(disclaimerText) - 2, Height - 10, 0x00FFFFFF);
+        DrawString(FontRenderer, disclaimerText, Width - FontRenderer.getStringWidth(disclaimerText) - 2, Height - 10, 0xFFFFFF);
         base.Render(mouseX, mouseY, partialTicks);
     }
 }

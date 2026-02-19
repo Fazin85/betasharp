@@ -23,7 +23,7 @@ public class InternalServer : MinecraftServer
         serverConfiguration.SetViewDistance(viewDistanceChunks);
     }
 
-    public volatile bool isReady = false;
+    public volatile bool isReady;
 
     protected override bool Init()
     {

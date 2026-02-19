@@ -90,9 +90,9 @@ public class GuiAchievement : Gui
         Lighting.turnOff();
         updateAchievementWindowScale();
 
-        _theGame.fontRenderer.drawStringWithShadow(LicenseWarningText, 2, 2, 0x00FFFFFF);
-        _theGame.fontRenderer.drawStringWithShadow(AltLocationWarningText, 2, 11, 0x00FFFFFF);
-        _theGame.fontRenderer.drawStringWithShadow(PurchasePromptText, 2, 20, 0x00FFFFFF);
+        _theGame.fontRenderer.drawStringWithShadow(LicenseWarningText, 2, 2, 0xFFFFFF);
+        _theGame.fontRenderer.drawStringWithShadow(AltLocationWarningText, 2, 11, 0xFFFFFF);
+        _theGame.fontRenderer.drawStringWithShadow(PurchasePromptText, 2, 20, 0xFFFFFF);
 
         GLManager.GL.DepthMask(true);
         GLManager.GL.Enable(GLEnum.DepthTest);

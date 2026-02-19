@@ -23,7 +23,7 @@ public class WorldRenderer : IWorldAccess
     private readonly TextureManager renderEngine;
     private readonly Minecraft mc;
     private BlockRenderer globalRenderBlocks;
-    private int cloudOffsetX = 0;
+    private int cloudOffsetX;
     private readonly int starGLCallList;
     private readonly int glSkyList;
     private readonly int glSkyList2;
@@ -547,7 +547,7 @@ public class WorldRenderer : IWorldAccess
         float var15 = (float)var13.Y;
         float var16 = (float)var13.Z;
 
-        float var19 = 0.00390625F;
+        float var19 = 1 / 256f;
         float var17 = MathHelper.floor_double(var6) * var19;
         float var18 = MathHelper.floor_double(var8) * var19;
         float var20 = (float)(var6 - MathHelper.floor_double(var6));

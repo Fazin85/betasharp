@@ -9,8 +9,8 @@ public class EntityChicken : EntityAnimal
 {
     public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityChicken).TypeHandle);
     public bool field_753_a = false;
-    public float field_752_b = 0.0F;
-    public float destPos = 0.0F;
+    public float field_752_b;
+    public float destPos;
     public float field_757_d;
     public float field_756_e;
     public float field_755_h = 1.0F;

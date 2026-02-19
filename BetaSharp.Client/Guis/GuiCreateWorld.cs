@@ -169,7 +169,7 @@ public class GuiCreateWorld : GuiScreen
         int centerY = Height / 4;
 
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, translations.translateKey("selectWorld.create"), centerX, centerY - 60 + 20, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, translations.translateKey("selectWorld.create"), centerX, centerY - 60 + 20, 0xFFFFFF);
         DrawString(FontRenderer, translations.translateKey("selectWorld.enterName"), centerX - 100, centerY - 10, 0xA0A0A0);
         DrawString(FontRenderer, $"{translations.translateKey("selectWorld.resultFolder")} {_folderName}", centerX - 100, centerY + 24, 0xA0A0A0);
         DrawString(FontRenderer, translations.translateKey("selectWorld.enterSeed"), centerX - 100, centerY + 56 - 12, 0xA0A0A0);

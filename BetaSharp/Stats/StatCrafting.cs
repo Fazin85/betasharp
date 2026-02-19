@@ -10,7 +10,7 @@ public class StatCrafting : StatBase
         this.itemId = itemId;
     }
 
-    public int func_25072_b()
+    public int getItemId()
     {
         return itemId;
     }

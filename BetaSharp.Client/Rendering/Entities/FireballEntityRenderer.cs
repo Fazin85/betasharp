@@ -8,10 +8,10 @@ namespace BetaSharp.Client.Rendering.Entities;
 public class FireballEntityRenderer : EntityRenderer
 {
 
-    public void render(EntityFireball var1, double var2, double var4, double var6, float var8, float var9)
+    public void render(EntityFireball var1, double x, double y, double z, float yaw, float tickDelta)
     {
         GLManager.GL.PushMatrix();
-        GLManager.GL.Translate((float)var2, (float)var4, (float)var6);
+        GLManager.GL.Translate((float)x, (float)y, (float)z);
         GLManager.GL.Enable(GLEnum.RescaleNormal);
         float var10 = 2.0F;
         GLManager.GL.Scale(var10 / 1.0F, var10 / 1.0F, var10 / 1.0F);
@@ -38,8 +38,8 @@ public class FireballEntityRenderer : EntityRenderer
         GLManager.GL.PopMatrix();
     }
 
-    public override void render(Entity var1, double var2, double var4, double var6, float var8, float var9)
+    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
     {
-        render((EntityFireball)var1, var2, var4, var6, var8, var9);
+        render((EntityFireball)target, x, y, z, yaw, tickDelta);
     }
 }

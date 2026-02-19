@@ -48,14 +48,14 @@ public class BiomeSource
 
     public virtual double[] GetTemperatures(double[] map, int x, int z, int width, int depth)
     {
-         int size = width * depth;
+        int size = width * depth;
         if (map == null || map.Length < size)
         {
             map = new double[size];
         }
 
         map = _temperatureSampler.sample(map, x, z, width, depth, (double)0.025F, (double)0.025F, 0.25D);
-        WeirdnessMap = _weirdnessSampler.sample(WeirdnessMap, x, z, width, depth, 0.25D, 0.25D, 0.5882352941176471D);
+        WeirdnessMap = _weirdnessSampler.sample(WeirdnessMap, x, z, width, depth, 0.25D, 0.25D, 10 / 17d);
         int index = 0;
 
         for (int i = 0; i < width; ++i)

@@ -3,11 +3,11 @@ namespace BetaSharp.Util.Maths;
 public record struct Vec3D
 {
     public static readonly Vec3D Zero = new Vec3D(0.0D, 0.0D, 0.0D);
-        
+
     public double x;
     public double y;
     public double z;
-        
+
     public Vec3D(double x, double y, double z)
     {
         if (x == -0.0D) x = 0.0D;
@@ -18,7 +18,7 @@ public record struct Vec3D
         this.y = y;
         this.z = z;
     }
-        
+
     public double squareDistanceTo(Vec3D other)
     {
         double dx = other.x - x;
@@ -26,7 +26,7 @@ public record struct Vec3D
         double dz = other.z - z;
         return dx * dx + dy * dy + dz * dz;
     }
-        
+
     public double distanceTo(Vec3D other)
     {
         return Math.Sqrt(squareDistanceTo(other));
@@ -36,13 +36,13 @@ public record struct Vec3D
     {
         return distanceTo(Zero);
     }
-        
+
     public Vec3D normalize()
     {
         double mag = magnitude();
         return mag < 1.0E-4D ? Zero : this / mag;
     }
-        
+
     public Vec3D crossProduct(Vec3D other)
     {
         return new Vec3D(y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x);
@@ -119,12 +119,12 @@ public record struct Vec3D
         y = var6;
         z = var8;
     }
-        
+
     public override string ToString()
     {
         return "(" + x + ", " + y + ", " + z + ")";
     }
-        
+
     public static Vec3D operator +(Vec3D a, Vec3D b)
     {
         return new Vec3D(a.x + b.x, a.y + b.y, a.z + b.z);
@@ -133,22 +133,22 @@ public record struct Vec3D
     {
         return new Vec3D(a.x - b.x, a.y - b.y, a.z - b.z);
     }
-        
+
     public static Vec3D operator *(Vec3D a, Vec3D b)
     {
         return new Vec3D(a.x * b.x, a.y * b.y, a.z * b.z);
     }
-        
+
     public static Vec3D operator /(Vec3D a, Vec3D b)
     {
         return new Vec3D(a.x / b.x, a.y / b.y, a.z / b.z);
     }
-        
+
     public static Vec3D operator *(double a, Vec3D b)
     {
         return new Vec3D(a * b.x, a * b.y, a * b.z);
     }
-        
+
     public static Vec3D operator /(Vec3D a, double b)
     {
         return new Vec3D(a.x / b, a.y / b, a.z / b);

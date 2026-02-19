@@ -58,7 +58,7 @@ public class ChunkRenderer
     private readonly Core.Shader chunkShader;
     private int lastRenderDistance;
     private Vector3D<double> lastViewPos;
-    private int currentIndex = 0;
+    private int currentIndex;
     private Matrix4X4<float> modelView;
     private Matrix4X4<float> projection;
     private int fogMode;

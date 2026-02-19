@@ -81,8 +81,8 @@ public class GuiTexturePacks : GuiScreen
         }
 
         TranslationStorage translations = TranslationStorage.getInstance();
-        DrawCenteredString(FontRenderer, translations.translateKey("texturePack.title"), Width / 2, 16, 0x00FFFFFF);
-        DrawCenteredString(FontRenderer, translations.translateKey("texturePack.folderInfo"), Width / 2 - 77, Height - 26, 8421504);
+        DrawCenteredString(FontRenderer, translations.translateKey("texturePack.title"), Width / 2, 16, 0xFFFFFF);
+        DrawCenteredString(FontRenderer, translations.translateKey("texturePack.folderInfo"), Width / 2 - 77, Height - 26, 0x808080);
         base.Render(mouseX, mouseY, partialTicks);
     }
 

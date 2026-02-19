@@ -26,7 +26,6 @@ public class GuiScreen : Gui
         {
             control.DrawButton(mc, mouseX, mouseY);
         }
-
     }
 
     protected virtual void KeyTyped(char eventChar, int eventKey)

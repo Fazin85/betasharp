@@ -13,12 +13,12 @@ public class EntityEgg : Entity
     private int field_20056_b = -1;
     private int field_20055_c = -1;
     private int field_20054_d = -1;
-    private int field_20053_e = 0;
-    private bool field_20052_f = false;
-    public int field_20057_a = 0;
+    private int field_20053_e;
+    private bool field_20052_f;
+    public int field_20057_a;
     private EntityLiving field_20051_g;
     private int field_20050_h;
-    private int field_20049_i = 0;
+    private int field_20049_i;
 
     public EntityEgg(World world) : base(world)
     {

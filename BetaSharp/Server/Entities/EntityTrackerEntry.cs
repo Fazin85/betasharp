@@ -1,4 +1,4 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Network.Packets;
@@ -21,14 +21,14 @@ public class EntityTrackerEntry : java.lang.Object
     public double velocityX;
     public double velocityY;
     public double velocityZ;
-    public int ticks = 0;
+    public int ticks;
     private double x;
     private double y;
     private double z;
-    private bool isInitialized = false;
+    private bool isInitialized;
     private bool alwaysUpdateVelocity;
-    private int ticksSinceLastDismount = 0;
-    public bool newPlayerDataUpdated = false;
+    private int ticksSinceLastDismount;
+    public bool newPlayerDataUpdated;
     public HashSet<ServerPlayerEntity> listeners = [];
 
     public EntityTrackerEntry(Entity entity, int trackedDistance, int trackedFrequency, bool alwaysUpdateVelocity)

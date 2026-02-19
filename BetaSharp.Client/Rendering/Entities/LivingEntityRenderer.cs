@@ -13,10 +13,10 @@ public class LivingEntityRenderer : EntityRenderer
     protected ModelBase mainModel;
     protected ModelBase renderPassModel;
 
-    public LivingEntityRenderer(ModelBase var1, float var2)
+    public LivingEntityRenderer(ModelBase mainModel, float shadowRadius)
     {
-        mainModel = var1;
-        shadowRadius = var2;
+        this.mainModel = mainModel;
+        this.shadowRadius = shadowRadius;
     }
 
     public void setRenderPassModel(ModelBase var1)
@@ -52,7 +52,7 @@ public class LivingEntityRenderer : EntityRenderer
             GLManager.GL.Enable(GLEnum.RescaleNormal);
             GLManager.GL.Scale(-1.0F, -1.0F, 1.0F);
             preRenderCallback(var1, var9);
-            GLManager.GL.Translate(0.0F, -24.0F * var14 - 0.0078125F, 0.0F);
+            GLManager.GL.Translate(0.0F, -24.0F * var14 - (1 / 128f), 0.0F);
             float var15 = var1.lastWalkAnimationSpeed + (var1.walkAnimationSpeed - var1.lastWalkAnimationSpeed) * var9;
             float var16 = var1.animationPhase - var1.walkAnimationSpeed * (1.0F - var9);
             if (var15 > 1.0F)
@@ -127,9 +127,9 @@ public class LivingEntityRenderer : EntityRenderer
 
             GLManager.GL.Disable(GLEnum.RescaleNormal);
         }
-        catch (java.lang.Exception var24)
+        catch (java.lang.Exception ex)
         {
-            var24.printStackTrace();
+            ex.printStackTrace();
         }
 
         GLManager.GL.Enable(GLEnum.CullFace);
@@ -253,8 +253,8 @@ public class LivingEntityRenderer : EntityRenderer
         }
     }
 
-    public override void render(Entity var1, double var2, double var4, double var6, float var8, float var9)
+    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
     {
-        doRenderLiving((EntityLiving)var1, var2, var4, var6, var8, var9);
+        doRenderLiving((EntityLiving)target, x, y, z, yaw, tickDelta);
     }
 }

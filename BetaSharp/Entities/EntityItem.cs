@@ -12,7 +12,7 @@ public class EntityItem : Entity
 
     public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityItem).TypeHandle);
     public ItemStack stack;
-    public int itemAge = 0;
+    public int itemAge;
     public int delayBeforeCanPickup;
     private int health = 5;
     public float bobPhase = (float)(java.lang.Math.random() * System.Math.PI * 2.0D);

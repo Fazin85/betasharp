@@ -6,10 +6,10 @@ namespace BetaSharp.Client.Rendering.Entities;
 public class BoxEntityRenderer : EntityRenderer
 {
 
-    public override void render(Entity var1, double var2, double var4, double var6, float var8, float var9)
+    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
     {
         GLManager.GL.PushMatrix();
-        renderShape(var1.boundingBox, var2 - var1.lastTickX, var4 - var1.lastTickY, var6 - var1.lastTickZ);
+        renderShape(target.boundingBox, x - target.lastTickX, y - target.lastTickY, z - target.lastTickZ);
         GLManager.GL.PopMatrix();
     }
 }

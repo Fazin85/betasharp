@@ -87,9 +87,9 @@ public class RegionFile : java.lang.Object
                 chunkSaveTimes[var3] = var4;
             }
         }
-        catch (java.io.IOException var6)
+        catch (java.io.IOException ex)
         {
-            var6.printStackTrace();
+            ex.printStackTrace();
         }
 
     }

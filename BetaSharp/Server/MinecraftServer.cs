@@ -10,7 +10,6 @@ using BetaSharp.Worlds;
 using BetaSharp.Worlds.Storage;
 using java.lang;
 using java.util;
-using java.util.logging;
 
 namespace BetaSharp.Server;
 
@@ -23,8 +22,8 @@ public abstract class MinecraftServer : Runnable, CommandOutput
     public PlayerManager playerManager;
     private ServerCommandHandler commandHandler;
     public bool running = true;
-    public bool stopped = false;
-    private int ticks = 0;
+    public bool stopped;
+    private int ticks;
     public string progressMessage;
     public int progress;
     private List tickables = new ArrayList();
@@ -41,7 +40,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
     private int _ticksThisSecond;
     private float _currentTps;
 
-    private volatile bool _isPaused = false;
+    private volatile bool _isPaused;
 
     public float Tps
     {
@@ -76,34 +75,34 @@ public abstract class MinecraftServer : Runnable, CommandOutput
         playerManager = CreatePlayerManager();
         entityTrackers[0] = new EntityTracker(this, 0);
         entityTrackers[1] = new EntityTracker(this, -1);
-        long var5 = java.lang.System.nanoTime();
-        string var7 = config.GetLevelName("world");
-        string seedInput = config.GetLevelSeed("");
-        long worldSeed = new JavaRandom().NextLong();
-        if (seedInput.Length > 0)
+        long startTime = java.lang.System.nanoTime();
+        string worldName = config.GetLevelName("world");
+        string seedString = config.GetLevelSeed("");
+        long seed = new java.util.Random().nextLong();
+        if (seedString.Length > 0)
         {
             try
             {
-                worldSeed = Long.parseLong(seedInput);
+                seed = Long.parseLong(seedString);
             }
             catch (NumberFormatException)
             {
                 // Java based string hashing
                 int hash = 0;
-                foreach (char c in seedInput)
+                foreach (char c in seedString)
                 {
                     hash = 31 * hash + c;
                 }
-                worldSeed = hash;
+                seed = hash;
             }
         }
 
-        Log.Info($"Preparing level \"{var7}\"");
-        loadWorld(new RegionWorldStorageSource(getFile(".")), var7, worldSeed);
+        Log.Info($"Preparing level \"{worldName}\"");
+        loadWorld(new RegionWorldStorageSource(getFile(".")), worldName, seed);
 
         if (logHelp)
         {
-            Log.Info($"Done ({java.lang.System.nanoTime() - var5}ns)! For help, type \"help\" or \"?\"");
+            Log.Info($"Done ({java.lang.System.nanoTime() - startTime}ns)! For help, type \"help\" or \"?\"");
         }
 
         return true;
@@ -112,57 +111,57 @@ public abstract class MinecraftServer : Runnable, CommandOutput
     private void loadWorld(WorldStorageSource storageSource, string worldDir, long seed)
     {
         worlds = new ServerWorld[2];
-        RegionWorldStorage var5 = new RegionWorldStorage(getFile("."), worldDir, true);
+        RegionWorldStorage worldStorage = new RegionWorldStorage(getFile("."), worldDir, true);
 
-        for (int var6 = 0; var6 < worlds.Length; var6++)
+        for (int i = 0; i < worlds.Length; i++)
         {
-            if (var6 == 0)
+            if (i == 0)
             {
-                worlds[var6] = new ServerWorld(this, var5, worldDir, var6 == 0 ? 0 : -1, seed);
+                worlds[i] = new ServerWorld(this, worldStorage, worldDir, i == 0 ? 0 : -1, seed);
             }
             else
             {
-                worlds[var6] = new ReadOnlyServerWorld(this, var5, worldDir, var6 == 0 ? 0 : -1, seed, worlds[0]);
+                worlds[i] = new ReadOnlyServerWorld(this, worldStorage, worldDir, i == 0 ? 0 : -1, seed, worlds[0]);
             }
 
-            worlds[var6].addWorldAccess(new ServerWorldEventListener(this, worlds[var6]));
-            worlds[var6].difficulty = config.GetSpawnMonsters(true) ? 1 : 0;
-            worlds[var6].allowSpawning(config.GetSpawnMonsters(true), spawnAnimals);
+            worlds[i].addWorldAccess(new ServerWorldEventListener(this, worlds[i]));
+            worlds[i].difficulty = config.GetSpawnMonsters(true) ? 1 : 0;
+            worlds[i].allowSpawning(config.GetSpawnMonsters(true), spawnAnimals);
             playerManager.saveAllPlayers(worlds);
         }
 
-        short var18 = 196;
-        long var7 = java.lang.System.currentTimeMillis();
+        short startRegionSize = 196;
+        long lastTimeLogged = java.lang.System.currentTimeMillis();
 
-        for (int var9 = 0; var9 < worlds.Length; var9++)
+        for (int i = 0; i < worlds.Length; i++)
         {
-            Log.Info($"Preparing start region for level {var9}");
-            if (var9 == 0 || config.GetAllowNether(true))
+            Log.Info($"Preparing start region for level {i}");
+            if (i == 0 || config.GetAllowNether(true))
             {
-                ServerWorld var10 = worlds[var9];
-                Vec3i var11 = var10.getSpawnPos();
+                ServerWorld world = worlds[i];
+                Vec3i spawnPos = world.getSpawnPos();
 
-                for (int var12 = -var18; var12 <= var18 && running; var12 += 16)
+                for (int x = -startRegionSize; x <= startRegionSize && running; x += 16)
                 {
-                    for (int var13 = -var18; var13 <= var18 && running; var13 += 16)
+                    for (int z = -startRegionSize; z <= startRegionSize && running; z += 16)
                     {
-                        long var14 = java.lang.System.currentTimeMillis();
-                        if (var14 < var7)
+                        long currentTime = java.lang.System.currentTimeMillis();
+                        if (currentTime < lastTimeLogged)
                         {
-                            var7 = var14;
+                            lastTimeLogged = currentTime;
                         }
 
-                        if (var14 > var7 + 1000L)
+                        if (currentTime > lastTimeLogged + 1000L)
                         {
-                            int var16 = (var18 * 2 + 1) * (var18 * 2 + 1);
-                            int var17 = (var12 + var18) * (var18 * 2 + 1) + var13 + 1;
-                            logProgress("Preparing spawn area", var17 * 100 / var16);
-                            var7 = var14;
+                            int total = (startRegionSize * 2 + 1) * (startRegionSize * 2 + 1);
+                            int complete = (x + startRegionSize) * (startRegionSize * 2 + 1) + z + 1;
+                            logProgress("Preparing spawn area", complete * 100 / total);
+                            lastTimeLogged = currentTime;
                         }
 
-                        var10.chunkCache.loadChunk(var11.x + var12 >> 4, var11.z + var13 >> 4);
+                        world.chunkCache.loadChunk(spawnPos.x + x >> 4, spawnPos.z + z >> 4);
 
-                        while (var10.doLightingUpdates() && running)
+                        while (world.doLightingUpdates() && running)
                         {
                         }
                     }
@@ -190,11 +189,10 @@ public abstract class MinecraftServer : Runnable, CommandOutput
     {
         Log.Info("Saving chunks");
 
-        for (int var1 = 0; var1 < worlds.Length; var1++)
+        foreach (ServerWorld world in worlds)
         {
-            ServerWorld var2 = worlds[var1];
-            var2.saveWithLoadingDisplay(true, null);
-            var2.forceSave();
+            world.saveWithLoadingDisplay(true, null);
+            world.forceSave();
         }
     }
 
@@ -212,10 +210,9 @@ public abstract class MinecraftServer : Runnable, CommandOutput
             playerManager.savePlayers();
         }
 
-        for (int var1 = 0; var1 < worlds.Length; var1++)
+        foreach (ServerWorld world in worlds)
         {
-            ServerWorld var2 = worlds[var1];
-            if (var2 != null)
+            if (world != null)
             {
                 saveWorlds();
             }
@@ -233,32 +230,33 @@ public abstract class MinecraftServer : Runnable, CommandOutput
         {
             if (Init())
             {
-                long var1 = java.lang.System.currentTimeMillis();
-                _lastTpsTime = var1;
+                long lastTime = java.lang.System.currentTimeMillis();
+                long accumulatedTime = 0L;
+                _lastTpsTime = lastTime;
                 _ticksThisSecond = 0;
 
-                for (long var3 = 0L; running; java.lang.Thread.sleep(1L))
+                while (running)
                 {
-                    long var5 = java.lang.System.currentTimeMillis();
-                    long var7 = var5 - var1;
-                    if (var7 > 2000L)
+                    long currentTime = java.lang.System.currentTimeMillis();
+                    long tickLength = currentTime - lastTime;
+                    if (tickLength > 2000L)
                     {
                         Log.Warn("Can't keep up! Did the system time change, or is the server overloaded?");
-                        var7 = 2000L;
+                        tickLength = 2000L;
                     }
 
-                    if (var7 < 0L)
+                    if (tickLength < 0L)
                     {
                         Log.Warn("Time ran backwards! Did the system time change?");
-                        var7 = 0L;
+                        tickLength = 0L;
                     }
 
-                    var3 += var7;
-                    var1 = var5;
+                    accumulatedTime += tickLength;
+                    lastTime = currentTime;
 
                     if (_isPaused)
                     {
-                        var3 = 0L;
+                        accumulatedTime = 0L;
                         lock (_tpsLock)
                         {
                             _currentTps = 0.0f;
@@ -270,13 +268,13 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                     {
                         tick();
                         _ticksThisSecond++;
-                        var3 = 0L;
+                        accumulatedTime = 0L;
                     }
                     else
                     {
-                        while (var3 > 50L)
+                        while (accumulatedTime > 50L)
                         {
-                            var3 -= 50L;
+                            accumulatedTime -= 50L;
                             tick();
                             _ticksThisSecond++;
                         }
@@ -293,6 +291,8 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                         _ticksThisSecond = 0;
                         _lastTpsTime = tpsNow;
                     }
+
+                    java.lang.Thread.sleep(1L);
                 }
             }
             else
@@ -305,16 +305,16 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                     {
                         java.lang.Thread.sleep(10L);
                     }
-                    catch (InterruptedException var57)
+                    catch (InterruptedException ex)
                     {
-                        var57.printStackTrace();
+                        ex.printStackTrace();
                     }
                 }
             }
         }
-        catch (System.Exception var58)
+        catch (System.Exception ex)
         {
-            Log.Error(var58);
+            Log.Error(ex);
             Log.Error("Unexpected exception");
 
             while (running)
@@ -325,9 +325,9 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                 {
                     java.lang.Thread.sleep(10L);
                 }
-                catch (InterruptedException var56)
+                catch (InterruptedException interruptedEx)
                 {
-                    var56.printStackTrace();
+                    interruptedEx.printStackTrace();
                 }
             }
         }
@@ -338,9 +338,9 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                 shutdown();
                 stopped = true;
             }
-            catch (Throwable var54)
+            catch (Throwable ex)
             {
-                var54.printStackTrace();
+                ex.printStackTrace();
             }
             finally
             {
@@ -354,48 +354,48 @@ public abstract class MinecraftServer : Runnable, CommandOutput
 
     private void tick()
     {
-        ArrayList var1 = [];
+        ArrayList completeCooldowns = [];
 
         var keys = GIVE_COMMANDS_COOLDOWNS.keySet();
         var iter = keys.iterator();
         while (iter.hasNext())
         {
-            string var3 = (string)iter.next();
-            int var4 = (int)GIVE_COMMANDS_COOLDOWNS.get(var3);
-            if (var4 > 0)
+            string key = (string)iter.next();
+            int cooldown = (int)GIVE_COMMANDS_COOLDOWNS.get(key);
+            if (cooldown > 0)
             {
-                GIVE_COMMANDS_COOLDOWNS.put(var3, var4 - 1);
+                GIVE_COMMANDS_COOLDOWNS.put(key, cooldown - 1);
             }
             else
             {
-                var1.add(var3);
+                completeCooldowns.add(key);
             }
         }
 
-        for (int var6 = 0; var6 < var1.size(); var6++)
+        for (int i = 0; i < completeCooldowns.size(); i++)
         {
-            GIVE_COMMANDS_COOLDOWNS.remove(var1.get(var6));
+            GIVE_COMMANDS_COOLDOWNS.remove(completeCooldowns.get(i));
         }
 
         ticks++;
 
-        for (int var7 = 0; var7 < worlds.Length; var7++)
+        for (int i = 0; i < worlds.Length; i++)
         {
-            if (var7 == 0 || config.GetAllowNether(true))
+            if (i == 0 || config.GetAllowNether(true))
             {
-                ServerWorld var10 = worlds[var7];
+                ServerWorld world = worlds[i];
                 if (ticks % 20 == 0)
                 {
-                    playerManager.sendToDimension(new WorldTimeUpdateS2CPacket(var10.getTime()), var10.dimension.id);
+                    playerManager.sendToDimension(new WorldTimeUpdateS2CPacket(world.getTime()), world.dimension.id);
                 }
 
-                var10.Tick();
+                world.Tick();
 
-                while (var10.doLightingUpdates())
+                while (world.doLightingUpdates())
                 {
                 }
 
-                var10.tickEntities();
+                world.tickEntities();
             }
         }
 
@@ -405,23 +405,23 @@ public abstract class MinecraftServer : Runnable, CommandOutput
         }
         playerManager.updateAllChunks();
 
-        for (int var8 = 0; var8 < entityTrackers.Length; var8++)
+        foreach (EntityTracker t in entityTrackers)
         {
-            entityTrackers[var8].tick();
+            t.tick();
         }
 
-        for (int var9 = 0; var9 < tickables.size(); var9++)
+        for (int i = 0; i < tickables.size(); i++)
         {
-            ((Tickable)tickables.get(var9)).tick();
+            ((Tickable)tickables.get(i)).tick();
         }
 
         try
         {
             runPendingCommands();
         }
-        catch (java.lang.Exception var5)
+        catch (java.lang.Exception ex)
         {
-            Log.Warn($"Unexpected exception while parsing console command: {var5}");
+            Log.Warn($"Unexpected exception while parsing console command: {ex}");
         }
     }
 
@@ -434,8 +434,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
     {
         while (pendingCommands.size() > 0)
         {
-            Command var1 = (Command)pendingCommands.remove(0);
-            commandHandler.ExecuteCommand(var1);
+            commandHandler.ExecuteCommand((Command)pendingCommands.remove(0));
         }
     }
 

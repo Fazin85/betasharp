@@ -60,9 +60,9 @@ public class RegionIo : java.lang.Object
                         var2.func_22196_b();
                     }
                 }
-                catch (java.io.IOException var3)
+                catch (java.io.IOException ex)
                 {
-                    var3.printStackTrace();
+                    ex.printStackTrace();
                 }
             }
 

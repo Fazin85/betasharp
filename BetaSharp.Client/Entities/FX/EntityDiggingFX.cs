@@ -8,7 +8,7 @@ public class EntityDiggingFX : EntityFX
 {
 
     private readonly Block targetedBlock;
-    private readonly int hitFace = 0;
+    private readonly int hitFace;
 
     public EntityDiggingFX(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, Block targetedBlock, int hitFace, int meta) : base(world, x, y, z, velocityX, velocityY, velocityZ)
     {

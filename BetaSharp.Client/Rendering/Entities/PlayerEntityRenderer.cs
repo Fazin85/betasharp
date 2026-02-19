@@ -1,4 +1,4 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Client.Entities;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
@@ -16,7 +16,7 @@ public class PlayerEntityRenderer : LivingEntityRenderer
     private readonly ModelBiped modelBipedMain;
     private readonly ModelBiped modelArmorChestplate = new(1.0F);
     private readonly ModelBiped modelArmor = new(0.5F);
-    private static readonly string[] armorFilenamePrefix = new string[] { "cloth", "chain", "iron", "diamond", "gold" };
+    private static readonly string[] armorFilenamePrefix = ["cloth", "chain", "iron", "diamond", "gold"];
 
     public PlayerEntityRenderer() : base(new ModelBiped(0.0F), 0.5F)
     {
@@ -55,7 +55,7 @@ public class PlayerEntityRenderer : LivingEntityRenderer
         modelArmorChestplate.field_1278_i = modelArmor.field_1278_i = modelBipedMain.field_1278_i = var10 != null;
         modelArmorChestplate.isSneak = modelArmor.isSneak = modelBipedMain.isSneak = var1.isSneaking();
         double var11 = var4 - var1.standingEyeHeight;
-        if (var1.isSneaking() && !(var1 is ClientPlayerEntity))
+        if (var1.isSneaking() && var1 is not ClientPlayerEntity)
         {
             var11 -= 0.125D;
         }
@@ -113,7 +113,7 @@ public class PlayerEntityRenderer : LivingEntityRenderer
                     var14.draw();
                     GLManager.GL.Enable(GLEnum.Texture2D);
                     GLManager.GL.DepthMask(true);
-                    var13.drawString(var12, -var13.getStringWidth(var12) / 2, 0, 553648127);
+                    var13.drawString(var12, -var13.getStringWidth(var12) / 2, 0, 0x20FFFFFF);
                     GLManager.GL.Enable(GLEnum.Lighting);
                     GLManager.GL.Disable(GLEnum.Blend);
                     GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
@@ -333,8 +333,8 @@ public class PlayerEntityRenderer : LivingEntityRenderer
         renderPlayer((EntityPlayer)var1, var2, var4, var6, var8, var9);
     }
 
-    public override void render(Entity var1, double var2, double var4, double var6, float var8, float var9)
+    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
     {
-        renderPlayer((EntityPlayer)var1, var2, var4, var6, var8, var9);
+        renderPlayer((EntityPlayer)target, x, y, z, yaw, tickDelta);
     }
 }

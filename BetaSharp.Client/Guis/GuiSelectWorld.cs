@@ -1,4 +1,4 @@
-using BetaSharp.Client.Input;
+﻿using BetaSharp.Client.Input;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Storage;
 using java.text;
@@ -17,7 +17,7 @@ public class GuiSelectWorld : GuiScreen
     private readonly DateFormat dateFormatter = new SimpleDateFormat();
     protected GuiScreen parentScreen;
     protected string screenTitle = "Select world";
-    private bool selected = false;
+    private bool selected;
     private int selectedWorld;
     private List saveList;
     private GuiWorldSlot worldSlotContainer;
@@ -166,7 +166,7 @@ public class GuiSelectWorld : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         worldSlotContainer.drawScreen(mouseX, mouseY, partialTicks);
-        DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0xFFFFFF);
         base.Render(mouseX, mouseY, partialTicks);
     }
 

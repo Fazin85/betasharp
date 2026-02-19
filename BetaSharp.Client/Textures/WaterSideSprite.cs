@@ -9,7 +9,7 @@ public class WaterSideSprite : DynamicTexture
     protected float[] next = new float[256];
     protected float[] heat = new float[256];
     protected float[] heatDelta = new float[256];
-    private int ticks = 0;
+    private int ticks;
 
     public WaterSideSprite() : base(Block.FlowingWater.textureId + 1)
     {

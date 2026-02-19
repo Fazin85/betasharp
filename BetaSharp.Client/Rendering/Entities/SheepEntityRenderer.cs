@@ -7,7 +7,7 @@ namespace BetaSharp.Client.Rendering.Entities;
 public class SheepEntityRenderer : LivingEntityRenderer
 {
 
-    public SheepEntityRenderer(ModelBase var1, ModelBase var2, float var3) : base(var1, var3)
+    public SheepEntityRenderer(ModelBase mainModel, ModelBase var2, float var3) : base(mainModel, var3)
     {
         setRenderPassModel(var2);
     }

@@ -52,8 +52,8 @@ public class GuiConnectFailed : GuiScreen
     public override void Render(int mouseX, int mouseY, float parcialTick)
     {
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, _errorMessage, Width / 2, Height / 2 - 50, 0x00FFFFFF);
-        DrawCenteredString(FontRenderer, _errorDetail, Width / 2, Height / 2 - 10, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, _errorMessage, Width / 2, Height / 2 - 50, 0xFFFFFF);
+        DrawCenteredString(FontRenderer, _errorDetail, Width / 2, Height / 2 - 10, 0xFFFFFF);
         base.Render(mouseX, mouseY, parcialTick);
     }
 }

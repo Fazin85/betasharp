@@ -16,12 +16,11 @@ public class RecipesWeapons
             for (int j = 0; j < recipePatterns.Length; ++j)
             {
                 Item swordResult = (Item)recipeItems[j + 1][i];
-                m.AddRecipe(new ItemStack(swordResult), 
-                    [ recipePatterns[j], '#', Item.Stick, 'X', material ]);
+                m.AddRecipe(new ItemStack(swordResult), recipePatterns[j], '#', Item.Stick, 'X', material);
             }
         }
             
-        m.AddRecipe(new ItemStack(Item.BOW, 1), [" #X", "# X", " #X", 'X', Item.String, '#', Item.Stick]);
-        m.AddRecipe(new ItemStack(Item.ARROW, 4), ["X", "#", "Y", 'Y', Item.Feather, 'X', Item.Flint, '#', Item.Stick]);
+        m.AddRecipe(new ItemStack(Item.BOW, 1), " #X", "# X", " #X", 'X', Item.String, '#', Item.Stick);
+        m.AddRecipe(new ItemStack(Item.ARROW, 4), "X", "#", "Y", 'Y', Item.Feather, 'X', Item.Flint, '#', Item.Stick);
     }
 }

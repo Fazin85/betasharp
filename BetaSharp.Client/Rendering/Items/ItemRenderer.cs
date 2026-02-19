@@ -1,4 +1,4 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Entities;
@@ -19,7 +19,7 @@ public class ItemRenderer : EntityRenderer
     public ItemRenderer()
     {
         shadowRadius = 0.15F;
-        shadowDarkness = 12.0F / 16.0F;
+        shadowStrength = 12.0F / 16.0F;
     }
 
     public void doRenderItem(EntityItem var1, double var2, double var4, double var6, float var8, float var9)
@@ -213,7 +213,7 @@ public class ItemRenderer : EntityRenderer
                 string var6 = "" + var3.count;
                 GLManager.GL.Disable(GLEnum.Lighting);
                 GLManager.GL.Disable(GLEnum.DepthTest);
-                var1.drawStringWithShadow(var6, var4 + 19 - 2 - var1.getStringWidth(var6), var5 + 6 + 3, 0x00FFFFFF);
+                var1.drawStringWithShadow(var6, var4 + 19 - 2 - var1.getStringWidth(var6), var5 + 6 + 3, 0xFFFFFF);
                 GLManager.GL.Enable(GLEnum.Lighting);
                 GLManager.GL.Enable(GLEnum.DepthTest);
             }
@@ -254,8 +254,8 @@ public class ItemRenderer : EntityRenderer
     public void renderTexturedQuad(int var1, int var2, int var3, int var4, int var5, int var6)
     {
         float var7 = 0.0F;
-        float var8 = 0.00390625F;
-        float var9 = 0.00390625F;
+        float var8 = 1 / 256f;
+        float var9 = 1 / 256f;
         Tessellator var10 = Tessellator.instance;
         var10.startDrawingQuads();
         var10.addVertexWithUV(var1 + 0, var2 + var6, (double)var7, (double)((var3 + 0) * var8), (double)((var4 + var6) * var9));
@@ -265,8 +265,8 @@ public class ItemRenderer : EntityRenderer
         var10.draw();
     }
 
-    public override void render(Entity var1, double var2, double var4, double var6, float var8, float var9)
+    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
     {
-        doRenderItem((EntityItem)var1, var2, var4, var6, var8, var9);
+        doRenderItem((EntityItem)target, x, y, z, yaw, tickDelta);
     }
 }

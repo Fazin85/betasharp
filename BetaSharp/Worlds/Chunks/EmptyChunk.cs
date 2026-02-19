@@ -7,19 +7,19 @@ namespace BetaSharp.Worlds.Chunks;
 
 public class EmptyChunk : Chunk
 {
-    public EmptyChunk(World var1, int var2, int var3) : base(var1, var2, var3)
+    public EmptyChunk(World world, int x, int z) : base(world, x, z)
     {
         empty = true;
     }
 
-    public EmptyChunk(World var1, byte[] var2, int var3, int var4) : base(var1, var2, var3, var4)
+    public EmptyChunk(World world, byte[] blocks, int x, int z) : base(world, blocks, x, z)
     {
         empty = true;
     }
 
-    public override bool chunkPosEquals(int var1, int var2)
+    public override bool chunkPosEquals(int x, int z)
     {
-        return var1 == x && var2 == z;
+        return x == this.x && z == this.z;
     }
 
     public override int getHeight(int var1, int var2)

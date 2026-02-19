@@ -1,4 +1,4 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Items;
 using BetaSharp.NBT;
@@ -15,8 +15,8 @@ public abstract class EntityLiving : Entity
     public int maxHealth = 20;
     public float limbSwingPhase;
     public float limbSwingScale;
-    public float bodyYaw = 0.0F;
-    public float lastBodyYaw = 0.0F;
+    public float bodyYaw;
+    public float lastBodyYaw;
     protected float lastWalkProgress;
     protected float walkProgress;
     protected float totalWalkDistance;
@@ -37,12 +37,12 @@ public abstract class EntityLiving : Entity
     private int livingSoundTime;
     public int hurtTime;
     public int maxHurtTime;
-    public float attackedAtYaw = 0.0F;
-    public int deathTime = 0;
-    public int attackTime = 0;
+    public float attackedAtYaw;
+    public int deathTime;
+    public int attackTime;
     public float cameraPitch;
     public float tilt;
-    protected bool unused_flag = false;
+    protected bool unused_flag;
     public int field_9326_T = -1;
     public float field_9325_U = (float)(java.lang.Math.random() * (double)0.9F + (double)0.1F);
     public float lastWalkAnimationSpeed;
@@ -54,16 +54,16 @@ public abstract class EntityLiving : Entity
     protected double newPosZ;
     protected double newRotationYaw;
     protected double newRotationPitch;
-    protected int damageForDisplay = 0;
-    protected int entityAge = 0;
+    protected int damageForDisplay;
+    protected int entityAge;
     protected float sidewaysSpeed;
     protected float forwardSpeed;
     protected float rotationSpeed;
-    protected bool jumping = false;
+    protected bool jumping;
     protected float defaultPitch = 0.0F;
     protected float movementSpeed = 0.7F;
     private Entity lookTarget;
-    protected int lookTimer = 0;
+    protected int lookTimer;
 
     public EntityLiving(World world) : base(world)
     {
@@ -547,7 +547,7 @@ public abstract class EntityLiving : Entity
             if (var3 > 0)
             {
                 BlockSoundGroup var4 = Block.Blocks[var3].soundGroup;
-                world.playSound(this, var4.func_1145_d(), var4.getVolume() * 0.5F, var4.getPitch() * (12.0F / 16.0F));
+                world.playSound(this, var4.getName(), var4.getVolume() * 0.5F, var4.getPitch() * (12.0F / 16.0F));
             }
         }
 

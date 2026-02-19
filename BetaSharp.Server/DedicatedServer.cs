@@ -43,10 +43,10 @@ public class DedicatedServer(IServerConfiguration config) : MinecraftServer(conf
         {
             connections = new ConnectionListener(this, var3, var4);
         }
-        catch (java.io.IOException var13)
+        catch (java.io.IOException ex)
         {
             Log.Warn("**** FAILED TO BIND TO PORT!");
-            Log.Warn($"The exception was: {var13}");
+            Log.Warn($"The exception was: {ex}");
             Log.Warn("Perhaps a server is already running on that port?");
             return false;
         }
@@ -91,9 +91,9 @@ public class DedicatedServer(IServerConfiguration config) : MinecraftServer(conf
 
             new RunServerThread(server, "Server thread").start();
         }
-        catch (java.lang.Exception var2)
+        catch (java.lang.Exception ex)
         {
-            Log.Error($"Failed to start the minecraft server: {var2}");
+            Log.Error($"Failed to start the minecraft server: {ex}");
         }
     }
 
