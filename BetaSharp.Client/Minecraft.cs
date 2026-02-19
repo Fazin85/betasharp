@@ -24,6 +24,7 @@ using BetaSharp.Launcher;
 using BetaSharp.Profiling;
 using BetaSharp.Server.Internal;
 using BetaSharp.Stats;
+using BetaSharp.Util;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
@@ -83,7 +84,6 @@ public partial class Minecraft
     private int serverPort;
     private readonly WaterSprite textureWaterFX = new();
     private readonly LavaSprite textureLavaFX = new();
-    private static java.io.File minecraftDir;
     public volatile bool running = true;
     public string debug = "";
     bool isTakingScreenshot;
@@ -271,7 +271,7 @@ public partial class Minecraft
         GLManager.GL.Viewport(0, 0, (uint)displayWidth, (uint)displayHeight);
         particleManager = new ParticleManager(world, textureManager);
 
-        MinecraftResourceDownloader downloader = new(this, minecraftDir.getAbsolutePath());
+        MinecraftResourceDownloader downloader = new(this, mcDataDir.getAbsolutePath());
         _ = downloader.DownloadResourcesAsync();
 
         checkGLError("Post startup");
@@ -339,58 +339,7 @@ public partial class Minecraft
 
     public static java.io.File getMinecraftDir()
     {
-        minecraftDir ??= getAppDir(nameof(BetaSharp));
-
-        return minecraftDir;
-    }
-
-    public static java.io.File getAppDir(string var0)
-    {
-        string var1 = java.lang.System.getProperty("user.home", ".");
-        java.io.File var2;
-        switch (EnumOSMappingHelper.enumOSMappingArray[(int)getOs()])
-        {
-            case 1:
-            case 2:
-                var2 = new java.io.File(var1, '.' + var0 + '/');
-                break;
-            case 3:
-                string var3 = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                var2 = new java.io.File(var3, "." + var0 + '/');
-
-                break;
-            case 4:
-                var2 = new java.io.File(var1, "Library/Application Support/" + var0);
-                break;
-            default:
-                var2 = new java.io.File(var1, var0 + '/');
-                break;
-        }
-
-        if (!var2.exists() && !var2.mkdirs())
-        {
-            throw new RuntimeException("The working directory could not be created: " + var2);
-        }
-        else
-        {
-            return var2;
-        }
-    }
-
-    private static Util.OperatingSystem getOs()
-    {
-        string osName = java.lang.System.getProperty("os.name").ToLower();
-
-        if (osName.Contains("win"))
-            return Util.OperatingSystem.windows;
-        if (osName.Contains("mac"))
-            return Util.OperatingSystem.macos;
-        if (osName.Contains("solaris") || osName.Contains("sunos"))
-            return Util.OperatingSystem.solaris;
-        if (osName.Contains("linux") || osName.Contains("unix"))
-            return Util.OperatingSystem.linux;
-
-        return Util.OperatingSystem.unknown;
+        return new java.io.File(PathHelper.GetAppDir(nameof(BetaSharp)));
     }
 
     public WorldStorageSource getSaveLoader()
@@ -739,7 +688,7 @@ public partial class Minecraft
                         GLManager.GL.ReadPixels(0, 0, (uint)displayWidth, (uint)displayHeight, PixelFormat.Rgb, PixelType.UnsignedByte, p);
                     }
                 }
-                string result = ScreenShotHelper.saveScreenshot(minecraftDir.getAbsolutePath(), displayWidth, displayHeight, pixels);
+                string result = ScreenShotHelper.saveScreenshot(mcDataDir.getAbsolutePath(), displayWidth, displayHeight, pixels);
                 ingameGUI.addChatMessage(result);
             }
         }
