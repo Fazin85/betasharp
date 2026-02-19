@@ -90,9 +90,9 @@ public class GuiAchievement : Gui
         Lighting.turnOff();
         updateAchievementWindowScale();
 
-        _theGame.fontRenderer.drawStringWithShadow(LicenseWarningText, 2, 2, 0xFFFFFF);
-        _theGame.fontRenderer.drawStringWithShadow(AltLocationWarningText, 2, 11, 0xFFFFFF);
-        _theGame.fontRenderer.drawStringWithShadow(PurchasePromptText, 2, 20, 0xFFFFFF);
+        _theGame.fontRenderer.DrawStringWithShadow(LicenseWarningText, 2, 2, 0xFFFFFF);
+        _theGame.fontRenderer.DrawStringWithShadow(AltLocationWarningText, 2, 11, 0xFFFFFF);
+        _theGame.fontRenderer.DrawStringWithShadow(PurchasePromptText, 2, 20, 0xFFFFFF);
 
         GLManager.GL.DepthMask(true);
         GLManager.GL.Enable(GLEnum.DepthTest);
@@ -121,7 +121,7 @@ public class GuiAchievement : Gui
         double animationProgress = calculateAnimationProgress(elapsedTime);
         int achievementX = _achievementWindowWidth - 160;
         int achievementY = 0 - (int)(animationProgress * 36.0D);
-        int achievementTextureId = _theGame.textureManager.getTextureId("/achievement/bg.png");
+        int achievementTextureId = _theGame.textureManager.GetTextureId("/achievement/bg.png");
 
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         GLManager.GL.Enable(GLEnum.Lighting);
@@ -173,12 +173,12 @@ public class GuiAchievement : Gui
     {
         if (_isAchievementInformation)
         {
-            _theGame.fontRenderer.func_27278_a(_achievementDescription ?? "", achievementX + 30, achievementY + 7, 120, 0xFFFFFFFF);
+            _theGame.fontRenderer.DrawStringWrapped(_achievementDescription ?? "", achievementX + 30, achievementY + 7, 120, 0xFFFFFFFF);
         }
         else
         {
-            _theGame.fontRenderer.drawString(_achievementTitle, achievementX + 30, achievementY + 7, 0xFFFFFF00);
-            _theGame.fontRenderer.drawString(_achievementDescription ?? "", achievementX + 30, achievementY + 18, 0xFFFFFFFF);
+            _theGame.fontRenderer.DrawString(_achievementTitle, achievementX + 30, achievementY + 7, 0xFFFFFF00);
+            _theGame.fontRenderer.DrawString(_achievementDescription ?? "", achievementX + 30, achievementY + 18, 0xFFFFFFFF);
         }
     }
 

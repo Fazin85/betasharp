@@ -1,111 +1,87 @@
+using System.IO.Compression;
 using BetaSharp.Client.Rendering.Core;
-using java.awt.image;
-using java.io;
-using java.util.zip;
-using javax.imageio;
 using Silk.NET.OpenGL.Legacy;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace BetaSharp.Client.Resource.Pack;
 
 public class ZippedTexturePack : TexturePack
 {
-    private ZipFile? _texturePackZipFile;
+    private ZipArchive? _texturePackZipFile;
     private int _texturePackName = -1;
-    private BufferedImage _texturePackThumbnail;
-    private readonly java.io.File _texturePackFile;
+    private Image<Rgba32>? _texturePackThumbnail;
 
-    public ZippedTexturePack(java.io.File var1)
+    private readonly FileInfo _texturePackFile;
+
+    public ZippedTexturePack(FileInfo file)
     {
-        texturePackFileName = var1.getName();
-        _texturePackFile = var1;
+        TexturePackFileName = file.Name;
+        _texturePackFile = file;
     }
 
-    private static string truncateString(string var1)
+    private static string TruncateString(string? str)
     {
-        if (var1 != null && var1.Length > 34)
+        if (str != null && str.Length > 34)
         {
-            var1 = var1[..34];
+            return str[..34];
         }
-
-        return var1;
+        return str ?? string.Empty;
     }
 
-    public override void func_6485_a(Minecraft var1)
+    public override void func_6485_a(Minecraft mc)
     {
-        ZipFile? var2 = null;
-        InputStream? var3 = null;
-
         try
         {
-            var2 = new ZipFile(_texturePackFile);
+            using var archive = ZipFile.OpenRead(_texturePackFile.FullName);
 
-            try
+            var packTxtEntry = archive.GetEntry("pack.txt");
+            if (packTxtEntry != null)
             {
-                var3 = var2.getInputStream(var2.getEntry("pack.txt"));
-                BufferedReader var4 = new(new InputStreamReader(var3));
-                firstDescriptionLine = truncateString(var4.readLine());
-                secondDescriptionLine = truncateString(var4.readLine());
-                var4.close();
-                var3.close();
+                using var stream = packTxtEntry.Open();
+                using var reader = new StreamReader(stream); // Replaces BufferedReader
+                FirstDescriptionLine = TruncateString(reader.ReadLine());
+                SecondDescriptionLine = TruncateString(reader.ReadLine());
             }
-            catch (java.lang.Exception) { }
 
-            try
+            var packPngEntry = archive.GetEntry("pack.png");
+            if (packPngEntry != null)
             {
-                var3 = var2.getInputStream(var2.getEntry("pack.png"));
-                _texturePackThumbnail = ImageIO.read(var3);
-                var3.close();
+                using var stream = packPngEntry.Open();
+                _texturePackThumbnail = Image.Load<Rgba32>(stream); // Native ImageSharp load
             }
-            catch (java.lang.Exception) { }
-
-            var2.close();
         }
-        catch (java.lang.Exception ex)
+        catch (Exception ex)
         {
-            ex.printStackTrace();
+            Log.Error(ex);
         }
-        finally
-        {
-            try
-            {
-                var3?.close();
-            }
-            catch (java.lang.Exception) { }
-
-            try
-            {
-                var2?.close();
-            }
-            catch (java.lang.Exception) { }
-
-        }
-
     }
 
-    public override void unload(Minecraft var1)
+    public override void Unload(Minecraft mc)
     {
         if (_texturePackThumbnail != null)
         {
-            var1.textureManager.delete(_texturePackName);
+            mc.textureManager.Delete(_texturePackName);
+            _texturePackThumbnail.Dispose();
         }
 
-        closeTexturePackFile();
+        CloseTexturePackFile();
     }
 
-    public override void bindThumbnailTexture(Minecraft var1)
+    public override void BindThumbnailTexture(Minecraft mc)
     {
         if (_texturePackThumbnail != null && _texturePackName < 0)
         {
-            _texturePackName = var1.textureManager.load(_texturePackThumbnail);
+            _texturePackName = mc.textureManager.Load(_texturePackThumbnail);
         }
 
         if (_texturePackThumbnail != null)
         {
-            var1.textureManager.bindTexture(_texturePackName);
+            mc.textureManager.BindTexture(_texturePackName);
         }
         else
         {
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var1.textureManager.getTextureId("/gui/unknown_pack.png"));
+            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.GetTextureId("/gui/unknown_pack.png"));
         }
 
     }
@@ -114,34 +90,38 @@ public class ZippedTexturePack : TexturePack
     {
         try
         {
-            _texturePackZipFile = new ZipFile(_texturePackFile);
+            // Opens the zip file and keeps it open for reading resources
+            _texturePackZipFile = ZipFile.OpenRead(_texturePackFile.FullName);
         }
         catch (Exception) { }
     }
 
-    public override void closeTexturePackFile()
+    public override void CloseTexturePackFile()
     {
-        try
-        {
-            _texturePackZipFile?.close();
-        }
-        catch (Exception) { }
-
+        _texturePackZipFile?.Dispose();
         _texturePackZipFile = null;
     }
 
-    public override InputStream getResourceAsStream(string var1)
+    public override Stream? GetResourceAsStream(string path)
     {
         try
         {
-            ZipEntry var2 = _texturePackZipFile!.getEntry(var1[1..]);
-            if (var2 != null)
+            string entryName = path.StartsWith("/") ? path[1..] : path;
+
+            var entry = _texturePackZipFile?.GetEntry(entryName);
+            if (entry != null)
             {
-                return _texturePackZipFile.getInputStream(var2);
+                var ms = new MemoryStream();
+                using (var entryStream = entry.Open())
+                {
+                    entryStream.CopyTo(ms);
+                }
+                ms.Position = 0;
+                return ms;
             }
         }
         catch (Exception) { }
 
-        return base.getResourceAsStream(var1);
+        return base.GetResourceAsStream(path);
     }
 }

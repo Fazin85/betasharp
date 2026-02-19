@@ -63,12 +63,12 @@ public class GuiIngame : Gui
         }
 
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_mc.textureManager.getTextureId("/gui/gui.png"));
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_mc.textureManager.GetTextureId("/gui/gui.png"));
         InventoryPlayer inventory = _mc.player.inventory;
         _zLevel = -90.0F;
         DrawTexturedModalRect(scaledWidth / 2 - 91, scaledHeight - 22, 0, 0, 182, 22);
         DrawTexturedModalRect(scaledWidth / 2 - 91 - 1 + inventory.selectedSlot * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_mc.textureManager.getTextureId("/gui/icons.png"));
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_mc.textureManager.GetTextureId("/gui/icons.png"));
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.BlendFunc(GLEnum.OneMinusDstColor, GLEnum.OneMinusSrcColor);
         DrawTexturedModalRect(scaledWidth / 2 - 7, scaledHeight / 2 - 7, 0, 0, 16, 16);
@@ -209,17 +209,17 @@ public class GuiIngame : Gui
             if (Minecraft.hasPaidCheckTime > 0L)
                 GLManager.GL.Translate(0.0F, 32.0F, 0.0F);
 
-            font.drawStringWithShadow("Minecraft Beta 1.7.3 (" + _mc.debug + ")", 2, 2, 0xFFFFFF);
-            font.drawStringWithShadow(_mc.getEntityDebugInfo(), 2, 22, 0xFFFFFF);
-            font.drawStringWithShadow(_mc.getParticleAndEntityCountDebugInfo(), 2, 32, 0xFFFFFF);
-            font.drawStringWithShadow(_mc.getWorldDebugInfo(), 2, 42, 0xFFFFFF);
+            font.DrawStringWithShadow("Minecraft Beta 1.7.3 (" + _mc.debug + ")", 2, 2, 0xFFFFFF);
+            font.DrawStringWithShadow(_mc.getEntityDebugInfo(), 2, 22, 0xFFFFFF);
+            font.DrawStringWithShadow(_mc.getParticleAndEntityCountDebugInfo(), 2, 32, 0xFFFFFF);
+            font.DrawStringWithShadow(_mc.getWorldDebugInfo(), 2, 42, 0xFFFFFF);
             long maxMem = _gcMonitor.MaxMemoryBytes;
             long usedMem = _gcMonitor.UsedMemoryBytes;
             long heapMem = _gcMonitor.UsedHeapBytes;
             debugStr = "Used memory: " + usedMem * 100L / maxMem + "% (" + usedMem / 1024L / 1024L + "MB) of " + maxMem / 1024L / 1024L + "MB";
-            DrawString(font, debugStr, scaledWidth - font.getStringWidth(debugStr) - 2, 2, 0xE0E0E0);
+            DrawString(font, debugStr, scaledWidth - font.GetStringWidth(debugStr) - 2, 2, 0xE0E0E0);
             debugStr = "GC heap: " + heapMem * 100L / maxMem + "% (" + heapMem / 1024L / 1024L + "MB)";
-            DrawString(font, debugStr, scaledWidth - font.getStringWidth(debugStr) - 2, 12, 0xE0E0E0);
+            DrawString(font, debugStr, scaledWidth - font.GetStringWidth(debugStr) - 2, 12, 0xE0E0E0);
             DrawString(font, "x: " + _mc.player.x, 2, 64, 0xE0E0E0);
             DrawString(font, "y: " + _mc.player.y, 2, 72, 0xE0E0E0);
             DrawString(font, "z: " + _mc.player.z, 2, 80, 0xE0E0E0);
@@ -261,7 +261,7 @@ public class GuiIngame : Gui
                     j = Color.HSBtoRGB(t / 50.0F, 0.7F, 0.6F) & 0xFFFFFF;
                 }
 
-                font.drawString(_recordPlaying, -font.getStringWidth(_recordPlaying) / 2, -4, (uint)(j + (i << 24)));
+                font.DrawString(_recordPlaying, -font.GetStringWidth(_recordPlaying) / 2, -4, (uint)(j + (i << 24)));
                 GLManager.GL.Disable(GLEnum.Blend);
                 GLManager.GL.PopMatrix();
             }
@@ -316,7 +316,7 @@ public class GuiIngame : Gui
                     debugStr = cl.Message;
                     DrawRect(left, y - 1, left + 320, y + 8, (uint)(alpha / 2 << 24));
                     GLManager.GL.Enable(GLEnum.Blend);
-                    font.drawStringWithShadow(debugStr, left, y, 0xFFFFFF + (uint)(alpha << 24));
+                    font.DrawStringWithShadow(debugStr, left, y, 0xFFFFFF + (uint)(alpha << 24));
                 }
             }
         }
@@ -371,7 +371,7 @@ public class GuiIngame : Gui
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         GLManager.GL.Disable(GLEnum.AlphaTest);
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_mc.textureManager.getTextureId("%blur%/misc/pumpkinblur.png"));
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_mc.textureManager.GetTextureId("%blur%/misc/pumpkinblur.png"));
         Tessellator tess = Tessellator.instance;
         tess.startDrawingQuads();
         tess.addVertexWithUV(0.0D, screenHeight, -90.0D, 0.0D, 1.0D);
@@ -403,7 +403,7 @@ public class GuiIngame : Gui
         GLManager.GL.DepthMask(false);
         GLManager.GL.BlendFunc(GLEnum.Zero, GLEnum.OneMinusSrcColor);
         GLManager.GL.Color4(PrevVignetteBrightness, PrevVignetteBrightness, PrevVignetteBrightness, 1.0F);
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_mc.textureManager.getTextureId("%blur%/misc/vignette.png"));
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_mc.textureManager.GetTextureId("%blur%/misc/vignette.png"));
         Tessellator tess = Tessellator.instance;
         tess.startDrawingQuads();
         tess.addVertexWithUV(0.0D, screenHeight, -90.0D, 0.0D, 1.0D);
@@ -431,7 +431,7 @@ public class GuiIngame : Gui
         GLManager.GL.DepthMask(false);
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, portalStrength);
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_mc.textureManager.getTextureId("/terrain.png"));
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_mc.textureManager.GetTextureId("/terrain.png"));
         float u1 = Block.NetherPortal.textureId % 16 / 16.0F;
         float v1 = Block.NetherPortal.textureId / 16 / 16.0F;
         float u2 = (Block.NetherPortal.textureId % 16 + 1) / 16.0F;
@@ -567,10 +567,10 @@ public class GuiIngame : Gui
 
     private void addWrappedChatMessage(string message)
     {
-        while (_mc.fontRenderer.getStringWidth(message) > 320)
+        while (_mc.fontRenderer.GetStringWidth(message) > 320)
         {
             int i;
-            for (i = 1; i < message.Length && _mc.fontRenderer.getStringWidth(message.Substring(0, i + 1)) <= 320; ++i)
+            for (i = 1; i < message.Length && _mc.fontRenderer.GetStringWidth(message.Substring(0, i + 1)) <= 320; ++i)
             {
             }
 
