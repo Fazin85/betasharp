@@ -32,9 +32,13 @@ public class SmeltingRecipeManager
         smeltingList[inputId] = output;
     }
 
-    public ItemStack Craft(int inputId)
+    public ItemStack? Craft(int inputId)
     {
-        return smeltingList[inputId];
+        if (smeltingList.TryGetValue(inputId, out ItemStack? result))
+        {
+            return result;
+        }
+        return null;
     }
 
     public Dictionary<int, ItemStack> GetSmeltingList()
