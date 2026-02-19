@@ -8,8 +8,9 @@ namespace BetaSharp.Server.Network;
 
 public class ConnectionListener
 {
-    public ServerSocket socket;
-    private readonly java.lang.Thread _thread;
+    public static Logger LOGGER = Logger.getLogger("Minecraft");
+    public ServerSocket? socket;
+    private readonly java.lang.Thread? _thread;
     public volatile bool open = false;
     private int _connectionCounter = 0;
     private readonly object _connectionCounterLock = new();
@@ -42,10 +43,10 @@ public class ConnectionListener
     public ConnectionListener(MinecraftServer server)
     {
         this.server = server;
-        socket = null;
+        socket = null!;
         port = 0;
         open = true;
-        _thread = null;
+        _thread = null!;
     }
 
     public void AddConnection(ServerPlayNetworkHandler connection)
