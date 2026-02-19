@@ -54,8 +54,8 @@ public abstract class Entity : java.lang.Object
     public float stepHeight = 0.0F;
     public bool noClip = false;
     public float pushSpeedReduction = 0.0F;
-    protected java.util.Random random = new();
-    public int age;
+    protected JavaRandom random = new();
+    public int age = 0;
     public int fireImmunityTicks = 1;
     public int fireTicks;
     protected int maxAir = 300;
@@ -200,7 +200,7 @@ public abstract class Entity : java.lang.Object
                     var1 = 1.0F;
                 }
 
-                world.playSound(this, "random.splash", var1, 1.0F + (random.nextFloat() - random.nextFloat()) * 0.4F);
+                world.playSound(this, "random.splash", var1, 1.0F + (random.NextFloat() - random.NextFloat()) * 0.4F);
                 float var2 = (float)MathHelper.floor_double(boundingBox.minY);
 
                 int var3;
@@ -208,15 +208,15 @@ public abstract class Entity : java.lang.Object
                 float var5;
                 for (var3 = 0; (float)var3 < 1.0F + width * 20.0F; ++var3)
                 {
-                    var4 = (random.nextFloat() * 2.0F - 1.0F) * width;
-                    var5 = (random.nextFloat() * 2.0F - 1.0F) * width;
-                    world.addParticle("bubble", x + (double)var4, (double)(var2 + 1.0F), z + (double)var5, velocityX, velocityY - (double)(random.nextFloat() * 0.2F), velocityZ);
+                    var4 = (random.NextFloat() * 2.0F - 1.0F) * width;
+                    var5 = (random.NextFloat() * 2.0F - 1.0F) * width;
+                    world.addParticle("bubble", x + (double)var4, (double)(var2 + 1.0F), z + (double)var5, velocityX, velocityY - (double)(random.NextFloat() * 0.2F), velocityZ);
                 }
 
                 for (var3 = 0; (float)var3 < 1.0F + width * 20.0F; ++var3)
                 {
-                    var4 = (random.nextFloat() * 2.0F - 1.0F) * width;
-                    var5 = (random.nextFloat() * 2.0F - 1.0F) * width;
+                    var4 = (random.NextFloat() * 2.0F - 1.0F) * width;
+                    var5 = (random.NextFloat() * 2.0F - 1.0F) * width;
                     world.addParticle("splash", x + (double)var4, (double)(var2 + 1.0F), z + (double)var5, velocityX, velocityY, velocityZ);
                 }
             }
@@ -597,7 +597,7 @@ public abstract class Entity : java.lang.Object
 
             if (var42 && fireTicks > 0)
             {
-                world.playSound(this, "random.fizz", 0.7F, 1.6F + (random.nextFloat() - random.nextFloat()) * 0.4F);
+                world.playSound(this, "random.fizz", 0.7F, 1.6F + (random.NextFloat() - random.NextFloat()) * 0.4F);
                 fireTicks = -fireImmunityTicks;
             }
 
@@ -1348,7 +1348,7 @@ public abstract class Entity : java.lang.Object
                 pushDirection = 5;
             }
 
-            float pushStrength = random.nextFloat() * 0.2F + 0.1F;
+            float pushStrength = random.NextFloat() * 0.2F + 0.1F;
             if (pushDirection == 0)
             {
                 velocityX = (double)(-pushStrength);

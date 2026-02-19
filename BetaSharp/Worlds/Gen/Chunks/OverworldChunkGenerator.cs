@@ -1,5 +1,6 @@
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Materials;
+using BetaSharp.Util.Maths;
 using BetaSharp.Util.Maths.Noise;
 using BetaSharp.Worlds.Biomes;
 using BetaSharp.Worlds.Chunks;
@@ -11,7 +12,7 @@ namespace BetaSharp.Worlds.Gen.Chunks;
 public class OverworldChunkGenerator : ChunkSource
 {
 
-    private readonly java.util.Random random;
+    private readonly JavaRandom random;
     private readonly OctavePerlinNoiseSampler minLimitPerlinNoise;
     private readonly OctavePerlinNoiseSampler maxLimitPerlinNoise;
     private readonly OctavePerlinNoiseSampler perlinNoise1;
@@ -37,7 +38,7 @@ public class OverworldChunkGenerator : ChunkSource
     public OverworldChunkGenerator(World world, long seed)
     {
         this.world = world;
-        random = new java.util.Random(seed);
+        random = new JavaRandom(seed);
         minLimitPerlinNoise = new OctavePerlinNoiseSampler(random, 16);
         maxLimitPerlinNoise = new OctavePerlinNoiseSampler(random, 16);
         perlinNoise1 = new OctavePerlinNoiseSampler(random, 8);
@@ -164,9 +165,9 @@ public class OverworldChunkGenerator : ChunkSource
             for (int var9 = 0; var9 < 16; ++var9)
             {
                 Biome var10 = biomes[var8 + var9 * 16];
-                bool var11 = sandBuffer[var8 + var9 * 16] + random.nextDouble() * 0.2D > 0.0D;
-                bool var12 = gravelBuffer[var8 + var9 * 16] + random.nextDouble() * 0.2D > 3.0D;
-                int var13 = (int)(depthBuffer[var8 + var9 * 16] / 3.0D + 3.0D + random.nextDouble() * 0.25D);
+                bool var11 = sandBuffer[var8 + var9 * 16] + random.NextDouble() * 0.2D > 0.0D;
+                bool var12 = gravelBuffer[var8 + var9 * 16] + random.NextDouble() * 0.2D > 3.0D;
+                int var13 = (int)(depthBuffer[var8 + var9 * 16] / 3.0D + 3.0D + random.NextDouble() * 0.25D);
                 int var14 = -1;
                 byte var15 = var10.TopBlockId;
                 byte var16 = var10.SoilBlockId;
@@ -174,7 +175,7 @@ public class OverworldChunkGenerator : ChunkSource
                 for (int var17 = 127; var17 >= 0; --var17)
                 {
                     int var18 = (var9 * 16 + var8) * 128 + var17;
-                    if (var17 <= 0 + random.nextInt(5))
+                    if (var17 <= 0 + random.NextInt(5))
                     {
                         blocks[var18] = (byte)Block.Bedrock.id;
                     }
@@ -240,7 +241,7 @@ public class OverworldChunkGenerator : ChunkSource
                                 blocks[var18] = var16;
                                 if (var14 == 0 && var16 == Block.Sand.id)
                                 {
-                                    var14 = random.nextInt(4);
+                                    var14 = random.NextInt(4);
                                     var16 = (byte)Block.Sandstone.id;
                                 }
                             }
@@ -259,7 +260,7 @@ public class OverworldChunkGenerator : ChunkSource
 
     public Chunk getChunk(int chunkX, int chunkZ)
     {
-        random.setSeed(chunkX * 341873128712L + chunkZ * 132897987541L);
+        random.SetSeed(chunkX * 341873128712L + chunkZ * 132897987541L);
         byte[] blocks = new byte[-java.lang.Short.MIN_VALUE];
         Chunk var4 = new Chunk(world, blocks, chunkX, chunkZ);
         biomes = world.getBiomeSource().GetBiomesInArea(biomes, chunkX * 16, chunkZ * 16, 16, 16);
@@ -402,28 +403,28 @@ public class OverworldChunkGenerator : ChunkSource
         int var4 = x * 16;
         int var5 = z * 16;
         Biome var6 = world.getBiomeSource().GetBiome(var4 + 16, var5 + 16);
-        random.setSeed(world.getSeed());
-        long var7 = random.nextLong() / 2L * 2L + 1L;
-        long var9 = random.nextLong() / 2L * 2L + 1L;
-        random.setSeed(x * var7 + z * var9 ^ world.getSeed());
+        random.SetSeed(world.getSeed());
+        long var7 = random.NextLong() / 2L * 2L + 1L;
+        long var9 = random.NextLong() / 2L * 2L + 1L;
+        random.SetSeed(x * var7 + z * var9 ^ world.getSeed());
         double var11 = 0.25D;
         int var13;
         int var14;
         int var15;
-        if (random.nextInt(4) == 0)
+        if (random.NextInt(4) == 0)
         {
-            var13 = var4 + random.nextInt(16) + 8;
-            var14 = random.nextInt(128);
-            var15 = var5 + random.nextInt(16) + 8;
+            var13 = var4 + random.NextInt(16) + 8;
+            var14 = random.NextInt(128);
+            var15 = var5 + random.NextInt(16) + 8;
             new LakeFeature(Block.Water.id).Generate(world, random, var13, var14, var15);
         }
 
-        if (random.nextInt(8) == 0)
+        if (random.NextInt(8) == 0)
         {
-            var13 = var4 + random.nextInt(16) + 8;
-            var14 = random.nextInt(random.nextInt(120) + 8);
-            var15 = var5 + random.nextInt(16) + 8;
-            if (var14 < 64 || random.nextInt(10) == 0)
+            var13 = var4 + random.NextInt(16) + 8;
+            var14 = random.NextInt(random.NextInt(120) + 8);
+            var15 = var5 + random.NextInt(16) + 8;
+            if (var14 < 64 || random.NextInt(10) == 0)
             {
                 new LakeFeature(Block.Lava.id).Generate(world, random, var13, var14, var15);
             }
@@ -432,88 +433,88 @@ public class OverworldChunkGenerator : ChunkSource
         int var16;
         for (var13 = 0; var13 < 8; ++var13)
         {
-            var14 = var4 + random.nextInt(16) + 8;
-            var15 = random.nextInt(128);
-            var16 = var5 + random.nextInt(16) + 8;
+            var14 = var4 + random.NextInt(16) + 8;
+            var15 = random.NextInt(128);
+            var16 = var5 + random.NextInt(16) + 8;
             new DungeonFeature().Generate(world, random, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 10; ++var13)
         {
-            var14 = var4 + random.nextInt(16);
-            var15 = random.nextInt(128);
-            var16 = var5 + random.nextInt(16);
+            var14 = var4 + random.NextInt(16);
+            var15 = random.NextInt(128);
+            var16 = var5 + random.NextInt(16);
             new ClayOreFeature(32).Generate(world, random, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 20; ++var13)
         {
-            var14 = var4 + random.nextInt(16);
-            var15 = random.nextInt(128);
-            var16 = var5 + random.nextInt(16);
+            var14 = var4 + random.NextInt(16);
+            var15 = random.NextInt(128);
+            var16 = var5 + random.NextInt(16);
             new OreFeature(Block.Dirt.id, 32).Generate(world, random, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 10; ++var13)
         {
-            var14 = var4 + random.nextInt(16);
-            var15 = random.nextInt(128);
-            var16 = var5 + random.nextInt(16);
+            var14 = var4 + random.NextInt(16);
+            var15 = random.NextInt(128);
+            var16 = var5 + random.NextInt(16);
             new OreFeature(Block.Gravel.id, 32).Generate(world, random, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 20; ++var13)
         {
-            var14 = var4 + random.nextInt(16);
-            var15 = random.nextInt(128);
-            var16 = var5 + random.nextInt(16);
+            var14 = var4 + random.NextInt(16);
+            var15 = random.NextInt(128);
+            var16 = var5 + random.NextInt(16);
             new OreFeature(Block.CoalOre.id, 16).Generate(world, random, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 20; ++var13)
         {
-            var14 = var4 + random.nextInt(16);
-            var15 = random.nextInt(64);
-            var16 = var5 + random.nextInt(16);
+            var14 = var4 + random.NextInt(16);
+            var15 = random.NextInt(64);
+            var16 = var5 + random.NextInt(16);
             new OreFeature(Block.IronOre.id, 8).Generate(world, random, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 2; ++var13)
         {
-            var14 = var4 + random.nextInt(16);
-            var15 = random.nextInt(32);
-            var16 = var5 + random.nextInt(16);
+            var14 = var4 + random.NextInt(16);
+            var15 = random.NextInt(32);
+            var16 = var5 + random.NextInt(16);
             new OreFeature(Block.GoldOre.id, 8).Generate(world, random, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 8; ++var13)
         {
-            var14 = var4 + random.nextInt(16);
-            var15 = random.nextInt(16);
-            var16 = var5 + random.nextInt(16);
+            var14 = var4 + random.NextInt(16);
+            var15 = random.NextInt(16);
+            var16 = var5 + random.NextInt(16);
             new OreFeature(Block.RedstoneOre.id, 7).Generate(world, random, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 1; ++var13)
         {
-            var14 = var4 + random.nextInt(16);
-            var15 = random.nextInt(16);
-            var16 = var5 + random.nextInt(16);
+            var14 = var4 + random.NextInt(16);
+            var15 = random.NextInt(16);
+            var16 = var5 + random.NextInt(16);
             new OreFeature(Block.DiamondOre.id, 7).Generate(world, random, var14, var15, var16);
         }
 
         for (var13 = 0; var13 < 1; ++var13)
         {
-            var14 = var4 + random.nextInt(16);
-            var15 = random.nextInt(16) + random.nextInt(16);
-            var16 = var5 + random.nextInt(16);
+            var14 = var4 + random.NextInt(16);
+            var15 = random.NextInt(16) + random.NextInt(16);
+            var16 = var5 + random.NextInt(16);
             new OreFeature(Block.LapisOre.id, 6).Generate(world, random, var14, var15, var16);
         }
 
         var11 = 0.5D;
-        var13 = (int)((forestNoise.generateNoise(var4 * var11, var5 * var11) / 8.0D + random.nextDouble() * 4.0D + 4.0D) / 3.0D);
+        var13 = (int)((forestNoise.generateNoise(var4 * var11, var5 * var11) / 8.0D + random.NextDouble() * 4.0D + 4.0D) / 3.0D);
         var14 = 0;
-        if (random.nextInt(10) == 0)
+        if (random.NextInt(10) == 0)
         {
             ++var14;
         }
@@ -556,8 +557,8 @@ public class OverworldChunkGenerator : ChunkSource
         int var17;
         for (var15 = 0; var15 < var14; ++var15)
         {
-            var16 = var4 + random.nextInt(16) + 8;
-            var17 = var5 + random.nextInt(16) + 8;
+            var16 = var4 + random.NextInt(16) + 8;
+            var17 = var5 + random.NextInt(16) + 8;
             Feature var18 = var6.GetRandomWorldGenForTrees(random);
             var18.prepare(1.0D, 1.0D, 1.0D);
             var18.Generate(world, random, var16, world.getTopY(var16, var17), var17);
@@ -588,9 +589,9 @@ public class OverworldChunkGenerator : ChunkSource
         int var25;
         for (var16 = 0; var16 < var27; ++var16)
         {
-            var17 = var4 + random.nextInt(16) + 8;
-            var25 = random.nextInt(128);
-            var19 = var5 + random.nextInt(16) + 8;
+            var17 = var4 + random.NextInt(16) + 8;
+            var25 = random.NextInt(128);
+            var19 = var5 + random.NextInt(16) + 8;
             new PlantPatchFeature(Block.Dandelion.id).Generate(world, random, var17, var25, var19);
         }
 
@@ -625,14 +626,14 @@ public class OverworldChunkGenerator : ChunkSource
         for (var17 = 0; var17 < var28; ++var17)
         {
             byte var26 = 1;
-            if (var6 == Biome.Rainforest && random.nextInt(3) != 0)
+            if (var6 == Biome.Rainforest && random.NextInt(3) != 0)
             {
                 var26 = 2;
             }
 
-            var19 = var4 + random.nextInt(16) + 8;
-            var20 = random.nextInt(128);
-            var21 = var5 + random.nextInt(16) + 8;
+            var19 = var4 + random.NextInt(16) + 8;
+            var20 = random.NextInt(128);
+            var21 = var5 + random.NextInt(16) + 8;
             new GrassPatchFeature(Block.Grass.id, var26).Generate(world, random, var19, var20, var21);
         }
 
@@ -644,49 +645,49 @@ public class OverworldChunkGenerator : ChunkSource
 
         for (var17 = 0; var17 < var28; ++var17)
         {
-            var25 = var4 + random.nextInt(16) + 8;
-            var19 = random.nextInt(128);
-            var20 = var5 + random.nextInt(16) + 8;
+            var25 = var4 + random.NextInt(16) + 8;
+            var19 = random.NextInt(128);
+            var20 = var5 + random.NextInt(16) + 8;
             new DeadBushPatchFeature(Block.DeadBush.id).Generate(world, random, var25, var19, var20);
         }
 
-        if (random.nextInt(2) == 0)
+        if (random.NextInt(2) == 0)
         {
-            var17 = var4 + random.nextInt(16) + 8;
-            var25 = random.nextInt(128);
-            var19 = var5 + random.nextInt(16) + 8;
+            var17 = var4 + random.NextInt(16) + 8;
+            var25 = random.NextInt(128);
+            var19 = var5 + random.NextInt(16) + 8;
             new PlantPatchFeature(Block.Rose.id).Generate(world, random, var17, var25, var19);
         }
 
-        if (random.nextInt(4) == 0)
+        if (random.NextInt(4) == 0)
         {
-            var17 = var4 + random.nextInt(16) + 8;
-            var25 = random.nextInt(128);
-            var19 = var5 + random.nextInt(16) + 8;
+            var17 = var4 + random.NextInt(16) + 8;
+            var25 = random.NextInt(128);
+            var19 = var5 + random.NextInt(16) + 8;
             new PlantPatchFeature(Block.BrownMushroom.id).Generate(world, random, var17, var25, var19);
         }
 
-        if (random.nextInt(8) == 0)
+        if (random.NextInt(8) == 0)
         {
-            var17 = var4 + random.nextInt(16) + 8;
-            var25 = random.nextInt(128);
-            var19 = var5 + random.nextInt(16) + 8;
+            var17 = var4 + random.NextInt(16) + 8;
+            var25 = random.NextInt(128);
+            var19 = var5 + random.NextInt(16) + 8;
             new PlantPatchFeature(Block.RedMushroom.id).Generate(world, random, var17, var25, var19);
         }
 
         for (var17 = 0; var17 < 10; ++var17)
         {
-            var25 = var4 + random.nextInt(16) + 8;
-            var19 = random.nextInt(128);
-            var20 = var5 + random.nextInt(16) + 8;
+            var25 = var4 + random.NextInt(16) + 8;
+            var19 = random.NextInt(128);
+            var20 = var5 + random.NextInt(16) + 8;
             new SugarCanePatchFeature().Generate(world, random, var25, var19, var20);
         }
 
-        if (random.nextInt(32) == 0)
+        if (random.NextInt(32) == 0)
         {
-            var17 = var4 + random.nextInt(16) + 8;
-            var25 = random.nextInt(128);
-            var19 = var5 + random.nextInt(16) + 8;
+            var17 = var4 + random.NextInt(16) + 8;
+            var25 = random.NextInt(128);
+            var19 = var5 + random.NextInt(16) + 8;
             new PumpkinPatchFeature().Generate(world, random, var17, var25, var19);
         }
 
@@ -698,25 +699,25 @@ public class OverworldChunkGenerator : ChunkSource
 
         for (var25 = 0; var25 < var17; ++var25)
         {
-            var19 = var4 + random.nextInt(16) + 8;
-            var20 = random.nextInt(128);
-            var21 = var5 + random.nextInt(16) + 8;
+            var19 = var4 + random.NextInt(16) + 8;
+            var20 = random.NextInt(128);
+            var21 = var5 + random.NextInt(16) + 8;
             new CactusPatchFeature().Generate(world, random, var19, var20, var21);
         }
 
         for (var25 = 0; var25 < 50; ++var25)
         {
-            var19 = var4 + random.nextInt(16) + 8;
-            var20 = random.nextInt(random.nextInt(120) + 8);
-            var21 = var5 + random.nextInt(16) + 8;
+            var19 = var4 + random.NextInt(16) + 8;
+            var20 = random.NextInt(random.NextInt(120) + 8);
+            var21 = var5 + random.NextInt(16) + 8;
             new SpringFeature(Block.FlowingWater.id).Generate(world, random, var19, var20, var21);
         }
 
         for (var25 = 0; var25 < 20; ++var25)
         {
-            var19 = var4 + random.nextInt(16) + 8;
-            var20 = random.nextInt(random.nextInt(random.nextInt(112) + 8) + 8);
-            var21 = var5 + random.nextInt(16) + 8;
+            var19 = var4 + random.NextInt(16) + 8;
+            var20 = random.NextInt(random.NextInt(random.NextInt(112) + 8) + 8);
+            var21 = var5 + random.NextInt(16) + 8;
             new SpringFeature(Block.FlowingLava.id).Generate(world, random, var19, var20, var21);
         }
 

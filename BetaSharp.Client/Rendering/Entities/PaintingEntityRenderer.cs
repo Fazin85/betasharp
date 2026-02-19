@@ -7,11 +7,11 @@ namespace BetaSharp.Client.Rendering.Entities;
 
 public class PaintingEntityRenderer : EntityRenderer
 {
-    private readonly java.util.Random rand = new();
+    private readonly JavaRandom rand = new();
 
     public void func_158_a(EntityPainting var1, double var2, double var4, double var6, float var8, float var9)
     {
-        rand.setSeed(187L);
+        rand.SetSeed(187L);
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate((float)var2, (float)var4, (float)var6);
         GLManager.GL.Rotate(var8, 0.0F, 1.0F, 0.0F);

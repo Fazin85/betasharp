@@ -1,4 +1,5 @@
 using BetaSharp.Blocks;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Gen.Features;
 
@@ -12,7 +13,7 @@ public class DeadBushPatchFeature : Feature
         _deadBushBlockId = deadBushBlockId;
     }
 
-    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
+    public override bool Generate(World world, JavaRandom rand, int x, int y, int z)
     {
         while (true)
         {
@@ -21,9 +22,9 @@ public class DeadBushPatchFeature : Feature
             {
                 for (int i = 0; i < 4; ++i)
                 {
-                    int genX = x + rand.nextInt(8) - rand.nextInt(8);
-                    int genY = y + rand.nextInt(4) - rand.nextInt(4);
-                    int genZ = z + rand.nextInt(8) - rand.nextInt(8);
+                    int genX = x + rand.NextInt(8) - rand.NextInt(8);
+                    int genY = y + rand.NextInt(4) - rand.NextInt(4);
+                    int genZ = z + rand.NextInt(8) - rand.NextInt(8);
                     if (world.isAir(genX, genY, genZ) && ((BlockPlant)Block.Blocks[_deadBushBlockId]).canGrow(world, genX, genY, genZ))
                     {
                         world.SetBlockWithoutNotifyingNeighbors(genX, genY, genZ, _deadBushBlockId);

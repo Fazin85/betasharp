@@ -8,7 +8,7 @@ public class CaveCarver : Carver
 
     protected void func_870_a(int chunkX, int chunkZ, byte[] var3, double var4, double var6, double var8)
     {
-        func_869_a(chunkX, chunkZ, var3, var4, var6, var8, 1.0F + rand.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5D);
+        func_869_a(chunkX, chunkZ, var3, var4, var6, var8, 1.0F + rand.NextFloat() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5D);
     }
 
     protected void func_869_a(int chunkX, int chunkZ, byte[] var3, double var4, double var6, double var8, float var10, float var11, float var12, int var13, int var14, double var15)
@@ -17,11 +17,11 @@ public class CaveCarver : Carver
         double var19 = chunkZ * 16 + 8;
         float var21 = 0.0F;
         float var22 = 0.0F;
-        java.util.Random var23 = new(rand.nextLong());
+        JavaRandom var23 = new(rand.NextLong());
         if (var14 <= 0)
         {
             int var24 = radius * 16 - 16;
-            var14 = var24 - var23.nextInt(var24 / 4);
+            var14 = var24 - var23.NextInt(var24 / 4);
         }
 
         bool var52 = false;
@@ -31,9 +31,9 @@ public class CaveCarver : Carver
             var52 = true;
         }
 
-        int var25 = var23.nextInt(var14 / 2) + var14 / 4;
+        int var25 = var23.NextInt(var14 / 2) + var14 / 4;
 
-        for (bool var26 = var23.nextInt(6) == 0; var13 < var14; ++var13)
+        for (bool var26 = var23.NextInt(6) == 0; var13 < var14; ++var13)
         {
             double var27 = 1.5D + (double)(MathHelper.sin(var13 * (float)Math.PI / var14) * var10 * 1.0F);
             double var29 = var27 * var15;
@@ -55,16 +55,16 @@ public class CaveCarver : Carver
             var11 += var21 * 0.1F;
             var22 *= 0.9F;
             var21 *= 12.0F / 16.0F;
-            var22 += (var23.nextFloat() - var23.nextFloat()) * var23.nextFloat() * 2.0F;
-            var21 += (var23.nextFloat() - var23.nextFloat()) * var23.nextFloat() * 4.0F;
+            var22 += (var23.NextFloat() - var23.NextFloat()) * var23.NextFloat() * 2.0F;
+            var21 += (var23.NextFloat() - var23.NextFloat()) * var23.NextFloat() * 4.0F;
             if (!var52 && var13 == var25 && var10 > 1.0F)
             {
-                func_869_a(chunkX, chunkZ, var3, var4, var6, var8, var23.nextFloat() * 0.5F + 0.5F, var11 - (float)Math.PI * 0.5F, var12 / 3.0F, var13, var14, 1.0D);
-                func_869_a(chunkX, chunkZ, var3, var4, var6, var8, var23.nextFloat() * 0.5F + 0.5F, var11 + (float)Math.PI * 0.5F, var12 / 3.0F, var13, var14, 1.0D);
+                func_869_a(chunkX, chunkZ, var3, var4, var6, var8, var23.NextFloat() * 0.5F + 0.5F, var11 - (float)Math.PI * 0.5F, var12 / 3.0F, var13, var14, 1.0D);
+                func_869_a(chunkX, chunkZ, var3, var4, var6, var8, var23.NextFloat() * 0.5F + 0.5F, var11 + (float)Math.PI * 0.5F, var12 / 3.0F, var13, var14, 1.0D);
                 return;
             }
 
-            if (var52 || var23.nextInt(4) != 0)
+            if (var52 || var23.NextInt(4) != 0)
             {
                 double var33 = var4 - var17;
                 double var35 = var8 - var19;
@@ -200,29 +200,29 @@ public class CaveCarver : Carver
 
     protected override void func_868_a(World world, int chunkX, int chunkZ, int centerChunkX, int centerChunkZ, byte[] blocks)
     {
-        int var7 = rand.nextInt(rand.nextInt(rand.nextInt(40) + 1) + 1);
-        if (rand.nextInt(15) != 0)
+        int var7 = rand.NextInt(rand.NextInt(rand.NextInt(40) + 1) + 1);
+        if (rand.NextInt(15) != 0)
         {
             var7 = 0;
         }
 
         for (int var8 = 0; var8 < var7; ++var8)
         {
-            double var9 = chunkX * 16 + rand.nextInt(16);
-            double var11 = rand.nextInt(rand.nextInt(120) + 8);
-            double var13 = chunkZ * 16 + rand.nextInt(16);
+            double var9 = chunkX * 16 + rand.NextInt(16);
+            double var11 = rand.NextInt(rand.NextInt(120) + 8);
+            double var13 = chunkZ * 16 + rand.NextInt(16);
             int var15 = 1;
-            if (rand.nextInt(4) == 0)
+            if (rand.NextInt(4) == 0)
             {
                 func_870_a(centerChunkX, centerChunkZ, blocks, var9, var11, var13);
-                var15 += rand.nextInt(4);
+                var15 += rand.NextInt(4);
             }
 
             for (int var16 = 0; var16 < var15; ++var16)
             {
-                float var17 = rand.nextFloat() * (float)Math.PI * 2.0F;
-                float var18 = (rand.nextFloat() - 0.5F) * 2.0F / 8.0F;
-                float var19 = rand.nextFloat() * 2.0F + rand.nextFloat();
+                float var17 = rand.NextFloat() * (float)Math.PI * 2.0F;
+                float var18 = (rand.NextFloat() - 0.5F) * 2.0F / 8.0F;
+                float var19 = rand.NextFloat() * 2.0F + rand.NextFloat();
                 func_869_a(centerChunkX, centerChunkZ, blocks, var9, var11, var13, var19, var17, var18, 0, 0, 1.0D);
             }
         }

@@ -13,9 +13,9 @@ public class EntityLavaFX : EntityFX
         velocityX *= (double)0.8F;
         velocityY *= (double)0.8F;
         velocityZ *= (double)0.8F;
-        velocityY = (double)(random.nextFloat() * 0.4F + 0.05F);
+        velocityY = (double)(random.NextFloat() * 0.4F + 0.05F);
         particleRed = particleGreen = particleBlue = 1.0F;
-        particleScale *= random.nextFloat() * 2.0F + 0.2F;
+        particleScale *= random.NextFloat() * 2.0F + 0.2F;
         baseScale = particleScale;
         particleMaxAge = (int)(16.0D / (java.lang.Math.random() * 0.8D + 0.2D));
         noClip = false;
@@ -45,7 +45,7 @@ public class EntityLavaFX : EntityFX
         }
 
         float lifeProgress = (float)particleAge / (float)particleMaxAge;
-        if (random.nextFloat() > lifeProgress)
+        if (random.NextFloat() > lifeProgress)
         {
             world.addParticle("smoke", x, y, z, velocityX, velocityY, velocityZ);
         }

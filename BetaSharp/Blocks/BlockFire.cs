@@ -53,7 +53,7 @@ public class BlockFire : Block
         return 3;
     }
 
-    public override int getDroppedItemCount(java.util.Random random)
+    public override int getDroppedItemCount(JavaRandom random)
     {
         return 0;
     }
@@ -63,7 +63,7 @@ public class BlockFire : Block
         return 40;
     }
 
-    public override void onTick(World world, int x, int y, int z, java.util.Random random)
+    public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
         bool isOnNetherrack = world.getBlockId(x, y - 1, z) == Block.Netherrack.id;
         if (!canPlaceAt(world, x, y, z))
@@ -76,7 +76,7 @@ public class BlockFire : Block
             int fireAge = world.getBlockMeta(x, y, z);
             if (fireAge < 15)
             {
-                world.SetBlockMetaWithoutNotifyingNeighbors(x, y, z, fireAge + random.nextInt(3) / 2);
+                world.SetBlockMetaWithoutNotifyingNeighbors(x, y, z, fireAge + random.NextInt(3) / 2);
             }
 
             world.ScheduleBlockUpdate(x, y, z, id, getTickRate());
@@ -88,7 +88,7 @@ public class BlockFire : Block
                 }
 
             }
-            else if (!isOnNetherrack && !isFlammable(world, x, y - 1, z) && fireAge == 15 && random.nextInt(4) == 0)
+            else if (!isOnNetherrack && !isFlammable(world, x, y - 1, z) && fireAge == 15 && random.NextInt(4) == 0)
             {
                 world.setBlock(x, y, z, 0);
             }
@@ -119,9 +119,9 @@ public class BlockFire : Block
                                 if (burnChance > 0)
                                 {
                                     int var13 = (burnChance + 40) / (fireAge + 30);
-                                    if (var13 > 0 && random.nextInt(spreadDifficulty) <= var13 && (!world.isRaining() || !world.isRaining(checkX, checkZ, checkY)) && !world.isRaining(checkX - 1, checkZ, z) && !world.isRaining(checkX + 1, checkZ, checkY) && !world.isRaining(checkX, checkZ, checkY - 1) && !world.isRaining(checkX, checkZ, checkY + 1))
+                                    if (var13 > 0 && random.NextInt(spreadDifficulty) <= var13 && (!world.isRaining() || !world.isRaining(checkX, checkZ, checkY)) && !world.isRaining(checkX - 1, checkZ, z) && !world.isRaining(checkX + 1, checkZ, checkY) && !world.isRaining(checkX, checkZ, checkY - 1) && !world.isRaining(checkX, checkZ, checkY + 1))
                                     {
-                                        int spreadChance = fireAge + random.nextInt(5) / 4;
+                                        int spreadChance = fireAge + random.NextInt(5) / 4;
                                         if (spreadChance > 15)
                                         {
                                             spreadChance = 15;
@@ -143,15 +143,15 @@ public class BlockFire : Block
         }
     }
 
-    private void trySpreadingFire(World world, int x, int y, int z, int spreadFactor, java.util.Random random, int currentAge)
+    private void trySpreadingFire(World world, int x, int y, int z, int spreadFactor, JavaRandom random, int currentAge)
     {
         int targetSpreadChance = _spreadChances[world.getBlockId(x, y, z)];
-        if (random.nextInt(spreadFactor) < targetSpreadChance)
+        if (random.NextInt(spreadFactor) < targetSpreadChance)
         {
             bool isTnt = world.getBlockId(x, y, z) == Block.TNT.id;
-            if (random.nextInt(currentAge + 10) < 5 && !world.isRaining(x, y, z))
+            if (random.NextInt(currentAge + 10) < 5 && !world.isRaining(x, y, z))
             {
-                int newFireAge = currentAge + random.nextInt(5) / 4;
+                int newFireAge = currentAge + random.NextInt(5) / 4;
                 if (newFireAge > 15)
                 {
                     newFireAge = 15;
@@ -240,11 +240,11 @@ public class BlockFire : Block
         }
     }
 
-    public override void randomDisplayTick(World world, int x, int y, int z, java.util.Random random)
+    public override void randomDisplayTick(World world, int x, int y, int z, JavaRandom random)
     {
-        if (random.nextInt(24) == 0)
+        if (random.NextInt(24) == 0)
         {
-            world.playSound((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "fire.fire", 1.0F + random.nextFloat(), random.nextFloat() * 0.7F + 0.3F);
+            world.playSound((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "fire.fire", 1.0F + random.NextFloat(), random.NextFloat() * 0.7F + 0.3F);
         }
 
         int particleIndex;
@@ -257,9 +257,9 @@ public class BlockFire : Block
             {
                 for (particleIndex = 0; particleIndex < 2; ++particleIndex)
                 {
-                    particleX = (float)x + random.nextFloat() * 0.1F;
-                    particleY = (float)y + random.nextFloat();
-                    particleZ = (float)z + random.nextFloat();
+                    particleX = (float)x + random.NextFloat() * 0.1F;
+                    particleY = (float)y + random.NextFloat();
+                    particleZ = (float)z + random.NextFloat();
                     world.addParticle("largesmoke", (double)particleX, (double)particleY, (double)particleZ, 0.0D, 0.0D, 0.0D);
                 }
             }
@@ -268,9 +268,9 @@ public class BlockFire : Block
             {
                 for (particleIndex = 0; particleIndex < 2; ++particleIndex)
                 {
-                    particleX = (float)(x + 1) - random.nextFloat() * 0.1F;
-                    particleY = (float)y + random.nextFloat();
-                    particleZ = (float)z + random.nextFloat();
+                    particleX = (float)(x + 1) - random.NextFloat() * 0.1F;
+                    particleY = (float)y + random.NextFloat();
+                    particleZ = (float)z + random.NextFloat();
                     world.addParticle("largesmoke", (double)particleX, (double)particleY, (double)particleZ, 0.0D, 0.0D, 0.0D);
                 }
             }
@@ -279,9 +279,9 @@ public class BlockFire : Block
             {
                 for (particleIndex = 0; particleIndex < 2; ++particleIndex)
                 {
-                    particleX = (float)x + random.nextFloat();
-                    particleY = (float)y + random.nextFloat();
-                    particleZ = (float)z + random.nextFloat() * 0.1F;
+                    particleX = (float)x + random.NextFloat();
+                    particleY = (float)y + random.NextFloat();
+                    particleZ = (float)z + random.NextFloat() * 0.1F;
                     world.addParticle("largesmoke", (double)particleX, (double)particleY, (double)particleZ, 0.0D, 0.0D, 0.0D);
                 }
             }
@@ -290,9 +290,9 @@ public class BlockFire : Block
             {
                 for (particleIndex = 0; particleIndex < 2; ++particleIndex)
                 {
-                    particleX = (float)x + random.nextFloat();
-                    particleY = (float)y + random.nextFloat();
-                    particleZ = (float)(z + 1) - random.nextFloat() * 0.1F;
+                    particleX = (float)x + random.NextFloat();
+                    particleY = (float)y + random.NextFloat();
+                    particleZ = (float)(z + 1) - random.NextFloat() * 0.1F;
                     world.addParticle("largesmoke", (double)particleX, (double)particleY, (double)particleZ, 0.0D, 0.0D, 0.0D);
                 }
             }
@@ -301,9 +301,9 @@ public class BlockFire : Block
             {
                 for (particleIndex = 0; particleIndex < 2; ++particleIndex)
                 {
-                    particleX = (float)x + random.nextFloat();
-                    particleY = (float)(y + 1) - random.nextFloat() * 0.1F;
-                    particleZ = (float)z + random.nextFloat();
+                    particleX = (float)x + random.NextFloat();
+                    particleY = (float)(y + 1) - random.NextFloat() * 0.1F;
+                    particleZ = (float)z + random.NextFloat();
                     world.addParticle("largesmoke", (double)particleX, (double)particleY, (double)particleZ, 0.0D, 0.0D, 0.0D);
                 }
             }
@@ -312,9 +312,9 @@ public class BlockFire : Block
         {
             for (particleIndex = 0; particleIndex < 3; ++particleIndex)
             {
-                particleX = (float)x + random.nextFloat();
-                particleY = (float)y + random.nextFloat() * 0.5F + 0.5F;
-                particleZ = (float)z + random.nextFloat();
+                particleX = (float)x + random.NextFloat();
+                particleY = (float)y + random.NextFloat() * 0.5F + 0.5F;
+                particleZ = (float)z + random.NextFloat();
                 world.addParticle("largesmoke", (double)particleX, (double)particleY, (double)particleZ, 0.0D, 0.0D, 0.0D);
             }
         }

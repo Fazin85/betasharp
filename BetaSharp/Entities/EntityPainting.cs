@@ -48,7 +48,7 @@ public class EntityPainting : Entity
 
         if (validPaintings.size() > 0)
         {
-            art = (EnumArt)validPaintings.get(random.nextInt(validPaintings.size()));
+            art = (EnumArt)validPaintings.get(random.NextInt(validPaintings.size()));
         }
 
         setFacing(direction);

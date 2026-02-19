@@ -19,9 +19,9 @@ public class BiomeSource
 
     public BiomeSource(World world)
     {
-        _temperatureSampler = new OctaveSimplexNoiseSampler(new java.util.Random(world.getSeed() * 9871L), 4);
-        _downfallSampler = new OctaveSimplexNoiseSampler(new java.util.Random(world.getSeed() * 39811L), 4);
-        _weirdnessSampler = new OctaveSimplexNoiseSampler(new java.util.Random(world.getSeed() * 543321L), 2);
+        _temperatureSampler = new OctaveSimplexNoiseSampler(new JavaRandom(world.getSeed() * 9871L), 4);
+        _downfallSampler = new OctaveSimplexNoiseSampler(new JavaRandom(world.getSeed() * 39811L), 4);
+        _weirdnessSampler = new OctaveSimplexNoiseSampler(new JavaRandom(world.getSeed() * 543321L), 2);
     }
 
     public virtual Biome GetBiome(ChunkPos chunkPos)

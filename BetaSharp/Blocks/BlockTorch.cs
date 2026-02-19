@@ -74,7 +74,7 @@ public class BlockTorch : Block
         world.setBlockMeta(x, y, z, meta);
     }
 
-    public override void onTick(World world, int x, int y, int z, java.util.Random random)
+    public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
         base.onTick(world, x, y, z, random);
         if (world.getBlockMeta(x, y, z) == 0)
@@ -193,7 +193,7 @@ public class BlockTorch : Block
         return base.raycast(world, x, y, z, startPos, endPos);
     }
 
-    public override void randomDisplayTick(World world, int x, int y, int z, java.util.Random random)
+    public override void randomDisplayTick(World world, int x, int y, int z, JavaRandom random)
     {
         int meta = world.getBlockMeta(x, y, z);
         double flameX = (double)((float)x + 0.5F);

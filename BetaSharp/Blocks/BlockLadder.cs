@@ -144,7 +144,7 @@ public class BlockLadder : Block
         base.neighborUpdate(world, x, y, z, id);
     }
 
-    public override int getDroppedItemCount(java.util.Random random)
+    public override int getDroppedItemCount(JavaRandom random)
     {
         return 1;
     }

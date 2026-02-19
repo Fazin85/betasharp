@@ -13,7 +13,7 @@ public class ItemRenderer : EntityRenderer
 {
 
     private readonly BlockRenderer renderBlocks = new();
-    private readonly java.util.Random random = new();
+    private readonly JavaRandom random = new();
     public bool useCustomDisplayColor = true;
 
     public ItemRenderer()
@@ -24,7 +24,7 @@ public class ItemRenderer : EntityRenderer
 
     public void doRenderItem(EntityItem var1, double var2, double var4, double var6, float var8, float var9)
     {
-        random.setSeed(187L);
+        random.SetSeed(187L);
         ItemStack var10 = var1.stack;
         GLManager.GL.PushMatrix();
         float var11 = MathHelper.sin((var1.age + var9) / 10.0F + var1.bobPhase) * 0.1F + 0.1F;
@@ -67,9 +67,9 @@ public class ItemRenderer : EntityRenderer
                 GLManager.GL.PushMatrix();
                 if (var29 > 0)
                 {
-                    var16 = (random.nextFloat() * 2.0F - 1.0F) * 0.2F / var28;
-                    var17 = (random.nextFloat() * 2.0F - 1.0F) * 0.2F / var28;
-                    var18 = (random.nextFloat() * 2.0F - 1.0F) * 0.2F / var28;
+                    var16 = (random.NextFloat() * 2.0F - 1.0F) * 0.2F / var28;
+                    var17 = (random.NextFloat() * 2.0F - 1.0F) * 0.2F / var28;
+                    var18 = (random.NextFloat() * 2.0F - 1.0F) * 0.2F / var28;
                     GLManager.GL.Translate(var16, var17, var18);
                 }
 
@@ -117,9 +117,9 @@ public class ItemRenderer : EntityRenderer
                 GLManager.GL.PushMatrix();
                 if (var23 > 0)
                 {
-                    var24 = (random.nextFloat() * 2.0F - 1.0F) * 0.3F;
-                    var25 = (random.nextFloat() * 2.0F - 1.0F) * 0.3F;
-                    var26 = (random.nextFloat() * 2.0F - 1.0F) * 0.3F;
+                    var24 = (random.NextFloat() * 2.0F - 1.0F) * 0.3F;
+                    var25 = (random.NextFloat() * 2.0F - 1.0F) * 0.3F;
+                    var26 = (random.NextFloat() * 2.0F - 1.0F) * 0.3F;
                     GLManager.GL.Translate(var24, var25, var26);
                 }
 

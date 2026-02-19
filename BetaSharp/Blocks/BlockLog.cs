@@ -1,5 +1,6 @@
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
@@ -11,12 +12,12 @@ public class BlockLog : Block
         textureId = 20;
     }
 
-    public override int getDroppedItemCount(java.util.Random random)
+    public override int getDroppedItemCount(JavaRandom random)
     {
         return 1;
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
         return Block.Log.id;
     }

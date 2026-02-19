@@ -7,7 +7,7 @@ namespace BetaSharp.Worlds;
 public class Explosion : java.lang.Object
 {
     public bool isFlaming = false;
-    private java.util.Random ExplosionRNG = new();
+    private JavaRandom ExplosionRNG = new();
     private World worldObj;
     public double explosionX;
     public double explosionY;
@@ -52,7 +52,7 @@ public class Explosion : java.lang.Object
                         var6 /= var12;
                         var8 /= var12;
                         var10 /= var12;
-                        float var14 = explosionSize * (0.7F + worldObj.random.nextFloat() * 0.6F);
+                        float var14 = explosionSize * (0.7F + worldObj.random.NextFloat() * 0.6F);
                         var15 = explosionX;
                         var17 = explosionY;
                         var19 = explosionZ;
@@ -126,7 +126,7 @@ public class Explosion : java.lang.Object
                 int var16 = var35.z;
                 int var38 = worldObj.getBlockId(var36, var37, var16);
                 int var18 = worldObj.getBlockId(var36, var37 - 1, var16);
-                if (var38 == 0 && Block.BlocksOpaque[var18] && ExplosionRNG.nextInt(3) == 0)
+                if (var38 == 0 && Block.BlocksOpaque[var18] && ExplosionRNG.NextInt(3) == 0)
                 {
                     worldObj.setBlock(var36, var37, var16, Block.Fire.id);
                 }
@@ -137,7 +137,7 @@ public class Explosion : java.lang.Object
 
     public void doExplosionB(bool var1)
     {
-        worldObj.playSound(explosionX, explosionY, explosionZ, "random.explode", 4.0F, (1.0F + (worldObj.random.nextFloat() - worldObj.random.nextFloat()) * 0.2F) * 0.7F);
+        worldObj.playSound(explosionX, explosionY, explosionZ, "random.explode", 4.0F, (1.0F + (worldObj.random.NextFloat() - worldObj.random.NextFloat()) * 0.2F) * 0.7F);
         List<BlockPos> var2 = new (destroyedBlockPositions);
 
         for (int var3 = var2.Count - 1; var3 >= 0; --var3)
@@ -149,9 +149,9 @@ public class Explosion : java.lang.Object
             int var8 = worldObj.getBlockId(var5, var6, var7);
             if (var1)
             {
-                double var9 = (double)(var5 + worldObj.random.nextFloat());
-                double var11 = (double)(var6 + worldObj.random.nextFloat());
-                double var13 = (double)(var7 + worldObj.random.nextFloat());
+                double var9 = (double)(var5 + worldObj.random.NextFloat());
+                double var11 = (double)(var6 + worldObj.random.NextFloat());
+                double var13 = (double)(var7 + worldObj.random.NextFloat());
                 double var15 = var9 - explosionX;
                 double var17 = var11 - explosionY;
                 double var19 = var13 - explosionZ;
@@ -160,7 +160,7 @@ public class Explosion : java.lang.Object
                 var17 /= var21;
                 var19 /= var21;
                 double var23 = 0.5D / (var21 / explosionSize + 0.1D);
-                var23 *= (double)(worldObj.random.nextFloat() * worldObj.random.nextFloat() + 0.3F);
+                var23 *= (double)(worldObj.random.NextFloat() * worldObj.random.NextFloat() + 0.3F);
                 var15 *= var23;
                 var17 *= var23;
                 var19 *= var23;

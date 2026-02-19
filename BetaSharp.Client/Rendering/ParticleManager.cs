@@ -14,7 +14,7 @@ public class ParticleManager
     protected World worldObj;
     private readonly List[] _fxLayers = new List[4];
     private readonly TextureManager _renderer;
-    private readonly java.util.Random _rand = new();
+    private readonly JavaRandom _rand = new();
 
     public ParticleManager(World var1, TextureManager var2)
     {
@@ -150,7 +150,7 @@ public class ParticleManager
                         double var11 = (double)var1 + ((double)var8 + 0.5D) / (double)var7;
                         double var13 = (double)var2 + ((double)var9 + 0.5D) / (double)var7;
                         double var15 = (double)var3 + ((double)var10 + 0.5D) / (double)var7;
-                        int var17 = _rand.nextInt(6);
+                        int var17 = _rand.NextInt(6);
                         addEffect((new EntityDiggingFX(worldObj, var11, var13, var15, var11 - (double)var1 - 0.5D, var13 - (double)var2 - 0.5D, var15 - (double)var3 - 0.5D, var6, var17, var5)).func_4041_a(var1, var2, var3));
                     }
                 }
@@ -166,9 +166,9 @@ public class ParticleManager
         {
             Block var6 = Block.Blocks[var5];
             float var7 = 0.1F;
-            double var8 = (double)var1 + _rand.nextDouble() * (var6.maxX - var6.minX - (double)(var7 * 2.0F)) + (double)var7 + var6.minX;
-            double var10 = (double)var2 + _rand.nextDouble() * (var6.maxY - var6.minY - (double)(var7 * 2.0F)) + (double)var7 + var6.minY;
-            double var12 = (double)var3 + _rand.nextDouble() * (var6.maxZ - var6.minZ - (double)(var7 * 2.0F)) + (double)var7 + var6.minZ;
+            double var8 = (double)var1 + _rand.NextDouble() * (var6.maxX - var6.minX - (double)(var7 * 2.0F)) + (double)var7 + var6.minX;
+            double var10 = (double)var2 + _rand.NextDouble() * (var6.maxY - var6.minY - (double)(var7 * 2.0F)) + (double)var7 + var6.minY;
+            double var12 = (double)var3 + _rand.NextDouble() * (var6.maxZ - var6.minZ - (double)(var7 * 2.0F)) + (double)var7 + var6.minZ;
             if (var4 == 0)
             {
                 var10 = (double)var2 + var6.minY - (double)var7;

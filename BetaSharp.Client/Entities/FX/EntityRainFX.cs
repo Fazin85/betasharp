@@ -17,7 +17,7 @@ public class EntityRainFX : EntityFX
         particleRed = 1.0F;
         particleGreen = 1.0F;
         particleBlue = 1.0F;
-        particleTextureIndex = 19 + random.nextInt(4);
+        particleTextureIndex = 19 + random.NextInt(4);
         setBoundingBoxSpacing(0.01F, 0.01F);
         particleGravity = 0.06F;
         particleMaxAge = (int)(8.0D / (java.lang.Math.random() * 0.8D + 0.2D));

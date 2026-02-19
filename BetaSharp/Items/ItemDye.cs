@@ -100,9 +100,9 @@ public class ItemDye : Item
                         bool validPosition = true;
                         for (int walkStep = 0; walkStep < attempt / 16 && validPosition; ++walkStep)
                         {
-                            spawnX += itemRand.nextInt(3) - 1;
-                            spawnY += (itemRand.nextInt(3) - 1) * itemRand.nextInt(3) / 2;
-                            spawnZ += itemRand.nextInt(3) - 1;
+                            spawnX += itemRand.NextInt(3) - 1;
+                            spawnY += (itemRand.NextInt(3) - 1) * itemRand.NextInt(3) / 2;
+                            spawnZ += itemRand.NextInt(3) - 1;
                             if (world.getBlockId(spawnX, spawnY - 1, spawnZ) != Block.GrassBlock.id || world.shouldSuffocate(spawnX, spawnY, spawnZ))
                             {
                                 validPosition = false;
@@ -111,11 +111,11 @@ public class ItemDye : Item
 
                         if (validPosition && world.getBlockId(spawnX, spawnY, spawnZ) == 0)
                         {
-                            if (itemRand.nextInt(10) != 0)
+                            if (itemRand.NextInt(10) != 0)
                             {
                                 world.setBlock(spawnX, spawnY, spawnZ, Block.Grass.id, 1);
                             }
-                            else if (itemRand.nextInt(3) != 0)
+                            else if (itemRand.NextInt(3) != 0)
                             {
                                 world.setBlock(spawnX, spawnY, spawnZ, Block.Dandelion.id);
                             }

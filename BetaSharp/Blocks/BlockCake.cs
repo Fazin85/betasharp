@@ -117,12 +117,12 @@ public class BlockCake : Block
         return world.getMaterial(x, y - 1, z).IsSolid;
     }
 
-    public override int getDroppedItemCount(java.util.Random random)
+    public override int getDroppedItemCount(JavaRandom random)
     {
         return 0;
     }
 
-    public override int getDroppedItemId(int blockMeta, java.util.Random random)
+    public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
         return 0;
     }

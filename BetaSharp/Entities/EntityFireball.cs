@@ -57,9 +57,9 @@ public class EntityFireball : Entity
         setPosition(x, y, z);
         standingEyeHeight = 0.0F;
         velocityX = velocityY = velocityZ = 0.0D;
-        var3 += random.nextGaussian() * 0.4D;
-        var5 += random.nextGaussian() * 0.4D;
-        var7 += random.nextGaussian() * 0.4D;
+        var3 += random.NextGaussian() * 0.4D;
+        var5 += random.NextGaussian() * 0.4D;
+        var7 += random.NextGaussian() * 0.4D;
         double var9 = (double)MathHelper.sqrt_double(var3 * var3 + var5 * var5 + var7 * var7);
         powerX = var3 / var9 * 0.1D;
         powerY = var5 / var9 * 0.1D;
@@ -90,9 +90,9 @@ public class EntityFireball : Entity
             }
 
             inGround = false;
-            velocityX *= (double)(random.nextFloat() * 0.2F);
-            velocityY *= (double)(random.nextFloat() * 0.2F);
-            velocityZ *= (double)(random.nextFloat() * 0.2F);
+            velocityX *= (double)(random.NextFloat() * 0.2F);
+            velocityY *= (double)(random.NextFloat() * 0.2F);
+            velocityZ *= (double)(random.NextFloat() * 0.2F);
             removalTimer = 0;
             inAirTime = 0;
         }

@@ -69,7 +69,7 @@ public class ClientPlayerEntity : EntityPlayer
 
             if (changeDimensionCooldown == 0.0F)
             {
-                mc.sndManager.PlaySoundFX("portal.trigger", 1.0F, random.nextFloat() * 0.4F + 0.8F);
+                mc.sndManager.PlaySoundFX("portal.trigger", 1.0F, random.NextFloat() * 0.4F + 0.8F);
             }
 
             changeDimensionCooldown += 0.0125F;

@@ -14,7 +14,7 @@ namespace BetaSharp.Server.Network;
 
 public class ServerLoginNetworkHandler : NetHandler
 {
-    private static java.util.Random random = new();
+    private static JavaRandom random = new();
     public Connection connection;
     public bool closed;
     private MinecraftServer server;
@@ -75,7 +75,7 @@ public class ServerLoginNetworkHandler : NetHandler
     {
         if (server.onlineMode)
         {
-            serverId = Long.toHexString(random.nextLong());
+            serverId = Long.toHexString(random.NextLong());
             connection.sendPacket(new HandshakePacket(serverId));
         }
         else

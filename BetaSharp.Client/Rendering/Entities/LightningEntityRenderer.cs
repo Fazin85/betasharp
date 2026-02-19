@@ -1,5 +1,6 @@
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Entities;
+using BetaSharp.Util.Maths;
 using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Rendering.Entities;
@@ -18,19 +19,19 @@ public class LightningEntityRenderer : EntityRenderer
         double[] var12 = new double[8];
         double var13 = 0.0D;
         double var15 = 0.0D;
-        java.util.Random var17 = new(var1.renderSeed);
+        JavaRandom var17 = new(var1.renderSeed);
 
         for (int var18 = 7; var18 >= 0; --var18)
         {
             var11[var18] = var13;
             var12[var18] = var15;
-            var13 += var17.nextInt(11) - 5;
-            var15 += var17.nextInt(11) - 5;
+            var13 += var17.NextInt(11) - 5;
+            var15 += var17.NextInt(11) - 5;
         }
 
         for (int var45 = 0; var45 < 4; ++var45)
         {
-            java.util.Random var46 = new(var1.renderSeed);
+            JavaRandom var46 = new(var1.renderSeed);
 
             for (int var19 = 0; var19 < 3; ++var19)
             {
@@ -55,13 +56,13 @@ public class LightningEntityRenderer : EntityRenderer
                     double var29 = var24;
                     if (var19 == 0)
                     {
-                        var22 += var46.nextInt(11) - 5;
-                        var24 += var46.nextInt(11) - 5;
+                        var22 += var46.NextInt(11) - 5;
+                        var24 += var46.NextInt(11) - 5;
                     }
                     else
                     {
-                        var22 += var46.nextInt(31) - 15;
-                        var24 += var46.nextInt(31) - 15;
+                        var22 += var46.NextInt(31) - 15;
+                        var24 += var46.NextInt(31) - 15;
                     }
 
                     var10.startDrawing(5);

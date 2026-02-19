@@ -1,11 +1,12 @@
 using BetaSharp.Blocks;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Gen.Features;
 
 public class GlowstoneClusterFeatureRare : Feature
 {
 
-    public override bool Generate(World world, java.util.Random rand, int x, int y, int z)
+    public override bool Generate(World world, JavaRandom rand, int x, int y, int z)
     {
         if (!world.isAir(x, y, z)) return false;
         if (world.getBlockId(x, y + 1, z) != Block.Netherrack.id) return false;
@@ -15,9 +16,9 @@ public class GlowstoneClusterFeatureRare : Feature
 
         for (int i = 0; i < 1500; ++i)
         {
-            int genX = x + rand.nextInt(8) - rand.nextInt(8);
-            int genY = y - rand.nextInt(12);
-            int genZ = z + rand.nextInt(8) - rand.nextInt(8);
+            int genX = x + rand.NextInt(8) - rand.NextInt(8);
+            int genY = y - rand.NextInt(12);
+            int genZ = z + rand.NextInt(8) - rand.NextInt(8);
             if (world.getBlockId(genX, genY, genZ) == 0)
             {
                 int GlowstoneNeighbors = 0;

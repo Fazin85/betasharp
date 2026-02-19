@@ -123,13 +123,13 @@ public class EntityMinecart : Entity, IInventory
                         ItemStack itemStack = minecart.getStack(slotIndex);
                         if (itemStack != null)
                         {
-                            float offsetX = random.nextFloat() * 0.8F + 0.1F;
-                            float offsetY = random.nextFloat() * 0.8F + 0.1F;
-                            float offsetZ = random.nextFloat() * 0.8F + 0.1F;
+                            float offsetX = random.NextFloat() * 0.8F + 0.1F;
+                            float offsetY = random.NextFloat() * 0.8F + 0.1F;
+                            float offsetZ = random.NextFloat() * 0.8F + 0.1F;
 
                             while (itemStack.count > 0)
                             {
-                                int dropCount = random.nextInt(21) + 10;
+                                int dropCount = random.NextInt(21) + 10;
                                 if (dropCount > itemStack.count)
                                 {
                                     dropCount = itemStack.count;
@@ -138,9 +138,9 @@ public class EntityMinecart : Entity, IInventory
                                 itemStack.count -= dropCount;
                                 EntityItem entityItem = new EntityItem(world, x + (double)offsetX, y + (double)offsetY, z + (double)offsetZ, new ItemStack(itemStack.itemId, dropCount, itemStack.getDamage()));
                                 float scatterSpeed = 0.05F;
-                                entityItem.velocityX = (double)((float)random.nextGaussian() * scatterSpeed);
-                                entityItem.velocityY = (double)((float)random.nextGaussian() * scatterSpeed + 0.2F);
-                                entityItem.velocityZ = (double)((float)random.nextGaussian() * scatterSpeed);
+                                entityItem.velocityX = (double)((float)random.NextGaussian() * scatterSpeed);
+                                entityItem.velocityY = (double)((float)random.NextGaussian() * scatterSpeed + 0.2F);
+                                entityItem.velocityZ = (double)((float)random.NextGaussian() * scatterSpeed);
                                 world.SpawnEntity(entityItem);
                             }
                         }
@@ -182,13 +182,13 @@ public class EntityMinecart : Entity, IInventory
             ItemStack itemStack = getStack(slotIndex);
             if (itemStack != null)
             {
-                float offsetX = random.nextFloat() * 0.8F + 0.1F;
-                float offsetY = random.nextFloat() * 0.8F + 0.1F;
-                float offsetZ = random.nextFloat() * 0.8F + 0.1F;
+                float offsetX = random.NextFloat() * 0.8F + 0.1F;
+                float offsetY = random.NextFloat() * 0.8F + 0.1F;
+                float offsetZ = random.NextFloat() * 0.8F + 0.1F;
 
                 while (itemStack.count > 0)
                 {
-                    int dropCount = random.nextInt(21) + 10;
+                    int dropCount = random.NextInt(21) + 10;
                     if (dropCount > itemStack.count)
                     {
                         dropCount = itemStack.count;
@@ -197,9 +197,9 @@ public class EntityMinecart : Entity, IInventory
                     itemStack.count -= dropCount;
                     EntityItem entityItem = new EntityItem(world, x + (double)offsetX, y + (double)offsetY, z + (double)offsetZ, new ItemStack(itemStack.itemId, dropCount, itemStack.getDamage()));
                     float scatterSpeed = 0.05F;
-                    entityItem.velocityX = (double)((float)random.nextGaussian() * scatterSpeed);
-                    entityItem.velocityY = (double)((float)random.nextGaussian() * scatterSpeed + 0.2F);
-                    entityItem.velocityZ = (double)((float)random.nextGaussian() * scatterSpeed);
+                    entityItem.velocityX = (double)((float)random.NextGaussian() * scatterSpeed);
+                    entityItem.velocityY = (double)((float)random.NextGaussian() * scatterSpeed + 0.2F);
+                    entityItem.velocityZ = (double)((float)random.NextGaussian() * scatterSpeed);
                     world.SpawnEntity(entityItem);
                 }
             }
@@ -611,7 +611,7 @@ public class EntityMinecart : Entity, IInventory
                 passenger = null;
             }
 
-            if (var6 && random.nextInt(4) == 0)
+            if (var6 && random.NextInt(4) == 0)
             {
                 --fuel;
                 if (fuel < 0)

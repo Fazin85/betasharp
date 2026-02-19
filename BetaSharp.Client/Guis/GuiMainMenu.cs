@@ -14,7 +14,7 @@ public class GuiMainMenu : GuiScreen
     private const int ButtonTexturePacksAndMods = 3;
     private const int ButtonQuit = 4;
 
-    private static readonly java.util.Random s_rand = new();
+    private static readonly JavaRandom s_rand = new();
     private string _splashText = "missingno";
     private GuiButton _multiplayerButton;
 
@@ -33,7 +33,7 @@ public class GuiMainMenu : GuiScreen
                 line = reader.readLine();
                 if (line == null)
                 {
-                    _splashText = splashLines[s_rand.nextInt(splashLines.Count)];
+                    _splashText = splashLines[s_rand.NextInt(splashLines.Count)];
                     break;
                 }
 

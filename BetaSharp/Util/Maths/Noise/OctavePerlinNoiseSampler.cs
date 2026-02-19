@@ -6,7 +6,7 @@ public class OctavePerlinNoiseSampler : NoiseSampler
     private readonly PerlinNoiseSampler[] _octaves;
     private readonly int _octaveCount;
 
-    public OctavePerlinNoiseSampler(java.util.Random rand, int octaveCount)
+    public OctavePerlinNoiseSampler(JavaRandom rand, int octaveCount)
     {
         _octaveCount = octaveCount;
         _octaves = new PerlinNoiseSampler[octaveCount];
