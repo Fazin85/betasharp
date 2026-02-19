@@ -67,11 +67,11 @@ public class BlockEntitySignRenderer : BlockEntitySpecialRenderer
             if (var14 == var1.CurrentRow)
             {
                 var15 = "> " + var15 + " <";
-                var17.drawString(var15, -var17.getStringWidth(var15) / 2, var14 * 10 - var1.Texts.Length * 5, var13);
+                var17.DrawString(var15, -var17.GetStringWidth(var15) / 2, var14 * 10 - var1.Texts.Length * 5, var13);
             }
             else
             {
-                var17.drawString(var15, -var17.getStringWidth(var15) / 2, var14 * 10 - var1.Texts.Length * 5, var13);
+                var17.DrawString(var15, -var17.GetStringWidth(var15) / 2, var14 * 10 - var1.Texts.Length * 5, var13);
             }
         }
 

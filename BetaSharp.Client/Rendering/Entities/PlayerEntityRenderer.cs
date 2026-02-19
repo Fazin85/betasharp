@@ -104,7 +104,7 @@ public class PlayerEntityRenderer : LivingEntityRenderer
                     Tessellator var14 = Tessellator.instance;
                     GLManager.GL.Disable(GLEnum.Texture2D);
                     var14.startDrawingQuads();
-                    int var15 = var13.getStringWidth(var12) / 2;
+                    int var15 = var13.GetStringWidth(var12) / 2;
                     var14.setColorRGBA_F(0.0F, 0.0F, 0.0F, 0.25F);
                     var14.addVertex(-var15 - 1, -1.0D, 0.0D);
                     var14.addVertex(-var15 - 1, 8.0D, 0.0D);
@@ -113,7 +113,7 @@ public class PlayerEntityRenderer : LivingEntityRenderer
                     var14.draw();
                     GLManager.GL.Enable(GLEnum.Texture2D);
                     GLManager.GL.DepthMask(true);
-                    var13.drawString(var12, -var13.getStringWidth(var12) / 2, 0, 0x20FFFFFF);
+                    var13.DrawString(var12, -var13.GetStringWidth(var12) / 2, 0, 0x20FFFFFF);
                     GLManager.GL.Enable(GLEnum.Lighting);
                     GLManager.GL.Disable(GLEnum.Blend);
                     GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);

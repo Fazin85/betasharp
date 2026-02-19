@@ -78,17 +78,17 @@ public class ParticleManager
                 int var9 = 0;
                 if (var8 == 0)
                 {
-                    var9 = _renderer.getTextureId("/particles.png");
+                    var9 = _renderer.GetTextureId("/particles.png");
                 }
 
                 if (var8 == 1)
                 {
-                    var9 = _renderer.getTextureId("/terrain.png");
+                    var9 = _renderer.GetTextureId("/terrain.png");
                 }
 
                 if (var8 == 2)
                 {
-                    var9 = _renderer.getTextureId("/gui/items.png");
+                    var9 = _renderer.GetTextureId("/gui/items.png");
                 }
 
                 GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var9);

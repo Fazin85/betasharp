@@ -1,9 +1,10 @@
 using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Entities;
-using java.awt.image;
 using java.util;
 using Silk.NET.OpenGL.Legacy;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace BetaSharp.Client.Rendering;
 
@@ -18,7 +19,7 @@ public class MapItemRenderer
     {
         _options = options;
         _textRenderer = textRenderer;
-        _textureId = textureManager.load(new BufferedImage(128, 128, 2));
+        _textureId = textureManager.Load(new Image<Rgba32>(128, 128));
 
         for (int i = 0; i < 128*128; ++i)
         {
@@ -56,7 +57,7 @@ public class MapItemRenderer
             }
         }
 
-        textureManager.bind(colors, 128, 128, _textureId);
+        textureManager.Bind(colors, 128, 128, _textureId);
         Tessellator tess = Tessellator.instance;
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_textureId);
         GLManager.GL.Enable(GLEnum.Blend);
@@ -69,7 +70,7 @@ public class MapItemRenderer
         tess.draw();
         GLManager.GL.Enable(GLEnum.AlphaTest);
         GLManager.GL.Disable(GLEnum.Blend);
-        textureManager.bindTexture(textureManager.getTextureId("/misc/mapicons.png"));
+        textureManager.BindTexture(textureManager.GetTextureId("/misc/mapicons.png"));
         Iterator it = mapState.icons.iterator();
 
         while (it.hasNext())
@@ -96,7 +97,7 @@ public class MapItemRenderer
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(0.0F, 0.0F, -0.04F);
         GLManager.GL.Scale(1.0F, 1.0F, 1.0F);
-        _textRenderer.drawString(mapState.id, 0, 0, 0xFF000000);
+        _textRenderer.DrawString(mapState.id, 0, 0, 0xFF000000);
         GLManager.GL.PopMatrix();
     }
 }

@@ -146,8 +146,8 @@ public abstract class GuiSlotStats : GuiSlot
             text = "-";
         }
 
-        _gui.FontRenderer.drawStringWithShadow(text,
-            x - _gui.FontRenderer.getStringWidth(text), y + 5,
+        _gui.FontRenderer.DrawStringWithShadow(text,
+            x - _gui.FontRenderer.GetStringWidth(text), y + 5,
             useBrightColor ? 0xFFFFFFu : 0x909090u);
     }
 
@@ -193,9 +193,9 @@ public abstract class GuiSlotStats : GuiSlot
                 {
                     int var6 = var1 + 12;
                     int var7 = var2 - 12;
-                    int var8 = _gui.FontRenderer.getStringWidth(var5);
+                    int var8 = _gui.FontRenderer.GetStringWidth(var5);
                     _gui.drawTranslucentRect(var6 - 3, var7 - 3, var6 + var8 + 3, var7 + 8 + 3);
-                    _gui.FontRenderer.drawStringWithShadow(var5, var6, var7, 0xFFFFFFFF);
+                    _gui.FontRenderer.DrawStringWithShadow(var5, var6, var7, 0xFFFFFFFF);
                 }
             }
 
@@ -212,9 +212,9 @@ public abstract class GuiSlotStats : GuiSlot
             {
                 int var6 = var2 + 12;
                 int var7 = var3 - 12;
-                int var8 = _gui.FontRenderer.getStringWidth(var5);
+                int var8 = _gui.FontRenderer.GetStringWidth(var5);
                 _gui.drawTranslucentRect(var6 - 3, var7 - 3, var6 + var8 + 3, var7 + 8 + 3);
-                _gui.FontRenderer.drawStringWithShadow(var5, var6, var7, 0xFFFFFFFF);
+                _gui.FontRenderer.DrawStringWithShadow(var5, var6, var7, 0xFFFFFFFF);
             }
 
         }

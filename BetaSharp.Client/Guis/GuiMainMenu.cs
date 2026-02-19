@@ -122,7 +122,7 @@ public class GuiMainMenu : GuiScreen
         short logoWidth = 274;
         int logoX = Width / 2 - logoWidth / 2;
         byte logoY = 30;
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/title/mclogo.png"));
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.GetTextureId("/title/mclogo.png"));
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         DrawTexturedModalRect(logoX + 0, logoY + 0, 0, 0, 155, 44);
         DrawTexturedModalRect(logoX + 155, logoY + 0, 0, 45, 155, 44);
@@ -132,15 +132,15 @@ public class GuiMainMenu : GuiScreen
         GLManager.GL.Rotate(-20.0F, 0.0F, 0.0F, 1.0F);
         float splashScale = 1.8F - MathHelper.abs(MathHelper.sin(java.lang.System.currentTimeMillis() % 1000L /
             1000.0F * (float)Math.PI * 2.0F) * 0.1F);
-        splashScale = splashScale * 100.0F / (FontRenderer.getStringWidth(_splashText) + 32);
+        splashScale = splashScale * 100.0F / (FontRenderer.GetStringWidth(_splashText) + 32);
         GLManager.GL.Scale(splashScale, splashScale, splashScale);
         DrawCenteredString(FontRenderer, _splashText, 0, -8, 0xFFFF00);
         GLManager.GL.PopMatrix();
         DrawString(FontRenderer, "Minecraft Beta 1.7.3", 2, 2, 0x505050);
         string copyrightText = "Copyright Mojang Studios. Not an official Minecraft product.";
-        DrawString(FontRenderer, copyrightText, Width - FontRenderer.getStringWidth(copyrightText) - 2, Height - 20, 0xFFFFFF);
+        DrawString(FontRenderer, copyrightText, Width - FontRenderer.GetStringWidth(copyrightText) - 2, Height - 20, 0xFFFFFF);
         string disclaimerText = "Not approved by or associated with Mojang Studios or Microsoft.";
-        DrawString(FontRenderer, disclaimerText, Width - FontRenderer.getStringWidth(disclaimerText) - 2, Height - 10, 0xFFFFFF);
+        DrawString(FontRenderer, disclaimerText, Width - FontRenderer.GetStringWidth(disclaimerText) - 2, Height - 10, 0xFFFFFF);
         base.Render(mouseX, mouseY, partialTicks);
     }
 }

@@ -24,7 +24,7 @@ public class GuiInventory : GuiContainer
 
     protected override void DrawGuiContainerForegroundLayer()
     {
-        FontRenderer.drawString("Crafting", 86, 16, 0x404040);
+        FontRenderer.DrawString("Crafting", 86, 16, 0x404040);
     }
 
     public override void Render(int mouseX, int mouseY, float partialTicks)
@@ -36,9 +36,9 @@ public class GuiInventory : GuiContainer
 
     protected override void DrawGuiContainerBackgroundLayer(float partialTicks)
     {
-        int textureId = mc.textureManager.getTextureId("/gui/inventory.png");
+        int textureId = mc.textureManager.GetTextureId("/gui/inventory.png");
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.textureManager.bindTexture(textureId);
+        mc.textureManager.BindTexture(textureId);
 
         int guiLeft = (Width - _xSize) / 2;
         int guiTop = (Height - _ySize) / 2;
