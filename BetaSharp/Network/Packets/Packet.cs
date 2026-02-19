@@ -54,7 +54,7 @@ public abstract class Packet : java.lang.Object
         }
         catch (java.lang.Exception ex)
         {
-            Log.Error(ex.ToString());
+            Log.Error(ex);
             Log.Info($"Skipping packet with id {rawId}");
             return null;
         }

@@ -73,7 +73,7 @@ public class RegionChunkStorage : ChunkStorage
         }
         catch (Exception var7)
         {
-            Log.Error(var7.ToString());
+            Log.Error(var7);
         }
     }
 

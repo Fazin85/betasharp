@@ -168,7 +168,7 @@ public class StatFileWriter
         }
         catch (JsonException var13)
         {
-            Log.Error(var13.ToString());
+            Log.Error(var13);
         }
 
         return var1;

@@ -115,7 +115,7 @@ public class PersistentStateManager : java.lang.Object
             }
             catch (System.Exception var6)
             {
-                Log.Error(var6.ToString());
+                Log.Error(var6);
             }
 
         }

@@ -110,7 +110,7 @@ public class EntityRegistry
         }
         catch (Exception ex)
         {
-            Log.Error(ex.ToString());
+            Log.Error(ex);
         }
 
         return null;
@@ -130,7 +130,7 @@ public class EntityRegistry
         }
         catch (java.lang.Exception ex)
         {
-            Log.Error(ex.ToString());
+            Log.Error(ex);
         }
 
         if (entity == null)

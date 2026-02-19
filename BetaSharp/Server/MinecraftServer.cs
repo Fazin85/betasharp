@@ -314,8 +314,8 @@ public abstract class MinecraftServer : Runnable, CommandOutput
         }
         catch (System.Exception var58)
         {
-            Log.Error(var58.ToString());
-            Log.Error("Unexpected exception", var58);
+            Log.Error(var58);
+            Log.Error("Unexpected exception");
 
             while (running)
             {

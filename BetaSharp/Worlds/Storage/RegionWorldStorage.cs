@@ -138,7 +138,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
         }
         catch (System.Exception e)
         {
-            Log.Error(e.ToString());
+            Log.Error(e);
         }
     }
 
@@ -176,7 +176,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
             }
             catch (java.lang.Exception var4)
             {
-                Log.Error(var4.ToString());
+                Log.Error(var4);
             }
         }
 
@@ -217,7 +217,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
         }
         catch (java.lang.Exception var7)
         {
-            Log.Error(var7.ToString());
+            Log.Error(var7);
         }
 
     }

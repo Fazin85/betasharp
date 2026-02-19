@@ -300,7 +300,7 @@ public class RegionFile : java.lang.Object
             }
             catch (System.IO.IOException var12)
             {
-                Log.Error(var12.ToString());
+                Log.Error(var12);
             }
         }
     }
