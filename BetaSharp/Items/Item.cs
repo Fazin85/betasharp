@@ -138,7 +138,7 @@ public class Item : java.lang.Object
         this.id = 256 + id;
         if (ITEMS[256 + id] != null)
         {
-            java.lang.System.@out.println("CONFLICT @ " + id);
+            Log.Info($"CONFLICT @ {id}");
         }
 
         ITEMS[256 + id] = this;

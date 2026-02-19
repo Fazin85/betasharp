@@ -413,7 +413,7 @@ public class ChunkMap
                         int var16 = chunkZ * 16 + (dirtyBlockCount >> 8 & 15);
                         if (Block.BlocksWithEntity[var1.getBlockId(var13, var15, var16)])
                         {
-                            java.lang.System.@out.println("Sending!");
+                            Log.Info("Sending!");
                             sendBlockEntityUpdate(var1.getBlockEntity(var13, var15, var16));
                         }
                     }

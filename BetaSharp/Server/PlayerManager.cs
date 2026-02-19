@@ -15,7 +15,6 @@ namespace BetaSharp.Server;
 
 public class PlayerManager
 {
-    public static readonly Logger LOGGER = Logger.getLogger("Minecraft");
     public List<ServerPlayerEntity> players = [];
     private readonly MinecraftServer _server;
     private readonly ChunkMap[] _chunkMaps;
