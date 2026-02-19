@@ -70,13 +70,6 @@ public static class Log
         }
     }
 
-    public static void Initialize(string? logFile = null)
-    {
-        Initialize(new LogOptions(
-            IsServer: true,
-            BaseDirectory: null,
-            EnableFileLogging: !string.IsNullOrEmpty(logFile)));
-    }
 
     public static void AddCrashHandlers()
     {
