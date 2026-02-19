@@ -521,7 +521,7 @@ public class GameRenderer
 
         applyFog(0);
         GLManager.GL.Enable(GLEnum.Fog);
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)client.textureManager.getTextureId("/terrain.png"));
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)client.textureManager.GetTextureId("/terrain.png"));
         Lighting.turnOff();
 
         Profiler.Start("sortAndRender");
@@ -558,7 +558,7 @@ public class GameRenderer
         applyFog(0);
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.Disable(GLEnum.CullFace);
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)client.textureManager.getTextureId("/terrain.png"));
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)client.textureManager.GetTextureId("/terrain.png"));
 
         Profiler.Start("sortAndRender2");
 
@@ -682,7 +682,7 @@ public class GameRenderer
             GLManager.GL.Enable(GLEnum.Blend);
             GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
             GLManager.GL.AlphaFunc(GLEnum.Greater, 0.01F);
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)client.textureManager.getTextureId("/environment/snow.png"));
+            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)client.textureManager.GetTextureId("/environment/snow.png"));
             double var9 = var3.lastTickX + (var3.x - var3.lastTickX) * (double)tickDelta;
             double var11 = var3.lastTickY + (var3.y - var3.lastTickY) * (double)tickDelta;
             double var13 = var3.lastTickZ + (var3.z - var3.lastTickZ) * (double)tickDelta;
@@ -760,7 +760,7 @@ public class GameRenderer
                 }
             }
 
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)client.textureManager.getTextureId("/environment/rain.png"));
+            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)client.textureManager.GetTextureId("/environment/rain.png"));
             var16 = 10;
 
             var18 = 0;

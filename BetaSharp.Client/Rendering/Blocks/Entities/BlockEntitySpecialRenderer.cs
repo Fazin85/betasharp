@@ -13,7 +13,7 @@ public abstract class BlockEntitySpecialRenderer
     protected void bindTextureByName(string var1)
     {
         TextureManager var2 = tileEntityRenderer.TextureManager;
-        var2.bindTexture(var2.getTextureId(var1));
+        var2.BindTexture(var2.GetTextureId(var1));
     }
 
     public void setTileEntityRenderer(BlockEntityRenderer var1)

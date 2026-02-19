@@ -83,12 +83,12 @@ public class Gui
 
     public static void DrawCenteredString(TextRenderer renderer, string text, int x, int y, uint color)
     {
-        renderer.drawStringWithShadow(text, x - renderer.getStringWidth(text) / 2, y, color);
+        renderer.DrawStringWithShadow(text, x - renderer.GetStringWidth(text) / 2, y, color);
     }
 
     public static void DrawString(TextRenderer renderer, string text, int x, int y, uint color)
     {
-        renderer.drawStringWithShadow(text, x, y, color);
+        renderer.DrawStringWithShadow(text, x, y, color);
     }
 
     public void DrawTexturedModalRect(int x, int y, int u, int v, int width, int height)

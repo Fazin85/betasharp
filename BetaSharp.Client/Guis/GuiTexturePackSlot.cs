@@ -17,21 +17,21 @@ public class GuiTexturePackSlot : GuiSlot
 
     public override int GetSize()
     {
-        return _parentTexturePackGui.mc.texturePackList.availableTexturePacks().size();
+        return _parentTexturePackGui.mc.texturePackList.AvailableTexturePacks.Count;
     }
     protected override void ElementClicked(int index, bool doubleClick)
     {
-        var packs = _parentTexturePackGui.mc.texturePackList.availableTexturePacks();
-        var selectedPack = (TexturePack)packs.get(index);
+        var packs = _parentTexturePackGui.mc.texturePackList.AvailableTexturePacks;
+        var selectedPack = packs[index];
 
         _parentTexturePackGui.mc.texturePackList.setTexturePack(selectedPack);
-        _parentTexturePackGui.mc.textureManager.reload();
+        _parentTexturePackGui.mc.textureManager.Reload();
     }
 
     protected override bool isSelected(int index)
     {
-        var packs = _parentTexturePackGui.mc.texturePackList.availableTexturePacks();
-        return _parentTexturePackGui.mc.texturePackList.selectedTexturePack == packs.get(index);
+        var packs = _parentTexturePackGui.mc.texturePackList.AvailableTexturePacks;
+        return _parentTexturePackGui.mc.texturePackList.SelectedTexturePack == packs[index];
     }
 
     protected override int getContentHeight()
@@ -46,8 +46,8 @@ public class GuiTexturePackSlot : GuiSlot
 
     protected override void drawSlot(int index, int x, int y, int slotHeight, Tessellator tess)
     {
-        var pack = (TexturePack)_parentTexturePackGui.mc.texturePackList.availableTexturePacks().get(index);
-        pack.bindThumbnailTexture(_parentTexturePackGui.mc);
+        var pack = _parentTexturePackGui.mc.texturePackList.AvailableTexturePacks[index];
+        pack.BindThumbnailTexture(_parentTexturePackGui.mc);
 
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
 
@@ -59,8 +59,8 @@ public class GuiTexturePackSlot : GuiSlot
         tess.addVertexWithUV(x, y, 0.0D, 0.0D, 0.0D);
         tess.draw();
 
-        Gui.DrawString(_parentTexturePackGui.FontRenderer, pack.texturePackFileName, x + 32 + 2, y + 1, 0xFFFFFF);
-        Gui.DrawString(_parentTexturePackGui.FontRenderer, pack.firstDescriptionLine, x + 32 + 2, y + 12, 0x808080);
-        Gui.DrawString(_parentTexturePackGui.FontRenderer, pack.secondDescriptionLine, x + 32 + 2, y + 12 + 10, 0x808080);
+        Gui.DrawString(_parentTexturePackGui.FontRenderer, pack.TexturePackFileName, x + 32 + 2, y + 1, 0xFFFFFF);
+        Gui.DrawString(_parentTexturePackGui.FontRenderer, pack.FirstDescriptionLine, x + 32 + 2, y + 12, 0x808080);
+        Gui.DrawString(_parentTexturePackGui.FontRenderer, pack.SecondDescriptionLine, x + 32 + 2, y + 12 + 10, 0x808080);
     }
 }

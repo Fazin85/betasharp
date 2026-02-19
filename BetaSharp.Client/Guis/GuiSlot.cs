@@ -227,7 +227,7 @@ public abstract class GuiSlot
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.Disable(GLEnum.Fog);
         Tessellator var16 = Tessellator.instance;
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/gui/background.png"));
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.GetTextureId("/gui/background.png"));
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         float var17 = 32.0F;
         var16.startDrawingQuads();
@@ -354,7 +354,7 @@ public abstract class GuiSlot
     private void overlayBackground(int var1, int var2, int var3, int var4)
     {
         Tessellator var5 = Tessellator.instance;
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/gui/background.png"));
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.GetTextureId("/gui/background.png"));
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         float var6 = 32.0F;
         var5.startDrawingQuads();

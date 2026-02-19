@@ -144,7 +144,7 @@ public class ItemRenderer : EntityRenderer
         float var11;
         if (var3 < 256 && BlockRenderer.isSideLit(Block.Blocks[var3].getRenderType()))
         {
-            var2.bindTexture(var2.getTextureId("/terrain.png"));
+            var2.BindTexture(var2.GetTextureId("/terrain.png"));
             Block var14 = Block.Blocks[var3];
             GLManager.GL.PushMatrix();
             GLManager.GL.Translate(var6 - 2, var7 + 3, -3.0F);
@@ -173,11 +173,11 @@ public class ItemRenderer : EntityRenderer
             GLManager.GL.Disable(GLEnum.Lighting);
             if (var3 < 256)
             {
-                var2.bindTexture(var2.getTextureId("/terrain.png"));
+                var2.BindTexture(var2.GetTextureId("/terrain.png"));
             }
             else
             {
-                var2.bindTexture(var2.getTextureId("/gui/items.png"));
+                var2.BindTexture(var2.GetTextureId("/gui/items.png"));
             }
 
             int var8 = Item.ITEMS[var3].getColorMultiplier(var4);
@@ -213,7 +213,7 @@ public class ItemRenderer : EntityRenderer
                 string var6 = "" + var3.count;
                 GLManager.GL.Disable(GLEnum.Lighting);
                 GLManager.GL.Disable(GLEnum.DepthTest);
-                var1.drawStringWithShadow(var6, var4 + 19 - 2 - var1.getStringWidth(var6), var5 + 6 + 3, 0xFFFFFF);
+                var1.DrawStringWithShadow(var6, var4 + 19 - 2 - var1.GetStringWidth(var6), var5 + 6 + 3, 0xFFFFFF);
                 GLManager.GL.Enable(GLEnum.Lighting);
                 GLManager.GL.Enable(GLEnum.DepthTest);
             }
