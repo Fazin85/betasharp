@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace BetaSharp.Util.Maths;
 
 /// <summary>
@@ -9,6 +11,7 @@ public class JavaRandom
 {
     private static long _seedUniquifier = 8682522807148012L;
     private readonly object _lock = new object();
+    private readonly object _seedLock = new object();
     private bool _haveNextNextGaussian = false;
     private double _nextNextGaussian;
     private const float FloatUnit = 1.0f / (1 << 24);
@@ -37,15 +40,16 @@ public class JavaRandom
 
     private static long InitialScramble(long seed) => (seed ^ Multiplier) & Mask;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private int Next(int bits)
     {
-        long oldSeed, nextSeed;
-        do
+        long nextSeed;
+
+        lock (_seedLock)
         {
-            oldSeed = Interlocked.Read(ref _seed);
-            nextSeed = (oldSeed * Multiplier + Addend) & Mask;
+            _seed = (_seed * Multiplier + Addend) & Mask;
+            nextSeed = _seed;
         }
-        while (Interlocked.CompareExchange(ref _seed, nextSeed, oldSeed) != oldSeed);
 
         return (int)((ulong)nextSeed >> (48 - bits));
     }
