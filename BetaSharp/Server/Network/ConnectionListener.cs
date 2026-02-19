@@ -8,7 +8,6 @@ namespace BetaSharp.Server.Network;
 
 public class ConnectionListener
 {
-    public static readonly Logger LOGGER = Logger.getLogger("Minecraft");
     public ServerSocket socket;
     private readonly java.lang.Thread _thread;
     public volatile bool open = false;

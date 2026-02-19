@@ -141,7 +141,7 @@ public class ServerChunkCache : ChunkSource
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Log.Error(ex);
                 return null;
             }
         }
@@ -157,7 +157,7 @@ public class ServerChunkCache : ChunkSource
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Log.Error(ex);
             }
         }
     }
@@ -177,7 +177,7 @@ public class ServerChunkCache : ChunkSource
             }
             catch (IOException ex)
             {
-                Console.WriteLine(ex);
+                Log.Error(ex);
             }
         }
     }

@@ -72,7 +72,7 @@ public class GuiScreen : Gui
         }
         catch (Exception)
         {
-            Console.WriteLine("Failed to set clipboard string: " + text);
+            Log.Error($"Failed to set clipboard string: {text}");
         }
     }
 
