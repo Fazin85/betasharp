@@ -11,8 +11,6 @@ namespace BetaSharp.Worlds.Storage;
 
 public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
 {
-    private static readonly Logger LOGGER = Logger.getLogger("Minecraft");
-
     private readonly java.io.File saveDirectory;
     private readonly java.io.File playersDirectory;
     private readonly java.io.File dataDir;
@@ -52,7 +50,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
         }
         catch (java.io.IOException var7)
         {
-            var7.printStackTrace();
+            Log.Error($"Failed to check session lock, aborting: {var7}");
             throw new java.lang.RuntimeException("Failed to check session lock, aborting");
         }
     }
@@ -140,7 +138,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
         }
         catch (System.Exception e)
         {
-            System.Console.WriteLine(e);
+            Log.Error(e);
         }
     }
 
@@ -178,7 +176,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
             }
             catch (java.lang.Exception var4)
             {
-                var4.printStackTrace();
+                Log.Error(var4);
             }
         }
 
@@ -219,7 +217,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
         }
         catch (java.lang.Exception var7)
         {
-            var7.printStackTrace();
+            Log.Error(var7);
         }
 
     }
@@ -250,7 +248,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
         }
         catch (Exception var5)
         {
-            LOGGER.warning("Failed to save player data for " + player.name);
+            Log.Warn($"Failed to save player data for {player.name}");
         }
     }
 
@@ -289,19 +287,19 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
                         using FileStream writeStream = File.OpenWrite(file.getAbsolutePath());
                         NbtIo.WriteCompressed(playerTag, writeStream);
 
-                        LOGGER.info("Migrated singleplayer player data from level.dat to " + file.getName());
+                        Log.Info($"Migrated singleplayer player data from level.dat to {file.getName()}");
                         return playerTag;
                     }
                 }
                 catch (Exception e)
                 {
-                    LOGGER.warning("Failed to migrate player data from level.dat: " + e);
+                    Log.Warn($"Failed to migrate player data from level.dat: {e}");
                 }
             }
         }
         catch (Exception var3)
         {
-            LOGGER.warning("Failed to load player data for " + playerName);
+            Log.Warn($"Failed to load player data for {playerName}");
         }
 
         return null;

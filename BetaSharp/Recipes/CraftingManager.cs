@@ -83,7 +83,7 @@ public class CraftingManager
         AddRecipe(new ItemStack(Block.StickyPiston, 1), ["S", "P", 'S', Item.Slimeball, 'P', Block.Piston]);
         AddRecipe(new ItemStack(Item.Bed, 1), ["###", "XXX", '#', Block.Wool, 'X', Block.Planks]);
         _recipes.Sort(new RecipeSorter());
-        java.lang.System.@out.println(_recipes.Count + " recipes");
+        Log.Info($"{_recipes.Count} recipes");
     }
 
     public void AddRecipe(ItemStack result, params object[] pattern)

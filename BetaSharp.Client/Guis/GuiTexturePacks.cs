@@ -46,7 +46,7 @@ public class GuiTexturePacks : GuiScreen
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Failed to open URL: {ex.Message}");
+                        Log.Error($"Failed to open URL: {ex.Message}");
                     }
                     break;
                 case ButtonDone:

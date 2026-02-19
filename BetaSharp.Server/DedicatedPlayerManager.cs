@@ -43,7 +43,7 @@ public class DedicatedPlayerManager : PlayerManager
         }
         catch (Exception var3)
         {
-            LOGGER.warning("Failed to load ban list: " + var3);
+            Log.Warn($"Failed to load ban list: {var3}");
         }
     }
 
@@ -62,7 +62,7 @@ public class DedicatedPlayerManager : PlayerManager
         }
         catch (Exception var4)
         {
-            LOGGER.warning("Failed to save ban list: " + var4);
+            Log.Warn($"Failed to save ban list: {var4}");
         }
     }
 
@@ -83,7 +83,7 @@ public class DedicatedPlayerManager : PlayerManager
         }
         catch (Exception var3)
         {
-            LOGGER.warning("Failed to load ip ban list: " + var3);
+            Log.Warn($"Failed to load ip ban list: {var3}");
         }
     }
 
@@ -102,7 +102,7 @@ public class DedicatedPlayerManager : PlayerManager
         }
         catch (Exception var4)
         {
-            LOGGER.warning("Failed to save ip ban list: " + var4);
+            Log.Warn($"Failed to save ip ban list: {var4}");
         }
     }
 
@@ -123,7 +123,7 @@ public class DedicatedPlayerManager : PlayerManager
         }
         catch (Exception var3)
         {
-            LOGGER.warning("Failed to load ip ban list: " + var3);
+            Log.Warn($"Failed to load ip ban list: {var3}");
         }
     }
 
@@ -142,7 +142,7 @@ public class DedicatedPlayerManager : PlayerManager
         }
         catch (Exception var4)
         {
-            LOGGER.warning("Failed to save ip ban list: " + var4);
+            Log.Warn($"Failed to save ip ban list: {var4}");
         }
     }
 
@@ -163,7 +163,7 @@ public class DedicatedPlayerManager : PlayerManager
         }
         catch (Exception var3)
         {
-            LOGGER.warning("Failed to load white-list: " + var3);
+            Log.Warn($"Failed to load white-list: {var3}");
         }
     }
 
@@ -182,7 +182,7 @@ public class DedicatedPlayerManager : PlayerManager
         }
         catch (Exception var4)
         {
-            LOGGER.warning("Failed to save white-list: " + var4);
+            Log.Warn($"Failed to save white-list: {var4}");
         }
     }
 }

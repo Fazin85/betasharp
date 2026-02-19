@@ -777,7 +777,7 @@ public class ClientNetworkHandler : NetHandler
         }
         else
         {
-            java.lang.System.@out.println("Unknown itemid: " + packet.id);
+            Log.Info($"Unknown itemid: {packet.id}");
         }
 
     }

@@ -76,7 +76,7 @@ public class ChunkRenderer
         this.world = world;
 
         chunkShader = new(AssetManager.Instance.getAsset("shaders/chunk.vert").getTextContent(), AssetManager.Instance.getAsset("shaders/chunk.frag").getTextContent());
-        Console.WriteLine("Loaded chunk shader");
+        Log.Info("Loaded chunk shader");
 
         GLManager.GL.UseProgram(0);
     }

@@ -193,7 +193,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         }
         catch (System.Exception var6)
         {
-            Console.WriteLine(var6);
+            Log.Error(var6.ToString());
         }
         texturePackList = new TexturePacks(this, mcDataDir);
         textureManager = new TextureManager(texturePackList, options);
@@ -214,13 +214,13 @@ public partial class Minecraft : java.lang.Object, Runnable
         loadScreen();
 
         bool anisotropicFiltering = GLManager.GL.IsExtensionPresent("GL_EXT_texture_filter_anisotropic");
-        Console.WriteLine($"Anisotropic Filtering Supported: {anisotropicFiltering}");
+        Log.Info($"Anisotropic Filtering Supported: {anisotropicFiltering}");
 
         if (anisotropicFiltering)
         {
             GLManager.GL.GetFloat(GLEnum.MaxTextureMaxAnisotropy, out float maxAnisotropy);
             GameOptions.MaxAnisotropy = maxAnisotropy;
-            Console.WriteLine($"Max Anisotropy: {maxAnisotropy}");
+            Log.Info($"Max Anisotropy: {maxAnisotropy}");
         }
         else
         {
@@ -236,7 +236,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         }
         catch (System.Exception e)
         {
-            Console.WriteLine("Failed to initialize ImGui: " + e);
+            Log.Error($"Failed to initialize ImGui: {e}");
             imGuiController = null;
         }
 
@@ -454,10 +454,10 @@ public partial class Minecraft : java.lang.Object, Runnable
         GLEnum glError = GLManager.GL.GetError();
         if (glError != 0)
         {
-            Console.WriteLine($"#### GL ERROR ####");
-            Console.WriteLine($"@ {location}");
-            Console.WriteLine($"> {glError.ToString()}");
-            Console.WriteLine($"");
+            Log.Error($"#### GL ERROR ####");
+            Log.Error($"@ {location}");
+            Log.Error($"> {glError.ToString()}");
+            Log.Error($"");
         }
     }
 
@@ -469,7 +469,7 @@ public partial class Minecraft : java.lang.Object, Runnable
             statFileWriter.func_27175_b();
             statFileWriter.syncStats();
 
-            java.lang.System.@out.println("Stopping!");
+            Log.Info("Stopping!");
 
             try
             {
@@ -711,7 +711,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         }
         catch (System.Exception e)
         {
-            Console.WriteLine(e);
+            Log.Error(e.ToString());
         }
         finally
         {
@@ -1043,7 +1043,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         }
         catch (System.Exception displayException)
         {
-            Console.WriteLine(displayException);
+            Log.Error(displayException.ToString());
         }
     }
 
@@ -1415,7 +1415,7 @@ public partial class Minecraft : java.lang.Object, Runnable
 
     private void forceReload()
     {
-        java.lang.System.@out.println("FORCING RELOAD!");
+        Log.Info("FORCING RELOAD!");
         sndManager = new SoundManager();
         sndManager.LoadSoundSettings(options);
     }

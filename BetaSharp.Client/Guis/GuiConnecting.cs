@@ -12,7 +12,7 @@ public class GuiConnecting : GuiScreen
 
     public GuiConnecting(Minecraft mc, string host, int port)
     {
-        java.lang.System.@out.println("Connecting to " + host + ", " + port);
+        Log.Info($"Connecting to {host}, {port}");
         mc.changeWorld1(null);
         new ThreadConnectToServer(this, mc, host, port).start();
     }
