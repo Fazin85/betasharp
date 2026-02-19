@@ -16,6 +16,7 @@ public class TextureManager
     private readonly Dictionary<string, int[]> _colors = [];
     private readonly Dictionary<int, Image<Rgba32>> _images = [];
     private readonly List<DynamicTexture> _dynamicTextures = [];
+    private readonly Dictionary<string, int> _atlasTileSizes = [];
     private readonly GameOptions _gameOptions;
     private bool _clamp;
     private bool _blur;
@@ -75,6 +76,9 @@ public class TextureManager
         try
         {
             using var img = LoadImageFromResource(path);
+
+            _atlasTileSizes[path] = img.Width / 16;
+
             Load(img, (int)newId, path.Contains("terrain.png"));
             _textures[path] = (int)newId;
             return (int)newId;
@@ -308,12 +312,17 @@ public class TextureManager
         foreach (var texture in _dynamicTextures)
         {
             texture.tick();
-            BindTexture(texture.copyTo > 0 
-                    ? texture.copyTo 
-                    : GetTextureId(texture.atlas == DynamicTexture.FXImage.Terrain ? "/terrain.png" : "/gui/items.png"));
+
+            string atlasPath = texture.atlas == DynamicTexture.FXImage.Terrain ? "/terrain.png" : "/gui/items.png";
+            BindTexture(texture.copyTo > 0 ? texture.copyTo : GetTextureId(atlasPath));
+
+            int targetTileSize = _atlasTileSizes.TryGetValue(atlasPath, out int size) ? size : 16;
 
             int fxSize = (int)Math.Sqrt(texture.pixels.Length / 4);
-                    
+
+            texture.replicate = targetTileSize / fxSize;
+            if (texture.replicate < 1) texture.replicate = 1;
+
             fixed (byte* ptr = texture.pixels)
             {
                 for (int x = 0; x < texture.replicate; x++)
@@ -321,9 +330,9 @@ public class TextureManager
                     for (int y = 0; y < texture.replicate; y++)
                     {
                         GLManager.GL.TexSubImage2D(GLEnum.Texture2D, 0,
-                            (texture.sprite % 16) * fxSize + (x * fxSize),
-                            (texture.sprite / 16) * fxSize + (y * fxSize),
-                            (uint)fxSize, (uint)fxSize, GLEnum.Rgba, GLEnum.UnsignedByte, ptr);
+                           (texture.sprite % 16) * targetTileSize + (x * fxSize),
+                           (texture.sprite / 16) * targetTileSize + (y * fxSize),
+                           (uint)fxSize, (uint)fxSize, GLEnum.Rgba, GLEnum.UnsignedByte, ptr);
                     }
                 }
             }
