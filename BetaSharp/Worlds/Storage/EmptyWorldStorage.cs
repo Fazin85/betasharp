@@ -20,7 +20,7 @@ public class EmptyWorldStorage : IWorldStorage
 
     public void CheckSessionLock()
     {
-        // No-op: No disk access means no session lock required
+
     }
 
     public IChunkStorage GetChunkStorage(Dimension dimension)
@@ -30,15 +30,14 @@ public class EmptyWorldStorage : IWorldStorage
 
     public void Save(WorldProperties props, List<EntityPlayer> players)
     {
-        // No-op
+
     }
 
     public void Save(WorldProperties props)
     {
-        // No-op
+
     }
 
-    // UPDATED: Now returns string instead of java.io.File
     public string GetWorldPropertiesFile(string name)
     {
         return null;
@@ -46,12 +45,11 @@ public class EmptyWorldStorage : IWorldStorage
 
     public void ForceSave()
     {
-        // No-op
+
     }
 
     public IPlayerSaveHandler GetPlayerSaveHandler()
     {
-        // Usually, if the world isn't saving, we shouldn't be trying to handle player saves
         throw new NotImplementedException("EmptyWorldStorage does not support player saving.");
     }
 }

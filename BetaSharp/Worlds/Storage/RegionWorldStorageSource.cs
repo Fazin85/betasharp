@@ -4,7 +4,7 @@ using System.IO;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Chunks.Storage;
-using SysPath = System.IO.Path; // Create an alias
+using SysPath = System.IO.Path;
 
 namespace BetaSharp.Worlds.Storage;
 
@@ -68,12 +68,10 @@ public class RegionWorldStorageSource
     private static long GetFolderSize(DirectoryInfo d)
     {
         long size = 0;
-        // Add size of files
         foreach (FileInfo fi in d.GetFiles())
         {
             size += fi.Length;
         }
-        // Recurring into subdirectories
         foreach (DirectoryInfo di in d.GetDirectories())
         {
             size += GetFolderSize(di);
@@ -149,7 +147,6 @@ public class RegionWorldStorageSource
         {
             try
             {
-                // true = recursive delete
                 Directory.Delete(worldPath, true);
             }
             catch (IOException ex)

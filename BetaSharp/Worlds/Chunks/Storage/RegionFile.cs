@@ -30,15 +30,11 @@ public class RegionFile : IDisposable
         try
         {
             _dataFile = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-
-            // Initialize headers if file is new
             if (_dataFile.Length < 4096)
             {
                 for (int i = 0; i < 2048; i++) WriteBigEndianInt(0); // Offsets + Timestamps
                 _sizeDelta += 8192;
             }
-
-            // Pad file to sector alignment
             if ((_dataFile.Length & 4095) != 0)
             {
                 _dataFile.Position = _dataFile.Length;
@@ -50,8 +46,8 @@ public class RegionFile : IDisposable
             _sectorFree = new List<bool>(sectorCount);
             for (int i = 0; i < sectorCount; i++) _sectorFree.Add(true);
 
-            _sectorFree[0] = false; // Offset table
-            _sectorFree[1] = false; // Timestamp table
+            _sectorFree[0] = false;
+            _sectorFree[1] = false; 
 
             _dataFile.Position = 0;
             for (int i = 0; i < 1024; i++)
@@ -112,11 +108,7 @@ public class RegionFile : IDisposable
             {
                 byte[] data = new byte[length - 1];
                 _dataFile.Read(data, 0, data.Length);
-
-                // Using ZLibStream for .NET 6+, or DeflateStream with ZLib wrapper
                 var ms = new MemoryStream(data);
-                // Note: Standard DeflateStream doesn't handle ZLib headers (CMF/FLG). 
-                // You may need a wrapper or System.IO.Compression.ZLibStream.
                 var zlib = new ZLibStream(ms, CompressionMode.Decompress);
                 return new ChunkDataStream(zlib, type);
             }
@@ -127,8 +119,6 @@ public class RegionFile : IDisposable
     public Stream GetChunkDataOutputStream(int x, int z)
     {
         if (IsOutOfBounds(x, z)) return null;
-
-        // This likely points to a buffer that calls this.Write() when closed
         var buffer = new RegionFileChunkBuffer(this, x, z);
         return new ZLibStream(buffer, CompressionMode.Compress);
     }
@@ -152,13 +142,11 @@ public class RegionFile : IDisposable
                 }
                 else
                 {
-                    // Mark old sectors as free
                     for (int i = 0; i < sectorsOccupied; i++)
                     {
                         _sectorFree[sectorOffset + i] = true;
                     }
 
-                    // Find enough contiguous free space
                     int firstFree = _sectorFree.IndexOf(true);
                     int runStart = firstFree;
                     int runLength = 0;
@@ -183,7 +171,6 @@ public class RegionFile : IDisposable
                     }
                     else
                     {
-                        // Grow file
                         _dataFile.Position = _dataFile.Length;
                         sectorOffset = _sectorFree.Count;
                         for (int i = 0; i < sectorsNeeded; i++)

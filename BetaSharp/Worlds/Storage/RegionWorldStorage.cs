@@ -34,7 +34,6 @@ public class RegionWorldStorage : IWorldStorage, IPlayerSaveHandler
         WriteSessionLock();
     }
 
-    // UPDATED: Return type is now IChunkStorage
     public virtual IChunkStorage GetChunkStorage(Dimension dimension)
     {
         if (dimension is NetherDimension)
@@ -44,7 +43,7 @@ public class RegionWorldStorage : IWorldStorage, IPlayerSaveHandler
             {
                 Directory.CreateDirectory(netherPath);
             }
-            // RegionChunkStorage now expects a string path
+         
             return new RegionChunkStorage(netherPath);
         }
 
@@ -58,7 +57,6 @@ public class RegionWorldStorage : IWorldStorage, IPlayerSaveHandler
             string lockFile = Combine(_saveDir, "session.lock");
             using FileStream fs = File.Create(lockFile);
 
-            // Session lock uses Big Endian
             byte[] bytes = BitConverter.GetBytes(_now);
             if (BitConverter.IsLittleEndian) Array.Reverse(bytes);
             fs.Write(bytes, 0, bytes.Length);

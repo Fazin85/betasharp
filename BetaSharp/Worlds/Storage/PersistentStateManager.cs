@@ -18,9 +18,6 @@ public class PersistentStateManager
         LoadIdCounts();
     }
 
-    /// <summary>
-    /// Loads or retrieves persistent data (like map data or village info).
-    /// </summary>
     public T LoadData<T>(string name) where T : PersistentState
     {
         if (_loadedDataMap.TryGetValue(name, out PersistentState existing))
@@ -39,7 +36,6 @@ public class PersistentStateManager
                 {
                     try
                     {
-                        // C# equivalent to Java reflection constructor: new T(name)
                         state = (T)Activator.CreateInstance(typeof(T), name);
                     }
                     catch (Exception e)

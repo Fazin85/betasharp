@@ -17,7 +17,6 @@ public class RegionChunkStorage : IChunkStorage
 
     public Chunk LoadChunk(World world, int chunkX, int chunkZ)
     {
-        // RegionIo.getChunkInputStream should be updated to accept a string path
         using ChunkDataStream s = RegionIo.GetChunkInputStream(_dir, chunkX, chunkZ);
         if (s == null)
         {
@@ -73,7 +72,6 @@ public class RegionChunkStorage : IChunkStorage
             NbtIo.Write(root, stream);
 
             WorldProperties props = world.getProperties();
-            // Update the size on disk based on the delta from the region file
             props.SizeOnDisk += (long)RegionIo.GetSizeDelta(_dir, chunk.x, chunk.z);
         }
         catch (Exception ex)
@@ -184,7 +182,6 @@ public class RegionChunkStorage : IChunkStorage
         return chunk;
     }
 
-    // Standard interface implementations
     public void SaveEntities(World world, Chunk chunk) { }
     public void Tick() { }
     public void Flush() { }
