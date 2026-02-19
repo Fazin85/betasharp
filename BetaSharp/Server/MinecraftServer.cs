@@ -97,8 +97,8 @@ public abstract class MinecraftServer : Runnable, CommandOutput
             }
         }
 
-        Log.Info($"Preparing level \"{var7}\"");
-        loadWorld(new RegionWorldStorageSource(getFile(".").getAbsolutePath()), var7, worldSeed);
+        Log.Info($"Preparing level \"{worldName}\"");
+        loadWorld(new RegionWorldStorageSource(getFile(".").getAbsolutePath()), worldName, seed);
 
         if (logHelp)
         {
@@ -117,11 +117,11 @@ public abstract class MinecraftServer : Runnable, CommandOutput
         {
             if (i == 0)
             {
-                worlds[i] = new ServerWorld(this, worldStorage, worldDir, i == 0 ? 0 : -1, seed);
+                worlds[i] = new ServerWorld(this, storageSource.GetStorage(worldDir, true), worldDir, i == 0 ? 0 : -1, seed);
             }
             else
             {
-                worlds[i] = new ReadOnlyServerWorld(this, worldStorage, worldDir, i == 0 ? 0 : -1, seed, worlds[0]);
+                worlds[i] = new ReadOnlyServerWorld(this, storageSource.GetStorage(worldDir, true), worldDir, i == 0 ? 0 : -1, seed, worlds[0]);
             }
 
             worlds[i].addWorldAccess(new ServerWorldEventListener(this, worlds[i]));
