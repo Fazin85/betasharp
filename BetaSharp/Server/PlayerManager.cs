@@ -9,7 +9,6 @@ using BetaSharp.Util;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Dimensions;
-using java.util.logging;
 
 namespace BetaSharp.Server;
 
@@ -208,10 +207,6 @@ public class PlayerManager
 
         if (targetWorld == null)
         {
-            // Fallback or error handling if target world doesn't exist? 
-            // For now, assuming user will only request valid dims or we just return.
-            // But the prompt implies "id is a number", so potentially any number. 
-            // If null, we can't really do anything.
             return;
         }
 
