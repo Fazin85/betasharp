@@ -303,7 +303,7 @@ public class TextureManager
     {
         _textures.Clear();
         foreach (var entry in _images) Load(entry.Value, entry.Key);
-        foreach (var key in new List<string>(_textures.Keys)) GetTextureId(key); // Re-trigger Load logic
+        foreach (var key in new List<string>(_textures.Keys)) GetTextureId(key);
         foreach (var key in new List<string>(_colors.Keys)) GetColors(key);
     }
 
