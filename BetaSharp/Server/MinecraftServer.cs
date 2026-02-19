@@ -16,7 +16,6 @@ namespace BetaSharp.Server;
 
 public abstract class MinecraftServer : Runnable, CommandOutput
 {
-    public static Logger LOGGER = Logger.getLogger("Minecraft");
     public HashMap GIVE_COMMANDS_COOLDOWNS = [];
     public ConnectionListener connections;
     public IServerConfiguration config;
@@ -68,7 +67,6 @@ public abstract class MinecraftServer : Runnable, CommandOutput
     protected virtual bool Init()
     {
         commandHandler = new ServerCommandHandler(this);
-        ServerLog.init();
 
         onlineMode = config.GetOnlineMode(true);
         spawnAnimals = config.GetSpawnAnimals(true);
@@ -100,12 +98,12 @@ public abstract class MinecraftServer : Runnable, CommandOutput
             }
         }
 
-        LOGGER.info("Preparing level \"" + worldName + "\"");
+        Log.Info($"Preparing level \"{worldName}\"");
         loadWorld(new RegionWorldStorageSource(getFile(".")), worldName, seed);
 
         if (logHelp)
         {
-            LOGGER.info("Done (" + (java.lang.System.nanoTime() - startTime) + "ns)! For help, type \"help\" or \"?\"");
+            Log.Info($"Done ({java.lang.System.nanoTime() - startTime}ns)! For help, type \"help\" or \"?\"");
         }
 
         return true;
@@ -138,7 +136,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
 
         for (int i = 0; i < worlds.Length; i++)
         {
-            LOGGER.info("Preparing start region for level " + i);
+            Log.Info($"Preparing start region for level {i}");
             if (i == 0 || config.GetAllowNether(true))
             {
                 ServerWorld world = worlds[i];
@@ -179,7 +177,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
     {
         progressMessage = progressType;
         this.progress = progress;
-        LOGGER.info(progressType + ": " + progress + "%");
+        Log.Info($"{progressType}: {progress}%");
     }
 
     private void clearProgress()
@@ -190,7 +188,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
 
     private void saveWorlds()
     {
-        LOGGER.info("Saving chunks");
+        Log.Info("Saving chunks");
 
         foreach (ServerWorld world in worlds)
         {
@@ -206,7 +204,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
             return;
         }
 
-        LOGGER.info("Stopping server");
+        Log.Info("Stopping server");
 
         if (playerManager != null)
         {
@@ -244,13 +242,13 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                     long tickLength = currentTime - lastTime;
                     if (tickLength > 2000L)
                     {
-                        LOGGER.warning("Can't keep up! Did the system time change, or is the server overloaded?");
+                        Log.Warn("Can't keep up! Did the system time change, or is the server overloaded?");
                         tickLength = 2000L;
                     }
 
                     if (tickLength < 0L)
                     {
-                        LOGGER.warning("Time ran backwards! Did the system time change?");
+                        Log.Warn("Time ran backwards! Did the system time change?");
                         tickLength = 0L;
                     }
 
@@ -317,8 +315,8 @@ public abstract class MinecraftServer : Runnable, CommandOutput
         }
         catch (System.Exception ex)
         {
-            Console.WriteLine(ex);
-            LOGGER.log(Level.SEVERE, "Unexpected exception", ex);
+            Log.Error(ex);
+            Log.Error("Unexpected exception");
 
             while (running)
             {
@@ -424,7 +422,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
         }
         catch (java.lang.Exception ex)
         {
-            LOGGER.log(Level.WARNING, "Unexpected exception while parsing console command", (Throwable)ex);
+            Log.Warn($"Unexpected exception while parsing console command: {ex}");
         }
     }
 
@@ -450,12 +448,12 @@ public abstract class MinecraftServer : Runnable, CommandOutput
 
     public void SendMessage(string message)
     {
-        LOGGER.info(message);
+        Log.Info(message);
     }
 
     public void Warn(string message)
     {
-        LOGGER.warning(message);
+        Log.Warn(message);
     }
 
     public string GetName()

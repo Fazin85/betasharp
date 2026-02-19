@@ -100,7 +100,7 @@ public class Shader : IDisposable
 
         if (location == -1)
         {
-            Console.WriteLine($"Warning: Uniform '{name}' not found in shader");
+            Log.Warn($"Warning: Uniform '{name}' not found in shader");
         }
 
         return location;

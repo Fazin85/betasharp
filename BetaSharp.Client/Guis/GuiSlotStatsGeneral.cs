@@ -8,18 +8,18 @@ public class GuiSlotStatsGeneral : GuiSlot
     readonly GuiStats parentStatsGui;
 
 
-    public GuiSlotStatsGeneral(GuiStats parent) : base(parent.mc, parent.width, parent.height, 32, parent.height - 64, 10)
+    public GuiSlotStatsGeneral(GuiStats parent) : base(parent.mc, parent.Width, parent.Height, 32, parent.Height - 64, 10)
     {
         parentStatsGui = parent;
         func_27258_a(false);
     }
 
-    public override int getSize()
+    public override int GetSize()
     {
         return Stats.Stats.GENERAL_STATS.size();
     }
 
-    protected override void elementClicked(int var1, bool var2)
+    protected override void ElementClicked(int var1, bool var2)
     {
     }
 
@@ -30,19 +30,19 @@ public class GuiSlotStatsGeneral : GuiSlot
 
     protected override int getContentHeight()
     {
-        return getSize() * 10;
+        return GetSize() * 10;
     }
 
     protected override void drawBackground()
     {
-        parentStatsGui.drawDefaultBackground();
+        parentStatsGui.DrawDefaultBackground();
     }
 
     protected override void drawSlot(int index, int x, int y, int rowHeight, Tessellator tessellator)
     {
         StatBase stat = (StatBase)Stats.Stats.GENERAL_STATS.get(index);
-        parentStatsGui.drawString(parentStatsGui.fontRenderer, stat.statName, x + 2, y + 1, index % 2 == 0 ? 0xFFFFFFu : 0x909090u);
+        parentStatsGui.FontRenderer.drawStringWithShadow(stat.statName, x + 2, y + 1, index % 2 == 0 ? 0xFFFFFFu : 0x909090u);
         string formatted = stat.format(parentStatsGui.statFileWriter.writeStat(stat));
-        parentStatsGui.drawString(parentStatsGui.fontRenderer, formatted, x + 2 + 213 - parentStatsGui.fontRenderer.getStringWidth(formatted), y + 1, index % 2 == 0 ? 0x00FFFFFFu : 0x00909090u);
+        parentStatsGui.FontRenderer.drawStringWithShadow(formatted, x + 2 + 213 - parentStatsGui.FontRenderer.getStringWidth(formatted), y + 1, index % 2 == 0 ? 0xFFFFFF : 0x909090u);
     }
 }

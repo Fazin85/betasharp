@@ -32,7 +32,7 @@ public struct LightUpdate
         int var5 = var2 * var3 * var4;
         if (var5 > -Short.MIN_VALUE)
         {
-            Console.WriteLine("Light too large, skipping!");
+            Log.Info("Light too large, skipping!");
         }
         else
         {

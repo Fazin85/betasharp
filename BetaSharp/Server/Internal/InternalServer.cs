@@ -29,7 +29,7 @@ public class InternalServer : MinecraftServer
     {
         connections = new ConnectionListener(this);
 
-        LOGGER.info($"Starting internal server");
+        Log.Info("Starting internal server");
 
         bool result = base.Init();
 

@@ -12,7 +12,7 @@ using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
-using BetaSharp.Client.Rendering.Entitys;
+using BetaSharp.Client.Rendering.Entities;
 using BetaSharp.Client.Rendering.Items;
 using BetaSharp.Client.Resource;
 using BetaSharp.Client.Resource.Pack;
@@ -193,7 +193,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         }
         catch (System.Exception ex)
         {
-            Console.WriteLine(ex);
+            Log.Error(ex);
         }
         texturePackList = new TexturePacks(this, mcDataDir);
         textureManager = new TextureManager(texturePackList, options);
@@ -214,13 +214,13 @@ public partial class Minecraft : java.lang.Object, Runnable
         loadScreen();
 
         bool anisotropicFiltering = GLManager.GL.IsExtensionPresent("GL_EXT_texture_filter_anisotropic");
-        Console.WriteLine($"Anisotropic Filtering Supported: {anisotropicFiltering}");
+        Log.Info($"Anisotropic Filtering Supported: {anisotropicFiltering}");
 
         if (anisotropicFiltering)
         {
             GLManager.GL.GetFloat(GLEnum.MaxTextureMaxAnisotropy, out float maxAnisotropy);
             GameOptions.MaxAnisotropy = maxAnisotropy;
-            Console.WriteLine($"Max Anisotropy: {maxAnisotropy}");
+            Log.Info($"Max Anisotropy: {maxAnisotropy}");
         }
         else
         {
@@ -236,7 +236,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         }
         catch (System.Exception e)
         {
-            Console.WriteLine("Failed to initialize ImGui: " + e);
+            Log.Error($"Failed to initialize ImGui: {e}");
             imGuiController = null;
         }
 
@@ -257,7 +257,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         GLManager.GL.LoadIdentity();
         GLManager.GL.MatrixMode(GLEnum.Modelview);
         checkGLError("Startup");
-        sndManager.loadSoundSettings(options);
+        sndManager.LoadSoundSettings(options);
         textureManager.addDynamicTexture(textureLavaFX);
         textureManager.addDynamicTexture(textureWaterFX);
         textureManager.addDynamicTexture(new NetherPortalSprite());
@@ -400,51 +400,48 @@ public partial class Minecraft : java.lang.Object, Runnable
 
     public void displayGuiScreen(GuiScreen newScreen)
     {
-        if (currentScreen is not GuiUnused)
+        currentScreen?.OnGuiClosed();
+
+        if (newScreen is GuiMainMenu)
         {
-            currentScreen?.onGuiClosed();
+            statFileWriter.func_27175_b();
+        }
 
-            if (newScreen is GuiMainMenu)
-            {
-                statFileWriter.func_27175_b();
-            }
+        statFileWriter.syncStats();
+        if (newScreen == null && world == null)
+        {
+            newScreen = new GuiMainMenu();
+        }
+        else if (newScreen == null && player.health <= 0)
+        {
+            newScreen = new GuiGameOver();
+        }
 
-            statFileWriter.syncStats();
-            if (newScreen == null && world == null)
-            {
-                newScreen = new GuiMainMenu();
-            }
-            else if (newScreen == null && player.health <= 0)
-            {
-                newScreen = new GuiGameOver();
-            }
+        if (newScreen is GuiMainMenu)
+        {
+            ingameGUI.clearChatMessages();
+        }
 
-            if (newScreen is GuiMainMenu)
-            {
-                ingameGUI.clearChatMessages();
-            }
+        currentScreen = newScreen;
 
-            currentScreen = newScreen;
+        if (internalServer != null)
+        {
+            bool shouldPause = newScreen?.DoesGuiPauseGame() ?? false;
+            internalServer.SetPaused(shouldPause);
+        }
 
-            if (internalServer != null)
-            {
-                bool shouldPause = newScreen?.doesGuiPauseGame() ?? false;
-                internalServer.SetPaused(shouldPause);
-            }
-
-            if (newScreen != null)
-            {
-                setIngameNotInFocus();
-                ScaledResolution scaledResolution = new(options, displayWidth, displayHeight);
-                int scaledWidth = scaledResolution.ScaledWidth;
-                int scaledHeight = scaledResolution.ScaledHeight;
-                newScreen.setWorldAndResolution(this, scaledWidth, scaledHeight);
-                skipRenderWorld = false;
-            }
-            else
-            {
-                setIngameFocus();
-            }
+        if (newScreen != null)
+        {
+            setIngameNotInFocus();
+            ScaledResolution scaledResolution = new(options, displayWidth, displayHeight);
+            int scaledWidth = scaledResolution.ScaledWidth;
+            int scaledHeight = scaledResolution.ScaledHeight;
+            newScreen.SetWorldAndResolution(this, scaledWidth, scaledHeight);
+            skipRenderWorld = false;
+        }
+        else
+        {
+            setIngameFocus();
         }
     }
 
@@ -454,10 +451,10 @@ public partial class Minecraft : java.lang.Object, Runnable
         GLEnum glError = GLManager.GL.GetError();
         if (glError != 0)
         {
-            Console.WriteLine($"#### GL ERROR ####");
-            Console.WriteLine($"@ {location}");
-            Console.WriteLine($"> {glError.ToString()}");
-            Console.WriteLine($"");
+            Log.Error($"#### GL ERROR ####");
+            Log.Error($"@ {location}");
+            Log.Error($"> {glError.ToString()}");
+            Log.Error($"");
         }
     }
 
@@ -469,7 +466,7 @@ public partial class Minecraft : java.lang.Object, Runnable
             statFileWriter.func_27175_b();
             statFileWriter.syncStats();
 
-            Console.WriteLine("Stopping!");
+            Log.Info("Stopping!");
 
             try
             {
@@ -483,7 +480,7 @@ public partial class Minecraft : java.lang.Object, Runnable
             }
             catch (Throwable textureCleanupException) { }
 
-            sndManager.closeMinecraft();
+            sndManager.CloseMinecraft();
             Mouse.destroy();
             Keyboard.destroy();
         }
@@ -575,7 +572,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                     long tickElapsedTime = java.lang.System.nanoTime() - tickStartTime;
                     checkGLError("Pre render");
                     BlockRenderer.fancyGrass = true;
-                    sndManager.updateListener(player, timer.renderPartialTicks);
+                    sndManager.UpdateListener(player, timer.renderPartialTicks);
                     GLManager.GL.Enable(GLEnum.Texture2D);
                     if (world != null)
                     {
@@ -665,7 +662,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                     ++frameCounter;
 
                     isGamePaused = (!isMultiplayerWorld() || internalServer != null) && currentScreen != null &&
-                                   currentScreen.doesGuiPauseGame();
+                                   currentScreen.DoesGuiPauseGame();
 
                     for (;
                          java.lang.System.currentTimeMillis() >= lastFpsCheckTime + 1000L;
@@ -707,7 +704,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         }
         catch (System.Exception e)
         {
-            Console.WriteLine(e);
+            Log.Error(e.ToString());
         }
         finally
         {
@@ -733,8 +730,18 @@ public partial class Minecraft : java.lang.Object, Runnable
             if (!isTakingScreenshot)
             {
                 isTakingScreenshot = true;
-                ingameGUI.addChatMessage(ScreenShotHelper.saveScreenshot(minecraftDir, displayWidth,
-                    displayHeight));
+                int size = displayWidth * displayHeight * 3;
+                byte[] pixels = new byte[size];
+                GLManager.GL.PixelStore(PixelStoreParameter.PackAlignment, 1);
+                unsafe
+                {
+                    fixed (byte* p = pixels)
+                    {
+                        GLManager.GL.ReadPixels(0, 0, (uint)displayWidth, (uint)displayHeight, PixelFormat.Rgb, PixelType.UnsignedByte, p);
+                    }
+                }
+                string result = ScreenShotHelper.saveScreenshot(minecraftDir.getAbsolutePath(), displayWidth, displayHeight, pixels);
+                ingameGUI.addChatMessage(result);
             }
         }
         else
@@ -1029,7 +1036,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         }
         catch (System.Exception displayException)
         {
-            Console.WriteLine(displayException);
+            Log.Error(displayException.ToString());
         }
     }
 
@@ -1054,7 +1061,7 @@ public partial class Minecraft : java.lang.Object, Runnable
             ScaledResolution scaledResolution = new(options, newWidth, newHeight);
             int scaledWidth = scaledResolution.ScaledWidth;
             int scaledHeight = scaledResolution.ScaledHeight;
-            currentScreen.setWorldAndResolution(this, scaledWidth, scaledHeight);
+            currentScreen.SetWorldAndResolution(this, scaledWidth, scaledHeight);
         }
     }
 
@@ -1141,15 +1148,15 @@ public partial class Minecraft : java.lang.Object, Runnable
 
         if (currentScreen != null)
         {
-            currentScreen.handleInput();
+            currentScreen.HandleInput();
             if (currentScreen != null)
             {
-                currentScreen.particlesGui.updateParticles();
-                currentScreen.updateScreen();
+                currentScreen.ParticlesGui.updateParticles();
+                currentScreen.UpdateScreen();
             }
         }
 
-        if (currentScreen == null || currentScreen.isInventoryScreen)
+        if (currentScreen == null || currentScreen.AllowUserInput)
         {
             processInputEvents();
         }
@@ -1283,7 +1290,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                 }
                 else
                 {
-                    currentScreen?.handleMouseInput();
+                    currentScreen?.HandleMouseInput();
                 }
             }
         }
@@ -1307,7 +1314,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                 {
                     if (currentScreen != null)
                     {
-                        currentScreen.handleKeyboardInput();
+                        currentScreen.HandleKeyboardInput();
                     }
                     else
                     {
@@ -1358,8 +1365,7 @@ public partial class Minecraft : java.lang.Object, Runnable
 
                         if (Keyboard.getEventKey() == options.keyBindCommand.keyCode)
                         {
-                            // Open chat with '/' and place the cursor after it
-                            displayGuiScreen(new GuiChat("/", true));
+                            displayGuiScreen(new GuiChat("/"));
                         }
                     }
 
@@ -1402,9 +1408,9 @@ public partial class Minecraft : java.lang.Object, Runnable
 
     private void forceReload()
     {
-        Console.WriteLine("FORCING RELOAD!");
+        Log.Info("FORCING RELOAD!");
         sndManager = new SoundManager();
-        sndManager.loadSoundSettings(options);
+        sndManager.LoadSoundSettings(options);
     }
 
     public bool isMultiplayerWorld()
@@ -1435,7 +1441,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         camera = null;
         loadingScreen.printText(loadingText);
         loadingScreen.progressStage("");
-        sndManager.playStreaming((string)null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+        sndManager.PlayStreaming((string)null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 
         world = newWorld;
         if (newWorld != null)
@@ -1520,9 +1526,9 @@ public partial class Minecraft : java.lang.Object, Runnable
         world.tickChunks();
     }
 
-    public void installResource(string resourcePath, java.io.File resourceFile)
+    public void installResource(string resourcePath, FileInfo resourceFile)
     {
-        if (!resourceFile.getPath().EndsWith("ogg"))
+        if (!resourceFile.FullName.EndsWith("ogg"))
         {
             //TODO: ADD SUPPORT FOR MUS SFX?
             return;
@@ -1533,23 +1539,23 @@ public partial class Minecraft : java.lang.Object, Runnable
         resourcePath = resourcePath.Substring(slashIndex + 1);
         if (category.Equals("sound", StringComparison.OrdinalIgnoreCase))
         {
-            sndManager.addSound(resourcePath, resourceFile);
+            sndManager.AddSound(resourcePath, resourceFile);
         }
         else if (category.Equals("newsound", StringComparison.OrdinalIgnoreCase))
         {
-            sndManager.addSound(resourcePath, resourceFile);
+            sndManager.AddSound(resourcePath, resourceFile);
         }
         else if (category.Equals("streaming", StringComparison.OrdinalIgnoreCase))
         {
-            sndManager.addStreaming(resourcePath, resourceFile);
+            sndManager.AddStreaming(resourcePath, resourceFile);
         }
         else if (category.Equals("music", StringComparison.OrdinalIgnoreCase))
         {
-            sndManager.addMusic(resourcePath, resourceFile);
+            sndManager.AddMusic(resourcePath, resourceFile);
         }
         else if (category.Equals("newmusic", StringComparison.OrdinalIgnoreCase))
         {
-            sndManager.addMusic(resourcePath, resourceFile);
+            sndManager.AddMusic(resourcePath, resourceFile);
         }
     }
 

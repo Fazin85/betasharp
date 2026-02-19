@@ -1,4 +1,4 @@
-using BetaSharp.Blocks;
+﻿using BetaSharp.Blocks;
 using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Worlds;
@@ -91,7 +91,7 @@ public class PlayerControllerSP : PlayerController
                 curBlockDamage += var6.getHardness(mc.player);
                 if (field_1069_h % 4.0F == 0.0F && var6 != null)
                 {
-                    mc.sndManager.playSound(var6.soundGroup.getName(), (float)var1 + 0.5F, (float)var2 + 0.5F, (float)var3 + 0.5F, (var6.soundGroup.getVolume() + 1.0F) / 8.0F, var6.soundGroup.getPitch() * 0.5F);
+                    mc.sndManager.PlaySound(var6.soundGroup.getName(), (float)var1 + 0.5F, (float)var2 + 0.5F, (float)var3 + 0.5F, (var6.soundGroup.getVolume() + 1.0F) / 8.0F, var6.soundGroup.getPitch() * 0.5F);
                 }
 
                 ++field_1069_h;
@@ -121,13 +121,13 @@ public class PlayerControllerSP : PlayerController
     {
         if (curBlockDamage <= 0.0F)
         {
-            mc.ingameGUI.damageGuiPartialTime = 0.0F;
+            mc.ingameGUI._damageGuiPartialTime = 0.0F;
             mc.terrainRenderer.damagePartialTime = 0.0F;
         }
         else
         {
             float var2 = prevBlockDamage + (curBlockDamage - prevBlockDamage) * var1;
-            mc.ingameGUI.damageGuiPartialTime = var2;
+            mc.ingameGUI._damageGuiPartialTime = var2;
             mc.terrainRenderer.damagePartialTime = var2;
         }
 
@@ -146,6 +146,6 @@ public class PlayerControllerSP : PlayerController
     public override void updateController()
     {
         prevBlockDamage = curBlockDamage;
-        mc.sndManager.playRandomMusicIfReady();
+        mc.sndManager.PlayRandomMusicIfReady();
     }
 }

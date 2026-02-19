@@ -166,7 +166,7 @@ public class AssetManager
         defineEmbeddedAsset("shaders/chunk.vert", AssetType.Text);
         defineEmbeddedAsset("shaders/chunk.frag", AssetType.Text);
 
-        Console.WriteLine($"Loaded {embeddedAssetsLoaded} embedded assets");
+        Log.Info($"Loaded {embeddedAssetsLoaded} embedded assets");
     }
 
     public Asset getAsset(string assetPath)
@@ -238,7 +238,7 @@ public class AssetManager
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"Failed to load binary asset: {assetPath}, {e}");
+                    Log.Error($"Failed to load binary asset: {assetPath}, {e}");
                 }
             }
             else if (type == AssetType.Text)
@@ -249,13 +249,13 @@ public class AssetManager
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"Failed to load text asset: {assetPath}, {e}");
+                    Log.Error($"Failed to load text asset: {assetPath}, {e}");
                 }
 
             }
         }
 
-        Console.WriteLine($"Loaded {assetsToLoad.Count} assets");
+        Log.Info($"Loaded {assetsToLoad.Count} assets");
 
         assetsToLoad.Clear();
     }
@@ -305,7 +305,7 @@ public class AssetManager
         }
         catch (Exception e)
         {
-            Console.WriteLine("Exception while loading embedded asset: " + e);
+            Log.Error($"Exception while loading embedded asset: {e}");
         }
     }
 

@@ -14,7 +14,6 @@ namespace BetaSharp.Server.Network;
 
 public class ServerLoginNetworkHandler : NetHandler
 {
-    public static Logger LOGGER = Logger.getLogger("Minecraft");
     private static java.util.Random random = new();
     public Connection connection;
     public bool closed;
@@ -61,7 +60,7 @@ public class ServerLoginNetworkHandler : NetHandler
     {
         try
         {
-            LOGGER.info("Disconnecting " + getConnectionInfo() + ": " + reason);
+            Log.Info($"Disconnecting {getConnectionInfo()}: {reason}");
             connection.sendPacket(new DisconnectPacket(reason));
             connection.disconnect();
             closed = true;
@@ -130,7 +129,7 @@ public class ServerLoginNetworkHandler : NetHandler
         {
             server.playerManager.loadPlayerData(ent);
             ent.setWorld(server.getWorld(ent.dimensionId));
-            LOGGER.info(getConnectionInfo() + " logged in with entity id " + ent.id + " at (" + ent.x + ", " + ent.y + ", " + ent.z + ")");
+            Log.Info($"{getConnectionInfo()} logged in with entity id {ent.id} at ({ent.x}, {ent.y}, {ent.z})");
             ServerWorld var3 = server.getWorld(ent.dimensionId);
             Vec3i var4 = var3.getSpawnPos();
             ServerPlayNetworkHandler handler = new ServerPlayNetworkHandler(server, connection, ent);
@@ -150,7 +149,7 @@ public class ServerLoginNetworkHandler : NetHandler
 
     public override void onDisconnected(string reason, object[]? objects)
     {
-        LOGGER.info(getConnectionInfo() + " lost connection");
+        Log.Info($"{getConnectionInfo()} lost connection");
         closed = true;
     }
 

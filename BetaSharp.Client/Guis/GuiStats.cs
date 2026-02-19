@@ -1,4 +1,4 @@
-﻿using BetaSharp.Client.Rendering;
+using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Items;
 using BetaSharp.Items;
@@ -24,15 +24,15 @@ public class GuiStats : GuiScreen
         statFileWriter = stats;
     }
 
-    public override void initGui()
+    public override void InitGui()
     {
         screenTitle = StatCollector.translateToLocal("gui.stats");
         slotGeneral = new GuiSlotStatsGeneral(this);
-        slotGeneral.registerScrollButtons(controlList, 1, 1);
+        slotGeneral.RegisterScrollButtons(_controlList, 1, 1);
         slotItem = new GuiSlotStatsItem(this);
-        slotItem.registerScrollButtons(controlList, 1, 1);
+        slotItem.RegisterScrollButtons(_controlList, 1, 1);
         slotBlock = new GuiSlotStatsBlock(this);
-        slotBlock.registerScrollButtons(controlList, 1, 1);
+        slotBlock.RegisterScrollButtons(_controlList, 1, 1);
         currentSlot = slotGeneral;
         initButtons();
     }
@@ -44,28 +44,28 @@ public class GuiStats : GuiScreen
         const int BUTTON_ITEMS = 3;
 
         TranslationStorage translations = TranslationStorage.getInstance();
-        controlList.add(new GuiButton(BUTTON_DONE, width / 2 + 4, height - 28, 150, 20, translations.translateKey("gui.done")));
-        controlList.add(new GuiButton(BUTTON_GENERAL, width / 2 - 154, height - 52, 100, 20, translations.translateKey("stat.generalButton")));
-        GuiButton blocksButton = new(BUTTON_BLOCKS, width / 2 - 46, height - 52, 100, 20, translations.translateKey("stat.blocksButton"));
-        controlList.add(blocksButton);
-        GuiButton itemsButton = new(BUTTON_ITEMS, width / 2 + 62, height - 52, 100, 20, translations.translateKey("stat.itemsButton"));
-        controlList.add(itemsButton);
-        if (slotBlock.getSize() == 0)
+        _controlList.Add(new GuiButton(BUTTON_DONE, Width / 2 + 4, Height - 28, 150, 20, translations.translateKey("gui.done")));
+        _controlList.Add(new GuiButton(BUTTON_GENERAL, Width / 2 - 154, Height - 52, 100, 20, translations.translateKey("stat.generalButton")));
+        GuiButton blocksButton = new(BUTTON_BLOCKS, Width / 2 - 46, Height - 52, 100, 20, translations.translateKey("stat.blocksButton"));
+        _controlList.Add(blocksButton);
+        GuiButton itemsButton = new(BUTTON_ITEMS, Width / 2 + 62, Height - 52, 100, 20, translations.translateKey("stat.itemsButton"));
+        _controlList.Add(itemsButton);
+        if (slotBlock.GetSize() == 0)
         {
-            blocksButton.enabled = false;
+            blocksButton.Enabled = false;
         }
 
-        if (slotItem.getSize() == 0)
+        if (slotItem.GetSize() == 0)
         {
-            itemsButton.enabled = false;
+            itemsButton.Enabled = false;
         }
     }
 
-    protected override void actionPerformed(GuiButton button)
+    protected override void ActionPerformed(GuiButton button)
     {
-        if (button.enabled)
+        if (button.Enabled)
         {
-            switch (button.id)
+            switch (button.Id)
             {
                 case 0: // DONE
                     mc.displayGuiScreen(parentScreen);
@@ -87,11 +87,11 @@ public class GuiStats : GuiScreen
         }
     }
 
-    public override void render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         currentSlot.drawScreen(mouseX, mouseY, partialTicks);
-        drawCenteredString(fontRenderer, screenTitle, width / 2, 20, 0x00FFFFFF);
-        base.render(mouseX, mouseY, partialTicks);
+        DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0x00FFFFFF);
+        base.Render(mouseX, mouseY, partialTicks);
     }
 
     public void drawItemSlot(int x, int y, int itemId)
@@ -102,7 +102,7 @@ public class GuiStats : GuiScreen
         GLManager.GL.Rotate(180.0F, 1.0F, 0.0F, 0.0F);
         Lighting.turnOn();
         GLManager.GL.PopMatrix();
-        itemRenderer.drawItemIntoGui(fontRenderer, mc.textureManager, itemId, 0, Item.ITEMS[itemId].getTextureId(0), x + 2, y + 2);
+        itemRenderer.drawItemIntoGui(FontRenderer, mc.textureManager, itemId, 0, Item.ITEMS[itemId].getTextureId(0), x + 2, y + 2);
         Lighting.turnOff();
         GLManager.GL.Disable(GLEnum.RescaleNormal);
     }
@@ -119,15 +119,15 @@ public class GuiStats : GuiScreen
         mc.textureManager.bindTexture(textureId);
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
-        tessellator.addVertexWithUV(x + 0, y + 18, zLevel, (double)((u + 0) * (1 / 128f)), (double)((v + 18) * (1 / 128f)));
-        tessellator.addVertexWithUV(x + 18, y + 18, zLevel, (double)((u + 18) * (1 / 128f)), (double)((v + 18) * (1 / 128f)));
-        tessellator.addVertexWithUV(x + 18, y + 0, zLevel, (double)((u + 18) * (1 / 128f)), (double)((v + 0) * (1 / 128f)));
-        tessellator.addVertexWithUV(x + 0, y + 0, zLevel, (double)((u + 0) * (1 / 128f)), (double)((v + 0) * (1 / 128f)));
+        tessellator.addVertexWithUV(x + 0, y + 18, _zLevel, (double)((u + 0) * 0.0078125F), (double)((v + 18) * 0.0078125F));
+        tessellator.addVertexWithUV(x + 18, y + 18, _zLevel, (double)((u + 18) * 0.0078125F), (double)((v + 18) * 0.0078125F));
+        tessellator.addVertexWithUV(x + 18, y + 0, _zLevel, (double)((u + 18) * 0.0078125F), (double)((v + 0) * 0.0078125F));
+        tessellator.addVertexWithUV(x + 0, y + 0, _zLevel, (double)((u + 0) * 0.0078125F), (double)((v + 0) * 0.0078125F));
         tessellator.draw();
     }
 
     public void drawTranslucentRect(int right, int bottom, int left, int top)
     {
-        drawGradientRect(right, bottom, left, top, 0xC0000000, 0xC0000000);
+        DrawGradientRect(right, bottom, left, top, 0xC0000000, 0xC0000000);
     }
 }

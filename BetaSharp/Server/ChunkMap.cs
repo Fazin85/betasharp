@@ -413,7 +413,7 @@ public class ChunkMap
                         int var16 = chunkZ * 16 + (dirtyBlockCount >> 8 & 15);
                         if (Block.BlocksWithEntity[var1.getBlockId(var13, var15, var16)])
                         {
-                            Console.WriteLine("Sending!");
+                            Log.Info("Sending!");
                             sendBlockEntityUpdate(var1.getBlockEntity(var13, var15, var16));
                         }
                     }

@@ -28,12 +28,12 @@ public class RegionChunkStorage : ChunkStorage
             NBTTagCompound var5 = NbtIo.Read(var4);
             if (!var5.HasKey("Level"))
             {
-                Console.WriteLine($"Chunk file at {chunkX},{chunkZ} is missing level data, skipping");
+                Log.Info($"Chunk file at {chunkX},{chunkZ} is missing level data, skipping");
                 return null;
             }
             else if (!var5.GetCompoundTag("Level").HasKey("Blocks"))
             {
-                Console.WriteLine($"Chunk file at {chunkX},{chunkZ} is missing block data, skipping");
+                Log.Info($"Chunk file at {chunkX},{chunkZ} is missing block data, skipping");
                 return null;
             }
             else
@@ -41,7 +41,7 @@ public class RegionChunkStorage : ChunkStorage
                 Chunk var6 = loadChunkFromNbt(world, var5.GetCompoundTag("Level"));
                 if (!var6.chunkPosEquals(chunkX, chunkZ))
                 {
-                    Console.WriteLine($"Chunk file at {chunkX},{chunkZ} is in the wrong location; relocating. (Expected {chunkX}, {chunkZ}, got {var6.x}, {var6.z})");
+                    Log.Info($"Chunk file at {chunkX},{chunkZ} is in the wrong location; relocating. (Expected {chunkX}, {chunkZ}, got {var6.x}, {var6.z})");
                     var5.SetInteger("xPos", chunkX);
                     var5.SetInteger("zPos", chunkZ);
                     var6 = loadChunkFromNbt(world, var5.GetCompoundTag("Level"));
@@ -72,7 +72,7 @@ public class RegionChunkStorage : ChunkStorage
         }
         catch (Exception var7)
         {
-            System.Console.WriteLine(var7);
+            Log.Error(var7);
         }
     }
 

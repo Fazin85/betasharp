@@ -1,76 +1,60 @@
-using java.nio;
-using java.text;
+using System.IO;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace BetaSharp;
 
 public class ScreenShotHelper
 {
-    private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
-    private static ByteBuffer buffer;
-    private static byte[] pixelData;
-    private static int[] imageData;
-
-    public static String saveScreenshot(java.io.File var0, int var1, int var2)
+    public static string saveScreenshot(string gameDir, int width, int height)
     {
         return "Screenshots are not supported";
-        //    try
-        //    {
-        //        java.io.File var3 = new(var0, "screenshots");
-        //        var3.mkdir();
-        //        if (buffer == null || buffer.capacity() < var1 * var2)
-        //        {
-        //            buffer = ByteBuffer.allocate(var1 * var2 * 3);
-        //        }
+    }
 
-        //        if (imageData == null || imageData.Length < var1 * var2 * 3)
-        //        {
-        //            pixelData = new byte[var1 * var2 * 3];
-        //            imageData = new int[var1 * var2];
-        //        }
+    public static string saveScreenshot(string gameDir, int width, int height, byte[] rgbPixels)
+    {
+        if (rgbPixels == null || rgbPixels.Length < width * height * 3)
+            return "Failed to save: invalid pixel data";
+        if (string.IsNullOrEmpty(gameDir))
+            return "Failed to save: invalid game directory";
 
-        //        GL11.glPixelStorei(GL11.GL_PACK_ALIGNMENT, 1);
-        //        GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
-        //        buffer.clear();
-        //        GL11.glReadPixels(0, 0, var1, var2, GL11.GL_RGB, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)buffer);
-        //        buffer.clear();
-        //        String var4 = "" + dateFormat.format(new Date());
-        //        int var6 = 1;
+        try
+        {
+            string screenshotsPath = System.IO.Path.Combine(gameDir, "screenshots");
+            System.IO.Directory.CreateDirectory(screenshotsPath);
 
-        //        while (true)
-        //        {
-        //            java.io.File var5 = new java.io.File(var3, var4 + (var6 == 1 ? "" : "_" + var6) + ".png");
-        //            if (!var5.exists())
-        //            {
-        //                buffer.get(pixelData);
+            string timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss");
+            int suffix = 1;
+            string fileName;
+            string fullPath;
+            do
+            {
+                fileName = suffix == 1 ? timestamp + ".png" : timestamp + "_" + suffix + ".png";
+                fullPath = System.IO.Path.Combine(screenshotsPath, fileName);
+                suffix++;
+            } while (System.IO.File.Exists(fullPath));
 
-        //                for (int var7 = 0; var7 < var1; ++var7)
-        //                {
-        //                    for (int var8 = 0; var8 < var2; ++var8)
-        //                    {
-        //                        int var9 = var7 + (var2 - var8 - 1) * var1;
-        //                        int var10 = pixelData[var9 * 3 + 0] & 255;
-        //                        int var11 = pixelData[var9 * 3 + 1] & 255;
-        //                        int var12 = pixelData[var9 * 3 + 2] & 255;
-        //                        int var13 = unchecked((int)(0xFF000000 | var10 << 16 | var11 << 8 | var12));
-        //                        imageData[var7 + var8 * var1] = var13;
-        //                    }
-        //                }
+            // OpenGL returns rows bottom-to-top; flip to top-to-bottom for the image file.
+            int rowStride = width * 3;
+            byte[] flipped = new byte[rgbPixels.Length];
+            for (int y = 0; y < height; y++)
+            {
+                int srcRow = height - 1 - y;
+                int srcOffset = srcRow * rowStride;
+                int dstOffset = y * rowStride;
+                Buffer.BlockCopy(rgbPixels, srcOffset, flipped, dstOffset, rowStride);
+            }
 
-        //                BufferedImage var15 = new BufferedImage(var1, var2, 1);
-        //                var15.setRGB(0, 0, var1, var2, imageData, 0, var1);
-        //                ImageIO.write(var15, "png", var5);
-        //                return "Saved screenshot as " + var5.getName();
-        //            }
+            using (Image<Rgb24> image = Image.LoadPixelData<Rgb24>(flipped, width, height))
+            {
+                image.SaveAsPng(fullPath);
+            }
 
-        //            ++var6;
-        //        }
-        //    }
-        //    catch (Exception var14)
-        //    {
-        //        var14.printStackTrace();
-        //        return "Failed to save: " + var14;
-        //    }
-        //}
-        //TODO: ADD SCREENSHOTS
+            return "Saved screenshot as " + fileName;
+        }
+        catch (Exception ex)
+        {
+            return "Failed to save: " + ex.Message;
+        }
     }
 }

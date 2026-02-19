@@ -1,4 +1,4 @@
-﻿using BetaSharp.Client.Rendering;
+using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Core;
 using java.util;
 
@@ -6,7 +6,7 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiParticle : Gui
 {
-    private readonly List particles = new ArrayList();
+    private readonly List<Particle> particles = new ();
     private readonly Minecraft mc;
 
     public GuiParticle(Minecraft mc)
@@ -16,14 +16,14 @@ public class GuiParticle : Gui
 
     public void updateParticles()
     {
-        for (int i = 0; i < particles.size(); ++i)
+        for (int i = 0; i < particles.Count; ++i)
         {
-            Particle p = (Particle)particles.get(i);
+            Particle p = particles[i];
             p.UpdatePrevious();
             p.Update(this);
             if (p.PendingRemoval)
             {
-                particles.remove(i--);
+                particles.RemoveAt(i--);
             }
         }
 
@@ -33,9 +33,9 @@ public class GuiParticle : Gui
     {
         mc.textureManager.bindTexture(mc.textureManager.getTextureId("/gui/particles.png"));
 
-        for (int i = 0; i < particles.size(); ++i)
+        for (int i = 0; i < particles.Count; ++i)
         {
-            Particle p = (Particle)particles.get(i);
+            Particle p = particles[i];
             int x = (int)(p.PrevX + (p.X - p.PrevX) * partialTicks - 4);
             int y = (int)(p.PrevY + (p.Y - p.PrevY) * partialTicks - 4);
             float alpha = (float)(p.PrevAlpha + (p.Alpha - p.PrevAlpha) * partialTicks);
@@ -43,7 +43,7 @@ public class GuiParticle : Gui
             float g = (float)(p.PrevG + (p.G - p.PrevG) * partialTicks);
             float b = (float)(p.PrevB + (p.B - p.PrevB) * partialTicks);
             GLManager.GL.Color4(r, g, b, alpha);
-            drawTexturedModalRect(x, y, 40, 0, 8, 8);
+            DrawTexturedModalRect(x, y, 40, 0, 8, 8);
         }
 
     }

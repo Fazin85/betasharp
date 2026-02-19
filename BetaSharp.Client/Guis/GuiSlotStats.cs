@@ -1,4 +1,4 @@
-﻿using BetaSharp.Client.Input;
+using BetaSharp.Client.Input;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Items;
 using BetaSharp.Stats;
@@ -17,7 +17,7 @@ public abstract class GuiSlotStats : GuiSlot
     private readonly GuiStats _gui;
 
     protected GuiSlotStats(GuiStats statsGui)
-        : base(statsGui.mc, statsGui.width, statsGui.height, 32, statsGui.height - 64, 20)
+        : base(statsGui.mc, statsGui.Width, statsGui.Height, 32, statsGui.Height - 64, 20)
     {
         _gui = statsGui;
         field_27268_b = -1;
@@ -27,7 +27,7 @@ public abstract class GuiSlotStats : GuiSlot
         func_27259_a(true, 20);
     }
 
-    protected override void elementClicked(int var1, bool var2)
+    protected override void ElementClicked(int var1, bool var2)
     {
     }
 
@@ -38,7 +38,7 @@ public abstract class GuiSlotStats : GuiSlot
 
     protected override void drawBackground()
     {
-        _gui.drawDefaultBackground();
+        _gui.DrawDefaultBackground();
     }
 
     protected override void func_27260_a(int var1, int var2, Tessellator var3)
@@ -117,12 +117,12 @@ public abstract class GuiSlotStats : GuiSlot
         if (field_27268_b >= 0)
         {
             func_27266_c(field_27268_b);
-            _gui.mc.sndManager.playSoundFX("random.click", 1.0F, 1.0F);
+            _gui.mc.sndManager.PlaySoundFX("random.click", 1.0F, 1.0F);
         }
 
     }
 
-    public override int getSize()
+    public override int GetSize()
     {
         return field_27273_c.size();
     }
@@ -134,24 +134,21 @@ public abstract class GuiSlotStats : GuiSlot
 
     protected abstract string getKeyForColumn(int column);
 
-    protected void func_27265_a(StatCrafting var1, int var2, int var3, bool var4)
+    protected void func_27265_a(StatCrafting var1, int x, int y, bool useBrightColor)
     {
-        string var5;
+        string text;
         if (var1 != null)
         {
-            var5 = var1.format(_gui.statFileWriter.writeStat(var1));
-            _gui.drawString(_gui.fontRenderer, var5,
-                var2 - _gui.fontRenderer.getStringWidth(var5), var3 + 5,
-                var4 ? 0x00FFFFFFu : 0x00909090u);
+            text = var1.format(_gui.statFileWriter.writeStat(var1));
         }
         else
         {
-            var5 = "-";
-            _gui.drawString(_gui.fontRenderer, var5,
-                var2 - _gui.fontRenderer.getStringWidth(var5), var3 + 5,
-                var4 ? 0x00FFFFFFu : 0x00909090u);
+            text = "-";
         }
 
+        _gui.FontRenderer.drawStringWithShadow(text,
+            x - _gui.FontRenderer.getStringWidth(text), y + 5,
+            useBrightColor ? 0x00FFFFFFu : 0x00909090u);
     }
 
     protected override void func_27257_b(int var1, int var2)
@@ -159,7 +156,7 @@ public abstract class GuiSlotStats : GuiSlot
         if (var2 >= top && var2 <= bottom)
         {
             int var3 = func_27256_c(var1, var2);
-            int var4 = _gui.width / 2 - 92 - 16;
+            int var4 = _gui.Width / 2 - 92 - 16;
             if (var3 >= 0)
             {
                 if (var1 < var4 + 40 || var1 > var4 + 40 + 20)
@@ -196,9 +193,9 @@ public abstract class GuiSlotStats : GuiSlot
                 {
                     int var6 = var1 + 12;
                     int var7 = var2 - 12;
-                    int var8 = _gui.fontRenderer.getStringWidth(var5);
+                    int var8 = _gui.FontRenderer.getStringWidth(var5);
                     _gui.drawTranslucentRect(var6 - 3, var7 - 3, var6 + var8 + 3, var7 + 8 + 3);
-                    _gui.fontRenderer.drawStringWithShadow(var5, var6, var7, 0xFFFFFFFF);
+                    _gui.FontRenderer.drawStringWithShadow(var5, var6, var7, 0xFFFFFFFF);
                 }
             }
 
@@ -215,9 +212,9 @@ public abstract class GuiSlotStats : GuiSlot
             {
                 int var6 = var2 + 12;
                 int var7 = var3 - 12;
-                int var8 = _gui.fontRenderer.getStringWidth(var5);
+                int var8 = _gui.FontRenderer.getStringWidth(var5);
                 _gui.drawTranslucentRect(var6 - 3, var7 - 3, var6 + var8 + 3, var7 + 8 + 3);
-                _gui.fontRenderer.drawStringWithShadow(var5, var6, var7, 0xFFFFFFFF);
+                _gui.FontRenderer.drawStringWithShadow(var5, var6, var7, 0xFFFFFFFF);
             }
 
         }

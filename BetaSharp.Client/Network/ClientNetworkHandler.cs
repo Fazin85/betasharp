@@ -776,7 +776,7 @@ public class ClientNetworkHandler : NetHandler
         }
         else
         {
-            Console.WriteLine($"Unknown itemid: {packet.id}");
+            Log.Info($"Unknown itemid: {packet.id}");
         }
 
     }

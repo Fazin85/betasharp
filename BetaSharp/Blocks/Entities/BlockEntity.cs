@@ -80,7 +80,7 @@ public class BlockEntity : java.lang.Object
         }
         else
         {
-            Console.WriteLine($"Skipping TileEntity with id {nbt.GetString("id")}");
+            Log.Info("Skipping TileEntity with id " + nbt.GetString("id"));
         }
 
         return blockEntity;

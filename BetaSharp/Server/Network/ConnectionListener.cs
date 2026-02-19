@@ -8,7 +8,6 @@ namespace BetaSharp.Server.Network;
 
 public class ConnectionListener
 {
-    public static readonly Logger LOGGER = Logger.getLogger("Minecraft");
     public ServerSocket socket;
     private readonly java.lang.Thread _thread;
     public volatile bool open;
@@ -74,7 +73,7 @@ public class ConnectionListener
             catch (java.lang.Exception ex)
             {
                 connection.disconnect("Internal server error");
-                LOGGER.log(Level.WARNING, "Failed to handle packet: " + ex, ex);
+                Log.Error($"Failed to handle packet: {ex}");
             }
 
             if (connection.closed)
@@ -95,7 +94,7 @@ public class ConnectionListener
             }
             catch (java.lang.Exception ex)
             {
-                LOGGER.log(Level.WARNING, "Failed to handle packet: " + ex, (Throwable)ex);
+                Log.Error($"Failed to handle packet: {ex}");
                 connection.disconnect("Internal server error");
             }
 
