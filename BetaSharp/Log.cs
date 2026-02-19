@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.IO.Compression;
 using Microsoft.Extensions.Logging;
 using BetaSharp.Util;
@@ -16,22 +15,17 @@ public static class Log
     private static bool _initialized;
     private static readonly object _lock = new();
     private static ILoggerFactory _factory = null!;
+    private static ILogger _logger = null!;
     private static LogOptions _options = null!;
 
-    public static void Debug(string? message, params object?[] args) => GetCallerLogger().LogDebug(message, args);
-    public static void Info(string? message, params object?[] args) => GetCallerLogger().LogInformation(message, args);
-    public static void Warn(string? message, params object?[] args) => GetCallerLogger().LogWarning(message, args);
-    public static void Error(Exception? ex = null, string? message = null, params object?[] args) => GetCallerLogger().LogError(ex, message, args);
-    public static void Error(string? message = null, params object?[] args) => GetCallerLogger().LogError(message, args);
-    public static void Fatal(Exception? ex = null, string? message = null, params object?[] args) => GetCallerLogger().LogCritical(ex, message, args);
+    private static ILogger Logger => _initialized ? _logger : throw new InvalidOperationException("Log.Initialize() must be called before logging.");
 
-    private static ILogger GetCallerLogger()
-    {
-        if (!_initialized)
-            throw new InvalidOperationException("Log.Initialize() must be called before logging.");
-        var type = new StackTrace(2, false).GetFrame(0)?.GetMethod()?.DeclaringType;
-        return type != null ? _factory.CreateLogger(type) : _factory.CreateLogger("Application");
-    }
+    public static void Debug(string? message, params object?[] args) => Logger.LogDebug(message, args);
+    public static void Info(string? message, params object?[] args) => Logger.LogInformation(message, args);
+    public static void Warn(string? message, params object?[] args) => Logger.LogWarning(message, args);
+    public static void Error(Exception? ex = null, string? message = null, params object?[] args) => Logger.LogError(ex, message, args);
+    public static void Error(string? message = null, params object?[] args) => Logger.LogError(message, args);
+    public static void Fatal(Exception? ex = null, string? message = null, params object?[] args) => Logger.LogCritical(ex, message, args);
 
     public static void Initialize(LogOptions options)
     {
@@ -66,6 +60,7 @@ public static class Log
             }
 
             _factory = builder;
+            _logger = _factory.CreateLogger("BetaSharp");
             _initialized = true;
         }
     }
