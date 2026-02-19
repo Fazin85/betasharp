@@ -52,15 +52,15 @@ public class GuiTexturePackSlot : GuiSlot
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
 
         tess.startDrawingQuads();
-        tess.setColorOpaque_I(0x00FFFFFF);
+        tess.setColorOpaque_I(0xFFFFFF);
         tess.addVertexWithUV(x, y + slotHeight, 0.0D, 0.0D, 1.0D);
         tess.addVertexWithUV(x + 32, y + slotHeight, 0.0D, 1.0D, 1.0D);
         tess.addVertexWithUV(x + 32, y, 0.0D, 1.0D, 0.0D);
         tess.addVertexWithUV(x, y, 0.0D, 0.0D, 0.0D);
         tess.draw();
 
-        Gui.DrawString(_parentTexturePackGui.FontRenderer, pack.texturePackFileName, x + 32 + 2, y + 1, 0x00FFFFFF);
-        Gui.DrawString(_parentTexturePackGui.FontRenderer, pack.firstDescriptionLine, x + 32 + 2, y + 12, 8421504);
-        Gui.DrawString(_parentTexturePackGui.FontRenderer, pack.secondDescriptionLine, x + 32 + 2, y + 12 + 10, 8421504);
+        Gui.DrawString(_parentTexturePackGui.FontRenderer, pack.texturePackFileName, x + 32 + 2, y + 1, 0xFFFFFF);
+        Gui.DrawString(_parentTexturePackGui.FontRenderer, pack.firstDescriptionLine, x + 32 + 2, y + 12, 0x808080);
+        Gui.DrawString(_parentTexturePackGui.FontRenderer, pack.secondDescriptionLine, x + 32 + 2, y + 12 + 10, 0x808080);
     }
 }

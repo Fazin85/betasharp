@@ -7,7 +7,7 @@ namespace BetaSharp.Client.Guis;
 public class GuiChat : GuiScreen
 {
     private const uint BackgroundColor = 0x80000000;
-    private const uint TextColorNormal = 14737632u;
+    private const uint TextColorNormal = 0xE0E0E0;
 
     protected string _message = "";
     private int _updateCounter = 0;

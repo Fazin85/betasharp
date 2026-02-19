@@ -148,7 +148,7 @@ public abstract class GuiSlotStats : GuiSlot
 
         _gui.FontRenderer.drawStringWithShadow(text,
             x - _gui.FontRenderer.getStringWidth(text), y + 5,
-            useBrightColor ? 0x00FFFFFFu : 0x00909090u);
+            useBrightColor ? 0xFFFFFFu : 0x909090u);
     }
 
     protected override void func_27257_b(int var1, int var2)

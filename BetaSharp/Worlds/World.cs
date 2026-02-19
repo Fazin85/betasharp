@@ -91,7 +91,7 @@ public abstract class World : java.lang.Object, BlockView
         blockEntityUpdateQueue = [];
         players = [];
         globalEntities = new ArrayList();
-        worldTimeMask = 0x00FFFFFFL;
+        worldTimeMask = 0xFFFFFFL;
         ambientDarkness = 0;
         lcgBlockSeed = (new java.util.Random()).nextInt();
         lcgBlockSeedIncrement = 1013904223;
@@ -133,7 +133,7 @@ public abstract class World : java.lang.Object, BlockView
         blockEntityUpdateQueue = [];
         players = [];
         globalEntities = new ArrayList();
-        worldTimeMask = 0x00FFFFFFL;
+        worldTimeMask = 0xFFFFFFL;
         ambientDarkness = 0;
         lcgBlockSeed = (new java.util.Random()).nextInt();
         lcgBlockSeedIncrement = 1013904223;
@@ -180,7 +180,7 @@ public abstract class World : java.lang.Object, BlockView
         blockEntityUpdateQueue = [];
         players = [];
         globalEntities = new ArrayList();
-        worldTimeMask = 0x00FFFFFFL;
+        worldTimeMask = 0xFFFFFFL;
         ambientDarkness = 0;
         lcgBlockSeed = (new java.util.Random()).nextInt();
         lcgBlockSeedIncrement = 1013904223;

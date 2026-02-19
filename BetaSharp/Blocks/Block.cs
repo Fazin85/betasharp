@@ -470,12 +470,12 @@ public class Block : java.lang.Object
 
     public virtual int getColor(int meta)
     {
-        return 0x00FFFFFF;
+        return 0xFFFFFF;
     }
 
     public virtual int getColorMultiplier(BlockView blockView, int x, int y, int z)
     {
-        return 0x00FFFFFF;
+        return 0xFFFFFF;
     }
 
     public virtual bool isPoweringSide(BlockView blockView, int x, int y, int z, int side)

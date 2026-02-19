@@ -84,7 +84,7 @@ public class GuiIngameMenu : GuiScreen
             DrawString(FontRenderer, "Saving level..", 8, Height - 16, (uint)(color << 16 | color << 8 | color));
         }
 
-        DrawCenteredString(FontRenderer, "Game menu", Width / 2, 40, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, "Game menu", Width / 2, 40, 0xFFFFFF);
         base.Render(mouseX, mouseY, partialTick);
     }
 }

@@ -90,7 +90,7 @@ public class GuiStats : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         currentSlot.drawScreen(mouseX, mouseY, partialTicks);
-        DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0xFFFFFF);
         base.Render(mouseX, mouseY, partialTicks);
     }
 

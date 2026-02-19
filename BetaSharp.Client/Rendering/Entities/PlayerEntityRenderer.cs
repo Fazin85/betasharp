@@ -113,7 +113,7 @@ public class PlayerEntityRenderer : LivingEntityRenderer
                     var14.draw();
                     GLManager.GL.Enable(GLEnum.Texture2D);
                     GLManager.GL.DepthMask(true);
-                    var13.drawString(var12, -var13.getStringWidth(var12) / 2, 0, 553648127);
+                    var13.drawString(var12, -var13.getStringWidth(var12) / 2, 0, 0x20FFFFFF);
                     GLManager.GL.Enable(GLEnum.Lighting);
                     GLManager.GL.Disable(GLEnum.Blend);
                     GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);

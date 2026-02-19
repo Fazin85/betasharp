@@ -1,4 +1,4 @@
-namespace BetaSharp.Client.Guis;
+﻿namespace BetaSharp.Client.Guis;
 
 public class GuiYesNo : GuiScreen
 {
@@ -44,8 +44,8 @@ public class GuiYesNo : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, _message1, Width / 2, 70, 0x00FFFFFF);
-        DrawCenteredString(FontRenderer, _message2, Width / 2, 90, 0x00FFFFFF);
+        DrawCenteredString(FontRenderer, _message1, Width / 2, 70, 0xFFFFFF);
+        DrawCenteredString(FontRenderer, _message2, Width / 2, 90, 0xFFFFFF);
         base.Render(mouseX, mouseY, partialTicks);
     }
 }

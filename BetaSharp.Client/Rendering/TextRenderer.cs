@@ -144,7 +144,7 @@ public class TextRenderer : java.lang.Object
             uint alpha = color & 0xFF000000;
             if (darken)
             {
-                color = (color & 0x00FCFCFC) >> 2;
+                color = (color & 0xFCFCFC) >> 2;
                 color |= alpha;
             }
             // assume alpha was omitted and default to fully opaque

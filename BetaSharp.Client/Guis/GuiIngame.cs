@@ -232,7 +232,7 @@ public class GuiIngame : Gui
 
             int meshY = _mc.internalServer != null ? 120 : 104;
             var cr = _mc.terrainRenderer.chunkRenderer;
-            DrawString(font, $"Meshes: S: {cr.LoadedMeshes} T: {cr.TranslucentMeshes}", 2, meshY, 14737632);
+            DrawString(font, $"Meshes: S: {cr.LoadedMeshes} T: {cr.TranslucentMeshes}", 2, meshY, 0xE0E0E0);
             GLManager.GL.PopMatrix();
         }
         else
@@ -255,7 +255,7 @@ public class GuiIngame : Gui
                 GLManager.GL.Translate(scaledWidth / 2, scaledHeight - 48, 0.0F);
                 GLManager.GL.Enable(GLEnum.Blend);
                 GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
-                j = 0x00FFFFFF;
+                j = 0xFFFFFF;
                 if (_isRecordMessageRainbow)
                 {
                     j = Color.HSBtoRGB(t / 50.0F, 0.7F, 0.6F) & 0xFFFFFF;
