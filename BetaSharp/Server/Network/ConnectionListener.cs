@@ -12,11 +12,22 @@ public class ConnectionListener
     public ServerSocket socket;
     private readonly java.lang.Thread _thread;
     public volatile bool open = false;
-    public int connectionCounter = 0;
+    private int _connectionCounter = 0;
+    private readonly object _connectionCounterLock = new();
+    private readonly object _pendingConnectionsLock = new();
+    private readonly object _connectionsLock = new();
     private readonly List<ServerLoginNetworkHandler> _pendingConnections = [];
     private readonly List<ServerPlayNetworkHandler> _connections = [];
     public MinecraftServer server;
     public int port;
+
+    public int GetNextConnectionCounter()
+    {
+        lock (_connectionCounterLock)
+        {
+            return _connectionCounter++;
+        }
+    }
 
     public ConnectionListener(MinecraftServer server, InetAddress address, int port)
     {
@@ -40,7 +51,10 @@ public class ConnectionListener
 
     public void AddConnection(ServerPlayNetworkHandler connection)
     {
-        _connections.Add(connection);
+        lock (_connectionsLock)
+        {
+            _connections.Add(connection);
+        }
     }
 
     public void AddPendingConnection(ServerLoginNetworkHandler connection)
@@ -51,7 +65,10 @@ public class ConnectionListener
         }
         else
         {
-            _pendingConnections.Add(connection);
+            lock (_pendingConnectionsLock)
+            {
+                _pendingConnections.Add(connection);
+            }
         }
     }
 
@@ -63,48 +80,54 @@ public class ConnectionListener
 
     public void Tick()
     {
-        for (int i = 0; i < _pendingConnections.Count; i++)
+        lock (_pendingConnectionsLock)
         {
-            ServerLoginNetworkHandler connection = _pendingConnections[i];
-
-            try
+            for (int i = 0; i < _pendingConnections.Count; i++)
             {
-                connection.tick();
-            }
-            catch (java.lang.Exception ex)
-            {
-                connection.disconnect("Internal server error");
-                LOGGER.log(Level.WARNING, "Failed to handle packet: " + ex, ex);
-            }
+                ServerLoginNetworkHandler connection = _pendingConnections[i];
 
-            if (connection.closed)
-            {
-                _pendingConnections.RemoveAt(i--);
-            }
+                try
+                {
+                    connection.tick();
+                }
+                catch (java.lang.Exception ex)
+                {
+                    connection.disconnect("Internal server error");
+                    LOGGER.log(Level.WARNING, "Failed to handle packet: " + ex, ex);
+                }
 
-            connection.connection.interrupt();
+                if (connection.closed)
+                {
+                    _pendingConnections.RemoveAt(i--);
+                }
+
+                connection.connection.interrupt();
+            }
         }
 
-        for (int i = 0; i < _connections.Count; i++)
+        lock (_connectionsLock)
         {
-            ServerPlayNetworkHandler connection = _connections[i];
-
-            try
+            for (int i = 0; i < _connections.Count; i++)
             {
-                connection.tick();
-            }
-            catch (java.lang.Exception ex)
-            {
-                LOGGER.log(Level.WARNING, "Failed to handle packet: " + ex, (Throwable)ex);
-                connection.disconnect("Internal server error");
-            }
+                ServerPlayNetworkHandler connection = _connections[i];
 
-            if (connection.disconnected)
-            {
-                _connections.RemoveAt(i--);
-            }
+                try
+                {
+                    connection.tick();
+                }
+                catch (java.lang.Exception ex)
+                {
+                    LOGGER.log(Level.WARNING, "Failed to handle packet: " + ex, (Throwable)ex);
+                    connection.disconnect("Internal server error");
+                }
 
-            connection.connection.interrupt();
+                if (connection.disconnected)
+                {
+                    _connections.RemoveAt(i--);
+                }
+
+                connection.connection.interrupt();
+            }
         }
     }
 }

@@ -178,18 +178,15 @@ public class EntityTrackerEntry : java.lang.Object
 
     public void notifyEntityRemoved(ServerPlayerEntity player)
     {
-        if (listeners.Contains(player))
-        {
-            listeners.Remove(player);
-        }
+        listeners.Remove(player);
     }
 
     public void updateListener(ServerPlayerEntity player)
     {
         if (player != currentTrackedEntity)
         {
-            double var2 = player.x - lastX / 32;
-            double var4 = player.z - lastZ / 32;
+            double var2 = player.x - lastX / 32.0;
+            double var4 = player.z - lastZ / 32.0;
             if (var2 >= -trackedDistance && var2 <= trackedDistance && var4 >= -trackedDistance && var4 <= trackedDistance)
             {
                 if (!listeners.Contains(player))
@@ -354,9 +351,8 @@ public class EntityTrackerEntry : java.lang.Object
 
     public void removeListener(ServerPlayerEntity player)
     {
-        if (listeners.Contains(player))
+        if (listeners.Remove(player))
         {
-            listeners.Remove(player);
             player.networkHandler.sendPacket(new EntityDestroyS2CPacket(currentTrackedEntity.id));
         }
     }

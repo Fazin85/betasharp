@@ -17,7 +17,7 @@ namespace BetaSharp.Server;
 public abstract class MinecraftServer : Runnable, CommandOutput
 {
     public static Logger LOGGER = Logger.getLogger("Minecraft");
-    public HashMap GIVE_COMMANDS_COOLDOWNS = [];
+    public Dictionary<string, int> GIVE_COMMANDS_COOLDOWNS = [];
     public ConnectionListener connections;
     public IServerConfiguration config;
     public ServerWorld[] worlds;
@@ -28,8 +28,8 @@ public abstract class MinecraftServer : Runnable, CommandOutput
     private int ticks = 0;
     public string progressMessage;
     public int progress;
-    private List tickables = new ArrayList();
-    private List pendingCommands = Collections.synchronizedList(new ArrayList());
+    private List<Tickable> tickables = [];
+    private Queue<Command> pendingCommands = new();
     public EntityTracker[] entityTrackers = new EntityTracker[2];
     public bool onlineMode;
     public bool spawnAnimals;
@@ -214,14 +214,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
             playerManager.savePlayers();
         }
 
-        for (int var1 = 0; var1 < worlds.Length; var1++)
-        {
-            ServerWorld var2 = worlds[var1];
-            if (var2 != null)
-            {
-                saveWorlds();
-            }
-        }
+        saveWorlds();
     }
 
     public void stop()
@@ -356,27 +349,23 @@ public abstract class MinecraftServer : Runnable, CommandOutput
 
     private void tick()
     {
-        ArrayList var1 = [];
+        var keysToRemove = new List<string>();
 
-        var keys = GIVE_COMMANDS_COOLDOWNS.keySet();
-        var iter = keys.iterator();
-        while (iter.hasNext())
+        foreach (var kvp in GIVE_COMMANDS_COOLDOWNS)
         {
-            string var3 = (string)iter.next();
-            int var4 = (int)GIVE_COMMANDS_COOLDOWNS.get(var3);
-            if (var4 > 0)
+            if (kvp.Value > 0)
             {
-                GIVE_COMMANDS_COOLDOWNS.put(var3, var4 - 1);
+                GIVE_COMMANDS_COOLDOWNS[kvp.Key] = kvp.Value - 1;
             }
             else
             {
-                var1.add(var3);
+                keysToRemove.Add(kvp.Key);
             }
         }
 
-        for (int var6 = 0; var6 < var1.size(); var6++)
+        foreach (var key in keysToRemove)
         {
-            GIVE_COMMANDS_COOLDOWNS.remove(var1.get(var6));
+            GIVE_COMMANDS_COOLDOWNS.Remove(key);
         }
 
         ticks++;
@@ -412,9 +401,9 @@ public abstract class MinecraftServer : Runnable, CommandOutput
             entityTrackers[var8].tick();
         }
 
-        for (int var9 = 0; var9 < tickables.size(); var9++)
+        for (int var9 = 0; var9 < tickables.Count; var9++)
         {
-            ((Tickable)tickables.get(var9)).tick();
+            tickables[var9].tick();
         }
 
         try
@@ -429,21 +418,21 @@ public abstract class MinecraftServer : Runnable, CommandOutput
 
     public void queueCommands(string str, CommandOutput cmd)
     {
-        pendingCommands.add(new Command(str, cmd));
+        pendingCommands.Enqueue(new Command(str, cmd));
     }
 
     public void runPendingCommands()
     {
-        while (pendingCommands.size() > 0)
+        while (pendingCommands.Count > 0)
         {
-            Command var1 = (Command)pendingCommands.remove(0);
+            Command var1 = pendingCommands.Dequeue();
             commandHandler.ExecuteCommand(var1);
         }
     }
 
     public void addTickable(Tickable tickable)
     {
-        tickables.add(tickable);
+        tickables.Add(tickable);
     }
 
     public abstract java.io.File getFile(string path);

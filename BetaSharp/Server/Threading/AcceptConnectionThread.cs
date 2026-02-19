@@ -15,6 +15,8 @@ public class AcceptConnectionThread : java.lang.Thread
     public override void run()
     {
         Dictionary<InetAddress, long> map = [];
+        const int MAX_CACHE_SIZE = 1000;
+        const long COOLDOWN_MS = 5000L;
 
         while (_listener.open)
         {
@@ -25,16 +27,25 @@ public class AcceptConnectionThread : java.lang.Thread
                 {
                     socket.setTcpNoDelay(true);
                     InetAddress addr = socket.getInetAddress();
-                    if (map.ContainsKey(addr) && !"127.0.0.1".Equals(addr.getHostAddress()) && java.lang.System.currentTimeMillis() - map[addr] < 5000L)
+                    long now = java.lang.System.currentTimeMillis();
+                    
+                    if (map.ContainsKey(addr) && !"127.0.0.1".Equals(addr.getHostAddress()) && now - map[addr] < COOLDOWN_MS)
                     {
-                        map[addr] = java.lang.System.currentTimeMillis();
+                        map[addr] = now;
                         socket.close();
                     }
                     else
                     {
-                        map[addr] = java.lang.System.currentTimeMillis();
-                        ServerLoginNetworkHandler handler = new(_listener.server, socket, "Connection # " + _listener.connectionCounter);
+                        map[addr] = now;
+                        ServerLoginNetworkHandler handler = new(_listener.server, socket, "Connection # " + _listener.GetNextConnectionCounter());
                         _listener.AddPendingConnection(handler);
+                        
+                        // Prune old entries if cache grows too large
+                        if (map.Count > MAX_CACHE_SIZE)
+                        {
+                            var oldestKey = map.OrderBy(kvp => kvp.Value).First().Key;
+                            map.Remove(oldestKey);
+                        }
                     }
                 }
             }

@@ -13,7 +13,7 @@ public class ConsoleFormatter : java.util.logging.Formatter
 
     public override string format(LogRecord logRecord)
     {
-        StringBuilder var2 = new StringBuilder();
+    StringBuilder var2 = new StringBuilder();
         var2.append(dateFormat.format(new Date(logRecord.getMillis())));
         Level var3 = logRecord.getLevel();
         if (var3 == Level.FINEST)
@@ -40,7 +40,7 @@ public class ConsoleFormatter : java.util.logging.Formatter
         {
             var2.append(" [SEVERE] ");
         }
-        else if (var3 == Level.SEVERE)
+        else
         {
             var2.append(" [" + var3.getLocalizedName() + "] ");
         }

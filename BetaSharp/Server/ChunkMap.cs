@@ -58,7 +58,7 @@ public class ChunkMap
 
     public static long GetChunkHash(int chunkX, int chunkZ)
     {
-        return chunkX + 2147483647L | chunkZ + 2147483647L << 32;
+        return ((long)chunkX + 2147483647L) | (((long)chunkZ + 2147483647L) << 32);
     }
 
     internal TrackedChunk GetOrCreateChunk(int chunkX, int chunkZ, bool createIfAbsent)
@@ -232,7 +232,7 @@ public class ChunkMap
     internal class TrackedChunk
     {
         private readonly ChunkMap chunkMap;
-        private readonly List<ServerPlayerEntity> players;
+        private readonly HashSet<ServerPlayerEntity> players;
         private readonly int chunkX;
         private readonly int chunkZ;
         private readonly ChunkPos chunkPos;
@@ -358,12 +358,11 @@ public class ChunkMap
 
         public void sendPacketToPlayers(Packet packet)
         {
-            for (int var2 = 0; var2 < players.Count; var2++)
+            foreach (var player in players)
             {
-                ServerPlayerEntity var3 = players[var2];
-                if (var3.activeChunks.Contains(chunkPos))
+                if (player.activeChunks.Contains(chunkPos))
                 {
-                    var3.networkHandler.sendPacket(packet);
+                    player.networkHandler.sendPacket(packet);
                 }
             }
         }
@@ -408,12 +407,11 @@ public class ChunkMap
 
                     for (int var11 = 0; var11 < dirtyBlockCount; var11++)
                     {
-                        int var13 = chunkX * 16 + (dirtyBlockCount >> 12 & 15);
-                        int var15 = dirtyBlockCount & 0xFF;
-                        int var16 = chunkZ * 16 + (dirtyBlockCount >> 8 & 15);
+                        int var13 = chunkX * 16 + (dirtyBlocks[var11] >> 12 & 15);
+                        int var15 = dirtyBlocks[var11] & 0xFF;
+                        int var16 = chunkZ * 16 + (dirtyBlocks[var11] >> 8 & 15);
                         if (Block.BlocksWithEntity[var1.getBlockId(var13, var15, var16)])
                         {
-                            java.lang.System.@out.println("Sending!");
                             sendBlockEntityUpdate(var1.getBlockEntity(var13, var15, var16));
                         }
                     }
