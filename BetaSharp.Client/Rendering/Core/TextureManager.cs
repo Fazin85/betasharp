@@ -10,7 +10,7 @@ using static BetaSharp.Client.Textures.TextureAtlasMipmapGenerator;
 
 namespace BetaSharp.Client.Rendering.Core;
 
-public class TextureManager : java.lang.Object
+public class TextureManager
 {
     private readonly Dictionary<string, int> _textures = [];
     private readonly Dictionary<string, int[]> _colors = [];
@@ -56,7 +56,7 @@ public class TextureManager : java.lang.Object
 
     public int Load(Image<Rgba32> image)
     {
-       uint newId = GLManager.GL.GenTexture();
+        uint newId = GLManager.GL.GenTexture();
         Load(image, (int)newId, false);
         _images[(int)newId] = image;
         return (int)newId;
@@ -118,7 +118,7 @@ public class TextureManager : java.lang.Object
                         ptr
                     );
                 }
-                 if (level > 0) mip.Dispose();
+                if (level > 0) mip.Dispose();
             }
 
             GLManager.GL.TexParameter(
@@ -128,8 +128,8 @@ public class TextureManager : java.lang.Object
                     TextureMinFilter.NearestMipmapNearest :
                     TextureMinFilter.Nearest)
                 );
-            GLManager.GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,(int)TextureMagFilter.Nearest);
-            GLManager.GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel,mipCount - 1);
+            GLManager.GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GLManager.GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, mipCount - 1);
 
             if (GLManager.GL.IsExtensionPresent("GL_EXT_texture_filter_anisotropic"))
             {
@@ -141,24 +141,24 @@ public class TextureManager : java.lang.Object
             return;
         }
 
-        GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMinFilter, 
+        GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMinFilter,
             (int)(_blur ?
                     GLEnum.Linear :
                     GLEnum.Nearest)
             );
-        GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMagFilter, 
+        GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMagFilter,
             (int)(_blur ?
                     GLEnum.Linear :
                     GLEnum.Nearest)
             );
-        GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureWrapS, 
+        GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureWrapS,
             (int)(_clamp ?
-                    GLEnum.ClampToEdge :
+                    GLEnum.Clamp :
                     GLEnum.Repeat)
             );
-        GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureWrapT, 
+        GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureWrapT,
             (int)(_clamp ?
-                    GLEnum.ClampToEdge :
+                    GLEnum.Clamp :
                     GLEnum.Repeat)
             );
 
@@ -169,6 +169,9 @@ public class TextureManager : java.lang.Object
         {
             GLManager.GL.TexImage2D(GLEnum.Texture2D, 0, (int)GLEnum.Rgba, (uint)image.Width, (uint)image.Height, 0, GLEnum.Rgba, GLEnum.UnsignedByte, ptr);
         }
+
+        _clamp = false;
+        _blur = false;
     }
 
     public void BindTexture(int id)
@@ -227,8 +230,6 @@ public class TextureManager : java.lang.Object
         using var stream = pack.GetResourceAsStream(cleanPath);
         var img = stream == null ? _missingTextureImage.Clone() : Image.Load<Rgba32>(stream);
 
-        _clamp = false;
-        _blur = false;
         return img;
     }
 
@@ -239,22 +240,22 @@ public class TextureManager : java.lang.Object
 
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var4);
 
-        GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMinFilter, 
+        GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMinFilter,
         (int)(_blur ?
             GLEnum.Linear :
             GLEnum.Nearest
         ));
-        GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMagFilter, 
+        GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMagFilter,
         (int)(_blur ?
             GLEnum.Linear :
             GLEnum.Nearest
         ));
-        GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureWrapS, 
+        GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureWrapS,
         (int)(_clamp ?
             GLEnum.ClampToEdge :
             GLEnum.Repeat
         ));
-        GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureWrapT, 
+        GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureWrapT,
         (int)(_clamp ?
             GLEnum.ClampToEdge :
             GLEnum.Repeat
@@ -282,9 +283,9 @@ public class TextureManager : java.lang.Object
     }
 
     public void Delete(int id)
-    { 
-        if (_images.Remove(id, out var img)) img.Dispose(); 
-        GLManager.GL.DeleteTexture((uint)id); 
+    {
+        if (_images.Remove(id, out var img)) img.Dispose();
+        GLManager.GL.DeleteTexture((uint)id);
     }
 
 
@@ -315,9 +316,9 @@ public class TextureManager : java.lang.Object
                 {
                     for (int y = 0; y < texture.replicate; y++)
                     {
-                        GLManager.GL.TexSubImage2D(GLEnum.Texture2D, 0, 
-                            (texture.sprite % 16) * fxSize + (x * fxSize), 
-                            (texture.sprite / 16) * fxSize + (y * fxSize), 
+                        GLManager.GL.TexSubImage2D(GLEnum.Texture2D, 0,
+                            (texture.sprite % 16) * fxSize + (x * fxSize),
+                            (texture.sprite / 16) * fxSize + (y * fxSize),
                             (uint)fxSize, (uint)fxSize, GLEnum.Rgba, GLEnum.UnsignedByte, ptr);
                     }
                 }
@@ -342,7 +343,7 @@ public class TextureManager : java.lang.Object
             if (newSize <= 0) break;
 
             byte[] downsampled = new byte[newSize * newSize * 4];
-            
+
             // Fast Box Filter for raw RGBA bytes (averages 2x2 pixel blocks)
             for (int y = 0; y < newSize; y++)
             {
