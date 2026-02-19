@@ -18,11 +18,12 @@ public static class Log
     private static ILoggerFactory _factory = null!;
     private static LogOptions _options = null!;
 
-    public static void Debug(string message) => GetCallerLogger().LogDebug(message);
-    public static void Info(string message) => GetCallerLogger().LogInformation(message);
-    public static void Warn(string message) => GetCallerLogger().LogWarning(message);
-    public static void Error(string message, Exception? ex = null) => GetCallerLogger().LogError(ex, message);
-    public static void Fatal(string message, Exception? ex = null) => GetCallerLogger().LogCritical(ex, message);
+    public static void Debug(string? message, params object?[] args) => GetCallerLogger().LogDebug(message, args);
+    public static void Info(string? message, params object?[] args) => GetCallerLogger().LogInformation(message, args);
+    public static void Warn(string? message, params object?[] args) => GetCallerLogger().LogWarning(message, args);
+    public static void Error(Exception? ex = null, string? message = null, params object?[] args) => GetCallerLogger().LogError(ex, message, args);
+    public static void Error(string? message = null, params object?[] args) => GetCallerLogger().LogError(message, args);
+    public static void Fatal(Exception? ex = null, string? message = null, params object?[] args) => GetCallerLogger().LogCritical(ex, message, args);
 
     private static ILogger GetCallerLogger()
     {
@@ -75,17 +76,11 @@ public static class Log
             IsServer: true,
             BaseDirectory: null,
             EnableFileLogging: !string.IsNullOrEmpty(logFile)));
-        if (!string.IsNullOrEmpty(logFile))
-        {
-            // Legacy: write to exact path. Re-initialize not possible, so this is best-effort.
-            // Callers should migrate to Initialize(LogOptions).
-        }
     }
 
     public static void AddCrashHandlers()
     {
-        if (!_initialized)
-            throw new InvalidOperationException("Log.Initialize() must be called before AddCrashHandlers.");
+        if (!_initialized) throw new InvalidOperationException("Log.Initialize() must be called before AddCrashHandlers.");
 
         string suffix = _options.IsServer ? "server" : "client";
 
@@ -209,16 +204,7 @@ public static class Log
         {
             if (!IsEnabled(logLevel)) return;
             var msg = formatter(state, exception);
-            var level = logLevel switch
-            {
-                LogLevel.Trace => "TRC",
-                LogLevel.Debug => "DBG",
-                LogLevel.Information => "INF",
-                LogLevel.Warning => "WRN",
-                LogLevel.Error => "ERR",
-                LogLevel.Critical => "CRT",
-                _ => "???"
-            };
+            var level = logLevel.ToString();
             lock (writer)
             {
                 writer.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} [{level}] {category}: {msg}");
