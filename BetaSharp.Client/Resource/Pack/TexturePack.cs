@@ -1,34 +1,36 @@
 namespace BetaSharp.Client.Resource.Pack;
 
-public abstract class TexturePack : java.lang.Object
+public abstract class TexturePack
 {
-    public string texturePackFileName;
-    public string firstDescriptionLine;
-    public string secondDescriptionLine;
-    public string field_6488_d;
+    public string? TexturePackFileName;
+    public string? FirstDescriptionLine;
+    public string? SecondDescriptionLine;
+    public string? Signature;
 
     public virtual void func_6482_a()
     {
     }
 
-    public virtual void closeTexturePackFile()
+    public virtual void CloseTexturePackFile()
     {
     }
 
-    public virtual void func_6485_a(Minecraft var1)
+    public virtual void func_6485_a(Minecraft mc)
     {
     }
 
-    public virtual void unload(Minecraft var1)
+    public virtual void Unload(Minecraft mc)
     {
     }
 
-    public virtual void bindThumbnailTexture(Minecraft var1)
+    public virtual void BindThumbnailTexture(Minecraft mc)
     {
     }
 
-    public virtual java.io.InputStream getResourceAsStream(string var1)
+    public virtual Stream? GetResourceAsStream(string path)
     {
-        return new java.io.ByteArrayInputStream(AssetManager.Instance.getAsset(var1).getBinaryContent());
+        var asset = AssetManager.Instance.getAsset(path);
+        if (asset == null) return null;
+        return new MemoryStream(asset.getBinaryContent());
     }
 }

@@ -97,7 +97,7 @@ public class LoadingScreenRenderer : LoadingDisplay
                 GLManager.GL.Translate(0.0F, 0.0F, -200.0F);
                 GLManager.GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
                 Tessellator var7 = Tessellator.instance;
-                int var8 = mc.textureManager.getTextureId("/gui/background.png");
+                int var8 = mc.textureManager.GetTextureId("/gui/background.png");
                 GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var8);
                 float var9 = 32.0F;
                 var7.startDrawingQuads();
@@ -129,8 +129,8 @@ public class LoadingScreenRenderer : LoadingDisplay
                     GLManager.GL.Enable(GLEnum.Texture2D);
                 }
 
-                mc.fontRenderer.drawStringWithShadow(field_1007_c, (var5 - mc.fontRenderer.getStringWidth(field_1007_c)) / 2, var6 / 2 - 4 - 16, 0xFFFFFF);
-                mc.fontRenderer.drawStringWithShadow(field_1004_a, (var5 - mc.fontRenderer.getStringWidth(field_1004_a)) / 2, var6 / 2 - 4 + 8, 0xFFFFFF);
+                mc.fontRenderer.DrawStringWithShadow(field_1007_c, (var5 - mc.fontRenderer.GetStringWidth(field_1007_c)) / 2, var6 / 2 - 4 - 16, 0xFFFFFF);
+                mc.fontRenderer.DrawStringWithShadow(field_1004_a, (var5 - mc.fontRenderer.GetStringWidth(field_1004_a)) / 2, var6 / 2 - 4 + 8, 0xFFFFFF);
                 Display.update();
 
                 try

@@ -18,7 +18,7 @@ public abstract class EntityRenderer
     protected void loadTexture(string path)
     {
         TextureManager? var2 = dispatcher.textureManager;
-        var2?.bindTexture(var2.getTextureId(path));
+        var2?.BindTexture(var2.GetTextureId(path));
     }
 
     protected bool loadDownloadableImageTexture(string var1, string var2)
@@ -116,7 +116,7 @@ public abstract class EntityRenderer
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
         TextureManager var10 = dispatcher.textureManager;
-        var10.bindTexture(var10.getTextureId("%clamp%/misc/shadow.png"));
+        var10.BindTexture(var10.GetTextureId("%clamp%/misc/shadow.png"));
         World var11 = getWorld();
         GLManager.GL.DepthMask(false);
         float radius = shadowRadius;
