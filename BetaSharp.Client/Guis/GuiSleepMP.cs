@@ -43,6 +43,8 @@ public class GuiSleepMP : GuiChat
 
     }
 
+    public override bool DoesGuiPauseGame() => false;
+
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         base.Render(mouseX, mouseY, partialTicks);
