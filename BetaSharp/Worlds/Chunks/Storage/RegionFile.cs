@@ -1,350 +1,256 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.IO.Compression;
-using java.io;
-using java.util;
 
 namespace BetaSharp.Worlds.Chunks.Storage;
 
-public class RegionFile : java.lang.Object
+public class RegionFile : IDisposable
 {
     public enum CompressionType : byte
     {
         GZipUnused = 1,
-        ZLibDeflate,
-        OldRegionUnused
+        ZLibDeflate = 2,
+        OldRegionUnused = 3
     }
 
-    private static readonly byte[] emptySector = new byte[4096];
-    private readonly java.io.File fileName;
-    private readonly RandomAccessFile dataFile;
-    private readonly int[] offsets = new int[1024];
-    private readonly int[] chunkSaveTimes = new int[1024];
-    private readonly ArrayList sectorFree;
-    private int sizeDelta;
+    private static readonly byte[] EmptySector = new byte[4096];
+    private readonly string _fileName;
+    private readonly FileStream _dataFile;
+    private readonly int[] _offsets = new int[1024];
+    private readonly int[] _chunkSaveTimes = new int[1024];
+    private readonly List<bool> _sectorFree;
+    private int _sizeDelta;
 
-    public RegionFile(java.io.File var1)
+    public RegionFile(string path)
     {
-        fileName = var1;
-        debugln("REGION LOAD " + fileName);
-        sizeDelta = 0;
+        _fileName = path;
+        _sizeDelta = 0;
 
         try
         {
-            dataFile = new RandomAccessFile(var1, "rw");
-            int var2;
-            if (dataFile.length() < 4096L)
+            _dataFile = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+
+            // Initialize headers if file is new
+            if (_dataFile.Length < 4096)
             {
-                for (var2 = 0; var2 < 1024; ++var2)
-                {
-                    dataFile.writeInt(0);
-                }
-
-                for (var2 = 0; var2 < 1024; ++var2)
-                {
-                    dataFile.writeInt(0);
-                }
-
-                sizeDelta += 8192;
+                for (int i = 0; i < 2048; i++) WriteBigEndianInt(0); // Offsets + Timestamps
+                _sizeDelta += 8192;
             }
 
-            if ((dataFile.length() & 4095L) != 0L)
+            // Pad file to sector alignment
+            if ((_dataFile.Length & 4095) != 0)
             {
-                for (var2 = 0; var2 < (dataFile.length() & 4095L); ++var2)
-                {
-                    dataFile.write(0);
-                }
+                _dataFile.Position = _dataFile.Length;
+                int paddingNeeded = (int)(4096 - (_dataFile.Length & 4095));
+                _dataFile.Write(new byte[paddingNeeded], 0, paddingNeeded);
             }
 
-            var2 = (int)dataFile.length() / 4096;
-            sectorFree = new ArrayList(var2);
+            int sectorCount = (int)_dataFile.Length / 4096;
+            _sectorFree = new List<bool>(sectorCount);
+            for (int i = 0; i < sectorCount; i++) _sectorFree.Add(true);
 
-            int var3;
-            for (var3 = 0; var3 < var2; ++var3)
+            _sectorFree[0] = false; // Offset table
+            _sectorFree[1] = false; // Timestamp table
+
+            _dataFile.Position = 0;
+            for (int i = 0; i < 1024; i++)
             {
-                sectorFree.add(java.lang.Boolean.TRUE);
-            }
-
-            sectorFree.set(0, java.lang.Boolean.FALSE);
-            sectorFree.set(1, java.lang.Boolean.FALSE);
-            dataFile.seek(0L);
-
-            int var4;
-            for (var3 = 0; var3 < 1024; ++var3)
-            {
-                var4 = dataFile.readInt();
-                offsets[var3] = var4;
-                if (var4 != 0 && (var4 >> 8) + (var4 & 255) <= sectorFree.size())
+                int offset = ReadBigEndianInt();
+                _offsets[i] = offset;
+                if (offset != 0 && (offset >> 8) + (offset & 255) <= _sectorFree.Count)
                 {
-                    for (int var5 = 0; var5 < (var4 & 255); ++var5)
+                    for (int sector = 0; sector < (offset & 255); sector++)
                     {
-                        sectorFree.set((var4 >> 8) + var5, java.lang.Boolean.FALSE);
+                        _sectorFree[(offset >> 8) + sector] = false;
                     }
                 }
             }
 
-            for (var3 = 0; var3 < 1024; ++var3)
+            for (int i = 0; i < 1024; i++)
             {
-                var4 = dataFile.readInt();
-                chunkSaveTimes[var3] = var4;
+                _chunkSaveTimes[i] = ReadBigEndianInt();
             }
         }
-        catch (java.io.IOException var6)
+        catch (IOException ex)
         {
-            var6.printStackTrace();
+            Log.Error($"Failed to load RegionFile {path}: {ex.Message}");
         }
-
     }
 
-    public int func_22209_a()
+    public int GetSizeDelta()
     {
         lock (this)
         {
-            int var1 = sizeDelta;
-            sizeDelta = 0;
-            return var1;
+            int delta = _sizeDelta;
+            _sizeDelta = 0;
+            return delta;
         }
     }
 
-    private void func_22211_a(string var1)
-    {
-    }
-
-    private void debugln(string var1)
-    {
-        func_22211_a(var1 + "\n");
-    }
-
-    private void func_22199_a(string var1, int var2, int var3, string var4)
-    {
-        func_22211_a("REGION " + var1 + " " + fileName.getName() + "[" + var2 + "," + var3 + "] = " + var4);
-    }
-
-    private void func_22197_a(string var1, int var2, int var3, int var4, string var5)
-    {
-        func_22211_a("REGION " + var1 + " " + fileName.getName() + "[" + var2 + "," + var3 + "] " + var4 + "B = " + var5);
-    }
-
-    private void debugln(string var1, int var2, int var3, string var4)
-    {
-        func_22199_a(var1, var2, var3, var4 + "\n");
-    }
-
-    public ChunkDataStream getChunkDataInputStream(int var1, int var2)
+    public ChunkDataStream GetChunkDataInputStream(int x, int z)
     {
         lock (this)
         {
-            if (outOfBounds(var1, var2))
-            {
-                debugln("READ", var1, var2, "out of bounds");
-                return null;
-            }
-            else
-            {
-                try
-                {
-                    int var3 = getOffset(var1, var2);
-                    if (var3 == 0)
-                    {
-                        return null;
-                    }
-                    else
-                    {
-                        int var4 = var3 >> 8;
-                        int var5 = var3 & 255;
-                        if (var4 + var5 > sectorFree.size())
-                        {
-                            debugln("READ", var1, var2, "invalid sector");
-                            return null;
-                        }
-                        else
-                        {
-                            dataFile.seek(var4 * 4096);
-                            int var6 = dataFile.readInt();
-                            if (var6 > 4096 * var5)
-                            {
-                                debugln("READ", var1, var2, "invalid length: " + var6 + " > 4096 * " + var5);
-                                return null;
-                            }
-                            else
-                            {
-                                CompressionType var7 = (CompressionType)dataFile.readByte();
-                                byte[] var8;
-                                Stream var9;
+            if (IsOutOfBounds(x, z)) return null;
 
-                                if (var7 == CompressionType.ZLibDeflate)
-                                {
-                                    var8 = new byte[var6 - 1];
-                                    dataFile.read(var8);
-                                    var9 = new ZLibStream(new MemoryStream(var8), CompressionMode.Decompress);
-                                    return new(var9, var7);
-                                }
-                                else
-                                {
-                                    debugln("READ", var1, var2, "unknown version " + var7);
-                                    return null;
-                                }
-                            }
-                        }
-                    }
-                }
-                catch (System.IO.IOException)
-                {
-                    debugln("READ", var1, var2, "exception");
-                    return null;
-                }
-            }
-        }
-    }
+            int offset = GetOffset(x, z);
+            if (offset == 0) return null;
 
-    public Stream getChunkDataOutputStream(int var1, int var2)
-    {
-        if (outOfBounds(var1, var2))
-        {
+            int sectorOffset = offset >> 8;
+            int sectorCount = offset & 255;
+
+            if (sectorOffset + sectorCount > _sectorFree.Count) return null;
+
+            _dataFile.Position = sectorOffset * 4096;
+            int length = ReadBigEndianInt();
+
+            if (length > 4096 * sectorCount) return null;
+
+            CompressionType type = (CompressionType)_dataFile.ReadByte();
+            if (type == CompressionType.ZLibDeflate)
+            {
+                byte[] data = new byte[length - 1];
+                _dataFile.Read(data, 0, data.Length);
+
+                // Using ZLibStream for .NET 6+, or DeflateStream with ZLib wrapper
+                var ms = new MemoryStream(data);
+                // Note: Standard DeflateStream doesn't handle ZLib headers (CMF/FLG). 
+                // You may need a wrapper or System.IO.Compression.ZLibStream.
+                var zlib = new ZLibStream(ms, CompressionMode.Decompress);
+                return new ChunkDataStream(zlib, type);
+            }
             return null;
         }
+    }
 
-        var buffer = new RegionFileChunkBuffer(this, var1, var2);
+    public Stream GetChunkDataOutputStream(int x, int z)
+    {
+        if (IsOutOfBounds(x, z)) return null;
+
+        // This likely points to a buffer that calls this.Write() when closed
+        var buffer = new RegionFileChunkBuffer(this, x, z);
         return new ZLibStream(buffer, CompressionMode.Compress);
     }
 
-    public void write(int var1, int var2, byte[] var3, int var4)
+    public void Write(int x, int z, byte[] data, int length)
     {
         lock (this)
         {
             try
             {
-                int var5 = getOffset(var1, var2);
-                int var6 = var5 >> 8;
-                int var7 = var5 & 255;
-                int var8 = (var4 + 5) / 4096 + 1;
-                if (var8 >= 256)
-                {
-                    return;
-                }
+                int offset = GetOffset(x, z);
+                int sectorOffset = offset >> 8;
+                int sectorsOccupied = offset & 255;
+                int sectorsNeeded = (length + 5) / 4096 + 1;
 
-                if (var6 != 0 && var7 == var8)
+                if (sectorsNeeded >= 256) return;
+
+                if (sectorOffset != 0 && sectorsOccupied == sectorsNeeded)
                 {
-                    func_22197_a("SAVE", var1, var2, var4, "rewrite");
-                    write(var6, var3, var4);
+                    WriteInternal(sectorOffset, data, length);
                 }
                 else
                 {
-                    int var9;
-                    for (var9 = 0; var9 < var7; ++var9)
+                    // Mark old sectors as free
+                    for (int i = 0; i < sectorsOccupied; i++)
                     {
-                        sectorFree.set(var6 + var9, java.lang.Boolean.TRUE);
+                        _sectorFree[sectorOffset + i] = true;
                     }
 
-                    var9 = sectorFree.indexOf(java.lang.Boolean.TRUE);
-                    int var10 = 0;
-                    int var11;
-                    if (var9 != -1)
-                    {
-                        for (var11 = var9; var11 < sectorFree.size(); ++var11)
-                        {
-                            if (var10 != 0)
-                            {
-                                if (((java.lang.Boolean)sectorFree.get(var11)).booleanValue())
-                                {
-                                    ++var10;
-                                }
-                                else
-                                {
-                                    var10 = 0;
-                                }
-                            }
-                            else if (((java.lang.Boolean)sectorFree.get(var11)).booleanValue())
-                            {
-                                var9 = var11;
-                                var10 = 1;
-                            }
+                    // Find enough contiguous free space
+                    int firstFree = _sectorFree.IndexOf(true);
+                    int runStart = firstFree;
+                    int runLength = 0;
 
-                            if (var10 >= var8)
-                            {
-                                break;
-                            }
+                    if (runStart != -1)
+                    {
+                        for (int i = runStart; i < _sectorFree.Count; i++)
+                        {
+                            if (_sectorFree[i]) runLength++;
+                            else { runLength = 0; runStart = i + 1; }
+
+                            if (runLength >= sectorsNeeded) break;
                         }
                     }
 
-                    if (var10 >= var8)
+                    if (runLength >= sectorsNeeded)
                     {
-                        func_22197_a("SAVE", var1, var2, var4, "reuse");
-                        var6 = var9;
-                        setOffset(var1, var2, var9 << 8 | var8);
-
-                        for (var11 = 0; var11 < var8; ++var11)
-                        {
-                            sectorFree.set(var6 + var11, java.lang.Boolean.FALSE);
-                        }
-
-                        write(var6, var3, var4);
+                        sectorOffset = runStart;
+                        SetOffset(x, z, (sectorOffset << 8) | sectorsNeeded);
+                        for (int i = 0; i < sectorsNeeded; i++) _sectorFree[sectorOffset + i] = false;
+                        WriteInternal(sectorOffset, data, length);
                     }
                     else
                     {
-                        func_22197_a("SAVE", var1, var2, var4, "grow");
-                        dataFile.seek(dataFile.length());
-                        var6 = sectorFree.size();
-
-                        for (var11 = 0; var11 < var8; ++var11)
+                        // Grow file
+                        _dataFile.Position = _dataFile.Length;
+                        sectorOffset = _sectorFree.Count;
+                        for (int i = 0; i < sectorsNeeded; i++)
                         {
-                            dataFile.write(emptySector);
-                            sectorFree.add(java.lang.Boolean.FALSE);
+                            _dataFile.Write(EmptySector, 0, 4096);
+                            _sectorFree.Add(false);
                         }
-
-                        sizeDelta += 4096 * var8;
-                        write(var6, var3, var4);
-                        setOffset(var1, var2, var6 << 8 | var8);
+                        _sizeDelta += 4096 * sectorsNeeded;
+                        WriteInternal(sectorOffset, data, length);
+                        SetOffset(x, z, (sectorOffset << 8) | sectorsNeeded);
                     }
                 }
-
-                func_22208_b(var1, var2, (int)(java.lang.System.currentTimeMillis() / 1000L));
+                SetTimestamp(x, z, (int)(DateTimeOffset.UtcNow.ToUnixTimeSeconds()));
             }
-            catch (System.IO.IOException var12)
+            catch (IOException ex)
             {
-                Log.Error(var12);
+                Log.Error(ex);
             }
         }
     }
 
-    private void write(int var1, byte[] var2, int var3)
+    private void WriteInternal(int sectorOffset, byte[] data, int length)
     {
-        debugln(" " + var1);
-        dataFile.seek(var1 * 4096);
-        dataFile.writeInt(var3 + 1);
-        dataFile.writeByte((byte)CompressionType.ZLibDeflate);
-        dataFile.write(var2, 0, var3);
+        _dataFile.Position = sectorOffset * 4096;
+        WriteBigEndianInt(length + 1);
+        _dataFile.WriteByte((byte)CompressionType.ZLibDeflate);
+        _dataFile.Write(data, 0, length);
     }
 
-    private bool outOfBounds(int var1, int var2)
+    private void WriteBigEndianInt(int val)
     {
-        return var1 < 0 || var1 >= 32 || var2 < 0 || var2 >= 32;
+        byte[] bytes = BitConverter.GetBytes(val);
+        if (BitConverter.IsLittleEndian) Array.Reverse(bytes);
+        _dataFile.Write(bytes, 0, 4);
     }
 
-    private int getOffset(int var1, int var2)
+    private int ReadBigEndianInt()
     {
-        return offsets[var1 + var2 * 32];
+        byte[] bytes = new byte[4];
+        _dataFile.Read(bytes, 0, 4);
+        if (BitConverter.IsLittleEndian) Array.Reverse(bytes);
+        return BitConverter.ToInt32(bytes, 0);
     }
 
-    public bool func_22202_c(int var1, int var2)
+    private bool IsOutOfBounds(int x, int z) => x < 0 || x >= 32 || z < 0 || z >= 32;
+
+    private int GetOffset(int x, int z) => _offsets[x + z * 32];
+
+    private void SetOffset(int x, int z, int offset)
     {
-        return getOffset(var1, var2) != 0;
+        _offsets[x + z * 32] = offset;
+        _dataFile.Position = (x + z * 32) * 4;
+        WriteBigEndianInt(offset);
     }
 
-    private void setOffset(int var1, int var2, int var3)
+    private void SetTimestamp(int x, int z, int time)
     {
-        offsets[var1 + var2 * 32] = var3;
-        dataFile.seek((var1 + var2 * 32) * 4);
-        dataFile.writeInt(var3);
+        _chunkSaveTimes[x + z * 32] = time;
+        _dataFile.Position = 4096 + (x + z * 32) * 4;
+        WriteBigEndianInt(time);
     }
 
-    private void func_22208_b(int var1, int var2, int var3)
-    {
-        chunkSaveTimes[var1 + var2 * 32] = var3;
-        dataFile.seek(4096 + (var1 + var2 * 32) * 4);
-        dataFile.writeInt(var3);
-    }
+    public void Close() => _dataFile.Close();
 
-    public void func_22196_b()
+    public void Dispose()
     {
-        dataFile.close();
+        _dataFile?.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

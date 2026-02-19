@@ -1,3 +1,4 @@
+using System;
 using BetaSharp.Blocks;
 using BetaSharp.Entities;
 using BetaSharp.Network.Packets;
@@ -5,234 +6,203 @@ using BetaSharp.Network.Packets.S2CPlay;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Chunks;
-using java.lang;
+using BetaSharp.Worlds.Storage; // Added for PersistentState
 
 namespace BetaSharp.Items;
 
 public class ItemMap : NetworkSyncedItem
 {
-
     public ItemMap(int id) : base(id)
     {
         setMaxCount(1);
     }
 
-    public static MapState getMapState(short mapId, World world)
+    public static MapState GetMapState(short mapId, World world)
     {
-        (new StringBuilder()).append("map_").append(mapId).toString();
-        MapState mapState = (MapState)world.getOrCreateState(MapState.Class, "map_" + mapId);
+        string mapName = $"map_{mapId}";
+        // Using the new Generic method:
+        MapState mapState = world.GetOrCreateState<MapState>(mapName);
+
         if (mapState == null)
         {
-            int mapIdCount = world.getIdCount("map");
-            string mapName = "map_" + mapIdCount;
-            mapState = new MapState(mapName);
-            world.setState(mapName, mapState);
+            int nextId = world.getIdCount("map");
+            string newName = $"map_{nextId}";
+            mapState = new MapState(newName);
+            world.setState(newName, mapState);
         }
 
         return mapState;
     }
 
-    public MapState getSavedMapState(ItemStack stack, World world)
+    public MapState GetSavedMapState(ItemStack stack, World world)
     {
-        (new StringBuilder()).append("map_").append(stack.getDamage()).toString();
-        MapState mapState = (MapState)world.getOrCreateState(MapState.Class, "map_" + stack.getDamage());
+        string mapName = $"map_{stack.getDamage()}";
+        // Using the new Generic method:
+        MapState mapState = world.GetOrCreateState<MapState>(mapName);
+
         if (mapState == null)
         {
             stack.setDamage(world.getIdCount("map"));
-            string mapName = "map_" + stack.getDamage();
-            mapState = new MapState(mapName);
-            mapState.centerX = world.getProperties().SpawnX;
-            mapState.centerZ = world.getProperties().SpawnZ;
-            mapState.scale = 3;
-            mapState.dimension = (sbyte)world.dimension.id;
+            string newName = $"map_{stack.getDamage()}";
+
+            mapState = new MapState(newName)
+            {
+                centerX = world.getProperties().SpawnX,
+                centerZ = world.getProperties().SpawnZ,
+                scale = 3,
+                dimension = (sbyte)world.dimension.id
+            };
+
             mapState.markDirty();
-            world.setState(mapName, mapState);
+            world.setState(newName, mapState);
         }
 
         return mapState;
     }
 
-    public void update(World world, Entity entity, MapState map)
+    public void UpdateMap(World world, Entity entity, MapState map)
     {
-        if (world.dimension.id == map.dimension)
+        if (world.dimension.id != map.dimension) return;
+
+        const int mapWidth = 128;
+        const int mapHeight = 128;
+        int blocksPerPixel = 1 << map.scale;
+        int centerX = map.centerX;
+        int centerZ = map.centerZ;
+
+        int entityPosX = MathHelper.floor_double(entity.x - centerX) / blocksPerPixel + mapWidth / 2;
+        int entityPosZ = MathHelper.floor_double(entity.z - centerZ) / blocksPerPixel + mapHeight / 2;
+        int scanRadius = 128 / blocksPerPixel;
+
+        if (world.dimension.hasCeiling)
         {
-            short mapWidth = 128;
-            short mapHeight = 128;
-            int blocksPerPixel = 1 << map.scale;
-            int centerX = map.centerX;
-            int centerZ = map.centerZ;
-            int entityPosX = MathHelper.floor_double(entity.x - (double)centerX) / blocksPerPixel + mapWidth / 2;
-            int entityPosZ = MathHelper.floor_double(entity.z - (double)centerZ) / blocksPerPixel + mapHeight / 2;
-            int scanRadius = 128 / blocksPerPixel;
-            if (world.dimension.hasCeiling)
-            {
-                scanRadius /= 2;
-            }
+            scanRadius /= 2;
+        }
 
-            ++map.inventoryTicks;
+        map.inventoryTicks++;
 
-            for (int pixelX = entityPosX - scanRadius + 1; pixelX < entityPosX + scanRadius; ++pixelX)
+        for (int pixelX = entityPosX - scanRadius + 1; pixelX < entityPosX + scanRadius; ++pixelX)
+        {
+            if ((pixelX & 15) == (map.inventoryTicks & 15))
             {
-                if ((pixelX & 15) == (map.inventoryTicks & 15))
+                int minDirtyZ = 255;
+                int maxDirtyZ = 0;
+                double lastHeight = 0.0D;
+
+                for (int pixelZ = entityPosZ - scanRadius - 1; pixelZ < entityPosZ + scanRadius; ++pixelZ)
                 {
-                    int minDirtyZ = 255;
-                    int maxDirtyZ = 0;
-                    double lastHeight = 0.0D;
-
-                    for (int pixelZ = entityPosZ - scanRadius - 1; pixelZ < entityPosZ + scanRadius; ++pixelZ)
+                    if (pixelX >= 0 && pixelZ >= -1 && pixelX < mapWidth && pixelZ < mapHeight)
                     {
-                        if (pixelX >= 0 && pixelZ >= -1 && pixelX < mapWidth && pixelZ < mapHeight)
+                        int dx = pixelX - entityPosX;
+                        int dy = pixelZ - entityPosZ;
+                        bool isOutside = dx * dx + dy * dy > (scanRadius - 2) * (scanRadius - 2);
+
+                        int worldX = (centerX / blocksPerPixel + pixelX - mapWidth / 2) * blocksPerPixel;
+                        int worldZ = (centerZ / blocksPerPixel + pixelZ - mapHeight / 2) * blocksPerPixel;
+
+                        int[] blockHistogram = new int[256];
+                        Chunk chunk = world.getChunkFromPos(worldX, worldZ);
+
+                        int chunkOffsetX = worldX & 15;
+                        int chunkOffsetZ = worldZ & 15;
+                        int fluidDepth = 0;
+                        double avgHeight = 0.0D;
+                        int sampleX;
+                        int sampleZ;
+
+                        if (world.dimension.hasCeiling)
                         {
-                            int dx = pixelX - entityPosX;
-                            int dy = pixelZ - entityPosZ;
-                            bool IsOutside = dx * dx + dy * dy > (scanRadius - 2) * (scanRadius - 2);
-                            int worldX = (centerX / blocksPerPixel + pixelX - mapWidth / 2) * blocksPerPixel;
-                            int worldZ = (centerZ / blocksPerPixel + pixelZ - mapHeight / 2) * blocksPerPixel;
-                            byte redSum = 0;
-                            byte greenSum = 0;
-                            byte blueSum = 0;
-                            int[] blockHistogram = new int[256];
-                            Chunk chunk = world.getChunkFromPos(worldX, worldZ);
-                            int chunkOffsetX = worldX & 15;
-                            int chunkOffsetZ = worldZ & 15;
-                            int fluidDepth = 0;
-                            double avgHeight = 0.0D;
-                            int sampleX;
-                            int sampleZ;
-                            int currentY;
-                            int colorIndex;
-                            if (world.dimension.hasCeiling)
-                            {
-                                sampleX = worldX + worldZ * 231871;
-                                sampleX = sampleX * sampleX * 31287121 + sampleX * 11;
-                                if ((sampleX >> 20 & 1) == 0)
-                                {
-                                    blockHistogram[Block.Dirt.id] += 10;
-                                }
-                                else
-                                {
-                                    blockHistogram[Block.Stone.id] += 10;
-                                }
+                            int hash = worldX + worldZ * 231871;
+                            hash = hash * hash * 31287121 + hash * 11;
 
-                                avgHeight = 100.0D;
-                            }
-                            else
+                            if ((hash >> 20 & 1) == 0) blockHistogram[Block.Dirt.id] += 10;
+                            else blockHistogram[Block.Stone.id] += 10;
+
+                            avgHeight = 100.0D;
+                        }
+                        else
+                        {
+                            for (sampleX = 0; sampleX < blocksPerPixel; ++sampleX)
                             {
-                                for (sampleX = 0; sampleX < blocksPerPixel; ++sampleX)
+                                for (sampleZ = 0; sampleZ < blocksPerPixel; ++sampleZ)
                                 {
-                                    for (sampleZ = 0; sampleZ < blocksPerPixel; ++sampleZ)
+                                    int currentY = chunk.getHeight(sampleX + chunkOffsetX, sampleZ + chunkOffsetZ) + 1;
+                                    int blockId = 0;
+
+                                    if (currentY > 1)
                                     {
-                                        currentY = chunk.getHeight(sampleX + chunkOffsetX, sampleZ + chunkOffsetZ) + 1;
-                                        int blockId = 0;
-                                        if (currentY > 1)
-                                        {
-                                            processBlockHeight(chunk, sampleX, chunkOffsetX, sampleZ, chunkOffsetZ, ref currentY, out blockId, ref fluidDepth);
-                                        }
-
-                                        avgHeight += (double)currentY / (double)(blocksPerPixel * blocksPerPixel);
-                                        ++blockHistogram[blockId];
-                                    }
-                                }
-                            }
-
-                            fluidDepth /= blocksPerPixel * blocksPerPixel;
-                            int var10000 = redSum / (blocksPerPixel * blocksPerPixel);
-                            var10000 = greenSum / (blocksPerPixel * blocksPerPixel);
-                            var10000 = blueSum / (blocksPerPixel * blocksPerPixel);
-                            sampleX = 0;
-                            sampleZ = 0;
-
-                            for (currentY = 0; currentY < 256; ++currentY)
-                            {
-                                if (blockHistogram[currentY] > sampleX)
-                                {
-                                    sampleZ = currentY;
-                                    sampleX = blockHistogram[currentY];
-                                }
-                            }
-
-                            double shadeFactor = (avgHeight - lastHeight) * 4.0D / (double)(blocksPerPixel + 4) + ((double)(pixelX + pixelZ & 1) - 0.5D) * 0.4D;
-                            byte brightness = 1;
-                            if (shadeFactor > 0.6D)
-                            {
-                                brightness = 2;
-                            }
-
-                            if (shadeFactor < -0.6D)
-                            {
-                                brightness = 0;
-                            }
-
-                            colorIndex = 0;
-                            if (sampleZ > 0)
-                            {
-                                MapColor mapColor = Block.Blocks[sampleZ].material.MapColor;
-                                if (mapColor == MapColor.waterColor)
-                                {
-                                    shadeFactor = (double)fluidDepth * 0.1D + (double)(pixelX + pixelZ & 1) * 0.2D;
-                                    brightness = 1;
-                                    if (shadeFactor < 0.5D)
-                                    {
-                                        brightness = 2;
+                                        ProcessBlockHeight(chunk, sampleX, chunkOffsetX, sampleZ, chunkOffsetZ, ref currentY, out blockId, ref fluidDepth);
                                     }
 
-                                    if (shadeFactor > 0.9D)
-                                    {
-                                        brightness = 0;
-                                    }
-                                }
-
-                                colorIndex = mapColor.colorIndex;
-                            }
-
-                            lastHeight = avgHeight;
-                            if (pixelZ >= 0 && dx * dx + dy * dy < scanRadius * scanRadius && (!IsOutside || (pixelX + pixelZ & 1) != 0))
-                            {
-                                byte currentColor = map.colors[pixelX + pixelZ * mapWidth];
-                                byte pixelColor = (byte)(colorIndex * 4 + brightness);
-                                if (currentColor != pixelColor)
-                                {
-                                    if (minDirtyZ > pixelZ)
-                                    {
-                                        minDirtyZ = pixelZ;
-                                    }
-
-                                    if (maxDirtyZ < pixelZ)
-                                    {
-                                        maxDirtyZ = pixelZ;
-                                    }
-
-                                    map.colors[pixelX + pixelZ * mapWidth] = pixelColor;
+                                    avgHeight += (double)currentY / (blocksPerPixel * blocksPerPixel);
+                                    blockHistogram[blockId]++;
                                 }
                             }
                         }
-                    }
 
-                    if (minDirtyZ <= maxDirtyZ)
-                    {
-                        map.markDirty(pixelX, minDirtyZ, maxDirtyZ);
+                        fluidDepth /= (blocksPerPixel * blocksPerPixel);
+                        sampleX = 0; // Max frequency
+                        sampleZ = 0; // Most common Block ID
+
+                        for (int i = 0; i < 256; ++i)
+                        {
+                            if (blockHistogram[i] > sampleX)
+                            {
+                                sampleZ = i;
+                                sampleX = blockHistogram[i];
+                            }
+                        }
+
+                        double shadeFactor = (avgHeight - lastHeight) * 4.0D / (blocksPerPixel + 4) + ((double)(pixelX + pixelZ & 1) - 0.5D) * 0.4D;
+                        byte brightness = (byte)(shadeFactor > 0.6D ? 2 : (shadeFactor < -0.6D ? 0 : 1));
+
+                        int colorIndex = 0;
+                        if (sampleZ > 0)
+                        {
+                            MapColor mapColor = Block.Blocks[sampleZ].material.MapColor;
+                            if (mapColor == MapColor.waterColor)
+                            {
+                                shadeFactor = fluidDepth * 0.1D + (double)(pixelX + pixelZ & 1) * 0.2D;
+                                brightness = (byte)(shadeFactor < 0.5D ? 2 : (shadeFactor > 0.9D ? 0 : 1));
+                            }
+                            colorIndex = mapColor.colorIndex;
+                        }
+
+                        lastHeight = avgHeight;
+                        if (pixelZ >= 0 && dx * dx + dy * dy < scanRadius * scanRadius && (!isOutside || (pixelX + pixelZ & 1) != 0))
+                        {
+                            byte currentColor = map.colors[pixelX + pixelZ * mapWidth];
+                            byte pixelColor = (byte)(colorIndex * 4 + brightness);
+
+                            if (currentColor != pixelColor)
+                            {
+                                if (minDirtyZ > pixelZ) minDirtyZ = pixelZ;
+                                if (maxDirtyZ < pixelZ) maxDirtyZ = pixelZ;
+                                map.colors[pixelX + pixelZ * mapWidth] = pixelColor;
+                            }
+                        }
                     }
                 }
-            }
 
+                if (minDirtyZ <= maxDirtyZ)
+                {
+                    map.markDirty(pixelX, minDirtyZ, maxDirtyZ);
+                }
+            }
         }
     }
 
-    private void processBlockHeight(Chunk chunk, int chunkX, int dx, int chunkZ, int dz, ref int scanY, out int blockId, ref int fluidDepth)
+    private void ProcessBlockHeight(Chunk chunk, int chunkX, int dx, int chunkZ, int dz, ref int scanY, out int blockId, ref int fluidDepth)
     {
-        bool foundSurface = false;
         blockId = 0;
         bool exitLoop = false;
 
         while (!exitLoop)
         {
-            foundSurface = true;
+            bool foundSurface = true;
             blockId = chunk.getBlockId(chunkX + dx, scanY - 1, chunkZ + dz);
-            if (blockId == 0)
-            {
-                foundSurface = false;
-            }
-            else if (scanY > 0 && blockId > 0 && Block.Blocks[blockId].material.MapColor == MapColor.airColor)
+
+            if (blockId == 0 || (scanY > 0 && Block.Blocks[blockId].material.MapColor == MapColor.airColor))
             {
                 foundSurface = false;
             }
@@ -252,7 +222,6 @@ public class ItemMap : NetworkSyncedItem
                 else
                 {
                     int depthCheckY = scanY - 1;
-
                     while (true)
                     {
                         int fluidBlockId = chunk.getBlockId(chunkX + dx, depthCheckY--, chunkZ + dz);
@@ -265,44 +234,47 @@ public class ItemMap : NetworkSyncedItem
                     }
                 }
             }
+            if (scanY <= 0) exitLoop = true; // Safety break
         }
     }
 
     public override void inventoryTick(ItemStack itemStack, World world, Entity entity, int slotIndex, bool shouldUpdate)
     {
-        if (!world.isRemote)
+        if (world.isRemote) return;
+
+        MapState mapState = GetSavedMapState(itemStack, world);
+        if (entity is EntityPlayer player)
         {
-            MapState mapState = getSavedMapState(itemStack, world);
-            if (entity is EntityPlayer)
-            {
-                EntityPlayer entityPlayer = (EntityPlayer)entity;
-                mapState.update(entityPlayer, itemStack);
-            }
+            mapState.update(player, itemStack);
+        }
 
-            if (shouldUpdate)
-            {
-                update(world, entity, mapState);
-            }
-
+        if (shouldUpdate)
+        {
+            UpdateMap(world, entity, mapState);
         }
     }
 
     public override void onCraft(ItemStack itemStack, World world, EntityPlayer entityPlayer)
     {
-        itemStack.setDamage(world.getIdCount("map"));
-        string mapName = "map_" + itemStack.getDamage();
-        MapState mapState = new MapState(mapName);
+        int mapId = world.getIdCount("map");
+        itemStack.setDamage(mapId);
+        string mapName = $"map_{mapId}";
+
+        MapState mapState = new MapState(mapName)
+        {
+            centerX = MathHelper.floor_double(entityPlayer.x),
+            centerZ = MathHelper.floor_double(entityPlayer.z),
+            scale = 3,
+            dimension = (sbyte)world.dimension.id
+        };
+
         world.setState(mapName, mapState);
-        mapState.centerX = MathHelper.floor_double(entityPlayer.x);
-        mapState.centerZ = MathHelper.floor_double(entityPlayer.z);
-        mapState.scale = 3;
-        mapState.dimension = (sbyte)world.dimension.id;
         mapState.markDirty();
     }
 
     public override Packet getUpdatePacket(ItemStack stack, World world, EntityPlayer player)
     {
-        byte[] updateData = getSavedMapState(stack, world).getPlayerMarkerPacket(player);
+        byte[] updateData = GetSavedMapState(stack, world).getPlayerMarkerPacket(player);
         return updateData == null ? null : new MapUpdateS2CPacket((short)Item.Map.id, (short)stack.getDamage(), updateData);
     }
 }

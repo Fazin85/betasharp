@@ -1,205 +1,186 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
 using BetaSharp.NBT;
-using java.lang;
-using java.util;
 
 namespace BetaSharp.Worlds.Storage;
 
-public class PersistentStateManager : java.lang.Object
+public class PersistentStateManager
 {
-    private readonly WorldStorage saveHandler;
-    private readonly Map loadedDataMap = new HashMap();
-    private readonly List loadedDataList = new ArrayList();
-    private readonly Map idCounts = new HashMap();
-    private static readonly Class c = ikvm.runtime.Util.getClassFromTypeHandle(typeof(java.lang.String).TypeHandle);
+    private readonly IWorldStorage _saveHandler;
+    private readonly Dictionary<string, PersistentState> _loadedDataMap = new();
+    private readonly List<PersistentState> _loadedDataList = new();
+    private readonly Dictionary<string, short> _idCounts = new();
 
-    public PersistentStateManager(WorldStorage var1)
+    public PersistentStateManager(IWorldStorage saveHandler)
     {
-        saveHandler = var1;
-        loadIdCounts();
+        _saveHandler = saveHandler;
+        LoadIdCounts();
     }
 
-    public PersistentState loadData(Class var1, string var2)
+    /// <summary>
+    /// Loads or retrieves persistent data (like map data or village info).
+    /// </summary>
+    public T LoadData<T>(string name) where T : PersistentState
     {
-        PersistentState var3 = (PersistentState)loadedDataMap.get(var2);
-        if (var3 != null)
+        if (_loadedDataMap.TryGetValue(name, out PersistentState existing))
         {
-            return var3;
+            return (T)existing;
         }
 
-        if (saveHandler != null)
+        T state = null;
+
+        if (_saveHandler != null)
         {
             try
             {
-                java.io.File file = saveHandler.getWorldPropertiesFile(var2);
-                if (file != null && file.exists())
+                string filePath = _saveHandler.GetWorldPropertiesFile(name);
+                if (filePath != null && File.Exists(filePath))
                 {
                     try
                     {
-                        var3 = (PersistentState)var1.getConstructor([c]).newInstance([var2]);
+                        // C# equivalent to Java reflection constructor: new T(name)
+                        state = (T)Activator.CreateInstance(typeof(T), name);
                     }
-                    catch (java.lang.Exception e)
+                    catch (Exception e)
                     {
-                        throw new RuntimeException("Failed to instantiate " + var1.toString(), e);
+                        throw new Exception($"Failed to instantiate {typeof(T)}", e);
                     }
 
-                    using var stream = File.OpenRead(file.getAbsolutePath());
-                    NBTTagCompound var6 = NbtIo.ReadCompressed(stream);
-                    var3.readNBT(var6.GetCompoundTag("data"));
+                    using var stream = File.OpenRead(filePath);
+                    NBTTagCompound root = NbtIo.ReadCompressed(stream);
+                    state.readNBT(root.GetCompoundTag("data"));
                 }
             }
-            catch (java.lang.Exception var8)
+            catch (Exception ex)
             {
-                var8.printStackTrace();
+                Log.Error($"Error loading persistent data '{name}': {ex.Message}");
             }
         }
 
-        if (var3 != null)
+        if (state != null)
         {
-            loadedDataMap.put(var2, var3);
-            loadedDataList.add(var3);
+            _loadedDataMap[name] = state;
+            _loadedDataList.Add(state);
         }
 
-        return var3;
+        return state;
     }
 
-    public void setData(string var1, PersistentState var2)
+    public void SetData(string name, PersistentState state)
     {
-        if (var2 == null)
-        {
-            throw new RuntimeException("Can\'t set null data");
-        }
-        else
-        {
-            if (loadedDataMap.containsKey(var1))
-            {
-                loadedDataList.remove(loadedDataMap.remove(var1));
-            }
+        if (state == null) throw new ArgumentNullException(nameof(state), "Can't set null data");
 
-            loadedDataMap.put(var1, var2);
-            loadedDataList.add(var2);
+        if (_loadedDataMap.ContainsKey(name))
+        {
+            _loadedDataList.Remove(_loadedDataMap[name]);
         }
+
+        _loadedDataMap[name] = state;
+        _loadedDataList.Add(state);
     }
 
-    public void saveAllData()
+    public void SaveAllData()
     {
-        for (int var1 = 0; var1 < loadedDataList.size(); ++var1)
+        foreach (var state in _loadedDataList)
         {
-            PersistentState var2 = (PersistentState)loadedDataList.get(var1);
-            if (var2.isDirty())
+            if (state.isDirty())
             {
-                saveData(var2);
-                var2.setDirty(false);
+                SaveData(state);
+                state.setDirty(false);
             }
         }
-
     }
 
-    private void saveData(PersistentState var1)
+    private void SaveData(PersistentState state)
     {
-        if (saveHandler != null)
+        if (_saveHandler == null) return;
+
+        try
         {
-            try
+            string filePath = _saveHandler.GetWorldPropertiesFile(state.id);
+            if (filePath != null)
             {
-                java.io.File file = saveHandler.getWorldPropertiesFile(var1.id);
-                if (file != null)
-                {
-                    NBTTagCompound var3 = new();
-                    var1.writeNBT(var3);
-                    NBTTagCompound tag = new();
-                    tag.SetCompoundTag("data", var3);
+                NBTTagCompound dataTag = new();
+                state.writeNBT(dataTag);
 
+                NBTTagCompound root = new();
+                root.SetCompoundTag("data", dataTag);
 
-                    using var stream = File.OpenWrite(file.getAbsolutePath());
-                    NbtIo.WriteCompressed(tag, stream);
-                }
+                using var stream = File.Create(filePath);
+                NbtIo.WriteCompressed(root, stream);
             }
-            catch (System.Exception var6)
-            {
-                Log.Error(var6);
-            }
-
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Failed to save persistent state {state.id}: {ex.Message}");
         }
     }
 
-    private void loadIdCounts()
+    private void LoadIdCounts()
     {
         try
         {
-            idCounts.clear();
-            if (saveHandler == null)
-            {
-                return;
-            }
+            _idCounts.Clear();
+            if (_saveHandler == null) return;
 
-            java.io.File file = saveHandler.getWorldPropertiesFile("idcounts");
-            if (file != null && file.exists())
+            string filePath = _saveHandler.GetWorldPropertiesFile("idcounts");
+            if (filePath != null && File.Exists(filePath))
             {
-                using var stream = File.OpenRead(file.getAbsolutePath());
-                NBTTagCompound var3 = NbtIo.Read(stream);
+                using var stream = File.OpenRead(filePath);
+                NBTTagCompound tag = NbtIo.Read(stream);
 
-                foreach (var var5 in var3.Values)
+                foreach (var entry in tag.Values)
                 {
-                    if (var5 is NBTTagShort)
+                    if (entry is NBTTagShort shortTag)
                     {
-                        NBTTagShort var6 = (NBTTagShort)var5;
-                        string var7 = var6.Key;
-                        short var8 = var6.Value;
-                        idCounts.put(var7, Short.valueOf(var8));
+                        _idCounts[shortTag.Key] = shortTag.Value;
                     }
                 }
             }
         }
-        catch (java.lang.Exception var9)
+        catch (Exception ex)
         {
-            var9.printStackTrace();
+            Log.Error($"Failed to load idcounts: {ex.Message}");
         }
-
     }
 
-    public int getUniqueDataId(string var1)
+    public int GetUniqueDataId(string key)
     {
-        Short var2 = (Short)idCounts.get(var1);
-        if (var2 == null)
+        if (!_idCounts.TryGetValue(key, out short val))
         {
-            var2 = Short.valueOf(0);
+            val = 0;
         }
         else
         {
-            var2 = Short.valueOf((short)(var2.shortValue() + 1));
+            val++;
         }
 
-        idCounts.put(var1, var2);
-        if (saveHandler == null)
-        {
-            return var2.shortValue();
-        }
-        else
+        _idCounts[key] = val;
+
+        if (_saveHandler != null)
         {
             try
             {
-                java.io.File file = saveHandler.getWorldPropertiesFile("idcounts");
-                if (file != null)
+                string filePath = _saveHandler.GetWorldPropertiesFile("idcounts");
+                if (filePath != null)
                 {
                     NBTTagCompound tag = new();
-                    Iterator var5 = idCounts.keySet().iterator();
-
-                    while (var5.hasNext())
+                    foreach (var kvp in _idCounts)
                     {
-                        string var6 = (string)var5.next();
-                        short var7 = ((Short)idCounts.get(var6)).shortValue();
-                        tag.SetShort(var6, var7);
+                        tag.SetShort(kvp.Key, kvp.Value);
                     }
 
-                    using var stream = File.OpenWrite(file.getAbsolutePath());
+                    using var stream = File.Create(filePath);
                     NbtIo.Write(tag, stream);
                 }
             }
-            catch (java.lang.Exception var8)
+            catch (Exception ex)
             {
-                var8.printStackTrace();
+                Log.Error($"Failed to save unique ID counts: {ex.Message}");
             }
-
-            return var2.shortValue();
         }
+
+        return val;
     }
 }

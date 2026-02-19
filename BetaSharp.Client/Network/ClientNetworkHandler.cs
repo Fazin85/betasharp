@@ -773,7 +773,7 @@ public class ClientNetworkHandler : NetHandler
     {
         if (packet.itemRawId == Item.Map.id)
         {
-            ItemMap.getMapState(packet.id, mc.world).updateData(packet.updateData);
+            ItemMap.GetMapState(packet.id, mc.world).updateData(packet.updateData);
         }
         else
         {

@@ -3,314 +3,229 @@ using BetaSharp.NBT;
 using BetaSharp.Server.Worlds;
 using BetaSharp.Worlds.Chunks.Storage;
 using BetaSharp.Worlds.Dimensions;
-using java.io;
-using java.util.logging;
-using File = System.IO.File;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using static System.IO.Path;
 
 namespace BetaSharp.Worlds.Storage;
 
-public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
+public class RegionWorldStorage : IWorldStorage, IPlayerSaveHandler
 {
-    private readonly java.io.File saveDirectory;
-    private readonly java.io.File playersDirectory;
-    private readonly java.io.File dataDir;
-    private readonly long now = java.lang.System.currentTimeMillis();
+    private readonly string _saveDir;
+    private readonly string _playersDir;
+    private readonly string _dataDir;
+    private readonly long _now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-    public RegionWorldStorage(java.io.File var1, string var2, bool var3)
+    public RegionWorldStorage(string baseDir, string worldName, bool createPlayersDir)
     {
-        saveDirectory = new java.io.File(var1, var2);
-        saveDirectory.mkdirs();
-        playersDirectory = new java.io.File(saveDirectory, "players");
-        dataDir = new java.io.File(saveDirectory, "data");
-        dataDir.mkdirs();
-        if (var3)
+        _saveDir = Combine(baseDir, worldName);
+        Directory.CreateDirectory(_saveDir);
+
+        _playersDir = Combine(_saveDir, "players");
+        _dataDir = Combine(_saveDir, "data");
+        Directory.CreateDirectory(_dataDir);
+
+        if (createPlayersDir)
         {
-            playersDirectory.mkdirs();
+            Directory.CreateDirectory(_playersDir);
         }
 
-        writeSessionLock();
+        WriteSessionLock();
     }
 
-    private void writeSessionLock()
+    // UPDATED: Return type is now IChunkStorage
+    public virtual IChunkStorage GetChunkStorage(Dimension dimension)
+    {
+        if (dimension is NetherDimension)
+        {
+            string netherPath = Combine(_saveDir, "DIM-1");
+            if (!Directory.Exists(netherPath))
+            {
+                Directory.CreateDirectory(netherPath);
+            }
+            // RegionChunkStorage now expects a string path
+            return new RegionChunkStorage(netherPath);
+        }
+
+        return new RegionChunkStorage(_saveDir);
+    }
+
+    private void WriteSessionLock()
     {
         try
         {
-            java.io.File var1 = new(saveDirectory, "session.lock");
-            DataOutputStream var2 = new(new FileOutputStream(var1));
+            string lockFile = Combine(_saveDir, "session.lock");
+            using FileStream fs = File.Create(lockFile);
 
-            try
-            {
-                var2.writeLong(now);
-            }
-            finally
-            {
-                var2.close();
-            }
-
+            // Session lock uses Big Endian
+            byte[] bytes = BitConverter.GetBytes(_now);
+            if (BitConverter.IsLittleEndian) Array.Reverse(bytes);
+            fs.Write(bytes, 0, bytes.Length);
         }
-        catch (java.io.IOException var7)
+        catch (IOException ex)
         {
-            Log.Error($"Failed to check session lock, aborting: {var7}");
-            throw new java.lang.RuntimeException("Failed to check session lock, aborting");
+            Log.Error($"Failed to write session lock: {ex.Message}");
+            throw new Exception("Failed to check session lock, aborting", ex);
         }
     }
 
-    protected java.io.File getDirectory()
-    {
-        return saveDirectory;
-    }
-
-    public void checkSessionLock()
+    public void CheckSessionLock()
     {
         try
         {
-            java.io.File var1 = new(saveDirectory, "session.lock");
-            DataInputStream var2 = new(new FileInputStream(var1));
+            string lockFile = Combine(_saveDir, "session.lock");
+            if (!File.Exists(lockFile)) return;
 
-            try
-            {
-                if (var2.readLong() != now)
-                {
-                    throw new MinecraftException("The save is being accessed from another location, aborting");
-                }
-            }
-            finally
-            {
-                var2.close();
-            }
+            using FileStream fs = File.OpenRead(lockFile);
+            byte[] bytes = new byte[8];
+            fs.Read(bytes, 0, 8);
 
+            if (BitConverter.IsLittleEndian) Array.Reverse(bytes);
+            long diskTime = BitConverter.ToInt64(bytes, 0);
+
+            if (diskTime != _now)
+            {
+                throw new Exception("The save is being accessed from another location, aborting");
+            }
         }
-        catch (java.io.IOException var7)
+        catch (IOException)
         {
-            throw new MinecraftException("Failed to check session lock, aborting");
+            throw new Exception("Failed to check session lock, aborting");
         }
     }
 
-    public virtual ChunkStorage getChunkStorage(Dimension var1)
+    public virtual void Save(WorldProperties props, List<EntityPlayer> players)
     {
-        java.io.File var2 = getDirectory();
-        if (var1 is NetherDimension)
-        {
-            java.io.File var3 = new(var2, "DIM-1");
-            var3.mkdirs();
-
-            return new RegionChunkStorage(var3);
-        }
-        else
-        {
-            return new RegionChunkStorage(var2);
-        }
+        props.SaveVersion = 19132;
+        NBTTagCompound dataTag = props.getNBTTagCompoundWithPlayer(players);
+        NBTTagCompound root = new();
+        root.SetTag("Data", dataTag);
+        SaveLevelDat(root);
     }
 
-    public virtual void save(WorldProperties var1, List<EntityPlayer> var2)
+    public void Save(WorldProperties props)
     {
-        var1.SaveVersion = 19132;
+        NBTTagCompound dataTag = props.getNBTTagCompound();
+        NBTTagCompound root = new();
+        root.SetTag("Data", dataTag);
+        SaveLevelDat(root);
+    }
 
-        NBTTagCompound var3 = var1.getNBTTagCompoundWithPlayer(var2);
-        NBTTagCompound tag = new();
-        tag.SetTag("Data", var3);
-
+    private void SaveLevelDat(NBTTagCompound root)
+    {
         try
         {
-            java.io.File file = new(saveDirectory, "level.dat_new");
-            java.io.File var6 = new(saveDirectory, "level.dat_old");
-            java.io.File var7 = new(saveDirectory, "level.dat");
+            string newFile = Combine(_saveDir, "level.dat_new");
+            string oldFile = Combine(_saveDir, "level.dat_old");
+            string currentFile = Combine(_saveDir, "level.dat");
 
-            using FileStream stream = File.OpenWrite(file.getAbsolutePath());
-            NbtIo.WriteCompressed(tag, stream);
-
-            if (var6.exists())
+            using (FileStream stream = File.Create(newFile))
             {
-                var6.delete();
+                NbtIo.WriteCompressed(root, stream);
             }
 
-            var7.renameTo(var6);
-            if (var7.exists())
-            {
-                var7.delete();
-            }
-
-            file.renameTo(var7);
-            if (file.exists())
-            {
-                file.delete();
-            }
+            if (File.Exists(oldFile)) File.Delete(oldFile);
+            if (File.Exists(currentFile)) File.Move(currentFile, oldFile);
+            File.Move(newFile, currentFile);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
-            Log.Error(e);
+            Log.Error($"Failed to save level.dat: {e.Message}");
         }
     }
 
-    public WorldProperties loadProperties()
+    public WorldProperties LoadProperties()
     {
-        java.io.File file = new(saveDirectory, "level.dat");
-        NBTTagCompound var2;
-        NBTTagCompound var3;
-        if (file.exists())
+        string file = Combine(_saveDir, "level.dat");
+        if (!File.Exists(file)) file = Combine(_saveDir, "level.dat_old");
+
+        if (File.Exists(file))
         {
             try
             {
-                using FileStream stream = File.OpenRead(file.getAbsolutePath());
-                var2 = NbtIo.ReadCompressed(stream);
-                var3 = var2.GetCompoundTag("Data");
-                WorldProperties wInfo = new(var3);
-                return wInfo;
+                using FileStream stream = File.OpenRead(file);
+                NBTTagCompound root = NbtIo.ReadCompressed(stream);
+                NBTTagCompound data = root.GetCompoundTag("Data");
+                return new WorldProperties(data);
             }
-            catch (java.lang.Exception var5)
+            catch (Exception e)
             {
-                var5.printStackTrace();
+                Log.Error($"Error loading properties: {e.Message}");
             }
         }
-
-        file = new java.io.File(saveDirectory, "level.dat_old");
-        if (file.exists())
-        {
-            try
-            {
-                using FileStream stream = File.OpenRead(file.getAbsolutePath());
-                var2 = NbtIo.ReadCompressed(stream);
-                var3 = var2.GetCompoundTag("Data");
-                WorldProperties wInfo = new(var3);
-                return wInfo;
-            }
-            catch (java.lang.Exception var4)
-            {
-                Log.Error(var4);
-            }
-        }
-
         return null;
     }
 
-    public void save(WorldProperties var1)
-    {
-        NBTTagCompound var2 = var1.getNBTTagCompound();
-        NBTTagCompound tag = new();
-        tag.SetTag("Data", var2);
+    public string GetWorldPropertiesFile(string name) => Combine(_dataDir, $"{name}.dat");
 
-        try
-        {
-            java.io.File file = new(saveDirectory, "level.dat_new");
-            java.io.File var5 = new(saveDirectory, "level.dat_old");
-            java.io.File var6 = new(saveDirectory, "level.dat");
-
-            using FileStream stream = File.OpenWrite(file.getAbsolutePath());
-            NbtIo.WriteCompressed(tag, stream);
-
-            if (var5.exists())
-            {
-                var5.delete();
-            }
-
-            var6.renameTo(var5);
-            if (var6.exists())
-            {
-                var6.delete();
-            }
-
-            file.renameTo(var6);
-            if (file.exists())
-            {
-                file.delete();
-            }
-        }
-        catch (java.lang.Exception var7)
-        {
-            Log.Error(var7);
-        }
-
-    }
-
-    public java.io.File getWorldPropertiesFile(string var1)
-    {
-        return new java.io.File(dataDir, var1 + ".dat");
-    }
-
-    public void savePlayerData(EntityPlayer player)
+    public void SavePlayerData(EntityPlayer player)
     {
         try
         {
             NBTTagCompound tag = new();
             player.write(tag);
-            java.io.File file = new(playersDirectory, "_tmp_.dat");
-            java.io.File var4 = new(playersDirectory, player.name + ".dat");
 
-            using FileStream stream = File.OpenWrite(file.getAbsolutePath());
-            NbtIo.WriteCompressed(tag, stream);
+            string tempFile = Combine(_playersDir, "_tmp_.dat");
+            string playerFile = Combine(_playersDir, $"{player.name}.dat");
 
-            if (var4.exists())
+            using (FileStream stream = File.Create(tempFile))
             {
-                var4.delete();
+                NbtIo.WriteCompressed(tag, stream);
             }
 
-            file.renameTo(var4);
+            if (File.Exists(playerFile)) File.Delete(playerFile);
+            File.Move(tempFile, playerFile);
         }
-        catch (Exception var5)
+        catch (Exception)
         {
             Log.Warn($"Failed to save player data for {player.name}");
         }
     }
 
-    public void loadPlayerData(EntityPlayer player)
+    public void LoadPlayerData(EntityPlayer player)
     {
-        NBTTagCompound var2 = loadPlayerData(player.name);
-        if (var2 != null)
-        {
-            player.read(var2);
-        }
+        NBTTagCompound tag = LoadPlayerData(player.name);
+        if (tag != null) player.read(tag);
     }
 
-    public NBTTagCompound loadPlayerData(string playerName)
+    public NBTTagCompound LoadPlayerData(string playerName)
     {
         try
         {
-            java.io.File file = new(playersDirectory, playerName + ".dat");
-            if (file.exists())
+            string playerFile = Combine(_playersDir, $"{playerName}.dat");
+            if (File.Exists(playerFile))
             {
-                using FileStream stream = File.OpenRead(file.getAbsolutePath());
+                using FileStream stream = File.OpenRead(playerFile);
                 return NbtIo.ReadCompressed(stream);
             }
 
-            java.io.File levelFile = new(saveDirectory, "level.dat");
-            if (levelFile.exists())
+            string levelFile = Combine(_saveDir, "level.dat");
+            if (File.Exists(levelFile))
             {
-                try
+                using FileStream stream = File.OpenRead(levelFile);
+                NBTTagCompound levelDat = NbtIo.ReadCompressed(stream);
+                NBTTagCompound data = levelDat.GetCompoundTag("Data");
+
+                if (data.HasKey("Player"))
                 {
-                    using FileStream stream = File.OpenRead(levelFile.getAbsolutePath());
-                    NBTTagCompound levelDat = NbtIo.ReadCompressed(stream);
-                    NBTTagCompound data = levelDat.GetCompoundTag("Data");
-                    if (data.HasKey("Player"))
+                    NBTTagCompound playerTag = data.GetCompoundTag("Player");
+                    using (FileStream writeStream = File.Create(playerFile))
                     {
-                        NBTTagCompound playerTag = data.GetCompoundTag("Player");
-
-                        using FileStream writeStream = File.OpenWrite(file.getAbsolutePath());
                         NbtIo.WriteCompressed(playerTag, writeStream);
-
-                        Log.Info($"Migrated singleplayer player data from level.dat to {file.getName()}");
-                        return playerTag;
                     }
-                }
-                catch (Exception e)
-                {
-                    Log.Warn($"Failed to migrate player data from level.dat: {e}");
+                    return playerTag;
                 }
             }
         }
-        catch (Exception var3)
+        catch (Exception e)
         {
-            Log.Warn($"Failed to load player data for {playerName}");
+            Log.Warn($"Failed to load player data for {playerName}: {e.Message}");
         }
-
         return null;
     }
 
-    public PlayerSaveHandler getPlayerSaveHandler()
-    {
-        return this;
-    }
+    public IPlayerSaveHandler GetPlayerSaveHandler() => this;
 
-    public void forceSave()
-    {
-    }
+    public void ForceSave() { }
 }

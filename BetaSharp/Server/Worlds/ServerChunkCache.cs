@@ -10,13 +10,13 @@ public class ServerChunkCache : ChunkSource
     private readonly HashSet<int> _chunksToUnload = [];
     private readonly Chunk _empty;
     private readonly ChunkSource _generator;
-    private readonly ChunkStorage _storage;
+    private readonly IChunkStorage _storage;
     public bool forceLoad = false;
     private readonly Dictionary<int, Chunk> _chunksByPos = [];
     private readonly List<Chunk> _chunks = [];
     private readonly ServerWorld _world;
 
-    public ServerChunkCache(ServerWorld world, ChunkStorage storage, ChunkSource generator)
+    public ServerChunkCache(ServerWorld world, IChunkStorage storage, ChunkSource generator)
     {
         _empty = new EmptyChunk(world, new byte[32768], 0, 0);
         _world = world;
@@ -134,9 +134,11 @@ public class ServerChunkCache : ChunkSource
         {
             try
             {
-                Chunk var3 = _storage.loadChunk(_world, chunkX, chunkZ);
-                var3?.lastSaveTime = _world.getTime();
-
+                Chunk var3 = _storage.LoadChunk(_world, chunkX, chunkZ);
+                if (var3 != null)
+                {
+                    var3.lastSaveTime = _world.getTime();
+                }
                 return var3;
             }
             catch (Exception ex)
@@ -153,7 +155,7 @@ public class ServerChunkCache : ChunkSource
         {
             try
             {
-                _storage.saveEntities(_world, chunk);
+                _storage.SaveEntities(_world, chunk);
             }
             catch (Exception ex)
             {
@@ -169,7 +171,7 @@ public class ServerChunkCache : ChunkSource
             try
             {
                 chunk.lastSaveTime = _world.getTime();
-                _storage.saveChunk(_world, chunk, null, -1);
+                _storage.SaveChunk(_world, chunk, null, -1);
             }
             catch (java.io.IOException var3)
             {
@@ -228,7 +230,7 @@ public class ServerChunkCache : ChunkSource
                 return true;
             }
 
-            _storage.flush();
+            _storage.Flush();
         }
 
         return true;
@@ -254,7 +256,7 @@ public class ServerChunkCache : ChunkSource
                 }
             }
 
-            _storage?.tick();
+            _storage?.Tick();
         }
 
         return _generator.tick();

@@ -6,7 +6,7 @@ public interface WorldStorageSource
 {
     string getName();
 
-    WorldStorage get(string saveName, bool createPlayerDataDir);
+    IWorldStorage get(string saveName, bool createPlayerDataDir);
 
     List getAll();
 

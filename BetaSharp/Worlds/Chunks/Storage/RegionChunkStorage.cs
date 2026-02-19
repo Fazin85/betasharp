@@ -1,83 +1,88 @@
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
 using BetaSharp.NBT;
-using java.io;
+using System;
+using System.IO;
 
 namespace BetaSharp.Worlds.Chunks.Storage;
 
-public class RegionChunkStorage : ChunkStorage
+public class RegionChunkStorage : IChunkStorage
 {
-    private readonly java.io.File dir;
+    private readonly string _dir;
 
-    public RegionChunkStorage(java.io.File dir)
+    public RegionChunkStorage(string dir)
     {
-        this.dir = dir;
+        _dir = dir;
     }
 
-    public Chunk loadChunk(World world, int chunkX, int chunkZ)
+    public Chunk LoadChunk(World world, int chunkX, int chunkZ)
     {
-        using ChunkDataStream s = RegionIo.getChunkInputStream(dir, chunkX, chunkZ);
+        // RegionIo.getChunkInputStream should be updated to accept a string path
+        using ChunkDataStream s = RegionIo.GetChunkInputStream(_dir, chunkX, chunkZ);
         if (s == null)
         {
             return null;
         }
 
-        Stream var4 = s.Stream;
+        Stream stream = s.Stream;
 
-        if (var4 != null)
+        if (stream != null)
         {
-            NBTTagCompound var5 = NbtIo.Read(var4);
-            if (!var5.HasKey("Level"))
+            NBTTagCompound root = NbtIo.Read(stream);
+            if (!root.HasKey("Level"))
             {
                 Log.Info($"Chunk file at {chunkX},{chunkZ} is missing level data, skipping");
                 return null;
             }
-            else if (!var5.GetCompoundTag("Level").HasKey("Blocks"))
+
+            NBTTagCompound levelTag = root.GetCompoundTag("Level");
+            if (!levelTag.HasKey("Blocks"))
             {
                 Log.Info($"Chunk file at {chunkX},{chunkZ} is missing block data, skipping");
                 return null;
             }
-            else
-            {
-                Chunk var6 = loadChunkFromNbt(world, var5.GetCompoundTag("Level"));
-                if (!var6.chunkPosEquals(chunkX, chunkZ))
-                {
-                    Log.Info($"Chunk file at {chunkX},{chunkZ} is in the wrong location; relocating. (Expected {chunkX}, {chunkZ}, got {var6.x}, {var6.z})");
-                    var5.SetInteger("xPos", chunkX);
-                    var5.SetInteger("zPos", chunkZ);
-                    var6 = loadChunkFromNbt(world, var5.GetCompoundTag("Level"));
-                }
 
-                var6.fill();
-                return var6;
+            Chunk chunk = LoadChunkFromNbt(world, levelTag);
+
+            if (!chunk.chunkPosEquals(chunkX, chunkZ))
+            {
+                Log.Info($"Chunk file at {chunkX},{chunkZ} is in the wrong location; relocating. (Expected {chunkX}, {chunkZ}, got {chunk.x}, {chunk.z})");
+                levelTag.SetInteger("xPos", chunkX);
+                levelTag.SetInteger("zPos", chunkZ);
+                chunk = LoadChunkFromNbt(world, levelTag);
             }
+
+            chunk.fill();
+            return chunk;
         }
-        else
-        {
-            return null;
-        }
+
+        return null;
     }
 
-    public void saveChunk(World world, Chunk chunk, Action unused1, long unused2)
+    public void SaveChunk(World world, Chunk chunk, Action unused1, long unused2)
     {
         try
         {
-            using Stream stream = RegionIo.getChunkOutputStream(dir, chunk.x, chunk.z);
-            NBTTagCompound tag = new();
-            NBTTagCompound var5 = new();
-            tag.SetTag("Level", var5);
-            storeChunkInCompound(chunk, world, var5);
-            NbtIo.Write(tag, stream);
-            WorldProperties var6 = world.getProperties();
-            var6.SizeOnDisk = var6.SizeOnDisk + (long)RegionIo.getSizeDelta(dir, chunk.x, chunk.z);
+            using Stream stream = RegionIo.GetChunkOutputStream(_dir, chunk.x, chunk.z);
+            NBTTagCompound root = new();
+            NBTTagCompound levelTag = new();
+
+            root.SetTag("Level", levelTag);
+            StoreChunkInCompound(chunk, world, levelTag);
+
+            NbtIo.Write(root, stream);
+
+            WorldProperties props = world.getProperties();
+            // Update the size on disk based on the delta from the region file
+            props.SizeOnDisk += (long)RegionIo.GetSizeDelta(_dir, chunk.x, chunk.z);
         }
-        catch (Exception var7)
+        catch (Exception ex)
         {
-            Log.Error(var7);
+            Log.Error(ex);
         }
     }
 
-    public static void storeChunkInCompound(Chunk chunk, World world, NBTTagCompound nbt)
+    public static void StoreChunkInCompound(Chunk chunk, World world, NBTTagCompound nbt)
     {
         nbt.SetInteger("xPos", chunk.x);
         nbt.SetInteger("zPos", chunk.z);
@@ -88,110 +93,100 @@ public class RegionChunkStorage : ChunkStorage
         nbt.SetByteArray("BlockLight", chunk.blockLight.bytes);
         nbt.SetByteArray("HeightMap", chunk.heightmap);
         nbt.SetBoolean("TerrainPopulated", chunk.terrainPopulated);
-        chunk.lastSaveHadEntities = false;
-        NBTTagList var3 = new();
 
-        NBTTagCompound var7;
-        for (int var4 = 0; var4 < chunk.entities.Length; ++var4)
+        chunk.lastSaveHadEntities = false;
+        NBTTagList entityList = new();
+
+        for (int i = 0; i < chunk.entities.Length; ++i)
         {
-            foreach (Entity var6 in chunk.entities[var4])
+            foreach (Entity entity in chunk.entities[i])
             {
                 chunk.lastSaveHadEntities = true;
-                var7 = new NBTTagCompound();
-                if (var6.saveSelfNbt(var7))
+                NBTTagCompound entityTag = new();
+                if (entity.saveSelfNbt(entityTag))
                 {
-                    var3.SetTag(var7);
+                    entityList.SetTag(entityTag);
                 }
             }
         }
+        nbt.SetTag("Entities", entityList);
 
-        nbt.SetTag("Entities", var3);
-        NBTTagList var8 = new();
-
-        foreach (BlockEntity var9 in chunk.blockEntities.Values)
+        NBTTagList tileEntityList = new();
+        foreach (BlockEntity tileEntity in chunk.blockEntities.Values)
         {
-            var7 = new NBTTagCompound();
-            var9.writeNbt(var7);
-            var8.SetTag(var7);
+            NBTTagCompound tileTag = new();
+            tileEntity.writeNbt(tileTag);
+            tileEntityList.SetTag(tileTag);
         }
-
-        nbt.SetTag("TileEntities", var8);
+        nbt.SetTag("TileEntities", tileEntityList);
     }
 
-    public static Chunk loadChunkFromNbt(World world, NBTTagCompound nbt)
+    public static Chunk LoadChunkFromNbt(World world, NBTTagCompound nbt)
     {
-        int var2 = nbt.GetInteger("xPos");
-        int var3 = nbt.GetInteger("zPos");
-        Chunk var4 = new(world, var2, var3);
-        var4.blocks = nbt.GetByteArray("Blocks");
-        var4.meta = new ChunkNibbleArray(nbt.GetByteArray("Data"));
-        var4.skyLight = new ChunkNibbleArray(nbt.GetByteArray("SkyLight"));
-        var4.blockLight = new ChunkNibbleArray(nbt.GetByteArray("BlockLight"));
-        var4.heightmap = nbt.GetByteArray("HeightMap");
-        var4.terrainPopulated = nbt.GetBoolean("TerrainPopulated");
-        if (!var4.meta.isArrayInitialized())
+        int x = nbt.GetInteger("xPos");
+        int z = nbt.GetInteger("zPos");
+
+        Chunk chunk = new(world, x, z);
+        chunk.blocks = nbt.GetByteArray("Blocks");
+        chunk.meta = new ChunkNibbleArray(nbt.GetByteArray("Data"));
+        chunk.skyLight = new ChunkNibbleArray(nbt.GetByteArray("SkyLight"));
+        chunk.blockLight = new ChunkNibbleArray(nbt.GetByteArray("BlockLight"));
+        chunk.heightmap = nbt.GetByteArray("HeightMap");
+        chunk.terrainPopulated = nbt.GetBoolean("TerrainPopulated");
+
+        if (!chunk.meta.isArrayInitialized())
         {
-            var4.meta = new ChunkNibbleArray(var4.blocks.Length);
+            chunk.meta = new ChunkNibbleArray(chunk.blocks.Length);
         }
 
-        if (var4.heightmap == null || !var4.skyLight.isArrayInitialized())
+        if (chunk.heightmap == null || !chunk.skyLight.isArrayInitialized())
         {
-            var4.heightmap = new byte[256];
-            var4.skyLight = new ChunkNibbleArray(var4.blocks.Length);
-            var4.populateHeightMap();
+            chunk.heightmap = new byte[256];
+            chunk.skyLight = new ChunkNibbleArray(chunk.blocks.Length);
+            chunk.populateHeightMap();
         }
 
-        if (!var4.blockLight.isArrayInitialized())
+        if (!chunk.blockLight.isArrayInitialized())
         {
-            var4.blockLight = new ChunkNibbleArray(var4.blocks.Length);
-            var4.populateLight();
+            chunk.blockLight = new ChunkNibbleArray(chunk.blocks.Length);
+            chunk.populateLight();
         }
 
-        NBTTagList var5 = nbt.GetTagList("Entities");
-        if (var5 != null)
+        NBTTagList entityList = nbt.GetTagList("Entities");
+        if (entityList != null)
         {
-            for (int var6 = 0; var6 < var5.TagCount(); ++var6)
+            for (int i = 0; i < entityList.TagCount(); ++i)
             {
-                NBTTagCompound var7 = (NBTTagCompound)var5.TagAt(var6);
-                Entity var8 = EntityRegistry.getEntityFromNbt(var7, world);
-                var4.lastSaveHadEntities = true;
-                if (var8 != null)
+                NBTTagCompound entityTag = (NBTTagCompound)entityList.TagAt(i);
+                Entity entity = EntityRegistry.getEntityFromNbt(entityTag, world);
+                chunk.lastSaveHadEntities = true;
+                if (entity != null)
                 {
-                    var4.addEntity(var8);
+                    chunk.addEntity(entity);
                 }
             }
         }
 
-        NBTTagList var10 = nbt.GetTagList("TileEntities");
-        if (var10 != null)
+        NBTTagList tileEntityList = nbt.GetTagList("TileEntities");
+        if (tileEntityList != null)
         {
-            for (int var11 = 0; var11 < var10.TagCount(); ++var11)
+            for (int i = 0; i < tileEntityList.TagCount(); ++i)
             {
-                NBTTagCompound var12 = (NBTTagCompound)var10.TagAt(var11);
-                BlockEntity var9 = BlockEntity.createFromNbt(var12);
-                if (var9 != null)
+                NBTTagCompound tileTag = (NBTTagCompound)tileEntityList.TagAt(i);
+                BlockEntity tileEntity = BlockEntity.createFromNbt(tileTag);
+                if (tileEntity != null)
                 {
-                    var4.addBlockEntity(var9);
+                    chunk.addBlockEntity(tileEntity);
                 }
             }
         }
 
-        return var4;
+        return chunk;
     }
 
-    public void saveEntities(World world, Chunk chunk)
-    {
-    }
-
-    public void tick()
-    {
-    }
-
-    public void flush()
-    {
-    }
-
-    public void flushToDisk()
-    {
-    }
+    // Standard interface implementations
+    public void SaveEntities(World world, Chunk chunk) { }
+    public void Tick() { }
+    public void Flush() { }
+    public void FlushToDisk() { }
 }

@@ -12,7 +12,7 @@ internal sealed class RegionFileChunkBuffer(RegionFile region, int var2, int var
             }
             
             var buffer = ToArray();
-            region.write(var2, var3, buffer, buffer.Length);
+            region.Write(var2, var3, buffer, buffer.Length);
         }
         finally
         {

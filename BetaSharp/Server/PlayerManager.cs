@@ -23,7 +23,7 @@ public class PlayerManager
     protected readonly HashSet<string> bannedIps = [];
     protected readonly HashSet<string> ops = [];
     protected readonly HashSet<string> whitelist = [];
-    private PlayerSaveHandler _saveHandler;
+    private IPlayerSaveHandler _saveHandler;
     private readonly bool _whitelistEnabled;
 
     public PlayerManager(MinecraftServer server)
@@ -39,7 +39,7 @@ public class PlayerManager
 
     public void saveAllPlayers(ServerWorld[] world)
     {
-        _saveHandler = world[0].getWorldStorage().getPlayerSaveHandler();
+        _saveHandler = world[0].getWorldStorage().GetPlayerSaveHandler();
     }
 
     public void updatePlayerAfterDimensionChange(ServerPlayerEntity player)
@@ -63,7 +63,7 @@ public class PlayerManager
 
     public void loadPlayerData(ServerPlayerEntity player)
     {
-        _saveHandler.loadPlayerData(player);
+        _saveHandler.LoadPlayerData(player);
     }
 
     public void addPlayer(ServerPlayerEntity player)
@@ -88,7 +88,7 @@ public class PlayerManager
 
     public void disconnect(ServerPlayerEntity player)
     {
-        _saveHandler.savePlayerData(player);
+        _saveHandler.SavePlayerData(player);
         _server.getWorld(player.dimensionId).Remove(player);
         players.Remove(player);
         getChunkMap(player.dimensionId).removePlayer(player);
@@ -453,7 +453,7 @@ public class PlayerManager
     {
         for (int var1 = 0; var1 < players.Count; var1++)
         {
-            _saveHandler.savePlayerData(players[var1]);
+            _saveHandler.SavePlayerData(players[var1]);
         }
     }
 

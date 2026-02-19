@@ -1,90 +1,91 @@
-using java.io;
-using java.lang.@ref;
-using java.util;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using static System.IO.Path;
 
 namespace BetaSharp.Worlds.Chunks.Storage;
 
-public class RegionIo : java.lang.Object
+public static class RegionIo
 {
-    private static readonly Map cache = new HashMap();
-    private static readonly object l = new();
+    // Dictionary replaces HashMap. WeakReference replaces SoftReference.
+    private static readonly Dictionary<string, WeakReference<RegionFile>> Cache = new();
+    private static readonly object _lock = new();
 
-    public static RegionFile func_22193_a(java.io.File var0, int var1, int var2)
+    public static RegionFile GetRegionFile(string baseDir, int chunkX, int chunkZ)
     {
-        lock (l)
+        lock (_lock)
         {
-            java.io.File var3 = new(var0, "region");
-            java.io.File var4 = new(var3, "r." + (var1 >> 5) + "." + (var2 >> 5) + ".mcr");
-            Reference var5 = (Reference)cache.get(var4);
-            RegionFile var6;
-            if (var5 != null)
+            string regionDirPath = Combine(baseDir, "region");
+            // Minecraft region files are named based on chunk coordinates divided by 32
+            string fileName = $"r.{chunkX >> 5}.{chunkZ >> 5}.mcr";
+            string filePath = Combine(regionDirPath, fileName);
+
+            if (Cache.TryGetValue(filePath, out var weakRef))
             {
-                var6 = (RegionFile)var5.get();
-                if (var6 != null)
+                if (weakRef.TryGetTarget(out RegionFile cachedFile))
                 {
-                    return var6;
+                    return cachedFile;
                 }
             }
 
-            if (!var3.exists())
+            if (!Directory.Exists(regionDirPath))
             {
-                var3.mkdirs();
+                Directory.CreateDirectory(regionDirPath);
             }
 
-            if (cache.size() >= 256)
+            if (Cache.Count >= 256)
             {
-                flush();
+                Flush();
             }
 
-            var6 = new RegionFile(var4);
-            cache.put(var4, new SoftReference(var6));
-            return var6;
+            // You'll need to update RegionFile's constructor to take a string path
+            RegionFile newRegionFile = new RegionFile(filePath);
+            Cache[filePath] = new WeakReference<RegionFile>(newRegionFile);
+
+            return newRegionFile;
         }
     }
 
-    public static void flush()
+    public static void Flush()
     {
-        lock (l)
+        lock (_lock)
         {
-            Iterator var0 = cache.values().iterator();
-
-            while (var0.hasNext())
+            foreach (var weakRef in Cache.Values)
             {
-                Reference var1 = (Reference)var0.next();
-
-                try
+                if (weakRef.TryGetTarget(out RegionFile region))
                 {
-                    RegionFile var2 = (RegionFile)var1.get();
-                    if (var2 != null)
+                    try
                     {
-                        var2.func_22196_b();
+                        // Assuming func_22196_b is the "close" or "sync" method
+                        region.Close();
+                    }
+                    catch (IOException ex)
+                    {
+                        Log.Error($"Error flushing region file: {ex.Message}");
                     }
                 }
-                catch (java.io.IOException var3)
-                {
-                    var3.printStackTrace();
-                }
             }
-
-            cache.clear();
+            Cache.Clear();
         }
     }
 
-    public static int getSizeDelta(java.io.File var0, int var1, int var2)
+    public static int GetSizeDelta(string baseDir, int chunkX, int chunkZ)
     {
-        RegionFile var3 = func_22193_a(var0, var1, var2);
-        return var3.func_22209_a();
+        RegionFile region = GetRegionFile(baseDir, chunkX, chunkZ);
+        // Assuming func_22209_a is GetSizeDelta
+        return region.GetSizeDelta();
     }
 
-    public static ChunkDataStream getChunkInputStream(java.io.File var0, int var1, int var2)
+    public static ChunkDataStream GetChunkInputStream(string baseDir, int chunkX, int chunkZ)
     {
-        RegionFile var3 = func_22193_a(var0, var1, var2);
-        return var3.getChunkDataInputStream(var1 & 31, var2 & 31);
+        RegionFile region = GetRegionFile(baseDir, chunkX, chunkZ);
+        // Chunks inside a region file are indexed 0-31
+        return region.GetChunkDataInputStream(chunkX & 31, chunkZ & 31);
     }
 
-    public static Stream getChunkOutputStream(java.io.File var0, int var1, int var2)
+    public static Stream GetChunkOutputStream(string baseDir, int chunkX, int chunkZ)
     {
-        RegionFile var3 = func_22193_a(var0, var1, var2);
-        return var3.getChunkDataOutputStream(var1 & 31, var2 & 31);
+        RegionFile region = GetRegionFile(baseDir, chunkX, chunkZ);
+        return region.GetChunkDataOutputStream(chunkX & 31, chunkZ & 31);
     }
 }

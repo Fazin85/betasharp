@@ -73,7 +73,7 @@ public partial class Minecraft : java.lang.Object, Runnable
     public MouseHelper mouseHelper;
     public TexturePacks texturePackList;
     private java.io.File mcDataDir;
-    private WorldStorageSource saveLoader;
+    private RegionWorldStorageSource saveLoader;
     public static long[] frameTimes = new long[512];
     public static long[] tickTimes = new long[512];
     public static int numRecordedFrameTimes = 0;
@@ -177,7 +177,7 @@ public partial class Minecraft : java.lang.Object, Runnable
         Display.setTitle("Minecraft Beta 1.7.3");
 
         mcDataDir = getMinecraftDir();
-        saveLoader = new RegionWorldStorageSource(new java.io.File(mcDataDir, "saves"));
+        saveLoader = new RegionWorldStorageSource(new java.io.File(mcDataDir, "saves").getPath());
         options = new GameOptions(this, mcDataDir);
         Profiler.Enabled = options.debugMode;
 
@@ -396,7 +396,7 @@ public partial class Minecraft : java.lang.Object, Runnable
                             : (var0.Contains("unix") ? Util.OperatingSystem.linux : Util.OperatingSystem.unknown)))));
     }
 
-    public WorldStorageSource getSaveLoader()
+    public RegionWorldStorageSource getSaveLoader()
     {
         return saveLoader;
     }

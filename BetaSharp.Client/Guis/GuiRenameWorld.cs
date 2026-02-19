@@ -31,8 +31,8 @@ public class GuiRenameWorld : GuiScreen
         _controlList.Clear();
         _controlList.Add(new GuiButton(ButtonRename, Width / 2 - 100, Height / 4 + 96 + 12, translations.translateKey("selectWorld.renameButton")));
         _controlList.Add(new GuiButton(ButtonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
-        WorldStorageSource worldStorage = mc.getSaveLoader();
-        WorldProperties worldProperties = worldStorage.getProperties(worldFolderName);
+        RegionWorldStorageSource worldStorage = mc.getSaveLoader();
+        WorldProperties worldProperties = worldStorage.GetProperties(worldFolderName);
         string currentWorldName = worldProperties.LevelName;
         nameInputField = new GuiTextField(this, FontRenderer, Width / 2 - 100, 60, 200, 20, currentWorldName)
         {
@@ -56,8 +56,8 @@ public class GuiRenameWorld : GuiScreen
                     mc.displayGuiScreen(parentScreen);
                     break;
                 case ButtonRename:
-                    WorldStorageSource worldStorage = mc.getSaveLoader();
-                    worldStorage.rename(worldFolderName, nameInputField.GetText().Trim());
+                    RegionWorldStorageSource worldStorage = mc.getSaveLoader();
+                    worldStorage.RenameWorld(worldFolderName, nameInputField.GetText().Trim());
                     mc.displayGuiScreen(parentScreen);
                     break;
             }
