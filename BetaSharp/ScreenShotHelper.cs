@@ -46,12 +46,10 @@ public class ScreenShotHelper
                 Buffer.BlockCopy(rgbPixels, srcOffset, flipped, dstOffset, rowStride);
             }
 
-            
             using (Image<Rgb24> image = Image.LoadPixelData<Rgb24>(flipped, width, height))
             {
                 image.SaveAsPng(fullPath);
             }
-            
 
             return "Saved screenshot as " + fileName;
         }
