@@ -3,59 +3,53 @@ using java.awt.image;
 using java.io;
 using javax.imageio;
 using Silk.NET.OpenGL.Legacy;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace BetaSharp.Client.Resource.Pack;
 
 public class BuiltInTexturePack : TexturePack
 {
-    private int _texturePackName = -1;
-    private readonly Image<Rgba32>? texturePackThumbnail;
+    private int texturePackName = -1;
+    private readonly BufferedImage texturePackThumbnail;
 
     public BuiltInTexturePack()
     {
-        TexturePackFileName = "Default";
-        FirstDescriptionLine = "The default look of Minecraft";
+        texturePackFileName = "Default";
+        firstDescriptionLine = "The default look of Minecraft";
 
         try
         {
-            byte[] content = AssetManager.Instance.getAsset("pack.png").getBinaryContent();
-            using (var ms = new MemoryStream(content))
-            {
-                texturePackThumbnail = Image.Load<Rgba32>(ms);
-            }
+            texturePackThumbnail = ImageIO.read(new ByteArrayInputStream(AssetManager.Instance.getAsset("pack.png").getBinaryContent()));
         }
-        catch (Exception ex)
+        catch (java.io.IOException ex)
         {
-            Log.Error(ex);
+            ex.printStackTrace();
         }
 
     }
 
-    public override void Unload(Minecraft mc)
+    public override void unload(Minecraft var1)
     {
         if (texturePackThumbnail != null)
         {
-            mc.textureManager.Delete(_texturePackName);
+            var1.textureManager.delete(texturePackName);
         }
 
     }
 
-    public override void BindThumbnailTexture(Minecraft mc)
+    public override void bindThumbnailTexture(Minecraft var1)
     {
-        if (texturePackThumbnail != null && _texturePackName < 0)
+        if (texturePackThumbnail != null && texturePackName < 0)
         {
-            _texturePackName = mc.textureManager.Load(texturePackThumbnail);
+            texturePackName = var1.textureManager.load(texturePackThumbnail);
         }
 
         if (texturePackThumbnail != null)
         {
-            mc.textureManager.BindTexture(_texturePackName);
+            var1.textureManager.bindTexture(texturePackName);
         }
         else
         {
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.GetTextureId("/gui/unknown_pack.png"));
+            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var1.textureManager.getTextureId("/gui/unknown_pack.png"));
         }
 
     }

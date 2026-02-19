@@ -12,8 +12,4 @@
     <ProjectReference Include="..\BetaSharp\BetaSharp.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.7" />
-  </ItemGroup>
-
 </Project>
