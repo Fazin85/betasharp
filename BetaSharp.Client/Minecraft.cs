@@ -635,6 +635,7 @@ public partial class Minecraft
                 }
             }
         }
+        catch (MinecraftShutdownException) {}
         catch (Exception unexpectedException)
         {
             crashCleanup();
