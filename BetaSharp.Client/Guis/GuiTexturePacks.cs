@@ -54,7 +54,7 @@ public class GuiTexturePacks : GuiScreen
                     mc.displayGuiScreen(_parentScreen);
                     break;
                 default:
-                    _guiTexturePackSlot.actionPerformed(btn);
+                    _guiTexturePackSlot.ActionPerformed(btn);
                     break;
             }
 
@@ -73,7 +73,7 @@ public class GuiTexturePacks : GuiScreen
 
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        _guiTexturePackSlot.drawScreen(mouseX, mouseY, partialTicks);
+        _guiTexturePackSlot.DrawScreen(mouseX, mouseY, partialTicks);
         if (_refreshTimer <= 0)
         {
             mc.texturePackList.updateAvaliableTexturePacks();

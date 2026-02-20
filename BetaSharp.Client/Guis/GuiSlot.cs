@@ -7,363 +7,337 @@ namespace BetaSharp.Client.Guis;
 
 public abstract class GuiSlot
 {
-    private readonly Minecraft mc;
-    private readonly int width;
-    private readonly int height;
-    protected readonly int top;
-    protected readonly int bottom;
-    private readonly int right;
-    private readonly int left;
-    protected readonly int posZ;
-    private int scrollUpButtonID;
-    private int scrollDownButtonID;
-    private float initialClickY = -2.0F;
-    private float scrollMultiplier;
-    private float amountScrolled;
-    private int selectedElement = -1;
-    private long lastClicked;
-    private bool field_25123_p = true;
-    private bool field_27262_q;
-    private int field_27261_r;
+    private readonly Minecraft _mc;
+    private readonly int _width;
+    private readonly int _height;
+    protected readonly int _top;
+    protected readonly int _bottom;
+    private readonly int _right;
+    private readonly int _left;
+    protected readonly int _posZ;
+
+    private int _scrollUpButtonID;
+    private int _scrollDownButtonID;
+    private float _initialClickY = -2.0F;
+    private float _scrollMultiplier;
+    private float _amountScrolled;
+    private int _selectedElement = -1;
+    private long _lastClicked;
+
+    private bool _showSelectionHighlight = true;
+    private bool _hasHeader;
+    private int _headerHeight;
 
     public GuiSlot(Minecraft mc, int width, int height, int top, int bottom, int posZ)
     {
-        this.mc = mc;
-        this.width = width;
-        this.height = height;
-        this.top = top;
-        this.bottom = bottom;
-        this.posZ = posZ;
-        left = 0;
-        right = width;
+        _mc = mc;
+        _width = width;
+        _height = height;
+        _top = top;
+        _bottom = bottom;
+        _posZ = posZ;
+        _left = 0;
+        _right = width;
     }
 
-    public void func_27258_a(bool var1)
-    {
-        field_25123_p = var1;
-    }
+    public void SetShowSelectionHighlight(bool value) => _showSelectionHighlight = value;
 
-    protected void func_27259_a(bool var1, int var2)
-    {
-        field_27262_q = var1;
-        field_27261_r = var2;
-        if (!var1)
-        {
-            field_27261_r = 0;
-        }
 
+    protected void SetHeader(bool hasHeader, int headerHeight)
+    {
+        _hasHeader = hasHeader;
+        _headerHeight = headerHeight;
+        if (!hasHeader) _headerHeight = 0;
     }
 
     public abstract int GetSize();
 
-    protected abstract void ElementClicked(int var1, bool var2);
+    protected abstract void ElementClicked(int index, bool doubleClick);
 
     protected abstract bool isSelected(int slotIndex);
 
-    protected virtual int getContentHeight()
-    {
-        return GetSize() * posZ + field_27261_r;
-    }
+    protected virtual int GetContentHeight() => GetSize() * _posZ + _headerHeight;
 
-    protected abstract void drawBackground();
+    protected abstract void DrawBackground();
 
-    protected abstract void drawSlot(int var1, int var2, int var3, int var4, Tessellator var5);
+    protected abstract void DrawSlot(int index, int x, int y, int height, Tessellator tess);
 
-    protected virtual void func_27260_a(int var1, int var2, Tessellator var3)
-    {
-    }
+    protected virtual void DrawHeader(int x, int y, Tessellator tess) { }
 
     protected virtual void func_27255_a(int var1, int var2)
     {
     }
 
-    protected virtual void func_27257_b(int var1, int var2)
+    protected virtual void PostDrawScreen(int mouseX, int mouseY) { }
+
+    public int GetSlotAt(int mouseX, int mouseY)
     {
+        int centerX = _width / 2 - 110;
+        int minX = centerX + 110;
+        int maxX = mouseY - _top - _headerHeight + (int)_amountScrolled - 4;
+        int relativeY = maxX / _posZ;
+        int index = relativeY / _posZ;
+
+        return (mouseX >= minX && mouseX <= maxX && index >= 0 && relativeY >= 0 && index < GetSize())
+            ? index
+            : -1;
     }
 
-    public int func_27256_c(int var1, int var2)
+    public void RegisterScrollButtons(List<GuiButton> buttons, int upId, int downId)
     {
-        int var3 = width / 2 - 110;
-        int var4 = width / 2 + 110;
-        int var5 = var2 - top - field_27261_r + (int)amountScrolled - 4;
-        int var6 = var5 / posZ;
-        return var1 >= var3 && var1 <= var4 && var6 >= 0 && var5 >= 0 && var6 < GetSize() ? var6 : -1;
+        _scrollUpButtonID = upId;
+        _scrollDownButtonID = downId;
     }
 
-    public void RegisterScrollButtons(List<GuiButton> var1, int var2, int var3)
+    private void BindAmountScrolled()
     {
-        scrollUpButtonID = var2;
-        scrollDownButtonID = var3;
+        int maxScroll = GetContentHeight() - (_bottom - _top - 4);
+        if (maxScroll < 0) maxScroll /= 2;
+
+        if (_amountScrolled < 0.0f) _amountScrolled = 0.0f;
+        if (_amountScrolled > maxScroll) _amountScrolled = maxScroll;
+
     }
 
-    private void bindAmountScrolled()
+    public void ActionPerformed(GuiButton button)
     {
-        int var1 = getContentHeight() - (bottom - top - 4);
-        if (var1 < 0)
+        if (!button.Enabled) return;
+
+        if (button.Id == _scrollUpButtonID)
         {
-            var1 /= 2;
+            _amountScrolled -= _posZ * 2 / 3;
+            _initialClickY = -2.0f;
+            BindAmountScrolled();
         }
-
-        if (amountScrolled < 0.0F)
+        else if (button.Id == _scrollDownButtonID)
         {
-            amountScrolled = 0.0F;
-        }
-
-        if (amountScrolled > var1)
-        {
-            amountScrolled = var1;
-        }
-
-    }
-
-    public void actionPerformed(GuiButton var1)
-    {
-        if (var1.Enabled)
-        {
-            if (var1.Id == scrollUpButtonID)
-            {
-                amountScrolled -= posZ * 2 / 3;
-                initialClickY = -2.0F;
-                bindAmountScrolled();
-            }
-            else if (var1.Id == scrollDownButtonID)
-            {
-                amountScrolled += posZ * 2 / 3;
-                initialClickY = -2.0F;
-                bindAmountScrolled();
-            }
-
+            _amountScrolled += _posZ * 2 / 3;
+            _initialClickY = -2.0f;
+            BindAmountScrolled();
         }
     }
 
-    public void drawScreen(int var1, int var2, float var3)
+    public void DrawScreen(int mouseX, int mouseY, float partialTicks)
     {
-        drawBackground();
-        int var4 = GetSize();
-        int var5 = width / 2 + 124;
-        int var6 = var5 + 6;
-        int var9;
-        int var10;
-        int var11;
-        int var13;
-        int var19;
+        DrawBackground();
+
+        int listSize = GetSize();
+        int scrollbarXStart = _width / 2 + 124;
+        int scrollbarXEnd = scrollbarXStart + 6;
+
         if (Mouse.isButtonDown(0))
         {
-            if (initialClickY == -1.0F)
+            if (_initialClickY == -1.0f)
             {
-                bool var7 = true;
-                if (var2 >= top && var2 <= bottom)
+                bool shouldCaptureMouse = true;
+
+                if (mouseY >= _top && mouseY <= _bottom)
                 {
-                    int var8 = width / 2 - 110;
-                    var9 = width / 2 + 110;
-                    var10 = var2 - top - field_27261_r + (int)amountScrolled - 4;
-                    var11 = var10 / posZ;
-                    if (var1 >= var8 && var1 <= var9 && var11 >= 0 && var10 >= 0 && var11 < var4)
+                    int contentMinX = _width / 2 - 110;
+                    int contentMaxX = _width / 2 + 110;
+                    int relativeY = mouseY - _top - _headerHeight + (int)_amountScrolled - 4;
+                    int slotIndex = relativeY / _posZ;
+
+                    if (mouseX >= contentMinX && mouseX <= contentMaxX && slotIndex >= 0 && relativeY >= 0 && slotIndex < listSize)
                     {
-                        bool var12 = var11 == selectedElement && java.lang.System.currentTimeMillis() - lastClicked < 250L;
-                        ElementClicked(var11, var12);
-                        selectedElement = var11;
-                        lastClicked = java.lang.System.currentTimeMillis();
+                        bool isDoubleClick = slotIndex == _selectedElement && (java.lang.System.currentTimeMillis() - _lastClicked < 250L);
+                        ElementClicked(slotIndex, isDoubleClick);
+                        _selectedElement = slotIndex;
+                        _lastClicked = java.lang.System.currentTimeMillis();
                     }
-                    else if (var1 >= var8 && var1 <= var9 && var10 < 0)
+                    else if (mouseX >= contentMinX && mouseX <= contentMaxX && relativeY < 0)
                     {
-                        func_27255_a(var1 - var8, var2 - top + (int)amountScrolled - 4);
-                        var7 = false;
+                        func_27255_a(mouseX - contentMinX, mouseY - _top + (int)_amountScrolled - 4);
+                        shouldCaptureMouse = false;
                     }
 
-                    if (var1 >= var5 && var1 <= var6)
+                    if (mouseX >= scrollbarXStart && mouseX <= scrollbarXEnd)
                     {
-                        scrollMultiplier = -1.0F;
-                        var19 = getContentHeight() - (bottom - top - 4);
-                        if (var19 < 1)
-                        {
-                            var19 = 1;
-                        }
+                        _scrollMultiplier = -1.0f;
+                        int maxScroll = Math.Max(1, GetContentHeight() - (_bottom - _top - 4));
+                        int viewHeight = _bottom - _top;
+                        int barHeight = Math.Clamp((viewHeight * viewHeight) / GetContentHeight(), 32, viewHeight - 8);
 
-                        var13 = (int)((bottom - top) * (bottom - top) / (float)getContentHeight());
-                        if (var13 < 32)
-                        {
-                            var13 = 32;
-                        }
-
-                        if (var13 > bottom - top - 8)
-                        {
-                            var13 = bottom - top - 8;
-                        }
-
-                        scrollMultiplier /= (bottom - top - var13) / (float)var19;
+                        _scrollMultiplier /= (float)(viewHeight - barHeight) / maxScroll;
                     }
                     else
                     {
-                        scrollMultiplier = 1.0F;
+                        _scrollMultiplier = 1.0f;
                     }
 
-                    if (var7)
-                    {
-                        initialClickY = var2;
-                    }
-                    else
-                    {
-                        initialClickY = -2.0F;
-                    }
+                    _initialClickY = shouldCaptureMouse ? mouseY : -2.0f;
                 }
                 else
                 {
-                    initialClickY = -2.0F;
+                    _initialClickY = -2.0f;
                 }
             }
-            else if (initialClickY >= 0.0F)
+            else if (_initialClickY >= 0.0f)
             {
-                amountScrolled -= (var2 - initialClickY) * scrollMultiplier;
-                initialClickY = var2;
+                _amountScrolled -= (mouseY - _initialClickY) * _scrollMultiplier;
+                _initialClickY = mouseY;
             }
         }
         else
         {
-            initialClickY = -1.0F;
+            _initialClickY = -1.0f;
         }
 
-        bindAmountScrolled();
+        BindAmountScrolled();
+
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.Disable(GLEnum.Fog);
-        Tessellator var16 = Tessellator.instance;
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/gui/background.png"));
-        GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        float var17 = 32.0F;
-        var16.startDrawingQuads();
-        var16.setColorOpaque_I(0x202020);
-        var16.addVertexWithUV(left, bottom, 0.0D, (double)(left / var17), (double)((bottom + (int)amountScrolled) / var17));
-        var16.addVertexWithUV(right, bottom, 0.0D, (double)(right / var17), (double)((bottom + (int)amountScrolled) / var17));
-        var16.addVertexWithUV(right, top, 0.0D, (double)(right / var17), (double)((top + (int)amountScrolled) / var17));
-        var16.addVertexWithUV(left, top, 0.0D, (double)(left / var17), (double)((top + (int)amountScrolled) / var17));
-        var16.draw();
-        var9 = width / 2 - 92 - 16;
-        var10 = top + 4 - (int)amountScrolled;
-        if (field_27262_q)
+        var tess = Tessellator.instance;
+
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_mc.textureManager.getTextureId("/gui/background.png"));
+        GLManager.GL.Color4(1.0f, 1.0f, 1.0f, 1.0f);
+        const float textureScale = 32.0f;
+
+        tess.startDrawingQuads();
+        tess.setColorOpaque_I(0x202020);
+        tess.addVertexWithUV(_left, _bottom, 0.0, _left / textureScale, (_bottom + (int)_amountScrolled) / textureScale);
+        tess.addVertexWithUV(_right, _bottom, 0.0, _right / textureScale, (_bottom + (int)_amountScrolled) / textureScale);
+        tess.addVertexWithUV(_right, _top, 0.0, _right / textureScale, (_top + (int)_amountScrolled) / textureScale);
+        tess.addVertexWithUV(_left, _top, 0.0, _left / textureScale, (_top + (int)_amountScrolled) / textureScale);
+        tess.draw();
+
+        int startX = _width / 2 - 92 - 16;
+        int startY = _top + 4 - (int)_amountScrolled;
+
+        if (_hasHeader)
         {
-            func_27260_a(var9, var10, var16);
+            DrawHeader(startX, startY, tess);
         }
 
-        int var14;
-        for (var11 = 0; var11 < var4; ++var11)
+        for (int i = 0; i < listSize; ++i)
         {
-            var19 = var10 + var11 * posZ + field_27261_r;
-            var13 = posZ - 4;
-            if (var19 <= bottom && var19 + var13 >= top)
-            {
-                if (field_25123_p && isSelected(var11))
-                {
-                    var14 = width / 2 - 110;
-                    int var15 = width / 2 + 110;
-                    GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-                    GLManager.GL.Disable(GLEnum.Texture2D);
-                    var16.startDrawingQuads();
-                    var16.setColorOpaque_I(0x808080);
-                    var16.addVertexWithUV(var14, var19 + var13 + 2, 0.0D, 0.0D, 1.0D);
-                    var16.addVertexWithUV(var15, var19 + var13 + 2, 0.0D, 1.0D, 1.0D);
-                    var16.addVertexWithUV(var15, var19 - 2, 0.0D, 1.0D, 0.0D);
-                    var16.addVertexWithUV(var14, var19 - 2, 0.0D, 0.0D, 0.0D);
-                    var16.setColorOpaque_I(0x000000);
-                    var16.addVertexWithUV(var14 + 1, var19 + var13 + 1, 0.0D, 0.0D, 1.0D);
-                    var16.addVertexWithUV(var15 - 1, var19 + var13 + 1, 0.0D, 1.0D, 1.0D);
-                    var16.addVertexWithUV(var15 - 1, var19 - 1, 0.0D, 1.0D, 0.0D);
-                    var16.addVertexWithUV(var14 + 1, var19 - 1, 0.0D, 0.0D, 0.0D);
-                    var16.draw();
-                    GLManager.GL.Enable(GLEnum.Texture2D);
-                }
+            int slotY = startY + i * _posZ + _headerHeight;
+            int slotHeight = _posZ - 4;
 
-                drawSlot(var11, var9, var19, var13, var16);
+            if (slotY > _bottom || slotY + slotHeight < _top) continue;
+
+            if (_showSelectionHighlight && isSelected(i))
+            {
+                int minX = _width / 2 - 110;
+                int maxX = _width / 2 + 110;
+                GLManager.GL.Color4(1.0f, 1.0f, 1.0f, 1.0f);
+                GLManager.GL.Disable(GLEnum.Texture2D);
+
+                tess.startDrawingQuads();
+                tess.setColorOpaque_I(0x808080); // Outer border (Gray)
+                tess.addVertexWithUV(minX, slotY + slotHeight + 2, 0.0, 0.0, 1.0);
+                tess.addVertexWithUV(maxX, slotY + slotHeight + 2, 0.0, 1.0, 1.0);
+                tess.addVertexWithUV(maxX, slotY - 2, 0.0, 1.0, 0.0);
+                tess.addVertexWithUV(minX, slotY - 2, 0.0, 0.0, 0.0);
+                tess.setColorOpaque_I(0x000000); // Inner background (Black)
+                tess.addVertexWithUV(minX + 1, slotY + slotHeight + 1, 0.0, 0.0, 1.0);
+                tess.addVertexWithUV(maxX - 1, slotY + slotHeight + 1, 0.0, 1.0, 1.0);
+                tess.addVertexWithUV(maxX - 1, slotY - 1, 0.0, 1.0, 0.0);
+                tess.addVertexWithUV(minX + 1, slotY - 1, 0.0, 0.0, 0.0);
+                tess.draw();
+                GLManager.GL.Enable(GLEnum.Texture2D);
             }
+
+            DrawSlot(i, startX, slotY, slotHeight, tess);
         }
 
         GLManager.GL.Disable(GLEnum.DepthTest);
-        byte var18 = 4;
-        overlayBackground(0, top, 255, 255);
-        overlayBackground(bottom, height, 255, 255);
+        OverlayBackground(0, _top, 255, 255);
+        OverlayBackground(_bottom, _height, 255, 255);
+
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
         GLManager.GL.Disable(GLEnum.AlphaTest);
         GLManager.GL.ShadeModel(GLEnum.Smooth);
         GLManager.GL.Disable(GLEnum.Texture2D);
-        var16.startDrawingQuads();
-        var16.setColorRGBA_I(0x000000, 0);
-        var16.addVertexWithUV(left, top + var18, 0.0D, 0.0D, 1.0D);
-        var16.addVertexWithUV(right, top + var18, 0.0D, 1.0D, 1.0D);
-        var16.setColorOpaque_I(0x000000);
-        var16.addVertexWithUV(right, top, 0.0D, 1.0D, 0.0D);
-        var16.addVertexWithUV(left, top, 0.0D, 0.0D, 0.0D);
-        var16.draw();
-        var16.startDrawingQuads();
-        var16.setColorOpaque_I(0x000000);
-        var16.addVertexWithUV(left, bottom, 0.0D, 0.0D, 1.0D);
-        var16.addVertexWithUV(right, bottom, 0.0D, 1.0D, 1.0D);
-        var16.setColorRGBA_I(0x000000, 0);
-        var16.addVertexWithUV(right, bottom - var18, 0.0D, 1.0D, 0.0D);
-        var16.addVertexWithUV(left, bottom - var18, 0.0D, 0.0D, 0.0D);
-        var16.draw();
-        var19 = getContentHeight() - (bottom - top - 4);
-        if (var19 > 0)
+
+        // Top/Bottom gradient shadows
+        const int shadowHeight = 4;
+        tess.startDrawingQuads();
+        tess.setColorRGBA_I(0x000000, 0);
+        tess.addVertexWithUV(_left, _top + shadowHeight, 0.0, 0.0, 1.0);
+        tess.addVertexWithUV(_right, _top + shadowHeight, 0.0, 1.0, 1.0);
+        tess.setColorOpaque_I(0x000000);
+        tess.addVertexWithUV(_right, _top, 0.0, 1.0, 0.0);
+        tess.addVertexWithUV(_left, _top, 0.0, 0.0, 0.0);
+        tess.draw();
+
+        tess.startDrawingQuads();
+        tess.setColorOpaque_I(0x000000);
+        tess.addVertexWithUV(_left, _bottom, 0.0, 0.0, 1.0);
+        tess.addVertexWithUV(_right, _bottom, 0.0, 1.0, 1.0);
+        tess.setColorRGBA_I(0x000000, 0);
+        tess.addVertexWithUV(_right, _bottom - shadowHeight, 0.0, 1.0, 0.0);
+        tess.addVertexWithUV(_left, _bottom - shadowHeight, 0.0, 0.0, 0.0);
+        tess.draw();
+
+        // Scrollbar Rendering
+        int scrollRange = GetContentHeight() - (_bottom - _top - 4);
+        if (scrollRange > 0)
         {
-            var13 = (bottom - top) * (bottom - top) / getContentHeight();
-            if (var13 < 32)
-            {
-                var13 = 32;
-            }
+            int viewHeight = _bottom - _top;
+            int barHeight = Math.Clamp((viewHeight * viewHeight) / GetContentHeight(), 32, viewHeight - 8);
+            int barY = (int)_amountScrolled * (viewHeight - barHeight) / scrollRange + _top;
+            barY = Math.Max(barY, _top);
 
-            if (var13 > bottom - top - 8)
-            {
-                var13 = bottom - top - 8;
-            }
+            // Bar Background
+            tess.startDrawingQuads();
+            tess.setColorOpaque_I(0x000000);
+            tess.addVertexWithUV(scrollbarXStart, _bottom, 0.0, 0.0, 1.0);
+            tess.addVertexWithUV(scrollbarXEnd, _bottom, 0.0, 1.0, 1.0);
+            tess.addVertexWithUV(scrollbarXEnd, _top, 0.0, 1.0, 0.0);
+            tess.addVertexWithUV(scrollbarXStart, _top, 0.0, 0.0, 0.0);
+            tess.draw();
 
-            var14 = (int)amountScrolled * (bottom - top - var13) / var19 + top;
-            if (var14 < top)
-            {
-                var14 = top;
-            }
+            // Bar Body
+            tess.startDrawingQuads();
+            tess.setColorOpaque_I(0x808080);
+            tess.addVertexWithUV(scrollbarXStart, barY + barHeight, 0.0, 0.0, 1.0);
+            tess.addVertexWithUV(scrollbarXEnd, barY + barHeight, 0.0, 1.0, 1.0);
+            tess.addVertexWithUV(scrollbarXEnd, barY, 0.0, 1.0, 0.0);
+            tess.addVertexWithUV(scrollbarXStart, barY, 0.0, 0.0, 0.0);
+            tess.draw();
 
-            var16.startDrawingQuads();
-            var16.setColorOpaque_I(0x000000);
-            var16.addVertexWithUV(var5, bottom, 0.0D, 0.0D, 1.0D);
-            var16.addVertexWithUV(var6, bottom, 0.0D, 1.0D, 1.0D);
-            var16.addVertexWithUV(var6, top, 0.0D, 1.0D, 0.0D);
-            var16.addVertexWithUV(var5, top, 0.0D, 0.0D, 0.0D);
-            var16.draw();
-            var16.startDrawingQuads();
-            var16.setColorOpaque_I(0x808080);
-            var16.addVertexWithUV(var5, var14 + var13, 0.0D, 0.0D, 1.0D);
-            var16.addVertexWithUV(var6, var14 + var13, 0.0D, 1.0D, 1.0D);
-            var16.addVertexWithUV(var6, var14, 0.0D, 1.0D, 0.0D);
-            var16.addVertexWithUV(var5, var14, 0.0D, 0.0D, 0.0D);
-            var16.draw();
-            var16.startDrawingQuads();
-            var16.setColorOpaque_I(0xC0C0C0);
-            var16.addVertexWithUV(var5, var14 + var13 - 1, 0.0D, 0.0D, 1.0D);
-            var16.addVertexWithUV(var6 - 1, var14 + var13 - 1, 0.0D, 1.0D, 1.0D);
-            var16.addVertexWithUV(var6 - 1, var14, 0.0D, 1.0D, 0.0D);
-            var16.addVertexWithUV(var5, var14, 0.0D, 0.0D, 0.0D);
-            var16.draw();
+            // Bar Highlight
+            tess.startDrawingQuads();
+            tess.setColorOpaque_I(0xC0C0C0);
+            tess.addVertexWithUV(scrollbarXStart, barY + barHeight - 1, 0.0, 0.0, 1.0);
+            tess.addVertexWithUV(scrollbarXEnd - 1, barY + barHeight - 1, 0.0, 1.0, 1.0);
+            tess.addVertexWithUV(scrollbarXEnd - 1, barY, 0.0, 1.0, 0.0);
+            tess.addVertexWithUV(scrollbarXStart, barY, 0.0, 0.0, 0.0);
+            tess.draw();
         }
 
-        func_27257_b(var1, var2);
+        PostDrawScreen(mouseX, mouseY);
+
         GLManager.GL.Enable(GLEnum.Texture2D);
         GLManager.GL.ShadeModel(GLEnum.Flat);
         GLManager.GL.Enable(GLEnum.AlphaTest);
         GLManager.GL.Disable(GLEnum.Blend);
     }
 
-    private void overlayBackground(int var1, int var2, int var3, int var4)
+    private void OverlayBackground(int startY, int endY, int alphaStart, int alphaEnd)
     {
-        Tessellator var5 = Tessellator.instance;
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/gui/background.png"));
-        GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        float var6 = 32.0F;
-        var5.startDrawingQuads();
-        var5.setColorRGBA_I(0x404040, var4);
-        var5.addVertexWithUV(0.0D, var2, 0.0D, 0.0D, (double)(var2 / var6));
-        var5.addVertexWithUV(width, var2, 0.0D, (double)(width / var6), (double)(var2 / var6));
-        var5.setColorRGBA_I(0x404040, var3);
-        var5.addVertexWithUV(width, var1, 0.0D, (double)(width / var6), (double)(var1 / var6));
-        var5.addVertexWithUV(0.0D, var1, 0.0D, 0.0D, (double)(var1 / var6));
-        var5.draw();
+        var tess = Tessellator.instance;
+        var textureId = (uint)_mc.textureManager.getTextureId("/gui/background.png");
+
+        GLManager.GL.BindTexture(GLEnum.Texture2D, textureId);
+        GLManager.GL.Color4(1.0f, 1.0f, 1.0f, 1.0f);
+
+        const float textureScale = 32.0f;
+
+        tess.startDrawingQuads();
+
+        // Bottom vertices
+        tess.setColorRGBA_I(0x404040, alphaEnd);
+        tess.addVertexWithUV(0.0, endY, 0.0, 0.0, endY / (double)textureScale);
+        tess.addVertexWithUV(_width, endY, 0.0, _width / textureScale, endY / (double)textureScale);
+
+        // Top vertices
+        tess.setColorRGBA_I(0x404040, alphaStart);
+        tess.addVertexWithUV(_width, startY, 0.0, _width / textureScale, startY / (double)textureScale);
+        tess.addVertexWithUV(0.0, startY, 0.0, 0.0, startY / (double)textureScale);
+
+        tess.draw();
     }
 }

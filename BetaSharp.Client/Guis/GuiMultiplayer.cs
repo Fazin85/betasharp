@@ -173,7 +173,7 @@ public class GuiMultiplayer : GuiScreen
         }
         else
         {
-            _serverListSelector.actionPerformed(button);
+            _serverListSelector.ActionPerformed(button);
         }
     }
 
@@ -247,7 +247,7 @@ public class GuiMultiplayer : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         DrawDefaultBackground();
-        _serverListSelector.drawScreen(mouseX, mouseY, partialTicks);
+        _serverListSelector.DrawScreen(mouseX, mouseY, partialTicks);
         DrawCenteredString(FontRenderer, "Play Multiplayer", Width / 2, 20, 0xFFFFFF);
         base.Render(mouseX, mouseY, partialTicks);
     }

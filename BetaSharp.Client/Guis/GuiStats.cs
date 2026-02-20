@@ -80,7 +80,7 @@ public class GuiStats : GuiScreen
                     currentSlot = slotBlock;
                     break;
                 default:
-                    currentSlot.actionPerformed(button);
+                    currentSlot.ActionPerformed(button);
                     break;
             }
 
@@ -89,7 +89,7 @@ public class GuiStats : GuiScreen
 
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        currentSlot.drawScreen(mouseX, mouseY, partialTicks);
+        currentSlot.DrawScreen(mouseX, mouseY, partialTicks);
         DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0xFFFFFF);
         base.Render(mouseX, mouseY, partialTicks);
     }

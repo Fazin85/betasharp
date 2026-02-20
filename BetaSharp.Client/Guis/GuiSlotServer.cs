@@ -32,17 +32,17 @@ public class GuiSlotServer : GuiSlot
         return index == _parent.GetSelectedServerIndex();
     }
 
-    protected override int getContentHeight()
+    protected override int GetContentHeight()
     {
         return GetSize() * 36;
     }
 
-    protected override void drawBackground()
+    protected override void DrawBackground()
     {
         _parent.DrawDefaultBackground();
     }
 
-    protected override void drawSlot(int index, int x, int y, int height, Tessellator tess)
+    protected override void DrawSlot(int index, int x, int y, int height, Tessellator tess)
     {
         ServerData server = _parent.GetServerList()[index];
         Gui.DrawString(_parent.FontRenderer, server.Name, x + 2, y + 1, 0xFFFFFF);

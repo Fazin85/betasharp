@@ -34,17 +34,17 @@ public class GuiTexturePackSlot : GuiSlot
         return _parentTexturePackGui.mc.texturePackList.selectedTexturePack == packs.get(index);
     }
 
-    protected override int getContentHeight()
+    protected override int GetContentHeight()
     {
         return GetSize() * 36;
     }
 
-    protected override void drawBackground()
+    protected override void DrawBackground()
     {
         _parentTexturePackGui.DrawDefaultBackground();
     }
 
-    protected override void drawSlot(int index, int x, int y, int slotHeight, Tessellator tess)
+    protected override void DrawSlot(int index, int x, int y, int slotHeight, Tessellator tess)
     {
         var pack = (TexturePack)_parentTexturePackGui.mc.texturePackList.availableTexturePacks().get(index);
         pack.bindThumbnailTexture(_parentTexturePackGui.mc);

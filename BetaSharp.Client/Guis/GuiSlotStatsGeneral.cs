@@ -11,7 +11,7 @@ public class GuiSlotStatsGeneral : GuiSlot
     public GuiSlotStatsGeneral(GuiStats parent) : base(parent.mc, parent.Width, parent.Height, 32, parent.Height - 64, 10)
     {
         parentStatsGui = parent;
-        func_27258_a(false);
+        SetShowSelectionHighlight(false);
     }
 
     public override int GetSize()
@@ -28,17 +28,17 @@ public class GuiSlotStatsGeneral : GuiSlot
         return false;
     }
 
-    protected override int getContentHeight()
+    protected override int GetContentHeight()
     {
         return GetSize() * 10;
     }
 
-    protected override void drawBackground()
+    protected override void DrawBackground()
     {
         parentStatsGui.DrawDefaultBackground();
     }
 
-    protected override void drawSlot(int index, int x, int y, int rowHeight, Tessellator tessellator)
+    protected override void DrawSlot(int index, int x, int y, int rowHeight, Tessellator tessellator)
     {
         StatBase stat = (StatBase)Stats.Stats.GENERAL_STATS.get(index);
         parentStatsGui.FontRenderer.drawStringWithShadow(stat.statName, x + 2, y + 1, index % 2 == 0 ? 0xFFFFFFu : 0x909090u);

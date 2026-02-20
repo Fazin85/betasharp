@@ -42,9 +42,9 @@ public class GuiSlotStatsBlock : GuiSlotStats
         field_27272_d = new SorterStatsBlock(this, parent);
     }
 
-    protected override void func_27260_a(int x, int y, Tessellator tessellator)
+    protected override void DrawHeader(int x, int y, Tessellator tessellator)
     {
-        base.func_27260_a(x, y, tessellator);
+        base.DrawHeader(x, y, tessellator);
         if (field_27268_b == 0)
         {
             parentStatsGui.drawTranslucentRect(x + 115 - 18 + 1, y + 1 + 1, 18, 18);
@@ -74,7 +74,7 @@ public class GuiSlotStatsBlock : GuiSlotStats
 
     }
 
-    protected override void drawSlot(int index, int x, int y, int rowHeight, Tessellator tessellator)
+    protected override void DrawSlot(int index, int x, int y, int rowHeight, Tessellator tessellator)
     {
         StatCrafting stat = func_27264_b(index);
         int id = stat.getItemId();
