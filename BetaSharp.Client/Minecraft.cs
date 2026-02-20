@@ -32,7 +32,6 @@ using BetaSharp.Worlds;
 using BetaSharp.Worlds.Colors;
 using BetaSharp.Worlds.Storage;
 using ImGuiNET;
-using java.lang;
 using Silk.NET.Input;
 using Silk.NET.OpenGL.Legacy;
 using Silk.NET.OpenGL.Legacy.Extensions.ImGui;
@@ -134,15 +133,10 @@ public partial class Minecraft
         }
     }
 
-    public void onMinecraftCrash(UnexpectedThrowable crashInfo)
+    public void onMinecraftCrash(Exception crashInfo)
     {
         hasCrashed = true;
-        displayUnexpectedThrowable(crashInfo);
-    }
-
-    public void displayUnexpectedThrowable(UnexpectedThrowable unexpectedThrowable)
-    {
-        unexpectedThrowable.exception.printStackTrace();
+        Log.Fatal(crashInfo, "The game has crashed!");
     }
 
     public void setServer(string name, int port)
@@ -192,7 +186,7 @@ public partial class Minecraft
 
             GLManager.Init(Display.getGL()!);
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             Log.Error(ex);
         }
@@ -235,9 +229,9 @@ public partial class Minecraft
             imGuiController = new(GLManager.GL, window, input);
             imGuiController.MakeCurrent();
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
-            Log.Error($"Failed to initialize ImGui: {e}");
+            Log.Error(e, "Failed to initialize ImGui");
             imGuiController = null;
         }
 
@@ -422,13 +416,13 @@ public partial class Minecraft
             {
                 changeWorld1((World)null);
             }
-            catch (Throwable worldChangeException) { }
+            catch (Exception worldChangeException) { }
 
             try
             {
                 GLAllocation.deleteTexturesAndDisplayLists();
             }
-            catch (Throwable textureCleanupException) { }
+            catch (Exception textureCleanupException) { }
 
             sndManager.CloseMinecraft();
             Mouse.destroy();
@@ -454,10 +448,9 @@ public partial class Minecraft
         {
             startGame();
         }
-        catch (java.lang.Exception startupException)
+        catch (Exception startupException)
         {
-            startupException.printStackTrace();
-            onMinecraftCrash(new UnexpectedThrowable("Failed to start game", startupException));
+            onMinecraftCrash(startupException);
             return;
         }
 
@@ -627,7 +620,7 @@ public partial class Minecraft
                     changeWorld1(null);
                     displayGuiScreen(new GuiConflictWarning());
                 }
-                catch (OutOfMemoryError)
+                catch (java.lang.OutOfMemoryError)
                 {
                     crashCleanup();
                     displayGuiScreen(new GuiErrorScreen());
@@ -642,18 +635,10 @@ public partial class Minecraft
                 }
             }
         }
-        catch (MinecraftError)
-        {
-        }
-        catch (Throwable unexpectedException)
+        catch (Exception unexpectedException)
         {
             crashCleanup();
-            unexpectedException.printStackTrace();
-            onMinecraftCrash(new UnexpectedThrowable("Unexpected error", unexpectedException));
-        }
-        catch (System.Exception e)
-        {
-            Log.Error(e.ToString());
+            onMinecraftCrash(unexpectedException);
         }
         finally
         {
@@ -667,7 +652,7 @@ public partial class Minecraft
         {
             changeWorld1(null);
         }
-        catch (System.Exception)
+        catch (Exception)
         {
         }
     }
@@ -1004,9 +989,9 @@ public partial class Minecraft
 
             Display.update();
         }
-        catch (System.Exception displayException)
+        catch (Exception displayException)
         {
-            Log.Error(displayException.ToString());
+            Log.Error(displayException, "Failed to toggle fullscreen");
         }
     }
 
@@ -1301,6 +1286,11 @@ public partial class Minecraft
                         if (Keyboard.getEventKey() == Keyboard.KEY_D && Keyboard.isKeyDown(Keyboard.KEY_F3))
                         {
                             ingameGUI.clearChatMessages();
+                        }
+
+                        if (Keyboard.getEventKey() == Keyboard.KEY_C && Keyboard.isKeyDown(Keyboard.KEY_F3))
+                        {
+                            throw new Exception("Simulated crash triggered by pressing F3 + C");
                         }
 
                         if (Keyboard.getEventKey() == Keyboard.KEY_F1)
