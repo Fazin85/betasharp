@@ -1,151 +1,155 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
 using BetaSharp.Client.Input;
-using java.io;
 
 namespace BetaSharp.Client.Options;
 
-public class GameOptions : java.lang.Object
+public class GameOptions
 {
-    private static readonly string[] RENDER_DISTANCES =
+    private static readonly string[] RenderDistance =
     [
         "options.renderDistance.far",
         "options.renderDistance.normal",
         "options.renderDistance.short",
         "options.renderDistance.tiny",
     ];
-    private static readonly string[] DIFFICULTIES =
+    private static readonly string[] Difficulties =
     [
         "options.difficulty.peaceful",
         "options.difficulty.easy",
         "options.difficulty.normal",
         "options.difficulty.hard",
     ];
-    private static readonly string[] GUISCALES =
+    private static readonly string[] GuiScales =
     [
         "options.guiScale.auto",
         "options.guiScale.small",
         "options.guiScale.normal",
         "options.guiScale.large",
     ];
-    // private static readonly string[] LIMIT_FRAMERATES = ["performance.max", "performance.balanced", "performance.powersaver"];
-    private static readonly string[] ANISO_LEVELS = ["options.off", "2x", "4x", "8x", "16x"];
-    private static readonly string[] MSAA_LEVELS = ["options.off", "2x", "4x", "8x"];
+
+    private static readonly string[] AnisoLeves = ["options.off", "2x", "4x", "8x", "16x"];
+    private static readonly string[] MSAALeves = ["options.off", "2x", "4x", "8x"];
+
     public static float MaxAnisotropy = 1.0f;
-    public float musicVolume = 1.0F;
-    public float soundVolume = 1.0F;
-    public float mouseSensitivity = 0.5F;
-    public bool invertMouse;
+    public float MusicVolume = 1.0F;
+    public float SoundVolume = 1.0F;
+    public float MouseSensitivity = 0.5F;
+    public bool InvertMouse;
     public int renderDistance;
-    public bool viewBobbing = true;
-    public float limitFramerate = 0.42857143f; // 0.428... = 120, 1.0 = 240, 0.0 = 30
-    public float fov = 0.44444445F; // (70 - 30) / 90
-    public string skin = "Default";
-    public KeyBinding keyBindForward = new("key.forward", 17);
-    public KeyBinding keyBindLeft = new("key.left", 30);
-    public KeyBinding keyBindBack = new("key.back", 31);
-    public KeyBinding keyBindRight = new("key.right", 32);
-    public KeyBinding keyBindJump = new("key.jump", 57);
-    public KeyBinding keyBindInventory = new("key.inventory", 18);
-    public KeyBinding keyBindDrop = new("key.drop", 16);
-    public KeyBinding keyBindChat = new("key.chat", 20);
-    public KeyBinding keyBindCommand = new("key.command", Keyboard.KEY_SLASH);
-    public KeyBinding keyBindToggleFog = new("key.fog", 33);
-    public KeyBinding keyBindSneak = new("key.sneak", 42);
-    public KeyBinding[] keyBindings;
-    protected Minecraft mc;
-    private readonly java.io.File optionsFile;
-    public int difficulty = 2;
-    public bool hideGUI = false;
-    public EnumCameraMode cameraMode = EnumCameraMode.FirstPerson;
-    public bool showDebugInfo = false;
-    public string lastServer = "";
-    public bool invertScrolling = false;
-    public bool smoothCamera = false;
-    public bool debugCamera = false;
-    public float amountScrolled = 1.0F;
+    public bool ViewBobbing = true;
+    public float LimitFramerate = 0.42857143f; // 0.428... = 120, 1.0 = 240, 0.0 = 30
+    public float Fov = 0.44444445F; // (70 - 30) / 90
+    public string Skin = "Default";
+
+    public KeyBinding KeyBindForward = new("key.forward", 17);
+    public KeyBinding KeyBindLeft = new("key.left", 30);
+    public KeyBinding KeyBindBack = new("key.back", 31);
+    public KeyBinding KeyBindRight = new("key.right", 32);
+    public KeyBinding KeyBindJump = new("key.jump", 57);
+    public KeyBinding KeyBindInventory = new("key.inventory", 18);
+    public KeyBinding KeyBindDrop = new("key.drop", 16);
+    public KeyBinding KeyBindChat = new("key.chat", 20);
+    public KeyBinding KeyBindCommand = new("key.command", Keyboard.KEY_SLASH);
+    public KeyBinding KeyBindToggleFog = new("key.fog", 33);
+    public KeyBinding KeyBindSneak = new("key.sneak", 42);
+    public KeyBinding[] KeyBindings;
+
+    protected Minecraft _mc;
+    private readonly string _optionsPath;
+    public int Difficulty = 2;
+    public bool HideGUI = false;
+    public EnumCameraMode CameraMode = EnumCameraMode.FirstPerson;
+    public bool ShowDebugInfo = false;
+    public string LastServer = "";
+    public bool InvertScrolling = false;
+    public bool SmoothCamera = false;
+    public bool DebugCamera = false;
+    public float AmountScrolled = 1.0F;
     public float field_22271_G = 1.0F;
-    public int guiScale;
-    public int anisotropicLevel;
-    public int msaaLevel;
+    public int GuiScale;
+    public int AnisotropicLevel;
+    public int MSAALevel;
     public int INITIAL_MSAA;
-    public bool useMipmaps = true;
-    public bool debugMode;
-    public bool environmentAnimation = true;
+    public bool UseMipmaps = true;
+    public bool DebugMode;
+    public bool EnvironmentAnimation = true;
 
-    public GameOptions(Minecraft mc, java.io.File mcDataDir)
+    public GameOptions(Minecraft mc, string mcDataDir)
     {
-        keyBindings =
+        KeyBindings =
         [
-            keyBindForward,
-            keyBindLeft,
-            keyBindBack,
-            keyBindRight,
-            keyBindJump,
-            keyBindSneak,
-            keyBindDrop,
-            keyBindInventory,
-            keyBindChat,
-            keyBindToggleFog,
+            KeyBindForward,
+            KeyBindLeft,
+            KeyBindBack,
+            KeyBindRight,
+            KeyBindJump,
+            KeyBindSneak,
+            KeyBindDrop,
+            KeyBindInventory,
+            KeyBindChat,
+            KeyBindToggleFog,
         ];
-        this.mc = mc;
-        optionsFile = new java.io.File(mcDataDir, "options.txt");
-        loadOptions();
-        INITIAL_MSAA = msaaLevel;
+        _mc = mc;
+        _optionsPath = System.IO.Path.Combine(mcDataDir, "options.txt");
+        LoadOptions();
+        INITIAL_MSAA = MSAALevel;
     }
 
-    public GameOptions()
-    {
-    }
+    public GameOptions() { }
 
-    public string getKeyBindingDescription(int keyBindingIndex)
+    public string GetKeyBindingDescription(int keyBindingIndex)
     {
         TranslationStorage translations = TranslationStorage.Instance;
-        return translations.TranslateKey(keyBindings[keyBindingIndex].keyDescription);
+        return translations.TranslateKey(KeyBindings[keyBindingIndex].keyDescription);
     }
 
-    public string getOptionDisplayString(int keyBindingIndex)
+    public string GetOptionDisplayString(int keyBindingIndex)
     {
-        return Keyboard.getKeyName(keyBindings[keyBindingIndex].keyCode);
+        return Keyboard.getKeyName(KeyBindings[keyBindingIndex].keyCode);
     }
 
-    public void setKeyBinding(int keyBindingIndex, int keyCode)
+    public void SetKeyBinding(int keyBindingIndex, int keyCode)
     {
-        keyBindings[keyBindingIndex].keyCode = keyCode;
-        saveOptions();
+        KeyBindings[keyBindingIndex].keyCode = keyCode;
+        SaveOptions();
     }
 
-    public void setOptionFloatValue(EnumOptions option, float value)
+    public void SetOptionFloatValue(EnumOptions option, float value)
     {
         if (option == EnumOptions.MUSIC)
         {
-            musicVolume = value;
-            mc.sndManager.OnSoundOptionsChanged();
+            MusicVolume = value;
+            _mc.sndManager.OnSoundOptionsChanged();
         }
         else if (option == EnumOptions.SOUND)
         {
-            soundVolume = value;
-            mc.sndManager.OnSoundOptionsChanged();
+            SoundVolume = value;
+            _mc.sndManager.OnSoundOptionsChanged();
         }
         else if (option == EnumOptions.SENSITIVITY)
         {
-            mouseSensitivity = value;
+            MouseSensitivity = value;
         }
         else if (option == EnumOptions.FRAMERATE_LIMIT)
         {
-            limitFramerate = value;
+            LimitFramerate = value;
         }
         else if (option == EnumOptions.FOV)
         {
-            fov = value;
+            Fov = value;
         }
 
-        saveOptions();
+        SaveOptions();
     }
 
-    public void setOptionValue(EnumOptions option, int increment)
+    public void SetOptionValue(EnumOptions option, int increment)
     {
         if (option == EnumOptions.INVERT_MOUSE)
         {
-            invertMouse = !invertMouse;
+            InvertMouse = !InvertMouse;
         }
         else if (option == EnumOptions.RENDER_DISTANCE)
         {
@@ -153,23 +157,23 @@ public class GameOptions : java.lang.Object
         }
         else if (option == EnumOptions.GUI_SCALE)
         {
-            guiScale = guiScale + increment & 3;
+            GuiScale = GuiScale + increment & 3;
         }
         else if (option == EnumOptions.VIEW_BOBBING)
         {
-            viewBobbing = !viewBobbing;
+            ViewBobbing = !ViewBobbing;
         }
         else if (option == EnumOptions.DIFFICULTY)
         {
-            difficulty = difficulty + increment & 3;
+            Difficulty = Difficulty + increment & 3;
         }
         else if (option == EnumOptions.ANISOTROPIC)
         {
-            anisotropicLevel = (anisotropicLevel + increment) % 5;
-            int anisoValue = anisotropicLevel == 0 ? 0 : (int)System.Math.Pow(2, anisotropicLevel);
+            AnisotropicLevel = (AnisotropicLevel + increment) % 5;
+            int anisoValue = AnisotropicLevel == 0 ? 0 : (int)System.Math.Pow(2, AnisotropicLevel);
             if (anisoValue > MaxAnisotropy)
             {
-                anisotropicLevel = 0;
+                AnisotropicLevel = 0;
             }
             if (Minecraft.INSTANCE?.textureManager != null)
             {
@@ -178,7 +182,7 @@ public class GameOptions : java.lang.Object
         }
         else if (option == EnumOptions.MIPMAPS)
         {
-            useMipmaps = !useMipmaps;
+            UseMipmaps = !UseMipmaps;
             if (Minecraft.INSTANCE?.textureManager != null)
             {
                 Minecraft.INSTANCE.textureManager.Reload();
@@ -186,46 +190,46 @@ public class GameOptions : java.lang.Object
         }
         else if (option == EnumOptions.MSAA)
         {
-            msaaLevel = (msaaLevel + increment) % 4;
+            MSAALevel = (MSAALevel + increment) % 4;
         }
         else if (option == EnumOptions.DEBUG_MODE)
         {
-            debugMode = !debugMode;
-            Profiling.Profiler.Enabled = debugMode;
+            DebugMode = !DebugMode;
+            Profiling.Profiler.Enabled = DebugMode;
         }
         else if (option == EnumOptions.ENVIRONMENT_ANIMATION)
         {
-            environmentAnimation = !environmentAnimation;
+            EnvironmentAnimation = !EnvironmentAnimation;
         }
 
-        saveOptions();
+        SaveOptions();
     }
 
-    public float getOptionFloatValue(EnumOptions option)
+    public float GetOptionFloatValue(EnumOptions option)
     {
-        if (option == EnumOptions.MUSIC) return musicVolume;
-        if (option == EnumOptions.SOUND) return soundVolume;
-        if (option == EnumOptions.SENSITIVITY) return mouseSensitivity;
-        if (option == EnumOptions.FRAMERATE_LIMIT) return limitFramerate;
-        if (option == EnumOptions.FOV) return fov;
+        if (option == EnumOptions.MUSIC) return MusicVolume;
+        if (option == EnumOptions.SOUND) return SoundVolume;
+        if (option == EnumOptions.SENSITIVITY) return MouseSensitivity;
+        if (option == EnumOptions.FRAMERATE_LIMIT) return LimitFramerate;
+        if (option == EnumOptions.FOV) return Fov;
         return 0.0F;
     }
 
-    public bool getOptionOrdinalValue(EnumOptions option)
+    public bool GetOptionOrdinalValue(EnumOptions option)
     {
         int mappedValue = EnumOptionsMappingHelper.enumOptionsMappingHelperArray[option.ordinal()];
         return mappedValue switch
         {
-            1 => invertMouse,
-            2 => viewBobbing,
-            3 => useMipmaps,
-            4 => debugMode,
-            5 => environmentAnimation,
+            1 => InvertMouse,
+            2 => ViewBobbing,
+            3 => UseMipmaps,
+            4 => DebugMode,
+            5 => EnvironmentAnimation,
             _ => false
         };
     }
 
-    public string getKeyBinding(EnumOptions option)
+    public string GetKeyBinding(EnumOptions option)
     {
         TranslationStorage translations = TranslationStorage.Instance;
         string label = GetOptionLabel(option, translations) + ": ";
@@ -236,7 +240,7 @@ public class GameOptions : java.lang.Object
         }
         else if (option.getEnumBoolean())
         {
-            bool isEnabled = getOptionOrdinalValue(option);
+            bool isEnabled = GetOptionOrdinalValue(option);
             return label + (isEnabled ? translations.TranslateKey("options.on") : translations.TranslateKey("options.off"));
         }
         else if (option == EnumOptions.MSAA)
@@ -258,7 +262,7 @@ public class GameOptions : java.lang.Object
 
     private string FormatFloatValue(EnumOptions option, string label, TranslationStorage translations)
     {
-        float value = getOptionFloatValue(option);
+        float value = GetOptionFloatValue(option);
 
         if (option == EnumOptions.SENSITIVITY)
         {
@@ -274,7 +278,9 @@ public class GameOptions : java.lang.Object
         }
         else
         {
-            return (value == 0.0F ? label + translations.TranslateKey("options.off") : label + (int)(value * 100.0F) + "%");
+            return value == 0.0F
+                ? label + translations.TranslateKey("options.off") 
+                : label + $"{(int)(value * 100.0F)}%";
         }
     }
 
@@ -286,8 +292,8 @@ public class GameOptions : java.lang.Object
 
     private string FormatMsaaValue(string label, TranslationStorage translations)
     {
-        string result = label + (msaaLevel == 0 ? translations.TranslateKey("options.off") : MSAA_LEVELS[msaaLevel]);
-        if (msaaLevel != INITIAL_MSAA)
+        string result = label + (MSAALevel == 0 ? translations.TranslateKey("options.off") : MSAALeves[MSAALevel]);
+        if (MSAALevel != INITIAL_MSAA)
         {
             result += " (Reload required)";
         }
@@ -296,46 +302,35 @@ public class GameOptions : java.lang.Object
 
     private string FormatEnumValue(EnumOptions option, string label, TranslationStorage translations)
     {
-        if (option == EnumOptions.RENDER_DISTANCE) return label + translations.TranslateKey(RENDER_DISTANCES[renderDistance]);
-        if (option == EnumOptions.DIFFICULTY) return label + translations.TranslateKey(DIFFICULTIES[difficulty]);
-        if (option == EnumOptions.GUI_SCALE) return label + translations.TranslateKey(GUISCALES[guiScale]);
-        if (option == EnumOptions.ANISOTROPIC) return label + (anisotropicLevel == 0 ? translations.TranslateKey("options.off") : ANISO_LEVELS[anisotropicLevel]);
+        if (option == EnumOptions.RENDER_DISTANCE) return label + translations.TranslateKey(RenderDistance[renderDistance]);
+        if (option == EnumOptions.DIFFICULTY) return label + translations.TranslateKey(Difficulties[Difficulty]);
+        if (option == EnumOptions.GUI_SCALE) return label + translations.TranslateKey(GuiScales[GuiScale]);
+        if (option == EnumOptions.ANISOTROPIC) return label + (AnisotropicLevel == 0 ? translations.TranslateKey("options.off") : AnisoLeves[AnisotropicLevel]);
         return label;
     }
 
-    public void loadOptions()
+    public void LoadOptions()
     {
         try
         {
-            if (!optionsFile.exists())
+            if (!File.Exists(_optionsPath)) throw new FileNotFoundException($"Options file not found at {_optionsPath}");
+            using StreamReader reader = new StreamReader(_optionsPath);
+            string? line;
+
+            while ((line = reader.ReadLine()) != null)
             {
-                return;
-            }
-
-            BufferedReader reader = new(new FileReader(optionsFile));
-            string line = "";
-
-            while (true)
-            {
-                line = reader.readLine();
-                if (line == null)
-                {
-                    reader.close();
-                    break;
-                }
-
                 try
                 {
                     string[] parts = line.Split(':');
-                    LoadOptionFromParts(parts);
+                    if (parts.Length >= 2) LoadOptionFromParts(parts);
                 }
-                catch (System.Exception)
+                catch (Exception)
                 {
                     Log.Error($"Skipping bad option: {line}");
                 }
             }
         }
-        catch (System.Exception)
+        catch (Exception)
         {
             Log.Error("Failed to load options");
         }
@@ -343,79 +338,57 @@ public class GameOptions : java.lang.Object
 
     private void LoadOptionFromParts(string[] parts)
     {
-        switch (parts[0])
-        {
-            case "music":
-                musicVolume = parseFloat(parts[1]);
-                break;
-            case "sound":
-                soundVolume = parseFloat(parts[1]);
-                break;
-            case "mouseSensitivity":
-                mouseSensitivity = parseFloat(parts[1]);
-                break;
-            case "invertYMouse":
-                invertMouse = parts[1].Equals("true");
-                break;
-            case "viewDistance":
-                renderDistance = int.Parse(parts[1]);
-                break;
-            case "guiScale":
-                guiScale = int.Parse(parts[1]);
-                break;
-            case "bobView":
-                viewBobbing = parts[1].Equals("true");
-                break;
-            case "fpsLimit":
-                limitFramerate = parseFloat(parts[1]);
-                break;
-            case "fov":
-                fov = parseFloat(parts[1]);
-                break;
-            case "difficulty":
-                difficulty = int.Parse(parts[1]);
-                break;
-            case "skin":
-                skin = parts[1];
-                break;
-            case "lastServer" when parts.Length >= 2:
-                lastServer = parts[1];
-                break;
-            case "anisotropicLevel":
-                anisotropicLevel = int.Parse(parts[1]);
-                break;
-            case "msaaLevel":
-                msaaLevel = int.Parse(parts[1]);
-                if (msaaLevel > 3) msaaLevel = 3;
-                break;
-            case "useMipmaps":
-                useMipmaps = parts[1].Equals("true");
-                break;
-            case "debugMode":
-                debugMode = parts[1].Equals("true");
-                break;
-            case "envAnimation":
-                environmentAnimation = parts[1].Equals("true");
-                break;
-            case "cameraMode":
-                cameraMode = (EnumCameraMode)int.Parse(parts[1]);
-                break;
-            case "thirdPersonView": // backward compatibility
-                cameraMode = parts[1].Equals("true") ? EnumCameraMode.ThirdPerson : EnumCameraMode.FirstPerson;
-                break;
-        }
+        if (parts.Length < 2) return;
 
-        // Load keybindings
-        for (int i = 0; i < keyBindings.Length; ++i)
+        string key = parts[0];
+        string value = parts[1];
+
+        switch (key)
         {
-            if (parts[0].Equals("key_" + keyBindings[i].keyDescription))
-            {
-                keyBindings[i].keyCode = int.Parse(parts[1]);
-            }
+            case "music": MusicVolume = ParseFloat(value); break;
+            case "sound": SoundVolume = ParseFloat(value); break;
+            case "mouseSensitivity": MouseSensitivity = ParseFloat(value); break;
+            case "invertYMouse": InvertMouse = value == "true"; break; // Simplified boolean parsing
+            case "viewDistance": renderDistance = int.Parse(value); break;
+            case "guiScale": GuiScale = int.Parse(value); break;
+            case "bobView": ViewBobbing = value == "true"; break;
+            case "fpsLimit": LimitFramerate = ParseFloat(value); break;
+            case "fov": Fov = ParseFloat(value); break;
+            case "difficulty": Difficulty = int.Parse(value); break;
+            case "skin": Skin = value; break;
+            case "lastServer": LastServer = value; break; // Safe now because of the global length check
+            case "anisotropicLevel": AnisotropicLevel = int.Parse(value); break;
+            case "msaaLevel":
+                MSAALevel = int.Parse(value);
+                if (MSAALevel > 3) MSAALevel = 3;
+                break;
+            case "useMipmaps": UseMipmaps = value == "true"; break;
+            case "debugMode": DebugMode = value == "true"; break;
+            case "envAnimation": EnvironmentAnimation = value == "true"; break;
+            case "cameraMode": CameraMode = (EnumCameraMode)int.Parse(value); break;
+            case "thirdPersonView": // backward compatibility
+                CameraMode = value == "true" ? EnumCameraMode.ThirdPerson : EnumCameraMode.FirstPerson;
+                break;
+
+            default:
+                if (key.StartsWith("key_"))
+                {
+                    string bindName = key[4..];
+
+                    for (int i = 0; i < KeyBindings.Length; ++i)
+                    {
+                        if (KeyBindings[i].keyDescription == bindName)
+                        {
+                            KeyBindings[i].keyCode = int.Parse(value);
+                            break;
+                        }
+                    }
+                }
+                break;
         }
     }
 
-    private float parseFloat(string value)
+    private float ParseFloat(string value)
     {
         return value switch
         {
@@ -425,38 +398,38 @@ public class GameOptions : java.lang.Object
         };
     }
 
-    public void saveOptions()
+    public void SaveOptions()
     {
         try
         {
-            using System.IO.StreamWriter writer = new(optionsFile.getAbsolutePath());
-            writer.WriteLine("music:" + musicVolume);
-            writer.WriteLine("sound:" + soundVolume);
-            writer.WriteLine("invertYMouse:" + invertMouse);
-            writer.WriteLine("mouseSensitivity:" + mouseSensitivity);
-            writer.WriteLine("viewDistance:" + renderDistance);
-            writer.WriteLine("guiScale:" + guiScale);
-            writer.WriteLine("bobView:" + viewBobbing);
-            writer.WriteLine("fpsLimit:" + limitFramerate);
-            writer.WriteLine("fov:" + fov);
-            writer.WriteLine("difficulty:" + difficulty);
-            writer.WriteLine("skin:" + skin);
-            writer.WriteLine("lastServer:" + lastServer);
-            writer.WriteLine("anisotropicLevel:" + anisotropicLevel);
-            writer.WriteLine("msaaLevel:" + msaaLevel);
-            writer.WriteLine("useMipmaps:" + useMipmaps);
-            writer.WriteLine("debugMode:" + debugMode);
-            writer.WriteLine("envAnimation:" + environmentAnimation);
-            writer.WriteLine("cameraMode:" + (int)cameraMode);
+            using var writer = new StreamWriter(_optionsPath);
+            writer.WriteLine($"music:{MusicVolume}");
+            writer.WriteLine($"sound:{SoundVolume}");
+            writer.WriteLine($"invertYMouse:{InvertMouse.ToString().ToLower()}");
+            writer.WriteLine($"mouseSensitivity:{MouseSensitivity}");
+            writer.WriteLine($"viewDistance:{renderDistance}");
+            writer.WriteLine($"guiScale:{GuiScale}");
+            writer.WriteLine($"bobView:{ViewBobbing.ToString().ToLower()}");
+            writer.WriteLine($"fpsLimit:{LimitFramerate}");
+            writer.WriteLine($"fov:{Fov}");
+            writer.WriteLine($"difficulty:{Difficulty}");
+            writer.WriteLine($"skin:{Skin}");
+            writer.WriteLine($"lastServer:{LastServer}");
+            writer.WriteLine($"anisotropicLevel:{AnisotropicLevel}");
+            writer.WriteLine($"msaaLevel:{MSAALevel}");
+            writer.WriteLine($"useMipmaps:{UseMipmaps.ToString().ToLower()}");
+            writer.WriteLine($"debugMode:{DebugMode.ToString().ToLower()}");
+            writer.WriteLine($"envAnimation:{EnvironmentAnimation.ToString().ToLower()}");
+            writer.WriteLine($"cameraMode:{(int)CameraMode}");
 
-            for (int i = 0; i < keyBindings.Length; ++i)
+            foreach (var bind in KeyBindings)
             {
-                writer.WriteLine("key_" + keyBindings[i].keyDescription + ":" + keyBindings[i].keyCode);
+                writer.WriteLine($"key_{bind.keyDescription}:{bind.keyCode}");
             }
 
             writer.Close();
         }
-        catch (System.Exception exception)
+        catch (Exception exception)
         {
             Log.Error($"Failed to save options: {exception.Message}");
         }

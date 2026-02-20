@@ -52,7 +52,7 @@ public class GuiIngame : Gui
         }
 
         ItemStack helmet = _mc.player.inventory.armorItemInSlot(3);
-        if (_mc.options.cameraMode == EnumCameraMode.FirstPerson && helmet != null && helmet.itemId == Block.Pumpkin.id)
+        if (_mc.options.CameraMode == EnumCameraMode.FirstPerson && helmet != null && helmet.itemId == Block.Pumpkin.id)
         {
             renderPumpkinBlur(scaledWidth, scaledHeight);
         }
@@ -70,7 +70,7 @@ public class GuiIngame : Gui
         DrawTexturedModalRect(scaledWidth / 2 - 91, scaledHeight - 22, 0, 0, 182, 22);
         DrawTexturedModalRect(scaledWidth / 2 - 91 - 1 + inventory.selectedSlot * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_mc.textureManager.GetTextureId("/gui/icons.png"));
-        if (_mc.options.cameraMode == EnumCameraMode.FirstPerson)
+        if (_mc.options.CameraMode == EnumCameraMode.FirstPerson)
         {
             GLManager.GL.Enable(GLEnum.Blend);
             GLManager.GL.BlendFunc(GLEnum.OneMinusDstColor, GLEnum.OneMinusSrcColor);
@@ -206,7 +206,7 @@ public class GuiIngame : Gui
         }
 
         string debugStr;
-        if (_mc.options.showDebugInfo)
+        if (_mc.options.ShowDebugInfo)
         {
             _gcMonitor.AllowUpdating = true;
             GLManager.GL.PushMatrix();

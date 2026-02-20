@@ -2,37 +2,27 @@ using java.io;
 
 namespace BetaSharp.Util;
 
-public class ChatAllowedCharacters : java.lang.Object
+public class ChatAllowedCharacters
 {
-    public static readonly string allowedCharacters = getAllowedCharacters();
+    public static readonly string allowedCharacters = GetAllowedCharacters();
     public static readonly char[] allowedCharactersArray = ['/', '\n', '\r', '\t', '\u0000', '\f', '`', '?', '*', '\\', '<', '>', '|', '\"', ':'];
 
-    private static string getAllowedCharacters()
+    private static string GetAllowedCharacters()
     {
-        string var0 = "";
-
         try
         {
-            BufferedReader var1 = new(new java.io.StringReader(AssetManager.Instance.getAsset("font.txt").getTextContent()));
-            string var2 = "";
-
-            while (true)
-            {
-                var2 = var1.readLine();
-                if (var2 == null)
-                {
-                    var1.close();
-                    break;
-                }
-
-                if (!var2.StartsWith('#'))
-                {
-                    var0 += var2;
-                }
-            }
+            string content = AssetManager.Instance.getAsset("font.txt").getTextContent();
+            if (string.IsNullOrWhiteSpace(content)) return string.Empty;
+            
+            return string.Concat(
+                content.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
+                       .Where(line => !line.StartsWith('#'))
+            );
         }
-        catch (java.lang.Exception) { }
-
-        return var0;
+        catch (Exception ex)
+        {
+            Log.Error(ex);
+            return string.Empty;
+        }
     }
 }

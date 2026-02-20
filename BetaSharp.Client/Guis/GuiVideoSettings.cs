@@ -43,12 +43,12 @@ public class GuiVideoSettings : GuiScreen
             if (!option.getEnumFloat())
             {
                 // Toggle-style button (e.g., Fancy/Fast or On/Off)
-                _controlList.Add(new GuiSmallButton(id, x, y, option, _gameOptions.getKeyBinding(option)));
+                _controlList.Add(new GuiSmallButton(id, x, y, option, _gameOptions.GetKeyBinding(option)));
             }
             else
             {
                 // Slider-style button (e.g., FOV or Render Distance)
-                _controlList.Add(new GuiSlider(id, x, y, option, _gameOptions.getKeyBinding(option), _gameOptions.getOptionFloatValue(option)));
+                _controlList.Add(new GuiSlider(id, x, y, option, _gameOptions.GetKeyBinding(option), _gameOptions.GetOptionFloatValue(option)));
             }
 
             optionIndex++;
@@ -63,13 +63,13 @@ public class GuiVideoSettings : GuiScreen
         {
             if (btn.Id < 100 && btn is GuiSmallButton)
             {
-                _gameOptions.setOptionValue(((GuiSmallButton)btn).returnEnumOptions(), 1);
-                btn.DisplayString = _gameOptions.getKeyBinding(EnumOptions.getEnumOptions(btn.Id));
+                _gameOptions.SetOptionValue(((GuiSmallButton)btn).returnEnumOptions(), 1);
+                btn.DisplayString = _gameOptions.GetKeyBinding(EnumOptions.getEnumOptions(btn.Id));
             }
 
             if (btn.Id == 200)
             {
-                mc.options.saveOptions();
+                mc.options.SaveOptions();
                 mc.displayGuiScreen(_parentScreen);
             }
 

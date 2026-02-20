@@ -27,13 +27,13 @@ public class GuiControls : GuiScreen
         TranslationStorage translations = TranslationStorage.Instance;
         int leftX = getLeftColumnX();
 
-        for (int i = 0; i < _options.keyBindings.Length; ++i)
+        for (int i = 0; i < _options.KeyBindings.Length; ++i)
         {
-            _controlList.Add(new GuiSmallButton(i, leftX + i % 2 * 160, Height / 6 + 24 * (i >> 1), 70, 20, _options.getOptionDisplayString(i)));
+            _controlList.Add(new GuiSmallButton(i, leftX + i % 2 * 160, Height / 6 + 24 * (i >> 1), 70, 20, _options.GetOptionDisplayString(i)));
         }
 
-        _controlList.Add(new GuiSlider(EnumOptions.SENSITIVITY.returnEnumOrdinal(), Width / 2 + 5, Height / 6 + 130, EnumOptions.SENSITIVITY, _options.getKeyBinding(EnumOptions.SENSITIVITY), _options.getOptionFloatValue(EnumOptions.SENSITIVITY)).Size(125, 20));
-        _controlList.Add(new GuiSmallButton(EnumOptions.INVERT_MOUSE.returnEnumOrdinal(), Width / 2 - 155, Height / 6 + 130, EnumOptions.INVERT_MOUSE, _options.getKeyBinding(EnumOptions.INVERT_MOUSE)).Size(125, 20));
+        _controlList.Add(new GuiSlider(EnumOptions.SENSITIVITY.returnEnumOrdinal(), Width / 2 + 5, Height / 6 + 130, EnumOptions.SENSITIVITY, _options.GetKeyBinding(EnumOptions.SENSITIVITY), _options.GetOptionFloatValue(EnumOptions.SENSITIVITY)).Size(125, 20));
+        _controlList.Add(new GuiSmallButton(EnumOptions.INVERT_MOUSE.returnEnumOrdinal(), Width / 2 - 155, Height / 6 + 130, EnumOptions.INVERT_MOUSE, _options.GetKeyBinding(EnumOptions.INVERT_MOUSE)).Size(125, 20));
 
         _controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 6 + 168, translations.TranslateKey("gui.done")));
         _screenTitle = translations.TranslateKey("controls.title");
@@ -41,9 +41,9 @@ public class GuiControls : GuiScreen
 
     protected override void ActionPerformed(GuiButton button)
     {
-        for (int i = 0; i < _options.keyBindings.Length; ++i)
+        for (int i = 0; i < _options.KeyBindings.Length; ++i)
         {
-            _controlList[i].DisplayString = _options.getOptionDisplayString(i);
+            _controlList[i].DisplayString = _options.GetOptionDisplayString(i);
         }
 
         switch (button.Id)
@@ -52,13 +52,13 @@ public class GuiControls : GuiScreen
                 mc.displayGuiScreen(_parentScreen);
                 break;
             case int id when id == EnumOptions.INVERT_MOUSE.returnEnumOrdinal():
-                _options.invertMouse = !_options.invertMouse;
-                button.DisplayString = _options.getKeyBinding(EnumOptions.INVERT_MOUSE);
-                _options.saveOptions();
+                _options.InvertMouse = !_options.InvertMouse;
+                button.DisplayString = _options.GetKeyBinding(EnumOptions.INVERT_MOUSE);
+                _options.SaveOptions();
                 break;
             default:
                 _selectedKey = button.Id;
-                button.DisplayString = "> " + _options.getOptionDisplayString(button.Id) + " <";
+                button.DisplayString = "> " + _options.GetOptionDisplayString(button.Id) + " <";
                 break;
         }
 
@@ -68,8 +68,8 @@ public class GuiControls : GuiScreen
     {
         if (_selectedKey >= 0)
         {
-            _options.setKeyBinding(_selectedKey, eventKey);
-            _controlList[_selectedKey].DisplayString = _options.getOptionDisplayString(_selectedKey);
+            _options.SetKeyBinding(_selectedKey, eventKey);
+            _controlList[_selectedKey].DisplayString = _options.GetOptionDisplayString(_selectedKey);
             _selectedKey = -1;
         }
         else
@@ -85,9 +85,9 @@ public class GuiControls : GuiScreen
         DrawCenteredString(FontRenderer, _screenTitle, Width / 2, 20, 0xFFFFFF);
         int leftX = getLeftColumnX();
 
-        for (int i = 0; i < _options.keyBindings.Length; ++i)
+        for (int i = 0; i < _options.KeyBindings.Length; ++i)
         {
-            DrawString(FontRenderer, _options.getKeyBindingDescription(i), leftX + i % 2 * 160 + 70 + 6, Height / 6 + 24 * (i >> 1) + 7, 0xFFFFFFFF);
+            DrawString(FontRenderer, _options.GetKeyBindingDescription(i), leftX + i % 2 * 160 + 70 + 6, Height / 6 + 24 * (i >> 1) + 7, 0xFFFFFFFF);
         }
 
         base.Render(mouseX, mouseY, partialTicks);
