@@ -33,7 +33,7 @@ public class EntityFX : Entity
         base.velocityY = velocityY + (double)((float)(java.lang.Math.random() * 2.0D - 1.0D) * 0.4F);
         base.velocityZ = velocityZ + (double)((float)(java.lang.Math.random() * 2.0D - 1.0D) * 0.4F);
         float velocityScale = (float)(java.lang.Math.random() + java.lang.Math.random() + 1.0D) * 0.15F;
-        float speed = MathHelper.sqrt_double(base.velocityX * base.velocityX + base.velocityY * base.velocityY + base.velocityZ * base.velocityZ);
+        float speed = MathHelper.Sqrt(base.velocityX * base.velocityX + base.velocityY * base.velocityY + base.velocityZ * base.velocityZ);
         base.velocityX = base.velocityX / (double)speed * (double)velocityScale * (double)0.4F;
         base.velocityY = base.velocityY / (double)speed * (double)velocityScale * (double)0.4F + (double)0.1F;
         base.velocityZ = base.velocityZ / (double)speed * (double)velocityScale * (double)0.4F;

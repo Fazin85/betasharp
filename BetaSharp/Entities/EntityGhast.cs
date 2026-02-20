@@ -49,7 +49,7 @@ public class EntityGhast : EntityFlying, Monster
         double dx1 = waypointX - x;
         double dy1 = waypointY - y;
         double dz1 = waypointZ - z;
-        double distance = (double)MathHelper.sqrt_double(dx1 * dx1 + dy1 * dy1 + dz1 * dz1);
+        double distance = (double)MathHelper.Sqrt(dx1 * dx1 + dy1 * dy1 + dz1 * dz1);
         if (distance < 1.0D || distance > 60.0D)
         {
             waypointX = x + (double)((random.NextFloat() * 2.0F - 1.0F) * 16.0F);

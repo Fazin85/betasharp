@@ -247,7 +247,7 @@ public abstract class EntityLiving : Entity
         tickMovement();
         double dx = x - prevX;
         double dz = z - prevZ;
-        float horizontalDistance = MathHelper.sqrt_double(dx * dx + dz * dz);
+        float horizontalDistance = MathHelper.Sqrt(dx * dx + dz * dz);
         float computedYaw = bodyYaw;
         float walkSpeed = 0.0F;
         lastWalkProgress = walkProgress;
@@ -480,7 +480,7 @@ public abstract class EntityLiving : Entity
 
     public void knockBack(Entity entity, int amount, double dx, double dy)
     {
-        float var7 = MathHelper.sqrt_double(dx * dx + dy * dy);
+        float var7 = MathHelper.Sqrt(dx * dx + dy * dy);
         float var8 = 0.4F;
         velocityX /= 2.0D;
         velocityY /= 2.0D;
@@ -543,7 +543,7 @@ public abstract class EntityLiving : Entity
         if (var2 > 0)
         {
             damage(null, var2);
-            int var3 = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(y - (double)0.2F - (double)standingEyeHeight), MathHelper.floor_double(z));
+            int var3 = world.getBlockId(MathHelper.Floor(x), MathHelper.Floor(y - (double)0.2F - (double)standingEyeHeight), MathHelper.Floor(z));
             if (var3 > 0)
             {
                 BlockSoundGroup soundGroup = Block.Blocks[var3].soundGroup;
@@ -590,7 +590,7 @@ public abstract class EntityLiving : Entity
             if (onGround)
             {
                 friction = 546.0F * 0.1F * 0.1F * 0.1F;
-                int groundBlockId = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
+                int groundBlockId = world.getBlockId(MathHelper.Floor(x), MathHelper.Floor(boundingBox.minY) - 1, MathHelper.Floor(z));
                 if (groundBlockId > 0)
                 {
                     friction = Block.Blocks[groundBlockId].slipperiness * 0.91F;
@@ -603,7 +603,7 @@ public abstract class EntityLiving : Entity
             if (onGround)
             {
                 friction = 546.0F * 0.1F * 0.1F * 0.1F;
-                int groundBlockId = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
+                int groundBlockId = world.getBlockId(MathHelper.Floor(x), MathHelper.Floor(boundingBox.minY) - 1, MathHelper.Floor(z));
                 if (groundBlockId > 0)
                 {
                     friction = Block.Blocks[groundBlockId].slipperiness * 0.91F;
@@ -660,7 +660,7 @@ public abstract class EntityLiving : Entity
         lastWalkAnimationSpeed = walkAnimationSpeed;
         previousY = x - prevX;
         double deltaZ = z - prevZ;
-        float distanceMoved = MathHelper.sqrt_double(previousY * previousY + deltaZ * deltaZ) * 4.0F;
+        float distanceMoved = MathHelper.Sqrt(previousY * previousY + deltaZ * deltaZ) * 4.0F;
         if (distanceMoved > 1.0F)
         {
             distanceMoved = 1.0F;
@@ -672,9 +672,9 @@ public abstract class EntityLiving : Entity
 
     public virtual bool isOnLadder()
     {
-        int x = MathHelper.floor_double(base.x);
-        int y = MathHelper.floor_double(boundingBox.minY);
-        int z = MathHelper.floor_double(base.z);
+        int x = MathHelper.Floor(base.x);
+        int y = MathHelper.Floor(boundingBox.minY);
+        int z = MathHelper.Floor(base.z);
         return world.getBlockId(x, y, z) == Block.Ladder.id;
     }
 
@@ -914,7 +914,7 @@ public abstract class EntityLiving : Entity
             dy = (entity.boundingBox.minY + entity.boundingBox.maxY) / 2.0D - (y + (double)getEyeHeight());
         }
 
-        double horizontalDistance = (double)MathHelper.sqrt_double(dx * dx + dz * dz);
+        double horizontalDistance = (double)MathHelper.Sqrt(dx * dx + dz * dz);
         float targetYaw = (float)(System.Math.Atan2(dz, dx) * 180.0D / (double)((float)System.Math.PI)) - 90.0F;
         float targetPitch = (float)(-(System.Math.Atan2(dy, horizontalDistance) * 180.0D / (double)((float)System.Math.PI)));
         pitch = -updateRotation(pitch, targetPitch, pitchSpeed);
@@ -1009,20 +1009,20 @@ public abstract class EntityLiving : Entity
         float sinPitch;
         if (partialTick == 1.0F)
         {
-            cosYaw = MathHelper.cos(-yaw * ((float)System.Math.PI / 180.0F) - (float)System.Math.PI);
-            sinYaw = MathHelper.sin(-yaw * ((float)System.Math.PI / 180.0F) - (float)System.Math.PI);
-            cosPitch = -MathHelper.cos(-pitch * ((float)System.Math.PI / 180.0F));
-            sinPitch = MathHelper.sin(-pitch * ((float)System.Math.PI / 180.0F));
+            cosYaw = MathHelper.Cos(-yaw * ((float)System.Math.PI / 180.0F) - (float)System.Math.PI);
+            sinYaw = MathHelper.Sin(-yaw * ((float)System.Math.PI / 180.0F) - (float)System.Math.PI);
+            cosPitch = -MathHelper.Cos(-pitch * ((float)System.Math.PI / 180.0F));
+            sinPitch = MathHelper.Sin(-pitch * ((float)System.Math.PI / 180.0F));
             return new Vec3D((double)(sinYaw * cosPitch), (double)sinPitch, (double)(cosYaw * cosPitch));
         }
         else
         {
             cosYaw = prevPitch + (pitch - prevPitch) * partialTick;
             sinYaw = prevYaw + (yaw - prevYaw) * partialTick;
-            cosPitch = MathHelper.cos(-sinYaw * ((float)System.Math.PI / 180.0F) - (float)System.Math.PI);
-            sinPitch = MathHelper.sin(-sinYaw * ((float)System.Math.PI / 180.0F) - (float)System.Math.PI);
-            float var6 = -MathHelper.cos(-cosYaw * ((float)System.Math.PI / 180.0F));
-            float var7 = MathHelper.sin(-cosYaw * ((float)System.Math.PI / 180.0F));
+            cosPitch = MathHelper.Cos(-sinYaw * ((float)System.Math.PI / 180.0F) - (float)System.Math.PI);
+            sinPitch = MathHelper.Sin(-sinYaw * ((float)System.Math.PI / 180.0F) - (float)System.Math.PI);
+            float var6 = -MathHelper.Cos(-cosYaw * ((float)System.Math.PI / 180.0F));
+            float var7 = MathHelper.Sin(-cosYaw * ((float)System.Math.PI / 180.0F));
             return new Vec3D((double)(sinPitch * var6), (double)var7, (double)(cosPitch * var6));
         }
     }

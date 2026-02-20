@@ -33,7 +33,7 @@ public class ModelGhast : ModelBase
     {
         for (int var7 = 0; var7 < tentacles.Length; ++var7)
         {
-            tentacles[var7].rotateAngleX = 0.2F * MathHelper.sin(var3 * 0.3F + var7) + 0.4F;
+            tentacles[var7].rotateAngleX = 0.2F * MathHelper.Sin(var3 * 0.3F + var7) + 0.4F;
         }
 
     }

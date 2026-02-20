@@ -40,10 +40,10 @@ public class FishingBobberEntityRenderer : EntityRenderer
         if (var1.angler != null)
         {
             float var20 = (var1.angler.prevYaw + (var1.angler.yaw - var1.angler.prevYaw) * tickDelta) * (float)Math.PI / 180.0F;
-            double var21 = (double)MathHelper.sin(var20);
-            double var23 = (double)MathHelper.cos(var20);
+            double var21 = (double)MathHelper.Sin(var20);
+            double var23 = (double)MathHelper.Cos(var20);
             float var25 = var1.angler.getSwingProgress(tickDelta);
-            float var26 = MathHelper.sin(MathHelper.sqrt_float(var25) * (float)Math.PI);
+            float var26 = MathHelper.Sin(MathHelper.Sqrt(var25) * (float)Math.PI);
             Vec3D var27 = new(-0.5D, 0.03D, 0.8D);
             var27.rotateAroundX(-(var1.angler.prevPitch + (var1.angler.pitch - var1.angler.prevPitch) * tickDelta) * (float)Math.PI / 180.0F);
             var27.rotateAroundY(-(var1.angler.prevYaw + (var1.angler.yaw - var1.angler.prevYaw) * tickDelta) * (float)Math.PI / 180.0F);
@@ -55,8 +55,8 @@ public class FishingBobberEntityRenderer : EntityRenderer
             if (dispatcher.options.CameraMode != EnumCameraMode.FirstPerson)
             {
                 var20 = (var1.angler.lastBodyYaw + (var1.angler.bodyYaw - var1.angler.lastBodyYaw) * tickDelta) * (float)Math.PI / 180.0F;
-                var21 = (double)MathHelper.sin(var20);
-                var23 = (double)MathHelper.cos(var20);
+                var21 = (double)MathHelper.Sin(var20);
+                var23 = (double)MathHelper.Cos(var20);
                 var28 = var1.angler.prevX + (var1.angler.x - var1.angler.prevX) * (double)tickDelta - var23 * 0.35D - var21 * 0.85D;
                 var30 = var1.angler.prevY + (var1.angler.y - var1.angler.prevY) * (double)tickDelta - 0.45D;
                 var32 = var1.angler.prevZ + (var1.angler.z - var1.angler.prevZ) * (double)tickDelta - var21 * 0.35D + var23 * 0.85D;

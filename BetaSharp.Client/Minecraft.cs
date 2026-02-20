@@ -1177,8 +1177,8 @@ public partial class Minecraft
 
             if (!isGamePaused && world != null)
             {
-                world.displayTick(MathHelper.floor_double(player.x),
-                    MathHelper.floor_double(player.y), MathHelper.floor_double(player.z));
+                world.displayTick(MathHelper.Floor(player.x),
+                    MathHelper.Floor(player.y), MathHelper.Floor(player.z));
             }
 
             if (!isGamePaused)

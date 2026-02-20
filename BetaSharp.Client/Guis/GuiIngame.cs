@@ -227,7 +227,7 @@ public class GuiIngame : Gui
             DrawString(font, "x: " + _mc.player.x, 2, 64, 0xE0E0E0);
             DrawString(font, "y: " + _mc.player.y, 2, 72, 0xE0E0E0);
             DrawString(font, "z: " + _mc.player.z, 2, 80, 0xE0E0E0);
-            DrawString(font, "f: " + (MathHelper.floor_double((double)(_mc.player.yaw * 4.0F / 360.0F) + 0.5D) & 3), 2, 88, 0xE0E0E0);
+            DrawString(font, "f: " + (MathHelper.Floor((double)(_mc.player.yaw * 4.0F / 360.0F) + 0.5D) & 3), 2, 88, 0xE0E0E0);
 
             if (_mc.internalServer != null)
             {

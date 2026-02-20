@@ -226,7 +226,7 @@ public abstract class EntityPlayer : EntityLiving
         inventory.inventoryTick();
         prevStepBobbingAmount = stepBobbingAmount;
         base.tickMovement();
-        float var1 = MathHelper.sqrt_double(velocityX * velocityX + velocityZ * velocityZ);
+        float var1 = MathHelper.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
         float var2 = (float)System.Math.Atan(-velocityY * (double)0.2F) * 15.0F;
         if (var1 > 0.1F)
         {
@@ -287,8 +287,8 @@ public abstract class EntityPlayer : EntityLiving
         inventory.dropInventory();
         if (adversary != null)
         {
-            velocityX = (double)(-MathHelper.cos((attackedAtYaw + yaw) * (float)System.Math.PI / 180.0F) * 0.1F);
-            velocityZ = (double)(-MathHelper.sin((attackedAtYaw + yaw) * (float)System.Math.PI / 180.0F) * 0.1F);
+            velocityX = (double)(-MathHelper.Cos((attackedAtYaw + yaw) * (float)System.Math.PI / 180.0F) * 0.1F);
+            velocityZ = (double)(-MathHelper.Sin((attackedAtYaw + yaw) * (float)System.Math.PI / 180.0F) * 0.1F);
         }
         else
         {
@@ -335,16 +335,16 @@ public abstract class EntityPlayer : EntityLiving
             {
                 var5 = random.NextFloat() * 0.5F;
                 float var6 = random.NextFloat() * (float)System.Math.PI * 2.0F;
-                var3.velocityX = (double)(-MathHelper.sin(var6) * var5);
-                var3.velocityZ = (double)(MathHelper.cos(var6) * var5);
+                var3.velocityX = (double)(-MathHelper.Sin(var6) * var5);
+                var3.velocityZ = (double)(MathHelper.Cos(var6) * var5);
                 var3.velocityY = (double)0.2F;
             }
             else
             {
                 var4 = 0.3F;
-                var3.velocityX = (double)(-MathHelper.sin(yaw / 180.0F * (float)System.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)System.Math.PI) * var4);
-                var3.velocityZ = (double)(MathHelper.cos(yaw / 180.0F * (float)System.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)System.Math.PI) * var4);
-                var3.velocityY = (double)(-MathHelper.sin(pitch / 180.0F * (float)System.Math.PI) * var4 + 0.1F);
+                var3.velocityX = (double)(-MathHelper.Sin(yaw / 180.0F * (float)System.Math.PI) * MathHelper.Cos(pitch / 180.0F * (float)System.Math.PI) * var4);
+                var3.velocityZ = (double)(MathHelper.Cos(yaw / 180.0F * (float)System.Math.PI) * MathHelper.Cos(pitch / 180.0F * (float)System.Math.PI) * var4);
+                var3.velocityY = (double)(-MathHelper.Sin(pitch / 180.0F * (float)System.Math.PI) * var4 + 0.1F);
                 var4 = 0.02F;
                 var5 = random.NextFloat() * (float)System.Math.PI * 2.0F;
                 var4 *= random.NextFloat();
@@ -394,7 +394,7 @@ public abstract class EntityPlayer : EntityLiving
         sleepTimer = nbt.GetShort("SleepTimer");
         if (sleeping)
         {
-            sleepingPos = new Vec3i(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z));
+            sleepingPos = new Vec3i(MathHelper.Floor(x), MathHelper.Floor(y), MathHelper.Floor(z));
             wakeUp(true, true, false);
         }
 
@@ -895,7 +895,7 @@ public abstract class EntityPlayer : EntityLiving
             int var7;
             if (isInFluid(Material.Water))
             {
-                var7 = java.lang.Math.round(MathHelper.sqrt_double(x * x + y * y + z * z) * 100.0F);
+                var7 = java.lang.Math.round(MathHelper.Sqrt(x * x + y * y + z * z) * 100.0F);
                 if (var7 > 0)
                 {
                     increaseStat(Stats.Stats.distanceDoveStat, var7);
@@ -903,7 +903,7 @@ public abstract class EntityPlayer : EntityLiving
             }
             else if (isInWater())
             {
-                var7 = java.lang.Math.round(MathHelper.sqrt_double(x * x + z * z) * 100.0F);
+                var7 = java.lang.Math.round(MathHelper.Sqrt(x * x + z * z) * 100.0F);
                 if (var7 > 0)
                 {
                     increaseStat(Stats.Stats.distanceSwumStat, var7);
@@ -918,7 +918,7 @@ public abstract class EntityPlayer : EntityLiving
             }
             else if (onGround)
             {
-                var7 = java.lang.Math.round(MathHelper.sqrt_double(x * x + z * z) * 100.0F);
+                var7 = java.lang.Math.round(MathHelper.Sqrt(x * x + z * z) * 100.0F);
                 if (var7 > 0)
                 {
                     increaseStat(Stats.Stats.distanceWalkedStat, var7);
@@ -926,7 +926,7 @@ public abstract class EntityPlayer : EntityLiving
             }
             else
             {
-                var7 = java.lang.Math.round(MathHelper.sqrt_double(x * x + z * z) * 100.0F);
+                var7 = java.lang.Math.round(MathHelper.Sqrt(x * x + z * z) * 100.0F);
                 if (var7 > 25)
                 {
                     increaseStat(Stats.Stats.distanceFlownStat, var7);
@@ -940,7 +940,7 @@ public abstract class EntityPlayer : EntityLiving
     {
         if (vehicle != null)
         {
-            int var7 = java.lang.Math.round(MathHelper.sqrt_double(x * x + y * y + z * z) * 100.0F);
+            int var7 = java.lang.Math.round(MathHelper.Sqrt(x * x + y * y + z * z) * 100.0F);
             if (var7 > 0)
             {
                 if (vehicle is EntityMinecart)
@@ -948,9 +948,9 @@ public abstract class EntityPlayer : EntityLiving
                     increaseStat(Stats.Stats.distanceByMinecartStat, var7);
                     if (startMinecartRidingCoordinate == null)
                     {
-                        startMinecartRidingCoordinate = new Vec3i(MathHelper.floor_double(base.x), MathHelper.floor_double(base.y), MathHelper.floor_double(base.z));
+                        startMinecartRidingCoordinate = new Vec3i(MathHelper.Floor(base.x), MathHelper.Floor(base.y), MathHelper.Floor(base.z));
                     }
-                    else if (startMinecartRidingCoordinate.getSqDistanceTo(MathHelper.floor_double(base.x), MathHelper.floor_double(base.y), MathHelper.floor_double(base.z)) >= 1000.0D)
+                    else if (startMinecartRidingCoordinate.getSqDistanceTo(MathHelper.Floor(base.x), MathHelper.Floor(base.y), MathHelper.Floor(base.z)) >= 1000.0D)
                     {
                         increaseStat(Achievements.CraftRail, 1);
                     }

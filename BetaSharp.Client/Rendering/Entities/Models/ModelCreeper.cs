@@ -58,9 +58,9 @@ public class ModelCreeper : ModelBase
     {
         head.rotateAngleY = var4 / (180.0F / (float)Math.PI);
         head.rotateAngleX = var5 / (180.0F / (float)Math.PI);
-        leg1.rotateAngleX = MathHelper.cos(var1 * 0.6662F) * 1.4F * var2;
-        leg2.rotateAngleX = MathHelper.cos(var1 * 0.6662F + (float)Math.PI) * 1.4F * var2;
-        leg3.rotateAngleX = MathHelper.cos(var1 * 0.6662F + (float)Math.PI) * 1.4F * var2;
-        leg4.rotateAngleX = MathHelper.cos(var1 * 0.6662F) * 1.4F * var2;
+        leg1.rotateAngleX = MathHelper.Cos(var1 * 0.6662F) * 1.4F * var2;
+        leg2.rotateAngleX = MathHelper.Cos(var1 * 0.6662F + (float)Math.PI) * 1.4F * var2;
+        leg3.rotateAngleX = MathHelper.Cos(var1 * 0.6662F + (float)Math.PI) * 1.4F * var2;
+        leg4.rotateAngleX = MathHelper.Cos(var1 * 0.6662F) * 1.4F * var2;
     }
 }

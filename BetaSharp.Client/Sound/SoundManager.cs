@@ -251,8 +251,8 @@ public class SoundManager
         double y = player.prevY + (player.y - player.prevY) * (double)partialTicks;
         double z = player.prevZ + (player.z - player.prevZ) * (double)partialTicks;
 
-        float lookX = MathHelper.cos(-yaw * ((float)Math.PI / 180.0F) - (float)Math.PI);
-        float lookY = MathHelper.sin(-yaw * ((float)Math.PI / 180.0F) - (float)Math.PI);
+        float lookX = MathHelper.Cos(-yaw * ((float)Math.PI / 180.0F) - (float)Math.PI);
+        float lookY = MathHelper.Sin(-yaw * ((float)Math.PI / 180.0F) - (float)Math.PI);
 
         Listener.Position = new Vector3f((float)x, (float)y, (float)z);
         Listener.Direction = new Vector3f(-lookY, 0.0F, -lookX);

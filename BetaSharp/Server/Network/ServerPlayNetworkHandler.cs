@@ -296,8 +296,8 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             }
 
             Vec3i var19 = var2.getSpawnPos();
-            int var9 = (int)MathHelper.abs(var5 - var19.x);
-            int var20 = (int)MathHelper.abs(var7 - var19.z);
+            int var9 = (int)MathHelper.Abs(var5 - var19.x);
+            int var20 = (int)MathHelper.Abs(var7 - var19.z);
             if (var9 > var20)
             {
                 var20 = var9;
@@ -359,8 +359,8 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             int var7 = packet.z;
             int var8 = packet.side;
             Vec3i var9 = var2.getSpawnPos();
-            int var10 = (int)MathHelper.abs(var5 - var9.x);
-            int var11 = (int)MathHelper.abs(var7 - var9.z);
+            int var10 = (int)MathHelper.Abs(var5 - var9.x);
+            int var11 = (int)MathHelper.Abs(var7 - var9.z);
             if (var10 > var11)
             {
                 var11 = var10;

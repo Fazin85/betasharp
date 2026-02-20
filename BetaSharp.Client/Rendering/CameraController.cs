@@ -48,7 +48,7 @@ public class CameraController
 
         _mc.camera ??= _mc.player;
 
-        float luminance = _mc.world.getLuminance(MathHelper.floor_double(_mc.camera.x), MathHelper.floor_double(_mc.camera.y), MathHelper.floor_double(_mc.camera.z));
+        float luminance = _mc.world.getLuminance(MathHelper.Floor(_mc.camera.x), MathHelper.Floor(_mc.camera.y), MathHelper.Floor(_mc.camera.z));
         float renderDistFactor = (3 - _mc.options.renderDistance) / 3.0F;
         float targetBob = luminance * (1.0F - renderDistFactor) + renderDistFactor;
         ViewBob += (targetBob - ViewBob) * 0.1F;
@@ -87,7 +87,7 @@ public class CameraController
         if (hurtTimeF >= 0.0F)
         {
             hurtTimeF /= cameraEntity.maxHurtTime;
-            hurtTimeF = MathHelper.sin(hurtTimeF * hurtTimeF * hurtTimeF * hurtTimeF * (float)Math.PI);
+            hurtTimeF = MathHelper.Sin(hurtTimeF * hurtTimeF * hurtTimeF * hurtTimeF * (float)Math.PI);
             float attackedYaw = cameraEntity.attackedAtYaw;
             GLManager.GL.Rotate(-attackedYaw, 0.0F, 1.0F, 0.0F);
             GLManager.GL.Rotate(-hurtTimeF * 14.0F, 0.0F, 0.0F, 1.0F);
@@ -104,9 +104,9 @@ public class CameraController
             float bobAmount = player.prevStepBobbingAmount + (player.stepBobbingAmount - player.prevStepBobbingAmount) * tickDelta;
             float pitch = player.cameraPitch + (player.tilt - player.cameraPitch) * tickDelta;
 
-            GLManager.GL.Translate(MathHelper.sin(speed * (float)Math.PI) * bobAmount * 0.5F, -Math.Abs(MathHelper.cos(speed * (float)Math.PI) * bobAmount), 0.0F);
-            GLManager.GL.Rotate(MathHelper.sin(speed * (float)Math.PI) * bobAmount * 3.0F, 0.0F, 0.0F, 1.0F);
-            GLManager.GL.Rotate(Math.Abs(MathHelper.cos(speed * (float)Math.PI - 0.2F) * bobAmount) * 5.0F, 1.0F, 0.0F, 0.0F);
+            GLManager.GL.Translate(MathHelper.Sin(speed * (float)Math.PI) * bobAmount * 0.5F, -Math.Abs(MathHelper.Cos(speed * (float)Math.PI) * bobAmount), 0.0F);
+            GLManager.GL.Rotate(MathHelper.Sin(speed * (float)Math.PI) * bobAmount * 3.0F, 0.0F, 0.0F, 1.0F);
+            GLManager.GL.Rotate(Math.Abs(MathHelper.Cos(speed * (float)Math.PI - 0.2F) * bobAmount) * 5.0F, 1.0F, 0.0F, 0.0F);
             GLManager.GL.Rotate(pitch, 1.0F, 0.0F, 0.0F);
         }
     }
@@ -127,10 +127,10 @@ public class CameraController
             GLManager.GL.Translate(0.0F, 0.3F, 0.0F);
             if (!_mc.options.DebugCamera)
             {
-                int blockId = _mc.world.getBlockId(MathHelper.floor_double(cameraEntity.x), MathHelper.floor_double(cameraEntity.y), MathHelper.floor_double(cameraEntity.z));
+                int blockId = _mc.world.getBlockId(MathHelper.Floor(cameraEntity.x), MathHelper.Floor(cameraEntity.y), MathHelper.Floor(cameraEntity.z));
                 if (blockId == Block.Bed.id)
                 {
-                    int meta = _mc.world.getBlockMeta(MathHelper.floor_double(cameraEntity.x), MathHelper.floor_double(cameraEntity.y), MathHelper.floor_double(cameraEntity.z));
+                    int meta = _mc.world.getBlockMeta(MathHelper.Floor(cameraEntity.x), MathHelper.Floor(cameraEntity.y), MathHelper.Floor(cameraEntity.z));
                     int rotation = meta & 3;
                     GLManager.GL.Rotate(rotation * 90, 0.0F, 1.0F, 0.0F);
                 }
@@ -167,9 +167,9 @@ public class CameraController
                 targetYaw = cameraEntity.yaw;
                 targetPitch = cameraEntity.pitch;
 
-                double vecX = (double)(-MathHelper.sin(targetYaw / 180.0F * (float)Math.PI) * MathHelper.cos(targetPitch / 180.0F * (float)Math.PI)) * currentDistance;
-                double vecZ = (double)(MathHelper.cos(targetYaw / 180.0F * (float)Math.PI) * MathHelper.cos(targetPitch / 180.0F * (float)Math.PI)) * currentDistance;
-                double vecY = (double)(-MathHelper.sin(targetPitch / 180.0F * (float)Math.PI)) * currentDistance;
+                double vecX = (double)(-MathHelper.Sin(targetYaw / 180.0F * (float)Math.PI) * MathHelper.Cos(targetPitch / 180.0F * (float)Math.PI)) * currentDistance;
+                double vecZ = (double)(MathHelper.Cos(targetYaw / 180.0F * (float)Math.PI) * MathHelper.Cos(targetPitch / 180.0F * (float)Math.PI)) * currentDistance;
+                double vecY = (double)(-MathHelper.Sin(targetPitch / 180.0F * (float)Math.PI)) * currentDistance;
 
                 for (int i = 0; i < 8; ++i)
                 {

@@ -20,7 +20,7 @@ public class ChickenEntityRenderer : LivingEntityRenderer
     {
         float var3 = var1.field_756_e + (var1.field_752_b - var1.field_756_e) * var2;
         float var4 = var1.field_757_d + (var1.destPos - var1.field_757_d) * var2;
-        return (MathHelper.sin(var3) + 1.0F) * var4;
+        return (MathHelper.Sin(var3) + 1.0F) * var4;
     }
 
     protected override float func_170_d(EntityLiving var1, float var2)

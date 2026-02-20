@@ -19,9 +19,9 @@ public class EntityNoteFX : EntityFX
         velocityY *= (double)0.01F;
         velocityZ *= (double)0.01F;
         velocityY += 0.2D;
-        particleRed = MathHelper.sin(((float)notePitch + 0.0F) * (float)Math.PI * 2.0F) * 0.65F + 0.35F;
-        particleGreen = MathHelper.sin(((float)notePitch + 1.0F / 3.0F) * (float)Math.PI * 2.0F) * 0.65F + 0.35F;
-        particleBlue = MathHelper.sin(((float)notePitch + 2.0F / 3.0F) * (float)Math.PI * 2.0F) * 0.65F + 0.35F;
+        particleRed = MathHelper.Sin(((float)notePitch + 0.0F) * (float)Math.PI * 2.0F) * 0.65F + 0.35F;
+        particleGreen = MathHelper.Sin(((float)notePitch + 1.0F / 3.0F) * (float)Math.PI * 2.0F) * 0.65F + 0.35F;
+        particleBlue = MathHelper.Sin(((float)notePitch + 2.0F / 3.0F) * (float)Math.PI * 2.0F) * 0.65F + 0.35F;
         particleScale *= 12.0F / 16.0F;
         particleScale *= scaleMultiplier;
         baseScale = particleScale;

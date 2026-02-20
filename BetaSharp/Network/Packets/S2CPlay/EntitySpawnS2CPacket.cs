@@ -29,9 +29,9 @@ public class EntitySpawnS2CPacket : Packet
     public EntitySpawnS2CPacket(Entity entity, int entityType, int entityData)
     {
         id = entity.id;
-        x = MathHelper.floor(entity.x * 32.0);
-        y = MathHelper.floor(entity.y * 32.0);
-        z = MathHelper.floor(entity.z * 32.0);
+        x = MathHelper.Floor(entity.x * 32.0);
+        y = MathHelper.Floor(entity.y * 32.0);
+        z = MathHelper.Floor(entity.z * 32.0);
         this.entityType = entityType;
         this.entityData = entityData;
         if (entityData > 0)

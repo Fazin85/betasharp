@@ -23,7 +23,7 @@ public class Frustum : FrustumData
         float y = Frustum[offset + 1];
         float z = Frustum[offset + 2];
 
-        float length = MathHelper.sqrt_float(x * x + y * y + z * z);
+        float length = MathHelper.Sqrt(x * x + y * y + z * z);
 
         Frustum[offset] /= length;
         Frustum[offset + 1] /= length;

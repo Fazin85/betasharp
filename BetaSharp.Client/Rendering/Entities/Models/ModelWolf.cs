@@ -84,7 +84,7 @@ public class ModelWolf : ModelBase
         }
         else
         {
-            wolfTail.rotateAngleY = MathHelper.cos(var2 * 0.6662F) * 1.4F * var3;
+            wolfTail.rotateAngleY = MathHelper.Cos(var2 * 0.6662F) * 1.4F * var3;
         }
 
         if (var5.isWolfSitting())
@@ -115,10 +115,10 @@ public class ModelWolf : ModelBase
             wolfLeg2.setRotationPoint(0.5F, 16.0F, 7.0F);
             wolfLeg3.setRotationPoint(-2.5F, 16.0F, -4.0F);
             wolfLeg4.setRotationPoint(0.5F, 16.0F, -4.0F);
-            wolfLeg1.rotateAngleX = MathHelper.cos(var2 * 0.6662F) * 1.4F * var3;
-            wolfLeg2.rotateAngleX = MathHelper.cos(var2 * 0.6662F + (float)Math.PI) * 1.4F * var3;
-            wolfLeg3.rotateAngleX = MathHelper.cos(var2 * 0.6662F + (float)Math.PI) * 1.4F * var3;
-            wolfLeg4.rotateAngleX = MathHelper.cos(var2 * 0.6662F) * 1.4F * var3;
+            wolfLeg1.rotateAngleX = MathHelper.Cos(var2 * 0.6662F) * 1.4F * var3;
+            wolfLeg2.rotateAngleX = MathHelper.Cos(var2 * 0.6662F + (float)Math.PI) * 1.4F * var3;
+            wolfLeg3.rotateAngleX = MathHelper.Cos(var2 * 0.6662F + (float)Math.PI) * 1.4F * var3;
+            wolfLeg4.rotateAngleX = MathHelper.Cos(var2 * 0.6662F) * 1.4F * var3;
         }
 
         float var6 = var5.getInterestedAngle(var4) + var5.getShakeAngle(var4, 0.0F);

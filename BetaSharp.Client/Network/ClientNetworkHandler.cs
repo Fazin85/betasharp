@@ -628,7 +628,7 @@ public class ClientNetworkHandler : NetHandler
         else if (packet.screenHandlerId == 1)
         {
             ClientPlayerEntity player = mc.player;
-            mc.player.openCraftingScreen(MathHelper.floor_double(player.x), MathHelper.floor_double(player.y), MathHelper.floor_double(player.z));
+            mc.player.openCraftingScreen(MathHelper.Floor(player.x), MathHelper.Floor(player.y), MathHelper.Floor(player.z));
             mc.player.currentScreenHandler.syncId = packet.syncId;
         }
 

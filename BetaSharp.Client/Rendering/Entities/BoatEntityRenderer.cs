@@ -30,7 +30,7 @@ public class BoatEntityRenderer : EntityRenderer
 
         if (var10 > 0.0F)
         {
-            GLManager.GL.Rotate(MathHelper.sin(var10) * var10 * var11 / 10.0F * var1.boatRockDirection, 1.0F, 0.0F, 0.0F);
+            GLManager.GL.Rotate(MathHelper.Sin(var10) * var10 * var11 / 10.0F * var1.boatRockDirection, 1.0F, 0.0F, 0.0F);
         }
 
         loadTexture("/terrain.png");

@@ -243,7 +243,7 @@ public class BlockPistonBase : Block
 
     private static int getFacingForPlacement(World world, int x, int y, int z, EntityPlayer player)
     {
-        if (MathF.Abs((float)player.x - (float)x) < 2.0F && MathHelper.abs((float)player.z - (float)z) < 2.0F)
+        if (MathF.Abs((float)player.x - (float)x) < 2.0F && MathHelper.Abs((float)player.z - (float)z) < 2.0F)
         {
             double var5 = player.y + 1.82D - (double)player.standingEyeHeight;
             if (var5 - (double)y > 2.0D)
@@ -257,7 +257,7 @@ public class BlockPistonBase : Block
             }
         }
 
-        int var7 = MathHelper.floor_double((double)(player.yaw * 4.0F / 360.0F) + 0.5D) & 3;
+        int var7 = MathHelper.Floor((double)(player.yaw * 4.0F / 360.0F) + 0.5D) & 3;
         return var7 == 0 ? 2 : (var7 == 1 ? 5 : (var7 == 2 ? 3 : (var7 == 3 ? 4 : 0)));
     }
 

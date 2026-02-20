@@ -26,9 +26,9 @@ public class PlayerSpawnS2CPacket : Packet
     {
         entityId = ent.id;
         name = ent.name;
-        xPosition = MathHelper.floor_double(ent.x * 32.0D);
-        yPosition = MathHelper.floor_double(ent.y * 32.0D);
-        zPosition = MathHelper.floor_double(ent.z * 32.0D);
+        xPosition = MathHelper.Floor(ent.x * 32.0D);
+        yPosition = MathHelper.Floor(ent.y * 32.0D);
+        zPosition = MathHelper.Floor(ent.z * 32.0D);
         rotation = (sbyte)(int)(ent.yaw * 256.0F / 360.0F);
         pitch = (sbyte)(int)(ent.pitch * 256.0F / 360.0F);
         ItemStack itemStack = ent.inventory.getSelectedItem();

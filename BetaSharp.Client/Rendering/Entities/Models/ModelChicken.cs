@@ -64,8 +64,8 @@ public class ModelChicken : ModelBase
         chin.rotateAngleX = head.rotateAngleX;
         chin.rotateAngleY = head.rotateAngleY;
         body.rotateAngleX = (float)Math.PI * 0.5F;
-        rightLeg.rotateAngleX = MathHelper.cos(var1 * 0.6662F) * 1.4F * var2;
-        leftLeg.rotateAngleX = MathHelper.cos(var1 * 0.6662F + (float)Math.PI) * 1.4F * var2;
+        rightLeg.rotateAngleX = MathHelper.Cos(var1 * 0.6662F) * 1.4F * var2;
+        leftLeg.rotateAngleX = MathHelper.Cos(var1 * 0.6662F + (float)Math.PI) * 1.4F * var2;
         rightWing.rotateAngleZ = var3;
         leftWing.rotateAngleZ = -var3;
     }

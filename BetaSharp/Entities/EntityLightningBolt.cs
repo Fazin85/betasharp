@@ -19,11 +19,11 @@ public class EntityLightningBolt : EntityWeatherEffect
         flashTimer = 2;
         renderSeed = random.NextLong();
         flashCount = random.NextInt(3) + 1;
-        if (world.difficulty >= 2 && world.isRegionLoaded(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z), 10))
+        if (world.difficulty >= 2 && world.isRegionLoaded(MathHelper.Floor(x), MathHelper.Floor(y), MathHelper.Floor(z), 10))
         {
-            int strikeX = MathHelper.floor_double(x);
-            int strikeY = MathHelper.floor_double(y);
-            int strikeZ = MathHelper.floor_double(z);
+            int strikeX = MathHelper.Floor(x);
+            int strikeY = MathHelper.Floor(y);
+            int strikeZ = MathHelper.Floor(z);
             if (world.getBlockId(strikeX, strikeY, strikeZ) == 0 && Block.Fire.canPlaceAt(world, strikeX, strikeY, strikeZ))
             {
                 world.setBlock(strikeX, strikeY, strikeZ, Block.Fire.id);
@@ -31,9 +31,9 @@ public class EntityLightningBolt : EntityWeatherEffect
 
             for (strikeX = 0; strikeX < 4; ++strikeX)
             {
-                strikeY = MathHelper.floor_double(x) + random.NextInt(3) - 1;
-                strikeZ = MathHelper.floor_double(y) + random.NextInt(3) - 1;
-                int fireZ = MathHelper.floor_double(z) + random.NextInt(3) - 1;
+                strikeY = MathHelper.Floor(x) + random.NextInt(3) - 1;
+                strikeZ = MathHelper.Floor(y) + random.NextInt(3) - 1;
+                int fireZ = MathHelper.Floor(z) + random.NextInt(3) - 1;
                 if (world.getBlockId(strikeY, strikeZ, fireZ) == 0 && Block.Fire.canPlaceAt(world, strikeY, strikeZ, fireZ))
                 {
                     world.setBlock(strikeY, strikeZ, fireZ, Block.Fire.id);
@@ -64,11 +64,11 @@ public class EntityLightningBolt : EntityWeatherEffect
                 --flashCount;
                 flashTimer = 1;
                 renderSeed = random.NextLong();
-                if (world.isRegionLoaded(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z), 10))
+                if (world.isRegionLoaded(MathHelper.Floor(x), MathHelper.Floor(y), MathHelper.Floor(z), 10))
                 {
-                    int floorX = MathHelper.floor_double(x);
-                    int floorY = MathHelper.floor_double(y);
-                    int floorZ = MathHelper.floor_double(z);
+                    int floorX = MathHelper.Floor(x);
+                    int floorY = MathHelper.Floor(y);
+                    int floorZ = MathHelper.Floor(z);
                     if (world.getBlockId(floorX, floorY, floorZ) == 0 && Block.Fire.canPlaceAt(world, floorX, floorY, floorZ))
                     {
                         world.setBlock(floorX, floorY, floorZ, Block.Fire.id);

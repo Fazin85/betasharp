@@ -33,8 +33,8 @@ public class LavaSideSprite : DynamicTexture
             for (var2 = 0; var2 < 16; ++var2)
             {
                 var3 = 0.0F;
-                int var4 = (int)(MathHelper.sin(var2 * (float)Math.PI * 2.0F / 16.0F) * 1.2F);
-                var5 = (int)(MathHelper.sin(var1 * (float)Math.PI * 2.0F / 16.0F) * 1.2F);
+                int var4 = (int)(MathHelper.Sin(var2 * (float)Math.PI * 2.0F / 16.0F) * 1.2F);
+                var5 = (int)(MathHelper.Sin(var1 * (float)Math.PI * 2.0F / 16.0F) * 1.2F);
 
                 for (var6 = var1 - 1; var6 <= var1 + 1; ++var6)
                 {

@@ -443,9 +443,9 @@ public class GameRenderer
             _random.SetSeed(_ticks * 312987231L);
             EntityLiving var2 = _client.camera;
             World var3 = _client.world;
-            int var4 = MathHelper.floor_double(var2.x);
-            int var5 = MathHelper.floor_double(var2.y);
-            int var6 = MathHelper.floor_double(var2.z);
+            int var4 = MathHelper.Floor(var2.x);
+            int var5 = MathHelper.Floor(var2.y);
+            int var6 = MathHelper.Floor(var2.z);
             byte var7 = 10;
             double var8 = 0.0D;
             double var10 = 0.0D;
@@ -487,7 +487,7 @@ public class GameRenderer
             if (var14 > 0 && _random.NextInt(3) < _rainSoundCounter++)
             {
                 _rainSoundCounter = 0;
-                if (var10 > var2.y + 1.0D && var3.getTopSolidBlockY(MathHelper.floor_double(var2.x), MathHelper.floor_double(var2.z)) > MathHelper.floor_double(var2.y))
+                if (var10 > var2.y + 1.0D && var3.getTopSolidBlockY(MathHelper.Floor(var2.x), MathHelper.Floor(var2.z)) > MathHelper.Floor(var2.y))
                 {
                     _client.world.playSound(var8, var10, var12, "ambient.weather.rain", 0.1F, 0.5F);
                 }
@@ -507,9 +507,9 @@ public class GameRenderer
         {
             EntityLiving var3 = _client.camera;
             World var4 = _client.world;
-            int var5 = MathHelper.floor_double(var3.x);
-            int var6 = MathHelper.floor_double(var3.y);
-            int var7 = MathHelper.floor_double(var3.z);
+            int var5 = MathHelper.Floor(var3.x);
+            int var6 = MathHelper.Floor(var3.y);
+            int var7 = MathHelper.Floor(var3.z);
             Tessellator var8 = Tessellator.instance;
             GLManager.GL.Disable(GLEnum.CullFace);
             GLManager.GL.Normal3(0.0F, 1.0F, 0.0F);
@@ -520,7 +520,7 @@ public class GameRenderer
             double var9 = var3.lastTickX + (var3.x - var3.lastTickX) * (double)tickDelta;
             double var11 = var3.lastTickY + (var3.y - var3.lastTickY) * (double)tickDelta;
             double var13 = var3.lastTickZ + (var3.z - var3.lastTickZ) * (double)tickDelta;
-            int var15 = MathHelper.floor_double(var11);
+            int var15 = MathHelper.Floor(var11);
             byte var16 = 10;
 
             Biome[] var17 = var4.getBiomeSource().GetBiomesInArea(var5 - var16, var7 - var16, var16 * 2 + 1, var16 * 2 + 1);
@@ -574,7 +574,7 @@ public class GameRenderer
                             float var30 = _random.NextFloat() + var27 * (float)_random.NextGaussian() * 0.001F;
                             double var31 = (double)(var19 + 0.5F) - var3.x;
                             double var33 = (double)(var20 + 0.5F) - var3.z;
-                            float var35 = MathHelper.sqrt_double(var31 * var31 + var33 * var33) / var16;
+                            float var35 = MathHelper.Sqrt(var31 * var31 + var33 * var33) / var16;
                             var8.startDrawingQuads();
                             float var36 = var4.getLuminance(var19, var23, var20);
                             GLManager.GL.Color4(var36, var36, var36, ((1.0F - var35 * var35) * 0.3F + 0.5F) * var2);
@@ -626,7 +626,7 @@ public class GameRenderer
                             var26 = ((_ticks + var19 * var19 * 3121 + var19 * 45238971 + var20 * var20 * 418711 + var20 * 13761 & 31) + tickDelta) / 32.0F * (3.0F + _random.NextFloat());
                             double var38 = (double)(var19 + 0.5F) - var3.x;
                             double var39 = (double)(var20 + 0.5F) - var3.z;
-                            float var40 = MathHelper.sqrt_double(var38 * var38 + var39 * var39) / var16;
+                            float var40 = MathHelper.Sqrt(var38 * var38 + var39 * var39) / var16;
                             var8.startDrawingQuads();
                             float var32 = var4.getLuminance(var19, 128, var20) * 0.85F + 0.15F;
                             GLManager.GL.Color4(var32, var32, var32, ((1.0F - var40 * var40) * 0.5F + 0.5F) * var2);

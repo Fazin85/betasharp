@@ -32,7 +32,7 @@ public class ArrowEntityRenderer : EntityRenderer
             float var21 = var1.arrowShake - var9;
             if (var21 > 0.0F)
             {
-                float var22 = -MathHelper.sin(var21 * 3.0F) * var21;
+                float var22 = -MathHelper.Sin(var21 * 3.0F) * var21;
                 GLManager.GL.Rotate(var22, 0.0F, 0.0F, 1.0F);
             }
 

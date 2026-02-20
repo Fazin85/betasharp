@@ -158,7 +158,7 @@ public class HeldItemRenderer
         Lighting.turnOn();
         GLManager.GL.PopMatrix();
         ItemStack var5 = itemToRender;
-        float var6 = mc.world.getLuminance(MathHelper.floor_double(var3.x), MathHelper.floor_double(var3.y), MathHelper.floor_double(var3.z));
+        float var6 = mc.world.getLuminance(MathHelper.Floor(var3.x), MathHelper.Floor(var3.y), MathHelper.Floor(var3.z));
         float var8;
         float var9;
         float var10;
@@ -181,9 +181,9 @@ public class HeldItemRenderer
             GLManager.GL.PushMatrix();
             var14 = 0.8F;
             var8 = var3.getSwingProgress(var1);
-            var9 = MathHelper.sin(var8 * (float)Math.PI);
-            var10 = MathHelper.sin(MathHelper.sqrt_float(var8) * (float)Math.PI);
-            GLManager.GL.Translate(-var10 * 0.4F, MathHelper.sin(MathHelper.sqrt_float(var8) * (float)Math.PI * 2.0F) * 0.2F, -var9 * 0.2F);
+            var9 = MathHelper.Sin(var8 * (float)Math.PI);
+            var10 = MathHelper.Sin(MathHelper.Sqrt(var8) * (float)Math.PI);
+            GLManager.GL.Translate(-var10 * 0.4F, MathHelper.Sin(MathHelper.Sqrt(var8) * (float)Math.PI * 2.0F) * 0.2F, -var9 * 0.2F);
             var8 = 1.0F - var4 / 45.0F + 0.1F;
             if (var8 < 0.0F)
             {
@@ -195,7 +195,7 @@ public class HeldItemRenderer
                 var8 = 1.0F;
             }
 
-            var8 = -MathHelper.cos(var8 * (float)Math.PI) * 0.5F + 0.5F;
+            var8 = -MathHelper.Cos(var8 * (float)Math.PI) * 0.5F + 0.5F;
             GLManager.GL.Translate(0.0F, 0.0F * var14 - (1.0F - var2) * 1.2F - var8 * 0.5F + 0.04F, -0.9F * var14);
             GLManager.GL.Rotate(90.0F, 0.0F, 1.0F, 0.0F);
             GLManager.GL.Rotate(var8 * -85.0F, 0.0F, 0.0F, 1.0F);
@@ -221,8 +221,8 @@ public class HeldItemRenderer
             }
 
             var9 = var3.getSwingProgress(var1);
-            var10 = MathHelper.sin(var9 * var9 * (float)Math.PI);
-            float var18 = MathHelper.sin(MathHelper.sqrt_float(var9) * (float)Math.PI);
+            var10 = MathHelper.Sin(var9 * var9 * (float)Math.PI);
+            float var18 = MathHelper.Sin(MathHelper.Sqrt(var9) * (float)Math.PI);
             GLManager.GL.Rotate(-var10 * 20.0F, 0.0F, 1.0F, 0.0F);
             GLManager.GL.Rotate(-var18 * 20.0F, 0.0F, 0.0F, 1.0F);
             GLManager.GL.Rotate(-var18 * 80.0F, 1.0F, 0.0F, 0.0F);
@@ -252,15 +252,15 @@ public class HeldItemRenderer
             GLManager.GL.PushMatrix();
             var14 = 0.8F;
             var8 = var3.getSwingProgress(var1);
-            var9 = MathHelper.sin(var8 * (float)Math.PI);
-            var10 = MathHelper.sin(MathHelper.sqrt_float(var8) * (float)Math.PI);
-            GLManager.GL.Translate(-var10 * 0.4F, MathHelper.sin(MathHelper.sqrt_float(var8) * (float)Math.PI * 2.0F) * 0.2F, -var9 * 0.2F);
+            var9 = MathHelper.Sin(var8 * (float)Math.PI);
+            var10 = MathHelper.Sin(MathHelper.Sqrt(var8) * (float)Math.PI);
+            GLManager.GL.Translate(-var10 * 0.4F, MathHelper.Sin(MathHelper.Sqrt(var8) * (float)Math.PI * 2.0F) * 0.2F, -var9 * 0.2F);
             GLManager.GL.Translate(0.7F * var14, -0.65F * var14 - (1.0F - var2) * 0.6F, -0.9F * var14);
             GLManager.GL.Rotate(45.0F, 0.0F, 1.0F, 0.0F);
             GLManager.GL.Enable(GLEnum.RescaleNormal);
             var8 = var3.getSwingProgress(var1);
-            var9 = MathHelper.sin(var8 * var8 * (float)Math.PI);
-            var10 = MathHelper.sin(MathHelper.sqrt_float(var8) * (float)Math.PI);
+            var9 = MathHelper.Sin(var8 * var8 * (float)Math.PI);
+            var10 = MathHelper.Sin(MathHelper.Sqrt(var8) * (float)Math.PI);
             GLManager.GL.Rotate(-var9 * 20.0F, 0.0F, 1.0F, 0.0F);
             GLManager.GL.Rotate(-var10 * 20.0F, 0.0F, 0.0F, 1.0F);
             GLManager.GL.Rotate(-var10 * 80.0F, 1.0F, 0.0F, 0.0F);
@@ -279,15 +279,15 @@ public class HeldItemRenderer
             GLManager.GL.PushMatrix();
             var14 = 0.8F;
             var8 = var3.getSwingProgress(var1);
-            var9 = MathHelper.sin(var8 * (float)Math.PI);
-            var10 = MathHelper.sin(MathHelper.sqrt_float(var8) * (float)Math.PI);
-            GLManager.GL.Translate(-var10 * 0.3F, MathHelper.sin(MathHelper.sqrt_float(var8) * (float)Math.PI * 2.0F) * 0.4F, -var9 * 0.4F);
+            var9 = MathHelper.Sin(var8 * (float)Math.PI);
+            var10 = MathHelper.Sin(MathHelper.Sqrt(var8) * (float)Math.PI);
+            GLManager.GL.Translate(-var10 * 0.3F, MathHelper.Sin(MathHelper.Sqrt(var8) * (float)Math.PI * 2.0F) * 0.4F, -var9 * 0.4F);
             GLManager.GL.Translate(0.8F * var14, -(12.0F / 16.0F) * var14 - (1.0F - var2) * 0.6F, -0.9F * var14);
             GLManager.GL.Rotate(45.0F, 0.0F, 1.0F, 0.0F);
             GLManager.GL.Enable(GLEnum.RescaleNormal);
             var8 = var3.getSwingProgress(var1);
-            var9 = MathHelper.sin(var8 * var8 * (float)Math.PI);
-            var10 = MathHelper.sin(MathHelper.sqrt_float(var8) * (float)Math.PI);
+            var9 = MathHelper.Sin(var8 * var8 * (float)Math.PI);
+            var10 = MathHelper.Sin(MathHelper.Sqrt(var8) * (float)Math.PI);
             GLManager.GL.Rotate(var10 * 70.0F, 0.0F, 1.0F, 0.0F);
             GLManager.GL.Rotate(-var9 * 20.0F, 0.0F, 0.0F, 1.0F);
             //TODO: ADD SKIN
@@ -323,9 +323,9 @@ public class HeldItemRenderer
 
         if (mc.player.isInsideWall())
         {
-            var2 = MathHelper.floor_double(mc.player.x);
-            int var3 = MathHelper.floor_double(mc.player.y);
-            int var4 = MathHelper.floor_double(mc.player.z);
+            var2 = MathHelper.Floor(mc.player.x);
+            int var3 = MathHelper.Floor(mc.player.y);
+            int var4 = MathHelper.Floor(mc.player.z);
             int var5 = mc.textureManager.GetTextureId("/terrain.png");
             GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var5);
             int var6 = mc.world.getBlockId(var2, var3, var4);
@@ -340,9 +340,9 @@ public class HeldItemRenderer
                     float var8 = ((var7 >> 0) % 2 - 0.5F) * mc.player.width * 0.9F;
                     float var9 = ((var7 >> 1) % 2 - 0.5F) * mc.player.height * 0.2F;
                     float var10 = ((var7 >> 2) % 2 - 0.5F) * mc.player.width * 0.9F;
-                    int var11 = MathHelper.floor_float(var2 + var8);
-                    int var12 = MathHelper.floor_float(var3 + var9);
-                    int var13 = MathHelper.floor_float(var4 + var10);
+                    int var11 = MathHelper.Floor(var2 + var8);
+                    int var12 = MathHelper.Floor(var3 + var9);
+                    int var13 = MathHelper.Floor(var4 + var10);
                     if (mc.world.shouldSuffocate(var11, var12, var13))
                     {
                         var6 = mc.world.getBlockId(var11, var12, var13);

@@ -35,13 +35,13 @@ public class CaveCarver : Carver
 
         for (bool var26 = var23.NextInt(6) == 0; var13 < var14; ++var13)
         {
-            double var27 = 1.5D + (double)(MathHelper.sin(var13 * (float)Math.PI / var14) * var10 * 1.0F);
+            double var27 = 1.5D + (double)(MathHelper.Sin(var13 * (float)Math.PI / var14) * var10 * 1.0F);
             double var29 = var27 * var15;
-            float var31 = MathHelper.cos(var12);
-            float var32 = MathHelper.sin(var12);
-            var4 += (double)(MathHelper.cos(var11) * var31);
+            float var31 = MathHelper.Cos(var12);
+            float var32 = MathHelper.Sin(var12);
+            var4 += (double)(MathHelper.Cos(var11) * var31);
             var6 += (double)var32;
-            var8 += (double)(MathHelper.sin(var11) * var31);
+            var8 += (double)(MathHelper.Sin(var11) * var31);
             if (var26)
             {
                 var12 *= 0.92F;
@@ -77,12 +77,12 @@ public class CaveCarver : Carver
 
                 if (var4 >= var17 - 16.0D - var27 * 2.0D && var8 >= var19 - 16.0D - var27 * 2.0D && var4 <= var17 + 16.0D + var27 * 2.0D && var8 <= var19 + 16.0D + var27 * 2.0D)
                 {
-                    int var53 = MathHelper.floor_double(var4 - var27) - chunkX * 16 - 1;
-                    int var34 = MathHelper.floor_double(var4 + var27) - chunkX * 16 + 1;
-                    int var54 = MathHelper.floor_double(var6 - var29) - 1;
-                    int var36 = MathHelper.floor_double(var6 + var29) + 1;
-                    int var55 = MathHelper.floor_double(var8 - var27) - chunkZ * 16 - 1;
-                    int var38 = MathHelper.floor_double(var8 + var27) - chunkZ * 16 + 1;
+                    int var53 = MathHelper.Floor(var4 - var27) - chunkX * 16 - 1;
+                    int var34 = MathHelper.Floor(var4 + var27) - chunkX * 16 + 1;
+                    int var54 = MathHelper.Floor(var6 - var29) - 1;
+                    int var36 = MathHelper.Floor(var6 + var29) + 1;
+                    int var55 = MathHelper.Floor(var8 - var27) - chunkZ * 16 - 1;
+                    int var38 = MathHelper.Floor(var8 + var27) - chunkZ * 16 + 1;
                     if (var53 < 0)
                     {
                         var53 = 0;

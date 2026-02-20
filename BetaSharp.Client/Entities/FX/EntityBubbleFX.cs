@@ -31,7 +31,7 @@ public class EntityBubbleFX : EntityFX
         velocityX *= (double)0.85F;
         velocityY *= (double)0.85F;
         velocityZ *= (double)0.85F;
-        if (world.getMaterial(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z)) != Material.Water)
+        if (world.getMaterial(MathHelper.Floor(x), MathHelper.Floor(y), MathHelper.Floor(z)) != Material.Water)
         {
             markDead();
         }

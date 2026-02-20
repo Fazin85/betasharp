@@ -1752,8 +1752,8 @@ public class BlockRenderer
                     var34 = (double)((var31 + 16) / 256.0F);
                 }
 
-                var36 = MathHelper.sin(var29) * 8.0F / 256.0F;
-                var37 = MathHelper.cos(var29) * 8.0F / 256.0F;
+                var36 = MathHelper.Sin(var29) * 8.0F / 256.0F;
+                var37 = MathHelper.Cos(var29) * 8.0F / 256.0F;
                 var38 = var1.getLuminance(blockAccess, var2, var3, var4);
                 var5.setColorOpaque_F(var15 * var38 * var7, var15 * var38 * var8, var15 * var38 * var9);
                 var5.addVertexWithUV(var2 + 0, (double)(var3 + var24), var4 + 0, var32 - (double)var37 - (double)var36, var34 - (double)var37 + (double)var36);
@@ -3905,8 +3905,8 @@ public class BlockRenderer
 
     public static void rotateAroundX(ref Vector3D<double> vec, float var1)
     {
-        float var2 = MathHelper.cos(var1);
-        float var3 = MathHelper.sin(var1);
+        float var2 = MathHelper.Cos(var1);
+        float var3 = MathHelper.Sin(var1);
         double var4 = vec.X;
         double var6 = vec.Y * (double)var2 + vec.Z * (double)var3;
         double var8 = vec.Z * (double)var2 - vec.Y * (double)var3;
@@ -3917,8 +3917,8 @@ public class BlockRenderer
 
     private static void rotateAroundY(ref Vector3D<double> vec, float var1)
     {
-        float var2 = MathHelper.cos(var1);
-        float var3 = MathHelper.sin(var1);
+        float var2 = MathHelper.Cos(var1);
+        float var3 = MathHelper.Sin(var1);
         double var4 = vec.X * (double)var2 + vec.Z * (double)var3;
         double var6 = vec.Y;
         double var8 = vec.Z * (double)var2 - vec.X * (double)var3;
