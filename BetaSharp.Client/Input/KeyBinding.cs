@@ -1,6 +1,6 @@
 namespace BetaSharp.Client.Input;
 
-public class KeyBinding : java.lang.Object
+public class KeyBinding
 {
     public string keyDescription;
     public int keyCode;
