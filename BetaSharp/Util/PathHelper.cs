@@ -17,7 +17,7 @@ public static class PathHelper
         if (IsWindows)
         {
             string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            path = System.IO.Path.Combine(appData, appName);
+            path = System.IO.Path.Combine(appData, "." + appName);
         }
         else if (IsMacOS)
         {
