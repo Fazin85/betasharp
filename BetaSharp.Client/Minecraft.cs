@@ -1,3 +1,4 @@
+using BetaSharp.Client.Options;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Avalonia;
@@ -537,7 +538,7 @@ public partial class Minecraft
 
                     if (player != null && player.isInsideWall())
                     {
-                        options.thirdPersonView = false;
+                        options.cameraMode = EnumCameraMode.FirstPerson;
                     }
 
                     if (!skipRenderWorld)
@@ -1293,7 +1294,7 @@ public partial class Minecraft
 
                         if (Keyboard.getEventKey() == Keyboard.KEY_F5)
                         {
-                            options.thirdPersonView = !options.thirdPersonView;
+                            options.cameraMode = (EnumCameraMode)((int)(options.cameraMode + 1) % 3);
                         }
 
                         if (Keyboard.getEventKey() == Keyboard.KEY_F8)

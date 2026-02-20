@@ -1,3 +1,4 @@
+using BetaSharp.Client.Options;
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Client.Rendering;
@@ -51,7 +52,7 @@ public class GuiIngame : Gui
         }
 
         ItemStack helmet = _mc.player.inventory.armorItemInSlot(3);
-        if (!_mc.options.thirdPersonView && helmet != null && helmet.itemId == Block.Pumpkin.id)
+        if (_mc.options.cameraMode == EnumCameraMode.FirstPerson && helmet != null && helmet.itemId == Block.Pumpkin.id)
         {
             renderPumpkinBlur(scaledWidth, scaledHeight);
         }
