@@ -4,7 +4,7 @@
     "Result": {
       "Name": "betasharp:WoodenPickaxe",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XXX",
@@ -21,7 +21,7 @@
     "Result": {
       "Name": "betasharp:WoodenShovel",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X",
@@ -38,7 +38,7 @@
     "Result": {
       "Name": "betasharp:WoodenAxe",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XX",
@@ -55,7 +55,7 @@
     "Result": {
       "Name": "betasharp:WoodenHoe",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XX",
@@ -72,7 +72,7 @@
     "Result": {
       "Name": "betasharp:StonePickaxe",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XXX",
@@ -89,7 +89,7 @@
     "Result": {
       "Name": "betasharp:StoneShovel",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X",
@@ -106,7 +106,7 @@
     "Result": {
       "Name": "betasharp:StoneAxe",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XX",
@@ -123,7 +123,7 @@
     "Result": {
       "Name": "betasharp:StoneHoe",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XX",
@@ -140,7 +140,7 @@
     "Result": {
       "Name": "betasharp:IronPickaxe",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XXX",
@@ -157,7 +157,7 @@
     "Result": {
       "Name": "betasharp:IronShovel",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X",
@@ -174,7 +174,7 @@
     "Result": {
       "Name": "betasharp:IronAxe",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XX",
@@ -191,7 +191,7 @@
     "Result": {
       "Name": "betasharp:IronHoe",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XX",
@@ -208,7 +208,7 @@
     "Result": {
       "Name": "betasharp:DiamondPickaxe",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XXX",
@@ -225,7 +225,7 @@
     "Result": {
       "Name": "betasharp:DiamondShovel",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X",
@@ -242,7 +242,7 @@
     "Result": {
       "Name": "betasharp:DiamondAxe",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XX",
@@ -259,7 +259,7 @@
     "Result": {
       "Name": "betasharp:DiamondHoe",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XX",
@@ -276,7 +276,7 @@
     "Result": {
       "Name": "betasharp:GoldenPickaxe",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XXX",
@@ -293,7 +293,7 @@
     "Result": {
       "Name": "betasharp:GoldenShovel",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X",
@@ -310,7 +310,7 @@
     "Result": {
       "Name": "betasharp:GoldenAxe",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XX",
@@ -327,7 +327,7 @@
     "Result": {
       "Name": "betasharp:GoldenHoe",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XX",
@@ -344,7 +344,7 @@
     "Result": {
       "Name": "betasharp:Shears",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       " #",
@@ -359,7 +359,7 @@
     "Result": {
       "Name": "betasharp:WoodenSword",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X",
@@ -376,7 +376,7 @@
     "Result": {
       "Name": "betasharp:StoneSword",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X",
@@ -393,7 +393,7 @@
     "Result": {
       "Name": "betasharp:IronSword",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X",
@@ -410,7 +410,7 @@
     "Result": {
       "Name": "betasharp:DiamondSword",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X",
@@ -427,7 +427,7 @@
     "Result": {
       "Name": "betasharp:GoldenSword",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X",
@@ -444,7 +444,7 @@
     "Result": {
       "Name": "betasharp:BOW",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       " #X",
@@ -461,7 +461,7 @@
     "Result": {
       "Name": "betasharp:ARROW",
       "Count": 4,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X",
@@ -479,7 +479,7 @@
     "Result": {
       "Name": "betasharp:GoldBlock",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "###",
@@ -495,7 +495,7 @@
     "Result": {
       "Name": "betasharp:GoldIngot",
       "Count": 9,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "#"
@@ -509,7 +509,7 @@
     "Result": {
       "Name": "betasharp:IronBlock",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "###",
@@ -525,7 +525,7 @@
     "Result": {
       "Name": "betasharp:IronIngot",
       "Count": 9,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "#"
@@ -539,7 +539,7 @@
     "Result": {
       "Name": "betasharp:DiamondBlock",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "###",
@@ -555,7 +555,7 @@
     "Result": {
       "Name": "betasharp:Diamond",
       "Count": 9,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "#"
@@ -569,7 +569,7 @@
     "Result": {
       "Name": "betasharp:LapisBlock",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "###",
@@ -585,7 +585,7 @@
     "Result": {
       "Name": "betasharp:Dye",
       "Count": 9,
-      "Damage": 4
+      "Meta": 4
     },
     "Pattern": [
       "#"
@@ -599,7 +599,7 @@
     "Result": {
       "Name": "betasharp:MushroomStew",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "Y",
@@ -617,7 +617,7 @@
     "Result": {
       "Name": "betasharp:MushroomStew",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "Y",
@@ -635,7 +635,7 @@
     "Result": {
       "Name": "betasharp:Cookie",
       "Count": 8,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "#X#"
@@ -650,7 +650,7 @@
     "Result": {
       "Name": "betasharp:Chest",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "###",
@@ -666,7 +666,7 @@
     "Result": {
       "Name": "betasharp:Furnace",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "###",
@@ -682,7 +682,7 @@
     "Result": {
       "Name": "betasharp:CraftingTable",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "##",
@@ -697,7 +697,7 @@
     "Result": {
       "Name": "betasharp:Sandstone",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "##",
@@ -712,7 +712,7 @@
     "Result": {
       "Name": "betasharp:LeatherHelmet",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XXX",
@@ -727,7 +727,7 @@
     "Result": {
       "Name": "betasharp:LeatherChestplate",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X X",
@@ -743,7 +743,7 @@
     "Result": {
       "Name": "betasharp:LeatherLeggings",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XXX",
@@ -759,7 +759,7 @@
     "Result": {
       "Name": "betasharp:LeatherBoots",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X X",
@@ -774,7 +774,7 @@
     "Result": {
       "Name": "betasharp:ChainHelmet",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XXX",
@@ -789,7 +789,7 @@
     "Result": {
       "Name": "betasharp:ChainChestplate",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X X",
@@ -805,7 +805,7 @@
     "Result": {
       "Name": "betasharp:ChainLeggings",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XXX",
@@ -821,7 +821,7 @@
     "Result": {
       "Name": "betasharp:ChainBoots",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X X",
@@ -836,7 +836,7 @@
     "Result": {
       "Name": "betasharp:IronHelmet",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XXX",
@@ -851,7 +851,7 @@
     "Result": {
       "Name": "betasharp:IronChestplate",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X X",
@@ -867,7 +867,7 @@
     "Result": {
       "Name": "betasharp:IronLeggings",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XXX",
@@ -883,7 +883,7 @@
     "Result": {
       "Name": "betasharp:IronBoots",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X X",
@@ -898,7 +898,7 @@
     "Result": {
       "Name": "betasharp:DiamondHelmet",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XXX",
@@ -913,7 +913,7 @@
     "Result": {
       "Name": "betasharp:DiamondChestplate",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X X",
@@ -929,7 +929,7 @@
     "Result": {
       "Name": "betasharp:DiamondLeggings",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XXX",
@@ -945,7 +945,7 @@
     "Result": {
       "Name": "betasharp:DiamondBoots",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X X",
@@ -960,7 +960,7 @@
     "Result": {
       "Name": "betasharp:GoldenHelmet",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XXX",
@@ -975,7 +975,7 @@
     "Result": {
       "Name": "betasharp:GoldenChestplate",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X X",
@@ -991,7 +991,7 @@
     "Result": {
       "Name": "betasharp:GoldenLeggings",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "XXX",
@@ -1007,7 +1007,7 @@
     "Result": {
       "Name": "betasharp:GoldenBoots",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X X",
@@ -1022,7 +1022,7 @@
     "Result": {
       "Name": "betasharp:Wool",
       "Count": 1,
-      "Damage": 15
+      "Meta": 15
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1034,7 +1034,7 @@
     "Result": {
       "Name": "betasharp:Wool",
       "Count": 1,
-      "Damage": 14
+      "Meta": 14
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1046,7 +1046,7 @@
     "Result": {
       "Name": "betasharp:Wool",
       "Count": 1,
-      "Damage": 13
+      "Meta": 13
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1058,7 +1058,7 @@
     "Result": {
       "Name": "betasharp:Wool",
       "Count": 1,
-      "Damage": 12
+      "Meta": 12
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1070,7 +1070,7 @@
     "Result": {
       "Name": "betasharp:Wool",
       "Count": 1,
-      "Damage": 11
+      "Meta": 11
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1082,7 +1082,7 @@
     "Result": {
       "Name": "betasharp:Wool",
       "Count": 1,
-      "Damage": 10
+      "Meta": 10
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1094,7 +1094,7 @@
     "Result": {
       "Name": "betasharp:Wool",
       "Count": 1,
-      "Damage": 9
+      "Meta": 9
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1106,7 +1106,7 @@
     "Result": {
       "Name": "betasharp:Wool",
       "Count": 1,
-      "Damage": 8
+      "Meta": 8
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1118,7 +1118,7 @@
     "Result": {
       "Name": "betasharp:Wool",
       "Count": 1,
-      "Damage": 7
+      "Meta": 7
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1130,7 +1130,7 @@
     "Result": {
       "Name": "betasharp:Wool",
       "Count": 1,
-      "Damage": 6
+      "Meta": 6
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1142,7 +1142,7 @@
     "Result": {
       "Name": "betasharp:Wool",
       "Count": 1,
-      "Damage": 5
+      "Meta": 5
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1154,7 +1154,7 @@
     "Result": {
       "Name": "betasharp:Wool",
       "Count": 1,
-      "Damage": 4
+      "Meta": 4
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1166,7 +1166,7 @@
     "Result": {
       "Name": "betasharp:Wool",
       "Count": 1,
-      "Damage": 3
+      "Meta": 3
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1178,7 +1178,7 @@
     "Result": {
       "Name": "betasharp:Wool",
       "Count": 1,
-      "Damage": 2
+      "Meta": 2
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1190,7 +1190,7 @@
     "Result": {
       "Name": "betasharp:Wool",
       "Count": 1,
-      "Damage": 1
+      "Meta": 1
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1202,7 +1202,7 @@
     "Result": {
       "Name": "betasharp:Wool",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1214,7 +1214,7 @@
     "Result": {
       "Name": "betasharp:Dye",
       "Count": 2,
-      "Damage": 11
+      "Meta": 11
     },
     "Ingredients": [
       "betasharp:Dandelion"
@@ -1225,7 +1225,7 @@
     "Result": {
       "Name": "betasharp:Dye",
       "Count": 2,
-      "Damage": 1
+      "Meta": 1
     },
     "Ingredients": [
       "betasharp:Rose"
@@ -1236,7 +1236,7 @@
     "Result": {
       "Name": "betasharp:Dye",
       "Count": 3,
-      "Damage": 15
+      "Meta": 15
     },
     "Ingredients": [
       "betasharp:Bone"
@@ -1247,7 +1247,7 @@
     "Result": {
       "Name": "betasharp:Dye",
       "Count": 2,
-      "Damage": 9
+      "Meta": 9
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1259,7 +1259,7 @@
     "Result": {
       "Name": "betasharp:Dye",
       "Count": 2,
-      "Damage": 14
+      "Meta": 14
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1271,7 +1271,7 @@
     "Result": {
       "Name": "betasharp:Dye",
       "Count": 2,
-      "Damage": 10
+      "Meta": 10
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1283,7 +1283,7 @@
     "Result": {
       "Name": "betasharp:Dye",
       "Count": 2,
-      "Damage": 8
+      "Meta": 8
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1295,7 +1295,7 @@
     "Result": {
       "Name": "betasharp:Dye",
       "Count": 2,
-      "Damage": 7
+      "Meta": 7
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1307,7 +1307,7 @@
     "Result": {
       "Name": "betasharp:Dye",
       "Count": 3,
-      "Damage": 7
+      "Meta": 7
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1320,7 +1320,7 @@
     "Result": {
       "Name": "betasharp:Dye",
       "Count": 2,
-      "Damage": 12
+      "Meta": 12
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1332,7 +1332,7 @@
     "Result": {
       "Name": "betasharp:Dye",
       "Count": 2,
-      "Damage": 6
+      "Meta": 6
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1344,7 +1344,7 @@
     "Result": {
       "Name": "betasharp:Dye",
       "Count": 2,
-      "Damage": 5
+      "Meta": 5
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1356,7 +1356,7 @@
     "Result": {
       "Name": "betasharp:Dye",
       "Count": 2,
-      "Damage": 13
+      "Meta": 13
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1368,7 +1368,7 @@
     "Result": {
       "Name": "betasharp:Dye",
       "Count": 3,
-      "Damage": 13
+      "Meta": 13
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1381,7 +1381,7 @@
     "Result": {
       "Name": "betasharp:Dye",
       "Count": 4,
-      "Damage": 13
+      "Meta": 13
     },
     "Ingredients": [
       "betasharp:Dye",
@@ -1395,7 +1395,7 @@
     "Result": {
       "Name": "betasharp:Paper",
       "Count": 3,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "###"
@@ -1409,7 +1409,7 @@
     "Result": {
       "Name": "betasharp:Book",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "#",
@@ -1425,7 +1425,7 @@
     "Result": {
       "Name": "betasharp:Fence",
       "Count": 2,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "###",
@@ -1440,7 +1440,7 @@
     "Result": {
       "Name": "betasharp:Jukebox",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "###",
@@ -1457,7 +1457,7 @@
     "Result": {
       "Name": "betasharp:Noteblock",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "###",
@@ -1474,7 +1474,7 @@
     "Result": {
       "Name": "betasharp:Bookshelf",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "###",
@@ -1491,7 +1491,7 @@
     "Result": {
       "Name": "betasharp:SnowBlock",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "##",
@@ -1506,7 +1506,7 @@
     "Result": {
       "Name": "betasharp:Clay",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "##",
@@ -1521,7 +1521,7 @@
     "Result": {
       "Name": "betasharp:Bricks",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "##",
@@ -1536,7 +1536,7 @@
     "Result": {
       "Name": "betasharp:Glowstone",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "##",
@@ -1551,7 +1551,7 @@
     "Result": {
       "Name": "betasharp:Wool",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "##",
@@ -1566,7 +1566,7 @@
     "Result": {
       "Name": "betasharp:TNT",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X#X",
@@ -1583,7 +1583,7 @@
     "Result": {
       "Name": "betasharp:Slab",
       "Count": 3,
-      "Damage": 3
+      "Meta": 3
     },
     "Pattern": [
       "###"
@@ -1597,7 +1597,7 @@
     "Result": {
       "Name": "betasharp:Slab",
       "Count": 3,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "###"
@@ -1611,7 +1611,7 @@
     "Result": {
       "Name": "betasharp:Slab",
       "Count": 3,
-      "Damage": 1
+      "Meta": 1
     },
     "Pattern": [
       "###"
@@ -1625,7 +1625,7 @@
     "Result": {
       "Name": "betasharp:Slab",
       "Count": 3,
-      "Damage": 2
+      "Meta": 2
     },
     "Pattern": [
       "###"
@@ -1639,7 +1639,7 @@
     "Result": {
       "Name": "betasharp:Ladder",
       "Count": 2,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "# #",
@@ -1655,7 +1655,7 @@
     "Result": {
       "Name": "betasharp:WoodenDoor",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "##",
@@ -1671,7 +1671,7 @@
     "Result": {
       "Name": "betasharp:Trapdoor",
       "Count": 2,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "###",
@@ -1686,7 +1686,7 @@
     "Result": {
       "Name": "betasharp:IronDoor",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "##",
@@ -1702,7 +1702,7 @@
     "Result": {
       "Name": "betasharp:Sign",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "###",
@@ -1719,7 +1719,7 @@
     "Result": {
       "Name": "betasharp:Cake",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "AAA",
@@ -1738,7 +1738,7 @@
     "Result": {
       "Name": "betasharp:Sugar",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "#"
@@ -1752,7 +1752,7 @@
     "Result": {
       "Name": "betasharp:Planks",
       "Count": 4,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "#"
@@ -1766,7 +1766,7 @@
     "Result": {
       "Name": "betasharp:Stick",
       "Count": 4,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "#",
@@ -1781,7 +1781,7 @@
     "Result": {
       "Name": "betasharp:Torch",
       "Count": 4,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X",
@@ -1797,7 +1797,7 @@
     "Result": {
       "Name": "betasharp:Torch",
       "Count": 4,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X",
@@ -1813,7 +1813,7 @@
     "Result": {
       "Name": "betasharp:Bowl",
       "Count": 4,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "# #",
@@ -1828,7 +1828,7 @@
     "Result": {
       "Name": "betasharp:Rail",
       "Count": 16,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X X",
@@ -1845,7 +1845,7 @@
     "Result": {
       "Name": "betasharp:PoweredRail",
       "Count": 6,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X X",
@@ -1863,7 +1863,7 @@
     "Result": {
       "Name": "betasharp:DetectorRail",
       "Count": 6,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X X",
@@ -1881,7 +1881,7 @@
     "Result": {
       "Name": "betasharp:Minecart",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "# #",
@@ -1896,7 +1896,7 @@
     "Result": {
       "Name": "betasharp:JackLantern",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "A",
@@ -1912,7 +1912,7 @@
     "Result": {
       "Name": "betasharp:ChestMinecart",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "A",
@@ -1928,7 +1928,7 @@
     "Result": {
       "Name": "betasharp:FurnaceMinecart",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "A",
@@ -1944,7 +1944,7 @@
     "Result": {
       "Name": "betasharp:Boat",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "# #",
@@ -1959,7 +1959,7 @@
     "Result": {
       "Name": "betasharp:Bucket",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "# #",
@@ -1974,7 +1974,7 @@
     "Result": {
       "Name": "betasharp:FlintAndSteel",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "A ",
@@ -1990,7 +1990,7 @@
     "Result": {
       "Name": "betasharp:Bread",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "###"
@@ -2004,7 +2004,7 @@
     "Result": {
       "Name": "betasharp:WoodenStairs",
       "Count": 4,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "#  ",
@@ -2020,7 +2020,7 @@
     "Result": {
       "Name": "betasharp:FishingRod",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "  #",
@@ -2037,7 +2037,7 @@
     "Result": {
       "Name": "betasharp:CobblestoneStairs",
       "Count": 4,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "#  ",
@@ -2053,7 +2053,7 @@
     "Result": {
       "Name": "betasharp:Painting",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "###",
@@ -2070,7 +2070,7 @@
     "Result": {
       "Name": "betasharp:GoldenApple",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "###",
@@ -2087,7 +2087,7 @@
     "Result": {
       "Name": "betasharp:Lever",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X",
@@ -2103,7 +2103,7 @@
     "Result": {
       "Name": "betasharp:LitRedstoneTorch",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "X",
@@ -2119,7 +2119,7 @@
     "Result": {
       "Name": "betasharp:Repeater",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "#X#",
@@ -2136,7 +2136,7 @@
     "Result": {
       "Name": "betasharp:Clock",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       " # ",
@@ -2153,7 +2153,7 @@
     "Result": {
       "Name": "betasharp:Compass",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       " # ",
@@ -2170,7 +2170,7 @@
     "Result": {
       "Name": "betasharp:Map",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "###",
@@ -2187,7 +2187,7 @@
     "Result": {
       "Name": "betasharp:Button",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "#",
@@ -2202,7 +2202,7 @@
     "Result": {
       "Name": "betasharp:StonePressurePlate",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "##"
@@ -2216,7 +2216,7 @@
     "Result": {
       "Name": "betasharp:WoodenPressurePlate",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "##"
@@ -2230,7 +2230,7 @@
     "Result": {
       "Name": "betasharp:Dispenser",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "###",
@@ -2248,7 +2248,7 @@
     "Result": {
       "Name": "betasharp:Piston",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "TTT",
@@ -2267,7 +2267,7 @@
     "Result": {
       "Name": "betasharp:StickyPiston",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "S",
@@ -2283,7 +2283,7 @@
     "Result": {
       "Name": "betasharp:Bed",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     },
     "Pattern": [
       "###",

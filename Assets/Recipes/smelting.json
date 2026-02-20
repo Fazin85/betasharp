@@ -5,7 +5,7 @@
     "Result": {
       "Name": "betasharp:IronIngot",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     }
   },
   {
@@ -14,7 +14,7 @@
     "Result": {
       "Name": "betasharp:GoldIngot",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     }
   },
   {
@@ -23,7 +23,7 @@
     "Result": {
       "Name": "betasharp:Diamond",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     }
   },
   {
@@ -32,7 +32,7 @@
     "Result": {
       "Name": "betasharp:Glass",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     }
   },
   {
@@ -41,7 +41,7 @@
     "Result": {
       "Name": "betasharp:CookedPorkchop",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     }
   },
   {
@@ -50,7 +50,7 @@
     "Result": {
       "Name": "betasharp:CookedFish",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     }
   },
   {
@@ -59,7 +59,7 @@
     "Result": {
       "Name": "betasharp:Stone",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     }
   },
   {
@@ -68,7 +68,7 @@
     "Result": {
       "Name": "betasharp:Brick",
       "Count": 1,
-      "Damage": 0
+      "Meta": 0
     }
   },
   {
@@ -77,7 +77,7 @@
     "Result": {
       "Name": "betasharp:Dye",
       "Count": 1,
-      "Damage": 2
+      "Meta": 2
     }
   },
   {
@@ -86,7 +86,7 @@
     "Result": {
       "Name": "betasharp:Coal",
       "Count": 1,
-      "Damage": 1
+      "Meta": 1
     }
   }
 ]
