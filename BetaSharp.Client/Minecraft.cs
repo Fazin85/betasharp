@@ -331,10 +331,10 @@ public partial class Minecraft
 
         Tessellator tess = Tessellator.instance;
         tess.startDrawingQuads();
-        tess.addVertexWithUV(x + 0,     y + height, 0,  (texX + 0) * uScale,        (texY + height) * vScale);
-        tess.addVertexWithUV(x + width, y + height, 0,  (texX + width) * uScale,    (texY + height) * vScale);
-        tess.addVertexWithUV(x + width, y + 0,      0,  (texX + width) * uScale,    (texY + 0) * vScale);
-        tess.addVertexWithUV(x + 0,     y + 0,      0,  (texX + 0) * uScale,        (texY + 0) * vScale);
+        tess.addVertexWithUV(x + 0, y + height, 0, (texX + 0) * uScale, (texY + height) * vScale);
+        tess.addVertexWithUV(x + width, y + height, 0, (texX + width) * uScale, (texY + height) * vScale);
+        tess.addVertexWithUV(x + width, y + 0, 0, (texX + width) * uScale, (texY + 0) * vScale);
+        tess.addVertexWithUV(x + 0, y + 0, 0, (texX + 0) * uScale, (texY + 0) * vScale);
         tess.draw();
     }
 
@@ -1294,7 +1294,7 @@ public partial class Minecraft
 
                         if (Keyboard.getEventKey() == Keyboard.KEY_F5)
                         {
-                            options.cameraMode = (EnumCameraMode)((int)(options.cameraMode + 1) % 3);
+                            options.cameraMode = (EnumCameraMode)((int)(options.cameraMode + 2) % 3);
                         }
 
                         if (Keyboard.getEventKey() == Keyboard.KEY_F8)
