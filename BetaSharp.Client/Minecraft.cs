@@ -32,7 +32,6 @@ using BetaSharp.Worlds;
 using BetaSharp.Worlds.Colors;
 using BetaSharp.Worlds.Storage;
 using ImGuiNET;
-using java.lang;
 using Silk.NET.Input;
 using Silk.NET.OpenGL.Legacy;
 using Silk.NET.OpenGL.Legacy.Extensions.ImGui;
@@ -134,15 +133,10 @@ public partial class Minecraft
         }
     }
 
-    public void onMinecraftCrash(UnexpectedThrowable crashInfo)
+    public void onMinecraftCrash(Exception crashInfo)
     {
         hasCrashed = true;
-        displayUnexpectedThrowable(crashInfo);
-    }
-
-    public void displayUnexpectedThrowable(UnexpectedThrowable unexpectedThrowable)
-    {
-        unexpectedThrowable.exception.printStackTrace();
+        Log.Fatal(crashInfo, "The game has crashed!");
     }
 
     public void setServer(string name, int port)
@@ -192,7 +186,7 @@ public partial class Minecraft
 
             GLManager.Init(Display.getGL()!);
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             Log.Error(ex);
         }
@@ -235,9 +229,9 @@ public partial class Minecraft
             imGuiController = new(GLManager.GL, window, input);
             imGuiController.MakeCurrent();
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
-            Log.Error($"Failed to initialize ImGui: {e}");
+            Log.Error(e, "Failed to initialize ImGui");
             imGuiController = null;
         }
 
@@ -420,15 +414,15 @@ public partial class Minecraft
 
             try
             {
-                changeWorld1((World)null);
+                changeWorld((World)null);
             }
-            catch (Throwable worldChangeException) { }
+            catch (Exception worldChangeException) { }
 
             try
             {
                 GLAllocation.deleteTexturesAndDisplayLists();
             }
-            catch (Throwable textureCleanupException) { }
+            catch (Exception textureCleanupException) { }
 
             sndManager.CloseMinecraft();
             Mouse.destroy();
@@ -454,10 +448,9 @@ public partial class Minecraft
         {
             startGame();
         }
-        catch (java.lang.Exception startupException)
+        catch (Exception startupException)
         {
-            startupException.printStackTrace();
-            onMinecraftCrash(new UnexpectedThrowable("Failed to start game", startupException));
+            onMinecraftCrash(startupException);
             return;
         }
 
@@ -509,7 +502,7 @@ public partial class Minecraft
                         catch (MinecraftException tickException)
                         {
                             world = null;
-                            changeWorld1((World)null);
+                            changeWorld((World)null);
                             displayGuiScreen(new GuiConflictWarning());
                         }
                     }
@@ -624,10 +617,10 @@ public partial class Minecraft
                 catch (MinecraftException)
                 {
                     world = null;
-                    changeWorld1(null);
+                    changeWorld(null);
                     displayGuiScreen(new GuiConflictWarning());
                 }
-                catch (OutOfMemoryError)
+                catch (OutOfMemoryException)
                 {
                     crashCleanup();
                     displayGuiScreen(new GuiErrorScreen());
@@ -642,18 +635,11 @@ public partial class Minecraft
                 }
             }
         }
-        catch (MinecraftError)
-        {
-        }
-        catch (Throwable unexpectedException)
+        catch (MinecraftShutdownException) {}
+        catch (Exception unexpectedException)
         {
             crashCleanup();
-            unexpectedException.printStackTrace();
-            onMinecraftCrash(new UnexpectedThrowable("Unexpected error", unexpectedException));
-        }
-        catch (System.Exception e)
-        {
-            Log.Error(e.ToString());
+            onMinecraftCrash(unexpectedException);
         }
         finally
         {
@@ -665,9 +651,9 @@ public partial class Minecraft
     {
         try
         {
-            changeWorld1(null);
+            changeWorld(null);
         }
-        catch (System.Exception)
+        catch (Exception)
         {
         }
     }
@@ -1004,9 +990,9 @@ public partial class Minecraft
 
             Display.update();
         }
-        catch (System.Exception displayException)
+        catch (Exception displayException)
         {
-            Log.Error(displayException.ToString());
+            Log.Error(displayException, "Failed to toggle fullscreen");
         }
     }
 
@@ -1303,6 +1289,11 @@ public partial class Minecraft
                             ingameGUI.clearChatMessages();
                         }
 
+                        if (Keyboard.getEventKey() == Keyboard.KEY_C && Keyboard.isKeyDown(Keyboard.KEY_F3))
+                        {
+                            throw new Exception("Simulated crash triggered by pressing F3 + C");
+                        }
+
                         if (Keyboard.getEventKey() == Keyboard.KEY_F1)
                         {
                             options.hideGUI = !options.hideGUI;
@@ -1395,21 +1386,11 @@ public partial class Minecraft
 
     public void startWorld(string worldName, string mainMenuText, long seed)
     {
-        changeWorld1((World)null);
+        changeWorld((World)null);
         displayGuiScreen(new GuiLevelLoading(worldName, seed));
     }
 
-    public void changeWorld1(World newWorld)
-    {
-        changeWorld2(newWorld, "");
-    }
-
-    public void changeWorld2(World newWorld, string loadingMessage)
-    {
-        changeWorld(newWorld, loadingMessage, (EntityPlayer)null);
-    }
-
-    public void changeWorld(World newWorld, string loadingText, EntityPlayer targetEntity)
+    public void changeWorld(World newWorld, string loadingText = "", EntityPlayer targetEntity = null)
     {
         statFileWriter.func_27175_b();
         statFileWriter.syncStats();
