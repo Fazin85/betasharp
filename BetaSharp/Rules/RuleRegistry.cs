@@ -4,6 +4,8 @@ namespace BetaSharp.Rules;
 
 public sealed class RuleRegistry
 {
+    public static RuleRegistry Instance { get; } = new();
+
     private readonly ConcurrentDictionary<ResourceLocation, IGameRule> _rules = new();
 
     public IGameRule<T> Register<T>(IGameRule<T> rule) where T : IRuleValue
