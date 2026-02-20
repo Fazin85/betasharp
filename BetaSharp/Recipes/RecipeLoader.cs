@@ -84,7 +84,6 @@ public static class RecipeLoader
 
         foreach (var recipe in recipes)
         {
-            // Resolve the input string to an ID
             object inputObj = BetaSharp.Registry.ItemRegistry.Resolve(recipe.Input);
             int inputId = inputObj switch {
                 Item i => i.id,
@@ -92,7 +91,6 @@ public static class RecipeLoader
                 _ => 0
             };
 
-            // Create the output stack using Meta
             ItemStack output = BetaSharp.Registry.ItemRegistry.ResolveStack(
                 recipe.Result.Name, 
                 recipe.Result.Count, 
