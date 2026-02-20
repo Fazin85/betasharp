@@ -318,7 +318,7 @@ public abstract class GuiSlot
     private void OverlayBackground(int startY, int endY, int alphaStart, int alphaEnd)
     {
         var tess = Tessellator.instance;
-        var textureId = (uint)_mc.textureManager.getTextureId("/gui/background.png");
+        var textureId = (uint)_mc.textureManager.GetTextureId("/gui/background.png");
 
         GLManager.GL.BindTexture(GLEnum.Texture2D, textureId);
         GLManager.GL.Color4(1.0f, 1.0f, 1.0f, 1.0f);
