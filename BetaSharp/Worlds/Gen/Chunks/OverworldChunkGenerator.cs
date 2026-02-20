@@ -168,22 +168,22 @@ public class OverworldChunkGenerator : ChunkSource
         gravelBuffer = sandGravelNoise.create(gravelBuffer, chunkX * 16, 109.0134D, chunkZ * 16, 16, 1, 16, chunkBiome, 1.0D, chunkBiome);
         depthBuffer = depthNoise.create(depthBuffer, chunkX * 16, chunkZ * 16, 0.0D, 16, 16, 1, chunkBiome * 2.0D, chunkBiome * 2.0D, chunkBiome * 2.0D);
 
-        for (int var8 = 0; var8 < 16; ++var8)
+        for (int horizontalScale = 0; horizontalScale < 16; ++horizontalScale)
         {
             for (int zOffset = 0; zOffset < 16; ++zOffset)
             {
-                Biome var10 = biomes[var8 + zOffset * 16];
-                bool fraction = sandBuffer[var8 + zOffset * 16] + random.NextDouble() * 0.2D > 0.0D;
-                bool var12 = gravelBuffer[var8 + zOffset * 16] + random.NextDouble() * 0.2D > 3.0D;
-                int featureX = (int)(depthBuffer[var8 + zOffset * 16] / 3.0D + 3.0D + random.NextDouble() * 0.25D);
+                Biome verticalScale = biomes[horizontalScale + zOffset * 16];
+                bool fraction = sandBuffer[horizontalScale + zOffset * 16] + random.NextDouble() * 0.2D > 0.0D;
+                bool temperatureBuffer = gravelBuffer[horizontalScale + zOffset * 16] + random.NextDouble() * 0.2D > 3.0D;
+                int featureX = (int)(depthBuffer[horizontalScale + zOffset * 16] / 3.0D + 3.0D + random.NextDouble() * 0.25D);
                 int featureY = -1;
-                byte featureZ = var10.TopBlockId;
-                byte var16 = var10.SoilBlockId;
+                byte featureZ = verticalScale.TopBlockId;
+                byte scaleFraction = verticalScale.SoilBlockId;
 
-                for (int var17 = 127; var17 >= 0; --var17)
+                for (int iX = 127; iX >= 0; --iX)
                 {
-                    int treeFeature = (zOffset * 16 + var8) * 128 + var17;
-                    if (var17 <= 0 + random.NextInt(5))
+                    int treeFeature = (zOffset * 16 + horizontalScale) * 128 + iX;
+                    if (iX <= 0 + random.NextInt(5))
                     {
                         blocks[treeFeature] = (byte)Block.Bedrock.id;
                     }
@@ -201,20 +201,20 @@ public class OverworldChunkGenerator : ChunkSource
                                 if (featureX <= 0)
                                 {
                                     featureZ = 0;
-                                    var16 = (byte)Block.Stone.id;
+                                    scaleFraction = (byte)Block.Stone.id;
                                 }
-                                else if (var17 >= blockZ - 4 && var17 <= blockZ + 1)
+                                else if (iX >= blockZ - 4 && iX <= blockZ + 1)
                                 {
-                                    featureZ = var10.TopBlockId;
-                                    var16 = var10.SoilBlockId;
-                                    if (var12)
+                                    featureZ = verticalScale.TopBlockId;
+                                    scaleFraction = verticalScale.SoilBlockId;
+                                    if (temperatureBuffer)
                                     {
                                         featureZ = 0;
                                     }
 
-                                    if (var12)
+                                    if (temperatureBuffer)
                                     {
-                                        var16 = (byte)Block.Gravel.id;
+                                        scaleFraction = (byte)Block.Gravel.id;
                                     }
 
                                     if (fraction)
@@ -224,33 +224,33 @@ public class OverworldChunkGenerator : ChunkSource
 
                                     if (fraction)
                                     {
-                                        var16 = (byte)Block.Sand.id;
+                                        scaleFraction = (byte)Block.Sand.id;
                                     }
                                 }
 
-                                if (var17 < blockZ && featureZ == 0)
+                                if (iX < blockZ && featureZ == 0)
                                 {
                                     featureZ = (byte)Block.Water.id;
                                 }
 
                                 featureY = featureX;
-                                if (var17 >= blockZ - 1)
+                                if (iX >= blockZ - 1)
                                 {
                                     blocks[treeFeature] = featureZ;
                                 }
                                 else
                                 {
-                                    blocks[treeFeature] = var16;
+                                    blocks[treeFeature] = scaleFraction;
                                 }
                             }
                             else if (featureY > 0)
                             {
                                 --featureY;
-                                blocks[treeFeature] = var16;
-                                if (featureY == 0 && var16 == Block.Sand.id)
+                                blocks[treeFeature] = scaleFraction;
+                                if (featureY == 0 && scaleFraction == Block.Sand.id)
                                 {
                                     featureY = random.NextInt(4);
-                                    var16 = (byte)Block.Sandstone.id;
+                                    scaleFraction = (byte)Block.Sandstone.id;
                                 }
                             }
                         }
@@ -266,6 +266,12 @@ public class OverworldChunkGenerator : ChunkSource
         return GetChunk(chunkX, chunkZ);
     }
 
+    /// <summary>
+    /// Generates a chunk at the given coordinates. The chunk is generated by first creating a low-resolution height map, then interpolating it to determine the base terrain, and finally carving caves and adding features to it.
+    /// </summary>
+    /// <param name="chunkX">The x-coordinate of the chunk</param>
+    /// <param name="chunkZ">The z-coordinate of the chunk</param>
+    /// <returns>The generated chunk</returns>
     public Chunk GetChunk(int chunkX, int chunkZ)
     {
         random.SetSeed(chunkX * 341873128712L + chunkZ * 132897987541L);
@@ -280,6 +286,24 @@ public class OverworldChunkGenerator : ChunkSource
         return chunk;
     }
 
+    /**
+    * @brief Generates the low-resolution height map that is used to generate the terrain of the overworld. The height map is generated by sampling 5 different noise maps and applying biome-dependent modifications to them.
+    * 
+    * @param terrainMap The terrain map that the scaled-down terrain values will be written to
+    * @param chunkPos The x,y,z coordinate of the sub-chunk
+    * @param max Defines the area of the terrainMap
+    */
+    /// <summary>
+    /// Generates the low-resolution height map that is used to generate the terrain of the overworld. The height map is generated by sampling 5 different noise maps and applying biome-dependent modifications to them.
+    /// </summary>
+    /// <param name="heightMap">The terrain map that the scaled-down terrain values will be written to</param>
+    /// <param name="x">The x-coordinate of the sub-chunk</param>
+    /// <param name="y">The y-coordinate of the sub-chunk</param>
+    /// <param name="z">The z-coordinate of the sub-chunk</param>
+    /// <param name="sizeX">The x-size of the terrainMap</param>
+    /// <param name="sizeY">The y-size of the terrainMap</param>
+    /// <param name="sizeZ">The z-size of the terrainMap</param>
+    /// <returns>The generated height map</returns>
     private double[] GenerateHeightMap(double[] heightMap, int x, int y, int z, int sizeX, int sizeY, int sizeZ)
     {
         if (heightMap == null)
@@ -287,112 +311,121 @@ public class OverworldChunkGenerator : ChunkSource
             heightMap = new double[sizeX * sizeY * sizeZ];
         }
 
-        double var8 = 684.412D;
-        double var10 = 684.412D;
-        double[] var12 = world.getBiomeSource().TemperatureMap;
-        double[] var13 = world.getBiomeSource().DownfallMap;
+        double horizontalScale = 684.412D;
+        double verticalScale = 684.412D;
+        double[] temperatureBuffer = world.getBiomeSource().TemperatureMap;
+        double[] downfallBuffer = world.getBiomeSource().DownfallMap;
         scaleNoiseBuffer = floatingIslandScale.create(scaleNoiseBuffer, x, z, sizeX, sizeZ, 1.121D, 1.121D, 0.5D);
         depthNoiseBuffer = floatingIslandNoise.create(depthNoiseBuffer, x, z, sizeX, sizeZ, 200.0D, 200.0D, 0.5D);
-        selectorNoiseBuffer = selectorNoise.create(selectorNoiseBuffer, x, y, z, sizeX, sizeY, sizeZ, var8 / 80.0D, var10 / 160.0D, var8 / 80.0D);
-        minLimitPerlinNoiseBuffer = minLimitPerlinNoise.create(minLimitPerlinNoiseBuffer, x, y, z, sizeX, sizeY, sizeZ, var8, var10, var8);
-        maxLimitPerlinNoiseBuffer = maxLimitPerlinNoise.create(maxLimitPerlinNoiseBuffer, x, y, z, sizeX, sizeY, sizeZ, var8, var10, var8);
-        int var14 = 0;
-        int var15 = 0;
-        int var16 = 16 / sizeX;
+        selectorNoiseBuffer = selectorNoise.create(selectorNoiseBuffer, x, y, z, sizeX, sizeY, sizeZ, horizontalScale / 80.0D, verticalScale / 160.0D, horizontalScale / 80.0D);
+        minLimitPerlinNoiseBuffer = minLimitPerlinNoise.create(minLimitPerlinNoiseBuffer, x, y, z, sizeX, sizeY, sizeZ, horizontalScale, verticalScale, horizontalScale);
+        maxLimitPerlinNoiseBuffer = maxLimitPerlinNoise.create(maxLimitPerlinNoiseBuffer, x, y, z, sizeX, sizeY, sizeZ, horizontalScale, verticalScale, horizontalScale);
+        // Used to iterate 3D noise maps (low, high, selector)
+        int xyzIndex = 0;
+        // Used to iterate 2D Noise maps (depth, continentalness)
+        int xzIndex = 0;
+        int scaleFraction = 16 / sizeX;
 
-        for (int var17 = 0; var17 < sizeX; ++var17)
+        for (int iX = 0; iX < sizeX; ++iX)
         {
-            int var18 = var17 * var16 + var16 / 2;
+            int sampleX = iX * scaleFraction + scaleFraction / 2;
 
-            for (int var19 = 0; var19 < sizeZ; ++var19)
+            for (int iZ = 0; iZ < sizeZ; ++iZ)
             {
-                int var20 = var19 * var16 + var16 / 2;
-                double var21 = var12[var18 * 16 + var20];
-                double var23 = var13[var18 * 16 + var20] * var21;
-                double var25 = 1.0D - var23;
-                var25 *= var25;
-                var25 *= var25;
-                var25 = 1.0D - var25;
-                double var27 = (scaleNoiseBuffer[var15] + 256.0D) / 512.0D;
-                var27 *= var25;
-                if (var27 > 1.0D)
+                // Sample 2D noises
+                int sampleZ = iZ * scaleFraction + scaleFraction / 2;
+                // Apply biome-noise-dependent variety
+                double temperatureSample = temperatureBuffer[sampleX * 16 + sampleZ];
+                double downfallSample = downfallBuffer[sampleX * 16 + sampleZ] * temperatureSample;
+                downfallSample = 1.0D - downfallSample;
+                downfallSample *= downfallSample;
+                downfallSample *= downfallSample;
+                downfallSample = 1.0D - downfallSample;
+			    // Sample scale/contientalness noise
+                double scaleNoiseSample = (scaleNoiseBuffer[xzIndex] + 256.0D) / 512.0D;
+                scaleNoiseSample *= downfallSample;
+                if (scaleNoiseSample > 1.0D)
                 {
-                    var27 = 1.0D;
+                    scaleNoiseSample = 1.0D;
+                }
+			    // Sample depth noise
+                double depthNoiseSample = depthNoiseBuffer[xzIndex] / 8000.0D;
+                if (depthNoiseSample < 0.0D)
+                {
+                    depthNoiseSample = -depthNoiseSample * 0.3D;
                 }
 
-                double var29 = depthNoiseBuffer[var15] / 8000.0D;
-                if (var29 < 0.0D)
+                depthNoiseSample = depthNoiseSample * 3.0D - 2.0D;
+                if (depthNoiseSample < 0.0D)
                 {
-                    var29 = -var29 * 0.3D;
-                }
-
-                var29 = var29 * 3.0D - 2.0D;
-                if (var29 < 0.0D)
-                {
-                    var29 /= 2.0D;
-                    if (var29 < -1.0D)
+                    depthNoiseSample /= 2.0D;
+                    if (depthNoiseSample < -1.0D)
                     {
-                        var29 = -1.0D;
+                        depthNoiseSample = -1.0D;
                     }
 
-                    var29 /= 1.4D;
-                    var29 /= 2.0D;
-                    var27 = 0.0D;
+                    depthNoiseSample /= 1.4D;
+                    depthNoiseSample /= 2.0D;
+                    scaleNoiseSample = 0.0D;
                 }
                 else
                 {
-                    if (var29 > 1.0D)
+                    if (depthNoiseSample > 1.0D)
                     {
-                        var29 = 1.0D;
+                        depthNoiseSample = 1.0D;
                     }
 
-                    var29 /= 8.0D;
+                    depthNoiseSample /= 8.0D;
                 }
 
-                if (var27 < 0.0D)
+                if (scaleNoiseSample < 0.0D)
                 {
-                    var27 = 0.0D;
+                    scaleNoiseSample = 0.0D;
                 }
 
-                var27 += 0.5D;
-                var29 = var29 * sizeY / 16.0D;
-                double var31 = sizeY / 2.0D + var29 * 4.0D;
-                ++var15;
+                scaleNoiseSample += 0.5D;
+                depthNoiseSample = depthNoiseSample * sizeY / 16.0D;
+                double elevationOffset = sizeY / 2.0D + depthNoiseSample * 4.0D;
+                ++xzIndex;
 
-                for (int var33 = 0; var33 < sizeY; ++var33)
+                for (int iY = 0; iY < sizeY; ++iY)
                 {
-                    double var34 = 0.0D;
-                    double var36 = (var33 - var31) * 12.0D / var27;
-                    if (var36 < 0.0D)
+                    double terrainDensity = 0.0D;
+                    double densityOffset = (iY - elevationOffset) * 12.0D / scaleNoiseSample;
+                    if (densityOffset < 0.0D)
                     {
-                        var36 *= 4.0D;
+                        densityOffset *= 4.0D;
                     }
 
-                    double var38 = minLimitPerlinNoiseBuffer[var14] / 512.0D;
-                    double var40 = maxLimitPerlinNoiseBuffer[var14] / 512.0D;
-                    double var42 = (selectorNoiseBuffer[var14] / 10.0D + 1.0D) / 2.0D;
-                    if (var42 < 0.0D)
+				    // Sample low noise
+                    double lowNoiseSample = minLimitPerlinNoiseBuffer[xyzIndex] / 512.0D;
+				    // Sample high noise
+                    double highNoiseSample = maxLimitPerlinNoiseBuffer[xyzIndex] / 512.0D;
+				    // Sample selector noise
+                    double selectorNoiseSample = (selectorNoiseBuffer[xyzIndex] / 10.0D + 1.0D) / 2.0D;
+                    if (selectorNoiseSample < 0.0D)
                     {
-                        var34 = var38;
+                        terrainDensity = lowNoiseSample;
                     }
-                    else if (var42 > 1.0D)
+                    else if (selectorNoiseSample > 1.0D)
                     {
-                        var34 = var40;
+                        terrainDensity = highNoiseSample;
                     }
                     else
                     {
-                        var34 = var38 + (var40 - var38) * var42;
+                        terrainDensity = lowNoiseSample + (highNoiseSample - lowNoiseSample) * selectorNoiseSample;
                     }
 
-                    var34 -= var36;
-                    if (var33 > sizeY - 4)
+                    terrainDensity -= densityOffset;
+				    // Reduce density towards max height
+                    if (iY > sizeY - 4)
                     {
-                        double var44 = (double)((var33 - (sizeY - 4)) / 3.0F);
-                        var34 = var34 * (1.0D - var44) + -10.0D * var44;
+                        double var44 = (double)((iY - (sizeY - 4)) / 3.0F);
+                        terrainDensity = terrainDensity * (1.0D - var44) + -10.0D * var44;
                     }
 
-                    heightMap[var14] = var34;
-                    ++var14;
+                    heightMap[xyzIndex] = terrainDensity;
+                    ++xyzIndex;
                 }
             }
         }
@@ -405,6 +438,12 @@ public class OverworldChunkGenerator : ChunkSource
         return true;
     }
 
+    /// <summary>
+    /// Generates the features of the chunk, such as ores, trees, lakes, etc. The features that are generated depend on the biome of the chunk and some random factors.
+    /// </summary>
+    /// <param name="source">The chunk source that is generating the chunk</param>
+    /// <param name="chunkX">The x-coordinate of the chunk</param>
+    /// <param name="chunkZ">The z-coordinate of the chunk</param>
     public void DecorateTerrain(ChunkSource source, int chunkX, int chunkZ)
     {
         BlockSand.fallInstantly = true;
