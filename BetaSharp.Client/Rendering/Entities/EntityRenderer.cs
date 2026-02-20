@@ -187,11 +187,11 @@ public abstract class EntityRenderer
                 }
 
                 var19.setColorRGBA_F(1.0F, 1.0F, 1.0F, (float)shadowDarkness);
-                double minX = blockX + block.minX + dx;
-                double maxX = blockX + block.maxX + dx;
-                double minY = blockY + block.minY + dy + 1.0D / 64.0D;
-                double minZ = blockZ + block.minZ + dz;
-                double maxZ = blockZ + block.maxZ + dz;
+                double minX = blockX + block.BoundingBox.minX + dx;
+                double maxX = blockX + block.BoundingBox.maxX + dx;
+                double minY = blockY + block.BoundingBox.minY + dy + 1.0D / 64.0D;
+                double minZ = blockZ + block.BoundingBox.minZ + dz;
+                double maxZ = blockZ + block.BoundingBox.maxZ + dz;
                 float var32 = (float)((x - minX) / 2.0D / (double)radius + 0.5D);
                 float var33 = (float)((x - maxX) / 2.0D / (double)radius + 0.5D);
                 float var34 = (float)((z - minZ) / 2.0D / (double)radius + 0.5D);
