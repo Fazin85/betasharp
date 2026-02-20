@@ -234,7 +234,7 @@ public class WorldRenderer : IWorldAccess
             for (var6 = 0; var6 < var5.Count; ++var6)
             {
                 var7 = var5[var6];
-                if (var7.shouldRender(var1) && (var7.ignoreFrustumCheck || culler.isBoundingBoxInFrustum(var7.boundingBox)) && (var7 != mc.camera || mc.options.cameraMode != EnumCameraMode.FirstPerson || mc.camera.isSleeping()))
+                if (var7.shouldRender(var1) && (var7.ignoreFrustumCheck || culler.isBoundingBoxInFrustum(var7.boundingBox)) && (var7 != mc.camera || mc.options.CameraMode != EnumCameraMode.FirstPerson || mc.camera.isSleeping()))
                 {
                     int var8 = MathHelper.Floor(var7.y);
                     if (var8 < 0)
@@ -286,7 +286,7 @@ public class WorldRenderer : IWorldAccess
 
         if (pass == 0)
         {
-            chunkRenderer.Render(cam, new(var33, var7, var9), renderDistance, world.getTime(), (float)var3, mc.options.environmentAnimation);
+            chunkRenderer.Render(cam, new(var33, var7, var9), renderDistance, world.getTime(), (float)var3, mc.options.EnvironmentAnimation);
         }
         else
         {
@@ -978,12 +978,12 @@ public class WorldRenderer : IWorldAccess
                 }
 
                 return;
-            case 2001:
+            case 2001: // This is for breaking a block
                 var16 = var6 & 255;
                 if (var16 > 0)
                 {
                     Block var17 = Block.Blocks[var16];
-                    mc.sndManager.PlaySound(var17.soundGroup.stepSoundDir(), var3 + 0.5F, var4 + 0.5F, var5 + 0.5F, (var17.soundGroup.getVolume() + 1.0F) / 2.0F, var17.soundGroup.getPitch() * 0.8F);
+                    mc.sndManager.PlaySound(var17.soundGroup.BreakSound, var3 + 0.5F, var4 + 0.5F, var5 + 0.5F, (var17.soundGroup.Volume + 1.0F) / 2.0F, var17.soundGroup.Pitch * 0.8F);
                 }
 
                 mc.particleManager.addBlockDestroyEffects(var3, var4, var5, var6 & 255, var6 >> 8 & 255);

@@ -43,7 +43,7 @@ public class GuiIngameMenu : GuiScreen
             }
 
             mc.stopInternalServer();
-            mc.changeWorld1(null);
+            mc.changeWorld(null);
             mc.displayGuiScreen(new GuiMainMenu());
         }
 

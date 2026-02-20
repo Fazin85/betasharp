@@ -45,8 +45,8 @@ public class GuiSlider : GuiButton
                     sliderValue = 1.0F;
                 }
 
-                mc.options.setOptionFloatValue(_idFloat, sliderValue);
-                DisplayString = mc.options.getKeyBinding(_idFloat);
+                mc.options.SetOptionFloatValue(_idFloat, sliderValue);
+                DisplayString = mc.options.GetKeyBinding(_idFloat);
             }
 
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
@@ -70,8 +70,8 @@ public class GuiSlider : GuiButton
                 sliderValue = 1.0F;
             }
 
-            mc.options.setOptionFloatValue(_idFloat, sliderValue);
-            DisplayString = mc.options.getKeyBinding(_idFloat);
+            mc.options.SetOptionFloatValue(_idFloat, sliderValue);
+            DisplayString = mc.options.GetKeyBinding(_idFloat);
             dragging = true;
             return true;
         }

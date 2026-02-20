@@ -165,38 +165,39 @@ public class ParticleManager
         if (var5 != 0)
         {
             Block var6 = Block.Blocks[var5];
+            Box blockBB = var6.BoundingBox;
             float var7 = 0.1F;
-            double var8 = (double)var1 + _rand.NextDouble() * (var6.maxX - var6.minX - (double)(var7 * 2.0F)) + (double)var7 + var6.minX;
-            double var10 = (double)var2 + _rand.NextDouble() * (var6.maxY - var6.minY - (double)(var7 * 2.0F)) + (double)var7 + var6.minY;
-            double var12 = (double)var3 + _rand.NextDouble() * (var6.maxZ - var6.minZ - (double)(var7 * 2.0F)) + (double)var7 + var6.minZ;
+            double var8 = var1 + _rand.NextDouble() * (blockBB.maxX - blockBB.minX - (var7 * 2.0F)) + var7 + blockBB.minX;
+            double var10 = var2 + _rand.NextDouble() * (blockBB.maxY - blockBB.minY - (var7 * 2.0F)) + var7 + blockBB.minY;
+            double var12 = var3 + _rand.NextDouble() * (blockBB.maxZ - blockBB.minZ - (var7 * 2.0F)) + var7 + blockBB.minZ;
             if (var4 == 0)
             {
-                var10 = (double)var2 + var6.minY - (double)var7;
+                var10 = var2 + blockBB.minY - var7;
             }
 
             if (var4 == 1)
             {
-                var10 = (double)var2 + var6.maxY + (double)var7;
+                var10 = var2 + blockBB.maxY + var7;
             }
 
             if (var4 == 2)
             {
-                var12 = (double)var3 + var6.minZ - (double)var7;
+                var12 = var3 + blockBB.minZ - var7;
             }
 
             if (var4 == 3)
             {
-                var12 = (double)var3 + var6.maxZ + (double)var7;
+                var12 = var3 + blockBB.maxZ + var7;
             }
 
             if (var4 == 4)
             {
-                var8 = (double)var1 + var6.minX - (double)var7;
+                var8 = var1 + blockBB.minX - var7;
             }
 
             if (var4 == 5)
             {
-                var8 = (double)var1 + var6.maxX + (double)var7;
+                var8 = var1 + blockBB.maxX + var7;
             }
 
             addEffect((new EntityDiggingFX(worldObj, var8, var10, var12, 0.0D, 0.0D, 0.0D, var6, var4, worldObj.getBlockMeta(var1, var2, var3))).func_4041_a(var1, var2, var3).scaleVelocity(0.2F).scaleSize(0.6F));

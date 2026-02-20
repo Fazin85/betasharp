@@ -539,15 +539,15 @@ public abstract class Entity : java.lang.Object
                 if (horizontalSpeed > (float)nextStepSoundDistance && var28 > 0)
                 {
                     ++nextStepSoundDistance;
-                    BlockSoundGroup var29 = Block.Blocks[var28].soundGroup;
+                    BlockSoundGroup soundGroup = Block.Blocks[var28].soundGroup;
                     if (world.getBlockId(var38, var26 + 1, var39) == Block.Snow.id)
                     {
-                        var29 = Block.Snow.soundGroup;
-                        world.playSound(this, var29.getName(), var29.getVolume() * 0.15F, var29.getPitch());
+                        soundGroup = Block.Snow.soundGroup;
+                        world.playSound(this, soundGroup.StepSound, soundGroup.Volume * 0.15F, soundGroup.Pitch);
                     }
                     else if (!Block.Blocks[var28].material.IsFluid)
                     {
-                        world.playSound(this, var29.getName(), var29.getVolume() * 0.15F, var29.getPitch());
+                        world.playSound(this, soundGroup.StepSound, soundGroup.Volume * 0.15F, soundGroup.Pitch);
                     }
 
                     Block.Blocks[var28].onSteppedOn(world, var38, var26, var39, this);

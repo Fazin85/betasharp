@@ -39,11 +39,11 @@ public class GuiOptions : GuiScreen
             int yPos = Height / 6 + 24 * (rowIndex >> 1);
             if (!currentOption.getEnumFloat())
             {
-                _controlList.Add(new GuiSmallButton(currentOption.returnEnumOrdinal(), xPos, yPos, currentOption, _options.getKeyBinding(currentOption)));
+                _controlList.Add(new GuiSmallButton(currentOption.returnEnumOrdinal(), xPos, yPos, currentOption, _options.GetKeyBinding(currentOption)));
             }
             else
             {
-                _controlList.Add(new GuiSlider(currentOption.returnEnumOrdinal(), xPos, yPos, currentOption, _options.getKeyBinding(currentOption), _options.getOptionFloatValue(currentOption)));
+                _controlList.Add(new GuiSlider(currentOption.returnEnumOrdinal(), xPos, yPos, currentOption, _options.GetKeyBinding(currentOption), _options.GetOptionFloatValue(currentOption)));
             }
 
             ++rowIndex;
@@ -60,22 +60,22 @@ public class GuiOptions : GuiScreen
 
         if (button.Id < 100 && button is GuiSmallButton)
         {
-            _options.setOptionValue(((GuiSmallButton)button).returnEnumOptions(), 1);
-            button.DisplayString = _options.getKeyBinding(EnumOptions.getEnumOptions(button.Id));
+            _options.SetOptionValue(((GuiSmallButton)button).returnEnumOptions(), 1);
+            button.DisplayString = _options.GetKeyBinding(EnumOptions.getEnumOptions(button.Id));
         }
 
         switch (button.Id)
         {
             case ButtonVideoSettings:
-                mc.options.saveOptions();
+                mc.options.SaveOptions();
                 mc.displayGuiScreen(new GuiVideoSettings(this, _options));
                 break;
             case ButtonControls:
-                mc.options.saveOptions();
+                mc.options.SaveOptions();
                 mc.displayGuiScreen(new GuiControls(this, _options));
                 break;
             case ButtonDone:
-                mc.options.saveOptions();
+                mc.options.SaveOptions();
                 mc.displayGuiScreen(_parentScreen);
                 break;
         }

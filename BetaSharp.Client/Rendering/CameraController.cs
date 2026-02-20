@@ -57,7 +57,7 @@ public class CameraController
     public float GetFov(float tickDelta, bool isHand = false)
     {
         EntityLiving cameraEntity = _mc.camera;
-        float fov = isHand ? 70.0F : (30.0F + _mc.options.fov * 90.0F);
+        float fov = isHand ? 70.0F : (30.0F + _mc.options.Fov * 90.0F);
 
         if (cameraEntity.isInFluid(Material.Water))
         {
@@ -125,7 +125,7 @@ public class CameraController
         {
             eyeHeightOffset = (float)((double)eyeHeightOffset + 1.0D);
             GLManager.GL.Translate(0.0F, 0.3F, 0.0F);
-            if (!_mc.options.debugCamera)
+            if (!_mc.options.DebugCamera)
             {
                 int blockId = _mc.world.getBlockId(MathHelper.Floor(cameraEntity.x), MathHelper.Floor(cameraEntity.y), MathHelper.Floor(cameraEntity.z));
                 if (blockId == Block.Bed.id)
@@ -139,10 +139,10 @@ public class CameraController
                 GLManager.GL.Rotate(cameraEntity.prevPitch + (cameraEntity.pitch - cameraEntity.prevPitch) * tickDelta, -1.0F, 0.0F, 0.0F);
             }
         }
-        else if (_mc.options.cameraMode == EnumCameraMode.FrontThirdPerson || _mc.options.cameraMode == EnumCameraMode.ThirdPerson)
+        else if (_mc.options.CameraMode == EnumCameraMode.ThirdPerson || _mc.options.CameraMode == EnumCameraMode.FrontThirdPerson)
         {
             double currentDistance;
-            if (_mc.options.cameraMode == EnumCameraMode.FrontThirdPerson)
+            if (_mc.options.CameraMode == EnumCameraMode.FrontThirdPerson)
             {
                 currentDistance = _prevFrontThirdPersonDistance + (_frontThirdPersonDistance - _prevFrontThirdPersonDistance) * tickDelta;
             }
@@ -154,7 +154,7 @@ public class CameraController
             float targetPitch;
             float targetYaw;
 
-            if (_mc.options.debugCamera)
+            if (_mc.options.DebugCamera)
             {
                 targetYaw = _prevThirdPersonYaw + (_thirdPersonYaw - _prevThirdPersonYaw) * tickDelta;
                 targetPitch = _prevThirdPersonPitch + (_thirdPersonPitch - _prevThirdPersonPitch) * tickDelta;
@@ -179,7 +179,7 @@ public class CameraController
 
                     HitResult hit = null;
 
-                    if (_mc.options.cameraMode == EnumCameraMode.FrontThirdPerson)
+                    if (_mc.options.CameraMode == EnumCameraMode.FrontThirdPerson)
                     {
                         hit = _mc.world.raycast(
                             new Vec3D(x + offsetX, y + offsetY, z + offsetZ),
@@ -207,7 +207,7 @@ public class CameraController
                 GLManager.GL.Rotate(cameraEntity.pitch - targetPitch, 1.0F, 0.0F, 0.0F);
                 GLManager.GL.Rotate(cameraEntity.yaw - targetYaw, 0.0F, 1.0F, 0.0F);
                 GLManager.GL.Translate(0.0F, 0.0F, (float)-currentDistance);
-                if (_mc.options.cameraMode == EnumCameraMode.FrontThirdPerson)
+                if (_mc.options.CameraMode == EnumCameraMode.FrontThirdPerson)
                 {
                     GLManager.GL.Rotate(180.0F, 0.0F, 1.0F, 0.0F);
                 }
@@ -220,7 +220,7 @@ public class CameraController
             GLManager.GL.Translate(0.0F, 0.0F, -0.1F);
         }
 
-        if (!_mc.options.debugCamera)
+        if (!_mc.options.DebugCamera)
         {
             GLManager.GL.Rotate(cameraEntity.prevPitch + (cameraEntity.pitch - cameraEntity.prevPitch) * tickDelta, 1.0F, 0.0F, 0.0F);
             GLManager.GL.Rotate(cameraEntity.prevYaw + (cameraEntity.yaw - cameraEntity.prevYaw) * tickDelta + 180.0F, 0.0F, 1.0F, 0.0F);

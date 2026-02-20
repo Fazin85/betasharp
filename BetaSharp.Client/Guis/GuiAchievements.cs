@@ -56,7 +56,7 @@ public class GuiAchievements : GuiScreen
 
     protected override void KeyTyped(char eventChar, int eventKey)
     {
-        if (eventKey == mc.options.keyBindInventory.keyCode)
+        if (eventKey == mc.options.KeyBindInventory.keyCode)
         {
             mc.displayGuiScreen(null);
             mc.setIngameFocus();

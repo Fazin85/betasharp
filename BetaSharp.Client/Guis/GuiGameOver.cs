@@ -42,7 +42,7 @@ public class GuiGameOver : GuiScreen
                 mc.displayGuiScreen(null);
                 break;
             case ButtonTitle:
-                mc.changeWorld1(null);
+                mc.changeWorld(null);
                 mc.displayGuiScreen(new GuiMainMenu());
                 break;
         }

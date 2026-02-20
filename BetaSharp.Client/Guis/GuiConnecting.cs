@@ -15,14 +15,14 @@ public class GuiConnecting : GuiScreen
     public GuiConnecting(Minecraft mc, string host, int port)
     {
         Log.Info($"Connecting to {host}, {port}");
-        mc.changeWorld1(null);
+        mc.changeWorld(null);
         new ThreadConnectToServer(this, mc, host, port).start();
     }
 
     public GuiConnecting(Minecraft mc, ClientNetworkHandler clientHandler)
     {
         _clientHandler = clientHandler;
-        mc.changeWorld1(null);
+        mc.changeWorld(null);
     }
 
     public override void UpdateScreen()

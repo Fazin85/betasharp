@@ -152,7 +152,7 @@ public class GameRenderer
         GLManager.GL.LoadIdentity();
 
         cameraController.ApplyDamageTiltEffect(tickDelta);
-        if (_client.options.viewBobbing)
+        if (_client.options.ViewBobbing)
         {
             cameraController.ApplyViewBobbing(tickDelta);
         }
@@ -185,24 +185,24 @@ public class GameRenderer
 
         GLManager.GL.PushMatrix();
         cameraController.ApplyDamageTiltEffect(tickDelta);
-        if (_client.options.viewBobbing)
+        if (_client.options.ViewBobbing)
         {
             cameraController.ApplyViewBobbing(tickDelta);
         }
 
-        if (_client.options.cameraMode == EnumCameraMode.FirstPerson && !_client.camera.isSleeping() && !_client.options.hideGUI)
+        if (_client.options.CameraMode == EnumCameraMode.FirstPerson && !_client.camera.isSleeping() && !_client.options.HideGUI)
         {
             itemRenderer.renderItemInFirstPerson(tickDelta);
         }
 
         GLManager.GL.PopMatrix();
-        if (_client.options.cameraMode == EnumCameraMode.FirstPerson && !_client.camera.isSleeping())
+        if (_client.options.CameraMode == EnumCameraMode.FirstPerson && !_client.camera.isSleeping())
         {
             itemRenderer.renderOverlays(tickDelta);
             cameraController.ApplyDamageTiltEffect(tickDelta);
         }
 
-        if (_client.options.viewBobbing)
+        if (_client.options.ViewBobbing)
         {
             cameraController.ApplyViewBobbing(tickDelta);
         }
@@ -226,16 +226,16 @@ public class GameRenderer
         if (_client.inGameHasFocus)
         {
             _client.mouseHelper.mouseXYChange();
-            float var2 = _client.options.mouseSensitivity * 0.6F + 0.2F;
+            float var2 = _client.options.MouseSensitivity * 0.6F + 0.2F;
             float var3 = var2 * var2 * var2 * 8.0F;
             float var4 = _client.mouseHelper.DeltaX * var3;
             float var5 = _client.mouseHelper.DeltaY * var3;
             int var6 = -1;
-            if (_client.options.invertMouse)
+            if (_client.options.InvertMouse)
             {
                 var6 = 1;
             }
-            if (_client.options.smoothCamera)
+            if (_client.options.SmoothCamera)
             {
                 var4 = _mouseFilterXAxis.Smooth(var4, 0.05F * var3);
                 var5 = _mouseFilterYAxis.Smooth(var5, 0.05F * var3);
@@ -250,7 +250,7 @@ public class GameRenderer
             int var15 = var13.ScaledHeight;
             int var16 = Mouse.getX() * var14 / _client.displayWidth;
             int var17 = var15 - Mouse.getY() * var15 / _client.displayHeight - 1;
-            int var7 = 30 + (int)(_client.options.limitFramerate * 210.0f);
+            int var7 = 30 + (int)(_client.options.LimitFramerate * 210.0f);
 
             if (var7 < 240)
             {
@@ -263,7 +263,7 @@ public class GameRenderer
                 renderFrame(tickDelta, 0L);
                 Profiler.PopGroup();
                 Profiler.Start("renderGameOverlay");
-                if (!_client.options.hideGUI || _client.currentScreen != null)
+                if (!_client.options.HideGUI || _client.currentScreen != null)
                 {
                     _client.ingameGUI.renderGameOverlay(tickDelta, _client.currentScreen != null, var16, var17);
                 }
@@ -340,7 +340,7 @@ public class GameRenderer
         GLManager.GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         GLManager.GL.Enable(GLEnum.CullFace);
         renderWorld(tickDelta);
-        Frustum.getInstance();
+        Frustum.Instance();
         if (_client.options.renderDistance < 2)
         {
             applyFog(-1);
@@ -466,7 +466,7 @@ public class GameRenderer
                     {
                         if (Block.Blocks[var19].material == Material.Lava)
                         {
-                            _client.particleManager.addEffect(new EntitySmokeFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].minY, (double)(var17 + var21), 0.0D, 0.0D, 0.0D));
+                            _client.particleManager.addEffect(new EntitySmokeFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].BoundingBox.minY, (double)(var17 + var21), 0.0D, 0.0D, 0.0D));
                         }
                         else
                         {
@@ -474,11 +474,11 @@ public class GameRenderer
                             if (_random.NextInt(var14) == 0)
                             {
                                 var8 = (double)(var16 + var20);
-                                var10 = (double)(var18 + 0.1F) - Block.Blocks[var19].minY;
+                                var10 = (double)(var18 + 0.1F) - Block.Blocks[var19].BoundingBox.minY;
                                 var12 = (double)(var17 + var21);
                             }
 
-                            _client.particleManager.addEffect(new EntityRainFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].minY, (double)(var17 + var21)));
+                            _client.particleManager.addEffect(new EntityRainFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].BoundingBox.minY, (double)(var17 + var21)));
                         }
                     }
                 }
