@@ -546,8 +546,8 @@ public abstract class EntityLiving : Entity
             int var3 = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(y - (double)0.2F - (double)standingEyeHeight), MathHelper.floor_double(z));
             if (var3 > 0)
             {
-                BlockSoundGroup var4 = Block.Blocks[var3].soundGroup;
-                world.playSound(this, var4.getName(), var4.getVolume() * 0.5F, var4.getPitch() * (12.0F / 16.0F));
+                BlockSoundGroup soundGroup = Block.Blocks[var3].soundGroup;
+                world.playSound(this, soundGroup.StepSound, soundGroup.Volume * 0.5F, soundGroup.Pitch * (12.0F / 16.0F));
             }
         }
 

@@ -19,9 +19,10 @@ public class Block : java.lang.Object
     public static readonly BlockSoundGroup SoundGrassFootstep = new("grass", 1.0F, 1.0F);
     public static readonly BlockSoundGroup SoundStoneFootstep = new("stone", 1.0F, 1.0F);
     public static readonly BlockSoundGroup SoundMetalFootstep = new("stone", 1.0F, 1.5F);
-    public static readonly BlockSoundGroup SoundGlassFootstep = new StepSoundStone("stone", 1.0F, 1.0F);
+    public static readonly BlockSoundGroup SoundGlassFootstep = new ("stone", 1.0F, 1.0F, "random.glass");
     public static readonly BlockSoundGroup SoundClothFootstep = new("cloth", 1.0F, 1.0F);
-    public static readonly BlockSoundGroup SoundSandFootstep = new StepSoundSand("sand", 1.0F, 1.0F);
+    public static readonly BlockSoundGroup SoundSandFootstep = new ("sand", 1.0F, 1.0F, "step.gravel");
+
     public static readonly Block[] Blocks = new Block[256];
     public static readonly bool[] BlocksRandomTick = new bool[256];
     public static readonly bool[] BlocksOpaque = new bool[256];

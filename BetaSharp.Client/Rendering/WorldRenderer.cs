@@ -978,12 +978,12 @@ public class WorldRenderer : IWorldAccess
                 }
 
                 return;
-            case 2001:
+            case 2001: // This is for breaking a block
                 var16 = var6 & 255;
                 if (var16 > 0)
                 {
                     Block var17 = Block.Blocks[var16];
-                    mc.sndManager.PlaySound(var17.soundGroup.stepSoundDir(), var3 + 0.5F, var4 + 0.5F, var5 + 0.5F, (var17.soundGroup.getVolume() + 1.0F) / 2.0F, var17.soundGroup.getPitch() * 0.8F);
+                    mc.sndManager.PlaySound(var17.soundGroup.BreakSound, var3 + 0.5F, var4 + 0.5F, var5 + 0.5F, (var17.soundGroup.Volume + 1.0F) / 2.0F, var17.soundGroup.Pitch * 0.8F);
                 }
 
                 mc.particleManager.addBlockDestroyEffects(var3, var4, var5, var6 & 255, var6 >> 8 & 255);
