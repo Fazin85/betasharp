@@ -466,7 +466,7 @@ public class GameRenderer
                     {
                         if (Block.Blocks[var19].material == Material.Lava)
                         {
-                            _client.particleManager.addEffect(new EntitySmokeFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].minY, (double)(var17 + var21), 0.0D, 0.0D, 0.0D));
+                            _client.particleManager.addEffect(new EntitySmokeFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].BoundingBox.minY, (double)(var17 + var21), 0.0D, 0.0D, 0.0D));
                         }
                         else
                         {
@@ -474,11 +474,11 @@ public class GameRenderer
                             if (_random.NextInt(var14) == 0)
                             {
                                 var8 = (double)(var16 + var20);
-                                var10 = (double)(var18 + 0.1F) - Block.Blocks[var19].minY;
+                                var10 = (double)(var18 + 0.1F) - Block.Blocks[var19].BoundingBox.minY;
                                 var12 = (double)(var17 + var21);
                             }
 
-                            _client.particleManager.addEffect(new EntityRainFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].minY, (double)(var17 + var21)));
+                            _client.particleManager.addEffect(new EntityRainFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].BoundingBox.minY, (double)(var17 + var21)));
                         }
                     }
                 }
