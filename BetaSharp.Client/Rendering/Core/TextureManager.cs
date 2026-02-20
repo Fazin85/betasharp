@@ -7,11 +7,13 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.Processing;
 using static BetaSharp.Client.Textures.TextureAtlasMipmapGenerator;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Client.Rendering.Core;
 
 public class TextureManager
 {
+    private readonly ILogger _logger = Log.Instance.For<TextureManager>();
     private readonly Dictionary<string, int> _textures = [];
     private readonly Dictionary<string, int[]> _colors = [];
     private readonly Dictionary<int, Image<Rgba32>> _images = [];
@@ -47,7 +49,7 @@ public class TextureManager
         }
         catch (Exception ex)
         {
-            Log.Error(ex);
+            _logger.LogError(ex, "Failed to get colors from image {Path}", path);
             int[] fallback = ReadColorsFromImage(_missingTextureImage);
             _colors[path] = fallback;
             return fallback;
@@ -85,7 +87,7 @@ public class TextureManager
         }
         catch (Exception ex)
         {
-            Log.Error(ex);
+            _logger.LogError(ex, "Failed to get texture id for path {Path}", path);
             Load(_missingTextureImage, (int)newId);
             _textures[path] = (int)newId;
             return (int)newId;

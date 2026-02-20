@@ -2,6 +2,7 @@ using BetaSharp.Client.Rendering.Core;
 using java.awt.image;
 using java.io;
 using javax.imageio;
+using Microsoft.Extensions.Logging;
 using Silk.NET.OpenGL.Legacy;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -10,6 +11,7 @@ namespace BetaSharp.Client.Resource.Pack;
 
 public class BuiltInTexturePack : TexturePack
 {
+    private readonly ILogger _logger = Log.Instance.For<BuiltInTexturePack>();
     private int _texturePackName = -1;
     private readonly Image<Rgba32>? texturePackThumbnail;
 
@@ -28,7 +30,7 @@ public class BuiltInTexturePack : TexturePack
         }
         catch (Exception ex)
         {
-            Log.Error(ex);
+            _logger.LogError(ex, "Failed to load built in texture pack");
         }
 
     }
