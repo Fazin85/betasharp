@@ -81,7 +81,7 @@ public abstract class EntityLiving : Entity
 
     public bool canSee(Entity entity)
     {
-        return world.raycast(new Vec3D(x, y + (double)getEyeHeight(), z), new Vec3D(entity.x, entity.y + (double)entity.getEyeHeight(), entity.z)) == null;
+        return world.raycast(new Vec3D(x, y + (double)getEyeHeight(), z), new Vec3D(entity.x, entity.y + (double)entity.getEyeHeight(), entity.z)).Type == HitResultType.MISS;
     }
 
     public override string getTexture()

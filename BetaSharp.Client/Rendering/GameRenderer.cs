@@ -73,9 +73,9 @@ public class GameRenderer
                 _client.objectMouseOver = _client.camera.rayTrace(var2, tickDelta);
                 double var4 = var2;
                 Vec3D var6 = _client.camera.getPosition(tickDelta);
-                if (_client.objectMouseOver != null)
+                if (_client.objectMouseOver.Type != HitResultType.MISS)
                 {
-                    var4 = _client.objectMouseOver.pos.distanceTo(var6);
+                    var4 = _client.objectMouseOver.Pos.distanceTo(var6);
                 }
 
                 if (var4 > 3.0D)
@@ -108,9 +108,9 @@ public class GameRenderer
                                 var11 = 0.0D;
                             }
                         }
-                        else if (var17 != null)
+                        else if (var17.Type != HitResultType.MISS)
                         {
-                            double var18 = var6.distanceTo(var17.pos);
+                            double var18 = var6.distanceTo(var17.Pos);
                             if (var18 < var11 || var11 == 0.0D)
                             {
                                 _targetedEntity = var14;
@@ -379,7 +379,7 @@ public class GameRenderer
         Profiler.Stop("renderParticles");
 
         EntityPlayer var21;
-        if (_client.objectMouseOver != null && var4.isInFluid(Material.Water) && var4 is EntityPlayer)
+        if (_client.objectMouseOver.Type != HitResultType.MISS && var4.isInFluid(Material.Water) && var4 is EntityPlayer)
         {
             var21 = (EntityPlayer)var4;
             GLManager.GL.Disable(GLEnum.AlphaTest);
@@ -407,7 +407,7 @@ public class GameRenderer
         GLManager.GL.DepthMask(true);
         GLManager.GL.Enable(GLEnum.CullFace);
         GLManager.GL.Disable(GLEnum.Blend);
-        if (cameraController.CameraZoom == 1.0D && var4 is EntityPlayer && _client.objectMouseOver != null && !var4.isInFluid(Material.Water))
+        if (cameraController.CameraZoom == 1.0D && var4 is EntityPlayer && _client.objectMouseOver.Type != HitResultType.MISS && !var4.isInFluid(Material.Water))
         {
             var21 = (EntityPlayer)var4;
             GLManager.GL.Disable(GLEnum.AlphaTest);

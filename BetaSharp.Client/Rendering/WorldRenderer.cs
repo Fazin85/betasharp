@@ -622,7 +622,7 @@ public class WorldRenderer : IWorldAccess
                 GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var7);
                 GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 0.5F);
                 GLManager.GL.PushMatrix();
-                var8 = world.getBlockId(var2.blockX, var2.blockY, var2.blockZ);
+                var8 = world.getBlockId(var2.BlockX, var2.BlockY, var2.BlockZ);
                 Block var9 = var8 > 0 ? Block.Blocks[var8] : null;
                 GLManager.GL.Disable(GLEnum.AlphaTest);
                 GLManager.GL.PolygonOffset(-3.0F, -3.0F);
@@ -636,7 +636,7 @@ public class WorldRenderer : IWorldAccess
                 var6.startDrawingQuads();
                 var6.setTranslationD(-var10, -var12, -var14);
                 var6.disableColor();
-                globalRenderBlocks.renderBlockUsingTexture(var9, var2.blockX, var2.blockY, var2.blockZ, 240 + (int)(damagePartialTime * 10.0F));
+                globalRenderBlocks.renderBlockUsingTexture(var9, var2.BlockX, var2.BlockY, var2.BlockZ, 240 + (int)(damagePartialTime * 10.0F));
                 var6.draw();
                 var6.setTranslationD(0.0D, 0.0D, 0.0D);
                 GLManager.GL.Disable(GLEnum.AlphaTest);
@@ -654,35 +654,35 @@ public class WorldRenderer : IWorldAccess
             GLManager.GL.Color4(var16, var16, var16, MathHelper.sin(java.lang.System.currentTimeMillis() / 200.0F) * 0.2F + 0.5F);
             var8 = renderEngine.GetTextureId("/terrain.png");
             GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var8);
-            int var17 = var2.blockX;
-            int var18 = var2.blockY;
-            int var11 = var2.blockZ;
-            if (var2.side == 0)
+            int var17 = var2.BlockX;
+            int var18 = var2.BlockY;
+            int var11 = var2.BlockZ;
+            if (var2.Side == 0)
             {
                 --var18;
             }
 
-            if (var2.side == 1)
+            if (var2.Side == 1)
             {
                 ++var18;
             }
 
-            if (var2.side == 2)
+            if (var2.Side == 2)
             {
                 --var11;
             }
 
-            if (var2.side == 3)
+            if (var2.Side == 3)
             {
                 ++var11;
             }
 
-            if (var2.side == 4)
+            if (var2.Side == 4)
             {
                 --var17;
             }
 
-            if (var2.side == 5)
+            if (var2.Side == 5)
             {
                 ++var17;
             }
@@ -694,7 +694,7 @@ public class WorldRenderer : IWorldAccess
 
     public void drawSelectionBox(EntityPlayer var1, HitResult var2, int var3, ItemStack var4, float var5)
     {
-        if (var3 == 0 && var2.type == HitResultType.TILE)
+        if (var3 == 0 && var2.Type == HitResultType.TILE)
         {
             GLManager.GL.Enable(GLEnum.Blend);
             GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
@@ -703,14 +703,14 @@ public class WorldRenderer : IWorldAccess
             GLManager.GL.Disable(GLEnum.Texture2D);
             GLManager.GL.DepthMask(false);
             float var6 = 0.002F;
-            int var7 = world.getBlockId(var2.blockX, var2.blockY, var2.blockZ);
+            int var7 = world.getBlockId(var2.BlockX, var2.BlockY, var2.BlockZ);
             if (var7 > 0)
             {
-                Block.Blocks[var7].updateBoundingBox(world, var2.blockX, var2.blockY, var2.blockZ);
+                Block.Blocks[var7].updateBoundingBox(world, var2.BlockX, var2.BlockY, var2.BlockZ);
                 double var8 = var1.lastTickX + (var1.x - var1.lastTickX) * (double)var5;
                 double var10 = var1.lastTickY + (var1.y - var1.lastTickY) * (double)var5;
                 double var12 = var1.lastTickZ + (var1.z - var1.lastTickZ) * (double)var5;
-                drawOutlinedBoundingBox(Block.Blocks[var7].getBoundingBox(world, var2.blockX, var2.blockY, var2.blockZ).expand((double)var6, (double)var6, (double)var6).offset(-var8, -var10, -var12));
+                drawOutlinedBoundingBox(Block.Blocks[var7].getBoundingBox(world, var2.BlockX, var2.BlockY, var2.BlockZ).expand((double)var6, (double)var6, (double)var6).offset(-var8, -var10, -var12));
             }
 
             GLManager.GL.DepthMask(true);

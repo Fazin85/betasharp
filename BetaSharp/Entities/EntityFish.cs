@@ -220,9 +220,9 @@ public class EntityFish : Entity
             HitResult var3 = world.raycast(var20, var2);
             var20 = new Vec3D(x, y, z);
             var2 = new Vec3D(x + base.velocityX, y + base.velocityY, z + base.velocityZ);
-            if (var3 != null)
+            if (var3.Type != HitResultType.MISS)
             {
-                var2 = new Vec3D(var3.pos.x, var3.pos.y, var3.pos.z);
+                var2 = new Vec3D(var3.Pos.x, var3.Pos.y, var3.Pos.z);
             }
 
             Entity var4 = null;
@@ -238,9 +238,9 @@ public class EntityFish : Entity
                     float var10 = 0.3F;
                     Box var11 = var9.boundingBox.expand((double)var10, (double)var10, (double)var10);
                     HitResult var12 = var11.raycast(var20, var2);
-                    if (var12 != null)
+                    if (var12.Type != HitResultType.MISS)
                     {
-                        var13 = var20.distanceTo(var12.pos);
+                        var13 = var20.distanceTo(var12.Pos);
                         if (var13 < var6 || var6 == 0.0D)
                         {
                             var4 = var9;
@@ -255,13 +255,13 @@ public class EntityFish : Entity
                 var3 = new HitResult(var4);
             }
 
-            if (var3 != null)
+            if (var3.Type != HitResultType.MISS)
             {
-                if (var3.entity != null)
+                if (var3.Entity != null)
                 {
-                    if (var3.entity.damage(angler, 0))
+                    if (var3.Entity.damage(angler, 0))
                     {
-                        bobber = var3.entity;
+                        bobber = var3.Entity;
                     }
                 }
                 else

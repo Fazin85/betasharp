@@ -177,7 +177,7 @@ public class CameraController
                     float offsetY = ((i >> 1 & 1) * 2 - 1) * 0.1F;
                     float offsetZ = ((i >> 2 & 1) * 2 - 1) * 0.1F;
 
-                    HitResult hit = null;
+                    HitResult hit = new HitResult(HitResultType.MISS);
 
                     if (_mc.options.cameraMode == EnumCameraMode.FrontThirdPerson)
                     {
@@ -194,9 +194,9 @@ public class CameraController
                         );
                     }
 
-                    if (hit != null)
+                    if (hit.Type != HitResultType.MISS)
                     {
-                        double dist = hit.pos.distanceTo(new Vec3D(x, y, z));
+                        double dist = hit.Pos.distanceTo(new Vec3D(x, y, z));
                         if (dist < currentDistance)
                         {
                             currentDistance = dist;

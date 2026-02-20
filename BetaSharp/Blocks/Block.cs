@@ -416,11 +416,11 @@ public class Block : java.lang.Object
         updateBoundingBox(world, x, y, z);
         Vec3D pos = new Vec3D(x, y, z);
         HitResult res = new Box(minX, minY, minZ, maxX, maxY, maxZ).raycast(startPos - pos, endPos - pos);
-        if (res == null) return null;
-        res.blockX = x;
-        res.blockY = y;
-        res.blockZ = z;
-        res.pos += pos;
+        if (res.Type == HitResultType.MISS) return new HitResult(HitResultType.MISS);
+        res.BlockX = x;
+        res.BlockY = y;
+        res.BlockZ = z;
+        res.Pos += pos;
         return res;
     }
 

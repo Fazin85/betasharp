@@ -69,7 +69,7 @@ public partial class Minecraft
     public GuiAchievement guiAchievement;
     public GuiIngame ingameGUI;
     public bool skipRenderWorld;
-    public HitResult objectMouseOver = null;
+    public HitResult objectMouseOver = new HitResult(HitResultType.MISS);
     public GameOptions options;
     public SoundManager sndManager = new();
     public MouseHelper mouseHelper;
@@ -847,14 +847,14 @@ public partial class Minecraft
 
             if (mouseButton != 0 || leftClickCounter <= 0)
             {
-                if (isHoldingMouse && objectMouseOver != null && objectMouseOver.type == HitResultType.TILE &&
+                if (isHoldingMouse && objectMouseOver.Type != HitResultType.MISS && objectMouseOver.Type == HitResultType.TILE &&
                     mouseButton == 0)
                 {
-                    int blockX = objectMouseOver.blockX;
-                    int blockY = objectMouseOver.blockY;
-                    int blockZ = objectMouseOver.blockZ;
-                    playerController.sendBlockRemoving(blockX, blockY, blockZ, objectMouseOver.side);
-                    particleManager.addBlockHitEffects(blockX, blockY, blockZ, objectMouseOver.side);
+                    int blockX = objectMouseOver.BlockX;
+                    int blockY = objectMouseOver.BlockY;
+                    int blockZ = objectMouseOver.BlockZ;
+                    playerController.sendBlockRemoving(blockX, blockY, blockZ, objectMouseOver.Side);
+                    particleManager.addBlockHitEffects(blockX, blockY, blockZ, objectMouseOver.Side);
                 }
                 else
                 {
@@ -874,34 +874,34 @@ public partial class Minecraft
             }
 
             bool shouldPerformSecondaryAction = true;
-            if (objectMouseOver == null)
+            if (objectMouseOver.Type == HitResultType.MISS)
             {
                 if (mouseButton == 0)
                 {
                     leftClickCounter = 10;
                 }
             }
-            else if (objectMouseOver.type == HitResultType.ENTITY)
+            else if (objectMouseOver.Type == HitResultType.ENTITY)
             {
                 if (mouseButton == 0)
                 {
-                    playerController.attackEntity(player, objectMouseOver.entity);
+                    playerController.attackEntity(player, objectMouseOver.Entity);
                 }
 
                 if (mouseButton == 1)
                 {
-                    playerController.interactWithEntity(player, objectMouseOver.entity);
+                    playerController.interactWithEntity(player, objectMouseOver.Entity);
                 }
             }
-            else if (objectMouseOver.type == HitResultType.TILE)
+            else if (objectMouseOver.Type == HitResultType.TILE)
             {
-                int blockX = objectMouseOver.blockX;
-                int blockY = objectMouseOver.blockY;
-                int blockZ = objectMouseOver.blockZ;
-                int blockSide = objectMouseOver.side;
+                int blockX = objectMouseOver.BlockX;
+                int blockY = objectMouseOver.BlockY;
+                int blockZ = objectMouseOver.BlockZ;
+                int blockSide = objectMouseOver.Side;
                 if (mouseButton == 0)
                 {
-                    playerController.clickBlock(blockX, blockY, blockZ, objectMouseOver.side);
+                    playerController.clickBlock(blockX, blockY, blockZ, objectMouseOver.Side);
                 }
                 else
                 {
@@ -1037,9 +1037,9 @@ public partial class Minecraft
 
     private void clickMiddleMouseButton()
     {
-        if (objectMouseOver != null)
+        if (objectMouseOver.Type != HitResultType.MISS)
         {
-            int blockId = world.getBlockId(objectMouseOver.blockX, objectMouseOver.blockY, objectMouseOver.blockZ);
+            int blockId = world.getBlockId(objectMouseOver.BlockX, objectMouseOver.BlockY, objectMouseOver.BlockZ);
             if (blockId == Block.GrassBlock.id)
             {
                 blockId = Block.Dirt.id;

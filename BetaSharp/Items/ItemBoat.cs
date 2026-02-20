@@ -32,17 +32,17 @@ public class ItemBoat : Item
         double rayLength = 5.0D;
         Vec3D rayEnd = rayStart + new Vec3D((double)dirX * rayLength, (double)sinPitch * rayLength, (double)dirZ * rayLength);
         HitResult hitResult = world.raycast(rayStart, rayEnd, true);
-        if (hitResult == null)
+        if (hitResult.Type == HitResultType.MISS)
         {
             return itemStack;
         }
         else
         {
-            if (hitResult.type == HitResultType.TILE)
+            if (hitResult.Type == HitResultType.TILE)
             {
-                int hitX = hitResult.blockX;
-                int hitY = hitResult.blockY;
-                int hitZ = hitResult.blockZ;
+                int hitX = hitResult.BlockX;
+                int hitY = hitResult.BlockY;
+                int hitZ = hitResult.BlockZ;
                 if (!world.isRemote)
                 {
                     if (world.getBlockId(hitX, hitY, hitZ) == Block.Snow.id)

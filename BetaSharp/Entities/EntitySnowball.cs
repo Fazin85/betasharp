@@ -138,9 +138,9 @@ public class EntitySnowball : Entity
         HitResult var3 = world.raycast(var15, var2);
         var15 = new Vec3D(x, y, z);
         var2 = new Vec3D(x + velocityX, y + velocityY, z + velocityZ);
-        if (var3 != null)
+        if (var3.Type != HitResultType.MISS)
         {
-            var2 = new Vec3D(var3.pos.x, var3.pos.y, var3.pos.z);
+            var2 = new Vec3D(var3.Pos.x, var3.Pos.y, var3.Pos.z);
         }
 
         if (!world.isRemote)
@@ -157,9 +157,9 @@ public class EntitySnowball : Entity
                     float var10 = 0.3F;
                     Box var11 = var9.boundingBox.expand((double)var10, (double)var10, (double)var10);
                     HitResult var12 = var11.raycast(var15, var2);
-                    if (var12 != null)
+                    if (var12.Type != HitResultType.MISS)
                     {
-                        double var13 = var15.distanceTo(var12.pos);
+                        double var13 = var15.distanceTo(var12.Pos);
                         if (var13 < var6 || var6 == 0.0D)
                         {
                             var4 = var9;
@@ -175,9 +175,9 @@ public class EntitySnowball : Entity
             }
         }
 
-        if (var3 != null)
+        if (var3.Type != HitResultType.MISS)
         {
-            if (var3.entity != null && var3.entity.damage(thrower, 0))
+            if (var3.Entity != null && var3.Entity.damage(thrower, 0))
             {
             }
 

@@ -935,7 +935,7 @@ public abstract class World : java.lang.Object, BlockView
                 if ((!bl2 || var13 == null || var13.getCollisionShape(this, var8, var9, var10) != null) && var11 > 0 && var13.hasCollision(var12, bl))
                 {
                     HitResult var14 = var13.raycast(this, var8, var9, var10, start, pos);
-                    if (var14 != null)
+                    if (var14.Type != HitResultType.MISS)
                     {
                         return var14;
                     }
@@ -947,12 +947,12 @@ public abstract class World : java.lang.Object, BlockView
                 {
                     if (java.lang.Double.isNaN(start.x) || java.lang.Double.isNaN(start.y) || java.lang.Double.isNaN(start.z))
                     {
-                        return null;
+                        return new HitResult(HitResultType.MISS);
                     }
 
                     if (var8 == var5 && var9 == var6 && var10 == var7)
                     {
-                        return null;
+                        return new HitResult(HitResultType.MISS);
                     }
 
                     bool var39 = true;
@@ -1097,23 +1097,23 @@ public abstract class World : java.lang.Object, BlockView
                     if ((!bl2 || var37 == null || var37.getCollisionShape(this, var8, var9, var10) != null) && var35 > 0 && var37.hasCollision(var36, bl))
                     {
                         HitResult var38 = var37.raycast(this, var8, var9, var10, start, pos);
-                        if (var38 != null)
+                        if (var38.Type != HitResultType.MISS)
                         {
                             return var38;
                         }
                     }
                 }
 
-                return null;
+                return new HitResult(HitResultType.MISS);
             }
             else
             {
-                return null;
+                return new HitResult(HitResultType.MISS);
             }
         }
         else
         {
-            return null;
+            return new HitResult(HitResultType.MISS);
         }
     }
 
@@ -2041,7 +2041,7 @@ public abstract class World : java.lang.Object, BlockView
                     double var14 = box.minX + (box.maxX - box.minX) * (double)var11;
                     double var16 = box.minY + (box.maxY - box.minY) * (double)var12;
                     double var18 = box.minZ + (box.maxZ - box.minZ) * (double)var13;
-                    if (raycast(new Vec3D(var14, var16, var18), vec) == null)
+                    if (raycast(new Vec3D(var14, var16, var18), vec).Type == HitResultType.MISS)
                     {
                         ++var9;
                     }

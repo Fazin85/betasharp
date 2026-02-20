@@ -303,7 +303,7 @@ public struct Box
 
         if (hitPos == null)
         {
-            return null;
+            return new HitResult(HitResultType.MISS);
         }
         else
         {
@@ -338,7 +338,7 @@ public struct Box
                 side = 3;
             }
 
-            return new HitResult(0, 0, 0, side, hitPos.Value);
+            return new HitResult(0, 0, 0, side, hitPos.Value, HitResultType.TILE);
         }
     }
 
