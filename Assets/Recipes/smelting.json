@@ -1,0 +1,92 @@
+[
+  {
+    "Type": "smelting",
+    "Input": "betasharp:IronOre",
+    "Result": {
+      "Name": "betasharp:IronIngot",
+      "Count": 1,
+      "Damage": 0
+    }
+  },
+  {
+    "Type": "smelting",
+    "Input": "betasharp:GoldOre",
+    "Result": {
+      "Name": "betasharp:GoldIngot",
+      "Count": 1,
+      "Damage": 0
+    }
+  },
+  {
+    "Type": "smelting",
+    "Input": "betasharp:DiamondOre",
+    "Result": {
+      "Name": "betasharp:Diamond",
+      "Count": 1,
+      "Damage": 0
+    }
+  },
+  {
+    "Type": "smelting",
+    "Input": "betasharp:Sand",
+    "Result": {
+      "Name": "betasharp:Glass",
+      "Count": 1,
+      "Damage": 0
+    }
+  },
+  {
+    "Type": "smelting",
+    "Input": "betasharp:RawPorkchop",
+    "Result": {
+      "Name": "betasharp:CookedPorkchop",
+      "Count": 1,
+      "Damage": 0
+    }
+  },
+  {
+    "Type": "smelting",
+    "Input": "betasharp:RawFish",
+    "Result": {
+      "Name": "betasharp:CookedFish",
+      "Count": 1,
+      "Damage": 0
+    }
+  },
+  {
+    "Type": "smelting",
+    "Input": "betasharp:Cobblestone",
+    "Result": {
+      "Name": "betasharp:Stone",
+      "Count": 1,
+      "Damage": 0
+    }
+  },
+  {
+    "Type": "smelting",
+    "Input": "betasharp:Clay",
+    "Result": {
+      "Name": "betasharp:Brick",
+      "Count": 1,
+      "Damage": 0
+    }
+  },
+  {
+    "Type": "smelting",
+    "Input": "betasharp:Cactus",
+    "Result": {
+      "Name": "betasharp:Dye",
+      "Count": 1,
+      "Damage": 2
+    }
+  },
+  {
+    "Type": "smelting",
+    "Input": "betasharp:Log",
+    "Result": {
+      "Name": "betasharp:Coal",
+      "Count": 1,
+      "Damage": 1
+    }
+  }
+]
