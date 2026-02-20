@@ -114,9 +114,9 @@ public class GuiStats : GuiScreen
 
     private void drawSlotTexture(int x, int y, int u, int v)
     {
-        int textureId = mc.textureManager.getTextureId("/gui/slot.png");
+        int textureId = mc.textureManager.GetTextureId("/gui/slot.png");
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.textureManager.bindTexture(textureId);
+        mc.textureManager.BindTexture(textureId);
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
         tessellator.addVertexWithUV(x + 0, y + 18, _zLevel, (double)((u + 0) * 0.0078125F), (double)((v + 18) * 0.0078125F));

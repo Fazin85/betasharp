@@ -195,12 +195,12 @@ public partial class Minecraft
         {
             Log.Error(ex);
         }
-        texturePackList = new TexturePacks(this, mcDataDir);
+        texturePackList = new TexturePacks(this, new DirectoryInfo(mcDataDir.getAbsolutePath()));
         textureManager = new TextureManager(texturePackList, options);
         fontRenderer = new TextRenderer(options, textureManager);
-        WaterColors.loadColors(textureManager.getColors("/misc/watercolor.png"));
-        GrassColors.loadColors(textureManager.getColors("/misc/grasscolor.png"));
-        FoliageColors.loadColors(textureManager.getColors("/misc/foliagecolor.png"));
+        WaterColors.loadColors(textureManager.GetColors("/misc/watercolor.png"));
+        GrassColors.loadColors(textureManager.GetColors("/misc/grasscolor.png"));
+        FoliageColors.loadColors(textureManager.GetColors("/misc/foliagecolor.png"));
         gameRenderer = new GameRenderer(this);
         EntityRenderDispatcher.instance.heldItemRenderer = new HeldItemRenderer(this);
         statFileWriter = new StatFileWriter(session, mcDataDir);
@@ -258,15 +258,15 @@ public partial class Minecraft
         GLManager.GL.MatrixMode(GLEnum.Modelview);
         checkGLError("Startup");
         sndManager.LoadSoundSettings(options);
-        textureManager.addDynamicTexture(textureLavaFX);
-        textureManager.addDynamicTexture(textureWaterFX);
-        textureManager.addDynamicTexture(new NetherPortalSprite());
-        textureManager.addDynamicTexture(new CompassSprite(this));
-        textureManager.addDynamicTexture(new ClockSprite(this));
-        textureManager.addDynamicTexture(new WaterSideSprite());
-        textureManager.addDynamicTexture(new LavaSideSprite());
-        textureManager.addDynamicTexture(new FireSprite(0));
-        textureManager.addDynamicTexture(new FireSprite(1));
+        textureManager.AddDynamicTexture(textureLavaFX);
+        textureManager.AddDynamicTexture(textureWaterFX);
+        textureManager.AddDynamicTexture(new NetherPortalSprite());
+        textureManager.AddDynamicTexture(new CompassSprite(this));
+        textureManager.AddDynamicTexture(new ClockSprite(this));
+        textureManager.AddDynamicTexture(new WaterSideSprite());
+        textureManager.AddDynamicTexture(new LavaSideSprite());
+        textureManager.AddDynamicTexture(new FireSprite(0));
+        textureManager.AddDynamicTexture(new FireSprite(1));
         terrainRenderer = new WorldRenderer(this, textureManager);
         GLManager.GL.Viewport(0, 0, (uint)displayWidth, (uint)displayHeight);
         particleManager = new ParticleManager(world, textureManager);
@@ -303,7 +303,7 @@ public partial class Minecraft
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.Enable(GLEnum.Texture2D);
         GLManager.GL.Disable(GLEnum.Fog);
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)textureManager.getTextureId("/title/mojang.png"));
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)textureManager.GetTextureId("/title/mojang.png"));
         tessellator.startDrawingQuads();
         tessellator.setColorOpaque_I(0xFFFFFF);
         tessellator.addVertexWithUV(0.0D, (double)displayHeight, 0.0D, 0.0D, 0.0D);
@@ -1064,10 +1064,10 @@ public partial class Minecraft
         Profiler.Stop("playerControllerUpdate");
 
         Profiler.Start("updateDynamicTextures");
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)textureManager.getTextureId("/terrain.png"));
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)textureManager.GetTextureId("/terrain.png"));
         if (!isGamePaused)
         {
-            textureManager.tick();
+            textureManager.Tick();
         }
 
         Profiler.Stop("updateDynamicTextures");

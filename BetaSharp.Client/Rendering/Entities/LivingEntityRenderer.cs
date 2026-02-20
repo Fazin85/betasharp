@@ -234,7 +234,7 @@ public class LivingEntityRenderer : EntityRenderer
 
             GLManager.GL.Disable(GLEnum.Texture2D);
             var14.startDrawingQuads();
-            int var16 = var11.getStringWidth(var2) / 2;
+            int var16 = var11.GetStringWidth(var2) / 2;
             var14.setColorRGBA_F(0.0F, 0.0F, 0.0F, 0.25F);
             var14.addVertex(-var16 - 1, -1 + var15, 0.0D);
             var14.addVertex(-var16 - 1, 8 + var15, 0.0D);
@@ -242,10 +242,10 @@ public class LivingEntityRenderer : EntityRenderer
             var14.addVertex(var16 + 1, -1 + var15, 0.0D);
             var14.draw();
             GLManager.GL.Enable(GLEnum.Texture2D);
-            var11.drawString(var2, -var11.getStringWidth(var2) / 2, var15, 0x20FFFFFF);
+            var11.DrawString(var2, -var11.GetStringWidth(var2) / 2, var15, 0x20FFFFFF);
             GLManager.GL.Enable(GLEnum.DepthTest);
             GLManager.GL.DepthMask(true);
-            var11.drawString(var2, -var11.getStringWidth(var2) / 2, var15, 0xFFFFFFFF);
+            var11.DrawString(var2, -var11.GetStringWidth(var2) / 2, var15, 0xFFFFFFFF);
             GLManager.GL.Enable(GLEnum.Lighting);
             GLManager.GL.Disable(GLEnum.Blend);
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
