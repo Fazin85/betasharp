@@ -197,7 +197,7 @@ public class GuiScreen : Gui
         GLManager.GL.Disable(EnableCap.Fog);
 
         Tessellator tess = Tessellator.instance;
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.getTextureId("/gui/background.png"));
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.GetTextureId("/gui/background.png"));
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
 
         float scale = 32.0F;

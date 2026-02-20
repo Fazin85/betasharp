@@ -50,7 +50,7 @@ public class GuiTexturePacks : GuiScreen
                     }
                     break;
                 case ButtonDone:
-                    mc.textureManager.reload();
+                    mc.textureManager.Reload();
                     mc.displayGuiScreen(_parentScreen);
                     break;
                 default:

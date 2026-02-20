@@ -5,6 +5,7 @@ using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using java.lang;
+using Math = System.Math;
 
 namespace BetaSharp.Entities;
 
@@ -815,7 +816,7 @@ public abstract class Entity : java.lang.Object
         {
             double var2 = entity.x - x;
             double var4 = entity.z - z;
-            double var6 = MathHelper.abs_max(var2, var4);
+            double var6 = Math.Max(Math.Abs(var2), Math.Abs(var4));
             if (var6 >= (double)0.01F)
             {
                 var6 = (double)MathHelper.sqrt_double(var6);

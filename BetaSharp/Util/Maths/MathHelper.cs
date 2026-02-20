@@ -1,6 +1,6 @@
 namespace BetaSharp.Util.Maths;
 
-public class MathHelper : java.lang.Object
+public static class MathHelper
 {
     private static readonly float[] SIN_TABLE = new float[65536];
 
@@ -47,28 +47,9 @@ public class MathHelper : java.lang.Object
         return var0 >= 0.0F ? var0 : -var0;
     }
 
-    public static double abs_max(double var0, double var2)
+    public static int floorDiv(int a, int b)
     {
-        if (var0 < 0.0D)
-        {
-            var0 = -var0;
-        }
-
-        if (var2 < 0.0D)
-        {
-            var2 = -var2;
-        }
-
-        return var0 > var2 ? var0 : var2;
-    }
-
-    public static bool stringNullOrLengthZero(string var0)
-    {
-        return var0 == null || var0.Length == 0;
-    }
-    public static int bucketInt(int var0, int var1)
-    {
-        return var0 < 0 ? -((-var0 - 1) / var1) - 1 : var0 / var1;
+        return a < 0 ? -((-a - 1) / b) - 1 : a / b;
     }
 
     static MathHelper()
@@ -77,6 +58,5 @@ public class MathHelper : java.lang.Object
         {
             SIN_TABLE[var0] = (float)java.lang.Math.sin(var0 * Math.PI * 2.0D / 65536.0D);
         }
-
     }
 }

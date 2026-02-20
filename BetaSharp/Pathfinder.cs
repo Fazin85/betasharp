@@ -11,7 +11,7 @@ public class Pathfinder : java.lang.Object
 {
     private readonly BlockView worldMap;
     private readonly Path path = new();
-    private readonly IntHashMap pointMap = new();
+    private readonly Dictionary<int, PathPoint> pointMap = new();
     private readonly PathPoint[] pathOptions = new PathPoint[32];
 
     public Pathfinder(BlockView var1)
@@ -32,7 +32,7 @@ public class Pathfinder : java.lang.Object
     private PathEntity createEntityPathTo(Entity var1, double var2, double var4, double var6, float var8)
     {
         path.clearPath();
-        pointMap.clearMap();
+        pointMap.Clear();
         PathPoint var9 = openPoint(MathHelper.floor_double(var1.boundingBox.minX), MathHelper.floor_double(var1.boundingBox.minY), MathHelper.floor_double(var1.boundingBox.minZ));
         PathPoint var10 = openPoint(MathHelper.floor_double(var2 - (double)(var1.width / 2.0F)), MathHelper.floor_double(var4), MathHelper.floor_double(var6 - (double)(var1.width / 2.0F)));
         PathPoint var11 = new(MathHelper.floor_float(var1.width + 1.0F), MathHelper.floor_float(var1.height + 1.0F), MathHelper.floor_float(var1.width + 1.0F));
@@ -185,11 +185,11 @@ public class Pathfinder : java.lang.Object
     private PathPoint openPoint(int var1, int var2, int var3)
     {
         int var4 = PathPoint.func_22329_a(var1, var2, var3);
-        PathPoint var5 = (PathPoint)pointMap.get(var4);
+        PathPoint var5 = pointMap.GetValueOrDefault(var4);
         if (var5 == null)
         {
             var5 = new PathPoint(var1, var2, var3);
-            pointMap.put(var4, var5);
+            pointMap[var4] = var5;
         }
 
         return var5;

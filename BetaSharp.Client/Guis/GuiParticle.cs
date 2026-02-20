@@ -31,7 +31,7 @@ public class GuiParticle : Gui
 
     public void render(float partialTicks)
     {
-        mc.textureManager.bindTexture(mc.textureManager.getTextureId("/gui/particles.png"));
+        mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/particles.png"));
 
         for (int i = 0; i < particles.Count; ++i)
         {

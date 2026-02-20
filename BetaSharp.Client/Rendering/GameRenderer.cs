@@ -5,6 +5,7 @@ using BetaSharp.Client.Entities.FX;
 using BetaSharp.Client.Input;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Items;
+using BetaSharp.Client.Options;
 using BetaSharp.Entities;
 using BetaSharp.Profiling;
 using BetaSharp.Util.Hit;
@@ -28,7 +29,9 @@ public class GameRenderer
     private readonly MouseFilter mouseFilterXAxis = new();
     private readonly MouseFilter mouseFilterYAxis = new();
     private readonly float thirdPersonDistance = 4.0F;
+    private readonly float frontThirdPersonDistance = 4.0F;
     private float prevThirdPersonDistance = 4.0F;
+    private float prevFrontThirdPersonDistance = 4.0F;
     private readonly float thirdPersonYaw = 0.0F;
     private float prevThirdPersonYaw;
     private readonly float thirdPersonPitch = 0.0F;
@@ -62,6 +65,7 @@ public class GameRenderer
     {
         lastViewBob = viewBob;
         prevThirdPersonDistance = thirdPersonDistance;
+        prevFrontThirdPersonDistance = frontThirdPersonDistance;
         prevThirdPersonYaw = thirdPersonYaw;
         prevThirdPersonPitch = thirdPersonPitch;
         prevCameraRoll = cameraRoll;
@@ -233,9 +237,17 @@ public class GameRenderer
                 GLManager.GL.Rotate(var2.prevPitch + (var2.pitch - var2.prevPitch) * tickDelta, -1.0F, 0.0F, 0.0F);
             }
         }
-        else if (client.options.thirdPersonView)
+        else if (client.options.cameraMode == EnumCameraMode.ThirdPerson || client.options.cameraMode == EnumCameraMode.FrontThirdPerson)
         {
-            double var27 = (double)(prevThirdPersonDistance + (thirdPersonDistance - prevThirdPersonDistance) * tickDelta);
+            double var27;
+            if (client.options.cameraMode == EnumCameraMode.FrontThirdPerson)
+            {
+                var27 = (double)(prevFrontThirdPersonDistance + (frontThirdPersonDistance - prevFrontThirdPersonDistance) * tickDelta);
+            }
+            else
+            {
+                var27 = (double)(prevThirdPersonDistance + (thirdPersonDistance - prevThirdPersonDistance) * tickDelta);
+            }
             float var13;
             float var28;
             if (client.options.debugCamera)
@@ -252,6 +264,11 @@ public class GameRenderer
                 var13 = var2.pitch;
                 double var14 = (double)(-MathHelper.sin(var28 / 180.0F * (float)java.lang.Math.PI) * MathHelper.cos(var13 / 180.0F * (float)java.lang.Math.PI)) * var27;
                 double var16 = (double)(MathHelper.cos(var28 / 180.0F * (float)java.lang.Math.PI) * MathHelper.cos(var13 / 180.0F * (float)java.lang.Math.PI)) * var27;
+                if (client.options.cameraMode == EnumCameraMode.FrontThirdPerson)
+                {
+                    var14 = -var14; // flip to front
+                    var16 = -var16;
+                }
                 double var18 = (double)-MathHelper.sin(var13 / 180.0F * (float)java.lang.Math.PI) * var27;
 
                 for (int var20 = 0; var20 < 8; ++var20)
@@ -262,7 +279,7 @@ public class GameRenderer
                     var21 *= 0.1F;
                     var22 *= 0.1F;
                     var23 *= 0.1F;
-                    HitResult var24 = client.world.raycast(new Vec3D(var4 + (double)var21, var6 + (double)var22, var8 + (double)var23), new Vec3D(var4 - var14 + (double)var21 + (double)var23, var6 - var18 + (double)var22, var8 - var16 + (double)var23));
+                    HitResult var24 = client.world.raycast(new Vec3D(var4 + (double)var21, var6 + (double)var22, var8 + (double)var23), new Vec3D(var4 + (client.options.cameraMode == EnumCameraMode.FrontThirdPerson ? var14 : -var14) + (double)var21 + (double)var23, var6 + (client.options.cameraMode == EnumCameraMode.FrontThirdPerson ? var18 : -var18) + (double)var22, var8 + (client.options.cameraMode == EnumCameraMode.FrontThirdPerson ? var16 : -var16) + (double)var23));
                     if (var24 != null)
                     {
                         double var25 = var24.pos.distanceTo(new Vec3D(var4, var6, var8));
@@ -276,6 +293,10 @@ public class GameRenderer
                 GLManager.GL.Rotate(var2.pitch - var13, 1.0F, 0.0F, 0.0F);
                 GLManager.GL.Rotate(var2.yaw - var28, 0.0F, 1.0F, 0.0F);
                 GLManager.GL.Translate(0.0F, 0.0F, (float)-var27);
+                if (client.options.cameraMode == EnumCameraMode.FrontThirdPerson)
+                {
+                    GLManager.GL.Rotate(180.0F, 0.0F, 1.0F, 0.0F);
+                }
                 GLManager.GL.Rotate(var28 - var2.yaw, 0.0F, 1.0F, 0.0F);
                 GLManager.GL.Rotate(var13 - var2.pitch, 1.0F, 0.0F, 0.0F);
             }
@@ -356,13 +377,13 @@ public class GameRenderer
             applyViewBobbing(tickDelta);
         }
 
-        if (!client.options.thirdPersonView && !client.camera.isSleeping() && !client.options.hideGUI)
+        if (client.options.cameraMode == EnumCameraMode.FirstPerson && !client.camera.isSleeping() && !client.options.hideGUI)
         {
             itemRenderer.renderItemInFirstPerson(tickDelta);
         }
 
         GLManager.GL.PopMatrix();
-        if (!client.options.thirdPersonView && !client.camera.isSleeping())
+        if (client.options.cameraMode == EnumCameraMode.FirstPerson && !client.camera.isSleeping())
         {
             itemRenderer.renderOverlays(tickDelta);
             applyDamageTiltEffect(tickDelta);
@@ -521,7 +542,7 @@ public class GameRenderer
 
         applyFog(0);
         GLManager.GL.Enable(GLEnum.Fog);
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)client.textureManager.getTextureId("/terrain.png"));
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)client.textureManager.GetTextureId("/terrain.png"));
         Lighting.turnOff();
 
         Profiler.Start("sortAndRender");
@@ -558,7 +579,7 @@ public class GameRenderer
         applyFog(0);
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.Disable(GLEnum.CullFace);
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)client.textureManager.getTextureId("/terrain.png"));
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)client.textureManager.GetTextureId("/terrain.png"));
 
         Profiler.Start("sortAndRender2");
 
@@ -682,7 +703,7 @@ public class GameRenderer
             GLManager.GL.Enable(GLEnum.Blend);
             GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
             GLManager.GL.AlphaFunc(GLEnum.Greater, 0.01F);
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)client.textureManager.getTextureId("/environment/snow.png"));
+            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)client.textureManager.GetTextureId("/environment/snow.png"));
             double var9 = var3.lastTickX + (var3.x - var3.lastTickX) * (double)tickDelta;
             double var11 = var3.lastTickY + (var3.y - var3.lastTickY) * (double)tickDelta;
             double var13 = var3.lastTickZ + (var3.z - var3.lastTickZ) * (double)tickDelta;
@@ -760,7 +781,7 @@ public class GameRenderer
                 }
             }
 
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)client.textureManager.getTextureId("/environment/rain.png"));
+            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)client.textureManager.GetTextureId("/environment/rain.png"));
             var16 = 10;
 
             var18 = 0;

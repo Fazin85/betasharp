@@ -54,7 +54,7 @@ public class GuiWorldSlot : GuiSlot
     {
         WorldSaveInfo worldInfo = (WorldSaveInfo)GuiSelectWorld.GetSize(_parentWorldGui).get(slotIndex);
         string displayName = worldInfo.getDisplayName();
-        if (displayName == null || MathHelper.stringNullOrLengthZero(displayName))
+        if (displayName == null || string.IsNullOrEmpty(displayName))
         {
             displayName = GuiSelectWorld.getWorldNameHeader(_parentWorldGui) + " " + (slotIndex + 1);
         }

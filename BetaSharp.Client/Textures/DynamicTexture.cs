@@ -31,11 +31,11 @@ public class DynamicTexture : java.lang.Object
     {
         if (atlas == FXImage.Terrain)
         {
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var1.getTextureId("/terrain.png"));
+            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var1.GetTextureId("/terrain.png"));
         }
         else if (atlas == FXImage.Items)
         {
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var1.getTextureId("/gui/items.png"));
+            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var1.GetTextureId("/gui/items.png"));
 
         }
 

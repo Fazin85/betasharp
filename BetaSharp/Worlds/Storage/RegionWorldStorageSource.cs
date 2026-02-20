@@ -43,7 +43,7 @@ public class RegionWorldStorageSource : WorldStorageSource
                 {
                     bool var9 = var8.SaveVersion != 19132;
                     string var10 = var8.LevelName;
-                    if (var10 == null || MathHelper.stringNullOrLengthZero(var10))
+                    if (var10 == null || string.IsNullOrEmpty(var10))
                     {
                         var10 = var7;
                     }

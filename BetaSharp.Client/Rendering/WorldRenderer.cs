@@ -6,6 +6,7 @@ using BetaSharp.Client.Rendering.Blocks.Entities;
 using BetaSharp.Client.Rendering.Chunks;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Entities;
+using BetaSharp.Client.Options;
 using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Profiling;
@@ -233,7 +234,7 @@ public class WorldRenderer : IWorldAccess
             for (var6 = 0; var6 < var5.Count; ++var6)
             {
                 var7 = var5[var6];
-                if (var7.shouldRender(var1) && (var7.ignoreFrustumCheck || culler.isBoundingBoxInFrustum(var7.boundingBox)) && (var7 != mc.camera || mc.options.thirdPersonView || mc.camera.isSleeping()))
+                if (var7.shouldRender(var1) && (var7.ignoreFrustumCheck || culler.isBoundingBoxInFrustum(var7.boundingBox)) && (var7 != mc.camera || mc.options.cameraMode != EnumCameraMode.FirstPerson || mc.camera.isSleeping()))
                 {
                     int var8 = MathHelper.floor_double(var7.y);
                     if (var8 < 0)
@@ -372,7 +373,7 @@ public class WorldRenderer : IWorldAccess
             GLManager.GL.Rotate(0.0F, 0.0F, 0.0F, 1.0F);
             GLManager.GL.Rotate(world.getTime(var1) * 360.0F, 1.0F, 0.0F, 0.0F);
             var11 = 30.0F;
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)renderEngine.getTextureId("/terrain/sun.png"));
+            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)renderEngine.GetTextureId("/terrain/sun.png"));
             var17.startDrawingQuads();
             var17.addVertexWithUV((double)-var11, 100.0D, (double)-var11, 0.0D, 0.0D);
             var17.addVertexWithUV((double)var11, 100.0D, (double)-var11, 1.0D, 0.0D);
@@ -380,7 +381,7 @@ public class WorldRenderer : IWorldAccess
             var17.addVertexWithUV((double)-var11, 100.0D, (double)var11, 0.0D, 1.0D);
             var17.draw();
             var11 = 20.0F;
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)renderEngine.getTextureId("/terrain/moon.png"));
+            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)renderEngine.GetTextureId("/terrain/moon.png"));
             var17.startDrawingQuads();
             var17.addVertexWithUV((double)-var11, -100.0D, (double)var11, 1.0D, 1.0D);
             var17.addVertexWithUV((double)var11, -100.0D, (double)var11, 0.0D, 1.0D);
@@ -539,7 +540,7 @@ public class WorldRenderer : IWorldAccess
         int var12 = MathHelper.floor_double(var8 / 2048.0D);
         var6 -= var11 * 2048;
         var8 -= var12 * 2048;
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)renderEngine.getTextureId("/environment/clouds.png"));
+        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)renderEngine.GetTextureId("/environment/clouds.png"));
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
         Vector3D<double> var13 = world.getCloudColor(var1);
@@ -617,7 +618,7 @@ public class WorldRenderer : IWorldAccess
             if (damagePartialTime > 0.0F)
             {
                 GLManager.GL.BlendFunc(GLEnum.DstColor, GLEnum.SrcColor);
-                int var7 = renderEngine.getTextureId("/terrain.png");
+                int var7 = renderEngine.GetTextureId("/terrain.png");
                 GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var7);
                 GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 0.5F);
                 GLManager.GL.PushMatrix();
@@ -651,7 +652,7 @@ public class WorldRenderer : IWorldAccess
             GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
             float var16 = MathHelper.sin(java.lang.System.currentTimeMillis() / 100.0F) * 0.2F + 0.8F;
             GLManager.GL.Color4(var16, var16, var16, MathHelper.sin(java.lang.System.currentTimeMillis() / 200.0F) * 0.2F + 0.5F);
-            var8 = renderEngine.getTextureId("/terrain.png");
+            var8 = renderEngine.GetTextureId("/terrain.png");
             GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var8);
             int var17 = var2.blockX;
             int var18 = var2.blockY;
@@ -750,12 +751,12 @@ public class WorldRenderer : IWorldAccess
 
     public void MarkBlocksDirty(int var1, int var2, int var3, int var4, int var5, int var6)
     {
-        int var7 = MathHelper.bucketInt(var1, SubChunkRenderer.Size);
-        int var8 = MathHelper.bucketInt(var2, SubChunkRenderer.Size);
-        int var9 = MathHelper.bucketInt(var3, SubChunkRenderer.Size);
-        int var10 = MathHelper.bucketInt(var4, SubChunkRenderer.Size);
-        int var11 = MathHelper.bucketInt(var5, SubChunkRenderer.Size);
-        int var12 = MathHelper.bucketInt(var6, SubChunkRenderer.Size);
+        int var7 = MathHelper.floorDiv(var1, SubChunkRenderer.Size);
+        int var8 = MathHelper.floorDiv(var2, SubChunkRenderer.Size);
+        int var9 = MathHelper.floorDiv(var3, SubChunkRenderer.Size);
+        int var10 = MathHelper.floorDiv(var4, SubChunkRenderer.Size);
+        int var11 = MathHelper.floorDiv(var5, SubChunkRenderer.Size);
+        int var12 = MathHelper.floorDiv(var6, SubChunkRenderer.Size);
 
         for (int var13 = var7; var13 <= var10; ++var13)
         {

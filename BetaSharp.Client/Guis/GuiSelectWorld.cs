@@ -61,7 +61,7 @@ public class GuiSelectWorld : GuiScreen
     protected string getSaveName(int worldIndex)
     {
         string worldName = ((WorldSaveInfo)saveList.get(worldIndex)).getDisplayName();
-        if (worldName == null || MathHelper.stringNullOrLengthZero(worldName))
+        if (worldName == null || string.IsNullOrEmpty(worldName))
         {
             TranslationStorage translations = TranslationStorage.getInstance();
             worldName = translations.translateKey("selectWorld.world") + " " + (worldIndex + 1);
