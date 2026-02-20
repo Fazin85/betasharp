@@ -35,7 +35,7 @@ public class LoadingScreenRenderer : LoadingDisplay
         {
             if (!field_1005_e)
             {
-                throw new MinecraftError();
+                throw new MinecraftShutdownException();
             }
         }
         else
@@ -58,7 +58,7 @@ public class LoadingScreenRenderer : LoadingDisplay
         {
             if (!field_1005_e)
             {
-                throw new MinecraftError();
+                throw new MinecraftShutdownException();
             }
         }
         else
@@ -76,7 +76,7 @@ public class LoadingScreenRenderer : LoadingDisplay
         {
             if (!field_1005_e)
             {
-                throw new MinecraftError();
+                throw new MinecraftShutdownException();
             }
         }
         else

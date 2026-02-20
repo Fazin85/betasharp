@@ -371,9 +371,9 @@ public class EntityBoat : Entity
 
             for (i = 0; i < 4; ++i)
             {
-                int x = MathHelper.floor_double(base.x + ((double)(i % 2) - 0.5D) * 0.8D);
-                int y = MathHelper.floor_double(base.y);
-                int z = MathHelper.floor_double(base.z + ((double)(i / 2) - 0.5D) * 0.8D);
+                int x = MathHelper.Floor(base.x + ((double)(i % 2) - 0.5D) * 0.8D);
+                int y = MathHelper.Floor(base.y);
+                int z = MathHelper.Floor(base.z + ((double)(i / 2) - 0.5D) * 0.8D);
                 if (world.getBlockId(x, y, z) == Block.Snow.id)
                 {
                     world.setBlock(x, y, z, 0);

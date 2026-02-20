@@ -20,7 +20,7 @@ public class EntityZombie : EntityMonster
         if (world.canMonsterSpawn())
         {
             float brightness = getBrightnessAtEyes(1.0F);
-            if (brightness > 0.5F && world.hasSkyLight(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z)) && random.NextFloat() * 30.0F < (brightness - 0.4F) * 2.0F)
+            if (brightness > 0.5F && world.hasSkyLight(MathHelper.Floor(x), MathHelper.Floor(y), MathHelper.Floor(z)) && random.NextFloat() * 30.0F < (brightness - 0.4F) * 2.0F)
             {
                 fireTicks = 300;
             }

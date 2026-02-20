@@ -27,8 +27,8 @@ public class GuiOptions : GuiScreen
 
     public override void InitGui()
     {
-        TranslationStorage translations = TranslationStorage.getInstance();
-        _screenTitle = translations.translateKey("options.title");
+        TranslationStorage translations = TranslationStorage.Instance;
+        _screenTitle = translations.TranslateKey("options.title");
         int rowIndex = 0;
         EnumOptions[] optionsToDisplay = _availableOptions;
         int optionsLength = optionsToDisplay.Length;
@@ -39,19 +39,19 @@ public class GuiOptions : GuiScreen
             int yPos = Height / 6 + 24 * (rowIndex >> 1);
             if (!currentOption.getEnumFloat())
             {
-                _controlList.Add(new GuiSmallButton(currentOption.returnEnumOrdinal(), xPos, yPos, currentOption, _options.getKeyBinding(currentOption)));
+                _controlList.Add(new GuiSmallButton(currentOption.returnEnumOrdinal(), xPos, yPos, currentOption, _options.GetKeyBinding(currentOption)));
             }
             else
             {
-                _controlList.Add(new GuiSlider(currentOption.returnEnumOrdinal(), xPos, yPos, currentOption, _options.getKeyBinding(currentOption), _options.getOptionFloatValue(currentOption)));
+                _controlList.Add(new GuiSlider(currentOption.returnEnumOrdinal(), xPos, yPos, currentOption, _options.GetKeyBinding(currentOption), _options.GetOptionFloatValue(currentOption)));
             }
 
             ++rowIndex;
         }
 
-        _controlList.Add(new GuiButton(ButtonVideoSettings, Width / 2 - 100, Height / 6 + 96 + 12, translations.translateKey("options.video")));
-        _controlList.Add(new GuiButton(ButtonControls, Width / 2 - 100, Height / 6 + 120 + 12, translations.translateKey("options.controls")));
-        _controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 6 + 168, translations.translateKey("gui.done")));
+        _controlList.Add(new GuiButton(ButtonVideoSettings, Width / 2 - 100, Height / 6 + 96 + 12, translations.TranslateKey("options.video")));
+        _controlList.Add(new GuiButton(ButtonControls, Width / 2 - 100, Height / 6 + 120 + 12, translations.TranslateKey("options.controls")));
+        _controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 6 + 168, translations.TranslateKey("gui.done")));
     }
 
     protected override void ActionPerformed(GuiButton button)
@@ -60,22 +60,22 @@ public class GuiOptions : GuiScreen
 
         if (button.Id < 100 && button is GuiSmallButton)
         {
-            _options.setOptionValue(((GuiSmallButton)button).returnEnumOptions(), 1);
-            button.DisplayString = _options.getKeyBinding(EnumOptions.getEnumOptions(button.Id));
+            _options.SetOptionValue(((GuiSmallButton)button).returnEnumOptions(), 1);
+            button.DisplayString = _options.GetKeyBinding(EnumOptions.getEnumOptions(button.Id));
         }
 
         switch (button.Id)
         {
             case ButtonVideoSettings:
-                mc.options.saveOptions();
+                mc.options.SaveOptions();
                 mc.displayGuiScreen(new GuiVideoSettings(this, _options));
                 break;
             case ButtonControls:
-                mc.options.saveOptions();
+                mc.options.SaveOptions();
                 mc.displayGuiScreen(new GuiControls(this, _options));
                 break;
             case ButtonDone:
-                mc.options.saveOptions();
+                mc.options.SaveOptions();
                 mc.displayGuiScreen(_parentScreen);
                 break;
         }

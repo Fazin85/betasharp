@@ -1,4 +1,5 @@
 using BetaSharp.NBT;
+using BetaSharp.Rules;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
@@ -21,9 +22,9 @@ public class EntityTNTPrimed : Entity
     {
         setPosition(x, y, z);
         float randomAngle = (float)(java.lang.Math.random() * (double)((float)Math.PI) * 2.0D);
-        velocityX = (double)(-MathHelper.sin(randomAngle * (float)Math.PI / 180.0F) * 0.02F);
+        velocityX = (double)(-MathHelper.Sin(randomAngle * (float)Math.PI / 180.0F) * 0.02F);
         velocityY = (double)0.2F;
-        velocityZ = (double)(-MathHelper.cos(randomAngle * (float)Math.PI / 180.0F) * 0.02F);
+        velocityZ = (double)(-MathHelper.Cos(randomAngle * (float)Math.PI / 180.0F) * 0.02F);
         fuse = 80;
         prevX = x;
         prevY = y;
@@ -82,7 +83,12 @@ public class EntityTNTPrimed : Entity
 
     private void explode()
     {
-        float power = 4.0F;
+        if (!world.Rules.GetBool(DefaultRules.TntExplodes))
+        {
+            return;
+        }
+
+        const float power = 4.0F;
         world.createExplosion((Entity)null, x, y, z, power);
     }
 

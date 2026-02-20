@@ -56,7 +56,7 @@ public class EntityItem : Entity
         prevY = y;
         prevZ = z;
         velocityY -= (double)0.04F;
-        if (world.getMaterial(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z)) == Material.Lava)
+        if (world.getMaterial(MathHelper.Floor(x), MathHelper.Floor(y), MathHelper.Floor(z)) == Material.Lava)
         {
             velocityY = (double)0.2F;
             velocityX = (double)((random.NextFloat() - random.NextFloat()) * 0.2F);
@@ -70,7 +70,7 @@ public class EntityItem : Entity
         if (onGround)
         {
             friction = 0.1F * 0.1F * 58.8F;
-            int groundBlockId = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
+            int groundBlockId = world.getBlockId(MathHelper.Floor(x), MathHelper.Floor(boundingBox.minY) - 1, MathHelper.Floor(z));
             if (groundBlockId > 0)
             {
                 friction = Block.Blocks[groundBlockId].slipperiness * 0.98F;

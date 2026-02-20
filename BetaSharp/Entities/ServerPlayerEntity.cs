@@ -536,8 +536,8 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
 
     public override void sendMessage(string message)
     {
-        TranslationStorage ts = TranslationStorage.getInstance();
-        string translatedMessage = ts.translateKey(message);
+        TranslationStorage ts = TranslationStorage.Instance;
+        string translatedMessage = ts.TranslateKey(message);
         networkHandler.sendPacket(new ChatMessagePacket(translatedMessage));
     }
 

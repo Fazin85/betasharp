@@ -66,25 +66,25 @@ public class GuiMainMenu : GuiScreen
         else if (now.Month == 12 && now.Day == 24) _splashText = "Merry X-mas!";
         else if (now.Month == 1 && now.Day == 1) _splashText = "Happy new year!";
 
-        TranslationStorage translator = TranslationStorage.getInstance();
+        TranslationStorage translator = TranslationStorage.Instance;
         int buttonTopY = Height / 4 + 48;
 
-        _controlList.Add(new GuiButton(ButtonSingleplayer, Width / 2 - 100, buttonTopY, translator.translateKey("menu.singleplayer")));
+        _controlList.Add(new GuiButton(ButtonSingleplayer, Width / 2 - 100, buttonTopY, translator.TranslateKey("menu.singleplayer")));
         _controlList.Add(_multiplayerButton =
-            new GuiButton(ButtonMultiplayer, Width / 2 - 100, buttonTopY + 24, translator.translateKey("menu.multiplayer")));
-        _controlList.Add(new GuiButton(ButtonTexturePacksAndMods, Width / 2 - 100, buttonTopY + 48, translator.translateKey("menu.mods")));
+            new GuiButton(ButtonMultiplayer, Width / 2 - 100, buttonTopY + 24, translator.TranslateKey("menu.multiplayer")));
+        _controlList.Add(new GuiButton(ButtonTexturePacksAndMods, Width / 2 - 100, buttonTopY + 48, translator.TranslateKey("menu.mods")));
 
         if (mc.hideQuitButton)
         {
-            _controlList.Add(new GuiButton(ButtonOptions, Width / 2 - 100, buttonTopY + 72, translator.translateKey("menu.options")));
+            _controlList.Add(new GuiButton(ButtonOptions, Width / 2 - 100, buttonTopY + 72, translator.TranslateKey("menu.options")));
         }
         else
         {
             _controlList.Add(new GuiButton(ButtonOptions, Width / 2 - 100, buttonTopY + 72 + 12, 98, 20,
-                translator.translateKey("menu.options")));
+                translator.TranslateKey("menu.options")));
 
             _controlList.Add(new GuiButton(ButtonQuit, Width / 2 + 2, buttonTopY + 72 + 12, 98, 20,
-                translator.translateKey("menu.quit")));
+                translator.TranslateKey("menu.quit")));
         }
 
         if (mc.session == null)
@@ -130,7 +130,7 @@ public class GuiMainMenu : GuiScreen
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(Width / 2 + 90, 70.0F, 0.0F);
         GLManager.GL.Rotate(-20.0F, 0.0F, 0.0F, 1.0F);
-        float splashScale = 1.8F - MathHelper.abs(MathHelper.sin(java.lang.System.currentTimeMillis() % 1000L /
+        float splashScale = 1.8F - MathHelper.Abs(MathHelper.Sin(java.lang.System.currentTimeMillis() % 1000L /
             1000.0F * (float)Math.PI * 2.0F) * 0.1F);
         splashScale = splashScale * 100.0F / (FontRenderer.GetStringWidth(_splashText) + 32);
         GLManager.GL.Scale(splashScale, splashScale, splashScale);

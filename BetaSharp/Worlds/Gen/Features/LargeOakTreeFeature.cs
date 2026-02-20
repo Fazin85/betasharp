@@ -67,8 +67,8 @@ public class LargeOakTreeFeature : Feature
                     {
                         double var11 = branchLengthScale * (double)var8 * ((double)random.NextFloat() + 0.328D);
                         double var13 = (double)random.NextFloat() * 2.0D * 3.14159D;
-                        int var15 = MathHelper.floor_double(var11 * java.lang.Math.sin(var13) + origin[0] + var9);
-                        int var16 = MathHelper.floor_double(var11 * java.lang.Math.cos(var13) + origin[2] + var9);
+                        int var15 = MathHelper.Floor(var11 * java.lang.Math.sin(var13) + origin[0] + var9);
+                        int var16 = MathHelper.Floor(var11 * java.lang.Math.cos(var13) + origin[2] + var9);
                         int[] var17 = [var15, var3, var16];
                         int[] var18 = [var15, var3 + foliageClusterHeight, var16];
                         if (tryBranch(var17, var18) == -1)
@@ -237,9 +237,9 @@ public class LargeOakTreeFeature : Feature
 
             for (int var16 = var4[var6] + var9; var15 != var16; var15 += var9)
             {
-                var14[var6] = MathHelper.floor_double(var1[var6] + var15 + 0.5D);
-                var14[var7] = MathHelper.floor_double(var1[var7] + var15 * var10 + 0.5D);
-                var14[var8] = MathHelper.floor_double(var1[var8] + var15 * var12 + 0.5D);
+                var14[var6] = MathHelper.Floor(var1[var6] + var15 + 0.5D);
+                var14[var7] = MathHelper.Floor(var1[var7] + var15 * var10 + 0.5D);
+                var14[var8] = MathHelper.Floor(var1[var8] + var15 * var12 + 0.5D);
                 world.SetBlockWithoutNotifyingNeighbors(var14[0], var14[1], var14[2], var3);
             }
 
@@ -350,8 +350,8 @@ public class LargeOakTreeFeature : Feature
             for (var15 = var3[var5] + var8; var14 != var15; var14 += var8)
             {
                 var13[var5] = var1[var5] + var14;
-                var13[var6] = MathHelper.floor_double(var1[var6] + var14 * var9);
-                var13[var7] = MathHelper.floor_double(var1[var7] + var14 * var11);
+                var13[var6] = MathHelper.Floor(var1[var6] + var14 * var9);
+                var13[var7] = MathHelper.Floor(var1[var7] + var14 * var11);
                 int var16 = world.getBlockId(var13[0], var13[1], var13[2]);
                 if (var16 != 0 && var16 != 18)
                 {

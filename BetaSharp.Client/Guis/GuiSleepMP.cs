@@ -11,8 +11,8 @@ public class GuiSleepMP : GuiChat
     public override void InitGui()
     {
         Keyboard.enableRepeatEvents(true);
-        TranslationStorage translations = TranslationStorage.getInstance();
-        _controlList.Add(new GuiButton(ButtonStopSleep, Width / 2 - 100, Height - 40, translations.translateKey("multiplayer.stopSleeping")));
+        TranslationStorage translations = TranslationStorage.Instance;
+        _controlList.Add(new GuiButton(ButtonStopSleep, Width / 2 - 100, Height - 40, translations.TranslateKey("multiplayer.stopSleeping")));
     }
 
     public override void OnGuiClosed()

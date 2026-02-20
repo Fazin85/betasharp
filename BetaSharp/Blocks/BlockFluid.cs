@@ -257,9 +257,9 @@ public abstract class BlockFluid : Block
 
         if (material == Material.Lava && world.getMaterial(x, y + 1, z) == Material.Air && !world.isOpaque(x, y + 1, z) && random.NextInt(100) == 0)
         {
-            double particleX = (double)((float)x + random.NextFloat());
-            double particleY = (double)y + maxY;
-            double particleZ = (double)((float)z + random.NextFloat());
+            double particleX = (double)(x + random.NextFloat());
+            double particleY = (double)y + BoundingBox.maxY;
+            double particleZ = (double)(z + random.NextFloat());
             world.addParticle("lava", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
         }
 
@@ -354,7 +354,7 @@ public abstract class BlockFluid : Block
 
     private static Vector3D<double> Normalize(Vector3D<double> vec)
     {
-        double length = (double)MathHelper.sqrt_double(vec.X * vec.X + vec.Y * vec.Y + vec.Z * vec.Z);
+        double length = (double)MathHelper.Sqrt(vec.X * vec.X + vec.Y * vec.Y + vec.Z * vec.Z);
         return length < 1.0E-4D ? new(0.0) : new(vec.X / length, vec.Y / length, vec.Z / length);
     }
 }

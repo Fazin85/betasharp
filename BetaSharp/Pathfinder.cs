@@ -33,9 +33,9 @@ public class Pathfinder : java.lang.Object
     {
         path.clearPath();
         pointMap.Clear();
-        PathPoint var9 = openPoint(MathHelper.floor_double(var1.boundingBox.minX), MathHelper.floor_double(var1.boundingBox.minY), MathHelper.floor_double(var1.boundingBox.minZ));
-        PathPoint var10 = openPoint(MathHelper.floor_double(var2 - (double)(var1.width / 2.0F)), MathHelper.floor_double(var4), MathHelper.floor_double(var6 - (double)(var1.width / 2.0F)));
-        PathPoint var11 = new(MathHelper.floor_float(var1.width + 1.0F), MathHelper.floor_float(var1.height + 1.0F), MathHelper.floor_float(var1.width + 1.0F));
+        PathPoint var9 = openPoint(MathHelper.Floor(var1.boundingBox.minX), MathHelper.Floor(var1.boundingBox.minY), MathHelper.Floor(var1.boundingBox.minZ));
+        PathPoint var10 = openPoint(MathHelper.Floor(var2 - (double)(var1.width / 2.0F)), MathHelper.Floor(var4), MathHelper.Floor(var6 - (double)(var1.width / 2.0F)));
+        PathPoint var11 = new(MathHelper.Floor(var1.width + 1.0F), MathHelper.Floor(var1.height + 1.0F), MathHelper.Floor(var1.width + 1.0F));
         PathEntity var12 = addToPath(var1, var9, var10, var11, var8);
         return var12;
     }

@@ -19,7 +19,7 @@ public class BlockSnow : Block
     {
         int meta = world.getBlockMeta(x, y, z) & 7;
         return meta >= 3 ?
-            new Box((double)x + minX, (double)y + minY, (double)z + minZ, (double)x + maxX, (double)((float)y + 0.5F), (double)z + maxZ) :
+            new Box(x + BoundingBox.minX, y + BoundingBox.minY, z + BoundingBox.minZ, x + BoundingBox.maxX, (double)((float)y + 0.5F), z + BoundingBox.maxZ) :
             null;
     }
 

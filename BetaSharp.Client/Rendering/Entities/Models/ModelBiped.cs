@@ -81,12 +81,12 @@ public class ModelBiped : ModelBase
         bipedHead.rotateAngleX = var5 / (180.0F / (float)Math.PI);
         bipedHeadwear.rotateAngleY = bipedHead.rotateAngleY;
         bipedHeadwear.rotateAngleX = bipedHead.rotateAngleX;
-        bipedRightArm.rotateAngleX = MathHelper.cos(var1 * 0.6662F + (float)Math.PI) * 2.0F * var2 * 0.5F;
-        bipedLeftArm.rotateAngleX = MathHelper.cos(var1 * 0.6662F) * 2.0F * var2 * 0.5F;
+        bipedRightArm.rotateAngleX = MathHelper.Cos(var1 * 0.6662F + (float)Math.PI) * 2.0F * var2 * 0.5F;
+        bipedLeftArm.rotateAngleX = MathHelper.Cos(var1 * 0.6662F) * 2.0F * var2 * 0.5F;
         bipedRightArm.rotateAngleZ = 0.0F;
         bipedLeftArm.rotateAngleZ = 0.0F;
-        bipedRightLeg.rotateAngleX = MathHelper.cos(var1 * 0.6662F) * 1.4F * var2;
-        bipedLeftLeg.rotateAngleX = MathHelper.cos(var1 * 0.6662F + (float)Math.PI) * 1.4F * var2;
+        bipedRightLeg.rotateAngleX = MathHelper.Cos(var1 * 0.6662F) * 1.4F * var2;
+        bipedLeftLeg.rotateAngleX = MathHelper.Cos(var1 * 0.6662F + (float)Math.PI) * 1.4F * var2;
         bipedRightLeg.rotateAngleY = 0.0F;
         bipedLeftLeg.rotateAngleY = 0.0F;
         if (isRiding)
@@ -114,11 +114,11 @@ public class ModelBiped : ModelBase
         if (onGround > -9990.0F)
         {
             float var7 = onGround;
-            bipedBody.rotateAngleY = MathHelper.sin(MathHelper.sqrt_float(var7) * (float)Math.PI * 2.0F) * 0.2F;
-            bipedRightArm.rotationPointZ = MathHelper.sin(bipedBody.rotateAngleY) * 5.0F;
-            bipedRightArm.rotationPointX = -MathHelper.cos(bipedBody.rotateAngleY) * 5.0F;
-            bipedLeftArm.rotationPointZ = -MathHelper.sin(bipedBody.rotateAngleY) * 5.0F;
-            bipedLeftArm.rotationPointX = MathHelper.cos(bipedBody.rotateAngleY) * 5.0F;
+            bipedBody.rotateAngleY = MathHelper.Sin(MathHelper.Sqrt(var7) * (float)Math.PI * 2.0F) * 0.2F;
+            bipedRightArm.rotationPointZ = MathHelper.Sin(bipedBody.rotateAngleY) * 5.0F;
+            bipedRightArm.rotationPointX = -MathHelper.Cos(bipedBody.rotateAngleY) * 5.0F;
+            bipedLeftArm.rotationPointZ = -MathHelper.Sin(bipedBody.rotateAngleY) * 5.0F;
+            bipedLeftArm.rotationPointX = MathHelper.Cos(bipedBody.rotateAngleY) * 5.0F;
             bipedRightArm.rotateAngleY += bipedBody.rotateAngleY;
             bipedLeftArm.rotateAngleY += bipedBody.rotateAngleY;
             bipedLeftArm.rotateAngleX += bipedBody.rotateAngleY;
@@ -126,11 +126,11 @@ public class ModelBiped : ModelBase
             var7 *= var7;
             var7 *= var7;
             var7 = 1.0F - var7;
-            float var8 = MathHelper.sin(var7 * (float)Math.PI);
-            float var9 = MathHelper.sin(onGround * (float)Math.PI) * -(bipedHead.rotateAngleX - 0.7F) * (12.0F / 16.0F);
+            float var8 = MathHelper.Sin(var7 * (float)Math.PI);
+            float var9 = MathHelper.Sin(onGround * (float)Math.PI) * -(bipedHead.rotateAngleX - 0.7F) * (12.0F / 16.0F);
             bipedRightArm.rotateAngleX = (float)(bipedRightArm.rotateAngleX - ((double)var8 * 1.2D + (double)var9));
             bipedRightArm.rotateAngleY += bipedBody.rotateAngleY * 2.0F;
-            bipedRightArm.rotateAngleZ = MathHelper.sin(onGround * (float)Math.PI) * -0.4F;
+            bipedRightArm.rotateAngleZ = MathHelper.Sin(onGround * (float)Math.PI) * -0.4F;
         }
 
         if (isSneak)
@@ -156,10 +156,10 @@ public class ModelBiped : ModelBase
             bipedHead.rotationPointY = 0.0F;
         }
 
-        bipedRightArm.rotateAngleZ += MathHelper.cos(var3 * 0.09F) * 0.05F + 0.05F;
-        bipedLeftArm.rotateAngleZ -= MathHelper.cos(var3 * 0.09F) * 0.05F + 0.05F;
-        bipedRightArm.rotateAngleX += MathHelper.sin(var3 * 0.067F) * 0.05F;
-        bipedLeftArm.rotateAngleX -= MathHelper.sin(var3 * 0.067F) * 0.05F;
+        bipedRightArm.rotateAngleZ += MathHelper.Cos(var3 * 0.09F) * 0.05F + 0.05F;
+        bipedLeftArm.rotateAngleZ -= MathHelper.Cos(var3 * 0.09F) * 0.05F + 0.05F;
+        bipedRightArm.rotateAngleX += MathHelper.Sin(var3 * 0.067F) * 0.05F;
+        bipedLeftArm.rotateAngleX -= MathHelper.Sin(var3 * 0.067F) * 0.05F;
     }
 
     public void renderEars(float var1)

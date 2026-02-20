@@ -58,7 +58,7 @@ public class OtherPlayerEntity : EntityPlayer
         lastWalkAnimationSpeed = walkAnimationSpeed;
         double dx = x - prevX;
         double dz = z - prevZ;
-        float horizontalDistance = MathHelper.sqrt_double(dx * dx + dz * dz) * 4.0F;
+        float horizontalDistance = MathHelper.Sqrt(dx * dx + dz * dz) * 4.0F;
         if (horizontalDistance > 1.0F)
         {
             horizontalDistance = 1.0F;
@@ -100,7 +100,7 @@ public class OtherPlayerEntity : EntityPlayer
         }
 
         prevStepBobbingAmount = stepBobbingAmount;
-        float horizontalSpeed = MathHelper.sqrt_double(velocityX * velocityX + velocityZ * velocityZ);
+        float horizontalSpeed = MathHelper.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
         float tiltAmount = (float)java.lang.Math.atan(-velocityY * (double)0.2F) * 15.0F;
         if (horizontalSpeed > 0.1F)
         {

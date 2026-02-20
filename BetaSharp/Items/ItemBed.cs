@@ -22,7 +22,7 @@ public class ItemBed : Item
         {
             ++y;
             BlockBed blockBed = (BlockBed)Block.Bed;
-            int direction = MathHelper.floor_double((double)(entityPlayer.yaw * 4.0F / 360.0F) + 0.5D) & 3;
+            int direction = MathHelper.Floor((double)(entityPlayer.yaw * 4.0F / 360.0F) + 0.5D) & 3;
             sbyte headOffsetX = 0;
             sbyte headOffsetZ = 0;
             if (direction == 0)

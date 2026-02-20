@@ -257,9 +257,9 @@ public class EntityMinecart : Entity, IInventory
             prevY = y;
             prevZ = z;
             velocityY -= (double)0.04F;
-            int floorX = MathHelper.floor_double(x);
-            int floorY = MathHelper.floor_double(y);
-            int floorZ = MathHelper.floor_double(z);
+            int floorX = MathHelper.Floor(x);
+            int floorY = MathHelper.Floor(y);
+            int floorZ = MathHelper.Floor(z);
             if (BlockRail.isRail(world, floorX, floorY - 1, floorZ))
             {
                 --floorY;
@@ -404,11 +404,11 @@ public class EntityMinecart : Entity, IInventory
                 }
 
                 move(var35, 0.0D, var37);
-                if (var14[0][1] != 0 && MathHelper.floor_double(x) - floorX == var14[0][0] && MathHelper.floor_double(z) - floorZ == var14[0][2])
+                if (var14[0][1] != 0 && MathHelper.Floor(x) - floorX == var14[0][0] && MathHelper.Floor(z) - floorZ == var14[0][2])
                 {
                     setPosition(x, y + (double)var14[0][1], z);
                 }
-                else if (var14[1][1] != 0 && MathHelper.floor_double(x) - floorX == var14[1][0] && MathHelper.floor_double(z) - floorZ == var14[1][2])
+                else if (var14[1][1] != 0 && MathHelper.Floor(x) - floorX == var14[1][0] && MathHelper.Floor(z) - floorZ == var14[1][2])
                 {
                     setPosition(x, y + (double)var14[1][1], z);
                 }
@@ -423,7 +423,7 @@ public class EntityMinecart : Entity, IInventory
                 {
                     if (type == 2)
                     {
-                        var39 = (double)MathHelper.sqrt_double(pushX * pushX + pushZ * pushZ);
+                        var39 = (double)MathHelper.Sqrt(pushX * pushX + pushZ * pushZ);
                         if (var39 > 0.01D)
                         {
                             var6 = true;
@@ -463,8 +463,8 @@ public class EntityMinecart : Entity, IInventory
                     setPosition(x, var52.Value.y, z);
                 }
 
-                int var53 = MathHelper.floor_double(x);
-                int var54 = MathHelper.floor_double(z);
+                int var53 = MathHelper.Floor(x);
+                int var54 = MathHelper.Floor(z);
                 if (var53 != floorX || var54 != floorZ)
                 {
                     var23 = System.Math.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
@@ -475,7 +475,7 @@ public class EntityMinecart : Entity, IInventory
                 double var42;
                 if (type == 2)
                 {
-                    var42 = (double)MathHelper.sqrt_double(pushX * pushX + pushZ * pushZ);
+                    var42 = (double)MathHelper.Sqrt(pushX * pushX + pushZ * pushZ);
                     if (var42 > 0.01D && velocityX * velocityX + velocityZ * velocityZ > 0.001D)
                     {
                         pushX /= var42;
@@ -627,9 +627,9 @@ public class EntityMinecart : Entity, IInventory
 
     public Vec3D? func_515_a(double x, double y, double z, double var7)
     {
-        int var9 = MathHelper.floor_double(x);
-        int var10 = MathHelper.floor_double(y);
-        int var11 = MathHelper.floor_double(z);
+        int var9 = MathHelper.Floor(x);
+        int var10 = MathHelper.Floor(y);
+        int var11 = MathHelper.Floor(z);
         if (BlockRail.isRail(world, var9, var10 - 1, var11))
         {
             --var10;
@@ -662,11 +662,11 @@ public class EntityMinecart : Entity, IInventory
             var17 /= var19;
             x += var15 * var7;
             z += var17 * var7;
-            if (var14[0][1] != 0 && MathHelper.floor_double(x) - var9 == var14[0][0] && MathHelper.floor_double(z) - var11 == var14[0][2])
+            if (var14[0][1] != 0 && MathHelper.Floor(x) - var9 == var14[0][0] && MathHelper.Floor(z) - var11 == var14[0][2])
             {
                 y += (double)var14[0][1];
             }
-            else if (var14[1][1] != 0 && MathHelper.floor_double(x) - var9 == var14[1][0] && MathHelper.floor_double(z) - var11 == var14[1][2])
+            else if (var14[1][1] != 0 && MathHelper.Floor(x) - var9 == var14[1][0] && MathHelper.Floor(z) - var11 == var14[1][2])
             {
                 y += (double)var14[1][1];
             }
@@ -677,9 +677,9 @@ public class EntityMinecart : Entity, IInventory
 
     public Vec3D? func_514_g(double x, double y, double z)
     {
-        int floorX = MathHelper.floor_double(x);
-        int floorY = MathHelper.floor_double(y);
-        int floorZ = MathHelper.floor_double(z);
+        int floorX = MathHelper.Floor(x);
+        int floorY = MathHelper.Floor(y);
+        int floorZ = MathHelper.Floor(z);
         if (BlockRail.isRail(world, floorX, floorY - 1, floorZ))
         {
             --floorY;
@@ -827,7 +827,7 @@ public class EntityMinecart : Entity, IInventory
                 double var6 = var2 * var2 + var4 * var4;
                 if (var6 >= (double)1.0E-4F)
                 {
-                    var6 = (double)MathHelper.sqrt_double(var6);
+                    var6 = (double)MathHelper.Sqrt(var6);
                     var2 /= var6;
                     var4 /= var6;
                     double var8 = 1.0D / var6;

@@ -123,12 +123,12 @@ public abstract class EntityRenderer
         double targetX = target.lastTickX + (target.x - target.lastTickX) * (double)tickDelta;
         double targetY = target.lastTickY + (target.y - target.lastTickY) * (double)tickDelta + (double)target.getShadowRadius();
         double targetZ = target.lastTickZ + (target.z - target.lastTickZ) * (double)tickDelta;
-        int minX = MathHelper.floor_double(targetX - (double)radius);
-        int maxX = MathHelper.floor_double(targetX + (double)radius);
-        int minY = MathHelper.floor_double(targetY - (double)radius);
-        int maxY = MathHelper.floor_double(targetY);
-        int minZ = MathHelper.floor_double(targetZ - (double)radius);
-        int maxZ = MathHelper.floor_double(targetZ + (double)radius);
+        int minX = MathHelper.Floor(targetX - (double)radius);
+        int maxX = MathHelper.Floor(targetX + (double)radius);
+        int minY = MathHelper.Floor(targetY - (double)radius);
+        int maxY = MathHelper.Floor(targetY);
+        int minZ = MathHelper.Floor(targetZ - (double)radius);
+        int maxZ = MathHelper.Floor(targetZ + (double)radius);
         double dx = x - targetX;
         double dy = y - targetY;
         double dz = z - targetZ;
@@ -187,11 +187,11 @@ public abstract class EntityRenderer
                 }
 
                 var19.setColorRGBA_F(1.0F, 1.0F, 1.0F, (float)shadowDarkness);
-                double minX = blockX + block.minX + dx;
-                double maxX = blockX + block.maxX + dx;
-                double minY = blockY + block.minY + dy + 1.0D / 64.0D;
-                double minZ = blockZ + block.minZ + dz;
-                double maxZ = blockZ + block.maxZ + dz;
+                double minX = blockX + block.BoundingBox.minX + dx;
+                double maxX = blockX + block.BoundingBox.maxX + dx;
+                double minY = blockY + block.BoundingBox.minY + dy + 1.0D / 64.0D;
+                double minZ = blockZ + block.BoundingBox.minZ + dz;
+                double maxZ = blockZ + block.BoundingBox.maxZ + dz;
                 float var32 = (float)((x - minX) / 2.0D / (double)radius + 0.5D);
                 float var33 = (float)((x - maxX) / 2.0D / (double)radius + 0.5D);
                 float var34 = (float)((z - minZ) / 2.0D / (double)radius + 0.5D);

@@ -234,9 +234,9 @@ public class WorldRenderer : IWorldAccess
             for (var6 = 0; var6 < var5.Count; ++var6)
             {
                 var7 = var5[var6];
-                if (var7.shouldRender(var1) && (var7.ignoreFrustumCheck || culler.isBoundingBoxInFrustum(var7.boundingBox)) && (var7 != mc.camera || mc.options.cameraMode != EnumCameraMode.FirstPerson || mc.camera.isSleeping()))
+                if (var7.shouldRender(var1) && (var7.ignoreFrustumCheck || culler.isBoundingBoxInFrustum(var7.boundingBox)) && (var7 != mc.camera || mc.options.CameraMode != EnumCameraMode.FirstPerson || mc.camera.isSleeping()))
                 {
-                    int var8 = MathHelper.floor_double(var7.y);
+                    int var8 = MathHelper.Floor(var7.y);
                     if (var8 < 0)
                     {
                         var8 = 0;
@@ -247,7 +247,7 @@ public class WorldRenderer : IWorldAccess
                         var8 = 127;
                     }
 
-                    if (world.isPosLoaded(MathHelper.floor_double(var7.x), var8, MathHelper.floor_double(var7.z)))
+                    if (world.isPosLoaded(MathHelper.Floor(var7.x), var8, MathHelper.Floor(var7.z)))
                     {
                         ++countEntitiesRendered;
                         EntityRenderDispatcher.instance.renderEntity(var7, var3);
@@ -286,7 +286,7 @@ public class WorldRenderer : IWorldAccess
 
         if (pass == 0)
         {
-            chunkRenderer.Render(cam, new(var33, var7, var9), renderDistance, world.getTime(), (float)var3, mc.options.environmentAnimation);
+            chunkRenderer.Render(cam, new(var33, var7, var9), renderDistance, world.getTime(), (float)var3, mc.options.EnvironmentAnimation);
         }
         else
         {
@@ -351,8 +351,8 @@ public class WorldRenderer : IWorldAccess
                 for (int var20 = 0; var20 <= var19; ++var20)
                 {
                     var14 = var20 * (float)java.lang.Math.PI * 2.0F / var19;
-                    float var15 = MathHelper.sin(var14);
-                    float var16 = MathHelper.cos(var14);
+                    float var15 = MathHelper.Sin(var14);
+                    float var16 = MathHelper.Cos(var14);
                     var17.addVertex((double)(var15 * 120.0F), (double)(var16 * 120.0F), (double)(-var16 * 40.0F * var18[3]));
                 }
 
@@ -536,8 +536,8 @@ public class WorldRenderer : IWorldAccess
         double var6 = (mc.camera.prevX + (mc.camera.x - mc.camera.prevX) * (double)var1 + (double)((cloudOffsetX + var1) * 0.03F)) / (double)var4;
         double var8 = (mc.camera.prevZ + (mc.camera.z - mc.camera.prevZ) * (double)var1) / (double)var4 + (double)0.33F;
         float var10 = world.dimension.getCloudHeight() - var2 + 0.33F;
-        int var11 = MathHelper.floor_double(var6 / 2048.0D);
-        int var12 = MathHelper.floor_double(var8 / 2048.0D);
+        int var11 = MathHelper.Floor(var6 / 2048.0D);
+        int var12 = MathHelper.Floor(var8 / 2048.0D);
         var6 -= var11 * 2048;
         var8 -= var12 * 2048;
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)renderEngine.GetTextureId("/environment/clouds.png"));
@@ -549,10 +549,10 @@ public class WorldRenderer : IWorldAccess
         float var16 = (float)var13.Z;
 
         float var19 = 1 / 256f;
-        float var17 = MathHelper.floor_double(var6) * var19;
-        float var18 = MathHelper.floor_double(var8) * var19;
-        float var20 = (float)(var6 - MathHelper.floor_double(var6));
-        float var21 = (float)(var8 - MathHelper.floor_double(var8));
+        float var17 = MathHelper.Floor(var6) * var19;
+        float var18 = MathHelper.Floor(var8) * var19;
+        float var20 = (float)(var6 - MathHelper.Floor(var6));
+        float var21 = (float)(var8 - MathHelper.Floor(var8));
 
         GLManager.GL.Scale(var4, 1.0F, var4);
 
@@ -611,7 +611,7 @@ public class WorldRenderer : IWorldAccess
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.Enable(GLEnum.AlphaTest);
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.One);
-        GLManager.GL.Color4(1.0F, 1.0F, 1.0F, (MathHelper.sin(java.lang.System.currentTimeMillis() / 100.0F) * 0.2F + 0.4F) * 0.5F);
+        GLManager.GL.Color4(1.0F, 1.0F, 1.0F, (MathHelper.Sin(java.lang.System.currentTimeMillis() / 100.0F) * 0.2F + 0.4F) * 0.5F);
         int var8;
         if (var3 == 0)
         {
@@ -650,8 +650,8 @@ public class WorldRenderer : IWorldAccess
         else if (var4 != null)
         {
             GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
-            float var16 = MathHelper.sin(java.lang.System.currentTimeMillis() / 100.0F) * 0.2F + 0.8F;
-            GLManager.GL.Color4(var16, var16, var16, MathHelper.sin(java.lang.System.currentTimeMillis() / 200.0F) * 0.2F + 0.5F);
+            float var16 = MathHelper.Sin(java.lang.System.currentTimeMillis() / 100.0F) * 0.2F + 0.8F;
+            GLManager.GL.Color4(var16, var16, var16, MathHelper.Sin(java.lang.System.currentTimeMillis() / 200.0F) * 0.2F + 0.5F);
             var8 = renderEngine.GetTextureId("/terrain.png");
             GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var8);
             int var17 = var2.blockX;
@@ -751,12 +751,12 @@ public class WorldRenderer : IWorldAccess
 
     public void MarkBlocksDirty(int var1, int var2, int var3, int var4, int var5, int var6)
     {
-        int var7 = MathHelper.floorDiv(var1, SubChunkRenderer.Size);
-        int var8 = MathHelper.floorDiv(var2, SubChunkRenderer.Size);
-        int var9 = MathHelper.floorDiv(var3, SubChunkRenderer.Size);
-        int var10 = MathHelper.floorDiv(var4, SubChunkRenderer.Size);
-        int var11 = MathHelper.floorDiv(var5, SubChunkRenderer.Size);
-        int var12 = MathHelper.floorDiv(var6, SubChunkRenderer.Size);
+        int var7 = MathHelper.FloorDiv(var1, SubChunkRenderer.Size);
+        int var8 = MathHelper.FloorDiv(var2, SubChunkRenderer.Size);
+        int var9 = MathHelper.FloorDiv(var3, SubChunkRenderer.Size);
+        int var10 = MathHelper.FloorDiv(var4, SubChunkRenderer.Size);
+        int var11 = MathHelper.FloorDiv(var5, SubChunkRenderer.Size);
+        int var12 = MathHelper.FloorDiv(var6, SubChunkRenderer.Size);
 
         for (int var13 = var7; var13 <= var10; ++var13)
         {
@@ -978,12 +978,12 @@ public class WorldRenderer : IWorldAccess
                 }
 
                 return;
-            case 2001:
+            case 2001: // This is for breaking a block
                 var16 = var6 & 255;
                 if (var16 > 0)
                 {
                     Block var17 = Block.Blocks[var16];
-                    mc.sndManager.PlaySound(var17.soundGroup.stepSoundDir(), var3 + 0.5F, var4 + 0.5F, var5 + 0.5F, (var17.soundGroup.getVolume() + 1.0F) / 2.0F, var17.soundGroup.getPitch() * 0.8F);
+                    mc.sndManager.PlaySound(var17.soundGroup.BreakSound, var3 + 0.5F, var4 + 0.5F, var5 + 0.5F, (var17.soundGroup.Volume + 1.0F) / 2.0F, var17.soundGroup.Pitch * 0.8F);
                 }
 
                 mc.particleManager.addBlockDestroyEffects(var3, var4, var5, var6 & 255, var6 >> 8 & 255);

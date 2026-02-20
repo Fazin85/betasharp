@@ -62,11 +62,11 @@ public class ParticleManager
 
     public void renderParticles(Entity var1, float var2)
     {
-        float var3 = MathHelper.cos(var1.yaw * (float)Math.PI / 180.0F);
-        float var4 = MathHelper.sin(var1.yaw * (float)Math.PI / 180.0F);
-        float var5 = -var4 * MathHelper.sin(var1.pitch * (float)Math.PI / 180.0F);
-        float var6 = var3 * MathHelper.sin(var1.pitch * (float)Math.PI / 180.0F);
-        float var7 = MathHelper.cos(var1.pitch * (float)Math.PI / 180.0F);
+        float var3 = MathHelper.Cos(var1.yaw * (float)Math.PI / 180.0F);
+        float var4 = MathHelper.Sin(var1.yaw * (float)Math.PI / 180.0F);
+        float var5 = -var4 * MathHelper.Sin(var1.pitch * (float)Math.PI / 180.0F);
+        float var6 = var3 * MathHelper.Sin(var1.pitch * (float)Math.PI / 180.0F);
+        float var7 = MathHelper.Cos(var1.pitch * (float)Math.PI / 180.0F);
         EntityFX.interpPosX = var1.lastTickX + (var1.x - var1.lastTickX) * (double)var2;
         EntityFX.interpPosY = var1.lastTickY + (var1.y - var1.lastTickY) * (double)var2;
         EntityFX.interpPosZ = var1.lastTickZ + (var1.z - var1.lastTickZ) * (double)var2;
@@ -165,38 +165,39 @@ public class ParticleManager
         if (var5 != 0)
         {
             Block var6 = Block.Blocks[var5];
+            Box blockBB = var6.BoundingBox;
             float var7 = 0.1F;
-            double var8 = (double)var1 + _rand.NextDouble() * (var6.maxX - var6.minX - (double)(var7 * 2.0F)) + (double)var7 + var6.minX;
-            double var10 = (double)var2 + _rand.NextDouble() * (var6.maxY - var6.minY - (double)(var7 * 2.0F)) + (double)var7 + var6.minY;
-            double var12 = (double)var3 + _rand.NextDouble() * (var6.maxZ - var6.minZ - (double)(var7 * 2.0F)) + (double)var7 + var6.minZ;
+            double var8 = var1 + _rand.NextDouble() * (blockBB.maxX - blockBB.minX - (var7 * 2.0F)) + var7 + blockBB.minX;
+            double var10 = var2 + _rand.NextDouble() * (blockBB.maxY - blockBB.minY - (var7 * 2.0F)) + var7 + blockBB.minY;
+            double var12 = var3 + _rand.NextDouble() * (blockBB.maxZ - blockBB.minZ - (var7 * 2.0F)) + var7 + blockBB.minZ;
             if (var4 == 0)
             {
-                var10 = (double)var2 + var6.minY - (double)var7;
+                var10 = var2 + blockBB.minY - var7;
             }
 
             if (var4 == 1)
             {
-                var10 = (double)var2 + var6.maxY + (double)var7;
+                var10 = var2 + blockBB.maxY + var7;
             }
 
             if (var4 == 2)
             {
-                var12 = (double)var3 + var6.minZ - (double)var7;
+                var12 = var3 + blockBB.minZ - var7;
             }
 
             if (var4 == 3)
             {
-                var12 = (double)var3 + var6.maxZ + (double)var7;
+                var12 = var3 + blockBB.maxZ + var7;
             }
 
             if (var4 == 4)
             {
-                var8 = (double)var1 + var6.minX - (double)var7;
+                var8 = var1 + blockBB.minX - var7;
             }
 
             if (var4 == 5)
             {
-                var8 = (double)var1 + var6.maxX + (double)var7;
+                var8 = var1 + blockBB.maxX + var7;
             }
 
             addEffect((new EntityDiggingFX(worldObj, var8, var10, var12, 0.0D, 0.0D, 0.0D, var6, var4, worldObj.getBlockMeta(var1, var2, var3))).func_4041_a(var1, var2, var3).scaleVelocity(0.2F).scaleSize(0.6F));

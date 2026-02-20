@@ -59,9 +59,9 @@ public class Explosion : java.lang.Object
 
                         for (float var21 = 0.3F; var14 > 0.0F; var14 -= var21 * (12.0F / 16.0F))
                         {
-                            int var22 = MathHelper.floor_double(var15);
-                            int var23 = MathHelper.floor_double(var17);
-                            int var24 = MathHelper.floor_double(var19);
+                            int var22 = MathHelper.Floor(var15);
+                            int var23 = MathHelper.Floor(var17);
+                            int var24 = MathHelper.Floor(var19);
                             int var25 = worldObj.getBlockId(var22, var23, var24);
                             if (var25 > 0)
                             {
@@ -83,12 +83,12 @@ public class Explosion : java.lang.Object
         }
 
         explosionSize *= 2.0F;
-        var3 = MathHelper.floor_double(explosionX - explosionSize - 1.0D);
-        var4 = MathHelper.floor_double(explosionX + explosionSize + 1.0D);
-        var5 = MathHelper.floor_double(explosionY - explosionSize - 1.0D);
-        int var29 = MathHelper.floor_double(explosionY + explosionSize + 1.0D);
-        int var7 = MathHelper.floor_double(explosionZ - explosionSize - 1.0D);
-        int var30 = MathHelper.floor_double(explosionZ + explosionSize + 1.0D);
+        var3 = MathHelper.Floor(explosionX - explosionSize - 1.0D);
+        var4 = MathHelper.Floor(explosionX + explosionSize + 1.0D);
+        var5 = MathHelper.Floor(explosionY - explosionSize - 1.0D);
+        int var29 = MathHelper.Floor(explosionY + explosionSize + 1.0D);
+        int var7 = MathHelper.Floor(explosionZ - explosionSize - 1.0D);
+        int var30 = MathHelper.Floor(explosionZ + explosionSize + 1.0D);
         var var9 = worldObj.getEntities(exploder, new Box(var3, var5, var7, var4, var29, var30));
         Vec3D var31 = new Vec3D(explosionX, explosionY, explosionZ);
 
@@ -101,7 +101,7 @@ public class Explosion : java.lang.Object
                 var15 = var33.x - explosionX;
                 var17 = var33.y - explosionY;
                 var19 = var33.z - explosionZ;
-                double var39 = (double)MathHelper.sqrt_double(var15 * var15 + var17 * var17 + var19 * var19);
+                double var39 = (double)MathHelper.Sqrt(var15 * var15 + var17 * var17 + var19 * var19);
                 var15 /= var39;
                 var17 /= var39;
                 var19 /= var39;
@@ -155,7 +155,7 @@ public class Explosion : java.lang.Object
                 double var15 = var9 - explosionX;
                 double var17 = var11 - explosionY;
                 double var19 = var13 - explosionZ;
-                double var21 = (double)MathHelper.sqrt_double(var15 * var15 + var17 * var17 + var19 * var19);
+                double var21 = (double)MathHelper.Sqrt(var15 * var15 + var17 * var17 + var19 * var19);
                 var15 /= var21;
                 var17 /= var21;
                 var19 /= var21;

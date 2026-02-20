@@ -26,11 +26,11 @@ public class GuiRenameWorld : GuiScreen
 
     public override void InitGui()
     {
-        TranslationStorage translations = TranslationStorage.getInstance();
+        TranslationStorage translations = TranslationStorage.Instance;
         Keyboard.enableRepeatEvents(true);
         _controlList.Clear();
-        _controlList.Add(new GuiButton(ButtonRename, Width / 2 - 100, Height / 4 + 96 + 12, translations.translateKey("selectWorld.renameButton")));
-        _controlList.Add(new GuiButton(ButtonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
+        _controlList.Add(new GuiButton(ButtonRename, Width / 2 - 100, Height / 4 + 96 + 12, translations.TranslateKey("selectWorld.renameButton")));
+        _controlList.Add(new GuiButton(ButtonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.TranslateKey("gui.cancel")));
         WorldStorageSource worldStorage = mc.getSaveLoader();
         WorldProperties worldProperties = worldStorage.getProperties(worldFolderName);
         string currentWorldName = worldProperties.LevelName;
@@ -83,10 +83,10 @@ public class GuiRenameWorld : GuiScreen
 
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        TranslationStorage translations = TranslationStorage.getInstance();
+        TranslationStorage translations = TranslationStorage.Instance;
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, translations.translateKey("selectWorld.renameTitle"), Width / 2, Height / 4 - 60 + 20, 0xFFFFFF);
-        DrawString(FontRenderer, translations.translateKey("selectWorld.enterName"), Width / 2 - 100, 47, 0xA0A0A0);
+        DrawCenteredString(FontRenderer, translations.TranslateKey("selectWorld.renameTitle"), Width / 2, Height / 4 - 60 + 20, 0xFFFFFF);
+        DrawString(FontRenderer, translations.TranslateKey("selectWorld.enterName"), Width / 2 - 100, 47, 0xA0A0A0);
         nameInputField.DrawTextBox();
         base.Render(mouseX, mouseY, partialTicks);
     }

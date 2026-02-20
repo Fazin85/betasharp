@@ -14,7 +14,7 @@ public class ScaledResolution
     {
         ScaledWidth = scaledWidth;
         ScaledHeight = scaledHeight;
-        int guiScale = options.guiScale;
+        int guiScale = options.GuiScale;
         scaleFactor = 1;
 
         if (guiScale == 0)

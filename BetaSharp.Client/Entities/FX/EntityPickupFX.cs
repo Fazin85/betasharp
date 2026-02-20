@@ -36,9 +36,9 @@ public class EntityPickupFX : EntityFX
         double renderX = targetX + (sourceX - targetX) * (double)lifeProgress;
         double renderY = targetY + (sourceY - targetY) * (double)lifeProgress;
         double renderZ = targetZ + (sourceZ - targetZ) * (double)lifeProgress;
-        int itemX = MathHelper.floor_double(renderX);
-        int itemY = MathHelper.floor_double(renderY + (double)(standingEyeHeight / 2.0F));
-        int itemZ = MathHelper.floor_double(renderZ);
+        int itemX = MathHelper.Floor(renderX);
+        int itemY = MathHelper.Floor(renderY + (double)(standingEyeHeight / 2.0F));
+        int itemZ = MathHelper.Floor(renderZ);
         float luminance = world.getLuminance(itemX, itemY, itemZ);
         renderX -= interpPosX;
         renderY -= interpPosY;

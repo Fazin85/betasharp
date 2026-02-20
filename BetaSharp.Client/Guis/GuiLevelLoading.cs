@@ -19,7 +19,7 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
         if (!_serverStarted)
         {
             _serverStarted = true;
-            mc.internalServer = new InternalServer(System.IO.Path.Combine(Minecraft.getMinecraftDir().getAbsolutePath(), "saves"), _worldDir, _seed.ToString(), 10, mc.options.difficulty);
+            mc.internalServer = new InternalServer(System.IO.Path.Combine(Minecraft.getMinecraftDir().getAbsolutePath(), "saves"), _worldDir, _seed.ToString(), 10, mc.options.Difficulty);
             new RunServerThread(mc.internalServer, "InternalServer").start();
         }
     }
@@ -57,7 +57,7 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
     public override void Render(int var1, int var2, float var3)
     {
         DrawDefaultBackground();
-        TranslationStorage var4 = TranslationStorage.getInstance();
+        TranslationStorage var4 = TranslationStorage.Instance;
 
         string title = "Loading level";
         string progressMsg = "";

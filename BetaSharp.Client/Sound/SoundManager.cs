@@ -35,7 +35,7 @@ public class SoundManager
     {
         _soundPoolStreaming.IsRandom = false;
         _options = options;
-        if (!_started && (options == null || options.soundVolume != 0.0F || options.musicVolume != 0.0F))
+        if (!_started && (options == null || options.SoundVolume != 0.0F || options.MusicVolume != 0.0F))
         {
             TryToSetLibraryAndCodecs();
         }
@@ -57,35 +57,35 @@ public class SoundManager
     private void TryToSetLibraryAndCodecs()
     {
 
-        float soundVolume = _options.soundVolume;
-        float musicVolume = _options.musicVolume;
-        _options.soundVolume = 0.0F;
-        _options.musicVolume = 0.0F;
-        _options.saveOptions();
+        float soundVolume = _options.SoundVolume;
+        float musicVolume = _options.MusicVolume;
+        _options.SoundVolume = 0.0F;
+        _options.MusicVolume = 0.0F;
+        _options.SaveOptions();
 
-        _options.soundVolume = soundVolume;
-        _options.musicVolume = musicVolume;
-        _options.saveOptions();
+        _options.SoundVolume = soundVolume;
+        _options.MusicVolume = musicVolume;
+        _options.SaveOptions();
 
         _started = true;
     }
 
     public void OnSoundOptionsChanged()
     {
-        if (!_started && (_options.soundVolume != 0.0F || _options.musicVolume != 0.0F))
+        if (!_started && (_options.SoundVolume != 0.0F || _options.MusicVolume != 0.0F))
         {
             TryToSetLibraryAndCodecs();
         }
 
         if (_started)
         {
-            if (_options.musicVolume == 0.0F)
+            if (_options.MusicVolume == 0.0F)
             {
                 _currentMusic?.Stop();
             }
             else
             {
-                _currentMusic?.Volume = _options.musicVolume * 100.0F;
+                _currentMusic?.Volume = _options.MusicVolume * 100.0F;
             }
         }
     }
@@ -205,7 +205,7 @@ public class SoundManager
 
     public void PlayRandomMusicIfReady()
     {
-        if (!_started || _options.musicVolume == 0.0F) return;
+        if (!_started || _options.MusicVolume == 0.0F) return;
 
         bool isMusicPlaying = _currentMusic != null && _currentMusic.Status == SoundStatus.Playing;
         bool isStreamingPlaying = _currentStreaming != null && _currentStreaming.Status == SoundStatus.Playing;
@@ -232,7 +232,7 @@ public class SoundManager
 
         _currentMusic = new Music(musicName)
         {
-            Volume = _options.musicVolume * 100.0F,
+            Volume = _options.MusicVolume * 100.0F,
             IsLooping = false,
             RelativeToListener = true,
             Position = new Vector3f(0, 0, 0)
@@ -243,7 +243,7 @@ public class SoundManager
 
     public void UpdateListener(EntityLiving player, float partialTicks)
     {
-        if (!_started || _options.soundVolume == 0.0F || player == null) return;
+        if (!_started || _options.SoundVolume == 0.0F || player == null) return;
 
 
         float yaw = player.prevYaw + (player.yaw - player.prevYaw) * partialTicks;
@@ -251,8 +251,8 @@ public class SoundManager
         double y = player.prevY + (player.y - player.prevY) * (double)partialTicks;
         double z = player.prevZ + (player.z - player.prevZ) * (double)partialTicks;
 
-        float lookX = MathHelper.cos(-yaw * ((float)Math.PI / 180.0F) - (float)Math.PI);
-        float lookY = MathHelper.sin(-yaw * ((float)Math.PI / 180.0F) - (float)Math.PI);
+        float lookX = MathHelper.Cos(-yaw * ((float)Math.PI / 180.0F) - (float)Math.PI);
+        float lookY = MathHelper.Sin(-yaw * ((float)Math.PI / 180.0F) - (float)Math.PI);
 
         Listener.Position = new Vector3f((float)x, (float)y, (float)z);
         Listener.Direction = new Vector3f(-lookY, 0.0F, -lookX);
@@ -261,7 +261,7 @@ public class SoundManager
 
     public void PlayStreaming(string name, float x, float y, float z, float volume, float pitch)
     {
-        if (!(_started && _options.soundVolume != 0.0F)) return;
+        if (!(_started && _options.SoundVolume != 0.0F)) return;
 
         if (_currentStreaming != null && _currentStreaming.Status == SoundStatus.Playing)
         {
@@ -282,7 +282,7 @@ public class SoundManager
         _currentStreaming?.Dispose();
         _currentStreaming = new Music(SanitizePath(entry.SoundUrl.LocalPath))
         {
-            Volume = 0.5F * _options.soundVolume * 100.0F,
+            Volume = 0.5F * _options.SoundVolume * 100.0F,
             IsLooping = false,
             RelativeToListener = false,
             Position = new(x, y, z)
@@ -293,7 +293,7 @@ public class SoundManager
 
     public void PlaySound(string name, float x, float y, float z, float volume, float pitch)
     {
-        if (!(_started && _options.soundVolume != 0.0F)) return;
+        if (!(_started && _options.SoundVolume != 0.0F)) return;
 
         SoundBuffer buffer = getRandomSoundBuffer(name);
         if (buffer == null || volume <= 0.0F) return;
@@ -321,14 +321,14 @@ public class SoundManager
         {
             finalVolume = 1.0F;
         }
-        sound.Volume = finalVolume * _options.soundVolume * 100.0F;
+        sound.Volume = finalVolume * _options.SoundVolume * 100.0F;
 
         sound.Play();
     }
 
     public void PlaySoundFX(string name, float volume, float pitch)
     {
-        if (!(_started && _options.soundVolume != 0.0F)) return;
+        if (!(_started && _options.SoundVolume != 0.0F)) return;
 
         SoundBuffer buffer = getRandomSoundBuffer(name);
         if (buffer == null) return;
@@ -348,7 +348,7 @@ public class SoundManager
             finalVolume = 1.0F;
         }
         finalVolume *= 0.25F;
-        sound.Volume = finalVolume * _options.soundVolume * 100.0F;
+        sound.Volume = finalVolume * _options.SoundVolume * 100.0F;
 
         sound.MinDistance = 1.0f;
         sound.Attenuation = 1.0f;

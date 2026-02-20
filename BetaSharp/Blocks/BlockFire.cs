@@ -1,4 +1,5 @@
 using BetaSharp.Blocks.Materials;
+using BetaSharp.Rules;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
@@ -65,6 +66,11 @@ public class BlockFire : Block
 
     public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
+        if (!world.Rules.GetBool(DefaultRules.DoFireTick))
+        {
+            return;
+        }
+
         bool isOnNetherrack = world.getBlockId(x, y - 1, z) == Block.Netherrack.id;
         if (!canPlaceAt(world, x, y, z))
         {

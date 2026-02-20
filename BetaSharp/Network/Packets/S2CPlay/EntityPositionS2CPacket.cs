@@ -32,9 +32,9 @@ public class EntityPositionS2CPacket : Packet
     public EntityPositionS2CPacket(Entity var1)
     {
         id = var1.id;
-        x = MathHelper.floor_double(var1.x * 32.0D);
-        y = MathHelper.floor_double(var1.y * 32.0D);
-        z = MathHelper.floor_double(var1.z * 32.0D);
+        x = MathHelper.Floor(var1.x * 32.0D);
+        y = MathHelper.Floor(var1.y * 32.0D);
+        z = MathHelper.Floor(var1.z * 32.0D);
         yaw = (sbyte)(int)(var1.yaw * 256.0F / 360.0F);
         pitch = (sbyte)(int)(var1.pitch * 256.0F / 360.0F);
     }

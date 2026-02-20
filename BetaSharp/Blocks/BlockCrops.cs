@@ -1,7 +1,8 @@
 using BetaSharp.Entities;
 using BetaSharp.Items;
-using BetaSharp.Worlds;
+using BetaSharp.Rules;
 using BetaSharp.Util.Maths;
+using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
@@ -110,7 +111,7 @@ public class BlockCrops : BlockPlant
     public override void dropStacks(World world, int x, int y, int z, int meta, float luck)
     {
         base.dropStacks(world, x, y, z, meta, luck);
-        if (!world.isRemote)
+        if (!world.isRemote && world.Rules.GetBool(DefaultRules.DoTileDrops))
         {
             for (int attempt = 0; attempt < 3; ++attempt)
             {

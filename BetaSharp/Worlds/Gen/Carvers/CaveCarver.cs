@@ -35,13 +35,13 @@ public class CaveCarver : Carver
 
         for (bool var26 = caveRand.NextInt(6) == 0; tunnelStep < tunnelLength; ++tunnelStep)
         {
-            double var27 = 1.5D + (double)(MathHelper.sin(tunnelStep * (float)Math.PI / tunnelLength) * tunnelRadius * 1.0F);
+            double var27 = 1.5D + (double)(MathHelper.Sin(tunnelStep * (float)Math.PI / tunnelLength) * tunnelRadius * 1.0F);
             double var29 = var27 * var15;
-            float var31 = MathHelper.cos(carvePitch);
-            float var32 = MathHelper.sin(carvePitch);
-            offsetX += (double)(MathHelper.cos(var11) * var31);
+            float var31 = MathHelper.Cos(carvePitch);
+            float var32 = MathHelper.Sin(carvePitch);
+            offsetX += (double)(MathHelper.Cos(var11) * var31);
             offsetY += (double)var32;
-            offsetZ += (double)(MathHelper.sin(var11) * var31);
+            offsetZ += (double)(MathHelper.Sin(var11) * var31);
             if (var26)
             {
                 carvePitch *= 0.92F;
@@ -77,12 +77,12 @@ public class CaveCarver : Carver
 
                 if (offsetX >= chunkCenterX - 16.0D - var27 * 2.0D && offsetZ >= chunkCenterZ - 16.0D - var27 * 2.0D && offsetX <= chunkCenterX + 16.0D + var27 * 2.0D && offsetZ <= chunkCenterZ + 16.0D + var27 * 2.0D)
                 {
-                    int xMin = MathHelper.floor_double(offsetX - var27) - chunkX * 16 - 1;
-                    int xMax = MathHelper.floor_double(offsetX + var27) - chunkX * 16 + 1;
-                    int yMin = MathHelper.floor_double(offsetY - var29) - 1;
-                    int yMax = MathHelper.floor_double(offsetY + var29) + 1;
-                    int zMin = MathHelper.floor_double(offsetZ - var27) - chunkZ * 16 - 1;
-                    int zMax = MathHelper.floor_double(offsetZ + var27) - chunkZ * 16 + 1;
+                    int xMin = MathHelper.Floor(offsetX - var27) - chunkX * 16 - 1;
+                    int xMax = MathHelper.Floor(offsetX + var27) - chunkX * 16 + 1;
+                    int yMin = MathHelper.Floor(offsetY - var29) - 1;
+                    int yMax = MathHelper.Floor(offsetY + var29) + 1;
+                    int zMin = MathHelper.Floor(offsetZ - var27) - chunkZ * 16 - 1;
+                    int zMax = MathHelper.Floor(offsetZ + var27) - chunkZ * 16 + 1;
                     if (xMin < 0)
                     {
                         xMin = 0;

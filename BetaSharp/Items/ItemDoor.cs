@@ -42,7 +42,7 @@ public class ItemDoor : Item
             }
             else
             {
-                int direction = MathHelper.floor_double((double)((entityPlayer.yaw + 180.0F) * 4.0F / 360.0F) - 0.5D) & 3;
+                int direction = MathHelper.Floor((double)((entityPlayer.yaw + 180.0F) * 4.0F / 360.0F) - 0.5D) & 3;
                 sbyte offsetX = 0;
                 sbyte offsetZ = 0;
                 if (direction == 0)

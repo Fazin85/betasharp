@@ -54,7 +54,7 @@ public class NetherPortalSprite : DynamicTexture
 
                         float var11 = var9 * var9 + var10 * var10;
                         float var12 = (float)java.lang.Math.atan2((double)var10, (double)var9) + (var2 / 32.0F * (float)Math.PI * 2.0F - var11 * 10.0F + var6 * 2) * (var6 * 2 - 1);
-                        var12 = (MathHelper.sin(var12) + 1.0F) / 2.0F;
+                        var12 = (MathHelper.Sin(var12) + 1.0F) / 2.0F;
                         var12 /= var11 + 1.0F;
                         var5 += var12 * 0.5F;
                     }

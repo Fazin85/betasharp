@@ -70,7 +70,7 @@ public class EntitySpider : EntityMonster
                 {
                     double dx = entity.x - x;
                     double dz = entity.z - z;
-                    float horizontalDistance = MathHelper.sqrt_double(dx * dx + dz * dz);
+                    float horizontalDistance = MathHelper.Sqrt(dx * dx + dz * dz);
                     velocityX = dx / (double)horizontalDistance * 0.5D * (double)0.8F + velocityX * (double)0.2F;
                     velocityZ = dz / (double)horizontalDistance * 0.5D * (double)0.8F + velocityZ * (double)0.2F;
                     velocityY = (double)0.4F;

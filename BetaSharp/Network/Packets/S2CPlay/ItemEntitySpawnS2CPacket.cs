@@ -29,9 +29,9 @@ public class ItemEntitySpawnS2CPacket : Packet
         itemRawId = item.stack.itemId;
         itemCount = item.stack.count;
         itemDamage = item.stack.getDamage();
-        x = MathHelper.floor_double(item.x * 32.0D);
-        y = MathHelper.floor_double(item.y * 32.0D);
-        z = MathHelper.floor_double(item.z * 32.0D);
+        x = MathHelper.Floor(item.x * 32.0D);
+        y = MathHelper.Floor(item.y * 32.0D);
+        z = MathHelper.Floor(item.z * 32.0D);
         velocityX = (sbyte)(int)(item.velocityX * 128.0D);
         velocityY = (sbyte)(int)(item.velocityY * 128.0D);
         velocityZ = (sbyte)(int)(item.velocityZ * 128.0D);

@@ -98,8 +98,8 @@ public record struct Vec3D
 
     public void rotateAroundX(float var1)
     {
-        float var2 = MathHelper.cos(var1);
-        float var3 = MathHelper.sin(var1);
+        float var2 = MathHelper.Cos(var1);
+        float var3 = MathHelper.Sin(var1);
         double var4 = x;
         double var6 = y * (double)var2 + z * (double)var3;
         double var8 = z * (double)var2 - y * (double)var3;
@@ -110,8 +110,8 @@ public record struct Vec3D
 
     public void rotateAroundY(float var1)
     {
-        float var2 = MathHelper.cos(var1);
-        float var3 = MathHelper.sin(var1);
+        float var2 = MathHelper.Cos(var1);
+        float var3 = MathHelper.Sin(var1);
         double var4 = x * (double)var2 + z * (double)var3;
         double var6 = y;
         double var8 = z * (double)var2 - x * (double)var3;

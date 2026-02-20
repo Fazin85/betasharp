@@ -52,7 +52,7 @@ public class GuiIngame : Gui
         }
 
         ItemStack helmet = _mc.player.inventory.armorItemInSlot(3);
-        if (_mc.options.cameraMode == EnumCameraMode.FirstPerson && helmet != null && helmet.itemId == Block.Pumpkin.id)
+        if (_mc.options.CameraMode == EnumCameraMode.FirstPerson && helmet != null && helmet.itemId == Block.Pumpkin.id)
         {
             renderPumpkinBlur(scaledWidth, scaledHeight);
         }
@@ -70,7 +70,7 @@ public class GuiIngame : Gui
         DrawTexturedModalRect(scaledWidth / 2 - 91, scaledHeight - 22, 0, 0, 182, 22);
         DrawTexturedModalRect(scaledWidth / 2 - 91 - 1 + inventory.selectedSlot * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_mc.textureManager.GetTextureId("/gui/icons.png"));
-        if (_mc.options.cameraMode == EnumCameraMode.FirstPerson)
+        if (_mc.options.CameraMode == EnumCameraMode.FirstPerson)
         {
             GLManager.GL.Enable(GLEnum.Blend);
             GLManager.GL.BlendFunc(GLEnum.OneMinusDstColor, GLEnum.OneMinusSrcColor);
@@ -206,7 +206,7 @@ public class GuiIngame : Gui
         }
 
         string debugStr;
-        if (_mc.options.showDebugInfo)
+        if (_mc.options.ShowDebugInfo)
         {
             _gcMonitor.AllowUpdating = true;
             GLManager.GL.PushMatrix();
@@ -227,7 +227,7 @@ public class GuiIngame : Gui
             DrawString(font, "x: " + _mc.player.x, 2, 64, 0xE0E0E0);
             DrawString(font, "y: " + _mc.player.y, 2, 72, 0xE0E0E0);
             DrawString(font, "z: " + _mc.player.z, 2, 80, 0xE0E0E0);
-            DrawString(font, "f: " + (MathHelper.floor_double((double)(_mc.player.yaw * 4.0F / 360.0F) + 0.5D) & 3), 2, 88, 0xE0E0E0);
+            DrawString(font, "f: " + (MathHelper.Floor((double)(_mc.player.yaw * 4.0F / 360.0F) + 0.5D) & 3), 2, 88, 0xE0E0E0);
 
             if (_mc.internalServer != null)
             {
@@ -602,8 +602,8 @@ public class GuiIngame : Gui
 
     public void addChatMessageTranslate(string key)
     {
-        TranslationStorage translations = TranslationStorage.getInstance();
-        string translated = translations.translateKey(key);
+        TranslationStorage translations = TranslationStorage.Instance;
+        string translated = translations.TranslateKey(key);
         addChatMessage(translated);
     }
 

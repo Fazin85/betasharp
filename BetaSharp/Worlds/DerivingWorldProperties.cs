@@ -1,4 +1,3 @@
-using BetaSharp.Entities;
 using BetaSharp.NBT;
 
 namespace BetaSharp.Worlds;
@@ -13,7 +12,8 @@ public class DerivingWorldProperties : WorldProperties
     public override long WorldTime { get => _baseProperties.WorldTime; }
     public override long LastTimePlayed { get => _baseProperties.LastTimePlayed; }
     public override long SizeOnDisk { get => _baseProperties.SizeOnDisk; }
-    public override NBTTagCompound? PlayerTag { get => _baseProperties.PlayerTag; }
+    public override NBTTagCompound? PlayerTag { get => _baseProperties.PlayerTag; set => _baseProperties.PlayerTag = value; }
+    public override NBTTagCompound? RulesTag { get => _baseProperties.RulesTag; set => _baseProperties.RulesTag = value; }
     public override int Dimension { get => _baseProperties.Dimension; }
     public override string LevelName { get => _baseProperties.LevelName; }
     public override int SaveVersion { get => _baseProperties.SaveVersion; }

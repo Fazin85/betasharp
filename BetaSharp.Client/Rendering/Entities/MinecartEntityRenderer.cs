@@ -56,7 +56,7 @@ public class MinecartEntityRenderer : EntityRenderer
 
         if (var23 > 0.0F)
         {
-            GLManager.GL.Rotate(MathHelper.sin(var23) * var23 * var24 / 10.0F * var1.minecartRockDirection, 1.0F, 0.0F, 0.0F);
+            GLManager.GL.Rotate(MathHelper.Sin(var23) * var23 * var24 / 10.0F * var1.minecartRockDirection, 1.0F, 0.0F, 0.0F);
         }
 
         if (var1.type != 0)

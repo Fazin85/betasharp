@@ -152,7 +152,7 @@ public class GameRenderer
         GLManager.GL.LoadIdentity();
 
         cameraController.ApplyDamageTiltEffect(tickDelta);
-        if (_client.options.viewBobbing)
+        if (_client.options.ViewBobbing)
         {
             cameraController.ApplyViewBobbing(tickDelta);
         }
@@ -185,24 +185,24 @@ public class GameRenderer
 
         GLManager.GL.PushMatrix();
         cameraController.ApplyDamageTiltEffect(tickDelta);
-        if (_client.options.viewBobbing)
+        if (_client.options.ViewBobbing)
         {
             cameraController.ApplyViewBobbing(tickDelta);
         }
 
-        if (_client.options.cameraMode == EnumCameraMode.FirstPerson && !_client.camera.isSleeping() && !_client.options.hideGUI)
+        if (_client.options.CameraMode == EnumCameraMode.FirstPerson && !_client.camera.isSleeping() && !_client.options.HideGUI)
         {
             itemRenderer.renderItemInFirstPerson(tickDelta);
         }
 
         GLManager.GL.PopMatrix();
-        if (_client.options.cameraMode == EnumCameraMode.FirstPerson && !_client.camera.isSleeping())
+        if (_client.options.CameraMode == EnumCameraMode.FirstPerson && !_client.camera.isSleeping())
         {
             itemRenderer.renderOverlays(tickDelta);
             cameraController.ApplyDamageTiltEffect(tickDelta);
         }
 
-        if (_client.options.viewBobbing)
+        if (_client.options.ViewBobbing)
         {
             cameraController.ApplyViewBobbing(tickDelta);
         }
@@ -226,16 +226,16 @@ public class GameRenderer
         if (_client.inGameHasFocus)
         {
             _client.mouseHelper.mouseXYChange();
-            float var2 = _client.options.mouseSensitivity * 0.6F + 0.2F;
+            float var2 = _client.options.MouseSensitivity * 0.6F + 0.2F;
             float var3 = var2 * var2 * var2 * 8.0F;
             float var4 = _client.mouseHelper.DeltaX * var3;
             float var5 = _client.mouseHelper.DeltaY * var3;
             int var6 = -1;
-            if (_client.options.invertMouse)
+            if (_client.options.InvertMouse)
             {
                 var6 = 1;
             }
-            if (_client.options.smoothCamera)
+            if (_client.options.SmoothCamera)
             {
                 var4 = _mouseFilterXAxis.Smooth(var4, 0.05F * var3);
                 var5 = _mouseFilterYAxis.Smooth(var5, 0.05F * var3);
@@ -250,7 +250,7 @@ public class GameRenderer
             int var15 = var13.ScaledHeight;
             int var16 = Mouse.getX() * var14 / _client.displayWidth;
             int var17 = var15 - Mouse.getY() * var15 / _client.displayHeight - 1;
-            int var7 = 30 + (int)(_client.options.limitFramerate * 210.0f);
+            int var7 = 30 + (int)(_client.options.LimitFramerate * 210.0f);
 
             if (var7 < 240)
             {
@@ -263,7 +263,7 @@ public class GameRenderer
                 renderFrame(tickDelta, 0L);
                 Profiler.PopGroup();
                 Profiler.Start("renderGameOverlay");
-                if (!_client.options.hideGUI || _client.currentScreen != null)
+                if (!_client.options.HideGUI || _client.currentScreen != null)
                 {
                     _client.ingameGUI.renderGameOverlay(tickDelta, _client.currentScreen != null, var16, var17);
                 }
@@ -340,7 +340,7 @@ public class GameRenderer
         GLManager.GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         GLManager.GL.Enable(GLEnum.CullFace);
         renderWorld(tickDelta);
-        Frustum.getInstance();
+        Frustum.Instance();
         if (_client.options.renderDistance < 2)
         {
             applyFog(-1);
@@ -443,9 +443,9 @@ public class GameRenderer
             _random.SetSeed(_ticks * 312987231L);
             EntityLiving var2 = _client.camera;
             World var3 = _client.world;
-            int var4 = MathHelper.floor_double(var2.x);
-            int var5 = MathHelper.floor_double(var2.y);
-            int var6 = MathHelper.floor_double(var2.z);
+            int var4 = MathHelper.Floor(var2.x);
+            int var5 = MathHelper.Floor(var2.y);
+            int var6 = MathHelper.Floor(var2.z);
             byte var7 = 10;
             double var8 = 0.0D;
             double var10 = 0.0D;
@@ -466,7 +466,7 @@ public class GameRenderer
                     {
                         if (Block.Blocks[var19].material == Material.Lava)
                         {
-                            _client.particleManager.addEffect(new EntitySmokeFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].minY, (double)(var17 + var21), 0.0D, 0.0D, 0.0D));
+                            _client.particleManager.addEffect(new EntitySmokeFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].BoundingBox.minY, (double)(var17 + var21), 0.0D, 0.0D, 0.0D));
                         }
                         else
                         {
@@ -474,11 +474,11 @@ public class GameRenderer
                             if (_random.NextInt(var14) == 0)
                             {
                                 var8 = (double)(var16 + var20);
-                                var10 = (double)(var18 + 0.1F) - Block.Blocks[var19].minY;
+                                var10 = (double)(var18 + 0.1F) - Block.Blocks[var19].BoundingBox.minY;
                                 var12 = (double)(var17 + var21);
                             }
 
-                            _client.particleManager.addEffect(new EntityRainFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].minY, (double)(var17 + var21)));
+                            _client.particleManager.addEffect(new EntityRainFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].BoundingBox.minY, (double)(var17 + var21)));
                         }
                     }
                 }
@@ -487,7 +487,7 @@ public class GameRenderer
             if (var14 > 0 && _random.NextInt(3) < _rainSoundCounter++)
             {
                 _rainSoundCounter = 0;
-                if (var10 > var2.y + 1.0D && var3.getTopSolidBlockY(MathHelper.floor_double(var2.x), MathHelper.floor_double(var2.z)) > MathHelper.floor_double(var2.y))
+                if (var10 > var2.y + 1.0D && var3.getTopSolidBlockY(MathHelper.Floor(var2.x), MathHelper.Floor(var2.z)) > MathHelper.Floor(var2.y))
                 {
                     _client.world.playSound(var8, var10, var12, "ambient.weather.rain", 0.1F, 0.5F);
                 }
@@ -507,9 +507,9 @@ public class GameRenderer
         {
             EntityLiving var3 = _client.camera;
             World var4 = _client.world;
-            int var5 = MathHelper.floor_double(var3.x);
-            int var6 = MathHelper.floor_double(var3.y);
-            int var7 = MathHelper.floor_double(var3.z);
+            int var5 = MathHelper.Floor(var3.x);
+            int var6 = MathHelper.Floor(var3.y);
+            int var7 = MathHelper.Floor(var3.z);
             Tessellator var8 = Tessellator.instance;
             GLManager.GL.Disable(GLEnum.CullFace);
             GLManager.GL.Normal3(0.0F, 1.0F, 0.0F);
@@ -520,7 +520,7 @@ public class GameRenderer
             double var9 = var3.lastTickX + (var3.x - var3.lastTickX) * (double)tickDelta;
             double var11 = var3.lastTickY + (var3.y - var3.lastTickY) * (double)tickDelta;
             double var13 = var3.lastTickZ + (var3.z - var3.lastTickZ) * (double)tickDelta;
-            int var15 = MathHelper.floor_double(var11);
+            int var15 = MathHelper.Floor(var11);
             byte var16 = 10;
 
             Biome[] var17 = var4.getBiomeSource().GetBiomesInArea(var5 - var16, var7 - var16, var16 * 2 + 1, var16 * 2 + 1);
@@ -574,7 +574,7 @@ public class GameRenderer
                             float var30 = _random.NextFloat() + var27 * (float)_random.NextGaussian() * 0.001F;
                             double var31 = (double)(var19 + 0.5F) - var3.x;
                             double var33 = (double)(var20 + 0.5F) - var3.z;
-                            float var35 = MathHelper.sqrt_double(var31 * var31 + var33 * var33) / var16;
+                            float var35 = MathHelper.Sqrt(var31 * var31 + var33 * var33) / var16;
                             var8.startDrawingQuads();
                             float var36 = var4.getLuminance(var19, var23, var20);
                             GLManager.GL.Color4(var36, var36, var36, ((1.0F - var35 * var35) * 0.3F + 0.5F) * var2);
@@ -626,7 +626,7 @@ public class GameRenderer
                             var26 = ((_ticks + var19 * var19 * 3121 + var19 * 45238971 + var20 * var20 * 418711 + var20 * 13761 & 31) + tickDelta) / 32.0F * (3.0F + _random.NextFloat());
                             double var38 = (double)(var19 + 0.5F) - var3.x;
                             double var39 = (double)(var20 + 0.5F) - var3.z;
-                            float var40 = MathHelper.sqrt_double(var38 * var38 + var39 * var39) / var16;
+                            float var40 = MathHelper.Sqrt(var38 * var38 + var39 * var39) / var16;
                             var8.startDrawingQuads();
                             float var32 = var4.getLuminance(var19, 128, var20) * 0.85F + 0.15F;
                             GLManager.GL.Color4(var32, var32, var32, ((1.0F - var40 * var40) * 0.5F + 0.5F) * var2);

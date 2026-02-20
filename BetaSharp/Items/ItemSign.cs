@@ -59,7 +59,7 @@ public class ItemSign : Item
             {
                 if (meta == 1)
                 {
-                    world.setBlock(x, y, z, Block.Sign.id, MathHelper.floor_double((double)((entityPlayer.yaw + 180.0F) * 16.0F / 360.0F) + 0.5D) & 15);
+                    world.setBlock(x, y, z, Block.Sign.id, MathHelper.Floor((double)((entityPlayer.yaw + 180.0F) * 16.0F / 360.0F) + 0.5D) & 15);
                 }
                 else
                 {

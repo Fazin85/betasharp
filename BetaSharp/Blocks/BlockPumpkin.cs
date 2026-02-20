@@ -59,7 +59,7 @@ public class BlockPumpkin : Block
 
     public override void onPlaced(World world, int x, int y, int z, EntityLiving placer)
     {
-        int direction = MathHelper.floor_double((double)(placer.yaw * 4.0F / 360.0F) + 2.5D) & 3;
+        int direction = MathHelper.Floor((double)(placer.yaw * 4.0F / 360.0F) + 2.5D) & 3;
         world.setBlockMeta(x, y, z, direction);
     }
 }

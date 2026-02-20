@@ -80,7 +80,7 @@ public abstract class GuiContainer : GuiScreen
 
         if (playerInv.getCursorStack() == null && hoveredSlot != null && hoveredSlot.hasStack())
         {
-            string itemName = ("" + TranslationStorage.getInstance().translateNamedKey(hoveredSlot.getStack().getItemName())).Trim();
+            string itemName = ("" + TranslationStorage.Instance.TranslateNamedKey(hoveredSlot.getStack().getItemName())).Trim();
             if (itemName.Length > 0)
             {
                 int tipX = mouseX - guiLeft + 12;
@@ -92,11 +92,14 @@ public abstract class GuiContainer : GuiScreen
             }
         }
 
-        // Render the dragged cursor item last so it appears on top of foreground text
         if (playerInv.getCursorStack() != null)
         {
             GLManager.GL.Enable(GLEnum.RescaleNormal);
+            GLManager.GL.PushMatrix();
+            GLManager.GL.Rotate(120.0F, 1.0F, 0.0F, 0.0F);
+            GLManager.GL.Rotate(-90.0F, 0.0F, 1.0F, 0.0F);
             Lighting.turnOn();
+            GLManager.GL.PopMatrix();
             GLManager.GL.Enable(GLEnum.Lighting);
             GLManager.GL.Enable(GLEnum.DepthTest);
 
@@ -197,7 +200,7 @@ public abstract class GuiContainer : GuiScreen
 
     protected override void KeyTyped(char eventChar, int eventKey)
     {
-        if (eventKey == Keyboard.KEY_ESCAPE || eventKey == mc.options.keyBindInventory.keyCode)
+        if (eventKey == Keyboard.KEY_ESCAPE || eventKey == mc.options.KeyBindInventory.keyCode)
         {
             mc.player.closeHandledScreen();
         }

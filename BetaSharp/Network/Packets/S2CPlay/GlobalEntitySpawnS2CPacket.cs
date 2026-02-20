@@ -21,9 +21,9 @@ public class GlobalEntitySpawnS2CPacket : Packet
     public GlobalEntitySpawnS2CPacket(Entity ent)
     {
         id = ent.id;
-        x = MathHelper.floor_double(ent.x * 32.0D);
-        y = MathHelper.floor_double(ent.y * 32.0D);
-        z = MathHelper.floor_double(ent.z * 32.0D);
+        x = MathHelper.Floor(ent.x * 32.0D);
+        y = MathHelper.Floor(ent.y * 32.0D);
+        z = MathHelper.Floor(ent.z * 32.0D);
         if (ent is EntityLightningBolt)
         {
             type = 1;

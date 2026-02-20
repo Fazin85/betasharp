@@ -1,4 +1,5 @@
 using BetaSharp.Entities;
+using BetaSharp.Rules;
 using BetaSharp.Worlds;
 
 namespace BetaSharp.Server.Commands;
@@ -122,7 +123,7 @@ public static class WorldCommands
 
         for (int i = 0; i < count; i++)
         {
-            var entity = EntityRegistry.createEntityAt(entityName, world, (float)player.x, (float)player.y, (float)player.z);
+            Entity? entity = EntityRegistry.createEntityAt(entityName, world, (float)player.x, (float)player.y, (float)player.z);
             if (entity != null)
             {
                 summoned++;
@@ -149,7 +150,7 @@ public static class WorldCommands
             ServerWorld world = server.worlds[w];
             var entities = new System.Collections.Generic.List<Entity>(world.entities);
 
-            foreach (var entity in entities)
+            foreach (Entity entity in entities)
             {
                 if (entity is EntityPlayer) continue;
 
@@ -197,5 +198,70 @@ public static class WorldCommands
 
         time = 0;
         return false;
+    }
+
+    public static void GameRule(MinecraftServer server, string senderName, string[] args, CommandOutput output)
+    {
+        ServerPlayerEntity player = server.playerManager.getPlayer(senderName);
+        ServerWorld world = player != null ? server.getWorld(player.dimensionId) : server.worlds[0];
+        RuleSet rules = world.Rules;
+        RuleRegistry registry = RuleRegistry.Instance;
+
+        if (args.Length == 0)
+        {
+            output.SendMessage("Available Game Rules:");
+            foreach (IGameRule rule in registry.All)
+            {
+                IRuleValue val = rules.Get(rule.Key);
+                output.SendMessage($"  {rule.Key} = {rule.Serialize(val)}");
+            }
+            return;
+        }
+
+        if (args.Length == 1)
+        {
+            string ruleName = args[0];
+            ResourceLocation key = ResourceLocation.Parse(ruleName);
+            if (registry.TryGet(key, out IGameRule? rule))
+            {
+                IRuleValue val = rules.Get(key);
+                output.SendMessage($"{ruleName} = {rule.Serialize(val)}");
+            }
+            else
+            {
+                output.SendMessage($"Unknown game rule: {ruleName}");
+            }
+            return;
+        }
+
+        if (args.Length >= 2)
+        {
+            string ruleName = args[0];
+            string valueStr = args[1];
+            ResourceLocation key = ResourceLocation.Parse(ruleName);
+
+            if (!registry.TryGet(key, out IGameRule? _))
+            {
+                output.SendMessage($"Unknown game rule: {ruleName}");
+                return;
+            }
+
+            try
+            {
+                if (rules.TrySet(key, valueStr))
+                {
+                    output.SendMessage($"Game rule {ruleName} has been updated to {valueStr}");
+                    AdminCommands.LogCommand(server, senderName, $"Set game rule {ruleName} to {valueStr}");
+                }
+                else
+                {
+                    output.SendMessage($"Failed to parse value '{valueStr}' for game rule {ruleName}");
+                }
+            }
+            catch (Exception ex)
+            {
+                output.SendMessage($"Error setting game rule: {ex.Message}");
+            }
+        }
     }
 }

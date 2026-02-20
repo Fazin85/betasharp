@@ -18,7 +18,7 @@ public class CreeperEntityRenderer : LivingEntityRenderer
     protected void updateCreeperScale(EntityCreeper var1, float var2)
     {
         float var4 = var1.setCreeperFlashTime(var2);
-        float var5 = 1.0F + MathHelper.sin(var4 * 100.0F) * var4 * 0.01F;
+        float var5 = 1.0F + MathHelper.Sin(var4 * 100.0F) * var4 * 0.01F;
         if (var4 < 0.0F)
         {
             var4 = 0.0F;

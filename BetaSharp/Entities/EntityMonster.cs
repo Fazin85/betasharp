@@ -93,9 +93,9 @@ public class EntityMonster : EntityCreature, Monster
 
     public override bool canSpawn()
     {
-        int x = MathHelper.floor_double(base.x);
-        int y = MathHelper.floor_double(boundingBox.minY);
-        int z = MathHelper.floor_double(base.z);
+        int x = MathHelper.Floor(base.x);
+        int y = MathHelper.Floor(boundingBox.minY);
+        int z = MathHelper.Floor(base.z);
         if (world.getBrightness(LightType.Sky, x, y, z) > random.NextInt(32))
         {
             return false;

@@ -111,7 +111,7 @@ public class EntitySquid : EntityWaterMob
             if (swimPhase < (float)Math.PI)
             {
                 phaseProgress = swimPhase / (float)Math.PI;
-                tentacleSpread = MathHelper.sin(phaseProgress * phaseProgress * (float)Math.PI) * (float)Math.PI * 0.25F;
+                tentacleSpread = MathHelper.Sin(phaseProgress * phaseProgress * (float)Math.PI) * (float)Math.PI * 0.25F;
                 if ((double)phaseProgress > 0.75D)
                 {
                     randomMotionSpeed = 1.0F;
@@ -136,7 +136,7 @@ public class EntitySquid : EntityWaterMob
                 velocityZ = (double)(randomMotionVecZ * randomMotionSpeed);
             }
 
-            phaseProgress = MathHelper.sqrt_double(velocityX * velocityX + velocityZ * velocityZ);
+            phaseProgress = MathHelper.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
             bodyYaw += (-((float)System.Math.Atan2(velocityX, velocityZ)) * 180.0F / (float)Math.PI - bodyYaw) * 0.1F;
             yaw = bodyYaw;
             tentaclePhase += (float)Math.PI * squidRotation * 1.5F;
@@ -144,7 +144,7 @@ public class EntitySquid : EntityWaterMob
         }
         else
         {
-            tentacleSpread = MathHelper.abs(MathHelper.sin(swimPhase)) * (float)Math.PI * 0.25F;
+            tentacleSpread = MathHelper.Abs(MathHelper.Sin(swimPhase)) * (float)Math.PI * 0.25F;
             if (!interpolateOnly)
             {
                 velocityX = 0.0D;
@@ -168,9 +168,9 @@ public class EntitySquid : EntityWaterMob
         if (random.NextInt(50) == 0 || !inWater || randomMotionVecX == 0.0F && randomMotionVecY == 0.0F && randomMotionVecZ == 0.0F)
         {
             float randomAngle = random.NextFloat() * (float)Math.PI * 2.0F;
-            randomMotionVecX = MathHelper.cos(randomAngle) * 0.2F;
+            randomMotionVecX = MathHelper.Cos(randomAngle) * 0.2F;
             randomMotionVecY = -0.1F + random.NextFloat() * 0.2F;
-            randomMotionVecZ = MathHelper.sin(randomAngle) * 0.2F;
+            randomMotionVecZ = MathHelper.Sin(randomAngle) * 0.2F;
         }
 
         func_27021_X();
