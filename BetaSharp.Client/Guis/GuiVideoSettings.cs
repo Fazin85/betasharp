@@ -12,7 +12,7 @@ public class GuiVideoSettings : GuiScreen
     {
         EnumOptions.RENDER_DISTANCE,
         EnumOptions.FRAMERATE_LIMIT,
-        EnumOptions.BRIGHTNESS,
+        // EnumOptions.BRIGHTNESS,
         EnumOptions.VIEW_BOBBING,
         EnumOptions.GUI_SCALE,
         EnumOptions.ANISOTROPIC,

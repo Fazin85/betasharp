@@ -423,6 +423,7 @@ public class GameOptions : java.lang.Object
                 break;
             case "brightness":
                 brightness = float.Parse(parts[1]);
+                break;
             case "cameraMode":
                 cameraMode = (EnumCameraMode)int.Parse(parts[1]);
                 break;
