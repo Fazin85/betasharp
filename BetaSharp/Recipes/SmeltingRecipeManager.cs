@@ -15,16 +15,8 @@ public class SmeltingRecipeManager
 
     private SmeltingRecipeManager()
     {
-        AddSmelting(Block.IronOre.id, new ItemStack(Item.IronIngot));
-        AddSmelting(Block.GoldOre.id, new ItemStack(Item.GoldIngot));
-        AddSmelting(Block.DiamondOre.id, new ItemStack(Item.Diamond));
-        AddSmelting(Block.Sand.id, new ItemStack(Block.Glass));
-        AddSmelting(Item.RawPorkchop.id, new ItemStack(Item.CookedPorkchop));
-        AddSmelting(Item.RawFish.id, new ItemStack(Item.CookedFish));
-        AddSmelting(Block.Cobblestone.id, new ItemStack(Block.Stone));
-        AddSmelting(Item.Clay.id, new ItemStack(Item.Brick));
-        AddSmelting(Block.Cactus.id, new ItemStack(Item.Dye, 1, 2));
-        AddSmelting(Block.Log.id, new ItemStack(Item.Coal, 1, 1));
+        RecipeLoader.LoadSmelting(this, "Assets/Recipes/smelting.json");
+        Log.Info($"[SmeltingRecipeManager] {smeltingList.Count} smelting recipes loaded from data.");
     }
 
     public void AddSmelting(int inputId, ItemStack output)

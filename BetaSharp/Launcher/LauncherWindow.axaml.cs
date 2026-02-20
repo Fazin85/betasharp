@@ -31,7 +31,7 @@ public partial class LauncherWindow : Window
 
         try
         {
-            var key = Registry.CurrentUser.OpenSubKey(
+            var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(
                 @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
             if (key != null)
             {
