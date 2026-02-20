@@ -6,12 +6,12 @@ namespace BetaSharp.Worlds.Gen.Carvers;
 public class NetherCaveCarver : Carver
 {
 
-    protected void func_4129_a(int chunkX, int chunkZ, byte[] blocks, double x, double y, double z)
+    protected void CarveNetherCavesInChunk(int chunkX, int chunkZ, byte[] blocks, double x, double y, double z)
     {
-        func_4128_a(chunkX, chunkZ, blocks, x, y, z, 1.0F + rand.NextFloat() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5D);
+        CarveNetherCaves(chunkX, chunkZ, blocks, x, y, z, 1.0F + rand.NextFloat() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5D);
     }
 
-    protected void func_4128_a(int chunkX, int chunkZ, byte[] blocks, double x, double y, double z, float var10, float var11, float var12, int var13, int var14, double var15)
+    protected void CarveNetherCaves(int chunkX, int chunkZ, byte[] blocks, double x, double y, double z, float var10, float var11, float var12, int var13, int var14, double var15)
     {
         double var17 = chunkX * 16 + 8;
         double var19 = chunkZ * 16 + 8;
@@ -59,8 +59,8 @@ public class NetherCaveCarver : Carver
             var21 += (var23.NextFloat() - var23.NextFloat()) * var23.NextFloat() * 4.0F;
             if (!var51 && var13 == var25 && var10 > 1.0F)
             {
-                func_4128_a(chunkX, chunkZ, blocks, x, y, z, var23.NextFloat() * 0.5F + 0.5F, var11 - (float)Math.PI * 0.5F, var12 / 3.0F, var13, var14, 1.0D);
-                func_4128_a(chunkX, chunkZ, blocks, x, y, z, var23.NextFloat() * 0.5F + 0.5F, var11 + (float)Math.PI * 0.5F, var12 / 3.0F, var13, var14, 1.0D);
+                CarveNetherCaves(chunkX, chunkZ, blocks, x, y, z, var23.NextFloat() * 0.5F + 0.5F, var11 - (float)Math.PI * 0.5F, var12 / 3.0F, var13, var14, 1.0D);
+                CarveNetherCaves(chunkX, chunkZ, blocks, x, y, z, var23.NextFloat() * 0.5F + 0.5F, var11 + (float)Math.PI * 0.5F, var12 / 3.0F, var13, var14, 1.0D);
                 return;
             }
 
@@ -179,7 +179,7 @@ public class NetherCaveCarver : Carver
 
     }
 
-    protected override void func_868_a(World world, int chunkX, int chunkZ, int centerChunkX, int centerChunkZ, byte[] blocks)
+    protected override void CarveCaves(World world, int chunkX, int chunkZ, int centerChunkX, int centerChunkZ, byte[] blocks)
     {
         int var7 = rand.NextInt(rand.NextInt(rand.NextInt(10) + 1) + 1);
         if (rand.NextInt(5) != 0)
@@ -195,7 +195,7 @@ public class NetherCaveCarver : Carver
             int var15 = 1;
             if (rand.NextInt(4) == 0)
             {
-                func_4129_a(centerChunkX, centerChunkZ, blocks, randX, randY, randZ);
+                CarveNetherCavesInChunk(centerChunkX, centerChunkZ, blocks, randX, randY, randZ);
                 var15 += rand.NextInt(4);
             }
 
@@ -204,7 +204,7 @@ public class NetherCaveCarver : Carver
                 float var17 = rand.NextFloat() * (float)Math.PI * 2.0F;
                 float var18 = (rand.NextFloat() - 0.5F) * 2.0F / 8.0F;
                 float var19 = rand.NextFloat() * 2.0F + rand.NextFloat();
-                func_4128_a(centerChunkX, centerChunkZ, blocks, randX, randY, randZ, var19 * 2.0F, var17, var18, 0, 0, 0.5D);
+                CarveNetherCaves(centerChunkX, centerChunkZ, blocks, randX, randY, randZ, var19 * 2.0F, var17, var18, 0, 0, 0.5D);
             }
         }
 
