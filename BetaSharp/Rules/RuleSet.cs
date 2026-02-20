@@ -3,9 +3,6 @@ using BetaSharp.NBT;
 
 namespace BetaSharp.Rules;
 
-/// <summary>
-/// A live collection of rule values. One per world.
-/// </summary>
 public sealed class RuleSet(RuleRegistry registry)
 {
     private readonly ConcurrentDictionary<ResourceLocation, IRuleValue> _values = new();
@@ -67,14 +64,13 @@ public sealed class RuleSet(RuleRegistry registry)
 
     public void WriteToNBT(NBTTagCompound nbt)
     {
-        foreach ((ResourceLocation? key, IRuleValue? value) in _values)
+        foreach (var (rule, value) in NonDefaultValues())
         {
-            IGameRule rule = registry.Get(key);
-            nbt.SetString(key.ToString(), rule.Serialize(value));
+            nbt.SetString(rule.Key.ToString(), rule.Serialize(value));
         }
     }
 
-    public static RuleSet ReadFromNBT(RuleRegistry registry, NBTTagCompound nbt)
+    public static RuleSet FromNBT(RuleRegistry registry, NBTTagCompound nbt)
     {
         RuleSet ruleSet = new(registry);
         foreach ((string key, NBTBase value) in nbt.Dictionary)

@@ -4,9 +4,16 @@ namespace BetaSharp.Rules;
 
 public sealed class RuleRegistry
 {
-    public static RuleRegistry Instance { get; } = new();
+    public static RuleRegistry Instance { get; } = CreateDefault();
 
     private readonly ConcurrentDictionary<ResourceLocation, IGameRule> _rules = new();
+
+    private static RuleRegistry CreateDefault()
+    {
+        RuleRegistry registry = new();
+        DefaultRules.Instance.RegisterAll(registry);
+        return registry;
+    }
 
     public IGameRule<T> Register<T>(IGameRule<T> rule) where T : IRuleValue
     {

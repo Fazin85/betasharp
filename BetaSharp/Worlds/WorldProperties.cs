@@ -13,6 +13,7 @@ public class WorldProperties
     public virtual long LastTimePlayed { get; }
     public virtual long SizeOnDisk { get; set; }
     public virtual NBTTagCompound? PlayerTag { get; set; }
+    public virtual NBTTagCompound? RulesTag { get; set; }
     public virtual int Dimension { get; }
     public virtual string LevelName { get; set; }
     public virtual int SaveVersion { get; set; }
@@ -44,6 +45,10 @@ public class WorldProperties
             PlayerTag = nbt.GetCompoundTag("Player");
             Dimension = PlayerTag.GetInteger("Dimension");
         }
+        if (nbt.HasKey("GameRules"))
+        {
+            RulesTag = nbt.GetCompoundTag("GameRules");
+        }
 
     }
 
@@ -63,6 +68,7 @@ public class WorldProperties
         LastTimePlayed = WorldProp.LastTimePlayed;
         SizeOnDisk = WorldProp.SizeOnDisk;
         PlayerTag = WorldProp.PlayerTag;
+        RulesTag = WorldProp.RulesTag;
         Dimension = WorldProp.Dimension;
         LevelName = WorldProp.LevelName;
         SaveVersion = WorldProp.SaveVersion;
@@ -114,6 +120,9 @@ public class WorldProperties
 
         if (playerNbt != null)
             worldNbt.SetCompoundTag("Player", playerNbt);
+
+        if (RulesTag != null)
+            worldNbt.SetCompoundTag("GameRules", RulesTag);
     }
 
     public virtual void SetSpawn(int x, int y, int z)

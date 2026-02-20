@@ -2,5 +2,5 @@ namespace BetaSharp.Rules;
 
 public interface IRulesProvider
 {
-    void RegisterAll(RuleRegistry r);
+    void RegisterAll(RuleRegistry registry);
 }
