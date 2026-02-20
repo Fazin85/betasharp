@@ -30,8 +30,8 @@ public class GuiVideoSettings : GuiScreen
 
     public override void InitGui()
     {
-        TranslationStorage translations = TranslationStorage.getInstance();
-        _screenTitle = translations.translateKey("options.videoTitle");
+        TranslationStorage translations = TranslationStorage.Instance;
+        _screenTitle = translations.TranslateKey("options.videoTitle");
         int optionIndex = 0;
 
         foreach (EnumOptions option in _videoOptions)
@@ -54,7 +54,7 @@ public class GuiVideoSettings : GuiScreen
             optionIndex++;
         }
 
-        _controlList.Add(new GuiButton(200, Width / 2 - 100, Height / 6 + 168, translations.translateKey("gui.done")));
+        _controlList.Add(new GuiButton(200, Width / 2 - 100, Height / 6 + 168, translations.TranslateKey("gui.done")));
     }
 
     protected override void ActionPerformed(GuiButton btn)

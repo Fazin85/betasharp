@@ -602,8 +602,8 @@ public class GuiIngame : Gui
 
     public void addChatMessageTranslate(string key)
     {
-        TranslationStorage translations = TranslationStorage.getInstance();
-        string translated = translations.translateKey(key);
+        TranslationStorage translations = TranslationStorage.Instance;
+        string translated = translations.TranslateKey(key);
         addChatMessage(translated);
     }
 

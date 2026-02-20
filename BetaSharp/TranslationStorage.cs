@@ -1,37 +1,55 @@
 namespace BetaSharp;
 
-public class TranslationStorage : java.lang.Object
+public class TranslationStorage
 {
-    private static readonly TranslationStorage instance = new();
-    private readonly java.util.Properties translateTable = new();
+    private static readonly TranslationStorage _instance = new();
+    public static TranslationStorage Instance => _instance;
+    private readonly Dictionary<string, string> _translateTable = new();
 
     private TranslationStorage()
     {
+        LoadLanguageFile("lang/en_US.lang");
+        LoadLanguageFile("lang/stats_US.lang");
+
+    }
+
+    private void LoadLanguageFile(string assetPath)
+    {
         try
         {
-            translateTable.load(new java.io.StringReader(AssetManager.Instance.getAsset("lang/en_US.lang").getTextContent()));
-            translateTable.load(new java.io.StringReader(AssetManager.Instance.getAsset("lang/stats_US.lang").getTextContent()));
+            var asset = AssetManager.Instance.getAsset(assetPath);
+            if (asset == null) return;
+
+            using StringReader reader = new(asset.getTextContent());
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                line = line.Trim();
+                if (string.IsNullOrEmpty(line) || line.StartsWith('#')) continue;
+
+                int separatorIndex = line.IndexOf('=');
+                if (separatorIndex != -1)
+                {
+                    string key = line[..separatorIndex].Trim();
+                    string value = line[(separatorIndex + 1)..].Trim();
+                    _translateTable[key] = value;
+                }
+            }
         }
-        catch (java.io.IOException err)
+        catch (Exception ex)
         {
-            err.printStackTrace();
+            Log.Error($"Failed to load language file {assetPath}: {ex.Message}");
         }
-
     }
 
-    public static TranslationStorage getInstance()
+    public string TranslateKey(string key)
     {
-        return instance;
+        return _translateTable.TryGetValue(key, out string value) ? value : key;
     }
 
-    public string translateKey(string key)
+    public string TranslateKeyFormat(string key, params object[] values)
     {
-        return translateTable.getProperty(key, key);
-    }
-
-    public string translateKeyFormat(string key, params object[] values)
-    {
-        string str = translateTable.getProperty(key, key);
+        string str = _translateTable.TryGetValue(key, out string value) ? value : key;
         for (int i = 0; i < values.Length; i++)
         {
             str = str.Replace($"%{i + 1}$s", values[i].ToString() ?? string.Empty);
@@ -39,8 +57,8 @@ public class TranslationStorage : java.lang.Object
         return str;
     }
 
-    public string translateNamedKey(string key)
+    public string TranslateNamedKey(string key)
     {
-        return translateTable.getProperty(key + ".name", "");
+        return _translateTable.TryGetValue($"{key}.name", out string value) ? value : "";
     }
 }

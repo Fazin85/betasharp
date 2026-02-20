@@ -27,8 +27,8 @@ public class GuiOptions : GuiScreen
 
     public override void InitGui()
     {
-        TranslationStorage translations = TranslationStorage.getInstance();
-        _screenTitle = translations.translateKey("options.title");
+        TranslationStorage translations = TranslationStorage.Instance;
+        _screenTitle = translations.TranslateKey("options.title");
         int rowIndex = 0;
         EnumOptions[] optionsToDisplay = _availableOptions;
         int optionsLength = optionsToDisplay.Length;
@@ -49,9 +49,9 @@ public class GuiOptions : GuiScreen
             ++rowIndex;
         }
 
-        _controlList.Add(new GuiButton(ButtonVideoSettings, Width / 2 - 100, Height / 6 + 96 + 12, translations.translateKey("options.video")));
-        _controlList.Add(new GuiButton(ButtonControls, Width / 2 - 100, Height / 6 + 120 + 12, translations.translateKey("options.controls")));
-        _controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 6 + 168, translations.translateKey("gui.done")));
+        _controlList.Add(new GuiButton(ButtonVideoSettings, Width / 2 - 100, Height / 6 + 96 + 12, translations.TranslateKey("options.video")));
+        _controlList.Add(new GuiButton(ButtonControls, Width / 2 - 100, Height / 6 + 120 + 12, translations.TranslateKey("options.controls")));
+        _controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 6 + 168, translations.TranslateKey("gui.done")));
     }
 
     protected override void ActionPerformed(GuiButton button)

@@ -188,7 +188,7 @@ public abstract class GuiSlotStats : GuiSlot
                     var5 = getKeyForColumn(2);
                 }
 
-                var5 = ("" + TranslationStorage.getInstance().translateKey(var5)).Trim();
+                var5 = ("" + TranslationStorage.Instance.TranslateKey(var5)).Trim();
                 if (var5.Length > 0)
                 {
                     int var6 = var1 + 12;
@@ -207,7 +207,7 @@ public abstract class GuiSlotStats : GuiSlot
         if (var1 != null)
         {
             Item var4 = Item.ITEMS[var1.getItemId()];
-            string var5 = ("" + TranslationStorage.getInstance().translateNamedKey(var4.getItemName())).Trim();
+            string var5 = ("" + TranslationStorage.Instance.TranslateNamedKey(var4.getItemName())).Trim();
             if (var5.Length > 0)
             {
                 int var6 = var2 + 12;

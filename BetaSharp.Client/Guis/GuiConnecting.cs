@@ -40,9 +40,9 @@ public class GuiConnecting : GuiScreen
 
     public override void InitGui()
     {
-        TranslationStorage translations = TranslationStorage.getInstance();
+        TranslationStorage translations = TranslationStorage.Instance;
         _controlList.Clear();
-        _controlList.Add(new GuiButton(_buttonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.cancel")));
+        _controlList.Add(new GuiButton(_buttonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.TranslateKey("gui.cancel")));
     }
 
     protected override void ActionPerformed(GuiButton button)
@@ -62,15 +62,15 @@ public class GuiConnecting : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         DrawDefaultBackground();
-        TranslationStorage translations = TranslationStorage.getInstance();
+        TranslationStorage translations = TranslationStorage.Instance;
         if (_clientHandler == null)
         {
-            DrawCenteredString(FontRenderer, translations.translateKey("connect.connecting"), Width / 2, Height / 2 - 50, 0xFFFFFF);
+            DrawCenteredString(FontRenderer, translations.TranslateKey("connect.connecting"), Width / 2, Height / 2 - 50, 0xFFFFFF);
             DrawCenteredString(FontRenderer, "", Width / 2, Height / 2 - 10, 0xFFFFFF);
         }
         else
         {
-            DrawCenteredString(FontRenderer, translations.translateKey("connect.authorizing"), Width / 2, Height / 2 - 50, 0xFFFFFF);
+            DrawCenteredString(FontRenderer, translations.TranslateKey("connect.authorizing"), Width / 2, Height / 2 - 50, 0xFFFFFF);
             DrawCenteredString(FontRenderer, _clientHandler.field_1209_a, Width / 2, Height / 2 - 10, 0xFFFFFF);
         }
 

@@ -102,8 +102,8 @@ public class GameOptions
 
     public string GetKeyBindingDescription(int keyBindingIndex)
     {
-        TranslationStorage translations = TranslationStorage.getInstance();
-        return translations.translateKey(KeyBindings[keyBindingIndex].keyDescription);
+        TranslationStorage translations = TranslationStorage.Instance;
+        return translations.TranslateKey(KeyBindings[keyBindingIndex].keyDescription);
     }
 
     public string GetOptionDisplayString(int keyBindingIndex)
@@ -231,7 +231,7 @@ public class GameOptions
 
     public string GetKeyBinding(EnumOptions option)
     {
-        TranslationStorage translations = TranslationStorage.getInstance();
+        TranslationStorage translations = TranslationStorage.Instance;
         string label = GetOptionLabel(option, translations) + ": ";
 
         if (option.getEnumFloat())
@@ -241,7 +241,7 @@ public class GameOptions
         else if (option.getEnumBoolean())
         {
             bool isEnabled = GetOptionOrdinalValue(option);
-            return label + (isEnabled ? translations.translateKey("options.on") : translations.translateKey("options.off"));
+            return label + (isEnabled ? translations.TranslateKey("options.on") : translations.TranslateKey("options.off"));
         }
         else if (option == EnumOptions.MSAA)
         {
@@ -257,7 +257,7 @@ public class GameOptions
     {
         if (option == EnumOptions.FRAMERATE_LIMIT) return "Max FPS";
         if (option == EnumOptions.FOV) return "FOV";
-        return translations.translateKey(option.getEnumString());
+        return translations.TranslateKey(option.getEnumString());
     }
 
     private string FormatFloatValue(EnumOptions option, string label, TranslationStorage translations)
@@ -266,7 +266,7 @@ public class GameOptions
 
         if (option == EnumOptions.SENSITIVITY)
         {
-            return value == 0.0F ? label + translations.translateKey("options.sensitivity.min") : (value == 1.0F ? label + translations.translateKey("options.sensitivity.max") : label + (int)(value * 200.0F) + "%");
+            return value == 0.0F ? label + translations.TranslateKey("options.sensitivity.min") : (value == 1.0F ? label + translations.TranslateKey("options.sensitivity.max") : label + (int)(value * 200.0F) + "%");
         }
         else if (option == EnumOptions.FRAMERATE_LIMIT)
         {
@@ -279,7 +279,7 @@ public class GameOptions
         else
         {
             return value == 0.0F
-                ? label + translations.translateKey("options.off") 
+                ? label + translations.TranslateKey("options.off") 
                 : label + $"{(int)(value * 100.0F)}%";
         }
     }
@@ -292,7 +292,7 @@ public class GameOptions
 
     private string FormatMsaaValue(string label, TranslationStorage translations)
     {
-        string result = label + (MSAALevel == 0 ? translations.translateKey("options.off") : MSAALeves[MSAALevel]);
+        string result = label + (MSAALevel == 0 ? translations.TranslateKey("options.off") : MSAALeves[MSAALevel]);
         if (MSAALevel != INITIAL_MSAA)
         {
             result += " (Reload required)";
@@ -302,10 +302,10 @@ public class GameOptions
 
     private string FormatEnumValue(EnumOptions option, string label, TranslationStorage translations)
     {
-        if (option == EnumOptions.RENDER_DISTANCE) return label + translations.translateKey(RenderDistance[renderDistance]);
-        if (option == EnumOptions.DIFFICULTY) return label + translations.translateKey(Difficulties[Difficulty]);
-        if (option == EnumOptions.GUI_SCALE) return label + translations.translateKey(GuiScales[GuiScale]);
-        if (option == EnumOptions.ANISOTROPIC) return label + (AnisotropicLevel == 0 ? translations.translateKey("options.off") : AnisoLeves[AnisotropicLevel]);
+        if (option == EnumOptions.RENDER_DISTANCE) return label + translations.TranslateKey(RenderDistance[renderDistance]);
+        if (option == EnumOptions.DIFFICULTY) return label + translations.TranslateKey(Difficulties[Difficulty]);
+        if (option == EnumOptions.GUI_SCALE) return label + translations.TranslateKey(GuiScales[GuiScale]);
+        if (option == EnumOptions.ANISOTROPIC) return label + (AnisotropicLevel == 0 ? translations.TranslateKey("options.off") : AnisoLeves[AnisotropicLevel]);
         return label;
     }
 

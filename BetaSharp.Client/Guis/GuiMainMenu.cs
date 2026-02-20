@@ -66,25 +66,25 @@ public class GuiMainMenu : GuiScreen
         else if (now.Month == 12 && now.Day == 24) _splashText = "Merry X-mas!";
         else if (now.Month == 1 && now.Day == 1) _splashText = "Happy new year!";
 
-        TranslationStorage translator = TranslationStorage.getInstance();
+        TranslationStorage translator = TranslationStorage.Instance;
         int buttonTopY = Height / 4 + 48;
 
-        _controlList.Add(new GuiButton(ButtonSingleplayer, Width / 2 - 100, buttonTopY, translator.translateKey("menu.singleplayer")));
+        _controlList.Add(new GuiButton(ButtonSingleplayer, Width / 2 - 100, buttonTopY, translator.TranslateKey("menu.singleplayer")));
         _controlList.Add(_multiplayerButton =
-            new GuiButton(ButtonMultiplayer, Width / 2 - 100, buttonTopY + 24, translator.translateKey("menu.multiplayer")));
-        _controlList.Add(new GuiButton(ButtonTexturePacksAndMods, Width / 2 - 100, buttonTopY + 48, translator.translateKey("menu.mods")));
+            new GuiButton(ButtonMultiplayer, Width / 2 - 100, buttonTopY + 24, translator.TranslateKey("menu.multiplayer")));
+        _controlList.Add(new GuiButton(ButtonTexturePacksAndMods, Width / 2 - 100, buttonTopY + 48, translator.TranslateKey("menu.mods")));
 
         if (mc.hideQuitButton)
         {
-            _controlList.Add(new GuiButton(ButtonOptions, Width / 2 - 100, buttonTopY + 72, translator.translateKey("menu.options")));
+            _controlList.Add(new GuiButton(ButtonOptions, Width / 2 - 100, buttonTopY + 72, translator.TranslateKey("menu.options")));
         }
         else
         {
             _controlList.Add(new GuiButton(ButtonOptions, Width / 2 - 100, buttonTopY + 72 + 12, 98, 20,
-                translator.translateKey("menu.options")));
+                translator.TranslateKey("menu.options")));
 
             _controlList.Add(new GuiButton(ButtonQuit, Width / 2 + 2, buttonTopY + 72 + 12, 98, 20,
-                translator.translateKey("menu.quit")));
+                translator.TranslateKey("menu.quit")));
         }
 
         if (mc.session == null)
