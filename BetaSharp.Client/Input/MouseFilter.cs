@@ -1,22 +1,22 @@
 namespace BetaSharp.Client.Input;
 
-public class MouseFilter : java.lang.Object
+public class MouseFilter
 {
-    private float field_22388_a;
-    private float field_22387_b;
-    private float field_22389_c;
+    private float _targetValue;
+    private float _remainingValue;
+    private float _lastSmoothedValue;
 
-    public float Smooth(float var1, float var2)
+    public float Smooth(float input, float weight)
     {
-        field_22388_a += var1;
-        var1 = (field_22388_a - field_22387_b) * var2;
-        field_22389_c += (var1 - field_22389_c) * 0.5F;
-        if (var1 > 0.0F && var1 > field_22389_c || var1 < 0.0F && var1 < field_22389_c)
+        _targetValue += input;
+        input = (_targetValue - _remainingValue) * weight;
+        _lastSmoothedValue += (input - _lastSmoothedValue) * 0.5F;
+        if (input > 0.0F && input > _lastSmoothedValue || input < 0.0F && input < _lastSmoothedValue)
         {
-            var1 = field_22389_c;
+            input = _lastSmoothedValue;
         }
 
-        field_22387_b += var1;
-        return var1;
+        _remainingValue += input;
+        return input;
     }
 }
