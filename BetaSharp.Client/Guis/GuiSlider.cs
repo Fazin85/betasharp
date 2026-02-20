@@ -16,6 +16,13 @@ public class GuiSlider : GuiButton
         sliderValue = value;
     }
 
+    public GuiSlider Size(int width, int height)
+    {
+        _width = width;
+        _height = height;
+        return this;
+    }
+
     protected override HoverState GetHoverState(bool var1)
     {
         return HoverState.Disabled;

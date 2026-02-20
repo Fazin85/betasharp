@@ -15,9 +15,8 @@ public class GuiOptions : GuiScreen
     private static readonly EnumOptions[] _availableOptions = [
         EnumOptions.MUSIC,
         EnumOptions.SOUND,
-        EnumOptions.INVERT_MOUSE,
-        EnumOptions.SENSITIVITY,
-        EnumOptions.DIFFICULTY
+        EnumOptions.DIFFICULTY,
+        EnumOptions.FOV
     ];
 
     public GuiOptions(GuiScreen parentScreen, GameOptions gameOptions)

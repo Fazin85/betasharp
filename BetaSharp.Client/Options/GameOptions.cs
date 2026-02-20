@@ -33,6 +33,7 @@ public class GameOptions : java.lang.Object
     public float musicVolume = 1.0F;
     public float soundVolume = 1.0F;
     public float mouseSensitivity = 0.5F;
+    public float brightness = 0.5F;
     public bool invertMouse;
     public int renderDistance;
     public bool viewBobbing = true;
@@ -137,6 +138,10 @@ public class GameOptions : java.lang.Object
         {
             fov = value;
         }
+        else if (option == EnumOptions.BRIGHTNESS)
+        {
+            brightness = value;
+        }
 
         saveOptions();
     }
@@ -206,6 +211,7 @@ public class GameOptions : java.lang.Object
         if (option == EnumOptions.MUSIC) return musicVolume;
         if (option == EnumOptions.SOUND) return soundVolume;
         if (option == EnumOptions.SENSITIVITY) return mouseSensitivity;
+        if (option == EnumOptions.BRIGHTNESS) return brightness;
         if (option == EnumOptions.FRAMERATE_LIMIT) return limitFramerate;
         if (option == EnumOptions.FOV) return fov;
         return 0.0F;
@@ -252,6 +258,7 @@ public class GameOptions : java.lang.Object
     private string GetOptionLabel(EnumOptions option, TranslationStorage translations)
     {
         if (option == EnumOptions.FRAMERATE_LIMIT) return "Max FPS";
+        if (option == EnumOptions.BRIGHTNESS) return "Brightness";
         if (option == EnumOptions.FOV) return "FOV";
         return translations.translateKey(option.getEnumString());
     }
@@ -268,6 +275,10 @@ public class GameOptions : java.lang.Object
         {
             return FormatFramerateValue(label, value);
         }
+        else if (option == EnumOptions.BRIGHTNESS)
+        {
+            return FormatBrightnessValue(label, value);
+        }
         else if (option == EnumOptions.FOV)
         {
             return label + (30 + (int)(value * 90.0f));
@@ -276,6 +287,19 @@ public class GameOptions : java.lang.Object
         {
             return (value == 0.0F ? label + translations.translateKey("options.off") : label + (int)(value * 100.0F) + "%");
         }
+    }
+
+    private string FormatBrightnessValue(string label, float value)
+    {
+        string brightnessLabel = "";
+
+        int procent = (int)(value * 100);
+        if (procent == 0) brightnessLabel = "Moody";
+        else if (procent == 50) brightnessLabel = "Default";
+        else if (procent == 100) brightnessLabel = "Bright";
+        else brightnessLabel = $"{procent}%";
+
+        return label + brightnessLabel;
     }
 
     private string FormatFramerateValue(string label, float value)
@@ -396,6 +420,9 @@ public class GameOptions : java.lang.Object
                 break;
             case "envAnimation":
                 environmentAnimation = parts[1].Equals("true");
+                break;
+            case "brightness":
+                brightness = float.Parse(parts[1]);
                 break;
         }
 

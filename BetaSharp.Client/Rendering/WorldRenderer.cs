@@ -35,6 +35,7 @@ public class WorldRenderer : IWorldAccess
     private int countEntitiesHidden;
     public ChunkRenderer chunkRenderer;
     public float damagePartialTime;
+    private float brightness;
 
     public WorldRenderer(Minecraft gameInstance, TextureManager textureManager)
     {
@@ -160,12 +161,14 @@ public class WorldRenderer : IWorldAccess
 
     }
 
-    public void tick(Entity view, float var3)
+    public void tick(Entity view, float var3, float brightness)
     {
         if (view == null)
         {
             return;
         }
+
+        this.brightness = brightness;
 
         double var33 = view.lastTickX + (view.x - view.lastTickX) * var3;
         double var7 = view.lastTickY + (view.y - view.lastTickY) * var3;

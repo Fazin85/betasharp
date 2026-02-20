@@ -70,7 +70,7 @@ public class GameRenderer
 
         float var1 = client.world.getLuminance(MathHelper.floor_double(client.camera.x), MathHelper.floor_double(client.camera.y), MathHelper.floor_double(client.camera.z));
         float var2 = (3 - client.options.renderDistance) / 3.0F;
-        float var3 = var1 * (1.0F - var2) + var2;
+        float var3 = (var1 * client.options.brightness) * (1.0F - var2) + var2;
         viewBob += (var3 - viewBob) * 0.1F;
         ++ticks;
         itemRenderer.updateEquippedItem();
@@ -81,7 +81,7 @@ public class GameRenderer
     {
         if (client.terrainRenderer != null)
         {
-            client.terrainRenderer.tick(client.camera, var1);
+            client.terrainRenderer.tick(client.camera, var1, client.options.brightness);
         }
     }
 

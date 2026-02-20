@@ -8,7 +8,19 @@ public class GuiVideoSettings : GuiScreen
     private readonly GuiScreen _parentScreen;
     protected string _screenTitle = "Video Settings";
     private readonly GameOptions _gameOptions;
-    private static readonly EnumOptions[] _videoOptions = { EnumOptions.RENDER_DISTANCE, EnumOptions.FOV, EnumOptions.FRAMERATE_LIMIT, EnumOptions.VIEW_BOBBING, EnumOptions.GUI_SCALE, EnumOptions.ANISOTROPIC, EnumOptions.MIPMAPS, EnumOptions.MSAA, EnumOptions.ENVIRONMENT_ANIMATION, EnumOptions.DEBUG_MODE };
+    private static readonly EnumOptions[] _videoOptions =
+    {
+        EnumOptions.RENDER_DISTANCE,
+        EnumOptions.FRAMERATE_LIMIT,
+        EnumOptions.BRIGHTNESS,
+        EnumOptions.VIEW_BOBBING,
+        EnumOptions.GUI_SCALE,
+        EnumOptions.ANISOTROPIC,
+        EnumOptions.MIPMAPS,
+        EnumOptions.MSAA,
+        EnumOptions.ENVIRONMENT_ANIMATION,
+        EnumOptions.DEBUG_MODE
+    };
 
     public GuiVideoSettings(GuiScreen parent, GameOptions options)
     {
