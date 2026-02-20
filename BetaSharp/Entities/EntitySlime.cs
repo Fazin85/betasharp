@@ -67,8 +67,8 @@ public class EntitySlime : EntityLiving, Monster
             {
                 float angle = random.NextFloat() * (float)Math.PI * 2.0F;
                 float spread = random.NextFloat() * 0.5F + 0.5F;
-                float offsetX = MathHelper.sin(angle) * (float)size * 0.5F * spread;
-                float offsetY = MathHelper.cos(angle) * (float)size * 0.5F * spread;
+                float offsetX = MathHelper.Sin(angle) * (float)size * 0.5F * spread;
+                float offsetY = MathHelper.Cos(angle) * (float)size * 0.5F * spread;
                 world.addParticle("slime", base.x + (double)offsetX, boundingBox.minY, z + (double)offsetY, 0.0D, 0.0D, 0.0D);
             }
 
@@ -167,7 +167,7 @@ public class EntitySlime : EntityLiving, Monster
 
     public override bool canSpawn()
     {
-        Chunk chunk = world.getChunkFromPos(MathHelper.floor_double(x), MathHelper.floor_double(z));
+        Chunk chunk = world.getChunkFromPos(MathHelper.Floor(x), MathHelper.Floor(z));
         return (getSlimeSize() == 1 || world.difficulty > 0) && random.NextInt(10) == 0 && chunk.getSlimeRandom(987234911L).NextInt(10) == 0 && y < 16.0D;
     }
 

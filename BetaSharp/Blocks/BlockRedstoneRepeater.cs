@@ -150,7 +150,7 @@ public class BlockRedstoneRepeater : Block
 
     public override void onPlaced(World world, int x, int y, int z, EntityLiving placer)
     {
-        int facing = ((MathHelper.floor_double((double)(placer.yaw * 4.0F / 360.0F) + 0.5D) & 3) + 2) % 4;
+        int facing = ((MathHelper.Floor((double)(placer.yaw * 4.0F / 360.0F) + 0.5D) & 3) + 2) % 4;
         world.setBlockMeta(x, y, z, facing);
         bool powered = isPowered(world, x, y, z, facing);
         if (powered)

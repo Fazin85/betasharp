@@ -22,9 +22,9 @@ public class EntityTNTPrimed : Entity
     {
         setPosition(x, y, z);
         float randomAngle = (float)(java.lang.Math.random() * (double)((float)Math.PI) * 2.0D);
-        velocityX = (double)(-MathHelper.sin(randomAngle * (float)Math.PI / 180.0F) * 0.02F);
+        velocityX = (double)(-MathHelper.Sin(randomAngle * (float)Math.PI / 180.0F) * 0.02F);
         velocityY = (double)0.2F;
-        velocityZ = (double)(-MathHelper.cos(randomAngle * (float)Math.PI / 180.0F) * 0.02F);
+        velocityZ = (double)(-MathHelper.Cos(randomAngle * (float)Math.PI / 180.0F) * 0.02F);
         fuse = 80;
         prevX = x;
         prevY = y;

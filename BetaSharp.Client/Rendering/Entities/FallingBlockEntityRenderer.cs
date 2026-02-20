@@ -26,7 +26,7 @@ public class FallingBlockEntityRenderer : EntityRenderer
         Block var10 = Block.Blocks[var1.blockId];
         World var11 = var1.getWorld();
         GLManager.GL.Disable(GLEnum.Lighting);
-        renderBlocks.renderBlockFallingSand(var10, var11, MathHelper.floor_double(var1.x), MathHelper.floor_double(var1.y), MathHelper.floor_double(var1.z));
+        renderBlocks.renderBlockFallingSand(var10, var11, MathHelper.Floor(var1.x), MathHelper.Floor(var1.y), MathHelper.Floor(var1.z));
         GLManager.GL.Enable(GLEnum.Lighting);
         GLManager.GL.PopMatrix();
     }

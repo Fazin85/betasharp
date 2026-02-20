@@ -40,7 +40,7 @@ public class EntityFlying : EntityLiving
             if (onGround)
             {
                 friction = 546.0F * 0.1F * 0.1F * 0.1F;
-                int groundBlockId = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
+                int groundBlockId = world.getBlockId(MathHelper.Floor(x), MathHelper.Floor(boundingBox.minY) - 1, MathHelper.Floor(z));
                 if (groundBlockId > 0)
                 {
                     friction = Block.Blocks[groundBlockId].slipperiness * 0.91F;
@@ -53,7 +53,7 @@ public class EntityFlying : EntityLiving
             if (onGround)
             {
                 friction = 546.0F * 0.1F * 0.1F * 0.1F;
-                int groundBlockId = world.getBlockId(MathHelper.floor_double(x), MathHelper.floor_double(boundingBox.minY) - 1, MathHelper.floor_double(z));
+                int groundBlockId = world.getBlockId(MathHelper.Floor(x), MathHelper.Floor(boundingBox.minY) - 1, MathHelper.Floor(z));
                 if (groundBlockId > 0)
                 {
                     friction = Block.Blocks[groundBlockId].slipperiness * 0.91F;
@@ -69,7 +69,7 @@ public class EntityFlying : EntityLiving
         lastWalkAnimationSpeed = walkAnimationSpeed;
         double dx = x - prevX;
         double dy = z - prevZ;
-        float distanceMoved = MathHelper.sqrt_double(dx * dx + dy * dy) * 4.0F;
+        float distanceMoved = MathHelper.Sqrt(dx * dx + dy * dy) * 4.0F;
         if (distanceMoved > 1.0F)
         {
             distanceMoved = 1.0F;

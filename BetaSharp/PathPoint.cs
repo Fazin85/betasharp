@@ -34,7 +34,7 @@ public class PathPoint : java.lang.Object
         float var2 = (float)(var1.xCoord - xCoord);
         float var3 = (float)(var1.yCoord - yCoord);
         float var4 = (float)(var1.zCoord - zCoord);
-        return MathHelper.sqrt_float(var2 * var2 + var3 * var3 + var4 * var4);
+        return MathHelper.Sqrt(var2 * var2 + var3 * var3 + var4 * var4);
     }
 
     public override bool equals(object var1)

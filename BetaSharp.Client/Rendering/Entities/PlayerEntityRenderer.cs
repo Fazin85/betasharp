@@ -172,8 +172,8 @@ public class PlayerEntityRenderer : LivingEntityRenderer
             double var22 = var1.prevCapeY + (var1.capeY - var1.prevCapeY) * (double)var2 - (var1.prevY + (var1.y - var1.prevY) * (double)var2);
             double var8 = var1.prevCapeZ + (var1.capeZ - var1.prevCapeZ) * (double)var2 - (var1.prevZ + (var1.z - var1.prevZ) * (double)var2);
             float var10 = var1.lastBodyYaw + (var1.bodyYaw - var1.lastBodyYaw) * var2;
-            double var11 = (double)MathHelper.sin(var10 * (float)Math.PI / 180.0F);
-            double var13 = (double)-MathHelper.cos(var10 * (float)Math.PI / 180.0F);
+            double var11 = (double)MathHelper.Sin(var10 * (float)Math.PI / 180.0F);
+            double var13 = (double)-MathHelper.Cos(var10 * (float)Math.PI / 180.0F);
             float var15 = (float)var22 * 10.0F;
             if (var15 < -6.0F)
             {
@@ -193,7 +193,7 @@ public class PlayerEntityRenderer : LivingEntityRenderer
             }
 
             float var18 = var1.prevStepBobbingAmount + (var1.stepBobbingAmount - var1.prevStepBobbingAmount) * var2;
-            var15 += MathHelper.sin((var1.prevHorizontalSpeed + (var1.horizontalSpeed - var1.prevHorizontalSpeed) * var2) * 6.0F) * 32.0F * var18;
+            var15 += MathHelper.Sin((var1.prevHorizontalSpeed + (var1.horizontalSpeed - var1.prevHorizontalSpeed) * var2) * 6.0F) * 32.0F * var18;
             if (var1.isSneaking())
             {
                 var15 += 25.0F;

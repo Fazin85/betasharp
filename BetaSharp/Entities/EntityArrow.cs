@@ -42,14 +42,14 @@ public class EntityArrow : Entity
         doesArrowBelongToPlayer = owner is EntityPlayer;
         setBoundingBoxSpacing(0.5F, 0.5F);
         setPositionAndAnglesKeepPrevAngles(owner.x, owner.y + (double)owner.getEyeHeight(), owner.z, owner.yaw, owner.pitch);
-        x -= (double)(MathHelper.cos(yaw / 180.0F * (float)System.Math.PI) * 0.16F);
+        x -= (double)(MathHelper.Cos(yaw / 180.0F * (float)System.Math.PI) * 0.16F);
         y -= (double)0.1F;
-        z -= (double)(MathHelper.sin(yaw / 180.0F * (float)System.Math.PI) * 0.16F);
+        z -= (double)(MathHelper.Sin(yaw / 180.0F * (float)System.Math.PI) * 0.16F);
         setPosition(x, y, z);
         standingEyeHeight = 0.0F;
-        velocityX = (double)(-MathHelper.sin(yaw / 180.0F * (float)System.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)System.Math.PI));
-        velocityZ = (double)(MathHelper.cos(yaw / 180.0F * (float)System.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)System.Math.PI));
-        velocityY = (double)(-MathHelper.sin(pitch / 180.0F * (float)System.Math.PI));
+        velocityX = (double)(-MathHelper.Sin(yaw / 180.0F * (float)System.Math.PI) * MathHelper.Cos(pitch / 180.0F * (float)System.Math.PI));
+        velocityZ = (double)(MathHelper.Cos(yaw / 180.0F * (float)System.Math.PI) * MathHelper.Cos(pitch / 180.0F * (float)System.Math.PI));
+        velocityY = (double)(-MathHelper.Sin(pitch / 180.0F * (float)System.Math.PI));
         setArrowHeading(velocityX, velocityY, velocityZ, 1.5F, 1.0F);
     }
 
@@ -59,7 +59,7 @@ public class EntityArrow : Entity
 
     public void setArrowHeading(double x, double y, double z, float speed, float spread)
     {
-        float length = MathHelper.sqrt_double(x * x + y * y + z * z);
+        float length = MathHelper.Sqrt(x * x + y * y + z * z);
         x /= (double)length;
         y /= (double)length;
         z /= (double)length;
@@ -72,7 +72,7 @@ public class EntityArrow : Entity
         velocityX = x;
         velocityY = y;
         velocityZ = z;
-        float horizontalSpeed = MathHelper.sqrt_double(x * x + z * z);
+        float horizontalSpeed = MathHelper.Sqrt(x * x + z * z);
         prevYaw = yaw = (float)(System.Math.Atan2(x, z) * 180.0D / (double)((float)System.Math.PI));
         prevPitch = pitch = (float)(System.Math.Atan2(y, (double)horizontalSpeed) * 180.0D / (double)((float)System.Math.PI));
         ticksInGround = 0;
@@ -85,7 +85,7 @@ public class EntityArrow : Entity
         base.velocityZ = velocityZ;
         if (prevPitch == 0.0F && prevYaw == 0.0F)
         {
-            float length = MathHelper.sqrt_double(velocityX * velocityX + velocityZ * velocityZ);
+            float length = MathHelper.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
             prevYaw = yaw = (float)(System.Math.Atan2(velocityX, velocityZ) * 180.0D / (double)((float)System.Math.PI));
             prevPitch = pitch = (float)(System.Math.Atan2(velocityY, (double)length) * 180.0D / (double)((float)System.Math.PI));
             prevPitch = pitch;
@@ -101,7 +101,7 @@ public class EntityArrow : Entity
         base.tick();
         if (prevPitch == 0.0F && prevYaw == 0.0F)
         {
-            float length = MathHelper.sqrt_double(velocityX * velocityX + velocityZ * velocityZ);
+            float length = MathHelper.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
             prevYaw = yaw = (float)(System.Math.Atan2(velocityX, velocityZ) * 180.0D / (double)((float)System.Math.PI));
             prevPitch = pitch = (float)(System.Math.Atan2(velocityY, (double)length) * 180.0D / (double)((float)System.Math.PI));
         }
@@ -216,7 +216,7 @@ public class EntityArrow : Entity
                     velocityX = (double)((float)(hit.pos.x - x));
                     velocityY = (double)((float)(hit.pos.y - y));
                     velocityZ = (double)((float)(hit.pos.z - z));
-                    horizontalSpeed = MathHelper.sqrt_double(velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
+                    horizontalSpeed = MathHelper.Sqrt(velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
                     x -= velocityX / (double)horizontalSpeed * (double)0.05F;
                     y -= velocityY / (double)horizontalSpeed * (double)0.05F;
                     z -= velocityZ / (double)horizontalSpeed * (double)0.05F;
@@ -229,7 +229,7 @@ public class EntityArrow : Entity
             x += velocityX;
             y += velocityY;
             z += velocityZ;
-            horizontalSpeed = MathHelper.sqrt_double(velocityX * velocityX + velocityZ * velocityZ);
+            horizontalSpeed = MathHelper.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
             yaw = (float)(System.Math.Atan2(velocityX, velocityZ) * 180.0D / (double)((float)System.Math.PI));
 
             for (pitch = (float)(System.Math.Atan2(velocityY, (double)horizontalSpeed) * 180.0D / (double)((float)System.Math.PI)); pitch - prevPitch < -180.0F; prevPitch -= 360.0F)

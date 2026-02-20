@@ -69,15 +69,15 @@ public class EntityFish : Entity
         angler.fishHook = this;
         setBoundingBoxSpacing(0.25F, 0.25F);
         setPositionAndAnglesKeepPrevAngles(player.x, player.y + 1.62D - (double)player.standingEyeHeight, player.z, player.yaw, player.pitch);
-        x -= (double)(MathHelper.cos(yaw / 180.0F * (float)System.Math.PI) * 0.16F);
+        x -= (double)(MathHelper.Cos(yaw / 180.0F * (float)System.Math.PI) * 0.16F);
         y -= (double)0.1F;
-        z -= (double)(MathHelper.sin(yaw / 180.0F * (float)System.Math.PI) * 0.16F);
+        z -= (double)(MathHelper.Sin(yaw / 180.0F * (float)System.Math.PI) * 0.16F);
         setPosition(x, y, z);
         standingEyeHeight = 0.0F;
         float var3 = 0.4F;
-        base.velocityX = (double)(-MathHelper.sin(yaw / 180.0F * (float)System.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)System.Math.PI) * var3);
-        base.velocityZ = (double)(MathHelper.cos(yaw / 180.0F * (float)System.Math.PI) * MathHelper.cos(pitch / 180.0F * (float)System.Math.PI) * var3);
-        base.velocityY = (double)(-MathHelper.sin(pitch / 180.0F * (float)System.Math.PI) * var3);
+        base.velocityX = (double)(-MathHelper.Sin(yaw / 180.0F * (float)System.Math.PI) * MathHelper.Cos(pitch / 180.0F * (float)System.Math.PI) * var3);
+        base.velocityZ = (double)(MathHelper.Cos(yaw / 180.0F * (float)System.Math.PI) * MathHelper.Cos(pitch / 180.0F * (float)System.Math.PI) * var3);
+        base.velocityY = (double)(-MathHelper.Sin(pitch / 180.0F * (float)System.Math.PI) * var3);
         func_4042_a(base.velocityX, base.velocityY, base.velocityZ, 1.5F, 1.0F);
     }
 
@@ -94,7 +94,7 @@ public class EntityFish : Entity
 
     public void func_4042_a(double var1, double var3, double var5, float var7, float var8)
     {
-        float var9 = MathHelper.sqrt_double(var1 * var1 + var3 * var3 + var5 * var5);
+        float var9 = MathHelper.Sqrt(var1 * var1 + var3 * var3 + var5 * var5);
         var1 /= (double)var9;
         var3 /= (double)var9;
         var5 /= (double)var9;
@@ -107,7 +107,7 @@ public class EntityFish : Entity
         base.velocityX = var1;
         base.velocityY = var3;
         base.velocityZ = var5;
-        float var10 = MathHelper.sqrt_double(var1 * var1 + var5 * var5);
+        float var10 = MathHelper.Sqrt(var1 * var1 + var5 * var5);
         prevYaw = yaw = (float)(System.Math.Atan2(var1, var5) * 180.0D / (double)((float)System.Math.PI));
         prevPitch = pitch = (float)(System.Math.Atan2(var3, (double)var10) * 180.0D / (double)((float)System.Math.PI));
         ticksInGround = 0;
@@ -273,7 +273,7 @@ public class EntityFish : Entity
             if (!inGround)
             {
                 base.move(base.velocityX, base.velocityY, base.velocityZ);
-                float var24 = MathHelper.sqrt_double(base.velocityX * base.velocityX + base.velocityZ * base.velocityZ);
+                float var24 = MathHelper.Sqrt(base.velocityX * base.velocityX + base.velocityZ * base.velocityZ);
                 yaw = (float)(System.Math.Atan2(base.velocityX, base.velocityZ) * 180.0D / (double)((float)System.Math.PI));
 
                 for (pitch = (float)(System.Math.Atan2(base.velocityY, (double)var24) * 180.0D / (double)((float)System.Math.PI)); pitch - prevPitch < -180.0F; prevPitch -= 360.0F)
@@ -326,7 +326,7 @@ public class EntityFish : Entity
                     else
                     {
                         short var29 = 500;
-                        if (world.isRaining(MathHelper.floor_double(x), MathHelper.floor_double(y) + 1, MathHelper.floor_double(z)))
+                        if (world.isRaining(MathHelper.Floor(x), MathHelper.Floor(y) + 1, MathHelper.Floor(z)))
                         {
                             var29 = 300;
                         }
@@ -336,7 +336,7 @@ public class EntityFish : Entity
                             ticksCatchable = random.NextInt(30) + 10;
                             base.velocityY -= (double)0.2F;
                             world.playSound(this, "random.splash", 0.25F, 1.0F + (random.NextFloat() - random.NextFloat()) * 0.4F);
-                            float var30 = (float)MathHelper.floor_double(boundingBox.minY);
+                            float var30 = (float)MathHelper.Floor(boundingBox.minY);
 
                             int var15;
                             float var17;
@@ -412,10 +412,10 @@ public class EntityFish : Entity
             double var2 = angler.x - x;
             double var4 = angler.y - y;
             double var6 = angler.z - z;
-            double var8 = (double)MathHelper.sqrt_double(var2 * var2 + var4 * var4 + var6 * var6);
+            double var8 = (double)MathHelper.Sqrt(var2 * var2 + var4 * var4 + var6 * var6);
             double var10 = 0.1D;
             bobber.velocityX += var2 * var10;
-            bobber.velocityY += var4 * var10 + (double)MathHelper.sqrt_double(var8) * 0.08D;
+            bobber.velocityY += var4 * var10 + (double)MathHelper.Sqrt(var8) * 0.08D;
             bobber.velocityZ += var6 * var10;
             var1 = 3;
         }
@@ -425,10 +425,10 @@ public class EntityFish : Entity
             double var3 = angler.x - x;
             double var5 = angler.y - y;
             double var7 = angler.z - z;
-            double var9 = (double)MathHelper.sqrt_double(var3 * var3 + var5 * var5 + var7 * var7);
+            double var9 = (double)MathHelper.Sqrt(var3 * var3 + var5 * var5 + var7 * var7);
             double var11 = 0.1D;
             var13.velocityX = var3 * var11;
-            var13.velocityY = var5 * var11 + (double)MathHelper.sqrt_double(var9) * 0.08D;
+            var13.velocityY = var5 * var11 + (double)MathHelper.Sqrt(var9) * 0.08D;
             var13.velocityZ = var7 * var11;
             world.SpawnEntity(var13);
             angler.increaseStat(Stats.Stats.fishCaughtStat, 1);

@@ -156,8 +156,8 @@ public class GuiAchievements : GuiScreen
 
     protected void func_27109_b(int var1, int var2, float var3)
     {
-        int var4 = MathHelper.floor_double(field_27116_m + (field_27114_o - field_27116_m) * (double)var3);
-        int var5 = MathHelper.floor_double(field_27115_n + (field_27113_p - field_27115_n) * (double)var3);
+        int var4 = MathHelper.Floor(field_27116_m + (field_27114_o - field_27116_m) * (double)var3);
+        int var5 = MathHelper.Floor(field_27115_n + (field_27113_p - field_27115_n) * (double)var3);
         if (var4 < field_27126_s)
         {
             var4 = field_27126_s;

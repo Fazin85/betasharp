@@ -223,7 +223,7 @@ public class EntityWolf : EntityAnimal
             if (timeWolfIsShaking > 0.4F)
             {
                 float groundY = (float)boundingBox.minY;
-                int particleCount = (int)(MathHelper.sin((timeWolfIsShaking - 0.4F) * (float)System.Math.PI) * 7.0F);
+                int particleCount = (int)(MathHelper.Sin((timeWolfIsShaking - 0.4F) * (float)System.Math.PI) * 7.0F);
 
                 for (int _ = 0; _ < particleCount; ++_)
                 {
@@ -258,7 +258,7 @@ public class EntityWolf : EntityAnimal
             shakeProgress = 1.0F;
         }
 
-        return MathHelper.sin(shakeProgress * (float)System.Math.PI) * MathHelper.sin(shakeProgress * (float)System.Math.PI * 11.0F) * 0.15F * (float)System.Math.PI;
+        return MathHelper.Sin(shakeProgress * (float)System.Math.PI) * MathHelper.Sin(shakeProgress * (float)System.Math.PI * 11.0F) * 0.15F * (float)System.Math.PI;
     }
 
     public float getInterestedAngle(float partialTick)
@@ -281,9 +281,9 @@ public class EntityWolf : EntityAnimal
         PathEntity path = world.findPath(this, entity, 16.0F);
         if (path == null && distanceToOwner > 12.0F)
         {
-            int ownerBlockX = MathHelper.floor_double(entity.x) - 2;
-            int ownerBlockY = MathHelper.floor_double(entity.z) - 2;
-            int ownerBlockZ = MathHelper.floor_double(entity.boundingBox.minY);
+            int ownerBlockX = MathHelper.Floor(entity.x) - 2;
+            int ownerBlockY = MathHelper.Floor(entity.z) - 2;
+            int ownerBlockZ = MathHelper.Floor(entity.boundingBox.minY);
 
             for (int dx = 0; dx <= 4; ++dx)
             {
@@ -382,7 +382,7 @@ public class EntityWolf : EntityAnimal
             {
                 double dx = entity.x - x;
                 double dy = entity.z - z;
-                float horizontalDistance = MathHelper.sqrt_double(dx * dx + dy * dy);
+                float horizontalDistance = MathHelper.Sqrt(dx * dx + dy * dy);
                 velocityX = dx / (double)horizontalDistance * 0.5D * (double)0.8F + velocityX * (double)0.2F;
                 velocityZ = dy / (double)horizontalDistance * 0.5D * (double)0.8F + velocityZ * (double)0.2F;
                 velocityY = (double)0.4F;

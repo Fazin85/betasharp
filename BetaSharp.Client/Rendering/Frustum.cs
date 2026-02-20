@@ -17,7 +17,7 @@ public class Frustum : FrustumData
 
     private void normalize(float[][] var1, int var2)
     {
-        float var3 = MathHelper.sqrt_float(var1[var2][0] * var1[var2][0] + var1[var2][1] * var1[var2][1] + var1[var2][2] * var1[var2][2]);
+        float var3 = MathHelper.Sqrt(var1[var2][0] * var1[var2][0] + var1[var2][1] * var1[var2][1] + var1[var2][2] * var1[var2][2]);
         var1[var2][0] /= var3;
         var1[var2][1] /= var3;
         var1[var2][2] /= var3;

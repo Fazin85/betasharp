@@ -252,9 +252,9 @@ public class ClientPlayerEntity : EntityPlayer
 
     protected override bool pushOutOfBlocks(double posX, double posY, double posZ)
     {
-        int floorX = MathHelper.floor_double(posX);
-        int floorY = MathHelper.floor_double(posY);
-        int floorZ = MathHelper.floor_double(posZ);
+        int floorX = MathHelper.Floor(posX);
+        int floorY = MathHelper.Floor(posY);
+        int floorZ = MathHelper.Floor(posZ);
         double fracX = posX - (double)floorX;
         double fracZ = posZ - (double)floorZ;
         if (isBlockTranslucent(floorX, floorY, floorZ) || isBlockTranslucent(floorX, floorY + 1, floorZ))

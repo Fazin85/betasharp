@@ -61,8 +61,8 @@ public class ItemMap : NetworkSyncedItem
             int blocksPerPixel = 1 << map.scale;
             int centerX = map.centerX;
             int centerZ = map.centerZ;
-            int entityPosX = MathHelper.floor_double(entity.x - (double)centerX) / blocksPerPixel + mapWidth / 2;
-            int entityPosZ = MathHelper.floor_double(entity.z - (double)centerZ) / blocksPerPixel + mapHeight / 2;
+            int entityPosX = MathHelper.Floor(entity.x - (double)centerX) / blocksPerPixel + mapWidth / 2;
+            int entityPosZ = MathHelper.Floor(entity.z - (double)centerZ) / blocksPerPixel + mapHeight / 2;
             int scanRadius = 128 / blocksPerPixel;
             if (world.dimension.hasCeiling)
             {
@@ -293,8 +293,8 @@ public class ItemMap : NetworkSyncedItem
         string mapName = "map_" + itemStack.getDamage();
         MapState mapState = new MapState(mapName);
         world.setState(mapName, mapState);
-        mapState.centerX = MathHelper.floor_double(entityPlayer.x);
-        mapState.centerZ = MathHelper.floor_double(entityPlayer.z);
+        mapState.centerX = MathHelper.Floor(entityPlayer.x);
+        mapState.centerZ = MathHelper.Floor(entityPlayer.z);
         mapState.scale = 3;
         mapState.dimension = (sbyte)world.dimension.id;
         mapState.markDirty();

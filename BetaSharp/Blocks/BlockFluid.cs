@@ -354,7 +354,7 @@ public abstract class BlockFluid : Block
 
     private static Vector3D<double> Normalize(Vector3D<double> vec)
     {
-        double length = (double)MathHelper.sqrt_double(vec.X * vec.X + vec.Y * vec.Y + vec.Z * vec.Z);
+        double length = (double)MathHelper.Sqrt(vec.X * vec.X + vec.Y * vec.Y + vec.Z * vec.Z);
         return length < 1.0E-4D ? new(0.0) : new(vec.X / length, vec.Y / length, vec.Z / length);
     }
 }

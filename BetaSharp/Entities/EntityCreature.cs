@@ -61,7 +61,7 @@ public class EntityCreature : EntityLiving
             pathToEntity = world.findPath(this, playerToAttack, range);
         }
 
-        int floorY = MathHelper.floor_double(boundingBox.minY + 0.5D);
+        int floorY = MathHelper.Floor(boundingBox.minY + 0.5D);
         bool isInWater = base.isInWater();
         bool isTouchingLava = base.isTouchingLava();
         pitch = 0.0F;
@@ -120,8 +120,8 @@ public class EntityCreature : EntityLiving
                     float previousYaw = yaw;
                     yaw = (float)(System.Math.Atan2(targetDeltaZ, targetDeltaX) * 180.0D / (double)((float)System.Math.PI)) - 90.0F;
                     yawDelta = (previousYaw - yaw + 90.0F) * (float)System.Math.PI / 180.0F;
-                    sidewaysSpeed = -MathHelper.sin(yawDelta) * forwardSpeed * 1.0F;
-                    forwardSpeed = MathHelper.cos(yawDelta) * forwardSpeed * 1.0F;
+                    sidewaysSpeed = -MathHelper.Sin(yawDelta) * forwardSpeed * 1.0F;
+                    forwardSpeed = MathHelper.Cos(yawDelta) * forwardSpeed * 1.0F;
                 }
 
                 if (verticalOffset > 0.0D)
@@ -163,9 +163,9 @@ public class EntityCreature : EntityLiving
 
         for (int _ = 0; _ < 10; ++_)
         {
-            int floorX = MathHelper.floor_double(x + (double)random.NextInt(13) - 6.0D);
-            int floorY = MathHelper.floor_double(y + (double)random.NextInt(7) - 3.0D);
-            int floorZ = MathHelper.floor_double(z + (double)random.NextInt(13) - 6.0D);
+            int floorX = MathHelper.Floor(x + (double)random.NextInt(13) - 6.0D);
+            int floorY = MathHelper.Floor(y + (double)random.NextInt(7) - 3.0D);
+            int floorZ = MathHelper.Floor(z + (double)random.NextInt(13) - 6.0D);
             float cost = getBlockPathWeight(floorX, floorY, floorZ);
             if (cost > bestCost)
             {
@@ -204,9 +204,9 @@ public class EntityCreature : EntityLiving
 
     public override bool canSpawn()
     {
-        int floorX = MathHelper.floor_double(x);
-        int floorY = MathHelper.floor_double(boundingBox.minY);
-        int floorZ = MathHelper.floor_double(z);
+        int floorX = MathHelper.Floor(x);
+        int floorY = MathHelper.Floor(boundingBox.minY);
+        int floorZ = MathHelper.Floor(z);
         return base.canSpawn() && getBlockPathWeight(floorX, floorY, floorZ) >= 0.0F;
     }
 

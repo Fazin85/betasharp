@@ -62,11 +62,11 @@ public class ParticleManager
 
     public void renderParticles(Entity var1, float var2)
     {
-        float var3 = MathHelper.cos(var1.yaw * (float)Math.PI / 180.0F);
-        float var4 = MathHelper.sin(var1.yaw * (float)Math.PI / 180.0F);
-        float var5 = -var4 * MathHelper.sin(var1.pitch * (float)Math.PI / 180.0F);
-        float var6 = var3 * MathHelper.sin(var1.pitch * (float)Math.PI / 180.0F);
-        float var7 = MathHelper.cos(var1.pitch * (float)Math.PI / 180.0F);
+        float var3 = MathHelper.Cos(var1.yaw * (float)Math.PI / 180.0F);
+        float var4 = MathHelper.Sin(var1.yaw * (float)Math.PI / 180.0F);
+        float var5 = -var4 * MathHelper.Sin(var1.pitch * (float)Math.PI / 180.0F);
+        float var6 = var3 * MathHelper.Sin(var1.pitch * (float)Math.PI / 180.0F);
+        float var7 = MathHelper.Cos(var1.pitch * (float)Math.PI / 180.0F);
         EntityFX.interpPosX = var1.lastTickX + (var1.x - var1.lastTickX) * (double)var2;
         EntityFX.interpPosY = var1.lastTickY + (var1.y - var1.lastTickY) * (double)var2;
         EntityFX.interpPosZ = var1.lastTickZ + (var1.z - var1.lastTickZ) * (double)var2;

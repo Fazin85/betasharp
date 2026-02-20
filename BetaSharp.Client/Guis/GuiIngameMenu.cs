@@ -79,7 +79,7 @@ public class GuiIngameMenu : GuiScreen
         if (isSavingActive || _menuTickCounter < 20)
         {
             float pulse = (_menuTickCounter % 10 + partialTick) / 10.0F;
-            pulse = MathHelper.sin(pulse * (float)Math.PI * 2.0F) * 0.2F + 0.8F;
+            pulse = MathHelper.Sin(pulse * (float)Math.PI * 2.0F) * 0.2F + 0.8F;
             int color = (int)(255.0F * pulse);
             DrawString(FontRenderer, "Saving level..", 8, Height - 16, (uint)(color << 16 | color << 8 | color));
         }

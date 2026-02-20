@@ -41,8 +41,8 @@ public class NaturalSpawner
             for (var3 = 0; var3 < var0.players.Count; ++var3)
             {
                 EntityPlayer var4 = var0.players[var3];
-                int var5 = MathHelper.floor_double(var4.x / 16.0D);
-                var6 = MathHelper.floor_double(var4.z / 16.0D);
+                int var5 = MathHelper.Floor(var4.x / 16.0D);
+                var6 = MathHelper.Floor(var4.z / 16.0D);
                 byte var7 = 8;
 
                 for (int var8 = -var7; var8 <= var7; ++var8)
@@ -222,9 +222,9 @@ public class NaturalSpawner
 
             for (int var8 = 0; var8 < 20 && !var7; ++var8)
             {
-                int var9 = MathHelper.floor_double(var5.x) + var0.random.NextInt(32) - var0.random.NextInt(32);
-                int var10 = MathHelper.floor_double(var5.z) + var0.random.NextInt(32) - var0.random.NextInt(32);
-                int var11 = MathHelper.floor_double(var5.y) + var0.random.NextInt(16) - var0.random.NextInt(16);
+                int var9 = MathHelper.Floor(var5.x) + var0.random.NextInt(32) - var0.random.NextInt(32);
+                int var10 = MathHelper.Floor(var5.z) + var0.random.NextInt(32) - var0.random.NextInt(32);
+                int var11 = MathHelper.Floor(var5.y) + var0.random.NextInt(16) - var0.random.NextInt(16);
                 if (var11 < 1)
                 {
                     var11 = 1;
@@ -272,7 +272,7 @@ public class NaturalSpawner
                             PathPoint var19 = var18.func_22328_c();
                             if (java.lang.Math.abs((double)var19.xCoord - var5.x) < 1.5D && java.lang.Math.abs((double)var19.zCoord - var5.z) < 1.5D && java.lang.Math.abs((double)var19.yCoord - var5.y) < 1.5D)
                             {
-                                Vec3i var20 = BlockBed.findWakeUpPosition(var0, MathHelper.floor_double(var5.x), MathHelper.floor_double(var5.y), MathHelper.floor_double(var5.z), 1);
+                                Vec3i var20 = BlockBed.findWakeUpPosition(var0, MathHelper.Floor(var5.x), MathHelper.Floor(var5.y), MathHelper.Floor(var5.z), 1);
                                 if (var20 == null)
                                 {
                                     var20 = new Vec3i(var9, var13 + 1, var10);

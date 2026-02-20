@@ -182,25 +182,25 @@ public class EntityPainting : Entity
             int startZ = zPosition;
             if (direction == 0)
             {
-                startX = MathHelper.floor_double(x - (double)((float)art.sizeX / 32.0F));
+                startX = MathHelper.Floor(x - (double)((float)art.sizeX / 32.0F));
             }
 
             if (direction == 1)
             {
-                startZ = MathHelper.floor_double(z - (double)((float)art.sizeX / 32.0F));
+                startZ = MathHelper.Floor(z - (double)((float)art.sizeX / 32.0F));
             }
 
             if (direction == 2)
             {
-                startX = MathHelper.floor_double(x - (double)((float)art.sizeX / 32.0F));
+                startX = MathHelper.Floor(x - (double)((float)art.sizeX / 32.0F));
             }
 
             if (direction == 3)
             {
-                startZ = MathHelper.floor_double(z - (double)((float)art.sizeX / 32.0F));
+                startZ = MathHelper.Floor(z - (double)((float)art.sizeX / 32.0F));
             }
 
-            startY = MathHelper.floor_double(y - (double)((float)art.sizeY / 32.0F));
+            startY = MathHelper.Floor(y - (double)((float)art.sizeY / 32.0F));
 
             int dy;
             for (int dx = 0; dx < widthInBlocks; ++dx)

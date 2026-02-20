@@ -148,7 +148,7 @@ public class LivingEntityRenderer : EntityRenderer
         if (var1.deathTime > 0)
         {
             float var5 = (var1.deathTime + var4 - 1.0F) / 20.0F * 1.6F;
-            var5 = MathHelper.sqrt_float(var5);
+            var5 = MathHelper.Sqrt(var5);
             if (var5 > 1.0F)
             {
                 var5 = 1.0F;

@@ -97,27 +97,27 @@ public class PaintingEntityRenderer : EntityRenderer
 
     private void func_160_a(EntityPainting var1, float var2, float var3)
     {
-        int var4 = MathHelper.floor_double(var1.x);
-        int var5 = MathHelper.floor_double(var1.y + (double)(var3 / 16.0F));
-        int var6 = MathHelper.floor_double(var1.z);
+        int var4 = MathHelper.Floor(var1.x);
+        int var5 = MathHelper.Floor(var1.y + (double)(var3 / 16.0F));
+        int var6 = MathHelper.Floor(var1.z);
         if (var1.direction == 0)
         {
-            var4 = MathHelper.floor_double(var1.x + (double)(var2 / 16.0F));
+            var4 = MathHelper.Floor(var1.x + (double)(var2 / 16.0F));
         }
 
         if (var1.direction == 1)
         {
-            var6 = MathHelper.floor_double(var1.z - (double)(var2 / 16.0F));
+            var6 = MathHelper.Floor(var1.z - (double)(var2 / 16.0F));
         }
 
         if (var1.direction == 2)
         {
-            var4 = MathHelper.floor_double(var1.x - (double)(var2 / 16.0F));
+            var4 = MathHelper.Floor(var1.x - (double)(var2 / 16.0F));
         }
 
         if (var1.direction == 3)
         {
-            var6 = MathHelper.floor_double(var1.z + (double)(var2 / 16.0F));
+            var6 = MathHelper.Floor(var1.z + (double)(var2 / 16.0F));
         }
 
         float var7 = dispatcher.world.getLuminance(var4, var5, var6);

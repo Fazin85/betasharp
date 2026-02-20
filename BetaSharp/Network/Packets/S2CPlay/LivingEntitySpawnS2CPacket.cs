@@ -27,9 +27,9 @@ public class LivingEntitySpawnS2CPacket : Packet
     {
         entityId = ent.id;
         type = (sbyte)EntityRegistry.getRawId(ent);
-        xPosition = MathHelper.floor_double(ent.x * 32.0D);
-        yPosition = MathHelper.floor_double(ent.y * 32.0D);
-        zPosition = MathHelper.floor_double(ent.z * 32.0D);
+        xPosition = MathHelper.Floor(ent.x * 32.0D);
+        yPosition = MathHelper.Floor(ent.y * 32.0D);
+        zPosition = MathHelper.Floor(ent.z * 32.0D);
         yaw = (sbyte)(int)(ent.yaw * 256.0F / 360.0F);
         pitch = (sbyte)(int)(ent.pitch * 256.0F / 360.0F);
         metaData = ent.getDataWatcher();
