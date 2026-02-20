@@ -35,9 +35,22 @@ public static class PathHelper
             {
                 path = System.IO.Path.Combine(userHome, ".local", "share", appName);
             }
+
+            MigrateLegacyLinuxDir(userHome, appName, path);
         }
 
         Directory.CreateDirectory(path);
         return path;
+    }
+
+    private static void MigrateLegacyLinuxDir(string userHome, string appName, string newPath)
+    {
+        string oldPath = System.IO.Path.Combine(userHome, "." + appName);
+
+        if (Directory.Exists(oldPath) && !Directory.Exists(newPath))
+        {
+            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(newPath)!);
+            Directory.Move(oldPath, newPath);
+        }
     }
 }
