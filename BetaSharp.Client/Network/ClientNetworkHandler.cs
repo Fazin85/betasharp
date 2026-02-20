@@ -66,7 +66,7 @@ public class ClientNetworkHandler : NetHandler
         {
             isRemote = true
         };
-        mc.changeWorld1(worldClient);
+        mc.changeWorld(worldClient);
         mc.player.dimensionId = packet.dimensionId;
         mc.displayGuiScreen(new GuiDownloadTerrain(this));
         mc.player.id = packet.protocolVersion;
@@ -376,7 +376,7 @@ public class ClientNetworkHandler : NetHandler
     {
         netManager.disconnect("disconnect.kicked");
         disconnected = true;
-        mc.changeWorld1(null);
+        mc.changeWorld(null);
         mc.displayGuiScreen(new GuiConnectFailed("disconnect.disconnected", "disconnect.genericReason", packet.reason));
     }
 
@@ -385,7 +385,7 @@ public class ClientNetworkHandler : NetHandler
         if (!disconnected)
         {
             disconnected = true;
-            mc.changeWorld1(null);
+            mc.changeWorld(null);
             mc.displayGuiScreen(new GuiConnectFailed("disconnect.lost", reason, args));
         }
     }
@@ -588,7 +588,7 @@ public class ClientNetworkHandler : NetHandler
             {
                 isRemote = true
             };
-            mc.changeWorld1(worldClient);
+            mc.changeWorld(worldClient);
             mc.player.dimensionId = packet.dimensionId;
             mc.displayGuiScreen(new GuiDownloadTerrain(this));
         }

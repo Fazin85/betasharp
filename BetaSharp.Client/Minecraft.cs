@@ -414,7 +414,7 @@ public partial class Minecraft
 
             try
             {
-                changeWorld1((World)null);
+                changeWorld((World)null);
             }
             catch (Exception worldChangeException) { }
 
@@ -502,7 +502,7 @@ public partial class Minecraft
                         catch (MinecraftException tickException)
                         {
                             world = null;
-                            changeWorld1((World)null);
+                            changeWorld((World)null);
                             displayGuiScreen(new GuiConflictWarning());
                         }
                     }
@@ -617,10 +617,10 @@ public partial class Minecraft
                 catch (MinecraftException)
                 {
                     world = null;
-                    changeWorld1(null);
+                    changeWorld(null);
                     displayGuiScreen(new GuiConflictWarning());
                 }
-                catch (java.lang.OutOfMemoryError)
+                catch (OutOfMemoryException)
                 {
                     crashCleanup();
                     displayGuiScreen(new GuiErrorScreen());
@@ -650,7 +650,7 @@ public partial class Minecraft
     {
         try
         {
-            changeWorld1(null);
+            changeWorld(null);
         }
         catch (Exception)
         {
@@ -1385,21 +1385,11 @@ public partial class Minecraft
 
     public void startWorld(string worldName, string mainMenuText, long seed)
     {
-        changeWorld1((World)null);
+        changeWorld((World)null);
         displayGuiScreen(new GuiLevelLoading(worldName, seed));
     }
 
-    public void changeWorld1(World newWorld)
-    {
-        changeWorld2(newWorld, "");
-    }
-
-    public void changeWorld2(World newWorld, string loadingMessage)
-    {
-        changeWorld(newWorld, loadingMessage, (EntityPlayer)null);
-    }
-
-    public void changeWorld(World newWorld, string loadingText, EntityPlayer targetEntity)
+    public void changeWorld(World newWorld, string loadingText = "", EntityPlayer targetEntity = null)
     {
         statFileWriter.func_27175_b();
         statFileWriter.syncStats();
