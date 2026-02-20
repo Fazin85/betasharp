@@ -2,8 +2,8 @@ namespace BetaSharp.Client.Input;
 
 public class MouseHelper
 {
-    public int deltaX;
-    public int deltaY;
+    public int DeltaX { get; private set; }
+    public int DeltaY { get; private set; }
 
     public MouseHelper()
     {
@@ -12,8 +12,8 @@ public class MouseHelper
     public void grabMouseCursor()
     {
         Mouse.setGrabbed(true);
-        deltaX = 0;
-        deltaY = 0;
+        DeltaX = 0;
+        DeltaY = 0;
     }
 
     public void ungrabMouseCursor()
@@ -24,7 +24,7 @@ public class MouseHelper
 
     public void mouseXYChange()
     {
-        deltaX = Mouse.getDX();
-        deltaY = Mouse.getDY();
+        DeltaX = Mouse.getDX();
+        DeltaY = Mouse.getDY();
     }
 }
