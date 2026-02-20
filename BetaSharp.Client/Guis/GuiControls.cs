@@ -32,6 +32,9 @@ public class GuiControls : GuiScreen
             _controlList.Add(new GuiSmallButton(i, leftX + i % 2 * 160, Height / 6 + 24 * (i >> 1), 70, 20, _options.getOptionDisplayString(i)));
         }
 
+        _controlList.Add(new GuiSlider(EnumOptions.SENSITIVITY.returnEnumOrdinal(), Width / 2 + 5, Height / 6 + 130, EnumOptions.SENSITIVITY, _options.getKeyBinding(EnumOptions.SENSITIVITY), _options.getOptionFloatValue(EnumOptions.SENSITIVITY)).Size(125, 20));
+        _controlList.Add(new GuiSmallButton(EnumOptions.INVERT_MOUSE.returnEnumOrdinal(), Width / 2 - 155, Height / 6 + 130, EnumOptions.INVERT_MOUSE, _options.getKeyBinding(EnumOptions.INVERT_MOUSE)).Size(125, 20));
+
         _controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 6 + 168, translations.translateKey("gui.done")));
         _screenTitle = translations.translateKey("controls.title");
     }
@@ -47,6 +50,11 @@ public class GuiControls : GuiScreen
         {
             case ButtonDone:
                 mc.displayGuiScreen(_parentScreen);
+                break;
+            case int id when id == EnumOptions.INVERT_MOUSE.returnEnumOrdinal():
+                _options.invertMouse = !_options.invertMouse;
+                button.DisplayString = _options.getKeyBinding(EnumOptions.INVERT_MOUSE);
+                _options.saveOptions();
                 break;
             default:
                 _selectedKey = button.Id;

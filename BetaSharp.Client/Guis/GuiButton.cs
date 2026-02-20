@@ -41,6 +41,13 @@ public class GuiButton : Gui
         DisplayString = displayStr;
     }
 
+    public GuiButton Size(int width, int height)
+    {
+        _width = width;
+        _height = height;
+        return this;
+    }
+
     protected virtual HoverState GetHoverState(bool isMouseOver)
     {
         if (!Enabled) return HoverState.Disabled;
