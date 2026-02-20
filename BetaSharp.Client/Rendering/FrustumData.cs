@@ -1,25 +1,34 @@
+using BetaSharp.Util.Maths;
+
 namespace BetaSharp.Client.Rendering;
 
-public class FrustumData : java.lang.Object
+public class FrustumData
 {
-    public float[][] frustum = new float[16][];
-    public float[] projectionMatrix = new float[16];
-    public float[] modelviewMatrix = new float[16];
-    public float[] clippingMatrix = new float[16];
-
-    public FrustumData()
+    public float[] Frustum = new float[24];
+    public float[] ProjectionMatrix = new float[16];
+    public float[] ModelviewMatrix = new float[16];
+    public float[] ClippingMatrix = new float[16];
+    public bool IsBoxInFrustum(Box box)
     {
-        for (int i = 0; i < 16; i++)
-        {
-            frustum[i] = new float[16];
-        }
-    }
+        float fMinX = (float)box.minX, fMinY = (float)box.minY, fMinZ = (float)box.minZ;
+        float fMaxX = (float)box.maxX, fMaxY = (float)box.maxY, fMaxZ = (float)box.maxZ;
 
-    public bool isBoxInFrustum(double var1, double var3, double var5, double var7, double var9, double var11)
-    {
-        for (int var13 = 0; var13 < 6; ++var13)
+        for (int i = 0; i < 6; i++)
         {
-            if (frustum[var13][0] * var1 + frustum[var13][1] * var3 + frustum[var13][2] * var5 + frustum[var13][3] <= 0.0D && frustum[var13][0] * var7 + frustum[var13][1] * var3 + frustum[var13][2] * var5 + frustum[var13][3] <= 0.0D && frustum[var13][0] * var1 + frustum[var13][1] * var9 + frustum[var13][2] * var5 + frustum[var13][3] <= 0.0D && frustum[var13][0] * var7 + frustum[var13][1] * var9 + frustum[var13][2] * var5 + frustum[var13][3] <= 0.0D && frustum[var13][0] * var1 + frustum[var13][1] * var3 + frustum[var13][2] * var11 + frustum[var13][3] <= 0.0D && frustum[var13][0] * var7 + frustum[var13][1] * var3 + frustum[var13][2] * var11 + frustum[var13][3] <= 0.0D && frustum[var13][0] * var1 + frustum[var13][1] * var9 + frustum[var13][2] * var11 + frustum[var13][3] <= 0.0D && frustum[var13][0] * var7 + frustum[var13][1] * var9 + frustum[var13][2] * var11 + frustum[var13][3] <= 0.0D)
+            int offset = i * 4;
+            float a = Frustum[offset];
+            float b = Frustum[offset + 1];
+            float c = Frustum[offset + 2];
+            float d = Frustum[offset + 3];
+
+            if (a * fMinX + b * fMinY + c * fMinZ + d <= 0.0f &&
+                a * fMaxX + b * fMinY + c * fMinZ + d <= 0.0f &&
+                a * fMinX + b * fMaxY + c * fMinZ + d <= 0.0f &&
+                a * fMaxX + b * fMaxY + c * fMinZ + d <= 0.0f &&
+                a * fMinX + b * fMinY + c * fMaxZ + d <= 0.0f &&
+                a * fMaxX + b * fMinY + c * fMaxZ + d <= 0.0f &&
+                a * fMinX + b * fMaxY + c * fMaxZ + d <= 0.0f &&
+                a * fMaxX + b * fMaxY + c * fMaxZ + d <= 0.0f)
             {
                 return false;
             }
