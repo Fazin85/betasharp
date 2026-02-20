@@ -92,13 +92,12 @@ public abstract class GuiContainer : GuiScreen
             }
         }
 
-        // Render the dragged cursor item last so it appears on top of foreground text
         if (playerInv.getCursorStack() != null)
         {
             GLManager.GL.Enable(GLEnum.RescaleNormal);
             GLManager.GL.PushMatrix();
             GLManager.GL.Rotate(120.0F, 1.0F, 0.0F, 0.0F);
-            GLManager.GL.Rotate(-90.0F, 0.0F, 1.0F, 0.0F); // Shadow on right side of block, not top
+            GLManager.GL.Rotate(-90.0F, 0.0F, 1.0F, 0.0F);
             Lighting.turnOn();
             GLManager.GL.PopMatrix();
             GLManager.GL.Enable(GLEnum.Lighting);
