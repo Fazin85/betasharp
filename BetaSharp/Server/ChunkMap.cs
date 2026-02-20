@@ -13,7 +13,7 @@ namespace BetaSharp.Server;
 public class ChunkMap
 {
     public List<ServerPlayerEntity> players = [];
-    private readonly LongObjectHashMap chunkMapping = new();
+    private readonly Dictionary<long, TrackedChunk> chunkMapping = new();
     private readonly List<TrackedChunk> chunksToUpdate = [];
     public readonly ChunkLoadingQueue loadQueue;
     private MinecraftServer server;
@@ -64,11 +64,11 @@ public class ChunkMap
     internal TrackedChunk GetOrCreateChunk(int chunkX, int chunkZ, bool createIfAbsent)
     {
         long var4 = GetChunkHash(chunkX, chunkZ);
-        TrackedChunk var6 = (TrackedChunk)chunkMapping.get(var4);
+        TrackedChunk var6 = chunkMapping.GetValueOrDefault(var4);
         if (var6 == null && createIfAbsent)
         {
             var6 = new TrackedChunk(this, chunkX, chunkZ);
-            chunkMapping.put(var4, var6);
+            chunkMapping[var4] = var6;
         }
 
         return var6;
@@ -283,7 +283,7 @@ public class ChunkMap
                 if (players.Count == 0)
                 {
                     long var2 = chunkX + 2147483647L | chunkZ + 2147483647L << 32;
-                    chunkMap.chunkMapping.remove(var2);
+                    chunkMap.chunkMapping.Remove(var2);
                     if (dirtyBlockCount > 0)
                     {
                         chunkMap.chunksToUpdate.Remove(this);

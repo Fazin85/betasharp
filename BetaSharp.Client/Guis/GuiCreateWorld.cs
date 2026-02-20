@@ -62,7 +62,7 @@ public class GuiCreateWorld : GuiScreen
             _folderName = _folderName.Replace(invalidChar, '_');
         }
 
-        if (MathHelper.stringNullOrLengthZero(_folderName))
+        if (string.IsNullOrEmpty(_folderName))
         {
             _folderName = "World";
         }
@@ -104,7 +104,7 @@ public class GuiCreateWorld : GuiScreen
                         _createClicked = true;
                         long worldSeed = new JavaRandom().NextLong();
                         string seedInput = _textboxSeed.GetText();
-                        if (!MathHelper.stringNullOrLengthZero(seedInput))
+                        if (!string.IsNullOrEmpty(seedInput))
                         {
                             try
                             {

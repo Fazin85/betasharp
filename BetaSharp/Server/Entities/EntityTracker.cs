@@ -9,7 +9,7 @@ namespace BetaSharp.Server.Entities;
 public class EntityTracker
 {
     private HashSet<EntityTrackerEntry> entries = [];
-    private IntHashMap entriesById = new();
+    private Dictionary<int, EntityTrackerEntry> entriesById = new();
     private MinecraftServer world;
     private int viewDistance;
     private int dimensionId;
@@ -102,7 +102,7 @@ public class EntityTracker
             trackedDistance = viewDistance;
         }
 
-        if (entriesById.containsKey(entity.id))
+        if (entriesById.ContainsKey(entity.id))
         {
             throw new IllegalStateException("Entity is already tracked!");
         }
@@ -110,7 +110,7 @@ public class EntityTracker
         {
             EntityTrackerEntry var5 = new(entity, trackedDistance, tracingFrequency, alwaysUpdateVelocity);
             entries.Add(var5);
-            entriesById.put(entity.id, var5);
+            entriesById[entity.id] = var5;
             var5.updateListeners(world.getWorld(dimensionId).players.Cast<ServerPlayerEntity>());
         }
     }
@@ -127,11 +127,10 @@ public class EntityTracker
             }
         }
 
-        EntityTrackerEntry var5 = (EntityTrackerEntry)entriesById.remove(entity.id);
-        if (var5 != null)
+        if (entriesById.Remove(entity.id, out EntityTrackerEntry ent))
         {
-            entries.Remove(var5);
-            var5.notifyEntityRemoved();
+            entries.Remove(ent);
+            ent.notifyEntityRemoved();
         }
     }
 
@@ -164,19 +163,17 @@ public class EntityTracker
 
     public void sendToListeners(Entity entity, Packet packet)
     {
-        EntityTrackerEntry var3 = (EntityTrackerEntry)entriesById.get(entity.id);
-        if (var3 != null)
+        if (entriesById.TryGetValue(entity.id, out EntityTrackerEntry ent))
         {
-            var3.sendToListeners(packet);
+            ent.sendToListeners(packet);
         }
     }
 
     public void sendToAround(Entity entity, Packet packet)
     {
-        EntityTrackerEntry var3 = (EntityTrackerEntry)entriesById.get(entity.id);
-        if (var3 != null)
+        if (entriesById.TryGetValue(entity.id, out EntityTrackerEntry ent))
         {
-            var3.sendToAround(packet);
+            ent.sendToAround(packet);
         }
     }
 
