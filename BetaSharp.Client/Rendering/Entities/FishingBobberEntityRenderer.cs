@@ -52,7 +52,7 @@ public class FishingBobberEntityRenderer : EntityRenderer
             double var28 = var1.angler.prevX + (var1.angler.x - var1.angler.prevX) * (double)tickDelta + var27.x;
             double var30 = var1.angler.prevY + (var1.angler.y - var1.angler.prevY) * (double)tickDelta + var27.y;
             double var32 = var1.angler.prevZ + (var1.angler.z - var1.angler.prevZ) * (double)tickDelta + var27.z;
-            if (dispatcher.options.cameraMode != EnumCameraMode.FirstPerson)
+            if (dispatcher.options.CameraMode != EnumCameraMode.FirstPerson)
             {
                 var20 = (var1.angler.lastBodyYaw + (var1.angler.bodyYaw - var1.angler.lastBodyYaw) * tickDelta) * (float)Math.PI / 180.0F;
                 var21 = (double)MathHelper.sin(var20);

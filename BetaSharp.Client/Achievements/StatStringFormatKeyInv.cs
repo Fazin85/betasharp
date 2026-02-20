@@ -9,6 +9,6 @@ public class StatStringFormatKeyInv(Minecraft game) : AchievementStatFormatter
 
     public string formatString(string key)
     {
-        return s_localizedName.translateKeyFormat(key, Keyboard.getKeyName(_mc.options.keyBindInventory.keyCode));
+        return s_localizedName.translateKeyFormat(key, Keyboard.getKeyName(_mc.options.KeyBindInventory.keyCode));
     }
 }

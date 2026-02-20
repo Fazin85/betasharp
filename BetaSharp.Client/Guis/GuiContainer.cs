@@ -197,7 +197,7 @@ public abstract class GuiContainer : GuiScreen
 
     protected override void KeyTyped(char eventChar, int eventKey)
     {
-        if (eventKey == Keyboard.KEY_ESCAPE || eventKey == mc.options.keyBindInventory.keyCode)
+        if (eventKey == Keyboard.KEY_ESCAPE || eventKey == mc.options.KeyBindInventory.keyCode)
         {
             mc.player.closeHandledScreen();
         }

@@ -179,13 +179,13 @@ public partial class Minecraft
 
         mcDataDir = getMinecraftDir();
         saveLoader = new RegionWorldStorageSource(new java.io.File(mcDataDir, "saves"));
-        options = new GameOptions(this, mcDataDir);
-        Profiler.Enabled = options.debugMode;
+        options = new GameOptions(this, mcDataDir.getAbsolutePath());
+        Profiler.Enabled = options.DebugMode;
 
         try
         {
             int[] msaaValues = [0, 2, 4, 8];
-            Display.MSAA_Samples = msaaValues[options.msaaLevel];
+            Display.MSAA_Samples = msaaValues[options.MSAALevel];
 
             Display.create();
             Display.getGlfw().SetWindowSizeLimits(Display.getWindowHandle(), 850, 480, 3840, 2160);
@@ -468,7 +468,7 @@ public partial class Minecraft
 
             while (running)
             {
-                if (options.debugMode)
+                if (options.DebugMode)
                 {
                     Profiler.Update(timer.DeltaTime);
                     Profiler.Record("frame Time", timer.DeltaTime * 1000.0f);
@@ -493,7 +493,7 @@ public partial class Minecraft
                     }
 
                     long tickStartTime = java.lang.System.nanoTime();
-                    if (options.debugMode)
+                    if (options.DebugMode)
                     {
                         Profiler.PushGroup("runTicks");
                     }
@@ -514,7 +514,7 @@ public partial class Minecraft
                         }
                     }
 
-                    if (options.debugMode)
+                    if (options.DebugMode)
                     {
                         Profiler.PopGroup();
                     }
@@ -526,9 +526,9 @@ public partial class Minecraft
                     GLManager.GL.Enable(GLEnum.Texture2D);
                     if (world != null)
                     {
-                        if (options.debugMode) Profiler.Start("updateLighting");
+                        if (options.DebugMode) Profiler.Start("updateLighting");
                         world.doLightingUpdates();
-                        if (options.debugMode) Profiler.Stop("updateLighting");
+                        if (options.DebugMode) Profiler.Stop("updateLighting");
                     }
 
                     if (!Keyboard.isKeyDown(Keyboard.KEY_F7))
@@ -538,19 +538,19 @@ public partial class Minecraft
 
                     if (player != null && player.isInsideWall())
                     {
-                        options.cameraMode = EnumCameraMode.FirstPerson;
+                        options.CameraMode = EnumCameraMode.FirstPerson;
                     }
 
                     if (!skipRenderWorld)
                     {
                         playerController?.setPartialTime(timer.renderPartialTicks);
 
-                        if (options.debugMode) Profiler.PushGroup("render");
+                        if (options.DebugMode) Profiler.PushGroup("render");
                         gameRenderer.onFrameUpdate(timer.renderPartialTicks);
-                        if (options.debugMode) Profiler.PopGroup();
+                        if (options.DebugMode) Profiler.PopGroup();
                     }
 
-                    if (imGuiController != null && timer.DeltaTime > 0.0f && options.showDebugInfo && options.debugMode)
+                    if (imGuiController != null && timer.DeltaTime > 0.0f && options.ShowDebugInfo && options.DebugMode)
                     {
                         imGuiController.Update(timer.DeltaTime);
                         ProfilerRenderer.Draw();
@@ -573,7 +573,7 @@ public partial class Minecraft
                         java.lang.Thread.sleep(10L);
                     }
 
-                    if (options.showDebugInfo)
+                    if (options.ShowDebugInfo)
                     {
                         displayDebugInfo(tickElapsedTime);
                     }
@@ -634,7 +634,7 @@ public partial class Minecraft
                 }
                 finally
                 {
-                    if (options.debugMode)
+                    if (options.DebugMode)
                     {
                         Profiler.CaptureFrame();
                         Profiler.PopGroup();
@@ -1143,10 +1143,10 @@ public partial class Minecraft
                 }
             }
 
-            world.difficulty = options.difficulty;
+            world.difficulty = options.Difficulty;
             if (internalServer != null)
             {
-                internalServer.SetDifficulty(options.difficulty);
+                internalServer.SetDifficulty(options.Difficulty);
             }
 
             if (world.isRemote)
@@ -1183,7 +1183,7 @@ public partial class Minecraft
             Profiler.PushGroup("theWorld.tick");
             if (!isGamePaused || (isMultiplayerWorld() && internalServer == null))
             {
-                world.allowSpawning(options.difficulty > 0, true);
+                world.allowSpawning(options.Difficulty > 0, true);
                 world.Tick();
             }
 
@@ -1216,7 +1216,7 @@ public partial class Minecraft
                 if (mouseWheelDelta != 0)
                 {
                     player.inventory.changeCurrentItem(mouseWheelDelta);
-                    if (options.invertScrolling)
+                    if (options.InvertScrolling)
                     {
                         if (mouseWheelDelta > 0)
                         {
@@ -1228,7 +1228,7 @@ public partial class Minecraft
                             mouseWheelDelta = -1;
                         }
 
-                        options.amountScrolled += (float)mouseWheelDelta * 0.25F;
+                        options.AmountScrolled += (float)mouseWheelDelta * 0.25F;
                     }
                 }
 
@@ -1305,40 +1305,40 @@ public partial class Minecraft
 
                         if (Keyboard.getEventKey() == Keyboard.KEY_F1)
                         {
-                            options.hideGUI = !options.hideGUI;
+                            options.HideGUI = !options.HideGUI;
                         }
 
                         if (Keyboard.getEventKey() == Keyboard.KEY_F3)
                         {
-                            options.showDebugInfo = !options.showDebugInfo;
+                            options.ShowDebugInfo = !options.ShowDebugInfo;
                         }
 
                         if (Keyboard.getEventKey() == Keyboard.KEY_F5)
                         {
-                            options.cameraMode = (EnumCameraMode)((int)(options.cameraMode + 2) % 3);
+                            options.CameraMode = (EnumCameraMode)((int)(options.CameraMode + 2) % 3);
                         }
 
                         if (Keyboard.getEventKey() == Keyboard.KEY_F8)
                         {
-                            options.smoothCamera = !options.smoothCamera;
+                            options.SmoothCamera = !options.SmoothCamera;
                         }
 
-                        if (Keyboard.getEventKey() == options.keyBindInventory.keyCode)
+                        if (Keyboard.getEventKey() == options.KeyBindInventory.keyCode)
                         {
                             displayGuiScreen(new GuiInventory(player));
                         }
 
-                        if (Keyboard.getEventKey() == options.keyBindDrop.keyCode)
+                        if (Keyboard.getEventKey() == options.KeyBindDrop.keyCode)
                         {
                             player.dropSelectedItem();
                         }
 
-                        if (Keyboard.getEventKey() == options.keyBindChat.keyCode)
+                        if (Keyboard.getEventKey() == options.KeyBindChat.keyCode)
                         {
                             displayGuiScreen(new GuiChat());
                         }
 
-                        if (Keyboard.getEventKey() == options.keyBindCommand.keyCode)
+                        if (Keyboard.getEventKey() == options.KeyBindCommand.keyCode)
                         {
                             displayGuiScreen(new GuiChat("/"));
                         }
@@ -1352,9 +1352,9 @@ public partial class Minecraft
                         }
                     }
 
-                    if (Keyboard.getEventKey() == options.keyBindToggleFog.keyCode)
+                    if (Keyboard.getEventKey() == options.KeyBindToggleFog.keyCode)
                     {
-                        options.setOptionValue(EnumOptions.RENDER_DISTANCE,
+                        options.SetOptionValue(EnumOptions.RENDER_DISTANCE,
                             !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) ? 1 : -1);
                     }
                 }
@@ -1674,7 +1674,7 @@ public partial class Minecraft
 
     public static bool isGuiEnabled()
     {
-        return INSTANCE == null || !INSTANCE.options.hideGUI;
+        return INSTANCE == null || !INSTANCE.options.HideGUI;
     }
 
     public static bool isFancyGraphicsEnabled()
@@ -1689,7 +1689,7 @@ public partial class Minecraft
 
     public static bool isDebugInfoEnabled()
     {
-        return INSTANCE != null && INSTANCE.options.showDebugInfo;
+        return INSTANCE != null && INSTANCE.options.ShowDebugInfo;
     }
 
     public static bool lineIsCommand(string var1) => (var1.StartsWith("/"));
