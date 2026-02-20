@@ -48,12 +48,12 @@ public class DataFile : java.lang.Object, Comparable
         return file;
     }
 
-    public int getChunkX()
+    public int GetChunkX()
     {
         return chunkX;
     }
 
-    public int getChunkZ()
+    public int GetChunkZ()
     {
         return chunkZ;
     }

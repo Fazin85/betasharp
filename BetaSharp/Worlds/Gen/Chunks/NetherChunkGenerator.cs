@@ -43,14 +43,14 @@ public class NetherChunkGenerator : ChunkSource
         depthNoise = new OctavePerlinNoiseSampler(random, 16);
     }
 
-    public void buildTerrain(int chunkX, int chunkZ, byte[] blocks)
+    public void BuildTerrain(int chunkX, int chunkZ, byte[] blocks)
     {
         byte var4 = 4;
         byte var5 = 32;
         int var6 = var4 + 1;
         byte var7 = 17;
         int var8 = var4 + 1;
-        heightMap = generateHeightMap(heightMap, chunkX * var4, 0, chunkZ * var4, var6, var7, var8);
+        heightMap = GenerateHeightMap(heightMap, chunkX * var4, 0, chunkZ * var4, var6, var7, var8);
 
         for (int var9 = 0; var9 < var4; ++var9)
         {
@@ -117,7 +117,7 @@ public class NetherChunkGenerator : ChunkSource
 
     }
 
-    public void buildSurfaces(int chunkX, int chunkZ, byte[] blocks)
+    public void BuildSurfaces(int chunkX, int chunkZ, byte[] blocks)
     {
         byte var4 = 64;
         double var5 = 1.0D / 32.0D;
@@ -216,23 +216,23 @@ public class NetherChunkGenerator : ChunkSource
 
     }
 
-    public Chunk loadChunk(int x, int z)
+    public Chunk LoadChunk(int x, int z)
     {
-        return getChunk(x, z);
+        return GetChunk(x, z);
     }
 
-    public Chunk getChunk(int chunkX, int chunkZ)
+    public Chunk GetChunk(int chunkX, int chunkZ)
     {
         random.SetSeed(chunkX * 341873128712L + chunkZ * 132897987541L);
         byte[] var3 = new byte[-java.lang.Short.MIN_VALUE];
-        buildTerrain(chunkX, chunkZ, var3);
-        buildSurfaces(chunkX, chunkZ, var3);
+        BuildTerrain(chunkX, chunkZ, var3);
+        BuildSurfaces(chunkX, chunkZ, var3);
         cave.carve(this, world, chunkX, chunkZ, var3);
         Chunk var4 = new Chunk(world, var3, chunkX, chunkZ);
         return var4;
     }
 
-    private double[] generateHeightMap(double[] heightMap, int x, int y, int z, int sizeX, int sizeY, int sizeZ)
+    private double[] GenerateHeightMap(double[] heightMap, int x, int y, int z, int sizeX, int sizeY, int sizeZ)
     {
         if (heightMap == null)
         {
@@ -364,12 +364,12 @@ public class NetherChunkGenerator : ChunkSource
         return heightMap;
     }
 
-    public bool isChunkLoaded(int x, int z)
+    public bool IsChunkLoaded(int x, int z)
     {
         return true;
     }
 
-    public void decorate(ChunkSource source, int x, int z)
+    public void DecorateTerrain(ChunkSource source, int x, int z)
     {
         BlockSand.fallInstantly = true;
         int var4 = x * 16;

@@ -86,7 +86,7 @@ public class RegionWorldStorage : WorldStorage, PlayerSaveHandler
         }
     }
 
-    public virtual ChunkStorage getChunkStorage(Dimension var1)
+    public virtual ChunkStorage GetChunkStorage(Dimension var1)
     {
         java.io.File var2 = getDirectory();
         if (var1 is NetherDimension)

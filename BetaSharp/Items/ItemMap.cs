@@ -92,7 +92,7 @@ public class ItemMap : NetworkSyncedItem
                             byte greenSum = 0;
                             byte blueSum = 0;
                             int[] blockHistogram = new int[256];
-                            Chunk chunk = world.getChunkFromPos(worldX, worldZ);
+                            Chunk chunk = world.GetChunkFromPos(worldX, worldZ);
                             int chunkOffsetX = worldX & 15;
                             int chunkOffsetZ = worldZ & 15;
                             int fluidDepth = 0;

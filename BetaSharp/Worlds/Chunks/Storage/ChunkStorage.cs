@@ -2,7 +2,7 @@ namespace BetaSharp.Worlds.Chunks.Storage;
 
 public interface ChunkStorage
 {
-    Chunk loadChunk(World world, int chunkX, int chunkZ);
+    Chunk LoadChunk(World world, int chunkX, int chunkZ);
 
     void saveChunk(World world, Chunk chunk, Action onSave, long sequence);
 

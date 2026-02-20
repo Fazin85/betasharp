@@ -167,7 +167,7 @@ public class EntitySlime : EntityLiving, Monster
 
     public override bool canSpawn()
     {
-        Chunk chunk = world.getChunkFromPos(MathHelper.floor_double(x), MathHelper.floor_double(z));
+        Chunk chunk = world.GetChunkFromPos(MathHelper.floor_double(x), MathHelper.floor_double(z));
         return (getSlimeSize() == 1 || world.difficulty > 0) && random.NextInt(10) == 0 && chunk.getSlimeRandom(987234911L).NextInt(10) == 0 && y < 16.0D;
     }
 

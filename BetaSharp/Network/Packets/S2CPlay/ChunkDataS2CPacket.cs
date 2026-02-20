@@ -32,7 +32,7 @@ public class ChunkDataS2CPacket : Packet
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.sizeZ = sizeZ;
-        byte[] chunkData = world.getChunkData(x, y, z, sizeX, sizeY, sizeZ);
+        byte[] chunkData = world.GetChunkData(x, y, z, sizeX, sizeY, sizeZ);
         rawData = chunkData;
         Deflater deflater = new(1);
 

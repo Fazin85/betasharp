@@ -47,7 +47,7 @@ public class ServerWorld : World
 
     protected override ChunkSource CreateChunkCache()
     {
-        ChunkStorage var1 = storage.getChunkStorage(dimension);
+        ChunkStorage var1 = storage.GetChunkStorage(dimension);
         chunkCache = new ServerChunkCache(this, var1, dimension.createChunkGenerator());
         return chunkCache;
     }

@@ -254,7 +254,7 @@ public class ChunkMap
             this.chunkX = chunkX;
             this.chunkZ = chunkZ;
             chunkPos = new ChunkPos(chunkX, chunkZ);
-            chunkMap.getWorld().chunkCache.loadChunk(chunkX, chunkZ);
+            chunkMap.getWorld().chunkCache.LoadChunk(chunkX, chunkZ);
         }
 
         public bool HasPlayer(ServerPlayerEntity player) => players.Contains(player);

@@ -186,7 +186,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
                     continue;
                 }
 
-                if (!world.chunkCache.getChunk(chunkPos.x, chunkPos.z).terrainPopulated)
+                if (!world.chunkCache.GetChunk(chunkPos.x, chunkPos.z).terrainPopulated)
                 {
                     continue;
                 }

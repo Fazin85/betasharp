@@ -29,7 +29,7 @@ public class ChunkDeltaUpdateS2CPacket : Packet
         this.positions = new short[size];
         blockRawIds = new byte[size];
         blockMetadata = new byte[size];
-        Chunk chunk = world.getChunk(x, z);
+        Chunk chunk = world.GetChunk(x, z);
 
         for (int i = 0; i < size; i++)
         {

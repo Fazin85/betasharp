@@ -789,11 +789,11 @@ public abstract class EntityPlayer : EntityLiving
 
     public static Vec3i findRespawnPosition(World world, Vec3i spawnPos)
     {
-        ChunkSource var2 = world.getChunkSource();
-        var2.loadChunk(spawnPos.x - 3 >> 4, spawnPos.z - 3 >> 4);
-        var2.loadChunk(spawnPos.x + 3 >> 4, spawnPos.z - 3 >> 4);
-        var2.loadChunk(spawnPos.x - 3 >> 4, spawnPos.z + 3 >> 4);
-        var2.loadChunk(spawnPos.x + 3 >> 4, spawnPos.z + 3 >> 4);
+        ChunkSource var2 = world.GetChunkSource();
+        var2.LoadChunk(spawnPos.x - 3 >> 4, spawnPos.z - 3 >> 4);
+        var2.LoadChunk(spawnPos.x + 3 >> 4, spawnPos.z - 3 >> 4);
+        var2.LoadChunk(spawnPos.x - 3 >> 4, spawnPos.z + 3 >> 4);
+        var2.LoadChunk(spawnPos.x + 3 >> 4, spawnPos.z + 3 >> 4);
         if (world.getBlockId(spawnPos.x, spawnPos.y, spawnPos.z) != Block.Bed.id)
         {
             return null;

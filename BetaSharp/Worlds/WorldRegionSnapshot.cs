@@ -42,7 +42,7 @@ public class WorldRegionSnapshot : BlockView, IDisposable
         {
             for (int cz = _chunkZ; cz <= maxChunkZ; ++cz)
             {
-                Chunk originalChunk = world.getChunk(cx, cz);
+                Chunk originalChunk = world.GetChunk(cx, cz);
                 _chunks[cx - _chunkX][cz - _chunkZ] = new(originalChunk);
             }
         }

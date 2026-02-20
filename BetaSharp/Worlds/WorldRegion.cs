@@ -34,7 +34,7 @@ public class WorldRegion : BlockView
         {
             for (int cz = _chunkZ; cz <= endZ; ++cz)
             {
-                _chunks[cx - _chunkX][cz - _chunkZ] = world.getChunk(cx, cz);
+                _chunks[cx - _chunkX][cz - _chunkZ] = world.GetChunk(cx, cz);
             }
         }
 

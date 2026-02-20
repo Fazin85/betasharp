@@ -57,7 +57,7 @@ public struct LightUpdate
                         var14 = world.isRegionLoaded(var10, 0, var11, 1);
                         if (var14)
                         {
-                            Chunk var15 = world.getChunk(var10 >> 4, var11 >> 4);
+                            Chunk var15 = world.GetChunk(var10 >> 4, var11 >> 4);
                             if (var15.isEmpty())
                             {
                                 var14 = false;

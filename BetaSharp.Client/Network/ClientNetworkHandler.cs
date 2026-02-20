@@ -342,7 +342,7 @@ public class ClientNetworkHandler : NetHandler
 
     public override void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet)
     {
-        Chunk chunk = worldClient.getChunk(packet.x, packet.z);
+        Chunk chunk = worldClient.GetChunk(packet.x, packet.z);
         int x = packet.x * 16;
         int y = packet.z * 16;
 

@@ -128,7 +128,7 @@ public class RegionFile : java.lang.Object
         func_22199_a(var1, var2, var3, var4 + "\n");
     }
 
-    public ChunkDataStream getChunkDataInputStream(int var1, int var2)
+    public ChunkDataStream GetChunkDataInputStream(int var1, int var2)
     {
         lock (this)
         {
@@ -195,7 +195,7 @@ public class RegionFile : java.lang.Object
         }
     }
 
-    public Stream getChunkDataOutputStream(int var1, int var2)
+    public Stream GetChunkDataOutputStream(int var1, int var2)
     {
         if (outOfBounds(var1, var2))
         {

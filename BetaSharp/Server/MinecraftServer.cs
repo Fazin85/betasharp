@@ -159,7 +159,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                             lastTimeLogged = currentTime;
                         }
 
-                        world.chunkCache.loadChunk(spawnPos.x + x >> 4, spawnPos.z + z >> 4);
+                        world.chunkCache.LoadChunk(spawnPos.x + x >> 4, spawnPos.z + z >> 4);
 
                         while (world.doLightingUpdates() && running)
                         {

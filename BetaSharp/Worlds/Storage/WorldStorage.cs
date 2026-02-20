@@ -11,7 +11,7 @@ public interface WorldStorage
 
     void checkSessionLock();
 
-    ChunkStorage getChunkStorage(Dimension dim);
+    ChunkStorage GetChunkStorage(Dimension dim);
 
     void save(WorldProperties var1, List<EntityPlayer> var2);
 

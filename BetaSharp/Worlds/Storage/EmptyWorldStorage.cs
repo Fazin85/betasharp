@@ -17,7 +17,7 @@ public class EmptyWorldStorage : WorldStorage
     {
     }
 
-    public ChunkStorage getChunkStorage(Dimension var1)
+    public ChunkStorage GetChunkStorage(Dimension var1)
     {
         return null;
     }

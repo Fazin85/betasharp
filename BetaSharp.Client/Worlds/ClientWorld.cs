@@ -97,11 +97,11 @@ public class ClientWorld : World
     {
         if (load)
         {
-            _chunkCache.loadChunk(chunkX, chunkZ);
+            _chunkCache.LoadChunk(chunkX, chunkZ);
         }
         else
         {
-            _chunkCache.unloadChunk(chunkX, chunkZ);
+            _chunkCache.unLoadChunk(chunkX, chunkZ);
         }
 
         if (!load)

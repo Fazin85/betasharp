@@ -45,9 +45,9 @@ public class PlayerManager
     {
         _chunkMaps[0].removePlayer(player);
         _chunkMaps[1].removePlayer(player);
-        getChunkMap(player.dimensionId).addPlayer(player);
+        GetChunkMap(player.dimensionId).addPlayer(player);
         ServerWorld var2 = _server.getWorld(player.dimensionId);
-        var2.chunkCache.loadChunk((int)player.x >> 4, (int)player.z >> 4);
+        var2.chunkCache.LoadChunk((int)player.x >> 4, (int)player.z >> 4);
     }
 
     public int getBlockViewDistance()
@@ -55,7 +55,7 @@ public class PlayerManager
         return _chunkMaps[0].getBlockViewDistance();
     }
 
-    private ChunkMap getChunkMap(int dimensionId)
+    private ChunkMap GetChunkMap(int dimensionId)
     {
         return dimensionId == -1 ? _chunkMaps[1] : _chunkMaps[0];
     }
@@ -69,7 +69,7 @@ public class PlayerManager
     {
         players.Add(player);
         ServerWorld var2 = _server.getWorld(player.dimensionId);
-        var2.chunkCache.loadChunk((int)player.x >> 4, (int)player.z >> 4);
+        var2.chunkCache.LoadChunk((int)player.x >> 4, (int)player.z >> 4);
 
         while (var2.getEntityCollisions(player, player.boundingBox).Count != 0)
         {
@@ -77,12 +77,12 @@ public class PlayerManager
         }
 
         var2.SpawnEntity(player);
-        getChunkMap(player.dimensionId).addPlayer(player);
+        GetChunkMap(player.dimensionId).addPlayer(player);
     }
 
     public void updatePlayerChunks(ServerPlayerEntity player)
     {
-        getChunkMap(player.dimensionId).updatePlayerChunks(player);
+        GetChunkMap(player.dimensionId).updatePlayerChunks(player);
     }
 
     public void disconnect(ServerPlayerEntity player)
@@ -90,7 +90,7 @@ public class PlayerManager
         _saveHandler.savePlayerData(player);
         _server.getWorld(player.dimensionId).Remove(player);
         players.Remove(player);
-        getChunkMap(player.dimensionId).removePlayer(player);
+        GetChunkMap(player.dimensionId).removePlayer(player);
     }
 
     public ServerPlayerEntity connectPlayer(ServerLoginNetworkHandler loginNetworkHandler, string name)
@@ -140,7 +140,7 @@ public class PlayerManager
     {
         _server.getEntityTracker(player.dimensionId).removeListener(player);
         _server.getEntityTracker(player.dimensionId).onEntityRemoved(player);
-        getChunkMap(player.dimensionId).removePlayer(player);
+        GetChunkMap(player.dimensionId).removePlayer(player);
         players.Remove(player);
         _server.getWorld(player.dimensionId).serverRemove(player);
         Vec3i var3 = player.getSpawnPos();
@@ -167,7 +167,7 @@ public class PlayerManager
             }
         }
 
-        var5.chunkCache.loadChunk((int)var4.x >> 4, (int)var4.z >> 4);
+        var5.chunkCache.LoadChunk((int)var4.x >> 4, (int)var4.z >> 4);
 
         while (var5.getEntityCollisions(var4, var4.boundingBox).Count != 0)
         {
@@ -177,7 +177,7 @@ public class PlayerManager
         var4.networkHandler.sendPacket(new PlayerRespawnPacket((sbyte)var4.dimensionId));
         var4.networkHandler.teleport(var4.x, var4.y, var4.z, var4.yaw, var4.pitch);
         sendWorldInfo(var4, var5);
-        getChunkMap(var4.dimensionId).addPlayer(var4);
+        GetChunkMap(var4.dimensionId).addPlayer(var4);
         var5.SpawnEntity(var4);
         players.Add(var4);
         var4.initScreenHandler();
@@ -266,7 +266,7 @@ public class PlayerManager
 
     public void markDirty(int x, int y, int z, int dimensionId)
     {
-        getChunkMap(dimensionId).markBlockForUpdate(x, y, z);
+        GetChunkMap(dimensionId).markBlockForUpdate(x, y, z);
     }
 
     public void sendToAll(Packet packet)

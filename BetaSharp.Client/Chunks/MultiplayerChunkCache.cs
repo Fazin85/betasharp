@@ -19,7 +19,7 @@ public class MultiplayerChunkCache : ChunkSource
         this.world = world;
     }
 
-    public bool isChunkLoaded(int x, int y)
+    public bool IsChunkLoaded(int x, int y)
     {
         if (this != null)
         {
@@ -32,9 +32,9 @@ public class MultiplayerChunkCache : ChunkSource
         }
     }
 
-    public void unloadChunk(int x, int z)
+    public void unLoadChunk(int x, int z)
     {
-        Chunk chunk = getChunk(x, z);
+        Chunk chunk = GetChunk(x, z);
         if (!chunk.isEmpty())
         {
             chunk.unload();
@@ -43,7 +43,7 @@ public class MultiplayerChunkCache : ChunkSource
         chunkByPos.Remove(new ChunkPos(x, z));
     }
 
-    public Chunk loadChunk(int x, int z)
+    public Chunk LoadChunk(int x, int z)
     {
         ChunkPos key = new(x, z);
         byte[] blocks = new byte[-Short.MIN_VALUE];
@@ -63,7 +63,7 @@ public class MultiplayerChunkCache : ChunkSource
         return chunk;
     }
 
-    public Chunk getChunk(int x, int z)
+    public Chunk GetChunk(int x, int z)
     {
         ChunkPos key = new(x, z);
         chunkByPos.TryGetValue(key, out Chunk? chunk);
@@ -85,7 +85,7 @@ public class MultiplayerChunkCache : ChunkSource
         return false;
     }
 
-    public void decorate(ChunkSource source, int x, int y)
+    public void DecorateTerrain(ChunkSource source, int x, int y)
     {
     }
 

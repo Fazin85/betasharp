@@ -13,9 +13,9 @@ public class RegionChunkStorage : ChunkStorage
         this.dir = dir;
     }
 
-    public Chunk loadChunk(World world, int chunkX, int chunkZ)
+    public Chunk LoadChunk(World world, int chunkX, int chunkZ)
     {
-        using ChunkDataStream s = RegionIo.getChunkInputStream(dir, chunkX, chunkZ);
+        using ChunkDataStream s = RegionIo.GetChunkInputStream(dir, chunkX, chunkZ);
         if (s == null)
         {
             return null;
@@ -38,13 +38,13 @@ public class RegionChunkStorage : ChunkStorage
             }
             else
             {
-                Chunk var6 = loadChunkFromNbt(world, var5.GetCompoundTag("Level"));
+                Chunk var6 = LoadChunkFromNbt(world, var5.GetCompoundTag("Level"));
                 if (!var6.chunkPosEquals(chunkX, chunkZ))
                 {
                     Log.Info($"Chunk file at {chunkX},{chunkZ} is in the wrong location; relocating. (Expected {chunkX}, {chunkZ}, got {var6.x}, {var6.z})");
                     var5.SetInteger("xPos", chunkX);
                     var5.SetInteger("zPos", chunkZ);
-                    var6 = loadChunkFromNbt(world, var5.GetCompoundTag("Level"));
+                    var6 = LoadChunkFromNbt(world, var5.GetCompoundTag("Level"));
                 }
 
                 var6.fill();
@@ -61,7 +61,7 @@ public class RegionChunkStorage : ChunkStorage
     {
         try
         {
-            using Stream stream = RegionIo.getChunkOutputStream(dir, chunk.x, chunk.z);
+            using Stream stream = RegionIo.GetChunkOutputStream(dir, chunk.x, chunk.z);
             NBTTagCompound tag = new();
             NBTTagCompound var5 = new();
             tag.SetTag("Level", var5);
@@ -117,7 +117,7 @@ public class RegionChunkStorage : ChunkStorage
         nbt.SetTag("TileEntities", var8);
     }
 
-    public static Chunk loadChunkFromNbt(World world, NBTTagCompound nbt)
+    public static Chunk LoadChunkFromNbt(World world, NBTTagCompound nbt)
     {
         int var2 = nbt.GetInteger("xPos");
         int var3 = nbt.GetInteger("zPos");
