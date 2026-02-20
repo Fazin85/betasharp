@@ -527,30 +527,34 @@ public abstract class Entity : java.lang.Object
             if (bypassesSteppingEffects() && !var18 && vehicle == null)
             {
                 horizontalSpeed = (float)((double)horizontalSpeed + (double)MathHelper.Sqrt(var37 * var37 + var23 * var23) * 0.6D);
-                var38 = MathHelper.Floor(this.x);
-                var26 = MathHelper.Floor(this.y - (double)0.2F - (double)standingEyeHeight);
-                var39 = MathHelper.Floor(this.z);
-                var28 = world.getBlockId(var38, var26, var39);
-                if (world.getBlockId(var38, var26 - 1, var39) == Block.Fence.id)
-                {
-                    var28 = world.getBlockId(var38, var26 - 1, var39);
-                }
 
-                if (horizontalSpeed > (float)nextStepSoundDistance && var28 > 0)
+                if (onGround)
                 {
-                    ++nextStepSoundDistance;
-                    BlockSoundGroup soundGroup = Block.Blocks[var28].soundGroup;
-                    if (world.getBlockId(var38, var26 + 1, var39) == Block.Snow.id)
-                    {
-                        soundGroup = Block.Snow.soundGroup;
-                        world.playSound(this, soundGroup.StepSound, soundGroup.Volume * 0.15F, soundGroup.Pitch);
-                    }
-                    else if (!Block.Blocks[var28].material.IsFluid)
-                    {
-                        world.playSound(this, soundGroup.StepSound, soundGroup.Volume * 0.15F, soundGroup.Pitch);
-                    }
+	                var38 = MathHelper.Floor(this.x);
+	                var26 = MathHelper.Floor(this.y - (double)0.2F - (double)standingEyeHeight);
+	                var39 = MathHelper.Floor(this.z);
+	                var28 = world.getBlockId(var38, var26, var39);
+	                if (world.getBlockId(var38, var26 - 1, var39) == Block.Fence.id)
+	                {
+	                    var28 = world.getBlockId(var38, var26 - 1, var39);
+	                }
 
-                    Block.Blocks[var28].onSteppedOn(world, var38, var26, var39, this);
+	                if (horizontalSpeed > (float)nextStepSoundDistance && var28 > 0)
+	                {
+	                    ++nextStepSoundDistance;
+	                    BlockSoundGroup soundGroup = Block.Blocks[var28].soundGroup;
+	                    if (world.getBlockId(var38, var26 + 1, var39) == Block.Snow.id)
+	                    {
+	                        soundGroup = Block.Snow.soundGroup;
+	                        world.playSound(this, soundGroup.StepSound, soundGroup.Volume * 0.15F, soundGroup.Pitch);
+	                    }
+	                    else if (!Block.Blocks[var28].material.IsFluid)
+	                    {
+	                        world.playSound(this, soundGroup.StepSound, soundGroup.Volume * 0.15F, soundGroup.Pitch);
+	                    }
+
+	                    Block.Blocks[var28].onSteppedOn(world, var38, var26, var39, this);
+	                }
                 }
             }
 
