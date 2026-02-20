@@ -10,26 +10,23 @@ public static class MathHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Sin(float value)
     {
-        return SinTable[(int)(value * FastMathFactor) & 0xFFFF];
+        // Bypasses .NET array bounds checking for maximum performance
+        ref float tableRef = ref MemoryMarshal.GetArrayDataReference(SinTable);
+        return Unsafe.Add(ref tableRef, (int)(value * FastMathFactor) & 0xFFFF);
     }
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Cos(float value)
     {
-        return SinTable[(int)(value * FastMathFactor + 16384.0F) &  0xFFFF];
+        // 16384 is 90 degrees in this 65536-step table
+        ref float tableRef = ref MemoryMarshal.GetArrayDataReference(SinTable);
+        return Unsafe.Add(ref tableRef, (int)(value * FastMathFactor + 16384.0f) & 0xFFFF);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float Sqrt(float value)
-    {
-        return (float)Math.Sqrt((double)value);
-    }
+    public static float Sqrt(float value) => MathF.Sqrt(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float Sqrt(double value)
-    {
-        return (float)Math.Sqrt(value);
-    }
+    public static float Sqrt(double value) => (float)Math.Sqrt(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Floor(float value)
@@ -46,10 +43,7 @@ public static class MathHelper
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float Abs(float value)
-    {
-        return value >= 0.0F ? value : -value;
-    }
+    public static float Abs(float value) => MathF.Abs(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int FloorDiv(int a, int b)
