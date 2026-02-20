@@ -340,7 +340,7 @@ public class GameRenderer
         GLManager.GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         GLManager.GL.Enable(GLEnum.CullFace);
         renderWorld(tickDelta);
-        Frustum.getInstance();
+        Frustum.Instance();
         if (_client.options.renderDistance < 2)
         {
             applyFog(-1);

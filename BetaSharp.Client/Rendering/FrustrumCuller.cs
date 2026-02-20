@@ -5,25 +5,25 @@ namespace BetaSharp.Client.Rendering;
 public class FrustrumCuller : Culler
 {
 
-    private readonly FrustumData frustum = Frustum.getInstance();
-    private double xPosition;
-    private double yPosition;
-    private double zPosition;
+    private readonly FrustumData frustum = Frustum.Instance();
+    private double _x;
+    private double _y;
+    private double _z;
 
     public void setPosition(double x, double y, double z)
     {
-        xPosition = x;
-        yPosition = y;
-        zPosition = z;
+        _x = x;
+        _y = y;
+        _z = z;
     }
 
-    public bool isBoxInFrustum(double minX, double minY, double minZ, double maxX, double maxY, double maxZ)
+    public bool IsBoxInFrustum(Box box)
     {
-        return frustum.isBoxInFrustum(minX - xPosition, minY - yPosition, minZ - zPosition, maxX - xPosition, maxY - yPosition, maxZ - zPosition);
+        return frustum.IsBoxInFrustum(box.offset(-_x, -_y, -_z));
     }
 
     public bool isBoundingBoxInFrustum(Box aabb)
     {
-        return isBoxInFrustum(aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ);
+        return IsBoxInFrustum(aabb);
     }
 }
