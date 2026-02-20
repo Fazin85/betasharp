@@ -101,7 +101,7 @@ public class ClientWorld : World
         }
         else
         {
-            _chunkCache.unLoadChunk(chunkX, chunkZ);
+            _chunkCache.UnloadChunk(chunkX, chunkZ);
         }
 
         if (!load)

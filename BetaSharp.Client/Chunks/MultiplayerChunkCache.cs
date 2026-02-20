@@ -32,7 +32,7 @@ public class MultiplayerChunkCache : ChunkSource
         }
     }
 
-    public void unLoadChunk(int x, int z)
+    public void UnloadChunk(int x, int z)
     {
         Chunk chunk = GetChunk(x, z);
         if (!chunk.isEmpty())
