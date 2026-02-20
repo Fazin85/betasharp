@@ -61,7 +61,7 @@ public class CameraController
 
         if (cameraEntity.isInFluid(Material.Water))
         {
-            fov = 60.0F;
+            fov -= 10.0F;
         }
 
         if (cameraEntity.health <= 0)
