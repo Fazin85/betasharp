@@ -25,7 +25,16 @@ public static class PathHelper
         }
         else
         {
-            path = System.IO.Path.Combine(userHome, "." + appName);
+            string? xdgData = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
+
+            if (!string.IsNullOrEmpty(xdgData))
+            {
+                path = System.IO.Path.Combine(xdgData, appName);
+            }
+            else
+            {
+                path = System.IO.Path.Combine(userHome, ".local", "share", appName);
+            }
         }
 
         Directory.CreateDirectory(path);
