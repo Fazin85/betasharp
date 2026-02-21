@@ -66,7 +66,7 @@ public class BlockBed : Block
                         if (otherPlayer.isSleeping())
                         {
                             Vec3i sleepingPos = otherPlayer.sleepingPos;
-                            if (sleepingPos.x == x && sleepingPos.y == y && sleepingPos.z == z)
+                            if (sleepingPos.X == x && sleepingPos.Y == y && sleepingPos.Z == z)
                             {
                                 occupant = otherPlayer;
                             }
@@ -199,7 +199,7 @@ public class BlockBed : Block
         world.setBlockMeta(x, y, z, blockMeta);
     }
 
-    public static Vec3i findWakeUpPosition(World world, int x, int y, int z, int skip)
+    public static Vec3i? findWakeUpPosition(World world, int x, int y, int z, int skip)
     {
         int blockMeta = world.getBlockMeta(x, y, z);
         int direction = getDirection(blockMeta);

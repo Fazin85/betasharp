@@ -131,9 +131,9 @@ public class NaturalSpawner
                                     float var29 = (float)var24 + 0.5F;
                                     if (var0.getClosestPlayer((double)var27, (double)var28, (double)var29, 24.0D) == null)
                                     {
-                                        float var30 = var27 - (float)var35.x;
-                                        float var31 = var28 - (float)var35.y;
-                                        float var32 = var29 - (float)var35.z;
+                                        float var30 = var27 - (float)var35.X;
+                                        float var31 = var28 - (float)var35.Y;
+                                        float var32 = var29 - (float)var35.Z;
                                         float var33 = var30 * var30 + var31 * var31 + var32 * var32;
                                         if (var33 >= 576.0F)
                                         {
@@ -272,19 +272,21 @@ public class NaturalSpawner
                             PathPoint var19 = var18.func_22328_c();
                             if (java.lang.Math.abs((double)var19.xCoord - var5.x) < 1.5D && java.lang.Math.abs((double)var19.zCoord - var5.z) < 1.5D && java.lang.Math.abs((double)var19.yCoord - var5.y) < 1.5D)
                             {
-                                Vec3i var20 = BlockBed.findWakeUpPosition(var0, MathHelper.Floor(var5.x), MathHelper.Floor(var5.y), MathHelper.Floor(var5.z), 1);
-                                if (var20 == null)
+                                Vec3i? var20 = BlockBed.findWakeUpPosition(var0, MathHelper.Floor(var5.x), MathHelper.Floor(var5.y), MathHelper.Floor(var5.z), 1);
+                                if (var20 is (int x, int y, int z))
                                 {
-                                    var20 = new Vec3i(var9, var13 + 1, var10);
+                                   var17.setPositionAndAnglesKeepPrevAngles(x + 0.5F, y, z + 0.5F, 0.0F, 0.0F);
+                                    var0.SpawnEntity(var17);
+                                    creatureSpecificInit(var17, var0, x + 0.5F, y, z + 0.5F);
+                                    var5.wakeUp(true, false, false);
+                                    var17.playLivingSound();
+                                    monstersSpawned = true;
+                                    var7 = true;
                                 }
-
-                                var17.setPositionAndAnglesKeepPrevAngles((double)((float)var20.x + 0.5F), (double)var20.y, (double)((float)var20.z + 0.5F), 0.0F, 0.0F);
-                                var0.SpawnEntity(var17);
-                                creatureSpecificInit(var17, var0, (float)var20.x + 0.5F, (float)var20.y, (float)var20.z + 0.5F);
-                                var5.wakeUp(true, false, false);
-                                var17.playLivingSound();
-                                monstersSpawned = true;
-                                var7 = true;
+                                else
+                                { 
+                                     var20 = new Vec3i(var9, var13 + 1, var10);
+                                }
                             }
                         }
                     }

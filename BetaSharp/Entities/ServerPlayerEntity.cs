@@ -37,9 +37,9 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
         interactionManager.player = this;
         this.interactionManager = interactionManager;
         Vec3i spawnPos = world.getSpawnPos();
-        int x = spawnPos.x;
-        int y = spawnPos.z;
-        int z = spawnPos.y;
+        int x = spawnPos.X;
+        int y = spawnPos.Z;
+        int z = spawnPos.Y;
         if (!world.dimension.hasCeiling)
         {
             x += random.NextInt(20) - 10;
