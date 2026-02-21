@@ -16,6 +16,17 @@ public class EntitySpider : EntityMonster
         movementSpeed = 0.8F;
     }
 
+    public override void PostSpawn()
+    {
+        if (world.random.NextInt(100) == 0)
+        {
+            EntitySkeleton skeleton = new EntitySkeleton(world);
+            skeleton.setPositionAndAnglesKeepPrevAngles(x, y, z, yaw, 0.0F);
+            world.SpawnEntity(skeleton);
+            skeleton.setVehicle(this);
+        }
+    }
+
     public override double getPassengerRidingHeight()
     {
         return (double)height * 0.75D - 0.5D;

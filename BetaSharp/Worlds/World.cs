@@ -2325,7 +2325,7 @@ public abstract class World : java.lang.Object, BlockView
             }
         }
         Profiler.Start("performSpawning");
-        NaturalSpawner.PerformSpawning(this, spawnHostileMobs, spawnPeacefulMobs);
+        NaturalSpawner.DoSpawning(this, spawnHostileMobs, spawnPeacefulMobs);
         Profiler.Stop("performSpawning");
         Profiler.Start("unload100OldestChunks");
         chunkSource.tick();

@@ -75,6 +75,11 @@ public abstract class EntityLiving : Entity
         stepHeight = 0.5F;
     }
 
+    public virtual void PostSpawn()
+    {
+
+    }
+
     protected override void initDataTracker()
     {
     }

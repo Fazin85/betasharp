@@ -28,7 +28,7 @@ public static class NaturalSpawner
         return new BlockPos(x, y, z);
     }
 
-    public static void PerformSpawning(World world, bool spawnHostile, bool spawnPeaceful)
+    public static void DoSpawning(World world, bool spawnHostile, bool spawnPeaceful)
     {
         if (!spawnHostile && !spawnPeaceful) return;
 
@@ -83,15 +83,15 @@ public static class NaturalSpawner
                                 Vec3D entityPos = new Vec3D(x + 0.5D, y, z + 0.5D);
                                 if (world.getClosestPlayer(entityPos.x, entityPos.y, entityPos.z, SpawnMinRadius) != null) continue;
                                 if (entityPos.squareDistanceTo((Vec3D)worldSpawn) < SpawnMinRadius * SpawnMinRadius) continue;
-                                EntityLiving spawnedEntity = toSpawn.Factory(world);
+                                EntityLiving entity = toSpawn.Factory(world);
 
-                                spawnedEntity.setPositionAndAnglesKeepPrevAngles(entityPos.x, entityPos.y, entityPos.z, world.random.NextFloat() * 360.0F, 0.0F);
-                                if (spawnedEntity.canSpawn())
+                                entity.setPositionAndAnglesKeepPrevAngles(entityPos.x, entityPos.y, entityPos.z, world.random.NextFloat() * 360.0F, 0.0F);
+                                if (entity.canSpawn())
                                 {
                                     spawnedCount++;
-                                    world.SpawnEntity(spawnedEntity);
-                                    EntitySpecificInit(spawnedEntity, world, entityPos.x, entityPos.y, entityPos.z);
-                                    if (spawnedCount >= spawnedEntity.getMaxSpawnedInChunk())
+                                    world.SpawnEntity(entity);
+                                    entity.PostSpawn();
+                                    if (spawnedCount >= entity.getMaxSpawnedInChunk())
                                     {
                                         breakToNextChunk = true;
                                     }
@@ -154,7 +154,7 @@ public static class NaturalSpawner
 
                                 entity.setPositionAndAnglesKeepPrevAngles((double)((float)wakeUpPos.X + 0.5F), (double)wakeUpPos.Y, (double)((float)wakeUpPos.Z + 0.5F), 0.0F, 0.0F);
                                 world.SpawnEntity(entity);
-                                EntitySpecificInit(entity, world, (float)wakeUpPos.X + 0.5F, (float)wakeUpPos.Y, (float)wakeUpPos.Z + 0.5F);
+                                entity.PostSpawn();
                                 player.wakeUp(true, false, false);
                                 entity.playLivingSound();
                                 monstersSpawned = true;
@@ -167,20 +167,5 @@ public static class NaturalSpawner
         }
 
         return monstersSpawned;
-    }
-
-    private static void EntitySpecificInit(EntityLiving entity, World world, double x, double y, double z)
-    {
-        if (entity is EntitySpider && world.random.NextInt(100) == 0)
-        {
-            EntitySkeleton var5 = new EntitySkeleton(world);
-            var5.setPositionAndAnglesKeepPrevAngles((double)x, (double)y, (double)z, entity.yaw, 0.0F);
-            world.SpawnEntity(var5);
-            var5.setVehicle(entity);
-        }
-        else if (entity is EntitySheep)
-        {
-            ((EntitySheep)entity).setFleeceColor(EntitySheep.getRandomFleeceColor(world.random));
-        }
     }
 }
