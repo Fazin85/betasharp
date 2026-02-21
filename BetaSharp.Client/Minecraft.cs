@@ -185,6 +185,8 @@ public partial class Minecraft
             Display.getGlfw().SetWindowSizeLimits(Display.getWindowHandle(), 850, 480, 3840, 2160);
 
             GLManager.Init(Display.getGL()!);
+
+            Display.getGlfw().SwapInterval(options.VSync ? 1 : 0);
         }
         catch (Exception ex)
         {
