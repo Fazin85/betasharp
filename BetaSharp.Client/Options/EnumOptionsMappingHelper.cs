@@ -37,5 +37,11 @@ public class EnumOptionsMappingHelper : java.lang.Object
             enumOptionsMappingHelperArray[EnumOptions.ENVIRONMENT_ANIMATION.ordinal()] = 5;
         }
         catch (NoSuchFieldError) { }
+
+        try
+        {
+            enumOptionsMappingHelperArray[EnumOptions.VSYNC.ordinal()] = 6;
+        }
+        catch (NoSuchFieldError) { }
     }
 }

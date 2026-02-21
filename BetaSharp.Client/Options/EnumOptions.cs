@@ -9,6 +9,7 @@ public class EnumOptions : java.lang.Object
     public static readonly EnumOptions RENDER_DISTANCE = new("options.renderDistance", false, false, 4);
     public static readonly EnumOptions VIEW_BOBBING = new("options.viewBobbing", false, true, 5);
     public static readonly EnumOptions FRAMERATE_LIMIT = new("options.framerateLimit", true, false, 8);
+    public static readonly EnumOptions VSYNC = new("VSync", false, true, 21);
     public static readonly EnumOptions FOV = new("options.fov", true, false, 18);
     public static readonly EnumOptions BRIGHTNESS = new("Brightness", true, false, 20);
     public static readonly EnumOptions DIFFICULTY = new("options.difficulty", false, false, 9);
@@ -21,7 +22,7 @@ public class EnumOptions : java.lang.Object
 
     private static readonly EnumOptions[] s_allValues =
     [
-        MUSIC, SOUND, INVERT_MOUSE, SENSITIVITY, RENDER_DISTANCE, VIEW_BOBBING, FRAMERATE_LIMIT, FOV, BRIGHTNESS, DIFFICULTY, GUI_SCALE, ANISOTROPIC, MIPMAPS, DEBUG_MODE, MSAA, ENVIRONMENT_ANIMATION
+        MUSIC, SOUND, INVERT_MOUSE, SENSITIVITY, RENDER_DISTANCE, FOV, VIEW_BOBBING, FRAMERATE_LIMIT, VSYNC, BRIGHTNESS, DIFFICULTY, GUI_SCALE, ANISOTROPIC, MIPMAPS, DEBUG_MODE, MSAA, ENVIRONMENT_ANIMATION
     ];
 
     private readonly bool enumFloat;
