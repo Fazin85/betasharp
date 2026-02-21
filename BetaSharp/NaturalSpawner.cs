@@ -187,11 +187,11 @@ public static class NaturalSpawner
                     entity.setPositionAndAnglesKeepPrevAngles((double)var14, (double)var15, (double)var16, world.random.NextFloat() * 360.0F, 0.0F);
                     if (entity.canSpawn())
                     {
-                        PathEntity var18 = pathfinder.createEntityPathTo(entity, player, 32.0F);
-                        if (var18 != null && var18.pathLength > 1)
+                        PathEntity pathEntity = pathfinder.createEntityPathTo(entity, player, 32.0F);
+                        if (pathEntity != null && pathEntity.pathLength > 1)
                         {
-                            PathPoint var19 = var18.func_22328_c();
-                            if (java.lang.Math.abs((double)var19.xCoord - player.x) < 1.5D && java.lang.Math.abs((double)var19.zCoord - player.z) < 1.5D && java.lang.Math.abs((double)var19.yCoord - player.y) < 1.5D)
+                            PathPoint pathPoint = pathEntity.func_22328_c();
+                            if (Math.Abs(pathPoint.xCoord - player.x) < 1.5D && Math.Abs(pathPoint.zCoord - player.z) < 1.5D && Math.Abs(pathPoint.yCoord - player.y) < 1.5D)
                             {
                                 Vec3i var20 = BlockBed.findWakeUpPosition(world, MathHelper.Floor(player.x), MathHelper.Floor(player.y), MathHelper.Floor(player.z), 1);
                                 if (var20 == null)
