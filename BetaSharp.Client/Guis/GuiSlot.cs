@@ -53,7 +53,7 @@ public abstract class GuiSlot
 
     protected abstract void ElementClicked(int index, bool doubleClick);
 
-    protected abstract bool isSelected(int slotIndex);
+    protected abstract bool IsSelected(int slotIndex);
 
     protected virtual int GetContentHeight() => GetSize() * _posZ + _headerHeight;
 
@@ -63,7 +63,7 @@ public abstract class GuiSlot
 
     protected virtual void DrawHeader(int x, int y, Tessellator tess) { }
 
-    protected virtual void func_27255_a(int var1, int var2)
+    protected virtual void HeaderClicked(int var1, int var2)
     {
     }
 
@@ -146,7 +146,7 @@ public abstract class GuiSlot
                     }
                     else if (mouseX >= contentMinX && mouseX <= contentMaxX && relativeY < 0)
                     {
-                        func_27255_a(mouseX - contentMinX, mouseY - _top + (int)_amountScrolled - 4);
+                        HeaderClicked(mouseX - contentMinX, mouseY - _top + (int)_amountScrolled - 4);
                         shouldCaptureMouse = false;
                     }
 
@@ -215,7 +215,7 @@ public abstract class GuiSlot
 
             if (slotY > _bottom || slotY + slotHeight < _top) continue;
 
-            if (_showSelectionHighlight && isSelected(i))
+            if (_showSelectionHighlight && IsSelected(i))
             {
                 int minX = _width / 2 - 110;
                 int maxX = _width / 2 + 110;

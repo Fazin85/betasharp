@@ -170,7 +170,7 @@ public class BlockRail : Block
                     }
                 }
             }
-            else if (id > 0 && Block.Blocks[id].canEmitRedstonePower() && !alwaysStraight && RailLogic.getNAdjacentTracks(new RailLogic(this, world, x, y, z)) == 3)
+            else if (id > 0 && Block.Blocks[id].canEmitRedstonePower() && !alwaysStraight && RailLogic.GetNAdjacentTracks(new RailLogic(this, world, new Vec3i(x, y, z))) == 3)
             {
                 updateShape(world, x, y, z, false);
             }
@@ -182,7 +182,7 @@ public class BlockRail : Block
     {
         if (!world.isRemote)
         {
-            (new RailLogic(this, world, x, y, z)).updateState(world.isPowered(x, y, z), force);
+            new RailLogic(this, world, new Vec3i(x, y, z)).UpdateState(world.isPowered(x, y, z), force);
         }
     }
 

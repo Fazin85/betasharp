@@ -342,7 +342,7 @@ public partial class Minecraft
         return saveLoader;
     }
 
-    public void displayGuiScreen(GuiScreen newScreen)
+    public void displayGuiScreen(GuiScreen? newScreen)
     {
         currentScreen?.OnGuiClosed();
 
@@ -1461,8 +1461,8 @@ public partial class Minecraft
         Vec3i centerPos = world.getSpawnPos();
         if (player != null)
         {
-            centerPos.x = (int)player.x;
-            centerPos.z = (int)player.z;
+            centerPos.X = (int)player.x;
+            centerPos.Z = (int)player.z;
         }
 
         for (int xOffset = -loadingRadius; xOffset <= loadingRadius; xOffset += 16)
@@ -1470,7 +1470,7 @@ public partial class Minecraft
             for (int zOffset = -loadingRadius; zOffset <= loadingRadius; zOffset += 16)
             {
                 loadingScreen.setLoadingProgress(loadedChunkCount++ * 100 / totalChunksToLoad);
-                world.getBlockId(centerPos.x + xOffset, 64, centerPos.z + zOffset);
+                world.getBlockId(centerPos.X + xOffset, 64, centerPos.Z + zOffset);
 
                 while (world.doLightingUpdates())
                 {
@@ -1532,32 +1532,33 @@ public partial class Minecraft
 
     public void respawn(bool ignoreSpawnPosition, int newDimensionId)
     {
-        Vec3i playerSpawnPos = null;
-        Vec3i respawnPos = null;
-        bool useBedSpawn = true;
-        if (player != null && !ignoreSpawnPosition)
+        Vec3i? playerSpawnPos = null;
+        Vec3i? respawnPos = null;
+
+        if (player is not null && !ignoreSpawnPosition)
         {
             playerSpawnPos = player.getSpawnPos();
-            if (playerSpawnPos != null)
+
+            if (playerSpawnPos is not null)
             {
                 respawnPos = EntityPlayer.findRespawnPosition(world, playerSpawnPos);
-                if (respawnPos == null)
+
+                if (respawnPos is null)
                 {
                     player.sendMessage("tile.bed.notValid");
                 }
             }
         }
 
-        if (respawnPos == null)
-        {
-            respawnPos = world.getSpawnPos();
-            useBedSpawn = false;
-        }
+        bool useBedSpawn = respawnPos is not null;
+        Vec3i finalRespawnPos = respawnPos ?? world.getSpawnPos();
 
         world.UpdateSpawnPosition();
         world.updateEntityLists();
+
         int previousPlayerId = 0;
-        if (player != null)
+
+        if (player is not null)
         {
             previousPlayerId = player.id;
             world.Remove(player);
@@ -1567,12 +1568,18 @@ public partial class Minecraft
         player = (ClientPlayerEntity)playerController.createPlayer(world);
         player.dimensionId = newDimensionId;
         camera = player;
+
         player.teleportToTop();
+
         if (useBedSpawn)
         {
             player.setSpawnPos(playerSpawnPos);
-            player.setPositionAndAnglesKeepPrevAngles((double)((float)respawnPos.x + 0.5F), (double)((float)respawnPos.y + 0.1F),
-                (double)((float)respawnPos.z + 0.5F), 0.0F, 0.0F);
+            player.setPositionAndAnglesKeepPrevAngles(
+                finalRespawnPos.X + 0.5,
+                finalRespawnPos.Y + 0.1,
+                finalRespawnPos.Z + 0.5,
+                0.0F,
+                0.0F);
         }
 
         playerController.flipPlayer(player);
@@ -1581,10 +1588,12 @@ public partial class Minecraft
         player.id = previousPlayerId;
         player.spawn();
         playerController.fillHotbar(player);
+
         showText("Respawning");
+
         if (currentScreen is GuiGameOver)
         {
-            displayGuiScreen((GuiScreen)null);
+            displayGuiScreen(null);
         }
     }
 

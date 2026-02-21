@@ -40,8 +40,8 @@ public abstract class EntityPlayer : EntityLiving
     public float sleepOffsetX;
     public float sleepOffsetY;
     public float sleepOffsetZ;
-    private Vec3i playerSpawnCoordinate;
-    private Vec3i startMinecartRidingCoordinate;
+    private Vec3i? playerSpawnCoordinate;
+    private Vec3i? startMinecartRidingCoordinate;
     public int portalCooldown = 20;
     protected bool inTeleportationState;
     public float changeDimensionCooldown;
@@ -56,7 +56,7 @@ public abstract class EntityPlayer : EntityLiving
         currentScreenHandler = playerScreenHandler;
         standingEyeHeight = 1.62F;
         Vec3i var2 = world.getSpawnPos();
-        setPositionAndAnglesKeepPrevAngles((double)var2.x + 0.5D, (double)(var2.y + 1), (double)var2.z + 0.5D, 0.0F, 0.0F);
+        setPositionAndAnglesKeepPrevAngles((double)var2.X + 0.5D, (double)(var2.Y + 1), (double)var2.Z + 0.5D, 0.0F, 0.0F);
         health = 20;
         modelName = "humanoid";
         rotationOffset = 180.0F;
@@ -412,11 +412,11 @@ public abstract class EntityPlayer : EntityLiving
         nbt.SetInteger("Dimension", dimensionId);
         nbt.SetBoolean("Sleeping", sleeping);
         nbt.SetShort("SleepTimer", (short)sleepTimer);
-        if (playerSpawnCoordinate != null)
+        if (playerSpawnCoordinate is (int x, int y, int z))
         {
-            nbt.SetInteger("SpawnX", playerSpawnCoordinate.x);
-            nbt.SetInteger("SpawnY", playerSpawnCoordinate.y);
-            nbt.SetInteger("SpawnZ", playerSpawnCoordinate.z);
+            nbt.SetInteger("SpawnX", x);
+            nbt.SetInteger("SpawnY", y);
+            nbt.SetInteger("SpawnZ", z);
         }
 
     }
@@ -459,7 +459,7 @@ public abstract class EntityPlayer : EntityLiving
 
             if (damageSource is EntityMonster || damageSource is EntityArrow)
             {
-                switch(world.difficulty)
+                switch (world.difficulty)
                 {
                     case 0:
                         amount = 0;
@@ -746,18 +746,17 @@ public abstract class EntityPlayer : EntityLiving
     {
         setBoundingBoxSpacing(0.6F, 1.8F);
         resetEyeHeight();
-        Vec3i var4 = sleepingPos;
-        Vec3i var5 = sleepingPos;
-        if (var4 != null && world.getBlockId(var4.x, var4.y, var4.z) == Block.Bed.id)
+        Vec3i? var4 = sleepingPos;
+        if (var4 is (int x, int y, int z) && world.getBlockId(x, y, z) == Block.Bed.id)
         {
-            BlockBed.updateState(world, var4.x, var4.y, var4.z, false);
-            var5 = BlockBed.findWakeUpPosition(world, var4.x, var4.y, var4.z, 0);
+            BlockBed.updateState(world, x, y, z, false);
+            Vec3i? var5 = BlockBed.findWakeUpPosition(world, x, y, z, 0);
             if (var5 == null)
             {
-                var5 = new Vec3i(var4.x, var4.y + 1, var4.z);
+                var5 = new Vec3i(x, y + 1, z);
             }
 
-            setPosition((double)((float)var5.x + 0.5F), (double)((float)var5.y + standingEyeHeight + 0.1F), (double)((float)var5.z + 0.5F));
+            setPosition(var5.Value.X + 0.5F, var5.Value.Y + standingEyeHeight + 0.1F, var5.Value.Z + 0.5F);
         }
 
         sleeping = false;
@@ -784,32 +783,36 @@ public abstract class EntityPlayer : EntityLiving
 
     private bool isSleepingInBed()
     {
-        return world.getBlockId(sleepingPos.x, sleepingPos.y, sleepingPos.z) == Block.Bed.id;
+        return world.getBlockId(sleepingPos.X, sleepingPos.Y, sleepingPos.Z) == Block.Bed.id;
     }
 
-    public static Vec3i findRespawnPosition(World world, Vec3i spawnPos)
+    public static Vec3i? findRespawnPosition(World world, Vec3i? spawnPos)
     {
-        ChunkSource var2 = world.GetChunkSource();
-        var2.LoadChunk(spawnPos.x - 3 >> 4, spawnPos.z - 3 >> 4);
-        var2.LoadChunk(spawnPos.x + 3 >> 4, spawnPos.z - 3 >> 4);
-        var2.LoadChunk(spawnPos.x - 3 >> 4, spawnPos.z + 3 >> 4);
-        var2.LoadChunk(spawnPos.x + 3 >> 4, spawnPos.z + 3 >> 4);
-        if (world.getBlockId(spawnPos.x, spawnPos.y, spawnPos.z) != Block.Bed.id)
+        if (spawnPos is not (int x, int y, int z))
         {
             return null;
         }
-        else
+
+        ChunkSource chunkSource = world.GetChunkSource();
+
+        chunkSource.LoadChunk((x - 3) >> 4, (z - 3) >> 4);
+        chunkSource.LoadChunk((x + 3) >> 4, (z - 3) >> 4);
+        chunkSource.LoadChunk((x - 3) >> 4, (z + 3) >> 4);
+        chunkSource.LoadChunk((x + 3) >> 4, (z + 3) >> 4);
+
+        if (world.getBlockId(x, y, z) != Block.Bed.id)
         {
-            Vec3i var3 = BlockBed.findWakeUpPosition(world, spawnPos.x, spawnPos.y, spawnPos.z, 0);
-            return var3;
+            return null;
         }
+
+        return BlockBed.findWakeUpPosition(world, x, y, z, 0);
     }
 
     public float getSleepingRotation()
     {
         if (sleepingPos != null)
         {
-            int var1 = world.getBlockMeta(sleepingPos.x, sleepingPos.y, sleepingPos.z);
+            int var1 = world.getBlockMeta(sleepingPos.X, sleepingPos.Y, sleepingPos.Z);
             int var2 = BlockBed.getDirection(var1);
             switch (var2)
             {
@@ -846,16 +849,16 @@ public abstract class EntityPlayer : EntityLiving
     {
     }
 
-    public Vec3i getSpawnPos()
+    public Vec3i? getSpawnPos()
     {
         return playerSpawnCoordinate;
     }
 
-    public void setSpawnPos(Vec3i spawnPos)
+    public void setSpawnPos(Vec3i? spawnPos)
     {
-        if (spawnPos != null)
+        if (spawnPos is (int x, int y, int z))
         {
-            playerSpawnCoordinate = new Vec3i(spawnPos);
+            playerSpawnCoordinate = new Vec3i(x, y, z);
         }
         else
         {
@@ -938,34 +941,39 @@ public abstract class EntityPlayer : EntityLiving
 
     private void increaseRidingMotionStats(double x, double y, double z)
     {
-        if (vehicle != null)
-        {
-            int var7 = java.lang.Math.round(MathHelper.Sqrt(x * x + y * y + z * z) * 100.0F);
-            if (var7 > 0)
-            {
-                if (vehicle is EntityMinecart)
-                {
-                    increaseStat(Stats.Stats.distanceByMinecartStat, var7);
-                    if (startMinecartRidingCoordinate == null)
-                    {
-                        startMinecartRidingCoordinate = new Vec3i(MathHelper.Floor(base.x), MathHelper.Floor(base.y), MathHelper.Floor(base.z));
-                    }
-                    else if (startMinecartRidingCoordinate.getSqDistanceTo(MathHelper.Floor(base.x), MathHelper.Floor(base.y), MathHelper.Floor(base.z)) >= 1000.0D)
-                    {
-                        increaseStat(Achievements.CraftRail, 1);
-                    }
-                }
-                else if (vehicle is EntityBoat)
-                {
-                    increaseStat(Stats.Stats.distanceByBoatStat, var7);
-                }
-                else if (vehicle is EntityPig)
-                {
-                    increaseStat(Stats.Stats.distanceByPigStat, var7);
-                }
-            }
-        }
+        if (vehicle is null) return;
 
+        int distanceScaled = (int)System.Math.Round(System.Math.Sqrt(x * x + y * y + z * z) * 100.0);
+
+        if (distanceScaled <= 0) return;
+
+        switch (vehicle)
+        {
+            case EntityMinecart:
+                increaseStat(Stats.Stats.distanceWalkedStat, distanceScaled);
+
+                int currentX = MathHelper.Floor(this.x);
+                int currentY = MathHelper.Floor(this.y);
+                int currentZ = MathHelper.Floor(this.z);
+
+                if (startMinecartRidingCoordinate is null)
+                {
+                    startMinecartRidingCoordinate = new Vec3i(currentX, currentY, currentZ);
+                }
+                else if (startMinecartRidingCoordinate.Value.SquaredDistanceTo(new Vec3i(currentX, currentY, currentZ)) >= 1_000_000)
+                {
+                    increaseStat(Achievements.CraftRail, 1);
+                }
+                break;
+
+            case EntityBoat:
+                increaseStat(Stats.Stats.distanceWalkedStat, distanceScaled);
+                break;
+
+            case EntityPig:
+                increaseStat(Stats.Stats.distanceWalkedStat, distanceScaled);
+                break;
+        }
     }
 
     protected override void onLanding(float fallDistance)
