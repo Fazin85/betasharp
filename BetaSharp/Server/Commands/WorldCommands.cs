@@ -162,7 +162,7 @@ public static class WorldCommands
                     "animal" => entity is EntityAnimal,
                     "item" => entity is EntityItem,
                     "tnt" => entity is EntityTNTPrimed,
-                    _ => EntityRegistry.getId(entity)?.Equals(filter, System.StringComparison.OrdinalIgnoreCase) ?? false
+                    _ => EntityRegistry.GetId(entity)?.Equals(filter, System.StringComparison.OrdinalIgnoreCase) ?? false
                 };
 
                 if (shouldKill)

@@ -517,7 +517,7 @@ public class ClientNetworkHandler : NetHandler
         double z = packet.zPosition / 32.0D;
         float yaw = packet.yaw * 360 / 256.0F;
         float pitch = packet.pitch * 360 / 256.0F;
-        EntityLiving ent = (EntityLiving)EntityRegistry.create(packet.type, mc.world);
+        EntityLiving ent = (EntityLiving)EntityRegistry.Create(packet.type, mc.world);
         ent.trackedPosX = packet.xPosition;
         ent.trackedPosY = packet.yPosition;
         ent.trackedPosZ = packet.zPosition;

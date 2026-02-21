@@ -964,7 +964,7 @@ public abstract class Entity : java.lang.Object
 
     protected string getRegistryEntry()
     {
-        return EntityRegistry.getId(this);
+        return EntityRegistry.GetId(this);
     }
 
     public abstract void readNbt(NBTTagCompound nbt);

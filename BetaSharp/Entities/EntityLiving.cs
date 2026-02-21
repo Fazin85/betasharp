@@ -9,7 +9,7 @@ using java.lang;
 
 namespace BetaSharp.Entities;
 
-public abstract class EntityLiving : Entity
+public class EntityLiving : Entity
 {
     public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityLiving).TypeHandle);
     public int maxHealth = 20;

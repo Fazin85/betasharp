@@ -26,7 +26,7 @@ public class LivingEntitySpawnS2CPacket : Packet
     public LivingEntitySpawnS2CPacket(EntityLiving ent)
     {
         entityId = ent.id;
-        type = (sbyte)EntityRegistry.getRawId(ent);
+        type = (sbyte)EntityRegistry.GetRawId(ent);
         xPosition = MathHelper.Floor(ent.x * 32.0D);
         yPosition = MathHelper.Floor(ent.y * 32.0D);
         zPosition = MathHelper.Floor(ent.z * 32.0D);
