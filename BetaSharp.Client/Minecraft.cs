@@ -226,7 +226,7 @@ public partial class Minecraft
         {
             var window = Display.getWindow();
             var input = window.CreateInput();
-            imGuiController = new(GLManager.GL, window, input);
+            imGuiController = new(((LegacyGL)GLManager.GL).SilkGL, window, input);
             imGuiController.MakeCurrent();
         }
         catch (Exception e)
@@ -635,7 +635,7 @@ public partial class Minecraft
                 }
             }
         }
-        catch (MinecraftShutdownException) {}
+        catch (MinecraftShutdownException) { }
         catch (Exception unexpectedException)
         {
             crashCleanup();
