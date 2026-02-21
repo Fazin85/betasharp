@@ -13,7 +13,7 @@ public static class NaturalSpawner
     private const int SpawnCloseness = 6;
 
     private static readonly HashSet<ChunkPos> ChunksForSpawning = [];
-    private static readonly Func<World, EntityLiving>[] nightSpawnEntities =
+    private static readonly Func<World, EntityLiving>[] Monsters =
     [
         w => new EntitySpider(w),
         w => new EntityZombie(w),
@@ -127,6 +127,72 @@ public static class NaturalSpawner
         }
     }
 
+    public static bool SpawnMonstersAndWakePlayers(World world, List<EntityPlayer> players)
+    {
+        bool monstersSpawned = false;
+        var pathfinder = new Pathfinder(world);
+        foreach (var player in players)
+        {
+            for (int i = 0; i < 20; ++i)
+            {
+                int spawnX = MathHelper.Floor(player.x) + world.random.NextInt(32) - world.random.NextInt(32);
+                int spawnZ = MathHelper.Floor(player.z) + world.random.NextInt(32) - world.random.NextInt(32);
+                int spawnY = MathHelper.Floor(player.y) + world.random.NextInt(16) - world.random.NextInt(16);
+                if (spawnY < 1)
+                {
+                    spawnY = 1;
+                }
+                else if (spawnY > 128)
+                {
+                    spawnY = 128;
+                }
+
+                int r = world.random.NextInt(Monsters.Length);
+
+                int newSpawnY;
+                for (newSpawnY = spawnY; newSpawnY > 2; --newSpawnY)
+                {
+                    if (world.shouldSuffocate(spawnX, newSpawnY - 1, spawnZ)) break;
+                }
+
+                while (!CreatureKind.Monster.CanSpawnAtLocation(world, spawnX, newSpawnY, spawnZ) && newSpawnY < spawnY + 16 && newSpawnY < 128)
+                {
+                    ++newSpawnY;
+                }
+
+                if (newSpawnY < spawnY + 16 && newSpawnY < 128)
+                {
+                    EntityLiving entity = Monsters[r](world);
+
+                    entity.setPositionAndAnglesKeepPrevAngles(spawnX + 0.5D, spawnY, spawnZ + 0.5D, world.random.NextFloat() * 360.0F, 0.0F);
+                    if (entity.canSpawn())
+                    {
+                        PathEntity pathEntity = pathfinder.createEntityPathTo(entity, player, 32.0F);
+                        if (pathEntity != null && pathEntity.pathLength > 1)
+                        {
+                            PathPoint pathPoint = pathEntity.func_22328_c();
+                            if (Math.Abs(pathPoint.xCoord - player.x) < 1.5D && Math.Abs(pathPoint.zCoord - player.z) < 1.5D && Math.Abs(pathPoint.yCoord - player.y) < 1.5D)
+                            {
+                                Vec3i wakeUpPos = BlockBed.findWakeUpPosition(world, MathHelper.Floor(player.x), MathHelper.Floor(player.y), MathHelper.Floor(player.z), 1);
+                                wakeUpPos ??= new Vec3i(spawnX, newSpawnY + 1, spawnZ);
+
+                                entity.setPositionAndAnglesKeepPrevAngles((double)((float)wakeUpPos.x + 0.5F), (double)wakeUpPos.y, (double)((float)wakeUpPos.z + 0.5F), 0.0F, 0.0F);
+                                world.SpawnEntity(entity);
+                                EntitySpecificInit(entity, world, (float)wakeUpPos.x + 0.5F, (float)wakeUpPos.y, (float)wakeUpPos.z + 0.5F);
+                                player.wakeUp(true, false, false);
+                                entity.playLivingSound();
+                                monstersSpawned = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return monstersSpawned;
+    }
+
     private static void EntitySpecificInit(EntityLiving entity, World world, double x, double y, double z)
     {
         if (entity is EntitySpider && world.random.NextInt(100) == 0)
@@ -140,79 +206,5 @@ public static class NaturalSpawner
         {
             ((EntitySheep)entity).setFleeceColor(EntitySheep.getRandomFleeceColor(world.random));
         }
-    }
-
-    public static bool SpawnMonstersAndWakePlayers(World world, List<EntityPlayer> players)
-    {
-        bool monstersSpawned = false;
-        var pathfinder = new Pathfinder(world);
-        foreach (var player in players)
-        {
-            bool breakFromLoop = false;
-
-            for (int i = 0; i < 20 && !breakFromLoop; ++i)
-            {
-                int var9 = MathHelper.Floor(player.x) + world.random.NextInt(32) - world.random.NextInt(32);
-                int var10 = MathHelper.Floor(player.z) + world.random.NextInt(32) - world.random.NextInt(32);
-                int var11 = MathHelper.Floor(player.y) + world.random.NextInt(16) - world.random.NextInt(16);
-                if (var11 < 1)
-                {
-                    var11 = 1;
-                }
-                else if (var11 > 128)
-                {
-                    var11 = 128;
-                }
-
-                int var12 = world.random.NextInt(nightSpawnEntities.Length);
-
-                int var13;
-                for (var13 = var11; var13 > 2 && !world.shouldSuffocate(var9, var13 - 1, var10); --var13)
-                {
-                }
-
-                while (!CreatureKind.Monster.CanSpawnAtLocation(world, var9, var13, var10) && var13 < var11 + 16 && var13 < 128)
-                {
-                    ++var13;
-                }
-
-                if (var13 < var11 + 16 && var13 < 128)
-                {
-                    float var14 = (float)var9 + 0.5F;
-                    float var15 = (float)var13;
-                    float var16 = (float)var10 + 0.5F;
-
-                    EntityLiving entity = nightSpawnEntities[var12](world);
-
-                    entity.setPositionAndAnglesKeepPrevAngles((double)var14, (double)var15, (double)var16, world.random.NextFloat() * 360.0F, 0.0F);
-                    if (entity.canSpawn())
-                    {
-                        PathEntity pathEntity = pathfinder.createEntityPathTo(entity, player, 32.0F);
-                        if (pathEntity != null && pathEntity.pathLength > 1)
-                        {
-                            PathPoint pathPoint = pathEntity.func_22328_c();
-                            if (Math.Abs(pathPoint.xCoord - player.x) < 1.5D && Math.Abs(pathPoint.zCoord - player.z) < 1.5D && Math.Abs(pathPoint.yCoord - player.y) < 1.5D)
-                            {
-                                Vec3i var20 = BlockBed.findWakeUpPosition(world, MathHelper.Floor(player.x), MathHelper.Floor(player.y), MathHelper.Floor(player.z), 1);
-                                if (var20 == null)
-                                {
-                                    var20 = new Vec3i(var9, var13 + 1, var10);
-                                }
-
-                                entity.setPositionAndAnglesKeepPrevAngles((double)((float)var20.x + 0.5F), (double)var20.y, (double)((float)var20.z + 0.5F), 0.0F, 0.0F);
-                                world.SpawnEntity(entity);
-                                EntitySpecificInit(entity, world, (float)var20.x + 0.5F, (float)var20.y, (float)var20.z + 0.5F);
-                                player.wakeUp(true, false, false);
-                                entity.playLivingSound();
-                                monstersSpawned = true;
-                                breakFromLoop = true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return monstersSpawned;
     }
 }
