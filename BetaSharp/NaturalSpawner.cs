@@ -56,32 +56,9 @@ public static class NaturalSpawner
                 foreach (var chunk in ChunksForSpawning)
                 {
                     Biome biome = world.getBiomeSource().GetBiome(chunk);
-                    var spawnables = biome.GetSpawnableList(creatureKind);
-
-                    if (spawnables == null || spawnables.Count == 0)
-                    {
-                        continue;
-                    }
-
-                    int totalWeight = 0;
-                    foreach (var entry in spawnables)
-                    {
-                        totalWeight += entry.SpawnWeight;
-                    }
-
-                    int r = world.random.NextInt(totalWeight);
-                    SpawnListEntry toSpawn = null;
-
-                    foreach (var entry in spawnables)
-                    {
-                        r -= entry.SpawnWeight;
-
-                        if (r < 0)
-                        {
-                            toSpawn = entry;
-                            break;
-                        }
-                    }
+                    var spawnSelector = biome.GetSpawnableList(creatureKind);
+                    if (spawnSelector.Empty) break;
+                    SpawnListEntry toSpawn = spawnSelector.GetNext(world.random);
 
                     BlockPos spawnPos = GetRandomSpawningPointInChunk(world, chunk.x * 16, chunk.z * 16);
                     if (world.shouldSuffocate(spawnPos.x, spawnPos.y, spawnPos.z)) continue;

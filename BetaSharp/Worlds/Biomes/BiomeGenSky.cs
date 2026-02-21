@@ -11,7 +11,7 @@ public class BiomeGenSky : Biome
         CreatureList.Clear();
         WaterCreatureList.Clear();
 
-        CreatureList.Add(new SpawnListEntry(w => new EntityChicken(w), 10));
+        CreatureList.Add(new SpawnListEntry(w => new EntityChicken(w)), 10);
     }
 
     public override int GetSkyColorByTemp(float rand)

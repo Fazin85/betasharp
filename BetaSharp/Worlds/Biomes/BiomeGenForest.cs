@@ -9,7 +9,7 @@ public class BiomeGenForest : Biome
 
     public BiomeGenForest()
     {
-        CreatureList.Add(new SpawnListEntry(w => new EntityWolf(w), 2));
+        CreatureList.Add(new SpawnListEntry(w => new EntityWolf(w)), 2);
     }
 
     public override Feature GetRandomWorldGenForTrees(JavaRandom rand)
