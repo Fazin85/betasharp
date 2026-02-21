@@ -18,8 +18,8 @@ public class ItemRenderer : EntityRenderer
 
     public ItemRenderer()
     {
-        shadowRadius = 0.15F;
-        shadowStrength = 12.0F / 16.0F;
+        ShadowRadius = 0.15F;
+        ShadowStrength = 12.0F / 16.0F;
     }
 
     public void doRenderItem(EntityItem var1, double var2, double var4, double var6, float var8, float var9)
@@ -123,7 +123,7 @@ public class ItemRenderer : EntityRenderer
                     GLManager.GL.Translate(var24, var25, var26);
                 }
 
-                GLManager.GL.Rotate(180.0F - dispatcher.playerViewY, 0.0F, 1.0F, 0.0F);
+                GLManager.GL.Rotate(180.0F - Dispatcher.playerViewY, 0.0F, 1.0F, 0.0F);
                 var15.startDrawingQuads();
                 var15.setNormal(0.0F, 1.0F, 0.0F);
                 var15.addVertexWithUV((double)(0.0F - var21), (double)(0.0F - var22), 0.0D, (double)var16, (double)var19);

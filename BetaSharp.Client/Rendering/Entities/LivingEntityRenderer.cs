@@ -16,7 +16,7 @@ public class LivingEntityRenderer : EntityRenderer
     public LivingEntityRenderer(ModelBase mainModel, float shadowRadius)
     {
         this.mainModel = mainModel;
-        this.shadowRadius = shadowRadius;
+        this.ShadowRadius = shadowRadius;
     }
 
     public void setRenderPassModel(ModelBase var1)
@@ -60,7 +60,7 @@ public class LivingEntityRenderer : EntityRenderer
                 var15 = 1.0F;
             }
 
-            loadDownloadableImageTexture(var1.skinUrl, var1.getTexture());
+            LoadDownloadableImageTexture(var1.skinUrl, var1.getTexture());
             GLManager.GL.Enable(GLEnum.AlphaTest);
             mainModel.setLivingAnimations(var1, var16, var15, var9);
             mainModel.render(var16, var15, var13, var11 - var10, var12, var14);
@@ -208,7 +208,7 @@ public class LivingEntityRenderer : EntityRenderer
 
     protected void renderLivingLabel(EntityLiving var1, string var2, double var3, double var5, double var7, int var9)
     {
-        float var10 = var1.getDistance(dispatcher.cameraEntity);
+        float var10 = var1.getDistance(Dispatcher.cameraEntity);
         if (var10 <= var9)
         {
             TextRenderer var11 = getTextRenderer();
@@ -217,8 +217,8 @@ public class LivingEntityRenderer : EntityRenderer
             GLManager.GL.PushMatrix();
             GLManager.GL.Translate((float)var3 + 0.0F, (float)var5 + 2.3F, (float)var7);
             GLManager.GL.Normal3(0.0F, 1.0F, 0.0F);
-            GLManager.GL.Rotate(-dispatcher.playerViewY, 0.0F, 1.0F, 0.0F);
-            GLManager.GL.Rotate(dispatcher.playerViewX, 1.0F, 0.0F, 0.0F);
+            GLManager.GL.Rotate(-Dispatcher.playerViewY, 0.0F, 1.0F, 0.0F);
+            GLManager.GL.Rotate(Dispatcher.playerViewX, 1.0F, 0.0F, 0.0F);
             GLManager.GL.Scale(-var13, -var13, var13);
             GLManager.GL.Disable(GLEnum.Lighting);
             GLManager.GL.DepthMask(false);

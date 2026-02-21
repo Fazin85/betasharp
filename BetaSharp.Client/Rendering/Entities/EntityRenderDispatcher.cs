@@ -133,7 +133,7 @@ public class EntityRenderDispatcher
         if (var10 != null)
         {
             var10.render(target, x, y, z, yaw, tickDelta);
-            var10.postRender(target, x, y, z, yaw, tickDelta);
+            var10.PostRender(target, x, y, z, yaw, tickDelta);
         }
 
     }

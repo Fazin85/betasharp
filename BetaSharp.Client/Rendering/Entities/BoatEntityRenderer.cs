@@ -12,7 +12,7 @@ public class BoatEntityRenderer : EntityRenderer
 
     public BoatEntityRenderer()
     {
-        shadowRadius = 0.5F;
+        ShadowRadius = 0.5F;
         modelBoat = new ModelBoat();
     }
 

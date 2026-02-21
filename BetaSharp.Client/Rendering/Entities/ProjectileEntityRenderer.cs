@@ -29,8 +29,8 @@ public class ProjectileEntityRenderer : EntityRenderer
         float var15 = 1.0F;
         float var16 = 0.5F;
         float var17 = 0.25F;
-        GLManager.GL.Rotate(180.0F - dispatcher.playerViewY, 0.0F, 1.0F, 0.0F);
-        GLManager.GL.Rotate(-dispatcher.playerViewX, 1.0F, 0.0F, 0.0F);
+        GLManager.GL.Rotate(180.0F - Dispatcher.playerViewY, 0.0F, 1.0F, 0.0F);
+        GLManager.GL.Rotate(-Dispatcher.playerViewX, 1.0F, 0.0F, 0.0F);
         var10.startDrawingQuads();
         var10.setNormal(0.0F, 1.0F, 0.0F);
         var10.addVertexWithUV((double)(0.0F - var16), (double)(0.0F - var17), 0.0D, (double)var11, (double)var14);

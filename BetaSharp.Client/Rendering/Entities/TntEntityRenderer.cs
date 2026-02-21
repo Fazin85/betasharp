@@ -13,7 +13,7 @@ public class TntEntityRenderer : EntityRenderer
 
     public TntEntityRenderer()
     {
-        shadowRadius = 0.5F;
+        ShadowRadius = 0.5F;
     }
 
     public void render(EntityTNTPrimed var1, double x, double y, double z, float yaw, float tickDelta)
