@@ -1,40 +1,40 @@
+using BetaSharp.Util;
 using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Rendering.Core;
 
 public unsafe class DisplayListCompiler
 {
-    public abstract class DLCommand;
-
-    public class DLDrawChunk : DLCommand
+    public enum DLCommandType : byte
     {
+        DrawChunk,
+        Translate,
+        Color
+    }
+
+    public struct DLCommand
+    {
+        public DLCommandType Type;
         public uint Vao;
         public uint Vbo;
         public int VertexCount;
         public GLEnum DrawMode;
+        public float X_R, Y_G, Z_B, W_A;
     }
 
-    public class DLTranslate : DLCommand
+    private class DisplayList
     {
-        public float X, Y, Z;
-    }
-
-    public class DLColor : DLCommand
-    {
-        public float R, G, B, A;
-    }
-
-    private class EmulatedDisplayList
-    {
-        public List<DLCommand> Commands = [];
+        public PooledList<DLCommand> Commands = new(16);
     }
 
     private readonly GL _gl;
     private uint _nextListId = 1;
-    private readonly Dictionary<uint, EmulatedDisplayList> _emulatedLists = [];
+    private readonly Dictionary<uint, DisplayList> _emulatedLists = [];
     private uint _compilingListId;
 
-    private List<byte>? _stagingBuffer;
+    private byte[] _stagingBuffer = new byte[16384];
+    private int _stagingBufferCount = 0;
+
     private GLEnum _lastDrawMode;
     private bool _compiledHasTexture;
     private bool _compiledHasColor;
@@ -53,7 +53,7 @@ public unsafe class DisplayListCompiler
         uint baseId = _nextListId;
         for (uint i = 0; i < range; i++)
         {
-            _emulatedLists[_nextListId] = new EmulatedDisplayList();
+            _emulatedLists[_nextListId] = new DisplayList();
             _nextListId++;
         }
         return baseId;
@@ -64,7 +64,7 @@ public unsafe class DisplayListCompiler
         for (uint i = 0; i < range; i++)
         {
             uint id = list + i;
-            if (_emulatedLists.TryGetValue(id, out EmulatedDisplayList? dl))
+            if (_emulatedLists.TryGetValue(id, out DisplayList? dl))
             {
                 FreeGpuResources(dl);
                 _emulatedLists.Remove(id);
@@ -76,34 +76,48 @@ public unsafe class DisplayListCompiler
     {
         IsCompiling = true;
         _compilingListId = list;
-        _stagingBuffer = new List<byte>(4096);
+        _stagingBufferCount = 0;
         _compiledHasTexture = false;
         _compiledHasColor = false;
         _compiledHasNormals = false;
         _compiledStride = 32;
 
-        if (_emulatedLists.TryGetValue(list, out EmulatedDisplayList? existing))
+        if (_emulatedLists.TryGetValue(list, out DisplayList? existing))
         {
             FreeGpuResources(existing);
             existing.Commands.Clear();
         }
         else
         {
-            _emulatedLists[list] = new EmulatedDisplayList();
+            _emulatedLists[list] = new DisplayList();
         }
     }
 
     public void EndList()
     {
         IsCompiling = false;
-        _stagingBuffer = null;
+        _stagingBufferCount = 0;
     }
 
     public void CaptureVertexData(byte* data, int byteCount)
     {
-        if (_stagingBuffer == null) return;
-        var span = new ReadOnlySpan<byte>(data, byteCount);
-        _stagingBuffer.AddRange(span.ToArray());
+        if (!IsCompiling) return;
+
+        EnsureCapacity(_stagingBufferCount + byteCount);
+        fixed (byte* dst = &_stagingBuffer[0])
+        {
+            System.Buffer.MemoryCopy(data, dst + _stagingBufferCount, byteCount, byteCount);
+        }
+        _stagingBufferCount += byteCount;
+    }
+
+    private void EnsureCapacity(int requiredSize)
+    {
+        if (_stagingBuffer.Length < requiredSize)
+        {
+            int newSize = Math.Max(_stagingBuffer.Length * 2, requiredSize);
+            Array.Resize(ref _stagingBuffer, newSize);
+        }
     }
 
     public void SetStride(uint stride) => _compiledStride = stride;
@@ -122,7 +136,7 @@ public unsafe class DisplayListCompiler
     {
         _lastDrawMode = mode;
 
-        if (_stagingBuffer == null || _stagingBuffer.Count == 0 || vertexCount == 0) return;
+        if (_stagingBufferCount == 0 || vertexCount == 0) return;
 
         uint vao = _gl.GenVertexArray();
         uint vbo = _gl.GenBuffer();
@@ -130,10 +144,9 @@ public unsafe class DisplayListCompiler
         _gl.BindVertexArray(vao);
         _gl.BindBuffer(GLEnum.ArrayBuffer, vbo);
 
-        byte[] data = _stagingBuffer.ToArray();
-        fixed (byte* ptr = data)
+        fixed (byte* ptr = &_stagingBuffer[0])
         {
-            _gl.BufferData(GLEnum.ArrayBuffer, (nuint)data.Length, ptr, GLEnum.StaticDraw);
+            _gl.BufferData(GLEnum.ArrayBuffer, (nuint)_stagingBufferCount, ptr, GLEnum.StaticDraw);
         }
 
         uint stride = _compiledStride;
@@ -174,50 +187,57 @@ public unsafe class DisplayListCompiler
 
         _gl.BindVertexArray(0);
 
-        _emulatedLists[_compilingListId].Commands.Add(new DLDrawChunk
+        _emulatedLists[_compilingListId].Commands.Add(new DLCommand
         {
+            Type = DLCommandType.DrawChunk,
             Vao = vao,
             Vbo = vbo,
             VertexCount = vertexCount,
             DrawMode = _lastDrawMode,
         });
 
-        _stagingBuffer.Clear();
+        _stagingBufferCount = 0;
     }
 
     public void RecordTranslate(float x, float y, float z)
     {
-        _emulatedLists[_compilingListId].Commands.Add(new DLTranslate { X = x, Y = y, Z = z });
+        _emulatedLists[_compilingListId].Commands.Add(new DLCommand { Type = DLCommandType.Translate, X_R = x, Y_G = y, Z_B = z });
     }
 
     public void RecordColor(float r, float g, float b, float a)
     {
-        _emulatedLists[_compilingListId].Commands.Add(new DLColor { R = r, G = g, B = b, A = a });
+        _emulatedLists[_compilingListId].Commands.Add(new DLCommand { Type = DLCommandType.Color, X_R = r, Y_G = g, Z_B = b, W_A = a });
     }
 
-    public void Execute(uint list, Action<DLDrawChunk> onDraw, Action<DLTranslate> onTranslate, Action<DLColor> onColor)
-    {
-        if (!_emulatedLists.TryGetValue(list, out EmulatedDisplayList? dl) || dl.Commands.Count == 0) return;
+    public delegate void DrawCallback(ref DLCommand cmd);
+    public delegate void TranslateCallback(ref DLCommand cmd);
+    public delegate void ColorCallback(ref DLCommand cmd);
 
-        foreach (DLCommand cmd in dl.Commands)
+    public void Execute(uint list, DrawCallback onDraw, TranslateCallback onTranslate, ColorCallback onColor)
+    {
+        if (!_emulatedLists.TryGetValue(list, out DisplayList? dl) || dl.Commands.Count == 0) return;
+
+        Span<DLCommand> span = dl.Commands.Span;
+        for (int i = 0; i < span.Length; i++)
         {
-            switch (cmd)
+            ref DLCommand cmd = ref span[i];
+            switch (cmd.Type)
             {
-                case DLDrawChunk chunk: onDraw(chunk); break;
-                case DLTranslate t: onTranslate(t); break;
-                case DLColor c: onColor(c); break;
+                case DLCommandType.DrawChunk: onDraw(ref cmd); break;
+                case DLCommandType.Translate: onTranslate(ref cmd); break;
+                case DLCommandType.Color: onColor(ref cmd); break;
             }
         }
     }
 
-    private void FreeGpuResources(EmulatedDisplayList dl)
+    private void FreeGpuResources(DisplayList dl)
     {
-        foreach (DLCommand cmd in dl.Commands)
+        foreach (DLCommand cmd in dl.Commands.Span)
         {
-            if (cmd is DLDrawChunk chunk)
+            if (cmd.Type == DLCommandType.DrawChunk)
             {
-                _gl.DeleteBuffer(chunk.Vbo);
-                _gl.DeleteVertexArray(chunk.Vao);
+                _gl.DeleteBuffer(cmd.Vbo);
+                _gl.DeleteVertexArray(cmd.Vao);
             }
         }
     }

@@ -17,23 +17,54 @@ public unsafe class EmulatedGL : LegacyGL
     private bool _alphaTestEnabled = false;
     private float _alphaThreshold = 0.1f;
 
-    private bool _lightingEnabled = false;
-    private float _light0DirX, _light0DirY, _light0DirZ;
-    private float _light0DiffR, _light0DiffG, _light0DiffB;
-    private float _light1DirX, _light1DirY, _light1DirZ;
-    private float _light1DiffR, _light1DiffG, _light1DiffB;
-    private float _ambientR = 0.2f, _ambientG = 0.2f, _ambientB = 0.2f;
+    private struct LightingState
+    {
+        public bool LightingEnabled = false;
+        public float Light0DirX, Light0DirY, Light0DirZ;
+        public float Light0DiffR, Light0DiffG, Light0DiffB;
+        public float Light1DirX, Light1DirY, Light1DirZ;
+        public float Light1DiffR, Light1DiffG, Light1DiffB;
+        public float AmbientR = 0.2f, AmbientG = 0.2f, AmbientB = 0.2f;
 
-    private bool _fogEnabled = false;
-    private int _fogMode = 0; // 0=linear, 1=exp
-    private float _fogColorR, _fogColorG, _fogColorB, _fogColorA;
-    private float _fogStart = 0f;
-    private float _fogEnd = 1f;
-    private float _fogDensity = 1f;
+        public LightingState()
+        {
+        }
+    }
+
+    private struct FogState
+    {
+        public bool FogEnabled = false;
+        public int FogMode = 0; // 0=linear, 1=exp
+        public float FogColorR, FogColorG, FogColorB, FogColorA;
+        public float FogStart = 0f;
+        public float FogEnd = 1f;
+        public float FogDensity = 1f;
+
+        public FogState()
+        {
+        }
+    }
+
+    private struct DirtyState
+    {
+        public bool DirtyModelView = true;
+        public bool DirtyProjection = true;
+        public bool DirtyTextureMatrix = true;
+        public bool DirtyLighting = true;
+        public bool StateDirty = true;
+        public bool DirtyFog = true;
+
+        public DirtyState()
+        {
+        }
+    }
+
+    private LightingState _lightingState = new();
+    private FogState _fogState = new();
+    private DirtyState _dirtyState = new();
 
     private readonly uint _immediateVao;
 
-    // Display Lists
     private readonly DisplayListCompiler _displayLists;
 
     public EmulatedGL(GL gl) : base(gl)
@@ -55,52 +86,86 @@ public unsafe class EmulatedGL : LegacyGL
         _ => _modelViewStack
     };
 
+    private void MarkActiveMatrixDirty()
+    {
+        if (_currentMatrixMode == GLEnum.Modelview) _dirtyState.DirtyModelView = true;
+        else if (_currentMatrixMode == GLEnum.Projection) _dirtyState.DirtyProjection = true;
+        else if (_currentMatrixMode == GLEnum.Texture) _dirtyState.DirtyTextureMatrix = true;
+    }
+
     private void ActivateShader()
     {
-        SilkGL.UseProgram(_shader.Program);
-        _shader.SetModelView(_modelViewStack.Top);
-        _shader.SetProjection(_projectionStack.Top);
-        _shader.SetTextureMatrix(_textureStack.Top);
-        _shader.SetUseTexture(_useTexture);
-        _shader.SetAlphaThreshold(_alphaTestEnabled ? _alphaThreshold : -1.0f);
-        _shader.SetEnableLighting(_lightingEnabled);
-
-        if (_lightingEnabled)
+        if (_currentProgram != _shader.Program)
         {
-            _shader.SetLight0(_light0DirX, _light0DirY, _light0DirZ, _light0DiffR, _light0DiffG, _light0DiffB);
-            _shader.SetLight1(_light1DirX, _light1DirY, _light1DirZ, _light1DiffR, _light1DiffG, _light1DiffB);
-            _shader.SetAmbientLight(_ambientR, _ambientG, _ambientB);
-
-            Matrix4X4<float> mv = _modelViewStack.Top;
-            if (Matrix4X4.Invert(mv, out Matrix4X4<float> invMv))
-            {
-                var t = Matrix4X4.Transpose(invMv);
-                var normalMatrix = new Matrix3X3<float>(
-                    t.M11, t.M12, t.M13,
-                    t.M21, t.M22, t.M23,
-                    t.M31, t.M32, t.M33);
-                _shader.SetNormalMatrix(normalMatrix);
-            }
-            else
-            {
-                _shader.SetNormalMatrix(Matrix3X3<float>.Identity);
-            }
+            SilkGL.UseProgram(_shader.Program);
+            _currentProgram = _shader.Program;
+            _dirtyState.DirtyModelView = true;
+            _dirtyState.DirtyProjection = true;
+            _dirtyState.DirtyTextureMatrix = true;
+            _dirtyState.StateDirty = true;
+            if (_lightingState.LightingEnabled) _dirtyState.DirtyLighting = true;
+            if (_fogState.FogEnabled) _dirtyState.DirtyFog = true;
         }
 
-        _shader.SetEnableFog(_fogEnabled);
-        if (_fogEnabled)
+        if (_dirtyState.DirtyProjection) { _shader.SetProjection(_projectionStack.Top); _dirtyState.DirtyProjection = false; }
+        if (_dirtyState.DirtyTextureMatrix) { _shader.SetTextureMatrix(_textureStack.Top); _dirtyState.DirtyTextureMatrix = false; }
+
+        if (_dirtyState.StateDirty)
         {
-            _shader.SetFogMode(_fogMode);
-            _shader.SetFogColor(_fogColorR, _fogColorG, _fogColorB, _fogColorA);
-            _shader.SetFogStart(_fogStart);
-            _shader.SetFogEnd(_fogEnd);
-            _shader.SetFogDensity(_fogDensity);
+            _shader.SetUseTexture(_useTexture);
+            _shader.SetAlphaThreshold(_alphaTestEnabled ? _alphaThreshold : -1.0f);
+            _shader.SetEnableLighting(_lightingState.LightingEnabled);
+            _shader.SetEnableFog(_fogState.FogEnabled);
+            _dirtyState.StateDirty = false;
+        }
+
+        if (_dirtyState.DirtyModelView)
+        {
+            _shader.SetModelView(_modelViewStack.Top);
+
+            if (_lightingState.LightingEnabled)
+            {
+                Matrix4X4<float> mv = _modelViewStack.Top;
+                if (Matrix4X4.Invert(mv, out Matrix4X4<float> invMv))
+                {
+                    var t = Matrix4X4.Transpose(invMv);
+                    var normalMatrix = new Matrix3X3<float>(
+                        t.M11, t.M12, t.M13,
+                        t.M21, t.M22, t.M23,
+                        t.M31, t.M32, t.M33);
+                    _shader.SetNormalMatrix(normalMatrix);
+                }
+                else
+                {
+                    _shader.SetNormalMatrix(Matrix3X3<float>.Identity);
+                }
+            }
+            _dirtyState.DirtyModelView = false;
+        }
+
+        if (_lightingState.LightingEnabled && _dirtyState.DirtyLighting)
+        {
+            _shader.SetLight0(_lightingState.Light0DirX, _lightingState.Light0DirY, _lightingState.Light0DirZ, _lightingState.Light0DiffR, _lightingState.Light0DiffG, _lightingState.Light0DiffB);
+            _shader.SetLight1(_lightingState.Light1DirX, _lightingState.Light1DirY, _lightingState.Light1DirZ, _lightingState.Light1DiffR, _lightingState.Light1DiffG, _lightingState.Light1DiffB);
+            _shader.SetAmbientLight(_lightingState.AmbientR, _lightingState.AmbientG, _lightingState.AmbientB);
+            _dirtyState.DirtyLighting = false;
+        }
+
+        if (_fogState.FogEnabled && _dirtyState.DirtyFog)
+        {
+            _shader.SetFogMode(_fogState.FogMode);
+            _shader.SetFogColor(_fogState.FogColorR, _fogState.FogColorG, _fogState.FogColorB, _fogState.FogColorA);
+            _shader.SetFogStart(_fogState.FogStart);
+            _shader.SetFogEnd(_fogState.FogEnd);
+            _shader.SetFogDensity(_fogState.FogDensity);
+            _dirtyState.DirtyFog = false;
         }
     }
 
     public override void AlphaFunc(GLEnum func, float refValue)
     {
         _alphaThreshold = refValue;
+        _dirtyState.StateDirty = true;
     }
 
     public override uint GenLists(uint range) => _displayLists.GenLists(range);
@@ -108,7 +173,9 @@ public unsafe class EmulatedGL : LegacyGL
     public override void NewList(uint list, GLEnum mode)
     {
         if (mode == GLEnum.Compile || mode == GLEnum.CompileAndExecute)
+        {
             _displayLists.BeginList(list);
+        }
     }
 
     public override void EndList() => _displayLists.EndList();
@@ -120,18 +187,18 @@ public unsafe class EmulatedGL : LegacyGL
         if (_displayLists.IsCompiling) return;
 
         _displayLists.Execute(list,
-            onDraw: chunk =>
+            onDraw: (ref chunk) =>
             {
                 ActivateShader();
                 SilkGL.BindVertexArray(chunk.Vao);
                 SilkGL.DrawArrays(chunk.DrawMode, 0, (uint)chunk.VertexCount);
             },
-            onTranslate: t =>
+            onTranslate: (ref t) =>
             {
-                ActiveStack.Translate(t.X, t.Y, t.Z);
-                _shader.SetModelView(ActiveStack.Top);
+                ActiveStack.Translate(t.X_R, t.Y_G, t.Z_B);
+                MarkActiveMatrixDirty();
             },
-            onColor: c => SilkGL.VertexAttrib4(1, c.R, c.G, c.B, c.A));
+            onColor: (ref c) => SilkGL.VertexAttrib4(1, c.X_R, c.Y_G, c.Z_B, c.W_A));
 
         SilkGL.BindVertexArray(_immediateVao);
     }
@@ -144,14 +211,18 @@ public unsafe class EmulatedGL : LegacyGL
         {
             uint* ids = (uint*)lists;
             for (int i = 0; i < (int)n; i++)
+            {
                 CallList(ids[i]);
+            }
         }
     }
 
     public override void BufferData(GLEnum target, nuint size, void* data, GLEnum usage)
     {
         if (_displayLists.IsCompiling && target == GLEnum.ArrayBuffer && data != null)
+        {
             _displayLists.CaptureVertexData((byte*)data, (int)size);
+        }
 
         SilkGL.BufferData(target, size, data, usage);
     }
@@ -165,54 +236,63 @@ public unsafe class EmulatedGL : LegacyGL
     {
         if (_displayLists.IsCompiling) return;
         ActiveStack.LoadIdentity();
+        MarkActiveMatrixDirty();
     }
 
     public override void PushMatrix()
     {
         if (_displayLists.IsCompiling) return;
         ActiveStack.Push();
+        MarkActiveMatrixDirty();
     }
 
     public override void PopMatrix()
     {
         if (_displayLists.IsCompiling) return;
         ActiveStack.Pop();
+        MarkActiveMatrixDirty();
     }
 
     public override void Translate(float x, float y, float z)
     {
         if (_displayLists.IsCompiling) { _displayLists.RecordTranslate(x, y, z); return; }
         ActiveStack.Translate(x, y, z);
+        MarkActiveMatrixDirty();
     }
 
     public override void Rotate(float angle, float x, float y, float z)
     {
         if (_displayLists.IsCompiling) return;
         ActiveStack.Rotate(angle, x, y, z);
+        MarkActiveMatrixDirty();
     }
 
     public override void Scale(float x, float y, float z)
     {
         if (_displayLists.IsCompiling) return;
         ActiveStack.Scale(x, y, z);
+        MarkActiveMatrixDirty();
     }
 
     public override void Scale(double x, double y, double z)
     {
         if (_displayLists.IsCompiling) return;
         ActiveStack.Scale((float)x, (float)y, (float)z);
+        MarkActiveMatrixDirty();
     }
 
     public override void Ortho(double left, double right, double bottom, double top, double zNear, double zFar)
     {
         if (_displayLists.IsCompiling) return;
         ActiveStack.Ortho(left, right, bottom, top, zNear, zFar);
+        MarkActiveMatrixDirty();
     }
 
     public override void Frustum(double left, double right, double bottom, double top, double zNear, double zFar)
     {
         if (_displayLists.IsCompiling) return;
         ActiveStack.Frustum(left, right, bottom, top, zNear, zFar);
+        MarkActiveMatrixDirty();
     }
 
     public override void Color3(float red, float green, float blue)
@@ -294,14 +374,14 @@ public unsafe class EmulatedGL : LegacyGL
     {
         switch (cap)
         {
-            case GLEnum.Texture2D: _useTexture = true; return;
-            case GLEnum.AlphaTest: _alphaTestEnabled = true; return;
-            case GLEnum.Lighting: _lightingEnabled = true; return;
-            case GLEnum.Fog: _fogEnabled = true; return;
+            case GLEnum.Texture2D: _useTexture = true; _dirtyState.StateDirty = true; return;
+            case GLEnum.AlphaTest: _alphaTestEnabled = true; _dirtyState.StateDirty = true; return;
+            case GLEnum.Lighting: _lightingState.LightingEnabled = true; _dirtyState.StateDirty = true; _dirtyState.DirtyLighting = true; return;
+            case GLEnum.Fog: _fogState.FogEnabled = true; _dirtyState.StateDirty = true; _dirtyState.DirtyFog = true; return;
             case GLEnum.Light0: return;
             case GLEnum.Light1: return;
             case GLEnum.ColorMaterial: return;
-            case GLEnum.RescaleNormal: return; // Shader always normalizes
+            case GLEnum.RescaleNormal: return;
         }
         if (_displayLists.IsCompiling) return;
         SilkGL.Enable(cap);
@@ -311,10 +391,10 @@ public unsafe class EmulatedGL : LegacyGL
     {
         switch (cap)
         {
-            case GLEnum.Texture2D: _useTexture = false; return;
-            case GLEnum.AlphaTest: _alphaTestEnabled = false; return;
-            case GLEnum.Lighting: _lightingEnabled = false; return;
-            case GLEnum.Fog: _fogEnabled = false; return;
+            case GLEnum.Texture2D: _useTexture = false; _dirtyState.StateDirty = true; return;
+            case GLEnum.AlphaTest: _alphaTestEnabled = false; _dirtyState.StateDirty = true; return;
+            case GLEnum.Lighting: _lightingState.LightingEnabled = false; _dirtyState.StateDirty = true; return;
+            case GLEnum.Fog: _fogState.FogEnabled = false; _dirtyState.StateDirty = true; return;
             case GLEnum.Light0: return;
             case GLEnum.Light1: return;
             case GLEnum.ColorMaterial: return;
@@ -337,13 +417,15 @@ public unsafe class EmulatedGL : LegacyGL
             float len = MathF.Sqrt(x * x + y * y + z * z);
             if (len > 0) { x /= len; y /= len; z /= len; }
 
-            if (light == GLEnum.Light0) { _light0DirX = x; _light0DirY = y; _light0DirZ = z; }
-            else if (light == GLEnum.Light1) { _light1DirX = x; _light1DirY = y; _light1DirZ = z; }
+            if (light == GLEnum.Light0) { _lightingState.Light0DirX = x; _lightingState.Light0DirY = y; _lightingState.Light0DirZ = z; }
+            else if (light == GLEnum.Light1) { _lightingState.Light1DirX = x; _lightingState.Light1DirY = y; _lightingState.Light1DirZ = z; }
+            _dirtyState.DirtyLighting = true;
         }
         else if (pname == GLEnum.Diffuse)
         {
-            if (light == GLEnum.Light0) { _light0DiffR = params_[0]; _light0DiffG = params_[1]; _light0DiffB = params_[2]; }
-            else if (light == GLEnum.Light1) { _light1DiffR = params_[0]; _light1DiffG = params_[1]; _light1DiffB = params_[2]; }
+            if (light == GLEnum.Light0) { _lightingState.Light0DiffR = params_[0]; _lightingState.Light0DiffG = params_[1]; _lightingState.Light0DiffB = params_[2]; }
+            else if (light == GLEnum.Light1) { _lightingState.Light1DiffR = params_[0]; _lightingState.Light1DiffG = params_[1]; _lightingState.Light1DiffB = params_[2]; }
+            _dirtyState.DirtyLighting = true;
         }
     }
 
@@ -351,21 +433,23 @@ public unsafe class EmulatedGL : LegacyGL
     {
         switch (pname)
         {
-            case GLEnum.FogMode: _fogMode = (int)param == (int)GLEnum.Linear ? 0 : 1; break;
-            case GLEnum.FogStart: _fogStart = param; break;
-            case GLEnum.FogEnd: _fogEnd = param; break;
-            case GLEnum.FogDensity: _fogDensity = param; break;
+            case GLEnum.FogMode: _fogState.FogMode = (int)param == (int)GLEnum.Linear ? 0 : 1; break;
+            case GLEnum.FogStart: _fogState.FogStart = param; break;
+            case GLEnum.FogEnd: _fogState.FogEnd = param; break;
+            case GLEnum.FogDensity: _fogState.FogDensity = param; break;
         }
+        _dirtyState.DirtyFog = true;
     }
 
     public override void Fog(GLEnum pname, ReadOnlySpan<float> params_)
     {
         if (pname == GLEnum.FogColor && params_.Length >= 4)
         {
-            _fogColorR = params_[0];
-            _fogColorG = params_[1];
-            _fogColorB = params_[2];
-            _fogColorA = params_[3];
+            _fogState.FogColorR = params_[0];
+            _fogState.FogColorG = params_[1];
+            _fogState.FogColorB = params_[2];
+            _fogState.FogColorA = params_[3];
+            _dirtyState.DirtyFog = true;
         }
     }
 
@@ -373,9 +457,10 @@ public unsafe class EmulatedGL : LegacyGL
     {
         if (pname == GLEnum.LightModelAmbient)
         {
-            _ambientR = params_[0];
-            _ambientG = params_[1];
-            _ambientB = params_[2];
+            _lightingState.AmbientR = params_[0];
+            _lightingState.AmbientG = params_[1];
+            _lightingState.AmbientB = params_[2];
+            _dirtyState.DirtyLighting = true;
         }
     }
 
@@ -401,7 +486,9 @@ public unsafe class EmulatedGL : LegacyGL
         }
 
         if (_currentProgram == 0 || _currentProgram == _shader.Program)
+        {
             ActivateShader();
+        }
 
         SilkGL.DrawArrays(mode, first, count);
     }
@@ -410,6 +497,10 @@ public unsafe class EmulatedGL : LegacyGL
     {
         if (_displayLists.IsCompiling) return;
         _currentProgram = program;
+        _dirtyState.StateDirty = true;
+        _dirtyState.DirtyModelView = true;
+        _dirtyState.DirtyProjection = true;
+        _dirtyState.DirtyTextureMatrix = true;
         base.UseProgram(program);
     }
 
@@ -433,13 +524,17 @@ public unsafe class EmulatedGL : LegacyGL
         {
             Matrix4X4<float> m = _modelViewStack.Top;
             fixed (float* dst = data)
+            {
                 System.Buffer.MemoryCopy(&m, dst, 64, 64);
+            }
         }
         else if (pname == GLEnum.ProjectionMatrix)
         {
             Matrix4X4<float> m = _projectionStack.Top;
             fixed (float* dst = data)
+            {
                 System.Buffer.MemoryCopy(&m, dst, 64, 64);
+            }
         }
     }
 }
