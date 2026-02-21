@@ -212,7 +212,7 @@ public class HeldItemRenderer
                 GLManager.GL.Rotate(-90.0F, 0.0F, 0.0F, 1.0F);
                 GLManager.GL.Rotate(59.0F, 0.0F, 0.0F, 1.0F);
                 GLManager.GL.Rotate(-65 * var21, 0.0F, 1.0F, 0.0F);
-                EntityRenderer var11 = EntityRenderDispatcher.instance.getEntityRenderObject(mc.player);
+                EntityRenderer var11 = EntityRenderDispatcher.instance.GetEntityRenderObject(mc.player);
                 PlayerEntityRenderer var12 = (PlayerEntityRenderer)var11;
                 float var13 = 1.0F;
                 GLManager.GL.Scale(var13, var13, var13);
@@ -298,7 +298,7 @@ public class HeldItemRenderer
             GLManager.GL.Rotate(-135.0F, 0.0F, 1.0F, 0.0F);
             GLManager.GL.Scale(1.0F, 1.0F, 1.0F);
             GLManager.GL.Translate(5.6F, 0.0F, 0.0F);
-            EntityRenderer var15 = EntityRenderDispatcher.instance.getEntityRenderObject(mc.player);
+            EntityRenderer var15 = EntityRenderDispatcher.instance.GetEntityRenderObject(mc.player);
             PlayerEntityRenderer var16 = (PlayerEntityRenderer)var15;
             var10 = 1.0F;
             GLManager.GL.Scale(var10, var10, var10);
