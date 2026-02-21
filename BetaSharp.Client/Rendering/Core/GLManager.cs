@@ -8,6 +8,6 @@ public class GLManager
 
     public static void Init(GL silkGl)
     {
-        GL = new LegacyGL(silkGl);
+        GL = new EmulatedGL(silkGl);
     }
 }

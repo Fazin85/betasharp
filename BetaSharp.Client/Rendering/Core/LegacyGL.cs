@@ -198,7 +198,7 @@ public unsafe class LegacyGL : IGL
     {
         SilkGL.EnableVertexAttribArray(index);
     }
-    public void EndList()
+    public virtual void EndList()
     {
         SilkGL.EndList();
     }
@@ -210,7 +210,7 @@ public unsafe class LegacyGL : IGL
     {
         SilkGL.Fog(pname, params_);
     }
-    public void Frustum(double left, double right, double bottom, double top, double zNear, double zFar)
+    public virtual void Frustum(double left, double right, double bottom, double top, double zNear, double zFar)
     {
         SilkGL.Frustum(left, right, bottom, top, zNear, zFar);
     }
@@ -342,15 +342,15 @@ public unsafe class LegacyGL : IGL
     {
         SilkGL.LinkProgram(program);
     }
-    public void LoadIdentity()
+    public virtual void LoadIdentity()
     {
         SilkGL.LoadIdentity();
     }
-    public void MatrixMode(GLEnum mode)
+    public virtual void MatrixMode(GLEnum mode)
     {
         SilkGL.MatrixMode(mode);
     }
-    public void NewList(uint list, GLEnum mode)
+    public virtual void NewList(uint list, GLEnum mode)
     {
         SilkGL.NewList(list, mode);
     }
@@ -370,7 +370,7 @@ public unsafe class LegacyGL : IGL
     {
         SilkGL.NormalPointer(type, stride, pointer);
     }
-    public void Ortho(double left, double right, double bottom, double top, double zNear, double zFar)
+    public virtual void Ortho(double left, double right, double bottom, double top, double zNear, double zFar)
     {
         SilkGL.Ortho(left, right, bottom, top, zNear, zFar);
     }
@@ -386,11 +386,11 @@ public unsafe class LegacyGL : IGL
     {
         SilkGL.PolygonOffset(factor, units);
     }
-    public void PopMatrix()
+    public virtual void PopMatrix()
     {
         SilkGL.PopMatrix();
     }
-    public void PushMatrix()
+    public virtual void PushMatrix()
     {
         SilkGL.PushMatrix();
     }
@@ -406,15 +406,15 @@ public unsafe class LegacyGL : IGL
     {
         SilkGL.ReadPixels(x, y, width, height, format, type, pixels);
     }
-    public void Rotate(float angle, float x, float y, float z)
+    public virtual void Rotate(float angle, float x, float y, float z)
     {
         SilkGL.Rotate(angle, x, y, z);
     }
-    public void Scale(float x, float y, float z)
+    public virtual void Scale(float x, float y, float z)
     {
         SilkGL.Scale(x, y, z);
     }
-    public void Scale(double x, double y, double z)
+    public virtual void Scale(double x, double y, double z)
     {
         SilkGL.Scale(x, y, z);
     }
@@ -490,11 +490,11 @@ public unsafe class LegacyGL : IGL
     {
         SilkGL.TexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
     }
-    public void Translate(double x, double y, double z)
+    public virtual void Translate(double x, double y, double z)
     {
         SilkGL.Translate(x, y, z);
     }
-    public void Translate(float x, float y, float z)
+    public virtual void Translate(float x, float y, float z)
     {
         SilkGL.Translate(x, y, z);
     }
