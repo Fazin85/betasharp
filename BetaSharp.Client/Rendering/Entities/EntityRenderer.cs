@@ -9,9 +9,12 @@ namespace BetaSharp.Client.Rendering.Entities;
 
 public abstract class EntityRenderer
 {
-    protected EntityRenderDispatcher Dispatcher { get; set; } = null!;
+    public EntityRenderDispatcher Dispatcher { get; set; } = null!;
     protected float ShadowRadius = 0.0F;
     protected float ShadowStrength = 1.0F;
+
+    protected World World => Dispatcher.world;
+    public TextRenderer TextRenderer => Dispatcher.getTextRenderer();
 
     public abstract void render(Entity target, double x, double y, double z, float yaw, float tickDelta);
 
@@ -125,7 +128,10 @@ public abstract class EntityRenderer
 
         TextureManager textureManager = Dispatcher.textureManager;
         textureManager.BindTexture(textureManager.GetTextureId("%clamp%/misc/shadow.png"));
-       // World world = getWorld();
+
+        GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureWrapS, (int)GLEnum.ClampToEdge);
+        GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureWrapT, (int)GLEnum.ClampToEdge);
+
         GLManager.GL.DepthMask(false);
         float radius = ShadowRadius;
 
@@ -153,8 +159,8 @@ public abstract class EntityRenderer
             {
                 for (int blockZ = minZ; blockZ <= maxZ; ++blockZ)
                 {
-                    int blockId = getWorld().getBlockId(blockX, blockY - 1, blockZ);
-                    if (blockId > 0 && getWorld().getLightLevel(blockX, blockY, blockZ) > 3)
+                    int blockId = World.getBlockId(blockX, blockY - 1, blockZ);
+                    if (blockId > 0 && World.getLightLevel(blockX, blockY, blockZ) > 3)
                     {
                         renderShadowOnBlock(Block.Blocks[blockId], x, y + (double)target.getShadowRadius(), z, blockX, blockY, blockZ, shadowiness, radius, dx, dy + (double)target.getShadowRadius(), dz);
                     }
@@ -166,11 +172,6 @@ public abstract class EntityRenderer
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         GLManager.GL.Disable(GLEnum.Blend);
         GLManager.GL.DepthMask(true);
-    }
-
-    private World getWorld()
-    {
-        return Dispatcher.world;
     }
 
     private void renderShadowOnBlock(
@@ -189,7 +190,7 @@ public abstract class EntityRenderer
     {
         if (!block.isFullCube()) return;
 
-        double shadowDarkness = ((double)shadowiness - (y - (blockY + dy)) / 2.0D) * 0.5D * (double)getWorld().getLuminance(blockX, blockY, blockZ);
+        double shadowDarkness = (shadowiness - (y - (blockY + dy)) / 2.0D) * 0.5D * World.getLuminance(blockX, blockY, blockZ);
 
         if (shadowDarkness < 0.0D) return;
 

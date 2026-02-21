@@ -62,7 +62,7 @@ public class EntityRenderDispatcher
 
         foreach (var render in entityRenderMap.Values)
         {
-            render.setDispatcher(this);
+            render.Dispatcher = this;
         }
     }
 

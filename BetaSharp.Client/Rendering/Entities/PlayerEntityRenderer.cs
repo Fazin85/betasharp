@@ -89,7 +89,7 @@ public class PlayerEntityRenderer : LivingEntityRenderer
                 }
                 else
                 {
-                    TextRenderer var13 = getTextRenderer();
+                    TextRenderer var13 = TextRenderer;
                     GLManager.GL.PushMatrix();
                     GLManager.GL.Translate((float)var2 + 0.0F, (float)var4 + 2.3F, (float)var6);
                     GLManager.GL.Normal3(0.0F, 1.0F, 0.0F);

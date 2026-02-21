@@ -211,7 +211,7 @@ public class LivingEntityRenderer : EntityRenderer
         float var10 = var1.getDistance(Dispatcher.cameraEntity);
         if (var10 <= var9)
         {
-            TextRenderer var11 = getTextRenderer();
+            TextRenderer var11 = TextRenderer;
             float var12 = 1.6F;
             float var13 = (float)(1.0D / 60.0D) * var12;
             GLManager.GL.PushMatrix();
