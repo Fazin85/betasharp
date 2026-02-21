@@ -2314,7 +2314,7 @@ public abstract class World : java.lang.Object, BlockView
             bool var1 = false;
             if (spawnHostileMobs && difficulty >= 1)
             {
-                var1 = NaturalSpawner.spawnMonstersAndWakePlayers(this, players);
+                var1 = NaturalSpawner.SpawnMonstersAndWakePlayers(this, players);
             }
 
             if (!var1)
@@ -2325,7 +2325,7 @@ public abstract class World : java.lang.Object, BlockView
             }
         }
         Profiler.Start("performSpawning");
-        NaturalSpawner.performSpawning(this, spawnHostileMobs, spawnPeacefulMobs);
+        NaturalSpawner.PerformSpawning(this, spawnHostileMobs, spawnPeacefulMobs);
         Profiler.Stop("performSpawning");
         Profiler.Start("unload100OldestChunks");
         chunkSource.tick();

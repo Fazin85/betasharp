@@ -61,4 +61,6 @@ public class Vec3i : java.lang.Object, Comparable
     {
         return compareChunkCoordinate((Vec3i)var1!);
     }
+
+    public static explicit operator Vec3D(Vec3i v) => new Vec3D(v.x, v.y, v.z);
 }
