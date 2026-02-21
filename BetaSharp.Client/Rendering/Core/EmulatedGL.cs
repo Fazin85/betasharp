@@ -17,6 +17,14 @@ public unsafe class EmulatedGL : LegacyGL
     private uint _currentProgram = 0;
     private float _alphaThreshold = 0.1f;
 
+    // Lighting state
+    private bool _lightingEnabled = false;
+    private float _light0DirX, _light0DirY, _light0DirZ;
+    private float _light0DiffR, _light0DiffG, _light0DiffB;
+    private float _light1DirX, _light1DirY, _light1DirZ;
+    private float _light1DiffR, _light1DiffG, _light1DiffB;
+    private float _ambientR = 0.2f, _ambientG = 0.2f, _ambientB = 0.2f;
+
     private readonly DisplayListCompiler _displayLists;
 
     public EmulatedGL(GL gl) : base(gl)
@@ -43,6 +51,31 @@ public unsafe class EmulatedGL : LegacyGL
         _shader.SetTextureMatrix(_textureStack.Top);
         _shader.SetUseTexture(_useTexture);
         _shader.SetAlphaThreshold(_alphaThreshold);
+        _shader.SetEnableLighting(_lightingEnabled);
+
+        if (_lightingEnabled)
+        {
+            _shader.SetLight0(_light0DirX, _light0DirY, _light0DirZ, _light0DiffR, _light0DiffG, _light0DiffB);
+            _shader.SetLight1(_light1DirX, _light1DirY, _light1DirZ, _light1DiffR, _light1DiffG, _light1DiffB);
+            _shader.SetAmbientLight(_ambientR, _ambientG, _ambientB);
+
+            // Normal matrix = transpose of inverse of upper-left 3x3 of modelview
+            var mv = _modelViewStack.Top;
+            if (Matrix4X4.Invert(mv, out var invMv))
+            {
+                // Transpose the inverse, then extract upper-left 3x3
+                var t = Matrix4X4.Transpose(invMv);
+                var normalMatrix = new Matrix3X3<float>(
+                    t.M11, t.M12, t.M13,
+                    t.M21, t.M22, t.M23,
+                    t.M31, t.M32, t.M33);
+                _shader.SetNormalMatrix(normalMatrix);
+            }
+            else
+            {
+                _shader.SetNormalMatrix(Matrix3X3<float>.Identity);
+            }
+        }
     }
 
     public override void AlphaFunc(GLEnum func, float refValue)
@@ -133,12 +166,6 @@ public unsafe class EmulatedGL : LegacyGL
     {
         if (_displayLists.IsCompiling) { _displayLists.RecordTranslate(x, y, z); return; }
         ActiveStack.Translate(x, y, z);
-    }
-
-    public override void Translate(double x, double y, double z)
-    {
-        if (_displayLists.IsCompiling) { _displayLists.RecordTranslate((float)x, (float)y, (float)z); return; }
-        ActiveStack.Translate((float)x, (float)y, (float)z);
     }
 
     public override void Rotate(float angle, float x, float y, float z)
@@ -245,16 +272,71 @@ public unsafe class EmulatedGL : LegacyGL
 
     public override void Enable(GLEnum cap)
     {
-        if (cap == GLEnum.Texture2D && !_displayLists.IsCompiling)
-            _useTexture = true;
+        if (_displayLists.IsCompiling) { base.Enable(cap); return; }
+        switch (cap)
+        {
+            case GLEnum.Texture2D: _useTexture = true; break;
+            case GLEnum.Lighting: _lightingEnabled = true; return;
+            case GLEnum.Light0: return;
+            case GLEnum.Light1: return;
+            case GLEnum.ColorMaterial: return;
+        }
         base.Enable(cap);
     }
 
     public override void Disable(GLEnum cap)
     {
-        if (cap == GLEnum.Texture2D && !_displayLists.IsCompiling)
-            _useTexture = false;
+        if (_displayLists.IsCompiling) { base.Disable(cap); return; }
+        switch (cap)
+        {
+            case GLEnum.Texture2D: _useTexture = false; break;
+            case GLEnum.Lighting: _lightingEnabled = false; return;
+            case GLEnum.Light0: return;
+            case GLEnum.Light1: return;
+            case GLEnum.ColorMaterial: return;
+        }
         base.Disable(cap);
+    }
+
+    public override void Light(GLEnum light, GLEnum pname, float* params_)
+    {
+        if (pname == GLEnum.Position)
+        {
+            // w=0 means directional; store normalized direction
+            float x = params_[0], y = params_[1], z = params_[2];
+            float len = MathF.Sqrt(x * x + y * y + z * z);
+            if (len > 0) { x /= len; y /= len; z /= len; }
+
+            if (light == GLEnum.Light0) { _light0DirX = x; _light0DirY = y; _light0DirZ = z; }
+            else if (light == GLEnum.Light1) { _light1DirX = x; _light1DirY = y; _light1DirZ = z; }
+        }
+        else if (pname == GLEnum.Diffuse)
+        {
+            if (light == GLEnum.Light0) { _light0DiffR = params_[0]; _light0DiffG = params_[1]; _light0DiffB = params_[2]; }
+            else if (light == GLEnum.Light1) { _light1DiffR = params_[0]; _light1DiffG = params_[1]; _light1DiffB = params_[2]; }
+        }
+        // Ambient and Specular are ignored (specular=0 in game, per-light ambient=0)
+    }
+
+    public override void LightModel(GLEnum pname, float* params_)
+    {
+        if (pname == GLEnum.LightModelAmbient)
+        {
+            _ambientR = params_[0];
+            _ambientG = params_[1];
+            _ambientB = params_[2];
+        }
+    }
+
+    public override void ColorMaterial(GLEnum face, GLEnum mode)
+    {
+        // Always treat vertex color as ambient+diffuse material (the only mode the game uses)
+    }
+
+    public override void Normal3(float nx, float ny, float nz)
+    {
+        // Set the current normal via vertex attrib 3 for immediate mode draws
+        SilkGL.VertexAttrib3(3, nx, ny, nz);
     }
 
     public override void DrawArrays(GLEnum mode, int first, uint count)

@@ -317,12 +317,12 @@ public unsafe class LegacyGL : IGL
         return SilkGL.IsExtensionPresent(extension);
     }
 
-    public void Light(GLEnum light, GLEnum pname, float* params_)
+    public virtual void Light(GLEnum light, GLEnum pname, float* params_)
     {
         SilkGL.Light(light, pname, params_);
     }
 
-    public void LightModel(GLEnum pname, float* params_)
+    public virtual void LightModel(GLEnum pname, float* params_)
     {
         SilkGL.LightModel(pname, params_);
     }
@@ -450,11 +450,6 @@ public unsafe class LegacyGL : IGL
     public void TexSubImage2D(GLEnum target, int level, int xoffset, int yoffset, uint width, uint height, GLEnum format, GLEnum type, void* pixels)
     {
         SilkGL.TexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
-    }
-
-    public virtual void Translate(double x, double y, double z)
-    {
-        SilkGL.Translate(x, y, z);
     }
 
     public virtual void Translate(float x, float y, float z)

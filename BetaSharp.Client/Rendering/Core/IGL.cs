@@ -93,7 +93,6 @@ public unsafe interface IGL
     void TexParameter(GLEnum target, GLEnum pname, int param);
     void TexParameter(GLEnum target, GLEnum pname, float param);
     void TexSubImage2D(GLEnum target, int level, int xoffset, int yoffset, uint width, uint height, GLEnum format, GLEnum type, void* pixels);
-    void Translate(double x, double y, double z);
     void Translate(float x, float y, float z);
     void Uniform1(int location, int v0);
     void Uniform1(int location, float v0);
