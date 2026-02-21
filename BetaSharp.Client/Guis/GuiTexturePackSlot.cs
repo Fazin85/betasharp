@@ -28,7 +28,7 @@ public class GuiTexturePackSlot : GuiSlot
         _parentTexturePackGui.mc.textureManager.Reload();
     }
 
-    protected override bool isSelected(int index)
+    protected override bool IsSelected(int index)
     {
         var packs = _parentTexturePackGui.mc.texturePackList.AvailableTexturePacks;
         return _parentTexturePackGui.mc.texturePackList.SelectedTexturePack == packs[index];

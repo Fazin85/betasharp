@@ -67,11 +67,11 @@ public class PlayerEntityRenderer : LivingEntityRenderer
 
     protected void renderName(EntityPlayer var1, double var2, double var4, double var6)
     {
-        if (Minecraft.isGuiEnabled() && var1 != dispatcher.cameraEntity)
+        if (Minecraft.isGuiEnabled() && var1 != Dispatcher.cameraEntity)
         {
             float var8 = 1.6F;
             float var9 = (float)(1.0D / 60.0D) * var8;
-            float var10 = var1.getDistance(dispatcher.cameraEntity);
+            float var10 = var1.getDistance(Dispatcher.cameraEntity);
             float var11 = var1.isSneaking() ? 32.0F : 64.0F;
             if (var10 < var11)
             {
@@ -89,12 +89,12 @@ public class PlayerEntityRenderer : LivingEntityRenderer
                 }
                 else
                 {
-                    TextRenderer var13 = getTextRenderer();
+                    TextRenderer var13 = TextRenderer;
                     GLManager.GL.PushMatrix();
                     GLManager.GL.Translate((float)var2 + 0.0F, (float)var4 + 2.3F, (float)var6);
                     GLManager.GL.Normal3(0.0F, 1.0F, 0.0F);
-                    GLManager.GL.Rotate(-dispatcher.playerViewY, 0.0F, 1.0F, 0.0F);
-                    GLManager.GL.Rotate(dispatcher.playerViewX, 1.0F, 0.0F, 0.0F);
+                    GLManager.GL.Rotate(-Dispatcher.playerViewY, 0.0F, 1.0F, 0.0F);
+                    GLManager.GL.Rotate(Dispatcher.playerViewX, 1.0F, 0.0F, 0.0F);
                     GLManager.GL.Scale(-var9, -var9, var9);
                     GLManager.GL.Disable(GLEnum.Lighting);
                     GLManager.GL.Translate(0.0F, 0.25F / var9, 0.0F);
@@ -139,12 +139,12 @@ public class PlayerEntityRenderer : LivingEntityRenderer
                 GLManager.GL.Scale(var4, -var4, var4);
             }
 
-            dispatcher.heldItemRenderer.renderItem(var1, var3);
+            Dispatcher.heldItemRenderer.renderItem(var1, var3);
             GLManager.GL.PopMatrix();
         }
 
         float var5;
-        if (var1.name.Equals("deadmau5") && loadDownloadableImageTexture(var1.skinUrl, null))
+        if (var1.name.Equals("deadmau5") && LoadDownloadableImageTexture(var1.skinUrl, null))
         {
             for (int var19 = 0; var19 < 2; ++var19)
             {
@@ -164,7 +164,7 @@ public class PlayerEntityRenderer : LivingEntityRenderer
             }
         }
 
-        if (loadDownloadableImageTexture(var1.playerCloakUrl, null))
+        if (LoadDownloadableImageTexture(var1.playerCloakUrl, null))
         {
             GLManager.GL.PushMatrix();
             GLManager.GL.Translate(0.0F, 0.0F, 2.0F / 16.0F);
@@ -251,7 +251,7 @@ public class PlayerEntityRenderer : LivingEntityRenderer
                 GLManager.GL.Rotate(20.0F, 0.0F, 0.0F, 1.0F);
             }
 
-            dispatcher.heldItemRenderer.renderItem(var1, var21);
+            Dispatcher.heldItemRenderer.renderItem(var1, var21);
             GLManager.GL.PopMatrix();
         }
 

@@ -173,12 +173,11 @@ public static class NaturalSpawner
                             PathPoint pathPoint = pathEntity.func_22328_c();
                             if (Math.Abs(pathPoint.xCoord - player.x) < 1.5D && Math.Abs(pathPoint.zCoord - player.z) < 1.5D && Math.Abs(pathPoint.yCoord - player.y) < 1.5D)
                             {
-                                Vec3i wakeUpPos = BlockBed.findWakeUpPosition(world, MathHelper.Floor(player.x), MathHelper.Floor(player.y), MathHelper.Floor(player.z), 1);
-                                wakeUpPos ??= new Vec3i(spawnX, newSpawnY + 1, spawnZ);
+                                Vec3i wakeUpPos = BlockBed.findWakeUpPosition(world, MathHelper.Floor(player.x), MathHelper.Floor(player.y), MathHelper.Floor(player.z), 1) ?? new Vec3i(spawnX, newSpawnY + 1, spawnZ);
 
-                                entity.setPositionAndAnglesKeepPrevAngles((double)((float)wakeUpPos.x + 0.5F), (double)wakeUpPos.y, (double)((float)wakeUpPos.z + 0.5F), 0.0F, 0.0F);
+                                entity.setPositionAndAnglesKeepPrevAngles((double)((float)wakeUpPos.X + 0.5F), (double)wakeUpPos.Y, (double)((float)wakeUpPos.Z + 0.5F), 0.0F, 0.0F);
                                 world.SpawnEntity(entity);
-                                EntitySpecificInit(entity, world, (float)wakeUpPos.x + 0.5F, (float)wakeUpPos.y, (float)wakeUpPos.z + 0.5F);
+                                EntitySpecificInit(entity, world, (float)wakeUpPos.X + 0.5F, (float)wakeUpPos.Y, (float)wakeUpPos.Z + 0.5F);
                                 player.wakeUp(true, false, false);
                                 entity.playLivingSound();
                                 monstersSpawned = true;

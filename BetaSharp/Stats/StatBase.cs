@@ -38,14 +38,14 @@ public class StatBase : java.lang.Object
 
     public virtual StatBase registerStat()
     {
-        if (Stats.ID_TO_STAT.containsKey(Integer.valueOf(id)))
+        if (Stats.ID_TO_STAT.ContainsKey(id))
         {
-            throw new RuntimeException("Duplicate stat id: \"" + ((StatBase)Stats.ID_TO_STAT.get(Integer.valueOf(id))).statName + "\" and \"" + statName + "\" at id " + id);
+            throw new RuntimeException("Duplicate stat id: \"" + ((StatBase)Stats.ID_TO_STAT[id]).statName + "\" and \"" + statName + "\" at id " + id);
         }
         else
         {
-            Stats.ALL_STATS.add(this);
-            Stats.ID_TO_STAT.put(Integer.valueOf(id), this);
+            Stats.ALL_STATS.Add(this);
+            Stats.ID_TO_STAT.Add(id, this);
             statGuid = AchievementMap.getGuid(id);
             return this;
         }

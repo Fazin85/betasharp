@@ -62,7 +62,7 @@ public class EntityRenderDispatcher
 
         foreach (var render in entityRenderMap.Values)
         {
-            render.setDispatcher(this);
+            render.Dispatcher = this;
         }
     }
 
@@ -133,7 +133,7 @@ public class EntityRenderDispatcher
         if (var10 != null)
         {
             var10.render(target, x, y, z, yaw, tickDelta);
-            var10.postRender(target, x, y, z, yaw, tickDelta);
+            var10.PostRender(target, new Vec3D(x, y, z), yaw, tickDelta);
         }
 
     }

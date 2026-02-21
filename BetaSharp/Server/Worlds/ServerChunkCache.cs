@@ -33,8 +33,8 @@ public class ServerChunkCache : ChunkSource
     public void isLoaded(int chunkX, int chunkZ)
     {
         Vec3i var3 = _world.getSpawnPos();
-        int var4 = chunkX * 16 + 8 - var3.x;
-        int var5 = chunkZ * 16 + 8 - var3.z;
+        int var4 = chunkX * 16 + 8 - var3.X;
+        int var5 = chunkZ * 16 + 8 - var3.Z;
         short var6 = 128;
         if (var4 < -var6 || var4 > var6 || var5 < -var6 || var5 > var6)
         {

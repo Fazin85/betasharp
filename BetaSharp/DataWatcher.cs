@@ -135,9 +135,9 @@ public class DataWatcher
                 break;
             case 6:
                 Vec3i vec = (Vec3i)obj.watchedObject;
-                stream.writeInt(vec.x);
-                stream.writeInt(vec.y);
-                stream.writeInt(vec.z);
+                stream.writeInt(vec.X);
+                stream.writeInt(vec.Y);
+                stream.writeInt(vec.Z);
                 break;
         }
     }

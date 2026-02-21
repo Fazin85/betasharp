@@ -2,65 +2,31 @@ using java.lang;
 
 namespace BetaSharp.Util.Maths;
 
-public class Vec3i : java.lang.Object, Comparable
+public record struct Vec3i(int X, int Y, int Z) : IComparable<Vec3i>
 {
-    public int x;
-    public int y;
-    public int z;
-
-    public Vec3i()
+    public static readonly Vec3i Zero = new Vec3i(0, 0, 0);
+    public Vec3i(Vec3i other) : this(other.X, other.Y, other.Z)
     {
     }
-
-    public Vec3i(int var1, int var2, int var3)
+    public int CompareTo(Vec3i other)
     {
-        x = var1;
-        y = var2;
-        z = var3;
+        if (Y != other.Y) return Y.CompareTo(other.Y);
+        if (Z != other.Z) return Z.CompareTo(other.Z);
+        return X.CompareTo(other.X);
     }
 
-    public Vec3i(Vec3i var1)
+    public int SquaredDistanceTo(Vec3i other)
     {
-        x = var1.x;
-        y = var1.y;
-        z = var1.z;
+        return Y == other.Y ? Z == other.Z ? X - other.X : Z - other.Z : Y - other.Y;
     }
 
-    public override bool equals(object var1)
+    public double DistanceTo(Vec3i other)
     {
-        if (var1 is not Vec3i)
-        {
-            return false;
-        }
-        else
-        {
-            Vec3i var2 = (Vec3i)var1;
-            return x == var2.x && y == var2.y && z == var2.z;
-        }
+        int dx = X - other.X;
+        int dy = Y - other.Y;
+        int dz = Z - other.Z;
+        return System.Math.Sqrt(dx * dx + dy * dy + dz * dz);
     }
 
-    public override int hashCode()
-    {
-        return x + z << 8 + y << 16;
-    }
-
-    public int compareChunkCoordinate(Vec3i var1)
-    {
-        return y == var1.y ? z == var1.z ? x - var1.x : z - var1.z : y - var1.y;
-    }
-
-    public double getSqDistanceTo(int var1, int var2, int var3)
-    {
-        int var4 = x - var1;
-        int var5 = y - var2;
-        int var6 = z - var3;
-        return java.lang.Math.sqrt(var4 * var4 + var5 * var5 + var6 * var6);
-    }
-
-    public int CompareTo(object? var1)
-    {
-        return compareChunkCoordinate((Vec3i)var1!);
-    }
-
-    public static explicit operator Vec3D(Vec3i v) => new Vec3D(v.x, v.y, v.z);
+    public static explicit operator Vec3D(Vec3i v) => new Vec3D(v.X, v.Y, v.Z);
 }

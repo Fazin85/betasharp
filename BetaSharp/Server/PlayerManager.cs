@@ -143,7 +143,7 @@ public class PlayerManager
         GetChunkMap(player.dimensionId).removePlayer(player);
         players.Remove(player);
         _server.getWorld(player.dimensionId).serverRemove(player);
-        Vec3i var3 = player.getSpawnPos();
+        Vec3i? var3 = player.getSpawnPos();
         player.dimensionId = dimensionId;
         ServerPlayerEntity var4 = new(
             _server, _server.getWorld(player.dimensionId), player.name, new ServerPlayerInteractionManager(_server.getWorld(player.dimensionId))
@@ -153,13 +153,14 @@ public class PlayerManager
             networkHandler = player.networkHandler
         };
         ServerWorld var5 = _server.getWorld(player.dimensionId);
-        if (var3 != null)
+        if (var3 is (int x, int y, int z))
         {
-            Vec3i var6 = EntityPlayer.findRespawnPosition(_server.getWorld(player.dimensionId), var3);
-            if (var6 != null)
+            Vec3i? var6 = EntityPlayer.findRespawnPosition(_server.getWorld(player.dimensionId), var3);
+            if (var6 is (int x2, int y2, int z2))
             {
-                var4.setPositionAndAnglesKeepPrevAngles(var6.x + 0.5F, var6.y + 0.1F, var6.z + 0.5F, 0.0F, 0.0F);
+                var4.setPositionAndAnglesKeepPrevAngles(x2 + 0.5F, y2 + 0.1F, z2 + 0.5F, 0.0F, 0.0F);
                 var4.setSpawnPos(var3);
+
             }
             else
             {

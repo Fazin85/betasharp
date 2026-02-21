@@ -1,96 +1,59 @@
-﻿using BetaSharp.Client.Rendering.Core;
+﻿using BetaSharp.Client.Guis.Comparators;
+using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Stats;
-using java.util;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiSlotStatsBlock : GuiSlotStats
+public class GuiSlotStatsBlock : GuiSlotStats<StatCrafting, StatCrafting>
 {
-    public readonly GuiStats parentStatsGui;
+    public GuiStats ParentStatsGui { get; }
 
 
     public GuiSlotStatsBlock(GuiStats parent) : base(parent)
     {
-        parentStatsGui = parent;
-        field_27273_c = new ArrayList();
-        Iterator iterator = Stats.Stats.BLOCKS_MINED_STATS.iterator();
+        ParentStatsGui = parent;
+        StatSorter = new SorterStatsBlock(this, parent);
 
-        while (iterator.hasNext())
-        {
-            StatCrafting stat = (StatCrafting)iterator.next();
-            bool hasStat = false;
-            int id = stat.getItemId();
-            if (parent.statFileWriter.writeStat(stat) > 0)
-            {
-                hasStat = true;
-            }
-            else if (Stats.Stats.USED[id] != null && parent.statFileWriter.writeStat(Stats.Stats.USED[id]) > 0)
-            {
-                hasStat = true;
-            }
-            else if (Stats.Stats.CRAFTED[id] != null && parent.statFileWriter.writeStat(Stats.Stats.CRAFTED[id]) > 0)
-            {
-                hasStat = true;
-            }
-
-            if (hasStat)
-            {
-                field_27273_c.add(stat);
-            }
-        }
-
-        field_27272_d = new SorterStatsBlock(this, parent);
+        Stats = BetaSharp.Stats.Stats.BLOCKS_MINED_STATS
+            .OfType<StatCrafting>()
+            .Where(stat =>
+                parent.statFileWriter.writeStat(stat) > 0 ||
+                (BetaSharp.Stats.Stats.USED[stat.getItemId()] is StatCrafting used && parent.statFileWriter.writeStat(used) > 0) ||
+                (BetaSharp.Stats.Stats.CRAFTED[stat.getItemId()] is StatCrafting crafted && parent.statFileWriter.writeStat(crafted) > 0))
+            .ToList();
     }
 
     protected override void DrawHeader(int x, int y, Tessellator tessellator)
     {
         base.DrawHeader(x, y, tessellator);
-        if (field_27268_b == 0)
-        {
-            parentStatsGui.drawTranslucentRect(x + 115 - 18 + 1, y + 1 + 1, 18, 18);
-        }
-        else
-        {
-            parentStatsGui.drawTranslucentRect(x + 115 - 18, y + 1, 18, 18);
-        }
 
-        if (field_27268_b == 1)
+        for (int i = 0; i < 3; i++)
         {
-            parentStatsGui.drawTranslucentRect(x + 165 - 18 + 1, y + 1 + 1, 36, 18);
-        }
-        else
-        {
-            parentStatsGui.drawTranslucentRect(x + 165 - 18, y + 1, 36, 18);
-        }
+            int offsetX = i switch { 0 => 97, 1 => 147, _ => 197 };
+            int uvX = i switch { 0 => 18, 1 => 36, _ => 54 };
+            int hoverOffset = HoveredColumn == i ? 1 : 0;
 
-        if (field_27268_b == 2)
-        {
-            parentStatsGui.drawTranslucentRect(x + 215 - 18 + 1, y + 1 + 1, 54, 18);
+            ParentStatsGui.drawTranslucentRect(x + offsetX + hoverOffset, y + 1 + hoverOffset, uvX, 18);
         }
-        else
-        {
-            parentStatsGui.drawTranslucentRect(x + 215 - 18, y + 1, 54, 18);
-        }
-
     }
 
     protected override void DrawSlot(int index, int x, int y, int rowHeight, Tessellator tessellator)
     {
-        StatCrafting stat = func_27264_b(index);
+        StatCrafting stat = GetStat(index);
         int id = stat.getItemId();
-        parentStatsGui.drawItemSlot(x + 40, y, id);
-        func_27265_a((StatCrafting)Stats.Stats.CRAFTED[id], x + 115, y, index % 2 == 0);
-        func_27265_a((StatCrafting)Stats.Stats.USED[id], x + 165, y, index % 2 == 0);
-        func_27265_a(stat, x + 215, y, index % 2 == 0);
+
+        ParentStatsGui.drawItemSlot(x + 40, y, id);
+
+        bool isBright = index % 2 == 0;
+        DrawStatValue(BetaSharp.Stats.Stats.CRAFTED[id] as StatCrafting, x + 115, y, isBright);
+        DrawStatValue(BetaSharp.Stats.Stats.USED[id] as StatCrafting, x + 165, y, isBright);
+        DrawStatValue(stat, x + 215, y, isBright);
     }
 
-    protected override string getKeyForColumn(int column)
+    protected override string GetKeyForColumn(int column) => column switch
     {
-        return column switch
-        {
-            0 => "stat.crafted",
-            1 => "stat.used",
-            _ => "stat.mined"
-        };
-    }
+        0 => "stat.crafted",
+        1 => "stat.used",
+        _ => "stat.mined"
+    };
 }

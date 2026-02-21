@@ -53,7 +53,7 @@ public class UndeadEntityRenderer : LivingEntityRenderer
                 GLManager.GL.Rotate(20.0F, 0.0F, 0.0F, 1.0F);
             }
 
-            dispatcher.heldItemRenderer.renderItem(var1, var3);
+            Dispatcher.heldItemRenderer.renderItem(var1, var3);
             GLManager.GL.PopMatrix();
         }
 

@@ -35,7 +35,7 @@ public class GuiWorldSlot : GuiSlot
 
     }
 
-    protected override bool isSelected(int slotIndex)
+    protected override bool IsSelected(int slotIndex)
     {
         return slotIndex == GuiSelectWorld.getSelectedWorld(_parentWorldGui);
     }

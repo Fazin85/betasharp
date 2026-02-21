@@ -27,7 +27,7 @@ public class GuiSlotServer : GuiSlot
         }
     }
 
-    protected override bool isSelected(int index)
+    protected override bool IsSelected(int index)
     {
         return index == _parent.GetSelectedServerIndex();
     }

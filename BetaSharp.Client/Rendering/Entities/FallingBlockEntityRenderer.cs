@@ -15,7 +15,7 @@ public class FallingBlockEntityRenderer : EntityRenderer
 
     public FallingBlockEntityRenderer()
     {
-        shadowRadius = 0.5F;
+        ShadowRadius = 0.5F;
     }
 
     public void doRenderFallingSand(EntityFallingSand var1, double var2, double var4, double var6, float var8, float var9)

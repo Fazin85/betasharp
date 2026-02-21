@@ -14,7 +14,7 @@ public class MinecartEntityRenderer : EntityRenderer
 
     public MinecartEntityRenderer()
     {
-        shadowRadius = 0.5F;
+        ShadowRadius = 0.5F;
         modelMinecart = new ModelMinecart();
     }
 
