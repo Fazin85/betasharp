@@ -13,7 +13,7 @@ public class SorterStatsBlock(GuiSlotStatsBlock slotStats, GuiStats stats) : ICo
         int idX = x.getItemId();
         int idY = y.getItemId();
 
-        StatBase? statX = slotStats.field_27271_e switch
+        StatBase? statX = slotStats.ActiveStatType switch
         {
             2 => Stats.Stats.mineBlockStatArray[idX],
             0 => Stats.Stats.CRAFTED[idX],
@@ -21,7 +21,7 @@ public class SorterStatsBlock(GuiSlotStatsBlock slotStats, GuiStats stats) : ICo
             _ => null
         };
 
-        StatBase? statY = slotStats.field_27271_e switch
+        StatBase? statY = slotStats.ActiveStatType switch
         {
             2 => Stats.Stats.mineBlockStatArray[idY],
             0 => Stats.Stats.CRAFTED[idY],
@@ -37,7 +37,7 @@ public class SorterStatsBlock(GuiSlotStatsBlock slotStats, GuiStats stats) : ICo
 
             if (valueX != valueY)
             {
-                return (valueX - valueY) * slotStats.field_27270_f;
+                return (valueX - valueY) * slotStats.SortOrder;
             }
         }
         return idX - idY;

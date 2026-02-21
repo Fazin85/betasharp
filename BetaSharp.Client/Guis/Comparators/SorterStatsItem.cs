@@ -13,7 +13,7 @@ public class SorterStatsItem(GuiSlotStatsItem slotStats, GuiStats stats) : IComp
         int idX = x.getItemId();
         int idY = y.getItemId();
 
-        StatBase? statX = slotStats.field_27271_e switch
+        StatBase? statX = slotStats.ActiveStatType switch
         {
             0 => Stats.Stats.BROKEN[idX],
             1 => Stats.Stats.CRAFTED[idX],
@@ -21,7 +21,7 @@ public class SorterStatsItem(GuiSlotStatsItem slotStats, GuiStats stats) : IComp
             _ => null
         };
 
-        StatBase? statY = slotStats.field_27271_e switch
+        StatBase? statY = slotStats.ActiveStatType switch
         {
             0 => Stats.Stats.BROKEN[idY],
             1 => Stats.Stats.CRAFTED[idY],
@@ -39,7 +39,7 @@ public class SorterStatsItem(GuiSlotStatsItem slotStats, GuiStats stats) : IComp
 
             if (valueX != valueY)
             {
-                return (valueX - valueY) * slotStats.field_27270_f;
+                return (valueX - valueY) * slotStats.SortOrder;
             }
         }
 

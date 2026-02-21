@@ -8,11 +8,11 @@ namespace BetaSharp.Stats;
 
 public class Stats : java.lang.Object
 {
-    public static Map ID_TO_STAT = new HashMap();
-    public static List ALL_STATS = new ArrayList();
-    public static List GENERAL_STATS = new ArrayList();
-    public static List ITEM_STATS = new ArrayList();
-    public static List BLOCKS_MINED_STATS = new ArrayList();
+    public static Dictionary<int, StatBase> ID_TO_STAT = [];
+    public static List<StatBase> ALL_STATS = [];
+    public static List<StatBase> GENERAL_STATS = [];
+    public static List<StatBase> ITEM_STATS = [];
+    public static List<StatBase> BLOCKS_MINED_STATS = [];
     public static StatBase startGameStat = (new StatBasic(1000, StatCollector.translateToLocal("stat.startGame"))).setLocalOnly().registerStat();
     public static StatBase createWorldStat = (new StatBasic(1001, StatCollector.translateToLocal("stat.createWorld"))).setLocalOnly().registerStat();
     public static StatBase loadWorldStat = (new StatBasic(1002, StatCollector.translateToLocal("stat.loadWorld"))).setLocalOnly().registerStat();
@@ -104,7 +104,7 @@ public class Stats : java.lang.Object
             {
                 string var4 = StatCollector.translateToLocalFormatted(var0, Block.Blocks[var3].translateBlockName());
                 var2[var3] = (new StatCrafting(var1 + var3, var4, var3)).registerStat();
-                BLOCKS_MINED_STATS.add((StatCrafting)var2[var3]);
+                BLOCKS_MINED_STATS.Add((StatCrafting)var2[var3]);
             }
         }
 
@@ -127,7 +127,7 @@ public class Stats : java.lang.Object
                 var0[var5] = (new StatCrafting(var2 + var5, var6, var5)).registerStat();
                 if (var5 >= Block.Blocks.Length)
                 {
-                    ITEM_STATS.add((StatCrafting)var0[var5]);
+                    ITEM_STATS.Add((StatCrafting)var0[var5]);
                 }
             }
         }
@@ -179,16 +179,16 @@ public class Stats : java.lang.Object
         }
         else
         {
-            ALL_STATS.remove(var0[var1]);
-            BLOCKS_MINED_STATS.remove(var0[var1]);
-            GENERAL_STATS.remove(var0[var1]);
+            ALL_STATS.Remove(var0[var1]);
+            BLOCKS_MINED_STATS.Remove(var0[var1]);
+            GENERAL_STATS.Remove(var0[var1]);
             var0[var1] = var0[var2];
         }
     }
 
     public static StatBase getStatById(int var0)
     {
-        return (StatBase)ID_TO_STAT.get(Integer.valueOf(var0));
+        return ID_TO_STAT[var0];
     }
 
     static Stats()

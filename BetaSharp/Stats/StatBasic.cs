@@ -13,7 +13,7 @@ public class StatBasic : StatBase
     public override StatBase registerStat()
     {
         base.registerStat();
-        Stats.GENERAL_STATS.add(this);
+        Stats.GENERAL_STATS.Add(this);
         return this;
     }
 }
