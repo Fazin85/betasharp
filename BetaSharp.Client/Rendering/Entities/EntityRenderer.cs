@@ -46,7 +46,7 @@ public abstract class EntityRenderer
         return false;
     }
 
-    private void RenderOnFire(Entity ent, double x, double y, double z, float tickDelta)
+    private void RenderOnFire(Entity ent, Vec3D pos, float tickDelta)
     {
         GLManager.GL.Disable(GLEnum.Lighting);
 
@@ -60,7 +60,7 @@ public abstract class EntityRenderer
         float maxV;
 
         GLManager.GL.PushMatrix();
-        GLManager.GL.Translate((float)x, (float)y, (float)z);
+        GLManager.GL.Translate((float)pos.x, (float)pos.y, (float)pos.z);
 
         float scale = ent.width * 1.4F;
         GLManager.GL.Scale(scale, scale, scale);
@@ -104,10 +104,10 @@ public abstract class EntityRenderer
                 (maxU, minU) = (minU, maxU);
             }
 
-            tess.addVertexWithUV((double)(widthOffset - depthOffset), (double)(0.0F - yOffset), (double)zOffset, (double)maxU, (double)maxV);
-            tess.addVertexWithUV((double)(-widthOffset - depthOffset), (double)(0.0F - yOffset), (double)zOffset, (double)minU, (double)maxV);
-            tess.addVertexWithUV((double)(-widthOffset - depthOffset), (double)(1.4F - yOffset), (double)zOffset, (double)minU, (double)minV);
-            tess.addVertexWithUV((double)(widthOffset - depthOffset), (double)(1.4F - yOffset), (double)zOffset, (double)maxU, (double)minV);
+            tess.addVertexWithUV(widthOffset - depthOffset, 0.0F - yOffset, zOffset, maxU, maxV);
+            tess.addVertexWithUV(-widthOffset - depthOffset, 0.0F - yOffset, zOffset, minU, maxV);
+            tess.addVertexWithUV(-widthOffset - depthOffset, 1.4F - yOffset, zOffset, minU, minV);
+            tess.addVertexWithUV(widthOffset - depthOffset, 1.4F - yOffset, zOffset, maxU, minV);
 
             heightRatio -= 0.45F;
             yOffset -= 0.45F;
@@ -121,7 +121,7 @@ public abstract class EntityRenderer
         GLManager.GL.Enable(GLEnum.Lighting);
     }
 
-    private void RenderShadow(Entity target, double x, double y, double z, float shadowiness, float tickDelta)
+    private void RenderShadow(Entity target, Vec3D pos, float shadowiness, float tickDelta)
     {
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
@@ -135,20 +135,20 @@ public abstract class EntityRenderer
         GLManager.GL.DepthMask(false);
         float radius = ShadowRadius;
 
-        double targetX = target.lastTickX + (target.x - target.lastTickX) * (double)tickDelta;
-        double targetY = target.lastTickY + (target.y - target.lastTickY) * (double)tickDelta + (double)target.getShadowRadius();
-        double targetZ = target.lastTickZ + (target.z - target.lastTickZ) * (double)tickDelta;
+        double targetX = target.lastTickX + (target.x - target.lastTickX) * tickDelta;
+        double targetY = target.lastTickY + (target.y - target.lastTickY) * tickDelta + target.getShadowRadius();
+        double targetZ = target.lastTickZ + (target.z - target.lastTickZ) * tickDelta;
 
-        int minX = MathHelper.Floor(targetX - (double)radius);
-        int maxX = MathHelper.Floor(targetX + (double)radius);
-        int minY = MathHelper.Floor(targetY - (double)radius);
+        int minX = MathHelper.Floor(targetX - radius);
+        int maxX = MathHelper.Floor(targetX + radius);
+        int minY = MathHelper.Floor(targetY - radius);
         int maxY = MathHelper.Floor(targetY);
-        int minZ = MathHelper.Floor(targetZ - (double)radius);
-        int maxZ = MathHelper.Floor(targetZ + (double)radius);
+        int minZ = MathHelper.Floor(targetZ - radius);
+        int maxZ = MathHelper.Floor(targetZ + radius);
 
-        double dx = x - targetX;
-        double dy = y - targetY;
-        double dz = z - targetZ;
+        double dx = pos.x - targetX;
+        double dy = pos.y - targetY;
+        double dz = pos.z - targetZ;
 
         Tessellator tess = Tessellator.instance;
         tess.startDrawingQuads();
@@ -162,7 +162,14 @@ public abstract class EntityRenderer
                     int blockId = World.getBlockId(blockX, blockY - 1, blockZ);
                     if (blockId > 0 && World.getLightLevel(blockX, blockY, blockZ) > 3)
                     {
-                        renderShadowOnBlock(Block.Blocks[blockId], x, y + (double)target.getShadowRadius(), z, blockX, blockY, blockZ, shadowiness, radius, dx, dy + (double)target.getShadowRadius(), dz);
+                        renderShadowOnBlock(
+                            Block.Blocks[blockId],
+                            new Vec3D(pos.x, pos.y + target.getShadowRadius(), pos.z),
+                            blockX, blockY, blockZ,
+                            shadowiness,
+                            radius,
+                            new Vec3D(dx, dy + target.getShadowRadius(), dz)
+                        );
                     }
                 }
             }
@@ -174,44 +181,30 @@ public abstract class EntityRenderer
         GLManager.GL.DepthMask(true);
     }
 
-    private void renderShadowOnBlock(
-        Block block,
-        double x,
-        double y,
-        double z,
-        int blockX,
-        int blockY,
-        int blockZ,
-        float shadowiness,
-        float radius,
-        double dx,
-        double dy,
-        double dz)
+    private void renderShadowOnBlock(Block block, Vec3D pos, int blockX, int blockY, int blockZ, float shadowiness, float radius, Vec3D offset)
     {
         if (!block.isFullCube()) return;
 
-        double shadowDarkness = (shadowiness - (y - (blockY + dy)) / 2.0D) * 0.5D * World.getLuminance(blockX, blockY, blockZ);
+        double shadowDarkness = (shadowiness - (pos.y - (blockY + offset.y)) / 2.0D) * 0.5D * World.getLuminance(blockX, blockY, blockZ);
 
         if (shadowDarkness < 0.0D) return;
 
         if (shadowDarkness > 1.0D)
-        {
             shadowDarkness = 1.0D;
-        }
 
         Tessellator tess = Tessellator.instance;
         tess.setColorRGBA_F(1.0F, 1.0F, 1.0F, (float)shadowDarkness);
 
-        double minX = blockX + block.BoundingBox.minX + dx;
-        double maxX = blockX + block.BoundingBox.maxX + dx;
-        double minY = blockY + block.BoundingBox.minY + dy + 1.0D / 64.0D;
-        double minZ = blockZ + block.BoundingBox.minZ + dz;
-        double maxZ = blockZ + block.BoundingBox.maxZ + dz;
+        double minX = blockX + block.BoundingBox.minX + offset.x;
+        double maxX = blockX + block.BoundingBox.maxX + offset.x;
+        double minY = blockY + block.BoundingBox.minY + offset.y+ 1.0D / 64.0D;
+        double minZ = blockZ + block.BoundingBox.minZ + offset.z;
+        double maxZ = blockZ + block.BoundingBox.maxZ + offset.z;
 
-        float minU = (float)((x - minX) / 2.0D / (double)radius + 0.5D);
-        float maxU = (float)((x - maxX) / 2.0D / (double)radius + 0.5D);
-        float minV = (float)((z - minZ) / 2.0D / (double)radius + 0.5D);
-        float maxV = (float)((z - maxZ) / 2.0D / (double)radius + 0.5D);
+        float minU = (float)((pos.x - minX) / 2.0D / (double)radius + 0.5D);
+        float maxU = (float)((pos.x - maxX) / 2.0D / (double)radius + 0.5D);
+        float minV = (float)((pos.z - minZ) / 2.0D / (double)radius + 0.5D);
+        float maxV = (float)((pos.z - maxZ) / 2.0D / (double)radius + 0.5D);
 
         tess.addVertexWithUV(minX, minY, minZ, (double)minU, (double)minV);
         tess.addVertexWithUV(minX, minY, maxZ, (double)minU, (double)maxV);
@@ -219,14 +212,14 @@ public abstract class EntityRenderer
         tess.addVertexWithUV(maxX, minY, minZ, (double)maxU, (double)minV);
     }
 
-    public static void renderShape(Box aabb, double x, double y, double z)
+    public static void renderShape(Box aabb, Vec3D pos)
     {
         GLManager.GL.Disable(GLEnum.Texture2D);
         Tessellator tess = Tessellator.instance;
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
 
         tess.startDrawingQuads();
-        tess.setTranslationD(x, y, z);
+        tess.setTranslationD(pos.x, pos.y, pos.z);
 
         tess.setNormal(0.0F, 0.0F, -1.0F);
 
@@ -264,7 +257,7 @@ public abstract class EntityRenderer
         tess.addVertex(aabb.maxX, aabb.maxY, aabb.minZ);
         tess.addVertex(aabb.maxX, aabb.maxY, aabb.maxZ);
         tess.addVertex(aabb.maxX, aabb.minY, aabb.maxZ);
-        
+
         tess.setTranslationD(0.0D, 0.0D, 0.0D);
         tess.draw();
         GLManager.GL.Enable(GLEnum.Texture2D);
@@ -308,7 +301,7 @@ public abstract class EntityRenderer
         tess.draw();
     }
 
-    public void PostRender(Entity target, double x, double y, double z, float yaw, float tickDelta)
+    public void PostRender(Entity target, Vec3D pos, float yaw, float tickDelta)
     {
         if (ShadowRadius > 0.0F)
         {
@@ -316,13 +309,13 @@ public abstract class EntityRenderer
             float shadowiness = (float)((1.0D - distance / 256.0D) * ShadowStrength);
             if (shadowiness > 0.0F)
             {
-                RenderShadow(target, x, y, z, shadowiness, tickDelta);
+                RenderShadow(target, pos, shadowiness, tickDelta);
             }
         }
 
         if (target.isOnFire())
         {
-            RenderOnFire(target, x, y, z, tickDelta);
+            RenderOnFire(target, pos, tickDelta);
         }
 
     }
