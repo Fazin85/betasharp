@@ -7,7 +7,6 @@ using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.lang;
 
 namespace BetaSharp.Client.Rendering.Entities;
 
