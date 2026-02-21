@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL.Legacy;
 
@@ -24,6 +23,14 @@ public unsafe class EmulatedGL : LegacyGL
     private float _light1DirX, _light1DirY, _light1DirZ;
     private float _light1DiffR, _light1DiffG, _light1DiffB;
     private float _ambientR = 0.2f, _ambientG = 0.2f, _ambientB = 0.2f;
+
+    // Fog state
+    private bool _fogEnabled = false;
+    private int _fogMode = 0; // 0=linear, 1=exp
+    private float _fogColorR, _fogColorG, _fogColorB, _fogColorA;
+    private float _fogStart = 0f;
+    private float _fogEnd = 1f;
+    private float _fogDensity = 1f;
 
     private readonly DisplayListCompiler _displayLists;
 
@@ -59,11 +66,9 @@ public unsafe class EmulatedGL : LegacyGL
             _shader.SetLight1(_light1DirX, _light1DirY, _light1DirZ, _light1DiffR, _light1DiffG, _light1DiffB);
             _shader.SetAmbientLight(_ambientR, _ambientG, _ambientB);
 
-            // Normal matrix = transpose of inverse of upper-left 3x3 of modelview
-            var mv = _modelViewStack.Top;
-            if (Matrix4X4.Invert(mv, out var invMv))
+            Matrix4X4<float> mv = _modelViewStack.Top;
+            if (Matrix4X4.Invert(mv, out Matrix4X4<float> invMv))
             {
-                // Transpose the inverse, then extract upper-left 3x3
                 var t = Matrix4X4.Transpose(invMv);
                 var normalMatrix = new Matrix3X3<float>(
                     t.M11, t.M12, t.M13,
@@ -75,6 +80,16 @@ public unsafe class EmulatedGL : LegacyGL
             {
                 _shader.SetNormalMatrix(Matrix3X3<float>.Identity);
             }
+        }
+
+        _shader.SetEnableFog(_fogEnabled);
+        if (_fogEnabled)
+        {
+            _shader.SetFogMode(_fogMode);
+            _shader.SetFogColor(_fogColorR, _fogColorG, _fogColorB, _fogColorA);
+            _shader.SetFogStart(_fogStart);
+            _shader.SetFogEnd(_fogEnd);
+            _shader.SetFogDensity(_fogDensity);
         }
     }
 
@@ -123,18 +138,13 @@ public unsafe class EmulatedGL : LegacyGL
         }
     }
 
-    // ---- BufferData interception ----
-
     public override void BufferData(GLEnum target, nuint size, void* data, GLEnum usage)
     {
         if (_displayLists.IsCompiling && target == GLEnum.ArrayBuffer && data != null)
             _displayLists.CaptureVertexData((byte*)data, (int)size);
 
-        // Always upload to GPU (keeps Tessellator VBO state valid)
         SilkGL.BufferData(target, size, data, usage);
     }
-
-    // ---- Matrix operations ----
 
     public override void MatrixMode(GLEnum mode)
     {
@@ -277,6 +287,7 @@ public unsafe class EmulatedGL : LegacyGL
         {
             case GLEnum.Texture2D: _useTexture = true; break;
             case GLEnum.Lighting: _lightingEnabled = true; return;
+            case GLEnum.Fog: _fogEnabled = true; return;
             case GLEnum.Light0: return;
             case GLEnum.Light1: return;
             case GLEnum.ColorMaterial: return;
@@ -291,6 +302,7 @@ public unsafe class EmulatedGL : LegacyGL
         {
             case GLEnum.Texture2D: _useTexture = false; break;
             case GLEnum.Lighting: _lightingEnabled = false; return;
+            case GLEnum.Fog: _fogEnabled = false; return;
             case GLEnum.Light0: return;
             case GLEnum.Light1: return;
             case GLEnum.ColorMaterial: return;
@@ -318,6 +330,28 @@ public unsafe class EmulatedGL : LegacyGL
         // Ambient and Specular are ignored (specular=0 in game, per-light ambient=0)
     }
 
+    public override void Fog(GLEnum pname, float param)
+    {
+        switch (pname)
+        {
+            case GLEnum.FogMode: _fogMode = (int)param == (int)GLEnum.Linear ? 0 : 1; break;
+            case GLEnum.FogStart: _fogStart = param; break;
+            case GLEnum.FogEnd: _fogEnd = param; break;
+            case GLEnum.FogDensity: _fogDensity = param; break;
+        }
+    }
+
+    public override void Fog(GLEnum pname, ReadOnlySpan<float> params_)
+    {
+        if (pname == GLEnum.FogColor && params_.Length >= 4)
+        {
+            _fogColorR = params_[0];
+            _fogColorG = params_[1];
+            _fogColorB = params_[2];
+            _fogColorA = params_[3];
+        }
+    }
+
     public override void LightModel(GLEnum pname, float* params_)
     {
         if (pname == GLEnum.LightModelAmbient)
@@ -330,12 +364,10 @@ public unsafe class EmulatedGL : LegacyGL
 
     public override void ColorMaterial(GLEnum face, GLEnum mode)
     {
-        // Always treat vertex color as ambient+diffuse material (the only mode the game uses)
     }
 
     public override void Normal3(float nx, float ny, float nz)
     {
-        // Set the current normal via vertex attrib 3 for immediate mode draws
         SilkGL.VertexAttrib3(3, nx, ny, nz);
     }
 

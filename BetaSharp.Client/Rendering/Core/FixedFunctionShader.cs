@@ -1,14 +1,11 @@
-using System;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Rendering.Core;
 
-public class FixedFunctionShader : IDisposable
+public class FixedFunctionShader
 {
     private readonly GL _gl;
-    private readonly uint _program;
-
     private readonly int _uModelView;
     private readonly int _uProjection;
     private readonly int _uTextureMatrix;
@@ -16,7 +13,6 @@ public class FixedFunctionShader : IDisposable
     private readonly int _uTexture0;
     private readonly int _uAlphaThreshold;
 
-    // Lighting uniforms
     private readonly int _uEnableLighting;
     private readonly int _uLight0Dir;
     private readonly int _uLight0Diffuse;
@@ -25,7 +21,14 @@ public class FixedFunctionShader : IDisposable
     private readonly int _uAmbientLight;
     private readonly int _uNormalMatrix;
 
-    public uint Program => _program;
+    private readonly int _uEnableFog;
+    private readonly int _uFogMode;  // 0=linear, 1=exp
+    private readonly int _uFogColor;
+    private readonly int _uFogStart;
+    private readonly int _uFogEnd;
+    private readonly int _uFogDensity;
+
+    public uint Program { get; }
 
     private const string VertexShaderSource = @"
 #version 330 core
@@ -47,12 +50,16 @@ uniform vec3 u_AmbientLight;
 
 flat out vec4 v_Color;
 out vec2 v_TexCoord;
+out float v_FogDist;
 
 void main()
 {
     vec4 tex = u_TextureMatrix * vec4(a_TexCoord, 0.0, 1.0);
     v_TexCoord = tex.xy;
-    gl_Position = u_Projection * u_ModelView * vec4(a_Position, 1.0);
+
+    vec4 viewPos = u_ModelView * vec4(a_Position, 1.0);
+    gl_Position = u_Projection * viewPos;
+    v_FogDist = length(viewPos.xyz);
 
     if (u_EnableLighting != 0)
     {
@@ -74,10 +81,18 @@ void main()
 #version 330 core
 flat in vec4 v_Color;
 in vec2 v_TexCoord;
+in float v_FogDist;
 
 uniform sampler2D u_Texture0;
 uniform int u_UseTexture;
 uniform float u_AlphaThreshold;
+
+uniform int u_EnableFog;
+uniform int u_FogMode;      // 0=linear, 1=exp
+uniform vec4 u_FogColor;
+uniform float u_FogStart;
+uniform float u_FogEnd;
+uniform float u_FogDensity;
 
 out vec4 FragColor;
 
@@ -92,6 +107,22 @@ void main()
 
     if (FragColor.a < u_AlphaThreshold)
         discard;
+
+    if (u_EnableFog != 0)
+    {
+        float fogFactor;
+        if (u_FogMode == 0)
+        {
+            // Linear
+            fogFactor = clamp((u_FogEnd - v_FogDist) / (u_FogEnd - u_FogStart), 0.0, 1.0);
+        }
+        else
+        {
+            // Exponential
+            fogFactor = clamp(exp(-u_FogDensity * v_FogDist), 0.0, 1.0);
+        }
+        FragColor = mix(u_FogColor, FragColor, fogFactor);
+    }
 }";
 
     public FixedFunctionShader(GL gl)
@@ -101,36 +132,42 @@ void main()
         uint vertexShader = CompileShader(ShaderType.VertexShader, VertexShaderSource);
         uint fragmentShader = CompileShader(ShaderType.FragmentShader, FragmentShaderSource);
 
-        _program = _gl.CreateProgram();
-        _gl.AttachShader(_program, vertexShader);
-        _gl.AttachShader(_program, fragmentShader);
-        _gl.LinkProgram(_program);
+        Program = _gl.CreateProgram();
+        _gl.AttachShader(Program, vertexShader);
+        _gl.AttachShader(Program, fragmentShader);
+        _gl.LinkProgram(Program);
 
-        _gl.GetProgram(_program, GLEnum.LinkStatus, out var status);
+        _gl.GetProgram(Program, GLEnum.LinkStatus, out int status);
         if (status == 0)
         {
-            var infoLog = _gl.GetProgramInfoLog(_program);
+            string infoLog = _gl.GetProgramInfoLog(Program);
             throw new Exception($"Program linking failed: {infoLog}");
         }
 
-        _gl.DetachShader(_program, vertexShader);
-        _gl.DetachShader(_program, fragmentShader);
+        _gl.DetachShader(Program, vertexShader);
+        _gl.DetachShader(Program, fragmentShader);
         _gl.DeleteShader(vertexShader);
         _gl.DeleteShader(fragmentShader);
 
-        _uModelView = _gl.GetUniformLocation(_program, "u_ModelView");
-        _uProjection = _gl.GetUniformLocation(_program, "u_Projection");
-        _uTextureMatrix = _gl.GetUniformLocation(_program, "u_TextureMatrix");
-        _uUseTexture = _gl.GetUniformLocation(_program, "u_UseTexture");
-        _uTexture0 = _gl.GetUniformLocation(_program, "u_Texture0");
-        _uAlphaThreshold = _gl.GetUniformLocation(_program, "u_AlphaThreshold");
-        _uEnableLighting = _gl.GetUniformLocation(_program, "u_EnableLighting");
-        _uLight0Dir = _gl.GetUniformLocation(_program, "u_Light0Dir");
-        _uLight0Diffuse = _gl.GetUniformLocation(_program, "u_Light0Diffuse");
-        _uLight1Dir = _gl.GetUniformLocation(_program, "u_Light1Dir");
-        _uLight1Diffuse = _gl.GetUniformLocation(_program, "u_Light1Diffuse");
-        _uAmbientLight = _gl.GetUniformLocation(_program, "u_AmbientLight");
-        _uNormalMatrix = _gl.GetUniformLocation(_program, "u_NormalMatrix");
+        _uModelView = _gl.GetUniformLocation(Program, "u_ModelView");
+        _uProjection = _gl.GetUniformLocation(Program, "u_Projection");
+        _uTextureMatrix = _gl.GetUniformLocation(Program, "u_TextureMatrix");
+        _uUseTexture = _gl.GetUniformLocation(Program, "u_UseTexture");
+        _uTexture0 = _gl.GetUniformLocation(Program, "u_Texture0");
+        _uAlphaThreshold = _gl.GetUniformLocation(Program, "u_AlphaThreshold");
+        _uEnableLighting = _gl.GetUniformLocation(Program, "u_EnableLighting");
+        _uLight0Dir = _gl.GetUniformLocation(Program, "u_Light0Dir");
+        _uLight0Diffuse = _gl.GetUniformLocation(Program, "u_Light0Diffuse");
+        _uLight1Dir = _gl.GetUniformLocation(Program, "u_Light1Dir");
+        _uLight1Diffuse = _gl.GetUniformLocation(Program, "u_Light1Diffuse");
+        _uAmbientLight = _gl.GetUniformLocation(Program, "u_AmbientLight");
+        _uNormalMatrix = _gl.GetUniformLocation(Program, "u_NormalMatrix");
+        _uEnableFog = _gl.GetUniformLocation(Program, "u_EnableFog");
+        _uFogMode = _gl.GetUniformLocation(Program, "u_FogMode");
+        _uFogColor = _gl.GetUniformLocation(Program, "u_FogColor");
+        _uFogStart = _gl.GetUniformLocation(Program, "u_FogStart");
+        _uFogEnd = _gl.GetUniformLocation(Program, "u_FogEnd");
+        _uFogDensity = _gl.GetUniformLocation(Program, "u_FogDensity");
     }
 
     private uint CompileShader(ShaderType type, string source)
@@ -139,55 +176,38 @@ void main()
         _gl.ShaderSource(shader, source);
         _gl.CompileShader(shader);
 
-        _gl.GetShader(shader, ShaderParameterName.CompileStatus, out var status);
+        _gl.GetShader(shader, ShaderParameterName.CompileStatus, out int status);
         if (status == 0)
         {
-            var infoLog = _gl.GetShaderInfoLog(shader);
+            string infoLog = _gl.GetShaderInfoLog(shader);
             throw new Exception($"Error compiling {type}: {infoLog}");
         }
 
         return shader;
     }
 
-    public void Use()
-    {
-        _gl.UseProgram(_program);
-    }
+    public void Use() => _gl.UseProgram(Program);
 
-    public unsafe void SetModelView(Matrix4X4<float> matrix)
-    {
+    public unsafe void SetModelView(Matrix4X4<float> matrix) =>
         _gl.UniformMatrix4(_uModelView, 1, false, (float*)&matrix);
-    }
 
-    public unsafe void SetProjection(Matrix4X4<float> matrix)
-    {
+    public unsafe void SetProjection(Matrix4X4<float> matrix) =>
         _gl.UniformMatrix4(_uProjection, 1, false, (float*)&matrix);
-    }
 
-    public unsafe void SetTextureMatrix(Matrix4X4<float> matrix)
-    {
+    public unsafe void SetTextureMatrix(Matrix4X4<float> matrix) =>
         _gl.UniformMatrix4(_uTextureMatrix, 1, false, (float*)&matrix);
-    }
 
-    public void SetUseTexture(bool useTexture)
-    {
+    public void SetUseTexture(bool useTexture) =>
         _gl.Uniform1(_uUseTexture, useTexture ? 1 : 0);
-    }
 
-    public void SetTexture0(int unit)
-    {
+    public void SetTexture0(int unit) =>
         _gl.Uniform1(_uTexture0, unit);
-    }
 
-    public void SetAlphaThreshold(float threshold)
-    {
+    public void SetAlphaThreshold(float threshold) =>
         _gl.Uniform1(_uAlphaThreshold, threshold);
-    }
 
-    public void SetEnableLighting(bool enable)
-    {
+    public void SetEnableLighting(bool enable) =>
         _gl.Uniform1(_uEnableLighting, enable ? 1 : 0);
-    }
 
     public void SetLight0(float dirX, float dirY, float dirZ, float diffR, float diffG, float diffB)
     {
@@ -201,18 +221,26 @@ void main()
         _gl.Uniform3(_uLight1Diffuse, diffR, diffG, diffB);
     }
 
-    public void SetAmbientLight(float r, float g, float b)
-    {
+    public void SetAmbientLight(float r, float g, float b) =>
         _gl.Uniform3(_uAmbientLight, r, g, b);
-    }
 
-    public unsafe void SetNormalMatrix(Matrix3X3<float> matrix)
-    {
+    public unsafe void SetNormalMatrix(Matrix3X3<float> matrix) =>
         _gl.UniformMatrix3(_uNormalMatrix, 1, false, (float*)&matrix);
-    }
+    public void SetEnableFog(bool enable) =>
+        _gl.Uniform1(_uEnableFog, enable ? 1 : 0);
 
-    public void Dispose()
-    {
-        _gl.DeleteProgram(_program);
-    }
+    public void SetFogMode(int mode) =>
+        _gl.Uniform1(_uFogMode, mode);
+
+    public void SetFogColor(float r, float g, float b, float a) =>
+        _gl.Uniform4(_uFogColor, r, g, b, a);
+
+    public void SetFogStart(float start) =>
+        _gl.Uniform1(_uFogStart, start);
+
+    public void SetFogEnd(float end) =>
+        _gl.Uniform1(_uFogEnd, end);
+
+    public void SetFogDensity(float density) =>
+        _gl.Uniform1(_uFogDensity, density);
 }

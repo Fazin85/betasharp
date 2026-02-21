@@ -216,12 +216,12 @@ public unsafe class LegacyGL : IGL
         SilkGL.EndList();
     }
 
-    public void Fog(GLEnum pname, float param)
+    public virtual void Fog(GLEnum pname, float param)
     {
         SilkGL.Fog(pname, param);
     }
 
-    public void Fog(GLEnum pname, ReadOnlySpan<float> params_)
+    public virtual void Fog(GLEnum pname, ReadOnlySpan<float> params_)
     {
         SilkGL.Fog(pname, params_);
     }
