@@ -21,7 +21,7 @@ public class RailLogic
         int blockId = world.getBlockId(pos.x, pos.y, pos.z);
         int meta = world.getBlockMeta(pos.x, pos.y, pos.z);
 
-        if (((BlockRail)Block.Blocks[blockId]).isAlwaysStraight())
+        if (Block.Blocks[blockId] is BlockRail rail && rail.isAlwaysStraight())
         {
             _isPoweredRail = true;
             meta &= -9;
