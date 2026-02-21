@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL.Legacy;
 
@@ -10,271 +11,228 @@ public unsafe class EmulatedGL : LegacyGL
     private readonly MatrixStack _textureStack = new();
 
     private GLEnum _currentMatrixMode = GLEnum.Modelview;
-    private bool _isCompilingList = false;
 
-    // Shader Emulation
-    private FixedFunctionShader _shader;
+    private readonly FixedFunctionShader _shader;
     private bool _useTexture = false;
+    private uint _currentProgram = 0;
+    private float _alphaThreshold = 0.1f;
+
+    private readonly DisplayListCompiler _displayLists;
 
     public EmulatedGL(GL gl) : base(gl)
     {
         _shader = new FixedFunctionShader(gl);
         _shader.Use();
         _shader.SetTexture0(0);
+        _displayLists = new DisplayListCompiler(gl);
     }
 
-    private MatrixStack ActiveStack
+    private MatrixStack ActiveStack => _currentMatrixMode switch
     {
-        get
-        {
-            return _currentMatrixMode switch
-            {
-                GLEnum.Modelview => _modelViewStack,
-                GLEnum.Projection => _projectionStack,
-                GLEnum.Texture => _textureStack,
-                _ => _modelViewStack
-            };
-        }
+        GLEnum.Modelview => _modelViewStack,
+        GLEnum.Projection => _projectionStack,
+        GLEnum.Texture => _textureStack,
+        _ => _modelViewStack
+    };
+
+    private void ActivateShader()
+    {
+        SilkGL.UseProgram(_shader.Program);
+        _shader.SetModelView(_modelViewStack.Top);
+        _shader.SetProjection(_projectionStack.Top);
+        _shader.SetTextureMatrix(_textureStack.Top);
+        _shader.SetUseTexture(_useTexture);
+        _shader.SetAlphaThreshold(_alphaThreshold);
     }
 
-    public override void MatrixMode(GLEnum mode)
+    public override void AlphaFunc(GLEnum func, float refValue)
     {
-        if (_isCompilingList)
-        {
-            base.MatrixMode(mode);
-            return;
-        }
-        _currentMatrixMode = mode;
-        base.MatrixMode(mode);
+        _alphaThreshold = refValue;
     }
+
+    public override uint GenLists(uint range) => _displayLists.GenLists(range);
 
     public override void NewList(uint list, GLEnum mode)
     {
         if (mode == GLEnum.Compile || mode == GLEnum.CompileAndExecute)
-        {
-            _isCompilingList = true;
-        }
-        base.NewList(list, mode);
+            _displayLists.BeginList(list);
     }
 
-    public override void EndList()
+    public override void EndList() => _displayLists.EndList();
+
+    public override void DeleteLists(uint list, uint range) => _displayLists.DeleteLists(list, range);
+
+    public override void CallList(uint list)
     {
-        _isCompilingList = false;
-        base.EndList();
+        if (_displayLists.IsCompiling) return;
+
+        _displayLists.Execute(list,
+            onDraw: chunk =>
+            {
+                ActivateShader();
+                SilkGL.BindVertexArray(chunk.Vao);
+                SilkGL.DrawArrays(chunk.DrawMode, 0, (uint)chunk.VertexCount);
+                SilkGL.BindVertexArray(0);
+            },
+            onTranslate: t => ActiveStack.Translate(t.X, t.Y, t.Z),
+            onColor: c => SilkGL.VertexAttrib4(1, c.R, c.G, c.B, c.A));
+    }
+
+    public override void CallLists(uint n, GLEnum type, void* lists)
+    {
+        if (_displayLists.IsCompiling) return;
+
+        if (type == GLEnum.UnsignedInt)
+        {
+            uint* ids = (uint*)lists;
+            for (int i = 0; i < (int)n; i++)
+                CallList(ids[i]);
+        }
+    }
+
+    // ---- BufferData interception ----
+
+    public override void BufferData(GLEnum target, nuint size, void* data, GLEnum usage)
+    {
+        if (_displayLists.IsCompiling && target == GLEnum.ArrayBuffer && data != null)
+            _displayLists.CaptureVertexData((byte*)data, (int)size);
+
+        // Always upload to GPU (keeps Tessellator VBO state valid)
+        SilkGL.BufferData(target, size, data, usage);
+    }
+
+    // ---- Matrix operations ----
+
+    public override void MatrixMode(GLEnum mode)
+    {
+        _currentMatrixMode = mode;
+        if (!_displayLists.IsCompiling) base.MatrixMode(mode);
     }
 
     public override void LoadIdentity()
     {
-        if (_isCompilingList)
-        {
-            base.LoadIdentity();
-            return;
-        }
+        if (_displayLists.IsCompiling) return;
         ActiveStack.LoadIdentity();
     }
 
     public override void PushMatrix()
     {
-        if (_isCompilingList)
-        {
-            base.PushMatrix();
-            return;
-        }
+        if (_displayLists.IsCompiling) return;
         ActiveStack.Push();
         base.PushMatrix();
     }
 
     public override void PopMatrix()
     {
-        if (_isCompilingList)
-        {
-            base.PopMatrix();
-            return;
-        }
+        if (_displayLists.IsCompiling) return;
         ActiveStack.Pop();
         base.PopMatrix();
     }
 
     public override void Translate(float x, float y, float z)
     {
-        if (_isCompilingList)
-        {
-            base.Translate(x, y, z);
-            return;
-        }
+        if (_displayLists.IsCompiling) { _displayLists.RecordTranslate(x, y, z); return; }
         ActiveStack.Translate(x, y, z);
     }
 
     public override void Translate(double x, double y, double z)
     {
-        if (_isCompilingList)
-        {
-            base.Translate(x, y, z);
-            return;
-        }
+        if (_displayLists.IsCompiling) { _displayLists.RecordTranslate((float)x, (float)y, (float)z); return; }
         ActiveStack.Translate((float)x, (float)y, (float)z);
     }
 
     public override void Rotate(float angle, float x, float y, float z)
     {
-        if (_isCompilingList)
-        {
-            base.Rotate(angle, x, y, z);
-            return;
-        }
+        if (_displayLists.IsCompiling) return;
         ActiveStack.Rotate(angle, x, y, z);
     }
 
     public override void Scale(float x, float y, float z)
     {
-        if (_isCompilingList)
-        {
-            base.Scale(x, y, z);
-            return;
-        }
+        if (_displayLists.IsCompiling) return;
         ActiveStack.Scale(x, y, z);
     }
 
     public override void Scale(double x, double y, double z)
     {
-        if (_isCompilingList)
-        {
-            base.Scale(x, y, z);
-            return;
-        }
+        if (_displayLists.IsCompiling) return;
         ActiveStack.Scale((float)x, (float)y, (float)z);
     }
 
     public override void Ortho(double left, double right, double bottom, double top, double zNear, double zFar)
     {
-        if (_isCompilingList)
-        {
-            base.Ortho(left, right, bottom, top, zNear, zFar);
-            return;
-        }
+        if (_displayLists.IsCompiling) return;
         ActiveStack.Ortho(left, right, bottom, top, zNear, zFar);
     }
 
     public override void Frustum(double left, double right, double bottom, double top, double zNear, double zFar)
     {
-        if (_isCompilingList)
-        {
-            base.Frustum(left, right, bottom, top, zNear, zFar);
-            return;
-        }
+        if (_displayLists.IsCompiling) return;
         ActiveStack.Frustum(left, right, bottom, top, zNear, zFar);
     }
 
-    // --- Phase 3: Immediate Mode / Array overriding ---
-
     public override void Color3(float red, float green, float blue)
     {
-        if (_isCompilingList)
-        {
-            base.Color3(red, green, blue);
-            return;
-        }
+        if (_displayLists.IsCompiling) { _displayLists.RecordColor(red, green, blue, 1.0f); return; }
         SilkGL.VertexAttrib4(1, red, green, blue, 1.0f);
         base.Color3(red, green, blue);
     }
 
     public override void Color3(byte red, byte green, byte blue)
     {
-        if (_isCompilingList)
-        {
-            base.Color3(red, green, blue);
-            return;
-        }
-        SilkGL.VertexAttrib4(1, red / 255.0f, green / 255.0f, blue / 255.0f, 1.0f);
+        float r = red / 255.0f, g = green / 255.0f, b = blue / 255.0f;
+        if (_displayLists.IsCompiling) { _displayLists.RecordColor(r, g, b, 1.0f); return; }
+        SilkGL.VertexAttrib4(1, r, g, b, 1.0f);
         base.Color3(red, green, blue);
     }
 
     public override void Color4(float red, float green, float blue, float alpha)
     {
-        if (_isCompilingList)
-        {
-            base.Color4(red, green, blue, alpha);
-            return;
-        }
+        if (_displayLists.IsCompiling) { _displayLists.RecordColor(red, green, blue, alpha); return; }
         SilkGL.VertexAttrib4(1, red, green, blue, alpha);
         base.Color4(red, green, blue, alpha);
     }
 
-    public override void Color4(byte red, byte green, byte blue, byte alpha)
+    public override void VertexPointer(int size, GLEnum type, uint stride, void* pointer)
     {
-        if (_isCompilingList)
-        {
-            base.Color4(red, green, blue, alpha);
-            return;
-        }
-        SilkGL.VertexAttrib4(1, red / 255.0f, green / 255.0f, blue / 255.0f, alpha / 255.0f);
-        base.Color4(red, green, blue, alpha);
-    }
-
-    public override unsafe void VertexPointer(int size, GLEnum type, uint stride, void* pointer)
-    {
-        if (_isCompilingList)
-        {
-            base.VertexPointer(size, type, stride, pointer);
-            return;
-        }
+        if (_displayLists.IsCompiling) { _displayLists.SetStride(stride); return; }
         SilkGL.VertexAttribPointer(0, size, type, false, stride, pointer);
     }
 
-    public override unsafe void ColorPointer(int size, ColorPointerType type, uint stride, void* pointer)
+    public override void ColorPointer(int size, ColorPointerType type, uint stride, void* pointer)
     {
-        if (_isCompilingList)
-        {
-            base.ColorPointer(size, type, stride, pointer);
-            return;
-        }
+        if (_displayLists.IsCompiling) return;
         SilkGL.VertexAttribPointer(1, size, (GLEnum)type, type == ColorPointerType.UnsignedByte, stride, pointer);
     }
 
-    public override unsafe void TexCoordPointer(int size, GLEnum type, uint stride, void* pointer)
+    public override void TexCoordPointer(int size, GLEnum type, uint stride, void* pointer)
     {
-        if (_isCompilingList)
-        {
-            base.TexCoordPointer(size, type, stride, pointer);
-            return;
-        }
+        if (_displayLists.IsCompiling) return;
         SilkGL.VertexAttribPointer(2, size, type, false, stride, pointer);
     }
 
-    public override unsafe void NormalPointer(NormalPointerType type, uint stride, void* pointer)
+    public override void NormalPointer(NormalPointerType type, uint stride, void* pointer)
     {
-        if (_isCompilingList)
-        {
-            base.NormalPointer(type, stride, pointer);
-            return;
-        }
+        if (_displayLists.IsCompiling) return;
         SilkGL.VertexAttribPointer(3, 3, (GLEnum)type, true, stride, pointer);
     }
 
     public override void EnableClientState(GLEnum array)
     {
-        if (_isCompilingList)
-        {
-            base.EnableClientState(array);
-            return;
-        }
+        if (_displayLists.IsCompiling) { _displayLists.EnableAttribute(array); return; }
         switch (array)
         {
             case GLEnum.VertexArray: SilkGL.EnableVertexAttribArray(0); break;
             case GLEnum.ColorArray: SilkGL.EnableVertexAttribArray(1); break;
             case GLEnum.TextureCoordArray: SilkGL.EnableVertexAttribArray(2); break;
             case GLEnum.NormalArray: SilkGL.EnableVertexAttribArray(3); break;
-            default: base.EnableClientState(array); break; // fallback just in case
+            default: base.EnableClientState(array); break;
         }
     }
 
     public override void DisableClientState(GLEnum array)
     {
-        if (_isCompilingList)
-        {
-            base.DisableClientState(array);
-            return;
-        }
+        if (_displayLists.IsCompiling) return;
         switch (array)
         {
             case GLEnum.VertexArray: SilkGL.DisableVertexAttribArray(0); break;
@@ -287,45 +245,74 @@ public unsafe class EmulatedGL : LegacyGL
 
     public override void Enable(GLEnum cap)
     {
-        if (_isCompilingList)
-        {
-            base.Enable(cap);
-            return;
-        }
-        if (cap == GLEnum.Texture2D)
+        if (cap == GLEnum.Texture2D && !_displayLists.IsCompiling)
             _useTexture = true;
-
         base.Enable(cap);
     }
 
     public override void Disable(GLEnum cap)
     {
-        if (_isCompilingList)
-        {
-            base.Disable(cap);
-            return;
-        }
-        if (cap == GLEnum.Texture2D)
+        if (cap == GLEnum.Texture2D && !_displayLists.IsCompiling)
             _useTexture = false;
-
         base.Disable(cap);
     }
 
     public override void DrawArrays(GLEnum mode, int first, uint count)
     {
-        if (_isCompilingList)
+        if (_displayLists.IsCompiling)
         {
-            base.DrawArrays(mode, first, count);
+            _displayLists.RecordDraw(mode, (int)count);
             return;
         }
 
-        // Apply shader state right before drawing
-        _shader.Use();
-        _shader.SetModelView(_modelViewStack.Top);
-        _shader.SetProjection(_projectionStack.Top);
-        _shader.SetTextureMatrix(_textureStack.Top);
-        _shader.SetUseTexture(_useTexture);
+        if (_currentProgram == 0 || _currentProgram == _shader.Program)
+            ActivateShader();
 
         SilkGL.DrawArrays(mode, first, count);
+    }
+
+    public override void UseProgram(uint program)
+    {
+        if (_displayLists.IsCompiling) return;
+        _currentProgram = program;
+        base.UseProgram(program);
+    }
+
+    public override void GetFloat(GLEnum pname, float* data)
+    {
+        if (pname == GLEnum.ModelviewMatrix)
+        {
+            Matrix4X4<float> m = _modelViewStack.Top;
+            System.Buffer.MemoryCopy(&m, data, 64, 64);
+        }
+        else if (pname == GLEnum.ProjectionMatrix)
+        {
+            Matrix4X4<float> m = _projectionStack.Top;
+            System.Buffer.MemoryCopy(&m, data, 64, 64);
+        }
+        else
+        {
+            base.GetFloat(pname, data);
+        }
+    }
+
+    public override void GetFloat(GLEnum pname, Span<float> data)
+    {
+        if (pname == GLEnum.ModelviewMatrix)
+        {
+            Matrix4X4<float> m = _modelViewStack.Top;
+            fixed (float* dst = data)
+                System.Buffer.MemoryCopy(&m, dst, 64, 64);
+        }
+        else if (pname == GLEnum.ProjectionMatrix)
+        {
+            Matrix4X4<float> m = _projectionStack.Top;
+            fixed (float* dst = data)
+                System.Buffer.MemoryCopy(&m, dst, 64, 64);
+        }
+        else
+        {
+            base.GetFloat(pname, data);
+        }
     }
 }

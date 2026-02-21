@@ -14,6 +14,7 @@ public class FixedFunctionShader : IDisposable
     private readonly int _uTextureMatrix;
     private readonly int _uUseTexture;
     private readonly int _uTexture0;
+    private readonly int _uAlphaThreshold;
 
     public uint Program => _program;
 
@@ -46,6 +47,7 @@ in vec2 v_TexCoord;
 
 uniform sampler2D u_Texture0;
 uniform int u_UseTexture;
+uniform float u_AlphaThreshold;
 
 out vec4 FragColor;
 
@@ -59,7 +61,7 @@ void main()
     FragColor = v_Color * texColor;
     
     // Alpha test emulation
-    if (FragColor.a < 0.1)
+    if (FragColor.a < u_AlphaThreshold)
         discard;
 }";
 
@@ -92,6 +94,7 @@ void main()
         _uTextureMatrix = _gl.GetUniformLocation(_program, "u_TextureMatrix");
         _uUseTexture = _gl.GetUniformLocation(_program, "u_UseTexture");
         _uTexture0 = _gl.GetUniformLocation(_program, "u_Texture0");
+        _uAlphaThreshold = _gl.GetUniformLocation(_program, "u_AlphaThreshold");
     }
 
     private uint CompileShader(ShaderType type, string source)
@@ -138,6 +141,11 @@ void main()
     public void SetTexture0(int unit)
     {
         _gl.Uniform1(_uTexture0, unit);
+    }
+
+    public void SetAlphaThreshold(float threshold)
+    {
+        _gl.Uniform1(_uAlphaThreshold, threshold);
     }
 
     public void Dispose()
