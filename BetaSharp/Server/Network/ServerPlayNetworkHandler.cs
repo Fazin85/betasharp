@@ -434,7 +434,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
 
     public override void handle(Packet packet)
     {
-        Log.Warn($"{getClass()} wasn't prepared to deal with a {packet.getClass()}");
+        Log.Warn($"{GetType()} wasn't prepared to deal with a {packet.GetType()}");
         disconnect("Protocol error, unexpected packet");
     }
 

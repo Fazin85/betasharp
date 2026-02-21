@@ -5,8 +5,6 @@ namespace BetaSharp.Network.Packets.Play;
 
 public class EntityAnimationPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityAnimationPacket).TypeHandle);
-
     public int id;
     public int animationId;
 

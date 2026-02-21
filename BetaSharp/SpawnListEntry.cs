@@ -1,13 +1,7 @@
 namespace BetaSharp;
 
-public class SpawnListEntry : java.lang.Object
+public class SpawnListEntry(Type type, int spawnRarityRate)
 {
-    public java.lang.Class entityClass;
-    public int spawnRarityRate;
-
-    public SpawnListEntry(java.lang.Class var1, int var2)
-    {
-        entityClass = var1;
-        spawnRarityRate = var2;
-    }
+	public readonly Type Type = type;
+    public readonly int SpawnRarityRate = spawnRarityRate;
 }

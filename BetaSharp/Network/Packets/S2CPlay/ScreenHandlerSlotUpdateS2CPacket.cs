@@ -5,8 +5,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class ScreenHandlerSlotUpdateS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ScreenHandlerSlotUpdateS2CPacket).TypeHandle);
-
     public int syncId;
     public int slot;
     public ItemStack stack;

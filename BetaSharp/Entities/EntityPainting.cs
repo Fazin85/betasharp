@@ -9,8 +9,6 @@ namespace BetaSharp.Entities;
 
 public class EntityPainting : Entity
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityPainting).TypeHandle);
-
     private int tickCounter;
     public int direction;
     public int xPosition;

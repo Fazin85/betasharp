@@ -8,8 +8,6 @@ namespace BetaSharp.Entities;
 
 public class EntitySlime : EntityLiving, Monster
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntitySlime).TypeHandle);
-
     public float squishAmount;
     public float prevSquishAmount;
     private int slimeJumpDelay;
@@ -26,12 +24,12 @@ public class EntitySlime : EntityLiving, Monster
     protected override void initDataTracker()
     {
         base.initDataTracker();
-        dataWatcher.addObject(16, new java.lang.Byte((byte)1));
+        dataWatcher.AddObject(16, (byte)1);
     }
 
     public void setSlimeSize(int size)
     {
-        dataWatcher.updateObject(16, new java.lang.Byte((byte)size));
+        dataWatcher.UpdateObject(16, (byte)size);
         setBoundingBoxSpacing(0.6F * (float)size, 0.6F * (float)size);
         health = size * size;
         setPosition(x, y, z);

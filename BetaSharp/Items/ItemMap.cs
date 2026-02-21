@@ -20,7 +20,7 @@ public class ItemMap : NetworkSyncedItem
     public static MapState getMapState(short mapId, World world)
     {
         (new StringBuilder()).append("map_").append(mapId).toString();
-        MapState mapState = (MapState)world.getOrCreateState(MapState.Class, "map_" + mapId);
+        MapState mapState = (MapState)world.getOrCreateState(typeof(MapState), "map_" + mapId);
         if (mapState == null)
         {
             int mapIdCount = world.getIdCount("map");
@@ -35,7 +35,7 @@ public class ItemMap : NetworkSyncedItem
     public MapState getSavedMapState(ItemStack stack, World world)
     {
         (new StringBuilder()).append("map_").append(stack.getDamage()).toString();
-        MapState mapState = (MapState)world.getOrCreateState(MapState.Class, "map_" + stack.getDamage());
+        MapState mapState = (MapState)world.getOrCreateState(typeof(MapState), "map_" + stack.getDamage());
         if (mapState == null)
         {
             stack.setDamage(world.getIdCount("map"));

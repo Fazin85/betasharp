@@ -1,43 +1,37 @@
 using BetaSharp.NBT;
 using BetaSharp.Worlds;
-using java.lang;
-using java.util;
-using Exception = java.lang.Exception;
+using Exception = System.Exception;
 
 namespace BetaSharp.Entities;
 
 public class EntityRegistry
 {
-    private static Map idToClass = new HashMap();
-    private static Map classToId = new HashMap();
-    private static Map rawIdToClass = new HashMap();
-    private static Map classToRawId = new HashMap();
+    private static Dictionary<string, Type> idToClass = new ();
+    private static Dictionary<Type, string> classToId = new ();
+    private static Dictionary<int, Type> rawIdToClass = new ();
+    private static Dictionary<Type, int> classToRawId = new ();
     public static Dictionary<string, int> namesToId = new();
 
-    private static void register(Class entityClass, string id, int rawId)
+    private static void Register(Type entityType, string id, int rawId)
     {
-        idToClass.put(id, entityClass);
-        classToId.put(entityClass, id);
-        rawIdToClass.put(Integer.valueOf(rawId), entityClass);
-        classToRawId.put(entityClass, Integer.valueOf(rawId));
+        idToClass.Add(id, entityType);
+        classToId.Add(entityType, id);
+        rawIdToClass.Add(rawId, entityType);
+        classToRawId.Add(entityType, rawId);
         namesToId.TryAdd(id.ToLower(), rawId);
     }
 
-    public static Entity create(string id, World world)
+    public static Entity Create(string id, World world)
     {
         Entity? entity = null;
 
         try
         {
-            Class entityClass = (Class)idToClass.get(id);
-            if (entityClass != null)
-            {
-                entity = (Entity)entityClass.getConstructor(World.Class).newInstance(world);
-            }
+	        entity = (Entity)Activator.CreateInstance(idToClass[id], world)!;
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
-            ex.printStackTrace();
+	        Log.Error(e);
         }
 
         return entity;
@@ -49,15 +43,11 @@ public class EntityRegistry
 
         try
         {
-            Class entityClass = (Class)idToClass.get(nbt.GetString("id"));
-            if (entityClass != null)
-            {
-                entity = (Entity)entityClass.getConstructor(World.Class).newInstance(world);
-            }
+	        entity = ((Entity)Activator.CreateInstance(idToClass[nbt.GetString("id")], world)!);
         }
-        catch (java.lang.Exception ex)
+        catch (Exception e)
         {
-            ex.printStackTrace();
+	        Log.Error(e);
         }
 
         if (entity != null)
@@ -79,10 +69,9 @@ public class EntityRegistry
         {
             if (namesToId.TryGetValue(name, out int id))
             {
-                Class entityClass = (Class)rawIdToClass.get(Integer.valueOf(id));
-                if (entityClass != null)
+				if(rawIdToClass.TryGetValue(id, out Type type))
                 {
-                    var entity = (Entity)entityClass.getConstructor(World.Class).newInstance(world);
+                    var entity = ((Entity)Activator.CreateInstance(type, world));
 
                     if (entity != null)
                     {
@@ -120,11 +109,7 @@ public class EntityRegistry
 
         try
         {
-            Class entityClass = (Class)rawIdToClass.get(Integer.valueOf(rawId));
-            if (entityClass != null)
-            {
-                entity = (Entity)entityClass.getConstructor(World.Class).newInstance(world);
-            }
+	        entity = ((Entity)Activator.CreateInstance(rawIdToClass[rawId], world));
         }
         catch (java.lang.Exception ex)
         {
@@ -139,41 +124,41 @@ public class EntityRegistry
         return entity;
     }
 
-    public static int getRawId(Entity entity)
+    public static int GetRawId(Entity entity)
     {
-        return ((Integer)classToRawId.get(entity.getClass())).intValue();
+        return classToRawId[entity.GetType()];
     }
 
-    public static string getId(Entity entity)
+    public static string GetId(Entity entity)
     {
-        return (string)classToId.get(entity.getClass());
+        return classToId[entity.GetType()];
     }
 
     static EntityRegistry()
     {
-        register(EntityArrow.Class, "Arrow", 10);
-        register(EntitySnowball.Class, "Snowball", 11);
-        register(EntityItem.Class, "Item", 1);
-        register(EntityPainting.Class, "Painting", 9);
-        register(EntityLiving.Class, "Mob", 48);
-        register(EntityMonster.Class, "Monster", 49);
-        register(EntityCreeper.Class, "Creeper", 50);
-        register(EntitySkeleton.Class, "Skeleton", 51);
-        register(EntitySpider.Class, "Spider", 52);
-        register(EntityGiantZombie.Class, "Giant", 53);
-        register(EntityZombie.Class, "Zombie", 54);
-        register(EntitySlime.Class, "Slime", 55);
-        register(EntityGhast.Class, "Ghast", 56);
-        register(EntityPigZombie.Class, "PigZombie", 57);
-        register(EntityPig.Class, "Pig", 90);
-        register(EntitySheep.Class, "Sheep", 91);
-        register(EntityCow.Class, "Cow", 92);
-        register(EntityChicken.Class, "Chicken", 93);
-        register(EntitySquid.Class, "Squid", 94);
-        register(EntityWolf.Class, "Wolf", 95);
-        register(EntityTNTPrimed.Class, "PrimedTnt", 20);
-        register(EntityFallingSand.Class, "FallingSand", 21);
-        register(EntityMinecart.Class, "Minecart", 40);
-        register(EntityBoat.Class, "Boat", 41);
+        Register(typeof(EntityArrow), "Arrow", 10);
+        Register(typeof(EntitySnowball), "Snowball", 11);
+        Register(typeof(EntityItem), "Item", 1);
+        Register(typeof(EntityPainting), "Painting", 9);
+        Register(typeof(EntityLiving), "Mob", 48);
+        Register(typeof(EntityMonster), "Monster", 49);
+        Register(typeof(EntityCreeper), "Creeper", 50);
+        Register(typeof(EntitySkeleton), "Skeleton", 51);
+        Register(typeof(EntitySpider), "Spider", 52);
+        Register(typeof(EntityGiantZombie), "Giant", 53);
+        Register(typeof(EntityZombie), "Zombie", 54);
+        Register(typeof(EntitySlime), "Slime", 55);
+        Register(typeof(EntityGhast), "Ghast", 56);
+        Register(typeof(EntityPigZombie), "PigZombie", 57);
+        Register(typeof(EntityPig), "Pig", 90);
+        Register(typeof(EntitySheep), "Sheep", 91);
+        Register(typeof(EntityCow), "Cow", 92);
+        Register(typeof(EntityChicken), "Chicken", 93);
+        Register(typeof(EntitySquid), "Squid", 94);
+        Register(typeof(EntityWolf), "Wolf", 95);
+        Register(typeof(EntityTNTPrimed), "PrimedTnt", 20);
+        Register(typeof(EntityFallingSand), "FallingSand", 21);
+        Register(typeof(EntityMinecart), "Minecart", 40);
+        Register(typeof(EntityBoat), "Boat", 41);
     }
 }

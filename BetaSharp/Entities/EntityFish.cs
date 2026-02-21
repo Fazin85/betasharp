@@ -9,8 +9,6 @@ namespace BetaSharp.Entities;
 
 public class EntityFish : Entity
 {
-
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityFish).TypeHandle);
     private int xTile;
     private int yTile;
     private int zTile;

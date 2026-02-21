@@ -64,13 +64,13 @@ public class BlockEntityMobSpawner : BlockEntity
 
                 for (int spawnAttempt = 0; spawnAttempt < max; ++spawnAttempt)
                 {
-                    EntityLiving entityLiving = (EntityLiving)EntityRegistry.create(_spawnedEntityId, world);
+                    EntityLiving entityLiving = (EntityLiving)EntityRegistry.Create(_spawnedEntityId, world);
                     if (entityLiving == null)
                     {
                         return;
                     }
 
-                    int count = world.collectEntitiesByClass(entityLiving.getClass(), new Box(x, y, z, x + 1, y + 1, z + 1).expand(8.0D, 4.0D, 8.0D)).Count;
+                    int count = world.CollectEntitiesByType<EntityLiving>(new Box(x, y, z, x + 1, y + 1, z + 1).expand(8.0D, 4.0D, 8.0D)).Count;
                     if (count >= 6)
                     {
                         ResetDelay();

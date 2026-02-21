@@ -5,8 +5,6 @@ namespace BetaSharp.Network.Packets.C2SPlay;
 
 public class PlayerInteractBlockC2SPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayerInteractBlockC2SPacket).TypeHandle);
-
     public int x;
     public int y;
     public int z;

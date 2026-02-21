@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.Play;
 
 public class ChatMessagePacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ChatMessagePacket).TypeHandle);
-
     public string chatMessage;
 
     public ChatMessagePacket()

@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.Play;
 
 public class DisconnectPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(DisconnectPacket).TypeHandle);
-
     public string reason;
 
     public DisconnectPacket()

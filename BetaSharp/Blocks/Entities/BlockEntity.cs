@@ -3,30 +3,30 @@ using BetaSharp.Network.Packets;
 using BetaSharp.Worlds;
 using java.lang;
 using java.util;
+using Exception = java.lang.Exception;
 
 namespace BetaSharp.Blocks.Entities;
 
-public class BlockEntity : java.lang.Object
+public class BlockEntity
 {
-    public static readonly Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(BlockEntity).TypeHandle);
-    private static readonly Map idToClass = new HashMap();
-    private static readonly Map classToId = new HashMap();
+    private static readonly Dictionary<string, Type> idToClass = new ();
+    private static readonly Dictionary<Type, string> classToId = new ();
     public World world;
     public int x;
     public int y;
     public int z;
     protected bool removed;
 
-    private static void create(Class blockEntityClass, string id)
+    private static void Create(Type blockEntityClass, string id)
     {
-        if (classToId.containsKey(id))
+        if (idToClass.ContainsKey(id))
         {
             throw new IllegalArgumentException("Duplicate id: " + id);
         }
         else
         {
-            idToClass.put(id, blockEntityClass);
-            classToId.put(blockEntityClass, id);
+            idToClass.Add(id, blockEntityClass);
+            classToId.Add(blockEntityClass, id);
         }
     }
 
@@ -39,10 +39,10 @@ public class BlockEntity : java.lang.Object
 
     public virtual void writeNbt(NBTTagCompound nbt)
     {
-        string entityId = (string)classToId.get(getClass());
+        string entityId = (string)classToId[(GetType())];
         if (entityId == null)
         {
-            throw new RuntimeException(getClass() + " is missing a mapping! This is a bug!");
+            throw new RuntimeException(GetType() + " is missing a mapping! This is a bug!");
         }
         else
         {
@@ -63,15 +63,15 @@ public class BlockEntity : java.lang.Object
 
         try
         {
-            Class blockEntityClass = (Class)idToClass.get(nbt.GetString("id"));
+            Type blockEntityClass = (Type)idToClass[(nbt.GetString("id"))];
             if (blockEntityClass != null)
             {
-                blockEntity = (BlockEntity)blockEntityClass.newInstance();
+                blockEntity = ((BlockEntity)Activator.CreateInstance(blockEntityClass));
             }
         }
-        catch (java.lang.Exception exception)
+        catch (Exception exception)
         {
-            exception.printStackTrace();
+            Log.Error(exception);
         }
 
         if (blockEntity != null)
@@ -135,13 +135,13 @@ public class BlockEntity : java.lang.Object
 
     static BlockEntity()
     {
-        create(new BlockEntityFurnace().getClass(), "Furnace");
-        create(new BlockEntityChest().getClass(), "Chest");
-        create(new BlockEntityRecordPlayer().getClass(), "RecordPlayer");
-        create(new BlockEntityDispenser().getClass(), "Trap");
-        create(new BlockEntitySign().getClass(), "Sign");
-        create(new BlockEntityMobSpawner().getClass(), "MobSpawner");
-        create(new BlockEntityNote().getClass(), "Music");
-        create(new BlockEntityPiston().getClass(), "Piston");
+        Create(typeof(BlockEntityFurnace), "Furnace");
+        Create(typeof(BlockEntityChest), "Chest");
+        Create(typeof(BlockEntityRecordPlayer), "RecordPlayer");
+        Create(typeof(BlockEntityDispenser), "Trap");
+        Create(typeof(BlockEntitySign), "Sign");
+        Create(typeof(BlockEntityMobSpawner), "MobSpawner");
+        Create(typeof(BlockEntityNote), "Music");
+        Create(typeof(BlockEntityPiston), "Piston");
     }
 }

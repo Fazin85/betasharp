@@ -98,12 +98,12 @@ public class BlockPressurePlate : Block
 
         if (activationRule == PressurePlateActiviationRule.MOBS)
         {
-            entitiesInBox = world.collectEntitiesByClass(EntityLiving.Class, new Box((double)((float)x + detectionInset), (double)y, (double)((float)z + detectionInset), (double)((float)(x + 1) - detectionInset), (double)y + 0.25D, (double)((float)(z + 1) - detectionInset)));
+            entitiesInBox = world.CollectEntitiesByType<EntityLiving>(new Box((double)((float)x + detectionInset), (double)y, (double)((float)z + detectionInset), (double)((float)(x + 1) - detectionInset), (double)y + 0.25D, (double)((float)(z + 1) - detectionInset)));
         }
 
         if (activationRule == PressurePlateActiviationRule.PLAYERS)
         {
-            entitiesInBox = world.collectEntitiesByClass(EntityPlayer.Class, new Box((double)((float)x + detectionInset), (double)y, (double)((float)z + detectionInset), (double)((float)(x + 1) - detectionInset), (double)y + 0.25D, (double)((float)(z + 1) - detectionInset)));
+            entitiesInBox = world.CollectEntitiesByType<EntityPlayer>(new Box((double)((float)x + detectionInset), (double)y, (double)((float)z + detectionInset), (double)((float)(x + 1) - detectionInset), (double)y + 0.25D, (double)((float)(z + 1) - detectionInset)));
         }
 
         if (entitiesInBox.Count > 0)

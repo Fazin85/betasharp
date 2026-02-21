@@ -2,15 +2,11 @@ using java.lang;
 
 namespace BetaSharp.Util.Maths;
 
-public class Vec3i : java.lang.Object, Comparable
+public class Vec3i : Comparable
 {
     public int x;
     public int y;
     public int z;
-
-    public Vec3i()
-    {
-    }
 
     public Vec3i(int var1, int var2, int var3)
     {
@@ -26,7 +22,7 @@ public class Vec3i : java.lang.Object, Comparable
         z = var1.z;
     }
 
-    public override bool equals(object var1)
+    public bool Equals(object var1)
     {
         if (var1 is not Vec3i)
         {
@@ -39,7 +35,7 @@ public class Vec3i : java.lang.Object, Comparable
         }
     }
 
-    public override int hashCode()
+    public override int GetHashCode()
     {
         return x + z << 8 + y << 16;
     }

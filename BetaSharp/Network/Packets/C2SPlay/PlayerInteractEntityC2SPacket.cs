@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.C2SPlay;
 
 public class PlayerInteractEntityC2SPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayerInteractEntityC2SPacket).TypeHandle);
-
     public int playerId;
     public int entityId;
     public int isLeftClick;

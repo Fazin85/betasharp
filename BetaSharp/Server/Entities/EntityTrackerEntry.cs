@@ -8,7 +8,7 @@ using java.lang;
 
 namespace BetaSharp.Server.Entities;
 
-public class EntityTrackerEntry : java.lang.Object
+public class EntityTrackerEntry 
 {
     public Entity currentTrackedEntity;
     public int trackedDistance;
@@ -44,12 +44,12 @@ public class EntityTrackerEntry : java.lang.Object
         lastPitch = MathHelper.Floor(entity.pitch * 256.0F / 360.0F);
     }
 
-    public override bool equals(object obj)
+    public override bool Equals(object obj)
     {
         return obj is EntityTrackerEntry entry && entry.currentTrackedEntity.id == currentTrackedEntity.id;
     }
 
-    public override int hashCode()
+    public override int GetHashCode()
     {
         return currentTrackedEntity.id;
     }
@@ -346,7 +346,7 @@ public class EntityTrackerEntry : java.lang.Object
                 }
                 else
                 {
-                    throw new IllegalArgumentException("Don't know how to add " + currentTrackedEntity.getClass() + "!");
+                    throw new IllegalArgumentException("Don't know how to add " + currentTrackedEntity.GetType() + "!");
                 }
             }
         }

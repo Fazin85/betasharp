@@ -8,8 +8,6 @@ namespace BetaSharp.Entities;
 
 public abstract class EntityAnimal : EntityCreature, SpawnableEntity
 {
-    public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityAnimal).TypeHandle);
-
     public EntityAnimal(World world) : base(world)
     {
     }

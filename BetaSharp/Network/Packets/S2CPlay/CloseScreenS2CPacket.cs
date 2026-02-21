@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class CloseScreenS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(CloseScreenS2CPacket).TypeHandle);
-
     public int windowId;
 
     public CloseScreenS2CPacket()

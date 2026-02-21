@@ -9,9 +9,8 @@ using Math = System.Math;
 
 namespace BetaSharp.Entities;
 
-public abstract class Entity : java.lang.Object
+public abstract class Entity 
 {
-    public static readonly Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(Entity).TypeHandle);
     private static int nextEntityID;
     public int id = nextEntityID++;
     public double renderDistanceWeight = 1.0D;
@@ -84,7 +83,7 @@ public abstract class Entity : java.lang.Object
     {
         this.world = world;
         setPosition(0.0D, 0.0D, 0.0D);
-        dataWatcher.addObject(0, java.lang.Byte.valueOf(0));
+        dataWatcher.AddObject(0, (byte)0);
         initDataTracker();
     }
 
@@ -95,12 +94,12 @@ public abstract class Entity : java.lang.Object
         return dataWatcher;
     }
 
-    public override bool equals(object other)
+    public override bool Equals(object other)
     {
         return other is Entity ? ((Entity)other).id == id : false;
     }
 
-    public override int hashCode()
+    public override int GetHashCode()
     {
         return id;
     }
@@ -964,7 +963,7 @@ public abstract class Entity : java.lang.Object
 
     protected string getRegistryEntry()
     {
-        return EntityRegistry.getId(this);
+        return EntityRegistry.GetId(this);
     }
 
     public abstract void readNbt(NBTTagCompound nbt);
@@ -1280,7 +1279,7 @@ public abstract class Entity : java.lang.Object
         {
             newValue = (byte)((byte)var3 & ~(1 << var1));
         }
-        dataWatcher.updateObject(0, java.lang.Byte.valueOf(newValue));
+        dataWatcher.UpdateObject(0, (byte)(newValue));
 
     }
 

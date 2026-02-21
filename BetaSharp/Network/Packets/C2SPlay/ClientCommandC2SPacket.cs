@@ -5,8 +5,6 @@ namespace BetaSharp.Network.Packets.C2SPlay;
 
 public class ClientCommandC2SPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ClientCommandC2SPacket).TypeHandle);
-
     public int entityId;
     public int mode;
 

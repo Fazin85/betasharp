@@ -9,8 +9,6 @@ namespace BetaSharp.Entities;
 
 public class EntityItem : Entity
 {
-
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityItem).TypeHandle);
     public ItemStack stack;
     public int itemAge;
     public int delayBeforeCanPickup;

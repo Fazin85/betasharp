@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class PlayNoteSoundS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayNoteSoundS2CPacket).TypeHandle);
-
     public int xLocation;
     public int yLocation;
     public int zLocation;

@@ -10,8 +10,6 @@ namespace BetaSharp.Entities;
 
 public class EntityArrow : Entity
 {
-    public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityArrow).TypeHandle);
-
     private int xTile = -1;
     private int yTile = -1;
     private int zTile = -1;

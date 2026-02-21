@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.C2SPlay;
 
 public class PlayerInputC2SPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayerInputC2SPacket).TypeHandle);
-
     private float sideways;
     private float forward;
     private bool jumping;

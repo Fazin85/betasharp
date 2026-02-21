@@ -2,7 +2,7 @@ using java.lang;
 
 namespace BetaSharp;
 
-public class BlockEvent : java.lang.Object, Comparable
+public class BlockEvent : Comparable
 {
     private static long nextTickEntryID;
     public int x;
@@ -20,7 +20,7 @@ public class BlockEvent : java.lang.Object, Comparable
         blockId = var4;
     }
 
-    public override bool equals(object var1)
+    public override bool Equals(object var1)
     {
         if (var1 is not BlockEvent)
         {
@@ -33,7 +33,7 @@ public class BlockEvent : java.lang.Object, Comparable
         }
     }
 
-    public override int hashCode()
+    public override int GetHashCode()
     {
         return (x * 128 * 1024 + z * 128 + y) * 256 + blockId;
     }

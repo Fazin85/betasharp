@@ -6,18 +6,18 @@ namespace BetaSharp;
 
 public class EnumCreatureType
 {
-    public static readonly EnumCreatureType monster = new EnumCreatureType(Monster.Class, 70, Material.Air, false);
+    public static readonly EnumCreatureType monster = new EnumCreatureType(typeof(Monster), 70, Material.Air, false);
     public static readonly EnumCreatureType creature = new EnumCreatureType(typeof(EntityAnimal), 15, Material.Air, true);
     public static readonly EnumCreatureType waterCreature = new EnumCreatureType(typeof(EntityWaterMob), 5, Material.Water, true);
 
-    private readonly Class creatureClass;
+    private readonly Type creatureClass;
     private readonly int maxAllowed;
     private readonly Material material;
     private readonly bool peaceful;
 
     public static readonly EnumCreatureType[] values = [monster, creature, waterCreature];
 
-    private EnumCreatureType(Class creatureClass, int maxAllowed, Material material, bool peaceful)
+    private EnumCreatureType(Type creatureClass, int maxAllowed, Material material, bool peaceful)
     {
         this.creatureClass = creatureClass;
         this.maxAllowed = maxAllowed;
@@ -25,7 +25,7 @@ public class EnumCreatureType
         this.peaceful = peaceful;
     }
 
-    public Class getCreatureClass()
+    public Type getCreatureType()
     {
         return creatureClass;
     }

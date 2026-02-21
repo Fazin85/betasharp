@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.C2SPlay;
 
 public class UpdateSelectedSlotC2SPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(UpdateSelectedSlotC2SPacket).TypeHandle);
-
     public int selectedSlot;
 
     public UpdateSelectedSlotC2SPacket()

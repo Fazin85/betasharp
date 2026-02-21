@@ -11,8 +11,6 @@ namespace BetaSharp.Client.Network;
 
 public class EntityClientPlayerMP : ClientPlayerEntity
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityClientPlayerMP).TypeHandle);
-
     public ClientNetworkHandler sendQueue;
     private int inventorySyncTickCounter;
     private bool hasReceivedInitialHealth;

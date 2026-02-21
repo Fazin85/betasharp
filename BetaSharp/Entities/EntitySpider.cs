@@ -7,8 +7,6 @@ namespace BetaSharp.Entities;
 
 public class EntitySpider : EntityMonster
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntitySpider).TypeHandle);
-
     public EntitySpider(World world) : base(world)
     {
         texture = "/mob/spider.png";

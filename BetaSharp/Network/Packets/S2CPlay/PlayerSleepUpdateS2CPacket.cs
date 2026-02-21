@@ -5,8 +5,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class PlayerSleepUpdateS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayerSleepUpdateS2CPacket).TypeHandle);
-
     public int id;
     public int x;
     public int y;

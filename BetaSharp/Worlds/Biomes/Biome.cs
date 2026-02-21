@@ -38,18 +38,18 @@ public class Biome
 
     protected Biome()
     {
-        MonsterList.Add(new SpawnListEntry(EntitySpider.Class, 10));
-        MonsterList.Add(new SpawnListEntry(EntityZombie.Class, 10));
-        MonsterList.Add(new SpawnListEntry(EntitySkeleton.Class, 10));
-        MonsterList.Add(new SpawnListEntry(EntityCreeper.Class, 10));
-        MonsterList.Add(new SpawnListEntry(EntitySlime.Class, 10));
+        MonsterList.Add(new SpawnListEntry(typeof(EntitySpider), 10));
+        MonsterList.Add(new SpawnListEntry(typeof(EntityZombie), 10));
+        MonsterList.Add(new SpawnListEntry(typeof(EntitySkeleton), 10));
+        MonsterList.Add(new SpawnListEntry(typeof(EntityCreeper), 10));
+        MonsterList.Add(new SpawnListEntry(typeof(EntitySlime), 10));
 
-        CreatureList.Add(new SpawnListEntry(EntitySheep.Class, 12));
-        CreatureList.Add(new SpawnListEntry(EntityPig.Class, 10));
-        CreatureList.Add(new SpawnListEntry(EntityChicken.Class, 10));
-        CreatureList.Add(new SpawnListEntry(EntityCow.Class, 8));
+        CreatureList.Add(new SpawnListEntry(typeof(EntitySheep), 12));
+        CreatureList.Add(new SpawnListEntry(typeof(EntityPig), 10));
+        CreatureList.Add(new SpawnListEntry(typeof(EntityChicken), 10));
+        CreatureList.Add(new SpawnListEntry(typeof(EntityCow), 8));
 
-        WaterCreatureList.Add(new SpawnListEntry(EntitySquid.Class, 10));
+        WaterCreatureList.Add(new SpawnListEntry(typeof(EntitySquid), 10));
     }
 
     protected Biome DisableRain() { HasRain = false; return this; }

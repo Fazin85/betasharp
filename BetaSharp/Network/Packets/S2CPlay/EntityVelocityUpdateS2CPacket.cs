@@ -5,8 +5,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class EntityVelocityUpdateS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityVelocityUpdateS2CPacket).TypeHandle);
-
     public int entityId;
     public int motionX;
     public int motionY;

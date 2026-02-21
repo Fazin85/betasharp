@@ -5,8 +5,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class ExplosionS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ExplosionS2CPacket).TypeHandle);
-
     public double explosionX;
     public double explosionY;
     public double explosionZ;

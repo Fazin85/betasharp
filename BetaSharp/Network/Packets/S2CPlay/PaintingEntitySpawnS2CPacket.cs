@@ -5,8 +5,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class PaintingEntitySpawnS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PaintingEntitySpawnS2CPacket).TypeHandle);
-
     public int entityId;
     public int xPosition;
     public int yPosition;

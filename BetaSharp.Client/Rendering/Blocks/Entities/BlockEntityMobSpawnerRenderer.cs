@@ -17,7 +17,7 @@ public class BlockEntityMobSpawnerRenderer : BlockEntitySpecialRenderer
         _entityDict.TryGetValue(var1.GetSpawnedEntityId(), out Entity? var9);
         if (var9 == null)
         {
-            var9 = EntityRegistry.create(var1.GetSpawnedEntityId(), null);
+            var9 = EntityRegistry.Create(var1.GetSpawnedEntityId(), null);
             _entityDict.Add(var1.GetSpawnedEntityId(), var9);
         }
 

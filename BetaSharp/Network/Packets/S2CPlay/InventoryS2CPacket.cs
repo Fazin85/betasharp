@@ -6,8 +6,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class InventoryS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(InventoryS2CPacket).TypeHandle);
-
     public int syncId;
     public ItemStack[] contents;
 

@@ -10,8 +10,6 @@ namespace BetaSharp.Entities;
 
 public class EntityBoat : Entity
 {
-
-    public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityBoat).TypeHandle);
     public int boatCurrentDamage;
     public int boatTimeSinceHit;
     public int boatRockDirection;

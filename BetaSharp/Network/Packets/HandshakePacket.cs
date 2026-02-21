@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets;
 
 public class HandshakePacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(HandshakePacket).TypeHandle);
-
     public string username;
 
     public HandshakePacket()

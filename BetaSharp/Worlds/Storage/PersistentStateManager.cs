@@ -18,7 +18,7 @@ public class PersistentStateManager : java.lang.Object
         loadIdCounts();
     }
 
-    public PersistentState loadData(Class var1, string var2)
+    public PersistentState LoadData(Type type, string var2)
     {
         PersistentState var3 = (PersistentState)loadedDataMap.get(var2);
         if (var3 != null)
@@ -35,11 +35,11 @@ public class PersistentStateManager : java.lang.Object
                 {
                     try
                     {
-                        var3 = (PersistentState)var1.getConstructor(c).newInstance(var2);
+                        var3 = (PersistentState)Activator.CreateInstance(type, var2)!;
                     }
                     catch (java.lang.Exception e)
                     {
-                        throw new RuntimeException("Failed to instantiate " + var1.toString(), e);
+                        throw new RuntimeException("Failed to instantiate " + type.ToString(), e);
                     }
 
                     using var stream = File.OpenRead(file.getAbsolutePath());

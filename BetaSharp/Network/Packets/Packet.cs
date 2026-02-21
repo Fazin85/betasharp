@@ -6,7 +6,7 @@ using java.util;
 
 namespace BetaSharp.Network.Packets;
 
-public abstract class Packet : java.lang.Object
+public abstract class Packet
 {
     private static Map IO_TO_TYPE = new HashMap();
     private static Map TYPE_TO_ID = new HashMap();
@@ -17,7 +17,7 @@ public abstract class Packet : java.lang.Object
     private static HashMap trackers;
     private static int incomingCount;
 
-    static void register(int rawId, bool clientBound, bool serverBound, Class type)
+    static void register(int rawId, bool clientBound, bool serverBound, Type type)
     {
         if (IO_TO_TYPE.containsKey(Integer.valueOf(rawId)))
         {
@@ -61,7 +61,7 @@ public abstract class Packet : java.lang.Object
 
     public int getRawId()
     {
-        return ((Integer)TYPE_TO_ID.get(getClass())).intValue();
+        return ((Integer)TYPE_TO_ID.get(GetType())).intValue();
     }
 
     public static Packet read(java.io.DataInputStream stream, bool server)
@@ -171,63 +171,63 @@ public abstract class Packet : java.lang.Object
 
     static Packet()
     {
-        register(0, true, true, KeepAlivePacket.Class);
-        register(1, true, true, LoginHelloPacket.Class);
-        register(2, true, true, HandshakePacket.Class);
-        register(3, true, true, ChatMessagePacket.Class);
-        register(4, true, false, WorldTimeUpdateS2CPacket.Class);
-        register(5, true, false, EntityEquipmentUpdateS2CPacket.Class);
-        register(6, true, false, PlayerSpawnPositionS2CPacket.Class);
-        register(7, false, true, PlayerInteractEntityC2SPacket.Class);
-        register(8, true, false, HealthUpdateS2CPacket.Class);
-        register(9, true, true, PlayerRespawnPacket.Class);
-        register(10, true, true, PlayerMovePacket.Class);
-        register(11, true, true, PlayerMovePositionAndOnGroundPacket.Class);
-        register(12, true, true, PlayerMoveLookAndOnGroundPacket.Class);
-        register(13, true, true, PlayerMoveFullPacket.Class);
-        register(14, false, true, PlayerActionC2SPacket.Class);
-        register(15, false, true, PlayerInteractBlockC2SPacket.Class);
-        register(16, false, true, UpdateSelectedSlotC2SPacket.Class);
-        register(17, true, false, PlayerSleepUpdateS2CPacket.Class);
-        register(18, true, true, EntityAnimationPacket.Class);
-        register(19, false, true, ClientCommandC2SPacket.Class);
-        register(20, true, false, PlayerSpawnS2CPacket.Class);
-        register(21, true, false, ItemEntitySpawnS2CPacket.Class);
-        register(22, true, false, ItemPickupAnimationS2CPacket.Class);
-        register(23, true, false, EntitySpawnS2CPacket.Class);
-        register(24, true, false, LivingEntitySpawnS2CPacket.Class);
-        register(25, true, false, PaintingEntitySpawnS2CPacket.Class);
-        register(27, false, true, PlayerInputC2SPacket.Class);
-        register(28, true, false, EntityVelocityUpdateS2CPacket.Class);
-        register(29, true, false, EntityDestroyS2CPacket.Class);
-        register(30, true, false, EntityS2CPacket.Class);
-        register(31, true, false, EntityMoveRelativeS2CPacket.Class);
-        register(32, true, false, EntityRotateS2CPacket.Class);
-        register(33, true, false, EntityRotateAndMoveRelativeS2CPacket.Class);
-        register(34, true, false, EntityPositionS2CPacket.Class);
-        register(38, true, false, EntityStatusS2CPacket.Class);
-        register(39, true, false, EntityVehicleSetS2CPacket.Class);
-        register(40, true, false, EntityTrackerUpdateS2CPacket.Class);
-        register(50, true, false, ChunkStatusUpdateS2CPacket.Class);
-        register(51, true, false, ChunkDataS2CPacket.Class);
-        register(52, true, false, ChunkDeltaUpdateS2CPacket.Class);
-        register(53, true, false, BlockUpdateS2CPacket.Class);
-        register(54, true, false, PlayNoteSoundS2CPacket.Class);
-        register(60, true, false, ExplosionS2CPacket.Class);
-        register(61, true, false, WorldEventS2CPacket.Class);
-        register(70, true, false, GameStateChangeS2CPacket.Class);
-        register(71, true, false, GlobalEntitySpawnS2CPacket.Class);
-        register(100, true, false, OpenScreenS2CPacket.Class);
-        register(101, true, true, CloseScreenS2CPacket.Class);
-        register(102, false, true, ClickSlotC2SPacket.Class);
-        register(103, true, false, ScreenHandlerSlotUpdateS2CPacket.Class);
-        register(104, true, false, InventoryS2CPacket.Class);
-        register(105, true, false, ScreenHandlerPropertyUpdateS2CPacket.Class);
-        register(106, true, true, ScreenHandlerAcknowledgementPacket.Class);
-        register(130, true, true, UpdateSignPacket.Class);
-        register(131, true, false, MapUpdateS2CPacket.Class);
-        register(200, true, false, IncreaseStatS2CPacket.Class);
-        register(255, true, true, DisconnectPacket.Class);
+        register(0, true, true, typeof(KeepAlivePacket));
+        register(1, true, true, typeof(LoginHelloPacket));
+        register(2, true, true, typeof(HandshakePacket));
+        register(3, true, true, typeof(ChatMessagePacket));
+        register(4, true, false, typeof(WorldTimeUpdateS2CPacket));
+        register(5, true, false, typeof(EntityEquipmentUpdateS2CPacket));
+        register(6, true, false, typeof(PlayerSpawnPositionS2CPacket));
+        register(7, false, true, typeof(PlayerInteractEntityC2SPacket));
+        register(8, true, false, typeof(HealthUpdateS2CPacket));
+        register(9, true, true, typeof(PlayerRespawnPacket));
+        register(10, true, true, typeof(PlayerMovePacket));
+        register(11, true, true, typeof(PlayerMovePositionAndOnGroundPacket));
+        register(12, true, true, typeof(PlayerMoveLookAndOnGroundPacket));
+        register(13, true, true, typeof(PlayerMoveFullPacket));
+        register(14, false, true, typeof(PlayerActionC2SPacket));
+        register(15, false, true, typeof(PlayerInteractBlockC2SPacket));
+        register(16, false, true, typeof(UpdateSelectedSlotC2SPacket));
+        register(17, true, false, typeof(PlayerSleepUpdateS2CPacket));
+        register(18, true, true, typeof(EntityAnimationPacket));
+        register(19, false, true, typeof(ClientCommandC2SPacket));
+        register(20, true, false, typeof(PlayerSpawnS2CPacket));
+        register(21, true, false, typeof(ItemEntitySpawnS2CPacket));
+        register(22, true, false, typeof(ItemPickupAnimationS2CPacket));
+        register(23, true, false, typeof(EntitySpawnS2CPacket));
+        register(24, true, false, typeof(LivingEntitySpawnS2CPacket));
+        register(25, true, false, typeof(PaintingEntitySpawnS2CPacket));
+        register(27, false, true, typeof(PlayerInputC2SPacket));
+        register(28, true, false, typeof(EntityVelocityUpdateS2CPacket));
+        register(29, true, false, typeof(EntityDestroyS2CPacket));
+        register(30, true, false, typeof(EntityS2CPacket));
+        register(31, true, false, typeof(EntityMoveRelativeS2CPacket));
+        register(32, true, false, typeof(EntityRotateS2CPacket));
+        register(33, true, false, typeof(EntityRotateAndMoveRelativeS2CPacket));
+        register(34, true, false, typeof(EntityPositionS2CPacket));
+        register(38, true, false, typeof(EntityStatusS2CPacket));
+        register(39, true, false, typeof(EntityVehicleSetS2CPacket));
+        register(40, true, false, typeof(EntityTrackerUpdateS2CPacket));
+        register(50, true, false, typeof(ChunkStatusUpdateS2CPacket));
+        register(51, true, false, typeof(ChunkDataS2CPacket));
+        register(52, true, false, typeof(ChunkDeltaUpdateS2CPacket));
+        register(53, true, false, typeof(BlockUpdateS2CPacket));
+        register(54, true, false, typeof(PlayNoteSoundS2CPacket));
+        register(60, true, false, typeof(ExplosionS2CPacket));
+        register(61, true, false, typeof(WorldEventS2CPacket));
+        register(70, true, false, typeof(GameStateChangeS2CPacket));
+        register(71, true, false, typeof(GlobalEntitySpawnS2CPacket));
+        register(100, true, false, typeof(OpenScreenS2CPacket));
+        register(101, true, true, typeof(CloseScreenS2CPacket));
+        register(102, false, true, typeof(ClickSlotC2SPacket));
+        register(103, true, false, typeof(ScreenHandlerSlotUpdateS2CPacket));
+        register(104, true, false, typeof(InventoryS2CPacket));
+        register(105, true, false, typeof(ScreenHandlerPropertyUpdateS2CPacket));
+        register(106, true, true, typeof(ScreenHandlerAcknowledgementPacket));
+        register(130, true, true, typeof(UpdateSignPacket));
+        register(131, true, false, typeof(MapUpdateS2CPacket));
+        register(200, true, false, typeof(IncreaseStatS2CPacket));
+        register(255, true, true, typeof(DisconnectPacket));
         trackers = new HashMap();
         incomingCount = 0;
     }

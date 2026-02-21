@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class EntityDestroyS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityDestroyS2CPacket).TypeHandle);
-
     public int entityId;
 
     public EntityDestroyS2CPacket()

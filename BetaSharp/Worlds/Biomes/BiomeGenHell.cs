@@ -11,7 +11,7 @@ public class BiomeGenHell : Biome
         CreatureList.Clear();
         WaterCreatureList.Clear();
 
-        MonsterList.Add(new SpawnListEntry(EntityGhast.Class, 10));
-        MonsterList.Add(new SpawnListEntry(EntityPigZombie.Class, 10));
+        MonsterList.Add(new SpawnListEntry(typeof(EntityGhast), 10));
+        MonsterList.Add(new SpawnListEntry(typeof(EntityPigZombie), 10));
     }
 }

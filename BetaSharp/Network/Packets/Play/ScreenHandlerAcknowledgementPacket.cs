@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.Play;
 
 public class ScreenHandlerAcknowledgementPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ScreenHandlerAcknowledgementPacket).TypeHandle);
-
     public int syncId;
     public short actionType;
     public bool accepted;

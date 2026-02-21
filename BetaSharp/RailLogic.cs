@@ -1,7 +1,6 @@
 using BetaSharp.Blocks;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.util;
 
 namespace BetaSharp;
 
@@ -12,13 +11,13 @@ public class RailLogic
     private int trackY;
     private int trackZ;
     private readonly bool isPoweredRail;
-    private List connectedTracks;
+    private List<BlockPos> connectedTracks;
     readonly BlockRail rail;
 
     public RailLogic(BlockRail var1, World var2, int var3, int var4, int var5)
     {
         rail = var1;
-        connectedTracks = new ArrayList();
+        connectedTracks = new List<BlockPos>();
         worldObj = var2;
         trackX = var3;
         trackY = var4;
@@ -40,72 +39,72 @@ public class RailLogic
 
     private void setConnections(int var1)
     {
-        connectedTracks.clear();
+        connectedTracks.Clear();
         if (var1 == 0)
         {
-            connectedTracks.add(new BlockPos(trackX, trackY, trackZ - 1));
-            connectedTracks.add(new BlockPos(trackX, trackY, trackZ + 1));
+            connectedTracks.Add(new BlockPos(trackX, trackY, trackZ - 1));
+            connectedTracks.Add(new BlockPos(trackX, trackY, trackZ + 1));
         }
         else if (var1 == 1)
         {
-            connectedTracks.add(new BlockPos(trackX - 1, trackY, trackZ));
-            connectedTracks.add(new BlockPos(trackX + 1, trackY, trackZ));
+            connectedTracks.Add(new BlockPos(trackX - 1, trackY, trackZ));
+            connectedTracks.Add(new BlockPos(trackX + 1, trackY, trackZ));
         }
         else if (var1 == 2)
         {
-            connectedTracks.add(new BlockPos(trackX - 1, trackY, trackZ));
-            connectedTracks.add(new BlockPos(trackX + 1, trackY + 1, trackZ));
+            connectedTracks.Add(new BlockPos(trackX - 1, trackY, trackZ));
+            connectedTracks.Add(new BlockPos(trackX + 1, trackY + 1, trackZ));
         }
         else if (var1 == 3)
         {
-            connectedTracks.add(new BlockPos(trackX - 1, trackY + 1, trackZ));
-            connectedTracks.add(new BlockPos(trackX + 1, trackY, trackZ));
+            connectedTracks.Add(new BlockPos(trackX - 1, trackY + 1, trackZ));
+            connectedTracks.Add(new BlockPos(trackX + 1, trackY, trackZ));
         }
         else if (var1 == 4)
         {
-            connectedTracks.add(new BlockPos(trackX, trackY + 1, trackZ - 1));
-            connectedTracks.add(new BlockPos(trackX, trackY, trackZ + 1));
+            connectedTracks.Add(new BlockPos(trackX, trackY + 1, trackZ - 1));
+            connectedTracks.Add(new BlockPos(trackX, trackY, trackZ + 1));
         }
         else if (var1 == 5)
         {
-            connectedTracks.add(new BlockPos(trackX, trackY, trackZ - 1));
-            connectedTracks.add(new BlockPos(trackX, trackY + 1, trackZ + 1));
+            connectedTracks.Add(new BlockPos(trackX, trackY, trackZ - 1));
+            connectedTracks.Add(new BlockPos(trackX, trackY + 1, trackZ + 1));
         }
         else if (var1 == 6)
         {
-            connectedTracks.add(new BlockPos(trackX + 1, trackY, trackZ));
-            connectedTracks.add(new BlockPos(trackX, trackY, trackZ + 1));
+            connectedTracks.Add(new BlockPos(trackX + 1, trackY, trackZ));
+            connectedTracks.Add(new BlockPos(trackX, trackY, trackZ + 1));
         }
         else if (var1 == 7)
         {
-            connectedTracks.add(new BlockPos(trackX - 1, trackY, trackZ));
-            connectedTracks.add(new BlockPos(trackX, trackY, trackZ + 1));
+            connectedTracks.Add(new BlockPos(trackX - 1, trackY, trackZ));
+            connectedTracks.Add(new BlockPos(trackX, trackY, trackZ + 1));
         }
         else if (var1 == 8)
         {
-            connectedTracks.add(new BlockPos(trackX - 1, trackY, trackZ));
-            connectedTracks.add(new BlockPos(trackX, trackY, trackZ - 1));
+            connectedTracks.Add(new BlockPos(trackX - 1, trackY, trackZ));
+            connectedTracks.Add(new BlockPos(trackX, trackY, trackZ - 1));
         }
         else if (var1 == 9)
         {
-            connectedTracks.add(new BlockPos(trackX + 1, trackY, trackZ));
-            connectedTracks.add(new BlockPos(trackX, trackY, trackZ - 1));
+            connectedTracks.Add(new BlockPos(trackX + 1, trackY, trackZ));
+            connectedTracks.Add(new BlockPos(trackX, trackY, trackZ - 1));
         }
 
     }
 
     private void func_785_b()
     {
-        for (int var1 = 0; var1 < connectedTracks.size(); ++var1)
+        for (int var1 = 0; var1 < connectedTracks.Count; ++var1)
         {
-            RailLogic var2 = getMinecartTrackLogic((BlockPos)connectedTracks.get(var1));
+            RailLogic var2 = getMinecartTrackLogic((BlockPos)connectedTracks[var1]);
             if (var2 != null && var2.isConnectedTo(this))
             {
-                connectedTracks.set(var1, new BlockPos(var2.trackX, var2.trackY, var2.trackZ));
+                connectedTracks[var1] = (new BlockPos(var2.trackX, var2.trackY, var2.trackZ));
             }
             else
             {
-                connectedTracks.remove(var1--);
+                connectedTracks.RemoveAt(var1--);
             }
         }
 
@@ -123,9 +122,9 @@ public class RailLogic
 
     private bool isConnectedTo(RailLogic var1)
     {
-        for (int var2 = 0; var2 < connectedTracks.size(); ++var2)
+        for (int var2 = 0; var2 < connectedTracks.Count; ++var2)
         {
-            BlockPos var3 = (BlockPos)connectedTracks.get(var2);
+            BlockPos var3 = (BlockPos)connectedTracks[var2];
             if (var3.x == var1.trackX && var3.z == var1.trackZ)
             {
                 return true;
@@ -137,9 +136,9 @@ public class RailLogic
 
     private bool isInTrack(int var1, int var2, int var3)
     {
-        for (int var4 = 0; var4 < connectedTracks.size(); ++var4)
+        for (int var4 = 0; var4 < connectedTracks.Count; ++var4)
         {
-            BlockPos var5 = (BlockPos)connectedTracks.get(var4);
+            BlockPos var5 = (BlockPos)connectedTracks[var4];
             if (var5.x == var1 && var5.z == var3)
             {
                 return true;
@@ -181,24 +180,24 @@ public class RailLogic
         {
             return true;
         }
-        else if (connectedTracks.size() == 2)
+        else if (connectedTracks.Count == 2)
         {
             return false;
         }
-        else if (connectedTracks.size() == 0)
+        else if (connectedTracks.Count == 0)
         {
             return true;
         }
         else
         {
-            BlockPos var2 = (BlockPos)connectedTracks.get(0);
+            BlockPos var2 = (BlockPos)connectedTracks[0];
             return var1.trackY == trackY && var2.y == trackY ? true : true;
         }
     }
 
     private void func_788_d(RailLogic var1)
     {
-        connectedTracks.add(new BlockPos(var1.trackX, var1.trackY, var1.trackZ));
+        connectedTracks.Add(new BlockPos(var1.trackX, var1.trackY, var1.trackZ));
         bool var2 = isInTrack(trackX, trackY, trackZ - 1);
         bool var3 = isInTrack(trackX, trackY, trackZ + 1);
         bool var4 = isInTrack(trackX - 1, trackY, trackZ);
@@ -434,9 +433,9 @@ public class RailLogic
         {
             worldObj.setBlockMeta(trackX, trackY, trackZ, var8);
 
-            for (int var9 = 0; var9 < connectedTracks.size(); ++var9)
+            for (int var9 = 0; var9 < connectedTracks.Count; ++var9)
             {
-                RailLogic var10 = getMinecartTrackLogic((BlockPos)connectedTracks.get(var9));
+                RailLogic var10 = getMinecartTrackLogic((BlockPos)connectedTracks[var9]);
                 if (var10 != null)
                 {
                     var10.func_785_b();

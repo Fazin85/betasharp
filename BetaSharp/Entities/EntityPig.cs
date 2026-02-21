@@ -6,8 +6,6 @@ namespace BetaSharp.Entities;
 
 public class EntityPig : EntityAnimal
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityPig).TypeHandle);
-
     public EntityPig(World world) : base(world)
     {
         texture = "/mob/pig.png";
@@ -16,7 +14,7 @@ public class EntityPig : EntityAnimal
 
     protected override void initDataTracker()
     {
-        dataWatcher.addObject(16, java.lang.Byte.valueOf((byte)0));
+        dataWatcher.AddObject(16, (byte)0);
     }
 
     public override void writeNbt(NBTTagCompound nbt)
@@ -73,11 +71,11 @@ public class EntityPig : EntityAnimal
     {
         if (isSaddled)
         {
-            dataWatcher.updateObject(16, java.lang.Byte.valueOf((byte)1));
+            dataWatcher.UpdateObject(16, ((byte)1));
         }
         else
         {
-            dataWatcher.updateObject(16, java.lang.Byte.valueOf((byte)0));
+            dataWatcher.UpdateObject(16, ((byte)0));
         }
 
     }

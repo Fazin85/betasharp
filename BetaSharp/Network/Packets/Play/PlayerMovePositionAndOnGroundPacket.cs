@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.Play;
 
 public class PlayerMovePositionAndOnGroundPacket : PlayerMovePacket
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayerMovePositionAndOnGroundPacket).TypeHandle);
-
     public PlayerMovePositionAndOnGroundPacket()
     {
         changePosition = true;

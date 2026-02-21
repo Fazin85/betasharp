@@ -5,8 +5,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class EntityEquipmentUpdateS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityEquipmentUpdateS2CPacket).TypeHandle);
-
     public int id;
     public int slot;
     public int itemRawId;

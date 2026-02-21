@@ -11,7 +11,6 @@ namespace BetaSharp.Entities;
 //TODO: BREAKING MINECART CRASHES THE GAME!!
 public class EntityMinecart : Entity, IInventory
 {
-    public static readonly Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityMinecart).TypeHandle);
     private ItemStack[] cargoItems;
     public int minecartCurrentDamage;
     public int minecartTimeSinceHit;

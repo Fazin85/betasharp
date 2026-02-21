@@ -6,8 +6,6 @@ namespace BetaSharp.Entities;
 
 public class EntityCow : EntityAnimal
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityCow).TypeHandle);
-
     public EntityCow(World world) : base(world)
     {
         this.texture = "/mob/cow.png";

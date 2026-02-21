@@ -7,8 +7,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class PlayerSpawnS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayerSpawnS2CPacket).TypeHandle);
-
     public int entityId;
     public string name;
     public int xPosition;

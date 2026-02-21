@@ -224,9 +224,9 @@ public class ClientNetworkHandler : NetHandler
     public override void onEntityTrackerUpdate(EntityTrackerUpdateS2CPacket packet)
     {
         Entity ent = getEntityByID(packet.id);
-        if (ent != null && packet.getWatchedObjects() != null)
+        if (ent != null && packet.GetWatchedObjects() != null)
         {
-            ent.getDataWatcher().updateWatchedObjectsFromList(packet.getWatchedObjects());
+            ent.getDataWatcher().UpdateWatchedObjectsFromList(packet.GetWatchedObjects());
         }
 
     }
@@ -525,10 +525,10 @@ public class ClientNetworkHandler : NetHandler
         ent.setPositionAndAngles(x, y, z, yaw, pitch);
         ent.interpolateOnly = true;
         worldClient.ForceEntity(packet.entityId, ent);
-        java.util.List metaData = packet.getMetadata();
+        List<WatchableObject> metaData = packet.GetMetadata();
         if (metaData != null)
         {
-            ent.getDataWatcher().updateWatchedObjectsFromList(metaData);
+            ent.getDataWatcher().UpdateWatchedObjectsFromList(metaData);
         }
 
     }

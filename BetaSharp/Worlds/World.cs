@@ -20,9 +20,8 @@ using Silk.NET.Maths;
 
 namespace BetaSharp.Worlds;
 
-public abstract class World : java.lang.Object, BlockView
+public abstract class World : BlockView
 {
-    public static readonly Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(World).TypeHandle);
     private const int AUTOSAVE_PERIOD = 40;
     public bool instantBlockUpdateEnabled;
     private readonly List<LightUpdate> lightingQueue;
@@ -2314,7 +2313,7 @@ public abstract class World : java.lang.Object, BlockView
             bool var1 = false;
             if (spawnHostileMobs && difficulty >= 1)
             {
-                var1 = NaturalSpawner.spawnMonstersAndWakePlayers(this, players);
+                var1 = NaturalSpawner.SpawnMonstersAndWakePlayers(this, players);
             }
 
             if (!var1)
@@ -2325,7 +2324,7 @@ public abstract class World : java.lang.Object, BlockView
             }
         }
         Profiler.Start("performSpawning");
-        NaturalSpawner.performSpawning(this, spawnHostileMobs, spawnPeacefulMobs);
+        NaturalSpawner.PerformSpawning(this, spawnHostileMobs, spawnPeacefulMobs);
         Profiler.Stop("performSpawning");
         Profiler.Start("unload100OldestChunks");
         chunkSource.tick();
@@ -2660,7 +2659,7 @@ public abstract class World : java.lang.Object, BlockView
             {
                 if (hasChunk(var7, var8))
                 {
-                    GetChunk(var7, var8).collectOtherEntities(entity, box, tempEntityList);
+	                GetChunk(var7, var8).CollectOtherEntities(entity, box, tempEntityList);
                 }
             }
         }
@@ -2668,7 +2667,7 @@ public abstract class World : java.lang.Object, BlockView
         return tempEntityList;
     }
 
-    public List<Entity> collectEntitiesByClass(Class clazz, Box box)
+    public List<Entity> CollectEntitiesByType<T>(Box box) where T : Entity
     {
         int var3 = MathHelper.Floor((box.minX - 2.0D) / 16.0D);
         int var4 = MathHelper.Floor((box.maxX + 2.0D) / 16.0D);
@@ -2682,7 +2681,7 @@ public abstract class World : java.lang.Object, BlockView
             {
                 if (hasChunk(var8, var9))
                 {
-                    GetChunk(var8, var9).collectEntitiesByClass(clazz, box, var7);
+	                GetChunk(var8, var9).CollectEntitiesByType<T>(box, var7);
                 }
             }
         }
@@ -2709,20 +2708,34 @@ public abstract class World : java.lang.Object, BlockView
 
     }
 
-    public int countEntities(Class entityClass)
+    public int countEntities<T>() where T : Entity
     {
         int var2 = 0;
 
         for (int var3 = 0; var3 < entities.Count; ++var3)
         {
-            Entity var4 = entities[var3];
-            if (entityClass.isAssignableFrom(var4.getClass()))
+            if (entities[var3] is T)
             {
                 ++var2;
             }
         }
 
         return var2;
+    }
+    
+    public int countEntities(Type type)
+    {
+	    int var2 = 0;
+
+	    for (int var3 = 0; var3 < entities.Count; ++var3)
+	    {
+		    if (entities[var3].GetType() == type)
+		    {
+			    ++var2;
+		    }
+	    }
+
+	    return var2;
     }
 
     public void addEntities(List<Entity> entities)
@@ -3228,9 +3241,9 @@ public abstract class World : java.lang.Object, BlockView
         persistentStateManager.setData(id, state);
     }
 
-    public PersistentState getOrCreateState(Class @class, string id)
+    public PersistentState getOrCreateState(Type type, string id)
     {
-        return persistentStateManager.loadData(@class, id);
+        return persistentStateManager.LoadData(type, id);
     }
 
     public int getIdCount(string id)

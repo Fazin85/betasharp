@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.Play;
 
 public class UpdateSignPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(UpdateSignPacket).TypeHandle);
-
     public int x;
     public int y;
     public int z;

@@ -74,7 +74,7 @@ public abstract class ScreenHandler : java.lang.Object
         for (int var3 = 0; var3 < slots.size(); var3++)
         {
             Slot var4 = (Slot)slots.get(var3);
-            if (var4.equals(inventory, index))
+            if (var4.Equals(inventory, index))
             {
                 return var4;
             }

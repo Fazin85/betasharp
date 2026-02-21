@@ -6,8 +6,6 @@ namespace BetaSharp.Entities;
 
 public class EntityGhast : EntityFlying, Monster
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityGhast).TypeHandle);
-
     public int courseChangeCooldown;
     public double waypointX;
     public double waypointY;
@@ -27,7 +25,7 @@ public class EntityGhast : EntityFlying, Monster
     protected override void initDataTracker()
     {
         base.initDataTracker();
-        dataWatcher.addObject(16, java.lang.Byte.valueOf((byte)0));
+        dataWatcher.AddObject(16, (byte)0);
     }
 
     public override void tick()
@@ -136,7 +134,7 @@ public class EntityGhast : EntityFlying, Monster
             byte isCharging = (byte)(attackCounter > 10 ? 1 : 0);
             if (data != isCharging)
             {
-                dataWatcher.updateObject(16, java.lang.Byte.valueOf(isCharging));
+                dataWatcher.UpdateObject(16, (byte)isCharging);
             }
         }
 

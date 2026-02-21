@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets;
 
 public class LoginHelloPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(LoginHelloPacket).TypeHandle);
-
     public const long BETASHARP_CLIENT_SIGNATURE = 0x627368617270; // "bsharp" in hex. Used to identify BetaSharp clients for future protocol extensions without breaking vanilla compatibility.
 
     public int protocolVersion;

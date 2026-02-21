@@ -15,7 +15,6 @@ namespace BetaSharp.Entities;
 
 public abstract class EntityPlayer : EntityLiving
 {
-    public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityPlayer).TypeHandle);
     public InventoryPlayer inventory;
     public ScreenHandler playerScreenHandler;
     public ScreenHandler currentScreenHandler;
@@ -67,7 +66,7 @@ public abstract class EntityPlayer : EntityLiving
     protected override void initDataTracker()
     {
         base.initDataTracker();
-        dataWatcher.addObject(16, java.lang.Byte.valueOf((byte)0));
+        dataWatcher.AddObject(16,(byte)0);
     }
 
     public override void tick()
@@ -477,22 +476,20 @@ public abstract class EntityPlayer : EntityLiving
             {
                 return false;
             }
-            else
+
+            var damageDealer = damageSource;
+            if (damageSource is EntityArrow arrow && arrow.owner != null)
             {
-                java.lang.Object var3 = damageSource;
-                if (damageSource is EntityArrow && ((EntityArrow)damageSource).owner != null)
-                {
-                    var3 = ((EntityArrow)damageSource).owner;
-                }
-
-                if (var3 is EntityLiving)
-                {
-                    commandWolvesToAttack((EntityLiving)var3, false);
-                }
-
-                increaseStat(Stats.Stats.damageTakenStat, amount);
-                return base.damage(damageSource, amount);
+                damageDealer = arrow.owner;
             }
+
+            if (damageDealer is EntityLiving livingEntity)
+            {
+                commandWolvesToAttack(livingEntity, false);
+            }
+
+            increaseStat(Stats.Stats.damageTakenStat, amount);
+            return base.damage(damageSource, amount);
         }
     }
 
@@ -511,7 +508,7 @@ public abstract class EntityPlayer : EntityLiving
 
             if (entity is not EntityPlayer || isPvpEnabled())
             {
-                var var7 = world.collectEntitiesByClass(EntityWolf.Class, new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(16.0D, 4.0D, 16.0D));
+                var var7 = world.CollectEntitiesByType<EntityWolf>(new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(16.0D, 4.0D, 16.0D));
 
                 foreach (Entity var5 in var7)
                 {
