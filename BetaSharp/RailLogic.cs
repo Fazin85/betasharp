@@ -7,101 +7,101 @@ namespace BetaSharp;
 
 public class RailLogic
 {
-    private World worldObj;
-    private int trackX;
-    private int trackY;
-    private int trackZ;
-    private readonly bool isPoweredRail;
+    private World _worldObj;
+    private int _trackX;
+    private int _trackY;
+    private int _trackZ;
+    private readonly bool _isPoweredRail;
     private List connectedTracks;
-    readonly BlockRail rail;
+    readonly BlockRail _rail;
 
-    public RailLogic(BlockRail var1, World var2, int var3, int var4, int var5)
+    public RailLogic(BlockRail railBlock, World world, int x, int y, int z)
     {
-        rail = var1;
+        _rail = railBlock;
         connectedTracks = new ArrayList();
-        worldObj = var2;
-        trackX = var3;
-        trackY = var4;
-        trackZ = var5;
-        int var6 = var2.getBlockId(var3, var4, var5);
-        int var7 = var2.getBlockMeta(var3, var4, var5);
-        if (((BlockRail)Block.Blocks[var6]).isAlwaysStraight())
+        _worldObj = world;
+        _trackX = x;
+        _trackY = y;
+        _trackZ = z;
+        int blockId = world.getBlockId(x, y, z);
+        int meta = world.getBlockMeta(x, y, z);
+        if (((BlockRail)Block.Blocks[blockId]).isAlwaysStraight())
         {
-            isPoweredRail = true;
-            var7 &= -9;
+            _isPoweredRail = true;
+            meta &= -9;
         }
         else
         {
-            isPoweredRail = false;
+            _isPoweredRail = false;
         }
 
-        setConnections(var7);
+        SetConnections(meta);
     }
 
-    private void setConnections(int var1)
+    private void SetConnections(int meta)
     {
         connectedTracks.clear();
-        if (var1 == 0)
+        if (meta == 0)
         {
-            connectedTracks.add(new BlockPos(trackX, trackY, trackZ - 1));
-            connectedTracks.add(new BlockPos(trackX, trackY, trackZ + 1));
+            connectedTracks.add(new BlockPos(_trackX, _trackY, _trackZ - 1));
+            connectedTracks.add(new BlockPos(_trackX, _trackY, _trackZ + 1));
         }
-        else if (var1 == 1)
+        else if (meta == 1)
         {
-            connectedTracks.add(new BlockPos(trackX - 1, trackY, trackZ));
-            connectedTracks.add(new BlockPos(trackX + 1, trackY, trackZ));
+            connectedTracks.add(new BlockPos(_trackX - 1, _trackY, _trackZ));
+            connectedTracks.add(new BlockPos(_trackX + 1, _trackY, _trackZ));
         }
-        else if (var1 == 2)
+        else if (meta == 2)
         {
-            connectedTracks.add(new BlockPos(trackX - 1, trackY, trackZ));
-            connectedTracks.add(new BlockPos(trackX + 1, trackY + 1, trackZ));
+            connectedTracks.add(new BlockPos(_trackX - 1, _trackY, _trackZ));
+            connectedTracks.add(new BlockPos(_trackX + 1, _trackY + 1, _trackZ));
         }
-        else if (var1 == 3)
+        else if (meta == 3)
         {
-            connectedTracks.add(new BlockPos(trackX - 1, trackY + 1, trackZ));
-            connectedTracks.add(new BlockPos(trackX + 1, trackY, trackZ));
+            connectedTracks.add(new BlockPos(_trackX - 1, _trackY + 1, _trackZ));
+            connectedTracks.add(new BlockPos(_trackX + 1, _trackY, _trackZ));
         }
-        else if (var1 == 4)
+        else if (meta == 4)
         {
-            connectedTracks.add(new BlockPos(trackX, trackY + 1, trackZ - 1));
-            connectedTracks.add(new BlockPos(trackX, trackY, trackZ + 1));
+            connectedTracks.add(new BlockPos(_trackX, _trackY + 1, _trackZ - 1));
+            connectedTracks.add(new BlockPos(_trackX, _trackY, _trackZ + 1));
         }
-        else if (var1 == 5)
+        else if (meta == 5)
         {
-            connectedTracks.add(new BlockPos(trackX, trackY, trackZ - 1));
-            connectedTracks.add(new BlockPos(trackX, trackY + 1, trackZ + 1));
+            connectedTracks.add(new BlockPos(_trackX, _trackY, _trackZ - 1));
+            connectedTracks.add(new BlockPos(_trackX, _trackY + 1, _trackZ + 1));
         }
-        else if (var1 == 6)
+        else if (meta == 6)
         {
-            connectedTracks.add(new BlockPos(trackX + 1, trackY, trackZ));
-            connectedTracks.add(new BlockPos(trackX, trackY, trackZ + 1));
+            connectedTracks.add(new BlockPos(_trackX + 1, _trackY, _trackZ));
+            connectedTracks.add(new BlockPos(_trackX, _trackY, _trackZ + 1));
         }
-        else if (var1 == 7)
+        else if (meta == 7)
         {
-            connectedTracks.add(new BlockPos(trackX - 1, trackY, trackZ));
-            connectedTracks.add(new BlockPos(trackX, trackY, trackZ + 1));
+            connectedTracks.add(new BlockPos(_trackX - 1, _trackY, _trackZ));
+            connectedTracks.add(new BlockPos(_trackX, _trackY, _trackZ + 1));
         }
-        else if (var1 == 8)
+        else if (meta == 8)
         {
-            connectedTracks.add(new BlockPos(trackX - 1, trackY, trackZ));
-            connectedTracks.add(new BlockPos(trackX, trackY, trackZ - 1));
+            connectedTracks.add(new BlockPos(_trackX - 1, _trackY, _trackZ));
+            connectedTracks.add(new BlockPos(_trackX, _trackY, _trackZ - 1));
         }
-        else if (var1 == 9)
+        else if (meta == 9)
         {
-            connectedTracks.add(new BlockPos(trackX + 1, trackY, trackZ));
-            connectedTracks.add(new BlockPos(trackX, trackY, trackZ - 1));
+            connectedTracks.add(new BlockPos(_trackX + 1, _trackY, _trackZ));
+            connectedTracks.add(new BlockPos(_trackX, _trackY, _trackZ - 1));
         }
 
     }
 
-    private void func_785_b()
+    private void RefreshConnectedTracks()
     {
         for (int var1 = 0; var1 < connectedTracks.size(); ++var1)
         {
-            RailLogic var2 = getMinecartTrackLogic((BlockPos)connectedTracks.get(var1));
-            if (var2 != null && var2.isConnectedTo(this))
+            RailLogic var2 = GetMinecartTrackLogic((BlockPos)connectedTracks.get(var1));
+            if (var2 != null && var2.IsConnectedTo(this))
             {
-                connectedTracks.set(var1, new BlockPos(var2.trackX, var2.trackY, var2.trackZ));
+                connectedTracks.set(var1, new BlockPos(var2._trackX, var2._trackY, var2._trackZ));
             }
             else
             {
@@ -111,22 +111,22 @@ public class RailLogic
 
     }
 
-    private bool isMinecartTrack(int var1, int var2, int var3)
+    private bool IsMinecartTrack(int x, int y, int z)
     {
-        return BlockRail.isRail(worldObj, var1, var2, var3) ? true : (BlockRail.isRail(worldObj, var1, var2 + 1, var3) ? true : BlockRail.isRail(worldObj, var1, var2 - 1, var3));
+        return BlockRail.isRail(_worldObj, x, y, z) ? true : (BlockRail.isRail(_worldObj, x, y + 1, z) ? true : BlockRail.isRail(_worldObj, x, y - 1, z));
     }
 
-    private RailLogic getMinecartTrackLogic(BlockPos var1)
+    private RailLogic? GetMinecartTrackLogic(BlockPos pos)
     {
-        return BlockRail.isRail(worldObj, var1.x, var1.y, var1.z) ? new RailLogic(rail, worldObj, var1.x, var1.y, var1.z) : (BlockRail.isRail(worldObj, var1.x, var1.y + 1, var1.z) ? new RailLogic(rail, worldObj, var1.x, var1.y + 1, var1.z) : (BlockRail.isRail(worldObj, var1.x, var1.y - 1, var1.z) ? new RailLogic(rail, worldObj, var1.x, var1.y - 1, var1.z) : null));
+        return BlockRail.isRail(_worldObj, pos.x, pos.y, pos.z) ? new RailLogic(_rail, _worldObj, pos.x, pos.y, pos.z) : (BlockRail.isRail(_worldObj, pos.x, pos.y + 1, pos.z) ? new RailLogic(_rail, _worldObj, pos.x, pos.y + 1, pos.z) : (BlockRail.isRail(_worldObj, pos.x, pos.y - 1, pos.z) ? new RailLogic(_rail, _worldObj, pos.x, pos.y - 1, pos.z) : null));
     }
 
-    private bool isConnectedTo(RailLogic var1)
+    private bool IsConnectedTo(RailLogic var1)
     {
         for (int var2 = 0; var2 < connectedTracks.size(); ++var2)
         {
             BlockPos var3 = (BlockPos)connectedTracks.get(var2);
-            if (var3.x == var1.trackX && var3.z == var1.trackZ)
+            if (var3.x == var1._trackX && var3.z == var1._trackZ)
             {
                 return true;
             }
@@ -135,12 +135,12 @@ public class RailLogic
         return false;
     }
 
-    private bool isInTrack(int var1, int var2, int var3)
+    private bool IsInTrack(int x, int y, int z)
     {
         for (int var4 = 0; var4 < connectedTracks.size(); ++var4)
         {
             BlockPos var5 = (BlockPos)connectedTracks.get(var4);
-            if (var5.x == var1 && var5.z == var3)
+            if (var5.x == x && var5.z == z)
             {
                 return true;
             }
@@ -149,25 +149,25 @@ public class RailLogic
         return false;
     }
 
-    private int getAdjacentTracks()
+    private int GetAdjacentTracks()
     {
         int var1 = 0;
-        if (isMinecartTrack(trackX, trackY, trackZ - 1))
+        if (IsMinecartTrack(_trackX, _trackY, _trackZ - 1))
         {
             ++var1;
         }
 
-        if (isMinecartTrack(trackX, trackY, trackZ + 1))
+        if (IsMinecartTrack(_trackX, _trackY, _trackZ + 1))
         {
             ++var1;
         }
 
-        if (isMinecartTrack(trackX - 1, trackY, trackZ))
+        if (IsMinecartTrack(_trackX - 1, _trackY, _trackZ))
         {
             ++var1;
         }
 
-        if (isMinecartTrack(trackX + 1, trackY, trackZ))
+        if (IsMinecartTrack(_trackX + 1, _trackY, _trackZ))
         {
             ++var1;
         }
@@ -175,9 +175,9 @@ public class RailLogic
         return var1;
     }
 
-    private bool handleKeyPress(RailLogic var1)
+    private bool CanConnectTo(RailLogic var1)
     {
-        if (isConnectedTo(var1))
+        if (IsConnectedTo(var1))
         {
             return true;
         }
@@ -192,17 +192,17 @@ public class RailLogic
         else
         {
             BlockPos var2 = (BlockPos)connectedTracks.get(0);
-            return var1.trackY == trackY && var2.y == trackY ? true : true;
+            return var1._trackY == _trackY && var2.y == _trackY ? true : true;
         }
     }
 
-    private void func_788_d(RailLogic var1)
+    private void ConnectTo(RailLogic targetLogic)
     {
-        connectedTracks.add(new BlockPos(var1.trackX, var1.trackY, var1.trackZ));
-        bool var2 = isInTrack(trackX, trackY, trackZ - 1);
-        bool var3 = isInTrack(trackX, trackY, trackZ + 1);
-        bool var4 = isInTrack(trackX - 1, trackY, trackZ);
-        bool var5 = isInTrack(trackX + 1, trackY, trackZ);
+        connectedTracks.add(new BlockPos(targetLogic._trackX, targetLogic._trackY, targetLogic._trackZ));
+        bool var2 = IsInTrack(_trackX, _trackY, _trackZ - 1);
+        bool var3 = IsInTrack(_trackX, _trackY, _trackZ + 1);
+        bool var4 = IsInTrack(_trackX - 1, _trackY, _trackZ);
+        bool var5 = IsInTrack(_trackX + 1, _trackY, _trackZ);
         int var6 = -1;
         if (var2 || var3)
         {
@@ -214,7 +214,7 @@ public class RailLogic
             var6 = 1;
         }
 
-        if (!isPoweredRail)
+        if (!_isPoweredRail)
         {
             if (var3 && var5 && !var2 && !var4)
             {
@@ -239,12 +239,12 @@ public class RailLogic
 
         if (var6 == 0)
         {
-            if (BlockRail.isRail(worldObj, trackX, trackY + 1, trackZ - 1))
+            if (BlockRail.isRail(_worldObj, _trackX, _trackY + 1, _trackZ - 1))
             {
                 var6 = 4;
             }
 
-            if (BlockRail.isRail(worldObj, trackX, trackY + 1, trackZ + 1))
+            if (BlockRail.isRail(_worldObj, _trackX, _trackY + 1, _trackZ + 1))
             {
                 var6 = 5;
             }
@@ -252,12 +252,12 @@ public class RailLogic
 
         if (var6 == 1)
         {
-            if (BlockRail.isRail(worldObj, trackX + 1, trackY + 1, trackZ))
+            if (BlockRail.isRail(_worldObj, _trackX + 1, _trackY + 1, _trackZ))
             {
                 var6 = 2;
             }
 
-            if (BlockRail.isRail(worldObj, trackX - 1, trackY + 1, trackZ))
+            if (BlockRail.isRail(_worldObj, _trackX - 1, _trackY + 1, _trackZ))
             {
                 var6 = 3;
             }
@@ -269,34 +269,34 @@ public class RailLogic
         }
 
         int var7 = var6;
-        if (isPoweredRail)
+        if (_isPoweredRail)
         {
-            var7 = worldObj.getBlockMeta(trackX, trackY, trackZ) & 8 | var6;
+            var7 = _worldObj.getBlockMeta(_trackX, _trackY, _trackZ) & 8 | var6;
         }
 
-        worldObj.setBlockMeta(trackX, trackY, trackZ, var7);
+        _worldObj.setBlockMeta(_trackX, _trackY, _trackZ, var7);
     }
 
-    private bool func_786_c(int var1, int var2, int var3)
+    private bool AttemptConnectionAt(int x, int y, int z)
     {
-        RailLogic var4 = getMinecartTrackLogic(new BlockPos(var1, var2, var3));
+        RailLogic var4 = GetMinecartTrackLogic(new BlockPos(x, y, z));
         if (var4 == null)
         {
             return false;
         }
         else
         {
-            var4.func_785_b();
-            return var4.handleKeyPress(this);
+            var4.RefreshConnectedTracks();
+            return var4.CanConnectTo(this);
         }
     }
 
-    public void updateState(bool var1, bool var2)
+    public void UpdateState(bool var1, bool var2)
     {
-        bool var3 = func_786_c(trackX, trackY, trackZ - 1);
-        bool var4 = func_786_c(trackX, trackY, trackZ + 1);
-        bool var5 = func_786_c(trackX - 1, trackY, trackZ);
-        bool var6 = func_786_c(trackX + 1, trackY, trackZ);
+        bool var3 = AttemptConnectionAt(_trackX, _trackY, _trackZ - 1);
+        bool var4 = AttemptConnectionAt(_trackX, _trackY, _trackZ + 1);
+        bool var5 = AttemptConnectionAt(_trackX - 1, _trackY, _trackZ);
+        bool var6 = AttemptConnectionAt(_trackX + 1, _trackY, _trackZ);
         int var7 = -1;
         if ((var3 || var4) && !var5 && !var6)
         {
@@ -308,7 +308,7 @@ public class RailLogic
             var7 = 1;
         }
 
-        if (!isPoweredRail)
+        if (!_isPoweredRail)
         {
             if (var4 && var6 && !var3 && !var5)
             {
@@ -343,7 +343,7 @@ public class RailLogic
                 var7 = 1;
             }
 
-            if (!isPoweredRail)
+            if (!_isPoweredRail)
             {
                 if (var1)
                 {
@@ -394,12 +394,12 @@ public class RailLogic
 
         if (var7 == 0)
         {
-            if (BlockRail.isRail(worldObj, trackX, trackY + 1, trackZ - 1))
+            if (BlockRail.isRail(_worldObj, _trackX, _trackY + 1, _trackZ - 1))
             {
                 var7 = 4;
             }
 
-            if (BlockRail.isRail(worldObj, trackX, trackY + 1, trackZ + 1))
+            if (BlockRail.isRail(_worldObj, _trackX, _trackY + 1, _trackZ + 1))
             {
                 var7 = 5;
             }
@@ -407,12 +407,12 @@ public class RailLogic
 
         if (var7 == 1)
         {
-            if (BlockRail.isRail(worldObj, trackX + 1, trackY + 1, trackZ))
+            if (BlockRail.isRail(_worldObj, _trackX + 1, _trackY + 1, _trackZ))
             {
                 var7 = 2;
             }
 
-            if (BlockRail.isRail(worldObj, trackX - 1, trackY + 1, trackZ))
+            if (BlockRail.isRail(_worldObj, _trackX - 1, _trackY + 1, _trackZ))
             {
                 var7 = 3;
             }
@@ -423,26 +423,26 @@ public class RailLogic
             var7 = 0;
         }
 
-        setConnections(var7);
+        SetConnections(var7);
         int var8 = var7;
-        if (isPoweredRail)
+        if (_isPoweredRail)
         {
-            var8 = worldObj.getBlockMeta(trackX, trackY, trackZ) & 8 | var7;
+            var8 = _worldObj.getBlockMeta(_trackX, _trackY, _trackZ) & 8 | var7;
         }
 
-        if (var2 || worldObj.getBlockMeta(trackX, trackY, trackZ) != var8)
+        if (var2 || _worldObj.getBlockMeta(_trackX, _trackY, _trackZ) != var8)
         {
-            worldObj.setBlockMeta(trackX, trackY, trackZ, var8);
+            _worldObj.setBlockMeta(_trackX, _trackY, _trackZ, var8);
 
             for (int var9 = 0; var9 < connectedTracks.size(); ++var9)
             {
-                RailLogic var10 = getMinecartTrackLogic((BlockPos)connectedTracks.get(var9));
+                RailLogic var10 = GetMinecartTrackLogic((BlockPos)connectedTracks.get(var9));
                 if (var10 != null)
                 {
-                    var10.func_785_b();
-                    if (var10.handleKeyPress(this))
+                    var10.RefreshConnectedTracks();
+                    if (var10.CanConnectTo(this))
                     {
-                        var10.func_788_d(this);
+                        var10.ConnectTo(this);
                     }
                 }
             }
@@ -450,8 +450,5 @@ public class RailLogic
 
     }
 
-    public static int getNAdjacentTracks(RailLogic var0)
-    {
-        return var0.getAdjacentTracks();
-    }
+    public static int GetNAdjacentTracks(RailLogic logic) => logic.GetAdjacentTracks();
 }
