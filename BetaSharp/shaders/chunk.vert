@@ -1,4 +1,4 @@
-﻿#version 460
+﻿#version 410
 
 layout(location = 0) in vec3 inPosition;
 layout(location = 1) in uvec2 inUV;
