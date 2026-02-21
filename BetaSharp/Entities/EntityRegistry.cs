@@ -1,72 +1,57 @@
 using BetaSharp.NBT;
 using BetaSharp.Worlds;
-using java.lang;
-using java.util;
-using Exception = java.lang.Exception;
+using Exception = System.Exception;
 
 namespace BetaSharp.Entities;
 
-public class EntityRegistry
+public static class EntityRegistry
 {
-    private static Map idToClass = new HashMap();
-    private static Map classToId = new HashMap();
-    private static Map rawIdToClass = new HashMap();
-    private static Map classToRawId = new HashMap();
-    public static Dictionary<string, int> namesToId = new();
+    private static readonly Dictionary<string, Func<World, Entity>> idToFactory = new ();
+    private static readonly Dictionary<Type, string> typeToId = new ();
+    private static readonly Dictionary<int, Func<World, Entity>> rawIdToFactory = new ();
+    private static readonly Dictionary<Type, int> typeToRawId = new ();
+    public  static readonly Dictionary<string, int> namesToId = new();
 
-    private static void register(Class entityClass, string id, int rawId)
+    private static void Register<T>(Func<World, T> factory, string id, int rawId) where T : Entity
     {
-        idToClass.put(id, entityClass);
-        classToId.put(entityClass, id);
-        rawIdToClass.put(Integer.valueOf(rawId), entityClass);
-        classToRawId.put(entityClass, Integer.valueOf(rawId));
+        idToFactory.Add(id, factory);
+        typeToId.Add(typeof(T), id);
+        rawIdToFactory.Add(rawId, factory);
+        typeToRawId.Add(typeof(T), rawId);
         namesToId.TryAdd(id.ToLower(), rawId);
     }
 
-    public static Entity create(string id, World world)
+    [Obsolete("Creating object from type can return null, use Register(Func<World, Entity> factory, string id, int rawId) instead.")]
+    private static void Register(Type type, string id, int rawId)
     {
-        Entity? entity = null;
-
-        try
-        {
-            Class entityClass = (Class)idToClass.get(id);
-            if (entityClass != null)
-            {
-                entity = (Entity)entityClass.getConstructor(World.Class).newInstance(world);
-            }
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-
-        return entity;
+	    Register(world => (Entity)Activator.CreateInstance(type, world)!, id, rawId);
     }
 
-    public static Entity getEntityFromNbt(NBTTagCompound nbt, World world)
+    public static Entity? Create(string id, World world)
     {
-        Entity entity = null;
+	    TryCreate(id, world, out Entity? entity);
+	    return entity;
+    }
+    
+    private static bool TryCreate(string id, World world, out Entity? entity)
+    {
+	    if (idToFactory.TryGetValue(id, out var factory))
+	    {
+		    entity = factory.Invoke(world);
+		    return true;
+	    }
 
-        try
-        {
-            Class entityClass = (Class)idToClass.get(nbt.GetString("id"));
-            if (entityClass != null)
-            {
-                entity = (Entity)entityClass.getConstructor(World.Class).newInstance(world);
-            }
-        }
-        catch (java.lang.Exception ex)
-        {
-            ex.printStackTrace();
-        }
+	    Log.Info($"Unable to find entity with id {id}");
+	    entity = null;
+	    return false;
+    }
 
-        if (entity != null)
+    public static Entity? getEntityFromNbt(NBTTagCompound nbt, World world)
+    {
+	    string id = nbt.GetString("id");
+        if (TryCreate(id, world, out Entity? entity))
         {
-            entity.read(nbt);
-        }
-        else
-        {
-            Log.Info($"Skipping Entity with id {nbt.GetString("id")}");
+	        entity!.read(nbt);
         }
 
         return entity;
@@ -79,19 +64,13 @@ public class EntityRegistry
         {
             if (namesToId.TryGetValue(name, out int id))
             {
-                Class entityClass = (Class)rawIdToClass.get(Integer.valueOf(id));
-                if (entityClass != null)
+				if(TryCreate(id, world, out Entity? entity))
                 {
-                    var entity = (Entity)entityClass.getConstructor(World.Class).newInstance(world);
-
-                    if (entity != null)
+                    entity!.setPosition(x, y, z);
+                    entity.setPositionAndAngles(x, y, z, 0, 0);
+                    if (!world.SpawnEntity(entity))
                     {
-                        entity.setPosition(x, y, z);
-                        entity.setPositionAndAngles(x, y, z, 0, 0);
-                        if (!world.SpawnEntity(entity))
-                        {
-                            Log.Error($"Entity `{name}` with ID:`{id}` failed to join world.");
-                        }
+                        Log.Error($"Entity `{name}` with ID:`{id}` failed to join world.");
                     }
 
                     return entity;
@@ -114,66 +93,60 @@ public class EntityRegistry
         return null;
     }
 
-    public static Entity create(int rawId, World world)
+    public static Entity? Create(int rawId, World world)
     {
-        Entity entity = null;
-
-        try
-        {
-            Class entityClass = (Class)rawIdToClass.get(Integer.valueOf(rawId));
-            if (entityClass != null)
-            {
-                entity = (Entity)entityClass.getConstructor(World.Class).newInstance(world);
-            }
-        }
-        catch (java.lang.Exception ex)
-        {
-            Log.Error(ex);
-        }
-
-        if (entity == null)
-        {
-            Log.Info($"Skipping Entity with id {rawId}");
-        }
-
-        return entity;
+	    TryCreate(rawId, world, out Entity? entity);
+	    return entity;
     }
 
-    public static int getRawId(Entity entity)
+    private static bool TryCreate(int rawId, World world, out Entity? entity)
     {
-        return ((Integer)classToRawId.get(entity.getClass())).intValue();
+	    if (rawIdToFactory.TryGetValue(rawId, out var factory))
+	    {
+		    entity = factory.Invoke(world);
+		    return true;
+	    }
+
+	    Log.Info($"Unable to find entity with raw id {rawId}");
+	    entity = null;
+	    return false;
     }
 
-    public static string getId(Entity entity)
+    public static int GetRawId(Entity entity)
     {
-        return (string)classToId.get(entity.getClass());
+        return typeToRawId[entity.GetType()];
+    }
+
+    public static string GetId(Entity entity)
+    {
+        return typeToId[entity.GetType()];
     }
 
     static EntityRegistry()
     {
-        register(EntityArrow.Class, "Arrow", 10);
-        register(EntitySnowball.Class, "Snowball", 11);
-        register(EntityItem.Class, "Item", 1);
-        register(EntityPainting.Class, "Painting", 9);
-        register(EntityLiving.Class, "Mob", 48);
-        register(EntityMonster.Class, "Monster", 49);
-        register(EntityCreeper.Class, "Creeper", 50);
-        register(EntitySkeleton.Class, "Skeleton", 51);
-        register(EntitySpider.Class, "Spider", 52);
-        register(EntityGiantZombie.Class, "Giant", 53);
-        register(EntityZombie.Class, "Zombie", 54);
-        register(EntitySlime.Class, "Slime", 55);
-        register(EntityGhast.Class, "Ghast", 56);
-        register(EntityPigZombie.Class, "PigZombie", 57);
-        register(EntityPig.Class, "Pig", 90);
-        register(EntitySheep.Class, "Sheep", 91);
-        register(EntityCow.Class, "Cow", 92);
-        register(EntityChicken.Class, "Chicken", 93);
-        register(EntitySquid.Class, "Squid", 94);
-        register(EntityWolf.Class, "Wolf", 95);
-        register(EntityTNTPrimed.Class, "PrimedTnt", 20);
-        register(EntityFallingSand.Class, "FallingSand", 21);
-        register(EntityMinecart.Class, "Minecart", 40);
-        register(EntityBoat.Class, "Boat", 41);
+        Register(world => new EntityArrow(world), "Arrow", 10);
+        Register(world => new EntitySnowball(world), "Snowball", 11);
+        Register(world => new EntityItem(world), "Item", 1);
+        Register(world => new EntityPainting(world), "Painting", 9);
+        Register(world => new EntityLiving(world), "Mob", 48);
+        Register(world => new EntityMonster(world), "Monster", 49);
+        Register(world => new EntityCreeper(world), "Creeper", 50);
+        Register(world => new EntitySkeleton(world), "Skeleton", 51);
+        Register(world => new EntitySpider(world), "Spider", 52);
+        Register(world => new EntityGiantZombie(world), "Giant", 53);
+        Register(world => new EntityZombie(world), "Zombie", 54);
+        Register(world => new EntitySlime(world), "Slime", 55);
+        Register(world => new EntityGhast(world), "Ghast", 56);
+        Register(world => new EntityPigZombie(world), "PigZombie", 57);
+        Register(world => new EntityPig(world), "Pig", 90);
+        Register(world => new EntitySheep(world), "Sheep", 91);
+        Register(world => new EntityCow(world), "Cow", 92);
+        Register(world => new EntityChicken(world), "Chicken", 93);
+        Register(world => new EntitySquid(world), "Squid", 94);
+        Register(world => new EntityWolf(world), "Wolf", 95);
+        Register(world => new EntityTNTPrimed(world), "PrimedTnt", 20);
+        Register(world => new EntityFallingSand(world), "FallingSand", 21);
+        Register(world => new EntityMinecart(world), "Minecart", 40);
+        Register(world => new EntityBoat(world), "Boat", 41);
     }
 }

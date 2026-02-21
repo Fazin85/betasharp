@@ -64,7 +64,7 @@ public class BlockEntityMobSpawner : BlockEntity
 
                 for (int spawnAttempt = 0; spawnAttempt < max; ++spawnAttempt)
                 {
-                    EntityLiving entityLiving = (EntityLiving)EntityRegistry.create(_spawnedEntityId, world);
+                    EntityLiving entityLiving = (EntityLiving)EntityRegistry.Create(_spawnedEntityId, world);
                     if (entityLiving == null)
                     {
                         return;
