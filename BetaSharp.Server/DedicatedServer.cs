@@ -69,8 +69,6 @@ public class DedicatedServer(IServerConfiguration config) : MinecraftServer(conf
     {
         Log.Instance.Initialize(Directory.GetCurrentDirectory());
 
-        Mods.LoadMods("./mods", Side.Server);
-
         try
         {
             DedicatedServerConfiguration config = new(new java.io.File("server.properties"));

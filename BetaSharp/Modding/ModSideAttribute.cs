@@ -1,5 +1,6 @@
 namespace BetaSharp.Modding;
 
+[AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public class ModSideAttribute : Attribute
 {
     public Side Side { get; }

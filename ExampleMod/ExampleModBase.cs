@@ -5,27 +5,26 @@ using MonoMod.RuntimeDetour;
 namespace ExampleMod;
 
 [ModSide(Side.Client)]
-public class Mod : IMod
+public class ExampleModBase : ModBase
 {
-    public string Name => "Example Mod";
-    public string Description => "Surely does something really cool";
-    public string Author => "ExampleAuthor123";
-    public Side Side => Side.Client;
+    public override string Name => "Example Mod";
+    public override string Description => "Surely does something really cool";
+    public override string Author => "ExampleAuthor123";
     private Hook _textRendererHook = null!;
 
-    public void Initialize()
+    public override void Initialize(Side side)
     {
         Console.WriteLine("Initialize called for Example Mod");
-        _textRendererHook = new(typeof(TextRenderer).GetMethod("renderString")!, TextRenderer_renderString);
+        _textRendererHook = new(typeof(TextRenderer).GetMethod("RenderString")!, TextRenderer_renderString);
     }
 
-    public void PostInitialize()
+    public override void PostInitialize(Side side)
     {
         Console.WriteLine($"PostInitialize called for Example Mod. " +
                           $"Loaded mods: [{string.Join(", ", Mods.ModRegistry.Select(m => m.Name))}]");
     }
 
-    public void Unload()
+    public override void Unload(Side side)
     {
         Console.WriteLine("Example Mod is unloading");
         _textRendererHook.Dispose();
