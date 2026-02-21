@@ -14,6 +14,7 @@ public unsafe class EmulatedGL : LegacyGL
     private readonly FixedFunctionShader _shader;
     private bool _useTexture = false;
     private uint _currentProgram = 0;
+    private bool _alphaTestEnabled = false;
     private float _alphaThreshold = 0.1f;
 
     // Lighting state
@@ -57,7 +58,7 @@ public unsafe class EmulatedGL : LegacyGL
         _shader.SetProjection(_projectionStack.Top);
         _shader.SetTextureMatrix(_textureStack.Top);
         _shader.SetUseTexture(_useTexture);
-        _shader.SetAlphaThreshold(_alphaThreshold);
+        _shader.SetAlphaThreshold(_alphaTestEnabled ? _alphaThreshold : -1.0f);
         _shader.SetEnableLighting(_lightingEnabled);
 
         if (_lightingEnabled)
@@ -149,7 +150,6 @@ public unsafe class EmulatedGL : LegacyGL
     public override void MatrixMode(GLEnum mode)
     {
         _currentMatrixMode = mode;
-        if (!_displayLists.IsCompiling) base.MatrixMode(mode);
     }
 
     public override void LoadIdentity()
@@ -162,14 +162,12 @@ public unsafe class EmulatedGL : LegacyGL
     {
         if (_displayLists.IsCompiling) return;
         ActiveStack.Push();
-        base.PushMatrix();
     }
 
     public override void PopMatrix()
     {
         if (_displayLists.IsCompiling) return;
         ActiveStack.Pop();
-        base.PopMatrix();
     }
 
     public override void Translate(float x, float y, float z)
@@ -212,7 +210,6 @@ public unsafe class EmulatedGL : LegacyGL
     {
         if (_displayLists.IsCompiling) { _displayLists.RecordColor(red, green, blue, 1.0f); return; }
         SilkGL.VertexAttrib4(1, red, green, blue, 1.0f);
-        base.Color3(red, green, blue);
     }
 
     public override void Color3(byte red, byte green, byte blue)
@@ -220,14 +217,12 @@ public unsafe class EmulatedGL : LegacyGL
         float r = red / 255.0f, g = green / 255.0f, b = blue / 255.0f;
         if (_displayLists.IsCompiling) { _displayLists.RecordColor(r, g, b, 1.0f); return; }
         SilkGL.VertexAttrib4(1, r, g, b, 1.0f);
-        base.Color3(red, green, blue);
     }
 
     public override void Color4(float red, float green, float blue, float alpha)
     {
         if (_displayLists.IsCompiling) { _displayLists.RecordColor(red, green, blue, alpha); return; }
         SilkGL.VertexAttrib4(1, red, green, blue, alpha);
-        base.Color4(red, green, blue, alpha);
     }
 
     public override void VertexPointer(int size, GLEnum type, uint stride, void* pointer)
@@ -286,11 +281,13 @@ public unsafe class EmulatedGL : LegacyGL
         switch (cap)
         {
             case GLEnum.Texture2D: _useTexture = true; break;
+            case GLEnum.AlphaTest: _alphaTestEnabled = true; return;
             case GLEnum.Lighting: _lightingEnabled = true; return;
             case GLEnum.Fog: _fogEnabled = true; return;
             case GLEnum.Light0: return;
             case GLEnum.Light1: return;
             case GLEnum.ColorMaterial: return;
+            case GLEnum.RescaleNormal: return; // Shader always normalizes
         }
         base.Enable(cap);
     }
@@ -301,11 +298,13 @@ public unsafe class EmulatedGL : LegacyGL
         switch (cap)
         {
             case GLEnum.Texture2D: _useTexture = false; break;
+            case GLEnum.AlphaTest: _alphaTestEnabled = false; return;
             case GLEnum.Lighting: _lightingEnabled = false; return;
             case GLEnum.Fog: _fogEnabled = false; return;
             case GLEnum.Light0: return;
             case GLEnum.Light1: return;
             case GLEnum.ColorMaterial: return;
+            case GLEnum.RescaleNormal: return;
         }
         base.Disable(cap);
     }
@@ -366,6 +365,10 @@ public unsafe class EmulatedGL : LegacyGL
     {
     }
 
+    public override void ShadeModel(GLEnum mode)
+    {
+    }
+
     public override void Normal3(float nx, float ny, float nz)
     {
         SilkGL.VertexAttrib3(3, nx, ny, nz);
@@ -404,10 +407,6 @@ public unsafe class EmulatedGL : LegacyGL
             Matrix4X4<float> m = _projectionStack.Top;
             System.Buffer.MemoryCopy(&m, data, 64, 64);
         }
-        else
-        {
-            base.GetFloat(pname, data);
-        }
     }
 
     public override void GetFloat(GLEnum pname, Span<float> data)
@@ -423,10 +422,6 @@ public unsafe class EmulatedGL : LegacyGL
             Matrix4X4<float> m = _projectionStack.Top;
             fixed (float* dst = data)
                 System.Buffer.MemoryCopy(&m, dst, 64, 64);
-        }
-        else
-        {
-            base.GetFloat(pname, data);
         }
     }
 }

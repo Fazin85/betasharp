@@ -407,7 +407,7 @@ public unsafe class LegacyGL : IGL
         SilkGL.Scale(x, y, z);
     }
 
-    public void ShadeModel(GLEnum mode)
+    public virtual void ShadeModel(GLEnum mode)
     {
         SilkGL.ShadeModel(mode);
     }
