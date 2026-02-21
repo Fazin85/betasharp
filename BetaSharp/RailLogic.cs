@@ -20,7 +20,7 @@ public class RailLogic
 
         int blockId = world.getBlockId(pos.x, pos.y, pos.z);
         int meta = world.getBlockMeta(pos.x, pos.y, pos.z);
-        
+
         if (((BlockRail)Block.Blocks[blockId]).isAlwaysStraight())
         {
             _isPoweredRail = true;
@@ -34,13 +34,13 @@ public class RailLogic
         SetConnections(meta);
     }
 
-        public void UpdateState(bool powered, bool forceUpdate)
+    public void UpdateState(bool powered, bool forceUpdate)
     {
         bool north = AttemptConnectionAt(new Vec3i(_trackPos.x, _trackPos.y, _trackPos.z - 1));
         bool south = AttemptConnectionAt(new Vec3i(_trackPos.x, _trackPos.y, _trackPos.z + 1));
         bool west = AttemptConnectionAt(new Vec3i(_trackPos.x - 1, _trackPos.y, _trackPos.z));
         bool east = AttemptConnectionAt(new Vec3i(_trackPos.x + 1, _trackPos.y, _trackPos.z));
-        
+
         int meta = -1;
         if ((north || south) && !west && !east) meta = 0;
         if ((west || east) && !north && !south) meta = 1;
@@ -92,7 +92,7 @@ public class RailLogic
         if (meta < 0) meta = 0;
 
         SetConnections(meta);
-        
+
         int finalMeta = meta;
         if (_isPoweredRail)
         {
@@ -146,34 +146,40 @@ public class RailLogic
 
     private void RefreshConnectedTracks()
     {
-        foreach (Vec3i pos in _connectedTracks)
+        for (int i = _connectedTracks.Count - 1; i >= 0; i--)
         {
+            Vec3i pos = _connectedTracks[i];
             RailLogic? logic = GetMinecartTrackLogic(pos);
-            
+
             if (logic != null && logic.IsConnectedTo(this))
             {
-                _connectedTracks.Add(new Vec3i(logic._trackPos.x, logic._trackPos.y, logic._trackPos.z));
+                _connectedTracks[i] = new Vec3i(logic._trackPos.x, logic._trackPos.y, logic._trackPos.z);
             }
             else
             {
-                _connectedTracks.Remove(pos);
+                _connectedTracks.RemoveAt(i);
             }
         }
     }
 
     private bool IsMinecartTrack(Vec3i pos)
     {
-        return BlockRail.isRail(_worldObj, pos.x, pos.y, pos.z) || 
-               BlockRail.isRail(_worldObj, pos.x, pos.y + 1, pos.z) || 
+        return BlockRail.isRail(_worldObj, pos.x, pos.y, pos.z) ||
+               BlockRail.isRail(_worldObj, pos.x, pos.y + 1, pos.z) ||
                BlockRail.isRail(_worldObj, pos.x, pos.y - 1, pos.z);
     }
 
     private RailLogic? GetMinecartTrackLogic(Vec3i pos)
     {
-        if (BlockRail.isRail(_worldObj, pos.x, pos.y, pos.z)) return new RailLogic(_rail, _worldObj, pos);
-        if (BlockRail.isRail(_worldObj, pos.x, pos.y + 1, pos.z)) return new RailLogic(_rail, _worldObj, pos);
-        if (BlockRail.isRail(_worldObj, pos.x, pos.y - 1, pos.z)) return new RailLogic(_rail, _worldObj, pos);
-        
+        if (BlockRail.isRail(_worldObj, pos.x, pos.y, pos.z))
+            return new RailLogic(_rail, _worldObj, pos);
+
+        if (BlockRail.isRail(_worldObj, pos.x, pos.y + 1, pos.z))
+            return new RailLogic(_rail, _worldObj, new Vec3i(pos.x, pos.y + 1, pos.z));
+
+        if (BlockRail.isRail(_worldObj, pos.x, pos.y - 1, pos.z))
+            return new RailLogic(_rail, _worldObj, new Vec3i(pos.x, pos.y - 1, pos.z));
+
         return null;
     }
 
@@ -210,23 +216,23 @@ public class RailLogic
         if (IsConnectedTo(targetLogic)) return true;
         if (_connectedTracks.Count == 2) return false;
         if (_connectedTracks.Count == 0) return true;
-        
+
         // This logic originally returned true regardless of the condition in decompiled source.
         // It's a known Beta 1.7.3 quirk. Kept original behavior but cleaned up.
         // Maybe this should be removed!!!
         Vec3i pos = _connectedTracks[0];
-        return true; 
+        return true;
     }
 
     private void ConnectTo(RailLogic targetLogic)
     {
-       _connectedTracks.Add(new Vec3i(targetLogic._trackPos.x, targetLogic._trackPos.y, targetLogic._trackPos.z));
-        
+        _connectedTracks.Add(new Vec3i(targetLogic._trackPos.x, targetLogic._trackPos.y, targetLogic._trackPos.z));
+
         bool north = IsInTrack(new Vec3i(_trackPos.x, _trackPos.y, _trackPos.z - 1));
         bool south = IsInTrack(new Vec3i(_trackPos.x, _trackPos.y, _trackPos.z + 1));
         bool west = IsInTrack(new Vec3i(_trackPos.x - 1, _trackPos.y, _trackPos.z));
         bool east = IsInTrack(new Vec3i(_trackPos.x + 1, _trackPos.y, _trackPos.z));
-        
+
         int meta = -1;
         if (north || south) meta = 0;
         if (west || east) meta = 1;
@@ -266,7 +272,7 @@ public class RailLogic
     {
         RailLogic? logic = GetMinecartTrackLogic(pos);
         if (logic == null) return false;
-        
+
         logic.RefreshConnectedTracks();
         return logic.CanConnectTo(this);
     }
