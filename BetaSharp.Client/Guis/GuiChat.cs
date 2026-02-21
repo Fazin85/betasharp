@@ -30,6 +30,8 @@ public class GuiChat : GuiScreen
     public override void InitGui()
     {
         Keyboard.enableRepeatEvents(true);
+        Keyboard.OnCharacterTyped += CharTyped;
+        _isSubscribedToKeyboard = true;
         _historyIndex = s_history.Count;
     }
 
@@ -117,12 +119,16 @@ public class GuiChat : GuiScreen
             }
             return;
         }
+    }
 
+    protected override void CharTyped(char eventChar)
+    {
         if (s_allowedChars.Contains(eventChar) && _message.Length < 100)
         {
             _message += eventChar;
         }
     }
+
 
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {

@@ -1256,7 +1256,7 @@ public partial class Minecraft
             --leftClickCounter;
         }
 
-        while (Keyboard.next())
+        while (Keyboard.Next())
         {
             player.handleKeyPress(Keyboard.getEventKey(), Keyboard.getEventKeyState());
 

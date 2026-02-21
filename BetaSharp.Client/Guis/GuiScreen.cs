@@ -5,12 +5,13 @@ using java.awt;
 using java.awt.datatransfer;
 using java.util;
 using Silk.NET.OpenGL.Legacy;
+using System;
+using System.Collections.Generic;
 
 namespace BetaSharp.Client.Guis;
 
 public class GuiScreen : Gui
 {
-
     public Minecraft mc;
     public int Width;
     public int Height;
@@ -20,6 +21,7 @@ public class GuiScreen : Gui
     public TextRenderer FontRenderer;
     public GuiParticle ParticlesGui;
     private GuiButton SelectedButton = null;
+    protected bool _isSubscribedToKeyboard = false;
 
     public virtual void Render(int mouseX, int mouseY, float partialTicks)
     {
@@ -36,8 +38,9 @@ public class GuiScreen : Gui
             mc.displayGuiScreen(null);
             mc.setIngameFocus();
         }
-
     }
+
+    protected virtual void CharTyped(char eventChar) { }
 
     public static string GetClipboardString()
     {
@@ -53,8 +56,8 @@ public class GuiScreen : Gui
         }
         catch (Exception)
         {
+            Log.Error($"Failed to get clipboard string");
         }
-
         return "";
     }
 
@@ -90,7 +93,6 @@ public class GuiScreen : Gui
                 }
             }
         }
-
     }
 
     protected virtual void MouseMovedOrUp(int x, int y, int button)
@@ -100,12 +102,9 @@ public class GuiScreen : Gui
             SelectedButton.MouseReleased(x, y);
             SelectedButton = null;
         }
-
     }
 
-    protected virtual void ActionPerformed(GuiButton var1)
-    {
-    }
+    protected virtual void ActionPerformed(GuiButton var1) { }
 
     public void SetWorldAndResolution(Minecraft mc, int width, int height)
     {
@@ -129,11 +128,10 @@ public class GuiScreen : Gui
             HandleMouseInput();
         }
 
-        while (Keyboard.next())
+        while (Keyboard.Next())
         {
             HandleKeyboardInput();
         }
-
     }
 
     public virtual void HandleMouseInput()
@@ -154,23 +152,31 @@ public class GuiScreen : Gui
     {
         if (Keyboard.getEventKeyState())
         {
-            if (Keyboard.getEventKey() == Keyboard.KEY_F11)
+            int key = Keyboard.getEventKey();
+            char c = Keyboard.getEventCharacter();
+
+            if (key == Keyboard.KEY_F11)
             {
                 mc.toggleFullscreen();
                 return;
             }
 
-            KeyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
+            if (key != Keyboard.KEY_NONE)
+            {
+                KeyTyped(c, key);
+            }
         }
-
     }
 
-    public virtual void UpdateScreen()
-    {
-    }
+    public virtual void UpdateScreen() { }
 
     public virtual void OnGuiClosed()
     {
+        if (_isSubscribedToKeyboard)
+        {
+            Keyboard.OnCharacterTyped -= CharTyped;
+            _isSubscribedToKeyboard = false;
+        }
     }
 
     public void DrawDefaultBackground()
@@ -188,7 +194,6 @@ public class GuiScreen : Gui
         {
             DrawBackground(var1);
         }
-
     }
 
     public void DrawBackground(int var1)

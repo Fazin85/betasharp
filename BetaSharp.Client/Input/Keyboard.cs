@@ -1,4 +1,4 @@
-﻿using Silk.NET.GLFW;
+using Silk.NET.GLFW;
 
 namespace BetaSharp.Client.Input;
 
@@ -150,9 +150,7 @@ public class Keyboard
 
     private static readonly bool[] keyDownBuffer = new bool[KEYBOARD_SIZE];
     private static readonly Queue<KeyEvent> eventQueue = new();
-
     private static KeyEvent current_event = new();
-    private static KeyEvent? lastQueuedEvent;
     private static bool repeat_enabled;
 
     private static Dictionary<Keys, int> keyMap;
@@ -327,7 +325,8 @@ public class Keyboard
         return c;
     }
 
-    private static unsafe void OnKey(WindowHandle* window, Keys key, int scancode, InputAction action, KeyModifiers mods)
+    private static unsafe void OnKey(WindowHandle* window, Keys key, int scancode, InputAction action,
+        KeyModifiers mods)
     {
         if (!created) return;
 
@@ -336,52 +335,45 @@ public class Keyboard
         bool pressed = action == InputAction.Press || action == InputAction.Repeat;
         bool isRepeat = action == InputAction.Repeat;
 
-        if (lwjglKey > 0 && lwjglKey < KEYBOARD_SIZE)
+        if (lwjglKey > 0 && lwjglKey < KEYBOARD_SIZE) keyDownBuffer[lwjglKey] = pressed && !isRepeat;
+
+
+        char character = '\0';
+        if (pressed)
         {
-            if (action == InputAction.Press) keyDownBuffer[lwjglKey] = true;
-            else if (action == InputAction.Release) keyDownBuffer[lwjglKey] = false;
+            // Get name of keyboard key and assign it (this feels stupid)
+            string? name = glfw.GetKeyName((int)key, scancode);
+            if (!string.IsNullOrEmpty(name)) character = name[0];
+
+            // Shift the char if shifted. TODO Missing caps lock check but can't find how to check
+            bool shifted = mods.HasFlag(KeyModifiers.Shift);
+            if (shifted) character = ShiftUp(character);
+            if (key == Keys.Space) character = ' ';
         }
 
-        var evt = new KeyEvent
+        eventQueue.Enqueue(new KeyEvent
         {
             Key = lwjglKey,
-            Character = '\0',
+            Character = character,
             State = pressed,
             Repeat = isRepeat,
             Nanos = GetNanos()
-        };
+        });
 
-        eventQueue.Enqueue(evt);
-        lastQueuedEvent = evt;
+        // pendingChar = null;
     }
 
-   private static unsafe void OnChar(WindowHandle* window, uint codepoint)
+    private static unsafe void OnChar(WindowHandle* window, uint codepoint)
     {
         if (!created) return;
 
         char character = (char)codepoint;
-        
         OnCharacterTyped?.Invoke(character);
-        if (lastQueuedEvent != null && lastQueuedEvent.State)
-        {
-            lastQueuedEvent.Character = character;
-        }
-        else
-        {
-            eventQueue.Enqueue(new KeyEvent
-            {
-                Key = KEY_NONE,
-                Character = character,
-                State = true,
-                Repeat = false,
-                Nanos = GetNanos()
-            });
-        }
     }
 
     public static event Action<char>? OnCharacterTyped;
 
-    public static bool next()
+    public static bool Next()
     {
         if (!created) throw new InvalidOperationException("Keyboard must be created before you can read events");
 
@@ -389,7 +381,6 @@ public class Keyboard
         {
             KeyEvent evt = eventQueue.Dequeue();
 
-            // Skip repeat events if not enabled
             if (evt.Repeat && !repeat_enabled)
                 continue;
 
@@ -444,7 +435,7 @@ public class Keyboard
         return "UNKNOWN";
     }
 
-    private class KeyEvent
+    private struct KeyEvent
     {
         public int Character;
         public int Key;
