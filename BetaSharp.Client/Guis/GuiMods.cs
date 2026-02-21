@@ -101,6 +101,11 @@ public class GuiMods : GuiScreen
         private bool _mouseHasMovedMuchSinceClick;
         private bool _mouseWasDown;
         private const int ListDragThreshold = 5;
+        private const int ScrollbarWidth = 6;
+        private const int TextMargin = 2;
+        private const int ModHeight = 36;
+        private const int ModBorderThickness = 1;
+        private const int ScrollbarLeftMargin = 1;
 
         public ModList(GuiMods parent)
         {
@@ -120,9 +125,9 @@ public class GuiMods : GuiScreen
                 (uint)((right - left) * scale),
                 (uint)((bottom - top) * scale));
             var mods = Mods.ModRegistry;
-            /*
+
             // Fake mods for testing
-            var mods = new (string Name, string Description)[]
+            /*var mods = new (string Name, string Description)[]
             {
                 ("Example Mod", "Surely does something really cool"),
                 ("Another Mod", "This mod adds even more cool features"),
@@ -136,19 +141,20 @@ public class GuiMods : GuiScreen
                 ("Adventure Mod", "Adds new adventures and quests to explore"),
                 ("Mod with a really long name that will have to be truncated with ellipses",
                 "This mod has a really long description that will also be truncated when displayed in the mod list"),
-            }.ToList();
-            */
-            int contentHeight = mods.Count * 36;
+            }.ToList();*/
+
+            int contentHeight = mods.Count * ModHeight;
             int height = Math.Min(contentHeight, bottom - top);
+            int listRight = right - ScrollbarWidth;
 
             int hoveredIndex = -1;
-            if (mouseY >= top && mouseY <= bottom && mouseX >= left && mouseX <= right - 6)
+            if (mouseY >= top && mouseY <= bottom && mouseX >= left && mouseX <= listRight)
             {
                 for (int i = 0; i < mods.Count; i++)
                 {
-                    int y = top + i * 36 - _scrollOffset;
-                    if (y + 36 < top || y > bottom) continue; // Skip off-screen mods
-                    if (mouseX >= left && mouseX <= right - 6 && mouseY >= y && mouseY <= y + 36)
+                    int y = top + i * ModHeight - _scrollOffset;
+                    if (y + ModHeight < top || y > bottom) continue; // Skip off-screen mods
+                    if (mouseX >= left && mouseX <= listRight && mouseY >= y && mouseY <= y + ModHeight)
                     {
                         hoveredIndex = i;
                         break;
@@ -175,7 +181,7 @@ public class GuiMods : GuiScreen
                     {
                         _mouseHasMovedMuchSinceClick = true;
                     }
-                    if (_initialClickX < right - 6) // dragging the list
+                    if (_initialClickX < listRight) // dragging the list
                     {
                         if (_mouseHasMovedMuchSinceClick)
                         {
@@ -188,7 +194,7 @@ public class GuiMods : GuiScreen
                         int contentScrollRange = contentHeight - height;
                         if (contentScrollRange > 0)
                         {
-                            deltaY = (deltaY * contentScrollRange) / (height - Math.Clamp((height * height) / contentHeight, 32, height - 8));
+                            deltaY = (deltaY * contentScrollRange) / (height - Math.Clamp((height * height) / contentHeight, 32, height));
                             deltaY *= -1;
                         }
                     }
@@ -210,8 +216,8 @@ public class GuiMods : GuiScreen
 
             for (int i = 0; i < mods.Count; i++)
             {
-                int y = top + i * 36 - _scrollOffset;
-                if (y + 36 < top || y > bottom) continue; // Skip off-screen mods
+                int y = top + i * ModHeight - _scrollOffset;
+                if (y + ModHeight < top || y > bottom) continue; // Skip off-screen mods
 
                 var mod = mods[i];
 
@@ -219,28 +225,28 @@ public class GuiMods : GuiScreen
                 if (i == SelectedIndex)
                 {
                     // Border
-                    DrawRect(left, y, right - 7, y + 36, 0xFF808080);
+                    DrawRect(left, y, listRight - ScrollbarLeftMargin, y + ModHeight, 0xFF808080);
                     // Background
-                    DrawRect(left + 1, y + 1, right - 7 - 1, y + 36 - 1, 0xFF000000);
+                    DrawRect(left + ModBorderThickness, y + ModBorderThickness, listRight - ModBorderThickness - ScrollbarLeftMargin, y + ModHeight - ModBorderThickness, 0xFF000000);
                 }
                 else if (i == hoveredIndex)
                 {
                     // Border
                     // top
-                    DrawRect(left, y, right - 8, y + 1, 0x80808080);
+                    DrawRect(left, y, listRight - ModBorderThickness - ScrollbarLeftMargin, y + ModBorderThickness, 0x80808080);
                     // bottom
-                    DrawRect(left, y + 35, right - 8, y + 36, 0x80808080);
+                    DrawRect(left, y + ModHeight - ModBorderThickness, listRight - ModBorderThickness - ScrollbarLeftMargin, y + ModHeight, 0x80808080);
                     // left
-                    DrawRect(left, y + 1, left + 1, y + 35, 0x80808080);
+                    DrawRect(left, y + ModBorderThickness, left + ModBorderThickness, y + ModHeight - ModBorderThickness, 0x80808080);
                     // right
-                    DrawRect(right - 8, y, right - 7, y + 36, 0x80808080);
+                    DrawRect(listRight - ScrollbarLeftMargin, y, listRight - ModBorderThickness - ScrollbarLeftMargin, y + ModHeight, 0x80808080);
                     // Background
-                    DrawRect(left + 1, y + 1, right - 7 - 1, y + 36 - 1, 0x80000000);
+                    DrawRect(left + ModBorderThickness, y + ModBorderThickness, listRight - ModBorderThickness - ScrollbarLeftMargin, y + ModHeight - ModBorderThickness, 0x80000000);
                 }
 
                 string name = mod.Name;
                 int nameWidth = _parent.FontRenderer.GetStringWidth(name);
-                while (nameWidth > right - left - 6)
+                while (nameWidth > listRight - left - ModBorderThickness - TextMargin - 2)
                 {
                     name = name[..^1];
                     nameWidth = _parent.FontRenderer.GetStringWidth(name + "...");
@@ -248,7 +254,7 @@ public class GuiMods : GuiScreen
                 if (name != mod.Name) name += "...";
                 string description = mod.Description.Split('\n')[0];
                 int descriptionWidth = _parent.FontRenderer.GetStringWidth(description);
-                while (descriptionWidth > right - left - 6)
+                while (descriptionWidth > listRight - left - ModBorderThickness - TextMargin - 2)
                 {
                     description = description[..^1];
                     descriptionWidth = _parent.FontRenderer.GetStringWidth(description + "...");
@@ -256,23 +262,23 @@ public class GuiMods : GuiScreen
                 if (description != mod.Description.Split('\n')[0]) description += "...";
 
                 // Draw mod name and description
-                DrawString(_parent.FontRenderer, name, left + 3, y + 3, 0xFFFFFF);
-                DrawString(_parent.FontRenderer, description, left + 3, y + 13, 0x808080);
+                DrawString(_parent.FontRenderer, name, left + ModBorderThickness + TextMargin, y + ModBorderThickness + TextMargin, 0xFFFFFF);
+                DrawString(_parent.FontRenderer, description, left + ModBorderThickness + TextMargin, y + 10 + ModBorderThickness + TextMargin, 0x808080);
             }
 
             if (height < contentHeight)
             {
                 // Draw scrollbar
-                int barHeight = Math.Clamp((height * height) / contentHeight, 32, height - 8);
+                int barHeight = Math.Clamp((height * height) / contentHeight, 32, height);
                 int barY = top + (_scrollOffset * (height - barHeight)) / (contentHeight - height);
-                int barX = right - 6;
+                int barX = right - ScrollbarWidth;
 
                 // Bar background
-                DrawRect(barX, top, barX + 6, bottom, 0xC0000000);
+                DrawRect(barX, top, barX + ScrollbarWidth, bottom, 0xC0000000);
                 // Bar body
-                DrawRect(barX, barY, barX + 6, barY + barHeight, 0xFF808080);
+                DrawRect(barX, barY, barX + ScrollbarWidth, barY + barHeight, 0xFF808080);
                 // Bar highlight
-                DrawRect(barX, barY, barX + 5, barY + barHeight - 1, 0xFFC0C0C0);
+                DrawRect(barX, barY, barX + ScrollbarWidth - 1, barY + barHeight - 1, 0xFFC0C0C0);
             }
 
             GLManager.GL.Disable(EnableCap.ScissorTest);
