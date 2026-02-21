@@ -409,16 +409,27 @@ public unsafe class EmulatedGL : LegacyGL
         Disable((GLEnum)cap);
     }
 
+    private void TransformLightPosition(float* params_, out float tx, out float ty, out float tz)
+    {
+        float x = params_[0], y = params_[1], z = params_[2], w = params_[3];
+
+        Matrix4X4<float> mv = _modelViewStack.Top;
+        tx = x * mv.M11 + y * mv.M21 + z * mv.M31 + w * mv.M41;
+        ty = x * mv.M12 + y * mv.M22 + z * mv.M32 + w * mv.M42;
+        tz = x * mv.M13 + y * mv.M23 + z * mv.M33 + w * mv.M43;
+
+        float len = MathF.Sqrt(tx * tx + ty * ty + tz * tz);
+        if (len > 0) { tx /= len; ty /= len; tz /= len; }
+    }
+
     public override void Light(GLEnum light, GLEnum pname, float* params_)
     {
         if (pname == GLEnum.Position)
         {
-            float x = params_[0], y = params_[1], z = params_[2];
-            float len = MathF.Sqrt(x * x + y * y + z * z);
-            if (len > 0) { x /= len; y /= len; z /= len; }
+            TransformLightPosition(params_, out float tx, out float ty, out float tz);
 
-            if (light == GLEnum.Light0) { _lightingState.Light0DirX = x; _lightingState.Light0DirY = y; _lightingState.Light0DirZ = z; }
-            else if (light == GLEnum.Light1) { _lightingState.Light1DirX = x; _lightingState.Light1DirY = y; _lightingState.Light1DirZ = z; }
+            if (light == GLEnum.Light0) { _lightingState.Light0DirX = tx; _lightingState.Light0DirY = ty; _lightingState.Light0DirZ = tz; }
+            else if (light == GLEnum.Light1) { _lightingState.Light1DirX = tx; _lightingState.Light1DirY = ty; _lightingState.Light1DirZ = tz; }
             _dirtyState.DirtyLighting = true;
         }
         else if (pname == GLEnum.Diffuse)
