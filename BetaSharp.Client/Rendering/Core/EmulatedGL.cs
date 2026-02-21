@@ -31,10 +31,16 @@ public unsafe class EmulatedGL : LegacyGL
     private float _fogEnd = 1f;
     private float _fogDensity = 1f;
 
+    private readonly uint _immediateVao;
+
+    // Display Lists
     private readonly DisplayListCompiler _displayLists;
 
     public EmulatedGL(GL gl) : base(gl)
     {
+        _immediateVao = gl.GenVertexArray();
+        gl.BindVertexArray(_immediateVao);
+
         _shader = new FixedFunctionShader(gl);
         _shader.Use();
         _shader.SetTexture0(0);
@@ -119,10 +125,15 @@ public unsafe class EmulatedGL : LegacyGL
                 ActivateShader();
                 SilkGL.BindVertexArray(chunk.Vao);
                 SilkGL.DrawArrays(chunk.DrawMode, 0, (uint)chunk.VertexCount);
-                SilkGL.BindVertexArray(0);
             },
-            onTranslate: t => ActiveStack.Translate(t.X, t.Y, t.Z),
+            onTranslate: t =>
+            {
+                ActiveStack.Translate(t.X, t.Y, t.Z);
+                _shader.SetModelView(ActiveStack.Top);
+            },
             onColor: c => SilkGL.VertexAttrib4(1, c.R, c.G, c.B, c.A));
+
+        SilkGL.BindVertexArray(_immediateVao);
     }
 
     public override void CallLists(uint n, GLEnum type, void* lists)
@@ -226,76 +237,81 @@ public unsafe class EmulatedGL : LegacyGL
     public override void VertexPointer(int size, GLEnum type, uint stride, void* pointer)
     {
         if (_displayLists.IsCompiling) { _displayLists.SetStride(stride); return; }
+        SilkGL.BindVertexArray(_immediateVao);
         SilkGL.VertexAttribPointer(0, size, type, false, stride, pointer);
     }
 
     public override void ColorPointer(int size, ColorPointerType type, uint stride, void* pointer)
     {
         if (_displayLists.IsCompiling) return;
-        SilkGL.VertexAttribPointer(1, size, (GLEnum)type, type == ColorPointerType.UnsignedByte, stride, pointer);
+        SilkGL.BindVertexArray(_immediateVao);
+        SilkGL.VertexAttribPointer(1, size, (GLEnum)type, true, stride, pointer);
     }
 
     public override void TexCoordPointer(int size, GLEnum type, uint stride, void* pointer)
     {
         if (_displayLists.IsCompiling) return;
+        SilkGL.BindVertexArray(_immediateVao);
         SilkGL.VertexAttribPointer(2, size, type, false, stride, pointer);
     }
 
     public override void NormalPointer(NormalPointerType type, uint stride, void* pointer)
     {
         if (_displayLists.IsCompiling) return;
+        SilkGL.BindVertexArray(_immediateVao);
         SilkGL.VertexAttribPointer(3, 3, (GLEnum)type, true, stride, pointer);
     }
 
     public override void EnableClientState(GLEnum array)
     {
         if (_displayLists.IsCompiling) { _displayLists.EnableAttribute(array); return; }
+        SilkGL.BindVertexArray(_immediateVao);
         switch (array)
         {
             case GLEnum.VertexArray: SilkGL.EnableVertexAttribArray(0); break;
             case GLEnum.ColorArray: SilkGL.EnableVertexAttribArray(1); break;
             case GLEnum.TextureCoordArray: SilkGL.EnableVertexAttribArray(2); break;
             case GLEnum.NormalArray: SilkGL.EnableVertexAttribArray(3); break;
-            default: base.EnableClientState(array); break;
+            default: break;
         }
     }
 
     public override void DisableClientState(GLEnum array)
     {
         if (_displayLists.IsCompiling) return;
+        SilkGL.BindVertexArray(_immediateVao);
         switch (array)
         {
             case GLEnum.VertexArray: SilkGL.DisableVertexAttribArray(0); break;
             case GLEnum.ColorArray: SilkGL.DisableVertexAttribArray(1); break;
             case GLEnum.TextureCoordArray: SilkGL.DisableVertexAttribArray(2); break;
             case GLEnum.NormalArray: SilkGL.DisableVertexAttribArray(3); break;
-            default: base.DisableClientState(array); break;
+            default: break;
         }
     }
 
     public override void Enable(GLEnum cap)
     {
-        if (_displayLists.IsCompiling) { base.Enable(cap); return; }
         switch (cap)
         {
-            case GLEnum.Texture2D: _useTexture = true; break;
+            case GLEnum.Texture2D: _useTexture = true; return;
             case GLEnum.AlphaTest: _alphaTestEnabled = true; return;
             case GLEnum.Lighting: _lightingEnabled = true; return;
             case GLEnum.Fog: _fogEnabled = true; return;
             case GLEnum.Light0: return;
             case GLEnum.Light1: return;
             case GLEnum.ColorMaterial: return;
-            case GLEnum.RescaleNormal: return;
+            case GLEnum.RescaleNormal: return; // Shader always normalizes
         }
-        base.Enable(cap);
+        if (_displayLists.IsCompiling) return;
+        SilkGL.Enable(cap);
     }
 
     public override void Disable(GLEnum cap)
     {
-        if (_displayLists.IsCompiling) { base.Disable(cap); return; }
         switch (cap)
         {
-            case GLEnum.Texture2D: _useTexture = false; break;
+            case GLEnum.Texture2D: _useTexture = false; return;
             case GLEnum.AlphaTest: _alphaTestEnabled = false; return;
             case GLEnum.Lighting: _lightingEnabled = false; return;
             case GLEnum.Fog: _fogEnabled = false; return;
@@ -304,7 +320,13 @@ public unsafe class EmulatedGL : LegacyGL
             case GLEnum.ColorMaterial: return;
             case GLEnum.RescaleNormal: return;
         }
-        base.Disable(cap);
+        if (_displayLists.IsCompiling) return;
+        SilkGL.Disable(cap);
+    }
+
+    public override void Disable(EnableCap cap)
+    {
+        Disable((GLEnum)cap);
     }
 
     public override void Light(GLEnum light, GLEnum pname, float* params_)
