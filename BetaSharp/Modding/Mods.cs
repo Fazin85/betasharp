@@ -8,6 +8,7 @@ public class Mods
 {
     public static ImmutableList<ModBase> ModRegistry { get; private set; } = ImmutableList<ModBase>.Empty;
     public static string ModsFolder { get; private set; } = null!;
+    public static string ConfigFolder { get; private set; } = null!;
 
     private static Dictionary<ModBase, ModLoadContext> _modLoadContexts { get; set; } = [];
     private static bool _loaded = false;
@@ -19,7 +20,7 @@ public class Mods
     /// If a mod is broken to the point where it cannot be loaded at all, it will be skipped and an error will be logged.
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown if this method has already been called.</exception>
-    public static void LoadMods(string modsFolder, Side side)
+    public static void LoadMods(string baseDirectory, Side side)
     {
         if (_loaded)
         {
@@ -27,12 +28,17 @@ public class Mods
         }
 
         _loaded = true;
-        ModsFolder = System.IO.Path.GetFullPath(modsFolder);
+        ModsFolder = System.IO.Path.GetFullPath(System.IO.Path.Combine(baseDirectory, "mods"));
+        ConfigFolder = System.IO.Path.GetFullPath(System.IO.Path.Combine(baseDirectory, "config"));
 
         if (!Directory.Exists(ModsFolder))
         {
             Directory.CreateDirectory(ModsFolder);
             return; // It's empty.
+        }
+        if (!Directory.Exists(ConfigFolder))
+        {
+            Directory.CreateDirectory(ConfigFolder);
         }
 
         List<string> modsFiles = Directory.GetFiles(ModsFolder)
