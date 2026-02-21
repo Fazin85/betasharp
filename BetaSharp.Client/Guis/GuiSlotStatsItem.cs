@@ -16,14 +16,14 @@ public class GuiSlotStatsItem : GuiSlotStats<StatCrafting, StatCrafting>
 
         Stats = BetaSharp.Stats.Stats.ITEM_STATS
             .OfType<StatCrafting>()
-            .Where(stat => 
+            .Where(stat =>
                 parent.statFileWriter.writeStat(stat) > 0 ||
                 (BetaSharp.Stats.Stats.BROKEN[stat.getItemId()] is StatCrafting broken && parent.statFileWriter.writeStat(broken) > 0) ||
                 (BetaSharp.Stats.Stats.CRAFTED[stat.getItemId()] is StatCrafting crafted && parent.statFileWriter.writeStat(crafted) > 0))
             .ToList();
     }
 
-     protected override void DrawHeader(int x, int y, Tessellator tessellator)
+    protected override void DrawHeader(int x, int y, Tessellator tessellator)
     {
         base.DrawHeader(x, y, tessellator);
 

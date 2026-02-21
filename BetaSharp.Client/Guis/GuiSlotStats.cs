@@ -107,7 +107,7 @@ public abstract class GuiSlotStats<T, K>(GuiStats statsGui) : GuiSlot(statsGui.m
 
     protected void DrawItemTooltip(StatCrafting? stat, int x, int y)
     {
-       if (stat is not null)
+        if (stat is not null)
         {
             Item item = Item.ITEMS[stat.getItemId()];
             string translated = TranslationStorage.Instance.TranslateNamedKey(item.getItemName()).Trim();

@@ -13,10 +13,10 @@ public class GuiSlotStatsBlock : GuiSlotStats<StatCrafting, StatCrafting>
     {
         ParentStatsGui = parent;
         StatSorter = new SorterStatsBlock(this, parent);
-        
+
         Stats = BetaSharp.Stats.Stats.BLOCKS_MINED_STATS
             .OfType<StatCrafting>()
-            .Where(stat => 
+            .Where(stat =>
                 parent.statFileWriter.writeStat(stat) > 0 ||
                 (BetaSharp.Stats.Stats.USED[stat.getItemId()] is StatCrafting used && parent.statFileWriter.writeStat(used) > 0) ||
                 (BetaSharp.Stats.Stats.CRAFTED[stat.getItemId()] is StatCrafting crafted && parent.statFileWriter.writeStat(crafted) > 0))
@@ -25,7 +25,7 @@ public class GuiSlotStatsBlock : GuiSlotStats<StatCrafting, StatCrafting>
 
     protected override void DrawHeader(int x, int y, Tessellator tessellator)
     {
-       base.DrawHeader(x, y, tessellator);
+        base.DrawHeader(x, y, tessellator);
 
         for (int i = 0; i < 3; i++)
         {
@@ -39,11 +39,11 @@ public class GuiSlotStatsBlock : GuiSlotStats<StatCrafting, StatCrafting>
 
     protected override void DrawSlot(int index, int x, int y, int rowHeight, Tessellator tessellator)
     {
-       StatCrafting stat = GetStat(index);
+        StatCrafting stat = GetStat(index);
         int id = stat.getItemId();
 
         ParentStatsGui.drawItemSlot(x + 40, y, id);
-        
+
         bool isBright = index % 2 == 0;
         DrawStatValue(BetaSharp.Stats.Stats.CRAFTED[id] as StatCrafting, x + 115, y, isBright);
         DrawStatValue(BetaSharp.Stats.Stats.USED[id] as StatCrafting, x + 165, y, isBright);
