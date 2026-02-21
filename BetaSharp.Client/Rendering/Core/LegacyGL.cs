@@ -22,7 +22,7 @@ public unsafe class LegacyGL : IGL
     {
         SilkGL.BindBuffer(target, buffer);
     }
-    public void BindTexture(GLEnum target, uint texture)
+    public virtual void BindTexture(GLEnum target, uint texture)
     {
         SilkGL.BindTexture(target, texture);
     }
@@ -46,15 +46,15 @@ public unsafe class LegacyGL : IGL
     {
         SilkGL.BufferData(target, size, data, usage);
     }
-    public void CallList(uint list)
+    public virtual void CallList(uint list)
     {
         SilkGL.CallList(list);
     }
-    public void CallLists<T0>(uint n, GLEnum type, ReadOnlySpan<T0> lists) where T0 : unmanaged
+    public virtual void CallLists<T0>(uint n, GLEnum type, ReadOnlySpan<T0> lists) where T0 : unmanaged
     {
         SilkGL.CallLists<T0>(n, type, lists);
     }
-    public void CallLists(uint n, GLEnum type, void* lists)
+    public virtual void CallLists(uint n, GLEnum type, void* lists)
     {
         SilkGL.CallLists(n, type, lists);
     }
@@ -74,35 +74,35 @@ public unsafe class LegacyGL : IGL
     {
         SilkGL.ClearDepth(depth);
     }
-    public void Color3(float red, float green, float blue)
+    public virtual void Color3(float red, float green, float blue)
     {
         SilkGL.Color3(red, green, blue);
     }
-    public void Color3(byte red, byte green, byte blue)
+    public virtual void Color3(byte red, byte green, byte blue)
     {
         SilkGL.Color3(red, green, blue);
     }
-    public void Color4(float red, float green, float blue, float alpha)
+    public virtual void Color4(float red, float green, float blue, float alpha)
     {
         SilkGL.Color4(red, green, blue, alpha);
     }
-    public void Color4(byte red, byte green, byte blue, byte alpha)
+    public virtual void Color4(byte red, byte green, byte blue, byte alpha)
     {
         SilkGL.Color4(red, green, blue, alpha);
     }
-    public void ColorMask(bool red, bool green, bool blue, bool alpha)
+    public virtual void ColorMask(bool red, bool green, bool blue, bool alpha)
     {
         SilkGL.ColorMask(red, green, blue, alpha);
     }
-    public void ColorMaterial(GLEnum face, GLEnum mode)
+    public virtual void ColorMaterial(GLEnum face, GLEnum mode)
     {
         SilkGL.ColorMaterial(face, mode);
     }
-    public void ColorPointer(int size, GLEnum type, uint stride, void* pointer)
+    public virtual void ColorPointer(int size, GLEnum type, uint stride, void* pointer)
     {
         SilkGL.ColorPointer(size, type, stride, pointer);
     }
-    public void ColorPointer(int size, ColorPointerType type, uint stride, void* pointer)
+    public virtual void ColorPointer(int size, ColorPointerType type, uint stride, void* pointer)
     {
         SilkGL.ColorPointer(size, type, stride, pointer);
     }
@@ -166,35 +166,35 @@ public unsafe class LegacyGL : IGL
     {
         SilkGL.DepthMask(flag);
     }
-    public void Disable(EnableCap cap)
+    public virtual void Disable(EnableCap cap)
     {
         SilkGL.Disable(cap);
     }
-    public void Disable(GLEnum cap)
+    public virtual void Disable(GLEnum cap)
     {
         SilkGL.Disable(cap);
     }
-    public void DisableClientState(GLEnum array)
+    public virtual void DisableClientState(GLEnum array)
     {
         SilkGL.DisableClientState(array);
     }
-    public void DrawArrays(GLEnum mode, int first, uint count)
+    public virtual void DrawArrays(GLEnum mode, int first, uint count)
     {
         SilkGL.DrawArrays(mode, first, count);
     }
-    public void Enable(EnableCap cap)
+    public virtual void Enable(EnableCap cap)
     {
         SilkGL.Enable(cap);
     }
-    public void Enable(GLEnum cap)
+    public virtual void Enable(GLEnum cap)
     {
         SilkGL.Enable(cap);
     }
-    public void EnableClientState(GLEnum array)
+    public virtual void EnableClientState(GLEnum array)
     {
         SilkGL.EnableClientState(array);
     }
-    public void EnableVertexAttribArray(uint index)
+    public virtual void EnableVertexAttribArray(uint index)
     {
         SilkGL.EnableVertexAttribArray(index);
     }
@@ -354,19 +354,19 @@ public unsafe class LegacyGL : IGL
     {
         SilkGL.NewList(list, mode);
     }
-    public void Normal3(float nx, float ny, float nz)
+    public virtual void Normal3(float nx, float ny, float nz)
     {
         SilkGL.Normal3(nx, ny, nz);
     }
-    public void Normal3(byte nx, byte ny, byte nz)
+    public virtual void Normal3(byte nx, byte ny, byte nz)
     {
         SilkGL.Normal3(nx, ny, nz);
     }
-    public void NormalPointer(GLEnum type, uint stride, void* pointer)
+    public virtual void NormalPointer(GLEnum type, uint stride, void* pointer)
     {
         SilkGL.NormalPointer(type, stride, pointer);
     }
-    public void NormalPointer(NormalPointerType type, uint stride, void* pointer)
+    public virtual void NormalPointer(NormalPointerType type, uint stride, void* pointer)
     {
         SilkGL.NormalPointer(type, stride, pointer);
     }
@@ -426,7 +426,7 @@ public unsafe class LegacyGL : IGL
     {
         SilkGL.ShaderSource(shader, string_);
     }
-    public void TexCoordPointer(int size, GLEnum type, uint stride, void* pointer)
+    public virtual void TexCoordPointer(int size, GLEnum type, uint stride, void* pointer)
     {
         SilkGL.TexCoordPointer(size, type, stride, pointer);
     }
@@ -530,15 +530,15 @@ public unsafe class LegacyGL : IGL
     {
         SilkGL.UseProgram(program);
     }
-    public void VertexAttribIPointer(uint index, int size, GLEnum type, uint stride, void* pointer)
+    public virtual void VertexAttribIPointer(uint index, int size, GLEnum type, uint stride, void* pointer)
     {
         SilkGL.VertexAttribIPointer(index, size, type, stride, pointer);
     }
-    public void VertexAttribPointer(uint index, int size, GLEnum type, bool normalized, uint stride, void* pointer)
+    public virtual void VertexAttribPointer(uint index, int size, GLEnum type, bool normalized, uint stride, void* pointer)
     {
         SilkGL.VertexAttribPointer(index, size, type, normalized, stride, pointer);
     }
-    public void VertexPointer(int size, GLEnum type, uint stride, void* pointer)
+    public virtual void VertexPointer(int size, GLEnum type, uint stride, void* pointer)
     {
         SilkGL.VertexPointer(size, type, stride, pointer);
     }
