@@ -5,7 +5,7 @@ public sealed class WeightedRandomSelector<T>
     private readonly List<T> _items = [];
     private readonly List<int> _cumulativeWeight = [0];
 
-    public bool Empty => _cumulativeWeight.Count == 0;
+    public bool Empty => _items.Count == 0;
 
     public void Add(T item, int weight)
     {
