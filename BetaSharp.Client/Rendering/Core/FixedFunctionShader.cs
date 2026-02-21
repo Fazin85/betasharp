@@ -69,7 +69,7 @@ void main()
         vec3 lighting = u_AmbientLight
                       + diff0 * u_Light0Diffuse
                       + diff1 * u_Light1Diffuse;
-        v_Color = vec4(a_Color.rgb * lighting, a_Color.a);
+        v_Color = vec4(clamp(a_Color.rgb * lighting, 0.0, 1.0), a_Color.a);
     }
     else
     {
