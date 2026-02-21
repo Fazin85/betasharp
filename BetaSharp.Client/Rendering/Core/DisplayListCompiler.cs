@@ -2,18 +2,8 @@ using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Rendering.Core;
 
-/// <summary>
-/// Software display list compiler that captures vertex data and GL state commands
-/// during NewList/EndList compilation, then replays them on CallList.
-/// 
-/// Native OpenGL display lists cannot record vertex array commands (glVertexPointer,
-/// glDrawArrays, etc.), so this class emulates the feature by intercepting those
-/// calls and storing the geometry in persistent VAO/VBO objects.
-/// </summary>
 public unsafe class DisplayListCompiler
 {
-    // ---- Recorded command types ----
-
     public abstract class DLCommand;
 
     public class DLDrawChunk : DLCommand
@@ -39,31 +29,24 @@ public unsafe class DisplayListCompiler
         public List<DLCommand> Commands = [];
     }
 
-    // ---- State ----
-
     private readonly GL _gl;
     private uint _nextListId = 1;
     private readonly Dictionary<uint, EmulatedDisplayList> _emulatedLists = [];
-
-    private bool _isCompiling;
     private uint _compilingListId;
 
-    // Staging data accumulated during compilation
     private List<byte>? _stagingBuffer;
     private GLEnum _lastDrawMode;
     private bool _compiledHasTexture;
     private bool _compiledHasColor;
     private bool _compiledHasNormals;
-    private uint _compiledStride = 32; // Tessellator default
+    private uint _compiledStride = 32;
 
-    public bool IsCompiling => _isCompiling;
+    public bool IsCompiling { get; private set; }
 
     public DisplayListCompiler(GL gl)
     {
         _gl = gl;
     }
-
-    // ---- ID allocation ----
 
     public uint GenLists(uint range)
     {
@@ -89,11 +72,9 @@ public unsafe class DisplayListCompiler
         }
     }
 
-    // ---- Compilation ----
-
     public void BeginList(uint list)
     {
-        _isCompiling = true;
+        IsCompiling = true;
         _compilingListId = list;
         _stagingBuffer = new List<byte>(4096);
         _compiledHasTexture = false;
@@ -114,13 +95,10 @@ public unsafe class DisplayListCompiler
 
     public void EndList()
     {
-        _isCompiling = false;
+        IsCompiling = false;
         _stagingBuffer = null;
     }
 
-    /// <summary>
-    /// Capture vertex data being uploaded via BufferData during compilation.
-    /// </summary>
     public void CaptureVertexData(byte* data, int byteCount)
     {
         if (_stagingBuffer == null) return;
@@ -128,14 +106,8 @@ public unsafe class DisplayListCompiler
         _stagingBuffer.AddRange(span.ToArray());
     }
 
-    /// <summary>
-    /// Record the current vertex stride (from VertexPointer).
-    /// </summary>
     public void SetStride(uint stride) => _compiledStride = stride;
 
-    /// <summary>
-    /// Track which vertex attributes are enabled during compilation.
-    /// </summary>
     public void EnableAttribute(GLEnum clientState)
     {
         switch (clientState)
@@ -146,10 +118,6 @@ public unsafe class DisplayListCompiler
         }
     }
 
-    /// <summary>
-    /// Called when DrawArrays fires during compilation.
-    /// Flushes staged vertex data into a persistent VAO/VBO chunk.
-    /// </summary>
     public void RecordDraw(GLEnum mode, int vertexCount)
     {
         _lastDrawMode = mode;
@@ -170,11 +138,9 @@ public unsafe class DisplayListCompiler
 
         uint stride = _compiledStride;
 
-        // Attrib 0: Position (3 floats at offset 0)
         _gl.EnableVertexAttribArray(0);
         _gl.VertexAttribPointer(0, 3, GLEnum.Float, false, stride, (void*)0);
 
-        // Attrib 1: Color (4 UByte at offset 20)
         if (_compiledHasColor)
         {
             _gl.EnableVertexAttribArray(1);
@@ -186,7 +152,6 @@ public unsafe class DisplayListCompiler
             _gl.VertexAttrib4(1, 1.0f, 1.0f, 1.0f, 1.0f);
         }
 
-        // Attrib 2: TexCoord (2 floats at offset 12)
         if (_compiledHasTexture)
         {
             _gl.EnableVertexAttribArray(2);
@@ -197,7 +162,6 @@ public unsafe class DisplayListCompiler
             _gl.DisableVertexAttribArray(2);
         }
 
-        // Attrib 3: Normal (3 bytes at offset 24)
         if (_compiledHasNormals)
         {
             _gl.EnableVertexAttribArray(3);
@@ -221,27 +185,16 @@ public unsafe class DisplayListCompiler
         _stagingBuffer.Clear();
     }
 
-    /// <summary>
-    /// Record a translate command into the current display list.
-    /// </summary>
     public void RecordTranslate(float x, float y, float z)
     {
         _emulatedLists[_compilingListId].Commands.Add(new DLTranslate { X = x, Y = y, Z = z });
     }
 
-    /// <summary>
-    /// Record a color command into the current display list.
-    /// </summary>
     public void RecordColor(float r, float g, float b, float a)
     {
         _emulatedLists[_compilingListId].Commands.Add(new DLColor { R = r, G = g, B = b, A = a });
     }
 
-    // ---- Playback ----
-
-    /// <summary>
-    /// Execute a display list, calling the provided callbacks for each command type.
-    /// </summary>
     public void Execute(uint list, Action<DLDrawChunk> onDraw, Action<DLTranslate> onTranslate, Action<DLColor> onColor)
     {
         if (!_emulatedLists.TryGetValue(list, out EmulatedDisplayList? dl) || dl.Commands.Count == 0) return;
@@ -256,8 +209,6 @@ public unsafe class DisplayListCompiler
             }
         }
     }
-
-    // ---- Cleanup ----
 
     private void FreeGpuResources(EmulatedDisplayList dl)
     {

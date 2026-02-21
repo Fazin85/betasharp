@@ -17,7 +17,6 @@ public unsafe class EmulatedGL : LegacyGL
     private bool _alphaTestEnabled = false;
     private float _alphaThreshold = 0.1f;
 
-    // Lighting state
     private bool _lightingEnabled = false;
     private float _light0DirX, _light0DirY, _light0DirZ;
     private float _light0DiffR, _light0DiffG, _light0DiffB;
@@ -25,7 +24,6 @@ public unsafe class EmulatedGL : LegacyGL
     private float _light1DiffR, _light1DiffG, _light1DiffB;
     private float _ambientR = 0.2f, _ambientG = 0.2f, _ambientB = 0.2f;
 
-    // Fog state
     private bool _fogEnabled = false;
     private int _fogMode = 0; // 0=linear, 1=exp
     private float _fogColorR, _fogColorG, _fogColorB, _fogColorA;
@@ -287,7 +285,7 @@ public unsafe class EmulatedGL : LegacyGL
             case GLEnum.Light0: return;
             case GLEnum.Light1: return;
             case GLEnum.ColorMaterial: return;
-            case GLEnum.RescaleNormal: return; // Shader always normalizes
+            case GLEnum.RescaleNormal: return;
         }
         base.Enable(cap);
     }
@@ -313,7 +311,6 @@ public unsafe class EmulatedGL : LegacyGL
     {
         if (pname == GLEnum.Position)
         {
-            // w=0 means directional; store normalized direction
             float x = params_[0], y = params_[1], z = params_[2];
             float len = MathF.Sqrt(x * x + y * y + z * z);
             if (len > 0) { x /= len; y /= len; z /= len; }
@@ -326,7 +323,6 @@ public unsafe class EmulatedGL : LegacyGL
             if (light == GLEnum.Light0) { _light0DiffR = params_[0]; _light0DiffG = params_[1]; _light0DiffB = params_[2]; }
             else if (light == GLEnum.Light1) { _light1DiffR = params_[0]; _light1DiffG = params_[1]; _light1DiffB = params_[2]; }
         }
-        // Ambient and Specular are ignored (specular=0 in game, per-light ambient=0)
     }
 
     public override void Fog(GLEnum pname, float param)

@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Silk.NET.Maths;
 
 namespace BetaSharp.Client.Rendering.Core;
@@ -35,35 +33,35 @@ public class MatrixStack
 
     public void Translate(float x, float y, float z)
     {
-        _current = Matrix4X4.CreateTranslation<float>(x, y, z) * _current;
+        _current = Matrix4X4.CreateTranslation(x, y, z) * _current;
     }
 
     public void Scale(float x, float y, float z)
     {
-        _current = Matrix4X4.CreateScale<float>(x, y, z) * _current;
+        _current = Matrix4X4.CreateScale(x, y, z) * _current;
     }
 
     public void Rotate(float angleDeg, float x, float y, float z)
     {
         float angleRad = angleDeg * (MathF.PI / 180.0f);
-        // Normalize axis
         float len = MathF.Sqrt(x * x + y * y + z * z);
+
         if (len > 0.0001f)
         {
             x /= len;
             y /= len;
             z /= len;
-            _current = Matrix4X4.CreateFromAxisAngle<float>(new Vector3D<float>(x, y, z), angleRad) * _current;
+            _current = Matrix4X4.CreateFromAxisAngle(new Vector3D<float>(x, y, z), angleRad) * _current;
         }
     }
 
     public void Ortho(double left, double right, double bottom, double top, double zNear, double zFar)
     {
-        _current *= Matrix4X4.CreateOrthographicOffCenter<float>((float)left, (float)right, (float)bottom, (float)top, (float)zNear, (float)zFar);
+        _current *= Matrix4X4.CreateOrthographicOffCenter((float)left, (float)right, (float)bottom, (float)top, (float)zNear, (float)zFar);
     }
 
     public void Frustum(double left, double right, double bottom, double top, double zNear, double zFar)
     {
-        _current *= Matrix4X4.CreatePerspectiveOffCenter<float>((float)left, (float)right, (float)bottom, (float)top, (float)zNear, (float)zFar);
+        _current *= Matrix4X4.CreatePerspectiveOffCenter((float)left, (float)right, (float)bottom, (float)top, (float)zNear, (float)zFar);
     }
 }
