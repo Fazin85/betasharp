@@ -32,7 +32,7 @@ public class GuiAchievement : Gui
     public void queueTakenAchievement(Achievement achievement)
     {
         _achievementTitle = StatCollector.translateToLocal("achievement.get");
-        _achievementDescription = achievement.statName;
+        _achievementDescription = achievement.Name;
         _achievementDisplayStartTime = GetCurrentTimeMillis();
         _theAchievement = achievement;
         _isAchievementInformation = false;
@@ -40,7 +40,7 @@ public class GuiAchievement : Gui
 
     public void queueAchievementInformation(Achievement achievement)
     {
-        _achievementTitle = achievement.statName;
+        _achievementTitle = achievement.Name;
         _achievementDescription = achievement.getTranslatedDescription();
         _achievementDisplayStartTime = GetCurrentTimeMillis() - 2500L;
         _theAchievement = achievement;

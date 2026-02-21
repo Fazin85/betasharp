@@ -506,7 +506,7 @@ public class Block
 
     public virtual void afterBreak(World world, EntityPlayer player, int x, int y, int z, int meta)
     {
-        player.increaseStat(Stats.Stats.mineBlockStatArray[id], 1);
+        player.increaseStat(Stats.Stats.MineBlockStatArray[id], 1);
         dropStacks(world, x, y, z, meta);
     }
 

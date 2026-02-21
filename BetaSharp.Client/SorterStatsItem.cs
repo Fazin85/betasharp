@@ -25,18 +25,18 @@ public class SorterStatsItem : Comparator
         StatBase var6 = null;
         if (field_27372_b.field_27271_e == 0)
         {
-            var5 = Stats.Stats.BROKEN[var3];
-            var6 = Stats.Stats.BROKEN[var4];
+            var5 = Stats.Stats.Broken[var3];
+            var6 = Stats.Stats.Broken[var4];
         }
         else if (field_27372_b.field_27271_e == 1)
         {
-            var5 = Stats.Stats.CRAFTED[var3];
-            var6 = Stats.Stats.CRAFTED[var4];
+            var5 = Stats.Stats.Crafted[var3];
+            var6 = Stats.Stats.Crafted[var4];
         }
         else if (field_27372_b.field_27271_e == 2)
         {
-            var5 = Stats.Stats.USED[var3];
-            var6 = Stats.Stats.USED[var4];
+            var5 = Stats.Stats.Used[var3];
+            var6 = Stats.Stats.Used[var4];
         }
 
         if (var5 != null || var6 != null)

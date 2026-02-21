@@ -1,4 +1,4 @@
-﻿using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Stats;
 using java.util;
 
@@ -13,22 +13,19 @@ public class GuiSlotStatsBlock : GuiSlotStats
     {
         parentStatsGui = parent;
         field_27273_c = new ArrayList();
-        Iterator iterator = Stats.Stats.BLOCKS_MINED_STATS.iterator();
-
-        while (iterator.hasNext())
+        foreach (StatCrafting stat in Stats.Stats.BlockMinedStats)
         {
-            StatCrafting stat = (StatCrafting)iterator.next();
             bool hasStat = false;
             int id = stat.getItemId();
             if (parent.statFileWriter.writeStat(stat) > 0)
             {
                 hasStat = true;
             }
-            else if (Stats.Stats.USED[id] != null && parent.statFileWriter.writeStat(Stats.Stats.USED[id]) > 0)
+            else if (Stats.Stats.Used[id] != null && parent.statFileWriter.writeStat(Stats.Stats.Used[id]) > 0)
             {
                 hasStat = true;
             }
-            else if (Stats.Stats.CRAFTED[id] != null && parent.statFileWriter.writeStat(Stats.Stats.CRAFTED[id]) > 0)
+            else if (Stats.Stats.Crafted[id] != null && parent.statFileWriter.writeStat(Stats.Stats.Crafted[id]) > 0)
             {
                 hasStat = true;
             }
@@ -79,8 +76,8 @@ public class GuiSlotStatsBlock : GuiSlotStats
         StatCrafting stat = func_27264_b(index);
         int id = stat.getItemId();
         parentStatsGui.drawItemSlot(x + 40, y, id);
-        func_27265_a((StatCrafting)Stats.Stats.CRAFTED[id], x + 115, y, index % 2 == 0);
-        func_27265_a((StatCrafting)Stats.Stats.USED[id], x + 165, y, index % 2 == 0);
+        func_27265_a((StatCrafting)Stats.Stats.Crafted[id], x + 115, y, index % 2 == 0);
+        func_27265_a((StatCrafting)Stats.Stats.Used[id], x + 165, y, index % 2 == 0);
         func_27265_a(stat, x + 215, y, index % 2 == 0);
     }
 

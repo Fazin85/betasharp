@@ -205,7 +205,7 @@ public class BlockLeaves : BlockLeavesBase
     {
         if (!world.isRemote && player.getHand() != null && player.getHand().itemId == Item.Shears.id)
         {
-            player.increaseStat(Stats.Stats.mineBlockStatArray[id], 1);
+            player.increaseStat(Stats.Stats.MineBlockStatArray[id], 1);
             dropStack(world, x, y, z, new ItemStack(Block.Leaves.id, 1, meta & 3));
         }
         else

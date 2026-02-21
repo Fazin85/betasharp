@@ -788,7 +788,7 @@ public class ClientNetworkHandler : NetHandler
 
     public override void onIncreaseStat(IncreaseStatS2CPacket packet)
     {
-        ((EntityClientPlayerMP)mc.player).func_27027_b(Stats.Stats.getStatById(packet.statId), packet.amount);
+        ((EntityClientPlayerMP)mc.player).func_27027_b(Stats.Stats.GetStatById(packet.statId), packet.amount);
     }
 
     public override bool isServerSide()

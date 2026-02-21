@@ -11,10 +11,10 @@ namespace BetaSharp.Client.Guis;
 public class GuiAchievements : GuiScreen
 {
 
-    private static readonly int field_27126_s = BetaSharp.Achievements.minColumn * 24 - 112;
-    private static readonly int field_27125_t = BetaSharp.Achievements.minRow * 24 - 112;
-    private static readonly int field_27124_u = BetaSharp.Achievements.maxColumn * 24 - 77;
-    private static readonly int field_27123_v = BetaSharp.Achievements.maxRow * 24 - 77;
+    private static readonly int field_27126_s = BetaSharp.Achievements.MinColumn * 24 - 112;
+    private static readonly int field_27125_t = BetaSharp.Achievements.MinRow * 24 - 112;
+    private static readonly int field_27124_u = BetaSharp.Achievements.MaxColumn * 24 - 77;
+    private static readonly int field_27123_v = BetaSharp.Achievements.MaxRow * 24 - 77;
     protected int field_27121_a = 256;
     protected int field_27119_i = 202;
     protected int field_27118_j;
@@ -373,7 +373,7 @@ public class GuiAchievements : GuiScreen
         if (var27 != null)
         {
             string? var32 = var27.getTranslatedDescription();
-            string var31 = var27.statName;
+            string var31 = var27.Name;
             var17 = var1 + 12;
             var33 = var2 - 4;
             if (statFileWriter.func_27181_b(var27))
@@ -395,7 +395,7 @@ public class GuiAchievements : GuiScreen
             else
             {
                 var34 = java.lang.Math.max(FontRenderer.GetStringWidth(var31), 120);
-                string var39 = StatCollector.translateToLocalFormatted("achievement.requires", new object[] { var27.parent.statName });
+                string var39 = StatCollector.translateToLocalFormatted("achievement.requires", new object[] { var27.parent.Name });
                 var38 = FontRenderer.GetStringHeight(var39, var34);
                 DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var38 + 12 + 3, 0xC0000000, 0xC0000000);
                 FontRenderer.DrawStringWrapped(var39, var17, var33 + 12, var34, 0xFF705050);

@@ -2,18 +2,17 @@ namespace BetaSharp.Stats;
 
 public class StatBasic : StatBase
 {
-    public StatBasic(int var1, string var2, StatFormatter var3) : base(var1, var2, var3)
-    {
-    }
+    public StatBasic(int id, string name, Func<int, string> formatter) : base(id, name, formatter) { }
 
-    public StatBasic(int var1, string var2) : base(var1, var2)
-    {
-    }
+    public StatBasic(int id, string name) : base(id, name) { }
 
-    public override StatBase registerStat()
+    public override StatBase RegisterStat()
     {
-        base.registerStat();
-        Stats.GENERAL_STATS.add(this);
+        base.RegisterStat();
+        if (!Stats.GeneralStats.Contains(this))
+        {
+            Stats.GeneralStats.Add(this);
+        }
         return this;
     }
 }

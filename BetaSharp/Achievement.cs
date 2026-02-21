@@ -28,24 +28,24 @@ public class Achievement : StatBase
         TranslationKey = StatCollector.translateToLocal("achievement." + key + ".desc");
         this.column = column;
         this.row = row;
-        if (column < Achievements.minColumn)
+        if (column < Achievements.MinColumn)
         {
-            Achievements.minColumn = column;
+            Achievements.MinColumn = column;
         }
 
-        if (row < Achievements.minRow)
+        if (row < Achievements.MinRow)
         {
-            Achievements.minRow = row;
+            Achievements.MinRow = row;
         }
 
-        if (column > Achievements.maxColumn)
+        if (column > Achievements.MaxColumn)
         {
-            Achievements.maxColumn = column;
+            Achievements.MaxColumn = column;
         }
 
-        if (row > Achievements.maxRow)
+        if (row > Achievements.MaxRow)
         {
-            Achievements.maxRow = row;
+            Achievements.MaxRow = row;
         }
 
         this.parent = parent;
@@ -53,24 +53,24 @@ public class Achievement : StatBase
 
     public Achievement m_66876377()
     {
-        localOnly = true;
+        base.SetLocalOnly();
         return this;
     }
 
-    public Achievement challenge()
+    public Achievement Challenge()
     {
         _isChallenge = true;
         return this;
     }
 
-    public Achievement registerAchievement()
+    public Achievement RegisterAchievement()
     {
-        base.registerStat();
+        base.RegisterStat();
         Achievements.AllAchievements.Add(this);
         return this;
     }
 
-    public override bool isAchievement()
+    public override bool IsAchievement()
     {
         return true;
     }
@@ -90,12 +90,12 @@ public class Achievement : StatBase
         return _isChallenge;
     }
 
-    public override StatBase registerStat()
+    public override StatBase RegisterStat()
     {
-        return registerAchievement();
+        return RegisterAchievement();
     }
 
-    public override StatBase setLocalOnly()
+    public override StatBase SetLocalOnly()
     {
         return m_66876377();
     }

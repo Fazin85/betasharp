@@ -9,15 +9,15 @@ public class GuiConnectFailed : GuiScreen
 
     public GuiConnectFailed(string messageKey, string detailKey, params object[]? formatArgs)
     {
-        TranslationStorage translations = TranslationStorage.Instance;
-        _errorMessage = translations.TranslateKey(messageKey);
+        TranslationStorage translations = TranslationStorage.getInstance();
+        _errorMessage = translations.translateKey(messageKey);
         if (formatArgs != null)
         {
-            _errorDetail = translations.TranslateKeyFormat(detailKey, formatArgs);
+            _errorDetail = translations.translateKeyFormat(detailKey, formatArgs);
         }
         else
         {
-            _errorDetail = translations.TranslateKey(detailKey);
+            _errorDetail = translations.translateKey(detailKey);
         }
 
     }
@@ -33,9 +33,9 @@ public class GuiConnectFailed : GuiScreen
     public override void InitGui()
     {
         mc.stopInternalServer();
-        TranslationStorage translations = TranslationStorage.Instance;
+        TranslationStorage translations = TranslationStorage.getInstance();
         _controlList.Clear();
-        _controlList.Add(new GuiButton(_buttonToMenu, Width / 2 - 100, Height / 4 + 120 + 12, translations.TranslateKey("gui.toMenu")));
+        _controlList.Add(new GuiButton(_buttonToMenu, Width / 2 - 100, Height / 4 + 120 + 12, translations.translateKey("gui.toMenu")));
     }
 
     protected override void ActionPerformed(GuiButton btt)

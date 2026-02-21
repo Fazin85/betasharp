@@ -108,6 +108,8 @@ public class StatFileWriter
 
     public static java.util.Map createStatsMap(string statsFileContents)
     {
+        _ = BetaSharp.Achievements.AllAchievements;
+
         java.util.HashMap statsMap = new java.util.HashMap();
         try
         {
@@ -130,14 +132,14 @@ public class StatFileWriter
                         ? var9.Value.GetInt32()
                         : java.lang.Integer.parseInt(var9.Value.GetString());
 
-                    StatBase var12 = Stats.getStatById(var10);
+                    StatBase var12 = Stats.GetStatById(var10);
                     if (var12 == null)
                     {
                         Log.Info($"{var10} is not a valid stat");
                     }
                     else
                     {
-                        sb.append(Stats.getStatById(var10).statGuid).append(",");
+                        sb.append(Stats.GetStatById(var10).StatGuid).append(",");
                         sb.append(var11).append(",");
                         statsMap.put(var12, java.lang.Integer.valueOf(var11));
                     }
@@ -198,8 +200,8 @@ public class StatFileWriter
                 var5 = false;
             }
 
-            var3.append("\r\n    {\"").append(var7.id).append("\":").append(statsMap.get(var7));
-            var4.append(var7.statGuid).append(",");
+            var3.append("\r\n    {\"").append(var7.Id).append("\":").append(statsMap.get(var7));
+            var4.append(var7.StatGuid).append(",");
             var4.append(statsMap.get(var7)).append(",");
         }
 

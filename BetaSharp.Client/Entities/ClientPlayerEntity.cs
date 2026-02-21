@@ -224,7 +224,7 @@ public class ClientPlayerEntity : EntityPlayer
     {
         if (stat != null)
         {
-            if (stat.isAchievement())
+            if (stat.IsAchievement())
             {
                 Achievement achievement = (Achievement)stat;
                 if (achievement.parent == null || mc.statFileWriter.hasAchievementUnlocked(achievement.parent))

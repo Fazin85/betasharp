@@ -1,78 +1,68 @@
-using BetaSharp.Stats.Achievements;
-using java.lang;
-using java.text;
-using java.util;
+using System.Globalization;
+using BetaSharp.Stats.Achievements; 
 
 namespace BetaSharp.Stats;
 
-public class StatBase : java.lang.Object
+public class StatBase
 {
-    public readonly int id;
-    public readonly string statName;
-    public bool localOnly;
-    public string statGuid;
-    private readonly StatFormatter formatter;
-    private static NumberFormat DEFAULT_NUMBER_FORMAT = NumberFormat.getIntegerInstance(Locale.US);
-    public static StatFormatter INTEGER_FORMAT = new IntegerStatFormatter();
-    private static DecimalFormat DEFAULT_DECIMAL_FORMAT = new DecimalFormat("########0.00");
-    public static StatFormatter TIME_PROVIDER = new TimeStatFormatter();
-    public static StatFormatter DISTANCE_PROVIDER = new DistanceStatFormatter();
+    public readonly int Id;
+    public readonly string Name;
+    public bool LocalOnly { get; private set; }
+    public string? StatGuid { get; private set; }
+    private readonly Func<int, string> _formatter;
 
-    public StatBase(int var1, string var2, StatFormatter var3)
+    public static readonly Func<int, string> IntegerFormat = (val) => val.ToString("N0", CultureInfo.InvariantCulture);
+    public static readonly Func<int, string> TimeFormat = (val) => {
+        double seconds = val / 20.0;
+        double minutes = seconds / 60.0;
+        double hours = minutes / 60.0;
+        double days = hours / 24.0;
+
+        if (days > 0.5) return days.ToString("F2") + " d";
+        if (hours > 0.5) return hours.ToString("F2") + " h";
+        if (minutes > 0.5) return minutes.ToString("F2") + " m";
+        return seconds.ToString("F2") + " s";
+    };
+    public static readonly Func<int, string> DistanceFormat = (val) => {
+        double meters = val / 100.0;
+        double kilometers = meters / 1000.0;
+        if (kilometers > 0.5) return kilometers.ToString("F2") + " km";
+        return meters.ToString("F2") + " m";
+    };
+
+    public StatBase(int id, string name, Func<int, string> formatter)
     {
-        localOnly = false;
-        id = var1;
-        statName = var2;
-        formatter = var3;
+        Id = id;
+        Name = name;
+        _formatter = formatter;
+        LocalOnly = false;
     }
 
-    public StatBase(int var1, string var2) : this(var1, var2, INTEGER_FORMAT)
-    {
-    }
+    public StatBase(int id, string name) : this(id, name, IntegerFormat) { }
 
-    public virtual StatBase setLocalOnly()
+    public virtual StatBase SetLocalOnly()
     {
-        localOnly = true;
+        LocalOnly = true;
         return this;
     }
 
-    public virtual StatBase registerStat()
+    public virtual StatBase RegisterStat()
     {
-        if (Stats.ID_TO_STAT.containsKey(Integer.valueOf(id)))
+        if (Stats.IdToStat.ContainsKey(Id))
         {
-            throw new RuntimeException("Duplicate stat id: \"" + ((StatBase)Stats.ID_TO_STAT.get(Integer.valueOf(id))).statName + "\" and \"" + statName + "\" at id " + id);
+            throw new InvalidOperationException($"Duplicate stat id: \"{Stats.IdToStat[Id].Name}\" and \"{Name}\" at id {Id}");
         }
-        else
-        {
-            Stats.ALL_STATS.add(this);
-            Stats.ID_TO_STAT.put(Integer.valueOf(id), this);
-            statGuid = AchievementMap.getGuid(id);
-            return this;
-        }
+        
+        Stats.AllStats.Add(this);
+        Stats.IdToStat.Add(Id, this);
+        StatGuid = AchievementMap.getGuid(Id);
+        
+        return this;
     }
 
-    public virtual bool isAchievement()
-    {
-        return false;
-    }
+    public virtual bool IsAchievement() => false;
 
-    public string format(int value)
-    {
-        return formatter.Format(value);
-    }
+    public string Format(int value) => _formatter(value);
 
-    public override string toString()
-    {
-        return statName;
-    }
-
-    public static NumberFormat defaultNumberFormat()
-    {
-        return DEFAULT_NUMBER_FORMAT;
-    }
-
-    public static DecimalFormat defaultDecimalFormat()
-    {
-        return DEFAULT_DECIMAL_FORMAT;
-    }
+    public override string ToString() => Name;
 }

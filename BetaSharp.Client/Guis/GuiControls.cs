@@ -24,7 +24,7 @@ public class GuiControls : GuiScreen
 
     public override void InitGui()
     {
-        TranslationStorage translations = TranslationStorage.Instance;
+        TranslationStorage translations = TranslationStorage.getInstance();
         int leftX = getLeftColumnX();
 
         for (int i = 0; i < _options.KeyBindings.Length; ++i)
@@ -35,8 +35,8 @@ public class GuiControls : GuiScreen
         _controlList.Add(new GuiSlider(EnumOptions.SENSITIVITY.returnEnumOrdinal(), Width / 2 + 5, Height / 6 + 130, EnumOptions.SENSITIVITY, _options.GetKeyBinding(EnumOptions.SENSITIVITY), _options.GetOptionFloatValue(EnumOptions.SENSITIVITY)).Size(125, 20));
         _controlList.Add(new GuiSmallButton(EnumOptions.INVERT_MOUSE.returnEnumOrdinal(), Width / 2 - 155, Height / 6 + 130, EnumOptions.INVERT_MOUSE, _options.GetKeyBinding(EnumOptions.INVERT_MOUSE)).Size(125, 20));
 
-        _controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 6 + 168, translations.TranslateKey("gui.done")));
-        _screenTitle = translations.TranslateKey("controls.title");
+        _controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 6 + 168, translations.translateKey("gui.done")));
+        _screenTitle = translations.translateKey("controls.title");
     }
 
     protected override void ActionPerformed(GuiButton button)

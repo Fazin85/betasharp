@@ -25,18 +25,18 @@ public class SorterStatsBlock : Comparator
         StatBase var6 = null;
         if (field_27298_b.field_27271_e == 2)
         {
-            var5 = Stats.Stats.mineBlockStatArray[var3];
-            var6 = Stats.Stats.mineBlockStatArray[var4];
+            var5 = Stats.Stats.MineBlockStatArray[var3];
+            var6 = Stats.Stats.MineBlockStatArray[var4];
         }
         else if (field_27298_b.field_27271_e == 0)
         {
-            var5 = Stats.Stats.CRAFTED[var3];
-            var6 = Stats.Stats.CRAFTED[var4];
+            var5 = Stats.Stats.Crafted[var3];
+            var6 = Stats.Stats.Crafted[var4];
         }
         else if (field_27298_b.field_27271_e == 1)
         {
-            var5 = Stats.Stats.USED[var3];
-            var6 = Stats.Stats.USED[var4];
+            var5 = Stats.Stats.Used[var3];
+            var6 = Stats.Stats.Used[var4];
         }
 
         if (var5 != null || var6 != null)

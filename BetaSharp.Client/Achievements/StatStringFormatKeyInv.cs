@@ -5,10 +5,10 @@ namespace BetaSharp.Client.Achievements;
 public class StatStringFormatKeyInv(Minecraft game) : AchievementStatFormatter
 {
     private readonly Minecraft _mc = game;
-    private static readonly TranslationStorage s_localizedName = TranslationStorage.Instance;
+    private static readonly TranslationStorage s_localizedName = TranslationStorage.getInstance();
 
     public string formatString(string key)
     {
-        return s_localizedName.TranslateKeyFormat(key, Keyboard.getKeyName(_mc.options.KeyBindings[6].keyCode));
+        return s_localizedName.translateKeyFormat(key, Keyboard.getKeyName(_mc.options.KeyBindings[6].keyCode));
     }
 }

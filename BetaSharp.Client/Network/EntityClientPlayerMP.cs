@@ -198,7 +198,7 @@ public class EntityClientPlayerMP : ClientPlayerEntity
     {
         if (stat != null)
         {
-            if (stat.localOnly)
+            if (stat.LocalOnly)
             {
                 base.increaseStat(stat, amount);
             }
@@ -210,7 +210,7 @@ public class EntityClientPlayerMP : ClientPlayerEntity
     {
         if (stat != null)
         {
-            if (!stat.localOnly)
+            if (!stat.LocalOnly)
             {
                 base.increaseStat(stat, amount);
             }

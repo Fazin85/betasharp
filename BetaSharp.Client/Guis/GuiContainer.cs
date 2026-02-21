@@ -80,7 +80,7 @@ public abstract class GuiContainer : GuiScreen
 
         if (playerInv.getCursorStack() == null && hoveredSlot != null && hoveredSlot.hasStack())
         {
-            string itemName = ("" + TranslationStorage.Instance.TranslateNamedKey(hoveredSlot.getStack().getItemName())).Trim();
+            string itemName = ("" + TranslationStorage.getInstance().translateNamedKey(hoveredSlot.getStack().getItemName())).Trim();
             if (itemName.Length > 0)
             {
                 int tipX = mouseX - guiLeft + 12;
