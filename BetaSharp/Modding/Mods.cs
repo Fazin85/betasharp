@@ -117,9 +117,15 @@ public class Mods
             modBaseInstance.Logger = Log.GetLogger($"Mod:{modBaseInstance.Name}");
 
             Log.Info($"Successfully instantiated mod {modBaseInstance.Name} ({file}). Initializing...");
+
             loadedMods.Add(modBaseInstance);
             _modLoadContexts[modBaseInstance] = loadContext;
-            modBaseInstance.Initialize(side);
+
+            if (side is Side.Client or Side.Both)
+                modBaseInstance.Initialize(Side.Client);
+            if (side is Side.Server or Side.Both)
+                modBaseInstance.Initialize(Side.Server);
+
             Log.Info($"Successfully initialized mod {modBaseInstance.Name}");
         }
 
@@ -129,7 +135,12 @@ public class Mods
         foreach (ModBase mod in ModRegistry)
         {
             Log.Info($"Running PostInitialize of mod {mod.Name}...");
-            mod.PostInitialize(side);
+
+            if (side is Side.Client or Side.Both)
+                mod.PostInitialize(Side.Client);
+            if (side is Side.Server or Side.Both)
+                mod.PostInitialize(Side.Server);
+
             Log.Info($"PostInitialize of mod {mod.Name} complete.");
         }
         Log.Info("Mods initialized.");
@@ -149,7 +160,11 @@ public class Mods
         Log.Info($"Unloading mod {mod.Name}...");
         try
         {
-            mod.Unload(side);
+            if (side is Side.Client or Side.Both)
+                mod.Unload(Side.Client);
+            if (side is Side.Server or Side.Both)
+                mod.Unload(Side.Server);
+
             _modLoadContexts.Remove(mod);
             ModRegistry = ModRegistry.Remove(mod);
             context.Unload();

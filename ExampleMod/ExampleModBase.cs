@@ -10,12 +10,13 @@ public class ExampleModBase : ModBase
     public override string Name => "Example Mod";
     public override string Description => "Surely does something really cool";
     public override string Author => "ExampleAuthor123";
+    public override bool HasOptionsMenu => false;
     private Hook _textRendererHook = null!;
 
     public override void Initialize(Side side)
     {
         Console.WriteLine("Initialize called for Example Mod");
-        _textRendererHook = new(typeof(TextRenderer).GetMethod("RenderString")!, TextRenderer_renderString);
+        //_textRendererHook = new(typeof(TextRenderer).GetMethod("RenderString")!, TextRenderer_renderString);
     }
 
     public override void PostInitialize(Side side)
@@ -27,7 +28,7 @@ public class ExampleModBase : ModBase
     public override void Unload(Side side)
     {
         Console.WriteLine("Example Mod is unloading");
-        _textRendererHook.Dispose();
+        //_textRendererHook.Dispose();
     }
 
     private static void TextRenderer_renderString(

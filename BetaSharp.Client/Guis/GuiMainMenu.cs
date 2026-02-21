@@ -10,8 +10,9 @@ public class GuiMainMenu : GuiScreen
     private const int ButtonOptions = 0;
     private const int ButtonSingleplayer = 1;
     private const int ButtonMultiplayer = 2;
-    private const int ButtonTexturePacksAndMods = 3;
-    private const int ButtonQuit = 4;
+    private const int ButtonTexturePacks = 3;
+    private const int ButtonMods = 4;
+    private const int ButtonQuit = 5;
 
     private static readonly JavaRandom s_rand = new();
     private string _splashText = "missingno";
@@ -72,7 +73,8 @@ public class GuiMainMenu : GuiScreen
         _controlList.Add(new GuiButton(ButtonSingleplayer, Width / 2 - 100, buttonTopY, translator.TranslateKey("menu.singleplayer")));
         _controlList.Add(_multiplayerButton =
             new GuiButton(ButtonMultiplayer, Width / 2 - 100, buttonTopY + 24, translator.TranslateKey("menu.multiplayer")));
-        _controlList.Add(new GuiButton(ButtonTexturePacksAndMods, Width / 2 - 100, buttonTopY + 48, translator.TranslateKey("menu.mods")));
+        _controlList.Add(new GuiButton(ButtonTexturePacks, Width / 2 + 2, buttonTopY + 48, 98, 20, "Texture Packs"));
+        _controlList.Add(new GuiButton(ButtonMods, Width / 2 - 100, buttonTopY + 48, 98, 20, "Mods"));
 
         if (mc.hideQuitButton)
         {
@@ -106,8 +108,11 @@ public class GuiMainMenu : GuiScreen
             case ButtonMultiplayer:
                 mc.displayGuiScreen(new GuiMultiplayer(this));
                 break;
-            case ButtonTexturePacksAndMods:
+            case ButtonTexturePacks:
                 mc.displayGuiScreen(new GuiTexturePacks(this));
+                break;
+            case ButtonMods:
+                mc.displayGuiScreen(new GuiMods(this));
                 break;
             case ButtonQuit:
                 mc.shutdown();
