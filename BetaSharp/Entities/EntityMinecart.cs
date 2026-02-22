@@ -4,6 +4,7 @@ using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Entities;
 
@@ -32,6 +33,9 @@ public class EntityMinecart : Entity, IInventory
         [[0, 0, -1], [-1, 0, 0]],
         [[0, 0, -1], [1, 0, 0]]
     ];
+
+    private readonly ILogger<EntityMinecart> _logger = Log.Instance.For<EntityMinecart>();
+
     private int field_9415_k;
     private double field_9414_l;
     private double field_9413_m;
@@ -162,7 +166,7 @@ public class EntityMinecart : Entity, IInventory
 
     public override void animateHurt()
     {
-        Log.Info("Animating hurt");
+        _logger.LogInformation("Animating hurt");
         minecartRockDirection = -minecartRockDirection;
         minecartTimeSinceHit = 10;
         minecartCurrentDamage += minecartCurrentDamage * 10;

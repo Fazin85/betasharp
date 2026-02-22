@@ -1,0 +1,16 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:BetaSharp.Launcher.Features.Authentication"
+
+             x:Class="BetaSharp.Launcher.Features.Authentication.AuthenticationView" x:DataType="local:AuthenticationViewModel">
+
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
+        <!-- ReSharper disable once Xaml.StyleClassNotFound -->
+        <Button Content="Authenticate with Microsoft" Classes="accent" Command="{CompiledBinding AuthenticateCommand}"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                ToolTip.Tip="A Web browser tab will be opened" />
+
+        <TextBlock Text="You must own a legitimate copy of Minecraft Java edition to use this client"
+                   TextWrapping="Wrap" TextAlignment="Center" Opacity="0.5" />
+    </StackPanel>
+</UserControl>

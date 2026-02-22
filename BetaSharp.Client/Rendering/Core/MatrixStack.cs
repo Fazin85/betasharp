@@ -25,10 +25,6 @@ public class MatrixStack
         {
             _current = _stack.Pop();
         }
-        else
-        {
-            Log.Error("Matrix stack underflow!");
-        }
     }
 
     public void Translate(float x, float y, float z)

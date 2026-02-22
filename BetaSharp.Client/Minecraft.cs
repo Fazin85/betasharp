@@ -1,8 +1,6 @@
 using BetaSharp.Client.Options;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Avalonia;
-using Avalonia.Controls;
 using BetaSharp.Blocks;
 using BetaSharp.Client.Achievements;
 using BetaSharp.Client.Entities;
@@ -21,7 +19,6 @@ using BetaSharp.Client.Sound;
 using BetaSharp.Client.Textures;
 using BetaSharp.Entities;
 using BetaSharp.Items;
-using BetaSharp.Launcher;
 using BetaSharp.Profiling;
 using BetaSharp.Server.Internal;
 using BetaSharp.Stats;
@@ -32,15 +29,19 @@ using BetaSharp.Worlds;
 using BetaSharp.Worlds.Colors;
 using BetaSharp.Worlds.Storage;
 using ImGuiNET;
+using java.lang;
+using Microsoft.Extensions.Logging;
 using Silk.NET.Input;
 using Silk.NET.OpenGL.Legacy;
 using Silk.NET.OpenGL.Legacy.Extensions.ImGui;
+using Exception = System.Exception;
 
 namespace BetaSharp.Client;
 
 public partial class Minecraft
 {
     public static Minecraft INSTANCE;
+    private readonly ILogger<Minecraft> _logger = Log.Instance.For<Minecraft>();
     public PlayerController playerController;
     private bool fullscreen;
     private bool hasCrashed;
@@ -136,7 +137,7 @@ public partial class Minecraft
     public void onMinecraftCrash(Exception crashInfo)
     {
         hasCrashed = true;
-        Log.Fatal(crashInfo, "The game has crashed!");
+        _logger.LogError(crashInfo, "The game has crashed!");
     }
 
     public void setServer(string name, int port)
@@ -185,10 +186,12 @@ public partial class Minecraft
             Display.getGlfw().SetWindowSizeLimits(Display.getWindowHandle(), 850, 480, 3840, 2160);
 
             GLManager.Init(Display.getGL()!);
+
+            Display.getGlfw().SwapInterval(options.VSync ? 1 : 0);
         }
         catch (Exception ex)
         {
-            Log.Error(ex);
+            _logger.LogError(ex, "Exception");
         }
         texturePackList = new TexturePacks(this, new DirectoryInfo(mcDataDir.getAbsolutePath()));
         textureManager = new TextureManager(texturePackList, options);
@@ -209,13 +212,13 @@ public partial class Minecraft
         loadScreen();
 
         bool anisotropicFiltering = GLManager.GL.IsExtensionPresent("GL_EXT_texture_filter_anisotropic");
-        Log.Info($"Anisotropic Filtering Supported: {anisotropicFiltering}");
+        _logger.LogInformation($"Anisotropic Filtering Supported: {anisotropicFiltering}");
 
         if (anisotropicFiltering)
         {
             GLManager.GL.GetFloat(GLEnum.MaxTextureMaxAnisotropy, out float maxAnisotropy);
             GameOptions.MaxAnisotropy = maxAnisotropy;
-            Log.Info($"Max Anisotropy: {maxAnisotropy}");
+            _logger.LogInformation($"Max Anisotropy: {maxAnisotropy}");
         }
         else
         {
@@ -231,7 +234,7 @@ public partial class Minecraft
         }
         catch (Exception e)
         {
-            Log.Error(e, "Failed to initialize ImGui");
+            _logger.LogError($"Failed to initialize ImGui: {e}");
             imGuiController = null;
         }
 
@@ -395,10 +398,10 @@ public partial class Minecraft
         GLEnum glError = GLManager.GL.GetError();
         if (glError != 0)
         {
-            Log.Error($"#### GL ERROR ####");
-            Log.Error($"@ {location}");
-            Log.Error($"> {glError.ToString()}");
-            Log.Error($"");
+            _logger.LogError($"#### GL ERROR ####");
+            _logger.LogError($"@ {location}");
+            _logger.LogError($"> {glError.ToString()}");
+            _logger.LogError($"");
         }
     }
 
@@ -410,7 +413,7 @@ public partial class Minecraft
             statFileWriter.func_27175_b();
             statFileWriter.syncStats();
 
-            Log.Info("Stopping!");
+            _logger.LogInformation("Stopping!");
 
             try
             {
@@ -992,7 +995,7 @@ public partial class Minecraft
         }
         catch (Exception displayException)
         {
-            Log.Error(displayException, "Failed to toggle fullscreen");
+            _logger.LogError(displayException.ToString());
         }
     }
 
@@ -1374,7 +1377,7 @@ public partial class Minecraft
 
     private void forceReload()
     {
-        Log.Info("FORCING RELOAD!");
+        _logger.LogInformation("FORCING RELOAD!");
         sndManager = new SoundManager();
         sndManager.LoadSoundSettings(options);
     }
@@ -1623,43 +1626,16 @@ public partial class Minecraft
         return player is EntityClientPlayerMP ? ((EntityClientPlayerMP)player).sendQueue : null;
     }
 
-    private static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
-            .UsePlatformDetect()
-            .LogToTrace();
-
     public static void Startup(string[] args)
     {
-        bool valid = JarValidator.ValidateJar("b1.7.3.jar");
-        string playerName = null;
-        string sessionToken = null;
-        playerName = "Player" + java.lang.System.currentTimeMillis() % 1000L;
-        if (args.Length > 0)
+        (string Name, string Session) result = args.Length switch
         {
-            playerName = args[0];
-        }
+            0 => ($"Player{Random.Shared.Next()}", "-"),
+            1 => (args[0], "-"),
+            _ => (args[0], args[1])
+        };
 
-        sessionToken = "-";
-        if (args.Length > 1)
-        {
-            sessionToken = args[1];
-        }
-
-        if (!valid)
-        {
-            var app = BuildAvaloniaApp();
-
-            app.StartWithClassicDesktopLifetime(args, ShutdownMode.OnMainWindowClose);
-
-            if (LauncherWindow.Result != null && LauncherWindow.Result.Success)
-            {
-                StartMainThread(playerName, sessionToken);
-            }
-        }
-        else
-        {
-            StartMainThread(playerName, sessionToken);
-        }
+        StartMainThread(result.Name, result.Session);
     }
 
     public static bool isGuiEnabled()

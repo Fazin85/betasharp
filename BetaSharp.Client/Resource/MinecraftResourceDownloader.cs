@@ -1,5 +1,6 @@
 using System.Net;
 using System.Xml;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Client.Resource;
 
@@ -9,6 +10,7 @@ public class MinecraftResourceDownloader : IDisposable
     private const string BETACRAFT_PROXY_HOST = "betacraft.uk";
     private const int BETACRAFT_PROXY_PORT = 11705;
 
+    private readonly ILogger<MinecraftResourceDownloader> _logger = Log.Instance.For<MinecraftResourceDownloader>();
     private readonly HttpClient _httpClient;
     private readonly string _resourcesDirectory;
     private readonly Minecraft mc;
@@ -51,12 +53,12 @@ public class MinecraftResourceDownloader : IDisposable
 
             if (lines.Length == loaded)
             {
-                Log.Info($"{loaded} resources");
+                _logger.LogInformation($"{loaded} resources");
                 return true;
             }
             else
             {
-                Log.Error($"resource count mismatch, expected {lines.Length}, loaded {loaded}");
+                _logger.LogError($"resource count mismatch, expected {lines.Length}, loaded {loaded}");
             }
         }
 
@@ -74,7 +76,7 @@ public class MinecraftResourceDownloader : IDisposable
 
         try
         {
-            Log.Info("Fetching resource list...");
+            _logger.LogInformation("Fetching resource list...");
 
             var response = await _httpClient.GetAsync(RESOURCE_URL);
             response.EnsureSuccessStatusCode();
@@ -92,7 +94,7 @@ public class MinecraftResourceDownloader : IDisposable
 
             File.WriteAllLines(manifestFilePath, resourceFileNames);
 
-            Log.Info($"Found {resources.Count} resources to download");
+            _logger.LogInformation($"Found {resources.Count} resources to download");
 
             for (int pass = 0; pass < 2; pass++)
             {
@@ -106,7 +108,7 @@ public class MinecraftResourceDownloader : IDisposable
         }
         catch (Exception ex)
         {
-            Log.Error($"Error downloading resources: {ex.Message}");
+            _logger.LogError($"Error downloading resources: {ex.Message}");
         }
     }
 
@@ -176,7 +178,7 @@ public class MinecraftResourceDownloader : IDisposable
         }
         catch (Exception ex)
         {
-            Log.Error($"Failed to download {path}: {ex.Message}");
+            _logger.LogError($"Failed to download {path}: {ex.Message}");
         }
     }
 

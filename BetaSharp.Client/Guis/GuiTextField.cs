@@ -8,7 +8,6 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiTextField : Gui
 {
-
     private readonly TextRenderer _fontRenderer;
     private readonly int _xPos;
     private readonly int _yPos;
@@ -206,8 +205,10 @@ public class GuiTextField : Gui
 
         if (IsEnabled)
         {
+            string cursor = IsFocused && _cursorCounter / 6 % 2 == 0 ? "_" : string.Empty;
             int safePos = Math.Clamp(_cursorPosition, 0, _text.Length);
-            string renderText = _text.Insert(safePos, "|");
+
+            string renderText = _text.Insert(safePos, cursor);
 
             DrawString(_fontRenderer, renderText, _xPos + 4, _yPos + (_height - 8) / 2, 0xE0E0E0);
         }

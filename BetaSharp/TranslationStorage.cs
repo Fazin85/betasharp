@@ -1,7 +1,10 @@
+using Microsoft.Extensions.Logging;
+
 namespace BetaSharp;
 
 public class TranslationStorage
 {
+    private ILogger _logger = Log.Instance.For<TranslationStorage>();
     private static readonly TranslationStorage _instance = new();
     public static TranslationStorage Instance => _instance;
     private readonly Dictionary<string, string> _translateTable = new();
@@ -38,7 +41,7 @@ public class TranslationStorage
         }
         catch (Exception ex)
         {
-            Log.Error($"Failed to load language file {assetPath}: {ex.Message}");
+            _logger.LogError($"Failed to load language file {assetPath}", ex);
         }
     }
 

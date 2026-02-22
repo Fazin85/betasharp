@@ -1,16 +1,19 @@
 using BetaSharp.NBT;
 using java.lang;
 using java.util;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Worlds.Storage;
 
 public class PersistentStateManager : java.lang.Object
 {
+    private static readonly Class c = ikvm.runtime.Util.getClassFromTypeHandle(typeof(java.lang.String).TypeHandle);
+
     private readonly WorldStorage saveHandler;
     private readonly Map loadedDataMap = new HashMap();
     private readonly List loadedDataList = new ArrayList();
     private readonly Map idCounts = new HashMap();
-    private static readonly Class c = ikvm.runtime.Util.getClassFromTypeHandle(typeof(java.lang.String).TypeHandle);
+    private readonly ILogger<PersistentStateManager> _logger = Log.Instance.For<PersistentStateManager>();
 
     public PersistentStateManager(WorldStorage var1)
     {
@@ -115,7 +118,7 @@ public class PersistentStateManager : java.lang.Object
             }
             catch (System.Exception ex)
             {
-                Log.Error(ex);
+                _logger.LogError(ex, "Exception");
             }
 
         }

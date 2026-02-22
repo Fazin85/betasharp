@@ -1,7 +1,10 @@
+using Microsoft.Extensions.Logging;
+
 namespace BetaSharp.Client.Resource.Pack;
 
 public class TexturePacks
 {
+    private readonly ILogger _logger = Log.Instance.For<TexturePacks>();
     private List<TexturePack> _availTexturePacks = [];
     private readonly TexturePack _defaultTexturePack = new BuiltInTexturePack();
     public TexturePack SelectedTexturePack;
@@ -78,7 +81,7 @@ public class TexturePacks
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex);
+                    _logger.LogError(ex, "Failed to load texture pack {File}", file.Name);
                 }
 
             }

@@ -1,6 +1,7 @@
 using BetaSharp.Entities;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Blocks.Entities;
 
@@ -10,6 +11,8 @@ public class BlockEntityMobSpawner : BlockEntity
     private string _spawnedEntityId = "Pig";
     public double Rotation { get; set; }
     public double LastRotation { get; set; } = 0.0D;
+
+    private readonly ILogger<BlockEntityMobSpawner> _logger = Log.Instance.For<BlockEntityMobSpawner>();
 
     public BlockEntityMobSpawner()
     {
@@ -110,7 +113,7 @@ public class BlockEntityMobSpawner : BlockEntity
     private void ResetDelay()
     {
         SpawnDelay = 200 + world.random.NextInt(600);
-        Log.Info("Spawn Delay: " + SpawnDelay);
+        _logger.LogInformation("Spawn Delay: " + SpawnDelay);
     }
 
     public override void readNbt(NBTTagCompound nbt)

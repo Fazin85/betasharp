@@ -7,6 +7,7 @@ using BetaSharp.Util;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using java.lang;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Server;
 
@@ -20,6 +21,7 @@ public class ChunkMap
     private readonly int dimensionId;
     private readonly int viewDistance;
     private readonly int[][] DIRECTIONS = [[1, 0], [0, 1], [-1, 0], [0, -1]];
+    private readonly ILogger<ChunkMap> _logger = Log.Instance.For<ChunkMap>();
 
     public ChunkMap(MinecraftServer server, int dimensionId, int viewRadius)
     {
@@ -231,6 +233,7 @@ public class ChunkMap
 
     internal class TrackedChunk
     {
+        private readonly ILogger<TrackedChunk> _logger = Log.Instance.For<TrackedChunk>();
         private readonly ChunkMap chunkMap;
         private readonly List<ServerPlayerEntity> players;
         private readonly int chunkX;
@@ -413,7 +416,7 @@ public class ChunkMap
                         int var16 = chunkZ * 16 + (dirtyBlockCount >> 8 & 15);
                         if (Block.BlocksWithEntity[var1.getBlockId(var13, var15, var16)])
                         {
-                            Log.Info("Sending!");
+                            _logger.LogInformation("Sending!");
                             sendBlockEntityUpdate(var1.getBlockEntity(var13, var15, var16));
                         }
                     }

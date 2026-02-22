@@ -3,6 +3,7 @@ using BetaSharp.Profiling;
 using BetaSharp.Util;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
+using Microsoft.Extensions.Logging;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL.Legacy;
 
@@ -10,6 +11,8 @@ namespace BetaSharp.Client.Rendering.Chunks;
 
 public class ChunkRenderer
 {
+    private readonly ILogger<ChunkRenderer> _logger = Log.Instance.For<ChunkRenderer>();
+
     static ChunkRenderer()
     {
         var offsets = new List<Vector3D<int>>();
@@ -76,7 +79,7 @@ public class ChunkRenderer
         this.world = world;
 
         chunkShader = new(AssetManager.Instance.getAsset("shaders/chunk.vert").getTextContent(), AssetManager.Instance.getAsset("shaders/chunk.frag").getTextContent());
-        Log.Info("Loaded chunk shader");
+        _logger.LogInformation("Loaded chunk shader");
 
         GLManager.GL.UseProgram(0);
     }

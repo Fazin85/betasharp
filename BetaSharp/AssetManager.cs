@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp;
 
@@ -57,6 +58,8 @@ public class AssetManager
     private readonly Dictionary<string, AssetType> assetsToLoad = [];
     private readonly Dictionary<string, Asset> loadedAssets = [];
     private readonly HashSet<string> assetDirectories = [];
+    private readonly ILogger<AssetManager> _logger = Log.Instance.For<AssetManager>();
+
     private int embeddedAssetsLoaded;
 
     private AssetManager()
@@ -166,7 +169,7 @@ public class AssetManager
         defineEmbeddedAsset("shaders/chunk.vert", AssetType.Text);
         defineEmbeddedAsset("shaders/chunk.frag", AssetType.Text);
 
-        Log.Info($"Loaded {embeddedAssetsLoaded} embedded assets");
+        _logger.LogInformation($"Loaded {embeddedAssetsLoaded} embedded assets");
     }
 
     public Asset getAsset(string assetPath)
@@ -238,7 +241,7 @@ public class AssetManager
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"Failed to load binary asset: {assetPath}, {e}");
+                    _logger.LogError($"Failed to load binary asset: {assetPath}, {e}");
                 }
             }
             else if (type == AssetType.Text)
@@ -249,13 +252,13 @@ public class AssetManager
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"Failed to load text asset: {assetPath}, {e}");
+                    _logger.LogError($"Failed to load text asset: {assetPath}, {e}");
                 }
 
             }
         }
 
-        Log.Info($"Loaded {assetsToLoad.Count} assets");
+        _logger.LogInformation($"Loaded {assetsToLoad.Count} assets");
 
         assetsToLoad.Clear();
     }
@@ -305,7 +308,7 @@ public class AssetManager
         }
         catch (Exception e)
         {
-            Log.Error($"Exception while loading embedded asset: {e}");
+            _logger.LogError($"Exception while loading embedded asset: {e}");
         }
     }
 

@@ -613,11 +613,6 @@ public class Tessellator : java.lang.Object
 
     public void setNormal(float var1, float var2, float var3)
     {
-        if (!IsDrawing)
-        {
-            Log.Info("But..");
-        }
-
         hasNormals = true;
         byte var4 = (byte)(int)(var1 * 128.0F);
         byte var5 = (byte)(int)(var2 * 127.0F);

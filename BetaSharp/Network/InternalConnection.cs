@@ -1,4 +1,5 @@
 using BetaSharp.Network.Packets;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Network;
 
@@ -7,6 +8,8 @@ public class InternalConnection : Connection
     public InternalConnection RemoteConnection { get; set; }
 
     public string Name { get; set; }
+
+    private readonly ILogger<InternalConnection> _logger = Log.Instance.For<InternalConnection>();
 
     public InternalConnection(NetHandler? networkHandler, string name)
     {
@@ -53,7 +56,7 @@ public class InternalConnection : Connection
         }
         if (count > 0)
         {
-            // Log.Info($"[{Name}] Processed {count} packets");
+            // _logger.LogInformation($"[{Name}] Processed {count} packets");
         }
     }
 
@@ -76,7 +79,7 @@ public class InternalConnection : Connection
             this.disconnectedReason = disconnectedReason;
             this.disconnectReasonArgs = disconnectReasonArgs;
 
-            Log.Info($"[{Name}] Disconnected: {disconnectedReason}");
+            _logger.LogInformation($"[{Name}] Disconnected: {disconnectedReason}");
 
             if (RemoteConnection != null && RemoteConnection.open)
             {
@@ -93,7 +96,7 @@ public class InternalConnection : Connection
             disconnected = true;
             disconnectedReason = reason;
             disconnectReasonArgs = args;
-            Log.Info($"[{Name}] Remote disconnected: {reason}");
+            _logger.LogInformation($"[{Name}] Remote disconnected: {reason}");
         }
     }
 

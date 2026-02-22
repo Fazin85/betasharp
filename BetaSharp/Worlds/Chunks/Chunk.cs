@@ -3,6 +3,7 @@ using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Profiling;
 using BetaSharp.Util.Maths;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Worlds.Chunks;
 
@@ -26,6 +27,7 @@ public class Chunk : java.lang.Object
     public bool empty;
     public bool lastSaveHadEntities;
     public long lastSaveTime;
+    private readonly ILogger<Chunk> _logger = Log.Instance.For<Chunk>();
 
     public Chunk(World world, int x, int z)
     {
@@ -435,7 +437,7 @@ public class Chunk : java.lang.Object
         int var3 = MathHelper.Floor(entity.z / 16.0D);
         if (var2 != x || var3 != z)
         {
-            Log.Info($"Wrong location! {entity}");
+            _logger.LogInformation($"Wrong location! {entity}");
             java.lang.Thread.dumpStack();
         }
 
@@ -537,7 +539,7 @@ public class Chunk : java.lang.Object
         }
         else
         {
-            Log.Info("Attempted to place a tile entity where there was no entity tile!");
+            _logger.LogInformation("Attempted to place a tile entity where there was no entity tile!");
         }
     }
 

@@ -1,11 +1,13 @@
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
 using BetaSharp.NBT;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Worlds.Chunks.Storage;
 
 public class RegionChunkStorage : ChunkStorage
 {
+    private readonly ILogger<RegionChunkStorage> _logger = Log.Instance.For<RegionChunkStorage>();
     private readonly java.io.File dir;
 
     public RegionChunkStorage(java.io.File dir)
@@ -28,12 +30,12 @@ public class RegionChunkStorage : ChunkStorage
             NBTTagCompound var5 = NbtIo.Read(var4);
             if (!var5.HasKey("Level"))
             {
-                Log.Info($"Chunk file at {chunkX},{chunkZ} is missing level data, skipping");
+                _logger.LogInformation($"Chunk file at {chunkX},{chunkZ} is missing level data, skipping");
                 return null;
             }
             else if (!var5.GetCompoundTag("Level").HasKey("Blocks"))
             {
-                Log.Info($"Chunk file at {chunkX},{chunkZ} is missing block data, skipping");
+                _logger.LogInformation($"Chunk file at {chunkX},{chunkZ} is missing block data, skipping");
                 return null;
             }
             else
@@ -41,7 +43,7 @@ public class RegionChunkStorage : ChunkStorage
                 Chunk var6 = LoadChunkFromNbt(world, var5.GetCompoundTag("Level"));
                 if (!var6.chunkPosEquals(chunkX, chunkZ))
                 {
-                    Log.Info($"Chunk file at {chunkX},{chunkZ} is in the wrong location; relocating. (Expected {chunkX}, {chunkZ}, got {var6.x}, {var6.z})");
+                    _logger.LogInformation($"Chunk file at {chunkX},{chunkZ} is in the wrong location; relocating. (Expected {chunkX}, {chunkZ}, got {var6.x}, {var6.z})");
                     var5.SetInteger("xPos", chunkX);
                     var5.SetInteger("zPos", chunkZ);
                     var6 = LoadChunkFromNbt(world, var5.GetCompoundTag("Level"));
@@ -72,7 +74,7 @@ public class RegionChunkStorage : ChunkStorage
         }
         catch (Exception var7)
         {
-            Log.Error(var7);
+            _logger.LogError(var7, "Exception");
         }
     }
 

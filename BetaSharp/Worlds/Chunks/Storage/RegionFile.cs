@@ -1,6 +1,7 @@
 using System.IO.Compression;
 using java.io;
 using java.util;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Worlds.Chunks.Storage;
 
@@ -16,6 +17,7 @@ public class RegionFile : java.lang.Object
     private static readonly byte[] emptySector = new byte[4096];
     private readonly java.io.File fileName;
     private readonly RandomAccessFile dataFile;
+    private readonly ILogger<RegionFile> _logger = Log.Instance.For<RegionFile>();
     private readonly int[] offsets = new int[1024];
     private readonly int[] chunkSaveTimes = new int[1024];
     private readonly ArrayList sectorFree;
@@ -300,7 +302,7 @@ public class RegionFile : java.lang.Object
             }
             catch (System.IO.IOException var12)
             {
-                Log.Error(var12);
+                _logger.LogError(var12, "Exception");
             }
         }
     }
