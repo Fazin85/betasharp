@@ -93,7 +93,7 @@ public class Block
     public static readonly Block Wheat = new BlockCrops(59, 88).setHardness(0.0F).setSoundGroup(SoundGrassFootstep).setBlockName("crops").disableStats().ignoreMetaUpdates();
     public static readonly Block Farmland = new BlockFarmland(60).setHardness(0.6F).setSoundGroup(SoundGravelFootstep).setBlockName("farmland");
     public static readonly Block Furnace = new BlockFurnace(61, false).setHardness(3.5F).setSoundGroup(SoundStoneFootstep).setBlockName("furnace").ignoreMetaUpdates();
-    public static readonly Block LitFurnace = new BlockFurnace(62, true).setHardness(3.5F).setSoundGroup(SoundStoneFootstep).setLuminance(14.0F / 16.0F).setBlockName("furnace").ignoreMetaUpdates();
+    public static readonly Block LitFurnace = new BlockFurnace(62, true, [44+17, 45, 45+17]).setHardness(3.5F).setSoundGroup(SoundStoneFootstep).setLuminance(14.0F / 16.0F).setBlockName("furnace").ignoreMetaUpdates();
     public static readonly Block Sign = new BlockSign(63, typeof(BlockEntitySign), true).setHardness(1.0F).setSoundGroup(SoundWoodFootstep).setBlockName("sign").disableStats().ignoreMetaUpdates();
     public static readonly Block Door = new BlockDoor(64, Material.Wood).setHardness(3.0F).setSoundGroup(SoundWoodFootstep).setBlockName("doorWood").disableStats().ignoreMetaUpdates();
     public static readonly Block Ladder = new BlockLadder(65, 83).setHardness(0.4F).setSoundGroup(SoundWoodFootstep).setBlockName("ladder").ignoreMetaUpdates();

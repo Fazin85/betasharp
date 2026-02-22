@@ -48,12 +48,12 @@
             "dependsOn": "Build All",
             "problemMatcher": "$msCompile"
         },
-        {
-            "label": "Watch Launcher",
+        /*{
+            "label": "Watch Client",
             "type": "shell",
-            "command": "dotnet watch run --project BetaSharp.Launcher --configuration Debug",
+            "command": "dotnet watch run --project BetaSharp.Client --configuration Debug",
             "problemMatcher": "$msCompile",
             "isBackground": true
-        }
+        }*/
     ]
 }

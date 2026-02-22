@@ -28,15 +28,59 @@
             "args": [],
             "console": "integratedTerminal"
         },
-        {
+        /*{
             "name": "Hot Reload: Launcher",
             "type": "dotnet",
             "request": "launch",
             "projectPath": "${workspaceFolder}/BetaSharp.Launcher/BetaSharp.Launcher.csproj",
-            "actionOnExternalChanges": "hotReload", 
-            "preLaunchTask": "Build All (Release)",
-            "console": "integratedTerminal"
-        }
+            "preLaunchTask": "Build Launcher",
+            "args": [],
+            "console": "integratedTerminal",
+            "actionOnExternalChanges": "hotReload",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Hot Reload: Client",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/BetaSharp.Client/BetaSharp.Client.csproj",
+            "preLaunchTask": "Build Client",
+            "args": [],
+            "console": "integratedTerminal",
+            "actionOnExternalChanges": "hotReload",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Hot Reload: Server",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/BetaSharp.Server/BetaSharp.Server.csproj",
+            "preLaunchTask": "Build Server",
+            "args": [],
+            "console": "integratedTerminal",
+            "actionOnExternalChanges": "hotReload",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Watch: Client",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/BetaSharp.Client/BetaSharp.Client.csproj",
+            "preLaunchTask": "Watch Client",
+            "args": [],
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Watch: Server",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/BetaSharp.Server/BetaSharp.Server.csproj",
+            "preLaunchTask": "Watch Server",
+            "args": [],
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        }*/
     ],
     "compounds": [
         {
@@ -45,6 +89,20 @@
                 "Launch: Server",
                 "Launch: Launcher (Recommended)"
             ]
-        }
+        },
+        /*{
+            "name": "Hot Reload: Server + Launcher",
+            "configurations": [
+                "Hot Reload: Server",
+                "Hot Reload: Launcher"
+            ]
+        },
+        {
+            "name": "Watch: Server + Client",
+            "configurations": [
+                "Watch: Server",
+                "Watch: Client"
+            ]
+        }*/
     ]
 }

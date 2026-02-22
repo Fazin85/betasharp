@@ -11,18 +11,27 @@ public class BlockFurnace : BlockWithEntity
 {
 
     private readonly JavaRandom _random = new();
-    private readonly bool _lit;
+    private bool lit = false;
     private static readonly ThreadLocal<bool> s_ignoreBlockRemoval = new(() => false);
 
-    public BlockFurnace(int id, bool lit) : base(id, Material.Stone)
+    private int[] Textures = [44, 45, 45+17];
+
+    /// <summary>
+    /// [0] = front
+    /// [1] = side
+    /// [2] = top
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="Textures"></param>
+    public BlockFurnace(int id, bool lit = false, int[]? Textures = null) : base(id, Material.Stone)
     {
-        _lit = lit;
-        textureId = 45;
+        this.Textures = Textures ?? this.Textures;
+        textureId = this.Textures[0];
     }
 
     public override int getDroppedItemId(int blockMeta, JavaRandom random)
     {
-        return Block.Furnace.id;
+        return id;
     }
 
     public override void onPlaced(World world, int x, int y, int z)
@@ -64,26 +73,32 @@ public class BlockFurnace : BlockWithEntity
         }
     }
 
-    public override int getTextureId(BlockView blockView, int x, int y, int z, int side)
+    private int checkState(ref int[] textures, BlockView blockView, int x, int y, int z, int side)
     {
-        if (side == 1)
+        if (side == 0 || side == 1)
         {
-            return textureId + 17;
-        }
-        else if (side == 0)
-        {
-            return textureId + 17;
+            return textures[2];
         }
         else
         {
             int meta = blockView.getBlockMeta(x, y, z);
-            return side != meta ? textureId : (_lit ? textureId + 16 : textureId - 1);
-        }
+            if (side != meta)
+            {
+                return textures[1];
+            }
+
+            return textures[0];
+        }       
+    }
+
+    public override int getTextureId(BlockView blockView, int x, int y, int z, int side)
+    {
+        return checkState(ref Textures, blockView, x, y, z, side);
     }
 
     public override void randomDisplayTick(World world, int x, int y, int z, JavaRandom random)
     {
-        if (_lit)
+        if (lit)
         {
             int var6 = world.getBlockMeta(x, y, z);
             float particleX = (float)x + 0.5F;
@@ -117,7 +132,15 @@ public class BlockFurnace : BlockWithEntity
 
     public override int getTexture(int side)
     {
-        return side == 1 ? textureId + 17 : (side == 0 ? textureId + 17 : (side == 3 ? textureId - 1 : textureId));
+        if (side == 0 || side == 1)
+        {
+            return Textures[2];
+        } 
+        if (side == 3)
+        {
+            return Textures[0];
+        }
+        return Textures[1];
     }
 
     public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
@@ -137,20 +160,27 @@ public class BlockFurnace : BlockWithEntity
     public static void updateLitState(bool lit, World world, int x, int y, int z)
     {
         int meta = world.getBlockMeta(x, y, z);
+        int id = world.getBlockId(x,y,z);
+
         BlockEntity furnace = world.getBlockEntity(x, y, z);
         s_ignoreBlockRemoval.Value = true;
         if (lit)
         {
-            world.setBlock(x, y, z, Block.LitFurnace.id);
+            world.setBlock(x, y, z, id+1);
         }
         else
         {
-            world.setBlock(x, y, z, Block.Furnace.id);
+            world.setBlock(x, y, z, id-1);
         }
 
+       // world.setBlock(x, y+1, z, Block.TNT.id);
+
+        //world.setBlock(x, y, z, id);
+
         s_ignoreBlockRemoval.Value = false;
+
         world.setBlockMeta(x, y, z, meta);
-        furnace.cancelRemoval();
+        furnace.cancelRemoval();                        
         world.setBlockEntity(x, y, z, furnace);
     }
 

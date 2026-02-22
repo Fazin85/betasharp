@@ -8,8 +8,10 @@ namespace BetaSharp.Blocks;
 
 public class BlockTNT : Block
 {
-    public BlockTNT(int id, int textureId) : base(id, textureId, Material.Tnt)
+    public float power = 4.0f;
+    public BlockTNT(int id, int textureId, float power = 4.0f) : base(id, textureId, Material.Tnt)
     {
+        this.power = power;
     }
 
     public override int getTexture(int side)
@@ -43,11 +45,23 @@ public class BlockTNT : Block
         return 0;
     }
 
+    private EntityTNTPrimed spawnTNT(World world, int x, int y, int z, bool randomFuse = false, int fuse = 80)
+    {
+        EntityTNTPrimed entityTNTPrimed = new EntityTNTPrimed(world, (double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), power);
+        if (randomFuse)
+        {
+            entityTNTPrimed.fuse = world.random.NextInt(entityTNTPrimed.fuse / 4) + entityTNTPrimed.fuse / 8;
+        } else
+        {
+            entityTNTPrimed.fuse = 80;
+        }
+        
+        world.SpawnEntity(entityTNTPrimed);
+        return entityTNTPrimed;
+    }
     public override void onDestroyedByExplosion(World world, int x, int y, int z)
     {
-        EntityTNTPrimed entityTNTPrimed = new EntityTNTPrimed(world, (double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F));
-        entityTNTPrimed.fuse = world.random.NextInt(entityTNTPrimed.fuse / 4) + entityTNTPrimed.fuse / 8;
-        world.SpawnEntity(entityTNTPrimed);
+        spawnTNT(world, x,y,z, true);
     }
 
     public override void onMetadataChange(World world, int x, int y, int z, int meta)
@@ -56,13 +70,12 @@ public class BlockTNT : Block
         {
             if ((meta & 1) == 0)
             {
-                dropStack(world, x, y, z, new ItemStack(Block.TNT.id, 1, 0));
+                dropStack(world, x, y, z, new ItemStack(id, 1, 0));
             }
             else
             {
-                EntityTNTPrimed entityTNTPrimed = new EntityTNTPrimed(world, (double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F));
-                world.SpawnEntity(entityTNTPrimed);
-                world.playSound(entityTNTPrimed, "random.fuse", 1.0F, 1.0F);
+                var tnt = spawnTNT(world, x,y,z);
+                world.playSound(tnt, "random.fuse", 1.0F, 1.0F);
             }
 
         }

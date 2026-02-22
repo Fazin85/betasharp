@@ -9,6 +9,7 @@ public class EntityTNTPrimed : Entity
 {
     public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityTNTPrimed).TypeHandle);
     public int fuse;
+    public float power = 4.0f;
 
     public EntityTNTPrimed(World world) : base(world)
     {
@@ -18,7 +19,7 @@ public class EntityTNTPrimed : Entity
         standingEyeHeight = height / 2.0F;
     }
 
-    public EntityTNTPrimed(World world, double x, double y, double z) : base(world)
+    private void createTNT(World world, double x, double y, double z)
     {
         setPosition(x, y, z);
         float randomAngle = (float)(java.lang.Math.random() * (double)((float)Math.PI) * 2.0D);
@@ -29,6 +30,16 @@ public class EntityTNTPrimed : Entity
         prevX = x;
         prevY = y;
         prevZ = z;
+    }
+    public EntityTNTPrimed(World world, double x, double y, double z) : base(world)
+    {
+        createTNT(world, x, y, z);
+    }
+
+    public EntityTNTPrimed(World world, double x, double y, double z, float power) : base(world)
+    {
+        createTNT(world, x, y, z);
+        this.power = power;
     }
 
     protected override void initDataTracker()
@@ -88,7 +99,6 @@ public class EntityTNTPrimed : Entity
             return;
         }
 
-        const float power = 4.0F;
         world.createExplosion((Entity)null, x, y, z, power);
     }
 
