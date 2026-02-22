@@ -18,11 +18,11 @@ internal sealed class MojangClient(ILogger<MojangClient> logger, IHttpClientFact
 
         var response = await client.PostAsync(
             "https://api.minecraftservices.com/authentication/login_with_xbox",
-            JsonContent.Create(request, SourceGenerationContext.Default.TokenRequest));
+            JsonContent.Create(request, MojangSerializerContext.Default.TokenRequest));
 
         await using var stream = await response.Content.ReadAsStreamAsync();
 
-        var instance = JsonSerializer.Deserialize<TokenResponse>(stream, SourceGenerationContext.Default.TokenResponse);
+        var instance = JsonSerializer.Deserialize<TokenResponse>(stream, MojangSerializerContext.Default.TokenResponse);
 
         ArgumentNullException.ThrowIfNull(instance);
 
@@ -39,7 +39,7 @@ internal sealed class MojangClient(ILogger<MojangClient> logger, IHttpClientFact
 
         await using var stream = await response.Content.ReadAsStreamAsync();
 
-        var instance = JsonSerializer.Deserialize<EntitlementsResponse>(stream, SourceGenerationContext.Default.EntitlementsResponse);
+        var instance = JsonSerializer.Deserialize<EntitlementsResponse>(stream, MojangSerializerContext.Default.EntitlementsResponse);
 
         ArgumentNullException.ThrowIfNull(instance);
 
@@ -56,11 +56,10 @@ internal sealed class MojangClient(ILogger<MojangClient> logger, IHttpClientFact
 
         await using var stream = await response.Content.ReadAsStreamAsync();
 
-        var instance = JsonSerializer.Deserialize<ProfileResponse>(stream, SourceGenerationContext.Default.ProfileResponse);
+        var instance = JsonSerializer.Deserialize<ProfileResponse>(stream, MojangSerializerContext.Default.ProfileResponse);
 
         ArgumentNullException.ThrowIfNull(instance);
 
         return instance;
     }
 }
-
