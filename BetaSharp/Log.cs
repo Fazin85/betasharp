@@ -57,10 +57,13 @@ public sealed class Log
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(_directory);
 
-        string path = System.IO.Path.Combine(
+        string parent = System.IO.Path.Combine(
             _directory,
-            "crashes",
-            $"{DateTime.Now:yyyy-MM-dd_HH.mm.ss}.log");
+            "crashes");
+
+        Directory.CreateDirectory(parent);
+
+        string path = System.IO.Path.Combine(parent, $"{DateTime.Now:yyyy-MM-dd_HH.mm.ss}.log");
 
         File.WriteAllText(path, exception.ToString());
     }
