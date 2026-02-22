@@ -201,10 +201,10 @@ public abstract class EntityRenderer
         double minZ = blockZ + block.BoundingBox.minZ + offset.z;
         double maxZ = blockZ + block.BoundingBox.maxZ + offset.z;
 
-        float minU = (float)((pos.x - minX) / 2.0D / (double)radius + 0.5D);
-        float maxU = (float)((pos.x - maxX) / 2.0D / (double)radius + 0.5D);
-        float minV = (float)((pos.z - minZ) / 2.0D / (double)radius + 0.5D);
-        float maxV = (float)((pos.z - maxZ) / 2.0D / (double)radius + 0.5D);
+        float minU = Math.Clamp((float)((pos.x - minX) / 2.0D / (double)radius + 0.5D), 0f, 1f);
+        float maxU = Math.Clamp((float)((pos.x - maxX) / 2.0D / (double)radius + 0.5D), 0f, 1f);
+        float minV = Math.Clamp((float)((pos.z - minZ) / 2.0D / (double)radius + 0.5D), 0f, 1f);
+        float maxV = Math.Clamp((float)((pos.z - maxZ) / 2.0D / (double)radius + 0.5D), 0f, 1f);
 
         tess.addVertexWithUV(minX, minY, minZ, (double)minU, (double)minV);
         tess.addVertexWithUV(minX, minY, maxZ, (double)minU, (double)maxV);
