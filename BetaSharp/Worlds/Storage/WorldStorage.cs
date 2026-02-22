@@ -5,20 +5,21 @@ using BetaSharp.Worlds.Dimensions;
 
 namespace BetaSharp.Worlds.Storage;
 
-public interface WorldStorage
+public interface IWorldStorage
 {
-    WorldProperties loadProperties();
+    WorldProperties? LoadProperties();
 
-    void checkSessionLock();
+    void CheckSessionLock();
 
-    ChunkStorage GetChunkStorage(Dimension dim);
+    IChunkStorage? GetChunkStorage(Dimension dimension);
 
-    void save(WorldProperties var1, List<EntityPlayer> var2);
+    void Save(WorldProperties properties, List<EntityPlayer> players);
 
-    void save(WorldProperties var1);
-    void forceSave();
+    void Save(WorldProperties properties);
 
-    PlayerSaveHandler getPlayerSaveHandler();
+    void ForceSave();
 
-    java.io.File getWorldPropertiesFile(string name);
+    IPlayerStorage? GetPlayerStorage();
+
+    FileInfo? GetWorldPropertiesFile(string name);
 }

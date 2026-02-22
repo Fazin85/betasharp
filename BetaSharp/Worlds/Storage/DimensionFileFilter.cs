@@ -1,27 +1,10 @@
-using java.io;
-using java.util.regex;
+using System.IO;
+using System.Text.RegularExpressions;
 
 namespace BetaSharp.Worlds.Storage;
 
-public class DimensionFileFilter : FileFilter
+public partial class DimensionFileFilter
 {
-
-    public static readonly Pattern PATTERN = Pattern.compile("[0-9a-z]|([0-9a-z][0-9a-z])");
-
-    private DimensionFileFilter()
-    {
-    }
-
-    public bool accept(java.io.File var1)
-    {
-        if (var1.isDirectory())
-        {
-            Matcher var2 = PATTERN.matcher(var1.getName());
-            return var2.matches();
-        }
-        else
-        {
-            return false;
-        }
-    }
+    [GeneratedRegex(@"^[0-9a-z]{1,2}$", RegexOptions.IgnoreCase)]
+    public static partial Regex DimensionPattern();
 }

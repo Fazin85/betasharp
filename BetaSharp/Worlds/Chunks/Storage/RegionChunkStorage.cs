@@ -5,14 +5,14 @@ using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Worlds.Chunks.Storage;
 
-public class RegionChunkStorage : ChunkStorage
+public class RegionChunkStorage : IChunkStorage
 {
     private readonly ILogger<RegionChunkStorage> _logger = Log.Instance.For<RegionChunkStorage>();
     private readonly java.io.File dir;
 
-    public RegionChunkStorage(java.io.File dir)
+    public RegionChunkStorage(string dir)
     {
-        this.dir = dir;
+        this.dir = new java.io.File(dir);
     }
 
     public Chunk LoadChunk(World world, int chunkX, int chunkZ)
@@ -59,7 +59,7 @@ public class RegionChunkStorage : ChunkStorage
         }
     }
 
-    public void saveChunk(World world, Chunk chunk, Action unused1, long unused2)
+    public void SaveChunk(World world, Chunk chunk, Action unused1, long unused2)
     {
         try
         {
@@ -180,19 +180,19 @@ public class RegionChunkStorage : ChunkStorage
         return var4;
     }
 
-    public void saveEntities(World world, Chunk chunk)
+    public void SaveEntities(World world, Chunk chunk)
     {
     }
 
-    public void tick()
+    public void Tick()
     {
     }
 
-    public void flush()
+    public void Flush()
     {
     }
 
-    public void flushToDisk()
+    public void FlushToDisk()
     {
     }
 }

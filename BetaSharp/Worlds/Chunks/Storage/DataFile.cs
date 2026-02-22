@@ -1,6 +1,5 @@
 using BetaSharp.Worlds.Storage;
 using java.lang;
-using java.util.regex;
 
 namespace BetaSharp.Worlds.Chunks.Storage;
 
@@ -13,11 +12,11 @@ public class DataFile : java.lang.Object, Comparable
     public DataFile(java.io.File var1)
     {
         file = var1;
-        Matcher var2 = DataFilenameFilter.PATTERN.matcher(var1.getName());
-        if (var2.matches())
+        var match = DataFilenameFilter.ChunkFilePattern().Match(var1.getName());
+        if (match.Success)
         {
-            chunkX = Integer.parseInt(var2.group(1), 36);
-            chunkZ = Integer.parseInt(var2.group(2), 36);
+            chunkX = Integer.parseInt(match.Groups[1].Value, 36);
+            chunkZ = Integer.parseInt(match.Groups[2].Value, 36);
         }
         else
         {

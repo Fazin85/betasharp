@@ -1,198 +1,138 @@
 using BetaSharp.NBT;
-using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Chunks.Storage;
-using java.io;
-using java.util;
-using File = System.IO.File;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Worlds.Storage;
 
-public class RegionWorldStorageSource : WorldStorageSource
+
+public class RegionWorldStorageSource : IWorldStorageSource
 {
-    protected readonly java.io.File dir;
+    protected readonly DirectoryInfo BaseDir;
 
-    public RegionWorldStorageSource(java.io.File file)
+    private readonly ILogger<RegionWorldStorageSource> _logger = Log.Instance.For<RegionWorldStorageSource>();
+
+    public RegionWorldStorageSource(string path)
     {
-        if (!file.exists())
+        BaseDir = new DirectoryInfo(path);
+        if (!BaseDir.Exists)
         {
-            file.mkdirs();
+            BaseDir.Create();
         }
-        dir = file;
     }
 
-    public virtual string getName()
-    {
-        return "Scaevolus\' McRegion";
-    }
+    public virtual string Name => "Scaevolus' McRegion";
 
-    public virtual List getAll()
+    public virtual List<WorldSaveInfo> GetAll()
     {
-        ArrayList var1 = new ArrayList();
-        java.io.File[] var2 = dir.listFiles();
-        java.io.File[] var3 = var2;
-        int var4 = var2.Length;
+        var saves = new List<WorldSaveInfo>();
+        
+        if (!BaseDir.Exists) return saves;
 
-        for (int var5 = 0; var5 < var4; ++var5)
+        foreach (var subDir in BaseDir.GetDirectories())
         {
-            java.io.File var6 = var3[var5];
-            if (var6.isDirectory())
-            {
-                string var7 = var6.getName();
-                WorldProperties var8 = getProperties(var7);
-                if (var8 != null)
-                {
-                    bool var9 = var8.SaveVersion != 19132;
-                    string var10 = var8.LevelName;
-                    if (var10 == null || string.IsNullOrEmpty(var10))
-                    {
-                        var10 = var7;
-                    }
+            string folderName = subDir.Name;
+            WorldProperties? props = GetProperties(folderName);
 
-                    var1.add(new WorldSaveInfo(var7, var10, var8.LastTimePlayed, var8.SizeOnDisk, var9));
-                }
+            if (props != null)
+            {
+                bool requiresConversion = props.SaveVersion != 19132;
+                string displayName = string.IsNullOrEmpty(props.LevelName) ? folderName : props.LevelName;
+
+                saves.Add(new WorldSaveInfo(
+                    folderName, 
+                    displayName, 
+                    props.LastTimePlayed, 
+                    props.SizeOnDisk, 
+                    requiresConversion));
             }
         }
 
-        return var1;
+        return saves;
     }
 
-    public virtual void flush()
+    public virtual void Flush()
     {
         RegionIo.flush();
     }
 
-    public virtual WorldStorage get(string var1, bool var2)
+    public virtual IWorldStorage Get(string worldName, bool createPlayerStorage)
     {
-        return new RegionWorldStorage(dir, var1, var2);
+        return new RegionWorldStorage(BaseDir.FullName, worldName, createPlayerStorage);
     }
 
-    private static long getFolderSizeMB(java.io.File folder)
+    private static long GetFolderSize(DirectoryInfo folder)
     {
-        long totalSize = 0;
-        java.io.File[] files = folder.listFiles();
+        long size = 0;
+        foreach (var file in folder.GetFiles()) size += file.Length;
+        foreach (var subDir in folder.GetDirectories()) size += GetFolderSize(subDir);
+        return size;
+    }
 
-        if (files != null)
+    public virtual WorldProperties? GetProperties(string worldName)
+    {
+        var worldDir = new DirectoryInfo(System.IO.Path.Combine(BaseDir.FullName, worldName));
+        if (!worldDir.Exists) return null;
+
+        string[] searchFiles = { "level.dat", "level.dat_old" };
+
+        foreach (var fileName in searchFiles)
         {
-            foreach (java.io.File file in files)
+            var file = new FileInfo(System.IO.Path.Combine(worldDir.FullName, fileName));
+            if (!file.Exists) continue;
+
+            try
             {
-                if (file.isFile())
+                using var stream = file.OpenRead();
+                var root = NbtIo.ReadCompressed(stream);
+                var data = root.GetCompoundTag("Data");
+                
+                var properties = new WorldProperties(data)
                 {
-                    totalSize += file.length();
-                }
-                else if (file.isDirectory())
-                {
-                    totalSize += getFolderSizeMB(file);
-                }
+                    SizeOnDisk = GetFolderSize(worldDir)
+                };
+                return properties;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to load {fileName} for {worldName}");
             }
         }
 
-        return totalSize;
+        return null;
     }
 
-    public virtual WorldProperties getProperties(string var1)
+    public void Rename(string worldFolder, string newName)
     {
-        java.io.File var2 = new java.io.File(dir, var1);
-        if (!var2.exists())
+        var file = new FileInfo(System.IO.Path.Combine(BaseDir.FullName, worldFolder, "level.dat"));
+        if (!file.Exists) return;
+
+        try
         {
-            return null;
+            NBTTagCompound root;
+            using (var readStream = file.OpenRead())
+            {
+                root = NbtIo.ReadCompressed(readStream);
+            }
+
+            root.GetCompoundTag("Data").SetString("LevelName", newName);
+
+            using (var writeStream = file.OpenWrite())
+            {
+                NbtIo.WriteCompressed(root, writeStream);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            java.io.File file = new java.io.File(var2, "level.dat");
-            NBTTagCompound var4;
-            NBTTagCompound var5;
-            if (file.exists())
-            {
-                try
-                {
-                    using var stream = File.OpenRead(file.getAbsolutePath());
-                    var4 = NbtIo.ReadCompressed(stream);
-
-                    var5 = var4.GetCompoundTag("Data");
-                    long sizeOnDisk = getFolderSizeMB(var2);
-                    var wInfo = new WorldProperties(var5);
-                    wInfo.SizeOnDisk = sizeOnDisk;
-                    return wInfo;
-                }
-                catch (java.lang.Exception ex)
-                {
-                    ex.printStackTrace();
-                }
-            }
-
-            file = new java.io.File(var2, "level.dat_old");
-            if (file.exists())
-            {
-                try
-                {
-                    using var stream = File.OpenRead(file.getAbsolutePath());
-                    var4 = NbtIo.ReadCompressed(stream);
-
-                    var5 = var4.GetCompoundTag("Data");
-                    long sizeOnDisk = getFolderSizeMB(var2);
-                    var wInfo = new WorldProperties(var5);
-                    wInfo.SizeOnDisk = sizeOnDisk;
-                    return wInfo;
-                }
-                catch (java.lang.Exception ex)
-                {
-                    ex.printStackTrace();
-                }
-            }
-
-            return null;
+            _logger.LogError(ex, $"Error renaming world {worldFolder}");
         }
     }
 
-    public void rename(string var1, string var2)
+    public void Delete(string worldFolder)
     {
-        java.io.File var3 = new java.io.File(dir, var1);
-        if (var3.exists())
+        var dir = new DirectoryInfo(System.IO.Path.Combine(BaseDir.FullName, worldFolder));
+        if (dir.Exists)
         {
-            java.io.File file = new java.io.File(var3, "level.dat");
-            if (file.exists())
-            {
-                try
-                {
-                    using var readingStream = File.OpenRead(file.getAbsolutePath());
-                    NBTTagCompound tag = NbtIo.ReadCompressed(readingStream);
-
-                    NBTTagCompound var6 = tag.GetCompoundTag("Data");
-                    var6.SetString("LevelName", var2);
-
-                    using var writingStream = File.OpenWrite(file.getAbsolutePath());
-                    NbtIo.WriteCompressed(tag, writingStream);
-                }
-                catch (java.lang.Exception ex)
-                {
-                    ex.printStackTrace();
-                }
-            }
-
+            dir.Delete(recursive: true);
         }
-    }
-
-    public void delete(string var1)
-    {
-        java.io.File var2 = new java.io.File(dir, var1);
-        if (var2.exists())
-        {
-            func_22179_a(var2.listFiles());
-            var2.delete();
-        }
-    }
-
-    protected static void func_22179_a(java.io.File[] var0)
-    {
-        for (int var1 = 0; var1 < var0.Length; ++var1)
-        {
-            if (var0[var1].isDirectory())
-            {
-                func_22179_a(var0[var1].listFiles());
-            }
-
-            var0[var1].delete();
-        }
-
     }
 }

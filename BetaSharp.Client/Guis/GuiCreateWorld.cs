@@ -70,9 +70,9 @@ public class GuiCreateWorld : GuiScreen
         _folderName = GenerateUnusedFolderName(mc.getSaveLoader(), _folderName);
     }
 
-    public static string GenerateUnusedFolderName(WorldStorageSource worldStorage, string baseFolderName)
+    public static string GenerateUnusedFolderName(IWorldStorageSource worldStorage, string baseFolderName)
     {
-        while (worldStorage.getProperties(baseFolderName) != null)
+        while (worldStorage.GetProperties(baseFolderName) != null)
         {
             baseFolderName = baseFolderName + "-";
         }

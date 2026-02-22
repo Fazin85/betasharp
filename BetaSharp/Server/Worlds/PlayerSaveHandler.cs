@@ -2,9 +2,9 @@ using BetaSharp.Entities;
 
 namespace BetaSharp.Server.Worlds;
 
-public interface PlayerSaveHandler
+public interface IPlayerStorage
 {
-    void savePlayerData(EntityPlayer player);
+    void SavePlayerData(EntityPlayer player);
 
-    void loadPlayerData(EntityPlayer player);
+    void LoadPlayerData(EntityPlayer player);
 }

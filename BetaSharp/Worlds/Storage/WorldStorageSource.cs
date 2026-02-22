@@ -1,22 +1,18 @@
-using java.util;
-
 namespace BetaSharp.Worlds.Storage;
 
-public interface WorldStorageSource
+public interface IWorldStorageSource
 {
-    string getName();
+    string Name { get; }
 
-    WorldStorage get(string saveName, bool createPlayerDataDir);
+    IWorldStorage Get(string saveName, bool createPlayerDataDir);
 
-    List getAll();
+    List<WorldSaveInfo> GetAll();
 
-    void flush();
+    void Flush();
 
-    WorldProperties getProperties(string var1);
+    WorldProperties? GetProperties(string saveName);
 
-    void delete(string var1);
+    void Delete(string saveName);
 
-    void rename(string var1, string var2);
-
-
+    void Rename(string saveName, string newName);
 }

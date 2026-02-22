@@ -19,7 +19,7 @@ public class GuiSelectWorld : GuiScreen
     protected string screenTitle = "Select world";
     private bool selected;
     private int selectedWorld;
-    private List saveList;
+    private List<WorldSaveInfo> saveList;
     private GuiWorldSlot worldSlotContainer;
     private string worldNameHeader;
     private string unsupportedFormatMessage;
@@ -47,20 +47,20 @@ public class GuiSelectWorld : GuiScreen
 
     private void loadSaves()
     {
-        WorldStorageSource worldStorage = mc.getSaveLoader();
-        saveList = worldStorage.getAll();
-        Collections.sort(saveList);
+        IWorldStorageSource worldStorage = mc.getSaveLoader();
+        saveList = worldStorage.GetAll();
+        saveList.Sort();
         selectedWorld = -1;
     }
 
     protected string getSaveFileName(int worldIndex)
     {
-        return ((WorldSaveInfo)saveList.get(worldIndex)).getFileName();
+        return saveList[worldIndex].FileName;
     }
 
     protected string getSaveName(int worldIndex)
     {
-        string worldName = ((WorldSaveInfo)saveList.get(worldIndex)).getDisplayName();
+        string worldName = saveList[worldIndex].DisplayName;
         if (worldName == null || string.IsNullOrEmpty(worldName))
         {
             TranslationStorage translations = TranslationStorage.Instance;
@@ -157,9 +157,9 @@ public class GuiSelectWorld : GuiScreen
 
     private void performDelete(int worldIndex)
     {
-        WorldStorageSource worldStorage = mc.getSaveLoader();
-        worldStorage.flush();
-        worldStorage.delete(getSaveFileName(worldIndex));
+        IWorldStorageSource worldStorage = mc.getSaveLoader();
+        worldStorage.Flush();
+        worldStorage.Delete(getSaveFileName(worldIndex));
         loadSaves();
     }
 
@@ -170,7 +170,7 @@ public class GuiSelectWorld : GuiScreen
         base.Render(mouseX, mouseY, partialTicks);
     }
 
-    public static List GetSize(GuiSelectWorld screen)
+    public static List<WorldSaveInfo> GetSize(GuiSelectWorld screen)
     {
         return screen.saveList;
     }

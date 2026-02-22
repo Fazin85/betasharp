@@ -55,7 +55,7 @@ public abstract class World : java.lang.Object, BlockView
     public readonly Dimension dimension;
     protected List<IWorldAccess> eventListeners;
     protected ChunkSource chunkSource;
-    protected readonly WorldStorage storage;
+    protected readonly IWorldStorage storage;
     protected WorldProperties properties;
     public bool eventProcessingEnabled;
     private bool allPlayersSleeping;
@@ -77,13 +77,13 @@ public abstract class World : java.lang.Object, BlockView
         return dimension.biomeSource;
     }
 
-    public WorldStorage getWorldStorage()
+    public IWorldStorage getWorldStorage()
     {
         return storage;
     }
 
 
-    public World(WorldStorage var1, string var2, Dimension var3, long var4)
+    public World(IWorldStorage var1, string var2, Dimension var3, long var4)
     {
         instantBlockUpdateEnabled = false;
         lightingQueue = [];
@@ -174,11 +174,11 @@ public abstract class World : java.lang.Object, BlockView
         prepareWeather();
     }
 
-    public World(WorldStorage var1, string var2, long var3) : this(var1, var2, var3, null)
+    public World(IWorldStorage var1, string var2, long var3) : this(var1, var2, var3, null)
     {
     }
 
-    public World(WorldStorage var1, string var2, long var3, Dimension var5)
+    public World(IWorldStorage var1, string var2, long var3, Dimension var5)
     {
         instantBlockUpdateEnabled = false;
         lightingQueue = [];
@@ -212,7 +212,7 @@ public abstract class World : java.lang.Object, BlockView
         isRemote = false;
         storage = var1;
         persistentStateManager = new PersistentStateManager(var1);
-        properties = var1.loadProperties();
+        properties = var1.LoadProperties();
         isNewWorld = properties == null;
         if (var5 != null)
         {
@@ -357,11 +357,11 @@ public abstract class World : java.lang.Object, BlockView
         properties.RulesTag = new NBTTagCompound();
         Rules.WriteToNBT(properties.RulesTag);
 
-        storage.save(properties, players.Cast<EntityPlayer>().ToList());
+        storage.Save(properties, players.Cast<EntityPlayer>().ToList());
         Profiler.Stop("saveWorldInfoAndPlayer");
 
         Profiler.Start("saveAllData");
-        persistentStateManager.saveAllData();
+        persistentStateManager.SaveAllData();
         Profiler.Stop("saveAllData");
     }
 
@@ -2990,7 +2990,7 @@ public abstract class World : java.lang.Object, BlockView
 
     public void checkSessionLock()
     {
-        storage.checkSessionLock();
+        storage.CheckSessionLock();
     }
 
     public void setTime(long time)
@@ -3227,17 +3227,17 @@ public abstract class World : java.lang.Object, BlockView
 
     public void setState(string id, PersistentState state)
     {
-        persistentStateManager.setData(id, state);
+        persistentStateManager.SetData(id, state);
     }
 
     public PersistentState getOrCreateState(Class @class, string id)
     {
-        return persistentStateManager.loadData(@class, id);
+        return persistentStateManager.LoadData<PersistentState>(id);
     }
 
     public int getIdCount(string id)
     {
-        return persistentStateManager.getUniqueDataId(id);
+        return persistentStateManager.GetUniqueDataId(id);
     }
 
     public void worldEvent(int @event, int x, int y, int z, int data)
