@@ -5,7 +5,10 @@ permissions:
 
 jobs:
   code-quality-check:
-    runs-on: windows-2022
+    strategy:
+      matrix:
+        on: [ubuntu-24.04, windows-2025, macos-15-intel]
+    runs-on: ${{ matrix.on }}
     timeout-minutes: 30
     steps:
       - name: Checkout Repository
