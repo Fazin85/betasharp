@@ -59,7 +59,7 @@ public class CraftingManager
         AddRecipe(new ItemStack(Block.PoweredRail, 6), ["X X", "X#X", "XRX", 'X', Item.GoldIngot, 'R', Item.Redstone, '#', Item.Stick]);
         AddRecipe(new ItemStack(Block.DetectorRail, 6), ["X X", "X#X", "XRX", 'X', Item.IronIngot, 'R', Item.Redstone, '#', Block.StonePressurePlate]);
         AddRecipe(new ItemStack(Item.Minecart, 1), ["# #", "###", '#', Item.IronIngot]);
-        AddRecipe(new ItemStack(Block.JackLantern, 1), ["A", "B", 'A', Block.Pumpkin, 'B', Block.Torch]);
+        AddRecipe(new ItemStack(Block.JackLantern, 1), ["A", "B", 'A', Block.CarvedPumpkin, 'B', Block.Torch]);
         AddRecipe(new ItemStack(Item.ChestMinecart, 1), ["A", "B", 'A', Block.Chest, 'B', Item.Minecart]);
         AddRecipe(new ItemStack(Item.FurnaceMinecart, 1), ["A", "B", 'A', Block.Furnace, 'B', Item.Minecart]);
         AddRecipe(new ItemStack(Item.Boat, 1), ["# #", "###", '#', Block.Planks]);
@@ -84,6 +84,8 @@ public class CraftingManager
         AddRecipe(new ItemStack(Block.Piston, 1), ["TTT", "#X#", "#R#", '#', Block.Cobblestone, 'X', Item.IronIngot, 'R', Item.Redstone, 'T', Block.Planks]);
         AddRecipe(new ItemStack(Block.StickyPiston, 1), ["S", "P", 'S', Item.Slimeball, 'P', Block.Piston]);
         AddRecipe(new ItemStack(Item.Bed, 1), ["###", "XXX", '#', Block.Wool, 'X', Block.Planks]);
+        AddRecipe(new ItemStack(Block.ZombiebrineSpawner, 1),["YXY", "XZX", "YXY", 'Y', Block.Soulsand, 'X', Block.Netherrack, 'Z', Block.DiamondBlock]);
+        AddShapelessRecipe(new ItemStack(Block.CarvedPumpkin, 1), Block.Pumpkin);
         Recipes.Sort(new RecipeSorter());
         _logger.LogInformation($"{Recipes.Count} recipes");
     }

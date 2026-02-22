@@ -40,6 +40,7 @@ public class EntityRenderDispatcher
         RegisterRenderer(typeof(EntityCreeper), new CreeperEntityRenderer());
         RegisterRenderer(typeof(EntitySkeleton), new UndeadEntityRenderer(new ModelSkeleton(), 0.5F));
         RegisterRenderer(typeof(EntityZombie), new UndeadEntityRenderer(new ModelZombie(), 0.5F));
+        RegisterRenderer(typeof(EntityZombieBrine), new UndeadEntityRenderer(new ModelZombie(), 0.5F));
         RegisterRenderer(typeof(EntitySlime), new SlimeEntityRenderer(new ModelSlime(16), new ModelSlime(0), 0.25F));
         RegisterRenderer(typeof(EntityPlayer), new PlayerEntityRenderer());
         RegisterRenderer(typeof(EntityGiantZombie), new GiantEntityRenderer(new ModelZombie(), 0.5F, 6.0F));

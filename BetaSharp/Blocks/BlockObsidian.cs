@@ -6,6 +6,7 @@ public class BlockObsidian : BlockStone
 {
     public BlockObsidian(int id, int textureId) : base(id, textureId)
     {
+        harvestLevel = 3;
     }
 
     public override int getDroppedItemCount(JavaRandom random)

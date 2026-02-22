@@ -9,41 +9,54 @@ public class BlockPumpkin : Block
 {
 
     private bool lit;
-
-    public BlockPumpkin(int id, int textureId, bool lit) : base(id, Material.Pumpkin)
+    private bool cut;
+    private int[] textures; //[top, side, front]
+    public BlockPumpkin(int id, int textureId, bool lit, bool cut) : base(id, Material.Pumpkin)
     {
         this.textureId = textureId;
+        textures = [textureId, textureId + 16, textureId + 17];//[top, side, front]
         setTickRandomly(true);
         this.lit = lit;
+        this.cut = cut;
     }
 
     public override int getTexture(int side, int meta)
     {
-        if (side == 1)
+        if (side == 0 || side == 1)
         {
-            return textureId;
+            return textures[0];
         }
-        else if (side == 0)
+        if (cut)
         {
-            return textureId;
-        }
-        else
-        {
-            int faceTexture = textureId + 1 + 16;
-            if (lit)
-            {
-                ++faceTexture;
-            }
+        bool isFace = (meta == 2 && side == 2) || 
+              (meta == 3 && side == 5) || 
+              (meta == 0 && side == 3) || 
+              (meta == 1 && side == 4);
 
-            return meta == 2 && side == 2 ?
-                faceTexture : (meta == 3 && side == 5 ? faceTexture : (meta == 0 && side == 3 ? faceTexture :
-                    (meta == 1 && side == 4 ? faceTexture : textureId + 16)));
+            if (isFace) 
+            {
+                if (lit)
+                {
+                    return textures[2] + 1;
+                }
+                return textures[2];
+            } 
         }
+
+        return textures[1];
     }
 
     public override int getTexture(int side)
     {
-        return side == 1 ? textureId : (side == 0 ? textureId : (side == 3 ? textureId + 1 + 16 : textureId + 16));
+        if (side == 0 || side == 1)
+        {
+            return textures[0];
+        }
+        if (side == 3)
+        {
+            return textures[2];
+        }
+        return textures[1];
     }
 
     public override void onPlaced(World world, int x, int y, int z)

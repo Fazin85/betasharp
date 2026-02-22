@@ -45,15 +45,15 @@ public class Block
     public static readonly Block Lava = new BlockStationary(11, Material.Lava).setHardness(100.0F).setLuminance(1.0F).setOpacity(255).setBlockName("lava").disableStats().ignoreMetaUpdates();
     public static readonly Block Sand = new BlockSand(12, 18).setHardness(0.5F).setSoundGroup(SoundSandFootstep).setBlockName("sand");
     public static readonly Block Gravel = new BlockGravel(13, 19).setHardness(0.6F).setSoundGroup(SoundGravelFootstep).setBlockName("gravel");
-    public static readonly Block GoldOre = new BlockOre(14, 32).setHardness(3.0F).setResistance(5.0F).setSoundGroup(SoundStoneFootstep).setBlockName("oreGold");
-    public static readonly Block IronOre = new BlockOre(15, 33).setHardness(3.0F).setResistance(5.0F).setSoundGroup(SoundStoneFootstep).setBlockName("oreIron");
+    public static readonly Block GoldOre = new BlockOre(14, 32).setHardness(3.0F).setHarvestLevel(2).setResistance(5.0F).setSoundGroup(SoundStoneFootstep).setBlockName("oreGold");
+    public static readonly Block IronOre = new BlockOre(15, 33).setHardness(3.0F).setHarvestLevel(1).setResistance(5.0F).setSoundGroup(SoundStoneFootstep).setBlockName("oreIron");
     public static readonly Block CoalOre = new BlockOre(16, 34).setHardness(3.0F).setResistance(5.0F).setSoundGroup(SoundStoneFootstep).setBlockName("oreCoal");
     public static readonly Block Log = new BlockLog(17).setHardness(2.0F).setSoundGroup(SoundWoodFootstep).setBlockName("log").ignoreMetaUpdates();
     public static readonly BlockLeaves Leaves = (BlockLeaves)new BlockLeaves(18, 52).setHardness(0.2F).setOpacity(1).setSoundGroup(SoundGrassFootstep).setBlockName("leaves").disableStats().ignoreMetaUpdates();
     public static readonly Block Sponge = new BlockSponge(19).setHardness(0.6F).setSoundGroup(SoundGrassFootstep).setBlockName("sponge");
     public static readonly Block Glass = new BlockGlass(20, 49, Material.Glass, false).setHardness(0.3F).setSoundGroup(SoundGlassFootstep).setBlockName("glass");
-    public static readonly Block LapisOre = new BlockOre(21, 160).setHardness(3.0F).setResistance(5.0F).setSoundGroup(SoundStoneFootstep).setBlockName("oreLapis");
-    public static readonly Block LapisBlock = new Block(22, 144, Material.Stone).setHardness(3.0F).setResistance(5.0F).setSoundGroup(SoundStoneFootstep).setBlockName("blockLapis");
+    public static readonly Block LapisOre = new BlockOre(21, 160).setHardness(3.0F).setHarvestLevel(1).setResistance(5.0F).setSoundGroup(SoundStoneFootstep).setBlockName("oreLapis");
+    public static readonly Block LapisBlock = new Block(22, 144, Material.Stone).setHarvestLevel(1).setHardness(3.0F).setResistance(5.0F).setSoundGroup(SoundStoneFootstep).setBlockName("blockLapis");
     public static readonly Block Dispenser = new BlockDispenser(23).setHardness(3.5F).setSoundGroup(SoundStoneFootstep).setBlockName("dispenser").ignoreMetaUpdates();
     public static readonly Block Sandstone = new BlockSandStone(24).setSoundGroup(SoundStoneFootstep).setHardness(0.8F).setBlockName("sandStone");
     public static readonly Block Noteblock = new BlockNote(25).setHardness(0.8F).setBlockName("musicBlock").ignoreMetaUpdates();
@@ -72,8 +72,8 @@ public class Block
     public static readonly BlockPlant Rose = (BlockPlant)new BlockPlant(38, 12).setHardness(0.0F).setSoundGroup(SoundGrassFootstep).setBlockName("rose");
     public static readonly BlockPlant BrownMushroom = (BlockPlant)new BlockMushroom(39, 29).setHardness(0.0F).setSoundGroup(SoundGrassFootstep).setLuminance(2.0F / 16.0F).setBlockName("mushroom");
     public static readonly BlockPlant RedMushroom = (BlockPlant)new BlockMushroom(40, 28).setHardness(0.0F).setSoundGroup(SoundGrassFootstep).setBlockName("mushroom");
-    public static readonly Block GoldBlock = new BlockOreStorage(41, 23).setHardness(3.0F).setResistance(10.0F).setSoundGroup(SoundMetalFootstep).setBlockName("blockGold");
-    public static readonly Block IronBlock = new BlockOreStorage(42, 22).setHardness(5.0F).setResistance(10.0F).setSoundGroup(SoundMetalFootstep).setBlockName("blockIron");
+    public static readonly Block GoldBlock = new BlockOreStorage(41, 23).setHardness(3.0F).setHarvestLevel(2).setResistance(10.0F).setSoundGroup(SoundMetalFootstep).setBlockName("blockGold");
+    public static readonly Block IronBlock = new BlockOreStorage(42, 22).setHardness(5.0F).setHarvestLevel(1).setResistance(10.0F).setSoundGroup(SoundMetalFootstep).setBlockName("blockIron");
     public static readonly Block DoubleSlab = new BlockSlab(43, true).setHardness(2.0F).setResistance(10.0F).setSoundGroup(SoundStoneFootstep).setBlockName("stoneSlab");
     public static readonly Block Slab = new BlockSlab(44, false).setHardness(2.0F).setResistance(10.0F).setSoundGroup(SoundStoneFootstep).setBlockName("stoneSlab");
     public static readonly Block Bricks = new Block(45, 7, Material.Stone).setHardness(2.0F).setResistance(10.0F).setSoundGroup(SoundStoneFootstep).setBlockName("brick");
@@ -87,8 +87,8 @@ public class Block
     public static readonly Block WoodenStairs = new BlockStairs(53, Planks).setBlockName("stairsWood").ignoreMetaUpdates();
     public static readonly Block Chest = new BlockChest(54).setHardness(2.5F).setSoundGroup(SoundWoodFootstep).setBlockName("chest").ignoreMetaUpdates();
     public static readonly Block RedstoneWire = new BlockRedstoneWire(55, 164).setHardness(0.0F).setSoundGroup(SoundPowderFootstep).setBlockName("redstoneDust").disableStats().ignoreMetaUpdates();
-    public static readonly Block DiamondOre = new BlockOre(56, 50).setHardness(3.0F).setResistance(5.0F).setSoundGroup(SoundStoneFootstep).setBlockName("oreDiamond");
-    public static readonly Block DiamondBlock = new BlockOreStorage(57, 24).setHardness(5.0F).setResistance(10.0F).setSoundGroup(SoundMetalFootstep).setBlockName("blockDiamond");
+    public static readonly Block DiamondOre = new BlockOre(56, 50).setHardness(3.0F).setHarvestLevel(2).setResistance(5.0F).setSoundGroup(SoundStoneFootstep).setBlockName("oreDiamond");
+    public static readonly Block DiamondBlock = new BlockOreStorage(57, 24).setHardness(5.0F).setHarvestLevel(2).setResistance(10.0F).setSoundGroup(SoundMetalFootstep).setBlockName("blockDiamond");
     public static readonly Block CraftingTable = new BlockWorkbench(58).setHardness(2.5F).setSoundGroup(SoundWoodFootstep).setBlockName("workbench");
     public static readonly Block Wheat = new BlockCrops(59, 88).setHardness(0.0F).setSoundGroup(SoundGrassFootstep).setBlockName("crops").disableStats().ignoreMetaUpdates();
     public static readonly Block Farmland = new BlockFarmland(60).setHardness(0.6F).setSoundGroup(SoundGravelFootstep).setBlockName("farmland");
@@ -104,8 +104,8 @@ public class Block
     public static readonly Block StonePressurePlate = new BlockPressurePlate(70, Stone.textureId, PressurePlateActiviationRule.MOBS, Material.Stone).setHardness(0.5F).setSoundGroup(SoundStoneFootstep).setBlockName("pressurePlate").ignoreMetaUpdates();
     public static readonly Block IronDoor = new BlockDoor(71, Material.Metal).setHardness(5.0F).setSoundGroup(SoundMetalFootstep).setBlockName("doorIron").disableStats().ignoreMetaUpdates();
     public static readonly Block WoodenPressurePlate = new BlockPressurePlate(72, Planks.textureId, PressurePlateActiviationRule.EVERYTHING, Material.Wood).setHardness(0.5F).setSoundGroup(SoundWoodFootstep).setBlockName("pressurePlate").ignoreMetaUpdates();
-    public static readonly Block RedstoneOre = new BlockRedstoneOre(73, 51, false).setHardness(3.0F).setResistance(5.0F).setSoundGroup(SoundStoneFootstep).setBlockName("oreRedstone").ignoreMetaUpdates();
-    public static readonly Block LitRedstoneOre = new BlockRedstoneOre(74, 51, true).setLuminance(10.0F / 16.0F).setHardness(3.0F).setResistance(5.0F).setSoundGroup(SoundStoneFootstep).setBlockName("oreRedstone").ignoreMetaUpdates();
+    public static readonly Block RedstoneOre = new BlockRedstoneOre(73, 51, false).setHarvestLevel(2).setHardness(3.0F).setResistance(5.0F).setSoundGroup(SoundStoneFootstep).setBlockName("oreRedstone").ignoreMetaUpdates();
+    public static readonly Block LitRedstoneOre = new BlockRedstoneOre(74, 51, true).setHarvestLevel(2).setLuminance(10.0F / 16.0F).setHardness(3.0F).setResistance(5.0F).setSoundGroup(SoundStoneFootstep).setBlockName("oreRedstone").ignoreMetaUpdates();
     public static readonly Block RedstoneTorch = new BlockRedstoneTorch(75, 115, false).setHardness(0.0F).setSoundGroup(SoundWoodFootstep).setBlockName("notGate").ignoreMetaUpdates();
     public static readonly Block LitRedstoneTorch = new BlockRedstoneTorch(76, 99, true).setHardness(0.0F).setLuminance(0.5F).setSoundGroup(SoundWoodFootstep).setBlockName("notGate").ignoreMetaUpdates();
     public static readonly Block Button = new BlockButton(77, Stone.textureId).setHardness(0.5F).setSoundGroup(SoundStoneFootstep).setBlockName("button").ignoreMetaUpdates();
@@ -117,17 +117,19 @@ public class Block
     public static readonly Block SugarCane = new BlockReed(83, 73).setHardness(0.0F).setSoundGroup(SoundGrassFootstep).setBlockName("reeds").disableStats();
     public static readonly Block Jukebox = new BlockJukeBox(84, 74).setHardness(2.0F).setResistance(10.0F).setSoundGroup(SoundStoneFootstep).setBlockName("jukebox").ignoreMetaUpdates();
     public static readonly Block Fence = new BlockFence(85, 4).setHardness(2.0F).setResistance(5.0F).setSoundGroup(SoundWoodFootstep).setBlockName("fence").ignoreMetaUpdates();
-    public static readonly Block Pumpkin = new BlockPumpkin(86, 102, false).setHardness(1.0F).setSoundGroup(SoundWoodFootstep).setBlockName("pumpkin").ignoreMetaUpdates();
+    public static readonly Block Pumpkin = new BlockPumpkin(86, 102, false, false).setHardness(1.0F).setSoundGroup(SoundWoodFootstep).setBlockName("pumpkin").ignoreMetaUpdates();
     public static readonly Block Netherrack = new BlockNetherrack(87, 103).setHardness(0.4F).setSoundGroup(SoundStoneFootstep).setBlockName("hellrock");
     public static readonly Block Soulsand = new BlockSoulSand(88, 104).setHardness(0.5F).setSoundGroup(SoundSandFootstep).setBlockName("hellsand");
     public static readonly Block Glowstone = new BlockGlowstone(89, 105, Material.Stone).setHardness(0.3F).setSoundGroup(SoundGlassFootstep).setLuminance(1.0F).setBlockName("lightgem");
     public static readonly BlockPortal NetherPortal = (BlockPortal)new BlockPortal(90, 14).setHardness(-1.0F).setSoundGroup(SoundGlassFootstep).setLuminance(12.0F / 16.0F).setBlockName("portal");
-    public static readonly Block JackLantern = new BlockPumpkin(91, 102, true).setHardness(1.0F).setSoundGroup(SoundWoodFootstep).setLuminance(1.0F).setBlockName("litpumpkin").ignoreMetaUpdates();
+    public static readonly Block JackLantern = new BlockPumpkin(91, 102, true, true).setHardness(1.0F).setSoundGroup(SoundWoodFootstep).setLuminance(1.0F).setBlockName("litpumpkin").ignoreMetaUpdates();
     public static readonly Block Cake = new BlockCake(92, 121).setHardness(0.5F).setSoundGroup(SoundClothFootstep).setBlockName("cake").disableStats().ignoreMetaUpdates();
     public static readonly Block Repeater = new BlockRedstoneRepeater(93, false).setHardness(0.0F).setSoundGroup(SoundWoodFootstep).setBlockName("diode").disableStats().ignoreMetaUpdates();
     public static readonly Block PoweredRepeater = new BlockRedstoneRepeater(94, true).setHardness(0.0F).setLuminance(10.0F / 16.0F).setSoundGroup(SoundWoodFootstep).setBlockName("diode").disableStats().ignoreMetaUpdates();
     public static readonly Block Trapdoor = new BlockTrapDoor(96, Material.Wood).setHardness(3.0F).setSoundGroup(SoundWoodFootstep).setBlockName("trapdoor").disableStats().ignoreMetaUpdates();
     public static readonly BlockPlant BlueRose = (BlockPlant)new BlockPlant(97, 111).setHardness(0.0F).setSoundGroup(SoundGrassFootstep).setBlockName("blueRose");
+    public static readonly Block CarvedPumpkin = new BlockPumpkin(98, 102, false, true).setHardness(1.0F).setSoundGroup(SoundWoodFootstep).setBlockName("carvedPumpkin").ignoreMetaUpdates();
+    public static readonly Block ZombiebrineSpawner = new BlockZombiebrineSpawner(99, 127).setHardness(1.0F).setSoundGroup(SoundWoodFootstep).setBlockName("zombiebrineSpawner").ignoreMetaUpdates();
     public int textureId;
     public readonly int id;
     public float hardness;
@@ -139,6 +141,8 @@ public class Block
     public readonly Material material;
     public float slipperiness;
     private string? blockName;
+
+    protected int harvestLevel = 0;
 
     protected Block(int id, Material material)
     {
@@ -397,6 +401,16 @@ public class Block
             droppedItem.delayBeforeCanPickup = 10;
             world.SpawnEntity(droppedItem);
         }
+    }
+
+    public virtual Block setHarvestLevel(int level)
+    {
+        this.harvestLevel = level;
+        return this;
+    }
+    public virtual int getHarvestLevel()
+    {
+        return harvestLevel;
     }
 
     protected virtual int getDroppedItemMeta(int blockMeta)

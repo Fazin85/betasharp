@@ -107,12 +107,6 @@ public class BlockDoor : Block
         }
 
     }
-
-    public override void onBlockBreakStart(World world, int x, int y, int z, EntityPlayer player)
-    {
-        onUse(world, x, y, z, player);
-    }
-
     public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
     {
         if (material == Material.Metal)

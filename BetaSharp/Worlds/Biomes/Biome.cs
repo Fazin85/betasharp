@@ -43,6 +43,7 @@ public class Biome
         MonsterList.Add(new SpawnListEntry(w => new EntitySkeleton(w)), 10);
         MonsterList.Add(new SpawnListEntry(w => new EntityCreeper(w)), 10);
         MonsterList.Add(new SpawnListEntry(w => new EntitySlime(w)), 10);
+       
 
         CreatureList.Add(new SpawnListEntry(w => new EntitySheep(w)), 12);
         CreatureList.Add(new SpawnListEntry(w => new EntityPig(w)), 10);

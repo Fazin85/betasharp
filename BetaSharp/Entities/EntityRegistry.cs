@@ -146,5 +146,6 @@ public static class EntityRegistry
         Register(world => new EntityFallingSand(world), "FallingSand", 21);
         Register(world => new EntityMinecart(world), "Minecart", 40);
         Register(world => new EntityBoat(world), "Boat", 41);
+        Register(world => new EntityZombieBrine(world), "Zombiebrine", 42);
     }
 }

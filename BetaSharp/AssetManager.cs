@@ -152,6 +152,7 @@ public class AssetManager
         defineAsset("mob/wolf_angry.png", AssetType.Binary);
         defineAsset("mob/wolf_tame.png", AssetType.Binary);
         defineAsset("mob/zombie.png", AssetType.Binary);
+        defineAsset("mob/zombiebrine.png", AssetType.Binary);
 
         defineAsset("terrain/moon.png", AssetType.Binary);
         defineAsset("terrain/sun.png", AssetType.Binary);

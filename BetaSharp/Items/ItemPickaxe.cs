@@ -25,6 +25,7 @@ public class ItemPickaxe : ItemTool
         Block.Netherrack,
         Block.LapisOre,
         Block.LapisBlock,
+        Block.Furnace,
     ];
 
     public ItemPickaxe(int id, EnumToolMaterial enumToolMaterial) : base(id, 2, enumToolMaterial, blocksEffectiveAgainst)
@@ -33,6 +34,6 @@ public class ItemPickaxe : ItemTool
 
     public override bool isSuitableFor(Block block)
     {
-        return block == Block.Obsidian ? toolMaterial.getHarvestLevel() == 3 : (block != Block.DiamondBlock && block != Block.DiamondOre ? (block != Block.GoldBlock && block != Block.GoldOre ? (block != Block.IronBlock && block != Block.IronOre ? (block != Block.LapisBlock && block != Block.LapisOre ? (block != Block.RedstoneOre && block != Block.LitRedstoneOre ? (block.material == Material.Stone ? true : block.material == Material.Metal) : toolMaterial.getHarvestLevel() >= 2) : toolMaterial.getHarvestLevel() >= 1) : toolMaterial.getHarvestLevel() >= 1) : toolMaterial.getHarvestLevel() >= 2) : toolMaterial.getHarvestLevel() >= 2);
+        return toolMaterial.getHarvestLevel() >= block.getHarvestLevel();
     }
 }
