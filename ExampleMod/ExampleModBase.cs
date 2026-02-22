@@ -1,4 +1,5 @@
-﻿using BetaSharp.Client.Rendering;
+﻿using BetaSharp.Client;
+using BetaSharp.Client.Rendering;
 using BetaSharp.Modding;
 using MonoMod.RuntimeDetour;
 
@@ -7,10 +8,7 @@ namespace ExampleMod;
 [ModSide(Side.Client)]
 public class ExampleModBase : ModBase
 {
-    public override string Name => "Example Mod";
-    public override string Description => "Surely does something really cool";
-    public override string Author => "ExampleAuthor123";
-    public override bool HasOptionsMenu => false;
+    public override bool HasOptionsMenu => true;
     private Hook _textRendererHook = null!;
 
     public override void Initialize(Side side)
@@ -29,6 +27,11 @@ public class ExampleModBase : ModBase
     {
         Console.WriteLine("Example Mod is unloading");
         //_textRendererHook.Dispose();
+    }
+
+    public override void OpenOptionsMenu()
+    {
+        Minecraft.INSTANCE.currentScreen = new ExampleModOptionsScreen();
     }
 
     private static void TextRenderer_renderString(

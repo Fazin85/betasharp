@@ -407,6 +407,11 @@ public unsafe class LegacyGL : IGL
         SilkGL.Scale(x, y, z);
     }
 
+    public virtual void Scissor(int x, int y, uint width, uint height)
+    {
+        SilkGL.Scissor(x, y, width, height);
+    }
+
     public virtual void ShadeModel(GLEnum mode)
     {
         SilkGL.ShadeModel(mode);

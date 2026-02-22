@@ -114,7 +114,8 @@ public class GuiMods : GuiScreen
 
         public void Draw(int mouseX, int mouseY, int left, int top, int right, int bottom)
         {
-            GLManager.GL.Enable(EnableCap.ScissorTest);
+            GLManager.GL.Enable(GLEnum.ScissorTest);
+
             var mc = Minecraft.INSTANCE;
             ScaledResolution res = new(mc.options, mc.displayWidth, mc.displayHeight);
             int scale = (int)Math.Round(mc.displayWidth / res.ScaledWidthDouble);

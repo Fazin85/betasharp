@@ -64,10 +64,6 @@ public class GuiOptions : GuiScreen
 
         switch (button.Id)
         {
-            case ButtonMods:
-                mc.options.SaveOptions();
-                mc.displayGuiScreen(new GuiMods(this));
-                break;
             case ButtonVideoSettings:
                 mc.options.SaveOptions();
                 mc.displayGuiScreen(new GuiVideoSettings(this, _options));

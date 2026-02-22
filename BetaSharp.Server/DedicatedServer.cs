@@ -1,4 +1,3 @@
-using BetaSharp.Launcher;
 using BetaSharp.Modding;
 using BetaSharp.Server.Network;
 using BetaSharp.Server.Threading;

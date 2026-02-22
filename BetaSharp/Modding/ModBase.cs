@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -5,11 +6,24 @@ namespace BetaSharp.Modding;
 
 public abstract class ModBase
 {
-    public abstract string Name { get; }
-    public abstract string Description { get; }
-    public abstract string Author { get; }
+    public required string Name { get; init; }
+    public required string Description { get; init; }
+    public required string Author { get; init; }
+    public required string Version { get; init; }
+    public required ILogger Logger { get; init; }
     public abstract bool HasOptionsMenu { get; }
-    public ILogger Logger { get; internal set; } = NullLogger.Instance;
+
+    protected ModBase(string name, string author, string description, string version, ILogger logger)
+    {
+        Name = name;
+        Author = author;
+        Description = description;
+        Version = version;
+        Logger = logger;
+    }
+
+    protected ModBase() { }
+
     /// <summary>
     /// Method called when mods are being initialized.
     /// Use this to register your mod's content, hooks, and perform other initialization logic.

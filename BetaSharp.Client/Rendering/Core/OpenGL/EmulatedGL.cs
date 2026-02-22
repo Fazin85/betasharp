@@ -269,6 +269,12 @@ public unsafe class EmulatedGL : LegacyGL
         MarkActiveMatrixDirty();
     }
 
+    public override void Scissor(int x, int y, uint width, uint height)
+    {
+        if (_displayLists.IsCompiling) { _displayLists.RecordScissor(x, y, width, height); return; }
+        SilkGL.Scissor(x, y, width, height);
+    }
+
     public override void Ortho(double left, double right, double bottom, double top, double zNear, double zFar)
     {
         if (_displayLists.IsCompiling) return;

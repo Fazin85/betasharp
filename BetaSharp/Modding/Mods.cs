@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Reflection;
 using System.Runtime.Loader;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Modding;
 
@@ -12,6 +13,7 @@ public class Mods
 
     private static Dictionary<ModBase, ModLoadContext> _modLoadContexts { get; set; } = [];
     private static bool _loaded = false;
+    private static readonly ILogger s_logger = Log.Instance.For<Mods>();
 
     /// <summary>
     /// Loads mods from the specified folder.
@@ -44,7 +46,7 @@ public class Mods
             .Where(f => System.IO.Path.GetExtension(f).Equals(".dll", StringComparison.OrdinalIgnoreCase))
             .ToList();
 
-        Log.Info($"Found {modsFiles.Count} mods in mods folder.");
+        s_logger.LogInformation($"Found {modsFiles.Count} mods in mods folder.");
         if (modsFiles.Count == 0)
         {
             return;
@@ -52,10 +54,10 @@ public class Mods
 
         List<ModBase> loadedMods = [];
 
-        Log.Info($"Loading {modsFiles.Count} mods...");
+        s_logger.LogInformation($"Loading {modsFiles.Count} mods...");
         foreach (string file in modsFiles)
         {
-            Log.Info("Loading mod " + file + "...");
+            s_logger.LogInformation("Loading mod " + file + "...");
 
             ModLoadContext loadContext = new(file);
             Assembly assembly;
@@ -65,9 +67,24 @@ public class Mods
             }
             catch (Exception ex)
             {
-                Log.Error($"Failed to load mod {file}: {ex}");
+                s_logger.LogError("Failed to load mod {File}: {Exception}", file, ex);
                 continue;
             }
+
+            ModInfoAttribute? modInfo = assembly.GetCustomAttribute<ModInfoAttribute>();
+            if (modInfo is null)
+            {
+                s_logger.LogWarning(
+                    $"Mod {{File}} has no {nameof(ModInfoAttribute)}. It will not have a name, author, description. " +
+                    $"This will not prevent it from being loaded, but it is recommended to add a {nameof(ModInfoAttribute)} to your mod's assembly. " +
+                    "See the example mod for an example.", file);
+            }
+            string modName = modInfo?.Name ?? System.IO.Path.GetFileNameWithoutExtension(file);
+            string modAuthor = modInfo?.Author ?? "Unknown author";
+            string modDescription = modInfo?.Description ?? "No description";
+            string modVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+                ?? assembly.GetName().Version?.ToString() ?? "Unknown version";
+
 
             Type? modType = null;
             try
@@ -85,65 +102,65 @@ public class Mods
             }
             catch (ReflectionTypeLoadException ex)
             {
-                Log.Error($"Aborting mod load: Failed to get types from mod {file}: {ex}");
+                s_logger.LogError("Aborting mod load: Failed to get types from mod {ModName}: {ReflectionTypeLoadException}", modName, ex);
                 continue;
             }
 
             if (modType == null)
             {
-                Log.Warn($"Mod {file} has no class that implements {nameof(ModBase)}, and as such will not be initialized.");
+                s_logger.LogWarning($"Mod {{ModName}} has no class that implements {nameof(ModBase)}, and as such will not be initialized.", modName);
                 continue;
             }
             if (Attribute.GetCustomAttribute(modType, typeof(ModSideAttribute)) is ModSideAttribute modSideAttr)
             {
                 if (modSideAttr.Side != side && modSideAttr.Side != Side.Both && side != Side.Both)
                 {
-                    Log.Info($"Skipping mod {file} because it is marked for side {modSideAttr.Side} and not {side}.");
+                    s_logger.LogInformation("Skipping mod {ModName} because it is marked for side {ModSide} and not {CurrentSide}.", modName, modSideAttr.Side, side);
                     continue;
                 }
             }
 
-            Log.Info($"Instantiating mod {file}...");
-            ModBase modBaseInstance;
+            s_logger.LogInformation("Instantiating mod {File}...", file);
+            ModBase mod;
             try
             {
-                modBaseInstance = (ModBase)Activator.CreateInstance(modType)!;
+                mod = (ModBase)Activator.CreateInstance(modType,
+                    modName, modAuthor, modDescription, modVersion, Log.Instance.For($"Mod:{modName}"))!;
             }
             catch (Exception ex)
             {
-                Log.Error($"Failed to create mod instance for mod {file}: {ex}");
+                s_logger.LogError("Failed to create mod instance for mod {ModName}: {Exception}", modName, ex);
                 continue;
             }
-            modBaseInstance.Logger = Log.GetLogger($"Mod:{modBaseInstance.Name}");
 
-            Log.Info($"Successfully instantiated mod {modBaseInstance.Name} ({file}). Initializing...");
+            s_logger.LogInformation("Successfully instantiated the mod {ModName}. Initializing...", modName);
 
-            loadedMods.Add(modBaseInstance);
-            _modLoadContexts[modBaseInstance] = loadContext;
+            loadedMods.Add(mod);
+            _modLoadContexts[mod] = loadContext;
 
             if (side is Side.Client or Side.Both)
-                modBaseInstance.Initialize(Side.Client);
+                mod.Initialize(Side.Client);
             if (side is Side.Server or Side.Both)
-                modBaseInstance.Initialize(Side.Server);
+                mod.Initialize(Side.Server);
 
-            Log.Info($"Successfully initialized mod {modBaseInstance.Name}");
+            s_logger.LogInformation("Successfully initialized mod {ModName}", modName);
         }
 
         ModRegistry = loadedMods.ToImmutableList();
 
-        Log.Info("Running PostInitialize on mods...");
+        s_logger.LogInformation("Running PostInitialize on mods...");
         foreach (ModBase mod in ModRegistry)
         {
-            Log.Info($"Running PostInitialize of mod {mod.Name}...");
+            s_logger.LogInformation("Running PostInitialize of mod {ModName}...", mod.Name);
 
             if (side is Side.Client or Side.Both)
                 mod.PostInitialize(Side.Client);
             if (side is Side.Server or Side.Both)
                 mod.PostInitialize(Side.Server);
 
-            Log.Info($"PostInitialize of mod {mod.Name} complete.");
+            s_logger.LogInformation("PostInitialize of mod {ModName} complete.", mod.Name);
         }
-        Log.Info("Mods initialized.");
+        s_logger.LogInformation("Mods initialized.");
     }
 
     /// <summary>
@@ -153,11 +170,11 @@ public class Mods
     {
         if (!_modLoadContexts.TryGetValue(mod, out var context))
         {
-            Log.Warn($"Attempted to unload mod {mod.Name} which is not loaded.");
+            s_logger.LogWarning("Attempted to unload mod {ModName} which is not loaded.", mod.Name);
             return;
         }
 
-        Log.Info($"Unloading mod {mod.Name}...");
+        s_logger.LogInformation("Unloading mod {ModName}...", mod.Name);
         try
         {
             if (side is Side.Client or Side.Both)
@@ -167,12 +184,28 @@ public class Mods
 
             _modLoadContexts.Remove(mod);
             ModRegistry = ModRegistry.Remove(mod);
+
+            WeakReference contextWeakRef = new(context, trackResurrection: true);
             context.Unload();
-            Log.Info($"Successfully unloaded mod {mod.Name}.");
+            for (int i = 0; contextWeakRef.IsAlive && i < 50; i++)
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
+            if (contextWeakRef.IsAlive)
+            {
+                s_logger.LogError("Attempted to unload mod {ModName}, but its assembly could not be unloaded. " +
+                          "This is likely due to lingering references to the mod's assembly that are still alive. " +
+                          "Make sure to clean up any hooks, content, or other references to the mod in the Unload method of your mod. " +
+                          "If you are having trouble, consider asking for help in the BetaSharp Discord server.", mod.Name);
+                return;
+            }
+
+            s_logger.LogInformation("Successfully unloaded mod {ModName}.", mod.Name);
         }
         catch (Exception ex)
         {
-            Log.Error($"Failed to unload mod {mod.Name}: {ex}");
+            s_logger.LogError("Failed to unload mod {ModName}: {Exception}", mod.Name, ex);
         }
     }
 }
