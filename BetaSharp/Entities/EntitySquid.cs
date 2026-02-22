@@ -8,8 +8,6 @@ namespace BetaSharp.Entities;
 
 public class EntitySquid : EntityWaterMob
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntitySquid).TypeHandle);
-
     public float tiltAngle;
     public float prevTiltAngle;
     public float tentaclePhase;

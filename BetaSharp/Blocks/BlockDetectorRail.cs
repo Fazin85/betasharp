@@ -60,7 +60,7 @@ public class BlockDetectorRail : BlockRail
         bool isPowered = (meta & 8) != 0;
         bool hasMinecart = false;
         float detectionInset = 2.0F / 16.0F;
-        var minecartsOnRail = world.collectEntitiesByClass(EntityMinecart.Class, new Box((double)((float)x + detectionInset), (double)y, (double)((float)z + detectionInset), (double)((float)(x + 1) - detectionInset), (double)y + 0.25D, (double)((float)(z + 1) - detectionInset)));
+        var minecartsOnRail = world.CollectEntitiesOfType<EntityMinecart>(new Box((double)((float)x + detectionInset), (double)y, (double)((float)z + detectionInset), (double)((float)(x + 1) - detectionInset), (double)y + 0.25D, (double)((float)(z + 1) - detectionInset)));
         if (minecartsOnRail.Count > 0)
         {
             hasMinecart = true;

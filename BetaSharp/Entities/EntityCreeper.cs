@@ -6,8 +6,6 @@ namespace BetaSharp.Entities;
 
 public class EntityCreeper : EntityMonster
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityCreeper).TypeHandle);
-
     int timeSinceIgnited;
     int lastActiveTime;
 

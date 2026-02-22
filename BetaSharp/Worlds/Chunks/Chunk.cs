@@ -621,7 +621,7 @@ public class Chunk : java.lang.Object
 
     }
 
-    public virtual void collectEntitiesByClass(java.lang.Class entityClass, Box box, List<Entity> result)
+    public virtual void CollectEntitiesOfType<T>(Box box, List<T> result) where T : Entity
     {
         int var4 = MathHelper.Floor((box.minY - 2.0D) / 16.0D);
         int var5 = MathHelper.Floor((box.maxY + 2.0D) / 16.0D);
@@ -642,13 +642,12 @@ public class Chunk : java.lang.Object
             for (int var8 = 0; var8 < var7.Count; ++var8)
             {
                 Entity var9 = var7[var8];
-                if (entityClass.isAssignableFrom(var9.getClass()) && var9.boundingBox.intersects(box))
+                if (var9 is T t && var9.boundingBox.intersects(box))
                 {
-                    result.Add(var9);
+                    result.Add(t);
                 }
             }
         }
-
     }
 
     public virtual bool shouldSave(bool saveEntities)

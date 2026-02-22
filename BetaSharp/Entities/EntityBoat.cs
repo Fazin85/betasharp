@@ -4,14 +4,11 @@ using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.lang;
 
 namespace BetaSharp.Entities;
 
 public class EntityBoat : Entity
 {
-
-    public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityBoat).TypeHandle);
     public int boatCurrentDamage;
     public int boatTimeSinceHit;
     public int boatRockDirection;

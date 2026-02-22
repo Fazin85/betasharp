@@ -2,13 +2,11 @@ using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.lang;
 
 namespace BetaSharp.Entities;
 
 public class EntityWolf : EntityAnimal
 {
-    public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityWolf).TypeHandle);
     private bool looksWithInterest;
     private float headTiltAmount;
     private float prevHeadTiltAmount;
@@ -124,7 +122,7 @@ public class EntityWolf : EntityAnimal
         }
         else if (playerToAttack == null && !hasPath() && !isWolfTamed() && world.random.NextInt(100) == 0)
         {
-            var nearbySheep = world.collectEntitiesByClass(EntitySheep.Class, new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(16.0D, 4.0D, 16.0D));
+            var nearbySheep = world.CollectEntitiesOfType<EntitySheep>(new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(16.0D, 4.0D, 16.0D));
             if (nearbySheep.Count > 0)
             {
                 setTarget(nearbySheep[world.random.NextInt(nearbySheep.Count)]);
@@ -338,17 +336,15 @@ public class EntityWolf : EntityAnimal
 
                 if (entity is EntityLiving)
                 {
-                    var nearbyWolves = world.collectEntitiesByClass(typeof(EntityWolf), new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(16.0D, 4.0D, 16.0D));
+                    var nearbyWolves = world.CollectEntitiesOfType<EntityWolf>(new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(16.0D, 4.0D, 16.0D));
 
-                    foreach (var ent in nearbyWolves)
+                    foreach (var wolf in nearbyWolves)
                     {
-                        EntityWolf wolf = (EntityWolf)ent;
                         if (!wolf.isWolfTamed() && wolf.playerToAttack == null)
                         {
-                            wolf.playerToAttack = ent;
-                            if (ent is EntityPlayer)
+                            wolf.playerToAttack = entity;
+                            if (entity is EntityPlayer)
                             {
-
                                 wolf.setWolfAngry(true);
                             }
                         }

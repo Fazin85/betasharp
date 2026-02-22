@@ -6,8 +6,6 @@ namespace BetaSharp.Entities;
 
 public class EntityMonster : EntityCreature, Monster
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityMonster).TypeHandle);
-
     protected int attackStrength = 2;
 
     public EntityMonster(World world) : base(world)

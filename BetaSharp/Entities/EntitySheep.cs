@@ -3,13 +3,11 @@ using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.lang;
 
 namespace BetaSharp.Entities;
 
 public class EntitySheep : EntityAnimal
 {
-    public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntitySheep).TypeHandle);
     public static readonly float[][] fleeceColorTable = [[1.0F, 1.0F, 1.0F], [0.95F, 0.7F, 0.2F], [0.9F, 0.5F, 0.85F], [0.6F, 0.7F, 0.95F], [0.9F, 0.9F, 0.2F], [0.5F, 0.8F, 0.1F], [0.95F, 0.7F, 0.8F], [0.3F, 0.3F, 0.3F], [0.6F, 0.6F, 0.6F], [0.3F, 0.6F, 0.7F], [0.7F, 0.4F, 0.9F], [0.2F, 0.4F, 0.8F], [0.5F, 0.4F, 0.3F], [0.4F, 0.5F, 0.2F], [0.8F, 0.3F, 0.3F], [0.1F, 0.1F, 0.1F]];
 
     public EntitySheep(World world) : base(world)
@@ -18,15 +16,15 @@ public class EntitySheep : EntityAnimal
         setBoundingBoxSpacing(0.9F, 1.3F);
     }
 
+    public override void PostSpawn()
+    {
+        setFleeceColor(getRandomFleeceColor(world.random));
+    }
+
     protected override void initDataTracker()
     {
         base.initDataTracker();
         dataWatcher.addObject(16, new java.lang.Byte((byte)0));
-    }
-
-    public override bool damage(Entity entity, int amount)
-    {
-        return base.damage(entity, amount);
     }
 
     protected override void dropFewItems()
@@ -127,7 +125,7 @@ public class EntitySheep : EntityAnimal
 
     }
 
-    public static int getRandomFleeceColor(JavaRandom random)
+    public static int getRandomFleeceColor(JavaRandom random) // TODO: Use WeightedRandomSelector
     {
         int roll = random.NextInt(100);
         return roll < 5 ? 15 : (roll < 10 ? 7 : (roll < 15 ? 8 : (roll < 18 ? 12 : (random.NextInt(500) == 0 ? 6 : 0))));

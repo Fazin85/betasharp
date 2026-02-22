@@ -6,8 +6,6 @@ namespace BetaSharp.Entities;
 
 public class EntityZombie : EntityMonster
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityZombie).TypeHandle);
-
     public EntityZombie(World world) : base(world)
     {
         texture = "/mob/zombie.png";

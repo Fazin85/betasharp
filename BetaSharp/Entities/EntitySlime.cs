@@ -8,8 +8,6 @@ namespace BetaSharp.Entities;
 
 public class EntitySlime : EntityLiving, Monster
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntitySlime).TypeHandle);
-
     public float squishAmount;
     public float prevSquishAmount;
     private int slimeJumpDelay;

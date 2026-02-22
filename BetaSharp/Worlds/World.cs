@@ -2316,7 +2316,7 @@ public abstract class World : java.lang.Object, BlockView
             bool var1 = false;
             if (spawnHostileMobs && difficulty >= 1)
             {
-                var1 = NaturalSpawner.spawnMonstersAndWakePlayers(this, players);
+                var1 = NaturalSpawner.SpawnMonstersAndWakePlayers(this, players);
             }
 
             if (!var1)
@@ -2327,7 +2327,7 @@ public abstract class World : java.lang.Object, BlockView
             }
         }
         Profiler.Start("performSpawning");
-        NaturalSpawner.performSpawning(this, spawnHostileMobs, spawnPeacefulMobs);
+        NaturalSpawner.DoSpawning(this, spawnHostileMobs, spawnPeacefulMobs);
         Profiler.Stop("performSpawning");
         Profiler.Start("unload100OldestChunks");
         chunkSource.tick();
@@ -2670,13 +2670,13 @@ public abstract class World : java.lang.Object, BlockView
         return tempEntityList;
     }
 
-    public List<Entity> collectEntitiesByClass(Class clazz, Box box)
+    public List<T> CollectEntitiesOfType<T>(Box box) where T : Entity
     {
+        List<T> res = new();
         int var3 = MathHelper.Floor((box.minX - 2.0D) / 16.0D);
         int var4 = MathHelper.Floor((box.maxX + 2.0D) / 16.0D);
         int var5 = MathHelper.Floor((box.minZ - 2.0D) / 16.0D);
         int var6 = MathHelper.Floor((box.maxZ + 2.0D) / 16.0D);
-        List<Entity> var7 = new();
 
         for (int var8 = var3; var8 <= var4; ++var8)
         {
@@ -2684,12 +2684,12 @@ public abstract class World : java.lang.Object, BlockView
             {
                 if (hasChunk(var8, var9))
                 {
-                    GetChunk(var8, var9).collectEntitiesByClass(clazz, box, var7);
+                    GetChunk(var8, var9).CollectEntitiesOfType<T>(box, res);
                 }
             }
         }
 
-        return var7;
+        return res;
     }
 
     public List<Entity> getEntities()
@@ -2711,20 +2711,16 @@ public abstract class World : java.lang.Object, BlockView
 
     }
 
-    public int countEntities(Class entityClass)
+    public int CountEntitiesOfType(Type type)
     {
-        int var2 = 0;
+        int res = 0;
 
-        for (int var3 = 0; var3 < entities.Count; ++var3)
+        foreach (var entity in entities)
         {
-            Entity var4 = entities[var3];
-            if (entityClass.isAssignableFrom(var4.getClass()))
-            {
-                ++var2;
-            }
+            if (type.IsInstanceOfType(entity)) res++;
         }
 
-        return var2;
+        return res;
     }
 
     public void addEntities(List<Entity> entities)

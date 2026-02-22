@@ -9,7 +9,7 @@ public class BiomeGenTaiga : Biome
 
     public BiomeGenTaiga()
     {
-        CreatureList.Add(new SpawnListEntry(EntityWolf.Class, 2));
+        CreatureList.Add(new SpawnListEntry(w => new EntityWolf(w)), 2);
     }
 
     public override Feature GetRandomWorldGenForTrees(JavaRandom rand)

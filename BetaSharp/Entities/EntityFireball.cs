@@ -7,8 +7,6 @@ namespace BetaSharp.Entities;
 
 public class EntityFireball : Entity
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityFireball).TypeHandle);
-
     private int blockX = -1;
     private int blockY = -1;
     private int blockZ = -1;

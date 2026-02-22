@@ -20,7 +20,7 @@ public class ServerWorld : World
     private readonly MinecraftServer server;
     private readonly Dictionary<int, Entity> entitiesById = [];
 
-    public ServerWorld(MinecraftServer server, IWorldStorage storage, String name, int dimensionId, long seed) : base(storage, name, seed, Dimension.fromId(dimensionId))
+    public ServerWorld(MinecraftServer server, IWorldStorage storage, String name, int dimensionId, long seed) : base(storage, name, seed, Dimension.FromId(dimensionId))
     {
         this.server = server;
     }
@@ -48,7 +48,7 @@ public class ServerWorld : World
     protected override ChunkSource CreateChunkCache()
     {
         IChunkStorage var1 = storage.GetChunkStorage(dimension);
-        chunkCache = new ServerChunkCache(this, var1, dimension.createChunkGenerator());
+        chunkCache = new ServerChunkCache(this, var1, dimension.CreateChunkGenerator());
         return chunkCache;
     }
 

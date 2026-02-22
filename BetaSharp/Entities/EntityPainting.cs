@@ -3,14 +3,11 @@ using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.util;
 
 namespace BetaSharp.Entities;
 
 public class EntityPainting : Entity
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityPainting).TypeHandle);
-
     private int tickCounter;
     public int direction;
     public int xPosition;
@@ -31,24 +28,20 @@ public class EntityPainting : Entity
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.zPosition = zPosition;
-        ArrayList validPaintings = new ArrayList();
-        EnumArt[] availablePaintings = EnumArt.values;
-        int artCount = availablePaintings.Length;
-
-        for (int i = 0; i < artCount; ++i)
+        List<EnumArt> validPaintings = new();
+        foreach (var art in EnumArt.values)
         {
-            EnumArt art = availablePaintings[i];
             this.art = art;
             setFacing(direction);
             if (canHangOnWall())
             {
-                validPaintings.add(art);
+                validPaintings.Add(art);
             }
         }
 
-        if (validPaintings.size() > 0)
+        if (validPaintings.Count > 0)
         {
-            art = (EnumArt)validPaintings.get(random.NextInt(validPaintings.size()));
+            art = validPaintings[random.NextInt(validPaintings.Count)];
         }
 
         setFacing(direction);

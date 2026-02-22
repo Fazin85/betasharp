@@ -8,8 +8,6 @@ namespace BetaSharp.Entities;
 
 public class EntityEgg : Entity
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityEgg).TypeHandle);
-
     private int field_20056_b = -1;
     private int field_20055_c = -1;
     private int field_20054_d = -1;

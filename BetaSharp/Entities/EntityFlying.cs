@@ -6,8 +6,6 @@ namespace BetaSharp.Entities;
 
 public class EntityFlying : EntityLiving
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityFlying).TypeHandle);
-
     public EntityFlying(World world) : base(world)
     {
     }

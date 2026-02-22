@@ -4,14 +4,11 @@ using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.lang;
-using Math = System.Math;
 
 namespace BetaSharp.Entities;
 
-public abstract class Entity : java.lang.Object
+public abstract class Entity
 {
-    public static readonly Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(Entity).TypeHandle);
     private static int nextEntityID;
     public int id = nextEntityID++;
     public double renderDistanceWeight = 1.0D;
@@ -95,12 +92,12 @@ public abstract class Entity : java.lang.Object
         return dataWatcher;
     }
 
-    public override bool equals(object other)
+    public override bool Equals(object other)
     {
-        return other is Entity ? ((Entity)other).id == id : false;
+        return other is Entity e && e.id == id;
     }
 
-    public override int hashCode()
+    public override int GetHashCode()
     {
         return id;
     }

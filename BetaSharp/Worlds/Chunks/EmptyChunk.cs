@@ -131,7 +131,7 @@ public class EmptyChunk : Chunk
     {
     }
 
-    public override void collectEntitiesByClass(Class var1, Box var2, List<Entity> var3)
+    public override void CollectEntitiesOfType<T>(Box box, List<T> result)
     {
     }
 

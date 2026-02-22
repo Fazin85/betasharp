@@ -7,8 +7,6 @@ namespace BetaSharp.Entities;
 
 public class EntityLightningBolt : EntityWeatherEffect
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityLightningBolt).TypeHandle);
-
     private int flashTimer;
     public long renderSeed;
     private int flashCount;

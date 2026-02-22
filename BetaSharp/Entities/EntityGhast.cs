@@ -6,8 +6,6 @@ namespace BetaSharp.Entities;
 
 public class EntityGhast : EntityFlying, Monster
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityGhast).TypeHandle);
-
     public int courseChangeCooldown;
     public double waypointX;
     public double waypointY;

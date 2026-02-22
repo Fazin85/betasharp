@@ -6,8 +6,6 @@ namespace BetaSharp.Entities;
 
 public class EntityPig : EntityAnimal
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityPig).TypeHandle);
-
     public EntityPig(World world) : base(world)
     {
         texture = "/mob/pig.png";
@@ -100,6 +98,5 @@ public class EntityPig : EntityAnimal
         {
             ((EntityPlayer)passenger).incrementStat(Achievements.KillPig);
         }
-
     }
 }

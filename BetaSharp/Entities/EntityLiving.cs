@@ -5,13 +5,11 @@ using BetaSharp.NBT;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.lang;
 
 namespace BetaSharp.Entities;
 
 public class EntityLiving : Entity
 {
-    public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityLiving).TypeHandle);
     public int maxHealth = 20;
     public float limbSwingPhase;
     public float limbSwingScale;
@@ -73,6 +71,11 @@ public class EntityLiving : Entity
         limbSwingPhase = (float)java.lang.Math.random() * 12398.0F;
         yaw = (float)(java.lang.Math.random() * (double)((float)System.Math.PI) * 2.0D);
         stepHeight = 0.5F;
+    }
+
+    public virtual void PostSpawn()
+    {
+
     }
 
     protected override void initDataTracker()

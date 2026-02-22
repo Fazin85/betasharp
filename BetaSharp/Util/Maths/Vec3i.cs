@@ -27,4 +27,6 @@ public record struct Vec3i(int X, int Y, int Z) : IComparable<Vec3i>
         int dz = Z - other.Z;
         return System.Math.Sqrt(dx * dx + dy * dy + dz * dz);
     }
+
+    public static explicit operator Vec3D(Vec3i v) => new Vec3D(v.X, v.Y, v.Z);
 }

@@ -29,27 +29,27 @@ public class Biome
     public byte TopBlockId = (byte)Block.GrassBlock.id;
     public byte SoilBlockId = (byte)Block.Dirt.id;
     public int FoliageColor { get; private set; } = 0x4EE031;
-    protected List<SpawnListEntry> MonsterList { get; } = [];
-    protected List<SpawnListEntry> CreatureList { get; } = [];
-    protected List<SpawnListEntry> WaterCreatureList { get; } = [];
+    protected WeightedRandomSelector<SpawnListEntry> MonsterList { get; } = new();
+    protected WeightedRandomSelector<SpawnListEntry> CreatureList { get; } = new();
+    protected WeightedRandomSelector<SpawnListEntry> WaterCreatureList { get; } = new();
 
     public bool HasSnow { get; private set; }
     public bool HasRain { get; private set; } = true;
 
     protected Biome()
     {
-        MonsterList.Add(new SpawnListEntry(EntitySpider.Class, 10));
-        MonsterList.Add(new SpawnListEntry(EntityZombie.Class, 10));
-        MonsterList.Add(new SpawnListEntry(EntitySkeleton.Class, 10));
-        MonsterList.Add(new SpawnListEntry(EntityCreeper.Class, 10));
-        MonsterList.Add(new SpawnListEntry(EntitySlime.Class, 10));
+        MonsterList.Add(new SpawnListEntry(w => new EntitySpider(w)), 10);
+        MonsterList.Add(new SpawnListEntry(w => new EntityZombie(w)), 10);
+        MonsterList.Add(new SpawnListEntry(w => new EntitySkeleton(w)), 10);
+        MonsterList.Add(new SpawnListEntry(w => new EntityCreeper(w)), 10);
+        MonsterList.Add(new SpawnListEntry(w => new EntitySlime(w)), 10);
 
-        CreatureList.Add(new SpawnListEntry(EntitySheep.Class, 12));
-        CreatureList.Add(new SpawnListEntry(EntityPig.Class, 10));
-        CreatureList.Add(new SpawnListEntry(EntityChicken.Class, 10));
-        CreatureList.Add(new SpawnListEntry(EntityCow.Class, 8));
+        CreatureList.Add(new SpawnListEntry(w => new EntitySheep(w)), 12);
+        CreatureList.Add(new SpawnListEntry(w => new EntityPig(w)), 10);
+        CreatureList.Add(new SpawnListEntry(w => new EntityChicken(w)), 10);
+        CreatureList.Add(new SpawnListEntry(w => new EntityCow(w)), 8);
 
-        WaterCreatureList.Add(new SpawnListEntry(EntitySquid.Class, 10));
+        WaterCreatureList.Add(new SpawnListEntry(w => new EntitySquid(w)), 10);
     }
 
     protected Biome DisableRain() { HasRain = false; return this; }
@@ -117,12 +117,12 @@ public class Biome
         return Color.getHSBColor(224.0F / 360.0F - var1 * 0.05F, 0.5F + var1 * 0.1F, 1.0F).getRGB();
     }
 
-    public List<SpawnListEntry>? GetSpawnableList(EnumCreatureType type)
+    public WeightedRandomSelector<SpawnListEntry> GetSpawnableList(CreatureKind kind)
     {
-        if (type == EnumCreatureType.monster) return MonsterList;
-        if (type == EnumCreatureType.creature) return CreatureList;
-        if (type == EnumCreatureType.waterCreature) return WaterCreatureList;
-        return null;
+        if (kind == CreatureKind.Monster) return MonsterList;
+        if (kind == CreatureKind.Creature) return CreatureList;
+        if (kind == CreatureKind.WaterCreature) return WaterCreatureList;
+        throw new ArgumentException("Invalid creature kind: " + kind);
     }
 
     public bool GetEnableSnow()

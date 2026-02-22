@@ -1,13 +1,11 @@
 using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Worlds;
-using java.lang;
 
 namespace BetaSharp.Entities;
 
 public class EntityChicken : EntityAnimal
 {
-    public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityChicken).TypeHandle);
     public bool field_753_a = false;
     public float field_752_b;
     public float destPos;

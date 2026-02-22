@@ -8,8 +8,6 @@ namespace BetaSharp.Entities;
 
 public class EntitySnowball : Entity
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntitySnowball).TypeHandle);
-
     private int xTileSnowball = -1;
     private int yTileSnowball = -1;
     private int zTileSnowball = -1;

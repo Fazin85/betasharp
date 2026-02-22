@@ -346,7 +346,7 @@ public class EntityTrackerEntry : java.lang.Object
                 }
                 else
                 {
-                    throw new IllegalArgumentException("Don't know how to add " + currentTrackedEntity.getClass() + "!");
+                    throw new IllegalArgumentException("Don't know how to add " + currentTrackedEntity.GetType() + "!");
                 }
             }
         }

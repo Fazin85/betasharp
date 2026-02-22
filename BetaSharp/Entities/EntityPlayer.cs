@@ -9,13 +9,11 @@ using BetaSharp.Stats;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Chunks;
-using java.lang;
 
 namespace BetaSharp.Entities;
 
 public abstract class EntityPlayer : EntityLiving
 {
-    public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityPlayer).TypeHandle);
     public InventoryPlayer inventory;
     public ScreenHandler playerScreenHandler;
     public ScreenHandler currentScreenHandler;
@@ -479,15 +477,14 @@ public abstract class EntityPlayer : EntityLiving
             }
             else
             {
-                java.lang.Object var3 = damageSource;
                 if (damageSource is EntityArrow && ((EntityArrow)damageSource).owner != null)
                 {
-                    var3 = ((EntityArrow)damageSource).owner;
+                    damageSource = ((EntityArrow)damageSource).owner;
                 }
 
-                if (var3 is EntityLiving)
+                if (damageSource is EntityLiving)
                 {
-                    commandWolvesToAttack((EntityLiving)var3, false);
+                    commandWolvesToAttack((EntityLiving)damageSource, false);
                 }
 
                 increaseStat(Stats.Stats.damageTakenStat, amount);
@@ -511,12 +508,10 @@ public abstract class EntityPlayer : EntityLiving
 
             if (entity is not EntityPlayer || isPvpEnabled())
             {
-                var var7 = world.collectEntitiesByClass(EntityWolf.Class, new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(16.0D, 4.0D, 16.0D));
+                var var7 = world.CollectEntitiesOfType<EntityWolf>(new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(16.0D, 4.0D, 16.0D));
 
-                foreach (Entity var5 in var7)
+                foreach (EntityWolf var6 in var7)
                 {
-                    EntityWolf var6 = (EntityWolf)var5;
-
                     if (!var6.isWolfTamed()) continue;
                     if (var6.getTarget() != null) continue;
                     if (!name.Equals(var6.getWolfOwner())) continue;
