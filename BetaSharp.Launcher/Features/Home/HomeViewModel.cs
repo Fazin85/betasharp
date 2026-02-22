@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using BetaSharp.Launcher.Features.Messages;
+using BetaSharp.Launcher.Features.Mojang;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -13,7 +14,7 @@ namespace BetaSharp.Launcher.Features.Home;
 internal sealed partial class HomeViewModel(
     AuthenticationService authenticationService,
     AccountService accountService,
-    MinecraftService minecraftService,
+    MojangClient minecraftService,
     DownloadingService downloadingService) : ObservableObject
 {
     [ObservableProperty]
@@ -45,9 +46,9 @@ internal sealed partial class HomeViewModel(
 
         Name = account.Name;
 
-        ArgumentException.ThrowIfNullOrWhiteSpace(account.Skin);
+        // ArgumentException.ThrowIfNullOrWhiteSpace(account.Skin);
 
-        Face = await minecraftService.GetFaceAsync(account.Skin);
+        // Face = await minecraftService.GetFaceAsync(account.Skin);
 
         _token = account.Token;
         _expiration = account.Expiration;

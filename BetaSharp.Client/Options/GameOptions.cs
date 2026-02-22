@@ -81,6 +81,7 @@ public class GameOptions
     public int AnisotropicLevel;
     public int MSAALevel;
     public int INITIAL_MSAA;
+    private bool initialDebugMode;
     public bool UseMipmaps = true;
     public bool DebugMode;
     public bool EnvironmentAnimation = true;
@@ -104,6 +105,7 @@ public class GameOptions
         _optionsPath = System.IO.Path.Combine(mcDataDir, "options.txt");
         LoadOptions();
         INITIAL_MSAA = MSAALevel;
+        initialDebugMode = DebugMode;
     }
 
     public GameOptions() { }
@@ -252,6 +254,10 @@ public class GameOptions
         {
             return FormatFloatValue(option, label, translations);
         }
+        else if(option == EnumOptions.DEBUG_MODE)
+        {
+            return FormatDebugMode(label, translations);
+        }
         else if (option.getEnumBoolean())
         {
             bool isEnabled = GetOptionOrdinalValue(option);
@@ -313,6 +319,18 @@ public class GameOptions
         {
             result += " (Reload required)";
         }
+        return result;
+    }
+
+    private string FormatDebugMode(string label, TranslationStorage translations)
+    {
+        bool isEnabled = GetOptionOrdinalValue(EnumOptions.DEBUG_MODE);
+        string result = label + (isEnabled ? translations.TranslateKey("options.on") : translations.TranslateKey("options.off"));
+        if (DebugMode != initialDebugMode)
+        {
+            result += " [!]";
+        }
+
         return result;
     }
 

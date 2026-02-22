@@ -41,15 +41,15 @@ public class RegionChunkStorage : IChunkStorage
             else
             {
                 Chunk var6 = LoadChunkFromNbt(world, var5.GetCompoundTag("Level"));
-                if (!var6.chunkPosEquals(chunkX, chunkZ))
+                if (!var6.ChunkPosEquals(chunkX, chunkZ))
                 {
-                    _logger.LogInformation($"Chunk file at {chunkX},{chunkZ} is in the wrong location; relocating. (Expected {chunkX}, {chunkZ}, got {var6.x}, {var6.z})");
+                    _logger.LogInformation($"Chunk file at {chunkX},{chunkZ} is in the wrong location; relocating. (Expected {chunkX}, {chunkZ}, got {var6.X}, {var6.Z})");
                     var5.SetInteger("xPos", chunkX);
                     var5.SetInteger("zPos", chunkZ);
                     var6 = LoadChunkFromNbt(world, var5.GetCompoundTag("Level"));
                 }
 
-                var6.fill();
+                var6.Fill();
                 return var6;
             }
         }
@@ -63,14 +63,14 @@ public class RegionChunkStorage : IChunkStorage
     {
         try
         {
-            using Stream stream = RegionIo.GetChunkOutputStream(dir, chunk.x, chunk.z);
+            using Stream stream = RegionIo.GetChunkOutputStream(dir, chunk.X, chunk.Z);
             NBTTagCompound tag = new();
             NBTTagCompound var5 = new();
             tag.SetTag("Level", var5);
             storeChunkInCompound(chunk, world, var5);
             NbtIo.Write(tag, stream);
             WorldProperties var6 = world.getProperties();
-            var6.SizeOnDisk = var6.SizeOnDisk + (long)RegionIo.getSizeDelta(dir, chunk.x, chunk.z);
+            var6.SizeOnDisk = var6.SizeOnDisk + (long)RegionIo.getSizeDelta(dir, chunk.X, chunk.Z);
         }
         catch (Exception var7)
         {
@@ -80,24 +80,24 @@ public class RegionChunkStorage : IChunkStorage
 
     public static void storeChunkInCompound(Chunk chunk, World world, NBTTagCompound nbt)
     {
-        nbt.SetInteger("xPos", chunk.x);
-        nbt.SetInteger("zPos", chunk.z);
+        nbt.SetInteger("xPos", chunk.X);
+        nbt.SetInteger("zPos", chunk.Z);
         nbt.SetLong("LastUpdate", world.getTime());
-        nbt.SetByteArray("Blocks", chunk.blocks);
-        nbt.SetByteArray("Data", chunk.meta.bytes);
-        nbt.SetByteArray("SkyLight", chunk.skyLight.bytes);
-        nbt.SetByteArray("BlockLight", chunk.blockLight.bytes);
-        nbt.SetByteArray("HeightMap", chunk.heightmap);
-        nbt.SetBoolean("TerrainPopulated", chunk.terrainPopulated);
-        chunk.lastSaveHadEntities = false;
+        nbt.SetByteArray("Blocks", chunk.Blocks);
+        nbt.SetByteArray("Data", chunk.Meta.Bytes);
+        nbt.SetByteArray("SkyLight", chunk.SkyLight.Bytes);
+        nbt.SetByteArray("BlockLight", chunk.BlockLight.Bytes);
+        nbt.SetByteArray("HeightMap", chunk.HeightMap);
+        nbt.SetBoolean("TerrainPopulated", chunk.TerrainPopulated);
+        chunk.LastSaveHadEntities = false;
         NBTTagList var3 = new();
 
         NBTTagCompound var7;
-        for (int var4 = 0; var4 < chunk.entities.Length; ++var4)
+        for (int var4 = 0; var4 < chunk.Entities.Length; ++var4)
         {
-            foreach (Entity var6 in chunk.entities[var4])
+            foreach (Entity var6 in chunk.Entities[var4])
             {
-                chunk.lastSaveHadEntities = true;
+                chunk.LastSaveHadEntities = true;
                 var7 = new NBTTagCompound();
                 if (var6.saveSelfNbt(var7))
                 {
@@ -109,7 +109,7 @@ public class RegionChunkStorage : IChunkStorage
         nbt.SetTag("Entities", var3);
         NBTTagList var8 = new();
 
-        foreach (BlockEntity var9 in chunk.blockEntities.Values)
+        foreach (BlockEntity var9 in chunk.BlockEntities.Values)
         {
             var7 = new NBTTagCompound();
             var9.writeNbt(var7);
@@ -124,28 +124,28 @@ public class RegionChunkStorage : IChunkStorage
         int var2 = nbt.GetInteger("xPos");
         int var3 = nbt.GetInteger("zPos");
         Chunk var4 = new(world, var2, var3);
-        var4.blocks = nbt.GetByteArray("Blocks");
-        var4.meta = new ChunkNibbleArray(nbt.GetByteArray("Data"));
-        var4.skyLight = new ChunkNibbleArray(nbt.GetByteArray("SkyLight"));
-        var4.blockLight = new ChunkNibbleArray(nbt.GetByteArray("BlockLight"));
-        var4.heightmap = nbt.GetByteArray("HeightMap");
-        var4.terrainPopulated = nbt.GetBoolean("TerrainPopulated");
-        if (!var4.meta.isArrayInitialized())
+        var4.Blocks = nbt.GetByteArray("Blocks");
+        var4.Meta = new ChunkNibbleArray(nbt.GetByteArray("Data"));
+        var4.SkyLight = new ChunkNibbleArray(nbt.GetByteArray("SkyLight"));
+        var4.BlockLight = new ChunkNibbleArray(nbt.GetByteArray("BlockLight"));
+        var4.HeightMap = nbt.GetByteArray("HeightMap");
+        var4.TerrainPopulated = nbt.GetBoolean("TerrainPopulated");
+        if (!var4.Meta.IsInitialized)
         {
-            var4.meta = new ChunkNibbleArray(var4.blocks.Length);
+            var4.Meta = new ChunkNibbleArray(var4.Blocks.Length);
         }
 
-        if (var4.heightmap == null || !var4.skyLight.isArrayInitialized())
+        if (var4.HeightMap == null || !var4.SkyLight.IsInitialized)
         {
-            var4.heightmap = new byte[256];
-            var4.skyLight = new ChunkNibbleArray(var4.blocks.Length);
-            var4.populateHeightMap();
+            var4.HeightMap = new byte[256];
+            var4.SkyLight = new ChunkNibbleArray(var4.Blocks.Length);
+            var4.PopulateHeightMap();
         }
 
-        if (!var4.blockLight.isArrayInitialized())
+        if (!var4.BlockLight.IsInitialized)
         {
-            var4.blockLight = new ChunkNibbleArray(var4.blocks.Length);
-            var4.populateLight();
+            var4.BlockLight = new ChunkNibbleArray(var4.Blocks.Length);
+            var4.PopulateLight();
         }
 
         NBTTagList var5 = nbt.GetTagList("Entities");
@@ -155,10 +155,10 @@ public class RegionChunkStorage : IChunkStorage
             {
                 NBTTagCompound var7 = (NBTTagCompound)var5.TagAt(var6);
                 Entity var8 = EntityRegistry.getEntityFromNbt(var7, world);
-                var4.lastSaveHadEntities = true;
+                var4.LastSaveHadEntities = true;
                 if (var8 != null)
                 {
-                    var4.addEntity(var8);
+                    var4.AddEntity(var8);
                 }
             }
         }
@@ -172,7 +172,7 @@ public class RegionChunkStorage : IChunkStorage
                 BlockEntity var9 = BlockEntity.createFromNbt(var12);
                 if (var9 != null)
                 {
-                    var4.addBlockEntity(var9);
+                    var4.AddBlockEntity(var9);
                 }
             }
         }

@@ -159,12 +159,12 @@ public class TextureManager
             );
         GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureWrapS,
             (int)(_clamp ?
-                    GLEnum.Clamp :
+                    GLEnum.ClampToEdge :
                     GLEnum.Repeat)
             );
         GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureWrapT,
             (int)(_clamp ?
-                    GLEnum.Clamp :
+                    GLEnum.ClampToEdge :
                     GLEnum.Repeat)
             );
 

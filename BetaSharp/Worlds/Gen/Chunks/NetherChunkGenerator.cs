@@ -435,22 +435,22 @@ public class NetherChunkGenerator : ChunkSource
         BlockSand.fallInstantly = false;
     }
 
-    public bool save(bool bl, LoadingDisplay display)
+    public bool Save(bool bl, LoadingDisplay display)
     {
         return true;
     }
 
-    public bool tick()
+    public bool Tick()
     {
         return false;
     }
 
-    public bool canSave()
+    public bool CanSave()
     {
         return true;
     }
 
-    public string getDebugInfo()
+    public string GetDebugInfo()
     {
         return "HellRandomLevelSource";
     }

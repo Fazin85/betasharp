@@ -1,39 +1,41 @@
 using BetaSharp.Blocks;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Worlds.Chunks;
 
 public class BlockSource
 {
-    private static byte[] BLOCKS = new byte[256];
+    private static readonly ILogger<BlockSource> _logger = Log.Instance.For<BlockSource>();
 
-    public static void fill(byte[] blocks)
-    {
-        for (int var1 = 0; var1 < blocks.Length; ++var1)
-        {
-            blocks[var1] = BLOCKS[blocks[var1] & 255];
-        }
-
-    }
+    private static byte[] SanitizationTable = new byte[256];
 
     static BlockSource()
     {
         try
         {
-            for (int var0 = 0; var0 < 256; ++var0)
+            for (int i = 0; i < 256; i++)
             {
-                byte var1 = (byte)var0;
-                if (var1 != 0 && Block.Blocks[var1 & 255] == null)
-                {
-                    var1 = 0;
-                }
+                byte blockId = (byte)i;
 
-                BLOCKS[var0] = var1;
+                if (blockId != 0 && Block.Blocks[blockId] == null)
+                    blockId = 0;
+
+                SanitizationTable[i] = blockId;
             }
         }
-        catch (java.lang.Exception ex)
+        catch (Exception ex)
         {
-            ex.printStackTrace();
+            _logger.LogError(ex, "Error initializing block sanitization table");
         }
+    }
 
+    public static void Fill(byte[] blocks)
+    {
+        Span<byte> blocksSpan = blocks;
+
+        for (int i = 0; i < blocksSpan.Length; i++)
+        {
+            blocksSpan[i] = SanitizationTable[blocksSpan[i]];
+        }
     }
 }

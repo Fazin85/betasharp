@@ -194,7 +194,7 @@ public class SkyChunkGenerator : ChunkSource
         func_28071_a(var1, var2, var3, field_28075_v, var5);
         func_28072_a(var1, var2, var3, field_28075_v);
         field_28076_u.carve(this, world, var1, var2, var3);
-        var4.populateHeightMap();
+        var4.PopulateHeightMap();
         return var4;
     }
 
@@ -585,22 +585,22 @@ public class SkyChunkGenerator : ChunkSource
         BlockSand.fallInstantly = false;
     }
 
-    public bool save(bool var1, LoadingDisplay var2)
+    public bool Save(bool var1, LoadingDisplay var2)
     {
         return true;
     }
 
-    public bool tick()
+    public bool Tick()
     {
         return false;
     }
 
-    public bool canSave()
+    public bool CanSave()
     {
         return true;
     }
 
-    public string getDebugInfo()
+    public string GetDebugInfo()
     {
         return "RandomLevelSource";
     }

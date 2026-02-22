@@ -326,7 +326,7 @@ public abstract class World : java.lang.Object, BlockView
 
     public void saveWithLoadingDisplay(bool saveEntities, LoadingDisplay loadingDisplay)
     {
-        if (chunkSource.canSave())
+        if (chunkSource.CanSave())
         {
             if (loadingDisplay != null)
             {
@@ -342,7 +342,7 @@ public abstract class World : java.lang.Object, BlockView
             }
 
             Profiler.Start("saveChunks");
-            chunkSource.save(saveEntities, loadingDisplay);
+            chunkSource.Save(saveEntities, loadingDisplay);
             Profiler.Stop("saveChunks");
         }
     }
@@ -367,7 +367,7 @@ public abstract class World : java.lang.Object, BlockView
 
     public bool attemptSaving(int i)
     {
-        if (!chunkSource.canSave())
+        if (!chunkSource.CanSave())
         {
             return true;
         }
@@ -378,13 +378,13 @@ public abstract class World : java.lang.Object, BlockView
                 save();
             }
 
-            return chunkSource.save(false, (LoadingDisplay)null);
+            return chunkSource.Save(false, (LoadingDisplay)null);
         }
     }
 
     public int getBlockId(int x, int y, int z)
     {
-        return x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000 ? (y < 0 ? 0 : (y >= 128 ? 0 : GetChunk(x >> 4, z >> 4).getBlockId(x & 15, y, z & 15))) : 0;
+        return x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000 ? (y < 0 ? 0 : (y >= 128 ? 0 : GetChunk(x >> 4, z >> 4).GetBlockId(x & 15, y, z & 15))) : 0;
     }
 
     public bool isAir(int x, int y, int z)
@@ -462,7 +462,7 @@ public abstract class World : java.lang.Object, BlockView
             else
             {
                 Chunk var6 = GetChunk(x >> 4, z >> 4);
-                return var6.setBlock(x & 15, y, z & 15, blockId, meta);
+                return var6.SetBlock(x & 15, y, z & 15, blockId, meta);
             }
         }
         else
@@ -486,7 +486,7 @@ public abstract class World : java.lang.Object, BlockView
             else
             {
                 Chunk var5 = GetChunk(x >> 4, z >> 4);
-                return var5.setBlock(x & 15, y, z & 15, blockId);
+                return var5.SetBlock(x & 15, y, z & 15, blockId);
             }
         }
         else
@@ -518,7 +518,7 @@ public abstract class World : java.lang.Object, BlockView
                 Chunk var4 = GetChunk(x >> 4, z >> 4);
                 x &= 15;
                 z &= 15;
-                return var4.getBlockMeta(x, y, z);
+                return var4.GetBlockMeta(x, y, z);
             }
         }
         else
@@ -561,7 +561,7 @@ public abstract class World : java.lang.Object, BlockView
                 Chunk var5 = GetChunk(x >> 4, z >> 4);
                 x &= 15;
                 z &= 15;
-                var5.setBlockMeta(x, y, z, meta);
+                var5.SetBlockMeta(x, y, z, meta);
                 return true;
             }
         }
@@ -665,7 +665,7 @@ public abstract class World : java.lang.Object, BlockView
 
     public bool hasSkyLight(int x, int y, int z)
     {
-        return GetChunk(x >> 4, z >> 4).isAboveMaxHeight(x & 15, y, z & 15);
+        return GetChunk(x >> 4, z >> 4).IsAboveMaxHeight(x & 15, y, z & 15);
     }
 
     public int getBrightness(int x, int y, int z)
@@ -681,7 +681,7 @@ public abstract class World : java.lang.Object, BlockView
                 y = 127;
             }
 
-            return GetChunk(x >> 4, z >> 4).getLight(x & 15, y, z & 15, 0);
+            return GetChunk(x >> 4, z >> 4).GetLight(x & 15, y, z & 15, 0);
         }
     }
 
@@ -742,7 +742,7 @@ public abstract class World : java.lang.Object, BlockView
                 Chunk var11 = GetChunk(x >> 4, z >> 4);
                 x &= 15;
                 z &= 15;
-                return var11.getLight(x, y, z, ambientDarkness);
+                return var11.GetLight(x, y, z, ambientDarkness);
             }
         }
         else
@@ -772,7 +772,7 @@ public abstract class World : java.lang.Object, BlockView
                 Chunk var4 = GetChunk(x >> 4, z >> 4);
                 x &= 15;
                 z &= 15;
-                return var4.isAboveMaxHeight(x, y, z);
+                return var4.IsAboveMaxHeight(x, y, z);
             }
         }
         else
@@ -792,7 +792,7 @@ public abstract class World : java.lang.Object, BlockView
             else
             {
                 Chunk var3 = GetChunk(x >> 4, z >> 4);
-                return var3.getHeight(x & 15, z & 15);
+                return var3.GetHeight(x & 15, z & 15);
             }
         }
         else
@@ -855,7 +855,7 @@ public abstract class World : java.lang.Object, BlockView
             else
             {
                 Chunk var7 = GetChunk(var5, var6);
-                return var7.getLight(type, x & 15, y, z & 15);
+                return var7.GetLight(type, x & 15, y, z & 15);
             }
         }
         else
@@ -875,7 +875,7 @@ public abstract class World : java.lang.Object, BlockView
                     if (hasChunk(x >> 4, z >> 4))
                     {
                         Chunk var6 = GetChunk(x >> 4, z >> 4);
-                        var6.setLight(lightType, x & 15, y, z & 15, value);
+                        var6.SetLight(lightType, x & 15, y, z & 15, value);
 
                         for (int var7 = 0; var7 < eventListeners.Count; ++var7)
                         {
@@ -1184,7 +1184,7 @@ public abstract class World : java.lang.Object, BlockView
                 updateSleepingPlayers();
             }
 
-            GetChunk(var2, var3).addEntity(entity);
+            GetChunk(var2, var3).AddEntity(entity);
             entities.Add(entity);
             NotifyEntityAdded(entity);
             return true;
@@ -1243,7 +1243,7 @@ public abstract class World : java.lang.Object, BlockView
         int var3 = entity.chunkZ;
         if (entity.isPersistent && hasChunk(var2, var3))
         {
-            GetChunk(var2, var3).removeEntity(entity);
+            GetChunk(var2, var3).RemoveEntity(entity);
         }
 
         entities.Remove(entity);
@@ -1457,7 +1457,7 @@ public abstract class World : java.lang.Object, BlockView
 
         for (z &= 15; var4 > 0; --var4)
         {
-            int var5 = var3.getBlockId(x, var4, z);
+            int var5 = var3.GetBlockId(x, var4, z);
             Material var6 = var5 == 0 ? Material.Air : Block.Blocks[var5].material;
             if (var6.BlocksMovement || var6.IsFluid)
             {
@@ -1493,7 +1493,7 @@ public abstract class World : java.lang.Object, BlockView
 
         for (int var7 = z & 15; var4 > 0; var4--)
         {
-            int var5 = var3.getBlockId(x, var4, var7);
+            int var5 = var3.GetBlockId(x, var4, var7);
             if (var5 != 0 && Block.Blocks[var5].material.BlocksMovement)
             {
                 return var4 + 1;
@@ -1571,7 +1571,7 @@ public abstract class World : java.lang.Object, BlockView
             var4 = var2.chunkZ;
             if (var2.isPersistent && hasChunk(var3, var4))
             {
-                GetChunk(var3, var4).removeEntity(var2);
+                GetChunk(var3, var4).RemoveEntity(var2);
             }
         }
 
@@ -1611,7 +1611,7 @@ public abstract class World : java.lang.Object, BlockView
                 var4 = var2.chunkZ;
                 if (var2.isPersistent && hasChunk(var3, var4))
                 {
-                    GetChunk(var3, var4).removeEntity(var2);
+                    GetChunk(var3, var4).RemoveEntity(var2);
                 }
 
                 entities.RemoveAt(var1--);
@@ -1637,7 +1637,7 @@ public abstract class World : java.lang.Object, BlockView
                 Chunk var7 = GetChunk(var5.x >> 4, var5.z >> 4);
                 if (var7 != null)
                 {
-                    var7.removeBlockEntityAt(var5.x & 15, var5.y, var5.z & 15);
+                    var7.RemoveBlockEntityAt(var5.x & 15, var5.y, var5.z & 15);
                 }
             }
         }
@@ -1656,7 +1656,7 @@ public abstract class World : java.lang.Object, BlockView
                     Chunk var9 = GetChunk(var8.x >> 4, var8.z >> 4);
                     if (var9 != null)
                     {
-                        var9.setBlockEntity(var8.x & 15, var8.y, var8.z & 15, var8);
+                        var9.SetBlockEntity(var8.x & 15, var8.y, var8.z & 15, var8);
                     }
                     blockUpdateEvent(var8.x, var8.y, var8.z);
                 }
@@ -1741,13 +1741,13 @@ public abstract class World : java.lang.Object, BlockView
             {
                 if (entity.isPersistent && hasChunk(entity.chunkX, entity.chunkZ))
                 {
-                    GetChunk(entity.chunkX, entity.chunkZ).removeEntity(entity, entity.chunkSlice);
+                    GetChunk(entity.chunkX, entity.chunkZ).RemoveEntity(entity, entity.chunkSlice);
                 }
 
                 if (hasChunk(var6, var8))
                 {
                     entity.isPersistent = true;
-                    GetChunk(var6, var8).addEntity(entity);
+                    GetChunk(var6, var8).AddEntity(entity);
                 }
                 else
                 {
@@ -2108,13 +2108,13 @@ public abstract class World : java.lang.Object, BlockView
 
     public string getDebugInfo()
     {
-        return chunkSource.getDebugInfo();
+        return chunkSource.GetDebugInfo();
     }
 
     public BlockEntity getBlockEntity(int x, int y, int z)
     {
         Chunk var4 = GetChunk(x >> 4, z >> 4);
-        return var4 != null ? var4.getBlockEntity(x & 15, y, z & 15) : null;
+        return var4 != null ? var4.GetBlockEntity(x & 15, y, z & 15) : null;
     }
 
     public void setBlockEntity(int x, int y, int z, BlockEntity blockEntity)
@@ -2134,7 +2134,7 @@ public abstract class World : java.lang.Object, BlockView
                 Chunk var5 = GetChunk(x >> 4, z >> 4);
                 if (var5 != null)
                 {
-                    var5.setBlockEntity(x & 15, y, z & 15, blockEntity);
+                    var5.SetBlockEntity(x & 15, y, z & 15, blockEntity);
                 }
             }
         }
@@ -2158,7 +2158,7 @@ public abstract class World : java.lang.Object, BlockView
             Chunk var5 = GetChunk(x >> 4, z >> 4);
             if (var5 != null)
             {
-                var5.removeBlockEntityAt(x & 15, y, z & 15);
+                var5.RemoveBlockEntityAt(x & 15, y, z & 15);
             }
         }
 
@@ -2245,7 +2245,7 @@ public abstract class World : java.lang.Object, BlockView
                 int var10 = (maxZ + minZ) / 2;
                 if (isPosLoaded(var9, 64, var10))
                 {
-                    if (GetChunkFromPos(var9, var10).isEmpty())
+                    if (GetChunkFromPos(var9, var10).IsEmpty())
                     {
                         return;
                     }
@@ -2330,7 +2330,7 @@ public abstract class World : java.lang.Object, BlockView
         NaturalSpawner.DoSpawning(this, spawnHostileMobs, spawnPeacefulMobs);
         Profiler.Stop("performSpawning");
         Profiler.Start("unload100OldestChunks");
-        chunkSource.tick();
+        chunkSource.Tick();
         Profiler.Stop("unload100OldestChunks");
 
         Profiler.Start("updateSkylightSubtracted");
@@ -2521,7 +2521,7 @@ public abstract class World : java.lang.Object, BlockView
                 var7 = var6 & 15;
                 var8 = var6 >> 8 & 15;
                 var9 = var6 >> 16 & 127;
-                var10 = var14.getBlockId(var7, var9, var8);
+                var10 = var14.GetBlockId(var7, var9, var8);
                 var7 += var3;
                 var8 += var4;
                 if (var10 == 0 && getBrightness(var7, var9, var8) <= random.NextInt(8) && getBrightness(LightType.Sky, var7, var9, var8) <= 0)
@@ -2557,16 +2557,16 @@ public abstract class World : java.lang.Object, BlockView
                 var7 = var6 & 15;
                 var8 = var6 >> 8 & 15;
                 var9 = getTopSolidBlockY(var7 + var3, var8 + var4);
-                if (getBiomeSource().GetBiome(var7 + var3, var8 + var4).GetEnableSnow() && var9 >= 0 && var9 < 128 && var14.getLight(LightType.Block, var7, var9, var8) < 10)
+                if (getBiomeSource().GetBiome(var7 + var3, var8 + var4).GetEnableSnow() && var9 >= 0 && var9 < 128 && var14.GetLight(LightType.Block, var7, var9, var8) < 10)
                 {
-                    var10 = var14.getBlockId(var7, var9 - 1, var8);
-                    var15 = var14.getBlockId(var7, var9, var8);
+                    var10 = var14.GetBlockId(var7, var9 - 1, var8);
+                    var15 = var14.GetBlockId(var7, var9, var8);
                     if (isRaining() && var15 == 0 && Block.Snow.canPlaceAt(this, var7 + var3, var9, var8 + var4) && var10 != 0 && var10 != Block.Ice.id && Block.Blocks[var10].material.BlocksMovement)
                     {
                         setBlock(var7 + var3, var9, var8 + var4, Block.Snow.id);
                     }
 
-                    if (var10 == Block.Water.id && var14.getBlockMeta(var7, var9 - 1, var8) == 0)
+                    if (var10 == Block.Water.id && var14.GetBlockMeta(var7, var9 - 1, var8) == 0)
                     {
                         setBlock(var7 + var3, var9 - 1, var8 + var4, Block.Ice.id);
                     }
@@ -2580,7 +2580,7 @@ public abstract class World : java.lang.Object, BlockView
                 var8 = var7 & 15;
                 var9 = var7 >> 8 & 15;
                 var10 = var7 >> 16 & 127;
-                var15 = var14.blocks[var8 << 11 | var9 << 7 | var10] & 255;
+                var15 = var14.Blocks[var8 << 11 | var9 << 7 | var10] & 255;
                 if (Block.BlocksRandomTick[var15])
                 {
                     Block.Blocks[var15].onTick(this, var8 + var3, var10, var9 + var4, random);
@@ -2662,7 +2662,7 @@ public abstract class World : java.lang.Object, BlockView
             {
                 if (hasChunk(var7, var8))
                 {
-                    GetChunk(var7, var8).collectOtherEntities(entity, box, tempEntityList);
+                    GetChunk(var7, var8).CollectOtherEntities(entity, box, tempEntityList);
                 }
             }
         }
@@ -2701,7 +2701,7 @@ public abstract class World : java.lang.Object, BlockView
     {
         if (isPosLoaded(x, y, z))
         {
-            GetChunkFromPos(x, z).markDirty();
+            GetChunkFromPos(x, z).MarkDirty();
         }
 
         for (int var5 = 0; var5 < eventListeners.Count; ++var5)
@@ -2741,7 +2741,7 @@ public abstract class World : java.lang.Object, BlockView
 
     public void tickChunks()
     {
-        while (chunkSource.tick())
+        while (chunkSource.Tick())
         {
         }
 
@@ -2918,7 +2918,7 @@ public abstract class World : java.lang.Object, BlockView
                     var20 = 16;
                 }
 
-                var12 = GetChunk(var15, var18).loadFromPacket(chunkData, var16, var13, var19, var17, var14, var20, var12);
+                var12 = GetChunk(var15, var18).LoadFromPacket(chunkData, var16, var13, var19, var17, var14, var20, var12);
                 setBlocksDirty(var15 * 16 + var16, var13, var18 * 16 + var19, var15 * 16 + var17, var14, var18 * 16 + var20);
             }
         }
@@ -2977,7 +2977,7 @@ public abstract class World : java.lang.Object, BlockView
                     var20 = 16;
                 }
 
-                var12 = GetChunk(var15, var18).toPacket(var7, var16, var13, var19, var17, var14, var20, var12);
+                var12 = GetChunk(var15, var18).ToPacket(var7, var16, var13, var19, var17, var14, var20, var12);
             }
         }
 
@@ -3076,7 +3076,7 @@ public abstract class World : java.lang.Object, BlockView
             var4 = var2.chunkZ;
             if (var2.isPersistent && hasChunk(var3, var4))
             {
-                GetChunk(var3, var4).removeEntity(var2);
+                GetChunk(var3, var4).RemoveEntity(var2);
             }
         }
 
@@ -3107,7 +3107,7 @@ public abstract class World : java.lang.Object, BlockView
                 var4 = var2.chunkZ;
                 if (var2.isPersistent && hasChunk(var3, var4))
                 {
-                    GetChunk(var3, var4).removeEntity(var2);
+                    GetChunk(var3, var4).RemoveEntity(var2);
                 }
 
                 entities.RemoveAt(var1--);

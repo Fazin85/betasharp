@@ -1,7 +1,7 @@
+using System.Collections.Generic;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
-using java.lang;
 
 namespace BetaSharp.Worlds.Chunks;
 
@@ -9,153 +9,69 @@ public class EmptyChunk : Chunk
 {
     public EmptyChunk(World world, int x, int z) : base(world, x, z)
     {
-        empty = true;
+        Empty = true;
     }
 
     public EmptyChunk(World world, byte[] blocks, int x, int z) : base(world, blocks, x, z)
     {
-        empty = true;
+        Empty = true;
     }
 
-    public override bool chunkPosEquals(int x, int z)
+    public override bool ChunkPosEquals(int x, int z) => x == this.X && z == this.Z;
+
+    public override int GetHeight(int x, int z) => 0;
+
+    public override void PopulateLight() { }
+    public override void PopulateHeightMapOnly() { }
+    public override void PopulateHeightMap() { }
+    public override void PopulateBlockLight() { }
+
+    public override int GetBlockId(int x, int y, int z) => 0;
+    
+    public override bool SetBlock(int x, int y, int z, int blockId, int meta) => true;
+    public override bool SetBlock(int x, int y, int z, int blockId) => true;
+
+    public override int GetBlockMeta(int x, int y, int z) => 0;
+    public override void SetBlockMeta(int x, int y, int z, int meta) { }
+
+    public override int GetLight(LightType type, int x, int y, int z) => 0;
+    public override void SetLight(LightType type, int x, int y, int z, int level) { }
+    public override int GetLight(int x, int y, int z, int skylight) => 0;
+
+    public override void AddEntity(Entity entity) { }
+    public override void RemoveEntity(Entity entity) { }
+    public override void RemoveEntity(Entity entity, int chunkY) { }
+
+    public override bool IsAboveMaxHeight(int x, int y, int z) => false;
+
+    public override BlockEntity? GetBlockEntity(int x, int y, int z) => null;
+    public override void AddBlockEntity(BlockEntity blockEntity) { }
+    public override void SetBlockEntity(int x, int y, int z, BlockEntity blockEntity) { }
+    public override void RemoveBlockEntityAt(int x, int y, int z) { }
+
+    public override void Load() { }
+    public override void Unload() { }
+    public override void MarkDirty() { }
+
+    public override void CollectOtherEntities(Entity excludeEntity, Box box, List<Entity> result) { }
+    public override void CollectEntitiesOfType<T>(Box box, List<T> result) { }
+
+    public override bool ShouldSave(bool saveAll) => false;
+
+    public override int LoadFromPacket(byte[] data, int startX, int startY, int startZ, int endX, int endY, int endZ, int meta)
     {
-        return x == this.x && z == this.z;
+        int width = endX - startX;
+        int height = endY - startY;
+        int depth = endZ - startZ;
+        
+        int volume = width * height * depth;
+        return volume + (volume / 2 * 3);
     }
 
-    public override int getHeight(int var1, int var2)
+    public override JavaRandom GetSlimeRandom(long seed)
     {
-        return 0;
+        return new JavaRandom(World.getSeed() + X * X * 4987142L + X * 5947611L + Z * Z * 4392871L + Z * 389711L ^ seed);
     }
 
-    public override void populateLight()
-    {
-    }
-
-    public override void populateHeightMapOnly()
-    {
-    }
-
-    public override void populateHeightMap()
-    {
-    }
-
-    public override void populateBlockLight()
-    {
-    }
-
-    public override int getBlockId(int var1, int var2, int var3)
-    {
-        return 0;
-    }
-
-    public override bool setBlock(int var1, int var2, int var3, int var4, int var5)
-    {
-        return true;
-    }
-
-    public override bool setBlock(int var1, int var2, int var3, int var4)
-    {
-        return true;
-    }
-
-    public override int getBlockMeta(int var1, int var2, int var3)
-    {
-        return 0;
-    }
-
-    public override void setBlockMeta(int var1, int var2, int var3, int var4)
-    {
-    }
-
-    public override int getLight(LightType var1, int var2, int var3, int var4)
-    {
-        return 0;
-    }
-
-    public override void setLight(LightType var1, int var2, int var3, int var4, int var5)
-    {
-    }
-
-    public override int getLight(int var1, int var2, int var3, int var4)
-    {
-        return 0;
-    }
-
-    public override void addEntity(Entity var1)
-    {
-    }
-
-    public override void removeEntity(Entity var1)
-    {
-    }
-
-    public override void removeEntity(Entity var1, int var2)
-    {
-    }
-
-    public override bool isAboveMaxHeight(int var1, int var2, int var3)
-    {
-        return false;
-    }
-
-    public override BlockEntity getBlockEntity(int var1, int var2, int var3)
-    {
-        return null;
-    }
-
-    public override void addBlockEntity(BlockEntity var1)
-    {
-    }
-
-    public override void setBlockEntity(int var1, int var2, int var3, BlockEntity var4)
-    {
-    }
-
-    public override void removeBlockEntityAt(int var1, int var2, int var3)
-    {
-    }
-
-    public override void load()
-    {
-    }
-
-    public override void unload()
-    {
-    }
-
-    public override void markDirty()
-    {
-    }
-
-    public override void collectOtherEntities(Entity var1, Box var2, List<Entity> var3)
-    {
-    }
-
-    public override void CollectEntitiesOfType<T>(Box box, List<T> result)
-    {
-    }
-
-    public override bool shouldSave(bool var1)
-    {
-        return false;
-    }
-
-    public override int loadFromPacket(byte[] var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8)
-    {
-        int var9 = var5 - var2;
-        int var10 = var6 - var3;
-        int var11 = var7 - var4;
-        int var12 = var9 * var10 * var11;
-        return var12 + var12 / 2 * 3;
-    }
-
-    public override JavaRandom getSlimeRandom(long var1)
-    {
-        return new(world.getSeed() + x * x * 4987142 + x * 5947611 + z * z * 4392871L + z * 389711 ^ var1);
-    }
-
-    public override bool isEmpty()
-    {
-        return true;
-    }
+    public override bool IsEmpty() => true;
 }

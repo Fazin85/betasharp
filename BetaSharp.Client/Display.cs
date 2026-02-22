@@ -27,6 +27,7 @@ public static unsafe class Display
     private static bool _wasResized;
     private static bool _closeRequested;
     public static int MSAA_Samples = 0;
+    public static bool DebugMode = false;
 
     // Window position
     private static int _x = -1;
@@ -45,8 +46,8 @@ public static unsafe class Display
         }
 
         // Get initial display mode (primary monitor)
-        var monitor = _glfw.GetPrimaryMonitor();
-        var videoMode = _glfw.GetVideoMode(monitor);
+        Silk.NET.GLFW.Monitor* monitor = _glfw.GetPrimaryMonitor();
+        Silk.NET.GLFW.VideoMode* videoMode = _glfw.GetVideoMode(monitor);
         _initialMode = new DisplayMode(videoMode->Width, videoMode->Height,
             videoMode->RefreshRate, videoMode->RedBits + videoMode->GreenBits + videoMode->BlueBits);
         _currentMode = _initialMode;
@@ -85,16 +86,16 @@ public static unsafe class Display
         lock (_lock)
         {
             var modes = new List<DisplayMode>();
-            var monitor = _glfw!.GetPrimaryMonitor();
+            Silk.NET.GLFW.Monitor* monitor = _glfw!.GetPrimaryMonitor();
 
             unsafe
             {
                 int count;
-                var videoModes = _glfw.GetVideoModes(monitor, out count);
+                Silk.NET.GLFW.VideoMode* videoModes = _glfw.GetVideoModes(monitor, out count);
 
                 for (int i = 0; i < count; i++)
                 {
-                    var mode = videoModes[i];
+                    Silk.NET.GLFW.VideoMode mode = videoModes[i];
                     int bpp = mode.RedBits + mode.GreenBits + mode.BlueBits;
                     modes.Add(new DisplayMode(mode.Width, mode.Height, mode.RefreshRate, bpp));
                 }
@@ -194,7 +195,7 @@ public static unsafe class Display
 
         if (_window != null && _glfw != null)
         {
-            var monitor = _glfw.GetPrimaryMonitor();
+            Silk.NET.GLFW.Monitor* monitor = _glfw.GetPrimaryMonitor();
             unsafe
             {
                 _glfw.SetWindowMonitor(
@@ -432,15 +433,15 @@ public static unsafe class Display
             if (isCreated())
                 throw new InvalidOperationException("Only one LWJGL context may be instantiated at any one time.");
 
-            var options = WindowOptions.Default;
+            WindowOptions options = WindowOptions.Default;
             options.Size = new Vector2D<int>(_currentMode.getWidth(), _currentMode.getHeight());
             options.Title = _title;
             options.WindowBorder = _resizable ? WindowBorder.Resizable : WindowBorder.Fixed;
             options.VSync = _swapInterval > 0;
             options.IsVisible = true;
             options.Samples = MSAA_Samples;
-            options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.Default, new APIVersion(4, 1));
-
+            options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, DebugMode ? ContextFlags.Debug : ContextFlags.Default, new APIVersion(4, 1));
+            
             if (_x >= 0 && _y >= 0)
                 options.Position = new Vector2D<int>(_x, _y);
 

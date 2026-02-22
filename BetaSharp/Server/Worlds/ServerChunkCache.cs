@@ -69,11 +69,11 @@ public class ServerChunkCache : ChunkSource
             _chunks.Add(var4);
             if (var4 != null)
             {
-                var4.populateBlockLight();
-                var4.load();
+                var4.PopulateBlockLight();
+                var4.Load();
             }
 
-            if (!var4.terrainPopulated
+            if (!var4.TerrainPopulated
                 && IsChunkLoaded(chunkX + 1, chunkZ + 1)
                 && IsChunkLoaded(chunkX, chunkZ + 1)
                 && IsChunkLoaded(chunkX + 1, chunkZ))
@@ -82,7 +82,7 @@ public class ServerChunkCache : ChunkSource
             }
 
             if (IsChunkLoaded(chunkX - 1, chunkZ)
-                && !GetChunk(chunkX - 1, chunkZ).terrainPopulated
+                && !GetChunk(chunkX - 1, chunkZ).TerrainPopulated
                 && IsChunkLoaded(chunkX - 1, chunkZ + 1)
                 && IsChunkLoaded(chunkX, chunkZ + 1)
                 && IsChunkLoaded(chunkX - 1, chunkZ))
@@ -91,7 +91,7 @@ public class ServerChunkCache : ChunkSource
             }
 
             if (IsChunkLoaded(chunkX, chunkZ - 1)
-                && !GetChunk(chunkX, chunkZ - 1).terrainPopulated
+                && !GetChunk(chunkX, chunkZ - 1).TerrainPopulated
                 && IsChunkLoaded(chunkX + 1, chunkZ - 1)
                 && IsChunkLoaded(chunkX, chunkZ - 1)
                 && IsChunkLoaded(chunkX + 1, chunkZ))
@@ -100,7 +100,7 @@ public class ServerChunkCache : ChunkSource
             }
 
             if (IsChunkLoaded(chunkX - 1, chunkZ - 1)
-                && !GetChunk(chunkX - 1, chunkZ - 1).terrainPopulated
+                && !GetChunk(chunkX - 1, chunkZ - 1).TerrainPopulated
                 && IsChunkLoaded(chunkX - 1, chunkZ - 1)
                 && IsChunkLoaded(chunkX, chunkZ - 1)
                 && IsChunkLoaded(chunkX - 1, chunkZ))
@@ -137,7 +137,7 @@ public class ServerChunkCache : ChunkSource
             try
             {
                 Chunk var3 = _storage.LoadChunk(_world, chunkX, chunkZ);
-                var3?.lastSaveTime = _world.getTime();
+                var3?.LastSaveTime = _world.getTime();
 
                 return var3;
             }
@@ -170,7 +170,7 @@ public class ServerChunkCache : ChunkSource
         {
             try
             {
-                chunk.lastSaveTime = _world.getTime();
+                chunk.LastSaveTime = _world.getTime();
                 _storage.SaveChunk(_world, chunk, null, -1);
             }
             catch (java.io.IOException ex)
@@ -188,34 +188,34 @@ public class ServerChunkCache : ChunkSource
     public void DecorateTerrain(ChunkSource source, int x, int z)
     {
         Chunk var4 = GetChunk(x, z);
-        if (!var4.terrainPopulated)
+        if (!var4.TerrainPopulated)
         {
-            var4.terrainPopulated = true;
+            var4.TerrainPopulated = true;
             if (_generator != null)
             {
                 _generator.DecorateTerrain(source, x, z);
-                var4.markDirty();
+                var4.MarkDirty();
             }
         }
     }
 
 
-    public bool save(bool saveEntities, LoadingDisplay display)
+    public bool Save(bool saveEntities, LoadingDisplay display)
     {
         int var3 = 0;
 
         for (int var4 = 0; var4 < _chunks.Count; var4++)
         {
             Chunk var5 = _chunks[var4];
-            if (saveEntities && !var5.empty)
+            if (saveEntities && !var5.Empty)
             {
                 this.saveEntities(var5);
             }
 
-            if (var5.shouldSave(saveEntities))
+            if (var5.ShouldSave(saveEntities))
             {
                 saveChunk(var5);
-                var5.dirty = false;
+                var5.Dirty = false;
                 if (++var3 == 24 && !saveEntities)
                 {
                     return false;
@@ -237,7 +237,7 @@ public class ServerChunkCache : ChunkSource
     }
 
 
-    public bool tick()
+    public bool Tick()
     {
         if (!_world.savingDisabled)
         {
@@ -247,7 +247,7 @@ public class ServerChunkCache : ChunkSource
                 {
                     int var2 = _chunksToUnload.First();
                     Chunk var3 = _chunksByPos[var2];
-                    var3.unload();
+                    var3.Unload();
                     saveChunk(var3);
                     saveEntities(var3);
                     _chunksToUnload.Remove(var2);
@@ -259,11 +259,11 @@ public class ServerChunkCache : ChunkSource
             _storage?.Tick();
         }
 
-        return _generator.tick();
+        return _generator.Tick();
     }
 
 
-    public bool canSave()
+    public bool CanSave()
     {
         return !_world.savingDisabled;
     }
@@ -272,7 +272,7 @@ public class ServerChunkCache : ChunkSource
     {
     }
 
-    public string getDebugInfo()
+    public string GetDebugInfo()
     {
         return "NOP";
     }

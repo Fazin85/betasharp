@@ -129,9 +129,6 @@ public abstract class EntityRenderer
         TextureManager textureManager = Dispatcher.textureManager;
         textureManager.BindTexture(textureManager.GetTextureId("%clamp%/misc/shadow.png"));
 
-        GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureWrapS, (int)GLEnum.ClampToEdge);
-        GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureWrapT, (int)GLEnum.ClampToEdge);
-
         GLManager.GL.DepthMask(false);
         float radius = ShadowRadius;
 
