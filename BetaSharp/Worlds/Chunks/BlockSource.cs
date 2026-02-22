@@ -29,7 +29,7 @@ public class BlockSource
         }
     }
 
-    public static void fill(byte[] blocks)
+    public static void Fill(byte[] blocks)
     {
         Span<byte> blocksSpan = blocks;
 

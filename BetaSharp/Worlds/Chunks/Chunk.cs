@@ -390,7 +390,7 @@ public class Chunk
         if (chunkX != X || chunkZ != Z)
         {
             _logger.LogWarning($"Entity in wrong chunk location! {entity}");
-            _logger.LogDebug(Environment.StackTrace); // Replaced dumpStack()
+            _logger.LogDebug(Environment.StackTrace);
         }
 
         int slice = MathHelper.Floor(entity.y / 16.0D);
@@ -709,5 +709,5 @@ public class Chunk
 
     public virtual bool IsEmpty() => false;
 
-    public void Fill() => BlockSource.fill(Blocks);
+    public void Fill() => BlockSource.Fill(Blocks);
 }
