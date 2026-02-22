@@ -282,7 +282,7 @@ public class OverworldChunkGenerator : ChunkSource
         BuildTerrain(chunkX, chunkZ, blocks, biomes, temperatureMap);
         BuildSurfaces(chunkX, chunkZ, blocks, biomes);
         cave.carve(this, world, chunkX, chunkZ, blocks);
-        chunk.populateHeightMap();
+        chunk.PopulateHeightMap();
         return chunk;
     }
 
@@ -811,22 +811,22 @@ public class OverworldChunkGenerator : ChunkSource
         BlockSand.fallInstantly = false;
     }
 
-    public bool save(bool saveEntities, LoadingDisplay display)
+    public bool Save(bool saveEntities, LoadingDisplay display)
     {
         return true;
     }
 
-    public bool tick()
+    public bool Tick()
     {
         return false;
     }
 
-    public bool canSave()
+    public bool CanSave()
     {
         return true;
     }
 
-    public string getDebugInfo()
+    public string GetDebugInfo()
     {
         return "RandomLevelSource";
     }

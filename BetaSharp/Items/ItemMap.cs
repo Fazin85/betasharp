@@ -122,7 +122,7 @@ public class ItemMap : NetworkSyncedItem
                                 {
                                     for (sampleZ = 0; sampleZ < blocksPerPixel; ++sampleZ)
                                     {
-                                        currentY = chunk.getHeight(sampleX + chunkOffsetX, sampleZ + chunkOffsetZ) + 1;
+                                        currentY = chunk.GetHeight(sampleX + chunkOffsetX, sampleZ + chunkOffsetZ) + 1;
                                         int blockId = 0;
                                         if (currentY > 1)
                                         {
@@ -227,7 +227,7 @@ public class ItemMap : NetworkSyncedItem
         while (!exitLoop)
         {
             foundSurface = true;
-            blockId = chunk.getBlockId(chunkX + dx, scanY - 1, chunkZ + dz);
+            blockId = chunk.GetBlockId(chunkX + dx, scanY - 1, chunkZ + dz);
             if (blockId == 0)
             {
                 foundSurface = false;
@@ -240,7 +240,7 @@ public class ItemMap : NetworkSyncedItem
             if (!foundSurface)
             {
                 --scanY;
-                blockId = chunk.getBlockId(chunkX + dx, scanY - 1, chunkZ + dz);
+                blockId = chunk.GetBlockId(chunkX + dx, scanY - 1, chunkZ + dz);
             }
 
             if (foundSurface)
@@ -255,7 +255,7 @@ public class ItemMap : NetworkSyncedItem
 
                     while (true)
                     {
-                        int fluidBlockId = chunk.getBlockId(chunkX + dx, depthCheckY--, chunkZ + dz);
+                        int fluidBlockId = chunk.GetBlockId(chunkX + dx, depthCheckY--, chunkZ + dz);
                         ++fluidDepth;
                         if (depthCheckY <= 0 || fluidBlockId == 0 || !Block.Blocks[fluidBlockId].material.IsFluid)
                         {

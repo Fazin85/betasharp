@@ -59,7 +59,7 @@ public struct LightUpdate
                         if (var14)
                         {
                             Chunk var15 = world.GetChunk(var10 >> 4, var11 >> 4);
-                            if (var15.isEmpty())
+                            if (var15.IsEmpty())
                             {
                                 var14 = false;
                             }

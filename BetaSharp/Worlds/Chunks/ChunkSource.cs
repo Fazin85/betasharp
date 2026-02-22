@@ -2,19 +2,19 @@ namespace BetaSharp.Worlds.Chunks;
 
 public interface ChunkSource
 {
-    bool IsChunkLoaded(int var1, int var2);
+    bool IsChunkLoaded(int x, int z);
 
-    Chunk GetChunk(int var1, int var2);
+    Chunk GetChunk(int x, int z);
 
-    Chunk LoadChunk(int var1, int var2);
+    Chunk LoadChunk(int x, int z);
 
-    void DecorateTerrain(ChunkSource var1, int var2, int var3);
+    void DecorateTerrain(ChunkSource source, int x, int z);
 
-    bool save(bool var1, LoadingDisplay var2);
+    bool Save(bool saveEntities, LoadingDisplay display);
 
-    bool tick();
+    bool Tick();
 
-    bool canSave();
+    bool CanSave();
 
-    string getDebugInfo();
+    string GetDebugInfo();
 }

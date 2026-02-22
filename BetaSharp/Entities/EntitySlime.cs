@@ -166,7 +166,7 @@ public class EntitySlime : EntityLiving, Monster
     public override bool canSpawn()
     {
         Chunk chunk = world.GetChunkFromPos(MathHelper.Floor(x), MathHelper.Floor(z));
-        return (getSlimeSize() == 1 || world.difficulty > 0) && random.NextInt(10) == 0 && chunk.getSlimeRandom(987234911L).NextInt(10) == 0 && y < 16.0D;
+        return (getSlimeSize() == 1 || world.difficulty > 0) && random.NextInt(10) == 0 && chunk.GetSlimeRandom(987234911L).NextInt(10) == 0 && y < 16.0D;
     }
 
     protected override float getSoundVolume()

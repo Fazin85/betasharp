@@ -37,8 +37,8 @@ public class ChunkDeltaUpdateS2CPacket : Packet
             int blockZ = positions[i] >> 8 & 15;
             int blockY = positions[i] & 255;
             this.positions[i] = positions[i];
-            blockRawIds[i] = (byte)chunk.getBlockId(blockX, blockY, blockZ);
-            blockMetadata[i] = (byte)chunk.getBlockMeta(blockX, blockY, blockZ);
+            blockRawIds[i] = (byte)chunk.GetBlockId(blockX, blockY, blockZ);
+            blockMetadata[i] = (byte)chunk.GetBlockMeta(blockX, blockY, blockZ);
         }
     }
 

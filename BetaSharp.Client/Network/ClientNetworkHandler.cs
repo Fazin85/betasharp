@@ -357,7 +357,7 @@ public class ClientNetworkHandler : NetHandler
             int blockX = positions >> 12 & 15;
             int blockZ = positions >> 8 & 15;
             int blockY = positions & 255;
-            chunk.setBlock(blockX, blockY, blockZ, blockRawId, metadata);
+            chunk.SetBlock(blockX, blockY, blockZ, blockRawId, metadata);
             worldClient.ClearBlockResets(blockX + x, blockY, blockZ + y, blockX + x, blockY, blockZ + y);
             worldClient.setBlocksDirty(blockX + x, blockY, blockZ + y, blockX + x, blockY, blockZ + y);
         }

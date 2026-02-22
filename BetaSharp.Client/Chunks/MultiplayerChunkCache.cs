@@ -35,9 +35,9 @@ public class MultiplayerChunkCache : ChunkSource
     public void UnloadChunk(int x, int z)
     {
         Chunk chunk = GetChunk(x, z);
-        if (!chunk.isEmpty())
+        if (!chunk.IsEmpty())
         {
-            chunk.unload();
+            chunk.Unload();
         }
 
         chunkByPos.Remove(new ChunkPos(x, z));
@@ -48,7 +48,7 @@ public class MultiplayerChunkCache : ChunkSource
         ChunkPos key = new(x, z);
         byte[] blocks = new byte[-Short.MIN_VALUE];
         Chunk chunk = new(world, blocks, x, z);
-        Arrays.fill(chunk.skyLight.bytes, 255);
+        Arrays.fill(chunk.SkyLight.Bytes, 255);
 
         if (chunkByPos.ContainsKey(key))
         {
@@ -59,7 +59,7 @@ public class MultiplayerChunkCache : ChunkSource
             chunkByPos.Add(key, chunk);
         }
 
-        chunk.loaded = true;
+        chunk.Loaded = true;
         return chunk;
     }
 
@@ -70,17 +70,17 @@ public class MultiplayerChunkCache : ChunkSource
         return chunk == null ? empty : chunk;
     }
 
-    public bool save(bool bl, LoadingDisplay display)
+    public bool Save(bool bl, LoadingDisplay display)
     {
         return true;
     }
 
-    public bool tick()
+    public bool Tick()
     {
         return false;
     }
 
-    public bool canSave()
+    public bool CanSave()
     {
         return false;
     }
@@ -93,7 +93,7 @@ public class MultiplayerChunkCache : ChunkSource
     {
     }
 
-    public string getDebugInfo()
+    public string GetDebugInfo()
     {
         return "MultiplayerChunkCache: " + chunkByPos.Count;
     }

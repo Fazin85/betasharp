@@ -1,45 +1,47 @@
+using System.Runtime.CompilerServices;
+
 namespace BetaSharp.Worlds.Chunks;
 
-public class ChunkNibbleArray : java.lang.Object
+public class ChunkNibbleArray
 {
-    public readonly byte[] bytes;
+    public readonly byte[] Bytes;
 
     public ChunkNibbleArray(int size)
     {
-        bytes = new byte[size >> 1];
+        Bytes = new byte[size >> 1];
     }
 
     public ChunkNibbleArray(byte[] bytes)
     {
-        this.bytes = bytes;
+        Bytes = bytes;
     }
 
-    public int getNibble(int x, int y, int z)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int GetNibble(int x, int y, int z)
     {
-        int var4 = x << 11 | z << 7 | y;
-        int var5 = var4 >> 1;
-        int var6 = var4 & 1;
-        return var6 == 0 ? bytes[var5] & 15 : bytes[var5] >> 4 & 15;
+        int index = (x << 11) | (z << 7) | y;
+        int byteIndex = index >> 1;
+
+        return (index & 1) == 0
+            ? Bytes[byteIndex] & 0x0F
+            : (Bytes[byteIndex] >> 4) & 0x0F;
     }
 
-    public void setNibble(int x, int y, int z, int value)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetNibble(int x, int y, int z, int value)
     {
-        int var5 = x << 11 | z << 7 | y;
-        int var6 = var5 >> 1;
-        int var7 = var5 & 1;
-        if (var7 == 0)
+        int index = (x << 11) | (z << 7) | y;
+        int byteIndex = index >> 1;
+
+        if ((index & 1) == 0)
         {
-            bytes[var6] = (byte)(bytes[var6] & 240 | value & 15);
+            Bytes[byteIndex] = (byte)((Bytes[byteIndex] & 0xF0) | (value & 0x0F));
         }
         else
         {
-            bytes[var6] = (byte)(bytes[var6] & 15 | (value & 15) << 4);
+            Bytes[byteIndex] = (byte)((Bytes[byteIndex] & 0x0F) | ((value & 0x0F) << 4));
         }
-
     }
 
-    public bool isArrayInitialized()
-    {
-        return bytes != null;
-    }
+    public bool IsInitialized => Bytes != null;
 }
