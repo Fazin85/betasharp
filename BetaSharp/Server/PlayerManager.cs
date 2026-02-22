@@ -246,7 +246,7 @@ public class PlayerManager
             player.setPositionAndAnglesKeepPrevAngles(x, player.y, z, player.yaw, player.pitch);
             targetWorld.updateEntity(player, false);
             targetWorld.chunkCache.forceLoad = true;
-            new PortalForcer().moveToPortal(targetWorld, player);
+            new PortalForcer().MoveToPortal(targetWorld, player);
             targetWorld.chunkCache.forceLoad = false;
         }
 

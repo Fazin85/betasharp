@@ -70,12 +70,12 @@ public class WorldRegion : BlockView
     public float getNaturalBrightness(int x, int y, int z, int blockLight)
     {
         int finalLight = Math.Max(getRawBrightness(x, y, z), blockLight);
-        return _world.dimension.lightLevelToLuminance[finalLight];
+        return _world.dimension.LightLevelToLuminance[finalLight];
     }
 
     public float getLuminance(int x, int y, int z)
     {
-        return _world.dimension.lightLevelToLuminance[getRawBrightness(x, y, z)];
+        return _world.dimension.LightLevelToLuminance[getRawBrightness(x, y, z)];
     }
 
     public int getRawBrightness(int x, int y, int z)

@@ -103,7 +103,7 @@ public class PlayerController
 
     public virtual EntityPlayer createPlayer(World var1)
     {
-        return new ClientPlayerEntity(mc, var1, mc.session, var1.dimension.id);
+        return new ClientPlayerEntity(mc, var1, mc.session, var1.dimension.Id);
     }
 
     public virtual void interactWithEntity(EntityPlayer var1, Entity var2)

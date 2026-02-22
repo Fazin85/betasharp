@@ -22,12 +22,12 @@ public class ServerWorldEventListener : IWorldAccess
 
     public void notifyEntityAdded(Entity entity)
     {
-        server.getEntityTracker(world.dimension.id).onEntityAdded(entity);
+        server.getEntityTracker(world.dimension.Id).onEntityAdded(entity);
     }
 
     public void notifyEntityRemoved(Entity entity)
     {
-        server.getEntityTracker(world.dimension.id).onEntityRemoved(entity);
+        server.getEntityTracker(world.dimension.Id).onEntityRemoved(entity);
     }
 
     public void playSound(string sound, double x, double y, double z, float volume, float pitch)
@@ -44,7 +44,7 @@ public class ServerWorldEventListener : IWorldAccess
 
     public void blockUpdate(int x, int y, int z)
     {
-        server.playerManager.markDirty(x, y, z, world.dimension.id);
+        server.playerManager.markDirty(x, y, z, world.dimension.Id);
     }
 
     public void playStreaming(String stream, int x, int y, int z)
@@ -58,7 +58,7 @@ public class ServerWorldEventListener : IWorldAccess
 
     public void worldEvent(EntityPlayer player, int @event, int x, int y, int z, int data)
     {
-        server.playerManager.sendToAround(player, x, y, z, 64.0, world.dimension.id, new WorldEventS2CPacket(@event, x, y, z, data));
+        server.playerManager.sendToAround(player, x, y, z, 64.0, world.dimension.Id, new WorldEventS2CPacket(@event, x, y, z, data));
     }
 
     public void spawnParticle(string var1, double var2, double var4, double var6, double var8, double var10, double var12)

@@ -37,7 +37,7 @@ public class BlockBed : Block
                 meta = world.getBlockMeta(x, y, z);
             }
 
-            if (!world.dimension.hasWorldSpawn())
+            if (!world.dimension.HasWorldSpawn)
             {
                 double posX = (double)x + 0.5D;
                 double posY = (double)y + 0.5D;

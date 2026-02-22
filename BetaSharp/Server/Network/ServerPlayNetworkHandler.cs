@@ -271,7 +271,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
         }
         else
         {
-            bool var3 = var2.bypassSpawnProtection = var2.dimension.id != 0 || server.playerManager.isOperator(player.name) || server is InternalServer;
+            bool var3 = var2.bypassSpawnProtection = var2.dimension.Id != 0 || server.playerManager.isOperator(player.name) || server is InternalServer;
             bool var4 = false;
             if (packet.action == 0)
             {
@@ -345,7 +345,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
     {
         ServerWorld var2 = server.getWorld(player.dimensionId);
         ItemStack var3 = player.inventory.getSelectedItem();
-        bool var4 = var2.bypassSpawnProtection = var2.dimension.id != 0 || server.playerManager.isOperator(player.name) || server is InternalServer;
+        bool var4 = var2.bypassSpawnProtection = var2.dimension.Id != 0 || server.playerManager.isOperator(player.name) || server is InternalServer;
         if (packet.side == 255)
         {
             if (var3 == null)

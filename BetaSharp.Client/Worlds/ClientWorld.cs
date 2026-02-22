@@ -21,7 +21,7 @@ public class ClientWorld : World
     private readonly HashSet<Entity> forcedEntities = [];
     private readonly HashSet<Entity> pendingEntities = [];
 
-    public ClientWorld(ClientNetworkHandler netHandler, long seed, int dimId) : base(new EmptyWorldStorage(), "MpServer", Dimension.fromId(dimId), seed)
+    public ClientWorld(ClientNetworkHandler netHandler, long seed, int dimId) : base(new EmptyWorldStorage(), "MpServer", Dimension.FromId(dimId), seed)
     {
         _networkHandler = netHandler;
         setSpawnPos(new Vec3i(8, 64, 8));
@@ -240,7 +240,7 @@ public class ClientWorld : World
 
     protected override void UpdateWeatherCycles()
     {
-        if (dimension.hasCeiling) return;
+        if (dimension.HasCeiling) return;
 
         if (ticksSinceLightning > 0) --ticksSinceLightning;
 

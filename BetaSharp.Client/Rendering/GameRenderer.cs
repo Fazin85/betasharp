@@ -774,7 +774,7 @@ public class GameRenderer
                 _client.terrainRenderer.chunkRenderer.SetFogEnd(_viewDistance * 0.8f);
             }
 
-            if (_client.world.dimension.isNether)
+            if (_client.world.dimension.IsNether)
             {
                 GLManager.GL.Fog(GLEnum.FogStart, 0.0F);
                 _client.terrainRenderer.chunkRenderer.SetFogStart(0.0f);

@@ -6,160 +6,136 @@ namespace BetaSharp.Worlds.Dimensions;
 
 public class PortalForcer
 {
-    private JavaRandom random = new();
-
-    public void moveToPortal(World world, Entity entity)
+    public void MoveToPortal(World world, Entity entity)
     {
-        if (!teleportToValidPort(world, entity))
+        if (!TeleportToValidPortal(world, entity))
         {
-            createPortal(world, entity);
-            teleportToValidPort(world, entity);
+            CreatePortal(world, entity);
+            TeleportToValidPortal(world, entity);
         }
     }
 
-    public bool teleportToValidPort(World world, Entity entity)
+    public bool TeleportToValidPortal(World world, Entity entity)
     {
-        short var3 = 128;
-        double var4 = -1.0D;
-        int var6 = 0;
-        int var7 = 0;
-        int var8 = 0;
-        int var9 = MathHelper.Floor(entity.x);
-        int var10 = MathHelper.Floor(entity.z);
+        short searchRadius = 128;
+        double closestDistance = -1.0D;
+        int foundX = 0;
+        int foundY = 0;
+        int foundZ = 0;
+        
+        int entityX = MathHelper.Floor(entity.x);
+        int entityZ = MathHelper.Floor(entity.z);
 
-        double var18;
-        for (int var11 = var9 - var3; var11 <= var9 + var3; ++var11)
+        // Phase 1: Search for an existing portal
+        for (int x = entityX - searchRadius; x <= entityX + searchRadius; ++x)
         {
-            double var12 = var11 + 0.5D - entity.x;
+            double dx = x + 0.5D - entity.x;
 
-            for (int var14 = var10 - var3; var14 <= var10 + var3; ++var14)
+            for (int z = entityZ - searchRadius; z <= entityZ + searchRadius; ++z)
             {
-                double var15 = var14 + 0.5D - entity.z;
+                double dz = z + 0.5D - entity.z;
 
-                for (int var17 = 127; var17 >= 0; --var17)
+                for (int y = 127; y >= 0; --y)
                 {
-                    if (world.getBlockId(var11, var17, var14) == Block.NetherPortal.id)
+                    if (world.getBlockId(x, y, z) == Block.NetherPortal.id)
                     {
-                        while (world.getBlockId(var11, var17 - 1, var14) == Block.NetherPortal.id)
+                        // Walk down to the bottom obsidian block of the portal frame
+                        while (world.getBlockId(x, y - 1, z) == Block.NetherPortal.id)
                         {
-                            --var17;
+                            --y;
                         }
 
-                        var18 = var17 + 0.5D - entity.y;
-                        double var20 = var12 * var12 + var18 * var18 + var15 * var15;
-                        if (var4 < 0.0D || var20 < var4)
+                        double dy = y + 0.5D - entity.y;
+                        double distanceSq = dx * dx + dy * dy + dz * dz;
+                        
+                        if (closestDistance < 0.0D || distanceSq < closestDistance)
                         {
-                            var4 = var20;
-                            var6 = var11;
-                            var7 = var17;
-                            var8 = var14;
+                            closestDistance = distanceSq;
+                            foundX = x;
+                            foundY = y;
+                            foundZ = z;
                         }
                     }
                 }
             }
         }
 
-        if (var4 >= 0.0D)
+        if (closestDistance >= 0.0D)
         {
-            double var22 = var6 + 0.5D;
-            double var16 = var7 + 0.5D;
-            var18 = var8 + 0.5D;
-            if (world.getBlockId(var6 - 1, var7, var8) == Block.NetherPortal.id)
-            {
-                var22 -= 0.5D;
-            }
+            double targetX = foundX + 0.5D;
+            double targetY = foundY + 0.5D;
+            double targetZ = foundZ + 0.5D;
 
-            if (world.getBlockId(var6 + 1, var7, var8) == Block.NetherPortal.id)
-            {
-                var22 += 0.5D;
-            }
+            // Offset the player so they don't spawn inside the obsidian frame
+            if (world.getBlockId(foundX - 1, foundY, foundZ) == Block.NetherPortal.id) targetX -= 0.5D;
+            if (world.getBlockId(foundX + 1, foundY, foundZ) == Block.NetherPortal.id) targetX += 0.5D;
+            if (world.getBlockId(foundX, foundY, foundZ - 1) == Block.NetherPortal.id) targetZ -= 0.5D;
+            if (world.getBlockId(foundX, foundY, foundZ + 1) == Block.NetherPortal.id) targetZ += 0.5D;
 
-            if (world.getBlockId(var6, var7, var8 - 1) == Block.NetherPortal.id)
-            {
-                var18 -= 0.5D;
-            }
-
-            if (world.getBlockId(var6, var7, var8 + 1) == Block.NetherPortal.id)
-            {
-                var18 += 0.5D;
-            }
-
-            entity.setPositionAndAnglesKeepPrevAngles(var22, var16, var18, entity.yaw, 0.0F);
+            entity.setPositionAndAnglesKeepPrevAngles(targetX, targetY, targetZ, entity.yaw, 0.0F);
             entity.velocityX = entity.velocityY = entity.velocityZ = 0.0D;
             return true;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
 
-    public bool createPortal(World world, Entity entity)
+    public bool CreatePortal(World world, Entity entity)
     {
-        byte var3 = 16;
-        double var4 = -1.0D;
-        int var6 = MathHelper.Floor(entity.x);
-        int var7 = MathHelper.Floor(entity.y);
-        int var8 = MathHelper.Floor(entity.z);
-        int var9 = var6;
-        int var10 = var7;
-        int var11 = var8;
-        int var12 = 0;
-        int var13 = random.NextInt(4);
+        byte searchRadius = 16;
+        double closestDistance = -1.0D;
+        
+        int entityX = MathHelper.Floor(entity.x);
+        int entityY = MathHelper.Floor(entity.y);
+        int entityZ = MathHelper.Floor(entity.z);
+        
+        int bestX = entityX;
+        int bestY = entityY;
+        int bestZ = entityZ;
+        int bestDirection = 0;
+        
+        int randomDirection = Random.Shared.Next(4);
 
-        int var14;
-        double var15;
-        int var17;
-        double var18;
-        int var20;
-        int var21;
-        int var22;
-        int var23;
-        int var24;
-        int var25;
-        int var26;
-        int var27;
-        int var28;
-        double var32;
-        double var33;
-        for (var14 = var6 - var3; var14 <= var6 + var3; ++var14)
+        // Phase 1: Search for an optimal flat 3x4 area of solid ground
+        for (int x = entityX - searchRadius; x <= entityX + searchRadius; ++x)
         {
-            var15 = var14 + 0.5D - entity.x;
+            double dx = x + 0.5D - entity.x;
 
-            for (var17 = var8 - var3; var17 <= var8 + var3; ++var17)
+            for (int z = entityZ - searchRadius; z <= entityZ + searchRadius; ++z)
             {
-                var18 = var17 + 0.5D - entity.z;
+                double dz = z + 0.5D - entity.z;
 
-                for (var20 = 127; var20 >= 0; --var20)
+                for (int y = 127; y >= 0; --y)
                 {
-                    if (world.isAir(var14, var20, var17))
+                    if (world.isAir(x, y, z))
                     {
-                        while (var20 > 0 && world.isAir(var14, var20 - 1, var17))
+                        while (y > 0 && world.isAir(x, y - 1, z))
                         {
-                            --var20;
+                            --y;
                         }
 
-                        for (var21 = var13; var21 < var13 + 4; ++var21)
+                        for (int dirOffset = randomDirection; dirOffset < randomDirection + 4; ++dirOffset)
                         {
-                            var22 = var21 % 2;
-                            var23 = 1 - var22;
-                            if (var21 % 4 >= 2)
+                            int dirX = dirOffset % 2;
+                            int dirZ = 1 - dirX;
+                            if (dirOffset % 4 >= 2)
                             {
-                                var22 = -var22;
-                                var23 = -var23;
+                                dirX = -dirX;
+                                dirZ = -dirZ;
                             }
 
                             bool validLocation = true;
-                            for (var24 = 0; var24 < 3 && validLocation; ++var24)
+                            for (int width = 0; width < 3 && validLocation; ++width)
                             {
-                                for (var25 = 0; var25 < 4 && validLocation; ++var25)
+                                for (int widthDepth = 0; widthDepth < 4 && validLocation; ++widthDepth)
                                 {
-                                    for (var26 = -1; var26 < 4 && validLocation; ++var26)
+                                    for (int height = -1; height < 4 && validLocation; ++height)
                                     {
-                                        var27 = var14 + (var25 - 1) * var22 + var24 * var23;
-                                        var28 = var20 + var26;
-                                        int var29 = var17 + (var25 - 1) * var23 - var24 * var22;
-                                        if (var26 < 0 && !world.getMaterial(var27, var28, var29).IsSolid || var26 >= 0 && !world.isAir(var27, var28, var29))
+                                        int checkX = x + (widthDepth - 1) * dirX + width * dirZ;
+                                        int checkY = y + height;
+                                        int checkZ = z + (widthDepth - 1) * dirZ - width * dirX;
+                                        
+                                        if (height < 0 && !world.getMaterial(checkX, checkY, checkZ).IsSolid || height >= 0 && !world.isAir(checkX, checkY, checkZ))
                                         {
                                             validLocation = false;
                                         }
@@ -169,15 +145,15 @@ public class PortalForcer
 
                             if (validLocation)
                             {
-                                var32 = var20 + 0.5D - entity.y;
-                                var33 = var15 * var15 + var32 * var32 + var18 * var18;
-                                if (var4 < 0.0D || var33 < var4)
+                                double dy = y + 0.5D - entity.y;
+                                double distanceSq = dx * dx + dy * dy + dz * dz;
+                                if (closestDistance < 0.0D || distanceSq < closestDistance)
                                 {
-                                    var4 = var33;
-                                    var9 = var14;
-                                    var10 = var20;
-                                    var11 = var17;
-                                    var12 = var21 % 4;
+                                    closestDistance = distanceSq;
+                                    bestX = x;
+                                    bestY = y;
+                                    bestZ = z;
+                                    bestDirection = dirOffset % 4;
                                 }
                             }
                         }
@@ -186,39 +162,41 @@ public class PortalForcer
             }
         }
 
-        if (var4 < 0.0D)
+        // Phase 2: If optimal location fails, settle for a tighter 1x4 area
+        if (closestDistance < 0.0D)
         {
-            for (var14 = var6 - var3; var14 <= var6 + var3; ++var14)
+            for (int x = entityX - searchRadius; x <= entityX + searchRadius; ++x)
             {
-                var15 = var14 + 0.5D - entity.x;
+                double dx = x + 0.5D - entity.x;
 
-                for (var17 = var8 - var3; var17 <= var8 + var3; ++var17)
+                for (int z = entityZ - searchRadius; z <= entityZ + searchRadius; ++z)
                 {
-                    var18 = var17 + 0.5D - entity.z;
+                    double dz = z + 0.5D - entity.z;
 
-                    for (var20 = 127; var20 >= 0; --var20)
+                    for (int y = 127; y >= 0; --y)
                     {
-                        if (world.isAir(var14, var20, var17))
+                        if (world.isAir(x, y, z))
                         {
-                            while (world.isAir(var14, var20 - 1, var17))
+                            while (world.isAir(x, y - 1, z))
                             {
-                                --var20;
+                                --y;
                             }
 
-                            for (var21 = var13; var21 < var13 + 2; ++var21)
+                            for (int dirOffset = randomDirection; dirOffset < randomDirection + 2; ++dirOffset)
                             {
-                                var22 = var21 % 2;
-                                var23 = 1 - var22;
+                                int dirX = dirOffset % 2;
+                                int dirZ = 1 - dirX;
 
                                 bool validLocation = true;
-                                for (var24 = 0; var24 < 4 && validLocation; ++var24)
+                                for (int widthDepth = 0; widthDepth < 4 && validLocation; ++widthDepth)
                                 {
-                                    for (var25 = -1; var25 < 4 && validLocation; ++var25)
+                                    for (int height = -1; height < 4 && validLocation; ++height)
                                     {
-                                        var26 = var14 + (var24 - 1) * var22;
-                                        var27 = var20 + var25;
-                                        var28 = var17 + (var24 - 1) * var23;
-                                        if (var25 < 0 && !world.getMaterial(var26, var27, var28).IsSolid || var25 >= 0 && !world.isAir(var26, var27, var28))
+                                        int checkX = x + (widthDepth - 1) * dirX;
+                                        int checkY = y + height;
+                                        int checkZ = z + (widthDepth - 1) * dirZ;
+                                        
+                                        if (height < 0 && !world.getMaterial(checkX, checkY, checkZ).IsSolid || height >= 0 && !world.isAir(checkX, checkY, checkZ))
                                         {
                                             validLocation = false;
                                         }
@@ -227,15 +205,15 @@ public class PortalForcer
 
                                 if (validLocation)
                                 {
-                                    var32 = var20 + 0.5D - entity.y;
-                                    var33 = var15 * var15 + var32 * var32 + var18 * var18;
-                                    if (var4 < 0.0D || var33 < var4)
+                                    double dy = y + 0.5D - entity.y;
+                                    double distanceSq = dx * dx + dy * dy + dz * dz;
+                                    if (closestDistance < 0.0D || distanceSq < closestDistance)
                                     {
-                                        var4 = var33;
-                                        var9 = var14;
-                                        var10 = var20;
-                                        var11 = var17;
-                                        var12 = var21 % 2;
+                                        closestDistance = distanceSq;
+                                        bestX = x;
+                                        bestY = y;
+                                        bestZ = z;
+                                        bestDirection = dirOffset % 2;
                                     }
                                 }
                             }
@@ -245,74 +223,72 @@ public class PortalForcer
             }
         }
 
-        int var30 = var9;
-        int var16 = var10;
-        var17 = var11;
-        int var31 = var12 % 2;
-        int var19 = 1 - var31;
-        if (var12 % 4 >= 2)
+        // Phase 3: Force generation
+        int finalX = bestX;
+        int finalY = bestY;
+        int finalZ = bestZ;
+        
+        int finalDirX = bestDirection % 2;
+        int finalDirZ = 1 - finalDirX;
+        
+        if (bestDirection % 4 >= 2)
         {
-            var31 = -var31;
-            var19 = -var19;
+            finalDirX = -finalDirX;
+            finalDirZ = -finalDirZ;
         }
 
-        bool var34;
-        if (var4 < 0.0D)
+        // If no valid spot was found, carve one out in the sky/ground.
+        if (closestDistance < 0.0D)
         {
-            if (var10 < 70)
-            {
-                var10 = 70;
-            }
+            finalY = Math.Clamp(finalY, 70, 118);
 
-            if (var10 > 118)
+            for (int w = -1; w <= 1; ++w)
             {
-                var10 = 118;
-            }
-
-            var16 = var10;
-
-            for (var20 = -1; var20 <= 1; ++var20)
-            {
-                for (var21 = 1; var21 < 3; ++var21)
+                for (int wDepth = 1; wDepth < 3; ++wDepth)
                 {
-                    for (var22 = -1; var22 < 3; ++var22)
+                    for (int h = -1; h < 3; ++h)
                     {
-                        var23 = var30 + (var21 - 1) * var31 + var20 * var19;
-                        var24 = var16 + var22;
-                        var25 = var17 + (var21 - 1) * var19 - var20 * var31;
-                        var34 = var22 < 0;
-                        world.setBlock(var23, var24, var25, var34 ? Block.Obsidian.id : 0);
+                        int buildX = finalX + (wDepth - 1) * finalDirX + w * finalDirZ;
+                        int buildY = finalY + h;
+                        int buildZ = finalZ + (wDepth - 1) * finalDirZ - w * finalDirX;
+                        
+                        bool isFloor = h < 0;
+                        world.setBlock(buildX, buildY, buildZ, isFloor ? Block.Obsidian.id : 0);
                     }
                 }
             }
         }
 
-        for (var20 = 0; var20 < 4; ++var20)
+        // Phase 4: Construct the Obsidian Frame and spawn portal blocks 
+        for (int pass = 0; pass < 4; ++pass)
         {
             world.pauseTicking = true;
 
-            for (var21 = 0; var21 < 4; ++var21)
+            for (int wDepth = 0; wDepth < 4; ++wDepth)
             {
-                for (var22 = -1; var22 < 4; ++var22)
+                for (int h = -1; h < 4; ++h)
                 {
-                    var23 = var30 + (var21 - 1) * var31;
-                    var24 = var16 + var22;
-                    var25 = var17 + (var21 - 1) * var19;
-                    var34 = var21 == 0 || var21 == 3 || var22 == -1 || var22 == 3;
-                    world.setBlock(var23, var24, var25, var34 ? Block.Obsidian.id : Block.NetherPortal.id);
+                    int buildX = finalX + (wDepth - 1) * finalDirX;
+                    int buildY = finalY + h;
+                    int buildZ = finalZ + (wDepth - 1) * finalDirZ;
+                    
+                    bool isFrameEdge = wDepth == 0 || wDepth == 3 || h == -1 || h == 3;
+                    world.setBlock(buildX, buildY, buildZ, isFrameEdge ? Block.Obsidian.id : Block.NetherPortal.id);
                 }
             }
 
             world.pauseTicking = false;
 
-            for (var21 = 0; var21 < 4; ++var21)
+            // Block updates (lighting, neighbor checks)
+            for (int wDepth = 0; wDepth < 4; ++wDepth)
             {
-                for (var22 = -1; var22 < 4; ++var22)
+                for (int h = -1; h < 4; ++h)
                 {
-                    var23 = var30 + (var21 - 1) * var31;
-                    var24 = var16 + var22;
-                    var25 = var17 + (var21 - 1) * var19;
-                    world.notifyNeighbors(var23, var24, var25, world.getBlockId(var23, var24, var25));
+                    int buildX = finalX + (wDepth - 1) * finalDirX;
+                    int buildY = finalY + h;
+                    int buildZ = finalZ + (wDepth - 1) * finalDirZ;
+                    
+                    world.notifyNeighbors(buildX, buildY, buildZ, world.getBlockId(buildX, buildY, buildZ));
                 }
             }
         }

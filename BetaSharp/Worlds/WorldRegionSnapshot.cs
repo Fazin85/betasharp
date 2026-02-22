@@ -47,7 +47,7 @@ public class WorldRegionSnapshot : BlockView, IDisposable
             }
         }
 
-        _lightTable = (float[])world.dimension.lightLevelToLuminance.Clone();
+        _lightTable = (float[])world.dimension.LightLevelToLuminance.Clone();
         _skylightSubtracted = world.ambientDarkness;
     }
 

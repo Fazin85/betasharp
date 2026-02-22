@@ -44,7 +44,7 @@ public class ItemMap : NetworkSyncedItem
             mapState.centerX = world.getProperties().SpawnX;
             mapState.centerZ = world.getProperties().SpawnZ;
             mapState.scale = 3;
-            mapState.dimension = (sbyte)world.dimension.id;
+            mapState.dimension = (sbyte)world.dimension.Id;
             mapState.markDirty();
             world.setState(mapName, mapState);
         }
@@ -54,7 +54,7 @@ public class ItemMap : NetworkSyncedItem
 
     public void update(World world, Entity entity, MapState map)
     {
-        if (world.dimension.id == map.dimension)
+        if (world.dimension.Id == map.dimension)
         {
             short mapWidth = 128;
             short mapHeight = 128;
@@ -64,7 +64,7 @@ public class ItemMap : NetworkSyncedItem
             int entityPosX = MathHelper.Floor(entity.x - (double)centerX) / blocksPerPixel + mapWidth / 2;
             int entityPosZ = MathHelper.Floor(entity.z - (double)centerZ) / blocksPerPixel + mapHeight / 2;
             int scanRadius = 128 / blocksPerPixel;
-            if (world.dimension.hasCeiling)
+            if (world.dimension.HasCeiling)
             {
                 scanRadius /= 2;
             }
@@ -101,7 +101,7 @@ public class ItemMap : NetworkSyncedItem
                             int sampleZ;
                             int currentY;
                             int colorIndex;
-                            if (world.dimension.hasCeiling)
+                            if (world.dimension.HasCeiling)
                             {
                                 sampleX = worldX + worldZ * 231871;
                                 sampleX = sampleX * sampleX * 31287121 + sampleX * 11;
@@ -296,7 +296,7 @@ public class ItemMap : NetworkSyncedItem
         mapState.centerX = MathHelper.Floor(entityPlayer.x);
         mapState.centerZ = MathHelper.Floor(entityPlayer.z);
         mapState.scale = 3;
-        mapState.dimension = (sbyte)world.dimension.id;
+        mapState.dimension = (sbyte)world.dimension.Id;
         mapState.markDirty();
     }
 
