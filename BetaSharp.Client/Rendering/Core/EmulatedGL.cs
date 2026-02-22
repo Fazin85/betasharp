@@ -548,4 +548,10 @@ public unsafe class EmulatedGL : LegacyGL
             }
         }
     }
+
+    public override void LineWidth(float width)
+    {
+        // TODO: ADD A BETTER WAY TO DO LINE WIDTH
+        SilkGL.LineWidth(1.0f); // > 1.0 IS DEPRECATED
+    }
 }

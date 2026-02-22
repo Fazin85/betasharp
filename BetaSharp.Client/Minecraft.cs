@@ -96,6 +96,7 @@ public partial class Minecraft
     private int joinPlayerCounter;
     private ImGuiController imGuiController;
     public InternalServer? internalServer;
+    private GLErrorHandler _glErrorHandler;
 
     public Minecraft(int width, int height, bool isFullscreen)
     {
@@ -181,6 +182,7 @@ public partial class Minecraft
         {
             int[] msaaValues = [0, 2, 4, 8];
             Display.MSAA_Samples = msaaValues[options.MSAALevel];
+            Display.DebugMode = options.DebugMode;
 
             Display.create();
             Display.getGlfw().SetWindowSizeLimits(Display.getWindowHandle(), 850, 480, 3840, 2160);
@@ -188,6 +190,11 @@ public partial class Minecraft
             GLManager.Init(Display.getGL()!);
 
             Display.getGlfw().SwapInterval(options.VSync ? 1 : 0);
+
+            if (options.DebugMode)
+            {
+                _glErrorHandler = new();
+            }
         }
         catch (Exception ex)
         {
@@ -1615,7 +1622,7 @@ public partial class Minecraft
         }
         else
         {
-            mc.session = new Session("Player" + java.lang.System.currentTimeMillis() % 1000L, "");
+            throw new Exception("Player name and session token were not provided!");
         }
 
         mc.Run();

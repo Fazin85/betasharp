@@ -327,7 +327,7 @@ public unsafe class LegacyGL : IGL
         SilkGL.LightModel(pname, params_);
     }
 
-    public void LineWidth(float width)
+    public virtual void LineWidth(float width)
     {
         SilkGL.LineWidth(width);
     }
