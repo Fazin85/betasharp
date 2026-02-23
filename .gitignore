@@ -370,3 +370,6 @@ FodyWeavers.xsd
 
 # Visual Studio Code
 .vscode
+
+# ImGui configuration file
+imgui.ini
