@@ -1,5 +1,4 @@
 using BetaSharp.Util.Maths;
-using java.lang;
 
 namespace BetaSharp.PathFinding;
 
@@ -9,7 +8,7 @@ internal class PathPoint
     public readonly int X;
     public readonly int Y;
     public readonly int Z;
-    
+
     public int Index = -1;
     public float TotalPathDistance;
     public float DistanceToNext;
@@ -27,11 +26,11 @@ internal class PathPoint
 
     public static int CalculateHash(int x, int y, int z)
     {
-        return (y & 255) | 
-               ((x & short.MaxValue) << 8) | 
-               ((z & short.MaxValue) << 24) | 
-               (x < 0 ? int.MinValue : 0) | 
-               (z < 0 ? 32768 : 0); 
+        return (y & 255) |
+               ((x & short.MaxValue) << 8) |
+               ((z & short.MaxValue) << 24) |
+               (x < 0 ? int.MinValue : 0) |
+               (z < 0 ? 32768 : 0);
     }
 
     public float DistanceTo(PathPoint other)
@@ -44,10 +43,10 @@ internal class PathPoint
 
     public override bool Equals(object? obj)
     {
-        return obj is PathPoint other && 
-               _hash == other._hash && 
-               X == other.X && 
-               Y == other.Y && 
+        return obj is PathPoint other &&
+               _hash == other._hash &&
+               X == other.X &&
+               Y == other.Y &&
                Z == other.Z;
     }
 

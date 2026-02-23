@@ -72,7 +72,7 @@ public class EntityCreature : EntityLiving
             while (pos != null && pos.Value.squareDistanceTo(new Vec3D(x, pos.Value.y, z)) < distance * distance)
             {
                 pathToEntity.IncrementPathIndex();
-                if (pathToEntity.IsFinished())
+                if (pathToEntity.IsFinished)
                 {
                     pos = null;
                     pathToEntity = null;

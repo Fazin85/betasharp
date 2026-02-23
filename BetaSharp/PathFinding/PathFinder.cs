@@ -35,9 +35,9 @@ internal class Pathfinder
 
         PathPoint startPoint = OpenPoint(MathHelper.Floor(entity.boundingBox.minX), MathHelper.Floor(entity.boundingBox.minY), MathHelper.Floor(entity.boundingBox.minZ));
         PathPoint targetPoint = OpenPoint(MathHelper.Floor(targetX - (entity.width / 2.0f)), MathHelper.Floor(targetY), MathHelper.Floor(targetZ - (entity.width / 2.0f)));
-        
+
         PathPoint sizePoint = new(MathHelper.Floor(entity.width + 1.0f), MathHelper.Floor(entity.height + 1.0f), MathHelper.Floor(entity.width + 1.0f));
-        
+
         return AddToPath(entity, startPoint, targetPoint, sizePoint, maxDistance);
     }
 
@@ -46,16 +46,16 @@ internal class Pathfinder
         start.TotalPathDistance = 0.0f;
         start.DistanceToNext = start.DistanceTo(target);
         start.DistanceToTarget = start.DistanceToNext;
-        
+
         _path.ClearPath();
         _path.AddPoint(start);
-        
+
         PathPoint closestPoint = start;
 
         while (!_path.IsPathEmpty())
         {
             PathPoint current = _path.Dequeue();
-            
+
             if (current.Equals(target))
             {
                 return CreateEntityPath(start, target);
@@ -73,13 +73,13 @@ internal class Pathfinder
             {
                 PathPoint option = _pathOptions[i];
                 float totalDistance = current.TotalPathDistance + current.DistanceTo(option);
-                
+
                 if (!option.IsAssigned() || totalDistance < option.TotalPathDistance)
                 {
                     option.Previous = current;
                     option.TotalPathDistance = totalDistance;
                     option.DistanceToNext = option.DistanceTo(target);
-                    
+
                     if (option.IsAssigned())
                     {
                         _path.ChangeDistance(option, option.TotalPathDistance + option.DistanceToNext);
@@ -97,7 +97,7 @@ internal class Pathfinder
         {
             return null;
         }
-        
+
         return CreateEntityPath(start, closestPoint);
     }
 
@@ -105,7 +105,7 @@ internal class Pathfinder
     {
         int optionCount = 0;
         byte stepUp = 0;
-        
+
         if (GetVerticalOffset(entity, current.X, current.Y + 1, current.Z, size) == 1)
         {
             stepUp = 1;
@@ -134,7 +134,7 @@ internal class Pathfinder
     private PathPoint? GetSafePoint(Entity entity, int x, int y, int z, PathPoint size, int stepUp)
     {
         PathPoint? safePoint = null;
-        
+
         if (GetVerticalOffset(entity, x, y, z, size) == 1)
         {
             safePoint = OpenPoint(x, y, z);
@@ -172,7 +172,7 @@ internal class Pathfinder
                 }
             }
 
-            if (offsetStatus == -2) 
+            if (offsetStatus == -2)
             {
                 return null;
             }
@@ -184,7 +184,7 @@ internal class Pathfinder
     private PathPoint OpenPoint(int x, int y, int z)
     {
         int hash = PathPoint.CalculateHash(x, y, z);
-    
+
         if (!_pointMap.TryGetValue(hash, out PathPoint? point))
         {
             point = new PathPoint(x, y, z);
@@ -208,7 +208,7 @@ internal class Pathfinder
                         if (blockId != Block.IronDoor.id && blockId != Block.Door.id)
                         {
                             Material material = Block.Blocks[blockId].material;
-                            if (material.BlocksMovement) return 0; 
+                            if (material.BlocksMovement) return 0;
                             if (material == Material.Water) return -1;
                             if (material == Material.Lava) return -2;
                         }
@@ -244,11 +244,12 @@ internal class Pathfinder
         length--;
 
         pathPoints[length] = end;
+
         while (current.Previous != null)
         {
-            pathPoints[length] = current.Previous;
             current = current.Previous;
             length--;
+            pathPoints[length] = current;
         }
 
         return new PathEntity(pathPoints);
