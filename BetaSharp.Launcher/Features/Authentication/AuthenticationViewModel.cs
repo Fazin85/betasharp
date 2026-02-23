@@ -22,7 +22,7 @@ internal sealed partial class AuthenticationViewModel(AccountsService accountsSe
             return;
         }
 
-        await accountsService.SaveAsync(token.Value, DateTimeOffset.Now.AddSeconds(token.Expiration));
+        await accountsService.RefreshAsync(token.Value, DateTimeOffset.Now.AddSeconds(token.Expiration));
 
         WeakReferenceMessenger.Default.Send(new NavigationMessage(Destination.Home));
     }

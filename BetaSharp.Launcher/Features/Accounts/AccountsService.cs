@@ -35,7 +35,6 @@ internal sealed class AccountsService(
 
         var mojang = await mojangClient.GetTokenAsync(xbox.Value, profile.DisplayClaims.Xui[0].Uhs);
 
-        // Check if owns Minecraft.
         var entitlements = await mojangClient.GetEntitlementsAsync(mojang.Value);
 
         if (!entitlements.Items.Any(item => item.Name is "product_minecraft" or "game_minecraft"))
@@ -73,7 +72,7 @@ internal sealed class AccountsService(
         return _account;
     }
 
-    public async Task SaveAsync(string token, DateTimeOffset expiration)
+    public async Task RefreshAsync(string token, DateTimeOffset expiration)
     {
         var profile = await mojangClient.GetProfileAsync(token);
 
