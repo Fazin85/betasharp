@@ -64,7 +64,7 @@ public class TextRenderer
                 {
                     int pixelIndex = (row * 8 + yOffset) * imgWidth + xOffset;
                     int alpha = pixels[pixelIndex] & 255;
-                    
+
                     if (alpha > 0)
                     {
                         columnIsEmpty = false;
@@ -94,11 +94,11 @@ public class TextRenderer
         {
             GLManager.GL.NewList((uint)(_fontDisplayLists + charIndex), GLEnum.Compile);
             tessellator.startDrawingQuads();
-            
+
             int u = (charIndex % 16) * 8;
             int v = (charIndex / 16) * 8;
-            
-            float quadSize = 7.99F; 
+
+            float quadSize = 7.99F;
             float uvOffset = 0.0F;
 
             tessellator.addVertexWithUV(0.0D, quadSize, 0.0D, (u / 128.0F) + uvOffset, ((v + quadSize) / 128.0F) + uvOffset);
@@ -117,7 +117,7 @@ public class TextRenderer
             int r = (colorIndex >> 2 & 1) * 170 + baseColorOffset;
             int g = (colorIndex >> 1 & 1) * 170 + baseColorOffset;
             int b = (colorIndex >> 0 & 1) * 170 + baseColorOffset;
-            
+
             if (colorIndex == 6)
             {
                 r += 85;
@@ -160,69 +160,78 @@ public class TextRenderer
         }
 
         GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)fontTextureName);
-        float a = (color >> 24 & 255) / 255.0F;
-        float r = (color >> 16 & 255) / 255.0F;
-        float g = (color >> 8 & 255) / 255.0F;
-        float b = (color & 255) / 255.0F;
-        
-        if (a == 0.0F) a = 1.0F;
+
+        float a = ((color >> 24) & 255) * (1.0f / 255.0f);
+        float r = ((color >> 16) & 255) * (1.0f / 255.0f);
+        float g = ((color >> 8) & 255) * (1.0f / 255.0f);
+        float b = (color & 255) * (1.0f / 255.0f);
+
+        if (a == 0f) a = 1f;
 
         GLManager.GL.Color4(r, g, b, a);
 
         int bufferPos = 0;
+        int length = text.Length;
 
         GLManager.GL.PushMatrix();
-        GLManager.GL.Translate((float)x, (float)y, 0.0F);
+        GLManager.GL.Translate(x, y, 0.0f);
 
-        for (int i = 0; i < text.Length; ++i)
+        int offset = 256 + (darken ? 16 : 0);
+
+        fixed (uint* listPtr = _listBuffer)
         {
-            for (; text.Length > i + 1 && text[i] == 167; i += 2)
+            for (int i = 0; i < length; i++)
             {
-                int colorCode = "0123456789abcdef".IndexOf(text.ToLower()[i + 1]);
-                if (colorCode < 0 || colorCode > 15)
+                char c = text[i];
+
+                // formatting code
+                if (c == '§' && i + 1 < length)
                 {
-                    colorCode = 15;
+                    int colorCode = HexToDec(text[++i]);
+                    _listBuffer[bufferPos++] =
+                        (uint)(_fontDisplayLists + colorCode + offset);
+                }
+                else
+                {
+                    int charIndex = ChatAllowedCharacters.allowedCharacters.IndexOf(c);
+                    if (charIndex >= 0)
+                    {
+                        _listBuffer[bufferPos++] =
+                            (uint)(_fontDisplayLists + charIndex + 32);
+                    }
                 }
 
-                _listBuffer[bufferPos++] = (uint)(_fontDisplayLists + 256 + colorCode + (darken ? 16 : 0));
-
-                if (bufferPos >= 1024)
+                if (bufferPos == _listBuffer.Length)
                 {
-                    CallLists(bufferPos);
+                    GLManager.GL.CallLists((uint)bufferPos, GLEnum.UnsignedInt, listPtr);
                     bufferPos = 0;
                 }
             }
 
-            if (i < text.Length)
+            if (bufferPos > 0)
             {
-                int charIndex = ChatAllowedCharacters.allowedCharacters.IndexOf(text[i]);
-                if (charIndex >= 0)
-                {
-                    _listBuffer[bufferPos++] = (uint)(_fontDisplayLists + charIndex + 32);
-                }
-            }
-
-            if (bufferPos >= 1024)
-            {
-                CallLists(bufferPos);
-                bufferPos = 0;
+                GLManager.GL.CallLists((uint)bufferPos, GLEnum.UnsignedInt, listPtr);
             }
         }
 
-        if (bufferPos > 0)
-        {
-            CallLists(bufferPos);
-        }
-        
         GLManager.GL.PopMatrix();
+    }
 
-        void CallLists(int count)
-        {
-            fixed (uint* ptr = _listBuffer)
-            {
-                GLManager.GL.CallLists((uint)count, GLEnum.UnsignedInt, ptr);
-            }
-        }
+    /// <summary>
+    /// Get decimal value of give hex char.
+    /// Non-hex characters are not handled,
+    /// but will still return a value between 0 and 15 inclusive.
+    /// </summary>
+    /// <param name="c">input character (case-insensitive)</param>
+    /// <returns>value between 0-15 inclusive</returns>
+    private int HexToDec(char c)
+    {
+        int v = c;
+        if (c <= '9') v -= '0';
+        else if (c <= 'F') v += 10 - 'A';
+        else if (c <= 'f') v += 10 - 'a';
+        else return 15;
+        return v <= 0 ? 0 : v;
     }
 
     public int GetStringWidth(string text)
