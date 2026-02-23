@@ -9,7 +9,7 @@ public class StatBasic : StatBase
     public override StatBase RegisterStat()
     {
         base.RegisterStat();
-        Stats.GENERAL_STATS.Add(this);
+        Stats.GeneralStats.Add(this);
         return this;
     }
 }

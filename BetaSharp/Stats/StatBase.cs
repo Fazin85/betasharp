@@ -38,14 +38,14 @@ public class StatBase
 
     public virtual StatBase RegisterStat()
     {
-        if (Stats.ID_TO_STAT.ContainsKey(Id))
+        if (Stats.IdToStat.ContainsKey(Id))
         {
-            string existingStatName = Stats.ID_TO_STAT[Id].StatName;
+            string existingStatName = Stats.IdToStat[Id].StatName;
             throw new InvalidOperationException($"Duplicate stat id: \"{existingStatName}\" and \"{StatName}\" at id {Id}");
         }
         
-        Stats.ALL_STATS.Add(this);
-        Stats.ID_TO_STAT.Add(Id, this);
+        Stats.AllStats.Add(this);
+        Stats.IdToStat.Add(Id, this);
         StatGuid = AchievementMap.getGuid(Id);
         
         return this;

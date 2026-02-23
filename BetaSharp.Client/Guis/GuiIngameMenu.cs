@@ -36,7 +36,7 @@ public class GuiIngameMenu : GuiScreen
 
         if (btt.Id == 1)
         {
-            mc.statFileWriter.readStat(Stats.Stats.leaveGameStat, 1);
+            mc.statFileWriter.readStat(Stats.Stats.LeaveGameStat, 1);
             if (mc.isMultiplayerWorld())
             {
                 mc.world.Disconnect();

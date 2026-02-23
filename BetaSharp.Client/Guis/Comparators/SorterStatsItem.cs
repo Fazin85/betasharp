@@ -15,17 +15,17 @@ public class SorterStatsItem(GuiSlotStatsItem slotStats, GuiStats stats) : IComp
 
         StatBase? statX = slotStats.ActiveStatType switch
         {
-            0 => Stats.Stats.BROKEN[idX],
-            1 => Stats.Stats.CRAFTED[idX],
-            2 => Stats.Stats.USED[idX],
+            0 => Stats.Stats.Broken[idX],
+            1 => Stats.Stats.Crafted[idX],
+            2 => Stats.Stats.Used[idX],
             _ => null
         };
 
         StatBase? statY = slotStats.ActiveStatType switch
         {
-            0 => Stats.Stats.BROKEN[idY],
-            1 => Stats.Stats.CRAFTED[idY],
-            2 => Stats.Stats.USED[idY],
+            0 => Stats.Stats.Broken[idY],
+            1 => Stats.Stats.Crafted[idY],
+            2 => Stats.Stats.Used[idY],
             _ => null
         };
 
