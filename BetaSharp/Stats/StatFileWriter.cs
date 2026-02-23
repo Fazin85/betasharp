@@ -128,23 +128,6 @@ public class StatFileWriter
                     }
                 }
             }
-
-            string statsChecksum = new MD5String("local").Hash(sb.ToString());
-
-            if (root.TryGetProperty("checksum", out JsonElement checksumElement))
-            {
-                string checksum = checksumElement.GetString();
-                if (!statsChecksum.Equals(checksum))
-                {
-                    s_logger.LogInformation("CHECKSUM MISMATCH");
-                    return null;
-                }
-            }
-            else
-            {
-                s_logger.LogInformation("CHECKSUM MISMATCH");
-                return null;
-            }
         }
         catch (JsonException ex)
         {
@@ -190,9 +173,8 @@ public class StatFileWriter
         if (!isFirst)
             sb.Append("}");
 
-        var md5 = new MD5String(salt!);
         sb.Append("\r\n  ],\r\n");
-        sb.Append("  \"checksum\":\"").Append(md5.Hash(hashDataBuilder.ToString())).Append("\"\r\n");
+        sb.Append("  \"checksum\":\"").Append("NoChecksum").Append("\"\r\n");
         sb.Append("}");
 
         return sb.ToString();
