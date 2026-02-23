@@ -20,10 +20,7 @@ internal class PathPoint
 
     public PathPoint(int x, int y, int z)
     {
-        X = x;
-        Y = y;
-        Z = z;
-        _hash = CalculateHash(x, y, z);
+        Init(x, y, z);
     }
 
     public void Init(int x, int y, int z)
