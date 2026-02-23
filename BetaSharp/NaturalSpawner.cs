@@ -108,7 +108,7 @@ public static class NaturalSpawner
     public static bool SpawnMonstersAndWakePlayers(World world, List<EntityPlayer> players)
     {
         bool monstersSpawned = false;
-        var pathfinder = new Pathfinder(world);
+        var pathfinder = new PathFinder(world);
         foreach (var player in players)
         {
             for (int i = 0; i < 20; ++i)

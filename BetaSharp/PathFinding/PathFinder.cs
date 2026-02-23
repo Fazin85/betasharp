@@ -6,7 +6,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.PathFinding;
 
-internal class Pathfinder
+internal class PathFinder
 {
     private readonly BlockView _worldMap;
     private readonly Path _path = new();
@@ -16,7 +16,7 @@ internal class Pathfinder
     private readonly PathPoint[] _pointPool = new PathPoint[4096];
     private int _poolIndex;
 
-    public Pathfinder(BlockView worldMap)
+    public PathFinder(BlockView worldMap)
     {
         _worldMap = worldMap;
 
