@@ -4,21 +4,21 @@ using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Client.Resource;
 
-public class MinecraftResourceDownloader : IDisposable
+public class BetaResourceDownloader : IResourceLoader, IDisposable
 {
     private const string RESOURCE_URL = "http://s3.amazonaws.com/MinecraftResources/";
     private const string BETACRAFT_PROXY_HOST = "betacraft.uk";
     private const int BETACRAFT_PROXY_PORT = 11705;
 
-    private readonly ILogger<MinecraftResourceDownloader> _logger = Log.Instance.For<MinecraftResourceDownloader>();
+    private readonly ILogger<BetaResourceDownloader> _logger = Log.Instance.For<BetaResourceDownloader>();
     private readonly HttpClient _httpClient;
     private readonly string _resourcesDirectory;
-    private readonly Minecraft mc;
+    private readonly Minecraft _mc;
     private bool _cancelled;
 
-    public MinecraftResourceDownloader(Minecraft mc, string baseDirectory)
+    public BetaResourceDownloader(Minecraft mc, string baseDirectory)
     {
-        this.mc = mc;
+        _mc = mc;
         _resourcesDirectory = System.IO.Path.Combine(baseDirectory, "resources");
         Directory.CreateDirectory(_resourcesDirectory);
 
@@ -38,16 +38,16 @@ public class MinecraftResourceDownloader : IDisposable
     {
         if (File.Exists(manifestFilePath))
         {
-            var lines = File.ReadAllLines(manifestFilePath);
+            string[] lines = File.ReadAllLines(manifestFilePath);
             int loaded = 0;
 
-            foreach (var line in lines)
+            foreach (string line in lines)
             {
-                var localFile = System.IO.Path.Combine(_resourcesDirectory, line);
+                string localFile = System.IO.Path.Combine(_resourcesDirectory, line);
                 if (File.Exists(localFile))
                 {
                     loaded++;
-                    mc.installResource(line, new FileInfo(localFile));
+                    _mc.installResource(line, new FileInfo(localFile));
                 }
             }
 
@@ -65,7 +65,7 @@ public class MinecraftResourceDownloader : IDisposable
         return false;
     }
 
-    public async Task DownloadResourcesAsync()
+    public async Task LoadAsync()
     {
         string manifestFilePath = System.IO.Path.Combine(_resourcesDirectory, "resourceManifest.txt");
 
@@ -78,16 +78,16 @@ public class MinecraftResourceDownloader : IDisposable
         {
             _logger.LogInformation("Fetching resource list...");
 
-            var response = await _httpClient.GetAsync(RESOURCE_URL);
+            HttpResponseMessage response = await _httpClient.GetAsync(RESOURCE_URL);
             response.EnsureSuccessStatusCode();
 
-            var xmlContent = await response.Content.ReadAsStringAsync();
+            string xmlContent = await response.Content.ReadAsStringAsync();
 
-            var resources = ParseResourceXml(xmlContent);
+            List<ResourceEntry> resources = ParseResourceXml(xmlContent);
 
             List<string> resourceFileNames = [];
 
-            foreach (var resource in resources)
+            foreach (ResourceEntry resource in resources)
             {
                 resourceFileNames.Add(resource.Key);
             }
@@ -98,7 +98,7 @@ public class MinecraftResourceDownloader : IDisposable
 
             for (int pass = 0; pass < 2; pass++)
             {
-                foreach (var resource in resources)
+                foreach (ResourceEntry resource in resources)
                 {
                     if (_cancelled) return;
 
@@ -118,7 +118,7 @@ public class MinecraftResourceDownloader : IDisposable
         var doc = new XmlDocument();
         doc.LoadXml(xmlContent);
 
-        var contents = doc.GetElementsByTagName("Contents");
+        XmlNodeList contents = doc.GetElementsByTagName("Contents");
 
         foreach (XmlNode node in contents)
         {
@@ -126,11 +126,11 @@ public class MinecraftResourceDownloader : IDisposable
             {
                 var element = (XmlElement)node;
 
-                var keyNode = element.GetElementsByTagName("Key")[0];
-                var sizeNode = element.GetElementsByTagName("Size")[0];
+                XmlNode? keyNode = element.GetElementsByTagName("Key")[0];
+                XmlNode? sizeNode = element.GetElementsByTagName("Size")[0];
 
-                string key = keyNode.InnerText;
-                long size = long.Parse(sizeNode.InnerText);
+                string key = keyNode!.InnerText;
+                long size = long.Parse(sizeNode!.InnerText);
 
                 if (size > 0)
                 {
@@ -160,7 +160,7 @@ public class MinecraftResourceDownloader : IDisposable
 
             if (localFile.Exists && localFile.Length == size)
             {
-                mc.installResource(path, new FileInfo(localFile.FullName));
+                _mc.installResource(path, new FileInfo(localFile.FullName));
                 return;
             }
 
@@ -173,7 +173,7 @@ public class MinecraftResourceDownloader : IDisposable
 
             if (!_cancelled)
             {
-                mc.installResource(path, new FileInfo(localFile.FullName));
+                _mc.installResource(path, new FileInfo(localFile.FullName));
             }
         }
         catch (Exception ex)
@@ -184,19 +184,19 @@ public class MinecraftResourceDownloader : IDisposable
 
     private async Task DownloadFile(string url, string destinationPath)
     {
-        var response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+        HttpResponseMessage response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
         response.EnsureSuccessStatusCode();
 
-        using var stream = await response.Content.ReadAsStreamAsync();
+        using Stream stream = await response.Content.ReadAsStreamAsync();
         using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None);
         byte[] buffer = new byte[4096];
         int bytesRead;
 
-        while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+        while ((bytesRead = await stream.ReadAsync(buffer)) > 0)
         {
             if (_cancelled) return;
 
-            await fileStream.WriteAsync(buffer, 0, bytesRead);
+            await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
         }
     }
 

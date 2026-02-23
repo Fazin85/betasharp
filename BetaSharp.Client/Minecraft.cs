@@ -276,8 +276,15 @@ public partial class Minecraft
         GLManager.GL.Viewport(0, 0, (uint)displayWidth, (uint)displayHeight);
         particleManager = new ParticleManager(world, textureManager);
 
-        MinecraftResourceDownloader downloader = new(this, mcDataDir.getAbsolutePath());
-        _ = downloader.DownloadResourcesAsync();
+        string dataDirPath = mcDataDir.getAbsolutePath();
+
+        _ = new ResourceManager()
+            .Add(new BetaResourceDownloader(this, dataDirPath))
+            .Add(new ModernAssetDownloader(this, dataDirPath,
+                [
+                 "minecraft/sounds/music/menu/moog_city_2.ogg",
+                 "minecraft/sounds/music/menu/mutation.ogg"
+                ])).LoadAllAsync();
 
         checkGLError("Post startup");
         ingameGUI = new GuiIngame(this);
@@ -1522,6 +1529,17 @@ public partial class Minecraft
         else if (category.Equals("newmusic", StringComparison.OrdinalIgnoreCase))
         {
             sndManager.AddMusic(resourcePath, resourceFile);
+        }
+        else if (category.Equals("custom", StringComparison.OrdinalIgnoreCase))
+        {
+            int subSlash = resourcePath.IndexOf("/");
+            string subCategory = resourcePath.Substring(0, subSlash);
+            resourcePath = resourcePath.Substring(subSlash + 1);
+
+            if (subCategory.Equals("music", StringComparison.OrdinalIgnoreCase))
+            {
+                sndManager.AddMusic(resourcePath, resourceFile);
+            }
         }
     }
 
