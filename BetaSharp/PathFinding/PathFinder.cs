@@ -62,8 +62,13 @@ internal class Pathfinder
 
         PathPoint closestPoint = start;
 
+        int iterations = 1024;
+        int iterationLimit = 1024;
+
         while (!_path.IsPathEmpty())
         {
+            if (iterations++ > 1024) break;
+
             PathPoint current = _path.Dequeue();
 
             if (current.Equals(target))
