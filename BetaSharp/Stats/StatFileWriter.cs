@@ -133,14 +133,14 @@ public class StatFileWriter
                         ? var9.Value.GetInt32()
                         : java.lang.Integer.parseInt(var9.Value.GetString());
 
-                    StatBase var12 = Stats.getStatById(var10);
+                    StatBase var12 = Stats.GetStatById(var10);
                     if (var12 == null)
                     {
                         s_logger.LogInformation($"{var10} is not a valid stat");
                     }
                     else
                     {
-                        sb.append(Stats.getStatById(var10).StatGuid).append(",");
+                        sb.append(Stats.GetStatById(var10).StatGuid).append(",");
                         sb.append(var11).append(",");
                         statsMap.put(var12, java.lang.Integer.valueOf(var11));
                     }

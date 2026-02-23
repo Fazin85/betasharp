@@ -15,7 +15,7 @@ public class Item : java.lang.Object
 
     static Item()
     {
-        Stats.Stats.initializeExtendedItemStats();
+        Stats.Stats.InitializeExtendedItemStats();
     }
 
     protected static JavaRandom itemRand = new();

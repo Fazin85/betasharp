@@ -575,6 +575,6 @@ public class Block
         }
 
         BlocksAllowVision[0] = true;
-        Stats.Stats.initializeItemStats();
+        Stats.Stats.InitializeItemStats();
     }
 }
