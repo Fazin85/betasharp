@@ -7,9 +7,9 @@ using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Stats;
 
-public class StatsSyncer
+public class StatsSynchronizer
 {
-    private static readonly ILogger<StatsSyncer> s_logger = Log.Instance.For<StatsSyncer>();
+    private static readonly ILogger<StatsSynchronizer> s_logger = Log.Instance.For<StatsSynchronizer>();
 
     private volatile bool _busy;
     private volatile Dictionary<StatBase, int> _mergedData;
@@ -28,7 +28,7 @@ public class StatsSyncer
     private int _syncTimeout;
     private int _timeoutCounter;
 
-    public StatsSyncer(Session session, StatFileWriter statFileWriter, string statsFolder)
+    public StatsSynchronizer(Session session, StatFileWriter statFileWriter, string statsFolder)
     {
         string usernameLower = session.username.ToLowerInvariant();
         
@@ -127,7 +127,7 @@ public class StatsSyncer
         _syncTimeout = 100;
         _busy = true;
         
-        new Threading.ThreadStatSyncerReceive(this).run();
+        new Threading.ThreadStatSynchronizerReceive(this).Start();
     }
 
     public void SendStats(Dictionary<StatBase, int> statsMap)
@@ -140,15 +140,7 @@ public class StatsSyncer
         _syncTimeout = 100;
         _busy = true;
 
-        // TODO:convert to Java Map
-        // when Threading gets refactored, this can be removed
-        var statsMapJava = new java.util.HashMap();
-        foreach (var kvp in statsMap)
-        {
-            statsMapJava.put(kvp.Key, kvp.Value);
-        }
-
-        new Threading.ThreadStatSyncerSend(this, statsMapJava).run();
+        new Threading.ThreadStatSynchronizerSend(this, statsMap).Start();
     }
 
     public void SyncStatsFileWithMap(Dictionary<StatBase, int> statsMap)

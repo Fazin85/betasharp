@@ -208,7 +208,7 @@ public partial class Minecraft
         FoliageColors.loadColors(textureManager.GetColors("/misc/foliagecolor.png"));
         gameRenderer = new GameRenderer(this);
         EntityRenderDispatcher.instance.heldItemRenderer = new HeldItemRenderer(this);
-        statFileWriter = new StatFileWriter(session, mcDataDir);
+        statFileWriter = new StatFileWriter(session, mcDataDir.getAbsolutePath());
 
         StatStringFormatKeyInv format = new(this);
         BetaSharp.Achievements.OpenInventory.GetTranslatedDescription = () =>
@@ -358,10 +358,10 @@ public partial class Minecraft
 
         if (newScreen is GuiMainMenu)
         {
-            statFileWriter.func_27175_b();
+            statFileWriter.Tick();
         }
 
-        statFileWriter.syncStats();
+        statFileWriter.SyncStats();
         if (newScreen == null && world == null)
         {
             newScreen = new GuiMainMenu();
@@ -417,8 +417,8 @@ public partial class Minecraft
         try
         {
             stopInternalServer();
-            statFileWriter.func_27175_b();
-            statFileWriter.syncStats();
+            statFileWriter.Tick();
+            statFileWriter.SyncStats();
 
             _logger.LogInformation("Stopping!");
 
@@ -1059,9 +1059,9 @@ public partial class Minecraft
     {
         Profiler.PushGroup("runTick");
 
-        Profiler.Start("statFileWriter.func_27178_d");
-        statFileWriter.func_27178_d();
-        Profiler.Stop("statFileWriter.func_27178_d");
+        Profiler.Start("statFileWriter.SyncStatsIfReady");
+        statFileWriter.SyncStatsIfReady();
+        Profiler.Stop("statFileWriter.SyncStatsIfReady");
         Profiler.Start("ingameGUI.updateTick");
         ingameGUI.updateTick();
         Profiler.Stop("ingameGUI.updateTick");
@@ -1402,8 +1402,8 @@ public partial class Minecraft
 
     public void changeWorld(World newWorld, string loadingText = "", EntityPlayer targetEntity = null)
     {
-        statFileWriter.func_27175_b();
-        statFileWriter.syncStats();
+        statFileWriter.Tick();
+        statFileWriter.SyncStats();
         camera = null;
         loadingScreen.printText(loadingText);
         loadingScreen.progressStage("");

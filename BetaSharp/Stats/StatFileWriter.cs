@@ -12,7 +12,7 @@ public class StatFileWriter
     private readonly Dictionary<StatBase, int> _statsData = new();
     private readonly Dictionary<StatBase, int> _statsSyncedData = new();
     private bool _statsExist;
-    private readonly StatsSyncer _statsSyncer;
+    private readonly StatsSynchronizer _statsSyncer;
 
     public StatFileWriter(Session session, string mcDataDir)
     {
@@ -36,7 +36,7 @@ public class StatFileWriter
                 }
             }
         }
-        _statsSyncer = new StatsSyncer(session, this, statsFolder);
+        _statsSyncer = new StatsSynchronizer(session, this, statsFolder);
     }
 
     public void ReadStat(StatBase stat, int increment)

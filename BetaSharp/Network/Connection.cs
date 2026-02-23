@@ -300,7 +300,7 @@ public class Connection
     {
         interrupt();
         closed = true;
-        new ThreadCloseConnection(this).start();
+        new ThreadCloseConnection(this).Start();
     }
 
     public int getDelayedSendQueueSize()

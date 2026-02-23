@@ -17,9 +17,9 @@ public class GuiSlotStatsBlock : GuiSlotStats<StatCrafting, StatCrafting>
         Stats = BetaSharp.Stats.Stats.BlocksMinedStats
             .OfType<StatCrafting>()
             .Where(stat =>
-                parent.statFileWriter.writeStat(stat) > 0 ||
-                (BetaSharp.Stats.Stats.Used[stat.ItemId] is StatCrafting used && parent.statFileWriter.writeStat(used) > 0) ||
-                (BetaSharp.Stats.Stats.Crafted[stat.ItemId] is StatCrafting crafted && parent.statFileWriter.writeStat(crafted) > 0))
+                parent.statFileWriter.GetStatValue(stat) > 0 ||
+                (BetaSharp.Stats.Stats.Used[stat.ItemId] is StatCrafting used && parent.statFileWriter.GetStatValue(used) > 0) ||
+                (BetaSharp.Stats.Stats.Crafted[stat.ItemId] is StatCrafting crafted && parent.statFileWriter.GetStatValue(crafted) > 0))
             .ToList();
     }
 

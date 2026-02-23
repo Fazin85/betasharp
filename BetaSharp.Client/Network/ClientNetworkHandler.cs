@@ -64,7 +64,7 @@ public class ClientNetworkHandler : NetHandler
     public override void onHello(LoginHelloPacket packet)
     {
         mc.playerController = new PlayerControllerMP(mc, this);
-        mc.statFileWriter.readStat(Stats.Stats.JoinMultiplayerStat, 1);
+        mc.statFileWriter.ReadStat(Stats.Stats.JoinMultiplayerStat, 1);
         worldClient = new ClientWorld(this, packet.worldSeed, packet.dimensionId)
         {
             isRemote = true

@@ -49,7 +49,7 @@ public class ClientPlayerEntity : EntityPlayer
 
     public override void tickMovement()
     {
-        if (!mc.statFileWriter.hasAchievementUnlocked(BetaSharp.Achievements.OpenInventory))
+        if (!mc.statFileWriter.HasAchievementUnlocked(BetaSharp.Achievements.OpenInventory))
         {
             mc.guiAchievement.queueAchievementInformation(BetaSharp.Achievements.OpenInventory);
         }
@@ -227,19 +227,19 @@ public class ClientPlayerEntity : EntityPlayer
             if (stat.IsAchievement())
             {
                 Achievement achievement = (Achievement)stat;
-                if (achievement.parent == null || mc.statFileWriter.hasAchievementUnlocked(achievement.parent))
+                if (achievement.parent == null || mc.statFileWriter.HasAchievementUnlocked(achievement.parent))
                 {
-                    if (!mc.statFileWriter.hasAchievementUnlocked(achievement))
+                    if (!mc.statFileWriter.HasAchievementUnlocked(achievement))
                     {
                         mc.guiAchievement.queueTakenAchievement(achievement);
                     }
 
-                    mc.statFileWriter.readStat(stat, value);
+                    mc.statFileWriter.ReadStat(stat, value);
                 }
             }
             else
             {
-                mc.statFileWriter.readStat(stat, value);
+                mc.statFileWriter.ReadStat(stat, value);
             }
 
         }
