@@ -1,6 +1,6 @@
 namespace BetaSharp.Stats;
 
-public class StatBasic : StatBase
+internal class StatBasic : StatBase
 {
     public StatBasic(int id, string statName, Func<int, string> formatter) : base(id, statName, formatter) { }
 

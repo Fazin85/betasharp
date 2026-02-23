@@ -1,43 +1,40 @@
-using java.io;
-using java.lang;
-using java.util;
-
 namespace BetaSharp.Stats.Achievements;
 
-public class AchievementMap : java.lang.Object
+internal class AchievementMap
 {
-    public static AchievementMap instance = new();
-    private readonly Map guidMap = new HashMap();
+    public static readonly AchievementMap Instance = new();
+    
+    private readonly Dictionary<int, string> _guidMap = new();
 
     private AchievementMap()
     {
         try
         {
-            BufferedReader var1 = new(new java.io.StringReader(AssetManager.Instance.getAsset("achievement/map.txt").getTextContent()));
+            string content = AssetManager.Instance.getAsset("achievement/map.txt").getTextContent();
+            
+            using StringReader reader = new(content);
 
-            while (true)
+            string? line;
+            while ((line = reader.ReadLine()) != null)
             {
-                string var2 = var1.readLine();
-                if (var2 == null)
-                {
-                    var1.close();
-                    break;
-                }
+                if (string.IsNullOrWhiteSpace(line)) continue;
 
-                string[] var3 = var2.Split(',');
-                int var4 = Integer.parseInt(var3[0]);
-                guidMap.put(Integer.valueOf(var4), var3[1]);
+                string[] parts = line.Split(',');
+                
+                if (parts.Length >= 2 && int.TryParse(parts[0], out int id))
+                {
+                    _guidMap[id] = parts[1].Trim();
+                }
             }
         }
-        catch (java.lang.Exception ex)
+        catch (Exception ex)
         {
-            ex.printStackTrace();
+            Console.WriteLine($"Error loading achievement map: {ex}");
         }
-
     }
 
-    public static string getGuid(int var0)
+    public static string GetGuid(int id)
     {
-        return (string)instance.guidMap.get(Integer.valueOf(var0));
+        return Instance._guidMap.TryGetValue(id, out string? guid) ? guid : string.Empty;
     }
 }

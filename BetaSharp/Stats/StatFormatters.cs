@@ -1,6 +1,6 @@
 namespace BetaSharp.Stats;
 
-public static class StatFormatters
+internal static class StatFormatters
 {
     public static string FormatDistance(int value)
     {

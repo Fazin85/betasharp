@@ -46,7 +46,7 @@ public class StatBase
 
         Stats.AllStats.Add(this);
         Stats.IdToStat.Add(Id, this);
-        StatGuid = AchievementMap.getGuid(Id);
+        StatGuid = AchievementMap.GetGuid(Id);
 
         return this;
     }

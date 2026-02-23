@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Threading;
 
-public class ThreadStatSynchronizerReceive
+internal class ThreadStatSynchronizerReceive
 {
     private readonly ILogger<ThreadStatSynchronizerReceive> _logger = Log.Instance.For<ThreadStatSynchronizerReceive>();
     private readonly StatsSynchronizer _synchronizer;

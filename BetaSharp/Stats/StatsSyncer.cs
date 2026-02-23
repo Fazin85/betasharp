@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using BetaSharp.Util;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Stats;
 
-public class StatsSynchronizer
+internal class StatsSynchronizer
 {
     private static readonly ILogger<StatsSynchronizer> s_logger = Log.Instance.For<StatsSynchronizer>();
 

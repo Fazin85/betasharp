@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Threading;
 
-public class ThreadCloseConnection
+internal class ThreadCloseConnection
 {
 
     private readonly ILogger<ThreadCloseConnection> _logger = Log.Instance.For<ThreadCloseConnection>();
