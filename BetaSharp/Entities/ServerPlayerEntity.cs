@@ -109,12 +109,6 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     }
 
 
-    public override void onKilledBy(Entity adversary)
-    {
-         base.onKilledBy(adversary);
-    }
-
-
     public override bool damage(Entity damageSource, int amount)
     {
         if (joinInvulnerabilityTicks > 0)
