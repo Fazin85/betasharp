@@ -147,7 +147,7 @@ public class StatFileWriter
                 }
             }
 
-            string statsChecksum = new MD5String("local").hash(sb.toString());
+            string statsChecksum = new MD5String("local").Hash(sb.toString());
 
             if (root.TryGetProperty("checksum", out JsonElement checksumElement))
             {
@@ -213,7 +213,7 @@ public class StatFileWriter
 
         MD5String var8 = new MD5String(salt);
         var3.append("\r\n  ],\r\n");
-        var3.append("  \"checksum\":\"").append(var8.hash(var4.toString())).append("\"\r\n");
+        var3.append("  \"checksum\":\"").append(var8.Hash(var4.toString())).append("\"\r\n");
         var3.append("}");
         return var3.toString();
     }
