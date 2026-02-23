@@ -26,12 +26,14 @@ internal sealed partial class HomeViewModel(AccountsService accountsService, Cli
     [RelayCommand]
     private async Task PlayAsync()
     {
+        // Check if account's token has expired.
         ArgumentNullException.ThrowIfNull(Account);
 
         await clientService.DownloadAsync();
 
         ArgumentException.ThrowIfNullOrWhiteSpace(Account.Token);
 
+        // Probably should move this into a service.
         using var process = Process.Start(Path.Combine(AppContext.BaseDirectory, "Client", "BetaSharp.Client"), [Account.Name, Account.Token]);
 
         ArgumentNullException.ThrowIfNull(process);

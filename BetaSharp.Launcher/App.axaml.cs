@@ -33,7 +33,3 @@ internal sealed partial class App : Application
         base.OnFrameworkInitializationCompleted();
     }
 }
-
-[JsonSourceGenerationOptions]
-[JsonSerializable(typeof(Account))]
-internal sealed partial class SourceGenerationContext : JsonSerializerContext;
