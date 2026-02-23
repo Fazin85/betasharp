@@ -7,7 +7,6 @@ using BetaSharp.Client.Entities;
 using BetaSharp.Client.Guis;
 using BetaSharp.Client.Input;
 using BetaSharp.Client.Network;
-using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
@@ -29,7 +28,6 @@ using BetaSharp.Worlds;
 using BetaSharp.Worlds.Colors;
 using BetaSharp.Worlds.Storage;
 using ImGuiNET;
-using java.lang;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Input;
 using Silk.NET.OpenGL.Legacy;
@@ -283,7 +281,9 @@ public partial class Minecraft
             .Add(new ModernAssetDownloader(this, dataDirPath,
                 [
                  "minecraft/sounds/music/menu/moog_city_2.ogg",
-                 "minecraft/sounds/music/menu/mutation.ogg"
+                 "minecraft/sounds/music/menu/mutation.ogg",
+                 "minecraft/sounds/music/menu/floating_trees.ogg",
+                 "minecraft/sounds/music/menu/beginning_2.ogg",
                 ])).LoadAllAsync();
 
         checkGLError("Post startup");
@@ -366,6 +366,11 @@ public partial class Minecraft
         if (newScreen is GuiMainMenu)
         {
             statFileWriter.func_27175_b();
+
+            if (inGameHasFocus)
+            {
+                sndManager.StopCurrentMusic();
+            }
         }
 
         statFileWriter.syncStats();
@@ -403,6 +408,7 @@ public partial class Minecraft
         else
         {
             setIngameFocus();
+            sndManager.StopMenuMusic();
         }
     }
 
@@ -814,7 +820,7 @@ public partial class Minecraft
             internalServer.stop();
             while (!internalServer.stopped)
             {
-                System.Threading.Thread.Sleep(1);
+                Thread.Sleep(1);
             }
             internalServer = null;
         }
@@ -1065,6 +1071,11 @@ public partial class Minecraft
     public void runTick(float partialTicks)
     {
         Profiler.PushGroup("runTick");
+
+        if(!inGameHasFocus && world == null && internalServer == null)
+        {
+            sndManager.PlayRandomMusicIfReady(20, 600, true);
+        }
 
         Profiler.Start("statFileWriter.func_27178_d");
         statFileWriter.func_27178_d();
@@ -1538,7 +1549,7 @@ public partial class Minecraft
 
             if (subCategory.Equals("music", StringComparison.OrdinalIgnoreCase))
             {
-                sndManager.AddMusic(resourcePath, resourceFile);
+                sndManager.AddMenuMusic(resourcePath, resourceFile);
             }
         }
     }

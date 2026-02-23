@@ -59,7 +59,7 @@ public class ModernAssetDownloader : IResourceLoader, IDisposable
                 }
 
                 string outputKey = System.IO.Path.Combine(OUTPUT_FOLDER, subFolder, fileName).Replace('\\', '/');
-                var localFile = new FileInfo(System.IO.Path.Combine(_resourcesDirectory, subFolder, fileName));
+                var localFile = new FileInfo(System.IO.Path.Combine(_resourcesDirectory, OUTPUT_FOLDER, subFolder, fileName));
 
                 if (localFile.Exists && localFile.Length == entry.Size)
                 {

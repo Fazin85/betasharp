@@ -11,6 +11,7 @@ public class SoundManager
     private readonly SoundPool _soundPoolSounds = new();
     private readonly SoundPool _soundPoolStreaming = new();
     private readonly SoundPool _soundPoolMusic = new();
+    private readonly SoundPool _soundPoolMenuMusic = new();
 
     private readonly Dictionary<string, List<SoundBuffer>> _soundBuffers = [];
 
@@ -23,8 +24,10 @@ public class SoundManager
     private readonly JavaRandom _rand = new();
 
     private int _ticksBeforeMusic = 0;
+    private int _ticksBeforeMenuMusic = 0;
     private Music _currentMusic = null;
     private Music _currentStreaming = null;
+    private bool playingMusicIsMenu = true;
 
     public SoundManager()
     {
@@ -96,8 +99,10 @@ public class SoundManager
 
         _currentMusic?.Stop();
         _currentMusic?.Dispose();
+        _currentMusic = null;
         _currentStreaming?.Stop();
         _currentStreaming?.Dispose();
+        _currentStreaming = null;
 
         for (int i = 0; i < MaxChannels; i++)
         {
@@ -130,6 +135,8 @@ public class SoundManager
 
 
     public void AddMusic(string name, FileInfo file) => _soundPoolMusic.AddSound(name, file);
+
+    public void AddMenuMusic(string name, FileInfo file) => _soundPoolMenuMusic.AddSound(name, file);
 
     private void LoadSoundBuffer(string name, FileInfo file)
     {
@@ -203,30 +210,49 @@ public class SoundManager
         return stolen;
     }
 
-    public void PlayRandomMusicIfReady()
+    public void PlayRandomMusicIfReady(int minTicks = 12000, int maxTicks = 24000, bool menu = false)
     {
         if (!_started || _options.MusicVolume == 0.0F) return;
 
         bool isMusicPlaying = _currentMusic != null && _currentMusic.Status == SoundStatus.Playing;
         bool isStreamingPlaying = _currentStreaming != null && _currentStreaming.Status == SoundStatus.Playing;
 
-        if (isMusicPlaying || isStreamingPlaying) return;
+        if ((isMusicPlaying || isStreamingPlaying) && playingMusicIsMenu == menu) return;
 
-
-        if (_ticksBeforeMusic > 0)
+        if (menu)
         {
-            --_ticksBeforeMusic;
-            return;
+            if (_ticksBeforeMenuMusic > 0)
+            {
+                --_ticksBeforeMenuMusic;
+                return;
+            }
+        }
+        else
+        {
+            if (_ticksBeforeMusic > 0)
+            {
+                --_ticksBeforeMusic;
+                return;
+            }
         }
 
-        SoundPoolEntry? entry = _soundPoolMusic.GetRandomSound();
+        SoundPoolEntry? entry = menu ? _soundPoolMenuMusic.GetRandomSound() : _soundPoolMusic.GetRandomSound();
         if (entry == null) return;
 
+        int ticksBefore = _rand.NextInt(minTicks) + maxTicks - minTicks;
 
-        _ticksBeforeMusic = _rand.NextInt(12000) + 12000;
+        if (menu)
+        {
+            _ticksBeforeMenuMusic = ticksBefore;
+        }
+        else
+        {
+            _ticksBeforeMusic = ticksBefore;
+        }
 
         _currentMusic?.Stop();
         _currentMusic?.Dispose();
+        _currentMusic = null;
 
         string musicName = SanitizePath(entry.SoundUrl.LocalPath);
 
@@ -239,6 +265,26 @@ public class SoundManager
         };
 
         _currentMusic.Play();
+        playingMusicIsMenu = menu;
+    }
+
+    public void StopCurrentMusic()
+    {
+        _currentMusic?.Stop();
+        _currentMusic?.Dispose();
+        _currentMusic = null;
+        _currentStreaming?.Stop();
+        _currentStreaming?.Dispose();
+        _currentStreaming = null;
+    }
+
+    public void StopMenuMusic()
+    {
+        if (playingMusicIsMenu)
+        {
+            StopCurrentMusic();
+            _ticksBeforeMenuMusic = 0;
+        }
     }
 
     public void UpdateListener(EntityLiving player, float partialTicks)

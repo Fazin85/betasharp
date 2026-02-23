@@ -21,8 +21,6 @@ public class GuiIngame : Gui
     private readonly JavaRandom _rand = new();
     private int _chatScrollPos = 0;
     private bool _chatScrollbarDragging = false;
-    private int _chatScrollbarDragStartY = 0;
-    private int _chatScrollbarDragStartScroll = 0;
     private readonly Minecraft _mc;
     public string _hoveredItemName = null;
     private int _updateCounter = 0;
@@ -493,65 +491,7 @@ public class GuiIngame : Gui
         }
 
     }
-
-    public void startChatScrollbarDrag(int mouseY, int scaledHeight)
-    {
-        // mouseY and scaledHeight are in scaled GUI coords coming from GuiChat
-        int linesToShow = 20;
-        int left = 2;
-        int chatWidth = 320;
-        int scrollbarX = left + chatWidth - 5;
-        int scrollbarWidth = 6;
-        int bottom = scaledHeight - 48 + 6; // 2 pixels before message end
-        int top = scaledHeight - 48 - (linesToShow - 1) * 9;
-        int scrollbarHeight = bottom - top;
-
-        if (mouseY < top || mouseY > bottom)
-        {
-            return;
-        }
-
-        _chatScrollbarDragging = true;
-        _chatScrollbarDragStartY = mouseY;
-        _chatScrollbarDragStartScroll = _chatScrollPos;
-    }
-
-    public void updateChatScrollbarDrag(int mouseY, int scaledHeight)
-    {
-        if (!_chatScrollbarDragging) return;
-
-        int linesToShow = 20;
-        int left = 2;
-        int chatWidth = 320;
-        int bottom = scaledHeight - 48 + 6; // 2 pixels before message end
-        int top = scaledHeight - 48 - (linesToShow - 1) * 9;
-        int scrollbarHeight = bottom - top;
-
-        int totalLines = _chatMessageList.Count;
-        int maxScroll = totalLines - linesToShow;
-        if (maxScroll < 0) maxScroll = 0;
-
-        int thumbHeight = 8;
-        if (totalLines > 0)
-        {
-            int calc = scrollbarHeight * linesToShow / totalLines;
-            if (calc > thumbHeight) thumbHeight = calc;
-        }
-
-        int range = Math.Max(1, scrollbarHeight - thumbHeight);
-
-        // Compute new scroll based on mouse position within scrollbar
-        int rel = mouseY - top;
-        if (rel < 0) rel = 0;
-        if (rel > scrollbarHeight - thumbHeight) rel = scrollbarHeight - thumbHeight;
-
-        // Inverted: Top is oldest (maxScroll), Bottom is newest (0)
-        int newScroll = maxScroll - (int)((long)rel * maxScroll / range);
-        if (newScroll < 0) newScroll = 0;
-        if (newScroll > maxScroll) newScroll = maxScroll;
-        _chatScrollPos = newScroll;
-    }
-
+   
     public void stopChatScrollbarDrag()
     {
         _chatScrollbarDragging = false;

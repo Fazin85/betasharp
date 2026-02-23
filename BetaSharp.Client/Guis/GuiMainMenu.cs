@@ -1,7 +1,6 @@
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Util.Maths;
 using java.io;
-using java.util;
 using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
@@ -51,6 +50,7 @@ public class GuiMainMenu : GuiScreen
 
     public override void UpdateScreen()
     {
+        
     }
 
     protected override void KeyTyped(char eventChar, int eventKey)
