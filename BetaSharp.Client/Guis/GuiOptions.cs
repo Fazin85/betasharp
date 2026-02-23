@@ -5,6 +5,7 @@ namespace BetaSharp.Client.Guis;
 public class GuiOptions : GuiScreen
 {
     private const int ButtonVideoSettings = 101;
+    private const int ButtonAudioSettings = 102;
     private const int ButtonControls = 100;
     private const int ButtonDone = 200;
 
@@ -12,12 +13,6 @@ public class GuiOptions : GuiScreen
     private readonly GameOptions _options;
 
     protected string _screenTitle = "Options";
-    private static readonly EnumOptions[] _availableOptions = [
-        EnumOptions.MUSIC,
-        EnumOptions.SOUND,
-        EnumOptions.DIFFICULTY,
-        EnumOptions.FOV
-    ];
 
     public GuiOptions(GuiScreen parentScreen, GameOptions gameOptions)
     {
@@ -30,26 +25,27 @@ public class GuiOptions : GuiScreen
         TranslationStorage translations = TranslationStorage.Instance;
         _screenTitle = translations.TranslateKey("options.title");
         int rowIndex = 0;
-        EnumOptions[] optionsToDisplay = _availableOptions;
-        int optionsLength = optionsToDisplay.Length;
 
-        foreach (EnumOptions currentOption in _availableOptions)
+        foreach (GameOption option in _options.MainScreenOptions)
         {
             int xPos = Width / 2 - 155 + (rowIndex % 2 * 160);
             int yPos = Height / 6 + 24 * (rowIndex >> 1);
-            if (!currentOption.getEnumFloat())
+            int id = rowIndex;
+
+            if (option is FloatOption floatOpt)
             {
-                _controlList.Add(new GuiSmallButton(currentOption.returnEnumOrdinal(), xPos, yPos, currentOption, _options.GetKeyBinding(currentOption)));
+                _controlList.Add(new GuiSlider(id, xPos, yPos, floatOpt, option.GetDisplayString(translations), floatOpt.Value));
             }
             else
             {
-                _controlList.Add(new GuiSlider(currentOption.returnEnumOrdinal(), xPos, yPos, currentOption, _options.GetKeyBinding(currentOption), _options.GetOptionFloatValue(currentOption)));
+                _controlList.Add(new GuiSmallButton(id, xPos, yPos, option, option.GetDisplayString(translations)));
             }
 
             ++rowIndex;
         }
 
-        _controlList.Add(new GuiButton(ButtonVideoSettings, Width / 2 - 100, Height / 6 + 96 + 12, translations.TranslateKey("options.video")));
+        _controlList.Add(new GuiButton(ButtonVideoSettings, Width / 2 - 100, Height / 6 + 72 + 12, translations.TranslateKey("options.video")));
+        _controlList.Add(new GuiButton(ButtonAudioSettings, Width / 2 - 100, Height / 6 + 96 + 12, "Audio Settings"));
         _controlList.Add(new GuiButton(ButtonControls, Width / 2 - 100, Height / 6 + 120 + 12, translations.TranslateKey("options.controls")));
         _controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 6 + 168, translations.TranslateKey("gui.done")));
     }
@@ -58,10 +54,10 @@ public class GuiOptions : GuiScreen
     {
         if (!button.Enabled) return;
 
-        if (button.Id < 100 && button is GuiSmallButton)
+        if (button is GuiSmallButton smallBtn && smallBtn.Option != null)
         {
-            _options.SetOptionValue(((GuiSmallButton)button).returnEnumOptions(), 1);
-            button.DisplayString = _options.GetKeyBinding(EnumOptions.getEnumOptions(button.Id));
+            smallBtn.ClickOption();
+            button.DisplayString = smallBtn.Option.GetDisplayString(TranslationStorage.Instance);
         }
 
         switch (button.Id)
@@ -69,6 +65,10 @@ public class GuiOptions : GuiScreen
             case ButtonVideoSettings:
                 mc.options.SaveOptions();
                 mc.displayGuiScreen(new GuiVideoSettings(this, _options));
+                break;
+            case ButtonAudioSettings:
+                mc.options.SaveOptions();
+                mc.displayGuiScreen(new GuiAudio(this, _options));
                 break;
             case ButtonControls:
                 mc.options.SaveOptions();

@@ -7,7 +7,6 @@ using BetaSharp.Client.Entities;
 using BetaSharp.Client.Guis;
 using BetaSharp.Client.Input;
 using BetaSharp.Client.Network;
-using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
@@ -29,7 +28,6 @@ using BetaSharp.Worlds;
 using BetaSharp.Worlds.Colors;
 using BetaSharp.Worlds.Storage;
 using ImGuiNET;
-using java.lang;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Input;
 using Silk.NET.OpenGL.Legacy;
@@ -47,7 +45,8 @@ public partial class Minecraft
     private bool hasCrashed;
     public int displayWidth;
     public int displayHeight;
-    private readonly Timer timer = new(20.0F);
+
+    public Timer Timer { get; } = new(20.0F);
     public World world;
     public WorldRenderer terrainRenderer;
     public ClientPlayerEntity player;
@@ -263,6 +262,7 @@ public partial class Minecraft
         GLManager.GL.MatrixMode(GLEnum.Modelview);
         checkGLError("Startup");
         sndManager.LoadSoundSettings(options);
+        DefaultMusicCategories.Register(sndManager);
         textureManager.AddDynamicTexture(textureLavaFX);
         textureManager.AddDynamicTexture(textureWaterFX);
         textureManager.AddDynamicTexture(new NetherPortalSprite());
@@ -276,8 +276,17 @@ public partial class Minecraft
         GLManager.GL.Viewport(0, 0, (uint)displayWidth, (uint)displayHeight);
         particleManager = new ParticleManager(world, textureManager);
 
-        MinecraftResourceDownloader downloader = new(this, mcDataDir.getAbsolutePath());
-        _ = downloader.DownloadResourcesAsync();
+        string dataDirPath = mcDataDir.getAbsolutePath();
+
+        _ = new ResourceManager()
+            .Add(new BetaResourceDownloader(this, dataDirPath))
+            .Add(new ModernAssetDownloader(this, dataDirPath,
+                [
+                 "minecraft/sounds/music/menu/moog_city_2.ogg",
+                 "minecraft/sounds/music/menu/mutation.ogg",
+                 "minecraft/sounds/music/menu/floating_trees.ogg",
+                 "minecraft/sounds/music/menu/beginning_2.ogg",
+                ])).LoadAllAsync();
 
         checkGLError("Post startup");
         ingameGUI = new GuiIngame(this);
@@ -359,6 +368,11 @@ public partial class Minecraft
         if (newScreen is GuiMainMenu)
         {
             statFileWriter.Tick();
+
+            if (inGameHasFocus)
+            {
+                sndManager.StopCurrentMusic();
+            }
         }
 
         statFileWriter.SyncStats();
@@ -396,6 +410,7 @@ public partial class Minecraft
         else
         {
             setIngameFocus();
+            sndManager.StopMusic(DefaultMusicCategories.Menu);
         }
     }
 
@@ -473,8 +488,8 @@ public partial class Minecraft
             {
                 if (options.DebugMode)
                 {
-                    Profiler.Update(timer.DeltaTime);
-                    Profiler.Record("frame Time", timer.DeltaTime * 1000.0f);
+                    Profiler.Update(Timer.DeltaTime);
+                    Profiler.Record("frame Time", Timer.DeltaTime * 1000.0f);
                     Profiler.PushGroup("run");
                 }
                 try
@@ -486,13 +501,13 @@ public partial class Minecraft
 
                     if (isGamePaused && world != null)
                     {
-                        float previousRenderPartialTicks = timer.renderPartialTicks;
-                        timer.UpdateTimer();
-                        timer.renderPartialTicks = previousRenderPartialTicks;
+                        float previousRenderPartialTicks = Timer.renderPartialTicks;
+                        Timer.UpdateTimer();
+                        Timer.renderPartialTicks = previousRenderPartialTicks;
                     }
                     else
                     {
-                        timer.UpdateTimer();
+                        Timer.UpdateTimer();
                     }
 
                     long tickStartTime = java.lang.System.nanoTime();
@@ -501,13 +516,13 @@ public partial class Minecraft
                         Profiler.PushGroup("runTicks");
                     }
 
-                    for (int tickIndex = 0; tickIndex < timer.elapsedTicks; ++tickIndex)
+                    for (int tickIndex = 0; tickIndex < Timer.elapsedTicks; ++tickIndex)
                     {
                         ++ticksRan;
 
                         try
                         {
-                            runTick(timer.renderPartialTicks);
+                            runTick(Timer.renderPartialTicks);
                         }
                         catch (MinecraftException tickException)
                         {
@@ -525,7 +540,7 @@ public partial class Minecraft
                     long tickElapsedTime = java.lang.System.nanoTime() - tickStartTime;
                     checkGLError("Pre render");
                     BlockRenderer.fancyGrass = true;
-                    sndManager.UpdateListener(player, timer.renderPartialTicks);
+                    sndManager.UpdateListener(player, Timer.renderPartialTicks);
                     GLManager.GL.Enable(GLEnum.Texture2D);
                     if (world != null)
                     {
@@ -546,21 +561,23 @@ public partial class Minecraft
 
                     if (!skipRenderWorld)
                     {
-                        playerController?.setPartialTime(timer.renderPartialTicks);
+                        playerController?.setPartialTime(Timer.renderPartialTicks);
 
                         if (options.DebugMode) Profiler.PushGroup("render");
-                        gameRenderer.onFrameUpdate(timer.renderPartialTicks);
+                        gameRenderer.onFrameUpdate(Timer.renderPartialTicks);
                         if (options.DebugMode) Profiler.PopGroup();
                     }
 
-                    if (imGuiController != null && timer.DeltaTime > 0.0f && options.ShowDebugInfo && options.DebugMode)
+                    if (imGuiController != null && Timer.DeltaTime > 0.0f && options.ShowDebugInfo && options.DebugMode)
                     {
-                        imGuiController.Update(timer.DeltaTime);
+                        imGuiController.Update(Timer.DeltaTime);
                         ProfilerRenderer.Draw();
                         ProfilerRenderer.DrawGraph();
 
                         ImGui.Begin("Render Info");
                         ImGui.Text($"Chunk Vertex Buffer Allocated MB: {VertexBuffer<ChunkVertex>.Allocated / 1000000.0}");
+                        ImGui.Text($"ChunkMeshVersion Allocated: {BetaSharp.Util.ChunkMeshVersion.TotalAllocated}");
+                        ImGui.Text($"ChunkMeshVersion Released: {BetaSharp.Util.ChunkMeshVersion.TotalReleased}");
                         ImGui.End();
 
                         imGuiController.Render();
@@ -807,7 +824,7 @@ public partial class Minecraft
             internalServer.stop();
             while (!internalServer.stopped)
             {
-                System.Threading.Thread.Sleep(1);
+                Thread.Sleep(1);
             }
             internalServer = null;
         }
@@ -1062,6 +1079,21 @@ public partial class Minecraft
         Profiler.Start("statFileWriter.SyncStatsIfReady");
         statFileWriter.SyncStatsIfReady();
         Profiler.Stop("statFileWriter.SyncStatsIfReady");
+
+        if (!inGameHasFocus && world == null && internalServer == null)
+        {
+            if (options.MenuMusic)
+            {
+                sndManager.PlayRandomMusicIfReady(DefaultMusicCategories.Menu);
+            }
+            else
+            {
+                sndManager.StopMusic(DefaultMusicCategories.Menu);
+            }
+        }
+
+
+
         Profiler.Start("ingameGUI.updateTick");
         ingameGUI.updateTick();
         Profiler.Stop("ingameGUI.updateTick");
@@ -1355,8 +1387,7 @@ public partial class Minecraft
 
                     if (Keyboard.getEventKey() == options.KeyBindToggleFog.keyCode)
                     {
-                        options.SetOptionValue(EnumOptions.RENDER_DISTANCE,
-                            !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) ? 1 : -1);
+                        options.RenderDistanceOption.Value = System.Math.Clamp(options.RenderDistanceOption.Value + (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) ? 1.0f / 28.0f : -1.0f / 28.0f), 0.0f, 1.0f);
                     }
                 }
             }
@@ -1364,14 +1395,14 @@ public partial class Minecraft
 
         if (currentScreen == null)
         {
-            if (Mouse.isButtonDown(0) && (float)(ticksRan - mouseTicksRan) >= timer.ticksPerSecond / 4.0F &&
+            if (Mouse.isButtonDown(0) && (float)(ticksRan - mouseTicksRan) >= Timer.ticksPerSecond / 4.0F &&
                 inGameHasFocus)
             {
                 clickMouse(0);
                 mouseTicksRan = ticksRan;
             }
 
-            if (Mouse.isButtonDown(1) && (float)(ticksRan - mouseTicksRan) >= timer.ticksPerSecond / 4.0F &&
+            if (Mouse.isButtonDown(1) && (float)(ticksRan - mouseTicksRan) >= Timer.ticksPerSecond / 4.0F &&
                 inGameHasFocus)
             {
                 clickMouse(1);
@@ -1387,6 +1418,7 @@ public partial class Minecraft
         _logger.LogInformation("FORCING RELOAD!");
         sndManager = new SoundManager();
         sndManager.LoadSoundSettings(options);
+        DefaultMusicCategories.Register(sndManager);
     }
 
     public bool isMultiplayerWorld()
@@ -1517,11 +1549,22 @@ public partial class Minecraft
         }
         else if (category.Equals("music", StringComparison.OrdinalIgnoreCase))
         {
-            sndManager.AddMusic(resourcePath, resourceFile);
+            sndManager.AddMusic(DefaultMusicCategories.Game, resourcePath, resourceFile);
         }
         else if (category.Equals("newmusic", StringComparison.OrdinalIgnoreCase))
         {
-            sndManager.AddMusic(resourcePath, resourceFile);
+            sndManager.AddMusic(DefaultMusicCategories.Game, resourcePath, resourceFile);
+        }
+        else if (category.Equals("custom", StringComparison.OrdinalIgnoreCase))
+        {
+            int subSlash = resourcePath.IndexOf("/");
+            string subCategory = resourcePath.Substring(0, subSlash);
+            resourcePath = resourcePath.Substring(subSlash + 1);
+
+            if (subCategory.Equals("music", StringComparison.OrdinalIgnoreCase))
+            {
+                sndManager.AddMusic(DefaultMusicCategories.Menu, resourcePath, resourceFile);
+            }
         }
     }
 
@@ -1619,6 +1662,11 @@ public partial class Minecraft
         if (playerName != null && sessionToken != null)
         {
             mc.session = new Session(playerName, sessionToken);
+
+            if (sessionToken == "-")
+            {
+                hasPaidCheckTime = java.lang.System.currentTimeMillis();
+            }
         }
         else
         {
@@ -1667,3 +1715,4 @@ public partial class Minecraft
 
     public static bool lineIsCommand(string var1) => (var1.StartsWith("/"));
 }
+

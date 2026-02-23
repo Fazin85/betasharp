@@ -1,4 +1,4 @@
-﻿namespace BetaSharp.Launcher.Features.Messages;
+﻿namespace BetaSharp.Launcher.Features.Shell;
 
 internal sealed class NavigationMessage(Destination destination)
 {

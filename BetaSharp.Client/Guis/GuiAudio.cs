@@ -2,14 +2,14 @@ using BetaSharp.Client.Options;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiVideoSettings : GuiScreen
+public class GuiAudio : GuiScreen
 {
 
     private readonly GuiScreen _parentScreen;
-    protected string _screenTitle = "Video Settings";
+    protected string _screenTitle = "Audio Settings";
     private readonly GameOptions _gameOptions;
 
-    public GuiVideoSettings(GuiScreen parent, GameOptions options)
+    public GuiAudio(GuiScreen parent, GameOptions options)
     {
         _parentScreen = parent;
         _gameOptions = options;
@@ -18,10 +18,10 @@ public class GuiVideoSettings : GuiScreen
     public override void InitGui()
     {
         TranslationStorage translations = TranslationStorage.Instance;
-        _screenTitle = translations.TranslateKey("options.videoTitle");
+        _screenTitle = "Audio Settings";
         int optionIndex = 0;
 
-        foreach (GameOption option in _gameOptions.VideoScreenOptions)
+        foreach (GameOption option in _gameOptions.AudioScreenOptions)
         {
             int x = Width / 2 - 155 + (optionIndex % 2) * 160;
             int y = Height / 6 + 24 * (optionIndex / 2);
@@ -56,15 +56,6 @@ public class GuiVideoSettings : GuiScreen
             {
                 mc.options.SaveOptions();
                 mc.displayGuiScreen(_parentScreen);
-            }
-
-            if (btn is GuiSmallButton { Option: CycleOption } guiScaleBtn
-                && guiScaleBtn.Option == _gameOptions.GuiScaleOption)
-            {
-                ScaledResolution scaled = new(mc.options, mc.displayWidth, mc.displayHeight);
-                int scaledWidth = scaled.ScaledWidth;
-                int scaledHeight = scaled.ScaledHeight;
-                SetWorldAndResolution(mc, scaledWidth, scaledHeight);
             }
         }
     }

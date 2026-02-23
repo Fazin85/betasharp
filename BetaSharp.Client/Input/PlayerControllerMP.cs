@@ -1,5 +1,6 @@
 using BetaSharp.Blocks;
 using BetaSharp.Client.Network;
+using BetaSharp.Client.Sound;
 using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Network.Packets.C2SPlay;
@@ -162,7 +163,7 @@ public class PlayerControllerMP : PlayerController
     {
         syncCurrentPlayItem();
         prevBlockDamageMP = curBlockDamageMP;
-        mc.sndManager.PlayRandomMusicIfReady();
+        mc.sndManager.PlayRandomMusicIfReady(DefaultMusicCategories.Game);
     }
 
     private void syncCurrentPlayItem()

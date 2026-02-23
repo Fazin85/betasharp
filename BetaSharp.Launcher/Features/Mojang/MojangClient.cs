@@ -6,23 +6,24 @@ using System.Threading.Tasks;
 using BetaSharp.Launcher.Features.Mojang.Entitlements;
 using BetaSharp.Launcher.Features.Mojang.Profile;
 using BetaSharp.Launcher.Features.Mojang.Token;
-using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Launcher.Features.Mojang;
 
-internal sealed class MojangClient(ILogger<MojangClient> logger, IHttpClientFactory clientFactory)
+internal sealed class MojangClient(IHttpClientFactory clientFactory)
 {
-    public async Task<TokenResponse> GetTokenAsync(TokenRequest request)
+    private const string Base = "https://api.minecraftservices.com";
+
+    public async Task<TokenResponse> GetTokenAsync(string token, string hash)
     {
         var client = clientFactory.CreateClient(nameof(MojangClient));
 
         var response = await client.PostAsync(
-            "https://api.minecraftservices.com/authentication/login_with_xbox",
-            JsonContent.Create(request, SourceGenerationContext.Default.TokenRequest));
+            $"{Base}/authentication/login_with_xbox",
+            JsonContent.Create(new TokenRequest { Value = $"XBL3.0 x={hash};{token}" }, MojangSerializerContext.Default.TokenRequest));
 
         await using var stream = await response.Content.ReadAsStreamAsync();
 
-        var instance = JsonSerializer.Deserialize<TokenResponse>(stream, SourceGenerationContext.Default.TokenResponse);
+        var instance = JsonSerializer.Deserialize<TokenResponse>(stream, MojangSerializerContext.Default.TokenResponse);
 
         ArgumentNullException.ThrowIfNull(instance);
 
@@ -35,11 +36,11 @@ internal sealed class MojangClient(ILogger<MojangClient> logger, IHttpClientFact
 
         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
 
-        var response = await client.GetAsync("https://api.minecraftservices.com/entitlements");
+        var response = await client.GetAsync($"{Base}/entitlements");
 
         await using var stream = await response.Content.ReadAsStreamAsync();
 
-        var instance = JsonSerializer.Deserialize<EntitlementsResponse>(stream, SourceGenerationContext.Default.EntitlementsResponse);
+        var instance = JsonSerializer.Deserialize<EntitlementsResponse>(stream, MojangSerializerContext.Default.EntitlementsResponse);
 
         ArgumentNullException.ThrowIfNull(instance);
 
@@ -52,15 +53,14 @@ internal sealed class MojangClient(ILogger<MojangClient> logger, IHttpClientFact
 
         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
 
-        var response = await client.GetAsync("https://api.minecraftservices.com/minecraft/profile");
+        var response = await client.GetAsync($"{Base}/minecraft/profile");
 
         await using var stream = await response.Content.ReadAsStreamAsync();
 
-        var instance = JsonSerializer.Deserialize<ProfileResponse>(stream, SourceGenerationContext.Default.ProfileResponse);
+        var instance = JsonSerializer.Deserialize<ProfileResponse>(stream, MojangSerializerContext.Default.ProfileResponse);
 
         ArgumentNullException.ThrowIfNull(instance);
 
         return instance;
     }
 }
-

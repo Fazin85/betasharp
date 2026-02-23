@@ -1,4 +1,5 @@
-﻿using BetaSharp.Blocks;
+using BetaSharp.Blocks;
+using BetaSharp.Client.Sound;
 using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Worlds;
@@ -146,6 +147,6 @@ public class PlayerControllerSP : PlayerController
     public override void updateController()
     {
         prevBlockDamage = curBlockDamage;
-        mc.sndManager.PlayRandomMusicIfReady();
+        mc.sndManager.PlayRandomMusicIfReady(DefaultMusicCategories.Game);
     }
 }

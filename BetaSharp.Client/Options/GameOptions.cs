@@ -1,9 +1,6 @@
 using System;
 using System.IO;
-using System.Linq;
-using System.Collections.Generic;
 using BetaSharp.Client.Input;
-using java.io;
 using Microsoft.Extensions.Logging;
 using File = System.IO.File;
 using FileNotFoundException = System.IO.FileNotFoundException;
@@ -14,21 +11,14 @@ public class GameOptions
 {
     private readonly ILogger<GameOptions> _logger = Log.Instance.For<GameOptions>();
 
-    private static readonly string[] RENDER_DISTANCES =
-    [
-        "options.renderDistance.far",
-        "options.renderDistance.normal",
-        "options.renderDistance.short",
-        "options.renderDistance.tiny",
-    ];
-    private static readonly string[] Difficulties =
+    private static readonly string[] DifficultyLabels =
     [
         "options.difficulty.peaceful",
         "options.difficulty.easy",
         "options.difficulty.normal",
         "options.difficulty.hard",
     ];
-    private static readonly string[] GuiScales =
+    private static readonly string[] GuiScaleLabels =
     [
         "options.guiScale.auto",
         "options.guiScale.small",
@@ -36,22 +26,82 @@ public class GameOptions
         "options.guiScale.large",
     ];
 
-    private static readonly string[] AnisoLeves = ["options.off", "2x", "4x", "8x", "16x"];
-    private static readonly string[] MSAALeves = ["options.off", "2x", "4x", "8x"];
+    private static readonly string[] AnisoLabels = ["options.off", "2x", "4x", "8x", "16x"];
+    private static readonly string[] MSAALabels = ["options.off", "2x", "4x", "8x"];
 
     public static float MaxAnisotropy = 1.0f;
-    public float MusicVolume = 1.0F;
-    public float SoundVolume = 1.0F;
-    public float MouseSensitivity = 0.5F;
-    public float Brightness = 0.5F;
-    public bool VSync = false;
-    public bool InvertMouse;
-    public int renderDistance;
-    public bool ViewBobbing = true;
-    public float LimitFramerate = 0.42857143f; // 0.428... = 120, 1.0 = 240, 0.0 = 30
-    public float Fov = 0.44444445F; // (70 - 30) / 90
-    public string Skin = "Default";
 
+
+    public FloatOption MusicVolumeOption { get; private set; }
+    public FloatOption SoundVolumeOption { get; private set; }
+    public FloatOption MouseSensitivityOption { get; private set; }
+    public FloatOption FramerateLimitOption { get; private set; }
+    public FloatOption FovOption { get; private set; }
+
+
+    public BoolOption InvertMouseOption { get; private set; }
+    public BoolOption ViewBobbingOption { get; private set; }
+    public BoolOption VSyncOption { get; private set; }
+    public BoolOption MipmapsOption { get; private set; }
+    public BoolOption DebugModeOption { get; private set; }
+    public BoolOption EnvironmentAnimationOption { get; private set; }
+    public BoolOption ChunkFadeOption { get; private set; }
+    public BoolOption MenuMusicOption { get; private set; }
+
+
+    public FloatOption RenderDistanceOption { get; private set; }
+    public CycleOption DifficultyOption { get; private set; }
+    public CycleOption GuiScaleOption { get; private set; }
+    public CycleOption AnisotropicOption { get; private set; }
+    public CycleOption MsaaOption { get; private set; }
+
+
+    public GameOption[] MainScreenOptions => [DifficultyOption, FovOption, DebugModeOption];
+    public GameOption[] AudioScreenOptions => [MusicVolumeOption, SoundVolumeOption, MenuMusicOption];
+    public GameOption[] VideoScreenOptions =>
+    [
+        RenderDistanceOption, FramerateLimitOption, VSyncOption,
+        ViewBobbingOption, GuiScaleOption, AnisotropicOption,
+        MipmapsOption, MsaaOption, EnvironmentAnimationOption, ChunkFadeOption
+    ];
+
+
+    public float MusicVolume
+    {
+        get => MusicVolumeOption.Value;
+        set => MusicVolumeOption.Value = value;
+    }
+
+    public float SoundVolume
+    {
+        get => SoundVolumeOption.Value;
+        set => SoundVolumeOption.Value = value;
+    }
+
+    public float MouseSensitivity => MouseSensitivityOption.Value;
+    public float LimitFramerate => FramerateLimitOption.Value;
+    public float Fov => FovOption.Value;
+    public bool InvertMouse
+    {
+        get => InvertMouseOption.Value;
+        set => InvertMouseOption.Value = value;
+    }
+    public int renderDistance => 4 + (int)(RenderDistanceOption.Value * 28.0f);
+    public bool ViewBobbing => ViewBobbingOption.Value;
+    public bool VSync => VSyncOption.Value;
+    public int Difficulty => DifficultyOption.Value;
+    public int GuiScale => GuiScaleOption.Value;
+    public int AnisotropicLevel => AnisotropicOption.Value;
+    public int MSAALevel => MsaaOption.Value;
+    public int INITIAL_MSAA;
+    public bool UseMipmaps => MipmapsOption.Value;
+    public bool DebugMode => DebugModeOption.Value;
+    public bool EnvironmentAnimation => EnvironmentAnimationOption.Value;
+    public bool ChunkFade => ChunkFadeOption.Value;
+    public bool MenuMusic => MenuMusicOption.Value;
+
+
+    public string Skin = "Default";
     public KeyBinding KeyBindForward = new("key.forward", 17);
     public KeyBinding KeyBindLeft = new("key.left", 30);
     public KeyBinding KeyBindBack = new("key.back", 31);
@@ -67,7 +117,6 @@ public class GameOptions
 
     protected Minecraft _mc;
     private readonly string _optionsPath;
-    public int Difficulty = 2;
     public bool HideGUI = false;
     public EnumCameraMode CameraMode = EnumCameraMode.FirstPerson;
     public bool ShowDebugInfo = false;
@@ -77,17 +126,19 @@ public class GameOptions
     public bool DebugCamera = false;
     public float AmountScrolled = 1.0F;
     public float field_22271_G = 1.0F;
-    public int GuiScale;
-    public int AnisotropicLevel;
-    public int MSAALevel;
-    public int INITIAL_MSAA;
     private bool initialDebugMode;
-    public bool UseMipmaps = true;
-    public bool DebugMode;
-    public bool EnvironmentAnimation = true;
+    public float Brightness = 0.5F;
+
+
+    private Dictionary<string, GameOption> _allOptions;
 
     public GameOptions(Minecraft mc, string mcDataDir)
     {
+        _mc = mc;
+        _optionsPath = System.IO.Path.Combine(mcDataDir, "options.txt");
+
+        InitializeOptions();
+
         KeyBindings =
         [
             KeyBindForward,
@@ -101,14 +152,151 @@ public class GameOptions
             KeyBindChat,
             KeyBindToggleFog,
         ];
-        _mc = mc;
-        _optionsPath = System.IO.Path.Combine(mcDataDir, "options.txt");
+
         LoadOptions();
         INITIAL_MSAA = MSAALevel;
         initialDebugMode = DebugMode;
     }
 
-    public GameOptions() { }
+    public GameOptions()
+    {
+        InitializeOptions();
+    }
+
+    private void InitializeOptions()
+    {
+        MusicVolumeOption = new FloatOption("options.music", "music", 1.0F)
+        {
+            Steps = 100,
+            OnChanged = _ => _mc?.sndManager.OnSoundOptionsChanged()
+        };
+        SoundVolumeOption = new FloatOption("options.sound", "sound", 1.0F)
+        {
+            Steps = 100,
+            OnChanged = _ => _mc?.sndManager.OnSoundOptionsChanged()
+        };
+        MouseSensitivityOption = new FloatOption("options.sensitivity", "mouseSensitivity", 0.5F)
+        {
+            Steps = 200,
+            Formatter = (v, t) => v == 0.0F
+                ? t.TranslateKey("options.sensitivity.min")
+                : v == 1.0F
+                    ? t.TranslateKey("options.sensitivity.max")
+                    : (int)(v * 200.0F) + "%"
+        };
+        FramerateLimitOption = new FloatOption("options.framerateLimit", "fpsLimit", 0.42857143f)
+        {
+            LabelOverride = "Max FPS",
+            Steps = 210,
+            Formatter = (v, _) =>
+            {
+                int fps = 30 + (int)(v * 210.0f);
+                return fps == 240 ? "Unlimited" : fps + " FPS";
+            }
+        };
+        FovOption = new FloatOption("options.fov", "fov", 0.44444445F)
+        {
+            LabelOverride = "FOV",
+            Steps = 90,
+            Formatter = (v, _) => (30 + (int)(v * 90.0f)).ToString()
+        };
+
+        InvertMouseOption = new BoolOption("options.invertMouse", "invertYMouse");
+        ViewBobbingOption = new BoolOption("options.viewBobbing", "bobView", true);
+        VSyncOption = new BoolOption("VSync", "vsync")
+        {
+            LabelOverride = "VSync",
+            OnChanged = v => Display.getGlfw().SwapInterval(v ? 1 : 0)
+        };
+        MipmapsOption = new BoolOption("Mipmaps", "useMipmaps", true)
+        {
+            OnChanged = _ =>
+            {
+                if (Minecraft.INSTANCE?.textureManager != null)
+                    Minecraft.INSTANCE.textureManager.Reload();
+            }
+        };
+        DebugModeOption = new BoolOption("Debug Mode", "debugMode")
+        {
+            Formatter = (v, t) =>
+            {
+                string result = v ? t.TranslateKey("options.on") : t.TranslateKey("options.off");
+                if (v != initialDebugMode) result += " [!]";
+                return result;
+            },
+            OnChanged = v => Profiling.Profiler.Enabled = v
+        };
+        EnvironmentAnimationOption = new BoolOption("Environment Anim", "envAnimation", true);
+        ChunkFadeOption = new BoolOption("Chunk Fade", "chunkFade", true);
+        MenuMusicOption = new BoolOption("Menu Music", "menuMusic", true);
+
+        RenderDistanceOption = new FloatOption("options.renderDistance", "viewDistance", 0.2f)
+        {
+            LabelOverride = "Render Distance",
+            Steps = 28,
+            Formatter = (v, t) => $"{4 + (int)(v * 28.0f)} Chunks",
+            OnChanged = _ => {
+                if (_mc?.internalServer != null)
+                {
+                    _mc.internalServer.SetViewDistance(this.renderDistance);
+                }
+            }
+        };
+        DifficultyOption = new CycleOption("options.difficulty", "difficulty", DifficultyLabels, 2);
+        GuiScaleOption = new CycleOption("options.guiScale", "guiScale", GuiScaleLabels);
+        AnisotropicOption = new CycleOption("Aniso Level", "anisotropicLevel", AnisoLabels)
+        {
+            Formatter = (v, t) => v == 0 ? t.TranslateKey("options.off") : AnisoLabels[v],
+            OnChanged = v =>
+            {
+                int anisoValue = v == 0 ? 0 : (int)System.Math.Pow(2, v);
+                if (anisoValue > MaxAnisotropy)
+                {
+                    AnisotropicOption.Value = 0;
+                }
+                if (Minecraft.INSTANCE?.textureManager != null)
+                    Minecraft.INSTANCE.textureManager.Reload();
+            }
+        };
+        MsaaOption = new CycleOption("MSAA", "msaaLevel", MSAALabels)
+        {
+            Formatter = (v, t) =>
+            {
+                string result = v == 0 ? t.TranslateKey("options.off") : MSAALabels[v];
+                if (v != INITIAL_MSAA) result += " (Reload required)";
+                return result;
+            }
+        };
+
+        _allOptions = new Dictionary<string, GameOption>();
+        foreach (var option in GetAllOptions())
+        {
+            _allOptions[option.SaveKey] = option;
+        }
+    }
+
+    private IEnumerable<GameOption> GetAllOptions()
+    {
+        yield return MusicVolumeOption;
+        yield return SoundVolumeOption;
+        yield return MouseSensitivityOption;
+        yield return FramerateLimitOption;
+        yield return FovOption;
+        yield return InvertMouseOption;
+        yield return ViewBobbingOption;
+        yield return VSyncOption;
+        yield return MipmapsOption;
+        yield return DebugModeOption;
+        yield return EnvironmentAnimationOption;
+        yield return ChunkFadeOption;
+        yield return MenuMusicOption;
+        yield return RenderDistanceOption;
+        yield return DifficultyOption;
+        yield return GuiScaleOption;
+        yield return AnisotropicOption;
+        yield return MsaaOption;
+    }
+
 
     public string GetKeyBindingDescription(int keyBindingIndex)
     {
@@ -127,221 +315,6 @@ public class GameOptions
         SaveOptions();
     }
 
-    public void SetOptionFloatValue(EnumOptions option, float value)
-    {
-        if (option == EnumOptions.MUSIC)
-        {
-            MusicVolume = value;
-            _mc.sndManager.OnSoundOptionsChanged();
-        }
-        else if (option == EnumOptions.SOUND)
-        {
-            SoundVolume = value;
-            _mc.sndManager.OnSoundOptionsChanged();
-        }
-        else if (option == EnumOptions.SENSITIVITY)
-        {
-            MouseSensitivity = value;
-        }
-        else if (option == EnumOptions.FRAMERATE_LIMIT)
-        {
-            LimitFramerate = value;
-        }
-        else if (option == EnumOptions.FOV)
-        {
-            Fov = value;
-        }
-
-        SaveOptions();
-    }
-
-    public void SetOptionValue(EnumOptions option, int increment)
-    {
-        if (option == EnumOptions.INVERT_MOUSE)
-        {
-            InvertMouse = !InvertMouse;
-        }
-        else if (option == EnumOptions.RENDER_DISTANCE)
-        {
-            renderDistance = renderDistance + increment & 3;
-        }
-        else if (option == EnumOptions.GUI_SCALE)
-        {
-            GuiScale = GuiScale + increment & 3;
-        }
-        else if (option == EnumOptions.VIEW_BOBBING)
-        {
-            ViewBobbing = !ViewBobbing;
-        }
-        else if (option == EnumOptions.VSYNC)
-        {
-            VSync = !VSync;
-            Display.getGlfw().SwapInterval(VSync ? 1 : 0);
-        }
-        else if (option == EnumOptions.DIFFICULTY)
-        {
-            Difficulty = Difficulty + increment & 3;
-        }
-        else if (option == EnumOptions.ANISOTROPIC)
-        {
-            AnisotropicLevel = (AnisotropicLevel + increment) % 5;
-            int anisoValue = AnisotropicLevel == 0 ? 0 : (int)System.Math.Pow(2, AnisotropicLevel);
-            if (anisoValue > MaxAnisotropy)
-            {
-                AnisotropicLevel = 0;
-            }
-            if (Minecraft.INSTANCE?.textureManager != null)
-            {
-                Minecraft.INSTANCE.textureManager.Reload();
-            }
-        }
-        else if (option == EnumOptions.MIPMAPS)
-        {
-            UseMipmaps = !UseMipmaps;
-            if (Minecraft.INSTANCE?.textureManager != null)
-            {
-                Minecraft.INSTANCE.textureManager.Reload();
-            }
-        }
-        else if (option == EnumOptions.MSAA)
-        {
-            MSAALevel = (MSAALevel + increment) % 4;
-        }
-        else if (option == EnumOptions.DEBUG_MODE)
-        {
-            DebugMode = !DebugMode;
-            Profiling.Profiler.Enabled = DebugMode;
-        }
-        else if (option == EnumOptions.ENVIRONMENT_ANIMATION)
-        {
-            EnvironmentAnimation = !EnvironmentAnimation;
-        }
-
-        SaveOptions();
-    }
-
-    public float GetOptionFloatValue(EnumOptions option)
-    {
-        if (option == EnumOptions.MUSIC) return MusicVolume;
-        if (option == EnumOptions.SOUND) return SoundVolume;
-        if (option == EnumOptions.SENSITIVITY) return MouseSensitivity;
-        if (option == EnumOptions.FRAMERATE_LIMIT) return LimitFramerate;
-        if (option == EnumOptions.FOV) return Fov;
-        return 0.0F;
-    }
-
-    public bool GetOptionOrdinalValue(EnumOptions option)
-    {
-        int mappedValue = EnumOptionsMappingHelper.enumOptionsMappingHelperArray[option.ordinal()];
-        return mappedValue switch
-        {
-            1 => InvertMouse,
-            2 => ViewBobbing,
-            3 => UseMipmaps,
-            4 => DebugMode,
-            5 => EnvironmentAnimation,
-            6 => VSync,
-            _ => false
-        };
-    }
-
-    public string GetKeyBinding(EnumOptions option)
-    {
-        TranslationStorage translations = TranslationStorage.Instance;
-        string label = GetOptionLabel(option, translations) + ": ";
-
-        if (option.getEnumFloat())
-        {
-            return FormatFloatValue(option, label, translations);
-        }
-        else if(option == EnumOptions.DEBUG_MODE)
-        {
-            return FormatDebugMode(label, translations);
-        }
-        else if (option.getEnumBoolean())
-        {
-            bool isEnabled = GetOptionOrdinalValue(option);
-            return label + (isEnabled ? translations.TranslateKey("options.on") : translations.TranslateKey("options.off"));
-        }
-        else if (option == EnumOptions.MSAA)
-        {
-            return FormatMsaaValue(label, translations);
-        }
-        else
-        {
-            return FormatEnumValue(option, label, translations);
-        }
-    }
-
-    private string GetOptionLabel(EnumOptions option, TranslationStorage translations)
-    {
-        if (option == EnumOptions.FRAMERATE_LIMIT) return "Max FPS";
-        if (option == EnumOptions.BRIGHTNESS) return "Brightness";
-        if (option == EnumOptions.VSYNC) return "VSync";
-        if (option == EnumOptions.FOV) return "FOV";
-        return translations.TranslateKey(option.getEnumString());
-    }
-
-    private string FormatFloatValue(EnumOptions option, string label, TranslationStorage translations)
-    {
-        float value = GetOptionFloatValue(option);
-
-        if (option == EnumOptions.SENSITIVITY)
-        {
-            return value == 0.0F ? label + translations.TranslateKey("options.sensitivity.min") : (value == 1.0F ? label + translations.TranslateKey("options.sensitivity.max") : label + (int)(value * 200.0F) + "%");
-        }
-        else if (option == EnumOptions.FRAMERATE_LIMIT)
-        {
-            return FormatFramerateValue(label, value);
-        }
-        else if (option == EnumOptions.FOV)
-        {
-            return label + (30 + (int)(value * 90.0f));
-        }
-        else
-        {
-            return value == 0.0F
-                ? label + translations.TranslateKey("options.off")
-                : label + $"{(int)(value * 100.0F)}%";
-        }
-    }
-
-    private string FormatFramerateValue(string label, float value)
-    {
-        int fps = 30 + (int)(value * 210.0f);
-        return label + (fps == 240 ? "Unlimited" : fps + " FPS");
-    }
-
-    private string FormatMsaaValue(string label, TranslationStorage translations)
-    {
-        string result = label + (MSAALevel == 0 ? translations.TranslateKey("options.off") : MSAALeves[MSAALevel]);
-        if (MSAALevel != INITIAL_MSAA)
-        {
-            result += " (Reload required)";
-        }
-        return result;
-    }
-
-    private string FormatDebugMode(string label, TranslationStorage translations)
-    {
-        bool isEnabled = GetOptionOrdinalValue(EnumOptions.DEBUG_MODE);
-        string result = label + (isEnabled ? translations.TranslateKey("options.on") : translations.TranslateKey("options.off"));
-        if (DebugMode != initialDebugMode)
-        {
-            result += " [!]";
-        }
-
-        return result;
-    }
-
-    private string FormatEnumValue(EnumOptions option, string label, TranslationStorage translations)
-    {
-        if (option == EnumOptions.RENDER_DISTANCE) return label + translations.TranslateKey(RENDER_DISTANCES[renderDistance]);
-        if (option == EnumOptions.DIFFICULTY) return label + translations.TranslateKey(Difficulties[Difficulty]);
-        if (option == EnumOptions.GUI_SCALE) return label + translations.TranslateKey(GuiScales[GuiScale]);
-        if (option == EnumOptions.ANISOTROPIC) return label + (AnisotropicLevel == 0 ? translations.TranslateKey("options.off") : AnisoLeves[AnisotropicLevel]);
-        return label;
-    }
 
     public void LoadOptions()
     {
@@ -377,39 +350,24 @@ public class GameOptions
         string key = parts[0];
         string value = parts[1];
 
+        if (_allOptions.TryGetValue(key, out GameOption? option))
+        {
+            option.Load(value);
+            return;
+        }
+
         switch (key)
         {
-            case "music": MusicVolume = ParseFloat(value); break;
-            case "sound": SoundVolume = ParseFloat(value); break;
-            case "mouseSensitivity": MouseSensitivity = ParseFloat(value); break;
-            case "invertYMouse": InvertMouse = value == "true"; break; // Simplified boolean parsing
-            case "viewDistance": renderDistance = int.Parse(value); break;
-            case "guiScale": GuiScale = int.Parse(value); break;
-            case "bobView": ViewBobbing = value == "true"; break;
-            case "fpsLimit": LimitFramerate = ParseFloat(value); break;
-            case "vsync": VSync = bool.Parse(value); break;
-            case "fov": Fov = ParseFloat(value); break;
-            case "difficulty": Difficulty = int.Parse(value); break;
             case "skin": Skin = value; break;
-            case "lastServer": LastServer = value; break; // Safe now because of the global length check
-            case "anisotropicLevel": AnisotropicLevel = int.Parse(value); break;
-            case "msaaLevel":
-                MSAALevel = int.Parse(value);
-                if (MSAALevel > 3) MSAALevel = 3;
-                break;
-            case "useMipmaps": UseMipmaps = value == "true"; break;
-            case "debugMode": DebugMode = value == "true"; break;
-            case "envAnimation": EnvironmentAnimation = value == "true"; break;
+            case "lastServer": LastServer = value; break;
             case "cameraMode": CameraMode = (EnumCameraMode)int.Parse(value); break;
-            case "thirdPersonView": // backward compatibility
+            case "thirdPersonView":
                 CameraMode = value == "true" ? EnumCameraMode.ThirdPerson : EnumCameraMode.FirstPerson;
                 break;
-
             default:
                 if (key.StartsWith("key_"))
                 {
                     string bindName = key[4..];
-
                     for (int i = 0; i < KeyBindings.Length; ++i)
                     {
                         if (KeyBindings[i].keyDescription == bindName)
@@ -423,39 +381,19 @@ public class GameOptions
         }
     }
 
-    private float ParseFloat(string value)
-    {
-        return value switch
-        {
-            "true" => 1.0F,
-            "false" => 0.0F,
-            _ => float.Parse(value)
-        };
-    }
-
     public void SaveOptions()
     {
         try
         {
             using var writer = new StreamWriter(_optionsPath);
-            writer.WriteLine($"music:{MusicVolume}");
-            writer.WriteLine($"sound:{SoundVolume}");
-            writer.WriteLine($"invertYMouse:{InvertMouse.ToString().ToLower()}");
-            writer.WriteLine($"mouseSensitivity:{MouseSensitivity}");
-            writer.WriteLine($"viewDistance:{renderDistance}");
-            writer.WriteLine($"guiScale:{GuiScale}");
-            writer.WriteLine($"bobView:{ViewBobbing.ToString().ToLower()}");
-            writer.WriteLine($"fpsLimit:{LimitFramerate}");
-            writer.WriteLine($"vsync:{VSync}");
-            writer.WriteLine($"fov:{Fov}");
-            writer.WriteLine($"difficulty:{Difficulty}");
+
+            foreach (var option in GetAllOptions())
+            {
+                writer.WriteLine($"{option.SaveKey}:{option.Save()}");
+            }
+
             writer.WriteLine($"skin:{Skin}");
             writer.WriteLine($"lastServer:{LastServer}");
-            writer.WriteLine($"anisotropicLevel:{AnisotropicLevel}");
-            writer.WriteLine($"msaaLevel:{MSAALevel}");
-            writer.WriteLine($"useMipmaps:{UseMipmaps.ToString().ToLower()}");
-            writer.WriteLine($"debugMode:{DebugMode.ToString().ToLower()}");
-            writer.WriteLine($"envAnimation:{EnvironmentAnimation.ToString().ToLower()}");
             writer.WriteLine($"cameraMode:{(int)CameraMode}");
 
             foreach (var bind in KeyBindings)
@@ -469,5 +407,10 @@ public class GameOptions
         {
             _logger.LogError($"Failed to save options: {exception.Message}");
         }
+    }
+
+    public void OnSoundOptionsChanged()
+    {
+        _mc?.sndManager.OnSoundOptionsChanged();
     }
 }

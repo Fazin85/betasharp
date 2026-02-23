@@ -11,6 +11,6 @@ public class ItemCoal : Item
 
     public override String getItemNameIS(ItemStack itemStack)
     {
-        return itemStack.getDamage() == 1 ? "item.charcoal" : "Item.Coal";
+        return itemStack.getDamage() == 1 ? "item.charcoal" : "item.coal";
     }
 }

@@ -1,6 +1,9 @@
+using System.Text.Json.Serialization;
+
 namespace BetaSharp.Launcher.Features.Xbox.Token;
 
 internal sealed class TokenResponse
 {
-    public required string Token { get; init; }
+    [JsonPropertyName("token")]
+    public required string Value { get; init; }
 }
