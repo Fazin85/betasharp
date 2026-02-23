@@ -4,10 +4,10 @@ namespace BetaSharp.PathFinding;
 
 internal class PathPoint
 {
-    private readonly int _hash;
-    public readonly int X;
-    public readonly int Y;
-    public readonly int Z;
+    private int _hash;
+    public int X;
+    public int Y;
+    public int Z;
 
     public int Index = -1;
     public float TotalPathDistance;
@@ -22,6 +22,21 @@ internal class PathPoint
         Y = y;
         Z = z;
         _hash = CalculateHash(x, y, z);
+    }
+
+    public void Init(int x, int y, int z)
+    {
+        X = x;
+        Y = y;
+        Z = z;
+        _hash = CalculateHash(x, y, z);
+        
+        Index = -1;
+        TotalPathDistance = 0f;
+        DistanceToNext = 0f;
+        DistanceToTarget = 0f;
+        Previous = null;
+        IsFirst = false;
     }
 
     public static int CalculateHash(int x, int y, int z)

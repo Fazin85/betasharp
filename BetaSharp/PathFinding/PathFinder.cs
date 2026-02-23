@@ -13,9 +13,17 @@ internal class Pathfinder
     private readonly Dictionary<int, PathPoint> _pointMap = new();
     private readonly PathPoint[] _pathOptions = new PathPoint[32];
 
+    private readonly PathPoint[] _pointPool = new PathPoint[4096];
+    private int _poolIndex;
+
     public Pathfinder(BlockView worldMap)
     {
         _worldMap = worldMap;
+
+        for (int i = 0; i < _pointPool.Length; i++)
+        {
+            _pointPool[i] = new PathPoint(0, 0, 0);
+        }
     }
 
     public PathEntity? CreateEntityPathTo(Entity entity, Entity target, float maxDistance)
@@ -32,6 +40,8 @@ internal class Pathfinder
     {
         _path.ClearPath();
         _pointMap.Clear();
+
+        _poolIndex = 0;
 
         PathPoint startPoint = OpenPoint(MathHelper.Floor(entity.boundingBox.minX), MathHelper.Floor(entity.boundingBox.minY), MathHelper.Floor(entity.boundingBox.minZ));
         PathPoint targetPoint = OpenPoint(MathHelper.Floor(targetX - (entity.width / 2.0f)), MathHelper.Floor(targetY), MathHelper.Floor(targetZ - (entity.width / 2.0f)));
@@ -183,11 +193,21 @@ internal class Pathfinder
 
     private PathPoint OpenPoint(int x, int y, int z)
     {
-        int hash = PathPoint.CalculateHash(x, y, z);
-
+       int hash = PathPoint.CalculateHash(x, y, z);
+        
         if (!_pointMap.TryGetValue(hash, out PathPoint? point))
         {
-            point = new PathPoint(x, y, z);
+            // Grab from the pool!
+            if (_poolIndex < _pointPool.Length)
+            {
+                point = _pointPool[_poolIndex++];
+                point.Init(x, y, z);
+            }
+            else
+            {
+                point = new PathPoint(x, y, z);
+            }
+            
             _pointMap[hash] = point;
         }
 
@@ -241,15 +261,16 @@ internal class Pathfinder
 
         PathPoint[] pathPoints = new PathPoint[length];
         current = end;
-        length--;
+        length--; 
 
-        pathPoints[length] = end;
-
+        pathPoints[length] = new PathPoint(end.X, end.Y, end.Z); 
+        
         while (current.Previous != null)
         {
             current = current.Previous;
-            length--;
-            pathPoints[length] = current;
+            length--; 
+
+            pathPoints[length] = new PathPoint(current.X, current.Y, current.Z); 
         }
 
         return new PathEntity(pathPoints);
