@@ -5,36 +5,36 @@ namespace BetaSharp.PathFinding;
 
 internal class PathEntity
 {
-    private readonly PathPoint[] points;
-    public readonly int pathLength;
-    private int pathIndex;
+    private readonly PathPoint[] _points;
+    public int PathLength { get; }
+    private int _pathIndex;
 
-    public PathEntity(PathPoint[] var1)
+    public PathEntity(PathPoint[] points)
     {
-        points = var1;
-        pathLength = var1.Length;
+        _points = points;
+        PathLength = points.Length;
     }
 
-    public void incrementPathIndex()
+    public void IncrementPathIndex()
     {
-        ++pathIndex;
+        _pathIndex++;
     }
 
-    public bool isFinished()
+    public bool IsFinished => _pathIndex >= _points.Length;
+
+    public PathPoint? GetFinalPoint()
     {
-        return pathIndex >= points.Length;
+        return PathLength > 0 ? _points[PathLength - 1] : null;
     }
 
-    public PathPoint func_22328_c()
+    public Vec3D GetPosition(Entity entity)
     {
-        return pathLength > 0 ? points[pathLength - 1] : null;
-    }
+        PathPoint currentPoint = _points[_pathIndex];
 
-    public Vec3D getPosition(Entity var1)
-    {
-        double var2 = (double)points[pathIndex].xCoord + (double)((int)(var1.width + 1.0F)) * 0.5D;
-        double var4 = (double)points[pathIndex].yCoord;
-        double var6 = (double)points[pathIndex].zCoord + (double)((int)(var1.width + 1.0F)) * 0.5D;
-        return new Vec3D(var2, var4, var6);
+        double x = currentPoint.X + (int)(entity.width + 1.0f) * 0.5;
+        double y = currentPoint.Y;
+        double z = currentPoint.Z + (int)(entity.width + 1.0f) * 0.5;
+
+        return new Vec3D(x, y, z);
     }
 }

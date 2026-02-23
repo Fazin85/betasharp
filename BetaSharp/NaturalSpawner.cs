@@ -145,11 +145,11 @@ public static class NaturalSpawner
                     entity.setPositionAndAnglesKeepPrevAngles(spawnX + 0.5D, spawnY, spawnZ + 0.5D, world.random.NextFloat() * 360.0F, 0.0F);
                     if (entity.canSpawn())
                     {
-                        PathEntity pathEntity = pathfinder.createEntityPathTo(entity, player, 32.0F);
-                        if (pathEntity != null && pathEntity.pathLength > 1)
+                        PathEntity pathEntity = pathfinder.CreateEntityPathTo(entity, player, 32.0F);
+                        if (pathEntity != null && pathEntity.PathLength > 1)
                         {
-                            PathPoint pathPoint = pathEntity.func_22328_c();
-                            if (Math.Abs(pathPoint.xCoord - player.x) < 1.5D && Math.Abs(pathPoint.zCoord - player.z) < 1.5D && Math.Abs(pathPoint.yCoord - player.y) < 1.5D)
+                            PathPoint pathPoint = pathEntity.GetFinalPoint();
+                            if (Math.Abs(pathPoint.X - player.x) < 1.5D && Math.Abs(pathPoint.Z - player.z) < 1.5D && Math.Abs(pathPoint.Y - player.y) < 1.5D)
                             {
                                 Vec3i wakeUpPos = BlockBed.findWakeUpPosition(world, MathHelper.Floor(player.x), MathHelper.Floor(player.y), MathHelper.Floor(player.z), 1) ?? new Vec3i(spawnX, newSpawnY + 1, spawnZ);
 

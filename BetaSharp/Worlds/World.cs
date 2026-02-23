@@ -2787,7 +2787,7 @@ public abstract class World : java.lang.Object, BlockView
         int var12 = var5 + var7;
         int var13 = var6 + var7;
         WorldRegion var14 = new(this, var8, var9, var10, var11, var12, var13);
-        return (new Pathfinder(var14)).createEntityPathTo(entity, target, range);
+        return (new Pathfinder(var14)).CreateEntityPathTo(entity, target, range);
     }
 
     internal PathEntity findPath(Entity entity, int x, int y, int z, float range)
@@ -2803,7 +2803,7 @@ public abstract class World : java.lang.Object, BlockView
         int var14 = var7 + var9;
         int var15 = var8 + var9;
         WorldRegion var16 = new(this, var10, var11, var12, var13, var14, var15);
-        return (new Pathfinder(var16)).createEntityPathTo(entity, x, y, z, range);
+        return (new Pathfinder(var16)).CreateEntityPathTo(entity, x, y, z, range);
     }
 
     public bool isStrongPoweringSide(int x, int y, int z, int side)

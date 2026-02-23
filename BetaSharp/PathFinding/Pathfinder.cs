@@ -1,7 +1,6 @@
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
-using BetaSharp.Util;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
@@ -9,225 +8,214 @@ namespace BetaSharp.PathFinding;
 
 internal class Pathfinder
 {
-    private readonly BlockView worldMap;
-    private readonly Path path = new();
-    private readonly Dictionary<int, PathPoint> pointMap = new();
-    private readonly PathPoint[] pathOptions = new PathPoint[32];
+    private readonly BlockView _worldMap;
+    private readonly Path _path = new();
+    private readonly Dictionary<int, PathPoint> _pointMap = new();
+    private readonly PathPoint[] _pathOptions = new PathPoint[32];
 
-    public Pathfinder(BlockView var1)
+    public Pathfinder(BlockView worldMap)
     {
-        worldMap = var1;
+        _worldMap = worldMap;
     }
 
-    public PathEntity createEntityPathTo(Entity var1, Entity var2, float var3)
+    public PathEntity? CreateEntityPathTo(Entity entity, Entity target, float maxDistance)
     {
-        return createEntityPathTo(var1, var2.x, var2.boundingBox.minY, var2.z, var3);
+        return CreateEntityPathTo(entity, target.x, target.boundingBox.minY, target.z, maxDistance);
     }
 
-    public PathEntity createEntityPathTo(Entity var1, int var2, int var3, int var4, float var5)
+    public PathEntity? CreateEntityPathTo(Entity entity, int x, int y, int z, float maxDistance)
     {
-        return createEntityPathTo(var1, (double)((float)var2 + 0.5F), (double)((float)var3 + 0.5F), (double)((float)var4 + 0.5F), var5);
+        return CreateEntityPathTo(entity, x + 0.5f, y + 0.5f, z + 0.5f, maxDistance);
     }
 
-    private PathEntity createEntityPathTo(Entity var1, double var2, double var4, double var6, float var8)
+    private PathEntity? CreateEntityPathTo(Entity entity, double targetX, double targetY, double targetZ, float maxDistance)
     {
-        path.clearPath();
-        pointMap.Clear();
-        PathPoint var9 = openPoint(MathHelper.Floor(var1.boundingBox.minX), MathHelper.Floor(var1.boundingBox.minY), MathHelper.Floor(var1.boundingBox.minZ));
-        PathPoint var10 = openPoint(MathHelper.Floor(var2 - (double)(var1.width / 2.0F)), MathHelper.Floor(var4), MathHelper.Floor(var6 - (double)(var1.width / 2.0F)));
-        PathPoint var11 = new(MathHelper.Floor(var1.width + 1.0F), MathHelper.Floor(var1.height + 1.0F), MathHelper.Floor(var1.width + 1.0F));
-        PathEntity var12 = addToPath(var1, var9, var10, var11, var8);
-        return var12;
+        _path.ClearPath();
+        _pointMap.Clear();
+
+        PathPoint startPoint = OpenPoint(MathHelper.Floor(entity.boundingBox.minX), MathHelper.Floor(entity.boundingBox.minY), MathHelper.Floor(entity.boundingBox.minZ));
+        PathPoint targetPoint = OpenPoint(MathHelper.Floor(targetX - (entity.width / 2.0f)), MathHelper.Floor(targetY), MathHelper.Floor(targetZ - (entity.width / 2.0f)));
+        
+        PathPoint sizePoint = new(MathHelper.Floor(entity.width + 1.0f), MathHelper.Floor(entity.height + 1.0f), MathHelper.Floor(entity.width + 1.0f));
+        
+        return AddToPath(entity, startPoint, targetPoint, sizePoint, maxDistance);
     }
 
-    private PathEntity addToPath(Entity var1, PathPoint var2, PathPoint var3, PathPoint var4, float var5)
+    private PathEntity? AddToPath(Entity entity, PathPoint start, PathPoint target, PathPoint size, float maxDistance)
     {
-        var2.totalPathDistance = 0.0F;
-        var2.distanceToNext = var2.distanceTo(var3);
-        var2.distanceToTarget = var2.distanceToNext;
-        path.clearPath();
-        path.addPoint(var2);
-        PathPoint var6 = var2;
+        start.TotalPathDistance = 0.0f;
+        start.DistanceToNext = start.DistanceTo(target);
+        start.DistanceToTarget = start.DistanceToNext;
+        
+        _path.ClearPath();
+        _path.AddPoint(start);
+        
+        PathPoint closestPoint = start;
 
-        while (!path.isPathEmpty())
+        while (!_path.IsPathEmpty())
         {
-            PathPoint var7 = path.dequeue();
-            if (var7.Equals(var3))
+            PathPoint current = _path.Dequeue();
+            
+            if (current.Equals(target))
             {
-                return createEntityPath(var2, var3);
+                return CreateEntityPath(start, target);
             }
 
-            if (var7.distanceTo(var3) < var6.distanceTo(var3))
+            if (current.DistanceTo(target) < closestPoint.DistanceTo(target))
             {
-                var6 = var7;
+                closestPoint = current;
             }
 
-            var7.isFirst = true;
-            int var8 = findPathOptions(var1, var7, var4, var3, var5);
+            current.IsFirst = true;
+            int optionCount = FindPathOptions(entity, current, size, target, maxDistance);
 
-            for (int var9 = 0; var9 < var8; ++var9)
+            for (int i = 0; i < optionCount; ++i)
             {
-                PathPoint var10 = pathOptions[var9];
-                float var11 = var7.totalPathDistance + var7.distanceTo(var10);
-                if (!var10.isAssigned() || var11 < var10.totalPathDistance)
+                PathPoint option = _pathOptions[i];
+                float totalDistance = current.TotalPathDistance + current.DistanceTo(option);
+                
+                if (!option.IsAssigned() || totalDistance < option.TotalPathDistance)
                 {
-                    var10.previous = var7;
-                    var10.totalPathDistance = var11;
-                    var10.distanceToNext = var10.distanceTo(var3);
-                    if (var10.isAssigned())
+                    option.Previous = current;
+                    option.TotalPathDistance = totalDistance;
+                    option.DistanceToNext = option.DistanceTo(target);
+                    
+                    if (option.IsAssigned())
                     {
-                        path.changeDistance(var10, var10.totalPathDistance + var10.distanceToNext);
+                        _path.ChangeDistance(option, option.TotalPathDistance + option.DistanceToNext);
                     }
                     else
                     {
-                        var10.distanceToTarget = var10.totalPathDistance + var10.distanceToNext;
-                        path.addPoint(var10);
+                        option.DistanceToTarget = option.TotalPathDistance + option.DistanceToNext;
+                        _path.AddPoint(option);
                     }
                 }
             }
         }
 
-        if (var6 == var2)
+        if (closestPoint == start)
         {
             return null;
         }
-        else
-        {
-            return createEntityPath(var2, var6);
-        }
+        
+        return CreateEntityPath(start, closestPoint);
     }
 
-    private int findPathOptions(Entity var1, PathPoint var2, PathPoint var3, PathPoint var4, float var5)
+    private int FindPathOptions(Entity entity, PathPoint current, PathPoint size, PathPoint target, float maxDistance)
     {
-        int var6 = 0;
-        byte var7 = 0;
-        if (getVerticalOffset(var1, var2.xCoord, var2.yCoord + 1, var2.zCoord, var3) == 1)
+        int optionCount = 0;
+        byte stepUp = 0;
+        
+        if (GetVerticalOffset(entity, current.X, current.Y + 1, current.Z, size) == 1)
         {
-            var7 = 1;
+            stepUp = 1;
         }
 
-        PathPoint var8 = getSafePoint(var1, var2.xCoord, var2.yCoord, var2.zCoord + 1, var3, var7);
-        PathPoint var9 = getSafePoint(var1, var2.xCoord - 1, var2.yCoord, var2.zCoord, var3, var7);
-        PathPoint var10 = getSafePoint(var1, var2.xCoord + 1, var2.yCoord, var2.zCoord, var3, var7);
-        PathPoint var11 = getSafePoint(var1, var2.xCoord, var2.yCoord, var2.zCoord - 1, var3, var7);
-        if (var8 != null && !var8.isFirst && var8.distanceTo(var4) < var5)
-        {
-            pathOptions[var6++] = var8;
-        }
+        PathPoint? pointSouth = GetSafePoint(entity, current.X, current.Y, current.Z + 1, size, stepUp);
+        PathPoint? pointWest = GetSafePoint(entity, current.X - 1, current.Y, current.Z, size, stepUp);
+        PathPoint? pointEast = GetSafePoint(entity, current.X + 1, current.Y, current.Z, size, stepUp);
+        PathPoint? pointNorth = GetSafePoint(entity, current.X, current.Y, current.Z - 1, size, stepUp);
 
-        if (var9 != null && !var9.isFirst && var9.distanceTo(var4) < var5)
-        {
-            pathOptions[var6++] = var9;
-        }
+        if (pointSouth != null && !pointSouth.IsFirst && pointSouth.DistanceTo(target) < maxDistance)
+            _pathOptions[optionCount++] = pointSouth;
 
-        if (var10 != null && !var10.isFirst && var10.distanceTo(var4) < var5)
-        {
-            pathOptions[var6++] = var10;
-        }
+        if (pointWest != null && !pointWest.IsFirst && pointWest.DistanceTo(target) < maxDistance)
+            _pathOptions[optionCount++] = pointWest;
 
-        if (var11 != null && !var11.isFirst && var11.distanceTo(var4) < var5)
-        {
-            pathOptions[var6++] = var11;
-        }
+        if (pointEast != null && !pointEast.IsFirst && pointEast.DistanceTo(target) < maxDistance)
+            _pathOptions[optionCount++] = pointEast;
 
-        return var6;
+        if (pointNorth != null && !pointNorth.IsFirst && pointNorth.DistanceTo(target) < maxDistance)
+            _pathOptions[optionCount++] = pointNorth;
+
+        return optionCount;
     }
 
-    private PathPoint getSafePoint(Entity var1, int var2, int var3, int var4, PathPoint var5, int var6)
+    private PathPoint? GetSafePoint(Entity entity, int x, int y, int z, PathPoint size, int stepUp)
     {
-        PathPoint var7 = null;
-        if (getVerticalOffset(var1, var2, var3, var4, var5) == 1)
+        PathPoint? safePoint = null;
+        
+        if (GetVerticalOffset(entity, x, y, z, size) == 1)
         {
-            var7 = openPoint(var2, var3, var4);
+            safePoint = OpenPoint(x, y, z);
         }
 
-        if (var7 == null && var6 > 0 && getVerticalOffset(var1, var2, var3 + var6, var4, var5) == 1)
+        if (safePoint == null && stepUp > 0 && GetVerticalOffset(entity, x, y + stepUp, z, size) == 1)
         {
-            var7 = openPoint(var2, var3 + var6, var4);
-            var3 += var6;
+            safePoint = OpenPoint(x, y + stepUp, z);
+            y += stepUp;
         }
 
-        if (var7 != null)
+        if (safePoint != null)
         {
-            int var8 = 0;
-            int var9 = 0;
+            int fallDistance = 0;
+            int offsetStatus = 0;
 
-            while (var3 > 0)
+            while (y > 0)
             {
-                var9 = getVerticalOffset(var1, var2, var3 - 1, var4, var5);
-                if (var9 != 1)
+                offsetStatus = GetVerticalOffset(entity, x, y - 1, z, size);
+                if (offsetStatus != 1)
                 {
                     break;
                 }
 
-                ++var8;
-                if (var8 >= 4)
+                fallDistance++;
+                if (fallDistance >= 4)
                 {
                     return null;
                 }
 
-                --var3;
-                if (var3 > 0)
+                y--;
+                if (y > 0)
                 {
-                    var7 = openPoint(var2, var3, var4);
+                    safePoint = OpenPoint(x, y, z);
                 }
             }
 
-            if (var9 == -2)
+            if (offsetStatus == -2) 
             {
                 return null;
             }
         }
 
-        return var7;
+        return safePoint;
     }
 
-    private PathPoint openPoint(int var1, int var2, int var3)
+    private PathPoint OpenPoint(int x, int y, int z)
     {
-        int var4 = PathPoint.func_22329_a(var1, var2, var3);
-        PathPoint var5 = pointMap.GetValueOrDefault(var4);
-        if (var5 == null)
+        int hash = PathPoint.CalculateHash(x, y, z);
+    
+        if (!_pointMap.TryGetValue(hash, out PathPoint? point))
         {
-            var5 = new PathPoint(var1, var2, var3);
-            pointMap[var4] = var5;
+            point = new PathPoint(x, y, z);
+            _pointMap[hash] = point;
         }
 
-        return var5;
+        return point;
     }
 
-    private int getVerticalOffset(Entity var1, int var2, int var3, int var4, PathPoint var5)
+    private int GetVerticalOffset(Entity entity, int x, int y, int z, PathPoint size)
     {
-        for (int var6 = var2; var6 < var2 + var5.xCoord; ++var6)
+        for (int ix = x; ix < x + size.X; ++ix)
         {
-            for (int var7 = var3; var7 < var3 + var5.yCoord; ++var7)
+            for (int iy = y; iy < y + size.Y; ++iy)
             {
-                for (int var8 = var4; var8 < var4 + var5.zCoord; ++var8)
+                for (int iz = z; iz < z + size.Z; ++iz)
                 {
-                    int var9 = worldMap.getBlockId(var6, var7, var8);
-                    if (var9 > 0)
+                    int blockId = _worldMap.getBlockId(ix, iy, iz);
+                    if (blockId > 0)
                     {
-                        if (var9 != Block.IronDoor.id && var9 != Block.Door.id)
+                        if (blockId != Block.IronDoor.id && blockId != Block.Door.id)
                         {
-                            Material var11 = Block.Blocks[var9].material;
-                            if (var11.BlocksMovement)
-                            {
-                                return 0;
-                            }
-
-                            if (var11 == Material.Water)
-                            {
-                                return -1;
-                            }
-
-                            if (var11 == Material.Lava)
-                            {
-                                return -2;
-                            }
+                            Material material = Block.Blocks[blockId].material;
+                            if (material.BlocksMovement) return 0; 
+                            if (material == Material.Water) return -1;
+                            if (material == Material.Lava) return -2;
                         }
                         else
                         {
-                            int var10 = worldMap.getBlockMeta(var6, var7, var8);
-                            if (!BlockDoor.isOpen(var10))
+                            int meta = _worldMap.getBlockMeta(ix, iy, iz);
+                            if (!BlockDoor.isOpen(meta))
                             {
                                 return 0;
                             }
@@ -240,26 +228,29 @@ internal class Pathfinder
         return 1;
     }
 
-    private PathEntity createEntityPath(PathPoint var1, PathPoint var2)
+    private PathEntity CreateEntityPath(PathPoint start, PathPoint end)
     {
-        int var3 = 1;
+        int length = 1;
+        PathPoint current = end;
 
-        PathPoint var4;
-        for (var4 = var2; var4.previous != null; var4 = var4.previous)
+        while (current.Previous != null)
         {
-            ++var3;
+            length++;
+            current = current.Previous;
         }
 
-        PathPoint[] var5 = new PathPoint[var3];
-        var4 = var2;
-        --var3;
+        PathPoint[] pathPoints = new PathPoint[length];
+        current = end;
+        length--;
 
-        for (var5[var3] = var2; var4.previous != null; var5[var3] = var4)
+        pathPoints[length] = end;
+        while (current.Previous != null)
         {
-            var4 = var4.previous;
-            --var3;
+            pathPoints[length] = current.Previous;
+            current = current.Previous;
+            length--;
         }
 
-        return new PathEntity(var5);
+        return new PathEntity(pathPoints);
     }
 }

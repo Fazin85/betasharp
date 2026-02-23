@@ -1,149 +1,141 @@
-using java.lang;
-
 namespace BetaSharp.PathFinding;
 
 internal class Path
 {
-    private PathPoint[] pathPoints = new PathPoint[1024];
-    private int count;
+    private PathPoint[] _pathPoints = new PathPoint[1024];
+    private int _count;
 
-    public PathPoint addPoint(PathPoint var1)
+    public PathPoint AddPoint(PathPoint point)
     {
-        if (var1.index >= 0)
+        if (point.Index >= 0)
         {
-            throw new IllegalStateException("OW KNOWS!");
+            throw new InvalidOperationException("OW KNOWS!"); 
+        }
+
+        if (_count == _pathPoints.Length)
+        {
+            PathPoint[] newArray = new PathPoint[_count << 1]; 
+            Array.Copy(_pathPoints, 0, newArray, 0, _count);
+            _pathPoints = newArray;
+        }
+
+        _pathPoints[_count] = point;
+        point.Index = _count;
+        SiftUp(_count++);
+        return point;
+    }
+
+    public void ClearPath()
+    {
+        _count = 0;
+    }
+
+    public PathPoint Dequeue()
+    {
+        PathPoint result = _pathPoints[0];
+        _pathPoints[0] = _pathPoints[--_count];
+        _pathPoints[_count] = null!; 
+
+        if (_count > 0)
+        {
+            SifDown(0);
+        }
+
+        result.Index = -1;
+        return result;
+    }
+
+    public void ChangeDistance(PathPoint point, float newDistance)
+    {
+        float oldDistance = point.DistanceToTarget;
+        point.DistanceToTarget = newDistance;
+
+        if (newDistance < oldDistance)
+        {
+            SiftUp(point.Index);
         }
         else
         {
-            if (count == pathPoints.Length)
-            {
-                PathPoint[] var2 = new PathPoint[count << 1];
-                java.lang.System.arraycopy(pathPoints, 0, var2, 0, count);
-                pathPoints = var2;
-            }
-
-            pathPoints[count] = var1;
-            var1.index = count;
-            sortBack(count++);
-            return var1;
+            SifDown(point.Index);
         }
     }
 
-    public void clearPath()
+    private void SiftUp(int index)
     {
-        count = 0;
-    }
+        PathPoint point = _pathPoints[index];
+        float distance = point.DistanceToTarget;
 
-    public PathPoint dequeue()
-    {
-        PathPoint var1 = pathPoints[0];
-        pathPoints[0] = pathPoints[--count];
-        pathPoints[count] = null;
-        if (count > 0)
+        while (index > 0)
         {
-            sortForward(0);
-        }
+            int parentIndex = (index - 1) >> 1;
+            PathPoint parentNode = _pathPoints[parentIndex];
 
-        var1.index = -1;
-        return var1;
-    }
-
-    public void changeDistance(PathPoint var1, float var2)
-    {
-        float var3 = var1.distanceToTarget;
-        var1.distanceToTarget = var2;
-        if (var2 < var3)
-        {
-            sortBack(var1.index);
-        }
-        else
-        {
-            sortForward(var1.index);
-        }
-
-    }
-
-    private void sortBack(int var1)
-    {
-        PathPoint var2 = pathPoints[var1];
-
-        int var4;
-        for (float var3 = var2.distanceToTarget; var1 > 0; var1 = var4)
-        {
-            var4 = var1 - 1 >> 1;
-            PathPoint var5 = pathPoints[var4];
-            if (var3 >= var5.distanceToTarget)
+            if (distance >= parentNode.DistanceToTarget)
             {
                 break;
             }
 
-            pathPoints[var1] = var5;
-            var5.index = var1;
+            _pathPoints[index] = parentNode;
+            parentNode.Index = index;
+            index = parentIndex;
         }
 
-        pathPoints[var1] = var2;
-        var2.index = var1;
+        _pathPoints[index] = point;
+        point.Index = index;
     }
 
-    private void sortForward(int var1)
+    private void SifDown(int index)
     {
-        PathPoint var2 = pathPoints[var1];
-        float var3 = var2.distanceToTarget;
+        PathPoint point = _pathPoints[index];
+        float distance = point.DistanceToTarget;
 
         while (true)
         {
-            int var4 = 1 + (var1 << 1);
-            int var5 = var4 + 1;
-            if (var4 >= count)
+            int leftChildIndex = 1 + (index << 1);
+            int rightChildIndex = leftChildIndex + 1;
+
+            if (leftChildIndex >= _count)
             {
                 break;
             }
 
-            PathPoint var6 = pathPoints[var4];
-            float var7 = var6.distanceToTarget;
-            PathPoint var8;
-            float var9;
-            if (var5 >= count)
+            PathPoint leftChild = _pathPoints[leftChildIndex];
+            float leftDistance = leftChild.DistanceToTarget;
+
+            PathPoint? rightChild = null;
+
+            float rightDistance = float.PositiveInfinity;
+
+            if (rightChildIndex < _count)
             {
-                var8 = null;
-                var9 = Float.POSITIVE_INFINITY;
+                rightChild = _pathPoints[rightChildIndex];
+                rightDistance = rightChild.DistanceToTarget;
+            }
+
+            if (leftDistance < rightDistance)
+            {
+                if (leftDistance >= distance) break;
+
+                _pathPoints[index] = leftChild;
+                leftChild.Index = index;
+                index = leftChildIndex;
             }
             else
             {
-                var8 = pathPoints[var5];
-                var9 = var8.distanceToTarget;
-            }
+                if (rightDistance >= distance) break;
 
-            if (var7 < var9)
-            {
-                if (var7 >= var3)
-                {
-                    break;
-                }
-
-                pathPoints[var1] = var6;
-                var6.index = var1;
-                var1 = var4;
-            }
-            else
-            {
-                if (var9 >= var3)
-                {
-                    break;
-                }
-
-                pathPoints[var1] = var8;
-                var8.index = var1;
-                var1 = var5;
+                _pathPoints[index] = rightChild!;
+                rightChild!.Index = index;
+                index = rightChildIndex;
             }
         }
 
-        pathPoints[var1] = var2;
-        var2.index = var1;
+        _pathPoints[index] = point;
+        point.Index = index;
     }
 
-    public bool isPathEmpty()
+    public bool IsPathEmpty()
     {
-        return count == 0;
+        return _count == 0;
     }
 }
