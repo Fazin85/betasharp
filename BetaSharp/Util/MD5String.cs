@@ -13,7 +13,7 @@ public class MD5String
         this.salt = salt;
     }
 
-    public string hash(string str)
+    public string Hash(string str)
     {
         try
         {

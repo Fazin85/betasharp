@@ -129,7 +129,7 @@ public class StatFileWriter
                 }
             }
 
-            string statsChecksum = new MD5String("local").hash(sb.ToString());
+            string statsChecksum = new MD5String("local").Hash(sb.ToString());
 
             if (root.TryGetProperty("checksum", out JsonElement checksumElement))
             {
@@ -156,7 +156,7 @@ public class StatFileWriter
 
     public static string SerializeStats(string username, string salt, Dictionary<StatBase, int> statsMap)
     {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         bool isFirst = true;
 
         sb.Append("{\r\n");
@@ -169,7 +169,7 @@ public class StatFileWriter
         }
 
         sb.Append("  \"stats-change\":[");
-        StringBuilder hashDataBuilder = new StringBuilder();
+        var hashDataBuilder = new StringBuilder();
 
         foreach (var kvp in statsMap)
         {
@@ -177,13 +177,9 @@ public class StatFileWriter
             int value = kvp.Value;
 
             if (!isFirst)
-            {
                 sb.Append("},");
-            }
             else
-            {
                 isFirst = false;
-            }
 
             sb.Append("\r\n    {\"").Append(stat.Id).Append("\":").Append(value);
 
@@ -192,13 +188,11 @@ public class StatFileWriter
         }
 
         if (!isFirst)
-        {
             sb.Append("}");
-        }
 
-        MD5String md5 = new MD5String(salt);
+        var md5 = new MD5String(salt!);
         sb.Append("\r\n  ],\r\n");
-        sb.Append("  \"checksum\":\"").Append(md5.hash(hashDataBuilder.ToString())).Append("\"\r\n");
+        sb.Append("  \"checksum\":\"").Append(md5.Hash(hashDataBuilder.ToString())).Append("\"\r\n");
         sb.Append("}");
 
         return sb.ToString();
