@@ -28,7 +28,7 @@ public class StatFileWriter
             {
                 string fileName = System.IO.Path.GetFileName(filePath);
                 string targetPath = System.IO.Path.Combine(statsFolder, fileName);
-                
+
                 if (!File.Exists(targetPath))
                 {
                     s_logger.LogInformation($"Relocating {fileName}");
@@ -48,12 +48,11 @@ public class StatFileWriter
 
     private void WriteStatToMap(Dictionary<StatBase, int> map, StatBase stat, int increment)
     {
-        // 3. Native Dictionary access completely eliminates boxing/unboxing
         map.TryGetValue(stat, out int current);
         map[stat] = current + increment;
     }
 
-    public Dictionary<StatBase, int> GetStatsSyncedData() // Originally func_27176_a
+    public Dictionary<StatBase, int> GetStatsSyncedData()
     {
         return new Dictionary<StatBase, int>(_statsSyncedData);
     }
@@ -71,7 +70,7 @@ public class StatFileWriter
         }
     }
 
-    public void AddStats(Dictionary<StatBase, int> newStats) // Originally func_27180_b
+    public void AddStats(Dictionary<StatBase, int> newStats)
     {
         if (newStats != null)
         {
@@ -83,7 +82,7 @@ public class StatFileWriter
         }
     }
 
-    public void SetStats(Dictionary<StatBase, int> newStats) // Originally func_27187_c
+    public void SetStats(Dictionary<StatBase, int> newStats)
     {
         if (newStats != null)
         {
@@ -130,7 +129,6 @@ public class StatFileWriter
                 }
             }
 
-            // Kept MD5String as requested
             string statsChecksum = new MD5String("local").hash(sb.ToString());
 
             if (root.TryGetProperty("checksum", out JsonElement checksumElement))
@@ -156,12 +154,11 @@ public class StatFileWriter
         return statsMap;
     }
 
-    // Originally func_27185_a
     public static string SerializeStats(string username, string salt, Dictionary<StatBase, int> statsMap)
     {
         StringBuilder sb = new StringBuilder();
         bool isFirst = true;
-        
+
         sb.Append("{\r\n");
         if (username != null && salt != null)
         {
@@ -189,7 +186,7 @@ public class StatFileWriter
             }
 
             sb.Append("\r\n    {\"").Append(stat.Id).Append("\":").Append(value);
-            
+
             hashDataBuilder.Append(stat.StatGuid).Append(",");
             hashDataBuilder.Append(value).Append(",");
         }
@@ -199,12 +196,11 @@ public class StatFileWriter
             sb.Append("}");
         }
 
-        // Kept MD5String as requested
         MD5String md5 = new MD5String(salt);
         sb.Append("\r\n  ],\r\n");
         sb.Append("  \"checksum\":\"").Append(md5.hash(hashDataBuilder.ToString())).Append("\"\r\n");
         sb.Append("}");
-        
+
         return sb.ToString();
     }
 

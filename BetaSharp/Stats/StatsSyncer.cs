@@ -14,24 +14,24 @@ public class StatsSynchronizer
     private volatile bool _busy;
     private volatile Dictionary<StatBase, int> _mergedData;
     private volatile Dictionary<StatBase, int> _downloadedData;
-    
+
     private readonly StatFileWriter _statFileWriter;
     private readonly Session _session;
-    
+
     private readonly string _unsentStatsFile;
     private readonly string _statsFile;
     private readonly string _tempUnsentStatsFile;
     private readonly string _tempStatsFile;
     private readonly string _oldUnsentStatsFile;
     private readonly string _oldStatsFile;
-    
+
     private int _syncTimeout;
     private int _timeoutCounter;
 
     public StatsSynchronizer(Session session, StatFileWriter statFileWriter, string statsFolder)
     {
         string usernameLower = session.username.ToLowerInvariant();
-        
+
         _unsentStatsFile = System.IO.Path.Combine(statsFolder, $"stats_{usernameLower}_unsent.dat");
         _statsFile = System.IO.Path.Combine(statsFolder, $"stats_{usernameLower}.dat");
         _oldUnsentStatsFile = System.IO.Path.Combine(statsFolder, $"stats_{usernameLower}_unsent.old");
@@ -126,7 +126,7 @@ public class StatsSynchronizer
 
         _syncTimeout = 100;
         _busy = true;
-        
+
         new Threading.ThreadStatSynchronizerReceive(this).Start();
     }
 

@@ -12,7 +12,7 @@ public static class Stats
     public static List<StatBase> ItemStats = [];
     public static List<StatBase> BlocksMinedStats = [];
 
-   public static StatBase StartGameStat = new StatBasic(1000, StatCollector.TranslateToLocal("stat.startGame")).SetLocalOnly().RegisterStat();
+    public static StatBase StartGameStat = new StatBasic(1000, StatCollector.TranslateToLocal("stat.startGame")).SetLocalOnly().RegisterStat();
     public static StatBase CreateWorldStat = new StatBasic(1001, StatCollector.TranslateToLocal("stat.createWorld")).SetLocalOnly().RegisterStat();
     public static StatBase LoadWorldStat = new StatBasic(1002, StatCollector.TranslateToLocal("stat.loadWorld")).SetLocalOnly().RegisterStat();
     public static StatBase JoinMultiplayerStat = new StatBasic(1003, StatCollector.TranslateToLocal("stat.joinMultiplayer")).SetLocalOnly().RegisterStat();
@@ -44,7 +44,7 @@ public static class Stats
     private static bool _hasBasicItemStatsInitialized;
     private static bool _hasExtendedItemStatsInitialized;
 
-public static void InitializeItemStats()
+    public static void InitializeItemStats()
     {
         Used = InitItemUsedStats(Used, "stat.useItem", 16908288, 0, Block.Blocks.Length);
         Broken = InitializeBrokenItemStats(Broken, "stat.breakItem", 16973824, 0, Block.Blocks.Length);
@@ -119,7 +119,7 @@ public static void InitializeItemStats()
             {
                 string translatedName = StatCollector.TranslateToLocalFormatted(baseName, Item.ITEMS[i].getStatName());
                 statsArray[i] = new StatCrafting(baseId + i, translatedName, i).RegisterStat();
-                
+
                 if (i >= Block.Blocks.Length)
                 {
                     ItemStats.Add(statsArray[i]);

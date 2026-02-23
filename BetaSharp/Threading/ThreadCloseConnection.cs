@@ -21,7 +21,7 @@ public class ThreadCloseConnection
             try
             {
                 await Task.Delay(2000);
-                
+
                 if (Connection.isOpen(Connection))
                 {
                     Connection.getWriter(Connection).interrupt();

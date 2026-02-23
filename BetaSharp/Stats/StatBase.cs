@@ -9,11 +9,11 @@ public class StatBase
     public string StatName { get; }
     public bool LocalOnly { get; set; }
     public string StatGuid { get; set; }
-    
+
     private readonly Func<int, string> _formatter;
-    
+
     private const string DefaultDecimalFormat = "0.00";
-    
+
     public static readonly Func<int, string> IntegerFormat = FormatInteger;
     public static readonly Func<int, string> TimeProvider = StatFormatters.FormatTime;
     public static readonly Func<int, string> DistanceProvider = StatFormatters.FormatDistance;
@@ -43,11 +43,11 @@ public class StatBase
             string existingStatName = Stats.IdToStat[Id].StatName;
             throw new InvalidOperationException($"Duplicate stat id: \"{existingStatName}\" and \"{StatName}\" at id {Id}");
         }
-        
+
         Stats.AllStats.Add(this);
         Stats.IdToStat.Add(Id, this);
         StatGuid = AchievementMap.getGuid(Id);
-        
+
         return this;
     }
 
@@ -55,7 +55,7 @@ public class StatBase
 
     public string Format(int value)
     {
-        return _formatter(value); 
+        return _formatter(value);
     }
 
     public override string ToString()
