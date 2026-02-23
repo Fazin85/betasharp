@@ -3,7 +3,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.PathFinding;
 
-public class PathEntity : java.lang.Object
+internal class PathEntity
 {
     private readonly PathPoint[] points;
     public readonly int pathLength;

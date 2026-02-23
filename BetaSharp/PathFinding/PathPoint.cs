@@ -3,7 +3,7 @@ using java.lang;
 
 namespace BetaSharp.PathFinding;
 
-public class PathPoint : java.lang.Object
+internal class PathPoint
 {
     public readonly int xCoord;
     public readonly int yCoord;
@@ -37,7 +37,7 @@ public class PathPoint : java.lang.Object
         return MathHelper.Sqrt(var2 * var2 + var3 * var3 + var4 * var4);
     }
 
-    public override bool equals(object var1)
+    public override bool Equals(object var1)
     {
         if (var1 is not PathPoint)
         {
@@ -50,7 +50,7 @@ public class PathPoint : java.lang.Object
         }
     }
 
-    public override int hashCode()
+    public override int GetHashCode()
     {
         return hash;
     }
@@ -60,7 +60,7 @@ public class PathPoint : java.lang.Object
         return index >= 0;
     }
 
-    public override string toString()
+    public override string ToString()
     {
         return xCoord + ", " + yCoord + ", " + zCoord;
     }

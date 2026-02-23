@@ -2,7 +2,7 @@ using java.lang;
 
 namespace BetaSharp.PathFinding;
 
-public class Path : java.lang.Object
+internal class Path
 {
     private PathPoint[] pathPoints = new PathPoint[1024];
     private int count;

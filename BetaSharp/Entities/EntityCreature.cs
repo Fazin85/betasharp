@@ -214,7 +214,7 @@ public class EntityCreature : EntityLiving
         return pathToEntity != null;
     }
 
-    public void setPathToEntity(PathEntity pathToEntity)
+    internal void setPathToEntity(PathEntity pathToEntity)
     {
         this.pathToEntity = pathToEntity;
     }

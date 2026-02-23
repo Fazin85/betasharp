@@ -2774,7 +2774,7 @@ public abstract class World : java.lang.Object, BlockView
         }
     }
 
-    public PathEntity findPath(Entity entity, Entity target, float range)
+    internal PathEntity findPath(Entity entity, Entity target, float range)
     {
         int var4 = MathHelper.Floor(entity.x);
         int var5 = MathHelper.Floor(entity.y);
@@ -2790,7 +2790,7 @@ public abstract class World : java.lang.Object, BlockView
         return (new Pathfinder(var14)).createEntityPathTo(entity, target, range);
     }
 
-    public PathEntity findPath(Entity entity, int x, int y, int z, float range)
+    internal PathEntity findPath(Entity entity, int x, int y, int z, float range)
     {
         int var6 = MathHelper.Floor(entity.x);
         int var7 = MathHelper.Floor(entity.y);

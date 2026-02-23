@@ -7,7 +7,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.PathFinding;
 
-public class Pathfinder : java.lang.Object
+internal class Pathfinder
 {
     private readonly BlockView worldMap;
     private readonly Path path = new();
@@ -52,7 +52,7 @@ public class Pathfinder : java.lang.Object
         while (!path.isPathEmpty())
         {
             PathPoint var7 = path.dequeue();
-            if (var7.equals(var3))
+            if (var7.Equals(var3))
             {
                 return createEntityPath(var2, var3);
             }
