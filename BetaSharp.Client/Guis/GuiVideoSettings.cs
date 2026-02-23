@@ -8,20 +8,6 @@ public class GuiVideoSettings : GuiScreen
     private readonly GuiScreen _parentScreen;
     protected string _screenTitle = "Video Settings";
     private readonly GameOptions _gameOptions;
-    private static readonly EnumOptions[] _videoOptions =
-    {
-        EnumOptions.RenderDistance,
-        EnumOptions.FramerateLimit,
-        EnumOptions.VSync,
-        // EnumOptions.Brightness,
-        EnumOptions.ViewBobbing,
-        EnumOptions.GuiScale,
-        EnumOptions.Anisotropic,
-        EnumOptions.Mipmaps,
-        EnumOptions.Msaa,
-        EnumOptions.EnvironmentAnimation,
-        EnumOptions.DebugMode
-    };
 
     public GuiVideoSettings(GuiScreen parent, GameOptions options)
     {
@@ -35,21 +21,19 @@ public class GuiVideoSettings : GuiScreen
         _screenTitle = translations.TranslateKey("options.videoTitle");
         int optionIndex = 0;
 
-        foreach (EnumOptions option in _videoOptions)
+        foreach (GameOption option in _gameOptions.VideoScreenOptions)
         {
             int x = Width / 2 - 155 + (optionIndex % 2) * 160;
             int y = Height / 6 + 24 * (optionIndex / 2);
-            int id = (int)option;
+            int id = optionIndex;
 
-            if (!option.IsFloat())
+            if (option is FloatOption floatOpt)
             {
-                // Toggle-style button (e.g., Fancy/Fast or On/Off)
-                _controlList.Add(new GuiSmallButton(id, x, y, option, _gameOptions.GetKeyBinding(option)));
+                _controlList.Add(new GuiSlider(id, x, y, floatOpt, option.GetDisplayString(translations), floatOpt.Value));
             }
             else
             {
-                // Slider-style button (e.g., FOV or Render Distance)
-                _controlList.Add(new GuiSlider(id, x, y, option, _gameOptions.GetKeyBinding(option), _gameOptions.GetOptionFloatValue(option)));
+                _controlList.Add(new GuiSmallButton(id, x, y, option, option.GetDisplayString(translations)));
             }
 
             optionIndex++;
@@ -62,10 +46,10 @@ public class GuiVideoSettings : GuiScreen
     {
         if (btn.Enabled)
         {
-            if (btn.Id < 100 && btn is GuiSmallButton)
+            if (btn is GuiSmallButton smallBtn && smallBtn.Option != null)
             {
-                _gameOptions.SetOptionValue(((GuiSmallButton)btn).returnEnumOptions(), 1);
-                btn.DisplayString = _gameOptions.GetKeyBinding((EnumOptions)btn.Id);
+                smallBtn.ClickOption();
+                btn.DisplayString = smallBtn.Option.GetDisplayString(TranslationStorage.Instance);
             }
 
             if (btn.Id == 200)
@@ -74,7 +58,8 @@ public class GuiVideoSettings : GuiScreen
                 mc.displayGuiScreen(_parentScreen);
             }
 
-            if (btn.Id == (int)EnumOptions.GuiScale)
+            if (btn is GuiSmallButton { Option: CycleOption } guiScaleBtn
+                && guiScaleBtn.Option == _gameOptions.GuiScaleOption)
             {
                 ScaledResolution scaled = new(mc.options, mc.displayWidth, mc.displayHeight);
                 int scaledWidth = scaled.ScaledWidth;
