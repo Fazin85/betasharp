@@ -10,7 +10,7 @@ internal class Pathfinder
 {
     private readonly BlockView _worldMap;
     private readonly Path _path = new();
-    private readonly Dictionary<int, PathPoint> _pointMap = new();
+    private readonly PathPoint[] _pointMap = new PathPoint[1024];
     private readonly PathPoint[] _pathOptions = new PathPoint[32];
 
     private readonly PathPoint[] _pointPool = new PathPoint[4096];
@@ -39,7 +39,7 @@ internal class Pathfinder
     private PathEntity? CreateEntityPathTo(Entity entity, double targetX, double targetY, double targetZ, float maxDistance)
     {
         _path.ClearPath();
-        _pointMap.Clear();
+        Array.Clear(_pointMap, 0, _pointMap.Length);
 
         _poolIndex = 0;
 
@@ -193,23 +193,31 @@ internal class Pathfinder
 
     private PathPoint OpenPoint(int x, int y, int z)
     {
-       int hash = PathPoint.CalculateHash(x, y, z);
+        int hash = PathPoint.CalculateHash(x, y, z);
+        int mapIndex = hash & 1023; 
         
-        if (!_pointMap.TryGetValue(hash, out PathPoint? point))
+        PathPoint? point = _pointMap[mapIndex];
+        while (point != null)
         {
-            // Grab from the pool!
-            if (_poolIndex < _pointPool.Length)
+            if (point.X == x && point.Y == y && point.Z == z)
             {
-                point = _pointPool[_poolIndex++];
-                point.Init(x, y, z);
+                return point; 
             }
-            else
-            {
-                point = new PathPoint(x, y, z);
-            }
-            
-            _pointMap[hash] = point;
+            point = point.NextMapNode;
         }
+
+        if (_poolIndex < _pointPool.Length)
+        {
+            point = _pointPool[_poolIndex++];
+            point.Init(x, y, z);
+        }
+        else
+        {
+            point = new PathPoint(x, y, z);
+        }
+        
+        point.NextMapNode = _pointMap[mapIndex];
+        _pointMap[mapIndex] = point;
 
         return point;
     }

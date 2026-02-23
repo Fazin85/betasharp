@@ -16,6 +16,8 @@ internal class PathPoint
     public PathPoint? Previous;
     public bool IsFirst = false;
 
+    public PathPoint? NextMapNode; // Used to chain points together if they hit the same array index!
+
     public PathPoint(int x, int y, int z)
     {
         X = x;
@@ -30,13 +32,15 @@ internal class PathPoint
         Y = y;
         Z = z;
         _hash = CalculateHash(x, y, z);
-        
+
         Index = -1;
         TotalPathDistance = 0f;
         DistanceToNext = 0f;
         DistanceToTarget = 0f;
         Previous = null;
         IsFirst = false;
+        
+        NextMapNode = null;
     }
 
     public static int CalculateHash(int x, int y, int z)
