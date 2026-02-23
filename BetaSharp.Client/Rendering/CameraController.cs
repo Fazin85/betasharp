@@ -49,7 +49,7 @@ public class CameraController
         _mc.camera ??= _mc.player;
 
         float luminance = _mc.world.getLuminance(MathHelper.Floor(_mc.camera.x), MathHelper.Floor(_mc.camera.y), MathHelper.Floor(_mc.camera.z));
-        float renderDistFactor = (3 - _mc.options.renderDistance) / 3.0F;
+        float renderDistFactor = System.Math.Clamp((_mc.options.renderDistance - 4.0F) / 28.0F, 0.0F, 1.0F);
         float targetBob = luminance * (1.0F - renderDistFactor) + renderDistFactor;
         ViewBob += (targetBob - ViewBob) * 0.1F;
     }

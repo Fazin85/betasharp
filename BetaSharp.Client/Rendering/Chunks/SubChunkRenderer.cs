@@ -18,6 +18,10 @@ public class SubChunkRenderer : IDisposable
     public Vector3D<int> ClipPosition { get; }
     public Box BoundingBox { get; }
 
+    public float Age { get; private set; } = 0.0f;
+    public bool HasFadedIn => Age >= FadeDuration;
+    public const float FadeDuration = 1.0f;
+
     private readonly VertexBuffer<ChunkVertex>[] vertexBuffers = new VertexBuffer<ChunkVertex>[2];
     private readonly VertexArray[] vertexArrays = new VertexArray[2];
     private readonly int[] vertexCounts = new int[2];
@@ -135,6 +139,14 @@ public class SubChunkRenderer : IDisposable
             );
 
             VertexArray.Unbind();
+        }
+    }
+
+    public void Update(float deltaTime)
+    {
+        if (!HasFadedIn)
+        {
+            Age += deltaTime;
         }
     }
 

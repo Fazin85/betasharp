@@ -10,7 +10,8 @@ public class SoundManager
 {
     private readonly SoundPool _soundPoolSounds = new();
     private readonly SoundPool _soundPoolStreaming = new();
-    private readonly SoundPool _soundPoolMusic = new();
+
+    private readonly Dictionary<ResourceLocation, MusicCategory> _musicCategories = [];
 
     private readonly Dictionary<string, List<SoundBuffer>> _soundBuffers = [];
 
@@ -22,13 +23,13 @@ public class SoundManager
     private static bool _started = false;
     private readonly JavaRandom _rand = new();
 
-    private int _ticksBeforeMusic = 0;
     private Music _currentMusic = null;
     private Music _currentStreaming = null;
+    private ResourceLocation? _activeCategoryName;
 
-    public SoundManager()
+    public void RegisterMusicCategory(ResourceLocation name, int minDelayTicks, int maxDelayTicks)
     {
-        _ticksBeforeMusic = _rand.NextInt(12000);
+        _musicCategories[name] = new MusicCategory(name, minDelayTicks, maxDelayTicks);
     }
 
     public void LoadSoundSettings(GameOptions options)
@@ -96,8 +97,10 @@ public class SoundManager
 
         _currentMusic?.Stop();
         _currentMusic?.Dispose();
+        _currentMusic = null;
         _currentStreaming?.Stop();
         _currentStreaming?.Dispose();
+        _currentStreaming = null;
 
         for (int i = 0; i < MaxChannels; i++)
         {
@@ -128,8 +131,13 @@ public class SoundManager
 
     public void AddStreaming(string name, FileInfo file) => _soundPoolStreaming.AddSound(name, file);
 
-
-    public void AddMusic(string name, FileInfo file) => _soundPoolMusic.AddSound(name, file);
+    public void AddMusic(ResourceLocation category, string name, FileInfo file)
+    {
+        if (_musicCategories.TryGetValue(category, out MusicCategory? musicCategory))
+        {
+            musicCategory.Pool.AddSound(name, file);
+        }
+    }
 
     private void LoadSoundBuffer(string name, FileInfo file)
     {
@@ -203,30 +211,31 @@ public class SoundManager
         return stolen;
     }
 
-    public void PlayRandomMusicIfReady()
+    public void PlayRandomMusicIfReady(ResourceLocation category)
     {
         if (!_started || _options.MusicVolume == 0.0F) return;
+
+        if (!_musicCategories.TryGetValue(category, out MusicCategory? musicCategory)) return;
 
         bool isMusicPlaying = _currentMusic != null && _currentMusic.Status == SoundStatus.Playing;
         bool isStreamingPlaying = _currentStreaming != null && _currentStreaming.Status == SoundStatus.Playing;
 
-        if (isMusicPlaying || isStreamingPlaying) return;
+        if ((isMusicPlaying || isStreamingPlaying) && _activeCategoryName == category) return;
 
-
-        if (_ticksBeforeMusic > 0)
+        if (musicCategory.TicksBeforeNext > 0)
         {
-            --_ticksBeforeMusic;
+            --musicCategory.TicksBeforeNext;
             return;
         }
 
-        SoundPoolEntry? entry = _soundPoolMusic.GetRandomSound();
+        SoundPoolEntry? entry = musicCategory.Pool.GetRandomSound();
         if (entry == null) return;
 
-
-        _ticksBeforeMusic = _rand.NextInt(12000) + 12000;
+        musicCategory.ResetDelay();
 
         _currentMusic?.Stop();
         _currentMusic?.Dispose();
+        _currentMusic = null;
 
         string musicName = SanitizePath(entry.SoundUrl.LocalPath);
 
@@ -239,6 +248,31 @@ public class SoundManager
         };
 
         _currentMusic.Play();
+        _activeCategoryName = category;
+    }
+
+    public void StopCurrentMusic()
+    {
+        _currentMusic?.Stop();
+        _currentMusic?.Dispose();
+        _currentMusic = null;
+        _currentStreaming?.Stop();
+        _currentStreaming?.Dispose();
+        _currentStreaming = null;
+        _activeCategoryName = null;
+    }
+
+    public void StopMusic(ResourceLocation? category = null)
+    {
+        if (category == null || _activeCategoryName == category)
+        {
+            StopCurrentMusic();
+
+            if (category != null && _musicCategories.TryGetValue(category, out MusicCategory? musicCategory))
+            {
+                musicCategory.TicksBeforeNext = 0;
+            }
+        }
     }
 
     public void UpdateListener(EntityLiving player, float partialTicks)

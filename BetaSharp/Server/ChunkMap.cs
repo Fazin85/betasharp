@@ -19,19 +19,19 @@ public class ChunkMap
     public readonly ChunkLoadingQueue loadQueue;
     private MinecraftServer server;
     private readonly int dimensionId;
-    private readonly int viewDistance;
+    private int viewDistance;
     private readonly int[][] DIRECTIONS = [[1, 0], [0, 1], [-1, 0], [0, -1]];
     private readonly ILogger<ChunkMap> _logger = Log.Instance.For<ChunkMap>();
 
     public ChunkMap(MinecraftServer server, int dimensionId, int viewRadius)
     {
-        if (viewRadius > 15)
+        if (viewRadius > 32)
         {
-            throw new IllegalArgumentException("Too big view radius!");
+            throw new IllegalArgumentException("Too big view radius! Max is 32.");
         }
-        else if (viewRadius < 3)
+        else if (viewRadius < 4)
         {
-            throw new IllegalArgumentException("Too small view radius!");
+            throw new IllegalArgumentException("Too small view radius! Min is 4.");
         }
         else
         {
@@ -45,6 +45,73 @@ public class ChunkMap
     public ServerWorld getWorld()
     {
         return server.getWorld(dimensionId);
+    }
+
+    public void SetViewDistance(int newDistance)
+    {
+        int oldDistance = viewDistance;
+        viewDistance = newDistance;
+
+        if (newDistance < oldDistance)
+        {
+            // Unload chunks that are now out of view distance
+            for (int i = 0; i < players.Count; i++)
+            {
+                ServerPlayerEntity player = players[i];
+                int px = (int)player.lastX >> 4;
+                int pz = (int)player.lastZ >> 4;
+
+                for (int cx = px - oldDistance; cx <= px + oldDistance; cx++)
+                {
+                    for (int cz = pz - oldDistance; cz <= pz + oldDistance; cz++)
+                    {
+                        if (!isWithinViewDistance(cx, cz, px, pz))
+                        {
+                            TrackedChunk chunk = GetOrCreateChunk(cx, cz, false);
+                            chunk?.removePlayer(player);
+                        }
+                    }
+                }
+            }
+        }
+        else if (newDistance > oldDistance)
+        {
+            // Load chunks that are now within view distance
+            for (int i = 0; i < players.Count; i++)
+            {
+                ServerPlayerEntity player = players[i];
+                int px = (int)player.lastX >> 4;
+                int pz = (int)player.lastZ >> 4;
+
+                for (int cx = px - newDistance; cx <= px + newDistance; cx++)
+                {
+                    for (int cz = pz - newDistance; cz <= pz + newDistance; cz++)
+                    {
+                        if (!isWithinOldViewDistance(cx, cz, px, pz, oldDistance))
+                        {
+                            if (GetOrCreateChunk(cx, cz, false) is TrackedChunk chunk)
+                            {
+                                if (!chunk.HasPlayer(player))
+                                {
+                                    chunk.addPlayer(player);
+                                }
+                            }
+                            else
+                            {
+                                loadQueue.Add(cx, cz, player);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private bool isWithinOldViewDistance(int chunkX, int chunkZ, int centerX, int centerZ, int oldDist)
+    {
+        int dx = chunkX - centerX;
+        int dz = chunkZ - centerZ;
+        return dx >= -oldDist && dx <= oldDist && dz >= -oldDist && dz <= oldDist;
     }
 
     public void updateChunks()

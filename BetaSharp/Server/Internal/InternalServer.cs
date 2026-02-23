@@ -24,6 +24,7 @@ public class InternalServer : MinecraftServer
     {
         InternalServerConfiguration serverConfiguration = (InternalServerConfiguration)config;
         serverConfiguration.SetViewDistance(viewDistanceChunks);
+        playerManager?.SetViewDistance(viewDistanceChunks);
     }
 
     public volatile bool isReady;

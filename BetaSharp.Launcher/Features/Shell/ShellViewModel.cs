@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using BetaSharp.Launcher.Features.Authentication;
 using BetaSharp.Launcher.Features.Home;
-using BetaSharp.Launcher.Features.Messages;
 using BetaSharp.Launcher.Features.Splash;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;

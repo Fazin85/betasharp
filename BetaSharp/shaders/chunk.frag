@@ -13,6 +13,9 @@ uniform float fogStart;
 uniform float fogEnd;
 uniform int fogMode;
 
+uniform bool chunkFadeEnabled;
+uniform float fadeProgress;
+
 void main() 
 {
     vec4 texColor = texture(textureSampler, texCoord);
@@ -36,5 +39,14 @@ void main()
     
     fogFactor = clamp(fogFactor, 0.0, 1.0);
     
-    FragColor = mix(fogColor, finalColor, fogFactor);
+    vec4 fogAppliedColor = mix(fogColor, finalColor, fogFactor);
+
+    if (chunkFadeEnabled)
+    {
+        FragColor = mix(fogColor, fogAppliedColor, fadeProgress);
+    }
+    else
+    {
+        FragColor = fogAppliedColor;
+    }
 }

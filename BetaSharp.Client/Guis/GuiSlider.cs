@@ -8,11 +8,11 @@ public class GuiSlider : GuiButton
 
     public float sliderValue = 1.0F;
     public bool dragging;
-    private readonly EnumOptions _idFloat;
+    private readonly FloatOption _option;
 
-    public GuiSlider(int id, int x, int y, EnumOptions option, string displayString, float value) : base(id, x, y, 150, 20, displayString)
+    public GuiSlider(int id, int x, int y, FloatOption option, string displayString, float value) : base(id, x, y, 150, 20, displayString)
     {
-        _idFloat = option;
+        _option = option;
         sliderValue = value;
     }
 
@@ -45,8 +45,8 @@ public class GuiSlider : GuiButton
                     sliderValue = 1.0F;
                 }
 
-                mc.options.SetOptionFloatValue(_idFloat, sliderValue);
-                DisplayString = mc.options.GetKeyBinding(_idFloat);
+                _option.Set(sliderValue);
+                DisplayString = _option.GetDisplayString(TranslationStorage.Instance);
             }
 
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
@@ -70,8 +70,8 @@ public class GuiSlider : GuiButton
                 sliderValue = 1.0F;
             }
 
-            mc.options.SetOptionFloatValue(_idFloat, sliderValue);
-            DisplayString = mc.options.GetKeyBinding(_idFloat);
+            _option.Set(sliderValue);
+            DisplayString = _option.GetDisplayString(TranslationStorage.Instance);
             dragging = true;
             return true;
         }

@@ -1,13 +1,8 @@
 using System;
 using System.IO;
-using System.Text.Json.Serialization;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using BetaSharp.Launcher.Features;
-using BetaSharp.Launcher.Features.Mojang.Entitlements;
-using BetaSharp.Launcher.Features.Mojang.Profile;
-using BetaSharp.Launcher.Features.Mojang.Token;
 using BetaSharp.Launcher.Features.Shell;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -36,13 +31,3 @@ internal sealed partial class App : Application
         base.OnFrameworkInitializationCompleted();
     }
 }
-
-[JsonSourceGenerationOptions(PropertyNameCaseInsensitive = true)]
-[JsonSerializable(typeof(AccountService.Account))]
-[JsonSerializable(typeof(TokenRequest))]
-[JsonSerializable(typeof(TokenResponse))]
-[JsonSerializable(typeof(EntitlementsResponse))]
-[JsonSerializable(typeof(EntitlementsResponse.Item))]
-[JsonSerializable(typeof(ProfileResponse))]
-[JsonSerializable(typeof(ProfileResponse.Skin))]
-internal sealed partial class SourceGenerationContext : JsonSerializerContext;

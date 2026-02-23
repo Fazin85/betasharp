@@ -24,6 +24,7 @@ public class PlayerManager
     protected readonly HashSet<string> whitelist = [];
     private IPlayerStorage _saveHandler;
     private readonly bool _whitelistEnabled;
+    private volatile int _pendingViewDistance = -1;
 
     public PlayerManager(MinecraftServer server)
     {
@@ -53,6 +54,11 @@ public class PlayerManager
     public int getBlockViewDistance()
     {
         return _chunkMaps[0].getBlockViewDistance();
+    }
+
+    public void SetViewDistance(int newDistance)
+    {
+        _pendingViewDistance = newDistance;
     }
 
     private ChunkMap GetChunkMap(int dimensionId)
@@ -259,6 +265,14 @@ public class PlayerManager
 
     public void updateAllChunks()
     {
+        int viewDistanceUpdate = _pendingViewDistance;
+        if (viewDistanceUpdate != -1)
+        {
+            _chunkMaps[0].SetViewDistance(viewDistanceUpdate);
+            _chunkMaps[1].SetViewDistance(viewDistanceUpdate);
+            _pendingViewDistance = -1;
+        }
+
         for (int var1 = 0; var1 < _chunkMaps.Length; var1++)
         {
             _chunkMaps[var1].updateChunks();
