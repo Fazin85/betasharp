@@ -13,10 +13,10 @@ public class GuiOptions : GuiScreen
 
     protected string _screenTitle = "Options";
     private static readonly EnumOptions[] _availableOptions = [
-        EnumOptions.MUSIC,
-        EnumOptions.SOUND,
-        EnumOptions.DIFFICULTY,
-        EnumOptions.FOV
+        EnumOptions.Music,
+        EnumOptions.Sound,
+        EnumOptions.Difficulty,
+        EnumOptions.Fov
     ];
 
     public GuiOptions(GuiScreen parentScreen, GameOptions gameOptions)
@@ -30,20 +30,18 @@ public class GuiOptions : GuiScreen
         TranslationStorage translations = TranslationStorage.Instance;
         _screenTitle = translations.TranslateKey("options.title");
         int rowIndex = 0;
-        EnumOptions[] optionsToDisplay = _availableOptions;
-        int optionsLength = optionsToDisplay.Length;
 
         foreach (EnumOptions currentOption in _availableOptions)
         {
             int xPos = Width / 2 - 155 + (rowIndex % 2 * 160);
             int yPos = Height / 6 + 24 * (rowIndex >> 1);
-            if (!currentOption.getEnumFloat())
+            if (!currentOption.IsFloat())
             {
-                _controlList.Add(new GuiSmallButton(currentOption.returnEnumOrdinal(), xPos, yPos, currentOption, _options.GetKeyBinding(currentOption)));
+                _controlList.Add(new GuiSmallButton((int)currentOption, xPos, yPos, currentOption, _options.GetKeyBinding(currentOption)));
             }
             else
             {
-                _controlList.Add(new GuiSlider(currentOption.returnEnumOrdinal(), xPos, yPos, currentOption, _options.GetKeyBinding(currentOption), _options.GetOptionFloatValue(currentOption)));
+                _controlList.Add(new GuiSlider((int)currentOption, xPos, yPos, currentOption, _options.GetKeyBinding(currentOption), _options.GetOptionFloatValue(currentOption)));
             }
 
             ++rowIndex;
@@ -61,7 +59,7 @@ public class GuiOptions : GuiScreen
         if (button.Id < 100 && button is GuiSmallButton)
         {
             _options.SetOptionValue(((GuiSmallButton)button).returnEnumOptions(), 1);
-            button.DisplayString = _options.GetKeyBinding(EnumOptions.getEnumOptions(button.Id));
+            button.DisplayString = _options.GetKeyBinding((EnumOptions)button.Id);
         }
 
         switch (button.Id)

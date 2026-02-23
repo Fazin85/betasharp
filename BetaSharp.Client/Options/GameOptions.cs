@@ -1,9 +1,6 @@
 using System;
 using System.IO;
-using System.Linq;
-using System.Collections.Generic;
 using BetaSharp.Client.Input;
-using java.io;
 using Microsoft.Extensions.Logging;
 using File = System.IO.File;
 using FileNotFoundException = System.IO.FileNotFoundException;
@@ -129,27 +126,25 @@ public class GameOptions
 
     public void SetOptionFloatValue(EnumOptions option, float value)
     {
-        if (option == EnumOptions.MUSIC)
+        switch (option)
         {
-            MusicVolume = value;
-            _mc.sndManager.OnSoundOptionsChanged();
-        }
-        else if (option == EnumOptions.SOUND)
-        {
-            SoundVolume = value;
-            _mc.sndManager.OnSoundOptionsChanged();
-        }
-        else if (option == EnumOptions.SENSITIVITY)
-        {
-            MouseSensitivity = value;
-        }
-        else if (option == EnumOptions.FRAMERATE_LIMIT)
-        {
-            LimitFramerate = value;
-        }
-        else if (option == EnumOptions.FOV)
-        {
-            Fov = value;
+            case EnumOptions.Music:
+                MusicVolume = value;
+                _mc.sndManager.OnSoundOptionsChanged();
+                break;
+            case EnumOptions.Sound:
+                SoundVolume = value;
+                _mc.sndManager.OnSoundOptionsChanged();
+                break;
+            case EnumOptions.Sensitivity:
+                MouseSensitivity = value;
+                break;
+            case EnumOptions.FramerateLimit:
+                LimitFramerate = value;
+                break;
+            case EnumOptions.Fov:
+                Fov = value;
+                break;
         }
 
         SaveOptions();
@@ -157,64 +152,56 @@ public class GameOptions
 
     public void SetOptionValue(EnumOptions option, int increment)
     {
-        if (option == EnumOptions.INVERT_MOUSE)
+        switch (option)
         {
-            InvertMouse = !InvertMouse;
-        }
-        else if (option == EnumOptions.RENDER_DISTANCE)
-        {
-            renderDistance = renderDistance + increment & 3;
-        }
-        else if (option == EnumOptions.GUI_SCALE)
-        {
-            GuiScale = GuiScale + increment & 3;
-        }
-        else if (option == EnumOptions.VIEW_BOBBING)
-        {
-            ViewBobbing = !ViewBobbing;
-        }
-        else if (option == EnumOptions.VSYNC)
-        {
-            VSync = !VSync;
-            Display.getGlfw().SwapInterval(VSync ? 1 : 0);
-        }
-        else if (option == EnumOptions.DIFFICULTY)
-        {
-            Difficulty = Difficulty + increment & 3;
-        }
-        else if (option == EnumOptions.ANISOTROPIC)
-        {
-            AnisotropicLevel = (AnisotropicLevel + increment) % 5;
-            int anisoValue = AnisotropicLevel == 0 ? 0 : (int)System.Math.Pow(2, AnisotropicLevel);
-            if (anisoValue > MaxAnisotropy)
-            {
-                AnisotropicLevel = 0;
-            }
-            if (Minecraft.INSTANCE?.textureManager != null)
-            {
-                Minecraft.INSTANCE.textureManager.Reload();
-            }
-        }
-        else if (option == EnumOptions.MIPMAPS)
-        {
-            UseMipmaps = !UseMipmaps;
-            if (Minecraft.INSTANCE?.textureManager != null)
-            {
-                Minecraft.INSTANCE.textureManager.Reload();
-            }
-        }
-        else if (option == EnumOptions.MSAA)
-        {
-            MSAALevel = (MSAALevel + increment) % 4;
-        }
-        else if (option == EnumOptions.DEBUG_MODE)
-        {
-            DebugMode = !DebugMode;
-            Profiling.Profiler.Enabled = DebugMode;
-        }
-        else if (option == EnumOptions.ENVIRONMENT_ANIMATION)
-        {
-            EnvironmentAnimation = !EnvironmentAnimation;
+            case EnumOptions.InvertMouse:
+                InvertMouse = !InvertMouse;
+                break;
+            case EnumOptions.RenderDistance:
+                renderDistance = renderDistance + increment & 3;
+                break;
+            case EnumOptions.GuiScale:
+                GuiScale = GuiScale + increment & 3;
+                break;
+            case EnumOptions.ViewBobbing:
+                ViewBobbing = !ViewBobbing;
+                break;
+            case EnumOptions.VSync:
+                VSync = !VSync;
+                Display.getGlfw().SwapInterval(VSync ? 1 : 0);
+                break;
+            case EnumOptions.Difficulty:
+                Difficulty = Difficulty + increment & 3;
+                break;
+            case EnumOptions.Anisotropic:
+                AnisotropicLevel = (AnisotropicLevel + increment) % 5;
+                int anisoValue = AnisotropicLevel == 0 ? 0 : (int)System.Math.Pow(2, AnisotropicLevel);
+                if (anisoValue > MaxAnisotropy)
+                {
+                    AnisotropicLevel = 0;
+                }
+                if (Minecraft.INSTANCE?.textureManager != null)
+                {
+                    Minecraft.INSTANCE.textureManager.Reload();
+                }
+                break;
+            case EnumOptions.Mipmaps:
+                UseMipmaps = !UseMipmaps;
+                if (Minecraft.INSTANCE?.textureManager != null)
+                {
+                    Minecraft.INSTANCE.textureManager.Reload();
+                }
+                break;
+            case EnumOptions.Msaa:
+                MSAALevel = (MSAALevel + increment) % 4;
+                break;
+            case EnumOptions.DebugMode:
+                DebugMode = !DebugMode;
+                Profiling.Profiler.Enabled = DebugMode;
+                break;
+            case EnumOptions.EnvironmentAnimation:
+                EnvironmentAnimation = !EnvironmentAnimation;
+                break;
         }
 
         SaveOptions();
@@ -222,26 +209,28 @@ public class GameOptions
 
     public float GetOptionFloatValue(EnumOptions option)
     {
-        if (option == EnumOptions.MUSIC) return MusicVolume;
-        if (option == EnumOptions.SOUND) return SoundVolume;
-        if (option == EnumOptions.SENSITIVITY) return MouseSensitivity;
-        if (option == EnumOptions.FRAMERATE_LIMIT) return LimitFramerate;
-        if (option == EnumOptions.FOV) return Fov;
-        return 0.0F;
+        return option switch
+        {
+            EnumOptions.Music => MusicVolume,
+            EnumOptions.Sound => SoundVolume,
+            EnumOptions.Sensitivity => MouseSensitivity,
+            EnumOptions.FramerateLimit => LimitFramerate,
+            EnumOptions.Fov => Fov,
+            _ => 0.0F,
+        };
     }
 
     public bool GetOptionOrdinalValue(EnumOptions option)
     {
-        int mappedValue = EnumOptionsMappingHelper.enumOptionsMappingHelperArray[option.ordinal()];
-        return mappedValue switch
+        return option switch
         {
-            1 => InvertMouse,
-            2 => ViewBobbing,
-            3 => UseMipmaps,
-            4 => DebugMode,
-            5 => EnvironmentAnimation,
-            6 => VSync,
-            _ => false
+            EnumOptions.InvertMouse => InvertMouse,
+            EnumOptions.ViewBobbing => ViewBobbing,
+            EnumOptions.Mipmaps => UseMipmaps,
+            EnumOptions.DebugMode => DebugMode,
+            EnumOptions.EnvironmentAnimation => EnvironmentAnimation,
+            EnumOptions.VSync => VSync,
+            _ => false,
         };
     }
 
@@ -250,20 +239,20 @@ public class GameOptions
         TranslationStorage translations = TranslationStorage.Instance;
         string label = GetOptionLabel(option, translations) + ": ";
 
-        if (option.getEnumFloat())
+        if (option.IsFloat())
         {
             return FormatFloatValue(option, label, translations);
         }
-        else if(option == EnumOptions.DEBUG_MODE)
+        else if (option == EnumOptions.DebugMode)
         {
             return FormatDebugMode(label, translations);
         }
-        else if (option.getEnumBoolean())
+        else if (option.IsBoolean())
         {
             bool isEnabled = GetOptionOrdinalValue(option);
             return label + (isEnabled ? translations.TranslateKey("options.on") : translations.TranslateKey("options.off"));
         }
-        else if (option == EnumOptions.MSAA)
+        else if (option == EnumOptions.Msaa)
         {
             return FormatMsaaValue(label, translations);
         }
@@ -275,35 +264,33 @@ public class GameOptions
 
     private string GetOptionLabel(EnumOptions option, TranslationStorage translations)
     {
-        if (option == EnumOptions.FRAMERATE_LIMIT) return "Max FPS";
-        if (option == EnumOptions.BRIGHTNESS) return "Brightness";
-        if (option == EnumOptions.VSYNC) return "VSync";
-        if (option == EnumOptions.FOV) return "FOV";
-        return translations.TranslateKey(option.getEnumString());
+        return option switch
+        {
+            EnumOptions.FramerateLimit => "Max FPS",
+            EnumOptions.Brightness => "Brightness",
+            EnumOptions.VSync => "VSync",
+            EnumOptions.Fov => "FOV",
+            _ => translations.TranslateKey(option.GetTranslationKey()),
+        };
     }
 
     private string FormatFloatValue(EnumOptions option, string label, TranslationStorage translations)
     {
         float value = GetOptionFloatValue(option);
 
-        if (option == EnumOptions.SENSITIVITY)
+        return option switch
         {
-            return value == 0.0F ? label + translations.TranslateKey("options.sensitivity.min") : (value == 1.0F ? label + translations.TranslateKey("options.sensitivity.max") : label + (int)(value * 200.0F) + "%");
-        }
-        else if (option == EnumOptions.FRAMERATE_LIMIT)
-        {
-            return FormatFramerateValue(label, value);
-        }
-        else if (option == EnumOptions.FOV)
-        {
-            return label + (30 + (int)(value * 90.0f));
-        }
-        else
-        {
-            return value == 0.0F
+            EnumOptions.Sensitivity => value == 0.0F
+                ? label + translations.TranslateKey("options.sensitivity.min")
+                : value == 1.0F
+                    ? label + translations.TranslateKey("options.sensitivity.max")
+                    : label + (int)(value * 200.0F) + "%",
+            EnumOptions.FramerateLimit => FormatFramerateValue(label, value),
+            EnumOptions.Fov => label + (30 + (int)(value * 90.0f)),
+            _ => value == 0.0F
                 ? label + translations.TranslateKey("options.off")
-                : label + $"{(int)(value * 100.0F)}%";
-        }
+                : label + $"{(int)(value * 100.0F)}%",
+        };
     }
 
     private string FormatFramerateValue(string label, float value)
@@ -324,7 +311,7 @@ public class GameOptions
 
     private string FormatDebugMode(string label, TranslationStorage translations)
     {
-        bool isEnabled = GetOptionOrdinalValue(EnumOptions.DEBUG_MODE);
+        bool isEnabled = GetOptionOrdinalValue(EnumOptions.DebugMode);
         string result = label + (isEnabled ? translations.TranslateKey("options.on") : translations.TranslateKey("options.off"));
         if (DebugMode != initialDebugMode)
         {
@@ -336,11 +323,14 @@ public class GameOptions
 
     private string FormatEnumValue(EnumOptions option, string label, TranslationStorage translations)
     {
-        if (option == EnumOptions.RENDER_DISTANCE) return label + translations.TranslateKey(RENDER_DISTANCES[renderDistance]);
-        if (option == EnumOptions.DIFFICULTY) return label + translations.TranslateKey(Difficulties[Difficulty]);
-        if (option == EnumOptions.GUI_SCALE) return label + translations.TranslateKey(GuiScales[GuiScale]);
-        if (option == EnumOptions.ANISOTROPIC) return label + (AnisotropicLevel == 0 ? translations.TranslateKey("options.off") : AnisoLeves[AnisotropicLevel]);
-        return label;
+        return option switch
+        {
+            EnumOptions.RenderDistance => label + translations.TranslateKey(RENDER_DISTANCES[renderDistance]),
+            EnumOptions.Difficulty => label + translations.TranslateKey(Difficulties[Difficulty]),
+            EnumOptions.GuiScale => label + translations.TranslateKey(GuiScales[GuiScale]),
+            EnumOptions.Anisotropic => label + (AnisotropicLevel == 0 ? translations.TranslateKey("options.off") : AnisoLeves[AnisotropicLevel]),
+            _ => label,
+        };
     }
 
     public void LoadOptions()
@@ -382,7 +372,7 @@ public class GameOptions
             case "music": MusicVolume = ParseFloat(value); break;
             case "sound": SoundVolume = ParseFloat(value); break;
             case "mouseSensitivity": MouseSensitivity = ParseFloat(value); break;
-            case "invertYMouse": InvertMouse = value == "true"; break; // Simplified boolean parsing
+            case "invertYMouse": InvertMouse = value == "true"; break;
             case "viewDistance": renderDistance = int.Parse(value); break;
             case "guiScale": GuiScale = int.Parse(value); break;
             case "bobView": ViewBobbing = value == "true"; break;
@@ -391,7 +381,7 @@ public class GameOptions
             case "fov": Fov = ParseFloat(value); break;
             case "difficulty": Difficulty = int.Parse(value); break;
             case "skin": Skin = value; break;
-            case "lastServer": LastServer = value; break; // Safe now because of the global length check
+            case "lastServer": LastServer = value; break;
             case "anisotropicLevel": AnisotropicLevel = int.Parse(value); break;
             case "msaaLevel":
                 MSAALevel = int.Parse(value);

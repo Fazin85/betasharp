@@ -10,17 +10,17 @@ public class GuiVideoSettings : GuiScreen
     private readonly GameOptions _gameOptions;
     private static readonly EnumOptions[] _videoOptions =
     {
-        EnumOptions.RENDER_DISTANCE,
-        EnumOptions.FRAMERATE_LIMIT,
-        EnumOptions.VSYNC,
-        // EnumOptions.BRIGHTNESS,
-        EnumOptions.VIEW_BOBBING,
-        EnumOptions.GUI_SCALE,
-        EnumOptions.ANISOTROPIC,
-        EnumOptions.MIPMAPS,
-        EnumOptions.MSAA,
-        EnumOptions.ENVIRONMENT_ANIMATION,
-        EnumOptions.DEBUG_MODE
+        EnumOptions.RenderDistance,
+        EnumOptions.FramerateLimit,
+        EnumOptions.VSync,
+        // EnumOptions.Brightness,
+        EnumOptions.ViewBobbing,
+        EnumOptions.GuiScale,
+        EnumOptions.Anisotropic,
+        EnumOptions.Mipmaps,
+        EnumOptions.Msaa,
+        EnumOptions.EnvironmentAnimation,
+        EnumOptions.DebugMode
     };
 
     public GuiVideoSettings(GuiScreen parent, GameOptions options)
@@ -39,9 +39,9 @@ public class GuiVideoSettings : GuiScreen
         {
             int x = Width / 2 - 155 + (optionIndex % 2) * 160;
             int y = Height / 6 + 24 * (optionIndex / 2);
-            int id = option.returnEnumOrdinal();
+            int id = (int)option;
 
-            if (!option.getEnumFloat())
+            if (!option.IsFloat())
             {
                 // Toggle-style button (e.g., Fancy/Fast or On/Off)
                 _controlList.Add(new GuiSmallButton(id, x, y, option, _gameOptions.GetKeyBinding(option)));
@@ -65,7 +65,7 @@ public class GuiVideoSettings : GuiScreen
             if (btn.Id < 100 && btn is GuiSmallButton)
             {
                 _gameOptions.SetOptionValue(((GuiSmallButton)btn).returnEnumOptions(), 1);
-                btn.DisplayString = _gameOptions.GetKeyBinding(EnumOptions.getEnumOptions(btn.Id));
+                btn.DisplayString = _gameOptions.GetKeyBinding((EnumOptions)btn.Id);
             }
 
             if (btn.Id == 200)
@@ -74,7 +74,7 @@ public class GuiVideoSettings : GuiScreen
                 mc.displayGuiScreen(_parentScreen);
             }
 
-            if (btn.Id == (int)EnumOptions.GUI_SCALE.ordinal())
+            if (btn.Id == (int)EnumOptions.GuiScale)
             {
                 ScaledResolution scaled = new(mc.options, mc.displayWidth, mc.displayHeight);
                 int scaledWidth = scaled.ScaledWidth;

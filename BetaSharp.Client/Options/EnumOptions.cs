@@ -1,83 +1,62 @@
+using System.Reflection;
+
 namespace BetaSharp.Client.Options;
 
-public class EnumOptions : java.lang.Object
+[AttributeUsage(AttributeTargets.Field)]
+public class OptionInfoAttribute : Attribute
 {
-    public static readonly EnumOptions MUSIC = new("options.music", true, false, 0);
-    public static readonly EnumOptions SOUND = new("options.sound", true, false, 1);
-    public static readonly EnumOptions INVERT_MOUSE = new("options.invertMouse", false, true, 2);
-    public static readonly EnumOptions SENSITIVITY = new("options.sensitivity", true, false, 3);
-    public static readonly EnumOptions RENDER_DISTANCE = new("options.renderDistance", false, false, 4);
-    public static readonly EnumOptions VIEW_BOBBING = new("options.viewBobbing", false, true, 5);
-    public static readonly EnumOptions FRAMERATE_LIMIT = new("options.framerateLimit", true, false, 8);
-    public static readonly EnumOptions VSYNC = new("VSync", false, true, 21);
-    public static readonly EnumOptions FOV = new("options.fov", true, false, 18);
-    public static readonly EnumOptions BRIGHTNESS = new("Brightness", true, false, 20);
-    public static readonly EnumOptions DIFFICULTY = new("options.difficulty", false, false, 9);
-    public static readonly EnumOptions GUI_SCALE = new("options.guiScale", false, false, 12);
-    public static readonly EnumOptions ANISOTROPIC = new("Aniso Level", false, false, 13);
-    public static readonly EnumOptions MIPMAPS = new("Mipmaps", false, true, 14);
-    public static readonly EnumOptions DEBUG_MODE = new("Debug Mode", false, true, 15);
-    public static readonly EnumOptions MSAA = new("MSAA", false, false, 16);
-    public static readonly EnumOptions ENVIRONMENT_ANIMATION = new("Environment Anim", false, true, 17);
+    public string TranslationKey { get; }
+    public bool IsFloat { get; }
+    public bool IsBoolean { get; }
 
-    private static readonly EnumOptions[] s_allValues =
-    [
-        MUSIC, SOUND, INVERT_MOUSE, SENSITIVITY, RENDER_DISTANCE, FOV, VIEW_BOBBING, FRAMERATE_LIMIT, VSYNC, BRIGHTNESS, DIFFICULTY, GUI_SCALE, ANISOTROPIC, MIPMAPS, DEBUG_MODE, MSAA, ENVIRONMENT_ANIMATION
-    ];
-
-    private readonly bool enumFloat;
-    private readonly bool enumBoolean;
-    private readonly string enumString;
-    private readonly int ordinalValue;
-
-    public static EnumOptions? getEnumOptions(int ordinal)
+    public OptionInfoAttribute(string translationKey, bool isFloat = false, bool isBoolean = false)
     {
-        foreach (EnumOptions option in values())
+        TranslationKey = translationKey;
+        IsFloat = isFloat;
+        IsBoolean = isBoolean;
+    }
+}
+
+public enum EnumOptions
+{
+    [OptionInfo("options.music", isFloat: true)]           Music,
+    [OptionInfo("options.sound", isFloat: true)]           Sound,
+    [OptionInfo("options.invertMouse", isBoolean: true)]   InvertMouse,
+    [OptionInfo("options.sensitivity", isFloat: true)]     Sensitivity,
+    [OptionInfo("options.renderDistance")]                  RenderDistance,
+    [OptionInfo("options.viewBobbing", isBoolean: true)]   ViewBobbing,
+    [OptionInfo("options.framerateLimit", isFloat: true)]   FramerateLimit,
+    [OptionInfo("options.fov", isFloat: true)]              Fov,
+    [OptionInfo("Brightness", isFloat: true)]               Brightness,
+    [OptionInfo("VSync", isBoolean: true)]                  VSync,
+    [OptionInfo("options.difficulty")]                      Difficulty,
+    [OptionInfo("options.guiScale")]                        GuiScale,
+    [OptionInfo("Aniso Level")]                             Anisotropic,
+    [OptionInfo("Mipmaps", isBoolean: true)]                Mipmaps,
+    [OptionInfo("Debug Mode", isBoolean: true)]             DebugMode,
+    [OptionInfo("MSAA")]                                    Msaa,
+    [OptionInfo("Environment Anim", isBoolean: true)]       EnvironmentAnimation,
+}
+
+public static class EnumOptionsExtensions
+{
+    private static readonly Dictionary<EnumOptions, OptionInfoAttribute> Cache = BuildCache();
+
+    private static Dictionary<EnumOptions, OptionInfoAttribute> BuildCache()
+    {
+        var dict = new Dictionary<EnumOptions, OptionInfoAttribute>();
+        foreach (var field in typeof(EnumOptions).GetFields(BindingFlags.Public | BindingFlags.Static))
         {
-            if (option.returnEnumOrdinal() == ordinal)
+            if (field.GetCustomAttribute<OptionInfoAttribute>() is OptionInfoAttribute attr)
             {
-                return option;
+                dict[(EnumOptions)field.GetValue(null)!] = attr;
             }
         }
-
-        return null;
+        return dict;
     }
 
-    private EnumOptions(string enumString, bool enumFloat, bool enumBoolean, int ordinal)
-    {
-        this.enumString = enumString;
-        this.enumFloat = enumFloat;
-        this.enumBoolean = enumBoolean;
-        ordinalValue = ordinal;
-    }
-
-    public bool getEnumFloat()
-    {
-        return enumFloat;
-    }
-
-    public bool getEnumBoolean()
-    {
-        return enumBoolean;
-    }
-
-    public int returnEnumOrdinal()
-    {
-        return ordinal();
-    }
-
-    public string getEnumString()
-    {
-        return enumString;
-    }
-
-    public int ordinal()
-    {
-        return ordinalValue;
-    }
-
-    public static EnumOptions[] values()
-    {
-        return s_allValues;
-    }
+    public static OptionInfoAttribute GetInfo(this EnumOptions option) => Cache[option];
+    public static bool IsFloat(this EnumOptions option) => Cache[option].IsFloat;
+    public static bool IsBoolean(this EnumOptions option) => Cache[option].IsBoolean;
+    public static string GetTranslationKey(this EnumOptions option) => Cache[option].TranslationKey;
 }

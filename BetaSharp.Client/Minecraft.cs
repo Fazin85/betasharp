@@ -1373,7 +1373,7 @@ public partial class Minecraft
 
                     if (Keyboard.getEventKey() == options.KeyBindToggleFog.keyCode)
                     {
-                        options.SetOptionValue(EnumOptions.RENDER_DISTANCE,
+                        options.SetOptionValue(EnumOptions.RenderDistance,
                             !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) ? 1 : -1);
                     }
                 }

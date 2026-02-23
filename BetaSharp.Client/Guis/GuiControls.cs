@@ -32,8 +32,8 @@ public class GuiControls : GuiScreen
             _controlList.Add(new GuiSmallButton(i, leftX + i % 2 * 160, Height / 6 + 24 * (i >> 1), 70, 20, _options.GetOptionDisplayString(i)));
         }
 
-        _controlList.Add(new GuiSlider(EnumOptions.SENSITIVITY.returnEnumOrdinal(), Width / 2 + 5, Height / 6 + 130, EnumOptions.SENSITIVITY, _options.GetKeyBinding(EnumOptions.SENSITIVITY), _options.GetOptionFloatValue(EnumOptions.SENSITIVITY)).Size(125, 20));
-        _controlList.Add(new GuiSmallButton(EnumOptions.INVERT_MOUSE.returnEnumOrdinal(), Width / 2 - 155, Height / 6 + 130, EnumOptions.INVERT_MOUSE, _options.GetKeyBinding(EnumOptions.INVERT_MOUSE)).Size(125, 20));
+        _controlList.Add(new GuiSlider((int)EnumOptions.Sensitivity, Width / 2 + 5, Height / 6 + 130, EnumOptions.Sensitivity, _options.GetKeyBinding(EnumOptions.Sensitivity), _options.GetOptionFloatValue(EnumOptions.Sensitivity)).Size(125, 20));
+        _controlList.Add(new GuiSmallButton((int)EnumOptions.InvertMouse, Width / 2 - 155, Height / 6 + 130, EnumOptions.InvertMouse, _options.GetKeyBinding(EnumOptions.InvertMouse)).Size(125, 20));
 
         _controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 6 + 168, translations.TranslateKey("gui.done")));
         _screenTitle = translations.TranslateKey("controls.title");
@@ -51,9 +51,9 @@ public class GuiControls : GuiScreen
             case ButtonDone:
                 mc.displayGuiScreen(_parentScreen);
                 break;
-            case int id when id == EnumOptions.INVERT_MOUSE.returnEnumOrdinal():
+            case int id when id == (int)EnumOptions.InvertMouse:
                 _options.InvertMouse = !_options.InvertMouse;
-                button.DisplayString = _options.GetKeyBinding(EnumOptions.INVERT_MOUSE);
+                button.DisplayString = _options.GetKeyBinding(EnumOptions.InvertMouse);
                 _options.SaveOptions();
                 break;
             default:
