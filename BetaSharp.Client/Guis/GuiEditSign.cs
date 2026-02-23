@@ -90,12 +90,12 @@ public class GuiEditSign : GuiScreen
         }
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float tickDelta)
     {
         DrawDefaultBackground();
         if (FontRenderer != null)
         {
-            DrawCenteredString(FontRenderer, ScreenTitle, Width / 2, 40, 0xFFFFFF);
+            Gui.DrawCenteredString(FontRenderer, ScreenTitle, Width / 2, 40, 0xFFFFFF);
         }
 
         GLManager.GL.PushMatrix();
@@ -132,6 +132,6 @@ public class GuiEditSign : GuiScreen
         _entitySign.CurrentRow = -1;
         GLManager.GL.PopMatrix();
 
-        base.Render(mouseX, mouseY, partialTicks);
+        base.Render(mouseX, mouseY, tickDelta);
     }
 }

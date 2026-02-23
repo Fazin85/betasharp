@@ -29,7 +29,7 @@ public class GuiAudio : GuiScreen
 
             if (option is FloatOption floatOpt)
             {
-                _controlList.Add(new GuiSlider(id, x, y, floatOpt, option.GetDisplayString(translations), floatOpt.Value));
+                _controlList.Add(new GuiOptionsSlider(id, x, y, floatOpt, option.GetDisplayString(translations), floatOpt.Value));
             }
             else
             {
@@ -60,10 +60,10 @@ public class GuiAudio : GuiScreen
         }
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float tickDelta)
     {
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, _screenTitle, Width / 2, 20, 0xFFFFFF);
-        base.Render(mouseX, mouseY, partialTicks);
+        Gui.DrawCenteredString(FontRenderer, _screenTitle, Width / 2, 20, 0xFFFFFF);
+        base.Render(mouseX, mouseY, tickDelta);
     }
 }

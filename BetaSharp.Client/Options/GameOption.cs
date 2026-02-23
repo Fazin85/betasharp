@@ -1,17 +1,23 @@
 namespace BetaSharp.Client.Options;
 
-public abstract class GameOption
+public abstract class GameOption<T> : GameOption
 {
-    public string TranslationKey { get; }
-    public string SaveKey { get; }
-    public string? LabelOverride { get; init; }
-    public bool IsSlider => this is FloatOption;
+    public T Value { get; set; } = default!;
+    public Action<T>? OnChanged { get; init; }
+    public Func<T, TranslationStorage, string>? Formatter { get; init; }
 
     protected GameOption(string translationKey, string saveKey)
     {
         TranslationKey = translationKey;
         SaveKey = saveKey;
     }
+}
+
+public abstract class GameOption
+{
+    public string TranslationKey { get; init; }
+    public string SaveKey { get; init; }
+    public string? LabelOverride { get; init; }
 
     public string GetLabel(TranslationStorage translations) =>
         LabelOverride ?? translations.TranslateKey(TranslationKey);

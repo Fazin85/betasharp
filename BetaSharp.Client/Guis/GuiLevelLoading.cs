@@ -56,7 +56,7 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
         }
     }
 
-    public override void Render(int var1, int var2, float var3)
+    public override void Render(int var1, int var2, float tickDelta)
     {
         DrawDefaultBackground();
         TranslationStorage var4 = TranslationStorage.Instance;
@@ -71,9 +71,9 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
             progress = mc.internalServer.progress;
         }
 
-        DrawCenteredString(FontRenderer, title, Width / 2, Height / 2 - 50, 0xFFFFFF);
-        DrawCenteredString(FontRenderer, progressMsg + " (" + progress + "%)", Width / 2, Height / 2 - 10, 0xFFFFFF);
+        Gui.DrawCenteredString(FontRenderer, title, Width / 2, Height / 2 - 50, 0xFFFFFF);
+        Gui.DrawCenteredString(FontRenderer, progressMsg + " (" + progress + "%)", Width / 2, Height / 2 - 10, 0xFFFFFF);
 
-        base.Render(var1, var2, var3);
+        base.Render(var1, var2, tickDelta);
     }
 }

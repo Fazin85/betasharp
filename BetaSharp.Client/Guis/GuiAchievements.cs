@@ -69,7 +69,7 @@ public class GuiAchievements : GuiScreen
 
     }
 
-    public override void Render(int var1, int var2, float var3)
+    public override void Render(int var1, int var2, float tickDelta)
     {
         if (Mouse.isButtonDown(0))
         {
@@ -121,7 +121,7 @@ public class GuiAchievements : GuiScreen
         }
 
         DrawDefaultBackground();
-        func_27109_b(var1, var2, var3);
+        func_27109_b(var1, var2, tickDelta);
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.Disable(GLEnum.DepthTest);
         func_27110_k();
@@ -185,7 +185,7 @@ public class GuiAchievements : GuiScreen
         int var9 = (Height - field_27119_i) / 2;
         int var10 = var8 + 16;
         int var11 = var9 + 17;
-        _zLevel = 0.0F;
+        ZLevel = 0.0F;
         GLManager.GL.DepthFunc(GLEnum.Gequal);
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(0.0F, 0.0F, -200.0F);
@@ -284,8 +284,8 @@ public class GuiAchievements : GuiScreen
                     color = 0xFF000000U;
                 }
 
-                DrawHorizontalLine(var14, var16, var15, color);
-                DrawVerticalLine(var16, var15, var17, color);
+                Gui.DrawHorizontalLine(var14, var16, var15, color);
+                Gui.DrawVerticalLine(var16, var15, var17, color);
             }
         }
 
@@ -366,7 +366,7 @@ public class GuiAchievements : GuiScreen
         mc.textureManager.BindTexture(var7);
         DrawTexturedModalRect(var8, var9, 0, 0, field_27121_a, field_27119_i);
         GLManager.GL.PopMatrix();
-        _zLevel = 0.0F;
+        ZLevel = 0.0F;
         GLManager.GL.DepthFunc(GLEnum.Lequal);
         GLManager.GL.Disable(GLEnum.DepthTest);
         GLManager.GL.Enable(GLEnum.Texture2D);
@@ -386,7 +386,7 @@ public class GuiAchievements : GuiScreen
                     var37 += 12;
                 }
 
-                DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var37 + 3 + 12, 0xC0000000U, 0xC0000000U);
+                Gui.DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var37 + 3 + 12, 0xC0000000U, 0xC0000000U);
                 FontRenderer.DrawStringWrapped(var32, var17, var33 + 12, var34, 0xFFA0A0A0);
                 if (statFileWriter.HasAchievementUnlocked(var27))
                 {
@@ -398,7 +398,7 @@ public class GuiAchievements : GuiScreen
                 var34 = java.lang.Math.max(FontRenderer.GetStringWidth(var31), 120);
                 string var39 = StatCollector.TranslateToLocalFormatted("achievement.requires", new object[] { var27.parent.StatName });
                 var38 = FontRenderer.GetStringHeight(var39, var34);
-                DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var38 + 12 + 3, 0xC0000000, 0xC0000000);
+                Gui.DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var38 + 12 + 3, 0xC0000000, 0xC0000000);
                 FontRenderer.DrawStringWrapped(var39, var17, var33 + 12, var34, 0xFF705050);
             }
 

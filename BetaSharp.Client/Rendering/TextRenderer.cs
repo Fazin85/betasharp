@@ -86,7 +86,7 @@ public class TextRenderer
     public void DrawStringWithShadow(ReadOnlySpan<char> text, int x, int y, uint color)
     {
         RenderString(text, x + 1, y + 1, color, true);
-        DrawString(text, x, y, color);
+        Gui.DrawString(text, x, y, color);
     }
 
     public void DrawString(ReadOnlySpan<char> text, int x, int y, uint color)

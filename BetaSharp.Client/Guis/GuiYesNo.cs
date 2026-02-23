@@ -41,11 +41,11 @@ public class GuiYesNo : GuiScreen
         }
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float tickDelta)
     {
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, _message1, Width / 2, 70, 0xFFFFFF);
-        DrawCenteredString(FontRenderer, _message2, Width / 2, 90, 0xFFFFFF);
-        base.Render(mouseX, mouseY, partialTicks);
+        Gui.DrawCenteredString(FontRenderer, _message1, Width / 2, 70, 0xFFFFFF);
+        Gui.DrawCenteredString(FontRenderer, _message2, Width / 2, 90, 0xFFFFFF);
+        base.Render(mouseX, mouseY, tickDelta);
     }
 }

@@ -11,28 +11,17 @@ using System.Collections.Generic;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiScreen : Gui
+public class GuiScreen : Control
 {
     private static readonly ILogger<GuiScreen> s_logger = Log.Instance.For<GuiScreen>();
-
+    internal override bool TopLevel => true;
     public Minecraft mc;
-    public int Width;
-    public int Height;
-    protected List<GuiButton> _controlList = new();
     public bool AllowUserInput = false;
     public virtual bool PausesGame => true;
     public TextRenderer FontRenderer;
     public GuiParticle ParticlesGui;
     private GuiButton SelectedButton = null;
     protected bool _isSubscribedToKeyboard = false;
-
-    public virtual void Render(int mouseX, int mouseY, float partialTicks)
-    {
-        foreach (var control in _controlList)
-        {
-            control.DrawButton(mc, mouseX, mouseY);
-        }
-    }
 
     protected virtual void KeyTyped(char eventChar, int eventKey)
     {
@@ -78,17 +67,14 @@ public class GuiScreen : Gui
 
     protected virtual void MouseClicked(int mouseX, int mouseY, int button)
     {
-        if (button == 0)
+        if (button != 0)
+            return;
+
+        foreach (Control control in Children.Where(control => control.JustClicked(mouseX, mouseY, button)))
         {
-            foreach (var control in _controlList.ToArray())
-            {
-                if (control.MousePressed(mc, mouseX, mouseY))
-                {
-                    SelectedButton = control;
-                    mc.sndManager.PlaySoundFX("random.click", 1.0F, 1.0F);
-                    ActionPerformed(control);
-                }
-            }
+            SelectedButton = control;
+            mc.sndManager.PlaySoundFX("random.click", 1.0F, 1.0F);
+            ActionPerformed(control);
         }
     }
 
@@ -100,8 +86,6 @@ public class GuiScreen : Gui
             SelectedButton = null;
         }
     }
-
-    protected virtual void ActionPerformed(GuiButton var1) { }
 
     public void SetWorldAndResolution(Minecraft mc, int width, int height)
     {
@@ -185,7 +169,7 @@ public class GuiScreen : Gui
     {
         if (mc.world != null)
         {
-            DrawGradientRect(0, 0, Width, Height, 0xC0101010, 0xD0101010);
+            Gui.DrawGradientRect(0, 0, Width, Height, 0xC0101010, 0xD0101010);
         }
         else
         {

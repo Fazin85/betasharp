@@ -43,9 +43,9 @@ public class GuiSleepMP : GuiChat
 
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float tickDelta)
     {
-        base.Render(mouseX, mouseY, partialTicks);
+        base.Render(mouseX, mouseY, tickDelta);
     }
 
     protected override void ActionPerformed(GuiButton button)

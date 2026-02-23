@@ -4,7 +4,7 @@ using java.util;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiParticle : Gui
+public class GuiParticle
 {
     private readonly List<Particle> particles = new ();
     private readonly Minecraft mc;

@@ -226,21 +226,24 @@ public class GameRenderer
         if (_client.inGameHasFocus)
         {
             _client.mouseHelper.mouseXYChange();
-            float var2 = _client.options.MouseSensitivity * 0.6F + 0.2F;
-            float var3 = var2 * var2 * var2 * 8.0F;
-            float var4 = _client.mouseHelper.DeltaX * var3;
-            float var5 = _client.mouseHelper.DeltaY * var3;
-            int var6 = -1;
+            float sensOption = _client.options.MouseSensitivity;
+            float sensitivity = sensOption * sensOption * sensOption * 8.0F;
+            float deltaYaw = _client.mouseHelper.DeltaX * sensitivity;
+            float deltaPitch = _client.mouseHelper.DeltaY * sensitivity;
+
+            int deltaPitchMultiplier = -1;
             if (_client.options.InvertMouse)
             {
-                var6 = 1;
+                deltaPitchMultiplier = 1;
             }
+
             if (_client.options.SmoothCamera)
             {
-                var4 = _mouseFilterXAxis.Smooth(var4, 0.05F * var3);
-                var5 = _mouseFilterYAxis.Smooth(var5, 0.05F * var3);
+                deltaYaw = _mouseFilterXAxis.Smooth(deltaYaw, 0.05F * sensitivity);
+                deltaPitch = _mouseFilterYAxis.Smooth(deltaPitch, 0.05F * sensitivity);
             }
-            _client.player.changeLookDirection(var4, var5 * var6);
+
+            _client.player.changeLookDirection(deltaYaw, deltaPitch * deltaPitchMultiplier);
         }
 
         if (!_client.skipRenderWorld)

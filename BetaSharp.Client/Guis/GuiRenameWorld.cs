@@ -10,7 +10,7 @@ public class GuiRenameWorld : GuiScreen
     private const int ButtonCancel = 1;
 
     private readonly GuiScreen parentScreen;
-    private GuiTextField nameInputField;
+    private TextField nameInputField;
     private readonly string worldFolderName;
 
     public GuiRenameWorld(GuiScreen parentScreen, string worldFolderName)
@@ -34,7 +34,7 @@ public class GuiRenameWorld : GuiScreen
         IWorldStorageSource worldStorage = mc.getSaveLoader();
         WorldProperties? worldProperties = worldStorage.GetProperties(worldFolderName);
         string currentWorldName = worldProperties?.LevelName ?? string.Empty;
-        nameInputField = new GuiTextField(this, FontRenderer, Width / 2 - 100, 60, 200, 20, currentWorldName)
+        nameInputField = new TextField(this, FontRenderer, Width / 2 - 100, 60, 200, 20, currentWorldName)
         {
             IsFocused = true
         };
@@ -81,13 +81,13 @@ public class GuiRenameWorld : GuiScreen
         nameInputField.MouseClicked(x, y, button);
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float tickDelta)
     {
         TranslationStorage translations = TranslationStorage.Instance;
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, translations.TranslateKey("selectWorld.renameTitle"), Width / 2, Height / 4 - 60 + 20, 0xFFFFFF);
-        DrawString(FontRenderer, translations.TranslateKey("selectWorld.enterName"), Width / 2 - 100, 47, 0xA0A0A0);
+        Gui.DrawCenteredString(FontRenderer, translations.TranslateKey("selectWorld.renameTitle"), Width / 2, Height / 4 - 60 + 20, 0xFFFFFF);
+        Gui.DrawString(FontRenderer, translations.TranslateKey("selectWorld.enterName"), Width / 2 - 100, 47, 0xA0A0A0);
         nameInputField.DrawTextBox();
-        base.Render(mouseX, mouseY, partialTicks);
+        base.Render(mouseX, mouseY, tickDelta);
     }
 }

@@ -12,8 +12,8 @@ public class GuiCreateWorld : GuiScreen
     private const int ButtonCancel = 1;
 
     private readonly GuiScreen _parentScreen;
-    private GuiTextField _textboxWorldName;
-    private GuiTextField _textboxSeed;
+    private TextField _textboxWorldName;
+    private TextField _textboxSeed;
     private string _folderName;
     private bool _createClicked;
 
@@ -36,12 +36,12 @@ public class GuiCreateWorld : GuiScreen
         int centerX = Width / 2;
         int centerY = Height / 4;
 
-        _textboxWorldName = new GuiTextField(this, FontRenderer, centerX - 100, centerY, 200, 20, translations.TranslateKey("selectWorld.newWorld"))
+        _textboxWorldName = new TextField(this, FontRenderer, centerX - 100, centerY, 200, 20, translations.TranslateKey("selectWorld.newWorld"))
         {
             IsFocused = true
         };
         _textboxWorldName.SetMaxStringLength(32);
-        _textboxSeed = new GuiTextField(this, FontRenderer, centerX - 100, centerY + 56, 200, 20, "");
+        _textboxSeed = new TextField(this, FontRenderer, centerX - 100, centerY + 56, 200, 20, "");
 
         _controlList.Clear();
         _controlList.Add(new GuiButton(ButtonCreate, centerX - 100, centerY + 96 + 12, translations.TranslateKey("selectWorld.create")));
@@ -161,7 +161,7 @@ public class GuiCreateWorld : GuiScreen
         _textboxSeed.MouseClicked(x, y, button);
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float tickDelta)
     {
         TranslationStorage translations = TranslationStorage.Instance;
 
@@ -169,14 +169,14 @@ public class GuiCreateWorld : GuiScreen
         int centerY = Height / 4;
 
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, translations.TranslateKey("selectWorld.create"), centerX, centerY - 60 + 20, 0xFFFFFF);
-        DrawString(FontRenderer, translations.TranslateKey("selectWorld.enterName"), centerX - 100, centerY - 10, 0xA0A0A0);
-        DrawString(FontRenderer, $"{translations.TranslateKey("selectWorld.resultFolder")} {_folderName}", centerX - 100, centerY + 24, 0xA0A0A0);
-        DrawString(FontRenderer, translations.TranslateKey("selectWorld.enterSeed"), centerX - 100, centerY + 56 - 12, 0xA0A0A0);
-        DrawString(FontRenderer, translations.TranslateKey("selectWorld.seedInfo"), centerX - 100, centerY + 56 + 24, 0xA0A0A0);
+        Gui.DrawCenteredString(FontRenderer, translations.TranslateKey("selectWorld.create"), centerX, centerY - 60 + 20, 0xFFFFFF);
+        Gui.DrawString(FontRenderer, translations.TranslateKey("selectWorld.enterName"), centerX - 100, centerY - 10, 0xA0A0A0);
+        Gui.DrawString(FontRenderer, $"{translations.TranslateKey("selectWorld.resultFolder")} {_folderName}", centerX - 100, centerY + 24, 0xA0A0A0);
+        Gui.DrawString(FontRenderer, translations.TranslateKey("selectWorld.enterSeed"), centerX - 100, centerY + 56 - 12, 0xA0A0A0);
+        Gui.DrawString(FontRenderer, translations.TranslateKey("selectWorld.seedInfo"), centerX - 100, centerY + 56 + 24, 0xA0A0A0);
         _textboxWorldName.DrawTextBox();
         _textboxSeed.DrawTextBox();
-        base.Render(mouseX, mouseY, partialTicks);
+        base.Render(mouseX, mouseY, tickDelta);
     }
 
     public override void SelectNextField()

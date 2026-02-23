@@ -34,7 +34,7 @@ public class GuiControls : GuiScreen
             _controlList.Add(new GuiSmallButton(i, leftX + i % 2 * 160, Height / 6 + 24 * (i >> 1), 70, 20, _options.GetOptionDisplayString(i)));
         }
 
-        _controlList.Add(new GuiSlider(SensitivityId, Width / 2 + 5, Height / 6 + 130, _options.MouseSensitivityOption, _options.MouseSensitivityOption.GetDisplayString(translations), _options.MouseSensitivityOption.Value).Size(125, 20));
+        _controlList.Add(new GuiOptionsSlider(SensitivityId, Width / 2 + 5, Height / 6 + 130, _options.MouseSensitivityOption, _options.MouseSensitivityOption.GetDisplayString(translations), _options.MouseSensitivityOption.Value).Size(125, 20));
         _controlList.Add(new GuiSmallButton(InvertMouseId, Width / 2 - 155, Height / 6 + 130, _options.InvertMouseOption, _options.InvertMouseOption.GetDisplayString(translations)).Size(125, 20));
 
         _controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 6 + 168, translations.TranslateKey("gui.done")));
@@ -84,17 +84,17 @@ public class GuiControls : GuiScreen
 
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float tickDelta)
     {
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, _screenTitle, Width / 2, 20, 0xFFFFFF);
+        Gui.DrawCenteredString(FontRenderer, _screenTitle, Width / 2, 20, 0xFFFFFF);
         int leftX = getLeftColumnX();
 
         for (int i = 0; i < _options.KeyBindings.Length; ++i)
         {
-            DrawString(FontRenderer, _options.GetKeyBindingDescription(i), leftX + i % 2 * 160 + 70 + 6, Height / 6 + 24 * (i >> 1) + 7, 0xFFFFFFFF);
+            Gui.DrawString(FontRenderer, _options.GetKeyBindingDescription(i), leftX + i % 2 * 160 + 70 + 6, Height / 6 + 24 * (i >> 1) + 7, 0xFFFFFFFF);
         }
 
-        base.Render(mouseX, mouseY, partialTicks);
+        base.Render(mouseX, mouseY, tickDelta);
     }
 }

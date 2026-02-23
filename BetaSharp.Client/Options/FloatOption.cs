@@ -1,11 +1,8 @@
 namespace BetaSharp.Client.Options;
 
-public class FloatOption : GameOption
+public class FloatOption : GameOption<float>
 {
-    public float Value { get; set; }
-    public Func<float, TranslationStorage, string>? Formatter { get; init; }
-    public Action<float>? OnChanged { get; init; }
-    public int? Steps { get; init; }
+    public float Step { get; init; }
 
     public FloatOption(string translationKey, string saveKey, float defaultValue = 0f) : base(translationKey, saveKey)
     {
@@ -16,9 +13,9 @@ public class FloatOption : GameOption
     {
         Value = Math.Clamp(value, 0f, 1f);
 
-        if (Steps.HasValue && Steps.Value > 0)
+        if (Step > 0)
         {
-            Value = MathF.Round(Value * Steps.Value) / Steps.Value;
+            Value = MathF.Round(Value / Step) * Step;
         }
 
         OnChanged?.Invoke(Value);

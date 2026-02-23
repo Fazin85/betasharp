@@ -5,8 +5,8 @@ namespace BetaSharp.Client.Guis;
 public class GuiScreenAddServer : GuiScreen
 {
     private readonly GuiMultiplayer _parentScreen;
-    private GuiTextField _serverName = null!;
-    private GuiTextField _serverAddress = null!;
+    private TextField _serverName = null!;
+    private TextField _serverAddress = null!;
     private readonly ServerData _serverData;
 
     public GuiScreenAddServer(GuiMultiplayer parentScreen, ServerData serverData)
@@ -28,13 +28,13 @@ public class GuiScreenAddServer : GuiScreen
         _controlList.Add(new GuiButton(0, Width / 2 - 100, Height / 4 + 96 + 12, "Done"));
         _controlList.Add(new GuiButton(1, Width / 2 - 100, Height / 4 + 120 + 12, "Cancel"));
 
-        _serverName = new GuiTextField(this, FontRenderer, Width / 2 - 100, 66, 200, 20, _serverData.Name)
+        _serverName = new TextField(this, FontRenderer, Width / 2 - 100, 66, 200, 20, _serverData.Name)
         {
             IsFocused = true
         };
         _serverName.SetMaxStringLength(32);
 
-        _serverAddress = new GuiTextField(this, FontRenderer, Width / 2 - 100, 106, 200, 20, _serverData.Ip);
+        _serverAddress = new TextField(this, FontRenderer, Width / 2 - 100, 106, 200, 20, _serverData.Ip);
         _serverAddress.SetMaxStringLength(128);
 
         _controlList[0].Enabled = _serverName.GetText().Length > 0 && _serverAddress.GetText().Length > 0 && _serverAddress.GetText().Split(":").Length > 0;
@@ -96,14 +96,14 @@ public class GuiScreenAddServer : GuiScreen
         _serverAddress.MouseClicked(x, y, button);
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float tickDelta)
     {
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, "Edit Server Info", Width / 2, 17, 0xFFFFFF);
-        DrawString(FontRenderer, "Server Name", Width / 2 - 100, 53, 0xA0A0A0);
-        DrawString(FontRenderer, "Server Address", Width / 2 - 100, 94, 0xA0A0A0);
+        Gui.DrawCenteredString(FontRenderer, "Edit Server Info", Width / 2, 17, 0xFFFFFF);
+        Gui.DrawString(FontRenderer, "Server Name", Width / 2 - 100, 53, 0xA0A0A0);
+        Gui.DrawString(FontRenderer, "Server Address", Width / 2 - 100, 94, 0xA0A0A0);
         _serverName.DrawTextBox();
         _serverAddress.DrawTextBox();
-        base.Render(mouseX, mouseY, partialTicks);
+        base.Render(mouseX, mouseY, tickDelta);
     }
 }

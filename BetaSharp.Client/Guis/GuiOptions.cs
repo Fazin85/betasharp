@@ -35,7 +35,7 @@ public class GuiOptions : GuiScreen
 
             if (option is FloatOption floatOpt)
             {
-                _controlList.Add(new GuiSlider(id, xPos, yPos, floatOpt, option.GetDisplayString(translations), floatOpt.Value));
+                _controlList.Add(new GuiOptionsSlider(id, xPos, yPos, floatOpt, option.GetDisplayString(translations), floatOpt.Value));
             }
             else
             {
@@ -57,7 +57,7 @@ public class GuiOptions : GuiScreen
     {
         if (!button.Enabled) return;
 
-        if (button is GuiSmallButton smallBtn && smallBtn.Option != null)
+        if (button is GuiSmallButton { Option: not null } smallBtn)
         {
             smallBtn.ClickOption();
             button.DisplayString = smallBtn.Option.GetDisplayString(TranslationStorage.Instance);
@@ -89,11 +89,11 @@ public class GuiOptions : GuiScreen
 
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float tickDelta)
     {
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, _screenTitle, Width / 2, 20, 0xFFFFFF);
+        Gui.DrawCenteredString(FontRenderer, _screenTitle, Width / 2, 20, 0xFFFFFF);
 
-        base.Render(mouseX, mouseY, partialTicks);
+        base.Render(mouseX, mouseY, tickDelta);
     }
 }

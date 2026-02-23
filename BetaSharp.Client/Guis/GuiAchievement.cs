@@ -6,7 +6,7 @@ using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiAchievement : Gui
+public class GuiAchievement : Control
 {
     private static readonly long AchievementDisplayDuration = 3000L;
     private static readonly string LicenseWarningText = "Minecraft Beta 1.7.3   Unlicensed Copy :(";

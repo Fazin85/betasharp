@@ -87,11 +87,11 @@ public class GuiStats : GuiScreen
         }
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float tickDelta)
     {
-        currentSlot.DrawScreen(mouseX, mouseY, partialTicks);
-        DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0xFFFFFF);
-        base.Render(mouseX, mouseY, partialTicks);
+        currentSlot.DrawScreen(mouseX, mouseY, tickDelta);
+        Gui.DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0xFFFFFF);
+        base.Render(mouseX, mouseY, tickDelta);
     }
 
     public void drawItemSlot(int x, int y, int itemId)
@@ -118,15 +118,15 @@ public class GuiStats : GuiScreen
         mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/slot.png"));
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
-        tessellator.addVertexWithUV(x + 0, y + 18, _zLevel, (double)((u + 0) * 0.0078125F), (double)((v + 18) * 0.0078125F));
-        tessellator.addVertexWithUV(x + 18, y + 18, _zLevel, (double)((u + 18) * 0.0078125F), (double)((v + 18) * 0.0078125F));
-        tessellator.addVertexWithUV(x + 18, y + 0, _zLevel, (double)((u + 18) * 0.0078125F), (double)((v + 0) * 0.0078125F));
-        tessellator.addVertexWithUV(x + 0, y + 0, _zLevel, (double)((u + 0) * 0.0078125F), (double)((v + 0) * 0.0078125F));
+        tessellator.addVertexWithUV(x + 0, y + 18, ZLevel, (double)((u + 0) * 0.0078125F), (double)((v + 18) * 0.0078125F));
+        tessellator.addVertexWithUV(x + 18, y + 18, ZLevel, (double)((u + 18) * 0.0078125F), (double)((v + 18) * 0.0078125F));
+        tessellator.addVertexWithUV(x + 18, y + 0, ZLevel, (double)((u + 18) * 0.0078125F), (double)((v + 0) * 0.0078125F));
+        tessellator.addVertexWithUV(x + 0, y + 0, ZLevel, (double)((u + 0) * 0.0078125F), (double)((v + 0) * 0.0078125F));
         tessellator.draw();
     }
 
     public void drawTranslucentRect(int right, int bottom, int left, int top)
     {
-        DrawGradientRect(right, bottom, left, top, 0xC0000000, 0xC0000000);
+        Gui.DrawGradientRect(right, bottom, left, top, 0xC0000000, 0xC0000000);
     }
 }

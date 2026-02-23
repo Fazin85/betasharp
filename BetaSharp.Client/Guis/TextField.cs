@@ -6,24 +6,18 @@ using java.awt.datatransfer;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiTextField : Gui
+public class TextField : Control
 {
     private readonly TextRenderer _fontRenderer;
-    private readonly int _xPos;
-    private readonly int _yPos;
-    private readonly int _width;
-    private readonly int _height;
     private string _text;
     private int _maxStringLength;
     private int _cursorCounter;
     private int _cursorPosition = 0;
     private int _selectionStart = -1;
     private int _selectionEnd = -1;
-    public bool IsFocused = false;
-    public bool IsEnabled = true;
     private readonly GuiScreen _parentGuiScreen;
 
-    public GuiTextField(GuiScreen parentGuiScreen, TextRenderer fontRenderer, int xPos, int yPos, int width, int height, string text)
+    public TextField(GuiScreen parentGuiScreen, TextRenderer fontRenderer, int xPos, int yPos, int width, int height, string text)
     {
         _parentGuiScreen = parentGuiScreen;
         _fontRenderer = fontRenderer;
@@ -200,21 +194,21 @@ public class GuiTextField : Gui
 
     public void DrawTextBox()
     {
-        DrawRect(_xPos - 1, _yPos - 1, _xPos + _width + 1, _yPos + _height + 1, 0xFFA0A0A0);
-        DrawRect(_xPos, _yPos, _xPos + _width, _yPos + _height, 0xFF000000);
+        Gui.DrawRect(_xPos - 1, _yPos - 1, _xPos + _width + 1, _yPos + _height + 1, 0xFFA0A0A0);
+        Gui.DrawRect(_xPos, _yPos, _xPos + _width, _yPos + _height, 0xFF000000);
 
-        if (IsEnabled)
+        if (Enabled)
         {
             string cursor = IsFocused && _cursorCounter / 6 % 2 == 0 ? "_" : string.Empty;
             int safePos = Math.Clamp(_cursorPosition, 0, _text.Length);
 
             string renderText = _text.Insert(safePos, cursor);
 
-            DrawString(_fontRenderer, renderText, _xPos + 4, _yPos + (_height - 8) / 2, 0xE0E0E0);
+            Gui.DrawString(_fontRenderer, renderText, _xPos + 4, _yPos + (_height - 8) / 2, 0xE0E0E0);
         }
         else
         {
-            DrawString(_fontRenderer, _text, _xPos + 4, _yPos + (_height - 8) / 2, 0x707070);
+            Gui.DrawString(_fontRenderer, _text, _xPos + 4, _yPos + (_height - 8) / 2, 0x707070);
         }
     }
 

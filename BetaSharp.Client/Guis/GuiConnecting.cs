@@ -61,22 +61,22 @@ public class GuiConnecting : GuiScreen
 
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float tickDelta)
     {
         DrawDefaultBackground();
         TranslationStorage translations = TranslationStorage.Instance;
         if (_clientHandler == null)
         {
-            DrawCenteredString(FontRenderer, translations.TranslateKey("connect.connecting"), Width / 2, Height / 2 - 50, 0xFFFFFF);
-            DrawCenteredString(FontRenderer, "", Width / 2, Height / 2 - 10, 0xFFFFFF);
+            Gui.DrawCenteredString(FontRenderer, translations.TranslateKey("connect.connecting"), Width / 2, Height / 2 - 50, 0xFFFFFF);
+            Gui.DrawCenteredString(FontRenderer, "", Width / 2, Height / 2 - 10, 0xFFFFFF);
         }
         else
         {
-            DrawCenteredString(FontRenderer, translations.TranslateKey("connect.authorizing"), Width / 2, Height / 2 - 50, 0xFFFFFF);
-            DrawCenteredString(FontRenderer, _clientHandler.field_1209_a, Width / 2, Height / 2 - 10, 0xFFFFFF);
+            Gui.DrawCenteredString(FontRenderer, translations.TranslateKey("connect.authorizing"), Width / 2, Height / 2 - 50, 0xFFFFFF);
+            Gui.DrawCenteredString(FontRenderer, _clientHandler.field_1209_a, Width / 2, Height / 2 - 10, 0xFFFFFF);
         }
 
-        base.Render(mouseX, mouseY, partialTicks);
+        base.Render(mouseX, mouseY, tickDelta);
     }
 
     public static ClientNetworkHandler setNetClientHandler(GuiConnecting guiConnecting, ClientNetworkHandler handler)

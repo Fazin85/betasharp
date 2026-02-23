@@ -70,7 +70,7 @@ public class GuiIngameMenu : GuiScreen
         ++_menuTickCounter;
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTick)
+    public override void Render(int mouseX, int mouseY, float tickDelta)
     {
         DrawDefaultBackground();
 
@@ -78,13 +78,13 @@ public class GuiIngameMenu : GuiScreen
 
         if (isSavingActive || _menuTickCounter < 20)
         {
-            float pulse = (_menuTickCounter % 10 + partialTick) / 10.0F;
+            float pulse = (_menuTickCounter % 10 + tickDelta) / 10.0F;
             pulse = MathHelper.Sin(pulse * (float)Math.PI * 2.0F) * 0.2F + 0.8F;
             int color = (int)(255.0F * pulse);
-            DrawString(FontRenderer, "Saving level..", 8, Height - 16, (uint)(color << 16 | color << 8 | color));
+            Gui.DrawString(FontRenderer, "Saving level..", 8, Height - 16, (uint)(color << 16 | color << 8 | color));
         }
 
-        DrawCenteredString(FontRenderer, "Game menu", Width / 2, 40, 0xFFFFFF);
-        base.Render(mouseX, mouseY, partialTick);
+        Gui.DrawCenteredString(FontRenderer, "Game menu", Width / 2, 40, 0xFFFFFF);
+        base.Render(mouseX, mouseY, tickDelta);
     }
 }

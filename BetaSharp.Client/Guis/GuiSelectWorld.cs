@@ -163,11 +163,11 @@ public class GuiSelectWorld : GuiScreen
         loadSaves();
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float tickDelta)
     {
-        worldSlotContainer.DrawScreen(mouseX, mouseY, partialTicks);
-        DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0xFFFFFF);
-        base.Render(mouseX, mouseY, partialTicks);
+        worldSlotContainer.DrawScreen(mouseX, mouseY, tickDelta);
+        Gui.DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0xFFFFFF);
+        base.Render(mouseX, mouseY, tickDelta);
     }
 
     public static List<WorldSaveInfo> GetSize(GuiSelectWorld screen)

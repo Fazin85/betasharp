@@ -244,12 +244,12 @@ public class GuiMultiplayer : GuiScreen
         base.MouseClicked(x, y, button);
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float tickDelta)
     {
         DrawDefaultBackground();
-        _serverListSelector.DrawScreen(mouseX, mouseY, partialTicks);
-        DrawCenteredString(FontRenderer, "Play Multiplayer", Width / 2, 20, 0xFFFFFF);
-        base.Render(mouseX, mouseY, partialTicks);
+        _serverListSelector.DrawScreen(mouseX, mouseY, tickDelta);
+        Gui.DrawCenteredString(FontRenderer, "Play Multiplayer", Width / 2, 20, 0xFFFFFF);
+        base.Render(mouseX, mouseY, tickDelta);
     }
 
     private void JoinServer(ServerData server)

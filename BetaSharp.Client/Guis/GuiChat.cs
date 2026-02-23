@@ -126,9 +126,9 @@ public class GuiChat : GuiScreen
     }
 
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float tickDelta)
     {
-        DrawRect(2, Height - 14, Width - 2, Height - 2, BackgroundColor);
+        Gui.DrawRect(2, Height - 14, Width - 2, Height - 2, BackgroundColor);
 
         string cursor = (_updateCounter / 6 % 2 == 0) ? "_" : "";
         string textToDraw = "> " + _message + cursor;
@@ -138,7 +138,7 @@ public class GuiChat : GuiScreen
 
         FontRenderer.DrawStringWithShadow(textToDraw, xBase, y, TextColorNormal);
 
-        base.Render(mouseX, mouseY, partialTicks);
+        base.Render(mouseX, mouseY, tickDelta);
     }
 
     public override void HandleMouseInput()

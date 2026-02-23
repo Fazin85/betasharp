@@ -44,11 +44,11 @@ public class GuiDownloadTerrain : GuiScreen
     {
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float tickDelta)
     {
         DrawBackground(0);
         TranslationStorage translations = TranslationStorage.Instance;
-        DrawCenteredString(FontRenderer, translations.TranslateKey("multiplayer.downloadingTerrain"), Width / 2, Height / 2 - 50, 0xFFFFFF);
-        base.Render(mouseX, mouseY, partialTicks);
+        Gui.DrawCenteredString(FontRenderer, translations.TranslateKey("multiplayer.downloadingTerrain"), Width / 2, Height / 2 - 50, 0xFFFFFF);
+        base.Render(mouseX, mouseY, tickDelta);
     }
 }

@@ -30,14 +30,14 @@ public abstract class GuiContainer : GuiScreen
         mc.player.currentScreenHandler = InventorySlots;
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float tickDelta)
     {
         DrawDefaultBackground();
 
         int guiLeft = (Width - _xSize) / 2;
         int guiTop = (Height - _ySize) / 2;
 
-        DrawGuiContainerBackgroundLayer(partialTicks);
+        DrawGuiContainerBackgroundLayer(tickDelta);
 
         GLManager.GL.PushMatrix();
         GLManager.GL.Rotate(120.0F, 1.0F, 0.0F, 0.0F);
@@ -64,7 +64,7 @@ public abstract class GuiContainer : GuiScreen
                 GLManager.GL.Disable(GLEnum.DepthTest);
                 int sx = slot.xDisplayPosition;
                 int sy = slot.yDisplayPosition;
-                DrawGradientRect(sx, sy, sx + 16, sy + 16, 0x80FFFFFF, 0x80FFFFFF);
+                Gui.DrawGradientRect(sx, sy, sx + 16, sy + 16, 0x80FFFFFF, 0x80FFFFFF);
                 GLManager.GL.Enable(GLEnum.Lighting);
                 GLManager.GL.Enable(GLEnum.DepthTest);
             }
@@ -87,7 +87,7 @@ public abstract class GuiContainer : GuiScreen
                 int tipY = mouseY - guiTop - 12;
                 int textWidth = FontRenderer.GetStringWidth(itemName);
 
-                DrawGradientRect(tipX - 3, tipY - 3, tipX + textWidth + 3, tipY + 8 + 3, 0xC0000000, 0xC0000000);
+                Gui.DrawGradientRect(tipX - 3, tipY - 3, tipX + textWidth + 3, tipY + 8 + 3, 0xC0000000, 0xC0000000);
                 FontRenderer.DrawStringWithShadow(itemName, tipX, tipY, 0xFFFFFFFF);
             }
         }
@@ -114,7 +114,7 @@ public abstract class GuiContainer : GuiScreen
         }
 
         GLManager.GL.PopMatrix();
-        base.Render(mouseX, mouseY, partialTicks);
+        base.Render(mouseX, mouseY, tickDelta);
 
         GLManager.GL.Enable(GLEnum.Lighting);
         GLManager.GL.Enable(GLEnum.DepthTest);

@@ -28,9 +28,9 @@ public class GuiInventory : GuiContainer
         FontRenderer.DrawString("Crafting", 86, 16, 0x404040);
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float tickDelta)
     {
-        base.Render(mouseX, mouseY, partialTicks);
+        base.Render(mouseX, mouseY, tickDelta);
         _mouseX = mouseX;
         _mouseY = mouseY;
     }

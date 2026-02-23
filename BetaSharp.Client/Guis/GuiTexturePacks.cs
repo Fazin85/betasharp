@@ -74,9 +74,9 @@ public class GuiTexturePacks : GuiScreen
         base.MouseMovedOrUp(mouseX, mouseY, button);
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float tickDelta)
     {
-        _guiTexturePackSlot.DrawScreen(mouseX, mouseY, partialTicks);
+        _guiTexturePackSlot.DrawScreen(mouseX, mouseY, tickDelta);
         if (_refreshTimer <= 0)
         {
             mc.texturePackList.updateAvaliableTexturePacks();
@@ -84,9 +84,9 @@ public class GuiTexturePacks : GuiScreen
         }
 
         TranslationStorage translations = TranslationStorage.Instance;
-        DrawCenteredString(FontRenderer, translations.TranslateKey("texturePack.title"), Width / 2, 16, 0xFFFFFF);
-        DrawCenteredString(FontRenderer, translations.TranslateKey("texturePack.folderInfo"), Width / 2 - 77, Height - 26, 0x808080);
-        base.Render(mouseX, mouseY, partialTicks);
+        Gui.DrawCenteredString(FontRenderer, translations.TranslateKey("texturePack.title"), Width / 2, 16, 0xFFFFFF);
+        Gui.DrawCenteredString(FontRenderer, translations.TranslateKey("texturePack.folderInfo"), Width / 2 - 77, Height - 26, 0x808080);
+        base.Render(mouseX, mouseY, tickDelta);
     }
 
     public override void UpdateScreen()

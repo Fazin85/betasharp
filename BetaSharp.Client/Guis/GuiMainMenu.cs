@@ -50,7 +50,7 @@ public class GuiMainMenu : GuiScreen
 
     public override void UpdateScreen()
     {
-        
+
     }
 
     protected override void KeyTyped(char eventChar, int eventKey)
@@ -115,7 +115,7 @@ public class GuiMainMenu : GuiScreen
         }
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    public override void Render(int mouseX, int mouseY, float tickDelta)
     {
         DrawDefaultBackground();
         Tessellator tess = Tessellator.instance;
@@ -134,13 +134,13 @@ public class GuiMainMenu : GuiScreen
             1000.0F * (float)Math.PI * 2.0F) * 0.1F);
         splashScale = splashScale * 100.0F / (FontRenderer.GetStringWidth(_splashText) + 32);
         GLManager.GL.Scale(splashScale, splashScale, splashScale);
-        DrawCenteredString(FontRenderer, _splashText, 0, -8, 0xFFFF00);
+        Gui.DrawCenteredString(FontRenderer, _splashText, 0, -8, 0xFFFF00);
         GLManager.GL.PopMatrix();
-        DrawString(FontRenderer, "Minecraft Beta 1.7.3", 2, 2, 0x505050);
+        Gui.DrawString(FontRenderer, "Minecraft Beta 1.7.3", 2, 2, 0x505050);
         string copyrightText = "Copyright Mojang Studios. Not an official Minecraft product.";
-        DrawString(FontRenderer, copyrightText, Width - FontRenderer.GetStringWidth(copyrightText) - 2, Height - 20, 0xFFFFFF);
+        Gui.DrawString(FontRenderer, copyrightText, Width - FontRenderer.GetStringWidth(copyrightText) - 2, Height - 20, 0xFFFFFF);
         string disclaimerText = "Not approved by or associated with Mojang Studios or Microsoft.";
-        DrawString(FontRenderer, disclaimerText, Width - FontRenderer.GetStringWidth(disclaimerText) - 2, Height - 10, 0xFFFFFF);
-        base.Render(mouseX, mouseY, partialTicks);
+        Gui.DrawString(FontRenderer, disclaimerText, Width - FontRenderer.GetStringWidth(disclaimerText) - 2, Height - 10, 0xFFFFFF);
+        base.Render(mouseX, mouseY, tickDelta);
     }
 }

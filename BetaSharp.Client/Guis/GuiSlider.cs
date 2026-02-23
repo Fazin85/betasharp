@@ -5,21 +5,29 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiSlider : GuiButton
 {
+    public float Value;
+    private readonly float _min;
+    private readonly float _max;
+    private readonly float _step;
+    private bool IsBeingDragged;
+    private readonly string _displayStringFormat;
+    private readonly Action<float> _updateAction;
 
-    public float sliderValue = 1.0F;
-    public bool dragging;
-    private readonly FloatOption _option;
-
-    public GuiSlider(int id, int x, int y, FloatOption option, string displayString, float value) : base(id, x, y, 150, 20, displayString)
+    public GuiSlider(int id, int x, int y, string displayStringFormat, Action<float> updateAction, float value, float min, float max, float step = 0)
+        : base(id, x, y, 150, 20, string.Format(displayStringFormat, value))
     {
-        _option = option;
-        sliderValue = value;
+        Value = value;
+        _min = min;
+        _max = max;
+        _step = step;
+        _displayStringFormat = displayStringFormat;
+        _updateAction = updateAction;
     }
 
     public GuiSlider Size(int width, int height)
     {
-        _width = width;
-        _height = height;
+        Width = width;
+        Height = height;
         return this;
     }
 
@@ -28,61 +36,49 @@ public class GuiSlider : GuiButton
         return HoverState.Disabled;
     }
 
-    protected override void MouseDragged(Minecraft mc, int mouseX, int mouseY)
+    protected override void MouseMoved(Minecraft mc, int mouseX, int mouseY)
     {
-        if (Enabled)
+        if (!Enabled)
+            return;
+
+        if (IsBeingDragged)
         {
-            if (dragging)
+            float percentage = (mouseX - (X + 4)) / (float)(Width - 8);
+            percentage = Math.Clamp(percentage, 0, 1);
+            Value = (percentage * (_max - _min) + _min);
+            if (_step > 0.0F)
             {
-                sliderValue = (mouseX - (XPosition + 4)) / (float)(_width - 8);
-                if (sliderValue < 0.0F)
-                {
-                    sliderValue = 0.0F;
-                }
-
-                if (sliderValue > 1.0F)
-                {
-                    sliderValue = 1.0F;
-                }
-
-                _option.Set(sliderValue);
-                DisplayString = _option.GetDisplayString(TranslationStorage.Instance);
+                Value = MathF.Round(Value / _step) * _step;
             }
 
-            GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-            DrawTexturedModalRect(XPosition + (int)(sliderValue * (_width - 8)), YPosition, 0, 66, 4, 20);
-            DrawTexturedModalRect(XPosition + (int)(sliderValue * (_width - 8)) + 4, YPosition, 196, 66, 4, 20);
+            DisplayString = string.Format(_displayStringFormat, Value);
+            _updateAction(Value);
         }
     }
 
-    public override bool MousePressed(Minecraft mc, int mouseX, int mouseY)
+    protected override void RenderBackground(Minecraft mc, int mouseX, int mouseY)
     {
-        if (base.MousePressed(mc, mouseX, mouseY))
-        {
-            sliderValue = (mouseX - (XPosition + 4)) / (float)(_width - 8);
-            if (sliderValue < 0.0F)
-            {
-                sliderValue = 0.0F;
-            }
+        if (!Enabled)
+            return;
 
-            if (sliderValue > 1.0F)
-            {
-                sliderValue = 1.0F;
-            }
+        GLManager.GL.Color4(1, 1, 1, 1);
+        DrawTexturedModalRect(X + (int)(Value * (Width - 8)), Y, 0, 66, 4, 20);
+        DrawTexturedModalRect(X + (int)(Value * (Width - 8)) + 4, Y, 196, 66, 4, 20);
+    }
 
-            _option.Set(sliderValue);
-            DisplayString = _option.GetDisplayString(TranslationStorage.Instance);
-            dragging = true;
-            return true;
-        }
-        else
-        {
+    public override bool MouseInBounds(int mouseX, int mouseY)
+    {
+        if (!base.MouseInBounds(mc, mouseX, mouseY))
             return false;
-        }
+
+        IsBeingDragged = true;
+        MouseMoved(mc, mouseX, mouseY);
+        return true;
+
     }
 
     public override void MouseReleased(int x, int y)
     {
-        dragging = false;
+        IsBeingDragged = false;
     }
 }
