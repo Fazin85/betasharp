@@ -5,6 +5,7 @@ namespace BetaSharp.Client.Guis;
 public class GuiOptions : GuiScreen
 {
     private const int ButtonVideoSettings = 101;
+    private const int ButtonAudioSettings = 102;
     private const int ButtonControls = 100;
     private const int ButtonDone = 200;
 
@@ -43,7 +44,8 @@ public class GuiOptions : GuiScreen
             ++rowIndex;
         }
 
-        _controlList.Add(new GuiButton(ButtonVideoSettings, Width / 2 - 100, Height / 6 + 96 + 12, translations.TranslateKey("options.video")));
+        _controlList.Add(new GuiButton(ButtonVideoSettings, Width / 2 - 100, Height / 6 + 72 + 12, translations.TranslateKey("options.video")));
+        _controlList.Add(new GuiButton(ButtonAudioSettings, Width / 2 - 100, Height / 6 + 96 + 12, "Audio Settings"));
         _controlList.Add(new GuiButton(ButtonControls, Width / 2 - 100, Height / 6 + 120 + 12, translations.TranslateKey("options.controls")));
         _controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 6 + 168, translations.TranslateKey("gui.done")));
     }
@@ -63,6 +65,10 @@ public class GuiOptions : GuiScreen
             case ButtonVideoSettings:
                 mc.options.SaveOptions();
                 mc.displayGuiScreen(new GuiVideoSettings(this, _options));
+                break;
+            case ButtonAudioSettings:
+                mc.options.SaveOptions();
+                mc.displayGuiScreen(new GuiAudio(this, _options));
                 break;
             case ButtonControls:
                 mc.options.SaveOptions();

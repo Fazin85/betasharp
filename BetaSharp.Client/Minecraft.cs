@@ -1076,7 +1076,14 @@ public partial class Minecraft
 
         if(!inGameHasFocus && world == null && internalServer == null)
         {
-            sndManager.PlayRandomMusicIfReady(DefaultMusicCategories.Menu);
+            if (options.MenuMusic)
+            {
+                sndManager.PlayRandomMusicIfReady(DefaultMusicCategories.Menu);
+            }
+            else
+            {
+                sndManager.StopMusic(DefaultMusicCategories.Menu);
+            }
         }
 
         Profiler.Start("statFileWriter.func_27178_d");
@@ -1704,3 +1711,4 @@ public partial class Minecraft
 
     public static bool lineIsCommand(string var1) => (var1.StartsWith("/"));
 }
+

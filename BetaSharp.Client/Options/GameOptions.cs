@@ -53,6 +53,7 @@ public class GameOptions
     public BoolOption DebugModeOption { get; private set; }
     public BoolOption EnvironmentAnimationOption { get; private set; }
     public BoolOption ChunkFadeOption { get; private set; }
+    public BoolOption MenuMusicOption { get; private set; }
 
 
     public CycleOption RenderDistanceOption { get; private set; }
@@ -62,12 +63,13 @@ public class GameOptions
     public CycleOption MsaaOption { get; private set; }
 
 
-    public GameOption[] MainScreenOptions => [MusicVolumeOption, SoundVolumeOption, DifficultyOption, FovOption];
+    public GameOption[] MainScreenOptions => [DifficultyOption, FovOption, DebugModeOption];
+    public GameOption[] AudioScreenOptions => [MusicVolumeOption, SoundVolumeOption, MenuMusicOption];
     public GameOption[] VideoScreenOptions =>
     [
         RenderDistanceOption, FramerateLimitOption, VSyncOption,
         ViewBobbingOption, GuiScaleOption, AnisotropicOption,
-        MipmapsOption, MsaaOption, EnvironmentAnimationOption, ChunkFadeOption, DebugModeOption
+        MipmapsOption, MsaaOption, EnvironmentAnimationOption, ChunkFadeOption
     ];
 
 
@@ -103,6 +105,7 @@ public class GameOptions
     public bool DebugMode => DebugModeOption.Value;
     public bool EnvironmentAnimation => EnvironmentAnimationOption.Value;
     public bool ChunkFade => ChunkFadeOption.Value;
+    public bool MenuMusic => MenuMusicOption.Value;
 
 
     public string Skin = "Default";
@@ -232,6 +235,7 @@ public class GameOptions
         };
         EnvironmentAnimationOption = new BoolOption("Environment Anim", "envAnimation", true);
         ChunkFadeOption = new BoolOption("Chunk Fade", "chunkFade", true);
+        MenuMusicOption = new BoolOption("Menu Music", "menuMusic", true);
 
         RenderDistanceOption = new CycleOption("options.renderDistance", "viewDistance", RenderDistanceLabels);
         DifficultyOption = new CycleOption("options.difficulty", "difficulty", DifficultyLabels, 2);
@@ -281,6 +285,7 @@ public class GameOptions
         yield return DebugModeOption;
         yield return EnvironmentAnimationOption;
         yield return ChunkFadeOption;
+        yield return MenuMusicOption;
         yield return RenderDistanceOption;
         yield return DifficultyOption;
         yield return GuiScaleOption;
