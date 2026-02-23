@@ -5,7 +5,7 @@ using BetaSharp.Util;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
-namespace BetaSharp;
+namespace BetaSharp.PathFinding;
 
 public class Pathfinder : java.lang.Object
 {

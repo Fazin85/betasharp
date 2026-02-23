@@ -1,7 +1,7 @@
 using BetaSharp.Util.Maths;
 using java.lang;
 
-namespace BetaSharp;
+namespace BetaSharp.PathFinding;
 
 public class PathPoint : java.lang.Object
 {

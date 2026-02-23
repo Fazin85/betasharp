@@ -1,6 +1,6 @@
 using java.lang;
 
-namespace BetaSharp;
+namespace BetaSharp.PathFinding;
 
 public class Path : java.lang.Object
 {

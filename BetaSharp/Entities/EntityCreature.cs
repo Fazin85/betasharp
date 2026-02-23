@@ -1,3 +1,4 @@
+using BetaSharp.PathFinding;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 

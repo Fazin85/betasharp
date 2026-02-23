@@ -1,7 +1,7 @@
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 
-namespace BetaSharp;
+namespace BetaSharp.PathFinding;
 
 public class PathEntity : java.lang.Object
 {
