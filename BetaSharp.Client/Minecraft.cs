@@ -261,6 +261,7 @@ public partial class Minecraft
         GLManager.GL.MatrixMode(GLEnum.Modelview);
         checkGLError("Startup");
         sndManager.LoadSoundSettings(options);
+        DefaultMusicCategories.Register(sndManager);
         textureManager.AddDynamicTexture(textureLavaFX);
         textureManager.AddDynamicTexture(textureWaterFX);
         textureManager.AddDynamicTexture(new NetherPortalSprite());
@@ -408,7 +409,7 @@ public partial class Minecraft
         else
         {
             setIngameFocus();
-            sndManager.StopMenuMusic();
+            sndManager.StopMusic(DefaultMusicCategories.Menu);
         }
     }
 
@@ -1074,7 +1075,7 @@ public partial class Minecraft
 
         if(!inGameHasFocus && world == null && internalServer == null)
         {
-            sndManager.PlayRandomMusicIfReady(20, 600, true);
+            sndManager.PlayRandomMusicIfReady(DefaultMusicCategories.Menu);
         }
 
         Profiler.Start("statFileWriter.func_27178_d");
@@ -1405,6 +1406,7 @@ public partial class Minecraft
         _logger.LogInformation("FORCING RELOAD!");
         sndManager = new SoundManager();
         sndManager.LoadSoundSettings(options);
+        DefaultMusicCategories.Register(sndManager);
     }
 
     public bool isMultiplayerWorld()
@@ -1535,11 +1537,11 @@ public partial class Minecraft
         }
         else if (category.Equals("music", StringComparison.OrdinalIgnoreCase))
         {
-            sndManager.AddMusic(resourcePath, resourceFile);
+            sndManager.AddMusic(DefaultMusicCategories.Game, resourcePath, resourceFile);
         }
         else if (category.Equals("newmusic", StringComparison.OrdinalIgnoreCase))
         {
-            sndManager.AddMusic(resourcePath, resourceFile);
+            sndManager.AddMusic(DefaultMusicCategories.Game, resourcePath, resourceFile);
         }
         else if (category.Equals("custom", StringComparison.OrdinalIgnoreCase))
         {
@@ -1549,7 +1551,7 @@ public partial class Minecraft
 
             if (subCategory.Equals("music", StringComparison.OrdinalIgnoreCase))
             {
-                sndManager.AddMenuMusic(resourcePath, resourceFile);
+                sndManager.AddMusic(DefaultMusicCategories.Menu, resourcePath, resourceFile);
             }
         }
     }
