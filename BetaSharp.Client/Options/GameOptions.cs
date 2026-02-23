@@ -169,14 +169,17 @@ public class GameOptions
     {
         MusicVolumeOption = new FloatOption("options.music", "music", 1.0F)
         {
+            Steps = 100,
             OnChanged = _ => _mc?.sndManager.OnSoundOptionsChanged()
         };
         SoundVolumeOption = new FloatOption("options.sound", "sound", 1.0F)
         {
+            Steps = 100,
             OnChanged = _ => _mc?.sndManager.OnSoundOptionsChanged()
         };
         MouseSensitivityOption = new FloatOption("options.sensitivity", "mouseSensitivity", 0.5F)
         {
+            Steps = 200,
             Formatter = (v, t) => v == 0.0F
                 ? t.TranslateKey("options.sensitivity.min")
                 : v == 1.0F
@@ -186,6 +189,7 @@ public class GameOptions
         FramerateLimitOption = new FloatOption("options.framerateLimit", "fpsLimit", 0.42857143f)
         {
             LabelOverride = "Max FPS",
+            Steps = 210,
             Formatter = (v, _) =>
             {
                 int fps = 30 + (int)(v * 210.0f);
@@ -195,6 +199,7 @@ public class GameOptions
         FovOption = new FloatOption("options.fov", "fov", 0.44444445F)
         {
             LabelOverride = "FOV",
+            Steps = 90,
             Formatter = (v, _) => (30 + (int)(v * 90.0f)).ToString()
         };
 

@@ -5,6 +5,7 @@ public class FloatOption : GameOption
     public float Value { get; set; }
     public Func<float, TranslationStorage, string>? Formatter { get; init; }
     public Action<float>? OnChanged { get; init; }
+    public int? Steps { get; init; }
 
     public FloatOption(string translationKey, string saveKey, float defaultValue = 0f) : base(translationKey, saveKey)
     {
@@ -14,6 +15,12 @@ public class FloatOption : GameOption
     public void Set(float value)
     {
         Value = Math.Clamp(value, 0f, 1f);
+
+        if (Steps.HasValue && Steps.Value > 0)
+        {
+            Value = MathF.Round(Value * Steps.Value) / Steps.Value;
+        }
+
         OnChanged?.Invoke(Value);
     }
 
