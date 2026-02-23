@@ -487,7 +487,7 @@ public abstract class EntityPlayer : EntityLiving
                     commandWolvesToAttack((EntityLiving)damageSource, false);
                 }
 
-                increaseStat(Stats.Stats.DamageDealtStat, amount);
+                increaseStat(Stats.Stats.DamageTakenStat, amount);
                 return base.damage(damageSource, amount);
             }
         }
@@ -919,7 +919,7 @@ public abstract class EntityPlayer : EntityLiving
                 var7 = java.lang.Math.round(MathHelper.Sqrt(x * x + z * z) * 100.0F);
                 if (var7 > 0)
                 {
-                    increaseStat(Stats.Stats.DistanceFallenStat, var7);
+                    increaseStat(Stats.Stats.DistanceWalkedStat, var7);
                 }
             }
             else
