@@ -307,7 +307,7 @@ public class Item : java.lang.Object
 
     public string getStatName()
     {
-        return StatCollector.translateToLocal(getItemName() + ".name");
+        return StatCollector.TranslateToLocal(getItemName() + ".name");
     }
 
     public virtual int getColorMultiplier(int color)

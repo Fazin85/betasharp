@@ -40,7 +40,7 @@ public class GuiAchievements : GuiScreen
     public override void InitGui()
     {
         _controlList.Clear();
-        _controlList.Add(new GuiSmallButton(1, Width / 2 + 24, Height / 2 + 74, 80, 20, StatCollector.translateToLocal("gui.done")));
+        _controlList.Add(new GuiSmallButton(1, Width / 2 + 24, Height / 2 + 74, 80, 20, StatCollector.TranslateToLocal("gui.done")));
     }
 
     protected override void ActionPerformed(GuiButton var1)
@@ -373,7 +373,7 @@ public class GuiAchievements : GuiScreen
         if (var27 != null)
         {
             string? var32 = var27.getTranslatedDescription();
-            string var31 = var27.statName;
+            string var31 = var27.StatName;
             var17 = var1 + 12;
             var33 = var2 - 4;
             if (statFileWriter.func_27181_b(var27))
@@ -389,13 +389,13 @@ public class GuiAchievements : GuiScreen
                 FontRenderer.DrawStringWrapped(var32, var17, var33 + 12, var34, 0xFFA0A0A0);
                 if (statFileWriter.hasAchievementUnlocked(var27))
                 {
-                    FontRenderer.DrawStringWithShadow(StatCollector.translateToLocal("achievement.taken"), var17, var33 + var37 + 4, 0xFF9090FF);
+                    FontRenderer.DrawStringWithShadow(StatCollector.TranslateToLocal("achievement.taken"), var17, var33 + var37 + 4, 0xFF9090FF);
                 }
             }
             else
             {
                 var34 = java.lang.Math.max(FontRenderer.GetStringWidth(var31), 120);
-                string var39 = StatCollector.translateToLocalFormatted("achievement.requires", new object[] { var27.parent.statName });
+                string var39 = StatCollector.TranslateToLocalFormatted("achievement.requires", new object[] { var27.parent.StatName });
                 var38 = FontRenderer.GetStringHeight(var39, var34);
                 DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var38 + 12 + 3, 0xC0000000, 0xC0000000);
                 FontRenderer.DrawStringWrapped(var39, var17, var33 + 12, var34, 0xFF705050);

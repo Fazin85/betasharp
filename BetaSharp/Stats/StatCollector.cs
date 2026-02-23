@@ -1,16 +1,10 @@
 namespace BetaSharp.Stats;
 
-public class StatCollector
+public static class StatCollector
 {
-    private static readonly TranslationStorage localizedName = TranslationStorage.Instance;
+    private static readonly TranslationStorage _translationStorage = TranslationStorage.Instance;
 
-    public static string translateToLocal(string var0)
-    {
-        return localizedName.TranslateKey(var0);
-    }
+    public static string TranslateToLocal(string key) => _translationStorage.TranslateKey(key);
 
-    public static string translateToLocalFormatted(string var0, params object[] var1)
-    {
-        return localizedName.TranslateKeyFormat(var0, var1);
-    }
+    public static string TranslateToLocalFormatted(string key, params object[] args) => _translationStorage.TranslateKeyFormat(key, args);
 }

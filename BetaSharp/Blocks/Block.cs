@@ -527,7 +527,7 @@ public class Block
 
     public string translateBlockName()
     {
-        return StatCollector.translateToLocal(getBlockName() + ".name");
+        return StatCollector.TranslateToLocal(getBlockName() + ".name");
     }
 
     public string getBlockName()

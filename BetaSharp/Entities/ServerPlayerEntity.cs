@@ -497,15 +497,15 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     {
         if (stat != null)
         {
-            if (!stat.localOnly)
+            if (!stat.LocalOnly)
             {
                 while (amount > 100)
                 {
-                    networkHandler.sendPacket(new IncreaseStatS2CPacket(stat.id, 100));
+                    networkHandler.sendPacket(new IncreaseStatS2CPacket(stat.Id, 100));
                     amount -= 100;
                 }
 
-                networkHandler.sendPacket(new IncreaseStatS2CPacket(stat.id, amount));
+                networkHandler.sendPacket(new IncreaseStatS2CPacket(stat.Id, amount));
             }
         }
     }

@@ -6,36 +6,36 @@ using java.util;
 
 namespace BetaSharp.Stats;
 
-public class Stats : java.lang.Object
+public class Stats
 {
     public static Dictionary<int, StatBase> ID_TO_STAT = [];
     public static List<StatBase> ALL_STATS = [];
     public static List<StatBase> GENERAL_STATS = [];
     public static List<StatBase> ITEM_STATS = [];
     public static List<StatBase> BLOCKS_MINED_STATS = [];
-    public static StatBase startGameStat = (new StatBasic(1000, StatCollector.translateToLocal("stat.startGame"))).setLocalOnly().registerStat();
-    public static StatBase createWorldStat = (new StatBasic(1001, StatCollector.translateToLocal("stat.createWorld"))).setLocalOnly().registerStat();
-    public static StatBase loadWorldStat = (new StatBasic(1002, StatCollector.translateToLocal("stat.loadWorld"))).setLocalOnly().registerStat();
-    public static StatBase joinMultiplayerStat = (new StatBasic(1003, StatCollector.translateToLocal("stat.joinMultiplayer"))).setLocalOnly().registerStat();
-    public static StatBase leaveGameStat = (new StatBasic(1004, StatCollector.translateToLocal("stat.leaveGame"))).setLocalOnly().registerStat();
-    public static StatBase minutesPlayedStat = (new StatBasic(1100, StatCollector.translateToLocal("stat.playOneMinute"), StatBase.TIME_PROVIDER)).setLocalOnly().registerStat();
-    public static StatBase distanceWalkedStat = (new StatBasic(2000, StatCollector.translateToLocal("stat.walkOneCm"), StatBase.DISTANCE_PROVIDER)).setLocalOnly().registerStat();
-    public static StatBase distanceSwumStat = (new StatBasic(2001, StatCollector.translateToLocal("stat.swimOneCm"), StatBase.DISTANCE_PROVIDER)).setLocalOnly().registerStat();
-    public static StatBase distanceFallenStat = (new StatBasic(2002, StatCollector.translateToLocal("stat.fallOneCm"), StatBase.DISTANCE_PROVIDER)).setLocalOnly().registerStat();
-    public static StatBase distanceClimbedStat = (new StatBasic(2003, StatCollector.translateToLocal("stat.climbOneCm"), StatBase.DISTANCE_PROVIDER)).setLocalOnly().registerStat();
-    public static StatBase distanceFlownStat = (new StatBasic(2004, StatCollector.translateToLocal("stat.flyOneCm"), StatBase.DISTANCE_PROVIDER)).setLocalOnly().registerStat();
-    public static StatBase distanceDoveStat = (new StatBasic(2005, StatCollector.translateToLocal("stat.diveOneCm"), StatBase.DISTANCE_PROVIDER)).setLocalOnly().registerStat();
-    public static StatBase distanceByMinecartStat = (new StatBasic(2006, StatCollector.translateToLocal("stat.minecartOneCm"), StatBase.DISTANCE_PROVIDER)).setLocalOnly().registerStat();
-    public static StatBase distanceByBoatStat = (new StatBasic(2007, StatCollector.translateToLocal("stat.boatOneCm"), StatBase.DISTANCE_PROVIDER)).setLocalOnly().registerStat();
-    public static StatBase distanceByPigStat = (new StatBasic(2008, StatCollector.translateToLocal("stat.pigOneCm"), StatBase.DISTANCE_PROVIDER)).setLocalOnly().registerStat();
-    public static StatBase jumpStat = (new StatBasic(2010, StatCollector.translateToLocal("stat.jump"))).setLocalOnly().registerStat();
-    public static StatBase dropStat = (new StatBasic(2011, StatCollector.translateToLocal("stat.drop"))).setLocalOnly().registerStat();
-    public static StatBase damageDealtStat = (new StatBasic(2020, StatCollector.translateToLocal("stat.damageDealt"))).registerStat();
-    public static StatBase damageTakenStat = (new StatBasic(2021, StatCollector.translateToLocal("stat.damageTaken"))).registerStat();
-    public static StatBase deathsStat = (new StatBasic(2022, StatCollector.translateToLocal("stat.deaths"))).registerStat();
-    public static StatBase mobKillsStat = (new StatBasic(2023, StatCollector.translateToLocal("stat.mobKills"))).registerStat();
-    public static StatBase playerKillsStat = (new StatBasic(2024, StatCollector.translateToLocal("stat.playerKills"))).registerStat();
-    public static StatBase fishCaughtStat = (new StatBasic(2025, StatCollector.translateToLocal("stat.fishCaught"))).registerStat();
+    public static StatBase startGameStat = new StatBasic(1000, StatCollector.TranslateToLocal("stat.startGame")).SetLocalOnly().RegisterStat();
+    public static StatBase createWorldStat = new StatBasic(1001, StatCollector.TranslateToLocal("stat.createWorld")).SetLocalOnly().RegisterStat();
+    public static StatBase loadWorldStat = new StatBasic(1002, StatCollector.TranslateToLocal("stat.loadWorld")).SetLocalOnly().RegisterStat();
+    public static StatBase joinMultiplayerStat = new StatBasic(1003, StatCollector.TranslateToLocal("stat.joinMultiplayer")).SetLocalOnly().RegisterStat();
+    public static StatBase leaveGameStat = new StatBasic(1004, StatCollector.TranslateToLocal("stat.leaveGame")).SetLocalOnly().RegisterStat();
+    public static StatBase minutesPlayedStat = new StatBasic(1100, StatCollector.TranslateToLocal("stat.playOneMinute"), StatFormatters.FormatTime).SetLocalOnly().RegisterStat();
+    public static StatBase distanceWalkedStat = new StatBasic(2000, StatCollector.TranslateToLocal("stat.walkOneCm"), StatFormatters.FormatDistance).SetLocalOnly().RegisterStat();
+    public static StatBase distanceSwumStat = new StatBasic(2001, StatCollector.TranslateToLocal("stat.swimOneCm"), StatFormatters.FormatDistance).SetLocalOnly().RegisterStat();
+    public static StatBase distanceFallenStat = new StatBasic(2002, StatCollector.TranslateToLocal("stat.fallOneCm"), StatFormatters.FormatDistance).SetLocalOnly().RegisterStat();
+    public static StatBase distanceClimbedStat = new StatBasic(2003, StatCollector.TranslateToLocal("stat.climbOneCm"), StatFormatters.FormatDistance).SetLocalOnly().RegisterStat();
+    public static StatBase distanceFlownStat = new StatBasic(2004, StatCollector.TranslateToLocal("stat.flyOneCm"), StatFormatters.FormatDistance).SetLocalOnly().RegisterStat();
+    public static StatBase distanceDoveStat = new StatBasic(2005, StatCollector.TranslateToLocal("stat.diveOneCm"), StatFormatters.FormatDistance).SetLocalOnly().RegisterStat();
+    public static StatBase distanceByMinecartStat = new StatBasic(2006, StatCollector.TranslateToLocal("stat.minecartOneCm"), StatFormatters.FormatDistance).SetLocalOnly().RegisterStat();
+    public static StatBase distanceByBoatStat = new StatBasic(2007, StatCollector.TranslateToLocal("stat.boatOneCm"), StatFormatters.FormatDistance).SetLocalOnly().RegisterStat();
+    public static StatBase distanceByPigStat = new StatBasic(2008, StatCollector.TranslateToLocal("stat.pigOneCm"), StatFormatters.FormatDistance).SetLocalOnly().RegisterStat();
+    public static StatBase jumpStat = new StatBasic(2010, StatCollector.TranslateToLocal("stat.jump")).SetLocalOnly().RegisterStat();
+    public static StatBase dropStat = new StatBasic(2011, StatCollector.TranslateToLocal("stat.drop")).SetLocalOnly().RegisterStat();
+    public static StatBase damageDealtStat = new StatBasic(2020, StatCollector.TranslateToLocal("stat.damageDealt")).RegisterStat();
+    public static StatBase damageTakenStat = new StatBasic(2021, StatCollector.TranslateToLocal("stat.damageTaken")).RegisterStat();
+    public static StatBase deathsStat = new StatBasic(2022, StatCollector.TranslateToLocal("stat.deaths")).RegisterStat();
+    public static StatBase mobKillsStat = new StatBasic(2023, StatCollector.TranslateToLocal("stat.mobKills")).RegisterStat();
+    public static StatBase playerKillsStat = new StatBasic(2024, StatCollector.TranslateToLocal("stat.playerKills")).RegisterStat();
+    public static StatBase fishCaughtStat = new StatBasic(2025, StatCollector.TranslateToLocal("stat.fishCaught")).RegisterStat();
     public static StatBase[] mineBlockStatArray = initBlocksMined("stat.mineBlock", 16777216);
     public static StatBase[] CRAFTED;
     public static StatBase[] USED;
@@ -85,8 +85,8 @@ public class Stats : java.lang.Object
             {
                 if (Item.ITEMS[integer.intValue()] != null)
                 {
-                    string var3 = StatCollector.translateToLocalFormatted("stat.craftItem", Item.ITEMS[integer.intValue()].getStatName());
-                    CRAFTED[integer.intValue()] = (new StatCrafting(16842752 + integer.intValue(), var3, integer.intValue())).registerStat();
+                    string var3 = StatCollector.TranslateToLocalFormatted("stat.craftItem", Item.ITEMS[integer.intValue()].getStatName());
+                    CRAFTED[integer.intValue()] = (new StatCrafting(16842752 + integer.intValue(), var3, integer.intValue())).RegisterStat();
                 }
             }
 
@@ -102,8 +102,8 @@ public class Stats : java.lang.Object
         {
             if (Block.Blocks[var3] != null && Block.Blocks[var3].getEnableStats())
             {
-                string var4 = StatCollector.translateToLocalFormatted(var0, Block.Blocks[var3].translateBlockName());
-                var2[var3] = (new StatCrafting(var1 + var3, var4, var3)).registerStat();
+                string var4 = StatCollector.TranslateToLocalFormatted(var0, Block.Blocks[var3].translateBlockName());
+                var2[var3] = (new StatCrafting(var1 + var3, var4, var3)).RegisterStat();
                 BLOCKS_MINED_STATS.Add((StatCrafting)var2[var3]);
             }
         }
@@ -123,8 +123,8 @@ public class Stats : java.lang.Object
         {
             if (Item.ITEMS[var5] != null)
             {
-                string var6 = StatCollector.translateToLocalFormatted(var1, Item.ITEMS[var5].getStatName());
-                var0[var5] = (new StatCrafting(var2 + var5, var6, var5)).registerStat();
+                string var6 = StatCollector.TranslateToLocalFormatted(var1, Item.ITEMS[var5].getStatName());
+                var0[var5] = (new StatCrafting(var2 + var5, var6, var5)).RegisterStat();
                 if (var5 >= Block.Blocks.Length)
                 {
                     ITEM_STATS.Add((StatCrafting)var0[var5]);
@@ -147,8 +147,8 @@ public class Stats : java.lang.Object
         {
             if (Item.ITEMS[var5] != null && Item.ITEMS[var5].isDamagable())
             {
-                string var6 = StatCollector.translateToLocalFormatted(var1, Item.ITEMS[var5].getStatName());
-                var0[var5] = (new StatCrafting(var2 + var5, var6, var5)).registerStat();
+                string var6 = StatCollector.TranslateToLocalFormatted(var1, Item.ITEMS[var5].getStatName());
+                var0[var5] = (new StatCrafting(var2 + var5, var6, var5)).RegisterStat();
             }
         }
 

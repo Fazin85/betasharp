@@ -140,7 +140,7 @@ public class StatFileWriter
                     }
                     else
                     {
-                        sb.append(Stats.getStatById(var10).statGuid).append(",");
+                        sb.append(Stats.getStatById(var10).StatGuid).append(",");
                         sb.append(var11).append(",");
                         statsMap.put(var12, java.lang.Integer.valueOf(var11));
                     }
@@ -201,8 +201,8 @@ public class StatFileWriter
                 var5 = false;
             }
 
-            var3.append("\r\n    {\"").append(var7.id).append("\":").append(statsMap.get(var7));
-            var4.append(var7.statGuid).append(",");
+            var3.append("\r\n    {\"").append(var7.Id).append("\":").append(statsMap.get(var7));
+            var4.append(var7.StatGuid).append(",");
             var4.append(statsMap.get(var7)).append(",");
         }
 

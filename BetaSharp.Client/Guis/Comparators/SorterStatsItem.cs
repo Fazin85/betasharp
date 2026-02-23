@@ -10,8 +10,8 @@ public class SorterStatsItem(GuiSlotStatsItem slotStats, GuiStats stats) : IComp
         if (x is null) return -1;
         if (y is null) return 1;
 
-        int idX = x.getItemId();
-        int idY = y.getItemId();
+        int idX = x.ItemId;
+        int idY = y.ItemId;
 
         StatBase? statX = slotStats.ActiveStatType switch
         {

@@ -26,7 +26,7 @@ public class GuiStats : GuiScreen
 
     public override void InitGui()
     {
-        screenTitle = StatCollector.translateToLocal("gui.stats");
+        screenTitle = StatCollector.TranslateToLocal("gui.stats");
         slotGeneral = new GuiSlotStatsGeneral(this);
         slotGeneral.RegisterScrollButtons(_controlList, 1, 1);
         slotItem = new GuiSlotStatsItem(this);

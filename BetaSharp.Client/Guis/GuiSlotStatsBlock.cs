@@ -18,8 +18,8 @@ public class GuiSlotStatsBlock : GuiSlotStats<StatCrafting, StatCrafting>
             .OfType<StatCrafting>()
             .Where(stat =>
                 parent.statFileWriter.writeStat(stat) > 0 ||
-                (BetaSharp.Stats.Stats.USED[stat.getItemId()] is StatCrafting used && parent.statFileWriter.writeStat(used) > 0) ||
-                (BetaSharp.Stats.Stats.CRAFTED[stat.getItemId()] is StatCrafting crafted && parent.statFileWriter.writeStat(crafted) > 0))
+                (BetaSharp.Stats.Stats.USED[stat.ItemId] is StatCrafting used && parent.statFileWriter.writeStat(used) > 0) ||
+                (BetaSharp.Stats.Stats.CRAFTED[stat.ItemId] is StatCrafting crafted && parent.statFileWriter.writeStat(crafted) > 0))
             .ToList();
     }
 
@@ -40,7 +40,7 @@ public class GuiSlotStatsBlock : GuiSlotStats<StatCrafting, StatCrafting>
     protected override void DrawSlot(int index, int x, int y, int rowHeight, Tessellator tessellator)
     {
         StatCrafting stat = GetStat(index);
-        int id = stat.getItemId();
+        int id = stat.ItemId;
 
         ParentStatsGui.drawItemSlot(x + 40, y, id);
 

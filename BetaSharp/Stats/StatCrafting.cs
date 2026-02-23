@@ -2,16 +2,10 @@ namespace BetaSharp.Stats;
 
 public class StatCrafting : StatBase
 {
+    public int ItemId { get; }
 
-    private readonly int itemId;
-
-    public StatCrafting(int var1, String var2, int itemId) : base(var1, var2)
+    public StatCrafting(int id, string statName, int itemId) : base(id, statName)
     {
-        this.itemId = itemId;
-    }
-
-    public int getItemId()
-    {
-        return itemId;
+        ItemId = itemId;
     }
 }
