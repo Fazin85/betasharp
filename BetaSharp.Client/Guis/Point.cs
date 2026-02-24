@@ -1,6 +1,6 @@
 namespace BetaSharp.Client.Guis;
 
-public class Point
+public struct Point
 {
     public int X;
     public int Y;
@@ -10,4 +10,6 @@ public class Point
         X = x;
         Y = y;
     }
+
+    public static implicit operator Point((int, int) tuple) => new(tuple.Item1, tuple.Item2);
 }

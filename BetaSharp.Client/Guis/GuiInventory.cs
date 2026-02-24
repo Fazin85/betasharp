@@ -20,7 +20,7 @@ public class GuiInventory : GuiContainer
 
     public override void InitGui()
     {
-        _controlList.Clear();
+        Children.Clear();
     }
 
     protected override void DrawGuiContainerForegroundLayer()
@@ -28,9 +28,9 @@ public class GuiInventory : GuiContainer
         FontRenderer.DrawString("Crafting", 86, 16, 0x404040);
     }
 
-    public override void Render(int mouseX, int mouseY, float tickDelta)
+    protected override void OnRendered(RenderEventArgs e)
     {
-        base.Render(mouseX, mouseY, tickDelta);
+        base.OnRendered(mouseX, mouseY, tickDelta);
         _mouseX = mouseX;
         _mouseY = mouseY;
     }
@@ -44,7 +44,7 @@ public class GuiInventory : GuiContainer
         int guiLeft = (Width - _xSize) / 2;
         int guiTop = (Height - _ySize) / 2;
 
-        DrawTexturedModalRect(guiLeft, guiTop, 0, 0, _xSize, _ySize);
+        DrawTexturedRect(guiLeft, guiTop, 0, 0, _xSize, _ySize);
         GLManager.GL.Enable(GLEnum.RescaleNormal);
         GLManager.GL.Enable(GLEnum.ColorMaterial);
         GLManager.GL.PushMatrix();
@@ -88,12 +88,12 @@ public class GuiInventory : GuiContainer
     {
         if (btt.Id == 0)
         {
-            mc.displayGuiScreen(new GuiAchievements(mc.statFileWriter));
+            mc.OpenScreen(new GuiAchievements(mc.statFileWriter));
         }
 
         if (btt.Id == 1)
         {
-            mc.displayGuiScreen(new GuiStats(this, mc.statFileWriter));
+            mc.OpenScreen(new GuiStats(this, mc.statFileWriter));
         }
 
     }

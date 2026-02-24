@@ -21,22 +21,22 @@ public class GuiRenameWorld : GuiScreen
 
     public override void UpdateScreen()
     {
-        nameInputField.updateCursorCounter();
+        nameInputField.UpdateCursorCounter();
     }
 
     public override void InitGui()
     {
         TranslationStorage translations = TranslationStorage.Instance;
         Keyboard.enableRepeatEvents(true);
-        _controlList.Clear();
-        _controlList.Add(new GuiButton(ButtonRename, Width / 2 - 100, Height / 4 + 96 + 12, translations.TranslateKey("selectWorld.renameButton")));
-        _controlList.Add(new GuiButton(ButtonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.TranslateKey("gui.cancel")));
+        Children.Clear();
+        Children.Add(new GuiButton(ButtonRename, Width / 2 - 100, Height / 4 + 96 + 12, translations.TranslateKey("selectWorld.renameButton")));
+        Children.Add(new GuiButton(ButtonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.TranslateKey("gui.cancel")));
         IWorldStorageSource worldStorage = mc.getSaveLoader();
         WorldProperties? worldProperties = worldStorage.GetProperties(worldFolderName);
         string currentWorldName = worldProperties?.LevelName ?? string.Empty;
         nameInputField = new TextField(this, FontRenderer, Width / 2 - 100, 60, 200, 20, currentWorldName)
         {
-            IsFocused = true
+            Focused = true
         };
         nameInputField.SetMaxStringLength(32);
     }
@@ -53,12 +53,12 @@ public class GuiRenameWorld : GuiScreen
             switch (button.Id)
             {
                 case ButtonCancel:
-                    mc.displayGuiScreen(parentScreen);
+                    mc.OpenScreen(parentScreen);
                     break;
                 case ButtonRename:
                     IWorldStorageSource worldStorage = mc.getSaveLoader();
-                    worldStorage.Rename(worldFolderName, nameInputField.GetText().Trim());
-                    mc.displayGuiScreen(parentScreen);
+                    worldStorage.Rename(worldFolderName, nameInputField.Text.Trim());
+                    mc.OpenScreen(parentScreen);
                     break;
             }
         }
@@ -66,28 +66,28 @@ public class GuiRenameWorld : GuiScreen
 
     protected override void KeyTyped(char eventChar, int eventKey)
     {
-        nameInputField.textboxKeyTyped(eventChar, eventKey);
-        _controlList[0].Enabled = nameInputField.GetText().Trim().Length > 0;
+        nameInputField.TextboxKeyTyped(eventChar, eventKey);
+        Children[0].Enabled = nameInputField.Text.Trim().Length > 0;
         if (eventChar == 13)
         {
-            ActionPerformed(_controlList[0]);
+            ActionPerformed(Children[0]);
         }
 
     }
 
     protected override void MouseClicked(int x, int y, int button)
     {
-        base.MouseClicked(x, y, button);
-        nameInputField.MouseClicked(x, y, button);
+        base.Clicked(x, y, button);
+        nameInputField.Clicked(x, y, button);
     }
 
-    public override void Render(int mouseX, int mouseY, float tickDelta)
+    protected override void OnRendered(RenderEventArgs e)
     {
         TranslationStorage translations = TranslationStorage.Instance;
         DrawDefaultBackground();
         Gui.DrawCenteredString(FontRenderer, translations.TranslateKey("selectWorld.renameTitle"), Width / 2, Height / 4 - 60 + 20, 0xFFFFFF);
         Gui.DrawString(FontRenderer, translations.TranslateKey("selectWorld.enterName"), Width / 2 - 100, 47, 0xA0A0A0);
         nameInputField.DrawTextBox();
-        base.Render(mouseX, mouseY, tickDelta);
+        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 }

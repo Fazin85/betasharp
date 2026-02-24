@@ -69,21 +69,21 @@ public class GuiMainMenu : GuiScreen
         TranslationStorage translator = TranslationStorage.Instance;
         int buttonTopY = Height / 4 + 48;
 
-        _controlList.Add(new GuiButton(ButtonSingleplayer, Width / 2 - 100, buttonTopY, translator.TranslateKey("menu.singleplayer")));
-        _controlList.Add(_multiplayerButton =
+        Children.Add(new GuiButton(ButtonSingleplayer, Width / 2 - 100, buttonTopY, translator.TranslateKey("menu.singleplayer")));
+        Children.Add(_multiplayerButton =
             new GuiButton(ButtonMultiplayer, Width / 2 - 100, buttonTopY + 24, translator.TranslateKey("menu.multiplayer")));
-        _controlList.Add(new GuiButton(ButtonTexturePacksAndMods, Width / 2 - 100, buttonTopY + 48, translator.TranslateKey("menu.mods")));
+        Children.Add(new GuiButton(ButtonTexturePacksAndMods, Width / 2 - 100, buttonTopY + 48, translator.TranslateKey("menu.mods")));
 
         if (mc.hideQuitButton)
         {
-            _controlList.Add(new GuiButton(ButtonOptions, Width / 2 - 100, buttonTopY + 72, translator.TranslateKey("menu.options")));
+            Children.Add(new GuiButton(ButtonOptions, Width / 2 - 100, buttonTopY + 72, translator.TranslateKey("menu.options")));
         }
         else
         {
-            _controlList.Add(new GuiButton(ButtonOptions, Width / 2 - 100, buttonTopY + 72 + 12, 98, 20,
+            Children.Add(new GuiButton(ButtonOptions, Width / 2 - 100, buttonTopY + 72 + 12, 98, 20,
                 translator.TranslateKey("menu.options")));
 
-            _controlList.Add(new GuiButton(ButtonQuit, Width / 2 + 2, buttonTopY + 72 + 12, 98, 20,
+            Children.Add(new GuiButton(ButtonQuit, Width / 2 + 2, buttonTopY + 72 + 12, 98, 20,
                 translator.TranslateKey("menu.quit")));
         }
 
@@ -98,16 +98,16 @@ public class GuiMainMenu : GuiScreen
         switch (button.Id)
         {
             case ButtonOptions:
-                mc.displayGuiScreen(new GuiOptions(this, mc.options));
+                mc.OpenScreen(new GuiOptions(this, mc.options));
                 break;
             case ButtonSingleplayer:
-                mc.displayGuiScreen(new GuiSelectWorld(this));
+                mc.OpenScreen(new GuiSelectWorld(this));
                 break;
             case ButtonMultiplayer:
-                mc.displayGuiScreen(new GuiMultiplayer(this));
+                mc.OpenScreen(new GuiMultiplayer(this));
                 break;
             case ButtonTexturePacksAndMods:
-                mc.displayGuiScreen(new GuiTexturePacks(this));
+                mc.OpenScreen(new GuiTexturePacks(this));
                 break;
             case ButtonQuit:
                 mc.shutdown();
@@ -115,7 +115,7 @@ public class GuiMainMenu : GuiScreen
         }
     }
 
-    public override void Render(int mouseX, int mouseY, float tickDelta)
+    protected override void OnRendered(RenderEventArgs e)
     {
         DrawDefaultBackground();
         Tessellator tess = Tessellator.instance;
@@ -124,8 +124,8 @@ public class GuiMainMenu : GuiScreen
         byte logoY = 30;
         mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/title/mclogo.png"));
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        DrawTexturedModalRect(logoX + 0, logoY + 0, 0, 0, 155, 44);
-        DrawTexturedModalRect(logoX + 155, logoY + 0, 0, 45, 155, 44);
+        DrawTexturedRect(logoX + 0, logoY + 0, 0, 0, 155, 44);
+        DrawTexturedRect(logoX + 155, logoY + 0, 0, 45, 155, 44);
         tess.setColorOpaque_I(0xFFFFFF);
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(Width / 2 + 90, 70.0F, 0.0F);
@@ -141,6 +141,6 @@ public class GuiMainMenu : GuiScreen
         Gui.DrawString(FontRenderer, copyrightText, Width - FontRenderer.GetStringWidth(copyrightText) - 2, Height - 20, 0xFFFFFF);
         string disclaimerText = "Not approved by or associated with Mojang Studios or Microsoft.";
         Gui.DrawString(FontRenderer, disclaimerText, Width - FontRenderer.GetStringWidth(disclaimerText) - 2, Height - 10, 0xFFFFFF);
-        base.Render(mouseX, mouseY, tickDelta);
+        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 }

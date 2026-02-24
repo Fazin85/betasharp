@@ -268,7 +268,7 @@ public class GameRenderer
                 Profiler.Start("renderGameOverlay");
                 if (!_client.options.HideGUI || _client.currentScreen != null)
                 {
-                    _client.ingameGUI.renderGameOverlay(tickDelta, _client.currentScreen != null, var16, var17);
+                    _client.ingameGUI.DoRendered(new(var16, var17, tickDelta));
                 }
                 Profiler.Stop("renderGameOverlay");
             }
@@ -285,7 +285,7 @@ public class GameRenderer
             if (_client.currentScreen != null)
             {
                 GLManager.GL.Clear(ClearBufferMask.DepthBufferBit);
-                _client.currentScreen.Render(var16, var17, tickDelta);
+                _client.currentScreen.OnRendered(var16, var17, tickDelta);
                 if (_client.currentScreen != null && _client.currentScreen.ParticlesGui != null)
                 {
                     _client.currentScreen.ParticlesGui.render(tickDelta);

@@ -1,7 +1,11 @@
+using System.Globalization;
+
 namespace BetaSharp.Client.Options;
 
 public class FloatOption : GameOption<float>
 {
+    public float Min { get; init; }
+    public float Max { get; init; }
     public float Step { get; init; }
 
     public FloatOption(string translationKey, string saveKey, float defaultValue = 0f) : base(translationKey, saveKey)
@@ -11,7 +15,7 @@ public class FloatOption : GameOption<float>
 
     public void Set(float value)
     {
-        Value = Math.Clamp(value, 0f, 1f);
+        Value = Math.Clamp(value, Min, Max);
 
         if (Step > 0)
         {
@@ -43,5 +47,5 @@ public class FloatOption : GameOption<float>
         };
     }
 
-    public override string Save() => Value.ToString();
+    public override string Save() => Value.ToString(CultureInfo.InvariantCulture);
 }

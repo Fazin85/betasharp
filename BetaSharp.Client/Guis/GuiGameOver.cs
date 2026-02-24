@@ -11,14 +11,14 @@ public class GuiGameOver : GuiScreen
 
     public override void InitGui()
     {
-        _controlList.Clear();
-        _controlList.Add(new GuiButton(ButtonRespawn, Width / 2 - 100, Height / 4 + 72, "Respawn"));
-        _controlList.Add(new GuiButton(ButtonTitle, Width / 2 - 100, Height / 4 + 96, "Title menu"));
+        Children.Clear();
+        Children.Add(new GuiButton(ButtonRespawn, Width / 2 - 100, Height / 4 + 72, "Respawn"));
+        Children.Add(new GuiButton(ButtonTitle, Width / 2 - 100, Height / 4 + 96, "Title menu"));
         if (mc.session == null)
         {
-            for (int i = 0; i < _controlList.Count; ++i)
+            for (int i = 0; i < Children.Count; ++i)
             {
-                GuiButton btn = _controlList[i];
+                GuiButton btn = Children[i];
                 if (btn.Id == ButtonRespawn)
                 {
                     btn.Enabled = false;
@@ -39,17 +39,17 @@ public class GuiGameOver : GuiScreen
         {
             case ButtonRespawn:
                 mc.player.respawn();
-                mc.displayGuiScreen(null);
+                mc.OpenScreen(null);
                 break;
             case ButtonTitle:
                 mc.changeWorld(null);
-                mc.displayGuiScreen(new GuiMainMenu());
+                mc.OpenScreen(new GuiMainMenu());
                 break;
         }
 
     }
 
-    public override void Render(int mouseX, int mouseY, float tickDelta)
+    protected override void OnRendered(RenderEventArgs e)
     {
         Gui.DrawGradientRect(0, 0, Width, Height, 0x60500000, 0xA0803030);
         GLManager.GL.PushMatrix();
@@ -57,6 +57,6 @@ public class GuiGameOver : GuiScreen
         Gui.DrawCenteredString(FontRenderer, "Game over!", Width / 2 / 2, 30, 0xFFFFFF);
         GLManager.GL.PopMatrix();
         Gui.DrawCenteredString(FontRenderer, "Score: &e" + mc.player.getScore(), Width / 2, 100, 0xFFFFFF);
-        base.Render(mouseX, mouseY, tickDelta);
+        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 }

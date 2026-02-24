@@ -26,9 +26,9 @@ public class GuiEditSign : GuiScreen
 
     public override void InitGui()
     {
-        _controlList.Clear();
+        Children.Clear();
         Keyboard.enableRepeatEvents(true);
-        _controlList.Add(new GuiButton(ButtonDoneId, Width / 2 - 100, Height / 4 + 120, "Done"));
+        Children.Add(new GuiButton(ButtonDoneId, Width / 2 - 100, Height / 4 + 120, "Done"));
     }
 
     public override void OnGuiClosed()
@@ -50,7 +50,7 @@ public class GuiEditSign : GuiScreen
         if (button.Enabled && button.Id == ButtonDoneId)
         {
             _entitySign.markDirty();
-            mc?.displayGuiScreen(null);
+            mc?.OpenScreen(null);
         }
     }
 
@@ -80,7 +80,7 @@ public class GuiEditSign : GuiScreen
         if (eventKey == Keyboard.KEY_ESCAPE)
         {
             _entitySign.markDirty();
-            mc?.displayGuiScreen(null);
+            mc?.OpenScreen(null);
             return;
         }
 
@@ -90,7 +90,7 @@ public class GuiEditSign : GuiScreen
         }
     }
 
-    public override void Render(int mouseX, int mouseY, float tickDelta)
+    protected override void OnRendered(RenderEventArgs e)
     {
         DrawDefaultBackground();
         if (FontRenderer != null)
@@ -132,6 +132,6 @@ public class GuiEditSign : GuiScreen
         _entitySign.CurrentRow = -1;
         GLManager.GL.PopMatrix();
 
-        base.Render(mouseX, mouseY, tickDelta);
+        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 }

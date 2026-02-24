@@ -6,7 +6,7 @@ public class GuiSmallButton : GuiButton
 {
     private readonly GameOption? _option;
 
-    public GuiSmallButton(int id, int x, int y, string displayStr) : base(id, x, y, 150, 20, displayStr)
+    public GuiSmallButton(int id, int x, int y, string textFormat) : base(id, x, y, 150, 20, textFormat)
     {
         _option = null;
     }

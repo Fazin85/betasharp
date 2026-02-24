@@ -39,7 +39,7 @@ public class StatFileWriter
         _statsSyncer = new StatsSynchronizer(session, this, statsFolder);
     }
 
-    public void ReadStat(StatBase stat, int increment)
+    public void WriteStat(StatBase stat, int increment)
     {
         WriteStatToMap(_statsSyncedData, stat, increment);
         WriteStatToMap(_statsData, stat, increment);

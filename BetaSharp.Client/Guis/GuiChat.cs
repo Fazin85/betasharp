@@ -27,7 +27,8 @@ public class GuiChat : GuiScreen
     public override void InitGui()
     {
         Keyboard.enableRepeatEvents(true);
-        _isSubscribedToKeyboard = true;
+        Keyboard.OnCharacterTyped += CharTyped;
+        IsSubscribedToKeyboard = true;
         _historyIndex = s_history.Count;
     }
 
@@ -45,7 +46,7 @@ public class GuiChat : GuiScreen
     {
         if (eventKey == Keyboard.KEY_ESCAPE)
         {
-            mc.displayGuiScreen(null);
+            mc.OpenScreen(null);
             return;
         }
 
@@ -63,7 +64,7 @@ public class GuiChat : GuiScreen
                 }
             }
 
-            mc.displayGuiScreen(null);
+            mc.OpenScreen(null);
             _message = "";
             return;
         }
@@ -126,7 +127,7 @@ public class GuiChat : GuiScreen
     }
 
 
-    public override void Render(int mouseX, int mouseY, float tickDelta)
+    protected override void OnRendered(RenderEventArgs e)
     {
         Gui.DrawRect(2, Height - 14, Width - 2, Height - 2, BackgroundColor);
 
@@ -138,7 +139,7 @@ public class GuiChat : GuiScreen
 
         FontRenderer.DrawStringWithShadow(textToDraw, xBase, y, TextColorNormal);
 
-        base.Render(mouseX, mouseY, tickDelta);
+        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 
     public override void HandleMouseInput()
@@ -172,7 +173,7 @@ public class GuiChat : GuiScreen
             return;
         }
 
-        base.MouseClicked(x, y, button);
+        base.Clicked(x, y, button);
     }
 
     private static string ConvertAmpersandToSection(string input)

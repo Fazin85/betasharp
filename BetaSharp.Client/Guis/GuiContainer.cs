@@ -30,7 +30,7 @@ public abstract class GuiContainer : GuiScreen
         mc.player.currentScreenHandler = InventorySlots;
     }
 
-    public override void Render(int mouseX, int mouseY, float tickDelta)
+    protected override void OnRendered(RenderEventArgs e)
     {
         DrawDefaultBackground();
 
@@ -114,7 +114,7 @@ public abstract class GuiContainer : GuiScreen
         }
 
         GLManager.GL.PopMatrix();
-        base.Render(mouseX, mouseY, tickDelta);
+        base.OnRendered(mouseX, mouseY, tickDelta);
 
         GLManager.GL.Enable(GLEnum.Lighting);
         GLManager.GL.Enable(GLEnum.DepthTest);
@@ -136,7 +136,7 @@ public abstract class GuiContainer : GuiScreen
             {
                 GLManager.GL.Disable(GLEnum.Lighting);
                 mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/items.png"));
-                DrawTexturedModalRect(x, y, iconIdx % 16 * 16, iconIdx / 16 * 16, 16, 16);
+                DrawTexturedRect(x, y, iconIdx % 16 * 16, iconIdx / 16 * 16, 16, 16);
                 GLManager.GL.Enable(GLEnum.Lighting);
                 return;
             }
@@ -175,7 +175,7 @@ public abstract class GuiContainer : GuiScreen
 
     protected override void MouseClicked(int x, int y, int button)
     {
-        base.MouseClicked(x, y, button);
+        base.Clicked(x, y, button);
         if (button == 0 || button == 1)
         {
             Slot slot = GetSlotAtPosition(x, y);

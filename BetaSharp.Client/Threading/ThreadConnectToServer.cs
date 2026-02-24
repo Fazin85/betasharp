@@ -30,7 +30,7 @@ public class ThreadConnectToServer(GuiConnecting connectingGui, Minecraft mc, st
                 return;
             }
 
-            mc.displayGuiScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", "Unknown host \'" + hostName + "\'"));
+            _mc.OpenScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", "Unknown host \'" + _hostName + "\'"));
         }
         catch (ConnectException ex)
         {
@@ -39,7 +39,7 @@ public class ThreadConnectToServer(GuiConnecting connectingGui, Minecraft mc, st
                 return;
             }
 
-            mc.displayGuiScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", ex.getMessage()));
+            _mc.OpenScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", ex.getMessage()));
         }
         catch (Exception e)
         {
@@ -49,7 +49,7 @@ public class ThreadConnectToServer(GuiConnecting connectingGui, Minecraft mc, st
             }
 
             _logger.LogError(e, e.Message);
-            mc.displayGuiScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", e.ToString()));
+            _mc.OpenScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", ex.toString()));
         }
     }
 }

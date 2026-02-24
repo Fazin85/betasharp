@@ -41,7 +41,7 @@ public class GuiSelectWorld : GuiScreen
         unsupportedFormatMessage = "Unsupported Format!";
         loadSaves();
         worldSlotContainer = new GuiWorldSlot(this);
-        worldSlotContainer.RegisterScrollButtons(_controlList, 4, 5);
+        worldSlotContainer.RegisterScrollButtons(Children, 4, 5);
         initButtons();
     }
 
@@ -73,11 +73,11 @@ public class GuiSelectWorld : GuiScreen
     public void initButtons()
     {
         TranslationStorage translations = TranslationStorage.Instance;
-        _controlList.Add(buttonSelect = new GuiButton(BUTTON_SELECT, Width / 2 - 154, Height - 52, 150, 20, translations.TranslateKey("selectWorld.select")));
-        _controlList.Add(buttonRename = new GuiButton(BUTTON_RENAME, Width / 2 - 154, Height - 28, 70, 20, translations.TranslateKey("selectWorld.rename")));
-        _controlList.Add(buttonDelete = new GuiButton(BUTTON_DELETE, Width / 2 - 74, Height - 28, 70, 20, translations.TranslateKey("selectWorld.delete")));
-        _controlList.Add(new GuiButton(BUTTON_CREATE, Width / 2 + 4, Height - 52, 150, 20, translations.TranslateKey("selectWorld.create")));
-        _controlList.Add(new GuiButton(BUTTON_CANCEL, Width / 2 + 4, Height - 28, 150, 20, translations.TranslateKey("gui.cancel")));
+        Children.Add(buttonSelect = new GuiButton(BUTTON_SELECT, Width / 2 - 154, Height - 52, 150, 20, translations.TranslateKey("selectWorld.select")));
+        Children.Add(buttonRename = new GuiButton(BUTTON_RENAME, Width / 2 - 154, Height - 28, 70, 20, translations.TranslateKey("selectWorld.rename")));
+        Children.Add(buttonDelete = new GuiButton(BUTTON_DELETE, Width / 2 - 74, Height - 28, 70, 20, translations.TranslateKey("selectWorld.delete")));
+        Children.Add(new GuiButton(BUTTON_CREATE, Width / 2 + 4, Height - 52, 150, 20, translations.TranslateKey("selectWorld.create")));
+        Children.Add(new GuiButton(BUTTON_CANCEL, Width / 2 + 4, Height - 28, 150, 20, translations.TranslateKey("gui.cancel")));
         buttonSelect.Enabled = false;
         buttonRename.Enabled = false;
         buttonDelete.Enabled = false;
@@ -95,7 +95,7 @@ public class GuiSelectWorld : GuiScreen
             string deleteButtonText = translations.TranslateKey("selectWorld.deleteButton");
             string cancelButtonText = translations.TranslateKey("gui.cancel");
             GuiYesNo confirmDialog = new(this, deleteQuestion, deleteWarning, deleteButtonText, cancelButtonText, worldIndex);
-            mc.displayGuiScreen(confirmDialog);
+            mc.OpenScreen(confirmDialog);
         }
     }
 
@@ -112,13 +112,13 @@ public class GuiSelectWorld : GuiScreen
                     selectWorld(selectedWorld);
                     break;
                 case BUTTON_CREATE:
-                    mc.displayGuiScreen(new GuiCreateWorld(this));
+                    mc.OpenScreen(new GuiCreateWorld(this));
                     break;
                 case BUTTON_RENAME:
-                    mc.displayGuiScreen(new GuiRenameWorld(this, getSaveFileName(selectedWorld)));
+                    mc.OpenScreen(new GuiRenameWorld(this, getSaveFileName(selectedWorld)));
                     break;
                 case BUTTON_CANCEL:
-                    mc.displayGuiScreen(parentScreen);
+                    mc.OpenScreen(parentScreen);
                     break;
                 default:
                     worldSlotContainer.ActionPerformed(button);
@@ -150,7 +150,7 @@ public class GuiSelectWorld : GuiScreen
                 performDelete(index);
             }
 
-            mc.displayGuiScreen(this);
+            mc.OpenScreen(this);
         }
 
     }
@@ -163,11 +163,11 @@ public class GuiSelectWorld : GuiScreen
         loadSaves();
     }
 
-    public override void Render(int mouseX, int mouseY, float tickDelta)
+    protected override void OnRendered(RenderEventArgs e)
     {
         worldSlotContainer.DrawScreen(mouseX, mouseY, tickDelta);
         Gui.DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0xFFFFFF);
-        base.Render(mouseX, mouseY, tickDelta);
+        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 
     public static List<WorldSaveInfo> GetSize(GuiSelectWorld screen)

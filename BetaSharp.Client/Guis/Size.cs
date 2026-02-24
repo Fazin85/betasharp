@@ -10,4 +10,6 @@ public struct Size
         Width = width;
         Height = height;
     }
+
+    public static implicit operator Size((int, int) tuple) => new(tuple.Item1, tuple.Item2);
 }

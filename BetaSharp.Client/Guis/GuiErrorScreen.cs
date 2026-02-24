@@ -18,7 +18,7 @@ public class GuiErrorScreen : GuiScreen
     {
     }
 
-    public override void Render(int mouseX, int mouseY, float tickDelta)
+    protected override void OnRendered(RenderEventArgs e)
     {
         DrawDefaultBackground();
         Gui.DrawCenteredString(FontRenderer, "Out of memory!", Width / 2, Height / 4 - 60 + 20, 0xFFFFFF);
@@ -29,6 +29,6 @@ public class GuiErrorScreen : GuiScreen
         Gui.DrawString(FontRenderer, "downloading the game and playing it offline.", Width / 2 - 140, Height / 4 - 60 + 60 + 45, 0xA0A0A0);
         Gui.DrawString(FontRenderer, "To prevent level corruption, the current game has quit.", Width / 2 - 140, Height / 4 - 60 + 60 + 63, 0xA0A0A0);
         Gui.DrawString(FontRenderer, "Please restart the game.", Width / 2 - 140, Height / 4 - 60 + 60 + 81, 0xA0A0A0);
-        base.Render(mouseX, mouseY, tickDelta);
+        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 }

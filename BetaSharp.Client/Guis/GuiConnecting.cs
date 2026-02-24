@@ -43,8 +43,8 @@ public class GuiConnecting : GuiScreen
     public override void InitGui()
     {
         TranslationStorage translations = TranslationStorage.Instance;
-        _controlList.Clear();
-        _controlList.Add(new GuiButton(_buttonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.TranslateKey("gui.cancel")));
+        Children.Clear();
+        Children.Add(new GuiButton(_buttonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.TranslateKey("gui.cancel")));
     }
 
     protected override void ActionPerformed(GuiButton button)
@@ -55,13 +55,13 @@ public class GuiConnecting : GuiScreen
                 _cancelled = true;
                 _clientHandler?.disconnect();
 
-                mc.displayGuiScreen(new GuiMainMenu());
+                mc.OpenScreen(new GuiMainMenu());
                 break;
         }
 
     }
 
-    public override void Render(int mouseX, int mouseY, float tickDelta)
+    protected override void OnRendered(RenderEventArgs e)
     {
         DrawDefaultBackground();
         TranslationStorage translations = TranslationStorage.Instance;
@@ -76,7 +76,7 @@ public class GuiConnecting : GuiScreen
             Gui.DrawCenteredString(FontRenderer, _clientHandler.field_1209_a, Width / 2, Height / 2 - 10, 0xFFFFFF);
         }
 
-        base.Render(mouseX, mouseY, tickDelta);
+        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 
     public static ClientNetworkHandler setNetClientHandler(GuiConnecting guiConnecting, ClientNetworkHandler handler)

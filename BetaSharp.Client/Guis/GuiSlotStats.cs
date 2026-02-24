@@ -63,7 +63,7 @@ public abstract class GuiSlotStats<T, K>(GuiStats statsGui) : GuiSlot(statsGui.m
 
     protected void DrawStatValue(StatCrafting? stat, int x, int y, bool useBrightColor)
     {
-        string text = stat is not null ? stat.Format(statsGui.statFileWriter.GetStatValue(stat)) : "-";
+        string text = stat is not null ? stat.format(statsGui.statFileWriter.ReadStat(stat)) : "-";
         statsGui.FontRenderer.DrawStringWithShadow(text, x - statsGui.FontRenderer.GetStringWidth(text), y + 5, useBrightColor ? 0xFFFFFFu : 0x909090u);
     }
 

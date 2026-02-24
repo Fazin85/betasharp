@@ -28,11 +28,11 @@ public class GuiStats : GuiScreen
     {
         screenTitle = StatCollector.TranslateToLocal("gui.stats");
         slotGeneral = new GuiSlotStatsGeneral(this);
-        slotGeneral.RegisterScrollButtons(_controlList, 1, 1);
+        slotGeneral.RegisterScrollButtons(Children, 1, 1);
         slotItem = new GuiSlotStatsItem(this);
-        slotItem.RegisterScrollButtons(_controlList, 1, 1);
+        slotItem.RegisterScrollButtons(Children, 1, 1);
         slotBlock = new GuiSlotStatsBlock(this);
-        slotBlock.RegisterScrollButtons(_controlList, 1, 1);
+        slotBlock.RegisterScrollButtons(Children, 1, 1);
         currentSlot = slotGeneral;
         initButtons();
     }
@@ -44,12 +44,12 @@ public class GuiStats : GuiScreen
         const int BUTTON_ITEMS = 3;
 
         TranslationStorage translations = TranslationStorage.Instance;
-        _controlList.Add(new GuiButton(BUTTON_DONE, Width / 2 + 4, Height - 28, 150, 20, translations.TranslateKey("gui.done")));
-        _controlList.Add(new GuiButton(BUTTON_GENERAL, Width / 2 - 154, Height - 52, 100, 20, translations.TranslateKey("stat.generalButton")));
+        Children.Add(new GuiButton(BUTTON_DONE, Width / 2 + 4, Height - 28, 150, 20, translations.TranslateKey("gui.done")));
+        Children.Add(new GuiButton(BUTTON_GENERAL, Width / 2 - 154, Height - 52, 100, 20, translations.TranslateKey("stat.generalButton")));
         GuiButton blocksButton = new(BUTTON_BLOCKS, Width / 2 - 46, Height - 52, 100, 20, translations.TranslateKey("stat.blocksButton"));
-        _controlList.Add(blocksButton);
+        Children.Add(blocksButton);
         GuiButton itemsButton = new(BUTTON_ITEMS, Width / 2 + 62, Height - 52, 100, 20, translations.TranslateKey("stat.itemsButton"));
-        _controlList.Add(itemsButton);
+        Children.Add(itemsButton);
         if (slotBlock.GetSize() == 0)
         {
             blocksButton.Enabled = false;
@@ -68,7 +68,7 @@ public class GuiStats : GuiScreen
             switch (button.Id)
             {
                 case 0: // DONE
-                    mc.displayGuiScreen(parentScreen);
+                    mc.OpenScreen(parentScreen);
                     break;
                 case 1: // GENERAL
                     currentSlot = slotGeneral;
@@ -87,11 +87,11 @@ public class GuiStats : GuiScreen
         }
     }
 
-    public override void Render(int mouseX, int mouseY, float tickDelta)
+    protected override void OnRendered(RenderEventArgs e)
     {
         currentSlot.DrawScreen(mouseX, mouseY, tickDelta);
         Gui.DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0xFFFFFF);
-        base.Render(mouseX, mouseY, tickDelta);
+        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 
     public void drawItemSlot(int x, int y, int itemId)

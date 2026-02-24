@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Net.Sockets;
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
@@ -70,14 +70,14 @@ public class ClientNetworkHandler : NetHandler
     public override void onHello(LoginHelloPacket packet)
     {
         mc.playerController = new PlayerControllerMP(mc, this);
-        mc.statFileWriter.ReadStat(Stats.Stats.JoinMultiplayerStat, 1);
+        mc.statFileWriter.WriteStat(Stats.Stats.joinMultiplayerStat, 1);
         worldClient = new ClientWorld(this, packet.worldSeed, packet.dimensionId)
         {
             isRemote = true
         };
         mc.changeWorld(worldClient);
         mc.player.dimensionId = packet.dimensionId;
-        mc.displayGuiScreen(new GuiDownloadTerrain(this));
+        mc.OpenScreen(new GuiDownloadTerrain(this));
         mc.player.id = packet.protocolVersion;
     }
 
@@ -339,7 +339,7 @@ public class ClientNetworkHandler : NetHandler
             mc.player.prevY = mc.player.y;
             mc.player.prevZ = mc.player.z;
             terrainLoaded = true;
-            mc.displayGuiScreen(null);
+            mc.OpenScreen(null);
         }
 
     }
@@ -386,7 +386,7 @@ public class ClientNetworkHandler : NetHandler
         netManager.disconnect("disconnect.kicked");
         disconnected = true;
         mc.changeWorld(null);
-        mc.displayGuiScreen(new GuiConnectFailed("disconnect.disconnected", "disconnect.genericReason", packet.reason));
+        mc.OpenScreen(new GuiConnectFailed("disconnect.disconnected", "disconnect.genericReason", packet.reason));
     }
 
     public override void onDisconnected(string reason, object[]? args)
@@ -395,7 +395,7 @@ public class ClientNetworkHandler : NetHandler
         {
             disconnected = true;
             mc.changeWorld(null);
-            mc.displayGuiScreen(new GuiConnectFailed("disconnect.lost", reason, args));
+            mc.OpenScreen(new GuiConnectFailed("disconnect.lost", reason, args));
         }
     }
 
@@ -599,7 +599,7 @@ public class ClientNetworkHandler : NetHandler
             };
             mc.changeWorld(worldClient);
             mc.player.dimensionId = packet.dimensionId;
-            mc.displayGuiScreen(new GuiDownloadTerrain(this));
+            mc.OpenScreen(new GuiDownloadTerrain(this));
         }
 
         mc.respawn(true, packet.dimensionId);

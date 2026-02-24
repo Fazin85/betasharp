@@ -20,19 +20,19 @@ public class GuiScreen : Control
     public virtual bool PausesGame => true;
     public TextRenderer FontRenderer;
     public GuiParticle ParticlesGui;
-    private GuiButton SelectedButton = null;
-    protected bool _isSubscribedToKeyboard = false;
+    protected bool IsSubscribedToKeyboard = false;
+    protected bool DisplayTitle;
 
-    protected virtual void KeyTyped(char eventChar, int eventKey)
+    public GuiScreen()
     {
-        if (eventKey == Keyboard.KEY_ESCAPE)
+        Rendered += (_, _) =>
         {
-            mc.displayGuiScreen(null);
-            mc.setIngameFocus();
-        }
+            if (DisplayTitle)
+            {
+                Gui.DrawCenteredString(FontRenderer, Text, Width / 2, 20, 0xFFFFFF);
+            }
+        };
     }
-
-    protected virtual void CharTyped(char eventChar) { }
 
     public static string GetClipboardString()
     {
@@ -40,7 +40,7 @@ public class GuiScreen : Control
         {
             if (Display.isCreated())
             {
-                return Display.getGlfw().GetClipboardString(Display.getWindowHandle());
+                return Display.getGlfw().GetClipboardString(Display.getWindowHandle()) ?? "";
             }
         }
 
@@ -74,15 +74,7 @@ public class GuiScreen : Control
     }
 
     public virtual void UpdateScreen() { }
-
-    public virtual void OnGuiClosed()
-    {
-        if (_isSubscribedToKeyboard)
-        {
-            Keyboard.OnCharacterTyped -= CharTyped;
-            _isSubscribedToKeyboard = false;
-        }
-    }
+    public virtual void OnGuiClosed() { }
 
     public void DrawDefaultBackground()
     {
@@ -100,7 +92,6 @@ public class GuiScreen : Control
             DrawBackground(var1);
         }
     }
-
     public void DrawBackground(int var1)
     {
         GLManager.GL.Disable(EnableCap.Lighting);

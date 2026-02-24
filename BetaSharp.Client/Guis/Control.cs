@@ -5,7 +5,7 @@ namespace BetaSharp.Client.Guis;
 
 public class Control
 {
-    public enum HoverState
+    public enum ButtonTexture
     {
         Disabled = 0,
         Normal = 1,
@@ -19,15 +19,22 @@ public class Control
     public readonly List<Control> Children = [];
     public List<Control> Descendants => Children.SelectMany(c => c.Descendants).Prepend(this).ToList();
 
-    private int _lastMouseX;
-    private int _lastMouseY;
-
     // Track whether last press occurred inside this control
     private bool _pressedInside;
 
-    public string Text;
+    public string Text
+    {
+        get;
+        set
+        {
+            field = value;
+            DoTextChanged(new TextEventArgs(value));
+        }
+    } = string.Empty;
 
-    protected Size Size
+    protected int TabIndex;
+
+    public Size Size
     {
         get;
         set
@@ -37,8 +44,8 @@ public class Control
             LayoutChildren();
         }
     }
-    protected int Width => Size.Width;
-    protected int Height => Size.Height;
+    public int Width => Size.Width;
+    public int Height => Size.Height;
 
     public Point Position
     {
@@ -53,8 +60,16 @@ public class Control
     public int X => Position.X;
     public int Y => Position.Y;
     public bool Enabled;
-    public bool IsFocused = false;
-    public virtual bool IsFocusable => false;
+    public bool Focused
+    {
+        get;
+        set
+        {
+
+        }
+    }
+
+    public virtual bool Focusable => false;
     public bool Visible;
 
     public Anchors Anchor
@@ -66,8 +81,16 @@ public class Control
             UpdateAnchorInfo();
             LayoutChildren();
         }
-    } = Anchors.Top | Anchors.Left;
+    }
     private AnchorInfo _anchorInfo;
+
+    protected Control(int x, int y, int width, int height)
+    {
+        Position = new(x, y);
+        Size = new(width, height);
+        Visible = true;
+    }
+    protected Control() { }
 
     private void UpdateAnchorInfo()
     {
@@ -119,15 +142,7 @@ public class Control
         Size = new(newWidth, newHeight);
     }
 
-    protected virtual HoverState GetHoverState(bool isMouseOver)
-    {
-        if (!Enabled) return HoverState.Disabled;
-        if (isMouseOver) return HoverState.Hovered;
-
-        return HoverState.Normal;
-    }
-
-    public void DrawTexturedModalRect(int x, int y, int u, int v, int width, int height)
+    public void DrawTexturedRect(int x, int y, int u, int v, int width, int height)
     {
         float f = 0.00390625F;
         Tessellator tess = Tessellator.instance;
@@ -139,73 +154,61 @@ public class Control
         tess.draw();
     }
 
-    public event EventHandler<MouseEventArgs>? MouseClicked;
+    public event EventHandler<MouseEventArgs>? Clicked;
     public event EventHandler<MouseEventArgs>? MousePressed;
     public event EventHandler<MouseEventArgs>? MouseReleased;
     public event EventHandler<MouseEventArgs>? MouseMoved;
     public event EventHandler<KeyboardEventArgs>? KeyInput;
     public event EventHandler<RenderEventArgs>? Rendered;
+    public event EventHandler<FocusEventArgs>? FocusChanged;
+    public event EventHandler<TextEventArgs>? TextChanged;
 
-    public virtual void Render(int mouseX, int mouseY, float tickDelta)
-    {
-        if (!Visible) return;
-
-        foreach (Control child in Children.ToArray())
-        {
-            child.Render(mouseX, mouseY, tickDelta);
-        }
-
-        DoRendered(new(mouseX, mouseY, tickDelta));
-    }
-
-    public virtual bool MouseInBounds(int mouseX, int mouseY)
+    public virtual bool PointInBounds(int x, int y)
     {
         return Enabled
                && Visible
-               && mouseX >= X
-               && mouseY >= Y
-               && mouseX < X + Width
-               && mouseY < Y + Height
-               && (_parent == null || _parent.MouseInBounds(mouseX, mouseY));
+               && x >= X
+               && y >= Y
+               && x < X + Width
+               && y < Y + Height
+               && (_parent == null || _parent.PointInBounds(x, y));
     }
 
     public void DoMousePressed(MouseEventArgs e)
     {
+        if (Focusable && !Focused)
+        {
+            Focused = true;
+        }
+        _pressedInside = true;
         OnMousePressed(e);
         MousePressed?.Invoke(this, e);
     }
 
-    protected virtual void OnMousePressed(MouseEventArgs e)
-    {
-        _pressedInside = MouseInBounds(e.MouseX, e.MouseY);
-    }
+    protected virtual void OnMousePressed(MouseEventArgs e) { }
 
     public void DoMouseReleased(MouseEventArgs e)
     {
         OnMouseReleased(e);
         MouseReleased?.Invoke(this, e);
 
-        if (_pressedInside && MouseInBounds(e.MouseX, e.MouseY))
+        if (_pressedInside && PointInBounds(e.X, e.Y))
         {
-            DoMouseClicked(e);
+            DoClicked(e);
         }
 
         _pressedInside = false;
     }
 
-    protected virtual void OnMouseReleased(MouseEventArgs e)
+    protected virtual void OnMouseReleased(MouseEventArgs e) { }
+
+    public void DoClicked(MouseEventArgs e)
     {
+        OnClicked(e);
+        Clicked?.Invoke(this, e);
     }
 
-    public void DoMouseClicked(MouseEventArgs e)
-    {
-        OnMouseClicked(e);
-        MouseClicked?.Invoke(this, e);
-    }
-
-    protected virtual void OnMouseClicked(MouseEventArgs e)
-    {
-    }
+    protected virtual void OnClicked(MouseEventArgs e) { }
 
     public void DoMouseMoved(MouseEventArgs e)
     {
@@ -213,9 +216,7 @@ public class Control
         MouseMoved?.Invoke(this, e);
     }
 
-    protected virtual void OnMouseMoved(MouseEventArgs e)
-    {
-    }
+    protected virtual void OnMouseMoved(MouseEventArgs e) { }
 
     public void DoKeyInput(KeyboardEventArgs e)
     {
@@ -223,19 +224,38 @@ public class Control
         KeyInput?.Invoke(this, e);
     }
 
-    protected virtual void OnKeyInput(KeyboardEventArgs e)
-    {
-    }
+    protected virtual void OnKeyInput(KeyboardEventArgs e) { }
 
     public void DoRendered(RenderEventArgs e)
     {
+        if (!Visible) return;
+
+        foreach (Control child in Children.ToArray())
+        {
+            child.DoRendered(e);
+        }
+
         OnRendered(e);
         Rendered?.Invoke(this, e);
     }
 
-    protected virtual void OnRendered(RenderEventArgs e)
+    protected virtual void OnRendered(RenderEventArgs e) { }
+
+    public void DoFocusChanged(FocusEventArgs e)
     {
+        OnFocusChanged(e);
+        FocusChanged?.Invoke(this, e);
     }
+
+    protected virtual void OnFocusChanged(FocusEventArgs e) { }
+
+    public void DoTextChanged(TextEventArgs e)
+    {
+        OnTextChanged(e);
+        TextChanged?.Invoke(this, e);
+    }
+
+    protected virtual void OnTextChanged(TextEventArgs e) { }
 
     public virtual void HandleMouseInput()
     {
@@ -245,7 +265,7 @@ public class Control
         int mouseX = Mouse.getEventX() * mc.displayWidth / mc.displayWidth;
         int mouseY = mc.displayHeight - Mouse.getEventY() * mc.displayHeight / mc.displayHeight - 1;
 
-        if (isButtonDown && button is >= 0 and < Mouse.MouseButtons && MouseInBounds(mouseX, mouseY))
+        if (isButtonDown && button is >= 0 and < Mouse.MouseButtons && PointInBounds(mouseX, mouseY))
         {
             DoMousePressed(new(mouseX, mouseY, button, isButtonDown));
         }
@@ -254,7 +274,7 @@ public class Control
             DoMouseReleased(new(mouseX, mouseY, button, isButtonDown));
         }
 
-        if (MouseInBounds(mouseX, mouseY))
+        if (PointInBounds(mouseX, mouseY))
         {
             DoMouseMoved(new(mouseX, mouseY, button, isButtonDown));
         }
@@ -297,16 +317,16 @@ public class Control
 // Event argument classes
 public class MouseEventArgs : EventArgs
 {
-    public int MouseX { get; }
-    public int MouseY { get; }
+    public int X { get; }
+    public int Y { get; }
     public int Button { get; }
     public bool Pressed { get; }
     public bool Handled { get; set; }
 
-    public MouseEventArgs(int mouseX, int mouseY, int button, bool pressed)
+    public MouseEventArgs(int x, int y, int button, bool pressed)
     {
-        MouseX = mouseX;
-        MouseY = mouseY;
+        X = x;
+        Y = y;
         Button = button;
         Pressed = pressed;
         Handled = false;
@@ -342,5 +362,27 @@ public class RenderEventArgs : EventArgs
         MouseX = mouseX;
         MouseY = mouseY;
         TickDelta = tickDelta;
+    }
+}
+
+public class FocusEventArgs : EventArgs
+{
+    public bool Focused { get; }
+    public Control? OldFocusedControl { get; }
+
+    public FocusEventArgs(bool focused, Control? oldFocusedControl)
+    {
+        Focused = focused;
+        OldFocusedControl = oldFocusedControl;
+    }
+}
+
+public class TextEventArgs : EventArgs
+{
+    public string Text { get; }
+
+    public TextEventArgs(string text)
+    {
+        Text = text;
     }
 }

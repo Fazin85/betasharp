@@ -24,8 +24,8 @@ public class GuiYesNo : GuiScreen
 
     public override void InitGui()
     {
-        _controlList.Add(new GuiSmallButton(ButtonConfirm, Width / 2 - 155 + 0, Height / 6 + 96, _confirmButtonText));
-        _controlList.Add(new GuiSmallButton(ButtonCancel, Width / 2 - 155 + 160, Height / 6 + 96, _cancelButtonText));
+        Children.Add(new GuiSmallButton(ButtonConfirm, Width / 2 - 155 + 0, Height / 6 + 96, _confirmButtonText));
+        Children.Add(new GuiSmallButton(ButtonCancel, Width / 2 - 155 + 160, Height / 6 + 96, _cancelButtonText));
     }
 
     protected override void ActionPerformed(GuiButton button)
@@ -41,11 +41,11 @@ public class GuiYesNo : GuiScreen
         }
     }
 
-    public override void Render(int mouseX, int mouseY, float tickDelta)
+    protected override void OnRendered(RenderEventArgs e)
     {
         DrawDefaultBackground();
         Gui.DrawCenteredString(FontRenderer, _message1, Width / 2, 70, 0xFFFFFF);
         Gui.DrawCenteredString(FontRenderer, _message2, Width / 2, 90, 0xFFFFFF);
-        base.Render(mouseX, mouseY, tickDelta);
+        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 }

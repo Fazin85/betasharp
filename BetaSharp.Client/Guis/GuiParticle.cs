@@ -43,7 +43,7 @@ public class GuiParticle
             float g = (float)(p.PrevG + (p.G - p.PrevG) * partialTicks);
             float b = (float)(p.PrevB + (p.B - p.PrevB) * partialTicks);
             GLManager.GL.Color4(r, g, b, alpha);
-            DrawTexturedModalRect(x, y, 40, 0, 8, 8);
+            DrawTexturedRect(x, y, 40, 0, 8, 8);
         }
 
     }

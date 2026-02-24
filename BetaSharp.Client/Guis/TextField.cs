@@ -9,40 +9,24 @@ namespace BetaSharp.Client.Guis;
 public class TextField : Control
 {
     private readonly TextRenderer _fontRenderer;
-    private string _text;
-    private int _maxStringLength;
+    public override bool Focusable => true;
+    public int MaxStringLength { get; init; }
     private int _cursorCounter;
-    private int _cursorPosition = 0;
+    private int _cursorPosition;
     private int _selectionStart = -1;
     private int _selectionEnd = -1;
-    private readonly GuiScreen _parentGuiScreen;
 
-    public TextField(GuiScreen parentGuiScreen, TextRenderer fontRenderer, int xPos, int yPos, int width, int height, string text)
+    public TextField(TextRenderer fontRenderer, string text)
     {
-        _parentGuiScreen = parentGuiScreen;
         _fontRenderer = fontRenderer;
-        _xPos = xPos;
-        _yPos = yPos;
-        _width = width;
-        _height = height;
-        SetText(text);
+        Text = text;
     }
 
-    public void SetText(string text)
+    public void UpdateCursorCounter() => _cursorCounter++;
+
+    protected override void OnKeyInput(KeyboardEventArgs e)
     {
-        _text = text;
-        _cursorPosition = text?.Length ?? 0;
-        _selectionStart = -1;
-        _selectionEnd = -1;
-    }
-
-    public string GetText() => _text;
-
-    public void updateCursorCounter() => _cursorCounter++;
-
-    public void textboxKeyTyped(char eventChar, int eventKey)
-    {
-        if (!IsEnabled || !IsFocused) return;
+        if (!e.IsKeyDown || !Enabled || !Focused) return;
 
         // Check for Ctrl combos first
         bool ctrlDown = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
@@ -50,12 +34,12 @@ public class TextField : Control
 
         if (ctrlDown)
         {
-            switch (eventKey)
+            switch (e.Key)
             {
                 case Keyboard.KEY_A:
                     // Select all
                     _selectionStart = 0;
-                    _selectionEnd = _text?.Length ?? 0;
+                    _selectionEnd = Text.Length;
                     _cursorPosition = _selectionEnd;
                     return;
                 case Keyboard.KEY_C:
@@ -76,7 +60,7 @@ public class TextField : Control
         // Handle Shift+Left/Right for selection
         if (shiftDown)
         {
-            switch (eventKey)
+            switch (e.Key)
             {
                 case Keyboard.KEY_LEFT:
                     if (_selectionStart == -1)
@@ -91,21 +75,21 @@ public class TextField : Control
                     {
                         _selectionStart = _cursorPosition;
                     }
-                    if (_cursorPosition < _text.Length) _cursorPosition++;
+                    if (_cursorPosition < Text.Length) _cursorPosition++;
                     _selectionEnd = _cursorPosition;
                     return;
             }
         }
 
         // Handle regular keys
-        switch (eventKey)
+        switch (e.Key)
         {
             case Keyboard.KEY_LEFT:
                 if (_cursorPosition > 0) _cursorPosition--;
                 ClearSelection();
                 return;
             case Keyboard.KEY_RIGHT:
-                if (_cursorPosition < _text.Length) _cursorPosition++;
+                if (_cursorPosition < Text.Length) _cursorPosition++;
                 ClearSelection();
                 return;
             case Keyboard.KEY_HOME:
@@ -113,7 +97,7 @@ public class TextField : Control
                 ClearSelection();
                 return;
             case Keyboard.KEY_END:
-                _cursorPosition = _text.Length;
+                _cursorPosition = Text.Length;
                 ClearSelection();
                 return;
             case Keyboard.KEY_DELETE:
@@ -121,100 +105,64 @@ public class TextField : Control
                 {
                     DeleteSelection();
                 }
-                else if (_cursorPosition < _text.Length)
+                else if (_cursorPosition < Text.Length)
                 {
-                    _text = _text.Substring(0, _cursorPosition) + _text.Substring(_cursorPosition + 1);
+                    Text = Text.Remove(_cursorPosition, 1);
                 }
                 ClearSelection();
                 return;
             case Keyboard.KEY_BACK:
                 HandleBackspace();
                 return;
-            case Keyboard.KEY_TAB:
-                _parentGuiScreen.SelectNextField();
-                return;
-        }
-
-        // Tab key
-        if (eventChar == 9 || eventKey == Keyboard.KEY_TAB)
-        {
-            _parentGuiScreen.SelectNextField();
-            return;
-        }
-
-        // Backspace
-        if (eventKey == Keyboard.KEY_BACK)
-        {
-            string var3 = GuiScreen.GetClipboardString();
-            var3 ??= "";
-
-            int var4 = 32 - _text.Length;
-            if (var4 > var3.Length)
-            {
-                DeleteSelection();
-            }
-            else if (_text.Length > 0 && _cursorPosition > 0)
-            {
-                _cursorPosition--;
-                _text = _text.Substring(0, _cursorPosition) + _text.Substring(_cursorPosition + 1);
-            }
-            ClearSelection();
-            return;
         }
 
         // Regular character input
-        if (ChatAllowedCharacters.allowedCharacters.IndexOf(eventChar) >= 0 && (_text.Length < _maxStringLength || _maxStringLength == 0))
+        if (ChatAllowedCharacters.allowedCharacters.Contains(e.KeyChar) && (Text.Length < MaxStringLength || MaxStringLength == 0))
         {
             if (HasSelection())
             {
                 DeleteSelection();
             }
 
-            _text = _text.Substring(0, _cursorPosition) + eventChar + _text.Substring(_cursorPosition);
+            Text = Text.Insert(_cursorPosition, e.KeyChar.ToString());
             _cursorPosition++;
             ClearSelection();
         }
     }
 
-    public void MouseClicked(int x, int y, int button)
+    protected override void OnFocusChanged(FocusEventArgs e)
     {
-        bool isFocused = IsEnabled && x >= _xPos && x < _xPos + _width && y >= _yPos && y < _yPos + _height;
-        SetFocused(isFocused);
-    }
-
-    public void SetFocused(bool isFocused)
-    {
-        if (isFocused && !IsFocused)
+        if (e.Focused && e.OldFocusedControl != this)
         {
             _cursorCounter = 0;
         }
-
-        IsFocused = isFocused;
     }
 
-    public void DrawTextBox()
+    protected override void OnRendered(RenderEventArgs e)
     {
-        Gui.DrawRect(_xPos - 1, _yPos - 1, _xPos + _width + 1, _yPos + _height + 1, 0xFFA0A0A0);
-        Gui.DrawRect(_xPos, _yPos, _xPos + _width, _yPos + _height, 0xFF000000);
+        Gui.DrawRect(X - 1, Y - 1, X + Width + 1, Y + Height + 1, 0xFFA0A0A0);
+        Gui.DrawRect(X, Y, X + Width, Y + Height, 0xFF000000);
 
         if (Enabled)
         {
-            string cursor = IsFocused && _cursorCounter / 6 % 2 == 0 ? "_" : string.Empty;
-            int safePos = Math.Clamp(_cursorPosition, 0, _text.Length);
+            string cursor = Focused && _cursorCounter / 6 % 2 == 0 ? "_" : string.Empty;
+            int safePos = Math.Clamp(_cursorPosition, 0, Text.Length);
 
-            string renderText = _text.Insert(safePos, cursor);
+            string renderText = Text.Insert(safePos, cursor);
 
-            Gui.DrawString(_fontRenderer, renderText, _xPos + 4, _yPos + (_height - 8) / 2, 0xE0E0E0);
+            Gui.DrawString(_fontRenderer, renderText, X + 4, Y + (Height - 8) / 2, 0xE0E0E0);
         }
         else
         {
-            Gui.DrawString(_fontRenderer, _text, _xPos + 4, _yPos + (_height - 8) / 2, 0x707070);
+            Gui.DrawString(_fontRenderer, Text, X + 4, Y + (Height - 8) / 2, 0x707070);
         }
     }
 
-    public void SetMaxStringLength(int maxStringLength)
+    protected override void OnTextChanged(TextEventArgs e)
     {
-        _maxStringLength = maxStringLength;
+        _cursorPosition = e.Text.Length;
+        _selectionStart = -1;
+        _selectionEnd = -1;
     }
 
     private bool HasSelection()
@@ -227,16 +175,16 @@ public class TextField : Control
         if (!HasSelection()) return (0, 0);
         int s = Math.Min(_selectionStart, _selectionEnd);
         int e = Math.Max(_selectionStart, _selectionEnd);
-        s = Math.Max(0, Math.Min(s, _text.Length));
-        e = Math.Max(0, Math.Min(e, _text.Length));
+        s = Math.Max(0, Math.Min(s, Text.Length));
+        e = Math.Max(0, Math.Min(e, Text.Length));
         return (s, e);
     }
 
     private string GetSelectedText()
     {
         if (!HasSelection()) return "";
-        var (s, e) = GetSelectionRange();
-        return _text.Substring(s, e - s);
+        (int start, int end) = GetSelectionRange();
+        return Text[start..end];
     }
 
     private void HandleBackspace()
@@ -248,7 +196,7 @@ public class TextField : Control
         else if (_cursorPosition > 0)
         {
             _cursorPosition--;
-            _text = _text.Remove(_cursorPosition, 1);
+            Text = Text.Remove(_cursorPosition, 1);
         }
         ClearSelection();
     }
@@ -256,9 +204,9 @@ public class TextField : Control
     private void DeleteSelection()
     {
         if (!HasSelection()) return;
-        var (s, e) = GetSelectionRange();
-        _text = _text.Substring(0, s) + _text.Substring(e);
-        _cursorPosition = s;
+        (int start, int end) = GetSelectionRange();
+        Text = Text[..start] + Text[end..];
+        _cursorPosition = start;
         ClearSelection();
     }
 
@@ -271,14 +219,8 @@ public class TextField : Control
     private void CopySelectionToClipboard()
     {
         if (!HasSelection()) return;
-        try
-        {
-            string sel = GetSelectedText();
-            GuiScreen.SetClipboardString(sel);
-        }
-        catch (Exception)
-        {
-        }
+        string sel = GetSelectedText();
+        GuiScreen.SetClipboardString(sel);
     }
 
     private void CutSelectionToClipboard()
@@ -290,19 +232,12 @@ public class TextField : Control
 
     private void PasteClipboardAtCursor()
     {
-        try
-        {
-            string clip = GuiScreen.GetClipboardString();
-            clip ??= "";
-            if (HasSelection()) DeleteSelection();
-            int maxInsert = Math.Max(0, (_maxStringLength > 0 ? _maxStringLength : 32) - _text.Length);
-            if (clip.Length > maxInsert) clip = clip.Substring(0, maxInsert);
-            _text = _text.Substring(0, _cursorPosition) + clip + _text.Substring(_cursorPosition);
-            _cursorPosition += clip.Length;
-            ClearSelection();
-        }
-        catch (Exception)
-        {
-        }
+        string clip = GuiScreen.GetClipboardString();
+        if (HasSelection()) DeleteSelection();
+        int maxInsert = Math.Max(0, (MaxStringLength > 0 ? MaxStringLength : 32) - Text.Length);
+        if (clip.Length > maxInsert) clip = clip[..maxInsert];
+        Text = Text.Insert(_cursorPosition, clip);
+        _cursorPosition += clip.Length;
+        ClearSelection();
     }
 }

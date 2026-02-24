@@ -304,11 +304,11 @@ public partial class Minecraft
 
         if (serverName != null)
         {
-            displayGuiScreen(new GuiConnecting(this, serverName, serverPort));
+            OpenScreen(new GuiConnecting(this, serverName, serverPort));
         }
         else
         {
-            displayGuiScreen(new GuiMainMenu());
+            OpenScreen(new GuiMainMenu());
         }
     }
 
@@ -373,7 +373,7 @@ public partial class Minecraft
         return saveLoader;
     }
 
-    public void displayGuiScreen(GuiScreen? newScreen)
+    public void OpenScreen(GuiScreen? newScreen)
     {
         currentScreen?.OnGuiClosed();
 
@@ -399,7 +399,7 @@ public partial class Minecraft
 
         if (newScreen is GuiMainMenu)
         {
-            ingameGUI.clearChatMessages();
+            ingameGUI.ClearChat();
         }
 
         currentScreen = newScreen;
@@ -544,7 +544,7 @@ public partial class Minecraft
                         {
                             world = null;
                             changeWorld((World)null);
-                            displayGuiScreen(new GuiConflictWarning());
+                            OpenScreen(new GuiConflictWarning());
                         }
                     }
 
@@ -676,12 +676,12 @@ public partial class Minecraft
                 {
                     world = null;
                     changeWorld(null);
-                    displayGuiScreen(new GuiConflictWarning());
+                    OpenScreen(new GuiConflictWarning());
                 }
                 catch (OutOfMemoryException)
                 {
                     crashCleanup();
-                    displayGuiScreen(new GuiErrorScreen());
+                    OpenScreen(new GuiErrorScreen());
                 }
                 finally
                 {
@@ -841,7 +841,7 @@ public partial class Minecraft
             {
                 inGameHasFocus = true;
                 mouseHelper.grabMouseCursor();
-                displayGuiScreen((GuiScreen)null);
+                OpenScreen((GuiScreen)null);
                 leftClickCounter = 10000;
                 mouseTicksRan = ticksRan + 10000;
             }
@@ -876,7 +876,7 @@ public partial class Minecraft
     {
         if (currentScreen == null)
         {
-            displayGuiScreen(new GuiIngameMenu());
+            OpenScreen(new GuiIngameMenu());
         }
     }
 
@@ -1157,16 +1157,16 @@ public partial class Minecraft
         {
             if (player.health <= 0)
             {
-                displayGuiScreen((GuiScreen)null);
+                OpenScreen((GuiScreen)null);
             }
             else if (player.isSleeping() && world != null && world.isRemote)
             {
-                displayGuiScreen(new GuiSleepMP());
+                OpenScreen(new GuiSleepMP());
             }
         }
         else if (currentScreen != null && currentScreen is GuiSleepMP && !player.isSleeping())
         {
-            displayGuiScreen((GuiScreen)null);
+            OpenScreen((GuiScreen)null);
         }
 
         if (currentScreen != null)
@@ -1359,7 +1359,7 @@ public partial class Minecraft
 
                         if (Keyboard.getEventKey() == Keyboard.KEY_D && Keyboard.isKeyDown(Keyboard.KEY_F3))
                         {
-                            ingameGUI.clearChatMessages();
+                            ingameGUI.ClearChat();
                         }
 
                         if (Keyboard.getEventKey() == Keyboard.KEY_C && Keyboard.isKeyDown(Keyboard.KEY_F3))
@@ -1389,7 +1389,7 @@ public partial class Minecraft
 
                         if (Keyboard.getEventKey() == options.KeyBindInventory.keyCode)
                         {
-                            displayGuiScreen(new GuiInventory(player));
+                            OpenScreen(new GuiInventory(player));
                         }
 
                         if (Keyboard.getEventKey() == options.KeyBindDrop.keyCode)
@@ -1399,12 +1399,12 @@ public partial class Minecraft
 
                         if (Keyboard.getEventKey() == options.KeyBindChat.keyCode)
                         {
-                            displayGuiScreen(new GuiChat());
+                            OpenScreen(new GuiChat());
                         }
 
                         if (Keyboard.getEventKey() == options.KeyBindCommand.keyCode)
                         {
-                            displayGuiScreen(new GuiChat("/"));
+                            OpenScreen(new GuiChat("/"));
                         }
                     }
 
@@ -1460,7 +1460,7 @@ public partial class Minecraft
     public void startWorld(string worldName, string mainMenuText, long seed)
     {
         changeWorld((World)null);
-        displayGuiScreen(new GuiLevelLoading(worldName, seed));
+        OpenScreen(new GuiLevelLoading(worldName, seed));
     }
 
     public void changeWorld(World newWorld, string loadingText = "", EntityPlayer targetEntity = null)
@@ -1683,7 +1683,7 @@ public partial class Minecraft
 
         if (currentScreen is GuiGameOver)
         {
-            displayGuiScreen(null);
+            OpenScreen(null);
         }
     }
 

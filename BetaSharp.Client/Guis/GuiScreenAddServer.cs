@@ -17,27 +17,27 @@ public class GuiScreenAddServer : GuiScreen
 
     public override void UpdateScreen()
     {
-        _serverName.updateCursorCounter();
-        _serverAddress.updateCursorCounter();
+        _serverName.UpdateCursorCounter();
+        _serverAddress.UpdateCursorCounter();
     }
 
     public override void InitGui()
     {
         Keyboard.enableRepeatEvents(true);
-        _controlList.Clear();
-        _controlList.Add(new GuiButton(0, Width / 2 - 100, Height / 4 + 96 + 12, "Done"));
-        _controlList.Add(new GuiButton(1, Width / 2 - 100, Height / 4 + 120 + 12, "Cancel"));
+        Children.Clear();
+        Children.Add(new GuiButton(0, Width / 2 - 100, Height / 4 + 96 + 12, "Done"));
+        Children.Add(new GuiButton(1, Width / 2 - 100, Height / 4 + 120 + 12, "Cancel"));
 
         _serverName = new TextField(this, FontRenderer, Width / 2 - 100, 66, 200, 20, _serverData.Name)
         {
-            IsFocused = true
+            Focused = true
         };
         _serverName.SetMaxStringLength(32);
 
         _serverAddress = new TextField(this, FontRenderer, Width / 2 - 100, 106, 200, 20, _serverData.Ip);
         _serverAddress.SetMaxStringLength(128);
 
-        _controlList[0].Enabled = _serverName.GetText().Length > 0 && _serverAddress.GetText().Length > 0 && _serverAddress.GetText().Split(":").Length > 0;
+        Children[0].Enabled = _serverName.Text.Length > 0 && _serverAddress.Text.Length > 0 && _serverAddress.Text.Split(":").Length > 0;
     }
 
     public override void OnGuiClosed()
@@ -55,8 +55,8 @@ public class GuiScreenAddServer : GuiScreen
             }
             else if (button.Id == 0)
             {
-                _serverData.Name = _serverName.GetText();
-                _serverData.Ip = _serverAddress.GetText();
+                _serverData.Name = _serverName.Text;
+                _serverData.Ip = _serverAddress.Text;
                 _parentScreen.ConfirmClicked(true, 0);
             }
         }
@@ -64,39 +64,39 @@ public class GuiScreenAddServer : GuiScreen
 
     protected override void KeyTyped(char eventChar, int eventKey)
     {
-        _serverName.textboxKeyTyped(eventChar, eventKey);
-        _serverAddress.textboxKeyTyped(eventChar, eventKey);
+        _serverName.TextboxKeyTyped(eventChar, eventKey);
+        _serverAddress.TextboxKeyTyped(eventChar, eventKey);
 
         if (eventKey == Keyboard.KEY_TAB)
         {
-            if (_serverName.IsFocused)
+            if (_serverName.Focused)
             {
-                _serverName.IsFocused = false;
-                _serverAddress.IsFocused = true;
+                _serverName.Focused = false;
+                _serverAddress.Focused = true;
             }
             else
             {
-                _serverName.IsFocused = true;
-                _serverAddress.IsFocused = false;
+                _serverName.Focused = true;
+                _serverAddress.Focused = false;
             }
         }
 
         if (eventKey == Keyboard.KEY_RETURN)
         {
-            ActionPerformed(_controlList[0]);
+            ActionPerformed(Children[0]);
         }
 
-        _controlList[0].Enabled = _serverName.GetText().Length > 0 && _serverAddress.GetText().Length > 0 && _serverAddress.GetText().Split(":").Length > 0;
+        Children[0].Enabled = _serverName.Text.Length > 0 && _serverAddress.Text.Length > 0 && _serverAddress.Text.Split(":").Length > 0;
     }
 
     protected override void MouseClicked(int x, int y, int button)
     {
-        base.MouseClicked(x, y, button);
-        _serverName.MouseClicked(x, y, button);
-        _serverAddress.MouseClicked(x, y, button);
+        base.Clicked(x, y, button);
+        _serverName.Clicked(x, y, button);
+        _serverAddress.Clicked(x, y, button);
     }
 
-    public override void Render(int mouseX, int mouseY, float tickDelta)
+    protected override void OnRendered(RenderEventArgs e)
     {
         DrawDefaultBackground();
         Gui.DrawCenteredString(FontRenderer, "Edit Server Info", Width / 2, 17, 0xFFFFFF);
@@ -104,6 +104,6 @@ public class GuiScreenAddServer : GuiScreen
         Gui.DrawString(FontRenderer, "Server Address", Width / 2 - 100, 94, 0xA0A0A0);
         _serverName.DrawTextBox();
         _serverAddress.DrawTextBox();
-        base.Render(mouseX, mouseY, tickDelta);
+        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 }

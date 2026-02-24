@@ -22,7 +22,7 @@ public class GuiDownloadTerrain : GuiScreen
 
     public override void InitGui()
     {
-        _controlList.Clear();
+        Children.Clear();
     }
 
     public override void UpdateScreen()
@@ -44,11 +44,11 @@ public class GuiDownloadTerrain : GuiScreen
     {
     }
 
-    public override void Render(int mouseX, int mouseY, float tickDelta)
+    protected override void OnRendered(RenderEventArgs e)
     {
         DrawBackground(0);
         TranslationStorage translations = TranslationStorage.Instance;
         Gui.DrawCenteredString(FontRenderer, translations.TranslateKey("multiplayer.downloadingTerrain"), Width / 2, Height / 2 - 50, 0xFFFFFF);
-        base.Render(mouseX, mouseY, tickDelta);
+        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 }

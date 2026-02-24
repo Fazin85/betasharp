@@ -24,8 +24,8 @@ public class GuiCreateWorld : GuiScreen
 
     public override void UpdateScreen()
     {
-        _textboxWorldName.updateCursorCounter();
-        _textboxSeed.updateCursorCounter();
+        _textboxWorldName.UpdateCursorCounter();
+        _textboxSeed.UpdateCursorCounter();
     }
 
     public override void InitGui()
@@ -38,21 +38,21 @@ public class GuiCreateWorld : GuiScreen
 
         _textboxWorldName = new TextField(this, FontRenderer, centerX - 100, centerY, 200, 20, translations.TranslateKey("selectWorld.newWorld"))
         {
-            IsFocused = true
+            Focused = true
         };
         _textboxWorldName.SetMaxStringLength(32);
         _textboxSeed = new TextField(this, FontRenderer, centerX - 100, centerY + 56, 200, 20, "");
 
-        _controlList.Clear();
-        _controlList.Add(new GuiButton(ButtonCreate, centerX - 100, centerY + 96 + 12, translations.TranslateKey("selectWorld.create")));
-        _controlList.Add(new GuiButton(ButtonCancel, centerX - 100, centerY + 120 + 12, translations.TranslateKey("gui.cancel")));
+        Children.Clear();
+        Children.Add(new GuiButton(ButtonCreate, centerX - 100, centerY + 96 + 12, translations.TranslateKey("selectWorld.create")));
+        Children.Add(new GuiButton(ButtonCancel, centerX - 100, centerY + 120 + 12, translations.TranslateKey("gui.cancel")));
 
         UpdateFolderName();
     }
 
     private void UpdateFolderName()
     {
-        _folderName = _textboxWorldName.GetText().Trim();
+        _folderName = _textboxWorldName.Text.Trim();
         char[] invalidCharacters = ChatAllowedCharacters.allowedCharactersArray;
         int charCount = invalidCharacters.Length;
 
@@ -92,7 +92,7 @@ public class GuiCreateWorld : GuiScreen
             switch (button.Id)
             {
                 case ButtonCancel:
-                    mc.displayGuiScreen(_parentScreen);
+                    mc.OpenScreen(_parentScreen);
                     break;
                 case ButtonCreate:
                     {
@@ -103,7 +103,7 @@ public class GuiCreateWorld : GuiScreen
 
                         _createClicked = true;
                         long worldSeed = new JavaRandom().NextLong();
-                        string seedInput = _textboxSeed.GetText();
+                        string seedInput = _textboxSeed.Text;
                         if (!string.IsNullOrEmpty(seedInput))
                         {
                             try
@@ -127,7 +127,7 @@ public class GuiCreateWorld : GuiScreen
                         }
 
                         mc.playerController = new PlayerControllerSP(mc);
-                        mc.startWorld(_folderName, _textboxWorldName.GetText(), worldSeed);
+                        mc.startWorld(_folderName, _textboxWorldName.Text, worldSeed);
                         break;
                     }
             }
@@ -136,32 +136,32 @@ public class GuiCreateWorld : GuiScreen
 
     protected override void KeyTyped(char eventChar, int eventKey)
     {
-        if (_textboxWorldName.IsFocused)
+        if (_textboxWorldName.Focused)
         {
-            _textboxWorldName.textboxKeyTyped(eventChar, eventKey);
+            _textboxWorldName.TextboxKeyTyped(eventChar, eventKey);
         }
         else
         {
-            _textboxSeed.textboxKeyTyped(eventChar, eventKey);
+            _textboxSeed.TextboxKeyTyped(eventChar, eventKey);
         }
 
         if (eventChar == 13)
         {
-            ActionPerformed(_controlList[0]);
+            ActionPerformed(Children[0]);
         }
 
-        _controlList[0].Enabled = _textboxWorldName.GetText().Length > 0;
+        Children[0].Enabled = _textboxWorldName.Text.Length > 0;
         UpdateFolderName();
     }
 
     protected override void MouseClicked(int x, int y, int button)
     {
-        base.MouseClicked(x, y, button);
-        _textboxWorldName.MouseClicked(x, y, button);
-        _textboxSeed.MouseClicked(x, y, button);
+        base.Clicked(x, y, button);
+        _textboxWorldName.Clicked(x, y, button);
+        _textboxSeed.Clicked(x, y, button);
     }
 
-    public override void Render(int mouseX, int mouseY, float tickDelta)
+    protected override void OnRendered(RenderEventArgs e)
     {
         TranslationStorage translations = TranslationStorage.Instance;
 
@@ -176,12 +176,12 @@ public class GuiCreateWorld : GuiScreen
         Gui.DrawString(FontRenderer, translations.TranslateKey("selectWorld.seedInfo"), centerX - 100, centerY + 56 + 24, 0xA0A0A0);
         _textboxWorldName.DrawTextBox();
         _textboxSeed.DrawTextBox();
-        base.Render(mouseX, mouseY, tickDelta);
+        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 
     public override void SelectNextField()
     {
-        if (_textboxWorldName.IsFocused)
+        if (_textboxWorldName.Focused)
         {
             _textboxWorldName.SetFocused(false);
             _textboxSeed.SetFocused(true);

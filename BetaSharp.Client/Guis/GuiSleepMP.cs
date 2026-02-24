@@ -12,7 +12,7 @@ public class GuiSleepMP : GuiChat
     {
         Keyboard.enableRepeatEvents(true);
         TranslationStorage translations = TranslationStorage.Instance;
-        _controlList.Add(new GuiButton(ButtonStopSleep, Width / 2 - 100, Height - 40, translations.TranslateKey("multiplayer.stopSleeping")));
+        Children.Add(new GuiButton(ButtonStopSleep, Width / 2 - 100, Height - 40, translations.TranslateKey("multiplayer.stopSleeping")));
     }
 
     public override void OnGuiClosed()
@@ -43,9 +43,9 @@ public class GuiSleepMP : GuiChat
 
     }
 
-    public override void Render(int mouseX, int mouseY, float tickDelta)
+    protected override void OnRendered(RenderEventArgs e)
     {
-        base.Render(mouseX, mouseY, tickDelta);
+        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 
     protected override void ActionPerformed(GuiButton button)

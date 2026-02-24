@@ -40,16 +40,15 @@ public class GuiAchievements : GuiScreen
 
     public override void InitGui()
     {
-        _controlList.Clear();
-        _controlList.Add(new GuiSmallButton(1, Width / 2 + 24, Height / 2 + 74, 80, 20, StatCollector.TranslateToLocal("gui.done")));
+        Children.Clear();
+        Children.Add(new GuiSmallButton(1, Width / 2 + 24, Height / 2 + 74, 80, 20, StatCollector.translateToLocal("gui.done")));
     }
 
     protected override void ActionPerformed(GuiButton var1)
     {
         if (var1.Id == 1)
         {
-            mc.displayGuiScreen(null);
-            mc.setIngameFocus();
+            mc.OpenScreen(null);
         }
 
         base.ActionPerformed(var1);
@@ -59,8 +58,7 @@ public class GuiAchievements : GuiScreen
     {
         if (eventKey == mc.options.KeyBindInventory.keyCode)
         {
-            mc.displayGuiScreen(null);
-            mc.setIngameFocus();
+            mc.OpenScreen(null);
         }
         else
         {
@@ -69,7 +67,7 @@ public class GuiAchievements : GuiScreen
 
     }
 
-    public override void Render(int var1, int var2, float tickDelta)
+    protected override void OnRendered(RenderEventArgs e)
     {
         if (Mouse.isButtonDown(0))
         {
@@ -77,7 +75,7 @@ public class GuiAchievements : GuiScreen
             int var5 = (Height - field_27119_i) / 2;
             int var6 = var4 + 8;
             int var7 = var5 + 17;
-            if ((field_27122_w == 0 || field_27122_w == 1) && var1 >= var6 && var1 < var6 + 224 && var2 >= var7 && var2 < var7 + 155)
+            if ((field_27122_w == 0 || field_27122_w == 1) && mouseX >= var6 && mouseX < var6 + 224 && mouseY >= var7 && mouseY < var7 + 155)
             {
                 if (field_27122_w == 0)
                 {
@@ -85,14 +83,14 @@ public class GuiAchievements : GuiScreen
                 }
                 else
                 {
-                    field_27114_o -= var1 - field_27118_j;
-                    field_27113_p -= var2 - field_27117_l;
+                    field_27114_o -= mouseX - field_27118_j;
+                    field_27113_p -= mouseY - field_27117_l;
                     field_27112_q = field_27116_m = field_27114_o;
                     field_27111_r = field_27115_n = field_27113_p;
                 }
 
-                field_27118_j = var1;
-                field_27117_l = var2;
+                field_27118_j = mouseX;
+                field_27117_l = mouseY;
             }
 
             if (field_27112_q < field_27126_s)
@@ -121,7 +119,7 @@ public class GuiAchievements : GuiScreen
         }
 
         DrawDefaultBackground();
-        func_27109_b(var1, var2, tickDelta);
+        func_27109_b(mouseX, mouseY, tickDelta);
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.Disable(GLEnum.DepthTest);
         func_27110_k();
@@ -246,7 +244,7 @@ public class GuiAchievements : GuiScreen
                     var26 = Block.Bedrock.textureId;
                 }
 
-                DrawTexturedModalRect(var10 + var24 * 16 - var14, var11 + var22 * 16 - var15, var26 % 16 << 4, var26 >> 4 << 4, 16, 16);
+                DrawTexturedRect(var10 + var24 * 16 - var14, var11 + var22 * 16 - var15, var26 % 16 << 4, var26 >> 4 << 4, 16, 16);
             }
         }
 
@@ -329,11 +327,11 @@ public class GuiAchievements : GuiScreen
                 var34 = var11 + var17;
                 if (var30.isChallenge())
                 {
-                    DrawTexturedModalRect(var33 - 2, var34 - 2, 26, 202, 26, 26);
+                    DrawTexturedRect(var33 - 2, var34 - 2, 26, 202, 26, 26);
                 }
                 else
                 {
-                    DrawTexturedModalRect(var33 - 2, var34 - 2, 0, 202, 26, 26);
+                    DrawTexturedRect(var33 - 2, var34 - 2, 0, 202, 26, 26);
                 }
 
                 if (!statFileWriter.CanUnlockAchievement(var30))
@@ -364,13 +362,13 @@ public class GuiAchievements : GuiScreen
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.BindTexture(var7);
-        DrawTexturedModalRect(var8, var9, 0, 0, field_27121_a, field_27119_i);
+        DrawTexturedRect(var8, var9, 0, 0, field_27121_a, field_27119_i);
         GLManager.GL.PopMatrix();
         ZLevel = 0.0F;
         GLManager.GL.DepthFunc(GLEnum.Lequal);
         GLManager.GL.Disable(GLEnum.DepthTest);
         GLManager.GL.Enable(GLEnum.Texture2D);
-        base.Render(var1, var2, var3);
+        base.OnRendered(var1, var2, var3);
         if (var27 != null)
         {
             string? var32 = var27.getTranslatedDescription();

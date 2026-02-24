@@ -30,6 +30,6 @@ public class GuiCrafting : GuiContainer
         mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/crafting.png"));
         int guiLeft = (Width - _xSize) / 2;
         int guiTop = (Height - _ySize) / 2;
-        DrawTexturedModalRect(guiLeft, guiTop, 0, 0, _xSize, _ySize);
+        DrawTexturedRect(guiLeft, guiTop, 0, 0, _xSize, _ySize);
     }
 }

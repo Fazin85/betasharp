@@ -32,8 +32,8 @@ public class SorterStatsBlock(GuiSlotStatsBlock slotStats, GuiStats stats) : ICo
         {
             if (statX is null) return 1;
             if (statY is null) return -1;
-            int valueX = stats.statFileWriter.GetStatValue(statX);
-            int valueY = stats.statFileWriter.GetStatValue(statY);
+            int valueX = stats.statFileWriter.ReadStat(statX);
+            int valueY = stats.statFileWriter.ReadStat(statY);
 
             if (valueX != valueY)
             {

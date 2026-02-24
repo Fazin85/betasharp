@@ -24,12 +24,12 @@ public class GuiTexturePacks : GuiScreen
     public override void InitGui()
     {
         TranslationStorage translations = TranslationStorage.Instance;
-        _controlList.Add(new GuiSmallButton(ButtonOpenFolder, Width / 2 - 154, Height - 48, translations.TranslateKey("texturePack.openFolder")));
-        _controlList.Add(new GuiSmallButton(ButtonDone, Width / 2 + 4, Height - 48, translations.TranslateKey("gui.done")));
+        Children.Add(new GuiSmallButton(ButtonOpenFolder, Width / 2 - 154, Height - 48, translations.TranslateKey("texturePack.openFolder")));
+        Children.Add(new GuiSmallButton(ButtonDone, Width / 2 + 4, Height - 48, translations.TranslateKey("gui.done")));
         mc.texturePackList.updateAvaliableTexturePacks();
         _texturePackFolder = new java.io.File(Minecraft.getMinecraftDir(), "texturepacks").getAbsolutePath();
         _guiTexturePackSlot = new GuiTexturePackSlot(this);
-        _guiTexturePackSlot.RegisterScrollButtons(_controlList, 7, 8);
+        _guiTexturePackSlot.RegisterScrollButtons(Children, 7, 8);
     }
 
     protected override void ActionPerformed(GuiButton btn)
@@ -54,7 +54,7 @@ public class GuiTexturePacks : GuiScreen
                     break;
                 case ButtonDone:
                     mc.textureManager.Reload();
-                    mc.displayGuiScreen(_parentScreen);
+                    mc.OpenScreen(_parentScreen);
                     break;
                 default:
                     _guiTexturePackSlot.ActionPerformed(btn);
@@ -66,7 +66,7 @@ public class GuiTexturePacks : GuiScreen
 
     protected override void MouseClicked(int mouseX, int mouseY, int button)
     {
-        base.MouseClicked(mouseX, mouseY, button);
+        base.Clicked(mouseX, mouseY, button);
     }
 
     protected override void MouseMovedOrUp(int mouseX, int mouseY, int button)
@@ -74,7 +74,7 @@ public class GuiTexturePacks : GuiScreen
         base.MouseMovedOrUp(mouseX, mouseY, button);
     }
 
-    public override void Render(int mouseX, int mouseY, float tickDelta)
+    protected override void OnRendered(RenderEventArgs e)
     {
         _guiTexturePackSlot.DrawScreen(mouseX, mouseY, tickDelta);
         if (_refreshTimer <= 0)
@@ -86,7 +86,7 @@ public class GuiTexturePacks : GuiScreen
         TranslationStorage translations = TranslationStorage.Instance;
         Gui.DrawCenteredString(FontRenderer, translations.TranslateKey("texturePack.title"), Width / 2, 16, 0xFFFFFF);
         Gui.DrawCenteredString(FontRenderer, translations.TranslateKey("texturePack.folderInfo"), Width / 2 - 77, Height - 26, 0x808080);
-        base.Render(mouseX, mouseY, tickDelta);
+        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 
     public override void UpdateScreen()

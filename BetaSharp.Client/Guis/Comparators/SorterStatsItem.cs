@@ -1,4 +1,4 @@
-﻿using BetaSharp.Stats;
+using BetaSharp.Stats;
 
 namespace BetaSharp.Client.Guis.Comparators;
 
@@ -34,8 +34,8 @@ public class SorterStatsItem(GuiSlotStatsItem slotStats, GuiStats stats) : IComp
             if (statX is null) return 1;
             if (statY is null) return -1;
 
-            int valueX = stats.statFileWriter.GetStatValue(statX);
-            int valueY = stats.statFileWriter.GetStatValue(statY);
+            int valueX = stats.statFileWriter.ReadStat(statX);
+            int valueY = stats.statFileWriter.ReadStat(statY);
 
             if (valueX != valueY)
             {

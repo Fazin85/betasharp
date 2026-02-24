@@ -17,7 +17,7 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
 
     public override void InitGui()
     {
-        _controlList.Clear();
+        Children.Clear();
         if (!_serverStarted)
         {
             _serverStarted = true;
@@ -32,7 +32,7 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
         {
             if (mc.internalServer.stopped)
             {
-                mc.displayGuiScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", "Internal server stopped unexpectedly"));
+                mc.OpenScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", "Internal server stopped unexpectedly"));
                 return;
             }
 
@@ -51,12 +51,12 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
                 clientConnection.setNetworkHandler(clientHandler);
                 clientHandler.addToSendQueue(new BetaSharp.Network.Packets.HandshakePacket(mc.session.username));
 
-                mc.displayGuiScreen(new GuiConnecting(mc, clientHandler));
+                mc.OpenScreen(new GuiConnecting(mc, clientHandler));
             }
         }
     }
 
-    public override void Render(int var1, int var2, float tickDelta)
+    protected override void OnRendered(RenderEventArgs e)
     {
         DrawDefaultBackground();
         TranslationStorage var4 = TranslationStorage.Instance;
@@ -74,6 +74,6 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
         Gui.DrawCenteredString(FontRenderer, title, Width / 2, Height / 2 - 50, 0xFFFFFF);
         Gui.DrawCenteredString(FontRenderer, progressMsg + " (" + progress + "%)", Width / 2, Height / 2 - 10, 0xFFFFFF);
 
-        base.Render(var1, var2, tickDelta);
+        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 }

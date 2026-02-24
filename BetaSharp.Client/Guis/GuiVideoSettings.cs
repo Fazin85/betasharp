@@ -4,21 +4,17 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiVideoSettings : GuiScreen
 {
-
     private readonly GuiScreen _parentScreen;
-    protected string _screenTitle = "Video Settings";
     private readonly GameOptions _gameOptions;
 
     public GuiVideoSettings(GuiScreen parent, GameOptions options)
     {
         _parentScreen = parent;
         _gameOptions = options;
-    }
+        DisplayTitle = true;
 
-    public override void InitGui()
-    {
         TranslationStorage translations = TranslationStorage.Instance;
-        _screenTitle = translations.TranslateKey("options.videoTitle");
+        Text = translations.TranslateKey("options.videoTitle");
         int optionIndex = 0;
 
         foreach (GameOption option in _gameOptions.VideoScreenOptions)
@@ -29,17 +25,17 @@ public class GuiVideoSettings : GuiScreen
 
             if (option is FloatOption floatOpt)
             {
-                _controlList.Add(new GuiOptionsSlider(id, x, y, floatOpt, option.GetDisplayString(translations), floatOpt.Value));
+                Children.Add(new GuiOptionsSlider(id, x, y, floatOpt, option.GetDisplayString(translations), floatOpt.Value));
             }
             else
             {
-                _controlList.Add(new GuiSmallButton(id, x, y, option, option.GetDisplayString(translations)));
+                Children.Add(new GuiSmallButton(id, x, y, option, option.GetDisplayString(translations)));
             }
 
             optionIndex++;
         }
 
-        _controlList.Add(new GuiButton(200, Width / 2 - 100, Height / 6 + 168, translations.TranslateKey("gui.done")));
+        Children.Add(new GuiButton(200, Width / 2 - 100, Height / 6 + 168, translations.TranslateKey("gui.done")));
     }
 
     protected override void ActionPerformed(GuiButton btn)
@@ -55,7 +51,7 @@ public class GuiVideoSettings : GuiScreen
             if (btn.Id == 200)
             {
                 mc.options.SaveOptions();
-                mc.displayGuiScreen(_parentScreen);
+                mc.OpenScreen(_parentScreen);
             }
 
             if (btn is GuiSmallButton { Option: CycleOption } guiScaleBtn
@@ -69,10 +65,8 @@ public class GuiVideoSettings : GuiScreen
         }
     }
 
-    public override void Render(int mouseX, int mouseY, float tickDelta)
+    protected override void OnRendered(RenderEventArgs e)
     {
         DrawDefaultBackground();
-        Gui.DrawCenteredString(FontRenderer, _screenTitle, Width / 2, 20, 0xFFFFFF);
-        base.Render(mouseX, mouseY, tickDelta);
     }
 }
