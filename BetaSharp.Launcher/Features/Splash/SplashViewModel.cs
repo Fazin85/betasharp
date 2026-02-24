@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Threading.Tasks;
 using BetaSharp.Launcher.Features.Accounts;
+using BetaSharp.Launcher.Features.Authentication;
+using BetaSharp.Launcher.Features.Home;
 using BetaSharp.Launcher.Features.Shell;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
 
 namespace BetaSharp.Launcher.Features.Splash;
 
-internal sealed partial class SplashViewModel(AccountsService accountsService) : ObservableObject
+internal sealed partial class SplashViewModel(NavigationService navigationService, AccountsService accountsService) : ObservableObject
 {
     [RelayCommand]
     private async Task InitializeAsync()
@@ -22,6 +23,12 @@ internal sealed partial class SplashViewModel(AccountsService accountsService) :
 
         await delay;
 
-        WeakReferenceMessenger.Default.Send(new NavigationMessage(account is null ? Destination.Authentication : Destination.Home));
+        if (account is null)
+        {
+            navigationService.Navigate<AuthenticationViewModel>();
+            return;
+        }
+
+        navigationService.Navigate<HomeViewModel>();
     }
 }

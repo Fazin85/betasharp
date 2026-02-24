@@ -31,8 +31,8 @@ public class GuiAchievement : Gui
 
     public void queueTakenAchievement(Achievement achievement)
     {
-        _achievementTitle = StatCollector.translateToLocal("achievement.get");
-        _achievementDescription = achievement.statName;
+        _achievementTitle = StatCollector.TranslateToLocal("achievement.get");
+        _achievementDescription = achievement.StatName;
         _achievementDisplayStartTime = GetCurrentTimeMillis();
         _theAchievement = achievement;
         _isAchievementInformation = false;
@@ -40,7 +40,7 @@ public class GuiAchievement : Gui
 
     public void queueAchievementInformation(Achievement achievement)
     {
-        _achievementTitle = achievement.statName;
+        _achievementTitle = achievement.StatName;
         _achievementDescription = achievement.getTranslatedDescription();
         _achievementDisplayStartTime = GetCurrentTimeMillis() - 2500L;
         _theAchievement = achievement;
@@ -121,11 +121,11 @@ public class GuiAchievement : Gui
         double animationProgress = calculateAnimationProgress(elapsedTime);
         int achievementX = _achievementWindowWidth - 160;
         int achievementY = 0 - (int)(animationProgress * 36.0D);
-        int achievementTextureId = _theGame.textureManager.GetTextureId("/achievement/bg.png");
+        int achievementTextureId = _theGame.textureManager.GetTextureId("/achievement/bg.png").Id;
 
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         GLManager.GL.Enable(GLEnum.Lighting);
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)achievementTextureId);
+        _theGame.textureManager.BindTexture(_theGame.textureManager.GetTextureId("/achievement/bg.png"));
         GLManager.GL.Disable(GLEnum.Lighting);
 
         DrawTexturedModalRect(achievementX, achievementY, 96, 202, 160, 32);

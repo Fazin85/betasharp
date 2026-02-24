@@ -32,18 +32,18 @@ public class HeldItemRenderer
         GLManager.GL.PushMatrix();
         if (var2.itemId < 256 && BlockRenderer.isSideLit(Block.Blocks[var2.itemId].getRenderType()))
         {
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.GetTextureId("/terrain.png"));
+            mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/terrain.png"));
             renderBlocksInstance.renderBlockOnInventory(Block.Blocks[var2.itemId], var2.getDamage(), var1.getBrightnessAtEyes(1.0F));
         }
         else
         {
             if (var2.itemId < 256)
             {
-                GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.GetTextureId("/terrain.png"));
+                mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/terrain.png"));
             }
             else
             {
-                GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.GetTextureId("/gui/items.png"));
+                mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/items.png"));
             }
 
             Tessellator var3 = Tessellator.instance;
@@ -201,7 +201,7 @@ public class HeldItemRenderer
             GLManager.GL.Rotate(var8 * -85.0F, 0.0F, 0.0F, 1.0F);
             GLManager.GL.Enable(GLEnum.RescaleNormal);
             //TODO: ADD SKINS
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.GetTextureId(mc.player.getTexture()));
+            mc.textureManager.BindTexture(mc.textureManager.GetTextureId(mc.player.getTexture()));
 
             for (int var17 = 0; var17 < 2; ++var17)
             {
@@ -291,7 +291,7 @@ public class HeldItemRenderer
             GLManager.GL.Rotate(var10 * 70.0F, 0.0F, 1.0F, 0.0F);
             GLManager.GL.Rotate(-var9 * 20.0F, 0.0F, 0.0F, 1.0F);
             //TODO: ADD SKIN
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.GetTextureId(mc.player.getTexture()));
+            mc.textureManager.BindTexture(mc.textureManager.GetTextureId(mc.player.getTexture()));
             GLManager.GL.Translate(-1.0F, 3.6F, 3.5F);
             GLManager.GL.Rotate(120.0F, 0.0F, 0.0F, 1.0F);
             GLManager.GL.Rotate(200.0F, 1.0F, 0.0F, 0.0F);
@@ -316,8 +316,7 @@ public class HeldItemRenderer
         int var2;
         if (mc.player.isOnFire())
         {
-            var2 = mc.textureManager.GetTextureId("/terrain.png");
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var2);
+            mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/terrain.png"));
             renderFireInFirstPerson(var1);
         }
 
@@ -326,8 +325,7 @@ public class HeldItemRenderer
             var2 = MathHelper.Floor(mc.player.x);
             int var3 = MathHelper.Floor(mc.player.y);
             int var4 = MathHelper.Floor(mc.player.z);
-            int var5 = mc.textureManager.GetTextureId("/terrain.png");
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var5);
+            mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/terrain.png"));
             int var6 = mc.world.getBlockId(var2, var3, var4);
             if (mc.world.shouldSuffocate(var2, var3, var4))
             {
@@ -358,8 +356,7 @@ public class HeldItemRenderer
 
         if (mc.player.isInFluid(Material.Water))
         {
-            var2 = mc.textureManager.GetTextureId("/misc/water.png");
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var2);
+            mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/misc/water.png"));
             renderWarpedTextureOverlay(var1);
         }
 

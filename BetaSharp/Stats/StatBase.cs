@@ -1,78 +1,75 @@
+using System.Globalization;
 using BetaSharp.Stats.Achievements;
-using java.lang;
-using java.text;
-using java.util;
 
 namespace BetaSharp.Stats;
 
-public class StatBase : java.lang.Object
+public class StatBase
 {
-    public readonly int id;
-    public readonly string statName;
-    public bool localOnly;
-    public string statGuid;
-    private readonly StatFormatter formatter;
-    private static NumberFormat DEFAULT_NUMBER_FORMAT = NumberFormat.getIntegerInstance(Locale.US);
-    public static StatFormatter INTEGER_FORMAT = new IntegerStatFormatter();
-    private static DecimalFormat DEFAULT_DECIMAL_FORMAT = new DecimalFormat("########0.00");
-    public static StatFormatter TIME_PROVIDER = new TimeStatFormatter();
-    public static StatFormatter DISTANCE_PROVIDER = new DistanceStatFormatter();
+    public int Id { get; }
+    public string StatName { get; }
+    public bool LocalOnly { get; set; }
+    public string StatGuid { get; set; }
 
-    public StatBase(int var1, string var2, StatFormatter var3)
+    private readonly Func<int, string> _formatter;
+
+    private const string DefaultDecimalFormat = "0.00";
+
+    public static readonly Func<int, string> IntegerFormat = FormatInteger;
+    public static readonly Func<int, string> TimeProvider = StatFormatters.FormatTime;
+    public static readonly Func<int, string> DistanceProvider = StatFormatters.FormatDistance;
+
+    public StatBase(int id, string statName, Func<int, string> formatter)
     {
-        localOnly = false;
-        id = var1;
-        statName = var2;
-        formatter = var3;
+        LocalOnly = false;
+        Id = id;
+        StatName = statName;
+        _formatter = formatter;
     }
 
-    public StatBase(int var1, string var2) : this(var1, var2, INTEGER_FORMAT)
+    public StatBase(int id, string statName) : this(id, statName, IntegerFormat)
     {
     }
 
-    public virtual StatBase setLocalOnly()
+    public virtual StatBase SetLocalOnly()
     {
-        localOnly = true;
+        LocalOnly = true;
         return this;
     }
 
-    public virtual StatBase registerStat()
+    public virtual StatBase RegisterStat()
     {
-        if (Stats.ID_TO_STAT.ContainsKey(id))
+        if (Stats.IdToStat.ContainsKey(Id))
         {
-            throw new RuntimeException("Duplicate stat id: \"" + ((StatBase)Stats.ID_TO_STAT[id]).statName + "\" and \"" + statName + "\" at id " + id);
+            string existingStatName = Stats.IdToStat[Id].StatName;
+            throw new InvalidOperationException($"Duplicate stat id: \"{existingStatName}\" and \"{StatName}\" at id {Id}");
         }
-        else
-        {
-            Stats.ALL_STATS.Add(this);
-            Stats.ID_TO_STAT.Add(id, this);
-            statGuid = AchievementMap.getGuid(id);
-            return this;
-        }
+
+        Stats.AllStats.Add(this);
+        Stats.IdToStat.Add(Id, this);
+        StatGuid = AchievementMap.GetGuid(Id);
+
+        return this;
     }
 
-    public virtual bool isAchievement()
+    public virtual bool IsAchievement() => false;
+
+    public string Format(int value)
     {
-        return false;
+        return _formatter(value);
     }
 
-    public string format(int value)
+    public override string ToString()
     {
-        return formatter.Format(value);
+        return StatName;
     }
 
-    public override string toString()
+    public static string FormatInteger(int value)
     {
-        return statName;
+        return value.ToString("N0", CultureInfo.InvariantCulture);
     }
 
-    public static NumberFormat defaultNumberFormat()
+    public static string FormatDecimal(double value)
     {
-        return DEFAULT_NUMBER_FORMAT;
-    }
-
-    public static DecimalFormat defaultDecimalFormat()
-    {
-        return DEFAULT_DECIMAL_FORMAT;
+        return value.ToString(DefaultDecimalFormat, CultureInfo.InvariantCulture);
     }
 }

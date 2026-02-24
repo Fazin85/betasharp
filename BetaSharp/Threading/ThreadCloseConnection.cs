@@ -1,32 +1,37 @@
 using BetaSharp.Network;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Threading;
 
-public class ThreadCloseConnection : java.lang.Thread
+internal class ThreadCloseConnection
 {
-    public readonly Connection field_28109_a;
 
-    public ThreadCloseConnection(Connection var1)
+    private readonly ILogger<ThreadCloseConnection> _logger = Log.Instance.For<ThreadCloseConnection>();
+    public readonly Connection Connection;
+
+    public ThreadCloseConnection(Connection connection)
     {
-        this.field_28109_a = var1;
+        Connection = connection;
     }
 
-
-    public override void run()
+    public void Start()
     {
-        try
+        Task.Run(async () =>
         {
-            java.lang.Thread.sleep(2000L);
-            if (Connection.isOpen(this.field_28109_a))
+            try
             {
-                Connection.getWriter(this.field_28109_a).interrupt();
-                this.field_28109_a.disconnect("disconnect.closed");
-            }
-        }
-        catch (java.lang.Exception ex)
-        {
-            ex.printStackTrace();
-        }
+                await Task.Delay(2000);
 
+                if (Connection.isOpen(Connection))
+                {
+                    Connection.getWriter(Connection).interrupt();
+                    Connection.disconnect(Connection, new java.lang.Exception("disconnect.closed"));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error closing connection");
+            }
+        });
     }
 }

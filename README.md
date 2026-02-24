@@ -16,8 +16,6 @@ An enhanced version of Minecraft Beta 1.7.3, ported to C#.
 
 ## Running
 
-### Launcher (Recommended)
-
 The launcher is the recommended way to play. It authenticates with your Microsoft account and starts the client automatically. \
 Clone the repository and run the following commands.
 
@@ -31,26 +29,11 @@ dotnet run --configuration Release
 Clone the repository and make sure the .NET 10 SDK is installed. For installation, visit https://dotnet.microsoft.com/en-us/download. \
 The Website lists instructions for downloading the SDK on Windows, macOS and Linux.
 
-It is recommended to build with `--configuration Release` for better performance.
-
-### Launcher
-
-```
-cd BetaSharp.Launcher
-dotnet build
-```
-
-### Client
+It is recommended to build with `--configuration Release` for better performance. \
+The server and client expect the JAR file to be in their running directory.
 
 ```
-cd BetaSharp.Client
-dotnet build
-```
-
-### Server
-
-```
-cd BetaSharp.Server
+cd BetaSharp.(Launcher/Client/Server)
 dotnet build
 ```
 

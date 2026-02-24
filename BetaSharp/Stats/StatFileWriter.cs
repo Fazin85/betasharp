@@ -1,9 +1,7 @@
+using System.Text;
 using System.Text.Json;
 using BetaSharp.Util;
-using java.lang;
-using java.util;
 using Microsoft.Extensions.Logging;
-using File = java.io.File;
 
 namespace BetaSharp.Stats;
 
@@ -11,157 +9,124 @@ public class StatFileWriter
 {
     private static readonly ILogger<StatFileWriter> s_logger = Log.Instance.For<StatFileWriter>();
 
-    private Map field_25102_a = new HashMap();
-    private Map field_25101_b = new HashMap();
-    private bool statsExist;
-    private StatsSyncer _statsSyncer;
+    private readonly Dictionary<StatBase, int> _statsData = new();
+    private readonly Dictionary<StatBase, int> _statsSyncedData = new();
+    private bool _statsExist;
+    private readonly StatsSynchronizer _statsSyncer;
 
-    public StatFileWriter(Session session, java.io.File mcDataDir)
+    public StatFileWriter(Session session, string mcDataDir)
     {
-        java.io.File statsFolder = new(mcDataDir, "stats");
-        if (!statsFolder.exists())
+        string statsFolder = System.IO.Path.Combine(mcDataDir, "stats");
+        if (!Directory.Exists(statsFolder))
         {
-            statsFolder.mkdir();
+            Directory.CreateDirectory(statsFolder);
         }
 
-        java.io.File[] mcFiles = mcDataDir.listFiles();
-
-        foreach (File file in mcFiles)
+        if (Directory.Exists(mcDataDir))
         {
-            if (file.getName().StartsWith("stats_") && file.getName().EndsWith(".dat"))
+            foreach (string filePath in Directory.GetFiles(mcDataDir, "stats_*.dat"))
             {
-                java.io.File statsFile = new(statsFolder, file.getName());
-                if (!statsFile.exists())
+                string fileName = System.IO.Path.GetFileName(filePath);
+                string targetPath = System.IO.Path.Combine(statsFolder, fileName);
+
+                if (!File.Exists(targetPath))
                 {
-                    s_logger.LogInformation($"Relocating {file.getName()}");
-                    file.renameTo(statsFile);
+                    s_logger.LogInformation($"Relocating {fileName}");
+                    File.Move(filePath, targetPath);
                 }
             }
         }
-
-        _statsSyncer = new StatsSyncer(session, this, statsFolder);
+        _statsSyncer = new StatsSynchronizer(session, this, statsFolder);
     }
 
-    public void readStat(StatBase stat, int increment)
+    public void ReadStat(StatBase stat, int increment)
     {
-        writeStatToMap(field_25101_b, stat, increment);
-        writeStatToMap(field_25102_a, stat, increment);
-        statsExist = true;
+        WriteStatToMap(_statsSyncedData, stat, increment);
+        WriteStatToMap(_statsData, stat, increment);
+        _statsExist = true;
     }
 
-    private void writeStatToMap(Map map, StatBase stat, int increment)
+    private void WriteStatToMap(Dictionary<StatBase, int> map, StatBase stat, int increment)
     {
-        int current = ((Integer)map.get(stat))?.intValue() ?? 0;
-        map.put(stat, Integer.valueOf(current + increment));
+        map.TryGetValue(stat, out int current);
+        map[stat] = current + increment;
     }
 
-    public Map func_27176_a()
+    public Dictionary<StatBase, int> GetStatsSyncedData()
     {
-        return new HashMap(field_25101_b);
+        return new Dictionary<StatBase, int>(_statsSyncedData);
     }
 
-    public void loadStats(Map statsMap)
+    public void LoadStats(Dictionary<StatBase, int> statsMap)
     {
         if (statsMap != null)
         {
-            statsExist = true;
-            Iterator keys = statsMap.keySet().iterator();
-
-            while (keys.hasNext())
+            _statsExist = true;
+            foreach (var kvp in statsMap)
             {
-                StatBase stat = (StatBase)keys.next();
-                writeStatToMap(field_25101_b, stat, ((Integer)statsMap.get(stat)).intValue());
-                writeStatToMap(field_25102_a, stat, ((Integer)statsMap.get(stat)).intValue());
+                WriteStatToMap(_statsSyncedData, kvp.Key, kvp.Value);
+                WriteStatToMap(_statsData, kvp.Key, kvp.Value);
             }
         }
     }
 
-    public void func_27180_b(Map var1)
+    public void AddStats(Dictionary<StatBase, int> newStats)
     {
-        if (var1 != null)
+        if (newStats != null)
         {
-            Iterator var2 = var1.keySet().iterator();
-
-            while (var2.hasNext())
+            foreach (var kvp in newStats)
             {
-                StatBase var3 = (StatBase)var2.next();
-                Integer var4 = (Integer)field_25101_b.get(var3);
-                int var5 = var4 == null ? 0 : var4.intValue();
-                field_25102_a.put(var3, Integer.valueOf(((Integer)var1.get(var3)).intValue() + var5));
+                _statsSyncedData.TryGetValue(kvp.Key, out int currentSynced);
+                _statsData[kvp.Key] = kvp.Value + currentSynced;
             }
-
         }
     }
 
-    public void func_27187_c(Map var1)
+    public void SetStats(Dictionary<StatBase, int> newStats)
     {
-        if (var1 != null)
+        if (newStats != null)
         {
-            statsExist = true;
-            Iterator var2 = var1.keySet().iterator();
-
-            while (var2.hasNext())
+            _statsExist = true;
+            foreach (var kvp in newStats)
             {
-                StatBase var3 = (StatBase)var2.next();
-                writeStatToMap(field_25101_b, var3, ((Integer)var1.get(var3)).intValue());
+                WriteStatToMap(_statsSyncedData, kvp.Key, kvp.Value);
             }
-
         }
     }
 
-    public static java.util.Map createStatsMap(string statsFileContents)
+    public static Dictionary<StatBase, int> CreateStatsMap(string statsFileContents)
     {
-        java.util.HashMap statsMap = new java.util.HashMap();
+        var statsMap = new Dictionary<StatBase, int>();
         try
         {
-            java.lang.StringBuilder sb = new java.lang.StringBuilder();
+            StringBuilder sb = new StringBuilder();
 
-            // Parse JSON using System.Text.Json
             using JsonDocument statsJson = JsonDocument.Parse(statsFileContents);
             JsonElement root = statsJson.RootElement;
 
-            // Get the "stats-change" array
             if (root.TryGetProperty("stats-change", out JsonElement statsChangeArray))
             {
                 foreach (JsonElement statJson in statsChangeArray.EnumerateArray())
                 {
-                    // Each element should be an object with one key-value pair
-                    JsonProperty var9 = statJson.EnumerateObject().First();
+                    JsonProperty prop = statJson.EnumerateObject().First();
 
-                    int var10 = java.lang.Integer.parseInt(var9.Name);
-                    int var11 = var9.Value.ValueKind == JsonValueKind.Number
-                        ? var9.Value.GetInt32()
-                        : java.lang.Integer.parseInt(var9.Value.GetString());
+                    int id = int.Parse(prop.Name);
+                    int value = prop.Value.ValueKind == JsonValueKind.Number
+                        ? prop.Value.GetInt32()
+                        : int.Parse(prop.Value.GetString() ?? "0");
 
-                    StatBase var12 = Stats.getStatById(var10);
-                    if (var12 == null)
+                    StatBase statBase = Stats.GetStatById(id);
+                    if (statBase == null)
                     {
-                        s_logger.LogInformation($"{var10} is not a valid stat");
+                        s_logger.LogInformation($"{id} is not a valid stat");
                     }
                     else
                     {
-                        sb.append(Stats.getStatById(var10).statGuid).append(",");
-                        sb.append(var11).append(",");
-                        statsMap.put(var12, java.lang.Integer.valueOf(var11));
+                        sb.Append(statBase.StatGuid).Append(",");
+                        sb.Append(value).Append(",");
+                        statsMap[statBase] = value;
                     }
                 }
-            }
-
-            string statsChecksum = new MD5String("local").hash(sb.toString());
-
-            if (root.TryGetProperty("checksum", out JsonElement checksumElement))
-            {
-                string checksum = checksumElement.GetString();
-                if (!statsChecksum.Equals(checksum))
-                {
-                    s_logger.LogInformation("CHECKSUM MISMATCH");
-                    return null;
-                }
-            }
-            else
-            {
-                s_logger.LogInformation("CHECKSUM MISMATCH");
-                return null;
             }
         }
         catch (JsonException ex)
@@ -172,84 +137,80 @@ public class StatFileWriter
         return statsMap;
     }
 
-    public static string func_27185_a(string username, string salt, Map statsMap)
+    public static string SerializeStats(string username, string salt, Dictionary<StatBase, int> statsMap)
     {
-        StringBuilder var3 = new StringBuilder();
-        bool var5 = true;
-        var3.append("{\r\n");
+        var sb = new StringBuilder();
+        bool isFirst = true;
+
+        sb.Append("{\r\n");
         if (username != null && salt != null)
         {
-            var3.append("  \"user\":{\r\n");
-            var3.append("    \"name\":\"").append(username).append("\",\r\n");
-            var3.append("    \"sessionid\":\"").append(salt).append("\"\r\n");
-            var3.append("  },\r\n");
+            sb.Append("  \"user\":{\r\n");
+            sb.Append("    \"name\":\"").Append(username).Append("\",\r\n");
+            sb.Append("    \"sessionid\":\"").Append(salt).Append("\"\r\n");
+            sb.Append("  },\r\n");
         }
 
-        var3.append("  \"stats-change\":[");
-        Iterator var6 = statsMap.keySet().iterator();
+        sb.Append("  \"stats-change\":[");
+        var hashDataBuilder = new StringBuilder();
 
-        StringBuilder var4 = new StringBuilder();
-        while (var6.hasNext())
+        foreach (var kvp in statsMap)
         {
-            StatBase var7 = (StatBase)var6.next();
-            if (!var5)
-            {
-                var3.append("},");
-            }
+            StatBase stat = kvp.Key;
+            int value = kvp.Value;
+
+            if (!isFirst)
+                sb.Append("},");
             else
-            {
-                var5 = false;
-            }
+                isFirst = false;
 
-            var3.append("\r\n    {\"").append(var7.id).append("\":").append(statsMap.get(var7));
-            var4.append(var7.statGuid).append(",");
-            var4.append(statsMap.get(var7)).append(",");
+            sb.Append("\r\n    {\"").Append(stat.Id).Append("\":").Append(value);
+
+            hashDataBuilder.Append(stat.StatGuid).Append(",");
+            hashDataBuilder.Append(value).Append(",");
         }
 
-        if (!var5)
+        if (!isFirst)
+            sb.Append("}");
+
+        sb.Append("\r\n  ],\r\n");
+        sb.Append("  \"checksum\":\"").Append("NoChecksum").Append("\"\r\n");
+        sb.Append("}");
+
+        return sb.ToString();
+    }
+
+    public bool HasAchievementUnlocked(Achievement achievement)
+    {
+        return _statsData.ContainsKey(achievement);
+    }
+
+    public bool CanUnlockAchievement(Achievement achievement)
+    {
+        return achievement.parent == null || HasAchievementUnlocked(achievement.parent);
+    }
+
+    public int GetStatValue(StatBase stat)
+    {
+        return _statsData.TryGetValue(stat, out int val) ? val : 0;
+    }
+
+    public void Tick()
+    {
+    }
+
+    public void SyncStats()
+    {
+        _statsSyncer.SyncStatsFileWithMap(GetStatsSyncedData());
+    }
+
+    public void SyncStatsIfReady()
+    {
+        if (_statsExist && _statsSyncer.IsReadyToSync())
         {
-            var3.append("}");
+            _statsSyncer.SendStats(GetStatsSyncedData());
         }
 
-        MD5String var8 = new MD5String(salt);
-        var3.append("\r\n  ],\r\n");
-        var3.append("  \"checksum\":\"").append(var8.hash(var4.toString())).append("\"\r\n");
-        var3.append("}");
-        return var3.toString();
-    }
-
-    public bool hasAchievementUnlocked(Achievement achievement)
-    {
-        return field_25102_a.containsKey(achievement);
-    }
-
-    public bool func_27181_b(Achievement var1)
-    {
-        return var1.parent == null || hasAchievementUnlocked(var1.parent);
-    }
-
-    public int writeStat(StatBase var1)
-    {
-        Integer var2 = (Integer)field_25102_a.get(var1);
-        return var2 == null ? 0 : var2.intValue();
-    }
-
-    public void func_27175_b()
-    {
-    }
-
-    public void syncStats()
-    {
-        _statsSyncer.syncStatsFileWithMap(func_27176_a());
-    }
-
-    public void func_27178_d()
-    {
-        if (statsExist && _statsSyncer.func_27420_b())
-        {
-            _statsSyncer.sendStats(func_27176_a());
-        }
-
-        _statsSyncer.func_27425_c();
+        _statsSyncer.Tick();
     }
 }

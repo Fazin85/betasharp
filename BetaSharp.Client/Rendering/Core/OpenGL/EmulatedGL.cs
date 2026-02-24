@@ -1,7 +1,7 @@
 using Silk.NET.Maths;
 using Silk.NET.OpenGL.Legacy;
 
-namespace BetaSharp.Client.Rendering.Core;
+namespace BetaSharp.Client.Rendering.Core.OpenGL;
 
 public unsafe class EmulatedGL : LegacyGL
 {
@@ -78,7 +78,7 @@ public unsafe class EmulatedGL : LegacyGL
         _displayLists = new DisplayListCompiler(gl);
     }
 
-    private MatrixStack ActiveStack => _currentMatrixMode switch
+    internal MatrixStack ActiveStack => _currentMatrixMode switch
     {
         GLEnum.Modelview => _modelViewStack,
         GLEnum.Projection => _projectionStack,
@@ -86,14 +86,14 @@ public unsafe class EmulatedGL : LegacyGL
         _ => _modelViewStack
     };
 
-    private void MarkActiveMatrixDirty()
+    internal void MarkActiveMatrixDirty()
     {
         if (_currentMatrixMode == GLEnum.Modelview) _dirtyState.DirtyModelView = true;
         else if (_currentMatrixMode == GLEnum.Projection) _dirtyState.DirtyProjection = true;
         else if (_currentMatrixMode == GLEnum.Texture) _dirtyState.DirtyTextureMatrix = true;
     }
 
-    private void ActivateShader()
+    internal void ActivateShader()
     {
         if (_currentProgram != _shader.Program)
         {
@@ -186,19 +186,7 @@ public unsafe class EmulatedGL : LegacyGL
     {
         if (_displayLists.IsCompiling) return;
 
-        _displayLists.Execute(list,
-            onDraw: (ref chunk) =>
-            {
-                ActivateShader();
-                SilkGL.BindVertexArray(chunk.Vao);
-                SilkGL.DrawArrays(chunk.DrawMode, 0, (uint)chunk.VertexCount);
-            },
-            onTranslate: (ref t) =>
-            {
-                ActiveStack.Translate(t.X_R, t.Y_G, t.Z_B);
-                MarkActiveMatrixDirty();
-            },
-            onColor: (ref c) => SilkGL.VertexAttrib4(1, c.X_R, c.Y_G, c.Z_B, c.W_A));
+        _displayLists.Execute(list, this);
 
         SilkGL.BindVertexArray(_immediateVao);
     }

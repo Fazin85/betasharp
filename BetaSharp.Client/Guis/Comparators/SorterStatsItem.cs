@@ -10,22 +10,22 @@ public class SorterStatsItem(GuiSlotStatsItem slotStats, GuiStats stats) : IComp
         if (x is null) return -1;
         if (y is null) return 1;
 
-        int idX = x.getItemId();
-        int idY = y.getItemId();
+        int idX = x.ItemId;
+        int idY = y.ItemId;
 
         StatBase? statX = slotStats.ActiveStatType switch
         {
-            0 => Stats.Stats.BROKEN[idX],
-            1 => Stats.Stats.CRAFTED[idX],
-            2 => Stats.Stats.USED[idX],
+            0 => Stats.Stats.Broken[idX],
+            1 => Stats.Stats.Crafted[idX],
+            2 => Stats.Stats.Used[idX],
             _ => null
         };
 
         StatBase? statY = slotStats.ActiveStatType switch
         {
-            0 => Stats.Stats.BROKEN[idY],
-            1 => Stats.Stats.CRAFTED[idY],
-            2 => Stats.Stats.USED[idY],
+            0 => Stats.Stats.Broken[idY],
+            1 => Stats.Stats.Crafted[idY],
+            2 => Stats.Stats.Used[idY],
             _ => null
         };
 
@@ -34,8 +34,8 @@ public class SorterStatsItem(GuiSlotStatsItem slotStats, GuiStats stats) : IComp
             if (statX is null) return 1;
             if (statY is null) return -1;
 
-            int valueX = stats.statFileWriter.writeStat(statX);
-            int valueY = stats.statFileWriter.writeStat(statY);
+            int valueX = stats.statFileWriter.GetStatValue(statX);
+            int valueY = stats.statFileWriter.GetStatValue(statY);
 
             if (valueX != valueY)
             {

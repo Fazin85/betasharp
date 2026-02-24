@@ -1,4 +1,4 @@
-using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core.Textures;
 using java.awt.image;
 using java.io;
 using javax.imageio;
@@ -12,7 +12,7 @@ namespace BetaSharp.Client.Resource.Pack;
 public class BuiltInTexturePack : TexturePack
 {
     private readonly ILogger _logger = Log.Instance.For<BuiltInTexturePack>();
-    private int _texturePackName = -1;
+    private TextureHandle? _texturePackName;
     private readonly Image<Rgba32>? texturePackThumbnail;
 
     public BuiltInTexturePack()
@@ -37,27 +37,28 @@ public class BuiltInTexturePack : TexturePack
 
     public override void Unload(Minecraft mc)
     {
-        if (texturePackThumbnail != null)
+        if (texturePackThumbnail != null && _texturePackName != null)
         {
             mc.textureManager.Delete(_texturePackName);
+
         }
 
     }
 
     public override void BindThumbnailTexture(Minecraft mc)
     {
-        if (texturePackThumbnail != null && _texturePackName < 0)
+        if (texturePackThumbnail != null && _texturePackName == null)
         {
             _texturePackName = mc.textureManager.Load(texturePackThumbnail);
         }
 
-        if (texturePackThumbnail != null)
+        if (texturePackThumbnail != null && _texturePackName != null)
         {
             mc.textureManager.BindTexture(_texturePackName);
         }
         else
         {
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.GetTextureId("/gui/unknown_pack.png"));
+            mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/unknown_pack.png"));
         }
 
     }

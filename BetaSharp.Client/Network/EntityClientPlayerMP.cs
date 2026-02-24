@@ -1,4 +1,4 @@
-﻿using BetaSharp.Client.Entities;
+using BetaSharp.Client.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Network.Packets.C2SPlay;
 using BetaSharp.Network.Packets.Play;
@@ -140,6 +140,11 @@ public class EntityClientPlayerMP : ClientPlayerEntity
 
     public override void dropSelectedItem()
     {
+        var selected = getHand();
+        if (selected != null && selected.count > 0)
+        {
+            increaseStat(Stats.Stats.DropStat, 1);
+        }
         sendQueue.addToSendQueue(new PlayerActionC2SPacket(4, 0, 0, 0, 0));
     }
 
@@ -198,7 +203,7 @@ public class EntityClientPlayerMP : ClientPlayerEntity
     {
         if (stat != null)
         {
-            if (stat.localOnly)
+            if (stat.LocalOnly)
             {
                 base.increaseStat(stat, amount);
             }
@@ -210,7 +215,7 @@ public class EntityClientPlayerMP : ClientPlayerEntity
     {
         if (stat != null)
         {
-            if (!stat.localOnly)
+            if (!stat.LocalOnly)
             {
                 base.increaseStat(stat, amount);
             }

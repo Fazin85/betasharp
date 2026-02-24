@@ -1,6 +1,6 @@
 using Silk.NET.OpenGL.Legacy;
 
-namespace BetaSharp.Client.Rendering.Core;
+namespace BetaSharp.Client.Rendering.Core.OpenGL;
 
 public unsafe class LegacyGL : IGL
 {

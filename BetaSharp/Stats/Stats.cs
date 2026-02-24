@@ -1,194 +1,186 @@
 using BetaSharp.Blocks;
 using BetaSharp.Items;
 using BetaSharp.Recipes;
-using java.lang;
-using java.util;
 
 namespace BetaSharp.Stats;
 
-public class Stats : java.lang.Object
+public static class Stats
 {
-    public static Dictionary<int, StatBase> ID_TO_STAT = [];
-    public static List<StatBase> ALL_STATS = [];
-    public static List<StatBase> GENERAL_STATS = [];
-    public static List<StatBase> ITEM_STATS = [];
-    public static List<StatBase> BLOCKS_MINED_STATS = [];
-    public static StatBase startGameStat = (new StatBasic(1000, StatCollector.translateToLocal("stat.startGame"))).setLocalOnly().registerStat();
-    public static StatBase createWorldStat = (new StatBasic(1001, StatCollector.translateToLocal("stat.createWorld"))).setLocalOnly().registerStat();
-    public static StatBase loadWorldStat = (new StatBasic(1002, StatCollector.translateToLocal("stat.loadWorld"))).setLocalOnly().registerStat();
-    public static StatBase joinMultiplayerStat = (new StatBasic(1003, StatCollector.translateToLocal("stat.joinMultiplayer"))).setLocalOnly().registerStat();
-    public static StatBase leaveGameStat = (new StatBasic(1004, StatCollector.translateToLocal("stat.leaveGame"))).setLocalOnly().registerStat();
-    public static StatBase minutesPlayedStat = (new StatBasic(1100, StatCollector.translateToLocal("stat.playOneMinute"), StatBase.TIME_PROVIDER)).setLocalOnly().registerStat();
-    public static StatBase distanceWalkedStat = (new StatBasic(2000, StatCollector.translateToLocal("stat.walkOneCm"), StatBase.DISTANCE_PROVIDER)).setLocalOnly().registerStat();
-    public static StatBase distanceSwumStat = (new StatBasic(2001, StatCollector.translateToLocal("stat.swimOneCm"), StatBase.DISTANCE_PROVIDER)).setLocalOnly().registerStat();
-    public static StatBase distanceFallenStat = (new StatBasic(2002, StatCollector.translateToLocal("stat.fallOneCm"), StatBase.DISTANCE_PROVIDER)).setLocalOnly().registerStat();
-    public static StatBase distanceClimbedStat = (new StatBasic(2003, StatCollector.translateToLocal("stat.climbOneCm"), StatBase.DISTANCE_PROVIDER)).setLocalOnly().registerStat();
-    public static StatBase distanceFlownStat = (new StatBasic(2004, StatCollector.translateToLocal("stat.flyOneCm"), StatBase.DISTANCE_PROVIDER)).setLocalOnly().registerStat();
-    public static StatBase distanceDoveStat = (new StatBasic(2005, StatCollector.translateToLocal("stat.diveOneCm"), StatBase.DISTANCE_PROVIDER)).setLocalOnly().registerStat();
-    public static StatBase distanceByMinecartStat = (new StatBasic(2006, StatCollector.translateToLocal("stat.minecartOneCm"), StatBase.DISTANCE_PROVIDER)).setLocalOnly().registerStat();
-    public static StatBase distanceByBoatStat = (new StatBasic(2007, StatCollector.translateToLocal("stat.boatOneCm"), StatBase.DISTANCE_PROVIDER)).setLocalOnly().registerStat();
-    public static StatBase distanceByPigStat = (new StatBasic(2008, StatCollector.translateToLocal("stat.pigOneCm"), StatBase.DISTANCE_PROVIDER)).setLocalOnly().registerStat();
-    public static StatBase jumpStat = (new StatBasic(2010, StatCollector.translateToLocal("stat.jump"))).setLocalOnly().registerStat();
-    public static StatBase dropStat = (new StatBasic(2011, StatCollector.translateToLocal("stat.drop"))).setLocalOnly().registerStat();
-    public static StatBase damageDealtStat = (new StatBasic(2020, StatCollector.translateToLocal("stat.damageDealt"))).registerStat();
-    public static StatBase damageTakenStat = (new StatBasic(2021, StatCollector.translateToLocal("stat.damageTaken"))).registerStat();
-    public static StatBase deathsStat = (new StatBasic(2022, StatCollector.translateToLocal("stat.deaths"))).registerStat();
-    public static StatBase mobKillsStat = (new StatBasic(2023, StatCollector.translateToLocal("stat.mobKills"))).registerStat();
-    public static StatBase playerKillsStat = (new StatBasic(2024, StatCollector.translateToLocal("stat.playerKills"))).registerStat();
-    public static StatBase fishCaughtStat = (new StatBasic(2025, StatCollector.translateToLocal("stat.fishCaught"))).registerStat();
-    public static StatBase[] mineBlockStatArray = initBlocksMined("stat.mineBlock", 16777216);
-    public static StatBase[] CRAFTED;
-    public static StatBase[] USED;
-    public static StatBase[] BROKEN;
-    private static bool hasBasicItemStatsInitialized;
-    private static bool hasExtendedItemStatsInitialized;
+    public static Dictionary<int, StatBase> IdToStat = [];
+    public static List<StatBase> AllStats = [];
+    public static List<StatBase> GeneralStats = [];
+    public static List<StatBase> ItemStats = [];
+    public static List<StatBase> BlocksMinedStats = [];
 
-    public static void initializeItemStats()
+    public static StatBase StartGameStat = new StatBasic(1000, StatCollector.TranslateToLocal("stat.startGame")).SetLocalOnly().RegisterStat();
+    public static StatBase CreateWorldStat = new StatBasic(1001, StatCollector.TranslateToLocal("stat.createWorld")).SetLocalOnly().RegisterStat();
+    public static StatBase LoadWorldStat = new StatBasic(1002, StatCollector.TranslateToLocal("stat.loadWorld")).SetLocalOnly().RegisterStat();
+    public static StatBase JoinMultiplayerStat = new StatBasic(1003, StatCollector.TranslateToLocal("stat.joinMultiplayer")).SetLocalOnly().RegisterStat();
+    public static StatBase LeaveGameStat = new StatBasic(1004, StatCollector.TranslateToLocal("stat.leaveGame")).SetLocalOnly().RegisterStat();
+    public static StatBase MinutesPlayedStat = new StatBasic(1100, StatCollector.TranslateToLocal("stat.playOneMinute"), StatFormatters.FormatTime).SetLocalOnly().RegisterStat();
+    public static StatBase DistanceWalkedStat = new StatBasic(2000, StatCollector.TranslateToLocal("stat.walkOneCm"), StatFormatters.FormatDistance).SetLocalOnly().RegisterStat();
+    public static StatBase DistanceSwumStat = new StatBasic(2001, StatCollector.TranslateToLocal("stat.swimOneCm"), StatFormatters.FormatDistance).SetLocalOnly().RegisterStat();
+    public static StatBase DistanceFallenStat = new StatBasic(2002, StatCollector.TranslateToLocal("stat.fallOneCm"), StatFormatters.FormatDistance).SetLocalOnly().RegisterStat();
+    public static StatBase DistanceClimbedStat = new StatBasic(2003, StatCollector.TranslateToLocal("stat.climbOneCm"), StatFormatters.FormatDistance).SetLocalOnly().RegisterStat();
+    public static StatBase DistanceFlownStat = new StatBasic(2004, StatCollector.TranslateToLocal("stat.flyOneCm"), StatFormatters.FormatDistance).SetLocalOnly().RegisterStat();
+    public static StatBase DistanceDoveStat = new StatBasic(2005, StatCollector.TranslateToLocal("stat.diveOneCm"), StatFormatters.FormatDistance).SetLocalOnly().RegisterStat();
+    public static StatBase DistanceByMinecartStat = new StatBasic(2006, StatCollector.TranslateToLocal("stat.minecartOneCm"), StatFormatters.FormatDistance).SetLocalOnly().RegisterStat();
+    public static StatBase DistanceByBoatStat = new StatBasic(2007, StatCollector.TranslateToLocal("stat.boatOneCm"), StatFormatters.FormatDistance).SetLocalOnly().RegisterStat();
+    public static StatBase DistanceByPigStat = new StatBasic(2008, StatCollector.TranslateToLocal("stat.pigOneCm"), StatFormatters.FormatDistance).SetLocalOnly().RegisterStat();
+    public static StatBase JumpStat = new StatBasic(2010, StatCollector.TranslateToLocal("stat.jump")).SetLocalOnly().RegisterStat();
+    public static StatBase DropStat = new StatBasic(2011, StatCollector.TranslateToLocal("stat.drop")).SetLocalOnly().RegisterStat();
+    public static StatBase DamageDealtStat = new StatBasic(2020, StatCollector.TranslateToLocal("stat.damageDealt")).RegisterStat();
+    public static StatBase DamageTakenStat = new StatBasic(2021, StatCollector.TranslateToLocal("stat.damageTaken")).RegisterStat();
+    public static StatBase DeathsStat = new StatBasic(2022, StatCollector.TranslateToLocal("stat.deaths")).RegisterStat();
+    public static StatBase MobKillsStat = new StatBasic(2023, StatCollector.TranslateToLocal("stat.mobKills")).RegisterStat();
+    public static StatBase PlayerKillsStat = new StatBasic(2024, StatCollector.TranslateToLocal("stat.playerKills")).RegisterStat();
+    public static StatBase FishCaughtStat = new StatBasic(2025, StatCollector.TranslateToLocal("stat.fishCaught")).RegisterStat();
+
+    public static StatBase[] MineBlockStatArray = InitBlocksMined("stat.mineBlock", 16777216);
+    public static StatBase[] Crafted;
+    public static StatBase[] Used;
+    public static StatBase[] Broken;
+
+    private static bool _hasBasicItemStatsInitialized;
+    private static bool _hasExtendedItemStatsInitialized;
+
+    public static void InitializeItemStats()
     {
-        USED = initItemUsedStats(USED, "stat.useItem", 16908288, 0, Block.Blocks.Length);
-        BROKEN = initializeBrokenItemStats(BROKEN, "stat.breakItem", 16973824, 0, Block.Blocks.Length);
-        hasBasicItemStatsInitialized = true;
-        initializeCraftedItemStats();
+        Used = InitItemUsedStats(Used, "stat.useItem", 16908288, 0, Block.Blocks.Length);
+        Broken = InitializeBrokenItemStats(Broken, "stat.breakItem", 16973824, 0, Block.Blocks.Length);
+        _hasBasicItemStatsInitialized = true;
+        InitializeCraftedItemStats();
     }
 
-    public static void initializeExtendedItemStats()
+    public static void InitializeExtendedItemStats()
     {
-        USED = initItemUsedStats(USED, "stat.useItem", 16908288, Block.Blocks.Length, 32000);
-        BROKEN = initializeBrokenItemStats(BROKEN, "stat.breakItem", 16973824, Block.Blocks.Length, 32000);
-        hasExtendedItemStatsInitialized = true;
-        initializeCraftedItemStats();
+        Used = InitItemUsedStats(Used, "stat.useItem", 16908288, Block.Blocks.Length, 32000);
+        Broken = InitializeBrokenItemStats(Broken, "stat.breakItem", 16973824, Block.Blocks.Length, 32000);
+        _hasExtendedItemStatsInitialized = true;
+        InitializeCraftedItemStats();
     }
 
-    public static void initializeCraftedItemStats()
+    public static void InitializeCraftedItemStats()
     {
-        if (hasBasicItemStatsInitialized && hasExtendedItemStatsInitialized)
+        if (_hasBasicItemStatsInitialized && _hasExtendedItemStatsInitialized)
         {
-            HashSet var0 = new HashSet();
-            object var1 = CraftingManager.getInstance().Recipes.GetEnumerator();
+            HashSet<int> craftedIds = new HashSet<int>();
 
-            while (var1 is IRecipe recipe)
+            foreach (IRecipe recipe in CraftingManager.getInstance().Recipes)
             {
-                var0.add(Integer.valueOf(recipe.GetRecipeOutput().itemId));
+                craftedIds.Add(recipe.GetRecipeOutput().itemId);
             }
 
-            var1 = SmeltingRecipeManager.getInstance().GetSmeltingList().Values.GetEnumerator();
-
-            while (var1 is ItemStack itemStack)
+            foreach (ItemStack itemStack in SmeltingRecipeManager.getInstance().GetSmeltingList().Values)
             {
-                var0.add(Integer.valueOf(itemStack.itemId));
+                craftedIds.Add(itemStack.itemId);
             }
 
-            CRAFTED = new StatBase[32000];
-            var1 = var0.iterator();
+            Crafted = new StatBase[32000];
 
-            while (var1 is Integer integer)
+            foreach (int itemId in craftedIds)
             {
-                if (Item.ITEMS[integer.intValue()] != null)
+                if (Item.ITEMS[itemId] != null)
                 {
-                    string var3 = StatCollector.translateToLocalFormatted("stat.craftItem", Item.ITEMS[integer.intValue()].getStatName());
-                    CRAFTED[integer.intValue()] = (new StatCrafting(16842752 + integer.intValue(), var3, integer.intValue())).registerStat();
+                    string translatedName = StatCollector.TranslateToLocalFormatted("stat.craftItem", Item.ITEMS[itemId].getStatName());
+                    Crafted[itemId] = new StatCrafting(16842752 + itemId, translatedName, itemId).RegisterStat();
                 }
             }
 
-            replaceAllSimilarBlocks(CRAFTED);
+            ReplaceAllSimilarBlocks(Crafted);
         }
     }
 
-    private static StatBase[] initBlocksMined(string var0, int var1)
+    private static StatBase[] InitBlocksMined(string baseName, int baseId)
     {
-        StatBase[] var2 = new StatBase[256];
+        StatBase[] statsArray = new StatBase[256];
 
-        for (int var3 = 0; var3 < 256; ++var3)
+        for (int i = 0; i < 256; ++i)
         {
-            if (Block.Blocks[var3] != null && Block.Blocks[var3].getEnableStats())
+            if (Block.Blocks[i] != null && Block.Blocks[i].getEnableStats())
             {
-                string var4 = StatCollector.translateToLocalFormatted(var0, Block.Blocks[var3].translateBlockName());
-                var2[var3] = (new StatCrafting(var1 + var3, var4, var3)).registerStat();
-                BLOCKS_MINED_STATS.Add((StatCrafting)var2[var3]);
+                string translatedName = StatCollector.TranslateToLocalFormatted(baseName, Block.Blocks[i].translateBlockName());
+                statsArray[i] = new StatCrafting(baseId + i, translatedName, i).RegisterStat();
+                BlocksMinedStats.Add(statsArray[i]);
             }
         }
 
-        replaceAllSimilarBlocks(var2);
-        return var2;
+        ReplaceAllSimilarBlocks(statsArray);
+        return statsArray;
     }
 
-    private static StatBase[] initItemUsedStats(StatBase[] var0, string var1, int var2, int var3, int var4)
+    private static StatBase[] InitItemUsedStats(StatBase[] statsArray, string baseName, int baseId, int startIdx, int endIdx)
     {
-        if (var0 == null)
-        {
-            var0 = new StatBase[32000];
-        }
+        statsArray ??= new StatBase[32000];
 
-        for (int var5 = var3; var5 < var4; ++var5)
+        for (int i = startIdx; i < endIdx; ++i)
         {
-            if (Item.ITEMS[var5] != null)
+            if (Item.ITEMS[i] != null)
             {
-                string var6 = StatCollector.translateToLocalFormatted(var1, Item.ITEMS[var5].getStatName());
-                var0[var5] = (new StatCrafting(var2 + var5, var6, var5)).registerStat();
-                if (var5 >= Block.Blocks.Length)
+                string translatedName = StatCollector.TranslateToLocalFormatted(baseName, Item.ITEMS[i].getStatName());
+                statsArray[i] = new StatCrafting(baseId + i, translatedName, i).RegisterStat();
+
+                if (i >= Block.Blocks.Length)
                 {
-                    ITEM_STATS.Add((StatCrafting)var0[var5]);
+                    ItemStats.Add(statsArray[i]);
                 }
             }
         }
 
-        replaceAllSimilarBlocks(var0);
-        return var0;
+        ReplaceAllSimilarBlocks(statsArray);
+        return statsArray;
     }
 
-    private static StatBase[] initializeBrokenItemStats(StatBase[] var0, string var1, int var2, int var3, int var4)
+    private static StatBase[] InitializeBrokenItemStats(StatBase[] statsArray, string baseName, int baseId, int startIdx, int endIdx)
     {
-        if (var0 == null)
-        {
-            var0 = new StatBase[32000];
-        }
+        statsArray ??= new StatBase[32000];
 
-        for (int var5 = var3; var5 < var4; ++var5)
+        for (int i = startIdx; i < endIdx; ++i)
         {
-            if (Item.ITEMS[var5] != null && Item.ITEMS[var5].isDamagable())
+            if (Item.ITEMS[i] != null && Item.ITEMS[i].isDamagable())
             {
-                string var6 = StatCollector.translateToLocalFormatted(var1, Item.ITEMS[var5].getStatName());
-                var0[var5] = (new StatCrafting(var2 + var5, var6, var5)).registerStat();
+                string translatedName = StatCollector.TranslateToLocalFormatted(baseName, Item.ITEMS[i].getStatName());
+                statsArray[i] = new StatCrafting(baseId + i, translatedName, i).RegisterStat();
             }
         }
 
-        replaceAllSimilarBlocks(var0);
-        return var0;
+        ReplaceAllSimilarBlocks(statsArray);
+        return statsArray;
     }
 
-    private static void replaceAllSimilarBlocks(StatBase[] var0)
+    private static void ReplaceAllSimilarBlocks(StatBase[] statsArray)
     {
-        replaceSimilarBlocks(var0, Block.Water.id, Block.FlowingWater.id);
-        replaceSimilarBlocks(var0, Block.Lava.id, Block.Lava.id);
-        replaceSimilarBlocks(var0, Block.JackLantern.id, Block.Pumpkin.id);
-        replaceSimilarBlocks(var0, Block.LitFurnace.id, Block.Furnace.id);
-        replaceSimilarBlocks(var0, Block.LitRedstoneOre.id, Block.RedstoneOre.id);
-        replaceSimilarBlocks(var0, Block.PoweredRepeater.id, Block.Repeater.id);
-        replaceSimilarBlocks(var0, Block.LitRedstoneTorch.id, Block.RedstoneTorch.id);
-        replaceSimilarBlocks(var0, Block.RedMushroom.id, Block.BrownMushroom.id);
-        replaceSimilarBlocks(var0, Block.DoubleSlab.id, Block.Slab.id);
-        replaceSimilarBlocks(var0, Block.GrassBlock.id, Block.Dirt.id);
-        replaceSimilarBlocks(var0, Block.Farmland.id, Block.Dirt.id);
+        ReplaceSimilarBlocks(statsArray, Block.Water.id, Block.FlowingWater.id);
+        ReplaceSimilarBlocks(statsArray, Block.Lava.id, Block.Lava.id);
+        ReplaceSimilarBlocks(statsArray, Block.JackLantern.id, Block.Pumpkin.id);
+        ReplaceSimilarBlocks(statsArray, Block.LitFurnace.id, Block.Furnace.id);
+        ReplaceSimilarBlocks(statsArray, Block.LitRedstoneOre.id, Block.RedstoneOre.id);
+        ReplaceSimilarBlocks(statsArray, Block.PoweredRepeater.id, Block.Repeater.id);
+        ReplaceSimilarBlocks(statsArray, Block.LitRedstoneTorch.id, Block.RedstoneTorch.id);
+        ReplaceSimilarBlocks(statsArray, Block.RedMushroom.id, Block.BrownMushroom.id);
+        ReplaceSimilarBlocks(statsArray, Block.DoubleSlab.id, Block.Slab.id);
+        ReplaceSimilarBlocks(statsArray, Block.GrassBlock.id, Block.Dirt.id);
+        ReplaceSimilarBlocks(statsArray, Block.Farmland.id, Block.Dirt.id);
     }
 
-    private static void replaceSimilarBlocks(StatBase[] var0, int var1, int var2)
+    private static void ReplaceSimilarBlocks(StatBase[] statsArray, int sourceId, int targetId)
     {
-        if (var0[var1] != null && var0[var2] == null)
+        if (statsArray[sourceId] != null && statsArray[targetId] == null)
         {
-            var0[var2] = var0[var1];
+            statsArray[targetId] = statsArray[sourceId];
         }
         else
         {
-            ALL_STATS.Remove(var0[var1]);
-            BLOCKS_MINED_STATS.Remove(var0[var1]);
-            GENERAL_STATS.Remove(var0[var1]);
-            var0[var1] = var0[var2];
+            AllStats.Remove(statsArray[sourceId]);
+            BlocksMinedStats.Remove(statsArray[sourceId]);
+            GeneralStats.Remove(statsArray[sourceId]);
+            statsArray[sourceId] = statsArray[targetId];
         }
     }
 
-    public static StatBase getStatById(int var0)
+    public static StatBase GetStatById(int id)
     {
-        return ID_TO_STAT[var0];
+        return IdToStat[id];
     }
 
     static Stats()

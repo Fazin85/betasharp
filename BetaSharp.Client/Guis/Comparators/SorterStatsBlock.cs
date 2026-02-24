@@ -10,30 +10,30 @@ public class SorterStatsBlock(GuiSlotStatsBlock slotStats, GuiStats stats) : ICo
         if (x is null) return -1;
         if (y is null) return 1;
 
-        int idX = x.getItemId();
-        int idY = y.getItemId();
+        int idX = x.ItemId;
+        int idY = y.ItemId;
 
         StatBase? statX = slotStats.ActiveStatType switch
         {
-            2 => Stats.Stats.mineBlockStatArray[idX],
-            0 => Stats.Stats.CRAFTED[idX],
-            1 => Stats.Stats.USED[idX],
+            2 => Stats.Stats.MineBlockStatArray[idX],
+            0 => Stats.Stats.Crafted[idX],
+            1 => Stats.Stats.Used[idX],
             _ => null
         };
 
         StatBase? statY = slotStats.ActiveStatType switch
         {
-            2 => Stats.Stats.mineBlockStatArray[idY],
-            0 => Stats.Stats.CRAFTED[idY],
-            1 => Stats.Stats.USED[idY],
+            2 => Stats.Stats.MineBlockStatArray[idY],
+            0 => Stats.Stats.Crafted[idY],
+            1 => Stats.Stats.Used[idY],
             _ => null
         };
         if (statX is not null || statY is not null)
         {
             if (statX is null) return 1;
             if (statY is null) return -1;
-            int valueX = stats.statFileWriter.writeStat(statX);
-            int valueY = stats.statFileWriter.writeStat(statY);
+            int valueX = stats.statFileWriter.GetStatValue(statX);
+            int valueY = stats.statFileWriter.GetStatValue(statY);
 
             if (valueX != valueY)
             {

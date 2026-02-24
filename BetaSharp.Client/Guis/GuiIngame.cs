@@ -62,12 +62,12 @@ public class GuiIngame : Gui
         }
 
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_mc.textureManager.GetTextureId("/gui/gui.png"));
+        _mc.textureManager.BindTexture(_mc.textureManager.GetTextureId("/gui/gui.png"));
         InventoryPlayer inventory = _mc.player.inventory;
         _zLevel = -90.0F;
         DrawTexturedModalRect(scaledWidth / 2 - 91, scaledHeight - 22, 0, 0, 182, 22);
         DrawTexturedModalRect(scaledWidth / 2 - 91 - 1 + inventory.selectedSlot * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_mc.textureManager.GetTextureId("/gui/icons.png"));
+        _mc.textureManager.BindTexture(_mc.textureManager.GetTextureId("/gui/icons.png"));
         if (_mc.options.CameraMode == EnumCameraMode.FirstPerson)
         {
             GLManager.GL.Enable(GLEnum.Blend);
@@ -373,7 +373,7 @@ public class GuiIngame : Gui
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         GLManager.GL.Disable(GLEnum.AlphaTest);
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_mc.textureManager.GetTextureId("%blur%/misc/pumpkinblur.png"));
+        _mc.textureManager.BindTexture(_mc.textureManager.GetTextureId("%blur%/misc/pumpkinblur.png"));
         Tessellator tess = Tessellator.instance;
         tess.startDrawingQuads();
         tess.addVertexWithUV(0.0D, screenHeight, -90.0D, 0.0D, 1.0D);
@@ -405,7 +405,7 @@ public class GuiIngame : Gui
         GLManager.GL.DepthMask(false);
         GLManager.GL.BlendFunc(GLEnum.Zero, GLEnum.OneMinusSrcColor);
         GLManager.GL.Color4(PrevVignetteBrightness, PrevVignetteBrightness, PrevVignetteBrightness, 1.0F);
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_mc.textureManager.GetTextureId("%blur%/misc/vignette.png"));
+        _mc.textureManager.BindTexture(_mc.textureManager.GetTextureId("%blur%/misc/vignette.png"));
         Tessellator tess = Tessellator.instance;
         tess.startDrawingQuads();
         tess.addVertexWithUV(0.0D, screenHeight, -90.0D, 0.0D, 1.0D);
@@ -433,7 +433,7 @@ public class GuiIngame : Gui
         GLManager.GL.DepthMask(false);
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, portalStrength);
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_mc.textureManager.GetTextureId("/terrain.png"));
+        _mc.textureManager.BindTexture(_mc.textureManager.GetTextureId("/terrain.png"));
         float u1 = Block.NetherPortal.textureId % 16 / 16.0F;
         float v1 = Block.NetherPortal.textureId / 16 / 16.0F;
         float u2 = (Block.NetherPortal.textureId % 16 + 1) / 16.0F;

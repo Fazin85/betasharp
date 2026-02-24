@@ -1,7 +1,7 @@
 using Silk.NET.Maths;
 using Silk.NET.OpenGL.Legacy;
 
-namespace BetaSharp.Client.Rendering.Core;
+namespace BetaSharp.Client.Rendering.Core.OpenGL;
 
 public class FixedFunctionShader
 {
