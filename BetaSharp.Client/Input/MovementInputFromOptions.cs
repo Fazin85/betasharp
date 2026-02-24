@@ -29,10 +29,7 @@ public class MovementInputFromOptions : MovementInput
                 {
                     sprinting = true;
                 }
-            }
-            else
-            {
-                if (!sprinting)
+                else
                 {
                     sprintTapTimer = SprintDoubleTapTicks;
                 }
