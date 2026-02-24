@@ -14,13 +14,16 @@ public class Control
 
     protected float ZLevel = 0.0F;
     internal virtual bool TopLevel => false;
-    private bool[] _mouseDown = new bool[Mouse.MouseButtons];
 
     private Control? _parent;
     public readonly List<Control> Children = [];
+    public List<Control> Descendants => Children.SelectMany(c => c.Descendants).Prepend(this).ToList();
 
     private int _lastMouseX;
     private int _lastMouseY;
+
+    // Track whether last press occurred inside this control
+    private bool _pressedInside;
 
     public string Text;
 
@@ -51,6 +54,7 @@ public class Control
     public int Y => Position.Y;
     public bool Enabled;
     public bool IsFocused = false;
+    public virtual bool IsFocusable => false;
     public bool Visible;
 
     public Anchors Anchor
@@ -75,7 +79,7 @@ public class Control
 
     protected void LayoutChildren()
     {
-        foreach (Control child in Children)
+        foreach (Control child in Children.ToArray())
         {
             child.UpdatePosition();
         }
@@ -135,14 +139,23 @@ public class Control
         tess.draw();
     }
 
+    public event EventHandler<MouseEventArgs>? MouseClicked;
+    public event EventHandler<MouseEventArgs>? MousePressed;
+    public event EventHandler<MouseEventArgs>? MouseReleased;
+    public event EventHandler<MouseEventArgs>? MouseMoved;
+    public event EventHandler<KeyboardEventArgs>? KeyInput;
+    public event EventHandler<RenderEventArgs>? Rendered;
+
     public virtual void Render(int mouseX, int mouseY, float tickDelta)
     {
         if (!Visible) return;
 
-        foreach (Control child in Children)
+        foreach (Control child in Children.ToArray())
         {
             child.Render(mouseX, mouseY, tickDelta);
         }
+
+        DoRendered(new(mouseX, mouseY, tickDelta));
     }
 
     public virtual bool MouseInBounds(int mouseX, int mouseY)
@@ -156,17 +169,178 @@ public class Control
                && (_parent == null || _parent.MouseInBounds(mouseX, mouseY));
     }
 
-    public virtual void MouseClicked(int mouseX, int mouseY, int button)
+    public void DoMousePressed(MouseEventArgs e)
+    {
+        OnMousePressed(e);
+        MousePressed?.Invoke(this, e);
+    }
+
+    protected virtual void OnMousePressed(MouseEventArgs e)
+    {
+        _pressedInside = MouseInBounds(e.MouseX, e.MouseY);
+    }
+
+    public void DoMouseReleased(MouseEventArgs e)
+    {
+        OnMouseReleased(e);
+        MouseReleased?.Invoke(this, e);
+
+        if (_pressedInside && MouseInBounds(e.MouseX, e.MouseY))
+        {
+            DoMouseClicked(e);
+        }
+
+        _pressedInside = false;
+    }
+
+    protected virtual void OnMouseReleased(MouseEventArgs e)
     {
     }
 
-    public bool JustClicked(int mouseX, int mouseY, int button)
+    public void DoMouseClicked(MouseEventArgs e)
     {
-        bool buttonWasDown = _mouseDown[button];
-        bool buttonIsDown = Mouse.isButtonDown(button);
-        _mouseDown[button] = buttonIsDown;
-        return MouseInBounds(mouseX, mouseY)
-               && !Children.Any(c => c.MouseInBounds(mouseX, mouseY))
-               && (buttonIsDown && !buttonWasDown);
+        OnMouseClicked(e);
+        MouseClicked?.Invoke(this, e);
+    }
+
+    protected virtual void OnMouseClicked(MouseEventArgs e)
+    {
+    }
+
+    public void DoMouseMoved(MouseEventArgs e)
+    {
+        OnMouseMoved(e);
+        MouseMoved?.Invoke(this, e);
+    }
+
+    protected virtual void OnMouseMoved(MouseEventArgs e)
+    {
+    }
+
+    public void DoKeyInput(KeyboardEventArgs e)
+    {
+        OnKeyInput(e);
+        KeyInput?.Invoke(this, e);
+    }
+
+    protected virtual void OnKeyInput(KeyboardEventArgs e)
+    {
+    }
+
+    public void DoRendered(RenderEventArgs e)
+    {
+        OnRendered(e);
+        Rendered?.Invoke(this, e);
+    }
+
+    protected virtual void OnRendered(RenderEventArgs e)
+    {
+    }
+
+    public virtual void HandleMouseInput()
+    {
+        var mc = Minecraft.INSTANCE;
+        int button = Mouse.getEventButton();
+        bool isButtonDown = Mouse.getEventButtonState();
+        int mouseX = Mouse.getEventX() * mc.displayWidth / mc.displayWidth;
+        int mouseY = mc.displayHeight - Mouse.getEventY() * mc.displayHeight / mc.displayHeight - 1;
+
+        if (isButtonDown && button is >= 0 and < Mouse.MouseButtons && MouseInBounds(mouseX, mouseY))
+        {
+            DoMousePressed(new(mouseX, mouseY, button, isButtonDown));
+        }
+        else if (!isButtonDown && button is >= 0 and < Mouse.MouseButtons)
+        {
+            DoMouseReleased(new(mouseX, mouseY, button, isButtonDown));
+        }
+
+        if (MouseInBounds(mouseX, mouseY))
+        {
+            DoMouseMoved(new(mouseX, mouseY, button, isButtonDown));
+        }
+
+        foreach (Control child in Children.ToArray())
+        {
+            child.HandleMouseInput();
+        }
+    }
+
+    public virtual void HandleKeyboardInput()
+    {
+        int key = Keyboard.getEventKey();
+        char keyChar = Keyboard.getEventCharacter();
+        bool isKeyDown = Keyboard.getEventKeyState();
+        bool isRepeat = Keyboard.isRepeatEvent();
+
+        DoKeyInput(new(key, keyChar, isKeyDown, isRepeat));
+
+        foreach (Control child in Children.ToArray())
+        {
+            child.HandleKeyboardInput();
+        }
+    }
+
+    public void HandleInput()
+    {
+        while (Mouse.next())
+        {
+            HandleMouseInput();
+        }
+
+        while (Keyboard.Next())
+        {
+            HandleKeyboardInput();
+        }
+    }
+}
+
+// Event argument classes
+public class MouseEventArgs : EventArgs
+{
+    public int MouseX { get; }
+    public int MouseY { get; }
+    public int Button { get; }
+    public bool Pressed { get; }
+    public bool Handled { get; set; }
+
+    public MouseEventArgs(int mouseX, int mouseY, int button, bool pressed)
+    {
+        MouseX = mouseX;
+        MouseY = mouseY;
+        Button = button;
+        Pressed = pressed;
+        Handled = false;
+    }
+}
+
+public class KeyboardEventArgs : EventArgs
+{
+    public int Key { get; }
+    public char KeyChar { get; }
+    public bool IsKeyDown { get; }
+    public bool IsRepeat { get; }
+    public bool Handled { get; set; }
+
+    public KeyboardEventArgs(int key, char keyChar, bool isKeyDown, bool isRepeat)
+    {
+        Key = key;
+        KeyChar = keyChar;
+        IsKeyDown = isKeyDown;
+        IsRepeat = isRepeat;
+        Handled = false;
+    }
+}
+
+public class RenderEventArgs : EventArgs
+{
+    public int MouseX { get; }
+    public int MouseY { get; }
+    public float TickDelta { get; }
+
+    public RenderEventArgs(int mouseX, int mouseY, float tickDelta)
+    {
+        MouseX = mouseX;
+        MouseY = mouseY;
+        TickDelta = tickDelta;
     }
 }

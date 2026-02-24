@@ -177,14 +177,14 @@ public class GuiMultiplayer : GuiScreen
         }
     }
 
-    public override void DeleteWorld(bool result, int id)
+    public override void DeleteWorld(bool confirmed, int index)
     {
         if (_deletingServer)
         {
             _deletingServer = false;
-            if (result)
+            if (confirmed)
             {
-                _serverList.RemoveAt(id);
+                _serverList.RemoveAt(index);
                 SaveServerList();
                 _selectedServerIndex = -1;
             }

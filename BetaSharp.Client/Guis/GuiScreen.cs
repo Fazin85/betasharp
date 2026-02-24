@@ -65,88 +65,12 @@ public class GuiScreen : Control
         }
     }
 
-    protected virtual void MouseClicked(int mouseX, int mouseY, int button)
-    {
-        if (button != 0)
-            return;
-
-        foreach (Control control in Children.Where(control => control.JustClicked(mouseX, mouseY, button)))
-        {
-            SelectedButton = control;
-            mc.sndManager.PlaySoundFX("random.click", 1.0F, 1.0F);
-            ActionPerformed(control);
-        }
-    }
-
-    protected virtual void MouseMovedOrUp(int x, int y, int button)
-    {
-        if (SelectedButton != null && button == 0)
-        {
-            SelectedButton.MouseReleased(x, y);
-            SelectedButton = null;
-        }
-    }
-
     public void SetWorldAndResolution(Minecraft mc, int width, int height)
     {
         ParticlesGui = new GuiParticle(mc);
         this.mc = mc;
         FontRenderer = mc.fontRenderer;
-        Width = width;
-        Height = height;
-        _controlList.Clear();
-        InitGui();
-    }
-
-    public virtual void InitGui()
-    {
-    }
-
-    public void HandleInput()
-    {
-        while (Mouse.next())
-        {
-            HandleMouseInput();
-        }
-
-        while (Keyboard.Next())
-        {
-            HandleKeyboardInput();
-        }
-    }
-
-    public virtual void HandleMouseInput()
-    {
-        int x = Mouse.getEventX() * Width / mc.displayWidth;
-        int y = Height - Mouse.getEventY() * Height / mc.displayHeight - 1;
-        if (Mouse.getEventButtonState())
-        {
-            MouseClicked(x, y, Mouse.getEventButton());
-        }
-        else
-        {
-            MouseMovedOrUp(x, y, Mouse.getEventButton());
-        }
-    }
-
-    public void HandleKeyboardInput()
-    {
-        if (Keyboard.getEventKeyState())
-        {
-            int key = Keyboard.getEventKey();
-            char c = Keyboard.getEventCharacter();
-
-            if (key == Keyboard.KEY_F11)
-            {
-                mc.toggleFullscreen();
-                return;
-            }
-
-            if (key != Keyboard.KEY_NONE)
-            {
-                KeyTyped(c, key);
-            }
-        }
+        Size = new(width, height);
     }
 
     public virtual void UpdateScreen() { }
@@ -197,7 +121,10 @@ public class GuiScreen : Control
         tess.draw();
     }
 
-    public virtual void DeleteWorld(bool var1, int var2) { }
+    public virtual void DeleteWorld(bool confirmed, int index) { }
 
-    public virtual void SelectNextField() { }
+    public virtual void SelectNextField()
+    {
+
+    }
 }

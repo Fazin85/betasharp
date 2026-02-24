@@ -140,14 +140,14 @@ public class GuiSelectWorld : GuiScreen
         }
     }
 
-    public override void DeleteWorld(bool confirmed, int worldIndex)
+    public override void DeleteWorld(bool confirmed, int index)
     {
         if (deleting)
         {
             deleting = false;
             if (confirmed)
             {
-                performDelete(worldIndex);
+                performDelete(index);
             }
 
             mc.displayGuiScreen(this);
