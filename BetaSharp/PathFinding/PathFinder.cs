@@ -63,7 +63,7 @@ internal class PathFinder
         PathPoint closestPoint = start;
 
         int iterations = 0;
-        int iterationLimit = 1024;
+        int iterationLimit = 4096;
 
         while (!_path.IsPathEmpty())
         {
@@ -199,14 +199,14 @@ internal class PathFinder
     private PathPoint OpenPoint(int x, int y, int z)
     {
         int hash = PathPoint.CalculateHash(x, y, z);
-        int mapIndex = hash & 1023; 
-        
+        int mapIndex = hash & 1023;
+
         PathPoint? point = _pointMap[mapIndex];
         while (point != null)
         {
             if (point.X == x && point.Y == y && point.Z == z)
             {
-                return point; 
+                return point;
             }
             point = point.NextMapNode;
         }
@@ -220,7 +220,7 @@ internal class PathFinder
         {
             point = new PathPoint(x, y, z);
         }
-        
+
         point.NextMapNode = _pointMap[mapIndex];
         _pointMap[mapIndex] = point;
 
@@ -274,16 +274,16 @@ internal class PathFinder
 
         PathPoint[] pathPoints = new PathPoint[length];
         current = end;
-        length--; 
+        length--;
 
-        pathPoints[length] = new PathPoint(end.X, end.Y, end.Z); 
-        
+        pathPoints[length] = new PathPoint(end.X, end.Y, end.Z);
+
         while (current.Previous != null)
         {
             current = current.Previous;
-            length--; 
+            length--;
 
-            pathPoints[length] = new PathPoint(current.X, current.Y, current.Z); 
+            pathPoints[length] = new PathPoint(current.X, current.Y, current.Z);
         }
 
         return new PathEntity(pathPoints);
