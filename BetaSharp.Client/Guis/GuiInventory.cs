@@ -37,7 +37,7 @@ public class GuiInventory : GuiContainer
         int guiLeft = (Width - _xSize) / 2;
         int guiTop = (Height - _ySize) / 2;
 
-        DrawTexturedRect(guiLeft, guiTop, 0, 0, _xSize, _ySize);
+        DrawTextureRegion(guiLeft, guiTop, 0, 0, _xSize, _ySize);
         GLManager.GL.Enable(GLEnum.RescaleNormal);
         GLManager.GL.Enable(GLEnum.ColorMaterial);
         GLManager.GL.PushMatrix();

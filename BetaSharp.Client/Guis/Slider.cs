@@ -47,7 +47,7 @@ public class Slider : Control
             return;
 
         GLManager.GL.Color4(1, 1, 1, 1);
-        DrawTexturedRect(X + (int)(Value * (Width - 8)), Y, 0, 66, 4, 20);
-        DrawTexturedRect(X + (int)(Value * (Width - 8)) + 4, Y, 196, 66, 4, 20);
+        DrawTextureRegion(X + (int)(Value * (Width - 8)), Y, 0, 66, 4, 20);
+        DrawTextureRegion(X + (int)(Value * (Width - 8)) + 4, Y, 196, 66, 4, 20);
     }
 }

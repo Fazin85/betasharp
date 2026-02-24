@@ -341,7 +341,7 @@ public partial class Minecraft
         short var4 = 256;
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         tessellator.setColorOpaque_I(0xFFFFFF);
-        drawTextureRegion((var1.ScaledWidth - var3) / 2, (var1.ScaledHeight - var4) / 2, 0, 0, var3, var4);
+        DrawTextureRegion((var1.ScaledWidth - var3) / 2, (var1.ScaledHeight - var4) / 2, 0, 0, var3, var4);
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.Disable(GLEnum.Fog);
         GLManager.GL.Enable(GLEnum.AlphaTest);
@@ -349,7 +349,7 @@ public partial class Minecraft
         Display.swapBuffers();
     }
 
-    public void drawTextureRegion(int x, int y, int texX, int texY, int width, int height)
+    public static void DrawTextureRegion(int x, int y, int texX, int texY, int width, int height)
     {
         float uScale = 1 / 256f;
         float vScale = 1 / 256f;

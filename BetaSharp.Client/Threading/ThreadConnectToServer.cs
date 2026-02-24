@@ -14,18 +14,18 @@ public class ThreadConnectToServer(GuiConnecting connectingGui, Minecraft mc, st
     {
         try
         {
-            GuiConnecting.setNetClientHandler(connectingGui, new ClientNetworkHandler(mc, hostName, port));
+            _connectingGui.ClientHandler = new(_mc, _hostName, _port);
 
-            if (GuiConnecting.isCancelled(connectingGui))
+            if (_connectingGui.Cancelled)
             {
                 return;
             }
 
-            GuiConnecting.getNetClientHandler(connectingGui).addToSendQueue(new HandshakePacket(mc.session.username));
+            _connectingGui.ClientHandler.addToSendQueue(new HandshakePacket(_mc.session.username));
         }
         catch (UnknownHostException)
         {
-            if (GuiConnecting.isCancelled(connectingGui))
+            if (_connectingGui.Cancelled)
             {
                 return;
             }
@@ -34,7 +34,7 @@ public class ThreadConnectToServer(GuiConnecting connectingGui, Minecraft mc, st
         }
         catch (ConnectException ex)
         {
-            if (GuiConnecting.isCancelled(connectingGui))
+            if (_connectingGui.Cancelled)
             {
                 return;
             }
@@ -43,7 +43,7 @@ public class ThreadConnectToServer(GuiConnecting connectingGui, Minecraft mc, st
         }
         catch (Exception e)
         {
-            if (GuiConnecting.isCancelled(connectingGui))
+            if (_connectingGui.Cancelled)
             {
                 return;
             }

@@ -22,9 +22,9 @@ public class Button : Control
         bool hovered = PointInBounds(e.MouseX, e.MouseY);
         int buttonTexture = Enabled ? (hovered ? 40 : 20) : 0;
         // Left half of button
-        DrawTexturedRect(X, Y, 0, 46 + buttonTexture * 20, Width / 2, Height);
+        DrawTextureRegion(X, Y, 0, 46 + buttonTexture * 20, Width / 2, Height);
         // Right half of button
-        DrawTexturedRect(X + Width / 2, Y, 200 - Width / 2, 46 + buttonTexture * 20, Width / 2, Height);
+        DrawTextureRegion(X + Width / 2, Y, 200 - Width / 2, 46 + buttonTexture * 20, Width / 2, Height);
 
         if (!Enabled)
         {

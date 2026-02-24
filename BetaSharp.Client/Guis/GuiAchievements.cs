@@ -9,7 +9,7 @@ using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiAchievements: GuiScreen
+public class GuiAchievements : GuiScreen
 {
     private static readonly int field_27126_s = BetaSharp.Achievements.minColumn * 24 - 112;
     private static readonly int field_27125_t = BetaSharp.Achievements.minRow * 24 - 112;
@@ -243,7 +243,7 @@ public class GuiAchievements: GuiScreen
                     var26 = Block.Bedrock.textureId;
                 }
 
-                DrawTexturedRect(var10 + var24 * 16 - var14, var11 + var22 * 16 - var15, var26 % 16 << 4, var26 >> 4 << 4, 16, 16);
+                DrawTextureRegion(var10 + var24 * 16 - var14, var11 + var22 * 16 - var15, var26 % 16 << 4, var26 >> 4 << 4, 16, 16);
             }
         }
 
@@ -326,11 +326,11 @@ public class GuiAchievements: GuiScreen
                 var34 = var11 + var17;
                 if (var30.isChallenge())
                 {
-                    DrawTexturedRect(var33 - 2, var34 - 2, 26, 202, 26, 26);
+                    DrawTextureRegion(var33 - 2, var34 - 2, 26, 202, 26, 26);
                 }
                 else
                 {
-                    DrawTexturedRect(var33 - 2, var34 - 2, 0, 202, 26, 26);
+                    DrawTextureRegion(var33 - 2, var34 - 2, 0, 202, 26, 26);
                 }
 
                 if (!statFileWriter.CanUnlockAchievement(var30))
@@ -361,7 +361,7 @@ public class GuiAchievements: GuiScreen
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.BindTexture(var7);
-        DrawTexturedRect(var8, var9, 0, 0, field_27121_a, field_27119_i);
+        DrawTextureRegion(var8, var9, 0, 0, field_27121_a, field_27119_i);
         GLManager.GL.PopMatrix();
         ZLevel = 0.0F;
         GLManager.GL.DepthFunc(GLEnum.Lequal);

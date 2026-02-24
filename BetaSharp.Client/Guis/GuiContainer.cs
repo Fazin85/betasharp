@@ -128,7 +128,7 @@ public abstract class GuiContainer : GuiScreen
             {
                 GLManager.GL.Disable(GLEnum.Lighting);
                 mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/items.png"));
-                DrawTexturedRect(x, y, iconIdx % 16 * 16, iconIdx / 16 * 16, 16, 16);
+                DrawTextureRegion(x, y, iconIdx % 16 * 16, iconIdx / 16 * 16, 16, 16);
                 GLManager.GL.Enable(GLEnum.Lighting);
                 return;
             }
@@ -205,7 +205,6 @@ public abstract class GuiContainer : GuiScreen
 
     public override void UpdateScreen()
     {
-        base.UpdateScreen();
         if (!mc.player.isAlive() || mc.player.dead)
         {
             mc.player.closeHandledScreen();

@@ -4,7 +4,7 @@ using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
 
-public abstract class GuiSlot
+public abstract class GuiList
 {
     private readonly Minecraft _mc;
     private readonly int _width;
@@ -27,7 +27,7 @@ public abstract class GuiSlot
     private bool _hasHeader;
     private int _headerHeight;
 
-    public GuiSlot(Minecraft mc, int width, int height, int top, int bottom, int posZ)
+    public GuiList(Minecraft mc, int width, int height, int top, int bottom, int posZ)
     {
         _mc = mc;
         _width = width;

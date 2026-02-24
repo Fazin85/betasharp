@@ -4,7 +4,7 @@ using BetaSharp.Screens;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiChest: GuiContainer
+public class GuiChest : GuiContainer
 {
     private readonly IInventory _upperChestInventory;
     private readonly IInventory _lowerChestInventory;
@@ -35,8 +35,8 @@ public class GuiChest: GuiContainer
         int guiLeft = (Width - _xSize) / 2;
         int guiTop = (Height - _ySize) / 2;
 
-        DrawTexturedRect(guiLeft, guiTop, 0, 0, _xSize, _inventoryRows * 18 + 17);
+        DrawTextureRegion(guiLeft, guiTop, 0, 0, _xSize, _inventoryRows * 18 + 17);
 
-        DrawTexturedRect(guiLeft, guiTop + _inventoryRows * 18 + 17, 0, 126, _xSize, 96);
+        DrawTextureRegion(guiLeft, guiTop + _inventoryRows * 18 + 17, 0, 126, _xSize, 96);
     }
 }

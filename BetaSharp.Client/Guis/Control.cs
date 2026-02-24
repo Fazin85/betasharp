@@ -142,7 +142,7 @@ public class Control
         Size = new(newWidth, newHeight);
     }
 
-    public void DrawTexturedRect(int x, int y, int u, int v, int width, int height)
+    public void DrawTextureRegion(int x, int y, int u, int v, int width, int height)
     {
         float f = 0.00390625F;
         Tessellator tess = Tessellator.instance;

@@ -8,9 +8,8 @@ public class GuiConnecting : GuiScreen
 {
     private readonly ILogger<GuiConnecting> _logger = Log.Instance.For<GuiConnecting>();
 
-    private ClientNetworkHandler _clientHandler;
-    private bool _cancelled = false;
-    private const int _buttonCancel = 0;
+    public ClientNetworkHandler ClientHandler;
+    public bool Cancelled { get; private set; }
 
     public override bool PausesGame=> false;
 
@@ -19,53 +18,42 @@ public class GuiConnecting : GuiScreen
         _logger.LogInformation($"Connecting to {host}, {port}");
         mc.changeWorld(null);
         new ThreadConnectToServer(this, mc, host, port).start();
+        AddCancelButton();
     }
 
     public GuiConnecting(Minecraft mc, ClientNetworkHandler clientHandler)
     {
-        _clientHandler = clientHandler;
+        ClientHandler = clientHandler;
         mc.changeWorld(null);
+        AddCancelButton();
+    }
+
+    private void AddCancelButton()
+    {
+        TranslationStorage translations = TranslationStorage.Instance;
+        Button cancelButton = new(Width / 2 - 100, Height / 4 + 120 + 12, translations.TranslateKey("gui.cancel"));
+        cancelButton.Clicked += (_, _) =>
+        {
+            Cancelled = true;
+            ClientHandler?.disconnect();
+            mc.OpenScreen(new GuiMainMenu());
+        };
+        Children.Add(cancelButton);
     }
 
     public override void UpdateScreen()
     {
-        if (_clientHandler != null)
+        if (ClientHandler != null)
         {
-            _clientHandler.tick();
+            ClientHandler.tick();
         }
-
-    }
-
-    protected override void OnKeyInput(KeyboardEventArgs e)
-    {
-    }
-
-    public override void InitGui()
-    {
-        TranslationStorage translations = TranslationStorage.Instance;
-        Children.Clear();
-        Children.Add(new Button(_buttonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.TranslateKey("gui.cancel")));
-    }
-
-    protected override void ActionPerformed(Button button)
-    {
-        switch (button.Id)
-        {
-            case _buttonCancel:
-                _cancelled = true;
-                _clientHandler?.disconnect();
-
-                mc.OpenScreen(new GuiMainMenu());
-                break;
-        }
-
     }
 
     protected override void OnRendered(RenderEventArgs e)
     {
         DrawDefaultBackground();
         TranslationStorage translations = TranslationStorage.Instance;
-        if (_clientHandler == null)
+        if (ClientHandler == null)
         {
             Gui.DrawCenteredString(FontRenderer, translations.TranslateKey("connect.connecting"), Width / 2, Height / 2 - 50, 0xFFFFFF);
             Gui.DrawCenteredString(FontRenderer, "", Width / 2, Height / 2 - 10, 0xFFFFFF);
@@ -73,24 +61,7 @@ public class GuiConnecting : GuiScreen
         else
         {
             Gui.DrawCenteredString(FontRenderer, translations.TranslateKey("connect.authorizing"), Width / 2, Height / 2 - 50, 0xFFFFFF);
-            Gui.DrawCenteredString(FontRenderer, _clientHandler.field_1209_a, Width / 2, Height / 2 - 10, 0xFFFFFF);
+            Gui.DrawCenteredString(FontRenderer, ClientHandler.field_1209_a, Width / 2, Height / 2 - 10, 0xFFFFFF);
         }
-
-        base.OnRendered(mouseX, mouseY, tickDelta);
-    }
-
-    public static ClientNetworkHandler setNetClientHandler(GuiConnecting guiConnecting, ClientNetworkHandler handler)
-    {
-        return guiConnecting._clientHandler = handler;
-    }
-
-    public static bool isCancelled(GuiConnecting guiConnecting)
-    {
-        return guiConnecting._cancelled;
-    }
-
-    public static ClientNetworkHandler getNetClientHandler(GuiConnecting guiConnecting)
-    {
-        return guiConnecting._clientHandler;
     }
 }

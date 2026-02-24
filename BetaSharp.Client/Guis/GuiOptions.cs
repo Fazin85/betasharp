@@ -4,14 +4,8 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiOptions : GuiScreen
 {
-    private readonly GuiScreen _parentScreen;
-    private readonly GameOptions _options;
-
     public GuiOptions(GuiScreen parentScreen, GameOptions options)
     {
-        _parentScreen = parentScreen;
-        _options = options;
-
         TranslationStorage translations = TranslationStorage.Instance;
         Text = translations.TranslateKey("options.title");
         DisplayTitle = true;
@@ -19,9 +13,9 @@ public class GuiOptions : GuiScreen
         int buttonLeft = Width / 2 - 100;
         int topY = Height / 6 + 12;
 
-        for (int i = 0; i < _options.MainScreenOptions.Length; i++)
+        for (int i = 0; i < options.MainScreenOptions.Length; i++)
         {
-            GameOption option = _options.MainScreenOptions[i];
+            GameOption option = options.MainScreenOptions[i];
             int x = buttonLeft - 55 + (i % 2 * 160);
             int y = topY + 12 * (i / 2);
 
@@ -48,7 +42,7 @@ public class GuiOptions : GuiScreen
         videoSettingsButton.Clicked += (_, _) =>
         {
             mc.options.SaveOptions();
-            mc.OpenScreen(new GuiVideoSettings(this, _options));
+            mc.OpenScreen(new GuiVideoSettings(this, options));
         };
         debugSettingsButton.Clicked += (_, _) =>
         {
@@ -58,19 +52,19 @@ public class GuiOptions : GuiScreen
         audioSettingsButton.Clicked += (_, _) =>
         {
             mc.options.SaveOptions();
-            mc.OpenScreen(new GuiAudio(this, _options));
+            mc.OpenScreen(new GuiAudio(this, options));
         };
         controlsButton.Clicked += (_, _) =>
         {
             mc.options.SaveOptions();
-            mc.OpenScreen(new GuiControls(this, _options));
+            mc.OpenScreen(new GuiControls(this, options));
         };
         doneButton.Clicked += (_, _) =>
         {
             mc.options.SaveOptions();
-            mc.OpenScreen(_parentScreen);
+            mc.OpenScreen(parentScreen);
         };
-        Children.AddRange([videoSettingsButton, debugSettingsButton, audioSettingsButton, controlsButton, doneButton]);
+        Children.AddRange(videoSettingsButton, debugSettingsButton, audioSettingsButton, controlsButton, doneButton);
     }
 
     protected override void OnRendered(RenderEventArgs e)

@@ -4,12 +4,12 @@ using BetaSharp.Stats;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiSlotStatsItem : GuiSlotStats<StatCrafting, StatCrafting>
+public class GuiListStatsItem : GuiListStats<StatCrafting, StatCrafting>
 {
     public GuiStats ParentStatsGui { get; }
 
 
-    public GuiSlotStatsItem(GuiStats parent) : base(parent)
+    public GuiListStatsItem(GuiStats parent) : base(parent)
     {
         ParentStatsGui = parent;
         StatSorter = new SorterStatsItem(this, parent);

@@ -1,29 +1,12 @@
 namespace BetaSharp.Client.Guis;
 
-public class GuiConflictWarning: GuiScreen
+public class GuiConflictWarning : GuiScreen
 {
-    private int _updateCounter = 0;
-
-    public override void UpdateScreen()
+    public GuiConflictWarning()
     {
-        ++_updateCounter;
-    }
-
-    public override void InitGui()
-    {
-        Children.Clear();
-        Children.Add(new Button(0, Width / 2 - 100, Height / 4 + 120 + 12, "Back to title screen"));
-    }
-
-    protected override void ActionPerformed(Button btt)
-    {
-        if (btt.Enabled)
-        {
-            if (btt.Id == 0)
-            {
-                mc.OpenScreen(new GuiMainMenu());
-            }
-        }
+        Button backButton = new(Width / 2 - 100, Height / 4 + 120 + 12, "Back to title screen");
+        backButton.Clicked += (_, _) => mc.OpenScreen(new GuiMainMenu());
+        Children.Add(backButton);
     }
 
     protected override void OnRendered(RenderEventArgs e)
@@ -34,6 +17,5 @@ public class GuiConflictWarning: GuiScreen
         Gui.DrawString(FontRenderer, "This could be caused by two copies of the game", Width / 2 - 140, Height / 4 - 60 + 60 + 18, 0xA0A0A0);
         Gui.DrawString(FontRenderer, "accessing the same level.", Width / 2 - 140, Height / 4 - 60 + 60 + 27, 0xA0A0A0);
         Gui.DrawString(FontRenderer, "To prevent level corruption, the current game has quit.", Width / 2 - 140, Height / 4 - 60 + 60 + 45, 0xA0A0A0);
-        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 }

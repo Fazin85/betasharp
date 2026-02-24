@@ -4,12 +4,12 @@ using java.util;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiTexturePackSlot : GuiSlot
+public class GuiTexturePackList : GuiList
 {
     public readonly GuiTexturePacks _parentTexturePackGui;
 
 
-    public GuiTexturePackSlot(GuiTexturePacks parent)
+    public GuiTexturePackList(GuiTexturePacks parent)
         : base(parent.mc, parent.Width, parent.Height, 32, parent.Height - 55 + 4, 36)
     {
         _parentTexturePackGui = parent;

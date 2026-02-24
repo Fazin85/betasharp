@@ -30,7 +30,7 @@ public class GuiControls : GuiScreen
             mc.OpenScreen(parentScreen);
         };
 
-        Children.AddRange([sensitivitySlider, invertMouseButton, doneButton]);
+        Children.AddRange(sensitivitySlider, invertMouseButton, doneButton);
     }
 
     protected override void OnRendered(RenderEventArgs e)

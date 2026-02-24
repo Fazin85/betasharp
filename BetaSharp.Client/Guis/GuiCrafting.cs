@@ -5,7 +5,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiCrafting: GuiContainer
+public class GuiCrafting : GuiContainer
 {
     public GuiCrafting(InventoryPlayer player, World world, int posX, int posY, int posZ) : base(new CraftingScreenHandler(player, world, posX, posY, posZ))
     {
@@ -29,6 +29,6 @@ public class GuiCrafting: GuiContainer
         mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/crafting.png"));
         int guiLeft = (Width - _xSize) / 2;
         int guiTop = (Height - _ySize) / 2;
-        DrawTexturedRect(guiLeft, guiTop, 0, 0, _xSize, _ySize);
+        DrawTextureRegion(guiLeft, guiTop, 0, 0, _xSize, _ySize);
     }
 }

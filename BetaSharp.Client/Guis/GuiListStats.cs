@@ -5,7 +5,7 @@ using BetaSharp.Stats;
 
 namespace BetaSharp.Client.Guis;
 
-public abstract class GuiSlotStats<T, K>(GuiStats statsGui) : GuiSlot(statsGui.mc, statsGui.Width, statsGui.Height, 32, statsGui.Height - 64, 20)
+public abstract class GuiListStats<T, K>(GuiStats statsGui) : GuiList(statsGui.mc, statsGui.Width, statsGui.Height, 32, statsGui.Height - 64, 20)
     where K : class, T
 {
     public int ActiveStatType { get; set; } = -1;

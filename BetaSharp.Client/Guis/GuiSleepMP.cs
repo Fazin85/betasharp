@@ -6,13 +6,14 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiSleepMP : GuiChat
 {
-    private const int ButtonStopSleep = 1;
-
     public override void InitGui()
     {
         Keyboard.enableRepeatEvents(true);
         TranslationStorage translations = TranslationStorage.Instance;
-        Children.Add(new Button(ButtonStopSleep, Width / 2 - 100, Height - 40, translations.TranslateKey("multiplayer.stopSleeping")));
+        Button stopSleepingButton =
+            new(Width / 2 - 100, Height - 40, translations.TranslateKey("multiplayer.stopSleeping"));
+        stopSleepingButton.Clicked += (_, _) => sendStopSleepingCommand();
+        Children.Add(stopSleepingButton);
     }
 
     public override void OnGuiClosed()
@@ -22,11 +23,11 @@ public class GuiSleepMP : GuiChat
 
     protected override void OnKeyInput(KeyboardEventArgs e)
     {
-        if (eventKey == 1)
+        if (e.Key == Keyboard.KEY_ESCAPE)
         {
             sendStopSleepingCommand();
         }
-        else if (eventKey == 28)
+        else if (e.Key == Keyboard.KEY_RETURN)
         {
             string trimmed = _message.Trim();
             if (trimmed.Length > 0)
@@ -36,30 +37,6 @@ public class GuiSleepMP : GuiChat
 
             _message = "";
         }
-        else
-        {
-            base.KeyTyped(eventChar, eventKey);
-        }
-
-    }
-
-    protected override void OnRendered(RenderEventArgs e)
-    {
-        base.OnRendered(mouseX, mouseY, tickDelta);
-    }
-
-    protected override void ActionPerformed(Button button)
-    {
-        switch (button.Id)
-        {
-            case ButtonStopSleep:
-                sendStopSleepingCommand();
-                break;
-            default:
-                base.ActionPerformed(button);
-                break;
-        }
-
     }
 
     private void sendStopSleepingCommand()
@@ -69,6 +46,5 @@ public class GuiSleepMP : GuiChat
             ClientNetworkHandler sendQueue = ((EntityClientPlayerMP)mc.player).sendQueue;
             sendQueue.addToSendQueue(new ClientCommandC2SPacket(mc.player, 3));
         }
-
     }
 }

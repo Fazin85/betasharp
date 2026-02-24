@@ -2,43 +2,18 @@
 
 public class GuiYesNo : GuiScreen
 {
-    private const int ButtonConfirm = 0;
-    private const int ButtonCancel = 1;
-
-    private readonly GuiScreen _parentScreen;
     private readonly string _message1;
     private readonly string _message2;
-    private readonly string _confirmButtonText;
-    private readonly string _cancelButtonText;
-    private readonly int _worldNumber;
 
     public GuiYesNo(GuiScreen parentScreen, string message1, string message2, string confirmButtonText, string cancelButtonText, int worldNumber)
     {
-        _parentScreen = parentScreen;
         _message1 = message1;
         _message2 = message2;
-        _confirmButtonText = confirmButtonText;
-        _cancelButtonText = cancelButtonText;
-        _worldNumber = worldNumber;
-    }
-
-    public override void InitGui()
-    {
-        Children.Add(new GuiSmallButton(ButtonConfirm, Width / 2 - 155 + 0, Height / 6 + 96, _confirmButtonText));
-        Children.Add(new GuiSmallButton(ButtonCancel, Width / 2 - 155 + 160, Height / 6 + 96, _cancelButtonText));
-    }
-
-    protected override void ActionPerformed(Button button)
-    {
-        switch (button.Id)
-        {
-            case ButtonConfirm:
-                _parentScreen.DeleteWorld(true, _worldNumber);
-                break;
-            case ButtonCancel:
-                _parentScreen.DeleteWorld(false, _worldNumber);
-                break;
-        }
+        Button confirmButton = new(Width / 2 - 155, Height / 6 + 96, confirmButtonText) { Size = new(150, 20) };
+        Button cancelButton = new(Width / 2 - 155 + 160, Height / 6 + 96, cancelButtonText) { Size = new(150, 20) };
+        confirmButton.Clicked += (_, _) => parentScreen.DeleteWorld(true, worldNumber);
+        cancelButton.Clicked += (_, _) => parentScreen.DeleteWorld(false, worldNumber);
+        Children.AddRange(confirmButton, cancelButton);
     }
 
     protected override void OnRendered(RenderEventArgs e)
@@ -46,6 +21,5 @@ public class GuiYesNo : GuiScreen
         DrawDefaultBackground();
         Gui.DrawCenteredString(FontRenderer, _message1, Width / 2, 70, 0xFFFFFF);
         Gui.DrawCenteredString(FontRenderer, _message2, Width / 2, 90, 0xFFFFFF);
-        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 }

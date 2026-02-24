@@ -65,14 +65,14 @@ public class GuiIngame : Control
         _mc.textureManager.BindTexture(_mc.textureManager.GetTextureId("/gui/gui.png"));
         InventoryPlayer inventory = _mc.player.inventory;
         ZLevel = -90.0F;
-        DrawTexturedRect(scaledWidth / 2 - 91, scaledHeight - 22, 0, 0, 182, 22);
-        DrawTexturedRect(scaledWidth / 2 - 91 - 1 + inventory.selectedSlot * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
+        DrawTextureRegion(scaledWidth / 2 - 91, scaledHeight - 22, 0, 0, 182, 22);
+        DrawTextureRegion(scaledWidth / 2 - 91 - 1 + inventory.selectedSlot * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
         _mc.textureManager.BindTexture(_mc.textureManager.GetTextureId("/gui/icons.png"));
         if (_mc.options.CameraMode == EnumCameraMode.FirstPerson)
         {
             GLManager.GL.Enable(GLEnum.Blend);
             GLManager.GL.BlendFunc(GLEnum.OneMinusDstColor, GLEnum.OneMinusSrcColor);
-            DrawTexturedRect(scaledWidth / 2 - 7, scaledHeight / 2 - 7, 0, 0, 16, 16);
+            DrawTextureRegion(scaledWidth / 2 - 7, scaledHeight / 2 - 7, 0, 0, 16, 16);
             GLManager.GL.Disable(GLEnum.Blend);
         }
         bool heartBlink = _mc.player.hearts / 3 % 2 == 1;
@@ -100,17 +100,17 @@ public class GuiIngame : Control
                     k = scaledWidth / 2 + 91 - i * 8 - 9;
                     if (i * 2 + 1 < armorValue)
                     {
-                        DrawTexturedRect(k, j, 34, 9, 9, 9);
+                        DrawTextureRegion(k, j, 34, 9, 9, 9);
                     }
 
                     if (i * 2 + 1 == armorValue)
                     {
-                        DrawTexturedRect(k, j, 25, 9, 9, 9);
+                        DrawTextureRegion(k, j, 25, 9, 9, 9);
                     }
 
                     if (i * 2 + 1 > armorValue)
                     {
-                        DrawTexturedRect(k, j, 16, 9, 9, 9);
+                        DrawTextureRegion(k, j, 16, 9, 9, 9);
                     }
                 }
 
@@ -126,28 +126,28 @@ public class GuiIngame : Control
                     j += _rand.NextInt(2);
                 }
 
-                DrawTexturedRect(x, j, 16 + blinkIndex * 9, 0, 9, 9);
+                DrawTextureRegion(x, j, 16 + blinkIndex * 9, 0, 9, 9);
                 if (heartBlink)
                 {
                     if (i * 2 + 1 < lastHealth)
                     {
-                        DrawTexturedRect(x, j, 70, 0, 9, 9);
+                        DrawTextureRegion(x, j, 70, 0, 9, 9);
                     }
 
                     if (i * 2 + 1 == lastHealth)
                     {
-                        DrawTexturedRect(x, j, 79, 0, 9, 9);
+                        DrawTextureRegion(x, j, 79, 0, 9, 9);
                     }
                 }
 
                 if (i * 2 + 1 < health)
                 {
-                    DrawTexturedRect(x, j, 52, 0, 9, 9);
+                    DrawTextureRegion(x, j, 52, 0, 9, 9);
                 }
 
                 if (i * 2 + 1 == health)
                 {
-                    DrawTexturedRect(x, j, 61, 0, 9, 9);
+                    DrawTextureRegion(x, j, 61, 0, 9, 9);
                 }
             }
 
@@ -160,11 +160,11 @@ public class GuiIngame : Control
                 {
                     if (k < i)
                     {
-                        DrawTexturedRect(scaledWidth / 2 - 91 + k * 8, scaledHeight - 32 - 9, 16, 18, 9, 9);
+                        DrawTextureRegion(scaledWidth / 2 - 91 + k * 8, scaledHeight - 32 - 9, 16, 18, 9, 9);
                     }
                     else
                     {
-                        DrawTexturedRect(scaledWidth / 2 - 91 + k * 8, scaledHeight - 32 - 9, 25, 18, 9, 9);
+                        DrawTextureRegion(scaledWidth / 2 - 91 + k * 8, scaledHeight - 32 - 9, 25, 18, 9, 9);
                     }
                 }
             }

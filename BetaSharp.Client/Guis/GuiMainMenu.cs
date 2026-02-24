@@ -52,7 +52,7 @@ public class GuiMainMenu : GuiScreen
         optionsButton.Clicked += (_, _) => mc.OpenScreen(new GuiOptions(this, mc.options));
         quitButton.Clicked += (_, _) => mc.shutdown();
 
-        Children.AddRange([singleplayerButton, multiplayerButton, texturePacksButton, optionsButton]);
+        Children.AddRange(singleplayerButton, multiplayerButton, texturePacksButton, optionsButton);
         if (!mc.hideQuitButton)
         {
             Children.Add(quitButton);
@@ -73,8 +73,8 @@ public class GuiMainMenu : GuiScreen
         byte logoY = 30;
         mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/title/mclogo.png"));
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        DrawTexturedRect(logoX + 0, logoY + 0, 0, 0, 155, 44);
-        DrawTexturedRect(logoX + 155, logoY + 0, 0, 45, 155, 44);
+        DrawTextureRegion(logoX + 0, logoY + 0, 0, 0, 155, 44);
+        DrawTextureRegion(logoX + 155, logoY + 0, 0, 45, 155, 44);
         tess.setColorOpaque_I(0xFFFFFF);
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(Width / 2 + 90, 70.0F, 0.0F);

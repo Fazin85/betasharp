@@ -251,8 +251,8 @@ public class GameRenderer
             ScaledResolution var13 = new(_client.options, _client.displayWidth, _client.displayHeight);
             int var14 = var13.ScaledWidth;
             int var15 = var13.ScaledHeight;
-            int var16 = Mouse.getX() * var14 / _client.displayWidth;
-            int var17 = var15 - Mouse.getY() * var15 / _client.displayHeight - 1;
+            int mouseX = Mouse.getX() * var14 / _client.displayWidth;
+            int mouseY = var15 - Mouse.getY() * var15 / _client.displayHeight - 1;
             int var7 = 30 + (int)(_client.options.LimitFramerate * 210.0f);
 
             if (var7 < 240)
@@ -268,7 +268,7 @@ public class GameRenderer
                 Profiler.Start("renderGameOverlay");
                 if (!_client.options.HideGUI || _client.currentScreen != null)
                 {
-                    _client.ingameGUI.DoRendered(new(var16, var17, tickDelta));
+                    _client.ingameGUI.DoRendered(new(mouseX, mouseY, tickDelta));
                 }
                 Profiler.Stop("renderGameOverlay");
             }
@@ -285,8 +285,8 @@ public class GameRenderer
             if (_client.currentScreen != null)
             {
                 GLManager.GL.Clear(ClearBufferMask.DepthBufferBit);
-                _client.currentScreen.OnRendered(var16, var17, tickDelta);
-                if (_client.currentScreen != null && _client.currentScreen.ParticlesGui != null)
+                _client.currentScreen.DoRendered(new(mouseX, mouseY, tickDelta));
+                if (_client.currentScreen is { ParticlesGui: not null })
                 {
                     _client.currentScreen.ParticlesGui.render(tickDelta);
                 }
@@ -499,7 +499,6 @@ public class GameRenderer
                     _client.world.playSound(var8, var10, var12, "ambient.weather.rain", 0.2F, 1.0F);
                 }
             }
-
         }
     }
 

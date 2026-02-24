@@ -1,10 +1,9 @@
 namespace BetaSharp.Client.Guis;
 
-public class GuiConnectFailed: GuiScreen
+public class GuiConnectFailed : GuiScreen
 {
     private readonly string _errorMessage;
     private readonly string _errorDetail;
-    private const int _buttonToMenu = 0;
 
     public GuiConnectFailed(string messageKey, string detailKey, params object[]? formatArgs)
     {
@@ -19,33 +18,10 @@ public class GuiConnectFailed: GuiScreen
             _errorDetail = translations.TranslateKey(detailKey);
         }
 
-    }
-
-    public override void UpdateScreen()
-    {
-    }
-
-    protected override void OnKeyInput(KeyboardEventArgs e)
-    {
-    }
-
-    public override void InitGui()
-    {
         mc.stopInternalServer();
-        TranslationStorage translations = TranslationStorage.Instance;
-        Children.Clear();
-        Children.Add(new Button(_buttonToMenu, Width / 2 - 100, Height / 4 + 120 + 12, translations.TranslateKey("gui.toMenu")));
-    }
-
-    protected override void ActionPerformed(Button btt)
-    {
-        switch (btt.Id)
-        {
-            case _buttonToMenu:
-                mc.OpenScreen(new GuiMainMenu());
-                break;
-        }
-
+        Button titleButton = new(Width / 2 - 100, Height / 4 + 120 + 12, translations.TranslateKey("gui.toMenu"));
+        titleButton.Clicked += (_, _) => mc.OpenScreen(new GuiMainMenu());
+        Children.Add(titleButton);
     }
 
     protected override void OnRendered(RenderEventArgs e)
@@ -53,6 +29,5 @@ public class GuiConnectFailed: GuiScreen
         DrawDefaultBackground();
         Gui.DrawCenteredString(FontRenderer, _errorMessage, Width / 2, Height / 2 - 50, 0xFFFFFF);
         Gui.DrawCenteredString(FontRenderer, _errorDetail, Width / 2, Height / 2 - 10, 0xFFFFFF);
-        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 }

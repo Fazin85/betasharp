@@ -2,7 +2,7 @@ using BetaSharp.Stats;
 
 namespace BetaSharp.Client.Guis.Comparators;
 
-public class SorterStatsBlock(GuiSlotStatsBlock slotStats, GuiStats stats) : IComparer<StatCrafting>
+public class SorterStatsBlock(GuiListStatsBlock listStats, GuiStats stats) : IComparer<StatCrafting>
 {
     public int Compare(StatCrafting? x, StatCrafting? y)
     {
@@ -13,7 +13,7 @@ public class SorterStatsBlock(GuiSlotStatsBlock slotStats, GuiStats stats) : ICo
         int idX = x.ItemId;
         int idY = y.ItemId;
 
-        StatBase? statX = slotStats.ActiveStatType switch
+        StatBase? statX = listStats.ActiveStatType switch
         {
             2 => Stats.Stats.MineBlockStatArray[idX],
             0 => Stats.Stats.Crafted[idX],
@@ -21,7 +21,7 @@ public class SorterStatsBlock(GuiSlotStatsBlock slotStats, GuiStats stats) : ICo
             _ => null
         };
 
-        StatBase? statY = slotStats.ActiveStatType switch
+        StatBase? statY = listStats.ActiveStatType switch
         {
             2 => Stats.Stats.MineBlockStatArray[idY],
             0 => Stats.Stats.Crafted[idY],
@@ -37,7 +37,7 @@ public class SorterStatsBlock(GuiSlotStatsBlock slotStats, GuiStats stats) : ICo
 
             if (valueX != valueY)
             {
-                return (valueX - valueY) * slotStats.SortOrder;
+                return (valueX - valueY) * listStats.SortOrder;
             }
         }
         return idX - idY;

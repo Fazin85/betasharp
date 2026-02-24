@@ -2,7 +2,7 @@ using BetaSharp.Stats;
 
 namespace BetaSharp.Client.Guis.Comparators;
 
-public class SorterStatsItem(GuiSlotStatsItem slotStats, GuiStats stats) : IComparer<StatCrafting>
+public class SorterStatsItem(GuiListStatsItem listStats, GuiStats stats) : IComparer<StatCrafting>
 {
     public int Compare(StatCrafting? x, StatCrafting? y)
     {
@@ -13,7 +13,7 @@ public class SorterStatsItem(GuiSlotStatsItem slotStats, GuiStats stats) : IComp
         int idX = x.ItemId;
         int idY = y.ItemId;
 
-        StatBase? statX = slotStats.ActiveStatType switch
+        StatBase? statX = listStats.ActiveStatType switch
         {
             0 => Stats.Stats.Broken[idX],
             1 => Stats.Stats.Crafted[idX],
@@ -21,7 +21,7 @@ public class SorterStatsItem(GuiSlotStatsItem slotStats, GuiStats stats) : IComp
             _ => null
         };
 
-        StatBase? statY = slotStats.ActiveStatType switch
+        StatBase? statY = listStats.ActiveStatType switch
         {
             0 => Stats.Stats.Broken[idY],
             1 => Stats.Stats.Crafted[idY],
@@ -39,7 +39,7 @@ public class SorterStatsItem(GuiSlotStatsItem slotStats, GuiStats stats) : IComp
 
             if (valueX != valueY)
             {
-                return (valueX - valueY) * slotStats.SortOrder;
+                return (valueX - valueY) * listStats.SortOrder;
             }
         }
 

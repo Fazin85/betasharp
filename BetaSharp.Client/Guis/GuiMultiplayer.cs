@@ -7,7 +7,7 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiMultiplayer : GuiScreen
 {
-    private GuiSlotServer _serverListSelector = null!;
+    private GuiListServer _serverListSelector = null!;
     private readonly List<ServerData> _serverList = [];
     private int _selectedServerIndex = -1;
     private Button _btnEdit = null!;
@@ -51,7 +51,7 @@ public class GuiMultiplayer : GuiScreen
         LoadServerList();
         Keyboard.enableRepeatEvents(true);
         Children.Clear();
-        _serverListSelector = new GuiSlotServer(this);
+        _serverListSelector = new GuiListServer(this);
 
         Children.Add(_btnEdit = new Button(7, Width / 2 - 154, Height - 28, 70, 20, "Edit"));
         Children.Add(_btnDelete = new Button(2, Width / 2 - 74, Height - 28, 70, 20, "Delete"));
@@ -118,7 +118,6 @@ public class GuiMultiplayer : GuiScreen
 
     public override void UpdateScreen()
     {
-        base.UpdateScreen();
         UpdateButtons();
     }
 

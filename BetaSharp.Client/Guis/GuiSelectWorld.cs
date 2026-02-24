@@ -20,7 +20,7 @@ public class GuiSelectWorld : GuiScreen
     private bool selected;
     private int selectedWorld;
     private List<WorldSaveInfo> saveList;
-    private GuiWorldSlot worldSlotContainer;
+    private GuiWorldList _worldListContainer;
     private string worldNameHeader;
     private string unsupportedFormatMessage;
     private bool deleting;
@@ -40,8 +40,8 @@ public class GuiSelectWorld : GuiScreen
         worldNameHeader = translations.TranslateKey("selectWorld.world");
         unsupportedFormatMessage = "Unsupported Format!";
         loadSaves();
-        worldSlotContainer = new GuiWorldSlot(this);
-        worldSlotContainer.RegisterScrollButtons(Children, 4, 5);
+        _worldListContainer = new GuiWorldList(this);
+        _worldListContainer.RegisterScrollButtons(Children, 4, 5);
         initButtons();
     }
 
@@ -121,7 +121,7 @@ public class GuiSelectWorld : GuiScreen
                     mc.OpenScreen(parentScreen);
                     break;
                 default:
-                    worldSlotContainer.ActionPerformed(button);
+                    _worldListContainer.ActionPerformed(button);
                     break;
             }
         }
@@ -165,7 +165,7 @@ public class GuiSelectWorld : GuiScreen
 
     protected override void OnRendered(RenderEventArgs e)
     {
-        worldSlotContainer.DrawScreen(mouseX, mouseY, tickDelta);
+        _worldListContainer.DrawScreen(mouseX, mouseY, tickDelta);
         Gui.DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0xFFFFFF);
         base.OnRendered(mouseX, mouseY, tickDelta);
     }

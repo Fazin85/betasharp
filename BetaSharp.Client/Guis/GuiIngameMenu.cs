@@ -38,7 +38,7 @@ public class GuiIngameMenu : GuiScreen
         optionsButton       .Clicked += (_, _) => mc.OpenScreen(new GuiOptions(this, mc.options));
         quitButton          .Clicked += QuitClicked;
 
-        Children.AddRange([quitButton, backToGameButton, optionsButton, achievementsButton, statsButton]);
+        Children.AddRange(quitButton, backToGameButton, optionsButton, achievementsButton, statsButton);
     }
 
     private void QuitClicked(object? o, MouseEventArgs e)
@@ -56,7 +56,6 @@ public class GuiIngameMenu : GuiScreen
 
     public override void UpdateScreen()
     {
-        base.UpdateScreen();
         ++_menuTickCounter;
     }
 

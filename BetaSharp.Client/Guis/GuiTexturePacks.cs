@@ -14,7 +14,7 @@ public class GuiTexturePacks : GuiScreen
     protected GuiScreen _parentScreen;
     private int _refreshTimer = -1;
     private string _texturePackFolder = "";
-    private GuiTexturePackSlot _guiTexturePackSlot;
+    private GuiTexturePackList _guiTexturePackList;
 
     public GuiTexturePacks(GuiScreen parent)
     {
@@ -28,8 +28,8 @@ public class GuiTexturePacks : GuiScreen
         Children.Add(new GuiSmallButton(ButtonDone, Width / 2 + 4, Height - 48, translations.TranslateKey("gui.done")));
         mc.texturePackList.updateAvaliableTexturePacks();
         _texturePackFolder = new java.io.File(Minecraft.getMinecraftDir(), "texturepacks").getAbsolutePath();
-        _guiTexturePackSlot = new GuiTexturePackSlot(this);
-        _guiTexturePackSlot.RegisterScrollButtons(Children, 7, 8);
+        _guiTexturePackList = new GuiTexturePackList(this);
+        _guiTexturePackList.RegisterScrollButtons(Children, 7, 8);
     }
 
     protected override void ActionPerformed(Button btn)
@@ -57,7 +57,7 @@ public class GuiTexturePacks : GuiScreen
                     mc.OpenScreen(_parentScreen);
                     break;
                 default:
-                    _guiTexturePackSlot.ActionPerformed(btn);
+                    _guiTexturePackList.ActionPerformed(btn);
                     break;
             }
 
@@ -66,7 +66,7 @@ public class GuiTexturePacks : GuiScreen
 
     protected override void OnRendered(RenderEventArgs e)
     {
-        _guiTexturePackSlot.DrawScreen(mouseX, mouseY, tickDelta);
+        _guiTexturePackList.DrawScreen(mouseX, mouseY, tickDelta);
         if (_refreshTimer <= 0)
         {
             mc.texturePackList.updateAvaliableTexturePacks();
@@ -81,7 +81,6 @@ public class GuiTexturePacks : GuiScreen
 
     public override void UpdateScreen()
     {
-        base.UpdateScreen();
         --_refreshTimer;
     }
 }

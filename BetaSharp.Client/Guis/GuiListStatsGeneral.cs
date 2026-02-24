@@ -3,12 +3,12 @@ using BetaSharp.Stats;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiSlotStatsGeneral : GuiSlot
+public class GuiListStatsGeneral : GuiList
 {
     readonly GuiStats parentStatsGui;
 
 
-    public GuiSlotStatsGeneral(GuiStats parent) : base(parent.mc, parent.Width, parent.Height, 32, parent.Height - 64, 10)
+    public GuiListStatsGeneral(GuiStats parent) : base(parent.mc, parent.Width, parent.Height, 32, parent.Height - 64, 10)
     {
         parentStatsGui = parent;
         SetShowSelectionHighlight(false);
