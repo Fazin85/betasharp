@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <PublishAot>true</PublishAot>
+    <!-- <PublishAot>true</PublishAot> -->
     <BuiltInComInteropSupport>false</BuiltInComInteropSupport>
     <OptimizationPreference>speed</OptimizationPreference>
     <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
