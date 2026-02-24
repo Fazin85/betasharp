@@ -3,14 +3,24 @@ using BetaSharp.Util.Hit;
 
 namespace BetaSharp.Util.Maths;
 
-public struct Box(double minX, double minY, double minZ, double maxX, double maxY, double maxZ)
+public struct Box
 {
-    public double MinX { get; set; } = minX;
-    public double MinY { get; set; } = minY;
-    public double MinZ { get; set; } = minZ;
-    public double MaxX { get; set; } = maxX;
-    public double MaxY { get; set; } = maxY;
-    public double MaxZ { get; set; } = maxZ;
+    public double MinX { get; set; }
+    public double MinY { get; set; }
+    public double MinZ { get; set; }
+    public double MaxX { get; set; }
+    public double MaxY { get; set; }
+    public double MaxZ { get; set; }
+
+    public Box(double minX, double minY, double minZ, double maxX, double maxY, double maxZ)
+    {
+        MinX = minX;
+        MinY = minY;
+        MinZ = minZ;
+        MaxX = maxX;
+        MaxY = maxY;
+        MaxZ = maxZ;
+    }
 
     public Box Stretch(double x, double y, double z)
     {
