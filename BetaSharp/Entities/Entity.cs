@@ -1260,6 +1260,16 @@ public abstract class Entity
         setFlag(1, sneaking);
     }
 
+    public virtual bool IsSprinting()
+    {
+        return getFlag(3);
+    }
+
+    public void SetSprinting(bool sprinting)
+    {
+        setFlag(3, sprinting);
+    }
+
     protected bool getFlag(int var1)
     {
         return (dataWatcher.getWatchableObjectByte(0) & 1 << var1) != 0;

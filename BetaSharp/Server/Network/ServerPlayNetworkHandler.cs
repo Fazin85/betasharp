@@ -543,6 +543,14 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             player.wakeUp(false, true, true);
             teleported = false;
         }
+        else if (packet.mode == 4)
+        {
+            player.SetSprinting(true);
+        }
+        else if (packet.mode == 5)
+        {
+            player.SetSprinting(false);
+        }
     }
 
     public override void onDisconnect(DisconnectPacket packet)

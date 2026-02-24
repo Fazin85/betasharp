@@ -1,4 +1,4 @@
-﻿using BetaSharp.Blocks.Entities;
+using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Achievements;
 using BetaSharp.Client.Entities.FX;
 using BetaSharp.Client.Guis;
@@ -45,6 +45,7 @@ public class ClientPlayerEntity : EntityPlayer
         sidewaysSpeed = movementInput.moveStrafe;
         forwardSpeed = movementInput.moveForward;
         jumping = movementInput.jump;
+        SetSprinting(movementInput.sprinting);
     }
 
     public override void tickMovement()
@@ -99,6 +100,12 @@ public class ClientPlayerEntity : EntityPlayer
         }
 
         movementInput.updatePlayerMoveState(this);
+
+        if (movementInput.sprinting && (movementInput.moveForward <= 0.0F || horizontalCollison || movementInput.sneak || isInWater()))
+        {
+            movementInput.sprinting = false;
+        }
+
         if (movementInput.sneak && cameraOffset < 0.2F)
         {
             cameraOffset = 0.2F;
@@ -182,6 +189,11 @@ public class ClientPlayerEntity : EntityPlayer
     public override bool isSneaking()
     {
         return movementInput.sneak && !sleeping;
+    }
+
+    public override bool IsSprinting()
+    {
+        return movementInput.sprinting && !sleeping;
     }
 
     public virtual void setHealth(int newHealth)

@@ -26,6 +26,8 @@ public class CameraController
     private float _prevCameraRoll;
     private readonly float _cameraRollAmount = 0.0F;
     private float _prevCameraRollAmount;
+    private float _sprintFovModifier = 1.0F;
+    private float _prevSprintFovModifier = 1.0F;
 
     public double CameraZoom { get; } = 1.0D;
     public double CameraYaw { get; } = 0.0D;
@@ -48,6 +50,10 @@ public class CameraController
 
         _mc.camera ??= _mc.player;
 
+        _prevSprintFovModifier = _sprintFovModifier;
+        float sprintFovTarget = _mc.camera.IsSprinting() ? 1.1F : 1.0F;
+        _sprintFovModifier += (sprintFovTarget - _sprintFovModifier) * 0.15F;
+
         float luminance = _mc.world.getLuminance(MathHelper.Floor(_mc.camera.x), MathHelper.Floor(_mc.camera.y), MathHelper.Floor(_mc.camera.z));
         float renderDistFactor = System.Math.Clamp((_mc.options.renderDistance - 4.0F) / 28.0F, 0.0F, 1.0F);
         float targetBob = luminance * (1.0F - renderDistFactor) + renderDistFactor;
@@ -69,6 +75,12 @@ public class CameraController
             float deathTimeF = cameraEntity.deathTime + tickDelta;
             fov /= (1.0F - 500.0F / (deathTimeF + 500.0F)) * 2.0F + 1.0F;
         }
+
+        if (cameraEntity.IsSprinting())
+        {
+            fov *= 1.1F;
+        }
+        // fov *= _prevSprintFovModifier + (_sprintFovModifier - _prevSprintFovModifier) * tickDelta;
 
         return fov + _prevCameraRoll + (_cameraRoll - _prevCameraRoll) * tickDelta;
     }

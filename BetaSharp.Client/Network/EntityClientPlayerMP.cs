@@ -24,6 +24,7 @@ public class EntityClientPlayerMP : ClientPlayerEntity
     private float oldRotationPitch;
     private bool lastOnGround;
     private bool wasSneaking;
+    private bool wasSprinting;
     private int positionOnlyPacketCount;
 
     public EntityClientPlayerMP(Minecraft mc, World world, Session session, ClientNetworkHandler clientNetworkHandler) : base(mc, world, session, 0)
@@ -70,6 +71,21 @@ public class EntityClientPlayerMP : ClientPlayerEntity
             }
 
             wasSneaking = isSneaking;
+        }
+
+        bool isSprinting = base.IsSprinting();
+        if (isSprinting != wasSprinting)
+        {
+            if (isSprinting)
+            {
+                sendQueue.addToSendQueue(new ClientCommandC2SPacket(this, 4));
+            }
+            else
+            {
+                sendQueue.addToSendQueue(new ClientCommandC2SPacket(this, 5));
+            }
+
+            wasSprinting = isSprinting;
         }
 
         double dx = x - oldPosX;

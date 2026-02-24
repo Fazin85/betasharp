@@ -5,9 +5,11 @@ namespace BetaSharp.Client.Input;
 
 public class MovementInputFromOptions : MovementInput
 {
+    private const int SprintDoubleTapTicks = 7;
 
     private readonly bool[] movementKeyStates = new bool[10];
     private readonly GameOptions gameSettings;
+    private int sprintTapTimer;
 
     public MovementInputFromOptions(GameOptions var1)
     {
@@ -20,6 +22,21 @@ public class MovementInputFromOptions : MovementInput
         if (var1 == gameSettings.KeyBindForward.keyCode)
         {
             var3 = 0;
+
+            if (var2)
+            {
+                if (sprintTapTimer > 0)
+                {
+                    sprinting = true;
+                }
+            }
+            else
+            {
+                if (!sprinting)
+                {
+                    sprintTapTimer = SprintDoubleTapTicks;
+                }
+            }
         }
 
         if (var1 == gameSettings.KeyBindBack.keyCode)
@@ -61,6 +78,8 @@ public class MovementInputFromOptions : MovementInput
             movementKeyStates[var1] = false;
         }
 
+        sprinting = false;
+        sprintTapTimer = 0;
     }
 
     public override void updatePlayerMoveState(EntityPlayer var1)
@@ -89,6 +108,17 @@ public class MovementInputFromOptions : MovementInput
 
         jump = movementKeyStates[4];
         sneak = movementKeyStates[5];
+
+        if (sprinting && (moveForward <= 0.0F || sneak))
+        {
+            sprinting = false;
+        }
+
+        if (sprintTapTimer > 0)
+        {
+            --sprintTapTimer;
+        }
+
         if (sneak)
         {
             moveStrafe = (float)((double)moveStrafe * 0.3D);

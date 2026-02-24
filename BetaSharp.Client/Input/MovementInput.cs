@@ -9,6 +9,7 @@ public class MovementInput
     public bool field_1177_c = false;
     public bool jump = false;
     public bool sneak = false;
+    public bool sprinting = false;
 
     public virtual void updatePlayerMoveState(EntityPlayer var1)
     {

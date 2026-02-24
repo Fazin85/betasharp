@@ -1,4 +1,4 @@
-﻿using BetaSharp.Blocks;
+using BetaSharp.Blocks;
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Items;
 using BetaSharp.NBT;
@@ -601,7 +601,12 @@ public class EntityLiving : Entity
             }
 
             float movementFactor = 0.16277136F / (friction * friction * friction);
-            moveNonSolid(strafe, forward, onGround ? 0.1F * movementFactor : 0.02F);
+            float acceleration = onGround ? 0.1F * movementFactor : 0.02F;
+            if (IsSprinting())
+            {
+                acceleration *= 1.3F;
+            }
+            moveNonSolid(strafe, forward, acceleration);
             friction = 0.91F;
             if (onGround)
             {
