@@ -2742,34 +2742,38 @@ public abstract class World : java.lang.Object, BlockView
 
     internal PathEntity findPath(Entity entity, Entity target, float range)
     {
-        int var4 = MathHelper.Floor(entity.x);
-        int var5 = MathHelper.Floor(entity.y);
-        int var6 = MathHelper.Floor(entity.z);
-        int var7 = (int)(range + 16.0F);
-        int var8 = var4 - var7;
-        int var9 = var5 - var7;
-        int var10 = var6 - var7;
-        int var11 = var4 + var7;
-        int var12 = var5 + var7;
-        int var13 = var6 + var7;
-        WorldRegion var14 = new(this, var8, var9, var10, var11, var12, var13);
-        return (new PathFinder(var14)).CreateEntityPathTo(entity, target, range);
+        Profiler.Start("AI.PathFinding.FindPathToTarget");
+        int entityX = MathHelper.Floor(entity.x);
+        int entityY = MathHelper.Floor(entity.y);
+        int entityZ = MathHelper.Floor(entity.z);
+        int searchRadius = (int)(range + 16.0F);
+        int minX = entityX - searchRadius;
+        int minY = entityY - searchRadius;
+        int minZ = entityZ - searchRadius;
+        int maxX = entityX + searchRadius;
+        int maxY = entityY + searchRadius;
+        int maxZ = entityZ + searchRadius;
+        WorldRegion region = new(this, minX, minY, minZ, maxX, maxY, maxZ);
+        Profiler.Stop("AI.PathFinding.FindPathToTarget");
+        return new PathFinder(region).CreateEntityPathTo(entity, target, range);
     }
 
     internal PathEntity findPath(Entity entity, int x, int y, int z, float range)
     {
-        int var6 = MathHelper.Floor(entity.x);
-        int var7 = MathHelper.Floor(entity.y);
-        int var8 = MathHelper.Floor(entity.z);
-        int var9 = (int)(range + 8.0F);
-        int var10 = var6 - var9;
-        int var11 = var7 - var9;
-        int var12 = var8 - var9;
-        int var13 = var6 + var9;
-        int var14 = var7 + var9;
-        int var15 = var8 + var9;
-        WorldRegion var16 = new(this, var10, var11, var12, var13, var14, var15);
-        return (new PathFinder(var16)).CreateEntityPathTo(entity, x, y, z, range);
+        Profiler.Start("AI.PathFinding.FindPathToPosition");
+        int entityX = MathHelper.Floor(entity.x);
+        int entityY = MathHelper.Floor(entity.y);
+        int entityZ = MathHelper.Floor(entity.z);
+        int searchRadius = (int)(range + 8.0F);
+        int minX = entityX - searchRadius;
+        int minY = entityY - searchRadius;
+        int minZ = entityZ - searchRadius;
+        int maxX = entityX + searchRadius;
+        int maxY = entityY + searchRadius;
+        int maxZ = entityZ + searchRadius;
+        WorldRegion region = new(this, minX, minY, minZ, maxX, maxY, maxZ);
+        Profiler.Stop("AI.PathFinding.FindPathToPosition");
+        return new PathFinder(region).CreateEntityPathTo(entity, x, y, z, range);
     }
 
     public bool isStrongPoweringSide(int x, int y, int z, int side)
