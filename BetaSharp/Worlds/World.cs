@@ -30,7 +30,7 @@ public abstract class World : java.lang.Object, BlockView
     private readonly ILogger<World> _logger = Log.Instance.For<World>();
     public List<Entity> entities;
     private readonly List<Entity> entitiesToUnload;
-    private readonly PriorityQueue<BlockUpdate, long> _scheduledUpdates = new();
+    private readonly PriorityQueue<BlockUpdate, (long, long)> _scheduledUpdates = new();
     private long _eventDeltaTime = 0; // difference between world time and the scheduled time of the block events so things don't break when using the time command
     public List<BlockEntity> blockEntities;
     private readonly List<BlockEntity> blockEntityUpdateQueue;
@@ -1518,7 +1518,7 @@ public abstract class World : java.lang.Object, BlockView
                 long scheduledTime = GetEventTime() + tickRate;
                 BlockUpdate blockUpdate = new(x, y, z, blockId, scheduledTime);
 
-                _scheduledUpdates.Enqueue(blockUpdate, scheduledTime);
+                _scheduledUpdates.Enqueue(blockUpdate, (blockUpdate.ScheduledTime, blockUpdate.ScheduledOrder));
             }
         }
     }
