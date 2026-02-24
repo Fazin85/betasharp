@@ -15,6 +15,7 @@ using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL.Legacy;
+using BetaSharp.Util;
 
 namespace BetaSharp.Client.Rendering;
 
@@ -181,7 +182,7 @@ public class WorldRenderer : IWorldAccess
 
         chunkRenderer?.Dispose();
         chunkRenderer = new(world);
-
+        ChunkMeshVersion.ClearPool();
 
 
         if (renderDistance >= 16)

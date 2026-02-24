@@ -16,6 +16,13 @@ public class ChunkMeshVersion
     public static int TotalAllocated { get; private set; }
     public static int TotalReleased { get; private set; }
 
+    public static void ClearPool()
+    {
+        s_pool.Clear();
+        TotalAllocated = 0;
+        TotalReleased = 0;
+    }
+
     public static ChunkMeshVersion Get()
     {
         if (s_pool.TryPop(out ChunkMeshVersion? version))
