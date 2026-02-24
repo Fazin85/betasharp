@@ -93,7 +93,8 @@ public partial class Minecraft
     public bool inGameHasFocus;
     private int mouseTicksRan;
     public bool isRaining = false;
-    long systemTime = java.lang.System.currentTimeMillis();
+    //private long systemTime = java.lang.System.currentTimeMillis();
+    private long systemTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
     private int joinPlayerCounter;
     private ImGuiController imGuiController;
     public InternalServer? internalServer;
