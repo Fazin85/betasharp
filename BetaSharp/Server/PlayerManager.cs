@@ -188,7 +188,6 @@ public class PlayerManager
         var5.SpawnEntity(var4);
         players.Add(var4);
         var4.initScreenHandler();
-        var4.m_41544513();
         return var4;
     }
 
