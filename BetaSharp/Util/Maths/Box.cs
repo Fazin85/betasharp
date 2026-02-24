@@ -51,7 +51,7 @@ public struct Box
         return offsetX;
     }
 
-    public double GetYOffset(Box other, double offsetY)
+    public double GetYOffset(in Box other, double offsetY)
     {
         if (other.MaxX <= MinX || other.MinX >= MaxX || other.MaxZ <= MinZ || other.MinZ >= MaxZ)
             return offsetY;
@@ -70,7 +70,7 @@ public struct Box
         return offsetY;
     }
 
-    public double GetZOffset(Box other, double offsetZ)
+    public double GetZOffset(in Box other, double offsetZ)
     {
         if (other.MaxX <= MinX || other.MinX >= MaxX || other.MaxY <= MinY || other.MinY >= MaxY)
             return offsetZ;
