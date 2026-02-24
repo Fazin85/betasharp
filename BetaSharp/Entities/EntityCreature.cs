@@ -29,10 +29,7 @@ public class EntityCreature : EntityLiving
             playerToAttack = findPlayerToAttack();
             if (playerToAttack != null)
             {
-                // PROFILER TAG 1: Initial Target Acquisition
-                Profiler.Start("AI.Pathfinding1");
                 pathToEntity = world.findPath(this, playerToAttack, range);
-                Profiler.Stop("AI.Pathfinding1");
             }
         }
         else if (!playerToAttack.isAlive())
@@ -61,10 +58,7 @@ public class EntityCreature : EntityLiving
         }
         else
         {
-            // PROFILER TAG 2: Target Tracking Refresh
-            Profiler.Start("AI.Pathfinding2");
             pathToEntity = world.findPath(this, playerToAttack, range);
-            Profiler.Stop("AI.Pathfinding2");
         }
 
         int floorY = MathHelper.Floor(boundingBox.minY + 0.5D);
@@ -185,10 +179,7 @@ public class EntityCreature : EntityLiving
 
         if (foundWanderTarget)
         {
-            // PROFILER TAG 3: Random Wandering
-            Profiler.Start("AI.Pathfinding3");
             pathToEntity = world.findPath(this, bestX, bestY, bestZ, 10.0F);
-            Profiler.Stop("AI.Pathfinding3");
         }
     }
 
