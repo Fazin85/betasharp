@@ -71,7 +71,7 @@ public class ConnectionListener
             {
                 connection.tick();
             }
-            catch (java.lang.Exception ex)
+            catch (Exception ex)
             {
                 connection.disconnect("Internal server error");
                 _logger.LogError($"Failed to handle packet: {ex}");
@@ -93,7 +93,7 @@ public class ConnectionListener
             {
                 connection.tick();
             }
-            catch (java.lang.Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Failed to handle packet: {ex}");
                 connection.disconnect("Internal server error");

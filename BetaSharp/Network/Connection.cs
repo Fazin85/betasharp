@@ -3,11 +3,13 @@ using BetaSharp.Threading;
 using java.io;
 using java.net;
 using java.util;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Network;
 
 public class Connection
 {
+    private readonly ILogger<Connection> _logger = Log.Instance.For<Connection>();
     public static readonly object LOCK = new();
     public static int READ_THREAD_COUNTER;
     public static int WRITE_THREAD_COUNTER;
@@ -46,9 +48,9 @@ public class Connection
             socket.setSoTimeout(30000);
             socket.setTrafficClass(24);
         }
-        catch (SocketException ex)
+        catch (SocketException e)
         {
-            java.lang.System.err.println(ex.getMessage());
+            _logger.LogError(e, e.Message);
         }
 
         _inputStream = new DataInputStream(socket.getInputStream());
@@ -140,7 +142,7 @@ public class Connection
 
             return wrotePacket;
         }
-        catch (java.lang.Exception ex)
+        catch (Exception ex)
         {
             if (!disconnected)
             {
@@ -189,7 +191,7 @@ public class Connection
 
             return receivedPacket;
         }
-        catch (java.lang.Exception ex)
+        catch (Exception ex)
         {
             if (!disconnected)
             {
@@ -200,10 +202,10 @@ public class Connection
         }
     }
 
-    private void disconnect(java.lang.Exception ex)
+    private void disconnect(Exception e)
     {
-        ex.printStackTrace();
-        disconnect("disconnect.genericReason", "Internal exception: " + ex.toString());
+        _logger.LogError(e, e.Message);
+        disconnect("disconnect.genericReason", "Internal exception: " + e);
     }
 
     public virtual void disconnect(string disconnectedReason, params object[] disconnectReasonArgs)
@@ -343,7 +345,7 @@ public class Connection
         return conn.disconnected;
     }
 
-    public static void disconnect(Connection conn, java.lang.Exception ex)
+    public static void disconnect(Connection conn, Exception ex)
     {
         conn.disconnect(ex);
     }

@@ -497,10 +497,10 @@ public class ClientNetworkHandler : NetHandler
                     netManager.disconnect("disconnect.loginFailedInfo", response);
                 }
             }
-            catch (java.lang.Exception ex)
+            catch (Exception e)
             {
-                ex.printStackTrace();
-                netManager.disconnect("disconnect.genericReason", "Internal client error: " + ex.toString());
+                _logger.LogError(e, e.Message);
+                netManager.disconnect("disconnect.genericReason", "Internal client error: " + e);
             }
         }
 

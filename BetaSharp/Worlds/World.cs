@@ -18,6 +18,7 @@ using java.lang;
 using java.util;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Maths;
+using Exception = System.Exception;
 using Random = System.Random;
 
 namespace BetaSharp.Worlds;
@@ -204,9 +205,9 @@ public abstract class World : BlockView
 
             SpawnEntity(player);
         }
-        catch (java.lang.Exception ex)
+        catch (Exception e)
         {
-            ex.printStackTrace();
+            _logger.LogError(e, e.Message);
         }
 
     }

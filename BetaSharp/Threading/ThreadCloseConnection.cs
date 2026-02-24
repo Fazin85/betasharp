@@ -25,7 +25,7 @@ internal class ThreadCloseConnection
                 if (Connection.isOpen(Connection))
                 {
                     Connection.getWriter(Connection).interrupt();
-                    Connection.disconnect(Connection, new java.lang.Exception("disconnect.closed"));
+                    Connection.disconnect(Connection, new Exception("disconnect.closed"));
                 }
             }
             catch (Exception ex)

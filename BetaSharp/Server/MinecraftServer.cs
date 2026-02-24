@@ -12,6 +12,7 @@ using java.lang;
 using java.util;
 using java.util.logging;
 using Microsoft.Extensions.Logging;
+using Exception = System.Exception;
 
 namespace BetaSharp.Server;
 
@@ -416,9 +417,9 @@ public abstract class MinecraftServer : Runnable, CommandOutput
         {
             runPendingCommands();
         }
-        catch (java.lang.Exception ex)
+        catch (Exception e)
         {
-            _logger.LogWarning($"Unexpected exception while parsing console command: {ex}");
+            _logger.LogWarning($"Unexpected exception while parsing console command: {e}");
         }
     }
 
