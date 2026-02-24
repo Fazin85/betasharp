@@ -16,7 +16,7 @@ public class GuiSlotStatsGeneral : GuiSlot
 
     public override int GetSize()
     {
-        return Stats.Stats.GENERAL_STATS.Count;
+        return Stats.Stats.GeneralStats.Count;
     }
 
     protected override void ElementClicked(int var1, bool var2)
@@ -40,9 +40,9 @@ public class GuiSlotStatsGeneral : GuiSlot
 
     protected override void DrawSlot(int index, int x, int y, int rowHeight, Tessellator tessellator)
     {
-        StatBase stat = Stats.Stats.GENERAL_STATS[index];
-        parentStatsGui.FontRenderer.DrawStringWithShadow(stat.statName, x + 2, y + 1, index % 2 == 0 ? 0xFFFFFFu : 0x909090u);
-        string formatted = stat.format(parentStatsGui.statFileWriter.writeStat(stat));
+        StatBase stat = Stats.Stats.GeneralStats[index];
+        parentStatsGui.FontRenderer.DrawStringWithShadow(stat.StatName, x + 2, y + 1, index % 2 == 0 ? 0xFFFFFFu : 0x909090u);
+        string formatted = stat.Format(parentStatsGui.statFileWriter.GetStatValue(stat));
         parentStatsGui.FontRenderer.DrawStringWithShadow(formatted, x + 2 + 213 - parentStatsGui.FontRenderer.GetStringWidth(formatted), y + 1, index % 2 == 0 ? 0xFFFFFF : 0x909090u);
     }
 }

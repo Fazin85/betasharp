@@ -1,4 +1,4 @@
-﻿using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core;
 using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Rendering;
@@ -97,8 +97,7 @@ public class LoadingScreenRenderer : LoadingDisplay
                 GLManager.GL.Translate(0.0F, 0.0F, -200.0F);
                 GLManager.GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
                 Tessellator var7 = Tessellator.instance;
-                int var8 = mc.textureManager.GetTextureId("/gui/background.png");
-                GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var8);
+                mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/background.png"));
                 float var9 = 32.0F;
                 var7.startDrawingQuads();
                 var7.setColorOpaque_I(0x404040);

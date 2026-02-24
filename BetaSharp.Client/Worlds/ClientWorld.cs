@@ -91,7 +91,7 @@ public class ClientWorld : World
 
     public override void ScheduleBlockUpdate(int x, int y, int z, int blockId, int delay) { }
 
-    public override bool ProcessScheduledTicks(bool flush) => false;
+    public override void ProcessScheduledTicks(bool flush) { }
 
     public void UpdateChunk(int chunkX, int chunkZ, bool load)
     {

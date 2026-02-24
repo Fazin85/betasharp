@@ -506,7 +506,7 @@ public class Block
 
     public virtual void afterBreak(World world, EntityPlayer player, int x, int y, int z, int meta)
     {
-        player.increaseStat(Stats.Stats.mineBlockStatArray[id], 1);
+        player.increaseStat(Stats.Stats.MineBlockStatArray[id], 1);
         dropStacks(world, x, y, z, meta);
     }
 
@@ -527,7 +527,7 @@ public class Block
 
     public string translateBlockName()
     {
-        return StatCollector.translateToLocal(getBlockName() + ".name");
+        return StatCollector.TranslateToLocal(getBlockName() + ".name");
     }
 
     public string getBlockName()
@@ -575,6 +575,6 @@ public class Block
         }
 
         BlocksAllowVision[0] = true;
-        Stats.Stats.initializeItemStats();
+        Stats.Stats.InitializeItemStats();
     }
 }

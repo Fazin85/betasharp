@@ -15,6 +15,8 @@ using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL.Legacy;
+using BetaSharp.Util;
+using BetaSharp.Client.Rendering.Core.Textures;
 
 namespace BetaSharp.Client.Rendering;
 
@@ -181,7 +183,7 @@ public class WorldRenderer : IWorldAccess
 
         chunkRenderer?.Dispose();
         chunkRenderer = new(world);
-
+        ChunkMeshVersion.ClearPool();
 
 
         if (renderDistance >= 16)
@@ -373,7 +375,7 @@ public class WorldRenderer : IWorldAccess
             GLManager.GL.Rotate(0.0F, 0.0F, 0.0F, 1.0F);
             GLManager.GL.Rotate(world.getTime(var1) * 360.0F, 1.0F, 0.0F, 0.0F);
             var11 = 30.0F;
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)renderEngine.GetTextureId("/terrain/sun.png"));
+            renderEngine.BindTexture(renderEngine.GetTextureId("/terrain/sun.png"));
             var17.startDrawingQuads();
             var17.addVertexWithUV((double)-var11, 100.0D, (double)-var11, 0.0D, 0.0D);
             var17.addVertexWithUV((double)var11, 100.0D, (double)-var11, 1.0D, 0.0D);
@@ -381,7 +383,7 @@ public class WorldRenderer : IWorldAccess
             var17.addVertexWithUV((double)-var11, 100.0D, (double)var11, 0.0D, 1.0D);
             var17.draw();
             var11 = 20.0F;
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)renderEngine.GetTextureId("/terrain/moon.png"));
+            renderEngine.BindTexture(renderEngine.GetTextureId("/terrain/moon.png"));
             var17.startDrawingQuads();
             var17.addVertexWithUV((double)-var11, -100.0D, (double)var11, 1.0D, 1.0D);
             var17.addVertexWithUV((double)var11, -100.0D, (double)var11, 0.0D, 1.0D);
@@ -540,7 +542,7 @@ public class WorldRenderer : IWorldAccess
         int var12 = MathHelper.Floor(var8 / 2048.0D);
         var6 -= var11 * 2048;
         var8 -= var12 * 2048;
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)renderEngine.GetTextureId("/environment/clouds.png"));
+        renderEngine.BindTexture(renderEngine.GetTextureId("/environment/clouds.png"));
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
         Vector3D<double> var13 = world.getCloudColor(var1);
@@ -618,8 +620,7 @@ public class WorldRenderer : IWorldAccess
             if (damagePartialTime > 0.0F)
             {
                 GLManager.GL.BlendFunc(GLEnum.DstColor, GLEnum.SrcColor);
-                int var7 = renderEngine.GetTextureId("/terrain.png");
-                GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var7);
+                renderEngine.BindTexture(renderEngine.GetTextureId("/terrain.png"));
                 GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 0.5F);
                 GLManager.GL.PushMatrix();
                 var8 = world.getBlockId(var2.BlockX, var2.BlockY, var2.BlockZ);
@@ -652,8 +653,7 @@ public class WorldRenderer : IWorldAccess
             GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
             float var16 = MathHelper.Sin(java.lang.System.currentTimeMillis() / 100.0F) * 0.2F + 0.8F;
             GLManager.GL.Color4(var16, var16, var16, MathHelper.Sin(java.lang.System.currentTimeMillis() / 200.0F) * 0.2F + 0.5F);
-            var8 = renderEngine.GetTextureId("/terrain.png");
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var8);
+            renderEngine.BindTexture(renderEngine.GetTextureId("/terrain.png"));
             int var17 = var2.BlockX;
             int var18 = var2.BlockY;
             int var11 = var2.BlockZ;
@@ -936,7 +936,7 @@ public class WorldRenderer : IWorldAccess
                 world.playSound(var3, var4, var5, "random.bow", 1.0F, 1.2F);
                 break;
             case 1003:
-                if (java.lang.Math.random() < 0.5D)
+                if (Random.Shared.NextDouble() < 0.5D)
                 {
                     world.playSound(var3 + 0.5D, var4 + 0.5D, var5 + 0.5D, "random.door_open", 1.0F, world.random.NextFloat() * 0.1F + 0.9F);
                 }

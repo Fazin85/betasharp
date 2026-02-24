@@ -1,7 +1,5 @@
 using System.Runtime.InteropServices;
 using BetaSharp.Util;
-using java.lang;
-using java.nio;
 using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Rendering.Core;
@@ -111,11 +109,9 @@ public enum TesselatorCaptureVertexFormat
     Chunk
 }
 
-public class Tessellator : java.lang.Object
+public class Tessellator
 {
     private static readonly bool convertQuadsToTriangles = true;
-    private readonly ByteBuffer byteBuffer;
-    private readonly IntBuffer intBuffer;
     private readonly int[] rawBuffer;
     private int vertexCount;
     private double textureU;
@@ -137,7 +133,7 @@ public class Tessellator : java.lang.Object
     private int normal;
     public static readonly Tessellator instance = new(2097152);
     public bool IsDrawing { get; private set; }
-    private readonly IntBuffer vertexBuffers;
+    private readonly uint[] _vboIds;
     private int vboIndex;
     private readonly int vboCount = 10;
     private readonly int bufferSize;
@@ -150,14 +146,12 @@ public class Tessellator : java.lang.Object
     private int scratchBufferIndex;
     private TesselatorCaptureVertexFormat vertexFormat;
 
-    private Tessellator(int var1)
+    private unsafe Tessellator(int var1)
     {
         bufferSize = var1;
-        byteBuffer = GLAllocation.createDirectByteBuffer(var1 * 4);
-        intBuffer = byteBuffer.asIntBuffer();
         rawBuffer = new int[var1];
-        vertexBuffers = GLAllocation.createDirectIntBuffer(vboCount);
-        GLAllocation.generateBuffersARB(vertexBuffers);
+        _vboIds = new uint[vboCount];
+        GLManager.GL.GenBuffers((uint)vboCount, _vboIds);
     }
 
     public Tessellator()
@@ -168,7 +162,7 @@ public class Tessellator : java.lang.Object
     {
         if (format == TesselatorCaptureVertexFormat.Chunk && IsDrawing)
         {
-            throw new IllegalStateException("Chunk vertex format is only supported in capture mode!");
+            throw new InvalidOperationException("Chunk vertex format is only supported in capture mode!");
         }
 
         vertexFormat = format;
@@ -196,7 +190,7 @@ public class Tessellator : java.lang.Object
     {
         if (!isCaptureMode || vertexFormat != TesselatorCaptureVertexFormat.Default)
         {
-            throw new IllegalStateException("Not capturing default vertices!");
+            throw new InvalidOperationException("Not capturing default vertices!");
         }
 
         isCaptureMode = false;
@@ -209,7 +203,7 @@ public class Tessellator : java.lang.Object
     {
         if (!isCaptureMode || vertexFormat != TesselatorCaptureVertexFormat.Chunk)
         {
-            throw new IllegalStateException("Not capturing chunk vertices!");
+            throw new InvalidOperationException("Not capturing chunk vertices!");
         }
 
         isCaptureMode = false;
@@ -239,7 +233,7 @@ public class Tessellator : java.lang.Object
     {
         if (!IsDrawing)
         {
-            throw new IllegalStateException("Not tesselating!");
+            throw new InvalidOperationException("Not tesselating!");
         }
         else
         {
@@ -253,21 +247,13 @@ public class Tessellator : java.lang.Object
 
             if (vertexCount > 0)
             {
-                intBuffer.clear();
-                intBuffer.put(rawBuffer, 0, rawBufferIndex);
-                byteBuffer.position(0);
-                byteBuffer.limit(rawBufferIndex * 4);
-
                 vboIndex = (vboIndex + 1) % vboCount;
-                GLManager.GL.BindBuffer(GLEnum.ArrayBuffer, (uint)vertexBuffers.get(vboIndex));
+                GLManager.GL.BindBuffer(GLEnum.ArrayBuffer, _vboIds[vboIndex]);
 
-                int size = byteBuffer.limit();
-
-                BufferHelper.UsePointer(byteBuffer, (p) =>
+                fixed (int* ptr = rawBuffer)
                 {
-                    var ptr = (byte*)p;
-                    GLManager.GL.BufferData(GLEnum.ArrayBuffer, (nuint)size, ptr, GLEnum.StreamDraw);
-                });
+                    GLManager.GL.BufferData(GLEnum.ArrayBuffer, (nuint)(rawBufferIndex * 4), ptr, GLEnum.StreamDraw);
+                }
 
                 if (hasTexture)
                 {
@@ -321,7 +307,6 @@ public class Tessellator : java.lang.Object
     private void reset()
     {
         vertexCount = 0;
-        byteBuffer?.clear();
         rawBufferIndex = 0;
         addedVertices = 0;
     }
@@ -335,7 +320,7 @@ public class Tessellator : java.lang.Object
     {
         if (IsDrawing)
         {
-            throw new IllegalStateException("Already tesselating!");
+            throw new InvalidOperationException("Already tesselating!");
         }
         else
         {
@@ -416,7 +401,7 @@ public class Tessellator : java.lang.Object
             }
 
             hasColor = true;
-            if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN)
+            if (BitConverter.IsLittleEndian)
             {
                 color = alpha << 24 | blue << 16 | green << 8 | red;
             }
@@ -438,18 +423,18 @@ public class Tessellator : java.lang.Object
     {
         if (isCaptureMode)
         {
-            scratchBuffer[scratchBufferIndex + 0] = Float.floatToRawIntBits((float)(x + xOffset));
-            scratchBuffer[scratchBufferIndex + 1] = Float.floatToRawIntBits((float)(y + yOffset));
-            scratchBuffer[scratchBufferIndex + 2] = Float.floatToRawIntBits((float)(z + zOffset));
+            scratchBuffer[scratchBufferIndex + 0] = BitConverter.SingleToInt32Bits((float)(x + xOffset));
+            scratchBuffer[scratchBufferIndex + 1] = BitConverter.SingleToInt32Bits((float)(y + yOffset));
+            scratchBuffer[scratchBufferIndex + 2] = BitConverter.SingleToInt32Bits((float)(z + zOffset));
 
             if (hasTexture)
             {
-                scratchBuffer[scratchBufferIndex + 3] = Float.floatToRawIntBits((float)textureU);
-                scratchBuffer[scratchBufferIndex + 4] = Float.floatToRawIntBits((float)textureV);
+                scratchBuffer[scratchBufferIndex + 3] = BitConverter.SingleToInt32Bits((float)textureU);
+                scratchBuffer[scratchBufferIndex + 4] = BitConverter.SingleToInt32Bits((float)textureV);
             }
             else if (vertexFormat == TesselatorCaptureVertexFormat.Chunk)
             {
-                throw new IllegalStateException("ChunkVertex requires texture coordinates!");
+                throw new InvalidOperationException("ChunkVertex requires texture coordinates!");
             }
 
             if (hasColor)
@@ -477,8 +462,8 @@ public class Tessellator : java.lang.Object
                 for (int i = 0; i < 4; i++)
                 {
                     int idx = i * 8;
-                    uvCentroidU += Float.intBitsToFloat(scratchBuffer[idx + 3]);
-                    uvCentroidV += Float.intBitsToFloat(scratchBuffer[idx + 4]);
+                    uvCentroidU += BitConverter.Int32BitsToSingle(scratchBuffer[idx + 3]);
+                    uvCentroidV += BitConverter.Int32BitsToSingle(scratchBuffer[idx + 4]);
                 }
                 uvCentroidU *= 0.25f;
                 uvCentroidV *= 0.25f;
@@ -525,8 +510,8 @@ public class Tessellator : java.lang.Object
 
             if (hasTexture)
             {
-                rawBuffer[rawBufferIndex + 3] = Float.floatToRawIntBits((float)textureU);
-                rawBuffer[rawBufferIndex + 4] = Float.floatToRawIntBits((float)textureV);
+                rawBuffer[rawBufferIndex + 3] = BitConverter.SingleToInt32Bits((float)textureU);
+                rawBuffer[rawBufferIndex + 4] = BitConverter.SingleToInt32Bits((float)textureV);
             }
 
             if (hasColor)
@@ -539,9 +524,9 @@ public class Tessellator : java.lang.Object
                 rawBuffer[rawBufferIndex + 6] = normal;
             }
 
-            rawBuffer[rawBufferIndex + 0] = Float.floatToRawIntBits((float)(x + xOffset));
-            rawBuffer[rawBufferIndex + 1] = Float.floatToRawIntBits((float)(y + yOffset));
-            rawBuffer[rawBufferIndex + 2] = Float.floatToRawIntBits((float)(z + zOffset));
+            rawBuffer[rawBufferIndex + 0] = BitConverter.SingleToInt32Bits((float)(x + xOffset));
+            rawBuffer[rawBufferIndex + 1] = BitConverter.SingleToInt32Bits((float)(y + yOffset));
+            rawBuffer[rawBufferIndex + 2] = BitConverter.SingleToInt32Bits((float)(z + zOffset));
             rawBufferIndex += 8;
             ++vertexCount;
 
@@ -555,17 +540,17 @@ public class Tessellator : java.lang.Object
 
     private void EmitVertexFromScratch(int baseIndex)
     {
-        float x = Float.intBitsToFloat(scratchBuffer[baseIndex + 0]);
-        float y = Float.intBitsToFloat(scratchBuffer[baseIndex + 1]);
-        float z = Float.intBitsToFloat(scratchBuffer[baseIndex + 2]);
+        float x = BitConverter.Int32BitsToSingle(scratchBuffer[baseIndex + 0]);
+        float y = BitConverter.Int32BitsToSingle(scratchBuffer[baseIndex + 1]);
+        float z = BitConverter.Int32BitsToSingle(scratchBuffer[baseIndex + 2]);
 
         if (vertexFormat == TesselatorCaptureVertexFormat.Chunk)
         {
             int col = hasColor ? scratchBuffer[baseIndex + 5] : unchecked((int)0xFFFFFFFF);
             byte light = hasLight ? (byte)scratchBuffer[baseIndex + 7] : (byte)0;
 
-            float u = Float.intBitsToFloat(scratchBuffer[baseIndex + 3]);
-            float v = Float.intBitsToFloat(scratchBuffer[baseIndex + 4]);
+            float u = BitConverter.Int32BitsToSingle(scratchBuffer[baseIndex + 3]);
+            float v = BitConverter.Int32BitsToSingle(scratchBuffer[baseIndex + 4]);
 
             capturedChunkVertices.Add(
                 ChunkVertexHelper.Create(
@@ -580,8 +565,8 @@ public class Tessellator : java.lang.Object
         }
         else
         {
-            float u = hasTexture ? Float.intBitsToFloat(scratchBuffer[baseIndex + 3]) : 0f;
-            float v = hasTexture ? Float.intBitsToFloat(scratchBuffer[baseIndex + 4]) : 0f;
+            float u = hasTexture ? BitConverter.Int32BitsToSingle(scratchBuffer[baseIndex + 3]) : 0f;
+            float v = hasTexture ? BitConverter.Int32BitsToSingle(scratchBuffer[baseIndex + 4]) : 0f;
             int col = hasColor ? scratchBuffer[baseIndex + 5] : 0;
             int norm = hasNormals ? scratchBuffer[baseIndex + 6] : 0;
 

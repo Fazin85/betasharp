@@ -1,6 +1,7 @@
 using BetaSharp.Blocks;
 using BetaSharp.Client.Entities.FX;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
@@ -75,23 +76,12 @@ public class ParticleManager
         {
             if (_fxLayers[var8].size() != 0)
             {
-                int var9 = 0;
-                if (var8 == 0)
-                {
-                    var9 = _renderer.GetTextureId("/particles.png");
-                }
+                TextureHandle texture = null;
+                if (var8 == 0) texture = _renderer.GetTextureId("/particles.png");
+                if (var8 == 1) texture = _renderer.GetTextureId("/terrain.png");
+                if (var8 == 2) texture = _renderer.GetTextureId("/gui/items.png");
 
-                if (var8 == 1)
-                {
-                    var9 = _renderer.GetTextureId("/terrain.png");
-                }
-
-                if (var8 == 2)
-                {
-                    var9 = _renderer.GetTextureId("/gui/items.png");
-                }
-
-                GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var9);
+                _renderer.BindTexture(texture);
                 Tessellator var10 = Tessellator.instance;
                 var10.startDrawingQuads();
 

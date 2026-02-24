@@ -77,7 +77,7 @@ public class ItemStack : java.lang.Object
         bool item = getItem().useOnBlock(this, entityPlayer, world, x, y, z, meta);
         if (item)
         {
-            entityPlayer.increaseStat(Stats.Stats.USED[itemId], 1);
+            entityPlayer.increaseStat(Stats.Stats.Used[itemId], 1);
         }
 
         return item;
@@ -162,7 +162,7 @@ public class ItemStack : java.lang.Object
             {
                 if (entity is EntityPlayer)
                 {
-                    ((EntityPlayer)entity).increaseStat(Stats.Stats.BROKEN[itemId], 1);
+                    ((EntityPlayer)entity).increaseStat(Stats.Stats.Broken[itemId], 1);
                 }
 
                 --count;
@@ -182,7 +182,7 @@ public class ItemStack : java.lang.Object
         bool hit = Item.ITEMS[itemId].postHit(this, entityLiving, entityPlayer);
         if (hit)
         {
-            entityPlayer.increaseStat(Stats.Stats.USED[itemId], 1);
+            entityPlayer.increaseStat(Stats.Stats.Used[itemId], 1);
         }
 
     }
@@ -192,7 +192,7 @@ public class ItemStack : java.lang.Object
         bool mined = Item.ITEMS[itemId].postMine(this, blockId, x, y, z, entityPlayer);
         if (mined)
         {
-            entityPlayer.increaseStat(Stats.Stats.USED[itemId], 1);
+            entityPlayer.increaseStat(Stats.Stats.Used[itemId], 1);
         }
 
     }
@@ -263,7 +263,7 @@ public class ItemStack : java.lang.Object
 
     public void onCraft(World world, EntityPlayer entityPlayer)
     {
-        entityPlayer.increaseStat(Stats.Stats.CRAFTED[itemId], count);
+        entityPlayer.increaseStat(Stats.Stats.Crafted[itemId], count);
         Item.ITEMS[itemId].onCraft(this, world, entityPlayer);
     }
 

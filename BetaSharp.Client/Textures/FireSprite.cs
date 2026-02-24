@@ -1,4 +1,5 @@
 using BetaSharp.Blocks;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Client.Textures;
 
@@ -41,7 +42,7 @@ public class FireSprite : DynamicTexture
                 next[var1 + var2 * 16] = var4 / (var3 * 1.06F);
                 if (var2 >= 19)
                 {
-                    next[var1 + var2 * 16] = (float)(java.lang.Math.random() * java.lang.Math.random() * java.lang.Math.random() * 4.0D + java.lang.Math.random() * (double)0.1F + (double)0.2F);
+                    next[var1 + var2 * 16] = (float)(Random.Shared.NextDouble() * Random.Shared.NextDouble() * Random.Shared.NextDouble() * 4.0D + Random.Shared.NextDouble() * (double)0.1F + (double)0.2F);
                 }
             }
         }

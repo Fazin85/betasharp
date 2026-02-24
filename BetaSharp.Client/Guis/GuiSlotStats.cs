@@ -63,7 +63,7 @@ public abstract class GuiSlotStats<T, K>(GuiStats statsGui) : GuiSlot(statsGui.m
 
     protected void DrawStatValue(StatCrafting? stat, int x, int y, bool useBrightColor)
     {
-        string text = stat is not null ? stat.format(statsGui.statFileWriter.writeStat(stat)) : "-";
+        string text = stat is not null ? stat.Format(statsGui.statFileWriter.GetStatValue(stat)) : "-";
         statsGui.FontRenderer.DrawStringWithShadow(text, x - statsGui.FontRenderer.GetStringWidth(text), y + 5, useBrightColor ? 0xFFFFFFu : 0x909090u);
     }
 
@@ -109,7 +109,7 @@ public abstract class GuiSlotStats<T, K>(GuiStats statsGui) : GuiSlot(statsGui.m
     {
         if (stat is not null)
         {
-            Item item = Item.ITEMS[stat.getItemId()];
+            Item item = Item.ITEMS[stat.ItemId];
             string translated = TranslationStorage.Instance.TranslateNamedKey(item.getItemName()).Trim();
             if (translated.Length > 0)
             {

@@ -76,7 +76,7 @@ public class BlockSnow : Block
         entityItem.delayBeforeCanPickup = 10;
         world.SpawnEntity(entityItem);
         world.setBlock(x, y, z, 0);
-        player.increaseStat(Stats.Stats.mineBlockStatArray[id], 1);
+        player.increaseStat(Stats.Stats.MineBlockStatArray[id], 1);
     }
 
     public override int getDroppedItemId(int blockMeta, JavaRandom random)

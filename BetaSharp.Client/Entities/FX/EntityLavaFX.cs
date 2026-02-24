@@ -1,4 +1,5 @@
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
 namespace BetaSharp.Client.Entities.FX;
@@ -17,7 +18,7 @@ public class EntityLavaFX : EntityFX
         particleRed = particleGreen = particleBlue = 1.0F;
         particleScale *= random.NextFloat() * 2.0F + 0.2F;
         baseScale = particleScale;
-        particleMaxAge = (int)(16.0D / (java.lang.Math.random() * 0.8D + 0.2D));
+        particleMaxAge = (int)(16.0D / (Random.Shared.NextDouble() * 0.8D + 0.2D));
         noClip = false;
         particleTextureIndex = 49;
     }

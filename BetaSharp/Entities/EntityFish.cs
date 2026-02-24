@@ -429,7 +429,7 @@ public class EntityFish : Entity
             var13.velocityY = var5 * var11 + (double)MathHelper.Sqrt(var9) * 0.08D;
             var13.velocityZ = var7 * var11;
             world.SpawnEntity(var13);
-            angler.increaseStat(Stats.Stats.fishCaughtStat, 1);
+            angler.increaseStat(Stats.Stats.FishCaughtStat, 1);
             var1 = 1;
         }
 

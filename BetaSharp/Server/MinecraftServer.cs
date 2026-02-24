@@ -28,7 +28,6 @@ public abstract class MinecraftServer : Runnable, CommandOutput
     private int ticks;
     public string progressMessage;
     public int progress;
-    private List tickables = new ArrayList();
     private List pendingCommands = Collections.synchronizedList(new ArrayList());
     public EntityTracker[] entityTrackers = new EntityTracker[2];
     public bool onlineMode;
@@ -413,11 +412,6 @@ public abstract class MinecraftServer : Runnable, CommandOutput
             t.tick();
         }
 
-        for (int i = 0; i < tickables.size(); i++)
-        {
-            ((Tickable)tickables.get(i)).tick();
-        }
-
         try
         {
             runPendingCommands();
@@ -439,11 +433,6 @@ public abstract class MinecraftServer : Runnable, CommandOutput
         {
             commandHandler.ExecuteCommand((Command)pendingCommands.remove(0));
         }
-    }
-
-    public void addTickable(Tickable tickable)
-    {
-        tickables.add(tickable);
     }
 
     public abstract java.io.File getFile(string path);

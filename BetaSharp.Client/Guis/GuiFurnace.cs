@@ -23,9 +23,8 @@ public class GuiFurnace : GuiContainer
 
     protected override void DrawGuiContainerBackgroundLayer(float partialTicks)
     {
-        int textureId = mc.textureManager.GetTextureId("/gui/furnace.png");
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.textureManager.BindTexture(textureId);
+        mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/furnace.png"));
         int guiLeft = (Width - _xSize) / 2;
         int guiTop = (Height - _ySize) / 2;
         DrawTexturedModalRect(guiLeft, guiTop, 0, 0, _xSize, _ySize);

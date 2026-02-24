@@ -31,8 +31,8 @@ public abstract class World : java.lang.Object, BlockView
     private readonly ILogger<World> _logger = Log.Instance.For<World>();
     public List<Entity> entities;
     private readonly List<Entity> entitiesToUnload;
-    private readonly TreeSet scheduledUpdates;
-    private readonly Set scheduledUpdateSet;
+    private readonly PriorityQueue<BlockUpdate, (long, long)> _scheduledUpdates = new();
+    private long _eventDeltaTime = 0; // difference between world time and the scheduled time of the block events so things don't break when using the time command
     public List<BlockEntity> blockEntities;
     private readonly List<BlockEntity> blockEntityUpdateQueue;
     public List<EntityPlayer> players;
@@ -90,8 +90,6 @@ public abstract class World : java.lang.Object, BlockView
         lightingQueue = [];
         entities = [];
         entitiesToUnload = [];
-        scheduledUpdates = new TreeSet();
-        scheduledUpdateSet = new HashSet();
         blockEntities = [];
         blockEntityUpdateQueue = [];
         players = [];
@@ -135,8 +133,6 @@ public abstract class World : java.lang.Object, BlockView
         lightingQueue = [];
         entities = [];
         entitiesToUnload = [];
-        scheduledUpdates = new TreeSet();
-        scheduledUpdateSet = new HashSet();
         blockEntities = [];
         blockEntityUpdateQueue = [];
         players = [];
@@ -185,8 +181,6 @@ public abstract class World : java.lang.Object, BlockView
         lightingQueue = [];
         entities = [];
         entitiesToUnload = [];
-        scheduledUpdates = new TreeSet();
-        scheduledUpdateSet = new HashSet();
         blockEntities = [];
         blockEntityUpdateQueue = [];
         players = [];
@@ -1504,38 +1498,29 @@ public abstract class World : java.lang.Object, BlockView
         return -1;
     }
 
-    public virtual void ScheduleBlockUpdate(int x, int y, int z, int id, int tickRate)
+    public virtual void ScheduleBlockUpdate(int x, int y, int z, int blockId, int tickRate)
     {
-        BlockEvent var6 = new(x, y, z, id);
         byte var7 = 8;
         if (instantBlockUpdateEnabled)
         {
-            if (isRegionLoaded(var6.x - var7, var6.y - var7, var6.z - var7, var6.x + var7, var6.y + var7, var6.z + var7))
+            if (isRegionLoaded(x - var7, y - var7, z - var7, x + var7, y + var7, z + var7))
             {
-                int var8 = getBlockId(var6.x, var6.y, var6.z);
-                if (var8 == var6.blockId && var8 > 0)
+                int var8 = getBlockId(x, y, z);
+                if (var8 == blockId && var8 > 0)
                 {
-                    Block.Blocks[var8].onTick(this, var6.x, var6.y, var6.z, random);
+                    Block.Blocks[var8].onTick(this, x, y, z, random);
                 }
             }
-
         }
         else
         {
             if (isRegionLoaded(x - var7, y - var7, z - var7, x + var7, y + var7, z + var7))
             {
-                if (id > 0)
-                {
-                    var6.setScheduledTime((long)tickRate + properties.WorldTime);
-                }
+                long scheduledTime = GetEventTime() + tickRate;
+                BlockUpdate blockUpdate = new(x, y, z, blockId, scheduledTime);
 
-                if (!scheduledUpdateSet.contains(var6))
-                {
-                    scheduledUpdateSet.add(var6);
-                    scheduledUpdates.add(var6);
-                }
+                _scheduledUpdates.Enqueue(blockUpdate, (blockUpdate.ScheduledTime, blockUpdate.ScheduledOrder));
             }
-
         }
     }
 
@@ -2591,42 +2576,23 @@ public abstract class World : java.lang.Object, BlockView
 
     }
 
-    public virtual bool ProcessScheduledTicks(bool flush)
+    public virtual void ProcessScheduledTicks(bool flush)
     {
-        int var2 = scheduledUpdates.size();
-        if (var2 != scheduledUpdateSet.size())
+        for (int i = 0; i < 1000; ++i)
         {
-            throw new IllegalStateException("TickNextTick list out of synch");
-        }
-        else
-        {
-            if (var2 > 1000)
-            {
-                var2 = 1000;
-            }
+            if (_scheduledUpdates.Count == 0) break;
+            if (!flush && _scheduledUpdates.Peek().ScheduledTime > GetEventTime()) break;
+            var blockUpdate = _scheduledUpdates.Dequeue();
 
-            for (int var3 = 0; var3 < var2; ++var3)
+            byte var5 = 8;
+            if (isRegionLoaded(blockUpdate.X - var5, blockUpdate.Y - var5, blockUpdate.Z - var5, blockUpdate.X + var5, blockUpdate.Y + var5, blockUpdate.Z + var5))
             {
-                BlockEvent var4 = (BlockEvent)scheduledUpdates.first();
-                if (!flush && var4.ticks > properties.WorldTime)
+                int blockId = getBlockId(blockUpdate.X, blockUpdate.Y, blockUpdate.Z);
+                if (blockId == blockUpdate.BlockId && blockId > 0)
                 {
-                    break;
-                }
-
-                scheduledUpdates.remove(var4);
-                scheduledUpdateSet.remove(var4);
-                byte var5 = 8;
-                if (isRegionLoaded(var4.x - var5, var4.y - var5, var4.z - var5, var4.x + var5, var4.y + var5, var4.z + var5))
-                {
-                    int var6 = getBlockId(var4.x, var4.y, var4.z);
-                    if (var6 == var4.blockId && var6 > 0)
-                    {
-                        Block.Blocks[var6].onTick(this, var4.x, var4.y, var4.z, random);
-                    }
+                    Block.Blocks[blockId].onTick(this, blockUpdate.X, blockUpdate.Y, blockUpdate.Z, random);
                 }
             }
-
-            return scheduledUpdates.size() != 0;
         }
     }
 
@@ -2997,15 +2963,8 @@ public abstract class World : java.lang.Object, BlockView
 
     public void synchronizeTimeAndUpdates(long time)
     {
-        long var3 = time - properties.WorldTime;
-
-        var iter = scheduledUpdateSet.iterator();
-        while (iter.hasNext())
-        {
-            var obj = (BlockEvent)iter.next();
-            obj.ticks += var3;
-        }
-
+        long deltaTime = time - properties.WorldTime;
+        _eventDeltaTime -= deltaTime;
         setTime(time);
     }
 
@@ -3017,6 +2976,11 @@ public abstract class World : java.lang.Object, BlockView
     public long getTime()
     {
         return properties.WorldTime;
+    }
+
+    private long GetEventTime()
+    {
+        return properties.WorldTime + _eventDeltaTime;
     }
 
     public Vec3i getSpawnPos()

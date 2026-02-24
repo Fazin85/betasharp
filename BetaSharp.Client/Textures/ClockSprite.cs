@@ -1,4 +1,5 @@
 ﻿using BetaSharp.Items;
+using BetaSharp.Util.Maths;
 using java.awt.image;
 using java.io;
 using javax.imageio;
@@ -44,7 +45,7 @@ public class ClockSprite : DynamicTexture
             var1 = (double)(-var3 * (float)Math.PI * 2.0F);
             if (mc.world.dimension.IsNether)
             {
-                var1 = java.lang.Math.random() * (double)(float)Math.PI * 2.0D;
+                var1 = Random.Shared.NextDouble() * (double)(float)Math.PI * 2.0D;
             }
         }
 

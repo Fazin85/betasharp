@@ -26,18 +26,4 @@ public class DynamicTexture : java.lang.Object
     public virtual void tick()
     {
     }
-
-    public void bind(TextureManager var1)
-    {
-        if (atlas == FXImage.Terrain)
-        {
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var1.GetTextureId("/terrain.png"));
-        }
-        else if (atlas == FXImage.Items)
-        {
-            GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var1.GetTextureId("/gui/items.png"));
-
-        }
-
-    }
 }

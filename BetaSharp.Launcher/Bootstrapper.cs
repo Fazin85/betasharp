@@ -30,7 +30,7 @@ internal static partial class Bootstrapper
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .WriteTo.File(
-                    Path.Combine(App.Folder, "Logs", ".txt"),
+                    Path.Combine(App.Folder, "logs", ".txt"),
                     rollingInterval: RollingInterval.Day,
                     retainedFileCountLimit: 5,
                     outputTemplate: template)
@@ -47,7 +47,9 @@ internal static partial class Bootstrapper
     [Singleton(typeof(ViewLocator))]
     [Singleton(typeof(AccountsService))]
     [Singleton(typeof(AuthenticationService))]
+    [Singleton(typeof(NavigationService))]
     [Singleton(typeof(AlertService))]
+    [Singleton(typeof(ShellViewModel))]
     [Transient(typeof(ClientService))]
     [Transient(typeof(SkinService))]
     [Transient(typeof(MojangClient))]
@@ -57,7 +59,6 @@ internal static partial class Bootstrapper
     [Transient(typeof(HomeView))]
     [Transient(typeof(HomeViewModel))]
     [Transient(typeof(ShellView))]
-    [Transient(typeof(ShellViewModel))]
     [Transient(typeof(SplashView))]
     [Transient(typeof(SplashViewModel))]
     private static partial void ConfigureServices(IServiceCollection services);

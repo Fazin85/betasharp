@@ -1,4 +1,5 @@
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
 namespace BetaSharp.Client.Entities.FX;
@@ -24,9 +25,9 @@ public class EntityPortalFX : EntityFX
         particleRed = particleGreen = particleBlue = 1.0F * brightnessVariation;
         particleGreen *= 0.3F;
         particleRed *= 0.9F;
-        particleMaxAge = (int)(java.lang.Math.random() * 10.0D) + 40;
+        particleMaxAge = (int)(Random.Shared.NextDouble() * 10.0D) + 40;
         noClip = true;
-        particleTextureIndex = (int)(java.lang.Math.random() * 8.0D);
+        particleTextureIndex = (int)(Random.Shared.NextDouble() * 8.0D);
     }
 
     public override void renderParticle(Tessellator t, float partialTick, float rotX, float rotY, float rotZ, float upX, float upZ)

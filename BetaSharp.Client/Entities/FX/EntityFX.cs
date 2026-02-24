@@ -29,10 +29,10 @@ public class EntityFX : Entity
         standingEyeHeight = height / 2.0F;
         setPosition(x, y, z);
         particleRed = particleGreen = particleBlue = 1.0F;
-        base.velocityX = velocityX + (double)((float)(java.lang.Math.random() * 2.0D - 1.0D) * 0.4F);
-        base.velocityY = velocityY + (double)((float)(java.lang.Math.random() * 2.0D - 1.0D) * 0.4F);
-        base.velocityZ = velocityZ + (double)((float)(java.lang.Math.random() * 2.0D - 1.0D) * 0.4F);
-        float velocityScale = (float)(java.lang.Math.random() + java.lang.Math.random() + 1.0D) * 0.15F;
+        base.velocityX = velocityX + (double)((float)(Random.Shared.NextDouble() * 2.0D - 1.0D) * 0.4F);
+        base.velocityY = velocityY + (double)((float)(Random.Shared.NextDouble() * 2.0D - 1.0D) * 0.4F);
+        base.velocityZ = velocityZ + (double)((float)(Random.Shared.NextDouble() * 2.0D - 1.0D) * 0.4F);
+        float velocityScale = (float)(Random.Shared.NextDouble() + Random.Shared.NextDouble() + 1.0D) * 0.15F;
         float speed = MathHelper.Sqrt(base.velocityX * base.velocityX + base.velocityY * base.velocityY + base.velocityZ * base.velocityZ);
         base.velocityX = base.velocityX / (double)speed * (double)velocityScale * (double)0.4F;
         base.velocityY = base.velocityY / (double)speed * (double)velocityScale * (double)0.4F + (double)0.1F;

@@ -1,7 +1,7 @@
 using BetaSharp.Util;
 using Silk.NET.OpenGL.Legacy;
 
-namespace BetaSharp.Client.Rendering.Core;
+namespace BetaSharp.Client.Rendering.Core.OpenGL;
 
 public unsafe class DisplayListCompiler
 {
@@ -31,6 +31,7 @@ public unsafe class DisplayListCompiler
     private uint _nextListId = 1;
     private readonly Dictionary<uint, DisplayList> _emulatedLists = [];
     private uint _compilingListId;
+    private DisplayList? _currentList;
 
     private byte[] _stagingBuffer = new byte[16384];
     private int _stagingBufferCount = 0;
@@ -67,6 +68,7 @@ public unsafe class DisplayListCompiler
             if (_emulatedLists.TryGetValue(id, out DisplayList? dl))
             {
                 FreeGpuResources(dl);
+                dl.Commands.Dispose();
                 _emulatedLists.Remove(id);
             }
         }
@@ -86,10 +88,12 @@ public unsafe class DisplayListCompiler
         {
             FreeGpuResources(existing);
             existing.Commands.Clear();
+            _currentList = existing;
         }
         else
         {
-            _emulatedLists[list] = new DisplayList();
+            _currentList = new DisplayList();
+            _emulatedLists[list] = _currentList;
         }
     }
 
@@ -97,6 +101,7 @@ public unsafe class DisplayListCompiler
     {
         IsCompiling = false;
         _stagingBufferCount = 0;
+        _currentList = null;
     }
 
     public void CaptureVertexData(byte* data, int byteCount)
@@ -187,7 +192,7 @@ public unsafe class DisplayListCompiler
 
         _gl.BindVertexArray(0);
 
-        _emulatedLists[_compilingListId].Commands.Add(new DLCommand
+        _currentList!.Commands.Add(new DLCommand
         {
             Type = DLCommandType.DrawChunk,
             Vao = vao,
@@ -201,19 +206,15 @@ public unsafe class DisplayListCompiler
 
     public void RecordTranslate(float x, float y, float z)
     {
-        _emulatedLists[_compilingListId].Commands.Add(new DLCommand { Type = DLCommandType.Translate, X_R = x, Y_G = y, Z_B = z });
+        _currentList!.Commands.Add(new DLCommand { Type = DLCommandType.Translate, X_R = x, Y_G = y, Z_B = z });
     }
 
     public void RecordColor(float r, float g, float b, float a)
     {
-        _emulatedLists[_compilingListId].Commands.Add(new DLCommand { Type = DLCommandType.Color, X_R = r, Y_G = g, Z_B = b, W_A = a });
+        _currentList!.Commands.Add(new DLCommand { Type = DLCommandType.Color, X_R = r, Y_G = g, Z_B = b, W_A = a });
     }
 
-    public delegate void DrawCallback(ref DLCommand cmd);
-    public delegate void TranslateCallback(ref DLCommand cmd);
-    public delegate void ColorCallback(ref DLCommand cmd);
-
-    public void Execute(uint list, DrawCallback onDraw, TranslateCallback onTranslate, ColorCallback onColor)
+    public void Execute(uint list, EmulatedGL emuGl)
     {
         if (!_emulatedLists.TryGetValue(list, out DisplayList? dl) || dl.Commands.Count == 0) return;
 
@@ -223,9 +224,18 @@ public unsafe class DisplayListCompiler
             ref DLCommand cmd = ref span[i];
             switch (cmd.Type)
             {
-                case DLCommandType.DrawChunk: onDraw(ref cmd); break;
-                case DLCommandType.Translate: onTranslate(ref cmd); break;
-                case DLCommandType.Color: onColor(ref cmd); break;
+                case DLCommandType.DrawChunk:
+                    emuGl.ActivateShader();
+                    emuGl.SilkGL.BindVertexArray(cmd.Vao);
+                    emuGl.SilkGL.DrawArrays(cmd.DrawMode, 0, (uint)cmd.VertexCount);
+                    break;
+                case DLCommandType.Translate:
+                    emuGl.ActiveStack.Translate(cmd.X_R, cmd.Y_G, cmd.Z_B);
+                    emuGl.MarkActiveMatrixDirty();
+                    break;
+                case DLCommandType.Color:
+                    emuGl.SilkGL.VertexAttrib4(1, cmd.X_R, cmd.Y_G, cmd.Z_B, cmd.W_A);
+                    break;
             }
         }
     }

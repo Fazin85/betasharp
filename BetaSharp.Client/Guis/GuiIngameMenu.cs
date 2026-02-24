@@ -23,8 +23,8 @@ public class GuiIngameMenu : GuiScreen
         _controlList.Add(new GuiButton(1, centerX - 100, centerY + 120 + verticalOffset, quitText));
         _controlList.Add(new GuiButton(4, centerX - 100, centerY + 24 + verticalOffset, "Back to game"));
         _controlList.Add(new GuiButton(0, centerX - 100, centerY + 96 + verticalOffset, "Options..."));
-        _controlList.Add(new GuiButton(5, centerX - 100, centerY + 48 + verticalOffset, 98, 20, StatCollector.translateToLocal("gui.achievements")));
-        _controlList.Add(new GuiButton(6, centerX + 2, centerY + 48 + verticalOffset, 98, 20, StatCollector.translateToLocal("gui.stats")));
+        _controlList.Add(new GuiButton(5, centerX - 100, centerY + 48 + verticalOffset, 98, 20, StatCollector.TranslateToLocal("gui.achievements")));
+        _controlList.Add(new GuiButton(6, centerX + 2, centerY + 48 + verticalOffset, 98, 20, StatCollector.TranslateToLocal("gui.stats")));
     }
 
     protected override void ActionPerformed(GuiButton btt)
@@ -36,7 +36,7 @@ public class GuiIngameMenu : GuiScreen
 
         if (btt.Id == 1)
         {
-            mc.statFileWriter.readStat(Stats.Stats.leaveGameStat, 1);
+            mc.statFileWriter.ReadStat(Stats.Stats.LeaveGameStat, 1);
             if (mc.isMultiplayerWorld())
             {
                 mc.world.Disconnect();

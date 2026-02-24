@@ -1,4 +1,4 @@
-﻿using BetaSharp.Blocks.Entities;
+using BetaSharp.Blocks.Entities;
 using BetaSharp.Inventorys;
 using BetaSharp.Items;
 using BetaSharp.Network.Packets;
@@ -106,12 +106,6 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     public ItemStack getEquipment(int slot)
     {
         return slot == 0 ? inventory.getSelectedItem() : inventory.armor[slot - 1];
-    }
-
-
-    public override void onKilledBy(Entity adversary)
-    {
-        inventory.dropInventory();
     }
 
 
@@ -497,15 +491,15 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     {
         if (stat != null)
         {
-            if (!stat.localOnly)
+            if (!stat.LocalOnly)
             {
                 while (amount > 100)
                 {
-                    networkHandler.sendPacket(new IncreaseStatS2CPacket(stat.id, 100));
+                    networkHandler.sendPacket(new IncreaseStatS2CPacket(stat.Id, 100));
                     amount -= 100;
                 }
 
-                networkHandler.sendPacket(new IncreaseStatS2CPacket(stat.id, amount));
+                networkHandler.sendPacket(new IncreaseStatS2CPacket(stat.Id, amount));
             }
         }
     }

@@ -12,7 +12,7 @@ public class EntityRainFX : EntityFX
     public EntityRainFX(World world, double x, double y, double z) : base(world, x, y, z, 0.0D, 0.0D, 0.0D)
     {
         velocityX *= (double)0.3F;
-        velocityY = (double)((float)java.lang.Math.random() * 0.2F + 0.1F);
+        velocityY = (double)((float)Random.Shared.NextDouble() * 0.2F + 0.1F);
         velocityZ *= (double)0.3F;
         particleRed = 1.0F;
         particleGreen = 1.0F;
@@ -20,7 +20,7 @@ public class EntityRainFX : EntityFX
         particleTextureIndex = 19 + random.NextInt(4);
         setBoundingBoxSpacing(0.01F, 0.01F);
         particleGravity = 0.06F;
-        particleMaxAge = (int)(8.0D / (java.lang.Math.random() * 0.8D + 0.2D));
+        particleMaxAge = (int)(8.0D / (Random.Shared.NextDouble() * 0.8D + 0.2D));
     }
 
     public override void renderParticle(Tessellator t, float partialTick, float rotX, float rotY, float rotZ, float upX, float upZ)
@@ -45,7 +45,7 @@ public class EntityRainFX : EntityFX
 
         if (onGround)
         {
-            if (java.lang.Math.random() < 0.5D)
+            if (Random.Shared.NextDouble() < 0.5D)
             {
                 markDead();
             }

@@ -54,7 +54,7 @@ public class LavaSideSprite : DynamicTexture
                 }
 
                 heatDelta[var1 + var2 * 16] -= 0.06F;
-                if (java.lang.Math.random() < 0.005D)
+                if (Random.Shared.NextDouble() < 0.005D)
                 {
                     heatDelta[var1 + var2 * 16] = 1.5F;
                 }

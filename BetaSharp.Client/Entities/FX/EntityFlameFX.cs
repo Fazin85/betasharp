@@ -1,4 +1,5 @@
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
 namespace BetaSharp.Client.Entities.FX;
@@ -15,7 +16,7 @@ public class EntityFlameFX : EntityFX
         base.velocityZ = base.velocityZ * (double)0.01F + velocityZ;
         baseScale = particleScale;
         particleRed = particleGreen = particleBlue = 1.0F;
-        particleMaxAge = (int)(8.0D / (java.lang.Math.random() * 0.8D + 0.2D)) + 4;
+        particleMaxAge = (int)(8.0D / (Random.Shared.NextDouble() * 0.8D + 0.2D)) + 4;
         noClip = true;
         particleTextureIndex = 48;
     }

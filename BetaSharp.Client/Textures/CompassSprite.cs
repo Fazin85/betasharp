@@ -66,7 +66,7 @@ public class CompassSprite : DynamicTexture
             var20 = (double)(mc.player.yaw - 90.0F) * Math.PI / 180.0D - java.lang.Math.atan2(var25, var23);
             if (mc.world.dimension.IsNether)
             {
-                var20 = java.lang.Math.random() * (double)(float)Math.PI * 2.0D;
+                var20 = Random.Shared.NextDouble() * (double)(float)Math.PI * 2.0D;
             }
         }
 

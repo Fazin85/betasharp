@@ -20,7 +20,7 @@ public class EntityTNTPrimed : Entity
     public EntityTNTPrimed(World world, double x, double y, double z) : base(world)
     {
         setPosition(x, y, z);
-        float randomAngle = (float)(java.lang.Math.random() * (double)((float)Math.PI) * 2.0D);
+        float randomAngle = (float)(Random.Shared.NextSingle() * (Math.PI) * 2.0D);
         velocityX = (double)(-MathHelper.Sin(randomAngle * (float)Math.PI / 180.0F) * 0.02F);
         velocityY = (double)0.2F;
         velocityZ = (double)(-MathHelper.Cos(randomAngle * (float)Math.PI / 180.0F) * 0.02F);

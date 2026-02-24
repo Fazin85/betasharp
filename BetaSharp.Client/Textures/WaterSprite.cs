@@ -1,4 +1,5 @@
 using BetaSharp.Blocks;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Client.Textures;
 
@@ -49,7 +50,7 @@ public class WaterSprite : DynamicTexture
                 }
 
                 heatDelta[var1 + var2 * 16] -= 0.1F;
-                if (java.lang.Math.random() < 0.05D)
+                if (Random.Shared.NextDouble() < 0.05D)
                 {
                     heatDelta[var1 + var2 * 16] = 0.5F;
                 }

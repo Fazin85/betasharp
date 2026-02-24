@@ -1,5 +1,6 @@
 using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Entities;
 using java.util;
 using Silk.NET.OpenGL.Legacy;
@@ -11,7 +12,7 @@ namespace BetaSharp.Client.Rendering;
 public class MapItemRenderer
 {
     private readonly int[] colors = new int[128 * 128];
-    private readonly int _textureId;
+    private readonly TextureHandle _textureId;
     private readonly GameOptions _options;
     private readonly TextRenderer _textRenderer;
 
@@ -57,9 +58,9 @@ public class MapItemRenderer
             }
         }
 
-        textureManager.Bind(colors, 128, 128, _textureId);
+        if (_textureId.Texture != null) textureManager.Bind(colors, 128, 128, _textureId.Texture);
         Tessellator tess = Tessellator.instance;
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_textureId);
+        _textureId.Bind();
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.Disable(GLEnum.AlphaTest);
         tess.startDrawingQuads();

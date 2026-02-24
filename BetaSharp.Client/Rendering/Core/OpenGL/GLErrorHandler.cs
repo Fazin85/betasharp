@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using Silk.NET.OpenGL.Legacy;
 
-namespace BetaSharp.Client.Rendering.Core;
+namespace BetaSharp.Client.Rendering.Core.OpenGL;
 
 internal class GLErrorHandler
 {

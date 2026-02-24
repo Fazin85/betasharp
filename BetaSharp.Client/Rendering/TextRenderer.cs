@@ -1,29 +1,23 @@
 using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Util;
-using Silk.NET.OpenGL.Legacy;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using System;
-using System.IO;
 
 namespace BetaSharp.Client.Rendering;
 
 public class TextRenderer
 {
     private readonly int[] _charWidth = new int[256];
-    public int fontTextureName = 0;
-    private readonly int _fontDisplayLists;
-
-    // Buffer to hold Display List IDs before sending them to OpenGL
-    private readonly uint[] _listBuffer = new uint[1024];
+    public TextureHandle? fontTextureName;
 
     public TextRenderer(GameOptions options, TextureManager textureManager)
     {
         Image<Rgba32> fontImage;
         try
         {
-            var asset = AssetManager.Instance.getAsset("font/default.png");
+            AssetManager.Asset asset = AssetManager.Instance.getAsset("font/default.png");
             using var stream = new MemoryStream(asset.getBinaryContent());
             fontImage = Image.Load<Rgba32>(stream);
         }
@@ -40,10 +34,10 @@ public class TextRenderer
         {
             for (int y = 0; y < accessor.Height; y++)
             {
-                var row = accessor.GetRowSpan(y);
+                Span<Rgba32> row = accessor.GetRowSpan(y);
                 for (int x = 0; x < accessor.Width; x++)
                 {
-                    var p = row[x];
+                    Rgba32 p = row[x];
                     pixels[y * imgWidth + x] = (p.A << 24) | (p.R << 16) | (p.G << 8) | p.B;
                 }
             }
@@ -64,7 +58,7 @@ public class TextRenderer
                 {
                     int pixelIndex = (row * 8 + yOffset) * imgWidth + xOffset;
                     int alpha = pixels[pixelIndex] & 255;
-                    
+
                     if (alpha > 0)
                     {
                         columnIsEmpty = false;
@@ -87,70 +81,22 @@ public class TextRenderer
         }
 
         fontTextureName = textureManager.Load(fontImage);
-        _fontDisplayLists = GLAllocation.generateDisplayLists(288);
-        Tessellator tessellator = Tessellator.instance;
-
-        for (int charIndex = 0; charIndex < 256; ++charIndex)
-        {
-            GLManager.GL.NewList((uint)(_fontDisplayLists + charIndex), GLEnum.Compile);
-            tessellator.startDrawingQuads();
-            
-            int u = (charIndex % 16) * 8;
-            int v = (charIndex / 16) * 8;
-            
-            float quadSize = 7.99F; 
-            float uvOffset = 0.0F;
-
-            tessellator.addVertexWithUV(0.0D, quadSize, 0.0D, (u / 128.0F) + uvOffset, ((v + quadSize) / 128.0F) + uvOffset);
-            tessellator.addVertexWithUV(quadSize, quadSize, 0.0D, ((u + quadSize) / 128.0F) + uvOffset, ((v + quadSize) / 128.0F) + uvOffset);
-            tessellator.addVertexWithUV(quadSize, 0.0D, 0.0D, ((u + quadSize) / 128.0F) + uvOffset, (v / 128.0F) + uvOffset);
-            tessellator.addVertexWithUV(0.0D, 0.0D, 0.0D, (u / 128.0F) + uvOffset, (v / 128.0F) + uvOffset);
-            tessellator.draw();
-
-            GLManager.GL.Translate(_charWidth[charIndex], 0.0F, 0.0F);
-            GLManager.GL.EndList();
-        }
-
-        for (int colorIndex = 0; colorIndex < 32; ++colorIndex)
-        {
-            int baseColorOffset = (colorIndex >> 3 & 1) * 85;
-            int r = (colorIndex >> 2 & 1) * 170 + baseColorOffset;
-            int g = (colorIndex >> 1 & 1) * 170 + baseColorOffset;
-            int b = (colorIndex >> 0 & 1) * 170 + baseColorOffset;
-            
-            if (colorIndex == 6)
-            {
-                r += 85;
-            }
-
-            bool isShadow = colorIndex >= 16;
-            if (isShadow)
-            {
-                r /= 4;
-                g /= 4;
-                b /= 4;
-            }
-
-            GLManager.GL.NewList((uint)(_fontDisplayLists + 256 + colorIndex), GLEnum.Compile);
-            GLManager.GL.Color3(r / 255.0F, g / 255.0F, b / 255.0F);
-            GLManager.GL.EndList();
-        }
     }
 
-    public void DrawStringWithShadow(string text, int x, int y, uint color)
+    public void DrawStringWithShadow(ReadOnlySpan<char> text, int x, int y, uint color)
     {
         RenderString(text, x + 1, y + 1, color, true);
         DrawString(text, x, y, color);
     }
 
-    public void DrawString(string text, int x, int y, uint color)
+    public void DrawString(ReadOnlySpan<char> text, int x, int y, uint color)
     {
         RenderString(text, x, y, color, false);
     }
 
-    public unsafe void RenderString(string text, int x, int y, uint color, bool darken)
+    public void RenderString(ReadOnlySpan<char> text, int x, int y, uint color, bool darken)
     {
-        if (string.IsNullOrEmpty(text)) return;
+        if (text.IsEmpty) return;
 
         uint alpha = color & 0xFF000000;
         if (darken)
@@ -159,38 +105,45 @@ public class TextRenderer
             color |= alpha;
         }
 
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)fontTextureName);
+        fontTextureName?.Bind();
         float a = (color >> 24 & 255) / 255.0F;
         float r = (color >> 16 & 255) / 255.0F;
         float g = (color >> 8 & 255) / 255.0F;
         float b = (color & 255) / 255.0F;
-        
+
         if (a == 0.0F) a = 1.0F;
 
-        GLManager.GL.Color4(r, g, b, a);
+        Tessellator tessellator = Tessellator.instance;
+        tessellator.startDrawingQuads();
+        tessellator.setColorRGBA_F(r, g, b, a);
 
-        int bufferPos = 0;
-
-        GLManager.GL.PushMatrix();
-        GLManager.GL.Translate((float)x, (float)y, 0.0F);
+        float currentX = x;
+        float currentY = y;
 
         for (int i = 0; i < text.Length; ++i)
         {
             for (; text.Length > i + 1 && text[i] == 167; i += 2)
             {
-                int colorCode = "0123456789abcdef".IndexOf(text.ToLower()[i + 1]);
-                if (colorCode < 0 || colorCode > 15)
+                int colorCode = HexToDec(text[i + 1]);
+
+                int baseColorOffset = (colorCode >> 3 & 1) * 85;
+                int cr = (colorCode >> 2 & 1) * 170 + baseColorOffset;
+                int cg = (colorCode >> 1 & 1) * 170 + baseColorOffset;
+                int cb = (colorCode >> 0 & 1) * 170 + baseColorOffset;
+
+                if (colorCode == 6)
                 {
-                    colorCode = 15;
+                    cr += 85;
                 }
 
-                _listBuffer[bufferPos++] = (uint)(_fontDisplayLists + 256 + colorCode + (darken ? 16 : 0));
-
-                if (bufferPos >= 1024)
+                if (darken)
                 {
-                    CallLists(bufferPos);
-                    bufferPos = 0;
+                    cr /= 4;
+                    cg /= 4;
+                    cb /= 4;
                 }
+
+                tessellator.setColorRGBA_F(cr / 255.0F, cg / 255.0F, cb / 255.0F, a);
             }
 
             if (i < text.Length)
@@ -198,36 +151,46 @@ public class TextRenderer
                 int charIndex = ChatAllowedCharacters.allowedCharacters.IndexOf(text[i]);
                 if (charIndex >= 0)
                 {
-                    _listBuffer[bufferPos++] = (uint)(_fontDisplayLists + charIndex + 32);
+                    int fontIndex = charIndex + 32;
+                    int u = (fontIndex % 16) * 8;
+                    int v = (fontIndex / 16) * 8;
+
+                    float quadSize = 7.99F;
+                    float uvOffset = 0.0F;
+
+                    tessellator.addVertexWithUV(currentX + 0.0D, currentY + quadSize, 0.0D, (u / 128.0F) + uvOffset, ((v + quadSize) / 128.0F) + uvOffset);
+                    tessellator.addVertexWithUV(currentX + quadSize, currentY + quadSize, 0.0D, ((u + quadSize) / 128.0F) + uvOffset, ((v + quadSize) / 128.0F) + uvOffset);
+                    tessellator.addVertexWithUV(currentX + quadSize, currentY + 0.0D, 0.0D, ((u + quadSize) / 128.0F) + uvOffset, (v / 128.0F) + uvOffset);
+                    tessellator.addVertexWithUV(currentX + 0.0D, currentY + 0.0D, 0.0D, (u / 128.0F) + uvOffset, (v / 128.0F) + uvOffset);
+
+                    currentX += _charWidth[fontIndex];
                 }
             }
-
-            if (bufferPos >= 1024)
-            {
-                CallLists(bufferPos);
-                bufferPos = 0;
-            }
         }
 
-        if (bufferPos > 0)
-        {
-            CallLists(bufferPos);
-        }
-        
-        GLManager.GL.PopMatrix();
-
-        void CallLists(int count)
-        {
-            fixed (uint* ptr = _listBuffer)
-            {
-                GLManager.GL.CallLists((uint)count, GLEnum.UnsignedInt, ptr);
-            }
-        }
+        tessellator.draw();
     }
 
-    public int GetStringWidth(string text)
+    /// <summary>
+    /// Get decimal value of give hex char.
+    /// Non-hex characters are not handled,
+    /// but will still return a value between 0 and 15 inclusive.
+    /// </summary>
+    /// <param name="c">input character (case-insensitive)</param>
+    /// <returns>value between 0-15 inclusive</returns>
+    private static int HexToDec(char c)
     {
-        if (string.IsNullOrEmpty(text)) return 0;
+        int v = c;
+        if (c <= '9') v -= '0';
+        else if (c <= 'F') v += 10 - 'A';
+        else if (c <= 'f') v += 10 - 'a';
+        else return 15;
+        return v <= 0 ? 0 : v;
+    }
+
+    public int GetStringWidth(ReadOnlySpan<char> text)
+    {
+        if (text.IsEmpty) return 0;
 
         int totalWidth = 0;
 
@@ -250,105 +213,105 @@ public class TextRenderer
         return totalWidth;
     }
 
-    public void DrawStringWrapped(string text, int x, int y, int maxWidth, uint color)
+    private int GetStringFitLength(ReadOnlySpan<char> text, int maxWidth)
     {
-        if (string.IsNullOrEmpty(text)) return;
-
-        string[] lines = text.Split("\n");
-        if (lines.Length > 1)
+        int width = 0;
+        int lastSpaceIndex = -1;
+        int i = 0;
+        for (; i < text.Length; ++i)
         {
-            for (int i = 0; i < lines.Length; ++i)
+            if (text[i] == 167)
             {
-                DrawStringWrapped(lines[i], x, y, maxWidth, color);
-                y += GetStringHeight(lines[i], maxWidth);
+                ++i;
+                continue;
             }
-            return;
-        }
-
-        string[] words = text.Split(" ");
-        int wordIndex = 0;
-
-        while (wordIndex < words.Length)
-        {
-            string currentLine;
-            for (currentLine = words[wordIndex++] + " "; wordIndex < words.Length && GetStringWidth(currentLine + words[wordIndex]) < maxWidth; currentLine = currentLine + words[wordIndex++] + " ")
+            if (text[i] == ' ')
             {
+                lastSpaceIndex = i;
             }
 
-            int cutIndex;
-            for (; GetStringWidth(currentLine) > maxWidth; currentLine = currentLine[cutIndex..])
+            int charIndex = ChatAllowedCharacters.allowedCharacters.IndexOf(text[i]);
+            if (charIndex >= 0)
             {
-                for (cutIndex = 0; GetStringWidth(currentLine[..(cutIndex + 1)]) <= maxWidth; ++cutIndex)
+                width += _charWidth[charIndex + 32];
+            }
+
+            if (width > maxWidth)
+            {
+                if (lastSpaceIndex > 0)
                 {
+                    return lastSpaceIndex;
                 }
-
-                if (currentLine[..cutIndex].Trim().Length > 0)
-                {
-                    DrawString(currentLine[..cutIndex], x, y, color);
-                    y += 8;
-                }
-            }
-
-            if (currentLine.Trim().Length > 0)
-            {
-                DrawString(currentLine, x, y, color);
-                y += 8;
+                return Math.Max(1, i);
             }
         }
+        return text.Length;
     }
 
-    public int GetStringHeight(string text, int maxWidth)
+    private void ProcessWrappedText(ReadOnlySpan<char> text, int x, int y, int maxWidth, uint color, bool draw, ref int outHeight)
     {
-        if (string.IsNullOrEmpty(text)) return 0;
+        if (text.IsEmpty) return;
 
-        string[] lines = text.Split("\n");
-        if (lines.Length > 1)
+        int totalHeight = 0;
+        int currentY = y;
+
+        while (text.Length > 0)
         {
-            int totalHeight = 0;
-            for (int i = 0; i < lines.Length; ++i)
+            int newlineIndex = text.IndexOf('\n');
+            ReadOnlySpan<char> line;
+            if (newlineIndex >= 0)
             {
-                totalHeight += GetStringHeight(lines[i], maxWidth);
+                line = text.Slice(0, newlineIndex);
+                text = text.Slice(newlineIndex + 1);
             }
-            return totalHeight;
-        }
-        else
-        {
-            string[] words = text.Split(" ");
-            int wordIndex = 0;
-            int totalHeight = 0;
-
-            while (wordIndex < words.Length)
+            else
             {
-                string currentLine;
-                for (currentLine = words[wordIndex++] + " "; wordIndex < words.Length && GetStringWidth(currentLine + words[wordIndex]) < maxWidth; currentLine = currentLine + words[wordIndex++] + " ")
+                line = text;
+                text = [];
+            }
+
+            while (line.Length > 0)
+            {
+                int fitLength = GetStringFitLength(line, maxWidth);
+                ReadOnlySpan<char> subline = line.Slice(0, Math.Min(fitLength, line.Length));
+
+                while(subline.Length > 0 && subline[subline.Length - 1] == ' ')
                 {
+                    subline = subline.Slice(0, subline.Length - 1);
                 }
 
-                int cutIndex;
-                for (; GetStringWidth(currentLine) > maxWidth; currentLine = currentLine[cutIndex..])
+                if (subline.Length > 0 || fitLength > 0)
                 {
-                    for (cutIndex = 0; GetStringWidth(currentLine[..(cutIndex + 1)]) <= maxWidth; ++cutIndex)
+                    if (draw && subline.Length > 0)
                     {
+                        DrawString(subline, x, currentY, color);
                     }
-
-                    if (currentLine[..cutIndex].Trim().Length > 0)
-                    {
-                        totalHeight += 8;
-                    }
-                }
-
-                if (currentLine.Trim().Length > 0)
-                {
+                    currentY += 8;
                     totalHeight += 8;
                 }
-            }
 
-            if (totalHeight < 8)
-            {
-                totalHeight += 8;
+                line = line.Slice(Math.Min(fitLength, line.Length));
+                while(line.Length > 0 && line[0] == ' ')
+                {
+                    line = line.Slice(1);
+                }
             }
-
-            return totalHeight;
         }
+
+        if (totalHeight < 8) totalHeight = 8;
+        outHeight = totalHeight;
+    }
+
+    public void DrawStringWrapped(ReadOnlySpan<char> text, int x, int y, int maxWidth, uint color)
+    {
+        int dummyHeight = 0;
+        ProcessWrappedText(text, x, y, maxWidth, color, true, ref dummyHeight);
+    }
+
+    public int GetStringHeight(ReadOnlySpan<char> text, int maxWidth)
+    {
+        int height = 0;
+        ProcessWrappedText(text, 0, 0, maxWidth, 0, false, ref height);
+        return height;
     }
 }
