@@ -82,7 +82,7 @@ public abstract class GuiSlot
             : -1;
     }
 
-    public void RegisterScrollButtons(List<GuiButton> buttons, int upId, int downId)
+    public void RegisterScrollButtons(List<Button> buttons, int upId, int downId)
     {
         _scrollUpButtonID = upId;
         _scrollDownButtonID = downId;
@@ -98,7 +98,7 @@ public abstract class GuiSlot
 
     }
 
-    public void ActionPerformed(GuiButton button)
+    public void ActionPerformed(Button button)
     {
         if (!button.Enabled) return;
 

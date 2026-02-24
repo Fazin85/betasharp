@@ -25,8 +25,8 @@ public class GuiScreenAddServer : GuiScreen
     {
         Keyboard.enableRepeatEvents(true);
         Children.Clear();
-        Children.Add(new GuiButton(0, Width / 2 - 100, Height / 4 + 96 + 12, "Done"));
-        Children.Add(new GuiButton(1, Width / 2 - 100, Height / 4 + 120 + 12, "Cancel"));
+        Children.Add(new Button(0, Width / 2 - 100, Height / 4 + 96 + 12, "Done"));
+        Children.Add(new Button(1, Width / 2 - 100, Height / 4 + 120 + 12, "Cancel"));
 
         _serverName = new TextField(this, FontRenderer, Width / 2 - 100, 66, 200, 20, _serverData.Name)
         {
@@ -45,7 +45,7 @@ public class GuiScreenAddServer : GuiScreen
         Keyboard.enableRepeatEvents(false);
     }
 
-    protected override void ActionPerformed(GuiButton button)
+    protected override void ActionPerformed(Button button)
     {
         if (button.Enabled)
         {
@@ -62,7 +62,7 @@ public class GuiScreenAddServer : GuiScreen
         }
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void OnKeyInput(KeyboardEventArgs e)
     {
         _serverName.TextboxKeyTyped(eventChar, eventKey);
         _serverAddress.TextboxKeyTyped(eventChar, eventKey);
@@ -89,7 +89,7 @@ public class GuiScreenAddServer : GuiScreen
         Children[0].Enabled = _serverName.Text.Length > 0 && _serverAddress.Text.Length > 0 && _serverAddress.Text.Split(":").Length > 0;
     }
 
-    protected override void MouseClicked(int x, int y, int button)
+    protected override void OnClicked(MouseEventArgs e)
     {
         base.Clicked(x, y, button);
         _serverName.Clicked(x, y, button);

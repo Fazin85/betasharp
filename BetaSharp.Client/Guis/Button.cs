@@ -4,9 +4,9 @@ using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiButton : Control
+public class Button : Control
 {
-    public GuiButton(int x, int y, string text) : base(x, y, 200, 20)
+    public Button(int x, int y, string text) : base(x, y, 200, 20)
     {
         Text = text;
     }

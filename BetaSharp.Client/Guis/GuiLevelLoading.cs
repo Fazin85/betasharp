@@ -6,22 +6,19 @@ using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
+public class GuiLevelLoading : GuiScreen
 {
     private readonly ILogger<GuiLevelLoading> _logger = Log.Instance.For<GuiLevelLoading>();
-    private readonly string _worldDir = worldDir;
-    private readonly long _seed = seed;
     private bool _serverStarted;
+    public override bool PausesGame => false;
 
-    public override bool PausesGame=> false;
-
-    public override void InitGui()
+    public GuiLevelLoading(string worldDir, long seed)
     {
-        Children.Clear();
         if (!_serverStarted)
         {
             _serverStarted = true;
-            mc.internalServer = new InternalServer(System.IO.Path.Combine(Minecraft.getMinecraftDir().getAbsolutePath(), "saves"), _worldDir, _seed.ToString(), mc.options.renderDistance, mc.options.Difficulty);
+            mc.internalServer = new(System.IO.Path.Combine(Minecraft.getMinecraftDir().getAbsolutePath(), "saves"),
+            worldDir, seed.ToString(), mc.options.renderDistance, mc.options.Difficulty);
             new RunServerThread(mc.internalServer, "InternalServer").start();
         }
     }
@@ -32,7 +29,8 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
         {
             if (mc.internalServer.stopped)
             {
-                mc.OpenScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", "Internal server stopped unexpectedly"));
+                mc.OpenScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason",
+                    "Internal server stopped unexpectedly"));
                 return;
             }
 
@@ -59,7 +57,6 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
     protected override void OnRendered(RenderEventArgs e)
     {
         DrawDefaultBackground();
-        TranslationStorage var4 = TranslationStorage.Instance;
 
         string title = "Loading level";
         string progressMsg = "";
@@ -73,7 +70,5 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
 
         Gui.DrawCenteredString(FontRenderer, title, Width / 2, Height / 2 - 50, 0xFFFFFF);
         Gui.DrawCenteredString(FontRenderer, progressMsg + " (" + progress + "%)", Width / 2, Height / 2 - 10, 0xFFFFFF);
-
-        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 }

@@ -2,7 +2,7 @@ using BetaSharp.Client.Options;
 
 namespace BetaSharp.Client.Guis;
 
-public class ToggleButton : GuiButton
+public class ToggleButton : Button
 {
     private readonly BoolOption _option;
     private readonly string _textFormat;

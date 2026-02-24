@@ -44,11 +44,11 @@ public class GuiStats : GuiScreen
         const int BUTTON_ITEMS = 3;
 
         TranslationStorage translations = TranslationStorage.Instance;
-        Children.Add(new GuiButton(BUTTON_DONE, Width / 2 + 4, Height - 28, 150, 20, translations.TranslateKey("gui.done")));
-        Children.Add(new GuiButton(BUTTON_GENERAL, Width / 2 - 154, Height - 52, 100, 20, translations.TranslateKey("stat.generalButton")));
-        GuiButton blocksButton = new(BUTTON_BLOCKS, Width / 2 - 46, Height - 52, 100, 20, translations.TranslateKey("stat.blocksButton"));
+        Children.Add(new Button(BUTTON_DONE, Width / 2 + 4, Height - 28, 150, 20, translations.TranslateKey("gui.done")));
+        Children.Add(new Button(BUTTON_GENERAL, Width / 2 - 154, Height - 52, 100, 20, translations.TranslateKey("stat.generalButton")));
+        Button blocksButton = new(BUTTON_BLOCKS, Width / 2 - 46, Height - 52, 100, 20, translations.TranslateKey("stat.blocksButton"));
         Children.Add(blocksButton);
-        GuiButton itemsButton = new(BUTTON_ITEMS, Width / 2 + 62, Height - 52, 100, 20, translations.TranslateKey("stat.itemsButton"));
+        Button itemsButton = new(BUTTON_ITEMS, Width / 2 + 62, Height - 52, 100, 20, translations.TranslateKey("stat.itemsButton"));
         Children.Add(itemsButton);
         if (slotBlock.GetSize() == 0)
         {
@@ -61,7 +61,7 @@ public class GuiStats : GuiScreen
         }
     }
 
-    protected override void ActionPerformed(GuiButton button)
+    protected override void ActionPerformed(Button button)
     {
         if (button.Enabled)
         {

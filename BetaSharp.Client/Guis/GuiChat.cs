@@ -42,7 +42,7 @@ public class GuiChat : GuiScreen
         ++_updateCounter;
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void OnKeyInput(KeyboardEventArgs e)
     {
         if (eventKey == Keyboard.KEY_ESCAPE)
         {
@@ -152,7 +152,7 @@ public class GuiChat : GuiScreen
         }
     }
 
-    protected override void MouseClicked(int x, int y, int button)
+    protected override void OnClicked(MouseEventArgs e)
     {
         if (button != 0) return;
 

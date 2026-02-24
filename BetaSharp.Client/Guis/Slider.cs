@@ -3,7 +3,7 @@ using BetaSharp.Client.Rendering.Core;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiSlider : Control
+public class Slider : Control
 {
     public float Value;
     private readonly float _min;
@@ -12,7 +12,7 @@ public class GuiSlider : Control
     private readonly string _textFormat;
     private readonly Action<float> _updateAction;
 
-    public GuiSlider(int x, int y, string textFormat, Action<float> updateAction, float value, float min, float max, float step = 0)
+    public Slider(int x, int y, string textFormat, Action<float> updateAction, float value, float min, float max, float step = 0)
         : base(x, y, 150, 20)
     {
         Value = value;

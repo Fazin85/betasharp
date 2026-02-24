@@ -2,7 +2,7 @@ using BetaSharp.Client.Options;
 
 namespace BetaSharp.Client.Guis;
 
-public class CycleButton : GuiButton
+public class CycleButton : Button
 {
     private readonly CycleOption _option;
     private readonly string _textFormat;

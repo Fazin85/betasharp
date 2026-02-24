@@ -12,7 +12,7 @@ public class GuiSleepMP : GuiChat
     {
         Keyboard.enableRepeatEvents(true);
         TranslationStorage translations = TranslationStorage.Instance;
-        Children.Add(new GuiButton(ButtonStopSleep, Width / 2 - 100, Height - 40, translations.TranslateKey("multiplayer.stopSleeping")));
+        Children.Add(new Button(ButtonStopSleep, Width / 2 - 100, Height - 40, translations.TranslateKey("multiplayer.stopSleeping")));
     }
 
     public override void OnGuiClosed()
@@ -20,7 +20,7 @@ public class GuiSleepMP : GuiChat
         Keyboard.enableRepeatEvents(false);
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void OnKeyInput(KeyboardEventArgs e)
     {
         if (eventKey == 1)
         {
@@ -48,7 +48,7 @@ public class GuiSleepMP : GuiChat
         base.OnRendered(mouseX, mouseY, tickDelta);
     }
 
-    protected override void ActionPerformed(GuiButton button)
+    protected override void ActionPerformed(Button button)
     {
         switch (button.Id)
         {

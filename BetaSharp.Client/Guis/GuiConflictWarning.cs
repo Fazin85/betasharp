@@ -1,8 +1,7 @@
 namespace BetaSharp.Client.Guis;
 
-public class GuiConflictWarning : GuiScreen
+public class GuiConflictWarning: GuiScreen
 {
-
     private int _updateCounter = 0;
 
     public override void UpdateScreen()
@@ -13,10 +12,10 @@ public class GuiConflictWarning : GuiScreen
     public override void InitGui()
     {
         Children.Clear();
-        Children.Add(new GuiButton(0, Width / 2 - 100, Height / 4 + 120 + 12, "Back to title screen"));
+        Children.Add(new Button(0, Width / 2 - 100, Height / 4 + 120 + 12, "Back to title screen"));
     }
 
-    protected override void ActionPerformed(GuiButton btt)
+    protected override void ActionPerformed(Button btt)
     {
         if (btt.Enabled)
         {

@@ -36,7 +36,7 @@ public class GuiConnecting : GuiScreen
 
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void OnKeyInput(KeyboardEventArgs e)
     {
     }
 
@@ -44,10 +44,10 @@ public class GuiConnecting : GuiScreen
     {
         TranslationStorage translations = TranslationStorage.Instance;
         Children.Clear();
-        Children.Add(new GuiButton(_buttonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.TranslateKey("gui.cancel")));
+        Children.Add(new Button(_buttonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.TranslateKey("gui.cancel")));
     }
 
-    protected override void ActionPerformed(GuiButton button)
+    protected override void ActionPerformed(Button button)
     {
         switch (button.Id)
         {

@@ -6,8 +6,7 @@ using java.lang;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiCreateWorld : GuiScreen
-{
+public class GuiCreateWorldprotected override void OnRendered{
     private const int ButtonCreate = 0;
     private const int ButtonCancel = 1;
 
@@ -44,8 +43,8 @@ public class GuiCreateWorld : GuiScreen
         _textboxSeed = new TextField(this, FontRenderer, centerX - 100, centerY + 56, 200, 20, "");
 
         Children.Clear();
-        Children.Add(new GuiButton(ButtonCreate, centerX - 100, centerY + 96 + 12, translations.TranslateKey("selectWorld.create")));
-        Children.Add(new GuiButton(ButtonCancel, centerX - 100, centerY + 120 + 12, translations.TranslateKey("gui.cancel")));
+        Children.Add(new Button(ButtonCreate, centerX - 100, centerY + 96 + 12, translations.TranslateKey("selectWorld.create")));
+        Children.Add(new Button(ButtonCancel, centerX - 100, centerY + 120 + 12, translations.TranslateKey("gui.cancel")));
 
         UpdateFolderName();
     }
@@ -85,7 +84,7 @@ public class GuiCreateWorld : GuiScreen
         Keyboard.enableRepeatEvents(false);
     }
 
-    protected override void ActionPerformed(GuiButton button)
+    protected override void ActionPerformed(Button button)
     {
         if (button.Enabled)
         {
@@ -134,7 +133,7 @@ public class GuiCreateWorld : GuiScreen
         }
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void OnKeyInput(KeyboardEventArgs e)
     {
         if (_textboxWorldName.Focused)
         {
@@ -154,7 +153,7 @@ public class GuiCreateWorld : GuiScreen
         UpdateFolderName();
     }
 
-    protected override void MouseClicked(int x, int y, int button)
+    protected override void OnClicked(MouseEventArgs e)
     {
         base.Clicked(x, y, button);
         _textboxWorldName.Clicked(x, y, button);

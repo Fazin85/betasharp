@@ -8,7 +8,6 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiInventory : GuiContainer
 {
-
     private float _mouseX;
     private float _mouseY;
 
@@ -18,11 +17,6 @@ public class GuiInventory : GuiContainer
         player.increaseStat(BetaSharp.Achievements.OpenInventory, 1);
     }
 
-    public override void InitGui()
-    {
-        Children.Clear();
-    }
-
     protected override void DrawGuiContainerForegroundLayer()
     {
         FontRenderer.DrawString("Crafting", 86, 16, 0x404040);
@@ -30,9 +24,8 @@ public class GuiInventory : GuiContainer
 
     protected override void OnRendered(RenderEventArgs e)
     {
-        base.OnRendered(mouseX, mouseY, tickDelta);
-        _mouseX = mouseX;
-        _mouseY = mouseY;
+        _mouseX = e.MouseX;
+        _mouseY = e.MouseY;
     }
 
     protected override void DrawGuiContainerBackgroundLayer(float partialTicks)
@@ -82,19 +75,5 @@ public class GuiInventory : GuiContainer
         GLManager.GL.PopMatrix();
         Lighting.turnOff();
         GLManager.GL.Disable(GLEnum.RescaleNormal);
-    }
-
-    protected override void ActionPerformed(GuiButton btt)
-    {
-        if (btt.Id == 0)
-        {
-            mc.OpenScreen(new GuiAchievements(mc.statFileWriter));
-        }
-
-        if (btt.Id == 1)
-        {
-            mc.OpenScreen(new GuiStats(this, mc.statFileWriter));
-        }
-
     }
 }

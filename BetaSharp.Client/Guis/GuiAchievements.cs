@@ -9,9 +9,8 @@ using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiAchievements : GuiScreen
+public class GuiAchievements: GuiScreen
 {
-
     private static readonly int field_27126_s = BetaSharp.Achievements.minColumn * 24 - 112;
     private static readonly int field_27125_t = BetaSharp.Achievements.minRow * 24 - 112;
     private static readonly int field_27124_u = BetaSharp.Achievements.maxColumn * 24 - 77;
@@ -44,7 +43,7 @@ public class GuiAchievements : GuiScreen
         Children.Add(new GuiSmallButton(1, Width / 2 + 24, Height / 2 + 74, 80, 20, StatCollector.translateToLocal("gui.done")));
     }
 
-    protected override void ActionPerformed(GuiButton var1)
+    protected override void ActionPerformed(Button var1)
     {
         if (var1.Id == 1)
         {
@@ -54,7 +53,7 @@ public class GuiAchievements : GuiScreen
         base.ActionPerformed(var1);
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void OnKeyInput(KeyboardEventArgs e)
     {
         if (eventKey == mc.options.KeyBindInventory.keyCode)
         {

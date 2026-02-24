@@ -106,17 +106,17 @@ public class GameOptions
 
 
     public string Skin = "Default";
-    public KeyBinding KeyBindForward = new("key.forward", 17);
-    public KeyBinding KeyBindLeft = new("key.left", 30);
-    public KeyBinding KeyBindBack = new("key.back", 31);
-    public KeyBinding KeyBindRight = new("key.right", 32);
-    public KeyBinding KeyBindJump = new("key.jump", 57);
-    public KeyBinding KeyBindInventory = new("key.inventory", 18);
-    public KeyBinding KeyBindDrop = new("key.drop", 16);
-    public KeyBinding KeyBindChat = new("key.chat", 20);
+    public KeyBinding KeyBindForward = new("key.forward", Keyboard.KEY_W);
+    public KeyBinding KeyBindLeft = new("key.left", Keyboard.KEY_A);
+    public KeyBinding KeyBindBack = new("key.back", Keyboard.KEY_S);
+    public KeyBinding KeyBindRight = new("key.right", Keyboard.KEY_D);
+    public KeyBinding KeyBindJump = new("key.jump", Keyboard.KEY_SPACE);
+    public KeyBinding KeyBindInventory = new("key.inventory", Keyboard.KEY_E);
+    public KeyBinding KeyBindDrop = new("key.drop", Keyboard.KEY_Q);
+    public KeyBinding KeyBindChat = new("key.chat", Keyboard.KEY_T);
     public KeyBinding KeyBindCommand = new("key.command", Keyboard.KEY_SLASH);
-    public KeyBinding KeyBindToggleFog = new("key.fog", 33);
-    public KeyBinding KeyBindSneak = new("key.sneak", 42);
+    public KeyBinding KeyBindToggleFog = new("key.fog", Keyboard.KEY_F);
+    public KeyBinding KeyBindSneak = new("key.sneak", Keyboard.KEY_LSHIFT);
     public KeyBinding[] KeyBindings;
 
     protected Minecraft _mc;
@@ -310,7 +310,7 @@ public class GameOptions
         return translations.TranslateKey(KeyBindings[keyBindingIndex].keyDescription);
     }
 
-    public string GetOptionDisplayString(int keyBindingIndex)
+    public string GetKeybindKeyName(int keyBindingIndex)
     {
         return Keyboard.getKeyName(KeyBindings[keyBindingIndex].keyCode);
     }

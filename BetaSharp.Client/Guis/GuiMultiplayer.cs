@@ -10,9 +10,9 @@ public class GuiMultiplayer : GuiScreen
     private GuiSlotServer _serverListSelector = null!;
     private readonly List<ServerData> _serverList = [];
     private int _selectedServerIndex = -1;
-    private GuiButton _btnEdit = null!;
-    private GuiButton _btnSelect = null!;
-    private GuiButton _btnDelete = null!;
+    private Button _btnEdit = null!;
+    private Button _btnSelect = null!;
+    private Button _btnDelete = null!;
     private bool _deletingServer = false;
     private bool _addingServer = false;
     private bool _editingServer = false;
@@ -53,13 +53,13 @@ public class GuiMultiplayer : GuiScreen
         Children.Clear();
         _serverListSelector = new GuiSlotServer(this);
 
-        Children.Add(_btnEdit = new GuiButton(7, Width / 2 - 154, Height - 28, 70, 20, "Edit"));
-        Children.Add(_btnDelete = new GuiButton(2, Width / 2 - 74, Height - 28, 70, 20, "Delete"));
-        Children.Add(_btnSelect = new GuiButton(1, Width / 2 - 154, Height - 52, 100, 20, "Join Server"));
-        Children.Add(new GuiButton(4, Width / 2 - 50, Height - 52, 100, 20, "Direct Connect"));
-        Children.Add(new GuiButton(3, Width / 2 + 4 + 50, Height - 52, 100, 20, "Add server"));
-        Children.Add(new GuiButton(8, Width / 2 + 4, Height - 28, 70, 20, "Refresh"));
-        Children.Add(new GuiButton(0, Width / 2 + 4 + 76, Height - 28, 75, 20, "Cancel"));
+        Children.Add(_btnEdit = new Button(7, Width / 2 - 154, Height - 28, 70, 20, "Edit"));
+        Children.Add(_btnDelete = new Button(2, Width / 2 - 74, Height - 28, 70, 20, "Delete"));
+        Children.Add(_btnSelect = new Button(1, Width / 2 - 154, Height - 52, 100, 20, "Join Server"));
+        Children.Add(new Button(4, Width / 2 - 50, Height - 52, 100, 20, "Direct Connect"));
+        Children.Add(new Button(3, Width / 2 + 4 + 50, Height - 52, 100, 20, "Add server"));
+        Children.Add(new Button(8, Width / 2 + 4, Height - 28, 70, 20, "Refresh"));
+        Children.Add(new Button(0, Width / 2 + 4 + 76, Height - 28, 75, 20, "Cancel"));
 
         UpdateButtons();
     }
@@ -122,7 +122,7 @@ public class GuiMultiplayer : GuiScreen
         UpdateButtons();
     }
 
-    protected override void ActionPerformed(GuiButton button)
+    protected override void ActionPerformed(Button button)
     {
         if (!button.Enabled) return;
 
@@ -231,7 +231,7 @@ public class GuiMultiplayer : GuiScreen
         }
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void OnKeyInput(KeyboardEventArgs e)
     {
         if (eventKey == 28) // Enter
         {
@@ -239,7 +239,7 @@ public class GuiMultiplayer : GuiScreen
         }
     }
 
-    protected override void MouseClicked(int x, int y, int button)
+    protected override void OnClicked(MouseEventArgs e)
     {
         base.Clicked(x, y, button);
     }

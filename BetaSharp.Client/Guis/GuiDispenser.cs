@@ -5,9 +5,8 @@ using BetaSharp.Screens;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiDispenser : GuiContainer
+public class GuiDispenser: GuiContainer
 {
-
     public GuiDispenser(InventoryPlayer inventory, BlockEntityDispenser dispenser) : base(new DispenserScreenHandler(inventory, dispenser))
     {
     }

@@ -32,7 +32,7 @@ public class GuiTexturePacks : GuiScreen
         _guiTexturePackSlot.RegisterScrollButtons(Children, 7, 8);
     }
 
-    protected override void ActionPerformed(GuiButton btn)
+    protected override void ActionPerformed(Button btn)
     {
         if (btn.Enabled)
         {
@@ -62,16 +62,6 @@ public class GuiTexturePacks : GuiScreen
             }
 
         }
-    }
-
-    protected override void MouseClicked(int mouseX, int mouseY, int button)
-    {
-        base.Clicked(mouseX, mouseY, button);
-    }
-
-    protected override void MouseMovedOrUp(int mouseX, int mouseY, int button)
-    {
-        base.MouseMovedOrUp(mouseX, mouseY, button);
     }
 
     protected override void OnRendered(RenderEventArgs e)

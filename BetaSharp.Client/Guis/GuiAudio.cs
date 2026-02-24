@@ -2,61 +2,42 @@ using BetaSharp.Client.Options;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiAudio : GuiScreen
+public class GuiAudio: GuiScreen
 {
-
-    private readonly GuiScreen _parentScreen;
     private readonly GameOptions _gameOptions;
 
     public GuiAudio(GuiScreen parent, GameOptions options)
     {
-        _parentScreen = parent;
         _gameOptions = options;
-
 
         TranslationStorage translations = TranslationStorage.Instance;
         Text = "Audio Settings";
         DisplayTitle = true;
-        int optionIndex = 0;
 
-        foreach (GameOption option in _gameOptions.AudioScreenOptions)
+        for (int i = 0; i < _gameOptions.AudioScreenOptions.Length; i++)
         {
-            int x = Width / 2 - 155 + (optionIndex % 2) * 160;
-            int y = Height / 6 + 24 * (optionIndex / 2);
-            int id = optionIndex;
+            GameOption option = _gameOptions.AudioScreenOptions[i];
+            int x = Width / 2 - 155 + (i % 2) * 160;
+            int y = Height / 6 + 24 * (i / 2);
 
             if (option is FloatOption floatOpt)
             {
-                Children.Add(new GuiOptionsSlider(id, x, y, floatOpt, option.GetDisplayString(translations), floatOpt.Value));
+                Children.Add(new OptionsSlider(x, y, floatOpt, option.GetDisplayString(translations), floatOpt.Value, 0,
+                    100, 1));
             }
-            else
+            else if (option is BoolOption boolOpt)
             {
-                Children.Add(new GuiSmallButton(id, x, y, option, option.GetDisplayString(translations)));
+                Children.Add(new ToggleButton(x, y, boolOpt, option.GetDisplayString(translations)));
             }
-
-            optionIndex++;
         }
 
-        Children.Add(new GuiButton(200, Width / 2 - 100, Height / 6 + 168, translations.TranslateKey("gui.done")));
-
-    }
-
-    protected override void ActionPerformed(GuiButton btn)
-    {
-        if (btn.Enabled)
+        Button doneButton = new(Width / 2 - 100, Height / 6 + 168, translations.TranslateKey("gui.done"));
+        doneButton.Clicked += (_, _) =>
         {
-            if (btn is GuiSmallButton smallBtn && smallBtn.Option != null)
-            {
-                smallBtn.ClickOption();
-                btn.DisplayString = smallBtn.Option.GetDisplayString(TranslationStorage.Instance);
-            }
-
-            if (btn.Id == 200)
-            {
-                mc.options.SaveOptions();
-                mc.OpenScreen(_parentScreen);
-            }
-        }
+            _gameOptions.SaveOptions();
+            mc.OpenScreen(parent);
+        };
+        Children.Add(doneButton);
     }
 
     protected override void OnRendered(RenderEventArgs e)

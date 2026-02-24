@@ -7,39 +7,37 @@ public class GuiOptions : GuiScreen
     private readonly GuiScreen _parentScreen;
     private readonly GameOptions _options;
 
-    public GuiOptions(GuiScreen parentScreen, GameOptions gameOptions)
+    public GuiOptions(GuiScreen parentScreen, GameOptions options)
     {
         _parentScreen = parentScreen;
-        _options = gameOptions;
+        _options = options;
 
         TranslationStorage translations = TranslationStorage.Instance;
         Text = translations.TranslateKey("options.title");
         DisplayTitle = true;
-        int rowIndex = 0;
 
         int buttonLeft = Width / 2 - 100;
         int topY = Height / 6 + 12;
 
-        foreach (GameOption option in _options.MainScreenOptions)
+        for (int i = 0; i < _options.MainScreenOptions.Length; i++)
         {
-            int xPos = buttonLeft - 55 + (rowIndex % 2 * 160);
-            int yPos = topY + 12 * (rowIndex >> 1);
+            GameOption option = _options.MainScreenOptions[i];
+            int x = buttonLeft - 55 + (i % 2 * 160);
+            int y = topY + 12 * (i / 2);
 
-            if (option is FloatOption floatOpt)
+            switch (option)
             {
-                Children.Add(new GuiSlider(xPos, yPos, option.GetDisplayString(translations), floatOpt.Set,
-                    floatOpt.Value, floatOpt.Min, floatOpt.Max, floatOpt.Step));
+                case FloatOption floatOpt:
+                    Children.Add(new Slider(x, y, option.GetDisplayString(translations), floatOpt.Set,
+                        floatOpt.Value, floatOpt.Min, floatOpt.Max, floatOpt.Step));
+                    break;
+                case BoolOption boolOpt:
+                    Children.Add(new ToggleButton(x, y, boolOpt, option.GetDisplayString(translations)));
+                    break;
+                case CycleOption cycleOpt:
+                    Children.Add(new CycleButton(x, y, cycleOpt, option.GetDisplayString(translations)));
+                    break;
             }
-            else if (option is BoolOption boolOpt)
-            {
-                Children.Add(new ToggleButton(xPos, yPos, boolOpt, option.GetDisplayString(translations)));
-            }
-            else if (option is CycleOption cycleOpt)
-            {
-                Children.Add(new CycleButton(xPos, yPos, cycleOpt, option.GetDisplayString(translations)));
-            }
-
-            ++rowIndex;
         }
 
         GuiButton videoSettingsButton = new(buttonLeft - 55, topY + 72, translations.TranslateKey("options.video"));
@@ -72,6 +70,7 @@ public class GuiOptions : GuiScreen
             mc.options.SaveOptions();
             mc.OpenScreen(_parentScreen);
         };
+        Children.AddRange([videoSettingsButton, debugSettingsButton, audioSettingsButton, controlsButton, doneButton]);
     }
 
     protected override void OnRendered(RenderEventArgs e)

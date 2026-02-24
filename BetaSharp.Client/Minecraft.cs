@@ -681,7 +681,7 @@ public partial class Minecraft
                 catch (OutOfMemoryException)
                 {
                     crashCleanup();
-                    OpenScreen(new GuiErrorScreen());
+                    OpenScreen(new GuiOomScreen());
                 }
                 finally
                 {

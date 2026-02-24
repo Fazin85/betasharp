@@ -1,8 +1,7 @@
 namespace BetaSharp.Client.Guis;
 
-public class GuiConnectFailed : GuiScreen
+public class GuiConnectFailed: GuiScreen
 {
-
     private readonly string _errorMessage;
     private readonly string _errorDetail;
     private const int _buttonToMenu = 0;
@@ -26,7 +25,7 @@ public class GuiConnectFailed : GuiScreen
     {
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void OnKeyInput(KeyboardEventArgs e)
     {
     }
 
@@ -35,10 +34,10 @@ public class GuiConnectFailed : GuiScreen
         mc.stopInternalServer();
         TranslationStorage translations = TranslationStorage.Instance;
         Children.Clear();
-        Children.Add(new GuiButton(_buttonToMenu, Width / 2 - 100, Height / 4 + 120 + 12, translations.TranslateKey("gui.toMenu")));
+        Children.Add(new Button(_buttonToMenu, Width / 2 - 100, Height / 4 + 120 + 12, translations.TranslateKey("gui.toMenu")));
     }
 
-    protected override void ActionPerformed(GuiButton btt)
+    protected override void ActionPerformed(Button btt)
     {
         switch (btt.Id)
         {

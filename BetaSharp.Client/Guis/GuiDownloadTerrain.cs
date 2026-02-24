@@ -3,9 +3,8 @@ using BetaSharp.Network.Packets.Play;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiDownloadTerrain : GuiScreen
+public class GuiDownloadTerrain: GuiScreen
 {
-
     private readonly ClientNetworkHandler _networkHandler;
     private int _tickCounter = 0;
 
@@ -16,7 +15,7 @@ public class GuiDownloadTerrain : GuiScreen
         this._networkHandler = networkHandler;
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void OnKeyInput(KeyboardEventArgs e)
     {
     }
 
@@ -40,7 +39,7 @@ public class GuiDownloadTerrain : GuiScreen
 
     }
 
-    protected override void ActionPerformed(GuiButton button)
+    protected override void ActionPerformed(Button button)
     {
     }
 

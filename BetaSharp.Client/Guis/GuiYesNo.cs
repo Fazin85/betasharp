@@ -28,7 +28,7 @@ public class GuiYesNo : GuiScreen
         Children.Add(new GuiSmallButton(ButtonCancel, Width / 2 - 155 + 160, Height / 6 + 96, _cancelButtonText));
     }
 
-    protected override void ActionPerformed(GuiButton button)
+    protected override void ActionPerformed(Button button)
     {
         switch (button.Id)
         {

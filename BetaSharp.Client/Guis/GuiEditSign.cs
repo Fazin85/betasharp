@@ -28,7 +28,7 @@ public class GuiEditSign : GuiScreen
     {
         Children.Clear();
         Keyboard.enableRepeatEvents(true);
-        Children.Add(new GuiButton(ButtonDoneId, Width / 2 - 100, Height / 4 + 120, "Done"));
+        Children.Add(new Button(ButtonDoneId, Width / 2 - 100, Height / 4 + 120, "Done"));
     }
 
     public override void OnGuiClosed()
@@ -45,7 +45,7 @@ public class GuiEditSign : GuiScreen
         ++_updateCounter;
     }
 
-    protected override void ActionPerformed(GuiButton button)
+    protected override void ActionPerformed(Button button)
     {
         if (button.Enabled && button.Id == ButtonDoneId)
         {
@@ -54,7 +54,7 @@ public class GuiEditSign : GuiScreen
         }
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void OnKeyInput(KeyboardEventArgs e)
     {
         if (eventKey == Keyboard.KEY_UP)
         {

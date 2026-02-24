@@ -4,9 +4,8 @@ using BetaSharp.Screens;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiChest : GuiContainer
+public class GuiChest: GuiContainer
 {
-
     private readonly IInventory _upperChestInventory;
     private readonly IInventory _lowerChestInventory;
     private readonly int _inventoryRows = 0;

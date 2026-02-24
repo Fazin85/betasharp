@@ -5,9 +5,8 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiCrafting : GuiContainer
+public class GuiCrafting: GuiContainer
 {
-
     public GuiCrafting(InventoryPlayer player, World world, int posX, int posY, int posZ) : base(new CraftingScreenHandler(player, world, posX, posY, posZ))
     {
     }

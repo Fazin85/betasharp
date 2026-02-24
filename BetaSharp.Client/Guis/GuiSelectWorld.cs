@@ -24,9 +24,9 @@ public class GuiSelectWorld : GuiScreen
     private string worldNameHeader;
     private string unsupportedFormatMessage;
     private bool deleting;
-    private GuiButton buttonRename;
-    private GuiButton buttonSelect;
-    private GuiButton buttonDelete;
+    private Button buttonRename;
+    private Button buttonSelect;
+    private Button buttonDelete;
 
     public GuiSelectWorld(GuiScreen parentScreen)
     {
@@ -73,11 +73,11 @@ public class GuiSelectWorld : GuiScreen
     public void initButtons()
     {
         TranslationStorage translations = TranslationStorage.Instance;
-        Children.Add(buttonSelect = new GuiButton(BUTTON_SELECT, Width / 2 - 154, Height - 52, 150, 20, translations.TranslateKey("selectWorld.select")));
-        Children.Add(buttonRename = new GuiButton(BUTTON_RENAME, Width / 2 - 154, Height - 28, 70, 20, translations.TranslateKey("selectWorld.rename")));
-        Children.Add(buttonDelete = new GuiButton(BUTTON_DELETE, Width / 2 - 74, Height - 28, 70, 20, translations.TranslateKey("selectWorld.delete")));
-        Children.Add(new GuiButton(BUTTON_CREATE, Width / 2 + 4, Height - 52, 150, 20, translations.TranslateKey("selectWorld.create")));
-        Children.Add(new GuiButton(BUTTON_CANCEL, Width / 2 + 4, Height - 28, 150, 20, translations.TranslateKey("gui.cancel")));
+        Children.Add(buttonSelect = new Button(BUTTON_SELECT, Width / 2 - 154, Height - 52, 150, 20, translations.TranslateKey("selectWorld.select")));
+        Children.Add(buttonRename = new Button(BUTTON_RENAME, Width / 2 - 154, Height - 28, 70, 20, translations.TranslateKey("selectWorld.rename")));
+        Children.Add(buttonDelete = new Button(BUTTON_DELETE, Width / 2 - 74, Height - 28, 70, 20, translations.TranslateKey("selectWorld.delete")));
+        Children.Add(new Button(BUTTON_CREATE, Width / 2 + 4, Height - 52, 150, 20, translations.TranslateKey("selectWorld.create")));
+        Children.Add(new Button(BUTTON_CANCEL, Width / 2 + 4, Height - 28, 150, 20, translations.TranslateKey("gui.cancel")));
         buttonSelect.Enabled = false;
         buttonRename.Enabled = false;
         buttonDelete.Enabled = false;
@@ -99,7 +99,7 @@ public class GuiSelectWorld : GuiScreen
         }
     }
 
-    protected override void ActionPerformed(GuiButton button)
+    protected override void ActionPerformed(Button button)
     {
         if (button.Enabled)
         {
@@ -185,17 +185,17 @@ public class GuiSelectWorld : GuiScreen
         return screen.selectedWorld;
     }
 
-    public static GuiButton getSelectButton(GuiSelectWorld screen)
+    public static Button getSelectButton(GuiSelectWorld screen)
     {
         return screen.buttonSelect;
     }
 
-    public static GuiButton getRenameButton(GuiSelectWorld screen)
+    public static Button getRenameButton(GuiSelectWorld screen)
     {
         return screen.buttonRename;
     }
 
-    public static GuiButton getDeleteButton(GuiSelectWorld screen)
+    public static Button getDeleteButton(GuiSelectWorld screen)
     {
         return screen.buttonDelete;
     }

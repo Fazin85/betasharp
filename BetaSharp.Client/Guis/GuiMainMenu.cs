@@ -15,103 +15,52 @@ public class GuiMainMenu : GuiScreen
 
     private static readonly JavaRandom s_rand = new();
     private string _splashText = "missingno";
-    private GuiButton _multiplayerButton;
+    private Button _multiplayerButton;
 
     public GuiMainMenu()
     {
         try
         {
-            List<string> splashLines = [];
-            BufferedReader reader =
-                new(new java.io.StringReader(AssetManager.Instance.getAsset("title/splashes.txt")
-                    .getTextContent()));
-            string line = "";
-
-            while (true)
+            List<string> splashLines = AssetManager.Instance.getAsset("title/splashes.txt")
+                .getTextContent().Split('\n').ToList();
+            DateTime now = DateTime.Now;
+            _splashText = now switch
             {
-                line = reader.readLine();
-                if (line == null)
-                {
-                    _splashText = splashLines[s_rand.NextInt(splashLines.Count)];
-                    break;
-                }
-
-                line = line.Trim();
-                if (line.Length > 0)
-                {
-                    splashLines.Add(line);
-                }
-            }
+                { Month: 11, Day: 9 } => "Happy birthday, ez!",
+                { Month: 6, Day: 1 } => "Happy birthday, Notch!",
+                { Month: 12, Day: 24 } => "Merry X-mas!",
+                { Month: 1, Day: 1 } => "Happy new year!",
+                _ => splashLines[s_rand.NextInt(splashLines.Count)],
+            };
         }
         catch (Exception)
         {
         }
-    }
-
-    public override void UpdateScreen()
-    {
-
-    }
-
-    protected override void KeyTyped(char eventChar, int eventKey)
-    {
-    }
-
-    public override void InitGui()
-    {
-        // Special days
-        DateTime now = DateTime.Now;
-        if (now.Month == 11 && now.Day == 9) _splashText = "Happy birthday, ez!";
-        else if (now.Month == 6 && now.Day == 1) _splashText = "Happy birthday, Notch!";
-        else if (now.Month == 12 && now.Day == 24) _splashText = "Merry X-mas!";
-        else if (now.Month == 1 && now.Day == 1) _splashText = "Happy new year!";
-
         TranslationStorage translator = TranslationStorage.Instance;
-        int buttonTopY = Height / 4 + 48;
+        int buttonTop = Height / 4 + 48;
+        int buttonLeft = Width / 2 - 100;
 
-        Children.Add(new GuiButton(ButtonSingleplayer, Width / 2 - 100, buttonTopY, translator.TranslateKey("menu.singleplayer")));
-        Children.Add(_multiplayerButton =
-            new GuiButton(ButtonMultiplayer, Width / 2 - 100, buttonTopY + 24, translator.TranslateKey("menu.multiplayer")));
-        Children.Add(new GuiButton(ButtonTexturePacksAndMods, Width / 2 - 100, buttonTopY + 48, translator.TranslateKey("menu.mods")));
+        Button singleplayerButton = new(buttonLeft, buttonTop, translator.TranslateKey("menu.singleplayer"));
+        Button multiplayerButton = new(buttonLeft, buttonTop + 24, translator.TranslateKey("menu.multiplayer"));
+        Button texturePacksButton = new(buttonLeft, buttonTop + 48, translator.TranslateKey("menu.mods"));
+        Button optionsButton = new(buttonLeft, buttonTop + 72, translator.TranslateKey("menu.options"));
+        Button quitButton = new(buttonLeft, buttonTop + 96, translator.TranslateKey("menu.quit"));
 
-        if (mc.hideQuitButton)
+        singleplayerButton.Clicked += (_, _) => mc.OpenScreen(new GuiSelectWorld(this));
+        multiplayerButton.Clicked += (_, _) => mc.OpenScreen(new GuiMultiplayer(this));
+        texturePacksButton.Clicked += (_, _) => mc.OpenScreen(new GuiTexturePacks(this));
+        optionsButton.Clicked += (_, _) => mc.OpenScreen(new GuiOptions(this, mc.options));
+        quitButton.Clicked += (_, _) => mc.shutdown();
+
+        Children.AddRange([singleplayerButton, multiplayerButton, texturePacksButton, optionsButton]);
+        if (!mc.hideQuitButton)
         {
-            Children.Add(new GuiButton(ButtonOptions, Width / 2 - 100, buttonTopY + 72, translator.TranslateKey("menu.options")));
-        }
-        else
-        {
-            Children.Add(new GuiButton(ButtonOptions, Width / 2 - 100, buttonTopY + 72 + 12, 98, 20,
-                translator.TranslateKey("menu.options")));
-
-            Children.Add(new GuiButton(ButtonQuit, Width / 2 + 2, buttonTopY + 72 + 12, 98, 20,
-                translator.TranslateKey("menu.quit")));
+            Children.Add(quitButton);
         }
 
         if (mc.session == null || mc.session.sessionId == "-")
         {
             _multiplayerButton.Enabled = false;
-        }
-    }
-
-    protected override void ActionPerformed(GuiButton button)
-    {
-        switch (button.Id)
-        {
-            case ButtonOptions:
-                mc.OpenScreen(new GuiOptions(this, mc.options));
-                break;
-            case ButtonSingleplayer:
-                mc.OpenScreen(new GuiSelectWorld(this));
-                break;
-            case ButtonMultiplayer:
-                mc.OpenScreen(new GuiMultiplayer(this));
-                break;
-            case ButtonTexturePacksAndMods:
-                mc.OpenScreen(new GuiTexturePacks(this));
-                break;
-            case ButtonQuit:
-                mc.shutdown();
-                break;
         }
     }
 
@@ -141,6 +90,5 @@ public class GuiMainMenu : GuiScreen
         Gui.DrawString(FontRenderer, copyrightText, Width - FontRenderer.GetStringWidth(copyrightText) - 2, Height - 20, 0xFFFFFF);
         string disclaimerText = "Not approved by or associated with Mojang Studios or Microsoft.";
         Gui.DrawString(FontRenderer, disclaimerText, Width - FontRenderer.GetStringWidth(disclaimerText) - 2, Height - 10, 0xFFFFFF);
-        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 }
