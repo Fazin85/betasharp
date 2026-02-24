@@ -72,7 +72,7 @@ public abstract class EntityRenderer
         float widthOffset = 0.5F;
         float depthOffset = 0.0F;
         float heightRatio = ent.height / scale;
-        float yOffset = (float)(ent.y - ent.boundingBox.minY);
+        float yOffset = (float)(ent.y - ent.boundingBox.MinY);
 
         GLManager.GL.Rotate(-Dispatcher.playerViewY, 0.0F, 1.0F, 0.0F);
         GLManager.GL.Translate(0.0F, 0.0F, -0.3F + (int)heightRatio * 0.02F);
@@ -193,11 +193,11 @@ public abstract class EntityRenderer
         Tessellator tess = Tessellator.instance;
         tess.setColorRGBA_F(1.0F, 1.0F, 1.0F, (float)shadowDarkness);
 
-        double minX = blockX + block.BoundingBox.minX + offset.x;
-        double maxX = blockX + block.BoundingBox.maxX + offset.x;
-        double minY = blockY + block.BoundingBox.minY + offset.y+ 1.0D / 64.0D;
-        double minZ = blockZ + block.BoundingBox.minZ + offset.z;
-        double maxZ = blockZ + block.BoundingBox.maxZ + offset.z;
+        double minX = blockX + block.BoundingBox.MinX + offset.x;
+        double maxX = blockX + block.BoundingBox.MaxX + offset.x;
+        double minY = blockY + block.BoundingBox.MinY + offset.y+ 1.0D / 64.0D;
+        double minZ = blockZ + block.BoundingBox.MinZ + offset.z;
+        double maxZ = blockZ + block.BoundingBox.MaxZ + offset.z;
 
         float minU = (float)((pos.x - minX) / 2.0D / (double)radius + 0.5D);
         float maxU = (float)((pos.x - maxX) / 2.0D / (double)radius + 0.5D);
@@ -221,40 +221,40 @@ public abstract class EntityRenderer
 
         tess.setNormal(0.0F, 0.0F, -1.0F);
 
-        tess.addVertex(aabb.minX, aabb.maxY, aabb.minZ);
-        tess.addVertex(aabb.maxX, aabb.maxY, aabb.minZ);
-        tess.addVertex(aabb.maxX, aabb.minY, aabb.minZ);
-        tess.addVertex(aabb.minX, aabb.minY, aabb.minZ);
+        tess.addVertex(aabb.MinX, aabb.MaxY, aabb.MinZ);
+        tess.addVertex(aabb.MaxX, aabb.MaxY, aabb.MinZ);
+        tess.addVertex(aabb.MaxX, aabb.MinY, aabb.MinZ);
+        tess.addVertex(aabb.MinX, aabb.MinY, aabb.MinZ);
 
         tess.setNormal(0.0F, 0.0F, 1.0F);
-        tess.addVertex(aabb.minX, aabb.minY, aabb.maxZ);
-        tess.addVertex(aabb.maxX, aabb.minY, aabb.maxZ);
-        tess.addVertex(aabb.maxX, aabb.maxY, aabb.maxZ);
-        tess.addVertex(aabb.minX, aabb.maxY, aabb.maxZ);
+        tess.addVertex(aabb.MinX, aabb.MinY, aabb.MaxZ);
+        tess.addVertex(aabb.MaxX, aabb.MinY, aabb.MaxZ);
+        tess.addVertex(aabb.MaxX, aabb.MaxY, aabb.MaxZ);
+        tess.addVertex(aabb.MinX, aabb.MaxY, aabb.MaxZ);
 
         tess.setNormal(0.0F, -1.0F, 0.0F);
-        tess.addVertex(aabb.minX, aabb.minY, aabb.minZ);
-        tess.addVertex(aabb.maxX, aabb.minY, aabb.minZ);
-        tess.addVertex(aabb.maxX, aabb.minY, aabb.maxZ);
-        tess.addVertex(aabb.minX, aabb.minY, aabb.maxZ);
+        tess.addVertex(aabb.MinX, aabb.MinY, aabb.MinZ);
+        tess.addVertex(aabb.MaxX, aabb.MinY, aabb.MinZ);
+        tess.addVertex(aabb.MaxX, aabb.MinY, aabb.MaxZ);
+        tess.addVertex(aabb.MinX, aabb.MinY, aabb.MaxZ);
 
         tess.setNormal(0.0F, 1.0F, 0.0F);
-        tess.addVertex(aabb.minX, aabb.maxY, aabb.maxZ);
-        tess.addVertex(aabb.maxX, aabb.maxY, aabb.maxZ);
-        tess.addVertex(aabb.maxX, aabb.maxY, aabb.minZ);
-        tess.addVertex(aabb.minX, aabb.maxY, aabb.minZ);
+        tess.addVertex(aabb.MinX, aabb.MaxY, aabb.MaxZ);
+        tess.addVertex(aabb.MaxX, aabb.MaxY, aabb.MaxZ);
+        tess.addVertex(aabb.MaxX, aabb.MaxY, aabb.MinZ);
+        tess.addVertex(aabb.MinX, aabb.MaxY, aabb.MinZ);
 
         tess.setNormal(-1.0F, 0.0F, 0.0F);
-        tess.addVertex(aabb.minX, aabb.minY, aabb.maxZ);
-        tess.addVertex(aabb.minX, aabb.maxY, aabb.maxZ);
-        tess.addVertex(aabb.minX, aabb.maxY, aabb.minZ);
-        tess.addVertex(aabb.minX, aabb.minY, aabb.minZ);
+        tess.addVertex(aabb.MinX, aabb.MinY, aabb.MaxZ);
+        tess.addVertex(aabb.MinX, aabb.MaxY, aabb.MaxZ);
+        tess.addVertex(aabb.MinX, aabb.MaxY, aabb.MinZ);
+        tess.addVertex(aabb.MinX, aabb.MinY, aabb.MinZ);
 
         tess.setNormal(1.0F, 0.0F, 0.0F);
-        tess.addVertex(aabb.maxX, aabb.minY, aabb.minZ);
-        tess.addVertex(aabb.maxX, aabb.maxY, aabb.minZ);
-        tess.addVertex(aabb.maxX, aabb.maxY, aabb.maxZ);
-        tess.addVertex(aabb.maxX, aabb.minY, aabb.maxZ);
+        tess.addVertex(aabb.MaxX, aabb.MinY, aabb.MinZ);
+        tess.addVertex(aabb.MaxX, aabb.MaxY, aabb.MinZ);
+        tess.addVertex(aabb.MaxX, aabb.MaxY, aabb.MaxZ);
+        tess.addVertex(aabb.MaxX, aabb.MinY, aabb.MaxZ);
 
         tess.setTranslationD(0.0D, 0.0D, 0.0D);
         tess.draw();
@@ -266,35 +266,35 @@ public abstract class EntityRenderer
         Tessellator tess = Tessellator.instance;
         tess.startDrawingQuads();
 
-        tess.addVertex(aabb.minX, aabb.maxY, aabb.minZ);
-        tess.addVertex(aabb.maxX, aabb.maxY, aabb.minZ);
-        tess.addVertex(aabb.maxX, aabb.minY, aabb.minZ);
-        tess.addVertex(aabb.minX, aabb.minY, aabb.minZ);
+        tess.addVertex(aabb.MinX, aabb.MaxY, aabb.MinZ);
+        tess.addVertex(aabb.MaxX, aabb.MaxY, aabb.MinZ);
+        tess.addVertex(aabb.MaxX, aabb.MinY, aabb.MinZ);
+        tess.addVertex(aabb.MinX, aabb.MinY, aabb.MinZ);
 
-        tess.addVertex(aabb.minX, aabb.minY, aabb.maxZ);
-        tess.addVertex(aabb.maxX, aabb.minY, aabb.maxZ);
-        tess.addVertex(aabb.maxX, aabb.maxY, aabb.maxZ);
-        tess.addVertex(aabb.minX, aabb.maxY, aabb.maxZ);
+        tess.addVertex(aabb.MinX, aabb.MinY, aabb.MaxZ);
+        tess.addVertex(aabb.MaxX, aabb.MinY, aabb.MaxZ);
+        tess.addVertex(aabb.MaxX, aabb.MaxY, aabb.MaxZ);
+        tess.addVertex(aabb.MinX, aabb.MaxY, aabb.MaxZ);
 
-        tess.addVertex(aabb.minX, aabb.minY, aabb.minZ);
-        tess.addVertex(aabb.maxX, aabb.minY, aabb.minZ);
-        tess.addVertex(aabb.maxX, aabb.minY, aabb.maxZ);
-        tess.addVertex(aabb.minX, aabb.minY, aabb.maxZ);
+        tess.addVertex(aabb.MinX, aabb.MinY, aabb.MinZ);
+        tess.addVertex(aabb.MaxX, aabb.MinY, aabb.MinZ);
+        tess.addVertex(aabb.MaxX, aabb.MinY, aabb.MaxZ);
+        tess.addVertex(aabb.MinX, aabb.MinY, aabb.MaxZ);
 
-        tess.addVertex(aabb.minX, aabb.maxY, aabb.maxZ);
-        tess.addVertex(aabb.maxX, aabb.maxY, aabb.maxZ);
-        tess.addVertex(aabb.maxX, aabb.maxY, aabb.minZ);
-        tess.addVertex(aabb.minX, aabb.maxY, aabb.minZ);
+        tess.addVertex(aabb.MinX, aabb.MaxY, aabb.MaxZ);
+        tess.addVertex(aabb.MaxX, aabb.MaxY, aabb.MaxZ);
+        tess.addVertex(aabb.MaxX, aabb.MaxY, aabb.MinZ);
+        tess.addVertex(aabb.MinX, aabb.MaxY, aabb.MinZ);
 
-        tess.addVertex(aabb.minX, aabb.minY, aabb.maxZ);
-        tess.addVertex(aabb.minX, aabb.maxY, aabb.maxZ);
-        tess.addVertex(aabb.minX, aabb.maxY, aabb.minZ);
-        tess.addVertex(aabb.minX, aabb.minY, aabb.minZ);
+        tess.addVertex(aabb.MinX, aabb.MinY, aabb.MaxZ);
+        tess.addVertex(aabb.MinX, aabb.MaxY, aabb.MaxZ);
+        tess.addVertex(aabb.MinX, aabb.MaxY, aabb.MinZ);
+        tess.addVertex(aabb.MinX, aabb.MinY, aabb.MinZ);
 
-        tess.addVertex(aabb.maxX, aabb.minY, aabb.minZ);
-        tess.addVertex(aabb.maxX, aabb.maxY, aabb.minZ);
-        tess.addVertex(aabb.maxX, aabb.maxY, aabb.maxZ);
-        tess.addVertex(aabb.maxX, aabb.minY, aabb.maxZ);
+        tess.addVertex(aabb.MaxX, aabb.MinY, aabb.MinZ);
+        tess.addVertex(aabb.MaxX, aabb.MaxY, aabb.MinZ);
+        tess.addVertex(aabb.MaxX, aabb.MaxY, aabb.MaxZ);
+        tess.addVertex(aabb.MaxX, aabb.MinY, aabb.MaxZ);
 
         tess.draw();
     }

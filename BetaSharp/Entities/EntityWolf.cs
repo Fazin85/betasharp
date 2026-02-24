@@ -122,7 +122,7 @@ public class EntityWolf : EntityAnimal
         }
         else if (playerToAttack == null && !hasPath() && !isWolfTamed() && world.random.NextInt(100) == 0)
         {
-            var nearbySheep = world.CollectEntitiesOfType<EntitySheep>(new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(16.0D, 4.0D, 16.0D));
+            var nearbySheep = world.CollectEntitiesOfType<EntitySheep>(new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).Expand(16.0D, 4.0D, 16.0D));
             if (nearbySheep.Count > 0)
             {
                 setTarget(nearbySheep[world.random.NextInt(nearbySheep.Count)]);
@@ -220,7 +220,7 @@ public class EntityWolf : EntityAnimal
 
             if (timeWolfIsShaking > 0.4F)
             {
-                float groundY = (float)boundingBox.minY;
+                float groundY = (float)boundingBox.MinY;
                 int particleCount = (int)(MathHelper.Sin((timeWolfIsShaking - 0.4F) * (float)System.Math.PI) * 7.0F);
 
                 for (int _ = 0; _ < particleCount; ++_)
@@ -281,7 +281,7 @@ public class EntityWolf : EntityAnimal
         {
             int ownerBlockX = MathHelper.Floor(entity.x) - 2;
             int ownerBlockY = MathHelper.Floor(entity.z) - 2;
-            int ownerBlockZ = MathHelper.Floor(entity.boundingBox.minY);
+            int ownerBlockZ = MathHelper.Floor(entity.boundingBox.MinY);
 
             for (int dx = 0; dx <= 4; ++dx)
             {
@@ -336,7 +336,7 @@ public class EntityWolf : EntityAnimal
 
                 if (entity is EntityLiving)
                 {
-                    var nearbyWolves = world.CollectEntitiesOfType<EntityWolf>(new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(16.0D, 4.0D, 16.0D));
+                    var nearbyWolves = world.CollectEntitiesOfType<EntityWolf>(new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).Expand(16.0D, 4.0D, 16.0D));
 
                     foreach (var wolf in nearbyWolves)
                     {
@@ -384,7 +384,7 @@ public class EntityWolf : EntityAnimal
                 velocityY = (double)0.4F;
             }
         }
-        else if ((double)distance < 1.5D && entity.boundingBox.maxY > boundingBox.minY && entity.boundingBox.minY < boundingBox.maxY)
+        else if ((double)distance < 1.5D && entity.boundingBox.MaxY > boundingBox.MinY && entity.boundingBox.MinY < boundingBox.MaxY)
         {
             attackTime = 20;
             byte damageAmount = 2;

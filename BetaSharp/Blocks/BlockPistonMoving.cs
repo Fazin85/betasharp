@@ -142,7 +142,7 @@ public class BlockPistonMoving : BlockWithEntity
             }
 
             int var8 = var5.getFacing();
-            BoundingBox = BoundingBox.offset(-(double)(PistonConstants.HEAD_OFFSET_X[var8] * var7), -(double)(PistonConstants.HEAD_OFFSET_Y[var8] * var7), -(double)(PistonConstants.HEAD_OFFSET_Z[var8] * var7));
+            BoundingBox = BoundingBox.Offset(-(double)(PistonConstants.HEAD_OFFSET_X[var8] * var7), -(double)(PistonConstants.HEAD_OFFSET_Y[var8] * var7), -(double)(PistonConstants.HEAD_OFFSET_Z[var8] * var7));
         }
 
     }
@@ -159,12 +159,12 @@ public class BlockPistonMoving : BlockWithEntity
             else
             {
                 Box res = shape.Value;
-                res.minX -= (double)((float)PistonConstants.HEAD_OFFSET_X[facing] * sizeMultiplier);
-                res.maxX -= (double)((float)PistonConstants.HEAD_OFFSET_X[facing] * sizeMultiplier);
-                res.minY -= (double)((float)PistonConstants.HEAD_OFFSET_Y[facing] * sizeMultiplier);
-                res.maxY -= (double)((float)PistonConstants.HEAD_OFFSET_Y[facing] * sizeMultiplier);
-                res.minZ -= (double)((float)PistonConstants.HEAD_OFFSET_Z[facing] * sizeMultiplier);
-                res.maxZ -= (double)((float)PistonConstants.HEAD_OFFSET_Z[facing] * sizeMultiplier);
+                res.MinX -= (double)((float)PistonConstants.HEAD_OFFSET_X[facing] * sizeMultiplier);
+                res.MaxX -= (double)((float)PistonConstants.HEAD_OFFSET_X[facing] * sizeMultiplier);
+                res.MinY -= (double)((float)PistonConstants.HEAD_OFFSET_Y[facing] * sizeMultiplier);
+                res.MaxY -= (double)((float)PistonConstants.HEAD_OFFSET_Y[facing] * sizeMultiplier);
+                res.MinZ -= (double)((float)PistonConstants.HEAD_OFFSET_Z[facing] * sizeMultiplier);
+                res.MaxZ -= (double)((float)PistonConstants.HEAD_OFFSET_Z[facing] * sizeMultiplier);
                 return res;
             }
         }

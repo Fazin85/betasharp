@@ -162,9 +162,9 @@ public class EntityBoat : Entity
 
         for (int i = 0; i < var1; ++i)
         {
-            double var5 = boundingBox.minY + (boundingBox.maxY - boundingBox.minY) * (double)(i + 0) / (double)var1 - 0.125D;
-            double var7 = boundingBox.minY + (boundingBox.maxY - boundingBox.minY) * (double)(i + 1) / (double)var1 - 0.125D;
-            Box var9 = new Box(boundingBox.minX, var5, boundingBox.minZ, boundingBox.maxX, var7, boundingBox.maxZ);
+            double var5 = boundingBox.MinY + (boundingBox.MaxY - boundingBox.MinY) * (double)(i + 0) / (double)var1 - 0.125D;
+            double var7 = boundingBox.MinY + (boundingBox.MaxY - boundingBox.MinY) * (double)(i + 1) / (double)var1 - 0.125D;
+            Box var9 = new Box(boundingBox.MinX, var5, boundingBox.MinZ, boundingBox.MaxX, var7, boundingBox.MaxZ);
             if (world.isFluidInBox(var9, Material.Water))
             {
                 var2 += 1.0D / (double)var1;
@@ -352,7 +352,7 @@ public class EntityBoat : Entity
 
             yaw = (float)((double)yaw + yawDelta);
             setRotation(yaw, pitch);
-            var entitiesInbound = world.getEntities(this, boundingBox.expand((double)0.2F, 0.0D, (double)0.2F));
+            var entitiesInbound = world.getEntities(this, boundingBox.Expand((double)0.2F, 0.0D, (double)0.2F));
             int i;
             if (entitiesInbound != null && entitiesInbound.Count > 0)
             {

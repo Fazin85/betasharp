@@ -16,8 +16,8 @@ public class FrustumData
     public bool IsBoxInFrustum(in Box box)
     {
         // Extract values once as floats for SIMD
-        float fMinX = (float)box.minX, fMinY = (float)box.minY, fMinZ = (float)box.minZ;
-        float fMaxX = (float)box.maxX, fMaxY = (float)box.maxY, fMaxZ = (float)box.maxZ;
+        float fMinX = (float)box.MinX, fMinY = (float)box.MinY, fMinZ = (float)box.MinZ;
+        float fMaxX = (float)box.MaxX, fMaxY = (float)box.MaxY, fMaxZ = (float)box.MaxZ;
 
         // Use SIMD if available (it will be on your 5950X)
         if (Vector128.IsHardwareAccelerated)

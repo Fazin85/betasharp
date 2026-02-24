@@ -90,7 +90,7 @@ public class EntityGhast : EntityFlying, Monster
         if (targetedEntity != null && targetedEntity.getSquaredDistance(this) < attackRange * attackRange)
         {
             double dx2 = targetedEntity.x - x;
-            double dy2 = targetedEntity.boundingBox.minY + (double)(targetedEntity.height / 2.0F) - (y + (double)(height / 2.0F));
+            double dy2 = targetedEntity.boundingBox.MinY + (double)(targetedEntity.height / 2.0F) - (y + (double)(height / 2.0F));
             double dz2 = targetedEntity.z - z;
             bodyYaw = yaw = -((float)System.Math.Atan2(dx2, dz2)) * 180.0F / (float)System.Math.PI;
             if (canSee(targetedEntity))
@@ -149,7 +149,7 @@ public class EntityGhast : EntityFlying, Monster
 
         for (int i = 1; (double)i < distance; ++i)
         {
-            box.translate(stepX, stepY, stepZ);
+            box.Translate(stepX, stepY, stepZ);
             if (world.getEntityCollisions(this, box).Count > 0)
             {
                 return false;

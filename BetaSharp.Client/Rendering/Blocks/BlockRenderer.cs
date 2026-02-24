@@ -164,11 +164,11 @@ public class BlockRenderer
         double var31 = (var27 + 16 - 0.01D) / 256.0D;
         double var33 = (double)(var28 / 256.0F);
         double var35 = (var28 + 16 - 0.01D) / 256.0D;
-        double var37 = var2 + blockBB.minX;
-        double var39 = var2 + blockBB.maxX;
-        double var41 = var3 + blockBB.minY + 0.1875D;
-        double var43 = var4 + blockBB.minZ;
-        double var45 = var4 + blockBB.maxZ;
+        double var37 = var2 + blockBB.MinX;
+        double var39 = var2 + blockBB.MaxX;
+        double var41 = var3 + blockBB.MinY + 0.1875D;
+        double var43 = var4 + blockBB.MinZ;
+        double var45 = var4 + blockBB.MaxZ;
         var5.addVertexWithUV(var37, var41, var45, var29, var35);
         var5.addVertexWithUV(var37, var41, var43, var29, var33);
         var5.addVertexWithUV(var39, var41, var43, var31, var33);
@@ -216,11 +216,11 @@ public class BlockRenderer
             var52 = var34;
         }
 
-        double var54 = var2 + blockBB.minX;
-        double var56 = var2 + blockBB.maxX;
-        double var58 = var3 + blockBB.maxY;
-        double var60 = var4 + blockBB.minZ;
-        double var62 = var4 + blockBB.maxZ;
+        double var54 = var2 + blockBB.MinX;
+        double var56 = var2 + blockBB.MaxX;
+        double var58 = var3 + blockBB.MaxY;
+        double var60 = var4 + blockBB.MinZ;
+        double var62 = var4 + blockBB.MaxZ;
         var5.addVertexWithUV(var56, var58, var62, var46, var50);
         var5.addVertexWithUV(var56, var58, var60, var38, var42);
         var5.addVertexWithUV(var54, var58, var60, var40, var44);
@@ -252,7 +252,7 @@ public class BlockRenderer
         if (var26 != 2 && (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3, var4 - 1, 2)))
         {
             var66 = var1.getLuminance(blockAccess, var2, var3, var4 - 1);
-            if (blockBB.minZ > 0.0D)
+            if (blockBB.MinZ > 0.0D)
             {
                 var66 = var25;
             }
@@ -265,7 +265,7 @@ public class BlockRenderer
         if (var26 != 3 && (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3, var4 + 1, 3)))
         {
             var66 = var1.getLuminance(blockAccess, var2, var3, var4 + 1);
-            if (blockBB.maxZ < 1.0D)
+            if (blockBB.MaxZ < 1.0D)
             {
                 var66 = var25;
             }
@@ -278,7 +278,7 @@ public class BlockRenderer
         if (var26 != 4 && (renderAllFaces || var1.isSideVisible(blockAccess, var2 - 1, var3, var4, 4)))
         {
             var66 = var1.getLuminance(blockAccess, var2 - 1, var3, var4);
-            if (blockBB.minX > 0.0D)
+            if (blockBB.MinX > 0.0D)
             {
                 var66 = var25;
             }
@@ -291,7 +291,7 @@ public class BlockRenderer
         if (var26 != 5 && (renderAllFaces || var1.isSideVisible(blockAccess, var2 + 1, var3, var4, 5)))
         {
             var66 = var1.getLuminance(blockAccess, var2 + 1, var3, var4);
-            if (blockBB.maxX < 1.0D)
+            if (blockBB.MaxX < 1.0D)
             {
                 var66 = var25;
             }
@@ -1863,8 +1863,8 @@ public class BlockRenderer
                 }
             }
 
-            blockBb.minY = var18;
-            blockBb.maxY = var20;
+            blockBb.MinY = var18;
+            blockBb.MaxY = var20;
             return var13;
         }
     }
@@ -2623,7 +2623,7 @@ public class BlockRenderer
         if (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3 + 1, var4, 1))
         {
             var27 = var1.getLuminance(blockAccess, var2, var3 + 1, var4);
-            if (blockBB.maxY != 1.0D && !var1.material.IsFluid)
+            if (blockBB.MaxY != 1.0D && !var1.material.IsFluid)
             {
                 var27 = var26;
             }
@@ -2637,7 +2637,7 @@ public class BlockRenderer
         if (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3, var4 - 1, 2))
         {
             var27 = var1.getLuminance(blockAccess, var2, var3, var4 - 1);
-            if (blockBB.minZ > 0.0D)
+            if (blockBB.MinZ > 0.0D)
             {
                 var27 = var26;
             }
@@ -2657,7 +2657,7 @@ public class BlockRenderer
         if (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3, var4 + 1, 3))
         {
             var27 = var1.getLuminance(blockAccess, var2, var3, var4 + 1);
-            if (blockBB.maxZ < 1.0D)
+            if (blockBB.MaxZ < 1.0D)
             {
                 var27 = var26;
             }
@@ -2677,7 +2677,7 @@ public class BlockRenderer
         if (renderAllFaces || var1.isSideVisible(blockAccess, var2 - 1, var3, var4, 4))
         {
             var27 = var1.getLuminance(blockAccess, var2 - 1, var3, var4);
-            if (blockBB.minX > 0.0D)
+            if (blockBB.MinX > 0.0D)
             {
                 var27 = var26;
             }
@@ -2697,7 +2697,7 @@ public class BlockRenderer
         if (renderAllFaces || var1.isSideVisible(blockAccess, var2 + 1, var3, var4, 5))
         {
             var27 = var1.getLuminance(blockAccess, var2 + 1, var3, var4);
-            if (blockBB.maxX < 1.0D)
+            if (blockBB.MaxX < 1.0D)
             {
                 var27 = var26;
             }
@@ -2762,7 +2762,7 @@ public class BlockRenderer
         if (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3 + 1, var4, 1))
         {
             var28 = var1.getLuminance(blockAccess, var2, var3 + 1, var4);
-            if (blockBB.maxY != 1.0D && !var1.material.IsFluid)
+            if (blockBB.MaxY != 1.0D && !var1.material.IsFluid)
             {
                 var28 = var27;
             }
@@ -2775,7 +2775,7 @@ public class BlockRenderer
         if (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3, var4 - 1, 2))
         {
             var28 = var1.getLuminance(blockAccess, var2, var3, var4 - 1);
-            if (blockBB.minZ > 0.0D)
+            if (blockBB.MinZ > 0.0D)
             {
                 var28 = var27;
             }
@@ -2790,7 +2790,7 @@ public class BlockRenderer
         if (renderAllFaces || var1.isSideVisible(blockAccess, var2, var3, var4 + 1, 3))
         {
             var28 = var1.getLuminance(blockAccess, var2, var3, var4 + 1);
-            if (blockBB.maxZ < 1.0D)
+            if (blockBB.MaxZ < 1.0D)
             {
                 var28 = var27;
             }
@@ -2805,7 +2805,7 @@ public class BlockRenderer
         if (renderAllFaces || var1.isSideVisible(blockAccess, var2 - 1, var3, var4, 4))
         {
             var28 = var1.getLuminance(blockAccess, var2 - 1, var3, var4);
-            if (blockBB.minX > 0.0D)
+            if (blockBB.MinX > 0.0D)
             {
                 var28 = var27;
             }
@@ -2820,7 +2820,7 @@ public class BlockRenderer
         if (renderAllFaces || var1.isSideVisible(blockAccess, var2 + 1, var3, var4, 5))
         {
             var28 = var1.getLuminance(blockAccess, var2 + 1, var3, var4);
-            if (blockBB.maxX < 1.0D)
+            if (blockBB.MaxX < 1.0D)
             {
                 var28 = var27;
             }
@@ -2959,7 +2959,7 @@ public class BlockRenderer
         float var11 = 0.6F;
         float var12 = var1.getLuminance(blockAccess, var2, var3, var4);
         float var13 = var1.getLuminance(blockAccess, var2, var3 - 1, var4);
-        if (blockBB.minY > 0.0D)
+        if (blockBB.MinY > 0.0D)
         {
             var13 = var12;
         }
@@ -2973,7 +2973,7 @@ public class BlockRenderer
         renderBottomFace(var1, var2, var3, var4, var1.getTextureId(blockAccess, var2, var3, var4, 0));
         var7 = true;
         var13 = var1.getLuminance(blockAccess, var2, var3 + 1, var4);
-        if (blockBB.maxY < 1.0D)
+        if (blockBB.MaxY < 1.0D)
         {
             var13 = var12;
         }
@@ -2987,7 +2987,7 @@ public class BlockRenderer
         renderTopFace(var1, var2, var3, var4, var1.getTextureId(blockAccess, var2, var3, var4, 1));
         var7 = true;
         var13 = var1.getLuminance(blockAccess, var2, var3, var4 - 1);
-        if (blockBB.minZ > 0.0D)
+        if (blockBB.MinZ > 0.0D)
         {
             var13 = var12;
         }
@@ -3009,7 +3009,7 @@ public class BlockRenderer
         var7 = true;
         flipTexture = false;
         var13 = var1.getLuminance(blockAccess, var2, var3, var4 + 1);
-        if (blockBB.maxZ < 1.0D)
+        if (blockBB.MaxZ < 1.0D)
         {
             var13 = var12;
         }
@@ -3031,7 +3031,7 @@ public class BlockRenderer
         var7 = true;
         flipTexture = false;
         var13 = var1.getLuminance(blockAccess, var2 - 1, var3, var4);
-        if (blockBB.minX > 0.0D)
+        if (blockBB.MinX > 0.0D)
         {
             var13 = var12;
         }
@@ -3053,7 +3053,7 @@ public class BlockRenderer
         var7 = true;
         flipTexture = false;
         var13 = var1.getLuminance(blockAccess, var2 + 1, var3, var4);
-        if (blockBB.maxX < 1.0D)
+        if (blockBB.MaxX < 1.0D)
         {
             var13 = var12;
         }
@@ -3088,17 +3088,17 @@ public class BlockRenderer
 
         int var10 = (var8 & 15) << 4;
         int var11 = var8 & 240;
-        double var12 = (var10 + blockBB.minX * 16.0D) / 256.0D;
-        double var14 = (var10 + blockBB.maxX * 16.0D - 0.01D) / 256.0D;
-        double var16 = (var11 + blockBB.minZ * 16.0D) / 256.0D;
-        double var18 = (var11 + blockBB.maxZ * 16.0D - 0.01D) / 256.0D;
-        if (blockBB.minX < 0.0D || blockBB.maxX > 1.0D)
+        double var12 = (var10 + blockBB.MinX * 16.0D) / 256.0D;
+        double var14 = (var10 + blockBB.MaxX * 16.0D - 0.01D) / 256.0D;
+        double var16 = (var11 + blockBB.MinZ * 16.0D) / 256.0D;
+        double var18 = (var11 + blockBB.MaxZ * 16.0D - 0.01D) / 256.0D;
+        if (blockBB.MinX < 0.0D || blockBB.MaxX > 1.0D)
         {
             var12 = (double)((var10 + 0.0F) / 256.0F);
             var14 = (double)((var10 + 15.99F) / 256.0F);
         }
 
-        if (blockBB.minZ < 0.0D || blockBB.maxZ > 1.0D)
+        if (blockBB.MinZ < 0.0D || blockBB.MaxZ > 1.0D)
         {
             var16 = (double)((var11 + 0.0F) / 256.0F);
             var18 = (double)((var11 + 15.99F) / 256.0F);
@@ -3110,10 +3110,10 @@ public class BlockRenderer
         double var26 = var18;
         if (field_31082_l == 2)
         {
-            var12 = (var10 + blockBB.minZ * 16.0D) / 256.0D;
-            var16 = (var11 + 16 - blockBB.maxX * 16.0D) / 256.0D;
-            var14 = (var10 + blockBB.maxZ * 16.0D) / 256.0D;
-            var18 = (var11 + 16 - blockBB.minX * 16.0D) / 256.0D;
+            var12 = (var10 + blockBB.MinZ * 16.0D) / 256.0D;
+            var16 = (var11 + 16 - blockBB.MaxX * 16.0D) / 256.0D;
+            var14 = (var10 + blockBB.MaxZ * 16.0D) / 256.0D;
+            var18 = (var11 + 16 - blockBB.MinX * 16.0D) / 256.0D;
             var24 = var16;
             var26 = var18;
             var20 = var12;
@@ -3123,10 +3123,10 @@ public class BlockRenderer
         }
         else if (field_31082_l == 1)
         {
-            var12 = (var10 + 16 - blockBB.maxZ * 16.0D) / 256.0D;
-            var16 = (var11 + blockBB.minX * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.minZ * 16.0D) / 256.0D;
-            var18 = (var11 + blockBB.maxX * 16.0D) / 256.0D;
+            var12 = (var10 + 16 - blockBB.MaxZ * 16.0D) / 256.0D;
+            var16 = (var11 + blockBB.MinX * 16.0D) / 256.0D;
+            var14 = (var10 + 16 - blockBB.MinZ * 16.0D) / 256.0D;
+            var18 = (var11 + blockBB.MaxX * 16.0D) / 256.0D;
             var20 = var14;
             var22 = var12;
             var12 = var14;
@@ -3136,21 +3136,21 @@ public class BlockRenderer
         }
         else if (field_31082_l == 3)
         {
-            var12 = (var10 + 16 - blockBB.minX * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.maxX * 16.0D - 0.01D) / 256.0D;
-            var16 = (var11 + 16 - blockBB.minZ * 16.0D) / 256.0D;
-            var18 = (var11 + 16 - blockBB.maxZ * 16.0D - 0.01D) / 256.0D;
+            var12 = (var10 + 16 - blockBB.MinX * 16.0D) / 256.0D;
+            var14 = (var10 + 16 - blockBB.MaxX * 16.0D - 0.01D) / 256.0D;
+            var16 = (var11 + 16 - blockBB.MinZ * 16.0D) / 256.0D;
+            var18 = (var11 + 16 - blockBB.MaxZ * 16.0D - 0.01D) / 256.0D;
             var20 = var14;
             var22 = var12;
             var24 = var16;
             var26 = var18;
         }
 
-        double var28 = var2 + blockBB.minX;
-        double var30 = var2 + blockBB.maxX;
-        double var32 = var4 + blockBB.minY;
-        double var34 = var6 + blockBB.minZ;
-        double var36 = var6 + blockBB.maxZ;
+        double var28 = var2 + blockBB.MinX;
+        double var30 = var2 + blockBB.MaxX;
+        double var32 = var4 + blockBB.MinY;
+        double var34 = var6 + blockBB.MinZ;
+        double var36 = var6 + blockBB.MaxZ;
         if (enableAO)
         {
             var9.setColorOpaque_F(colorRedTopLeft, colorGreenTopLeft, colorBlueTopLeft);
@@ -3183,17 +3183,17 @@ public class BlockRenderer
 
         int var10 = (var8 & 15) << 4;
         int var11 = var8 & 240;
-        double var12 = (var10 + blockBB.minX * 16.0D) / 256.0D;
-        double var14 = (var10 + blockBB.maxX * 16.0D - 0.01D) / 256.0D;
-        double var16 = (var11 + blockBB.minZ * 16.0D) / 256.0D;
-        double var18 = (var11 + blockBB.maxZ * 16.0D - 0.01D) / 256.0D;
-        if (blockBB.minX < 0.0D || blockBB.maxX > 1.0D)
+        double var12 = (var10 + blockBB.MinX * 16.0D) / 256.0D;
+        double var14 = (var10 + blockBB.MaxX * 16.0D - 0.01D) / 256.0D;
+        double var16 = (var11 + blockBB.MinZ * 16.0D) / 256.0D;
+        double var18 = (var11 + blockBB.MaxZ * 16.0D - 0.01D) / 256.0D;
+        if (blockBB.MinX < 0.0D || blockBB.MaxX > 1.0D)
         {
             var12 = (double)((var10 + 0.0F) / 256.0F);
             var14 = (double)((var10 + 15.99F) / 256.0F);
         }
 
-        if (blockBB.minZ < 0.0D || blockBB.maxZ > 1.0D)
+        if (blockBB.MinZ < 0.0D || blockBB.MaxZ > 1.0D)
         {
             var16 = (double)((var11 + 0.0F) / 256.0F);
             var18 = (double)((var11 + 15.99F) / 256.0F);
@@ -3205,10 +3205,10 @@ public class BlockRenderer
         double var26 = var18;
         if (field_31083_k == 1)
         {
-            var12 = (var10 + blockBB.minZ * 16.0D) / 256.0D;
-            var16 = (var11 + 16 - blockBB.maxX * 16.0D) / 256.0D;
-            var14 = (var10 + blockBB.maxZ * 16.0D) / 256.0D;
-            var18 = (var11 + 16 - blockBB.minX * 16.0D) / 256.0D;
+            var12 = (var10 + blockBB.MinZ * 16.0D) / 256.0D;
+            var16 = (var11 + 16 - blockBB.MaxX * 16.0D) / 256.0D;
+            var14 = (var10 + blockBB.MaxZ * 16.0D) / 256.0D;
+            var18 = (var11 + 16 - blockBB.MinX * 16.0D) / 256.0D;
             var24 = var16;
             var26 = var18;
             var20 = var12;
@@ -3218,10 +3218,10 @@ public class BlockRenderer
         }
         else if (field_31083_k == 2)
         {
-            var12 = (var10 + 16 - blockBB.maxZ * 16.0D) / 256.0D;
-            var16 = (var11 + blockBB.minX * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.minZ * 16.0D) / 256.0D;
-            var18 = (var11 + blockBB.maxX * 16.0D) / 256.0D;
+            var12 = (var10 + 16 - blockBB.MaxZ * 16.0D) / 256.0D;
+            var16 = (var11 + blockBB.MinX * 16.0D) / 256.0D;
+            var14 = (var10 + 16 - blockBB.MinZ * 16.0D) / 256.0D;
+            var18 = (var11 + blockBB.MaxX * 16.0D) / 256.0D;
             var20 = var14;
             var22 = var12;
             var12 = var14;
@@ -3231,21 +3231,21 @@ public class BlockRenderer
         }
         else if (field_31083_k == 3)
         {
-            var12 = (var10 + 16 - blockBB.minX * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.maxX * 16.0D - 0.01D) / 256.0D;
-            var16 = (var11 + 16 - blockBB.minZ * 16.0D) / 256.0D;
-            var18 = (var11 + 16 - blockBB.maxZ * 16.0D - 0.01D) / 256.0D;
+            var12 = (var10 + 16 - blockBB.MinX * 16.0D) / 256.0D;
+            var14 = (var10 + 16 - blockBB.MaxX * 16.0D - 0.01D) / 256.0D;
+            var16 = (var11 + 16 - blockBB.MinZ * 16.0D) / 256.0D;
+            var18 = (var11 + 16 - blockBB.MaxZ * 16.0D - 0.01D) / 256.0D;
             var20 = var14;
             var22 = var12;
             var24 = var16;
             var26 = var18;
         }
 
-        double var28 = var2 + blockBB.minX;
-        double var30 = var2 + blockBB.maxX;
-        double var32 = var4 + blockBB.maxY;
-        double var34 = var6 + blockBB.minZ;
-        double var36 = var6 + blockBB.maxZ;
+        double var28 = var2 + blockBB.MinX;
+        double var30 = var2 + blockBB.MaxX;
+        double var32 = var4 + blockBB.MaxY;
+        double var34 = var6 + blockBB.MinZ;
+        double var36 = var6 + blockBB.MaxZ;
         if (enableAO)
         {
             var9.setColorOpaque_F(colorRedTopLeft, colorGreenTopLeft, colorBlueTopLeft);
@@ -3278,10 +3278,10 @@ public class BlockRenderer
 
         int var10 = (var8 & 15) << 4;
         int var11 = var8 & 240;
-        double var12 = (var10 + blockBB.minX * 16.0D) / 256.0D;
-        double var14 = (var10 + blockBB.maxX * 16.0D - 0.01D) / 256.0D;
-        double var16 = (var11 + 16 - blockBB.maxY * 16.0D) / 256.0D;
-        double var18 = (var11 + 16 - blockBB.minY * 16.0D - 0.01D) / 256.0D;
+        double var12 = (var10 + blockBB.MinX * 16.0D) / 256.0D;
+        double var14 = (var10 + blockBB.MaxX * 16.0D - 0.01D) / 256.0D;
+        double var16 = (var11 + 16 - blockBB.MaxY * 16.0D) / 256.0D;
+        double var18 = (var11 + 16 - blockBB.MinY * 16.0D - 0.01D) / 256.0D;
         double var20;
         if (flipTexture)
         {
@@ -3290,13 +3290,13 @@ public class BlockRenderer
             var14 = var20;
         }
 
-        if (blockBB.minX < 0.0D || blockBB.maxX > 1.0D)
+        if (blockBB.MinX < 0.0D || blockBB.MaxX > 1.0D)
         {
             var12 = (double)((var10 + 0.0F) / 256.0F);
             var14 = (double)((var10 + 15.99F) / 256.0F);
         }
 
-        if (blockBB.minY < 0.0D || blockBB.maxY > 1.0D)
+        if (blockBB.MinY < 0.0D || blockBB.MaxY > 1.0D)
         {
             var16 = (double)((var11 + 0.0F) / 256.0F);
             var18 = (double)((var11 + 15.99F) / 256.0F);
@@ -3308,10 +3308,10 @@ public class BlockRenderer
         double var26 = var18;
         if (field_31087_g == 2)
         {
-            var12 = (var10 + blockBB.minY * 16.0D) / 256.0D;
-            var16 = (var11 + 16 - blockBB.minX * 16.0D) / 256.0D;
-            var14 = (var10 + blockBB.maxY * 16.0D) / 256.0D;
-            var18 = (var11 + 16 - blockBB.maxX * 16.0D) / 256.0D;
+            var12 = (var10 + blockBB.MinY * 16.0D) / 256.0D;
+            var16 = (var11 + 16 - blockBB.MinX * 16.0D) / 256.0D;
+            var14 = (var10 + blockBB.MaxY * 16.0D) / 256.0D;
+            var18 = (var11 + 16 - blockBB.MaxX * 16.0D) / 256.0D;
             var24 = var16;
             var26 = var18;
             var20 = var12;
@@ -3321,10 +3321,10 @@ public class BlockRenderer
         }
         else if (field_31087_g == 1)
         {
-            var12 = (var10 + 16 - blockBB.maxY * 16.0D) / 256.0D;
-            var16 = (var11 + blockBB.maxX * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.minY * 16.0D) / 256.0D;
-            var18 = (var11 + blockBB.minX * 16.0D) / 256.0D;
+            var12 = (var10 + 16 - blockBB.MaxY * 16.0D) / 256.0D;
+            var16 = (var11 + blockBB.MaxX * 16.0D) / 256.0D;
+            var14 = (var10 + 16 - blockBB.MinY * 16.0D) / 256.0D;
+            var18 = (var11 + blockBB.MinX * 16.0D) / 256.0D;
             var20 = var14;
             var22 = var12;
             var12 = var14;
@@ -3334,21 +3334,21 @@ public class BlockRenderer
         }
         else if (field_31087_g == 3)
         {
-            var12 = (var10 + 16 - blockBB.minX * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.maxX * 16.0D - 0.01D) / 256.0D;
-            var16 = (var11 + blockBB.maxY * 16.0D) / 256.0D;
-            var18 = (var11 + blockBB.minY * 16.0D - 0.01D) / 256.0D;
+            var12 = (var10 + 16 - blockBB.MinX * 16.0D) / 256.0D;
+            var14 = (var10 + 16 - blockBB.MaxX * 16.0D - 0.01D) / 256.0D;
+            var16 = (var11 + blockBB.MaxY * 16.0D) / 256.0D;
+            var18 = (var11 + blockBB.MinY * 16.0D - 0.01D) / 256.0D;
             var20 = var14;
             var22 = var12;
             var24 = var16;
             var26 = var18;
         }
 
-        double var28 = var2 + blockBB.minX;
-        double var30 = var2 + blockBB.maxX;
-        double var32 = var4 + blockBB.minY;
-        double var34 = var4 + blockBB.maxY;
-        double var36 = var6 + blockBB.minZ;
+        double var28 = var2 + blockBB.MinX;
+        double var30 = var2 + blockBB.MaxX;
+        double var32 = var4 + blockBB.MinY;
+        double var34 = var4 + blockBB.MaxY;
+        double var36 = var6 + blockBB.MinZ;
         if (enableAO)
         {
             var9.setColorOpaque_F(colorRedTopLeft, colorGreenTopLeft, colorBlueTopLeft);
@@ -3381,10 +3381,10 @@ public class BlockRenderer
 
         int var10 = (var8 & 15) << 4;
         int var11 = var8 & 240;
-        double var12 = (var10 + blockBB.minX * 16.0D) / 256.0D;
-        double var14 = (var10 + blockBB.maxX * 16.0D - 0.01D) / 256.0D;
-        double var16 = (var11 + 16 - blockBB.maxY * 16.0D) / 256.0D;
-        double var18 = (var11 + 16 - blockBB.minY * 16.0D - 0.01D) / 256.0D;
+        double var12 = (var10 + blockBB.MinX * 16.0D) / 256.0D;
+        double var14 = (var10 + blockBB.MaxX * 16.0D - 0.01D) / 256.0D;
+        double var16 = (var11 + 16 - blockBB.MaxY * 16.0D) / 256.0D;
+        double var18 = (var11 + 16 - blockBB.MinY * 16.0D - 0.01D) / 256.0D;
         double var20;
         if (flipTexture)
         {
@@ -3393,13 +3393,13 @@ public class BlockRenderer
             var14 = var20;
         }
 
-        if (blockBB.minX < 0.0D || blockBB.maxX > 1.0D)
+        if (blockBB.MinX < 0.0D || blockBB.MaxX > 1.0D)
         {
             var12 = (double)((var10 + 0.0F) / 256.0F);
             var14 = (double)((var10 + 15.99F) / 256.0F);
         }
 
-        if (blockBB.minY < 0.0D || blockBB.maxY > 1.0D)
+        if (blockBB.MinY < 0.0D || blockBB.MaxY > 1.0D)
         {
             var16 = (double)((var11 + 0.0F) / 256.0F);
             var18 = (double)((var11 + 15.99F) / 256.0F);
@@ -3411,10 +3411,10 @@ public class BlockRenderer
         double var26 = var18;
         if (field_31086_h == 1)
         {
-            var12 = (var10 + blockBB.minY * 16.0D) / 256.0D;
-            var18 = (var11 + 16 - blockBB.minX * 16.0D) / 256.0D;
-            var14 = (var10 + blockBB.maxY * 16.0D) / 256.0D;
-            var16 = (var11 + 16 - blockBB.maxX * 16.0D) / 256.0D;
+            var12 = (var10 + blockBB.MinY * 16.0D) / 256.0D;
+            var18 = (var11 + 16 - blockBB.MinX * 16.0D) / 256.0D;
+            var14 = (var10 + blockBB.MaxY * 16.0D) / 256.0D;
+            var16 = (var11 + 16 - blockBB.MaxX * 16.0D) / 256.0D;
             var24 = var16;
             var26 = var18;
             var20 = var12;
@@ -3424,10 +3424,10 @@ public class BlockRenderer
         }
         else if (field_31086_h == 2)
         {
-            var12 = (var10 + 16 - blockBB.maxY * 16.0D) / 256.0D;
-            var16 = (var11 + blockBB.minX * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.minY * 16.0D) / 256.0D;
-            var18 = (var11 + blockBB.maxX * 16.0D) / 256.0D;
+            var12 = (var10 + 16 - blockBB.MaxY * 16.0D) / 256.0D;
+            var16 = (var11 + blockBB.MinX * 16.0D) / 256.0D;
+            var14 = (var10 + 16 - blockBB.MinY * 16.0D) / 256.0D;
+            var18 = (var11 + blockBB.MaxX * 16.0D) / 256.0D;
             var20 = var14;
             var22 = var12;
             var12 = var14;
@@ -3437,21 +3437,21 @@ public class BlockRenderer
         }
         else if (field_31086_h == 3)
         {
-            var12 = (var10 + 16 - blockBB.minX * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.maxX * 16.0D - 0.01D) / 256.0D;
-            var16 = (var11 + blockBB.maxY * 16.0D) / 256.0D;
-            var18 = (var11 + blockBB.minY * 16.0D - 0.01D) / 256.0D;
+            var12 = (var10 + 16 - blockBB.MinX * 16.0D) / 256.0D;
+            var14 = (var10 + 16 - blockBB.MaxX * 16.0D - 0.01D) / 256.0D;
+            var16 = (var11 + blockBB.MaxY * 16.0D) / 256.0D;
+            var18 = (var11 + blockBB.MinY * 16.0D - 0.01D) / 256.0D;
             var20 = var14;
             var22 = var12;
             var24 = var16;
             var26 = var18;
         }
 
-        double var28 = var2 + blockBB.minX;
-        double var30 = var2 + blockBB.maxX;
-        double var32 = var4 + blockBB.minY;
-        double var34 = var4 + blockBB.maxY;
-        double var36 = var6 + blockBB.maxZ;
+        double var28 = var2 + blockBB.MinX;
+        double var30 = var2 + blockBB.MaxX;
+        double var32 = var4 + blockBB.MinY;
+        double var34 = var4 + blockBB.MaxY;
+        double var36 = var6 + blockBB.MaxZ;
         if (enableAO)
         {
             var9.setColorOpaque_F(colorRedTopLeft, colorGreenTopLeft, colorBlueTopLeft);
@@ -3484,10 +3484,10 @@ public class BlockRenderer
 
         int var10 = (var8 & 15) << 4;
         int var11 = var8 & 240;
-        double var12 = (var10 + blockBB.minZ * 16.0D) / 256.0D;
-        double var14 = (var10 + blockBB.maxZ * 16.0D - 0.01D) / 256.0D;
-        double var16 = (var11 + 16 - blockBB.maxY * 16.0D) / 256.0D;
-        double var18 = (var11 + 16 - blockBB.minY * 16.0D - 0.01D) / 256.0D;
+        double var12 = (var10 + blockBB.MinZ * 16.0D) / 256.0D;
+        double var14 = (var10 + blockBB.MaxZ * 16.0D - 0.01D) / 256.0D;
+        double var16 = (var11 + 16 - blockBB.MaxY * 16.0D) / 256.0D;
+        double var18 = (var11 + 16 - blockBB.MinY * 16.0D - 0.01D) / 256.0D;
         double var20;
         if (flipTexture)
         {
@@ -3496,13 +3496,13 @@ public class BlockRenderer
             var14 = var20;
         }
 
-        if (blockBB.minZ < 0.0D || blockBB.maxZ > 1.0D)
+        if (blockBB.MinZ < 0.0D || blockBB.MaxZ > 1.0D)
         {
             var12 = (double)((var10 + 0.0F) / 256.0F);
             var14 = (double)((var10 + 15.99F) / 256.0F);
         }
 
-        if (blockBB.minY < 0.0D || blockBB.maxY > 1.0D)
+        if (blockBB.MinY < 0.0D || blockBB.MaxY > 1.0D)
         {
             var16 = (double)((var11 + 0.0F) / 256.0F);
             var18 = (double)((var11 + 15.99F) / 256.0F);
@@ -3514,10 +3514,10 @@ public class BlockRenderer
         double var26 = var18;
         if (field_31084_j == 1)
         {
-            var12 = (var10 + blockBB.minY * 16.0D) / 256.0D;
-            var16 = (var11 + 16 - blockBB.maxZ * 16.0D) / 256.0D;
-            var14 = (var10 + blockBB.maxY * 16.0D) / 256.0D;
-            var18 = (var11 + 16 - blockBB.minZ * 16.0D) / 256.0D;
+            var12 = (var10 + blockBB.MinY * 16.0D) / 256.0D;
+            var16 = (var11 + 16 - blockBB.MaxZ * 16.0D) / 256.0D;
+            var14 = (var10 + blockBB.MaxY * 16.0D) / 256.0D;
+            var18 = (var11 + 16 - blockBB.MinZ * 16.0D) / 256.0D;
             var24 = var16;
             var26 = var18;
             var20 = var12;
@@ -3527,10 +3527,10 @@ public class BlockRenderer
         }
         else if (field_31084_j == 2)
         {
-            var12 = (var10 + 16 - blockBB.maxY * 16.0D) / 256.0D;
-            var16 = (var11 + blockBB.minZ * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.minY * 16.0D) / 256.0D;
-            var18 = (var11 + blockBB.maxZ * 16.0D) / 256.0D;
+            var12 = (var10 + 16 - blockBB.MaxY * 16.0D) / 256.0D;
+            var16 = (var11 + blockBB.MinZ * 16.0D) / 256.0D;
+            var14 = (var10 + 16 - blockBB.MinY * 16.0D) / 256.0D;
+            var18 = (var11 + blockBB.MaxZ * 16.0D) / 256.0D;
             var20 = var14;
             var22 = var12;
             var12 = var14;
@@ -3540,21 +3540,21 @@ public class BlockRenderer
         }
         else if (field_31084_j == 3)
         {
-            var12 = (var10 + 16 - blockBB.minZ * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.maxZ * 16.0D - 0.01D) / 256.0D;
-            var16 = (var11 + blockBB.maxY * 16.0D) / 256.0D;
-            var18 = (var11 + blockBB.minY * 16.0D - 0.01D) / 256.0D;
+            var12 = (var10 + 16 - blockBB.MinZ * 16.0D) / 256.0D;
+            var14 = (var10 + 16 - blockBB.MaxZ * 16.0D - 0.01D) / 256.0D;
+            var16 = (var11 + blockBB.MaxY * 16.0D) / 256.0D;
+            var18 = (var11 + blockBB.MinY * 16.0D - 0.01D) / 256.0D;
             var20 = var14;
             var22 = var12;
             var24 = var16;
             var26 = var18;
         }
 
-        double var28 = var2 + blockBB.minX;
-        double var30 = var4 + blockBB.minY;
-        double var32 = var4 + blockBB.maxY;
-        double var34 = var6 + blockBB.minZ;
-        double var36 = var6 + blockBB.maxZ;
+        double var28 = var2 + blockBB.MinX;
+        double var30 = var4 + blockBB.MinY;
+        double var32 = var4 + blockBB.MaxY;
+        double var34 = var6 + blockBB.MinZ;
+        double var36 = var6 + blockBB.MaxZ;
         if (enableAO)
         {
             var9.setColorOpaque_F(colorRedTopLeft, colorGreenTopLeft, colorBlueTopLeft);
@@ -3587,10 +3587,10 @@ public class BlockRenderer
 
         int var10 = (var8 & 15) << 4;
         int var11 = var8 & 240;
-        double var12 = (var10 + blockBB.minZ * 16.0D) / 256.0D;
-        double var14 = (var10 + blockBB.maxZ * 16.0D - 0.01D) / 256.0D;
-        double var16 = (var11 + 16 - blockBB.maxY * 16.0D) / 256.0D;
-        double var18 = (var11 + 16 - blockBB.minY * 16.0D - 0.01D) / 256.0D;
+        double var12 = (var10 + blockBB.MinZ * 16.0D) / 256.0D;
+        double var14 = (var10 + blockBB.MaxZ * 16.0D - 0.01D) / 256.0D;
+        double var16 = (var11 + 16 - blockBB.MaxY * 16.0D) / 256.0D;
+        double var18 = (var11 + 16 - blockBB.MinY * 16.0D - 0.01D) / 256.0D;
         double var20;
         if (flipTexture)
         {
@@ -3599,13 +3599,13 @@ public class BlockRenderer
             var14 = var20;
         }
 
-        if (blockBB.minZ < 0.0D || blockBB.maxZ > 1.0D)
+        if (blockBB.MinZ < 0.0D || blockBB.MaxZ > 1.0D)
         {
             var12 = (double)((var10 + 0.0F) / 256.0F);
             var14 = (double)((var10 + 15.99F) / 256.0F);
         }
 
-        if (blockBB.minY < 0.0D || blockBB.maxY > 1.0D)
+        if (blockBB.MinY < 0.0D || blockBB.MaxY > 1.0D)
         {
             var16 = (double)((var11 + 0.0F) / 256.0F);
             var18 = (double)((var11 + 15.99F) / 256.0F);
@@ -3617,10 +3617,10 @@ public class BlockRenderer
         double var26 = var18;
         if (field_31085_i == 2)
         {
-            var12 = (var10 + blockBB.minY * 16.0D) / 256.0D;
-            var16 = (var11 + 16 - blockBB.minZ * 16.0D) / 256.0D;
-            var14 = (var10 + blockBB.maxY * 16.0D) / 256.0D;
-            var18 = (var11 + 16 - blockBB.maxZ * 16.0D) / 256.0D;
+            var12 = (var10 + blockBB.MinY * 16.0D) / 256.0D;
+            var16 = (var11 + 16 - blockBB.MinZ * 16.0D) / 256.0D;
+            var14 = (var10 + blockBB.MaxY * 16.0D) / 256.0D;
+            var18 = (var11 + 16 - blockBB.MaxZ * 16.0D) / 256.0D;
             var24 = var16;
             var26 = var18;
             var20 = var12;
@@ -3630,10 +3630,10 @@ public class BlockRenderer
         }
         else if (field_31085_i == 1)
         {
-            var12 = (var10 + 16 - blockBB.maxY * 16.0D) / 256.0D;
-            var16 = (var11 + blockBB.maxZ * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.minY * 16.0D) / 256.0D;
-            var18 = (var11 + blockBB.minZ * 16.0D) / 256.0D;
+            var12 = (var10 + 16 - blockBB.MaxY * 16.0D) / 256.0D;
+            var16 = (var11 + blockBB.MaxZ * 16.0D) / 256.0D;
+            var14 = (var10 + 16 - blockBB.MinY * 16.0D) / 256.0D;
+            var18 = (var11 + blockBB.MinZ * 16.0D) / 256.0D;
             var20 = var14;
             var22 = var12;
             var12 = var14;
@@ -3643,21 +3643,21 @@ public class BlockRenderer
         }
         else if (field_31085_i == 3)
         {
-            var12 = (var10 + 16 - blockBB.minZ * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.maxZ * 16.0D - 0.01D) / 256.0D;
-            var16 = (var11 + blockBB.maxY * 16.0D) / 256.0D;
-            var18 = (var11 + blockBB.minY * 16.0D - 0.01D) / 256.0D;
+            var12 = (var10 + 16 - blockBB.MinZ * 16.0D) / 256.0D;
+            var14 = (var10 + 16 - blockBB.MaxZ * 16.0D - 0.01D) / 256.0D;
+            var16 = (var11 + blockBB.MaxY * 16.0D) / 256.0D;
+            var18 = (var11 + blockBB.MinY * 16.0D - 0.01D) / 256.0D;
             var20 = var14;
             var22 = var12;
             var24 = var16;
             var26 = var18;
         }
 
-        double var28 = var2 + blockBB.maxX;
-        double var30 = var4 + blockBB.minY;
-        double var32 = var4 + blockBB.maxY;
-        double var34 = var6 + blockBB.minZ;
-        double var36 = var6 + blockBB.maxZ;
+        double var28 = var2 + blockBB.MaxX;
+        double var30 = var4 + blockBB.MinY;
+        double var32 = var4 + blockBB.MaxY;
+        double var34 = var6 + blockBB.MinZ;
+        double var36 = var6 + blockBB.MaxZ;
         if (enableAO)
         {
             var9.setColorOpaque_F(colorRedTopLeft, colorGreenTopLeft, colorBlueTopLeft);

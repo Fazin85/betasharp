@@ -59,7 +59,7 @@ public class EntityCreature : EntityLiving
             pathToEntity = world.findPath(this, playerToAttack, range);
         }
 
-        int floorY = MathHelper.Floor(boundingBox.minY + 0.5D);
+        int floorY = MathHelper.Floor(boundingBox.MinY + 0.5D);
         bool isInWater = base.isInWater();
         bool isTouchingLava = base.isTouchingLava();
         pitch = 0.0F;
@@ -203,7 +203,7 @@ public class EntityCreature : EntityLiving
     public override bool canSpawn()
     {
         int floorX = MathHelper.Floor(x);
-        int floorY = MathHelper.Floor(boundingBox.minY);
+        int floorY = MathHelper.Floor(boundingBox.MinY);
         int floorZ = MathHelper.Floor(z);
         return base.canSpawn() && getBlockPathWeight(floorX, floorY, floorZ) >= 0.0F;
     }
