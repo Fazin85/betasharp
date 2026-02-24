@@ -111,9 +111,9 @@ public struct Box(double minX, double minY, double minZ, double maxX, double max
 
     public HitResult Raycast(Vec3D start, Vec3D end)
     {
-        Vec3D? hitX = GetClosest(start, end, start.getIntermediateWithXValue(end, MinX), start.getIntermediateWithXValue(end, MaxX), Box.Axis.X);
-        Vec3D? hitY = GetClosest(start, end, start.getIntermediateWithYValue(end, MinY), start.getIntermediateWithYValue(end, MaxY), Box.Axis.Y);
-        Vec3D? hitZ = GetClosest(start, end, start.getIntermediateWithZValue(end, MinZ), start.getIntermediateWithZValue(end, MaxZ), Box.Axis.Z);
+        Vec3D? hitX = GetClosest(start, end, start.getIntermediateWithXValue(end, MinX), start.getIntermediateWithXValue(end, MaxX), Axis.X);
+        Vec3D? hitY = GetClosest(start, end, start.getIntermediateWithYValue(end, MinY), start.getIntermediateWithYValue(end, MaxY), Axis.Y);
+        Vec3D? hitZ = GetClosest(start, end, start.getIntermediateWithZValue(end, MinZ), start.getIntermediateWithZValue(end, MaxZ), Axis.Z);
 
         Vec3D? finalHit = null;
         int side = -1;
@@ -138,7 +138,7 @@ public struct Box(double minX, double minY, double minZ, double maxX, double max
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool IsValid(in Vec3D p, Box.Axis axis) => axis switch
+    private bool IsValid(in Vec3D p, Axis axis) => axis switch
     {
         Axis.X => p.y >= MinY && p.y <= MaxY && p.z >= MinZ && p.z <= MaxZ,
         Axis.Y => p.x >= MinX && p.x <= MaxX && p.z >= MinZ && p.z <= MaxZ,
