@@ -67,7 +67,7 @@ public class EntitySlime : EntityLiving, Monster
                 float spread = random.NextFloat() * 0.5F + 0.5F;
                 float offsetX = MathHelper.Sin(angle) * (float)size * 0.5F * spread;
                 float offsetY = MathHelper.Cos(angle) * (float)size * 0.5F * spread;
-                world.addParticle("slime", base.x + (double)offsetX, boundingBox.minY, z + (double)offsetY, 0.0D, 0.0D, 0.0D);
+                world.addParticle("slime", base.x + (double)offsetX, boundingBox.MinY, z + (double)offsetY, 0.0D, 0.0D, 0.0D);
             }
 
             if (size > 2)

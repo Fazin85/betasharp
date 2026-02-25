@@ -511,8 +511,8 @@ public class Chunk
 
     public virtual void CollectOtherEntities(Entity except, Box box, List<Entity> result)
     {
-        int minSlice = MathHelper.Floor((box.minY - 2.0D) / 16.0D);
-        int maxSlice = MathHelper.Floor((box.maxY + 2.0D) / 16.0D);
+        int minSlice = MathHelper.Floor((box.MinY - 2.0D) / 16.0D);
+        int maxSlice = MathHelper.Floor((box.MaxY + 2.0D) / 16.0D);
 
         if (minSlice < 0) minSlice = 0;
         if (maxSlice >= Entities.Length) maxSlice = Entities.Length - 1;
@@ -521,7 +521,7 @@ public class Chunk
         {
             foreach (var entity in Entities[i])
             {
-                if (entity != except && entity.boundingBox.intersects(box))
+                if (entity != except && entity.boundingBox.Intersects(box))
                 {
                     result.Add(entity);
                 }
@@ -531,8 +531,8 @@ public class Chunk
 
     public virtual void CollectEntitiesOfType<T>(Box box, List<T> result) where T : Entity
     {
-        int minSlice = MathHelper.Floor((box.minY - 2.0D) / 16.0D);
-        int maxSlice = MathHelper.Floor((box.maxY + 2.0D) / 16.0D);
+        int minSlice = MathHelper.Floor((box.MinY - 2.0D) / 16.0D);
+        int maxSlice = MathHelper.Floor((box.MaxY + 2.0D) / 16.0D);
 
         if (minSlice < 0) minSlice = 0;
         if (maxSlice >= Entities.Length) maxSlice = Entities.Length - 1;
@@ -541,7 +541,7 @@ public class Chunk
         {
             foreach (var entity in Entities[i])
             {
-                if (entity is T typedEntity && entity.boundingBox.intersects(box))
+                if (entity is T typedEntity && entity.boundingBox.Intersects(box))
                 {
                     result.Add(typedEntity);
                 }

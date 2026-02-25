@@ -323,7 +323,7 @@ public class ClientNetworkHandler : NetHandler
         ent.velocityX = ent.velocityY = ent.velocityZ = 0.0D;
         ent.setPositionAndAngles(x, y, z, yaw, pitch);
         packet.x = ent.x;
-        packet.y = ent.boundingBox.minY;
+        packet.y = ent.boundingBox.MinY;
         packet.z = ent.z;
         packet.eyeHeight = ent.y;
         netManager.sendPacket(packet);

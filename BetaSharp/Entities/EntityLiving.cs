@@ -593,7 +593,7 @@ public class EntityLiving : Entity
             if (onGround)
             {
                 friction = 546.0F * 0.1F * 0.1F * 0.1F;
-                int groundBlockId = world.getBlockId(MathHelper.Floor(x), MathHelper.Floor(boundingBox.minY) - 1, MathHelper.Floor(z));
+                int groundBlockId = world.getBlockId(MathHelper.Floor(x), MathHelper.Floor(boundingBox.MinY) - 1, MathHelper.Floor(z));
                 if (groundBlockId > 0)
                 {
                     friction = Block.Blocks[groundBlockId].slipperiness * 0.91F;
@@ -606,7 +606,7 @@ public class EntityLiving : Entity
             if (onGround)
             {
                 friction = 546.0F * 0.1F * 0.1F * 0.1F;
-                int groundBlockId = world.getBlockId(MathHelper.Floor(x), MathHelper.Floor(boundingBox.minY) - 1, MathHelper.Floor(z));
+                int groundBlockId = world.getBlockId(MathHelper.Floor(x), MathHelper.Floor(boundingBox.MinY) - 1, MathHelper.Floor(z));
                 if (groundBlockId > 0)
                 {
                     friction = Block.Blocks[groundBlockId].slipperiness * 0.91F;
@@ -676,7 +676,7 @@ public class EntityLiving : Entity
     public virtual bool isOnLadder()
     {
         int x = MathHelper.Floor(base.x);
-        int y = MathHelper.Floor(boundingBox.minY);
+        int y = MathHelper.Floor(boundingBox.MinY);
         int z = MathHelper.Floor(base.z);
         return world.getBlockId(x, y, z) == Block.Ladder.id;
     }
@@ -735,7 +735,7 @@ public class EntityLiving : Entity
             --newPosRotationIncrements;
             setPosition(newX, newY, newZ);
             setRotation(yaw, pitch);
-            var collisions = world.getEntityCollisions(this, boundingBox.contract(1.0D / 32.0D, 0.0D, 1.0D / 32.0D));
+            var collisions = world.getEntityCollisions(this, boundingBox.Contract(1.0D / 32.0D, 0.0D, 1.0D / 32.0D));
             if (collisions.Count > 0)
             {
                 double highestCollisionY = 0.0D;
@@ -743,13 +743,13 @@ public class EntityLiving : Entity
                 for (int i = 0; i < collisions.Count; ++i)
                 {
                     Box box = collisions[i];
-                    if (box.maxY > highestCollisionY)
+                    if (box.MaxY > highestCollisionY)
                     {
-                        highestCollisionY = box.maxY;
+                        highestCollisionY = box.MaxY;
                     }
                 }
 
-                newY += highestCollisionY - boundingBox.minY;
+                newY += highestCollisionY - boundingBox.MinY;
                 setPosition(newX, newY, newZ);
             }
         }
@@ -788,7 +788,7 @@ public class EntityLiving : Entity
         forwardSpeed *= 0.98F;
         rotationSpeed *= 0.9F;
         travel(sidewaysSpeed, forwardSpeed);
-        var nearbyEntities = world.getEntities(this, boundingBox.expand((double)0.2F, 0.0D, (double)0.2F));
+        var nearbyEntities = world.getEntities(this, boundingBox.Expand((double)0.2F, 0.0D, (double)0.2F));
         if (nearbyEntities != null && nearbyEntities.Count > 0)
         {
             for (int i = 0; i < nearbyEntities.Count; ++i)
@@ -914,7 +914,7 @@ public class EntityLiving : Entity
         }
         else
         {
-            dy = (entity.boundingBox.minY + entity.boundingBox.maxY) / 2.0D - (y + (double)getEyeHeight());
+            dy = (entity.boundingBox.MinY + entity.boundingBox.MaxY) / 2.0D - (y + (double)getEyeHeight());
         }
 
         double horizontalDistance = (double)MathHelper.Sqrt(dx * dx + dz * dz);

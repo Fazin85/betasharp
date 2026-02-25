@@ -21,7 +21,7 @@ public class Pathfinder : java.lang.Object
 
     public PathEntity createEntityPathTo(Entity var1, Entity var2, float var3)
     {
-        return createEntityPathTo(var1, var2.x, var2.boundingBox.minY, var2.z, var3);
+        return createEntityPathTo(var1, var2.x, var2.boundingBox.MinY, var2.z, var3);
     }
 
     public PathEntity createEntityPathTo(Entity var1, int var2, int var3, int var4, float var5)
@@ -33,7 +33,7 @@ public class Pathfinder : java.lang.Object
     {
         path.clearPath();
         pointMap.Clear();
-        PathPoint var9 = openPoint(MathHelper.Floor(var1.boundingBox.minX), MathHelper.Floor(var1.boundingBox.minY), MathHelper.Floor(var1.boundingBox.minZ));
+        PathPoint var9 = openPoint(MathHelper.Floor(var1.boundingBox.MinX), MathHelper.Floor(var1.boundingBox.MinY), MathHelper.Floor(var1.boundingBox.MinZ));
         PathPoint var10 = openPoint(MathHelper.Floor(var2 - (double)(var1.width / 2.0F)), MathHelper.Floor(var4), MathHelper.Floor(var6 - (double)(var1.width / 2.0F)));
         PathPoint var11 = new(MathHelper.Floor(var1.width + 1.0F), MathHelper.Floor(var1.height + 1.0F), MathHelper.Floor(var1.width + 1.0F));
         PathEntity var12 = addToPath(var1, var9, var10, var11, var8);

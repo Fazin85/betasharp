@@ -85,7 +85,7 @@ public class EntityFish : Entity
 
     public override bool shouldRender(double var1)
     {
-        double var3 = boundingBox.getAverageSizeLength() * 4.0D;
+        double var3 = boundingBox.AverageEdgeLength * 4.0D;
         var3 *= 64.0D;
         return var1 < var3 * var3;
     }
@@ -173,7 +173,7 @@ public class EntityFish : Entity
                     if (!bobber.dead)
                     {
                         x = bobber.x;
-                        y = bobber.boundingBox.minY + (double)bobber.height * 0.8D;
+                        y = bobber.boundingBox.MinY + (double)bobber.height * 0.8D;
                         z = bobber.z;
                         return;
                     }
@@ -224,7 +224,7 @@ public class EntityFish : Entity
             }
 
             Entity var4 = null;
-            var var5 = world.getEntities(this, boundingBox.stretch(base.velocityX, base.velocityY, base.velocityZ).expand(1.0D, 1.0D, 1.0D));
+            var var5 = world.getEntities(this, boundingBox.Stretch(base.velocityX, base.velocityY, base.velocityZ).Expand(1.0D, 1.0D, 1.0D));
             double var6 = 0.0D;
 
             double var13;
@@ -234,8 +234,8 @@ public class EntityFish : Entity
                 if (var9.isCollidable() && (var9 != angler || ticksInAir >= 5))
                 {
                     float var10 = 0.3F;
-                    Box var11 = var9.boundingBox.expand((double)var10, (double)var10, (double)var10);
-                    HitResult var12 = var11.raycast(var20, var2);
+                    Box var11 = var9.boundingBox.Expand((double)var10, (double)var10, (double)var10);
+                    HitResult var12 = var11.Raycast(var20, var2);
                     if (var12.Type != HitResultType.MISS)
                     {
                         var13 = var20.distanceTo(var12.Pos);
@@ -306,9 +306,9 @@ public class EntityFish : Entity
 
                 for (int var28 = 0; var28 < var26; ++var28)
                 {
-                    double var14 = boundingBox.minY + (boundingBox.maxY - boundingBox.minY) * (double)(var28 + 0) / (double)var26 - 0.125D + 0.125D;
-                    double var16 = boundingBox.minY + (boundingBox.maxY - boundingBox.minY) * (double)(var28 + 1) / (double)var26 - 0.125D + 0.125D;
-                    Box var18 = new Box(boundingBox.minX, var14, boundingBox.minZ, boundingBox.maxX, var16, boundingBox.maxZ);
+                    double var14 = boundingBox.MinY + (boundingBox.MaxY - boundingBox.MinY) * (double)(var28 + 0) / (double)var26 - 0.125D + 0.125D;
+                    double var16 = boundingBox.MinY + (boundingBox.MaxY - boundingBox.MinY) * (double)(var28 + 1) / (double)var26 - 0.125D + 0.125D;
+                    Box var18 = new Box(boundingBox.MinX, var14, boundingBox.MinZ, boundingBox.MaxX, var16, boundingBox.MaxZ);
                     if (world.isFluidInBox(var18, Material.Water))
                     {
                         var27 += 1.0D / (double)var26;
@@ -334,7 +334,7 @@ public class EntityFish : Entity
                             ticksCatchable = random.NextInt(30) + 10;
                             base.velocityY -= (double)0.2F;
                             world.playSound(this, "random.splash", 0.25F, 1.0F + (random.NextFloat() - random.NextFloat()) * 0.4F);
-                            float var30 = (float)MathHelper.Floor(boundingBox.minY);
+                            float var30 = (float)MathHelper.Floor(boundingBox.MinY);
 
                             int var15;
                             float var17;

@@ -1,364 +1,171 @@
+using System.Runtime.CompilerServices;
 using BetaSharp.Util.Hit;
 
 namespace BetaSharp.Util.Maths;
 
 public struct Box
 {
-    public double minX;
-    public double minY;
-    public double minZ;
-    public double maxX;
-    public double maxY;
-    public double maxZ;
-        
-    public Box(double x1, double y1, double z1, double x2, double y2, double z2)
+    public double MinX { get; set; }
+    public double MinY { get; set; }
+    public double MinZ { get; set; }
+    public double MaxX { get; set; }
+    public double MaxY { get; set; }
+    public double MaxZ { get; set; }
+
+    public Box(double minX, double minY, double minZ, double maxX, double maxY, double maxZ)
     {
-        minX = x1;
-        minY = y1;
-        minZ = z1;
-        maxX = x2;
-        maxY = y2;
-        maxZ = z2;
+        MinX = minX;
+        MinY = minY;
+        MinZ = minZ;
+        MaxX = maxX;
+        MaxY = maxY;
+        MaxZ = maxZ;
     }
 
-    public Box stretch(double x, double y, double z)
+    public Box Stretch(double x, double y, double z)
     {
-        double var7 = minX;
-        double var9 = minY;
-        double var11 = minZ;
-        double var13 = maxX;
-        double var15 = maxY;
-        double var17 = maxZ;
-        if (x < 0.0D)
-        {
-            var7 += x;
-        }
+        var (newMinX, newMaxX) = x < 0 ? (MinX + x, MaxX) : (MinX, MaxX + x);
+        var (newMinY, newMaxY) = y < 0 ? (MinY + y, MaxY) : (MinY, MaxY + y);
+        var (newMinZ, newMaxZ) = z < 0 ? (MinZ + z, MaxZ) : (MinZ, MaxZ + z);
 
-        if (x > 0.0D)
-        {
-            var13 += x;
-        }
-
-        if (y < 0.0D)
-        {
-            var9 += y;
-        }
-
-        if (y > 0.0D)
-        {
-            var15 += y;
-        }
-
-        if (z < 0.0D)
-        {
-            var11 += z;
-        }
-
-        if (z > 0.0D)
-        {
-            var17 += z;
-        }
-
-        return new Box(var7, var9, var11, var13, var15, var17);
+        return new Box(newMinX, newMinY, newMinZ, newMaxX, newMaxY, newMaxZ);
     }
 
-    public Box expand(double x, double y, double z)
+    public Box Expand(double x, double y, double z) =>
+        new(MinX - x, MinY - y, MinZ - z, MaxX + x, MaxY + y, MaxZ + z);
+
+    public Box Offset(double x, double y, double z) =>
+        new(MinX + x, MinY + y, MinZ + z, MaxX + x, MaxY + y, MaxZ + z);
+
+    public double GetXOffset(in Box other, double offsetX)
     {
-        double var7 = minX - x;
-        double var9 = minY - y;
-        double var11 = minZ - z;
-        double var13 = maxX + x;
-        double var15 = maxY + y;
-        double var17 = maxZ + z;
-        return new Box(var7, var9, var11, var13, var15, var17);
+        if (other.MaxY <= MinY || other.MinY >= MaxY || other.MaxZ <= MinZ || other.MinZ >= MaxZ)
+            return offsetX;
+
+        if (offsetX > 0 && other.MaxX <= MinX)
+            return Math.Min(offsetX, MinX - other.MaxX);
+
+        if (offsetX < 0 && other.MinX >= MaxX)
+            return Math.Max(offsetX, MaxX - other.MinX);
+
+        return offsetX;
     }
 
-    public Box offset(double x, double y, double z)
+    public double GetYOffset(in Box other, double offsetY)
     {
-        return new Box(minX + x, minY + y, minZ + z, maxX + x, maxY + y, maxZ + z);
+        if (other.MaxX <= MinX || other.MinX >= MaxX || other.MaxZ <= MinZ || other.MinZ >= MaxZ)
+            return offsetY;
+
+        if (offsetY > 0 && other.MaxY <= MinY)
+        {
+            double diff = MinY - other.MaxY;
+            if (diff < offsetY) offsetY = diff;
+        }
+        else if (offsetY < 0 && other.MinY >= MaxY)
+        {
+            double diff = MaxY - other.MinY;
+            if (diff > offsetY) offsetY = diff;
+        }
+
+        return offsetY;
     }
 
-    public double getXOffset(Box box, double x)
+    public double GetZOffset(in Box other, double offsetZ)
     {
-        if (box.maxY > minY && box.minY < maxY)
-        {
-            if (box.maxZ > minZ && box.minZ < maxZ)
-            {
-                double var4;
-                if (x > 0.0D && box.maxX <= minX)
-                {
-                    var4 = minX - box.maxX;
-                    if (var4 < x)
-                    {
-                        x = var4;
-                    }
-                }
+        if (other.MaxX <= MinX || other.MinX >= MaxX || other.MaxY <= MinY || other.MinY >= MaxY)
+            return offsetZ;
 
-                if (x < 0.0D && box.minX >= maxX)
-                {
-                    var4 = maxX - box.minX;
-                    if (var4 > x)
-                    {
-                        x = var4;
-                    }
-                }
-
-                return x;
-            }
-            else
-            {
-                return x;
-            }
-        }
-        else
+        if (offsetZ > 0 && other.MaxZ <= MinZ)
         {
-            return x;
+            double diff = MinZ - other.MaxZ;
+            if (diff < offsetZ) offsetZ = diff;
         }
+        else if (offsetZ < 0 && other.MinZ >= MaxZ)
+        {
+            double diff = MaxZ - other.MinZ;
+            if (diff > offsetZ) offsetZ = diff;
+        }
+
+        return offsetZ;
     }
 
-    public double getYOffset(Box box, double y)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool Intersects(in Box other) =>
+        other.MaxX > MinX && other.MinX < MaxX &&
+        other.MaxY > MinY && other.MinY < MaxY &&
+        other.MaxZ > MinZ && other.MinZ < MaxZ;
+
+    public Box Translate(double x, double y, double z)
     {
-        if (box.maxX > minX && box.minX < maxX)
-        {
-            if (box.maxZ > minZ && box.minZ < maxZ)
-            {
-                double var4;
-                if (y > 0.0D && box.maxY <= minY)
-                {
-                    var4 = minY - box.maxY;
-                    if (var4 < y)
-                    {
-                        y = var4;
-                    }
-                }
-
-                if (y < 0.0D && box.minY >= maxY)
-                {
-                    var4 = maxY - box.minY;
-                    if (var4 > y)
-                    {
-                        y = var4;
-                    }
-                }
-
-                return y;
-            }
-            else
-            {
-                return y;
-            }
-        }
-        else
-        {
-            return y;
-        }
-    }
-
-    public double getZOffset(Box box, double z)
-    {
-        if (box.maxX > minX && box.minX < maxX)
-        {
-            if (box.maxY > minY && box.minY < maxY)
-            {
-                double var4;
-                if (z > 0.0D && box.maxZ <= minZ)
-                {
-                    var4 = minZ - box.maxZ;
-                    if (var4 < z)
-                    {
-                        z = var4;
-                    }
-                }
-
-                if (z < 0.0D && box.minZ >= maxZ)
-                {
-                    var4 = maxZ - box.minZ;
-                    if (var4 > z)
-                    {
-                        z = var4;
-                    }
-                }
-
-                return z;
-            }
-            else
-            {
-                return z;
-            }
-        }
-        else
-        {
-            return z;
-        }
-    }
-
-    public bool intersects(Box box)
-    {
-        return box.maxX > minX && box.minX < maxX ? box.maxY > minY && box.minY < maxY ? box.maxZ > minZ && box.minZ < maxZ : false : false;
-    }
-
-    public Box translate(double x, double y, double z)
-    {
-        minX += x;
-        minY += y;
-        minZ += z;
-        maxX += x;
-        maxY += y;
-        maxZ += z;
+        MinX += x;
+        MinY += y;
+        MinZ += z;
+        MaxX += x;
+        MaxY += y;
+        MaxZ += z;
         return this;
     }
 
-    public bool contains(Vec3D pos)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool Contains(in Vec3D pos) =>
+        pos.x > MinX && pos.x < MaxX &&
+        pos.y > MinY && pos.y < MaxY &&
+        pos.z > MinZ && pos.z < MaxZ;
+
+    public double AverageEdgeLength => (MaxX - MinX + (MaxY - MinY) + (MaxZ - MinZ)) / 3.0;
+
+    public Box Contract(double x, double y, double z) =>
+        new(MinX + x, MinY + y, MinZ + z, MaxX - x, MaxY - y, MaxZ - z);
+
+    private enum Axis { X, Y, Z }
+
+    public HitResult Raycast(Vec3D start, Vec3D end)
     {
-        return pos.x > minX && pos.x < maxX ? pos.y > minY && pos.y < maxY ? pos.z > minZ && pos.z < maxZ : false : false;
-    }
+        Vec3D? hitX = GetClosest(start, end, start.getIntermediateWithXValue(end, MinX), start.getIntermediateWithXValue(end, MaxX), Axis.X);
+        Vec3D? hitY = GetClosest(start, end, start.getIntermediateWithYValue(end, MinY), start.getIntermediateWithYValue(end, MaxY), Axis.Y);
+        Vec3D? hitZ = GetClosest(start, end, start.getIntermediateWithZValue(end, MinZ), start.getIntermediateWithZValue(end, MaxZ), Axis.Z);
 
-    public double getAverageSizeLength()
-    {
-        double var1 = maxX - minX;
-        double var3 = maxY - minY;
-        double var5 = maxZ - minZ;
-        return (var1 + var3 + var5) / 3.0D;
-    }
+        Vec3D? finalHit = null;
+        int side = -1;
 
-    public Box contract(double x, double y, double z)
-    {
-        double var7 = minX + x;
-        double var9 = minY + y;
-        double var11 = minZ + z;
-        double var13 = maxX - x;
-        double var15 = maxY - y;
-        double var17 = maxZ - z;
-        return new Box(var7, var9, var11, var13, var15, var17);
-    }
+        UpdateHit(hitX, ref finalHit, ref side, start.getIntermediateWithXValue(end, MinX) == hitX ? 4 : 5);
+        UpdateHit(hitY, ref finalHit, ref side, start.getIntermediateWithYValue(end, MinY) == hitY ? 0 : 1);
+        UpdateHit(hitZ, ref finalHit, ref side, start.getIntermediateWithZValue(end, MinZ) == hitZ ? 2 : 3);
 
-    public HitResult raycast(Vec3D startPos, Vec3D endPos)
-    {
-        Vec3D? hitMinX = startPos.getIntermediateWithXValue(endPos, minX);
-        Vec3D? hitMaxX = startPos.getIntermediateWithXValue(endPos, maxX);
-        Vec3D? hitMinY = startPos.getIntermediateWithYValue(endPos, minY);
-        Vec3D? hitMaxY = startPos.getIntermediateWithYValue(endPos, maxY);
-        Vec3D? hitMinZ = startPos.getIntermediateWithZValue(endPos, minZ);
-        Vec3D? hitMaxZ = startPos.getIntermediateWithZValue(endPos, maxZ);
-        if (hitMinX != null && !isVecInsideYZBounds(hitMinX.Value))
+        return finalHit is null
+            ? new HitResult(HitResultType.MISS)
+            : new HitResult(0, 0, 0, side, finalHit.Value, HitResultType.TILE);
+
+        void UpdateHit(in Vec3D? candidate, ref Vec3D? current, ref int currentSide, int candidateSide)
         {
-            hitMinX = null;
-        }
-
-        if (hitMaxX != null && !isVecInsideYZBounds(hitMaxX.Value))
-        {
-            hitMaxX = null;
-        }
-
-        if (hitMinY != null && !isVecInsideXZBounds(hitMinY.Value))
-        {
-            hitMinY = null;
-        }
-
-        if (hitMaxY != null && !isVecInsideXZBounds(hitMaxY.Value))
-        {
-            hitMaxY = null;
-        }
-
-        if (hitMinZ != null && !isVecInsideXYBounds(hitMinZ.Value))
-        {
-            hitMinZ = null;
-        }
-
-        if (hitMaxZ != null && !isVecInsideXYBounds(hitMaxZ.Value))
-        {
-            hitMaxZ = null;
-        }
-
-        Vec3D? hitPos = null;
-        if (hitMinX != null && (hitPos == null || startPos.distanceTo(hitMinX.Value) < startPos.distanceTo(hitPos.Value)))
-        {
-            hitPos = hitMinX;
-        }
-
-        if (hitMaxX != null && (hitPos == null || startPos.distanceTo(hitMaxX.Value) < startPos.distanceTo(hitPos.Value)))
-        {
-            hitPos = hitMaxX;
-        }
-
-        if (hitMinY != null && (hitPos == null || startPos.distanceTo(hitMinY.Value) < startPos.distanceTo(hitPos.Value)))
-        {
-            hitPos = hitMinY;
-        }
-
-        if (hitMaxY != null && (hitPos == null || startPos.distanceTo(hitMaxY.Value) < startPos.distanceTo(hitPos.Value)))
-        {
-            hitPos = hitMaxY;
-        }
-
-        if (hitMinZ != null && (hitPos == null || startPos.distanceTo(hitMinZ.Value) < startPos.distanceTo(hitPos.Value)))
-        {
-            hitPos = hitMinZ;
-        }
-
-        if (hitMaxZ != null && (hitPos == null || startPos.distanceTo(hitMaxZ.Value) < startPos.distanceTo(hitPos.Value)))
-        {
-            hitPos = hitMaxZ;
-        }
-
-        if (hitPos == null)
-        {
-            return new HitResult(HitResultType.MISS);
-        }
-        else
-        {
-            int side = -1;
-            if (hitPos == hitMinX)
+            if (candidate is null) return;
+            if (current is null || start.distanceTo(candidate.Value) < start.distanceTo(current.Value))
             {
-                side = 4;
+                current = candidate;
+                currentSide = candidateSide;
             }
-
-            if (hitPos == hitMaxX)
-            {
-                side = 5;
-            }
-
-            if (hitPos == hitMinY)
-            {
-                side = 0;
-            }
-
-            if (hitPos == hitMaxY)
-            {
-                side = 1;
-            }
-
-            if (hitPos == hitMinZ)
-            {
-                side = 2;
-            }
-
-            if (hitPos == hitMaxZ)
-            {
-                side = 3;
-            }
-
-            return new HitResult(0, 0, 0, side, hitPos.Value, HitResultType.TILE);
         }
     }
 
-    private bool isVecInsideYZBounds(Vec3D pos)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private bool IsValid(in Vec3D p, Axis axis) => axis switch
     {
-        return pos.y >= minY && pos.y <= maxY && pos.z >= minZ && pos.z <= maxZ;
+        Axis.X => p.y >= MinY && p.y <= MaxY && p.z >= MinZ && p.z <= MaxZ,
+        Axis.Y => p.x >= MinX && p.x <= MaxX && p.z >= MinZ && p.z <= MaxZ,
+        Axis.Z => p.x >= MinX && p.x <= MaxX && p.y >= MinY && p.y <= MaxY,
+        _ => false
+    };
+
+    private Vec3D? GetClosest(in Vec3D start, in Vec3D end, in Vec3D? a, in Vec3D? b, Axis axis)
+    {
+        bool aValid = a is not null && IsValid(a.Value, axis);
+        bool bValid = b is not null && IsValid(b.Value, axis);
+
+        if (aValid && bValid)
+            return start.distanceTo(a!.Value) < start.distanceTo(b!.Value) ? a : b;
+
+        return aValid ? a : (bValid ? b : null);
     }
 
-    private bool isVecInsideXZBounds(Vec3D pos)
-    {
-        return pos.x >= minX && pos.x <= maxX && pos.z >= minZ && pos.z <= maxZ;
-    }
-
-    private bool isVecInsideXYBounds(Vec3D pos)
-    {
-        return pos.x >= minX && pos.x <= maxX && pos.y >= minY && pos.y <= maxY;
-    }
-
-    public override string ToString()
-    {
-        return "box[" + minX + ", " + minY + ", " + minZ + " -> " + maxX + ", " + maxY + ", " + maxZ + "]";
-    }
+    public override string ToString() => $"Box[{MinX:F2}, {MinY:F2}, {MinZ:F2} -> {MaxX:F2}, {MaxY:F2}, {MaxZ:F2}]";
 }
