@@ -10,28 +10,28 @@ public class GuiTexturePackList : GuiList
 
 
     public GuiTexturePackList(GuiTexturePacks parent)
-        : base(parent.mc, parent.Width, parent.Height, 32, parent.Height - 55 + 4, 36)
+        : base(parent.MC, parent.Width, parent.Height, 32, parent.Height - 55 + 4, 36)
     {
         _parentTexturePackGui = parent;
     }
 
     public override int GetSize()
     {
-        return _parentTexturePackGui.mc.texturePackList.AvailableTexturePacks.Count;
+        return _parentTexturePackGui.MC.texturePackList.AvailableTexturePacks.Count;
     }
     protected override void ElementClicked(int index, bool doubleClick)
     {
-        var packs = _parentTexturePackGui.mc.texturePackList.AvailableTexturePacks;
+        var packs = _parentTexturePackGui.MC.texturePackList.AvailableTexturePacks;
         var selectedPack = packs[index];
 
-        _parentTexturePackGui.mc.texturePackList.setTexturePack(selectedPack);
-        _parentTexturePackGui.mc.textureManager.Reload();
+        _parentTexturePackGui.MC.texturePackList.setTexturePack(selectedPack);
+        _parentTexturePackGui.MC.textureManager.Reload();
     }
 
     protected override bool IsSelected(int index)
     {
-        var packs = _parentTexturePackGui.mc.texturePackList.AvailableTexturePacks;
-        return _parentTexturePackGui.mc.texturePackList.SelectedTexturePack == packs[index];
+        var packs = _parentTexturePackGui.MC.texturePackList.AvailableTexturePacks;
+        return _parentTexturePackGui.MC.texturePackList.SelectedTexturePack == packs[index];
     }
 
     protected override int GetContentHeight()
@@ -46,8 +46,8 @@ public class GuiTexturePackList : GuiList
 
     protected override void DrawSlot(int index, int x, int y, int slotHeight, Tessellator tess)
     {
-        var pack = _parentTexturePackGui.mc.texturePackList.AvailableTexturePacks[index];
-        pack.BindThumbnailTexture(_parentTexturePackGui.mc);
+        var pack = _parentTexturePackGui.MC.texturePackList.AvailableTexturePacks[index];
+        pack.BindThumbnailTexture(_parentTexturePackGui.MC);
 
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
 

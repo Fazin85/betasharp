@@ -10,7 +10,7 @@ public class TextField : Control
 {
     private readonly TextRenderer _fontRenderer;
     public override bool Focusable => true;
-    public int MaxStringLength { get; init; }
+    public int MaxLength { get; init; }
     private int _cursorCounter;
     private int _cursorPosition;
     private int _selectionStart = -1;
@@ -117,7 +117,7 @@ public class TextField : Control
         }
 
         // Regular character input
-        if (ChatAllowedCharacters.allowedCharacters.Contains(e.KeyChar) && (Text.Length < MaxStringLength || MaxStringLength == 0))
+        if (ChatAllowedCharacters.allowedCharacters.Contains(e.KeyChar) && (Text.Length < MaxLength || MaxLength == 0))
         {
             if (HasSelection())
             {
@@ -220,7 +220,7 @@ public class TextField : Control
     {
         if (!HasSelection()) return;
         string sel = GetSelectedText();
-        GuiScreen.SetClipboardString(sel);
+        Screen.SetClipboardString(sel);
     }
 
     private void CutSelectionToClipboard()
@@ -232,9 +232,9 @@ public class TextField : Control
 
     private void PasteClipboardAtCursor()
     {
-        string clip = GuiScreen.GetClipboardString();
+        string clip = Screen.GetClipboardString();
         if (HasSelection()) DeleteSelection();
-        int maxInsert = Math.Max(0, (MaxStringLength > 0 ? MaxStringLength : 32) - Text.Length);
+        int maxInsert = Math.Max(0, (MaxLength > 0 ? MaxLength : 32) - Text.Length);
         if (clip.Length > maxInsert) clip = clip[..maxInsert];
         Text = Text.Insert(_cursorPosition, clip);
         _cursorPosition += clip.Length;

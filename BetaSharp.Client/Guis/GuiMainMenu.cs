@@ -5,7 +5,7 @@ using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiMainMenu : GuiScreen
+public class GuiMainMenu : Screen
 {
     private const int ButtonOptions = 0;
     private const int ButtonSingleplayer = 1;
@@ -46,19 +46,15 @@ public class GuiMainMenu : GuiScreen
         Button optionsButton = new(buttonLeft, buttonTop + 72, translator.TranslateKey("menu.options"));
         Button quitButton = new(buttonLeft, buttonTop + 96, translator.TranslateKey("menu.quit"));
 
-        singleplayerButton.Clicked += (_, _) => mc.OpenScreen(new GuiSelectWorld(this));
-        multiplayerButton.Clicked += (_, _) => mc.OpenScreen(new GuiMultiplayer(this));
-        texturePacksButton.Clicked += (_, _) => mc.OpenScreen(new GuiTexturePacks(this));
-        optionsButton.Clicked += (_, _) => mc.OpenScreen(new GuiOptions(this, mc.options));
-        quitButton.Clicked += (_, _) => mc.shutdown();
+        singleplayerButton.Clicked += (_, _) => MC.OpenScreen(new GuiSelectWorld(this));
+        multiplayerButton.Clicked += (_, _) => MC.OpenScreen(new GuiMultiplayer(this));
+        texturePacksButton.Clicked += (_, _) => MC.OpenScreen(new GuiTexturePacks(this));
+        optionsButton.Clicked += (_, _) => MC.OpenScreen(new GuiOptions(this, MC.options));
+        quitButton.Clicked += (_, _) => MC.shutdown();
 
-        Children.AddRange(singleplayerButton, multiplayerButton, texturePacksButton, optionsButton);
-        if (!mc.hideQuitButton)
-        {
-            Children.Add(quitButton);
-        }
+        Children.AddRange(singleplayerButton, multiplayerButton, texturePacksButton, optionsButton, quitButton);
 
-        if (mc.session == null || mc.session.sessionId == "-")
+        if (MC.session == null || MC.session.sessionId == "-")
         {
             _multiplayerButton.Enabled = false;
         }
@@ -71,7 +67,7 @@ public class GuiMainMenu : GuiScreen
         short logoWidth = 274;
         int logoX = Width / 2 - logoWidth / 2;
         byte logoY = 30;
-        mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/title/mclogo.png"));
+        MC.textureManager.BindTexture(MC.textureManager.GetTextureId("/title/mclogo.png"));
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         DrawTextureRegion(logoX + 0, logoY + 0, 0, 0, 155, 44);
         DrawTextureRegion(logoX + 155, logoY + 0, 0, 45, 155, 44);

@@ -56,12 +56,11 @@ public partial class Minecraft
     public ParticleManager particleManager;
     public Session session;
     public string minecraftUri;
-    public bool hideQuitButton = false;
     public volatile bool isGamePaused;
     public TextureManager textureManager;
     public SkinManager skinManager;
     public TextRenderer fontRenderer;
-    public GuiScreen currentScreen;
+    public Screen currentScreen;
     public LoadingScreenRenderer loadingScreen;
     public GameRenderer gameRenderer;
     private int ticksRan;
@@ -373,7 +372,7 @@ public partial class Minecraft
         return saveLoader;
     }
 
-    public void OpenScreen(GuiScreen? newScreen)
+    public void OpenScreen(Screen? newScreen)
     {
         currentScreen?.OnGuiClosed();
 
@@ -492,6 +491,7 @@ public partial class Minecraft
         catch (Exception startupException)
         {
             onMinecraftCrash(startupException);
+            if (Debugger.IsAttached) throw;
             return;
         }
 
@@ -698,6 +698,7 @@ public partial class Minecraft
         {
             crashCleanup();
             onMinecraftCrash(unexpectedException);
+            if (Debugger.IsAttached) throw;
         }
         finally
         {
@@ -841,7 +842,7 @@ public partial class Minecraft
             {
                 inGameHasFocus = true;
                 mouseHelper.grabMouseCursor();
-                OpenScreen((GuiScreen)null);
+                OpenScreen((Screen)null);
                 leftClickCounter = 10000;
                 mouseTicksRan = ticksRan + 10000;
             }
@@ -1157,7 +1158,7 @@ public partial class Minecraft
         {
             if (player.health <= 0)
             {
-                OpenScreen((GuiScreen)null);
+                OpenScreen((Screen)null);
             }
             else if (player.isSleeping() && world != null && world.isRemote)
             {
@@ -1166,7 +1167,7 @@ public partial class Minecraft
         }
         else if (currentScreen != null && currentScreen is GuiSleepMP && !player.isSleeping())
         {
-            OpenScreen((GuiScreen)null);
+            OpenScreen((Screen)null);
         }
 
         if (currentScreen != null)

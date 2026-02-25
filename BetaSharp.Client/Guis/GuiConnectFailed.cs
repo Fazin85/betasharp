@@ -1,6 +1,6 @@
 namespace BetaSharp.Client.Guis;
 
-public class GuiConnectFailed : GuiScreen
+public class GuiConnectFailed : Screen
 {
     private readonly string _errorMessage;
     private readonly string _errorDetail;
@@ -18,9 +18,9 @@ public class GuiConnectFailed : GuiScreen
             _errorDetail = translations.TranslateKey(detailKey);
         }
 
-        mc.stopInternalServer();
+        MC.stopInternalServer();
         Button titleButton = new(Width / 2 - 100, Height / 4 + 120 + 12, translations.TranslateKey("gui.toMenu"));
-        titleButton.Clicked += (_, _) => mc.OpenScreen(new GuiMainMenu());
+        titleButton.Clicked += (_, _) => MC.OpenScreen(new GuiMainMenu());
         Children.Add(titleButton);
     }
 

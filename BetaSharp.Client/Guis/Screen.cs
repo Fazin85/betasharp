@@ -11,11 +11,11 @@ using System.Collections.Generic;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiScreen : Control
+public class Screen : Control
 {
-    private static readonly ILogger<GuiScreen> s_logger = Log.Instance.For<GuiScreen>();
+    private static readonly ILogger<Screen> s_logger = Log.Instance.For<Screen>();
     internal override bool TopLevel => true;
-    public Minecraft mc;
+    public Minecraft MC;
     public bool AllowUserInput = false;
     public virtual bool PausesGame => true;
     public TextRenderer FontRenderer;
@@ -23,8 +23,9 @@ public class GuiScreen : Control
     protected bool IsSubscribedToKeyboard = false;
     protected bool DisplayTitle;
 
-    public GuiScreen()
+    public Screen()
     {
+        MC = Minecraft.INSTANCE;
         Rendered += (_, _) =>
         {
             if (DisplayTitle)
@@ -68,7 +69,7 @@ public class GuiScreen : Control
     public void SetWorldAndResolution(Minecraft mc, int width, int height)
     {
         ParticlesGui = new GuiParticle(mc);
-        this.mc = mc;
+        this.MC = mc;
         FontRenderer = mc.fontRenderer;
         Size = new(width, height);
     }
@@ -83,7 +84,7 @@ public class GuiScreen : Control
 
     public void DrawWorldBackground(int var1)
     {
-        if (mc.world != null)
+        if (MC.world != null)
         {
             Gui.DrawGradientRect(0, 0, Width, Height, 0xC0101010, 0xD0101010);
         }
@@ -98,7 +99,7 @@ public class GuiScreen : Control
         GLManager.GL.Disable(EnableCap.Fog);
 
         Tessellator tess = Tessellator.instance;
-        mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/background.png"));
+        MC.textureManager.BindTexture(MC.textureManager.GetTextureId("/gui/background.png"));
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
 
         float scale = 32.0F;

@@ -6,7 +6,7 @@ using java.util;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiSelectWorld : GuiScreen
+public class GuiSelectWorld : Screen
 {
     private const int BUTTON_CANCEL = 0;
     private const int BUTTON_SELECT = 1;
@@ -15,7 +15,7 @@ public class GuiSelectWorld : GuiScreen
     private const int BUTTON_RENAME = 6;
 
     private readonly DateFormat dateFormatter = new SimpleDateFormat();
-    protected GuiScreen parentScreen;
+    protected Screen parentScreen;
     protected string screenTitle = "Select world";
     private bool selected;
     private int selectedWorld;
@@ -28,26 +28,36 @@ public class GuiSelectWorld : GuiScreen
     private Button buttonSelect;
     private Button buttonDelete;
 
-    public GuiSelectWorld(GuiScreen parentScreen)
+    public GuiSelectWorld(Screen parentScreen)
     {
         this.parentScreen = parentScreen;
-    }
 
-    public override void InitGui()
-    {
         TranslationStorage translations = TranslationStorage.Instance;
-        screenTitle = translations.TranslateKey("selectWorld.title");
+        Text = translations.TranslateKey("selectWorld.title");
+        DisplayTitle = true;
         worldNameHeader = translations.TranslateKey("selectWorld.world");
         unsupportedFormatMessage = "Unsupported Format!";
         loadSaves();
+
         _worldListContainer = new GuiWorldList(this);
-        _worldListContainer.RegisterScrollButtons(Children, 4, 5);
-        initButtons();
+        buttonSelect = new(Width / 2 - 154, Height - 52, 150, 20, translations.TranslateKey("selectWorld.select")) { Enabled = false };
+        buttonRename = new(Width / 2 - 154, Height - 28, 70, 20, translations.TranslateKey("selectWorld.rename")) { Enabled = false };
+        buttonDelete = new(Width / 2 - 74, Height - 28, 70, 20, translations.TranslateKey("selectWorld.delete")) { Enabled = false };
+        Button buttonCreate = new(Width / 2 + 4, Height - 52, 150, 20, translations.TranslateKey("selectWorld.create"));
+        Button buttonCancel = new(Width / 2 + 4, Height - 28, 150, 20, translations.TranslateKey("gui.cancel"));
+
+        buttonSelect.Clicked += (_, _) => selectWorld(selectedWorld);
+        buttonRename.Clicked += (_, _) => MC.OpenScreen(new GuiRenameWorld(this, getSaveFileName(selectedWorld)));
+        buttonDelete.Clicked += (_, _) => deleteWorld(selectedWorld);
+        buttonCreate.Clicked += (_, _) => MC.OpenScreen(new GuiCreateWorld(this));
+        buttonCancel.Clicked += (_, _) => MC.OpenScreen(parentScreen);
+
+        Children.AddRange(buttonSelect, buttonRename, buttonDelete, buttonCreate, buttonCancel);
     }
 
     private void loadSaves()
     {
-        IWorldStorageSource worldStorage = mc.getSaveLoader();
+        IWorldStorageSource worldStorage = MC.getSaveLoader();
         saveList = worldStorage.GetAll();
         saveList.Sort();
         selectedWorld = -1;
@@ -70,19 +80,6 @@ public class GuiSelectWorld : GuiScreen
         return worldName;
     }
 
-    public void initButtons()
-    {
-        TranslationStorage translations = TranslationStorage.Instance;
-        Children.Add(buttonSelect = new Button(BUTTON_SELECT, Width / 2 - 154, Height - 52, 150, 20, translations.TranslateKey("selectWorld.select")));
-        Children.Add(buttonRename = new Button(BUTTON_RENAME, Width / 2 - 154, Height - 28, 70, 20, translations.TranslateKey("selectWorld.rename")));
-        Children.Add(buttonDelete = new Button(BUTTON_DELETE, Width / 2 - 74, Height - 28, 70, 20, translations.TranslateKey("selectWorld.delete")));
-        Children.Add(new Button(BUTTON_CREATE, Width / 2 + 4, Height - 52, 150, 20, translations.TranslateKey("selectWorld.create")));
-        Children.Add(new Button(BUTTON_CANCEL, Width / 2 + 4, Height - 28, 150, 20, translations.TranslateKey("gui.cancel")));
-        buttonSelect.Enabled = false;
-        buttonRename.Enabled = false;
-        buttonDelete.Enabled = false;
-    }
-
     private void deleteWorld(int worldIndex)
     {
         string worldName = getSaveName(worldIndex);
@@ -95,35 +92,7 @@ public class GuiSelectWorld : GuiScreen
             string deleteButtonText = translations.TranslateKey("selectWorld.deleteButton");
             string cancelButtonText = translations.TranslateKey("gui.cancel");
             GuiYesNo confirmDialog = new(this, deleteQuestion, deleteWarning, deleteButtonText, cancelButtonText, worldIndex);
-            mc.OpenScreen(confirmDialog);
-        }
-    }
-
-    protected override void ActionPerformed(Button button)
-    {
-        if (button.Enabled)
-        {
-            switch (button.Id)
-            {
-                case BUTTON_DELETE:
-                    deleteWorld(selectedWorld);
-                    break;
-                case BUTTON_SELECT:
-                    selectWorld(selectedWorld);
-                    break;
-                case BUTTON_CREATE:
-                    mc.OpenScreen(new GuiCreateWorld(this));
-                    break;
-                case BUTTON_RENAME:
-                    mc.OpenScreen(new GuiRenameWorld(this, getSaveFileName(selectedWorld)));
-                    break;
-                case BUTTON_CANCEL:
-                    mc.OpenScreen(parentScreen);
-                    break;
-                default:
-                    _worldListContainer.ActionPerformed(button);
-                    break;
-            }
+            MC.OpenScreen(confirmDialog);
         }
     }
 
@@ -132,11 +101,11 @@ public class GuiSelectWorld : GuiScreen
         if (!selected)
         {
             selected = true;
-            mc.playerController = new PlayerControllerSP(mc);
+            MC.playerController = new PlayerControllerSP(MC);
             string worldFileName = getSaveFileName(worldIndex);
             worldFileName ??= "World" + worldIndex;
 
-            mc.startWorld(worldFileName, getSaveName(worldIndex), 0L);
+            MC.startWorld(worldFileName, getSaveName(worldIndex), 0L);
         }
     }
 
@@ -150,23 +119,17 @@ public class GuiSelectWorld : GuiScreen
                 performDelete(index);
             }
 
-            mc.OpenScreen(this);
+            MC.OpenScreen(this);
         }
 
     }
 
     private void performDelete(int worldIndex)
     {
-        IWorldStorageSource worldStorage = mc.getSaveLoader();
+        IWorldStorageSource worldStorage = MC.getSaveLoader();
         worldStorage.Flush();
         worldStorage.Delete(getSaveFileName(worldIndex));
         loadSaves();
-    }
-
-    protected override void OnRendered(RenderEventArgs e)
-    {
-        _worldListContainer.DrawScreen(mouseX, mouseY, tickDelta);
-        Gui.DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0xFFFFFF);
     }
 
     public static List<WorldSaveInfo> GetSize(GuiSelectWorld screen)

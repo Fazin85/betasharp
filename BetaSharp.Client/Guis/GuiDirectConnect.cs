@@ -2,7 +2,7 @@
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiDirectConnect : GuiScreen
+public class GuiDirectConnect : Screen
 {
     private readonly GuiMultiplayer _parentScreen;
     private readonly TextField _serverAddress;
@@ -18,7 +18,7 @@ public class GuiDirectConnect : GuiScreen
         _serverAddress = new(Width / 2 - 100, 106, FontRenderer, _serverData.Ip)
         {
             Anchor = Anchors.Top,
-            MaxStringLength = 128,
+            MaxLength = 128,
         };
         Button joinServerButton = new(Width / 2 - 100, Height / 4 + 96 + 12, "Join Server")
         {

@@ -9,7 +9,7 @@ using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
 
-public abstract class GuiContainer : GuiScreen
+public abstract class GuiContainer : Screen
 {
     private static readonly ItemRenderer _itemRenderer = new();
     protected int _xSize = 176;
@@ -21,7 +21,7 @@ public abstract class GuiContainer : GuiScreen
     public GuiContainer(ScreenHandler inventorySlots)
     {
         InventorySlots = inventorySlots;
-        mc.player.currentScreenHandler = InventorySlots;
+        MC.player.currentScreenHandler = InventorySlots;
     }
 
     protected override void OnRendered(RenderEventArgs e)
@@ -64,7 +64,7 @@ public abstract class GuiContainer : GuiScreen
             }
         }
 
-        InventoryPlayer playerInv = mc.player.inventory;
+        InventoryPlayer playerInv = MC.player.inventory;
 
         GLManager.GL.Disable(GLEnum.RescaleNormal);
         Lighting.turnOff();
@@ -98,8 +98,8 @@ public abstract class GuiContainer : GuiScreen
             GLManager.GL.Enable(GLEnum.DepthTest);
 
             GLManager.GL.Translate(0.0F, 0.0F, 32.0F);
-            _itemRenderer.renderItemIntoGUI(FontRenderer, mc.textureManager, playerInv.getCursorStack(), e.MouseX - guiLeft - 8, e.MouseY - guiTop - 8);
-            _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, mc.textureManager, playerInv.getCursorStack(), e.MouseX - guiLeft - 8, e.MouseY - guiTop - 8);
+            _itemRenderer.renderItemIntoGUI(FontRenderer, MC.textureManager, playerInv.getCursorStack(), e.MouseX - guiLeft - 8, e.MouseY - guiTop - 8);
+            _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, MC.textureManager, playerInv.getCursorStack(), e.MouseX - guiLeft - 8, e.MouseY - guiTop - 8);
 
             Lighting.turnOff();
             GLManager.GL.Disable(GLEnum.Lighting);
@@ -127,15 +127,15 @@ public abstract class GuiContainer : GuiScreen
             if (iconIdx >= 0)
             {
                 GLManager.GL.Disable(GLEnum.Lighting);
-                mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/items.png"));
+                MC.textureManager.BindTexture(MC.textureManager.GetTextureId("/gui/items.png"));
                 DrawTextureRegion(x, y, iconIdx % 16 * 16, iconIdx / 16 * 16, 16, 16);
                 GLManager.GL.Enable(GLEnum.Lighting);
                 return;
             }
         }
 
-        _itemRenderer.renderItemIntoGUI(FontRenderer, mc.textureManager, item, x, y);
-        _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, mc.textureManager, item, x, y);
+        _itemRenderer.renderItemIntoGUI(FontRenderer, MC.textureManager, item, x, y);
+        _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, MC.textureManager, item, x, y);
     }
 
     private Slot? GetSlotAtPosition(int mouseX, int mouseY)
@@ -181,33 +181,33 @@ public abstract class GuiContainer : GuiScreen
             if (slotId != -1)
             {
                 bool isShiftClick = slotId != -999 && (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT));
-                mc.playerController.func_27174_a(InventorySlots.syncId, slotId, e.Button, isShiftClick, mc.player);
+                MC.playerController.func_27174_a(InventorySlots.syncId, slotId, e.Button, isShiftClick, MC.player);
             }
         }
     }
 
     protected override void OnKeyInput(KeyboardEventArgs e)
     {
-        if (e.Key == Keyboard.KEY_ESCAPE || e.Key == mc.options.KeyBindInventory.keyCode)
+        if (e.Key == Keyboard.KEY_ESCAPE || e.Key == MC.options.KeyBindInventory.keyCode)
         {
-            mc.player.closeHandledScreen();
+            MC.player.closeHandledScreen();
         }
     }
 
     public override void OnGuiClosed()
     {
-        if (mc.player != null)
+        if (MC.player != null)
         {
-            mc.playerController.func_20086_a(InventorySlots.syncId, mc.player);
+            MC.playerController.func_20086_a(InventorySlots.syncId, MC.player);
         }
     }
 
 
     public override void UpdateScreen()
     {
-        if (!mc.player.isAlive() || mc.player.dead)
+        if (!MC.player.isAlive() || MC.player.dead)
         {
-            mc.player.closeHandledScreen();
+            MC.player.closeHandledScreen();
         }
     }
 }

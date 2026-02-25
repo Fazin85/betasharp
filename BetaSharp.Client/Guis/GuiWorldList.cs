@@ -9,8 +9,7 @@ public class GuiWorldList : GuiList
 {
     readonly GuiSelectWorld _parentWorldGui;
 
-
-    public GuiWorldList(GuiSelectWorld parent) : base(parent.mc, parent.Width, parent.Height, 32, parent.Height - 64, 36)
+    public GuiWorldList(GuiSelectWorld parent) : base(parent.MC, parent.Width, parent.Height, 32, parent.Height - 64, 36)
     {
         _parentWorldGui = parent;
     }

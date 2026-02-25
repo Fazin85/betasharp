@@ -3,7 +3,7 @@ using BetaSharp.Network.Packets.Play;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiDownloadTerrain : GuiScreen
+public class GuiDownloadTerrain : Screen
 {
     private readonly ClientNetworkHandler _networkHandler;
     private int _tickCounter = 0;

@@ -2,11 +2,11 @@ using BetaSharp.Client.Options;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiAudio : GuiScreen
+public class GuiAudio : Screen
 {
     private readonly GameOptions _gameOptions;
 
-    public GuiAudio(GuiScreen parent, GameOptions options)
+    public GuiAudio(Screen parent, GameOptions options)
     {
         _gameOptions = options;
 
@@ -35,7 +35,7 @@ public class GuiAudio : GuiScreen
         doneButton.Clicked += (_, _) =>
         {
             _gameOptions.SaveOptions();
-            mc.OpenScreen(parent);
+            MC.OpenScreen(parent);
         };
         Children.Add(doneButton);
     }

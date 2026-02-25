@@ -2,9 +2,9 @@ using BetaSharp.Client.Options;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiOptions : GuiScreen
+public class GuiOptions : Screen
 {
-    public GuiOptions(GuiScreen parentScreen, GameOptions options)
+    public GuiOptions(Screen parentScreen, GameOptions options)
     {
         TranslationStorage translations = TranslationStorage.Instance;
         Text = translations.TranslateKey("options.title");
@@ -41,8 +41,8 @@ public class GuiOptions : GuiScreen
         GuiButton doneButton = new(buttonLeft, topY + 168, translations.TranslateKey("gui.done"));
         videoSettingsButton.Clicked += (_, _) =>
         {
-            mc.options.SaveOptions();
-            mc.OpenScreen(new GuiVideoSettings(this, options));
+            MC.options.SaveOptions();
+            MC.OpenScreen(new GuiVideoSettings(this, options));
         };
         debugSettingsButton.Clicked += (_, _) =>
         {
@@ -51,18 +51,18 @@ public class GuiOptions : GuiScreen
         };
         audioSettingsButton.Clicked += (_, _) =>
         {
-            mc.options.SaveOptions();
-            mc.OpenScreen(new GuiAudio(this, options));
+            MC.options.SaveOptions();
+            MC.OpenScreen(new GuiAudio(this, options));
         };
         controlsButton.Clicked += (_, _) =>
         {
-            mc.options.SaveOptions();
-            mc.OpenScreen(new GuiControls(this, options));
+            MC.options.SaveOptions();
+            MC.OpenScreen(new GuiControls(this, options));
         };
         doneButton.Clicked += (_, _) =>
         {
-            mc.options.SaveOptions();
-            mc.OpenScreen(parentScreen);
+            MC.options.SaveOptions();
+            MC.OpenScreen(parentScreen);
         };
         Children.AddRange(videoSettingsButton, debugSettingsButton, audioSettingsButton, controlsButton, doneButton);
     }

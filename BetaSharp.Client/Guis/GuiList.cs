@@ -39,6 +39,24 @@ public abstract class GuiList
         _right = width;
     }
 
+    /*public void ActionPerformed(Button button)
+    {
+        if (!button.Enabled) return;
+
+        if (button.Id == _scrollUpButtonID)
+        {
+            _amountScrolled -= _posZ * 2 / 3;
+            _initialClickY = -2.0f;
+            BindAmountScrolled();
+        }
+        else if (button.Id == _scrollDownButtonID)
+        {
+            _amountScrolled += _posZ * 2 / 3;
+            _initialClickY = -2.0f;
+            BindAmountScrolled();
+        }
+    }*/
+
     public void SetShowSelectionHighlight(bool value) => _showSelectionHighlight = value;
 
 
@@ -96,24 +114,6 @@ public abstract class GuiList
         if (_amountScrolled < 0.0f) _amountScrolled = 0.0f;
         if (_amountScrolled > maxScroll) _amountScrolled = maxScroll;
 
-    }
-
-    public void ActionPerformed(Button button)
-    {
-        if (!button.Enabled) return;
-
-        if (button.Id == _scrollUpButtonID)
-        {
-            _amountScrolled -= _posZ * 2 / 3;
-            _initialClickY = -2.0f;
-            BindAmountScrolled();
-        }
-        else if (button.Id == _scrollDownButtonID)
-        {
-            _amountScrolled += _posZ * 2 / 3;
-            _initialClickY = -2.0f;
-            BindAmountScrolled();
-        }
     }
 
     public void DrawScreen(int mouseX, int mouseY, float tickDelta)

@@ -2,11 +2,11 @@ using BetaSharp.Client.Options;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiControls : GuiScreen
+public class GuiControls : Screen
 {
     private readonly GameOptions _options;
 
-    public GuiControls(GuiScreen parentScreen, GameOptions options)
+    public GuiControls(Screen parentScreen, GameOptions options)
     {
         _options = options;
 
@@ -27,7 +27,7 @@ public class GuiControls : GuiScreen
         doneButton.Clicked += (_, _) =>
         {
             _options.SaveOptions();
-            mc.OpenScreen(parentScreen);
+            MC.OpenScreen(parentScreen);
         };
 
         Children.AddRange(sensitivitySlider, invertMouseButton, doneButton);

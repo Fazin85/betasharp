@@ -2,12 +2,12 @@ using BetaSharp.Client.Options;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiVideoSettings : GuiScreen
+public class GuiVideoSettings : Screen
 {
-    private readonly GuiScreen _parentScreen;
+    private readonly Screen _parentScreen;
     private readonly GameOptions _options;
 
-    public GuiVideoSettings(GuiScreen parent, GameOptions options)
+    public GuiVideoSettings(Screen parent, GameOptions options)
     {
         _parentScreen = parent;
         _options = options;
@@ -41,10 +41,10 @@ public class GuiVideoSettings : GuiScreen
                     {
                         Children[^1].Clicked += (_, _) =>
                         {
-                            ScaledResolution scaled = new(mc.options, mc.displayWidth, mc.displayHeight);
+                            ScaledResolution scaled = new(MC.options, MC.displayWidth, MC.displayHeight);
                             int scaledWidth = scaled.ScaledWidth;
                             int scaledHeight = scaled.ScaledHeight;
-                            SetWorldAndResolution(mc, scaledWidth, scaledHeight);
+                            SetWorldAndResolution(MC, scaledWidth, scaledHeight);
                         };
                     }
                     break;
@@ -54,8 +54,8 @@ public class GuiVideoSettings : GuiScreen
         Button doneButton = new(buttonLeft, topY + 156, translations.TranslateKey("gui.done"));
         doneButton.Clicked += (_, _) =>
         {
-            mc.options.SaveOptions();
-            mc.OpenScreen(_parentScreen);
+            MC.options.SaveOptions();
+            MC.OpenScreen(_parentScreen);
         };
     }
 

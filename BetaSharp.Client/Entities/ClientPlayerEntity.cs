@@ -62,7 +62,7 @@ public class ClientPlayerEntity : EntityPlayer
 
             if (mc.currentScreen != null)
             {
-                mc.OpenScreen((GuiScreen)null);
+                mc.OpenScreen((Screen)null);
             }
 
             if (changeDimensionCooldown == 0.0F)

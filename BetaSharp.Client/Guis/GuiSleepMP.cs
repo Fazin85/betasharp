@@ -6,12 +6,11 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiSleepMP : GuiChat
 {
-    public override void InitGui()
+    public GuiSleepMP()
     {
         Keyboard.enableRepeatEvents(true);
         TranslationStorage translations = TranslationStorage.Instance;
-        Button stopSleepingButton =
-            new(Width / 2 - 100, Height - 40, translations.TranslateKey("multiplayer.stopSleeping"));
+        Button stopSleepingButton = new(Width / 2 - 100, Height - 40, translations.TranslateKey("multiplayer.stopSleeping"));
         stopSleepingButton.Clicked += (_, _) => sendStopSleepingCommand();
         Children.Add(stopSleepingButton);
     }
@@ -32,7 +31,7 @@ public class GuiSleepMP : GuiChat
             string trimmed = _message.Trim();
             if (trimmed.Length > 0)
             {
-                mc.player.sendChatMessage(trimmed);
+                MC.player.sendChatMessage(trimmed);
             }
 
             _message = "";
@@ -41,10 +40,10 @@ public class GuiSleepMP : GuiChat
 
     private void sendStopSleepingCommand()
     {
-        if (mc.player is EntityClientPlayerMP)
+        if (MC.player is EntityClientPlayerMP)
         {
-            ClientNetworkHandler sendQueue = ((EntityClientPlayerMP)mc.player).sendQueue;
-            sendQueue.addToSendQueue(new ClientCommandC2SPacket(mc.player, 3));
+            ClientNetworkHandler sendQueue = ((EntityClientPlayerMP)MC.player).sendQueue;
+            sendQueue.addToSendQueue(new ClientCommandC2SPacket(MC.player, 3));
         }
     }
 }

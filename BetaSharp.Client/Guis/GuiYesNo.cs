@@ -1,11 +1,11 @@
 ﻿namespace BetaSharp.Client.Guis;
 
-public class GuiYesNo : GuiScreen
+public class GuiYesNo : Screen
 {
     private readonly string _message1;
     private readonly string _message2;
 
-    public GuiYesNo(GuiScreen parentScreen, string message1, string message2, string confirmButtonText, string cancelButtonText, int worldNumber)
+    public GuiYesNo(Screen parentScreen, string message1, string message2, string confirmButtonText, string cancelButtonText, int worldNumber)
     {
         _message1 = message1;
         _message2 = message2;

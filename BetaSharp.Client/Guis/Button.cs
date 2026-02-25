@@ -6,7 +6,8 @@ namespace BetaSharp.Client.Guis;
 
 public class Button : Control
 {
-    public Button(int x, int y, string text) : base(x, y, 200, 20)
+    public Button(int x, int y, string text) : this(x, y, 200, 20, text) { }
+    public Button(int x, int y, int width, int height, string text) : base(x, y, width, height)
     {
         Text = text;
     }

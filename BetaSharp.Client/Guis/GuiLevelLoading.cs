@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiLevelLoading : GuiScreen
+public class GuiLevelLoading : Screen
 {
     private readonly ILogger<GuiLevelLoading> _logger = Log.Instance.For<GuiLevelLoading>();
     private bool _serverStarted;
@@ -17,24 +17,24 @@ public class GuiLevelLoading : GuiScreen
         if (!_serverStarted)
         {
             _serverStarted = true;
-            mc.internalServer = new(System.IO.Path.Combine(Minecraft.getMinecraftDir().getAbsolutePath(), "saves"),
-            worldDir, seed.ToString(), mc.options.renderDistance, mc.options.Difficulty);
-            new RunServerThread(mc.internalServer, "InternalServer").start();
+            MC.internalServer = new(System.IO.Path.Combine(Minecraft.getMinecraftDir().getAbsolutePath(), "saves"),
+            worldDir, seed.ToString(), MC.options.renderDistance, MC.options.Difficulty);
+            new RunServerThread(MC.internalServer, "InternalServer").start();
         }
     }
 
     public override void UpdateScreen()
     {
-        if (mc.internalServer != null)
+        if (MC.internalServer != null)
         {
-            if (mc.internalServer.stopped)
+            if (MC.internalServer.stopped)
             {
-                mc.OpenScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason",
+                MC.OpenScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason",
                     "Internal server stopped unexpectedly"));
                 return;
             }
 
-            if (mc.internalServer.isReady)
+            if (MC.internalServer.isReady)
             {
                 InternalConnection clientConnection = new(null, "Internal-Client");
                 InternalConnection serverConnection = new(null, "Internal-Server");
@@ -42,14 +42,14 @@ public class GuiLevelLoading : GuiScreen
                 clientConnection.AssignRemote(serverConnection);
                 serverConnection.AssignRemote(clientConnection);
 
-                mc.internalServer.connections.AddInternalConnection(serverConnection);
+                MC.internalServer.connections.AddInternalConnection(serverConnection);
                 _logger.LogInformation("[Internal-Client] Created internal connection");
 
-                ClientNetworkHandler clientHandler = new(mc, clientConnection);
+                ClientNetworkHandler clientHandler = new(MC, clientConnection);
                 clientConnection.setNetworkHandler(clientHandler);
-                clientHandler.addToSendQueue(new BetaSharp.Network.Packets.HandshakePacket(mc.session.username));
+                clientHandler.addToSendQueue(new BetaSharp.Network.Packets.HandshakePacket(MC.session.username));
 
-                mc.OpenScreen(new GuiConnecting(mc, clientHandler));
+                MC.OpenScreen(new GuiConnecting(MC, clientHandler));
             }
         }
     }
@@ -62,10 +62,10 @@ public class GuiLevelLoading : GuiScreen
         string progressMsg = "";
         int progress = 0;
 
-        if (mc.internalServer != null)
+        if (MC.internalServer != null)
         {
-            progressMsg = mc.internalServer.progressMessage ?? "Starting server...";
-            progress = mc.internalServer.progress;
+            progressMsg = MC.internalServer.progressMessage ?? "Starting server...";
+            progress = MC.internalServer.progress;
         }
 
         Gui.DrawCenteredString(FontRenderer, title, Width / 2, Height / 2 - 50, 0xFFFFFF);

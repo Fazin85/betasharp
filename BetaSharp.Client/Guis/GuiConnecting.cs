@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiConnecting : GuiScreen
+public class GuiConnecting : Screen
 {
     private readonly ILogger<GuiConnecting> _logger = Log.Instance.For<GuiConnecting>();
 
@@ -36,7 +36,7 @@ public class GuiConnecting : GuiScreen
         {
             Cancelled = true;
             ClientHandler?.disconnect();
-            mc.OpenScreen(new GuiMainMenu());
+            MC.OpenScreen(new GuiMainMenu());
         };
         Children.Add(cancelButton);
     }

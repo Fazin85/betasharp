@@ -8,9 +8,8 @@ using BetaSharp.Util;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiEditSign : GuiScreen
+public class GuiEditSign : Screen
 {
-    private const string ScreenTitle = "Edit sign message:";
     private const int ButtonDoneId = 0;
     private const int MaxLineLength = 15;
 
@@ -22,21 +21,24 @@ public class GuiEditSign : GuiScreen
     public GuiEditSign(BlockEntitySign sign)
     {
         _entitySign = sign;
-    }
-
-    public override void InitGui()
-    {
-        Children.Clear();
+        Text = "Edit sign message:";
+        DisplayTitle = true;
         Keyboard.enableRepeatEvents(true);
-        Children.Add(new Button(ButtonDoneId, Width / 2 - 100, Height / 4 + 120, "Done"));
+        Button doneButton = new(Width / 2 - 100, Height / 4 + 120, "Done");
+        doneButton.Clicked += (_, _) =>
+        {
+            _entitySign.markDirty();
+            MC?.OpenScreen(null);
+        };
+        Children.Add(doneButton);
     }
 
     public override void OnGuiClosed()
     {
         Keyboard.enableRepeatEvents(false);
-        if (mc?.world?.isRemote ?? false)
+        if (MC?.world?.isRemote ?? false)
         {
-            mc.getSendQueue().addToSendQueue(new UpdateSignPacket(_entitySign.X, _entitySign.Y, _entitySign.Z, _entitySign.Texts));
+            MC.getSendQueue().addToSendQueue(new UpdateSignPacket(_entitySign.x, _entitySign.y, _entitySign.z, _entitySign.Texts));
         }
     }
 
@@ -45,61 +47,42 @@ public class GuiEditSign : GuiScreen
         ++_updateCounter;
     }
 
-    protected override void ActionPerformed(Button button)
-    {
-        if (button.Enabled && button.Id == ButtonDoneId)
-        {
-            _entitySign.markDirty();
-            mc?.OpenScreen(null);
-        }
-    }
-
     protected override void OnKeyInput(KeyboardEventArgs e)
     {
-        if (eventKey == Keyboard.KEY_UP)
+        switch (e.Key)
         {
-            _editLine = _editLine - 1 & 3;
-            return;
+            case Keyboard.KEY_UP:
+                _editLine = _editLine - 1 & 3;
+                return;
+            case Keyboard.KEY_DOWN or Keyboard.KEY_RETURN:
+                _editLine = _editLine + 1 & 3;
+                return;
+            case Keyboard.KEY_BACK:
+                {
+                    if (_entitySign.Texts[_editLine].Length > 0)
+                    {
+                        _entitySign.Texts[_editLine] = _entitySign.Texts[_editLine][..(_entitySign.Texts[_editLine].Length - 1)];
+                    }
+                    return;
+                }
+            case Keyboard.KEY_ESCAPE:
+                _entitySign.markDirty();
+                MC?.OpenScreen(null);
+                return;
         }
 
-        if (eventKey == Keyboard.KEY_DOWN || eventKey == Keyboard.KEY_RETURN)
+        if (s_allowedCharacters.Contains(e.KeyChar) && _entitySign.Texts[_editLine].Length < MaxLineLength)
         {
-            _editLine = _editLine + 1 & 3;
-            return;
-        }
-
-        if (eventKey == Keyboard.KEY_BACK)
-        {
-            if (_entitySign.Texts[_editLine].Length > 0)
-            {
-                _entitySign.Texts[_editLine] = _entitySign.Texts[_editLine].Substring(0, _entitySign.Texts[_editLine].Length - 1);
-            }
-            return;
-        }
-
-        if (eventKey == Keyboard.KEY_ESCAPE)
-        {
-            _entitySign.markDirty();
-            mc?.OpenScreen(null);
-            return;
-        }
-
-        if (s_allowedCharacters.IndexOf(eventChar) >= 0 && _entitySign.Texts[_editLine].Length < MaxLineLength)
-        {
-            _entitySign.Texts[_editLine] += eventChar;
+            _entitySign.Texts[_editLine] += e.KeyChar;
         }
     }
 
     protected override void OnRendered(RenderEventArgs e)
     {
         DrawDefaultBackground();
-        if (FontRenderer != null)
-        {
-            Gui.DrawCenteredString(FontRenderer, ScreenTitle, Width / 2, 40, 0xFFFFFF);
-        }
 
         GLManager.GL.PushMatrix();
-        GLManager.GL.Translate(Width / 2, 0.0F, 50.0F);
+        GLManager.GL.Translate(Width / 2f, 0.0F, 50.0F);
         float scale = 93.75F;
         GLManager.GL.Scale(-scale, -scale, -scale);
         GLManager.GL.Rotate(180.0F, 0.0F, 1.0F, 0.0F);
@@ -109,7 +92,6 @@ public class GuiEditSign : GuiScreen
         {
             float rotation = _entitySign.getPushedBlockData() * 360 / 16.0F;
             GLManager.GL.Rotate(rotation, 0.0F, 1.0F, 0.0F);
-            GLManager.GL.Translate(0.0F, -1.0625F, 0.0F);
         }
         else
         {
@@ -120,8 +102,9 @@ public class GuiEditSign : GuiScreen
             if (rotationIndex == 5) angle = -90.0F;
 
             GLManager.GL.Rotate(angle, 0.0F, 1.0F, 0.0F);
-            GLManager.GL.Translate(0.0F, -1.0625F, 0.0F);
         }
+
+        GLManager.GL.Translate(0.0F, -1.0625F, 0.0F);
 
         if (_updateCounter / 6 % 2 == 0)
         {
@@ -131,6 +114,5 @@ public class GuiEditSign : GuiScreen
         BlockEntityRenderer.Instance.RenderTileEntityAt(_entitySign, -0.5D, -0.75D, -0.5D, 0.0F);
         _entitySign.CurrentRow = -1;
         GLManager.GL.PopMatrix();
-
-        }
+    }
 }

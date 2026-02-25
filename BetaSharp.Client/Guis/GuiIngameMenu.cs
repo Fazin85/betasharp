@@ -3,7 +3,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiIngameMenu : GuiScreen
+public class GuiIngameMenu : Screen
 {
     private int _saveStepTimer = 0;
     private int _menuTickCounter = 0;
@@ -18,7 +18,7 @@ public class GuiIngameMenu : GuiScreen
         int centerY = Height / 4;
         int buttonLeft = centerX - 100;
 
-        string quitText = (mc.isMultiplayerWorld() && mc.internalServer == null) ? "Disconnect" : "Save and quit to title";
+        string quitText = (MC.isMultiplayerWorld() && MC.internalServer == null) ? "Disconnect" : "Save and quit to title";
 
         Button backToGameButton = new(buttonLeft, centerY + 24 + verticalOffset, "Back to game");
         Button achievementsButton = new(buttonLeft, centerY + 48 + verticalOffset, StatCollector.TranslateToLocal("gui.achievements"))
@@ -32,10 +32,10 @@ public class GuiIngameMenu : GuiScreen
         Button optionsButton = new(buttonLeft, centerY + 96 + verticalOffset, "Options...");
         Button quitButton = new(buttonLeft, centerY + 100 + verticalOffset, quitText);
 
-        backToGameButton.Clicked += (_, _) => mc.OpenScreen(null);
-        achievementsButton  .Clicked += (_, _) => mc.OpenScreen(new GuiAchievements(mc.statFileWriter));
-        statsButton         .Clicked += (_, _) => mc.OpenScreen(new GuiStats(this, mc.statFileWriter));
-        optionsButton       .Clicked += (_, _) => mc.OpenScreen(new GuiOptions(this, mc.options));
+        backToGameButton.Clicked += (_, _) => MC.OpenScreen(null);
+        achievementsButton  .Clicked += (_, _) => MC.OpenScreen(new GuiAchievements(MC.statFileWriter));
+        statsButton         .Clicked += (_, _) => MC.OpenScreen(new GuiStats(this, MC.statFileWriter));
+        optionsButton       .Clicked += (_, _) => MC.OpenScreen(new GuiOptions(this, MC.options));
         quitButton          .Clicked += QuitClicked;
 
         Children.AddRange(quitButton, backToGameButton, optionsButton, achievementsButton, statsButton);
@@ -43,15 +43,15 @@ public class GuiIngameMenu : GuiScreen
 
     private void QuitClicked(object? o, MouseEventArgs e)
     {
-        mc.statFileWriter.WriteStat(Stats.Stats.leaveGameStat, 1);
-        if (mc.isMultiplayerWorld())
+        MC.statFileWriter.WriteStat(Stats.Stats.LeaveGameStat, 1);
+        if (MC.isMultiplayerWorld())
         {
-            mc.world.Disconnect();
+            MC.world.Disconnect();
         }
 
-        mc.stopInternalServer();
-        mc.changeWorld(null);
-        mc.OpenScreen(new GuiMainMenu());
+        MC.stopInternalServer();
+        MC.changeWorld(null);
+        MC.OpenScreen(new GuiMainMenu());
     }
 
     public override void UpdateScreen()
@@ -63,7 +63,7 @@ public class GuiIngameMenu : GuiScreen
     {
         DrawDefaultBackground();
 
-        bool isSavingActive = !mc.world.attemptSaving(_saveStepTimer++);
+        bool isSavingActive = !MC.world.attemptSaving(_saveStepTimer++);
 
         if (isSavingActive || _menuTickCounter < 20)
         {

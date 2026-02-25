@@ -1,6 +1,6 @@
 namespace BetaSharp.Client.Guis;
 
-public class GuiOomScreen : GuiScreen
+public class GuiOomScreen : Screen
 {
     protected override void OnRendered(RenderEventArgs e)
     {

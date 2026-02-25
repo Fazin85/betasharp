@@ -7,90 +7,41 @@ using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiStats : GuiScreen
+public class GuiStats : Screen
 {
     private static readonly ItemRenderer itemRenderer = new();
-    protected GuiScreen parentScreen;
-    protected string screenTitle = "Select world";
+    protected Screen parentScreen;
     private GuiListStatsGeneral _listGeneral;
     private GuiListStatsItem _listItem;
     private GuiListStatsBlock _listBlock;
     public StatFileWriter statFileWriter { get; }
     private GuiList _currentList;
 
-    public GuiStats(GuiScreen parent, StatFileWriter stats)
+    public GuiStats(Screen parent, StatFileWriter stats)
     {
         parentScreen = parent;
         statFileWriter = stats;
-    }
 
-    public override void InitGui()
-    {
-        screenTitle = StatCollector.TranslateToLocal("gui.stats");
+        Text = StatCollector.TranslateToLocal("gui.stats");
+        DisplayTitle = true;
+
         _listGeneral = new GuiListStatsGeneral(this);
-        _listGeneral.RegisterScrollButtons(Children, 1, 1);
         _listItem = new GuiListStatsItem(this);
-        _listItem.RegisterScrollButtons(Children, 1, 1);
         _listBlock = new GuiListStatsBlock(this);
-        _listBlock.RegisterScrollButtons(Children, 1, 1);
         _currentList = _listGeneral;
-        initButtons();
-    }
-    public void initButtons()
-    {
-        const int BUTTON_DONE = 0;
-        const int BUTTON_GENERAL = 1;
-        const int BUTTON_BLOCKS = 2;
-        const int BUTTON_ITEMS = 3;
 
         TranslationStorage translations = TranslationStorage.Instance;
-        Children.Add(new Button(BUTTON_DONE, Width / 2 + 4, Height - 28, 150, 20, translations.TranslateKey("gui.done")));
-        Children.Add(new Button(BUTTON_GENERAL, Width / 2 - 154, Height - 52, 100, 20, translations.TranslateKey("stat.generalButton")));
-        Button blocksButton = new(BUTTON_BLOCKS, Width / 2 - 46, Height - 52, 100, 20, translations.TranslateKey("stat.blocksButton"));
-        Children.Add(blocksButton);
-        Button itemsButton = new(BUTTON_ITEMS, Width / 2 + 62, Height - 52, 100, 20, translations.TranslateKey("stat.itemsButton"));
-        Children.Add(itemsButton);
-        if (_listBlock.GetSize() == 0)
-        {
-            blocksButton.Enabled = false;
-        }
+        Button doneButton = new(Width / 2 + 4, Height - 28, 150, 20, translations.TranslateKey("gui.done"));
+        Button generalButton = new(Width / 2 - 154, Height - 52, 100, 20, translations.TranslateKey("stat.generalButton"));
+        Button blocksButton = new(Width / 2 - 46, Height - 52, 100, 20, translations.TranslateKey("stat.blocksButton")) { Enabled = _listBlock.GetSize() > 0 };
+        Button itemsButton = new(Width / 2 + 62, Height - 52, 100, 20, translations.TranslateKey("stat.itemsButton")) { Enabled = _listItem.GetSize() > 0 };
 
-        if (_listItem.GetSize() == 0)
-        {
-            itemsButton.Enabled = false;
-        }
-    }
+        doneButton.Clicked += (_, _) => MC.OpenScreen(parentScreen);
+        generalButton.Clicked += (_, _) => _currentList = _listGeneral;
+        blocksButton.Clicked += (_, _) => _currentList = _listBlock;
+        itemsButton.Clicked += (_, _) => _currentList = _listItem;
 
-    protected override void ActionPerformed(Button button)
-    {
-        if (button.Enabled)
-        {
-            switch (button.Id)
-            {
-                case 0: // DONE
-                    mc.OpenScreen(parentScreen);
-                    break;
-                case 1: // GENERAL
-                    _currentList = _listGeneral;
-                    break;
-                case 3: // ITEMS
-                    _currentList = _listItem;
-                    break;
-                case 2: // BLOCKS
-                    _currentList = _listBlock;
-                    break;
-                default:
-                    _currentList.ActionPerformed(button);
-                    break;
-            }
-
-        }
-    }
-
-    protected override void OnRendered(RenderEventArgs e)
-    {
-        _currentList.DrawScreen(mouseX, mouseY, tickDelta);
-        Gui.DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0xFFFFFF);
+        Children.AddRange(doneButton, generalButton, blocksButton, itemsButton);
     }
 
     public void drawItemSlot(int x, int y, int itemId)
@@ -101,7 +52,7 @@ public class GuiStats : GuiScreen
         GLManager.GL.Rotate(180.0F, 1.0F, 0.0F, 0.0F);
         Lighting.turnOn();
         GLManager.GL.PopMatrix();
-        itemRenderer.drawItemIntoGui(FontRenderer, mc.textureManager, itemId, 0, Item.ITEMS[itemId].getTextureId(0), x + 2, y + 2);
+        itemRenderer.drawItemIntoGui(FontRenderer, MC.textureManager, itemId, 0, Item.ITEMS[itemId].getTextureId(0), x + 2, y + 2);
         Lighting.turnOff();
         GLManager.GL.Disable(GLEnum.RescaleNormal);
     }
@@ -114,7 +65,7 @@ public class GuiStats : GuiScreen
     private void drawSlotTexture(int x, int y, int u, int v)
     {
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/slot.png"));
+        MC.textureManager.BindTexture(MC.textureManager.GetTextureId("/gui/slot.png"));
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
         tessellator.addVertexWithUV(x + 0, y + 18, ZLevel, (double)((u + 0) * 0.0078125F), (double)((v + 18) * 0.0078125F));

@@ -7,7 +7,7 @@ public class GuiListServer : GuiList
     private readonly GuiMultiplayer _parent;
 
     public GuiListServer(GuiMultiplayer parent)
-        : base(parent.mc, parent.Width, parent.Height, 32, parent.Height - 64, 36)
+        : base(parent.MC, parent.Width, parent.Height, 32, parent.Height - 64, 36)
     {
         _parent = parent;
     }

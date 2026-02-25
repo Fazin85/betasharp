@@ -1,11 +1,11 @@
 namespace BetaSharp.Client.Guis;
 
-public class GuiConflictWarning : GuiScreen
+public class GuiConflictWarning : Screen
 {
     public GuiConflictWarning()
     {
         Button backButton = new(Width / 2 - 100, Height / 4 + 120 + 12, "Back to title screen");
-        backButton.Clicked += (_, _) => mc.OpenScreen(new GuiMainMenu());
+        backButton.Clicked += (_, _) => MC.OpenScreen(new GuiMainMenu());
         Children.Add(backButton);
     }
 
