@@ -145,7 +145,9 @@ public class ChunkRenderer : IChunkVisibilityVisitor
             int y = Math.Clamp(cameraChunkPos.Y, 0, 112);
             _renderers.TryGetValue(new Vector3D<int>(cameraChunkPos.X, y, cameraChunkPos.Z), out cameraState);
         }
-        
+
+        Profiler.Start("FindVisible");
+
         _occlusionCuller.FindVisible(
             this,
             cameraState?.Renderer,
@@ -155,6 +157,8 @@ public class ChunkRenderer : IChunkVisibilityVisitor
             UseOcclusionCulling,
             _frameIndex
         );
+
+        Profiler.Stop("FindVisible");
 
         AddNearbySections(cameraChunkPos, _frameIndex, renderParams.Camera);
 
