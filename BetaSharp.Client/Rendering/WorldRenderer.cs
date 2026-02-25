@@ -185,16 +185,6 @@ public class WorldRenderer : IWorldAccess
         chunkRenderer = new(world);
         ChunkMeshVersion.ClearPool();
 
-
-        if (renderDistance >= 16)
-        {
-            SubChunkRenderer.Size = 32;
-        }
-        else
-        {
-            SubChunkRenderer.Size = 16;
-        }
-
         renderEntitiesStartupCounter = 2;
     }
 

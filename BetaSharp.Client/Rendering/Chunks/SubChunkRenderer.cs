@@ -10,7 +10,7 @@ namespace BetaSharp.Client.Rendering.Chunks;
 
 public class SubChunkRenderer : IDisposable
 {
-    public static int Size = 16;
+    public const int Size = 16;
     public bool HasTranslucentMesh => vertexCounts[1] > 0;
     public Vector3D<int> Position { get; }
     public Vector3D<int> PositionPlus { get; }
