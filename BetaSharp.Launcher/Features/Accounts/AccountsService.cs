@@ -31,10 +31,10 @@ internal sealed class AccountsService(
     {
         string microsoft = await authenticationService.AuthenticateAsync();
 
-        var profile = await xboxClient.GetProfileAsync(microsoft);
-        var xbox = await xboxClient.GetTokenAsync(profile.Token);
+        var user = await xboxClient.GetUserAsync(microsoft);
+        var xbox = await xboxClient.GetTokenAsync(user.Token);
 
-        var mojang = await mojangClient.GetTokenAsync(xbox.Value, profile.DisplayClaims.Xui[0].Uhs);
+        var mojang = await mojangClient.GetTokenAsync(xbox.Value, user.DisplayClaims.Xui[0].Uhs);
         var entitlements = await mojangClient.GetEntitlementsAsync(mojang.Value);
 
         if (entitlements.Items.Any(item => item.Name is "product_minecraft" or "game_minecraft"))
@@ -50,17 +50,19 @@ internal sealed class AccountsService(
     {
         if (_account is null)
         {
-            if (!File.Exists(_path))
+            try
             {
-                logger.LogInformation("Failed to get account's file");
+                await using var stream = File.OpenRead(_path);
+
+                _account = await JsonSerializer.DeserializeAsync(stream, AccountsSerializerContext.Default.Account);
+
+                ArgumentNullException.ThrowIfNull(_account);
+            }
+            catch (Exception exception)
+            {
+                logger.LogWarning(exception, "Failed to read account's file");
                 return null;
             }
-
-            await using var stream = File.OpenRead(_path);
-
-            _account = await JsonSerializer.DeserializeAsync(stream, AccountSerializerContext.Default.Account);
-
-            ArgumentNullException.ThrowIfNull(_account);
         }
 
         if (DateTimeOffset.Now.AddMinutes(1) <= _account.Expiration)
@@ -79,7 +81,7 @@ internal sealed class AccountsService(
         _account = new Account { Name = profile.Name, Skin = profile.Skins.FirstOrDefault()?.Url, Token = token, Expiration = expiration };
 
         await using var stream = File.OpenWrite(_path);
-        await JsonSerializer.SerializeAsync(stream, _account, AccountSerializerContext.Default.Account);
+        await JsonSerializer.SerializeAsync(stream, _account, AccountsSerializerContext.Default.Account);
     }
 
     public async Task DeleteAsync()

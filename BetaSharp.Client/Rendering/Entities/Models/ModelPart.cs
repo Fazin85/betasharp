@@ -4,7 +4,7 @@ using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Rendering.Entities.Models;
 
-public class ModelPart : java.lang.Object
+public class ModelPart
 {
     private PositionTextureVertex[] corners;
     private Quad[] faces;

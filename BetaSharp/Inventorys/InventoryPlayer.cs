@@ -5,7 +5,7 @@ using BetaSharp.NBT;
 
 namespace BetaSharp.Inventorys;
 
-public class InventoryPlayer : java.lang.Object, IInventory
+public class InventoryPlayer : IInventory
 {
 
     public ItemStack[] main = new ItemStack[36];

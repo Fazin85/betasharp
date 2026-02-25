@@ -1,3 +1,4 @@
+using BetaSharp.Client.Rendering.Chunks.Occlusion;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Profiling;
 using BetaSharp.Util;
@@ -9,7 +10,7 @@ using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Rendering.Chunks;
 
-public class ChunkRenderer
+public class ChunkRenderer : IChunkVisibilityVisitor
 {
     private readonly ILogger<ChunkRenderer> _logger = Log.Instance.For<ChunkRenderer>();
 
@@ -17,11 +18,11 @@ public class ChunkRenderer
     {
         var offsets = new List<Vector3D<int>>();
 
-        for (int x = -MAX_RENDER_DISTANCE; x <= MAX_RENDER_DISTANCE; x++)
+        for (int x = -MaxRenderDistance; x <= MaxRenderDistance; x++)
         {
             for (int y = -8; y <= 8; y++)
             {
-                for (int z = -MAX_RENDER_DISTANCE; z <= MAX_RENDER_DISTANCE; z++)
+                for (int z = -MaxRenderDistance; z <= MaxRenderDistance; z++)
                 {
                     offsets.Add(new Vector3D<int>(x, y, z));
                 }
@@ -31,7 +32,7 @@ public class ChunkRenderer
         offsets.Sort((a, b) =>
             (a.X * a.X + a.Y * a.Y + a.Z * a.Z).CompareTo(b.X * b.X + b.Y * b.Y + b.Z * b.Z));
 
-        spiralOffsets = [.. offsets];
+        s_spiralOffsets = [.. offsets];
     }
 
     private class SubChunkState(bool isLit, SubChunkRenderer renderer)
@@ -47,60 +48,68 @@ public class ChunkRenderer
         public bool priority = priority;
     }
 
-    private static readonly Vector3D<int>[] spiralOffsets;
-    private const int MAX_RENDER_DISTANCE = 32 + 1;
-    private readonly Dictionary<Vector3D<int>, SubChunkState> renderers = [];
-    private readonly List<SubChunkRenderer> translucentRenderers = [];
-    private readonly List<SubChunkRenderer> renderersToRemove = [];
-    private readonly ChunkMeshGenerator meshGenerator;
-    private readonly World world;
-    private readonly Dictionary<Vector3D<int>, ChunkMeshVersion> chunkVersions = [];
-    private readonly List<Vector3D<int>> chunkVersionsToRemove = [];
-    private readonly List<ChunkToMeshInfo> dirtyChunks = [];
-    private readonly List<ChunkToMeshInfo> lightingUpdates = [];
-    private readonly Core.Shader chunkShader;
-    private int lastRenderDistance;
-    private Vector3D<double> lastViewPos;
-    private int currentIndex;
-    private Matrix4X4<float> modelView;
-    private Matrix4X4<float> projection;
-    private int fogMode;
-    private float fogDensity;
-    private float fogStart;
-    private float fogEnd;
-    private Vector4D<float> fogColor;
+    private static readonly Vector3D<int>[] s_spiralOffsets;
+    private const int MaxRenderDistance = 32 + 1;
+    private readonly Dictionary<Vector3D<int>, SubChunkState> _renderers = [];
+    private readonly List<SubChunkRenderer> _translucentRenderers = [];
+    private readonly List<SubChunkRenderer> _renderersToRemove = [];
+    private readonly ChunkMeshGenerator _meshGenerator;
+    private readonly World _world;
+    private readonly Dictionary<Vector3D<int>, ChunkMeshVersion> _chunkVersions = [];
+    private readonly List<Vector3D<int>> _chunkVersionsToRemove = [];
+    private readonly List<ChunkToMeshInfo> _dirtyChunks = [];
+    private readonly List<ChunkToMeshInfo> _lightingUpdates = [];
+    private readonly Core.Shader _chunkShader;
+    private int _lastRenderDistance;
+    private Vector3D<double> _lastViewPos;
+    private int _currentIndex;
+    private Matrix4X4<float> _modelView;
+    private Matrix4X4<float> _projection;
+    private int _fogMode;
+    private float _fogDensity;
+    private float _fogStart;
+    private float _fogEnd;
+    private Vector4D<float> _fogColor;
+    private readonly ChunkOcclusionCuller _occlusionCuller = new();
+    private readonly List<SubChunkRenderer> _visibleRenderers = [];
+    private int _frameIndex = 0;
 
-    public int LoadedMeshes => renderers.Count;
+    public bool UseOcclusionCulling { get; set; } = true;
+
+    public int TotalChunks => _renderers.Count;
+    public int ChunksInFrustum { get; private set; }
+    public int ChunksOccluded { get; private set; }
+    public int ChunksRendered { get; private set; }
     public int TranslucentMeshes { get; private set; }
 
     public ChunkRenderer(World world)
     {
-        meshGenerator = new();
-        this.world = world;
+        _meshGenerator = new();
+        _world = world;
 
-        chunkShader = new(AssetManager.Instance.getAsset("shaders/chunk.vert").getTextContent(), AssetManager.Instance.getAsset("shaders/chunk.frag").getTextContent());
+        _chunkShader = new(AssetManager.Instance.getAsset("shaders/chunk.vert").getTextContent(), AssetManager.Instance.getAsset("shaders/chunk.frag").getTextContent());
         _logger.LogInformation("Loaded chunk shader");
 
         GLManager.GL.UseProgram(0);
     }
 
-    public void Render(Culler camera, Vector3D<double> viewPos, int renderDistance, long ticks, float partialTicks, float deltaTime, bool envAnim, bool chunkFadeEnabled)
+    public void Render(ChunkRenderParams renderParams)
     {
-        lastRenderDistance = renderDistance;
-        lastViewPos = viewPos;
+        _lastRenderDistance = renderParams.RenderDistance;
+        _lastViewPos = renderParams.ViewPos;
 
-        chunkShader.Bind();
-        chunkShader.SetUniform1("textureSampler", 0);
-        chunkShader.SetUniform1("fogMode", fogMode);
-        chunkShader.SetUniform1("fogDensity", fogDensity);
-        chunkShader.SetUniform1("fogStart", fogStart);
-        chunkShader.SetUniform1("fogEnd", fogEnd);
-        chunkShader.SetUniform4("fogColor", fogColor);
+        _chunkShader.Bind();
+        _chunkShader.SetUniform1("textureSampler", 0);
+        _chunkShader.SetUniform1("fogMode", _fogMode);
+        _chunkShader.SetUniform1("fogDensity", _fogDensity);
+        _chunkShader.SetUniform1("fogStart", _fogStart);
+        _chunkShader.SetUniform1("fogEnd", _fogEnd);
+        _chunkShader.SetUniform4("fogColor", _fogColor);
 
-        int wrappedTicks = (int)(ticks % 24000);
-        chunkShader.SetUniform1("time", (wrappedTicks + partialTicks) / 20.0f);
-        chunkShader.SetUniform1("envAnim", envAnim ? 1 : 0);
-        chunkShader.SetUniform1("chunkFadeEnabled", chunkFadeEnabled ? 1 : 0);
+        int wrappedTicks = (int)(renderParams.Ticks % 24000);
+        _chunkShader.SetUniform1("time", (wrappedTicks + renderParams.PartialTicks) / 20.0f);
+        _chunkShader.SetUniform1("envAnim", renderParams.EnvironmentAnimation ? 1 : 0);
+        _chunkShader.SetUniform1("chunkFadeEnabled", renderParams.ChunkFade ? 1 : 0);
 
         var modelView = new Matrix4X4<float>();
         var projection = new Matrix4X4<float>();
@@ -115,54 +124,123 @@ public class ChunkRenderer
             GLManager.GL.GetFloat(GLEnum.ProjectionMatrix, (float*)&projection);
         }
 
-        this.modelView = modelView;
-        this.projection = projection;
+        _modelView = modelView;
+        _projection = projection;
 
-        chunkShader.SetUniformMatrix4("projectionMatrix", projection);
+        _chunkShader.SetUniformMatrix4("projectionMatrix", projection);
+
+        _visibleRenderers.Clear();
+        _frameIndex++;
+
+        Vector3D<int> cameraChunkPos = new(
+            (int)Math.Floor(renderParams.ViewPos.X / SubChunkRenderer.Size) * SubChunkRenderer.Size,
+            (int)Math.Floor(renderParams.ViewPos.Y / SubChunkRenderer.Size) * SubChunkRenderer.Size,
+            (int)Math.Floor(renderParams.ViewPos.Z / SubChunkRenderer.Size) * SubChunkRenderer.Size
+        );
+
+        _renderers.TryGetValue(cameraChunkPos, out SubChunkState? cameraState);
+
+        if (cameraState == null)
+        {
+            int y = Math.Clamp(cameraChunkPos.Y, 0, 112);
+            _renderers.TryGetValue(new Vector3D<int>(cameraChunkPos.X, y, cameraChunkPos.Z), out cameraState);
+        }
+
+        float renderDistWorld = renderParams.RenderDistance * SubChunkRenderer.Size;
+
+        Profiler.Start("FindVisible");
+
+        _occlusionCuller.FindVisible(
+            this,
+            cameraState?.Renderer,
+            renderParams.ViewPos,
+            renderParams.Camera,
+            renderDistWorld,
+            UseOcclusionCulling,
+            _frameIndex
+        );
+
+        Profiler.Stop("FindVisible");
+
+        AddNearbySections(cameraChunkPos, _frameIndex, renderParams.Camera);
+
+        int frustumCount = 0;
+        int visitedVisibleCount = _visibleRenderers.Count;
+
+        foreach (SubChunkState state in _renderers.Values)
+        {
+            if (renderParams.Camera.isBoundingBoxInFrustum(state.Renderer.BoundingBox))
+            {
+                frustumCount++;
+            }
+        }
+
+        ChunksInFrustum = frustumCount;
+        ChunksOccluded = frustumCount - visitedVisibleCount;
+        ChunksRendered = visitedVisibleCount;
+
+        if (renderParams.RenderOccluded)
+        {
+            var occludedRenderers = new List<SubChunkRenderer>();
+            foreach (SubChunkState state in _renderers.Values)
+            {
+                SubChunkRenderer renderer = state.Renderer;
+                if (renderer.LastVisibleFrame != _frameIndex)
+                {
+                    if (renderer.IsVisible(renderParams.Camera, renderParams.ViewPos, renderDistWorld))
+                    {
+                        occludedRenderers.Add(renderer);
+                    }
+                }
+            }
+            _visibleRenderers.Clear();
+            _visibleRenderers.AddRange(occludedRenderers);
+            ChunksRendered = _visibleRenderers.Count;
+        }
 
         int translucentCount = 0;
-        foreach (var state in renderers.Values)
+        foreach (SubChunkRenderer renderer in _visibleRenderers)
         {
-            if (!IsChunkInRenderDistance(state.Renderer.Position, viewPos))
-            {
-                renderersToRemove.Add(state.Renderer);
-                continue;
-            }
+            renderer.Update(renderParams.DeltaTime);
 
-            state.Renderer.Update(deltaTime);
-
-            if (state.Renderer.HasTranslucentMesh)
+            if (renderer.HasTranslucentMesh)
             {
                 translucentCount++;
             }
 
-            if (camera.isBoundingBoxInFrustum(state.Renderer.BoundingBox))
-            {
-                float fadeProgress = Math.Clamp(state.Renderer.Age / SubChunkRenderer.FadeDuration, 0.0f, 1.0f);
-                chunkShader.SetUniform1("fadeProgress", fadeProgress);
-                state.Renderer.Render(chunkShader, 0, viewPos, modelView);
+            float fadeProgress = Math.Clamp(renderer.Age / SubChunkRenderer.FadeDuration, 0.0f, 1.0f);
+            _chunkShader.SetUniform1("fadeProgress", fadeProgress);
+            renderer.Render(_chunkShader, 0, renderParams.ViewPos, modelView);
 
-                if (state.Renderer.HasTranslucentMesh)
-                {
-                    translucentRenderers.Add(state.Renderer);
-                }
+            if (renderer.HasTranslucentMesh)
+            {
+                _translucentRenderers.Add(renderer);
+            }
+        }
+
+        foreach (SubChunkState state in _renderers.Values)
+        {
+            if (!IsChunkInRenderDistance(state.Renderer.Position, renderParams.ViewPos))
+            {
+                _renderersToRemove.Add(state.Renderer);
             }
         }
         TranslucentMeshes = translucentCount;
 
-        foreach (var renderer in renderersToRemove)
+        foreach (SubChunkRenderer renderer in _renderersToRemove)
         {
-            renderers.Remove(renderer.Position);
+            UpdateAdjacency(renderer, false);
+            _renderers.Remove(renderer.Position);
             renderer.Dispose();
 
-            chunkVersions.Remove(renderer.Position);
+            _chunkVersions.Remove(renderer.Position);
         }
 
-        renderersToRemove.Clear();
+        _renderersToRemove.Clear();
 
-        ProcessOneMeshUpdate(camera);
+        ProcessOneMeshUpdate(renderParams.Camera);
         ProcessOneLightingMeshUpdate();
-        LoadNewMeshes(viewPos);
+        LoadNewMeshes(renderParams.ViewPos);
 
         GLManager.GL.UseProgram(0);
         Core.VertexArray.Unbind();
@@ -170,51 +248,51 @@ public class ChunkRenderer
 
     public void SetFogMode(int mode)
     {
-        fogMode = mode;
+        _fogMode = mode;
     }
 
     public void SetFogDensity(float density)
     {
-        fogDensity = density;
+        _fogDensity = density;
     }
 
     public void SetFogStart(float start)
     {
-        fogStart = start;
+        _fogStart = start;
     }
 
     public void SetFogEnd(float end)
     {
-        fogEnd = end;
+        _fogEnd = end;
     }
 
     public void SetFogColor(float r, float g, float b, float a)
     {
-        fogColor = new(r, g, b, a);
+        _fogColor = new(r, g, b, a);
     }
 
-    public void RenderTransparent(Vector3D<double> viewPos)
+    public void RenderTransparent(ChunkRenderParams renderParams)
     {
-        chunkShader.Bind();
-        chunkShader.SetUniform1("textureSampler", 0);
+        _chunkShader.Bind();
+        _chunkShader.SetUniform1("textureSampler", 0);
 
-        chunkShader.SetUniformMatrix4("projectionMatrix", projection);
+        _chunkShader.SetUniformMatrix4("projectionMatrix", _projection);
 
-        translucentRenderers.Sort((a, b) =>
+        _translucentRenderers.Sort((a, b) =>
         {
-            double distA = Vector3D.DistanceSquared(ToDoubleVec(a.Position), viewPos);
-            double distB = Vector3D.DistanceSquared(ToDoubleVec(b.Position), viewPos);
+            double distA = Vector3D.DistanceSquared(ToDoubleVec(a.Position), renderParams.ViewPos);
+            double distB = Vector3D.DistanceSquared(ToDoubleVec(b.Position), renderParams.ViewPos);
             return distB.CompareTo(distA);
         });
 
-        foreach (var renderer in translucentRenderers)
+        foreach (SubChunkRenderer renderer in _translucentRenderers)
         {
             float fadeProgress = Math.Clamp(renderer.Age / SubChunkRenderer.FadeDuration, 0.0f, 1.0f);
-            chunkShader.SetUniform1("fadeProgress", fadeProgress);
-            renderer.Render(chunkShader, 1, viewPos, modelView);
+            _chunkShader.SetUniform1("fadeProgress", fadeProgress);
+            renderer.Render(_chunkShader, 1, renderParams.ViewPos, _modelView);
         }
 
-        translucentRenderers.Clear();
+        _translucentRenderers.Clear();
 
         GLManager.GL.UseProgram(0);
         Core.VertexArray.Unbind();
@@ -224,14 +302,14 @@ public class ChunkRenderer
     {
         for (int i = 0; i < maxChunks; i++)
         {
-            if (meshGenerator.Mesh is MeshBuildResult mesh)
+            if (_meshGenerator.Mesh is MeshBuildResult mesh)
             {
                 if (IsChunkInRenderDistance(mesh.Pos, viewPos))
                 {
-                    if (!chunkVersions.TryGetValue(mesh.Pos, out var version))
+                    if (!_chunkVersions.TryGetValue(mesh.Pos, out ChunkMeshVersion? version))
                     {
                         version = ChunkMeshVersion.Get();
-                        chunkVersions[mesh.Pos] = version;
+                        _chunkVersions[mesh.Pos] = version;
                     }
 
                     version.CompleteMesh(mesh.Version);
@@ -241,21 +319,96 @@ public class ChunkRenderer
                         long? snapshot = version.SnapshotIfNeeded();
                         if (snapshot.HasValue)
                         {
-                            meshGenerator.MeshChunk(world, mesh.Pos, snapshot.Value);
+                            _meshGenerator.MeshChunk(_world, mesh.Pos, snapshot.Value);
                         }
                         continue;
                     }
 
-                    if (renderers.TryGetValue(mesh.Pos, out SubChunkState? state))
+                    if (_renderers.TryGetValue(mesh.Pos, out SubChunkState? state))
                     {
                         state.Renderer.UploadMeshData(mesh.Solid, mesh.Translucent);
                         state.IsLit = mesh.IsLit;
+                        state.Renderer.VisibilityData = mesh.VisibilityData;
                     }
                     else
                     {
                         var renderer = new SubChunkRenderer(mesh.Pos);
                         renderer.UploadMeshData(mesh.Solid, mesh.Translucent);
-                        renderers[mesh.Pos] = new SubChunkState(mesh.IsLit, renderer);
+                        renderer.VisibilityData = mesh.VisibilityData;
+                        _renderers[mesh.Pos] = new SubChunkState(mesh.IsLit, renderer);
+                        UpdateAdjacency(renderer, true);
+                    }
+                }
+            }
+        }
+    }
+
+    private void UpdateAdjacency(SubChunkRenderer renderer, bool added)
+    {
+        Vector3D<int> pos = renderer.Position;
+        int size = SubChunkRenderer.Size;
+
+        SubChunkRenderer? Get(Vector3D<int> p) => _renderers.TryGetValue(p, out SubChunkState? s) ? s.Renderer : null;
+
+        SubChunkRenderer? down = Get(pos + new Vector3D<int>(0, -size, 0));
+        SubChunkRenderer? up = Get(pos + new Vector3D<int>(0, size, 0));
+        SubChunkRenderer? north = Get(pos + new Vector3D<int>(0, 0, -size));
+        SubChunkRenderer? south = Get(pos + new Vector3D<int>(0, 0, size));
+        SubChunkRenderer? west = Get(pos + new Vector3D<int>(-size, 0, 0));
+        SubChunkRenderer? east = Get(pos + new Vector3D<int>(size, 0, 0));
+
+        if (added)
+        {
+            renderer.AdjacentDown = down;
+            renderer.AdjacentUp = up;
+            renderer.AdjacentNorth = north;
+            renderer.AdjacentSouth = south;
+            renderer.AdjacentWest = west;
+            renderer.AdjacentEast = east;
+
+            down?.AdjacentUp = renderer;
+            up?.AdjacentDown = renderer;
+            north?.AdjacentSouth = renderer;
+            south?.AdjacentNorth = renderer;
+            west?.AdjacentEast = renderer;
+            east?.AdjacentWest = renderer;
+        }
+        else
+        {
+            down?.AdjacentUp = null;
+            up?.AdjacentDown = null;
+            north?.AdjacentSouth = null;
+            south?.AdjacentNorth = null;
+            west?.AdjacentEast = null;
+            east?.AdjacentWest = null;
+        }
+    }
+
+    public void Visit(SubChunkRenderer renderer)
+    {
+        _visibleRenderers.Add(renderer);
+    }
+
+    private void AddNearbySections(Vector3D<int> cameraChunkPos, int frame, Culler camera)
+    {
+        int size = SubChunkRenderer.Size;
+        for (int x = -size; x <= size; x += size)
+        {
+            for (int y = -size; y <= size; y += size)
+            {
+                for (int z = -size; z <= size; z += size)
+                {
+                    Vector3D<int> pos = cameraChunkPos + new Vector3D<int>(x, y, z);
+                    if (_renderers.TryGetValue(pos, out SubChunkState? state))
+                    {
+                        if (state.Renderer.LastVisibleFrame != frame)
+                        {
+                            state.Renderer.LastVisibleFrame = frame;
+                            if (camera.isBoundingBoxInFrustum(state.Renderer.BoundingBox))
+                            {
+                                Visit(state.Renderer);
+                            }
+                        }
                     }
                 }
             }
@@ -264,20 +417,20 @@ public class ChunkRenderer
 
     private void ProcessOneMeshUpdate(Culler camera)
     {
-        dirtyChunks.Sort((a, b) =>
+        _dirtyChunks.Sort((a, b) =>
         {
-            var distA = Vector3D.DistanceSquared(ToDoubleVec(a.Pos), lastViewPos);
-            var distB = Vector3D.DistanceSquared(ToDoubleVec(b.Pos), lastViewPos);
+            double distA = Vector3D.DistanceSquared(ToDoubleVec(a.Pos), _lastViewPos);
+            double distB = Vector3D.DistanceSquared(ToDoubleVec(b.Pos), _lastViewPos);
             return distA.CompareTo(distB);
         });
 
-        for (int i = 0; i < dirtyChunks.Count; i++)
+        for (int i = 0; i < _dirtyChunks.Count; i++)
         {
-            var info = dirtyChunks[i];
+            ChunkToMeshInfo info = _dirtyChunks[i];
 
-            if (!IsChunkInRenderDistance(info.Pos, lastViewPos))
+            if (!IsChunkInRenderDistance(info.Pos, _lastViewPos))
             {
-                dirtyChunks.RemoveAt(i);
+                _dirtyChunks.RemoveAt(i);
                 i--;
                 continue;
             }
@@ -294,48 +447,48 @@ public class ChunkRenderer
                 continue;
             }
 
-            meshGenerator.MeshChunk(world, info.Pos, info.Version);
-            dirtyChunks.RemoveAt(i);
+            _meshGenerator.MeshChunk(_world, info.Pos, info.Version);
+            _dirtyChunks.RemoveAt(i);
             return;
         }
     }
 
     private void ProcessOneLightingMeshUpdate()
     {
-        lightingUpdates.Sort((a, b) =>
+        _lightingUpdates.Sort((a, b) =>
         {
-            var distA = Vector3D.DistanceSquared(ToDoubleVec(a.Pos), lastViewPos);
-            var distB = Vector3D.DistanceSquared(ToDoubleVec(b.Pos), lastViewPos);
+            double distA = Vector3D.DistanceSquared(ToDoubleVec(a.Pos), _lastViewPos);
+            double distB = Vector3D.DistanceSquared(ToDoubleVec(b.Pos), _lastViewPos);
             return distA.CompareTo(distB);
         });
 
-        for (int i = 0; i < lightingUpdates.Count; i++)
+        for (int i = 0; i < _lightingUpdates.Count; i++)
         {
-            ChunkToMeshInfo update = lightingUpdates[i];
+            ChunkToMeshInfo update = _lightingUpdates[i];
 
-            if (!IsChunkInRenderDistance(update.Pos, lastViewPos))
+            if (!IsChunkInRenderDistance(update.Pos, _lastViewPos))
             {
-                lightingUpdates.RemoveAt(i);
+                _lightingUpdates.RemoveAt(i);
                 i--;
                 continue;
             }
 
-            meshGenerator.MeshChunk(world, update.Pos, update.Version);
-            lightingUpdates.RemoveAt(i);
+            _meshGenerator.MeshChunk(_world, update.Pos, update.Version);
+            _lightingUpdates.RemoveAt(i);
             return;
         }
     }
 
     public void UpdateAllRenderers()
     {
-        foreach (var state in renderers.Values)
+        foreach (SubChunkState state in _renderers.Values)
         {
-            if (IsChunkInRenderDistance(state.Renderer.Position, lastViewPos) && state.IsLit)
+            if (IsChunkInRenderDistance(state.Renderer.Position, _lastViewPos) && state.IsLit)
             {
-                if (!chunkVersions.TryGetValue(state.Renderer.Position, out var version))
+                if (!_chunkVersions.TryGetValue(state.Renderer.Position, out ChunkMeshVersion? version))
                 {
                     version = ChunkMeshVersion.Get();
-                    chunkVersions[state.Renderer.Position] = version;
+                    _chunkVersions[state.Renderer.Position] = version;
                 }
 
                 version.MarkDirty();
@@ -343,7 +496,7 @@ public class ChunkRenderer
                 long? snapshot = version.SnapshotIfNeeded();
                 if (snapshot.HasValue)
                 {
-                    lightingUpdates.Add(new(state.Renderer.Position, snapshot.Value, false));
+                    _lightingUpdates.Add(new(state.Renderer.Position, snapshot.Value, false));
                 }
             }
         }
@@ -353,7 +506,7 @@ public class ChunkRenderer
     {
         Profiler.Start("WorldRenderer.Tick");
 
-        lastViewPos = viewPos;
+        _lastViewPos = viewPos;
 
         Vector3D<int> currentChunk = new(
             (int)Math.Floor(viewPos.X / SubChunkRenderer.Size),
@@ -361,7 +514,7 @@ public class ChunkRenderer
             (int)Math.Floor(viewPos.Z / SubChunkRenderer.Size)
         );
 
-        int radiusSq = lastRenderDistance * lastRenderDistance;
+        int radiusSq = _lastRenderDistance * _lastRenderDistance;
         int enqueuedCount = 0;
         bool priorityPassClean = true;
 
@@ -370,20 +523,20 @@ public class ChunkRenderer
         const int PRIORITY_PASS_LIMIT = 1024;
         const int BACKGROUND_PASS_LIMIT = 2048;
 
-        for (int i = 0; i < PRIORITY_PASS_LIMIT && i < spiralOffsets.Length; i++)
+        for (int i = 0; i < PRIORITY_PASS_LIMIT && i < s_spiralOffsets.Length; i++)
         {
-            var offset = spiralOffsets[i];
+            Vector3D<int> offset = s_spiralOffsets[i];
             int distSq = offset.X * offset.X + offset.Y * offset.Y + offset.Z * offset.Z;
 
             if (distSq > radiusSq)
                 break;
 
-            var chunkPos = (currentChunk + offset) * SubChunkRenderer.Size;
+            Vector3D<int> chunkPos = (currentChunk + offset) * SubChunkRenderer.Size;
 
             if (chunkPos.Y < 0 || chunkPos.Y >= 128)
                 continue;
 
-            if (renderers.ContainsKey(chunkPos) || chunkVersions.ContainsKey(chunkPos))
+            if (_renderers.ContainsKey(chunkPos) || _chunkVersions.ContainsKey(chunkPos))
                 continue;
 
             if (MarkDirty(chunkPos))
@@ -404,13 +557,13 @@ public class ChunkRenderer
         {
             for (int i = 0; i < BACKGROUND_PASS_LIMIT; i++)
             {
-                var offset = spiralOffsets[currentIndex];
+                Vector3D<int> offset = s_spiralOffsets[_currentIndex];
                 int distSq = offset.X * offset.X + offset.Y * offset.Y + offset.Z * offset.Z;
 
                 if (distSq <= radiusSq)
                 {
-                    var chunkPos = (currentChunk + offset) * SubChunkRenderer.Size;
-                    if (!renderers.ContainsKey(chunkPos) && !chunkVersions.ContainsKey(chunkPos))
+                    Vector3D<int> chunkPos = (currentChunk + offset) * SubChunkRenderer.Size;
+                    if (!_renderers.ContainsKey(chunkPos) && !_chunkVersions.ContainsKey(chunkPos))
                     {
                         if (MarkDirty(chunkPos))
                         {
@@ -419,7 +572,7 @@ public class ChunkRenderer
                     }
                 }
 
-                currentIndex = (currentIndex + 1) % spiralOffsets.Length;
+                _currentIndex = (_currentIndex + 1) % s_spiralOffsets.Length;
 
                 if (enqueuedCount >= MAX_CHUNKS_PER_FRAME)
                     break;
@@ -427,21 +580,21 @@ public class ChunkRenderer
         }
 
         Profiler.Start("WorldRenderer.Tick.RemoveVersions");
-        foreach (var version in chunkVersions)
+        foreach (KeyValuePair<Vector3D<int>, ChunkMeshVersion> version in _chunkVersions)
         {
-            if (!IsChunkInRenderDistance(version.Key, lastViewPos))
+            if (!IsChunkInRenderDistance(version.Key, _lastViewPos))
             {
-                chunkVersionsToRemove.Add(version.Key);
+                _chunkVersionsToRemove.Add(version.Key);
             }
         }
 
-        foreach (var pos in chunkVersionsToRemove)
+        foreach (Vector3D<int> pos in _chunkVersionsToRemove)
         {
-            chunkVersions[pos].Release();
-            chunkVersions.Remove(pos);
+            _chunkVersions[pos].Release();
+            _chunkVersions.Remove(pos);
         }
 
-        chunkVersionsToRemove.Clear();
+        _chunkVersionsToRemove.Clear();
         Profiler.Stop("WorldRenderer.Tick.RemoveVersions");
 
         Profiler.Stop("WorldRenderer.Tick");
@@ -449,29 +602,29 @@ public class ChunkRenderer
 
     public bool MarkDirty(Vector3D<int> chunkPos, bool priority = false)
     {
-        if (!world.isRegionLoaded(chunkPos.X - 1, chunkPos.Y - 1, chunkPos.Z - 1, chunkPos.X + SubChunkRenderer.Size + 1, chunkPos.Y + SubChunkRenderer.Size + 1, chunkPos.Z + SubChunkRenderer.Size + 1) | !IsChunkInRenderDistance(chunkPos, lastViewPos))
+        if (!_world.isRegionLoaded(chunkPos.X - 1, chunkPos.Y - 1, chunkPos.Z - 1, chunkPos.X + SubChunkRenderer.Size + 1, chunkPos.Y + SubChunkRenderer.Size + 1, chunkPos.Z + SubChunkRenderer.Size + 1) | !IsChunkInRenderDistance(chunkPos, _lastViewPos))
             return false;
 
-        if (!chunkVersions.TryGetValue(chunkPos, out var version))
+        if (!_chunkVersions.TryGetValue(chunkPos, out ChunkMeshVersion? version))
         {
             version = ChunkMeshVersion.Get();
-            chunkVersions[chunkPos] = version;
+            _chunkVersions[chunkPos] = version;
         }
         version.MarkDirty();
 
         long? snapshot = version.SnapshotIfNeeded();
         if (snapshot.HasValue)
         {
-            for (int i = 0; i < dirtyChunks.Count; i++)
+            for (int i = 0; i < _dirtyChunks.Count; i++)
             {
-                if (dirtyChunks[i].Pos == chunkPos)
+                if (_dirtyChunks[i].Pos == chunkPos)
                 {
-                    dirtyChunks[i] = new(chunkPos, snapshot.Value, priority || dirtyChunks[i].priority);
+                    _dirtyChunks[i] = new(chunkPos, snapshot.Value, priority || _dirtyChunks[i].priority);
                     return true;
                 }
             }
 
-            dirtyChunks.Add(new(chunkPos, snapshot.Value, priority));
+            _dirtyChunks.Add(new(chunkPos, snapshot.Value, priority));
             return true;
         }
 
@@ -487,7 +640,7 @@ public class ChunkRenderer
         int viewChunkZ = (int)Math.Floor(viewPos.Z / SubChunkRenderer.Size);
 
         int dist = Vector2D.Distance(new Vector2D<int>(chunkX, chunkZ), new Vector2D<int>(viewChunkX, viewChunkZ));
-        bool isIn = dist <= lastRenderDistance;
+        bool isIn = dist <= _lastRenderDistance;
         return isIn;
     }
 
@@ -495,22 +648,22 @@ public class ChunkRenderer
 
     public void Dispose()
     {
-        foreach (var state in renderers.Values)
+        foreach (SubChunkState state in _renderers.Values)
         {
             state.Renderer.Dispose();
         }
 
-        chunkShader.Dispose();
+        _chunkShader.Dispose();
 
-        renderers.Clear();
+        _renderers.Clear();
 
-        translucentRenderers.Clear();
-        renderersToRemove.Clear();
+        _translucentRenderers.Clear();
+        _renderersToRemove.Clear();
 
-        foreach (var version in chunkVersions.Values)
+        foreach (ChunkMeshVersion version in _chunkVersions.Values)
         {
             version.Release();
         }
-        chunkVersions.Clear();
+        _chunkVersions.Clear();
     }
 }

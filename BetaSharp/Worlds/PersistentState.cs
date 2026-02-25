@@ -2,7 +2,7 @@ using BetaSharp.NBT;
 
 namespace BetaSharp.Worlds;
 
-public abstract class PersistentState : java.lang.Object
+public abstract class PersistentState
 {
     public readonly string id;
     private bool dirty;

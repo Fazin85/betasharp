@@ -185,16 +185,6 @@ public class WorldRenderer : IWorldAccess
         chunkRenderer = new(world);
         ChunkMeshVersion.ClearPool();
 
-
-        if (renderDistance >= 16)
-        {
-            SubChunkRenderer.Size = 32;
-        }
-        else
-        {
-            SubChunkRenderer.Size = 16;
-        }
-
         renderEntitiesStartupCounter = 2;
     }
 
@@ -286,13 +276,26 @@ public class WorldRenderer : IWorldAccess
 
         Lighting.turnOff();
 
+        var renderParams = new ChunkRenderParams
+        {
+            Camera = cam,
+            ViewPos = new Vector3D<double>(var33, var7, var9),
+            RenderDistance = renderDistance,
+            Ticks = world.getTime(),
+            PartialTicks = (float)var3,
+            DeltaTime = mc.Timer.DeltaTime,
+            EnvironmentAnimation = mc.options.EnvironmentAnimation,
+            ChunkFade = mc.options.ChunkFade,
+            RenderOccluded = mc.options.RenderOccluded
+        };
+
         if (pass == 0)
         {
-            chunkRenderer.Render(cam, new Vector3D<double>(var33, var7, var9), renderDistance, world.getTime(), (float)var3, mc.Timer.DeltaTime, mc.options.EnvironmentAnimation, mc.options.ChunkFade);
+            chunkRenderer.Render(renderParams);
         }
         else
         {
-            chunkRenderer.RenderTransparent(new(var33, var7, var9));
+            chunkRenderer.RenderTransparent(renderParams);
         }
 
         return 0;

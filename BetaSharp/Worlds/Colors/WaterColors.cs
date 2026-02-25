@@ -1,6 +1,6 @@
 namespace BetaSharp.Worlds.Colors;
 
-public class WaterColors : java.lang.Object
+public class WaterColors
 {
     private static int[] waterBuffer = new int[65536];
 

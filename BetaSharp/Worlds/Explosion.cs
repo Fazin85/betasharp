@@ -4,7 +4,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds;
 
-public class Explosion : java.lang.Object
+public class Explosion
 {
     public bool isFlaming = false;
     private JavaRandom ExplosionRNG = new();

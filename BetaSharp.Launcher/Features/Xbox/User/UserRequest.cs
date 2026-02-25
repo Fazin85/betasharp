@@ -1,8 +1,8 @@
-namespace BetaSharp.Launcher.Features.Xbox.Profile;
+namespace BetaSharp.Launcher.Features.Xbox.User;
 
-internal sealed class ProfileRequest
+internal sealed class UserRequest
 {
-    public sealed class ProfileProperties
+    public sealed class UserProperties
     {
         public string AuthMethod => "RPS";
 
@@ -11,7 +11,7 @@ internal sealed class ProfileRequest
         public required string RpsTicket { get; init; }
     }
 
-    public required ProfileProperties Properties { get; init; }
+    public required UserProperties Properties { get; init; }
 
     public string RelyingParty => "http://auth.xboxlive.com";
 

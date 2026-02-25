@@ -1,6 +1,6 @@
 namespace BetaSharp.Worlds.Colors;
 
-public class GrassColors : java.lang.Object
+public class GrassColors
 {
     private static int[] grassBuffer = new int[65536];
 

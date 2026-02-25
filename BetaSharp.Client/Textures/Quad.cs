@@ -3,7 +3,7 @@ using Silk.NET.Maths;
 
 namespace BetaSharp.Client.Textures;
 
-public class Quad : java.lang.Object
+public class Quad
 {
     public PositionTextureVertex[] vertexPositions;
     public int nVertices;

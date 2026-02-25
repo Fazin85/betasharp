@@ -7,6 +7,7 @@ public class GuiOptions : GuiScreen
     private const int ButtonVideoSettings = 101;
     private const int ButtonAudioSettings = 102;
     private const int ButtonControls = 100;
+    private const int ButtonDebugSettings = 103;
     private const int ButtonDone = 200;
 
     private readonly GuiScreen _parentScreen;
@@ -44,9 +45,11 @@ public class GuiOptions : GuiScreen
             ++rowIndex;
         }
 
-        _controlList.Add(new GuiButton(ButtonVideoSettings, Width / 2 - 100, Height / 6 + 72 + 12, translations.TranslateKey("options.video")));
-        _controlList.Add(new GuiButton(ButtonAudioSettings, Width / 2 - 100, Height / 6 + 96 + 12, "Audio Settings"));
-        _controlList.Add(new GuiButton(ButtonControls, Width / 2 - 100, Height / 6 + 120 + 12, translations.TranslateKey("options.controls")));
+        _controlList.Add(new GuiSmallButton(ButtonVideoSettings, Width / 2 - 155, Height / 6 + 48 + 24, translations.TranslateKey("options.video")));
+        _controlList.Add(new GuiSmallButton(ButtonDebugSettings, Width / 2 + 5, Height / 6 + 48 + 24, "Debug Options..."));
+        _controlList.Add(new GuiSmallButton(ButtonAudioSettings, Width / 2 - 155, Height / 6 + 72 + 24, "Audio Settings"));
+        _controlList.Add(new GuiSmallButton(ButtonControls, Width / 2 + 5, Height / 6 + 72 + 24, translations.TranslateKey("options.controls")));
+
         _controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 6 + 168, translations.TranslateKey("gui.done")));
     }
 
@@ -69,6 +72,10 @@ public class GuiOptions : GuiScreen
             case ButtonAudioSettings:
                 mc.options.SaveOptions();
                 mc.displayGuiScreen(new GuiAudio(this, _options));
+                break;
+            case ButtonDebugSettings:
+                mc.options.SaveOptions();
+                mc.displayGuiScreen(new GuiDebugOptions(this, _options));
                 break;
             case ButtonControls:
                 mc.options.SaveOptions();
