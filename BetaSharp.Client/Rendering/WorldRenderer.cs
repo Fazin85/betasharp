@@ -223,9 +223,9 @@ public class WorldRenderer : IWorldAccess
 
             int var6;
             Entity var7;
-            for (var6 = 0; var6 < world.globalEntities.size(); ++var6)
+            for (var6 = 0; var6 < world.globalEntities.Count; ++var6)
             {
-                var7 = (Entity)world.globalEntities.get(var6);
+                var7 = (Entity)world.globalEntities[var6];
                 ++countEntitiesRendered;
                 if (var7.shouldRender(var1))
                 {

@@ -70,7 +70,7 @@ public static class WorldCommands
             switch (weather)
             {
                 case "clear":
-                    world.globalEntities.clear();
+                    world.globalEntities.Clear();
                     world.getProperties().IsRaining = false;
                     world.getProperties().IsThundering = false;
                     break;
