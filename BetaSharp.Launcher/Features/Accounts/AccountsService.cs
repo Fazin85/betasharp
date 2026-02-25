@@ -58,7 +58,7 @@ internal sealed class AccountsService(
 
             await using var stream = File.OpenRead(_path);
 
-            _account = await JsonSerializer.DeserializeAsync(stream, AccountSerializerContext.Default.Account);
+            _account = await JsonSerializer.DeserializeAsync(stream, AccountsSerializerContext.Default.Account);
 
             ArgumentNullException.ThrowIfNull(_account);
         }
@@ -79,7 +79,7 @@ internal sealed class AccountsService(
         _account = new Account { Name = profile.Name, Skin = profile.Skins.FirstOrDefault()?.Url, Token = token, Expiration = expiration };
 
         await using var stream = File.OpenWrite(_path);
-        await JsonSerializer.SerializeAsync(stream, _account, AccountSerializerContext.Default.Account);
+        await JsonSerializer.SerializeAsync(stream, _account, AccountsSerializerContext.Default.Account);
     }
 
     public async Task DeleteAsync()
