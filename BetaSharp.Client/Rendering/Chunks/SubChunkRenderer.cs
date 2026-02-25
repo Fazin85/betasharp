@@ -22,6 +22,18 @@ public class SubChunkRenderer : IDisposable
     public bool HasFadedIn => Age >= FadeDuration;
     public const float FadeDuration = 1.0f;
 
+    // Occlusion Culling State
+    public Occlusion.ChunkVisibilityStore VisibilityData;
+    public Occlusion.ChunkDirectionMask IncomingDirections;
+    public int LastVisibleFrame = -1;
+
+    public SubChunkRenderer? AdjacentDown;
+    public SubChunkRenderer? AdjacentUp;
+    public SubChunkRenderer? AdjacentNorth;
+    public SubChunkRenderer? AdjacentSouth;
+    public SubChunkRenderer? AdjacentWest;
+    public SubChunkRenderer? AdjacentEast;
+
     private readonly VertexBuffer<ChunkVertex>[] vertexBuffers = new VertexBuffer<ChunkVertex>[2];
     private readonly VertexArray[] vertexArrays = new VertexArray[2];
     private readonly int[] vertexCounts = new int[2];

@@ -12,6 +12,7 @@ public struct MeshBuildResult
     public PooledList<ChunkVertex> Solid;
     public PooledList<ChunkVertex> Translucent;
     public bool IsLit;
+    public Occlusion.ChunkVisibilityStore VisibilityData;
     public Vector3D<int> Pos;
     public long Version;
 
@@ -156,6 +157,7 @@ public class ChunkMeshGenerator : IDisposable
         }
 
         result.IsLit = cache.getIsLit();
+        result.VisibilityData = Occlusion.ChunkVisibilityComputer.Compute(cache, pos.X, pos.Y, pos.Z);
         return result;
     }
 

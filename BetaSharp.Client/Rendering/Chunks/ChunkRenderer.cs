@@ -9,7 +9,7 @@ using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Rendering.Chunks;
 
-public class ChunkRenderer
+public class ChunkRenderer : Occlusion.IChunkVisibilityVisitor
 {
     private readonly ILogger<ChunkRenderer> _logger = Log.Instance.For<ChunkRenderer>();
 
@@ -69,6 +69,12 @@ public class ChunkRenderer
     private float fogStart;
     private float fogEnd;
     private Vector4D<float> fogColor;
+    private readonly Occlusion.ChunkOcclusionCuller occlusionCuller = new();
+    private readonly List<SubChunkRenderer> visibleRenderers = [];
+    private int frameIndex = 0;
+
+    public bool UseOcclusionCulling { get; set; } = true;
+    public bool DebugRenderOccluded { get; set; } = true;
 
     public int LoadedMeshes => renderers.Count;
     public int TranslucentMeshes { get; private set; }
@@ -120,38 +126,95 @@ public class ChunkRenderer
 
         chunkShader.SetUniformMatrix4("projectionMatrix", projection);
 
+        visibleRenderers.Clear();
+        frameIndex++;
+
+        Vector3D<int> cameraChunkPos = new(
+            (int)Math.Floor(viewPos.X / SubChunkRenderer.Size) * SubChunkRenderer.Size,
+            (int)Math.Floor(viewPos.Y / SubChunkRenderer.Size) * SubChunkRenderer.Size,
+            (int)Math.Floor(viewPos.Z / SubChunkRenderer.Size) * SubChunkRenderer.Size
+        );
+
+        renderers.TryGetValue(cameraChunkPos, out var cameraState);
+
+        if (cameraState == null)
+        {
+            // If we're not in a chunk, we might be above/below.
+            // Try to find the nearest chunk on the Y axis.
+            int y = Math.Clamp(cameraChunkPos.Y, 0, 112);
+            renderers.TryGetValue(new Vector3D<int>(cameraChunkPos.X, y, cameraChunkPos.Z), out cameraState);
+        }
+        
+        occlusionCuller.FindVisible(
+            this,
+            cameraState?.Renderer,
+            viewPos,
+            camera,
+            renderDistance * SubChunkRenderer.Size,
+            UseOcclusionCulling,
+            frameIndex
+        );
+
+        AddNearbySections(cameraChunkPos, frameIndex, camera);
+
+        if (DebugRenderOccluded)
+        {
+            var occludedRenderers = new List<SubChunkRenderer>();
+            foreach (var state in renderers.Values)
+            {
+                var renderer = state.Renderer;
+                if (renderer.LastVisibleFrame != frameIndex)
+                {
+                    // Chunks that were NOT visited by the culler, but are in frustum/distance
+                    if (camera.isBoundingBoxInFrustum(renderer.BoundingBox))
+                    {
+                        double dx = renderer.PositionPlus.X - viewPos.X;
+                        double dy = renderer.PositionPlus.Y - viewPos.Y;
+                        double dz = renderer.PositionPlus.Z - viewPos.Z;
+                        if ((dx * dx + dz * dz) < (renderDistance * SubChunkRenderer.Size * renderDistance * SubChunkRenderer.Size) && Math.Abs(dy) < renderDistance * SubChunkRenderer.Size)
+                        {
+                            occludedRenderers.Add(renderer);
+                        }
+                    }
+                }
+            }
+            visibleRenderers.Clear();
+            visibleRenderers.AddRange(occludedRenderers);
+        }
+
         int translucentCount = 0;
+        foreach (var renderer in visibleRenderers)
+        {
+            renderer.Update(deltaTime);
+
+            if (renderer.HasTranslucentMesh)
+            {
+                translucentCount++;
+            }
+
+            float fadeProgress = Math.Clamp(renderer.Age / SubChunkRenderer.FadeDuration, 0.0f, 1.0f);
+            chunkShader.SetUniform1("fadeProgress", fadeProgress);
+            renderer.Render(chunkShader, 0, viewPos, modelView);
+
+            if (renderer.HasTranslucentMesh)
+            {
+                translucentRenderers.Add(renderer);
+            }
+        }
+
+        // Handle removals and cleanup for non-visible chunks if necessary
         foreach (var state in renderers.Values)
         {
             if (!IsChunkInRenderDistance(state.Renderer.Position, viewPos))
             {
                 renderersToRemove.Add(state.Renderer);
-                continue;
-            }
-
-            state.Renderer.Update(deltaTime);
-
-            if (state.Renderer.HasTranslucentMesh)
-            {
-                translucentCount++;
-            }
-
-            if (camera.isBoundingBoxInFrustum(state.Renderer.BoundingBox))
-            {
-                float fadeProgress = Math.Clamp(state.Renderer.Age / SubChunkRenderer.FadeDuration, 0.0f, 1.0f);
-                chunkShader.SetUniform1("fadeProgress", fadeProgress);
-                state.Renderer.Render(chunkShader, 0, viewPos, modelView);
-
-                if (state.Renderer.HasTranslucentMesh)
-                {
-                    translucentRenderers.Add(state.Renderer);
-                }
             }
         }
         TranslucentMeshes = translucentCount;
 
         foreach (var renderer in renderersToRemove)
         {
+            UpdateAdjacency(renderer, false);
             renderers.Remove(renderer.Position);
             renderer.Dispose();
 
@@ -250,12 +313,87 @@ public class ChunkRenderer
                     {
                         state.Renderer.UploadMeshData(mesh.Solid, mesh.Translucent);
                         state.IsLit = mesh.IsLit;
+                        state.Renderer.VisibilityData = mesh.VisibilityData;
                     }
                     else
                     {
                         var renderer = new SubChunkRenderer(mesh.Pos);
                         renderer.UploadMeshData(mesh.Solid, mesh.Translucent);
+                        renderer.VisibilityData = mesh.VisibilityData;
                         renderers[mesh.Pos] = new SubChunkState(mesh.IsLit, renderer);
+                        UpdateAdjacency(renderer, true);
+                    }
+                }
+            }
+        }
+    }
+
+    private void UpdateAdjacency(SubChunkRenderer renderer, bool added)
+    {
+        var pos = renderer.Position;
+        int size = SubChunkRenderer.Size;
+
+        SubChunkRenderer? Get(Vector3D<int> p) => renderers.TryGetValue(p, out var s) ? s.Renderer : null;
+
+        var down = Get(pos + new Vector3D<int>(0, -size, 0));
+        var up = Get(pos + new Vector3D<int>(0, size, 0));
+        var north = Get(pos + new Vector3D<int>(0, 0, -size));
+        var south = Get(pos + new Vector3D<int>(0, 0, size));
+        var west = Get(pos + new Vector3D<int>(-size, 0, 0));
+        var east = Get(pos + new Vector3D<int>(size, 0, 0));
+
+        if (added)
+        {
+            renderer.AdjacentDown = down;
+            renderer.AdjacentUp = up;
+            renderer.AdjacentNorth = north;
+            renderer.AdjacentSouth = south;
+            renderer.AdjacentWest = west;
+            renderer.AdjacentEast = east;
+
+            if (down != null) down.AdjacentUp = renderer;
+            if (up != null) up.AdjacentDown = renderer;
+            if (north != null) north.AdjacentSouth = renderer;
+            if (south != null) south.AdjacentNorth = renderer;
+            if (west != null) west.AdjacentEast = renderer;
+            if (east != null) east.AdjacentWest = renderer;
+        }
+        else
+        {
+            if (down != null) down.AdjacentUp = null;
+            if (up != null) up.AdjacentDown = null;
+            if (north != null) north.AdjacentSouth = null;
+            if (south != null) south.AdjacentNorth = null;
+            if (west != null) west.AdjacentEast = null;
+            if (east != null) east.AdjacentWest = null;
+        }
+    }
+
+    public void Visit(SubChunkRenderer renderer)
+    {
+        visibleRenderers.Add(renderer);
+    }
+
+    private void AddNearbySections(Vector3D<int> cameraChunkPos, int frame, Culler camera)
+    {
+        int size = SubChunkRenderer.Size;
+        for (int x = -size; x <= size; x += size)
+        {
+            for (int y = -size; y <= size; y += size)
+            {
+                for (int z = -size; z <= size; z += size)
+                {
+                    var pos = cameraChunkPos + new Vector3D<int>(x, y, z);
+                    if (renderers.TryGetValue(pos, out var state))
+                    {
+                        if (state.Renderer.LastVisibleFrame != frame)
+                        {
+                            state.Renderer.LastVisibleFrame = frame;
+                            if (camera.isBoundingBoxInFrustum(state.Renderer.BoundingBox))
+                            {
+                                Visit(state.Renderer);
+                            }
+                        }
                     }
                 }
             }
