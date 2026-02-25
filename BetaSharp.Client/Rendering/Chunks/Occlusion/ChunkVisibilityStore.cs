@@ -4,9 +4,6 @@ namespace BetaSharp.Client.Rendering.Chunks.Occlusion;
 
 public struct ChunkVisibilityStore
 {
-    // A 64-bit mask where each bit represents visibility between two faces.
-    // There are 6 faces, so 6*6 = 36 possible paths.
-    // Bit index = (from * 8) + to
     private long _data;
 
     public void SetVisible(ChunkDirection from, ChunkDirection to)
@@ -22,11 +19,10 @@ public struct ChunkVisibilityStore
     public readonly ChunkDirectionMask GetVisibleFrom(ChunkDirectionMask incoming, Vector3D<double> viewPos, SubChunkRenderer renderer)
     {
         if (incoming == ChunkDirectionMask.None)
-            return FoldOutgoing(_data); // If no incoming (camera inside), all are potentially valid
+            return FoldOutgoing(_data);
 
         long visibilityData = _data;
         
-        // Angle occlusion masking (Sodium's optimization)
         visibilityData &= GetAngleMask(viewPos, renderer);
 
         long mask = CreateMask((int)incoming);
@@ -64,8 +60,6 @@ public struct ChunkVisibilityStore
 
     private static long CreateMask(int incoming)
     {
-        // This spreads the 6 mask bits across 6 bytes, putting bit 'i' at bit 0 of byte 'i'
-        // Multiplier has bits at 0, 7, 14, 21, 28, 35
         const long multiplier = 0x810204081L;
         long expanded = multiplier * (uint)incoming;
         return (expanded & 0x010101010101L) * 0xFF;

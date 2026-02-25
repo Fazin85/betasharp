@@ -135,7 +135,7 @@ public class ChunkRenderer : Occlusion.IChunkVisibilityVisitor
             (int)Math.Floor(viewPos.Z / SubChunkRenderer.Size) * SubChunkRenderer.Size
         );
 
-        renderers.TryGetValue(cameraChunkPos, out var cameraState);
+        renderers.TryGetValue(cameraChunkPos, out SubChunkState? cameraState);
 
         if (cameraState == null)
         {
@@ -160,9 +160,9 @@ public class ChunkRenderer : Occlusion.IChunkVisibilityVisitor
         if (DebugRenderOccluded)
         {
             var occludedRenderers = new List<SubChunkRenderer>();
-            foreach (var state in renderers.Values)
+            foreach (SubChunkState state in renderers.Values)
             {
-                var renderer = state.Renderer;
+                SubChunkRenderer renderer = state.Renderer;
                 if (renderer.LastVisibleFrame != frameIndex)
                 {
                     // Chunks that were NOT visited by the culler, but are in frustum/distance
@@ -183,7 +183,7 @@ public class ChunkRenderer : Occlusion.IChunkVisibilityVisitor
         }
 
         int translucentCount = 0;
-        foreach (var renderer in visibleRenderers)
+        foreach (SubChunkRenderer renderer in visibleRenderers)
         {
             renderer.Update(deltaTime);
 
@@ -202,8 +202,7 @@ public class ChunkRenderer : Occlusion.IChunkVisibilityVisitor
             }
         }
 
-        // Handle removals and cleanup for non-visible chunks if necessary
-        foreach (var state in renderers.Values)
+        foreach (SubChunkState state in renderers.Values)
         {
             if (!IsChunkInRenderDistance(state.Renderer.Position, viewPos))
             {
@@ -212,7 +211,7 @@ public class ChunkRenderer : Occlusion.IChunkVisibilityVisitor
         }
         TranslucentMeshes = translucentCount;
 
-        foreach (var renderer in renderersToRemove)
+        foreach (SubChunkRenderer renderer in renderersToRemove)
         {
             UpdateAdjacency(renderer, false);
             renderers.Remove(renderer.Position);
@@ -270,7 +269,7 @@ public class ChunkRenderer : Occlusion.IChunkVisibilityVisitor
             return distB.CompareTo(distA);
         });
 
-        foreach (var renderer in translucentRenderers)
+        foreach (SubChunkRenderer renderer in translucentRenderers)
         {
             float fadeProgress = Math.Clamp(renderer.Age / SubChunkRenderer.FadeDuration, 0.0f, 1.0f);
             chunkShader.SetUniform1("fadeProgress", fadeProgress);
@@ -291,7 +290,7 @@ public class ChunkRenderer : Occlusion.IChunkVisibilityVisitor
             {
                 if (IsChunkInRenderDistance(mesh.Pos, viewPos))
                 {
-                    if (!chunkVersions.TryGetValue(mesh.Pos, out var version))
+                    if (!chunkVersions.TryGetValue(mesh.Pos, out ChunkMeshVersion? version))
                     {
                         version = ChunkMeshVersion.Get();
                         chunkVersions[mesh.Pos] = version;
@@ -330,17 +329,17 @@ public class ChunkRenderer : Occlusion.IChunkVisibilityVisitor
 
     private void UpdateAdjacency(SubChunkRenderer renderer, bool added)
     {
-        var pos = renderer.Position;
+        Vector3D<int> pos = renderer.Position;
         int size = SubChunkRenderer.Size;
 
-        SubChunkRenderer? Get(Vector3D<int> p) => renderers.TryGetValue(p, out var s) ? s.Renderer : null;
+        SubChunkRenderer? Get(Vector3D<int> p) => renderers.TryGetValue(p, out SubChunkState? s) ? s.Renderer : null;
 
-        var down = Get(pos + new Vector3D<int>(0, -size, 0));
-        var up = Get(pos + new Vector3D<int>(0, size, 0));
-        var north = Get(pos + new Vector3D<int>(0, 0, -size));
-        var south = Get(pos + new Vector3D<int>(0, 0, size));
-        var west = Get(pos + new Vector3D<int>(-size, 0, 0));
-        var east = Get(pos + new Vector3D<int>(size, 0, 0));
+        SubChunkRenderer? down = Get(pos + new Vector3D<int>(0, -size, 0));
+        SubChunkRenderer? up = Get(pos + new Vector3D<int>(0, size, 0));
+        SubChunkRenderer? north = Get(pos + new Vector3D<int>(0, 0, -size));
+        SubChunkRenderer? south = Get(pos + new Vector3D<int>(0, 0, size));
+        SubChunkRenderer? west = Get(pos + new Vector3D<int>(-size, 0, 0));
+        SubChunkRenderer? east = Get(pos + new Vector3D<int>(size, 0, 0));
 
         if (added)
         {
@@ -351,21 +350,21 @@ public class ChunkRenderer : Occlusion.IChunkVisibilityVisitor
             renderer.AdjacentWest = west;
             renderer.AdjacentEast = east;
 
-            if (down != null) down.AdjacentUp = renderer;
-            if (up != null) up.AdjacentDown = renderer;
-            if (north != null) north.AdjacentSouth = renderer;
-            if (south != null) south.AdjacentNorth = renderer;
-            if (west != null) west.AdjacentEast = renderer;
-            if (east != null) east.AdjacentWest = renderer;
+            down?.AdjacentUp = renderer;
+            up?.AdjacentDown = renderer;
+            north?.AdjacentSouth = renderer;
+            south?.AdjacentNorth = renderer;
+            west?.AdjacentEast = renderer;
+            east?.AdjacentWest = renderer;
         }
         else
         {
-            if (down != null) down.AdjacentUp = null;
-            if (up != null) up.AdjacentDown = null;
-            if (north != null) north.AdjacentSouth = null;
-            if (south != null) south.AdjacentNorth = null;
-            if (west != null) west.AdjacentEast = null;
-            if (east != null) east.AdjacentWest = null;
+            down?.AdjacentUp = null;
+            up?.AdjacentDown = null;
+            north?.AdjacentSouth = null;
+            south?.AdjacentNorth = null;
+            west?.AdjacentEast = null;
+            east?.AdjacentWest = null;
         }
     }
 
@@ -383,8 +382,8 @@ public class ChunkRenderer : Occlusion.IChunkVisibilityVisitor
             {
                 for (int z = -size; z <= size; z += size)
                 {
-                    var pos = cameraChunkPos + new Vector3D<int>(x, y, z);
-                    if (renderers.TryGetValue(pos, out var state))
+                    Vector3D<int> pos = cameraChunkPos + new Vector3D<int>(x, y, z);
+                    if (renderers.TryGetValue(pos, out SubChunkState? state))
                     {
                         if (state.Renderer.LastVisibleFrame != frame)
                         {
@@ -411,7 +410,7 @@ public class ChunkRenderer : Occlusion.IChunkVisibilityVisitor
 
         for (int i = 0; i < dirtyChunks.Count; i++)
         {
-            var info = dirtyChunks[i];
+            ChunkToMeshInfo info = dirtyChunks[i];
 
             if (!IsChunkInRenderDistance(info.Pos, lastViewPos))
             {
@@ -466,11 +465,11 @@ public class ChunkRenderer : Occlusion.IChunkVisibilityVisitor
 
     public void UpdateAllRenderers()
     {
-        foreach (var state in renderers.Values)
+        foreach (SubChunkState state in renderers.Values)
         {
             if (IsChunkInRenderDistance(state.Renderer.Position, lastViewPos) && state.IsLit)
             {
-                if (!chunkVersions.TryGetValue(state.Renderer.Position, out var version))
+                if (!chunkVersions.TryGetValue(state.Renderer.Position, out ChunkMeshVersion? version))
                 {
                     version = ChunkMeshVersion.Get();
                     chunkVersions[state.Renderer.Position] = version;
@@ -510,13 +509,13 @@ public class ChunkRenderer : Occlusion.IChunkVisibilityVisitor
 
         for (int i = 0; i < PRIORITY_PASS_LIMIT && i < spiralOffsets.Length; i++)
         {
-            var offset = spiralOffsets[i];
+            Vector3D<int> offset = spiralOffsets[i];
             int distSq = offset.X * offset.X + offset.Y * offset.Y + offset.Z * offset.Z;
 
             if (distSq > radiusSq)
                 break;
 
-            var chunkPos = (currentChunk + offset) * SubChunkRenderer.Size;
+            Vector3D<int> chunkPos = (currentChunk + offset) * SubChunkRenderer.Size;
 
             if (chunkPos.Y < 0 || chunkPos.Y >= 128)
                 continue;
@@ -542,12 +541,12 @@ public class ChunkRenderer : Occlusion.IChunkVisibilityVisitor
         {
             for (int i = 0; i < BACKGROUND_PASS_LIMIT; i++)
             {
-                var offset = spiralOffsets[currentIndex];
+                Vector3D<int> offset = spiralOffsets[currentIndex];
                 int distSq = offset.X * offset.X + offset.Y * offset.Y + offset.Z * offset.Z;
 
                 if (distSq <= radiusSq)
                 {
-                    var chunkPos = (currentChunk + offset) * SubChunkRenderer.Size;
+                    Vector3D<int> chunkPos = (currentChunk + offset) * SubChunkRenderer.Size;
                     if (!renderers.ContainsKey(chunkPos) && !chunkVersions.ContainsKey(chunkPos))
                     {
                         if (MarkDirty(chunkPos))
@@ -565,7 +564,7 @@ public class ChunkRenderer : Occlusion.IChunkVisibilityVisitor
         }
 
         Profiler.Start("WorldRenderer.Tick.RemoveVersions");
-        foreach (var version in chunkVersions)
+        foreach (KeyValuePair<Vector3D<int>, ChunkMeshVersion> version in chunkVersions)
         {
             if (!IsChunkInRenderDistance(version.Key, lastViewPos))
             {
@@ -573,7 +572,7 @@ public class ChunkRenderer : Occlusion.IChunkVisibilityVisitor
             }
         }
 
-        foreach (var pos in chunkVersionsToRemove)
+        foreach (Vector3D<int> pos in chunkVersionsToRemove)
         {
             chunkVersions[pos].Release();
             chunkVersions.Remove(pos);
@@ -590,7 +589,7 @@ public class ChunkRenderer : Occlusion.IChunkVisibilityVisitor
         if (!world.isRegionLoaded(chunkPos.X - 1, chunkPos.Y - 1, chunkPos.Z - 1, chunkPos.X + SubChunkRenderer.Size + 1, chunkPos.Y + SubChunkRenderer.Size + 1, chunkPos.Z + SubChunkRenderer.Size + 1) | !IsChunkInRenderDistance(chunkPos, lastViewPos))
             return false;
 
-        if (!chunkVersions.TryGetValue(chunkPos, out var version))
+        if (!chunkVersions.TryGetValue(chunkPos, out ChunkMeshVersion? version))
         {
             version = ChunkMeshVersion.Get();
             chunkVersions[chunkPos] = version;
@@ -633,7 +632,7 @@ public class ChunkRenderer : Occlusion.IChunkVisibilityVisitor
 
     public void Dispose()
     {
-        foreach (var state in renderers.Values)
+        foreach (SubChunkState state in renderers.Values)
         {
             state.Renderer.Dispose();
         }
@@ -645,7 +644,7 @@ public class ChunkRenderer : Occlusion.IChunkVisibilityVisitor
         translucentRenderers.Clear();
         renderersToRemove.Clear();
 
-        foreach (var version in chunkVersions.Values)
+        foreach (ChunkMeshVersion version in chunkVersions.Values)
         {
             version.Release();
         }

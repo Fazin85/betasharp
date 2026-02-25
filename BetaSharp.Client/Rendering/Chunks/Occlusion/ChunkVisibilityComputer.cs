@@ -11,10 +11,8 @@ public static class ChunkVisibilityComputer
         int totalBlocks = size * size * size;
         ChunkVisibilityStore store = new();
         
-        // We use a bitset to track visited blocks
         Span<uint> visited = stackalloc uint[(totalBlocks + 31) / 32];
         
-        // Check connectivity from each face
         for (int f = 0; f < ChunkDirectionExtensions.Count; f++)
         {
             ChunkDirection startFace = (ChunkDirection)f;
@@ -22,7 +20,6 @@ public static class ChunkVisibilityComputer
             
             ChunkDirectionMask reachable = FloodFill(cache, minX, minY, minZ, startFace, visited, size);
             
-            // For each reachable face, set visibility
             for (int t = 0; t < ChunkDirectionExtensions.Count; t++)
             {
                 if ((reachable & (ChunkDirectionMask)(1 << t)) != 0)
@@ -45,11 +42,9 @@ public static class ChunkVisibilityComputer
         ChunkDirectionMask reachable = ChunkDirectionMask.None;
         int totalBlocks = size * size * size;
         
-        // Queue for flood fill
         Span<ushort> queue = stackalloc ushort[totalBlocks];
         int head = 0, tail = 0;
 
-        // Add all air blocks on the start face to the queue
         for (int i = 0; i < size; i++)
         {
             for (int j = 0; j < size; j++)
@@ -94,7 +89,6 @@ public static class ChunkVisibilityComputer
                 lz = (idx >> 10) & 0x1F;
             }
 
-            // Check if we touched any other face
             if (lx == 0) reachable |= ChunkDirectionMask.West;
             if (lx == size - 1) reachable |= ChunkDirectionMask.East;
             if (ly == 0) reachable |= ChunkDirectionMask.Down;
@@ -102,7 +96,6 @@ public static class ChunkVisibilityComputer
             if (lz == 0) reachable |= ChunkDirectionMask.North;
             if (lz == size - 1) reachable |= ChunkDirectionMask.South;
 
-            // Visit neighbors
             TryVisit(cache, minX, minY, minZ, lx - 1, ly, lz, visited, queue, ref tail, size);
             TryVisit(cache, minX, minY, minZ, lx + 1, ly, lz, visited, queue, ref tail, size);
             TryVisit(cache, minX, minY, minZ, lx, ly - 1, lz, visited, queue, ref tail, size);
@@ -139,7 +132,7 @@ public static class ChunkVisibilityComputer
     {
         int id = cache.getBlockId(x, y, z);
         if (id <= 0) return true;
-        return !BetaSharp.Blocks.Block.BlocksOpaque[id];
+        return !Block.BlocksOpaque[id];
     }
 
     private static int GetIndex(int x, int y, int z, int size)

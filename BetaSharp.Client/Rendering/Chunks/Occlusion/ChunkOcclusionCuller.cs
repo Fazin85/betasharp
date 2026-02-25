@@ -1,6 +1,4 @@
-using BetaSharp.Util.Maths;
 using Silk.NET.Maths;
-using BetaSharp.Worlds;
 
 namespace BetaSharp.Client.Rendering.Chunks.Occlusion;
 
@@ -29,7 +27,7 @@ public class ChunkOcclusionCuller
             _data[_write++] = item;
         }
 
-        public SubChunkRenderer Dequeue()
+        public SubChunkRenderer? Dequeue()
         {
             if (_read == _write) return null;
             return _data[_read++];
@@ -56,26 +54,17 @@ public class ChunkOcclusionCuller
         bool useOcclusionCulling,
         int frame)
     {
-        var readQueue = _queues[_currentQueue];
-        var writeQueue = _queues[1 - _currentQueue];
+        ChunkQueue readQueue = _queues[_currentQueue];
+        ChunkQueue writeQueue = _queues[1 - _currentQueue];
 
         readQueue.Reset();
         writeQueue.Reset();
 
         if (startNode == null)
         {
-            // Fallback: If camera is above/below world, start from all chunks on the boundary face
-            int boundaryY = viewPos.Y < 0 ? 0 : 112; // 128 - 16 = 112 for bottom of top section
-            var direction = viewPos.Y < 0 ? ChunkDirection.Down : ChunkDirection.Up;
-            
-            // This is complex to implement fully here without access to all renderers.
-            // For now, let's just return and rely on the fact that if we aren't in a chunk,
-            // we probably aren't occluded by anything either (except frustum).
-            // But we NEED a starting point.
             return;
         }
 
-        // Start traversal from the chunk the camera is in
         startNode.LastVisibleFrame = frame;
         startNode.IncomingDirections = ChunkDirectionMask.None;
         visitor.Visit(startNode);
@@ -95,7 +84,7 @@ public class ChunkOcclusionCuller
 
             writeQueue.Reset();
 
-            SubChunkRenderer current;
+            SubChunkRenderer? current;
             while ((current = readQueue.Dequeue()) != null)
             {
                 if (!IsVisible(current, viewPos, culler, renderDistance))
@@ -113,7 +102,6 @@ public class ChunkOcclusionCuller
                     outgoing = ChunkDirectionMask.All;
                 }
 
-                // Only traverse outwards from camera
                 outgoing &= GetOutwardDirections(viewPos, current);
 
                 EnqueueNeighbors(writeQueue, current, outgoing, frame);
@@ -121,7 +109,7 @@ public class ChunkOcclusionCuller
         }
     }
 
-    private void EnqueueNeighbors(ChunkQueue queue, SubChunkRenderer current, ChunkDirectionMask outgoing, int frame)
+    private static void EnqueueNeighbors(ChunkQueue queue, SubChunkRenderer current, ChunkDirectionMask outgoing, int frame)
     {
         if (outgoing == ChunkDirectionMask.None) return;
 
@@ -133,7 +121,7 @@ public class ChunkOcclusionCuller
         if ((outgoing & ChunkDirectionMask.East) != 0) VisitNode(queue, current.AdjacentEast, ChunkDirectionMask.West, frame);
     }
 
-    private void VisitNode(ChunkQueue queue, SubChunkRenderer neighbor, ChunkDirectionMask incoming, int frame)
+    private static void VisitNode(ChunkQueue queue, SubChunkRenderer? neighbor, ChunkDirectionMask incoming, int frame)
     {
         if (neighbor == null) return;
 
@@ -147,9 +135,8 @@ public class ChunkOcclusionCuller
         neighbor.IncomingDirections |= incoming;
     }
 
-    private bool IsVisible(SubChunkRenderer renderer, Vector3D<double> viewPos, Culler culler, float renderDistance)
+    private static bool IsVisible(SubChunkRenderer renderer, Vector3D<double> viewPos, Culler culler, float renderDistance)
     {
-        // Simple frustum and distance check
         if (!culler.isBoundingBoxInFrustum(renderer.BoundingBox)) return false;
 
         double dx = renderer.PositionPlus.X - viewPos.X;
@@ -159,7 +146,7 @@ public class ChunkOcclusionCuller
         return (dx * dx + dz * dz) < (renderDistance * renderDistance) && Math.Abs(dy) < renderDistance;
     }
 
-    private ChunkDirectionMask GetOutwardDirections(Vector3D<double> viewPos, SubChunkRenderer renderer)
+    private static ChunkDirectionMask GetOutwardDirections(Vector3D<double> viewPos, SubChunkRenderer renderer)
     {
         int chunkX = renderer.Position.X / SubChunkRenderer.Size;
         int chunkY = renderer.Position.Y / SubChunkRenderer.Size;

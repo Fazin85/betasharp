@@ -22,7 +22,6 @@ public class SubChunkRenderer : IDisposable
     public bool HasFadedIn => Age >= FadeDuration;
     public const float FadeDuration = 1.0f;
 
-    // Occlusion Culling State
     public Occlusion.ChunkVisibilityStore VisibilityData;
     public Occlusion.ChunkDirectionMask IncomingDirections;
     public int LastVisibleFrame = -1;

@@ -80,7 +80,7 @@ public class ChunkMeshGenerator : IDisposable
 
             try
             {
-                var mesh = GenerateMesh(pos, version, cache);
+                MeshBuildResult mesh = GenerateMesh(pos, version, cache);
                 lock (results)
                     results.Enqueue(mesh);
             }
@@ -141,10 +141,10 @@ public class ChunkMeshGenerator : IDisposable
             tess.draw();
             tess.setTranslationD(0, 0, 0);
 
-            var verts = tess.endCaptureChunkVertices();
+            PooledList<ChunkVertex> verts = tess.endCaptureChunkVertices();
             if (verts.Count > 0)
             {
-                var list = listPool.Get();
+                PooledList<ChunkVertex> list = listPool.Get();
                 list.AddRange(verts.Span);
 
                 if (pass == 0)
