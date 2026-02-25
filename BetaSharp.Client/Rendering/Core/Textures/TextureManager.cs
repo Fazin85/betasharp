@@ -24,7 +24,7 @@ public class TextureManager : IDisposable
     private bool _blur;
     private readonly TexturePacks _texturePacks;
     private readonly Minecraft _mc;
-    private readonly Image<Rgba32> _missingTextureImage = new(64, 64);
+    private readonly Image<Rgba32> _missingTextureImage = new(256, 256);
 
     public TextureManager(Minecraft mc, TexturePacks texturePacks, GameOptions options)
     {
@@ -34,8 +34,8 @@ public class TextureManager : IDisposable
         _missingTextureImage.Mutate(ctx =>
         {
             ctx.BackgroundColor(Color.Magenta);
-            ctx.Fill(Color.Black, new RectangleF(0, 0, 32, 32));
-            ctx.Fill(Color.Black, new RectangleF(32, 32, 32, 32));
+            ctx.Fill(Color.Black, new RectangleF(0, 0, 128, 128));
+            ctx.Fill(Color.Black, new RectangleF(128, 128, 128, 128));
         });
     }
 
@@ -57,6 +57,12 @@ public class TextureManager : IDisposable
             return fallback;
         }
 
+    }
+
+    public int GetAtlasTileSize(string path)
+    {
+        if (_atlasTileSizes.TryGetValue(path, out int size)) return size;
+        return 16;
     }
 
     public TextureHandle Load(Image<Rgba32> image)
@@ -255,6 +261,7 @@ public class TextureManager : IDisposable
 
     public void Reload()
     {
+        _atlasTileSizes.Clear();
         foreach (KeyValuePair<string, TextureHandle> entry in _textures)
         {
             entry.Value.Texture?.Dispose();
@@ -271,6 +278,7 @@ public class TextureManager : IDisposable
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to reload texture {Path}", entry.Key);
+                _atlasTileSizes[entry.Key] = _missingTextureImage.Width / 16;
                 Load(_missingTextureImage, newTexture, false);
             }
         }
@@ -315,32 +323,78 @@ public class TextureManager : IDisposable
             int tileY = (texture.sprite / 16) * targetTileSize;
 
             int fxSize = (int)Math.Sqrt(texture.pixels.Length / 4);
-            int finalReplicate = (texture.replicate * targetTileSize) / fxSize;
-            if (finalReplicate < 1) finalReplicate = 1;
+            int scale = targetTileSize / fxSize;
+            if (scale < 1) scale = 1;
 
-            fixed (byte* ptr = texture.pixels)
+            byte[] uploadPixels = texture.pixels;
+            int uploadSize = fxSize;
+            byte[]? rentedArray = null;
+
+            try
             {
-                for (int x = 0; x < finalReplicate; x++)
+                if (scale > 1)
                 {
-                    for (int y = 0; y < finalReplicate; y++)
+                    uploadSize = fxSize * scale;
+                    rentedArray = System.Buffers.ArrayPool<byte>.Shared.Rent(uploadSize * uploadSize * 4);
+                    UpscaleNearestNeighbor(texture.pixels, rentedArray, fxSize, uploadSize, scale);
+                    uploadPixels = rentedArray;
+                }
+
+                int finalReplicate = texture.replicate;
+
+                fixed (byte* ptr = uploadPixels)
+                {
+                    for (int x = 0; x < finalReplicate; x++)
                     {
-                        atlasTexture.UploadSubImage(
-                           tileX + (x * fxSize),
-                           tileY + (y * fxSize),
-                           fxSize, fxSize, ptr, 0, PixelFormat.Rgba);
+                        for (int y = 0; y < finalReplicate; y++)
+                        {
+                            atlasTexture.UploadSubImage(
+                               tileX + (x * uploadSize),
+                               tileY + (y * uploadSize),
+                               uploadSize, uploadSize, ptr, 0, PixelFormat.Rgba);
+                        }
+                    }
+                }
+
+                if (texture.atlas == DynamicTexture.FXImage.Terrain && _gameOptions.UseMipmaps)
+                {
+                    for (int x = 0; x < finalReplicate; x++)
+                    {
+                        for (int y = 0; y < finalReplicate; y++)
+                        {
+                            UpdateTileMipmaps(tileX + (x * uploadSize), tileY + (y * uploadSize), uploadSize, targetTileSize, uploadPixels, atlasTexture);
+                        }
                     }
                 }
             }
-
-            if (texture.atlas == DynamicTexture.FXImage.Terrain && _gameOptions.UseMipmaps)
+            finally
             {
-                for (int x = 0; x < finalReplicate; x++)
+                if (rentedArray != null)
                 {
-                    for (int y = 0; y < finalReplicate; y++)
-                    {
-                        UpdateTileMipmaps(tileX + (x * fxSize), tileY + (y * fxSize), fxSize, targetTileSize, texture.pixels, atlasTexture);
-                    }
+                    System.Buffers.ArrayPool<byte>.Shared.Return(rentedArray);
                 }
+            }
+        }
+    }
+
+    private static void UpscaleNearestNeighbor(byte[] src, byte[] dst, int srcSize, int dstSize, int scale)
+    {
+        ReadOnlySpan<byte> srcSpan = src;
+        Span<byte> dstSpan = dst;
+
+        for (int y = 0; y < dstSize; y++)
+        {
+            int srcY = y / scale;
+            for (int x = 0; x < dstSize; x++)
+            {
+                int srcX = x / scale;
+                int srcIdx = (srcY * srcSize + srcX) * 4;
+                int dstIdx = (y * dstSize + x) * 4;
+                
+                dstSpan[dstIdx] = srcSpan[srcIdx];
+                dstSpan[dstIdx + 1] = srcSpan[srcIdx + 1];
+                dstSpan[dstIdx + 2] = srcSpan[srcIdx + 2];
+                dstSpan[dstIdx + 3] = srcSpan[srcIdx + 3];
             }
         }
     }
