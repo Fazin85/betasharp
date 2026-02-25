@@ -2637,37 +2637,51 @@ public abstract class World : BlockView
     internal PathEntity findPath(Entity entity, Entity target, float range)
     {
         Profiler.Start("AI.PathFinding.FindPathToTarget");
+
         int entityX = MathHelper.Floor(entity.x);
         int entityY = MathHelper.Floor(entity.y);
         int entityZ = MathHelper.Floor(entity.z);
         int searchRadius = (int)(range + 16.0F);
+
         int minX = entityX - searchRadius;
         int minY = entityY - searchRadius;
         int minZ = entityZ - searchRadius;
         int maxX = entityX + searchRadius;
         int maxY = entityY + searchRadius;
         int maxZ = entityZ + searchRadius;
+
         WorldRegion region = new(this, minX, minY, minZ, maxX, maxY, maxZ);
+        PathFinder finder = new PathFinder(region);
+
+        PathEntity result = finder.CreateEntityPathTo(entity, target, range);
         Profiler.Stop("AI.PathFinding.FindPathToTarget");
-        return new PathFinder(region).CreateEntityPathTo(entity, target, range);
+
+        return result;
     }
 
     internal PathEntity findPath(Entity entity, int x, int y, int z, float range)
     {
         Profiler.Start("AI.PathFinding.FindPathToPosition");
+
         int entityX = MathHelper.Floor(entity.x);
         int entityY = MathHelper.Floor(entity.y);
         int entityZ = MathHelper.Floor(entity.z);
         int searchRadius = (int)(range + 8.0F);
+
         int minX = entityX - searchRadius;
         int minY = entityY - searchRadius;
         int minZ = entityZ - searchRadius;
         int maxX = entityX + searchRadius;
         int maxY = entityY + searchRadius;
         int maxZ = entityZ + searchRadius;
+
         WorldRegion region = new(this, minX, minY, minZ, maxX, maxY, maxZ);
+        PathFinder finder = new PathFinder(region);
+
+        PathEntity result = finder.CreateEntityPathTo(entity, x, y, z, range);
         Profiler.Stop("AI.PathFinding.FindPathToPosition");
-        return new PathFinder(region).CreateEntityPathTo(entity, x, y, z, range);
+
+        return result;
     }
 
     public bool isStrongPoweringSide(int x, int y, int z, int side)
