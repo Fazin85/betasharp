@@ -3,8 +3,8 @@ namespace BetaSharp.Util;
 public static class UnixTime
 {
     // i feel very stupid
-    public static long GetCurrentTimeMillis()
+    public static long ToMillis(this DateTimeOffset dateTime)
     {
-        return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        return dateTime.ToUnixTimeMilliseconds();
     }
 }

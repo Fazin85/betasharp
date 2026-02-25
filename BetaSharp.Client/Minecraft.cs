@@ -93,7 +93,7 @@ public partial class Minecraft
     public bool inGameHasFocus;
     private int mouseTicksRan;
     public bool isRaining = false;
-    long systemTime = UnixTime.GetCurrentTimeMillis();
+    long systemTime = DateTimeOffset.UtcNow.ToMillis();
     private int joinPlayerCounter;
     private ImGuiController imGuiController;
     public InternalServer? internalServer;
@@ -487,7 +487,7 @@ public partial class Minecraft
 
         try
         {
-            long lastFpsCheckTime = UnixTime.GetCurrentTimeMillis();
+            long lastFpsCheckTime = DateTimeOffset.UtcNow.ToMillis();
             int frameCounter = 0;
 
             while (running)
@@ -651,7 +651,7 @@ public partial class Minecraft
                     isGamePaused = (!isMultiplayerWorld() || internalServer != null) && (currentScreen?.PausesGame ?? false);
 
                     for (;
-                         UnixTime.GetCurrentTimeMillis() >= lastFpsCheckTime + 1000L;
+                         DateTimeOffset.UtcNow.ToMillis() >= lastFpsCheckTime + 1000L;
                          frameCounter = 0)
                     {
                         debug = frameCounter + " fps";
@@ -1246,7 +1246,7 @@ public partial class Minecraft
             }
         }
 
-        systemTime = UnixTime.GetCurrentTimeMillis();
+        systemTime = DateTimeOffset.UtcNow.ToMillis();
         Profiler.PopGroup();
     }
 
@@ -1254,7 +1254,7 @@ public partial class Minecraft
     {
         while (Mouse.next())
         {
-            long timeSinceLastMouseEvent = UnixTime.GetCurrentTimeMillis() - systemTime;
+            long timeSinceLastMouseEvent = DateTimeOffset.UtcNow.ToMillis() - systemTime;
             if (timeSinceLastMouseEvent <= 200L)
             {
                 int mouseWheelDelta = Mouse.getEventDWheel();
@@ -1682,7 +1682,7 @@ public partial class Minecraft
 
             if (sessionToken == "-")
             {
-                hasPaidCheckTime = UnixTime.GetCurrentTimeMillis();
+                hasPaidCheckTime = DateTimeOffset.UtcNow.ToMillis();
             }
         }
         else
