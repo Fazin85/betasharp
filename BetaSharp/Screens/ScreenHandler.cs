@@ -6,7 +6,7 @@ using java.util;
 
 namespace BetaSharp.Screens;
 
-public abstract class ScreenHandler : java.lang.Object
+public abstract class ScreenHandler
 {
     public List trackedStacks = new ArrayList();
     public List slots = new ArrayList();

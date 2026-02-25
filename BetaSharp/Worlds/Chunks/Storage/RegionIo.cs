@@ -4,7 +4,7 @@ using java.util;
 
 namespace BetaSharp.Worlds.Chunks.Storage;
 
-public class RegionIo : java.lang.Object
+public class RegionIo
 {
     private static readonly Map cache = new HashMap();
     private static readonly object l = new();

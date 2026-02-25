@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Items;
 
-public class Item : java.lang.Object
+public class Item
 {
     private readonly ILogger<Item> _logger = Log.Instance.For<Item>();
 

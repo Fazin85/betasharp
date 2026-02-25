@@ -1,6 +1,6 @@
 namespace BetaSharp.Worlds.Colors;
 
-public class FoliageColors : java.lang.Object
+public class FoliageColors
 {
     private static int[] foliageBuffer = new int[65536];
 

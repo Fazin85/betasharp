@@ -1,4 +1,4 @@
-namespace BetaSharp.Launcher.Features.Xbox.Profile;
+namespace BetaSharp.Launcher.Features.Xbox.User;
 
 internal sealed class UserResponse
 {

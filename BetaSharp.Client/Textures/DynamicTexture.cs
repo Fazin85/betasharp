@@ -7,14 +7,14 @@ using System.IO;
 
 namespace BetaSharp.Client.Textures;
 
-public class DynamicTexture : java.lang.Object
+public class DynamicTexture
 {
     public byte[] pixels = new byte[1024];
     public int sprite;
     public int copyTo = 0;
     public int replicate = 1;
     public FXImage atlas = FXImage.Terrain;
-    
+
     protected byte[][]? customFrames;
     protected int customFrameIndex;
     protected int customFrameCount;
