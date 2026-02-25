@@ -16,7 +16,7 @@ public class BlockRenderer
     
     private bool _flipTexture;
     private bool _renderAllFaces;
-    private static bool s_fancyGrass = true;
+    private static readonly bool s_fancyGrass = true;
     public bool renderFromInside = true;
     private int _uvRotateEast;
     private int _uvRotateWest;
