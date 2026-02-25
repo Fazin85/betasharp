@@ -89,7 +89,7 @@ public class GameRenderer
                 Vec3D var8 = var6 + var2 * var7;
                 _targetedEntity = null;
                 float var9 = 1.0F;
-                var var10 = _client.world.getEntities(_client.camera, _client.camera.boundingBox.stretch(var7.x * var2, var7.y * var2, var7.z * var2).expand((double)var9, (double)var9, (double)var9));
+                var var10 = _client.world.getEntities(_client.camera, _client.camera.boundingBox.Stretch(var7.x * var2, var7.y * var2, var7.z * var2).Expand((double)var9, (double)var9, (double)var9));
                 double var11 = 0.0D;
 
                 for (int var13 = 0; var13 < var10.Count; ++var13)
@@ -98,9 +98,9 @@ public class GameRenderer
                     if (var14.isCollidable())
                     {
                         float var15 = var14.getTargetingMargin();
-                        Box var16 = var14.boundingBox.expand((double)var15, (double)var15, (double)var15);
-                        HitResult var17 = var16.raycast(var6, var8);
-                        if (var16.contains(var6))
+                        Box var16 = var14.boundingBox.Expand((double)var15, (double)var15, (double)var15);
+                        HitResult var17 = var16.Raycast(var6, var8);
+                        if (var16.Contains(var6))
                         {
                             if (0.0D < var11 || var11 == 0.0D)
                             {
@@ -466,7 +466,7 @@ public class GameRenderer
                     {
                         if (Block.Blocks[var19].material == Material.Lava)
                         {
-                            _client.particleManager.addEffect(new EntitySmokeFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].BoundingBox.minY, (double)(var17 + var21), 0.0D, 0.0D, 0.0D));
+                            _client.particleManager.addEffect(new EntitySmokeFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].BoundingBox.MinY, (double)(var17 + var21), 0.0D, 0.0D, 0.0D));
                         }
                         else
                         {
@@ -474,11 +474,11 @@ public class GameRenderer
                             if (_random.NextInt(var14) == 0)
                             {
                                 var8 = (double)(var16 + var20);
-                                var10 = (double)(var18 + 0.1F) - Block.Blocks[var19].BoundingBox.minY;
+                                var10 = (double)(var18 + 0.1F) - Block.Blocks[var19].BoundingBox.MinY;
                                 var12 = (double)(var17 + var21);
                             }
 
-                            _client.particleManager.addEffect(new EntityRainFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].BoundingBox.minY, (double)(var17 + var21)));
+                            _client.particleManager.addEffect(new EntityRainFX(var3, (double)(var16 + var20), (double)(var18 + 0.1F) - Block.Blocks[var19].BoundingBox.MinY, (double)(var17 + var21)));
                         }
                     }
                 }

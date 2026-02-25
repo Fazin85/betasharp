@@ -1,8 +1,6 @@
 using BetaSharp.Network;
 using BetaSharp.Server.Threading;
-using java.lang;
 using java.net;
-using java.util.logging;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Server.Network;
@@ -49,7 +47,7 @@ public class ConnectionListener
     {
         if (connection == null)
         {
-            throw new IllegalArgumentException("Got null pendingconnection!");
+            throw new ArgumentException("Got null pendingconnection!", nameof(connection));
         }
         else
         {
@@ -73,7 +71,7 @@ public class ConnectionListener
             {
                 connection.tick();
             }
-            catch (java.lang.Exception ex)
+            catch (Exception ex)
             {
                 connection.disconnect("Internal server error");
                 _logger.LogError($"Failed to handle packet: {ex}");
@@ -95,7 +93,7 @@ public class ConnectionListener
             {
                 connection.tick();
             }
-            catch (java.lang.Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Failed to handle packet: {ex}");
                 connection.disconnect("Internal server error");

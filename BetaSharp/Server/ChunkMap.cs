@@ -6,7 +6,6 @@ using BetaSharp.Network.Packets.S2CPlay;
 using BetaSharp.Util;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.lang;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Server;
@@ -27,19 +26,17 @@ public class ChunkMap
     {
         if (viewRadius > 32)
         {
-            throw new IllegalArgumentException("Too big view radius! Max is 32.");
+            throw new ArgumentException("Too big view radius! Max is 32.", nameof(viewRadius));
         }
-        else if (viewRadius < 4)
+        if (viewRadius < 4)
         {
-            throw new IllegalArgumentException("Too small view radius! Min is 4.");
+            throw new ArgumentException("Too small view radius! Min is 4.", nameof(viewRadius));
         }
-        else
-        {
-            viewDistance = viewRadius;
-            this.server = server;
-            this.dimensionId = dimensionId;
-            this.loadQueue = new ChunkLoadingQueue(this);
-        }
+
+        viewDistance = viewRadius;
+        this.server = server;
+        this.dimensionId = dimensionId;
+        loadQueue = new ChunkLoadingQueue(this);
     }
 
     public ServerWorld getWorld()
@@ -338,7 +335,7 @@ public class ChunkMap
 
             if (player.activeChunks.Add(chunkPos))
             {
-                player.networkHandler.sendPacket(new ChunkStatusUpdateS2CPacket(chunkPos.x, chunkPos.z, true));
+                player.networkHandler.sendPacket(new ChunkStatusUpdateS2CPacket(chunkPos.X, chunkPos.Z, true));
             }
 
             players.Add(player);

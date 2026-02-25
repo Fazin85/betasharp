@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.Play;
 
 public class PlayerMovePacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayerMovePacket).TypeHandle);
-
     public double x;
     public double y;
     public double z;
@@ -25,22 +23,22 @@ public class PlayerMovePacket : Packet
         this.onGround = onGround;
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onPlayerMove(this);
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         onGround = stream.read() != 0;
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.write(onGround ? 1 : 0);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 1;
     }

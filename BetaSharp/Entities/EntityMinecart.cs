@@ -595,7 +595,7 @@ public class EntityMinecart : Entity, IInventory
             }
 
             setRotation(yaw, pitch);
-            var var16 = world.getEntities(this, boundingBox.expand((double)0.2F, 0.0D, (double)0.2F));
+            var var16 = world.getEntities(this, boundingBox.Expand((double)0.2F, 0.0D, (double)0.2F));
             if (var16 != null && var16.Count > 0)
             {
                 for (int var51 = 0; var51 < var16.Count; ++var51)

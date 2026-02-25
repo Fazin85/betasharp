@@ -6,8 +6,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class ChunkDataS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ChunkDataS2CPacket).TypeHandle);
-
     public int x;
     public int y;
     public int z;
@@ -20,12 +18,12 @@ public class ChunkDataS2CPacket : Packet
 
     public ChunkDataS2CPacket()
     {
-        worldPacket = true;
+        WorldPacket = true;
     }
 
     public ChunkDataS2CPacket(int x, int y, int z, int sizeX, int sizeY, int sizeZ, World world)
     {
-        worldPacket = true;
+        WorldPacket = true;
         this.x = x;
         this.y = y;
         this.z = z;
@@ -49,7 +47,7 @@ public class ChunkDataS2CPacket : Packet
         }
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         x = stream.readInt();
         y = stream.readShort();
@@ -81,7 +79,7 @@ public class ChunkDataS2CPacket : Packet
 
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeInt(x);
         stream.writeShort(y);
@@ -93,12 +91,12 @@ public class ChunkDataS2CPacket : Packet
         stream.write(chunkData, 0, chunkDataSize);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.handleChunkData(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 17 + chunkDataSize;
     }

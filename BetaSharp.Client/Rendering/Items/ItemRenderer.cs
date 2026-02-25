@@ -164,9 +164,9 @@ public class ItemRenderer : EntityRenderer
             }
 
             GLManager.GL.Rotate(-90.0F, 0.0F, 1.0F, 0.0F);
-            renderBlocks.field_31088_b = useCustomDisplayColor;
+            renderBlocks.renderFromInside = useCustomDisplayColor;
             renderBlocks.renderBlockOnInventory(var14, var4, 1.0F);
-            renderBlocks.field_31088_b = true;
+            renderBlocks.renderFromInside = true;
             GLManager.GL.PopMatrix();
         }
         else if (var5 >= 0)

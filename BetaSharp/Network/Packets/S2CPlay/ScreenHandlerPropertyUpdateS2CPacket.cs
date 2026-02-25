@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class ScreenHandlerPropertyUpdateS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ScreenHandlerPropertyUpdateS2CPacket).TypeHandle);
-
     public int syncId;
     public int propertyId;
     public int value;
@@ -21,26 +19,26 @@ public class ScreenHandlerPropertyUpdateS2CPacket : Packet
         this.value = value;
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onScreenHandlerPropertyUpdate(this);
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         syncId = (sbyte)stream.readByte();
         propertyId = stream.readShort();
         value = stream.readShort();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeByte(syncId);
         stream.writeShort(propertyId);
         stream.writeShort(value);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 5;
     }

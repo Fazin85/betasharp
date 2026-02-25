@@ -29,8 +29,15 @@ public abstract class TexturePack
 
     public virtual Stream? GetResourceAsStream(string path)
     {
-        var asset = AssetManager.Instance.getAsset(path);
-        if (asset == null) return null;
-        return new MemoryStream(asset.getBinaryContent());
+        try
+        {
+            AssetManager.Asset asset = AssetManager.Instance.getAsset(path);
+            if (asset == null) return null;
+            return new MemoryStream(asset.getBinaryContent());
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 }

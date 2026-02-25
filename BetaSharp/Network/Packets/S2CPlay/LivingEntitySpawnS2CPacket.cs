@@ -7,8 +7,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class LivingEntitySpawnS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(LivingEntitySpawnS2CPacket).TypeHandle);
-
     public int entityId;
     public sbyte type;
     public int xPosition;
@@ -17,11 +15,9 @@ public class LivingEntitySpawnS2CPacket : Packet
     public sbyte yaw;
     public sbyte pitch;
     private DataWatcher metaData;
-    private List receivedMetadata;
+    private List<WatchableObject> receivedMetadata;
 
-    public LivingEntitySpawnS2CPacket()
-    {
-    }
+    public LivingEntitySpawnS2CPacket() { }
 
     public LivingEntitySpawnS2CPacket(EntityLiving ent)
     {
@@ -35,7 +31,7 @@ public class LivingEntitySpawnS2CPacket : Packet
         metaData = ent.getDataWatcher();
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         entityId = stream.readInt();
         type = (sbyte)stream.readByte();
@@ -44,10 +40,10 @@ public class LivingEntitySpawnS2CPacket : Packet
         zPosition = stream.readInt();
         yaw = (sbyte)stream.readByte();
         pitch = (sbyte)stream.readByte();
-        receivedMetadata = DataWatcher.readWatchableObjects(stream);
+        receivedMetadata = DataWatcher.ReadWatchableObjects(stream);
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeInt(entityId);
         stream.writeByte(type);
@@ -56,20 +52,20 @@ public class LivingEntitySpawnS2CPacket : Packet
         stream.writeInt(zPosition);
         stream.writeByte(yaw);
         stream.writeByte(pitch);
-        metaData.writeWatchableObjects(stream);
+        metaData.WriteWatchableObjects(stream);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onLivingEntitySpawn(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 20;
     }
 
-    public List getMetadata()
+    public List<WatchableObject> GetMetadata()
     {
         return receivedMetadata;
     }

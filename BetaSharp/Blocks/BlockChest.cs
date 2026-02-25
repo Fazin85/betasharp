@@ -206,7 +206,7 @@ public class BlockChest : BlockWithEntity
 
     public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
     {
-        java.lang.Object chestInventory = (BlockEntityChest)world.getBlockEntity(x, y, z);
+        IInventory chestInventory = (BlockEntityChest)world.getBlockEntity(x, y, z);
         if (world.shouldSuffocate(x, y + 1, z))
         {
             return true;

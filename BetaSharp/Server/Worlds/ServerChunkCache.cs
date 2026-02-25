@@ -29,7 +29,7 @@ public class ServerChunkCache : ChunkSource
 
     public bool IsChunkLoaded(int x, int z)
     {
-        return _chunksByPos.ContainsKey(ChunkPos.hashCode(x, z));
+        return _chunksByPos.ContainsKey(ChunkPos.GetHashCode(x, z));
     }
 
     public void isLoaded(int chunkX, int chunkZ)
@@ -40,14 +40,14 @@ public class ServerChunkCache : ChunkSource
         short var6 = 128;
         if (var4 < -var6 || var4 > var6 || var5 < -var6 || var5 > var6)
         {
-            _chunksToUnload.Add(ChunkPos.hashCode(chunkX, chunkZ));
+            _chunksToUnload.Add(ChunkPos.GetHashCode(chunkX, chunkZ));
         }
     }
 
 
     public Chunk LoadChunk(int chunkX, int chunkZ)
     {
-        int var3 = ChunkPos.hashCode(chunkX, chunkZ);
+        int var3 = ChunkPos.GetHashCode(chunkX, chunkZ);
         _chunksToUnload.Remove(var3);
         _chunksByPos.TryGetValue(var3, out Chunk? var4);
         if (var4 == null)
@@ -115,7 +115,7 @@ public class ServerChunkCache : ChunkSource
 
     public Chunk GetChunk(int chunkX, int chunkZ)
     {
-        _chunksByPos.TryGetValue(ChunkPos.hashCode(chunkX, chunkZ), out Chunk? var3);
+        _chunksByPos.TryGetValue(ChunkPos.GetHashCode(chunkX, chunkZ), out Chunk? var3);
         if (var3 == null)
         {
             return !_world.eventProcessingEnabled && !forceLoad ? _empty : LoadChunk(chunkX, chunkZ);

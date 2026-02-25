@@ -5,8 +5,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class ExplosionS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ExplosionS2CPacket).TypeHandle);
-
     public double explosionX;
     public double explosionY;
     public double explosionZ;
@@ -26,7 +24,7 @@ public class ExplosionS2CPacket : Packet
         destroyedBlockPositions = new HashSet<BlockPos>(affectedBlocks);
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         explosionX = stream.readDouble();
         explosionY = stream.readDouble();
@@ -49,7 +47,7 @@ public class ExplosionS2CPacket : Packet
 
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeDouble(explosionX);
         stream.writeDouble(explosionY);
@@ -70,12 +68,12 @@ public class ExplosionS2CPacket : Packet
         }
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onExplosion(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 32 + destroyedBlockPositions.Count * 3;
     }

@@ -143,7 +143,7 @@ public class BlockEntityFurnace : BlockEntity, IInventory
             --burnTime;
         }
 
-        if (!world.isRemote)
+        if (!World.isRemote)
         {
             if (burnTime == 0 && canAcceptRecipeOutput())
             {
@@ -180,7 +180,7 @@ public class BlockEntityFurnace : BlockEntity, IInventory
             if (wasBurning != burnTime > 0)
             {
                 stateChanged = true;
-                BlockFurnace.updateLitState(burnTime > 0, world, x, y, z);
+                BlockFurnace.updateLitState(burnTime > 0, World, X, Y, Z);
             }
         }
 
@@ -242,6 +242,6 @@ public class BlockEntityFurnace : BlockEntity, IInventory
 
     public bool canPlayerUse(EntityPlayer player)
     {
-        return world.getBlockEntity(x, y, z) != this ? false : player.getSquaredDistance(x + 0.5D, y + 0.5D, z + 0.5D) <= 64.0D;
+        return World.getBlockEntity(X, Y, Z) != this ? false : player.getSquaredDistance(X + 0.5D, Y + 0.5D, Z + 0.5D) <= 64.0D;
     }
 }

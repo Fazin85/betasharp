@@ -7,7 +7,6 @@ using BetaSharp.Stats;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.lang;
 
 namespace BetaSharp.Blocks;
 
@@ -147,7 +146,7 @@ public class Block
         slipperiness = 0.6F;
         if (Blocks[id] != null)
         {
-            throw new IllegalArgumentException("Slot " + id + " is already occupied by " + Blocks[id] + " when adding " + this);
+            throw new ArgumentException("Slot " + id + " is already occupied by " + Blocks[id] + " when adding " + this, nameof(id));
         }
         else
         {
@@ -251,12 +250,12 @@ public class Block
 
     public virtual bool isSideVisible(BlockView blockView, int x, int y, int z, int side)
     {
-        var minX = BoundingBox.minX;
-        var minY = BoundingBox.minY;
-        var minZ = BoundingBox.minZ;
-        var maxX = BoundingBox.maxX;
-        var maxY = BoundingBox.maxY;
-        var maxZ = BoundingBox.maxZ;
+        var minX = BoundingBox.MinX;
+        var minY = BoundingBox.MinY;
+        var minZ = BoundingBox.MinZ;
+        var maxX = BoundingBox.MaxX;
+        var maxY = BoundingBox.MaxY;
+        var maxZ = BoundingBox.MaxZ;
         return side == 0 && minY > 0.0D ? true : (side == 1 && maxY < 1.0D ? true : (side == 2 && minZ > 0.0D ? true : (side == 3 && maxZ < 1.0D ? true : (side == 4 && minX > 0.0D ? true : (side == 5 && maxX < 1.0D ? true : !blockView.isOpaque(x, y, z))))));
     }
 
@@ -282,13 +281,13 @@ public class Block
 
     public virtual Box getBoundingBox(World world, int x, int y, int z)
     {
-        return BoundingBox.offset(x, y, z);
+        return BoundingBox.Offset(x, y, z);
     }
 
     public virtual void addIntersectingBoundingBox(World world, int x, int y, int z, Box box, List<Box> boxes)
     {
         Box? collisionBox = getCollisionShape(world, x, y, z);
-        if (collisionBox != null && box.intersects(collisionBox.Value))
+        if (collisionBox != null && box.Intersects(collisionBox.Value))
         {
             boxes.Add(collisionBox.Value);
         }
@@ -296,7 +295,7 @@ public class Block
 
     public virtual Box? getCollisionShape(World world, int x, int y, int z)
     {
-        return BoundingBox.offset(x, y, z);
+        return BoundingBox.Offset(x, y, z);
     }
 
     public virtual bool isOpaque()
@@ -412,7 +411,7 @@ public class Block
     {
         updateBoundingBox(world, x, y, z);
         Vec3D pos = new Vec3D(x, y, z);
-        HitResult res = BoundingBox.raycast(startPos - pos, endPos - pos);
+        HitResult res = BoundingBox.Raycast(startPos - pos, endPos - pos);
         if (res.Type == HitResultType.MISS) return new HitResult(HitResultType.MISS);
         res.BlockX = x;
         res.BlockY = y;

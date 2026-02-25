@@ -224,7 +224,7 @@ public class NetherChunkGenerator : ChunkSource
     public Chunk GetChunk(int chunkX, int chunkZ)
     {
         random.SetSeed(chunkX * 341873128712L + chunkZ * 132897987541L);
-        byte[] var3 = new byte[-java.lang.Short.MIN_VALUE];
+        byte[] var3 = new byte[-short.MinValue];
         BuildTerrain(chunkX, chunkZ, var3);
         BuildSurfaces(chunkX, chunkZ, var3);
         cave.carve(this, world, chunkX, chunkZ, var3);

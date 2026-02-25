@@ -1,4 +1,4 @@
-using BetaSharp.Client.Entities;
+﻿using BetaSharp.Client.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Network.Packets.C2SPlay;
 using BetaSharp.Network.Packets.Play;
@@ -11,8 +11,6 @@ namespace BetaSharp.Client.Network;
 
 public class EntityClientPlayerMP : ClientPlayerEntity
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityClientPlayerMP).TypeHandle);
-
     public ClientNetworkHandler sendQueue;
     private int inventorySyncTickCounter;
     private bool hasReceivedInitialHealth;
@@ -73,7 +71,7 @@ public class EntityClientPlayerMP : ClientPlayerEntity
         }
 
         double dx = x - oldPosX;
-        double dMinY = boundingBox.minY - lastSentMinY;
+        double dMinY = boundingBox.MinY - lastSentMinY;
         double dy = y - oldPosY;
         double dz = z - oldPosZ;
         double dYaw = (double)(yaw - oldRotationYaw);
@@ -95,12 +93,12 @@ public class EntityClientPlayerMP : ClientPlayerEntity
         }
         else if (positionChanged && rotationChanged)
         {
-            sendQueue.addToSendQueue(new PlayerMoveFullPacket(x, boundingBox.minY, y, z, yaw, pitch, onGround));
+            sendQueue.addToSendQueue(new PlayerMoveFullPacket(x, boundingBox.MinY, y, z, yaw, pitch, onGround));
             positionOnlyPacketCount = 0;
         }
         else if (positionChanged)
         {
-            sendQueue.addToSendQueue(new PlayerMovePositionAndOnGroundPacket(x, boundingBox.minY, y, z, onGround));
+            sendQueue.addToSendQueue(new PlayerMovePositionAndOnGroundPacket(x, boundingBox.MinY, y, z, onGround));
             positionOnlyPacketCount = 0;
         }
         else if (rotationChanged)
@@ -125,7 +123,7 @@ public class EntityClientPlayerMP : ClientPlayerEntity
         if (positionChanged)
         {
             oldPosX = x;
-            lastSentMinY = boundingBox.minY;
+            lastSentMinY = boundingBox.MinY;
             oldPosY = y;
             oldPosZ = z;
         }

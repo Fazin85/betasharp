@@ -1,6 +1,6 @@
 namespace BetaSharp;
 
-public class EnumToolMaterial : java.lang.Object
+public class EnumToolMaterial
 {
     public static readonly EnumToolMaterial WOOD = new(0, 59, 2.0F, 0);
     public static readonly EnumToolMaterial STONE = new(1, 131, 4.0F, 1);

@@ -5,8 +5,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class EntityVelocityUpdateS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityVelocityUpdateS2CPacket).TypeHandle);
-
     public int entityId;
     public int motionX;
     public int motionY;
@@ -59,7 +57,7 @@ public class EntityVelocityUpdateS2CPacket : Packet
         this.motionZ = (int)(motionZ * 8000.0D);
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         entityId = stream.readInt();
         motionX = stream.readShort();
@@ -67,7 +65,7 @@ public class EntityVelocityUpdateS2CPacket : Packet
         motionZ = stream.readShort();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeInt(entityId);
         stream.writeShort(motionX);
@@ -75,12 +73,12 @@ public class EntityVelocityUpdateS2CPacket : Packet
         stream.writeShort(motionZ);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onEntityVelocityUpdate(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 10;
     }

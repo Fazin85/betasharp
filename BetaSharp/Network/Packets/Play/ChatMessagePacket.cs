@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.Play;
 
 public class ChatMessagePacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ChatMessagePacket).TypeHandle);
-
     public string chatMessage;
 
     public ChatMessagePacket()
@@ -22,22 +20,22 @@ public class ChatMessagePacket : Packet
         chatMessage = msg;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
-        chatMessage = readString(stream, 119);
+        chatMessage = ReadString(stream, 119);
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
-        writeString(chatMessage, stream);
+        WriteString(chatMessage, stream);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onChatMessage(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return chatMessage.Length;
     }

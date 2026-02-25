@@ -5,8 +5,6 @@ namespace BetaSharp.Network.Packets.C2SPlay;
 
 public class ClickSlotC2SPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ClickSlotC2SPacket).TypeHandle);
-
     public int syncId;
     public int slot;
     public int button;
@@ -28,12 +26,12 @@ public class ClickSlotC2SPacket : Packet
         this.holdingShift = holdingShift;
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onClickSlot(this);
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         syncId = (sbyte)stream.readByte();
         slot = stream.readShort();
@@ -54,7 +52,7 @@ public class ClickSlotC2SPacket : Packet
 
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeByte(syncId);
         stream.writeShort(slot);
@@ -74,7 +72,7 @@ public class ClickSlotC2SPacket : Packet
 
     }
 
-    public override int size()
+    public override int Size()
     {
         return 11;
     }

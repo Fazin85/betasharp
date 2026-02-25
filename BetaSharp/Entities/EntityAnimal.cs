@@ -29,7 +29,7 @@ public abstract class EntityAnimal : EntityCreature, SpawnableEntity
     public override bool canSpawn()
     {
         int x = MathHelper.Floor(base.x);
-        int y = MathHelper.Floor(boundingBox.minY);
+        int y = MathHelper.Floor(boundingBox.MinY);
         int z = MathHelper.Floor(base.z);
         return world.getBlockId(x, y - 1, z) == Block.GrassBlock.id && world.getBrightness(x, y, z) > 8 && base.canSpawn();
     }

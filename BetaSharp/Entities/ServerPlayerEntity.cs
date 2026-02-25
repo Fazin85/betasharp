@@ -180,7 +180,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
                     continue;
                 }
 
-                if (!world.chunkCache.GetChunk(chunkPos.x, chunkPos.z).TerrainPopulated)
+                if (!world.chunkCache.GetChunk(chunkPos.X, chunkPos.Z).TerrainPopulated)
                 {
                     continue;
                 }
@@ -251,15 +251,15 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
 
     private void SendChunkData(ServerWorld world, ChunkPos chunkPos)
     {
-        int worldX = chunkPos.x * 16;
-        int worldZ = chunkPos.z * 16;
+        int worldX = chunkPos.X * 16;
+        int worldZ = chunkPos.Z * 16;
         networkHandler.sendPacket(new ChunkDataS2CPacket(worldX, 0, worldZ, 16, 128, 16, world));
     }
 
     private void SendBlockEntityUpdates(ServerWorld world, ChunkPos chunkPos)
     {
-        int startX = chunkPos.x * 16;
-        int startZ = chunkPos.z * 16;
+        int startX = chunkPos.X * 16;
+        int startZ = chunkPos.Z * 16;
         int endX = startX + 16;
         int endZ = startZ + 16;
 

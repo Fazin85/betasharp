@@ -2,6 +2,7 @@ using java.io;
 using java.lang;
 using java.util;
 using java.util.logging;
+using Exception = System.Exception;
 
 namespace BetaSharp.Server;
 
@@ -20,7 +21,7 @@ public class DedicatedServerConfiguration : IServerConfiguration
             {
                 properties.load(new FileInputStream(file));
             }
-            catch (java.lang.Exception ex)
+            catch (Exception ex)
             {
                 logger.log(Level.WARNING, "Failed to load " + file, (Throwable)ex);
                 generateNew();
@@ -50,9 +51,9 @@ public class DedicatedServerConfiguration : IServerConfiguration
         {
             properties.store(new FileOutputStream(propertiesFile), "Minecraft server properties");
         }
-        catch (java.lang.Exception ex)
+        catch (Exception ex)
         {
-            logger.log(Level.WARNING, "Failed to save " + propertiesFile, (Throwable)ex);
+            logger.log(Level.WARNING, "Failed to save " + propertiesFile, ex);
             generateNew();
         }
     }
@@ -84,7 +85,7 @@ public class DedicatedServerConfiguration : IServerConfiguration
         {
             return Integer.parseInt(getProperty(property, "" + fallback));
         }
-        catch (java.lang.Exception)
+        catch (Exception)
         {
             properties.setProperty(property, "" + fallback);
             return fallback;
@@ -102,7 +103,7 @@ public class DedicatedServerConfiguration : IServerConfiguration
         {
             return java.lang.Boolean.parseBoolean(getProperty(property, "" + fallback));
         }
-        catch (java.lang.Exception)
+        catch (Exception)
         {
             properties.setProperty(property, "" + fallback);
             return fallback;

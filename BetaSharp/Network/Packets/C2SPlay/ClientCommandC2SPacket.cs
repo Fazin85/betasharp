@@ -5,8 +5,6 @@ namespace BetaSharp.Network.Packets.C2SPlay;
 
 public class ClientCommandC2SPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ClientCommandC2SPacket).TypeHandle);
-
     public int entityId;
     public int mode;
 
@@ -20,24 +18,24 @@ public class ClientCommandC2SPacket : Packet
         this.mode = mode;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         entityId = stream.readInt();
         mode = (sbyte)stream.readByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeInt(entityId);
         stream.writeByte(mode);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.handleClientCommand(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 5;
     }

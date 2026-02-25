@@ -1,9 +1,10 @@
+using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Items;
 
 namespace BetaSharp.Inventorys;
 
-public class InventoryLargeChest : java.lang.Object, IInventory
+public class InventoryLargeChest : BlockEntity, IInventory
 {
     private string name;
     private IInventory upperChest;

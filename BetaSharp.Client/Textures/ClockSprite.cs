@@ -1,4 +1,5 @@
-﻿using BetaSharp.Items;
+using BetaSharp.Client.Rendering.Core.Textures;
+using BetaSharp.Items;
 using BetaSharp.Util.Maths;
 using java.awt.image;
 using java.io;
@@ -8,32 +9,93 @@ namespace BetaSharp.Client.Textures;
 
 public class ClockSprite : DynamicTexture
 {
-
-    private readonly Minecraft mc;
-    private readonly int[] clock = new int[256];
-    private readonly int[] dial = new int[256];
+    private Minecraft mc;
+    private int[] clock = new int[256];
+    private int[] dial = new int[256];
     private double angle;
     private double angleDelta;
+    private int resolution = 16;
+    private int dialResolution = 16;
 
     public ClockSprite(Minecraft var1) : base(Item.Clock.getTextureId(0))
     {
         mc = var1;
         atlas = FXImage.Items;
+    }
+
+    public override void Setup(Minecraft mc)
+    {
+        this.mc = mc;
+        TextureManager tm = mc.textureManager;
+        string atlasPath = "/gui/items.png";
+        
+        var handle = tm.GetTextureId(atlasPath);
+        if (handle.Texture != null)
+        {
+            resolution = handle.Texture.Width / 16;
+        }
+        else
+        {
+            resolution = 16;
+        }
+
+        int pixelCount = resolution * resolution;
+        if (clock.Length != pixelCount)
+        {
+            clock = new int[pixelCount];
+            dial = new int[pixelCount];
+            pixels = new byte[pixelCount * 4];
+        }
 
         try
         {
-            BufferedImage var2 = ImageIO.read(new ByteArrayInputStream(AssetManager.Instance.getAsset("gui/items.png").getBinaryContent()));
-            int var3 = sprite % 16 * 16;
-            int var4 = sprite / 16 * 16;
-            var2.getRGB(var3, var4, 16, 16, clock, 0, 16);
-            var2 = ImageIO.read(new ByteArrayInputStream(AssetManager.Instance.getAsset("misc/dial.png").getBinaryContent()));
-            var2.getRGB(0, 0, 16, 16, dial, 0, 16);
+            using var stream = mc.texturePackList.SelectedTexturePack.GetResourceAsStream("gui/items.png");
+            if (stream != null)
+            {
+                using var ms = new MemoryStream();
+                stream.CopyTo(ms);
+                BufferedImage var2 = ImageIO.read(new ByteArrayInputStream(ms.ToArray()));
+                int localRes = var2.getWidth() / 16;
+                int var3 = (sprite % 16) * localRes;
+                int var4 = (sprite / 16) * localRes;
+
+                if (localRes == resolution)
+                {
+                    var2.getRGB(var3, var4, resolution, resolution, clock, 0, resolution);
+                }
+                else
+                {
+                    int[] temp = new int[localRes * localRes];
+                    var2.getRGB(var3, var4, localRes, localRes, temp, 0, localRes);
+                    for (int y = 0; y < resolution; y++)
+                    {
+                        for (int x = 0; x < resolution; x++)
+                        {
+                            clock[y * resolution + x] = temp[(y * localRes / resolution) * localRes + (x * localRes / resolution)];
+                        }
+                    }
+                }
+            }
+            
+            using var dialStream = mc.texturePackList.SelectedTexturePack.GetResourceAsStream("misc/dial.png");
+            if (dialStream != null)
+            {
+                using var ms = new MemoryStream();
+                dialStream.CopyTo(ms);
+                BufferedImage var2 = ImageIO.read(new ByteArrayInputStream(ms.ToArray()));
+                dialResolution = var2.getWidth();
+                int dialPixelCount = dialResolution * dialResolution;
+                if (dial.Length != dialPixelCount)
+                {
+                    dial = new int[dialPixelCount];
+                }
+                var2.getRGB(0, 0, dialResolution, dialResolution, dial, 0, dialResolution); 
+            }
         }
         catch (java.io.IOException ex)
         {
             ex.printStackTrace();
         }
-
     }
 
     public override void tick()
@@ -75,34 +137,28 @@ public class ClockSprite : DynamicTexture
         double var5 = java.lang.Math.sin(angle);
         double var7 = java.lang.Math.cos(angle);
 
-        for (int var9 = 0; var9 < 256; ++var9)
+        int pixelCount = resolution * resolution;
+        float invResMinus1 = 1.0f / (resolution - 1);
+
+        for (int var9 = 0; var9 < pixelCount; ++var9)
         {
             int var10 = clock[var9] >> 24 & 255;
             int var11 = clock[var9] >> 16 & 255;
             int var12 = clock[var9] >> 8 & 255;
             int var13 = clock[var9] >> 0 & 255;
-            if (var11 == var13 && var12 == 0 && var13 > 0)
+            
+            if (Math.Abs(var11 - var13) < 10 && var12 < 40 && var11 > 100)
             {
-                double var14 = -(var9 % 16 / 15.0D - 0.5D);
-                double var16 = var9 / 16 / 15.0D - 0.5D;
+                double var14 = -((var9 % resolution) * invResMinus1 - 0.5D);
+                double var16 = (var9 / resolution) * invResMinus1 - 0.5D;
                 int var18 = var11;
-                int var19 = (int)((var14 * var7 + var16 * var5 + 0.5D) * 16.0D);
-                int var20 = (int)((var16 * var7 - var14 * var5 + 0.5D) * 16.0D);
-                int var21 = (var19 & 15) + (var20 & 15) * 16;
+                int var19 = (int)((var14 * var7 + var16 * var5 + 0.5D) * dialResolution);
+                int var20 = (int)((var16 * var7 - var14 * var5 + 0.5D) * dialResolution);
+                int var21 = (var19 & (dialResolution - 1)) + (var20 & (dialResolution - 1)) * dialResolution;
                 var10 = dial[var21] >> 24 & 255;
                 var11 = (dial[var21] >> 16 & 255) * var11 / 255;
                 var12 = (dial[var21] >> 8 & 255) * var18 / 255;
                 var13 = (dial[var21] >> 0 & 255) * var18 / 255;
-            }
-
-            if (anaglyphEnabled)
-            {
-                int var23 = (var11 * 30 + var12 * 59 + var13 * 11) / 100;
-                int var15 = (var11 * 30 + var12 * 70) / 100;
-                int var24 = (var11 * 30 + var13 * 70) / 100;
-                var11 = var23;
-                var12 = var15;
-                var13 = var24;
             }
 
             pixels[var9 * 4 + 0] = (byte)var11;
@@ -110,6 +166,5 @@ public class ClockSprite : DynamicTexture
             pixels[var9 * 4 + 2] = (byte)var13;
             pixels[var9 * 4 + 3] = (byte)var10;
         }
-
     }
 }

@@ -2,6 +2,7 @@ using BetaSharp.Client.Guis;
 using BetaSharp.Client.Network;
 using BetaSharp.Network.Packets;
 using java.net;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Client.Threading;
 
@@ -11,6 +12,7 @@ public class ThreadConnectToServer(GuiConnecting var1, Minecraft var2, string va
     private readonly string _hostName = var3;
     private readonly int _port = var4;
     private readonly GuiConnecting _connectingGui = var1;
+    private readonly ILogger<ThreadConnectToServer> _logger = Log.Instance.For<ThreadConnectToServer>();
 
     public override void run()
     {
@@ -43,15 +45,15 @@ public class ThreadConnectToServer(GuiConnecting var1, Minecraft var2, string va
 
             _mc.displayGuiScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", ex.getMessage()));
         }
-        catch (java.lang.Exception ex)
+        catch (Exception e)
         {
             if (GuiConnecting.isCancelled(_connectingGui))
             {
                 return;
             }
 
-            ex.printStackTrace();
-            _mc.displayGuiScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", ex.toString()));
+            _logger.LogError(e, e.Message);
+            _mc.displayGuiScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", e.ToString()));
         }
 
     }

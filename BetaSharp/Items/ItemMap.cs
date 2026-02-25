@@ -5,7 +5,6 @@ using BetaSharp.Network.Packets.S2CPlay;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Chunks;
-using java.lang;
 
 namespace BetaSharp.Items;
 
@@ -19,8 +18,7 @@ public class ItemMap : NetworkSyncedItem
 
     public static MapState getMapState(short mapId, World world)
     {
-        (new StringBuilder()).append("map_").append(mapId).toString();
-        MapState mapState = (MapState)world.getOrCreateState(MapState.Class, "map_" + mapId);
+        MapState? mapState = (MapState?)world.getOrCreateState(typeof(MapState), "map_" + mapId);
         if (mapState == null)
         {
             int mapIdCount = world.getIdCount("map");
@@ -34,12 +32,11 @@ public class ItemMap : NetworkSyncedItem
 
     public MapState getSavedMapState(ItemStack stack, World world)
     {
-        (new StringBuilder()).append("map_").append(stack.getDamage()).toString();
-        MapState mapState = (MapState)world.getOrCreateState(MapState.Class, "map_" + stack.getDamage());
+        string mapName = "map_" + stack.getDamage();
+        MapState? mapState = (MapState?)world.getOrCreateState(typeof(MapState), mapName);
         if (mapState == null)
         {
             stack.setDamage(world.getIdCount("map"));
-            string mapName = "map_" + stack.getDamage();
             mapState = new MapState(mapName);
             mapState.centerX = world.getProperties().SpawnX;
             mapState.centerZ = world.getProperties().SpawnZ;

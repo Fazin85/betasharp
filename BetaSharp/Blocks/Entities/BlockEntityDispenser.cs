@@ -134,6 +134,6 @@ public class BlockEntityDispenser : BlockEntity, IInventory
 
     public bool canPlayerUse(EntityPlayer player)
     {
-        return world.getBlockEntity(x, y, z) != this ? false : player.getSquaredDistance(x + 0.5D, y + 0.5D, z + 0.5D) <= 64.0D;
+        return World.getBlockEntity(X, Y, Z) != this ? false : player.getSquaredDistance(X + 0.5D, Y + 0.5D, Z + 0.5D) <= 64.0D;
     }
 }

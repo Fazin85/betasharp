@@ -60,7 +60,7 @@ public class EntityPigZombie : EntityZombie
     {
         if (entity is EntityPlayer)
         {
-            var entities = world.getEntities(this, boundingBox.expand(32.0D, 32.0D, 32.0D));
+            var entities = world.getEntities(this, boundingBox.Expand(32.0D, 32.0D, 32.0D));
 
             for (int i = 0; i < entities.Count; ++i)
             {

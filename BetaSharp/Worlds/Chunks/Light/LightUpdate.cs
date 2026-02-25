@@ -1,5 +1,4 @@
 using BetaSharp.Blocks;
-using java.lang;
 
 namespace BetaSharp.Worlds.Chunks.Light;
 
@@ -31,7 +30,7 @@ public struct LightUpdate
         int var3 = maxY - minY + 1;
         int var4 = maxZ - minZ + 1;
         int var5 = var2 * var3 * var4;
-        if (var5 > -Short.MIN_VALUE)
+        if (var5 > -short.MinValue)
         {
             // _logger.LogInformation("Light too large, skipping!");
         }

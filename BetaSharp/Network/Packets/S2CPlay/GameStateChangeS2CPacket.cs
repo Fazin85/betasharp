@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class GameStateChangeS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(GameStateChangeS2CPacket).TypeHandle);
-
     public static readonly string[] REASONS = ["tile.bed.notValid", null, null];
     public int reason;
 
@@ -18,22 +16,22 @@ public class GameStateChangeS2CPacket : Packet
         this.reason = reason;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         reason = (sbyte)stream.readByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeByte(reason);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onGameStateChange(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 1;
     }

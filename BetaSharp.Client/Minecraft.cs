@@ -208,7 +208,7 @@ public partial class Minecraft
             _logger.LogError(ex, "Exception");
         }
         texturePackList = new TexturePacks(this, new DirectoryInfo(mcDataDir.getAbsolutePath()));
-        textureManager = new TextureManager(texturePackList, options);
+        textureManager = new TextureManager(this, texturePackList, options);
         fontRenderer = new TextRenderer(options, textureManager);
         WaterColors.loadColors(textureManager.GetColors("/misc/watercolor.png"));
         GrassColors.loadColors(textureManager.GetColors("/misc/grasscolor.png"));
@@ -551,7 +551,6 @@ public partial class Minecraft
 
                     long tickElapsedTime = java.lang.System.nanoTime() - tickStartTime;
                     checkGLError("Pre render");
-                    BlockRenderer.fancyGrass = true;
                     sndManager.UpdateListener(player, Timer.renderPartialTicks);
                     GLManager.GL.Enable(GLEnum.Texture2D);
                     if (world != null)
@@ -1472,7 +1471,7 @@ public partial class Minecraft
             {
                 if (targetEntity == null)
                 {
-                    player = (ClientPlayerEntity)newWorld.getPlayerForProxy(ClientPlayerEntity.Class);
+                    player = (ClientPlayerEntity)newWorld.getPlayerForProxy(typeof(ClientPlayerEntity));
                 }
             }
             else if (player != null)

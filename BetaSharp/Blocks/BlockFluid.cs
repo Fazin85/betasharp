@@ -258,7 +258,7 @@ public abstract class BlockFluid : Block
         if (material == Material.Lava && world.getMaterial(x, y + 1, z) == Material.Air && !world.isOpaque(x, y + 1, z) && random.NextInt(100) == 0)
         {
             double particleX = (double)(x + random.NextFloat());
-            double particleY = (double)y + BoundingBox.maxY;
+            double particleY = (double)y + BoundingBox.MaxY;
             double particleZ = (double)(z + random.NextFloat());
             world.addParticle("lava", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
         }

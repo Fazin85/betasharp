@@ -5,8 +5,6 @@ namespace BetaSharp.Network.Packets.Play;
 
 public class EntityAnimationPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityAnimationPacket).TypeHandle);
-
     public int id;
     public int animationId;
 
@@ -20,24 +18,24 @@ public class EntityAnimationPacket : Packet
         this.animationId = animationId;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         id = stream.readInt();
         animationId = (sbyte)stream.readByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeInt(id);
         stream.writeByte(animationId);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onEntityAnimation(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 5;
     }

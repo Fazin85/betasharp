@@ -10,6 +10,7 @@ using java.lang;
 using java.net;
 using java.util.logging;
 using Microsoft.Extensions.Logging;
+using Exception = System.Exception;
 
 namespace BetaSharp.Server.Network;
 
@@ -68,9 +69,9 @@ public class ServerLoginNetworkHandler : NetHandler
             connection.disconnect();
             closed = true;
         }
-        catch (java.lang.Exception ex)
+        catch (Exception e)
         {
-            ex.printStackTrace();
+            _logger.LogError(e, e.Message);
         }
     }
 

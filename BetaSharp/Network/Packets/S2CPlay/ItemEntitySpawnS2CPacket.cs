@@ -6,8 +6,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class ItemEntitySpawnS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ItemEntitySpawnS2CPacket).TypeHandle);
-
     public int id;
     public int x;
     public int y;
@@ -37,7 +35,7 @@ public class ItemEntitySpawnS2CPacket : Packet
         velocityZ = (sbyte)(int)(item.velocityZ * 128.0D);
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         id = stream.readInt();
         itemRawId = stream.readShort();
@@ -51,7 +49,7 @@ public class ItemEntitySpawnS2CPacket : Packet
         velocityZ = (sbyte)stream.readByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeInt(id);
         stream.writeShort(itemRawId);
@@ -65,12 +63,12 @@ public class ItemEntitySpawnS2CPacket : Packet
         stream.writeByte(velocityZ);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onItemEntitySpawn(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 24;
     }

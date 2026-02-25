@@ -169,7 +169,7 @@ public class RegionChunkStorage : IChunkStorage
             for (int var11 = 0; var11 < var10.TagCount(); ++var11)
             {
                 NBTTagCompound var12 = (NBTTagCompound)var10.TagAt(var11);
-                BlockEntity var9 = BlockEntity.createFromNbt(var12);
+                BlockEntity var9 = BlockEntity.CreateFromNbt(var12);
                 if (var9 != null)
                 {
                     var4.AddBlockEntity(var9);

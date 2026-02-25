@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class WorldEventS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(WorldEventS2CPacket).TypeHandle);
-
     public int eventId;
     public int data;
     public int x;
@@ -25,7 +23,7 @@ public class WorldEventS2CPacket : Packet
         this.data = data;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         eventId = stream.readInt();
         x = stream.readInt();
@@ -34,7 +32,7 @@ public class WorldEventS2CPacket : Packet
         data = stream.readInt();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeInt(eventId);
         stream.writeInt(x);
@@ -43,12 +41,12 @@ public class WorldEventS2CPacket : Packet
         stream.writeInt(data);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onWorldEvent(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 20;
     }

@@ -28,7 +28,7 @@ internal class PathFinder
 
     public PathEntity? CreateEntityPathTo(Entity entity, Entity target, float maxDistance)
     {
-        return CreateEntityPathTo(entity, target.x, target.boundingBox.minY, target.z, maxDistance);
+        return CreateEntityPathTo(entity, target.x, target.boundingBox.MinY, target.z, maxDistance);
     }
 
     public PathEntity? CreateEntityPathTo(Entity entity, int x, int y, int z, float maxDistance)
@@ -43,7 +43,7 @@ internal class PathFinder
 
         _poolIndex = 0;
 
-        PathPoint startPoint = OpenPoint(MathHelper.Floor(entity.boundingBox.minX), MathHelper.Floor(entity.boundingBox.minY), MathHelper.Floor(entity.boundingBox.minZ));
+        PathPoint startPoint = OpenPoint(MathHelper.Floor(entity.boundingBox.MinX), MathHelper.Floor(entity.boundingBox.MinY), MathHelper.Floor(entity.boundingBox.MinZ));
         PathPoint targetPoint = OpenPoint(MathHelper.Floor(targetX - (entity.width / 2.0f)), MathHelper.Floor(targetY), MathHelper.Floor(targetZ - (entity.width / 2.0f)));
 
         PathPoint sizePoint = new(MathHelper.Floor(entity.width + 1.0f), MathHelper.Floor(entity.height + 1.0f), MathHelper.Floor(entity.width + 1.0f));

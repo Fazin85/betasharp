@@ -5,44 +5,40 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class EntityTrackerUpdateS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityTrackerUpdateS2CPacket).TypeHandle);
-
     public int id;
-    private List trackedValues;
+    private List<WatchableObject> trackedValues;
 
-    public EntityTrackerUpdateS2CPacket()
-    {
-    }
+    public EntityTrackerUpdateS2CPacket() { }
 
     public EntityTrackerUpdateS2CPacket(int entityId, DataWatcher dataWatcher)
     {
         id = entityId;
-        trackedValues = dataWatcher.getDirtyEntries();
+        trackedValues = dataWatcher.GetDirtyEntries();
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         id = stream.readInt();
-        trackedValues = DataWatcher.readWatchableObjects(stream);
+        trackedValues = DataWatcher.ReadWatchableObjects(stream);
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeInt(id);
-        DataWatcher.writeObjectsInListToStream(trackedValues, stream);
+        DataWatcher.WriteObjectsInListToStream(trackedValues, stream);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onEntityTrackerUpdate(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 5;
     }
 
-    public List getWatchedObjects()
+    public List<WatchableObject> GetWatchedObjects()
     {
         return trackedValues;
     }

@@ -1,25 +1,17 @@
-using java.lang;
-
 namespace BetaSharp.Util.Maths;
 
-public readonly record struct ChunkPos
+public readonly record struct ChunkPos(int x, int z)
 {
-    public readonly int x;
-    public readonly int z;
+    public readonly int X = x;
+    public readonly int Z = z;
 
-    public ChunkPos(int var1, int var2)
+    public static int GetHashCode(int x, int z)
     {
-        x = var1;
-        z = var2;
-    }
-
-    public static int hashCode(int var0, int var1)
-    {
-        return (var0 < 0 ? Integer.MIN_VALUE : 0) | (var0 & Short.MAX_VALUE) << 16 | (var1 < 0 ? -Short.MIN_VALUE : 0) | var1 & Short.MAX_VALUE;
+        return (x < 0 ? int.MinValue : 0) | (x & short.MaxValue) << 16 | (z < 0 ? -short.MinValue : 0) | z & short.MaxValue;
     }
 
     public override int GetHashCode()
     {
-        return hashCode(x, z);
+        return GetHashCode(X, Z);
     }
 }
