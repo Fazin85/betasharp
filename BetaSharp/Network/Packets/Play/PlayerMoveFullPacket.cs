@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.Play;
 
 public class PlayerMoveFullPacket : PlayerMovePacket
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayerMoveFullPacket).TypeHandle);
-
     public PlayerMoveFullPacket()
     {
         changeLook = true;
@@ -25,7 +23,7 @@ public class PlayerMoveFullPacket : PlayerMovePacket
         changePosition = true;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         x = stream.readDouble();
         y = stream.readDouble();
@@ -33,10 +31,10 @@ public class PlayerMoveFullPacket : PlayerMovePacket
         z = stream.readDouble();
         yaw = stream.readFloat();
         pitch = stream.readFloat();
-        base.read(stream);
+        base.Read(stream);
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeDouble(x);
         stream.writeDouble(y);
@@ -44,10 +42,10 @@ public class PlayerMoveFullPacket : PlayerMovePacket
         stream.writeDouble(z);
         stream.writeFloat(yaw);
         stream.writeFloat(pitch);
-        base.write(stream);
+        base.Write(stream);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 41;
     }

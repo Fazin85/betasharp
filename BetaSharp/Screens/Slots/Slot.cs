@@ -3,7 +3,7 @@ using BetaSharp.Items;
 
 namespace BetaSharp.Screens.Slots;
 
-public class Slot : java.lang.Object
+public class Slot
 {
     private readonly int slotIndex;
     private readonly IInventory inventory;
@@ -65,7 +65,7 @@ public class Slot : java.lang.Object
         return inventory.removeStack(slotIndex, amount);
     }
 
-    public bool equals(IInventory inventory, int index)
+    public bool Equals(IInventory inventory, int index)
     {
         return inventory == this.inventory && index == slotIndex;
     }

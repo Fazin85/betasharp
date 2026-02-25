@@ -105,7 +105,7 @@ public class WorldRegionSnapshot : BlockView, IDisposable
             NBTTagCompound? nbt = chunk.GetTileEntityNbt(x & 15, y, z & 15);
             if (nbt != null)
             {
-                var newEntity = BlockEntity.createFromNbt(nbt);
+                var newEntity = BlockEntity.CreateFromNbt(nbt);
                 if (newEntity != null)
                 {
                     _tileEntityCache[pos] = newEntity;

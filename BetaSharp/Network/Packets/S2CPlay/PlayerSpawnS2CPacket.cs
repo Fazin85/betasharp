@@ -7,8 +7,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class PlayerSpawnS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayerSpawnS2CPacket).TypeHandle);
-
     public int entityId;
     public string name;
     public int xPosition;
@@ -35,10 +33,10 @@ public class PlayerSpawnS2CPacket : Packet
         currentItem = itemStack == null ? 0 : itemStack.itemId;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         entityId = stream.readInt();
-        name = readString(stream, 16);
+        name = ReadString(stream, 16);
         xPosition = stream.readInt();
         yPosition = stream.readInt();
         zPosition = stream.readInt();
@@ -47,10 +45,10 @@ public class PlayerSpawnS2CPacket : Packet
         currentItem = stream.readShort();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeInt(entityId);
-        writeString(name, stream);
+        WriteString(name, stream);
         stream.writeInt(xPosition);
         stream.writeInt(yPosition);
         stream.writeInt(zPosition);
@@ -59,12 +57,12 @@ public class PlayerSpawnS2CPacket : Packet
         stream.writeShort(currentItem);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onPlayerSpawn(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 28;
     }

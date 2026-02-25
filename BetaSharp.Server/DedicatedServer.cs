@@ -3,6 +3,7 @@ using BetaSharp.Server.Threading;
 using java.lang;
 using java.net;
 using Microsoft.Extensions.Logging;
+using Exception = System.Exception;
 
 namespace BetaSharp.Server;
 
@@ -74,9 +75,9 @@ public class DedicatedServer(IServerConfiguration config) : MinecraftServer(conf
 
             new RunServerThread(server, "Server thread").start();
         }
-        catch (java.lang.Exception ex)
+        catch (Exception e)
         {
-            s_logger.LogError($"Failed to start the minecraft server: {ex}");
+            s_logger.LogError($"Failed to start the minecraft server: {e}");
         }
     }
 

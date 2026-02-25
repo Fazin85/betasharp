@@ -467,7 +467,7 @@ public class InventoryPlayer : java.lang.Object, IInventory
         int slotIndex;
         for (slotIndex = 0; slotIndex < armor.Length; ++slotIndex)
         {
-            if (armor[slotIndex] != null && armor[slotIndex].equals(itemStack))
+            if (armor[slotIndex] != null && armor[slotIndex].Equals(itemStack))
             {
                 return true;
             }
@@ -475,7 +475,7 @@ public class InventoryPlayer : java.lang.Object, IInventory
 
         for (slotIndex = 0; slotIndex < main.Length; ++slotIndex)
         {
-            if (main[slotIndex] != null && main[slotIndex].equals(itemStack))
+            if (main[slotIndex] != null && main[slotIndex].Equals(itemStack))
             {
                 return true;
             }

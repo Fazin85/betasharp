@@ -13,7 +13,6 @@ using BetaSharp.Server.Internal;
 using BetaSharp.Util;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.lang;
 using java.util;
 using Microsoft.Extensions.Logging;
 
@@ -33,7 +32,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
     private double teleportTargetY;
     private double teleportTargetZ;
     private bool teleported = true;
-    private Map transactions = new HashMap();
+    private Dictionary<int, short> transactions = new ();
 
     private readonly ILogger<ServerPlayNetworkHandler> _logger = Log.Instance.For<ServerPlayNetworkHandler>();
 
@@ -201,7 +200,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             }
 
             float var21 = (1 / 16f);
-            bool var22 = var2.getEntityCollisions(player, player.boundingBox.contract(var21, var21, var21)).Count == 0;
+            bool var22 = var2.getEntityCollisions(player, player.boundingBox.Contract(var21, var21, var21)).Count == 0;
             player.move(var32, var15, var17);
             var32 = var5 - player.x;
             var15 = var7 - player.y;
@@ -222,14 +221,14 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             }
 
             player.setPositionAndAngles(var5, var7, var9, var11, var12);
-            bool var24 = var2.getEntityCollisions(player, player.boundingBox.contract(var21, var21, var21)).Count == 0;
+            bool var24 = var2.getEntityCollisions(player, player.boundingBox.Contract(var21, var21, var21)).Count == 0;
             if (var22 && (var23 || !var24) && !player.isSleeping())
             {
                 teleport(teleportTargetX, teleportTargetY, teleportTargetZ, var11, var12);
                 return;
             }
 
-            Box var25 = player.boundingBox.expand(var21, var21, var21).stretch(0.0, -0.55, 0.0);
+            Box var25 = player.boundingBox.Expand(var21, var21, var21).Stretch(0.0, -0.55, 0.0);
             if (server.flightEnabled || var2.isAnyBlockInBox(var25))
             {
                 floatingTime = 0;
@@ -437,7 +436,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
 
     public override void handle(Packet packet)
     {
-        _logger.LogWarning($"{getClass()} wasn't prepared to deal with a {packet.getClass()}");
+        _logger.LogWarning($"{GetType()} wasn't prepared to deal with a {packet.GetType()}");
         disconnect("Protocol error, unexpected packet");
     }
 
@@ -610,14 +609,17 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             }
             else
             {
-                transactions.put(player.currentScreenHandler.syncId, packet.actionType);
+                // should something be done adding fails?
+                transactions.TryAdd(player.currentScreenHandler.syncId, packet.actionType);
                 player.networkHandler.sendPacket(new ScreenHandlerAcknowledgementPacket(packet.syncId, packet.actionType, false));
                 player.currentScreenHandler.updatePlayerList(player, false);
-                ArrayList var3 = new ArrayList();
 
-                for (int var4 = 0; var4 < player.currentScreenHandler.slots.size(); var4++)
+                int size = player.currentScreenHandler.slots.size();
+                ArrayList var3 = new ArrayList(size);
+
+                for (int i = 0; i < size; i++)
                 {
-                    var3.add(((Slot)player.currentScreenHandler.slots.get(var4)).getStack());
+                    var3.add(((Slot)player.currentScreenHandler.slots.get(i)).getStack());
                 }
 
                 player.onContentsUpdate(player.currentScreenHandler, var3);
@@ -627,9 +629,8 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
 
     public override void onScreenHandlerAcknowledgement(ScreenHandlerAcknowledgementPacket packet)
     {
-        Short var2 = (Short)transactions.get(player.currentScreenHandler.syncId);
-        if (var2 != null
-            && packet.actionType == var2.shortValue()
+        if (transactions.TryGetValue(player.currentScreenHandler.syncId, out short value)
+            && packet.actionType == value
             && player.currentScreenHandler.syncId == packet.syncId
             && !player.currentScreenHandler.canOpen(player))
         {

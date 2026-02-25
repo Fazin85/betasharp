@@ -3,11 +3,13 @@ using BetaSharp.Threading;
 using java.io;
 using java.net;
 using java.util;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Network;
 
 public class Connection
 {
+    private readonly ILogger<Connection> _logger = Log.Instance.For<Connection>();
     public static readonly object LOCK = new();
     public static int READ_THREAD_COUNTER;
     public static int WRITE_THREAD_COUNTER;
@@ -46,9 +48,9 @@ public class Connection
             socket.setSoTimeout(30000);
             socket.setTrafficClass(24);
         }
-        catch (SocketException ex)
+        catch (SocketException e)
         {
-            java.lang.System.err.println(ex.getMessage());
+            _logger.LogError(e, e.Message);
         }
 
         _inputStream = new DataInputStream(socket.getInputStream());
@@ -76,8 +78,8 @@ public class Connection
             object lockObj = lck;
             lock (lockObj)
             {
-                sendQueueSize += packet.size() + 1;
-                if (packet.worldPacket)
+                sendQueueSize += packet.Size() + 1;
+                if (packet.WorldPacket)
                 {
                     delayedSendQueue.add(packet);
                 }
@@ -105,42 +107,42 @@ public class Connection
             int packetId;
             Packet packet;
             object lockObj;
-            if (!sendQueue.isEmpty() && (lag == 0 || java.lang.System.currentTimeMillis() - ((Packet)sendQueue.get(0)).creationTime >= lag))
+            if (!sendQueue.isEmpty() && (lag == 0 || java.lang.System.currentTimeMillis() - ((Packet)sendQueue.get(0)).CreationTime >= lag))
             {
                 lockObj = lck;
                 lock (lockObj)
                 {
                     packet = (Packet)sendQueue.remove(0);
-                    sendQueueSize -= packet.size() + 1;
+                    sendQueueSize -= packet.Size() + 1;
                 }
 
-                Packet.write(packet, _outputStream);
+                Packet.Write(packet, _outputStream);
                 sizeStats = TOTAL_SEND_SIZE;
-                packetId = packet.getRawId();
-                sizeStats[packetId] += packet.size() + 1;
+                packetId = packet.GetRawId();
+                sizeStats[packetId] += packet.Size() + 1;
                 wrotePacket = true;
             }
 
-            if (_delay-- <= 0 && !delayedSendQueue.isEmpty() && (lag == 0 || java.lang.System.currentTimeMillis() - ((Packet)delayedSendQueue.get(0)).creationTime >= lag))
+            if (_delay-- <= 0 && !delayedSendQueue.isEmpty() && (lag == 0 || java.lang.System.currentTimeMillis() - ((Packet)delayedSendQueue.get(0)).CreationTime >= lag))
             {
                 lockObj = lck;
                 lock (lockObj)
                 {
                     packet = (Packet)delayedSendQueue.remove(0);
-                    sendQueueSize -= packet.size() + 1;
+                    sendQueueSize -= packet.Size() + 1;
                 }
 
-                Packet.write(packet, _outputStream);
+                Packet.Write(packet, _outputStream);
                 sizeStats = TOTAL_SEND_SIZE;
-                packetId = packet.getRawId();
-                sizeStats[packetId] += packet.size() + 1;
+                packetId = packet.GetRawId();
+                sizeStats[packetId] += packet.Size() + 1;
                 _delay = 0;
                 wrotePacket = true;
             }
 
             return wrotePacket;
         }
-        catch (java.lang.Exception ex)
+        catch (Exception ex)
         {
             if (!disconnected)
             {
@@ -173,12 +175,12 @@ public class Connection
 
         try
         {
-            Packet packet = Packet.read(_inputStream, networkHandler.isServerSide());
+            Packet? packet = Packet.Read(_inputStream, networkHandler.isServerSide());
             if (packet != null)
             {
                 int[] sizeStats = TOTAL_READ_SIZE;
-                int packetId = packet.getRawId();
-                sizeStats[packetId] += packet.size() + 1;
+                int packetId = packet.GetRawId();
+                sizeStats[packetId] += packet.Size() + 1;
                 readQueue.add(packet);
                 receivedPacket = true;
             }
@@ -189,7 +191,7 @@ public class Connection
 
             return receivedPacket;
         }
-        catch (java.lang.Exception ex)
+        catch (Exception ex)
         {
             if (!disconnected)
             {
@@ -200,10 +202,10 @@ public class Connection
         }
     }
 
-    private void disconnect(java.lang.Exception ex)
+    private void disconnect(Exception e)
     {
-        ex.printStackTrace();
-        disconnect("disconnect.genericReason", "Internal exception: " + ex.toString());
+        _logger.LogError(e, e.Message);
+        disconnect("disconnect.genericReason", "Internal exception: " + e);
     }
 
     public virtual void disconnect(string disconnectedReason, params object[] disconnectReasonArgs)
@@ -287,7 +289,7 @@ public class Connection
         while (!readQueue.isEmpty() && maxPacketsPerTick-- >= 0)
         {
             Packet packet = (Packet)readQueue.remove(0);
-            packet.apply(networkHandler);
+            packet.Apply(networkHandler);
         }
     }
 
@@ -343,7 +345,7 @@ public class Connection
         return conn.disconnected;
     }
 
-    public static void disconnect(Connection conn, java.lang.Exception ex)
+    public static void disconnect(Connection conn, Exception ex)
     {
         conn.disconnect(ex);
     }

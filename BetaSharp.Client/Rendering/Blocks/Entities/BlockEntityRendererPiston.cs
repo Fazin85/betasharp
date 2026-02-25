@@ -32,23 +32,23 @@ public class BlockEntityRendererPiston : BlockEntitySpecialRenderer
             }
 
             var10.startDrawingQuads();
-            var10.setTranslationD((double)((float)var2 - var1.x + var1.getRenderOffsetX(var8)), (double)((float)var4 - var1.y + var1.getRenderOffsetY(var8)), (double)((float)var6 - var1.z + var1.getRenderOffsetZ(var8)));
+            var10.setTranslationD((double)((float)var2 - var1.X + var1.getRenderOffsetX(var8)), (double)((float)var4 - var1.Y + var1.getRenderOffsetY(var8)), (double)((float)var6 - var1.Z + var1.getRenderOffsetZ(var8)));
             var10.setColorOpaque(1, 1, 1);
             if (var9 == Block.PistonHead && var1.getProgress(var8) < 0.5F)
             {
-                renderBlocks.func_31079_a(var9, var1.x, var1.y, var1.z, false);
+                renderBlocks.func_31079_a(var9, var1.X, var1.Y, var1.Z, false);
             }
             else if (var1.isSource() && !var1.isExtending())
             {
                 Block.PistonHead.setSprite(((BlockPistonBase)var9).getTopTexture());
-                renderBlocks.func_31079_a(Block.PistonHead, var1.x, var1.y, var1.z, var1.getProgress(var8) < 0.5F);
+                renderBlocks.func_31079_a(Block.PistonHead, var1.X, var1.Y, var1.Z, var1.getProgress(var8) < 0.5F);
                 Block.PistonHead.clearSprite();
-                var10.setTranslationD((double)((float)var2 - var1.x), (double)((float)var4 - var1.y), (double)((float)var6 - var1.z));
-                renderBlocks.func_31078_d(var9, var1.x, var1.y, var1.z);
+                var10.setTranslationD((double)((float)var2 - var1.X), (double)((float)var4 - var1.Y), (double)((float)var6 - var1.Z));
+                renderBlocks.func_31078_d(var9, var1.X, var1.Y, var1.Z);
             }
             else
             {
-                renderBlocks.func_31075_a(var9, var1.x, var1.y, var1.z);
+                renderBlocks.func_31075_a(var9, var1.X, var1.Y, var1.Z);
             }
 
             var10.setTranslationD(0.0D, 0.0D, 0.0D);

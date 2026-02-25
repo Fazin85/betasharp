@@ -15,10 +15,10 @@ public class EntityBubbleFX : EntityFX
         particleTextureIndex = 32;
         setBoundingBoxSpacing(0.02F, 0.02F);
         particleScale *= random.NextFloat() * 0.6F + 0.2F;
-        base.velocityX = velocityX * (double)0.2F + (double)((float)(java.lang.Math.random() * 2.0D - 1.0D) * 0.02F);
-        base.velocityY = velocityY * (double)0.2F + (double)((float)(java.lang.Math.random() * 2.0D - 1.0D) * 0.02F);
-        base.velocityZ = velocityZ * (double)0.2F + (double)((float)(java.lang.Math.random() * 2.0D - 1.0D) * 0.02F);
-        particleMaxAge = (int)(8.0D / (java.lang.Math.random() * 0.8D + 0.2D));
+        base.velocityX = velocityX * (double)0.2F + (double)((float)(Random.Shared.NextDouble() * 2.0D - 1.0D) * 0.02F);
+        base.velocityY = velocityY * (double)0.2F + (double)((float)(Random.Shared.NextDouble() * 2.0D - 1.0D) * 0.02F);
+        base.velocityZ = velocityZ * (double)0.2F + (double)((float)(Random.Shared.NextDouble() * 2.0D - 1.0D) * 0.02F);
+        particleMaxAge = (int)(8.0D / (Random.Shared.NextDouble() * 0.8D + 0.2D));
     }
 
     public override void tick()

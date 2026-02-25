@@ -36,7 +36,7 @@ public class GuiEditSign : GuiScreen
         Keyboard.enableRepeatEvents(false);
         if (mc?.world?.isRemote ?? false)
         {
-            mc.getSendQueue().addToSendQueue(new UpdateSignPacket(_entitySign.x, _entitySign.y, _entitySign.z, _entitySign.Texts));
+            mc.getSendQueue().addToSendQueue(new UpdateSignPacket(_entitySign.X, _entitySign.Y, _entitySign.Z, _entitySign.Texts));
         }
     }
 

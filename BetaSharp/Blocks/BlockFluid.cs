@@ -258,7 +258,7 @@ public abstract class BlockFluid : Block
         if (material == Material.Lava && world.getMaterial(x, y + 1, z) == Material.Air && !world.isOpaque(x, y + 1, z) && random.NextInt(100) == 0)
         {
             double particleX = (double)(x + random.NextFloat());
-            double particleY = (double)y + BoundingBox.maxY;
+            double particleY = (double)y + BoundingBox.MaxY;
             double particleZ = (double)(z + random.NextFloat());
             world.addParticle("lava", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
         }
@@ -343,11 +343,11 @@ public abstract class BlockFluid : Block
 
     protected void fizz(World world, int x, int y, int z)
     {
-        world.playSound((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "random.fizz", 0.5F, 2.6F + (world.random.NextFloat() - world.random.NextFloat()) * 0.8F);
+        world.playSound(x + 0.5F, y + 0.5F, z + 0.5F, "random.fizz", 0.5F, 2.6F + (world.random.NextFloat() - world.random.NextFloat()) * 0.8F);
 
         for (int particleIndex = 0; particleIndex < 8; ++particleIndex)
         {
-            world.addParticle("largesmoke", (double)x + java.lang.Math.random(), (double)y + 1.2D, (double)z + java.lang.Math.random(), 0.0D, 0.0D, 0.0D);
+            world.addParticle("largesmoke", x + Random.Shared.NextDouble(), y + 1.2D, (double)z + Random.Shared.NextDouble(), 0.0D, 0.0D, 0.0D);
         }
 
     }

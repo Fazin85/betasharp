@@ -1,5 +1,3 @@
-using java.io;
-
 namespace BetaSharp.Util;
 
 public class ChatAllowedCharacters

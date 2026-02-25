@@ -5,12 +5,18 @@ namespace BetaSharp.Client.Textures;
 
 public class NetherPortalSprite : DynamicTexture
 {
-
     private int ticks;
     private readonly byte[][] frames = new byte[32][];
 
     public NetherPortalSprite() : base(Block.NetherPortal.textureId)
     {
+    }
+
+    public override void Setup(Minecraft mc)
+    {
+        TryLoadCustomTexture(mc, "custom_portal.png");
+        if (customFrames != null) return;
+
         JavaRandom var1 = new(100L);
         for (int i = 0; i < frames.Length; i++)
         {
@@ -72,11 +78,17 @@ public class NetherPortalSprite : DynamicTexture
                 }
             }
         }
-
     }
 
     public override void tick()
     {
+        if (customFrames != null)
+        {
+            Buffer.BlockCopy(customFrames[customFrameIndex], 0, pixels, 0, pixels.Length);
+            customFrameIndex = (customFrameIndex + 1) % customFrameCount;
+            return;
+        }
+
         ++ticks;
         byte[] var1 = frames[ticks & 31];
 
@@ -86,21 +98,10 @@ public class NetherPortalSprite : DynamicTexture
             int var4 = var1[var2 * 4 + 1] & 255;
             int var5 = var1[var2 * 4 + 2] & 255;
             int var6 = var1[var2 * 4 + 3] & 255;
-            if (anaglyphEnabled)
-            {
-                int var7 = (var3 * 30 + var4 * 59 + var5 * 11) / 100;
-                int var8 = (var3 * 30 + var4 * 70) / 100;
-                int var9 = (var3 * 30 + var5 * 70) / 100;
-                var3 = var7;
-                var4 = var8;
-                var5 = var9;
-            }
-
             pixels[var2 * 4 + 0] = (byte)var3;
             pixels[var2 * 4 + 1] = (byte)var4;
             pixels[var2 * 4 + 2] = (byte)var5;
             pixels[var2 * 4 + 3] = (byte)var6;
         }
-
     }
 }

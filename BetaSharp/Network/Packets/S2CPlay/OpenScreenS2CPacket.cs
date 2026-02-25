@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class OpenScreenS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(OpenScreenS2CPacket).TypeHandle);
-
     public int syncId;
     public int screenHandlerId;
     public string name;
@@ -23,12 +21,12 @@ public class OpenScreenS2CPacket : Packet
         slotsCount = size;
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onOpenScreen(this);
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         syncId = (sbyte)stream.readByte();
         screenHandlerId = (sbyte)stream.readByte();
@@ -36,7 +34,7 @@ public class OpenScreenS2CPacket : Packet
         slotsCount = (sbyte)stream.readByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeByte(syncId);
         stream.writeByte(screenHandlerId);
@@ -44,7 +42,7 @@ public class OpenScreenS2CPacket : Packet
         stream.writeByte(slotsCount);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 3 + name.Length;
     }

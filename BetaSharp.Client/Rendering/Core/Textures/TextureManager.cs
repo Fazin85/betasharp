@@ -23,17 +23,19 @@ public class TextureManager : IDisposable
     private bool _clamp;
     private bool _blur;
     private readonly TexturePacks _texturePacks;
-    private readonly Image<Rgba32> _missingTextureImage = new(64, 64);
+    private readonly Minecraft _mc;
+    private readonly Image<Rgba32> _missingTextureImage = new(256, 256);
 
-    public TextureManager(TexturePacks texturePacks, GameOptions options)
+    public TextureManager(Minecraft mc, TexturePacks texturePacks, GameOptions options)
     {
+        _mc = mc;
         _texturePacks = texturePacks;
         _gameOptions = options;
         _missingTextureImage.Mutate(ctx =>
         {
             ctx.BackgroundColor(Color.Magenta);
-            ctx.Fill(Color.Black, new RectangleF(0, 0, 32, 32));
-            ctx.Fill(Color.Black, new RectangleF(32, 32, 32, 32));
+            ctx.Fill(Color.Black, new RectangleF(0, 0, 128, 128));
+            ctx.Fill(Color.Black, new RectangleF(128, 128, 128, 128));
         });
     }
 
@@ -55,6 +57,12 @@ public class TextureManager : IDisposable
             return fallback;
         }
 
+    }
+
+    public int GetAtlasTileSize(string path)
+    {
+        if (_atlasTileSizes.TryGetValue(path, out int size)) return size;
+        return 16;
     }
 
     public TextureHandle Load(Image<Rgba32> image)
@@ -247,11 +255,13 @@ public class TextureManager : IDisposable
     public void AddDynamicTexture(DynamicTexture t)
     {
         _dynamicTextures.Add(t);
+        t.Setup(_mc);
         t.tick();
     }
 
     public void Reload()
     {
+        _atlasTileSizes.Clear();
         foreach (KeyValuePair<string, TextureHandle> entry in _textures)
         {
             entry.Value.Texture?.Dispose();
@@ -268,6 +278,7 @@ public class TextureManager : IDisposable
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to reload texture {Path}", entry.Key);
+                _atlasTileSizes[entry.Key] = _missingTextureImage.Width / 16;
                 Load(_missingTextureImage, newTexture, false);
             }
         }
@@ -285,6 +296,11 @@ public class TextureManager : IDisposable
         }
     
         foreach (string key in new List<string>(_colors.Keys)) GetColors(key);
+
+        foreach (DynamicTexture dynamicTexture in _dynamicTextures)
+        {
+            dynamicTexture.Setup(_mc);
+        }
     }
 
     public unsafe void Tick()
@@ -294,76 +310,139 @@ public class TextureManager : IDisposable
             texture.tick();
 
             string atlasPath = texture.atlas == DynamicTexture.FXImage.Terrain ? "/terrain.png" : "/gui/items.png";
-            BindTexture(texture.copyTo > 0 ? null : GetTextureId(atlasPath)); // copyTo > 0 is handled differently
-
-            int targetTileSize = _atlasTileSizes.TryGetValue(atlasPath, out int size) ? size : 16;
-
-            int fxSize = (int)Math.Sqrt(texture.pixels.Length / 4);
-
-            texture.replicate = targetTileSize / fxSize;
-            if (texture.replicate < 1) texture.replicate = 1;
-
-            GLTexture? atlasTexture = GetTextureId(atlasPath).Texture;
+            
+            TextureHandle atlasHandle = _textures.FirstOrDefault(x => x.Key.EndsWith(atlasPath)).Value;
+            atlasHandle ??= GetTextureId(atlasPath);
+            
+            GLTexture? atlasTexture = atlasHandle.Texture;
             if (atlasTexture == null) continue;
 
-            fixed (byte* ptr = texture.pixels)
+            int targetTileSize = atlasTexture.Width / 16;
+
+            int tileX = (texture.sprite % 16) * targetTileSize;
+            int tileY = (texture.sprite / 16) * targetTileSize;
+
+            int fxSize = (int)Math.Sqrt(texture.pixels.Length / 4);
+            int scale = targetTileSize / fxSize;
+            if (scale < 1) scale = 1;
+
+            byte[] uploadPixels = texture.pixels;
+            int uploadSize = fxSize;
+            byte[]? rentedArray = null;
+
+            try
             {
-                for (int x = 0; x < texture.replicate; x++)
+                if (scale > 1)
                 {
-                    for (int y = 0; y < texture.replicate; y++)
+                    uploadSize = fxSize * scale;
+                    rentedArray = System.Buffers.ArrayPool<byte>.Shared.Rent(uploadSize * uploadSize * 4);
+                    UpscaleNearestNeighbor(texture.pixels, rentedArray, fxSize, uploadSize, scale);
+                    uploadPixels = rentedArray;
+                }
+
+                int finalReplicate = texture.replicate;
+
+                fixed (byte* ptr = uploadPixels)
+                {
+                    for (int x = 0; x < finalReplicate; x++)
                     {
-                        atlasTexture.UploadSubImage(
-                           (texture.sprite % 16) * targetTileSize + (x * fxSize),
-                           (texture.sprite / 16) * targetTileSize + (y * fxSize),
-                           fxSize, fxSize, ptr, 0, PixelFormat.Rgba);
+                        for (int y = 0; y < finalReplicate; y++)
+                        {
+                            atlasTexture.UploadSubImage(
+                               tileX + (x * uploadSize),
+                               tileY + (y * uploadSize),
+                               uploadSize, uploadSize, ptr, 0, PixelFormat.Rgba);
+                        }
+                    }
+                }
+
+                if (texture.atlas == DynamicTexture.FXImage.Terrain && _gameOptions.UseMipmaps)
+                {
+                    for (int x = 0; x < finalReplicate; x++)
+                    {
+                        for (int y = 0; y < finalReplicate; y++)
+                        {
+                            UpdateTileMipmaps(tileX + (x * uploadSize), tileY + (y * uploadSize), uploadSize, targetTileSize, uploadPixels, atlasTexture);
+                        }
                     }
                 }
             }
-
-            if (texture.atlas == DynamicTexture.FXImage.Terrain && _gameOptions.UseMipmaps)
-                UpdateTileMipmaps(texture.sprite, texture.pixels, fxSize, GetTextureId(atlasPath).Texture);
+            finally
+            {
+                if (rentedArray != null)
+                {
+                    System.Buffers.ArrayPool<byte>.Shared.Return(rentedArray);
+                }
+            }
         }
     }
 
-    private unsafe void UpdateTileMipmaps(int tileIndex, byte[] tileData, int tileSize, GLTexture? texture)
+    private static void UpscaleNearestNeighbor(byte[] src, byte[] dst, int srcSize, int dstSize, int scale)
     {
-        if (!_gameOptions.UseMipmaps || texture == null) return;
+        ReadOnlySpan<byte> srcSpan = src;
+        Span<byte> dstSpan = dst;
 
-        int maxMipLevels = (int)Math.Log2(tileSize) + 1;
+        for (int y = 0; y < dstSize; y++)
+        {
+            int srcY = y / scale;
+            for (int x = 0; x < dstSize; x++)
+            {
+                int srcX = x / scale;
+                int srcIdx = (srcY * srcSize + srcX) * 4;
+                int dstIdx = (y * dstSize + x) * 4;
+                
+                dstSpan[dstIdx] = srcSpan[srcIdx];
+                dstSpan[dstIdx + 1] = srcSpan[srcIdx + 1];
+                dstSpan[dstIdx + 2] = srcSpan[srcIdx + 2];
+                dstSpan[dstIdx + 3] = srcSpan[srcIdx + 3];
+            }
+        }
+    }
+
+    private unsafe void UpdateTileMipmaps(int baseX, int baseY, int dataSize, int targetTileSize, byte[] tileData, GLTexture texture)
+    {
+        int maxMipLevels = (int)Math.Log2(targetTileSize) + 1;
         byte[] currentData = tileData;
-        int currentSize = tileSize;
+        int currentSize = dataSize;
 
         for (int mipLevel = 1; mipLevel < maxMipLevels; mipLevel++)
         {
             int newSize = currentSize >> 1;
-            if (newSize <= 0) break;
+            if (newSize < 1) newSize = 1;
 
             byte[] downsampled = new byte[newSize * newSize * 4];
 
-            for (int y = 0; y < newSize; y++)
+            if (currentSize > 1)
             {
-                for (int x = 0; x < newSize; x++)
+                for (int y = 0; y < newSize; y++)
                 {
-                    int src0 = ((y * 2) * currentSize + (x * 2)) * 4;
-                    int src1 = ((y * 2) * currentSize + (x * 2 + 1)) * 4;
-                    int src2 = ((y * 2 + 1) * currentSize + (x * 2)) * 4;
-                    int src3 = ((y * 2 + 1) * currentSize + (x * 2 + 1)) * 4;
+                    for (int x = 0; x < newSize; x++)
+                    {
+                        int src0 = ((y * 2) * currentSize + (x * 2)) * 4;
+                        int src1 = ((y * 2) * currentSize + (x * 2 + 1)) * 4;
+                        int src2 = ((y * 2 + 1) * currentSize + (x * 2)) * 4;
+                        int src3 = ((y * 2 + 1) * currentSize + (x * 2 + 1)) * 4;
 
-                    int dst = (y * newSize + x) * 4;
+                        int dst = (y * newSize + x) * 4;
 
-                    downsampled[dst] = (byte)((currentData[src0] + currentData[src1] + currentData[src2] + currentData[src3]) >> 2);
-                    downsampled[dst + 1] = (byte)((currentData[src0 + 1] + currentData[src1 + 1] + currentData[src2 + 1] + currentData[src3 + 1]) >> 2);
-                    downsampled[dst + 2] = (byte)((currentData[src0 + 2] + currentData[src1 + 2] + currentData[src2 + 2] + currentData[src3 + 2]) >> 2);
-                    downsampled[dst + 3] = (byte)((currentData[src0 + 3] + currentData[src1 + 3] + currentData[src2 + 3] + currentData[src3 + 3]) >> 2);
+                        downsampled[dst] = (byte)((currentData[src0] + currentData[src1] + currentData[src2] + currentData[src3]) >> 2);
+                        downsampled[dst + 1] = (byte)((currentData[src0 + 1] + currentData[src1 + 1] + currentData[src2 + 1] + currentData[src3 + 1]) >> 2);
+                        downsampled[dst + 2] = (byte)((currentData[src0 + 2] + currentData[src1 + 2] + currentData[src2 + 2] + currentData[src3 + 2]) >> 2);
+                        downsampled[dst + 3] = (byte)((currentData[src0 + 3] + currentData[src1 + 3] + currentData[src2 + 3] + currentData[src3 + 3]) >> 2);
+                    }
                 }
             }
+            else
+            {
+                for (int i = 0; i < 4; i++) downsampled[i] = currentData[i];
+            }
 
-            int mipTileX = tileIndex % 16 * newSize;
-            int mipTileY = tileIndex / 16 * newSize;
+            int mipX = baseX >> mipLevel;
+            int mipY = baseY >> mipLevel;
 
             fixed (byte* ptr = downsampled)
             {
-                texture.UploadSubImage(mipTileX, mipTileY, newSize, newSize, ptr, mipLevel, PixelFormat.Rgba);
+                texture.UploadSubImage(mipX, mipY, newSize, newSize, ptr, mipLevel, PixelFormat.Rgba);
             }
 
             currentData = downsampled;

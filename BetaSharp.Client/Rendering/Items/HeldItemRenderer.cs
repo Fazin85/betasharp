@@ -37,14 +37,9 @@ public class HeldItemRenderer
         }
         else
         {
-            if (var2.itemId < 256)
-            {
-                mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/terrain.png"));
-            }
-            else
-            {
-                mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/items.png"));
-            }
+            string texPath = var2.itemId < 256 ? "/terrain.png" : "/gui/items.png";
+            mc.textureManager.BindTexture(mc.textureManager.GetTextureId(texPath));
+            int tileSize = mc.textureManager.GetAtlasTileSize(texPath);
 
             Tessellator var3 = Tessellator.instance;
             int var4 = var1.getItemStackTextureId(var2);
@@ -84,10 +79,10 @@ public class HeldItemRenderer
             float var15;
             float var16;
             float var17;
-            for (var14 = 0; var14 < 16; ++var14)
+            for (var14 = 0; var14 < tileSize; ++var14)
             {
-                var15 = var14 / 16.0F;
-                var16 = var6 + (var5 - var6) * var15 - (1 / 512f);
+                var15 = var14 / (float)tileSize;
+                var16 = var6 + (var5 - var6) * var15 - (1.0f / (tileSize * 32.0f));
                 var17 = var9 * var15;
                 var3.addVertexWithUV((double)var17, 0.0D, (double)(0.0F - var13), (double)var16, (double)var8);
                 var3.addVertexWithUV((double)var17, 0.0D, 0.0D, (double)var16, (double)var8);
@@ -99,11 +94,11 @@ public class HeldItemRenderer
             var3.startDrawingQuads();
             var3.setNormal(1.0F, 0.0F, 0.0F);
 
-            for (var14 = 0; var14 < 16; ++var14)
+            for (var14 = 0; var14 < tileSize; ++var14)
             {
-                var15 = var14 / 16.0F;
-                var16 = var6 + (var5 - var6) * var15 - (1 / 512f);
-                var17 = var9 * var15 + 1.0F / 16.0F;
+                var15 = var14 / (float)tileSize;
+                var16 = var6 + (var5 - var6) * var15 - (1.0f / (tileSize * 32.0f));
+                var17 = var9 * var15 + 1.0F / tileSize;
                 var3.addVertexWithUV((double)var17, 1.0D, (double)(0.0F - var13), (double)var16, (double)var7);
                 var3.addVertexWithUV((double)var17, 1.0D, 0.0D, (double)var16, (double)var7);
                 var3.addVertexWithUV((double)var17, 0.0D, 0.0D, (double)var16, (double)var8);
@@ -114,11 +109,11 @@ public class HeldItemRenderer
             var3.startDrawingQuads();
             var3.setNormal(0.0F, 1.0F, 0.0F);
 
-            for (var14 = 0; var14 < 16; ++var14)
+            for (var14 = 0; var14 < tileSize; ++var14)
             {
-                var15 = var14 / 16.0F;
-                var16 = var8 + (var7 - var8) * var15 - (1 / 512f);
-                var17 = var9 * var15 + 1.0F / 16.0F;
+                var15 = var14 / (float)tileSize;
+                var16 = var8 + (var7 - var8) * var15 - (1.0f / (tileSize * 32.0f));
+                var17 = var9 * var15 + 1.0F / tileSize;
                 var3.addVertexWithUV(0.0D, (double)var17, 0.0D, (double)var6, (double)var16);
                 var3.addVertexWithUV((double)var9, (double)var17, 0.0D, (double)var5, (double)var16);
                 var3.addVertexWithUV((double)var9, (double)var17, (double)(0.0F - var13), (double)var5, (double)var16);
@@ -129,10 +124,10 @@ public class HeldItemRenderer
             var3.startDrawingQuads();
             var3.setNormal(0.0F, -1.0F, 0.0F);
 
-            for (var14 = 0; var14 < 16; ++var14)
+            for (var14 = 0; var14 < tileSize; ++var14)
             {
-                var15 = var14 / 16.0F;
-                var16 = var8 + (var7 - var8) * var15 - (1 / 512f);
+                var15 = var14 / (float)tileSize;
+                var16 = var8 + (var7 - var8) * var15 - (1.0f / (tileSize * 32.0f));
                 var17 = var9 * var15;
                 var3.addVertexWithUV((double)var9, (double)var17, 0.0D, (double)var5, (double)var16);
                 var3.addVertexWithUV(0.0D, (double)var17, 0.0D, (double)var6, (double)var16);

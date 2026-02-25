@@ -1,4 +1,5 @@
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
 namespace BetaSharp.Client.Entities.FX;
@@ -20,11 +21,11 @@ public class EntitySnowShovelFX : EntityFX
         base.velocityX += velocityX;
         base.velocityY += velocityY;
         base.velocityZ += velocityZ;
-        particleRed = particleGreen = particleBlue = 1.0F - (float)(java.lang.Math.random() * (double)0.3F);
+        particleRed = particleGreen = particleBlue = 1.0F - (float)(Random.Shared.NextDouble() * (double)0.3F);
         particleScale *= 12.0F / 16.0F;
         particleScale *= scaleMultiplier;
         baseScale = particleScale;
-        particleMaxAge = (int)(8.0D / (java.lang.Math.random() * 0.8D + 0.2D));
+        particleMaxAge = (int)(8.0D / (Random.Shared.NextDouble() * 0.8D + 0.2D));
         particleMaxAge = (int)((float)particleMaxAge * scaleMultiplier);
         noClip = false;
     }

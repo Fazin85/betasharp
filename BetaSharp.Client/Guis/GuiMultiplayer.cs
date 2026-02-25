@@ -148,7 +148,7 @@ public class GuiMultiplayer : GuiScreen
         {
             _directConnect = true;
             _tempServer = new ServerData("Minecraft Server", "");
-            mc.displayGuiScreen(new GuiScreenAddServer(this, _tempServer));
+            mc.displayGuiScreen(new GuiDirectConnect(this, _tempServer));
         }
         else if (button.Id == 3) // Add
         {

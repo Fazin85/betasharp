@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.C2SPlay;
 
 public class PlayerInputC2SPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayerInputC2SPacket).TypeHandle);
-
     private float sideways;
     private float forward;
     private bool jumping;
@@ -13,7 +11,7 @@ public class PlayerInputC2SPacket : Packet
     private float pitch;
     private float yaw;
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         sideways = stream.readFloat();
         forward = stream.readFloat();
@@ -23,7 +21,7 @@ public class PlayerInputC2SPacket : Packet
         sneaking = stream.readBoolean();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeFloat(sideways);
         stream.writeFloat(forward);
@@ -33,12 +31,12 @@ public class PlayerInputC2SPacket : Packet
         stream.writeBoolean(sneaking);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onPlayerInput(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 18;
     }

@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.Play;
 
 public class PlayerRespawnPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayerRespawnPacket).TypeHandle);
-
     public sbyte dimensionId;
 
     public PlayerRespawnPacket()
@@ -17,22 +15,22 @@ public class PlayerRespawnPacket : Packet
         this.dimensionId = dimensionId;
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onPlayerRespawn(this);
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         dimensionId = (sbyte)stream.readByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeByte(dimensionId);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 1;
     }

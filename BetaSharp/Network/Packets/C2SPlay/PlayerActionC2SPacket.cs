@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.C2SPlay;
 
 public class PlayerActionC2SPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayerActionC2SPacket).TypeHandle);
-
     public int x;
     public int y;
     public int z;
@@ -25,7 +23,7 @@ public class PlayerActionC2SPacket : Packet
         this.direction = direction;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         action = stream.read();
         x = stream.readInt();
@@ -34,7 +32,7 @@ public class PlayerActionC2SPacket : Packet
         direction = stream.read();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.write(action);
         stream.writeInt(x);
@@ -43,12 +41,12 @@ public class PlayerActionC2SPacket : Packet
         stream.write(direction);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.handlePlayerAction(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 11;
     }

@@ -51,7 +51,7 @@ public class InternalConnection : Connection
         while (!readQueue.isEmpty())
         {
             Packet packet = (Packet)readQueue.remove(0);
-            packet.apply(networkHandler);
+            packet.Apply(networkHandler);
             count++;
         }
         if (count > 0)

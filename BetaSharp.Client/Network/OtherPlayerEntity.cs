@@ -7,8 +7,6 @@ namespace BetaSharp.Client.Network;
 
 public class OtherPlayerEntity : EntityPlayer
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(OtherPlayerEntity).TypeHandle);
-
     private int lerpSteps;
     private double lerpX;
     private double lerpY;

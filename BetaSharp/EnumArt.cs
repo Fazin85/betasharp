@@ -1,6 +1,6 @@
 namespace BetaSharp;
 
-public class EnumArt : java.lang.Object
+public class EnumArt
 {
     public static readonly EnumArt Kebab = new("Kebab", 16, 16, 0, 0);
     public static readonly EnumArt Aztec = new("Aztec", 16, 16, 16, 0);

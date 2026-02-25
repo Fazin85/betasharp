@@ -42,7 +42,7 @@ public class EntityLiving : Entity
     public float tilt;
     protected bool unused_flag;
     public int field_9326_T = -1;
-    public float field_9325_U = (float)(java.lang.Math.random() * (double)0.9F + (double)0.1F);
+    public float field_9325_U = Random.Shared.NextSingle() * 0.9f + 0.1f;
     public float lastWalkAnimationSpeed;
     public float walkAnimationSpeed;
     public float animationPhase;
@@ -66,10 +66,10 @@ public class EntityLiving : Entity
     public EntityLiving(World world) : base(world)
     {
         preventEntitySpawning = true;
-        limbSwingScale = (float)(java.lang.Math.random() + 1.0D) * 0.01F;
+        limbSwingScale = (Random.Shared.NextSingle() + 1.0f) * 0.01f;
         setPosition(x, y, z);
-        limbSwingPhase = (float)java.lang.Math.random() * 12398.0F;
-        yaw = (float)(java.lang.Math.random() * (double)((float)System.Math.PI) * 2.0D);
+        limbSwingPhase = Random.Shared.NextSingle() * 12398.0f;
+        yaw = (Random.Shared.NextSingle() * (float)Math.PI) * 2.0f;
         stepHeight = 0.5F;
     }
 
@@ -417,9 +417,9 @@ public class EntityLiving : Entity
                         double var4 = entity.x - x;
 
                         double var6;
-                        for (var6 = entity.z - z; var4 * var4 + var6 * var6 < 1.0E-4D; var6 = (java.lang.Math.random() - java.lang.Math.random()) * 0.01D)
+                        for (var6 = entity.z - z; var4 * var4 + var6 * var6 < 1.0E-4D; var6 = (Random.Shared.NextDouble() - Random.Shared.NextDouble()) * 0.01D)
                         {
-                            var4 = (java.lang.Math.random() - java.lang.Math.random()) * 0.01D;
+                            var4 = (Random.Shared.NextDouble() - Random.Shared.NextDouble()) * 0.01D;
                         }
 
                         attackedAtYaw = (float)(System.Math.Atan2(var6, var4) * 180.0D / (double)((float)System.Math.PI)) - yaw;
@@ -427,7 +427,7 @@ public class EntityLiving : Entity
                     }
                     else
                     {
-                        attackedAtYaw = (float)((int)(java.lang.Math.random() * 2.0D) * 180);
+                        attackedAtYaw = (float)((int)(Random.Shared.NextDouble() * 2.0D) * 180);
                     }
                 }
 
@@ -593,7 +593,7 @@ public class EntityLiving : Entity
             if (onGround)
             {
                 friction = 546.0F * 0.1F * 0.1F * 0.1F;
-                int groundBlockId = world.getBlockId(MathHelper.Floor(x), MathHelper.Floor(boundingBox.minY) - 1, MathHelper.Floor(z));
+                int groundBlockId = world.getBlockId(MathHelper.Floor(x), MathHelper.Floor(boundingBox.MinY) - 1, MathHelper.Floor(z));
                 if (groundBlockId > 0)
                 {
                     friction = Block.Blocks[groundBlockId].slipperiness * 0.91F;
@@ -606,7 +606,7 @@ public class EntityLiving : Entity
             if (onGround)
             {
                 friction = 546.0F * 0.1F * 0.1F * 0.1F;
-                int groundBlockId = world.getBlockId(MathHelper.Floor(x), MathHelper.Floor(boundingBox.minY) - 1, MathHelper.Floor(z));
+                int groundBlockId = world.getBlockId(MathHelper.Floor(x), MathHelper.Floor(boundingBox.MinY) - 1, MathHelper.Floor(z));
                 if (groundBlockId > 0)
                 {
                     friction = Block.Blocks[groundBlockId].slipperiness * 0.91F;
@@ -676,7 +676,7 @@ public class EntityLiving : Entity
     public virtual bool isOnLadder()
     {
         int x = MathHelper.Floor(base.x);
-        int y = MathHelper.Floor(boundingBox.minY);
+        int y = MathHelper.Floor(boundingBox.MinY);
         int z = MathHelper.Floor(base.z);
         return world.getBlockId(x, y, z) == Block.Ladder.id;
     }
@@ -735,7 +735,7 @@ public class EntityLiving : Entity
             --newPosRotationIncrements;
             setPosition(newX, newY, newZ);
             setRotation(yaw, pitch);
-            var collisions = world.getEntityCollisions(this, boundingBox.contract(1.0D / 32.0D, 0.0D, 1.0D / 32.0D));
+            var collisions = world.getEntityCollisions(this, boundingBox.Contract(1.0D / 32.0D, 0.0D, 1.0D / 32.0D));
             if (collisions.Count > 0)
             {
                 double highestCollisionY = 0.0D;
@@ -743,13 +743,13 @@ public class EntityLiving : Entity
                 for (int i = 0; i < collisions.Count; ++i)
                 {
                     Box box = collisions[i];
-                    if (box.maxY > highestCollisionY)
+                    if (box.MaxY > highestCollisionY)
                     {
-                        highestCollisionY = box.maxY;
+                        highestCollisionY = box.MaxY;
                     }
                 }
 
-                newY += highestCollisionY - boundingBox.minY;
+                newY += highestCollisionY - boundingBox.MinY;
                 setPosition(newX, newY, newZ);
             }
         }
@@ -788,7 +788,7 @@ public class EntityLiving : Entity
         forwardSpeed *= 0.98F;
         rotationSpeed *= 0.9F;
         travel(sidewaysSpeed, forwardSpeed);
-        var nearbyEntities = world.getEntities(this, boundingBox.expand((double)0.2F, 0.0D, (double)0.2F));
+        var nearbyEntities = world.getEntities(this, boundingBox.Expand((double)0.2F, 0.0D, (double)0.2F));
         if (nearbyEntities != null && nearbyEntities.Count > 0)
         {
             for (int i = 0; i < nearbyEntities.Count; ++i)
@@ -914,7 +914,7 @@ public class EntityLiving : Entity
         }
         else
         {
-            dy = (entity.boundingBox.minY + entity.boundingBox.maxY) / 2.0D - (y + (double)getEyeHeight());
+            dy = (entity.boundingBox.MinY + entity.boundingBox.MaxY) / 2.0D - (y + (double)getEyeHeight());
         }
 
         double horizontalDistance = (double)MathHelper.Sqrt(dx * dx + dz * dz);

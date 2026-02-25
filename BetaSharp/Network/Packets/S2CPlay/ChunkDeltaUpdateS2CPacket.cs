@@ -6,8 +6,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class ChunkDeltaUpdateS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ChunkDeltaUpdateS2CPacket).TypeHandle);
-
     public int x;
     public int z;
     public short[] positions;
@@ -17,12 +15,12 @@ public class ChunkDeltaUpdateS2CPacket : Packet
 
     public ChunkDeltaUpdateS2CPacket()
     {
-        worldPacket = true;
+        WorldPacket = true;
     }
 
     public ChunkDeltaUpdateS2CPacket(int x, int z, short[] positions, int size, World world)
     {
-        worldPacket = true;
+        WorldPacket = true;
         this.x = x;
         this.z = z;
         this._size = size;
@@ -42,7 +40,7 @@ public class ChunkDeltaUpdateS2CPacket : Packet
         }
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         x = stream.readInt();
         z = stream.readInt();
@@ -61,7 +59,7 @@ public class ChunkDeltaUpdateS2CPacket : Packet
         stream.readFully(blockMetadata);
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeInt(x);
         stream.writeInt(z);
@@ -76,12 +74,12 @@ public class ChunkDeltaUpdateS2CPacket : Packet
         stream.write(blockMetadata);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onChunkDeltaUpdate(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 10 + _size * 4;
     }

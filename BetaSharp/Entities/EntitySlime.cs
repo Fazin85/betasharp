@@ -24,12 +24,12 @@ public class EntitySlime : EntityLiving, Monster
     protected override void initDataTracker()
     {
         base.initDataTracker();
-        dataWatcher.addObject(16, new java.lang.Byte((byte)1));
+        dataWatcher.AddObject(16, (byte)1);
     }
 
     public void setSlimeSize(int size)
     {
-        dataWatcher.updateObject(16, new java.lang.Byte((byte)size));
+        dataWatcher.UpdateObject(16, (byte)size);
         setBoundingBoxSpacing(0.6F * (float)size, 0.6F * (float)size);
         health = size * size;
         setPosition(x, y, z);
@@ -67,7 +67,7 @@ public class EntitySlime : EntityLiving, Monster
                 float spread = random.NextFloat() * 0.5F + 0.5F;
                 float offsetX = MathHelper.Sin(angle) * (float)size * 0.5F * spread;
                 float offsetY = MathHelper.Cos(angle) * (float)size * 0.5F * spread;
-                world.addParticle("slime", base.x + (double)offsetX, boundingBox.minY, z + (double)offsetY, 0.0D, 0.0D, 0.0D);
+                world.addParticle("slime", base.x + (double)offsetX, boundingBox.MinY, z + (double)offsetY, 0.0D, 0.0D, 0.0D);
             }
 
             if (size > 2)

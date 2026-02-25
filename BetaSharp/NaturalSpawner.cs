@@ -60,7 +60,7 @@ public static class NaturalSpawner
                     if (spawnSelector.Empty) break;
                     SpawnListEntry toSpawn = spawnSelector.GetNext(world.random);
 
-                    BlockPos spawnPos = GetRandomSpawningPointInChunk(world, chunk.x * 16, chunk.z * 16);
+                    BlockPos spawnPos = GetRandomSpawningPointInChunk(world, chunk.X * 16, chunk.Z * 16);
                     if (world.shouldSuffocate(spawnPos.x, spawnPos.y, spawnPos.z)) continue;
                     if (world.getMaterial(spawnPos.x, spawnPos.y, spawnPos.z) != creatureKind.SpawnMaterial) continue;
 

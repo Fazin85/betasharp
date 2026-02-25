@@ -7,7 +7,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp;
 
-public class Pathfinder : java.lang.Object
+public class Pathfinder
 {
     private readonly BlockView worldMap;
     private readonly Path path = new();
@@ -21,7 +21,7 @@ public class Pathfinder : java.lang.Object
 
     public PathEntity createEntityPathTo(Entity var1, Entity var2, float var3)
     {
-        return createEntityPathTo(var1, var2.x, var2.boundingBox.minY, var2.z, var3);
+        return createEntityPathTo(var1, var2.x, var2.boundingBox.MinY, var2.z, var3);
     }
 
     public PathEntity createEntityPathTo(Entity var1, int var2, int var3, int var4, float var5)
@@ -33,7 +33,7 @@ public class Pathfinder : java.lang.Object
     {
         path.clearPath();
         pointMap.Clear();
-        PathPoint var9 = openPoint(MathHelper.Floor(var1.boundingBox.minX), MathHelper.Floor(var1.boundingBox.minY), MathHelper.Floor(var1.boundingBox.minZ));
+        PathPoint var9 = openPoint(MathHelper.Floor(var1.boundingBox.MinX), MathHelper.Floor(var1.boundingBox.MinY), MathHelper.Floor(var1.boundingBox.MinZ));
         PathPoint var10 = openPoint(MathHelper.Floor(var2 - (double)(var1.width / 2.0F)), MathHelper.Floor(var4), MathHelper.Floor(var6 - (double)(var1.width / 2.0F)));
         PathPoint var11 = new(MathHelper.Floor(var1.width + 1.0F), MathHelper.Floor(var1.height + 1.0F), MathHelper.Floor(var1.width + 1.0F));
         PathEntity var12 = addToPath(var1, var9, var10, var11, var8);
@@ -43,7 +43,7 @@ public class Pathfinder : java.lang.Object
     private PathEntity addToPath(Entity var1, PathPoint var2, PathPoint var3, PathPoint var4, float var5)
     {
         var2.totalPathDistance = 0.0F;
-        var2.distanceToNext = var2.distanceTo(var3);
+        var2.distanceToNext = var2.DistanceTo(var3);
         var2.distanceToTarget = var2.distanceToNext;
         path.clearPath();
         path.addPoint(var2);
@@ -52,12 +52,12 @@ public class Pathfinder : java.lang.Object
         while (!path.isPathEmpty())
         {
             PathPoint var7 = path.dequeue();
-            if (var7.equals(var3))
+            if (var7.Equals(var3))
             {
                 return createEntityPath(var2, var3);
             }
 
-            if (var7.distanceTo(var3) < var6.distanceTo(var3))
+            if (var7.DistanceTo(var3) < var6.DistanceTo(var3))
             {
                 var6 = var7;
             }
@@ -68,13 +68,13 @@ public class Pathfinder : java.lang.Object
             for (int var9 = 0; var9 < var8; ++var9)
             {
                 PathPoint var10 = pathOptions[var9];
-                float var11 = var7.totalPathDistance + var7.distanceTo(var10);
-                if (!var10.isAssigned() || var11 < var10.totalPathDistance)
+                float var11 = var7.totalPathDistance + var7.DistanceTo(var10);
+                if (!var10.IsAssigned() || var11 < var10.totalPathDistance)
                 {
                     var10.previous = var7;
                     var10.totalPathDistance = var11;
-                    var10.distanceToNext = var10.distanceTo(var3);
-                    if (var10.isAssigned())
+                    var10.distanceToNext = var10.DistanceTo(var3);
+                    if (var10.IsAssigned())
                     {
                         path.changeDistance(var10, var10.totalPathDistance + var10.distanceToNext);
                     }
@@ -110,22 +110,22 @@ public class Pathfinder : java.lang.Object
         PathPoint var9 = getSafePoint(var1, var2.xCoord - 1, var2.yCoord, var2.zCoord, var3, var7);
         PathPoint var10 = getSafePoint(var1, var2.xCoord + 1, var2.yCoord, var2.zCoord, var3, var7);
         PathPoint var11 = getSafePoint(var1, var2.xCoord, var2.yCoord, var2.zCoord - 1, var3, var7);
-        if (var8 != null && !var8.isFirst && var8.distanceTo(var4) < var5)
+        if (var8 != null && !var8.isFirst && var8.DistanceTo(var4) < var5)
         {
             pathOptions[var6++] = var8;
         }
 
-        if (var9 != null && !var9.isFirst && var9.distanceTo(var4) < var5)
+        if (var9 != null && !var9.isFirst && var9.DistanceTo(var4) < var5)
         {
             pathOptions[var6++] = var9;
         }
 
-        if (var10 != null && !var10.isFirst && var10.distanceTo(var4) < var5)
+        if (var10 != null && !var10.isFirst && var10.DistanceTo(var4) < var5)
         {
             pathOptions[var6++] = var10;
         }
 
-        if (var11 != null && !var11.isFirst && var11.distanceTo(var4) < var5)
+        if (var11 != null && !var11.isFirst && var11.DistanceTo(var4) < var5)
         {
             pathOptions[var6++] = var11;
         }

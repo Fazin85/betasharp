@@ -187,7 +187,7 @@ public class SkyChunkGenerator : ChunkSource
     public Chunk GetChunk(int var1, int var2)
     {
         rand.SetSeed(var1 * 341873128712L + var2 * 132897987541L);
-        byte[] var3 = new byte[-java.lang.Short.MIN_VALUE];
+        byte[] var3 = new byte[-short.MinValue];
         Chunk var4 = new Chunk(world, var3, var1, var2);
         field_28075_v = world.getBiomeSource().GetBiomesInArea(field_28075_v, var1 * 16, var2 * 16, 16, 16);
         double[] var5 = world.getBiomeSource().TemperatureMap;

@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.Play;
 
 public class ScreenHandlerAcknowledgementPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ScreenHandlerAcknowledgementPacket).TypeHandle);
-
     public int syncId;
     public short actionType;
     public bool accepted;
@@ -21,26 +19,26 @@ public class ScreenHandlerAcknowledgementPacket : Packet
         this.accepted = accepted;
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onScreenHandlerAcknowledgement(this);
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         syncId = (sbyte)stream.readByte();
         actionType = stream.readShort();
         accepted = (sbyte)stream.readByte() != 0;
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeByte(syncId);
         stream.writeShort(actionType);
         stream.writeByte(accepted ? 1 : 0);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 4;
     }

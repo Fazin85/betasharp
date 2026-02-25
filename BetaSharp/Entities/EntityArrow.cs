@@ -108,7 +108,7 @@ public class EntityArrow : Entity
         {
             Block.Blocks[blockId].updateBoundingBox(world, xTile, yTile, zTile);
             Box? box = Block.Blocks[blockId].getCollisionShape(world, xTile, yTile, zTile);
-            if (box != null && box.Value.contains(new Vec3D(x, y, z)))
+            if (box != null && box.Value.Contains(new Vec3D(x, y, z)))
             {
                 inGround = true;
             }
@@ -154,7 +154,7 @@ public class EntityArrow : Entity
             }
 
             Entity hitEntity = null;
-            var candidates = world.getEntities(this, boundingBox.stretch(velocityX, velocityY, velocityZ).expand(1.0D, 1.0D, 1.0D));
+            var candidates = world.getEntities(this, boundingBox.Stretch(velocityX, velocityY, velocityZ).Expand(1.0D, 1.0D, 1.0D));
             double minHitDistance = 0.0D;
 
             float expandAmount;
@@ -164,8 +164,8 @@ public class EntityArrow : Entity
                 if (entity.isCollidable() && (entity != owner || ticksInAir >= 5))
                 {
                     expandAmount = 0.3F;
-                    Box expandedBox = entity.boundingBox.expand((double)expandAmount, (double)expandAmount, (double)expandAmount);
-                    HitResult hitResult = expandedBox.raycast(rayStart, rayEnd);
+                    Box expandedBox = entity.boundingBox.Expand((double)expandAmount, (double)expandAmount, (double)expandAmount);
+                    HitResult hitResult = expandedBox.Raycast(rayStart, rayEnd);
                     if (hitResult.Type != HitResultType.MISS)
                     {
                         double hitDistance = rayStart.distanceTo(hitResult.Pos);

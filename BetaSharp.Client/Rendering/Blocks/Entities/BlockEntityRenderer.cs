@@ -36,12 +36,12 @@ public class BlockEntityRenderer
         }
     }
 
-    public BlockEntitySpecialRenderer? GetSpecialRendererForClass(Class clazz)
+    public BlockEntitySpecialRenderer? GetSpecialRendererForClass(Type clazz)
     {
         _specialRendererMap.TryGetValue(clazz, out BlockEntitySpecialRenderer? renderer);
-        if (renderer == null && clazz != BlockEntity.Class)
+        if (renderer == null && clazz != typeof(BlockEntity))
         {
-            renderer = GetSpecialRendererForClass(clazz.getSuperclass());
+            renderer = GetSpecialRendererForClass(clazz.BaseType);
             _specialRendererMap[clazz] = renderer;
         }
 
@@ -50,7 +50,7 @@ public class BlockEntityRenderer
 
     public BlockEntitySpecialRenderer? GetSpecialRendererForEntity(BlockEntity var1)
     {
-        return var1 == null ? null : GetSpecialRendererForClass(var1.getClass());
+        return var1 == null ? null : GetSpecialRendererForClass(var1.GetType());
     }
 
     public void CacheActiveRenderInfo(World var1, TextureManager var2, TextRenderer var3, EntityLiving var4, float var5)
@@ -74,9 +74,9 @@ public class BlockEntityRenderer
     {
         if (var1.distanceFrom(PlayerX, PlayerY, PlayerZ) < 4096.0D)
         {
-            float var3 = World.getLuminance(var1.x, var1.y, var1.z);
+            float var3 = World.getLuminance(var1.X, var1.Y, var1.Z);
             GLManager.GL.Color3(var3, var3, var3);
-            RenderTileEntityAt(var1, var1.x - StaticPlayerX, var1.y - StaticPlayerY, var1.z - StaticPlayerZ, var2);
+            RenderTileEntityAt(var1, var1.X - StaticPlayerX, var1.Y - StaticPlayerY, var1.Z - StaticPlayerZ, var2);
         }
 
     }

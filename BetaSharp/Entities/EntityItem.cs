@@ -13,7 +13,7 @@ public class EntityItem : Entity
     public int itemAge;
     public int delayBeforeCanPickup;
     private int health = 5;
-    public float bobPhase = (float)(java.lang.Math.random() * System.Math.PI * 2.0D);
+    public float bobPhase = Random.Shared.NextSingle() * ((float)Math.PI) * 2.0f;
 
     public EntityItem(World world, double x, double y, double z, ItemStack stack) : base(world)
     {
@@ -21,10 +21,10 @@ public class EntityItem : Entity
         standingEyeHeight = height / 2.0F;
         setPosition(x, y, z);
         this.stack = stack;
-        yaw = (float)(java.lang.Math.random() * 360.0D);
-        velocityX = (double)((float)(java.lang.Math.random() * (double)0.2F - (double)0.1F));
-        velocityY = (double)0.2F;
-        velocityZ = (double)((float)(java.lang.Math.random() * (double)0.2F - (double)0.1F));
+        yaw = Random.Shared.NextSingle() * 360.0f;
+        velocityX = Random.Shared.NextDouble() * 0.2f - 0.1f;
+        velocityY = 0.2F;
+        velocityZ = Random.Shared.NextDouble() * 0.2f - 0.1f;
     }
 
     protected override bool bypassesSteppingEffects()
@@ -62,13 +62,13 @@ public class EntityItem : Entity
             world.playSound(this, "random.fizz", 0.4F, 2.0F + random.NextFloat() * 0.4F);
         }
 
-        pushOutOfBlocks(x, (boundingBox.minY + boundingBox.maxY) / 2.0D, z);
+        pushOutOfBlocks(x, (boundingBox.MinY + boundingBox.MaxY) / 2.0D, z);
         move(velocityX, velocityY, velocityZ);
         float friction = 0.98F;
         if (onGround)
         {
             friction = 0.1F * 0.1F * 58.8F;
-            int groundBlockId = world.getBlockId(MathHelper.Floor(x), MathHelper.Floor(boundingBox.minY) - 1, MathHelper.Floor(z));
+            int groundBlockId = world.getBlockId(MathHelper.Floor(x), MathHelper.Floor(boundingBox.MinY) - 1, MathHelper.Floor(z));
             if (groundBlockId > 0)
             {
                 friction = Block.Blocks[groundBlockId].slipperiness * 0.98F;

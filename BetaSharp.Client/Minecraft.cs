@@ -152,11 +152,16 @@ public partial class Minecraft
     {
         InitializeTimer();
 
+        int maximumWidth = Display.getDisplayMode().getWidth();
+        int maximumHeight = Display.getDisplayMode().getHeight();
+
         if (fullscreen)
         {
             Display.setFullscreen(true);
-            displayWidth = Display.getDisplayMode().getWidth();
-            displayHeight = Display.getDisplayMode().getHeight();
+
+            displayWidth = maximumWidth;
+            displayHeight = maximumHeight;
+
             if (displayWidth <= 0)
             {
                 displayWidth = 1;
@@ -170,6 +175,7 @@ public partial class Minecraft
         else
         {
             Display.setDisplayMode(new DisplayMode(displayWidth, displayHeight));
+            Display.setLocation((maximumWidth - displayWidth)  / 2 , (maximumHeight  - displayHeight)  / 2);
         }
 
         Display.setTitle("Minecraft Beta 1.7.3");
@@ -186,7 +192,7 @@ public partial class Minecraft
             Display.DebugMode = options.DebugMode;
 
             Display.create();
-            Display.getGlfw().SetWindowSizeLimits(Display.getWindowHandle(), 850, 480, 3840, 2160);
+            Display.getGlfw().SetWindowSizeLimits(Display.getWindowHandle(), 850, 480, maximumWidth, maximumHeight);
 
             GLManager.Init(Display.getGL()!);
 
@@ -202,7 +208,7 @@ public partial class Minecraft
             _logger.LogError(ex, "Exception");
         }
         texturePackList = new TexturePacks(this, new DirectoryInfo(mcDataDir.getAbsolutePath()));
-        textureManager = new TextureManager(texturePackList, options);
+        textureManager = new TextureManager(this, texturePackList, options);
         fontRenderer = new TextRenderer(options, textureManager);
         WaterColors.loadColors(textureManager.GetColors("/misc/watercolor.png"));
         GrassColors.loadColors(textureManager.GetColors("/misc/grasscolor.png"));
@@ -545,7 +551,6 @@ public partial class Minecraft
 
                     long tickElapsedTime = java.lang.System.nanoTime() - tickStartTime;
                     checkGLError("Pre render");
-                    BlockRenderer.fancyGrass = true;
                     sndManager.UpdateListener(player, Timer.renderPartialTicks);
                     GLManager.GL.Enable(GLEnum.Texture2D);
                     if (world != null)
@@ -1466,7 +1471,7 @@ public partial class Minecraft
             {
                 if (targetEntity == null)
                 {
-                    player = (ClientPlayerEntity)newWorld.getPlayerForProxy(ClientPlayerEntity.Class);
+                    player = (ClientPlayerEntity)newWorld.getPlayerForProxy(typeof(ClientPlayerEntity));
                 }
             }
             else if (player != null)
@@ -1671,7 +1676,7 @@ public partial class Minecraft
     {
         System.Threading.Thread.CurrentThread.Name = "Minecraft Main Thread";
 
-        Minecraft mc = new(1280, 720, false)
+        Minecraft mc = new(850, 480, false)
         {
             minecraftUri = "www.minecraft.net"
         };

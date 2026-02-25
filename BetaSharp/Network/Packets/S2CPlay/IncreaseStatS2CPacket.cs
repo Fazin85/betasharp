@@ -4,8 +4,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class IncreaseStatS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(IncreaseStatS2CPacket).TypeHandle);
-
     public int statId;
     public int amount;
 
@@ -19,24 +17,24 @@ public class IncreaseStatS2CPacket : Packet
         this.amount = amount;
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onIncreaseStat(this);
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         statId = stream.readInt();
         amount = (sbyte)stream.readByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeInt(statId);
         stream.writeByte(amount);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 6;
     }

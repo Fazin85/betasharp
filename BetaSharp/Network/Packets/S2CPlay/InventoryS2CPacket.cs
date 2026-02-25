@@ -6,8 +6,6 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class InventoryS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(InventoryS2CPacket).TypeHandle);
-
     public int syncId;
     public ItemStack[] contents;
 
@@ -27,7 +25,7 @@ public class InventoryS2CPacket : Packet
         }
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         syncId = (sbyte)stream.readByte();
         short itemsCount = stream.readShort();
@@ -47,7 +45,7 @@ public class InventoryS2CPacket : Packet
 
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeByte(syncId);
         stream.writeShort(contents.Length);
@@ -68,12 +66,12 @@ public class InventoryS2CPacket : Packet
 
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onInventory(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 3 + contents.Length * 5;
     }

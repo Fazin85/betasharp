@@ -1,40 +1,43 @@
+using Microsoft.Extensions.Logging;
+using Exception = System.Exception;
+using StringReader = System.IO.StringReader;
+
 namespace BetaSharp.Stats.Achievements;
 
-internal class AchievementMap
+internal static class AchievementMap
 {
-    public static readonly AchievementMap Instance = new();
-    
-    private readonly Dictionary<int, string> _guidMap = new();
+    private static readonly ILogger s_logger = Log.Instance.For(nameof(AchievementMap));
+    private static readonly Dictionary<int, string> s_guidMap = new();
 
-    private AchievementMap()
+    static AchievementMap()
     {
         try
         {
-            string content = AssetManager.Instance.getAsset("achievement/map.txt").getTextContent();
-            
-            using StringReader reader = new(content);
-
-            string? line;
-            while ((line = reader.ReadLine()) != null)
+            using (var reader = new StringReader(AssetManager.Instance.getAsset("achievement/map.txt").getTextContent()))
             {
-                if (string.IsNullOrWhiteSpace(line)) continue;
-
-                string[] parts = line.Split(',');
-                
-                if (parts.Length >= 2 && int.TryParse(parts[0], out int id))
+                while (reader.ReadLine() is { } line)
                 {
-                    _guidMap[id] = parts[1].Trim();
+                    if (line == "") continue;
+                    string[] parts = line.Split(',');
+                    int key = int.Parse(parts[0]);
+                    s_guidMap.Add(key, parts[1].Trim());
                 }
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error loading achievement map: {ex}");
+            s_logger.LogError(ex, ex.Message);
         }
     }
 
     public static string GetGuid(int id)
     {
-        return Instance._guidMap.TryGetValue(id, out string? guid) ? guid : string.Empty;
+        if (!s_guidMap.TryGetValue(id, out string? value))
+        {
+            //s_logger.LogWarning("No guid found for id: " + id);
+            return string.Empty;
+        }
+
+        return value;
     }
 }

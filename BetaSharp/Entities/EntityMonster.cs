@@ -66,7 +66,7 @@ public class EntityMonster : EntityCreature, Monster
 
     protected override void attackEntity(Entity entity, float distance)
     {
-        if (attackTime <= 0 && distance < 2.0F && entity.boundingBox.maxY > boundingBox.minY && entity.boundingBox.minY < boundingBox.maxY)
+        if (attackTime <= 0 && distance < 2.0F && entity.boundingBox.MaxY > boundingBox.MinY && entity.boundingBox.MinY < boundingBox.MaxY)
         {
             attackTime = 20;
             entity.damage(this, attackStrength);
@@ -92,7 +92,7 @@ public class EntityMonster : EntityCreature, Monster
     public override bool canSpawn()
     {
         int x = MathHelper.Floor(base.x);
-        int y = MathHelper.Floor(boundingBox.minY);
+        int y = MathHelper.Floor(boundingBox.MinY);
         int z = MathHelper.Floor(base.z);
         if (world.getBrightness(LightType.Sky, x, y, z) > random.NextInt(32))
         {

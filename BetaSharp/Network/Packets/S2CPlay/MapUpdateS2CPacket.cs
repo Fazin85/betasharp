@@ -4,26 +4,24 @@ namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class MapUpdateS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(MapUpdateS2CPacket).TypeHandle);
-
     public short itemRawId;
     public short id;
     public byte[] updateData;
 
     public MapUpdateS2CPacket()
     {
-        worldPacket = true;
+        WorldPacket = true;
     }
 
     public MapUpdateS2CPacket(short itemRawId, short id, byte[] updateData)
     {
-        worldPacket = true;
+        WorldPacket = true;
         this.itemRawId = itemRawId;
         this.id = id;
         this.updateData = updateData;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(DataInputStream stream)
     {
         itemRawId = stream.readShort();
         id = stream.readShort();
@@ -31,7 +29,7 @@ public class MapUpdateS2CPacket : Packet
         stream.readFully(updateData);
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(DataOutputStream stream)
     {
         stream.writeShort(itemRawId);
         stream.writeShort(id);
@@ -39,12 +37,12 @@ public class MapUpdateS2CPacket : Packet
         stream.write(updateData);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onMapUpdate(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 4 + updateData.Length;
     }

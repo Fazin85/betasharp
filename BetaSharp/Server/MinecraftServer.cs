@@ -12,6 +12,7 @@ using java.lang;
 using java.util;
 using java.util.logging;
 using Microsoft.Extensions.Logging;
+using Exception = System.Exception;
 
 namespace BetaSharp.Server;
 
@@ -28,7 +29,6 @@ public abstract class MinecraftServer : Runnable, CommandOutput
     private int ticks;
     public string progressMessage;
     public int progress;
-    private List tickables = new ArrayList();
     private List pendingCommands = Collections.synchronizedList(new ArrayList());
     public EntityTracker[] entityTrackers = new EntityTracker[2];
     public bool onlineMode;
@@ -413,18 +413,13 @@ public abstract class MinecraftServer : Runnable, CommandOutput
             t.tick();
         }
 
-        for (int i = 0; i < tickables.size(); i++)
-        {
-            ((Tickable)tickables.get(i)).tick();
-        }
-
         try
         {
             runPendingCommands();
         }
-        catch (java.lang.Exception ex)
+        catch (Exception e)
         {
-            _logger.LogWarning($"Unexpected exception while parsing console command: {ex}");
+            _logger.LogWarning($"Unexpected exception while parsing console command: {e}");
         }
     }
 
@@ -439,11 +434,6 @@ public abstract class MinecraftServer : Runnable, CommandOutput
         {
             commandHandler.ExecuteCommand((Command)pendingCommands.remove(0));
         }
-    }
-
-    public void addTickable(Tickable tickable)
-    {
-        tickables.add(tickable);
     }
 
     public abstract java.io.File getFile(string path);
