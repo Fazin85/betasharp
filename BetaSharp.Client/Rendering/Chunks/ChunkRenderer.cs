@@ -85,7 +85,7 @@ public class ChunkRenderer : IChunkVisibilityVisitor
     public ChunkRenderer(World world)
     {
         _meshGenerator = new();
-        this._world = world;
+        _world = world;
 
         _chunkShader = new(AssetManager.Instance.getAsset("shaders/chunk.vert").getTextContent(), AssetManager.Instance.getAsset("shaders/chunk.frag").getTextContent());
         _logger.LogInformation("Loaded chunk shader");
@@ -124,8 +124,8 @@ public class ChunkRenderer : IChunkVisibilityVisitor
             GLManager.GL.GetFloat(GLEnum.ProjectionMatrix, (float*)&projection);
         }
 
-        this._modelView = modelView;
-        this._projection = projection;
+        _modelView = modelView;
+        _projection = projection;
 
         _chunkShader.SetUniformMatrix4("projectionMatrix", projection);
 
@@ -146,6 +146,8 @@ public class ChunkRenderer : IChunkVisibilityVisitor
             _renderers.TryGetValue(new Vector3D<int>(cameraChunkPos.X, y, cameraChunkPos.Z), out cameraState);
         }
 
+        float renderDistWorld = renderParams.RenderDistance * SubChunkRenderer.Size;
+
         Profiler.Start("FindVisible");
 
         _occlusionCuller.FindVisible(
@@ -153,7 +155,7 @@ public class ChunkRenderer : IChunkVisibilityVisitor
             cameraState?.Renderer,
             renderParams.ViewPos,
             renderParams.Camera,
-            renderParams.RenderDistance * SubChunkRenderer.Size,
+            renderDistWorld,
             UseOcclusionCulling,
             _frameIndex
         );
@@ -185,14 +187,9 @@ public class ChunkRenderer : IChunkVisibilityVisitor
                 SubChunkRenderer renderer = state.Renderer;
                 if (renderer.LastVisibleFrame != _frameIndex)
                 {
-                    if (renderParams.Camera.isBoundingBoxInFrustum(renderer.BoundingBox))
+                    if (renderer.IsVisible(renderParams.Camera, renderParams.ViewPos, renderDistWorld))
                     {
-                        Vector3D<double> diff = ToDoubleVec(renderer.PositionPlus) - renderParams.ViewPos;
-                        double radius = renderParams.RenderDistance * SubChunkRenderer.Size;
-                        if (new Vector2D<double>(diff.X, diff.Z).LengthSquared < radius * radius && Math.Abs(diff.Y) < radius)
-                        {
-                            occludedRenderers.Add(renderer);
-                        }
+                        occludedRenderers.Add(renderer);
                     }
                 }
             }

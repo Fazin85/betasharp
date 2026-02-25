@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using BetaSharp.Blocks;
 using BetaSharp.Worlds;
 
@@ -123,10 +124,15 @@ public static class ChunkVisibilityComputer
     {
         int id = cache.getBlockId(x, y, z);
         if (id <= 0) return true;
-        return !BetaSharp.Blocks.Block.BlocksOpaque[id];
+        return !Block.BlocksOpaque[id];
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static int GetIndex(int x, int y, int z) => x | (y << 4) | (z << 8);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool IsVisited(Span<uint> visited, int idx) => (visited[idx >> 5] & (1u << (idx & 31))) != 0;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void MarkVisited(Span<uint> visited, int idx) => visited[idx >> 5] |= (1u << (idx & 31));
 }

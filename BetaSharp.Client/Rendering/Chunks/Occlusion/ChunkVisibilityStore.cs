@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Silk.NET.Maths;
 
 namespace BetaSharp.Client.Rendering.Chunks.Occlusion;
@@ -6,14 +7,10 @@ public struct ChunkVisibilityStore
 {
     private long _data;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetVisible(ChunkDirection from, ChunkDirection to)
     {
         _data |= 1L << GetBit(from, to);
-    }
-
-    public readonly bool IsVisible(ChunkDirection from, ChunkDirection to)
-    {
-        return (_data & (1L << GetBit(from, to))) != 0;
     }
 
     public readonly ChunkDirectionMask GetVisibleFrom(ChunkDirectionMask incoming, Vector3D<double> viewPos, SubChunkRenderer renderer)
@@ -31,7 +28,7 @@ public struct ChunkVisibilityStore
 
     private static long GetAngleMask(Vector3D<double> viewPos, SubChunkRenderer renderer)
     {
-        var center = renderer.PositionPlus;
+        Vector3D<int> center = renderer.PositionPlus;
         double dx = Math.Abs(viewPos.X - center.X);
         double dy = Math.Abs(viewPos.Y - center.Y);
         double dz = Math.Abs(viewPos.Z - center.Z);
@@ -44,20 +41,22 @@ public struct ChunkVisibilityStore
         return ~mask;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static long GetUpDownOccluded() => (1L << GetBit(ChunkDirection.Down, ChunkDirection.Up)) | (1L << GetBit(ChunkDirection.Up, ChunkDirection.Down));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static long GetNorthSouthOccluded() => (1L << GetBit(ChunkDirection.North, ChunkDirection.South)) | (1L << GetBit(ChunkDirection.South, ChunkDirection.North));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static long GetWestEastOccluded() => (1L << GetBit(ChunkDirection.West, ChunkDirection.East)) | (1L << GetBit(ChunkDirection.East, ChunkDirection.West));
 
-    public readonly ChunkDirectionMask GetVisibleAll()
-    {
-        return FoldOutgoing(_data);
-    }
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static int GetBit(ChunkDirection from, ChunkDirection to)
     {
         return ((int)from << 3) | (int)to;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static long CreateMask(int incoming)
     {
         const long multiplier = 0x810204081L;
@@ -65,6 +64,7 @@ public struct ChunkVisibilityStore
         return (expanded & 0x010101010101L) * 0xFF;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ChunkDirectionMask FoldOutgoing(long data)
     {
         long folded = data;

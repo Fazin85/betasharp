@@ -87,7 +87,7 @@ public class ChunkOcclusionCuller
             SubChunkRenderer? current;
             while ((current = readQueue.Dequeue()) != null)
             {
-                if (!IsVisible(current, viewPos, culler, renderDistance))
+                if (!current.IsVisible(culler, viewPos, renderDistance))
                     continue;
 
                 visitor.Visit(current);
@@ -135,16 +135,6 @@ public class ChunkOcclusionCuller
         neighbor.IncomingDirections |= incoming;
     }
 
-    private static bool IsVisible(SubChunkRenderer renderer, Vector3D<double> viewPos, Culler culler, float renderDistance)
-    {
-        if (!culler.isBoundingBoxInFrustum(renderer.BoundingBox)) return false;
-
-        double dx = renderer.PositionPlus.X - viewPos.X;
-        double dy = renderer.PositionPlus.Y - viewPos.Y;
-        double dz = renderer.PositionPlus.Z - viewPos.Z;
-        
-        return (dx * dx + dz * dz) < (renderDistance * renderDistance) && Math.Abs(dy) < renderDistance;
-    }
 
     private static ChunkDirectionMask GetOutwardDirections(Vector3D<double> viewPos, SubChunkRenderer renderer)
     {

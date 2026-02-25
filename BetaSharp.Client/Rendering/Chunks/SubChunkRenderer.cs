@@ -62,6 +62,17 @@ public class SubChunkRenderer : IDisposable
         vertexCounts[1] = 0;
     }
 
+    public bool IsVisible(Culler camera, Vector3D<double> viewPos, float renderDistance)
+    {
+        if (!camera.isBoundingBoxInFrustum(BoundingBox)) return false;
+
+        double dx = PositionPlus.X - viewPos.X;
+        double dy = PositionPlus.Y - viewPos.Y;
+        double dz = PositionPlus.Z - viewPos.Z;
+
+        return (dx * dx + dz * dz) < (renderDistance * renderDistance) && Math.Abs(dy) < renderDistance;
+    }
+
     public void UploadMeshData(PooledList<ChunkVertex>? solidMesh, PooledList<ChunkVertex>? translucentMesh)
     {
         vertexCounts[0] = 0;
