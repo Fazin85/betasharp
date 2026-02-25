@@ -36,17 +36,20 @@ internal class PathPoint
         DistanceToTarget = 0f;
         Previous = null;
         IsFirst = false;
-        
+
         NextMapNode = null;
     }
 
     public static int CalculateHash(int x, int y, int z)
     {
-        return (y & 255) |
-               ((x & short.MaxValue) << 8) |
-               ((z & short.MaxValue) << 24) |
-               (x < 0 ? int.MinValue : 0) |
-               (z < 0 ? 32768 : 0);
+        unchecked
+        {
+            int hash = 17;
+            hash = hash * 31 + x;
+            hash = hash * 31 + y;
+            hash = hash * 31 + z;
+            return hash;
+        }
     }
 
     public float DistanceTo(PathPoint other)

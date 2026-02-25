@@ -199,7 +199,7 @@ internal class PathFinder
     private PathPoint OpenPoint(int x, int y, int z)
     {
         int hash = PathPoint.CalculateHash(x, y, z);
-        int mapIndex = hash & 1023;
+        int mapIndex = (hash & int.MaxValue) & 1023;
 
         PathPoint? point = _pointMap[mapIndex];
         while (point != null)
