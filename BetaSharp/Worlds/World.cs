@@ -2633,40 +2633,54 @@ public abstract class World : BlockView
         }
     }
 
-    public PathEntity findPath(Entity entity, Entity target, float range)
+    internal PathEntity findPath(Entity entity, Entity target, float range)
     {
         Profiler.Start("AI.PathFinding.FindPathToTarget");
+
         int entityX = MathHelper.Floor(entity.x);
         int entityY = MathHelper.Floor(entity.y);
         int entityZ = MathHelper.Floor(entity.z);
         int searchRadius = (int)(range + 16.0F);
+
         int minX = entityX - searchRadius;
         int minY = entityY - searchRadius;
         int minZ = entityZ - searchRadius;
         int maxX = entityX + searchRadius;
         int maxY = entityY + searchRadius;
         int maxZ = entityZ + searchRadius;
+
         WorldRegion region = new(this, minX, minY, minZ, maxX, maxY, maxZ);
+        Pathfinder finder = new Pathfinder(region);
+
+        PathEntity result = finder.createEntityPathTo(entity, target, range);
         Profiler.Stop("AI.PathFinding.FindPathToTarget");
-        return new Pathfinder(region).createEntityPathTo(entity, target, range);
+
+        return result;
     }
 
-    public PathEntity findPath(Entity entity, int x, int y, int z, float range)
+    internal PathEntity findPath(Entity entity, int x, int y, int z, float range)
     {
         Profiler.Start("AI.PathFinding.FindPathToPosition");
+
         int entityX = MathHelper.Floor(entity.x);
         int entityY = MathHelper.Floor(entity.y);
         int entityZ = MathHelper.Floor(entity.z);
         int searchRadius = (int)(range + 8.0F);
+
         int minX = entityX - searchRadius;
         int minY = entityY - searchRadius;
         int minZ = entityZ - searchRadius;
         int maxX = entityX + searchRadius;
         int maxY = entityY + searchRadius;
         int maxZ = entityZ + searchRadius;
+
         WorldRegion region = new(this, minX, minY, minZ, maxX, maxY, maxZ);
+        Pathfinder finder = new Pathfinder(region);
+
+        PathEntity result = finder.createEntityPathTo(entity, x, y, z, range);
         Profiler.Stop("AI.PathFinding.FindPathToPosition");
-        return new Pathfinder(region).createEntityPathTo(entity, x, y, z, range);
+
+        return result;
     }
 
     public bool isStrongPoweringSide(int x, int y, int z, int side)
