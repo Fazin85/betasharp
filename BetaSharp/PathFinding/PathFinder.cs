@@ -6,7 +6,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.PathFinding;
 
-internal class PathFinder
+public class PathFinder
 {
     private BlockView _worldMap;
     private readonly Path _path = new();
@@ -16,8 +16,17 @@ internal class PathFinder
     private readonly PathPoint[] _pointPool = new PathPoint[4096];
     private int _poolIndex;
 
-    public PathFinder()
+    //public PathFinder()
+    //{
+    //    for (int i = 0; i < _pointPool.Length; i++)
+    //    {
+    //        _pointPool[i] = new PathPoint(0, 0, 0);
+    //    }
+    //}
+
+    public PathFinder(World world)
     {
+        _worldMap = world;
         for (int i = 0; i < _pointPool.Length; i++)
         {
             _pointPool[i] = new PathPoint(0, 0, 0);
@@ -29,27 +38,31 @@ internal class PathFinder
         _worldMap = worldMap;
     }
 
-    public PathEntity? CreateEntityPathTo(Entity entity, Entity target, float maxDistance)
+    internal PathEntity? CreateEntityPathTo(Entity entity, Entity target, float maxDistance)
     {
         return CreateEntityPathTo(entity, target.x, target.boundingBox.MinY, target.z, maxDistance);
     }
 
-    public PathEntity? CreateEntityPathTo(Entity entity, int x, int y, int z, float maxDistance)
+    internal PathEntity? CreateEntityPathTo(Entity entity, int x, int y, int z, float maxDistance)
     {
         return CreateEntityPathTo(entity, x + 0.5f, y + 0.5f, z + 0.5f, maxDistance);
     }
 
-    private PathEntity? CreateEntityPathTo(Entity entity, double targetX, double targetY, double targetZ, float maxDistance)
+    private PathEntity? CreateEntityPathTo(Entity entity, double targetX, double targetY, double targetZ,
+        float maxDistance)
     {
         _path.ClearPath();
         Array.Clear(_pointMap, 0, _pointMap.Length);
 
         _poolIndex = 0;
 
-        PathPoint startPoint = OpenPoint(MathHelper.Floor(entity.boundingBox.MinX), MathHelper.Floor(entity.boundingBox.MinY), MathHelper.Floor(entity.boundingBox.MinZ));
-        PathPoint targetPoint = OpenPoint(MathHelper.Floor(targetX - (entity.width / 2.0f)), MathHelper.Floor(targetY), MathHelper.Floor(targetZ - (entity.width / 2.0f)));
+        PathPoint startPoint = OpenPoint(MathHelper.Floor(entity.boundingBox.MinX),
+            MathHelper.Floor(entity.boundingBox.MinY), MathHelper.Floor(entity.boundingBox.MinZ));
+        PathPoint targetPoint = OpenPoint(MathHelper.Floor(targetX - (entity.width / 2.0f)), MathHelper.Floor(targetY),
+            MathHelper.Floor(targetZ - (entity.width / 2.0f)));
 
-        PathPoint sizePoint = new(MathHelper.Floor(entity.width + 1.0f), MathHelper.Floor(entity.height + 1.0f), MathHelper.Floor(entity.width + 1.0f));
+        PathPoint sizePoint = new(MathHelper.Floor(entity.width + 1.0f), MathHelper.Floor(entity.height + 1.0f),
+            MathHelper.Floor(entity.width + 1.0f));
 
         return AddToPath(entity, startPoint, targetPoint, sizePoint, maxDistance);
     }
@@ -211,6 +224,7 @@ internal class PathFinder
             {
                 return point;
             }
+
             point = point.NextMapNode;
         }
 
