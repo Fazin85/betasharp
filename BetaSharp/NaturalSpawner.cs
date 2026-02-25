@@ -1,3 +1,4 @@
+using System.Xml;
 using BetaSharp.Blocks;
 using BetaSharp.Entities;
 using BetaSharp.PathFinding;
@@ -12,6 +13,7 @@ public static class NaturalSpawner
     private const int SpawnMaxRadius = 8; // Expressed in chunks
     private const float SpawnMinRadius = 24.0F; // Expressed in blocks
     private const int SpawnCloseness = 6;
+    private static readonly PathFinder _pathFinder = new();
 
     private static readonly HashSet<ChunkPos> ChunksForSpawning = [];
     private static readonly Func<World, EntityLiving>[] Monsters =
@@ -23,6 +25,7 @@ public static class NaturalSpawner
 
     private static BlockPos GetRandomSpawningPointInChunk(World world, int centerX, int centerZ)
     {
+        _pathFinder.SetWorld(world);
         int x = centerX + world.random.NextInt(16);
         int y = world.random.NextInt(128);
         int z = centerZ + world.random.NextInt(16);
@@ -31,6 +34,7 @@ public static class NaturalSpawner
 
     public static void DoSpawning(World world, bool spawnHostile, bool spawnPeaceful)
     {
+        _pathFinder.SetWorld(world);
         if (!spawnHostile && !spawnPeaceful) return;
 
         ChunksForSpawning.Clear();
@@ -107,8 +111,8 @@ public static class NaturalSpawner
 
     public static bool SpawnMonstersAndWakePlayers(World world, List<EntityPlayer> players)
     {
+        _pathFinder.SetWorld(world);
         bool monstersSpawned = false;
-        var pathfinder = new PathFinder(world);
         foreach (var player in players)
         {
             for (int i = 0; i < 20; ++i)
@@ -145,7 +149,7 @@ public static class NaturalSpawner
                     entity.setPositionAndAnglesKeepPrevAngles(spawnX + 0.5D, spawnY, spawnZ + 0.5D, world.random.NextFloat() * 360.0F, 0.0F);
                     if (entity.canSpawn())
                     {
-                        PathEntity pathEntity = pathfinder.CreateEntityPathTo(entity, player, 32.0F);
+                        var pathEntity = _pathFinder.CreateEntityPathTo(entity, player, 32.0F);
                         if (pathEntity != null && pathEntity.PathLength > 1)
                         {
                             PathPoint pathPoint = pathEntity.GetFinalPoint();

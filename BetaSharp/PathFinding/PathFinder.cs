@@ -8,7 +8,7 @@ namespace BetaSharp.PathFinding;
 
 internal class PathFinder
 {
-    private readonly BlockView _worldMap;
+    private BlockView _worldMap;
     private readonly Path _path = new();
     private readonly PathPoint[] _pointMap = new PathPoint[1024];
     private readonly PathPoint[] _pathOptions = new PathPoint[32];
@@ -16,14 +16,17 @@ internal class PathFinder
     private readonly PathPoint[] _pointPool = new PathPoint[4096];
     private int _poolIndex;
 
-    public PathFinder(BlockView worldMap)
+    public PathFinder()
     {
-        _worldMap = worldMap;
-
         for (int i = 0; i < _pointPool.Length; i++)
         {
             _pointPool[i] = new PathPoint(0, 0, 0);
         }
+    }
+
+    public void SetWorld(BlockView worldMap)
+    {
+        _worldMap = worldMap;
     }
 
     public PathEntity? CreateEntityPathTo(Entity entity, Entity target, float maxDistance)

@@ -72,6 +72,8 @@ public abstract class World : BlockView
     public bool isRemote = false;
     public RuleSet Rules { get; protected set; }
 
+    private PathFinder _pathFinder = new ();
+
     public World(IWorldStorage var1, string var2, Dimension var3, long var4)
     {
         storage = var1;
@@ -80,6 +82,7 @@ public abstract class World : BlockView
         dimension = var3;
         var3.SetWorld(this);
         chunkSource = CreateChunkCache();
+        _pathFinder.SetWorld(this);
         Rules = properties.RulesTag != null
             ? RuleSet.FromNBT(RuleRegistry.Instance, properties.RulesTag)
             : new RuleSet(RuleRegistry.Instance);
@@ -93,6 +96,7 @@ public abstract class World : BlockView
         persistentStateManager = new PersistentStateManager(var1);
         properties = var1.LoadProperties();
         isNewWorld = properties == null;
+        _pathFinder.SetWorld(this);
         if (var5 != null)
         {
             dimension = var5;
@@ -2634,10 +2638,10 @@ public abstract class World : BlockView
         }
     }
 
+
     internal PathEntity findPath(Entity entity, Entity target, float range)
     {
         Profiler.Start("AI.PathFinding.FindPathToTarget");
-
         int entityX = MathHelper.Floor(entity.x);
         int entityY = MathHelper.Floor(entity.y);
         int entityZ = MathHelper.Floor(entity.z);
@@ -2651,9 +2655,8 @@ public abstract class World : BlockView
         int maxZ = entityZ + searchRadius;
 
         WorldRegion region = new(this, minX, minY, minZ, maxX, maxY, maxZ);
-        PathFinder finder = new PathFinder(region);
 
-        PathEntity result = finder.CreateEntityPathTo(entity, target, range);
+        PathEntity result = _pathFinder.CreateEntityPathTo(entity, target, range);
         Profiler.Stop("AI.PathFinding.FindPathToTarget");
 
         return result;
@@ -2662,7 +2665,6 @@ public abstract class World : BlockView
     internal PathEntity findPath(Entity entity, int x, int y, int z, float range)
     {
         Profiler.Start("AI.PathFinding.FindPathToPosition");
-
         int entityX = MathHelper.Floor(entity.x);
         int entityY = MathHelper.Floor(entity.y);
         int entityZ = MathHelper.Floor(entity.z);
@@ -2676,9 +2678,9 @@ public abstract class World : BlockView
         int maxZ = entityZ + searchRadius;
 
         WorldRegion region = new(this, minX, minY, minZ, maxX, maxY, maxZ);
-        PathFinder finder = new PathFinder(region);
 
-        PathEntity result = finder.CreateEntityPathTo(entity, x, y, z, range);
+
+        PathEntity result = _pathFinder.CreateEntityPathTo(entity, x, y, z, range);
         Profiler.Stop("AI.PathFinding.FindPathToPosition");
 
         return result;
