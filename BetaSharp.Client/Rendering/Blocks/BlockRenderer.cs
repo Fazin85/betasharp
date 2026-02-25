@@ -16,7 +16,7 @@ public class BlockRenderer
     
     private bool _flipTexture;
     private bool _renderAllFaces;
-    public static bool fancyGrass = true;
+    private static bool s_fancyGrass = true;
     public bool renderFromInside = true;
     private int _uvRotateEast;
     private int _uvRotateWest;
@@ -2279,7 +2279,7 @@ public class BlockRenderer
             _colorBlueTopRight *= var12;
             var19 = var1.getTextureId(_blockAccess, var2, var3, var4, 2);
             renderEastFace(var1, var2, var3, var4, var19);
-            if (fancyGrass && var19 == 3 && _overrideBlockTexture < 0)
+            if (s_fancyGrass && var19 == 3 && _overrideBlockTexture < 0)
             {
                 _colorRedTopLeft *= var5;
                 _colorRedBottomLeft *= var5;
@@ -2375,7 +2375,7 @@ public class BlockRenderer
             _colorBlueTopRight *= var12;
             var19 = var1.getTextureId(_blockAccess, var2, var3, var4, 3);
             renderWestFace(var1, var2, var3, var4, var1.getTextureId(_blockAccess, var2, var3, var4, 3));
-            if (fancyGrass && var19 == 3 && _overrideBlockTexture < 0)
+            if (s_fancyGrass && var19 == 3 && _overrideBlockTexture < 0)
             {
                 _colorRedTopLeft *= var5;
                 _colorRedBottomLeft *= var5;
@@ -2471,7 +2471,7 @@ public class BlockRenderer
             _colorBlueTopRight *= var12;
             var19 = var1.getTextureId(_blockAccess, var2, var3, var4, 4);
             renderNorthFace(var1, var2, var3, var4, var19);
-            if (fancyGrass && var19 == 3 && _overrideBlockTexture < 0)
+            if (s_fancyGrass && var19 == 3 && _overrideBlockTexture < 0)
             {
                 _colorRedTopLeft *= var5;
                 _colorRedBottomLeft *= var5;
@@ -2567,7 +2567,7 @@ public class BlockRenderer
             _colorBlueTopRight *= var12;
             var19 = var1.getTextureId(_blockAccess, var2, var3, var4, 5);
             renderSouthFace(var1, var2, var3, var4, var19);
-            if (fancyGrass && var19 == 3 && _overrideBlockTexture < 0)
+            if (s_fancyGrass && var19 == 3 && _overrideBlockTexture < 0)
             {
                 _colorRedTopLeft *= var5;
                 _colorRedBottomLeft *= var5;
@@ -2661,7 +2661,7 @@ public class BlockRenderer
             var8.setColorOpaque_F(var18 * var27, var21 * var27, var24 * var27);
             var28 = var1.getTextureId(_blockAccess, var2, var3, var4, 2);
             renderEastFace(var1, var2, var3, var4, var28);
-            if (fancyGrass && var28 == 3 && _overrideBlockTexture < 0)
+            if (s_fancyGrass && var28 == 3 && _overrideBlockTexture < 0)
             {
                 var8.setColorOpaque_F(var18 * var27 * var5, var21 * var27 * var6, var24 * var27 * var7);
                 renderEastFace(var1, var2, var3, var4, 38);
@@ -2681,7 +2681,7 @@ public class BlockRenderer
             var8.setColorOpaque_F(var18 * var27, var21 * var27, var24 * var27);
             var28 = var1.getTextureId(_blockAccess, var2, var3, var4, 3);
             renderWestFace(var1, var2, var3, var4, var28);
-            if (fancyGrass && var28 == 3 && _overrideBlockTexture < 0)
+            if (s_fancyGrass && var28 == 3 && _overrideBlockTexture < 0)
             {
                 var8.setColorOpaque_F(var18 * var27 * var5, var21 * var27 * var6, var24 * var27 * var7);
                 renderWestFace(var1, var2, var3, var4, 38);
@@ -2701,7 +2701,7 @@ public class BlockRenderer
             var8.setColorOpaque_F(var19 * var27, var22 * var27, var25 * var27);
             var28 = var1.getTextureId(_blockAccess, var2, var3, var4, 4);
             renderNorthFace(var1, var2, var3, var4, var28);
-            if (fancyGrass && var28 == 3 && _overrideBlockTexture < 0)
+            if (s_fancyGrass && var28 == 3 && _overrideBlockTexture < 0)
             {
                 var8.setColorOpaque_F(var19 * var27 * var5, var22 * var27 * var6, var25 * var27 * var7);
                 renderNorthFace(var1, var2, var3, var4, 38);
@@ -2721,7 +2721,7 @@ public class BlockRenderer
             var8.setColorOpaque_F(var19 * var27, var22 * var27, var25 * var27);
             var28 = var1.getTextureId(_blockAccess, var2, var3, var4, 5);
             renderSouthFace(var1, var2, var3, var4, var28);
-            if (fancyGrass && var28 == 3 && _overrideBlockTexture < 0)
+            if (s_fancyGrass && var28 == 3 && _overrideBlockTexture < 0)
             {
                 var8.setColorOpaque_F(var19 * var27 * var5, var22 * var27 * var6, var25 * var27 * var7);
                 renderSouthFace(var1, var2, var3, var4, 38);
