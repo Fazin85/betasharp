@@ -1457,24 +1457,7 @@ public abstract class World : java.lang.Object, BlockView
         }
 
         Profiler.Start("updateEntites.clearUnloadedEntities");
-
-        foreach (Entity entityToUnload in _entitiesToUnload)
-        {
-            int chunkX = entityToUnload.chunkX;
-            int chunkZ = entityToUnload.chunkZ;
-            if (entityToUnload.isPersistent && hasChunk(chunkX, chunkZ))
-            {
-                GetChunk(chunkX, chunkZ).RemoveEntity(entityToUnload);
-            }
-        }
-
-        foreach (Entity entityToUnload in _entitiesToUnload)
-        {
-            NotifyEntityRemoved(entityToUnload);
-        }
-
-        _entitiesToUnload.Clear();
-
+        FlushEntities();
         Profiler.Stop("updateEntites.clearUnloadedEntities");
 
         Profiler.Start("updateEntites.updateLoadedEntities");
@@ -2932,47 +2915,44 @@ public abstract class World : java.lang.Object, BlockView
 
     public void updateEntityLists()
     {
+        FlushEntities();
+    }
+
+    private void FlushEntities()
+    {
         Entities.RemoveAll(e => _entitiesToUnload.Contains(e));
 
         foreach (var entity in _entitiesToUnload)
         {
-            var chunkX = entity.chunkX;
-            var chunkZ = entity.chunkZ;
+            EntitiesById.Remove(entity.id);
 
-            if (entity.isPersistent && hasChunk(chunkX, chunkZ))
+            if (entity.isPersistent && hasChunk(entity.chunkX, entity.chunkZ))
             {
-                GetChunk(chunkX, chunkZ).RemoveEntity(entity);
+                GetChunk(entity.chunkX, entity.chunkZ).RemoveEntity(entity);
             }
             NotifyEntityRemoved(entity);
         }
-
         _entitiesToUnload.Clear();
 
-        for (int var1 = 0; var1 < Entities.Count; ++var1)
+        for (int i = 0; i < Entities.Count; ++i)
         {
-            var var2 = Entities[var1];
-            if (var2.vehicle != null)
+            var entity = Entities[i];
+            if (entity.vehicle != null)
             {
-                if (!var2.vehicle.dead && var2.vehicle.passenger == var2)
-                {
-                    continue;
-                }
-
-                var2.vehicle.passenger = null;
-                var2.vehicle = null;
+                if (!entity.vehicle.dead && entity.vehicle.passenger == entity) continue;
+                entity.vehicle.passenger = null;
+                entity.vehicle = null;
             }
-
-            if (var2.dead)
+            if (entity.dead)
             {
-                var var3 = var2.chunkX;
-                var var4 = var2.chunkZ;
-                if (var2.isPersistent && hasChunk(var3, var4))
+                if (entity.isPersistent && hasChunk(entity.chunkX, entity.chunkZ))
                 {
-                    GetChunk(var3, var4).RemoveEntity(var2);
+                    GetChunk(entity.chunkX, entity.chunkZ).RemoveEntity(entity);
                 }
 
-                Entities.RemoveAt(var1--);
-                NotifyEntityRemoved(var2);
+                Entities.RemoveAt(i--);
+                EntitiesById.Remove(entity.id); // <-- The missing dictionary sync!
+                NotifyEntityRemoved(entity);
             }
         }
     }
