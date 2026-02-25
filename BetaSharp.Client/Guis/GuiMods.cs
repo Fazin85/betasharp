@@ -106,6 +106,8 @@ public class GuiMods : GuiScreen
         private const int ModHeight = 36;
         private const int ModBorderThickness = 1;
         private const int ScrollbarLeftMargin = 1;
+        private const int TextHeight = 8;
+        private const int BetweenTextMargin = 2;
 
         public ModList(GuiMods parent)
         {
@@ -128,19 +130,19 @@ public class GuiMods : GuiScreen
             var mods = Mods.ModRegistry;
 
             // Fake mods for testing
-            /*var mods = new (string Name, string Description)[]
+            /*var mods = new (string Version, string Name, string Description)[]
             {
-                ("Example Mod", "Surely does something really cool"),
-                ("Another Mod", "This mod adds even more cool features"),
-                ("Yet Another Mod", "Because one mod isn't enough"),
-                ("Super Cool Mod", "The coolest mod of them all"),
-                ("Mega Mod", "Adds a ton of content to the game"),
-                ("Fun Mod", "Makes the game more fun to play"),
-                ("Utility Mod", "Adds useful tools and features"),
-                ("Graphics Mod", "Improves the game's visuals"),
-                ("Performance Mod", "Optimizes the game for better performance"),
-                ("Adventure Mod", "Adds new adventures and quests to explore"),
-                ("Mod with a really long name that will have to be truncated with ellipses",
+                ("1.0.5", "Example Mod", "Surely does something really cool"),
+                ("1.0.5", "Another Mod", "This mod adds even more cool features"),
+                ("1.1.5", "Yet Another Mod", "Because one mod isn't enough"),
+                ("1.3.1", "Super Cool Mod", "The coolest mod of them all"),
+                ("6.3.1", "Mega Mod", "Adds a ton of content to the game"),
+                ("1.3.1", "Fun Mod", "Makes the game more fun to play"),
+                ("1.2.0", "Utility Mod", "Adds useful tools and features"),
+                ("1.2.0", "Graphics Mod", "Improves the game's visuals"),
+                ("3.2.0", "Performance Mod", "Optimizes the game for better performance"),
+                ("3.2.6", "Adventure Mod", "Adds new adventures and quests to explore"),
+                ("1.2.6", "Mod with a really long name that will have to be truncated with ellipses",
                 "This mod has a really long description that will also be truncated when displayed in the mod list"),
             }.ToList();*/
 
@@ -245,26 +247,14 @@ public class GuiMods : GuiScreen
                     DrawRect(left + ModBorderThickness, y + ModBorderThickness, listRight - ModBorderThickness - ScrollbarLeftMargin, y + ModHeight - ModBorderThickness, 0x80000000);
                 }
 
-                string name = mod.Name;
-                int nameWidth = _parent.FontRenderer.GetStringWidth(name);
-                while (nameWidth > listRight - left - ModBorderThickness - TextMargin - 2)
-                {
-                    name = name[..^1];
-                    nameWidth = _parent.FontRenderer.GetStringWidth(name + "...");
-                }
-                if (name != mod.Name) name += "...";
-                string description = mod.Description.Split('\n')[0];
-                int descriptionWidth = _parent.FontRenderer.GetStringWidth(description);
-                while (descriptionWidth > listRight - left - ModBorderThickness - TextMargin - 2)
-                {
-                    description = description[..^1];
-                    descriptionWidth = _parent.FontRenderer.GetStringWidth(description + "...");
-                }
-                if (description != mod.Description.Split('\n')[0]) description += "...";
+                string name = Truncate(mod.Name, listRight - left - ModBorderThickness - TextMargin - ScrollbarLeftMargin - ModBorderThickness);
+                string version = Truncate(mod.Version, listRight - left - ModBorderThickness - TextMargin - ScrollbarLeftMargin - ModBorderThickness);
+                string description = Truncate(mod.Description.Split('\n')[0], listRight - left - ModBorderThickness - TextMargin - ScrollbarLeftMargin - ModBorderThickness);
 
                 // Draw mod name and description
                 DrawString(_parent.FontRenderer, name, left + ModBorderThickness + TextMargin, y + ModBorderThickness + TextMargin, 0xFFFFFF);
-                DrawString(_parent.FontRenderer, description, left + ModBorderThickness + TextMargin, y + 10 + ModBorderThickness + TextMargin, 0x808080);
+                DrawString(_parent.FontRenderer, version, left + ModBorderThickness + TextMargin, y + TextHeight + BetweenTextMargin + ModBorderThickness + TextMargin, 0x808080);
+                DrawString(_parent.FontRenderer, description, left + ModBorderThickness + TextMargin, y + (TextHeight + BetweenTextMargin) * 2 + ModBorderThickness + TextMargin, 0x808080);
             }
 
             if (height < contentHeight)
@@ -283,6 +273,23 @@ public class GuiMods : GuiScreen
             }
 
             GLManager.GL.Disable(EnableCap.ScissorTest);
+
+            return;
+
+            string Truncate(string text, int maxWidth)
+            {
+                string originalText = text;
+                int width = _parent.FontRenderer.GetStringWidth(text);
+                while (width > maxWidth && text.Length > 0)
+                {
+                    text = text[..^1];
+                    width = _parent.FontRenderer.GetStringWidth(text + "...");
+                }
+
+                if (text.Length == 0 || width > maxWidth) return "";
+                if (text == originalText) return text;
+                return text + "...";
+            }
         }
     }
 }
