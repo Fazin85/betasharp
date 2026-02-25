@@ -44,6 +44,7 @@ public class GameOptions
     public BoolOption VSyncOption { get; private set; }
     public BoolOption MipmapsOption { get; private set; }
     public BoolOption DebugModeOption { get; private set; }
+    public BoolOption RenderOccludedOption { get; private set; }
     public BoolOption EnvironmentAnimationOption { get; private set; }
     public BoolOption ChunkFadeOption { get; private set; }
     public BoolOption MenuMusicOption { get; private set; }
@@ -56,7 +57,7 @@ public class GameOptions
     public CycleOption MsaaOption { get; private set; }
 
 
-    public GameOption[] MainScreenOptions => [DifficultyOption, FovOption, DebugModeOption];
+    public GameOption[] MainScreenOptions => [DifficultyOption, FovOption];
     public GameOption[] AudioScreenOptions => [MusicVolumeOption, SoundVolumeOption, MenuMusicOption];
     public GameOption[] VideoScreenOptions =>
     [
@@ -64,6 +65,8 @@ public class GameOptions
         ViewBobbingOption, GuiScaleOption, AnisotropicOption,
         MipmapsOption, MsaaOption, EnvironmentAnimationOption, ChunkFadeOption
     ];
+
+    public GameOption[] DebugScreenOptions => [DebugModeOption, RenderOccludedOption];
 
 
     public float MusicVolume
@@ -96,6 +99,7 @@ public class GameOptions
     public int INITIAL_MSAA;
     public bool UseMipmaps => MipmapsOption.Value;
     public bool DebugMode => DebugModeOption.Value;
+    public bool RenderOccluded => RenderOccludedOption.Value;
     public bool EnvironmentAnimation => EnvironmentAnimationOption.Value;
     public bool ChunkFade => ChunkFadeOption.Value;
     public bool MenuMusic => MenuMusicOption.Value;
@@ -226,6 +230,7 @@ public class GameOptions
             },
             OnChanged = v => Profiling.Profiler.Enabled = v
         };
+        RenderOccludedOption = new BoolOption("Render Occluded", "renderOccluded");
         EnvironmentAnimationOption = new BoolOption("Environment Anim", "envAnimation", true);
         ChunkFadeOption = new BoolOption("Chunk Fade", "chunkFade", true);
         MenuMusicOption = new BoolOption("Menu Music", "menuMusic", true);
@@ -287,6 +292,7 @@ public class GameOptions
         yield return VSyncOption;
         yield return MipmapsOption;
         yield return DebugModeOption;
+        yield return RenderOccludedOption;
         yield return EnvironmentAnimationOption;
         yield return ChunkFadeOption;
         yield return MenuMusicOption;

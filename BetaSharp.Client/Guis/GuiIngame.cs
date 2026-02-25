@@ -232,9 +232,6 @@ public class GuiIngame : Gui
                 DrawString(font, $"Server TPS: {_mc.internalServer.Tps:F1}", 2, 104, 0xE0E0E0);
             }
 
-            int meshY = _mc.internalServer != null ? 120 : 104;
-            var cr = _mc.terrainRenderer.chunkRenderer;
-            DrawString(font, $"Meshes: S: {cr.LoadedMeshes} T: {cr.TranslucentMeshes}", 2, meshY, 0xE0E0E0);
             GLManager.GL.PopMatrix();
         }
         else

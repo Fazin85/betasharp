@@ -47,7 +47,7 @@ public class ChunkOcclusionCuller
 
     public void FindVisible(
         IChunkVisibilityVisitor visitor,
-        SubChunkRenderer startNode,
+        SubChunkRenderer? startNode,
         Vector3D<double> viewPos,
         Culler culler,
         float renderDistance,

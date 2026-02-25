@@ -594,6 +594,11 @@ public partial class Minecraft
                         ProfilerRenderer.DrawGraph();
 
                         ImGui.Begin("Render Info");
+                        ImGui.Text($"Chunks Total: {terrainRenderer.chunkRenderer.TotalChunks}");
+                        ImGui.Text($"Chunks Frustum: {terrainRenderer.chunkRenderer.ChunksInFrustum}");
+                        ImGui.Text($"Chunks Occluded: {terrainRenderer.chunkRenderer.ChunksOccluded}");
+                        ImGui.Text($"Chunks Rendered: {terrainRenderer.chunkRenderer.ChunksRendered}");
+                        ImGui.Separator();
                         ImGui.Text($"Chunk Vertex Buffer Allocated MB: {VertexBuffer<ChunkVertex>.Allocated / 1000000.0}");
                         ImGui.Text($"ChunkMeshVersion Allocated: {BetaSharp.Util.ChunkMeshVersion.TotalAllocated}");
                         ImGui.Text($"ChunkMeshVersion Released: {BetaSharp.Util.ChunkMeshVersion.TotalReleased}");
