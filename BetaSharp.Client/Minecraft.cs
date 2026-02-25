@@ -18,6 +18,7 @@ using BetaSharp.Client.Sound;
 using BetaSharp.Client.Textures;
 using BetaSharp.Entities;
 using BetaSharp.Items;
+using BetaSharp.Modding;
 using BetaSharp.Profiling;
 using BetaSharp.Server.Internal;
 using BetaSharp.Stats;
@@ -181,6 +182,9 @@ public partial class Minecraft
         Display.setTitle("Minecraft Beta 1.7.3");
 
         mcDataDir = getMinecraftDir();
+
+        Mods.LoadMods(mcDataDir.getAbsolutePath(), Side.Both);
+
         saveLoader = new RegionWorldStorageSource(System.IO.Path.Combine(mcDataDir.getAbsolutePath(), "saves"));
         options = new GameOptions(this, mcDataDir.getAbsolutePath());
         Profiler.Enabled = options.DebugMode;
@@ -689,6 +693,7 @@ public partial class Minecraft
         {
             crashCleanup();
             onMinecraftCrash(unexpectedException);
+            if (Debugger.IsAttached) throw;
         }
         finally
         {

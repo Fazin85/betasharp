@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BetaSharp.Client\BetaSharp.Client.csproj"/>
+    <ProjectReference Include="..\BetaSharp\BetaSharp.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Costura.Fody" Version="6.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="MonoMod" Version="22.7.31.1" PrivateAssets="none">
+      <PrivateAssets>none</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="MonoMod.RuntimeDetour" Version="25.3.3" PrivateAssets="none">
+      <PrivateAssets>none</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

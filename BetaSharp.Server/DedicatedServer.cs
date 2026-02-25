@@ -1,3 +1,4 @@
+using BetaSharp.Modding;
 using BetaSharp.Server.Network;
 using BetaSharp.Server.Threading;
 using java.lang;
@@ -21,6 +22,8 @@ public class DedicatedServer(IServerConfiguration config) : MinecraftServer(conf
         ConsoleInputThread var1 = new(this);
         var1.setDaemon(true);
         var1.start();
+
+        Mods.LoadMods(".", Side.Server);
 
         s_logger.LogInformation("Starting minecraft server version Beta 1.7.3");
         if (Runtime.getRuntime().maxMemory() / 1024L / 1024L < 512L)

@@ -1,0 +1,14 @@
+﻿<Weavers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="FodyWeavers.xsd">
+  <Costura IncludeRuntimeReferences="true">
+    <IncludeAssemblies>
+      MonoMod
+      MonoMod.RuntimeDetour
+      MonoMod.Utils
+      MonoMod.Core
+      MonoMod.ILHelpers
+      MonoMod.Backports
+      Mono.Cecil
+      System.Reflection.TypeExtensions
+    </IncludeAssemblies>
+  </Costura>
+</Weavers>

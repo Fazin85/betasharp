@@ -83,6 +83,7 @@ public unsafe interface IGL
     void Rotate(float angle, float x, float y, float z);
     void Scale(float x, float y, float z);
     void Scale(double x, double y, double z);
+    void Scissor(int x, int y, uint width, uint height);
     void ShadeModel(GLEnum mode);
     void ShaderSource(uint shader, string string_);
     void TexCoordPointer(int size, GLEnum type, uint stride, void* pointer);
