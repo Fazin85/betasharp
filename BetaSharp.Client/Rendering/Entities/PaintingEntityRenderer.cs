@@ -7,125 +7,123 @@ namespace BetaSharp.Client.Rendering.Entities;
 
 public class PaintingEntityRenderer : EntityRenderer
 {
-    private readonly JavaRandom rand = new();
-
-    public void func_158_a(EntityPainting var1, double var2, double var4, double var6, float var8, float var9)
+    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
     {
-        rand.SetSeed(187L);
+        RenderPainting((EntityPainting)target, x, y, z, yaw);
+    }
+
+    private void RenderPainting(EntityPainting painting, double x, double y, double z, float yaw)
+    {
         GLManager.GL.PushMatrix();
-        GLManager.GL.Translate((float)var2, (float)var4, (float)var6);
-        GLManager.GL.Rotate(var8, 0.0F, 1.0F, 0.0F);
+        GLManager.GL.Translate((float)x, (float)y, (float)z);
+        GLManager.GL.Rotate(yaw, 0.0F, 1.0F, 0.0F);
         GLManager.GL.Enable(GLEnum.RescaleNormal);
+
         loadTexture("/art/kz.png");
-        EnumArt var10 = var1.art;
-        float var11 = 1.0F / 16.0F;
-        GLManager.GL.Scale(var11, var11, var11);
-        func_159_a(var1, var10.sizeX, var10.sizeY, var10.offsetX, var10.offsetY);
+
+        EnumArt art = painting.Art;
+        float pixelScale = 1.0F / 16.0F;
+        GLManager.GL.Scale(pixelScale, pixelScale, pixelScale);
+
+        RenderPaintingQuads(painting, art.SizeX, art.SizeY, art.OffsetX, art.OffsetY);
+
         GLManager.GL.Disable(GLEnum.RescaleNormal);
         GLManager.GL.PopMatrix();
     }
 
-    private void func_159_a(EntityPainting var1, int var2, int var3, int var4, int var5)
+    private void RenderPaintingQuads(EntityPainting painting, int width, int height, int textureX, int textureY)
     {
-        float var6 = -var2 / 2.0F;
-        float var7 = -var3 / 2.0F;
-        float var8 = -0.5F;
-        float var9 = 0.5F;
+        float leftBound = -width / 2.0F;
+        float bottomBound = -height / 2.0F;
+        float frontZ = -0.5F;
+        float backZ = 0.5F;
 
-        for (int var10 = 0; var10 < var2 / 16; ++var10)
+        for (int tileX = 0; tileX < width / 16; ++tileX)
         {
-            for (int var11 = 0; var11 < var3 / 16; ++var11)
+            for (int tileY = 0; tileY < height / 16; ++tileY)
             {
-                float var12 = var6 + (var10 + 1) * 16;
-                float var13 = var6 + var10 * 16;
-                float var14 = var7 + (var11 + 1) * 16;
-                float var15 = var7 + var11 * 16;
-                func_160_a(var1, (var12 + var13) / 2.0F, (var14 + var15) / 2.0F);
-                float var16 = (var4 + var2 - var10 * 16) / 256.0F;
-                float var17 = (var4 + var2 - (var10 + 1) * 16) / 256.0F;
-                float var18 = (var5 + var3 - var11 * 16) / 256.0F;
-                float var19 = (var5 + var3 - (var11 + 1) * 16) / 256.0F;
-                float var20 = 12.0F / 16.0F;
-                float var21 = 13.0F / 16.0F;
-                float var22 = 0.0F;
-                float var23 = 1.0F / 16.0F;
-                float var24 = 12.0F / 16.0F;
-                float var25 = 13.0F / 16.0F;
-                float var26 = (1 / 512f);
-                float var27 = (1 / 512f);
-                float var28 = 385.0F / 512.0F;
-                float var29 = 385.0F / 512.0F;
-                float var30 = 0.0F;
-                float var31 = 1.0F / 16.0F;
-                Tessellator var32 = Tessellator.instance;
-                var32.startDrawingQuads();
-                var32.setNormal(0.0F, 0.0F, -1.0F);
-                var32.addVertexWithUV((double)var12, (double)var15, (double)var8, (double)var17, (double)var18);
-                var32.addVertexWithUV((double)var13, (double)var15, (double)var8, (double)var16, (double)var18);
-                var32.addVertexWithUV((double)var13, (double)var14, (double)var8, (double)var16, (double)var19);
-                var32.addVertexWithUV((double)var12, (double)var14, (double)var8, (double)var17, (double)var19);
-                var32.setNormal(0.0F, 0.0F, 1.0F);
-                var32.addVertexWithUV((double)var12, (double)var14, (double)var9, (double)var20, (double)var22);
-                var32.addVertexWithUV((double)var13, (double)var14, (double)var9, (double)var21, (double)var22);
-                var32.addVertexWithUV((double)var13, (double)var15, (double)var9, (double)var21, (double)var23);
-                var32.addVertexWithUV((double)var12, (double)var15, (double)var9, (double)var20, (double)var23);
-                var32.setNormal(0.0F, -1.0F, 0.0F);
-                var32.addVertexWithUV((double)var12, (double)var14, (double)var8, (double)var24, (double)var26);
-                var32.addVertexWithUV((double)var13, (double)var14, (double)var8, (double)var25, (double)var26);
-                var32.addVertexWithUV((double)var13, (double)var14, (double)var9, (double)var25, (double)var27);
-                var32.addVertexWithUV((double)var12, (double)var14, (double)var9, (double)var24, (double)var27);
-                var32.setNormal(0.0F, 1.0F, 0.0F);
-                var32.addVertexWithUV((double)var12, (double)var15, (double)var9, (double)var24, (double)var26);
-                var32.addVertexWithUV((double)var13, (double)var15, (double)var9, (double)var25, (double)var26);
-                var32.addVertexWithUV((double)var13, (double)var15, (double)var8, (double)var25, (double)var27);
-                var32.addVertexWithUV((double)var12, (double)var15, (double)var8, (double)var24, (double)var27);
-                var32.setNormal(-1.0F, 0.0F, 0.0F);
-                var32.addVertexWithUV((double)var12, (double)var14, (double)var9, (double)var29, (double)var30);
-                var32.addVertexWithUV((double)var12, (double)var15, (double)var9, (double)var29, (double)var31);
-                var32.addVertexWithUV((double)var12, (double)var15, (double)var8, (double)var28, (double)var31);
-                var32.addVertexWithUV((double)var12, (double)var14, (double)var8, (double)var28, (double)var30);
-                var32.setNormal(1.0F, 0.0F, 0.0F);
-                var32.addVertexWithUV((double)var13, (double)var14, (double)var8, (double)var29, (double)var30);
-                var32.addVertexWithUV((double)var13, (double)var15, (double)var8, (double)var29, (double)var31);
-                var32.addVertexWithUV((double)var13, (double)var15, (double)var9, (double)var28, (double)var31);
-                var32.addVertexWithUV((double)var13, (double)var14, (double)var9, (double)var28, (double)var30);
-                var32.draw();
+                float xMax = leftBound + (tileX + 1) * 16;
+                float xMin = leftBound + tileX * 16;
+                float yMax = bottomBound + (tileY + 1) * 16;
+                float yMin = bottomBound + tileY * 16;
+
+                UpdateLighting(painting, (xMax + xMin) / 2.0F, (yMax + yMin) / 2.0F);
+
+                float uMax = (textureX + width - tileX * 16) / 256.0F;
+                float uMin = (textureX + width - (tileX + 1) * 16) / 256.0F;
+                float vMax = (textureY + height - tileY * 16) / 256.0F;
+                float vMin = (textureY + height - (tileY + 1) * 16) / 256.0F;
+
+                float edgeUMin = 12.0F / 16.0F;
+                float edgeUMax = 13.0F / 16.0F;
+                float edgeVMin = 0.0F;
+                float edgeVMax = 1.0F / 16.0F;
+
+                Tessellator tess = Tessellator.instance;
+                tess.startDrawingQuads();
+
+                // Front Face (The Art)
+                tess.setNormal(0.0F, 0.0F, -1.0F);
+                tess.addVertexWithUV(xMax, yMin, frontZ, uMin, vMax);
+                tess.addVertexWithUV(xMin, yMin, frontZ, uMax, vMax);
+                tess.addVertexWithUV(xMin, yMax, frontZ, uMax, vMin);
+                tess.addVertexWithUV(xMax, yMax, frontZ, uMin, vMin);
+
+                // Back Face (The Wood)
+                tess.setNormal(0.0F, 0.0F, 1.0F);
+                tess.addVertexWithUV(xMax, yMax, backZ, edgeUMin, edgeVMin);
+                tess.addVertexWithUV(xMin, yMax, backZ, edgeUMax, edgeVMin);
+                tess.addVertexWithUV(xMin, yMin, backZ, edgeUMax, edgeVMax);
+                tess.addVertexWithUV(xMax, yMin, backZ, edgeUMin, edgeVMax);
+
+                // Side/Top/Bottom Edges
+                tess.setNormal(0.0F, -1.0F, 0.0F); // Top
+                tess.addVertexWithUV(xMax, yMax, frontZ, edgeUMin, edgeVMin);
+                tess.addVertexWithUV(xMin, yMax, frontZ, edgeUMax, edgeVMin);
+                tess.addVertexWithUV(xMin, yMax, backZ, edgeUMax, edgeVMax);
+                tess.addVertexWithUV(xMax, yMax, backZ, edgeUMin, edgeVMax);
+
+                tess.setNormal(0.0F, 1.0F, 0.0F); // Bottom
+                tess.addVertexWithUV(xMax, yMin, backZ, edgeUMin, edgeVMin);
+                tess.addVertexWithUV(xMin, yMin, backZ, edgeUMax, edgeVMin);
+                tess.addVertexWithUV(xMin, yMin, frontZ, edgeUMax, edgeVMax);
+                tess.addVertexWithUV(xMax, yMin, frontZ, edgeUMin, edgeVMax);
+
+                tess.setNormal(-1.0F, 0.0F, 0.0F); // Left
+                tess.addVertexWithUV(xMax, yMax, backZ, edgeUMax, edgeVMin);
+                tess.addVertexWithUV(xMax, yMin, backZ, edgeUMax, edgeVMax);
+                tess.addVertexWithUV(xMax, yMin, frontZ, edgeUMin, edgeVMax);
+                tess.addVertexWithUV(xMax, yMax, frontZ, edgeUMin, edgeVMin);
+
+                tess.setNormal(1.0F, 0.0F, 0.0F); // Right
+                tess.addVertexWithUV(xMin, yMax, frontZ, edgeUMax, edgeVMin);
+                tess.addVertexWithUV(xMin, yMin, frontZ, edgeUMax, edgeVMax);
+                tess.addVertexWithUV(xMin, yMin, backZ, edgeUMin, edgeVMax);
+                tess.addVertexWithUV(xMin, yMax, backZ, edgeUMin, edgeVMin);
+
+                tess.draw();
             }
         }
-
     }
 
-    private void func_160_a(EntityPainting var1, float var2, float var3)
+    private void UpdateLighting(EntityPainting painting, float offsetX, float offsetY)
     {
-        int var4 = MathHelper.Floor(var1.x);
-        int var5 = MathHelper.Floor(var1.y + (double)(var3 / 16.0F));
-        int var6 = MathHelper.Floor(var1.z);
-        if (var1.direction == 0)
+        int checkX = MathHelper.Floor(painting.x);
+        int checkY = MathHelper.Floor(painting.y + (offsetY / 16.0F));
+        int checkZ = MathHelper.Floor(painting.z);
+
+        // Offset the light check based on orientation to ensure we aren't sampling inside the wall
+        switch (painting.Direction)
         {
-            var4 = MathHelper.Floor(var1.x + (double)(var2 / 16.0F));
+            case 0: checkX = MathHelper.Floor(painting.x + (offsetX / 16.0F)); break;
+            case 1: checkZ = MathHelper.Floor(painting.z - (offsetX / 16.0F)); break;
+            case 2: checkX = MathHelper.Floor(painting.x - (offsetX / 16.0F)); break;
+            case 3: checkZ = MathHelper.Floor(painting.z + (offsetX / 16.0F)); break;
         }
 
-        if (var1.direction == 1)
-        {
-            var6 = MathHelper.Floor(var1.z - (double)(var2 / 16.0F));
-        }
-
-        if (var1.direction == 2)
-        {
-            var4 = MathHelper.Floor(var1.x - (double)(var2 / 16.0F));
-        }
-
-        if (var1.direction == 3)
-        {
-            var6 = MathHelper.Floor(var1.z + (double)(var2 / 16.0F));
-        }
-
-        float var7 = Dispatcher.world.getLuminance(var4, var5, var6);
-        GLManager.GL.Color3(var7, var7, var7);
+        float light = Dispatcher.world.getLuminance(checkX, checkY, checkZ);
+        GLManager.GL.Color3(light, light, light);
     }
 
-    public override void render(Entity target, double x, double y, double z, float yaw, float tickDelta)
-    {
-        func_158_a((EntityPainting)target, x, y, z, yaw, tickDelta);
-    }
+
 }
