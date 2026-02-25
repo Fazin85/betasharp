@@ -16,7 +16,7 @@ public class TextField : Control
     private int _selectionStart = -1;
     private int _selectionEnd = -1;
 
-    public TextField(TextRenderer fontRenderer, string text)
+    public TextField(int x, int y, TextRenderer fontRenderer, string text) : base(x, y, 200, 20)
     {
         _fontRenderer = fontRenderer;
         Text = text;

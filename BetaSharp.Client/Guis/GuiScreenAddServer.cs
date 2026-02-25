@@ -104,6 +104,5 @@ public class GuiScreenAddServer : GuiScreen
         Gui.DrawString(FontRenderer, "Server Address", Width / 2 - 100, 94, 0xA0A0A0);
         _serverName.DrawTextBox();
         _serverAddress.DrawTextBox();
-        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 }

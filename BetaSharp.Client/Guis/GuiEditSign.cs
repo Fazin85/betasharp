@@ -132,6 +132,5 @@ public class GuiEditSign : GuiScreen
         _entitySign.CurrentRow = -1;
         GLManager.GL.PopMatrix();
 
-        base.OnRendered(mouseX, mouseY, tickDelta);
-    }
+        }
 }

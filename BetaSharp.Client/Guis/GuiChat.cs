@@ -139,8 +139,7 @@ public class GuiChat : GuiScreen
 
         FontRenderer.DrawStringWithShadow(textToDraw, xBase, y, TextColorNormal);
 
-        base.OnRendered(mouseX, mouseY, tickDelta);
-    }
+        }
 
     public override void HandleMouseInput()
     {

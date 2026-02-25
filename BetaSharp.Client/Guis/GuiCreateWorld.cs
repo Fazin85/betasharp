@@ -175,8 +175,7 @@ public class GuiCreateWorldprotected override void OnRendered{
         Gui.DrawString(FontRenderer, translations.TranslateKey("selectWorld.seedInfo"), centerX - 100, centerY + 56 + 24, 0xA0A0A0);
         _textboxWorldName.DrawTextBox();
         _textboxSeed.DrawTextBox();
-        base.OnRendered(mouseX, mouseY, tickDelta);
-    }
+        }
 
     public override void SelectNextField()
     {

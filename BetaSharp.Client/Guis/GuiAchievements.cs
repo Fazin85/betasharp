@@ -40,7 +40,7 @@ public class GuiAchievements : GuiScreen
     public override void InitGui()
     {
         Children.Clear();
-        Children.Add(new GuiSmallButton(1, Width / 2 + 24, Height / 2 + 74, 80, 20, StatCollector.translateToLocal("gui.done")));
+        Children.Add(new GuiSmallButton(1, Width / 2 + 24, Height / 2 + 74, 80, 20, StatCollector.TranslateToLocal("gui.done")));
     }
 
     protected override void ActionPerformed(Button var1)

@@ -26,7 +26,7 @@ public class GuiStats : GuiScreen
 
     public override void InitGui()
     {
-        screenTitle = StatCollector.translateToLocal("gui.stats");
+        screenTitle = StatCollector.TranslateToLocal("gui.stats");
         _listGeneral = new GuiListStatsGeneral(this);
         _listGeneral.RegisterScrollButtons(Children, 1, 1);
         _listItem = new GuiListStatsItem(this);
@@ -91,7 +91,6 @@ public class GuiStats : GuiScreen
     {
         _currentList.DrawScreen(mouseX, mouseY, tickDelta);
         Gui.DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0xFFFFFF);
-        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 
     public void drawItemSlot(int x, int y, int itemId)

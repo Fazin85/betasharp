@@ -21,11 +21,11 @@ public class GuiIngameMenu : GuiScreen
         string quitText = (mc.isMultiplayerWorld() && mc.internalServer == null) ? "Disconnect" : "Save and quit to title";
 
         Button backToGameButton = new(buttonLeft, centerY + 24 + verticalOffset, "Back to game");
-        Button achievementsButton = new(buttonLeft, centerY + 48 + verticalOffset, StatCollector.translateToLocal("gui.achievements"))
+        Button achievementsButton = new(buttonLeft, centerY + 48 + verticalOffset, StatCollector.TranslateToLocal("gui.achievements"))
         {
             Size = new(98, 20),
         };
-        Button statsButton = new(centerX + 2, centerY + 48 + verticalOffset, StatCollector.translateToLocal("gui.stats"))
+        Button statsButton = new(centerX + 2, centerY + 48 + verticalOffset, StatCollector.TranslateToLocal("gui.stats"))
         {
             Size = new(98, 20),
         };

@@ -17,9 +17,9 @@ public class GuiListStatsItem : GuiListStats<StatCrafting, StatCrafting>
         Stats = BetaSharp.Stats.Stats.ItemStats
             .OfType<StatCrafting>()
             .Where(stat =>
-                parent.statFileWriter.GetStatValue(stat) > 0 ||
-                (BetaSharp.Stats.Stats.Broken[stat.ItemId] is StatCrafting broken && parent.statFileWriter.GetStatValue(broken) > 0) ||
-                (BetaSharp.Stats.Stats.Crafted[stat.ItemId] is StatCrafting crafted && parent.statFileWriter.GetStatValue(crafted) > 0))
+                parent.statFileWriter.ReadStat(stat) > 0 ||
+                (BetaSharp.Stats.Stats.Broken[stat.ItemId] is StatCrafting broken && parent.statFileWriter.ReadStat(broken) > 0) ||
+                (BetaSharp.Stats.Stats.Crafted[stat.ItemId] is StatCrafting crafted && parent.statFileWriter.ReadStat(crafted) > 0))
             .ToList();
     }
 

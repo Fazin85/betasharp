@@ -116,7 +116,7 @@ public abstract class GuiList
         }
     }
 
-    public void DrawScreen(int mouseX, int mouseY, float partialTicks)
+    public void DrawScreen(int mouseX, int mouseY, float tickDelta)
     {
         DrawBackground();
 

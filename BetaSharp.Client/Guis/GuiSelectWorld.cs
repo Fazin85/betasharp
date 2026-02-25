@@ -167,7 +167,6 @@ public class GuiSelectWorld : GuiScreen
     {
         _worldListContainer.DrawScreen(mouseX, mouseY, tickDelta);
         Gui.DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0xFFFFFF);
-        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 
     public static List<WorldSaveInfo> GetSize(GuiSelectWorld screen)

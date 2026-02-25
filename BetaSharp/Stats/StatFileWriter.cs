@@ -190,7 +190,7 @@ public class StatFileWriter
         return achievement.parent == null || HasAchievementUnlocked(achievement.parent);
     }
 
-    public int GetStatValue(StatBase stat)
+    public int ReadStat(StatBase stat)
     {
         return _statsData.TryGetValue(stat, out int val) ? val : 0;
     }

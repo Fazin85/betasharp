@@ -76,7 +76,6 @@ public class GuiTexturePacks : GuiScreen
         TranslationStorage translations = TranslationStorage.Instance;
         Gui.DrawCenteredString(FontRenderer, translations.TranslateKey("texturePack.title"), Width / 2, 16, 0xFFFFFF);
         Gui.DrawCenteredString(FontRenderer, translations.TranslateKey("texturePack.folderInfo"), Width / 2 - 77, Height - 26, 0x808080);
-        base.OnRendered(mouseX, mouseY, tickDelta);
     }
 
     public override void UpdateScreen()

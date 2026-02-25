@@ -18,8 +18,8 @@ public class GuiListStatsBlock : GuiListStats<StatCrafting, StatCrafting>
             .OfType<StatCrafting>()
             .Where(stat =>
                 parent.statFileWriter.ReadStat(stat) > 0 ||
-                (BetaSharp.Stats.Stats.Used[stat.ItemId] is StatCrafting used && parent.statFileWriter.GetStatValue(used) > 0) ||
-                (BetaSharp.Stats.Stats.Crafted[stat.ItemId] is StatCrafting crafted && parent.statFileWriter.GetStatValue(crafted) > 0))
+                (BetaSharp.Stats.Stats.Used[stat.ItemId] is StatCrafting used && parent.statFileWriter.ReadStat(used) > 0) ||
+                (BetaSharp.Stats.Stats.Crafted[stat.ItemId] is StatCrafting crafted && parent.statFileWriter.ReadStat(crafted) > 0))
             .ToList();
     }
 

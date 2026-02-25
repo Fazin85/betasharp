@@ -191,13 +191,13 @@ public class GuiMultiplayer : GuiScreen
         }
     }
 
-    public void ConfirmClicked(bool result, int id)
+    public void ConfirmClicked(bool confirmed, int id)
     {
         if (_directConnect)
         {
             _directConnect = false;
 
-            if (result)
+            if (confirmed)
             {
                 JoinServer(_tempServer);
             }
@@ -209,7 +209,7 @@ public class GuiMultiplayer : GuiScreen
         else if (_addingServer)
         {
             _addingServer = false;
-            if (result)
+            if (confirmed)
             {
                 _serverList.Add(_tempServer);
                 SaveServerList();
@@ -219,7 +219,7 @@ public class GuiMultiplayer : GuiScreen
         else if (_editingServer)
         {
             _editingServer = false;
-            if (result)
+            if (confirmed)
             {
                 ServerData server = _serverList[_selectedServerIndex];
                 server.Name = _tempServer.Name;
@@ -248,8 +248,7 @@ public class GuiMultiplayer : GuiScreen
         DrawDefaultBackground();
         _serverListSelector.DrawScreen(mouseX, mouseY, tickDelta);
         Gui.DrawCenteredString(FontRenderer, "Play Multiplayer", Width / 2, 20, 0xFFFFFF);
-        base.OnRendered(mouseX, mouseY, tickDelta);
-    }
+        }
 
     private void JoinServer(ServerData server)
     {
