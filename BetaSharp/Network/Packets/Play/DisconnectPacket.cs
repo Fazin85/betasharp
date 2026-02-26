@@ -1,11 +1,9 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.Play;
 
 public class DisconnectPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(DisconnectPacket).TypeHandle);
-
     public string reason;
 
     public DisconnectPacket()
@@ -17,22 +15,22 @@ public class DisconnectPacket : Packet
         this.reason = reason;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        reason = readString(stream, 100);
+        reason = stream.ReadLongString(100);
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        writeString(reason, stream);
+        stream.WriteLongString(reason);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onDisconnect(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return reason.Length;
     }

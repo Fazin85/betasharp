@@ -18,8 +18,8 @@ public class EntityCreeper : EntityMonster
     protected override void initDataTracker()
     {
         base.initDataTracker();
-        dataWatcher.addObject(16, java.lang.Byte.valueOf(255)); // -1
-        dataWatcher.addObject(17, java.lang.Byte.valueOf(0));
+        dataWatcher.AddObject(16, (byte)255); // -1
+        dataWatcher.AddObject(17, (byte)0);
     }
 
     public override void writeNbt(NBTTagCompound nbt)
@@ -35,7 +35,7 @@ public class EntityCreeper : EntityMonster
     public override void readNbt(NBTTagCompound nbt)
     {
         base.readNbt(nbt);
-        dataWatcher.updateObject(17, java.lang.Byte.valueOf((byte)(nbt.GetBoolean("powered") ? 1 : 0)));
+        dataWatcher.UpdateObject(17,(byte)(nbt.GetBoolean("powered") ? 1 : 0));
     }
 
     protected override void attackBlockedEntity(Entity entity, float distance)
@@ -176,12 +176,12 @@ public class EntityCreeper : EntityMonster
 
     private void setCreeperState(int state)
     {
-        dataWatcher.updateObject(16, java.lang.Byte.valueOf((byte)state));
+        dataWatcher.UpdateObject(16, (byte)state);
     }
 
     public override void onStruckByLightning(EntityLightningBolt bolt)
     {
         base.onStruckByLightning(bolt);
-        dataWatcher.updateObject(17, java.lang.Byte.valueOf(1));
+        dataWatcher.UpdateObject(17, (byte)(1));
     }
 }

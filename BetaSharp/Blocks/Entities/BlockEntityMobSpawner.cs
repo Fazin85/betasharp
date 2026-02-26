@@ -31,7 +31,7 @@ public class BlockEntityMobSpawner : BlockEntity
 
     public bool IsPlayerInRange()
     {
-        return world.getClosestPlayer(x + 0.5D, y + 0.5D, z + 0.5D, 16.0D) != null;
+        return World.getClosestPlayer(X + 0.5D, Y + 0.5D, Z + 0.5D, 16.0D) != null;
     }
 
     public override void tick()
@@ -39,18 +39,18 @@ public class BlockEntityMobSpawner : BlockEntity
         LastRotation = Rotation;
         if (IsPlayerInRange())
         {
-            double particleX = (double)(x + world.random.NextFloat());
-            double particleY = (double)(y + world.random.NextFloat());
-            double particleZ = (double)(z + world.random.NextFloat());
-            world.addParticle("smoke", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
-            world.addParticle("flame", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
+            double particleX = (double)(X + World.random.NextFloat());
+            double particleY = (double)(Y + World.random.NextFloat());
+            double particleZ = (double)(Z + World.random.NextFloat());
+            World.addParticle("smoke", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
+            World.addParticle("flame", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
 
             for (Rotation += 1000.0F / (SpawnDelay + 200.0F); Rotation > 360.0D; LastRotation -= 360.0D)
             {
                 Rotation -= 360.0D;
             }
 
-            if (!world.isRemote)
+            if (!World.isRemote)
             {
                 if (SpawnDelay == -1)
                 {
@@ -67,13 +67,13 @@ public class BlockEntityMobSpawner : BlockEntity
 
                 for (int spawnAttempt = 0; spawnAttempt < max; ++spawnAttempt)
                 {
-                    EntityLiving entityLiving = (EntityLiving)EntityRegistry.Create(_spawnedEntityId, world);
+                    EntityLiving entityLiving = (EntityLiving)EntityRegistry.Create(_spawnedEntityId, World);
                     if (entityLiving == null)
                     {
                         return;
                     }
 
-                    int count = world.CollectEntitiesOfType<EntityLiving>(new Box(x, y, z, x + 1, y + 1, z + 1).expand(8.0D, 4.0D, 8.0D)).Where(e => e.GetType() == entityLiving.GetType()).Count();
+                    int count = World.CollectEntitiesOfType<EntityLiving>(new Box(X, Y, Z, X + 1, Y + 1, Z + 1).Expand(8.0D, 4.0D, 8.0D)).Where(e => e.GetType() == entityLiving.GetType()).Count();
                     if (count >= 6)
                     {
                         ResetDelay();
@@ -82,21 +82,21 @@ public class BlockEntityMobSpawner : BlockEntity
 
                     if (entityLiving != null)
                     {
-                        double posX = x + (world.random.NextDouble() - world.random.NextDouble()) * 4.0D;
-                        double posY = y + world.random.NextInt(3) - 1;
-                        double posZ = z + (world.random.NextDouble() - world.random.NextDouble()) * 4.0D;
-                        entityLiving.setPositionAndAnglesKeepPrevAngles(posX, posY, posZ, world.random.NextFloat() * 360.0F, 0.0F);
+                        double posX = X + (World.random.NextDouble() - World.random.NextDouble()) * 4.0D;
+                        double posY = Y + World.random.NextInt(3) - 1;
+                        double posZ = Z + (World.random.NextDouble() - World.random.NextDouble()) * 4.0D;
+                        entityLiving.setPositionAndAnglesKeepPrevAngles(posX, posY, posZ, World.random.NextFloat() * 360.0F, 0.0F);
                         if (entityLiving.canSpawn())
                         {
-                            world.SpawnEntity(entityLiving);
+                            World.SpawnEntity(entityLiving);
 
                             for (int particleIndex = 0; particleIndex < 20; ++particleIndex)
                             {
-                                particleX = x + 0.5D + ((double)world.random.NextFloat() - 0.5D) * 2.0D;
-                                particleY = y + 0.5D + ((double)world.random.NextFloat() - 0.5D) * 2.0D;
-                                particleZ = z + 0.5D + ((double)world.random.NextFloat() - 0.5D) * 2.0D;
-                                world.addParticle("smoke", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
-                                world.addParticle("flame", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
+                                particleX = X + 0.5D + ((double)World.random.NextFloat() - 0.5D) * 2.0D;
+                                particleY = Y + 0.5D + ((double)World.random.NextFloat() - 0.5D) * 2.0D;
+                                particleZ = Z + 0.5D + ((double)World.random.NextFloat() - 0.5D) * 2.0D;
+                                World.addParticle("smoke", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
+                                World.addParticle("flame", particleX, particleY, particleZ, 0.0D, 0.0D, 0.0D);
                             }
 
                             entityLiving.animateSpawn();
@@ -112,7 +112,7 @@ public class BlockEntityMobSpawner : BlockEntity
 
     private void ResetDelay()
     {
-        SpawnDelay = 200 + world.random.NextInt(600);
+        SpawnDelay = 200 + World.random.NextInt(600);
         _logger.LogInformation("Spawn Delay: " + SpawnDelay);
     }
 

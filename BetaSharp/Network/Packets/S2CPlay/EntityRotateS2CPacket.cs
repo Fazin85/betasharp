@@ -1,11 +1,9 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class EntityRotateS2CPacket : EntityS2CPacket
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityRotateS2CPacket).TypeHandle);
-
     public EntityRotateS2CPacket()
     {
         rotate = true;
@@ -18,21 +16,21 @@ public class EntityRotateS2CPacket : EntityS2CPacket
         rotate = true;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        base.read(stream);
-        yaw = (sbyte)stream.readByte();
-        pitch = (sbyte)stream.readByte();
+        base.Read(stream);
+        yaw = (sbyte)stream.ReadByte();
+        pitch = (sbyte)stream.ReadByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        base.write(stream);
-        stream.writeByte(yaw);
-        stream.writeByte(pitch);
+        base.Write(stream);
+        stream.WriteByte((byte)yaw);
+        stream.WriteByte((byte)pitch);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 6;
     }

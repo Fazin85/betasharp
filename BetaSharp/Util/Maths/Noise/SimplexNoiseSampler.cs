@@ -1,6 +1,6 @@
 namespace BetaSharp.Util.Maths.Noise;
 
-public class SimplexNoiseSampler : java.lang.Object
+public class SimplexNoiseSampler
 {
     private static readonly int[][] grads = [[1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0], [1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1], [0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]];
     private readonly int[] _permutations;

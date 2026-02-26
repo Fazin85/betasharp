@@ -1,4 +1,6 @@
-﻿using BetaSharp.Blocks;
+﻿using System.Net;
+using System.Net.Sockets;
+using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Entities;
 using BetaSharp.Client.Entities.FX;
@@ -19,6 +21,7 @@ using BetaSharp.Worlds.Chunks;
 using BetaSharp.Worlds.Storage;
 using java.net;
 using Microsoft.Extensions.Logging;
+using Socket = System.Net.Sockets.Socket;
 
 namespace BetaSharp.Client.Network;
 
@@ -37,10 +40,13 @@ public class ClientNetworkHandler : NetHandler
 
     public ClientNetworkHandler(Minecraft mc, string address, int port)
     {
-
         this.mc = mc;
-        Socket socket = new(InetAddress.getByName(address), port);
-        socket.setTcpNoDelay(true);
+
+        var endPoint = new IPEndPoint(Dns.GetHostAddresses(address)[0], port);
+        Socket socket = new(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
+
+        socket.Connect(endPoint);
+
         netManager = new Connection(socket, "Client", this);
     }
 
@@ -227,9 +233,9 @@ public class ClientNetworkHandler : NetHandler
     public override void onEntityTrackerUpdate(EntityTrackerUpdateS2CPacket packet)
     {
         Entity ent = getEntityByID(packet.id);
-        if (ent != null && packet.getWatchedObjects() != null)
+        if (ent != null && packet.GetWatchedObjects() != null)
         {
-            ent.getDataWatcher().updateWatchedObjectsFromList(packet.getWatchedObjects());
+            ent.getDataWatcher().UpdateWatchedObjectsFromList(packet.GetWatchedObjects());
         }
 
     }
@@ -323,7 +329,7 @@ public class ClientNetworkHandler : NetHandler
         ent.velocityX = ent.velocityY = ent.velocityZ = 0.0D;
         ent.setPositionAndAngles(x, y, z, yaw, pitch);
         packet.x = ent.x;
-        packet.y = ent.boundingBox.minY;
+        packet.y = ent.boundingBox.MinY;
         packet.z = ent.z;
         packet.eyeHeight = ent.y;
         netManager.sendPacket(packet);
@@ -497,10 +503,10 @@ public class ClientNetworkHandler : NetHandler
                     netManager.disconnect("disconnect.loginFailedInfo", response);
                 }
             }
-            catch (java.lang.Exception ex)
+            catch (Exception e)
             {
-                ex.printStackTrace();
-                netManager.disconnect("disconnect.genericReason", "Internal client error: " + ex.toString());
+                _logger.LogError(e, e.Message);
+                netManager.disconnect("disconnect.genericReason", "Internal client error: " + e);
             }
         }
 
@@ -528,10 +534,10 @@ public class ClientNetworkHandler : NetHandler
         ent.setPositionAndAngles(x, y, z, yaw, pitch);
         ent.interpolateOnly = true;
         worldClient.ForceEntity(packet.entityId, ent);
-        java.util.List metaData = packet.getMetadata();
+        List<WatchableObject> metaData = packet.GetMetadata();
         if (metaData != null)
         {
-            ent.getDataWatcher().updateWatchedObjectsFromList(metaData);
+            ent.getDataWatcher().UpdateWatchedObjectsFromList(metaData);
         }
 
     }

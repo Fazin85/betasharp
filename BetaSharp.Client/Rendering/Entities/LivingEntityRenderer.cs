@@ -3,7 +3,9 @@ using BetaSharp.Client.Rendering.Entities.Models;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 using java.lang;
+using Microsoft.Extensions.Logging;
 using Silk.NET.OpenGL.Legacy;
+using Exception = System.Exception;
 
 namespace BetaSharp.Client.Rendering.Entities;
 
@@ -12,6 +14,7 @@ public class LivingEntityRenderer : EntityRenderer
 
     protected ModelBase mainModel;
     protected ModelBase renderPassModel;
+    private readonly ILogger<LivingEntityRenderer> _logger = Log.Instance.For<LivingEntityRenderer>();
 
     public LivingEntityRenderer(ModelBase mainModel, float shadowRadius)
     {
@@ -127,9 +130,9 @@ public class LivingEntityRenderer : EntityRenderer
 
             GLManager.GL.Disable(GLEnum.RescaleNormal);
         }
-        catch (java.lang.Exception ex)
+        catch (Exception e)
         {
-            ex.printStackTrace();
+            _logger.LogError(e, e.Message);
         }
 
         GLManager.GL.Enable(GLEnum.CullFace);

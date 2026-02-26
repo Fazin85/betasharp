@@ -1,11 +1,9 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.C2SPlay;
 
 public class UpdateSelectedSlotC2SPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(UpdateSelectedSlotC2SPacket).TypeHandle);
-
     public int selectedSlot;
 
     public UpdateSelectedSlotC2SPacket()
@@ -17,22 +15,22 @@ public class UpdateSelectedSlotC2SPacket : Packet
         this.selectedSlot = selectedSlot;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        selectedSlot = stream.readShort();
+        selectedSlot = stream.ReadShort();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeShort(selectedSlot);
+        stream.WriteShort((short)selectedSlot);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onUpdateSelectedSlot(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 2;
     }

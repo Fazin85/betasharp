@@ -1,5 +1,3 @@
-using java.lang;
-
 namespace BetaSharp.Util.Maths;
 
 public record struct Vec3i(int X, int Y, int Z) : IComparable<Vec3i>

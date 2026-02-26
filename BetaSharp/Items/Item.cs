@@ -4,12 +4,11 @@ using BetaSharp.Entities;
 using BetaSharp.Stats;
 using BetaSharp.Worlds;
 using BetaSharp.Util.Maths;
-using java.lang;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Items;
 
-public class Item : java.lang.Object
+public class Item
 {
     private readonly ILogger<Item> _logger = Log.Instance.For<Item>();
 
@@ -286,7 +285,7 @@ public class Item : java.lang.Object
     {
         if (maxCount > 1)
         {
-            throw new IllegalArgumentException("Max stack size must be 1 for items with crafting results");
+            throw new ArgumentException("Max stack size must be 1 for items with crafting results");
         }
         else
         {

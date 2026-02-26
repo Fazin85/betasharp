@@ -30,7 +30,7 @@ public class Chunk
     public bool LastSaveHadEntities;
     public long LastSaveTime;
 
-    private readonly ILogger<Chunk> _logger = Log.Instance.For<Chunk>();
+    private static readonly ILogger<Chunk> s_logger = Log.Instance.For<Chunk>();
 
 
     public Chunk(World world, int x, int z)
@@ -389,8 +389,8 @@ public class Chunk
 
         if (chunkX != X || chunkZ != Z)
         {
-            _logger.LogWarning($"Entity in wrong chunk location! {entity}");
-            _logger.LogDebug(Environment.StackTrace);
+            s_logger.LogWarning($"Entity in wrong chunk location! {entity}");
+            s_logger.LogDebug(Environment.StackTrace);
         }
 
         int slice = MathHelper.Floor(entity.y / 16.0D);
@@ -444,9 +444,9 @@ public class Chunk
 
     public virtual void AddBlockEntity(BlockEntity blockEntity)
     {
-        int localX = blockEntity.x - X * 16;
-        int localZ = blockEntity.z - Z * 16;
-        SetBlockEntity(localX, blockEntity.y, localZ, blockEntity);
+        int localX = blockEntity.X - X * 16;
+        int localZ = blockEntity.Z - Z * 16;
+        SetBlockEntity(localX, blockEntity.Y, localZ, blockEntity);
 
         if (Loaded) World.blockEntities.Add(blockEntity);
     }
@@ -454,10 +454,10 @@ public class Chunk
     public virtual void SetBlockEntity(int localX, int y, int localZ, BlockEntity blockEntity)
     {
         BlockPos pos = new(localX, y, localZ);
-        blockEntity.world = World;
-        blockEntity.x = X * 16 + localX;
-        blockEntity.y = y;
-        blockEntity.z = Z * 16 + localZ;
+        blockEntity.World = World;
+        blockEntity.X = X * 16 + localX;
+        blockEntity.Y = y;
+        blockEntity.Z = Z * 16 + localZ;
 
         int id = GetBlockId(localX, y, localZ);
         if (id != 0 && Block.Blocks[id] is BlockWithEntity)
@@ -467,7 +467,7 @@ public class Chunk
         }
         else
         {
-            _logger.LogWarning("Attempted to place a tile entity where there was no entity tile block!");
+            s_logger.LogWarning("Attempted to place a tile entity where there was no entity tile block!");
         }
     }
 
@@ -511,8 +511,8 @@ public class Chunk
 
     public virtual void CollectOtherEntities(Entity except, Box box, List<Entity> result)
     {
-        int minSlice = MathHelper.Floor((box.minY - 2.0D) / 16.0D);
-        int maxSlice = MathHelper.Floor((box.maxY + 2.0D) / 16.0D);
+        int minSlice = MathHelper.Floor((box.MinY - 2.0D) / 16.0D);
+        int maxSlice = MathHelper.Floor((box.MaxY + 2.0D) / 16.0D);
 
         if (minSlice < 0) minSlice = 0;
         if (maxSlice >= Entities.Length) maxSlice = Entities.Length - 1;
@@ -521,7 +521,7 @@ public class Chunk
         {
             foreach (var entity in Entities[i])
             {
-                if (entity != except && entity.boundingBox.intersects(box))
+                if (entity != except && entity.boundingBox.Intersects(box))
                 {
                     result.Add(entity);
                 }
@@ -531,8 +531,8 @@ public class Chunk
 
     public virtual void CollectEntitiesOfType<T>(Box box, List<T> result) where T : Entity
     {
-        int minSlice = MathHelper.Floor((box.minY - 2.0D) / 16.0D);
-        int maxSlice = MathHelper.Floor((box.maxY + 2.0D) / 16.0D);
+        int minSlice = MathHelper.Floor((box.MinY - 2.0D) / 16.0D);
+        int maxSlice = MathHelper.Floor((box.MaxY + 2.0D) / 16.0D);
 
         if (minSlice < 0) minSlice = 0;
         if (maxSlice >= Entities.Length) maxSlice = Entities.Length - 1;
@@ -541,7 +541,7 @@ public class Chunk
         {
             foreach (var entity in Entities[i])
             {
-                if (entity is T typedEntity && entity.boundingBox.intersects(box))
+                if (entity is T typedEntity && entity.boundingBox.Intersects(box))
                 {
                     result.Add(typedEntity);
                 }

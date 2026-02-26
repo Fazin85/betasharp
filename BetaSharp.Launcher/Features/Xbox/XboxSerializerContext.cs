@@ -1,12 +1,12 @@
 using System.Text.Json.Serialization;
-using BetaSharp.Launcher.Features.Xbox.Profile;
 using BetaSharp.Launcher.Features.Xbox.Token;
+using BetaSharp.Launcher.Features.Xbox.User;
 
 namespace BetaSharp.Launcher.Features.Xbox;
 
 [JsonSourceGenerationOptions(PropertyNameCaseInsensitive = true)]
-[JsonSerializable(typeof(ProfileRequest))]
-[JsonSerializable(typeof(ProfileRequest.ProfileProperties))]
+[JsonSerializable(typeof(UserRequest))]
+[JsonSerializable(typeof(UserRequest.UserProperties))]
 [JsonSerializable(typeof(UserResponse))]
 [JsonSerializable(typeof(UserResponse.UserDisplayClaims))]
 [JsonSerializable(typeof(UserResponse.UserDisplayClaims.UserXui))]

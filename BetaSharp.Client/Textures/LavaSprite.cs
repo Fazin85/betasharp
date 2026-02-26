@@ -15,8 +15,20 @@ public class LavaSprite : DynamicTexture
     {
     }
 
+    public override void Setup(Minecraft mc)
+    {
+        TryLoadCustomTexture(mc, "custom_lava_still.png");
+    }
+
     public override void tick()
     {
+        if (customFrames != null)
+        {
+            Buffer.BlockCopy(customFrames[customFrameIndex], 0, pixels, 0, pixels.Length);
+            customFrameIndex = (customFrameIndex + 1) % customFrameCount;
+            return;
+        }
+
         int var2;
         float var3;
         int var5;
@@ -50,7 +62,7 @@ public class LavaSprite : DynamicTexture
                 }
 
                 heatDelta[var1 + var2 * 16] -= 0.06F;
-                if (java.lang.Math.random() < 0.005D)
+                if (Random.Shared.NextDouble() < 0.005D)
                 {
                     heatDelta[var1 + var2 * 16] = 1.5F;
                 }
@@ -75,16 +87,6 @@ public class LavaSprite : DynamicTexture
             var5 = (int)(var3 * 100.0F + 155.0F);
             var6 = (int)(var3 * var3 * 255.0F);
             var7 = (int)(var3 * var3 * var3 * var3 * 128.0F);
-            if (anaglyphEnabled)
-            {
-                var8 = (var5 * 30 + var6 * 59 + var7 * 11) / 100;
-                var9 = (var5 * 30 + var6 * 70) / 100;
-                int var10 = (var5 * 30 + var7 * 70) / 100;
-                var5 = var8;
-                var6 = var9;
-                var7 = var10;
-            }
-
             pixels[var2 * 4 + 0] = (byte)var5;
             pixels[var2 * 4 + 1] = (byte)var6;
             pixels[var2 * 4 + 2] = (byte)var7;

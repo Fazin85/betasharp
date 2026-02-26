@@ -1,12 +1,10 @@
+using System.Net.Sockets;
 using BetaSharp.Entities;
-using java.io;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class PlayerSleepUpdateS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayerSleepUpdateS2CPacket).TypeHandle);
-
     public int id;
     public int x;
     public int y;
@@ -26,30 +24,30 @@ public class PlayerSleepUpdateS2CPacket : Packet
         this.id = player.id;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        id = stream.readInt();
-        status = (sbyte)stream.readByte();
-        x = stream.readInt();
-        y = (sbyte)stream.readByte();
-        z = stream.readInt();
+        id = stream.ReadInt();
+        status = (sbyte)stream.ReadByte();
+        x = stream.ReadInt();
+        y = (sbyte)stream.ReadByte();
+        z = stream.ReadInt();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(id);
-        stream.writeByte(status);
-        stream.writeInt(x);
-        stream.writeByte(y);
-        stream.writeInt(z);
+        stream.WriteInt(id);
+        stream.WriteByte((byte)status);
+        stream.WriteInt(x);
+        stream.WriteByte((byte)y);
+        stream.WriteInt(z);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onPlayerSleepUpdate(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 14;
     }

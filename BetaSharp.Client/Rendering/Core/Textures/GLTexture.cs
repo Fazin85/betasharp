@@ -10,6 +10,8 @@ public class GLTexture : IDisposable
 
     public uint Id { get; private set; }
     public string Source { get; }
+    public int Width { get; private set; }
+    public int Height { get; private set; }
     public static int ActiveTextureCount => s_activeTextures.Count;
 
     public GLTexture(string source)
@@ -50,6 +52,11 @@ public class GLTexture : IDisposable
 
     public unsafe void Upload(int width, int height, byte* ptr, int level = 0, PixelFormat format = PixelFormat.Rgba, InternalFormat internalFormat = InternalFormat.Rgba)
     {
+        if (level == 0)
+        {
+            Width = width;
+            Height = height;
+        }
         Bind();
         GLManager.GL.TexImage2D(TextureTarget.Texture2D, level, internalFormat, (uint)width, (uint)height, 0, format, PixelType.UnsignedByte, ptr);
     }

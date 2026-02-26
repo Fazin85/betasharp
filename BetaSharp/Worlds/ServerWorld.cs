@@ -59,7 +59,7 @@ public class ServerWorld : World
         for (int var8 = 0; var8 < blockEntities.Count; var8++)
         {
             BlockEntity var9 = blockEntities[var8];
-            if (var9.x >= minX && var9.y >= minY && var9.z >= minZ && var9.x < maxX && var9.y < maxY && var9.z < maxZ)
+            if (var9.X >= minX && var9.Y >= minY && var9.Z >= minZ && var9.X < maxX && var9.Y < maxY && var9.Z < maxZ)
             {
                 var7.Add(var9);
             }

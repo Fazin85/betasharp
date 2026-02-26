@@ -1,11 +1,9 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class PlayerSpawnPositionS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayerSpawnPositionS2CPacket).TypeHandle);
-
     public int x;
     public int y;
     public int z;
@@ -21,26 +19,26 @@ public class PlayerSpawnPositionS2CPacket : Packet
         this.z = z;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        x = stream.readInt();
-        y = stream.readInt();
-        z = stream.readInt();
+        x = stream.ReadInt();
+        y = stream.ReadInt();
+        z = stream.ReadInt();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(x);
-        stream.writeInt(y);
-        stream.writeInt(z);
+        stream.WriteInt(x);
+        stream.WriteInt(y);
+        stream.WriteInt(z);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onPlayerSpawnPosition(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 12;
     }

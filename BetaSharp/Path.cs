@@ -1,8 +1,7 @@
-using java.lang;
 
 namespace BetaSharp;
 
-public class Path : java.lang.Object
+public class Path
 {
     private PathPoint[] pathPoints = new PathPoint[1024];
     private int count;
@@ -11,7 +10,7 @@ public class Path : java.lang.Object
     {
         if (var1.index >= 0)
         {
-            throw new IllegalStateException("OW KNOWS!");
+            throw new Exception("IllegalState: OW KNOWS!");
         }
         else
         {
@@ -106,7 +105,7 @@ public class Path : java.lang.Object
             if (var5 >= count)
             {
                 var8 = null;
-                var9 = Float.POSITIVE_INFINITY;
+                var9 = float.PositiveInfinity;
             }
             else
             {

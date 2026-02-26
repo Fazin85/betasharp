@@ -1,13 +1,11 @@
+using System.Net.Sockets;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
-using java.io;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class EntityPositionS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityPositionS2CPacket).TypeHandle);
-
     public int id;
     public int x;
     public int y;
@@ -39,32 +37,32 @@ public class EntityPositionS2CPacket : Packet
         pitch = (sbyte)(int)(var1.pitch * 256.0F / 360.0F);
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        id = stream.readInt();
-        x = stream.readInt();
-        y = stream.readInt();
-        z = stream.readInt();
-        yaw = (sbyte)stream.read();
-        pitch = (sbyte)stream.read();
+        id = stream.ReadInt();
+        x = stream.ReadInt();
+        y = stream.ReadInt();
+        z = stream.ReadInt();
+        yaw = (sbyte)stream.ReadByte();
+        pitch = (sbyte)stream.ReadByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(id);
-        stream.writeInt(x);
-        stream.writeInt(y);
-        stream.writeInt(z);
-        stream.write(yaw);
-        stream.write(pitch);
+        stream.WriteInt(id);
+        stream.WriteInt(x);
+        stream.WriteInt(y);
+        stream.WriteInt(z);
+        stream.WriteByte((byte)yaw);
+        stream.WriteByte((byte)pitch);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onEntityPosition(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 34;
     }

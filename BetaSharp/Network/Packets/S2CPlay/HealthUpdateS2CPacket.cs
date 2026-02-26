@@ -1,11 +1,9 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class HealthUpdateS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(HealthUpdateS2CPacket).TypeHandle);
-
     public int healthMP;
 
     public HealthUpdateS2CPacket()
@@ -17,22 +15,22 @@ public class HealthUpdateS2CPacket : Packet
         healthMP = health;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        healthMP = stream.readShort();
+        healthMP = stream.ReadShort();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeShort(healthMP);
+        stream.WriteShort((short)healthMP);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onHealthUpdate(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 2;
     }

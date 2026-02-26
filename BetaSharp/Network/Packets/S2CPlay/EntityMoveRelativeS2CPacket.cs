@@ -1,11 +1,9 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class EntityMoveRelativeS2CPacket : EntityS2CPacket
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityMoveRelativeS2CPacket).TypeHandle);
-
     public EntityMoveRelativeS2CPacket()
     {
     }
@@ -17,23 +15,23 @@ public class EntityMoveRelativeS2CPacket : EntityS2CPacket
         this.deltaZ = (sbyte)deltaZ;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        base.read(stream);
-        deltaX = (sbyte)stream.readByte();
-        deltaY = (sbyte)stream.readByte();
-        deltaZ = (sbyte)stream.readByte();
+        base.Read(stream);
+        deltaX = (sbyte)stream.ReadByte();
+        deltaY = (sbyte)stream.ReadByte();
+        deltaZ = (sbyte)stream.ReadByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        base.write(stream);
-        stream.writeByte(deltaX);
-        stream.writeByte(deltaY);
-        stream.writeByte(deltaZ);
+        base.Write(stream);
+        stream.WriteByte((byte)deltaX);
+        stream.WriteByte((byte)deltaY);
+        stream.WriteByte((byte)deltaZ);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 7;
     }

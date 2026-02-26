@@ -1,3 +1,4 @@
+using System.Net;
 using BetaSharp.Network.Packets;
 using Microsoft.Extensions.Logging;
 
@@ -51,7 +52,7 @@ public class InternalConnection : Connection
         while (!readQueue.isEmpty())
         {
             Packet packet = (Packet)readQueue.remove(0);
-            packet.apply(networkHandler);
+            packet.Apply(networkHandler);
             count++;
         }
         if (count > 0)
@@ -118,8 +119,8 @@ public class InternalConnection : Connection
         }
     }
 
-    public override java.net.SocketAddress? getAddress()
+    public override IPEndPoint getAddress()
     {
-        return new java.net.InetSocketAddress("127.0.0.1", 12345);
+        return new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12345);
     }
 }

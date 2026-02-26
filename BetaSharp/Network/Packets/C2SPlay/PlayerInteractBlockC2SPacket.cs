@@ -1,12 +1,10 @@
+using System.Net.Sockets;
 using BetaSharp.Items;
-using java.io;
 
 namespace BetaSharp.Network.Packets.C2SPlay;
 
 public class PlayerInteractBlockC2SPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayerInteractBlockC2SPacket).TypeHandle);
-
     public int x;
     public int y;
     public int z;
@@ -26,17 +24,17 @@ public class PlayerInteractBlockC2SPacket : Packet
         this.stack = stack;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        x = stream.readInt();
-        y = stream.read();
-        z = stream.readInt();
-        side = stream.read();
-        short itemId = stream.readShort();
+        x = stream.ReadInt();
+        y = stream.ReadByte();
+        z = stream.ReadInt();
+        side = stream.ReadByte();
+        short itemId = stream.ReadShort();
         if (itemId >= 0)
         {
-            sbyte count = (sbyte)stream.readByte();
-            short damage = stream.readShort();
+            sbyte count = (sbyte)stream.ReadByte();
+            short damage = stream.ReadShort();
             stack = new ItemStack(itemId, count, damage);
         }
         else
@@ -46,31 +44,31 @@ public class PlayerInteractBlockC2SPacket : Packet
 
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(x);
-        stream.write(y);
-        stream.writeInt(z);
-        stream.write(side);
+        stream.WriteInt(x);
+        stream.WriteByte((byte)y);
+        stream.WriteInt(z);
+        stream.WriteByte((byte)side);
         if (stack == null)
         {
-            stream.writeShort(-1);
+            stream.WriteShort((short)-1);
         }
         else
         {
-            stream.writeShort(stack.itemId);
-            stream.writeByte(stack.count);
-            stream.writeShort(stack.getDamage());
+            stream.WriteShort((short)stack.itemId);
+            stream.WriteByte((byte)stack.count);
+            stream.WriteShort((short)stack.getDamage());
         }
 
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onPlayerInteractBlock(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 15;
     }

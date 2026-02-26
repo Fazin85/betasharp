@@ -185,16 +185,6 @@ public class WorldRenderer : IWorldAccess
         chunkRenderer = new(world);
         ChunkMeshVersion.ClearPool();
 
-
-        if (renderDistance >= 16)
-        {
-            SubChunkRenderer.Size = 32;
-        }
-        else
-        {
-            SubChunkRenderer.Size = 16;
-        }
-
         renderEntitiesStartupCounter = 2;
     }
 
@@ -260,7 +250,7 @@ public class WorldRenderer : IWorldAccess
             for (var6 = 0; var6 < world.blockEntities.Count; ++var6)
             {
                 BlockEntity entity = world.blockEntities[var6];
-                if (culler.isBoundingBoxInFrustum(new Box(entity.x, entity.y, entity.z, entity.x + 1, entity.y + 1, entity.z + 1)))
+                if (!entity.isRemoved() && culler.isBoundingBoxInFrustum(new Box(entity.X, entity.Y, entity.Z, entity.X + 1, entity.Y + 1, entity.Z + 1)))
                 {
                     BlockEntityRenderer.Instance.RenderTileEntity(entity, var3);
                 }
@@ -286,13 +276,26 @@ public class WorldRenderer : IWorldAccess
 
         Lighting.turnOff();
 
+        var renderParams = new ChunkRenderParams
+        {
+            Camera = cam,
+            ViewPos = new Vector3D<double>(var33, var7, var9),
+            RenderDistance = renderDistance,
+            Ticks = world.getTime(),
+            PartialTicks = (float)var3,
+            DeltaTime = mc.Timer.DeltaTime,
+            EnvironmentAnimation = mc.options.EnvironmentAnimation,
+            ChunkFade = mc.options.ChunkFade,
+            RenderOccluded = mc.options.RenderOccluded
+        };
+
         if (pass == 0)
         {
-            chunkRenderer.Render(cam, new Vector3D<double>(var33, var7, var9), renderDistance, world.getTime(), (float)var3, mc.Timer.DeltaTime, mc.options.EnvironmentAnimation, mc.options.ChunkFade);
+            chunkRenderer.Render(renderParams);
         }
         else
         {
-            chunkRenderer.RenderTransparent(new(var33, var7, var9));
+            chunkRenderer.RenderTransparent(renderParams);
         }
 
         return 0;
@@ -710,7 +713,7 @@ public class WorldRenderer : IWorldAccess
                 double var8 = var1.lastTickX + (var1.x - var1.lastTickX) * (double)var5;
                 double var10 = var1.lastTickY + (var1.y - var1.lastTickY) * (double)var5;
                 double var12 = var1.lastTickZ + (var1.z - var1.lastTickZ) * (double)var5;
-                drawOutlinedBoundingBox(Block.Blocks[var7].getBoundingBox(world, var2.BlockX, var2.BlockY, var2.BlockZ).expand((double)var6, (double)var6, (double)var6).offset(-var8, -var10, -var12));
+                drawOutlinedBoundingBox(Block.Blocks[var7].getBoundingBox(world, var2.BlockX, var2.BlockY, var2.BlockZ).Expand((double)var6, (double)var6, (double)var6).Offset(-var8, -var10, -var12));
             }
 
             GLManager.GL.DepthMask(true);
@@ -724,28 +727,28 @@ public class WorldRenderer : IWorldAccess
     {
         Tessellator var2 = Tessellator.instance;
         var2.startDrawing(3);
-        var2.addVertex(var1.minX, var1.minY, var1.minZ);
-        var2.addVertex(var1.maxX, var1.minY, var1.minZ);
-        var2.addVertex(var1.maxX, var1.minY, var1.maxZ);
-        var2.addVertex(var1.minX, var1.minY, var1.maxZ);
-        var2.addVertex(var1.minX, var1.minY, var1.minZ);
+        var2.addVertex(var1.MinX, var1.MinY, var1.MinZ);
+        var2.addVertex(var1.MaxX, var1.MinY, var1.MinZ);
+        var2.addVertex(var1.MaxX, var1.MinY, var1.MaxZ);
+        var2.addVertex(var1.MinX, var1.MinY, var1.MaxZ);
+        var2.addVertex(var1.MinX, var1.MinY, var1.MinZ);
         var2.draw();
         var2.startDrawing(3);
-        var2.addVertex(var1.minX, var1.maxY, var1.minZ);
-        var2.addVertex(var1.maxX, var1.maxY, var1.minZ);
-        var2.addVertex(var1.maxX, var1.maxY, var1.maxZ);
-        var2.addVertex(var1.minX, var1.maxY, var1.maxZ);
-        var2.addVertex(var1.minX, var1.maxY, var1.minZ);
+        var2.addVertex(var1.MinX, var1.MaxY, var1.MinZ);
+        var2.addVertex(var1.MaxX, var1.MaxY, var1.MinZ);
+        var2.addVertex(var1.MaxX, var1.MaxY, var1.MaxZ);
+        var2.addVertex(var1.MinX, var1.MaxY, var1.MaxZ);
+        var2.addVertex(var1.MinX, var1.MaxY, var1.MinZ);
         var2.draw();
         var2.startDrawing(1);
-        var2.addVertex(var1.minX, var1.minY, var1.minZ);
-        var2.addVertex(var1.minX, var1.maxY, var1.minZ);
-        var2.addVertex(var1.maxX, var1.minY, var1.minZ);
-        var2.addVertex(var1.maxX, var1.maxY, var1.minZ);
-        var2.addVertex(var1.maxX, var1.minY, var1.maxZ);
-        var2.addVertex(var1.maxX, var1.maxY, var1.maxZ);
-        var2.addVertex(var1.minX, var1.minY, var1.maxZ);
-        var2.addVertex(var1.minX, var1.maxY, var1.maxZ);
+        var2.addVertex(var1.MinX, var1.MinY, var1.MinZ);
+        var2.addVertex(var1.MinX, var1.MaxY, var1.MinZ);
+        var2.addVertex(var1.MaxX, var1.MinY, var1.MinZ);
+        var2.addVertex(var1.MaxX, var1.MaxY, var1.MinZ);
+        var2.addVertex(var1.MaxX, var1.MinY, var1.MaxZ);
+        var2.addVertex(var1.MaxX, var1.MaxY, var1.MaxZ);
+        var2.addVertex(var1.MinX, var1.MinY, var1.MaxZ);
+        var2.addVertex(var1.MinX, var1.MaxY, var1.MaxZ);
         var2.draw();
     }
 
@@ -883,32 +886,15 @@ public class WorldRenderer : IWorldAccess
     public void notifyEntityAdded(Entity var1)
     {
         var1.updateCloak();
-        //TODO: SKINS
-        //if (var1.skinUrl != null)
-        //{
-        //    renderEngine.obtainImageData(var1.skinUrl, new ImageBufferDownload());
-        //}
-
-        //if (var1.cloakUrl != null)
-        //{
-        //    renderEngine.obtainImageData(var1.cloakUrl, new ImageBufferDownload());
-        //}
-
+        if (!string.IsNullOrEmpty(var1.skinUrl) && mc.session.skinUrl != null)
+        {
+            EntityRenderDispatcher.instance.skinManager?.RequestDownload(var1.skinUrl);
+        }
     }
 
     public void notifyEntityRemoved(Entity var1)
     {
-        //TODO: SKINS
-        //if (var1.skinUrl != null)
-        //{
-        //    renderEngine.releaseImageData(var1.skinUrl);
-        //}
-
-        //if (var1.cloakUrl != null)
-        //{
-        //    renderEngine.releaseImageData(var1.cloakUrl);
-        //}
-
+        EntityRenderDispatcher.instance.skinManager?.Release(var1.skinUrl);
     }
 
     public void notifyAmbientDarknessChanged()
@@ -936,7 +922,7 @@ public class WorldRenderer : IWorldAccess
                 world.playSound(var3, var4, var5, "random.bow", 1.0F, 1.2F);
                 break;
             case 1003:
-                if (java.lang.Math.random() < 0.5D)
+                if (Random.Shared.NextDouble() < 0.5D)
                 {
                     world.playSound(var3 + 0.5D, var4 + 0.5D, var5 + 0.5D, "random.door_open", 1.0F, world.random.NextFloat() * 0.1F + 0.9F);
                 }

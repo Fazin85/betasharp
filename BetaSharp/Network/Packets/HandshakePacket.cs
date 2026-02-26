@@ -1,11 +1,9 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets;
 
 public class HandshakePacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(HandshakePacket).TypeHandle);
-
     public string username;
 
     public HandshakePacket()
@@ -17,22 +15,22 @@ public class HandshakePacket : Packet
         this.username = username;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        username = readString(stream, 32);
+        username = stream.ReadLongString(32);
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        writeString(username, stream);
+        stream.WriteLongString(username);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onHandshake(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 4 + username.Length + 4;
     }

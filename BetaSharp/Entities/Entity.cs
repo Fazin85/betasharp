@@ -4,6 +4,7 @@ using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
+using Math = System.Math;
 
 namespace BetaSharp.Entities;
 
@@ -81,7 +82,7 @@ public abstract class Entity
     {
         this.world = world;
         setPosition(0.0D, 0.0D, 0.0D);
-        dataWatcher.addObject(0, java.lang.Byte.valueOf(0));
+        dataWatcher.AddObject(0, (byte)0);
         initDataTracker();
     }
 
@@ -199,7 +200,7 @@ public abstract class Entity
                 }
 
                 world.playSound(this, "random.splash", var1, 1.0F + (random.NextFloat() - random.NextFloat()) * 0.4F);
-                float var2 = (float)MathHelper.Floor(boundingBox.minY);
+                float var2 = (float)MathHelper.Floor(boundingBox.MinY);
 
                 int var3;
                 float var4;
@@ -289,7 +290,7 @@ public abstract class Entity
 
     public bool getEntitiesInside(double x, double y, double z)
     {
-        Box box = boundingBox.offset(x, y, z);
+        Box box = boundingBox.Offset(x, y, z);
         var entitiesInbound = world.getEntityCollisions(this, box);
         return entitiesInbound.Count > 0 ? false : !world.isBoxSubmergedInFluid(box);
     }
@@ -298,10 +299,10 @@ public abstract class Entity
     {
         if (noClip)
         {
-            boundingBox.translate(x, y, z);
-            this.x = (boundingBox.minX + boundingBox.maxX) / 2.0D;
-            this.y = boundingBox.minY + (double)standingEyeHeight - (double)cameraOffset;
-            this.z = (boundingBox.minZ + boundingBox.maxZ) / 2.0D;
+            boundingBox.Translate(x, y, z);
+            this.x = (boundingBox.MinX + boundingBox.MaxX) / 2.0D;
+            this.y = boundingBox.MinY + (double)standingEyeHeight - (double)cameraOffset;
+            this.z = (boundingBox.MinZ + boundingBox.MaxZ) / 2.0D;
         }
         else
         {
@@ -327,7 +328,7 @@ public abstract class Entity
             if (var18)
             {
                 double var19;
-                for (var19 = 0.05D; x != 0.0D && world.getEntityCollisions(this, boundingBox.offset(x, -1.0D, 0.0D)).Count == 0; var11 = x)
+                for (var19 = 0.05D; x != 0.0D && world.getEntityCollisions(this, boundingBox.Offset(x, -1.0D, 0.0D)).Count == 0; var11 = x)
                 {
                     if (x < var19 && x >= -var19)
                     {
@@ -343,7 +344,7 @@ public abstract class Entity
                     }
                 }
 
-                for (; z != 0.0D && world.getEntityCollisions(this, boundingBox.offset(0.0D, -1.0D, z)).Count == 0; var15 = z)
+                for (; z != 0.0D && world.getEntityCollisions(this, boundingBox.Offset(0.0D, -1.0D, z)).Count == 0; var15 = z)
                 {
                     if (z < var19 && z >= -var19)
                     {
@@ -360,14 +361,14 @@ public abstract class Entity
                 }
             }
 
-            var entitiesInbound = world.getEntityCollisions(this, boundingBox.stretch(x, y, z));
+            var entitiesInbound = world.getEntityCollisions(this, boundingBox.Stretch(x, y, z));
 
             for (int var20 = 0; var20 < entitiesInbound.Count; ++var20)
             {
-                y = entitiesInbound[var20].getYOffset(boundingBox, y);
+                y = entitiesInbound[var20].GetYOffset(boundingBox, y);
             }
 
-            boundingBox.translate(0.0D, y, 0.0D);
+            boundingBox.Translate(0.0D, y, 0.0D);
             if (!keepVelocityOnCollision && var13 != y)
             {
                 z = 0.0D;
@@ -380,10 +381,10 @@ public abstract class Entity
             int i;
             for (i = 0; i < entitiesInbound.Count; ++i)
             {
-                x = entitiesInbound[i].getXOffset(boundingBox, x);
+                x = entitiesInbound[i].GetXOffset(boundingBox, x);
             }
 
-            boundingBox.translate(x, 0.0D, 0.0D);
+            boundingBox.Translate(x, 0.0D, 0.0D);
             if (!keepVelocityOnCollision && var11 != x)
             {
                 z = 0.0D;
@@ -393,10 +394,10 @@ public abstract class Entity
 
             for (i = 0; i < entitiesInbound.Count; ++i)
             {
-                z = entitiesInbound[i].getZOffset(boundingBox, z);
+                z = entitiesInbound[i].GetZOffset(boundingBox, z);
             }
 
-            boundingBox.translate(0.0D, 0.0D, z);
+            boundingBox.Translate(0.0D, 0.0D, z);
             if (!keepVelocityOnCollision && var15 != z)
             {
                 z = 0.0D;
@@ -417,14 +418,14 @@ public abstract class Entity
                 z = var15;
                 Box var27 = boundingBox;
                 boundingBox = var17;
-                entitiesInbound = world.getEntityCollisions(this, boundingBox.stretch(var11, y, var15));
+                entitiesInbound = world.getEntityCollisions(this, boundingBox.Stretch(var11, y, var15));
 
                 for (var28 = 0; var28 < entitiesInbound.Count; ++var28)
                 {
-                    y = entitiesInbound[var28].getYOffset(boundingBox, y);
+                    y = entitiesInbound[var28].GetYOffset(boundingBox, y);
                 }
 
-                boundingBox.translate(0.0D, y, 0.0D);
+                boundingBox.Translate(0.0D, y, 0.0D);
                 if (!keepVelocityOnCollision && var13 != y)
                 {
                     z = 0.0D;
@@ -434,10 +435,10 @@ public abstract class Entity
 
                 for (var28 = 0; var28 < entitiesInbound.Count; ++var28)
                 {
-                    x = entitiesInbound[var28].getXOffset(boundingBox, x);
+                    x = entitiesInbound[var28].GetXOffset(boundingBox, x);
                 }
 
-                boundingBox.translate(x, 0.0D, 0.0D);
+                boundingBox.Translate(x, 0.0D, 0.0D);
                 if (!keepVelocityOnCollision && var11 != x)
                 {
                     z = 0.0D;
@@ -447,10 +448,10 @@ public abstract class Entity
 
                 for (var28 = 0; var28 < entitiesInbound.Count; ++var28)
                 {
-                    z = entitiesInbound[var28].getZOffset(boundingBox, z);
+                    z = entitiesInbound[var28].GetZOffset(boundingBox, z);
                 }
 
-                boundingBox.translate(0.0D, 0.0D, z);
+                boundingBox.Translate(0.0D, 0.0D, z);
                 if (!keepVelocityOnCollision && var15 != z)
                 {
                     z = 0.0D;
@@ -470,10 +471,10 @@ public abstract class Entity
 
                     for (var28 = 0; var28 < entitiesInbound.Count; ++var28)
                     {
-                        y = entitiesInbound[var28].getYOffset(boundingBox, y);
+                        y = entitiesInbound[var28].GetYOffset(boundingBox, y);
                     }
 
-                    boundingBox.translate(0.0D, y, 0.0D);
+                    boundingBox.Translate(0.0D, y, 0.0D);
                 }
 
                 if (var37 * var37 + var25 * var25 >= x * x + z * z)
@@ -485,7 +486,7 @@ public abstract class Entity
                 }
                 else
                 {
-                    double var41 = boundingBox.minY - (double)((int)boundingBox.minY);
+                    double var41 = boundingBox.MinY - (double)((int)boundingBox.MinY);
                     if (var41 > 0.0D)
                     {
                         cameraOffset = (float)((double)cameraOffset + var41 + 0.01D);
@@ -493,9 +494,9 @@ public abstract class Entity
                 }
             }
 
-            this.x = (boundingBox.minX + boundingBox.maxX) / 2.0D;
-            this.y = boundingBox.minY + (double)standingEyeHeight - (double)cameraOffset;
-            this.z = (boundingBox.minZ + boundingBox.maxZ) / 2.0D;
+            this.x = (boundingBox.MinX + boundingBox.MaxX) / 2.0D;
+            this.y = boundingBox.MinY + (double)standingEyeHeight - (double)cameraOffset;
+            this.z = (boundingBox.MinZ + boundingBox.MaxZ) / 2.0D;
             horizontalCollison = var11 != x || var15 != z;
             verticalCollision = var13 != y;
             onGround = var13 != y && var13 < 0.0D;
@@ -555,12 +556,12 @@ public abstract class Entity
                 }
             }
 
-            var38 = MathHelper.Floor(boundingBox.minX + 0.001D);
-            var26 = MathHelper.Floor(boundingBox.minY + 0.001D);
-            var39 = MathHelper.Floor(boundingBox.minZ + 0.001D);
-            var28 = MathHelper.Floor(boundingBox.maxX - 0.001D);
-            int var40 = MathHelper.Floor(boundingBox.maxY - 0.001D);
-            int var30 = MathHelper.Floor(boundingBox.maxZ - 0.001D);
+            var38 = MathHelper.Floor(boundingBox.MinX + 0.001D);
+            var26 = MathHelper.Floor(boundingBox.MinY + 0.001D);
+            var39 = MathHelper.Floor(boundingBox.MinZ + 0.001D);
+            var28 = MathHelper.Floor(boundingBox.MaxX - 0.001D);
+            int var40 = MathHelper.Floor(boundingBox.MaxY - 0.001D);
+            int var30 = MathHelper.Floor(boundingBox.MaxZ - 0.001D);
             if (world.isRegionLoaded(var38, var26, var39, var28, var40, var30))
             {
                 for (int var31 = var38; var31 <= var28; ++var31)
@@ -580,7 +581,7 @@ public abstract class Entity
             }
 
             bool var42 = isWet();
-            if (world.isFireOrLavaInBox(boundingBox.contract(0.001D, 0.001D, 0.001D)))
+            if (world.isFireOrLavaInBox(boundingBox.Contract(0.001D, 0.001D, 0.001D)))
             {
                 damage(1);
                 if (!var42)
@@ -663,7 +664,7 @@ public abstract class Entity
 
     public virtual bool checkWaterCollisions()
     {
-        return world.updateMovementInFluid(boundingBox.expand(0.0D, (double)-0.4F, 0.0D).contract(0.001D, 0.001D, 0.001D), Material.Water, this);
+        return world.updateMovementInFluid(boundingBox.Expand(0.0D, (double)-0.4F, 0.0D).Contract(0.001D, 0.001D, 0.001D), Material.Water, this);
     }
 
     public bool isInFluid(Material var1)
@@ -692,7 +693,7 @@ public abstract class Entity
 
     public bool isTouchingLava()
     {
-        return world.isMaterialInBox(boundingBox.expand((double)-0.1F, (double)-0.4F, (double)-0.1F), Material.Lava);
+        return world.isMaterialInBox(boundingBox.Expand((double)-0.1F, (double)-0.4F, (double)-0.1F), Material.Lava);
     }
 
     public void moveNonSolid(float strafe, float forward, float speed)
@@ -718,10 +719,21 @@ public abstract class Entity
     public virtual float getBrightnessAtEyes(float var1)
     {
         int var2 = MathHelper.Floor(x);
-        double var3 = (boundingBox.maxY - boundingBox.minY) * 0.66D;
+        double var3 = (boundingBox.MaxY - boundingBox.MinY) * 0.66D;
         int var5 = MathHelper.Floor(y - (double)standingEyeHeight + var3);
         int var6 = MathHelper.Floor(z);
-        if (world.isRegionLoaded(MathHelper.Floor(boundingBox.minX), MathHelper.Floor(boundingBox.minY), MathHelper.Floor(boundingBox.minZ), MathHelper.Floor(boundingBox.maxX), MathHelper.Floor(boundingBox.maxY), MathHelper.Floor(boundingBox.maxZ)))
+
+        int minX = MathHelper.Floor(boundingBox.MinX);
+        int minY = MathHelper.Floor(boundingBox.MinY);
+        int minZ = MathHelper.Floor(boundingBox.MinZ);
+        int maxX = MathHelper.Floor(boundingBox.MaxX);
+        int maxY = MathHelper.Floor(boundingBox.MaxY);
+        int maxZ = MathHelper.Floor(boundingBox.MaxZ);
+
+        minY = Math.Min(127, Math.Max(0, minY));
+        maxY = Math.Min(127, Math.Max(0, maxY));
+
+        if (world.isRegionLoaded(minX, minY, minZ, maxX, maxY, maxZ))
         {
             float var7 = world.getLuminance(var2, var5, var6);
             if (var7 < minBrightness)
@@ -885,7 +897,7 @@ public abstract class Entity
 
     public virtual bool shouldRender(double var1)
     {
-        double var3 = boundingBox.getAverageSizeLength();
+        double var3 = boundingBox.AverageEdgeLength;
         var3 *= 64.0D * renderDistanceWeight;
         return var1 < var3 * var3;
     }
@@ -1145,7 +1157,7 @@ public abstract class Entity
         {
             if (vehicle != null)
             {
-                setPositionAndAnglesKeepPrevAngles(vehicle.x, vehicle.boundingBox.minY + (double)vehicle.height, vehicle.z, yaw, pitch);
+                setPositionAndAnglesKeepPrevAngles(vehicle.x, vehicle.boundingBox.MinY + (double)vehicle.height, vehicle.z, yaw, pitch);
                 vehicle.passenger = null;
             }
 
@@ -1155,7 +1167,7 @@ public abstract class Entity
         {
             vehicle.passenger = null;
             vehicle = null;
-            setPositionAndAnglesKeepPrevAngles(entity.x, entity.boundingBox.minY + (double)entity.height, entity.z, yaw, pitch);
+            setPositionAndAnglesKeepPrevAngles(entity.x, entity.boundingBox.MinY + (double)entity.height, entity.z, yaw, pitch);
         }
         else
         {
@@ -1178,7 +1190,7 @@ public abstract class Entity
     {
         setPosition(x, y, z);
         setRotation(var7, var8);
-        var var10 = world.getEntityCollisions(this, boundingBox.contract(1.0D / 32.0D, 0.0D, 1.0D / 32.0D));
+        var var10 = world.getEntityCollisions(this, boundingBox.Contract(1.0D / 32.0D, 0.0D, 1.0D / 32.0D));
         if (var10.Count > 0)
         {
             double var11 = 0.0D;
@@ -1186,13 +1198,13 @@ public abstract class Entity
             for (int var13 = 0; var13 < var10.Count; ++var13)
             {
                 Box var14 = var10[var13];
-                if (var14.maxY > var11)
+                if (var14.MaxY > var11)
                 {
-                    var11 = var14.maxY;
+                    var11 = var14.MaxY;
                 }
             }
 
-            y += var11 - boundingBox.minY;
+            y += var11 - boundingBox.MinY;
             setPosition(x, y, z);
         }
 
@@ -1277,7 +1289,7 @@ public abstract class Entity
         {
             newValue = (byte)((byte)var3 & ~(1 << var1));
         }
-        dataWatcher.updateObject(0, java.lang.Byte.valueOf(newValue));
+        dataWatcher.UpdateObject(0, (byte)(newValue));
 
     }
 

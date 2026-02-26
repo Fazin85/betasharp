@@ -2,14 +2,14 @@ using BetaSharp.NBT;
 
 namespace BetaSharp.Worlds;
 
-public abstract class PersistentState : java.lang.Object
+public abstract class PersistentState
 {
     public readonly string id;
     private bool dirty;
 
-    public PersistentState(JString var1)
+    public PersistentState(string var1)
     {
-        id = var1.value;
+        id = var1;
     }
 
     public abstract void readNBT(NBTTagCompound var1);

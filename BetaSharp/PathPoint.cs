@@ -1,9 +1,8 @@
 using BetaSharp.Util.Maths;
-using java.lang;
 
 namespace BetaSharp;
 
-public class PathPoint : java.lang.Object
+public class PathPoint
 {
     public readonly int xCoord;
     public readonly int yCoord;
@@ -26,10 +25,10 @@ public class PathPoint : java.lang.Object
 
     public static int func_22329_a(int var0, int var1, int var2)
     {
-        return var1 & 255 | (var0 & Short.MAX_VALUE) << 8 | (var2 & Short.MAX_VALUE) << 24 | (var0 < 0 ? Integer.MIN_VALUE : 0) | (var2 < 0 ? -Short.MIN_VALUE : 0);
+        return var1 & 255 | (var0 & short.MaxValue) << 8 | (var2 & short.MaxValue) << 24 | (var0 < 0 ? int.MinValue : 0) | (var2 < 0 ? -short.MinValue : 0);
     }
 
-    public float distanceTo(PathPoint var1)
+    public float DistanceTo(PathPoint var1)
     {
         float var2 = (float)(var1.xCoord - xCoord);
         float var3 = (float)(var1.yCoord - yCoord);
@@ -37,7 +36,7 @@ public class PathPoint : java.lang.Object
         return MathHelper.Sqrt(var2 * var2 + var3 * var3 + var4 * var4);
     }
 
-    public override bool equals(object var1)
+    public override bool Equals(object var1)
     {
         if (var1 is not PathPoint)
         {
@@ -50,17 +49,17 @@ public class PathPoint : java.lang.Object
         }
     }
 
-    public override int hashCode()
+    public override int GetHashCode()
     {
         return hash;
     }
 
-    public bool isAssigned()
+    public bool IsAssigned()
     {
         return index >= 0;
     }
 
-    public override string toString()
+    public override string ToString()
     {
         return xCoord + ", " + yCoord + ", " + zCoord;
     }

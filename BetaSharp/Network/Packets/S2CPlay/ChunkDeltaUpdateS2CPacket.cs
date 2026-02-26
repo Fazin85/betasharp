@@ -1,13 +1,11 @@
+using System.Net.Sockets;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Chunks;
-using java.io;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class ChunkDeltaUpdateS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ChunkDeltaUpdateS2CPacket).TypeHandle);
-
     public int x;
     public int z;
     public short[] positions;
@@ -17,12 +15,12 @@ public class ChunkDeltaUpdateS2CPacket : Packet
 
     public ChunkDeltaUpdateS2CPacket()
     {
-        worldPacket = true;
+        WorldPacket = true;
     }
 
     public ChunkDeltaUpdateS2CPacket(int x, int z, short[] positions, int size, World world)
     {
-        worldPacket = true;
+        WorldPacket = true;
         this.x = x;
         this.z = z;
         this._size = size;
@@ -42,11 +40,11 @@ public class ChunkDeltaUpdateS2CPacket : Packet
         }
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        x = stream.readInt();
-        z = stream.readInt();
-        _size = stream.readShort() & '\uffff';
+        x = stream.ReadInt();
+        z = stream.ReadInt();
+        _size = stream.ReadShort() & '\uffff';
         positions = new short[_size];
 
         blockRawIds = new byte[_size];
@@ -54,34 +52,34 @@ public class ChunkDeltaUpdateS2CPacket : Packet
 
         for (int i = 0; i < _size; ++i)
         {
-            positions[i] = stream.readShort();
+            positions[i] = stream.ReadShort();
         }
 
-        stream.readFully(blockRawIds);
-        stream.readFully(blockMetadata);
+        stream.ReadExactly(blockRawIds);
+        stream.ReadExactly(blockMetadata);
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(x);
-        stream.writeInt(z);
-        stream.writeShort((short)_size);
+        stream.WriteInt(x);
+        stream.WriteInt(z);
+        stream.WriteShort((short)_size);
 
         for (int i = 0; i < _size; ++i)
         {
-            stream.writeShort(positions[i]);
+            stream.WriteShort(positions[i]);
         }
 
-        stream.write(blockRawIds);
-        stream.write(blockMetadata);
+        stream.Write(blockRawIds);
+        stream.Write(blockMetadata);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onChunkDeltaUpdate(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 10 + _size * 4;
     }

@@ -4,7 +4,7 @@ using BetaSharp.Screens;
 
 namespace BetaSharp.Inventorys;
 
-public class InventoryCrafting : java.lang.Object, IInventory
+public class InventoryCrafting : IInventory
 {
     private ItemStack[] stackList;
     private int gridWidth;

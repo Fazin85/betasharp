@@ -1,48 +1,46 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class ChunkStatusUpdateS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ChunkStatusUpdateS2CPacket).TypeHandle);
-
     public int x;
     public int z;
     public bool load;
 
     public ChunkStatusUpdateS2CPacket()
     {
-        worldPacket = false;
+        WorldPacket = false;
     }
 
     public ChunkStatusUpdateS2CPacket(int x, int z, bool load)
     {
-        worldPacket = false;
+        WorldPacket = false;
         this.x = x;
         this.z = z;
         this.load = load;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        x = stream.readInt();
-        z = stream.readInt();
-        load = stream.read() != 0;
+        x = stream.ReadInt();
+        z = stream.ReadInt();
+        load = stream.ReadByte() != 0;
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(x);
-        stream.writeInt(z);
-        stream.write(load ? 1 : 0);
+        stream.WriteInt(x);
+        stream.WriteInt(z);
+        stream.WriteBoolean(load);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onChunkStatusUpdate(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 9;
     }

@@ -10,7 +10,7 @@ namespace BetaSharp.Client.Rendering.Chunks;
 
 public class SubChunkRenderer : IDisposable
 {
-    public static int Size = 16;
+    public const int Size = 16;
     public bool HasTranslucentMesh => vertexCounts[1] > 0;
     public Vector3D<int> Position { get; }
     public Vector3D<int> PositionPlus { get; }
@@ -21,6 +21,17 @@ public class SubChunkRenderer : IDisposable
     public float Age { get; private set; } = 0.0f;
     public bool HasFadedIn => Age >= FadeDuration;
     public const float FadeDuration = 1.0f;
+
+    public Occlusion.ChunkVisibilityStore VisibilityData;
+    public Occlusion.ChunkDirectionMask IncomingDirections;
+    public int LastVisibleFrame = -1;
+
+    public SubChunkRenderer? AdjacentDown;
+    public SubChunkRenderer? AdjacentUp;
+    public SubChunkRenderer? AdjacentNorth;
+    public SubChunkRenderer? AdjacentSouth;
+    public SubChunkRenderer? AdjacentWest;
+    public SubChunkRenderer? AdjacentEast;
 
     private readonly VertexBuffer<ChunkVertex>[] vertexBuffers = new VertexBuffer<ChunkVertex>[2];
     private readonly VertexArray[] vertexArrays = new VertexArray[2];
@@ -49,6 +60,17 @@ public class SubChunkRenderer : IDisposable
 
         vertexCounts[0] = 0;
         vertexCounts[1] = 0;
+    }
+
+    public bool IsVisible(Culler camera, Vector3D<double> viewPos, float renderDistance)
+    {
+        if (!camera.isBoundingBoxInFrustum(BoundingBox)) return false;
+
+        double dx = PositionPlus.X - viewPos.X;
+        double dy = PositionPlus.Y - viewPos.Y;
+        double dz = PositionPlus.Z - viewPos.Z;
+
+        return (dx * dx + dz * dz) < (renderDistance * renderDistance) && Math.Abs(dy) < renderDistance;
     }
 
     public void UploadMeshData(PooledList<ChunkVertex>? solidMesh, PooledList<ChunkVertex>? translucentMesh)

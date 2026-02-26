@@ -27,7 +27,7 @@ public class EmptyChunk : Chunk
     public override void PopulateBlockLight() { }
 
     public override int GetBlockId(int x, int y, int z) => 0;
-    
+
     public override bool SetBlock(int x, int y, int z, int blockId, int meta) => true;
     public override bool SetBlock(int x, int y, int z, int blockId) => true;
 
@@ -63,7 +63,7 @@ public class EmptyChunk : Chunk
         int width = endX - startX;
         int height = endY - startY;
         int depth = endZ - startZ;
-        
+
         int volume = width * height * depth;
         return volume + (volume / 2 * 3);
     }

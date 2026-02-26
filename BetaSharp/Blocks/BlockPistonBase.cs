@@ -26,7 +26,7 @@ public class BlockPistonBase : Block
     public override int getTexture(int side, int meta)
     {
         int var3 = getFacing(meta);
-        return var3 > 5 ? textureId : (side == var3 ? (!isExtended(meta) && BoundingBox.minX <= 0.0D && BoundingBox.minY <= 0.0D && BoundingBox.minZ <= 0.0D && BoundingBox.maxX >= 1.0D && BoundingBox.maxY >= 1.0D && BoundingBox.maxZ >= 1.0D ? textureId : 110) : (side == PistonConstants.field_31057_a[var3] ? 109 : 108));
+        return var3 > 5 ? textureId : (side == var3 ? (!isExtended(meta) && BoundingBox.MinX <= 0.0D && BoundingBox.MinY <= 0.0D && BoundingBox.MinZ <= 0.0D && BoundingBox.MaxX >= 1.0D && BoundingBox.MaxY >= 1.0D && BoundingBox.MaxZ >= 1.0D ? textureId : 110) : (side == PistonConstants.field_31057_a[var3] ? 109 : 108));
     }
 
     public override int getRenderType()

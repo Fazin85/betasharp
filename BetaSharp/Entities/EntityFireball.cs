@@ -31,7 +31,7 @@ public class EntityFireball : Entity
 
     public override bool shouldRender(double var1)
     {
-        double var3 = boundingBox.getAverageSizeLength() * 4.0D;
+        double var3 = boundingBox.AverageEdgeLength * 4.0D;
         var3 *= 64.0D;
         return var1 < var3 * var3;
     }
@@ -110,7 +110,7 @@ public class EntityFireball : Entity
         }
 
         Entity var4 = null;
-        var var5 = world.getEntities(this, boundingBox.stretch(velocityX, velocityY, velocityZ).expand(1.0D, 1.0D, 1.0D));
+        var var5 = world.getEntities(this, boundingBox.Stretch(velocityX, velocityY, velocityZ).Expand(1.0D, 1.0D, 1.0D));
         double var6 = 0.0D;
 
         for (int var8 = 0; var8 < var5.Count; ++var8)
@@ -119,8 +119,8 @@ public class EntityFireball : Entity
             if (var9.isCollidable() && (var9 != owner || inAirTime >= 25))
             {
                 float var10 = 0.3F;
-                Box var11 = var9.boundingBox.expand((double)var10, (double)var10, (double)var10);
-                HitResult var12 = var11.raycast(var15, var2);
+                Box var11 = var9.boundingBox.Expand((double)var10, (double)var10, (double)var10);
+                HitResult var12 = var11.Raycast(var15, var2);
                 if (var12.Type != HitResultType.MISS)
                 {
                     double var13 = var15.distanceTo(var12.Pos);

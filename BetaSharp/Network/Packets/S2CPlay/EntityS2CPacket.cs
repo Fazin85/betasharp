@@ -1,11 +1,9 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class EntityS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityS2CPacket).TypeHandle);
-
     public int id;
     public sbyte deltaX;
     public sbyte deltaY;
@@ -22,22 +20,22 @@ public class EntityS2CPacket : Packet
     {
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        id = stream.readInt();
+        id = stream.ReadInt();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(id);
+        stream.WriteInt(id);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onEntity(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 4;
     }

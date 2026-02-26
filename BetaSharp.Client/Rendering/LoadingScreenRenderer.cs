@@ -1,5 +1,4 @@
-using BetaSharp.Client.Rendering.Core;
-using BetaSharp.Util;
+﻿using BetaSharp.Client.Rendering.Core;
 using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Rendering;
@@ -137,7 +136,7 @@ public class LoadingScreenRenderer : LoadingDisplay
                 {
                     java.lang.Thread.yield();
                 }
-                catch (java.lang.Exception) { }
+                catch (Exception) { }
 
             }
         }

@@ -58,7 +58,7 @@ public class TextRenderer
                 {
                     int pixelIndex = (row * 8 + yOffset) * imgWidth + xOffset;
                     int alpha = pixels[pixelIndex] & 255;
-                    
+
                     if (alpha > 0)
                     {
                         columnIsEmpty = false;
@@ -94,7 +94,7 @@ public class TextRenderer
         RenderString(text, x, y, color, false);
     }
 
-    public unsafe void RenderString(ReadOnlySpan<char> text, int x, int y, uint color, bool darken)
+    public void RenderString(ReadOnlySpan<char> text, int x, int y, uint color, bool darken)
     {
         if (text.IsEmpty) return;
 
@@ -110,7 +110,7 @@ public class TextRenderer
         float r = (color >> 16 & 255) / 255.0F;
         float g = (color >> 8 & 255) / 255.0F;
         float b = (color & 255) / 255.0F;
-        
+
         if (a == 0.0F) a = 1.0F;
 
         Tessellator tessellator = Tessellator.instance;
@@ -124,17 +124,13 @@ public class TextRenderer
         {
             for (; text.Length > i + 1 && text[i] == 167; i += 2)
             {
-                int colorCode = "0123456789abcdef".IndexOf(char.ToLower(text[i + 1]));
-                if (colorCode < 0 || colorCode > 15)
-                {
-                    colorCode = 15;
-                }
+                int colorCode = HexToDec(text[i + 1]);
 
                 int baseColorOffset = (colorCode >> 3 & 1) * 85;
                 int cr = (colorCode >> 2 & 1) * 170 + baseColorOffset;
                 int cg = (colorCode >> 1 & 1) * 170 + baseColorOffset;
                 int cb = (colorCode >> 0 & 1) * 170 + baseColorOffset;
-                
+
                 if (colorCode == 6)
                 {
                     cr += 85;
@@ -158,8 +154,8 @@ public class TextRenderer
                     int fontIndex = charIndex + 32;
                     int u = (fontIndex % 16) * 8;
                     int v = (fontIndex / 16) * 8;
-                    
-                    float quadSize = 7.99F; 
+
+                    float quadSize = 7.99F;
                     float uvOffset = 0.0F;
 
                     tessellator.addVertexWithUV(currentX + 0.0D, currentY + quadSize, 0.0D, (u / 128.0F) + uvOffset, ((v + quadSize) / 128.0F) + uvOffset);
@@ -173,6 +169,23 @@ public class TextRenderer
         }
 
         tessellator.draw();
+    }
+
+    /// <summary>
+    /// Get decimal value of give hex char.
+    /// Non-hex characters are not handled,
+    /// but will still return a value between 0 and 15 inclusive.
+    /// </summary>
+    /// <param name="c">input character (case-insensitive)</param>
+    /// <returns>value between 0-15 inclusive</returns>
+    private static int HexToDec(char c)
+    {
+        int v = c;
+        if (c <= '9') v -= '0';
+        else if (c <= 'F') v += 10 - 'A';
+        else if (c <= 'f') v += 10 - 'a';
+        else return 15;
+        return v <= 0 ? 0 : v;
     }
 
     public int GetStringWidth(ReadOnlySpan<char> text)
@@ -261,7 +274,7 @@ public class TextRenderer
             {
                 int fitLength = GetStringFitLength(line, maxWidth);
                 ReadOnlySpan<char> subline = line.Slice(0, Math.Min(fitLength, line.Length));
-                
+
                 while(subline.Length > 0 && subline[subline.Length - 1] == ' ')
                 {
                     subline = subline.Slice(0, subline.Length - 1);
@@ -284,7 +297,7 @@ public class TextRenderer
                 }
             }
         }
-        
+
         if (totalHeight < 8) totalHeight = 8;
         outHeight = totalHeight;
     }

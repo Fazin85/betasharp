@@ -1,12 +1,10 @@
+using System.Net.Sockets;
 using BetaSharp.Entities;
-using java.io;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class PaintingEntitySpawnS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PaintingEntitySpawnS2CPacket).TypeHandle);
-
     public int entityId;
     public int xPosition;
     public int yPosition;
@@ -21,39 +19,39 @@ public class PaintingEntitySpawnS2CPacket : Packet
     public PaintingEntitySpawnS2CPacket(EntityPainting paint)
     {
         entityId = paint.id;
-        xPosition = paint.xPosition;
-        yPosition = paint.yPosition;
-        zPosition = paint.zPosition;
-        direction = paint.direction;
-        title = paint.art.title;
+        xPosition = paint.XPosition;
+        yPosition = paint.YPosition;
+        zPosition = paint.ZPosition;
+        direction = paint.Direction;
+        title = paint.Art.Title;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        entityId = stream.readInt();
-        title = readString(stream, EnumArt.maxArtTitleLength);
-        xPosition = stream.readInt();
-        yPosition = stream.readInt();
-        zPosition = stream.readInt();
-        direction = stream.readInt();
+        entityId = stream.ReadInt();
+        title = stream.ReadLongString((ushort) EnumArt.MaxArtTitleLength);
+        xPosition = stream.ReadInt();
+        yPosition = stream.ReadInt();
+        zPosition = stream.ReadInt();
+        direction = stream.ReadInt();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(entityId);
-        writeString(title, stream);
-        stream.writeInt(xPosition);
-        stream.writeInt(yPosition);
-        stream.writeInt(zPosition);
-        stream.writeInt(direction);
+        stream.WriteInt(entityId);
+        stream.WriteLongString(title);
+        stream.WriteInt(xPosition);
+        stream.WriteInt(yPosition);
+        stream.WriteInt(zPosition);
+        stream.WriteInt(direction);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onPaintingEntitySpawn(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 24;
     }

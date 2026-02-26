@@ -1,0 +1,49 @@
+﻿name: Feature Request
+description: Suggest a new feature or improvement for BetaSharp
+title: "Feature: "
+labels: [ "enhancement" ]
+body:
+    -   type: markdown
+        attributes:
+            value: |
+                Thanks for taking the time to suggest a feature! Please fill out the form below.
+
+    -   type: textarea
+        id: summary
+        attributes:
+            label: Summary
+            description: A clear and concise description of the feature you'd like to see added.
+        validations:
+            required: true
+
+    -   type: textarea
+        id: motivation
+        attributes:
+            label: Motivation
+            description: Why is this feature needed? What problem does it solve or what improvement does it bring?
+        validations:
+            required: true
+
+    -   type: textarea
+        id: feature
+        attributes:
+            label: Describe the Feature
+            description: Describe how you'd like this feature to work. Be as specific as possible.
+        validations:
+            required: true
+
+    -   type: textarea
+        id: alternatives
+        attributes:
+            label: Alternatives Considered
+            description: Have you considered any alternative solutions or workarounds? If so, describe them here.
+        validations:
+            required: false
+
+    -   type: textarea
+        id: additional_context
+        attributes:
+            label: Additional Context
+            description: Add any other context, screenshots, videos, or references (e.g. Minecraft wiki) that may help support this request.
+        validations:
+            required: false

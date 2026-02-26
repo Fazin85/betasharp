@@ -1,26 +1,26 @@
 name: Build
-
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: [pull_request, push, workflow_dispatch]
+permissions:
+  contents: read
 
 jobs:
   build:
     strategy:
       matrix:
-        on: [ubuntu-latest, windows-latest, macos-latest]
+        on: [ubuntu-24.04, windows-2025, macos-15-intel]
     runs-on: ${{ matrix.on }}
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-dotnet@v5
+      - name: Checkout Repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # 6.0.2
         with:
-          dotnet-version: '8.0.x'
-      - name: Restore
+          persist-credentials: false
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@baa11fbfe1d6520db94683bd5c7a3818018e4309 # 5.1.0
+        with:
+          dotnet-version: '10.0.x'
+          dotnet-quality: 'ga'
+      - name: Restore dependencies for .NET
         run: dotnet restore
-      - name: Build
+      - name: Build with .NET
         run: dotnet build --no-restore

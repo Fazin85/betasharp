@@ -20,12 +20,17 @@ public class PersistentStateManager
 
     public T? LoadData<T>(string id) where T : PersistentState
     {
-        if (_loadedDataMap.TryGetValue(id, out var existingState))
+        return (T?)LoadData(typeof(T), id);
+    }
+
+    public PersistentState? LoadData(Type type, string id)
+    {
+        if (_loadedDataMap.TryGetValue(id, out PersistentState? existingState))
         {
-            return (T)existingState;
+            return existingState;
         }
 
-        T? newState = null;
+        PersistentState? newState = null;
 
         if (_saveHandler != null)
         {
@@ -36,17 +41,17 @@ public class PersistentStateManager
                 {
                     try
                     {
-                        newState = (T)Activator.CreateInstance(typeof(T), id)!;
+                        newState = (PersistentState)Activator.CreateInstance(type, id)!;
                     }
                     catch (Exception ex)
                     {
-                        throw new InvalidOperationException($"Failed to instantiate {typeof(T).Name}", ex);
+                        throw new InvalidOperationException($"Failed to instantiate {type.Name}", ex);
                     }
 
-                    using var stream = file.OpenRead();
+                    using FileStream stream = file.OpenRead();
                     NBTTagCompound rootTag = NbtIo.ReadCompressed(stream);
-                    
-                    newState.readNBT(rootTag.GetCompoundTag("data")); 
+
+                    newState.readNBT(rootTag.GetCompoundTag("data"));
                 }
             }
             catch (Exception ex)
@@ -79,7 +84,7 @@ public class PersistentStateManager
 
     public void SaveAllData()
     {
-        foreach (var state in _loadedDataList)
+        foreach (PersistentState state in _loadedDataList)
         {
             if (state.isDirty())
             {
@@ -100,11 +105,11 @@ public class PersistentStateManager
             {
                 NBTTagCompound stateTag = new();
                 state.writeNBT(stateTag);
-                
+
                 NBTTagCompound rootTag = new();
                 rootTag.SetCompoundTag("data", stateTag);
 
-                using var stream = file.OpenWrite();
+                using FileStream stream = file.OpenWrite();
                 NbtIo.WriteCompressed(rootTag, stream);
             }
         }
@@ -124,10 +129,10 @@ public class PersistentStateManager
             FileInfo? file = _saveHandler.GetWorldPropertiesFile("idcounts");
             if (file != null && file.Exists)
             {
-                using var stream = file.OpenRead();
+                using FileStream stream = file.OpenRead();
                 NBTTagCompound rootTag = NbtIo.Read(stream);
 
-                foreach (var tag in rootTag.Values)
+                foreach (NBTBase tag in rootTag.Values)
                 {
                     if (tag is NBTTagShort shortTag)
                     {
@@ -157,12 +162,12 @@ public class PersistentStateManager
             if (file != null)
             {
                 NBTTagCompound rootTag = new();
-                foreach (var kvp in _idCounts)
+                foreach (KeyValuePair<string, short> kvp in _idCounts)
                 {
                     rootTag.SetShort(kvp.Key, kvp.Value);
                 }
 
-                using var stream = file.OpenWrite();
+                using FileStream stream = file.OpenWrite();
                 NbtIo.Write(rootTag, stream);
             }
         }

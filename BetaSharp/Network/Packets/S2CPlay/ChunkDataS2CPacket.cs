@@ -1,13 +1,11 @@
+using System.Net.Sockets;
 using BetaSharp.Worlds;
-using java.io;
 using java.util.zip;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class ChunkDataS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ChunkDataS2CPacket).TypeHandle);
-
     public int x;
     public int y;
     public int z;
@@ -20,12 +18,12 @@ public class ChunkDataS2CPacket : Packet
 
     public ChunkDataS2CPacket()
     {
-        worldPacket = true;
+        WorldPacket = true;
     }
 
     public ChunkDataS2CPacket(int x, int y, int z, int sizeX, int sizeY, int sizeZ, World world)
     {
-        worldPacket = true;
+        WorldPacket = true;
         this.x = x;
         this.y = y;
         this.z = z;
@@ -49,18 +47,17 @@ public class ChunkDataS2CPacket : Packet
         }
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        x = stream.readInt();
-        y = stream.readShort();
-        z = stream.readInt();
-        sizeX = stream.read() + 1;
-        sizeY = stream.read() + 1;
-        sizeZ = stream.read() + 1;
-        chunkDataSize = stream.readInt();
-        byte[]
-            chunkData = new byte[chunkDataSize];
-        stream.readFully(chunkData);
+        x = stream.ReadInt();
+        y = stream.ReadShort();
+        z = stream.ReadInt();
+        sizeX = stream.ReadByte() + 1;
+        sizeY = stream.ReadByte() + 1;
+        sizeZ = stream.ReadByte() + 1;
+        chunkDataSize = stream.ReadInt();
+        byte[] chunkData = new byte[chunkDataSize];
+        stream.ReadExactly(chunkData);
 
         this.chunkData = new byte[sizeX * sizeY * sizeZ * 5 / 2];
         Inflater inflater = new();
@@ -81,24 +78,24 @@ public class ChunkDataS2CPacket : Packet
 
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(x);
-        stream.writeShort(y);
-        stream.writeInt(z);
-        stream.write(sizeX - 1);
-        stream.write(sizeY - 1);
-        stream.write(sizeZ - 1);
-        stream.writeInt(chunkDataSize);
-        stream.write(chunkData, 0, chunkDataSize);
+        stream.WriteInt(x);
+        stream.WriteShort((short)y);
+        stream.WriteInt(z);
+        stream.WriteByte((byte)(sizeX - 1));
+        stream.WriteByte((byte)(sizeY - 1));
+        stream.WriteByte((byte)(sizeZ - 1));
+        stream.WriteInt(chunkDataSize);
+        stream.Write(chunkData, 0, chunkDataSize);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.handleChunkData(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 17 + chunkDataSize;
     }

@@ -1,11 +1,9 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.Play;
 
 public class PlayerMoveFullPacket : PlayerMovePacket
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayerMoveFullPacket).TypeHandle);
-
     public PlayerMoveFullPacket()
     {
         changeLook = true;
@@ -25,29 +23,29 @@ public class PlayerMoveFullPacket : PlayerMovePacket
         changePosition = true;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        x = stream.readDouble();
-        y = stream.readDouble();
-        eyeHeight = stream.readDouble();
-        z = stream.readDouble();
-        yaw = stream.readFloat();
-        pitch = stream.readFloat();
-        base.read(stream);
+        x = stream.ReadDouble();
+        y = stream.ReadDouble();
+        eyeHeight = stream.ReadDouble();
+        z = stream.ReadDouble();
+        yaw = stream.ReadFloat();
+        pitch = stream.ReadFloat();
+        base.Read(stream);
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeDouble(x);
-        stream.writeDouble(y);
-        stream.writeDouble(eyeHeight);
-        stream.writeDouble(z);
-        stream.writeFloat(yaw);
-        stream.writeFloat(pitch);
-        base.write(stream);
+        stream.WriteDouble(x);
+        stream.WriteDouble(y);
+        stream.WriteDouble(eyeHeight);
+        stream.WriteDouble(z);
+        stream.WriteFloat(yaw);
+        stream.WriteFloat(pitch);
+        base.Write(stream);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 41;
     }

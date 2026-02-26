@@ -1,11 +1,9 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
 public class PlayNoteSoundS2CPacket : Packet
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayNoteSoundS2CPacket).TypeHandle);
-
     public int xLocation;
     public int yLocation;
     public int zLocation;
@@ -25,30 +23,30 @@ public class PlayNoteSoundS2CPacket : Packet
         this.pitch = pitch;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        xLocation = stream.readInt();
-        yLocation = stream.readShort();
-        zLocation = stream.readInt();
-        instrumentType = stream.read();
-        pitch = stream.read();
+        xLocation = stream.ReadInt();
+        yLocation = stream.ReadShort();
+        zLocation = stream.ReadInt();
+        instrumentType = stream.ReadByte();
+        pitch = stream.ReadByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(xLocation);
-        stream.writeShort(yLocation);
-        stream.writeInt(zLocation);
-        stream.write(instrumentType);
-        stream.write(pitch);
+        stream.WriteInt(xLocation);
+        stream.WriteShort((short)yLocation);
+        stream.WriteInt(zLocation);
+        stream.WriteByte((byte)instrumentType);
+        stream.WriteByte((byte)pitch);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onPlayNoteSound(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 12;
     }

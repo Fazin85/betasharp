@@ -1,3 +1,4 @@
+using System.Net.Sockets;
 using BetaSharp.Entities;
 using BetaSharp.Network;
 using BetaSharp.Network.Packets;
@@ -7,9 +8,8 @@ using BetaSharp.Server.Internal;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using java.lang;
-using java.net;
-using java.util.logging;
 using Microsoft.Extensions.Logging;
+using Exception = System.Exception;
 
 namespace BetaSharp.Server.Network;
 
@@ -68,9 +68,9 @@ public class ServerLoginNetworkHandler : NetHandler
             connection.disconnect();
             closed = true;
         }
-        catch (java.lang.Exception ex)
+        catch (Exception e)
         {
-            ex.printStackTrace();
+            _logger.LogError(e, e.Message);
         }
     }
 
@@ -163,8 +163,11 @@ public class ServerLoginNetworkHandler : NetHandler
 
     public string getConnectionInfo()
     {
-        if (connection.getAddress() == null) return "Internal";
-        return username != null ? username + " [" + connection.getAddress()!.toString() + "]" : connection.getAddress()!.toString();
+        var endPoint = connection.getAddress();
+
+        if (endPoint == null) return "Internal";
+
+        return !string.IsNullOrWhiteSpace(username) ? username : endPoint.ToString();
     }
 
     public override bool isServerSide()
