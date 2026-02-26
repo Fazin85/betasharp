@@ -290,34 +290,10 @@ public static class Helper
             int textureId = context.OverrideTexture >= 0
                 ? context.OverrideTexture
                 : block.getTextureId(world, pos.x, pos.y, pos.z, 5);
-            context. RenderSouthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, colors, textureId);
+            context.RenderSouthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, colors, textureId);
             hasRendered = true;
         }
 
         return hasRendered;
-    }
-
-    internal static void RotateAroundX(ref Vec3D vec, float angleRadians)
-    {
-        float cosAngle = MathHelper.Cos(angleRadians);
-        float sinAngle = MathHelper.Sin(angleRadians);
-
-        double rotatedY = vec.y * cosAngle + vec.z * sinAngle;
-        double rotatedZ = vec.z * cosAngle - vec.y * sinAngle;
-
-        vec.y = rotatedY;
-        vec.z = rotatedZ;
-    }
-
-    internal static void RotateAroundY(ref Vec3D vec, float angleRadians)
-    {
-        float cosAngle = MathHelper.Cos(angleRadians);
-        float sinAngle = MathHelper.Sin(angleRadians);
-
-        double rotatedX = vec.x * cosAngle + vec.z * sinAngle;
-        double rotatedZ = vec.z * cosAngle - vec.x * sinAngle;
-
-        vec.x = rotatedX;
-        vec.z = rotatedZ;
     }
 }

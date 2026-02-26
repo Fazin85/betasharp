@@ -17,7 +17,7 @@ public class LeverRenderer : IBlockRenderer
         float baseThickness = 3.0F / 16.0F;
         float baseHeight = 3.0F / 16.0F;
 
-        // 1. Calculate the base plate box (Your existing logic)
+        // 1. Calculate the baseplate box (Your existing logic)
         Box baseBox = orientation switch {
             5 => new Box(0.5 - baseHeight, 0.0, 0.5 - baseWidth, 0.5 + baseHeight, baseThickness, 0.5 + baseWidth),
             6 => new Box(0.5 - baseWidth, 0.0, 0.5 - baseHeight, 0.5 + baseWidth, baseThickness, 0.5 + baseHeight),
@@ -87,25 +87,25 @@ public class LeverRenderer : IBlockRenderer
             if (isActivated)
             {
                 vertices[i].z -= 1.0D / 16.0D;
-                Helper.RotateAroundX(ref vertices[i], (float)Math.PI * 2.0F / 9.0F);
+                vertices[i].rotateAroundX((float)Math.PI * 2.0F / 9.0F);
             }
             else
             {
                 vertices[i].z += 1.0D / 16.0D;
-                Helper.RotateAroundX(ref vertices[i], -(float)Math.PI * 2.0F / 9.0F);
+                vertices[i].rotateAroundX(-(float)Math.PI * 2.0F / 9.0F);
             }
 
             // Apply orientation rotations
-            if (orientation == 6) Helper.RotateAroundY(ref vertices[i], (float)Math.PI * 0.5F);
+            if (orientation == 6) vertices[i].rotateAroundY((float)Math.PI * 0.5F);
 
             if (orientation < 5) // Wall mount requires extra rotation
             {
                 vertices[i].y -= 0.375D;
-                Helper.RotateAroundX(ref vertices[i], (float)Math.PI * 0.5F);
+                vertices[i].rotateAroundX((float)Math.PI * 0.5F);
 
-                if (orientation == 3) Helper.RotateAroundY(ref vertices[i], (float)Math.PI);
-                if (orientation == 2) Helper.RotateAroundY(ref vertices[i], (float)Math.PI * 0.5F);
-                if (orientation == 1) Helper.RotateAroundY(ref vertices[i], (float)Math.PI * -0.5F);
+                if (orientation == 3) vertices[i].rotateAroundY((float)Math.PI);
+                if (orientation == 2) vertices[i].rotateAroundY((float)Math.PI * 0.5F);
+                if (orientation == 1) vertices[i].rotateAroundY((float)Math.PI * -0.5F);
 
                 vertices[i].x += pos.x + 0.5D; // Fixed .X to .x
                 vertices[i].y += pos.y + 0.5D;
