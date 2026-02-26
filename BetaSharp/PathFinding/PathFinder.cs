@@ -16,14 +16,6 @@ public class PathFinder
     private readonly PathPoint[] _pointPool = new PathPoint[4096];
     private int _poolIndex;
 
-    //public PathFinder()
-    //{
-    //    for (int i = 0; i < _pointPool.Length; i++)
-    //    {
-    //        _pointPool[i] = new PathPoint(0, 0, 0);
-    //    }
-    //}
-
     public PathFinder(World world)
     {
         _worldMap = world;
