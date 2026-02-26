@@ -109,7 +109,7 @@ public class ChunkMeshGenerator : IDisposable
         };
 
         var tess = new Tessellator();
-        var rb = new BlockRenderer(cache, tess);
+        var rb = new BlockRenderer();
 
         for (int pass = 0; pass < 2; pass++)
         {
@@ -133,8 +133,9 @@ public class ChunkMeshGenerator : IDisposable
 
                         if (blockPass != pass)
                             hasNextPass = true;
-                        else
-                            rb.RenderBlockByRenderType(b, new BlockPos(x, y, z));
+                        // TODO: Block Render Ongoing refactor
+                        //else
+                        //    rb.RenderBlockByRenderType(b, new BlockPos(x, y, z));
                     }
                 }
             }

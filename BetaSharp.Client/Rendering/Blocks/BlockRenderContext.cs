@@ -2,22 +2,22 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Client.Rendering.Blocks;
 
-public readonly ref struct BlockRenderContext
+public ref struct BlockRenderContext
 {
-    public readonly int OverrideTexture;
-    public readonly bool RenderAllFaces;
-    public readonly bool FlipTexture;
-    public readonly Box? OverrideBounds;
-    public readonly bool EnableAo = true;
-    public readonly int AoBlendMode = 0;
+    public int OverrideTexture;
+    public bool RenderAllFaces;
+    public bool FlipTexture;
+    public Box? OverrideBounds;
+    public bool EnableAo = true;
+    public int AoBlendMode = 0;
 
     // UV Rotations
-    public readonly int UvRotateTop;
-    public readonly int UvRotateBottom;
-    public readonly int UvRotateNorth;
-    public readonly int UvRotateSouth;
-    public readonly int UvRotateEast;
-    public readonly int UvRotateWest;
+    public int UvRotateTop;
+    public int UvRotateBottom;
+    public int UvRotateNorth;
+    public int UvRotateSouth;
+    public int UvRotateEast;
+    public int UvRotateWest;
 
     // Custom flag for Pistons (Expanded/Short arm)
     public readonly bool CustomFlag;

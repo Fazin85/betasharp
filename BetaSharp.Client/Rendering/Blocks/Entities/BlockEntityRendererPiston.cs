@@ -35,21 +35,22 @@ public class BlockEntityRendererPiston : BlockEntitySpecialRenderer
             var10.startDrawingQuads();
             var10.setTranslationD((double)((float)var2 - var1.X + var1.getRenderOffsetX(var8)), (double)((float)var4 - var1.Y + var1.getRenderOffsetY(var8)), (double)((float)var6 - var1.Z + var1.getRenderOffsetZ(var8)));
             var10.setColorOpaque(1, 1, 1);
+            // TODO: Block Render Ongoing refactor
             if (var9 == Block.PistonHead && var1.getProgress(var8) < 0.5F)
             {
-                renderBlocks.RenderPistonExtensionAllFaces(var9, var1.X, var1.Y, var1.Z, false);
+                //renderBlocks.RenderPistonExtensionAllFaces(var9, var1.X, var1.Y, var1.Z, false);
             }
             else if (var1.isSource() && !var1.isExtending())
             {
                 Block.PistonHead.setSprite(((BlockPistonBase)var9).getTopTexture());
-                renderBlocks.RenderPistonExtensionAllFaces(Block.PistonHead, var1.X, var1.Y, var1.Z, var1.getProgress(var8) < 0.5F);
+                //renderBlocks.RenderPistonExtensionAllFaces(Block.PistonHead, var1.X, var1.Y, var1.Z, var1.getProgress(var8) < 0.5F);
                 Block.PistonHead.clearSprite();
                 var10.setTranslationD((double)((float)var2 - var1.X), (double)((float)var4 - var1.Y), (double)((float)var6 - var1.Z));
-                renderBlocks.RenderPistonBaseAllFaces(var9, var1.X, var1.Y, var1.Z);
+                //renderBlocks.RenderPistonBaseAllFaces(var9, var1.X, var1.Y, var1.Z);
             }
             else
             {
-                renderBlocks.RenderBlockForcedAllFaces(var9,new BlockPos( var1.X, var1.Y, var1.Z));
+               //renderBlocks.RenderBlockForcedAllFaces(var9,new BlockPos( var1.X, var1.Y, var1.Z));
             }
 
             var10.setTranslationD(0.0D, 0.0D, 0.0D);
@@ -61,7 +62,7 @@ public class BlockEntityRendererPiston : BlockEntitySpecialRenderer
 
     public override void func_31069_a(World var1)
     {
-        renderBlocks = new BlockRenderer(var1, Tessellator.instance);
+        renderBlocks = new BlockRenderer();
     }
 
     public override void renderTileEntityAt(BlockEntity var1, double var2, double var4, double var6, float var8)
