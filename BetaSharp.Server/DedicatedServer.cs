@@ -34,7 +34,9 @@ public class DedicatedServer(IServerConfiguration config) : MinecraftServer(conf
 
         string addressInput = config.GetServerIp("");
 
-        var address = IPAddress.Any;
+        bool dualStack = config.GetDualStack(false);
+
+        var address = dualStack ? IPAddress.IPv6Any : IPAddress.Any;
 
         if (addressInput.Length > 0)
         {
@@ -47,7 +49,7 @@ public class DedicatedServer(IServerConfiguration config) : MinecraftServer(conf
 
         try
         {
-            connections = new ConnectionListener(this, address, port);
+            connections = new ConnectionListener(this, address, port, dualStack);
         }
         catch (java.io.IOException ex)
         {

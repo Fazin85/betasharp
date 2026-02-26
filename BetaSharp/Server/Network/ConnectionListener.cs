@@ -20,11 +20,12 @@ public class ConnectionListener
     public MinecraftServer server;
     public int port;
 
-    public ConnectionListener(MinecraftServer server, IPAddress address, int port)
+    public ConnectionListener(MinecraftServer server, IPAddress address, int port, bool dualStack = false)
     {
         this.server = server;
 
         Socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
+        Socket.DualMode = dualStack;
         Socket.Bind(new IPEndPoint(address, port));
         Socket.Listen();
 
