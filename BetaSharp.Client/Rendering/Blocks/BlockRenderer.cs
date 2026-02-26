@@ -8,24 +8,23 @@ namespace BetaSharp.Client.Rendering.Blocks;
 
 public class BlockRenderer
 {
-    private static readonly StandardBlockRenderer _standard = new();
-    private static readonly ReedRenderer _reed = new();
-    private static readonly TorchRenderer _torch = new();
-    private static readonly FireRenderer _fire = new();
-    private static readonly FluidsRenderer _fluids = new();
-    private static readonly RedstoneWireRenderer _wire = new();
-    private static readonly CropsRenderer _crops = new();
-    private static readonly DoorRenderer _door = new();
-    private static readonly LadderRenderer _ladder = new();
-    private static readonly MinecartTrackRenderer _track = new();
-    private static readonly StairsRenderer _stairs = new();
-    private static readonly FenceRenderer _fence = new();
-    private static readonly LeverRenderer _lever = new();
-    private static readonly CactusRenderer _cactus = new();
-    private static readonly BedRenderer _bed = new();
-    private static readonly RepeaterRenderer _repeater = new();
-    private static readonly PistonBaseRenderer _pistonBase = new();
-    private static readonly PistonExtensionRenderer _pistonExt = new();
+    private static readonly ReedRenderer s_reed = new();
+    private static readonly TorchRenderer s_torch = new();
+    private static readonly FireRenderer s_fire = new();
+    private static readonly FluidsRenderer s_fluids = new();
+    private static readonly RedstoneWireRenderer s_wire = new();
+    private static readonly CropsRenderer s_crops = new();
+    private static readonly DoorRenderer s_door = new();
+    private static readonly LadderRenderer s_ladder = new();
+    private static readonly MinecartTrackRenderer s_track = new();
+    private static readonly StairsRenderer s_stairs = new();
+    private static readonly FenceRenderer s_fence = new();
+    private static readonly LeverRenderer s_lever = new();
+    private static readonly CactusRenderer s_cactus = new();
+    private static readonly BedRenderer s_bed = new();
+    private static readonly RepeaterRenderer s_repeater = new();
+    private static readonly PistonBaseRenderer s_pistonBase = new();
+    private static readonly PistonExtensionRenderer s_pistonExt = new();
 
 
     public bool RenderBlockByRenderType(IBlockAccess world, Block block, BlockPos pos, Tessellator tess,
@@ -36,6 +35,8 @@ public class BlockRenderer
         block.updateBoundingBox(world, pos.x, pos.y, pos.z);
 
         var ctx = new BlockRenderContext(
+            tess: tess,
+            world: world,
             overrideTexture: overrideTexture,
             renderAllFaces: renderAllFaces,
             flipTexture: false,
@@ -52,24 +53,24 @@ public class BlockRenderer
 
         return type switch
         {
-            RendererType.StandardBlock => _standard.Render(world, block, pos, tess, ctx),
-            RendererType.Reed => _reed.Render(world, block, pos, tess, ctx),
-            RendererType.Torch => _torch.Render(world, block, pos, tess, ctx),
-            RendererType.Fire => _fire.Render(world, block, pos, tess, ctx),
-            RendererType.Fluids => _fluids.Render(world, block, pos, tess, ctx),
-            RendererType.RedstoneWire => _wire.Render(world, block, pos, tess, ctx),
-            RendererType.Crops => _crops.Render(world, block, pos, tess, ctx),
-            RendererType.Door => _door.Render(world, block, pos, tess, ctx),
-            RendererType.Ladder => _ladder.Render(world, block, pos, tess, ctx),
-            RendererType.MinecartTrack => _track.Render(world, block, pos, tess, ctx),
-            RendererType.Stairs => _stairs.Render(world, block, pos, tess, ctx),
-            RendererType.Fence => _fence.Render(world, block, pos, tess, ctx),
-            RendererType.Lever => _lever.Render(world, block, pos, tess, ctx),
-            RendererType.Cactus => _cactus.Render(world, block, pos, tess, ctx),
-            RendererType.Bed => _bed.Render(world, block, pos, tess, ctx),
-            RendererType.Repeater => _repeater.Render(world, block, pos, tess, ctx),
-            RendererType.PistonBase => _pistonBase.Render(world, block, pos, tess, ctx),
-            RendererType.PistonExtension => _pistonExt.Render(world, block, pos, tess, ctx),
+            RendererType.StandardBlock => ctx.DrawBlock(block, pos),
+            RendererType.Reed => s_reed.Render(block, pos, ctx),
+            RendererType.Torch => s_torch.Render(block, pos, ctx),
+            RendererType.Fire => s_fire.Render(block, pos, ctx),
+            RendererType.Fluids => s_fluids.Render(block, pos, ctx),
+            RendererType.RedstoneWire => s_wire.Render(block, pos, ctx),
+            RendererType.Crops => s_crops.Render(block, pos, ctx),
+            RendererType.Door => s_door.Render(block, pos, ctx),
+            RendererType.Ladder => s_ladder.Render(block, pos, ctx),
+            RendererType.MinecartTrack => s_track.Render(block, pos, ctx),
+            RendererType.Stairs => s_stairs.Render(block, pos, ctx),
+            RendererType.Fence => s_fence.Render(block, pos, ctx),
+            RendererType.Lever => s_lever.Render(block, pos, ctx),
+            RendererType.Cactus => s_cactus.Render(block, pos, ctx),
+            RendererType.Bed => s_bed.Render(block, pos, ctx),
+            RendererType.Repeater => s_repeater.Render(block, pos, ctx),
+            RendererType.PistonBase => s_pistonBase.Render(block, pos, ctx),
+            RendererType.PistonExtension => s_pistonExt.Render(block, pos, ctx),
             _ => false
         };
     }

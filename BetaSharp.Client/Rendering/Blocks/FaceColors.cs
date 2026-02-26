@@ -1,4 +1,4 @@
-namespace BetaSharp.Client.Rendering.Blocks.Renderers;
+namespace BetaSharp.Client.Rendering.Blocks;
 
 public readonly ref struct FaceColors
 {

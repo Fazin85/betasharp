@@ -1,16 +1,13 @@
 using BetaSharp.Blocks;
-using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
 
 namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class LeverRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
-        in BlockRenderContext ctx)
+    public bool Render(Block block, in BlockPos pos, in BlockRenderContext ctx)
     {
-        int metadata = world.getBlockMeta(pos.x, pos.y, pos.z);
+        int metadata = ctx.World.getBlockMeta(pos.x, pos.y, pos.z);
         int orientation = metadata & 7;
         bool isActivated = (metadata & 8) > 0;
 
@@ -37,6 +34,8 @@ public class LeverRenderer : IBlockRenderer
 
         // Create a sub-context specifically for drawing the baseplate
         var baseCtx = new BlockRenderContext(
+            world: ctx.World,
+            tess: ctx.Tess,
             overrideTexture: baseTextureId,
             renderAllFaces: ctx.RenderAllFaces,
             flipTexture: ctx.FlipTexture,
@@ -53,12 +52,12 @@ public class LeverRenderer : IBlockRenderer
         );
 
         // Draw the base using the helper
-        baseCtx.DrawBlock(block, pos, world, tess);
+        baseCtx.DrawBlock(block, pos);
 
         // --- 2. Calculate Handle Lighting & Texture ---
-        float luminance = block.getLuminance(world, pos.x, pos.y, pos.z);
+        float luminance = block.getLuminance(ctx.World, pos.x, pos.y, pos.z);
         if (Block.BlocksLightLuminance[block.id] > 0) luminance = 1.0F;
-        tess.setColorOpaque_F(luminance, luminance, luminance);
+        ctx.Tess.setColorOpaque_F(luminance, luminance, luminance);
 
         // Determine texture for the handle itself
         int handleTextureId = ctx.OverrideTexture >= 0 ? ctx.OverrideTexture : block.getTexture(0);
@@ -184,10 +183,10 @@ public class LeverRenderer : IBlockRenderer
                     break;
             }
 
-            tess.addVertexWithUV(v1.x, v1.y, v1.z, minU, maxV);
-            tess.addVertexWithUV(v2.x, v2.y, v2.z, maxU, maxV);
-            tess.addVertexWithUV(v3.x, v3.y, v3.z, maxU, minV);
-            tess.addVertexWithUV(v4.x, v4.y, v4.z, minU, minV);
+            ctx.Tess.addVertexWithUV(v1.x, v1.y, v1.z, minU, maxV);
+            ctx.Tess.addVertexWithUV(v2.x, v2.y, v2.z, maxU, maxV);
+            ctx.Tess.addVertexWithUV(v3.x, v3.y, v3.z, maxU, minV);
+            ctx.Tess.addVertexWithUV(v4.x, v4.y, v4.z, minU, minV);
         }
 
         return true;

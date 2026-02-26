@@ -1,16 +1,13 @@
 using BetaSharp.Blocks;
-using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
 
 namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class PistonBaseRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
-        in BlockRenderContext ctx)
+    public bool Render(Block block, in BlockPos pos, in BlockRenderContext ctx)
     {
-        int metadata = world.getBlockMeta(pos.x, pos.y, pos.z);
+        int metadata = ctx.World.getBlockMeta(pos.x, pos.y, pos.z);
 
         // CustomFlag acts as our 'expanded' override from the BlockEntity animation
         bool isExpanded = ctx.CustomFlag || (metadata & 8) != 0;
@@ -111,6 +108,6 @@ public class PistonBaseRenderer : IBlockRenderer
             UvRotateWest = uvWest
         };
 
-        return baseCtx.DrawBlock(block, pos, world, tess);
+        return baseCtx.DrawBlock(block, pos);
     }
 }

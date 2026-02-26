@@ -1,18 +1,16 @@
 using BetaSharp.Blocks;
-using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
 
 namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class MinecartTrackRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext ctx)
+    public bool Render(Block block, in BlockPos pos, in BlockRenderContext ctx)
     {
         // Cast the generic block to a BlockRail to access rail-specific methods
         BlockRail rail = (BlockRail)block;
 
-        int metadata = world.getBlockMeta(pos.x, pos.y, pos.z);
+        int metadata = ctx.World.getBlockMeta(pos.x, pos.y, pos.z);
 
         int textureId = rail.getTexture(0, metadata);
         if (ctx.OverrideTexture >= 0)
@@ -26,8 +24,8 @@ public class MinecartTrackRenderer : IBlockRenderer
             metadata &= 7;
         }
 
-        float luminance = rail.getLuminance(world, pos.x, pos.y, pos.z);
-        tess.setColorOpaque_F(luminance, luminance, luminance);
+        float luminance = rail.getLuminance(ctx.World, pos.x, pos.y, pos.z);
+        ctx.Tess.setColorOpaque_F(luminance, luminance, luminance);
 
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
@@ -101,15 +99,15 @@ public class MinecartTrackRenderer : IBlockRenderer
         }
 
         // Render both sides of the quad so it's visible from below (for glass/transparent floors)
-        tess.addVertexWithUV(x1, h1, z1, maxU, minV);
-        tess.addVertexWithUV(x2, h2, z2, maxU, maxV);
-        tess.addVertexWithUV(x3, h3, z3, minU, maxV);
-        tess.addVertexWithUV(x4, h4, z4, minU, minV);
+        ctx.Tess.addVertexWithUV(x1, h1, z1, maxU, minV);
+        ctx.Tess.addVertexWithUV(x2, h2, z2, maxU, maxV);
+        ctx.Tess.addVertexWithUV(x3, h3, z3, minU, maxV);
+        ctx.Tess.addVertexWithUV(x4, h4, z4, minU, minV);
 
-        tess.addVertexWithUV(x4, h4, z4, minU, minV);
-        tess.addVertexWithUV(x3, h3, z3, minU, maxV);
-        tess.addVertexWithUV(x2, h2, z2, maxU, maxV);
-        tess.addVertexWithUV(x1, h1, z1, maxU, minV);
+        ctx.Tess.addVertexWithUV(x4, h4, z4, minU, minV);
+        ctx.Tess.addVertexWithUV(x3, h3, z3, minU, maxV);
+        ctx.Tess.addVertexWithUV(x2, h2, z2, maxU, maxV);
+        ctx.Tess.addVertexWithUV(x1, h1, z1, maxU, minV);
 
         return true;
     }

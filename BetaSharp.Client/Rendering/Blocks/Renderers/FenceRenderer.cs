@@ -1,14 +1,11 @@
 using BetaSharp.Blocks;
-using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
 
 namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class FenceRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
-        in BlockRenderContext ctx)
+    public bool Render(Block block, in BlockPos pos, in BlockRenderContext ctx)
     {
         bool hasRendered = true;
 
@@ -18,13 +15,13 @@ public class FenceRenderer : IBlockRenderer
 
         // Clone the context and apply the new bounding box for the post
         var postCtx = ctx with { OverrideBounds = new Box(postMin, 0.0F, postMin, postMax, 1.0F, postMax) };
-        postCtx.DrawBlock(block, pos, world, tess);
+        postCtx.DrawBlock(block, pos);
 
-        // Check for adjacent fences using 'world' and 'pos'
-        bool connectsWest = world.getBlockId(pos.x - 1, pos.y, pos.z) == block.id;
-        bool connectsEast = world.getBlockId(pos.x + 1, pos.y, pos.z) == block.id;
-        bool connectsNorth = world.getBlockId(pos.x, pos.y, pos.z - 1) == block.id;
-        bool connectsSouth = world.getBlockId(pos.x, pos.y, pos.z + 1) == block.id;
+        // Check for adjacent fences using 'ctx.World' and 'pos'
+        bool connectsWest = ctx.World.getBlockId(pos.x - 1, pos.y, pos.z) == block.id;
+        bool connectsEast = ctx.World.getBlockId(pos.x + 1, pos.y, pos.z) == block.id;
+        bool connectsNorth = ctx.World.getBlockId(pos.x, pos.y, pos.z - 1) == block.id;
+        bool connectsSouth = ctx.World.getBlockId(pos.x, pos.y, pos.z + 1) == block.id;
 
         bool connectsX = connectsWest || connectsEast;
         bool connectsZ = connectsNorth || connectsSouth;
@@ -55,7 +52,7 @@ public class FenceRenderer : IBlockRenderer
             {
                 OverrideBounds = new Box(barMinX, topBarMinY, barDepthMin, barMaxX, topBarMaxY, barDepthMax)
             };
-            topXCtx.DrawBlock(block, pos, world, tess);
+            topXCtx.DrawBlock(block, pos);
         }
 
         if (connectsZ)
@@ -64,7 +61,7 @@ public class FenceRenderer : IBlockRenderer
             {
                 OverrideBounds = new Box(barDepthMin, topBarMinY, barMinZ, barDepthMax, topBarMaxY, barMaxZ)
             };
-            topZCtx.DrawBlock(block, pos, world, tess);
+            topZCtx.DrawBlock(block, pos);
         }
 
         // 3. Render Bottom Connecting Bars
@@ -77,7 +74,7 @@ public class FenceRenderer : IBlockRenderer
             {
                 OverrideBounds = new Box(barMinX, bottomBarMinY, barDepthMin, barMaxX, bottomBarMaxY, barDepthMax)
             };
-            bottomXCtx.DrawBlock(block, pos, world, tess);
+            bottomXCtx.DrawBlock(block, pos);
         }
 
         if (connectsZ)
@@ -86,7 +83,7 @@ public class FenceRenderer : IBlockRenderer
             {
                 OverrideBounds = new Box(barDepthMin, bottomBarMinY, barMinZ, barDepthMax, bottomBarMaxY, barMaxZ)
             };
-            bottomZCtx.DrawBlock(block, pos, world, tess);
+            bottomZCtx.DrawBlock(block, pos);
         }
 
         // Notice we COMPLETELY REMOVED the bounding box reset!
