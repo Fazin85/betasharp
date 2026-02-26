@@ -133,9 +133,8 @@ public class ChunkMeshGenerator : IDisposable
 
                         if (blockPass != pass)
                             hasNextPass = true;
-                        // TODO: Block Render Ongoing refactor
-                        //else
-                        //    rb.RenderBlockByRenderType(b, new BlockPos(x, y, z));
+                        else
+                            rb.RenderBlockByRenderType(cache, b, new BlockPos(x, y, z), tess);
                     }
                 }
             }
