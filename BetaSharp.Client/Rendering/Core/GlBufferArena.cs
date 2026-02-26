@@ -7,7 +7,7 @@ namespace BetaSharp.Client.Rendering.Core;
 
 public unsafe class GlBufferArena : IDisposable
 {
-    private class Segment
+    public class Segment
     {
         public int Offset;
         public int Length;
@@ -27,6 +27,11 @@ public unsafe class GlBufferArena : IDisposable
     private int _version;
 
     public int Version => _version;
+    public int Capacity => _capacity;
+    public int Used => _used;
+    public uint BufferId => _id;
+
+    public bool IsEmpty => _used == 0;
 
     public GlBufferArena(int initialCapacity, int stride)
     {
@@ -44,16 +49,26 @@ public unsafe class GlBufferArena : IDisposable
         };
     }
 
-    public uint BufferId => _id;
-
-    public int Allocate(int size)
+    public Segment Allocate(int size)
     {
         Segment entry = FindFree(size);
         if (entry == null)
         {
-            Grow(size);
-            entry = FindFree(size);
-            if (entry == null) return -1; // Should not happen after grow
+            // If we have enough total free space, try compacting first
+            if (_capacity - _used >= size)
+            {
+                Compact();
+                entry = FindFree(size);
+            }
+            
+            // If still no entry, we must grow
+            if (entry == null)
+            {
+                Grow(size);
+                entry = FindFree(size);
+            }
+
+            if (entry == null) return null; // Should definitely not happen now
         }
 
         if (entry.Length == size)
@@ -84,51 +99,112 @@ public unsafe class GlBufferArena : IDisposable
         }
 
         _used += size;
-        return entry.Offset;
+        return entry;
     }
 
     private void Grow(int minRequiredSize)
     {
         int newCapacity = System.Math.Max(_capacity * 2, _used + minRequiredSize);
+        Log.Instance.For<GlBufferArena>().LogInformation($"Growing GlBufferArena to {newCapacity} vertices");
+        Compact(newCapacity);
+    }
+
+    public void Defragment() => Compact(); // Keeping name for compatibility but redirecting to Compact
+
+    private void Compact(int newCapacity = -1)
+    {
+        if (_id == 0) return;
+        if (newCapacity == -1) newCapacity = _capacity;
+
         uint newId = GLManager.GL.GenBuffer();
-        
         GLManager.GL.BindBuffer(GLEnum.ArrayBuffer, newId);
         GLManager.GL.BufferData(GLEnum.ArrayBuffer, (nuint)(newCapacity * _stride), (void*)0, GLEnum.StaticDraw);
 
-        if (_id != 0)
+        if (_used > 0)
         {
             GLManager.GL.BindBuffer(GLEnum.CopyReadBuffer, _id);
             GLManager.GL.BindBuffer(GLEnum.CopyWriteBuffer, newId);
-            GLManager.GL.CopyBufferSubData(GLEnum.CopyReadBuffer, GLEnum.CopyWriteBuffer, 0, 0, (nuint)(_capacity * _stride));
-            GLManager.GL.DeleteBuffer(_id);
-        }
 
-        // Add a new free segment or extend the last one
-        Segment curr = _head;
-        while (curr.Next != null) curr = curr.Next;
+            int nextPackedOffset = 0;
+            var usedSegments = new List<Segment>();
+            Segment curr = _head;
+            while (curr != null)
+            {
+                if (!curr.Free) usedSegments.Add(curr);
+                curr = curr.Next;
+            }
 
-        if (curr.Free)
-        {
-            curr.Length += (newCapacity - _capacity);
+            int i = 0;
+            while (i < usedSegments.Count)
+            {
+                Segment batchStart = usedSegments[i];
+                int batchLength = batchStart.Length;
+                int j = i + 1;
+                
+                while (j < usedSegments.Count && usedSegments[j].Offset == usedSegments[j - 1].End)
+                {
+                    batchLength += usedSegments[j].Length;
+                    j++;
+                }
+
+                GLManager.GL.CopyBufferSubData(GLEnum.CopyReadBuffer, GLEnum.CopyWriteBuffer, 
+                    (nint)(batchStart.Offset * _stride), 
+                    (nint)(nextPackedOffset * _stride), 
+                    (nuint)(batchLength * _stride));
+
+                int offsetInBatch = 0;
+                for (int k = i; k < j; k++)
+                {
+                    usedSegments[k].Offset = nextPackedOffset + offsetInBatch;
+                    offsetInBatch += usedSegments[k].Length;
+                }
+
+                nextPackedOffset += batchLength;
+                i = j;
+            }
+
+            // Sync the linked list
+            if (usedSegments.Count > 0)
+            {
+                _head = usedSegments[0];
+                _head.Prev = null;
+                for (int k = 0; k < usedSegments.Count - 1; k++)
+                {
+                    usedSegments[k].Next = usedSegments[k + 1];
+                    usedSegments[k + 1].Prev = usedSegments[k];
+                }
+                
+                Segment last = usedSegments[^1];
+                if (nextPackedOffset < newCapacity)
+                {
+                    last.Next = new Segment
+                    {
+                        Offset = nextPackedOffset,
+                        Length = newCapacity - nextPackedOffset,
+                        Free = true,
+                        Prev = last,
+                        Next = null
+                    };
+                }
+                else
+                {
+                    last.Next = null;
+                }
+            }
+            else
+            {
+                _head = new Segment { Offset = 0, Length = newCapacity, Free = true, Prev = null, Next = null };
+            }
         }
         else
         {
-            Segment newFree = new Segment
-            {
-                Offset = curr.End,
-                Length = newCapacity - _capacity,
-                Free = true,
-                Prev = curr,
-                Next = null
-            };
-            curr.Next = newFree;
+            _head = new Segment { Offset = 0, Length = newCapacity, Free = true, Prev = null, Next = null };
         }
 
+        GLManager.GL.DeleteBuffer(_id);
         _id = newId;
         _capacity = newCapacity;
         _version++;
-        
-        Log.Instance.For<GlBufferArena>().LogInformation($"GlBufferArena growing to {_capacity} vertices ({_capacity * _stride / 1024 / 1024} MB), Version: {_version}");
     }
 
     private Segment FindFree(int size)
@@ -143,48 +219,39 @@ public unsafe class GlBufferArena : IDisposable
         return null;
     }
 
-    public void Free(int offset)
+    public void Free(Segment segment)
     {
-        Segment curr = _head;
-        while (curr != null)
+        if (segment == null || segment.Free) return;
+
+        segment.Free = true;
+        _used -= segment.Length;
+
+        // Merge with next
+        if (segment.Next != null && segment.Next.Free)
         {
-            if (curr.Offset == offset)
-            {
-                if (curr.Free) return;
+            segment.Length += segment.Next.Length;
+            segment.Next = segment.Next.Next;
+            if (segment.Next != null)
+                segment.Next.Prev = segment;
+        }
 
-                curr.Free = true;
-                _used -= curr.Length;
-
-                // Merge with next
-                if (curr.Next != null && curr.Next.Free)
-                {
-                    curr.Length += curr.Next.Length;
-                    curr.Next = curr.Next.Next;
-                    if (curr.Next != null)
-                        curr.Next.Prev = curr;
-                }
-
-                // Merge with prev
-                if (curr.Prev != null && curr.Prev.Free)
-                {
-                    Segment prev = curr.Prev;
-                    prev.Length += curr.Length;
-                    prev.Next = curr.Next;
-                    if (curr.Next != null)
-                        curr.Next.Prev = prev;
-                }
-                return;
-            }
-            curr = curr.Next;
+        // Merge with prev
+        if (segment.Prev != null && segment.Prev.Free)
+        {
+            Segment prev = segment.Prev;
+            prev.Length += segment.Length;
+            prev.Next = segment.Next;
+            if (segment.Next != null)
+                segment.Next.Prev = prev;
         }
     }
 
-    public void Upload<T>(int offset, Span<T> data) where T : unmanaged
+    public void Upload<T>(Segment segment, Span<T> data) where T : unmanaged
     {
         GLManager.GL.BindBuffer(GLEnum.ArrayBuffer, _id);
         fixed (T* ptr = data)
         {
-            GLManager.GL.BufferSubData(GLEnum.ArrayBuffer, (nint)(offset * _stride), (nuint)(data.Length * sizeof(T)), ptr);
+            GLManager.GL.BufferSubData(GLEnum.ArrayBuffer, (nint)(segment.Offset * _stride), (nuint)(data.Length * sizeof(T)), ptr);
         }
     }
 

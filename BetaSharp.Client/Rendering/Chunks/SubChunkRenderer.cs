@@ -79,7 +79,7 @@ public class SubChunkRenderer : IDisposable
         return (dx * dx + dz * dz) < (renderDistance * renderDistance) && Math.Abs(dy) < renderDistance;
     }
 
-    public void UploadMeshData(PooledList<ChunkVertex>? solidMesh, PooledList<ChunkVertex>? translucentMesh)
+    public void UploadMeshData(PooledList<ChunkVertex>? solidMesh, PooledList<ChunkVertex>? translucentMesh, long version)
     {
         if (_region == null) return;
 
@@ -90,12 +90,12 @@ public class SubChunkRenderer : IDisposable
         {
             if (solidMesh.Count > 0)
             {
-                _region.UploadSection(_regionIndex, 0, solidMesh.Span);
+                _region.UploadSection(_regionIndex, 0, solidMesh.Span, version);
                 vertexCounts[0] = solidMesh.Count;
             }
             else
             {
-                _region.UploadSection(_regionIndex, 0, Span<ChunkVertex>.Empty);
+                _region.UploadSection(_regionIndex, 0, Span<ChunkVertex>.Empty, version);
             }
             solidMesh.Dispose();
         }
@@ -104,12 +104,12 @@ public class SubChunkRenderer : IDisposable
         {
             if (translucentMesh.Count > 0)
             {
-                _region.UploadSection(_regionIndex, 1, translucentMesh.Span);
+                _region.UploadSection(_regionIndex, 1, translucentMesh.Span, version);
                 vertexCounts[1] = translucentMesh.Count;
             }
             else
             {
-                _region.UploadSection(_regionIndex, 1, Span<ChunkVertex>.Empty);
+                _region.UploadSection(_regionIndex, 1, Span<ChunkVertex>.Empty, version);
             }
             translucentMesh.Dispose();
         }
@@ -166,8 +166,8 @@ public class SubChunkRenderer : IDisposable
 
         // Region manages its own resources. We don't need to free anything here
         // other than marking as empty in region if we wanted to be thorough.
-        _region?.UploadSection(_regionIndex, 0, Span<ChunkVertex>.Empty);
-        _region?.UploadSection(_regionIndex, 1, Span<ChunkVertex>.Empty);
+        _region?.UploadSection(_regionIndex, 0, Span<ChunkVertex>.Empty, -1);
+        _region?.UploadSection(_regionIndex, 1, Span<ChunkVertex>.Empty, -1);
 
         disposed = true;
     }

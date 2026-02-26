@@ -216,40 +216,35 @@ public class ChunkRenderer : IChunkVisibilityVisitor
         
         // Group visible chunks by region
         var groupedVisible = new Dictionary<RenderRegion, List<SubChunkRenderer>>();
-        foreach (var r in _visibleRenderers)
+        foreach (SubChunkRenderer r in _visibleRenderers)
         {
-            var region = GetRegionForRenderer(r);
+            RenderRegion? region = GetRegionForRenderer(r);
             if (region == null) continue;
-            if (!groupedVisible.TryGetValue(region, out var list))
+            if (!groupedVisible.TryGetValue(region, out List<SubChunkRenderer>? list))
             {
-                list = new List<SubChunkRenderer>();
+                list = [];
                 groupedVisible[region] = list;
             }
             list.Add(r);
         }
 
-        foreach (var entry in groupedVisible)
+        foreach (KeyValuePair<RenderRegion, List<SubChunkRenderer>> entry in groupedVisible)
         {
-            var region = entry.Key;
-            var visibleInRegion = entry.Value;
-            var batch = region.GetBatch(0);
-            batch.Clear();
+            RenderRegion region = entry.Key;
+            
+            // Hierarchical Region Culling
+            if (!renderParams.Camera.isBoundingBoxInFrustum(region.BoundingBox)) continue;
 
-            foreach (var renderer in visibleInRegion)
-            {
-                int offset = region.GetOffset(0, GetSectionIndex(renderer.Position));
-                int count = renderer.GetVertexCount(0);
-                if (offset != -1 && count > 0)
-                {
-                    batch.Add(offset, (uint)count);
-                }
-            }
+            List<SubChunkRenderer> visibleInRegion = entry.Value;
+            
+            region.UpdateBatch(0, visibleInRegion);
+            MultiDrawBatch batch = region.GetBatch(0);
 
             if (!batch.IsEmpty)
             {
                 // Set region-specific uniforms
                 Vector3D<double> pos = new(region.Origin.X - renderParams.ViewPos.X, region.Origin.Y - renderParams.ViewPos.Y, region.Origin.Z - renderParams.ViewPos.Z);
-                var regionModelView = Matrix4X4.CreateTranslation(new Vector3D<float>((float)pos.X, (float)pos.Y, (float)pos.Z)) * modelView;
+                Matrix4X4<float> regionModelView = Matrix4X4.CreateTranslation(new Vector3D<float>((float)pos.X, (float)pos.Y, (float)pos.Z)) * modelView;
                 
                 _chunkShader.SetUniformMatrix4("modelViewMatrix", regionModelView);
                 _chunkShader.SetUniform3("chunkPos", (float)region.Origin.X, (float)region.Origin.Y, (float)region.Origin.Z);
@@ -278,10 +273,6 @@ public class ChunkRenderer : IChunkVisibilityVisitor
         {
             UpdateAdjacency(renderer, false);
             _renderers.Remove(renderer.Position);
-            
-            // If the section is being removed, we should also check if its region can be removed
-            // Sodium has a more complex management, for now we'll just let them live or 
-            // periodically sweep them.
             
             renderer.Dispose();
 
@@ -332,13 +323,13 @@ public class ChunkRenderer : IChunkVisibilityVisitor
 
         // Group visible translucent renderers by region
         var groupedTranslucent = new Dictionary<RenderRegion, List<SubChunkRenderer>>();
-        foreach (var r in _translucentRenderers)
+        foreach (SubChunkRenderer r in _translucentRenderers)
         {
-            var region = GetRegionForRenderer(r);
+            RenderRegion? region = GetRegionForRenderer(r);
             if (region == null) continue;
-            if (!groupedTranslucent.TryGetValue(region, out var list))
+            if (!groupedTranslucent.TryGetValue(region, out List<SubChunkRenderer>? list))
             {
-                list = new List<SubChunkRenderer>();
+                list = [];
                 groupedTranslucent[region] = list;
             }
             list.Add(r);
@@ -353,28 +344,28 @@ public class ChunkRenderer : IChunkVisibilityVisitor
             return distB.CompareTo(distA);
         });
 
-        foreach (var region in sortedRegions)
+        foreach (RenderRegion? region in sortedRegions)
         {
-            var visibleInRegion = groupedTranslucent[region];
-            var batch = region.GetBatch(1);
-            batch.Clear();
+            // Hierarchical Region Culling
+            if (!renderParams.Camera.isBoundingBoxInFrustum(region.BoundingBox)) continue;
 
-            // Note: Within a region we might still want to sort sections, 
-            // but for now we'll just batch them.
-            foreach (var renderer in visibleInRegion)
+            List<SubChunkRenderer> visibleInRegion = groupedTranslucent[region];
+            
+            // Intra-region sorting for transparency (Sodium requirement)
+            visibleInRegion.Sort((a, b) =>
             {
-                int offset = region.GetOffset(1, GetSectionIndex(renderer.Position));
-                int count = renderer.GetVertexCount(1);
-                if (offset != -1 && count > 0)
-                {
-                    batch.Add(offset, (uint)count);
-                }
-            }
+                double distA = Vector3D.DistanceSquared(ToDoubleVec(a.PositionPlus), renderParams.ViewPos);
+                double distB = Vector3D.DistanceSquared(ToDoubleVec(b.PositionPlus), renderParams.ViewPos);
+                return distB.CompareTo(distA);
+            });
+
+            region.UpdateBatch(1, visibleInRegion);
+            MultiDrawBatch batch = region.GetBatch(1);
 
             if (!batch.IsEmpty)
             {
                 Vector3D<double> pos = new(region.Origin.X - renderParams.ViewPos.X, region.Origin.Y - renderParams.ViewPos.Y, region.Origin.Z - renderParams.ViewPos.Z);
-                var regionModelView = Matrix4X4.CreateTranslation(new Vector3D<float>((float)pos.X, (float)pos.Y, (float)pos.Z)) * _modelView;
+                Matrix4X4<float> regionModelView = Matrix4X4.CreateTranslation(new Vector3D<float>((float)pos.X, (float)pos.Y, (float)pos.Z)) * _modelView;
                 
                 _chunkShader.SetUniformMatrix4("modelViewMatrix", regionModelView);
                 _chunkShader.SetUniform3("chunkPos", (float)region.Origin.X, (float)region.Origin.Y, (float)region.Origin.Z);
@@ -423,18 +414,18 @@ public class ChunkRenderer : IChunkVisibilityVisitor
 
                     if (_renderers.TryGetValue(mesh.Pos, out SubChunkState? state))
                     {
-                        var region = GetOrCreateRegion(mesh.Pos);
+                        RenderRegion region = GetOrCreateRegion(mesh.Pos);
                         state.Renderer.SetRegion(region, GetSectionIndex(mesh.Pos));
-                        state.Renderer.UploadMeshData(mesh.Solid, mesh.Translucent);
+                        state.Renderer.UploadMeshData(mesh.Solid, mesh.Translucent, mesh.Version);
                         state.IsLit = mesh.IsLit;
                         state.Renderer.VisibilityData = mesh.VisibilityData;
                     }
                     else
                     {
                         var renderer = new SubChunkRenderer(mesh.Pos);
-                        var region = GetOrCreateRegion(mesh.Pos);
+                        RenderRegion region = GetOrCreateRegion(mesh.Pos);
                         renderer.SetRegion(region, GetSectionIndex(mesh.Pos));
-                        renderer.UploadMeshData(mesh.Solid, mesh.Translucent);
+                        renderer.UploadMeshData(mesh.Solid, mesh.Translucent, mesh.Version);
                         renderer.VisibilityData = mesh.VisibilityData;
                         _renderers[mesh.Pos] = new SubChunkState(mesh.IsLit, renderer);
                         UpdateAdjacency(renderer, true);
@@ -735,14 +726,14 @@ public class ChunkRenderer : IChunkVisibilityVisitor
     public RenderRegion? GetRegionForRenderer(SubChunkRenderer renderer)
     {
         Vector3D<int> regionPos = GetRegionPos(renderer.Position);
-        _regions.TryGetValue(regionPos, out var region);
+        _regions.TryGetValue(regionPos, out RenderRegion? region);
         return region;
     }
 
     private RenderRegion GetOrCreateRegion(Vector3D<int> pos)
     {
         Vector3D<int> regionPos = GetRegionPos(pos);
-        if (!_regions.TryGetValue(regionPos, out var region))
+        if (!_regions.TryGetValue(regionPos, out RenderRegion? region))
         {
             region = new RenderRegion(regionPos);
             _regions[regionPos] = region;
@@ -750,7 +741,7 @@ public class ChunkRenderer : IChunkVisibilityVisitor
         return region;
     }
 
-    private Vector3D<int> GetRegionPos(Vector3D<int> pos)
+    private static Vector3D<int> GetRegionPos(Vector3D<int> pos)
     {
         // Region size: 8x4x8 sections. Section size: 16.
         // Region size in blocks: 128x64x128.
@@ -760,7 +751,7 @@ public class ChunkRenderer : IChunkVisibilityVisitor
         return new Vector3D<int>(rx, ry, rz);
     }
 
-    private int GetSectionIndex(Vector3D<int> pos)
+    private static int GetSectionIndex(Vector3D<int> pos)
     {
         int sx = (pos.X / 16) % 8;
         int sy = (pos.Y / 16) % 4;
@@ -803,7 +794,7 @@ public class ChunkRenderer : IChunkVisibilityVisitor
         _translucentRenderers.Clear();
         _renderersToRemove.Clear();
         
-        foreach (var region in _regions.Values)
+        foreach (RenderRegion region in _regions.Values)
         {
             region.Dispose();
         }
