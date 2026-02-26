@@ -7,26 +7,24 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class ReedRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
-        in BlockRenderContext context)
+    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext context)
     {
-        Tessellator tess = _tess;
-
-        float luminance = block.getLuminance(_blockAccess, x, y, z);
-        int colorMultiplier = block.getColorMultiplier(_blockAccess, x, y, z);
+        float luminance = block.getLuminance(world, pos.x, pos.y, pos.z);
+        int colorMultiplier = block.getColorMultiplier(world, pos.x, pos.y, pos.z);
         float r = (colorMultiplier >> 16 & 255) / 255.0F;
         float g = (colorMultiplier >> 8 & 255) / 255.0F;
         float b = (colorMultiplier & 255) / 255.0F;
 
         tess.setColorOpaque_F(luminance * r, luminance * g, luminance * b);
 
-        double renderX = x;
-        double renderY = y;
-        double renderZ = z;
+        double renderX = pos.x;
+        double renderY = pos.y;
+        double renderZ = pos.z;
 
-        if (block == Block.Grass)
+        // Apply random organic offset for grass so it doesn't look grid-aligned
+        if (block == Block.Grass) // Assuming Block.TallGrass or equivalent
         {
-            long hash = x * 3129871L ^ z * 116129781L ^ y;
+            long hash = pos.x * 3129871L ^ pos.z * 116129781L ^ pos.y;
             hash = hash * hash * 42317861L + hash * 11L;
 
             renderX += (((hash >> 16 & 15L) / 15.0F) - 0.5D) * 0.5D;
@@ -34,7 +32,62 @@ public class ReedRenderer : IBlockRenderer
             renderZ += (((hash >> 24 & 15L) / 15.0F) - 0.5D) * 0.5D;
         }
 
-        RenderCrossedSquares(block, _blockAccess.getBlockMeta(x, y, z), renderX, renderY, renderZ);
+        RenderCrossedSquares(block, world.getBlockMeta(pos.x, pos.y, pos.z), renderX, renderY, renderZ, tess, context);
         return true;
+    }
+
+    private void RenderCrossedSquares(Block block, int metadata, double x, double y, double z, Tessellator tess, in BlockRenderContext context)
+    {
+        int textureId = block.getTexture(0, metadata);
+        if (context.OverrideTexture >= 0)
+        {
+            textureId = context.OverrideTexture;
+        }
+
+        // Convert texture ID to UV coordinates (0.0 to 1.0 range)
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
+        double minU = texU / 256.0F;
+        double maxU = (texU + 15.99F) / 256.0F;
+        double minV = texV / 256.0F;
+        double maxV = (texV + 15.99F) / 256.0F;
+
+        // Magic number 0.45 means the planes stretch from 0.05 to 0.95 within the block.
+        // This slight inset prevents Z-fighting (flickering) if the plant touches an adjacent solid block.
+        double minOffset = 0.5D - 0.45D; // 0.05
+        double maxOffset = 0.5D + 0.45D; // 0.95
+
+        double minX = x + minOffset;
+        double maxX = x + maxOffset;
+        double minZ = z + minOffset;
+        double maxZ = z + maxOffset;
+
+        // --- First Diagonal Plane (Bottom-Left to Top-Right across the X/Z grid) ---
+
+        // Front side
+        tess.addVertexWithUV(minX, y + 1.0D, minZ, minU, minV);
+        tess.addVertexWithUV(minX, y + 0.0D, minZ, minU, maxV);
+        tess.addVertexWithUV(maxX, y + 0.0D, maxZ, maxU, maxV);
+        tess.addVertexWithUV(maxX, y + 1.0D, maxZ, maxU, minV);
+
+        // Back side (reversed winding order and UVs)
+        tess.addVertexWithUV(maxX, y + 1.0D, maxZ, minU, minV);
+        tess.addVertexWithUV(maxX, y + 0.0D, maxZ, minU, maxV);
+        tess.addVertexWithUV(minX, y + 0.0D, minZ, maxU, maxV);
+        tess.addVertexWithUV(minX, y + 1.0D, minZ, maxU, minV);
+
+        // --- Second Diagonal Plane (Top-Left to Bottom-Right across the X/Z grid) ---
+
+        // Front side
+        tess.addVertexWithUV(minX, y + 1.0D, maxZ, minU, minV);
+        tess.addVertexWithUV(minX, y + 0.0D, maxZ, minU, maxV);
+        tess.addVertexWithUV(maxX, y + 0.0D, minZ, maxU, maxV);
+        tess.addVertexWithUV(maxX, y + 1.0D, minZ, maxU, minV);
+
+        // Back side (reversed winding order and UVs)
+        tess.addVertexWithUV(maxX, y + 1.0D, minZ, minU, minV);
+        tess.addVertexWithUV(maxX, y + 0.0D, minZ, minU, maxV);
+        tess.addVertexWithUV(minX, y + 0.0D, maxZ, maxU, maxV);
+        tess.addVertexWithUV(minX, y + 1.0D, maxZ, maxU, minV);
     }
 }
