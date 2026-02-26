@@ -41,8 +41,13 @@ public class Shader : IDisposable
 
     public void SetUniform3(string name, Vector3D<float> vec)
     {
+        SetUniform3(name, vec.X, vec.Y, vec.Z);
+    }
+
+    public void SetUniform3(string name, float x, float y, float z)
+    {
         int location = GetUniformLocation(name);
-        GLManager.GL.Uniform3(location, vec.X, vec.Y, vec.Z);
+        GLManager.GL.Uniform3(location, x, y, z);
     }
 
     public void SetUniform1(string name, float value)

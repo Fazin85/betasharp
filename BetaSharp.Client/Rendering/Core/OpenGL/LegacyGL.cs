@@ -51,6 +51,16 @@ public unsafe class LegacyGL : IGL
         SilkGL.BufferData(target, size, data, usage);
     }
 
+    public virtual void BufferSubData(GLEnum target, nint offset, nuint size, void* data)
+    {
+        SilkGL.BufferSubData(target, offset, size, data);
+    }
+
+    public void CopyBufferSubData(GLEnum readTarget, GLEnum writeTarget, nint readOffset, nint writeOffset, nuint size)
+    {
+        SilkGL.CopyBufferSubData(readTarget, writeTarget, readOffset, writeOffset, size);
+    }
+
     public virtual void CallList(uint list)
     {
         SilkGL.CallList(list);
@@ -194,6 +204,11 @@ public unsafe class LegacyGL : IGL
     public virtual void DrawArrays(GLEnum mode, int first, uint count)
     {
         SilkGL.DrawArrays(mode, first, count);
+    }
+
+    public virtual void MultiDrawArrays(GLEnum mode, int* first, uint* count, uint drawcount)
+    {
+        SilkGL.MultiDrawArrays(mode, first, count, drawcount);
     }
 
     public virtual void Enable(GLEnum cap)

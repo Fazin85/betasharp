@@ -12,6 +12,8 @@ public unsafe interface IGL
     void BlendFunc(GLEnum sfactor, GLEnum dfactor);
     void BufferData<T0>(GLEnum target, ReadOnlySpan<T0> data, GLEnum usage) where T0 : unmanaged;
     void BufferData(GLEnum target, nuint size, void* data, GLEnum usage);
+    void BufferSubData(GLEnum target, nint offset, nuint size, void* data);
+    void CopyBufferSubData(GLEnum readTarget, GLEnum writeTarget, nint readOffset, nint writeOffset, nuint size);
     void CallList(uint list);
     void CallLists(uint n, GLEnum type, void* lists);
     void Clear(ClearBufferMask mask);
@@ -100,6 +102,7 @@ public unsafe interface IGL
     void Uniform4(int location, float v0, float v1, float v2, float v3);
     void UniformMatrix4(int location, uint count, bool transpose, float* value);
     void UseProgram(uint program);
+    void MultiDrawArrays(GLEnum mode, int* first, uint* count, uint drawcount);
     void VertexAttribIPointer(uint index, int size, GLEnum type, uint stride, void* pointer);
     void VertexAttribPointer(uint index, int size, GLEnum type, bool normalized, uint stride, void* pointer);
     void VertexPointer(int size, GLEnum type, uint stride, void* pointer);

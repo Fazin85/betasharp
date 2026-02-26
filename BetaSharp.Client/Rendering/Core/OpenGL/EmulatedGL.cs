@@ -215,6 +215,11 @@ public unsafe class EmulatedGL : LegacyGL
         SilkGL.BufferData(target, size, data, usage);
     }
 
+    public override void BufferSubData(GLEnum target, nint offset, nuint size, void* data)
+    {
+        SilkGL.BufferSubData(target, offset, size, data);
+    }
+
     public override void MatrixMode(GLEnum mode)
     {
         _currentMatrixMode = mode;
@@ -490,6 +495,24 @@ public unsafe class EmulatedGL : LegacyGL
         }
 
         SilkGL.DrawArrays(mode, first, count);
+    }
+
+    public override void MultiDrawArrays(GLEnum mode, int* first, uint* count, uint drawcount)
+    {
+        if (_displayLists.IsCompiling)
+        {
+            // Display list support for multi-draw is complex; for now, we'll just not support it in display lists
+            // or we could loop and record individual draws.
+            // Since we use this for chunks which DON'T use display lists in BetaSharp, we can skip for now.
+            return;
+        }
+
+        if (_currentProgram == 0 || _currentProgram == _shader.Program)
+        {
+            ActivateShader();
+        }
+
+        SilkGL.MultiDrawArrays(mode, first, count, drawcount);
     }
 
     public override void UseProgram(uint program)

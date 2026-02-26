@@ -27,7 +27,7 @@ public struct ChunkVertex
     public short U; // 2 bytes + 10 bytes = 12 bytes
     public short V; // 2 bytes + 12 bytes = 14 bytes
     public byte Light; // 1 byte + 14 bytes = 15 bytes
-    public byte Padding; // 16 bytes total
+    public byte SectionIndex; // 16 bytes total
 }
 
 public static class ChunkVertexHelper
@@ -46,7 +46,8 @@ public static class ChunkVertexHelper
         float centroidU,
         float centroidV,
         byte skyLight,
-        byte blockLight)
+        byte blockLight,
+        byte sectionIndex)
     {
         return new ChunkVertex
         {
@@ -57,7 +58,7 @@ public static class ChunkVertexHelper
             U = FloatToShortUVWithInset(u, centroidU),
             V = FloatToShortUVWithInset(v, centroidV),
             Light = PackLight(skyLight, blockLight),
-            Padding = 0
+            SectionIndex = sectionIndex
         };
     }
 
@@ -139,6 +140,8 @@ public class Tessellator
     private readonly int bufferSize;
     private float uvCentroidU;
     private float uvCentroidV;
+    
+    public byte CurrentSectionIndex;
     private bool isCaptureMode;
     private PooledList<Vertex> capturedVertices;
     private PooledList<ChunkVertex> capturedChunkVertices;
@@ -559,7 +562,8 @@ public class Tessellator
                     u, v,
                     uvCentroidU, uvCentroidV,
                     ChunkVertexHelper.GetSkyLight(light),
-                    ChunkVertexHelper.GetBlockLight(light)
+                    ChunkVertexHelper.GetBlockLight(light),
+                    CurrentSectionIndex
                 )
             );
         }

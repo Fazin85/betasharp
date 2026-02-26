@@ -4,6 +4,7 @@ layout(location = 0) in vec3 inPosition;
 layout(location = 1) in uvec2 inUV;
 layout(location = 2) in vec4 inColor;
 layout(location = 3) in uint inLight;
+layout(location = 4) in uint inSectionIndex;
 
 out vec4 vertexColor;
 out vec2 texCoord;
@@ -11,7 +12,7 @@ out float fogDistance;
 
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
-uniform vec2 chunkPos;
+uniform vec3 chunkPos;
 uniform float time;
 uniform bool envAnim;
 
@@ -20,6 +21,15 @@ const float POSITION_SCALE_INV = 64.0 / 32767.0;
 vec3 unpackPosition(vec3 packedPos)
 {
     return packedPos * POSITION_SCALE_INV;
+}
+
+vec3 getChunkOffset(uint idx)
+{
+    uint sx = idx % 8u;
+    uint sy = (idx / 8u) % 4u;
+    uint sz = idx / 32u;
+    
+    return vec3(float(sx), float(sy), float(sz)) * 16.0;
 }
 
 float unpackSkyLight(uint light)
@@ -108,14 +118,18 @@ void main()
     
     uv += bias;
 
+    vec3 offset = getChunkOffset(inSectionIndex);
+    vec3 worldPos = position + offset + chunkPos;
+
     if (envAnim)
     {
         int textureIndex = atlasIndexFromUV(uv);
-        vec3 worldPos = position + vec3(chunkPos.x, 0.0, chunkPos.y);
-    
         applyWaving(worldPos, position, textureIndex, 1.0);
-
-        position = worldPos - vec3(chunkPos.x, 0.0, chunkPos.y);
+        position = worldPos - chunkPos;
+    }
+    else
+    {
+        position = worldPos - chunkPos;
     }
 
     vec4 color = inColor;

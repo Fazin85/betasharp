@@ -73,6 +73,8 @@ public class ChunkMeshGenerator : IDisposable
             pos.Z + SubChunkRenderer.Size + 1
         );
 
+        Vector3D<int> regionOrigin = GetRegionPos(pos);
+
         Task.Run(async () =>
         {
             if (concurrencySemaphore != null)
@@ -90,6 +92,28 @@ public class ChunkMeshGenerator : IDisposable
                 concurrencySemaphore?.Release();
             }
         });
+    }
+
+    private Vector3D<int> GetRegionPos(Vector3D<int> pos)
+    {
+        // 8x4x8 regions
+        int rx = (int)Math.Floor(pos.X / 128.0) * 128;
+        int ry = (int)Math.Floor(pos.Y / 64.0) * 64;
+        int rz = (int)Math.Floor(pos.Z / 128.0) * 128;
+        return new Vector3D<int>(rx, ry, rz);
+    }
+
+    private int GetSectionIndex(Vector3D<int> pos)
+    {
+        int sx = (pos.X / 16) % 8;
+        int sy = (pos.Y / 16) % 4;
+        int sz = (pos.Z / 16) % 8;
+        
+        if (sx < 0) sx += 8;
+        if (sy < 0) sy += 4;
+        if (sz < 0) sz += 8;
+        
+        return sx + sy * 8 + sz * (8 * 4);
     }
 
     private MeshBuildResult GenerateMesh(Vector3D<int> pos, long version, WorldRegionSnapshot cache)
@@ -115,6 +139,7 @@ public class ChunkMeshGenerator : IDisposable
             bool hasNextPass = false;
 
             tess.startCapture(TesselatorCaptureVertexFormat.Chunk);
+            tess.CurrentSectionIndex = (byte)GetSectionIndex(pos);
             tess.startDrawingQuads();
             tess.setTranslationD(-pos.X, -pos.Y, -pos.Z);
 
