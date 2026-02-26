@@ -7,17 +7,15 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class RedstoneWireRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
-        in BlockRenderContext context)
+    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext context)
     {
-        Tessellator tess = _tess;
-        int powerLevel = _blockAccess.getBlockMeta(x, y, z);
+        int powerLevel = world.getBlockMeta(pos.x, pos.y, pos.z);
 
         int textureId = block.getTexture(1, powerLevel);
-        if (_overrideBlockTexture >= 0) textureId = _overrideBlockTexture;
+        if (context.OverrideTexture >= 0) textureId = context.OverrideTexture;
 
         // --- 1. Calculate the Glow Color ---
-        float luminance = block.getLuminance(_blockAccess, x, y, z);
+        float luminance = block.getLuminance(world, pos.x, pos.y, pos.z);
         float powerPercent = powerLevel / 15.0F;
 
         // Red component increases with power
@@ -42,35 +40,35 @@ public class RedstoneWireRenderer : IBlockRenderer
 
         // --- 3. Connection Logic ---
         // Checks neighbors on same level OR one level down (if the neighbor isn't solid)
-        bool connectsWest = BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x - 1, y, z, 1) ||
-                            (!_blockAccess.shouldSuffocate(x - 1, y, z) &&
-                             BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x - 1, y - 1, z, -1));
-        bool connectsEast = BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x + 1, y, z, 3) ||
-                            (!_blockAccess.shouldSuffocate(x + 1, y, z) &&
-                             BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x + 1, y - 1, z, -1));
-        bool connectsNorth = BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x, y, z - 1, 2) ||
-                             (!_blockAccess.shouldSuffocate(x, y, z - 1) &&
-                              BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x, y - 1, z - 1, -1));
-        bool connectsSouth = BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x, y, z + 1, 0) ||
-                             (!_blockAccess.shouldSuffocate(x, y, z + 1) &&
-                              BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x, y - 1, z + 1, -1));
+        bool connectsWest = BlockRedstoneWire.isPowerProviderOrWire(world, pos.x - 1, pos.y, pos.z, 1) ||
+                            (!world.shouldSuffocate(pos.x - 1, pos.y, pos.z) &&
+                             BlockRedstoneWire.isPowerProviderOrWire(world, pos.x - 1, pos.y - 1, pos.z, -1));
+        bool connectsEast = BlockRedstoneWire.isPowerProviderOrWire(world, pos.x + 1, pos.y, pos.z, 3) ||
+                            (!world.shouldSuffocate(pos.x + 1, pos.y, pos.z) &&
+                             BlockRedstoneWire.isPowerProviderOrWire(world, pos.x + 1, pos.y - 1, pos.z, -1));
+        bool connectsNorth = BlockRedstoneWire.isPowerProviderOrWire(world, pos.x, pos.y, pos.z - 1, 2) ||
+                             (!world.shouldSuffocate(pos.x, pos.y, pos.z - 1) &&
+                              BlockRedstoneWire.isPowerProviderOrWire(world, pos.x, pos.y - 1, pos.z - 1, -1));
+        bool connectsSouth = BlockRedstoneWire.isPowerProviderOrWire(world, pos.x, pos.y, pos.z + 1, 0) ||
+                             (!world.shouldSuffocate(pos.x, pos.y, pos.z + 1) &&
+                              BlockRedstoneWire.isPowerProviderOrWire(world, pos.x, pos.y - 1, pos.z + 1, -1));
 
         // Check for connections climbing UP a block
-        if (!_blockAccess.shouldSuffocate(x, y + 1, z))
+        if (!world.shouldSuffocate(pos.x, pos.y + 1, pos.z))
         {
-            if (_blockAccess.shouldSuffocate(x - 1, y, z) &&
-                BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x - 1, y + 1, z, -1)) connectsWest = true;
-            if (_blockAccess.shouldSuffocate(x + 1, y, z) &&
-                BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x + 1, y + 1, z, -1)) connectsEast = true;
-            if (_blockAccess.shouldSuffocate(x, y, z - 1) &&
-                BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x, y + 1, z - 1, -1)) connectsNorth = true;
-            if (_blockAccess.shouldSuffocate(x, y, z + 1) &&
-                BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x, y + 1, z + 1, -1)) connectsSouth = true;
+            if (world.shouldSuffocate(pos.x - 1, pos.y, pos.z) &&
+                BlockRedstoneWire.isPowerProviderOrWire(world, pos.x - 1, pos.y + 1, pos.z, -1)) connectsWest = true;
+            if (world.shouldSuffocate(pos.x + 1, pos.y, pos.z) &&
+                BlockRedstoneWire.isPowerProviderOrWire(world, pos.x + 1, pos.y + 1, pos.z, -1)) connectsEast = true;
+            if (world.shouldSuffocate(pos.x, pos.y, pos.z - 1) &&
+                BlockRedstoneWire.isPowerProviderOrWire(world, pos.x, pos.y + 1, pos.z - 1, -1)) connectsNorth = true;
+            if (world.shouldSuffocate(pos.x, pos.y, pos.z + 1) &&
+                BlockRedstoneWire.isPowerProviderOrWire(world, pos.x, pos.y + 1, pos.z + 1, -1)) connectsSouth = true;
         }
 
         // --- 4. Determine Shape (Straight vs Cross) ---
-        float renderMinX = x, renderMaxX = x + 1;
-        float renderMinZ = z, renderMaxZ = z + 1;
+        float renderMinX = pos.x, renderMaxX = pos.x + 1;
+        float renderMinZ = pos.z, renderMaxZ = pos.z + 1;
         int shapeType = 0; // 0 = Cross, 1 = East/West, 2 = North/South
 
         if ((connectsWest || connectsEast) && !connectsNorth && !connectsSouth) shapeType = 1;
@@ -114,7 +112,7 @@ public class RedstoneWireRenderer : IBlockRenderer
         }
 
         // --- 5. Render Horizontal Ground Quad ---
-        double groundY = y + 0.015625D; // 1/64 height offset to prevent Z-fighting
+        double groundY = pos.y + 0.015625D; // 1/64 height offset to prevent Z-fighting
 
         // Render the colored redstone
         tess.addVertexWithUV(renderMaxX, groundY, renderMaxZ, maxU, maxV);
@@ -131,74 +129,74 @@ public class RedstoneWireRenderer : IBlockRenderer
         tess.addVertexWithUV(renderMinX, groundY, renderMaxZ, minU, maxV + shroudVOffset);
 
         // --- 6. Render Slopes (Rising up walls) ---
-        if (!_blockAccess.shouldSuffocate(x, y + 1, z))
+        if (!world.shouldSuffocate(pos.x, pos.y + 1, pos.z))
         {
             minU = (texU + 16) / 256.0F;
             maxU = (texU + 16 + 15.99F) / 256.0F;
-            double slopeHeight = y + 1.021875D; // Slight offset above the block
+            double slopeHeight = pos.y + 1.021875D; // Slight offset above the block
 
             // West Slope
-            if (_blockAccess.shouldSuffocate(x - 1, y, z) && _blockAccess.getBlockId(x - 1, y + 1, z) == block.id)
+            if (world.shouldSuffocate(pos.x - 1, pos.y, pos.z) && world.getBlockId(pos.x - 1, pos.y + 1, pos.z) == block.id)
             {
                 tess.setColorOpaque_F(luminance * r, luminance * g, luminance * b);
-                tess.addVertexWithUV(x + 0.015625D, slopeHeight, z + 1, maxU, minV);
-                tess.addVertexWithUV(x + 0.015625D, y, z + 1, minU, minV);
-                tess.addVertexWithUV(x + 0.015625D, y, z + 0, minU, maxV);
-                tess.addVertexWithUV(x + 0.015625D, slopeHeight, z + 0, maxU, maxV);
+                tess.addVertexWithUV(pos.x + 0.015625D, slopeHeight, pos.z + 1, maxU, minV);
+                tess.addVertexWithUV(pos.x + 0.015625D, pos.y, pos.z + 1, minU, minV);
+                tess.addVertexWithUV(pos.x + 0.015625D, pos.y, pos.z + 0, minU, maxV);
+                tess.addVertexWithUV(pos.x + 0.015625D, slopeHeight, pos.z + 0, maxU, maxV);
 
                 tess.setColorOpaque_F(luminance, luminance, luminance);
-                tess.addVertexWithUV(x + 0.015625D, slopeHeight, z + 1, maxU, minV + shroudVOffset);
-                tess.addVertexWithUV(x + 0.015625D, y, z + 1, minU, minV + shroudVOffset);
-                tess.addVertexWithUV(x + 0.015625D, y, z + 0, minU, maxV + shroudVOffset);
-                tess.addVertexWithUV(x + 0.015625D, slopeHeight, z + 0, maxU, maxV + shroudVOffset);
+                tess.addVertexWithUV(pos.x + 0.015625D, slopeHeight, pos.z + 1, maxU, minV + shroudVOffset);
+                tess.addVertexWithUV(pos.x + 0.015625D, pos.y, pos.z + 1, minU, minV + shroudVOffset);
+                tess.addVertexWithUV(pos.x + 0.015625D, pos.y, pos.z + 0, minU, maxV + shroudVOffset);
+                tess.addVertexWithUV(pos.x + 0.015625D, slopeHeight, pos.z + 0, maxU, maxV + shroudVOffset);
             }
 
             // East Slope
-            if (_blockAccess.shouldSuffocate(x + 1, y, z) && _blockAccess.getBlockId(x + 1, y + 1, z) == block.id)
+            if (world.shouldSuffocate(pos.x + 1, pos.y, pos.z) && world.getBlockId(pos.x + 1, pos.y + 1, pos.z) == block.id)
             {
                 tess.setColorOpaque_F(luminance * r, luminance * g, luminance * b);
-                tess.addVertexWithUV(x + 1 - 0.015625D, y, z + 1, minU, maxV);
-                tess.addVertexWithUV(x + 1 - 0.015625D, slopeHeight, z + 1, maxU, maxV);
-                tess.addVertexWithUV(x + 1 - 0.015625D, slopeHeight, z + 0, maxU, minV);
-                tess.addVertexWithUV(x + 1 - 0.015625D, y, z + 0, minU, minV);
+                tess.addVertexWithUV(pos.x + 1 - 0.015625D, pos.y, pos.z + 1, minU, maxV);
+                tess.addVertexWithUV(pos.x + 1 - 0.015625D, slopeHeight, pos.z + 1, maxU, maxV);
+                tess.addVertexWithUV(pos.x + 1 - 0.015625D, slopeHeight, pos.z + 0, maxU, minV);
+                tess.addVertexWithUV(pos.x + 1 - 0.015625D, pos.y, pos.z + 0, minU, minV);
 
                 tess.setColorOpaque_F(luminance, luminance, luminance);
-                tess.addVertexWithUV(x + 1 - 0.015625D, y, z + 1, minU, maxV + shroudVOffset);
-                tess.addVertexWithUV(x + 1 - 0.015625D, slopeHeight, z + 1, maxU, maxV + shroudVOffset);
-                tess.addVertexWithUV(x + 1 - 0.015625D, slopeHeight, z + 0, maxU, minV + shroudVOffset);
-                tess.addVertexWithUV(x + 1 - 0.015625D, y, z + 0, minU, minV + shroudVOffset);
+                tess.addVertexWithUV(pos.x + 1 - 0.015625D, pos.y, pos.z + 1, minU, maxV + shroudVOffset);
+                tess.addVertexWithUV(pos.x + 1 - 0.015625D, slopeHeight, pos.z + 1, maxU, maxV + shroudVOffset);
+                tess.addVertexWithUV(pos.x + 1 - 0.015625D, slopeHeight, pos.z + 0, maxU, minV + shroudVOffset);
+                tess.addVertexWithUV(pos.x + 1 - 0.015625D, pos.y, pos.z + 0, minU, minV + shroudVOffset);
             }
 
             // North Slope
-            if (_blockAccess.shouldSuffocate(x, y, z - 1) && _blockAccess.getBlockId(x, y + 1, z - 1) == block.id)
+            if (world.shouldSuffocate(pos.x, pos.y, pos.z - 1) && world.getBlockId(pos.x, pos.y + 1, pos.z - 1) == block.id)
             {
                 tess.setColorOpaque_F(luminance * r, luminance * g, luminance * b);
-                tess.addVertexWithUV(x + 1, y, z + 0.015625D, minU, maxV);
-                tess.addVertexWithUV(x + 1, slopeHeight, z + 0.015625D, maxU, maxV);
-                tess.addVertexWithUV(x + 0, slopeHeight, z + 0.015625D, maxU, minV);
-                tess.addVertexWithUV(x + 0, y, z + 0.015625D, minU, minV);
+                tess.addVertexWithUV(pos.x + 1, pos.y, pos.z + 0.015625D, minU, maxV);
+                tess.addVertexWithUV(pos.x + 1, slopeHeight, pos.z + 0.015625D, maxU, maxV);
+                tess.addVertexWithUV(pos.x + 0, slopeHeight, pos.z + 0.015625D, maxU, minV);
+                tess.addVertexWithUV(pos.x + 0, pos.y, pos.z + 0.015625D, minU, minV);
 
                 tess.setColorOpaque_F(luminance, luminance, luminance);
-                tess.addVertexWithUV(x + 1, y, z + 0.015625D, minU, maxV + shroudVOffset);
-                tess.addVertexWithUV(x + 1, slopeHeight, z + 0.015625D, maxU, maxV + shroudVOffset);
-                tess.addVertexWithUV(x + 0, slopeHeight, z + 0.015625D, maxU, minV + shroudVOffset);
-                tess.addVertexWithUV(x + 0, y, z + 0.015625D, minU, minV + shroudVOffset);
+                tess.addVertexWithUV(pos.x + 1, pos.y, pos.z + 0.015625D, minU, maxV + shroudVOffset);
+                tess.addVertexWithUV(pos.x + 1, slopeHeight, pos.z + 0.015625D, maxU, maxV + shroudVOffset);
+                tess.addVertexWithUV(pos.x + 0, slopeHeight, pos.z + 0.015625D, maxU, minV + shroudVOffset);
+                tess.addVertexWithUV(pos.x + 0, pos.y, pos.z + 0.015625D, minU, minV + shroudVOffset);
             }
 
             // South Slope
-            if (_blockAccess.shouldSuffocate(x, y, z + 1) && _blockAccess.getBlockId(x, y + 1, z + 1) == block.id)
+            if (world.shouldSuffocate(pos.x, pos.y, pos.z + 1) && world.getBlockId(pos.x, pos.y + 1, pos.z + 1) == block.id)
             {
                 tess.setColorOpaque_F(luminance * r, luminance * g, luminance * b);
-                tess.addVertexWithUV(x + 1, slopeHeight, z + 1 - 0.015625D, maxU, minV);
-                tess.addVertexWithUV(x + 1, y, z + 1 - 0.015625D, minU, minV);
-                tess.addVertexWithUV(x + 0, y, z + 1 - 0.015625D, minU, maxV);
-                tess.addVertexWithUV(x + 0, slopeHeight, z + 1 - 0.015625D, maxU, maxV);
+                tess.addVertexWithUV(pos.x + 1, slopeHeight, pos.z + 1 - 0.015625D, maxU, minV);
+                tess.addVertexWithUV(pos.x + 1, pos.y, pos.z + 1 - 0.015625D, minU, minV);
+                tess.addVertexWithUV(pos.x + 0, pos.y, pos.z + 1 - 0.015625D, minU, maxV);
+                tess.addVertexWithUV(pos.x + 0, slopeHeight, pos.z + 1 - 0.015625D, maxU, maxV);
 
                 tess.setColorOpaque_F(luminance, luminance, luminance);
-                tess.addVertexWithUV(x + 1, slopeHeight, z + 1 - 0.015625D, maxU, minV + shroudVOffset);
-                tess.addVertexWithUV(x + 1, y, z + 1 - 0.015625D, minU, minV + shroudVOffset);
-                tess.addVertexWithUV(x + 0, y, z + 1 - 0.015625D, minU, maxV + shroudVOffset);
-                tess.addVertexWithUV(x + 0, slopeHeight, z + 1 - 0.015625D, maxU, maxV + shroudVOffset);
+                tess.addVertexWithUV(pos.x + 1, slopeHeight, pos.z + 1 - 0.015625D, maxU, minV + shroudVOffset);
+                tess.addVertexWithUV(pos.x + 1, pos.y, pos.z + 1 - 0.015625D, minU, minV + shroudVOffset);
+                tess.addVertexWithUV(pos.x + 0, pos.y, pos.z + 1 - 0.015625D, minU, maxV + shroudVOffset);
+                tess.addVertexWithUV(pos.x + 0, slopeHeight, pos.z + 1 - 0.015625D, maxU, maxV + shroudVOffset);
             }
         }
 
