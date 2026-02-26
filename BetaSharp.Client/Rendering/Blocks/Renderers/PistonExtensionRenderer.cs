@@ -7,7 +7,8 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class PistonExtensionRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext context)
+    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
+        in BlockRenderContext context)
     {
         int metadata = world.getBlockMeta(pos.x, pos.y, pos.z);
         int facing = BlockPistonExtension.getFacing(metadata);
@@ -25,26 +26,51 @@ public class PistonExtensionRenderer : IBlockRenderer
         switch (facing)
         {
             case 0: // Down
-                uvTop = 3; uvBottom = 3; uvNorth = 3; uvSouth = 3; uvWest = 0; uvEast = 0;
+                uvTop = 3;
+                uvBottom = 3;
+                uvNorth = 3;
+                uvSouth = 3;
+                uvWest = 0;
+                uvEast = 0;
                 bounds = new Box(0.0F, 0.0F, 0.0F, 1.0F, 0.25F, 1.0F);
                 break;
             case 1: // Up
                 bounds = new Box(0.0F, 0.75F, 0.0F, 1.0F, 1.0F, 1.0F);
                 break;
             case 2: // North
-                uvTop = 0; uvBottom = 0; uvNorth = 2; uvSouth = 1; uvWest = 0; uvEast = 0;
+                uvTop = 0;
+                uvBottom = 0;
+                uvNorth = 2;
+                uvSouth = 1;
+                uvWest = 0;
+                uvEast = 0;
                 bounds = new Box(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.25F);
                 break;
             case 3: // South
-                uvTop = 3; uvBottom = 3; uvNorth = 1; uvSouth = 2; uvWest = 0; uvEast = 0;
+                uvTop = 3;
+                uvBottom = 3;
+                uvNorth = 1;
+                uvSouth = 2;
+                uvWest = 0;
+                uvEast = 0;
                 bounds = new Box(0.0F, 0.0F, 0.75F, 1.0F, 1.0F, 1.0F);
                 break;
             case 4: // West
-                uvTop = 2; uvBottom = 1; uvNorth = 0; uvSouth = 0; uvWest = 2; uvEast = 1;
+                uvTop = 2;
+                uvBottom = 1;
+                uvNorth = 0;
+                uvSouth = 0;
+                uvWest = 2;
+                uvEast = 1;
                 bounds = new Box(0.0F, 0.0F, 0.0F, 0.25F, 1.0F, 1.0F);
                 break;
             case 5: // East
-                uvTop = 1; uvBottom = 2; uvNorth = 0; uvSouth = 0; uvWest = 1; uvEast = 2;
+                uvTop = 1;
+                uvBottom = 2;
+                uvNorth = 0;
+                uvSouth = 0;
+                uvWest = 1;
+                uvEast = 2;
                 bounds = new Box(0.75F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
                 break;
         }
@@ -60,7 +86,7 @@ public class PistonExtensionRenderer : IBlockRenderer
             UvRotateWest = uvWest
         };
 
-        bool hasRendered = Helper.RenderStandardBlock(block, pos, world, tess, headCtx);
+        bool hasRendered = headCtx.RenderStandardBlock(block, pos, world, tess);
 
         // 2. Render the custom extension arm geometry
         double x = pos.x;
@@ -70,47 +96,72 @@ public class PistonExtensionRenderer : IBlockRenderer
         switch (facing)
         {
             case 0:
-                RenderPistonArmY(tess, context, x + 0.375, x + 0.625, y + 0.25, y + 0.25 + armLength, z + 0.625, z + 0.625, luminance * 0.8F, texWidth);
-                RenderPistonArmY(tess, context, x + 0.625, x + 0.375, y + 0.25, y + 0.25 + armLength, z + 0.375, z + 0.375, luminance * 0.8F, texWidth);
-                RenderPistonArmY(tess, context, x + 0.375, x + 0.375, y + 0.25, y + 0.25 + armLength, z + 0.375, z + 0.625, luminance * 0.6F, texWidth);
-                RenderPistonArmY(tess, context, x + 0.625, x + 0.625, y + 0.25, y + 0.25 + armLength, z + 0.625, z + 0.375, luminance * 0.6F, texWidth);
+                RenderPistonArmY(tess, context, x + 0.375, x + 0.625, y + 0.25, y + 0.25 + armLength, z + 0.625,
+                    z + 0.625, luminance * 0.8F, texWidth);
+                RenderPistonArmY(tess, context, x + 0.625, x + 0.375, y + 0.25, y + 0.25 + armLength, z + 0.375,
+                    z + 0.375, luminance * 0.8F, texWidth);
+                RenderPistonArmY(tess, context, x + 0.375, x + 0.375, y + 0.25, y + 0.25 + armLength, z + 0.375,
+                    z + 0.625, luminance * 0.6F, texWidth);
+                RenderPistonArmY(tess, context, x + 0.625, x + 0.625, y + 0.25, y + 0.25 + armLength, z + 0.625,
+                    z + 0.375, luminance * 0.6F, texWidth);
                 break;
             case 1:
-                RenderPistonArmY(tess, context, x + 0.375, x + 0.625, y + 0.75 - armLength, y + 0.75, z + 0.625, z + 0.625, luminance * 0.8F, texWidth);
-                RenderPistonArmY(tess, context, x + 0.625, x + 0.375, y + 0.75 - armLength, y + 0.75, z + 0.375, z + 0.375, luminance * 0.8F, texWidth);
-                RenderPistonArmY(tess, context, x + 0.375, x + 0.375, y + 0.75 - armLength, y + 0.75, z + 0.375, z + 0.625, luminance * 0.6F, texWidth);
-                RenderPistonArmY(tess, context, x + 0.625, x + 0.625, y + 0.75 - armLength, y + 0.75, z + 0.625, z + 0.375, luminance * 0.6F, texWidth);
+                RenderPistonArmY(tess, context, x + 0.375, x + 0.625, y + 0.75 - armLength, y + 0.75, z + 0.625,
+                    z + 0.625, luminance * 0.8F, texWidth);
+                RenderPistonArmY(tess, context, x + 0.625, x + 0.375, y + 0.75 - armLength, y + 0.75, z + 0.375,
+                    z + 0.375, luminance * 0.8F, texWidth);
+                RenderPistonArmY(tess, context, x + 0.375, x + 0.375, y + 0.75 - armLength, y + 0.75, z + 0.375,
+                    z + 0.625, luminance * 0.6F, texWidth);
+                RenderPistonArmY(tess, context, x + 0.625, x + 0.625, y + 0.75 - armLength, y + 0.75, z + 0.625,
+                    z + 0.375, luminance * 0.6F, texWidth);
                 break;
             case 2:
-                RenderPistonArmZ(tess, context, x + 0.375, x + 0.375, y + 0.625, y + 0.375, z + 0.25, z + 0.25 + armLength, luminance * 0.6F, texWidth);
-                RenderPistonArmZ(tess, context, x + 0.625, x + 0.625, y + 0.375, y + 0.625, z + 0.25, z + 0.25 + armLength, luminance * 0.6F, texWidth);
-                RenderPistonArmZ(tess, context, x + 0.375, x + 0.625, y + 0.375, y + 0.375, z + 0.25, z + 0.25 + armLength, luminance * 0.5F, texWidth);
-                RenderPistonArmZ(tess, context, x + 0.625, x + 0.375, y + 0.625, y + 0.625, z + 0.25, z + 0.25 + armLength, luminance, texWidth);
+                RenderPistonArmZ(tess, context, x + 0.375, x + 0.375, y + 0.625, y + 0.375, z + 0.25,
+                    z + 0.25 + armLength, luminance * 0.6F, texWidth);
+                RenderPistonArmZ(tess, context, x + 0.625, x + 0.625, y + 0.375, y + 0.625, z + 0.25,
+                    z + 0.25 + armLength, luminance * 0.6F, texWidth);
+                RenderPistonArmZ(tess, context, x + 0.375, x + 0.625, y + 0.375, y + 0.375, z + 0.25,
+                    z + 0.25 + armLength, luminance * 0.5F, texWidth);
+                RenderPistonArmZ(tess, context, x + 0.625, x + 0.375, y + 0.625, y + 0.625, z + 0.25,
+                    z + 0.25 + armLength, luminance, texWidth);
                 break;
             case 3:
-                RenderPistonArmZ(tess, context, x + 0.375, x + 0.375, y + 0.625, y + 0.375, z + 0.75 - armLength, z + 0.75, luminance * 0.6F, texWidth);
-                RenderPistonArmZ(tess, context, x + 0.625, x + 0.625, y + 0.375, y + 0.625, z + 0.75 - armLength, z + 0.75, luminance * 0.6F, texWidth);
-                RenderPistonArmZ(tess, context, x + 0.375, x + 0.625, y + 0.375, y + 0.375, z + 0.75 - armLength, z + 0.75, luminance * 0.5F, texWidth);
-                RenderPistonArmZ(tess, context, x + 0.625, x + 0.375, y + 0.625, y + 0.625, z + 0.75 - armLength, z + 0.75, luminance, texWidth);
+                RenderPistonArmZ(tess, context, x + 0.375, x + 0.375, y + 0.625, y + 0.375, z + 0.75 - armLength,
+                    z + 0.75, luminance * 0.6F, texWidth);
+                RenderPistonArmZ(tess, context, x + 0.625, x + 0.625, y + 0.375, y + 0.625, z + 0.75 - armLength,
+                    z + 0.75, luminance * 0.6F, texWidth);
+                RenderPistonArmZ(tess, context, x + 0.375, x + 0.625, y + 0.375, y + 0.375, z + 0.75 - armLength,
+                    z + 0.75, luminance * 0.5F, texWidth);
+                RenderPistonArmZ(tess, context, x + 0.625, x + 0.375, y + 0.625, y + 0.625, z + 0.75 - armLength,
+                    z + 0.75, luminance, texWidth);
                 break;
             case 4:
-                RenderPistonArmX(tess, context, x + 0.25, x + 0.25 + armLength, y + 0.375, y + 0.375, z + 0.625, z + 0.375, luminance * 0.5F, texWidth);
-                RenderPistonArmX(tess, context, x + 0.25, x + 0.25 + armLength, y + 0.625, y + 0.625, z + 0.375, z + 0.625, luminance, texWidth);
-                RenderPistonArmX(tess, context, x + 0.25, x + 0.25 + armLength, y + 0.375, y + 0.625, z + 0.375, z + 0.375, luminance * 0.6F, texWidth);
-                RenderPistonArmX(tess, context, x + 0.25, x + 0.25 + armLength, y + 0.625, y + 0.375, z + 0.625, z + 0.625, luminance * 0.6F, texWidth);
+                RenderPistonArmX(tess, context, x + 0.25, x + 0.25 + armLength, y + 0.375, y + 0.375, z + 0.625,
+                    z + 0.375, luminance * 0.5F, texWidth);
+                RenderPistonArmX(tess, context, x + 0.25, x + 0.25 + armLength, y + 0.625, y + 0.625, z + 0.375,
+                    z + 0.625, luminance, texWidth);
+                RenderPistonArmX(tess, context, x + 0.25, x + 0.25 + armLength, y + 0.375, y + 0.625, z + 0.375,
+                    z + 0.375, luminance * 0.6F, texWidth);
+                RenderPistonArmX(tess, context, x + 0.25, x + 0.25 + armLength, y + 0.625, y + 0.375, z + 0.625,
+                    z + 0.625, luminance * 0.6F, texWidth);
                 break;
             case 5:
-                RenderPistonArmX(tess, context, x + 0.75 - armLength, x + 0.75, y + 0.375, y + 0.375, z + 0.625, z + 0.375, luminance * 0.5F, texWidth);
-                RenderPistonArmX(tess, context, x + 0.75 - armLength, x + 0.75, y + 0.625, y + 0.625, z + 0.375, z + 0.625, luminance, texWidth);
-                RenderPistonArmX(tess, context, x + 0.75 - armLength, x + 0.75, y + 0.375, y + 0.625, z + 0.375, z + 0.375, luminance * 0.6F, texWidth);
-                RenderPistonArmX(tess, context, x + 0.75 - armLength, x + 0.75, y + 0.625, y + 0.375, z + 0.625, z + 0.625, luminance * 0.6F, texWidth);
+                RenderPistonArmX(tess, context, x + 0.75 - armLength, x + 0.75, y + 0.375, y + 0.375, z + 0.625,
+                    z + 0.375, luminance * 0.5F, texWidth);
+                RenderPistonArmX(tess, context, x + 0.75 - armLength, x + 0.75, y + 0.625, y + 0.625, z + 0.375,
+                    z + 0.625, luminance, texWidth);
+                RenderPistonArmX(tess, context, x + 0.75 - armLength, x + 0.75, y + 0.375, y + 0.625, z + 0.375,
+                    z + 0.375, luminance * 0.6F, texWidth);
+                RenderPistonArmX(tess, context, x + 0.75 - armLength, x + 0.75, y + 0.625, y + 0.375, z + 0.625,
+                    z + 0.625, luminance * 0.6F, texWidth);
                 break;
         }
 
         return hasRendered;
     }
 
-    private void RenderPistonArmY(Tessellator tess, in BlockRenderContext context, double x1, double x2, double y1, double y2, double z1, double z2, float luminance, double textureWidth)
+    private void RenderPistonArmY(Tessellator tess, in BlockRenderContext context, double x1, double x2, double y1,
+        double y2, double z1, double z2, float luminance, double textureWidth)
     {
         int textureId = 108; // Base piston arm texture
         if (context.OverrideTexture >= 0) textureId = context.OverrideTexture;
@@ -130,7 +181,8 @@ public class PistonExtensionRenderer : IBlockRenderer
         tess.addVertexWithUV(x2, y2, z2, maxU, maxV);
     }
 
-    private void RenderPistonArmZ(Tessellator tess, in BlockRenderContext context, double x1, double x2, double y1, double y2, double z1, double z2, float luminance, double textureWidth)
+    private void RenderPistonArmZ(Tessellator tess, in BlockRenderContext context, double x1, double x2, double y1,
+        double y2, double z1, double z2, float luminance, double textureWidth)
     {
         int textureId = 108;
         if (context.OverrideTexture >= 0) textureId = context.OverrideTexture;
@@ -150,7 +202,8 @@ public class PistonExtensionRenderer : IBlockRenderer
         tess.addVertexWithUV(x2, y2, z2, maxU, maxV);
     }
 
-    private void RenderPistonArmX(Tessellator tess, in BlockRenderContext context, double x1, double x2, double y1, double y2, double z1, double z2, float luminance, double textureWidth)
+    private void RenderPistonArmX(Tessellator tess, in BlockRenderContext context, double x1, double x2, double y1,
+        double y2, double z1, double z2, float luminance, double textureWidth)
     {
         int textureId = 108;
         if (context.OverrideTexture >= 0) textureId = context.OverrideTexture;

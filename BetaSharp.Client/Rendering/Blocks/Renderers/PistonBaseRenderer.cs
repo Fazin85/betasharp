@@ -7,7 +7,8 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class PistonBaseRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext context)
+    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
+        in BlockRenderContext context)
     {
         int metadata = world.getBlockMeta(pos.x, pos.y, pos.z);
 
@@ -24,26 +25,39 @@ public class PistonBaseRenderer : IBlockRenderer
             switch (facing)
             {
                 case 0: // Down
-                    uvEast = 3; uvWest = 3; uvSouth = 3; uvNorth = 3;
+                    uvEast = 3;
+                    uvWest = 3;
+                    uvSouth = 3;
+                    uvNorth = 3;
                     bounds = new Box(0.0F, 0.25F, 0.0F, 1.0F, 1.0F, 1.0F);
                     break;
                 case 1: // Up
                     bounds = new Box(0.0F, 0.0F, 0.0F, 1.0F, 0.75F, 1.0F);
                     break;
                 case 2: // North
-                    uvSouth = 1; uvNorth = 2;
+                    uvSouth = 1;
+                    uvNorth = 2;
                     bounds = new Box(0.0F, 0.0F, 0.25F, 1.0F, 1.0F, 1.0F);
                     break;
                 case 3: // South
-                    uvSouth = 2; uvNorth = 1; uvTop = 3; uvBottom = 3;
+                    uvSouth = 2;
+                    uvNorth = 1;
+                    uvTop = 3;
+                    uvBottom = 3;
                     bounds = new Box(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.75F);
                     break;
                 case 4: // West
-                    uvEast = 1; uvWest = 2; uvTop = 2; uvBottom = 1;
+                    uvEast = 1;
+                    uvWest = 2;
+                    uvTop = 2;
+                    uvBottom = 1;
                     bounds = new Box(0.25F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
                     break;
                 case 5: // East
-                    uvEast = 2; uvWest = 1; uvTop = 1; uvBottom = 2;
+                    uvEast = 2;
+                    uvWest = 1;
+                    uvTop = 1;
+                    uvBottom = 2;
                     bounds = new Box(0.0F, 0.0F, 0.0F, 0.75F, 1.0F, 1.0F);
                     break;
             }
@@ -55,19 +69,32 @@ public class PistonBaseRenderer : IBlockRenderer
             switch (facing)
             {
                 case 0: // Down
-                    uvEast = 3; uvWest = 3; uvSouth = 3; uvNorth = 3;
+                    uvEast = 3;
+                    uvWest = 3;
+                    uvSouth = 3;
+                    uvNorth = 3;
                     break;
                 case 2: // North
-                    uvSouth = 1; uvNorth = 2;
+                    uvSouth = 1;
+                    uvNorth = 2;
                     break;
                 case 3: // South
-                    uvSouth = 2; uvNorth = 1; uvTop = 3; uvBottom = 3;
+                    uvSouth = 2;
+                    uvNorth = 1;
+                    uvTop = 3;
+                    uvBottom = 3;
                     break;
                 case 4: // West
-                    uvEast = 1; uvWest = 2; uvTop = 2; uvBottom = 1;
+                    uvEast = 1;
+                    uvWest = 2;
+                    uvTop = 2;
+                    uvBottom = 1;
                     break;
                 case 5: // East
-                    uvEast = 2; uvWest = 1; uvTop = 1; uvBottom = 2;
+                    uvEast = 2;
+                    uvWest = 1;
+                    uvTop = 1;
+                    uvBottom = 2;
                     break;
             }
         }
@@ -84,6 +111,6 @@ public class PistonBaseRenderer : IBlockRenderer
             UvRotateWest = uvWest
         };
 
-        return Helper.RenderStandardBlock(block, pos, world, tess, baseCtx);
+        return baseCtx.RenderStandardBlock(block, pos, world, tess);
     }
 }

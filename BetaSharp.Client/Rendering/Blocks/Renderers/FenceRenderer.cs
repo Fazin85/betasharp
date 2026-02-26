@@ -7,7 +7,8 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class FenceRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext context)
+    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
+        in BlockRenderContext context)
     {
         bool hasRendered = true;
 
@@ -17,7 +18,7 @@ public class FenceRenderer : IBlockRenderer
 
         // Clone the context and apply the new bounding box for the post
         var postCtx = context with { OverrideBounds = new Box(postMin, 0.0F, postMin, postMax, 1.0F, postMax) };
-        Helper.RenderStandardBlock(block, pos, world, tess, postCtx);
+        postCtx.RenderStandardBlock(block, pos, world, tess);
 
         // Check for adjacent fences using 'world' and 'pos'
         bool connectsWest = world.getBlockId(pos.x - 1, pos.y, pos.z) == block.id;
@@ -50,14 +51,20 @@ public class FenceRenderer : IBlockRenderer
 
         if (connectsX)
         {
-            var topXCtx = context with { OverrideBounds = new Box(barMinX, topBarMinY, barDepthMin, barMaxX, topBarMaxY, barDepthMax) };
-            Helper.RenderStandardBlock(block, pos, world, tess, topXCtx);
+            var topXCtx = context with
+            {
+                OverrideBounds = new Box(barMinX, topBarMinY, barDepthMin, barMaxX, topBarMaxY, barDepthMax)
+            };
+            topXCtx.RenderStandardBlock(block, pos, world, tess);
         }
 
         if (connectsZ)
         {
-            var topZCtx = context with { OverrideBounds = new Box(barDepthMin, topBarMinY, barMinZ, barDepthMax, topBarMaxY, barMaxZ) };
-            Helper.RenderStandardBlock(block, pos, world, tess, topZCtx);
+            var topZCtx = context with
+            {
+                OverrideBounds = new Box(barDepthMin, topBarMinY, barMinZ, barDepthMax, topBarMaxY, barMaxZ)
+            };
+            topZCtx.RenderStandardBlock(block, pos, world, tess);
         }
 
         // 3. Render Bottom Connecting Bars
@@ -66,14 +73,20 @@ public class FenceRenderer : IBlockRenderer
 
         if (connectsX)
         {
-            var bottomXCtx = context with { OverrideBounds = new Box(barMinX, bottomBarMinY, barDepthMin, barMaxX, bottomBarMaxY, barDepthMax) };
-            Helper.RenderStandardBlock(block, pos, world, tess, bottomXCtx);
+            var bottomXCtx = context with
+            {
+                OverrideBounds = new Box(barMinX, bottomBarMinY, barDepthMin, barMaxX, bottomBarMaxY, barDepthMax)
+            };
+            bottomXCtx.RenderStandardBlock(block, pos, world, tess);
         }
 
         if (connectsZ)
         {
-            var bottomZCtx = context with { OverrideBounds = new Box(barDepthMin, bottomBarMinY, barMinZ, barDepthMax, bottomBarMaxY, barMaxZ) };
-            Helper.RenderStandardBlock(block, pos, world, tess, bottomZCtx);
+            var bottomZCtx = context with
+            {
+                OverrideBounds = new Box(barDepthMin, bottomBarMinY, barMinZ, barDepthMax, bottomBarMaxY, barMaxZ)
+            };
+            bottomZCtx.RenderStandardBlock(block, pos, world, tess);
         }
 
         // Notice we COMPLETELY REMOVED the bounding box reset!

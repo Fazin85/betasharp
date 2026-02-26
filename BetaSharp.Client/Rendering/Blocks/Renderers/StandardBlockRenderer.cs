@@ -7,8 +7,6 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class StandardBlockRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext context)
-    {
-        return Helper.RenderStandardBlock(block, pos, world, tess, context);
-    }
+    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
+        in BlockRenderContext context) => context.RenderStandardBlock(block, pos, world, tess);
 }
