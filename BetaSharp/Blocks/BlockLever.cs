@@ -27,9 +27,9 @@ public class BlockLever : Block
         return false;
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return 12;
+        return BlockRendererType.Lever;
     }
 
     public override bool canPlaceAt(World world, int x, int y, int z, int side)

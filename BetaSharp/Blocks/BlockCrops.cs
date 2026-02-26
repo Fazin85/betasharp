@@ -103,9 +103,9 @@ public class BlockCrops : BlockPlant
         return textureId + meta;
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return 6;
+        return BlockRendererType.Crops;
     }
 
     public override void dropStacks(World world, int x, int y, int z, int meta, float luck)

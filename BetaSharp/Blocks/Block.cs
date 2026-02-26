@@ -205,9 +205,9 @@ public class Block
         return true;
     }
 
-    public virtual int getRenderType()
+    public virtual BlockRendererType getRenderType()
     {
-        return 0;
+        return BlockRendererType.Standard;
     }
 
     protected Block setHardness(float hardness)

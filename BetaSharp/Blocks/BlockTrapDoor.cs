@@ -32,9 +32,9 @@ public class BlockTrapDoor : Block
         return false;
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return 0;
+        return BlockRendererType.Standard;
     }
 
     public override Box getBoundingBox(World world, int x, int y, int z)

@@ -64,9 +64,9 @@ public class BlockRedstoneRepeater : Block
         return side != 0 && side != 1;
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return 15;
+        return BlockRendererType.Repeater;
     }
 
     public override int getTexture(int side)

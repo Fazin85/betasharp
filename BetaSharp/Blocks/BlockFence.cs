@@ -31,8 +31,8 @@ public class BlockFence : Block
         return false;
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return 11;
+        return BlockRendererType.Fence;
     }
 }

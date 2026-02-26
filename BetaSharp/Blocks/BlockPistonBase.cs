@@ -29,9 +29,9 @@ public class BlockPistonBase : Block
         return var3 > 5 ? textureId : (side == var3 ? (!isExtended(meta) && BoundingBox.MinX <= 0.0D && BoundingBox.MinY <= 0.0D && BoundingBox.MinZ <= 0.0D && BoundingBox.MaxX >= 1.0D && BoundingBox.MaxY >= 1.0D && BoundingBox.MaxZ >= 1.0D ? textureId : 110) : (side == PistonConstants.field_31057_a[var3] ? 109 : 108));
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return 16;
+        return BlockRendererType.PistonBase;
     }
 
     public override bool isOpaque()

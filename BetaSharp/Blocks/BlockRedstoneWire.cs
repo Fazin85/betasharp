@@ -35,9 +35,9 @@ public class BlockRedstoneWire : Block
         return false;
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return 5;
+        return BlockRendererType.RedstoneWire;
     }
 
     public override int getColorMultiplier(IBlockAccess var1, int var2, int var3, int var4)

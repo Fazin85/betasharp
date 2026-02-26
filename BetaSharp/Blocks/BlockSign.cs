@@ -65,9 +65,9 @@ public class BlockSign : BlockWithEntity
         }
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return -1;
+        return BlockRendererType.Entity;
     }
 
     public override bool isFullCube()

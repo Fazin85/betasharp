@@ -1,8 +1,9 @@
-namespace BetaSharp.Client.Rendering.Blocks.Renderers;
+namespace BetaSharp.Blocks;
 
-public enum RendererType: int
+public enum BlockRendererType: int
 {
-    StandardBlock = 0,
+    Entity = -1,
+    Standard = 0,
     Reed = 1,
     Torch = 2,
     Fire = 3,

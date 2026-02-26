@@ -60,9 +60,9 @@ public class BlockDoor : Block
         return false;
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return 7;
+        return BlockRendererType.Door;
     }
 
     public override Box getBoundingBox(World world, int x, int y, int z)

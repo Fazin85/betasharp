@@ -96,9 +96,9 @@ public abstract class BlockFluid : Block
         return null;
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return 4;
+        return BlockRendererType.Fluids;
     }
 
     public override int getDroppedItemId(int blockMeta, JavaRandom random)

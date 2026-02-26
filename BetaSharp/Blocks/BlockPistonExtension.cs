@@ -51,9 +51,9 @@ public class BlockPistonExtension : Block
         return side == var3 ? (pistonHeadSprite >= 0 ? pistonHeadSprite : ((meta & 8) != 0 ? textureId - 1 : textureId)) : (side == PistonConstants.field_31057_a[var3] ? 107 : 108);
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return 17;
+        return BlockRendererType.PistonExtension;
     }
 
     public override bool isOpaque()

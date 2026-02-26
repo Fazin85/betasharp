@@ -49,9 +49,9 @@ public class BlockFire : Block
         return false;
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return 3;
+        return BlockRendererType.Fire;
     }
 
     public override int getDroppedItemCount(JavaRandom random)

@@ -46,9 +46,9 @@ public class BlockPistonMoving : BlockWithEntity
         return false;
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return -1;
+        return BlockRendererType.Entity;
     }
 
     public override bool isOpaque()

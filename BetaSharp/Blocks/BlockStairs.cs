@@ -38,9 +38,9 @@ public class BlockStairs : Block
         return false;
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return 10;
+        return BlockRendererType.Stairs;
     }
 
     public override bool isSideVisible(IBlockAccess iBlockAccess, int x, int y, int z, int side)

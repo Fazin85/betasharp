@@ -32,7 +32,7 @@ public class BlockRenderer
     public bool RenderBlockByRenderType(IBlockAccess world, Block block, BlockPos pos, Tessellator tess,
         int overrideTexture = -1, bool renderAllFaces = false)
     {
-        RendererType type = (RendererType)block.getRenderType();
+        BlockRendererType type = block.getRenderType();
 
         block.updateBoundingBox(world, pos.x, pos.y, pos.z);
 
@@ -50,29 +50,29 @@ public class BlockRenderer
             uvEast: 0,
             uvWest: 0,
             aoBlendMode: 1,
-            customFlag: type == RendererType.PistonExtension
+            customFlag: type == BlockRendererType.PistonExtension
         );
 
         return type switch
         {
-            RendererType.StandardBlock => ctx.DrawBlock(block, pos),
-            RendererType.Reed => s_reed.Render(block, pos, ctx),
-            RendererType.Torch => s_torch.Render(block, pos, ctx),
-            RendererType.Fire => s_fire.Render(block, pos, ctx),
-            RendererType.Fluids => s_fluids.Render(block, pos, ctx),
-            RendererType.RedstoneWire => s_wire.Render(block, pos, ctx),
-            RendererType.Crops => s_crops.Render(block, pos, ctx),
-            RendererType.Door => s_door.Render(block, pos, ctx),
-            RendererType.Ladder => s_ladder.Render(block, pos, ctx),
-            RendererType.MinecartTrack => s_track.Render(block, pos, ctx),
-            RendererType.Stairs => s_stairs.Render(block, pos, ctx),
-            RendererType.Fence => s_fence.Render(block, pos, ctx),
-            RendererType.Lever => s_lever.Render(block, pos, ctx),
-            RendererType.Cactus => s_cactus.Render(block, pos, ctx),
-            RendererType.Bed => s_bed.Render(block, pos, ctx),
-            RendererType.Repeater => s_repeater.Render(block, pos, ctx),
-            RendererType.PistonBase => s_pistonBase.Render(block, pos, ctx),
-            RendererType.PistonExtension => s_pistonExt.Render(block, pos, ctx),
+            BlockRendererType.Standard => ctx.DrawBlock(block, pos),
+            BlockRendererType.Reed => s_reed.Render(block, pos, ctx),
+            BlockRendererType.Torch => s_torch.Render(block, pos, ctx),
+            BlockRendererType.Fire => s_fire.Render(block, pos, ctx),
+            BlockRendererType.Fluids => s_fluids.Render(block, pos, ctx),
+            BlockRendererType.RedstoneWire => s_wire.Render(block, pos, ctx),
+            BlockRendererType.Crops => s_crops.Render(block, pos, ctx),
+            BlockRendererType.Door => s_door.Render(block, pos, ctx),
+            BlockRendererType.Ladder => s_ladder.Render(block, pos, ctx),
+            BlockRendererType.MinecartTrack => s_track.Render(block, pos, ctx),
+            BlockRendererType.Stairs => s_stairs.Render(block, pos, ctx),
+            BlockRendererType.Fence => s_fence.Render(block, pos, ctx),
+            BlockRendererType.Lever => s_lever.Render(block, pos, ctx),
+            BlockRendererType.Cactus => s_cactus.Render(block, pos, ctx),
+            BlockRendererType.Bed => s_bed.Render(block, pos, ctx),
+            BlockRendererType.Repeater => s_repeater.Render(block, pos, ctx),
+            BlockRendererType.PistonBase => s_pistonBase.Render(block, pos, ctx),
+            BlockRendererType.PistonExtension => s_pistonExt.Render(block, pos, ctx),
             _ => false
         };
     }
@@ -82,7 +82,7 @@ public class BlockRenderer
     [Deprecated(["THIS SHOULD BE PART OF THE UI"])]
     public void RenderBlockOnInventory(Block block, int metadata, float brightness, Tessellator tess)
     {
-        int renderType = block.getRenderType();
+        BlockRendererType renderType = block.getRenderType();
 
         int color = block.getColor(metadata);
         float red = (color >> 16 & 255) / 255.0F * brightness;
@@ -95,7 +95,7 @@ public class BlockRenderer
             tess: tess,
             renderAllFaces: true,
             enableAo: false,
-            overrideTexture: (renderType == 16) ? 1 : -1
+            overrideTexture: (renderType == BlockRendererType.PistonBase) ? 1 : -1
         );
 
         Vec3D origin = new Vec3D(0, 0, 0);
@@ -201,12 +201,12 @@ public class BlockRenderer
         tess.draw();
     }
 
-    public static bool IsSideLit(int renderType)
+    public static bool IsSideLit(BlockRendererType renderType)
     {
-        return renderType == 0 || // Standard
-               renderType == 10 || // Stairs
-               renderType == 11 || // Fence
-               renderType == 13 || // Cactus
-               renderType == 16; // Piston Base
+        return renderType == BlockRendererType.Standard ||
+               renderType == BlockRendererType.Stairs ||
+               renderType == BlockRendererType.Fence ||
+               renderType == BlockRendererType.Cactus ||
+               renderType == BlockRendererType.PistonBase;
     }
 }
