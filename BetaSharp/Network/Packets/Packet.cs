@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Sockets;
 using BetaSharp.Network.Packets.C2SPlay;
 using BetaSharp.Network.Packets.Play;
@@ -8,7 +9,7 @@ namespace BetaSharp.Network.Packets;
 
 public abstract class Packet
 {
-    private static readonly Dictionary<int, PacketRegisterItem> s_ioToType = new ();
+    private static readonly List<PacketRegisterItem?> s_ioToType = new (255);
     private static readonly Dictionary<Type, PacketRegisterRout> s_typeToId = new ();
     private static readonly ILogger<Packet> s_logger = Log.Instance.For<Packet>();
 
@@ -20,7 +21,31 @@ public abstract class Packet
 
     private static void Register<T>(PacketRegisterItem<T> item) where T : Packet
     {
-        if (s_ioToType.ContainsKey(item.Id))
+        // populate list with default values
+        if (s_ioToType.Count <= item.Id)
+        {
+            int l = item.Id + 1;
+            if (s_ioToType.Capacity < l)
+            {
+                // Resize list
+                s_ioToType.Capacity = l;
+            }
+            else if (s_ioToType.Capacity > l)
+            {
+                // list already resized, fill list to capacity
+                l = s_ioToType.Capacity;
+            }
+
+            s_ioToType.AddRange(
+                Enumerable.Repeat<PacketRegisterItem?>(null, l - s_ioToType.Count)
+            );
+        }
+
+        if (item.Id < 0)
+        {
+            throw new ArgumentException("Packet id cannot be negative:" + item.Id, nameof(item));
+        }
+        if (s_ioToType[item.Id] != null)
         {
             throw new ArgumentException("Duplicate packet id:" + item.Id, nameof(item));
         }
@@ -29,24 +54,23 @@ public abstract class Packet
             throw new ArgumentException("Duplicate packet class:" + typeof(T));
         }
 
-        s_ioToType.Add(item.Id, item);
+        s_ioToType[item.Id] = item;
         s_typeToId.Add(typeof(T), item);
     }
 
     public static Packet? Create(int rawId)
     {
-        if (s_ioToType.TryGetValue(rawId, out PacketRegisterItem? item))
+        if (TryGetPacket(rawId, out PacketRegisterItem? item))
         {
             return item.NewPacket();
         }
 
-        s_logger.LogInformation($"Skipping packet with id {rawId}");
         return null;
     }
 
     public int GetRawId()
     {
-        if (!s_typeToId.TryGetValue(GetType(), out _rout))
+        if (_rout == null && !s_typeToId.TryGetValue(GetType(), out _rout))
         {
             s_logger.LogError($"Id not found for packet type {GetType()}");
             return -1;
@@ -66,7 +90,7 @@ public abstract class Packet
                 return null;
             }
 
-            if (!s_ioToType.TryGetValue(rawId, out PacketRegisterItem? packetR))
+            if (!TryGetPacket(rawId, out PacketRegisterItem? packetR))
             {
                 throw new IOException("Bad packet id " + rawId);
             }
@@ -99,6 +123,19 @@ public abstract class Packet
         tracker.update(packet.Size());
 
         return packet;
+    }
+
+    private static bool TryGetPacket(int id, [NotNullWhen(true)] out PacketRegisterItem? item)
+    {
+        if (id < 0 || id >= s_ioToType.Count)
+        {
+            s_logger.LogWarning("Packet id out of registered range: " + id);
+            item = null;
+            return false;
+        }
+
+        item = s_ioToType[id];
+        return item != null;
     }
 
     public static void Write(Packet packet, NetworkStream stream)
