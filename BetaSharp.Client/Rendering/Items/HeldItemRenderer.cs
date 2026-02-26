@@ -195,8 +195,7 @@ public class HeldItemRenderer
             GLManager.GL.Rotate(90.0F, 0.0F, 1.0F, 0.0F);
             GLManager.GL.Rotate(var8 * -85.0F, 0.0F, 0.0F, 1.0F);
             GLManager.GL.Enable(GLEnum.RescaleNormal);
-            //TODO: ADD SKINS
-            mc.textureManager.BindTexture(mc.textureManager.GetTextureId(mc.player.getTexture()));
+            bindSkinTexture();
 
             for (int var17 = 0; var17 < 2; ++var17)
             {
@@ -285,8 +284,7 @@ public class HeldItemRenderer
             var10 = MathHelper.Sin(MathHelper.Sqrt(var8) * (float)Math.PI);
             GLManager.GL.Rotate(var10 * 70.0F, 0.0F, 1.0F, 0.0F);
             GLManager.GL.Rotate(-var9 * 20.0F, 0.0F, 0.0F, 1.0F);
-            //TODO: ADD SKIN
-            mc.textureManager.BindTexture(mc.textureManager.GetTextureId(mc.player.getTexture()));
+            bindSkinTexture();
             GLManager.GL.Translate(-1.0F, 3.6F, 3.5F);
             GLManager.GL.Rotate(120.0F, 0.0F, 0.0F, 1.0F);
             GLManager.GL.Rotate(200.0F, 1.0F, 0.0F, 0.0F);
@@ -497,5 +495,17 @@ public class HeldItemRenderer
     public void func_9450_c()
     {
         equippedProgress = 0.0F;
+    }
+
+    private void bindSkinTexture()
+    {
+        var skinHandle = EntityRenderDispatcher.instance.skinManager?.GetTextureHandle(mc.player?.skinUrl);
+        if (skinHandle != null)
+        {
+            skinHandle.Bind();
+            return;
+        }
+
+        mc.textureManager.BindTexture(mc.textureManager.GetTextureId(mc.player.getTexture()));
     }
 }

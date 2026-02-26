@@ -28,47 +28,27 @@ public class EnumArt
     public static readonly EnumArt Skeleton = new("Skeleton", 64, 48, 192, 64);
     public static readonly EnumArt DonkeyKong = new("DonkeyKong", 64, 48, 192, 112);
 
-    public static readonly int maxArtTitleLength = "SkullAndRoses".Length;
-    public readonly string title;
-    public readonly int sizeX;
-    public readonly int sizeY;
-    public readonly int offsetX;
-    public readonly int offsetY;
-    public static readonly EnumArt[] values =
+    public static readonly int MaxArtTitleLength = "SkullAndRoses".Length;
+
+    public readonly string Title;
+    public readonly int SizeX;
+    public readonly int SizeY;
+    public readonly int OffsetX;
+    public readonly int OffsetY;
+
+    public static readonly EnumArt[] Values =
     [
-        Kebab,
-        Aztec,
-        Alban,
-        Aztec2,
-        Bomb,
-        Plant,
-        Wasteland,
-        Pool,
-        Courbet,
-        Sea,
-        Sunset,
-        Creebet,
-        Wanderer,
-        Graham,
-        Match,
-        Bust,
-        Stage,
-        Void,
-        SkullAndRoses,
-        Fighters,
-        Pointer,
-        Pigscene,
-        BurningSkull,
-        Skeleton,
-        DonkeyKong
+        Kebab, Aztec, Alban, Aztec2, Bomb, Plant, Wasteland, Pool, Courbet, Sea, Sunset, Creebet,
+        Wanderer, Graham, Match, Bust, Stage, Void, SkullAndRoses, Fighters, Pointer, Pigscene,
+        BurningSkull, Skeleton, DonkeyKong
     ];
 
-    private EnumArt(string var3, int var4, int var5, int var6, int var7)
+    private EnumArt(string title, int sizeX, int sizeY, int offsetX, int offsetY)
     {
-        title = var3;
-        sizeX = var4;
-        sizeY = var5;
-        offsetX = var6;
-        offsetY = var7;
+        Title = title;
+        SizeX = sizeX;
+        SizeY = sizeY;
+        OffsetX = offsetX;
+        OffsetY = offsetY;
     }
 }

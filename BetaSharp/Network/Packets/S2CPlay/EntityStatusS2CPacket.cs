@@ -1,4 +1,4 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
@@ -17,16 +17,16 @@ public class EntityStatusS2CPacket : Packet
         entityStatus = (sbyte)status;
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        entityId = stream.readInt();
-        entityStatus = (sbyte)stream.readByte();
+        entityId = stream.ReadInt();
+        entityStatus = (sbyte)stream.ReadByte();
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(entityId);
-        stream.writeByte(entityStatus);
+        stream.WriteInt(entityId);
+        stream.WriteByte((byte)entityStatus);
     }
 
     public override void Apply(NetHandler handler)

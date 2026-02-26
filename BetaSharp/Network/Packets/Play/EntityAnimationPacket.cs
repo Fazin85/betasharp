@@ -1,5 +1,5 @@
+using System.Net.Sockets;
 using BetaSharp.Entities;
-using java.io;
 
 namespace BetaSharp.Network.Packets.Play;
 
@@ -18,16 +18,16 @@ public class EntityAnimationPacket : Packet
         this.animationId = animationId;
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        id = stream.readInt();
-        animationId = (sbyte)stream.readByte();
+        id = stream.ReadInt();
+        animationId = (sbyte)stream.ReadByte();
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(id);
-        stream.writeByte(animationId);
+        stream.WriteInt(id);
+        stream.WriteByte((byte)animationId);
     }
 
     public override void Apply(NetHandler handler)

@@ -886,32 +886,15 @@ public class WorldRenderer : IWorldAccess
     public void notifyEntityAdded(Entity var1)
     {
         var1.updateCloak();
-        //TODO: SKINS
-        //if (var1.skinUrl != null)
-        //{
-        //    renderEngine.obtainImageData(var1.skinUrl, new ImageBufferDownload());
-        //}
-
-        //if (var1.cloakUrl != null)
-        //{
-        //    renderEngine.obtainImageData(var1.cloakUrl, new ImageBufferDownload());
-        //}
-
+        if (!string.IsNullOrEmpty(var1.skinUrl) && mc.session.skinUrl != null)
+        {
+            EntityRenderDispatcher.instance.skinManager?.RequestDownload(var1.skinUrl);
+        }
     }
 
     public void notifyEntityRemoved(Entity var1)
     {
-        //TODO: SKINS
-        //if (var1.skinUrl != null)
-        //{
-        //    renderEngine.releaseImageData(var1.skinUrl);
-        //}
-
-        //if (var1.cloakUrl != null)
-        //{
-        //    renderEngine.releaseImageData(var1.cloakUrl);
-        //}
-
+        EntityRenderDispatcher.instance.skinManager?.Release(var1.skinUrl);
     }
 
     public void notifyAmbientDarknessChanged()

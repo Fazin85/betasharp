@@ -1,4 +1,4 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
@@ -17,16 +17,16 @@ public class ItemPickupAnimationS2CPacket : Packet
         collectorEntityId = collectorId;
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        entityId = stream.readInt();
-        collectorEntityId = stream.readInt();
+        entityId = stream.ReadInt();
+        collectorEntityId = stream.ReadInt();
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(entityId);
-        stream.writeInt(collectorEntityId);
+        stream.WriteInt(entityId);
+        stream.WriteInt(collectorEntityId);
     }
 
     public override void Apply(NetHandler handler)

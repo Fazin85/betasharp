@@ -1,4 +1,4 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
@@ -26,20 +26,20 @@ public class OpenScreenS2CPacket : Packet
         handler.onOpenScreen(this);
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        syncId = (sbyte)stream.readByte();
-        screenHandlerId = (sbyte)stream.readByte();
-        name = stream.readUTF();
-        slotsCount = (sbyte)stream.readByte();
+        syncId = (sbyte)stream.ReadByte();
+        screenHandlerId = (sbyte)stream.ReadByte();
+        name = stream.ReadString();
+        slotsCount = (sbyte)stream.ReadByte();
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeByte(syncId);
-        stream.writeByte(screenHandlerId);
-        stream.writeUTF(name);
-        stream.writeByte(slotsCount);
+        stream.WriteByte((byte)syncId);
+        stream.WriteByte((byte)screenHandlerId);
+        stream.WriteString(name);
+        stream.WriteByte((byte)slotsCount);
     }
 
     public override int Size()

@@ -315,10 +315,9 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                 }
             }
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError(ex, "Exception");
-            _logger.LogError("Unexpected exception");
 
             while (running)
             {

@@ -1,6 +1,6 @@
+using System.Net.Sockets;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
-using java.io;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
@@ -35,32 +35,32 @@ public class ItemEntitySpawnS2CPacket : Packet
         velocityZ = (sbyte)(int)(item.velocityZ * 128.0D);
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        id = stream.readInt();
-        itemRawId = stream.readShort();
-        itemCount = (sbyte)stream.readByte();
-        itemDamage = stream.readShort();
-        x = stream.readInt();
-        y = stream.readInt();
-        z = stream.readInt();
-        velocityX = (sbyte)stream.readByte();
-        velocityY = (sbyte)stream.readByte();
-        velocityZ = (sbyte)stream.readByte();
+        id = stream.ReadInt();
+        itemRawId = stream.ReadShort();
+        itemCount = (sbyte)stream.ReadByte();
+        itemDamage = stream.ReadShort();
+        x = stream.ReadInt();
+        y = stream.ReadInt();
+        z = stream.ReadInt();
+        velocityX = (sbyte)stream.ReadByte();
+        velocityY = (sbyte)stream.ReadByte();
+        velocityZ = (sbyte)stream.ReadByte();
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(id);
-        stream.writeShort(itemRawId);
-        stream.writeByte(itemCount);
-        stream.writeShort(itemDamage);
-        stream.writeInt(x);
-        stream.writeInt(y);
-        stream.writeInt(z);
-        stream.writeByte(velocityX);
-        stream.writeByte(velocityY);
-        stream.writeByte(velocityZ);
+        stream.WriteInt(id);
+        stream.WriteShort((short)itemRawId);
+        stream.WriteByte((byte)itemCount);
+        stream.WriteShort((short)itemDamage);
+        stream.WriteInt(x);
+        stream.WriteInt(y);
+        stream.WriteInt(z);
+        stream.WriteByte((byte)velocityX);
+        stream.WriteByte((byte)velocityY);
+        stream.WriteByte((byte)velocityZ);
     }
 
     public override void Apply(NetHandler handler)

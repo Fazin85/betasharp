@@ -1,7 +1,8 @@
+using System.Net;
+using System.Net.Sockets;
 using BetaSharp.Server.Network;
 using BetaSharp.Server.Threading;
 using java.lang;
-using java.net;
 using Microsoft.Extensions.Logging;
 using Exception = System.Exception;
 
@@ -31,19 +32,23 @@ public class DedicatedServer(IServerConfiguration config) : MinecraftServer(conf
 
         s_logger.LogInformation("Loading properties");
 
-        string var2 = config.GetServerIp("");
-        InetAddress var3 = null;
-        if (var2.Length > 0)
+        string addressInput = config.GetServerIp("");
+
+        bool dualStack = config.GetDualStack(false);
+
+        var address = dualStack ? IPAddress.IPv6Any : IPAddress.Any;
+
+        if (addressInput.Length > 0)
         {
-            var3 = InetAddress.getByName(var2);
+            address = Dns.GetHostAddresses(addressInput)[0];
         }
 
-        int var4 = config.GetServerPort(25565);
-        s_logger.LogInformation($"Starting Minecraft server on {(var2.Length == 0 ? "*" : var2)}:{var4}");
+        int port = config.GetServerPort(25565);
+        s_logger.LogInformation($"Starting Minecraft server on {(addressInput.Length == 0 ? "*" : addressInput)}:{port}");
 
         try
         {
-            connections = new ConnectionListener(this, var3, var4);
+            connections = new ConnectionListener(this, address, port, dualStack);
         }
         catch (java.io.IOException ex)
         {

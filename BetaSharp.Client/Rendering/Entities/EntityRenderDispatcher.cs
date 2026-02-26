@@ -20,6 +20,7 @@ public class EntityRenderDispatcher
     public static double offsetY;
     public static double offsetZ;
     public TextureManager textureManager;
+    public SkinManager skinManager;
     public HeldItemRenderer heldItemRenderer;
     public World world;
     public EntityLiving cameraEntity;

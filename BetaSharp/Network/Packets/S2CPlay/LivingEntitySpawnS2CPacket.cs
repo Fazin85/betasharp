@@ -1,7 +1,6 @@
+using System.Net.Sockets;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
-using java.io;
-using java.util;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
@@ -31,27 +30,27 @@ public class LivingEntitySpawnS2CPacket : Packet
         metaData = ent.getDataWatcher();
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        entityId = stream.readInt();
-        type = (sbyte)stream.readByte();
-        xPosition = stream.readInt();
-        yPosition = stream.readInt();
-        zPosition = stream.readInt();
-        yaw = (sbyte)stream.readByte();
-        pitch = (sbyte)stream.readByte();
+        entityId = stream.ReadInt();
+        type = (sbyte)stream.ReadByte();
+        xPosition = stream.ReadInt();
+        yPosition = stream.ReadInt();
+        zPosition = stream.ReadInt();
+        yaw = (sbyte)stream.ReadByte();
+        pitch = (sbyte)stream.ReadByte();
         receivedMetadata = DataWatcher.ReadWatchableObjects(stream);
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(entityId);
-        stream.writeByte(type);
-        stream.writeInt(xPosition);
-        stream.writeInt(yPosition);
-        stream.writeInt(zPosition);
-        stream.writeByte(yaw);
-        stream.writeByte(pitch);
+        stream.WriteInt(entityId);
+        stream.WriteByte((byte)type);
+        stream.WriteInt(xPosition);
+        stream.WriteInt(yPosition);
+        stream.WriteInt(zPosition);
+        stream.WriteByte((byte)yaw);
+        stream.WriteByte((byte)pitch);
         metaData.WriteWatchableObjects(stream);
     }
 
