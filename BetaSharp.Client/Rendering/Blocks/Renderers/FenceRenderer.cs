@@ -7,22 +7,23 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class FenceRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
-        in BlockRenderContext context)
+    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext context)
     {
         bool hasRendered = true;
 
         // 1. Render the central vertical post
         float postMin = 6.0F / 16.0F;
         float postMax = 10.0F / 16.0F;
-        SetOverrideBoundingBox(postMin, 0.0F, postMin, postMax, 1.0F, postMax);
-        RenderStandardBlock(block, x, y, z);
 
-        // Check for adjacent fences
-        bool connectsWest = _blockAccess.getBlockId(x - 1, y, z) == block.id;
-        bool connectsEast = _blockAccess.getBlockId(x + 1, y, z) == block.id;
-        bool connectsNorth = _blockAccess.getBlockId(x, y, z - 1) == block.id;
-        bool connectsSouth = _blockAccess.getBlockId(x, y, z + 1) == block.id;
+        // Clone the context and apply the new bounding box for the post
+        var postCtx = context with { OverrideBounds = new Box(postMin, 0.0F, postMin, postMax, 1.0F, postMax) };
+        Helper.RenderStandardBlock(block, pos, world, tess, postCtx);
+
+        // Check for adjacent fences using 'world' and 'pos'
+        bool connectsWest = world.getBlockId(pos.x - 1, pos.y, pos.z) == block.id;
+        bool connectsEast = world.getBlockId(pos.x + 1, pos.y, pos.z) == block.id;
+        bool connectsNorth = world.getBlockId(pos.x, pos.y, pos.z - 1) == block.id;
+        bool connectsSouth = world.getBlockId(pos.x, pos.y, pos.z + 1) == block.id;
 
         bool connectsX = connectsWest || connectsEast;
         bool connectsZ = connectsNorth || connectsSouth;
@@ -38,7 +39,6 @@ public class FenceRenderer : IBlockRenderer
         float barDepthMax = 9.0F / 16.0F;
 
         // Determine how far the bars extend based on neighbor connections
-        // If connecting, stretch to the edge (0.0 or 1.0). Otherwise, stay near the post.
         float barMinX = connectsWest ? 0.0F : barDepthMin;
         float barMaxX = connectsEast ? 1.0F : barDepthMax;
         float barMinZ = connectsNorth ? 0.0F : barDepthMin;
@@ -50,14 +50,14 @@ public class FenceRenderer : IBlockRenderer
 
         if (connectsX)
         {
-            SetOverrideBoundingBox(barMinX, topBarMinY, barDepthMin, barMaxX, topBarMaxY, barDepthMax);
-            RenderStandardBlock(block, x, y, z);
+            var topXCtx = context with { OverrideBounds = new Box(barMinX, topBarMinY, barDepthMin, barMaxX, topBarMaxY, barDepthMax) };
+            Helper.RenderStandardBlock(block, pos, world, tess, topXCtx);
         }
 
         if (connectsZ)
         {
-            SetOverrideBoundingBox(barDepthMin, topBarMinY, barMinZ, barDepthMax, topBarMaxY, barMaxZ);
-            RenderStandardBlock(block, x, y, z);
+            var topZCtx = context with { OverrideBounds = new Box(barDepthMin, topBarMinY, barMinZ, barDepthMax, topBarMaxY, barMaxZ) };
+            Helper.RenderStandardBlock(block, pos, world, tess, topZCtx);
         }
 
         // 3. Render Bottom Connecting Bars
@@ -66,18 +66,18 @@ public class FenceRenderer : IBlockRenderer
 
         if (connectsX)
         {
-            SetOverrideBoundingBox(barMinX, bottomBarMinY, barDepthMin, barMaxX, bottomBarMaxY, barDepthMax);
-            RenderStandardBlock(block, x, y, z);
+            var bottomXCtx = context with { OverrideBounds = new Box(barMinX, bottomBarMinY, barDepthMin, barMaxX, bottomBarMaxY, barDepthMax) };
+            Helper.RenderStandardBlock(block, pos, world, tess, bottomXCtx);
         }
 
         if (connectsZ)
         {
-            SetOverrideBoundingBox(barDepthMin, bottomBarMinY, barMinZ, barDepthMax, bottomBarMaxY, barMaxZ);
-            RenderStandardBlock(block, x, y, z);
+            var bottomZCtx = context with { OverrideBounds = new Box(barDepthMin, bottomBarMinY, barMinZ, barDepthMax, bottomBarMaxY, barMaxZ) };
+            Helper.RenderStandardBlock(block, pos, world, tess, bottomZCtx);
         }
 
-        // Reset bounding box state to prevent breaking the next block in the chunk
-        SetOverrideBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+        // Notice we COMPLETELY REMOVED the bounding box reset!
+        // The original 'context' was never mutated, so we don't need to clean up after ourselves.
 
         return hasRendered;
     }
