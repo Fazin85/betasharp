@@ -10,7 +10,6 @@ namespace BetaSharp.Client.Rendering.Blocks;
 public class BlockRenderer
 {
     // Core Dependencies & Constants
-    private static readonly bool s_fancyGrass = true;
     private readonly int _aoBlendMode = 1;
 
     private readonly IBlockAccess _blockAccess = null!;
@@ -39,29 +38,6 @@ public class BlockRenderer
 
     // Ambient Occlusion: Base Settings
     private bool _enableAo;
-    private float _aoLightValueXNeg;
-    private float _aoLightValueXPos;
-    private float _aoLightValueYNeg;
-    private float _aoLightValueYPos;
-    private float _aoLightValueZNeg;
-    private float _aoLightValueZPos;
-
-
-    // Ambient Occlusion: Neighbor Opacity Cache
-    private bool _aoBlockOpXNegYNeg;
-    private bool _aoBlockOpXNegYPos;
-    private bool _aoBlockOpXPosYNeg;
-    private bool _aoBlockOpXPosYPos;
-
-    private bool _aoBlockOpXNegZNeg;
-    private bool _aoBlockOpXNegZPos;
-    private bool _aoBlockOpXPosZNeg;
-    private bool _aoBlockOpXPosZPos;
-
-    private bool _aoBlockOpYNegZNeg;
-    private bool _aoBlockOpYNegZPos;
-    private bool _aoBlockOpYPosZNeg;
-    private bool _aoBlockOpYPosZPos;
 
     // Ambient Occlusion: Vertex Colors
     private float _colorRedTopLeft;
@@ -2070,123 +2046,117 @@ public class BlockRenderer
         bool hasRendered = false;
         Box bounds = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
 
-        // 1. Get Base Color/Biome Tint
+        // 1. Base Colors
         int colorMultiplier = block.getColorMultiplier(_blockAccess, x, y, z);
         float r = (colorMultiplier >> 16 & 255) / 255.0F;
         float g = (colorMultiplier >> 8 & 255) / 255.0F;
         float b = (colorMultiplier & 255) / 255.0F;
 
-        // 2. Determine Tinting Rules
         bool tintBottom = true, tintTop = true, tintEast = true, tintWest = true, tintNorth = true, tintSouth = true;
         if (block.textureId == 3 || _overrideBlockTexture >= 0)
         {
             tintBottom = tintEast = tintWest = tintNorth = tintSouth = false;
         }
 
-        // 3. Cache Direct Neighbor Luminance
-        _aoLightValueXNeg = block.getLuminance(_blockAccess, x - 1, y, z);
-        _aoLightValueYNeg = block.getLuminance(_blockAccess, x, y - 1, z);
-        _aoLightValueZNeg = block.getLuminance(_blockAccess, x, y, z - 1);
-        _aoLightValueXPos = block.getLuminance(_blockAccess, x + 1, y, z);
-        _aoLightValueYPos = block.getLuminance(_blockAccess, x, y + 1, z);
-        _aoLightValueZPos = block.getLuminance(_blockAccess, x, y, z + 1);
+        // Cache luminances for the 6 direct neighbors
+        float lXn = block.getLuminance(_blockAccess, x - 1, y, z);
+        float lXp = block.getLuminance(_blockAccess, x + 1, y, z);
+        float lYn = block.getLuminance(_blockAccess, x, y - 1, z);
+        float lYp = block.getLuminance(_blockAccess, x, y + 1, z);
+        float lZn = block.getLuminance(_blockAccess, x, y, z - 1);
+        float lZp = block.getLuminance(_blockAccess, x, y, z + 1);
 
-        // 4. Cache Diagonal Opacity (Is the diagonal neighbor solid/opaque?)
-        bool opXpYp = Block.BlocksAllowVision[_blockAccess.getBlockId(x + 1, y + 1, z)];
-        bool opXpYn = Block.BlocksAllowVision[_blockAccess.getBlockId(x + 1, y - 1, z)];
-        bool opXpZp = Block.BlocksAllowVision[_blockAccess.getBlockId(x + 1, y, z + 1)];
-        bool opXpZn = Block.BlocksAllowVision[_blockAccess.getBlockId(x + 1, y, z - 1)];
-        bool opXnYp = Block.BlocksAllowVision[_blockAccess.getBlockId(x - 1, y + 1, z)];
-        bool opXnYn = Block.BlocksAllowVision[_blockAccess.getBlockId(x - 1, y - 1, z)];
-        bool opXnZp = Block.BlocksAllowVision[_blockAccess.getBlockId(x - 1, y, z + 1)];
-        bool opXnZn = Block.BlocksAllowVision[_blockAccess.getBlockId(x - 1, y, z - 1)];
-        bool opYpZp = Block.BlocksAllowVision[_blockAccess.getBlockId(x, y + 1, z + 1)];
-        bool opYpZn = Block.BlocksAllowVision[_blockAccess.getBlockId(x, y + 1, z - 1)];
-        bool opYnZp = Block.BlocksAllowVision[_blockAccess.getBlockId(x, y - 1, z + 1)];
-        bool opYnZn = Block.BlocksAllowVision[_blockAccess.getBlockId(x, y - 1, z - 1)];
+        // Cache opacity for the 12 edges (Used for AO shadowing)
+        // Format: isOpaque[Axis][Direction][Side]
+        bool opXnYn = !Block.BlocksAllowVision[_blockAccess.getBlockId(x - 1, y - 1, z)];
+        bool opXnYp = !Block.BlocksAllowVision[_blockAccess.getBlockId(x - 1, y + 1, z)];
+        bool opXpYn = !Block.BlocksAllowVision[_blockAccess.getBlockId(x + 1, y - 1, z)];
+        bool opXpYp = !Block.BlocksAllowVision[_blockAccess.getBlockId(x + 1, y + 1, z)];
+        bool opXnZn = !Block.BlocksAllowVision[_blockAccess.getBlockId(x - 1, y, z - 1)];
+        bool opXnZp = !Block.BlocksAllowVision[_blockAccess.getBlockId(x - 1, y, z + 1)];
+        bool opXpZn = !Block.BlocksAllowVision[_blockAccess.getBlockId(x + 1, y, z - 1)];
+        bool opXpZp = !Block.BlocksAllowVision[_blockAccess.getBlockId(x + 1, y, z + 1)];
+        bool opYnZn = !Block.BlocksAllowVision[_blockAccess.getBlockId(x, y - 1, z - 1)];
+        bool opYnZp = !Block.BlocksAllowVision[_blockAccess.getBlockId(x, y - 1, z + 1)];
+        bool opYpZn = !Block.BlocksAllowVision[_blockAccess.getBlockId(x, y + 1, z - 1)];
+        bool opYpZp = !Block.BlocksAllowVision[_blockAccess.getBlockId(x, y + 1, z + 1)];
 
         float v0, v1, v2, v3;
 
+        // ==========================================
         // BOTTOM FACE (Y - 1)
+        // ==========================================
         if (_renderAllFaces || bounds.MinY > 0.0D || block.isSideVisible(_blockAccess, x, y - 1, z, 0))
         {
-            if (_aoBlendMode <= 0)
-            {
-                v0 = v1 = v2 = v3 = _aoLightValueYNeg;
-            }
+            if (_aoBlendMode <= 0) v0 = v1 = v2 = v3 = lYn;
             else
             {
-                int adjY = y - 1;
-                float lW = block.getLuminance(_blockAccess, x - 1, adjY, z);
-                float lE = block.getLuminance(_blockAccess, x + 1, adjY, z);
-                float lN = block.getLuminance(_blockAccess, x, adjY, z - 1);
-                float lS = block.getLuminance(_blockAccess, x, adjY, z + 1);
-
-                float lNW = (!opYnZn && !opXnZn) ? lW : block.getLuminance(_blockAccess, x - 1, adjY, z - 1);
-                float lSW = (!opYnZp && !opXnZp) ? lW : block.getLuminance(_blockAccess, x - 1, adjY, z + 1);
-                float lNE = (!opYnZn && !opXpZn) ? lE : block.getLuminance(_blockAccess, x + 1, adjY, z - 1);
-                float lSE = (!opYnZp && !opXpZp) ? lE : block.getLuminance(_blockAccess, x + 1, adjY, z + 1);
-
-                v0 = (lSW + lW + lS + _aoLightValueYNeg) / 4.0F;
-                v1 = (lW + lNW + _aoLightValueYNeg + lN) / 4.0F;
-                v2 = (_aoLightValueYNeg + lN + lE + lNE) / 4.0F;
-                v3 = (lS + _aoLightValueYNeg + lSE + lE) / 4.0F;
+                float n = block.getLuminance(_blockAccess, x, y - 1, z - 1);
+                float s = block.getLuminance(_blockAccess, x, y - 1, z + 1);
+                float w = block.getLuminance(_blockAccess, x - 1, y - 1, z);
+                float e = block.getLuminance(_blockAccess, x + 1, y - 1, z);
+                float nw = (opXnZn || opYnZn) ? w : block.getLuminance(_blockAccess, x - 1, y - 1, z - 1);
+                float sw = (opXnZp || opYnZp) ? w : block.getLuminance(_blockAccess, x - 1, y - 1, z + 1);
+                float ne = (opXpZn || opYnZn) ? e : block.getLuminance(_blockAccess, x + 1, y - 1, z - 1);
+                float se = (opXpZp || opYnZp) ? e : block.getLuminance(_blockAccess, x + 1, y - 1, z + 1);
+                v0 = (sw + w + s + lYn) / 4.0F; // minX, maxZ
+                v1 = (w + nw + lYn + n) / 4.0F; // minX, minZ
+                v2 = (lYn + n + e + ne) / 4.0F; // maxX, minZ
+                v3 = (s + lYn + se + e) / 4.0F; // maxX, maxZ
             }
+
             AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.5F, tintBottom);
             RenderBottomFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 0));
             hasRendered = true;
         }
 
+        // ==========================================
         // TOP FACE (Y + 1)
+        // ==========================================
         if (_renderAllFaces || bounds.MaxY < 1.0D || block.isSideVisible(_blockAccess, x, y + 1, z, 1))
         {
-            if (_aoBlendMode <= 0) { v0 = v1 = v2 = v3 = _aoLightValueYPos; }
+            if (_aoBlendMode <= 0) v0 = v1 = v2 = v3 = lYp;
             else
             {
-                int adjY = y + 1;
-                float lW = block.getLuminance(_blockAccess, x - 1, adjY, z);
-                float lE = block.getLuminance(_blockAccess, x + 1, adjY, z);
-                float lN = block.getLuminance(_blockAccess, x, adjY, z - 1);
-                float lS = block.getLuminance(_blockAccess, x, adjY, z + 1);
-
-                float lNW = (!opYpZn && !opXnZn) ? lW : block.getLuminance(_blockAccess, x - 1, adjY, z - 1);
-                float lNE = (!opYpZn && !opXpZn) ? lE : block.getLuminance(_blockAccess, x + 1, adjY, z - 1);
-                float lSW = (!opYpZp && !opXnZp) ? lW : block.getLuminance(_blockAccess, x - 1, adjY, z + 1);
-                float lSE = (!opYpZp && !opXpZp) ? lE : block.getLuminance(_blockAccess, x + 1, adjY, z + 1);
-
-                v0 = (lS + _aoLightValueYPos + lSE + lE) / 4.0F;
-                v1 = (_aoLightValueYPos + lN + lE + lNE) / 4.0F;
-                v2 = (lW + lNW + _aoLightValueYPos + lN) / 4.0F;
-                v3 = (lSW + lW + lS + _aoLightValueYPos) / 4.0F;
+                float n = block.getLuminance(_blockAccess, x, y + 1, z - 1);
+                float s = block.getLuminance(_blockAccess, x, y + 1, z + 1);
+                float w = block.getLuminance(_blockAccess, x - 1, y + 1, z);
+                float e = block.getLuminance(_blockAccess, x + 1, y + 1, z);
+                float nw = (opXnYp || opYpZn) ? w : block.getLuminance(_blockAccess, x - 1, y + 1, z - 1);
+                float sw = (opXnYp || opYpZp) ? w : block.getLuminance(_blockAccess, x - 1, y + 1, z + 1);
+                float ne = (opXpYp || opYpZn) ? e : block.getLuminance(_blockAccess, x + 1, y + 1, z - 1);
+                float se = (opXpYp || opYpZp) ? e : block.getLuminance(_blockAccess, x + 1, y + 1, z + 1);
+                v0 = (s + lYp + se + e) / 4.0F; // maxX, maxZ
+                v1 = (lYp + n + e + ne) / 4.0F; // maxX, minZ
+                v2 = (w + nw + lYp + n) / 4.0F; // minX, minZ
+                v3 = (sw + w + s + lYp) / 4.0F; // minX, maxZ
             }
+
             AssignVertexColors(v0, v1, v2, v3, r, g, b, 1.0F, tintTop);
             RenderTopFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 1));
             hasRendered = true;
         }
 
+        // ==========================================
         // EAST FACE (Z - 1)
+        // ==========================================
         if (_renderAllFaces || bounds.MinZ > 0.0D || block.isSideVisible(_blockAccess, x, y, z - 1, 2))
         {
-            if (_aoBlendMode <= 0)
-            {
-                v0 = v1 = v2 = v3 = _aoLightValueZNeg;
-            }
+            if (_aoBlendMode <= 0) v0 = v1 = v2 = v3 = lZn;
             else
             {
-                int adjZ = z - 1;
-                float lW = block.getLuminance(_blockAccess, x - 1, y, adjZ);
-                float lE = block.getLuminance(_blockAccess, x + 1, y, adjZ);
-                float lDn = block.getLuminance(_blockAccess, x, y - 1, adjZ);
-                float lUp = block.getLuminance(_blockAccess, x, y + 1, adjZ);
-                float lDnW = (!opXnZn && !opYnZn) ? lW : block.getLuminance(_blockAccess, x - 1, y - 1, adjZ);
-                float lUpW = (!opXnZn && !opYpZn) ? lW : block.getLuminance(_blockAccess, x - 1, y + 1, adjZ);
-                float lDnE = (!opXpZn && !opYnZn) ? lE : block.getLuminance(_blockAccess, x + 1, y - 1, adjZ);
-                float lUpE = (!opXpZn && !opYpZn) ? lE : block.getLuminance(_blockAccess, x + 1, y + 1, adjZ);
-
-                v0 = (lW + lUpW + _aoLightValueZNeg + lUp) / 4.0F;
-                v1 = (_aoLightValueZNeg + lUp + lE + lUpE) / 4.0F;
-                v2 = (lDn + _aoLightValueZNeg + lDnE + lE) / 4.0F;
-                v3 = (lDnW + lW + lDn + _aoLightValueZNeg) / 4.0F;
+                float u = block.getLuminance(_blockAccess, x, y + 1, z - 1);
+                float d = block.getLuminance(_blockAccess, x, y - 1, z - 1);
+                float w = block.getLuminance(_blockAccess, x - 1, y, z - 1);
+                float e = block.getLuminance(_blockAccess, x + 1, y, z - 1);
+                float uw = (opXnZn || opYpZn) ? w : block.getLuminance(_blockAccess, x - 1, y + 1, z - 1);
+                float dw = (opXnZn || opYnZn) ? w : block.getLuminance(_blockAccess, x - 1, y - 1, z - 1);
+                float ue = (opXpZn || opYpZn) ? e : block.getLuminance(_blockAccess, x + 1, y + 1, z - 1);
+                float de = (opXpZn || opYnZn) ? e : block.getLuminance(_blockAccess, x + 1, y - 1, z - 1);
+                v0 = (w + uw + lZn + u) / 4.0F;
+                v1 = (lZn + u + e + ue) / 4.0F;
+                v2 = (d + lZn + de + e) / 4.0F;
+                v3 = (dw + w + d + lZn) / 4.0F;
             }
 
             AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.8F, tintEast);
@@ -2194,29 +2164,26 @@ public class BlockRenderer
             hasRendered = true;
         }
 
+        // ==========================================
         // WEST FACE (Z + 1)
+        // ==========================================
         if (_renderAllFaces || bounds.MaxZ < 1.0D || block.isSideVisible(_blockAccess, x, y, z + 1, 3))
         {
-            if (_aoBlendMode <= 0)
-            {
-                v0 = v1 = v2 = v3 = _aoLightValueZPos;
-            }
+            if (_aoBlendMode <= 0) v0 = v1 = v2 = v3 = lZp;
             else
             {
-                int adjZ = z + 1;
-                float lW = block.getLuminance(_blockAccess, x - 1, y, adjZ);
-                float lE = block.getLuminance(_blockAccess, x + 1, y, adjZ);
-                float lDn = block.getLuminance(_blockAccess, x, y - 1, adjZ);
-                float lUp = block.getLuminance(_blockAccess, x, y + 1, adjZ);
-                float lDnW = (!opXnZp && !opYnZp) ? lW : block.getLuminance(_blockAccess, x - 1, y - 1, adjZ);
-                float lUpW = (!opXnZp && !opYpZp) ? lW : block.getLuminance(_blockAccess, x - 1, y + 1, adjZ);
-                float lDnE = (!opXpZp && !opYnZp) ? lE : block.getLuminance(_blockAccess, x + 1, y - 1, adjZ);
-                float lUpE = (!opXpZp && !opYpZp) ? lE : block.getLuminance(_blockAccess, x + 1, y + 1, adjZ);
-
-                v0 = (lW + lUpW + _aoLightValueZPos + lUp) / 4.0F;
-                v1 = (_aoLightValueZPos + lUp + lE + lUpE) / 4.0F;
-                v2 = (lDn + _aoLightValueZPos + lDnE + lE) / 4.0F;
-                v3 = (lDnW + lW + lDn + _aoLightValueZPos) / 4.0F;
+                float u = block.getLuminance(_blockAccess, x, y + 1, z + 1);
+                float d = block.getLuminance(_blockAccess, x, y - 1, z + 1);
+                float w = block.getLuminance(_blockAccess, x - 1, y, z + 1);
+                float e = block.getLuminance(_blockAccess, x + 1, y, z + 1);
+                float uw = (opXnZp || opYpZp) ? w : block.getLuminance(_blockAccess, x - 1, y + 1, z + 1);
+                float dw = (opXnZp || opYnZp) ? w : block.getLuminance(_blockAccess, x - 1, y - 1, z + 1);
+                float ue = (opXpZp || opYpZp) ? e : block.getLuminance(_blockAccess, x + 1, y + 1, z + 1);
+                float de = (opXpZp || opYnZp) ? e : block.getLuminance(_blockAccess, x + 1, y - 1, z + 1);
+                v0 = (w + uw + lZp + u) / 4.0F;
+                v1 = (dw + w + d + lZp) / 4.0F;
+                v2 = (d + lZp + de + e) / 4.0F;
+                v3 = (lZp + u + e + ue) / 4.0F;
             }
 
             AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.8F, tintWest);
@@ -2224,29 +2191,26 @@ public class BlockRenderer
             hasRendered = true;
         }
 
+        // ==========================================
         // NORTH FACE (X - 1)
+        // ==========================================
         if (_renderAllFaces || bounds.MinX > 0.0D || block.isSideVisible(_blockAccess, x - 1, y, z, 4))
         {
-            if (_aoBlendMode <= 0)
-            {
-                v0 = v1 = v2 = v3 = _aoLightValueXNeg;
-            }
+            if (_aoBlendMode <= 0) v0 = v1 = v2 = v3 = lXn;
             else
             {
-                int adjX = x - 1;
-                float lDn = block.getLuminance(_blockAccess, adjX, y - 1, z);
-                float lUp = block.getLuminance(_blockAccess, adjX, y + 1, z);
-                float lN = block.getLuminance(_blockAccess, adjX, y, z - 1);
-                float lS = block.getLuminance(_blockAccess, adjX, y, z + 1);
-                float lDnN = (!opXnZn && !opYnZn) ? lN : block.getLuminance(_blockAccess, adjX, y - 1, z - 1);
-                float lDnS = (!opXnZp && !opYnZp) ? lS : block.getLuminance(_blockAccess, adjX, y - 1, z + 1);
-                float lUpN = (!opXnZn && !opYpZn) ? lN : block.getLuminance(_blockAccess, adjX, y + 1, z - 1);
-                float lUpS = (!opXnZp && !opYpZp) ? lS : block.getLuminance(_blockAccess, adjX, y + 1, z + 1);
-
-                v0 = (lUp + lUpS + _aoLightValueXNeg + lS) / 4.0F;
-                v1 = (lDn + lDnS + _aoLightValueXNeg + lS) / 4.0F;
-                v2 = (lN + _aoLightValueXNeg + lDnN + lDn) / 4.0F;
-                v3 = (lUp + lUpN + lN + _aoLightValueXNeg) / 4.0F;
+                float u = block.getLuminance(_blockAccess, x - 1, y + 1, z);
+                float d = block.getLuminance(_blockAccess, x - 1, y - 1, z);
+                float n = block.getLuminance(_blockAccess, x - 1, y, z - 1);
+                float s = block.getLuminance(_blockAccess, x - 1, y, z + 1);
+                float un = (opXnZn || opXnYp) ? n : block.getLuminance(_blockAccess, x - 1, y + 1, z - 1);
+                float dn = (opXnZn || opXnYn) ? n : block.getLuminance(_blockAccess, x - 1, y - 1, z - 1);
+                float us = (opXnZp || opXnYp) ? s : block.getLuminance(_blockAccess, x - 1, y + 1, z + 1);
+                float ds = (opXnZp || opXnYn) ? s : block.getLuminance(_blockAccess, x - 1, y - 1, z + 1);
+                v0 = (u + us + lXn + s) / 4.0F;
+                v1 = (u + un + n + lXn) / 4.0F;
+                v2 = (n + lXn + dn + d) / 4.0F;
+                v3 = (d + ds + lXn + s) / 4.0F;
             }
 
             AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.6F, tintNorth);
@@ -2254,29 +2218,26 @@ public class BlockRenderer
             hasRendered = true;
         }
 
+        // ==========================================
         // SOUTH FACE (X + 1)
+        // ==========================================
         if (_renderAllFaces || bounds.MaxX < 1.0D || block.isSideVisible(_blockAccess, x + 1, y, z, 5))
         {
-            if (_aoBlendMode <= 0)
-            {
-                v0 = v1 = v2 = v3 = _aoLightValueXPos;
-            }
+            if (_aoBlendMode <= 0) v0 = v1 = v2 = v3 = lXp;
             else
             {
-                int adjX = x + 1;
-                float lDn = block.getLuminance(_blockAccess, adjX, y - 1, z);
-                float lUp = block.getLuminance(_blockAccess, adjX, y + 1, z);
-                float lN = block.getLuminance(_blockAccess, adjX, y, z - 1);
-                float lS = block.getLuminance(_blockAccess, adjX, y, z + 1);
-                float lDnN = (!opXpZn && !opYnZn) ? lN : block.getLuminance(_blockAccess, adjX, y - 1, z - 1);
-                float lDnS = (!opXpZp && !opYnZp) ? lS : block.getLuminance(_blockAccess, adjX, y - 1, z + 1);
-                float lUpN = (!opXpZn && !opYpZn) ? lN : block.getLuminance(_blockAccess, adjX, y + 1, z - 1);
-                float lUpS = (!opXpZp && !opYpZp) ? lS : block.getLuminance(_blockAccess, adjX, y + 1, z + 1);
-
-                v0 = (lDn + lDnS + _aoLightValueXPos + lS) / 4.0F;
-                v1 = (lUp + lUpS + _aoLightValueXPos + lS) / 4.0F;
-                v2 = (lN + _aoLightValueXPos + lUpN + lUp) / 4.0F;
-                v3 = (lDnN + lDn + lN + _aoLightValueXPos) / 4.0F;
+                float u = block.getLuminance(_blockAccess, x + 1, y + 1, z);
+                float d = block.getLuminance(_blockAccess, x + 1, y - 1, z);
+                float n = block.getLuminance(_blockAccess, x + 1, y, z - 1);
+                float s = block.getLuminance(_blockAccess, x + 1, y, z + 1);
+                float un = (opXpZn || opXpYp) ? n : block.getLuminance(_blockAccess, x + 1, y + 1, z - 1);
+                float dn = (opXpZn || opXpYn) ? n : block.getLuminance(_blockAccess, x + 1, y - 1, z - 1);
+                float us = (opXpZp || opXpYp) ? s : block.getLuminance(_blockAccess, x + 1, y + 1, z + 1);
+                float ds = (opXpZp || opXpYn) ? s : block.getLuminance(_blockAccess, x + 1, y - 1, z + 1);
+                v0 = (d + ds + lXp + s) / 4.0F;
+                v1 = (n + lXp + dn + d) / 4.0F;
+                v2 = (u + un + n + lXp) / 4.0F;
+                v3 = (u + us + lXp + s) / 4.0F;
             }
 
             AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.6F, tintSouth);
