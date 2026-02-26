@@ -13,7 +13,7 @@ public class BlockRenderer
     private static readonly bool s_fancyGrass = true;
     private readonly int _aoBlendMode = 1;
 
-    private readonly BlockView _blockAccess = null!;
+    private readonly IBlockAccess _iBlockAccess = null!;
     private readonly Tessellator? _tess;
 
 
@@ -79,14 +79,14 @@ public class BlockRenderer
     private float _colorBlueBottomLeft;
     private float _colorBlueBottomRight;
 
-    public BlockRenderer(BlockView blockAccess)
+    public BlockRenderer(IBlockAccess iBlockAccess)
     {
-        _blockAccess = blockAccess;
+        _iBlockAccess = iBlockAccess;
     }
 
-    public BlockRenderer(BlockView blockAccess, Tessellator tess)
+    public BlockRenderer(IBlockAccess iBlockAccess, Tessellator tess)
     {
-        _blockAccess = blockAccess;
+        _iBlockAccess = iBlockAccess;
         _tess = tess;
     }
 
@@ -127,7 +127,7 @@ public class BlockRenderer
     public bool RenderBlockByRenderType(Block block, int x, int y, int z)
     {
         int type = block.getRenderType();
-        block.updateBoundingBox(_blockAccess, x, y, z);
+        block.updateBoundingBox(_iBlockAccess, x, y, z);
         _useOverrideBoundingBox = false;
 
         return type switch
@@ -159,7 +159,7 @@ public class BlockRenderer
         Tessellator tess = GetTessellator();
         Box bounds = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
 
-        int metadata = _blockAccess.getBlockMeta(x, y, z);
+        int metadata = _iBlockAccess.getBlockMeta(x, y, z);
         int direction = BlockBed.getDirection(metadata);
         bool isHead = BlockBed.isHeadOfBed(metadata);
 
@@ -168,14 +168,14 @@ public class BlockRenderer
         float lightZ = 0.8F;
         float lightX = 0.6F;
 
-        float centerLuminance = block.getLuminance(_blockAccess, x, y, z);
+        float centerLuminance = block.getLuminance(_iBlockAccess, x, y, z);
 
         // ==========================================
         // BOTTOM FACE
         // ==========================================
         tess.setColorOpaque_F(lightBottom * centerLuminance, lightBottom * centerLuminance, lightBottom * centerLuminance);
 
-        int texBottom = block.getTextureId(_blockAccess, x, y, z, 0);
+        int texBottom = block.getTextureId(_iBlockAccess, x, y, z, 0);
         int texU = (texBottom & 15) << 4;
         int texV = texBottom & 240;
 
@@ -198,10 +198,10 @@ public class BlockRenderer
         // ==========================================
         // TOP FACE
         // ==========================================
-        float topLuminance = block.getLuminance(_blockAccess, x, y + 1, z);
+        float topLuminance = block.getLuminance(_iBlockAccess, x, y + 1, z);
         tess.setColorOpaque_F(lightTop * topLuminance, lightTop * topLuminance, lightTop * topLuminance);
 
-        int texTop = block.getTextureId(_blockAccess, x, y, z, 1);
+        int texTop = block.getTextureId(_iBlockAccess, x, y, z, 1);
         texU = (texTop & 15) << 4;
         texV = texTop & 240;
 
@@ -260,43 +260,43 @@ public class BlockRenderer
         float faceLuminance;
 
         // East Face (Z - 1)
-        if (forwardDir != 2 && (_renderAllFaces || block.isSideVisible(_blockAccess, x, y, z - 1, 2)))
+        if (forwardDir != 2 && (_renderAllFaces || block.isSideVisible(_iBlockAccess, x, y, z - 1, 2)))
         {
-            faceLuminance = bounds.MinZ > 0.0D ? centerLuminance : block.getLuminance(_blockAccess, x, y, z - 1);
+            faceLuminance = bounds.MinZ > 0.0D ? centerLuminance : block.getLuminance(_iBlockAccess, x, y, z - 1);
             tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
 
             _flipTexture = textureFlipDir == 2;
-            RenderEastFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 2));
+            RenderEastFace(block, x, y, z, block.getTextureId(_iBlockAccess, x, y, z, 2));
         }
 
         // West Face (Z + 1)
-        if (forwardDir != 3 && (_renderAllFaces || block.isSideVisible(_blockAccess, x, y, z + 1, 3)))
+        if (forwardDir != 3 && (_renderAllFaces || block.isSideVisible(_iBlockAccess, x, y, z + 1, 3)))
         {
-            faceLuminance = bounds.MaxZ < 1.0D ? centerLuminance : block.getLuminance(_blockAccess, x, y, z + 1);
+            faceLuminance = bounds.MaxZ < 1.0D ? centerLuminance : block.getLuminance(_iBlockAccess, x, y, z + 1);
             tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
 
             _flipTexture = textureFlipDir == 3;
-            RenderWestFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 3));
+            RenderWestFace(block, x, y, z, block.getTextureId(_iBlockAccess, x, y, z, 3));
         }
 
         // North Face (X - 1)
-        if (forwardDir != 4 && (_renderAllFaces || block.isSideVisible(_blockAccess, x - 1, y, z, 4)))
+        if (forwardDir != 4 && (_renderAllFaces || block.isSideVisible(_iBlockAccess, x - 1, y, z, 4)))
         {
-            faceLuminance = bounds.MinX > 0.0D ? centerLuminance : block.getLuminance(_blockAccess, x - 1, y, z);
+            faceLuminance = bounds.MinX > 0.0D ? centerLuminance : block.getLuminance(_iBlockAccess, x - 1, y, z);
             tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
 
             _flipTexture = textureFlipDir == 4;
-            RenderNorthFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 4));
+            RenderNorthFace(block, x, y, z, block.getTextureId(_iBlockAccess, x, y, z, 4));
         }
 
         // South Face (X + 1)
-        if (forwardDir != 5 && (_renderAllFaces || block.isSideVisible(_blockAccess, x + 1, y, z, 5)))
+        if (forwardDir != 5 && (_renderAllFaces || block.isSideVisible(_iBlockAccess, x + 1, y, z, 5)))
         {
-            faceLuminance = bounds.MaxX < 1.0D ? centerLuminance : block.getLuminance(_blockAccess, x + 1, y, z);
+            faceLuminance = bounds.MaxX < 1.0D ? centerLuminance : block.getLuminance(_iBlockAccess, x + 1, y, z);
             tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
 
             _flipTexture = textureFlipDir == 5;
-            RenderSouthFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 5));
+            RenderSouthFace(block, x, y, z, block.getTextureId(_iBlockAccess, x, y, z, 5));
         }
 
         _flipTexture = false;
@@ -305,10 +305,10 @@ public class BlockRenderer
 
     private bool RenderBlockTorch(Block block, int x, int y, int z)
     {
-        int metadata = _blockAccess.getBlockMeta(x, y, z);
+        int metadata = _iBlockAccess.getBlockMeta(x, y, z);
         Tessellator tess = GetTessellator();
 
-        float luminance = block.getLuminance(_blockAccess, x, y, z);
+        float luminance = block.getLuminance(_iBlockAccess, x, y, z);
         if (Block.BlocksLightLuminance[block.id] > 0)
         {
             luminance = 1.0F;
@@ -346,7 +346,7 @@ public class BlockRenderer
 
     private bool RenderBlockRepeater(Block block, int x, int y, int z)
     {
-        int metadata = _blockAccess.getBlockMeta(x, y, z);
+        int metadata = _iBlockAccess.getBlockMeta(x, y, z);
         int direction = metadata & 3;
         int delay = (metadata & 12) >> 2;
 
@@ -354,7 +354,7 @@ public class BlockRenderer
         RenderStandardBlock(block, x, y, z);
 
         Tessellator tess = GetTessellator();
-        float luminance = block.getLuminance(_blockAccess, x, y, z);
+        float luminance = block.getLuminance(_iBlockAccess, x, y, z);
         if (Block.BlocksLightLuminance[block.id] > 0)
         {
             luminance = (luminance + 1.0F) * 0.5F;
@@ -451,7 +451,7 @@ public class BlockRenderer
 
     private bool RenderPistonBase(Block block, int x, int y, int z, bool expanded)
     {
-        int metadata = _blockAccess.getBlockMeta(x, y, z);
+        int metadata = _iBlockAccess.getBlockMeta(x, y, z);
         bool isExpanded = expanded || (metadata & 8) != 0;
         int facing = BlockPistonBase.getFacing(metadata);
 
@@ -604,9 +604,9 @@ public class BlockRenderer
 
     private bool RenderPistonExtension(Block block, int x, int y, int z, bool isShortArm)
     {
-        int metadata = _blockAccess.getBlockMeta(x, y, z);
+        int metadata = _iBlockAccess.getBlockMeta(x, y, z);
         int facing = BlockPistonExtension.getFacing(metadata);
-        float luminance = block.getLuminance(_blockAccess, x, y, z);
+        float luminance = block.getLuminance(_iBlockAccess, x, y, z);
 
         // Arm length logic: 1.0 for full extension, 0.5 for partial
         float armLength = isShortArm ? 1.0F : 0.5F;
@@ -691,7 +691,7 @@ public class BlockRenderer
 
     private bool RenderBlockLever(Block block, int x, int y, int z)
     {
-        int metadata = _blockAccess.getBlockMeta(x, y, z);
+        int metadata = _iBlockAccess.getBlockMeta(x, y, z);
         int orientation = metadata & 7;
         bool isActivated = (metadata & 8) > 0;
         Tessellator tess = GetTessellator();
@@ -741,7 +741,7 @@ public class BlockRenderer
         }
 
         // --- 2. Calculate Handle Lighting & Texture ---
-        float luminance = block.getLuminance(_blockAccess, x, y, z);
+        float luminance = block.getLuminance(_iBlockAccess, x, y, z);
         if (Block.BlocksLightLuminance[block.id] > 0) luminance = 1.0F;
         tess.setColorOpaque_F(luminance, luminance, luminance);
 
@@ -854,7 +854,7 @@ public class BlockRenderer
         int textureId = block.getTexture(0);
         if (_overrideBlockTexture >= 0) textureId = _overrideBlockTexture;
 
-        float luminance = block.getLuminance(_blockAccess, x, y, z);
+        float luminance = block.getLuminance(_iBlockAccess, x, y, z);
         tess.setColorOpaque_F(luminance, luminance, luminance);
 
         int texU = (textureId & 15) << 4;
@@ -867,7 +867,7 @@ public class BlockRenderer
         float fireHeight = 1.4F;
 
         // If not on a solid/flammable floor, render climbing flames on walls
-        if (!_blockAccess.shouldSuffocate(x, y - 1, z) && !Block.Fire.isFlammable(_blockAccess, x, y - 1, z))
+        if (!_iBlockAccess.shouldSuffocate(x, y - 1, z) && !Block.Fire.isFlammable(_iBlockAccess, x, y - 1, z))
         {
             float sideInset = 0.2F;
             float yOffset = 1.0F / 16.0F;
@@ -885,7 +885,7 @@ public class BlockRenderer
             }
 
             // Climbing West Wall
-            if (Block.Fire.isFlammable(_blockAccess, x - 1, y, z))
+            if (Block.Fire.isFlammable(_iBlockAccess, x - 1, y, z))
             {
                 tess.addVertexWithUV(x + sideInset, y + fireHeight + yOffset, z + 1, maxU, minV);
                 tess.addVertexWithUV(x, y + yOffset, z + 1, maxU, maxV);
@@ -899,7 +899,7 @@ public class BlockRenderer
             }
 
             // Climbing East Wall
-            if (Block.Fire.isFlammable(_blockAccess, x + 1, y, z))
+            if (Block.Fire.isFlammable(_iBlockAccess, x + 1, y, z))
             {
                 tess.addVertexWithUV(x + 1 - sideInset, y + fireHeight + yOffset, z, minU, minV);
                 tess.addVertexWithUV(x + 1, y + yOffset, z, minU, maxV);
@@ -913,7 +913,7 @@ public class BlockRenderer
             }
 
             // Climbing North Wall
-            if (Block.Fire.isFlammable(_blockAccess, x, y, z - 1))
+            if (Block.Fire.isFlammable(_iBlockAccess, x, y, z - 1))
             {
                 tess.addVertexWithUV(x, y + fireHeight + yOffset, z + sideInset, maxU, minV);
                 tess.addVertexWithUV(x, y + yOffset, z, maxU, maxV);
@@ -927,7 +927,7 @@ public class BlockRenderer
             }
 
             // Climbing South Wall
-            if (Block.Fire.isFlammable(_blockAccess, x, y, z + 1))
+            if (Block.Fire.isFlammable(_iBlockAccess, x, y, z + 1))
             {
                 tess.addVertexWithUV(x + 1, y + fireHeight + yOffset, z + 1 - sideInset, minU, minV);
                 tess.addVertexWithUV(x + 1, y + yOffset, z + 1, minU, maxV);
@@ -941,7 +941,7 @@ public class BlockRenderer
             }
 
             // Climbing Ceilings
-            if (Block.Fire.isFlammable(_blockAccess, x, y + 1, z))
+            if (Block.Fire.isFlammable(_iBlockAccess, x, y + 1, z))
             {
                 double xMax = x + 1, xMin = x;
                 double zMax = z + 1, zMin = z;
@@ -1049,13 +1049,13 @@ public class BlockRenderer
     private bool RenderBlockRedstoneWire(Block block, int x, int y, int z)
     {
         Tessellator tess = GetTessellator();
-        int powerLevel = _blockAccess.getBlockMeta(x, y, z);
+        int powerLevel = _iBlockAccess.getBlockMeta(x, y, z);
 
         int textureId = block.getTexture(1, powerLevel);
         if (_overrideBlockTexture >= 0) textureId = _overrideBlockTexture;
 
         // --- 1. Calculate the Glow Color ---
-        float luminance = block.getLuminance(_blockAccess, x, y, z);
+        float luminance = block.getLuminance(_iBlockAccess, x, y, z);
         float powerPercent = powerLevel / 15.0F;
 
         // Red component increases with power
@@ -1080,22 +1080,22 @@ public class BlockRenderer
 
         // --- 3. Connection Logic ---
         // Checks neighbors on same level OR one level down (if the neighbor isn't solid)
-        bool connectsWest = BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x - 1, y, z, 1) ||
-                           (!_blockAccess.shouldSuffocate(x - 1, y, z) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x - 1, y - 1, z, -1));
-        bool connectsEast = BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x + 1, y, z, 3) ||
-                           (!_blockAccess.shouldSuffocate(x + 1, y, z) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x + 1, y - 1, z, -1));
-        bool connectsNorth = BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x, y, z - 1, 2) ||
-                            (!_blockAccess.shouldSuffocate(x, y, z - 1) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x, y - 1, z - 1, -1));
-        bool connectsSouth = BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x, y, z + 1, 0) ||
-                            (!_blockAccess.shouldSuffocate(x, y, z + 1) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x, y - 1, z + 1, -1));
+        bool connectsWest = BlockRedstoneWire.isPowerProviderOrWire(_iBlockAccess, x - 1, y, z, 1) ||
+                           (!_iBlockAccess.shouldSuffocate(x - 1, y, z) && BlockRedstoneWire.isPowerProviderOrWire(_iBlockAccess, x - 1, y - 1, z, -1));
+        bool connectsEast = BlockRedstoneWire.isPowerProviderOrWire(_iBlockAccess, x + 1, y, z, 3) ||
+                           (!_iBlockAccess.shouldSuffocate(x + 1, y, z) && BlockRedstoneWire.isPowerProviderOrWire(_iBlockAccess, x + 1, y - 1, z, -1));
+        bool connectsNorth = BlockRedstoneWire.isPowerProviderOrWire(_iBlockAccess, x, y, z - 1, 2) ||
+                            (!_iBlockAccess.shouldSuffocate(x, y, z - 1) && BlockRedstoneWire.isPowerProviderOrWire(_iBlockAccess, x, y - 1, z - 1, -1));
+        bool connectsSouth = BlockRedstoneWire.isPowerProviderOrWire(_iBlockAccess, x, y, z + 1, 0) ||
+                            (!_iBlockAccess.shouldSuffocate(x, y, z + 1) && BlockRedstoneWire.isPowerProviderOrWire(_iBlockAccess, x, y - 1, z + 1, -1));
 
         // Check for connections climbing UP a block
-        if (!_blockAccess.shouldSuffocate(x, y + 1, z))
+        if (!_iBlockAccess.shouldSuffocate(x, y + 1, z))
         {
-            if (_blockAccess.shouldSuffocate(x - 1, y, z) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x - 1, y + 1, z, -1)) connectsWest = true;
-            if (_blockAccess.shouldSuffocate(x + 1, y, z) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x + 1, y + 1, z, -1)) connectsEast = true;
-            if (_blockAccess.shouldSuffocate(x, y, z - 1) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x, y + 1, z - 1, -1)) connectsNorth = true;
-            if (_blockAccess.shouldSuffocate(x, y, z + 1) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x, y + 1, z + 1, -1)) connectsSouth = true;
+            if (_iBlockAccess.shouldSuffocate(x - 1, y, z) && BlockRedstoneWire.isPowerProviderOrWire(_iBlockAccess, x - 1, y + 1, z, -1)) connectsWest = true;
+            if (_iBlockAccess.shouldSuffocate(x + 1, y, z) && BlockRedstoneWire.isPowerProviderOrWire(_iBlockAccess, x + 1, y + 1, z, -1)) connectsEast = true;
+            if (_iBlockAccess.shouldSuffocate(x, y, z - 1) && BlockRedstoneWire.isPowerProviderOrWire(_iBlockAccess, x, y + 1, z - 1, -1)) connectsNorth = true;
+            if (_iBlockAccess.shouldSuffocate(x, y, z + 1) && BlockRedstoneWire.isPowerProviderOrWire(_iBlockAccess, x, y + 1, z + 1, -1)) connectsSouth = true;
         }
 
         // --- 4. Determine Shape (Straight vs Cross) ---
@@ -1142,14 +1142,14 @@ public class BlockRenderer
         tess.addVertexWithUV(renderMinX, groundY, renderMaxZ, minU, maxV + shroudVOffset);
 
         // --- 6. Render Slopes (Rising up walls) ---
-        if (!_blockAccess.shouldSuffocate(x, y + 1, z))
+        if (!_iBlockAccess.shouldSuffocate(x, y + 1, z))
         {
             minU = (texU + 16) / 256.0F;
             maxU = (texU + 16 + 15.99F) / 256.0F;
             double slopeHeight = y + 1.021875D; // Slight offset above the block
 
             // West Slope
-            if (_blockAccess.shouldSuffocate(x - 1, y, z) && _blockAccess.getBlockId(x - 1, y + 1, z) == block.id)
+            if (_iBlockAccess.shouldSuffocate(x - 1, y, z) && _iBlockAccess.getBlockId(x - 1, y + 1, z) == block.id)
             {
                 tess.setColorOpaque_F(luminance * r, luminance * g, luminance * b);
                 tess.addVertexWithUV(x + 0.015625D, slopeHeight, z + 1, maxU, minV);
@@ -1165,7 +1165,7 @@ public class BlockRenderer
             }
 
             // East Slope
-            if (_blockAccess.shouldSuffocate(x + 1, y, z) && _blockAccess.getBlockId(x + 1, y + 1, z) == block.id)
+            if (_iBlockAccess.shouldSuffocate(x + 1, y, z) && _iBlockAccess.getBlockId(x + 1, y + 1, z) == block.id)
             {
                 tess.setColorOpaque_F(luminance * r, luminance * g, luminance * b);
                 tess.addVertexWithUV(x + 1 - 0.015625D, y, z + 1, minU, maxV);
@@ -1181,7 +1181,7 @@ public class BlockRenderer
             }
 
             // North Slope
-            if (_blockAccess.shouldSuffocate(x, y, z - 1) && _blockAccess.getBlockId(x, y + 1, z - 1) == block.id)
+            if (_iBlockAccess.shouldSuffocate(x, y, z - 1) && _iBlockAccess.getBlockId(x, y + 1, z - 1) == block.id)
             {
                 tess.setColorOpaque_F(luminance * r, luminance * g, luminance * b);
                 tess.addVertexWithUV(x + 1, y, z + 0.015625D, minU, maxV);
@@ -1197,7 +1197,7 @@ public class BlockRenderer
             }
 
             // South Slope
-            if (_blockAccess.shouldSuffocate(x, y, z + 1) && _blockAccess.getBlockId(x, y + 1, z + 1) == block.id)
+            if (_iBlockAccess.shouldSuffocate(x, y, z + 1) && _iBlockAccess.getBlockId(x, y + 1, z + 1) == block.id)
             {
                 tess.setColorOpaque_F(luminance * r, luminance * g, luminance * b);
                 tess.addVertexWithUV(x + 1, slopeHeight, z + 1 - 0.015625D, maxU, minV);
@@ -1219,7 +1219,7 @@ public class BlockRenderer
     private bool RenderBlockMinecartTrack(BlockRail rail, int x, int y, int z)
     {
         Tessellator tess = GetTessellator();
-        int metadata = _blockAccess.getBlockMeta(x, y, z);
+        int metadata = _iBlockAccess.getBlockMeta(x, y, z);
         int textureId = rail.getTexture(0, metadata);
 
         if (_overrideBlockTexture >= 0)
@@ -1233,7 +1233,7 @@ public class BlockRenderer
             metadata &= 7;
         }
 
-        float luminance = rail.getLuminance(_blockAccess, x, y, z);
+        float luminance = rail.getLuminance(_iBlockAccess, x, y, z);
         tess.setColorOpaque_F(luminance, luminance, luminance);
 
         int texU = (textureId & 15) << 4;
@@ -1317,7 +1317,7 @@ public class BlockRenderer
             textureId = _overrideBlockTexture;
         }
 
-        float luminance = block.getLuminance(_blockAccess, x, y, z);
+        float luminance = block.getLuminance(_iBlockAccess, x, y, z);
         tess.setColorOpaque_F(luminance, luminance, luminance);
 
         int texU = (textureId & 15) << 4;
@@ -1327,7 +1327,7 @@ public class BlockRenderer
         double minV = texV / 256.0D;
         double maxV = (texV + 15.99D) / 256.0D;
 
-        int metadata = _blockAccess.getBlockMeta(x, y, z);
+        int metadata = _iBlockAccess.getBlockMeta(x, y, z);
         double offset = 0.05D;
 
         if (metadata == 5)
@@ -1366,8 +1366,8 @@ public class BlockRenderer
     {
         Tessellator tess = GetTessellator();
 
-        float luminance = block.getLuminance(_blockAccess, x, y, z);
-        int colorMultiplier = block.getColorMultiplier(_blockAccess, x, y, z);
+        float luminance = block.getLuminance(_iBlockAccess, x, y, z);
+        int colorMultiplier = block.getColorMultiplier(_iBlockAccess, x, y, z);
         float r = (colorMultiplier >> 16 & 255) / 255.0F;
         float g = (colorMultiplier >> 8 & 255) / 255.0F;
         float b = (colorMultiplier & 255) / 255.0F;
@@ -1388,17 +1388,17 @@ public class BlockRenderer
             renderZ += (((hash >> 24 & 15L) / 15.0F) - 0.5D) * 0.5D;
         }
 
-        RenderCrossedSquares(block, _blockAccess.getBlockMeta(x, y, z), renderX, renderY, renderZ);
+        RenderCrossedSquares(block, _iBlockAccess.getBlockMeta(x, y, z), renderX, renderY, renderZ);
         return true;
     }
 
     private bool RenderBlockCrops(Block block, int x, int y, int z)
     {
         Tessellator tess = GetTessellator();
-        float luminance = block.getLuminance(_blockAccess, x, y, z);
+        float luminance = block.getLuminance(_iBlockAccess, x, y, z);
         tess.setColorOpaque_F(luminance, luminance, luminance);
 
-        int metadata = _blockAccess.getBlockMeta(x, y, z);
+        int metadata = _iBlockAccess.getBlockMeta(x, y, z);
 
         double yOffset = y - (1.0D / 16.0D);
         RenderCropQuads(block, metadata, x, yOffset, z);
@@ -1622,20 +1622,20 @@ public class BlockRenderer
         Box bounds = block.BoundingBox;
 
         // Base fluid color tint (e.g., biome water color)
-        int colorMultiplier = block.getColorMultiplier(_blockAccess, x, y, z);
+        int colorMultiplier = block.getColorMultiplier(_iBlockAccess, x, y, z);
         float tintR = (colorMultiplier >> 16 & 255) / 255.0F;
         float tintG = (colorMultiplier >> 8 & 255) / 255.0F;
         float tintB = (colorMultiplier & 255) / 255.0F;
 
         // Determine which faces are actually visible to the player
-        bool isTopVisible = block.isSideVisible(_blockAccess, x, y + 1, z, 1);
-        bool isBottomVisible = block.isSideVisible(_blockAccess, x, y - 1, z, 0);
+        bool isTopVisible = block.isSideVisible(_iBlockAccess, x, y + 1, z, 1);
+        bool isBottomVisible = block.isSideVisible(_iBlockAccess, x, y - 1, z, 0);
         bool[] sideVisible =
         [
-            block.isSideVisible(_blockAccess, x, y, z - 1, 2), // North
-            block.isSideVisible(_blockAccess, x, y, z + 1, 3), // South
-            block.isSideVisible(_blockAccess, x - 1, y, z, 4), // West
-            block.isSideVisible(_blockAccess, x + 1, y, z, 5)  // East
+            block.isSideVisible(_iBlockAccess, x, y, z - 1, 2), // North
+            block.isSideVisible(_iBlockAccess, x, y, z + 1, 3), // South
+            block.isSideVisible(_iBlockAccess, x - 1, y, z, 4), // West
+            block.isSideVisible(_iBlockAccess, x + 1, y, z, 5)  // East
         ];
 
         // Fast exit if completely surrounded
@@ -1653,7 +1653,7 @@ public class BlockRenderer
         float lightX = 0.6F; // East/West
 
         Material material = block.material;
-        int meta = _blockAccess.getBlockMeta(x, y, z);
+        int meta = _iBlockAccess.getBlockMeta(x, y, z);
 
         // Calculate the height of the fluid at each of the 4 corners of this block
         float heightNw = GetFluidVertexHeight(x, y, z, material);
@@ -1666,7 +1666,7 @@ public class BlockRenderer
         {
             hasRendered = true;
             int textureId = block.getTexture(1, meta);
-            float flowAngle = (float)BlockFluid.getFlowingAngle(_blockAccess, x, y, z, material);
+            float flowAngle = (float)BlockFluid.getFlowingAngle(_iBlockAccess, x, y, z, material);
 
             // If flowing, switch to the flowing texture variant
             if (flowAngle > -999.0F)
@@ -1695,7 +1695,7 @@ public class BlockRenderer
             float sinAngle = MathHelper.Sin(flowAngle) * 8.0F / 256.0F;
             float cosAngle = MathHelper.Cos(flowAngle) * 8.0F / 256.0F;
 
-            float luminance = block.getLuminance(_blockAccess, x, y, z);
+            float luminance = block.getLuminance(_iBlockAccess, x, y, z);
             tess.setColorOpaque_F(lightTop * luminance * tintR, lightTop * luminance * tintG, lightTop * luminance * tintB);
 
             // Draw top face with dynamic heights and rotated UVs
@@ -1708,7 +1708,7 @@ public class BlockRenderer
         // BOTTOM FACE
         if (_renderAllFaces || isBottomVisible)
         {
-            float luminance = block.getLuminance(_blockAccess, x, y - 1, z);
+            float luminance = block.getLuminance(_iBlockAccess, x, y - 1, z);
             tess.setColorOpaque_F(lightBottom * luminance, lightBottom * luminance, lightBottom * luminance);
             RenderBottomFace(block, x, y, z, block.getTexture(0));
             hasRendered = true;
@@ -1769,7 +1769,7 @@ public class BlockRenderer
                 double minV2 = (texV + (1.0F - h2) * 16.0F) / 256.0F; // UV height match for corner 2
                 double maxV = (texV + 16 - 0.01D) / 256.0D;
 
-                float luminance = block.getLuminance(_blockAccess, adjX, y, adjZ);
+                float luminance = block.getLuminance(_iBlockAccess, adjX, y, adjZ);
                 float shadow = (side < 2) ? lightZ : lightX;
                 luminance *= shadow;
 
@@ -1801,12 +1801,12 @@ public class BlockRenderer
             int checkZ = z - (i >> 1 & 1);
 
             // If there is fluid directly above any of the 4 blocks, the corner must be completely full (height 1.0)
-            if (_blockAccess.getMaterial(checkX, y + 1, checkZ) == material)
+            if (_iBlockAccess.getMaterial(checkX, y + 1, checkZ) == material)
             {
                 return 1.0F;
             }
 
-            Material neighborMaterial = _blockAccess.getMaterial(checkX, y, checkZ);
+            Material neighborMaterial = _iBlockAccess.getMaterial(checkX, y, checkZ);
 
             if (neighborMaterial != material)
             {
@@ -1819,7 +1819,7 @@ public class BlockRenderer
             }
             else
             {
-                int neighborMeta = _blockAccess.getBlockMeta(checkX, y, checkZ);
+                int neighborMeta = _iBlockAccess.getBlockMeta(checkX, y, checkZ);
                 float fluidDepth = BlockFluid.getFluidHeightFromMeta(neighborMeta);
 
                 // Meta >= 8 (falling fluid) or Meta == 0 (source block)
@@ -1909,7 +1909,7 @@ public class BlockRenderer
         Box bounds = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
 
         // 1. Get Base Color/Biome Tint
-        int colorMultiplier = block.getColorMultiplier(_blockAccess, x, y, z);
+        int colorMultiplier = block.getColorMultiplier(_iBlockAccess, x, y, z);
         float r = (colorMultiplier >> 16 & 255) / 255.0F;
         float g = (colorMultiplier >> 8 & 255) / 255.0F;
         float b = (colorMultiplier & 255) / 255.0F;
@@ -1923,31 +1923,31 @@ public class BlockRenderer
         }
 
         // 3. Cache base light values for the center block and the 6 adjacent blocks
-        _aoLightValueXNeg = block.getLuminance(_blockAccess, x - 1, y, z);
-        _aoLightValueYNeg = block.getLuminance(_blockAccess, x, y - 1, z);
-        _aoLightValueZNeg = block.getLuminance(_blockAccess, x, y, z - 1);
-        _aoLightValueXPos = block.getLuminance(_blockAccess, x + 1, y, z);
-        _aoLightValueYPos = block.getLuminance(_blockAccess, x, y + 1, z);
-        _aoLightValueZPos = block.getLuminance(_blockAccess, x, y, z + 1);
+        _aoLightValueXNeg = block.getLuminance(_iBlockAccess, x - 1, y, z);
+        _aoLightValueYNeg = block.getLuminance(_iBlockAccess, x, y - 1, z);
+        _aoLightValueZNeg = block.getLuminance(_iBlockAccess, x, y, z - 1);
+        _aoLightValueXPos = block.getLuminance(_iBlockAccess, x + 1, y, z);
+        _aoLightValueYPos = block.getLuminance(_iBlockAccess, x, y + 1, z);
+        _aoLightValueZPos = block.getLuminance(_iBlockAccess, x, y, z + 1);
 
         // 4. Cache Diagonal Opacity (Can light pass through the diagonal neighbors?)
-        _aoBlockOpXPosYPos = Block.BlocksAllowVision[_blockAccess.getBlockId(x + 1, y + 1, z)];
-        _aoBlockOpYPosZNeg = Block.BlocksAllowVision[_blockAccess.getBlockId(x + 1, y - 1, z)];
-        _aoBlockOpXPosZNeg = Block.BlocksAllowVision[_blockAccess.getBlockId(x + 1, y, z + 1)];
-        _aoBlockOpXPosZPos = Block.BlocksAllowVision[_blockAccess.getBlockId(x + 1, y, z - 1)];
-        _aoBlockOpXNegYNeg = Block.BlocksAllowVision[_blockAccess.getBlockId(x - 1, y + 1, z)];
-        _aoBlockOpYNegZPos = Block.BlocksAllowVision[_blockAccess.getBlockId(x - 1, y - 1, z)];
-        _aoBlockOpXNegZNeg = Block.BlocksAllowVision[_blockAccess.getBlockId(x - 1, y, z - 1)];
-        _aoBlockOpXNegZPos = Block.BlocksAllowVision[_blockAccess.getBlockId(x - 1, y, z + 1)];
-        _aoBlockOpXPosYNeg = Block.BlocksAllowVision[_blockAccess.getBlockId(x, y + 1, z + 1)];
-        _aoBlockOpXNegYPos = Block.BlocksAllowVision[_blockAccess.getBlockId(x, y + 1, z - 1)];
-        _aoBlockOpYPosZPos = Block.BlocksAllowVision[_blockAccess.getBlockId(x, y - 1, z + 1)];
-        _aoBlockOpYNegZNeg = Block.BlocksAllowVision[_blockAccess.getBlockId(x, y - 1, z - 1)];
+        _aoBlockOpXPosYPos = Block.BlocksAllowVision[_iBlockAccess.getBlockId(x + 1, y + 1, z)];
+        _aoBlockOpYPosZNeg = Block.BlocksAllowVision[_iBlockAccess.getBlockId(x + 1, y - 1, z)];
+        _aoBlockOpXPosZNeg = Block.BlocksAllowVision[_iBlockAccess.getBlockId(x + 1, y, z + 1)];
+        _aoBlockOpXPosZPos = Block.BlocksAllowVision[_iBlockAccess.getBlockId(x + 1, y, z - 1)];
+        _aoBlockOpXNegYNeg = Block.BlocksAllowVision[_iBlockAccess.getBlockId(x - 1, y + 1, z)];
+        _aoBlockOpYNegZPos = Block.BlocksAllowVision[_iBlockAccess.getBlockId(x - 1, y - 1, z)];
+        _aoBlockOpXNegZNeg = Block.BlocksAllowVision[_iBlockAccess.getBlockId(x - 1, y, z - 1)];
+        _aoBlockOpXNegZPos = Block.BlocksAllowVision[_iBlockAccess.getBlockId(x - 1, y, z + 1)];
+        _aoBlockOpXPosYNeg = Block.BlocksAllowVision[_iBlockAccess.getBlockId(x, y + 1, z + 1)];
+        _aoBlockOpXNegYPos = Block.BlocksAllowVision[_iBlockAccess.getBlockId(x, y + 1, z - 1)];
+        _aoBlockOpYPosZPos = Block.BlocksAllowVision[_iBlockAccess.getBlockId(x, y - 1, z + 1)];
+        _aoBlockOpYNegZNeg = Block.BlocksAllowVision[_iBlockAccess.getBlockId(x, y - 1, z - 1)];
 
         float lightTl, lightBl, lightBr, lightTr;
 
         // BOTTOM FACE (Y - 1)
-        if (_renderAllFaces || bounds.MinY > 0.0D || block.isSideVisible(_blockAccess, x, y - 1, z, 0))
+        if (_renderAllFaces || bounds.MinY > 0.0D || block.isSideVisible(_iBlockAccess, x, y - 1, z, 0))
         {
             if (_aoBlendMode <= 0) // Flat Lighting
             {
@@ -1956,16 +1956,16 @@ public class BlockRenderer
             else // Smooth Ambient Occlusion
             {
                 int adjY = y - 1;
-                float lightWest = block.getLuminance(_blockAccess, x - 1, adjY, z);
-                float lightEast = block.getLuminance(_blockAccess, x + 1, adjY, z);
-                float lightNorth = block.getLuminance(_blockAccess, x, adjY, z - 1);
-                float lightSouth = block.getLuminance(_blockAccess, x, adjY, z + 1);
+                float lightWest = block.getLuminance(_iBlockAccess, x - 1, adjY, z);
+                float lightEast = block.getLuminance(_iBlockAccess, x + 1, adjY, z);
+                float lightNorth = block.getLuminance(_iBlockAccess, x, adjY, z - 1);
+                float lightSouth = block.getLuminance(_iBlockAccess, x, adjY, z + 1);
 
                 // Calculate corner lights. If neighbors form a solid corner, prevent light bleeding.
-                float lightNorthWest = (!_aoBlockOpYNegZNeg && !_aoBlockOpYNegZPos) ? lightWest : block.getLuminance(_blockAccess, x - 1, adjY, z - 1);
-                float lightSouthWest = (!_aoBlockOpYPosZPos && !_aoBlockOpYNegZPos) ? lightWest : block.getLuminance(_blockAccess, x - 1, adjY, z + 1);
-                float lightNorthEast = (!_aoBlockOpYNegZNeg && !_aoBlockOpYPosZNeg) ? lightEast : block.getLuminance(_blockAccess, x + 1, adjY, z - 1);
-                float lightSouthEast = (!_aoBlockOpYPosZPos && !_aoBlockOpYPosZNeg) ? lightEast : block.getLuminance(_blockAccess, x + 1, adjY, z + 1);
+                float lightNorthWest = (!_aoBlockOpYNegZNeg && !_aoBlockOpYNegZPos) ? lightWest : block.getLuminance(_iBlockAccess, x - 1, adjY, z - 1);
+                float lightSouthWest = (!_aoBlockOpYPosZPos && !_aoBlockOpYNegZPos) ? lightWest : block.getLuminance(_iBlockAccess, x - 1, adjY, z + 1);
+                float lightNorthEast = (!_aoBlockOpYNegZNeg && !_aoBlockOpYPosZNeg) ? lightEast : block.getLuminance(_iBlockAccess, x + 1, adjY, z - 1);
+                float lightSouthEast = (!_aoBlockOpYPosZPos && !_aoBlockOpYPosZNeg) ? lightEast : block.getLuminance(_iBlockAccess, x + 1, adjY, z + 1);
 
                 // Average the 4 surrounding blocks for each vertex
                 lightTl = (lightSouthWest + lightWest + lightSouth + _aoLightValueYNeg) / 4.0F;
@@ -1984,12 +1984,12 @@ public class BlockRenderer
             _colorRedBottomRight = tintR * lightBr; _colorGreenBottomRight = tintG * lightBr; _colorBlueBottomRight = tintB * lightBr;
             _colorRedTopRight = tintR * lightTr; _colorGreenTopRight = tintG * lightTr; _colorBlueTopRight = tintB * lightTr;
 
-            RenderBottomFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 0));
+            RenderBottomFace(block, x, y, z, block.getTextureId(_iBlockAccess, x, y, z, 0));
             hasRendered = true;
         }
 
         // TOP FACE (Y + 1)
-        if (_renderAllFaces || bounds.MaxY < 1.0D || block.isSideVisible(_blockAccess, x, y + 1, z, 1))
+        if (_renderAllFaces || bounds.MaxY < 1.0D || block.isSideVisible(_iBlockAccess, x, y + 1, z, 1))
         {
             if (_aoBlendMode <= 0)
             {
@@ -1998,15 +1998,15 @@ public class BlockRenderer
             else
             {
                 int adjY = y + 1;
-                float lightWest = block.getLuminance(_blockAccess, x - 1, adjY, z);
-                float lightEast = block.getLuminance(_blockAccess, x + 1, adjY, z);
-                float lightNorth = block.getLuminance(_blockAccess, x, adjY, z - 1);
-                float lightSouth = block.getLuminance(_blockAccess, x, adjY, z + 1);
+                float lightWest = block.getLuminance(_iBlockAccess, x - 1, adjY, z);
+                float lightEast = block.getLuminance(_iBlockAccess, x + 1, adjY, z);
+                float lightNorth = block.getLuminance(_iBlockAccess, x, adjY, z - 1);
+                float lightSouth = block.getLuminance(_iBlockAccess, x, adjY, z + 1);
 
-                float lightNorthWest = (!_aoBlockOpXNegYPos && !_aoBlockOpXNegYNeg) ? lightWest : block.getLuminance(_blockAccess, x - 1, adjY, z - 1);
-                float lightNorthEast = (!_aoBlockOpXNegYPos && !_aoBlockOpXPosYPos) ? lightEast : block.getLuminance(_blockAccess, x + 1, adjY, z - 1);
-                float lightSouthWest = (!_aoBlockOpXPosYNeg && !_aoBlockOpXNegYNeg) ? lightWest : block.getLuminance(_blockAccess, x - 1, adjY, z + 1);
-                float lightSouthEast = (!_aoBlockOpXPosYNeg && !_aoBlockOpXPosYPos) ? lightEast : block.getLuminance(_blockAccess, x + 1, adjY, z + 1);
+                float lightNorthWest = (!_aoBlockOpXNegYPos && !_aoBlockOpXNegYNeg) ? lightWest : block.getLuminance(_iBlockAccess, x - 1, adjY, z - 1);
+                float lightNorthEast = (!_aoBlockOpXNegYPos && !_aoBlockOpXPosYPos) ? lightEast : block.getLuminance(_iBlockAccess, x + 1, adjY, z - 1);
+                float lightSouthWest = (!_aoBlockOpXPosYNeg && !_aoBlockOpXNegYNeg) ? lightWest : block.getLuminance(_iBlockAccess, x - 1, adjY, z + 1);
+                float lightSouthEast = (!_aoBlockOpXPosYNeg && !_aoBlockOpXPosYPos) ? lightEast : block.getLuminance(_iBlockAccess, x + 1, adjY, z + 1);
 
                 lightTl = (lightSouthWest + lightWest + lightSouth + _aoLightValueYPos) / 4.0F;
                 lightBl = (lightWest + lightNorthWest + _aoLightValueYPos + lightNorth) / 4.0F;
@@ -2024,12 +2024,12 @@ public class BlockRenderer
             _colorRedBottomRight = tintR * lightBr; _colorGreenBottomRight = tintG * lightBr; _colorBlueBottomRight = tintB * lightBr;
             _colorRedTopRight = tintR * lightTr; _colorGreenTopRight = tintG * lightTr; _colorBlueTopRight = tintB * lightTr;
 
-            RenderTopFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 1));
+            RenderTopFace(block, x, y, z, block.getTextureId(_iBlockAccess, x, y, z, 1));
             hasRendered = true;
         }
 
         // EAST FACE (Z - 1)
-        if (_renderAllFaces || bounds.MinZ > 0.0D || block.isSideVisible(_blockAccess, x, y, z - 1, 2))
+        if (_renderAllFaces || bounds.MinZ > 0.0D || block.isSideVisible(_iBlockAccess, x, y, z - 1, 2))
         {
             if (_aoBlendMode <= 0)
             {
@@ -2038,15 +2038,15 @@ public class BlockRenderer
             else
             {
                 int adjZ = z - 1;
-                float lightWest = block.getLuminance(_blockAccess, x - 1, y, adjZ);
-                float lightEast = block.getLuminance(_blockAccess, x + 1, y, adjZ);
-                float lightDown = block.getLuminance(_blockAccess, x, y - 1, adjZ);
-                float lightUp = block.getLuminance(_blockAccess, x, y + 1, adjZ);
+                float lightWest = block.getLuminance(_iBlockAccess, x - 1, y, adjZ);
+                float lightEast = block.getLuminance(_iBlockAccess, x + 1, y, adjZ);
+                float lightDown = block.getLuminance(_iBlockAccess, x, y - 1, adjZ);
+                float lightUp = block.getLuminance(_iBlockAccess, x, y + 1, adjZ);
 
-                float lightDownWest = (!_aoBlockOpXNegZNeg && !_aoBlockOpYNegZNeg) ? lightWest : block.getLuminance(_blockAccess, x - 1, y - 1, adjZ);
-                float lightUpWest = (!_aoBlockOpXNegZNeg && !_aoBlockOpXNegYPos) ? lightWest : block.getLuminance(_blockAccess, x - 1, y + 1, adjZ);
-                float lightDownEast = (!_aoBlockOpXPosZPos && !_aoBlockOpYNegZNeg) ? lightEast : block.getLuminance(_blockAccess, x + 1, y - 1, adjZ);
-                float lightUpEast = (!_aoBlockOpXPosZPos && !_aoBlockOpXNegYPos) ? lightEast : block.getLuminance(_blockAccess, x + 1, y + 1, adjZ);
+                float lightDownWest = (!_aoBlockOpXNegZNeg && !_aoBlockOpYNegZNeg) ? lightWest : block.getLuminance(_iBlockAccess, x - 1, y - 1, adjZ);
+                float lightUpWest = (!_aoBlockOpXNegZNeg && !_aoBlockOpXNegYPos) ? lightWest : block.getLuminance(_iBlockAccess, x - 1, y + 1, adjZ);
+                float lightDownEast = (!_aoBlockOpXPosZPos && !_aoBlockOpYNegZNeg) ? lightEast : block.getLuminance(_iBlockAccess, x + 1, y - 1, adjZ);
+                float lightUpEast = (!_aoBlockOpXPosZPos && !_aoBlockOpXNegYPos) ? lightEast : block.getLuminance(_iBlockAccess, x + 1, y + 1, adjZ);
 
                 lightTl = (lightWest + lightUpWest + _aoLightValueZNeg + lightUp) / 4.0F;
                 lightBl = (_aoLightValueZNeg + lightUp + lightEast + lightUpEast) / 4.0F;
@@ -2064,7 +2064,7 @@ public class BlockRenderer
             _colorRedBottomRight = tintR * lightBr; _colorGreenBottomRight = tintG * lightBr; _colorBlueBottomRight = tintB * lightBr;
             _colorRedTopRight = tintR * lightTr; _colorGreenTopRight = tintG * lightTr; _colorBlueTopRight = tintB * lightTr;
 
-            int tex = block.getTextureId(_blockAccess, x, y, z, 2);
+            int tex = block.getTextureId(_iBlockAccess, x, y, z, 2);
             RenderEastFace(block, x, y, z, tex);
 
             // Render fancy biome grass overlay for the side if needed
@@ -2079,7 +2079,7 @@ public class BlockRenderer
         }
 
         // WEST FACE (Z + 1)
-        if (_renderAllFaces || bounds.MaxZ < 1.0D || block.isSideVisible(_blockAccess, x, y, z + 1, 3))
+        if (_renderAllFaces || bounds.MaxZ < 1.0D || block.isSideVisible(_iBlockAccess, x, y, z + 1, 3))
         {
             if (_aoBlendMode <= 0)
             {
@@ -2088,15 +2088,15 @@ public class BlockRenderer
             else
             {
                 int adjZ = z + 1;
-                float lightWest = block.getLuminance(_blockAccess, x - 1, y, adjZ);
-                float lightEast = block.getLuminance(_blockAccess, x + 1, y, adjZ);
-                float lightDown = block.getLuminance(_blockAccess, x, y - 1, adjZ);
-                float lightUp = block.getLuminance(_blockAccess, x, y + 1, adjZ);
+                float lightWest = block.getLuminance(_iBlockAccess, x - 1, y, adjZ);
+                float lightEast = block.getLuminance(_iBlockAccess, x + 1, y, adjZ);
+                float lightDown = block.getLuminance(_iBlockAccess, x, y - 1, adjZ);
+                float lightUp = block.getLuminance(_iBlockAccess, x, y + 1, adjZ);
 
-                float lightDownWest = (!_aoBlockOpXNegZPos && !_aoBlockOpYPosZPos) ? lightWest : block.getLuminance(_blockAccess, x - 1, y - 1, adjZ);
-                float lightUpWest = (!_aoBlockOpXNegZPos && !_aoBlockOpXPosYNeg) ? lightWest : block.getLuminance(_blockAccess, x - 1, y + 1, adjZ);
-                float lightDownEast = (!_aoBlockOpXPosZNeg && !_aoBlockOpYPosZPos) ? lightEast : block.getLuminance(_blockAccess, x + 1, y - 1, adjZ);
-                float lightUpEast = (!_aoBlockOpXPosZNeg && !_aoBlockOpXPosYNeg) ? lightEast : block.getLuminance(_blockAccess, x + 1, y + 1, adjZ);
+                float lightDownWest = (!_aoBlockOpXNegZPos && !_aoBlockOpYPosZPos) ? lightWest : block.getLuminance(_iBlockAccess, x - 1, y - 1, adjZ);
+                float lightUpWest = (!_aoBlockOpXNegZPos && !_aoBlockOpXPosYNeg) ? lightWest : block.getLuminance(_iBlockAccess, x - 1, y + 1, adjZ);
+                float lightDownEast = (!_aoBlockOpXPosZNeg && !_aoBlockOpYPosZPos) ? lightEast : block.getLuminance(_iBlockAccess, x + 1, y - 1, adjZ);
+                float lightUpEast = (!_aoBlockOpXPosZNeg && !_aoBlockOpXPosYNeg) ? lightEast : block.getLuminance(_iBlockAccess, x + 1, y + 1, adjZ);
 
                 lightTl = (lightWest + lightUpWest + _aoLightValueZPos + lightUp) / 4.0F;
                 lightBl = (_aoLightValueZPos + lightUp + lightEast + lightUpEast) / 4.0F;
@@ -2113,7 +2113,7 @@ public class BlockRenderer
             _colorRedBottomRight = tintR * lightBr; _colorGreenBottomRight = tintG * lightBr; _colorBlueBottomRight = tintB * lightBr;
             _colorRedTopRight = tintR * lightTr; _colorGreenTopRight = tintG * lightTr; _colorBlueTopRight = tintB * lightTr;
 
-            int tex = block.getTextureId(_blockAccess, x, y, z, 3);
+            int tex = block.getTextureId(_iBlockAccess, x, y, z, 3);
             RenderWestFace(block, x, y, z, tex);
 
             if (s_fancyGrass && tex == 3 && _overrideBlockTexture < 0)
@@ -2127,7 +2127,7 @@ public class BlockRenderer
         }
 
         // NORTH FACE (X - 1)
-        if (_renderAllFaces || bounds.MinX > 0.0D || block.isSideVisible(_blockAccess, x - 1, y, z, 4))
+        if (_renderAllFaces || bounds.MinX > 0.0D || block.isSideVisible(_iBlockAccess, x - 1, y, z, 4))
         {
             if (_aoBlendMode <= 0)
             {
@@ -2136,15 +2136,15 @@ public class BlockRenderer
             else
             {
                 int adjX = x - 1;
-                float lightDown = block.getLuminance(_blockAccess, adjX, y - 1, z);
-                float lightNorth = block.getLuminance(_blockAccess, adjX, y, z - 1);
-                float lightSouth = block.getLuminance(_blockAccess, adjX, y, z + 1);
-                float lightUp = block.getLuminance(_blockAccess, adjX, y + 1, z);
+                float lightDown = block.getLuminance(_iBlockAccess, adjX, y - 1, z);
+                float lightNorth = block.getLuminance(_iBlockAccess, adjX, y, z - 1);
+                float lightSouth = block.getLuminance(_iBlockAccess, adjX, y, z + 1);
+                float lightUp = block.getLuminance(_iBlockAccess, adjX, y + 1, z);
 
-                float lightDownNorth = (!_aoBlockOpXNegZNeg && !_aoBlockOpYNegZPos) ? lightNorth : block.getLuminance(_blockAccess, adjX, y - 1, z - 1);
-                float lightDownSouth = (!_aoBlockOpXNegZPos && !_aoBlockOpYNegZPos) ? lightSouth : block.getLuminance(_blockAccess, adjX, y - 1, z + 1);
-                float lightUpNorth = (!_aoBlockOpXNegZNeg && !_aoBlockOpXNegYNeg) ? lightNorth : block.getLuminance(_blockAccess, adjX, y + 1, z - 1);
-                float lightUpSouth = (!_aoBlockOpXNegZPos && !_aoBlockOpXNegYNeg) ? lightSouth : block.getLuminance(_blockAccess, adjX, y + 1, z + 1);
+                float lightDownNorth = (!_aoBlockOpXNegZNeg && !_aoBlockOpYNegZPos) ? lightNorth : block.getLuminance(_iBlockAccess, adjX, y - 1, z - 1);
+                float lightDownSouth = (!_aoBlockOpXNegZPos && !_aoBlockOpYNegZPos) ? lightSouth : block.getLuminance(_iBlockAccess, adjX, y - 1, z + 1);
+                float lightUpNorth = (!_aoBlockOpXNegZNeg && !_aoBlockOpXNegYNeg) ? lightNorth : block.getLuminance(_iBlockAccess, adjX, y + 1, z - 1);
+                float lightUpSouth = (!_aoBlockOpXNegZPos && !_aoBlockOpXNegYNeg) ? lightSouth : block.getLuminance(_iBlockAccess, adjX, y + 1, z + 1);
 
                 lightTl = (lightDown + lightDownSouth + _aoLightValueXNeg + lightSouth) / 4.0F;
                 lightBl = (_aoLightValueXNeg + lightSouth + lightUp + lightUpSouth) / 4.0F;
@@ -2162,7 +2162,7 @@ public class BlockRenderer
             _colorRedBottomRight = tintR * lightBr; _colorGreenBottomRight = tintG * lightBr; _colorBlueBottomRight = tintB * lightBr;
             _colorRedTopRight = tintR * lightTr; _colorGreenTopRight = tintG * lightTr; _colorBlueTopRight = tintB * lightTr;
 
-            int tex = block.getTextureId(_blockAccess, x, y, z, 4);
+            int tex = block.getTextureId(_iBlockAccess, x, y, z, 4);
             RenderNorthFace(block, x, y, z, tex);
 
             if (s_fancyGrass && tex == 3 && _overrideBlockTexture < 0)
@@ -2176,7 +2176,7 @@ public class BlockRenderer
         }
 
         // SOUTH FACE (X + 1)
-        if (_renderAllFaces || bounds.MaxX < 1.0D || block.isSideVisible(_blockAccess, x + 1, y, z, 5))
+        if (_renderAllFaces || bounds.MaxX < 1.0D || block.isSideVisible(_iBlockAccess, x + 1, y, z, 5))
         {
             if (_aoBlendMode <= 0)
             {
@@ -2185,15 +2185,15 @@ public class BlockRenderer
             else
             {
                 int adjX = x + 1;
-                float lightDown = block.getLuminance(_blockAccess, adjX, y - 1, z);
-                float lightNorth = block.getLuminance(_blockAccess, adjX, y, z - 1);
-                float lightSouth = block.getLuminance(_blockAccess, adjX, y, z + 1);
-                float lightUp = block.getLuminance(_blockAccess, adjX, y + 1, z);
+                float lightDown = block.getLuminance(_iBlockAccess, adjX, y - 1, z);
+                float lightNorth = block.getLuminance(_iBlockAccess, adjX, y, z - 1);
+                float lightSouth = block.getLuminance(_iBlockAccess, adjX, y, z + 1);
+                float lightUp = block.getLuminance(_iBlockAccess, adjX, y + 1, z);
 
-                float lightDownNorth = (!_aoBlockOpYPosZNeg && !_aoBlockOpXPosZPos) ? lightNorth : block.getLuminance(_blockAccess, adjX, y - 1, z - 1);
-                float lightDownSouth = (!_aoBlockOpYPosZNeg && !_aoBlockOpXPosZNeg) ? lightSouth : block.getLuminance(_blockAccess, adjX, y - 1, z + 1);
-                float lightUpNorth = (!_aoBlockOpXPosYPos && !_aoBlockOpXPosZPos) ? lightNorth : block.getLuminance(_blockAccess, adjX, y + 1, z - 1);
-                float lightUpSouth = (!_aoBlockOpXPosYPos && !_aoBlockOpXPosZNeg) ? lightSouth : block.getLuminance(_blockAccess, adjX, y + 1, z + 1);
+                float lightDownNorth = (!_aoBlockOpYPosZNeg && !_aoBlockOpXPosZPos) ? lightNorth : block.getLuminance(_iBlockAccess, adjX, y - 1, z - 1);
+                float lightDownSouth = (!_aoBlockOpYPosZNeg && !_aoBlockOpXPosZNeg) ? lightSouth : block.getLuminance(_iBlockAccess, adjX, y - 1, z + 1);
+                float lightUpNorth = (!_aoBlockOpXPosYPos && !_aoBlockOpXPosZPos) ? lightNorth : block.getLuminance(_iBlockAccess, adjX, y + 1, z - 1);
+                float lightUpSouth = (!_aoBlockOpXPosYPos && !_aoBlockOpXPosZNeg) ? lightSouth : block.getLuminance(_iBlockAccess, adjX, y + 1, z + 1);
 
                 lightTl = (lightDownSouth + lightDown + _aoLightValueXPos + lightSouth) / 4.0F;
                 lightBl = (_aoLightValueXPos + lightSouth + lightUp + lightUpSouth) / 4.0F;
@@ -2210,7 +2210,7 @@ public class BlockRenderer
             _colorRedBottomRight = tintR * lightBr; _colorGreenBottomRight = tintG * lightBr; _colorBlueBottomRight = tintB * lightBr;
             _colorRedTopRight = tintR * lightTr; _colorGreenTopRight = tintG * lightTr; _colorBlueTopRight = tintB * lightTr;
 
-            int tex = block.getTextureId(_blockAccess, x, y, z, 5);
+            int tex = block.getTextureId(_iBlockAccess, x, y, z, 5);
             RenderSouthFace(block, x, y, z, tex);
 
             if (s_fancyGrass && tex == 3 && _overrideBlockTexture < 0)
@@ -2234,7 +2234,7 @@ public class BlockRenderer
         bool hasRendered = false;
 
         // 1. Calculate the specific biome/tint color for this cactus
-        int colorMultiplier = block.getColorMultiplier(_blockAccess, x, y, z);
+        int colorMultiplier = block.getColorMultiplier(_iBlockAccess, x, y, z);
         float red = (colorMultiplier >> 16 & 255) / 255.0F;
         float green = (colorMultiplier >> 8 & 255) / 255.0F;
         float blue = (colorMultiplier & 255) / 255.0F;
@@ -2254,85 +2254,85 @@ public class BlockRenderer
         // 1/16th of a block = exactly 1 pixel width in a standard 16x16 texture
         float inset = 1.0F / 16.0F;
 
-        float centerLuminance = block.getLuminance(_blockAccess, x, y, z);
+        float centerLuminance = block.getLuminance(_iBlockAccess, x, y, z);
         float faceLuminance;
 
         // --- Bottom Face (Y - 1) ---
-        if (_renderAllFaces || bounds.MinY > 0.0D || block.isSideVisible(_blockAccess, x, y - 1, z, 0))
+        if (_renderAllFaces || bounds.MinY > 0.0D || block.isSideVisible(_iBlockAccess, x, y - 1, z, 0))
         {
-            faceLuminance = block.getLuminance(_blockAccess, x, y - 1, z);
+            faceLuminance = block.getLuminance(_iBlockAccess, x, y - 1, z);
             tess.setColorOpaque_F(rBottom * faceLuminance, gBottom * faceLuminance, bBottom * faceLuminance);
-            RenderBottomFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 0));
+            RenderBottomFace(block, x, y, z, block.getTextureId(_iBlockAccess, x, y, z, 0));
             hasRendered = true;
         }
 
         // --- Top Face (Y + 1) ---
-        if (_renderAllFaces || bounds.MaxY < 1.0D || block.isSideVisible(_blockAccess, x, y + 1, z, 1))
+        if (_renderAllFaces || bounds.MaxY < 1.0D || block.isSideVisible(_iBlockAccess, x, y + 1, z, 1))
         {
-            faceLuminance = block.getLuminance(_blockAccess, x, y + 1, z);
+            faceLuminance = block.getLuminance(_iBlockAccess, x, y + 1, z);
             if (Math.Abs(bounds.MaxY - 1.0D) > 0.1 && !block.material.IsFluid)
             {
                 faceLuminance = centerLuminance;
             }
 
             tess.setColorOpaque_F(rTop * faceLuminance, gTop * faceLuminance, bTop * faceLuminance);
-            RenderTopFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 1));
+            RenderTopFace(block, x, y, z, block.getTextureId(_iBlockAccess, x, y, z, 1));
             hasRendered = true;
         }
 
         // --- East Face (Z - 1) ---
-        if (_renderAllFaces || bounds.MinZ > 0.0D || block.isSideVisible(_blockAccess, x, y, z - 1, 2))
+        if (_renderAllFaces || bounds.MinZ > 0.0D || block.isSideVisible(_iBlockAccess, x, y, z - 1, 2))
         {
-            faceLuminance = block.getLuminance(_blockAccess, x, y, z - 1);
+            faceLuminance = block.getLuminance(_iBlockAccess, x, y, z - 1);
             if (bounds.MinZ > 0.0D) faceLuminance = centerLuminance;
 
             tess.setColorOpaque_F(rZ * faceLuminance, gZ * faceLuminance, bZ * faceLuminance);
 
             // Translate inward by 1 pixel, render face, then reset
             tess.setTranslationF(0.0F, 0.0F, inset);
-            RenderEastFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 2));
+            RenderEastFace(block, x, y, z, block.getTextureId(_iBlockAccess, x, y, z, 2));
             tess.setTranslationF(0.0F, 0.0F, -inset);
             hasRendered = true;
         }
 
         // --- West Face (Z + 1) ---
-        if (_renderAllFaces || bounds.MaxZ < 1.0D || block.isSideVisible(_blockAccess, x, y, z + 1, 3))
+        if (_renderAllFaces || bounds.MaxZ < 1.0D || block.isSideVisible(_iBlockAccess, x, y, z + 1, 3))
         {
-            faceLuminance = block.getLuminance(_blockAccess, x, y, z + 1);
+            faceLuminance = block.getLuminance(_iBlockAccess, x, y, z + 1);
             if (bounds.MaxZ < 1.0D) faceLuminance = centerLuminance;
 
             tess.setColorOpaque_F(rZ * faceLuminance, gZ * faceLuminance, bZ * faceLuminance);
 
             tess.setTranslationF(0.0F, 0.0F, -inset);
-            RenderWestFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 3));
+            RenderWestFace(block, x, y, z, block.getTextureId(_iBlockAccess, x, y, z, 3));
             tess.setTranslationF(0.0F, 0.0F, inset);
             hasRendered = true;
         }
 
         // --- North Face (X - 1) ---
-        if (_renderAllFaces || bounds.MinX > 0.0D || block.isSideVisible(_blockAccess, x - 1, y, z, 4))
+        if (_renderAllFaces || bounds.MinX > 0.0D || block.isSideVisible(_iBlockAccess, x - 1, y, z, 4))
         {
-            faceLuminance = block.getLuminance(_blockAccess, x - 1, y, z);
+            faceLuminance = block.getLuminance(_iBlockAccess, x - 1, y, z);
             if (bounds.MinX > 0.0D) faceLuminance = centerLuminance;
 
             tess.setColorOpaque_F(rX * faceLuminance, gX * faceLuminance, bX * faceLuminance);
 
             tess.setTranslationF(inset, 0.0F, 0.0F);
-            RenderNorthFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 4));
+            RenderNorthFace(block, x, y, z, block.getTextureId(_iBlockAccess, x, y, z, 4));
             tess.setTranslationF(-inset, 0.0F, 0.0F);
             hasRendered = true;
         }
 
         // --- South Face (X + 1) ---
-        if (_renderAllFaces || bounds.MaxX < 1.0D || block.isSideVisible(_blockAccess, x + 1, y, z, 5))
+        if (_renderAllFaces || bounds.MaxX < 1.0D || block.isSideVisible(_iBlockAccess, x + 1, y, z, 5))
         {
-            faceLuminance = block.getLuminance(_blockAccess, x + 1, y, z);
+            faceLuminance = block.getLuminance(_iBlockAccess, x + 1, y, z);
             if (bounds.MaxX < 1.0D) faceLuminance = centerLuminance;
 
             tess.setColorOpaque_F(rX * faceLuminance, gX * faceLuminance, bX * faceLuminance);
 
             tess.setTranslationF(-inset, 0.0F, 0.0F);
-            RenderSouthFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 5));
+            RenderSouthFace(block, x, y, z, block.getTextureId(_iBlockAccess, x, y, z, 5));
             tess.setTranslationF(inset, 0.0F, 0.0F);
             hasRendered = true;
         }
@@ -2351,10 +2351,10 @@ public class BlockRenderer
         RenderStandardBlock(block, x, y, z);
 
         // Check for adjacent fences
-        bool connectsWest = _blockAccess.getBlockId(x - 1, y, z) == block.id;
-        bool connectsEast = _blockAccess.getBlockId(x + 1, y, z) == block.id;
-        bool connectsNorth = _blockAccess.getBlockId(x, y, z - 1) == block.id;
-        bool connectsSouth = _blockAccess.getBlockId(x, y, z + 1) == block.id;
+        bool connectsWest = _iBlockAccess.getBlockId(x - 1, y, z) == block.id;
+        bool connectsEast = _iBlockAccess.getBlockId(x + 1, y, z) == block.id;
+        bool connectsNorth = _iBlockAccess.getBlockId(x, y, z - 1) == block.id;
+        bool connectsSouth = _iBlockAccess.getBlockId(x, y, z + 1) == block.id;
 
         bool connectsX = connectsWest || connectsEast;
         bool connectsZ = connectsNorth || connectsSouth;
@@ -2418,7 +2418,7 @@ public class BlockRenderer
     private bool RenderBlockStairs(Block block, int x, int y, int z)
     {
         bool hasRendered = false;
-        int direction = _blockAccess.getBlockMeta(x, y, z);
+        int direction = _iBlockAccess.getBlockMeta(x, y, z);
 
         if (direction == 0) // Ascending East (Stairs face West)
         {
@@ -2484,33 +2484,33 @@ public class BlockRenderer
         float lightZ = 0.8F; // East/West
         float lightX = 0.6F; // North/South
 
-        float blockLuminance = block.getLuminance(_blockAccess, x, y, z);
+        float blockLuminance = block.getLuminance(_iBlockAccess, x, y, z);
 
         bool isLightEmitter = Block.BlocksLightLuminance[block.id] > 0;
 
         // --- Bottom Face (Y - 1) ---
-        float faceLuminance = block.getLuminance(_blockAccess, x, y - 1, z);
+        float faceLuminance = block.getLuminance(_iBlockAccess, x, y - 1, z);
         if (bounds.MinY > 0.0D) faceLuminance = blockLuminance;
         if (isLightEmitter) faceLuminance = 1.0F;
 
         tess.setColorOpaque_F(lightBottom * faceLuminance, lightBottom * faceLuminance, lightBottom * faceLuminance);
-        RenderBottomFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 0));
+        RenderBottomFace(block, x, y, z, block.getTextureId(_iBlockAccess, x, y, z, 0));
 
         // --- Top Face (Y + 1) ---
-        faceLuminance = block.getLuminance(_blockAccess, x, y + 1, z);
+        faceLuminance = block.getLuminance(_iBlockAccess, x, y + 1, z);
         if (bounds.MaxY < 1.0D) faceLuminance = blockLuminance;
         if (isLightEmitter) faceLuminance = 1.0F;
 
         tess.setColorOpaque_F(lightTop * faceLuminance, lightTop * faceLuminance, lightTop * faceLuminance);
-        RenderTopFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 1));
+        RenderTopFace(block, x, y, z, block.getTextureId(_iBlockAccess, x, y, z, 1));
 
         // --- East Face (Z - 1) ---
-        faceLuminance = block.getLuminance(_blockAccess, x, y, z - 1);
+        faceLuminance = block.getLuminance(_iBlockAccess, x, y, z - 1);
         if (bounds.MinZ > 0.0D) faceLuminance = blockLuminance;
         if (isLightEmitter) faceLuminance = 1.0F;
 
         tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
-        int textureId = block.getTextureId(_blockAccess, x, y, z, 2);
+        int textureId = block.getTextureId(_iBlockAccess, x, y, z, 2);
 
         // Negative texture ID is used as a flag to flip the texture horizontally (for door hinges)
         if (textureId < 0)
@@ -2522,12 +2522,12 @@ public class BlockRenderer
         _flipTexture = false;
 
         // --- West Face (Z + 1) ---
-        faceLuminance = block.getLuminance(_blockAccess, x, y, z + 1);
+        faceLuminance = block.getLuminance(_iBlockAccess, x, y, z + 1);
         if (bounds.MaxZ < 1.0D) faceLuminance = blockLuminance;
         if (isLightEmitter) faceLuminance = 1.0F;
 
         tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
-        textureId = block.getTextureId(_blockAccess, x, y, z, 3);
+        textureId = block.getTextureId(_iBlockAccess, x, y, z, 3);
         if (textureId < 0)
         {
             _flipTexture = true;
@@ -2537,12 +2537,12 @@ public class BlockRenderer
         _flipTexture = false;
 
         // --- North Face (X - 1) ---
-        faceLuminance = block.getLuminance(_blockAccess, x - 1, y, z);
+        faceLuminance = block.getLuminance(_iBlockAccess, x - 1, y, z);
         if (bounds.MinX > 0.0D) faceLuminance = blockLuminance;
         if (isLightEmitter) faceLuminance = 1.0F;
 
         tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
-        textureId = block.getTextureId(_blockAccess, x, y, z, 4);
+        textureId = block.getTextureId(_iBlockAccess, x, y, z, 4);
         if (textureId < 0)
         {
             _flipTexture = true;
@@ -2552,12 +2552,12 @@ public class BlockRenderer
         _flipTexture = false;
 
         // --- South Face (X + 1) ---
-        faceLuminance = block.getLuminance(_blockAccess, x + 1, y, z);
+        faceLuminance = block.getLuminance(_iBlockAccess, x + 1, y, z);
         if (bounds.MaxX < 1.0D) faceLuminance = blockLuminance;
         if (isLightEmitter) faceLuminance = 1.0F;
 
         tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
-        textureId = block.getTextureId(_blockAccess, x, y, z, 5);
+        textureId = block.getTextureId(_iBlockAccess, x, y, z, 5);
         if (textureId < 0)
         {
             _flipTexture = true;
