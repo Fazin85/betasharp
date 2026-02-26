@@ -1,5 +1,7 @@
+using System.Xml;
 using BetaSharp.Blocks;
 using BetaSharp.Entities;
+using BetaSharp.PathFinding;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Biomes;
@@ -13,6 +15,7 @@ public static class NaturalSpawner
     private const int SpawnCloseness = 6;
 
     private static readonly HashSet<ChunkPos> ChunksForSpawning = [];
+
     private static readonly Func<World, EntityLiving>[] Monsters =
     [
         w => new EntitySpider(w),
@@ -20,16 +23,18 @@ public static class NaturalSpawner
         w => new EntitySkeleton(w),
     ];
 
-    private static BlockPos GetRandomSpawningPointInChunk(World world, int centerX, int centerZ)
+    private static BlockPos GetRandomSpawningPointInChunk(World world, PathFinder pathFinder, int centerX, int centerZ)
     {
+        pathFinder.SetWorld(world);
         int x = centerX + world.random.NextInt(16);
         int y = world.random.NextInt(128);
         int z = centerZ + world.random.NextInt(16);
         return new BlockPos(x, y, z);
     }
 
-    public static void DoSpawning(World world, bool spawnHostile, bool spawnPeaceful)
+    internal static void DoSpawning(World world, PathFinder pathFinder, bool spawnHostile, bool spawnPeaceful)
     {
+        pathFinder.SetWorld(world);
         if (!spawnHostile && !spawnPeaceful) return;
 
         ChunksForSpawning.Clear();
@@ -51,7 +56,9 @@ public static class NaturalSpawner
         Vec3i worldSpawn = world.getSpawnPos();
         foreach (var creatureKind in CreatureKind.Values)
         {
-            if (((!creatureKind.Peaceful && spawnHostile) || (creatureKind.Peaceful && spawnPeaceful)) && world.CountEntitiesOfType(creatureKind.EntityType) <= creatureKind.MobCap * ChunksForSpawning.Count / 256)
+            if (((!creatureKind.Peaceful && spawnHostile) || (creatureKind.Peaceful && spawnPeaceful)) &&
+                world.CountEntitiesOfType(creatureKind.EntityType) <=
+                creatureKind.MobCap * ChunksForSpawning.Count / 256)
             {
                 foreach (var chunk in ChunksForSpawning)
                 {
@@ -60,7 +67,7 @@ public static class NaturalSpawner
                     if (spawnSelector.Empty) break;
                     SpawnListEntry toSpawn = spawnSelector.GetNext(world.random);
 
-                    BlockPos spawnPos = GetRandomSpawningPointInChunk(world, chunk.X * 16, chunk.Z * 16);
+                    BlockPos spawnPos = GetRandomSpawningPointInChunk(world, pathFinder, chunk.X * 16, chunk.Z * 16);
                     if (world.shouldSuffocate(spawnPos.x, spawnPos.y, spawnPos.z)) continue;
                     if (world.getMaterial(spawnPos.x, spawnPos.y, spawnPos.z) != creatureKind.SpawnMaterial) continue;
 
@@ -81,11 +88,14 @@ public static class NaturalSpawner
                             if (creatureKind.CanSpawnAtLocation(world, x, y, z))
                             {
                                 Vec3D entityPos = new Vec3D(x + 0.5D, y, z + 0.5D);
-                                if (world.getClosestPlayer(entityPos.x, entityPos.y, entityPos.z, SpawnMinRadius) != null) continue;
-                                if (entityPos.squareDistanceTo((Vec3D)worldSpawn) < SpawnMinRadius * SpawnMinRadius) continue;
+                                if (world.getClosestPlayer(entityPos.x, entityPos.y, entityPos.z, SpawnMinRadius) !=
+                                    null) continue;
+                                if (entityPos.squareDistanceTo((Vec3D)worldSpawn) < SpawnMinRadius * SpawnMinRadius)
+                                    continue;
                                 EntityLiving entity = toSpawn.Factory(world);
 
-                                entity.setPositionAndAnglesKeepPrevAngles(entityPos.x, entityPos.y, entityPos.z, world.random.NextFloat() * 360.0F, 0.0F);
+                                entity.setPositionAndAnglesKeepPrevAngles(entityPos.x, entityPos.y, entityPos.z,
+                                    world.random.NextFloat() * 360.0F, 0.0F);
                                 if (entity.canSpawn())
                                 {
                                     spawnedCount++;
@@ -104,10 +114,10 @@ public static class NaturalSpawner
         }
     }
 
-    public static bool SpawnMonstersAndWakePlayers(World world, List<EntityPlayer> players)
+    internal static bool SpawnMonstersAndWakePlayers(World world, PathFinder pathFinder, List<EntityPlayer> players)
     {
+        pathFinder.SetWorld(world);
         bool monstersSpawned = false;
-        var pathfinder = new Pathfinder(world);
         foreach (var player in players)
         {
             for (int i = 0; i < 20; ++i)
@@ -132,7 +142,8 @@ public static class NaturalSpawner
                     if (world.shouldSuffocate(spawnX, newSpawnY - 1, spawnZ)) break;
                 }
 
-                while (!CreatureKind.Monster.CanSpawnAtLocation(world, spawnX, newSpawnY, spawnZ) && newSpawnY < spawnY + 16 && newSpawnY < 128)
+                while (!CreatureKind.Monster.CanSpawnAtLocation(world, spawnX, newSpawnY, spawnZ) &&
+                       newSpawnY < spawnY + 16 && newSpawnY < 128)
                 {
                     ++newSpawnY;
                 }
@@ -141,18 +152,24 @@ public static class NaturalSpawner
                 {
                     EntityLiving entity = Monsters[r](world);
 
-                    entity.setPositionAndAnglesKeepPrevAngles(spawnX + 0.5D, spawnY, spawnZ + 0.5D, world.random.NextFloat() * 360.0F, 0.0F);
+                    entity.setPositionAndAnglesKeepPrevAngles(spawnX + 0.5D, spawnY, spawnZ + 0.5D,
+                        world.random.NextFloat() * 360.0F, 0.0F);
                     if (entity.canSpawn())
                     {
-                        PathEntity pathEntity = pathfinder.createEntityPathTo(entity, player, 32.0F);
-                        if (pathEntity != null && pathEntity.pathLength > 1)
+                        var pathEntity = pathFinder.CreateEntityPathTo(entity, player, 32.0F);
+                        if (pathEntity != null && pathEntity.PathLength > 1)
                         {
-                            PathPoint pathPoint = pathEntity.func_22328_c();
-                            if (Math.Abs(pathPoint.xCoord - player.x) < 1.5D && Math.Abs(pathPoint.zCoord - player.z) < 1.5D && Math.Abs(pathPoint.yCoord - player.y) < 1.5D)
+                            PathPoint pathPoint = pathEntity.GetFinalPoint();
+                            if (Math.Abs(pathPoint.X - player.x) < 1.5D && Math.Abs(pathPoint.Z - player.z) < 1.5D &&
+                                Math.Abs(pathPoint.Y - player.y) < 1.5D)
                             {
-                                Vec3i wakeUpPos = BlockBed.findWakeUpPosition(world, MathHelper.Floor(player.x), MathHelper.Floor(player.y), MathHelper.Floor(player.z), 1) ?? new Vec3i(spawnX, newSpawnY + 1, spawnZ);
+                                Vec3i wakeUpPos =
+                                    BlockBed.findWakeUpPosition(world, MathHelper.Floor(player.x),
+                                        MathHelper.Floor(player.y), MathHelper.Floor(player.z), 1) ??
+                                    new Vec3i(spawnX, newSpawnY + 1, spawnZ);
 
-                                entity.setPositionAndAnglesKeepPrevAngles((double)((float)wakeUpPos.X + 0.5F), (double)wakeUpPos.Y, (double)((float)wakeUpPos.Z + 0.5F), 0.0F, 0.0F);
+                                entity.setPositionAndAnglesKeepPrevAngles((double)((float)wakeUpPos.X + 0.5F),
+                                    (double)wakeUpPos.Y, (double)((float)wakeUpPos.Z + 0.5F), 0.0F, 0.0F);
                                 world.SpawnEntity(entity);
                                 entity.PostSpawn();
                                 player.wakeUp(true, false, false);

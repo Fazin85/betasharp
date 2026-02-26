@@ -1,5 +1,6 @@
 using BetaSharp.Items;
 using BetaSharp.NBT;
+using BetaSharp.PathFinding;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 

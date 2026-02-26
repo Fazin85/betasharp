@@ -1,4 +1,4 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
@@ -19,24 +19,24 @@ public class EntityRotateAndMoveRelativeS2CPacket : EntityS2CPacket
         rotate = true;
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
         base.Read(stream);
-        deltaX = (sbyte)stream.readByte();
-        deltaY = (sbyte)stream.readByte();
-        deltaZ = (sbyte)stream.readByte();
-        yaw = (sbyte)stream.readByte();
-        pitch = (sbyte)stream.readByte();
+        deltaX = (sbyte)stream.ReadByte();
+        deltaY = (sbyte)stream.ReadByte();
+        deltaZ = (sbyte)stream.ReadByte();
+        yaw = (sbyte)stream.ReadByte();
+        pitch = (sbyte)stream.ReadByte();
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
         base.Write(stream);
-        stream.writeByte(deltaX);
-        stream.writeByte(deltaY);
-        stream.writeByte(deltaZ);
-        stream.writeByte(yaw);
-        stream.writeByte(pitch);
+        stream.WriteByte((byte)deltaX);
+        stream.WriteByte((byte)deltaY);
+        stream.WriteByte((byte)deltaZ);
+        stream.WriteByte((byte)yaw);
+        stream.WriteByte((byte)pitch);
     }
 
     public override int Size()

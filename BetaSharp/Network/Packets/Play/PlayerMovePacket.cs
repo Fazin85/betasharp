@@ -1,4 +1,4 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.Play;
 
@@ -28,14 +28,14 @@ public class PlayerMovePacket : Packet
         handler.onPlayerMove(this);
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        onGround = stream.read() != 0;
+        onGround = stream.ReadByte() != 0;
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.write(onGround ? 1 : 0);
+        stream.WriteBoolean(onGround);
     }
 
     public override int Size()

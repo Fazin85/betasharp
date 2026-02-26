@@ -1,4 +1,4 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.C2SPlay;
 
@@ -15,14 +15,14 @@ public class UpdateSelectedSlotC2SPacket : Packet
         this.selectedSlot = selectedSlot;
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        selectedSlot = stream.readShort();
+        selectedSlot = stream.ReadShort();
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeShort(selectedSlot);
+        stream.WriteShort((short)selectedSlot);
     }
 
     public override void Apply(NetHandler handler)

@@ -25,26 +25,22 @@ public abstract class EntityRenderer
         var2?.BindTexture(var2.GetTextureId(path));
     }
 
-    protected bool LoadDownloadableImageTexture(string url, string fallbackPath)
+    protected bool LoadDownloadableImageTexture(string? url, string fallbackPath)
     {
-        //RenderEngine var3 = renderManager.renderEngine;
+        if (!string.IsNullOrEmpty(url))
+        {
+            TextureHandle? skinHandle = Dispatcher.skinManager?.GetTextureHandle(url);
+            if (skinHandle != null)
+            {
+                skinHandle.Bind();
+                return true;
+            }
+        }
+
         if (string.IsNullOrEmpty(fallbackPath)) return false;
 
         loadTexture(fallbackPath);
         return true;
-        //TODO: CUSTOM SKINS
-        //int var4 = var3.getTextureForDownloadableImage(var1, var2);
-        //int var4 = var3.getTexture(var1);
-        //if (var4 >= 0)
-        //{
-        //    var3.bindTexture(var4);
-        //    return true;
-        //}
-        //else
-        //{
-        //    return false;
-        //}
-        return false;
     }
 
     private void RenderOnFire(Entity ent, Vec3D pos, float tickDelta)

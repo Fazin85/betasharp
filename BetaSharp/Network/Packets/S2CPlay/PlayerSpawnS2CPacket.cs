@@ -1,7 +1,7 @@
+using System.Net.Sockets;
 using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Util.Maths;
-using java.io;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
@@ -33,28 +33,28 @@ public class PlayerSpawnS2CPacket : Packet
         currentItem = itemStack == null ? 0 : itemStack.itemId;
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        entityId = stream.readInt();
-        name = ReadString(stream, 16);
-        xPosition = stream.readInt();
-        yPosition = stream.readInt();
-        zPosition = stream.readInt();
-        rotation = (sbyte)stream.readByte();
-        pitch = (sbyte)stream.readByte();
-        currentItem = stream.readShort();
+        entityId = stream.ReadInt();
+        name = stream.ReadLongString(16);
+        xPosition = stream.ReadInt();
+        yPosition = stream.ReadInt();
+        zPosition = stream.ReadInt();
+        rotation = (sbyte)stream.ReadByte();
+        pitch = (sbyte)stream.ReadByte();
+        currentItem = stream.ReadShort();
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(entityId);
-        WriteString(name, stream);
-        stream.writeInt(xPosition);
-        stream.writeInt(yPosition);
-        stream.writeInt(zPosition);
-        stream.writeByte(rotation);
-        stream.writeByte(pitch);
-        stream.writeShort(currentItem);
+        stream.WriteInt(entityId);
+        stream.WriteLongString(name);
+        stream.WriteInt(xPosition);
+        stream.WriteInt(yPosition);
+        stream.WriteInt(zPosition);
+        stream.WriteByte((byte)rotation);
+        stream.WriteByte((byte)pitch);
+        stream.WriteShort((short)currentItem);
     }
 
     public override void Apply(NetHandler handler)

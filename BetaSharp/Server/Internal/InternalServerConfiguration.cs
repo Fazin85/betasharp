@@ -73,6 +73,11 @@ public class InternalServerConfiguration : IServerConfiguration
         return "";
     }
 
+    public bool GetDualStack(bool fallback)
+    {
+        return false;
+    }
+
     public int GetServerPort(int fallback)
     {
         return 25565;

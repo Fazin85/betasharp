@@ -1,4 +1,4 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
@@ -16,14 +16,14 @@ public class GameStateChangeS2CPacket : Packet
         this.reason = reason;
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        reason = (sbyte)stream.readByte();
+        reason = (sbyte)stream.ReadByte();
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeByte(reason);
+        stream.WriteByte((byte)reason);
     }
 
     public override void Apply(NetHandler handler)

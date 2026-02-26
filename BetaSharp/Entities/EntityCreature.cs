@@ -1,3 +1,5 @@
+using BetaSharp.PathFinding;
+using BetaSharp.Profiling;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
@@ -65,20 +67,20 @@ public class EntityCreature : EntityLiving
         pitch = 0.0F;
         if (pathToEntity != null && random.NextInt(100) != 0)
         {
-            Vec3D? pos = pathToEntity.getPosition(this);
+            Vec3D? pos = pathToEntity.GetPosition(this);
             double distance = (double)(width * 2.0F);
 
             while (pos != null && pos.Value.squareDistanceTo(new Vec3D(x, pos.Value.y, z)) < distance * distance)
             {
-                pathToEntity.incrementPathIndex();
-                if (pathToEntity.isFinished())
+                pathToEntity.IncrementPathIndex();
+                if (pathToEntity.IsFinished)
                 {
                     pos = null;
                     pathToEntity = null;
                 }
                 else
                 {
-                    pos = pathToEntity.getPosition(this);
+                    pos = pathToEntity.GetPosition(this);
                 }
             }
 
@@ -179,7 +181,6 @@ public class EntityCreature : EntityLiving
         {
             pathToEntity = world.findPath(this, bestX, bestY, bestZ, 10.0F);
         }
-
     }
 
     protected virtual void attackEntity(Entity entity, float distance)
@@ -213,7 +214,7 @@ public class EntityCreature : EntityLiving
         return pathToEntity != null;
     }
 
-    public void setPathToEntity(PathEntity pathToEntity)
+    internal void setPathToEntity(PathEntity pathToEntity)
     {
         this.pathToEntity = pathToEntity;
     }

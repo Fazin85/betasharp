@@ -1,4 +1,4 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.C2SPlay;
 
@@ -19,18 +19,18 @@ public class PlayerInteractEntityC2SPacket : Packet
         this.isLeftClick = isLeftClick;
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        playerId = stream.readInt();
-        entityId = stream.readInt();
-        isLeftClick = (sbyte)stream.readByte();
+        playerId = stream.ReadInt();
+        entityId = stream.ReadInt();
+        isLeftClick = (sbyte)stream.ReadByte();
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(playerId);
-        stream.writeInt(entityId);
-        stream.writeByte(isLeftClick);
+        stream.WriteInt(playerId);
+        stream.WriteInt(entityId);
+        stream.WriteByte((byte)isLeftClick);
     }
 
     public override void Apply(NetHandler handler)

@@ -1,13 +1,15 @@
+using System.Net;
+using System.Net.Sockets;
 using BetaSharp.Network;
 using BetaSharp.Server.Threading;
-using java.net;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Server.Network;
 
 public class ConnectionListener
 {
-    public ServerSocket socket;
+    public Socket Socket { get; }
+
     private readonly java.lang.Thread _thread;
     private readonly ILogger<ConnectionListener> _logger = Log.Instance.For<ConnectionListener>();
 
@@ -18,12 +20,16 @@ public class ConnectionListener
     public MinecraftServer server;
     public int port;
 
-    public ConnectionListener(MinecraftServer server, InetAddress address, int port)
+    public ConnectionListener(MinecraftServer server, IPAddress address, int port, bool dualStack = false)
     {
         this.server = server;
-        socket = new ServerSocket(port, 0, address);
-        socket.setPerformancePreferences(0, 2, 1);
-        this.port = socket.getLocalPort();
+
+        Socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
+        Socket.DualMode = dualStack;
+        Socket.Bind(new IPEndPoint(address, port));
+        Socket.Listen();
+
+        this.port = port;
         open = true;
         _thread = new AcceptConnectionThread(this, "Listen Thread");
         _thread.start();
@@ -32,7 +38,7 @@ public class ConnectionListener
     public ConnectionListener(MinecraftServer server)
     {
         this.server = server;
-        socket = null;
+        Socket = null;
         port = 0;
         open = true;
         _thread = null;

@@ -1,4 +1,4 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.Play;
 
@@ -23,30 +23,30 @@ public class UpdateSignPacket : Packet
         this.text = text;
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        x = stream.readInt();
-        y = stream.readShort();
-        z = stream.readInt();
+        x = stream.ReadInt();
+        y = stream.ReadShort();
+        z = stream.ReadInt();
         text = new string[4];
 
         for (int i = 0; i < 4; ++i)
         {
 
-            text[i] = ReadString(stream, 15);
+            text[i] = stream.ReadLongString(15);
         }
 
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(x);
-        stream.writeShort(y);
-        stream.writeInt(z);
+        stream.WriteInt(x);
+        stream.WriteShort((short)y);
+        stream.WriteInt(z);
 
         for (int i = 0; i < 4; ++i)
         {
-            WriteString(text[i], stream);
+            stream.WriteLongString(text[i]);
         }
 
     }

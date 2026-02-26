@@ -4,6 +4,7 @@ public interface IServerConfiguration
 {
     string GetServerIp(string fallback);
     int GetServerPort(int fallback);
+    bool GetDualStack(bool fallback);
     bool GetOnlineMode(bool fallback);
     bool GetSpawnAnimals(bool fallback);
     bool GetPvpEnabled(bool fallback);

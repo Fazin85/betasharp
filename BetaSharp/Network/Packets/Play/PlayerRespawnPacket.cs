@@ -1,4 +1,4 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.Play;
 
@@ -20,14 +20,14 @@ public class PlayerRespawnPacket : Packet
         handler.onPlayerRespawn(this);
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        dimensionId = (sbyte)stream.readByte();
+        dimensionId = (sbyte)stream.ReadByte();
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeByte(dimensionId);
+        stream.WriteByte((byte)dimensionId);
     }
 
     public override int Size()

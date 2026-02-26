@@ -1,4 +1,4 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.Play;
 
@@ -15,14 +15,14 @@ public class DisconnectPacket : Packet
         this.reason = reason;
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        reason = ReadString(stream, 100);
+        reason = stream.ReadLongString(100);
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        WriteString(reason, stream);
+        stream.WriteLongString(reason);
     }
 
     public override void Apply(NetHandler handler)

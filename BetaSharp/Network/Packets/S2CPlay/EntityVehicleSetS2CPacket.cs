@@ -1,5 +1,5 @@
+using System.Net.Sockets;
 using BetaSharp.Entities;
-using java.io;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
@@ -23,16 +23,16 @@ public class EntityVehicleSetS2CPacket : Packet
         return 8;
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        entityId = stream.readInt();
-        vehicleEntityId = stream.readInt();
+        entityId = stream.ReadInt();
+        vehicleEntityId = stream.ReadInt();
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(entityId);
-        stream.writeInt(vehicleEntityId);
+        stream.WriteInt(entityId);
+        stream.WriteInt(vehicleEntityId);
     }
 
     public override void Apply(NetHandler handler)

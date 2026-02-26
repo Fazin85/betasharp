@@ -1,5 +1,5 @@
+using System.Net.Sockets;
 using BetaSharp.Entities;
-using java.io;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
@@ -19,31 +19,31 @@ public class PaintingEntitySpawnS2CPacket : Packet
     public PaintingEntitySpawnS2CPacket(EntityPainting paint)
     {
         entityId = paint.id;
-        xPosition = paint.xPosition;
-        yPosition = paint.yPosition;
-        zPosition = paint.zPosition;
-        direction = paint.direction;
-        title = paint.art.title;
+        xPosition = paint.XPosition;
+        yPosition = paint.YPosition;
+        zPosition = paint.ZPosition;
+        direction = paint.Direction;
+        title = paint.Art.Title;
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        entityId = stream.readInt();
-        title = ReadString(stream, EnumArt.maxArtTitleLength);
-        xPosition = stream.readInt();
-        yPosition = stream.readInt();
-        zPosition = stream.readInt();
-        direction = stream.readInt();
+        entityId = stream.ReadInt();
+        title = stream.ReadLongString((ushort) EnumArt.MaxArtTitleLength);
+        xPosition = stream.ReadInt();
+        yPosition = stream.ReadInt();
+        zPosition = stream.ReadInt();
+        direction = stream.ReadInt();
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(entityId);
-        WriteString(title, stream);
-        stream.writeInt(xPosition);
-        stream.writeInt(yPosition);
-        stream.writeInt(zPosition);
-        stream.writeInt(direction);
+        stream.WriteInt(entityId);
+        stream.WriteLongString(title);
+        stream.WriteInt(xPosition);
+        stream.WriteInt(yPosition);
+        stream.WriteInt(zPosition);
+        stream.WriteInt(direction);
     }
 
     public override void Apply(NetHandler handler)

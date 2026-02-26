@@ -39,7 +39,7 @@ public class ItemPainting : Item
             }
 
             EntityPainting painting = new EntityPainting(world, x, y, z, direction);
-            if (painting.canHangOnWall())
+            if (painting.CanHangOnWall())
             {
                 if (!world.isRemote)
                 {
