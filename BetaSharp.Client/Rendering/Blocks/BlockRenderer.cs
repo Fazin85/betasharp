@@ -1,5 +1,6 @@
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Materials;
+using BetaSharp.Client.Rendering.Blocks.Renderers;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
@@ -9,65 +10,34 @@ namespace BetaSharp.Client.Rendering.Blocks;
 
 public class BlockRenderer
 {
-    // Core Dependencies & Constants
-    private readonly int _aoBlendMode = 1;
-
     private readonly IBlockAccess _blockAccess = null!;
-    private readonly Tessellator? _tess;
+    private readonly Tessellator _tess = Tessellator.instance;
+    private readonly RendererRegistry _rendererRegistry = new();
 
-
-    // Public Configuration
-    public bool RenderFromInside = true;
-
-
-    // General Rendering State
-    private int _overrideBlockTexture = -1;
-    private bool _flipTexture;
-    private bool _renderAllFaces;
-    private bool _useOverrideBoundingBox;
-    private Box _overrideBoundingBox;
-
-
-    // Uv Rotation State
-    private int _uvRotateTop;
-    private int _uvRotateBottom;
-    private int _uvRotateNorth;
-    private int _uvRotateSouth;
-    private int _uvRotateEast;
-    private int _uvRotateWest;
-
-    // Ambient Occlusion: Base Settings
-    private bool _enableAo;
-
-    // Ambient Occlusion: Vertex Colors
-    private float _colorRedTopLeft;
-    private float _colorRedTopRight;
-    private float _colorRedBottomLeft;
-    private float _colorRedBottomRight;
-
-    private float _colorGreenTopLeft;
-    private float _colorGreenTopRight;
-    private float _colorGreenBottomLeft;
-    private float _colorGreenBottomRight;
-
-    private float _colorBlueTopLeft;
-    private float _colorBlueTopRight;
-    private float _colorBlueBottomLeft;
-    private float _colorBlueBottomRight;
-
-    public BlockRenderer(IBlockAccess iBlockAccess)
-    {
-        _blockAccess = iBlockAccess;
-    }
 
     public BlockRenderer(IBlockAccess iBlockAccess, Tessellator tess)
     {
         _blockAccess = iBlockAccess;
         _tess = tess;
-    }
 
-    public BlockRenderer()
-    {
+        _rendererRegistry[RendererType.StandardBlock] = new StandardBlockRenderer();
+        _rendererRegistry[RendererType.Reed] = new ReedRenderer();
+        _rendererRegistry[RendererType.Torch] = new TorchRenderer();
+        _rendererRegistry[RendererType.Fire] = new FireRenderer();
+        _rendererRegistry[RendererType.Fluids] = new FluidsRenderer();
+        _rendererRegistry[RendererType.RedstoneWire] = new RedstoneWireRenderer();
+        _rendererRegistry[RendererType.Crops] = new CropsRenderer();
+        _rendererRegistry[RendererType.Door] = new DoorRenderer();
+        _rendererRegistry[RendererType.Ladder] = new LadderRenderer();
+        _rendererRegistry[RendererType.MinecartTrack] = new MinecartTrackRenderer();
+        _rendererRegistry[RendererType.Stairs] = new StairsRenderer();
+        _rendererRegistry[RendererType.Fence] = new FenceRenderer();
+        _rendererRegistry[RendererType.Lever] = new LeverRenderer();
+        _rendererRegistry[RendererType.Cactus] = new CactusRenderer();
+        _rendererRegistry[RendererType.Bed] = new BedRenderer();
+        _rendererRegistry[RendererType.Repeater] = new RepeaterRenderer();
+        _rendererRegistry[RendererType.PistonBase] = new PistonBaseRenderer();
+        _rendererRegistry[RendererType.PistonExtension] = new PistonExtensionRenderer();
     }
 
     private void SetOverrideBoundingBox(double minX, double minY, double minZ, double maxX, double maxY, double maxZ)
@@ -76,63 +46,60 @@ public class BlockRenderer
         _useOverrideBoundingBox = true;
     }
 
-    private Tessellator GetTessellator()
-    {
-        if (_tess == null)
-        {
-            return Tessellator.instance;
-        }
-
-        return _tess;
-    }
-
-    public void RenderBlockWithTextureOverride(Block block, int x, int y, int z, int textureId)
+    public void RenderBlockWithTextureOverride(IBlockAccess world, Block block, BlockPos pos, Tessellator tess,
+        int textureId)
     {
         _overrideBlockTexture = textureId;
-        RenderBlockByRenderType(block, x, y, z);
+        RenderBlockByRenderType(world, block, pos, tess);
         _overrideBlockTexture = -1; // Reset to default
     }
 
-    public void RenderBlockForcedAllFaces(Block block, int x, int y, int z)
+    public void RenderBlockForcedAllFaces(IBlockAccess world, Block block, BlockPos pos, Tessellator tess)
     {
         _renderAllFaces = true;
-        RenderBlockByRenderType(block, x, y, z);
+        RenderBlockByRenderType(world, block, pos, tess);
         _renderAllFaces = false; // Reset to default
     }
 
-    public bool RenderBlockByRenderType(Block block, int x, int y, int z)
+    public bool RenderBlockByRenderType(IBlockAccess world, Block block, BlockPos pos, Tessellator tess)
     {
-        int type = block.getRenderType();
-        block.updateBoundingBox(_blockAccess, x, y, z);
-        _useOverrideBoundingBox = false;
+        RendererType type = (RendererType)block.getRenderType();
 
-        return type switch
+        block.updateBoundingBox(_blockAccess, pos.x, pos.y, pos.z);
+
+        Box? activeBounds = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
+
+        bool isPistonExtension = (type == RendererType.PistonExtension);
+
+        var ctx = new BlockRenderContext(
+            overrideTexture: _overrideBlockTexture,
+            renderAllFaces: _renderAllFaces,
+            flipTexture: flipTexture,
+            bounds: activeBounds,
+            uvTop: _uvRotateTop,
+            uvBottom: _uvRotateBottom,
+            uvNorth: _uvRotateNorth,
+            uvSouth: _uvRotateSouth,
+            uvEast: _uvRotateEast,
+            uvWest: _uvRotateWest,
+            customFlag: isPistonExtension
+        );
+
+        try
         {
-            0 => RenderStandardBlock(block, x, y, z),
-            1 => RenderBlockReed(block, x, y, z),
-            2 => RenderBlockTorch(block, x, y, z),
-            3 => RenderBlockFire(block, x, y, z),
-            4 => RenderBlockFluids(block, x, y, z),
-            5 => RenderBlockRedstoneWire(block, x, y, z),
-            6 => RenderBlockCrops(block, x, y, z),
-            7 => RenderBlockDoor(block, x, y, z),
-            8 => RenderBlockLadder(block, x, y, z),
-            9 => RenderBlockMinecartTrack((BlockRail)block, x, y, z),
-            10 => RenderBlockStairs(block, x, y, z),
-            11 => RenderBlockFence(block, x, y, z),
-            12 => RenderBlockLever(block, x, y, z),
-            13 => RenderBlockCactus(block, x, y, z),
-            14 => RenderBlockBed(block, x, y, z),
-            15 => RenderBlockRepeater(block, x, y, z),
-            16 => RenderPistonBase(block, x, y, z, false),
-            17 => RenderPistonExtension(block, x, y, z, true),
-            _ => false
-        };
+            IBlockRenderer renderer = _rendererRegistry[type];
+
+            return renderer.Render(world, block, pos, tess, ctx);
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     private bool RenderBlockBed(Block block, int x, int y, int z)
     {
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
         Box bounds = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
 
         int metadata = _blockAccess.getBlockMeta(x, y, z);
@@ -247,8 +214,8 @@ public class BlockRenderer
             faceLuminance = bounds.MinZ > 0.0D ? centerLuminance : block.getLuminance(_blockAccess, x, y, z - 1);
             tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
 
-            _flipTexture = textureFlipDir == 2;
-            RenderEastFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 2));
+            flipTexture = textureFlipDir == 2;
+            Helper.RenderEastFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 2));
         }
 
         // West Face (Z + 1)
@@ -257,8 +224,8 @@ public class BlockRenderer
             faceLuminance = bounds.MaxZ < 1.0D ? centerLuminance : block.getLuminance(_blockAccess, x, y, z + 1);
             tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
 
-            _flipTexture = textureFlipDir == 3;
-            RenderWestFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 3));
+            flipTexture = textureFlipDir == 3;
+            Helper.RenderWestFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 3));
         }
 
         // North Face (X - 1)
@@ -267,8 +234,8 @@ public class BlockRenderer
             faceLuminance = bounds.MinX > 0.0D ? centerLuminance : block.getLuminance(_blockAccess, x - 1, y, z);
             tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
 
-            _flipTexture = textureFlipDir == 4;
-            RenderNorthFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 4));
+            flipTexture = textureFlipDir == 4;
+            Helper.RenderNorthFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 4));
         }
 
         // South Face (X + 1)
@@ -277,18 +244,18 @@ public class BlockRenderer
             faceLuminance = bounds.MaxX < 1.0D ? centerLuminance : block.getLuminance(_blockAccess, x + 1, y, z);
             tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
 
-            _flipTexture = textureFlipDir == 5;
+            flipTexture = textureFlipDir == 5;
             RenderSouthFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 5));
         }
 
-        _flipTexture = false;
+        flipTexture = false;
         return true;
     }
 
     private bool RenderBlockTorch(Block block, int x, int y, int z)
     {
         int metadata = _blockAccess.getBlockMeta(x, y, z);
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
 
         float luminance = block.getLuminance(_blockAccess, x, y, z);
         if (Block.BlocksLightLuminance[block.id] > 0)
@@ -335,7 +302,7 @@ public class BlockRenderer
         // Render the base slab
         RenderStandardBlock(block, x, y, z);
 
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
         float luminance = block.getLuminance(_blockAccess, x, y, z);
         if (Block.BlocksLightLuminance[block.id] > 0)
         {
@@ -555,7 +522,7 @@ public class BlockRenderer
     private void RenderPistonArmY(double x1, double x2, double y1, double y2, double z1, double z2, float luminance,
         double textureWidth)
     {
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
         int textureId = 108; // Piston arm texture
         if (_overrideBlockTexture >= 0) textureId = _overrideBlockTexture;
 
@@ -577,7 +544,7 @@ public class BlockRenderer
     private void RenderPistonArmZ(double x1, double x2, double y1, double y2, double z1, double z2, float luminance,
         double textureWidth)
     {
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
         int textureId = 108;
         if (_overrideBlockTexture >= 0) textureId = _overrideBlockTexture;
 
@@ -599,7 +566,7 @@ public class BlockRenderer
     private void RenderPistonArmX(double x1, double x2, double y1, double y2, double z1, double z2, float luminance,
         double textureWidth)
     {
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
         int textureId = 108;
         if (_overrideBlockTexture >= 0) textureId = _overrideBlockTexture;
 
@@ -741,7 +708,7 @@ public class BlockRenderer
         int metadata = _blockAccess.getBlockMeta(x, y, z);
         int orientation = metadata & 7;
         bool isActivated = (metadata & 8) > 0;
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
 
         // Levers use a cobblestone texture for the baseplate by default
         bool hasTextureOverride = _overrideBlockTexture >= 0;
@@ -933,7 +900,7 @@ public class BlockRenderer
 
     private bool RenderBlockFire(Block block, int x, int y, int z)
     {
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
         int textureId = block.getTexture(0);
         if (_overrideBlockTexture >= 0) textureId = _overrideBlockTexture;
 
@@ -1131,7 +1098,7 @@ public class BlockRenderer
 
     private bool RenderBlockRedstoneWire(Block block, int x, int y, int z)
     {
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
         int powerLevel = _blockAccess.getBlockMeta(x, y, z);
 
         int textureId = block.getTexture(1, powerLevel);
@@ -1328,7 +1295,7 @@ public class BlockRenderer
 
     private bool RenderBlockMinecartTrack(BlockRail rail, int x, int y, int z)
     {
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
         int metadata = _blockAccess.getBlockMeta(x, y, z);
         int textureId = rail.getTexture(0, metadata);
 
@@ -1433,7 +1400,7 @@ public class BlockRenderer
 
     private bool RenderBlockLadder(Block block, int x, int y, int z)
     {
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
 
         int textureId = block.getTexture(0);
         if (_overrideBlockTexture >= 0)
@@ -1488,7 +1455,7 @@ public class BlockRenderer
 
     private bool RenderBlockReed(Block block, int x, int y, int z)
     {
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
 
         float luminance = block.getLuminance(_blockAccess, x, y, z);
         int colorMultiplier = block.getColorMultiplier(_blockAccess, x, y, z);
@@ -1518,7 +1485,7 @@ public class BlockRenderer
 
     private bool RenderBlockCrops(Block block, int x, int y, int z)
     {
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
         float luminance = block.getLuminance(_blockAccess, x, y, z);
         tess.setColorOpaque_F(luminance, luminance, luminance);
 
@@ -1531,7 +1498,7 @@ public class BlockRenderer
 
     private void RenderTorchAtAngle(Block block, double x, double y, double z, double tiltX, double tiltZ)
     {
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
 
         int textureId = block.getTexture(0);
         if (_overrideBlockTexture >= 0)
@@ -1607,7 +1574,7 @@ public class BlockRenderer
 
     private void RenderCrossedSquares(Block block, int metadata, double x, double y, double z)
     {
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
 
         int textureId = block.getTexture(0, metadata);
         if (_overrideBlockTexture >= 0)
@@ -1664,7 +1631,7 @@ public class BlockRenderer
 
     private void RenderCropQuads(Block block, int metadata, double x, double y, double z)
     {
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
         int textureId = block.getTexture(0, metadata);
 
         if (_overrideBlockTexture >= 0)
@@ -1738,7 +1705,7 @@ public class BlockRenderer
     /// </summary>
     private bool RenderBlockFluids(Block block, int x, int y, int z)
     {
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
         Box bounds = block.BoundingBox;
 
         // Base fluid color tint (e.g., biome water color)
@@ -1836,7 +1803,7 @@ public class BlockRenderer
         {
             float luminance = block.getLuminance(_blockAccess, x, y - 1, z);
             tess.setColorOpaque_F(lightBottom * luminance, lightBottom * luminance, lightBottom * luminance);
-            RenderBottomFace(block, x, y, z, block.getTexture(0));
+            Helper.RenderBottomFace(block, x, y, z, block.getTexture(0));
             hasRendered = true;
         }
 
@@ -1987,7 +1954,7 @@ public class BlockRenderer
         float lightZ = 0.8F; // East/West faces
         float lightX = 0.6F; // North/South faces
 
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
         tess.startDrawingQuads();
 
         // Base luminance at the entity's current position
@@ -2000,35 +1967,35 @@ public class BlockRenderer
 
         tess.setColorOpaque_F(lightBottom * faceLuminance, lightBottom * faceLuminance, lightBottom * faceLuminance);
         // Note: Rendered at local origin (-0.5) because the entity's global transform handles the actual world position
-        RenderBottomFace(block, -0.5D, -0.5D, -0.5D, block.getTexture(0));
+        Helper.RenderBottomFace(block, -0.5D, -0.5D, -0.5D, block.getTexture(0));
 
         // --- Top Face (Y + 1) ---
         faceLuminance = block.getLuminance(world, x, y + 1, z);
         if (faceLuminance < currentLuminance) faceLuminance = currentLuminance;
 
         tess.setColorOpaque_F(lightTop * faceLuminance, lightTop * faceLuminance, lightTop * faceLuminance);
-        RenderTopFace(block, -0.5D, -0.5D, -0.5D, block.getTexture(1));
+        Helper.RenderTopFace(block, -0.5D, -0.5D, -0.5D, block.getTexture(1));
 
         // --- East Face (Z - 1) ---
         faceLuminance = block.getLuminance(world, x, y, z - 1);
         if (faceLuminance < currentLuminance) faceLuminance = currentLuminance;
 
         tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
-        RenderEastFace(block, -0.5D, -0.5D, -0.5D, block.getTexture(2));
+        Helper.RenderEastFace(block, -0.5D, -0.5D, -0.5D, block.getTexture(2));
 
         // --- West Face (Z + 1) ---
         faceLuminance = block.getLuminance(world, x, y, z + 1);
         if (faceLuminance < currentLuminance) faceLuminance = currentLuminance;
 
         tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
-        RenderWestFace(block, -0.5D, -0.5D, -0.5D, block.getTexture(3));
+        Helper.RenderWestFace(block, -0.5D, -0.5D, -0.5D, block.getTexture(3));
 
         // --- North Face (X - 1) ---
         faceLuminance = block.getLuminance(world, x - 1, y, z);
         if (faceLuminance < currentLuminance) faceLuminance = currentLuminance;
 
         tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
-        RenderNorthFace(block, -0.5D, -0.5D, -0.5D, block.getTexture(4));
+        Helper.RenderNorthFace(block, -0.5D, -0.5D, -0.5D, block.getTexture(4));
 
         // --- South Face (X + 1) ---
         faceLuminance = block.getLuminance(world, x + 1, y, z);
@@ -2106,7 +2073,7 @@ public class BlockRenderer
             }
 
             AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.5F, tintBottom);
-            RenderBottomFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 0));
+            Helper.RenderBottomFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 0));
             hasRendered = true;
         }
 
@@ -2133,7 +2100,7 @@ public class BlockRenderer
             }
 
             AssignVertexColors(v0, v1, v2, v3, r, g, b, 1.0F, tintTop);
-            RenderTopFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 1));
+            Helper.RenderTopFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 1));
             hasRendered = true;
         }
 
@@ -2160,7 +2127,7 @@ public class BlockRenderer
             }
 
             AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.8F, tintEast);
-            RenderEastFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 2));
+            Helper.RenderEastFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 2));
             hasRendered = true;
         }
 
@@ -2187,7 +2154,7 @@ public class BlockRenderer
             }
 
             AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.8F, tintWest);
-            RenderWestFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 3));
+            Helper.RenderWestFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 3));
             hasRendered = true;
         }
 
@@ -2214,7 +2181,7 @@ public class BlockRenderer
             }
 
             AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.6F, tintNorth);
-            RenderNorthFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 4));
+            Helper.RenderNorthFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 4));
             hasRendered = true;
         }
 
@@ -2273,7 +2240,7 @@ public class BlockRenderer
 
     private bool RenderBlockCactus(Block block, int x, int y, int z)
     {
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
         Box bounds = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
         bool hasRendered = false;
 
@@ -2306,7 +2273,7 @@ public class BlockRenderer
         {
             faceLuminance = block.getLuminance(_blockAccess, x, y - 1, z);
             tess.setColorOpaque_F(rBottom * faceLuminance, gBottom * faceLuminance, bBottom * faceLuminance);
-            RenderBottomFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 0));
+            Helper.RenderBottomFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 0));
             hasRendered = true;
         }
 
@@ -2320,7 +2287,7 @@ public class BlockRenderer
             }
 
             tess.setColorOpaque_F(rTop * faceLuminance, gTop * faceLuminance, bTop * faceLuminance);
-            RenderTopFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 1));
+            Helper.RenderTopFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 1));
             hasRendered = true;
         }
 
@@ -2334,7 +2301,7 @@ public class BlockRenderer
 
             // Translate inward by 1 pixel, render face, then reset
             tess.setTranslationF(0.0F, 0.0F, inset);
-            RenderEastFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 2));
+            Helper.RenderEastFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 2));
             tess.setTranslationF(0.0F, 0.0F, -inset);
             hasRendered = true;
         }
@@ -2348,7 +2315,7 @@ public class BlockRenderer
             tess.setColorOpaque_F(rZ * faceLuminance, gZ * faceLuminance, bZ * faceLuminance);
 
             tess.setTranslationF(0.0F, 0.0F, -inset);
-            RenderWestFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 3));
+            Helper.RenderWestFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 3));
             tess.setTranslationF(0.0F, 0.0F, inset);
             hasRendered = true;
         }
@@ -2362,7 +2329,7 @@ public class BlockRenderer
             tess.setColorOpaque_F(rX * faceLuminance, gX * faceLuminance, bX * faceLuminance);
 
             tess.setTranslationF(inset, 0.0F, 0.0F);
-            RenderNorthFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 4));
+            Helper.RenderNorthFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 4));
             tess.setTranslationF(-inset, 0.0F, 0.0F);
             hasRendered = true;
         }
@@ -2520,7 +2487,7 @@ public class BlockRenderer
 
     private bool RenderBlockDoor(Block block, int x, int y, int z)
     {
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
         Box bounds = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
 
         float lightBottom = 0.5F;
@@ -2538,7 +2505,7 @@ public class BlockRenderer
         if (isLightEmitter) faceLuminance = 1.0F;
 
         tess.setColorOpaque_F(lightBottom * faceLuminance, lightBottom * faceLuminance, lightBottom * faceLuminance);
-        RenderBottomFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 0));
+        Helper.RenderBottomFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 0));
 
         // --- Top Face (Y + 1) ---
         faceLuminance = block.getLuminance(_blockAccess, x, y + 1, z);
@@ -2546,7 +2513,7 @@ public class BlockRenderer
         if (isLightEmitter) faceLuminance = 1.0F;
 
         tess.setColorOpaque_F(lightTop * faceLuminance, lightTop * faceLuminance, lightTop * faceLuminance);
-        RenderTopFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 1));
+        Helper.RenderTopFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 1));
 
         // --- East Face (Z - 1) ---
         faceLuminance = block.getLuminance(_blockAccess, x, y, z - 1);
@@ -2559,12 +2526,12 @@ public class BlockRenderer
         // Negative texture ID is used as a flag to flip the texture horizontally (for door hinges)
         if (textureId < 0)
         {
-            _flipTexture = true;
+            flipTexture = true;
             textureId = -textureId;
         }
 
-        RenderEastFace(block, x, y, z, textureId);
-        _flipTexture = false;
+        Helper.RenderEastFace(block, x, y, z, textureId);
+        flipTexture = false;
 
         // --- West Face (Z + 1) ---
         faceLuminance = block.getLuminance(_blockAccess, x, y, z + 1);
@@ -2575,12 +2542,12 @@ public class BlockRenderer
         textureId = block.getTextureId(_blockAccess, x, y, z, 3);
         if (textureId < 0)
         {
-            _flipTexture = true;
+            flipTexture = true;
             textureId = -textureId;
         }
 
-        RenderWestFace(block, x, y, z, textureId);
-        _flipTexture = false;
+        Helper.RenderWestFace(block, x, y, z, textureId);
+        flipTexture = false;
 
         // --- North Face (X - 1) ---
         faceLuminance = block.getLuminance(_blockAccess, x - 1, y, z);
@@ -2591,12 +2558,12 @@ public class BlockRenderer
         textureId = block.getTextureId(_blockAccess, x, y, z, 4);
         if (textureId < 0)
         {
-            _flipTexture = true;
+            flipTexture = true;
             textureId = -textureId;
         }
 
-        RenderNorthFace(block, x, y, z, textureId);
-        _flipTexture = false;
+        Helper.RenderNorthFace(block, x, y, z, textureId);
+        flipTexture = false;
 
         // --- South Face (X + 1) ---
         faceLuminance = block.getLuminance(_blockAccess, x + 1, y, z);
@@ -2607,19 +2574,19 @@ public class BlockRenderer
         textureId = block.getTextureId(_blockAccess, x, y, z, 5);
         if (textureId < 0)
         {
-            _flipTexture = true;
+            flipTexture = true;
             textureId = -textureId;
         }
 
         RenderSouthFace(block, x, y, z, textureId);
-        _flipTexture = false;
+        flipTexture = false;
 
         return true;
     }
 
     private void RenderSouthFace(Block block, double x, double y, double z, int textureId)
     {
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
         Box blockBb = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
 
         if (_overrideBlockTexture >= 0)
@@ -2635,7 +2602,7 @@ public class BlockRenderer
         double minV = (texV + 16 - blockBb.MaxY * 16.0D) / 256.0D;
         double maxV = (texV + 16 - blockBb.MinY * 16.0D - 0.01D) / 256.0D;
 
-        if (_flipTexture)
+        if (flipTexture)
         {
             (minU, maxU) = (maxU, minU);
         }
@@ -2716,499 +2683,9 @@ public class BlockRenderer
         }
     }
 
-    private void RenderBottomFace(Block block, double x, double y, double z, int textureId)
-    {
-        Tessellator tess = GetTessellator();
-        Box blockBb = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
-
-        if (_overrideBlockTexture >= 0)
-        {
-            textureId = _overrideBlockTexture;
-        }
-
-        int texU = (textureId & 15) << 4;
-        int texV = textureId & 240;
-        double minU = (texU + blockBb.MinX * 16.0D) / 256.0D;
-        double maxU = (texU + blockBb.MaxX * 16.0D - 0.01D) / 256.0D;
-        double minV = (texV + blockBb.MinZ * 16.0D) / 256.0D;
-        double maxV = (texV + blockBb.MaxZ * 16.0D - 0.01D) / 256.0D;
-
-        if (blockBb.MinX < 0.0D || blockBb.MaxX > 1.0D)
-        {
-            minU = texU / 256.0D;
-            maxU = (texU + 15.99D) / 256.0D;
-        }
-
-        if (blockBb.MinZ < 0.0D || blockBb.MaxZ > 1.0D)
-        {
-            minV = texV / 256.0D;
-            maxV = (texV + 15.99D) / 256.0D;
-        }
-
-        double u1 = maxU, u2 = minU, v1 = minV, v2 = maxV;
-
-        if (_uvRotateBottom == 2)
-        {
-            minU = (texU + blockBb.MinZ * 16.0D) / 256.0D;
-            minV = (texV + 16 - blockBb.MaxX * 16.0D) / 256.0D;
-            maxU = (texU + blockBb.MaxZ * 16.0D) / 256.0D;
-            maxV = (texV + 16 - blockBb.MinX * 16.0D) / 256.0D;
-            v1 = minV;
-            v2 = maxV;
-            u1 = minU;
-            u2 = maxU;
-            minV = maxV;
-            maxV = v1;
-        }
-        else if (_uvRotateBottom == 1)
-        {
-            minU = (texU + 16 - blockBb.MaxZ * 16.0D) / 256.0D;
-            minV = (texV + blockBb.MinX * 16.0D) / 256.0D;
-            maxU = (texU + 16 - blockBb.MinZ * 16.0D) / 256.0D;
-            maxV = (texV + blockBb.MaxX * 16.0D) / 256.0D;
-            u1 = maxU;
-            u2 = minU;
-            minU = maxU;
-            maxU = u2;
-            v1 = maxV;
-            v2 = minV;
-        }
-        else if (_uvRotateBottom == 3)
-        {
-            minU = (texU + 16 - blockBb.MinX * 16.0D) / 256.0D;
-            maxU = (texU + 16 - blockBb.MaxX * 16.0D - 0.01D) / 256.0D;
-            minV = (texV + 16 - blockBb.MinZ * 16.0D) / 256.0D;
-            maxV = (texV + 16 - blockBb.MaxZ * 16.0D - 0.01D) / 256.0D;
-            u1 = maxU;
-            u2 = minU;
-            v1 = minV;
-            v2 = maxV;
-        }
-
-        double minX = x + blockBb.MinX;
-        double maxX = x + blockBb.MaxX;
-        double minY = y + blockBb.MinY;
-        double minZ = z + blockBb.MinZ;
-        double maxZ = z + blockBb.MaxZ;
-
-        if (_enableAo)
-        {
-            tess.setColorOpaque_F(_colorRedTopLeft, _colorGreenTopLeft, _colorBlueTopLeft);
-            tess.addVertexWithUV(minX, minY, maxZ, u2, v2);
-            tess.setColorOpaque_F(_colorRedBottomLeft, _colorGreenBottomLeft, _colorBlueBottomLeft);
-            tess.addVertexWithUV(minX, minY, minZ, minU, minV);
-            tess.setColorOpaque_F(_colorRedBottomRight, _colorGreenBottomRight, _colorBlueBottomRight);
-            tess.addVertexWithUV(maxX, minY, minZ, u1, v1);
-            tess.setColorOpaque_F(_colorRedTopRight, _colorGreenTopRight, _colorBlueTopRight);
-            tess.addVertexWithUV(maxX, minY, maxZ, maxU, maxV);
-        }
-        else
-        {
-            tess.addVertexWithUV(minX, minY, maxZ, u2, v2);
-            tess.addVertexWithUV(minX, minY, minZ, minU, minV);
-            tess.addVertexWithUV(maxX, minY, minZ, u1, v1);
-            tess.addVertexWithUV(maxX, minY, maxZ, maxU, maxV);
-        }
-    }
-
-    private void RenderTopFace(Block block, double x, double y, double z, int textureId)
-    {
-        Tessellator tess = GetTessellator();
-        Box blockBb = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
-
-        if (_overrideBlockTexture >= 0)
-        {
-            textureId = _overrideBlockTexture;
-        }
-
-        int texU = (textureId & 15) << 4;
-        int texV = textureId & 240;
-        double minU = (texU + blockBb.MinX * 16.0D) / 256.0D;
-        double maxU = (texU + blockBb.MaxX * 16.0D - 0.01D) / 256.0D;
-        double minV = (texV + blockBb.MinZ * 16.0D) / 256.0D;
-        double maxV = (texV + blockBb.MaxZ * 16.0D - 0.01D) / 256.0D;
-
-        if (blockBb.MinX < 0.0D || blockBb.MaxX > 1.0D)
-        {
-            minU = texU / 256.0D;
-            maxU = (texU + 15.99D) / 256.0D;
-        }
-
-        if (blockBb.MinZ < 0.0D || blockBb.MaxZ > 1.0D)
-        {
-            minV = texV / 256.0D;
-            maxV = (texV + 15.99D) / 256.0D;
-        }
-
-        double u1 = maxU, u2 = minU, v1 = minV, v2 = maxV;
-
-        if (_uvRotateTop == 1)
-        {
-            minU = (texU + blockBb.MinZ * 16.0D) / 256.0D;
-            minV = (texV + 16 - blockBb.MaxX * 16.0D) / 256.0D;
-            maxU = (texU + blockBb.MaxZ * 16.0D) / 256.0D;
-            maxV = (texV + 16 - blockBb.MinX * 16.0D) / 256.0D;
-            v1 = minV;
-            v2 = maxV;
-            u1 = minU;
-            u2 = maxU;
-            minV = maxV;
-            maxV = v1;
-        }
-        else if (_uvRotateTop == 2)
-        {
-            minU = (texU + 16 - blockBb.MaxZ * 16.0D) / 256.0D;
-            minV = (texV + blockBb.MinX * 16.0D) / 256.0D;
-            maxU = (texU + 16 - blockBb.MinZ * 16.0D) / 256.0D;
-            maxV = (texV + blockBb.MaxX * 16.0D) / 256.0D;
-            u1 = maxU;
-            u2 = minU;
-            minU = maxU;
-            maxU = u2;
-            v1 = maxV;
-            v2 = minV;
-        }
-        else if (_uvRotateTop == 3)
-        {
-            minU = (texU + 16 - blockBb.MinX * 16.0D) / 256.0D;
-            maxU = (texU + 16 - blockBb.MaxX * 16.0D - 0.01D) / 256.0D;
-            minV = (texV + 16 - blockBb.MinZ * 16.0D) / 256.0D;
-            maxV = (texV + 16 - blockBb.MaxZ * 16.0D - 0.01D) / 256.0D;
-            u1 = maxU;
-            u2 = minU;
-            v1 = minV;
-            v2 = maxV;
-        }
-
-        double minX = x + blockBb.MinX;
-        double maxX = x + blockBb.MaxX;
-        double maxY = y + blockBb.MaxY;
-        double minZ = z + blockBb.MinZ;
-        double maxZ = z + blockBb.MaxZ;
-
-        if (_enableAo)
-        {
-            tess.setColorOpaque_F(_colorRedTopLeft, _colorGreenTopLeft, _colorBlueTopLeft);
-            tess.addVertexWithUV(maxX, maxY, maxZ, maxU, maxV);
-            tess.setColorOpaque_F(_colorRedBottomLeft, _colorGreenBottomLeft, _colorBlueBottomLeft);
-            tess.addVertexWithUV(maxX, maxY, minZ, u1, v1);
-            tess.setColorOpaque_F(_colorRedBottomRight, _colorGreenBottomRight, _colorBlueBottomRight);
-            tess.addVertexWithUV(minX, maxY, minZ, minU, minV);
-            tess.setColorOpaque_F(_colorRedTopRight, _colorGreenTopRight, _colorBlueTopRight);
-            tess.addVertexWithUV(minX, maxY, maxZ, u2, v2);
-        }
-        else
-        {
-            tess.addVertexWithUV(maxX, maxY, maxZ, maxU, maxV);
-            tess.addVertexWithUV(maxX, maxY, minZ, u1, v1);
-            tess.addVertexWithUV(minX, maxY, minZ, minU, minV);
-            tess.addVertexWithUV(minX, maxY, maxZ, u2, v2);
-        }
-    }
-
-    private void RenderEastFace(Block block, double x, double y, double z, int textureId)
-    {
-        Tessellator tess = GetTessellator();
-        Box blockBb = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
-
-        if (_overrideBlockTexture >= 0)
-        {
-            textureId = _overrideBlockTexture;
-        }
-
-        int texU = (textureId & 15) << 4;
-        int texV = textureId & 240;
-        double minU = (texU + blockBb.MinX * 16.0D) / 256.0D;
-        double maxU = (texU + blockBb.MaxX * 16.0D - 0.01D) / 256.0D;
-        double minV = (texV + 16 - blockBb.MaxY * 16.0D) / 256.0D;
-        double maxV = (texV + 16 - blockBb.MinY * 16.0D - 0.01D) / 256.0D;
-
-        if (_flipTexture)
-        {
-            (minU, maxU) = (maxU, minU);
-        }
-
-        if (blockBb.MinX < 0.0D || blockBb.MaxX > 1.0D)
-        {
-            minU = texU / 256.0D;
-            maxU = (texU + 15.99D) / 256.0D;
-        }
-
-        if (blockBb.MinY < 0.0D || blockBb.MaxY > 1.0D)
-        {
-            minV = texV / 256.0D;
-            maxV = (texV + 15.99D) / 256.0D;
-        }
-
-        double u1 = maxU, u2 = minU, v1 = minV, v2 = maxV;
-
-        if (_uvRotateEast == 2)
-        {
-            minU = (texU + blockBb.MinY * 16.0D) / 256.0D;
-            minV = (texV + 16 - blockBb.MinX * 16.0D) / 256.0D;
-            maxU = (texU + blockBb.MaxY * 16.0D) / 256.0D;
-            maxV = (texV + 16 - blockBb.MaxX * 16.0D) / 256.0D;
-            v1 = minV;
-            v2 = maxV;
-            u1 = minU;
-            u2 = maxU;
-            minV = maxV;
-            maxV = v1;
-        }
-        else if (_uvRotateEast == 1)
-        {
-            minU = (texU + 16 - blockBb.MaxY * 16.0D) / 256.0D;
-            minV = (texV + blockBb.MaxX * 16.0D) / 256.0D;
-            maxU = (texU + 16 - blockBb.MinY * 16.0D) / 256.0D;
-            maxV = (texV + blockBb.MinX * 16.0D) / 256.0D;
-            u1 = maxU;
-            u2 = minU;
-            minU = maxU;
-            maxU = u2;
-            v1 = maxV;
-            v2 = minV;
-        }
-        else if (_uvRotateEast == 3)
-        {
-            minU = (texU + 16 - blockBb.MinX * 16.0D) / 256.0D;
-            maxU = (texU + 16 - blockBb.MaxX * 16.0D - 0.01D) / 256.0D;
-            minV = (texV + blockBb.MaxY * 16.0D) / 256.0D;
-            maxV = (texV + blockBb.MinY * 16.0D - 0.01D) / 256.0D;
-            u1 = maxU;
-            u2 = minU;
-            v1 = minV;
-            v2 = maxV;
-        }
-
-        double minX = x + blockBb.MinX;
-        double maxX = x + blockBb.MaxX;
-        double minY = y + blockBb.MinY;
-        double maxY = y + blockBb.MaxY;
-        double minZ = z + blockBb.MinZ;
-
-        if (_enableAo)
-        {
-            tess.setColorOpaque_F(_colorRedTopLeft, _colorGreenTopLeft, _colorBlueTopLeft);
-            tess.addVertexWithUV(minX, maxY, minZ, u1, v1);
-            tess.setColorOpaque_F(_colorRedBottomLeft, _colorGreenBottomLeft, _colorBlueBottomLeft);
-            tess.addVertexWithUV(maxX, maxY, minZ, minU, minV);
-            tess.setColorOpaque_F(_colorRedBottomRight, _colorGreenBottomRight, _colorBlueBottomRight);
-            tess.addVertexWithUV(maxX, minY, minZ, u2, v2);
-            tess.setColorOpaque_F(_colorRedTopRight, _colorGreenTopRight, _colorBlueTopRight);
-            tess.addVertexWithUV(minX, minY, minZ, maxU, maxV);
-        }
-        else
-        {
-            tess.addVertexWithUV(minX, maxY, minZ, u1, v1);
-            tess.addVertexWithUV(maxX, maxY, minZ, minU, minV);
-            tess.addVertexWithUV(maxX, minY, minZ, u2, v2);
-            tess.addVertexWithUV(minX, minY, minZ, maxU, maxV);
-        }
-    }
-
-    private void RenderWestFace(Block block, double x, double y, double z, int textureId)
-    {
-        Tessellator tess = GetTessellator();
-        Box blockBb = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
-
-        if (_overrideBlockTexture >= 0)
-        {
-            textureId = _overrideBlockTexture;
-        }
-
-        int texU = (textureId & 15) << 4;
-        int texV = textureId & 240;
-        double minU = (texU + blockBb.MinX * 16.0D) / 256.0D;
-        double maxU = (texU + blockBb.MaxX * 16.0D - 0.01D) / 256.0D;
-        double minV = (texV + 16 - blockBb.MaxY * 16.0D) / 256.0D;
-        double maxV = (texV + 16 - blockBb.MinY * 16.0D - 0.01D) / 256.0D;
-
-        if (_flipTexture)
-        {
-            (minU, maxU) = (maxU, minU);
-        }
-
-        if (blockBb.MinX < 0.0D || blockBb.MaxX > 1.0D)
-        {
-            minU = texU / 256.0D;
-            maxU = (texU + 15.99D) / 256.0D;
-        }
-
-        if (blockBb.MinY < 0.0D || blockBb.MaxY > 1.0D)
-        {
-            minV = texV / 256.0D;
-            maxV = (texV + 15.99D) / 256.0D;
-        }
-
-        double u1 = maxU, u2 = minU, v1 = minV, v2 = maxV;
-
-        if (_uvRotateWest == 1)
-        {
-            minU = (texU + blockBb.MinY * 16.0D) / 256.0D;
-            minV = (texV + 16 - blockBb.MinX * 16.0D) / 256.0D;
-            maxU = (texU + blockBb.MaxY * 16.0D) / 256.0D;
-            maxV = (texV + 16 - blockBb.MaxX * 16.0D) / 256.0D;
-            v1 = minV;
-            v2 = maxV;
-            u1 = minU;
-            u2 = maxU;
-            minV = maxV;
-            maxV = v1;
-        }
-        else if (_uvRotateWest == 2)
-        {
-            minU = (texU + 16 - blockBb.MaxY * 16.0D) / 256.0D;
-            minV = (texV + blockBb.MinX * 16.0D) / 256.0D;
-            maxU = (texU + 16 - blockBb.MinY * 16.0D) / 256.0D;
-            maxV = (texV + blockBb.MaxX * 16.0D) / 256.0D;
-            u1 = maxU;
-            u2 = minU;
-            minU = maxU;
-            maxU = u2;
-            v1 = maxV;
-            v2 = minV;
-        }
-        else if (_uvRotateWest == 3)
-        {
-            minU = (texU + 16 - blockBb.MinX * 16.0D) / 256.0D;
-            maxU = (texU + 16 - blockBb.MaxX * 16.0D - 0.01D) / 256.0D;
-            minV = (texV + blockBb.MaxY * 16.0D) / 256.0D;
-            maxV = (texV + blockBb.MinY * 16.0D - 0.01D) / 256.0D;
-            u1 = maxU;
-            u2 = minU;
-            v1 = minV;
-            v2 = maxV;
-        }
-
-        double minX = x + blockBb.MinX;
-        double maxX = x + blockBb.MaxX;
-        double minY = y + blockBb.MinY;
-        double maxY = y + blockBb.MaxY;
-        double maxZ = z + blockBb.MaxZ;
-
-        if (_enableAo)
-        {
-            tess.setColorOpaque_F(_colorRedTopLeft, _colorGreenTopLeft, _colorBlueTopLeft);
-            tess.addVertexWithUV(minX, maxY, maxZ, minU, minV);
-            tess.setColorOpaque_F(_colorRedBottomLeft, _colorGreenBottomLeft, _colorBlueBottomLeft);
-            tess.addVertexWithUV(minX, minY, maxZ, u2, v2);
-            tess.setColorOpaque_F(_colorRedBottomRight, _colorGreenBottomRight, _colorBlueBottomRight);
-            tess.addVertexWithUV(maxX, minY, maxZ, maxU, maxV);
-            tess.setColorOpaque_F(_colorRedTopRight, _colorGreenTopRight, _colorBlueTopRight);
-            tess.addVertexWithUV(maxX, maxY, maxZ, u1, v1);
-        }
-        else
-        {
-            tess.addVertexWithUV(minX, maxY, maxZ, minU, minV);
-            tess.addVertexWithUV(minX, minY, maxZ, u2, v2);
-            tess.addVertexWithUV(maxX, minY, maxZ, maxU, maxV);
-            tess.addVertexWithUV(maxX, maxY, maxZ, u1, v1);
-        }
-    }
-
-    private void RenderNorthFace(Block block, double x, double y, double z, int textureId)
-    {
-        Tessellator tess = GetTessellator();
-        Box blockBb = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
-
-        if (_overrideBlockTexture >= 0)
-        {
-            textureId = _overrideBlockTexture;
-        }
-
-        int texU = (textureId & 15) << 4;
-        int texV = textureId & 240;
-        double minU = (texU + blockBb.MinZ * 16.0D) / 256.0D;
-        double maxU = (texU + blockBb.MaxZ * 16.0D - 0.01D) / 256.0D;
-        double minV = (texV + 16 - blockBb.MaxY * 16.0D) / 256.0D;
-        double maxV = (texV + 16 - blockBb.MinY * 16.0D - 0.01D) / 256.0D;
-
-        if (_flipTexture)
-        {
-            (minU, maxU) = (maxU, minU);
-        }
-
-        if (blockBb.MinZ < 0.0D || blockBb.MaxZ > 1.0D)
-        {
-            minU = texU / 256.0D;
-            maxU = (texU + 15.99D) / 256.0D;
-        }
-
-        if (blockBb.MinY < 0.0D || blockBb.MaxY > 1.0D)
-        {
-            minV = texV / 256.0D;
-            maxV = (texV + 15.99D) / 256.0D;
-        }
-
-        double u1 = maxU, u2 = minU, v1 = minV, v2 = maxV;
-
-        if (_uvRotateNorth == 1)
-        {
-            minU = (texU + blockBb.MinY * 16.0D) / 256.0D;
-            minV = (texV + 16 - blockBb.MaxZ * 16.0D) / 256.0D;
-            maxU = (texU + blockBb.MaxY * 16.0D) / 256.0D;
-            maxV = (texV + 16 - blockBb.MinZ * 16.0D) / 256.0D;
-            v1 = minV;
-            v2 = maxV;
-            u1 = minU;
-            u2 = maxU;
-            minV = maxV;
-            maxV = v1;
-        }
-        else if (_uvRotateNorth == 2)
-        {
-            minU = (texU + 16 - blockBb.MaxY * 16.0D) / 256.0D;
-            minV = (texV + blockBb.MinZ * 16.0D) / 256.0D;
-            maxU = (texU + 16 - blockBb.MinY * 16.0D) / 256.0D;
-            maxV = (texV + blockBb.MaxZ * 16.0D) / 256.0D;
-            u1 = maxU;
-            u2 = minU;
-            minU = maxU;
-            maxU = u2;
-            v1 = maxV;
-            v2 = minV;
-        }
-        else if (_uvRotateNorth == 3)
-        {
-            minU = (texU + 16 - blockBb.MinZ * 16.0D) / 256.0D;
-            maxU = (texU + 16 - blockBb.MaxZ * 16.0D - 0.01D) / 256.0D;
-            minV = (texV + blockBb.MaxY * 16.0D) / 256.0D;
-            maxV = (texV + blockBb.MinY * 16.0D - 0.01D) / 256.0D;
-            u1 = maxU;
-            u2 = minU;
-            v1 = minV;
-            v2 = maxV;
-        }
-
-        double minX = x + blockBb.MinX;
-        double minY = y + blockBb.MinY;
-        double maxY = y + blockBb.MaxY;
-        double minZ = z + blockBb.MinZ;
-        double maxZ = z + blockBb.MaxZ;
-
-        if (_enableAo)
-        {
-            tess.setColorOpaque_F(_colorRedTopLeft, _colorGreenTopLeft, _colorBlueTopLeft);
-            tess.addVertexWithUV(minX, maxY, maxZ, u1, v1);
-            tess.setColorOpaque_F(_colorRedBottomLeft, _colorGreenBottomLeft, _colorBlueBottomLeft);
-            tess.addVertexWithUV(minX, maxY, minZ, minU, minV);
-            tess.setColorOpaque_F(_colorRedBottomRight, _colorGreenBottomRight, _colorBlueBottomRight);
-            tess.addVertexWithUV(minX, minY, minZ, u2, v2);
-            tess.setColorOpaque_F(_colorRedTopRight, _colorGreenTopRight, _colorBlueTopRight);
-            tess.addVertexWithUV(minX, minY, maxZ, maxU, maxV);
-        }
-        else
-        {
-            tess.addVertexWithUV(minX, maxY, maxZ, u1, v1);
-            tess.addVertexWithUV(minX, maxY, minZ, minU, minV);
-            tess.addVertexWithUV(minX, minY, minZ, u2, v2);
-            tess.addVertexWithUV(minX, minY, maxZ, maxU, maxV);
-        }
-    }
-
     public void RenderBlockOnInventory(Block block, int metadata, float brightness)
     {
-        Tessellator tess = GetTessellator();
+        Tessellator tess = _tess;
         int renderType = block.getRenderType();
 
         if (RenderFromInside)
@@ -3232,27 +2709,27 @@ public class BlockRenderer
 
             tess.startDrawingQuads();
             tess.setNormal(0.0F, -1.0F, 0.0F);
-            RenderBottomFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(0, metadata));
+            Helper.RenderBottomFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(0, metadata));
             tess.draw();
 
             tess.startDrawingQuads();
             tess.setNormal(0.0F, 1.0F, 0.0F);
-            RenderTopFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(1, metadata));
+            Helper.RenderTopFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(1, metadata));
             tess.draw();
 
             tess.startDrawingQuads();
             tess.setNormal(0.0F, 0.0F, -1.0F);
-            RenderEastFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(2, metadata));
+            Helper.RenderEastFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(2, metadata));
             tess.draw();
 
             tess.startDrawingQuads();
             tess.setNormal(0.0F, 0.0F, 1.0F);
-            RenderWestFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(3, metadata));
+            Helper.RenderWestFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(3, metadata));
             tess.draw();
 
             tess.startDrawingQuads();
             tess.setNormal(-1.0F, 0.0F, 0.0F);
-            RenderNorthFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(4, metadata));
+            Helper.RenderNorthFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(4, metadata));
             tess.draw();
 
             tess.startDrawingQuads();
@@ -3277,32 +2754,32 @@ public class BlockRenderer
 
             tess.startDrawingQuads();
             tess.setNormal(0.0F, -1.0F, 0.0F);
-            RenderBottomFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(0));
+            Helper.RenderBottomFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(0));
             tess.draw();
 
             tess.startDrawingQuads();
             tess.setNormal(0.0F, 1.0F, 0.0F);
-            RenderTopFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(1));
+            Helper.RenderTopFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(1));
             tess.draw();
 
             tess.startDrawingQuads();
             tess.setNormal(0.0F, 0.0F, -1.0F);
             tess.setTranslationF(0.0F, 0.0F, inset);
-            RenderEastFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(2));
+            Helper.RenderEastFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(2));
             tess.setTranslationF(0.0F, 0.0F, -inset);
             tess.draw();
 
             tess.startDrawingQuads();
             tess.setNormal(0.0F, 0.0F, 1.0F);
             tess.setTranslationF(0.0F, 0.0F, -inset);
-            RenderWestFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(3));
+            Helper.RenderWestFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(3));
             tess.setTranslationF(0.0F, 0.0F, inset);
             tess.draw();
 
             tess.startDrawingQuads();
             tess.setNormal(-1.0F, 0.0F, 0.0F);
             tess.setTranslationF(inset, 0.0F, 0.0F);
-            RenderNorthFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(4));
+            Helper.RenderNorthFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(4));
             tess.setTranslationF(-inset, 0.0F, 0.0F);
             tess.draw();
 
@@ -3370,23 +2847,23 @@ public class BlockRenderer
     {
         tess.startDrawingQuads();
         tess.setNormal(0.0F, -1.0F, 0.0F);
-        RenderBottomFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(0));
+        Helper.RenderBottomFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(0));
         tess.draw();
         tess.startDrawingQuads();
         tess.setNormal(0.0F, 1.0F, 0.0F);
-        RenderTopFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(1));
+        Helper.RenderTopFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(1));
         tess.draw();
         tess.startDrawingQuads();
         tess.setNormal(0.0F, 0.0F, -1.0F);
-        RenderEastFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(2));
+        Helper.RenderEastFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(2));
         tess.draw();
         tess.startDrawingQuads();
         tess.setNormal(0.0F, 0.0F, 1.0F);
-        RenderWestFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(3));
+        Helper.RenderWestFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(3));
         tess.draw();
         tess.startDrawingQuads();
         tess.setNormal(-1.0F, 0.0F, 0.0F);
-        RenderNorthFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(4));
+        Helper.RenderNorthFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(4));
         tess.draw();
         tess.startDrawingQuads();
         tess.setNormal(1.0F, 0.0F, 0.0F);
