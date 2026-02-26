@@ -732,7 +732,7 @@ public static class Helper
             var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 1.0F, tintTop);
             int textureId = context.OverrideTexture >= 0
                 ? context.OverrideTexture
-                : block.getTextureId(world, pos.x, pos.y, pos.z, 0);
+                : block.getTextureId(world, pos.x, pos.y, pos.z, 1);
             RenderTopFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, context, colors, textureId, context.FlipTexture);
             hasRendered = true;
         }
@@ -760,7 +760,7 @@ public static class Helper
             var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.8F, tintEast);
             int textureId = context.OverrideTexture >= 0
                 ? context.OverrideTexture
-                : block.getTextureId(world, pos.x, pos.y, pos.z, 0);
+                : block.getTextureId(world, pos.x, pos.y, pos.z, 2);
             RenderEastFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, context, colors, textureId,
                 context.FlipTexture);
             hasRendered = true;
@@ -789,7 +789,7 @@ public static class Helper
             var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.8F, tintWest);
             int textureId = context.OverrideTexture >= 0
                 ? context.OverrideTexture
-                : block.getTextureId(world, pos.x, pos.y, pos.z, 0);
+                : block.getTextureId(world, pos.x, pos.y, pos.z, 3);
             RenderWestFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, context, colors, textureId,
                 context.FlipTexture);
             hasRendered = true;
@@ -818,7 +818,7 @@ public static class Helper
             var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.6F, tintNorth);
             int textureId = context.OverrideTexture >= 0
                 ? context.OverrideTexture
-                : block.getTextureId(world, pos.x, pos.y, pos.z, 0);
+                : block.getTextureId(world, pos.x, pos.y, pos.z, 4);
             RenderNorthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, context, colors, textureId,
                 context.FlipTexture);
             hasRendered = true;
@@ -847,7 +847,7 @@ public static class Helper
             var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.6F, tintSouth);
             int textureId = context.OverrideTexture >= 0
                 ? context.OverrideTexture
-                : block.getTextureId(world, pos.x, pos.y, pos.z, 0);
+                : block.getTextureId(world, pos.x, pos.y, pos.z, 5);
             RenderSouthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, context, colors, textureId,
                 context.FlipTexture);
             hasRendered = true;
