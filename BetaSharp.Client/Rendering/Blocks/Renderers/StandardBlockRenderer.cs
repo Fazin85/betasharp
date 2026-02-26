@@ -5,11 +5,10 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
-public class StandardBlockRenderer:IBlockRenderer
+public class StandardBlockRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
-        in BlockRenderContext context)
+    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext context)
     {
-        return Helper.RenderStandardBlock();
+        return Helper.RenderStandardBlock(block, pos, world, tess, context);
     }
 }
