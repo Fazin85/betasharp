@@ -7,102 +7,103 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class DoorRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
-        in BlockRenderContext context)
+    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext context)
     {
-        Tessellator tess = _tess;
-        Box bounds = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
+        Box bounds = context.OverrideBounds ?? block.BoundingBox;
 
         float lightBottom = 0.5F;
         float lightTop = 1.0F;
         float lightZ = 0.8F; // East/West
         float lightX = 0.6F; // North/South
 
-        float blockLuminance = block.getLuminance(_blockAccess, x, y, z);
-
+        float blockLuminance = block.getLuminance(world, pos.x, pos.y, pos.z);
         bool isLightEmitter = Block.BlocksLightLuminance[block.id] > 0;
 
+        // Dummy colors since Door uses flat shading (tess.setColorOpaque_F) instead of AO
+        FaceColors dummyColors = new FaceColors();
+
+        // If your Helper specifically requires Vec3D instead of BlockPos, use this:
+        Vec3D vecPos = new Vec3D(pos.x, pos.y, pos.z);
+
         // --- Bottom Face (Y - 1) ---
-        float faceLuminance = block.getLuminance(_blockAccess, x, y - 1, z);
+        float faceLuminance = block.getLuminance(world, pos.x, pos.y - 1, pos.z);
         if (bounds.MinY > 0.0D) faceLuminance = blockLuminance;
         if (isLightEmitter) faceLuminance = 1.0F;
 
         tess.setColorOpaque_F(lightBottom * faceLuminance, lightBottom * faceLuminance, lightBottom * faceLuminance);
-        Helper.RenderBottomFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 0));
+        Helper.RenderBottomFace(block, vecPos, tess, context, dummyColors, block.getTextureId(world, pos.x, pos.y, pos.z, 0), false);
 
         // --- Top Face (Y + 1) ---
-        faceLuminance = block.getLuminance(_blockAccess, x, y + 1, z);
+        faceLuminance = block.getLuminance(world, pos.x, pos.y + 1, pos.z);
         if (bounds.MaxY < 1.0D) faceLuminance = blockLuminance;
         if (isLightEmitter) faceLuminance = 1.0F;
 
         tess.setColorOpaque_F(lightTop * faceLuminance, lightTop * faceLuminance, lightTop * faceLuminance);
-        Helper.RenderTopFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 1));
+        Helper.RenderTopFace(block, vecPos, tess, context, dummyColors, block.getTextureId(world, pos.x, pos.y, pos.z, 1), false);
 
         // --- East Face (Z - 1) ---
-        faceLuminance = block.getLuminance(_blockAccess, x, y, z - 1);
+        faceLuminance = block.getLuminance(world, pos.x, pos.y, pos.z - 1);
         if (bounds.MinZ > 0.0D) faceLuminance = blockLuminance;
         if (isLightEmitter) faceLuminance = 1.0F;
 
         tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
-        int textureId = block.getTextureId(_blockAccess, x, y, z, 2);
+        int textureId = block.getTextureId(world, pos.x, pos.y, pos.z, 2);
 
-        // Negative texture ID is used as a flag to flip the texture horizontally (for door hinges)
+        bool flip = false;
         if (textureId < 0)
         {
-            flipTexture = true;
-            textureId = -textureId;
+            flip = true;
+            textureId = -textureId; // Make it positive for the UV math
         }
-
-        Helper.RenderEastFace(block, x, y, z, textureId);
-        flipTexture = false;
+        Helper.RenderEastFace(block, vecPos, tess, context, dummyColors, textureId, flip);
 
         // --- West Face (Z + 1) ---
-        faceLuminance = block.getLuminance(_blockAccess, x, y, z + 1);
+        faceLuminance = block.getLuminance(world, pos.x, pos.y, pos.z + 1);
         if (bounds.MaxZ < 1.0D) faceLuminance = blockLuminance;
         if (isLightEmitter) faceLuminance = 1.0F;
 
         tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
-        textureId = block.getTextureId(_blockAccess, x, y, z, 3);
+        textureId = block.getTextureId(world, pos.x, pos.y, pos.z, 3);
+
+        flip = false;
         if (textureId < 0)
         {
-            flipTexture = true;
+            flip = true;
             textureId = -textureId;
         }
-
-        Helper.RenderWestFace(block, x, y, z, textureId);
-        flipTexture = false;
+        Helper.RenderWestFace(block, vecPos, tess, context, dummyColors, textureId, flip);
 
         // --- North Face (X - 1) ---
-        faceLuminance = block.getLuminance(_blockAccess, x - 1, y, z);
+        faceLuminance = block.getLuminance(world, pos.x - 1, pos.y, pos.z);
         if (bounds.MinX > 0.0D) faceLuminance = blockLuminance;
         if (isLightEmitter) faceLuminance = 1.0F;
 
         tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
-        textureId = block.getTextureId(_blockAccess, x, y, z, 4);
+        textureId = block.getTextureId(world, pos.x, pos.y, pos.z, 4);
+
+        flip = false;
         if (textureId < 0)
         {
-            flipTexture = true;
+            flip = true;
             textureId = -textureId;
         }
-
-        Helper.RenderNorthFace(block, x, y, z, textureId);
-        flipTexture = false;
+        Helper.RenderNorthFace(block, vecPos, tess, context, dummyColors, textureId, flip);
 
         // --- South Face (X + 1) ---
-        faceLuminance = block.getLuminance(_blockAccess, x + 1, y, z);
+        faceLuminance = block.getLuminance(world, pos.x + 1, pos.y, pos.z);
         if (bounds.MaxX < 1.0D) faceLuminance = blockLuminance;
         if (isLightEmitter) faceLuminance = 1.0F;
 
         tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
-        textureId = block.getTextureId(_blockAccess, x, y, z, 5);
+        textureId = block.getTextureId(world, pos.x, pos.y, pos.z, 5);
+
+        flip = false;
         if (textureId < 0)
         {
-            flipTexture = true;
+            flip = true;
             textureId = -textureId;
         }
-
-        RenderSouthFace(block, x, y, z, textureId);
-        flipTexture = false;
+        Helper.RenderSouthFace(block, vecPos, tess, context, dummyColors, textureId, flip);
 
         return true;
     }
