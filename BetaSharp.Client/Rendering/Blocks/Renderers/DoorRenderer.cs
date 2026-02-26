@@ -7,11 +7,11 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class DoorRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext context)
+    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext ctx)
     {
-        Box bounds = context.OverrideBounds ?? block.BoundingBox;
+        Box bounds = ctx.OverrideBounds ?? block.BoundingBox;
 
-        var flatCtx = context with { EnableAo = false };
+        var flatCtx = ctx with { EnableAo = false };
 
         float lightBottom = 0.5F;
         float lightTop = 1.0F;
@@ -33,7 +33,7 @@ public class DoorRenderer : IBlockRenderer
         if (isLightEmitter) faceLuminance = 1.0F;
 
         tess.setColorOpaque_F(lightBottom * faceLuminance, lightBottom * faceLuminance, lightBottom * faceLuminance);
-        flatCtx.RenderBottomFace(block, vecPos, tess, dummyColors, block.getTextureId(world, pos.x, pos.y, pos.z, 0));
+        flatCtx.DrawBottomFace(block, vecPos, tess, dummyColors, block.getTextureId(world, pos.x, pos.y, pos.z, 0));
 
         // --- Top Face (Y + 1) ---
         faceLuminance = block.getLuminance(world, pos.x, pos.y + 1, pos.z);
@@ -41,7 +41,7 @@ public class DoorRenderer : IBlockRenderer
         if (isLightEmitter) faceLuminance = 1.0F;
 
         tess.setColorOpaque_F(lightTop * faceLuminance, lightTop * faceLuminance, lightTop * faceLuminance);
-        flatCtx.RenderTopFace(block, vecPos, tess, dummyColors, block.getTextureId(world, pos.x, pos.y, pos.z, 1));
+        flatCtx.DrawTopFace(block, vecPos, tess, dummyColors, block.getTextureId(world, pos.x, pos.y, pos.z, 1));
 
         // --- East Face (Z - 1) ---
         faceLuminance = block.getLuminance(world, pos.x, pos.y, pos.z - 1);
@@ -57,7 +57,7 @@ public class DoorRenderer : IBlockRenderer
             flatCtx.FlipTexture = true;
             textureId = -textureId; // Make it positive for the UV math
         }
-        flatCtx.RenderEastFace(block, vecPos, tess, dummyColors, textureId);
+        flatCtx.DrawEastFace(block, vecPos, tess, dummyColors, textureId);
 
         // --- West Face (Z + 1) ---
         faceLuminance = block.getLuminance(world, pos.x, pos.y, pos.z + 1);
@@ -73,7 +73,7 @@ public class DoorRenderer : IBlockRenderer
             flatCtx.FlipTexture = true;
             textureId = -textureId;
         }
-        flatCtx.RenderWestFace(block, vecPos, tess, dummyColors, textureId);
+        flatCtx.DrawWestFace(block, vecPos, tess, dummyColors, textureId);
 
         // --- North Face (X - 1) ---
         faceLuminance = block.getLuminance(world, pos.x - 1, pos.y, pos.z);
@@ -89,7 +89,7 @@ public class DoorRenderer : IBlockRenderer
             flatCtx.FlipTexture = true;
             textureId = -textureId;
         }
-        flatCtx.RenderNorthFace(block, vecPos, tess, dummyColors, textureId);
+        flatCtx.DrawNorthFace(block, vecPos, tess, dummyColors, textureId);
 
         // --- South Face (X + 1) ---
         faceLuminance = block.getLuminance(world, pos.x + 1, pos.y, pos.z);
@@ -105,7 +105,7 @@ public class DoorRenderer : IBlockRenderer
             flatCtx.FlipTexture = true;
             textureId = -textureId;
         }
-        flatCtx.RenderSouthFace(block, vecPos, tess, dummyColors, textureId);
+        flatCtx.DrawSouthFace(block, vecPos, tess, dummyColors, textureId);
 
         return true;
     }

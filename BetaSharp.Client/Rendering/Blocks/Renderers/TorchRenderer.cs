@@ -8,7 +8,7 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 public class TorchRenderer : IBlockRenderer
 {
     public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
-        in BlockRenderContext context)
+        in BlockRenderContext ctx)
     {
         int metadata = world.getBlockMeta(pos.x, pos.y, pos.z);
 
@@ -26,27 +26,27 @@ public class TorchRenderer : IBlockRenderer
 
         if (metadata == 1) // Attached to West wall (pointing East)
         {
-            context.DrawTorch(block, tess, new Vec3D(pos.x - horizontalOffset, pos.y + verticalOffset, pos.z),
+            ctx.DrawTorch(block, tess, new Vec3D(pos.x - horizontalOffset, pos.y + verticalOffset, pos.z),
                 -tiltAmount, 0.0D);
         }
         else if (metadata == 2) // Attached to East wall (pointing West)
         {
-            context.DrawTorch(block, tess, new Vec3D(pos.x + horizontalOffset, pos.y + verticalOffset, pos.z),
+            ctx.DrawTorch(block, tess, new Vec3D(pos.x + horizontalOffset, pos.y + verticalOffset, pos.z),
                 tiltAmount, 0.0D);
         }
         else if (metadata == 3) // Attached to North wall (pointing South)
         {
-            context.DrawTorch(block, tess, new Vec3D(pos.x, pos.y + verticalOffset, pos.z - horizontalOffset), 0.0D,
+            ctx.DrawTorch(block, tess, new Vec3D(pos.x, pos.y + verticalOffset, pos.z - horizontalOffset), 0.0D,
                 -tiltAmount);
         }
         else if (metadata == 4) // Attached to South wall (pointing North)
         {
-            context.DrawTorch(block, tess, new Vec3D(pos.x, pos.y + verticalOffset, pos.z + horizontalOffset), 0.0D,
+            ctx.DrawTorch(block, tess, new Vec3D(pos.x, pos.y + verticalOffset, pos.z + horizontalOffset), 0.0D,
                 tiltAmount);
         }
         else // Standing on floor
         {
-            context.DrawTorch(block, tess, new Vec3D(pos.x, pos.y, pos.z), 0.0D, 0.0D);
+            ctx.DrawTorch(block, tess, new Vec3D(pos.x, pos.y, pos.z), 0.0D, 0.0D);
         }
 
         return true;

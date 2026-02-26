@@ -8,7 +8,7 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 public class FenceRenderer : IBlockRenderer
 {
     public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
-        in BlockRenderContext context)
+        in BlockRenderContext ctx)
     {
         bool hasRendered = true;
 
@@ -17,8 +17,8 @@ public class FenceRenderer : IBlockRenderer
         float postMax = 10.0F / 16.0F;
 
         // Clone the context and apply the new bounding box for the post
-        var postCtx = context with { OverrideBounds = new Box(postMin, 0.0F, postMin, postMax, 1.0F, postMax) };
-        postCtx.RenderStandardBlock(block, pos, world, tess);
+        var postCtx = ctx with { OverrideBounds = new Box(postMin, 0.0F, postMin, postMax, 1.0F, postMax) };
+        postCtx.DrawBlock(block, pos, world, tess);
 
         // Check for adjacent fences using 'world' and 'pos'
         bool connectsWest = world.getBlockId(pos.x - 1, pos.y, pos.z) == block.id;
@@ -51,20 +51,20 @@ public class FenceRenderer : IBlockRenderer
 
         if (connectsX)
         {
-            var topXCtx = context with
+            var topXCtx = ctx with
             {
                 OverrideBounds = new Box(barMinX, topBarMinY, barDepthMin, barMaxX, topBarMaxY, barDepthMax)
             };
-            topXCtx.RenderStandardBlock(block, pos, world, tess);
+            topXCtx.DrawBlock(block, pos, world, tess);
         }
 
         if (connectsZ)
         {
-            var topZCtx = context with
+            var topZCtx = ctx with
             {
                 OverrideBounds = new Box(barDepthMin, topBarMinY, barMinZ, barDepthMax, topBarMaxY, barMaxZ)
             };
-            topZCtx.RenderStandardBlock(block, pos, world, tess);
+            topZCtx.DrawBlock(block, pos, world, tess);
         }
 
         // 3. Render Bottom Connecting Bars
@@ -73,20 +73,20 @@ public class FenceRenderer : IBlockRenderer
 
         if (connectsX)
         {
-            var bottomXCtx = context with
+            var bottomXCtx = ctx with
             {
                 OverrideBounds = new Box(barMinX, bottomBarMinY, barDepthMin, barMaxX, bottomBarMaxY, barDepthMax)
             };
-            bottomXCtx.RenderStandardBlock(block, pos, world, tess);
+            bottomXCtx.DrawBlock(block, pos, world, tess);
         }
 
         if (connectsZ)
         {
-            var bottomZCtx = context with
+            var bottomZCtx = ctx with
             {
                 OverrideBounds = new Box(barDepthMin, bottomBarMinY, barMinZ, barDepthMax, bottomBarMaxY, barMaxZ)
             };
-            bottomZCtx.RenderStandardBlock(block, pos, world, tess);
+            bottomZCtx.DrawBlock(block, pos, world, tess);
         }
 
         // Notice we COMPLETELY REMOVED the bounding box reset!

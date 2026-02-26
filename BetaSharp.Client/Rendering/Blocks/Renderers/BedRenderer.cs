@@ -8,9 +8,9 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 public class BedRenderer : IBlockRenderer
 {
     public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
-        in BlockRenderContext context)
+        in BlockRenderContext ctx)
     {
-        Box bounds = context.OverrideBounds ?? block.BoundingBox;
+        Box bounds = ctx.OverrideBounds ?? block.BoundingBox;
         int metadata = world.getBlockMeta(pos.x, pos.y, pos.z);
         int direction = BlockBed.getDirection(metadata);
         bool isHead = BlockBed.isHeadOfBed(metadata);
@@ -116,48 +116,48 @@ public class BedRenderer : IBlockRenderer
         }
 
         float faceLuminance;
-        var flatCtx = context with { EnableAo = false };
+        var flatCtx = ctx with { EnableAo = false };
         // East Face (Z - 1)
-        if (forwardDir != 2 && (context.RenderAllFaces || block.isSideVisible(world, pos.x, pos.y, pos.z - 1, 2)))
+        if (forwardDir != 2 && (ctx.RenderAllFaces || block.isSideVisible(world, pos.x, pos.y, pos.z - 1, 2)))
         {
             faceLuminance = bounds.MinZ > 0.0D ? centerLuminance : block.getLuminance(world, pos.x, pos.y, pos.z - 1);
             tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
 
             flatCtx.FlipTexture = textureFlipDir == 2;
-            flatCtx.RenderEastFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, new FaceColors(),
+            flatCtx.DrawEastFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, new FaceColors(),
                 block.getTextureId(world, pos.x, pos.y, pos.z, 2));
         }
 
         // West Face (Z + 1)
-        if (forwardDir != 3 && (context.RenderAllFaces || block.isSideVisible(world, pos.x, pos.y, pos.z + 1, 3)))
+        if (forwardDir != 3 && (ctx.RenderAllFaces || block.isSideVisible(world, pos.x, pos.y, pos.z + 1, 3)))
         {
             faceLuminance = bounds.MaxZ < 1.0D ? centerLuminance : block.getLuminance(world, pos.x, pos.y, pos.z + 1);
             tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
 
             flatCtx.FlipTexture = textureFlipDir == 3;
-            flatCtx.RenderWestFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, new FaceColors(),
+            flatCtx.DrawWestFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, new FaceColors(),
                 block.getTextureId(world, pos.x, pos.y, pos.z, 3));
         }
 
         // North Face (X - 1)
-        if (forwardDir != 4 && (context.RenderAllFaces || block.isSideVisible(world, pos.x - 1, pos.y, pos.z, 4)))
+        if (forwardDir != 4 && (ctx.RenderAllFaces || block.isSideVisible(world, pos.x - 1, pos.y, pos.z, 4)))
         {
             faceLuminance = bounds.MinX > 0.0D ? centerLuminance : block.getLuminance(world, pos.x - 1, pos.y, pos.z);
             tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
 
             flatCtx.FlipTexture = textureFlipDir == 4;
-            flatCtx.RenderNorthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, new FaceColors(),
+            flatCtx.DrawNorthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, new FaceColors(),
                 block.getTextureId(world, pos.x, pos.y, pos.z, 4));
         }
 
         // South Face (X + 1)
-        if (forwardDir != 5 && (context.RenderAllFaces || block.isSideVisible(world, pos.x + 1, pos.y, pos.z, 5)))
+        if (forwardDir != 5 && (ctx.RenderAllFaces || block.isSideVisible(world, pos.x + 1, pos.y, pos.z, 5)))
         {
             faceLuminance = bounds.MaxX < 1.0D ? centerLuminance : block.getLuminance(world, pos.x + 1, pos.y, pos.z);
             tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
 
             flatCtx.FlipTexture = textureFlipDir == 5;
-            flatCtx.RenderSouthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, new FaceColors(),
+            flatCtx.DrawSouthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, new FaceColors(),
                 block.getTextureId(world, pos.x, pos.y, pos.z, 5));
         }
 

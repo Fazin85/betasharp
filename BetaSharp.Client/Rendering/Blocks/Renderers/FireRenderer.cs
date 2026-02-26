@@ -7,10 +7,10 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class FireRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext context)
+    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext ctx)
     {
         int textureId = block.getTexture(0);
-        if (context.OverrideTexture >= 0) textureId = context.OverrideTexture;
+        if (ctx.OverrideTexture >= 0) textureId = ctx.OverrideTexture;
 
         float luminance = block.getLuminance(world, pos.x, pos.y, pos.z);
         tess.setColorOpaque_F(luminance, luminance, luminance);

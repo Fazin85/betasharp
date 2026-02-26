@@ -8,16 +8,16 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 public class PistonBaseRenderer : IBlockRenderer
 {
     public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
-        in BlockRenderContext context)
+        in BlockRenderContext ctx)
     {
         int metadata = world.getBlockMeta(pos.x, pos.y, pos.z);
 
         // CustomFlag acts as our 'expanded' override from the BlockEntity animation
-        bool isExpanded = context.CustomFlag || (metadata & 8) != 0;
+        bool isExpanded = ctx.CustomFlag || (metadata & 8) != 0;
         int facing = BlockPistonBase.getFacing(metadata);
 
         int uvTop = 0, uvBottom = 0, uvNorth = 0, uvSouth = 0, uvEast = 0, uvWest = 0;
-        Box? bounds = context.OverrideBounds ?? block.BoundingBox;
+        Box? bounds = ctx.OverrideBounds ?? block.BoundingBox;
 
         if (isExpanded)
         {
@@ -100,7 +100,7 @@ public class PistonBaseRenderer : IBlockRenderer
         }
 
         // Clone the context, applying our specific rotations and bounds
-        var baseCtx = context with
+        var baseCtx = ctx with
         {
             OverrideBounds = bounds,
             UvRotateTop = uvTop,
@@ -111,6 +111,6 @@ public class PistonBaseRenderer : IBlockRenderer
             UvRotateWest = uvWest
         };
 
-        return baseCtx.RenderStandardBlock(block, pos, world, tess);
+        return baseCtx.DrawBlock(block, pos, world, tess);
     }
 }

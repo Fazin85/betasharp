@@ -7,7 +7,7 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class CropsRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext context)
+    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext ctx)
     {
         float luminance = block.getLuminance(world, pos.x, pos.y, pos.z);
         tess.setColorOpaque_F(luminance, luminance, luminance);
@@ -17,7 +17,7 @@ public class CropsRenderer : IBlockRenderer
         // Crops are pushed down slightly into the soil block
         double yOffset = pos.y - (1.0D / 16.0D);
 
-        RenderCropQuads(block, metadata, pos.x, yOffset, pos.z, tess, context);
+        RenderCropQuads(block, metadata, pos.x, yOffset, pos.z, tess, ctx);
 
         return true;
     }

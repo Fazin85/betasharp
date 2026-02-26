@@ -7,7 +7,7 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class ReedRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext context)
+    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext ctx)
     {
         float luminance = block.getLuminance(world, pos.x, pos.y, pos.z);
         int colorMultiplier = block.getColorMultiplier(world, pos.x, pos.y, pos.z);
@@ -32,7 +32,7 @@ public class ReedRenderer : IBlockRenderer
             renderZ += (((hash >> 24 & 15L) / 15.0F) - 0.5D) * 0.5D;
         }
 
-        RenderCrossedSquares(block, world.getBlockMeta(pos.x, pos.y, pos.z), renderX, renderY, renderZ, tess, context);
+        RenderCrossedSquares(block, world.getBlockMeta(pos.x, pos.y, pos.z), renderX, renderY, renderZ, tess, ctx);
         return true;
     }
 

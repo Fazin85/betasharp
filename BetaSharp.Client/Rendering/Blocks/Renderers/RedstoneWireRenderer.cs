@@ -8,12 +8,12 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 public class RedstoneWireRenderer : IBlockRenderer
 {
     public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
-        in BlockRenderContext context)
+        in BlockRenderContext ctx)
     {
         int powerLevel = world.getBlockMeta(pos.x, pos.y, pos.z);
 
         int textureId = block.getTexture(1, powerLevel);
-        if (context.OverrideTexture >= 0) textureId = context.OverrideTexture;
+        if (ctx.OverrideTexture >= 0) textureId = ctx.OverrideTexture;
 
         // --- 1. Calculate the Glow Color ---
         float luminance = block.getLuminance(world, pos.x, pos.y, pos.z);

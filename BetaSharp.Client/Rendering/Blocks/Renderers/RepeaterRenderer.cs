@@ -8,15 +8,15 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 public class RepeaterRenderer : IBlockRenderer
 {
     public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
-        in BlockRenderContext context)
+        in BlockRenderContext ctx)
     {
         int metadata = world.getBlockMeta(pos.x, pos.y, pos.z);
         int direction = metadata & 3;
         int delay = (metadata & 12) >> 2;
         // 1. Base Rendering
-        var slabCtx = context with { EnableAo = false, UvRotateTop = (direction + 1) % 4 };
+        var slabCtx = ctx with { EnableAo = false, UvRotateTop = (direction + 1) % 4 };
 
-        slabCtx.RenderStandardBlock(block, pos, world, tess);
+        slabCtx.DrawBlock(block, pos, world, tess);
 
         // 2. Prepare Torch Rendering
         float luminance = block.getLuminance(world, pos.x, pos.y, pos.z);

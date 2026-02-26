@@ -57,7 +57,7 @@ public ref struct BlockRenderContext
     }
 
 
-    internal readonly void RenderBottomFace(Block block, in Vec3D pos, Tessellator tess, in FaceColors colors,
+    internal readonly void DrawBottomFace(Block block, in Vec3D pos, Tessellator tess, in FaceColors colors,
         int textureId)
     {
         Box blockBb = OverrideBounds ?? block.BoundingBox;
@@ -146,7 +146,7 @@ public ref struct BlockRenderContext
         }
     }
 
-    internal readonly void RenderTopFace(Block block, in Vec3D pos, Tessellator tess, in FaceColors colors,
+    internal readonly void DrawTopFace(Block block, in Vec3D pos, Tessellator tess, in FaceColors colors,
         int textureId)
     {
         Box blockBb = OverrideBounds ?? block.BoundingBox;
@@ -235,7 +235,7 @@ public ref struct BlockRenderContext
         }
     }
 
-    internal readonly void RenderEastFace(Block block, in Vec3D pos, Tessellator tess, in FaceColors colors,
+    internal readonly void DrawEastFace(Block block, in Vec3D pos, Tessellator tess, in FaceColors colors,
         int textureId)
     {
         Box blockBb = OverrideBounds ?? block.BoundingBox;
@@ -329,7 +329,7 @@ public ref struct BlockRenderContext
         }
     }
 
-    internal readonly void RenderWestFace(Block block, in Vec3D pos, Tessellator tess, in FaceColors colors,
+    internal readonly void DrawWestFace(Block block, in Vec3D pos, Tessellator tess, in FaceColors colors,
         int textureId)
     {
         Box blockBb = OverrideBounds ?? block.BoundingBox;
@@ -423,7 +423,7 @@ public ref struct BlockRenderContext
         }
     }
 
-    internal readonly void RenderNorthFace(Block block, in Vec3D pos, Tessellator tess, in FaceColors colors,
+    internal readonly void DrawNorthFace(Block block, in Vec3D pos, Tessellator tess, in FaceColors colors,
         int textureId)
     {
         Box blockBb = OverrideBounds ?? block.BoundingBox;
@@ -517,7 +517,7 @@ public ref struct BlockRenderContext
         }
     }
 
-    internal readonly void RenderSouthFace(Block block, in Vec3D pos, Tessellator tess, in FaceColors colors,
+    internal readonly void DrawSouthFace(Block block, in Vec3D pos, Tessellator tess, in FaceColors colors,
         int textureId)
     {
         Box blockBb = OverrideBounds ?? block.BoundingBox;
@@ -611,7 +611,7 @@ public ref struct BlockRenderContext
         }
     }
 
-    internal readonly bool RenderStandardBlock(in Block block, in BlockPos pos, in IBlockAccess world, Tessellator tess)
+    internal readonly bool DrawBlock(in Block block, in BlockPos pos, in IBlockAccess world, Tessellator tess)
     {
         bool hasRendered = false;
         Box bounds = OverrideBounds ?? block.BoundingBox;
@@ -677,7 +677,7 @@ public ref struct BlockRenderContext
             int textureId = OverrideTexture >= 0
                 ? OverrideTexture
                 : block.getTextureId(world, pos.x, pos.y, pos.z, 0);
-            RenderBottomFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, colors, textureId);
+            DrawBottomFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, colors, textureId);
             hasRendered = true;
         }
 
@@ -705,7 +705,7 @@ public ref struct BlockRenderContext
             int textureId = OverrideTexture >= 0
                 ? OverrideTexture
                 : block.getTextureId(world, pos.x, pos.y, pos.z, 1);
-            RenderTopFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, colors, textureId);
+            DrawTopFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, colors, textureId);
             hasRendered = true;
         }
 
@@ -733,7 +733,7 @@ public ref struct BlockRenderContext
             int textureId = OverrideTexture >= 0
                 ? OverrideTexture
                 : block.getTextureId(world, pos.x, pos.y, pos.z, 2);
-            RenderEastFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, colors, textureId);
+            DrawEastFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, colors, textureId);
             hasRendered = true;
         }
 
@@ -761,7 +761,7 @@ public ref struct BlockRenderContext
             int textureId = OverrideTexture >= 0
                 ? OverrideTexture
                 : block.getTextureId(world, pos.x, pos.y, pos.z, 3);
-            RenderWestFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, colors, textureId);
+            DrawWestFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, colors, textureId);
             hasRendered = true;
         }
 
@@ -789,7 +789,7 @@ public ref struct BlockRenderContext
             int textureId = OverrideTexture >= 0
                 ? OverrideTexture
                 : block.getTextureId(world, pos.x, pos.y, pos.z, 4);
-            RenderNorthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, colors, textureId);
+            DrawNorthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, colors, textureId);
             hasRendered = true;
         }
 
@@ -815,7 +815,7 @@ public ref struct BlockRenderContext
 
             var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.6F, tintSouth);
             int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTextureId(world, pos.x, pos.y, pos.z, 5);
-            RenderSouthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, colors, textureId);
+            DrawSouthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, colors, textureId);
             hasRendered = true;
         }
 

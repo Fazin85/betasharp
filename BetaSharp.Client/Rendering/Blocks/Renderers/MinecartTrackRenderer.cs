@@ -7,7 +7,7 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class MinecartTrackRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext context)
+    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext ctx)
     {
         // Cast the generic block to a BlockRail to access rail-specific methods
         BlockRail rail = (BlockRail)block;
@@ -15,9 +15,9 @@ public class MinecartTrackRenderer : IBlockRenderer
         int metadata = world.getBlockMeta(pos.x, pos.y, pos.z);
 
         int textureId = rail.getTexture(0, metadata);
-        if (context.OverrideTexture >= 0)
+        if (ctx.OverrideTexture >= 0)
         {
-            textureId = context.OverrideTexture;
+            textureId = ctx.OverrideTexture;
         }
 
         // Powered/Detector rails use bit 3 for state, but the first 8 shapes are identical

@@ -8,7 +8,7 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 public class LeverRenderer : IBlockRenderer
 {
     public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
-        in BlockRenderContext context)
+        in BlockRenderContext ctx)
     {
         int metadata = world.getBlockMeta(pos.x, pos.y, pos.z);
         int orientation = metadata & 7;
@@ -33,27 +33,27 @@ public class LeverRenderer : IBlockRenderer
         };
 
         // Levers use a cobblestone texture for the baseplate by default, unless overridden
-        int baseTextureId = context.OverrideTexture >= 0 ? context.OverrideTexture : Block.Cobblestone.textureId;
+        int baseTextureId = ctx.OverrideTexture >= 0 ? ctx.OverrideTexture : Block.Cobblestone.textureId;
 
         // Create a sub-context specifically for drawing the baseplate
         var baseCtx = new BlockRenderContext(
             overrideTexture: baseTextureId,
-            renderAllFaces: context.RenderAllFaces,
-            flipTexture: context.FlipTexture,
+            renderAllFaces: ctx.RenderAllFaces,
+            flipTexture: ctx.FlipTexture,
             bounds: baseBox,
-            uvTop: context.UvRotateTop,
-            uvBottom: context.UvRotateBottom,
-            uvNorth: context.UvRotateNorth,
-            uvSouth: context.UvRotateSouth,
-            uvEast: context.UvRotateEast,
-            uvWest: context.UvRotateWest,
-            customFlag: context.CustomFlag,
+            uvTop: ctx.UvRotateTop,
+            uvBottom: ctx.UvRotateBottom,
+            uvNorth: ctx.UvRotateNorth,
+            uvSouth: ctx.UvRotateSouth,
+            uvEast: ctx.UvRotateEast,
+            uvWest: ctx.UvRotateWest,
+            customFlag: ctx.CustomFlag,
             enableAo: false,
             aoBlendMode: 0
         );
 
         // Draw the base using the helper
-        baseCtx.RenderStandardBlock(block, pos, world, tess);
+        baseCtx.DrawBlock(block, pos, world, tess);
 
         // --- 2. Calculate Handle Lighting & Texture ---
         float luminance = block.getLuminance(world, pos.x, pos.y, pos.z);
@@ -61,7 +61,7 @@ public class LeverRenderer : IBlockRenderer
         tess.setColorOpaque_F(luminance, luminance, luminance);
 
         // Determine texture for the handle itself
-        int handleTextureId = context.OverrideTexture >= 0 ? context.OverrideTexture : block.getTexture(0);
+        int handleTextureId = ctx.OverrideTexture >= 0 ? ctx.OverrideTexture : block.getTexture(0);
 
         int texU = (handleTextureId & 15) << 4;
         int texV = handleTextureId & 240;

@@ -8,13 +8,13 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class CactusRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext context)
+    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext ctx)
     {
-        Box bounds = context.OverrideBounds ?? block.BoundingBox;
+        Box bounds = ctx.OverrideBounds ?? block.BoundingBox;
         bool hasRendered = false;
 
         // Force the helper to use flat shading so it doesn't override our colors with the dummy struct
-        var flatCtx = context with { EnableAo = false };
+        var flatCtx = ctx with { EnableAo = false };
 
         // 1. Calculate the specific biome/tint color for this cactus
         int colorMultiplier = block.getColorMultiplier(world, pos.x, pos.y, pos.z);
@@ -49,7 +49,7 @@ public class CactusRenderer : IBlockRenderer
             tess.setColorOpaque_F(rBottom * faceLuminance, gBottom * faceLuminance, bBottom * faceLuminance);
 
             int tex = block.getTextureId(world, pos.x, pos.y, pos.z, 0);
-            flatCtx.RenderBottomFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, dummyColors, tex);
+            flatCtx.DrawBottomFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, dummyColors, tex);
             hasRendered = true;
         }
 
@@ -65,7 +65,7 @@ public class CactusRenderer : IBlockRenderer
             tess.setColorOpaque_F(rTop * faceLuminance, gTop * faceLuminance, bTop * faceLuminance);
 
             int tex = block.getTextureId(world, pos.x, pos.y, pos.z, 1);
-            flatCtx.RenderTopFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, dummyColors, tex);
+            flatCtx.DrawTopFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, dummyColors, tex);
             hasRendered = true;
         }
 
@@ -80,7 +80,7 @@ public class CactusRenderer : IBlockRenderer
             tess.setTranslationF(0.0F, 0.0F, inset);
 
             int tex = block.getTextureId(world, pos.x, pos.y, pos.z, 2);
-            flatCtx.RenderEastFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, dummyColors, tex);
+            flatCtx.DrawEastFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, dummyColors, tex);
 
             tess.setTranslationF(0.0F, 0.0F, -inset);
             hasRendered = true;
@@ -97,7 +97,7 @@ public class CactusRenderer : IBlockRenderer
             tess.setTranslationF(0.0F, 0.0F, -inset);
 
             int tex = block.getTextureId(world, pos.x, pos.y, pos.z, 3);
-            flatCtx.RenderWestFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, dummyColors, tex);
+            flatCtx.DrawWestFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, dummyColors, tex);
 
             tess.setTranslationF(0.0F, 0.0F, inset);
             hasRendered = true;
@@ -114,7 +114,7 @@ public class CactusRenderer : IBlockRenderer
             tess.setTranslationF(inset, 0.0F, 0.0F);
 
             int tex = block.getTextureId(world, pos.x, pos.y, pos.z, 4);
-            flatCtx.RenderNorthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, dummyColors, tex);
+            flatCtx.DrawNorthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, dummyColors, tex);
 
             tess.setTranslationF(-inset, 0.0F, 0.0F);
             hasRendered = true;
@@ -131,7 +131,7 @@ public class CactusRenderer : IBlockRenderer
             tess.setTranslationF(-inset, 0.0F, 0.0F);
 
             int tex = block.getTextureId(world, pos.x, pos.y, pos.z, 5);
-            flatCtx.RenderSouthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, dummyColors, tex);
+            flatCtx.DrawSouthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, dummyColors, tex);
 
             tess.setTranslationF(inset, 0.0F, 0.0F);
             hasRendered = true;

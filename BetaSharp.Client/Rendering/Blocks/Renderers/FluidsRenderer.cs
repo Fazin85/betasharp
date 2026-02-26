@@ -9,7 +9,7 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 public class FluidsRenderer : IBlockRenderer
 {
     public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
-        in BlockRenderContext context)
+        in BlockRenderContext ctx)
     {
         Box bounds = block.BoundingBox;
 
@@ -55,7 +55,7 @@ public class FluidsRenderer : IBlockRenderer
         float heightNe = GetFluidVertexHeight(world, pos.x + 1, pos.y, pos.z, material);
 
         // TOP FACE (Flowing Surface)
-        if (context.RenderAllFaces || isTopVisible)
+        if (ctx.RenderAllFaces || isTopVisible)
         {
             hasRendered = true;
             int textureId = block.getTexture(1, meta);
@@ -104,7 +104,7 @@ public class FluidsRenderer : IBlockRenderer
         }
 
         // BOTTOM FACE
-        if (context.RenderAllFaces || isBottomVisible)
+        if (ctx.RenderAllFaces || isBottomVisible)
         {
             float luminance = block.getLuminance(world, pos.x, pos.y - 1, pos.z);
             tess.setColorOpaque_F(lightBottom * luminance, lightBottom * luminance, lightBottom * luminance);
@@ -114,7 +114,7 @@ public class FluidsRenderer : IBlockRenderer
             int tex = block.getTexture(0);
 
             // Note: Fluids don't override bounds for the bottom face, so we just pass the default context
-            context.RenderBottomFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, dummyColors, tex);
+            ctx.DrawBottomFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, dummyColors, tex);
             hasRendered = true;
         }
 
@@ -133,7 +133,7 @@ public class FluidsRenderer : IBlockRenderer
             int texU = (textureId & 15) << 4;
             int texV = textureId & 240;
 
-            if (context.RenderAllFaces || sideVisible[side])
+            if (ctx.RenderAllFaces || sideVisible[side])
             {
                 float h1, h2; // Top corner heights for this face
                 float x1, x2; // X coordinates
