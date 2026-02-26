@@ -13,7 +13,12 @@ public class TranslationStorage
     {
         LoadLanguageFile("lang/en_US.lang");
         LoadLanguageFile("lang/stats_US.lang");
+        AddTranslation("disconnect.genericReason", "%1$s");
+    }
 
+    public void AddTranslation(string key, string translation)
+    {
+        _translateTable[key] = translation;
     }
 
     private void LoadLanguageFile(string assetPath)
@@ -57,6 +62,8 @@ public class TranslationStorage
         {
             str = str.Replace($"%{i + 1}$s", values[i].ToString() ?? string.Empty);
         }
+        if (str == "%s")
+            str = key + " (Failed to translate key!)";
         return str;
     }
 
