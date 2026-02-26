@@ -7,7 +7,8 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class RedstoneWireRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext context)
+    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
+        in BlockRenderContext context)
     {
         int powerLevel = world.getBlockMeta(pos.x, pos.y, pos.z);
 
@@ -39,7 +40,6 @@ public class RedstoneWireRenderer : IBlockRenderer
         double maxV = (texV + 15.99F) / 256.0F;
 
         // --- 3. Connection Logic ---
-        // Checks neighbors on same level OR one level down (if the neighbor isn't solid)
         bool connectsWest = BlockRedstoneWire.isPowerProviderOrWire(world, pos.x - 1, pos.y, pos.z, 1) ||
                             (!world.shouldSuffocate(pos.x - 1, pos.y, pos.z) &&
                              BlockRedstoneWire.isPowerProviderOrWire(world, pos.x - 1, pos.y - 1, pos.z, -1));
@@ -53,7 +53,6 @@ public class RedstoneWireRenderer : IBlockRenderer
                              (!world.shouldSuffocate(pos.x, pos.y, pos.z + 1) &&
                               BlockRedstoneWire.isPowerProviderOrWire(world, pos.x, pos.y - 1, pos.z + 1, -1));
 
-        // Check for connections climbing UP a block
         if (!world.shouldSuffocate(pos.x, pos.y + 1, pos.z))
         {
             if (world.shouldSuffocate(pos.x - 1, pos.y, pos.z) &&
@@ -66,7 +65,7 @@ public class RedstoneWireRenderer : IBlockRenderer
                 BlockRedstoneWire.isPowerProviderOrWire(world, pos.x, pos.y + 1, pos.z + 1, -1)) connectsSouth = true;
         }
 
-        // --- 4. Determine Shape (Straight vs Cross) ---
+        // --- 4. Determine Shape ---
         float renderMinX = pos.x, renderMaxX = pos.x + 1;
         float renderMinZ = pos.z, renderMaxZ = pos.z + 1;
         int shapeType = 0; // 0 = Cross, 1 = East/West, 2 = North/South
@@ -80,7 +79,6 @@ public class RedstoneWireRenderer : IBlockRenderer
             maxU = (texU + 16 + 15.99F) / 256.0F;
         }
 
-        // Shrink the footprint if no connection exists on a specific side
         if (shapeType == 0)
         {
             if (connectsWest || connectsEast || connectsNorth || connectsSouth)
@@ -112,31 +110,49 @@ public class RedstoneWireRenderer : IBlockRenderer
         }
 
         // --- 5. Render Horizontal Ground Quad ---
-        double groundY = pos.y + 0.015625D; // 1/64 height offset to prevent Z-fighting
+        double groundY = pos.y + 0.015625D;
 
-        // Render the colored redstone
-        tess.addVertexWithUV(renderMaxX, groundY, renderMaxZ, maxU, maxV);
-        tess.addVertexWithUV(renderMaxX, groundY, renderMinZ, maxU, minV);
-        tess.addVertexWithUV(renderMinX, groundY, renderMinZ, minU, minV);
-        tess.addVertexWithUV(renderMinX, groundY, renderMaxZ, minU, maxV);
+        // Handle UV Rotation for North/South (Shape 2)
+        double u1 = minU, u2 = maxU, u3 = maxU, u4 = minU;
+        double v1 = minV, v2 = minV, v3 = maxV, v4 = maxV;
 
-        // Render the dark shroud (shadow) underneath
+        if (shapeType == 2)
+        {
+            u1 = maxU;
+            u2 = maxU;
+            u3 = minU;
+            u4 = minU;
+            v1 = maxV;
+            v2 = minV;
+            v3 = minV;
+            v4 = maxV;
+        }
+
+        // Main Wire
+        tess.addVertexWithUV(renderMaxX, groundY, renderMaxZ, u3, v3);
+        tess.addVertexWithUV(renderMaxX, groundY, renderMinZ, u2, v2);
+        tess.addVertexWithUV(renderMinX, groundY, renderMinZ, u1, v1);
+        tess.addVertexWithUV(renderMinX, groundY, renderMaxZ, u4, v4);
+
+        // Shadow Shroud
         tess.setColorOpaque_F(luminance, luminance, luminance);
-        double shroudVOffset = 1.0D / 16.0D; // Texture atlas row for shadow
-        tess.addVertexWithUV(renderMaxX, groundY, renderMaxZ, maxU, maxV + shroudVOffset);
-        tess.addVertexWithUV(renderMaxX, groundY, renderMinZ, maxU, minV + shroudVOffset);
-        tess.addVertexWithUV(renderMinX, groundY, renderMinZ, minU, minV + shroudVOffset);
-        tess.addVertexWithUV(renderMinX, groundY, renderMaxZ, minU, maxV + shroudVOffset);
+        double shroudVOffset = 1.0D / 16.0D;
+        tess.addVertexWithUV(renderMaxX, groundY, renderMaxZ, u3, v3 + shroudVOffset);
+        tess.addVertexWithUV(renderMaxX, groundY, renderMinZ, u2, v2 + shroudVOffset);
+        tess.addVertexWithUV(renderMinX, groundY, renderMinZ, u1, v1 + shroudVOffset);
+        tess.addVertexWithUV(renderMinX, groundY, renderMaxZ, u4, v4 + shroudVOffset);
 
-        // --- 6. Render Slopes (Rising up walls) ---
+        // --- 6. Render Slopes ---
         if (!world.shouldSuffocate(pos.x, pos.y + 1, pos.z))
         {
+            // Reset to the straight texture variant for slopes
             minU = (texU + 16) / 256.0F;
             maxU = (texU + 16 + 15.99F) / 256.0F;
-            double slopeHeight = pos.y + 1.021875D; // Slight offset above the block
+            double slopeHeight = pos.y + 1.021875D;
 
             // West Slope
-            if (world.shouldSuffocate(pos.x - 1, pos.y, pos.z) && world.getBlockId(pos.x - 1, pos.y + 1, pos.z) == block.id)
+            if (world.shouldSuffocate(pos.x - 1, pos.y, pos.z) &&
+                world.getBlockId(pos.x - 1, pos.y + 1, pos.z) == block.id)
             {
                 tess.setColorOpaque_F(luminance * r, luminance * g, luminance * b);
                 tess.addVertexWithUV(pos.x + 0.015625D, slopeHeight, pos.z + 1, maxU, minV);
@@ -152,7 +168,8 @@ public class RedstoneWireRenderer : IBlockRenderer
             }
 
             // East Slope
-            if (world.shouldSuffocate(pos.x + 1, pos.y, pos.z) && world.getBlockId(pos.x + 1, pos.y + 1, pos.z) == block.id)
+            if (world.shouldSuffocate(pos.x + 1, pos.y, pos.z) &&
+                world.getBlockId(pos.x + 1, pos.y + 1, pos.z) == block.id)
             {
                 tess.setColorOpaque_F(luminance * r, luminance * g, luminance * b);
                 tess.addVertexWithUV(pos.x + 1 - 0.015625D, pos.y, pos.z + 1, minU, maxV);
@@ -168,7 +185,8 @@ public class RedstoneWireRenderer : IBlockRenderer
             }
 
             // North Slope
-            if (world.shouldSuffocate(pos.x, pos.y, pos.z - 1) && world.getBlockId(pos.x, pos.y + 1, pos.z - 1) == block.id)
+            if (world.shouldSuffocate(pos.x, pos.y, pos.z - 1) &&
+                world.getBlockId(pos.x, pos.y + 1, pos.z - 1) == block.id)
             {
                 tess.setColorOpaque_F(luminance * r, luminance * g, luminance * b);
                 tess.addVertexWithUV(pos.x + 1, pos.y, pos.z + 0.015625D, minU, maxV);
@@ -184,7 +202,8 @@ public class RedstoneWireRenderer : IBlockRenderer
             }
 
             // South Slope
-            if (world.shouldSuffocate(pos.x, pos.y, pos.z + 1) && world.getBlockId(pos.x, pos.y + 1, pos.z + 1) == block.id)
+            if (world.shouldSuffocate(pos.x, pos.y, pos.z + 1) &&
+                world.getBlockId(pos.x, pos.y + 1, pos.z + 1) == block.id)
             {
                 tess.setColorOpaque_F(luminance * r, luminance * g, luminance * b);
                 tess.addVertexWithUV(pos.x + 1, slopeHeight, pos.z + 1 - 0.015625D, maxU, minV);
