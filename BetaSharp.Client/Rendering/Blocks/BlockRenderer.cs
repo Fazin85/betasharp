@@ -51,6 +51,7 @@ public class BlockRenderer
             uvSouth: 0,
             uvEast: 0,
             uvWest: 0,
+            aoBlendMode: 1,
             customFlag: type == RendererType.PistonExtension
         );
 
