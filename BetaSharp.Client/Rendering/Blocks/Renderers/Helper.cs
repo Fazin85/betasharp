@@ -6,12 +6,9 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public static class Helper
 {
-    internal static void RenderBottomFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context, in FaceColors colors)
+    internal static void RenderBottomFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context, in FaceColors colors,int textureId,bool flipTexture)
     {
         Box blockBb = context.OverrideBounds ?? block.BoundingBox;
-
-        int textureId = context.OverrideTexture;
-
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
         double minU = (texU + blockBb.MinX * 16.0D) / 256.0D;
@@ -97,12 +94,9 @@ public static class Helper
         }
     }
 
-    internal static void RenderTopFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context, in FaceColors colors)
+    internal static void RenderTopFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context, in FaceColors colors,int textureId,bool flipTexture)
     {
         Box blockBb = context.OverrideBounds ?? block.BoundingBox;
-
-        int textureId = context.OverrideTexture;
-
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
         double minU = (texU + blockBb.MinX * 16.0D) / 256.0D;
@@ -188,12 +182,9 @@ public static class Helper
         }
     }
 
-    internal static void RenderEastFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context, in FaceColors colors)
+    internal static void RenderEastFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context, in FaceColors colors,int textureId,bool flipTexture)
     {
         Box blockBb = context.OverrideBounds ?? block.BoundingBox;
-
-        int textureId = context.OverrideTexture;
-
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
         double minU = (texU + blockBb.MinX * 16.0D) / 256.0D;
@@ -201,7 +192,7 @@ public static class Helper
         double minV = (texV + 16 - blockBb.MaxY * 16.0D) / 256.0D;
         double maxV = (texV + 16 - blockBb.MinY * 16.0D - 0.01D) / 256.0D;
 
-        if (context.FlipTexture)
+        if (flipTexture)
         {
             (minU, maxU) = (maxU, minU);
         }
@@ -284,12 +275,9 @@ public static class Helper
         }
     }
 
-    internal static void RenderWestFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context, in FaceColors colors)
+    internal static void RenderWestFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context, in FaceColors colors,int textureId,bool flipTexture)
     {
         Box blockBb = context.OverrideBounds ?? block.BoundingBox;
-
-        int textureId = context.OverrideTexture;
-
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
         double minU = (texU + blockBb.MinX * 16.0D) / 256.0D;
@@ -297,7 +285,7 @@ public static class Helper
         double minV = (texV + 16 - blockBb.MaxY * 16.0D) / 256.0D;
         double maxV = (texV + 16 - blockBb.MinY * 16.0D - 0.01D) / 256.0D;
 
-        if (context.FlipTexture)
+        if (flipTexture)
         {
             (minU, maxU) = (maxU, minU);
         }
@@ -380,13 +368,10 @@ public static class Helper
         }
     }
 
-    internal static void RenderNorthFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context, in FaceColors colors)
+    internal static void RenderNorthFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context, in FaceColors colors,int textureId,bool flipTexture)
     {
 
         Box blockBb = context.OverrideBounds ?? block.BoundingBox;
-
-        int textureId = context.OverrideTexture;
-
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
         double minU = (texU + blockBb.MinZ * 16.0D) / 256.0D;
@@ -394,7 +379,7 @@ public static class Helper
         double minV = (texV + 16 - blockBb.MaxY * 16.0D) / 256.0D;
         double maxV = (texV + 16 - blockBb.MinY * 16.0D - 0.01D) / 256.0D;
 
-        if (context.FlipTexture)
+        if (flipTexture)
         {
             (minU, maxU) = (maxU, minU);
         }
@@ -477,7 +462,7 @@ public static class Helper
         }
     }
 
-    internal static void  RenderSouthFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context, in FaceColors colors)
+    internal static void  RenderSouthFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context, in FaceColors colors,int textureId,bool flipTexture)
     {
         Box blockBb = context.OverrideBounds ?? block.BoundingBox;
 
@@ -489,7 +474,7 @@ public static class Helper
         double minV = (texV + 16 - blockBb.MaxY * 16.0D) / 256.0D;
         double maxV = (texV + 16 - blockBb.MinY * 16.0D - 0.01D) / 256.0D;
 
-        if (context.FlipTexture)
+        if (flipTexture)
         {
             (minU, maxU) = (maxU, minU);
         }
