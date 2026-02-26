@@ -2,6 +2,7 @@ using System;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Items;
 using BetaSharp.Stats;
+using BetaSharp.Util;
 using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
@@ -100,7 +101,7 @@ public class GuiAchievement : Gui
 
     private void displayAchievementNotification()
     {
-        double elapsedTime = (java.lang.System.currentTimeMillis() - _achievementDisplayStartTime) / AchievementDisplayDuration;
+        double elapsedTime = (DateTimeOffset.UtcNow.ToMillis() - _achievementDisplayStartTime) / AchievementDisplayDuration;
 
         if (_isAchievementInformation || _isAchievementInformation || elapsedTime >= 0.0D && elapsedTime <= 1.0D)
         {
