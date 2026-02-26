@@ -17,33 +17,16 @@ public class LeverRenderer : IBlockRenderer
         float baseThickness = 3.0F / 16.0F;
         float baseHeight = 3.0F / 16.0F;
 
-        Box baseBox = new Box(0, 0, 0, 1, 1, 1); // Fallback box
-
-        // --- 1. Calculate the Base Plate Bounding Box ---
-        if (orientation == 5) // Floor (North/South)
-        {
-            baseBox = new Box(0.5F - baseHeight, 0.0F, 0.5F - baseWidth, 0.5F + baseHeight, baseThickness, 0.5F + baseWidth);
-        }
-        else if (orientation == 6) // Floor (East/West)
-        {
-            baseBox = new Box(0.5F - baseWidth, 0.0F, 0.5F - baseHeight, 0.5F + baseWidth, baseThickness, 0.5F + baseHeight);
-        }
-        else if (orientation == 4) // Wall South
-        {
-            baseBox = new Box(0.5F - baseHeight, 0.5F - baseWidth, 1.0F - baseThickness, 0.5F + baseHeight, 0.5F + baseWidth, 1.0F);
-        }
-        else if (orientation == 3) // Wall North
-        {
-            baseBox = new Box(0.5F - baseHeight, 0.5F - baseWidth, 0.0F, 0.5F + baseHeight, 0.5F + baseWidth, baseThickness);
-        }
-        else if (orientation == 2) // Wall East
-        {
-            baseBox = new Box(1.0F - baseThickness, 0.5F - baseWidth, 0.5F - baseHeight, 1.0F, 0.5F + baseWidth, 0.5F + baseHeight);
-        }
-        else if (orientation == 1) // Wall West
-        {
-            baseBox = new Box(0.0F, 0.5F - baseWidth, 0.5F - baseHeight, baseThickness, 0.5F + baseWidth, 0.5F + baseHeight);
-        }
+        // 1. Calculate the base plate box (Your existing logic)
+        Box baseBox = orientation switch {
+            5 => new Box(0.5 - baseHeight, 0.0, 0.5 - baseWidth, 0.5 + baseHeight, baseThickness, 0.5 + baseWidth),
+            6 => new Box(0.5 - baseWidth, 0.0, 0.5 - baseHeight, 0.5 + baseWidth, baseThickness, 0.5 + baseHeight),
+            4 => new Box(0.5 - baseHeight, 0.5 - baseWidth, 1.0 - baseThickness, 0.5 + baseHeight, 0.5 + baseWidth, 1.0),
+            3 => new Box(0.5 - baseHeight, 0.5 - baseWidth, 0.0, 0.5 + baseHeight, 0.5 + baseWidth, baseThickness),
+            2 => new Box(1.0 - baseThickness, 0.5 - baseWidth, 0.5 - baseHeight, 1.0, 0.5 + baseWidth, 0.5 + baseHeight),
+            1 => new Box(0.0, 0.5 - baseWidth, 0.5 - baseHeight, baseThickness, 0.5 + baseWidth, 0.5 + baseHeight),
+            _ => new Box(0, 0, 0, 1, 1, 1)
+        };
 
         // Levers use a cobblestone texture for the baseplate by default, unless overridden
         int baseTextureId = context.OverrideTexture >= 0 ? context.OverrideTexture : Block.Cobblestone.textureId;
@@ -60,7 +43,9 @@ public class LeverRenderer : IBlockRenderer
             uvSouth: context.UvRotateSouth,
             uvEast: context.UvRotateEast,
             uvWest: context.UvRotateWest,
-            customFlag: context.CustomFlag
+            customFlag: context.CustomFlag,
+            enableAo: false,
+            aoBlendMode: 0
         );
 
         // Draw the base using the helper

@@ -31,6 +31,7 @@ public ref struct BlockRenderContext
         int uvNorth = 0, int uvSouth = 0,
         int uvEast = 0, int uvWest = 0,
         bool customFlag = false,
+        bool enableAo = true,
         int aoBlendMode = 0)
     {
         OverrideTexture = overrideTexture;
@@ -45,7 +46,9 @@ public ref struct BlockRenderContext
         UvRotateEast = uvEast;
         UvRotateWest = uvWest;
 
-        CustomFlag = customFlag;
         AoBlendMode = aoBlendMode;
+        EnableAo = enableAo;
+
+        CustomFlag = customFlag;
     }
 }

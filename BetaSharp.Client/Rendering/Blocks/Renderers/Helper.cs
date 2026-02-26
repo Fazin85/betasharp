@@ -7,7 +7,8 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public static class Helper
 {
-    internal static void RenderBottomFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context, in FaceColors colors, int textureId, bool flipTexture)
+    internal static void RenderBottomFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context,
+        in FaceColors colors, int textureId, bool flipTexture)
     {
         Box blockBb = context.OverrideBounds ?? block.BoundingBox;
         int texU = (textureId & 15) << 4;
@@ -95,7 +96,8 @@ public static class Helper
         }
     }
 
-    internal static void RenderTopFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context, in FaceColors colors, int textureId, bool flipTexture)
+    internal static void RenderTopFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context,
+        in FaceColors colors, int textureId, bool flipTexture)
     {
         Box blockBb = context.OverrideBounds ?? block.BoundingBox;
         int texU = (textureId & 15) << 4;
@@ -183,7 +185,8 @@ public static class Helper
         }
     }
 
-    internal static void RenderEastFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context, in FaceColors colors, int textureId, bool flipTexture)
+    internal static void RenderEastFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context,
+        in FaceColors colors, int textureId, bool flipTexture)
     {
         Box blockBb = context.OverrideBounds ?? block.BoundingBox;
         int texU = (textureId & 15) << 4;
@@ -276,7 +279,8 @@ public static class Helper
         }
     }
 
-    internal static void RenderWestFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context, in FaceColors colors, int textureId, bool flipTexture)
+    internal static void RenderWestFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context,
+        in FaceColors colors, int textureId, bool flipTexture)
     {
         Box blockBb = context.OverrideBounds ?? block.BoundingBox;
         int texU = (textureId & 15) << 4;
@@ -369,9 +373,9 @@ public static class Helper
         }
     }
 
-    internal static void RenderNorthFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context, in FaceColors colors, int textureId, bool flipTexture)
+    internal static void RenderNorthFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context,
+        in FaceColors colors, int textureId, bool flipTexture)
     {
-
         Box blockBb = context.OverrideBounds ?? block.BoundingBox;
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
@@ -463,7 +467,8 @@ public static class Helper
         }
     }
 
-    internal static void RenderSouthFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context, in FaceColors colors, int textureId, bool flipTexture)
+    internal static void RenderSouthFace(Block block, in Vec3D pos, Tessellator tess, in BlockRenderContext context,
+        in FaceColors colors, int textureId, bool flipTexture)
     {
         Box blockBb = context.OverrideBounds ?? block.BoundingBox;
 
@@ -556,7 +561,8 @@ public static class Helper
         }
     }
 
-    internal static void  RenderTorchAtAngle(in Block block, in Tessellator tess, in Vec3D pos, double tiltX, double tiltZ,
+    internal static void RenderTorchAtAngle(in Block block, in Tessellator tess, in Vec3D pos, double tiltX,
+        double tiltZ,
         in BlockRenderContext context)
     {
         int textureId = block.getTexture(0);
@@ -631,7 +637,8 @@ public static class Helper
         tess.addVertexWithUV(leftX, pos.y + 1.0D, centerZ - radius, maxU, minV);
     }
 
-    internal static bool RenderStandardBlock(in Block block, in BlockPos pos, in IBlockAccess world, Tessellator tess, in BlockRenderContext context)
+    internal static bool RenderStandardBlock(in Block block, in BlockPos pos, in IBlockAccess world, Tessellator tess,
+        in BlockRenderContext context)
     {
         bool hasRendered = false;
         Box bounds = context.OverrideBounds ?? block.BoundingBox;
@@ -694,8 +701,11 @@ public static class Helper
             }
 
             var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.5F, tintBottom);
-            int textureId = block.getTextureId(world, pos.x, pos.y, pos.z, 0);
-            RenderBottomFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, context, colors, textureId, context.FlipTexture);
+            int textureId = context.OverrideTexture >= 0
+                ? context.OverrideTexture
+                : block.getTextureId(world, pos.x, pos.y, pos.z, 0);
+            RenderBottomFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, context, colors, textureId,
+                context.FlipTexture);
             hasRendered = true;
         }
 
@@ -720,7 +730,9 @@ public static class Helper
             }
 
             var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 1.0F, tintTop);
-            int textureId = block.getTextureId(world, pos.x, pos.y, pos.z, 1);
+            int textureId = context.OverrideTexture >= 0
+                ? context.OverrideTexture
+                : block.getTextureId(world, pos.x, pos.y, pos.z, 0);
             RenderTopFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, context, colors, textureId, context.FlipTexture);
             hasRendered = true;
         }
@@ -746,8 +758,11 @@ public static class Helper
             }
 
             var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.8F, tintEast);
-            int textureId = block.getTextureId(world, pos.x, pos.y, pos.z, 2);
-            RenderEastFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, context, colors, textureId, context.FlipTexture);
+            int textureId = context.OverrideTexture >= 0
+                ? context.OverrideTexture
+                : block.getTextureId(world, pos.x, pos.y, pos.z, 0);
+            RenderEastFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, context, colors, textureId,
+                context.FlipTexture);
             hasRendered = true;
         }
 
@@ -771,9 +786,12 @@ public static class Helper
                 v3 = (lZp + u + e + ue) / 4.0F;
             }
 
-           var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.8F, tintWest);
-            int textureId = block.getTextureId(world, pos.x, pos.y, pos.z, 3);
-            RenderWestFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, context, colors, textureId, context.FlipTexture);
+            var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.8F, tintWest);
+            int textureId = context.OverrideTexture >= 0
+                ? context.OverrideTexture
+                : block.getTextureId(world, pos.x, pos.y, pos.z, 0);
+            RenderWestFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, context, colors, textureId,
+                context.FlipTexture);
             hasRendered = true;
         }
 
@@ -797,9 +815,12 @@ public static class Helper
                 v3 = (d + ds + lXn + s) / 4.0F;
             }
 
-           var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.6F, tintNorth);
-            int textureId = block.getTextureId(world, pos.x, pos.y, pos.z, 4);
-            RenderNorthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, context, colors, textureId, context.FlipTexture);
+            var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.6F, tintNorth);
+            int textureId = context.OverrideTexture >= 0
+                ? context.OverrideTexture
+                : block.getTextureId(world, pos.x, pos.y, pos.z, 0);
+            RenderNorthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, context, colors, textureId,
+                context.FlipTexture);
             hasRendered = true;
         }
 
@@ -824,8 +845,11 @@ public static class Helper
             }
 
             var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.6F, tintSouth);
-            int textureId = block.getTextureId(world, pos.x, pos.y, pos.z, 5);
-            RenderSouthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, context, colors, textureId, context.FlipTexture);
+            int textureId = context.OverrideTexture >= 0
+                ? context.OverrideTexture
+                : block.getTextureId(world, pos.x, pos.y, pos.z, 0);
+            RenderSouthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, context, colors, textureId,
+                context.FlipTexture);
             hasRendered = true;
         }
 
