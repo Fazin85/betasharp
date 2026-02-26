@@ -7,7 +7,7 @@ public readonly ref struct BlockRenderContext
     public readonly int OverrideTexture;
     public readonly bool RenderAllFaces;
     public readonly bool FlipTexture;
-    public Box? OverrideBounds;
+    public readonly Box? OverrideBounds;
     public readonly bool EnableAo = true;
     public readonly int AoBlendMode = 0;
 
