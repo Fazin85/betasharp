@@ -26,31 +26,29 @@ public class TorchRenderer : IBlockRenderer
 
         if (metadata == 1) // Attached to West wall (pointing East)
         {
-            Helper.RenderTorchAtAngle(block, tess, new Vec3D(pos.x - horizontalOffset, pos.y + verticalOffset, pos.z),
-                -tiltAmount, 0.0D,context);
+            context.DrawTorch(block, tess, new Vec3D(pos.x - horizontalOffset, pos.y + verticalOffset, pos.z),
+                -tiltAmount, 0.0D);
         }
         else if (metadata == 2) // Attached to East wall (pointing West)
         {
-            Helper.RenderTorchAtAngle(block, tess, new Vec3D(pos.x + horizontalOffset, pos.y + verticalOffset, pos.z),
-                tiltAmount, 0.0D,context);
+            context.DrawTorch(block, tess, new Vec3D(pos.x + horizontalOffset, pos.y + verticalOffset, pos.z),
+                tiltAmount, 0.0D);
         }
         else if (metadata == 3) // Attached to North wall (pointing South)
         {
-            Helper.RenderTorchAtAngle(block, tess, new Vec3D(pos.x, pos.y + verticalOffset, pos.z - horizontalOffset), 0.0D,
-                -tiltAmount,context);
+            context.DrawTorch(block, tess, new Vec3D(pos.x, pos.y + verticalOffset, pos.z - horizontalOffset), 0.0D,
+                -tiltAmount);
         }
         else if (metadata == 4) // Attached to South wall (pointing North)
         {
-            Helper.RenderTorchAtAngle(block, tess, new Vec3D(pos.x, pos.y + verticalOffset, pos.z + horizontalOffset), 0.0D,
-                tiltAmount,context);
+            context.DrawTorch(block, tess, new Vec3D(pos.x, pos.y + verticalOffset, pos.z + horizontalOffset), 0.0D,
+                tiltAmount);
         }
         else // Standing on floor
         {
-            Helper.RenderTorchAtAngle(block, tess, new Vec3D(pos.x, pos.y, pos.z), 0.0D, 0.0D,context);
+            context.DrawTorch(block, tess, new Vec3D(pos.x, pos.y, pos.z), 0.0D, 0.0D);
         }
 
         return true;
     }
-
-    
 }

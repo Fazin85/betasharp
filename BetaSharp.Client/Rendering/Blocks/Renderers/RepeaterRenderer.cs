@@ -55,10 +55,10 @@ public class RepeaterRenderer : IBlockRenderer
         }
 
         // 3. Render the two torch pins
-        Helper.RenderTorchAtAngle(block, tess,
-            new Vec3D(pos.x + staticTorchX, pos.y + torchVerticalOffset, pos.z + staticTorchZ), 0.0D, 0.0D, slabCtx);
-        Helper.RenderTorchAtAngle(block, tess,
-            new Vec3D(pos.x + delayTorchX, pos.y + torchVerticalOffset, pos.z + delayTorchZ), 0.0D, 0.0D, slabCtx);
+        slabCtx.DrawTorch(block, tess,
+            new Vec3D(pos.x + staticTorchX, pos.y + torchVerticalOffset, pos.z + staticTorchZ), 0.0D, 0.0D);
+        slabCtx.DrawTorch(block, tess,
+            new Vec3D(pos.x + delayTorchX, pos.y + torchVerticalOffset, pos.z + delayTorchZ), 0.0D, 0.0D);
         return true;
     }
 }
