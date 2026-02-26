@@ -11,7 +11,7 @@ public class BedRenderer : IBlockRenderer
         in BlockRenderContext context)
     {
         Box bounds = context.OverrideBounds ?? block.BoundingBox;
-        bool flipTexture = context.FlipTexture;
+        bool flipTexture;
 
         int metadata = world.getBlockMeta(pos.x, pos.y, pos.z);
         int direction = BlockBed.getDirection(metadata);

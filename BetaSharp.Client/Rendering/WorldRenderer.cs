@@ -640,7 +640,7 @@ public class WorldRenderer : IWorldAccess
                 var6.startDrawingQuads();
                 var6.setTranslationD(-var10, -var12, -var14);
                 var6.disableColor();
-                globalRenderBlocks.RenderBlockWithTextureOverride(var9, var2.BlockX, var2.BlockY, var2.BlockZ, 240 + (int)(damagePartialTime * 10.0F));
+                globalRenderBlocks.RenderBlockWithTextureOverride(var9, new BlockPos(var2.BlockX, var2.BlockY, var2.BlockZ), 240 + (int)(damagePartialTime * 10.0F));
                 var6.draw();
                 var6.setTranslationD(0.0D, 0.0D, 0.0D);
                 GLManager.GL.Disable(GLEnum.AlphaTest);

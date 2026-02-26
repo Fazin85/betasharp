@@ -13,7 +13,7 @@ public class RepeaterRenderer:IBlockRenderer
         int delay = (metadata & 12) >> 2;
 
         // Render the base slab
-        RenderStandardBlock(block, pos.x, pos.y, pos.z);
+        Helper.RenderStandardBlock(block, pos, world, tess, context);
 
         float luminance = block.getLuminance(world, pos.x, pos.y, pos.z);
         if (Block.BlocksLightLuminance[block.id] > 0)

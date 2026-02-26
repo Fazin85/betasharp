@@ -1,6 +1,7 @@
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using Silk.NET.OpenGL.Legacy;
 
@@ -48,7 +49,7 @@ public class BlockEntityRendererPiston : BlockEntitySpecialRenderer
             }
             else
             {
-                renderBlocks.RenderBlockForcedAllFaces(var9, var1.X, var1.Y, var1.Z);
+                renderBlocks.RenderBlockForcedAllFaces(var9,new BlockPos( var1.X, var1.Y, var1.Z));
             }
 
             var10.setTranslationD(0.0D, 0.0D, 0.0D);

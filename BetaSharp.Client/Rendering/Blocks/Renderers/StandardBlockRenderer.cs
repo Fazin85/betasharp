@@ -7,6 +7,9 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class StandardBlockRenderer:IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext context) =>
-        throw new NotImplementedException();
+    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
+        in BlockRenderContext context)
+    {
+        return Helper.RenderStandardBlock();
+    }
 }

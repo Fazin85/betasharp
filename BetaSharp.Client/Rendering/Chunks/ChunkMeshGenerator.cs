@@ -2,6 +2,7 @@ using BetaSharp.Blocks;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Util;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using Silk.NET.Maths;
 
@@ -133,7 +134,7 @@ public class ChunkMeshGenerator : IDisposable
                         if (blockPass != pass)
                             hasNextPass = true;
                         else
-                            rb.RenderBlockByRenderType(b, x, y, z);
+                            rb.RenderBlockByRenderType(b, new BlockPos(x, y, z));
                     }
                 }
             }
