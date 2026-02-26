@@ -5,16 +5,16 @@ internal class Path
     private PathPoint[] _pathPoints = new PathPoint[1024];
     private int _count;
 
-    public PathPoint AddPoint(PathPoint point)
+    public void AddPoint(PathPoint point)
     {
         if (point.Index >= 0)
         {
-            throw new InvalidOperationException("OW KNOWS!"); 
+            throw new InvalidOperationException("OW KNOWS!");
         }
 
         if (_count == _pathPoints.Length)
         {
-            PathPoint[] newArray = new PathPoint[_count << 1]; 
+            PathPoint[] newArray = new PathPoint[_count << 1];
             Array.Copy(_pathPoints, 0, newArray, 0, _count);
             _pathPoints = newArray;
         }
@@ -22,7 +22,6 @@ internal class Path
         _pathPoints[_count] = point;
         point.Index = _count;
         SiftUp(_count++);
-        return point;
     }
 
     public void ClearPath()
@@ -34,11 +33,11 @@ internal class Path
     {
         PathPoint result = _pathPoints[0];
         _pathPoints[0] = _pathPoints[--_count];
-        _pathPoints[_count] = null!; 
+        _pathPoints[_count] = null!;
 
         if (_count > 0)
         {
-            SifDown(0);
+            SiftDown(0);
         }
 
         result.Index = -1;
@@ -56,7 +55,7 @@ internal class Path
         }
         else
         {
-            SifDown(point.Index);
+            SiftDown(point.Index);
         }
     }
 
@@ -84,7 +83,7 @@ internal class Path
         point.Index = index;
     }
 
-    private void SifDown(int index)
+    private void SiftDown(int index)
     {
         PathPoint point = _pathPoints[index];
         float distance = point.DistanceToTarget;
