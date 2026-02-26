@@ -7,28 +7,28 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class CropsRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess,
-        in BlockRenderContext context)
+    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext context)
     {
-        Tessellator tess = _tess;
-        float luminance = block.getLuminance(world, x, y, z);
+        float luminance = block.getLuminance(world, pos.x, pos.y, pos.z);
         tess.setColorOpaque_F(luminance, luminance, luminance);
 
-        int metadata = world.getBlockMeta(x, y, z);
+        int metadata = world.getBlockMeta(pos.x, pos.y, pos.z);
 
-        double yOffset = y - (1.0D / 16.0D);
-        RenderCropQuads(block, metadata, x, yOffset, z);
+        // Crops are pushed down slightly into the soil block
+        double yOffset = pos.y - (1.0D / 16.0D);
+
+        RenderCropQuads(block, metadata, pos.x, yOffset, pos.z, tess, context);
+
         return true;
     }
 
-     private void RenderCropQuads(Block block, int metadata, double x, double y, double z)
+    private void RenderCropQuads(Block block, int metadata, double x, double y, double z, Tessellator tess, in BlockRenderContext context)
     {
-        Tessellator tess = _tess;
         int textureId = block.getTexture(0, metadata);
 
-        if (_overrideBlockTexture >= 0)
+        if (context.OverrideTexture >= 0)
         {
-            textureId = _overrideBlockTexture;
+            textureId = context.OverrideTexture;
         }
 
         int texU = (textureId & 15) << 4;
