@@ -1,5 +1,4 @@
 using System.Net.Sockets;
-using java.io;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 

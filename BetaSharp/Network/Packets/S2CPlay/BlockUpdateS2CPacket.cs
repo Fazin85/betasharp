@@ -1,6 +1,5 @@
 using System.Net.Sockets;
 using BetaSharp.Worlds;
-using java.io;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 

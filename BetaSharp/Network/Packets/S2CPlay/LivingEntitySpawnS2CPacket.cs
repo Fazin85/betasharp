@@ -1,8 +1,6 @@
 using System.Net.Sockets;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
-using java.io;
-using java.util;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
