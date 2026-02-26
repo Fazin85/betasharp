@@ -114,8 +114,7 @@ public class FluidsRenderer : IBlockRenderer
             int tex = block.getTexture(0);
 
             // Note: Fluids don't override bounds for the bottom face, so we just pass the default context
-            Helper.RenderBottomFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, context, dummyColors, tex,
-                context.FlipTexture);
+            context.RenderBottomFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, dummyColors, tex);
             hasRendered = true;
         }
 

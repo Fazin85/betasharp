@@ -49,7 +49,7 @@ public class CactusRenderer : IBlockRenderer
             tess.setColorOpaque_F(rBottom * faceLuminance, gBottom * faceLuminance, bBottom * faceLuminance);
 
             int tex = block.getTextureId(world, pos.x, pos.y, pos.z, 0);
-            Helper.RenderBottomFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, flatCtx, dummyColors, tex, flatCtx.FlipTexture);
+            flatCtx.RenderBottomFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, dummyColors, tex);
             hasRendered = true;
         }
 
@@ -65,7 +65,7 @@ public class CactusRenderer : IBlockRenderer
             tess.setColorOpaque_F(rTop * faceLuminance, gTop * faceLuminance, bTop * faceLuminance);
 
             int tex = block.getTextureId(world, pos.x, pos.y, pos.z, 1);
-            Helper.RenderTopFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, flatCtx, dummyColors, tex, flatCtx.FlipTexture);
+            flatCtx.RenderTopFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, dummyColors, tex);
             hasRendered = true;
         }
 
@@ -80,7 +80,7 @@ public class CactusRenderer : IBlockRenderer
             tess.setTranslationF(0.0F, 0.0F, inset);
 
             int tex = block.getTextureId(world, pos.x, pos.y, pos.z, 2);
-            Helper.RenderEastFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, flatCtx, dummyColors, tex, flatCtx.FlipTexture);
+            flatCtx.RenderEastFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, dummyColors, tex);
 
             tess.setTranslationF(0.0F, 0.0F, -inset);
             hasRendered = true;
@@ -97,7 +97,7 @@ public class CactusRenderer : IBlockRenderer
             tess.setTranslationF(0.0F, 0.0F, -inset);
 
             int tex = block.getTextureId(world, pos.x, pos.y, pos.z, 3);
-            Helper.RenderWestFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, flatCtx, dummyColors, tex, flatCtx.FlipTexture);
+            flatCtx.RenderWestFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, dummyColors, tex);
 
             tess.setTranslationF(0.0F, 0.0F, inset);
             hasRendered = true;
@@ -114,7 +114,7 @@ public class CactusRenderer : IBlockRenderer
             tess.setTranslationF(inset, 0.0F, 0.0F);
 
             int tex = block.getTextureId(world, pos.x, pos.y, pos.z, 4);
-            Helper.RenderNorthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, flatCtx, dummyColors, tex, flatCtx.FlipTexture);
+            flatCtx.RenderNorthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, dummyColors, tex);
 
             tess.setTranslationF(-inset, 0.0F, 0.0F);
             hasRendered = true;
@@ -131,7 +131,7 @@ public class CactusRenderer : IBlockRenderer
             tess.setTranslationF(-inset, 0.0F, 0.0F);
 
             int tex = block.getTextureId(world, pos.x, pos.y, pos.z, 5);
-            Helper.RenderSouthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, flatCtx, dummyColors, tex, flatCtx.FlipTexture);
+            flatCtx.RenderSouthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, dummyColors, tex);
 
             tess.setTranslationF(inset, 0.0F, 0.0F);
             hasRendered = true;

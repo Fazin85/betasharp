@@ -33,7 +33,7 @@ public class DoorRenderer : IBlockRenderer
         if (isLightEmitter) faceLuminance = 1.0F;
 
         tess.setColorOpaque_F(lightBottom * faceLuminance, lightBottom * faceLuminance, lightBottom * faceLuminance);
-        Helper.RenderBottomFace(block, vecPos, tess, flatCtx, dummyColors, block.getTextureId(world, pos.x, pos.y, pos.z, 0), false);
+        flatCtx.RenderBottomFace(block, vecPos, tess, dummyColors, block.getTextureId(world, pos.x, pos.y, pos.z, 0));
 
         // --- Top Face (Y + 1) ---
         faceLuminance = block.getLuminance(world, pos.x, pos.y + 1, pos.z);
@@ -41,7 +41,7 @@ public class DoorRenderer : IBlockRenderer
         if (isLightEmitter) faceLuminance = 1.0F;
 
         tess.setColorOpaque_F(lightTop * faceLuminance, lightTop * faceLuminance, lightTop * faceLuminance);
-        Helper.RenderTopFace(block, vecPos, tess, flatCtx, dummyColors, block.getTextureId(world, pos.x, pos.y, pos.z, 1), false);
+        flatCtx.RenderTopFace(block, vecPos, tess, dummyColors, block.getTextureId(world, pos.x, pos.y, pos.z, 1));
 
         // --- East Face (Z - 1) ---
         faceLuminance = block.getLuminance(world, pos.x, pos.y, pos.z - 1);
@@ -51,13 +51,13 @@ public class DoorRenderer : IBlockRenderer
         tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
         int textureId = block.getTextureId(world, pos.x, pos.y, pos.z, 2);
 
-        bool flip = false;
+
         if (textureId < 0)
         {
-            flip = true;
+            flatCtx.FlipTexture = true;
             textureId = -textureId; // Make it positive for the UV math
         }
-        Helper.RenderEastFace(block, vecPos, tess, flatCtx, dummyColors, textureId, flip);
+        flatCtx.RenderEastFace(block, vecPos, tess, dummyColors, textureId);
 
         // --- West Face (Z + 1) ---
         faceLuminance = block.getLuminance(world, pos.x, pos.y, pos.z + 1);
@@ -67,13 +67,13 @@ public class DoorRenderer : IBlockRenderer
         tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
         textureId = block.getTextureId(world, pos.x, pos.y, pos.z, 3);
 
-        flip = false;
+
         if (textureId < 0)
         {
-            flip = true;
+            flatCtx.FlipTexture = true;
             textureId = -textureId;
         }
-        Helper.RenderWestFace(block, vecPos, tess, flatCtx, dummyColors, textureId, flip);
+        flatCtx.RenderWestFace(block, vecPos, tess, dummyColors, textureId);
 
         // --- North Face (X - 1) ---
         faceLuminance = block.getLuminance(world, pos.x - 1, pos.y, pos.z);
@@ -83,13 +83,13 @@ public class DoorRenderer : IBlockRenderer
         tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
         textureId = block.getTextureId(world, pos.x, pos.y, pos.z, 4);
 
-        flip = false;
+
         if (textureId < 0)
         {
-            flip = true;
+            flatCtx.FlipTexture = true;
             textureId = -textureId;
         }
-        Helper.RenderNorthFace(block, vecPos, tess, flatCtx, dummyColors, textureId, flip);
+        flatCtx.RenderNorthFace(block, vecPos, tess, dummyColors, textureId);
 
         // --- South Face (X + 1) ---
         faceLuminance = block.getLuminance(world, pos.x + 1, pos.y, pos.z);
@@ -99,13 +99,13 @@ public class DoorRenderer : IBlockRenderer
         tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
         textureId = block.getTextureId(world, pos.x, pos.y, pos.z, 5);
 
-        flip = false;
+
         if (textureId < 0)
         {
-            flip = true;
+            flatCtx.FlipTexture = true;
             textureId = -textureId;
         }
-        Helper.RenderSouthFace(block, vecPos, tess, flatCtx, dummyColors, textureId, flip);
+        flatCtx.RenderSouthFace(block, vecPos, tess, dummyColors, textureId);
 
         return true;
     }

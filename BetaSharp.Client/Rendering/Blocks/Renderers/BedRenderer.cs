@@ -11,8 +11,6 @@ public class BedRenderer : IBlockRenderer
         in BlockRenderContext context)
     {
         Box bounds = context.OverrideBounds ?? block.BoundingBox;
-        bool flipTexture;
-
         int metadata = world.getBlockMeta(pos.x, pos.y, pos.z);
         int direction = BlockBed.getDirection(metadata);
         bool isHead = BlockBed.isHeadOfBed(metadata);
@@ -125,9 +123,9 @@ public class BedRenderer : IBlockRenderer
             faceLuminance = bounds.MinZ > 0.0D ? centerLuminance : block.getLuminance(world, pos.x, pos.y, pos.z - 1);
             tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
 
-            flipTexture = textureFlipDir == 2;
-            Helper.RenderEastFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, flatCtx, new FaceColors(),
-                block.getTextureId(world, pos.x, pos.y, pos.z, 2), flipTexture);
+            flatCtx.FlipTexture = textureFlipDir == 2;
+            flatCtx.RenderEastFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, new FaceColors(),
+                block.getTextureId(world, pos.x, pos.y, pos.z, 2));
         }
 
         // West Face (Z + 1)
@@ -136,9 +134,9 @@ public class BedRenderer : IBlockRenderer
             faceLuminance = bounds.MaxZ < 1.0D ? centerLuminance : block.getLuminance(world, pos.x, pos.y, pos.z + 1);
             tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
 
-            flipTexture = textureFlipDir == 3;
-            Helper.RenderWestFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, flatCtx, new FaceColors(),
-                block.getTextureId(world, pos.x, pos.y, pos.z, 3), flipTexture);
+            flatCtx.FlipTexture = textureFlipDir == 3;
+            flatCtx.RenderWestFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, new FaceColors(),
+                block.getTextureId(world, pos.x, pos.y, pos.z, 3));
         }
 
         // North Face (X - 1)
@@ -147,9 +145,9 @@ public class BedRenderer : IBlockRenderer
             faceLuminance = bounds.MinX > 0.0D ? centerLuminance : block.getLuminance(world, pos.x - 1, pos.y, pos.z);
             tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
 
-            flipTexture = textureFlipDir == 4;
-            Helper.RenderNorthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, flatCtx, new FaceColors(),
-                block.getTextureId(world, pos.x, pos.y, pos.z, 4), flipTexture);
+            flatCtx.FlipTexture = textureFlipDir == 4;
+            flatCtx.RenderNorthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, new FaceColors(),
+                block.getTextureId(world, pos.x, pos.y, pos.z, 4));
         }
 
         // South Face (X + 1)
@@ -158,9 +156,9 @@ public class BedRenderer : IBlockRenderer
             faceLuminance = bounds.MaxX < 1.0D ? centerLuminance : block.getLuminance(world, pos.x + 1, pos.y, pos.z);
             tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
 
-            flipTexture = textureFlipDir == 5;
-            Helper.RenderSouthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, flatCtx, new FaceColors(),
-                block.getTextureId(world, pos.x, pos.y, pos.z, 5), flipTexture);
+            flatCtx.FlipTexture = textureFlipDir == 5;
+            flatCtx.RenderSouthFace(block, new Vec3D(pos.x, pos.y, pos.z), tess, new FaceColors(),
+                block.getTextureId(world, pos.x, pos.y, pos.z, 5));
         }
 
         return true;
