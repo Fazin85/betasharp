@@ -467,8 +467,8 @@ public static class Helper
     {
         Box blockBb = context.OverrideBounds ?? block.BoundingBox;
 
-        int texU = (context.OverrideTexture & 15) << 4;
-        int texV = context.OverrideTexture & 240;
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
 
         double minU = (texU + blockBb.MinZ * 16.0D) / 256.0D;
         double maxU = (texU + blockBb.MaxZ * 16.0D - 0.01D) / 256.0D;
