@@ -1,4 +1,6 @@
-﻿using BetaSharp.Blocks;
+﻿using System.Net;
+using System.Net.Sockets;
+using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Entities;
 using BetaSharp.Client.Entities.FX;
@@ -19,6 +21,7 @@ using BetaSharp.Worlds.Chunks;
 using BetaSharp.Worlds.Storage;
 using java.net;
 using Microsoft.Extensions.Logging;
+using Socket = System.Net.Sockets.Socket;
 
 namespace BetaSharp.Client.Network;
 
@@ -37,10 +40,13 @@ public class ClientNetworkHandler : NetHandler
 
     public ClientNetworkHandler(Minecraft mc, string address, int port)
     {
-
         this.mc = mc;
-        Socket socket = new(InetAddress.getByName(address), port);
-        socket.setTcpNoDelay(true);
+
+        var endPoint = new IPEndPoint(Dns.GetHostAddresses(address)[0], port);
+        Socket socket = new(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
+
+        socket.Connect(endPoint);
+
         netManager = new Connection(socket, "Client", this);
     }
 

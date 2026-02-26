@@ -1,4 +1,4 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
@@ -15,14 +15,14 @@ public class EntityDestroyS2CPacket : Packet
         entityId = id;
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        entityId = stream.readInt();
+        entityId = stream.ReadInt();
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(entityId);
+        stream.WriteInt(entityId);
     }
 
     public override void Apply(NetHandler handler)

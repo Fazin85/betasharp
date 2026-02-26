@@ -1,4 +1,4 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
@@ -20,14 +20,14 @@ public class CloseScreenS2CPacket : Packet
         handler.onCloseScreen(this);
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        windowId = (sbyte)stream.readByte();
+        windowId = (sbyte)stream.ReadByte();
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeByte(windowId);
+        stream.WriteByte((byte)windowId);
     }
 
     public override int Size()

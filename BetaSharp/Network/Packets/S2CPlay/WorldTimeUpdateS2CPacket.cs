@@ -1,4 +1,4 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
@@ -15,14 +15,14 @@ public class WorldTimeUpdateS2CPacket : Packet
         this.time = time;
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        time = stream.readLong();
+        time = stream.ReadLong();
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeLong(time);
+        stream.WriteLong(time);
     }
 
     public override void Apply(NetHandler handler)

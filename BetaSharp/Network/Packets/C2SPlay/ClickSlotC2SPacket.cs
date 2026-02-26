@@ -1,5 +1,5 @@
+using System.Net.Sockets;
 using BetaSharp.Items;
-using java.io;
 
 namespace BetaSharp.Network.Packets.C2SPlay;
 
@@ -31,18 +31,18 @@ public class ClickSlotC2SPacket : Packet
         handler.onClickSlot(this);
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        syncId = (sbyte)stream.readByte();
-        slot = stream.readShort();
-        button = (sbyte)stream.readByte();
-        actionType = stream.readShort();
-        holdingShift = stream.readBoolean();
-        short itemId = stream.readShort();
+        syncId = (sbyte)stream.ReadByte();
+        slot = stream.ReadShort();
+        button = (sbyte)stream.ReadByte();
+        actionType = stream.ReadShort();
+        holdingShift = stream.ReadBoolean();
+        short itemId = stream.ReadShort();
         if (itemId >= 0)
         {
-            sbyte count = (sbyte)stream.readByte();
-            short damage = stream.readShort();
+            sbyte count = (sbyte)stream.ReadByte();
+            short damage = stream.ReadShort();
             stack = new ItemStack(itemId, count, damage);
         }
         else
@@ -52,22 +52,22 @@ public class ClickSlotC2SPacket : Packet
 
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeByte(syncId);
-        stream.writeShort(slot);
-        stream.writeByte(button);
-        stream.writeShort(actionType);
-        stream.writeBoolean(holdingShift);
+        stream.WriteByte((byte)syncId);
+        stream.WriteShort((short)slot);
+        stream.WriteByte((byte)button);
+        stream.WriteShort((short)actionType);
+        stream.WriteBoolean(holdingShift);
         if (stack == null)
         {
-            stream.writeShort(-1);
+            stream.WriteShort((short)-1);
         }
         else
         {
-            stream.writeShort(stack.itemId);
-            stream.writeByte(stack.count);
-            stream.writeShort(stack.getDamage());
+            stream.WriteShort((short)stack.itemId);
+            stream.WriteByte((byte)stack.count);
+            stream.WriteShort((short)stack.getDamage());
         }
 
     }

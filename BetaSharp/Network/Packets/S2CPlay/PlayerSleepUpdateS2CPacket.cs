@@ -1,5 +1,5 @@
+using System.Net.Sockets;
 using BetaSharp.Entities;
-using java.io;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
@@ -24,22 +24,22 @@ public class PlayerSleepUpdateS2CPacket : Packet
         this.id = player.id;
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        id = stream.readInt();
-        status = (sbyte)stream.readByte();
-        x = stream.readInt();
-        y = (sbyte)stream.readByte();
-        z = stream.readInt();
+        id = stream.ReadInt();
+        status = (sbyte)stream.ReadByte();
+        x = stream.ReadInt();
+        y = (sbyte)stream.ReadByte();
+        z = stream.ReadInt();
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(id);
-        stream.writeByte(status);
-        stream.writeInt(x);
-        stream.writeByte(y);
-        stream.writeInt(z);
+        stream.WriteInt(id);
+        stream.WriteByte((byte)status);
+        stream.WriteInt(x);
+        stream.WriteByte((byte)y);
+        stream.WriteInt(z);
     }
 
     public override void Apply(NetHandler handler)

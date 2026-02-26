@@ -1,4 +1,4 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.C2SPlay;
 
@@ -23,22 +23,22 @@ public class PlayerActionC2SPacket : Packet
         this.direction = direction;
     }
 
-    public override void Read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        action = stream.read();
-        x = stream.readInt();
-        y = stream.read();
-        z = stream.readInt();
-        direction = stream.read();
+        action = stream.ReadByte();
+        x = stream.ReadInt();
+        y = stream.ReadByte();
+        z = stream.ReadInt();
+        direction = stream.ReadByte();
     }
 
-    public override void Write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.write(action);
-        stream.writeInt(x);
-        stream.write(y);
-        stream.writeInt(z);
-        stream.write(direction);
+        stream.WriteByte((byte)action);
+        stream.WriteInt(x);
+        stream.WriteByte((byte)y);
+        stream.WriteInt(z);
+        stream.WriteByte((byte)direction);
     }
 
     public override void Apply(NetHandler handler)
