@@ -5,16 +5,19 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
-public class MinecartTrackRenderer:IBlockRenderer
+public class MinecartTrackRenderer : IBlockRenderer
 {
-    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext context)  {
-        Tessellator tess = _tess;
-        int metadata = _blockAccess.getBlockMeta(x, y, z);
-        int textureId = rail.getTexture(0, metadata);
+    public bool Render(IBlockAccess world, Block block, in BlockPos pos, Tessellator tess, in BlockRenderContext context)
+    {
+        // Cast the generic block to a BlockRail to access rail-specific methods
+        BlockRail rail = (BlockRail)block;
 
-        if (_overrideBlockTexture >= 0)
+        int metadata = world.getBlockMeta(pos.x, pos.y, pos.z);
+
+        int textureId = rail.getTexture(0, metadata);
+        if (context.OverrideTexture >= 0)
         {
-            textureId = _overrideBlockTexture;
+            textureId = context.OverrideTexture;
         }
 
         // Powered/Detector rails use bit 3 for state, but the first 8 shapes are identical
@@ -23,7 +26,7 @@ public class MinecartTrackRenderer:IBlockRenderer
             metadata &= 7;
         }
 
-        float luminance = rail.getLuminance(_blockAccess, x, y, z);
+        float luminance = rail.getLuminance(world, pos.x, pos.y, pos.z);
         tess.setColorOpaque_F(luminance, luminance, luminance);
 
         int texU = (textureId & 15) << 4;
@@ -36,49 +39,49 @@ public class MinecartTrackRenderer:IBlockRenderer
         float verticalOffset = 1.0F / 16.0F; // 1 pixel above the ground
 
         // Default vertex positions (flat square)
-        float x1 = x + 1, x2 = x + 1, x3 = x + 0, x4 = x + 0;
-        float z1 = z + 0, z2 = z + 1, z3 = z + 1, z4 = z + 0;
+        float x1 = pos.x + 1, x2 = pos.x + 1, x3 = pos.x + 0, x4 = pos.x + 0;
+        float z1 = pos.z + 0, z2 = pos.z + 1, z3 = pos.z + 1, z4 = pos.z + 0;
 
-        float h1 = y + verticalOffset;
-        float h2 = y + verticalOffset;
-        float h3 = y + verticalOffset;
-        float h4 = y + verticalOffset;
+        float h1 = pos.y + verticalOffset;
+        float h2 = pos.y + verticalOffset;
+        float h3 = pos.y + verticalOffset;
+        float h4 = pos.y + verticalOffset;
 
         // Handle coordinate swapping for curves and orientation
         if (metadata != 1 && metadata != 2 && metadata != 3 && metadata != 7)
         {
             if (metadata == 8)
             {
-                x2 = x + 0;
+                x2 = pos.x + 0;
                 x1 = x2;
-                x4 = x + 1;
+                x4 = pos.x + 1;
                 x3 = x4;
-                z4 = z + 1;
+                z4 = pos.z + 1;
                 z1 = z4;
-                z3 = z + 0;
+                z3 = pos.z + 0;
                 z2 = z3;
             }
             else if (metadata == 9)
             {
-                x4 = x + 0;
+                x4 = pos.x + 0;
                 x1 = x4;
-                x3 = x + 1;
+                x3 = pos.x + 1;
                 x2 = x3;
-                z2 = z + 0;
+                z2 = pos.z + 0;
                 z1 = z2;
-                z4 = z + 1;
+                z4 = pos.z + 1;
                 z3 = z4;
             }
         }
         else
         {
-            x4 = x + 1;
+            x4 = pos.x + 1;
             x1 = x4;
-            x3 = x + 0;
+            x3 = pos.x + 0;
             x2 = x3;
-            z2 = z + 1;
+            z2 = pos.z + 1;
             z1 = z2;
-            z4 = z + 0;
+            z4 = pos.z + 0;
             z3 = z4;
         }
 
