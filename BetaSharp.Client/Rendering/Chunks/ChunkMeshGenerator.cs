@@ -133,7 +133,7 @@ public class ChunkMeshGenerator : IDisposable
                         if (blockPass != pass)
                             hasNextPass = true;
                         else
-                            rb.renderBlockByRenderType(b, x, y, z);
+                            rb.RenderBlockByRenderType(b, x, y, z);
                     }
                 }
             }

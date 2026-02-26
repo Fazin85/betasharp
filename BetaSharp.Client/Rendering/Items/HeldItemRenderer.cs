@@ -30,10 +30,10 @@ public class HeldItemRenderer
     public void renderItem(EntityLiving var1, ItemStack var2)
     {
         GLManager.GL.PushMatrix();
-        if (var2.itemId < 256 && BlockRenderer.isSideLit(Block.Blocks[var2.itemId].getRenderType()))
+        if (var2.itemId < 256 && BlockRenderer.IsSideLit(Block.Blocks[var2.itemId].getRenderType()))
         {
             mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/terrain.png"));
-            renderBlocksInstance.renderBlockOnInventory(Block.Blocks[var2.itemId], var2.getDamage(), var1.getBrightnessAtEyes(1.0F));
+            renderBlocksInstance.RenderBlockOnInventory(Block.Blocks[var2.itemId], var2.getDamage(), var1.getBrightnessAtEyes(1.0F));
         }
         else
         {

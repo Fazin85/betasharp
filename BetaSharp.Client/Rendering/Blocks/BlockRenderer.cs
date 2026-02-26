@@ -9,128 +9,122 @@ namespace BetaSharp.Client.Rendering.Blocks;
 
 public class BlockRenderer
 {
-    private readonly BlockView _blockAccess;
-    private readonly Tessellator? _tessellator;
-    private int _overrideBlockTexture = -1;
+    // Core Dependencies & Constants
+    private static readonly bool s_fancyGrass = true;
+    private readonly int _aoBlendMode = 1;
 
-    
+    private readonly BlockView _blockAccess = null!;
+    private readonly Tessellator? _tess;
+
+
+    // Public Configuration
+    public bool RenderFromInside = true;
+
+
+    // General Rendering State
+    private int _overrideBlockTexture = -1;
     private bool _flipTexture;
     private bool _renderAllFaces;
-    private static readonly bool s_fancyGrass = true;
-    public bool renderFromInside = true;
-    private int _uvRotateEast;
-    private int _uvRotateWest;
-    private int _uvRotateSouth;
-    private int _uvRotateNorth;
-    private int _uvRotateTop;
-    private int _uvRotateBottom;
-    private bool _enableAO;
-    private float _lightValueOwn;
-    private float _aoLightValueXNeg;
-    private float _aoLightValueYNeg;
-    private float _aoLightValueZNeg;
-    private float _aoLightValueXPos;
-    private float _aoLightValueYPos;
-    private float _aoLightValueZPos;
-    private float _colorRedTopLeft_V;
-    private float _colorRedBottomLeft_V;
-    private float _colorRedBottomRight_V;
-    private float _colorRedTopRight_V;
-    private float _colorGreenTopLeft_V;
-    private float _colorGreenBottomLeft_V;
-    private float _colorGreenBottomRight_V;
-    private float _colorGreenTopRight_V;
-    private float _colorBlueTopLeft_V;
-    private float _colorBlueBottomLeft_V;
-    private float _colorBlueBottomRight_V;
-    private float _colorBlueTopRight_V;
-    private float _aoLightValueScratch1;
-    private float _aoLightValueScratch2;
-    private float _aoLightValueScratch3;
-    private float _aoLightValueScratch4;
-    private float _aoLightValueScratch5;
-    private float _aoLightValueScratch6;
-    private float _aoLightValueScratch7;
-    private float _aoLightValueScratch8;
-    private readonly int _aoBlendMode = 1;
-    private float _colorRedTopLeft;
-    private float _colorRedBottomLeft;
-    private float _colorRedBottomRight;
-    private float _colorRedTopRight;
-    private float _colorGreenTopLeft;
-    private float _colorGreenBottomLeft;
-    private float _colorGreenBottomRight;
-    private float _colorGreenTopRight;
-    private float _colorBlueTopLeft;
-    private float _colorBlueBottomLeft;
-    private float _colorBlueBottomRight;
-    private float _colorBlueTopRight;
-    private bool _aoBlockOpXNegYPos;
-    private bool _aoBlockOpXPosYPos;
-    private bool _aoBlockOpXNegYNeg;
-    private bool _aoBlockOpXPosYNeg;
-    private bool _aoBlockOpXNegZNeg;
-    private bool _aoBlockOpXPosZNeg;
-    private bool _aoBlockOpXNegZPos;
-    private bool _aoBlockOpXPosZPos;
-    private bool _aoBlockOpYNegZNeg;
-    private bool _aoBlockOpYPosZNeg;
-    private bool _aoBlockOpYNegZPos;
-    private bool _aoBlockOpYPosZPos;
     private bool _useOverrideBoundingBox;
     private Box _overrideBoundingBox;
 
-    public BlockRenderer(BlockView var1)
+
+    // Uv Rotation State
+    private int _uvRotateTop;
+    private int _uvRotateBottom;
+    private int _uvRotateNorth;
+    private int _uvRotateSouth;
+    private int _uvRotateEast;
+    private int _uvRotateWest;
+
+    // Ambient Occlusion: Base Settings
+    private bool _enableAo;
+    private float _aoLightValueXNeg;
+    private float _aoLightValueXPos;
+    private float _aoLightValueYNeg;
+    private float _aoLightValueYPos;
+    private float _aoLightValueZNeg;
+    private float _aoLightValueZPos;
+
+
+    // Ambient Occlusion: Neighbor Opacity Cache
+    private bool _aoBlockOpXNegYNeg;
+    private bool _aoBlockOpXNegYPos;
+    private bool _aoBlockOpXPosYNeg;
+    private bool _aoBlockOpXPosYPos;
+
+    private bool _aoBlockOpXNegZNeg;
+    private bool _aoBlockOpXNegZPos;
+    private bool _aoBlockOpXPosZNeg;
+    private bool _aoBlockOpXPosZPos;
+
+    private bool _aoBlockOpYNegZNeg;
+    private bool _aoBlockOpYNegZPos;
+    private bool _aoBlockOpYPosZNeg;
+    private bool _aoBlockOpYPosZPos;
+
+    // Ambient Occlusion: Vertex Colors
+    private float _colorRedTopLeft;
+    private float _colorRedTopRight;
+    private float _colorRedBottomLeft;
+    private float _colorRedBottomRight;
+
+    private float _colorGreenTopLeft;
+    private float _colorGreenTopRight;
+    private float _colorGreenBottomLeft;
+    private float _colorGreenBottomRight;
+
+    private float _colorBlueTopLeft;
+    private float _colorBlueTopRight;
+    private float _colorBlueBottomLeft;
+    private float _colorBlueBottomRight;
+
+    public BlockRenderer(BlockView blockAccess)
     {
-        _blockAccess = var1;
+        _blockAccess = blockAccess;
     }
 
-    public BlockRenderer(BlockView var1, Tessellator t)
+    public BlockRenderer(BlockView blockAccess, Tessellator tess)
     {
-        _blockAccess = var1;
-        _tessellator = t;
+        _blockAccess = blockAccess;
+        _tess = tess;
     }
 
     public BlockRenderer()
     {
     }
 
-    public void setOverrideBoundingBox(double minX, double minY, double minZ, double maxX, double maxY, double maxZ)
+    private void SetOverrideBoundingBox(double minX, double minY, double minZ, double maxX, double maxY, double maxZ)
     {
         _overrideBoundingBox = new Box(minX, minY, minZ, maxX, maxY, maxZ);
         _useOverrideBoundingBox = true;
     }
 
-    public void clearOverrideBoundingBox()
+    private Tessellator GetTessellator()
     {
-        _useOverrideBoundingBox = false;
-    }
-
-    private Tessellator getTessellator()
-    {
-        if (_tessellator == null)
+        if (_tess == null)
         {
             return Tessellator.instance;
         }
 
-        return _tessellator;
+        return _tess;
     }
 
-    public void renderBlockUsingTexture(Block var1, int var2, int var3, int var4, int var5)
+    public void RenderBlockWithTextureOverride(Block block, int x, int y, int z, int textureId)
     {
-        _overrideBlockTexture = var5;
-        renderBlockByRenderType(var1, var2, var3, var4);
-        _overrideBlockTexture = -1;
+        _overrideBlockTexture = textureId;
+        RenderBlockByRenderType(block, x, y, z);
+        _overrideBlockTexture = -1; // Reset to default
     }
 
-    public void func_31075_a(Block var1, int var2, int var3, int var4)
+    public void RenderBlockForcedAllFaces(Block block, int x, int y, int z)
     {
         _renderAllFaces = true;
-        renderBlockByRenderType(var1, var2, var3, var4);
-        _renderAllFaces = false;
+        RenderBlockByRenderType(block, x, y, z);
+        _renderAllFaces = false; // Reset to default
     }
 
-    public bool renderBlockByRenderType(Block block, int x, int y, int z)
+    public bool RenderBlockByRenderType(Block block, int x, int y, int z)
     {
         int type = block.getRenderType();
         block.updateBoundingBox(_blockAccess, x, y, z);
@@ -138,3659 +132,3198 @@ public class BlockRenderer
 
         return type switch
         {
-            0 => renderStandardBlock(block, x, y, z),
-            1 => renderBlockReed(block, x, y, z),
-            2 => renderBlockTorch(block, x, y, z),
-            3 => renderBlockFire(block, x, y, z),
-            4 => renderBlockFluids(block, x, y, z),
-            5 => renderBlockRedstoneWire(block, x, y, z),
-            6 => renderBlockCrops(block, x, y, z),
-            7 => renderBlockDoor(block, x, y, z),
-            8 => renderBlockLadder(block, x, y, z),
-            9 => renderBlockMinecartTrack((BlockRail)block, x, y, z),
-            10 => renderBlockStairs(block, x, y, z),
-            11 => renderBlockFence(block, x, y, z),
-            12 => renderBlockLever(block, x, y, z),
-            13 => renderBlockCactus(block, x, y, z),
-            14 => renderBlockBed(block, x, y, z),
-            15 => renderBlockRepeater(block, x, y, z),
-            16 => func_31074_b(block, x, y, z, false),
-            17 => func_31080_c(block, x, y, z, true),
+            0 => RenderStandardBlock(block, x, y, z),
+            1 => RenderBlockReed(block, x, y, z),
+            2 => RenderBlockTorch(block, x, y, z),
+            3 => RenderBlockFire(block, x, y, z),
+            4 => RenderBlockFluids(block, x, y, z),
+            5 => RenderBlockRedstoneWire(block, x, y, z),
+            6 => RenderBlockCrops(block, x, y, z),
+            7 => RenderBlockDoor(block, x, y, z),
+            8 => RenderBlockLadder(block, x, y, z),
+            9 => RenderBlockMinecartTrack((BlockRail)block, x, y, z),
+            10 => RenderBlockStairs(block, x, y, z),
+            11 => RenderBlockFence(block, x, y, z),
+            12 => RenderBlockLever(block, x, y, z),
+            13 => RenderBlockCactus(block, x, y, z),
+            14 => RenderBlockBed(block, x, y, z),
+            15 => RenderBlockRepeater(block, x, y, z),
+            16 => RenderPistonBase(block, x, y, z, false),
+            17 => RenderPistonExtension(block, x, y, z, true),
             _ => false
         };
     }
 
-    private bool renderBlockBed(Block var1, int var2, int var3, int var4)
+    private bool RenderBlockBed(Block block, int x, int y, int z)
     {
-        Tessellator var5 = getTessellator();
-        Box blockBB = _useOverrideBoundingBox ? _overrideBoundingBox : var1.BoundingBox;
-        int var6 = _blockAccess.getBlockMeta(var2, var3, var4);
-        int var7 = BlockBed.getDirection(var6);
-        bool var8 = BlockBed.isHeadOfBed(var6);
-        float var9 = 0.5F;
-        float var10 = 1.0F;
-        float var11 = 0.8F;
-        float var12 = 0.6F;
-        float var25 = var1.getLuminance(_blockAccess, var2, var3, var4);
-        var5.setColorOpaque_F(var9 * var25, var9 * var25, var9 * var25);
-        int var26 = var1.getTextureId(_blockAccess, var2, var3, var4, 0);
-        int var27 = (var26 & 15) << 4;
-        int var28 = var26 & 240;
-        double var29 = (double)(var27 / 256.0F);
-        double var31 = (var27 + 16 - 0.01D) / 256.0D;
-        double var33 = (double)(var28 / 256.0F);
-        double var35 = (var28 + 16 - 0.01D) / 256.0D;
-        double var37 = var2 + blockBB.MinX;
-        double var39 = var2 + blockBB.MaxX;
-        double var41 = var3 + blockBB.MinY + 0.1875D;
-        double var43 = var4 + blockBB.MinZ;
-        double var45 = var4 + blockBB.MaxZ;
-        var5.addVertexWithUV(var37, var41, var45, var29, var35);
-        var5.addVertexWithUV(var37, var41, var43, var29, var33);
-        var5.addVertexWithUV(var39, var41, var43, var31, var33);
-        var5.addVertexWithUV(var39, var41, var45, var31, var35);
-        float var64 = var1.getLuminance(_blockAccess, var2, var3 + 1, var4);
-        var5.setColorOpaque_F(var10 * var64, var10 * var64, var10 * var64);
-        var27 = var1.getTextureId(_blockAccess, var2, var3, var4, 1);
-        var28 = (var27 & 15) << 4;
-        int var67 = var27 & 240;
-        double var30 = (double)(var28 / 256.0F);
-        double var32 = (var28 + 16 - 0.01D) / 256.0D;
-        double var34 = (double)(var67 / 256.0F);
-        double var36 = (var67 + 16 - 0.01D) / 256.0D;
-        double var38 = var30;
-        double var40 = var32;
-        double var42 = var34;
-        double var44 = var34;
-        double var46 = var30;
-        double var48 = var32;
-        double var50 = var36;
-        double var52 = var36;
-        if (var7 == 0)
-        {
-            var40 = var30;
-            var42 = var36;
-            var46 = var32;
-            var52 = var34;
-        }
-        else if (var7 == 2)
-        {
-            var38 = var32;
-            var44 = var36;
-            var48 = var30;
-            var50 = var34;
-        }
-        else if (var7 == 3)
-        {
-            var38 = var32;
-            var44 = var36;
-            var48 = var30;
-            var50 = var34;
-            var40 = var30;
-            var42 = var36;
-            var46 = var32;
-            var52 = var34;
-        }
+        Tessellator tess = GetTessellator();
+        Box bounds = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
 
-        double var54 = var2 + blockBB.MinX;
-        double var56 = var2 + blockBB.MaxX;
-        double var58 = var3 + blockBB.MaxY;
-        double var60 = var4 + blockBB.MinZ;
-        double var62 = var4 + blockBB.MaxZ;
-        var5.addVertexWithUV(var56, var58, var62, var46, var50);
-        var5.addVertexWithUV(var56, var58, var60, var38, var42);
-        var5.addVertexWithUV(var54, var58, var60, var40, var44);
-        var5.addVertexWithUV(var54, var58, var62, var48, var52);
-        var26 = Facings.TO_DIR[var7];
-        if (var8)
+        int metadata = _blockAccess.getBlockMeta(x, y, z);
+        int direction = BlockBed.getDirection(metadata);
+        bool isHead = BlockBed.isHeadOfBed(metadata);
+
+        float lightBottom = 0.5F;
+        float lightTop = 1.0F;
+        float lightZ = 0.8F;
+        float lightX = 0.6F;
+
+        float centerLuminance = block.getLuminance(_blockAccess, x, y, z);
+
+        // ==========================================
+        // BOTTOM FACE
+        // ==========================================
+        tess.setColorOpaque_F(lightBottom * centerLuminance, lightBottom * centerLuminance, lightBottom * centerLuminance);
+
+        int texBottom = block.getTextureId(_blockAccess, x, y, z, 0);
+        int texU = (texBottom & 15) << 4;
+        int texV = texBottom & 240;
+
+        double minU = texU / 256.0F;
+        double maxU = (texU + 15.99D) / 256.0D;
+        double minV = texV / 256.0F;
+        double maxV = (texV + 15.99D) / 256.0D;
+
+        double minX = x + bounds.MinX;
+        double maxX = x + bounds.MaxX;
+        double bedBottomY = y + bounds.MinY + 0.1875D; // Bed legs are 3 pixels tall (3/16 = 0.1875)
+        double minZ = z + bounds.MinZ;
+        double maxZ = z + bounds.MaxZ;
+
+        tess.addVertexWithUV(minX, bedBottomY, maxZ, minU, maxV);
+        tess.addVertexWithUV(minX, bedBottomY, minZ, minU, minV);
+        tess.addVertexWithUV(maxX, bedBottomY, minZ, maxU, minV);
+        tess.addVertexWithUV(maxX, bedBottomY, maxZ, maxU, maxV);
+
+        // ==========================================
+        // TOP FACE
+        // ==========================================
+        float topLuminance = block.getLuminance(_blockAccess, x, y + 1, z);
+        tess.setColorOpaque_F(lightTop * topLuminance, lightTop * topLuminance, lightTop * topLuminance);
+
+        int texTop = block.getTextureId(_blockAccess, x, y, z, 1);
+        texU = (texTop & 15) << 4;
+        texV = texTop & 240;
+
+        minU = texU / 256.0F;
+        maxU = (texU + 15.99D) / 256.0D;
+        minV = texV / 256.0F;
+        maxV = (texV + 15.99D) / 256.0D;
+
+        double u1 = minU, u2 = maxU, u3 = minU, u4 = maxU;
+        double v1 = minV, v2 = minV, v3 = maxV, v4 = maxV;
+
+        // Rotate top texture based on bed orientation
+        if (direction == 0) // South
         {
-            var26 = Facings.TO_DIR[Facings.OPPOSITE[var7]];
+            u2 = minU; v2 = maxV;
+            u3 = maxU; v3 = minV;
+        }
+        else if (direction == 2) // North
+        {
+            u1 = maxU; v1 = maxV;
+            u4 = minU; v4 = minV;
+        }
+        else if (direction == 3) // East
+        {
+            u1 = maxU; v1 = maxV;
+            u4 = minU; v4 = minV;
+            u2 = minU; v2 = maxV;
+            u3 = maxU; v3 = minV;
         }
 
-        byte var65 = 4;
-        switch (var7)
+        double bedTopY = y + bounds.MaxY;
+
+        tess.addVertexWithUV(maxX, bedTopY, maxZ, u3, v3);
+        tess.addVertexWithUV(maxX, bedTopY, minZ, u1, v1);
+        tess.addVertexWithUV(minX, bedTopY, minZ, u2, v2);
+        tess.addVertexWithUV(minX, bedTopY, maxZ, u4, v4);
+
+        // ==========================================
+        // SIDE FACES
+        // ==========================================
+        int forwardDir = Facings.TO_DIR[direction];
+        if (isHead)
         {
-            case 0:
-                var65 = 5;
-                break;
-            case 1:
-                var65 = 3;
-                goto case 2;
-            case 2:
-            default:
-                break;
-            case 3:
-                var65 = 2;
-                break;
+            forwardDir = Facings.TO_DIR[Facings.OPPOSITE[direction]];
         }
 
-        float var66;
-        if (var26 != 2 && (_renderAllFaces || var1.isSideVisible(_blockAccess, var2, var3, var4 - 1, 2)))
+        byte textureFlipDir = 4;
+        switch (direction)
         {
-            var66 = var1.getLuminance(_blockAccess, var2, var3, var4 - 1);
-            if (blockBB.MinZ > 0.0D)
-            {
-                var66 = var25;
-            }
-
-            var5.setColorOpaque_F(var11 * var66, var11 * var66, var11 * var66);
-            _flipTexture = var65 == 2;
-            renderEastFace(var1, var2, var3, var4, var1.getTextureId(_blockAccess, var2, var3, var4, 2));
+            case 0: textureFlipDir = 5; break;
+            case 1: textureFlipDir = 3; goto case 2;
+            case 2: default: break;
+            case 3: textureFlipDir = 2; break;
         }
 
-        if (var26 != 3 && (_renderAllFaces || var1.isSideVisible(_blockAccess, var2, var3, var4 + 1, 3)))
-        {
-            var66 = var1.getLuminance(_blockAccess, var2, var3, var4 + 1);
-            if (blockBB.MaxZ < 1.0D)
-            {
-                var66 = var25;
-            }
+        float faceLuminance;
 
-            var5.setColorOpaque_F(var11 * var66, var11 * var66, var11 * var66);
-            _flipTexture = var65 == 3;
-            renderWestFace(var1, var2, var3, var4, var1.getTextureId(_blockAccess, var2, var3, var4, 3));
+        // East Face (Z - 1)
+        if (forwardDir != 2 && (_renderAllFaces || block.isSideVisible(_blockAccess, x, y, z - 1, 2)))
+        {
+            faceLuminance = bounds.MinZ > 0.0D ? centerLuminance : block.getLuminance(_blockAccess, x, y, z - 1);
+            tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
+
+            _flipTexture = textureFlipDir == 2;
+            RenderEastFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 2));
         }
 
-        if (var26 != 4 && (_renderAllFaces || var1.isSideVisible(_blockAccess, var2 - 1, var3, var4, 4)))
+        // West Face (Z + 1)
+        if (forwardDir != 3 && (_renderAllFaces || block.isSideVisible(_blockAccess, x, y, z + 1, 3)))
         {
-            var66 = var1.getLuminance(_blockAccess, var2 - 1, var3, var4);
-            if (blockBB.MinX > 0.0D)
-            {
-                var66 = var25;
-            }
+            faceLuminance = bounds.MaxZ < 1.0D ? centerLuminance : block.getLuminance(_blockAccess, x, y, z + 1);
+            tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
 
-            var5.setColorOpaque_F(var12 * var66, var12 * var66, var12 * var66);
-            _flipTexture = var65 == 4;
-            renderNorthFace(var1, var2, var3, var4, var1.getTextureId(_blockAccess, var2, var3, var4, 4));
+            _flipTexture = textureFlipDir == 3;
+            RenderWestFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 3));
         }
 
-        if (var26 != 5 && (_renderAllFaces || var1.isSideVisible(_blockAccess, var2 + 1, var3, var4, 5)))
+        // North Face (X - 1)
+        if (forwardDir != 4 && (_renderAllFaces || block.isSideVisible(_blockAccess, x - 1, y, z, 4)))
         {
-            var66 = var1.getLuminance(_blockAccess, var2 + 1, var3, var4);
-            if (blockBB.MaxX < 1.0D)
-            {
-                var66 = var25;
-            }
+            faceLuminance = bounds.MinX > 0.0D ? centerLuminance : block.getLuminance(_blockAccess, x - 1, y, z);
+            tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
 
-            var5.setColorOpaque_F(var12 * var66, var12 * var66, var12 * var66);
-            _flipTexture = var65 == 5;
-            renderSouthFace(var1, var2, var3, var4, var1.getTextureId(_blockAccess, var2, var3, var4, 5));
+            _flipTexture = textureFlipDir == 4;
+            RenderNorthFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 4));
+        }
+
+        // South Face (X + 1)
+        if (forwardDir != 5 && (_renderAllFaces || block.isSideVisible(_blockAccess, x + 1, y, z, 5)))
+        {
+            faceLuminance = bounds.MaxX < 1.0D ? centerLuminance : block.getLuminance(_blockAccess, x + 1, y, z);
+            tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
+
+            _flipTexture = textureFlipDir == 5;
+            RenderSouthFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 5));
         }
 
         _flipTexture = false;
         return true;
     }
 
-    public bool renderBlockTorch(Block var1, int var2, int var3, int var4)
+    private bool RenderBlockTorch(Block block, int x, int y, int z)
     {
-        int var5 = _blockAccess.getBlockMeta(var2, var3, var4);
-        Tessellator var6 = getTessellator();
-        float var7 = var1.getLuminance(_blockAccess, var2, var3, var4);
-        if (Block.BlocksLightLuminance[var1.id] > 0)
+        int metadata = _blockAccess.getBlockMeta(x, y, z);
+        Tessellator tess = GetTessellator();
+
+        float luminance = block.getLuminance(_blockAccess, x, y, z);
+        if (Block.BlocksLightLuminance[block.id] > 0)
         {
-            var7 = 1.0F;
+            luminance = 1.0F;
         }
 
-        var6.setColorOpaque_F(var7, var7, var7);
-        double var8 = (double)0.4F;
-        double var10 = 0.5D - var8;
-        double var12 = (double)0.2F;
-        if (var5 == 1)
+        tess.setColorOpaque_F(luminance, luminance, luminance);
+
+        double tiltAmount = 0.4F;
+        double horizontalOffset = 0.5D - tiltAmount;
+        double verticalOffset = 0.2F;
+
+        if (metadata == 1) // Attached to West wall (pointing East)
         {
-            renderTorchAtAngle(var1, var2 - var10, var3 + var12, var4, -var8, 0.0D);
+            RenderTorchAtAngle(block, x - horizontalOffset, y + verticalOffset, z, -tiltAmount, 0.0D);
         }
-        else if (var5 == 2)
+        else if (metadata == 2) // Attached to East wall (pointing West)
         {
-            renderTorchAtAngle(var1, var2 + var10, var3 + var12, var4, var8, 0.0D);
+            RenderTorchAtAngle(block, x + horizontalOffset, y + verticalOffset, z, tiltAmount, 0.0D);
         }
-        else if (var5 == 3)
+        else if (metadata == 3) // Attached to North wall (pointing South)
         {
-            renderTorchAtAngle(var1, var2, var3 + var12, var4 - var10, 0.0D, -var8);
+            RenderTorchAtAngle(block, x, y + verticalOffset, z - horizontalOffset, 0.0D, -tiltAmount);
         }
-        else if (var5 == 4)
+        else if (metadata == 4) // Attached to South wall (pointing North)
         {
-            renderTorchAtAngle(var1, var2, var3 + var12, var4 + var10, 0.0D, var8);
+            RenderTorchAtAngle(block, x, y + verticalOffset, z + horizontalOffset, 0.0D, tiltAmount);
         }
-        else
+        else // Standing on floor
         {
-            renderTorchAtAngle(var1, var2, var3, var4, 0.0D, 0.0D);
+            RenderTorchAtAngle(block, x, y, z, 0.0D, 0.0D);
         }
 
         return true;
     }
 
-    private bool renderBlockRepeater(Block var1, int var2, int var3, int var4)
+    private bool RenderBlockRepeater(Block block, int x, int y, int z)
     {
-        int var5 = _blockAccess.getBlockMeta(var2, var3, var4);
-        int var6 = var5 & 3;
-        int var7 = (var5 & 12) >> 2;
-        renderStandardBlock(var1, var2, var3, var4);
-        Tessellator var8 = getTessellator();
-        float var9 = var1.getLuminance(_blockAccess, var2, var3, var4);
-        if (Block.BlocksLightLuminance[var1.id] > 0)
+        int metadata = _blockAccess.getBlockMeta(x, y, z);
+        int direction = metadata & 3;
+        int delay = (metadata & 12) >> 2;
+
+        // Render the base slab
+        RenderStandardBlock(block, x, y, z);
+
+        Tessellator tess = GetTessellator();
+        float luminance = block.getLuminance(_blockAccess, x, y, z);
+        if (Block.BlocksLightLuminance[block.id] > 0)
         {
-            var9 = (var9 + 1.0F) * 0.5F;
+            luminance = (luminance + 1.0F) * 0.5F;
         }
 
-        var8.setColorOpaque_F(var9, var9, var9);
-        double var10 = -0.1875D;
-        double var12 = 0.0D;
-        double var14 = 0.0D;
-        double var16 = 0.0D;
-        double var18 = 0.0D;
-        switch (var6)
+        tess.setColorOpaque_F(luminance, luminance, luminance);
+
+        double torchVerticalOffset = -0.1875D;
+        double staticTorchX = 0.0D;
+        double staticTorchZ = 0.0D;
+        double delayTorchX = 0.0D;
+        double delayTorchZ = 0.0D;
+
+        // Calculate positions for the two torch pins based on direction and delay
+        switch (direction)
         {
-            case 0:
-                var18 = -0.3125D;
-                var14 = BlockRedstoneRepeater.RENDER_OFFSET[var7];
+            case 0: // South
+                delayTorchZ = -0.3125D;
+                staticTorchZ = BlockRedstoneRepeater.RENDER_OFFSET[delay];
                 break;
-            case 1:
-                var16 = 0.3125D;
-                var12 = -BlockRedstoneRepeater.RENDER_OFFSET[var7];
+            case 1: // West
+                delayTorchX = 0.3125D;
+                staticTorchX = -BlockRedstoneRepeater.RENDER_OFFSET[delay];
                 break;
-            case 2:
-                var18 = 0.3125D;
-                var14 = -BlockRedstoneRepeater.RENDER_OFFSET[var7];
+            case 2: // North
+                delayTorchZ = 0.3125D;
+                staticTorchZ = -BlockRedstoneRepeater.RENDER_OFFSET[delay];
                 break;
-            case 3:
-                var16 = -0.3125D;
-                var12 = BlockRedstoneRepeater.RENDER_OFFSET[var7];
+            case 3: // East
+                delayTorchX = -0.3125D;
+                staticTorchX = BlockRedstoneRepeater.RENDER_OFFSET[delay];
                 break;
         }
 
-        renderTorchAtAngle(var1, var2 + var12, var3 + var10, var4 + var14, 0.0D, 0.0D);
-        renderTorchAtAngle(var1, var2 + var16, var3 + var10, var4 + var18, 0.0D, 0.0D);
-        int var20 = var1.getTexture(1);
-        int var21 = (var20 & 15) << 4;
-        int var22 = var20 & 240;
-        double var23 = (double)(var21 / 256.0F);
-        double var25 = (double)((var21 + 15.99F) / 256.0F);
-        double var27 = (double)(var22 / 256.0F);
-        double var29 = (double)((var22 + 15.99F) / 256.0F);
-        float var31 = 2.0F / 16.0F;
-        float var32 = var2 + 1;
-        float var33 = var2 + 1;
-        float var34 = var2 + 0;
-        float var35 = var2 + 0;
-        float var36 = var4 + 0;
-        float var37 = var4 + 1;
-        float var38 = var4 + 1;
-        float var39 = var4 + 0;
-        float var40 = var3 + var31;
-        if (var6 == 2)
+        // Render the two torch pins on top of the slab
+        RenderTorchAtAngle(block, x + staticTorchX, y + torchVerticalOffset, z + staticTorchZ, 0.0D, 0.0D);
+        RenderTorchAtAngle(block, x + delayTorchX, y + torchVerticalOffset, z + delayTorchZ, 0.0D, 0.0D);
+
+        // Render the top surface texture of the repeater slab
+        int textureId = block.getTexture(1);
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
+        double minU = texU / 256.0F;
+        double maxU = (texU + 15.99F) / 256.0F;
+        double minV = texV / 256.0F;
+        double maxV = (texV + 15.99F) / 256.0F;
+
+        float surfaceHeight = y + (2.0F / 16.0F);
+        float x1 = x + 1;
+        float x2 = x + 1;
+        float x3 = x + 0;
+        float x4 = x + 0;
+        float z1 = z + 0;
+        float z2 = z + 1;
+        float z3 = z + 1;
+        float z4 = z + 0;
+
+        if (direction == 2) // North
         {
-            var33 = var2 + 0;
-            var32 = var33;
-            var35 = var2 + 1;
-            var34 = var35;
-            var39 = var4 + 1;
-            var36 = var39;
-            var38 = var4 + 0;
-            var37 = var38;
+            x2 = x + 0; x1 = x2;
+            x4 = x + 1; x3 = x4;
+            z4 = z + 1; z1 = z4;
+            z3 = z + 0; z2 = z3;
         }
-        else if (var6 == 3)
+        else if (direction == 3) // East
         {
-            var35 = var2 + 0;
-            var32 = var35;
-            var34 = var2 + 1;
-            var33 = var34;
-            var37 = var4 + 0;
-            var36 = var37;
-            var39 = var4 + 1;
-            var38 = var39;
+            x4 = x + 0; x1 = x4;
+            x3 = x + 1; x2 = x3;
+            z2 = z + 0; z1 = z2;
+            z4 = z + 1; z3 = z4;
         }
-        else if (var6 == 1)
+        else if (direction == 1) // West
         {
-            var35 = var2 + 1;
-            var32 = var35;
-            var34 = var2 + 0;
-            var33 = var34;
-            var37 = var4 + 1;
-            var36 = var37;
-            var39 = var4 + 0;
-            var38 = var39;
+            x4 = x + 1; x1 = x4;
+            x3 = x + 0; x2 = x3;
+            z2 = z + 1; z1 = z2;
+            z4 = z + 0; z3 = z4;
         }
 
-        var8.addVertexWithUV((double)var35, (double)var40, (double)var39, var23, var27);
-        var8.addVertexWithUV((double)var34, (double)var40, (double)var38, var23, var29);
-        var8.addVertexWithUV((double)var33, (double)var40, (double)var37, var25, var29);
-        var8.addVertexWithUV((double)var32, (double)var40, (double)var36, var25, var27);
+        tess.addVertexWithUV(x4, surfaceHeight, z4, minU, minV);
+        tess.addVertexWithUV(x3, surfaceHeight, z3, minU, maxV);
+        tess.addVertexWithUV(x2, surfaceHeight, z2, maxU, maxV);
+        tess.addVertexWithUV(x1, surfaceHeight, z1, maxU, minV);
+
         return true;
     }
 
-    public void func_31078_d(Block var1, int var2, int var3, int var4)
+    public void RenderPistonBaseAllFaces(Block block, int x, int y, int z)
     {
         _renderAllFaces = true;
-        func_31074_b(var1, var2, var3, var4, true);
+        RenderPistonBase(block, x, y, z, true);
         _renderAllFaces = false;
     }
 
-    private bool func_31074_b(Block var1, int var2, int var3, int var4, bool var5)
+    private bool RenderPistonBase(Block block, int x, int y, int z, bool expanded)
     {
-        int var6 = _blockAccess.getBlockMeta(var2, var3, var4);
-        bool var7 = var5 || (var6 & 8) != 0;
-        int var8 = BlockPistonBase.getFacing(var6);
-        if (var7)
+        int metadata = _blockAccess.getBlockMeta(x, y, z);
+        bool isExpanded = expanded || (metadata & 8) != 0;
+        int facing = BlockPistonBase.getFacing(metadata);
+
+        if (isExpanded)
         {
-            switch (var8)
+            // If the piston is expanded, we shrink the base block's bounding box
+            // to make room for the piston head/arm.
+            switch (facing)
             {
-                case 0:
-                    _uvRotateEast = 3;
-                    _uvRotateWest = 3;
-                    _uvRotateSouth = 3;
-                    _uvRotateNorth = 3;
-                    setOverrideBoundingBox(0.0F, 0.25F, 0.0F, 1.0F, 1.0F, 1.0F);
+                case 0: // Down
+                    _uvRotateEast = 3; _uvRotateWest = 3; _uvRotateSouth = 3; _uvRotateNorth = 3;
+                    SetOverrideBoundingBox(0.0F, 0.25F, 0.0F, 1.0F, 1.0F, 1.0F);
                     break;
-                case 1:
-                    setOverrideBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 12.0F / 16.0F, 1.0F);
+                case 1: // Up
+                    SetOverrideBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 0.75F, 1.0F);
                     break;
-                case 2:
-                    _uvRotateSouth = 1;
-                    _uvRotateNorth = 2;
-                    setOverrideBoundingBox(0.0F, 0.0F, 0.25F, 1.0F, 1.0F, 1.0F);
+                case 2: // North
+                    _uvRotateSouth = 1; _uvRotateNorth = 2;
+                    SetOverrideBoundingBox(0.0F, 0.0F, 0.25F, 1.0F, 1.0F, 1.0F);
                     break;
-                case 3:
-                    _uvRotateSouth = 2;
-                    _uvRotateNorth = 1;
-                    _uvRotateTop = 3;
-                    _uvRotateBottom = 3;
-                    setOverrideBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 12.0F / 16.0F);
+                case 3: // South
+                    _uvRotateSouth = 2; _uvRotateNorth = 1; _uvRotateTop = 3; _uvRotateBottom = 3;
+                    SetOverrideBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.75F);
                     break;
-                case 4:
-                    _uvRotateEast = 1;
-                    _uvRotateWest = 2;
-                    _uvRotateTop = 2;
-                    _uvRotateBottom = 1;
-                    setOverrideBoundingBox(0.25F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+                case 4: // West
+                    _uvRotateEast = 1; _uvRotateWest = 2; _uvRotateTop = 2; _uvRotateBottom = 1;
+                    SetOverrideBoundingBox(0.25F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
                     break;
-                case 5:
-                    _uvRotateEast = 2;
-                    _uvRotateWest = 1;
-                    _uvRotateTop = 1;
-                    _uvRotateBottom = 2;
-                    setOverrideBoundingBox(0.0F, 0.0F, 0.0F, 12.0F / 16.0F, 1.0F, 1.0F);
+                case 5: // East
+                    _uvRotateEast = 2; _uvRotateWest = 1; _uvRotateTop = 1; _uvRotateBottom = 2;
+                    SetOverrideBoundingBox(0.0F, 0.0F, 0.0F, 0.75F, 1.0F, 1.0F);
                     break;
             }
 
-            renderStandardBlock(var1, var2, var3, var4);
-            _uvRotateEast = 0;
-            _uvRotateWest = 0;
-            _uvRotateSouth = 0;
-            _uvRotateNorth = 0;
-            _uvRotateTop = 0;
-            _uvRotateBottom = 0;
-            setOverrideBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+            RenderStandardBlock(block, x, y, z);
+
+            // Reset rotations and box
+            ResetUvRotation();
+            SetOverrideBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         }
         else
         {
-            switch (var8)
+            // Piston is retracted (full block), but we still apply UV rotation
+            // so the "face" of the piston points in the correct direction.
+            switch (facing)
             {
-                case 0:
-                    _uvRotateEast = 3;
-                    _uvRotateWest = 3;
-                    _uvRotateSouth = 3;
-                    _uvRotateNorth = 3;
-                    goto case 1;
-                case 1:
-                default:
+                case 0: // Down
+                    _uvRotateEast = 3; _uvRotateWest = 3; _uvRotateSouth = 3; _uvRotateNorth = 3;
                     break;
-                case 2:
-                    _uvRotateSouth = 1;
-                    _uvRotateNorth = 2;
+                case 2: // North
+                    _uvRotateSouth = 1; _uvRotateNorth = 2;
                     break;
-                case 3:
-                    _uvRotateSouth = 2;
-                    _uvRotateNorth = 1;
-                    _uvRotateTop = 3;
-                    _uvRotateBottom = 3;
+                case 3: // South
+                    _uvRotateSouth = 2; _uvRotateNorth = 1; _uvRotateTop = 3; _uvRotateBottom = 3;
                     break;
-                case 4:
-                    _uvRotateEast = 1;
-                    _uvRotateWest = 2;
-                    _uvRotateTop = 2;
-                    _uvRotateBottom = 1;
+                case 4: // West
+                    _uvRotateEast = 1; _uvRotateWest = 2; _uvRotateTop = 2; _uvRotateBottom = 1;
                     break;
-                case 5:
-                    _uvRotateEast = 2;
-                    _uvRotateWest = 1;
-                    _uvRotateTop = 1;
-                    _uvRotateBottom = 2;
+                case 5: // East
+                    _uvRotateEast = 2; _uvRotateWest = 1; _uvRotateTop = 1; _uvRotateBottom = 2;
                     break;
             }
 
-            renderStandardBlock(var1, var2, var3, var4);
-            _uvRotateEast = 0;
-            _uvRotateWest = 0;
-            _uvRotateSouth = 0;
-            _uvRotateNorth = 0;
-            _uvRotateTop = 0;
-            _uvRotateBottom = 0;
+            RenderStandardBlock(block, x, y, z);
+            ResetUvRotation();
         }
 
         return true;
     }
 
-    private void func_31076_a(double var1, double var3, double var5, double var7, double var9, double var11, float var13, double var14)
+    private void ResetUvRotation()
     {
-        int var16 = 108;
-        if (_overrideBlockTexture >= 0)
-        {
-            var16 = _overrideBlockTexture;
-        }
-
-        int var17 = (var16 & 15) << 4;
-        int var18 = var16 & 240;
-        Tessellator var19 = getTessellator();
-        double var20 = (double)((var17 + 0) / 256.0F);
-        double var22 = (double)((var18 + 0) / 256.0F);
-        double var24 = (var17 + var14 - 0.01D) / 256.0D;
-        double var26 = ((double)(var18 + 4.0F) - 0.01D) / 256.0D;
-        var19.setColorOpaque_F(var13, var13, var13);
-        var19.addVertexWithUV(var1, var7, var9, var24, var22);
-        var19.addVertexWithUV(var1, var5, var9, var20, var22);
-        var19.addVertexWithUV(var3, var5, var11, var20, var26);
-        var19.addVertexWithUV(var3, var7, var11, var24, var26);
-    }
-
-    private void func_31081_b(double var1, double var3, double var5, double var7, double var9, double var11, float var13, double var14)
-    {
-        int var16 = 108;
-        if (_overrideBlockTexture >= 0)
-        {
-            var16 = _overrideBlockTexture;
-        }
-
-        int var17 = (var16 & 15) << 4;
-        int var18 = var16 & 240;
-        Tessellator var19 = getTessellator();
-        double var20 = (double)((var17 + 0) / 256.0F);
-        double var22 = (double)((var18 + 0) / 256.0F);
-        double var24 = (var17 + var14 - 0.01D) / 256.0D;
-        double var26 = ((double)(var18 + 4.0F) - 0.01D) / 256.0D;
-        var19.setColorOpaque_F(var13, var13, var13);
-        var19.addVertexWithUV(var1, var5, var11, var24, var22);
-        var19.addVertexWithUV(var1, var5, var9, var20, var22);
-        var19.addVertexWithUV(var3, var7, var9, var20, var26);
-        var19.addVertexWithUV(var3, var7, var11, var24, var26);
-    }
-
-    private void func_31077_c(double var1, double var3, double var5, double var7, double var9, double var11, float var13, double var14)
-    {
-        int var16 = 108;
-        if (_overrideBlockTexture >= 0)
-        {
-            var16 = _overrideBlockTexture;
-        }
-
-        int var17 = (var16 & 15) << 4;
-        int var18 = var16 & 240;
-        Tessellator var19 = getTessellator();
-        double var20 = (double)((var17 + 0) / 256.0F);
-        double var22 = (double)((var18 + 0) / 256.0F);
-        double var24 = (var17 + var14 - 0.01D) / 256.0D;
-        double var26 = ((double)(var18 + 4.0F) - 0.01D) / 256.0D;
-        var19.setColorOpaque_F(var13, var13, var13);
-        var19.addVertexWithUV(var3, var5, var9, var24, var22);
-        var19.addVertexWithUV(var1, var5, var9, var20, var22);
-        var19.addVertexWithUV(var1, var7, var11, var20, var26);
-        var19.addVertexWithUV(var3, var7, var11, var24, var26);
-    }
-
-    public void func_31079_a(Block var1, int var2, int var3, int var4, bool var5)
-    {
-        _renderAllFaces = true;
-        func_31080_c(var1, var2, var3, var4, var5);
-        _renderAllFaces = false;
-    }
-
-    private bool func_31080_c(Block var1, int var2, int var3, int var4, bool var5)
-    {
-        int var6 = _blockAccess.getBlockMeta(var2, var3, var4);
-        int var7 = BlockPistonExtension.getFacing(var6);
-        float var11 = var1.getLuminance(_blockAccess, var2, var3, var4);
-        float var12 = var5 ? 1.0F : 0.5F;
-        double var13 = var5 ? 16.0D : 8.0D;
-        switch (var7)
-        {
-            case 0:
-                _uvRotateEast = 3;
-                _uvRotateWest = 3;
-                _uvRotateSouth = 3;
-                _uvRotateNorth = 3;
-                setOverrideBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 0.25F, 1.0F);
-                renderStandardBlock(var1, var2, var3, var4);
-                func_31076_a((double)(var2 + 6.0F / 16.0F), (double)(var2 + 10.0F / 16.0F), (double)(var3 + 0.25F), (double)(var3 + 0.25F + var12), (double)(var4 + 10.0F / 16.0F), (double)(var4 + 10.0F / 16.0F), var11 * 0.8F, var13);
-                func_31076_a((double)(var2 + 10.0F / 16.0F), (double)(var2 + 6.0F / 16.0F), (double)(var3 + 0.25F), (double)(var3 + 0.25F + var12), (double)(var4 + 6.0F / 16.0F), (double)(var4 + 6.0F / 16.0F), var11 * 0.8F, var13);
-                func_31076_a((double)(var2 + 6.0F / 16.0F), (double)(var2 + 6.0F / 16.0F), (double)(var3 + 0.25F), (double)(var3 + 0.25F + var12), (double)(var4 + 6.0F / 16.0F), (double)(var4 + 10.0F / 16.0F), var11 * 0.6F, var13);
-                func_31076_a((double)(var2 + 10.0F / 16.0F), (double)(var2 + 10.0F / 16.0F), (double)(var3 + 0.25F), (double)(var3 + 0.25F + var12), (double)(var4 + 10.0F / 16.0F), (double)(var4 + 6.0F / 16.0F), var11 * 0.6F, var13);
-                break;
-            case 1:
-                setOverrideBoundingBox(0.0F, 12.0F / 16.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-                renderStandardBlock(var1, var2, var3, var4);
-                func_31076_a((double)(var2 + 6.0F / 16.0F), (double)(var2 + 10.0F / 16.0F), (double)(var3 - 0.25F + 1.0F - var12), (double)(var3 - 0.25F + 1.0F), (double)(var4 + 10.0F / 16.0F), (double)(var4 + 10.0F / 16.0F), var11 * 0.8F, var13);
-                func_31076_a((double)(var2 + 10.0F / 16.0F), (double)(var2 + 6.0F / 16.0F), (double)(var3 - 0.25F + 1.0F - var12), (double)(var3 - 0.25F + 1.0F), (double)(var4 + 6.0F / 16.0F), (double)(var4 + 6.0F / 16.0F), var11 * 0.8F, var13);
-                func_31076_a((double)(var2 + 6.0F / 16.0F), (double)(var2 + 6.0F / 16.0F), (double)(var3 - 0.25F + 1.0F - var12), (double)(var3 - 0.25F + 1.0F), (double)(var4 + 6.0F / 16.0F), (double)(var4 + 10.0F / 16.0F), var11 * 0.6F, var13);
-                func_31076_a((double)(var2 + 10.0F / 16.0F), (double)(var2 + 10.0F / 16.0F), (double)(var3 - 0.25F + 1.0F - var12), (double)(var3 - 0.25F + 1.0F), (double)(var4 + 10.0F / 16.0F), (double)(var4 + 6.0F / 16.0F), var11 * 0.6F, var13);
-                break;
-            case 2:
-                _uvRotateSouth = 1;
-                _uvRotateNorth = 2;
-                setOverrideBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.25F);
-                renderStandardBlock(var1, var2, var3, var4);
-                func_31081_b((double)(var2 + 6.0F / 16.0F), (double)(var2 + 6.0F / 16.0F), (double)(var3 + 10.0F / 16.0F), (double)(var3 + 6.0F / 16.0F), (double)(var4 + 0.25F), (double)(var4 + 0.25F + var12), var11 * 0.6F, var13);
-                func_31081_b((double)(var2 + 10.0F / 16.0F), (double)(var2 + 10.0F / 16.0F), (double)(var3 + 6.0F / 16.0F), (double)(var3 + 10.0F / 16.0F), (double)(var4 + 0.25F), (double)(var4 + 0.25F + var12), var11 * 0.6F, var13);
-                func_31081_b((double)(var2 + 6.0F / 16.0F), (double)(var2 + 10.0F / 16.0F), (double)(var3 + 6.0F / 16.0F), (double)(var3 + 6.0F / 16.0F), (double)(var4 + 0.25F), (double)(var4 + 0.25F + var12), var11 * 0.5F, var13);
-                func_31081_b((double)(var2 + 10.0F / 16.0F), (double)(var2 + 6.0F / 16.0F), (double)(var3 + 10.0F / 16.0F), (double)(var3 + 10.0F / 16.0F), (double)(var4 + 0.25F), (double)(var4 + 0.25F + var12), var11, var13);
-                break;
-            case 3:
-                _uvRotateSouth = 2;
-                _uvRotateNorth = 1;
-                _uvRotateTop = 3;
-                _uvRotateBottom = 3;
-                setOverrideBoundingBox(0.0F, 0.0F, 12.0F / 16.0F, 1.0F, 1.0F, 1.0F);
-                renderStandardBlock(var1, var2, var3, var4);
-                func_31081_b((double)(var2 + 6.0F / 16.0F), (double)(var2 + 6.0F / 16.0F), (double)(var3 + 10.0F / 16.0F), (double)(var3 + 6.0F / 16.0F), (double)(var4 - 0.25F + 1.0F - var12), (double)(var4 - 0.25F + 1.0F), var11 * 0.6F, var13);
-                func_31081_b((double)(var2 + 10.0F / 16.0F), (double)(var2 + 10.0F / 16.0F), (double)(var3 + 6.0F / 16.0F), (double)(var3 + 10.0F / 16.0F), (double)(var4 - 0.25F + 1.0F - var12), (double)(var4 - 0.25F + 1.0F), var11 * 0.6F, var13);
-                func_31081_b((double)(var2 + 6.0F / 16.0F), (double)(var2 + 10.0F / 16.0F), (double)(var3 + 6.0F / 16.0F), (double)(var3 + 6.0F / 16.0F), (double)(var4 - 0.25F + 1.0F - var12), (double)(var4 - 0.25F + 1.0F), var11 * 0.5F, var13);
-                func_31081_b((double)(var2 + 10.0F / 16.0F), (double)(var2 + 6.0F / 16.0F), (double)(var3 + 10.0F / 16.0F), (double)(var3 + 10.0F / 16.0F), (double)(var4 - 0.25F + 1.0F - var12), (double)(var4 - 0.25F + 1.0F), var11, var13);
-                break;
-            case 4:
-                _uvRotateEast = 1;
-                _uvRotateWest = 2;
-                _uvRotateTop = 2;
-                _uvRotateBottom = 1;
-                setOverrideBoundingBox(0.0F, 0.0F, 0.0F, 0.25F, 1.0F, 1.0F);
-                renderStandardBlock(var1, var2, var3, var4);
-                func_31077_c((double)(var2 + 0.25F), (double)(var2 + 0.25F + var12), (double)(var3 + 6.0F / 16.0F), (double)(var3 + 6.0F / 16.0F), (double)(var4 + 10.0F / 16.0F), (double)(var4 + 6.0F / 16.0F), var11 * 0.5F, var13);
-                func_31077_c((double)(var2 + 0.25F), (double)(var2 + 0.25F + var12), (double)(var3 + 10.0F / 16.0F), (double)(var3 + 10.0F / 16.0F), (double)(var4 + 6.0F / 16.0F), (double)(var4 + 10.0F / 16.0F), var11, var13);
-                func_31077_c((double)(var2 + 0.25F), (double)(var2 + 0.25F + var12), (double)(var3 + 6.0F / 16.0F), (double)(var3 + 10.0F / 16.0F), (double)(var4 + 6.0F / 16.0F), (double)(var4 + 6.0F / 16.0F), var11 * 0.6F, var13);
-                func_31077_c((double)(var2 + 0.25F), (double)(var2 + 0.25F + var12), (double)(var3 + 10.0F / 16.0F), (double)(var3 + 6.0F / 16.0F), (double)(var4 + 10.0F / 16.0F), (double)(var4 + 10.0F / 16.0F), var11 * 0.6F, var13);
-                break;
-            case 5:
-                _uvRotateEast = 2;
-                _uvRotateWest = 1;
-                _uvRotateTop = 1;
-                _uvRotateBottom = 2;
-                setOverrideBoundingBox(12.0F / 16.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-                renderStandardBlock(var1, var2, var3, var4);
-                func_31077_c((double)(var2 - 0.25F + 1.0F - var12), (double)(var2 - 0.25F + 1.0F), (double)(var3 + 6.0F / 16.0F), (double)(var3 + 6.0F / 16.0F), (double)(var4 + 10.0F / 16.0F), (double)(var4 + 6.0F / 16.0F), var11 * 0.5F, var13);
-                func_31077_c((double)(var2 - 0.25F + 1.0F - var12), (double)(var2 - 0.25F + 1.0F), (double)(var3 + 10.0F / 16.0F), (double)(var3 + 10.0F / 16.0F), (double)(var4 + 6.0F / 16.0F), (double)(var4 + 10.0F / 16.0F), var11, var13);
-                func_31077_c((double)(var2 - 0.25F + 1.0F - var12), (double)(var2 - 0.25F + 1.0F), (double)(var3 + 6.0F / 16.0F), (double)(var3 + 10.0F / 16.0F), (double)(var4 + 6.0F / 16.0F), (double)(var4 + 6.0F / 16.0F), var11 * 0.6F, var13);
-                func_31077_c((double)(var2 - 0.25F + 1.0F - var12), (double)(var2 - 0.25F + 1.0F), (double)(var3 + 10.0F / 16.0F), (double)(var3 + 6.0F / 16.0F), (double)(var4 + 10.0F / 16.0F), (double)(var4 + 10.0F / 16.0F), var11 * 0.6F, var13);
-                break;
-        }
-
         _uvRotateEast = 0;
         _uvRotateWest = 0;
         _uvRotateSouth = 0;
         _uvRotateNorth = 0;
         _uvRotateTop = 0;
         _uvRotateBottom = 0;
-        setOverrideBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+    }
+
+    private void RenderPistonArmY(double x1, double x2, double y1, double y2, double z1, double z2, float luminance, double textureWidth)
+    {
+        Tessellator tess = GetTessellator();
+        int textureId = 108; // Piston arm texture
+        if (_overrideBlockTexture >= 0) textureId = _overrideBlockTexture;
+
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
+
+        double minU = texU / 256.0D;
+        double minV = texV / 256.0D;
+        double maxU = (texU + textureWidth - 0.01D) / 256.0D;
+        double maxV = (texV + 4.0D - 0.01D) / 256.0D;
+
+        tess.setColorOpaque_F(luminance, luminance, luminance);
+        tess.addVertexWithUV(x1, y2, z1, maxU, minV);
+        tess.addVertexWithUV(x1, y1, z1, minU, minV);
+        tess.addVertexWithUV(x2, y1, z2, minU, maxV);
+        tess.addVertexWithUV(x2, y2, z2, maxU, maxV);
+    }
+
+    private void RenderPistonArmZ(double x1, double x2, double y1, double y2, double z1, double z2, float luminance, double textureWidth)
+    {
+        Tessellator tess = GetTessellator();
+        int textureId = 108;
+        if (_overrideBlockTexture >= 0) textureId = _overrideBlockTexture;
+
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
+
+        double minU = texU / 256.0D;
+        double minV = texV / 256.0D;
+        double maxU = (texU + textureWidth - 0.01D) / 256.0D;
+        double maxV = (texV + 4.0D - 0.01D) / 256.0D;
+
+        tess.setColorOpaque_F(luminance, luminance, luminance);
+        tess.addVertexWithUV(x1, y1, z2, maxU, minV);
+        tess.addVertexWithUV(x1, y1, z1, minU, minV);
+        tess.addVertexWithUV(x2, y2, z1, minU, maxV);
+        tess.addVertexWithUV(x2, y2, z2, maxU, maxV);
+    }
+
+    private void RenderPistonArmX(double x1, double x2, double y1, double y2, double z1, double z2, float luminance, double textureWidth)
+    {
+        Tessellator tess = GetTessellator();
+        int textureId = 108;
+        if (_overrideBlockTexture >= 0) textureId = _overrideBlockTexture;
+
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
+
+        double minU = texU / 256.0D;
+        double minV = texV / 256.0D;
+        double maxU = (texU + textureWidth - 0.01D) / 256.0D;
+        double maxV = (texV + 4.0D - 0.01D) / 256.0D;
+
+        tess.setColorOpaque_F(luminance, luminance, luminance);
+        tess.addVertexWithUV(x2, y1, z1, maxU, minV);
+        tess.addVertexWithUV(x1, y1, z1, minU, minV);
+        tess.addVertexWithUV(x1, y2, z2, minU, maxV);
+        tess.addVertexWithUV(x2, y2, z2, maxU, maxV);
+    }
+
+    public void RenderPistonExtensionAllFaces(Block block, int x, int y, int z, bool isShortArm)
+    {
+        _renderAllFaces = true;
+        RenderPistonExtension(block, x, y, z, isShortArm);
+        _renderAllFaces = false;
+    }
+
+    private bool RenderPistonExtension(Block block, int x, int y, int z, bool isShortArm)
+    {
+        int metadata = _blockAccess.getBlockMeta(x, y, z);
+        int facing = BlockPistonExtension.getFacing(metadata);
+        float luminance = block.getLuminance(_blockAccess, x, y, z);
+
+        // Arm length logic: 1.0 for full extension, 0.5 for partial
+        float armLength = isShortArm ? 1.0F : 0.5F;
+        double texWidth = isShortArm ? 16.0D : 8.0D;
+
+        switch (facing)
+        {
+            case 0: // Down
+                ApplyRotation(3, 3, 3, 3, 0, 0);
+                SetOverrideBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 0.25F, 1.0F);
+                RenderStandardBlock(block, x, y, z);
+                RenderPistonArmY(x + 0.375, x + 0.625, y + 0.25, y + 0.25 + armLength, z + 0.625, z + 0.625, luminance * 0.8F, texWidth);
+                RenderPistonArmY(x + 0.625, x + 0.375, y + 0.25, y + 0.25 + armLength, z + 0.375, z + 0.375, luminance * 0.8F, texWidth);
+                RenderPistonArmY(x + 0.375, x + 0.375, y + 0.25, y + 0.25 + armLength, z + 0.375, z + 0.625, luminance * 0.6F, texWidth);
+                RenderPistonArmY(x + 0.625, x + 0.625, y + 0.25, y + 0.25 + armLength, z + 0.625, z + 0.375, luminance * 0.6F, texWidth);
+                break;
+
+            case 1: // Up
+                SetOverrideBoundingBox(0.0F, 0.75F, 0.0F, 1.0F, 1.0F, 1.0F);
+                RenderStandardBlock(block, x, y, z);
+                RenderPistonArmY(x + 0.375, x + 0.625, y + 0.75 - armLength, y + 0.75, z + 0.625, z + 0.625, luminance * 0.8F, texWidth);
+                RenderPistonArmY(x + 0.625, x + 0.375, y + 0.75 - armLength, y + 0.75, z + 0.375, z + 0.375, luminance * 0.8F, texWidth);
+                RenderPistonArmY(x + 0.375, x + 0.375, y + 0.75 - armLength, y + 0.75, z + 0.375, z + 0.625, luminance * 0.6F, texWidth);
+                RenderPistonArmY(x + 0.625, x + 0.625, y + 0.75 - armLength, y + 0.75, z + 0.625, z + 0.375, luminance * 0.6F, texWidth);
+                break;
+
+            case 2: // North
+                ApplyRotation(0, 0, 2, 1, 0, 0);
+                SetOverrideBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.25F);
+                RenderStandardBlock(block, x, y, z);
+                RenderPistonArmZ(x + 0.375, x + 0.375, y + 0.625, y + 0.375, z + 0.25, z + 0.25 + armLength, luminance * 0.6F, texWidth);
+                RenderPistonArmZ(x + 0.625, x + 0.625, y + 0.375, y + 0.625, z + 0.25, z + 0.25 + armLength, luminance * 0.6F, texWidth);
+                RenderPistonArmZ(x + 0.375, x + 0.625, y + 0.375, y + 0.375, z + 0.25, z + 0.25 + armLength, luminance * 0.5F, texWidth);
+                RenderPistonArmZ(x + 0.625, x + 0.375, y + 0.625, y + 0.625, z + 0.25, z + 0.25 + armLength, luminance, texWidth);
+                break;
+
+            case 3: // South
+                ApplyRotation(3, 3, 1, 2, 0, 0);
+                SetOverrideBoundingBox(0.0F, 0.0F, 0.75F, 1.0F, 1.0F, 1.0F);
+                RenderStandardBlock(block, x, y, z);
+                RenderPistonArmZ(x + 0.375, x + 0.375, y + 0.625, y + 0.375, z + 0.75 - armLength, z + 0.75, luminance * 0.6F, texWidth);
+                RenderPistonArmZ(x + 0.625, x + 0.625, y + 0.375, y + 0.625, z + 0.75 - armLength, z + 0.75, luminance * 0.6F, texWidth);
+                RenderPistonArmZ(x + 0.375, x + 0.625, y + 0.375, y + 0.375, z + 0.75 - armLength, z + 0.75, luminance * 0.5F, texWidth);
+                RenderPistonArmZ(x + 0.625, x + 0.375, y + 0.625, y + 0.625, z + 0.75 - armLength, z + 0.75, luminance, texWidth);
+                break;
+
+            case 4: // West
+                ApplyRotation(2, 1, 0, 0, 2, 1);
+                SetOverrideBoundingBox(0.0F, 0.0F, 0.0F, 0.25F, 1.0F, 1.0F);
+                RenderStandardBlock(block, x, y, z);
+                RenderPistonArmX(x + 0.25, x + 0.25 + armLength, y + 0.375, y + 0.375, z + 0.625, z + 0.375, luminance * 0.5F, texWidth);
+                RenderPistonArmX(x + 0.25, x + 0.25 + armLength, y + 0.625, y + 0.625, z + 0.375, z + 0.625, luminance, texWidth);
+                RenderPistonArmX(x + 0.25, x + 0.25 + armLength, y + 0.375, y + 0.625, z + 0.375, z + 0.375, luminance * 0.6F, texWidth);
+                RenderPistonArmX(x + 0.25, x + 0.25 + armLength, y + 0.625, y + 0.375, z + 0.625, z + 0.625, luminance * 0.6F, texWidth);
+                break;
+
+            case 5: // East
+                ApplyRotation(1, 2, 0, 0, 1, 2);
+                SetOverrideBoundingBox(0.75F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+                RenderStandardBlock(block, x, y, z);
+                RenderPistonArmX(x + 0.75 - armLength, x + 0.75, y + 0.375, y + 0.375, z + 0.625, z + 0.375, luminance * 0.5F, texWidth);
+                RenderPistonArmX(x + 0.75 - armLength, x + 0.75, y + 0.625, y + 0.625, z + 0.375, z + 0.625, luminance, texWidth);
+                RenderPistonArmX(x + 0.75 - armLength, x + 0.75, y + 0.375, y + 0.625, z + 0.375, z + 0.375, luminance * 0.6F, texWidth);
+                RenderPistonArmX(x + 0.75 - armLength, x + 0.75, y + 0.625, y + 0.375, z + 0.625, z + 0.625, luminance * 0.6F, texWidth);
+                break;
+        }
+
+        ResetUvRotation();
+        SetOverrideBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         return true;
     }
 
-    public bool renderBlockLever(Block var1, int var2, int var3, int var4)
+    private void ApplyRotation(int top, int bottom, int north, int south, int west, int east)
     {
-        int var5 = _blockAccess.getBlockMeta(var2, var3, var4);
-        int var6 = var5 & 7;
-        bool var7 = (var5 & 8) > 0;
-        Tessellator var8 = getTessellator();
-        bool var9 = _overrideBlockTexture >= 0;
-        if (!var9)
+        _uvRotateTop = top;
+        _uvRotateBottom = bottom;
+        _uvRotateNorth = north;
+        _uvRotateSouth = south;
+        _uvRotateWest = west;
+        _uvRotateEast = east;
+    }
+
+    private bool RenderBlockLever(Block block, int x, int y, int z)
+    {
+        int metadata = _blockAccess.getBlockMeta(x, y, z);
+        int orientation = metadata & 7;
+        bool isActivated = (metadata & 8) > 0;
+        Tessellator tess = GetTessellator();
+
+        // Levers use a cobblestone texture for the baseplate by default
+        bool hasTextureOverride = _overrideBlockTexture >= 0;
+        if (!hasTextureOverride)
         {
             _overrideBlockTexture = Block.Cobblestone.textureId;
         }
 
-        float var10 = 0.25F;
-        float var11 = 3.0F / 16.0F;
-        float var12 = 3.0F / 16.0F;
-        if (var6 == 5)
+        float baseWidth = 0.25F;
+        float baseThickness = 3.0F / 16.0F;
+        float baseHeight = 3.0F / 16.0F;
+
+        // --- 1. Render the Base Plate ---
+        if (orientation == 5) // Floor (North/South)
         {
-            setOverrideBoundingBox(0.5F - var11, 0.0F, 0.5F - var10, 0.5F + var11, var12, 0.5F + var10);
+            SetOverrideBoundingBox(0.5F - baseHeight, 0.0F, 0.5F - baseWidth, 0.5F + baseHeight, baseThickness, 0.5F + baseWidth);
         }
-        else if (var6 == 6)
+        else if (orientation == 6) // Floor (East/West)
         {
-            setOverrideBoundingBox(0.5F - var10, 0.0F, 0.5F - var11, 0.5F + var10, var12, 0.5F + var11);
+            SetOverrideBoundingBox(0.5F - baseWidth, 0.0F, 0.5F - baseHeight, 0.5F + baseWidth, baseThickness, 0.5F + baseHeight);
         }
-        else if (var6 == 4)
+        else if (orientation == 4) // Wall South
         {
-            setOverrideBoundingBox(0.5F - var11, 0.5F - var10, 1.0F - var12, 0.5F + var11, 0.5F + var10, 1.0F);
+            SetOverrideBoundingBox(0.5F - baseHeight, 0.5F - baseWidth, 1.0F - baseThickness, 0.5F + baseHeight, 0.5F + baseWidth, 1.0F);
         }
-        else if (var6 == 3)
+        else if (orientation == 3) // Wall North
         {
-            setOverrideBoundingBox(0.5F - var11, 0.5F - var10, 0.0F, 0.5F + var11, 0.5F + var10, var12);
+            SetOverrideBoundingBox(0.5F - baseHeight, 0.5F - baseWidth, 0.0F, 0.5F + baseHeight, 0.5F + baseWidth, baseThickness);
         }
-        else if (var6 == 2)
+        else if (orientation == 2) // Wall East
         {
-            setOverrideBoundingBox(1.0F - var12, 0.5F - var10, 0.5F - var11, 1.0F, 0.5F + var10, 0.5F + var11);
+            SetOverrideBoundingBox(1.0F - baseThickness, 0.5F - baseWidth, 0.5F - baseHeight, 1.0F, 0.5F + baseWidth, 0.5F + baseHeight);
         }
-        else if (var6 == 1)
+        else if (orientation == 1) // Wall West
         {
-            setOverrideBoundingBox(0.0F, 0.5F - var10, 0.5F - var11, var12, 0.5F + var10, 0.5F + var11);
+            SetOverrideBoundingBox(0.0F, 0.5F - baseWidth, 0.5F - baseHeight, baseThickness, 0.5F + baseWidth, 0.5F + baseHeight);
         }
 
-        renderStandardBlock(var1, var2, var3, var4);
-        if (!var9)
+        RenderStandardBlock(block, x, y, z);
+
+        if (!hasTextureOverride)
         {
             _overrideBlockTexture = -1;
         }
 
-        float var13 = var1.getLuminance(_blockAccess, var2, var3, var4);
-        if (Block.BlocksLightLuminance[var1.id] > 0)
-        {
-            var13 = 1.0F;
-        }
+        // --- 2. Calculate Handle Lighting & Texture ---
+        float luminance = block.getLuminance(_blockAccess, x, y, z);
+        if (Block.BlocksLightLuminance[block.id] > 0) luminance = 1.0F;
+        tess.setColorOpaque_F(luminance, luminance, luminance);
 
-        var8.setColorOpaque_F(var13, var13, var13);
-        int var14 = var1.getTexture(0);
-        if (_overrideBlockTexture >= 0)
-        {
-            var14 = _overrideBlockTexture;
-        }
+        int textureId = block.getTexture(0);
+        if (_overrideBlockTexture >= 0) textureId = _overrideBlockTexture;
 
-        int var15 = (var14 & 15) << 4;
-        int var16 = var14 & 240;
-        float var17 = var15 / 256.0F;
-        float var18 = (var15 + 15.99F) / 256.0F;
-        float var19 = var16 / 256.0F;
-        float var20 = (var16 + 15.99F) / 256.0F;
-        Vector3D<double>[] var21 = new Vector3D<double>[8];
-        float var22 = 1.0F / 16.0F;
-        float var23 = 1.0F / 16.0F;
-        float var24 = 10.0F / 16.0F;
-        var21[0] = new((double)-var22, 0.0D, (double)-var23);
-        var21[1] = new((double)var22, 0.0D, (double)-var23);
-        var21[2] = new((double)var22, 0.0D, (double)var23);
-        var21[3] = new((double)-var22, 0.0D, (double)var23);
-        var21[4] = new((double)-var22, (double)var24, (double)-var23);
-        var21[5] = new((double)var22, (double)var24, (double)-var23);
-        var21[6] = new((double)var22, (double)var24, (double)var23);
-        var21[7] = new((double)-var22, (double)var24, (double)var23);
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
+        float minU = texU / 256.0F;
+        float maxU = (texU + 15.99F) / 256.0F;
+        float minV = texV / 256.0F;
+        float maxV = (texV + 15.99F) / 256.0F;
 
-        for (int var25 = 0; var25 < 8; ++var25)
+        // --- 3. Handle Vertex Math ---
+        Vector3D<double>[] vertices = new Vector3D<double>[8];
+        float hRadius = 1.0F / 16.0F;
+        float hLength = 10.0F / 16.0F;
+
+        // Initial handle box (standing straight up)
+        vertices[0] = new(-hRadius, 0.0D, -hRadius);
+        vertices[1] = new( hRadius, 0.0D, -hRadius);
+        vertices[2] = new( hRadius, 0.0D,  hRadius);
+        vertices[3] = new(-hRadius, 0.0D,  hRadius);
+        vertices[4] = new(-hRadius, hLength, -hRadius);
+        vertices[5] = new( hRadius, hLength, -hRadius);
+        vertices[6] = new( hRadius, hLength,  hRadius);
+        vertices[7] = new(-hRadius, hLength,  hRadius);
+
+        for (int i = 0; i < 8; ++i)
         {
-            if (var7)
+            // Toggle angle based on state
+            if (isActivated)
             {
-                var21[var25].Z -= 1.0D / 16.0D;
-                rotateAroundX(ref var21[var25], (float)Math.PI * 2.0F / 9.0F);
+                vertices[i].Z -= 1.0D / 16.0D;
+                RotateAroundX(ref vertices[i], (float)Math.PI * 2.0F / 9.0F);
             }
             else
             {
-                var21[var25].Z += 1.0D / 16.0D;
-                rotateAroundX(ref var21[var25], -((float)Math.PI * 2.0F / 9.0F));
+                vertices[i].Z += 1.0D / 16.0D;
+                RotateAroundX(ref vertices[i], -(float)Math.PI * 2.0F / 9.0F);
             }
 
-            if (var6 == 6)
+            // Apply orientation rotations
+            if (orientation == 6) RotateAroundY(ref vertices[i], (float)Math.PI * 0.5F);
+
+            if (orientation < 5) // Wall mount requires extra rotation
             {
-                rotateAroundY(ref var21[var25], (float)Math.PI * 0.5F);
-            }
+                vertices[i].Y -= 0.375D;
+                RotateAroundX(ref vertices[i], (float)Math.PI * 0.5F);
 
-            if (var6 < 5)
-            {
-                var21[var25].Y -= 0.375D;
-                rotateAroundX(ref var21[var25], (float)Math.PI * 0.5F);
-                if (var6 == 4)
-                {
-                    rotateAroundY(ref var21[var25], 0.0f);
-                }
+                if (orientation == 3) RotateAroundY(ref vertices[i], (float)Math.PI);
+                if (orientation == 2) RotateAroundY(ref vertices[i], (float)Math.PI * 0.5F);
+                if (orientation == 1) RotateAroundY(ref vertices[i], (float)Math.PI * -0.5F);
 
-                if (var6 == 3)
-                {
-                    rotateAroundY(ref var21[var25], (float)Math.PI);
-                }
-
-                if (var6 == 2)
-                {
-                    rotateAroundY(ref var21[var25], (float)Math.PI * 0.5F);
-                }
-
-                if (var6 == 1)
-                {
-                    rotateAroundY(ref var21[var25], (float)Math.PI * -0.5F);
-                }
-
-                var21[var25].X += var2 + 0.5D;
-                var21[var25].Y += var3 + 0.5F;
-                var21[var25].Z += var4 + 0.5D;
+                vertices[i].X += x + 0.5D;
+                vertices[i].Y += y + 0.5D;
+                vertices[i].Z += z + 0.5D;
             }
             else
             {
-                var21[var25].X += var2 + 0.5D;
-                var21[var25].Y += var3 + 2.0F / 16.0F;
-                var21[var25].Z += var4 + 0.5D;
+                vertices[i].X += x + 0.5D;
+                vertices[i].Y += y + 2.0F / 16.0F;
+                vertices[i].Z += z + 0.5D;
             }
         }
 
-        Vector3D<double> var30 = new();
-        Vector3D<double> var26 = new();
-        Vector3D<double> var27 = new();
-        Vector3D<double> var28 = new();
-
-        for (int var29 = 0; var29 < 6; ++var29)
+        // --- 4. Draw the Handle Faces ---
+        for (int face = 0; face < 6; ++face)
         {
-            if (var29 == 0)
+            // The handle uses specific tiny snippets of the texture atlas for its detail
+            if (face == 0) // Bottom cap
             {
-                var17 = (var15 + 7) / 256.0F;
-                var18 = (var15 + 9 - 0.01F) / 256.0F;
-                var19 = (var16 + 6) / 256.0F;
-                var20 = (var16 + 8 - 0.01F) / 256.0F;
+                minU = (texU + 7) / 256.0F;
+                maxU = (texU + 9 - 0.01F) / 256.0F;
+                minV = (texV + 6) / 256.0F;
+                maxV = (texV + 8 - 0.01F) / 256.0F;
             }
-            else if (var29 == 2)
+            else if (face == 2) // Side detail
             {
-                var17 = (var15 + 7) / 256.0F;
-                var18 = (var15 + 9 - 0.01F) / 256.0F;
-                var19 = (var16 + 6) / 256.0F;
-                var20 = (var16 + 16 - 0.01F) / 256.0F;
-            }
-
-            if (var29 == 0)
-            {
-                var30 = var21[0];
-                var26 = var21[1];
-                var27 = var21[2];
-                var28 = var21[3];
-            }
-            else if (var29 == 1)
-            {
-                var30 = var21[7];
-                var26 = var21[6];
-                var27 = var21[5];
-                var28 = var21[4];
-            }
-            else if (var29 == 2)
-            {
-                var30 = var21[1];
-                var26 = var21[0];
-                var27 = var21[4];
-                var28 = var21[5];
-            }
-            else if (var29 == 3)
-            {
-                var30 = var21[2];
-                var26 = var21[1];
-                var27 = var21[5];
-                var28 = var21[6];
-            }
-            else if (var29 == 4)
-            {
-                var30 = var21[3];
-                var26 = var21[2];
-                var27 = var21[6];
-                var28 = var21[7];
-            }
-            else if (var29 == 5)
-            {
-                var30 = var21[0];
-                var26 = var21[3];
-                var27 = var21[7];
-                var28 = var21[4];
+                minU = (texU + 7) / 256.0F;
+                maxU = (texU + 9 - 0.01F) / 256.0F;
+                minV = (texV + 6) / 256.0F;
+                maxV = (texV + 16 - 0.01F) / 256.0F;
             }
 
-            var8.addVertexWithUV(var30.X, var30.Y, var30.Z, (double)var17, (double)var20);
-            var8.addVertexWithUV(var26.X, var26.Y, var26.Z, (double)var18, (double)var20);
-            var8.addVertexWithUV(var27.X, var27.Y, var27.Z, (double)var18, (double)var19);
-            var8.addVertexWithUV(var28.X, var28.Y, var28.Z, (double)var17, (double)var19);
+            Vector3D<double> v1 = default, v2 = default, v3 = default, v4 = default;
+
+            switch (face)
+            {
+                case 0: v1 = vertices[0]; v2 = vertices[1]; v3 = vertices[2]; v4 = vertices[3]; break;
+                case 1: v1 = vertices[7]; v2 = vertices[6]; v3 = vertices[5]; v4 = vertices[4]; break;
+                case 2: v1 = vertices[1]; v2 = vertices[0]; v3 = vertices[4]; v4 = vertices[5]; break;
+                case 3: v1 = vertices[2]; v2 = vertices[1]; v3 = vertices[5]; v4 = vertices[6]; break;
+                case 4: v1 = vertices[3]; v2 = vertices[2]; v3 = vertices[6]; v4 = vertices[7]; break;
+                case 5: v1 = vertices[0]; v2 = vertices[3]; v3 = vertices[7]; v4 = vertices[4]; break;
+            }
+
+            tess.addVertexWithUV(v1.X, v1.Y, v1.Z, minU, maxV);
+            tess.addVertexWithUV(v2.X, v2.Y, v2.Z, maxU, maxV);
+            tess.addVertexWithUV(v3.X, v3.Y, v3.Z, maxU, minV);
+            tess.addVertexWithUV(v4.X, v4.Y, v4.Z, minU, minV);
         }
 
         return true;
     }
 
-    public bool renderBlockFire(Block var1, int var2, int var3, int var4)
+    private bool RenderBlockFire(Block block, int x, int y, int z)
     {
-        Tessellator var5 = getTessellator();
-        int var6 = var1.getTexture(0);
-        if (_overrideBlockTexture >= 0)
+        Tessellator tess = GetTessellator();
+        int textureId = block.getTexture(0);
+        if (_overrideBlockTexture >= 0) textureId = _overrideBlockTexture;
+
+        float luminance = block.getLuminance(_blockAccess, x, y, z);
+        tess.setColorOpaque_F(luminance, luminance, luminance);
+
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
+        double minU = texU / 256.0F;
+        double maxU = (texU + 15.99F) / 256.0F;
+        double minV = texV / 256.0F;
+        double maxV = (texV + 15.99F) / 256.0F;
+
+        float fireHeight = 1.4F;
+
+        // If not on a solid/flammable floor, render climbing flames on walls
+        if (!_blockAccess.shouldSuffocate(x, y - 1, z) && !Block.Fire.isFlammable(_blockAccess, x, y - 1, z))
         {
-            var6 = _overrideBlockTexture;
-        }
+            float sideInset = 0.2F;
+            float yOffset = 1.0F / 16.0F;
 
-        float var7 = var1.getLuminance(_blockAccess, var2, var3, var4);
-        var5.setColorOpaque_F(var7, var7, var7);
-        int var8 = (var6 & 15) << 4;
-        int var9 = var6 & 240;
-        double var10 = (double)(var8 / 256.0F);
-        double var12 = (double)((var8 + 15.99F) / 256.0F);
-        double var14 = (double)(var9 / 256.0F);
-        double var16 = (double)((var9 + 15.99F) / 256.0F);
-        float var18 = 1.4F;
-        double var21;
-        double var23;
-        double var25;
-        double var27;
-        double var29;
-        double var31;
-        double var33;
-        if (!_blockAccess.shouldSuffocate(var2, var3 - 1, var4) && !Block.Fire.isFlammable(_blockAccess, var2, var3 - 1, var4))
-        {
-            float var37 = 0.2F;
-            float var20 = 1.0F / 16.0F;
-            if ((var2 + var3 + var4 & 1) == 1)
+            // Variation: Flip texture or use second fire frame based on position
+            if ((x + y + z & 1) == 1)
             {
-                var10 = (double)(var8 / 256.0F);
-                var12 = (double)((var8 + 15.99F) / 256.0F);
-                var14 = (double)((var9 + 16) / 256.0F);
-                var16 = (double)((var9 + 15.99F + 16.0F) / 256.0F);
+                minV = (texV + 16) / 256.0F;
+                maxV = (texV + 15.99F + 16.0F) / 256.0F;
             }
 
-            if ((var2 / 2 + var3 / 2 + var4 / 2 & 1) == 1)
+            if ((x / 2 + y / 2 + z / 2 & 1) == 1)
             {
-                var21 = var12;
-                var12 = var10;
-                var10 = var21;
+                (minU, maxU) = (maxU, minU);
             }
 
-            if (Block.Fire.isFlammable(_blockAccess, var2 - 1, var3, var4))
+            // Climbing West Wall
+            if (Block.Fire.isFlammable(_blockAccess, x - 1, y, z))
             {
-                var5.addVertexWithUV((double)(var2 + var37), (double)(var3 + var18 + var20), var4 + 1, var12, var14);
-                var5.addVertexWithUV(var2 + 0, (double)(var3 + 0 + var20), var4 + 1, var12, var16);
-                var5.addVertexWithUV(var2 + 0, (double)(var3 + 0 + var20), var4 + 0, var10, var16);
-                var5.addVertexWithUV((double)(var2 + var37), (double)(var3 + var18 + var20), var4 + 0, var10, var14);
-                var5.addVertexWithUV((double)(var2 + var37), (double)(var3 + var18 + var20), var4 + 0, var10, var14);
-                var5.addVertexWithUV(var2 + 0, (double)(var3 + 0 + var20), var4 + 0, var10, var16);
-                var5.addVertexWithUV(var2 + 0, (double)(var3 + 0 + var20), var4 + 1, var12, var16);
-                var5.addVertexWithUV((double)(var2 + var37), (double)(var3 + var18 + var20), var4 + 1, var12, var14);
+                tess.addVertexWithUV(x + sideInset, y + fireHeight + yOffset, z + 1, maxU, minV);
+                tess.addVertexWithUV(x, y + yOffset, z + 1, maxU, maxV);
+                tess.addVertexWithUV(x, y + yOffset, z, minU, maxV);
+                tess.addVertexWithUV(x + sideInset, y + fireHeight + yOffset, z, minU, minV);
+                // Backface
+                tess.addVertexWithUV(x + sideInset, y + fireHeight + yOffset, z, minU, minV);
+                tess.addVertexWithUV(x, y + yOffset, z, minU, maxV);
+                tess.addVertexWithUV(x, y + yOffset, z + 1, maxU, maxV);
+                tess.addVertexWithUV(x + sideInset, y + fireHeight + yOffset, z + 1, maxU, minV);
             }
 
-            if (Block.Fire.isFlammable(_blockAccess, var2 + 1, var3, var4))
+            // Climbing East Wall
+            if (Block.Fire.isFlammable(_blockAccess, x + 1, y, z))
             {
-                var5.addVertexWithUV((double)(var2 + 1 - var37), (double)(var3 + var18 + var20), var4 + 0, var10, var14);
-                var5.addVertexWithUV(var2 + 1 - 0, (double)(var3 + 0 + var20), var4 + 0, var10, var16);
-                var5.addVertexWithUV(var2 + 1 - 0, (double)(var3 + 0 + var20), var4 + 1, var12, var16);
-                var5.addVertexWithUV((double)(var2 + 1 - var37), (double)(var3 + var18 + var20), var4 + 1, var12, var14);
-                var5.addVertexWithUV((double)(var2 + 1 - var37), (double)(var3 + var18 + var20), var4 + 1, var12, var14);
-                var5.addVertexWithUV(var2 + 1 - 0, (double)(var3 + 0 + var20), var4 + 1, var12, var16);
-                var5.addVertexWithUV(var2 + 1 - 0, (double)(var3 + 0 + var20), var4 + 0, var10, var16);
-                var5.addVertexWithUV((double)(var2 + 1 - var37), (double)(var3 + var18 + var20), var4 + 0, var10, var14);
+                tess.addVertexWithUV(x + 1 - sideInset, y + fireHeight + yOffset, z, minU, minV);
+                tess.addVertexWithUV(x + 1, y + yOffset, z, minU, maxV);
+                tess.addVertexWithUV(x + 1, y + yOffset, z + 1, maxU, maxV);
+                tess.addVertexWithUV(x + 1 - sideInset, y + fireHeight + yOffset, z + 1, maxU, minV);
+                // Backface
+                tess.addVertexWithUV(x + 1 - sideInset, y + fireHeight + yOffset, z + 1, maxU, minV);
+                tess.addVertexWithUV(x + 1, y + yOffset, z + 1, maxU, maxV);
+                tess.addVertexWithUV(x + 1, y + yOffset, z, minU, maxV);
+                tess.addVertexWithUV(x + 1 - sideInset, y + fireHeight + yOffset, z, minU, minV);
             }
 
-            if (Block.Fire.isFlammable(_blockAccess, var2, var3, var4 - 1))
+            // Climbing North Wall
+            if (Block.Fire.isFlammable(_blockAccess, x, y, z - 1))
             {
-                var5.addVertexWithUV(var2 + 0, (double)(var3 + var18 + var20), (double)(var4 + var37), var12, var14);
-                var5.addVertexWithUV(var2 + 0, (double)(var3 + 0 + var20), var4 + 0, var12, var16);
-                var5.addVertexWithUV(var2 + 1, (double)(var3 + 0 + var20), var4 + 0, var10, var16);
-                var5.addVertexWithUV(var2 + 1, (double)(var3 + var18 + var20), (double)(var4 + var37), var10, var14);
-                var5.addVertexWithUV(var2 + 1, (double)(var3 + var18 + var20), (double)(var4 + var37), var10, var14);
-                var5.addVertexWithUV(var2 + 1, (double)(var3 + 0 + var20), var4 + 0, var10, var16);
-                var5.addVertexWithUV(var2 + 0, (double)(var3 + 0 + var20), var4 + 0, var12, var16);
-                var5.addVertexWithUV(var2 + 0, (double)(var3 + var18 + var20), (double)(var4 + var37), var12, var14);
+                tess.addVertexWithUV(x, y + fireHeight + yOffset, z + sideInset, maxU, minV);
+                tess.addVertexWithUV(x, y + yOffset, z, maxU, maxV);
+                tess.addVertexWithUV(x + 1, y + yOffset, z, minU, maxV);
+                tess.addVertexWithUV(x + 1, y + fireHeight + yOffset, z + sideInset, minU, minV);
+                // Backface
+                tess.addVertexWithUV(x + 1, y + fireHeight + yOffset, z + sideInset, minU, minV);
+                tess.addVertexWithUV(x + 1, y + yOffset, z, minU, maxV);
+                tess.addVertexWithUV(x, y + yOffset, z, maxU, maxV);
+                tess.addVertexWithUV(x, y + fireHeight + yOffset, z + sideInset, maxU, minV);
             }
 
-            if (Block.Fire.isFlammable(_blockAccess, var2, var3, var4 + 1))
+            // Climbing South Wall
+            if (Block.Fire.isFlammable(_blockAccess, x, y, z + 1))
             {
-                var5.addVertexWithUV(var2 + 1, (double)(var3 + var18 + var20), (double)(var4 + 1 - var37), var10, var14);
-                var5.addVertexWithUV(var2 + 1, (double)(var3 + 0 + var20), var4 + 1 - 0, var10, var16);
-                var5.addVertexWithUV(var2 + 0, (double)(var3 + 0 + var20), var4 + 1 - 0, var12, var16);
-                var5.addVertexWithUV(var2 + 0, (double)(var3 + var18 + var20), (double)(var4 + 1 - var37), var12, var14);
-                var5.addVertexWithUV(var2 + 0, (double)(var3 + var18 + var20), (double)(var4 + 1 - var37), var12, var14);
-                var5.addVertexWithUV(var2 + 0, (double)(var3 + 0 + var20), var4 + 1 - 0, var12, var16);
-                var5.addVertexWithUV(var2 + 1, (double)(var3 + 0 + var20), var4 + 1 - 0, var10, var16);
-                var5.addVertexWithUV(var2 + 1, (double)(var3 + var18 + var20), (double)(var4 + 1 - var37), var10, var14);
+                tess.addVertexWithUV(x + 1, y + fireHeight + yOffset, z + 1 - sideInset, minU, minV);
+                tess.addVertexWithUV(x + 1, y + yOffset, z + 1, minU, maxV);
+                tess.addVertexWithUV(x, y + yOffset, z + 1, maxU, maxV);
+                tess.addVertexWithUV(x, y + fireHeight + yOffset, z + 1 - sideInset, maxU, minV);
+                // Backface
+                tess.addVertexWithUV(x, y + fireHeight + yOffset, z + 1 - sideInset, maxU, minV);
+                tess.addVertexWithUV(x, y + yOffset, z + 1, maxU, maxV);
+                tess.addVertexWithUV(x + 1, y + yOffset, z + 1, minU, maxV);
+                tess.addVertexWithUV(x + 1, y + fireHeight + yOffset, z + 1 - sideInset, minU, minV);
             }
 
-            if (Block.Fire.isFlammable(_blockAccess, var2, var3 + 1, var4))
+            // Climbing Ceilings
+            if (Block.Fire.isFlammable(_blockAccess, x, y + 1, z))
             {
-                var21 = var2 + 0.5D + 0.5D;
-                var23 = var2 + 0.5D - 0.5D;
-                var25 = var4 + 0.5D + 0.5D;
-                var27 = var4 + 0.5D - 0.5D;
-                var29 = var2 + 0.5D - 0.5D;
-                var31 = var2 + 0.5D + 0.5D;
-                var33 = var4 + 0.5D - 0.5D;
-                double var35 = var4 + 0.5D + 0.5D;
-                var10 = (double)(var8 / 256.0F);
-                var12 = (double)((var8 + 15.99F) / 256.0F);
-                var14 = (double)(var9 / 256.0F);
-                var16 = (double)((var9 + 15.99F) / 256.0F);
-                ++var3;
-                var18 = -0.2F;
-                if ((var2 + var3 + var4 & 1) == 0)
+                double xMax = x + 1, xMin = x;
+                double zMax = z + 1, zMin = z;
+
+                minU = texU / 256.0F;
+                maxU = (texU + 15.99F) / 256.0F;
+                minV = texV / 256.0F;
+                maxV = (texV + 15.99F) / 256.0F;
+
+                int ceilY = y + 1;
+                float ceilOffset = -0.2F;
+
+                if ((x + ceilY + z & 1) == 0)
                 {
-                    var5.addVertexWithUV(var29, (double)(var3 + var18), var4 + 0, var12, var14);
-                    var5.addVertexWithUV(var21, var3 + 0, var4 + 0, var12, var16);
-                    var5.addVertexWithUV(var21, var3 + 0, var4 + 1, var10, var16);
-                    var5.addVertexWithUV(var29, (double)(var3 + var18), var4 + 1, var10, var14);
-                    var10 = (double)(var8 / 256.0F);
-                    var12 = (double)((var8 + 15.99F) / 256.0F);
-                    var14 = (double)((var9 + 16) / 256.0F);
-                    var16 = (double)((var9 + 15.99F + 16.0F) / 256.0F);
-                    var5.addVertexWithUV(var31, (double)(var3 + var18), var4 + 1, var12, var14);
-                    var5.addVertexWithUV(var23, var3 + 0, var4 + 1, var12, var16);
-                    var5.addVertexWithUV(var23, var3 + 0, var4 + 0, var10, var16);
-                    var5.addVertexWithUV(var31, (double)(var3 + var18), var4 + 0, var10, var14);
+                    tess.addVertexWithUV(xMin, ceilY + ceilOffset, z, maxU, minV);
+                    tess.addVertexWithUV(xMax, ceilY, z, maxU, maxV);
+                    tess.addVertexWithUV(xMax, ceilY, z + 1, minU, maxV);
+                    tess.addVertexWithUV(xMin, ceilY + ceilOffset, z + 1, minU, minV);
+
+                    minV = (texV + 16) / 256.0F;
+                    maxV = (texV + 15.99F + 16.0F) / 256.0F;
+
+                    tess.addVertexWithUV(xMax, ceilY + ceilOffset, z + 1, maxU, minV);
+                    tess.addVertexWithUV(xMin, ceilY, z + 1, maxU, maxV);
+                    tess.addVertexWithUV(xMin, ceilY, z, minU, maxV);
+                    tess.addVertexWithUV(xMax, ceilY + ceilOffset, z, minU, minV);
                 }
                 else
                 {
-                    var5.addVertexWithUV(var2 + 0, (double)(var3 + var18), var35, var12, var14);
-                    var5.addVertexWithUV(var2 + 0, var3 + 0, var27, var12, var16);
-                    var5.addVertexWithUV(var2 + 1, var3 + 0, var27, var10, var16);
-                    var5.addVertexWithUV(var2 + 1, (double)(var3 + var18), var35, var10, var14);
-                    var10 = (double)(var8 / 256.0F);
-                    var12 = (double)((var8 + 15.99F) / 256.0F);
-                    var14 = (double)((var9 + 16) / 256.0F);
-                    var16 = (double)((var9 + 15.99F + 16.0F) / 256.0F);
-                    var5.addVertexWithUV(var2 + 1, (double)(var3 + var18), var33, var12, var14);
-                    var5.addVertexWithUV(var2 + 1, var3 + 0, var25, var12, var16);
-                    var5.addVertexWithUV(var2 + 0, var3 + 0, var25, var10, var16);
-                    var5.addVertexWithUV(var2 + 0, (double)(var3 + var18), var33, var10, var14);
+                    tess.addVertexWithUV(x, ceilY + ceilOffset, zMax, maxU, minV);
+                    tess.addVertexWithUV(x, ceilY, zMin, maxU, maxV);
+                    tess.addVertexWithUV(x + 1, ceilY, zMin, minU, maxV);
+                    tess.addVertexWithUV(x + 1, ceilY + ceilOffset, zMax, minU, minV);
+
+                    minV = (texV + 16) / 256.0F;
+                    maxV = (texV + 15.99F + 16.0F) / 256.0F;
+
+                    tess.addVertexWithUV(x + 1, ceilY + ceilOffset, zMin, maxU, minV);
+                    tess.addVertexWithUV(x + 1, ceilY, zMax, maxU, maxV);
+                    tess.addVertexWithUV(x, ceilY, zMax, minU, maxV);
+                    tess.addVertexWithUV(x, ceilY + ceilOffset, zMin, minU, minV);
                 }
+            }
+        }
+        else // Render central "X" flames for fire on solid floors
+        {
+            double insetSmall = 0.2D, insetLarge = 0.3D;
+            double xC = x + 0.5D, zC = z + 0.5D;
+
+            // First diagonal set
+            tess.addVertexWithUV(xC - insetLarge, y + fireHeight, z + 1, maxU, minV);
+            tess.addVertexWithUV(xC + insetSmall, y, z + 1, maxU, maxV);
+            tess.addVertexWithUV(xC + insetSmall, y, z, minU, maxV);
+            tess.addVertexWithUV(xC - insetLarge, y + fireHeight, z, minU, minV);
+
+            tess.addVertexWithUV(xC + insetLarge, y + fireHeight, z, maxU, minV);
+            tess.addVertexWithUV(xC - insetSmall, y, z, maxU, maxV);
+            tess.addVertexWithUV(xC - insetSmall, y, z + 1, minU, maxV);
+            tess.addVertexWithUV(xC + insetLarge, y + fireHeight, z + 1, minU, minV);
+
+            // Switch texture frame
+            minV = (texV + 16) / 256.0F;
+            maxV = (texV + 15.99F + 16.0F) / 256.0F;
+
+            // Second diagonal set (X-axis dominant)
+            tess.addVertexWithUV(x + 1, y + fireHeight, zC + insetLarge, maxU, minV);
+            tess.addVertexWithUV(x + 1, y, zC - insetSmall, maxU, maxV);
+            tess.addVertexWithUV(x, y, zC - insetSmall, minU, maxV);
+            tess.addVertexWithUV(x, y + fireHeight, zC + insetLarge, minU, minV);
+
+            tess.addVertexWithUV(x, y + fireHeight, zC - insetLarge, maxU, minV);
+            tess.addVertexWithUV(x, y, zC + insetSmall, maxU, maxV);
+            tess.addVertexWithUV(x + 1, y, zC + insetSmall, minU, maxV);
+            tess.addVertexWithUV(x + 1, y + fireHeight, zC - insetLarge, minU, minV);
+
+            // Third set (outer crossing)
+            double i4 = 0.4D, i5 = 0.5D;
+            tess.addVertexWithUV(xC - i4, y + fireHeight, z, minU, minV);
+            tess.addVertexWithUV(xC - i5, y, z, minU, maxV);
+            tess.addVertexWithUV(xC - i5, y, z + 1, maxU, maxV);
+            tess.addVertexWithUV(xC - i4, y + fireHeight, z + 1, maxU, minV);
+
+            tess.addVertexWithUV(xC + i4, y + fireHeight, z + 1, minU, minV);
+            tess.addVertexWithUV(xC + i5, y, z + 1, minU, maxV);
+            tess.addVertexWithUV(xC + i5, y, z, maxU, maxV);
+            tess.addVertexWithUV(xC + i4, y + fireHeight, z, maxU, minV);
+
+            // Final set
+            minV = texV / 256.0F;
+            maxV = (texV + 15.99F) / 256.0F;
+            tess.addVertexWithUV(x, y + fireHeight, zC + i4, minU, minV);
+            tess.addVertexWithUV(x, y, zC + i5, minU, maxV);
+            tess.addVertexWithUV(x + 1, y, zC + i5, maxU, maxV);
+            tess.addVertexWithUV(x + 1, y + fireHeight, zC + i4, maxU, minV);
+
+            tess.addVertexWithUV(x + 1, y + fireHeight, zC - i4, minU, minV);
+            tess.addVertexWithUV(x + 1, y, zC - i5, minU, maxV);
+            tess.addVertexWithUV(x, y, zC - i5, maxU, maxV);
+            tess.addVertexWithUV(x, y + fireHeight, zC - i4, maxU, minV);
+        }
+
+        return true;
+    }
+
+    private bool RenderBlockRedstoneWire(Block block, int x, int y, int z)
+    {
+        Tessellator tess = GetTessellator();
+        int powerLevel = _blockAccess.getBlockMeta(x, y, z);
+
+        int textureId = block.getTexture(1, powerLevel);
+        if (_overrideBlockTexture >= 0) textureId = _overrideBlockTexture;
+
+        // --- 1. Calculate the Glow Color ---
+        float luminance = block.getLuminance(_blockAccess, x, y, z);
+        float powerPercent = powerLevel / 15.0F;
+
+        // Red component increases with power
+        float r = powerPercent * 0.6F + 0.4F;
+        if (powerLevel == 0) r = 0.3F;
+
+        // Green and Blue are much lower to keep it red, but they curve up slightly at high power
+        float g = powerPercent * powerPercent * 0.7F - 0.5F;
+        float b = powerPercent * powerPercent * 0.6F - 0.7F;
+        if (g < 0.0F) g = 0.0F;
+        if (b < 0.0F) b = 0.0F;
+
+        tess.setColorOpaque_F(luminance * r, luminance * g, luminance * b);
+
+        // --- 2. UV Mapping ---
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
+        double minU = texU / 256.0F;
+        double maxU = (texU + 15.99F) / 256.0F;
+        double minV = texV / 256.0F;
+        double maxV = (texV + 15.99F) / 256.0F;
+
+        // --- 3. Connection Logic ---
+        // Checks neighbors on same level OR one level down (if the neighbor isn't solid)
+        bool connectsWest = BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x - 1, y, z, 1) ||
+                           (!_blockAccess.shouldSuffocate(x - 1, y, z) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x - 1, y - 1, z, -1));
+        bool connectsEast = BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x + 1, y, z, 3) ||
+                           (!_blockAccess.shouldSuffocate(x + 1, y, z) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x + 1, y - 1, z, -1));
+        bool connectsNorth = BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x, y, z - 1, 2) ||
+                            (!_blockAccess.shouldSuffocate(x, y, z - 1) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x, y - 1, z - 1, -1));
+        bool connectsSouth = BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x, y, z + 1, 0) ||
+                            (!_blockAccess.shouldSuffocate(x, y, z + 1) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x, y - 1, z + 1, -1));
+
+        // Check for connections climbing UP a block
+        if (!_blockAccess.shouldSuffocate(x, y + 1, z))
+        {
+            if (_blockAccess.shouldSuffocate(x - 1, y, z) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x - 1, y + 1, z, -1)) connectsWest = true;
+            if (_blockAccess.shouldSuffocate(x + 1, y, z) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x + 1, y + 1, z, -1)) connectsEast = true;
+            if (_blockAccess.shouldSuffocate(x, y, z - 1) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x, y + 1, z - 1, -1)) connectsNorth = true;
+            if (_blockAccess.shouldSuffocate(x, y, z + 1) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, x, y + 1, z + 1, -1)) connectsSouth = true;
+        }
+
+        // --- 4. Determine Shape (Straight vs Cross) ---
+        float renderMinX = x, renderMaxX = x + 1;
+        float renderMinZ = z, renderMaxZ = z + 1;
+        int shapeType = 0; // 0 = Cross, 1 = East/West, 2 = North/South
+
+        if ((connectsWest || connectsEast) && !connectsNorth && !connectsSouth) shapeType = 1;
+        if ((connectsNorth || connectsSouth) && !connectsEast && !connectsWest) shapeType = 2;
+
+        if (shapeType != 0) // Use the "Straight Line" texture variant
+        {
+            minU = (texU + 16) / 256.0F;
+            maxU = (texU + 16 + 15.99F) / 256.0F;
+        }
+
+        // Shrink the footprint if no connection exists on a specific side
+        if (shapeType == 0)
+        {
+            if (connectsWest || connectsEast || connectsNorth || connectsSouth)
+            {
+                if (!connectsWest) { renderMinX += 0.3125F; minU += 0.01953125D; }
+                if (!connectsEast) { renderMaxX -= 0.3125F; maxU -= 0.01953125D; }
+                if (!connectsNorth) { renderMinZ += 0.3125F; minV += 0.01953125D; }
+                if (!connectsSouth) { renderMaxZ -= 0.3125F; maxV -= 0.01953125D; }
+            }
+        }
+
+        // --- 5. Render Horizontal Ground Quad ---
+        double groundY = y + 0.015625D; // 1/64 height offset to prevent Z-fighting
+
+        // Render the colored redstone
+        tess.addVertexWithUV(renderMaxX, groundY, renderMaxZ, maxU, maxV);
+        tess.addVertexWithUV(renderMaxX, groundY, renderMinZ, maxU, minV);
+        tess.addVertexWithUV(renderMinX, groundY, renderMinZ, minU, minV);
+        tess.addVertexWithUV(renderMinX, groundY, renderMaxZ, minU, maxV);
+
+        // Render the dark shroud (shadow) underneath
+        tess.setColorOpaque_F(luminance, luminance, luminance);
+        double shroudVOffset = 1.0D / 16.0D; // Texture atlas row for shadow
+        tess.addVertexWithUV(renderMaxX, groundY, renderMaxZ, maxU, maxV + shroudVOffset);
+        tess.addVertexWithUV(renderMaxX, groundY, renderMinZ, maxU, minV + shroudVOffset);
+        tess.addVertexWithUV(renderMinX, groundY, renderMinZ, minU, minV + shroudVOffset);
+        tess.addVertexWithUV(renderMinX, groundY, renderMaxZ, minU, maxV + shroudVOffset);
+
+        // --- 6. Render Slopes (Rising up walls) ---
+        if (!_blockAccess.shouldSuffocate(x, y + 1, z))
+        {
+            minU = (texU + 16) / 256.0F;
+            maxU = (texU + 16 + 15.99F) / 256.0F;
+            double slopeHeight = y + 1.021875D; // Slight offset above the block
+
+            // West Slope
+            if (_blockAccess.shouldSuffocate(x - 1, y, z) && _blockAccess.getBlockId(x - 1, y + 1, z) == block.id)
+            {
+                tess.setColorOpaque_F(luminance * r, luminance * g, luminance * b);
+                tess.addVertexWithUV(x + 0.015625D, slopeHeight, z + 1, maxU, minV);
+                tess.addVertexWithUV(x + 0.015625D, y, z + 1, minU, minV);
+                tess.addVertexWithUV(x + 0.015625D, y, z + 0, minU, maxV);
+                tess.addVertexWithUV(x + 0.015625D, slopeHeight, z + 0, maxU, maxV);
+
+                tess.setColorOpaque_F(luminance, luminance, luminance);
+                tess.addVertexWithUV(x + 0.015625D, slopeHeight, z + 1, maxU, minV + shroudVOffset);
+                tess.addVertexWithUV(x + 0.015625D, y, z + 1, minU, minV + shroudVOffset);
+                tess.addVertexWithUV(x + 0.015625D, y, z + 0, minU, maxV + shroudVOffset);
+                tess.addVertexWithUV(x + 0.015625D, slopeHeight, z + 0, maxU, maxV + shroudVOffset);
+            }
+
+            // East Slope
+            if (_blockAccess.shouldSuffocate(x + 1, y, z) && _blockAccess.getBlockId(x + 1, y + 1, z) == block.id)
+            {
+                tess.setColorOpaque_F(luminance * r, luminance * g, luminance * b);
+                tess.addVertexWithUV(x + 1 - 0.015625D, y, z + 1, minU, maxV);
+                tess.addVertexWithUV(x + 1 - 0.015625D, slopeHeight, z + 1, maxU, maxV);
+                tess.addVertexWithUV(x + 1 - 0.015625D, slopeHeight, z + 0, maxU, minV);
+                tess.addVertexWithUV(x + 1 - 0.015625D, y, z + 0, minU, minV);
+
+                tess.setColorOpaque_F(luminance, luminance, luminance);
+                tess.addVertexWithUV(x + 1 - 0.015625D, y, z + 1, minU, maxV + shroudVOffset);
+                tess.addVertexWithUV(x + 1 - 0.015625D, slopeHeight, z + 1, maxU, maxV + shroudVOffset);
+                tess.addVertexWithUV(x + 1 - 0.015625D, slopeHeight, z + 0, maxU, minV + shroudVOffset);
+                tess.addVertexWithUV(x + 1 - 0.015625D, y, z + 0, minU, minV + shroudVOffset);
+            }
+
+            // North Slope
+            if (_blockAccess.shouldSuffocate(x, y, z - 1) && _blockAccess.getBlockId(x, y + 1, z - 1) == block.id)
+            {
+                tess.setColorOpaque_F(luminance * r, luminance * g, luminance * b);
+                tess.addVertexWithUV(x + 1, y, z + 0.015625D, minU, maxV);
+                tess.addVertexWithUV(x + 1, slopeHeight, z + 0.015625D, maxU, maxV);
+                tess.addVertexWithUV(x + 0, slopeHeight, z + 0.015625D, maxU, minV);
+                tess.addVertexWithUV(x + 0, y, z + 0.015625D, minU, minV);
+
+                tess.setColorOpaque_F(luminance, luminance, luminance);
+                tess.addVertexWithUV(x + 1, y, z + 0.015625D, minU, maxV + shroudVOffset);
+                tess.addVertexWithUV(x + 1, slopeHeight, z + 0.015625D, maxU, maxV + shroudVOffset);
+                tess.addVertexWithUV(x + 0, slopeHeight, z + 0.015625D, maxU, minV + shroudVOffset);
+                tess.addVertexWithUV(x + 0, y, z + 0.015625D, minU, minV + shroudVOffset);
+            }
+
+            // South Slope
+            if (_blockAccess.shouldSuffocate(x, y, z + 1) && _blockAccess.getBlockId(x, y + 1, z + 1) == block.id)
+            {
+                tess.setColorOpaque_F(luminance * r, luminance * g, luminance * b);
+                tess.addVertexWithUV(x + 1, slopeHeight, z + 1 - 0.015625D, maxU, minV);
+                tess.addVertexWithUV(x + 1, y, z + 1 - 0.015625D, minU, minV);
+                tess.addVertexWithUV(x + 0, y, z + 1 - 0.015625D, minU, maxV);
+                tess.addVertexWithUV(x + 0, slopeHeight, z + 1 - 0.015625D, maxU, maxV);
+
+                tess.setColorOpaque_F(luminance, luminance, luminance);
+                tess.addVertexWithUV(x + 1, slopeHeight, z + 1 - 0.015625D, maxU, minV + shroudVOffset);
+                tess.addVertexWithUV(x + 1, y, z + 1 - 0.015625D, minU, minV + shroudVOffset);
+                tess.addVertexWithUV(x + 0, y, z + 1 - 0.015625D, minU, maxV + shroudVOffset);
+                tess.addVertexWithUV(x + 0, slopeHeight, z + 1 - 0.015625D, maxU, maxV + shroudVOffset);
+            }
+        }
+
+        return true;
+    }
+
+    private bool RenderBlockMinecartTrack(BlockRail rail, int x, int y, int z)
+    {
+        Tessellator tess = GetTessellator();
+        int metadata = _blockAccess.getBlockMeta(x, y, z);
+        int textureId = rail.getTexture(0, metadata);
+
+        if (_overrideBlockTexture >= 0)
+        {
+            textureId = _overrideBlockTexture;
+        }
+
+        // Powered/Detector rails use bit 3 for state, but the first 8 shapes are identical
+        if (rail.isAlwaysStraight())
+        {
+            metadata &= 7;
+        }
+
+        float luminance = rail.getLuminance(_blockAccess, x, y, z);
+        tess.setColorOpaque_F(luminance, luminance, luminance);
+
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
+        double minU = texU / 256.0D;
+        double maxU = (texU + 15.99D) / 256.0D;
+        double minV = texV / 256.0D;
+        double maxV = (texV + 15.99D) / 256.0D;
+
+        float verticalOffset = 1.0F / 16.0F; // 1 pixel above the ground
+
+        // Default vertex positions (flat square)
+        float x1 = x + 1, x2 = x + 1, x3 = x + 0, x4 = x + 0;
+        float z1 = z + 0, z2 = z + 1, z3 = z + 1, z4 = z + 0;
+
+        float h1 = y + verticalOffset;
+        float h2 = y + verticalOffset;
+        float h3 = y + verticalOffset;
+        float h4 = y + verticalOffset;
+
+        // Handle coordinate swapping for curves and orientation
+        if (metadata != 1 && metadata != 2 && metadata != 3 && metadata != 7)
+        {
+            if (metadata == 8)
+            {
+                x2 = x + 0; x1 = x2;
+                x4 = x + 1; x3 = x4;
+                z4 = z + 1; z1 = z4;
+                z3 = z + 0; z2 = z3;
+            }
+            else if (metadata == 9)
+            {
+                x4 = x + 0; x1 = x4;
+                x3 = x + 1; x2 = x3;
+                z2 = z + 0; z1 = z2;
+                z4 = z + 1; z3 = z4;
             }
         }
         else
         {
-            double var19 = var2 + 0.5D + 0.2D;
-            var21 = var2 + 0.5D - 0.2D;
-            var23 = var4 + 0.5D + 0.2D;
-            var25 = var4 + 0.5D - 0.2D;
-            var27 = var2 + 0.5D - 0.3D;
-            var29 = var2 + 0.5D + 0.3D;
-            var31 = var4 + 0.5D - 0.3D;
-            var33 = var4 + 0.5D + 0.3D;
-            var5.addVertexWithUV(var27, (double)(var3 + var18), var4 + 1, var12, var14);
-            var5.addVertexWithUV(var19, var3 + 0, var4 + 1, var12, var16);
-            var5.addVertexWithUV(var19, var3 + 0, var4 + 0, var10, var16);
-            var5.addVertexWithUV(var27, (double)(var3 + var18), var4 + 0, var10, var14);
-            var5.addVertexWithUV(var29, (double)(var3 + var18), var4 + 0, var12, var14);
-            var5.addVertexWithUV(var21, var3 + 0, var4 + 0, var12, var16);
-            var5.addVertexWithUV(var21, var3 + 0, var4 + 1, var10, var16);
-            var5.addVertexWithUV(var29, (double)(var3 + var18), var4 + 1, var10, var14);
-            var10 = (double)(var8 / 256.0F);
-            var12 = (double)((var8 + 15.99F) / 256.0F);
-            var14 = (double)((var9 + 16) / 256.0F);
-            var16 = (double)((var9 + 15.99F + 16.0F) / 256.0F);
-            var5.addVertexWithUV(var2 + 1, (double)(var3 + var18), var33, var12, var14);
-            var5.addVertexWithUV(var2 + 1, var3 + 0, var25, var12, var16);
-            var5.addVertexWithUV(var2 + 0, var3 + 0, var25, var10, var16);
-            var5.addVertexWithUV(var2 + 0, (double)(var3 + var18), var33, var10, var14);
-            var5.addVertexWithUV(var2 + 0, (double)(var3 + var18), var31, var12, var14);
-            var5.addVertexWithUV(var2 + 0, var3 + 0, var23, var12, var16);
-            var5.addVertexWithUV(var2 + 1, var3 + 0, var23, var10, var16);
-            var5.addVertexWithUV(var2 + 1, (double)(var3 + var18), var31, var10, var14);
-            var19 = var2 + 0.5D - 0.5D;
-            var21 = var2 + 0.5D + 0.5D;
-            var23 = var4 + 0.5D - 0.5D;
-            var25 = var4 + 0.5D + 0.5D;
-            var27 = var2 + 0.5D - 0.4D;
-            var29 = var2 + 0.5D + 0.4D;
-            var31 = var4 + 0.5D - 0.4D;
-            var33 = var4 + 0.5D + 0.4D;
-            var5.addVertexWithUV(var27, (double)(var3 + var18), var4 + 0, var10, var14);
-            var5.addVertexWithUV(var19, var3 + 0, var4 + 0, var10, var16);
-            var5.addVertexWithUV(var19, var3 + 0, var4 + 1, var12, var16);
-            var5.addVertexWithUV(var27, (double)(var3 + var18), var4 + 1, var12, var14);
-            var5.addVertexWithUV(var29, (double)(var3 + var18), var4 + 1, var10, var14);
-            var5.addVertexWithUV(var21, var3 + 0, var4 + 1, var10, var16);
-            var5.addVertexWithUV(var21, var3 + 0, var4 + 0, var12, var16);
-            var5.addVertexWithUV(var29, (double)(var3 + var18), var4 + 0, var12, var14);
-            var10 = (double)(var8 / 256.0F);
-            var12 = (double)((var8 + 15.99F) / 256.0F);
-            var14 = (double)(var9 / 256.0F);
-            var16 = (double)((var9 + 15.99F) / 256.0F);
-            var5.addVertexWithUV(var2 + 0, (double)(var3 + var18), var33, var10, var14);
-            var5.addVertexWithUV(var2 + 0, var3 + 0, var25, var10, var16);
-            var5.addVertexWithUV(var2 + 1, var3 + 0, var25, var12, var16);
-            var5.addVertexWithUV(var2 + 1, (double)(var3 + var18), var33, var12, var14);
-            var5.addVertexWithUV(var2 + 1, (double)(var3 + var18), var31, var10, var14);
-            var5.addVertexWithUV(var2 + 1, var3 + 0, var23, var10, var16);
-            var5.addVertexWithUV(var2 + 0, var3 + 0, var23, var12, var16);
-            var5.addVertexWithUV(var2 + 0, (double)(var3 + var18), var31, var12, var14);
+            x4 = x + 1; x1 = x4;
+            x3 = x + 0; x2 = x3;
+            z2 = z + 1; z1 = z2;
+            z4 = z + 0; z3 = z4;
         }
 
-        return true;
-    }
-
-    public bool renderBlockRedstoneWire(Block var1, int var2, int var3, int var4)
-    {
-        Tessellator var5 = getTessellator();
-        int var6 = _blockAccess.getBlockMeta(var2, var3, var4);
-        int var7 = var1.getTexture(1, var6);
-        if (_overrideBlockTexture >= 0)
+        // Handle Slopes (ascending heights)
+        if (metadata != 2 && metadata != 4)
         {
-            var7 = _overrideBlockTexture;
-        }
-
-        float var8 = var1.getLuminance(_blockAccess, var2, var3, var4);
-        float var9 = var6 / 15.0F;
-        float var10 = var9 * 0.6F + 0.4F;
-        if (var6 == 0)
-        {
-            var10 = 0.3F;
-        }
-
-        float var11 = var9 * var9 * 0.7F - 0.5F;
-        float var12 = var9 * var9 * 0.6F - 0.7F;
-        if (var11 < 0.0F)
-        {
-            var11 = 0.0F;
-        }
-
-        if (var12 < 0.0F)
-        {
-            var12 = 0.0F;
-        }
-
-        var5.setColorOpaque_F(var8 * var10, var8 * var11, var8 * var12);
-        int var13 = (var7 & 15) << 4;
-        int var14 = var7 & 240;
-        double var15 = (double)(var13 / 256.0F);
-        double var17 = (double)((var13 + 15.99F) / 256.0F);
-        double var19 = (double)(var14 / 256.0F);
-        double var21 = (double)((var14 + 15.99F) / 256.0F);
-        bool var26 = BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, var2 - 1, var3, var4, 1) || !_blockAccess.shouldSuffocate(var2 - 1, var3, var4) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, var2 - 1, var3 - 1, var4, -1);
-        bool var27 = BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, var2 + 1, var3, var4, 3) || !_blockAccess.shouldSuffocate(var2 + 1, var3, var4) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, var2 + 1, var3 - 1, var4, -1);
-        bool var28 = BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, var2, var3, var4 - 1, 2) || !_blockAccess.shouldSuffocate(var2, var3, var4 - 1) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, var2, var3 - 1, var4 - 1, -1);
-        bool var29 = BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, var2, var3, var4 + 1, 0) || !_blockAccess.shouldSuffocate(var2, var3, var4 + 1) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, var2, var3 - 1, var4 + 1, -1);
-        if (!_blockAccess.shouldSuffocate(var2, var3 + 1, var4))
-        {
-            if (_blockAccess.shouldSuffocate(var2 - 1, var3, var4) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, var2 - 1, var3 + 1, var4, -1))
+            if (metadata == 3 || metadata == 5)
             {
-                var26 = true;
-            }
-
-            if (_blockAccess.shouldSuffocate(var2 + 1, var3, var4) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, var2 + 1, var3 + 1, var4, -1))
-            {
-                var27 = true;
-            }
-
-            if (_blockAccess.shouldSuffocate(var2, var3, var4 - 1) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, var2, var3 + 1, var4 - 1, -1))
-            {
-                var28 = true;
-            }
-
-            if (_blockAccess.shouldSuffocate(var2, var3, var4 + 1) && BlockRedstoneWire.isPowerProviderOrWire(_blockAccess, var2, var3 + 1, var4 + 1, -1))
-            {
-                var29 = true;
-            }
-        }
-
-        float var31 = var2 + 0;
-        float var32 = var2 + 1;
-        float var33 = var4 + 0;
-        float var34 = var4 + 1;
-        byte var35 = 0;
-        if ((var26 || var27) && !var28 && !var29)
-        {
-            var35 = 1;
-        }
-
-        if ((var28 || var29) && !var27 && !var26)
-        {
-            var35 = 2;
-        }
-
-        if (var35 != 0)
-        {
-            var15 = (double)((var13 + 16) / 256.0F);
-            var17 = (double)((var13 + 16 + 15.99F) / 256.0F);
-            var19 = (double)(var14 / 256.0F);
-            var21 = (double)((var14 + 15.99F) / 256.0F);
-        }
-
-        if (var35 == 0)
-        {
-            if (var27 || var28 || var29 || var26)
-            {
-                if (!var26)
-                {
-                    var31 += 5.0F / 16.0F;
-                }
-
-                if (!var26)
-                {
-                    var15 += 1.25D / 64.0D;
-                }
-
-                if (!var27)
-                {
-                    var32 -= 5.0F / 16.0F;
-                }
-
-                if (!var27)
-                {
-                    var17 -= 1.25D / 64.0D;
-                }
-
-                if (!var28)
-                {
-                    var33 += 5.0F / 16.0F;
-                }
-
-                if (!var28)
-                {
-                    var19 += 1.25D / 64.0D;
-                }
-
-                if (!var29)
-                {
-                    var34 -= 5.0F / 16.0F;
-                }
-
-                if (!var29)
-                {
-                    var21 -= 1.25D / 64.0D;
-                }
-            }
-
-            var5.addVertexWithUV((double)var32, (double)(var3 + (1 / 64f)), (double)var34, var17, var21);
-            var5.addVertexWithUV((double)var32, (double)(var3 + (1 / 64f)), (double)var33, var17, var19);
-            var5.addVertexWithUV((double)var31, (double)(var3 + (1 / 64f)), (double)var33, var15, var19);
-            var5.addVertexWithUV((double)var31, (double)(var3 + (1 / 64f)), (double)var34, var15, var21);
-            var5.setColorOpaque_F(var8, var8, var8);
-            var5.addVertexWithUV((double)var32, (double)(var3 + (1 / 64f)), (double)var34, var17, var21 + 1.0D / 16.0D);
-            var5.addVertexWithUV((double)var32, (double)(var3 + (1 / 64f)), (double)var33, var17, var19 + 1.0D / 16.0D);
-            var5.addVertexWithUV((double)var31, (double)(var3 + (1 / 64f)), (double)var33, var15, var19 + 1.0D / 16.0D);
-            var5.addVertexWithUV((double)var31, (double)(var3 + (1 / 64f)), (double)var34, var15, var21 + 1.0D / 16.0D);
-        }
-        else if (var35 == 1)
-        {
-            var5.addVertexWithUV((double)var32, (double)(var3 + (1 / 64f)), (double)var34, var17, var21);
-            var5.addVertexWithUV((double)var32, (double)(var3 + (1 / 64f)), (double)var33, var17, var19);
-            var5.addVertexWithUV((double)var31, (double)(var3 + (1 / 64f)), (double)var33, var15, var19);
-            var5.addVertexWithUV((double)var31, (double)(var3 + (1 / 64f)), (double)var34, var15, var21);
-            var5.setColorOpaque_F(var8, var8, var8);
-            var5.addVertexWithUV((double)var32, (double)(var3 + (1 / 64f)), (double)var34, var17, var21 + 1.0D / 16.0D);
-            var5.addVertexWithUV((double)var32, (double)(var3 + (1 / 64f)), (double)var33, var17, var19 + 1.0D / 16.0D);
-            var5.addVertexWithUV((double)var31, (double)(var3 + (1 / 64f)), (double)var33, var15, var19 + 1.0D / 16.0D);
-            var5.addVertexWithUV((double)var31, (double)(var3 + (1 / 64f)), (double)var34, var15, var21 + 1.0D / 16.0D);
-        }
-        else if (var35 == 2)
-        {
-            var5.addVertexWithUV((double)var32, (double)(var3 + (1 / 64f)), (double)var34, var17, var21);
-            var5.addVertexWithUV((double)var32, (double)(var3 + (1 / 64f)), (double)var33, var15, var21);
-            var5.addVertexWithUV((double)var31, (double)(var3 + (1 / 64f)), (double)var33, var15, var19);
-            var5.addVertexWithUV((double)var31, (double)(var3 + (1 / 64f)), (double)var34, var17, var19);
-            var5.setColorOpaque_F(var8, var8, var8);
-            var5.addVertexWithUV((double)var32, (double)(var3 + (1 / 64f)), (double)var34, var17, var21 + 1.0D / 16.0D);
-            var5.addVertexWithUV((double)var32, (double)(var3 + (1 / 64f)), (double)var33, var15, var21 + 1.0D / 16.0D);
-            var5.addVertexWithUV((double)var31, (double)(var3 + (1 / 64f)), (double)var33, var15, var19 + 1.0D / 16.0D);
-            var5.addVertexWithUV((double)var31, (double)(var3 + (1 / 64f)), (double)var34, var17, var19 + 1.0D / 16.0D);
-        }
-
-        if (!_blockAccess.shouldSuffocate(var2, var3 + 1, var4))
-        {
-            var15 = (double)((var13 + 16) / 256.0F);
-            var17 = (double)((var13 + 16 + 15.99F) / 256.0F);
-            var19 = (double)(var14 / 256.0F);
-            var21 = (double)((var14 + 15.99F) / 256.0F);
-            if (_blockAccess.shouldSuffocate(var2 - 1, var3, var4) && _blockAccess.getBlockId(var2 - 1, var3 + 1, var4) == Block.RedstoneWire.id)
-            {
-                var5.setColorOpaque_F(var8 * var10, var8 * var11, var8 * var12);
-                var5.addVertexWithUV((double)(var2 + (1 / 64f)), (double)(var3 + 1 + 7.0F / 320.0F), var4 + 1, var17, var19);
-                var5.addVertexWithUV((double)(var2 + (1 / 64f)), var3 + 0, var4 + 1, var15, var19);
-                var5.addVertexWithUV((double)(var2 + (1 / 64f)), var3 + 0, var4 + 0, var15, var21);
-                var5.addVertexWithUV((double)(var2 + (1 / 64f)), (double)(var3 + 1 + 7.0F / 320.0F), var4 + 0, var17, var21);
-                var5.setColorOpaque_F(var8, var8, var8);
-                var5.addVertexWithUV((double)(var2 + (1 / 64f)), (double)(var3 + 1 + 7.0F / 320.0F), var4 + 1, var17, var19 + 1.0D / 16.0D);
-                var5.addVertexWithUV((double)(var2 + (1 / 64f)), var3 + 0, var4 + 1, var15, var19 + 1.0D / 16.0D);
-                var5.addVertexWithUV((double)(var2 + (1 / 64f)), var3 + 0, var4 + 0, var15, var21 + 1.0D / 16.0D);
-                var5.addVertexWithUV((double)(var2 + (1 / 64f)), (double)(var3 + 1 + 7.0F / 320.0F), var4 + 0, var17, var21 + 1.0D / 16.0D);
-            }
-
-            if (_blockAccess.shouldSuffocate(var2 + 1, var3, var4) && _blockAccess.getBlockId(var2 + 1, var3 + 1, var4) == Block.RedstoneWire.id)
-            {
-                var5.setColorOpaque_F(var8 * var10, var8 * var11, var8 * var12);
-                var5.addVertexWithUV((double)(var2 + 1 - (1 / 64f)), var3 + 0, var4 + 1, var15, var21);
-                var5.addVertexWithUV((double)(var2 + 1 - (1 / 64f)), (double)(var3 + 1 + 7.0F / 320.0F), var4 + 1, var17, var21);
-                var5.addVertexWithUV((double)(var2 + 1 - (1 / 64f)), (double)(var3 + 1 + 7.0F / 320.0F), var4 + 0, var17, var19);
-                var5.addVertexWithUV((double)(var2 + 1 - (1 / 64f)), var3 + 0, var4 + 0, var15, var19);
-                var5.setColorOpaque_F(var8, var8, var8);
-                var5.addVertexWithUV((double)(var2 + 1 - (1 / 64f)), var3 + 0, var4 + 1, var15, var21 + 1.0D / 16.0D);
-                var5.addVertexWithUV((double)(var2 + 1 - (1 / 64f)), (double)(var3 + 1 + 7.0F / 320.0F), var4 + 1, var17, var21 + 1.0D / 16.0D);
-                var5.addVertexWithUV((double)(var2 + 1 - (1 / 64f)), (double)(var3 + 1 + 7.0F / 320.0F), var4 + 0, var17, var19 + 1.0D / 16.0D);
-                var5.addVertexWithUV((double)(var2 + 1 - (1 / 64f)), var3 + 0, var4 + 0, var15, var19 + 1.0D / 16.0D);
-            }
-
-            if (_blockAccess.shouldSuffocate(var2, var3, var4 - 1) && _blockAccess.getBlockId(var2, var3 + 1, var4 - 1) == Block.RedstoneWire.id)
-            {
-                var5.setColorOpaque_F(var8 * var10, var8 * var11, var8 * var12);
-                var5.addVertexWithUV(var2 + 1, var3 + 0, (double)(var4 + (1 / 64f)), var15, var21);
-                var5.addVertexWithUV(var2 + 1, (double)(var3 + 1 + 7.0F / 320.0F), (double)(var4 + (1 / 64f)), var17, var21);
-                var5.addVertexWithUV(var2 + 0, (double)(var3 + 1 + 7.0F / 320.0F), (double)(var4 + (1 / 64f)), var17, var19);
-                var5.addVertexWithUV(var2 + 0, var3 + 0, (double)(var4 + (1 / 64f)), var15, var19);
-                var5.setColorOpaque_F(var8, var8, var8);
-                var5.addVertexWithUV(var2 + 1, var3 + 0, (double)(var4 + (1 / 64f)), var15, var21 + 1.0D / 16.0D);
-                var5.addVertexWithUV(var2 + 1, (double)(var3 + 1 + 7.0F / 320.0F), (double)(var4 + (1 / 64f)), var17, var21 + 1.0D / 16.0D);
-                var5.addVertexWithUV(var2 + 0, (double)(var3 + 1 + 7.0F / 320.0F), (double)(var4 + (1 / 64f)), var17, var19 + 1.0D / 16.0D);
-                var5.addVertexWithUV(var2 + 0, var3 + 0, (double)(var4 + (1 / 64f)), var15, var19 + 1.0D / 16.0D);
-            }
-
-            if (_blockAccess.shouldSuffocate(var2, var3, var4 + 1) && _blockAccess.getBlockId(var2, var3 + 1, var4 + 1) == Block.RedstoneWire.id)
-            {
-                var5.setColorOpaque_F(var8 * var10, var8 * var11, var8 * var12);
-                var5.addVertexWithUV(var2 + 1, (double)(var3 + 1 + 7.0F / 320.0F), (double)(var4 + 1 - (1 / 64f)), var17, var19);
-                var5.addVertexWithUV(var2 + 1, var3 + 0, (double)(var4 + 1 - (1 / 64f)), var15, var19);
-                var5.addVertexWithUV(var2 + 0, var3 + 0, (double)(var4 + 1 - (1 / 64f)), var15, var21);
-                var5.addVertexWithUV(var2 + 0, (double)(var3 + 1 + 7.0F / 320.0F), (double)(var4 + 1 - (1 / 64f)), var17, var21);
-                var5.setColorOpaque_F(var8, var8, var8);
-                var5.addVertexWithUV(var2 + 1, (double)(var3 + 1 + 7.0F / 320.0F), (double)(var4 + 1 - (1 / 64f)), var17, var19 + 1.0D / 16.0D);
-                var5.addVertexWithUV(var2 + 1, var3 + 0, (double)(var4 + 1 - (1 / 64f)), var15, var19 + 1.0D / 16.0D);
-                var5.addVertexWithUV(var2 + 0, var3 + 0, (double)(var4 + 1 - (1 / 64f)), var15, var21 + 1.0D / 16.0D);
-                var5.addVertexWithUV(var2 + 0, (double)(var3 + 1 + 7.0F / 320.0F), (double)(var4 + 1 - (1 / 64f)), var17, var21 + 1.0D / 16.0D);
-            }
-        }
-
-        return true;
-    }
-
-    public bool renderBlockMinecartTrack(BlockRail var1, int var2, int var3, int var4)
-    {
-        Tessellator var5 = getTessellator();
-        int var6 = _blockAccess.getBlockMeta(var2, var3, var4);
-        int var7 = var1.getTexture(0, var6);
-        if (_overrideBlockTexture >= 0)
-        {
-            var7 = _overrideBlockTexture;
-        }
-
-        if (var1.isAlwaysStraight())
-        {
-            var6 &= 7;
-        }
-
-        float var8 = var1.getLuminance(_blockAccess, var2, var3, var4);
-        var5.setColorOpaque_F(var8, var8, var8);
-        int var9 = (var7 & 15) << 4;
-        int var10 = var7 & 240;
-        double var11 = (double)(var9 / 256.0F);
-        double var13 = (double)((var9 + 15.99F) / 256.0F);
-        double var15 = (double)(var10 / 256.0F);
-        double var17 = (double)((var10 + 15.99F) / 256.0F);
-        float var19 = 1.0F / 16.0F;
-        float var20 = var2 + 1;
-        float var21 = var2 + 1;
-        float var22 = var2 + 0;
-        float var23 = var2 + 0;
-        float var24 = var4 + 0;
-        float var25 = var4 + 1;
-        float var26 = var4 + 1;
-        float var27 = var4 + 0;
-        float var28 = var3 + var19;
-        float var29 = var3 + var19;
-        float var30 = var3 + var19;
-        float var31 = var3 + var19;
-        if (var6 != 1 && var6 != 2 && var6 != 3 && var6 != 7)
-        {
-            if (var6 == 8)
-            {
-                var21 = var2 + 0;
-                var20 = var21;
-                var23 = var2 + 1;
-                var22 = var23;
-                var27 = var4 + 1;
-                var24 = var27;
-                var26 = var4 + 0;
-                var25 = var26;
-            }
-            else if (var6 == 9)
-            {
-                var23 = var2 + 0;
-                var20 = var23;
-                var22 = var2 + 1;
-                var21 = var22;
-                var25 = var4 + 0;
-                var24 = var25;
-                var27 = var4 + 1;
-                var26 = var27;
+                h2++; h3++; // Sloping up North/South
             }
         }
         else
         {
-            var23 = var2 + 1;
-            var20 = var23;
-            var22 = var2 + 0;
-            var21 = var22;
-            var25 = var4 + 1;
-            var24 = var25;
-            var27 = var4 + 0;
-            var26 = var27;
+            h1++; h4++; // Sloping up West/East
         }
 
-        if (var6 != 2 && var6 != 4)
-        {
-            if (var6 == 3 || var6 == 5)
-            {
-                ++var29;
-                ++var30;
-            }
-        }
-        else
-        {
-            ++var28;
-            ++var31;
-        }
+        // Render both sides of the quad so it's visible from below (for glass/transparent floors)
+        tess.addVertexWithUV(x1, h1, z1, maxU, minV);
+        tess.addVertexWithUV(x2, h2, z2, maxU, maxV);
+        tess.addVertexWithUV(x3, h3, z3, minU, maxV);
+        tess.addVertexWithUV(x4, h4, z4, minU, minV);
 
-        var5.addVertexWithUV((double)var20, (double)var28, (double)var24, var13, var15);
-        var5.addVertexWithUV((double)var21, (double)var29, (double)var25, var13, var17);
-        var5.addVertexWithUV((double)var22, (double)var30, (double)var26, var11, var17);
-        var5.addVertexWithUV((double)var23, (double)var31, (double)var27, var11, var15);
-        var5.addVertexWithUV((double)var23, (double)var31, (double)var27, var11, var15);
-        var5.addVertexWithUV((double)var22, (double)var30, (double)var26, var11, var17);
-        var5.addVertexWithUV((double)var21, (double)var29, (double)var25, var13, var17);
-        var5.addVertexWithUV((double)var20, (double)var28, (double)var24, var13, var15);
+        tess.addVertexWithUV(x4, h4, z4, minU, minV);
+        tess.addVertexWithUV(x3, h3, z3, minU, maxV);
+        tess.addVertexWithUV(x2, h2, z2, maxU, maxV);
+        tess.addVertexWithUV(x1, h1, z1, maxU, minV);
+
         return true;
     }
 
-    public bool renderBlockLadder(Block var1, int var2, int var3, int var4)
+    private bool RenderBlockLadder(Block block, int x, int y, int z)
     {
-        Tessellator var5 = getTessellator();
-        int var6 = var1.getTexture(0);
+        Tessellator tess = GetTessellator();
+
+        int textureId = block.getTexture(0);
         if (_overrideBlockTexture >= 0)
         {
-            var6 = _overrideBlockTexture;
+            textureId = _overrideBlockTexture;
         }
 
-        float var7 = var1.getLuminance(_blockAccess, var2, var3, var4);
-        var5.setColorOpaque_F(var7, var7, var7);
-        int var8 = (var6 & 15) << 4;
-        int var9 = var6 & 240;
-        double var10 = (double)(var8 / 256.0F);
-        double var12 = (double)((var8 + 15.99F) / 256.0F);
-        double var14 = (double)(var9 / 256.0F);
-        double var16 = (double)((var9 + 15.99F) / 256.0F);
-        int var18 = _blockAccess.getBlockMeta(var2, var3, var4);
-        float var19 = 0.0F;
-        float var20 = 0.05F;
-        if (var18 == 5)
-        {
-            var5.addVertexWithUV((double)(var2 + var20), (double)(var3 + 1 + var19), (double)(var4 + 1 + var19), var10, var14);
-            var5.addVertexWithUV((double)(var2 + var20), (double)(var3 + 0 - var19), (double)(var4 + 1 + var19), var10, var16);
-            var5.addVertexWithUV((double)(var2 + var20), (double)(var3 + 0 - var19), (double)(var4 + 0 - var19), var12, var16);
-            var5.addVertexWithUV((double)(var2 + var20), (double)(var3 + 1 + var19), (double)(var4 + 0 - var19), var12, var14);
-        }
+        float luminance = block.getLuminance(_blockAccess, x, y, z);
+        tess.setColorOpaque_F(luminance, luminance, luminance);
 
-        if (var18 == 4)
-        {
-            var5.addVertexWithUV((double)(var2 + 1 - var20), (double)(var3 + 0 - var19), (double)(var4 + 1 + var19), var12, var16);
-            var5.addVertexWithUV((double)(var2 + 1 - var20), (double)(var3 + 1 + var19), (double)(var4 + 1 + var19), var12, var14);
-            var5.addVertexWithUV((double)(var2 + 1 - var20), (double)(var3 + 1 + var19), (double)(var4 + 0 - var19), var10, var14);
-            var5.addVertexWithUV((double)(var2 + 1 - var20), (double)(var3 + 0 - var19), (double)(var4 + 0 - var19), var10, var16);
-        }
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
+        double minU = texU / 256.0D;
+        double maxU = (texU + 15.99D) / 256.0D;
+        double minV = texV / 256.0D;
+        double maxV = (texV + 15.99D) / 256.0D;
 
-        if (var18 == 3)
-        {
-            var5.addVertexWithUV((double)(var2 + 1 + var19), (double)(var3 + 0 - var19), (double)(var4 + var20), var12, var16);
-            var5.addVertexWithUV((double)(var2 + 1 + var19), (double)(var3 + 1 + var19), (double)(var4 + var20), var12, var14);
-            var5.addVertexWithUV((double)(var2 + 0 - var19), (double)(var3 + 1 + var19), (double)(var4 + var20), var10, var14);
-            var5.addVertexWithUV((double)(var2 + 0 - var19), (double)(var3 + 0 - var19), (double)(var4 + var20), var10, var16);
-        }
+        int metadata = _blockAccess.getBlockMeta(x, y, z);
+        double offset = 0.05D;
 
-        if (var18 == 2)
+        if (metadata == 5)
         {
-            var5.addVertexWithUV((double)(var2 + 1 + var19), (double)(var3 + 1 + var19), (double)(var4 + 1 - var20), var10, var14);
-            var5.addVertexWithUV((double)(var2 + 1 + var19), (double)(var3 + 0 - var19), (double)(var4 + 1 - var20), var10, var16);
-            var5.addVertexWithUV((double)(var2 + 0 - var19), (double)(var3 + 0 - var19), (double)(var4 + 1 - var20), var12, var16);
-            var5.addVertexWithUV((double)(var2 + 0 - var19), (double)(var3 + 1 + var19), (double)(var4 + 1 - var20), var12, var14);
+            tess.addVertexWithUV(x + offset, y + 1.0D, z + 1.0D, minU, minV);
+            tess.addVertexWithUV(x + offset, y + 0.0D, z + 1.0D, minU, maxV);
+            tess.addVertexWithUV(x + offset, y + 0.0D, z + 0.0D, maxU, maxV);
+            tess.addVertexWithUV(x + offset, y + 1.0D, z + 0.0D, maxU, minV);
+        }
+        else if (metadata == 4)
+        {
+            tess.addVertexWithUV(x + 1.0D - offset, y + 0.0D, z + 1.0D, maxU, maxV);
+            tess.addVertexWithUV(x + 1.0D - offset, y + 1.0D, z + 1.0D, maxU, minV);
+            tess.addVertexWithUV(x + 1.0D - offset, y + 1.0D, z + 0.0D, minU, minV);
+            tess.addVertexWithUV(x + 1.0D - offset, y + 0.0D, z + 0.0D, minU, maxV);
+        }
+        else if (metadata == 3)
+        {
+            tess.addVertexWithUV(x + 1.0D, y + 0.0D, z + offset, maxU, maxV);
+            tess.addVertexWithUV(x + 1.0D, y + 1.0D, z + offset, maxU, minV);
+            tess.addVertexWithUV(x + 0.0D, y + 1.0D, z + offset, minU, minV);
+            tess.addVertexWithUV(x + 0.0D, y + 0.0D, z + offset, minU, maxV);
+        }
+        else if (metadata == 2)
+        {
+            tess.addVertexWithUV(x + 1.0D, y + 1.0D, z + 1.0D - offset, minU, minV);
+            tess.addVertexWithUV(x + 1.0D, y + 0.0D, z + 1.0D - offset, minU, maxV);
+            tess.addVertexWithUV(x + 0.0D, y + 0.0D, z + 1.0D - offset, maxU, maxV);
+            tess.addVertexWithUV(x + 0.0D, y + 1.0D, z + 1.0D - offset, maxU, minV);
         }
 
         return true;
     }
 
-    public bool renderBlockReed(Block var1, int var2, int var3, int var4)
+    private bool RenderBlockReed(Block block, int x, int y, int z)
     {
-        Tessellator var5 = getTessellator();
-        float var6 = var1.getLuminance(_blockAccess, var2, var3, var4);
-        int var7 = var1.getColorMultiplier(_blockAccess, var2, var3, var4);
-        float var8 = (var7 >> 16 & 255) / 255.0F;
-        float var9 = (var7 >> 8 & 255) / 255.0F;
-        float var10 = (var7 & 255) / 255.0F;
+        Tessellator tess = GetTessellator();
 
-        var5.setColorOpaque_F(var6 * var8, var6 * var9, var6 * var10);
-        double var19 = var2;
-        double var20 = var3;
-        double var15 = var4;
-        if (var1 == Block.Grass)
+        float luminance = block.getLuminance(_blockAccess, x, y, z);
+        int colorMultiplier = block.getColorMultiplier(_blockAccess, x, y, z);
+        float r = (colorMultiplier >> 16 & 255) / 255.0F;
+        float g = (colorMultiplier >> 8 & 255) / 255.0F;
+        float b = (colorMultiplier & 255) / 255.0F;
+
+        tess.setColorOpaque_F(luminance * r, luminance * g, luminance * b);
+
+        double renderX = x;
+        double renderY = y;
+        double renderZ = z;
+
+        if (block == Block.Grass)
         {
-            long var17 = var2 * 3129871 ^ var4 * 116129781L ^ var3;
-            var17 = var17 * var17 * 42317861L + var17 * 11L;
-            var19 += ((double)((var17 >> 16 & 15L) / 15.0F) - 0.5D) * 0.5D;
-            var20 += ((double)((var17 >> 20 & 15L) / 15.0F) - 1.0D) * 0.2D;
-            var15 += ((double)((var17 >> 24 & 15L) / 15.0F) - 0.5D) * 0.5D;
+            long hash = x * 3129871L ^ z * 116129781L ^ y;
+            hash = hash * hash * 42317861L + hash * 11L;
+
+            renderX += (((hash >> 16 & 15L) / 15.0F) - 0.5D) * 0.5D;
+            renderY += (((hash >> 20 & 15L) / 15.0F) - 1.0D) * 0.2D;
+            renderZ += (((hash >> 24 & 15L) / 15.0F) - 0.5D) * 0.5D;
         }
 
-        renderCrossedSquares(var1, _blockAccess.getBlockMeta(var2, var3, var4), var19, var20, var15);
+        RenderCrossedSquares(block, _blockAccess.getBlockMeta(x, y, z), renderX, renderY, renderZ);
         return true;
     }
 
-    public bool renderBlockCrops(Block var1, int var2, int var3, int var4)
+    private bool RenderBlockCrops(Block block, int x, int y, int z)
     {
-        Tessellator var5 = getTessellator();
-        float var6 = var1.getLuminance(_blockAccess, var2, var3, var4);
-        var5.setColorOpaque_F(var6, var6, var6);
-        func_1245_b(var1, _blockAccess.getBlockMeta(var2, var3, var4), var2, (double)(var3 - 1.0F / 16.0F), var4);
+        Tessellator tess = GetTessellator();
+        float luminance = block.getLuminance(_blockAccess, x, y, z);
+        tess.setColorOpaque_F(luminance, luminance, luminance);
+
+        int metadata = _blockAccess.getBlockMeta(x, y, z);
+
+        double yOffset = y - (1.0D / 16.0D);
+        RenderCropQuads(block, metadata, x, yOffset, z);
         return true;
     }
 
-    public void renderTorchAtAngle(Block var1, double var2, double var4, double var6, double var8, double var10)
+    private void RenderTorchAtAngle(Block block, double x, double y, double z, double tiltX, double tiltZ)
     {
-        Tessellator var12 = getTessellator();
-        int var13 = var1.getTexture(0);
+        Tessellator tess = GetTessellator();
+
+        int textureId = block.getTexture(0);
         if (_overrideBlockTexture >= 0)
         {
-            var13 = _overrideBlockTexture;
+            textureId = _overrideBlockTexture;
         }
 
-        int var14 = (var13 & 15) << 4;
-        int var15 = var13 & 240;
-        float var16 = var14 / 256.0F;
-        float var17 = (var14 + 15.99F) / 256.0F;
-        float var18 = var15 / 256.0F;
-        float var19 = (var15 + 15.99F) / 256.0F;
-        double var20 = (double)var16 + 1.75D / 64.0D;
-        double var22 = (double)var18 + 6.0D / 256.0D;
-        double var24 = (double)var16 + 9.0D / 256.0D;
-        double var26 = (double)var18 + 1.0D / 32.0D;
-        var2 += 0.5D;
-        var6 += 0.5D;
-        double var28 = var2 - 0.5D;
-        double var30 = var2 + 0.5D;
-        double var32 = var6 - 0.5D;
-        double var34 = var6 + 0.5D;
-        double var36 = 1.0D / 16.0D;
-        double var38 = 0.625D;
-        var12.addVertexWithUV(var2 + var8 * (1.0D - var38) - var36, var4 + var38, var6 + var10 * (1.0D - var38) - var36, var20, var22);
-        var12.addVertexWithUV(var2 + var8 * (1.0D - var38) - var36, var4 + var38, var6 + var10 * (1.0D - var38) + var36, var20, var26);
-        var12.addVertexWithUV(var2 + var8 * (1.0D - var38) + var36, var4 + var38, var6 + var10 * (1.0D - var38) + var36, var24, var26);
-        var12.addVertexWithUV(var2 + var8 * (1.0D - var38) + var36, var4 + var38, var6 + var10 * (1.0D - var38) - var36, var24, var22);
-        var12.addVertexWithUV(var2 - var36, var4 + 1.0D, var32, (double)var16, (double)var18);
-        var12.addVertexWithUV(var2 - var36 + var8, var4 + 0.0D, var32 + var10, (double)var16, (double)var19);
-        var12.addVertexWithUV(var2 - var36 + var8, var4 + 0.0D, var34 + var10, (double)var17, (double)var19);
-        var12.addVertexWithUV(var2 - var36, var4 + 1.0D, var34, (double)var17, (double)var18);
-        var12.addVertexWithUV(var2 + var36, var4 + 1.0D, var34, (double)var16, (double)var18);
-        var12.addVertexWithUV(var2 + var8 + var36, var4 + 0.0D, var34 + var10, (double)var16, (double)var19);
-        var12.addVertexWithUV(var2 + var8 + var36, var4 + 0.0D, var32 + var10, (double)var17, (double)var19);
-        var12.addVertexWithUV(var2 + var36, var4 + 1.0D, var32, (double)var17, (double)var18);
-        var12.addVertexWithUV(var28, var4 + 1.0D, var6 + var36, (double)var16, (double)var18);
-        var12.addVertexWithUV(var28 + var8, var4 + 0.0D, var6 + var36 + var10, (double)var16, (double)var19);
-        var12.addVertexWithUV(var30 + var8, var4 + 0.0D, var6 + var36 + var10, (double)var17, (double)var19);
-        var12.addVertexWithUV(var30, var4 + 1.0D, var6 + var36, (double)var17, (double)var18);
-        var12.addVertexWithUV(var30, var4 + 1.0D, var6 - var36, (double)var16, (double)var18);
-        var12.addVertexWithUV(var30 + var8, var4 + 0.0D, var6 - var36 + var10, (double)var16, (double)var19);
-        var12.addVertexWithUV(var28 + var8, var4 + 0.0D, var6 - var36 + var10, (double)var17, (double)var19);
-        var12.addVertexWithUV(var28, var4 + 1.0D, var6 - var36, (double)var17, (double)var18);
+        // Standard UV boundaries for the sides of the torch
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
+        float minU = texU / 256.0F;
+        float maxU = (texU + 15.99F) / 256.0F;
+        float minV = texV / 256.0F;
+        float maxV = (texV + 15.99F) / 256.0F;
+
+        // Custom UV boundaries specifically for the TOP face of the torch (the burning coal part)
+        // 1.75 / 64 = 7 / 256. 9 / 256. This targets a specific 2x2 pixel square on the texture.
+        double topMinU = minU + 7.0D / 256.0D;
+        double topMinV = minV + 6.0D / 256.0D;
+        double topMaxU = minU + 9.0D / 256.0D;
+        double topMaxV = minV + 8.0D / 256.0D; // 1.0D / 32.0D = 8.0D / 256.0D
+
+        // Shift origin to the center of the block for easier rotation/tilting math
+        double centerX = x + 0.5D;
+        double centerZ = z + 0.5D;
+
+        double leftX = centerX - 0.5D;
+        double rightX = centerX + 0.5D;
+        double frontZ = centerZ - 0.5D;
+        double backZ = centerZ + 0.5D;
+
+        // Torch dimensions
+        double radius = 1.0D / 16.0D; // 1 pixel thick from the center
+        double height = 0.625D;       // 10 pixels tall (10 / 16)
+
+        // ==========================================
+        // TOP FACE (The burning tip)
+        // ==========================================
+        double tipOffsetBase = 1.0D - height; // How far down from the top of the block space the tip sits
+        double tipX = centerX + tiltX * tipOffsetBase;
+        double tipZ = centerZ + tiltZ * tipOffsetBase;
+
+        tess.addVertexWithUV(tipX - radius, y + height, tipZ - radius, topMinU, topMinV);
+        tess.addVertexWithUV(tipX - radius, y + height, tipZ + radius, topMinU, topMaxV);
+        tess.addVertexWithUV(tipX + radius, y + height, tipZ + radius, topMaxU, topMaxV);
+        tess.addVertexWithUV(tipX + radius, y + height, tipZ - radius, topMaxU, topMinV);
+
+        // ==========================================
+        // SIDE FACES
+        // ==========================================
+        // The top vertices stay near the center, while the bottom vertices are shifted by tiltX and tiltZ
+
+        // West Face
+        tess.addVertexWithUV(centerX - radius, y + 1.0D, frontZ, minU, minV);
+        tess.addVertexWithUV(centerX - radius + tiltX, y + 0.0D, frontZ + tiltZ, minU, maxV);
+        tess.addVertexWithUV(centerX - radius + tiltX, y + 0.0D, backZ + tiltZ, maxU, maxV);
+        tess.addVertexWithUV(centerX - radius, y + 1.0D, backZ, maxU, minV);
+
+        // East Face
+        tess.addVertexWithUV(centerX + radius, y + 1.0D, backZ, minU, minV);
+        tess.addVertexWithUV(centerX + radius + tiltX, y + 0.0D, backZ + tiltZ, minU, maxV);
+        tess.addVertexWithUV(centerX + radius + tiltX, y + 0.0D, frontZ + tiltZ, maxU, maxV);
+        tess.addVertexWithUV(centerX + radius, y + 1.0D, frontZ, maxU, minV);
+
+        // North Face
+        tess.addVertexWithUV(leftX, y + 1.0D, centerZ + radius, minU, minV);
+        tess.addVertexWithUV(leftX + tiltX, y + 0.0D, centerZ + radius + tiltZ, minU, maxV);
+        tess.addVertexWithUV(rightX + tiltX, y + 0.0D, centerZ + radius + tiltZ, maxU, maxV);
+        tess.addVertexWithUV(rightX, y + 1.0D, centerZ + radius, maxU, minV);
+
+        // South Face
+        tess.addVertexWithUV(rightX, y + 1.0D, centerZ - radius, minU, minV);
+        tess.addVertexWithUV(rightX + tiltX, y + 0.0D, centerZ - radius + tiltZ, minU, maxV);
+        tess.addVertexWithUV(leftX + tiltX, y + 0.0D, centerZ - radius + tiltZ, maxU, maxV);
+        tess.addVertexWithUV(leftX, y + 1.0D, centerZ - radius, maxU, minV);
     }
 
-    public void renderCrossedSquares(Block var1, int var2, double var3, double var5, double var7)
+    private void RenderCrossedSquares(Block block, int metadata, double x, double y, double z)
     {
-        Tessellator var9 = getTessellator();
-        int var10 = var1.getTexture(0, var2);
+        Tessellator tess = GetTessellator();
+
+        int textureId = block.getTexture(0, metadata);
         if (_overrideBlockTexture >= 0)
         {
-            var10 = _overrideBlockTexture;
+            textureId = _overrideBlockTexture;
         }
 
-        int var11 = (var10 & 15) << 4;
-        int var12 = var10 & 240;
-        double var13 = (double)(var11 / 256.0F);
-        double var15 = (double)((var11 + 15.99F) / 256.0F);
-        double var17 = (double)(var12 / 256.0F);
-        double var19 = (double)((var12 + 15.99F) / 256.0F);
-        double var21 = var3 + 0.5D - (double)0.45F;
-        double var23 = var3 + 0.5D + (double)0.45F;
-        double var25 = var7 + 0.5D - (double)0.45F;
-        double var27 = var7 + 0.5D + (double)0.45F;
-        var9.addVertexWithUV(var21, var5 + 1.0D, var25, var13, var17);
-        var9.addVertexWithUV(var21, var5 + 0.0D, var25, var13, var19);
-        var9.addVertexWithUV(var23, var5 + 0.0D, var27, var15, var19);
-        var9.addVertexWithUV(var23, var5 + 1.0D, var27, var15, var17);
-        var9.addVertexWithUV(var23, var5 + 1.0D, var27, var13, var17);
-        var9.addVertexWithUV(var23, var5 + 0.0D, var27, var13, var19);
-        var9.addVertexWithUV(var21, var5 + 0.0D, var25, var15, var19);
-        var9.addVertexWithUV(var21, var5 + 1.0D, var25, var15, var17);
-        var9.addVertexWithUV(var21, var5 + 1.0D, var27, var13, var17);
-        var9.addVertexWithUV(var21, var5 + 0.0D, var27, var13, var19);
-        var9.addVertexWithUV(var23, var5 + 0.0D, var25, var15, var19);
-        var9.addVertexWithUV(var23, var5 + 1.0D, var25, var15, var17);
-        var9.addVertexWithUV(var23, var5 + 1.0D, var25, var13, var17);
-        var9.addVertexWithUV(var23, var5 + 0.0D, var25, var13, var19);
-        var9.addVertexWithUV(var21, var5 + 0.0D, var27, var15, var19);
-        var9.addVertexWithUV(var21, var5 + 1.0D, var27, var15, var17);
+        // Convert texture ID to UV coordinates (0.0 to 1.0 range)
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
+        double minU = texU / 256.0F;
+        double maxU = (texU + 15.99F) / 256.0F;
+        double minV = texV / 256.0F;
+        double maxV = (texV + 15.99F) / 256.0F;
+
+        // Magic number 0.45 means the planes stretch from 0.05 to 0.95 within the block.
+        // This slight inset prevents Z-fighting (flickering) if the plant touches an adjacent solid block.
+        double minOffset = 0.5D - 0.45D; // 0.05
+        double maxOffset = 0.5D + 0.45D; // 0.95
+
+        double minX = x + minOffset;
+        double maxX = x + maxOffset;
+        double minZ = z + minOffset;
+        double maxZ = z + maxOffset;
+
+        // First Diagonal Plane (Bottom-Left to Top-Right across the X/Z grid)
+
+        // Front side
+        tess.addVertexWithUV(minX, y + 1.0D, minZ, minU, minV);
+        tess.addVertexWithUV(minX, y + 0.0D, minZ, minU, maxV);
+        tess.addVertexWithUV(maxX, y + 0.0D, maxZ, maxU, maxV);
+        tess.addVertexWithUV(maxX, y + 1.0D, maxZ, maxU, minV);
+
+        // Back side (reversed winding order and UVs)
+        tess.addVertexWithUV(maxX, y + 1.0D, maxZ, minU, minV);
+        tess.addVertexWithUV(maxX, y + 0.0D, maxZ, minU, maxV);
+        tess.addVertexWithUV(minX, y + 0.0D, minZ, maxU, maxV);
+        tess.addVertexWithUV(minX, y + 1.0D, minZ, maxU, minV);
+
+        // Second Diagonal Plane (Top-Left to Bottom-Right across the X/Z grid)
+
+        // Front side
+        tess.addVertexWithUV(minX, y + 1.0D, maxZ, minU, minV);
+        tess.addVertexWithUV(minX, y + 0.0D, maxZ, minU, maxV);
+        tess.addVertexWithUV(maxX, y + 0.0D, minZ, maxU, maxV);
+        tess.addVertexWithUV(maxX, y + 1.0D, minZ, maxU, minV);
+
+        // Back side (reversed winding order and UVs)
+        tess.addVertexWithUV(maxX, y + 1.0D, minZ, minU, minV);
+        tess.addVertexWithUV(maxX, y + 0.0D, minZ, minU, maxV);
+        tess.addVertexWithUV(minX, y + 0.0D, maxZ, maxU, maxV);
+        tess.addVertexWithUV(minX, y + 1.0D, maxZ, maxU, minV);
     }
 
-    public void func_1245_b(Block var1, int var2, double var3, double var5, double var7)
+    private void RenderCropQuads(Block block, int metadata, double x, double y, double z)
     {
-        Tessellator var9 = getTessellator();
-        int var10 = var1.getTexture(0, var2);
+        Tessellator tess = GetTessellator();
+        int textureId = block.getTexture(0, metadata);
+
         if (_overrideBlockTexture >= 0)
         {
-            var10 = _overrideBlockTexture;
+            textureId = _overrideBlockTexture;
         }
 
-        int var11 = (var10 & 15) << 4;
-        int var12 = var10 & 240;
-        double var13 = (double)(var11 / 256.0F);
-        double var15 = (double)((var11 + 15.99F) / 256.0F);
-        double var17 = (double)(var12 / 256.0F);
-        double var19 = (double)((var12 + 15.99F) / 256.0F);
-        double var21 = var3 + 0.5D - 0.25D;
-        double var23 = var3 + 0.5D + 0.25D;
-        double var25 = var7 + 0.5D - 0.5D;
-        double var27 = var7 + 0.5D + 0.5D;
-        var9.addVertexWithUV(var21, var5 + 1.0D, var25, var13, var17);
-        var9.addVertexWithUV(var21, var5 + 0.0D, var25, var13, var19);
-        var9.addVertexWithUV(var21, var5 + 0.0D, var27, var15, var19);
-        var9.addVertexWithUV(var21, var5 + 1.0D, var27, var15, var17);
-        var9.addVertexWithUV(var21, var5 + 1.0D, var27, var13, var17);
-        var9.addVertexWithUV(var21, var5 + 0.0D, var27, var13, var19);
-        var9.addVertexWithUV(var21, var5 + 0.0D, var25, var15, var19);
-        var9.addVertexWithUV(var21, var5 + 1.0D, var25, var15, var17);
-        var9.addVertexWithUV(var23, var5 + 1.0D, var27, var13, var17);
-        var9.addVertexWithUV(var23, var5 + 0.0D, var27, var13, var19);
-        var9.addVertexWithUV(var23, var5 + 0.0D, var25, var15, var19);
-        var9.addVertexWithUV(var23, var5 + 1.0D, var25, var15, var17);
-        var9.addVertexWithUV(var23, var5 + 1.0D, var25, var13, var17);
-        var9.addVertexWithUV(var23, var5 + 0.0D, var25, var13, var19);
-        var9.addVertexWithUV(var23, var5 + 0.0D, var27, var15, var19);
-        var9.addVertexWithUV(var23, var5 + 1.0D, var27, var15, var17);
-        var21 = var3 + 0.5D - 0.5D;
-        var23 = var3 + 0.5D + 0.5D;
-        var25 = var7 + 0.5D - 0.25D;
-        var27 = var7 + 0.5D + 0.25D;
-        var9.addVertexWithUV(var21, var5 + 1.0D, var25, var13, var17);
-        var9.addVertexWithUV(var21, var5 + 0.0D, var25, var13, var19);
-        var9.addVertexWithUV(var23, var5 + 0.0D, var25, var15, var19);
-        var9.addVertexWithUV(var23, var5 + 1.0D, var25, var15, var17);
-        var9.addVertexWithUV(var23, var5 + 1.0D, var25, var13, var17);
-        var9.addVertexWithUV(var23, var5 + 0.0D, var25, var13, var19);
-        var9.addVertexWithUV(var21, var5 + 0.0D, var25, var15, var19);
-        var9.addVertexWithUV(var21, var5 + 1.0D, var25, var15, var17);
-        var9.addVertexWithUV(var23, var5 + 1.0D, var27, var13, var17);
-        var9.addVertexWithUV(var23, var5 + 0.0D, var27, var13, var19);
-        var9.addVertexWithUV(var21, var5 + 0.0D, var27, var15, var19);
-        var9.addVertexWithUV(var21, var5 + 1.0D, var27, var15, var17);
-        var9.addVertexWithUV(var21, var5 + 1.0D, var27, var13, var17);
-        var9.addVertexWithUV(var21, var5 + 0.0D, var27, var13, var19);
-        var9.addVertexWithUV(var23, var5 + 0.0D, var27, var15, var19);
-        var9.addVertexWithUV(var23, var5 + 1.0D, var27, var15, var17);
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
+        double minU = (texU / 256.0F);
+        double maxU = ((texU + 15.99F) / 256.0F);
+        double minV = (texV / 256.0F);
+        double maxV = ((texV + 15.99F) / 256.0F);
+
+        double minX = x + 0.5D - 0.25D; // Left plane X
+        double maxX = x + 0.5D + 0.25D; // Right plane X
+        double minZ = z + 0.5D - 0.5D;  // Front plane Z
+        double maxZ = z + 0.5D + 0.5D;  // Back plane Z
+
+        // --- Vertical Planes (North-South aligned) ---
+        tess.addVertexWithUV(minX, y + 1.0D, minZ, minU, minV);
+        tess.addVertexWithUV(minX, y + 0.0D, minZ, minU, maxV);
+        tess.addVertexWithUV(minX, y + 0.0D, maxZ, maxU, maxV);
+        tess.addVertexWithUV(minX, y + 1.0D, maxZ, maxU, minV);
+
+        tess.addVertexWithUV(minX, y + 1.0D, maxZ, minU, minV);
+        tess.addVertexWithUV(minX, y + 0.0D, maxZ, minU, maxV);
+        tess.addVertexWithUV(minX, y + 0.0D, minZ, maxU, maxV);
+        tess.addVertexWithUV(minX, y + 1.0D, minZ, maxU, minV);
+
+        tess.addVertexWithUV(maxX, y + 1.0D, maxZ, minU, minV);
+        tess.addVertexWithUV(maxX, y + 0.0D, maxZ, minU, maxV);
+        tess.addVertexWithUV(maxX, y + 0.0D, minZ, maxU, maxV);
+        tess.addVertexWithUV(maxX, y + 1.0D, minZ, maxU, minV);
+
+        tess.addVertexWithUV(maxX, y + 1.0D, minZ, minU, minV);
+        tess.addVertexWithUV(maxX, y + 0.0D, minZ, minU, maxV);
+        tess.addVertexWithUV(maxX, y + 0.0D, maxZ, maxU, maxV);
+        tess.addVertexWithUV(maxX, y + 1.0D, maxZ, maxU, minV);
+
+        // --- Horizontal Planes (East-West aligned) ---
+        // Reposition coordinates for the crossing planes
+        minX = x + 0.5D - 0.5D;
+        maxX = x + 0.5D + 0.5D;
+        minZ = z + 0.5D - 0.25D;
+        maxZ = z + 0.5D + 0.25D;
+
+        tess.addVertexWithUV(minX, y + 1.0D, minZ, minU, minV);
+        tess.addVertexWithUV(minX, y + 0.0D, minZ, minU, maxV);
+        tess.addVertexWithUV(maxX, y + 0.0D, minZ, maxU, maxV);
+        tess.addVertexWithUV(maxX, y + 1.0D, minZ, maxU, minV);
+
+        tess.addVertexWithUV(maxX, y + 1.0D, minZ, minU, minV);
+        tess.addVertexWithUV(maxX, y + 0.0D, minZ, minU, maxV);
+        tess.addVertexWithUV(minX, y + 0.0D, minZ, maxU, maxV);
+        tess.addVertexWithUV(minX, y + 1.0D, minZ, maxU, minV);
+
+        tess.addVertexWithUV(maxX, y + 1.0D, maxZ, minU, minV);
+        tess.addVertexWithUV(maxX, y + 0.0D, maxZ, minU, maxV);
+        tess.addVertexWithUV(minX, y + 0.0D, maxZ, maxU, maxV);
+        tess.addVertexWithUV(minX, y + 1.0D, maxZ, maxU, minV);
+
+        tess.addVertexWithUV(minX, y + 1.0D, maxZ, minU, minV);
+        tess.addVertexWithUV(minX, y + 0.0D, maxZ, minU, maxV);
+        tess.addVertexWithUV(maxX, y + 0.0D, maxZ, maxU, maxV);
+        tess.addVertexWithUV(maxX, y + 1.0D, maxZ, maxU, minV);
     }
 
-    public bool renderBlockFluids(Block var1, int var2, int var3, int var4)
+    /// <summary>
+    /// Renders dynamic fluid blocks (Water/Lava), calculating smooth slopes and flowing texture UVs.
+    /// </summary>
+    private bool RenderBlockFluids(Block block, int x, int y, int z)
     {
-        Tessellator var5 = getTessellator();
-        Box blockBb = var1.BoundingBox;
-        int var6 = var1.getColorMultiplier(_blockAccess, var2, var3, var4);
-        float var7 = (var6 >> 16 & 255) / 255.0F;
-        float var8 = (var6 >> 8 & 255) / 255.0F;
-        float var9 = (var6 & 255) / 255.0F;
-        bool var10 = var1.isSideVisible(_blockAccess, var2, var3 + 1, var4, 1);
-        bool var11 = var1.isSideVisible(_blockAccess, var2, var3 - 1, var4, 0);
-        bool[] var12 =
+        Tessellator tess = GetTessellator();
+        Box bounds = block.BoundingBox;
+
+        // Base fluid color tint (e.g., biome water color)
+        int colorMultiplier = block.getColorMultiplier(_blockAccess, x, y, z);
+        float tintR = (colorMultiplier >> 16 & 255) / 255.0F;
+        float tintG = (colorMultiplier >> 8 & 255) / 255.0F;
+        float tintB = (colorMultiplier & 255) / 255.0F;
+
+        // Determine which faces are actually visible to the player
+        bool isTopVisible = block.isSideVisible(_blockAccess, x, y + 1, z, 1);
+        bool isBottomVisible = block.isSideVisible(_blockAccess, x, y - 1, z, 0);
+        bool[] sideVisible =
         [
-            var1.isSideVisible(_blockAccess, var2, var3, var4 - 1, 2),
-            var1.isSideVisible(_blockAccess, var2, var3, var4 + 1, 3),
-            var1.isSideVisible(_blockAccess, var2 - 1, var3, var4, 4),
-            var1.isSideVisible(_blockAccess, var2 + 1, var3, var4, 5)
+            block.isSideVisible(_blockAccess, x, y, z - 1, 2), // North
+            block.isSideVisible(_blockAccess, x, y, z + 1, 3), // South
+            block.isSideVisible(_blockAccess, x - 1, y, z, 4), // West
+            block.isSideVisible(_blockAccess, x + 1, y, z, 5)  // East
         ];
-        if (!var10 && !var11 && !var12[0] && !var12[1] && !var12[2] && !var12[3])
+
+        // Fast exit if completely surrounded
+        if (!isTopVisible && !isBottomVisible && !sideVisible[0] && !sideVisible[1] && !sideVisible[2] && !sideVisible[3])
         {
             return false;
         }
-        else
+
+        bool hasRendered = false;
+
+        // Directional shading
+        float lightBottom = 0.5F;
+        float lightTop = 1.0F;
+        float lightZ = 0.8F; // North/South
+        float lightX = 0.6F; // East/West
+
+        Material material = block.material;
+        int meta = _blockAccess.getBlockMeta(x, y, z);
+
+        // Calculate the height of the fluid at each of the 4 corners of this block
+        float heightNw = GetFluidVertexHeight(x, y, z, material);
+        float heightSw = GetFluidVertexHeight(x, y, z + 1, material);
+        float heightSe = GetFluidVertexHeight(x + 1, y, z + 1, material);
+        float heightNe = GetFluidVertexHeight(x + 1, y, z, material);
+
+        // TOP FACE (Flowing Surface)
+        if (_renderAllFaces || isTopVisible)
         {
-            bool var13 = false;
-            float var14 = 0.5F;
-            float var15 = 1.0F;
-            float var16 = 0.8F;
-            float var17 = 0.6F;
-            double var18 = 0.0D;
-            double var20 = 1.0D;
-            Material var22 = var1.material;
-            int var23 = _blockAccess.getBlockMeta(var2, var3, var4);
-            float var24 = func_1224_a(var2, var3, var4, var22);
-            float var25 = func_1224_a(var2, var3, var4 + 1, var22);
-            float var26 = func_1224_a(var2 + 1, var3, var4 + 1, var22);
-            float var27 = func_1224_a(var2 + 1, var3, var4, var22);
-            int var28;
-            int var31;
-            float var36;
-            float var37;
-            float var38;
-            if (_renderAllFaces || var10)
+            hasRendered = true;
+            int textureId = block.getTexture(1, meta);
+            float flowAngle = (float)BlockFluid.getFlowingAngle(_blockAccess, x, y, z, material);
+
+            // If flowing, switch to the flowing texture variant
+            if (flowAngle > -999.0F)
             {
-                var13 = true;
-                var28 = var1.getTexture(1, var23);
-                float var29 = (float)BlockFluid.getFlowingAngle(_blockAccess, var2, var3, var4, var22);
-                if (var29 > -999.0F)
-                {
-                    var28 = var1.getTexture(2, var23);
-                }
-
-                int var30 = (var28 & 15) << 4;
-                var31 = var28 & 240;
-                double var32 = (var30 + 8.0D) / 256.0D;
-                double var34 = (var31 + 8.0D) / 256.0D;
-                if (var29 < -999.0F)
-                {
-                    var29 = 0.0F;
-                }
-                else
-                {
-                    var32 = (double)((var30 + 16) / 256.0F);
-                    var34 = (double)((var31 + 16) / 256.0F);
-                }
-
-                var36 = MathHelper.Sin(var29) * 8.0F / 256.0F;
-                var37 = MathHelper.Cos(var29) * 8.0F / 256.0F;
-                var38 = var1.getLuminance(_blockAccess, var2, var3, var4);
-                var5.setColorOpaque_F(var15 * var38 * var7, var15 * var38 * var8, var15 * var38 * var9);
-                var5.addVertexWithUV(var2 + 0, (double)(var3 + var24), var4 + 0, var32 - (double)var37 - (double)var36, var34 - (double)var37 + (double)var36);
-                var5.addVertexWithUV(var2 + 0, (double)(var3 + var25), var4 + 1, var32 - (double)var37 + (double)var36, var34 + (double)var37 + (double)var36);
-                var5.addVertexWithUV(var2 + 1, (double)(var3 + var26), var4 + 1, var32 + (double)var37 + (double)var36, var34 + (double)var37 - (double)var36);
-                var5.addVertexWithUV(var2 + 1, (double)(var3 + var27), var4 + 0, var32 + (double)var37 - (double)var36, var34 - (double)var37 - (double)var36);
+                textureId = block.getTexture(2, meta);
             }
 
-            if (_renderAllFaces || var11)
+            int texU = (textureId & 15) << 4;
+            int texV = textureId & 240;
+            double centerU = (texU + 8.0D) / 256.0D;
+            double centerV = (texV + 8.0D) / 256.0D;
+
+            // If completely still, use standard flat UVs
+            if (flowAngle < -999.0F)
             {
-                float var52 = var1.getLuminance(_blockAccess, var2, var3 - 1, var4);
-                var5.setColorOpaque_F(var14 * var52, var14 * var52, var14 * var52);
-                renderBottomFace(var1, var2, var3, var4, var1.getTexture(0));
-                var13 = true;
+                flowAngle = 0.0F;
+            }
+            else
+            {
+                // Shift UV center for flowing animation
+                centerU = (texU + 16) / 256.0F;
+                centerV = (texV + 16) / 256.0F;
             }
 
-            for (var28 = 0; var28 < 4; ++var28)
-            {
-                int var53 = var2;
-                var31 = var4;
-                if (var28 == 0)
-                {
-                    var31 = var4 - 1;
-                }
+            // Calculate rotational offsets for the UVs to make the texture flow in the correct direction
+            float sinAngle = MathHelper.Sin(flowAngle) * 8.0F / 256.0F;
+            float cosAngle = MathHelper.Cos(flowAngle) * 8.0F / 256.0F;
 
-                if (var28 == 1)
-                {
-                    ++var31;
-                }
+            float luminance = block.getLuminance(_blockAccess, x, y, z);
+            tess.setColorOpaque_F(lightTop * luminance * tintR, lightTop * luminance * tintG, lightTop * luminance * tintB);
 
-                if (var28 == 2)
-                {
-                    var53 = var2 - 1;
-                }
-
-                if (var28 == 3)
-                {
-                    ++var53;
-                }
-
-                int var54 = var1.getTexture(var28 + 2, var23);
-                int var33 = (var54 & 15) << 4;
-                int var55 = var54 & 240;
-                if (_renderAllFaces || var12[var28])
-                {
-                    float var35;
-                    float var39;
-                    float var40;
-                    if (var28 == 0)
-                    {
-                        var35 = var24;
-                        var36 = var27;
-                        var37 = var2;
-                        var39 = var2 + 1;
-                        var38 = var4;
-                        var40 = var4;
-                    }
-                    else if (var28 == 1)
-                    {
-                        var35 = var26;
-                        var36 = var25;
-                        var37 = var2 + 1;
-                        var39 = var2;
-                        var38 = var4 + 1;
-                        var40 = var4 + 1;
-                    }
-                    else if (var28 == 2)
-                    {
-                        var35 = var25;
-                        var36 = var24;
-                        var37 = var2;
-                        var39 = var2;
-                        var38 = var4 + 1;
-                        var40 = var4;
-                    }
-                    else
-                    {
-                        var35 = var27;
-                        var36 = var26;
-                        var37 = var2 + 1;
-                        var39 = var2 + 1;
-                        var38 = var4;
-                        var40 = var4 + 1;
-                    }
-
-                    var13 = true;
-                    double var41 = (double)((var33 + 0) / 256.0F);
-                    double var43 = (var33 + 16 - 0.01D) / 256.0D;
-                    double var45 = (double)((var55 + (1.0F - var35) * 16.0F) / 256.0F);
-                    double var47 = (double)((var55 + (1.0F - var36) * 16.0F) / 256.0F);
-                    double var49 = (var55 + 16 - 0.01D) / 256.0D;
-                    float var51 = var1.getLuminance(_blockAccess, var53, var3, var31);
-                    if (var28 < 2)
-                    {
-                        var51 *= var16;
-                    }
-                    else
-                    {
-                        var51 *= var17;
-                    }
-
-                    var5.setColorOpaque_F(var15 * var51 * var7, var15 * var51 * var8, var15 * var51 * var9);
-                    var5.addVertexWithUV((double)var37, (double)(var3 + var35), (double)var38, var41, var45);
-                    var5.addVertexWithUV((double)var39, (double)(var3 + var36), (double)var40, var43, var47);
-                    var5.addVertexWithUV((double)var39, var3 + 0, (double)var40, var43, var49);
-                    var5.addVertexWithUV((double)var37, var3 + 0, (double)var38, var41, var49);
-                }
-            }
-
-            blockBb.MinY = var18;
-            blockBb.MaxY = var20;
-            return var13;
+            // Draw top face with dynamic heights and rotated UVs
+            tess.addVertexWithUV(x + 0, y + heightNw, z + 0, centerU - cosAngle - sinAngle, centerV - cosAngle + sinAngle);
+            tess.addVertexWithUV(x + 0, y + heightSw, z + 1, centerU - cosAngle + sinAngle, centerV + cosAngle + sinAngle);
+            tess.addVertexWithUV(x + 1, y + heightSe, z + 1, centerU + cosAngle + sinAngle, centerV + cosAngle - sinAngle);
+            tess.addVertexWithUV(x + 1, y + heightNe, z + 0, centerU + cosAngle - sinAngle, centerV - cosAngle - sinAngle);
         }
+
+        // BOTTOM FACE
+        if (_renderAllFaces || isBottomVisible)
+        {
+            float luminance = block.getLuminance(_blockAccess, x, y - 1, z);
+            tess.setColorOpaque_F(lightBottom * luminance, lightBottom * luminance, lightBottom * luminance);
+            RenderBottomFace(block, x, y, z, block.getTexture(0));
+            hasRendered = true;
+        }
+
+        // SIDE FACES (North, South, West, East)
+        for (int side = 0; side < 4; ++side)
+        {
+            int adjX = x;
+            int adjZ = z;
+
+            if (side == 0) adjZ = z - 1; // North
+            if (side == 1) adjZ = z + 1; // South
+            if (side == 2) adjX = x - 1; // West
+            if (side == 3) adjX = x + 1; // East
+
+            int textureId = block.getTexture(side + 2, meta);
+            int texU = (textureId & 15) << 4;
+            int texV = textureId & 240;
+
+            if (_renderAllFaces || sideVisible[side])
+            {
+                float h1, h2; // Top corner heights for this face
+                float x1, x2; // X coordinates
+                float z1, z2; // Z coordinates
+
+                if (side == 0) // North
+                {
+                    h1 = heightNw; h2 = heightNe;
+                    x1 = x; x2 = x + 1;
+                    z1 = z; z2 = z;
+                }
+                else if (side == 1) // South
+                {
+                    h1 = heightSe; h2 = heightSw;
+                    x1 = x + 1; x2 = x;
+                    z1 = z + 1; z2 = z + 1;
+                }
+                else if (side == 2) // West
+                {
+                    h1 = heightSw; h2 = heightNw;
+                    x1 = x; x2 = x;
+                    z1 = z + 1; z2 = z;
+                }
+                else // East
+                {
+                    h1 = heightNe; h2 = heightSe;
+                    x1 = x + 1; x2 = x + 1;
+                    z1 = z; z2 = z + 1;
+                }
+
+                hasRendered = true;
+
+                // Crop the UVs vertically so the texture doesn't stretch on short flowing water blocks
+                double minU = (texU + 0) / 256.0F;
+                double maxU = (texU + 16 - 0.01D) / 256.0D;
+                double minV1 = (texV + (1.0F - h1) * 16.0F) / 256.0F; // UV height match for corner 1
+                double minV2 = (texV + (1.0F - h2) * 16.0F) / 256.0F; // UV height match for corner 2
+                double maxV = (texV + 16 - 0.01D) / 256.0D;
+
+                float luminance = block.getLuminance(_blockAccess, adjX, y, adjZ);
+                float shadow = (side < 2) ? lightZ : lightX;
+                luminance *= shadow;
+
+                tess.setColorOpaque_F(lightTop * luminance * tintR, lightTop * luminance * tintG, lightTop * luminance * tintB);
+
+                // Draw the side face matching the sloped top corners
+                tess.addVertexWithUV(x1, y + h1, z1, minU, minV1);
+                tess.addVertexWithUV(x2, y + h2, z2, maxU, minV2);
+                tess.addVertexWithUV(x2, y + 0, z2, maxU, maxV);
+                tess.addVertexWithUV(x1, y + 0, z1, minU, maxV);
+            }
+        }
+
+        // Reset bounding box state
+        bounds.MinY = 0.0D;
+        bounds.MaxY = 1.0D;
+        return hasRendered;
     }
 
-    private float func_1224_a(int var1, int var2, int var3, Material var4)
+    private float GetFluidVertexHeight(int x, int y, int z, Material material)
     {
-        int var5 = 0;
-        float var6 = 0.0F;
+        int totalWeight = 0;
+        float totalDepth = 0.0F;
 
-        for (int var7 = 0; var7 < 4; ++var7)
+        // Iterate through the 2x2 grid sharing this vertex: (x, z), (x-1, z), (x, z-1), (x-1, z-1)
+        for (int i = 0; i < 4; ++i)
         {
-            int var8 = var1 - (var7 & 1);
-            int var10 = var3 - (var7 >> 1 & 1);
-            if (_blockAccess.getMaterial(var8, var2 + 1, var10) == var4)
+            int checkX = x - (i & 1);
+            int checkZ = z - (i >> 1 & 1);
+
+            // If there is fluid directly above any of the 4 blocks, the corner must be completely full (height 1.0)
+            if (_blockAccess.getMaterial(checkX, y + 1, checkZ) == material)
             {
                 return 1.0F;
             }
 
-            Material var11 = _blockAccess.getMaterial(var8, var2, var10);
-            if (var11 != var4)
+            Material neighborMaterial = _blockAccess.getMaterial(checkX, y, checkZ);
+
+            if (neighborMaterial != material)
             {
-                if (!var11.IsSolid)
+                // If the neighbor is air or a non-solid block, it contributes "full depth" (pulls the water level down to 0)
+                if (!neighborMaterial.IsSolid)
                 {
-                    ++var6;
-                    ++var5;
+                    ++totalDepth;
+                    ++totalWeight;
                 }
             }
             else
             {
-                int var12 = _blockAccess.getBlockMeta(var8, var2, var10);
-                if (var12 >= 8 || var12 == 0)
+                int neighborMeta = _blockAccess.getBlockMeta(checkX, y, checkZ);
+                float fluidDepth = BlockFluid.getFluidHeightFromMeta(neighborMeta);
+
+                // Meta >= 8 (falling fluid) or Meta == 0 (source block)
+                if (neighborMeta >= 8 || neighborMeta == 0)
                 {
-                    var6 += BlockFluid.getFluidHeightFromMeta(var12) * 10.0F;
-                    var5 += 10;
+                    // Source blocks and falling columns get 10x the "weight" in the average,
+                    // heavily anchoring the fluid corner to their height.
+                    totalDepth += fluidDepth * 10.0F;
+                    totalWeight += 10;
                 }
 
-                var6 += BlockFluid.getFluidHeightFromMeta(var12);
-                ++var5;
+                totalDepth += fluidDepth;
+                ++totalWeight;
             }
         }
 
-        return 1.0F - var6 / var5;
+        // Depth is measured from the top down. Subtract from 1.0 to get height from bottom up.
+        return 1.0F - totalDepth / totalWeight;
     }
 
-    public void renderBlockFallingSand(Block var1, World var2, int var3, int var4, int var5)
+    public void RenderBlockFallingSand(Block block, World world, int x, int y, int z)
     {
-        float var6 = 0.5F;
-        float var7 = 1.0F;
-        float var8 = 0.8F;
-        float var9 = 0.6F;
-        Tessellator var10 = getTessellator();
-        var10.startDrawingQuads();
-        float var11 = var1.getLuminance(var2, var3, var4, var5);
-        float var12 = var1.getLuminance(var2, var3, var4 - 1, var5);
-        if (var12 < var11)
-        {
-            var12 = var11;
-        }
+        // Directional shading multipliers for fake 3D depth
+        float lightBottom = 0.5F;
+        float lightTop = 1.0F;
+        float lightZ = 0.8F; // East/West faces
+        float lightX = 0.6F; // North/South faces
 
-        var10.setColorOpaque_F(var6 * var12, var6 * var12, var6 * var12);
-        renderBottomFace(var1, -0.5D, -0.5D, -0.5D, var1.getTexture(0));
-        var12 = var1.getLuminance(var2, var3, var4 + 1, var5);
-        if (var12 < var11)
-        {
-            var12 = var11;
-        }
+        Tessellator tess = GetTessellator();
+        tess.startDrawingQuads();
 
-        var10.setColorOpaque_F(var7 * var12, var7 * var12, var7 * var12);
-        renderTopFace(var1, -0.5D, -0.5D, -0.5D, var1.getTexture(1));
-        var12 = var1.getLuminance(var2, var3, var4, var5 - 1);
-        if (var12 < var11)
-        {
-            var12 = var11;
-        }
+        // Base luminance at the entity's current position
+        float currentLuminance = block.getLuminance(world, x, y, z);
 
-        var10.setColorOpaque_F(var8 * var12, var8 * var12, var8 * var12);
-        renderEastFace(var1, -0.5D, -0.5D, -0.5D, var1.getTexture(2));
-        var12 = var1.getLuminance(var2, var3, var4, var5 + 1);
-        if (var12 < var11)
-        {
-            var12 = var11;
-        }
+        float faceLuminance =
+            // --- Bottom Face (Y - 1) ---
+            block.getLuminance(world, x, y - 1, z);
+        // Ensure the face isn't darker than the air block it occupies
+        if (faceLuminance < currentLuminance) faceLuminance = currentLuminance;
 
-        var10.setColorOpaque_F(var8 * var12, var8 * var12, var8 * var12);
-        renderWestFace(var1, -0.5D, -0.5D, -0.5D, var1.getTexture(3));
-        var12 = var1.getLuminance(var2, var3 - 1, var4, var5);
-        if (var12 < var11)
-        {
-            var12 = var11;
-        }
+        tess.setColorOpaque_F(lightBottom * faceLuminance, lightBottom * faceLuminance, lightBottom * faceLuminance);
+        // Note: Rendered at local origin (-0.5) because the entity's global transform handles the actual world position
+        RenderBottomFace(block, -0.5D, -0.5D, -0.5D, block.getTexture(0));
 
-        var10.setColorOpaque_F(var9 * var12, var9 * var12, var9 * var12);
-        renderNorthFace(var1, -0.5D, -0.5D, -0.5D, var1.getTexture(4));
-        var12 = var1.getLuminance(var2, var3 + 1, var4, var5);
-        if (var12 < var11)
-        {
-            var12 = var11;
-        }
+        // --- Top Face (Y + 1) ---
+        faceLuminance = block.getLuminance(world, x, y + 1, z);
+        if (faceLuminance < currentLuminance) faceLuminance = currentLuminance;
 
-        var10.setColorOpaque_F(var9 * var12, var9 * var12, var9 * var12);
-        renderSouthFace(var1, -0.5D, -0.5D, -0.5D, var1.getTexture(5));
-        var10.draw();
+        tess.setColorOpaque_F(lightTop * faceLuminance, lightTop * faceLuminance, lightTop * faceLuminance);
+        RenderTopFace(block, -0.5D, -0.5D, -0.5D, block.getTexture(1));
+
+        // --- East Face (Z - 1) ---
+        faceLuminance = block.getLuminance(world, x, y, z - 1);
+        if (faceLuminance < currentLuminance) faceLuminance = currentLuminance;
+
+        tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
+        RenderEastFace(block, -0.5D, -0.5D, -0.5D, block.getTexture(2));
+
+        // --- West Face (Z + 1) ---
+        faceLuminance = block.getLuminance(world, x, y, z + 1);
+        if (faceLuminance < currentLuminance) faceLuminance = currentLuminance;
+
+        tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
+        RenderWestFace(block, -0.5D, -0.5D, -0.5D, block.getTexture(3));
+
+        // --- North Face (X - 1) ---
+        faceLuminance = block.getLuminance(world, x - 1, y, z);
+        if (faceLuminance < currentLuminance) faceLuminance = currentLuminance;
+
+        tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
+        RenderNorthFace(block, -0.5D, -0.5D, -0.5D, block.getTexture(4));
+
+        // --- South Face (X + 1) ---
+        faceLuminance = block.getLuminance(world, x + 1, y, z);
+        if (faceLuminance < currentLuminance) faceLuminance = currentLuminance;
+
+        tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
+        RenderSouthFace(block, -0.5D, -0.5D, -0.5D, block.getTexture(5));
+
+        tess.draw();
     }
 
-    public bool renderStandardBlock(Block var1, int var2, int var3, int var4)
+    private bool RenderStandardBlock(Block block, int x, int y, int z)
     {
-        int var5 = var1.getColorMultiplier(_blockAccess, var2, var3, var4);
-        float var6 = (var5 >> 16 & 255) / 255.0F;
-        float var7 = (var5 >> 8 & 255) / 255.0F;
-        float var8 = (var5 & 255) / 255.0F;
+        _enableAo = true;
+        bool hasRendered = false;
+        Box bounds = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
 
-        return renderStandardBlockWithAmbientOcclusion(var1, var2, var3, var4, var6, var7, var8);
-    }
+        // 1. Get Base Color/Biome Tint
+        int colorMultiplier = block.getColorMultiplier(_blockAccess, x, y, z);
+        float r = (colorMultiplier >> 16 & 255) / 255.0F;
+        float g = (colorMultiplier >> 8 & 255) / 255.0F;
+        float b = (colorMultiplier & 255) / 255.0F;
 
-    public bool renderStandardBlockWithAmbientOcclusion(Block var1, int var2, int var3, int var4, float var5, float var6, float var7)
-    {
-        _enableAO = true;
-        bool var8 = false;
-        bool var13 = true;
-        bool var14 = true;
-        bool var15 = true;
-        bool var16 = true;
-        bool var17 = true;
-        bool var18 = true;
-        Box blockBB = _useOverrideBoundingBox ? _overrideBoundingBox : var1.BoundingBox;
-        _lightValueOwn = var1.getLuminance(_blockAccess, var2, var3, var4);
-        _aoLightValueXNeg = var1.getLuminance(_blockAccess, var2 - 1, var3, var4);
-        _aoLightValueYNeg = var1.getLuminance(_blockAccess, var2, var3 - 1, var4);
-        _aoLightValueZNeg = var1.getLuminance(_blockAccess, var2, var3, var4 - 1);
-        _aoLightValueXPos = var1.getLuminance(_blockAccess, var2 + 1, var3, var4);
-        _aoLightValueYPos = var1.getLuminance(_blockAccess, var2, var3 + 1, var4);
-        _aoLightValueZPos = var1.getLuminance(_blockAccess, var2, var3, var4 + 1);
-        _aoBlockOpXPosYPos = Block.BlocksAllowVision[_blockAccess.getBlockId(var2 + 1, var3 + 1, var4)];
-        _aoBlockOpYPosZNeg = Block.BlocksAllowVision[_blockAccess.getBlockId(var2 + 1, var3 - 1, var4)];
-        _aoBlockOpXPosZNeg = Block.BlocksAllowVision[_blockAccess.getBlockId(var2 + 1, var3, var4 + 1)];
-        _aoBlockOpXPosZPos = Block.BlocksAllowVision[_blockAccess.getBlockId(var2 + 1, var3, var4 - 1)];
-        _aoBlockOpXNegYNeg = Block.BlocksAllowVision[_blockAccess.getBlockId(var2 - 1, var3 + 1, var4)];
-        _aoBlockOpYNegZPos = Block.BlocksAllowVision[_blockAccess.getBlockId(var2 - 1, var3 - 1, var4)];
-        _aoBlockOpXNegZNeg = Block.BlocksAllowVision[_blockAccess.getBlockId(var2 - 1, var3, var4 - 1)];
-        _aoBlockOpXNegZPos = Block.BlocksAllowVision[_blockAccess.getBlockId(var2 - 1, var3, var4 + 1)];
-        _aoBlockOpXPosYNeg = Block.BlocksAllowVision[_blockAccess.getBlockId(var2, var3 + 1, var4 + 1)];
-        _aoBlockOpXNegYPos = Block.BlocksAllowVision[_blockAccess.getBlockId(var2, var3 + 1, var4 - 1)];
-        _aoBlockOpYPosZPos = Block.BlocksAllowVision[_blockAccess.getBlockId(var2, var3 - 1, var4 + 1)];
-        _aoBlockOpYNegZNeg = Block.BlocksAllowVision[_blockAccess.getBlockId(var2, var3 - 1, var4 - 1)];
-        if (var1.textureId == 3)
+        // 2. Determine which faces receive the color tint.
+        // Grass (ID 3) only gets tinted on the top face. Custom overridden textures also lose side tints.
+        bool tintBottom = true, tintTop = true, tintEast = true, tintWest = true, tintNorth = true, tintSouth = true;
+        if (block.textureId == 3 || _overrideBlockTexture >= 0)
         {
-            var18 = false;
-            var17 = var18;
-            var16 = var18;
-            var15 = var18;
-            var13 = var18;
+            tintBottom = tintEast = tintWest = tintNorth = tintSouth = false;
         }
 
-        if (_overrideBlockTexture >= 0)
+        // 3. Cache base light values for the center block and the 6 adjacent blocks
+        _aoLightValueXNeg = block.getLuminance(_blockAccess, x - 1, y, z);
+        _aoLightValueYNeg = block.getLuminance(_blockAccess, x, y - 1, z);
+        _aoLightValueZNeg = block.getLuminance(_blockAccess, x, y, z - 1);
+        _aoLightValueXPos = block.getLuminance(_blockAccess, x + 1, y, z);
+        _aoLightValueYPos = block.getLuminance(_blockAccess, x, y + 1, z);
+        _aoLightValueZPos = block.getLuminance(_blockAccess, x, y, z + 1);
+
+        // 4. Cache Diagonal Opacity (Can light pass through the diagonal neighbors?)
+        _aoBlockOpXPosYPos = Block.BlocksAllowVision[_blockAccess.getBlockId(x + 1, y + 1, z)];
+        _aoBlockOpYPosZNeg = Block.BlocksAllowVision[_blockAccess.getBlockId(x + 1, y - 1, z)];
+        _aoBlockOpXPosZNeg = Block.BlocksAllowVision[_blockAccess.getBlockId(x + 1, y, z + 1)];
+        _aoBlockOpXPosZPos = Block.BlocksAllowVision[_blockAccess.getBlockId(x + 1, y, z - 1)];
+        _aoBlockOpXNegYNeg = Block.BlocksAllowVision[_blockAccess.getBlockId(x - 1, y + 1, z)];
+        _aoBlockOpYNegZPos = Block.BlocksAllowVision[_blockAccess.getBlockId(x - 1, y - 1, z)];
+        _aoBlockOpXNegZNeg = Block.BlocksAllowVision[_blockAccess.getBlockId(x - 1, y, z - 1)];
+        _aoBlockOpXNegZPos = Block.BlocksAllowVision[_blockAccess.getBlockId(x - 1, y, z + 1)];
+        _aoBlockOpXPosYNeg = Block.BlocksAllowVision[_blockAccess.getBlockId(x, y + 1, z + 1)];
+        _aoBlockOpXNegYPos = Block.BlocksAllowVision[_blockAccess.getBlockId(x, y + 1, z - 1)];
+        _aoBlockOpYPosZPos = Block.BlocksAllowVision[_blockAccess.getBlockId(x, y - 1, z + 1)];
+        _aoBlockOpYNegZNeg = Block.BlocksAllowVision[_blockAccess.getBlockId(x, y - 1, z - 1)];
+
+        float lightTl, lightBl, lightBr, lightTr;
+
+        // BOTTOM FACE (Y - 1)
+        if (_renderAllFaces || bounds.MinY > 0.0D || block.isSideVisible(_blockAccess, x, y - 1, z, 0))
         {
-            var18 = false;
-            var17 = var18;
-            var16 = var18;
-            var15 = var18;
-            var13 = var18;
+            if (_aoBlendMode <= 0) // Flat Lighting
+            {
+                lightTl = lightBl = lightBr = lightTr = _aoLightValueYNeg;
+            }
+            else // Smooth Ambient Occlusion
+            {
+                int adjY = y - 1;
+                float lightWest = block.getLuminance(_blockAccess, x - 1, adjY, z);
+                float lightEast = block.getLuminance(_blockAccess, x + 1, adjY, z);
+                float lightNorth = block.getLuminance(_blockAccess, x, adjY, z - 1);
+                float lightSouth = block.getLuminance(_blockAccess, x, adjY, z + 1);
+
+                // Calculate corner lights. If neighbors form a solid corner, prevent light bleeding.
+                float lightNorthWest = (!_aoBlockOpYNegZNeg && !_aoBlockOpYNegZPos) ? lightWest : block.getLuminance(_blockAccess, x - 1, adjY, z - 1);
+                float lightSouthWest = (!_aoBlockOpYPosZPos && !_aoBlockOpYNegZPos) ? lightWest : block.getLuminance(_blockAccess, x - 1, adjY, z + 1);
+                float lightNorthEast = (!_aoBlockOpYNegZNeg && !_aoBlockOpYPosZNeg) ? lightEast : block.getLuminance(_blockAccess, x + 1, adjY, z - 1);
+                float lightSouthEast = (!_aoBlockOpYPosZPos && !_aoBlockOpYPosZNeg) ? lightEast : block.getLuminance(_blockAccess, x + 1, adjY, z + 1);
+
+                // Average the 4 surrounding blocks for each vertex
+                lightTl = (lightSouthWest + lightWest + lightSouth + _aoLightValueYNeg) / 4.0F;
+                lightBl = (lightWest + lightNorthWest + _aoLightValueYNeg + lightNorth) / 4.0F;
+                lightBr = (_aoLightValueYNeg + lightNorth + lightEast + lightNorthEast) / 4.0F;
+                lightTr = (lightSouth + _aoLightValueYNeg + lightSouthEast + lightEast) / 4.0F;
+            }
+
+            // Apply base shadow (0.5 for bottom), block tint, and vertex AO light
+            float tintR = (tintBottom ? r : 1.0F) * 0.5F;
+            float tintG = (tintBottom ? g : 1.0F) * 0.5F;
+            float tintB = (tintBottom ? b : 1.0F) * 0.5F;
+
+            _colorRedTopLeft = tintR * lightTl; _colorGreenTopLeft = tintG * lightTl; _colorBlueTopLeft = tintB * lightTl;
+            _colorRedBottomLeft = tintR * lightBl; _colorGreenBottomLeft = tintG * lightBl; _colorBlueBottomLeft = tintB * lightBl;
+            _colorRedBottomRight = tintR * lightBr; _colorGreenBottomRight = tintG * lightBr; _colorBlueBottomRight = tintB * lightBr;
+            _colorRedTopRight = tintR * lightTr; _colorGreenTopRight = tintG * lightTr; _colorBlueTopRight = tintB * lightTr;
+
+            RenderBottomFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 0));
+            hasRendered = true;
         }
 
-        float var9;
-        float var10;
-        float var11;
-        float var12;
-        if (_renderAllFaces || blockBB.MinY > 0.0D || var1.isSideVisible(_blockAccess, var2, var3 - 1, var4, 0))
+        // TOP FACE (Y + 1)
+        if (_renderAllFaces || bounds.MaxY < 1.0D || block.isSideVisible(_blockAccess, x, y + 1, z, 1))
         {
             if (_aoBlendMode <= 0)
             {
-                var12 = _aoLightValueYNeg;
-                var11 = var12;
-                var10 = var12;
-                var9 = var12;
+                lightTl = lightBl = lightBr = lightTr = _aoLightValueYPos;
             }
             else
             {
-                --var3;
-                _colorRedBottomLeft_V = var1.getLuminance(_blockAccess, var2 - 1, var3, var4);
-                _colorRedTopRight_V = var1.getLuminance(_blockAccess, var2, var3, var4 - 1);
-                _colorGreenTopLeft_V = var1.getLuminance(_blockAccess, var2, var3, var4 + 1);
-                _colorGreenBottomRight_V = var1.getLuminance(_blockAccess, var2 + 1, var3, var4);
-                if (!_aoBlockOpYNegZNeg && !_aoBlockOpYNegZPos)
-                {
-                    _colorRedTopLeft_V = _colorRedBottomLeft_V;
-                }
-                else
-                {
-                    _colorRedTopLeft_V = var1.getLuminance(_blockAccess, var2 - 1, var3, var4 - 1);
-                }
+                int adjY = y + 1;
+                float lightWest = block.getLuminance(_blockAccess, x - 1, adjY, z);
+                float lightEast = block.getLuminance(_blockAccess, x + 1, adjY, z);
+                float lightNorth = block.getLuminance(_blockAccess, x, adjY, z - 1);
+                float lightSouth = block.getLuminance(_blockAccess, x, adjY, z + 1);
 
-                if (!_aoBlockOpYPosZPos && !_aoBlockOpYNegZPos)
-                {
-                    _colorRedBottomRight_V = _colorRedBottomLeft_V;
-                }
-                else
-                {
-                    _colorRedBottomRight_V = var1.getLuminance(_blockAccess, var2 - 1, var3, var4 + 1);
-                }
+                float lightNorthWest = (!_aoBlockOpXNegYPos && !_aoBlockOpXNegYNeg) ? lightWest : block.getLuminance(_blockAccess, x - 1, adjY, z - 1);
+                float lightNorthEast = (!_aoBlockOpXNegYPos && !_aoBlockOpXPosYPos) ? lightEast : block.getLuminance(_blockAccess, x + 1, adjY, z - 1);
+                float lightSouthWest = (!_aoBlockOpXPosYNeg && !_aoBlockOpXNegYNeg) ? lightWest : block.getLuminance(_blockAccess, x - 1, adjY, z + 1);
+                float lightSouthEast = (!_aoBlockOpXPosYNeg && !_aoBlockOpXPosYPos) ? lightEast : block.getLuminance(_blockAccess, x + 1, adjY, z + 1);
 
-                if (!_aoBlockOpYNegZNeg && !_aoBlockOpYPosZNeg)
-                {
-                    _colorGreenBottomLeft_V = _colorGreenBottomRight_V;
-                }
-                else
-                {
-                    _colorGreenBottomLeft_V = var1.getLuminance(_blockAccess, var2 + 1, var3, var4 - 1);
-                }
-
-                if (!_aoBlockOpYPosZPos && !_aoBlockOpYPosZNeg)
-                {
-                    _colorGreenTopRight_V = _colorGreenBottomRight_V;
-                }
-                else
-                {
-                    _colorGreenTopRight_V = var1.getLuminance(_blockAccess, var2 + 1, var3, var4 + 1);
-                }
-
-                ++var3;
-                var9 = (_colorRedBottomRight_V + _colorRedBottomLeft_V + _colorGreenTopLeft_V + _aoLightValueYNeg) / 4.0F;
-                var12 = (_colorGreenTopLeft_V + _aoLightValueYNeg + _colorGreenTopRight_V + _colorGreenBottomRight_V) / 4.0F;
-                var11 = (_aoLightValueYNeg + _colorRedTopRight_V + _colorGreenBottomRight_V + _colorGreenBottomLeft_V) / 4.0F;
-                var10 = (_colorRedBottomLeft_V + _colorRedTopLeft_V + _aoLightValueYNeg + _colorRedTopRight_V) / 4.0F;
+                lightTl = (lightSouthWest + lightWest + lightSouth + _aoLightValueYPos) / 4.0F;
+                lightBl = (lightWest + lightNorthWest + _aoLightValueYPos + lightNorth) / 4.0F;
+                lightBr = (_aoLightValueYPos + lightNorth + lightEast + lightNorthEast) / 4.0F;
+                lightTr = (lightSouth + _aoLightValueYPos + lightSouthEast + lightEast) / 4.0F;
             }
 
-            _colorRedTopLeft = _colorRedBottomLeft = _colorRedBottomRight = _colorRedTopRight = (var13 ? var5 : 1.0F) * 0.5F;
-            _colorGreenTopLeft = _colorGreenBottomLeft = _colorGreenBottomRight = _colorGreenTopRight = (var13 ? var6 : 1.0F) * 0.5F;
-            _colorBlueTopLeft = _colorBlueBottomLeft = _colorBlueBottomRight = _colorBlueTopRight = (var13 ? var7 : 1.0F) * 0.5F;
-            _colorRedTopLeft *= var9;
-            _colorGreenTopLeft *= var9;
-            _colorBlueTopLeft *= var9;
-            _colorRedBottomLeft *= var10;
-            _colorGreenBottomLeft *= var10;
-            _colorBlueBottomLeft *= var10;
-            _colorRedBottomRight *= var11;
-            _colorGreenBottomRight *= var11;
-            _colorBlueBottomRight *= var11;
-            _colorRedTopRight *= var12;
-            _colorGreenTopRight *= var12;
-            _colorBlueTopRight *= var12;
-            renderBottomFace(var1, var2, var3, var4, var1.getTextureId(_blockAccess, var2, var3, var4, 0));
-            var8 = true;
+            // Apply base shadow (1.0 for top), block tint, and vertex AO light
+            float tintR = tintTop ? r : 1.0F;
+            float tintG = tintTop ? g : 1.0F;
+            float tintB = tintTop ? b : 1.0F;
+
+            _colorRedTopLeft = tintR * lightTl; _colorGreenTopLeft = tintG * lightTl; _colorBlueTopLeft = tintB * lightTl;
+            _colorRedBottomLeft = tintR * lightBl; _colorGreenBottomLeft = tintG * lightBl; _colorBlueBottomLeft = tintB * lightBl;
+            _colorRedBottomRight = tintR * lightBr; _colorGreenBottomRight = tintG * lightBr; _colorBlueBottomRight = tintB * lightBr;
+            _colorRedTopRight = tintR * lightTr; _colorGreenTopRight = tintG * lightTr; _colorBlueTopRight = tintB * lightTr;
+
+            RenderTopFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 1));
+            hasRendered = true;
         }
 
-        if (_renderAllFaces || blockBB.MaxY < 1.0D || var1.isSideVisible(_blockAccess, var2, var3 + 1, var4, 1))
+        // EAST FACE (Z - 1)
+        if (_renderAllFaces || bounds.MinZ > 0.0D || block.isSideVisible(_blockAccess, x, y, z - 1, 2))
         {
             if (_aoBlendMode <= 0)
             {
-                var12 = _aoLightValueYPos;
-                var11 = var12;
-                var10 = var12;
-                var9 = var12;
+                lightTl = lightBl = lightBr = lightTr = _aoLightValueZNeg;
             }
             else
             {
-                ++var3;
-                _colorBlueBottomLeft_V = var1.getLuminance(_blockAccess, var2 - 1, var3, var4);
-                _aoLightValueScratch2 = var1.getLuminance(_blockAccess, var2 + 1, var3, var4);
-                _colorBlueTopRight_V = var1.getLuminance(_blockAccess, var2, var3, var4 - 1);
-                _aoLightValueScratch3 = var1.getLuminance(_blockAccess, var2, var3, var4 + 1);
-                if (!_aoBlockOpXNegYPos && !_aoBlockOpXNegYNeg)
-                {
-                    _colorBlueTopLeft_V = _colorBlueBottomLeft_V;
-                }
-                else
-                {
-                    _colorBlueTopLeft_V = var1.getLuminance(_blockAccess, var2 - 1, var3, var4 - 1);
-                }
+                int adjZ = z - 1;
+                float lightWest = block.getLuminance(_blockAccess, x - 1, y, adjZ);
+                float lightEast = block.getLuminance(_blockAccess, x + 1, y, adjZ);
+                float lightDown = block.getLuminance(_blockAccess, x, y - 1, adjZ);
+                float lightUp = block.getLuminance(_blockAccess, x, y + 1, adjZ);
 
-                if (!_aoBlockOpXNegYPos && !_aoBlockOpXPosYPos)
-                {
-                    _aoLightValueScratch1 = _aoLightValueScratch2;
-                }
-                else
-                {
-                    _aoLightValueScratch1 = var1.getLuminance(_blockAccess, var2 + 1, var3, var4 - 1);
-                }
+                float lightDownWest = (!_aoBlockOpXNegZNeg && !_aoBlockOpYNegZNeg) ? lightWest : block.getLuminance(_blockAccess, x - 1, y - 1, adjZ);
+                float lightUpWest = (!_aoBlockOpXNegZNeg && !_aoBlockOpXNegYPos) ? lightWest : block.getLuminance(_blockAccess, x - 1, y + 1, adjZ);
+                float lightDownEast = (!_aoBlockOpXPosZPos && !_aoBlockOpYNegZNeg) ? lightEast : block.getLuminance(_blockAccess, x + 1, y - 1, adjZ);
+                float lightUpEast = (!_aoBlockOpXPosZPos && !_aoBlockOpXNegYPos) ? lightEast : block.getLuminance(_blockAccess, x + 1, y + 1, adjZ);
 
-                if (!_aoBlockOpXPosYNeg && !_aoBlockOpXNegYNeg)
-                {
-                    _colorBlueBottomRight_V = _colorBlueBottomLeft_V;
-                }
-                else
-                {
-                    _colorBlueBottomRight_V = var1.getLuminance(_blockAccess, var2 - 1, var3, var4 + 1);
-                }
-
-                if (!_aoBlockOpXPosYNeg && !_aoBlockOpXPosYPos)
-                {
-                    _aoLightValueScratch4 = _aoLightValueScratch2;
-                }
-                else
-                {
-                    _aoLightValueScratch4 = var1.getLuminance(_blockAccess, var2 + 1, var3, var4 + 1);
-                }
-
-                --var3;
-                var12 = (_colorBlueBottomRight_V + _colorBlueBottomLeft_V + _aoLightValueScratch3 + _aoLightValueYPos) / 4.0F;
-                var9 = (_aoLightValueScratch3 + _aoLightValueYPos + _aoLightValueScratch4 + _aoLightValueScratch2) / 4.0F;
-                var10 = (_aoLightValueYPos + _colorBlueTopRight_V + _aoLightValueScratch2 + _aoLightValueScratch1) / 4.0F;
-                var11 = (_colorBlueBottomLeft_V + _colorBlueTopLeft_V + _aoLightValueYPos + _colorBlueTopRight_V) / 4.0F;
+                lightTl = (lightWest + lightUpWest + _aoLightValueZNeg + lightUp) / 4.0F;
+                lightBl = (_aoLightValueZNeg + lightUp + lightEast + lightUpEast) / 4.0F;
+                lightBr = (lightDown + _aoLightValueZNeg + lightDownEast + lightEast) / 4.0F;
+                lightTr = (lightDownWest + lightWest + lightDown + _aoLightValueZNeg) / 4.0F;
             }
 
-            _colorRedTopLeft = _colorRedBottomLeft = _colorRedBottomRight = _colorRedTopRight = var14 ? var5 : 1.0F;
-            _colorGreenTopLeft = _colorGreenBottomLeft = _colorGreenBottomRight = _colorGreenTopRight = var14 ? var6 : 1.0F;
-            _colorBlueTopLeft = _colorBlueBottomLeft = _colorBlueBottomRight = _colorBlueTopRight = var14 ? var7 : 1.0F;
-            _colorRedTopLeft *= var9;
-            _colorGreenTopLeft *= var9;
-            _colorBlueTopLeft *= var9;
-            _colorRedBottomLeft *= var10;
-            _colorGreenBottomLeft *= var10;
-            _colorBlueBottomLeft *= var10;
-            _colorRedBottomRight *= var11;
-            _colorGreenBottomRight *= var11;
-            _colorBlueBottomRight *= var11;
-            _colorRedTopRight *= var12;
-            _colorGreenTopRight *= var12;
-            _colorBlueTopRight *= var12;
-            renderTopFace(var1, var2, var3, var4, var1.getTextureId(_blockAccess, var2, var3, var4, 1));
-            var8 = true;
+            // East/West base shading is 0.8
+            float tintR = (tintEast ? r : 1.0F) * 0.8F;
+            float tintG = (tintEast ? g : 1.0F) * 0.8F;
+            float tintB = (tintEast ? b : 1.0F) * 0.8F;
+
+            _colorRedTopLeft = tintR * lightTl; _colorGreenTopLeft = tintG * lightTl; _colorBlueTopLeft = tintB * lightTl;
+            _colorRedBottomLeft = tintR * lightBl; _colorGreenBottomLeft = tintG * lightBl; _colorBlueBottomLeft = tintB * lightBl;
+            _colorRedBottomRight = tintR * lightBr; _colorGreenBottomRight = tintG * lightBr; _colorBlueBottomRight = tintB * lightBr;
+            _colorRedTopRight = tintR * lightTr; _colorGreenTopRight = tintG * lightTr; _colorBlueTopRight = tintB * lightTr;
+
+            int tex = block.getTextureId(_blockAccess, x, y, z, 2);
+            RenderEastFace(block, x, y, z, tex);
+
+            // Render fancy biome grass overlay for the side if needed
+            if (s_fancyGrass && tex == 3 && _overrideBlockTexture < 0)
+            {
+                _colorRedTopLeft *= r; _colorRedBottomLeft *= r; _colorRedBottomRight *= r; _colorRedTopRight *= r;
+                _colorGreenTopLeft *= g; _colorGreenBottomLeft *= g; _colorGreenBottomRight *= g; _colorGreenTopRight *= g;
+                _colorBlueTopLeft *= b; _colorBlueBottomLeft *= b; _colorBlueBottomRight *= b; _colorBlueTopRight *= b;
+                RenderEastFace(block, x, y, z, 38);
+            }
+            hasRendered = true;
         }
 
-        int var19;
-        if (_renderAllFaces || blockBB.MinZ > 0.0D || var1.isSideVisible(_blockAccess, var2, var3, var4 - 1, 2))
+        // WEST FACE (Z + 1)
+        if (_renderAllFaces || bounds.MaxZ < 1.0D || block.isSideVisible(_blockAccess, x, y, z + 1, 3))
         {
             if (_aoBlendMode <= 0)
             {
-                var12 = _aoLightValueZNeg;
-                var11 = var12;
-                var10 = var12;
-                var9 = var12;
+                lightTl = lightBl = lightBr = lightTr = _aoLightValueZPos;
             }
             else
             {
-                --var4;
-                _aoLightValueScratch5 = var1.getLuminance(_blockAccess, var2 - 1, var3, var4);
-                _colorRedTopRight_V = var1.getLuminance(_blockAccess, var2, var3 - 1, var4);
-                _colorBlueTopRight_V = var1.getLuminance(_blockAccess, var2, var3 + 1, var4);
-                _aoLightValueScratch6 = var1.getLuminance(_blockAccess, var2 + 1, var3, var4);
-                if (!_aoBlockOpXNegZNeg && !_aoBlockOpYNegZNeg)
-                {
-                    _colorRedTopLeft_V = _aoLightValueScratch5;
-                }
-                else
-                {
-                    _colorRedTopLeft_V = var1.getLuminance(_blockAccess, var2 - 1, var3 - 1, var4);
-                }
+                int adjZ = z + 1;
+                float lightWest = block.getLuminance(_blockAccess, x - 1, y, adjZ);
+                float lightEast = block.getLuminance(_blockAccess, x + 1, y, adjZ);
+                float lightDown = block.getLuminance(_blockAccess, x, y - 1, adjZ);
+                float lightUp = block.getLuminance(_blockAccess, x, y + 1, adjZ);
 
-                if (!_aoBlockOpXNegZNeg && !_aoBlockOpXNegYPos)
-                {
-                    _colorBlueTopLeft_V = _aoLightValueScratch5;
-                }
-                else
-                {
-                    _colorBlueTopLeft_V = var1.getLuminance(_blockAccess, var2 - 1, var3 + 1, var4);
-                }
+                float lightDownWest = (!_aoBlockOpXNegZPos && !_aoBlockOpYPosZPos) ? lightWest : block.getLuminance(_blockAccess, x - 1, y - 1, adjZ);
+                float lightUpWest = (!_aoBlockOpXNegZPos && !_aoBlockOpXPosYNeg) ? lightWest : block.getLuminance(_blockAccess, x - 1, y + 1, adjZ);
+                float lightDownEast = (!_aoBlockOpXPosZNeg && !_aoBlockOpYPosZPos) ? lightEast : block.getLuminance(_blockAccess, x + 1, y - 1, adjZ);
+                float lightUpEast = (!_aoBlockOpXPosZNeg && !_aoBlockOpXPosYNeg) ? lightEast : block.getLuminance(_blockAccess, x + 1, y + 1, adjZ);
 
-                if (!_aoBlockOpXPosZPos && !_aoBlockOpYNegZNeg)
-                {
-                    _colorGreenBottomLeft_V = _aoLightValueScratch6;
-                }
-                else
-                {
-                    _colorGreenBottomLeft_V = var1.getLuminance(_blockAccess, var2 + 1, var3 - 1, var4);
-                }
-
-                if (!_aoBlockOpXPosZPos && !_aoBlockOpXNegYPos)
-                {
-                    _aoLightValueScratch1 = _aoLightValueScratch6;
-                }
-                else
-                {
-                    _aoLightValueScratch1 = var1.getLuminance(_blockAccess, var2 + 1, var3 + 1, var4);
-                }
-
-                ++var4;
-                var9 = (_aoLightValueScratch5 + _colorBlueTopLeft_V + _aoLightValueZNeg + _colorBlueTopRight_V) / 4.0F;
-                var10 = (_aoLightValueZNeg + _colorBlueTopRight_V + _aoLightValueScratch6 + _aoLightValueScratch1) / 4.0F;
-                var11 = (_colorRedTopRight_V + _aoLightValueZNeg + _colorGreenBottomLeft_V + _aoLightValueScratch6) / 4.0F;
-                var12 = (_colorRedTopLeft_V + _aoLightValueScratch5 + _colorRedTopRight_V + _aoLightValueZNeg) / 4.0F;
+                lightTl = (lightWest + lightUpWest + _aoLightValueZPos + lightUp) / 4.0F;
+                lightBl = (_aoLightValueZPos + lightUp + lightEast + lightUpEast) / 4.0F;
+                lightBr = (lightDown + _aoLightValueZPos + lightDownEast + lightEast) / 4.0F;
+                lightTr = (lightDownWest + lightWest + lightDown + _aoLightValueZPos) / 4.0F;
             }
 
-            _colorRedTopLeft = _colorRedBottomLeft = _colorRedBottomRight = _colorRedTopRight = (var15 ? var5 : 1.0F) * 0.8F;
-            _colorGreenTopLeft = _colorGreenBottomLeft = _colorGreenBottomRight = _colorGreenTopRight = (var15 ? var6 : 1.0F) * 0.8F;
-            _colorBlueTopLeft = _colorBlueBottomLeft = _colorBlueBottomRight = _colorBlueTopRight = (var15 ? var7 : 1.0F) * 0.8F;
-            _colorRedTopLeft *= var9;
-            _colorGreenTopLeft *= var9;
-            _colorBlueTopLeft *= var9;
-            _colorRedBottomLeft *= var10;
-            _colorGreenBottomLeft *= var10;
-            _colorBlueBottomLeft *= var10;
-            _colorRedBottomRight *= var11;
-            _colorGreenBottomRight *= var11;
-            _colorBlueBottomRight *= var11;
-            _colorRedTopRight *= var12;
-            _colorGreenTopRight *= var12;
-            _colorBlueTopRight *= var12;
-            var19 = var1.getTextureId(_blockAccess, var2, var3, var4, 2);
-            renderEastFace(var1, var2, var3, var4, var19);
-            if (s_fancyGrass && var19 == 3 && _overrideBlockTexture < 0)
+            float tintR = (tintWest ? r : 1.0F) * 0.8F;
+            float tintG = (tintWest ? g : 1.0F) * 0.8F;
+            float tintB = (tintWest ? b : 1.0F) * 0.8F;
+
+            _colorRedTopLeft = tintR * lightTl; _colorGreenTopLeft = tintG * lightTl; _colorBlueTopLeft = tintB * lightTl;
+            _colorRedBottomLeft = tintR * lightBl; _colorGreenBottomLeft = tintG * lightBl; _colorBlueBottomLeft = tintB * lightBl;
+            _colorRedBottomRight = tintR * lightBr; _colorGreenBottomRight = tintG * lightBr; _colorBlueBottomRight = tintB * lightBr;
+            _colorRedTopRight = tintR * lightTr; _colorGreenTopRight = tintG * lightTr; _colorBlueTopRight = tintB * lightTr;
+
+            int tex = block.getTextureId(_blockAccess, x, y, z, 3);
+            RenderWestFace(block, x, y, z, tex);
+
+            if (s_fancyGrass && tex == 3 && _overrideBlockTexture < 0)
             {
-                _colorRedTopLeft *= var5;
-                _colorRedBottomLeft *= var5;
-                _colorRedBottomRight *= var5;
-                _colorRedTopRight *= var5;
-                _colorGreenTopLeft *= var6;
-                _colorGreenBottomLeft *= var6;
-                _colorGreenBottomRight *= var6;
-                _colorGreenTopRight *= var6;
-                _colorBlueTopLeft *= var7;
-                _colorBlueBottomLeft *= var7;
-                _colorBlueBottomRight *= var7;
-                _colorBlueTopRight *= var7;
-                renderEastFace(var1, var2, var3, var4, 38);
+                _colorRedTopLeft *= r; _colorRedBottomLeft *= r; _colorRedBottomRight *= r; _colorRedTopRight *= r;
+                _colorGreenTopLeft *= g; _colorGreenBottomLeft *= g; _colorGreenBottomRight *= g; _colorGreenTopRight *= g;
+                _colorBlueTopLeft *= b; _colorBlueBottomLeft *= b; _colorBlueBottomRight *= b; _colorBlueTopRight *= b;
+                RenderWestFace(block, x, y, z, 38);
             }
-
-            var8 = true;
+            hasRendered = true;
         }
 
-        if (_renderAllFaces || blockBB.MaxZ < 1.0D || var1.isSideVisible(_blockAccess, var2, var3, var4 + 1, 3))
+        // NORTH FACE (X - 1)
+        if (_renderAllFaces || bounds.MinX > 0.0D || block.isSideVisible(_blockAccess, x - 1, y, z, 4))
         {
             if (_aoBlendMode <= 0)
             {
-                var12 = _aoLightValueZPos;
-                var11 = var12;
-                var10 = var12;
-                var9 = var12;
+                lightTl = lightBl = lightBr = lightTr = _aoLightValueXNeg;
             }
             else
             {
-                ++var4;
-                _aoLightValueScratch7 = var1.getLuminance(_blockAccess, var2 - 1, var3, var4);
-                _aoLightValueScratch8 = var1.getLuminance(_blockAccess, var2 + 1, var3, var4);
-                _colorGreenTopLeft_V = var1.getLuminance(_blockAccess, var2, var3 - 1, var4);
-                _aoLightValueScratch3 = var1.getLuminance(_blockAccess, var2, var3 + 1, var4);
-                if (!_aoBlockOpXNegZPos && !_aoBlockOpYPosZPos)
-                {
-                    _colorRedBottomRight_V = _aoLightValueScratch7;
-                }
-                else
-                {
-                    _colorRedBottomRight_V = var1.getLuminance(_blockAccess, var2 - 1, var3 - 1, var4);
-                }
+                int adjX = x - 1;
+                float lightDown = block.getLuminance(_blockAccess, adjX, y - 1, z);
+                float lightNorth = block.getLuminance(_blockAccess, adjX, y, z - 1);
+                float lightSouth = block.getLuminance(_blockAccess, adjX, y, z + 1);
+                float lightUp = block.getLuminance(_blockAccess, adjX, y + 1, z);
 
-                if (!_aoBlockOpXNegZPos && !_aoBlockOpXPosYNeg)
-                {
-                    _colorBlueBottomRight_V = _aoLightValueScratch7;
-                }
-                else
-                {
-                    _colorBlueBottomRight_V = var1.getLuminance(_blockAccess, var2 - 1, var3 + 1, var4);
-                }
+                float lightDownNorth = (!_aoBlockOpXNegZNeg && !_aoBlockOpYNegZPos) ? lightNorth : block.getLuminance(_blockAccess, adjX, y - 1, z - 1);
+                float lightDownSouth = (!_aoBlockOpXNegZPos && !_aoBlockOpYNegZPos) ? lightSouth : block.getLuminance(_blockAccess, adjX, y - 1, z + 1);
+                float lightUpNorth = (!_aoBlockOpXNegZNeg && !_aoBlockOpXNegYNeg) ? lightNorth : block.getLuminance(_blockAccess, adjX, y + 1, z - 1);
+                float lightUpSouth = (!_aoBlockOpXNegZPos && !_aoBlockOpXNegYNeg) ? lightSouth : block.getLuminance(_blockAccess, adjX, y + 1, z + 1);
 
-                if (!_aoBlockOpXPosZNeg && !_aoBlockOpYPosZPos)
-                {
-                    _colorGreenTopRight_V = _aoLightValueScratch8;
-                }
-                else
-                {
-                    _colorGreenTopRight_V = var1.getLuminance(_blockAccess, var2 + 1, var3 - 1, var4);
-                }
-
-                if (!_aoBlockOpXPosZNeg && !_aoBlockOpXPosYNeg)
-                {
-                    _aoLightValueScratch4 = _aoLightValueScratch8;
-                }
-                else
-                {
-                    _aoLightValueScratch4 = var1.getLuminance(_blockAccess, var2 + 1, var3 + 1, var4);
-                }
-
-                --var4;
-                var9 = (_aoLightValueScratch7 + _colorBlueBottomRight_V + _aoLightValueZPos + _aoLightValueScratch3) / 4.0F;
-                var12 = (_aoLightValueZPos + _aoLightValueScratch3 + _aoLightValueScratch8 + _aoLightValueScratch4) / 4.0F;
-                var11 = (_colorGreenTopLeft_V + _aoLightValueZPos + _colorGreenTopRight_V + _aoLightValueScratch8) / 4.0F;
-                var10 = (_colorRedBottomRight_V + _aoLightValueScratch7 + _colorGreenTopLeft_V + _aoLightValueZPos) / 4.0F;
+                lightTl = (lightDown + lightDownSouth + _aoLightValueXNeg + lightSouth) / 4.0F;
+                lightBl = (_aoLightValueXNeg + lightSouth + lightUp + lightUpSouth) / 4.0F;
+                lightBr = (lightNorth + _aoLightValueXNeg + lightUpNorth + lightUp) / 4.0F;
+                lightTr = (lightDownNorth + lightDown + lightNorth + _aoLightValueXNeg) / 4.0F;
             }
 
-            _colorRedTopLeft = _colorRedBottomLeft = _colorRedBottomRight = _colorRedTopRight = (var16 ? var5 : 1.0F) * 0.8F;
-            _colorGreenTopLeft = _colorGreenBottomLeft = _colorGreenBottomRight = _colorGreenTopRight = (var16 ? var6 : 1.0F) * 0.8F;
-            _colorBlueTopLeft = _colorBlueBottomLeft = _colorBlueBottomRight = _colorBlueTopRight = (var16 ? var7 : 1.0F) * 0.8F;
-            _colorRedTopLeft *= var9;
-            _colorGreenTopLeft *= var9;
-            _colorBlueTopLeft *= var9;
-            _colorRedBottomLeft *= var10;
-            _colorGreenBottomLeft *= var10;
-            _colorBlueBottomLeft *= var10;
-            _colorRedBottomRight *= var11;
-            _colorGreenBottomRight *= var11;
-            _colorBlueBottomRight *= var11;
-            _colorRedTopRight *= var12;
-            _colorGreenTopRight *= var12;
-            _colorBlueTopRight *= var12;
-            var19 = var1.getTextureId(_blockAccess, var2, var3, var4, 3);
-            renderWestFace(var1, var2, var3, var4, var1.getTextureId(_blockAccess, var2, var3, var4, 3));
-            if (s_fancyGrass && var19 == 3 && _overrideBlockTexture < 0)
+            // North/South base shading is 0.6
+            float tintR = (tintNorth ? r : 1.0F) * 0.6F;
+            float tintG = (tintNorth ? g : 1.0F) * 0.6F;
+            float tintB = (tintNorth ? b : 1.0F) * 0.6F;
+
+            _colorRedTopLeft = tintR * lightTl; _colorGreenTopLeft = tintG * lightTl; _colorBlueTopLeft = tintB * lightTl;
+            _colorRedBottomLeft = tintR * lightBl; _colorGreenBottomLeft = tintG * lightBl; _colorBlueBottomLeft = tintB * lightBl;
+            _colorRedBottomRight = tintR * lightBr; _colorGreenBottomRight = tintG * lightBr; _colorBlueBottomRight = tintB * lightBr;
+            _colorRedTopRight = tintR * lightTr; _colorGreenTopRight = tintG * lightTr; _colorBlueTopRight = tintB * lightTr;
+
+            int tex = block.getTextureId(_blockAccess, x, y, z, 4);
+            RenderNorthFace(block, x, y, z, tex);
+
+            if (s_fancyGrass && tex == 3 && _overrideBlockTexture < 0)
             {
-                _colorRedTopLeft *= var5;
-                _colorRedBottomLeft *= var5;
-                _colorRedBottomRight *= var5;
-                _colorRedTopRight *= var5;
-                _colorGreenTopLeft *= var6;
-                _colorGreenBottomLeft *= var6;
-                _colorGreenBottomRight *= var6;
-                _colorGreenTopRight *= var6;
-                _colorBlueTopLeft *= var7;
-                _colorBlueBottomLeft *= var7;
-                _colorBlueBottomRight *= var7;
-                _colorBlueTopRight *= var7;
-                renderWestFace(var1, var2, var3, var4, 38);
+                _colorRedTopLeft *= r; _colorRedBottomLeft *= r; _colorRedBottomRight *= r; _colorRedTopRight *= r;
+                _colorGreenTopLeft *= g; _colorGreenBottomLeft *= g; _colorGreenBottomRight *= g; _colorGreenTopRight *= g;
+                _colorBlueTopLeft *= b; _colorBlueBottomLeft *= b; _colorBlueBottomRight *= b; _colorBlueTopRight *= b;
+                RenderNorthFace(block, x, y, z, 38);
             }
-
-            var8 = true;
+            hasRendered = true;
         }
 
-        if (_renderAllFaces || blockBB.MinX > 0.0D || var1.isSideVisible(_blockAccess, var2 - 1, var3, var4, 4))
+        // SOUTH FACE (X + 1)
+        if (_renderAllFaces || bounds.MaxX < 1.0D || block.isSideVisible(_blockAccess, x + 1, y, z, 5))
         {
             if (_aoBlendMode <= 0)
             {
-                var12 = _aoLightValueXNeg;
-                var11 = var12;
-                var10 = var12;
-                var9 = var12;
+                lightTl = lightBl = lightBr = lightTr = _aoLightValueXPos;
             }
             else
             {
-                --var2;
-                _colorRedBottomLeft_V = var1.getLuminance(_blockAccess, var2, var3 - 1, var4);
-                _aoLightValueScratch5 = var1.getLuminance(_blockAccess, var2, var3, var4 - 1);
-                _aoLightValueScratch7 = var1.getLuminance(_blockAccess, var2, var3, var4 + 1);
-                _colorBlueBottomLeft_V = var1.getLuminance(_blockAccess, var2, var3 + 1, var4);
-                if (!_aoBlockOpXNegZNeg && !_aoBlockOpYNegZPos)
-                {
-                    _colorRedTopLeft_V = _aoLightValueScratch5;
-                }
-                else
-                {
-                    _colorRedTopLeft_V = var1.getLuminance(_blockAccess, var2, var3 - 1, var4 - 1);
-                }
+                int adjX = x + 1;
+                float lightDown = block.getLuminance(_blockAccess, adjX, y - 1, z);
+                float lightNorth = block.getLuminance(_blockAccess, adjX, y, z - 1);
+                float lightSouth = block.getLuminance(_blockAccess, adjX, y, z + 1);
+                float lightUp = block.getLuminance(_blockAccess, adjX, y + 1, z);
 
-                if (!_aoBlockOpXNegZPos && !_aoBlockOpYNegZPos)
-                {
-                    _colorRedBottomRight_V = _aoLightValueScratch7;
-                }
-                else
-                {
-                    _colorRedBottomRight_V = var1.getLuminance(_blockAccess, var2, var3 - 1, var4 + 1);
-                }
+                float lightDownNorth = (!_aoBlockOpYPosZNeg && !_aoBlockOpXPosZPos) ? lightNorth : block.getLuminance(_blockAccess, adjX, y - 1, z - 1);
+                float lightDownSouth = (!_aoBlockOpYPosZNeg && !_aoBlockOpXPosZNeg) ? lightSouth : block.getLuminance(_blockAccess, adjX, y - 1, z + 1);
+                float lightUpNorth = (!_aoBlockOpXPosYPos && !_aoBlockOpXPosZPos) ? lightNorth : block.getLuminance(_blockAccess, adjX, y + 1, z - 1);
+                float lightUpSouth = (!_aoBlockOpXPosYPos && !_aoBlockOpXPosZNeg) ? lightSouth : block.getLuminance(_blockAccess, adjX, y + 1, z + 1);
 
-                if (!_aoBlockOpXNegZNeg && !_aoBlockOpXNegYNeg)
-                {
-                    _colorBlueTopLeft_V = _aoLightValueScratch5;
-                }
-                else
-                {
-                    _colorBlueTopLeft_V = var1.getLuminance(_blockAccess, var2, var3 + 1, var4 - 1);
-                }
-
-                if (!_aoBlockOpXNegZPos && !_aoBlockOpXNegYNeg)
-                {
-                    _colorBlueBottomRight_V = _aoLightValueScratch7;
-                }
-                else
-                {
-                    _colorBlueBottomRight_V = var1.getLuminance(_blockAccess, var2, var3 + 1, var4 + 1);
-                }
-
-                ++var2;
-                var12 = (_colorRedBottomLeft_V + _colorRedBottomRight_V + _aoLightValueXNeg + _aoLightValueScratch7) / 4.0F;
-                var9 = (_aoLightValueXNeg + _aoLightValueScratch7 + _colorBlueBottomLeft_V + _colorBlueBottomRight_V) / 4.0F;
-                var10 = (_aoLightValueScratch5 + _aoLightValueXNeg + _colorBlueTopLeft_V + _colorBlueBottomLeft_V) / 4.0F;
-                var11 = (_colorRedTopLeft_V + _colorRedBottomLeft_V + _aoLightValueScratch5 + _aoLightValueXNeg) / 4.0F;
+                lightTl = (lightDownSouth + lightDown + _aoLightValueXPos + lightSouth) / 4.0F;
+                lightBl = (_aoLightValueXPos + lightSouth + lightUp + lightUpSouth) / 4.0F;
+                lightBr = (lightNorth + _aoLightValueXPos + lightUpNorth + lightUp) / 4.0F;
+                lightTr = (lightDownNorth + lightDown + lightNorth + _aoLightValueXPos) / 4.0F;
             }
 
-            _colorRedTopLeft = _colorRedBottomLeft = _colorRedBottomRight = _colorRedTopRight = (var17 ? var5 : 1.0F) * 0.6F;
-            _colorGreenTopLeft = _colorGreenBottomLeft = _colorGreenBottomRight = _colorGreenTopRight = (var17 ? var6 : 1.0F) * 0.6F;
-            _colorBlueTopLeft = _colorBlueBottomLeft = _colorBlueBottomRight = _colorBlueTopRight = (var17 ? var7 : 1.0F) * 0.6F;
-            _colorRedTopLeft *= var9;
-            _colorGreenTopLeft *= var9;
-            _colorBlueTopLeft *= var9;
-            _colorRedBottomLeft *= var10;
-            _colorGreenBottomLeft *= var10;
-            _colorBlueBottomLeft *= var10;
-            _colorRedBottomRight *= var11;
-            _colorGreenBottomRight *= var11;
-            _colorBlueBottomRight *= var11;
-            _colorRedTopRight *= var12;
-            _colorGreenTopRight *= var12;
-            _colorBlueTopRight *= var12;
-            var19 = var1.getTextureId(_blockAccess, var2, var3, var4, 4);
-            renderNorthFace(var1, var2, var3, var4, var19);
-            if (s_fancyGrass && var19 == 3 && _overrideBlockTexture < 0)
+            float tintR = (tintSouth ? r : 1.0F) * 0.6F;
+            float tintG = (tintSouth ? g : 1.0F) * 0.6F;
+            float tintB = (tintSouth ? b : 1.0F) * 0.6F;
+
+            _colorRedTopLeft = tintR * lightTl; _colorGreenTopLeft = tintG * lightTl; _colorBlueTopLeft = tintB * lightTl;
+            _colorRedBottomLeft = tintR * lightBl; _colorGreenBottomLeft = tintG * lightBl; _colorBlueBottomLeft = tintB * lightBl;
+            _colorRedBottomRight = tintR * lightBr; _colorGreenBottomRight = tintG * lightBr; _colorBlueBottomRight = tintB * lightBr;
+            _colorRedTopRight = tintR * lightTr; _colorGreenTopRight = tintG * lightTr; _colorBlueTopRight = tintB * lightTr;
+
+            int tex = block.getTextureId(_blockAccess, x, y, z, 5);
+            RenderSouthFace(block, x, y, z, tex);
+
+            if (s_fancyGrass && tex == 3 && _overrideBlockTexture < 0)
             {
-                _colorRedTopLeft *= var5;
-                _colorRedBottomLeft *= var5;
-                _colorRedBottomRight *= var5;
-                _colorRedTopRight *= var5;
-                _colorGreenTopLeft *= var6;
-                _colorGreenBottomLeft *= var6;
-                _colorGreenBottomRight *= var6;
-                _colorGreenTopRight *= var6;
-                _colorBlueTopLeft *= var7;
-                _colorBlueBottomLeft *= var7;
-                _colorBlueBottomRight *= var7;
-                _colorBlueTopRight *= var7;
-                renderNorthFace(var1, var2, var3, var4, 38);
+                _colorRedTopLeft *= r; _colorRedBottomLeft *= r; _colorRedBottomRight *= r; _colorRedTopRight *= r;
+                _colorGreenTopLeft *= g; _colorGreenBottomLeft *= g; _colorGreenBottomRight *= g; _colorGreenTopRight *= g;
+                _colorBlueTopLeft *= b; _colorBlueBottomLeft *= b; _colorBlueBottomRight *= b; _colorBlueTopRight *= b;
+                RenderSouthFace(block, x, y, z, 38);
             }
-
-            var8 = true;
+            hasRendered = true;
         }
 
-        if (_renderAllFaces || blockBB.MaxX < 1.0D || var1.isSideVisible(_blockAccess, var2 + 1, var3, var4, 5))
-        {
-            if (_aoBlendMode <= 0)
-            {
-                var12 = _aoLightValueXPos;
-                var11 = var12;
-                var10 = var12;
-                var9 = var12;
-            }
-            else
-            {
-                ++var2;
-                _colorGreenBottomRight_V = var1.getLuminance(_blockAccess, var2, var3 - 1, var4);
-                _aoLightValueScratch6 = var1.getLuminance(_blockAccess, var2, var3, var4 - 1);
-                _aoLightValueScratch8 = var1.getLuminance(_blockAccess, var2, var3, var4 + 1);
-                _aoLightValueScratch2 = var1.getLuminance(_blockAccess, var2, var3 + 1, var4);
-                if (!_aoBlockOpYPosZNeg && !_aoBlockOpXPosZPos)
-                {
-                    _colorGreenBottomLeft_V = _aoLightValueScratch6;
-                }
-                else
-                {
-                    _colorGreenBottomLeft_V = var1.getLuminance(_blockAccess, var2, var3 - 1, var4 - 1);
-                }
-
-                if (!_aoBlockOpYPosZNeg && !_aoBlockOpXPosZNeg)
-                {
-                    _colorGreenTopRight_V = _aoLightValueScratch8;
-                }
-                else
-                {
-                    _colorGreenTopRight_V = var1.getLuminance(_blockAccess, var2, var3 - 1, var4 + 1);
-                }
-
-                if (!_aoBlockOpXPosYPos && !_aoBlockOpXPosZPos)
-                {
-                    _aoLightValueScratch1 = _aoLightValueScratch6;
-                }
-                else
-                {
-                    _aoLightValueScratch1 = var1.getLuminance(_blockAccess, var2, var3 + 1, var4 - 1);
-                }
-
-                if (!_aoBlockOpXPosYPos && !_aoBlockOpXPosZNeg)
-                {
-                    _aoLightValueScratch4 = _aoLightValueScratch8;
-                }
-                else
-                {
-                    _aoLightValueScratch4 = var1.getLuminance(_blockAccess, var2, var3 + 1, var4 + 1);
-                }
-
-                --var2;
-                var9 = (_colorGreenBottomRight_V + _colorGreenTopRight_V + _aoLightValueXPos + _aoLightValueScratch8) / 4.0F;
-                var12 = (_aoLightValueXPos + _aoLightValueScratch8 + _aoLightValueScratch2 + _aoLightValueScratch4) / 4.0F;
-                var11 = (_aoLightValueScratch6 + _aoLightValueXPos + _aoLightValueScratch1 + _aoLightValueScratch2) / 4.0F;
-                var10 = (_colorGreenBottomLeft_V + _colorGreenBottomRight_V + _aoLightValueScratch6 + _aoLightValueXPos) / 4.0F;
-            }
-
-            _colorRedTopLeft = _colorRedBottomLeft = _colorRedBottomRight = _colorRedTopRight = (var18 ? var5 : 1.0F) * 0.6F;
-            _colorGreenTopLeft = _colorGreenBottomLeft = _colorGreenBottomRight = _colorGreenTopRight = (var18 ? var6 : 1.0F) * 0.6F;
-            _colorBlueTopLeft = _colorBlueBottomLeft = _colorBlueBottomRight = _colorBlueTopRight = (var18 ? var7 : 1.0F) * 0.6F;
-            _colorRedTopLeft *= var9;
-            _colorGreenTopLeft *= var9;
-            _colorBlueTopLeft *= var9;
-            _colorRedBottomLeft *= var10;
-            _colorGreenBottomLeft *= var10;
-            _colorBlueBottomLeft *= var10;
-            _colorRedBottomRight *= var11;
-            _colorGreenBottomRight *= var11;
-            _colorBlueBottomRight *= var11;
-            _colorRedTopRight *= var12;
-            _colorGreenTopRight *= var12;
-            _colorBlueTopRight *= var12;
-            var19 = var1.getTextureId(_blockAccess, var2, var3, var4, 5);
-            renderSouthFace(var1, var2, var3, var4, var19);
-            if (s_fancyGrass && var19 == 3 && _overrideBlockTexture < 0)
-            {
-                _colorRedTopLeft *= var5;
-                _colorRedBottomLeft *= var5;
-                _colorRedBottomRight *= var5;
-                _colorRedTopRight *= var5;
-                _colorGreenTopLeft *= var6;
-                _colorGreenBottomLeft *= var6;
-                _colorGreenBottomRight *= var6;
-                _colorGreenTopRight *= var6;
-                _colorBlueTopLeft *= var7;
-                _colorBlueBottomLeft *= var7;
-                _colorBlueBottomRight *= var7;
-                _colorBlueTopRight *= var7;
-                renderSouthFace(var1, var2, var3, var4, 38);
-            }
-
-            var8 = true;
-        }
-
-        _enableAO = false;
-        return var8;
+        _enableAo = false;
+        return hasRendered;
     }
 
-    public bool renderBlockCactus(Block var1, int var2, int var3, int var4)
+    private bool RenderBlockCactus(Block block, int x, int y, int z)
     {
-        int var5 = var1.getColorMultiplier(_blockAccess, var2, var3, var4);
-        float var6 = (var5 >> 16 & 255) / 255.0F;
-        float var7 = (var5 >> 8 & 255) / 255.0F;
-        float var8 = (var5 & 255) / 255.0F;
+        Tessellator tess = GetTessellator();
+        Box bounds = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
+        bool hasRendered = false;
 
-        return func_1230_b(var1, var2, var3, var4, var6, var7, var8);
+        // 1. Calculate the specific biome/tint color for this cactus
+        int colorMultiplier = block.getColorMultiplier(_blockAccess, x, y, z);
+        float red = (colorMultiplier >> 16 & 255) / 255.0F;
+        float green = (colorMultiplier >> 8 & 255) / 255.0F;
+        float blue = (colorMultiplier & 255) / 255.0F;
+
+        // 2. Base directional lighting multipliers
+        float lightBottom = 0.5F;
+        float lightTop = 1.0F;
+        float lightZ = 0.8F; // East/West faces
+        float lightX = 0.6F; // North/South faces
+
+        // Pre-calculate tinted colors for each face
+        float rBottom = lightBottom * red, gBottom = lightBottom * green, bBottom = lightBottom * blue;
+        float rTop = lightTop * red, gTop = lightTop * green, bTop = lightTop * blue;
+        float rZ = lightZ * red, gZ = lightZ * green, bZ = lightZ * blue;
+        float rX = lightX * red, gX = lightX * green, bX = lightX * blue;
+
+        // 1/16th of a block = exactly 1 pixel width in a standard 16x16 texture
+        float inset = 1.0F / 16.0F;
+
+        float centerLuminance = block.getLuminance(_blockAccess, x, y, z);
+        float faceLuminance;
+
+        // --- Bottom Face (Y - 1) ---
+        if (_renderAllFaces || bounds.MinY > 0.0D || block.isSideVisible(_blockAccess, x, y - 1, z, 0))
+        {
+            faceLuminance = block.getLuminance(_blockAccess, x, y - 1, z);
+            tess.setColorOpaque_F(rBottom * faceLuminance, gBottom * faceLuminance, bBottom * faceLuminance);
+            RenderBottomFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 0));
+            hasRendered = true;
+        }
+
+        // --- Top Face (Y + 1) ---
+        if (_renderAllFaces || bounds.MaxY < 1.0D || block.isSideVisible(_blockAccess, x, y + 1, z, 1))
+        {
+            faceLuminance = block.getLuminance(_blockAccess, x, y + 1, z);
+            if (Math.Abs(bounds.MaxY - 1.0D) > 0.1 && !block.material.IsFluid)
+            {
+                faceLuminance = centerLuminance;
+            }
+
+            tess.setColorOpaque_F(rTop * faceLuminance, gTop * faceLuminance, bTop * faceLuminance);
+            RenderTopFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 1));
+            hasRendered = true;
+        }
+
+        // --- East Face (Z - 1) ---
+        if (_renderAllFaces || bounds.MinZ > 0.0D || block.isSideVisible(_blockAccess, x, y, z - 1, 2))
+        {
+            faceLuminance = block.getLuminance(_blockAccess, x, y, z - 1);
+            if (bounds.MinZ > 0.0D) faceLuminance = centerLuminance;
+
+            tess.setColorOpaque_F(rZ * faceLuminance, gZ * faceLuminance, bZ * faceLuminance);
+
+            // Translate inward by 1 pixel, render face, then reset
+            tess.setTranslationF(0.0F, 0.0F, inset);
+            RenderEastFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 2));
+            tess.setTranslationF(0.0F, 0.0F, -inset);
+            hasRendered = true;
+        }
+
+        // --- West Face (Z + 1) ---
+        if (_renderAllFaces || bounds.MaxZ < 1.0D || block.isSideVisible(_blockAccess, x, y, z + 1, 3))
+        {
+            faceLuminance = block.getLuminance(_blockAccess, x, y, z + 1);
+            if (bounds.MaxZ < 1.0D) faceLuminance = centerLuminance;
+
+            tess.setColorOpaque_F(rZ * faceLuminance, gZ * faceLuminance, bZ * faceLuminance);
+
+            tess.setTranslationF(0.0F, 0.0F, -inset);
+            RenderWestFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 3));
+            tess.setTranslationF(0.0F, 0.0F, inset);
+            hasRendered = true;
+        }
+
+        // --- North Face (X - 1) ---
+        if (_renderAllFaces || bounds.MinX > 0.0D || block.isSideVisible(_blockAccess, x - 1, y, z, 4))
+        {
+            faceLuminance = block.getLuminance(_blockAccess, x - 1, y, z);
+            if (bounds.MinX > 0.0D) faceLuminance = centerLuminance;
+
+            tess.setColorOpaque_F(rX * faceLuminance, gX * faceLuminance, bX * faceLuminance);
+
+            tess.setTranslationF(inset, 0.0F, 0.0F);
+            RenderNorthFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 4));
+            tess.setTranslationF(-inset, 0.0F, 0.0F);
+            hasRendered = true;
+        }
+
+        // --- South Face (X + 1) ---
+        if (_renderAllFaces || bounds.MaxX < 1.0D || block.isSideVisible(_blockAccess, x + 1, y, z, 5))
+        {
+            faceLuminance = block.getLuminance(_blockAccess, x + 1, y, z);
+            if (bounds.MaxX < 1.0D) faceLuminance = centerLuminance;
+
+            tess.setColorOpaque_F(rX * faceLuminance, gX * faceLuminance, bX * faceLuminance);
+
+            tess.setTranslationF(-inset, 0.0F, 0.0F);
+            RenderSouthFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 5));
+            tess.setTranslationF(inset, 0.0F, 0.0F);
+            hasRendered = true;
+        }
+
+        return hasRendered;
     }
 
-    public bool func_1230_b(Block var1, int var2, int var3, int var4, float var5, float var6, float var7)
+    private bool RenderBlockFence(Block block, int x, int y, int z)
     {
-        Tessellator var8 = getTessellator();
-        Box blockBB = _useOverrideBoundingBox ? _overrideBoundingBox : var1.BoundingBox;
-        bool var9 = false;
-        float var10 = 0.5F;
-        float var11 = 1.0F;
-        float var12 = 0.8F;
-        float var13 = 0.6F;
-        float var14 = var10 * var5;
-        float var15 = var11 * var5;
-        float var16 = var12 * var5;
-        float var17 = var13 * var5;
-        float var18 = var10 * var6;
-        float var19 = var11 * var6;
-        float var20 = var12 * var6;
-        float var21 = var13 * var6;
-        float var22 = var10 * var7;
-        float var23 = var11 * var7;
-        float var24 = var12 * var7;
-        float var25 = var13 * var7;
-        float var26 = 1.0F / 16.0F;
-        float var27 = var1.getLuminance(_blockAccess, var2, var3, var4);
-        float var28;
-        if (_renderAllFaces || blockBB.MinY > 0.0D || var1.isSideVisible(_blockAccess, var2, var3 - 1, var4, 0))
+        bool hasRendered = true;
+
+        // 1. Render the central vertical post
+        float postMin = 6.0F / 16.0F;
+        float postMax = 10.0F / 16.0F;
+        SetOverrideBoundingBox(postMin, 0.0F, postMin, postMax, 1.0F, postMax);
+        RenderStandardBlock(block, x, y, z);
+
+        // Check for adjacent fences
+        bool connectsWest = _blockAccess.getBlockId(x - 1, y, z) == block.id;
+        bool connectsEast = _blockAccess.getBlockId(x + 1, y, z) == block.id;
+        bool connectsNorth = _blockAccess.getBlockId(x, y, z - 1) == block.id;
+        bool connectsSouth = _blockAccess.getBlockId(x, y, z + 1) == block.id;
+
+        bool connectsX = connectsWest || connectsEast;
+        bool connectsZ = connectsNorth || connectsSouth;
+
+        // If the fence is completely isolated, default to drawing small stubs along the X-axis
+        if (!connectsX && !connectsZ)
         {
-            var28 = var1.getLuminance(_blockAccess, var2, var3 - 1, var4);
-            var8.setColorOpaque_F(var14 * var28, var18 * var28, var22 * var28);
-            renderBottomFace(var1, var2, var3, var4, var1.getTextureId(_blockAccess, var2, var3, var4, 0));
-            var9 = true;
+            connectsX = true;
         }
 
-        if (_renderAllFaces || blockBB.MaxY < 1.0D || var1.isSideVisible(_blockAccess, var2, var3 + 1, var4, 1))
-        {
-            var28 = var1.getLuminance(_blockAccess, var2, var3 + 1, var4);
-            if (blockBB.MaxY != 1.0D && !var1.material.IsFluid)
-            {
-                var28 = var27;
-            }
+        // Base depth/thickness for the horizontal connecting bars
+        float barDepthMin = 7.0F / 16.0F;
+        float barDepthMax = 9.0F / 16.0F;
 
-            var8.setColorOpaque_F(var15 * var28, var19 * var28, var23 * var28);
-            renderTopFace(var1, var2, var3, var4, var1.getTextureId(_blockAccess, var2, var3, var4, 1));
-            var9 = true;
+        // Determine how far the bars extend based on neighbor connections
+        // If connecting, stretch to the edge (0.0 or 1.0). Otherwise, stay near the post.
+        float barMinX = connectsWest ? 0.0F : barDepthMin;
+        float barMaxX = connectsEast ? 1.0F : barDepthMax;
+        float barMinZ = connectsNorth ? 0.0F : barDepthMin;
+        float barMaxZ = connectsSouth ? 1.0F : barDepthMax;
+
+        // 2. Render Top Connecting Bars
+        float topBarMinY = 12.0F / 16.0F;
+        float topBarMaxY = 15.0F / 16.0F;
+
+        if (connectsX)
+        {
+            SetOverrideBoundingBox(barMinX, topBarMinY, barDepthMin, barMaxX, topBarMaxY, barDepthMax);
+            RenderStandardBlock(block, x, y, z);
         }
 
-        if (_renderAllFaces || blockBB.MinZ > 0.0D || var1.isSideVisible(_blockAccess, var2, var3, var4 - 1, 2))
+        if (connectsZ)
         {
-            var28 = var1.getLuminance(_blockAccess, var2, var3, var4 - 1);
-            if (blockBB.MinZ > 0.0D)
-            {
-                var28 = var27;
-            }
-
-            var8.setColorOpaque_F(var16 * var28, var20 * var28, var24 * var28);
-            var8.setTranslationF(0.0F, 0.0F, var26);
-            renderEastFace(var1, var2, var3, var4, var1.getTextureId(_blockAccess, var2, var3, var4, 2));
-            var8.setTranslationF(0.0F, 0.0F, -var26);
-            var9 = true;
+            SetOverrideBoundingBox(barDepthMin, topBarMinY, barMinZ, barDepthMax, topBarMaxY, barMaxZ);
+            RenderStandardBlock(block, x, y, z);
         }
 
-        if (_renderAllFaces || blockBB.MaxZ < 1.0D || var1.isSideVisible(_blockAccess, var2, var3, var4 + 1, 3))
-        {
-            var28 = var1.getLuminance(_blockAccess, var2, var3, var4 + 1);
-            if (blockBB.MaxZ < 1.0D)
-            {
-                var28 = var27;
-            }
+        // 3. Render Bottom Connecting Bars
+        float bottomBarMinY = 6.0F / 16.0F;
+        float bottomBarMaxY = 9.0F / 16.0F;
 
-            var8.setColorOpaque_F(var16 * var28, var20 * var28, var24 * var28);
-            var8.setTranslationF(0.0F, 0.0F, -var26);
-            renderWestFace(var1, var2, var3, var4, var1.getTextureId(_blockAccess, var2, var3, var4, 3));
-            var8.setTranslationF(0.0F, 0.0F, var26);
-            var9 = true;
+        if (connectsX)
+        {
+            SetOverrideBoundingBox(barMinX, bottomBarMinY, barDepthMin, barMaxX, bottomBarMaxY, barDepthMax);
+            RenderStandardBlock(block, x, y, z);
         }
 
-        if (_renderAllFaces || blockBB.MinX > 0.0D || var1.isSideVisible(_blockAccess, var2 - 1, var3, var4, 4))
+        if (connectsZ)
         {
-            var28 = var1.getLuminance(_blockAccess, var2 - 1, var3, var4);
-            if (blockBB.MinX > 0.0D)
-            {
-                var28 = var27;
-            }
-
-            var8.setColorOpaque_F(var17 * var28, var21 * var28, var25 * var28);
-            var8.setTranslationF(var26, 0.0F, 0.0F);
-            renderNorthFace(var1, var2, var3, var4, var1.getTextureId(_blockAccess, var2, var3, var4, 4));
-            var8.setTranslationF(-var26, 0.0F, 0.0F);
-            var9 = true;
+            SetOverrideBoundingBox(barDepthMin, bottomBarMinY, barMinZ, barDepthMax, bottomBarMaxY, barMaxZ);
+            RenderStandardBlock(block, x, y, z);
         }
 
-        if (_renderAllFaces || blockBB.MaxX < 1.0D || var1.isSideVisible(_blockAccess, var2 + 1, var3, var4, 5))
-        {
-            var28 = var1.getLuminance(_blockAccess, var2 + 1, var3, var4);
-            if (blockBB.MaxX < 1.0D)
-            {
-                var28 = var27;
-            }
+        // Reset bounding box state to prevent breaking the next block in the chunk
+        SetOverrideBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 
-            var8.setColorOpaque_F(var17 * var28, var21 * var28, var25 * var28);
-            var8.setTranslationF(-var26, 0.0F, 0.0F);
-            renderSouthFace(var1, var2, var3, var4, var1.getTextureId(_blockAccess, var2, var3, var4, 5));
-            var8.setTranslationF(var26, 0.0F, 0.0F);
-            var9 = true;
-        }
-
-        return var9;
+        return hasRendered;
     }
 
-    public bool renderBlockFence(Block var1, int var2, int var3, int var4)
+
+    private bool RenderBlockStairs(Block block, int x, int y, int z)
     {
-        float var6 = 6.0F / 16.0F;
-        float var7 = 10.0F / 16.0F;
-        setOverrideBoundingBox(var6, 0.0F, var6, var7, 1.0F, var7);
-        renderStandardBlock(var1, var2, var3, var4);
-        bool var5 = true;
-        bool var8 = false;
-        bool var9 = false;
-        if (_blockAccess.getBlockId(var2 - 1, var3, var4) == var1.id || _blockAccess.getBlockId(var2 + 1, var3, var4) == var1.id)
+        bool hasRendered = false;
+        int direction = _blockAccess.getBlockMeta(x, y, z);
+
+        if (direction == 0) // Ascending East (Stairs face West)
         {
-            var8 = true;
+            // Lower step (West half)
+            SetOverrideBoundingBox(0.0F, 0.0F, 0.0F, 0.5F, 0.5F, 1.0F);
+            RenderStandardBlock(block, x, y, z);
+
+            // Upper step (East half)
+            SetOverrideBoundingBox(0.5F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+            RenderStandardBlock(block, x, y, z);
+
+            hasRendered = true;
+        }
+        else if (direction == 1) // Ascending West (Stairs face East)
+        {
+            // Upper step (West half)
+            SetOverrideBoundingBox(0.0F, 0.0F, 0.0F, 0.5F, 1.0F, 1.0F);
+            RenderStandardBlock(block, x, y, z);
+
+            // Lower step (East half)
+            SetOverrideBoundingBox(0.5F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
+            RenderStandardBlock(block, x, y, z);
+
+            hasRendered = true;
+        }
+        else if (direction == 2) // Ascending South (Stairs face North)
+        {
+            // Lower step (North half)
+            SetOverrideBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 0.5F);
+            RenderStandardBlock(block, x, y, z);
+
+            // Upper step (South half)
+            SetOverrideBoundingBox(0.0F, 0.0F, 0.5F, 1.0F, 1.0F, 1.0F);
+            RenderStandardBlock(block, x, y, z);
+
+            hasRendered = true;
+        }
+        else if (direction == 3) // Ascending North (Stairs face South)
+        {
+            // Upper step (North half)
+            SetOverrideBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.5F);
+            RenderStandardBlock(block, x, y, z);
+
+            // Lower step (South half)
+            SetOverrideBoundingBox(0.0F, 0.0F, 0.5F, 1.0F, 0.5F, 1.0F);
+            RenderStandardBlock(block, x, y, z);
+
+            hasRendered = true;
         }
 
-        if (_blockAccess.getBlockId(var2, var3, var4 - 1) == var1.id || _blockAccess.getBlockId(var2, var3, var4 + 1) == var1.id)
-        {
-            var9 = true;
-        }
+        SetOverrideBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 
-        bool var10 = _blockAccess.getBlockId(var2 - 1, var3, var4) == var1.id;
-        bool var11 = _blockAccess.getBlockId(var2 + 1, var3, var4) == var1.id;
-        bool var12 = _blockAccess.getBlockId(var2, var3, var4 - 1) == var1.id;
-        bool var13 = _blockAccess.getBlockId(var2, var3, var4 + 1) == var1.id;
-        if (!var8 && !var9)
-        {
-            var8 = true;
-        }
-
-        var6 = 7.0F / 16.0F;
-        var7 = 9.0F / 16.0F;
-        float var14 = 12.0F / 16.0F;
-        float var15 = 15.0F / 16.0F;
-        float var16 = var10 ? 0.0F : var6;
-        float var17 = var11 ? 1.0F : var7;
-        float var18 = var12 ? 0.0F : var6;
-        float var19 = var13 ? 1.0F : var7;
-        if (var8)
-        {
-            setOverrideBoundingBox(var16, var14, var6, var17, var15, var7);
-            renderStandardBlock(var1, var2, var3, var4);
-            var5 = true;
-        }
-
-        if (var9)
-        {
-            setOverrideBoundingBox(var6, var14, var18, var7, var15, var19);
-            renderStandardBlock(var1, var2, var3, var4);
-            var5 = true;
-        }
-
-        var14 = 6.0F / 16.0F;
-        var15 = 9.0F / 16.0F;
-        if (var8)
-        {
-            setOverrideBoundingBox(var16, var14, var6, var17, var15, var7);
-            renderStandardBlock(var1, var2, var3, var4);
-            var5 = true;
-        }
-
-        if (var9)
-        {
-            setOverrideBoundingBox(var6, var14, var18, var7, var15, var19);
-            renderStandardBlock(var1, var2, var3, var4);
-            var5 = true;
-        }
-
-        setOverrideBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-        return var5;
+        return hasRendered;
     }
 
-    public bool renderBlockStairs(Block var1, int var2, int var3, int var4)
+    private bool RenderBlockDoor(Block block, int x, int y, int z)
     {
-        bool var5 = false;
-        int var6 = _blockAccess.getBlockMeta(var2, var3, var4);
-        if (var6 == 0)
-        {
-            setOverrideBoundingBox(0.0F, 0.0F, 0.0F, 0.5F, 0.5F, 1.0F);
-            renderStandardBlock(var1, var2, var3, var4);
-            setOverrideBoundingBox(0.5F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-            renderStandardBlock(var1, var2, var3, var4);
-            var5 = true;
-        }
-        else if (var6 == 1)
-        {
-            setOverrideBoundingBox(0.0F, 0.0F, 0.0F, 0.5F, 1.0F, 1.0F);
-            renderStandardBlock(var1, var2, var3, var4);
-            setOverrideBoundingBox(0.5F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
-            renderStandardBlock(var1, var2, var3, var4);
-            var5 = true;
-        }
-        else if (var6 == 2)
-        {
-            setOverrideBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 0.5F);
-            renderStandardBlock(var1, var2, var3, var4);
-            setOverrideBoundingBox(0.0F, 0.0F, 0.5F, 1.0F, 1.0F, 1.0F);
-            renderStandardBlock(var1, var2, var3, var4);
-            var5 = true;
-        }
-        else if (var6 == 3)
-        {
-            setOverrideBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.5F);
-            renderStandardBlock(var1, var2, var3, var4);
-            setOverrideBoundingBox(0.0F, 0.0F, 0.5F, 1.0F, 0.5F, 1.0F);
-            renderStandardBlock(var1, var2, var3, var4);
-            var5 = true;
-        }
+        Tessellator tess = GetTessellator();
+        Box bounds = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
 
-        setOverrideBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-        return var5;
-    }
+        float lightBottom = 0.5F;
+        float lightTop = 1.0F;
+        float lightZ = 0.8F; // East/West
+        float lightX = 0.6F; // North/South
 
-    public bool renderBlockDoor(Block var1, int var2, int var3, int var4)
-    {
-        Tessellator var5 = getTessellator();
-        Box blockBB = _useOverrideBoundingBox ? _overrideBoundingBox : var1.BoundingBox;
-        float var8 = 0.5F;
-        float var9 = 1.0F;
-        float var10 = 0.8F;
-        float var11 = 0.6F;
-        float var12 = var1.getLuminance(_blockAccess, var2, var3, var4);
-        float var13 = var1.getLuminance(_blockAccess, var2, var3 - 1, var4);
-        if (blockBB.MinY > 0.0D)
-        {
-            var13 = var12;
-        }
+        float blockLuminance = block.getLuminance(_blockAccess, x, y, z);
 
-        if (Block.BlocksLightLuminance[var1.id] > 0)
-        {
-            var13 = 1.0F;
-        }
+        bool isLightEmitter = Block.BlocksLightLuminance[block.id] > 0;
 
-        var5.setColorOpaque_F(var8 * var13, var8 * var13, var8 * var13);
-        renderBottomFace(var1, var2, var3, var4, var1.getTextureId(_blockAccess, var2, var3, var4, 0));
-        var13 = var1.getLuminance(_blockAccess, var2, var3 + 1, var4);
-        if (blockBB.MaxY < 1.0D)
-        {
-            var13 = var12;
-        }
+        // --- Bottom Face (Y - 1) ---
+        float faceLuminance = block.getLuminance(_blockAccess, x, y - 1, z);
+        if (bounds.MinY > 0.0D) faceLuminance = blockLuminance;
+        if (isLightEmitter) faceLuminance = 1.0F;
 
-        if (Block.BlocksLightLuminance[var1.id] > 0)
-        {
-            var13 = 1.0F;
-        }
+        tess.setColorOpaque_F(lightBottom * faceLuminance, lightBottom * faceLuminance, lightBottom * faceLuminance);
+        RenderBottomFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 0));
 
-        var5.setColorOpaque_F(var9 * var13, var9 * var13, var9 * var13);
-        renderTopFace(var1, var2, var3, var4, var1.getTextureId(_blockAccess, var2, var3, var4, 1));
-        var13 = var1.getLuminance(_blockAccess, var2, var3, var4 - 1);
-        if (blockBB.MinZ > 0.0D)
-        {
-            var13 = var12;
-        }
+        // --- Top Face (Y + 1) ---
+        faceLuminance = block.getLuminance(_blockAccess, x, y + 1, z);
+        if (bounds.MaxY < 1.0D) faceLuminance = blockLuminance;
+        if (isLightEmitter) faceLuminance = 1.0F;
 
-        if (Block.BlocksLightLuminance[var1.id] > 0)
-        {
-            var13 = 1.0F;
-        }
+        tess.setColorOpaque_F(lightTop * faceLuminance, lightTop * faceLuminance, lightTop * faceLuminance);
+        RenderTopFace(block, x, y, z, block.getTextureId(_blockAccess, x, y, z, 1));
 
-        var5.setColorOpaque_F(var10 * var13, var10 * var13, var10 * var13);
-        int var14 = var1.getTextureId(_blockAccess, var2, var3, var4, 2);
-        if (var14 < 0)
+        // --- East Face (Z - 1) ---
+        faceLuminance = block.getLuminance(_blockAccess, x, y, z - 1);
+        if (bounds.MinZ > 0.0D) faceLuminance = blockLuminance;
+        if (isLightEmitter) faceLuminance = 1.0F;
+
+        tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
+        int textureId = block.getTextureId(_blockAccess, x, y, z, 2);
+
+        // Negative texture ID is used as a flag to flip the texture horizontally (for door hinges)
+        if (textureId < 0)
         {
             _flipTexture = true;
-            var14 = -var14;
+            textureId = -textureId;
         }
-
-        renderEastFace(var1, var2, var3, var4, var14);
+        RenderEastFace(block, x, y, z, textureId);
         _flipTexture = false;
-        var13 = var1.getLuminance(_blockAccess, var2, var3, var4 + 1);
-        if (blockBB.MaxZ < 1.0D)
-        {
-            var13 = var12;
-        }
 
-        if (Block.BlocksLightLuminance[var1.id] > 0)
-        {
-            var13 = 1.0F;
-        }
+        // --- West Face (Z + 1) ---
+        faceLuminance = block.getLuminance(_blockAccess, x, y, z + 1);
+        if (bounds.MaxZ < 1.0D) faceLuminance = blockLuminance;
+        if (isLightEmitter) faceLuminance = 1.0F;
 
-        var5.setColorOpaque_F(var10 * var13, var10 * var13, var10 * var13);
-        var14 = var1.getTextureId(_blockAccess, var2, var3, var4, 3);
-        if (var14 < 0)
+        tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
+        textureId = block.getTextureId(_blockAccess, x, y, z, 3);
+        if (textureId < 0)
         {
             _flipTexture = true;
-            var14 = -var14;
+            textureId = -textureId;
         }
-
-        renderWestFace(var1, var2, var3, var4, var14);
+        RenderWestFace(block, x, y, z, textureId);
         _flipTexture = false;
-        var13 = var1.getLuminance(_blockAccess, var2 - 1, var3, var4);
-        if (blockBB.MinX > 0.0D)
-        {
-            var13 = var12;
-        }
 
-        if (Block.BlocksLightLuminance[var1.id] > 0)
-        {
-            var13 = 1.0F;
-        }
+        // --- North Face (X - 1) ---
+        faceLuminance = block.getLuminance(_blockAccess, x - 1, y, z);
+        if (bounds.MinX > 0.0D) faceLuminance = blockLuminance;
+        if (isLightEmitter) faceLuminance = 1.0F;
 
-        var5.setColorOpaque_F(var11 * var13, var11 * var13, var11 * var13);
-        var14 = var1.getTextureId(_blockAccess, var2, var3, var4, 4);
-        if (var14 < 0)
+        tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
+        textureId = block.getTextureId(_blockAccess, x, y, z, 4);
+        if (textureId < 0)
         {
             _flipTexture = true;
-            var14 = -var14;
+            textureId = -textureId;
         }
-
-        renderNorthFace(var1, var2, var3, var4, var14);
+        RenderNorthFace(block, x, y, z, textureId);
         _flipTexture = false;
-        var13 = var1.getLuminance(_blockAccess, var2 + 1, var3, var4);
-        if (blockBB.MaxX < 1.0D)
-        {
-            var13 = var12;
-        }
 
-        if (Block.BlocksLightLuminance[var1.id] > 0)
-        {
-            var13 = 1.0F;
-        }
+        // --- South Face (X + 1) ---
+        faceLuminance = block.getLuminance(_blockAccess, x + 1, y, z);
+        if (bounds.MaxX < 1.0D) faceLuminance = blockLuminance;
+        if (isLightEmitter) faceLuminance = 1.0F;
 
-        var5.setColorOpaque_F(var11 * var13, var11 * var13, var11 * var13);
-        var14 = var1.getTextureId(_blockAccess, var2, var3, var4, 5);
-        if (var14 < 0)
+        tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
+        textureId = block.getTextureId(_blockAccess, x, y, z, 5);
+        if (textureId < 0)
         {
             _flipTexture = true;
-            var14 = -var14;
+            textureId = -textureId;
         }
-
-        renderSouthFace(var1, var2, var3, var4, var14);
-        bool var7 = true;
+        RenderSouthFace(block, x, y, z, textureId);
         _flipTexture = false;
-        return var7;
+
+        return true;
     }
 
-    public void renderBottomFace(Block var1, double var2, double var4, double var6, int var8)
+    private void RenderSouthFace(Block block, double x, double y, double z, int textureId)
     {
-        Tessellator var9 = getTessellator();
-        Box blockBB = _useOverrideBoundingBox ? _overrideBoundingBox : var1.BoundingBox;
+        Tessellator tess = GetTessellator();
+        Box blockBb = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
+
         if (_overrideBlockTexture >= 0)
         {
-            var8 = _overrideBlockTexture;
+            textureId = _overrideBlockTexture;
         }
 
-        int var10 = (var8 & 15) << 4;
-        int var11 = var8 & 240;
-        double var12 = (var10 + blockBB.MinX * 16.0D) / 256.0D;
-        double var14 = (var10 + blockBB.MaxX * 16.0D - 0.01D) / 256.0D;
-        double var16 = (var11 + blockBB.MinZ * 16.0D) / 256.0D;
-        double var18 = (var11 + blockBB.MaxZ * 16.0D - 0.01D) / 256.0D;
-        if (blockBB.MinX < 0.0D || blockBB.MaxX > 1.0D)
-        {
-            var12 = (double)((var10 + 0.0F) / 256.0F);
-            var14 = (double)((var10 + 15.99F) / 256.0F);
-        }
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
 
-        if (blockBB.MinZ < 0.0D || blockBB.MaxZ > 1.0D)
-        {
-            var16 = (double)((var11 + 0.0F) / 256.0F);
-            var18 = (double)((var11 + 15.99F) / 256.0F);
-        }
+        double minU = (texU + blockBb.MinZ * 16.0D) / 256.0D;
+        double maxU = (texU + blockBb.MaxZ * 16.0D - 0.01D) / 256.0D;
+        double minV = (texV + 16 - blockBb.MaxY * 16.0D) / 256.0D;
+        double maxV = (texV + 16 - blockBb.MinY * 16.0D - 0.01D) / 256.0D;
 
-        double var20 = var14;
-        double var22 = var12;
-        double var24 = var16;
-        double var26 = var18;
-        if (_uvRotateBottom == 2)
-        {
-            var12 = (var10 + blockBB.MinZ * 16.0D) / 256.0D;
-            var16 = (var11 + 16 - blockBB.MaxX * 16.0D) / 256.0D;
-            var14 = (var10 + blockBB.MaxZ * 16.0D) / 256.0D;
-            var18 = (var11 + 16 - blockBB.MinX * 16.0D) / 256.0D;
-            var24 = var16;
-            var26 = var18;
-            var20 = var12;
-            var22 = var14;
-            var16 = var18;
-            var18 = var24;
-        }
-        else if (_uvRotateBottom == 1)
-        {
-            var12 = (var10 + 16 - blockBB.MaxZ * 16.0D) / 256.0D;
-            var16 = (var11 + blockBB.MinX * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.MinZ * 16.0D) / 256.0D;
-            var18 = (var11 + blockBB.MaxX * 16.0D) / 256.0D;
-            var20 = var14;
-            var22 = var12;
-            var12 = var14;
-            var14 = var22;
-            var24 = var18;
-            var26 = var16;
-        }
-        else if (_uvRotateBottom == 3)
-        {
-            var12 = (var10 + 16 - blockBB.MinX * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.MaxX * 16.0D - 0.01D) / 256.0D;
-            var16 = (var11 + 16 - blockBB.MinZ * 16.0D) / 256.0D;
-            var18 = (var11 + 16 - blockBB.MaxZ * 16.0D - 0.01D) / 256.0D;
-            var20 = var14;
-            var22 = var12;
-            var24 = var16;
-            var26 = var18;
-        }
-
-        double var28 = var2 + blockBB.MinX;
-        double var30 = var2 + blockBB.MaxX;
-        double var32 = var4 + blockBB.MinY;
-        double var34 = var6 + blockBB.MinZ;
-        double var36 = var6 + blockBB.MaxZ;
-        if (_enableAO)
-        {
-            var9.setColorOpaque_F(_colorRedTopLeft, _colorGreenTopLeft, _colorBlueTopLeft);
-            var9.addVertexWithUV(var28, var32, var36, var22, var26);
-            var9.setColorOpaque_F(_colorRedBottomLeft, _colorGreenBottomLeft, _colorBlueBottomLeft);
-            var9.addVertexWithUV(var28, var32, var34, var12, var16);
-            var9.setColorOpaque_F(_colorRedBottomRight, _colorGreenBottomRight, _colorBlueBottomRight);
-            var9.addVertexWithUV(var30, var32, var34, var20, var24);
-            var9.setColorOpaque_F(_colorRedTopRight, _colorGreenTopRight, _colorBlueTopRight);
-            var9.addVertexWithUV(var30, var32, var36, var14, var18);
-        }
-        else
-        {
-            var9.addVertexWithUV(var28, var32, var36, var22, var26);
-            var9.addVertexWithUV(var28, var32, var34, var12, var16);
-            var9.addVertexWithUV(var30, var32, var34, var20, var24);
-            var9.addVertexWithUV(var30, var32, var36, var14, var18);
-        }
-
-    }
-
-    public void renderTopFace(Block var1, double var2, double var4, double var6, int var8)
-    {
-        Tessellator var9 = getTessellator();
-        Box blockBB = _useOverrideBoundingBox ? _overrideBoundingBox : var1.BoundingBox;
-        if (_overrideBlockTexture >= 0)
-        {
-            var8 = _overrideBlockTexture;
-        }
-
-        int var10 = (var8 & 15) << 4;
-        int var11 = var8 & 240;
-        double var12 = (var10 + blockBB.MinX * 16.0D) / 256.0D;
-        double var14 = (var10 + blockBB.MaxX * 16.0D - 0.01D) / 256.0D;
-        double var16 = (var11 + blockBB.MinZ * 16.0D) / 256.0D;
-        double var18 = (var11 + blockBB.MaxZ * 16.0D - 0.01D) / 256.0D;
-        if (blockBB.MinX < 0.0D || blockBB.MaxX > 1.0D)
-        {
-            var12 = (double)((var10 + 0.0F) / 256.0F);
-            var14 = (double)((var10 + 15.99F) / 256.0F);
-        }
-
-        if (blockBB.MinZ < 0.0D || blockBB.MaxZ > 1.0D)
-        {
-            var16 = (double)((var11 + 0.0F) / 256.0F);
-            var18 = (double)((var11 + 15.99F) / 256.0F);
-        }
-
-        double var20 = var14;
-        double var22 = var12;
-        double var24 = var16;
-        double var26 = var18;
-        if (_uvRotateTop == 1)
-        {
-            var12 = (var10 + blockBB.MinZ * 16.0D) / 256.0D;
-            var16 = (var11 + 16 - blockBB.MaxX * 16.0D) / 256.0D;
-            var14 = (var10 + blockBB.MaxZ * 16.0D) / 256.0D;
-            var18 = (var11 + 16 - blockBB.MinX * 16.0D) / 256.0D;
-            var24 = var16;
-            var26 = var18;
-            var20 = var12;
-            var22 = var14;
-            var16 = var18;
-            var18 = var24;
-        }
-        else if (_uvRotateTop == 2)
-        {
-            var12 = (var10 + 16 - blockBB.MaxZ * 16.0D) / 256.0D;
-            var16 = (var11 + blockBB.MinX * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.MinZ * 16.0D) / 256.0D;
-            var18 = (var11 + blockBB.MaxX * 16.0D) / 256.0D;
-            var20 = var14;
-            var22 = var12;
-            var12 = var14;
-            var14 = var22;
-            var24 = var18;
-            var26 = var16;
-        }
-        else if (_uvRotateTop == 3)
-        {
-            var12 = (var10 + 16 - blockBB.MinX * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.MaxX * 16.0D - 0.01D) / 256.0D;
-            var16 = (var11 + 16 - blockBB.MinZ * 16.0D) / 256.0D;
-            var18 = (var11 + 16 - blockBB.MaxZ * 16.0D - 0.01D) / 256.0D;
-            var20 = var14;
-            var22 = var12;
-            var24 = var16;
-            var26 = var18;
-        }
-
-        double var28 = var2 + blockBB.MinX;
-        double var30 = var2 + blockBB.MaxX;
-        double var32 = var4 + blockBB.MaxY;
-        double var34 = var6 + blockBB.MinZ;
-        double var36 = var6 + blockBB.MaxZ;
-        if (_enableAO)
-        {
-            var9.setColorOpaque_F(_colorRedTopLeft, _colorGreenTopLeft, _colorBlueTopLeft);
-            var9.addVertexWithUV(var30, var32, var36, var14, var18);
-            var9.setColorOpaque_F(_colorRedBottomLeft, _colorGreenBottomLeft, _colorBlueBottomLeft);
-            var9.addVertexWithUV(var30, var32, var34, var20, var24);
-            var9.setColorOpaque_F(_colorRedBottomRight, _colorGreenBottomRight, _colorBlueBottomRight);
-            var9.addVertexWithUV(var28, var32, var34, var12, var16);
-            var9.setColorOpaque_F(_colorRedTopRight, _colorGreenTopRight, _colorBlueTopRight);
-            var9.addVertexWithUV(var28, var32, var36, var22, var26);
-        }
-        else
-        {
-            var9.addVertexWithUV(var30, var32, var36, var14, var18);
-            var9.addVertexWithUV(var30, var32, var34, var20, var24);
-            var9.addVertexWithUV(var28, var32, var34, var12, var16);
-            var9.addVertexWithUV(var28, var32, var36, var22, var26);
-        }
-
-    }
-
-    public void renderEastFace(Block var1, double var2, double var4, double var6, int var8)
-    {
-        Tessellator var9 = getTessellator();
-        Box blockBB = _useOverrideBoundingBox ? _overrideBoundingBox : var1.BoundingBox;
-        if (_overrideBlockTexture >= 0)
-        {
-            var8 = _overrideBlockTexture;
-        }
-
-        int var10 = (var8 & 15) << 4;
-        int var11 = var8 & 240;
-        double var12 = (var10 + blockBB.MinX * 16.0D) / 256.0D;
-        double var14 = (var10 + blockBB.MaxX * 16.0D - 0.01D) / 256.0D;
-        double var16 = (var11 + 16 - blockBB.MaxY * 16.0D) / 256.0D;
-        double var18 = (var11 + 16 - blockBB.MinY * 16.0D - 0.01D) / 256.0D;
-        double var20;
         if (_flipTexture)
         {
-            var20 = var12;
-            var12 = var14;
-            var14 = var20;
+            (minU, maxU) = (maxU, minU);
         }
 
-        if (blockBB.MinX < 0.0D || blockBB.MaxX > 1.0D)
+        if (blockBb.MinZ < 0.0D || blockBb.MaxZ > 1.0D)
         {
-            var12 = (double)((var10 + 0.0F) / 256.0F);
-            var14 = (double)((var10 + 15.99F) / 256.0F);
+            minU = texU / 256.0D;
+            maxU = (texU + 15.99D) / 256.0D;
+        }
+        if (blockBb.MinY < 0.0D || blockBb.MaxY > 1.0D)
+        {
+            minV = texV / 256.0D;
+            maxV = (texV + 15.99D) / 256.0D;
         }
 
-        if (blockBB.MinY < 0.0D || blockBB.MaxY > 1.0D)
-        {
-            var16 = (double)((var11 + 0.0F) / 256.0F);
-            var18 = (double)((var11 + 15.99F) / 256.0F);
-        }
+        double u1 = maxU, u2 = minU, v1 = minV, v2 = maxV;
 
-        var20 = var14;
-        double var22 = var12;
-        double var24 = var16;
-        double var26 = var18;
-        if (_uvRotateEast == 2)
-        {
-            var12 = (var10 + blockBB.MinY * 16.0D) / 256.0D;
-            var16 = (var11 + 16 - blockBB.MinX * 16.0D) / 256.0D;
-            var14 = (var10 + blockBB.MaxY * 16.0D) / 256.0D;
-            var18 = (var11 + 16 - blockBB.MaxX * 16.0D) / 256.0D;
-            var24 = var16;
-            var26 = var18;
-            var20 = var12;
-            var22 = var14;
-            var16 = var18;
-            var18 = var24;
-        }
-        else if (_uvRotateEast == 1)
-        {
-            var12 = (var10 + 16 - blockBB.MaxY * 16.0D) / 256.0D;
-            var16 = (var11 + blockBB.MaxX * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.MinY * 16.0D) / 256.0D;
-            var18 = (var11 + blockBB.MinX * 16.0D) / 256.0D;
-            var20 = var14;
-            var22 = var12;
-            var12 = var14;
-            var14 = var22;
-            var24 = var18;
-            var26 = var16;
-        }
-        else if (_uvRotateEast == 3)
-        {
-            var12 = (var10 + 16 - blockBB.MinX * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.MaxX * 16.0D - 0.01D) / 256.0D;
-            var16 = (var11 + blockBB.MaxY * 16.0D) / 256.0D;
-            var18 = (var11 + blockBB.MinY * 16.0D - 0.01D) / 256.0D;
-            var20 = var14;
-            var22 = var12;
-            var24 = var16;
-            var26 = var18;
-        }
-
-        double var28 = var2 + blockBB.MinX;
-        double var30 = var2 + blockBB.MaxX;
-        double var32 = var4 + blockBB.MinY;
-        double var34 = var4 + blockBB.MaxY;
-        double var36 = var6 + blockBB.MinZ;
-        if (_enableAO)
-        {
-            var9.setColorOpaque_F(_colorRedTopLeft, _colorGreenTopLeft, _colorBlueTopLeft);
-            var9.addVertexWithUV(var28, var34, var36, var20, var24);
-            var9.setColorOpaque_F(_colorRedBottomLeft, _colorGreenBottomLeft, _colorBlueBottomLeft);
-            var9.addVertexWithUV(var30, var34, var36, var12, var16);
-            var9.setColorOpaque_F(_colorRedBottomRight, _colorGreenBottomRight, _colorBlueBottomRight);
-            var9.addVertexWithUV(var30, var32, var36, var22, var26);
-            var9.setColorOpaque_F(_colorRedTopRight, _colorGreenTopRight, _colorBlueTopRight);
-            var9.addVertexWithUV(var28, var32, var36, var14, var18);
-        }
-        else
-        {
-            var9.addVertexWithUV(var28, var34, var36, var20, var24);
-            var9.addVertexWithUV(var30, var34, var36, var12, var16);
-            var9.addVertexWithUV(var30, var32, var36, var22, var26);
-            var9.addVertexWithUV(var28, var32, var36, var14, var18);
-        }
-
-    }
-
-    public void renderWestFace(Block var1, double var2, double var4, double var6, int var8)
-    {
-        Tessellator var9 = getTessellator();
-        Box blockBB = _useOverrideBoundingBox ? _overrideBoundingBox : var1.BoundingBox;
-        if (_overrideBlockTexture >= 0)
-        {
-            var8 = _overrideBlockTexture;
-        }
-
-        int var10 = (var8 & 15) << 4;
-        int var11 = var8 & 240;
-        double var12 = (var10 + blockBB.MinX * 16.0D) / 256.0D;
-        double var14 = (var10 + blockBB.MaxX * 16.0D - 0.01D) / 256.0D;
-        double var16 = (var11 + 16 - blockBB.MaxY * 16.0D) / 256.0D;
-        double var18 = (var11 + 16 - blockBB.MinY * 16.0D - 0.01D) / 256.0D;
-        double var20;
-        if (_flipTexture)
-        {
-            var20 = var12;
-            var12 = var14;
-            var14 = var20;
-        }
-
-        if (blockBB.MinX < 0.0D || blockBB.MaxX > 1.0D)
-        {
-            var12 = (double)((var10 + 0.0F) / 256.0F);
-            var14 = (double)((var10 + 15.99F) / 256.0F);
-        }
-
-        if (blockBB.MinY < 0.0D || blockBB.MaxY > 1.0D)
-        {
-            var16 = (double)((var11 + 0.0F) / 256.0F);
-            var18 = (double)((var11 + 15.99F) / 256.0F);
-        }
-
-        var20 = var14;
-        double var22 = var12;
-        double var24 = var16;
-        double var26 = var18;
-        if (_uvRotateWest == 1)
-        {
-            var12 = (var10 + blockBB.MinY * 16.0D) / 256.0D;
-            var18 = (var11 + 16 - blockBB.MinX * 16.0D) / 256.0D;
-            var14 = (var10 + blockBB.MaxY * 16.0D) / 256.0D;
-            var16 = (var11 + 16 - blockBB.MaxX * 16.0D) / 256.0D;
-            var24 = var16;
-            var26 = var18;
-            var20 = var12;
-            var22 = var14;
-            var16 = var18;
-            var18 = var24;
-        }
-        else if (_uvRotateWest == 2)
-        {
-            var12 = (var10 + 16 - blockBB.MaxY * 16.0D) / 256.0D;
-            var16 = (var11 + blockBB.MinX * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.MinY * 16.0D) / 256.0D;
-            var18 = (var11 + blockBB.MaxX * 16.0D) / 256.0D;
-            var20 = var14;
-            var22 = var12;
-            var12 = var14;
-            var14 = var22;
-            var24 = var18;
-            var26 = var16;
-        }
-        else if (_uvRotateWest == 3)
-        {
-            var12 = (var10 + 16 - blockBB.MinX * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.MaxX * 16.0D - 0.01D) / 256.0D;
-            var16 = (var11 + blockBB.MaxY * 16.0D) / 256.0D;
-            var18 = (var11 + blockBB.MinY * 16.0D - 0.01D) / 256.0D;
-            var20 = var14;
-            var22 = var12;
-            var24 = var16;
-            var26 = var18;
-        }
-
-        double var28 = var2 + blockBB.MinX;
-        double var30 = var2 + blockBB.MaxX;
-        double var32 = var4 + blockBB.MinY;
-        double var34 = var4 + blockBB.MaxY;
-        double var36 = var6 + blockBB.MaxZ;
-        if (_enableAO)
-        {
-            var9.setColorOpaque_F(_colorRedTopLeft, _colorGreenTopLeft, _colorBlueTopLeft);
-            var9.addVertexWithUV(var28, var34, var36, var12, var16);
-            var9.setColorOpaque_F(_colorRedBottomLeft, _colorGreenBottomLeft, _colorBlueBottomLeft);
-            var9.addVertexWithUV(var28, var32, var36, var22, var26);
-            var9.setColorOpaque_F(_colorRedBottomRight, _colorGreenBottomRight, _colorBlueBottomRight);
-            var9.addVertexWithUV(var30, var32, var36, var14, var18);
-            var9.setColorOpaque_F(_colorRedTopRight, _colorGreenTopRight, _colorBlueTopRight);
-            var9.addVertexWithUV(var30, var34, var36, var20, var24);
-        }
-        else
-        {
-            var9.addVertexWithUV(var28, var34, var36, var12, var16);
-            var9.addVertexWithUV(var28, var32, var36, var22, var26);
-            var9.addVertexWithUV(var30, var32, var36, var14, var18);
-            var9.addVertexWithUV(var30, var34, var36, var20, var24);
-        }
-
-    }
-
-    public void renderNorthFace(Block var1, double var2, double var4, double var6, int var8)
-    {
-        Tessellator var9 = getTessellator();
-        Box blockBB = _useOverrideBoundingBox ? _overrideBoundingBox : var1.BoundingBox;
-        if (_overrideBlockTexture >= 0)
-        {
-            var8 = _overrideBlockTexture;
-        }
-
-        int var10 = (var8 & 15) << 4;
-        int var11 = var8 & 240;
-        double var12 = (var10 + blockBB.MinZ * 16.0D) / 256.0D;
-        double var14 = (var10 + blockBB.MaxZ * 16.0D - 0.01D) / 256.0D;
-        double var16 = (var11 + 16 - blockBB.MaxY * 16.0D) / 256.0D;
-        double var18 = (var11 + 16 - blockBB.MinY * 16.0D - 0.01D) / 256.0D;
-        double var20;
-        if (_flipTexture)
-        {
-            var20 = var12;
-            var12 = var14;
-            var14 = var20;
-        }
-
-        if (blockBB.MinZ < 0.0D || blockBB.MaxZ > 1.0D)
-        {
-            var12 = (double)((var10 + 0.0F) / 256.0F);
-            var14 = (double)((var10 + 15.99F) / 256.0F);
-        }
-
-        if (blockBB.MinY < 0.0D || blockBB.MaxY > 1.0D)
-        {
-            var16 = (double)((var11 + 0.0F) / 256.0F);
-            var18 = (double)((var11 + 15.99F) / 256.0F);
-        }
-
-        var20 = var14;
-        double var22 = var12;
-        double var24 = var16;
-        double var26 = var18;
-        if (_uvRotateNorth == 1)
-        {
-            var12 = (var10 + blockBB.MinY * 16.0D) / 256.0D;
-            var16 = (var11 + 16 - blockBB.MaxZ * 16.0D) / 256.0D;
-            var14 = (var10 + blockBB.MaxY * 16.0D) / 256.0D;
-            var18 = (var11 + 16 - blockBB.MinZ * 16.0D) / 256.0D;
-            var24 = var16;
-            var26 = var18;
-            var20 = var12;
-            var22 = var14;
-            var16 = var18;
-            var18 = var24;
-        }
-        else if (_uvRotateNorth == 2)
-        {
-            var12 = (var10 + 16 - blockBB.MaxY * 16.0D) / 256.0D;
-            var16 = (var11 + blockBB.MinZ * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.MinY * 16.0D) / 256.0D;
-            var18 = (var11 + blockBB.MaxZ * 16.0D) / 256.0D;
-            var20 = var14;
-            var22 = var12;
-            var12 = var14;
-            var14 = var22;
-            var24 = var18;
-            var26 = var16;
-        }
-        else if (_uvRotateNorth == 3)
-        {
-            var12 = (var10 + 16 - blockBB.MinZ * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.MaxZ * 16.0D - 0.01D) / 256.0D;
-            var16 = (var11 + blockBB.MaxY * 16.0D) / 256.0D;
-            var18 = (var11 + blockBB.MinY * 16.0D - 0.01D) / 256.0D;
-            var20 = var14;
-            var22 = var12;
-            var24 = var16;
-            var26 = var18;
-        }
-
-        double var28 = var2 + blockBB.MinX;
-        double var30 = var4 + blockBB.MinY;
-        double var32 = var4 + blockBB.MaxY;
-        double var34 = var6 + blockBB.MinZ;
-        double var36 = var6 + blockBB.MaxZ;
-        if (_enableAO)
-        {
-            var9.setColorOpaque_F(_colorRedTopLeft, _colorGreenTopLeft, _colorBlueTopLeft);
-            var9.addVertexWithUV(var28, var32, var36, var20, var24);
-            var9.setColorOpaque_F(_colorRedBottomLeft, _colorGreenBottomLeft, _colorBlueBottomLeft);
-            var9.addVertexWithUV(var28, var32, var34, var12, var16);
-            var9.setColorOpaque_F(_colorRedBottomRight, _colorGreenBottomRight, _colorBlueBottomRight);
-            var9.addVertexWithUV(var28, var30, var34, var22, var26);
-            var9.setColorOpaque_F(_colorRedTopRight, _colorGreenTopRight, _colorBlueTopRight);
-            var9.addVertexWithUV(var28, var30, var36, var14, var18);
-        }
-        else
-        {
-            var9.addVertexWithUV(var28, var32, var36, var20, var24);
-            var9.addVertexWithUV(var28, var32, var34, var12, var16);
-            var9.addVertexWithUV(var28, var30, var34, var22, var26);
-            var9.addVertexWithUV(var28, var30, var36, var14, var18);
-        }
-
-    }
-
-    public void renderSouthFace(Block var1, double var2, double var4, double var6, int var8)
-    {
-        Tessellator var9 = getTessellator();
-        Box blockBB = _useOverrideBoundingBox ? _overrideBoundingBox : var1.BoundingBox;
-        if (_overrideBlockTexture >= 0)
-        {
-            var8 = _overrideBlockTexture;
-        }
-
-        int var10 = (var8 & 15) << 4;
-        int var11 = var8 & 240;
-        double var12 = (var10 + blockBB.MinZ * 16.0D) / 256.0D;
-        double var14 = (var10 + blockBB.MaxZ * 16.0D - 0.01D) / 256.0D;
-        double var16 = (var11 + 16 - blockBB.MaxY * 16.0D) / 256.0D;
-        double var18 = (var11 + 16 - blockBB.MinY * 16.0D - 0.01D) / 256.0D;
-        double var20;
-        if (_flipTexture)
-        {
-            var20 = var12;
-            var12 = var14;
-            var14 = var20;
-        }
-
-        if (blockBB.MinZ < 0.0D || blockBB.MaxZ > 1.0D)
-        {
-            var12 = (double)((var10 + 0.0F) / 256.0F);
-            var14 = (double)((var10 + 15.99F) / 256.0F);
-        }
-
-        if (blockBB.MinY < 0.0D || blockBB.MaxY > 1.0D)
-        {
-            var16 = (double)((var11 + 0.0F) / 256.0F);
-            var18 = (double)((var11 + 15.99F) / 256.0F);
-        }
-
-        var20 = var14;
-        double var22 = var12;
-        double var24 = var16;
-        double var26 = var18;
         if (_uvRotateSouth == 2)
         {
-            var12 = (var10 + blockBB.MinY * 16.0D) / 256.0D;
-            var16 = (var11 + 16 - blockBB.MinZ * 16.0D) / 256.0D;
-            var14 = (var10 + blockBB.MaxY * 16.0D) / 256.0D;
-            var18 = (var11 + 16 - blockBB.MaxZ * 16.0D) / 256.0D;
-            var24 = var16;
-            var26 = var18;
-            var20 = var12;
-            var22 = var14;
-            var16 = var18;
-            var18 = var24;
+            minU = (texU + blockBb.MinY * 16.0D) / 256.0D;
+            minV = (texV + 16 - blockBb.MinZ * 16.0D) / 256.0D;
+            maxU = (texU + blockBb.MaxY * 16.0D) / 256.0D;
+            maxV = (texV + 16 - blockBb.MaxZ * 16.0D) / 256.0D;
+            v1 = minV; v2 = maxV;
+            u1 = minU; u2 = maxU;
+            minV = maxV;
         }
         else if (_uvRotateSouth == 1)
         {
-            var12 = (var10 + 16 - blockBB.MaxY * 16.0D) / 256.0D;
-            var16 = (var11 + blockBB.MaxZ * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.MinY * 16.0D) / 256.0D;
-            var18 = (var11 + blockBB.MinZ * 16.0D) / 256.0D;
-            var20 = var14;
-            var22 = var12;
-            var12 = var14;
-            var14 = var22;
-            var24 = var18;
-            var26 = var16;
+            minU = (texU + 16 - blockBb.MaxY * 16.0D) / 256.0D;
+            minV = (texV + blockBb.MaxZ * 16.0D) / 256.0D;
+            maxU = (texU + 16 - blockBb.MinY * 16.0D) / 256.0D;
+            maxV = (texV + blockBb.MinZ * 16.0D) / 256.0D;
+            u1 = maxU; u2 = minU;
+            minU = maxU;
+            v1 = maxV; v2 = minV;
         }
         else if (_uvRotateSouth == 3)
         {
-            var12 = (var10 + 16 - blockBB.MinZ * 16.0D) / 256.0D;
-            var14 = (var10 + 16 - blockBB.MaxZ * 16.0D - 0.01D) / 256.0D;
-            var16 = (var11 + blockBB.MaxY * 16.0D) / 256.0D;
-            var18 = (var11 + blockBB.MinY * 16.0D - 0.01D) / 256.0D;
-            var20 = var14;
-            var22 = var12;
-            var24 = var16;
-            var26 = var18;
+            minU = (texU + 16 - blockBb.MinZ * 16.0D) / 256.0D;
+            maxU = (texU + 16 - blockBb.MaxZ * 16.0D - 0.01D) / 256.0D;
+            minV = (texV + blockBb.MaxY * 16.0D) / 256.0D;
+            maxV = (texV + blockBb.MinY * 16.0D - 0.01D) / 256.0D;
+            u1 = maxU; u2 = minU;
+            v1 = minV; v2 = maxV;
         }
 
-        double var28 = var2 + blockBB.MaxX;
-        double var30 = var4 + blockBB.MinY;
-        double var32 = var4 + blockBB.MaxY;
-        double var34 = var6 + blockBB.MinZ;
-        double var36 = var6 + blockBB.MaxZ;
-        if (_enableAO)
+        double posX = x + blockBb.MaxX;
+        double minY = y + blockBb.MinY;
+        double maxY = y + blockBb.MaxY;
+        double minZ = z + blockBb.MinZ;
+        double maxZ = z + blockBb.MaxZ;
+
+        if (_enableAo)
         {
-            var9.setColorOpaque_F(_colorRedTopLeft, _colorGreenTopLeft, _colorBlueTopLeft);
-            var9.addVertexWithUV(var28, var30, var36, var22, var26);
-            var9.setColorOpaque_F(_colorRedBottomLeft, _colorGreenBottomLeft, _colorBlueBottomLeft);
-            var9.addVertexWithUV(var28, var30, var34, var14, var18);
-            var9.setColorOpaque_F(_colorRedBottomRight, _colorGreenBottomRight, _colorBlueBottomRight);
-            var9.addVertexWithUV(var28, var32, var34, var20, var24);
-            var9.setColorOpaque_F(_colorRedTopRight, _colorGreenTopRight, _colorBlueTopRight);
-            var9.addVertexWithUV(var28, var32, var36, var12, var16);
+            tess.setColorOpaque_F(_colorRedTopLeft, _colorGreenTopLeft, _colorBlueTopLeft);
+            tess.addVertexWithUV(posX, minY, maxZ, u2, v2);
+            tess.setColorOpaque_F(_colorRedBottomLeft, _colorGreenBottomLeft, _colorBlueBottomLeft);
+            tess.addVertexWithUV(posX, minY, minZ, u1, v2);
+            tess.setColorOpaque_F(_colorRedBottomRight, _colorGreenBottomRight, _colorBlueBottomRight);
+            tess.addVertexWithUV(posX, maxY, minZ, u1, v1);
+            tess.setColorOpaque_F(_colorRedTopRight, _colorGreenTopRight, _colorBlueTopRight);
+            tess.addVertexWithUV(posX, maxY, maxZ, minU, minV);
         }
         else
         {
-            var9.addVertexWithUV(var28, var30, var36, var22, var26);
-            var9.addVertexWithUV(var28, var30, var34, var14, var18);
-            var9.addVertexWithUV(var28, var32, var34, var20, var24);
-            var9.addVertexWithUV(var28, var32, var36, var12, var16);
+            tess.addVertexWithUV(posX, minY, maxZ, u2, v2);
+            tess.addVertexWithUV(posX, minY, minZ, u1, v2);
+            tess.addVertexWithUV(posX, maxY, minZ, u1, v1);
+            tess.addVertexWithUV(posX, maxY, maxZ, minU, minV);
         }
-
     }
 
-    public void renderBlockOnInventory(Block var1, int var2, float var3)
+    private void RenderBottomFace(Block block, double x, double y, double z, int textureId)
     {
-        Tessellator var4 = getTessellator();
-        int var5;
-        float var6;
-        float var7;
-        if (renderFromInside)
+        Tessellator tess = GetTessellator();
+        Box blockBb = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
+
+        if (_overrideBlockTexture >= 0)
         {
-            var5 = var1.getColor(var2);
-            var6 = (var5 >> 16 & 255) / 255.0F;
-            var7 = (var5 >> 8 & 255) / 255.0F;
-            float var8 = (var5 & 255) / 255.0F;
-            GLManager.GL.Color4(var6 * var3, var7 * var3, var8 * var3, 1.0F);
+            textureId = _overrideBlockTexture;
         }
 
-        var5 = var1.getRenderType();
-        if (var5 != 0 && var5 != 16)
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
+        double minU = (texU + blockBb.MinX * 16.0D) / 256.0D;
+        double maxU = (texU + blockBb.MaxX * 16.0D - 0.01D) / 256.0D;
+        double minV = (texV + blockBb.MinZ * 16.0D) / 256.0D;
+        double maxV = (texV + blockBb.MaxZ * 16.0D - 0.01D) / 256.0D;
+
+        if (blockBb.MinX < 0.0D || blockBb.MaxX > 1.0D)
         {
-            if (var5 == 1)
-            {
-                var4.startDrawingQuads();
-                var4.setNormal(0.0F, -1.0F, 0.0F);
-                renderCrossedSquares(var1, var2, -0.5D, -0.5D, -0.5D);
-                var4.draw();
-            }
-            else if (var5 == 13)
-            {
-                var1.setupRenderBoundingBox();
-                GLManager.GL.Translate(-0.5F, -0.5F, -0.5F);
-                var6 = 1.0F / 16.0F;
-                var4.startDrawingQuads();
-                var4.setNormal(0.0F, -1.0F, 0.0F);
-                renderBottomFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(0));
-                var4.draw();
-                var4.startDrawingQuads();
-                var4.setNormal(0.0F, 1.0F, 0.0F);
-                renderTopFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(1));
-                var4.draw();
-                var4.startDrawingQuads();
-                var4.setNormal(0.0F, 0.0F, -1.0F);
-                var4.setTranslationF(0.0F, 0.0F, var6);
-                renderEastFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(2));
-                var4.setTranslationF(0.0F, 0.0F, -var6);
-                var4.draw();
-                var4.startDrawingQuads();
-                var4.setNormal(0.0F, 0.0F, 1.0F);
-                var4.setTranslationF(0.0F, 0.0F, -var6);
-                renderWestFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(3));
-                var4.setTranslationF(0.0F, 0.0F, var6);
-                var4.draw();
-                var4.startDrawingQuads();
-                var4.setNormal(-1.0F, 0.0F, 0.0F);
-                var4.setTranslationF(var6, 0.0F, 0.0F);
-                renderNorthFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(4));
-                var4.setTranslationF(-var6, 0.0F, 0.0F);
-                var4.draw();
-                var4.startDrawingQuads();
-                var4.setNormal(1.0F, 0.0F, 0.0F);
-                var4.setTranslationF(-var6, 0.0F, 0.0F);
-                renderSouthFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(5));
-                var4.setTranslationF(var6, 0.0F, 0.0F);
-                var4.draw();
-                GLManager.GL.Translate(0.5F, 0.5F, 0.5F);
-            }
-            else if (var5 == 6)
-            {
-                var4.startDrawingQuads();
-                var4.setNormal(0.0F, -1.0F, 0.0F);
-                func_1245_b(var1, var2, -0.5D, -0.5D, -0.5D);
-                var4.draw();
-            }
-            else if (var5 == 2)
-            {
-                var4.startDrawingQuads();
-                var4.setNormal(0.0F, -1.0F, 0.0F);
-                renderTorchAtAngle(var1, -0.5D, -0.5D, -0.5D, 0.0D, 0.0D);
-                var4.draw();
-            }
-            else
-            {
-                int var9;
-                if (var5 == 10)
-                {
-                    for (var9 = 0; var9 < 2; ++var9)
-                    {
-                        if (var9 == 0)
-                        {
-                            var1.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.5F);
-                        }
+            minU = texU / 256.0D;
+            maxU = (texU + 15.99D) / 256.0D;
+        }
 
-                        if (var9 == 1)
-                        {
-                            var1.setBoundingBox(0.0F, 0.0F, 0.5F, 1.0F, 0.5F, 1.0F);
-                        }
+        if (blockBb.MinZ < 0.0D || blockBb.MaxZ > 1.0D)
+        {
+            minV = texV / 256.0D;
+            maxV = (texV + 15.99D) / 256.0D;
+        }
 
-                        GLManager.GL.Translate(-0.5F, -0.5F, -0.5F);
-                        var4.startDrawingQuads();
-                        var4.setNormal(0.0F, -1.0F, 0.0F);
-                        renderBottomFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(0));
-                        var4.draw();
-                        var4.startDrawingQuads();
-                        var4.setNormal(0.0F, 1.0F, 0.0F);
-                        renderTopFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(1));
-                        var4.draw();
-                        var4.startDrawingQuads();
-                        var4.setNormal(0.0F, 0.0F, -1.0F);
-                        renderEastFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(2));
-                        var4.draw();
-                        var4.startDrawingQuads();
-                        var4.setNormal(0.0F, 0.0F, 1.0F);
-                        renderWestFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(3));
-                        var4.draw();
-                        var4.startDrawingQuads();
-                        var4.setNormal(-1.0F, 0.0F, 0.0F);
-                        renderNorthFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(4));
-                        var4.draw();
-                        var4.startDrawingQuads();
-                        var4.setNormal(1.0F, 0.0F, 0.0F);
-                        renderSouthFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(5));
-                        var4.draw();
-                        GLManager.GL.Translate(0.5F, 0.5F, 0.5F);
-                    }
-                }
-                else if (var5 == 11)
-                {
-                    for (var9 = 0; var9 < 4; ++var9)
-                    {
-                        var7 = 2.0F / 16.0F;
-                        if (var9 == 0)
-                        {
-                            var1.setBoundingBox(0.5F - var7, 0.0F, 0.0F, 0.5F + var7, 1.0F, var7 * 2.0F);
-                        }
+        double u1 = maxU, u2 = minU, v1 = minV, v2 = maxV;
 
-                        if (var9 == 1)
-                        {
-                            var1.setBoundingBox(0.5F - var7, 0.0F, 1.0F - var7 * 2.0F, 0.5F + var7, 1.0F, 1.0F);
-                        }
+        if (_uvRotateBottom == 2)
+        {
+            minU = (texU + blockBb.MinZ * 16.0D) / 256.0D;
+            minV = (texV + 16 - blockBb.MaxX * 16.0D) / 256.0D;
+            maxU = (texU + blockBb.MaxZ * 16.0D) / 256.0D;
+            maxV = (texV + 16 - blockBb.MinX * 16.0D) / 256.0D;
+            v1 = minV; v2 = maxV;
+            u1 = minU; u2 = maxU;
+            minV = maxV; maxV = v1;
+        }
+        else if (_uvRotateBottom == 1)
+        {
+            minU = (texU + 16 - blockBb.MaxZ * 16.0D) / 256.0D;
+            minV = (texV + blockBb.MinX * 16.0D) / 256.0D;
+            maxU = (texU + 16 - blockBb.MinZ * 16.0D) / 256.0D;
+            maxV = (texV + blockBb.MaxX * 16.0D) / 256.0D;
+            u1 = maxU; u2 = minU;
+            minU = maxU; maxU = u2;
+            v1 = maxV; v2 = minV;
+        }
+        else if (_uvRotateBottom == 3)
+        {
+            minU = (texU + 16 - blockBb.MinX * 16.0D) / 256.0D;
+            maxU = (texU + 16 - blockBb.MaxX * 16.0D - 0.01D) / 256.0D;
+            minV = (texV + 16 - blockBb.MinZ * 16.0D) / 256.0D;
+            maxV = (texV + 16 - blockBb.MaxZ * 16.0D - 0.01D) / 256.0D;
+            u1 = maxU; u2 = minU;
+            v1 = minV; v2 = maxV;
+        }
 
-                        var7 = 1.0F / 16.0F;
-                        if (var9 == 2)
-                        {
-                            var1.setBoundingBox(0.5F - var7, 1.0F - var7 * 3.0F, -var7 * 2.0F, 0.5F + var7, 1.0F - var7, 1.0F + var7 * 2.0F);
-                        }
+        double minX = x + blockBb.MinX;
+        double maxX = x + blockBb.MaxX;
+        double minY = y + blockBb.MinY;
+        double minZ = z + blockBb.MinZ;
+        double maxZ = z + blockBb.MaxZ;
 
-                        if (var9 == 3)
-                        {
-                            var1.setBoundingBox(0.5F - var7, 0.5F - var7 * 3.0F, -var7 * 2.0F, 0.5F + var7, 0.5F - var7, 1.0F + var7 * 2.0F);
-                        }
-
-                        GLManager.GL.Translate(-0.5F, -0.5F, -0.5F);
-                        var4.startDrawingQuads();
-                        var4.setNormal(0.0F, -1.0F, 0.0F);
-                        renderBottomFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(0));
-                        var4.draw();
-                        var4.startDrawingQuads();
-                        var4.setNormal(0.0F, 1.0F, 0.0F);
-                        renderTopFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(1));
-                        var4.draw();
-                        var4.startDrawingQuads();
-                        var4.setNormal(0.0F, 0.0F, -1.0F);
-                        renderEastFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(2));
-                        var4.draw();
-                        var4.startDrawingQuads();
-                        var4.setNormal(0.0F, 0.0F, 1.0F);
-                        renderWestFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(3));
-                        var4.draw();
-                        var4.startDrawingQuads();
-                        var4.setNormal(-1.0F, 0.0F, 0.0F);
-                        renderNorthFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(4));
-                        var4.draw();
-                        var4.startDrawingQuads();
-                        var4.setNormal(1.0F, 0.0F, 0.0F);
-                        renderSouthFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(5));
-                        var4.draw();
-                        GLManager.GL.Translate(0.5F, 0.5F, 0.5F);
-                    }
-
-                    var1.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-                }
-            }
+        if (_enableAo)
+        {
+            tess.setColorOpaque_F(_colorRedTopLeft, _colorGreenTopLeft, _colorBlueTopLeft);
+            tess.addVertexWithUV(minX, minY, maxZ, u2, v2);
+            tess.setColorOpaque_F(_colorRedBottomLeft, _colorGreenBottomLeft, _colorBlueBottomLeft);
+            tess.addVertexWithUV(minX, minY, minZ, minU, minV);
+            tess.setColorOpaque_F(_colorRedBottomRight, _colorGreenBottomRight, _colorBlueBottomRight);
+            tess.addVertexWithUV(maxX, minY, minZ, u1, v1);
+            tess.setColorOpaque_F(_colorRedTopRight, _colorGreenTopRight, _colorBlueTopRight);
+            tess.addVertexWithUV(maxX, minY, maxZ, maxU, maxV);
         }
         else
         {
-            if (var5 == 16)
-            {
-                var2 = 1;
-            }
+            tess.addVertexWithUV(minX, minY, maxZ, u2, v2);
+            tess.addVertexWithUV(minX, minY, minZ, minU, minV);
+            tess.addVertexWithUV(maxX, minY, minZ, u1, v1);
+            tess.addVertexWithUV(maxX, minY, maxZ, maxU, maxV);
+        }
+    }
 
-            var1.setupRenderBoundingBox();
+    private void RenderTopFace(Block block, double x, double y, double z, int textureId)
+    {
+        Tessellator tess = GetTessellator();
+        Box blockBb = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
+
+        if (_overrideBlockTexture >= 0)
+        {
+            textureId = _overrideBlockTexture;
+        }
+
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
+        double minU = (texU + blockBb.MinX * 16.0D) / 256.0D;
+        double maxU = (texU + blockBb.MaxX * 16.0D - 0.01D) / 256.0D;
+        double minV = (texV + blockBb.MinZ * 16.0D) / 256.0D;
+        double maxV = (texV + blockBb.MaxZ * 16.0D - 0.01D) / 256.0D;
+
+        if (blockBb.MinX < 0.0D || blockBb.MaxX > 1.0D)
+        {
+            minU = texU / 256.0D;
+            maxU = (texU + 15.99D) / 256.0D;
+        }
+
+        if (blockBb.MinZ < 0.0D || blockBb.MaxZ > 1.0D)
+        {
+            minV = texV / 256.0D;
+            maxV = (texV + 15.99D) / 256.0D;
+        }
+
+        double u1 = maxU, u2 = minU, v1 = minV, v2 = maxV;
+
+        if (_uvRotateTop == 1)
+        {
+            minU = (texU + blockBb.MinZ * 16.0D) / 256.0D;
+            minV = (texV + 16 - blockBb.MaxX * 16.0D) / 256.0D;
+            maxU = (texU + blockBb.MaxZ * 16.0D) / 256.0D;
+            maxV = (texV + 16 - blockBb.MinX * 16.0D) / 256.0D;
+            v1 = minV; v2 = maxV;
+            u1 = minU; u2 = maxU;
+            minV = maxV; maxV = v1;
+        }
+        else if (_uvRotateTop == 2)
+        {
+            minU = (texU + 16 - blockBb.MaxZ * 16.0D) / 256.0D;
+            minV = (texV + blockBb.MinX * 16.0D) / 256.0D;
+            maxU = (texU + 16 - blockBb.MinZ * 16.0D) / 256.0D;
+            maxV = (texV + blockBb.MaxX * 16.0D) / 256.0D;
+            u1 = maxU; u2 = minU;
+            minU = maxU; maxU = u2;
+            v1 = maxV; v2 = minV;
+        }
+        else if (_uvRotateTop == 3)
+        {
+            minU = (texU + 16 - blockBb.MinX * 16.0D) / 256.0D;
+            maxU = (texU + 16 - blockBb.MaxX * 16.0D - 0.01D) / 256.0D;
+            minV = (texV + 16 - blockBb.MinZ * 16.0D) / 256.0D;
+            maxV = (texV + 16 - blockBb.MaxZ * 16.0D - 0.01D) / 256.0D;
+            u1 = maxU; u2 = minU;
+            v1 = minV; v2 = maxV;
+        }
+
+        double minX = x + blockBb.MinX;
+        double maxX = x + blockBb.MaxX;
+        double maxY = y + blockBb.MaxY;
+        double minZ = z + blockBb.MinZ;
+        double maxZ = z + blockBb.MaxZ;
+
+        if (_enableAo)
+        {
+            tess.setColorOpaque_F(_colorRedTopLeft, _colorGreenTopLeft, _colorBlueTopLeft);
+            tess.addVertexWithUV(maxX, maxY, maxZ, maxU, maxV);
+            tess.setColorOpaque_F(_colorRedBottomLeft, _colorGreenBottomLeft, _colorBlueBottomLeft);
+            tess.addVertexWithUV(maxX, maxY, minZ, u1, v1);
+            tess.setColorOpaque_F(_colorRedBottomRight, _colorGreenBottomRight, _colorBlueBottomRight);
+            tess.addVertexWithUV(minX, maxY, minZ, minU, minV);
+            tess.setColorOpaque_F(_colorRedTopRight, _colorGreenTopRight, _colorBlueTopRight);
+            tess.addVertexWithUV(minX, maxY, maxZ, u2, v2);
+        }
+        else
+        {
+            tess.addVertexWithUV(maxX, maxY, maxZ, maxU, maxV);
+            tess.addVertexWithUV(maxX, maxY, minZ, u1, v1);
+            tess.addVertexWithUV(minX, maxY, minZ, minU, minV);
+            tess.addVertexWithUV(minX, maxY, maxZ, u2, v2);
+        }
+    }
+
+    private void RenderEastFace(Block block, double x, double y, double z, int textureId)
+    {
+        Tessellator tess = GetTessellator();
+        Box blockBb = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
+
+        if (_overrideBlockTexture >= 0)
+        {
+            textureId = _overrideBlockTexture;
+        }
+
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
+        double minU = (texU + blockBb.MinX * 16.0D) / 256.0D;
+        double maxU = (texU + blockBb.MaxX * 16.0D - 0.01D) / 256.0D;
+        double minV = (texV + 16 - blockBb.MaxY * 16.0D) / 256.0D;
+        double maxV = (texV + 16 - blockBb.MinY * 16.0D - 0.01D) / 256.0D;
+
+        if (_flipTexture)
+        {
+            (minU, maxU) = (maxU, minU);
+        }
+
+        if (blockBb.MinX < 0.0D || blockBb.MaxX > 1.0D)
+        {
+            minU = texU / 256.0D;
+            maxU = (texU + 15.99D) / 256.0D;
+        }
+
+        if (blockBb.MinY < 0.0D || blockBb.MaxY > 1.0D)
+        {
+            minV = texV / 256.0D;
+            maxV = (texV + 15.99D) / 256.0D;
+        }
+
+        double u1 = maxU, u2 = minU, v1 = minV, v2 = maxV;
+
+        if (_uvRotateEast == 2)
+        {
+            minU = (texU + blockBb.MinY * 16.0D) / 256.0D;
+            minV = (texV + 16 - blockBb.MinX * 16.0D) / 256.0D;
+            maxU = (texU + blockBb.MaxY * 16.0D) / 256.0D;
+            maxV = (texV + 16 - blockBb.MaxX * 16.0D) / 256.0D;
+            v1 = minV; v2 = maxV;
+            u1 = minU; u2 = maxU;
+            minV = maxV; maxV = v1;
+        }
+        else if (_uvRotateEast == 1)
+        {
+            minU = (texU + 16 - blockBb.MaxY * 16.0D) / 256.0D;
+            minV = (texV + blockBb.MaxX * 16.0D) / 256.0D;
+            maxU = (texU + 16 - blockBb.MinY * 16.0D) / 256.0D;
+            maxV = (texV + blockBb.MinX * 16.0D) / 256.0D;
+            u1 = maxU; u2 = minU;
+            minU = maxU; maxU = u2;
+            v1 = maxV; v2 = minV;
+        }
+        else if (_uvRotateEast == 3)
+        {
+            minU = (texU + 16 - blockBb.MinX * 16.0D) / 256.0D;
+            maxU = (texU + 16 - blockBb.MaxX * 16.0D - 0.01D) / 256.0D;
+            minV = (texV + blockBb.MaxY * 16.0D) / 256.0D;
+            maxV = (texV + blockBb.MinY * 16.0D - 0.01D) / 256.0D;
+            u1 = maxU; u2 = minU;
+            v1 = minV; v2 = maxV;
+        }
+
+        double minX = x + blockBb.MinX;
+        double maxX = x + blockBb.MaxX;
+        double minY = y + blockBb.MinY;
+        double maxY = y + blockBb.MaxY;
+        double minZ = z + blockBb.MinZ;
+
+        if (_enableAo)
+        {
+            tess.setColorOpaque_F(_colorRedTopLeft, _colorGreenTopLeft, _colorBlueTopLeft);
+            tess.addVertexWithUV(minX, maxY, minZ, u1, v1);
+            tess.setColorOpaque_F(_colorRedBottomLeft, _colorGreenBottomLeft, _colorBlueBottomLeft);
+            tess.addVertexWithUV(maxX, maxY, minZ, minU, minV);
+            tess.setColorOpaque_F(_colorRedBottomRight, _colorGreenBottomRight, _colorBlueBottomRight);
+            tess.addVertexWithUV(maxX, minY, minZ, u2, v2);
+            tess.setColorOpaque_F(_colorRedTopRight, _colorGreenTopRight, _colorBlueTopRight);
+            tess.addVertexWithUV(minX, minY, minZ, maxU, maxV);
+        }
+        else
+        {
+            tess.addVertexWithUV(minX, maxY, minZ, u1, v1);
+            tess.addVertexWithUV(maxX, maxY, minZ, minU, minV);
+            tess.addVertexWithUV(maxX, minY, minZ, u2, v2);
+            tess.addVertexWithUV(minX, minY, minZ, maxU, maxV);
+        }
+    }
+
+    private void RenderWestFace(Block block, double x, double y, double z, int textureId)
+    {
+        Tessellator tess = GetTessellator();
+        Box blockBb = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
+
+        if (_overrideBlockTexture >= 0)
+        {
+            textureId = _overrideBlockTexture;
+        }
+
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
+        double minU = (texU + blockBb.MinX * 16.0D) / 256.0D;
+        double maxU = (texU + blockBb.MaxX * 16.0D - 0.01D) / 256.0D;
+        double minV = (texV + 16 - blockBb.MaxY * 16.0D) / 256.0D;
+        double maxV = (texV + 16 - blockBb.MinY * 16.0D - 0.01D) / 256.0D;
+
+        if (_flipTexture)
+        {
+            (minU, maxU) = (maxU, minU);
+        }
+
+        if (blockBb.MinX < 0.0D || blockBb.MaxX > 1.0D)
+        {
+            minU = texU / 256.0D;
+            maxU = (texU + 15.99D) / 256.0D;
+        }
+
+        if (blockBb.MinY < 0.0D || blockBb.MaxY > 1.0D)
+        {
+            minV = texV / 256.0D;
+            maxV = (texV + 15.99D) / 256.0D;
+        }
+
+        double u1 = maxU, u2 = minU, v1 = minV, v2 = maxV;
+
+        if (_uvRotateWest == 1)
+        {
+            minU = (texU + blockBb.MinY * 16.0D) / 256.0D;
+            minV = (texV + 16 - blockBb.MinX * 16.0D) / 256.0D;
+            maxU = (texU + blockBb.MaxY * 16.0D) / 256.0D;
+            maxV = (texV + 16 - blockBb.MaxX * 16.0D) / 256.0D;
+            v1 = minV; v2 = maxV;
+            u1 = minU; u2 = maxU;
+            minV = maxV; maxV = v1;
+        }
+        else if (_uvRotateWest == 2)
+        {
+            minU = (texU + 16 - blockBb.MaxY * 16.0D) / 256.0D;
+            minV = (texV + blockBb.MinX * 16.0D) / 256.0D;
+            maxU = (texU + 16 - blockBb.MinY * 16.0D) / 256.0D;
+            maxV = (texV + blockBb.MaxX * 16.0D) / 256.0D;
+            u1 = maxU; u2 = minU;
+            minU = maxU; maxU = u2;
+            v1 = maxV; v2 = minV;
+        }
+        else if (_uvRotateWest == 3)
+        {
+            minU = (texU + 16 - blockBb.MinX * 16.0D) / 256.0D;
+            maxU = (texU + 16 - blockBb.MaxX * 16.0D - 0.01D) / 256.0D;
+            minV = (texV + blockBb.MaxY * 16.0D) / 256.0D;
+            maxV = (texV + blockBb.MinY * 16.0D - 0.01D) / 256.0D;
+            u1 = maxU; u2 = minU;
+            v1 = minV; v2 = maxV;
+        }
+
+        double minX = x + blockBb.MinX;
+        double maxX = x + blockBb.MaxX;
+        double minY = y + blockBb.MinY;
+        double maxY = y + blockBb.MaxY;
+        double maxZ = z + blockBb.MaxZ;
+
+        if (_enableAo)
+        {
+            tess.setColorOpaque_F(_colorRedTopLeft, _colorGreenTopLeft, _colorBlueTopLeft);
+            tess.addVertexWithUV(minX, maxY, maxZ, minU, minV);
+            tess.setColorOpaque_F(_colorRedBottomLeft, _colorGreenBottomLeft, _colorBlueBottomLeft);
+            tess.addVertexWithUV(minX, minY, maxZ, u2, v2);
+            tess.setColorOpaque_F(_colorRedBottomRight, _colorGreenBottomRight, _colorBlueBottomRight);
+            tess.addVertexWithUV(maxX, minY, maxZ, maxU, maxV);
+            tess.setColorOpaque_F(_colorRedTopRight, _colorGreenTopRight, _colorBlueTopRight);
+            tess.addVertexWithUV(maxX, maxY, maxZ, u1, v1);
+        }
+        else
+        {
+            tess.addVertexWithUV(minX, maxY, maxZ, minU, minV);
+            tess.addVertexWithUV(minX, minY, maxZ, u2, v2);
+            tess.addVertexWithUV(maxX, minY, maxZ, maxU, maxV);
+            tess.addVertexWithUV(maxX, maxY, maxZ, u1, v1);
+        }
+    }
+
+    private void RenderNorthFace(Block block, double x, double y, double z, int textureId)
+    {
+        Tessellator tess = GetTessellator();
+        Box blockBb = _useOverrideBoundingBox ? _overrideBoundingBox : block.BoundingBox;
+
+        if (_overrideBlockTexture >= 0)
+        {
+            textureId = _overrideBlockTexture;
+        }
+
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
+        double minU = (texU + blockBb.MinZ * 16.0D) / 256.0D;
+        double maxU = (texU + blockBb.MaxZ * 16.0D - 0.01D) / 256.0D;
+        double minV = (texV + 16 - blockBb.MaxY * 16.0D) / 256.0D;
+        double maxV = (texV + 16 - blockBb.MinY * 16.0D - 0.01D) / 256.0D;
+
+        if (_flipTexture)
+        {
+            (minU, maxU) = (maxU, minU);
+        }
+
+        if (blockBb.MinZ < 0.0D || blockBb.MaxZ > 1.0D)
+        {
+            minU = texU / 256.0D;
+            maxU = (texU + 15.99D) / 256.0D;
+        }
+
+        if (blockBb.MinY < 0.0D || blockBb.MaxY > 1.0D)
+        {
+            minV = texV / 256.0D;
+            maxV = (texV + 15.99D) / 256.0D;
+        }
+
+        double u1 = maxU, u2 = minU, v1 = minV, v2 = maxV;
+
+        if (_uvRotateNorth == 1)
+        {
+            minU = (texU + blockBb.MinY * 16.0D) / 256.0D;
+            minV = (texV + 16 - blockBb.MaxZ * 16.0D) / 256.0D;
+            maxU = (texU + blockBb.MaxY * 16.0D) / 256.0D;
+            maxV = (texV + 16 - blockBb.MinZ * 16.0D) / 256.0D;
+            v1 = minV; v2 = maxV;
+            u1 = minU; u2 = maxU;
+            minV = maxV; maxV = v1;
+        }
+        else if (_uvRotateNorth == 2)
+        {
+            minU = (texU + 16 - blockBb.MaxY * 16.0D) / 256.0D;
+            minV = (texV + blockBb.MinZ * 16.0D) / 256.0D;
+            maxU = (texU + 16 - blockBb.MinY * 16.0D) / 256.0D;
+            maxV = (texV + blockBb.MaxZ * 16.0D) / 256.0D;
+            u1 = maxU; u2 = minU;
+            minU = maxU; maxU = u2;
+            v1 = maxV; v2 = minV;
+        }
+        else if (_uvRotateNorth == 3)
+        {
+            minU = (texU + 16 - blockBb.MinZ * 16.0D) / 256.0D;
+            maxU = (texU + 16 - blockBb.MaxZ * 16.0D - 0.01D) / 256.0D;
+            minV = (texV + blockBb.MaxY * 16.0D) / 256.0D;
+            maxV = (texV + blockBb.MinY * 16.0D - 0.01D) / 256.0D;
+            u1 = maxU; u2 = minU;
+            v1 = minV; v2 = maxV;
+        }
+
+        double minX = x + blockBb.MinX;
+        double minY = y + blockBb.MinY;
+        double maxY = y + blockBb.MaxY;
+        double minZ = z + blockBb.MinZ;
+        double maxZ = z + blockBb.MaxZ;
+
+        if (_enableAo)
+        {
+            tess.setColorOpaque_F(_colorRedTopLeft, _colorGreenTopLeft, _colorBlueTopLeft);
+            tess.addVertexWithUV(minX, maxY, maxZ, u1, v1);
+            tess.setColorOpaque_F(_colorRedBottomLeft, _colorGreenBottomLeft, _colorBlueBottomLeft);
+            tess.addVertexWithUV(minX, maxY, minZ, minU, minV);
+            tess.setColorOpaque_F(_colorRedBottomRight, _colorGreenBottomRight, _colorBlueBottomRight);
+            tess.addVertexWithUV(minX, minY, minZ, u2, v2);
+            tess.setColorOpaque_F(_colorRedTopRight, _colorGreenTopRight, _colorBlueTopRight);
+            tess.addVertexWithUV(minX, minY, maxZ, maxU, maxV);
+        }
+        else
+        {
+            tess.addVertexWithUV(minX, maxY, maxZ, u1, v1);
+            tess.addVertexWithUV(minX, maxY, minZ, minU, minV);
+            tess.addVertexWithUV(minX, minY, minZ, u2, v2);
+            tess.addVertexWithUV(minX, minY, maxZ, maxU, maxV);
+        }
+    }
+
+    public void RenderBlockOnInventory(Block block, int metadata, float brightness)
+    {
+        Tessellator tess = GetTessellator();
+        int renderType = block.getRenderType();
+
+        if (RenderFromInside)
+        {
+            int color = block.getColor(metadata);
+            float red = (color >> 16 & 255) / 255.0F;
+            float green = (color >> 8 & 255) / 255.0F;
+            float blue = (color & 255) / 255.0F;
+
+            // Apply color and brightness to the global GL state
+            GLManager.GL.Color4(red * brightness, green * brightness, blue * brightness, 1.0F);
+        }
+
+        // Standard blocks (0) and Piston Bases (16) use standard 6-face cube rendering
+        if (renderType == 0 || renderType == 16)
+        {
+            if (renderType == 16) metadata = 1; // Force standard texture for piston items
+
+            block.setupRenderBoundingBox();
             GLManager.GL.Translate(-0.5F, -0.5F, -0.5F);
-            var4.startDrawingQuads();
-            var4.setNormal(0.0F, -1.0F, 0.0F);
-            renderBottomFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(0, var2));
-            var4.draw();
-            var4.startDrawingQuads();
-            var4.setNormal(0.0F, 1.0F, 0.0F);
-            renderTopFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(1, var2));
-            var4.draw();
-            var4.startDrawingQuads();
-            var4.setNormal(0.0F, 0.0F, -1.0F);
-            renderEastFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(2, var2));
-            var4.draw();
-            var4.startDrawingQuads();
-            var4.setNormal(0.0F, 0.0F, 1.0F);
-            renderWestFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(3, var2));
-            var4.draw();
-            var4.startDrawingQuads();
-            var4.setNormal(-1.0F, 0.0F, 0.0F);
-            renderNorthFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(4, var2));
-            var4.draw();
-            var4.startDrawingQuads();
-            var4.setNormal(1.0F, 0.0F, 0.0F);
-            renderSouthFace(var1, 0.0D, 0.0D, 0.0D, var1.getTexture(5, var2));
-            var4.draw();
+
+            tess.startDrawingQuads();
+            tess.setNormal(0.0F, -1.0F, 0.0F);
+            RenderBottomFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(0, metadata));
+            tess.draw();
+
+            tess.startDrawingQuads();
+            tess.setNormal(0.0F, 1.0F, 0.0F);
+            RenderTopFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(1, metadata));
+            tess.draw();
+
+            tess.startDrawingQuads();
+            tess.setNormal(0.0F, 0.0F, -1.0F);
+            RenderEastFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(2, metadata));
+            tess.draw();
+
+            tess.startDrawingQuads();
+            tess.setNormal(0.0F, 0.0F, 1.0F);
+            RenderWestFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(3, metadata));
+            tess.draw();
+
+            tess.startDrawingQuads();
+            tess.setNormal(-1.0F, 0.0F, 0.0F);
+            RenderNorthFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(4, metadata));
+            tess.draw();
+
+            tess.startDrawingQuads();
+            tess.setNormal(1.0F, 0.0F, 0.0F);
+            RenderSouthFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(5, metadata));
+            tess.draw();
+
             GLManager.GL.Translate(0.5F, 0.5F, 0.5F);
         }
+        else if (renderType == 1) // Crossed squares (Flowers, Saplings)
+        {
+            tess.startDrawingQuads();
+            tess.setNormal(0.0F, -1.0F, 0.0F);
+            RenderCrossedSquares(block, metadata, -0.5D, -0.5D, -0.5D);
+            tess.draw();
+        }
+        else if (renderType == 13) // Cactus (slightly inset faces)
+        {
+            block.setupRenderBoundingBox();
+            GLManager.GL.Translate(-0.5F, -0.5F, -0.5F);
+            float inset = 1.0F / 16.0F;
 
+            tess.startDrawingQuads();
+            tess.setNormal(0.0F, -1.0F, 0.0F);
+            RenderBottomFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(0));
+            tess.draw();
+
+            tess.startDrawingQuads();
+            tess.setNormal(0.0F, 1.0F, 0.0F);
+            RenderTopFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(1));
+            tess.draw();
+
+            tess.startDrawingQuads();
+            tess.setNormal(0.0F, 0.0F, -1.0F);
+            tess.setTranslationF(0.0F, 0.0F, inset);
+            RenderEastFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(2));
+            tess.setTranslationF(0.0F, 0.0F, -inset);
+            tess.draw();
+
+            tess.startDrawingQuads();
+            tess.setNormal(0.0F, 0.0F, 1.0F);
+            tess.setTranslationF(0.0F, 0.0F, -inset);
+            RenderWestFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(3));
+            tess.setTranslationF(0.0F, 0.0F, inset);
+            tess.draw();
+
+            tess.startDrawingQuads();
+            tess.setNormal(-1.0F, 0.0F, 0.0F);
+            tess.setTranslationF(inset, 0.0F, 0.0F);
+            RenderNorthFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(4));
+            tess.setTranslationF(-inset, 0.0F, 0.0F);
+            tess.draw();
+
+            tess.startDrawingQuads();
+            tess.setNormal(1.0F, 0.0F, 0.0F);
+            tess.setTranslationF(-inset, 0.0F, 0.0F);
+            RenderSouthFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(5));
+            tess.setTranslationF(inset, 0.0F, 0.0F);
+            tess.draw();
+
+            GLManager.GL.Translate(0.5F, 0.5F, 0.5F);
+        }
+        else if (renderType == 6) // Crops (Wheat/Seeds)
+        {
+            tess.startDrawingQuads();
+            tess.setNormal(0.0F, -1.0F, 0.0F);
+            RenderCropQuads(block, metadata, -0.5D, -0.5D, -0.5D);
+            tess.draw();
+        }
+        else if (renderType == 2) // Torch
+        {
+            tess.startDrawingQuads();
+            tess.setNormal(0.0F, -1.0F, 0.0F);
+            RenderTorchAtAngle(block, -0.5D, -0.5D, -0.5D, 0.0D, 0.0D);
+            tess.draw();
+        }
+        else if (renderType == 10) // Stairs
+        {
+            for (int i = 0; i < 2; ++i)
+            {
+                if (i == 0) block.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.5F);
+                if (i == 1) block.setBoundingBox(0.0F, 0.0F, 0.5F, 1.0F, 0.5F, 1.0F);
+
+                GLManager.GL.Translate(-0.5F, -0.5F, -0.5F);
+                RenderCubeItem(block, tess);
+                GLManager.GL.Translate(0.5F, 0.5F, 0.5F);
+            }
+        }
+        else if (renderType == 11) // Fence
+        {
+            for (int i = 0; i < 4; ++i)
+            {
+                float size = 2.0F / 16.0F;
+                if (i == 0) block.setBoundingBox(0.5F - size, 0.0F, 0.0F, 0.5F + size, 1.0F, size * 2.0F);
+                if (i == 1) block.setBoundingBox(0.5F - size, 0.0F, 1.0F - size * 2.0F, 0.5F + size, 1.0F, 1.0F);
+
+                size = 1.0F / 16.0F;
+                if (i == 2) block.setBoundingBox(0.5F - size, 1.0F - size * 3.0F, -size * 2.0F, 0.5F + size, 1.0F - size, 1.0F + size * 2.0F);
+                if (i == 3) block.setBoundingBox(0.5F - size, 0.5F - size * 3.0F, -size * 2.0F, 0.5F + size, 0.5F - size, 1.0F + size * 2.0F);
+
+                GLManager.GL.Translate(-0.5F, -0.5F, -0.5F);
+                RenderCubeItem(block, tess);
+                GLManager.GL.Translate(0.5F, 0.5F, 0.5F);
+            }
+            block.setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+        }
     }
 
-    public static bool isSideLit(int var0)
+    private void RenderCubeItem(Block block, Tessellator tess)
     {
-        return var0 == 0 ? true : var0 == 13 ? true : var0 == 10 ? true : var0 == 11 ? true : var0 == 16;
+        tess.startDrawingQuads();
+        tess.setNormal(0.0F, -1.0F, 0.0F);
+        RenderBottomFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(0));
+        tess.draw();
+        tess.startDrawingQuads();
+        tess.setNormal(0.0F, 1.0F, 0.0F);
+        RenderTopFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(1));
+        tess.draw();
+        tess.startDrawingQuads();
+        tess.setNormal(0.0F, 0.0F, -1.0F);
+        RenderEastFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(2));
+        tess.draw();
+        tess.startDrawingQuads();
+        tess.setNormal(0.0F, 0.0F, 1.0F);
+        RenderWestFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(3));
+        tess.draw();
+        tess.startDrawingQuads();
+        tess.setNormal(-1.0F, 0.0F, 0.0F);
+        RenderNorthFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(4));
+        tess.draw();
+        tess.startDrawingQuads();
+        tess.setNormal(1.0F, 0.0F, 0.0F);
+        RenderSouthFace(block, 0.0D, 0.0D, 0.0D, block.getTexture(5));
+        tess.draw();
     }
 
-    public static void rotateAroundX(ref Vector3D<double> vec, float var1)
+    public static bool IsSideLit(int renderType)
     {
-        float var2 = MathHelper.Cos(var1);
-        float var3 = MathHelper.Sin(var1);
-        double var4 = vec.X;
-        double var6 = vec.Y * (double)var2 + vec.Z * (double)var3;
-        double var8 = vec.Z * (double)var2 - vec.Y * (double)var3;
-        vec.X = var4;
-        vec.Y = var6;
-        vec.Z = var8;
+        return renderType == 0 || // Standard
+            renderType == 10 || // Stairs
+            renderType == 11 || // Fence
+            renderType == 13 || // Cactus
+            renderType == 16;   // Piston Base
     }
 
-    private static void rotateAroundY(ref Vector3D<double> vec, float var1)
+    private static void RotateAroundX(ref Vector3D<double> vector, float angleRadians)
     {
-        float var2 = MathHelper.Cos(var1);
-        float var3 = MathHelper.Sin(var1);
-        double var4 = vec.X * (double)var2 + vec.Z * (double)var3;
-        double var6 = vec.Y;
-        double var8 = vec.Z * (double)var2 - vec.X * (double)var3;
-        vec.X = var4;
-        vec.Y = var6;
-        vec.Z = var8;
+        float cosAngle = MathHelper.Cos(angleRadians);
+        float sinAngle = MathHelper.Sin(angleRadians);
+
+        double rotatedY = vector.Y * cosAngle + vector.Z * sinAngle;
+        double rotatedZ = vector.Z * cosAngle - vector.Y * sinAngle;
+
+        vector.Y = rotatedY;
+        vector.Z = rotatedZ;
+    }
+
+    private static void RotateAroundY(ref Vector3D<double> vector, float angleRadians)
+    {
+        float cosAngle = MathHelper.Cos(angleRadians);
+        float sinAngle = MathHelper.Sin(angleRadians);
+
+        double rotatedX = vector.X * cosAngle + vector.Z * sinAngle;
+        double rotatedZ = vector.Z * cosAngle - vector.X * sinAngle;
+
+        vector.X = rotatedX;
+        vector.Z = rotatedZ;
     }
 }

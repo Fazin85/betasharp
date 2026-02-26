@@ -42,7 +42,7 @@ public class TntEntityRenderer : EntityRenderer
 
         var10 = (1.0F - (var1.fuse - tickDelta + 1.0F) / 100.0F) * 0.8F;
         loadTexture("/terrain.png");
-        blockRenderer.renderBlockOnInventory(Block.TNT, 0, var1.getBrightnessAtEyes(tickDelta));
+        blockRenderer.RenderBlockOnInventory(Block.TNT, 0, var1.getBrightnessAtEyes(tickDelta));
         if (var1.fuse / 5 % 2 == 0)
         {
             GLManager.GL.Disable(GLEnum.Texture2D);
@@ -50,7 +50,7 @@ public class TntEntityRenderer : EntityRenderer
             GLManager.GL.Enable(GLEnum.Blend);
             GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.DstAlpha);
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, var10);
-            blockRenderer.renderBlockOnInventory(Block.TNT, 0, 1.0F);
+            blockRenderer.RenderBlockOnInventory(Block.TNT, 0, 1.0F);
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
             GLManager.GL.Disable(GLEnum.Blend);
             GLManager.GL.Enable(GLEnum.Lighting);
