@@ -9,12 +9,12 @@ namespace BetaSharp;
 
 public class Pathfinder
 {
-    private readonly BlockView worldMap;
+    private readonly IBlockAccess worldMap;
     private readonly Path path = new();
     private readonly Dictionary<int, PathPoint> pointMap = new();
     private readonly PathPoint[] pathOptions = new PathPoint[32];
 
-    public Pathfinder(BlockView var1)
+    public Pathfinder(IBlockAccess var1)
     {
         worldMap = var1;
     }

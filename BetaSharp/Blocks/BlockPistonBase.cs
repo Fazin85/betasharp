@@ -181,9 +181,9 @@ public class BlockPistonBase : Block
         deaf = false;
     }
 
-    public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
+    public override void updateBoundingBox(IBlockAccess iBlockAccess, int x, int y, int z)
     {
-        int var5 = blockView.getBlockMeta(x, y, z);
+        int var5 = iBlockAccess.getBlockMeta(x, y, z);
         if (isExtended(var5))
         {
             switch (getFacing(var5))

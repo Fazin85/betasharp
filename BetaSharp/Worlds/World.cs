@@ -23,7 +23,7 @@ using Random = System.Random;
 
 namespace BetaSharp.Worlds;
 
-public abstract class World : BlockView
+public abstract class World : IBlockAccess
 {
     private const int AUTOSAVE_PERIOD = 40;
     public bool instantBlockUpdateEnabled = false;

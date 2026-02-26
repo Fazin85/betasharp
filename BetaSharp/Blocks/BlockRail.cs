@@ -48,9 +48,9 @@ public class BlockRail : Block
         return base.raycast(world, x, y, z, startPos, endPos);
     }
 
-    public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
+    public override void updateBoundingBox(IBlockAccess iBlockAccess, int x, int y, int z)
     {
-        int meta = blockView.getBlockMeta(x, y, z);
+        int meta = iBlockAccess.getBlockMeta(x, y, z);
         if (meta >= 2 && meta <= 5)
         {
             setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 10.0F / 16.0F, 1.0F);

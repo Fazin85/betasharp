@@ -59,7 +59,7 @@ public class BlockRedstoneRepeater : Block
         return side == 0 ? (lit ? 99 : 115) : (side == 1 ? (lit ? 147 : 131) : 5);
     }
 
-    public override bool isSideVisible(BlockView blockView, int x, int y, int z, int side)
+    public override bool isSideVisible(IBlockAccess iBlockAccess, int x, int y, int z, int side)
     {
         return side != 0 && side != 1;
     }
@@ -79,7 +79,7 @@ public class BlockRedstoneRepeater : Block
         return isPoweringSide(world, x, y, z, side);
     }
 
-    public override bool isPoweringSide(BlockView blockView, int x, int y, int z, int side)
+    public override bool isPoweringSide(IBlockAccess iBlockAccess, int x, int y, int z, int side)
     {
         if (!lit)
         {
@@ -87,7 +87,7 @@ public class BlockRedstoneRepeater : Block
         }
         else
         {
-            int facing = blockView.getBlockMeta(x, y, z) & 3;
+            int facing = iBlockAccess.getBlockMeta(x, y, z) & 3;
             return facing == 0 && side == 3 ? true : (facing == 1 && side == 4 ? true : (facing == 2 && side == 2 ? true : facing == 3 && side == 5));
         }
     }

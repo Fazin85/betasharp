@@ -77,9 +77,9 @@ public class BlockDoor : Block
         return base.getCollisionShape(world, x, y, z);
     }
 
-    public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
+    public override void updateBoundingBox(IBlockAccess iBlockAccess, int x, int y, int z)
     {
-        rotate(setOpen(blockView.getBlockMeta(x, y, z)));
+        rotate(setOpen(iBlockAccess.getBlockMeta(x, y, z)));
     }
 
     public void rotate(int meta)

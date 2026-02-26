@@ -127,9 +127,9 @@ public class BlockPistonExtension : Block
         setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
     }
 
-    public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
+    public override void updateBoundingBox(IBlockAccess iBlockAccess, int x, int y, int z)
     {
-        int var5 = blockView.getBlockMeta(x, y, z);
+        int var5 = iBlockAccess.getBlockMeta(x, y, z);
         switch (getFacing(var5))
         {
             case 0:

@@ -143,9 +143,9 @@ public class BlockLever : Block
         }
     }
 
-    public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
+    public override void updateBoundingBox(IBlockAccess iBlockAccess, int x, int y, int z)
     {
-        int var5 = blockView.getBlockMeta(x, y, z) & 7;
+        int var5 = iBlockAccess.getBlockMeta(x, y, z) & 7;
         float var6 = 3.0F / 16.0F;
         if (var5 == 1)
         {
@@ -248,9 +248,9 @@ public class BlockLever : Block
         base.onBreak(world, x, y, z);
     }
 
-    public override bool isPoweringSide(BlockView blockView, int x, int y, int a, int side)
+    public override bool isPoweringSide(IBlockAccess iBlockAccess, int x, int y, int a, int side)
     {
-        return (blockView.getBlockMeta(x, y, a) & 8) > 0;
+        return (iBlockAccess.getBlockMeta(x, y, a) & 8) > 0;
     }
 
     public override bool isStrongPoweringSide(World world, int x, int y, int z, int side)
