@@ -9,6 +9,7 @@ public readonly ref struct BlockRenderContext
     public readonly bool FlipTexture;
     public readonly Box? OverrideBounds;
     public readonly bool EnableAo = true;
+    public readonly int AoBlendMode = 0;
 
     // UV Rotations
     public readonly int UvRotateTop;
@@ -29,7 +30,8 @@ public readonly ref struct BlockRenderContext
         int uvTop = 0, int uvBottom = 0,
         int uvNorth = 0, int uvSouth = 0,
         int uvEast = 0, int uvWest = 0,
-        bool customFlag = false)
+        bool customFlag = false,
+        int aoBlendMode = 0)
     {
         OverrideTexture = overrideTexture;
         RenderAllFaces = renderAllFaces;
@@ -44,5 +46,6 @@ public readonly ref struct BlockRenderContext
         UvRotateWest = uvWest;
 
         CustomFlag = customFlag;
+        AoBlendMode = aoBlendMode;
     }
 }
