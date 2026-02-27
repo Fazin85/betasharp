@@ -38,7 +38,7 @@ public class GuiConnecting : Screen
             ClientHandler?.disconnect();
             MC.OpenScreen(new GuiMainMenu());
         };
-        Children.Add(cancelButton);
+        AddChild(cancelButton);
     }
 
     public override void UpdateScreen()

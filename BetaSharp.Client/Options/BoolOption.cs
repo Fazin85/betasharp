@@ -4,12 +4,19 @@ public class BoolOption : GameOption<bool>
 {
     public BoolOption(string translationKey, string saveKey, bool defaultValue = false) : base(translationKey, saveKey)
     {
+        DefaultValue = defaultValue;
         Value = defaultValue;
     }
 
     public void Toggle()
     {
         Value = !Value;
+        OnChanged?.Invoke(Value);
+    }
+
+    public void ResetToDefault()
+    {
+        Value = DefaultValue;
         OnChanged?.Invoke(Value);
     }
 

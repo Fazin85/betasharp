@@ -36,7 +36,7 @@ public class GuiDirectConnect : Screen
             joinServerButton.Enabled = _serverAddress.Text.Length > 0 && _serverAddress.Text.Split(":").Length > 0;
         };
 
-        Children.AddRange(joinServerButton, cancelButton, _serverAddress);
+        AddChildren(joinServerButton, cancelButton, _serverAddress);
     }
 
     public override void UpdateScreen()

@@ -44,7 +44,7 @@ public class GuiTexturePacks : Screen
             MC.OpenScreen(_parentScreen);
         };
 
-        Children.AddRange(openFolderButton, doneButton);
+        AddChildren(openFolderButton, doneButton);
     }
 
     protected override void OnRendered(RenderEventArgs e)

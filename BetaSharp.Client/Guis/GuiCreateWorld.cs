@@ -48,7 +48,7 @@ public class GuiCreateWorld : Screen
         createButton.Clicked += (_, _) => CreateWorld();
         cancelButton.Clicked += (_, _) => MC.OpenScreen(_parentScreen);
 
-        Children.AddRange(_textboxWorldName, _textboxSeed, createButton, cancelButton);
+        AddChildren(_textboxWorldName, _textboxSeed, createButton, cancelButton);
 
         UpdateFolderName();
     }

@@ -253,7 +253,7 @@ public class GameRenderer
             int var15 = var13.ScaledHeight;
             int mouseX = Mouse.getX() * var14 / _client.displayWidth;
             int mouseY = var15 - Mouse.getY() * var15 / _client.displayHeight - 1;
-            int var7 = 30 + (int)(_client.options.LimitFramerate * 210.0f);
+            int var7 = (int)_client.options.FramerateLimit;
 
             if (var7 < 240)
             {

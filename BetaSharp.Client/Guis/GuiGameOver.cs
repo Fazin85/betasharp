@@ -22,7 +22,7 @@ public class GuiGameOver : Screen
             MC.changeWorld(null);
             MC.OpenScreen(new GuiMainMenu());
         };
-        Children.AddRange(respawnButton, titleButton);
+        AddChildren(respawnButton, titleButton);
     }
 
     protected override void OnRendered(RenderEventArgs e)

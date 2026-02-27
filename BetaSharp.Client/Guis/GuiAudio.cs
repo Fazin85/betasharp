@@ -22,12 +22,11 @@ public class GuiAudio : Screen
 
             if (option is FloatOption floatOpt)
             {
-                Children.Add(new OptionsSlider(x, y, floatOpt, option.GetDisplayString(translations), floatOpt.Value, 0,
-                    100, 1));
+                AddChild(new OptionsSlider(x, y, floatOpt));
             }
             else if (option is BoolOption boolOpt)
             {
-                Children.Add(new ToggleButton(x, y, boolOpt, option.GetDisplayString(translations)));
+                AddChild(new ToggleButton(x, y, boolOpt));
             }
         }
 
@@ -37,7 +36,7 @@ public class GuiAudio : Screen
             _gameOptions.SaveOptions();
             MC.OpenScreen(parent);
         };
-        Children.Add(doneButton);
+        AddChild(doneButton);
     }
 
     protected override void OnRendered(RenderEventArgs e)

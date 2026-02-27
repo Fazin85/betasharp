@@ -15,14 +15,13 @@ public class GuiControls : Screen
 
         for (int i = 0; i < _options.KeyBindings.Length; ++i)
         {
-            Children.Add(new ControlsButton(leftX + i % 2 * 160, Height / 6 + 24 * (i >> 1), _options.KeyBindings[i]));
+            AddChild(new ControlsButton(leftX + i % 2 * 160, Height / 6 + 24 * (i >> 1), _options.KeyBindings[i]));
         }
 
-        OptionsSlider sensitivitySlider = new(Width / 2 + 5, Height / 6 + 130, _options.MouseSensitivityOption,
-            _options.MouseSensitivityOption.GetDisplayString(translations), _options.MouseSensitivityOption.Value, 0.2f,
-            0.8f) { Size = new(125, 20) };
-        ToggleButton invertMouseButton = new(Width / 2 - 155, Height / 6 + 130, _options.InvertMouseOption,
-            _options.InvertMouseOption.GetDisplayString(translations)) { Size = new(125, 20) };
+        OptionsSlider sensitivitySlider = new(Width / 2 + 5, Height / 6 + 130, _options.MouseSensitivityOption)
+            { Size = new(125, 20) };
+        ToggleButton invertMouseButton = new(Width / 2 - 155, Height / 6 + 130, _options.InvertMouseOption)
+            { Size = new(125, 20) };
         Button doneButton = new(Width / 2 - 100, Height / 6 + 168, translations.TranslateKey("gui.done"));
         doneButton.Clicked += (_, _) =>
         {
@@ -30,7 +29,7 @@ public class GuiControls : Screen
             MC.OpenScreen(parentScreen);
         };
 
-        Children.AddRange(sensitivitySlider, invertMouseButton, doneButton);
+        AddChildren(sensitivitySlider, invertMouseButton, doneButton);
     }
 
     protected override void OnRendered(RenderEventArgs e)

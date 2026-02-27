@@ -3,25 +3,41 @@ using BetaSharp.Client.Rendering.Core;
 
 namespace BetaSharp.Client.Guis;
 
-public class Control
+public partial class Control
 {
-    public enum ButtonTexture
-    {
-        Disabled = 0,
-        Normal = 1,
-        Hovered = 2
-    }
-
-    protected float ZLevel = 0.0F;
-    internal virtual bool TopLevel => false;
-
-    private Control? _parent;
-    public readonly List<Control> Children = [];
-    public List<Control> Descendants => Children.SelectMany(c => c.Descendants).Prepend(this).ToList();
-
-    // Track whether last press occurred inside this control
     private bool _pressedInside;
 
+    private Control? _parent
+    {
+        get;
+        set
+        {
+            field = value;
+            UpdateRatios();
+        }
+    }
+    private float _xRatio;
+    private float _yRatio;
+    protected int? TabIndex;
+    protected float ZLevel;
+    protected readonly List<Control> Children = [];
+
+    public Point AbsolutePosition
+    {
+        get
+        {
+            if (_parent == null) return Position;
+            Point parentAbsPos = _parent.AbsolutePosition;
+            return new(parentAbsPos.X + X, parentAbsPos.Y + Y);
+        }
+    }
+
+    public bool Enabled = true;
+    public bool Focused
+    {
+        get;
+        set;
+    }
     public string Text
     {
         get;
@@ -31,46 +47,39 @@ public class Control
             DoTextChanged(new TextEventArgs(value));
         }
     } = string.Empty;
-
-    protected int TabIndex;
-
     public Size Size
     {
         get;
         set
         {
+            Size oldSize = field;
             field = value;
+            UpdateRatios();
             UpdateAnchorInfo();
-            LayoutChildren();
+            LayoutChildren(oldSize);
         }
     }
     public int Width => Size.Width;
     public int Height => Size.Height;
-
+    private bool _updatingPosition;
     public Point Position
     {
         get;
         set
         {
             field = value;
+            UpdateRatios();
             UpdateAnchorInfo();
-            LayoutChildren();
+            LayoutChildren(Size);
         }
     }
     public int X => Position.X;
     public int Y => Position.Y;
-    public bool Enabled;
-    public bool Focused
-    {
-        get;
-        set
-        {
-
-        }
-    }
+    public List<Control> Descendants => Children.SelectMany(c => c.Descendants).Prepend(this).ToList();
 
     public virtual bool Focusable => false;
-    public bool Visible;
+    public virtual bool TopLevel => false;
+    public bool Visible = true;
 
     public Anchors Anchor
     {
@@ -79,18 +88,20 @@ public class Control
         {
             field = value;
             UpdateAnchorInfo();
-            LayoutChildren();
+            LayoutChildren(Size);
         }
     }
+    public CenteringBehavior VerticalCenteringBehavior { get; init; } = CenteringBehavior.Start;
+    public CenteringBehavior HorizontalCenteringBehavior { get; init; } = CenteringBehavior.Middle;
     private AnchorInfo _anchorInfo;
 
-    protected Control(int x, int y, int width, int height)
+    public Control(int x, int y, int width, int height)
     {
         Position = new(x, y);
         Size = new(width, height);
         Visible = true;
     }
-    protected Control() { }
+    public Control() { }
 
     private void UpdateAnchorInfo()
     {
@@ -99,16 +110,49 @@ public class Control
             Left = X, Top = Y, Right = X + Width, Bottom = Y + Height,
         };
     }
-
-    protected void LayoutChildren()
+    private void UpdateRatios()
     {
-        foreach (Control child in Children.ToArray())
+        if (_parent == null)
         {
-            child.UpdatePosition();
+            _xRatio = 0;
+            _yRatio = 0;
+        }
+        else if (!_updatingPosition)
+        {
+            if (!Anchor.HasFlag(Anchors.Left) && !Anchor.HasFlag(Anchors.Right))
+            {
+                float pos = HorizontalCenteringBehavior switch
+                {
+                    CenteringBehavior.Start => X,
+                    CenteringBehavior.Middle => X + Width / 2f,
+                    CenteringBehavior.End => X + Width,
+                    _ => throw new InvalidOperationException("Invalid HorizontalCenteringBehavior value"),
+                };
+                _xRatio = pos / _parent.Width;
+            }
+            if (!Anchor.HasFlag(Anchors.Top) && !Anchor.HasFlag(Anchors.Bottom))
+            {
+                float pos = VerticalCenteringBehavior switch
+                {
+                    CenteringBehavior.Start => Y,
+                    CenteringBehavior.Middle => Y + Height / 2f,
+                    CenteringBehavior.End => Y + Height,
+                    _ => throw new InvalidOperationException("Invalid VerticalCenteringBehavior value"),
+                };
+                _yRatio = pos / _parent.Height;
+            }
         }
     }
 
-    protected void UpdatePosition()
+    protected void LayoutChildren(Size oldSize)
+    {
+        foreach (Control child in Children.ToArray())
+        {
+            child.UpdatePosition(oldSize);
+        }
+    }
+
+    protected void UpdatePosition(Size oldParentSize)
     {
         if (_parent == null) return;
 
@@ -128,6 +172,17 @@ public class Control
         {
             newX = parentWidth - _anchorInfo.Right;
         }
+        else if (!Anchor.HasFlag(Anchors.Left))
+        {
+            float offset = HorizontalCenteringBehavior switch
+            {
+                CenteringBehavior.Start => 0,
+                CenteringBehavior.Middle => Width / 2f,
+                CenteringBehavior.End => Width,
+                _ => throw new InvalidOperationException("Invalid HorizontalCenteringBehavior value"),
+            };
+            newX = (int)(parentWidth * _xRatio - offset);
+        }
 
         if (Anchor.HasFlag(Anchors.Top) && Anchor.HasFlag(Anchors.Bottom))
         {
@@ -137,9 +192,23 @@ public class Control
         {
             newY = parentHeight - _anchorInfo.Bottom;
         }
+        else if (!Anchor.HasFlag(Anchors.Top))
+        {
+            float offset = VerticalCenteringBehavior switch
+            {
+                CenteringBehavior.Start => 0,
+                CenteringBehavior.Middle => Height / 2f,
+                CenteringBehavior.End => Height,
+                _ => throw new InvalidOperationException("Invalid VerticalCenteringBehavior value"),
+            };
+            newY = (int)(parentHeight * _yRatio - offset);
+        }
 
+        bool wasUpdating = _updatingPosition;
+        _updatingPosition = true;
         Position = new(newX, newY);
         Size = new(newWidth, newHeight);
+        _updatingPosition = wasUpdating;
     }
 
     public void DrawTextureRegion(int x, int y, int u, int v, int width, int height)
@@ -154,122 +223,49 @@ public class Control
         tess.draw();
     }
 
-    public event EventHandler<MouseEventArgs>? Clicked;
-    public event EventHandler<MouseEventArgs>? MousePressed;
-    public event EventHandler<MouseEventArgs>? MouseReleased;
-    public event EventHandler<MouseEventArgs>? MouseMoved;
-    public event EventHandler<KeyboardEventArgs>? KeyInput;
-    public event EventHandler<RenderEventArgs>? Rendered;
-    public event EventHandler<FocusEventArgs>? FocusChanged;
-    public event EventHandler<TextEventArgs>? TextChanged;
+    /// <summary>
+    /// Returns all focusable controls in the order they should be navigated when pressing Tab.
+    /// Explicitly set TabIndex values are navigated first, followed by controls without a TabIndex,
+    /// which will be navigated in reading order.
+    /// </summary>
+    public IEnumerable<Control> GetTabOrder()
+    {
+        return Descendants
+            .Where(c => c is { Focusable: true, Visible: true, Enabled: true } && (c.TabIndex ?? 0) >= 0)
+            .OrderBy(c => c.TabIndex ?? int.MaxValue)  // Explicit values navigated first
+            .ThenBy(c => c.AbsolutePosition.Y)         // Remaining are sorted top-to-bottom
+            .ThenBy(c => c.AbsolutePosition.X);        // Then left-to-right
+    }
 
     public virtual bool PointInBounds(int x, int y)
     {
+        Point abs = AbsolutePosition;
         return Enabled
                && Visible
-               && x >= X
-               && y >= Y
-               && x < X + Width
-               && y < Y + Height
+               && x >= abs.X
+               && y >= abs.Y
+               && x < abs.X + Width
+               && y < abs.Y + Height
                && (_parent == null || _parent.PointInBounds(x, y));
     }
-
-    public void DoMousePressed(MouseEventArgs e)
-    {
-        if (Focusable && !Focused)
-        {
-            Focused = true;
-        }
-        _pressedInside = true;
-        OnMousePressed(e);
-        MousePressed?.Invoke(this, e);
-    }
-
-    protected virtual void OnMousePressed(MouseEventArgs e) { }
-
-    public void DoMouseReleased(MouseEventArgs e)
-    {
-        OnMouseReleased(e);
-        MouseReleased?.Invoke(this, e);
-
-        if (_pressedInside && PointInBounds(e.X, e.Y))
-        {
-            DoClicked(e);
-        }
-
-        _pressedInside = false;
-    }
-
-    protected virtual void OnMouseReleased(MouseEventArgs e) { }
-
-    public void DoClicked(MouseEventArgs e)
-    {
-        OnClicked(e);
-        Clicked?.Invoke(this, e);
-    }
-
-    protected virtual void OnClicked(MouseEventArgs e) { }
-
-    public void DoMouseMoved(MouseEventArgs e)
-    {
-        OnMouseMoved(e);
-        MouseMoved?.Invoke(this, e);
-    }
-
-    protected virtual void OnMouseMoved(MouseEventArgs e) { }
-
-    public void DoKeyInput(KeyboardEventArgs e)
-    {
-        OnKeyInput(e);
-        KeyInput?.Invoke(this, e);
-    }
-
-    protected virtual void OnKeyInput(KeyboardEventArgs e) { }
-
-    public void DoRendered(RenderEventArgs e)
-    {
-        if (!Visible) return;
-
-        foreach (Control child in Children.ToArray())
-        {
-            child.DoRendered(e);
-        }
-
-        OnRendered(e);
-        Rendered?.Invoke(this, e);
-    }
-
-    protected virtual void OnRendered(RenderEventArgs e) { }
-
-    public void DoFocusChanged(FocusEventArgs e)
-    {
-        OnFocusChanged(e);
-        FocusChanged?.Invoke(this, e);
-    }
-
-    protected virtual void OnFocusChanged(FocusEventArgs e) { }
-
-    public void DoTextChanged(TextEventArgs e)
-    {
-        OnTextChanged(e);
-        TextChanged?.Invoke(this, e);
-    }
-
-    protected virtual void OnTextChanged(TextEventArgs e) { }
 
     public virtual void HandleMouseInput()
     {
         var mc = Minecraft.INSTANCE;
         int button = Mouse.getEventButton();
         bool isButtonDown = Mouse.getEventButtonState();
-        int mouseX = Mouse.getEventX() * mc.displayWidth / mc.displayWidth;
-        int mouseY = mc.displayHeight - Mouse.getEventY() * mc.displayHeight / mc.displayHeight - 1;
+        ScaledResolution var13 = new(mc.options, mc.displayWidth, mc.displayHeight);
+        int var14 = var13.ScaledWidth;
+        int var15 = var13.ScaledHeight;
+        int mouseX = Mouse.getEventX() * var14 / mc.displayWidth;
+        int mouseY = var15 - Mouse.getEventY() * var15 / mc.displayHeight - 1;
+
 
         if (isButtonDown && button is >= 0 and < Mouse.MouseButtons && PointInBounds(mouseX, mouseY))
         {
             DoMousePressed(new(mouseX, mouseY, button, isButtonDown));
         }
-        else if (!isButtonDown && button is >= 0 and < Mouse.MouseButtons)
+        else if (!isButtonDown && button is >= 0 and < Mouse.MouseButtons && PointInBounds(mouseX, mouseY))
         {
             DoMouseReleased(new(mouseX, mouseY, button, isButtonDown));
         }
@@ -312,77 +308,20 @@ public class Control
             HandleKeyboardInput();
         }
     }
-}
 
-// Event argument classes
-public class MouseEventArgs : EventArgs
-{
-    public int X { get; }
-    public int Y { get; }
-    public int Button { get; }
-    public bool Pressed { get; }
-    public bool Handled { get; set; }
-
-    public MouseEventArgs(int x, int y, int button, bool pressed)
+    public void AddChild(Control child)
     {
-        X = x;
-        Y = y;
-        Button = button;
-        Pressed = pressed;
-        Handled = false;
+        Children.Add(child);
+        child._parent = this;
+        child.UpdatePosition(Size);
     }
-}
-
-public class KeyboardEventArgs : EventArgs
-{
-    public int Key { get; }
-    public char KeyChar { get; }
-    public bool IsKeyDown { get; }
-    public bool IsRepeat { get; }
-    public bool Handled { get; set; }
-
-    public KeyboardEventArgs(int key, char keyChar, bool isKeyDown, bool isRepeat)
+    public void AddChildren(params ReadOnlySpan<Control> children)
     {
-        Key = key;
-        KeyChar = keyChar;
-        IsKeyDown = isKeyDown;
-        IsRepeat = isRepeat;
-        Handled = false;
-    }
-}
-
-public class RenderEventArgs : EventArgs
-{
-    public int MouseX { get; }
-    public int MouseY { get; }
-    public float TickDelta { get; }
-
-    public RenderEventArgs(int mouseX, int mouseY, float tickDelta)
-    {
-        MouseX = mouseX;
-        MouseY = mouseY;
-        TickDelta = tickDelta;
-    }
-}
-
-public class FocusEventArgs : EventArgs
-{
-    public bool Focused { get; }
-    public Control? OldFocusedControl { get; }
-
-    public FocusEventArgs(bool focused, Control? oldFocusedControl)
-    {
-        Focused = focused;
-        OldFocusedControl = oldFocusedControl;
-    }
-}
-
-public class TextEventArgs : EventArgs
-{
-    public string Text { get; }
-
-    public TextEventArgs(string text)
-    {
-        Text = text;
+        Children.AddRange(children);
+        foreach (Control child in children)
+        {
+            child._parent = this;
+            child.UpdatePosition(Size);
+        }
     }
 }

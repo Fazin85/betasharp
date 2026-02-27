@@ -32,13 +32,13 @@ public class GuiIngameMenu : Screen
         Button optionsButton = new(buttonLeft, centerY + 96 + verticalOffset, "Options...");
         Button quitButton = new(buttonLeft, centerY + 100 + verticalOffset, quitText);
 
-        backToGameButton.Clicked += (_, _) => MC.OpenScreen(null);
+        backToGameButton    .Clicked += (_, _) => MC.OpenScreen(null);
         achievementsButton  .Clicked += (_, _) => MC.OpenScreen(new GuiAchievements(MC.statFileWriter));
         statsButton         .Clicked += (_, _) => MC.OpenScreen(new GuiStats(this, MC.statFileWriter));
         optionsButton       .Clicked += (_, _) => MC.OpenScreen(new GuiOptions(this, MC.options));
         quitButton          .Clicked += QuitClicked;
 
-        Children.AddRange(quitButton, backToGameButton, optionsButton, achievementsButton, statsButton);
+        AddChildren(quitButton, backToGameButton, optionsButton, achievementsButton, statsButton);
     }
 
     private void QuitClicked(object? o, MouseEventArgs e)

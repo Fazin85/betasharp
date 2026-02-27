@@ -6,7 +6,7 @@ public class GuiConflictWarning : Screen
     {
         Button backButton = new(Width / 2 - 100, Height / 4 + 120 + 12, "Back to title screen");
         backButton.Clicked += (_, _) => MC.OpenScreen(new GuiMainMenu());
-        Children.Add(backButton);
+        AddChild(backButton);
     }
 
     protected override void OnRendered(RenderEventArgs e)

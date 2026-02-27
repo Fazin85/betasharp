@@ -52,7 +52,7 @@ public class GuiSelectWorld : Screen
         buttonCreate.Clicked += (_, _) => MC.OpenScreen(new GuiCreateWorld(this));
         buttonCancel.Clicked += (_, _) => MC.OpenScreen(parentScreen);
 
-        Children.AddRange(buttonSelect, buttonRename, buttonDelete, buttonCreate, buttonCancel);
+        AddChildren(buttonSelect, buttonRename, buttonDelete, buttonCreate, buttonCancel);
     }
 
     private void loadSaves()

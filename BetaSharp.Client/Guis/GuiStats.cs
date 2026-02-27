@@ -41,7 +41,7 @@ public class GuiStats : Screen
         blocksButton.Clicked += (_, _) => _currentList = _listBlock;
         itemsButton.Clicked += (_, _) => _currentList = _listItem;
 
-        Children.AddRange(doneButton, generalButton, blocksButton, itemsButton);
+        AddChildren(doneButton, generalButton, blocksButton, itemsButton);
     }
 
     public void drawItemSlot(int x, int y, int itemId)

@@ -14,7 +14,7 @@ namespace BetaSharp.Client.Guis;
 public class Screen : Control
 {
     private static readonly ILogger<Screen> s_logger = Log.Instance.For<Screen>();
-    internal override bool TopLevel => true;
+    public override bool TopLevel => true;
     public Minecraft MC;
     public bool AllowUserInput = false;
     public virtual bool PausesGame => true;
@@ -22,10 +22,15 @@ public class Screen : Control
     public GuiParticle ParticlesGui;
     protected bool IsSubscribedToKeyboard = false;
     protected bool DisplayTitle;
+    private Control? _focusedControl;
 
     public Screen()
     {
-        MC = Minecraft.INSTANCE;
+        var mc = Minecraft.INSTANCE;
+        ScaledResolution scaledResolution = new(mc.options, mc.displayWidth, mc.displayHeight);
+        int scaledWidth = scaledResolution.ScaledWidth;
+        int scaledHeight = scaledResolution.ScaledHeight;
+        SetWorldAndResolution(mc, scaledWidth, scaledHeight);
         Rendered += (_, _) =>
         {
             if (DisplayTitle)
@@ -68,8 +73,8 @@ public class Screen : Control
 
     public void SetWorldAndResolution(Minecraft mc, int width, int height)
     {
-        ParticlesGui = new GuiParticle(mc);
-        this.MC = mc;
+        ParticlesGui = new(mc);
+        MC = mc;
         FontRenderer = mc.fontRenderer;
         Size = new(width, height);
     }
@@ -111,6 +116,17 @@ public class Screen : Control
         tess.addVertexWithUV(Width, 0.0D, 0.0D, (double)(Width / scale), 0 + var1);
         tess.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0 + var1);
         tess.draw();
+    }
+
+    public void SetFocus(Control? control)
+    {
+        if (_focusedControl == control) return;
+
+        var oldFocused = _focusedControl;
+        oldFocused?.DoFocusChanged(new(false, control));
+
+        _focusedControl = control;
+        control?.DoFocusChanged(new(true, oldFocused));
     }
 
     public virtual void DeleteWorld(bool confirmed, int index) { }

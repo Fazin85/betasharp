@@ -22,14 +22,13 @@ public class GuiOptions : Screen
             switch (option)
             {
                 case FloatOption floatOpt:
-                    Children.Add(new Slider(x, y, option.GetDisplayString(translations), floatOpt.Set,
-                        floatOpt.Value, floatOpt.Min, floatOpt.Max, floatOpt.Step));
+                    AddChild(new OptionsSlider(x, y, floatOpt));
                     break;
                 case BoolOption boolOpt:
-                    Children.Add(new ToggleButton(x, y, boolOpt, option.GetDisplayString(translations)));
+                    AddChild(new ToggleButton(x, y, boolOpt));
                     break;
                 case CycleOption cycleOpt:
-                    Children.Add(new CycleButton(x, y, cycleOpt, option.GetDisplayString(translations)));
+                    AddChild(new CycleButton(x, y, cycleOpt));
                     break;
             }
         }
@@ -64,7 +63,7 @@ public class GuiOptions : Screen
             MC.options.SaveOptions();
             MC.OpenScreen(parentScreen);
         };
-        Children.AddRange(videoSettingsButton, debugSettingsButton, audioSettingsButton, controlsButton, doneButton);
+        AddChildren(videoSettingsButton, debugSettingsButton, audioSettingsButton, controlsButton, doneButton);
     }
 
     protected override void OnRendered(RenderEventArgs e)

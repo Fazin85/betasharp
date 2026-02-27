@@ -21,7 +21,7 @@ public class GuiConnectFailed : Screen
         MC.stopInternalServer();
         Button titleButton = new(Width / 2 - 100, Height / 4 + 120 + 12, translations.TranslateKey("gui.toMenu"));
         titleButton.Clicked += (_, _) => MC.OpenScreen(new GuiMainMenu());
-        Children.Add(titleButton);
+        AddChild(titleButton);
     }
 
     protected override void OnRendered(RenderEventArgs e)

@@ -5,6 +5,7 @@ public abstract class GameOption<T> : GameOption
     public T Value { get; set; } = default!;
     public Action<T>? OnChanged { get; init; }
     public Func<T, TranslationStorage, string>? Formatter { get; init; }
+    public T DefaultValue { get; init; }
 
     protected GameOption(string translationKey, string saveKey)
     {

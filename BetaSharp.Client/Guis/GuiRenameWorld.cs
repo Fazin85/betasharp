@@ -38,7 +38,7 @@ public class GuiRenameWorld : Screen
             MaxLength = 32,
         };
 
-        Children.AddRange(renameButton, cancelButton, nameInputField);
+        AddChildren(renameButton, cancelButton, nameInputField);
     }
 
     public override void UpdateScreen()

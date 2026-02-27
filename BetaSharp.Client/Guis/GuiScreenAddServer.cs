@@ -32,7 +32,7 @@ public class GuiScreenAddServer : Screen
         _serverName.KeyInput += FieldKeyPressed;
         _serverAddress.KeyInput += FieldKeyPressed;
 
-        Children.AddRange(_doneButton, cancelButton, _serverName, _serverAddress);
+        AddChildren(_doneButton, cancelButton, _serverName, _serverAddress);
 
         _doneButton.Enabled = _serverName.Text.Length > 0 && _serverAddress.Text.Length > 0 && _serverAddress.Text.Split(":").Length > 0;
     }

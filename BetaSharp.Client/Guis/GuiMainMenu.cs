@@ -7,15 +7,8 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiMainMenu : Screen
 {
-    private const int ButtonOptions = 0;
-    private const int ButtonSingleplayer = 1;
-    private const int ButtonMultiplayer = 2;
-    private const int ButtonTexturePacksAndMods = 3;
-    private const int ButtonQuit = 4;
-
     private static readonly JavaRandom s_rand = new();
     private string _splashText = "missingno";
-    private Button _multiplayerButton;
 
     public GuiMainMenu()
     {
@@ -37,14 +30,15 @@ public class GuiMainMenu : Screen
         {
         }
         TranslationStorage translator = TranslationStorage.Instance;
-        int buttonTop = Height / 4 + 48;
+        int buttonTop = Height / 4;
         int buttonLeft = Width / 2 - 100;
 
-        Button singleplayerButton = new(buttonLeft, buttonTop, translator.TranslateKey("menu.singleplayer"));
-        Button multiplayerButton = new(buttonLeft, buttonTop + 24, translator.TranslateKey("menu.multiplayer"));
-        Button texturePacksButton = new(buttonLeft, buttonTop + 48, translator.TranslateKey("menu.mods"));
-        Button optionsButton = new(buttonLeft, buttonTop + 72, translator.TranslateKey("menu.options"));
-        Button quitButton = new(buttonLeft, buttonTop + 96, translator.TranslateKey("menu.quit"));
+        Control container = new(buttonLeft, buttonTop, 200, 152);
+        Button singleplayerButton = new(0, 48, translator.TranslateKey("menu.singleplayer"));
+        Button multiplayerButton = new(0, 72, translator.TranslateKey("menu.multiplayer"));
+        Button texturePacksButton = new(0, 96, translator.TranslateKey("menu.mods"));
+        Button optionsButton = new(0, 132, 98, 20, translator.TranslateKey("menu.options"));
+        Button quitButton = new(102, 132, 98, 20, translator.TranslateKey("menu.quit"));
 
         singleplayerButton.Clicked += (_, _) => MC.OpenScreen(new GuiSelectWorld(this));
         multiplayerButton.Clicked += (_, _) => MC.OpenScreen(new GuiMultiplayer(this));
@@ -52,11 +46,12 @@ public class GuiMainMenu : Screen
         optionsButton.Clicked += (_, _) => MC.OpenScreen(new GuiOptions(this, MC.options));
         quitButton.Clicked += (_, _) => MC.shutdown();
 
-        Children.AddRange(singleplayerButton, multiplayerButton, texturePacksButton, optionsButton, quitButton);
+        container.AddChildren(singleplayerButton, multiplayerButton, texturePacksButton, optionsButton, quitButton);
+        AddChild(container);
 
         if (MC.session == null || MC.session.sessionId == "-")
         {
-            _multiplayerButton.Enabled = false;
+            multiplayerButton.Enabled = false;
         }
     }
 

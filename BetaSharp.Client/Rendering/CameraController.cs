@@ -49,7 +49,7 @@ public class CameraController
         _mc.camera ??= _mc.player;
 
         float luminance = _mc.world.getLuminance(MathHelper.Floor(_mc.camera.x), MathHelper.Floor(_mc.camera.y), MathHelper.Floor(_mc.camera.z));
-        float renderDistFactor = System.Math.Clamp((_mc.options.renderDistance - 4.0F) / 28.0F, 0.0F, 1.0F);
+        float renderDistFactor = Math.Clamp((_mc.options.renderDistance - 4.0F) / 28.0F, 0.0F, 1.0F);
         float targetBob = luminance * (1.0F - renderDistFactor) + renderDistFactor;
         ViewBob += (targetBob - ViewBob) * 0.1F;
     }
@@ -57,7 +57,7 @@ public class CameraController
     public float GetFov(float tickDelta, bool isHand = false)
     {
         EntityLiving cameraEntity = _mc.camera;
-        float fov = isHand ? 70.0F : (30.0F + _mc.options.Fov * 90.0F);
+        float fov = isHand ? 70.0F : _mc.options.Fov;
 
         if (cameraEntity.isInFluid(Material.Water))
         {

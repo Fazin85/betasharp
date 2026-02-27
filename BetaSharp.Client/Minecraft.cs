@@ -364,7 +364,7 @@ public partial class Minecraft
 
     public static java.io.File getMinecraftDir()
     {
-        return new java.io.File(PathHelper.GetAppDir(nameof(BetaSharp)));
+        return new(PathHelper.GetAppDir(nameof(BetaSharp)));
     }
 
     public IWorldStorageSource getSaveLoader()
@@ -412,10 +412,6 @@ public partial class Minecraft
         if (newScreen != null)
         {
             setIngameNotInFocus();
-            ScaledResolution scaledResolution = new(options, displayWidth, displayHeight);
-            int scaledWidth = scaledResolution.ScaledWidth;
-            int scaledHeight = scaledResolution.ScaledHeight;
-            newScreen.SetWorldAndResolution(this, scaledWidth, scaledHeight);
             skipRenderWorld = false;
         }
         else

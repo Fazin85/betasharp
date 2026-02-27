@@ -86,7 +86,7 @@ public class SoundManager
             }
             else
             {
-                _currentMusic?.Volume = _options.MusicVolume * 100.0F;
+                _currentMusic?.Volume = _options.MusicVolume;
             }
         }
     }
@@ -241,7 +241,7 @@ public class SoundManager
 
         _currentMusic = new Music(musicName)
         {
-            Volume = _options.MusicVolume * 100.0F,
+            Volume = _options.MusicVolume,
             IsLooping = false,
             RelativeToListener = true,
             Position = new Vector3f(0, 0, 0)
@@ -316,7 +316,7 @@ public class SoundManager
         _currentStreaming?.Dispose();
         _currentStreaming = new Music(SanitizePath(entry.SoundUrl.LocalPath))
         {
-            Volume = 0.5F * _options.SoundVolume * 100.0F,
+            Volume = 0.5F * _options.SoundVolume,
             IsLooping = false,
             RelativeToListener = false,
             Position = new(x, y, z)
@@ -355,7 +355,7 @@ public class SoundManager
         {
             finalVolume = 1.0F;
         }
-        sound.Volume = finalVolume * _options.SoundVolume * 100.0F;
+        sound.Volume = finalVolume * _options.SoundVolume;
 
         sound.Play();
     }
@@ -382,7 +382,7 @@ public class SoundManager
             finalVolume = 1.0F;
         }
         finalVolume *= 0.25F;
-        sound.Volume = finalVolume * _options.SoundVolume * 100.0F;
+        sound.Volume = finalVolume * _options.SoundVolume;
 
         sound.MinDistance = 1.0f;
         sound.Attenuation = 1.0f;

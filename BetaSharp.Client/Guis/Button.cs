@@ -6,6 +6,7 @@ namespace BetaSharp.Client.Guis;
 
 public class Button : Control
 {
+    public override bool Focusable => true;
     public Button(int x, int y, string text) : this(x, y, 200, 20, text) { }
     public Button(int x, int y, int width, int height, string text) : base(x, y, width, height)
     {
@@ -23,9 +24,9 @@ public class Button : Control
         bool hovered = PointInBounds(e.MouseX, e.MouseY);
         int buttonTexture = Enabled ? (hovered ? 40 : 20) : 0;
         // Left half of button
-        DrawTextureRegion(X, Y, 0, 46 + buttonTexture * 20, Width / 2, Height);
+        DrawTextureRegion(X, Y, 0, 46 + buttonTexture, Width / 2, Height);
         // Right half of button
-        DrawTextureRegion(X + Width / 2, Y, 200 - Width / 2, 46 + buttonTexture * 20, Width / 2, Height);
+        DrawTextureRegion(X + Width / 2, Y, 200 - Width / 2, 46 + buttonTexture, Width / 2, Height);
 
         if (!Enabled)
         {

@@ -30,7 +30,7 @@ public class GuiEditSign : Screen
             _entitySign.markDirty();
             MC?.OpenScreen(null);
         };
-        Children.Add(doneButton);
+        AddChild(doneButton);
     }
 
     public override void OnGuiClosed()

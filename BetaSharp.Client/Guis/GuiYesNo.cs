@@ -13,7 +13,7 @@ public class GuiYesNo : Screen
         Button cancelButton = new(Width / 2 - 155 + 160, Height / 6 + 96, cancelButtonText) { Size = new(150, 20) };
         confirmButton.Clicked += (_, _) => parentScreen.DeleteWorld(true, worldNumber);
         cancelButton.Clicked += (_, _) => parentScreen.DeleteWorld(false, worldNumber);
-        Children.AddRange(confirmButton, cancelButton);
+        AddChildren(confirmButton, cancelButton);
     }
 
     protected override void OnRendered(RenderEventArgs e)

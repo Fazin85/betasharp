@@ -5,20 +5,35 @@ namespace BetaSharp.Client.Guis;
 public class ToggleButton : Button
 {
     private readonly BoolOption _option;
-    private readonly string _textFormat;
+    private long _lastClickTime;
+    private const long DoubleClickThresholdMs = 400;
     public GameOption Option => _option;
 
-    public ToggleButton(int x, int y, BoolOption option, string textFormat)
-        : base(x, y, string.Format(textFormat, option.Value))
+    public ToggleButton(int x, int y, BoolOption option)
+        : base(x, y, option.GetDisplayString(TranslationStorage.Instance))
     {
         _option = option;
-        _textFormat = textFormat;
         Size = new(150, 20);
     }
 
     protected override void OnClicked(MouseEventArgs e)
     {
-        _option.Toggle();
-        Text = string.Format(_textFormat, _option.Value);
+        long currentTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        if (currentTime - _lastClickTime < DoubleClickThresholdMs)
+        {
+            _option.ResetToDefault();
+            _lastClickTime = 0;
+        }
+        else
+        {
+            _option.Toggle();
+            _lastClickTime = currentTime;
+        }
+        RefreshDisplay();
+    }
+
+    public void RefreshDisplay()
+    {
+        Text = _option.GetDisplayString(TranslationStorage.Instance);
     }
 }

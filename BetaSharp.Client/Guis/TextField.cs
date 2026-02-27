@@ -132,7 +132,7 @@ public class TextField : Control
 
     protected override void OnFocusChanged(FocusEventArgs e)
     {
-        if (e.Focused && e.OldFocusedControl != this)
+        if (e.Focused && e.OtherControl != this)
         {
             _cursorCounter = 0;
         }

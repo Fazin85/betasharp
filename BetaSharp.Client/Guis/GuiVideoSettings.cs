@@ -29,17 +29,17 @@ public class GuiVideoSettings : Screen
             switch (option)
             {
                 case FloatOption floatOpt:
-                    Children.Add(new Slider(x, y, option.GetDisplayString(translations), floatOpt.Set,
-                        floatOpt.Value, floatOpt.Min, floatOpt.Max, floatOpt.Step));
+                    AddChild(new OptionsSlider(x, y, floatOpt));
                     break;
                 case BoolOption boolOpt:
-                    Children.Add(new ToggleButton(x, y, boolOpt, option.GetDisplayString(translations)));
+                    AddChild(new ToggleButton(x, y, boolOpt));
                     break;
                 case CycleOption cycleOpt:
-                    Children.Add(new CycleButton(x, y, cycleOpt, option.GetDisplayString(translations)));
+                    var cycleButton = new CycleButton(x, y, cycleOpt);
+                    AddChild(cycleButton);
                     if (option == _options.GuiScaleOption)
                     {
-                        Children[^1].Clicked += (_, _) =>
+                        cycleButton.Clicked += (_, _) =>
                         {
                             ScaledResolution scaled = new(MC.options, MC.displayWidth, MC.displayHeight);
                             int scaledWidth = scaled.ScaledWidth;

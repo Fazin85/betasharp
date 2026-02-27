@@ -12,7 +12,7 @@ public class GuiSleepMP : GuiChat
         TranslationStorage translations = TranslationStorage.Instance;
         Button stopSleepingButton = new(Width / 2 - 100, Height - 40, translations.TranslateKey("multiplayer.stopSleeping"));
         stopSleepingButton.Clicked += (_, _) => sendStopSleepingCommand();
-        Children.Add(stopSleepingButton);
+        AddChild(stopSleepingButton);
     }
 
     public override void OnGuiClosed()
