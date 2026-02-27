@@ -237,20 +237,48 @@ public partial class Control
             .ThenBy(c => c.AbsolutePosition.X);        // Then left-to-right
     }
 
-    public virtual bool PointInBounds(int x, int y)
+
+    public bool PointInBounds(int x, int y)
     {
         Point abs = AbsolutePosition;
-        return Enabled
-               && Visible
-               && x >= abs.X
-               && y >= abs.Y
-               && x < abs.X + Width
-               && y < abs.Y + Height
-               && (_parent == null || _parent.PointInBounds(x, y));
+
+        // First, check if point is within this control's bounds
+        if (!Visible ||
+            x < abs.X || y < abs.Y ||
+            x >= abs.X + Width || y >= abs.Y + Height)
+        {
+            return false;
+        }
+
+        // Check if parent clips us
+        if (_parent != null && !_parent.ContainsPoint(x, y))
+        {
+            return false;
+        }
+
+        // Point is in our bounds - but is it covered by a VISIBLE and ENABLED child?
+        foreach (var child in Children)
+        {
+            if (child is { Visible: true } && child.ContainsPoint(x, y))
+            {
+                return false;  // Point is in an active child, not in "us"
+            }
+        }
+
+        return true;
+    }
+
+    public virtual bool ContainsPoint(int x, int y)
+    {
+        Point abs = AbsolutePosition;
+        return x >= abs.X && y >= abs.Y &&
+               x < abs.X + Width && y < abs.Y + Height;
     }
 
     public virtual void HandleMouseInput()
     {
+        if (!Enabled) return;
+
         var mc = Minecraft.INSTANCE;
         int button = Mouse.getEventButton();
         bool isButtonDown = Mouse.getEventButtonState();
@@ -260,12 +288,11 @@ public partial class Control
         int mouseX = Mouse.getEventX() * var14 / mc.displayWidth;
         int mouseY = var15 - Mouse.getEventY() * var15 / mc.displayHeight - 1;
 
-
         if (isButtonDown && button is >= 0 and < Mouse.MouseButtons && PointInBounds(mouseX, mouseY))
         {
             DoMousePressed(new(mouseX, mouseY, button, isButtonDown));
         }
-        else if (!isButtonDown && button is >= 0 and < Mouse.MouseButtons && PointInBounds(mouseX, mouseY))
+        else if (!isButtonDown && button is >= 0 and < Mouse.MouseButtons && _pressedInside)
         {
             DoMouseReleased(new(mouseX, mouseY, button, isButtonDown));
         }
@@ -273,6 +300,10 @@ public partial class Control
         if (PointInBounds(mouseX, mouseY))
         {
             DoMouseMoved(new(mouseX, mouseY, button, isButtonDown));
+        }
+        if (_pressedInside)
+        {
+            DoMouseDragged(new(mouseX, mouseY, button, isButtonDown));
         }
 
         foreach (Control child in Children.ToArray())

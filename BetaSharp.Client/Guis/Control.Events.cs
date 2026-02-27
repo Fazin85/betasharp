@@ -53,11 +53,6 @@ public partial class Control
     {
         OnMouseMoved(e);
         MouseMoved?.Invoke(this, e);
-
-        if (_pressedInside && PointInBounds(e.X, e.Y))
-        {
-            DoMouseDragged(e);
-        }
     }
 
     protected virtual void OnMouseMoved(MouseEventArgs e) { }

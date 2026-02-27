@@ -193,7 +193,7 @@ public class GameOptions
                 ? t.TranslateKey("options.sensitivity.min")
                 : Math.Abs(v - 0.8) < 0.0015
                     ? t.TranslateKey("options.sensitivity.max")
-                    : (int)(v - 0.2 * (1000/3d)) + "%"
+                    : (int)Math.Round((v - 0.2) * (1000/3d)) + "%"
         };
         FramerateLimitOption = new FloatOption("options.framerateLimit", "fpsLimit", 120)
         {
@@ -208,7 +208,7 @@ public class GameOptions
             LabelOverride = "FOV",
             Min = 30,
             Max = 120,
-            Step = 1/90f,
+            Step = 1,
             Formatter = (v, _) => ((int)v).ToString(CultureInfo.CurrentCulture)
         };
 

@@ -18,13 +18,13 @@ public class GuiVideoSettings : Screen
         DisplayTitle = true;
 
         int buttonLeft = Width / 2 - 100;
-        int topY = Height / 6 + 12;
+        int topY = Height / 6;
 
-        for (int i = 0; i < _options.MainScreenOptions.Length; i++)
+        for (int i = 0; i < _options.VideoScreenOptions.Length; i++)
         {
-            GameOption option = _options.MainScreenOptions[i];
+            GameOption option = _options.VideoScreenOptions[i];
             int x = buttonLeft - 55 + (i % 2 * 160);
-            int y = topY + 12 * (i >> 1);
+            int y = topY + (24 * (i / 2));
 
             switch (option)
             {
@@ -51,12 +51,14 @@ public class GuiVideoSettings : Screen
             }
         }
 
-        Button doneButton = new(buttonLeft, topY + 156, translations.TranslateKey("gui.done"));
+        Button doneButton = new(buttonLeft, topY + 168, translations.TranslateKey("gui.done"));
         doneButton.Clicked += (_, _) =>
         {
             MC.options.SaveOptions();
             MC.OpenScreen(_parentScreen);
         };
+
+        AddChild(doneButton);
     }
 
     protected override void OnRendered(RenderEventArgs e)
