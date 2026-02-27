@@ -243,247 +243,211 @@ public ref struct BlockRenderContext
         }
     }
 
-    internal readonly void DrawEastFace(Block block, in Vec3D pos, in FaceColors colors, int textureId)
+    internal readonly void DrawNorthFace(Block block, in Vec3D pos, in FaceColors colors, int textureId)
     {
         Box bb = OverrideBounds ?? block.BoundingBox;
+        double bMinY = bb.MinY < 0.0 ? 0.0 : (bb.MinY > 1.0 ? 1.0 : bb.MinY);
+        double bMaxY = bb.MaxY < 0.0 ? 0.0 : (bb.MaxY > 1.0 ? 1.0 : bb.MaxY);
+        double bMinZ = bb.MinZ < 0.0 ? 0.0 : (bb.MinZ > 1.0 ? 1.0 : bb.MinZ);
+        double bMaxZ = bb.MaxZ < 0.0 ? 0.0 : (bb.MaxZ > 1.0 ? 1.0 : bb.MaxZ);
+
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
 
-        double bMinX = bb.MinX < 0.0D ? 0.0D : (bb.MinX > 1.0D ? 1.0D : bb.MinX);
-        double bMaxX = bb.MaxX < 0.0D ? 0.0D : (bb.MaxX > 1.0D ? 1.0D : bb.MaxX);
-        double bMinY = bb.MinY < 0.0D ? 0.0D : (bb.MinY > 1.0D ? 1.0D : bb.MinY);
-        double bMaxY = bb.MaxY < 0.0D ? 0.0D : (bb.MaxY > 1.0D ? 1.0D : bb.MaxY);
-
-        double u0 = (texU + bMinX * 16.0D) / 256.0D;
-        double u1 = (texU + bMaxX * 16.0D - 0.01D) / 256.0D;
-        double v0 = (texV + 16.0D - bMaxY * 16.0D) / 256.0D;
-        double v1 = (texV + 16.0D - bMinY * 16.0D - 0.01D) / 256.0D;
-
-        if (FlipTexture) { (u0, u1) = (u1, u0); }
-
-        double tlU = 0, tlV = 0, trU = 0, trV = 0, blU = 0, blV = 0, brU = 0, brV = 0;
-
-        // 8 Absolute Rotation States
-        switch (UvRotateEast)
+        void GetUV(double h, double v, out double u, out double outV, int uvRotate, bool flipTexture)
         {
-            case 0: tlU=u0; tlV=v0; trU=u1; trV=v0; blU=u0; blV=v1; brU=u1; brV=v1; break;
-            case 1: tlU=u0; tlV=v1; trU=u0; trV=v0; blU=u1; blV=v1; brU=u1; brV=v0; break;
-            case 2: tlU=u1; tlV=v1; trU=u0; trV=v1; blU=u1; blV=v0; brU=u0; brV=v0; break;
-            case 3: tlU=u1; tlV=v0; trU=u1; trV=v1; blU=u0; blV=v0; brU=u0; brV=v1; break;
-            case 4: tlU=u1; tlV=v0; trU=u0; trV=v0; blU=u1; blV=v1; brU=u0; brV=v1; break; // mirrored
-            case 5: tlU=u1; tlV=v1; trU=u1; trV=v0; blU=u0; blV=v1; brU=u0; brV=v0; break; // mirrored
-            case 6: tlU=u0; tlV=v1; trU=u1; trV=v1; blU=u0; blV=v0; brU=u1; brV=v0; break; // mirrored
-            case 7: tlU=u0; tlV=v0; trU=u0; trV=v1; blU=u1; blV=v0; brU=u1; brV=v1; break; // mirrored
+            double fU = h, fV = v;
+            switch (uvRotate)
+            {
+                case 1: fU = v; fV = 1.0 - h; break;
+                case 2: fU = 1.0 - h; fV = 1.0 - v; break;
+                case 3: fU = 1.0 - v; fV = h; break;
+                case 4: fU = 1.0 - h; fV = v; break; // Mirrored variants
+                case 5: fU = v; fV = h; break;
+                case 6: fU = h; fV = 1.0 - v; break;
+                case 7: fU = 1.0 - v; fV = 1.0 - h; break;
+            }
+            if (flipTexture) fU = 1.0 - fU;
+            u = (texU + fU * 16.0) / 256.0;
+            outV = (texV + fV * 16.0) / 256.0;
         }
+
+        // X- Face (Yellow): Left = minZ, Right = maxZ
+        GetUV(bMinZ, 1.0 - bMaxY, out double uTL, out double vTL, UvRotateNorth, FlipTexture);
+        GetUV(bMinZ, 1.0 - bMinY, out double uBL, out double vBL, UvRotateNorth, FlipTexture);
+        GetUV(bMaxZ, 1.0 - bMinY, out double uBR, out double vBR, UvRotateNorth, FlipTexture);
+        GetUV(bMaxZ, 1.0 - bMaxY, out double uTR, out double vTR, UvRotateNorth, FlipTexture);
+
+        double minX = pos.x + bb.MinX;
+        double minY = pos.y + bb.MinY; double maxY = pos.y + bb.MaxY;
+        double minZ = pos.z + bb.MinZ; double maxZ = pos.z + bb.MaxZ;
+
+        if (EnableAo) {
+            Tess.setColorOpaque_F(colors.RedTopLeft, colors.GreenTopLeft, colors.BlueTopLeft); Tess.addVertexWithUV(minX, maxY, minZ, uTL, vTL);
+            Tess.setColorOpaque_F(colors.RedBottomLeft, colors.GreenBottomLeft, colors.BlueBottomLeft); Tess.addVertexWithUV(minX, minY, minZ, uBL, vBL);
+            Tess.setColorOpaque_F(colors.RedBottomRight, colors.GreenBottomRight, colors.BlueBottomRight); Tess.addVertexWithUV(minX, minY, maxZ, uBR, vBR);
+            Tess.setColorOpaque_F(colors.RedTopRight, colors.GreenTopRight, colors.BlueTopRight); Tess.addVertexWithUV(minX, maxY, maxZ, uTR, vTR);
+        } else {
+            Tess.addVertexWithUV(minX, maxY, minZ, uTL, vTL);
+            Tess.addVertexWithUV(minX, minY, minZ, uBL, vBL);
+            Tess.addVertexWithUV(minX, minY, maxZ, uBR, vBR);
+            Tess.addVertexWithUV(minX, maxY, maxZ, uTR, vTR);
+        }
+    }
+
+    internal readonly void DrawSouthFace(Block block, in Vec3D pos, in FaceColors colors, int textureId)
+    {
+        Box bb = OverrideBounds ?? block.BoundingBox;
+        double bMinY = bb.MinY < 0.0 ? 0.0 : (bb.MinY > 1.0 ? 1.0 : bb.MinY);
+        double bMaxY = bb.MaxY < 0.0 ? 0.0 : (bb.MaxY > 1.0 ? 1.0 : bb.MaxY);
+        double bMinZ = bb.MinZ < 0.0 ? 0.0 : (bb.MinZ > 1.0 ? 1.0 : bb.MinZ);
+        double bMaxZ = bb.MaxZ < 0.0 ? 0.0 : (bb.MaxZ > 1.0 ? 1.0 : bb.MaxZ);
+
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
+
+        void GetUV(double h, double v, out double u, out double outV, int uvRotate, bool flipTexture)
+        {
+            double fU = h, fV = v;
+            switch (uvRotate)
+            {
+                case 1: fU = v; fV = 1.0 - h; break;
+                case 2: fU = 1.0 - h; fV = 1.0 - v; break;
+                case 3: fU = 1.0 - v; fV = h; break;
+                case 4: fU = 1.0 - h; fV = v; break;
+                case 5: fU = v; fV = h; break;
+                case 6: fU = h; fV = 1.0 - v; break;
+                case 7: fU = 1.0 - v; fV = 1.0 - h; break;
+            }
+            if (flipTexture) fU = 1.0 - fU;
+            u = (texU + fU * 16.0) / 256.0;
+            outV = (texV + fV * 16.0) / 256.0;
+        }
+
+        // X+ Face (Green): Left = maxZ, Right = minZ
+        GetUV(1.0 - bMaxZ, 1.0 - bMaxY, out double uTL, out double vTL, UvRotateSouth, FlipTexture);
+        GetUV(1.0 - bMaxZ, 1.0 - bMinY, out double uBL, out double vBL, UvRotateSouth, FlipTexture);
+        GetUV(1.0 - bMinZ, 1.0 - bMinY, out double uBR, out double vBR, UvRotateSouth, FlipTexture);
+        GetUV(1.0 - bMinZ, 1.0 - bMaxY, out double uTR, out double vTR, UvRotateSouth, FlipTexture);
+
+        double posX = pos.x + bb.MaxX;
+        double minY = pos.y + bb.MinY; double maxY = pos.y + bb.MaxY;
+        double minZ = pos.z + bb.MinZ; double maxZ = pos.z + bb.MaxZ;
+
+        if (EnableAo) {
+            Tess.setColorOpaque_F(colors.RedTopLeft, colors.GreenTopLeft, colors.BlueTopLeft); Tess.addVertexWithUV(posX, maxY, maxZ, uTL, vTL);
+            Tess.setColorOpaque_F(colors.RedBottomLeft, colors.GreenBottomLeft, colors.BlueBottomLeft); Tess.addVertexWithUV(posX, minY, maxZ, uBL, vBL);
+            Tess.setColorOpaque_F(colors.RedBottomRight, colors.GreenBottomRight, colors.BlueBottomRight); Tess.addVertexWithUV(posX, minY, minZ, uBR, vBR);
+            Tess.setColorOpaque_F(colors.RedTopRight, colors.GreenTopRight, colors.BlueTopRight); Tess.addVertexWithUV(posX, maxY, minZ, uTR, vTR);
+        } else {
+            Tess.addVertexWithUV(posX, maxY, maxZ, uTL, vTL);
+            Tess.addVertexWithUV(posX, minY, maxZ, uBL, vBL);
+            Tess.addVertexWithUV(posX, minY, minZ, uBR, vBR);
+            Tess.addVertexWithUV(posX, maxY, minZ, uTR, vTR);
+        }
+    }
+
+    internal readonly void DrawEastFace(Block block, in Vec3D pos, in FaceColors colors, int textureId)
+    {
+        Box bb = OverrideBounds ?? block.BoundingBox;
+        double bMinY = bb.MinY < 0.0 ? 0.0 : (bb.MinY > 1.0 ? 1.0 : bb.MinY);
+        double bMaxY = bb.MaxY < 0.0 ? 0.0 : (bb.MaxY > 1.0 ? 1.0 : bb.MaxY);
+        double bMinX = bb.MinX < 0.0 ? 0.0 : (bb.MinX > 1.0 ? 1.0 : bb.MinX);
+        double bMaxX = bb.MaxX < 0.0 ? 0.0 : (bb.MaxX > 1.0 ? 1.0 : bb.MaxX);
+
+        int texU = (textureId & 15) << 4;
+        int texV = textureId & 240;
+
+        void GetUV(double h, double v, out double u, out double outV, int uvRotate, bool flipTexture)
+        {
+            double fU = h, fV = v;
+            switch (uvRotate)
+            {
+                case 1: fU = v; fV = 1.0 - h; break;
+                case 2: fU = 1.0 - h; fV = 1.0 - v; break;
+                case 3: fU = 1.0 - v; fV = h; break;
+                case 4: fU = 1.0 - h; fV = v; break;
+                case 5: fU = v; fV = h; break;
+                case 6: fU = h; fV = 1.0 - v; break;
+                case 7: fU = 1.0 - v; fV = 1.0 - h; break;
+            }
+            if (flipTexture) fU = 1.0 - fU;
+            u = (texU + fU * 16.0) / 256.0;
+            outV = (texV + fV * 16.0) / 256.0;
+        }
+
+        // Z- Face (Blue): Left = maxX, Right = minX
+        GetUV(1.0 - bMaxX, 1.0 - bMaxY, out double uTL, out double vTL, UvRotateEast, FlipTexture);
+        GetUV(1.0 - bMaxX, 1.0 - bMinY, out double uBL, out double vBL, UvRotateEast, FlipTexture);
+        GetUV(1.0 - bMinX, 1.0 - bMinY, out double uBR, out double vBR, UvRotateEast, FlipTexture);
+        GetUV(1.0 - bMinX, 1.0 - bMaxY, out double uTR, out double vTR, UvRotateEast, FlipTexture);
 
         double minX = pos.x + bb.MinX; double maxX = pos.x + bb.MaxX;
         double minY = pos.y + bb.MinY; double maxY = pos.y + bb.MaxY;
         double minZ = pos.z + bb.MinZ;
 
-        // Looking at Z-. Left side is maxX, Right side is minX.
-        if (EnableAo)
-        {
-            Tess.setColorOpaque_F(colors.RedTopLeft, colors.GreenTopLeft, colors.BlueTopLeft);
-            Tess.addVertexWithUV(minX, maxY, minZ, trU, trV); // Top Right
-
-            Tess.setColorOpaque_F(colors.RedBottomLeft, colors.GreenBottomLeft, colors.BlueBottomLeft);
-            Tess.addVertexWithUV(maxX, maxY, minZ, tlU, tlV); // Top Left
-
-            Tess.setColorOpaque_F(colors.RedBottomRight, colors.GreenBottomRight, colors.BlueBottomRight);
-            Tess.addVertexWithUV(maxX, minY, minZ, blU, blV); // Bottom Left
-
-            Tess.setColorOpaque_F(colors.RedTopRight, colors.GreenTopRight, colors.BlueTopRight);
-            Tess.addVertexWithUV(minX, minY, minZ, brU, brV); // Bottom Right
-        }
-        else
-        {
-            Tess.addVertexWithUV(minX, maxY, minZ, trU, trV);
-            Tess.addVertexWithUV(maxX, maxY, minZ, tlU, tlV);
-            Tess.addVertexWithUV(maxX, minY, minZ, blU, blV);
-            Tess.addVertexWithUV(minX, minY, minZ, brU, brV);
+        if (EnableAo) {
+            Tess.setColorOpaque_F(colors.RedTopLeft, colors.GreenTopLeft, colors.BlueTopLeft); Tess.addVertexWithUV(maxX, maxY, minZ, uTL, vTL);
+            Tess.setColorOpaque_F(colors.RedBottomLeft, colors.GreenBottomLeft, colors.BlueBottomLeft); Tess.addVertexWithUV(maxX, minY, minZ, uBL, vBL);
+            Tess.setColorOpaque_F(colors.RedBottomRight, colors.GreenBottomRight, colors.BlueBottomRight); Tess.addVertexWithUV(minX, minY, minZ, uBR, vBR);
+            Tess.setColorOpaque_F(colors.RedTopRight, colors.GreenTopRight, colors.BlueTopRight); Tess.addVertexWithUV(minX, maxY, minZ, uTR, vTR);
+        } else {
+            Tess.addVertexWithUV(maxX, maxY, minZ, uTL, vTL);
+            Tess.addVertexWithUV(maxX, minY, minZ, uBL, vBL);
+            Tess.addVertexWithUV(minX, minY, minZ, uBR, vBR);
+            Tess.addVertexWithUV(minX, maxY, minZ, uTR, vTR);
         }
     }
 
     internal readonly void DrawWestFace(Block block, in Vec3D pos, in FaceColors colors, int textureId)
     {
         Box bb = OverrideBounds ?? block.BoundingBox;
+        double bMinY = bb.MinY < 0.0 ? 0.0 : (bb.MinY > 1.0 ? 1.0 : bb.MinY);
+        double bMaxY = bb.MaxY < 0.0 ? 0.0 : (bb.MaxY > 1.0 ? 1.0 : bb.MaxY);
+        double bMinX = bb.MinX < 0.0 ? 0.0 : (bb.MinX > 1.0 ? 1.0 : bb.MinX);
+        double bMaxX = bb.MaxX < 0.0 ? 0.0 : (bb.MaxX > 1.0 ? 1.0 : bb.MaxX);
+
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
 
-        double bMinX = bb.MinX < 0.0D ? 0.0D : (bb.MinX > 1.0D ? 1.0D : bb.MinX);
-        double bMaxX = bb.MaxX < 0.0D ? 0.0D : (bb.MaxX > 1.0D ? 1.0D : bb.MaxX);
-        double bMinY = bb.MinY < 0.0D ? 0.0D : (bb.MinY > 1.0D ? 1.0D : bb.MinY);
-        double bMaxY = bb.MaxY < 0.0D ? 0.0D : (bb.MaxY > 1.0D ? 1.0D : bb.MaxY);
-
-        double u0 = (texU + bMinX * 16.0D) / 256.0D;
-        double u1 = (texU + bMaxX * 16.0D - 0.01D) / 256.0D;
-        double v0 = (texV + 16.0D - bMaxY * 16.0D) / 256.0D;
-        double v1 = (texV + 16.0D - bMinY * 16.0D - 0.01D) / 256.0D;
-
-        if (FlipTexture) { (u0, u1) = (u1, u0); }
-
-        double tlU = 0, tlV = 0, trU = 0, trV = 0, blU = 0, blV = 0, brU = 0, brV = 0;
-
-        // 8 Absolute Rotation States
-        switch (UvRotateWest)
+        void GetUV(double h, double v, out double u, out double outV, int uvRotate, bool flipTexture)
         {
-            case 0: tlU=u0; tlV=v0; trU=u1; trV=v0; blU=u0; blV=v1; brU=u1; brV=v1; break;
-            case 1: tlU=u0; tlV=v1; trU=u0; trV=v0; blU=u1; blV=v1; brU=u1; brV=v0; break;
-            case 2: tlU=u1; tlV=v1; trU=u0; trV=v1; blU=u1; blV=v0; brU=u0; brV=v0; break;
-            case 3: tlU=u1; tlV=v0; trU=u1; trV=v1; blU=u0; blV=v0; brU=u0; brV=v1; break;
-            case 4: tlU=u1; tlV=v0; trU=u0; trV=v0; blU=u1; blV=v1; brU=u0; brV=v1; break; // mirrored
-            case 5: tlU=u1; tlV=v1; trU=u1; trV=v0; blU=u0; blV=v1; brU=u0; brV=v0; break; // mirrored
-            case 6: tlU=u0; tlV=v1; trU=u1; trV=v1; blU=u0; blV=v0; brU=u1; brV=v0; break; // mirrored
-            case 7: tlU=u0; tlV=v0; trU=u0; trV=v1; blU=u1; blV=v0; brU=u1; brV=v1; break; // mirrored
+            double fU = h, fV = v;
+            switch (uvRotate)
+            {
+                case 1: fU = v; fV = 1.0 - h; break;
+                case 2: fU = 1.0 - h; fV = 1.0 - v; break;
+                case 3: fU = 1.0 - v; fV = h; break;
+                case 4: fU = 1.0 - h; fV = v; break;
+                case 5: fU = v; fV = h; break;
+                case 6: fU = h; fV = 1.0 - v; break;
+                case 7: fU = 1.0 - v; fV = 1.0 - h; break;
+            }
+            if (flipTexture) fU = 1.0 - fU;
+            u = (texU + fU * 16.0) / 256.0;
+            outV = (texV + fV * 16.0) / 256.0;
         }
+
+        // Z+ Face (Red): Left = minX, Right = maxX
+        GetUV(bMinX, 1.0 - bMaxY, out double uTL, out double vTL, UvRotateWest, FlipTexture);
+        GetUV(bMinX, 1.0 - bMinY, out double uBL, out double vBL, UvRotateWest, FlipTexture);
+        GetUV(bMaxX, 1.0 - bMinY, out double uBR, out double vBR, UvRotateWest, FlipTexture);
+        GetUV(bMaxX, 1.0 - bMaxY, out double uTR, out double vTR, UvRotateWest, FlipTexture);
 
         double minX = pos.x + bb.MinX; double maxX = pos.x + bb.MaxX;
         double minY = pos.y + bb.MinY; double maxY = pos.y + bb.MaxY;
         double maxZ = pos.z + bb.MaxZ;
 
-        // Looking at Z+. Left side is minX, Right side is maxX.
-        if (EnableAo)
-        {
-            Tess.setColorOpaque_F(colors.RedTopLeft, colors.GreenTopLeft, colors.BlueTopLeft);
-            Tess.addVertexWithUV(minX, maxY, maxZ, tlU, tlV); // Top Left
-
-            Tess.setColorOpaque_F(colors.RedBottomLeft, colors.GreenBottomLeft, colors.BlueBottomLeft);
-            Tess.addVertexWithUV(minX, minY, maxZ, blU, blV); // Bottom Left
-
-            Tess.setColorOpaque_F(colors.RedBottomRight, colors.GreenBottomRight, colors.BlueBottomRight);
-            Tess.addVertexWithUV(maxX, minY, maxZ, brU, brV); // Bottom Right
-
-            Tess.setColorOpaque_F(colors.RedTopRight, colors.GreenTopRight, colors.BlueTopRight);
-            Tess.addVertexWithUV(maxX, maxY, maxZ, trU, trV); // Top Right
-        }
-        else
-        {
-            Tess.addVertexWithUV(minX, maxY, maxZ, tlU, tlV);
-            Tess.addVertexWithUV(minX, minY, maxZ, blU, blV);
-            Tess.addVertexWithUV(maxX, minY, maxZ, brU, brV);
-            Tess.addVertexWithUV(maxX, maxY, maxZ, trU, trV);
-        }
-    }
-
-
-internal readonly void DrawSouthFace(Block block, in Vec3D pos, in FaceColors colors, int textureId)
-    {
-        Box bb = OverrideBounds ?? block.BoundingBox;
-        int texU = (textureId & 15) << 4;
-        int texV = textureId & 240;
-
-        double bMinZ = bb.MinZ < 0.0D ? 0.0D : (bb.MinZ > 1.0D ? 1.0D : bb.MinZ);
-        double bMaxZ = bb.MaxZ < 0.0D ? 0.0D : (bb.MaxZ > 1.0D ? 1.0D : bb.MaxZ);
-        double bMinY = bb.MinY < 0.0D ? 0.0D : (bb.MinY > 1.0D ? 1.0D : bb.MinY);
-        double bMaxY = bb.MaxY < 0.0D ? 0.0D : (bb.MaxY > 1.0D ? 1.0D : bb.MaxY);
-
-        double u0 = (texU + bMinZ * 16.0D) / 256.0D;
-        double u1 = (texU + bMaxZ * 16.0D - 0.01D) / 256.0D;
-        double v0 = (texV + 16.0D - bMaxY * 16.0D) / 256.0D;
-        double v1 = (texV + 16.0D - bMinY * 16.0D - 0.01D) / 256.0D;
-
-        if (FlipTexture) { (u0, u1) = (u1, u0); }
-
-        double tlU = 0, tlV = 0, trU = 0, trV = 0, blU = 0, blV = 0, brU = 0, brV = 0;
-
-        // 8 Absolute Rotation States
-        switch (UvRotateSouth)
-        {
-            case 0: tlU=u0; tlV=v0; trU=u1; trV=v0; blU=u0; blV=v1; brU=u1; brV=v1; break;
-            case 1: tlU=u0; tlV=v1; trU=u0; trV=v0; blU=u1; blV=v1; brU=u1; brV=v0; break;
-            case 2: tlU=u1; tlV=v1; trU=u0; trV=v1; blU=u1; blV=v0; brU=u0; brV=v0; break;
-            case 3: tlU=u1; tlV=v0; trU=u1; trV=v1; blU=u0; blV=v0; brU=u0; brV=v1; break;
-            case 4: tlU=u1; tlV=v0; trU=u0; trV=v0; blU=u1; blV=v1; brU=u0; brV=v1; break; // mirrored
-            case 5: tlU=u1; tlV=v1; trU=u1; trV=v0; blU=u0; blV=v1; brU=u0; brV=v0; break; // mirrored
-            case 6: tlU=u0; tlV=v1; trU=u1; trV=v1; blU=u0; blV=v0; brU=u1; brV=v0; break; // mirrored
-            case 7: tlU=u0; tlV=v0; trU=u0; trV=v1; blU=u1; blV=v0; brU=u1; brV=v1; break; // mirrored
-        }
-
-        double posX = pos.x + bb.MaxX; 
-        double minY = pos.y + bb.MinY; double maxY = pos.y + bb.MaxY;
-        double minZ = pos.z + bb.MinZ; double maxZ = pos.z + bb.MaxZ;
-
-        // Looking at X+. Left side is maxZ, Right side is minZ.
-        if (EnableAo)
-        {
-            Tess.setColorOpaque_F(colors.RedTopLeft, colors.GreenTopLeft, colors.BlueTopLeft);
-            Tess.addVertexWithUV(posX, maxY, maxZ, tlU, tlV); // Top Left
-
-            Tess.setColorOpaque_F(colors.RedBottomLeft, colors.GreenBottomLeft, colors.BlueBottomLeft);
-            Tess.addVertexWithUV(posX, minY, maxZ, blU, blV); // Bottom Left
-
-            Tess.setColorOpaque_F(colors.RedBottomRight, colors.GreenBottomRight, colors.BlueBottomRight);
-            Tess.addVertexWithUV(posX, minY, minZ, brU, brV); // Bottom Right
-
-            Tess.setColorOpaque_F(colors.RedTopRight, colors.GreenTopRight, colors.BlueTopRight);
-            Tess.addVertexWithUV(posX, maxY, minZ, trU, trV); // Top Right
-        }
-        else
-        {
-            Tess.addVertexWithUV(posX, maxY, maxZ, tlU, tlV);
-            Tess.addVertexWithUV(posX, minY, maxZ, blU, blV);
-            Tess.addVertexWithUV(posX, minY, minZ, brU, brV);
-            Tess.addVertexWithUV(posX, maxY, minZ, trU, trV);
-        }
-    }
-
-    internal readonly void DrawNorthFace(Block block, in Vec3D pos, in FaceColors colors, int textureId)
-    {
-        Box bb = OverrideBounds ?? block.BoundingBox;
-        int texU = (textureId & 15) << 4;
-        int texV = textureId & 240;
-
-        double bMinZ = bb.MinZ < 0.0D ? 0.0D : (bb.MinZ > 1.0D ? 1.0D : bb.MinZ);
-        double bMaxZ = bb.MaxZ < 0.0D ? 0.0D : (bb.MaxZ > 1.0D ? 1.0D : bb.MaxZ);
-        double bMinY = bb.MinY < 0.0D ? 0.0D : (bb.MinY > 1.0D ? 1.0D : bb.MinY);
-        double bMaxY = bb.MaxY < 0.0D ? 0.0D : (bb.MaxY > 1.0D ? 1.0D : bb.MaxY);
-
-        double u0 = (texU + bMinZ * 16.0D) / 256.0D;
-        double u1 = (texU + bMaxZ * 16.0D - 0.01D) / 256.0D;
-        double v0 = (texV + 16.0D - bMaxY * 16.0D) / 256.0D;
-        double v1 = (texV + 16.0D - bMinY * 16.0D - 0.01D) / 256.0D;
-
-        if (FlipTexture) { (u0, u1) = (u1, u0); }
-
-        double tlU = 0, tlV = 0, trU = 0, trV = 0, blU = 0, blV = 0, brU = 0, brV = 0;
-
-        // 8 Absolute Rotation States
-        switch (UvRotateNorth)
-        {
-            case 0: tlU=u0; tlV=v0; trU=u1; trV=v0; blU=u0; blV=v1; brU=u1; brV=v1; break; // 0
-            case 1: tlU=u0; tlV=v1; trU=u0; trV=v0; blU=u1; blV=v1; brU=u1; brV=v0; break; // 90
-            case 2: tlU=u1; tlV=v1; trU=u0; trV=v1; blU=u1; blV=v0; brU=u0; brV=v0; break; // 180
-            case 3: tlU=u1; tlV=v0; trU=u1; trV=v1; blU=u0; blV=v0; brU=u0; brV=v1; break; // 270
-            case 4: tlU=u1; tlV=v0; trU=u0; trV=v0; blU=u1; blV=v1; brU=u0; brV=v1; break; // mirrored
-            case 5: tlU=u1; tlV=v1; trU=u1; trV=v0; blU=u0; blV=v1; brU=u0; brV=v0; break; // mirrored
-            case 6: tlU=u0; tlV=v1; trU=u1; trV=v1; blU=u0; blV=v0; brU=u1; brV=v0; break; // mirrored
-            case 7: tlU=u0; tlV=v0; trU=u0; trV=v1; blU=u1; blV=v0; brU=u1; brV=v1; break; // mirrored
-        }
-
-        double minX = pos.x + bb.MinX;
-        double minY = pos.y + bb.MinY; double maxY = pos.y + bb.MaxY;
-        double minZ = pos.z + bb.MinZ; double maxZ = pos.z + bb.MaxZ;
-
-        if (EnableAo)
-        {
-            Tess.setColorOpaque_F(colors.RedBottomLeft, colors.GreenBottomLeft, colors.BlueBottomLeft);
-            Tess.addVertexWithUV(minX, maxY, minZ, tlU, tlV); // Top Left
-            
-            Tess.setColorOpaque_F(colors.RedBottomRight, colors.GreenBottomRight, colors.BlueBottomRight);
-            Tess.addVertexWithUV(minX, minY, minZ, blU, blV); // Bottom Left
-            
-            Tess.setColorOpaque_F(colors.RedTopRight, colors.GreenTopRight, colors.BlueTopRight);
-            Tess.addVertexWithUV(minX, minY, maxZ, brU, brV); // Bottom Right
-            
-            Tess.setColorOpaque_F(colors.RedTopLeft, colors.GreenTopLeft, colors.BlueTopLeft);
-            Tess.addVertexWithUV(minX, maxY, maxZ, trU, trV); // Top Right
-        }
-        else
-        {
-            Tess.addVertexWithUV(minX, maxY, minZ, tlU, tlV);
-            Tess.addVertexWithUV(minX, minY, minZ, blU, blV);
-            Tess.addVertexWithUV(minX, minY, maxZ, brU, brV);
-            Tess.addVertexWithUV(minX, maxY, maxZ, trU, trV);
+        if (EnableAo) {
+            Tess.setColorOpaque_F(colors.RedTopLeft, colors.GreenTopLeft, colors.BlueTopLeft); Tess.addVertexWithUV(minX, maxY, maxZ, uTL, vTL);
+            Tess.setColorOpaque_F(colors.RedBottomLeft, colors.GreenBottomLeft, colors.BlueBottomLeft); Tess.addVertexWithUV(minX, minY, maxZ, uBL, vBL);
+            Tess.setColorOpaque_F(colors.RedBottomRight, colors.GreenBottomRight, colors.BlueBottomRight); Tess.addVertexWithUV(maxX, minY, maxZ, uBR, vBR);
+            Tess.setColorOpaque_F(colors.RedTopRight, colors.GreenTopRight, colors.BlueTopRight); Tess.addVertexWithUV(maxX, maxY, maxZ, uTR, vTR);
+        } else {
+            Tess.addVertexWithUV(minX, maxY, maxZ, uTL, vTL);
+            Tess.addVertexWithUV(minX, minY, maxZ, uBL, vBL);
+            Tess.addVertexWithUV(maxX, minY, maxZ, uBR, vBR);
+            Tess.addVertexWithUV(maxX, maxY, maxZ, uTR, vTR);
         }
     }
 
