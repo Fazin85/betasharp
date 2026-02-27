@@ -56,6 +56,12 @@ public class LeverRenderer : IBlockRenderer
 
         // --- 2. Calculate Handle Lighting & Texture ---
         float luminance = block.getLuminance(ctx.World, pos.x, pos.y, pos.z);
+        if (orientation == 1) luminance = block.getLuminance(ctx.World, pos.x - 1, pos.y, pos.z);
+        else if (orientation == 2) luminance = block.getLuminance(ctx.World, pos.x + 1, pos.y, pos.z);
+        else if (orientation == 3) luminance = block.getLuminance(ctx.World, pos.x, pos.y, pos.z - 1);
+        else if (orientation == 4) luminance = block.getLuminance(ctx.World, pos.x, pos.y, pos.z + 1);
+        else if (orientation == 5 || orientation == 6) luminance = block.getLuminance(ctx.World, pos.x, pos.y + 1, pos.z);
+
         if (Block.BlocksLightLuminance[block.id] > 0) luminance = 1.0F;
         ctx.Tess.setColorOpaque_F(luminance, luminance, luminance);
 
