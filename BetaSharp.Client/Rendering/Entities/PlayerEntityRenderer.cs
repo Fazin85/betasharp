@@ -131,14 +131,13 @@ public class PlayerEntityRenderer : LivingEntityRenderer
         {
             GLManager.GL.PushMatrix();
             modelBipedMain.bipedHead.transform(1.0F / 16.0F);
-            // TODO: Block Render Ongoing refactor
-            // if (BlockRenderer.IsSideLit(Block.Blocks[var3.itemId].getRenderType()))
-            // {
-            //     float var4 = 10.0F / 16.0F;
-            //     GLManager.GL.Translate(0.0F, -0.25F, 0.0F);
-            //     GLManager.GL.Rotate(180.0F, 0.0F, 1.0F, 0.0F);
-            //     GLManager.GL.Scale(var4, -var4, var4);
-            // }
+            if (BlockRenderer.IsSideLit(Block.Blocks[var3.itemId].getRenderType()))
+            {
+                float var4 = 10.0F / 16.0F;
+                GLManager.GL.Translate(0.0F, -0.25F, 0.0F);
+                GLManager.GL.Rotate(180.0F, 0.0F, 1.0F, 0.0F);
+                GLManager.GL.Scale(var4, -var4, var4);
+            }
 
             Dispatcher.heldItemRenderer.renderItem(var1, var3);
             GLManager.GL.PopMatrix();
@@ -219,18 +218,16 @@ public class PlayerEntityRenderer : LivingEntityRenderer
                 var21 = new ItemStack(Item.Stick);
             }
 
-            // TODO: Block Render Ongoing refactor
-            // if (var21.itemId < 256 && BlockRenderer.IsSideLit(Block.Blocks[var21.itemId].getRenderType()))
-            // {
-            //     var5 = 0.5F;
-            //     GLManager.GL.Translate(0.0F, 3.0F / 16.0F, -(5.0F / 16.0F));
-            //     var5 *= 12.0F / 16.0F;
-            //     GLManager.GL.Rotate(20.0F, 1.0F, 0.0F, 0.0F);
-            //     GLManager.GL.Rotate(45.0F, 0.0F, 1.0F, 0.0F);
-            //     GLManager.GL.Scale(var5, -var5, var5);
-            // }
-            // else
-            if (Item.ITEMS[var21.itemId].isHandheld())
+            if (var21.itemId < 256 && BlockRenderer.IsSideLit(Block.Blocks[var21.itemId].getRenderType()))
+            {
+                var5 = 0.5F;
+                GLManager.GL.Translate(0.0F, 3.0F / 16.0F, -(5.0F / 16.0F));
+                var5 *= 12.0F / 16.0F;
+                GLManager.GL.Rotate(20.0F, 1.0F, 0.0F, 0.0F);
+                GLManager.GL.Rotate(45.0F, 0.0F, 1.0F, 0.0F);
+                GLManager.GL.Scale(var5, -var5, var5);
+            }
+            else if (Item.ITEMS[var21.itemId].isHandheld())
             {
                 var5 = 10.0F / 16.0F;
                 if (Item.ITEMS[var21.itemId].isHandheldRod())
