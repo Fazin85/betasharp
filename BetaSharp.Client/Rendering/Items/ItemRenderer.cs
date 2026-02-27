@@ -51,35 +51,35 @@ public class ItemRenderer : EntityRenderer
         float var16;
         float var17;
         float var18;
-        // TODO: Block Render Ongoing refactor
-        // if (var10.itemId < 256 && BlockRenderer.IsSideLit(Block.Blocks[var10.itemId].getRenderType()))
-        // {
-        //     GLManager.GL.Rotate(var12, 0.0F, 1.0F, 0.0F);
-        //     loadTexture("/terrain.png");
-        //     float var28 = 0.25F;
-        //     if (!Block.Blocks[var10.itemId].isFullCube() && var10.itemId != Block.Slab.id && Block.Blocks[var10.itemId].getRenderType() != 16)
-        //     {
-        //         var28 = 0.5F;
-        //     }
-//
-        //     GLManager.GL.Scale(var28, var28, var28);
-//
-        //     for (int var29 = 0; var29 < var13; ++var29)
-        //     {
-        //         GLManager.GL.PushMatrix();
-        //         if (var29 > 0)
-        //         {
-        //             var16 = (random.NextFloat() * 2.0F - 1.0F) * 0.2F / var28;
-        //             var17 = (random.NextFloat() * 2.0F - 1.0F) * 0.2F / var28;
-        //             var18 = (random.NextFloat() * 2.0F - 1.0F) * 0.2F / var28;
-        //             GLManager.GL.Translate(var16, var17, var18);
-        //         }
-//
-        //         renderBlocks.RenderBlockOnInventory(Block.Blocks[var10.itemId], var10.getDamage(), var1.getBrightnessAtEyes(var9));
-        //         GLManager.GL.PopMatrix();
-        //     }
-        // }
-        // else
+        if (var10.itemId < 256 && BlockRenderer.IsSideLit(Block.Blocks[var10.itemId].getRenderType()))
+        {
+            GLManager.GL.Rotate(var12, 0.0F, 1.0F, 0.0F);
+            loadTexture("/terrain.png");
+            float var28 = 0.25F;
+            if (!Block.Blocks[var10.itemId].isFullCube() && var10.itemId != Block.Slab.id
+                && Block.Blocks[var10.itemId].getRenderType() != BlockRendererType.PistonBase)
+            {
+                var28 = 0.5F;
+            }
+
+            GLManager.GL.Scale(var28, var28, var28);
+
+            for (int var29 = 0; var29 < var13; ++var29)
+            {
+                GLManager.GL.PushMatrix();
+                if (var29 > 0)
+                {
+                    var16 = (random.NextFloat() * 2.0F - 1.0F) * 0.2F / var28;
+                    var17 = (random.NextFloat() * 2.0F - 1.0F) * 0.2F / var28;
+                    var18 = (random.NextFloat() * 2.0F - 1.0F) * 0.2F / var28;
+                    GLManager.GL.Translate(var16, var17, var18);
+                }
+
+                renderBlocks.RenderBlockOnInventory(Block.Blocks[var10.itemId], var10.getDamage(), var1.getBrightnessAtEyes(var9), Tessellator.instance);
+                GLManager.GL.PopMatrix();
+            }
+        }
+        else
         {
             GLManager.GL.Scale(0.5F, 0.5F, 0.5F);
             int var14 = var10.getTextureId();
