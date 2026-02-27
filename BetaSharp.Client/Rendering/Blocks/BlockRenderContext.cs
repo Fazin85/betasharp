@@ -1,5 +1,4 @@
 using BetaSharp.Blocks;
-using BetaSharp.Client.Rendering.Blocks.Renderers;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
@@ -542,7 +541,6 @@ public ref struct BlockRenderContext
         float lZn = block.getLuminance(World, pos.x, pos.y, pos.z - 1);
         float lZp = block.getLuminance(World, pos.x, pos.y, pos.z + 1);
 
-
         bool opXnYn = !Block.BlocksAllowVision[World.getBlockId(pos.x - 1, pos.y - 1, pos.z)];
         bool opXnYp = !Block.BlocksAllowVision[World.getBlockId(pos.x - 1, pos.y + 1, pos.z)];
         bool opXpYn = !Block.BlocksAllowVision[World.getBlockId(pos.x + 1, pos.y - 1, pos.z)];
@@ -572,16 +570,14 @@ public ref struct BlockRenderContext
                 float sw = (opXnZp || opYnZp) ? w : block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z + 1);
                 float ne = (opXpZn || opYnZn) ? e : block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z - 1);
                 float se = (opXpZp || opYnZp) ? e : block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z + 1);
-                v0 = (sw + w + s + lYn) / 4.0F; // minX, maxZ
-                v1 = (w + nw + lYn + n) / 4.0F; // minX, minZ
-                v2 = (lYn + n + e + ne) / 4.0F; // maxX, minZ
-                v3 = (s + lYn + se + e) / 4.0F; // maxX, maxZ
+                v0 = (sw + w + s + lYn) / 4.0F;
+                v1 = (w + nw + lYn + n) / 4.0F;
+                v2 = (lYn + n + e + ne) / 4.0F;
+                v3 = (s + lYn + se + e) / 4.0F;
             }
 
             var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.5F, tintBottom);
-            int textureId = OverrideTexture >= 0
-                ? OverrideTexture
-                : block.getTextureId(World, pos.x, pos.y, pos.z, 0);
+            int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 0);
             DrawBottomFace(block, new Vec3D(pos.x, pos.y, pos.z), colors, textureId);
             hasRendered = true;
         }
@@ -600,16 +596,14 @@ public ref struct BlockRenderContext
                 float sw = (opXnYp || opYpZp) ? w : block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z + 1);
                 float ne = (opXpYp || opYpZn) ? e : block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z - 1);
                 float se = (opXpYp || opYpZp) ? e : block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z + 1);
-                v0 = (s + lYp + se + e) / 4.0F; // maxX, maxZ
-                v1 = (lYp + n + e + ne) / 4.0F; // maxX, minZ
-                v2 = (w + nw + lYp + n) / 4.0F; // minX, minZ
-                v3 = (sw + w + s + lYp) / 4.0F; // minX, maxZ
+                v0 = (s + lYp + se + e) / 4.0F;
+                v1 = (lYp + n + e + ne) / 4.0F;
+                v2 = (w + nw + lYp + n) / 4.0F;
+                v3 = (sw + w + s + lYp) / 4.0F;
             }
 
             var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 1.0F, tintTop);
-            int textureId = OverrideTexture >= 0
-                ? OverrideTexture
-                : block.getTextureId(World, pos.x, pos.y, pos.z, 1);
+            int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 1);
             DrawTopFace(block, new Vec3D(pos.x, pos.y, pos.z), colors, textureId);
             hasRendered = true;
         }
@@ -634,7 +628,7 @@ public ref struct BlockRenderContext
                 v3 = (dw + w + d + lZn) / 4.0F;
             }
 
-            var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.8F, tintEast);
+            var colors = FaceColors.AssignVertexColors(v1, v2, v3, v0, r, g, b, 0.8F, tintEast);
             int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 2);
             DrawEastFace(block, new Vec3D(pos.x, pos.y, pos.z), colors, textureId);
             hasRendered = true;
@@ -660,7 +654,7 @@ public ref struct BlockRenderContext
                 v3 = (lZp + u + e + ue) / 4.0F;
             }
 
-            var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.8F, tintWest); // Z+ (South)
+            var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.8F, tintWest);
             int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 3);
             DrawWestFace(block, new Vec3D(pos.x, pos.y, pos.z), colors, textureId);
             hasRendered = true;
@@ -686,7 +680,7 @@ public ref struct BlockRenderContext
                 v3 = (d + ds + lXn + s) / 4.0F;
             }
 
-            var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.6F, tintNorth); // X- (West)
+            var colors = FaceColors.AssignVertexColors(v1, v2, v3, v0, r, g, b, 0.6F, tintNorth);
             int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 4);
             DrawNorthFace(block, new Vec3D(pos.x, pos.y, pos.z), colors, textureId);
             hasRendered = true;
@@ -712,7 +706,7 @@ public ref struct BlockRenderContext
                 v3 = (u + us + lXp + s) / 4.0F;
             }
 
-            var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.6F, tintSouth); // X+ (East)
+            var colors = FaceColors.AssignVertexColors(v3, v0, v1, v2, r, g, b, 0.6F, tintSouth);
             int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 5);
             DrawSouthFace(block, new Vec3D(pos.x, pos.y, pos.z), colors, textureId);
             hasRendered = true;
