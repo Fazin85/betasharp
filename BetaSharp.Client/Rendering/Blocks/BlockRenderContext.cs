@@ -505,7 +505,7 @@ public ref struct BlockRenderContext
                 v3 = (dw + w + d + lZn) / 4.0F;
             }
 
-            var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, 0, 0, 1, 0.8F, tintEast);
+            var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3,  r, g, b, 0.8F, tintEast);
             int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 2);
             DrawEastFace(block, new Vec3D(pos.x, pos.y, pos.z), colors, textureId);
             hasRendered = true;
@@ -531,7 +531,7 @@ public ref struct BlockRenderContext
                 v3 = (lZp + u + e + ue) / 4.0F;
             }
 
-            var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, 1, 0, 0, 0.8F, tintWest); // Z+ (South)
+            var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.8F, tintWest); // Z+ (South)
             int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 3);
             DrawWestFace(block, new Vec3D(pos.x, pos.y, pos.z), colors, textureId);
             hasRendered = true;
@@ -557,7 +557,7 @@ public ref struct BlockRenderContext
                 v3 = (d + ds + lXn + s) / 4.0F;
             }
 
-            var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, 1, 1, 0, 0.6F, tintNorth); // X- (West)
+            var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.6F, tintNorth); // X- (West)
             int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 4);
             DrawNorthFace(block, new Vec3D(pos.x, pos.y, pos.z), colors, textureId);
             hasRendered = true;
@@ -583,7 +583,7 @@ public ref struct BlockRenderContext
                 v3 = (u + us + lXp + s) / 4.0F;
             }
 
-            var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, 0, 1, 0, 0.6F, tintSouth); // X+ (East)
+            var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.6F, tintSouth); // X+ (East)
             int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 5);
             DrawSouthFace(block, new Vec3D(pos.x, pos.y, pos.z), colors, textureId);
             hasRendered = true;
