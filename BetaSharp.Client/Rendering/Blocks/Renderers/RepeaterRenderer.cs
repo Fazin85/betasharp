@@ -11,7 +11,16 @@ public class RepeaterRenderer : IBlockRenderer
         int direction = metadata & 3;
         int delay = (metadata & 12) >> 2;
         // 1. Base Rendering
-        var slabCtx = ctx with { EnableAo = false, UvRotateTop = (direction + 1) % 4 };
+        int topRotation = direction switch
+        {
+            0 => 0, // South (+Z)
+            1 => 1, // West (-X)
+            2 => 2, // North (-Z)
+            3 => 3, // East (+X)
+            _ => 0
+        };
+
+        var slabCtx = ctx with { EnableAo = true, AoBlendMode = 0, UvRotateTop = direction % 4};
 
         slabCtx.DrawBlock(block, pos);
 
