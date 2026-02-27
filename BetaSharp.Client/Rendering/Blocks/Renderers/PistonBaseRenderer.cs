@@ -17,26 +17,41 @@ public class PistonBaseRenderer : IBlockRenderer
         switch (facing)
         {
             case 0: // Down
-                uvEast = 3; uvWest = 3; uvSouth = 3; uvNorth = 3;
+                uvSouth = 2;
+                uvNorth = 2;
+                uvEast = 2;
+                uvWest = 2;
                 if (isExpanded) bounds = new Box(0.0F, 0.25F, 0.0F, 1.0F, 1.0F, 1.0F);
                 break;
             case 1: // Up
                 if (isExpanded) bounds = new Box(0.0F, 0.0F, 0.0F, 1.0F, 0.75F, 1.0F);
                 break;
-            case 2: // North (-Z)
-                uvSouth = 1; uvNorth = 2;
+            case 2: // North (-Z, Blue Face)
+                uvSouth = 1; 
+                uvNorth = 3; 
+                uvEast = 1; // Counters the -90 degree twist on the head
                 if (isExpanded) bounds = new Box(0.0F, 0.0F, 0.25F, 1.0F, 1.0F, 1.0F);
                 break;
-            case 3: // South (+Z)
-                uvSouth = 2; uvNorth = 1; uvTop = 3; uvBottom = 3;
+            case 3: // South (+Z, Red Face)
+                uvSouth = 3; 
+                uvNorth = 1; 
+                uvTop = 3; 
+                uvBottom = 3; 
+                uvWest = 1; // Counters the -90 degree twist on the head
                 if (isExpanded) bounds = new Box(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.75F);
                 break;
-            case 4: // West (-X)
-                uvEast = 1; uvWest = 2; uvTop = 2; uvBottom = 1;
+            case 4: // West (-X, Yellow Face)
+                uvEast = 1; 
+                uvWest = 3; 
+                uvTop = 2; 
+                uvBottom = 1; 
                 if (isExpanded) bounds = new Box(0.25F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
                 break;
-            case 5: // East (+X)
-                uvEast = 2; uvWest = 1; uvTop = 1; uvBottom = 2;
+            case 5: // East (+X, Green Face)
+                uvEast = 1; 
+                uvWest = 1; 
+                uvTop = 1; 
+                uvBottom = 2; 
                 if (isExpanded) bounds = new Box(0.0F, 0.0F, 0.0F, 0.75F, 1.0F, 1.0F);
                 break;
         }
