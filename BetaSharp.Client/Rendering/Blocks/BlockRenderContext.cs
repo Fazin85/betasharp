@@ -65,181 +65,119 @@ public ref struct BlockRenderContext
     }
 
 
-    internal readonly void DrawBottomFace(Block block, in Vec3D pos, in FaceColors colors,
-        int textureId)
+    internal readonly void DrawBottomFace(Block block, in Vec3D pos, in FaceColors colors, int textureId)
     {
-        Box blockBb = OverrideBounds ?? block.BoundingBox;
+        Box bb = OverrideBounds ?? block.BoundingBox;
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
-        double minU = (texU + blockBb.MinX * 16.0D) / 256.0D;
-        double maxU = (texU + blockBb.MaxX * 16.0D - 0.01D) / 256.0D;
-        double minV = (texV + blockBb.MinZ * 16.0D) / 256.0D;
-        double maxV = (texV + blockBb.MaxZ * 16.0D - 0.01D) / 256.0D;
 
-        if (blockBb.MinX < 0.0D || blockBb.MaxX > 1.0D)
+        double bMinX = bb.MinX < 0.0D ? 0.0D : (bb.MinX > 1.0D ? 1.0D : bb.MinX);
+        double bMaxX = bb.MaxX < 0.0D ? 0.0D : (bb.MaxX > 1.0D ? 1.0D : bb.MaxX);
+        double bMinZ = bb.MinZ < 0.0D ? 0.0D : (bb.MinZ > 1.0D ? 1.0D : bb.MinZ);
+        double bMaxZ = bb.MaxZ < 0.0D ? 0.0D : (bb.MaxZ > 1.0D ? 1.0D : bb.MaxZ);
+
+        void GetUV(double h, double v, out double u, out double outV, int uvRotate, bool flipTexture)
         {
-            minU = texU / 256.0D;
-            maxU = (texU + 15.99D) / 256.0D;
+            double fU = h, fV = v;
+            switch (uvRotate)
+            {
+                case 1: fU = v; fV = 1.0 - h; break;
+                case 2: fU = 1.0 - h; fV = 1.0 - v; break;
+                case 3: fU = 1.0 - v; fV = h; break;
+                case 4: fU = 1.0 - h; fV = v; break; // mirrored
+                case 5: fU = v; fV = h; break;       // mirrored 90
+                case 6: fU = h; fV = 1.0 - v; break; // mirrored 180
+                case 7: fU = 1.0 - v; fV = 1.0 - h; break; // mirrored 270
+            }
+            if (flipTexture) fU = 1.0 - fU;
+            u = (texU + fU * 16.0D) / 256.0D;
+            outV = (texV + fV * 16.0D) / 256.0D;
         }
 
-        if (blockBb.MinZ < 0.0D || blockBb.MaxZ > 1.0D)
-        {
-            minV = texV / 256.0D;
-            maxV = (texV + 15.99D) / 256.0D;
-        }
+        GetUV(bMinX, bMaxZ, out double u0, out double v0, UvRotateBottom, FlipTexture);
+        GetUV(bMinX, bMinZ, out double u1, out double v1, UvRotateBottom, FlipTexture);
+        GetUV(bMaxX, bMinZ, out double u2, out double v2, UvRotateBottom, FlipTexture);
+        GetUV(bMaxX, bMaxZ, out double u3, out double v3, UvRotateBottom, FlipTexture);
 
-        double u1 = maxU, u2 = minU, v1 = minV, v2 = maxV;
-
-        if (UvRotateBottom == 2)
-        {
-            minU = (texU + blockBb.MinZ * 16.0D) / 256.0D;
-            minV = (texV + 16 - blockBb.MaxX * 16.0D) / 256.0D;
-            maxU = (texU + blockBb.MaxZ * 16.0D) / 256.0D;
-            maxV = (texV + 16 - blockBb.MinX * 16.0D) / 256.0D;
-            v1 = minV;
-            v2 = maxV;
-            u1 = minU;
-            u2 = maxU;
-            minV = maxV;
-            maxV = v1;
-        }
-        else if (UvRotateBottom == 1)
-        {
-            minU = (texU + 16 - blockBb.MaxZ * 16.0D) / 256.0D;
-            minV = (texV + blockBb.MinX * 16.0D) / 256.0D;
-            maxU = (texU + 16 - blockBb.MinZ * 16.0D) / 256.0D;
-            maxV = (texV + blockBb.MaxX * 16.0D) / 256.0D;
-            u1 = maxU;
-            u2 = minU;
-            minU = maxU;
-            maxU = u2;
-            v1 = maxV;
-            v2 = minV;
-        }
-        else if (UvRotateBottom == 3)
-        {
-            minU = (texU + 16 - blockBb.MinX * 16.0D) / 256.0D;
-            maxU = (texU + 16 - blockBb.MaxX * 16.0D - 0.01D) / 256.0D;
-            minV = (texV + 16 - blockBb.MinZ * 16.0D) / 256.0D;
-            maxV = (texV + 16 - blockBb.MaxZ * 16.0D - 0.01D) / 256.0D;
-            u1 = maxU;
-            u2 = minU;
-            v1 = minV;
-            v2 = maxV;
-        }
-
-        double minX = pos.x + blockBb.MinX;
-        double maxX = pos.x + blockBb.MaxX;
-        double minY = pos.y + blockBb.MinY;
-        double minZ = pos.z + blockBb.MinZ;
-        double maxZ = pos.z + blockBb.MaxZ;
+        double minX = pos.x + bb.MinX; double maxX = pos.x + bb.MaxX;
+        double minY = pos.y + bb.MinY; 
+        double minZ = pos.z + bb.MinZ; double maxZ = pos.z + bb.MaxZ;
 
         if (EnableAo)
         {
             Tess.setColorOpaque_F(colors.RedTopLeft, colors.GreenTopLeft, colors.BlueTopLeft);
-            Tess.addVertexWithUV(minX, minY, maxZ, u2, v2);
+            Tess.addVertexWithUV(minX, minY, maxZ, u0, v0);
             Tess.setColorOpaque_F(colors.RedBottomLeft, colors.GreenBottomLeft, colors.BlueBottomLeft);
-            Tess.addVertexWithUV(minX, minY, minZ, minU, minV);
+            Tess.addVertexWithUV(minX, minY, minZ, u1, v1);
             Tess.setColorOpaque_F(colors.RedBottomRight, colors.GreenBottomRight, colors.BlueBottomRight);
-            Tess.addVertexWithUV(maxX, minY, minZ, u1, v1);
+            Tess.addVertexWithUV(maxX, minY, minZ, u2, v2);
             Tess.setColorOpaque_F(colors.RedTopRight, colors.GreenTopRight, colors.BlueTopRight);
-            Tess.addVertexWithUV(maxX, minY, maxZ, maxU, maxV);
+            Tess.addVertexWithUV(maxX, minY, maxZ, u3, v3);
         }
         else
         {
-            Tess.addVertexWithUV(minX, minY, maxZ, u2, v2);
-            Tess.addVertexWithUV(minX, minY, minZ, minU, minV);
-            Tess.addVertexWithUV(maxX, minY, minZ, u1, v1);
-            Tess.addVertexWithUV(maxX, minY, maxZ, maxU, maxV);
+            Tess.addVertexWithUV(minX, minY, maxZ, u0, v0);
+            Tess.addVertexWithUV(minX, minY, minZ, u1, v1);
+            Tess.addVertexWithUV(maxX, minY, minZ, u2, v2);
+            Tess.addVertexWithUV(maxX, minY, maxZ, u3, v3);
         }
     }
 
-    internal readonly void DrawTopFace(Block block, in Vec3D pos, in FaceColors colors,
-        int textureId)
+    internal readonly void DrawTopFace(Block block, in Vec3D pos, in FaceColors colors, int textureId)
     {
-        Box blockBb = OverrideBounds ?? block.BoundingBox;
+        Box bb = OverrideBounds ?? block.BoundingBox;
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
-        double minU = (texU + blockBb.MinX * 16.0D) / 256.0D;
-        double maxU = (texU + blockBb.MaxX * 16.0D - 0.01D) / 256.0D;
-        double minV = (texV + blockBb.MinZ * 16.0D) / 256.0D;
-        double maxV = (texV + blockBb.MaxZ * 16.0D - 0.01D) / 256.0D;
 
-        if (blockBb.MinX < 0.0D || blockBb.MaxX > 1.0D)
+        double bMinX = bb.MinX < 0.0D ? 0.0D : (bb.MinX > 1.0D ? 1.0D : bb.MinX);
+        double bMaxX = bb.MaxX < 0.0D ? 0.0D : (bb.MaxX > 1.0D ? 1.0D : bb.MaxX);
+        double bMinZ = bb.MinZ < 0.0D ? 0.0D : (bb.MinZ > 1.0D ? 1.0D : bb.MinZ);
+        double bMaxZ = bb.MaxZ < 0.0D ? 0.0D : (bb.MaxZ > 1.0D ? 1.0D : bb.MaxZ);
+
+        void GetUV(double h, double v, out double u, out double outV, int uvRotate, bool flipTexture)
         {
-            minU = texU / 256.0D;
-            maxU = (texU + 15.99D) / 256.0D;
+            double fU = h, fV = v;
+            switch (uvRotate)
+            {
+                case 1: fU = v; fV = 1.0 - h; break;
+                case 2: fU = 1.0 - h; fV = 1.0 - v; break;
+                case 3: fU = 1.0 - v; fV = h; break;
+                case 4: fU = 1.0 - h; fV = v; break; // mirrored
+                case 5: fU = v; fV = h; break;       // mirrored 90
+                case 6: fU = h; fV = 1.0 - v; break; // mirrored 180
+                case 7: fU = 1.0 - v; fV = 1.0 - h; break; // mirrored 270
+            }
+            if (flipTexture) fU = 1.0 - fU;
+            u = (texU + fU * 16.0D) / 256.0D;
+            outV = (texV + fV * 16.0D) / 256.0D;
         }
 
-        if (blockBb.MinZ < 0.0D || blockBb.MaxZ > 1.0D)
-        {
-            minV = texV / 256.0D;
-            maxV = (texV + 15.99D) / 256.0D;
-        }
+        GetUV(bMaxX, bMaxZ, out double u0, out double v0, UvRotateTop, FlipTexture);
+        GetUV(bMaxX, bMinZ, out double u1, out double v1, UvRotateTop, FlipTexture);
+        GetUV(bMinX, bMinZ, out double u2, out double v2, UvRotateTop, FlipTexture);
+        GetUV(bMinX, bMaxZ, out double u3, out double v3, UvRotateTop, FlipTexture);
 
-        double u1 = maxU, u2 = minU, v1 = minV, v2 = maxV;
-
-        if (UvRotateTop == 1)
-        {
-            minU = (texU + blockBb.MinZ * 16.0D) / 256.0D;
-            minV = (texV + 16 - blockBb.MaxX * 16.0D) / 256.0D;
-            maxU = (texU + blockBb.MaxZ * 16.0D) / 256.0D;
-            maxV = (texV + 16 - blockBb.MinX * 16.0D) / 256.0D;
-            v1 = minV;
-            v2 = maxV;
-            u1 = minU;
-            u2 = maxU;
-            minV = maxV;
-            maxV = v1;
-        }
-        else if (UvRotateTop == 2)
-        {
-            minU = (texU + 16 - blockBb.MaxZ * 16.0D) / 256.0D;
-            minV = (texV + blockBb.MinX * 16.0D) / 256.0D;
-            maxU = (texU + 16 - blockBb.MinZ * 16.0D) / 256.0D;
-            maxV = (texV + blockBb.MaxX * 16.0D) / 256.0D;
-            u1 = maxU;
-            u2 = minU;
-            minU = maxU;
-            maxU = u2;
-            v1 = maxV;
-            v2 = minV;
-        }
-        else if (UvRotateTop == 3)
-        {
-            minU = (texU + 16 - blockBb.MinX * 16.0D) / 256.0D;
-            maxU = (texU + 16 - blockBb.MaxX * 16.0D - 0.01D) / 256.0D;
-            minV = (texV + 16 - blockBb.MinZ * 16.0D) / 256.0D;
-            maxV = (texV + 16 - blockBb.MaxZ * 16.0D - 0.01D) / 256.0D;
-            u1 = maxU;
-            u2 = minU;
-            v1 = minV;
-            v2 = maxV;
-        }
-
-        double minX = pos.x + blockBb.MinX;
-        double maxX = pos.x + blockBb.MaxX;
-        double maxY = pos.y + blockBb.MaxY;
-        double minZ = pos.z + blockBb.MinZ;
-        double maxZ = pos.z + blockBb.MaxZ;
+        double minX = pos.x + bb.MinX; double maxX = pos.x + bb.MaxX;
+        double maxY = pos.y + bb.MaxY; 
+        double minZ = pos.z + bb.MinZ; double maxZ = pos.z + bb.MaxZ;
 
         if (EnableAo)
         {
             Tess.setColorOpaque_F(colors.RedTopLeft, colors.GreenTopLeft, colors.BlueTopLeft);
-            Tess.addVertexWithUV(maxX, maxY, maxZ, maxU, maxV);
+            Tess.addVertexWithUV(maxX, maxY, maxZ, u0, v0);
             Tess.setColorOpaque_F(colors.RedBottomLeft, colors.GreenBottomLeft, colors.BlueBottomLeft);
             Tess.addVertexWithUV(maxX, maxY, minZ, u1, v1);
             Tess.setColorOpaque_F(colors.RedBottomRight, colors.GreenBottomRight, colors.BlueBottomRight);
-            Tess.addVertexWithUV(minX, maxY, minZ, minU, minV);
+            Tess.addVertexWithUV(minX, maxY, minZ, u2, v2);
             Tess.setColorOpaque_F(colors.RedTopRight, colors.GreenTopRight, colors.BlueTopRight);
-            Tess.addVertexWithUV(minX, maxY, maxZ, u2, v2);
+            Tess.addVertexWithUV(minX, maxY, maxZ, u3, v3);
         }
         else
         {
-            Tess.addVertexWithUV(maxX, maxY, maxZ, maxU, maxV);
+            Tess.addVertexWithUV(maxX, maxY, maxZ, u0, v0);
             Tess.addVertexWithUV(maxX, maxY, minZ, u1, v1);
-            Tess.addVertexWithUV(minX, maxY, minZ, minU, minV);
-            Tess.addVertexWithUV(minX, maxY, maxZ, u2, v2);
+            Tess.addVertexWithUV(minX, maxY, minZ, u2, v2);
+            Tess.addVertexWithUV(minX, maxY, maxZ, u3, v3);
         }
     }
 
@@ -262,7 +200,7 @@ public ref struct BlockRenderContext
                 case 1: fU = v; fV = 1.0 - h; break;
                 case 2: fU = 1.0 - h; fV = 1.0 - v; break;
                 case 3: fU = 1.0 - v; fV = h; break;
-                case 4: fU = 1.0 - h; fV = v; break; // Mirrored variants
+                case 4: fU = 1.0 - h; fV = v; break;
                 case 5: fU = v; fV = h; break;
                 case 6: fU = h; fV = 1.0 - v; break;
                 case 7: fU = 1.0 - v; fV = 1.0 - h; break;
@@ -272,7 +210,7 @@ public ref struct BlockRenderContext
             outV = (texV + fV * 16.0) / 256.0;
         }
 
-        // X- Face (Yellow): Left = minZ, Right = maxZ
+        // X- Face: Left = minZ, Right = maxZ
         GetUV(bMinZ, 1.0 - bMaxY, out double uTL, out double vTL, UvRotateNorth, FlipTexture);
         GetUV(bMinZ, 1.0 - bMinY, out double uBL, out double vBL, UvRotateNorth, FlipTexture);
         GetUV(bMaxZ, 1.0 - bMinY, out double uBR, out double vBR, UvRotateNorth, FlipTexture);
@@ -324,7 +262,7 @@ public ref struct BlockRenderContext
             outV = (texV + fV * 16.0) / 256.0;
         }
 
-        // X+ Face (Green): Left = maxZ, Right = minZ
+        // X+ Face: Left = maxZ, Right = minZ
         GetUV(1.0 - bMaxZ, 1.0 - bMaxY, out double uTL, out double vTL, UvRotateSouth, FlipTexture);
         GetUV(1.0 - bMaxZ, 1.0 - bMinY, out double uBL, out double vBL, UvRotateSouth, FlipTexture);
         GetUV(1.0 - bMinZ, 1.0 - bMinY, out double uBR, out double vBR, UvRotateSouth, FlipTexture);
@@ -376,7 +314,7 @@ public ref struct BlockRenderContext
             outV = (texV + fV * 16.0) / 256.0;
         }
 
-        // Z- Face (Blue): Left = maxX, Right = minX
+        // Z- Face: Left = maxX, Right = minX
         GetUV(1.0 - bMaxX, 1.0 - bMaxY, out double uTL, out double vTL, UvRotateEast, FlipTexture);
         GetUV(1.0 - bMaxX, 1.0 - bMinY, out double uBL, out double vBL, UvRotateEast, FlipTexture);
         GetUV(1.0 - bMinX, 1.0 - bMinY, out double uBR, out double vBR, UvRotateEast, FlipTexture);
@@ -428,7 +366,7 @@ public ref struct BlockRenderContext
             outV = (texV + fV * 16.0) / 256.0;
         }
 
-        // Z+ Face (Red): Left = minX, Right = maxX
+        // Z+ Face: Left = minX, Right = maxX
         GetUV(bMinX, 1.0 - bMaxY, out double uTL, out double vTL, UvRotateWest, FlipTexture);
         GetUV(bMinX, 1.0 - bMinY, out double uBL, out double vBL, UvRotateWest, FlipTexture);
         GetUV(bMaxX, 1.0 - bMinY, out double uBR, out double vBR, UvRotateWest, FlipTexture);
@@ -593,7 +531,7 @@ public ref struct BlockRenderContext
                 v3 = (lZp + u + e + ue) / 4.0F;
             }
 
-            var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, 1, 0, 0, 0.8F, tintWest); // RED = Z+ (South)
+            var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, 1, 0, 0, 0.8F, tintWest); // Z+ (South)
             int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 3);
             DrawWestFace(block, new Vec3D(pos.x, pos.y, pos.z), colors, textureId);
             hasRendered = true;
@@ -619,7 +557,7 @@ public ref struct BlockRenderContext
                 v3 = (d + ds + lXn + s) / 4.0F;
             }
 
-            var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, 1, 1, 0, 0.6F, tintNorth); // YELLOW = X- (West)
+            var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, 1, 1, 0, 0.6F, tintNorth); // X- (West)
             int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 4);
             DrawNorthFace(block, new Vec3D(pos.x, pos.y, pos.z), colors, textureId);
             hasRendered = true;
@@ -645,7 +583,7 @@ public ref struct BlockRenderContext
                 v3 = (u + us + lXp + s) / 4.0F;
             }
 
-            var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, 0, 1, 0, 0.6F, tintSouth); // GREEN = X+ (East)
+            var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, 0, 1, 0, 0.6F, tintSouth); // X+ (East)
             int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 5);
             DrawSouthFace(block, new Vec3D(pos.x, pos.y, pos.z), colors, textureId);
             hasRendered = true;
