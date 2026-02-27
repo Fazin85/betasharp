@@ -48,25 +48,32 @@ public class LeverRenderer : IBlockRenderer
             uvWest: ctx.UvRotateWest,
             customFlag: ctx.CustomFlag,
             enableAo: false,
-            aoBlendMode: 0
+            aoBlendMode: 1
         );
 
         // Draw the base using the helper
         baseCtx.DrawBlock(block, pos);
 
-        // --- 2. Calculate Handle Lighting & Texture ---
-        float luminance = block.getLuminance(ctx.World, pos.x, pos.y, pos.z);
-        if (orientation == 1) luminance = block.getLuminance(ctx.World, pos.x - 1, pos.y, pos.z);
-        else if (orientation == 2) luminance = block.getLuminance(ctx.World, pos.x + 1, pos.y, pos.z);
-        else if (orientation == 3) luminance = block.getLuminance(ctx.World, pos.x, pos.y, pos.z - 1);
-        else if (orientation == 4) luminance = block.getLuminance(ctx.World, pos.x, pos.y, pos.z + 1);
-        else if (orientation == 5 || orientation == 6) luminance = block.getLuminance(ctx.World, pos.x, pos.y + 1, pos.z);
-
-        if (Block.BlocksLightLuminance[block.id] > 0) luminance = 1.0F;
-        ctx.Tess.setColorOpaque_F(luminance, luminance, luminance);
+        var handleCtx = new BlockRenderContext(
+            world: ctx.World,
+            tess: ctx.Tess,
+            overrideTexture: ctx.OverrideTexture,
+            renderAllFaces: ctx.RenderAllFaces,
+            flipTexture: ctx.FlipTexture,
+            bounds: null,
+            uvTop: ctx.UvRotateTop,
+            uvBottom: ctx.UvRotateBottom,
+            uvNorth: ctx.UvRotateNorth,
+            uvSouth: ctx.UvRotateSouth,
+            uvEast: ctx.UvRotateEast,
+            uvWest: ctx.UvRotateWest,
+            customFlag: ctx.CustomFlag,
+            enableAo: false,
+            aoBlendMode: 1
+        );
 
         // Determine texture for the handle itself
-        int handleTextureId = ctx.OverrideTexture >= 0 ? ctx.OverrideTexture : block.getTexture(0);
+        int handleTextureId = handleCtx.OverrideTexture >= 0 ? handleCtx.OverrideTexture : block.getTexture(0);
 
         int texU = (handleTextureId & 15) << 4;
         int texV = handleTextureId & 240;
@@ -189,10 +196,10 @@ public class LeverRenderer : IBlockRenderer
                     break;
             }
 
-            ctx.Tess.addVertexWithUV(v1.x, v1.y, v1.z, minU, maxV);
-            ctx.Tess.addVertexWithUV(v2.x, v2.y, v2.z, maxU, maxV);
-            ctx.Tess.addVertexWithUV(v3.x, v3.y, v3.z, maxU, minV);
-            ctx.Tess.addVertexWithUV(v4.x, v4.y, v4.z, minU, minV);
+            handleCtx.Tess.addVertexWithUV(v1.x, v1.y, v1.z, minU, maxV);
+            handleCtx.Tess.addVertexWithUV(v2.x, v2.y, v2.z, maxU, maxV);
+            handleCtx.Tess.addVertexWithUV(v3.x, v3.y, v3.z, maxU, minV);
+            handleCtx.Tess.addVertexWithUV(v4.x, v4.y, v4.z, minU, minV);
         }
 
         return true;
