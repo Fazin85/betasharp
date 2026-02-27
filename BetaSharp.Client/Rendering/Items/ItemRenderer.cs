@@ -144,35 +144,31 @@ public class ItemRenderer : EntityRenderer
     public void drawItemIntoGui(TextRenderer var1, TextureManager var2, int var3, int var4, int var5, int var6, int var7)
     {
         float var11;
-        // TODO: Block Render Ongoing refactor
-        // if (var3 < 256 && BlockRenderer.IsSideLit(Block.Blocks[var3].getRenderType()))
-        // {
-        //     var2.BindTexture(var2.GetTextureId("/terrain.png"));
-        //     Block var14 = Block.Blocks[var3];
-        //     GLManager.GL.PushMatrix();
-        //     GLManager.GL.Translate(var6 - 2, var7 + 3, -3.0F);
-        //     GLManager.GL.Scale(10.0F, 10.0F, 10.0F);
-        //     GLManager.GL.Translate(1.0F, 0.5F, 1.0F);
-        //     GLManager.GL.Scale(1.0F, 1.0F, -1.0F);
-        //     GLManager.GL.Rotate(210.0F, 1.0F, 0.0F, 0.0F);
-        //     GLManager.GL.Rotate(45.0F, 0.0F, 1.0F, 0.0F);
-        //     int var15 = Item.ITEMS[var3].getColorMultiplier(var4);
-        //     var11 = (var15 >> 16 & 255) / 255.0F;
-        //     float var12 = (var15 >> 8 & 255) / 255.0F;
-        //     float var13 = (var15 & 255) / 255.0F;
-        //     if (useCustomDisplayColor)
-        //     {
-        //         GLManager.GL.Color4(var11, var12, var13, 1.0F);
-        //     }
-//
-        //     GLManager.GL.Rotate(-90.0F, 0.0F, 1.0F, 0.0F);
-        //     renderBlocks.RenderFromInside = useCustomDisplayColor;
-        //     renderBlocks.RenderBlockOnInventory(var14, var4, 1.0F);
-        //     renderBlocks.RenderFromInside = true;
-        //     GLManager.GL.PopMatrix();
-        // }
-        // else
-        if (var5 >= 0)
+        if (var3 < 256 && BlockRenderer.IsSideLit(Block.Blocks[var3].getRenderType()))
+        {
+            var2.BindTexture(var2.GetTextureId("/terrain.png"));
+            Block var14 = Block.Blocks[var3];
+            GLManager.GL.PushMatrix();
+            GLManager.GL.Translate(var6 - 2, var7 + 3, -3.0F);
+            GLManager.GL.Scale(10.0F, 10.0F, 10.0F);
+            GLManager.GL.Translate(1.0F, 0.5F, 1.0F);
+            GLManager.GL.Scale(1.0F, 1.0F, -1.0F);
+            GLManager.GL.Rotate(210.0F, 1.0F, 0.0F, 0.0F);
+            GLManager.GL.Rotate(45.0F, 0.0F, 1.0F, 0.0F);
+            int var15 = Item.ITEMS[var3].getColorMultiplier(var4);
+            var11 = (var15 >> 16 & 255) / 255.0F;
+            float var12 = (var15 >> 8 & 255) / 255.0F;
+            float var13 = (var15 & 255) / 255.0F;
+            if (useCustomDisplayColor)
+            {
+                GLManager.GL.Color4(var11, var12, var13, 1.0F);
+            }
+
+            GLManager.GL.Rotate(-90.0F, 0.0F, 1.0F, 0.0F);
+            renderBlocks.RenderBlockOnInventory(var14, var4, 1.0F, Tessellator.instance);
+            GLManager.GL.PopMatrix();
+        }
+        else if (var5 >= 0)
         {
             GLManager.GL.Disable(GLEnum.Lighting);
             if (var3 < 256)

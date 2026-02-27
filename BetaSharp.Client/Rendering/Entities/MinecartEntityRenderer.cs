@@ -11,6 +11,7 @@ public class MinecartEntityRenderer : EntityRenderer
 {
 
     protected ModelBase modelMinecart;
+    private readonly BlockRenderer blockRenderer = new();
 
     public MinecartEntityRenderer()
     {
@@ -66,14 +67,13 @@ public class MinecartEntityRenderer : EntityRenderer
             GLManager.GL.Scale(var25, var25, var25);
             GLManager.GL.Translate(0.0F, 5.0F / 16.0F, 0.0F);
             GLManager.GL.Rotate(90.0F, 0.0F, 1.0F, 0.0F);
-            //TODO: WTF WHY ARE WE MAKING A NEW RENDER BLOCKS EVERY TIME
             if (var1.type == 1)
             {
-                //new BlockRenderer().RenderBlockOnInventory(Block.Chest, 0, var1.getBrightnessAtEyes(tickDelta));
+                blockRenderer.RenderBlockOnInventory(Block.Chest, 0, var1.getBrightnessAtEyes(tickDelta), Tessellator.instance);
             }
             else if (var1.type == 2)
             {
-                //new BlockRenderer().RenderBlockOnInventory(Block.Furnace, 0, var1.getBrightnessAtEyes(tickDelta));
+                blockRenderer.RenderBlockOnInventory(Block.Furnace, 0, var1.getBrightnessAtEyes(tickDelta), Tessellator.instance);
             }
 
             GLManager.GL.Rotate(-90.0F, 0.0F, 1.0F, 0.0F);
