@@ -77,9 +77,6 @@ public class BlockRenderer
         };
     }
 
-
-    // TODO: THIS SHOULD BE PART OF THE UI
-    [Deprecated(["THIS SHOULD BE PART OF THE UI"])]
     public void RenderBlockOnInventory(Block block, int metadata, float brightness, Tessellator tess)
     {
         BlockRendererType renderType = block.getRenderType();
@@ -91,7 +88,7 @@ public class BlockRenderer
         GLManager.GL.Color4(red, green, blue, 1.0F);
 
         var uiCtx = new BlockRenderContext(
-            world: null,
+            world: NullBlockAccess.Instance,
             tess: tess,
             renderAllFaces: true,
             enableAo: false,
@@ -141,9 +138,8 @@ public class BlockRenderer
         }
         else
         {
-            // For non-cube blocks (Torches, Flowers), we use their specialized renderers
             BlockPos itemPos = new BlockPos(0, 0, 0);
-            RenderBlockByRenderType(null, block, itemPos, tess, uiCtx.OverrideTexture, true);
+            RenderBlockByRenderType(NullBlockAccess.Instance, block, itemPos, tess, uiCtx.OverrideTexture, true);
         }
     }
 
