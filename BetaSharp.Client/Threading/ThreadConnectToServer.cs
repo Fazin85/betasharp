@@ -6,9 +6,21 @@ using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Client.Threading;
 
-public class ThreadConnectToServer(GuiConnecting connectingGui, Minecraft mc, string hostName, int port) : java.lang.Thread
+public class ThreadConnectToServer : java.lang.Thread
 {
     private readonly ILogger<ThreadConnectToServer> _logger = Log.Instance.For<ThreadConnectToServer>();
+    private readonly GuiConnecting _connectingGui;
+    private readonly Minecraft _mc;
+    private readonly string _hostName;
+    private readonly int _port;
+
+    public ThreadConnectToServer(GuiConnecting connectingGui, Minecraft mc, string hostName, int port)
+    {
+        _connectingGui = connectingGui;
+        _mc = mc;
+        _hostName = hostName;
+        _port = port;
+    }
 
     public override void run()
     {
@@ -49,7 +61,7 @@ public class ThreadConnectToServer(GuiConnecting connectingGui, Minecraft mc, st
             }
 
             _logger.LogError(e, e.Message);
-            _mc.OpenScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", ex.toString()));
+            _mc.OpenScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", e.ToString()));
         }
     }
 }

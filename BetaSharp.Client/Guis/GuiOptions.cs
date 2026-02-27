@@ -33,11 +33,11 @@ public class GuiOptions : Screen
             }
         }
 
-        GuiButton videoSettingsButton = new(buttonLeft - 55, topY + 72, translations.TranslateKey("options.video"));
-        GuiButton debugSettingsButton = new(buttonLeft + 105, topY + 72, "Debug Settings...");
-        GuiButton audioSettingsButton = new(buttonLeft - 55, topY + 96, "Audio Settings");
-        GuiButton controlsButton = new(buttonLeft + 105, topY + 96, translations.TranslateKey("options.controls"));
-        GuiButton doneButton = new(buttonLeft, topY + 168, translations.TranslateKey("gui.done"));
+        Button videoSettingsButton = new(buttonLeft - 55, topY + 72, translations.TranslateKey("options.video"));
+        Button debugSettingsButton = new(buttonLeft + 105, topY + 72, "Debug Settings...");
+        Button audioSettingsButton = new(buttonLeft - 55, topY + 96, "Audio Settings");
+        Button controlsButton = new(buttonLeft + 105, topY + 96, translations.TranslateKey("options.controls"));
+        Button doneButton = new(buttonLeft, topY + 168, translations.TranslateKey("gui.done"));
         videoSettingsButton.Clicked += (_, _) =>
         {
             MC.options.SaveOptions();
@@ -45,8 +45,8 @@ public class GuiOptions : Screen
         };
         debugSettingsButton.Clicked += (_, _) =>
         {
-            mc.options.SaveOptions();
-            mc.OpenScreen(new GuiDebugOptions(this, _options));
+            MC.options.SaveOptions();
+            MC.OpenScreen(new GuiDebugOptions(this, options));
         };
         audioSettingsButton.Clicked += (_, _) =>
         {

@@ -10,12 +10,11 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiEditSign : Screen
 {
-    private const int ButtonDoneId = 0;
     private const int MaxLineLength = 15;
 
     private readonly BlockEntitySign _entitySign;
     private int _updateCounter;
-    private int _editLine = 0;
+    private int _editLine;
     private static readonly string s_allowedCharacters = ChatAllowedCharacters.allowedCharacters;
 
     public GuiEditSign(BlockEntitySign sign)
@@ -28,7 +27,7 @@ public class GuiEditSign : Screen
         doneButton.Clicked += (_, _) =>
         {
             _entitySign.markDirty();
-            MC?.OpenScreen(null);
+            MC.OpenScreen(null);
         };
         AddChild(doneButton);
     }
@@ -38,7 +37,7 @@ public class GuiEditSign : Screen
         Keyboard.enableRepeatEvents(false);
         if (MC?.world?.isRemote ?? false)
         {
-            MC.getSendQueue().addToSendQueue(new UpdateSignPacket(_entitySign.x, _entitySign.y, _entitySign.z, _entitySign.Texts));
+            MC.getSendQueue().addToSendQueue(new UpdateSignPacket(_entitySign.X, _entitySign.Y, _entitySign.Z, _entitySign.Texts));
         }
     }
 

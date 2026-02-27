@@ -23,10 +23,6 @@ public class GuiChat : Screen
         Keyboard.enableRepeatEvents(true);
         IsSubscribedToKeyboard = true;
         _historyIndex = s_history.Count;
-    }
-
-    public GuiChat(string prefix)
-    {
         _message = prefix;
     }
 
