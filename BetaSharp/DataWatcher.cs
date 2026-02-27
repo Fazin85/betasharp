@@ -57,8 +57,7 @@ public class DataWatcher
 
     public sbyte getWatchableObjectByte(int id)
     {
-        // TODO: Refactor watchable object
-        return watchedObjects[id].watchedObject is int value ? (sbyte)value : (sbyte)0;
+        return unchecked((sbyte) ((byte)watchedObjects[id].watchedObject));
     }
 
     public int GetWatchableObjectInt(int id)
