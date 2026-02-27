@@ -80,6 +80,31 @@ public class BlockRenderer
     public void RenderBlockOnInventory(Block block, int metadata, float brightness, Tessellator tess)
     {
         BlockRendererType renderType = block.getRenderType();
+        if (renderType == BlockRendererType.PistonBase)
+        {
+            const int pistonMeta = 1;
+            var pistonWorld = new PistonItemBlockAccess(block.id, pistonMeta);
+
+            GLManager.GL.Color4(brightness, brightness, brightness, 1.0F);
+
+            GLManager.GL.Translate(-0.5F, -0.5F, -0.5F);
+
+            tess.startDrawingQuads();
+
+            BlockRenderContext ctx = new(
+                world: pistonWorld,
+                tess: tess,
+                renderAllFaces: true,
+                enableAo: false
+            );
+
+            BlockPos pos = new(0, 0, 0);
+            s_pistonBase.Render(block, pos, ctx);
+
+            tess.draw();
+            GLManager.GL.Translate(0.5F, 0.5F, 0.5F);
+            return;
+        }
 
         var uiCtx = new BlockRenderContext(
             world: NullBlockAccess.Instance,
