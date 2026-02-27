@@ -48,7 +48,7 @@ public class PistonBaseRenderer : IBlockRenderer
                 if (isExpanded) bounds = new Box(0.25F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
                 break;
             case 5: // East (+X, Green Face)
-                uvEast = 1; 
+                uvEast = 3; 
                 uvWest = 1; 
                 uvTop = 1; 
                 uvBottom = 2; 
