@@ -5,127 +5,67 @@ using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiMainMenu : GuiScreen
+public class GuiMainMenu : Screen
 {
-    private const int ButtonOptions = 0;
-    private const int ButtonSingleplayer = 1;
-    private const int ButtonMultiplayer = 2;
-    private const int ButtonTexturePacksAndMods = 3;
-    private const int ButtonQuit = 4;
-
     private static readonly JavaRandom s_rand = new();
     private string _splashText = "missingno";
-    private GuiButton _multiplayerButton;
 
     public GuiMainMenu()
     {
         try
         {
-            List<string> splashLines = [];
-            BufferedReader reader =
-                new(new java.io.StringReader(AssetManager.Instance.getAsset("title/splashes.txt")
-                    .getTextContent()));
-            string line = "";
-
-            while (true)
+            List<string> splashLines = AssetManager.Instance.getAsset("title/splashes.txt")
+                .getTextContent().Split('\n').ToList();
+            DateTime now = DateTime.Now;
+            _splashText = now switch
             {
-                line = reader.readLine();
-                if (line == null)
-                {
-                    _splashText = splashLines[s_rand.NextInt(splashLines.Count)];
-                    break;
-                }
-
-                line = line.Trim();
-                if (line.Length > 0)
-                {
-                    splashLines.Add(line);
-                }
-            }
+                { Month: 11, Day: 9 } => "Happy birthday, ez!",
+                { Month: 6, Day: 1 } => "Happy birthday, Notch!",
+                { Month: 12, Day: 24 } => "Merry X-mas!",
+                { Month: 1, Day: 1 } => "Happy new year!",
+                _ => splashLines[s_rand.NextInt(splashLines.Count)],
+            };
         }
         catch (Exception)
         {
         }
-    }
-
-    public override void UpdateScreen()
-    {
-        
-    }
-
-    protected override void KeyTyped(char eventChar, int eventKey)
-    {
-    }
-
-    public override void InitGui()
-    {
-        // Special days
-        DateTime now = DateTime.Now;
-        if (now.Month == 11 && now.Day == 9) _splashText = "Happy birthday, ez!";
-        else if (now.Month == 6 && now.Day == 1) _splashText = "Happy birthday, Notch!";
-        else if (now.Month == 12 && now.Day == 24) _splashText = "Merry X-mas!";
-        else if (now.Month == 1 && now.Day == 1) _splashText = "Happy new year!";
-
         TranslationStorage translator = TranslationStorage.Instance;
-        int buttonTopY = Height / 4 + 48;
+        int buttonTop = Height / 4;
+        int buttonLeft = Width / 2 - 100;
 
-        _controlList.Add(new GuiButton(ButtonSingleplayer, Width / 2 - 100, buttonTopY, translator.TranslateKey("menu.singleplayer")));
-        _controlList.Add(_multiplayerButton =
-            new GuiButton(ButtonMultiplayer, Width / 2 - 100, buttonTopY + 24, translator.TranslateKey("menu.multiplayer")));
-        _controlList.Add(new GuiButton(ButtonTexturePacksAndMods, Width / 2 - 100, buttonTopY + 48, translator.TranslateKey("menu.mods")));
+        Control container = new(buttonLeft, buttonTop, 200, 152);
+        Button singleplayerButton = new(0, 48, translator.TranslateKey("menu.singleplayer"));
+        Button multiplayerButton = new(0, 72, translator.TranslateKey("menu.multiplayer"));
+        Button texturePacksButton = new(0, 96, translator.TranslateKey("menu.mods"));
+        Button optionsButton = new(0, 132, 98, 20, translator.TranslateKey("menu.options"));
+        Button quitButton = new(102, 132, 98, 20, translator.TranslateKey("menu.quit"));
 
-        if (mc.hideQuitButton)
+        singleplayerButton.Clicked += (_, _) => MC.OpenScreen(new GuiSelectWorld(this));
+        multiplayerButton.Clicked += (_, _) => MC.OpenScreen(new GuiMultiplayer(this));
+        texturePacksButton.Clicked += (_, _) => MC.OpenScreen(new GuiTexturePacks(this));
+        optionsButton.Clicked += (_, _) => MC.OpenScreen(new GuiOptions(this, MC.options));
+        quitButton.Clicked += (_, _) => MC.shutdown();
+
+        container.AddChildren(singleplayerButton, multiplayerButton, texturePacksButton, optionsButton, quitButton);
+        AddChild(container);
+
+        if (MC.session == null || MC.session.sessionId == "-")
         {
-            _controlList.Add(new GuiButton(ButtonOptions, Width / 2 - 100, buttonTopY + 72, translator.TranslateKey("menu.options")));
-        }
-        else
-        {
-            _controlList.Add(new GuiButton(ButtonOptions, Width / 2 - 100, buttonTopY + 72 + 12, 98, 20,
-                translator.TranslateKey("menu.options")));
-
-            _controlList.Add(new GuiButton(ButtonQuit, Width / 2 + 2, buttonTopY + 72 + 12, 98, 20,
-                translator.TranslateKey("menu.quit")));
-        }
-
-        if (mc.session == null || mc.session.sessionId == "-")
-        {
-            _multiplayerButton.Enabled = false;
-        }
-    }
-
-    protected override void ActionPerformed(GuiButton button)
-    {
-        switch (button.Id)
-        {
-            case ButtonOptions:
-                mc.displayGuiScreen(new GuiOptions(this, mc.options));
-                break;
-            case ButtonSingleplayer:
-                mc.displayGuiScreen(new GuiSelectWorld(this));
-                break;
-            case ButtonMultiplayer:
-                mc.displayGuiScreen(new GuiMultiplayer(this));
-                break;
-            case ButtonTexturePacksAndMods:
-                mc.displayGuiScreen(new GuiTexturePacks(this));
-                break;
-            case ButtonQuit:
-                mc.shutdown();
-                break;
+            multiplayerButton.Enabled = false;
         }
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    protected override void OnRendered(RenderEventArgs e)
     {
         DrawDefaultBackground();
         Tessellator tess = Tessellator.instance;
         short logoWidth = 274;
         int logoX = Width / 2 - logoWidth / 2;
         byte logoY = 30;
-        mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/title/mclogo.png"));
+        MC.textureManager.BindTexture(MC.textureManager.GetTextureId("/title/mclogo.png"));
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        DrawTexturedModalRect(logoX + 0, logoY + 0, 0, 0, 155, 44);
-        DrawTexturedModalRect(logoX + 155, logoY + 0, 0, 45, 155, 44);
+        DrawTextureRegion(logoX + 0, logoY + 0, 0, 0, 155, 44);
+        DrawTextureRegion(logoX + 155, logoY + 0, 0, 45, 155, 44);
         tess.setColorOpaque_I(0xFFFFFF);
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(Width / 2 + 90, 70.0F, 0.0F);
@@ -134,13 +74,12 @@ public class GuiMainMenu : GuiScreen
             1000.0F * (float)Math.PI * 2.0F) * 0.1F);
         splashScale = splashScale * 100.0F / (FontRenderer.GetStringWidth(_splashText) + 32);
         GLManager.GL.Scale(splashScale, splashScale, splashScale);
-        DrawCenteredString(FontRenderer, _splashText, 0, -8, 0xFFFF00);
+        Gui.DrawCenteredString(FontRenderer, _splashText, 0, -8, 0xFFFF00);
         GLManager.GL.PopMatrix();
-        DrawString(FontRenderer, "Minecraft Beta 1.7.3", 2, 2, 0x505050);
+        Gui.DrawString(FontRenderer, "Minecraft Beta 1.7.3", 2, 2, 0x505050);
         string copyrightText = "Copyright Mojang Studios. Not an official Minecraft product.";
-        DrawString(FontRenderer, copyrightText, Width - FontRenderer.GetStringWidth(copyrightText) - 2, Height - 20, 0xFFFFFF);
+        Gui.DrawString(FontRenderer, copyrightText, Width - FontRenderer.GetStringWidth(copyrightText) - 2, Height - 20, 0xFFFFFF);
         string disclaimerText = "Not approved by or associated with Mojang Studios or Microsoft.";
-        DrawString(FontRenderer, disclaimerText, Width - FontRenderer.GetStringWidth(disclaimerText) - 2, Height - 10, 0xFFFFFF);
-        base.Render(mouseX, mouseY, partialTicks);
+        Gui.DrawString(FontRenderer, disclaimerText, Width - FontRenderer.GetStringWidth(disclaimerText) - 2, Height - 10, 0xFFFFFF);
     }
 }

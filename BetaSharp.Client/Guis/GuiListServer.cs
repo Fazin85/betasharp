@@ -2,12 +2,12 @@ using BetaSharp.Client.Rendering.Core;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiSlotServer : GuiSlot
+public class GuiListServer : GuiList
 {
     private readonly GuiMultiplayer _parent;
 
-    public GuiSlotServer(GuiMultiplayer parent)
-        : base(parent.mc, parent.Width, parent.Height, 32, parent.Height - 64, 36)
+    public GuiListServer(GuiMultiplayer parent)
+        : base(parent.MC, parent.Width, parent.Height, 32, parent.Height - 64, 36)
     {
         _parent = parent;
     }

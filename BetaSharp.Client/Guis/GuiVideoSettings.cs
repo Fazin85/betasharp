@@ -2,77 +2,67 @@ using BetaSharp.Client.Options;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiVideoSettings : GuiScreen
+public class GuiVideoSettings : Screen
 {
+    private readonly Screen _parentScreen;
+    private readonly GameOptions _options;
 
-    private readonly GuiScreen _parentScreen;
-    protected string _screenTitle = "Video Settings";
-    private readonly GameOptions _gameOptions;
-
-    public GuiVideoSettings(GuiScreen parent, GameOptions options)
+    public GuiVideoSettings(Screen parent, GameOptions options)
     {
         _parentScreen = parent;
-        _gameOptions = options;
-    }
+        _options = options;
+        DisplayTitle = true;
 
-    public override void InitGui()
-    {
         TranslationStorage translations = TranslationStorage.Instance;
-        _screenTitle = translations.TranslateKey("options.videoTitle");
-        int optionIndex = 0;
+        Text = translations.TranslateKey("options.videoTitle");
+        DisplayTitle = true;
 
-        foreach (GameOption option in _gameOptions.VideoScreenOptions)
+        int buttonLeft = Width / 2 - 100;
+        int topY = Height / 6;
+
+        for (int i = 0; i < _options.VideoScreenOptions.Length; i++)
         {
-            int x = Width / 2 - 155 + (optionIndex % 2) * 160;
-            int y = Height / 6 + 24 * (optionIndex / 2);
-            int id = optionIndex;
+            GameOption option = _options.VideoScreenOptions[i];
+            int x = buttonLeft - 55 + (i % 2 * 160);
+            int y = topY + (24 * (i / 2));
 
-            if (option is FloatOption floatOpt)
+            switch (option)
             {
-                _controlList.Add(new GuiSlider(id, x, y, floatOpt, option.GetDisplayString(translations), floatOpt.Value));
+                case FloatOption floatOpt:
+                    AddChild(new OptionsSlider(x, y, floatOpt));
+                    break;
+                case BoolOption boolOpt:
+                    AddChild(new ToggleButton(x, y, boolOpt));
+                    break;
+                case CycleOption cycleOpt:
+                    var cycleButton = new CycleButton(x, y, cycleOpt);
+                    AddChild(cycleButton);
+                    if (option == _options.GuiScaleOption)
+                    {
+                        cycleButton.Clicked += (_, _) =>
+                        {
+                            ScaledResolution scaled = new(MC.options, MC.displayWidth, MC.displayHeight);
+                            int scaledWidth = scaled.ScaledWidth;
+                            int scaledHeight = scaled.ScaledHeight;
+                            SetWorldAndResolution(MC, scaledWidth, scaledHeight);
+                        };
+                    }
+                    break;
             }
-            else
-            {
-                _controlList.Add(new GuiSmallButton(id, x, y, option, option.GetDisplayString(translations)));
-            }
-
-            optionIndex++;
         }
 
-        _controlList.Add(new GuiButton(200, Width / 2 - 100, Height / 6 + 168, translations.TranslateKey("gui.done")));
-    }
-
-    protected override void ActionPerformed(GuiButton btn)
-    {
-        if (btn.Enabled)
+        Button doneButton = new(buttonLeft, topY + 168, translations.TranslateKey("gui.done"));
+        doneButton.Clicked += (_, _) =>
         {
-            if (btn is GuiSmallButton smallBtn && smallBtn.Option != null)
-            {
-                smallBtn.ClickOption();
-                btn.DisplayString = smallBtn.Option.GetDisplayString(TranslationStorage.Instance);
-            }
+            MC.options.SaveOptions();
+            MC.OpenScreen(_parentScreen);
+        };
 
-            if (btn.Id == 200)
-            {
-                mc.options.SaveOptions();
-                mc.displayGuiScreen(_parentScreen);
-            }
-
-            if (btn is GuiSmallButton { Option: CycleOption } guiScaleBtn
-                && guiScaleBtn.Option == _gameOptions.GuiScaleOption)
-            {
-                ScaledResolution scaled = new(mc.options, mc.displayWidth, mc.displayHeight);
-                int scaledWidth = scaled.ScaledWidth;
-                int scaledHeight = scaled.ScaledHeight;
-                SetWorldAndResolution(mc, scaledWidth, scaledHeight);
-            }
-        }
+        AddChild(doneButton);
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    protected override void OnRendered(RenderEventArgs e)
     {
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, _screenTitle, Width / 2, 20, 0xFFFFFF);
-        base.Render(mouseX, mouseY, partialTicks);
     }
 }

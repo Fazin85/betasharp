@@ -2,42 +2,45 @@ using BetaSharp.Client.Input;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiScreenAddServer : GuiScreen
+public class GuiScreenAddServer : Screen
 {
-    private readonly GuiMultiplayer _parentScreen;
-    private GuiTextField _serverName = null!;
-    private GuiTextField _serverAddress = null!;
-    private readonly ServerData _serverData;
+    private readonly TextField _serverName;
+    private readonly TextField _serverAddress;
+    private readonly Button _doneButton;
 
     public GuiScreenAddServer(GuiMultiplayer parentScreen, ServerData serverData)
     {
-        _parentScreen = parentScreen;
-        _serverData = serverData;
+        Keyboard.enableRepeatEvents(true);
+        int buttonLeft = Width / 2 - 100;
+
+        _doneButton = new(buttonLeft, Height / 4 + 96 + 12, "Done");
+        Button cancelButton = new(buttonLeft, Height / 4 + 120 + 12, "Cancel");
+        _serverName = new(buttonLeft, 66, FontRenderer, serverData.Name)
+        {
+            Focused = true,
+            MaxLength = 32,
+        };
+        _serverAddress = new(buttonLeft, 106, FontRenderer, serverData.Ip) { MaxLength = 128 };
+
+        _doneButton.Clicked += (_, _) => parentScreen.ConfirmClicked(false, 0);
+        cancelButton.Clicked += (_, _) =>
+        {
+            serverData.Name = _serverName.Text;
+            serverData.Ip = _serverAddress.Text;
+            parentScreen.ConfirmClicked(true, 0);
+        };
+        _serverName.KeyInput += FieldKeyPressed;
+        _serverAddress.KeyInput += FieldKeyPressed;
+
+        AddChildren(_doneButton, cancelButton, _serverName, _serverAddress);
+
+        _doneButton.Enabled = _serverName.Text.Length > 0 && _serverAddress.Text.Length > 0 && _serverAddress.Text.Split(":").Length > 0;
     }
 
     public override void UpdateScreen()
     {
-        _serverName.updateCursorCounter();
-        _serverAddress.updateCursorCounter();
-    }
-
-    public override void InitGui()
-    {
-        Keyboard.enableRepeatEvents(true);
-        _controlList.Clear();
-        _controlList.Add(new GuiButton(0, Width / 2 - 100, Height / 4 + 96 + 12, "Done"));
-        _controlList.Add(new GuiButton(1, Width / 2 - 100, Height / 4 + 120 + 12, "Cancel"));
-
-        _serverName = new GuiTextField(this, FontRenderer, Width / 2 - 100, 66, 200, 20, _serverData.Name)
-        {
-            IsFocused = true
-        };
-        _serverName.SetMaxStringLength(32);
-
-        _serverAddress = new GuiTextField(this, FontRenderer, Width / 2 - 100, 106, 200, 20, _serverData.Ip);
-        _serverAddress.SetMaxStringLength(128);
-
-        _controlList[0].Enabled = _serverName.GetText().Length > 0 && _serverAddress.GetText().Length > 0 && _serverAddress.GetText().Split(":").Length > 0;
+        _serverName.UpdateCursorCounter();
+        _serverAddress.UpdateCursorCounter();
     }
 
     public override void OnGuiClosed()
@@ -45,65 +48,21 @@ public class GuiScreenAddServer : GuiScreen
         Keyboard.enableRepeatEvents(false);
     }
 
-    protected override void ActionPerformed(GuiButton button)
+    private void FieldKeyPressed(object? sender, KeyboardEventArgs e)
     {
-        if (button.Enabled)
+        if (e.Key == Keyboard.KEY_RETURN)
         {
-            if (button.Id == 1)
-            {
-                _parentScreen.ConfirmClicked(false, 0);
-            }
-            else if (button.Id == 0)
-            {
-                _serverData.Name = _serverName.GetText();
-                _serverData.Ip = _serverAddress.GetText();
-                _parentScreen.ConfirmClicked(true, 0);
-            }
-        }
-    }
-
-    protected override void KeyTyped(char eventChar, int eventKey)
-    {
-        _serverName.textboxKeyTyped(eventChar, eventKey);
-        _serverAddress.textboxKeyTyped(eventChar, eventKey);
-
-        if (eventKey == Keyboard.KEY_TAB)
-        {
-            if (_serverName.IsFocused)
-            {
-                _serverName.IsFocused = false;
-                _serverAddress.IsFocused = true;
-            }
-            else
-            {
-                _serverName.IsFocused = true;
-                _serverAddress.IsFocused = false;
-            }
+            _doneButton.DoClicked((MouseEventArgs)EventArgs.Empty);
         }
 
-        if (eventKey == Keyboard.KEY_RETURN)
-        {
-            ActionPerformed(_controlList[0]);
-        }
-
-        _controlList[0].Enabled = _serverName.GetText().Length > 0 && _serverAddress.GetText().Length > 0 && _serverAddress.GetText().Split(":").Length > 0;
+        _doneButton.Enabled = _serverName.Text.Length > 0 && _serverAddress.Text.Length > 0 && _serverAddress.Text.Split(":").Length > 0;
     }
 
-    protected override void MouseClicked(int x, int y, int button)
-    {
-        base.MouseClicked(x, y, button);
-        _serverName.MouseClicked(x, y, button);
-        _serverAddress.MouseClicked(x, y, button);
-    }
-
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    protected override void OnRendered(RenderEventArgs e)
     {
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, "Edit Server Info", Width / 2, 17, 0xFFFFFF);
-        DrawString(FontRenderer, "Server Name", Width / 2 - 100, 53, 0xA0A0A0);
-        DrawString(FontRenderer, "Server Address", Width / 2 - 100, 94, 0xA0A0A0);
-        _serverName.DrawTextBox();
-        _serverAddress.DrawTextBox();
-        base.Render(mouseX, mouseY, partialTicks);
+        Gui.DrawCenteredString(FontRenderer, "Edit Server Info", Width / 2, 17, 0xFFFFFF);
+        Gui.DrawString(FontRenderer, "Server Name", Width / 2 - 100, 53, 0xA0A0A0);
+        Gui.DrawString(FontRenderer, "Server Address", Width / 2 - 100, 94, 0xA0A0A0);
     }
 }

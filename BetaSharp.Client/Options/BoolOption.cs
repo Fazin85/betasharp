@@ -1,19 +1,22 @@
 namespace BetaSharp.Client.Options;
 
-public class BoolOption : GameOption
+public class BoolOption : GameOption<bool>
 {
-    public bool Value { get; set; }
-    public Func<bool, TranslationStorage, string>? Formatter { get; init; }
-    public Action<bool>? OnChanged { get; init; }
-
     public BoolOption(string translationKey, string saveKey, bool defaultValue = false) : base(translationKey, saveKey)
     {
+        DefaultValue = defaultValue;
         Value = defaultValue;
     }
 
     public void Toggle()
     {
         Value = !Value;
+        OnChanged?.Invoke(Value);
+    }
+
+    public void ResetToDefault()
+    {
+        Value = DefaultValue;
         OnChanged?.Invoke(Value);
     }
 

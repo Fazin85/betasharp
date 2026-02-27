@@ -4,14 +4,15 @@ namespace BetaSharp.Client.Input;
 
 public static class Mouse
 {
-    public const int EVENT_SIZE = 1 + 1 + 4 + 4 + 4 + 8;
+    public const int EventSize = 1 + 1 + 4 + 4 + 4 + 8;
+    public const int MouseButtons = 8;
 
     private static bool created;
     private static Glfw glfw;
     private static unsafe WindowHandle* window;
 
     // Current state
-    private static readonly bool[] buttons = new bool[8];
+    private static readonly bool[] buttons = new bool[MouseButtons];
     private static int x, y;
     private static int absolute_x, absolute_y;
     private static int dx, dy, dwheel;

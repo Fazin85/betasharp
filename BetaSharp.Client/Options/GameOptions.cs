@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using BetaSharp.Client.Input;
 using Microsoft.Extensions.Logging;
@@ -82,14 +83,14 @@ public class GameOptions
     }
 
     public float MouseSensitivity => MouseSensitivityOption.Value;
-    public float LimitFramerate => FramerateLimitOption.Value;
+    public float FramerateLimit => FramerateLimitOption.Value;
     public float Fov => FovOption.Value;
     public bool InvertMouse
     {
         get => InvertMouseOption.Value;
         set => InvertMouseOption.Value = value;
     }
-    public int renderDistance => 4 + (int)(RenderDistanceOption.Value * 28.0f);
+    public int renderDistance => (int)RenderDistanceOption.Value;
     public bool ViewBobbing => ViewBobbingOption.Value;
     public bool VSync => VSyncOption.Value;
     public int Difficulty => DifficultyOption.Value;
@@ -106,17 +107,17 @@ public class GameOptions
 
 
     public string Skin = "Default";
-    public KeyBinding KeyBindForward = new("key.forward", 17);
-    public KeyBinding KeyBindLeft = new("key.left", 30);
-    public KeyBinding KeyBindBack = new("key.back", 31);
-    public KeyBinding KeyBindRight = new("key.right", 32);
-    public KeyBinding KeyBindJump = new("key.jump", 57);
-    public KeyBinding KeyBindInventory = new("key.inventory", 18);
-    public KeyBinding KeyBindDrop = new("key.drop", 16);
-    public KeyBinding KeyBindChat = new("key.chat", 20);
+    public KeyBinding KeyBindForward = new("key.forward", Keyboard.KEY_W);
+    public KeyBinding KeyBindLeft = new("key.left", Keyboard.KEY_A);
+    public KeyBinding KeyBindBack = new("key.back", Keyboard.KEY_S);
+    public KeyBinding KeyBindRight = new("key.right", Keyboard.KEY_D);
+    public KeyBinding KeyBindJump = new("key.jump", Keyboard.KEY_SPACE);
+    public KeyBinding KeyBindInventory = new("key.inventory", Keyboard.KEY_E);
+    public KeyBinding KeyBindDrop = new("key.drop", Keyboard.KEY_Q);
+    public KeyBinding KeyBindChat = new("key.chat", Keyboard.KEY_T);
     public KeyBinding KeyBindCommand = new("key.command", Keyboard.KEY_SLASH);
-    public KeyBinding KeyBindToggleFog = new("key.fog", 33);
-    public KeyBinding KeyBindSneak = new("key.sneak", 42);
+    public KeyBinding KeyBindToggleFog = new("key.fog", Keyboard.KEY_F);
+    public KeyBinding KeyBindSneak = new("key.sneak", Keyboard.KEY_LSHIFT);
     public KeyBinding[] KeyBindings;
 
     protected Minecraft _mc;
@@ -169,40 +170,46 @@ public class GameOptions
 
     private void InitializeOptions()
     {
-        MusicVolumeOption = new FloatOption("options.music", "music", 1.0F)
+        MusicVolumeOption = new FloatOption("options.music", "music", 100)
         {
-            Steps = 100,
+            Min = 0,
+            Max = 100,
+            Step = 1,
             OnChanged = _ => _mc?.sndManager.OnSoundOptionsChanged()
         };
-        SoundVolumeOption = new FloatOption("options.sound", "sound", 1.0F)
+        SoundVolumeOption = new FloatOption("options.sound", "sound", 100)
         {
-            Steps = 100,
+            Min = 0,
+            Max = 100,
+            Step = 1,
             OnChanged = _ => _mc?.sndManager.OnSoundOptionsChanged()
         };
-        MouseSensitivityOption = new FloatOption("options.sensitivity", "mouseSensitivity", 0.5F)
+        MouseSensitivityOption = new FloatOption("options.sensitivity", "mouseSensitivity", 0.5f)
         {
-            Steps = 200,
-            Formatter = (v, t) => v == 0.0F
+            Min = 0.2f,
+            Max = 0.8f,
+            Step = 0.003f,
+            Formatter = (v, t) => Math.Abs(v - 0.2) < 0.0015
                 ? t.TranslateKey("options.sensitivity.min")
-                : v == 1.0F
+                : Math.Abs(v - 0.8) < 0.0015
                     ? t.TranslateKey("options.sensitivity.max")
-                    : (int)(v * 200.0F) + "%"
+                    : (int)Math.Round((v - 0.2) * (1000/3d)) + "%"
         };
-        FramerateLimitOption = new FloatOption("options.framerateLimit", "fpsLimit", 0.42857143f)
+        FramerateLimitOption = new FloatOption("options.framerateLimit", "fpsLimit", 120)
         {
             LabelOverride = "Max FPS",
-            Steps = 210,
-            Formatter = (v, _) =>
-            {
-                int fps = 30 + (int)(v * 210.0f);
-                return fps == 240 ? "Unlimited" : fps + " FPS";
-            }
+            Min = 30,
+            Max = 240,
+            Step = 1,
+            Formatter = (v, _) => Math.Abs((int)(v - 240)) < 0.5 ? "Unlimited" : (int)v + " FPS"
         };
-        FovOption = new FloatOption("options.fov", "fov", 0.44444445F)
+        FovOption = new FloatOption("options.fov", "fov", 70)
         {
             LabelOverride = "FOV",
-            Steps = 90,
-            Formatter = (v, _) => (30 + (int)(v * 90.0f)).ToString()
+            Min = 30,
+            Max = 120,
+            Step = 1,
+            Formatter = (v, _) => ((int)v).ToString(CultureInfo.CurrentCulture)
         };
 
         InvertMouseOption = new BoolOption("options.invertMouse", "invertYMouse");
@@ -238,8 +245,10 @@ public class GameOptions
         RenderDistanceOption = new FloatOption("options.renderDistance", "viewDistance", 0.2f)
         {
             LabelOverride = "Render Distance",
-            Steps = 28,
-            Formatter = (v, t) => $"{4 + (int)(v * 28.0f)} Chunks",
+            Min = 4,
+            Max = 32,
+            Step = 1,
+            Formatter = (v, _) => $"{(int)v} Chunks",
             OnChanged = _ => {
                 if (_mc?.internalServer != null)
                 {
@@ -310,7 +319,7 @@ public class GameOptions
         return translations.TranslateKey(KeyBindings[keyBindingIndex].keyDescription);
     }
 
-    public string GetOptionDisplayString(int keyBindingIndex)
+    public string GetKeybindKeyName(int keyBindingIndex)
     {
         return Keyboard.getKeyName(KeyBindings[keyBindingIndex].keyCode);
     }

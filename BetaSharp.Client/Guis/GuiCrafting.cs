@@ -7,7 +7,6 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiCrafting : GuiContainer
 {
-
     public GuiCrafting(InventoryPlayer player, World world, int posX, int posY, int posZ) : base(new CraftingScreenHandler(player, world, posX, posY, posZ))
     {
     }
@@ -15,7 +14,7 @@ public class GuiCrafting : GuiContainer
     public override void OnGuiClosed()
     {
         base.OnGuiClosed();
-        InventorySlots.onClosed(mc.player);
+        InventorySlots.onClosed(MC.player);
     }
 
     protected override void DrawGuiContainerForegroundLayer()
@@ -27,9 +26,9 @@ public class GuiCrafting : GuiContainer
     protected override void DrawGuiContainerBackgroundLayer(float partialTicks)
     {
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/crafting.png"));
+        MC.textureManager.BindTexture(MC.textureManager.GetTextureId("/gui/crafting.png"));
         int guiLeft = (Width - _xSize) / 2;
         int guiTop = (Height - _ySize) / 2;
-        DrawTexturedModalRect(guiLeft, guiTop, 0, 0, _xSize, _ySize);
+        DrawTextureRegion(guiLeft, guiTop, 0, 0, _xSize, _ySize);
     }
 }

@@ -6,7 +6,7 @@ using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiAchievement : Gui
+public class GuiAchievement : Control
 {
     private static readonly long AchievementDisplayDuration = 3000L;
     private static readonly string LicenseWarningText = "Minecraft Beta 1.7.3   Unlicensed Copy :(";
@@ -128,7 +128,7 @@ public class GuiAchievement : Gui
         _theGame.textureManager.BindTexture(_theGame.textureManager.GetTextureId("/achievement/bg.png"));
         GLManager.GL.Disable(GLEnum.Lighting);
 
-        DrawTexturedModalRect(achievementX, achievementY, 96, 202, 160, 32);
+        DrawTextureRegion(achievementX, achievementY, 96, 202, 160, 32);
         drawAchievementText(achievementX, achievementY);
 
         GLManager.GL.PushMatrix();

@@ -4,7 +4,7 @@ using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
 
-public abstract class GuiSlot
+public abstract class GuiList
 {
     private readonly Minecraft _mc;
     private readonly int _width;
@@ -27,7 +27,7 @@ public abstract class GuiSlot
     private bool _hasHeader;
     private int _headerHeight;
 
-    public GuiSlot(Minecraft mc, int width, int height, int top, int bottom, int posZ)
+    public GuiList(Minecraft mc, int width, int height, int top, int bottom, int posZ)
     {
         _mc = mc;
         _width = width;
@@ -38,6 +38,24 @@ public abstract class GuiSlot
         _left = 0;
         _right = width;
     }
+
+    /*public void ActionPerformed(Button button)
+    {
+        if (!button.Enabled) return;
+
+        if (button.Id == _scrollUpButtonID)
+        {
+            _amountScrolled -= _posZ * 2 / 3;
+            _initialClickY = -2.0f;
+            BindAmountScrolled();
+        }
+        else if (button.Id == _scrollDownButtonID)
+        {
+            _amountScrolled += _posZ * 2 / 3;
+            _initialClickY = -2.0f;
+            BindAmountScrolled();
+        }
+    }*/
 
     public void SetShowSelectionHighlight(bool value) => _showSelectionHighlight = value;
 
@@ -82,7 +100,7 @@ public abstract class GuiSlot
             : -1;
     }
 
-    public void RegisterScrollButtons(List<GuiButton> buttons, int upId, int downId)
+    public void RegisterScrollButtons(List<Button> buttons, int upId, int downId)
     {
         _scrollUpButtonID = upId;
         _scrollDownButtonID = downId;
@@ -98,25 +116,7 @@ public abstract class GuiSlot
 
     }
 
-    public void ActionPerformed(GuiButton button)
-    {
-        if (!button.Enabled) return;
-
-        if (button.Id == _scrollUpButtonID)
-        {
-            _amountScrolled -= _posZ * 2 / 3;
-            _initialClickY = -2.0f;
-            BindAmountScrolled();
-        }
-        else if (button.Id == _scrollDownButtonID)
-        {
-            _amountScrolled += _posZ * 2 / 3;
-            _initialClickY = -2.0f;
-            BindAmountScrolled();
-        }
-    }
-
-    public void DrawScreen(int mouseX, int mouseY, float partialTicks)
+    public void DrawScreen(int mouseX, int mouseY, float tickDelta)
     {
         DrawBackground();
 

@@ -9,7 +9,8 @@ public unsafe class DisplayListCompiler
     {
         DrawChunk,
         Translate,
-        Color
+        Color,
+        Scissor,
     }
 
     public struct DLCommand
@@ -20,6 +21,8 @@ public unsafe class DisplayListCompiler
         public int VertexCount;
         public GLEnum DrawMode;
         public float X_R, Y_G, Z_B, W_A;
+        public int ScissorX, ScissorY;
+        public uint ScissorWidth, ScissorHeight;
     }
 
     private class DisplayList
@@ -214,6 +217,11 @@ public unsafe class DisplayListCompiler
         _currentList!.Commands.Add(new DLCommand { Type = DLCommandType.Color, X_R = r, Y_G = g, Z_B = b, W_A = a });
     }
 
+    public void RecordScissor(int x, int y, uint width, uint height)
+    {
+        _emulatedLists[_compilingListId].Commands.Add(new DLCommand { Type = DLCommandType.Scissor, ScissorX = x, ScissorY = y, ScissorWidth = width, ScissorHeight = height });
+    }
+
     public void Execute(uint list, EmulatedGL emuGl)
     {
         if (!_emulatedLists.TryGetValue(list, out DisplayList? dl) || dl.Commands.Count == 0) return;
@@ -235,6 +243,9 @@ public unsafe class DisplayListCompiler
                     break;
                 case DLCommandType.Color:
                     emuGl.SilkGL.VertexAttrib4(1, cmd.X_R, cmd.Y_G, cmd.Z_B, cmd.W_A);
+                    break;
+                case DLCommandType.Scissor:
+                    emuGl.SilkGL.Scissor(cmd.ScissorX, cmd.ScissorY, cmd.ScissorWidth, cmd.ScissorHeight);
                     break;
             }
         }

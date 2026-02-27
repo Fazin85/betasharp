@@ -226,21 +226,24 @@ public class GameRenderer
         if (_client.inGameHasFocus)
         {
             _client.mouseHelper.mouseXYChange();
-            float var2 = _client.options.MouseSensitivity * 0.6F + 0.2F;
-            float var3 = var2 * var2 * var2 * 8.0F;
-            float var4 = _client.mouseHelper.DeltaX * var3;
-            float var5 = _client.mouseHelper.DeltaY * var3;
-            int var6 = -1;
+            float sensOption = _client.options.MouseSensitivity;
+            float sensitivity = sensOption * sensOption * sensOption * 8.0F;
+            float deltaYaw = _client.mouseHelper.DeltaX * sensitivity;
+            float deltaPitch = _client.mouseHelper.DeltaY * sensitivity;
+
+            int deltaPitchMultiplier = -1;
             if (_client.options.InvertMouse)
             {
-                var6 = 1;
+                deltaPitchMultiplier = 1;
             }
+
             if (_client.options.SmoothCamera)
             {
-                var4 = _mouseFilterXAxis.Smooth(var4, 0.05F * var3);
-                var5 = _mouseFilterYAxis.Smooth(var5, 0.05F * var3);
+                deltaYaw = _mouseFilterXAxis.Smooth(deltaYaw, 0.05F * sensitivity);
+                deltaPitch = _mouseFilterYAxis.Smooth(deltaPitch, 0.05F * sensitivity);
             }
-            _client.player.changeLookDirection(var4, var5 * var6);
+
+            _client.player.changeLookDirection(deltaYaw, deltaPitch * deltaPitchMultiplier);
         }
 
         if (!_client.skipRenderWorld)
@@ -248,9 +251,9 @@ public class GameRenderer
             ScaledResolution var13 = new(_client.options, _client.displayWidth, _client.displayHeight);
             int var14 = var13.ScaledWidth;
             int var15 = var13.ScaledHeight;
-            int var16 = Mouse.getX() * var14 / _client.displayWidth;
-            int var17 = var15 - Mouse.getY() * var15 / _client.displayHeight - 1;
-            int var7 = 30 + (int)(_client.options.LimitFramerate * 210.0f);
+            int mouseX = Mouse.getX() * var14 / _client.displayWidth;
+            int mouseY = var15 - Mouse.getY() * var15 / _client.displayHeight - 1;
+            int var7 = (int)_client.options.FramerateLimit;
 
             if (var7 < 240)
             {
@@ -265,7 +268,7 @@ public class GameRenderer
                 Profiler.Start("renderGameOverlay");
                 if (!_client.options.HideGUI || _client.currentScreen != null)
                 {
-                    _client.ingameGUI.renderGameOverlay(tickDelta, _client.currentScreen != null, var16, var17);
+                    _client.ingameGUI.DoRendered(new(mouseX, mouseY, tickDelta));
                 }
                 Profiler.Stop("renderGameOverlay");
             }
@@ -282,8 +285,8 @@ public class GameRenderer
             if (_client.currentScreen != null)
             {
                 GLManager.GL.Clear(ClearBufferMask.DepthBufferBit);
-                _client.currentScreen.Render(var16, var17, tickDelta);
-                if (_client.currentScreen != null && _client.currentScreen.ParticlesGui != null)
+                _client.currentScreen.DoRendered(new(mouseX, mouseY, tickDelta));
+                if (_client.currentScreen is { ParticlesGui: not null })
                 {
                     _client.currentScreen.ParticlesGui.render(tickDelta);
                 }
@@ -496,7 +499,6 @@ public class GameRenderer
                     _client.world.playSound(var8, var10, var12, "ambient.weather.rain", 0.2F, 1.0F);
                 }
             }
-
         }
     }
 

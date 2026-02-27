@@ -5,7 +5,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiChat : GuiScreen
+public class GuiChat : Screen
 {
     private const uint BackgroundColor = 0x80000000;
     private const uint TextColorNormal = 0xE0E0E0;
@@ -20,15 +20,10 @@ public class GuiChat : GuiScreen
 
     public GuiChat(string prefix = "")
     {
-        Keyboard.OnCharacterTyped += CharTyped;
-        _message = prefix;
-    }
-
-    public override void InitGui()
-    {
         Keyboard.enableRepeatEvents(true);
-        _isSubscribedToKeyboard = true;
+        IsSubscribedToKeyboard = true;
         _historyIndex = s_history.Count;
+        _message = prefix;
     }
 
     public override void OnGuiClosed()
@@ -41,21 +36,21 @@ public class GuiChat : GuiScreen
         ++_updateCounter;
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void OnKeyInput(KeyboardEventArgs e)
     {
-        if (eventKey == Keyboard.KEY_ESCAPE)
+        if (e.Key == Keyboard.KEY_ESCAPE)
         {
-            mc.displayGuiScreen(null);
+            MC.OpenScreen(null);
             return;
         }
 
-        if (eventKey == Keyboard.KEY_RETURN)
+        if (e.Key == Keyboard.KEY_RETURN)
         {
             string msg = _message.Trim();
             if (msg.Length > 0)
             {
                 string sendMsg = ConvertAmpersandToSection(msg);
-                mc.player.sendChatMessage(sendMsg);
+                MC.player.sendChatMessage(sendMsg);
                 s_history.Add(sendMsg);
                 if (s_history.Count > 100)
                 {
@@ -63,14 +58,18 @@ public class GuiChat : GuiScreen
                 }
             }
 
-            mc.displayGuiScreen(null);
+            MC.OpenScreen(null);
             _message = "";
             return;
         }
 
-        if (eventKey == Keyboard.KEY_UP)
+        if (e.Key == Keyboard.KEY_UP)
         {
             if (Keyboard.isKeyDown(Keyboard.KEY_LMENU) || Keyboard.isKeyDown(Keyboard.KEY_RMENU))
+            {
+                MC.ingameGUI.scrollChat(5);
+            }
+            else
             {
                 if (_historyIndex > 0)
                 {
@@ -78,16 +77,16 @@ public class GuiChat : GuiScreen
                     _message = s_history[_historyIndex];
                 }
             }
-            else
-            {
-                mc.ingameGUI.scrollChat(1);
-            }
             return;
         }
 
-        if (eventKey == Keyboard.KEY_DOWN)
+        if (e.Key == Keyboard.KEY_DOWN)
         {
             if (Keyboard.isKeyDown(Keyboard.KEY_LMENU) || Keyboard.isKeyDown(Keyboard.KEY_RMENU))
+            {
+                MC.ingameGUI.scrollChat(-5);
+            }
+            else
             {
                 if (_historyIndex < s_history.Count - 1)
                 {
@@ -100,14 +99,10 @@ public class GuiChat : GuiScreen
                     _message = "";
                 }
             }
-            else
-            {
-                mc.ingameGUI.scrollChat(-1);
-            }
             return;
         }
 
-        if (eventKey == Keyboard.KEY_BACK)
+        if (e.Key == Keyboard.KEY_BACK)
         {
             if (_message.Length > 0)
             {
@@ -115,20 +110,17 @@ public class GuiChat : GuiScreen
             }
             return;
         }
-    }
 
-    protected override void CharTyped(char eventChar)
-    {
-        if (s_allowedChars.Contains(eventChar) && _message.Length < 100)
+        if (s_allowedChars.Contains(e.KeyChar) && _message.Length < 100)
         {
-            _message += eventChar;
+            _message += e.KeyChar;
         }
     }
 
 
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    protected override void OnRendered(RenderEventArgs e)
     {
-        DrawRect(2, Height - 14, Width - 2, Height - 2, BackgroundColor);
+        Gui.DrawRect(2, Height - 14, Width - 2, Height - 2, BackgroundColor);
 
         string cursor = (_updateCounter / 6 % 2 == 0) ? "_" : "";
         string textToDraw = "> " + _message + cursor;
@@ -137,8 +129,6 @@ public class GuiChat : GuiScreen
         int xBase = 4;
 
         FontRenderer.DrawStringWithShadow(textToDraw, xBase, y, TextColorNormal);
-
-        base.Render(mouseX, mouseY, partialTicks);
     }
 
     public override void HandleMouseInput()
@@ -147,32 +137,29 @@ public class GuiChat : GuiScreen
         int wheel = Mouse.getEventDWheel();
         if (wheel != 0)
         {
-            mc.ingameGUI.scrollChat(wheel > 0 ? 1 : -1);
+            MC.ingameGUI.scrollChat(wheel > 0 ? 1 : -1);
         }
     }
 
-    protected override void MouseClicked(int x, int y, int button)
+    protected override void OnClicked(MouseEventArgs e)
     {
-        if (button != 0) return;
+        if (e.Button != 0) return;
 
-        if (mc.ingameGUI._hoveredItemName != null)
+        if (MC.ingameGUI._hoveredItemName != null)
         {
-            if (_message.Length > 0 && !_message.EndsWith(" "))
+            if (_message.Length > 0 && !_message.EndsWith(' '))
             {
                 _message += " ";
             }
 
-            _message += mc.ingameGUI._hoveredItemName;
+            _message += MC.ingameGUI._hoveredItemName;
 
             const byte maxLen = 100;
             if (_message.Length > maxLen)
             {
-                _message = _message.Substring(0, maxLen);
+                _message = _message[..maxLen];
             }
-            return;
         }
-
-        base.MouseClicked(x, y, button);
     }
 
     private static string ConvertAmpersandToSection(string input)
@@ -180,14 +167,14 @@ public class GuiChat : GuiScreen
         if (string.IsNullOrEmpty(input)) return input;
 
         var sb = new StringBuilder();
-        const string colorCodes = "0123456789abcdefklmnor";
+        const string styleCodes = "0123456789abcdefklmnor";
 
         for (int i = 0; i < input.Length; i++)
         {
             if (input[i] == '&' && i + 1 < input.Length)
             {
                 char c = char.ToLower(input[i + 1]);
-                if (colorCodes.Contains(c))
+                if (styleCodes.Contains(c))
                 {
                     sb.Append('§');
                     sb.Append(c);

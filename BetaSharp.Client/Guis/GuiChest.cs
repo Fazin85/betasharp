@@ -6,7 +6,6 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiChest : GuiContainer
 {
-
     private readonly IInventory _upperChestInventory;
     private readonly IInventory _lowerChestInventory;
     private readonly int _inventoryRows = 0;
@@ -31,13 +30,13 @@ public class GuiChest : GuiContainer
     protected override void DrawGuiContainerBackgroundLayer(float partialTicks)
     {
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/container.png"));
+        MC.textureManager.BindTexture(MC.textureManager.GetTextureId("/gui/container.png"));
 
         int guiLeft = (Width - _xSize) / 2;
         int guiTop = (Height - _ySize) / 2;
 
-        DrawTexturedModalRect(guiLeft, guiTop, 0, 0, _xSize, _inventoryRows * 18 + 17);
+        DrawTextureRegion(guiLeft, guiTop, 0, 0, _xSize, _inventoryRows * 18 + 17);
 
-        DrawTexturedModalRect(guiLeft, guiTop + _inventoryRows * 18 + 17, 0, 126, _xSize, 96);
+        DrawTextureRegion(guiLeft, guiTop + _inventoryRows * 18 + 17, 0, 126, _xSize, 96);
     }
 }

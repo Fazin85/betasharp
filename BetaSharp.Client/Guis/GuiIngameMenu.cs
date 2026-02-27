@@ -3,88 +3,76 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiIngameMenu : GuiScreen
+public class GuiIngameMenu : Screen
 {
-
     private int _saveStepTimer = 0;
     private int _menuTickCounter = 0;
 
-    public override void InitGui()
+    public GuiIngameMenu()
     {
         _saveStepTimer = 0;
-        _controlList.Clear();
+        Children.Clear();
 
         int verticalOffset = -16;
         int centerX = Width / 2;
         int centerY = Height / 4;
+        int buttonLeft = centerX - 100;
 
-        string quitText = (mc.isMultiplayerWorld() && mc.internalServer == null) ? "Disconnect" : "Save and quit to title";
+        string quitText = (MC.isMultiplayerWorld() && MC.internalServer == null) ? "Disconnect" : "Save and quit to title";
 
-        _controlList.Add(new GuiButton(1, centerX - 100, centerY + 120 + verticalOffset, quitText));
-        _controlList.Add(new GuiButton(4, centerX - 100, centerY + 24 + verticalOffset, "Back to game"));
-        _controlList.Add(new GuiButton(0, centerX - 100, centerY + 96 + verticalOffset, "Options..."));
-        _controlList.Add(new GuiButton(5, centerX - 100, centerY + 48 + verticalOffset, 98, 20, StatCollector.TranslateToLocal("gui.achievements")));
-        _controlList.Add(new GuiButton(6, centerX + 2, centerY + 48 + verticalOffset, 98, 20, StatCollector.TranslateToLocal("gui.stats")));
+        Button backToGameButton = new(buttonLeft, centerY + 24 + verticalOffset, "Back to game");
+        Button achievementsButton = new(buttonLeft, centerY + 48 + verticalOffset, StatCollector.TranslateToLocal("gui.achievements"))
+        {
+            Size = new(98, 20),
+        };
+        Button statsButton = new(centerX + 2, centerY + 48 + verticalOffset, StatCollector.TranslateToLocal("gui.stats"))
+        {
+            Size = new(98, 20),
+        };
+        Button optionsButton = new(buttonLeft, centerY + 96 + verticalOffset, "Options...");
+        Button quitButton = new(buttonLeft, centerY + 100 + verticalOffset, quitText);
+
+        backToGameButton    .Clicked += (_, _) => MC.OpenScreen(null);
+        achievementsButton  .Clicked += (_, _) => MC.OpenScreen(new GuiAchievements(MC.statFileWriter));
+        statsButton         .Clicked += (_, _) => MC.OpenScreen(new GuiStats(this, MC.statFileWriter));
+        optionsButton       .Clicked += (_, _) => MC.OpenScreen(new GuiOptions(this, MC.options));
+        quitButton          .Clicked += QuitClicked;
+
+        AddChildren(quitButton, backToGameButton, optionsButton, achievementsButton, statsButton);
     }
 
-    protected override void ActionPerformed(GuiButton btt)
+    private void QuitClicked(object? o, MouseEventArgs e)
     {
-        if (btt.Id == 0)
+        MC.statFileWriter.WriteStat(Stats.Stats.LeaveGameStat, 1);
+        if (MC.isMultiplayerWorld())
         {
-            mc.displayGuiScreen(new GuiOptions(this, mc.options));
+            MC.world.Disconnect();
         }
 
-        if (btt.Id == 1)
-        {
-            mc.statFileWriter.ReadStat(Stats.Stats.LeaveGameStat, 1);
-            if (mc.isMultiplayerWorld())
-            {
-                mc.world.Disconnect();
-            }
-
-            mc.stopInternalServer();
-            mc.changeWorld(null);
-            mc.displayGuiScreen(new GuiMainMenu());
-        }
-
-        if (btt.Id == 4)
-        {
-            mc.displayGuiScreen(null);
-            mc.setIngameFocus();
-        }
-
-        if (btt.Id == 5)
-        {
-            mc.displayGuiScreen(new GuiAchievements(mc.statFileWriter));
-        }
-
-        if (btt.Id == 6)
-        {
-            mc.displayGuiScreen(new GuiStats(this, mc.statFileWriter));
-        }
+        MC.stopInternalServer();
+        MC.changeWorld(null);
+        MC.OpenScreen(new GuiMainMenu());
     }
 
     public override void UpdateScreen()
     {
-        base.UpdateScreen();
         ++_menuTickCounter;
     }
 
-    public override void Render(int mouseX, int mouseY, float partialTick)
+    protected override void OnRendered(RenderEventArgs e)
     {
         DrawDefaultBackground();
 
-        bool isSavingActive = !mc.world.attemptSaving(_saveStepTimer++);
+        bool isSavingActive = !MC.world.attemptSaving(_saveStepTimer++);
 
         if (isSavingActive || _menuTickCounter < 20)
         {
-            float pulse = (_menuTickCounter % 10 + partialTick) / 10.0F;
+            float pulse = (_menuTickCounter % 10 + e.TickDelta) / 10.0F;
             pulse = MathHelper.Sin(pulse * (float)Math.PI * 2.0F) * 0.2F + 0.8F;
             int color = (int)(255.0F * pulse);
-            DrawString(FontRenderer, "Saving level..", 8, Height - 16, (uint)(color << 16 | color << 8 | color));
+            Gui.DrawString(FontRenderer, "Saving level..", 8, Height - 16, (uint)(color << 16 | color << 8 | color));
         }
 
-        DrawCenteredString(FontRenderer, "Game menu", Width / 2, 40, 0xFFFFFF);
-        base.Render(mouseX, mouseY, partialTick);
+        Gui.DrawCenteredString(FontRenderer, "Game menu", Width / 2, 40, 0xFFFFFF);
     }
 }

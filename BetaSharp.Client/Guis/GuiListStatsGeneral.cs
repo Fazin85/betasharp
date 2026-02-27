@@ -3,12 +3,12 @@ using BetaSharp.Stats;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiSlotStatsGeneral : GuiSlot
+public class GuiListStatsGeneral : GuiList
 {
     readonly GuiStats parentStatsGui;
 
 
-    public GuiSlotStatsGeneral(GuiStats parent) : base(parent.mc, parent.Width, parent.Height, 32, parent.Height - 64, 10)
+    public GuiListStatsGeneral(GuiStats parent) : base(parent.MC, parent.Width, parent.Height, 32, parent.Height - 64, 10)
     {
         parentStatsGui = parent;
         SetShowSelectionHighlight(false);
@@ -42,7 +42,7 @@ public class GuiSlotStatsGeneral : GuiSlot
     {
         StatBase stat = Stats.Stats.GeneralStats[index];
         parentStatsGui.FontRenderer.DrawStringWithShadow(stat.StatName, x + 2, y + 1, index % 2 == 0 ? 0xFFFFFFu : 0x909090u);
-        string formatted = stat.Format(parentStatsGui.statFileWriter.GetStatValue(stat));
+        string formatted = stat.Format(parentStatsGui.statFileWriter.ReadStat(stat));
         parentStatsGui.FontRenderer.DrawStringWithShadow(formatted, x + 2 + 213 - parentStatsGui.FontRenderer.GetStringWidth(formatted), y + 1, index % 2 == 0 ? 0xFFFFFF : 0x909090u);
     }
 }

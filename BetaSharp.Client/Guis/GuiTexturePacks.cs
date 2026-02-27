@@ -4,94 +4,64 @@ using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiTexturePacks : GuiScreen
+public class GuiTexturePacks : Screen
 {
     private readonly ILogger<GuiTexturePacks> _logger = Log.Instance.For<GuiTexturePacks>();
 
-    private const int ButtonOpenFolder = 5;
-    private const int ButtonDone = 6;
-
-    protected GuiScreen _parentScreen;
+    protected Screen _parentScreen;
     private int _refreshTimer = -1;
-    private string _texturePackFolder = "";
-    private GuiTexturePackSlot _guiTexturePackSlot;
+    private string _texturePackFolder;
+    private GuiTexturePackList _guiTexturePackList;
 
-    public GuiTexturePacks(GuiScreen parent)
+    public GuiTexturePacks(Screen parent)
     {
         _parentScreen = parent;
-    }
-
-    public override void InitGui()
-    {
         TranslationStorage translations = TranslationStorage.Instance;
-        _controlList.Add(new GuiSmallButton(ButtonOpenFolder, Width / 2 - 154, Height - 48, translations.TranslateKey("texturePack.openFolder")));
-        _controlList.Add(new GuiSmallButton(ButtonDone, Width / 2 + 4, Height - 48, translations.TranslateKey("gui.done")));
-        mc.texturePackList.updateAvaliableTexturePacks();
+        Button openFolderButton = new Button(Width / 2 - 154, Height - 48, 150, 20, translations.TranslateKey("texturePack.openFolder"));
+        Button doneButton = new Button(Width / 2 + 4, Height - 48, 150, 20, translations.TranslateKey("gui.done"));
+        MC.texturePackList.updateAvaliableTexturePacks();
         _texturePackFolder = new java.io.File(Minecraft.getMinecraftDir(), "texturepacks").getAbsolutePath();
-        _guiTexturePackSlot = new GuiTexturePackSlot(this);
-        _guiTexturePackSlot.RegisterScrollButtons(_controlList, 7, 8);
-    }
+        _guiTexturePackList = new GuiTexturePackList(this);
 
-    protected override void ActionPerformed(GuiButton btn)
-    {
-        if (btn.Enabled)
+        openFolderButton.Clicked += (_, _) =>
         {
-            switch (btn.Id)
+            try
             {
-                case ButtonOpenFolder:
-                    try
-                    {
-                        Process.Start(new ProcessStartInfo
-                        {
-                            FileName = "file://" + _texturePackFolder,
-                            UseShellExecute = true
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError($"Failed to open URL: {ex.Message}");
-                    }
-                    break;
-                case ButtonDone:
-                    mc.textureManager.Reload();
-                    mc.displayGuiScreen(_parentScreen);
-                    break;
-                default:
-                    _guiTexturePackSlot.ActionPerformed(btn);
-                    break;
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "file://" + _texturePackFolder,
+                    UseShellExecute = true,
+                });
             }
+            catch (Exception ex)
+            {
+                _logger.LogError("Failed to open URL: {Message}", ex.Message);
+            }
+        };
+        doneButton.Clicked += (_, _) =>
+        {
+            MC.textureManager.Reload();
+            MC.OpenScreen(_parentScreen);
+        };
 
-        }
+        AddChildren(openFolderButton, doneButton);
     }
 
-    protected override void MouseClicked(int mouseX, int mouseY, int button)
+    protected override void OnRendered(RenderEventArgs e)
     {
-        base.MouseClicked(mouseX, mouseY, button);
-    }
-
-    protected override void MouseMovedOrUp(int mouseX, int mouseY, int button)
-    {
-        base.MouseMovedOrUp(mouseX, mouseY, button);
-    }
-
-    public override void Render(int mouseX, int mouseY, float partialTicks)
-    {
-        _guiTexturePackSlot.DrawScreen(mouseX, mouseY, partialTicks);
         if (_refreshTimer <= 0)
         {
-            mc.texturePackList.updateAvaliableTexturePacks();
+            MC.texturePackList.updateAvaliableTexturePacks();
             _refreshTimer += 20;
         }
 
         TranslationStorage translations = TranslationStorage.Instance;
-        DrawCenteredString(FontRenderer, translations.TranslateKey("texturePack.title"), Width / 2, 16, 0xFFFFFF);
-        DrawCenteredString(FontRenderer, translations.TranslateKey("texturePack.folderInfo"), Width / 2 - 77, Height - 26, 0x808080);
-        base.Render(mouseX, mouseY, partialTicks);
+        Gui.DrawCenteredString(FontRenderer, translations.TranslateKey("texturePack.title"), Width / 2, 16, 0xFFFFFF);
+        Gui.DrawCenteredString(FontRenderer, translations.TranslateKey("texturePack.folderInfo"), Width / 2 - 77, Height - 26, 0x808080);
     }
 
     public override void UpdateScreen()
     {
-        base.UpdateScreen();
         --_refreshTimer;
     }
 }

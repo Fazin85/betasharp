@@ -13,7 +13,7 @@ using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiIngame : Gui
+public class GuiIngame : Control
 {
     private readonly GCMonitor _gcMonitor;
     private static readonly ItemRenderer _itemRenderer = new();
@@ -36,7 +36,7 @@ public class GuiIngame : Gui
         _gcMonitor = new GCMonitor();
     }
 
-    public void renderGameOverlay(float partialTicks, bool unusedFlag, int unusedA, int unusedB)
+    protected override void OnRendered(RenderEventArgs e)
     {
         ScaledResolution scaled = new(_mc.options, _mc.displayWidth, _mc.displayHeight);
         int scaledWidth = scaled.ScaledWidth;
@@ -46,7 +46,7 @@ public class GuiIngame : Gui
         GLManager.GL.Enable(GLEnum.Blend);
         if (Minecraft.isFancyGraphicsEnabled())
         {
-            renderVignette(_mc.player.getBrightnessAtEyes(partialTicks), scaledWidth, scaledHeight);
+            renderVignette(_mc.player.getBrightnessAtEyes(e.TickDelta), scaledWidth, scaledHeight);
         }
 
         ItemStack helmet = _mc.player.inventory.armorItemInSlot(3);
@@ -55,7 +55,7 @@ public class GuiIngame : Gui
             renderPumpkinBlur(scaledWidth, scaledHeight);
         }
 
-        float screenDistortion = _mc.player.lastScreenDistortion + (_mc.player.changeDimensionCooldown - _mc.player.lastScreenDistortion) * partialTicks;
+        float screenDistortion = _mc.player.lastScreenDistortion + (_mc.player.changeDimensionCooldown - _mc.player.lastScreenDistortion) * e.TickDelta;
         if (screenDistortion > 0.0F)
         {
             renderPortalOverlay(screenDistortion, scaledWidth, scaledHeight);
@@ -64,15 +64,15 @@ public class GuiIngame : Gui
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         _mc.textureManager.BindTexture(_mc.textureManager.GetTextureId("/gui/gui.png"));
         InventoryPlayer inventory = _mc.player.inventory;
-        _zLevel = -90.0F;
-        DrawTexturedModalRect(scaledWidth / 2 - 91, scaledHeight - 22, 0, 0, 182, 22);
-        DrawTexturedModalRect(scaledWidth / 2 - 91 - 1 + inventory.selectedSlot * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
+        ZLevel = -90.0F;
+        DrawTextureRegion(scaledWidth / 2 - 91, scaledHeight - 22, 0, 0, 182, 22);
+        DrawTextureRegion(scaledWidth / 2 - 91 - 1 + inventory.selectedSlot * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
         _mc.textureManager.BindTexture(_mc.textureManager.GetTextureId("/gui/icons.png"));
         if (_mc.options.CameraMode == EnumCameraMode.FirstPerson)
         {
             GLManager.GL.Enable(GLEnum.Blend);
             GLManager.GL.BlendFunc(GLEnum.OneMinusDstColor, GLEnum.OneMinusSrcColor);
-            DrawTexturedModalRect(scaledWidth / 2 - 7, scaledHeight / 2 - 7, 0, 0, 16, 16);
+            DrawTextureRegion(scaledWidth / 2 - 7, scaledHeight / 2 - 7, 0, 0, 16, 16);
             GLManager.GL.Disable(GLEnum.Blend);
         }
         bool heartBlink = _mc.player.hearts / 3 % 2 == 1;
@@ -100,17 +100,17 @@ public class GuiIngame : Gui
                     k = scaledWidth / 2 + 91 - i * 8 - 9;
                     if (i * 2 + 1 < armorValue)
                     {
-                        DrawTexturedModalRect(k, j, 34, 9, 9, 9);
+                        DrawTextureRegion(k, j, 34, 9, 9, 9);
                     }
 
                     if (i * 2 + 1 == armorValue)
                     {
-                        DrawTexturedModalRect(k, j, 25, 9, 9, 9);
+                        DrawTextureRegion(k, j, 25, 9, 9, 9);
                     }
 
                     if (i * 2 + 1 > armorValue)
                     {
-                        DrawTexturedModalRect(k, j, 16, 9, 9, 9);
+                        DrawTextureRegion(k, j, 16, 9, 9, 9);
                     }
                 }
 
@@ -126,28 +126,28 @@ public class GuiIngame : Gui
                     j += _rand.NextInt(2);
                 }
 
-                DrawTexturedModalRect(x, j, 16 + blinkIndex * 9, 0, 9, 9);
+                DrawTextureRegion(x, j, 16 + blinkIndex * 9, 0, 9, 9);
                 if (heartBlink)
                 {
                     if (i * 2 + 1 < lastHealth)
                     {
-                        DrawTexturedModalRect(x, j, 70, 0, 9, 9);
+                        DrawTextureRegion(x, j, 70, 0, 9, 9);
                     }
 
                     if (i * 2 + 1 == lastHealth)
                     {
-                        DrawTexturedModalRect(x, j, 79, 0, 9, 9);
+                        DrawTextureRegion(x, j, 79, 0, 9, 9);
                     }
                 }
 
                 if (i * 2 + 1 < health)
                 {
-                    DrawTexturedModalRect(x, j, 52, 0, 9, 9);
+                    DrawTextureRegion(x, j, 52, 0, 9, 9);
                 }
 
                 if (i * 2 + 1 == health)
                 {
-                    DrawTexturedModalRect(x, j, 61, 0, 9, 9);
+                    DrawTextureRegion(x, j, 61, 0, 9, 9);
                 }
             }
 
@@ -160,11 +160,11 @@ public class GuiIngame : Gui
                 {
                     if (k < i)
                     {
-                        DrawTexturedModalRect(scaledWidth / 2 - 91 + k * 8, scaledHeight - 32 - 9, 16, 18, 9, 9);
+                        DrawTextureRegion(scaledWidth / 2 - 91 + k * 8, scaledHeight - 32 - 9, 16, 18, 9, 9);
                     }
                     else
                     {
-                        DrawTexturedModalRect(scaledWidth / 2 - 91 + k * 8, scaledHeight - 32 - 9, 25, 18, 9, 9);
+                        DrawTextureRegion(scaledWidth / 2 - 91 + k * 8, scaledHeight - 32 - 9, 25, 18, 9, 9);
                     }
                 }
             }
@@ -181,7 +181,7 @@ public class GuiIngame : Gui
         {
             i = scaledWidth / 2 - 90 + armorValue * 20 + 2;
             j = scaledHeight - 16 - 3;
-            renderInventorySlot(armorValue, i, j, partialTicks);
+            renderInventorySlot(armorValue, i, j, e.TickDelta);
         }
 
         Lighting.turnOff();
@@ -198,7 +198,7 @@ public class GuiIngame : Gui
             }
 
             j = (int)(220.0F * sleepAlpha) << 24 | 1052704;
-            DrawRect(0, 0, scaledWidth, scaledHeight, (uint)j);
+            Gui.DrawRect(0, 0, scaledWidth, scaledHeight, (uint)j);
             GLManager.GL.Enable(GLEnum.AlphaTest);
             GLManager.GL.Enable(GLEnum.DepthTest);
         }
@@ -219,17 +219,17 @@ public class GuiIngame : Gui
             long usedMem = _gcMonitor.UsedMemoryBytes;
             long heapMem = _gcMonitor.UsedHeapBytes;
             debugStr = "Used memory: " + usedMem * 100L / maxMem + "% (" + usedMem / 1024L / 1024L + "MB) of " + maxMem / 1024L / 1024L + "MB";
-            DrawString(font, debugStr, scaledWidth - font.GetStringWidth(debugStr) - 2, 2, 0xE0E0E0);
+            Gui.DrawString(font, debugStr, scaledWidth - font.GetStringWidth(debugStr) - 2, 2, 0xE0E0E0);
             debugStr = "GC heap: " + heapMem * 100L / maxMem + "% (" + heapMem / 1024L / 1024L + "MB)";
-            DrawString(font, debugStr, scaledWidth - font.GetStringWidth(debugStr) - 2, 12, 0xE0E0E0);
-            DrawString(font, "x: " + _mc.player.x, 2, 64, 0xE0E0E0);
-            DrawString(font, "y: " + _mc.player.y, 2, 72, 0xE0E0E0);
-            DrawString(font, "z: " + _mc.player.z, 2, 80, 0xE0E0E0);
-            DrawString(font, "f: " + (MathHelper.Floor((double)(_mc.player.yaw * 4.0F / 360.0F) + 0.5D) & 3), 2, 88, 0xE0E0E0);
+            Gui.DrawString(font, debugStr, scaledWidth - font.GetStringWidth(debugStr) - 2, 12, 0xE0E0E0);
+            Gui.DrawString(font, "x: " + _mc.player.x, 2, 64, 0xE0E0E0);
+            Gui.DrawString(font, "y: " + _mc.player.y, 2, 72, 0xE0E0E0);
+            Gui.DrawString(font, "z: " + _mc.player.z, 2, 80, 0xE0E0E0);
+            Gui.DrawString(font, "f: " + (MathHelper.Floor((double)(_mc.player.yaw * 4.0F / 360.0F) + 0.5D) & 3), 2, 88, 0xE0E0E0);
 
             if (_mc.internalServer != null)
             {
-                DrawString(font, $"Server TPS: {_mc.internalServer.Tps:F1}", 2, 104, 0xE0E0E0);
+                Gui.DrawString(font, $"Server TPS: {_mc.internalServer.Tps:F1}", 2, 104, 0xE0E0E0);
             }
 
             GLManager.GL.PopMatrix();
@@ -241,7 +241,7 @@ public class GuiIngame : Gui
 
         if (_recordPlayingUpFor > 0)
         {
-            float t = _recordPlayingUpFor - partialTicks;
+            float t = _recordPlayingUpFor - e.TickDelta;
             i = (int)(t * 256.0F / 20.0F);
             if (i > 255)
             {
@@ -313,7 +313,7 @@ public class GuiIngame : Gui
                     byte left = 2;
                     int y = -j * 9;
                     debugStr = cl.Message;
-                    DrawRect(left, y - 1, left + 320, y + 8, (uint)(alpha / 2 << 24));
+                    Gui.DrawRect(left, y - 1, left + 320, y + 8, (uint)(alpha / 2 << 24));
                     GLManager.GL.Enable(GLEnum.Blend);
                     font.DrawStringWithShadow(debugStr, left, y, 0xFFFFFF + (uint)(alpha << 24));
                 }
@@ -358,7 +358,7 @@ public class GuiIngame : Gui
                 thumbY = top + (int)((long)(maxScroll - _chatScrollPos) * range / maxScroll);
 
                 uint thumbColor = _chatScrollbarDragging ? 0xFFAAAAAA : 0xFFCCCCCC;
-                DrawRect(scrollbarX + 1, thumbY, scrollbarX + scrollbarWidth - 1, thumbY + thumbHeight, thumbColor);
+                Gui.DrawRect(scrollbarX + 1, thumbY, scrollbarX + scrollbarWidth - 1, thumbY + thumbHeight, thumbColor);
             }
         }
     }
@@ -448,12 +448,12 @@ public class GuiIngame : Gui
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
-    private void renderInventorySlot(int slotIndex, int x, int y, float partialTicks)
+    private void renderInventorySlot(int slotIndex, int x, int y, float tickDelta)
     {
         ItemStack stack = _mc.player.inventory.main[slotIndex];
         if (stack != null)
         {
-            float bob = stack.bobbingAnimationTime - partialTicks;
+            float bob = stack.bobbingAnimationTime - tickDelta;
             if (bob > 0.0F)
             {
                 GLManager.GL.PushMatrix();
@@ -488,12 +488,8 @@ public class GuiIngame : Gui
         }
 
     }
-   
-    public void stopChatScrollbarDrag()
-    {
-        _chatScrollbarDragging = false;
-    }
-    public void clearChatMessages()
+
+    public void ClearChat()
     {
         _chatMessageList.Clear();
     }

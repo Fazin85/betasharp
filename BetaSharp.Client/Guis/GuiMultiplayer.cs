@@ -5,25 +5,77 @@ namespace BetaSharp.Client.Guis;
 
 //TODO: Update multiplayer menu to use proper translations
 
-public class GuiMultiplayer : GuiScreen
+public class GuiMultiplayer : Screen
 {
-    private GuiSlotServer _serverListSelector = null!;
+    private GuiListServer _serverListSelector;
     private readonly List<ServerData> _serverList = [];
     private int _selectedServerIndex = -1;
-    private GuiButton _btnEdit = null!;
-    private GuiButton _btnSelect = null!;
-    private GuiButton _btnDelete = null!;
-    private bool _deletingServer = false;
-    private bool _addingServer = false;
-    private bool _editingServer = false;
-    private bool _directConnect = false;
+    private readonly Button _btnEdit;
+    private readonly Button _btnSelect;
+    private readonly Button _btnDelete;
+    private bool _deletingServer;
+    private bool _addingServer;
+    private bool _editingServer;
+    private bool _directConnect;
     private ServerData _tempServer = null!;
 
-    private readonly GuiScreen _parentScreen;
+    private readonly Screen _parentScreen;
 
-    public GuiMultiplayer(GuiScreen parentScreen)
+    public GuiMultiplayer(Screen parentScreen)
     {
         _parentScreen = parentScreen;
+
+        LoadServerList();
+        Keyboard.enableRepeatEvents(true);
+        Children.Clear();
+        _serverListSelector = new GuiListServer(this);
+
+        _btnEdit = new(Width / 2 - 154, Height - 28, 70, 20, "Edit") { Enabled = false };
+        _btnDelete = new(Width / 2 - 74, Height - 28, 70, 20, "Delete") { Enabled = false };
+        _btnSelect = new(Width / 2 - 154, Height - 52, 100, 20, "Join Server") { Enabled = false };
+        Button directConnectButton = new(Width / 2 - 50, Height - 52, 100, 20, "Direct Connect");
+        Button addServerButton = new(Width / 2 + 4 + 50, Height - 52, 100, 20, "Add server");
+        Button refreshButton = new(Width / 2 + 4, Height - 28, 70, 20, "Refresh");
+        Button cancelButton = new(Width / 2 + 4 + 76, Height - 28, 75, 20, "Cancel");
+
+        _btnEdit.Clicked += (_, _) =>
+        {
+            _editingServer = true;
+            ServerData original = _serverList[_selectedServerIndex];
+            _tempServer = new ServerData(original.Name, original.Ip);
+            MC.OpenScreen(new GuiScreenAddServer(this, _tempServer));
+        };
+        _btnDelete.Clicked += (_, _) =>
+        {
+            string serverName = _serverList[_selectedServerIndex].Name;
+            if (serverName != null)
+            {
+                _deletingServer = true;
+                string q = "Are you sure you want to remove this server?";
+                string w = "'" + serverName + "' " + "will be lost forever! (A long time!)";
+                string b = "Delete";
+                string c = "Cancel";
+                GuiYesNo yesNo = new(this, q, w, b, c, _selectedServerIndex);
+                MC.OpenScreen(yesNo);
+            }
+        };
+        _btnSelect.Clicked += (_, _) => ConnectToServer(_selectedServerIndex);
+        directConnectButton.Clicked += (_, _) =>
+        {
+            _directConnect = true;
+            _tempServer = new ServerData("Minecraft Server", "");
+            MC.OpenScreen(new GuiDirectConnect(this, _tempServer));
+        };
+        addServerButton.Clicked += (_, _) =>
+        {
+            _addingServer = true;
+            _tempServer = new ServerData("Minecraft Server", "");
+            MC.OpenScreen(new GuiScreenAddServer(this, _tempServer));
+        };
+        refreshButton.Clicked += (_, _) => LoadServerList();
+        cancelButton.Clicked += (_, _) => MC.OpenScreen(_parentScreen);
+
+        AddChildren(_btnEdit, _btnDelete, _btnSelect, directConnectButton, addServerButton, refreshButton, cancelButton);
     }
 
     public List<ServerData> GetServerList()
@@ -44,32 +96,6 @@ public class GuiMultiplayer : GuiScreen
     public int GetSelectedServerIndex()
     {
         return _selectedServerIndex;
-    }
-
-    public override void InitGui()
-    {
-        LoadServerList();
-        Keyboard.enableRepeatEvents(true);
-        _controlList.Clear();
-        _serverListSelector = new GuiSlotServer(this);
-
-        _controlList.Add(_btnEdit = new GuiButton(7, Width / 2 - 154, Height - 28, 70, 20, "Edit"));
-        _controlList.Add(_btnDelete = new GuiButton(2, Width / 2 - 74, Height - 28, 70, 20, "Delete"));
-        _controlList.Add(_btnSelect = new GuiButton(1, Width / 2 - 154, Height - 52, 100, 20, "Join Server"));
-        _controlList.Add(new GuiButton(4, Width / 2 - 50, Height - 52, 100, 20, "Direct Connect"));
-        _controlList.Add(new GuiButton(3, Width / 2 + 4 + 50, Height - 52, 100, 20, "Add server"));
-        _controlList.Add(new GuiButton(8, Width / 2 + 4, Height - 28, 70, 20, "Refresh"));
-        _controlList.Add(new GuiButton(0, Width / 2 + 4 + 76, Height - 28, 75, 20, "Cancel"));
-
-        UpdateButtons();
-    }
-
-    private void UpdateButtons()
-    {
-        bool hasSelection = _selectedServerIndex >= 0 && _selectedServerIndex < _serverList.Count;
-        _btnSelect.Enabled = hasSelection;
-        _btnEdit.Enabled = hasSelection;
-        _btnDelete.Enabled = hasSelection;
     }
 
     private void LoadServerList()
@@ -116,140 +142,72 @@ public class GuiMultiplayer : GuiScreen
         Keyboard.enableRepeatEvents(false);
     }
 
-    public override void UpdateScreen()
-    {
-        base.UpdateScreen();
-        UpdateButtons();
-    }
-
-    protected override void ActionPerformed(GuiButton button)
-    {
-        if (!button.Enabled) return;
-
-        if (button.Id == 2) // Delete
-        {
-            string serverName = _serverList[_selectedServerIndex].Name;
-            if (serverName != null)
-            {
-                _deletingServer = true;
-                string q = "Are you sure you want to remove this server?";
-                string w = "'" + serverName + "' " + "will be lost forever! (A long time!)";
-                string b = "Delete";
-                string c = "Cancel";
-                GuiYesNo yesNo = new(this, q, w, b, c, _selectedServerIndex);
-                mc.displayGuiScreen(yesNo);
-            }
-        }
-        else if (button.Id == 1) // Select/Connect
-        {
-            ConnectToServer(_selectedServerIndex);
-        }
-        else if (button.Id == 4) // Direct Connect
-        {
-            _directConnect = true;
-            _tempServer = new ServerData("Minecraft Server", "");
-            mc.displayGuiScreen(new GuiDirectConnect(this, _tempServer));
-        }
-        else if (button.Id == 3) // Add
-        {
-            _addingServer = true;
-            _tempServer = new ServerData("Minecraft Server", "");
-            mc.displayGuiScreen(new GuiScreenAddServer(this, _tempServer));
-        }
-        else if (button.Id == 7) // Edit
-        {
-            _editingServer = true;
-            ServerData original = _serverList[_selectedServerIndex];
-            _tempServer = new ServerData(original.Name, original.Ip);
-            mc.displayGuiScreen(new GuiScreenAddServer(this, _tempServer));
-        }
-        else if (button.Id == 0) // Cancel
-        {
-            mc.displayGuiScreen(_parentScreen);
-        }
-        else if (button.Id == 8) // Refresh
-        {
-            LoadServerList();
-        }
-        else
-        {
-            _serverListSelector.ActionPerformed(button);
-        }
-    }
-
-    public override void DeleteWorld(bool result, int id)
+    public override void DeleteWorld(bool confirmed, int index)
     {
         if (_deletingServer)
         {
             _deletingServer = false;
-            if (result)
+            if (confirmed)
             {
-                _serverList.RemoveAt(id);
+                _serverList.RemoveAt(index);
                 SaveServerList();
                 _selectedServerIndex = -1;
             }
-            mc.displayGuiScreen(this);
+            MC.OpenScreen(this);
         }
     }
 
-    public void ConfirmClicked(bool result, int id)
+    public void ConfirmClicked(bool confirmed, int id)
     {
         if (_directConnect)
         {
             _directConnect = false;
 
-            if (result)
+            if (confirmed)
             {
                 JoinServer(_tempServer);
             }
             else
             {
-                mc.displayGuiScreen(this);
+                MC.OpenScreen(this);
             }
         }
         else if (_addingServer)
         {
             _addingServer = false;
-            if (result)
+            if (confirmed)
             {
                 _serverList.Add(_tempServer);
                 SaveServerList();
             }
-            mc.displayGuiScreen(this);
+            MC.OpenScreen(this);
         }
         else if (_editingServer)
         {
             _editingServer = false;
-            if (result)
+            if (confirmed)
             {
                 ServerData server = _serverList[_selectedServerIndex];
                 server.Name = _tempServer.Name;
                 server.Ip = _tempServer.Ip;
                 SaveServerList();
             }
-            mc.displayGuiScreen(this);
+            MC.OpenScreen(this);
         }
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void OnKeyInput(KeyboardEventArgs e)
     {
-        if (eventKey == 28) // Enter
+        if (e.Key == Keyboard.KEY_RETURN)
         {
-            if (_btnSelect != null && _btnSelect.Enabled) ActionPerformed(_btnSelect);
+            ConnectToServer(_selectedServerIndex);
         }
     }
 
-    protected override void MouseClicked(int x, int y, int button)
-    {
-        base.MouseClicked(x, y, button);
-    }
-
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    protected override void OnRendered(RenderEventArgs e)
     {
         DrawDefaultBackground();
-        _serverListSelector.DrawScreen(mouseX, mouseY, partialTicks);
-        DrawCenteredString(FontRenderer, "Play Multiplayer", Width / 2, 20, 0xFFFFFF);
-        base.Render(mouseX, mouseY, partialTicks);
+        Gui.DrawCenteredString(FontRenderer, "Play Multiplayer", Width / 2, 20, 0xFFFFFF);
     }
 
     private void JoinServer(ServerData server)
@@ -285,6 +243,6 @@ public class GuiMultiplayer : GuiScreen
             _ = int.TryParse(parts[1], out portNum);
         }
 
-        mc.displayGuiScreen(new GuiConnecting(mc, host, portNum));
+        MC.OpenScreen(new GuiConnecting(MC, host, portNum));
     }
 }

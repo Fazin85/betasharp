@@ -1,11 +1,9 @@
 namespace BetaSharp.Client.Guis;
 
-public class GuiConnectFailed : GuiScreen
+public class GuiConnectFailed : Screen
 {
-
     private readonly string _errorMessage;
     private readonly string _errorDetail;
-    private const int _buttonToMenu = 0;
 
     public GuiConnectFailed(string messageKey, string detailKey, params object[]? formatArgs)
     {
@@ -20,40 +18,16 @@ public class GuiConnectFailed : GuiScreen
             _errorDetail = translations.TranslateKey(detailKey);
         }
 
+        MC.stopInternalServer();
+        Button titleButton = new(Width / 2 - 100, Height / 4 + 120 + 12, translations.TranslateKey("gui.toMenu"));
+        titleButton.Clicked += (_, _) => MC.OpenScreen(new GuiMainMenu());
+        AddChild(titleButton);
     }
 
-    public override void UpdateScreen()
-    {
-    }
-
-    protected override void KeyTyped(char eventChar, int eventKey)
-    {
-    }
-
-    public override void InitGui()
-    {
-        mc.stopInternalServer();
-        TranslationStorage translations = TranslationStorage.Instance;
-        _controlList.Clear();
-        _controlList.Add(new GuiButton(_buttonToMenu, Width / 2 - 100, Height / 4 + 120 + 12, translations.TranslateKey("gui.toMenu")));
-    }
-
-    protected override void ActionPerformed(GuiButton btt)
-    {
-        switch (btt.Id)
-        {
-            case _buttonToMenu:
-                mc.displayGuiScreen(new GuiMainMenu());
-                break;
-        }
-
-    }
-
-    public override void Render(int mouseX, int mouseY, float parcialTick)
+    protected override void OnRendered(RenderEventArgs e)
     {
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, _errorMessage, Width / 2, Height / 2 - 50, 0xFFFFFF);
-        DrawCenteredString(FontRenderer, _errorDetail, Width / 2, Height / 2 - 10, 0xFFFFFF);
-        base.Render(mouseX, mouseY, parcialTick);
+        Gui.DrawCenteredString(FontRenderer, _errorMessage, Width / 2, Height / 2 - 50, 0xFFFFFF);
+        Gui.DrawCenteredString(FontRenderer, _errorDetail, Width / 2, Height / 2 - 10, 0xFFFFFF);
     }
 }

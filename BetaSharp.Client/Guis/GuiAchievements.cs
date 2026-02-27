@@ -9,9 +9,8 @@ using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiAchievements : GuiScreen
+public class GuiAchievements : Screen
 {
-
     private static readonly int field_27126_s = BetaSharp.Achievements.minColumn * 24 - 112;
     private static readonly int field_27125_t = BetaSharp.Achievements.minRow * 24 - 112;
     private static readonly int field_27124_u = BetaSharp.Achievements.maxColumn * 24 - 77;
@@ -34,42 +33,21 @@ public class GuiAchievements : GuiScreen
         this.statFileWriter = statFileWriter;
         short var2 = 141;
         short var3 = 141;
-        field_27116_m = field_27114_o = field_27112_q = BetaSharp.Achievements.OpenInventory.column * 24 - var2 / 2 - 12;
-        field_27115_n = field_27113_p = field_27111_r = BetaSharp.Achievements.OpenInventory.row * 24 - var3 / 2;
+        field_27116_m = field_27114_o = field_27112_q = BetaSharp.Achievements.OpenInventory.column * 24 - var2 / 2f - 12;
+        field_27115_n = field_27113_p = field_27111_r = BetaSharp.Achievements.OpenInventory.row * 24 - var3 / 2f;
+        Button doneButton = new(Width / 2 + 24, Height / 2 + 74, 80, 20, StatCollector.TranslateToLocal("gui.done"));
+        doneButton.Clicked += (_, _) => MC.OpenScreen(null);
     }
 
-    public override void InitGui()
+    protected override void OnKeyInput(KeyboardEventArgs e)
     {
-        _controlList.Clear();
-        _controlList.Add(new GuiSmallButton(1, Width / 2 + 24, Height / 2 + 74, 80, 20, StatCollector.TranslateToLocal("gui.done")));
+        if (e.Key == MC.options.KeyBindInventory.keyCode)
+        {
+            MC.OpenScreen(null);
+        }
     }
 
-    protected override void ActionPerformed(GuiButton var1)
-    {
-        if (var1.Id == 1)
-        {
-            mc.displayGuiScreen(null);
-            mc.setIngameFocus();
-        }
-
-        base.ActionPerformed(var1);
-    }
-
-    protected override void KeyTyped(char eventChar, int eventKey)
-    {
-        if (eventKey == mc.options.KeyBindInventory.keyCode)
-        {
-            mc.displayGuiScreen(null);
-            mc.setIngameFocus();
-        }
-        else
-        {
-            base.KeyTyped(eventChar, eventKey);
-        }
-
-    }
-
-    public override void Render(int var1, int var2, float var3)
+    protected override void OnRendered(RenderEventArgs e)
     {
         if (Mouse.isButtonDown(0))
         {
@@ -77,7 +55,7 @@ public class GuiAchievements : GuiScreen
             int var5 = (Height - field_27119_i) / 2;
             int var6 = var4 + 8;
             int var7 = var5 + 17;
-            if ((field_27122_w == 0 || field_27122_w == 1) && var1 >= var6 && var1 < var6 + 224 && var2 >= var7 && var2 < var7 + 155)
+            if (field_27122_w is 0 or 1 && e.MouseX >= var6 && e.MouseX < var6 + 224 && e.MouseY >= var7 && e.MouseY < var7 + 155)
             {
                 if (field_27122_w == 0)
                 {
@@ -85,14 +63,14 @@ public class GuiAchievements : GuiScreen
                 }
                 else
                 {
-                    field_27114_o -= var1 - field_27118_j;
-                    field_27113_p -= var2 - field_27117_l;
+                    field_27114_o -= e.MouseX - field_27118_j;
+                    field_27113_p -= e.MouseY - field_27117_l;
                     field_27112_q = field_27116_m = field_27114_o;
                     field_27111_r = field_27115_n = field_27113_p;
                 }
 
-                field_27118_j = var1;
-                field_27117_l = var2;
+                field_27118_j = e.MouseX;
+                field_27117_l = e.MouseY;
             }
 
             if (field_27112_q < field_27126_s)
@@ -121,7 +99,7 @@ public class GuiAchievements : GuiScreen
         }
 
         DrawDefaultBackground();
-        func_27109_b(var1, var2, var3);
+        func_27109_b(e.MouseX, e.MouseY, e.TickDelta);
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.Disable(GLEnum.DepthTest);
         func_27110_k();
@@ -145,7 +123,6 @@ public class GuiAchievements : GuiScreen
             field_27114_o += var1 * 0.85D;
             field_27113_p += var3 * 0.85D;
         }
-
     }
 
     protected void func_27110_k()
@@ -179,13 +156,13 @@ public class GuiAchievements : GuiScreen
             var5 = field_27123_v - 1;
         }
 
-        TextureHandle var6 = mc.textureManager.GetTextureId("/terrain.png");
-        TextureHandle var7 = mc.textureManager.GetTextureId("/achievement/bg.png");
+        TextureHandle var6 = MC.textureManager.GetTextureId("/terrain.png");
+        TextureHandle var7 = MC.textureManager.GetTextureId("/achievement/bg.png");
         int var8 = (Width - field_27121_a) / 2;
         int var9 = (Height - field_27119_i) / 2;
         int var10 = var8 + 16;
         int var11 = var9 + 17;
-        _zLevel = 0.0F;
+        ZLevel = 0.0F;
         GLManager.GL.DepthFunc(GLEnum.Gequal);
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(0.0F, 0.0F, -200.0F);
@@ -193,7 +170,7 @@ public class GuiAchievements : GuiScreen
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.Enable(GLEnum.RescaleNormal);
         GLManager.GL.Enable(GLEnum.ColorMaterial);
-        mc.textureManager.BindTexture(var6);
+        MC.textureManager.BindTexture(var6);
         int var12 = var4 + 288 >> 4;
         int var13 = var5 + 288 >> 4;
         int var14 = (var4 + 288) % 16;
@@ -246,7 +223,7 @@ public class GuiAchievements : GuiScreen
                     var26 = Block.Bedrock.textureId;
                 }
 
-                DrawTexturedModalRect(var10 + var24 * 16 - var14, var11 + var22 * 16 - var15, var26 % 16 << 4, var26 >> 4 << 4, 16, 16);
+                DrawTextureRegion(var10 + var24 * 16 - var14, var11 + var22 * 16 - var15, var26 % 16 << 4, var26 >> 4 << 4, 16, 16);
             }
         }
 
@@ -284,8 +261,8 @@ public class GuiAchievements : GuiScreen
                     color = 0xFF000000U;
                 }
 
-                DrawHorizontalLine(var14, var16, var15, color);
-                DrawVerticalLine(var16, var15, var17, color);
+                Gui.DrawHorizontalLine(var14, var16, var15, color);
+                Gui.DrawVerticalLine(var16, var15, var17, color);
             }
         }
 
@@ -324,16 +301,16 @@ public class GuiAchievements : GuiScreen
                     GLManager.GL.Color4(var35, var35, var35, 1.0F);
                 }
 
-                mc.textureManager.BindTexture(var7);
+                MC.textureManager.BindTexture(var7);
                 var33 = var10 + var16;
                 var34 = var11 + var17;
                 if (var30.isChallenge())
                 {
-                    DrawTexturedModalRect(var33 - 2, var34 - 2, 26, 202, 26, 26);
+                    DrawTextureRegion(var33 - 2, var34 - 2, 26, 202, 26, 26);
                 }
                 else
                 {
-                    DrawTexturedModalRect(var33 - 2, var34 - 2, 0, 202, 26, 26);
+                    DrawTextureRegion(var33 - 2, var34 - 2, 0, 202, 26, 26);
                 }
 
                 if (!statFileWriter.CanUnlockAchievement(var30))
@@ -345,7 +322,7 @@ public class GuiAchievements : GuiScreen
 
                 GLManager.GL.Enable(GLEnum.Lighting);
                 GLManager.GL.Enable(GLEnum.CullFace);
-                var29.renderItemIntoGUI(mc.fontRenderer, mc.textureManager, var30.icon, var33 + 3, var34 + 3);
+                var29.renderItemIntoGUI(MC.fontRenderer, MC.textureManager, var30.icon, var33 + 3, var34 + 3);
                 GLManager.GL.Disable(GLEnum.Lighting);
                 if (!statFileWriter.CanUnlockAchievement(var30))
                 {
@@ -363,14 +340,14 @@ public class GuiAchievements : GuiScreen
         GLManager.GL.Disable(GLEnum.DepthTest);
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.textureManager.BindTexture(var7);
-        DrawTexturedModalRect(var8, var9, 0, 0, field_27121_a, field_27119_i);
+        MC.textureManager.BindTexture(var7);
+        DrawTextureRegion(var8, var9, 0, 0, field_27121_a, field_27119_i);
         GLManager.GL.PopMatrix();
-        _zLevel = 0.0F;
+        ZLevel = 0.0F;
         GLManager.GL.DepthFunc(GLEnum.Lequal);
         GLManager.GL.Disable(GLEnum.DepthTest);
         GLManager.GL.Enable(GLEnum.Texture2D);
-        base.Render(var1, var2, var3);
+
         if (var27 != null)
         {
             string? var32 = var27.getTranslatedDescription();
@@ -386,7 +363,7 @@ public class GuiAchievements : GuiScreen
                     var37 += 12;
                 }
 
-                DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var37 + 3 + 12, 0xC0000000U, 0xC0000000U);
+                Gui.DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var37 + 3 + 12, 0xC0000000U, 0xC0000000U);
                 FontRenderer.DrawStringWrapped(var32, var17, var33 + 12, var34, 0xFFA0A0A0);
                 if (statFileWriter.HasAchievementUnlocked(var27))
                 {
@@ -396,9 +373,9 @@ public class GuiAchievements : GuiScreen
             else
             {
                 var34 = java.lang.Math.max(FontRenderer.GetStringWidth(var31), 120);
-                string var39 = StatCollector.TranslateToLocalFormatted("achievement.requires", new object[] { var27.parent.StatName });
+                string var39 = StatCollector.TranslateToLocalFormatted("achievement.requires", var27.parent.StatName);
                 var38 = FontRenderer.GetStringHeight(var39, var34);
-                DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var38 + 12 + 3, 0xC0000000, 0xC0000000);
+                Gui.DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var38 + 12 + 3, 0xC0000000, 0xC0000000);
                 FontRenderer.DrawStringWrapped(var39, var17, var33 + 12, var34, 0xFF705050);
             }
 

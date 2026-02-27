@@ -1,4 +1,4 @@
-﻿using BetaSharp.Blocks.Entities;
+using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Achievements;
 using BetaSharp.Client.Entities.FX;
 using BetaSharp.Client.Guis;
@@ -62,7 +62,7 @@ public class ClientPlayerEntity : EntityPlayer
 
             if (mc.currentScreen != null)
             {
-                mc.displayGuiScreen((GuiScreen)null);
+                mc.OpenScreen((Screen)null);
             }
 
             if (changeDimensionCooldown == 0.0F)
@@ -134,32 +134,32 @@ public class ClientPlayerEntity : EntityPlayer
     public override void closeHandledScreen()
     {
         base.closeHandledScreen();
-        mc.displayGuiScreen(null);
+        mc.OpenScreen(null);
     }
 
     public override void openEditSignScreen(BlockEntitySign sign)
     {
-        mc.displayGuiScreen(new GuiEditSign(sign));
+        mc.OpenScreen(new GuiEditSign(sign));
     }
 
     public override void openChestScreen(IInventory inventory)
     {
-        mc.displayGuiScreen(new GuiChest(base.inventory, inventory));
+        mc.OpenScreen(new GuiChest(base.inventory, inventory));
     }
 
     public override void openCraftingScreen(int x, int y, int z)
     {
-        mc.displayGuiScreen(new GuiCrafting(inventory, world, x, y, z));
+        mc.OpenScreen(new GuiCrafting(inventory, world, x, y, z));
     }
 
     public override void openFurnaceScreen(BlockEntityFurnace furnace)
     {
-        mc.displayGuiScreen(new GuiFurnace(inventory, furnace));
+        mc.OpenScreen(new GuiFurnace(inventory, furnace));
     }
 
     public override void openDispenserScreen(BlockEntityDispenser dispenser)
     {
-        mc.displayGuiScreen(new GuiDispenser(inventory, dispenser));
+        mc.OpenScreen(new GuiDispenser(inventory, dispenser));
     }
 
     public override void sendPickup(Entity entity, int count)
@@ -232,12 +232,12 @@ public class ClientPlayerEntity : EntityPlayer
                         mc.guiAchievement.queueTakenAchievement(achievement);
                     }
 
-                    mc.statFileWriter.ReadStat(stat, value);
+                    mc.statFileWriter.WriteStat(stat, value);
                 }
             }
             else
             {
-                mc.statFileWriter.ReadStat(stat, value);
+                mc.statFileWriter.WriteStat(stat, value);
             }
 
         }

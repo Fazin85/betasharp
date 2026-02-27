@@ -5,15 +5,21 @@ using BetaSharp.Stats;
 
 namespace BetaSharp.Client.Guis;
 
-public abstract class GuiSlotStats<T, K>(GuiStats statsGui) : GuiSlot(statsGui.mc, statsGui.Width, statsGui.Height, 32, statsGui.Height - 64, 20)
-    where K : class, T
+public abstract class GuiListStats<T, K> : GuiList where K : class, T
 {
     public int ActiveStatType { get; set; } = -1;
     public int SortOrder { get; set; }
 
     protected int HoveredColumn { get; set; } = -1;
     protected List<K> Stats { get; set; } = [];
-    protected IComparer<T> StatSorter { get; set; } = null!;
+    protected IComparer<T> StatSorter { get; init; } = null!;
+
+    private GuiStats statsGui;
+
+    public GuiListStats(GuiStats statsGui) : base(statsGui.MC, statsGui.Width, statsGui.Height, 32, statsGui.Height - 64, 20)
+    {
+        this.statsGui = statsGui;
+    }
 
     protected override void ElementClicked(int slotIndex, bool doubleClick) { }
 
@@ -51,7 +57,7 @@ public abstract class GuiSlotStats<T, K>(GuiStats statsGui) : GuiSlot(statsGui.m
         if (HoveredColumn >= 0)
         {
             SortByColumn(HoveredColumn);
-            statsGui.mc.sndManager.PlaySoundFX("random.click", 1.0F, 1.0F);
+            statsGui.MC.sndManager.PlaySoundFX("random.click", 1.0F, 1.0F);
         }
     }
 
@@ -63,7 +69,7 @@ public abstract class GuiSlotStats<T, K>(GuiStats statsGui) : GuiSlot(statsGui.m
 
     protected void DrawStatValue(StatCrafting? stat, int x, int y, bool useBrightColor)
     {
-        string text = stat is not null ? stat.Format(statsGui.statFileWriter.GetStatValue(stat)) : "-";
+        string text = stat is not null ? stat.Format(statsGui.statFileWriter.ReadStat(stat)) : "-";
         statsGui.FontRenderer.DrawStringWithShadow(text, x - statsGui.FontRenderer.GetStringWidth(text), y + 5, useBrightColor ? 0xFFFFFFu : 0x909090u);
     }
 

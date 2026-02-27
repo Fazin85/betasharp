@@ -9,9 +9,8 @@ using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
 
-public abstract class GuiContainer : GuiScreen
+public abstract class GuiContainer : Screen
 {
-
     private static readonly ItemRenderer _itemRenderer = new();
     protected int _xSize = 176;
     protected int _ySize = 166;
@@ -22,22 +21,17 @@ public abstract class GuiContainer : GuiScreen
     public GuiContainer(ScreenHandler inventorySlots)
     {
         InventorySlots = inventorySlots;
+        MC.player.currentScreenHandler = InventorySlots;
     }
 
-    public override void InitGui()
-    {
-        base.InitGui();
-        mc.player.currentScreenHandler = InventorySlots;
-    }
-
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    protected override void OnRendered(RenderEventArgs e)
     {
         DrawDefaultBackground();
 
         int guiLeft = (Width - _xSize) / 2;
         int guiTop = (Height - _ySize) / 2;
 
-        DrawGuiContainerBackgroundLayer(partialTicks);
+        DrawGuiContainerBackgroundLayer(e.TickDelta);
 
         GLManager.GL.PushMatrix();
         GLManager.GL.Rotate(120.0F, 1.0F, 0.0F, 0.0F);
@@ -49,14 +43,14 @@ public abstract class GuiContainer : GuiScreen
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         GLManager.GL.Enable(GLEnum.RescaleNormal);
 
-        Slot hoveredSlot = null;
+        Slot? hoveredSlot = null;
 
 
         for (int i = 0; i < InventorySlots.slots.size(); ++i)
         {
             Slot slot = (Slot)InventorySlots.slots.get(i);
             DrawSlotInventory(slot);
-            if (GetIsMouseOverSlot(slot, mouseX, mouseY))
+            if (GetIsMouseOverSlot(slot, e.MouseX, e.MouseY))
             {
                 hoveredSlot = slot;
 
@@ -64,13 +58,13 @@ public abstract class GuiContainer : GuiScreen
                 GLManager.GL.Disable(GLEnum.DepthTest);
                 int sx = slot.xDisplayPosition;
                 int sy = slot.yDisplayPosition;
-                DrawGradientRect(sx, sy, sx + 16, sy + 16, 0x80FFFFFF, 0x80FFFFFF);
+                Gui.DrawGradientRect(sx, sy, sx + 16, sy + 16, 0x80FFFFFF, 0x80FFFFFF);
                 GLManager.GL.Enable(GLEnum.Lighting);
                 GLManager.GL.Enable(GLEnum.DepthTest);
             }
         }
 
-        InventoryPlayer playerInv = mc.player.inventory;
+        InventoryPlayer playerInv = MC.player.inventory;
 
         GLManager.GL.Disable(GLEnum.RescaleNormal);
         Lighting.turnOff();
@@ -83,11 +77,11 @@ public abstract class GuiContainer : GuiScreen
             string itemName = ("" + TranslationStorage.Instance.TranslateNamedKey(hoveredSlot.getStack().getItemName())).Trim();
             if (itemName.Length > 0)
             {
-                int tipX = mouseX - guiLeft + 12;
-                int tipY = mouseY - guiTop - 12;
+                int tipX = e.MouseX - guiLeft + 12;
+                int tipY = e.MouseY - guiTop - 12;
                 int textWidth = FontRenderer.GetStringWidth(itemName);
 
-                DrawGradientRect(tipX - 3, tipY - 3, tipX + textWidth + 3, tipY + 8 + 3, 0xC0000000, 0xC0000000);
+                Gui.DrawGradientRect(tipX - 3, tipY - 3, tipX + textWidth + 3, tipY + 8 + 3, 0xC0000000, 0xC0000000);
                 FontRenderer.DrawStringWithShadow(itemName, tipX, tipY, 0xFFFFFFFF);
             }
         }
@@ -104,8 +98,8 @@ public abstract class GuiContainer : GuiScreen
             GLManager.GL.Enable(GLEnum.DepthTest);
 
             GLManager.GL.Translate(0.0F, 0.0F, 32.0F);
-            _itemRenderer.renderItemIntoGUI(FontRenderer, mc.textureManager, playerInv.getCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8);
-            _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, mc.textureManager, playerInv.getCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8);
+            _itemRenderer.renderItemIntoGUI(FontRenderer, MC.textureManager, playerInv.getCursorStack(), e.MouseX - guiLeft - 8, e.MouseY - guiTop - 8);
+            _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, MC.textureManager, playerInv.getCursorStack(), e.MouseX - guiLeft - 8, e.MouseY - guiTop - 8);
 
             Lighting.turnOff();
             GLManager.GL.Disable(GLEnum.Lighting);
@@ -114,8 +108,6 @@ public abstract class GuiContainer : GuiScreen
         }
 
         GLManager.GL.PopMatrix();
-        base.Render(mouseX, mouseY, partialTicks);
-
         GLManager.GL.Enable(GLEnum.Lighting);
         GLManager.GL.Enable(GLEnum.DepthTest);
     }
@@ -135,18 +127,18 @@ public abstract class GuiContainer : GuiScreen
             if (iconIdx >= 0)
             {
                 GLManager.GL.Disable(GLEnum.Lighting);
-                mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/items.png"));
-                DrawTexturedModalRect(x, y, iconIdx % 16 * 16, iconIdx / 16 * 16, 16, 16);
+                MC.textureManager.BindTexture(MC.textureManager.GetTextureId("/gui/items.png"));
+                DrawTextureRegion(x, y, iconIdx % 16 * 16, iconIdx / 16 * 16, 16, 16);
                 GLManager.GL.Enable(GLEnum.Lighting);
                 return;
             }
         }
 
-        _itemRenderer.renderItemIntoGUI(FontRenderer, mc.textureManager, item, x, y);
-        _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, mc.textureManager, item, x, y);
+        _itemRenderer.renderItemIntoGUI(FontRenderer, MC.textureManager, item, x, y);
+        _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, MC.textureManager, item, x, y);
     }
 
-    private Slot GetSlotAtPosition(int mouseX, int mouseY)
+    private Slot? GetSlotAtPosition(int mouseX, int mouseY)
     {
         for (int i = 0; i < InventorySlots.slots.size(); ++i)
         {
@@ -173,16 +165,15 @@ public abstract class GuiContainer : GuiScreen
                mouseY < slot.yDisplayPosition + 16 + 1;
     }
 
-    protected override void MouseClicked(int x, int y, int button)
+    protected override void OnClicked(MouseEventArgs e)
     {
-        base.MouseClicked(x, y, button);
-        if (button == 0 || button == 1)
+        if (e.Button is 0 or 1)
         {
-            Slot slot = GetSlotAtPosition(x, y);
+            Slot slot = GetSlotAtPosition(e.X, e.Y);
             int guiLeft = (Width - _xSize) / 2;
             int guiTop = (Height - _ySize) / 2;
 
-            bool isOutside = x < guiLeft || y < guiTop || x >= guiLeft + _xSize || y >= guiTop + _ySize;
+            bool isOutside = e.X < guiLeft || e.Y < guiTop || e.X >= guiLeft + _xSize || e.Y >= guiTop + _ySize;
 
             int slotId = -1;
             if (slot != null) slotId = slot.id;
@@ -190,39 +181,33 @@ public abstract class GuiContainer : GuiScreen
             if (slotId != -1)
             {
                 bool isShiftClick = slotId != -999 && (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT));
-                mc.playerController.func_27174_a(InventorySlots.syncId, slotId, button, isShiftClick, mc.player);
+                MC.playerController.func_27174_a(InventorySlots.syncId, slotId, e.Button, isShiftClick, MC.player);
             }
         }
-
     }
 
-    protected override void MouseMovedOrUp(int x, int y, int button) { }
-
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void OnKeyInput(KeyboardEventArgs e)
     {
-        if (eventKey == Keyboard.KEY_ESCAPE || eventKey == mc.options.KeyBindInventory.keyCode)
+        if (e.Key == Keyboard.KEY_ESCAPE || e.Key == MC.options.KeyBindInventory.keyCode)
         {
-            mc.player.closeHandledScreen();
+            MC.player.closeHandledScreen();
         }
-
     }
 
     public override void OnGuiClosed()
     {
-        if (mc.player != null)
+        if (MC.player != null)
         {
-            mc.playerController.func_20086_a(InventorySlots.syncId, mc.player);
+            MC.playerController.func_20086_a(InventorySlots.syncId, MC.player);
         }
     }
 
 
     public override void UpdateScreen()
     {
-        base.UpdateScreen();
-        if (!mc.player.isAlive() || mc.player.dead)
+        if (!MC.player.isAlive() || MC.player.dead)
         {
-            mc.player.closeHandledScreen();
+            MC.player.closeHandledScreen();
         }
-
     }
 }

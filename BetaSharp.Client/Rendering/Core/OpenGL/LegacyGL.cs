@@ -196,6 +196,11 @@ public unsafe class LegacyGL : IGL
         SilkGL.DrawArrays(mode, first, count);
     }
 
+    public virtual void Enable(EnableCap cap)
+    {
+        SilkGL.Enable(cap);
+    }
+
     public virtual void Enable(GLEnum cap)
     {
         SilkGL.Enable(cap);
@@ -286,6 +291,10 @@ public unsafe class LegacyGL : IGL
         SilkGL.GetFloat(pname, data);
     }
 
+    public virtual void GetInteger(GetPName pname, Span<int> data)
+    {
+        SilkGL.GetInteger(pname, data);
+    }
 
     public void GetProgram(uint program, ProgramPropertyARB pname, out int params_)
     {
@@ -310,6 +319,11 @@ public unsafe class LegacyGL : IGL
     public int GetUniformLocation(uint program, string name)
     {
         return SilkGL.GetUniformLocation(program, name);
+    }
+
+    public virtual bool IsEnabled(EnableCap cap)
+    {
+        return SilkGL.IsEnabled(cap);
     }
 
     public bool IsExtensionPresent(string extension)
@@ -405,6 +419,11 @@ public unsafe class LegacyGL : IGL
     public virtual void Scale(double x, double y, double z)
     {
         SilkGL.Scale(x, y, z);
+    }
+
+    public virtual void Scissor(int x, int y, uint width, uint height)
+    {
+        SilkGL.Scissor(x, y, width, height);
     }
 
     public virtual void ShadeModel(GLEnum mode)

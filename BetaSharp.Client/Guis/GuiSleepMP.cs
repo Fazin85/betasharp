@@ -6,13 +6,13 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiSleepMP : GuiChat
 {
-    private const int ButtonStopSleep = 1;
-
-    public override void InitGui()
+    public GuiSleepMP()
     {
         Keyboard.enableRepeatEvents(true);
         TranslationStorage translations = TranslationStorage.Instance;
-        _controlList.Add(new GuiButton(ButtonStopSleep, Width / 2 - 100, Height - 40, translations.TranslateKey("multiplayer.stopSleeping")));
+        Button stopSleepingButton = new(Width / 2 - 100, Height - 40, translations.TranslateKey("multiplayer.stopSleeping"));
+        stopSleepingButton.Clicked += (_, _) => sendStopSleepingCommand();
+        AddChild(stopSleepingButton);
     }
 
     public override void OnGuiClosed()
@@ -20,55 +20,30 @@ public class GuiSleepMP : GuiChat
         Keyboard.enableRepeatEvents(false);
     }
 
-    protected override void KeyTyped(char eventChar, int eventKey)
+    protected override void OnKeyInput(KeyboardEventArgs e)
     {
-        if (eventKey == 1)
+        if (e.Key == Keyboard.KEY_ESCAPE)
         {
             sendStopSleepingCommand();
         }
-        else if (eventKey == 28)
+        else if (e.Key == Keyboard.KEY_RETURN)
         {
             string trimmed = _message.Trim();
             if (trimmed.Length > 0)
             {
-                mc.player.sendChatMessage(trimmed);
+                MC.player.sendChatMessage(trimmed);
             }
 
             _message = "";
         }
-        else
-        {
-            base.KeyTyped(eventChar, eventKey);
-        }
-
-    }
-
-    public override void Render(int mouseX, int mouseY, float partialTicks)
-    {
-        base.Render(mouseX, mouseY, partialTicks);
-    }
-
-    protected override void ActionPerformed(GuiButton button)
-    {
-        switch (button.Id)
-        {
-            case ButtonStopSleep:
-                sendStopSleepingCommand();
-                break;
-            default:
-                base.ActionPerformed(button);
-                break;
-        }
-
     }
 
     private void sendStopSleepingCommand()
     {
-        if (mc.player is EntityClientPlayerMP)
+        if (MC.player is EntityClientPlayerMP)
         {
-            ClientNetworkHandler sendQueue = ((EntityClientPlayerMP)mc.player).sendQueue;
-            sendQueue.addToSendQueue(new ClientCommandC2SPacket(mc.player, 3));
+            ClientNetworkHandler sendQueue = ((EntityClientPlayerMP)MC.player).sendQueue;
+            sendQueue.addToSendQueue(new ClientCommandC2SPacket(MC.player, 3));
         }
-
     }
 }

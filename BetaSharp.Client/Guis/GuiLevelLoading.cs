@@ -6,37 +6,35 @@ using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
+public class GuiLevelLoading : Screen
 {
     private readonly ILogger<GuiLevelLoading> _logger = Log.Instance.For<GuiLevelLoading>();
-    private readonly string _worldDir = worldDir;
-    private readonly long _seed = seed;
     private bool _serverStarted;
+    public override bool PausesGame => false;
 
-    public override bool PausesGame=> false;
-
-    public override void InitGui()
+    public GuiLevelLoading(string worldDir, long seed)
     {
-        _controlList.Clear();
         if (!_serverStarted)
         {
             _serverStarted = true;
-            mc.internalServer = new InternalServer(System.IO.Path.Combine(Minecraft.getMinecraftDir().getAbsolutePath(), "saves"), _worldDir, _seed.ToString(), mc.options.renderDistance, mc.options.Difficulty);
-            new RunServerThread(mc.internalServer, "InternalServer").start();
+            MC.internalServer = new(System.IO.Path.Combine(Minecraft.getMinecraftDir().getAbsolutePath(), "saves"),
+            worldDir, seed.ToString(), MC.options.renderDistance, MC.options.Difficulty);
+            new RunServerThread(MC.internalServer, "InternalServer").start();
         }
     }
 
     public override void UpdateScreen()
     {
-        if (mc.internalServer != null)
+        if (MC.internalServer != null)
         {
-            if (mc.internalServer.stopped)
+            if (MC.internalServer.stopped)
             {
-                mc.displayGuiScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", "Internal server stopped unexpectedly"));
+                MC.OpenScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason",
+                    "Internal server stopped unexpectedly"));
                 return;
             }
 
-            if (mc.internalServer.isReady)
+            if (MC.internalServer.isReady)
             {
                 InternalConnection clientConnection = new(null, "Internal-Client");
                 InternalConnection serverConnection = new(null, "Internal-Server");
@@ -44,36 +42,33 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
                 clientConnection.AssignRemote(serverConnection);
                 serverConnection.AssignRemote(clientConnection);
 
-                mc.internalServer.connections.AddInternalConnection(serverConnection);
+                MC.internalServer.connections.AddInternalConnection(serverConnection);
                 _logger.LogInformation("[Internal-Client] Created internal connection");
 
-                ClientNetworkHandler clientHandler = new(mc, clientConnection);
+                ClientNetworkHandler clientHandler = new(MC, clientConnection);
                 clientConnection.setNetworkHandler(clientHandler);
-                clientHandler.addToSendQueue(new BetaSharp.Network.Packets.HandshakePacket(mc.session.username));
+                clientHandler.addToSendQueue(new BetaSharp.Network.Packets.HandshakePacket(MC.session.username));
 
-                mc.displayGuiScreen(new GuiConnecting(mc, clientHandler));
+                MC.OpenScreen(new GuiConnecting(MC, clientHandler));
             }
         }
     }
 
-    public override void Render(int var1, int var2, float var3)
+    protected override void OnRendered(RenderEventArgs e)
     {
         DrawDefaultBackground();
-        TranslationStorage var4 = TranslationStorage.Instance;
 
         string title = "Loading level";
         string progressMsg = "";
         int progress = 0;
 
-        if (mc.internalServer != null)
+        if (MC.internalServer != null)
         {
-            progressMsg = mc.internalServer.progressMessage ?? "Starting server...";
-            progress = mc.internalServer.progress;
+            progressMsg = MC.internalServer.progressMessage ?? "Starting server...";
+            progress = MC.internalServer.progress;
         }
 
-        DrawCenteredString(FontRenderer, title, Width / 2, Height / 2 - 50, 0xFFFFFF);
-        DrawCenteredString(FontRenderer, progressMsg + " (" + progress + "%)", Width / 2, Height / 2 - 10, 0xFFFFFF);
-
-        base.Render(var1, var2, var3);
+        Gui.DrawCenteredString(FontRenderer, title, Width / 2, Height / 2 - 50, 0xFFFFFF);
+        Gui.DrawCenteredString(FontRenderer, progressMsg + " (" + progress + "%)", Width / 2, Height / 2 - 10, 0xFFFFFF);
     }
 }

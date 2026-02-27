@@ -3,9 +3,8 @@ using BetaSharp.Network.Packets.Play;
 
 namespace BetaSharp.Client.Guis;
 
-public class GuiDownloadTerrain : GuiScreen
+public class GuiDownloadTerrain : Screen
 {
-
     private readonly ClientNetworkHandler _networkHandler;
     private int _tickCounter = 0;
 
@@ -13,16 +12,7 @@ public class GuiDownloadTerrain : GuiScreen
 
     public GuiDownloadTerrain(ClientNetworkHandler networkHandler)
     {
-        this._networkHandler = networkHandler;
-    }
-
-    protected override void KeyTyped(char eventChar, int eventKey)
-    {
-    }
-
-    public override void InitGui()
-    {
-        _controlList.Clear();
+        _networkHandler = networkHandler;
     }
 
     public override void UpdateScreen()
@@ -37,18 +27,12 @@ public class GuiDownloadTerrain : GuiScreen
         {
             _networkHandler.tick();
         }
-
     }
 
-    protected override void ActionPerformed(GuiButton button)
-    {
-    }
-
-    public override void Render(int mouseX, int mouseY, float partialTicks)
+    protected override void OnRendered(RenderEventArgs e)
     {
         DrawBackground(0);
         TranslationStorage translations = TranslationStorage.Instance;
-        DrawCenteredString(FontRenderer, translations.TranslateKey("multiplayer.downloadingTerrain"), Width / 2, Height / 2 - 50, 0xFFFFFF);
-        base.Render(mouseX, mouseY, partialTicks);
+        Gui.DrawCenteredString(FontRenderer, translations.TranslateKey("multiplayer.downloadingTerrain"), Width / 2, Height / 2 - 50, 0xFFFFFF);
     }
 }
