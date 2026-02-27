@@ -41,6 +41,7 @@ public unsafe interface IGL
     void Disable(GLEnum cap);
     void DisableClientState(GLEnum array);
     void DrawArrays(GLEnum mode, int first, uint count);
+    void Enable(EnableCap cap);
     void Enable(GLEnum cap);
     void EnableClientState(GLEnum array);
     void EnableVertexAttribArray(uint index);
@@ -59,11 +60,13 @@ public unsafe interface IGL
     void GetFloat(GLEnum pname, Span<float> data);
     void GetFloat(GLEnum pname, out float data);
     void GetFloat(GLEnum pname, float* data);
+    void GetInteger(GetPName pname, Span<int> data);
     void GetProgram(uint program, ProgramPropertyARB pname, out int params_);
     string GetProgramInfoLog(uint program);
     void GetShader(uint shader, ShaderParameterName pname, out int params_);
     string GetShaderInfoLog(uint shader);
     int GetUniformLocation(uint program, string name);
+    bool IsEnabled(EnableCap cap);
     bool IsExtensionPresent(string extension);
     void Light(GLEnum light, GLEnum pname, float* params_);
     void LightModel(GLEnum pname, float* params_);
@@ -83,6 +86,7 @@ public unsafe interface IGL
     void Rotate(float angle, float x, float y, float z);
     void Scale(float x, float y, float z);
     void Scale(double x, double y, double z);
+    void Scissor(int x, int y, uint width, uint height);
     void ShadeModel(GLEnum mode);
     void ShaderSource(uint shader, string string_);
     void TexCoordPointer(int size, GLEnum type, uint stride, void* pointer);
