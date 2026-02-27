@@ -13,6 +13,18 @@ public class BlockGrass : Block
         setTickRandomly(true);
     }
 
+    public override int getTexture(int side)
+    {
+        if (side == 1) return 0;  // top: grass green
+        if (side == 0) return 2;  // bottom: dirt
+        return 3;                  // sides: grass+dirt edge
+    }
+
+    public override int getColorForFace(int meta, int face)
+    {
+        return face == 1 ? GrassColors.getDefaultColor() : 0xFFFFFF;
+    }
+
     public override int getTextureId(IBlockAccess iBlockAccess, int x, int y, int z, int side)
     {
         if (side == 1)

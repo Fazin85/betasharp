@@ -18,6 +18,11 @@ public class BlockTallGrass : BlockPlant
         return meta == 1 ? textureId : (meta == 2 ? textureId + 16 + 1 : (meta == 0 ? textureId + 16 : textureId));
     }
 
+    public override int getColor(int meta)
+    {
+        return meta == 0 ? 0xFFFFFF : GrassColors.getDefaultColor();
+    }
+
     public override int getColorMultiplier(IBlockAccess iBlockAccess, int x, int y, int z)
     {
         int meta = iBlockAccess.getBlockMeta(x, y, z);

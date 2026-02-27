@@ -81,12 +81,6 @@ public class BlockRenderer
     {
         BlockRendererType renderType = block.getRenderType();
 
-        int color = block.getColor(metadata);
-        float red = (color >> 16 & 255) / 255.0F * brightness;
-        float green = (color >> 8 & 255) / 255.0F * brightness;
-        float blue = (color & 255) / 255.0F * brightness;
-        GLManager.GL.Color4(red, green, blue, 1.0F);
-
         var uiCtx = new BlockRenderContext(
             world: NullBlockAccess.Instance,
             tess: tess,
@@ -100,37 +94,53 @@ public class BlockRenderer
 
         if (IsSideLit(renderType))
         {
+            void SetFaceColor(int face)
+            {
+                int c = block.getColorForFace(metadata, face);
+                GLManager.GL.Color4(
+                    (c >> 16 & 255) / 255.0F * brightness,
+                    (c >> 8 & 255) / 255.0F * brightness,
+                    (c & 255) / 255.0F * brightness,
+                    1.0F);
+            }
+
             block.setupRenderBoundingBox();
             GLManager.GL.Translate(-0.5F, -0.5F, -0.5F);
 
             // We manually draw the cube faces here to set GL Normals for the UI lighting
             tess.startDrawingQuads();
             tess.setNormal(0.0F, -1.0F, 0.0F);
+            SetFaceColor(0);
             uiCtx.DrawBottomFace(block, origin, dummyColors, block.getTexture(0, metadata));
             tess.draw();
 
             tess.startDrawingQuads();
             tess.setNormal(0.0F, 1.0F, 0.0F);
+            SetFaceColor(1);
             uiCtx.DrawTopFace(block, origin, dummyColors, block.getTexture(1, metadata));
             tess.draw();
 
             tess.startDrawingQuads();
             tess.setNormal(0.0F, 0.0F, -1.0F);
+            SetFaceColor(2);
             uiCtx.DrawEastFace(block, origin, dummyColors, block.getTexture(2, metadata));
             tess.draw();
 
             tess.startDrawingQuads();
             tess.setNormal(0.0F, 0.0F, 1.0F);
+            SetFaceColor(3);
             uiCtx.DrawWestFace(block, origin, dummyColors, block.getTexture(3, metadata));
             tess.draw();
 
             tess.startDrawingQuads();
             tess.setNormal(-1.0F, 0.0F, 0.0F);
+            SetFaceColor(4);
             uiCtx.DrawNorthFace(block, origin, dummyColors, block.getTexture(4, metadata));
             tess.draw();
 
             tess.startDrawingQuads();
             tess.setNormal(1.0F, 0.0F, 0.0F);
+            SetFaceColor(5);
             uiCtx.DrawSouthFace(block, origin, dummyColors, block.getTexture(5, metadata));
             tess.draw();
 
@@ -138,6 +148,12 @@ public class BlockRenderer
         }
         else
         {
+            int color = block.getColor(metadata);
+            GLManager.GL.Color4(
+                (color >> 16 & 255) / 255.0F * brightness,
+                (color >> 8 & 255) / 255.0F * brightness,
+                (color & 255) / 255.0F * brightness,
+                1.0F);
             BlockPos itemPos = new BlockPos(0, 0, 0);
             RenderBlockByRenderType(NullBlockAccess.Instance, block, itemPos, tess, uiCtx.OverrideTexture, true);
         }

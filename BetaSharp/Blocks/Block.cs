@@ -470,6 +470,8 @@ public class Block
         return 0xFFFFFF;
     }
 
+    public virtual int getColorForFace(int meta, int face) => getColor(meta);
+
     public virtual int getColorMultiplier(IBlockAccess iBlockAccess, int x, int y, int z)
     {
         return 0xFFFFFF;
