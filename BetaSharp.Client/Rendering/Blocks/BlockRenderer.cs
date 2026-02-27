@@ -92,7 +92,7 @@ public class BlockRenderer
         Vec3D origin = new Vec3D(0, 0, 0);
         FaceColors dummyColors = new FaceColors();
 
-        if (IsSideLit(renderType))
+        if (renderType == BlockRendererType.Standard || renderType == BlockRendererType.PistonBase)
         {
             void SetFaceColor(int face)
             {
@@ -154,8 +154,13 @@ public class BlockRenderer
                 (color >> 8 & 255) / 255.0F * brightness,
                 (color & 255) / 255.0F * brightness,
                 1.0F);
+            GLManager.GL.Translate(-0.5F, -0.5F, -0.5F);
             BlockPos itemPos = new BlockPos(0, 0, 0);
+            tess.startDrawingQuads();
+            tess.setNormal(0.0F, 1.0F, 0.0F);
             RenderBlockByRenderType(NullBlockAccess.Instance, block, itemPos, tess, uiCtx.OverrideTexture, true);
+            tess.draw();
+            GLManager.GL.Translate(0.5F, 0.5F, 0.5F);
         }
     }
 
