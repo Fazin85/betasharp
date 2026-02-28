@@ -7,5 +7,5 @@ namespace BetaSharp.Client.Rendering.Blocks;
 
 public interface IBlockRenderer
 {
-    bool Render(Block block, in BlockPos pos, in BlockRenderContext ctx);
+    bool Draw(Block block, in BlockPos pos, ref BlockRenderContext ctx);
 }

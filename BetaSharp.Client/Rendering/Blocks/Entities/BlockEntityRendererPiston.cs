@@ -47,27 +47,23 @@ public class BlockEntityRendererPiston : BlockEntitySpecialRenderer
                 aoBlendMode: Minecraft.isAmbientOcclusionEnabled() ? 1 : 0
             );
 
-            BlockPos pos = new (piston.X, piston.Y, piston.Z);
+            BlockPos pos = new(piston.X, piston.Y, piston.Z);
 
             if (block == Block.PistonHead && piston.getProgress(tickDelta) < 0.5F)
             {
                 var ctx = baseCtx with { CustomFlag = true };
-                _pistonExtensionRenderer.Render(block, pos, ctx);
+                _pistonExtensionRenderer.Draw(block, pos, ref ctx);
             }
             else if (piston.isSource() && !piston.isExtending())
             {
-                var headCtx = baseCtx with
-                {
-                    OverrideTexture = ((BlockPistonBase)block).getTopTexture(),
-                    CustomFlag = piston.getProgress(tickDelta) < 0.5F
-                };
+                var headCtx = baseCtx with { OverrideTexture = ((BlockPistonBase)block).getTopTexture(), CustomFlag = piston.getProgress(tickDelta) < 0.5F };
 
-                _pistonExtensionRenderer.Render(Block.PistonHead, pos, headCtx);
+                _pistonExtensionRenderer.Draw(Block.PistonHead, pos, ref headCtx);
 
                 tess.setTranslationD(x - piston.X, y - piston.Y, z - piston.Z);
 
                 var basePartCtx = baseCtx with { CustomFlag = true };
-                _pistonBaseRenderer.Render(block, pos, basePartCtx);
+                _pistonBaseRenderer.Draw(block, pos, ref basePartCtx);
             }
             else
             {

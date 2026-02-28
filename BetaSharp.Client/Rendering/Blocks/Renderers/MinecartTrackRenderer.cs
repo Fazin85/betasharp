@@ -5,7 +5,7 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class MinecartTrackRenderer : IBlockRenderer
 {
-    public bool Render(Block block, in BlockPos pos, in BlockRenderContext ctx)
+    public bool Draw(Block block, in BlockPos pos, ref BlockRenderContext ctx)
     {
         // Cast the generic block to a BlockRail to access rail-specific methods
         BlockRail rail = (BlockRail)block;

@@ -5,7 +5,7 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class PistonBaseRenderer : IBlockRenderer
 {
-    public bool Render(Block block, in BlockPos pos, in BlockRenderContext ctx)
+    public bool Draw(Block block, in BlockPos pos, ref BlockRenderContext ctx)
     {
         int metadata = ctx.World.getBlockMeta(pos.x, pos.y, pos.z);
         bool isExpanded = ctx.CustomFlag || (metadata & 8) != 0;
@@ -33,17 +33,17 @@ public class PistonBaseRenderer : IBlockRenderer
                 if (isExpanded) bounds = new Box(0.0F, 0.0F, 0.25F, 1.0F, 1.0F, 1.0F);
                 break;
             case 3: // South (+Z)
-                uvSouth = 3; uvNorth = 1; uvEast = 0; uvWest = 1; 
+                uvSouth = 3; uvNorth = 1; uvEast = 0; uvWest = 1;
                 uvTop = 2; uvBottom = 2;
                 if (isExpanded) bounds = new Box(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.75F);
                 break;
             case 4: // West (-X)
-                uvSouth = 0; uvNorth = 0; uvEast = 1; uvWest = 3; 
+                uvSouth = 0; uvNorth = 0; uvEast = 1; uvWest = 3;
                 uvTop = 3; uvBottom = 3;
                 if (isExpanded) bounds = new Box(0.25F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
                 break;
             case 5: // East (+X)
-                uvSouth = 0; uvNorth = 0; uvEast = 3; uvWest = 1; 
+                uvSouth = 0; uvNorth = 0; uvEast = 3; uvWest = 1;
                 uvTop = 1; uvBottom = 1;
                 if (isExpanded) bounds = new Box(0.0F, 0.0F, 0.0F, 0.75F, 1.0F, 1.0F);
                 break;

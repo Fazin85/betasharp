@@ -5,7 +5,7 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class LeverRenderer : IBlockRenderer
 {
-    public bool Render(Block block, in BlockPos pos, in BlockRenderContext ctx)
+    public bool Draw(Block block, in BlockPos pos, ref BlockRenderContext ctx)
     {
         int metadata = ctx.World.getBlockMeta(pos.x, pos.y, pos.z);
         int orientation = metadata & 7;

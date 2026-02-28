@@ -27,8 +27,7 @@ public class BlockRenderer
     private static readonly PistonExtensionRenderer s_pistonExt = new();
 
 
-    public static bool RenderBlockByRenderType(IBlockAccess world, Block block, BlockPos pos, Tessellator tess,
-        int overrideTexture = -1, bool renderAllFaces = false)
+    public static bool RenderBlockByRenderType(IBlockAccess world, Block block, BlockPos pos, Tessellator tess, int overrideTexture = -1, bool renderAllFaces = false)
     {
         BlockRendererType type = block.getRenderType();
 
@@ -40,7 +39,6 @@ public class BlockRenderer
             overrideTexture: overrideTexture,
             renderAllFaces: renderAllFaces,
             flipTexture: false,
-            bounds: block.BoundingBox,
             uvTop: 0,
             uvBottom: 0,
             uvNorth: 0,
@@ -51,26 +49,30 @@ public class BlockRenderer
             customFlag: type == BlockRendererType.PistonExtension
         );
 
+        if (type == BlockRendererType.Standard)
+        {
+            return ctx.DrawBlock(block, pos);
+        }
+
         return type switch
         {
-            BlockRendererType.Standard => ctx.DrawBlock(block, pos),
-            BlockRendererType.Reed => s_reed.Render(block, pos, ctx),
-            BlockRendererType.Torch => s_torch.Render(block, pos, ctx),
-            BlockRendererType.Fire => s_fire.Render(block, pos, ctx),
-            BlockRendererType.Fluids => s_fluids.Render(block, pos, ctx),
-            BlockRendererType.RedstoneWire => s_wire.Render(block, pos, ctx),
-            BlockRendererType.Crops => s_crops.Render(block, pos, ctx),
-            BlockRendererType.Door => s_door.Render(block, pos, ctx),
-            BlockRendererType.Ladder => s_ladder.Render(block, pos, ctx),
-            BlockRendererType.MinecartTrack => s_track.Render(block, pos, ctx),
-            BlockRendererType.Stairs => s_stairs.Render(block, pos, ctx),
-            BlockRendererType.Fence => s_fence.Render(block, pos, ctx),
-            BlockRendererType.Lever => s_lever.Render(block, pos, ctx),
-            BlockRendererType.Cactus => s_cactus.Render(block, pos, ctx),
-            BlockRendererType.Bed => s_bed.Render(block, pos, ctx),
-            BlockRendererType.Repeater => s_repeater.Render(block, pos, ctx),
-            BlockRendererType.PistonBase => s_pistonBase.Render(block, pos, ctx),
-            BlockRendererType.PistonExtension => s_pistonExt.Render(block, pos, ctx),
+            BlockRendererType.Reed => s_reed.Draw(block, pos, ref ctx),
+            BlockRendererType.Torch => s_torch.Draw(block, pos, ref ctx),
+            BlockRendererType.Fire => s_fire.Draw(block, pos, ref ctx),
+            BlockRendererType.Fluids => s_fluids.Draw(block, pos, ref ctx),
+            BlockRendererType.RedstoneWire => s_wire.Draw(block, pos, ref ctx),
+            BlockRendererType.Crops => s_crops.Draw(block, pos, ref ctx),
+            BlockRendererType.Door => s_door.Draw(block, pos, ref ctx),
+            BlockRendererType.Ladder => s_ladder.Draw(block, pos, ref ctx),
+            BlockRendererType.MinecartTrack => s_track.Draw(block, pos, ref ctx),
+            BlockRendererType.Stairs => s_stairs.Draw(block, pos, ref ctx),
+            BlockRendererType.Fence => s_fence.Draw(block, pos, ref ctx),
+            BlockRendererType.Lever => s_lever.Draw(block, pos, ref ctx),
+            BlockRendererType.Cactus => s_cactus.Draw(block, pos, ref ctx),
+            BlockRendererType.Bed => s_bed.Draw(block, pos, ref ctx),
+            BlockRendererType.Repeater => s_repeater.Draw(block, pos, ref ctx),
+            BlockRendererType.PistonBase => s_pistonBase.Draw(block, pos, ref ctx),
+            BlockRendererType.PistonExtension => s_pistonExt.Draw(block, pos, ref ctx),
             _ => false
         };
     }
@@ -97,7 +99,7 @@ public class BlockRenderer
             );
 
             BlockPos pos = new(0, 0, 0);
-            s_pistonBase.Render(block, pos, ctx);
+            s_pistonBase.Draw(block, pos, ref ctx);
 
             tess.draw();
             GLManager.GL.Translate(0.5F, 0.5F, 0.5F);

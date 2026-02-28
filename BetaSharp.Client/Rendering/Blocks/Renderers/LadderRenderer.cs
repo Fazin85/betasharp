@@ -5,7 +5,7 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class LadderRenderer : IBlockRenderer
 {
-    public bool Render(Block block, in BlockPos pos, in BlockRenderContext ctx)
+    public bool Draw(Block block, in BlockPos pos, ref BlockRenderContext ctx)
     {
         int textureId = block.getTexture(0);
         if (ctx.OverrideTexture >= 0)

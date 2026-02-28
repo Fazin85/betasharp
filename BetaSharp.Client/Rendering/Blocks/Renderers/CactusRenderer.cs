@@ -5,7 +5,7 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class CactusRenderer : IBlockRenderer
 {
-    public bool Render(Block block, in BlockPos pos, in BlockRenderContext ctx)
+    public bool Draw(Block block, in BlockPos pos, ref BlockRenderContext ctx)
     {
         Box bounds = ctx.OverrideBounds ?? block.BoundingBox;
         bool hasRendered = false;
@@ -37,7 +37,7 @@ public class CactusRenderer : IBlockRenderer
         float centerLuminance = block.getLuminance(ctx.World, pos.x, pos.y, pos.z);
         float faceLuminance;
 
-        FaceColors dummyColors = new FaceColors();
+        FaceColors dummyColors = new ();
 
         // --- Bottom Face (Y - 1) ---
         if (flatCtx.RenderAllFaces || bounds.MinY > 0.0D || block.isSideVisible(ctx.World, pos.x, pos.y - 1, pos.z, 0))

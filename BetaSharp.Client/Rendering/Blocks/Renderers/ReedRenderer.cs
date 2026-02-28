@@ -5,7 +5,7 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class ReedRenderer : IBlockRenderer
 {
-    public bool Render(Block block, in BlockPos pos, in BlockRenderContext ctx)
+    public bool Draw(Block block, in BlockPos pos, ref BlockRenderContext ctx)
     {
         float luminance = block.getLuminance(ctx.World, pos.x, pos.y, pos.z);
         int colorMultiplier = block.getColorMultiplier(ctx.World, pos.x, pos.y, pos.z);
@@ -30,13 +30,12 @@ public class ReedRenderer : IBlockRenderer
             renderZ += (((hash >> 24 & 15L) / 15.0F) - 0.5D) * 0.5D;
         }
 
-        RenderCrossedSquares(block, ctx.World.getBlockMeta(pos.x, pos.y, pos.z), renderX, renderY, renderZ,
-            ctx);
+        RenderCrossedSquares(block, ctx.World.getBlockMeta(pos.x, pos.y, pos.z), renderX, renderY, renderZ, ref ctx);
         return true;
     }
 
     private void RenderCrossedSquares(Block block, int metadata, double x, double y, double z,
-        in BlockRenderContext ctx)
+        ref BlockRenderContext ctx)
     {
         int textureId = block.getTexture(0, metadata);
         if (ctx.OverrideTexture >= 0)

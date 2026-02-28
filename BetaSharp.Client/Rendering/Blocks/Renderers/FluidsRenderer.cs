@@ -6,7 +6,7 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class FluidsRenderer : IBlockRenderer
 {
-    public bool Render(Block block, in BlockPos pos, in BlockRenderContext ctx)
+    public bool Draw(Block block, in BlockPos pos, ref BlockRenderContext ctx)
     {
         // Base fluid color tint (e.g., biome water color)
         int colorMultiplier = block.getColorMultiplier(ctx.World, pos.x, pos.y, pos.z);
@@ -44,10 +44,10 @@ public class FluidsRenderer : IBlockRenderer
         int meta = ctx.World.getBlockMeta(pos.x, pos.y, pos.z);
 
         // Calculate the height of the fluid at each of the 4 corners of this block
-        float heightNw = GetFluidVertexHeight(ctx, pos.x, pos.y, pos.z, material);
-        float heightSw = GetFluidVertexHeight(ctx, pos.x, pos.y, pos.z + 1, material);
-        float heightSe = GetFluidVertexHeight(ctx, pos.x + 1, pos.y, pos.z + 1, material);
-        float heightNe = GetFluidVertexHeight(ctx, pos.x + 1, pos.y, pos.z, material);
+        float heightNw = GetFluidVertexHeight(ref ctx, pos.x, pos.y, pos.z, material);
+        float heightSw = GetFluidVertexHeight(ref ctx, pos.x, pos.y, pos.z + 1, material);
+        float heightSe = GetFluidVertexHeight(ref ctx, pos.x + 1, pos.y, pos.z + 1, material);
+        float heightNe = GetFluidVertexHeight(ref ctx, pos.x + 1, pos.y, pos.z, material);
 
         // TOP FACE (Flowing Surface)
         if (ctx.RenderAllFaces || isTopVisible)
@@ -199,7 +199,7 @@ public class FluidsRenderer : IBlockRenderer
     }
 
     // Passed ctx.World explicitly into this helper method
-    private float GetFluidVertexHeight(in BlockRenderContext ctx, int x, int y, int z, Material material)
+    private float GetFluidVertexHeight(ref BlockRenderContext ctx, int x, int y, int z, Material material)
     {
         int totalWeight = 0;
         float totalDepth = 0.0F;

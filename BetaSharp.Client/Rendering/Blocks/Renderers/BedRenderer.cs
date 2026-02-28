@@ -5,8 +5,7 @@ namespace BetaSharp.Client.Rendering.Blocks.Renderers;
 
 public class BedRenderer : IBlockRenderer
 {
-    public bool Render(Block block, in BlockPos pos,
-        in BlockRenderContext ctx)
+    public bool Draw(Block block, in BlockPos pos, ref BlockRenderContext ctx)
     {
         Box bounds = ctx.OverrideBounds ?? block.BoundingBox;
         int metadata = ctx.World.getBlockMeta(pos.x, pos.y, pos.z);
