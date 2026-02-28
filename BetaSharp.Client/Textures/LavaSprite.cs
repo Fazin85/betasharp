@@ -3,17 +3,12 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Client.Textures;
 
-public class LavaSprite : DynamicTexture
+public class LavaSprite() : DynamicTexture(Block.FlowingLava.textureId)
 {
-
-    protected float[] current = new float[256];
-    protected float[] next = new float[256];
-    protected float[] head = new float[256];
-    protected float[] heatDelta = new float[256];
-
-    public LavaSprite() : base(Block.FlowingLava.textureId)
-    {
-    }
+    private float[] _current = new float[256];
+    private float[] _next = new float[256];
+    private readonly float[] _heat = new float[256];
+    private readonly float[] _heatDelta = new float[256];
 
     public override void Setup(Minecraft mc)
     {
@@ -22,76 +17,68 @@ public class LavaSprite : DynamicTexture
 
     public override void tick()
     {
-        if (customFrames != null)
+        if (CustomFrames != null)
         {
-            Buffer.BlockCopy(customFrames[customFrameIndex], 0, pixels, 0, pixels.Length);
-            customFrameIndex = (customFrameIndex + 1) % customFrameCount;
+            Buffer.BlockCopy(CustomFrames[CustomFrameIndex], 0, Pixels, 0, Pixels.Length);
+            CustomFrameIndex = (CustomFrameIndex + 1) % CustomFrameCount;
             return;
         }
 
-        int var2;
-        float var3;
-        int var5;
-        int var6;
-        int var7;
-        int var8;
-        int var9;
-        for (int var1 = 0; var1 < 16; ++var1)
+        for (int x = 0; x < 16; ++x)
         {
-            for (var2 = 0; var2 < 16; ++var2)
+            for (int y = 0; y < 16; ++y)
             {
-                var3 = 0.0F;
-                int var4 = (int)(MathHelper.Sin(var2 * (float)Math.PI * 2.0F / 16.0F) * 1.2F);
-                var5 = (int)(MathHelper.Sin(var1 * (float)Math.PI * 2.0F / 16.0F) * 1.2F);
+                float accumulatedHeat = 0.0F;
+                int distortX = (int)(MathHelper.Sin(y * (float)Math.PI * 2.0F / 16.0F) * 1.2F);
+                int distortY = (int)(MathHelper.Sin(x * (float)Math.PI * 2.0F / 16.0F) * 1.2F);
 
-                for (var6 = var1 - 1; var6 <= var1 + 1; ++var6)
+                int nx;
+                for (nx = x - 1; nx <= x + 1; ++nx)
                 {
-                    for (var7 = var2 - 1; var7 <= var2 + 1; ++var7)
+                    int ny;
+                    for (ny = y - 1; ny <= y + 1; ++ny)
                     {
-                        var8 = var6 + var4 & 15;
-                        var9 = var7 + var5 & 15;
-                        var3 += current[var8 + var9 * 16];
+                        int sampleX = nx + distortX & 15;
+                        int sampleY = ny + distortY & 15;
+                        accumulatedHeat += _current[sampleX + sampleY * 16];
                     }
                 }
 
-                next[var1 + var2 * 16] = var3 / 10.0F + (head[(var1 + 0 & 15) + (var2 + 0 & 15) * 16] + head[(var1 + 1 & 15) + (var2 + 0 & 15) * 16] + head[(var1 + 1 & 15) + (var2 + 1 & 15) * 16] + head[(var1 + 0 & 15) + (var2 + 1 & 15) * 16]) / 4.0F * 0.8F;
-                head[var1 + var2 * 16] += heatDelta[var1 + var2 * 16] * 0.01F;
-                if (head[var1 + var2 * 16] < 0.0F)
+                _next[x + y * 16] = accumulatedHeat / 10.0F +
+                                    (_heat[(x + 0 & 15) + (y + 0 & 15) * 16] + _heat[(x + 1 & 15) + (y + 0 & 15) * 16] + _heat[(x + 1 & 15) + (y + 1 & 15) * 16] + _heat[(x + 0 & 15) + (y + 1 & 15) * 16]) / 4.0F * 0.8F;
+                _heat[x + y * 16] += _heatDelta[x + y * 16] * 0.01F;
+
+                if (_heat[x + y * 16] < 0.0F)
                 {
-                    head[var1 + var2 * 16] = 0.0F;
+                    _heat[x + y * 16] = 0.0F;
                 }
 
-                heatDelta[var1 + var2 * 16] -= 0.06F;
+                _heatDelta[x + y * 16] -= 0.06F;
+
                 if (Random.Shared.NextDouble() < 0.005D)
                 {
-                    heatDelta[var1 + var2 * 16] = 1.5F;
+                    _heatDelta[x + y * 16] = 1.5F;
                 }
             }
         }
 
-        (next, current) = (current, next);
+        (_next, _current) = (_current, _next);
 
-        for (var2 = 0; var2 < 256; ++var2)
+        for (int pixelIndex = 0; pixelIndex < 256; ++pixelIndex)
         {
-            var3 = current[var2] * 2.0F;
-            if (var3 > 1.0F)
-            {
-                var3 = 1.0F;
-            }
+            float intensity = _current[pixelIndex] * 2.0F;
 
-            if (var3 < 0.0F)
-            {
-                var3 = 0.0F;
-            }
+            if (intensity > 1.0F) intensity = 1.0F;
+            if (intensity < 0.0F) intensity = 0.0F;
 
-            var5 = (int)(var3 * 100.0F + 155.0F);
-            var6 = (int)(var3 * var3 * 255.0F);
-            var7 = (int)(var3 * var3 * var3 * var3 * 128.0F);
-            pixels[var2 * 4 + 0] = (byte)var5;
-            pixels[var2 * 4 + 1] = (byte)var6;
-            pixels[var2 * 4 + 2] = (byte)var7;
-            pixels[var2 * 4 + 3] = 255;
+            int r = (int)(intensity * 100.0F + 155.0F);
+            int g = (int)(intensity * intensity * 255.0F);
+            int b = (int)(intensity * intensity * intensity * intensity * 128.0F);
+
+            Pixels[pixelIndex * 4 + 0] = (byte)r;
+            Pixels[pixelIndex * 4 + 1] = (byte)g;
+            Pixels[pixelIndex * 4 + 2] = (byte)b;
+            Pixels[pixelIndex * 4 + 3] = 255;
         }
-
     }
 }

@@ -3,63 +3,65 @@ using Silk.NET.Maths;
 
 namespace BetaSharp.Client.Textures;
 
-public class Quad
+public struct Quad
 {
-    public PositionTextureVertex[] vertexPositions;
-    public int nVertices;
-    private readonly bool invertNormal;
+    private PositionTextureVertex[] _vertexPositions;
+    public int NVertices;
+    private readonly bool _invertNormal;
 
-    public Quad(PositionTextureVertex[] var1)
+    private Quad(PositionTextureVertex[] vertices)
     {
-        nVertices = 0;
-        invertNormal = false;
-        vertexPositions = var1;
-        nVertices = var1.Length;
+        NVertices = 0;
+        _invertNormal = false;
+        _vertexPositions = vertices;
+        NVertices = vertices.Length;
     }
 
-    public Quad(PositionTextureVertex[] var1, int var2, int var3, int var4, int var5) : this(var1)
+    public Quad(PositionTextureVertex[] vertices, int texMinU, int texMinV, int texMaxU, int texMaxV) : this(vertices)
     {
-        float var6 = 0.0015625F;
-        float var7 = 0.003125F;
-        var1[0] = var1[0].setTexturePosition(var4 / 64.0F - var6, var3 / 32.0F + var7);
-        var1[1] = var1[1].setTexturePosition(var2 / 64.0F + var6, var3 / 32.0F + var7);
-        var1[2] = var1[2].setTexturePosition(var2 / 64.0F + var6, var5 / 32.0F - var7);
-        var1[3] = var1[3].setTexturePosition(var4 / 64.0F - var6, var5 / 32.0F - var7);
+        float uMargin = 0.0015625F;
+        float vMargin = 0.003125F;
+        vertices[0] = vertices[0].setTexturePosition(texMaxU / 64.0F - uMargin, texMinV / 32.0F + vMargin);
+        vertices[1] = vertices[1].setTexturePosition(texMinU / 64.0F + uMargin, texMinV / 32.0F + vMargin);
+        vertices[2] = vertices[2].setTexturePosition(texMinU / 64.0F + uMargin, texMaxV / 32.0F - vMargin);
+        vertices[3] = vertices[3].setTexturePosition(texMaxU / 64.0F - uMargin, texMaxV / 32.0F - vMargin);
     }
 
     public void flipFace()
     {
-        PositionTextureVertex[] var1 = new PositionTextureVertex[vertexPositions.Length];
+        PositionTextureVertex[] reversed = new PositionTextureVertex[_vertexPositions.Length];
 
-        for (int var2 = 0; var2 < vertexPositions.Length; ++var2)
+        for (int i = 0; i < _vertexPositions.Length; ++i)
         {
-            var1[var2] = vertexPositions[vertexPositions.Length - var2 - 1];
+            reversed[i] = _vertexPositions[_vertexPositions.Length - i - 1];
         }
 
-        vertexPositions = var1;
+        _vertexPositions = reversed;
     }
 
-    public void draw(Tessellator var1, float var2)
+    public void draw(Tessellator tessellator, float scale)
     {
-        Vector3D<double> var3 = vertexPositions[1].vector3D - vertexPositions[0].vector3D;
-        Vector3D<double> var4 = vertexPositions[1].vector3D - vertexPositions[2].vector3D;
-        Vector3D<double> var5 = Vector3D.Normalize(Vector3D.Cross(var4, var3));
-        var1.startDrawingQuads();
-        if (invertNormal)
+        Vector3D<double> edge1 = _vertexPositions[1].vector3D - _vertexPositions[0].vector3D;
+        Vector3D<double> edge2 = _vertexPositions[1].vector3D - _vertexPositions[2].vector3D;
+        Vector3D<double> normal = Vector3D.Normalize(Vector3D.Cross(edge2, edge1));
+
+        tessellator.startDrawingQuads();
+
+        if (_invertNormal)
         {
-            var1.setNormal(-(float)var5.X, -(float)var5.Y, -(float)var5.Z);
+            tessellator.setNormal(-(float)normal.X, -(float)normal.Y, -(float)normal.Z);
         }
         else
         {
-            var1.setNormal((float)var5.X, (float)var5.Y, (float)var5.Z);
+            tessellator.setNormal((float)normal.X, (float)normal.Y, (float)normal.Z);
         }
 
-        for (int var6 = 0; var6 < 4; ++var6)
+        for (int i = 0; i < 4; ++i)
         {
-            PositionTextureVertex var7 = vertexPositions[var6];
-            var1.addVertexWithUV((double)((float)var7.vector3D.X * var2), (double)((float)var7.vector3D.Y * var2), (double)((float)var7.vector3D.Z * var2), var7.texturePositionX, var7.texturePositionY);
+            PositionTextureVertex vertex = _vertexPositions[i];
+            tessellator.addVertexWithUV(((float)vertex.vector3D.X * scale), ((float)vertex.vector3D.Y * scale), ((float)vertex.vector3D.Z * scale), vertex.texturePositionX, vertex.texturePositionY);
         }
 
-        var1.draw();
+        tessellator.draw();
     }
 }

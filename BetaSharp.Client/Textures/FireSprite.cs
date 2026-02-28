@@ -1,97 +1,80 @@
 using BetaSharp.Blocks;
-using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Client.Textures;
 
-public class FireSprite : DynamicTexture
+public class FireSprite(int index) : DynamicTexture(Block.Fire.textureId + index * 16)
 {
-    protected float[] current = new float[320];
-    protected float[] next = new float[320];
-
-    private readonly int index;
-
-    public FireSprite(int var1) : base(Block.Fire.textureId + var1 * 16)
-    {
-        index = var1;
-    }
+    private float[] _current = new float[320];
+    private float[] _next = new float[320];
 
     public override void Setup(Minecraft mc)
     {
-        Array.Clear(current);
-        Array.Clear(next);
+        Array.Clear(_current);
+        Array.Clear(_next);
         TryLoadCustomTexture(mc, index == 0 ? "custom_fire_e_w.png" : "custom_fire_n_s.png");
     }
 
     public override void tick()
     {
-        if (customFrames != null)
+        if (CustomFrames != null)
         {
-            Buffer.BlockCopy(customFrames[customFrameIndex], 0, pixels, 0, pixels.Length);
-            customFrameIndex = (customFrameIndex + 1) % customFrameCount;
+            Buffer.BlockCopy(CustomFrames[CustomFrameIndex], 0, Pixels, 0, Pixels.Length);
+            CustomFrameIndex = (CustomFrameIndex + 1) % CustomFrameCount;
             return;
         }
 
-        int var2;
-        float var4;
-        int var5;
-        int var6;
-        for (int var1 = 0; var1 < 16; ++var1)
+        for (int x = 0; x < 16; ++x)
         {
-            for (var2 = 0; var2 < 20; ++var2)
+            for (int y = 0; y < 20; ++y)
             {
-                int var3 = 18;
-                var4 = current[var1 + (var2 + 1) % 20 * 16] * var3;
+                int weight = 18;
+                float heat = _current[x + (y + 1) % 20 * 16] * weight;
 
-                for (var5 = var1 - 1; var5 <= var1 + 1; ++var5)
+                for (int nx = x - 1; nx <= x + 1; ++nx)
                 {
-                    for (var6 = var2; var6 <= var2 + 1; ++var6)
+                    for (int ny = y; ny <= y + 1; ++ny)
                     {
-                        if (var5 >= 0 && var6 >= 0 && var5 < 16 && var6 < 20)
+                        if (nx >= 0 && ny >= 0 && nx < 16 && ny < 20)
                         {
-                            var4 += current[var5 + var6 * 16];
+                            heat += _current[nx + ny * 16];
                         }
 
-                        ++var3;
+                        ++weight;
                     }
                 }
 
-                next[var1 + var2 * 16] = var4 / (var3 * 1.06F);
-                if (var2 >= 19)
+                _next[x + y * 16] = heat / (weight * 1.06F);
+
+                if (y >= 19)
                 {
-                    next[var1 + var2 * 16] = (float)(Random.Shared.NextDouble() * Random.Shared.NextDouble() * Random.Shared.NextDouble() * 4.0D + Random.Shared.NextDouble() * (double)0.1F + (double)0.2F);
+                    _next[x + y * 16] = (float)(Random.Shared.NextDouble() * Random.Shared.NextDouble() * Random.Shared.NextDouble() * 4.0D + Random.Shared.NextDouble() * 0.1F + 0.2F);
                 }
             }
         }
 
-        (next, current) = (current, next);
+        (_next, _current) = (_current, _next);
 
-        for (var2 = 0; var2 < 256; ++var2)
+        for (int pixelIndex = 0; pixelIndex < 256; ++pixelIndex)
         {
-            float var13 = current[var2] * 1.8F;
-            if (var13 > 1.0F)
+            float intensity = _current[pixelIndex] * 1.8F;
+
+            if (intensity > 1.0F) intensity = 1.0F;
+            if (intensity < 0.0F) intensity = 0.0F;
+
+            int r = (int)(intensity * 155.0F + 100.0F);
+            int g = (int)(intensity * intensity * 255.0F);
+            int b = (int)(intensity * intensity * intensity * intensity * intensity * intensity * intensity * intensity * intensity * intensity * 255.0F);
+            short a = 255;
+
+            if (intensity < 0.5F)
             {
-                var13 = 1.0F;
+                a = 0;
             }
 
-            if (var13 < 0.0F)
-            {
-                var13 = 0.0F;
-            }
-
-            var5 = (int)(var13 * 155.0F + 100.0F);
-            var6 = (int)(var13 * var13 * 255.0F);
-            int var7 = (int)(var13 * var13 * var13 * var13 * var13 * var13 * var13 * var13 * var13 * var13 * 255.0F);
-            short var8 = 255;
-            if (var13 < 0.5F)
-            {
-                var8 = 0;
-            }
-
-            var4 = (var13 - 0.5F) * 2.0F;
-            pixels[var2 * 4 + 0] = (byte)var5;
-            pixels[var2 * 4 + 1] = (byte)var6;
-            pixels[var2 * 4 + 2] = (byte)var7;
-            pixels[var2 * 4 + 3] = (byte)var8;
+            Pixels[pixelIndex * 4 + 0] = (byte)r;
+            Pixels[pixelIndex * 4 + 1] = (byte)g;
+            Pixels[pixelIndex * 4 + 2] = (byte)b;
+            Pixels[pixelIndex * 4 + 3] = (byte)a;
         }
     }
 }

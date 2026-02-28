@@ -309,7 +309,7 @@ public class TextureManager : IDisposable
         {
             texture.tick();
 
-            string atlasPath = texture.atlas == DynamicTexture.FXImage.Terrain ? "/terrain.png" : "/gui/items.png";
+            string atlasPath = texture.Atlas == DynamicTexture.FxImage.Terrain ? "/terrain.png" : "/gui/items.png";
             
             TextureHandle atlasHandle = _textures.FirstOrDefault(x => x.Key.EndsWith(atlasPath)).Value;
             atlasHandle ??= GetTextureId(atlasPath);
@@ -319,14 +319,14 @@ public class TextureManager : IDisposable
 
             int targetTileSize = atlasTexture.Width / 16;
 
-            int tileX = (texture.sprite % 16) * targetTileSize;
-            int tileY = (texture.sprite / 16) * targetTileSize;
+            int tileX = (texture.Sprite % 16) * targetTileSize;
+            int tileY = (texture.Sprite / 16) * targetTileSize;
 
-            int fxSize = (int)Math.Sqrt(texture.pixels.Length / 4);
+            int fxSize = (int)Math.Sqrt(texture.Pixels.Length / 4);
             int scale = targetTileSize / fxSize;
             if (scale < 1) scale = 1;
 
-            byte[] uploadPixels = texture.pixels;
+            byte[] uploadPixels = texture.Pixels;
             int uploadSize = fxSize;
             byte[]? rentedArray = null;
 
@@ -336,11 +336,11 @@ public class TextureManager : IDisposable
                 {
                     uploadSize = fxSize * scale;
                     rentedArray = System.Buffers.ArrayPool<byte>.Shared.Rent(uploadSize * uploadSize * 4);
-                    UpscaleNearestNeighbor(texture.pixels, rentedArray, fxSize, uploadSize, scale);
+                    UpscaleNearestNeighbor(texture.Pixels, rentedArray, fxSize, uploadSize, scale);
                     uploadPixels = rentedArray;
                 }
 
-                int finalReplicate = texture.replicate;
+                int finalReplicate = texture.Replicate;
 
                 fixed (byte* ptr = uploadPixels)
                 {
@@ -356,7 +356,7 @@ public class TextureManager : IDisposable
                     }
                 }
 
-                if (texture.atlas == DynamicTexture.FXImage.Terrain && _gameOptions.UseMipmaps)
+                if (texture.Atlas == DynamicTexture.FxImage.Terrain && _gameOptions.UseMipmaps)
                 {
                     for (int x = 0; x < finalReplicate; x++)
                     {

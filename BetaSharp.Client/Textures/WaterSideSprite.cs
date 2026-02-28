@@ -1,20 +1,18 @@
 using BetaSharp.Blocks;
-using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Client.Textures;
 
 public class WaterSideSprite : DynamicTexture
 {
-
-    protected float[] current = new float[256];
-    protected float[] next = new float[256];
-    protected float[] heat = new float[256];
-    protected float[] heatDelta = new float[256];
-    private int ticks;
+    private float[] _current = new float[256];
+    private float[] _next = new float[256];
+    private readonly float[] _heat = new float[256];
+    private readonly float[] _heatDelta = new float[256];
+    private int _ticks;
 
     public WaterSideSprite() : base(Block.FlowingWater.textureId + 1)
     {
-        replicate = 2;
+        Replicate = 2;
     }
 
     public override void Setup(Minecraft mc)
@@ -24,80 +22,72 @@ public class WaterSideSprite : DynamicTexture
 
     public override void tick()
     {
-        if (customFrames != null)
+        if (CustomFrames != null)
         {
-            Buffer.BlockCopy(customFrames[customFrameIndex], 0, pixels, 0, pixels.Length);
-            customFrameIndex = (customFrameIndex + 1) % customFrameCount;
+            Buffer.BlockCopy(CustomFrames[CustomFrameIndex], 0, Pixels, 0, Pixels.Length);
+            CustomFrameIndex = (CustomFrameIndex + 1) % CustomFrameCount;
             return;
         }
 
-        ++ticks;
+        ++_ticks;
 
-        int var1;
-        int var2;
-        float var3;
-        int var5;
-        int var6;
-        for (var1 = 0; var1 < 16; ++var1)
+        for (int x = 0; x < 16; ++x)
         {
-            for (var2 = 0; var2 < 16; ++var2)
+            for (int y = 0; y < 16; ++y)
             {
-                var3 = 0.0F;
+                float accumulatedFlow = 0.0F;
 
-                for (int var4 = var2 - 2; var4 <= var2; ++var4)
+                for (int ny = y - 2; ny <= y; ++ny)
                 {
-                    var5 = var1 & 15;
-                    var6 = var4 & 15;
-                    var3 += current[var5 + var6 * 16];
+                    int sampleX = x & 15;
+                    int sampleY = ny & 15;
+                    accumulatedFlow += _current[sampleX + sampleY * 16];
                 }
 
-                next[var1 + var2 * 16] = var3 / 3.2F + heat[var1 + var2 * 16] * 0.8F;
+                _next[x + y * 16] = accumulatedFlow / 3.2F + _heat[x + y * 16] * 0.8F;
             }
         }
 
-        for (var1 = 0; var1 < 16; ++var1)
+        for (int x = 0; x < 16; ++x)
         {
-            for (var2 = 0; var2 < 16; ++var2)
+            for (int y = 0; y < 16; ++y)
             {
-                heat[var1 + var2 * 16] += heatDelta[var1 + var2 * 16] * 0.05F;
-                if (heat[var1 + var2 * 16] < 0.0F)
+                _heat[x + y * 16] += _heatDelta[x + y * 16] * 0.05F;
+
+                if (_heat[x + y * 16] < 0.0F)
                 {
-                    heat[var1 + var2 * 16] = 0.0F;
+                    _heat[x + y * 16] = 0.0F;
                 }
 
-                heatDelta[var1 + var2 * 16] -= 0.3F;
+                _heatDelta[x + y * 16] -= 0.3F;
+
                 if (Random.Shared.NextDouble() < 0.2D)
                 {
-                    heatDelta[var1 + var2 * 16] = 0.5F;
+                    _heatDelta[x + y * 16] = 0.5F;
                 }
             }
         }
 
-        (next, current) = (current, next);
+        (_next, _current) = (_current, _next);
 
-        for (var2 = 0; var2 < 256; ++var2)
+        for (int pixelIndex = 0; pixelIndex < 256; ++pixelIndex)
         {
-            var3 = current[var2 - ticks * 16 & 255];
-            if (var3 > 1.0F)
-            {
-                var3 = 1.0F;
-            }
+            // The "- _ticks * 16" offset animates the downward flow
+            float intensity = _current[pixelIndex - _ticks * 16 & 255];
 
-            if (var3 < 0.0F)
-            {
-                var3 = 0.0F;
-            }
+            if (intensity > 1.0F) intensity = 1.0F;
+            if (intensity < 0.0F) intensity = 0.0F;
 
-            float var13 = var3 * var3;
-            var5 = (int)(32.0F + var13 * 32.0F);
-            var6 = (int)(50.0F + var13 * 64.0F);
-            int var7 = 255;
-            int var8 = (int)(146.0F + var13 * 50.0F);
-            pixels[var2 * 4 + 0] = (byte)var5;
-            pixels[var2 * 4 + 1] = (byte)var6;
-            pixels[var2 * 4 + 2] = (byte)var7;
-            pixels[var2 * 4 + 3] = (byte)var8;
+            float intensitySq = intensity * intensity;
+            int r = (int)(32.0F + intensitySq * 32.0F);
+            int g = (int)(50.0F + intensitySq * 64.0F);
+            int b = 255;
+            int a = (int)(146.0F + intensitySq * 50.0F);
+
+            Pixels[pixelIndex * 4 + 0] = (byte)r;
+            Pixels[pixelIndex * 4 + 1] = (byte)g;
+            Pixels[pixelIndex * 4 + 2] = (byte)b;
+            Pixels[pixelIndex * 4 + 3] = (byte)a;
         }
-
     }
 }

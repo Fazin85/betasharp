@@ -9,39 +9,39 @@ namespace BetaSharp.Client.Textures;
 
 public class CompassSprite : DynamicTexture
 {
-    private Minecraft mc;
-    private int[] compass = new int[256];
-    private double angle;
-    private double angleDelta;
-    private int resolution = 16;
+    private Minecraft _mc;
+    private int[] _compass = new int[256];
+    private double _angle;
+    private double _angleDelta;
+    private int _resolution = 16;
 
-    public CompassSprite(Minecraft var1) : base(Item.Compass.getTextureId(0))
+    public CompassSprite(Minecraft mc) : base(Item.Compass.getTextureId(0))
     {
-        mc = var1;
-        atlas = FXImage.Items;
+        _mc = mc;
+        Atlas = FxImage.Items;
     }
 
     public override void Setup(Minecraft mc)
     {
-        this.mc = mc;
+        _mc = mc;
         TextureManager tm = mc.textureManager;
         string atlasPath = "/gui/items.png";
 
         var handle = tm.GetTextureId(atlasPath);
         if (handle.Texture != null)
         {
-            resolution = handle.Texture.Width / 16;
+            _resolution = handle.Texture.Width / 16;
         }
         else
         {
-            resolution = 16;
+            _resolution = 16;
         }
 
-        int pixelCount = resolution * resolution;
-        if (compass.Length != pixelCount)
+        int pixelCount = _resolution * _resolution;
+        if (_compass.Length != pixelCount)
         {
-            compass = new int[pixelCount];
-            pixels = new byte[pixelCount * 4];
+            _compass = new int[pixelCount];
+            Pixels = new byte[pixelCount * 4];
         }
 
         try
@@ -51,29 +51,28 @@ public class CompassSprite : DynamicTexture
             {
                 using var ms = new MemoryStream();
                 stream.CopyTo(ms);
-                BufferedImage var2 = ImageIO.read(new ByteArrayInputStream(ms.ToArray()));
-                int localRes = var2.getWidth() / 16;
-                int var3 = (sprite % 16) * localRes;
-                int var4 = (sprite / 16) * localRes;
+                BufferedImage atlasImage = ImageIO.read(new ByteArrayInputStream(ms.ToArray()));
+                int localRes = atlasImage.getWidth() / 16;
+                int sourceX = (Sprite % 16) * localRes;
+                int sourceY = (Sprite / 16) * localRes;
 
-                if (localRes == resolution)
+                if (localRes == _resolution)
                 {
-                    var2.getRGB(var3, var4, resolution, resolution, compass, 0, resolution);
+                    atlasImage.getRGB(sourceX, sourceY, _resolution, _resolution, _compass, 0, _resolution);
                 }
                 else
                 {
                     int[] temp = new int[localRes * localRes];
-                    var2.getRGB(var3, var4, localRes, localRes, temp, 0, localRes);
-                    for (int y = 0; y < resolution; y++)
+                    atlasImage.getRGB(sourceX, sourceY, localRes, localRes, temp, 0, localRes);
+                    for (int y = 0; y < _resolution; y++)
                     {
-                        for (int x = 0; x < resolution; x++)
+                        for (int x = 0; x < _resolution; x++)
                         {
-                            compass[y * resolution + x] = temp[(y * localRes / resolution) * localRes + (x * localRes / resolution)];
+                            _compass[y * _resolution + x] = temp[(y * localRes / _resolution) * localRes + (x * localRes / _resolution)];
                         }
                     }
                 }
             }
-
         }
         catch (java.io.IOException ex)
         {
@@ -83,95 +82,80 @@ public class CompassSprite : DynamicTexture
 
     public override void tick()
     {
-        int pixelCount = resolution * resolution;
-        for (int var1 = 0; var1 < pixelCount; ++var1)
+        int pixelCount = _resolution * _resolution;
+
+        for (int i = 0; i < pixelCount; ++i)
         {
-            int var2 = compass[var1] >> 24 & 255;
-            int var3 = compass[var1] >> 16 & 255;
-            int var4 = compass[var1] >> 8 & 255;
-            int var5 = compass[var1] >> 0 & 255;
-            pixels[var1 * 4 + 0] = (byte)var3;
-            pixels[var1 * 4 + 1] = (byte)var4;
-            pixels[var1 * 4 + 2] = (byte)var5;
-            pixels[var1 * 4 + 3] = (byte)var2;
+            int a = _compass[i] >> 24 & 255;
+            int r = _compass[i] >> 16 & 255;
+            int g = _compass[i] >> 8 & 255;
+            int b = _compass[i] >> 0 & 255;
+            Pixels[i * 4 + 0] = (byte)r;
+            Pixels[i * 4 + 1] = (byte)g;
+            Pixels[i * 4 + 2] = (byte)b;
+            Pixels[i * 4 + 3] = (byte)a;
         }
 
-        double var20 = 0.0D;
-        if (mc.world != null && mc.player != null)
+        double targetAngle = 0.0D;
+        if (_mc.world != null && _mc.player != null)
         {
-            Vec3i var21 = mc.world.getSpawnPos();
-            double var23 = var21.X - mc.player.x;
-            double var25 = var21.Z - mc.player.z;
-            var20 = (mc.player.yaw - 90.0F) * Math.PI / 180.0D - Math.Atan2(var25, var23);
-            if (mc.world.dimension.IsNether)
+            Vec3i spawnPos = _mc.world.getSpawnPos();
+            double deltaX = spawnPos.X - _mc.player.x;
+            double deltaZ = spawnPos.Z - _mc.player.z;
+
+            targetAngle = (_mc.player.yaw - 90.0F) * Math.PI / 180.0D - Math.Atan2(deltaZ, deltaX);
+
+            if (_mc.world.dimension.IsNether)
             {
-                var20 = Random.Shared.NextDouble() * (float)Math.PI * 2.0D;
+                targetAngle = Random.Shared.NextDouble() * (float)Math.PI * 2.0D;
             }
         }
 
-        double var22;
-        for (var22 = var20 - angle; var22 < -Math.PI; var22 += Math.PI * 2.0D)
+        double angleDiff;
+        for (angleDiff = targetAngle - _angle; angleDiff < -Math.PI; angleDiff += Math.PI * 2.0D) ;
+        while (angleDiff >= Math.PI) angleDiff -= Math.PI * 2.0D;
+
+        if (angleDiff < -1.0D) angleDiff = -1.0D;
+        if (angleDiff > 1.0D) angleDiff = 1.0D;
+
+        _angleDelta += angleDiff * 0.1D;
+        _angleDelta *= 0.8D;
+        _angle += _angleDelta;
+
+        double sinAngle = Math.Sin(_angle);
+        double cosAngle = Math.Cos(_angle);
+
+        float center = (_resolution - 1) / 2.0f;
+        float needleScale = _resolution / 16.0f;
+
+        for (int offset = -Math.Max(1, _resolution / 4); offset <= Math.Max(1, _resolution / 4); ++offset)
         {
+            int pixelX = (int)(center + 0.5f + cosAngle * offset * 0.3D * needleScale);
+            int pixelY = (int)(center - 0.5f - sinAngle * offset * 0.3D * 0.5D * needleScale);
+
+            if (pixelX < 0 || pixelX >= _resolution || pixelY < 0 || pixelY >= _resolution) continue;
+
+            int pixelIdx = pixelY * _resolution + pixelX;
+            Pixels[pixelIdx * 4 + 0] = 100; // R
+            Pixels[pixelIdx * 4 + 1] = 100; // G
+            Pixels[pixelIdx * 4 + 2] = 100; // B
+            Pixels[pixelIdx * 4 + 3] = 255; // A
         }
 
-        while (var22 >= Math.PI)
+        for (int offset = -Math.Max(1, _resolution / 2); offset <= _resolution; ++offset)
         {
-            var22 -= Math.PI * 2.0D;
-        }
+            int pixelX = (int)(center + 0.5f + sinAngle * offset * 0.3D * needleScale);
+            int pixelY = (int)(center - 0.5f + cosAngle * offset * 0.3D * 0.5D * needleScale);
 
-        if (var22 < -1.0D)
-        {
-            var22 = -1.0D;
-        }
+            if (pixelX < 0 || pixelX >= _resolution || pixelY < 0 || pixelY >= _resolution) continue;
 
-        if (var22 > 1.0D)
-        {
-            var22 = 1.0D;
-        }
+            int pixelIdx = pixelY * _resolution + pixelX;
+            bool isPointyEnd = offset >= 0;
 
-        angleDelta += var22 * 0.1D;
-        angleDelta *= 0.8D;
-        angle += angleDelta;
-        double var24 = Math.Sin(angle);
-        double var26 = Math.Cos(angle);
-
-        float center = (resolution - 1) / 2.0f;
-        float needleScale = resolution / 16.0f;
-
-        for (int var9 = -Math.Max(1, resolution / 4); var9 <= Math.Max(1, resolution / 4); ++var9)
-        {
-            int var10 = (int)(center + 0.5f + var26 * var9 * 0.3D * needleScale);
-            int var11 = (int)(center - 0.5f - var24 * var9 * 0.3D * 0.5D * needleScale);
-
-            if (var10 < 0 || var10 >= resolution || var11 < 0 || var11 >= resolution) continue;
-
-            int var12 = var11 * resolution + var10;
-            int var13 = 100;
-            int var14 = 100;
-            int var15 = 100;
-            short var16 = 255;
-            pixels[var12 * 4 + 0] = (byte)var13;
-            pixels[var12 * 4 + 1] = (byte)var14;
-            pixels[var12 * 4 + 2] = (byte)var15;
-            pixels[var12 * 4 + 3] = (byte)var16;
-        }
-
-        for (int var9 = -Math.Max(1, resolution / 2); var9 <= resolution; ++var9)
-        {
-            int var10 = (int)(center + 0.5f + var24 * var9 * 0.3D * needleScale);
-            int var11 = (int)(center - 0.5f + var26 * var9 * 0.3D * 0.5D * needleScale);
-
-            if (var10 < 0 || var10 >= resolution || var11 < 0 || var11 >= resolution) continue;
-
-            int var12 = var11 * resolution + var10;
-            int var13 = var9 >= 0 ? 255 : 100;
-            int var14 = var9 >= 0 ? 20 : 100;
-            int var15 = var9 >= 0 ? 20 : 100;
-            short var16 = 255;
-            pixels[var12 * 4 + 0] = (byte)var13;
-            pixels[var12 * 4 + 1] = (byte)var14;
-            pixels[var12 * 4 + 2] = (byte)var15;
-            pixels[var12 * 4 + 3] = (byte)var16;
+            Pixels[pixelIdx * 4 + 0] = (byte)(isPointyEnd ? 255 : 100);
+            Pixels[pixelIdx * 4 + 1] = (byte)(isPointyEnd ? 20 : 100);
+            Pixels[pixelIdx * 4 + 2] = (byte)(isPointyEnd ? 20 : 100);
+            Pixels[pixelIdx * 4 + 3] = 255;
         }
     }
 }

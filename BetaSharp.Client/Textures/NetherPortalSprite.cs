@@ -3,78 +3,61 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Client.Textures;
 
-public class NetherPortalSprite : DynamicTexture
+public class NetherPortalSprite() : DynamicTexture(Block.NetherPortal.textureId)
 {
-    private int ticks;
-    private readonly byte[][] frames = new byte[32][];
-
-    public NetherPortalSprite() : base(Block.NetherPortal.textureId)
-    {
-    }
+    private int _ticks;
+    private readonly byte[][] _frames = new byte[32][];
 
     public override void Setup(Minecraft mc)
     {
         TryLoadCustomTexture(mc, "custom_portal.png");
-        if (customFrames != null) return;
+        if (CustomFrames != null) return;
 
-        JavaRandom var1 = new(100L);
-        for (int i = 0; i < frames.Length; i++)
+        JavaRandom random = new(100L);
+        for (int i = 0; i < _frames.Length; i++)
         {
-            frames[i] = new byte[1024];
+            _frames[i] = new byte[1024];
         }
 
-        for (int var2 = 0; var2 < 32; ++var2)
+        for (int frameIdx = 0; frameIdx < 32; ++frameIdx)
         {
-            for (int var3 = 0; var3 < 16; ++var3)
+            for (int x = 0; x < 16; ++x)
             {
-                for (int var4 = 0; var4 < 16; ++var4)
+                for (int y = 0; y < 16; ++y)
                 {
-                    float var5 = 0.0F;
+                    float intensity = 0.0F;
 
-                    int var6;
-                    for (var6 = 0; var6 < 2; ++var6)
+                    for (int layer = 0; layer < 2; ++layer)
                     {
-                        float var7 = var6 * 8;
-                        float var8 = var6 * 8;
-                        float var9 = (var3 - var7) / 16.0F * 2.0F;
-                        float var10 = (var4 - var8) / 16.0F * 2.0F;
-                        if (var9 < -1.0F)
-                        {
-                            var9 += 2.0F;
-                        }
+                        float offsetX = layer * 8;
+                        float offsetY = layer * 8;
+                        float distX = (x - offsetX) / 16.0F * 2.0F;
+                        float distY = (y - offsetY) / 16.0F * 2.0F;
 
-                        if (var9 >= 1.0F)
-                        {
-                            var9 -= 2.0F;
-                        }
+                        if (distX < -1.0F) distX += 2.0F;
+                        if (distX >= 1.0F) distX -= 2.0F;
+                        if (distY < -1.0F) distY += 2.0F;
+                        if (distY >= 1.0F) distY -= 2.0F;
 
-                        if (var10 < -1.0F)
-                        {
-                            var10 += 2.0F;
-                        }
-
-                        if (var10 >= 1.0F)
-                        {
-                            var10 -= 2.0F;
-                        }
-
-                        float var11 = var9 * var9 + var10 * var10;
-                        float var12 = (float)Math.Atan2(var10, var9) + (var2 / 32.0F * (float)Math.PI * 2.0F - var11 * 10.0F + var6 * 2) * (var6 * 2 - 1);
-                        var12 = (MathHelper.Sin(var12) + 1.0F) / 2.0F;
-                        var12 /= var11 + 1.0F;
-                        var5 += var12 * 0.5F;
+                        float sqDist = distX * distX + distY * distY;
+                        float swirlPhase = (float)Math.Atan2(distY, distX) + (frameIdx / 32.0F * (float)Math.PI * 2.0F - sqDist * 10.0F + layer * 2) * (layer * 2 - 1);
+                        swirlPhase = (MathHelper.Sin(swirlPhase) + 1.0F) / 2.0F;
+                        swirlPhase /= sqDist + 1.0F;
+                        intensity += swirlPhase * 0.5F;
                     }
 
-                    var5 += var1.NextFloat() * 0.1F;
-                    var6 = (int)(var5 * 100.0F + 155.0F);
-                    int var13 = (int)(var5 * var5 * 200.0F + 55.0F);
-                    int var14 = (int)(var5 * var5 * var5 * var5 * 255.0F);
-                    int var15 = (int)(var5 * 100.0F + 155.0F);
-                    int var16 = var4 * 16 + var3;
-                    frames[var2][var16 * 4 + 0] = (byte)var13;
-                    frames[var2][var16 * 4 + 1] = (byte)var14;
-                    frames[var2][var16 * 4 + 2] = (byte)var6;
-                    frames[var2][var16 * 4 + 3] = (byte)var15;
+                    intensity += random.NextFloat() * 0.1F;
+
+                    int r = (int)(intensity * intensity * 200.0F + 55.0F);
+                    int g = (int)(intensity * intensity * intensity * intensity * 255.0F);
+                    int b = (int)(intensity * 100.0F + 155.0F);
+                    int a = (int)(intensity * 100.0F + 155.0F);
+
+                    int pixelIdx = y * 16 + x;
+                    _frames[frameIdx][pixelIdx * 4 + 0] = (byte)r;
+                    _frames[frameIdx][pixelIdx * 4 + 1] = (byte)g;
+                    _frames[frameIdx][pixelIdx * 4 + 2] = (byte)b;
+                    _frames[frameIdx][pixelIdx * 4 + 3] = (byte)a;
                 }
             }
         }
@@ -82,26 +65,26 @@ public class NetherPortalSprite : DynamicTexture
 
     public override void tick()
     {
-        if (customFrames != null)
+        if (CustomFrames != null)
         {
-            Buffer.BlockCopy(customFrames[customFrameIndex], 0, pixels, 0, pixels.Length);
-            customFrameIndex = (customFrameIndex + 1) % customFrameCount;
+            Buffer.BlockCopy(CustomFrames[CustomFrameIndex], 0, Pixels, 0, Pixels.Length);
+            CustomFrameIndex = (CustomFrameIndex + 1) % CustomFrameCount;
             return;
         }
 
-        ++ticks;
-        byte[] var1 = frames[ticks & 31];
+        ++_ticks;
+        byte[] currentFrame = _frames[_ticks & 31];
 
-        for (int var2 = 0; var2 < 256; ++var2)
+        for (int i = 0; i < 256; ++i)
         {
-            int var3 = var1[var2 * 4 + 0] & 255;
-            int var4 = var1[var2 * 4 + 1] & 255;
-            int var5 = var1[var2 * 4 + 2] & 255;
-            int var6 = var1[var2 * 4 + 3] & 255;
-            pixels[var2 * 4 + 0] = (byte)var3;
-            pixels[var2 * 4 + 1] = (byte)var4;
-            pixels[var2 * 4 + 2] = (byte)var5;
-            pixels[var2 * 4 + 3] = (byte)var6;
+            int r = currentFrame[i * 4 + 0] & 255;
+            int g = currentFrame[i * 4 + 1] & 255;
+            int b = currentFrame[i * 4 + 2] & 255;
+            int a = currentFrame[i * 4 + 3] & 255;
+            Pixels[i * 4 + 0] = (byte)r;
+            Pixels[i * 4 + 1] = (byte)g;
+            Pixels[i * 4 + 2] = (byte)b;
+            Pixels[i * 4 + 3] = (byte)a;
         }
     }
 }

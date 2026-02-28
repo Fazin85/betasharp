@@ -9,42 +9,42 @@ namespace BetaSharp.Client.Textures;
 
 public class ClockSprite : DynamicTexture
 {
-    private Minecraft mc;
-    private int[] clock = new int[256];
-    private int[] dial = new int[256];
-    private double angle;
-    private double angleDelta;
-    private int resolution = 16;
-    private int dialResolution = 16;
+    private Minecraft _mc;
+    private int[] _clock = new int[256];
+    private int[] _dial = new int[256];
+    private double _angle;
+    private double _angleDelta;
+    private int _resolution = 16;
+    private int _dialResolution = 16;
 
     public ClockSprite(Minecraft var1) : base(Item.Clock.getTextureId(0))
     {
-        mc = var1;
-        atlas = FXImage.Items;
+        _mc = var1;
+        Atlas = FxImage.Items;
     }
 
     public override void Setup(Minecraft mc)
     {
-        this.mc = mc;
+        this._mc = mc;
         TextureManager tm = mc.textureManager;
         string atlasPath = "/gui/items.png";
 
         var handle = tm.GetTextureId(atlasPath);
         if (handle.Texture != null)
         {
-            resolution = handle.Texture.Width / 16;
+            _resolution = handle.Texture.Width / 16;
         }
         else
         {
-            resolution = 16;
+            _resolution = 16;
         }
 
-        int pixelCount = resolution * resolution;
-        if (clock.Length != pixelCount)
+        int pixelCount = _resolution * _resolution;
+        if (_clock.Length != pixelCount)
         {
-            clock = new int[pixelCount];
-            dial = new int[pixelCount];
-            pixels = new byte[pixelCount * 4];
+            _clock = new int[pixelCount];
+            _dial = new int[pixelCount];
+            Pixels = new byte[pixelCount * 4];
         }
 
         try
@@ -54,24 +54,24 @@ public class ClockSprite : DynamicTexture
             {
                 using var ms = new MemoryStream();
                 stream.CopyTo(ms);
-                BufferedImage var2 = ImageIO.read(new ByteArrayInputStream(ms.ToArray()));
-                int localRes = var2.getWidth() / 16;
-                int var3 = (sprite % 16) * localRes;
-                int var4 = (sprite / 16) * localRes;
+                BufferedImage image = ImageIO.read(new ByteArrayInputStream(ms.ToArray()));
+                int atlasResolution = image.getWidth() / 16;
+                int sourceX = (Sprite % 16) * atlasResolution;
+                int sourceY = (Sprite / 16) * atlasResolution;
 
-                if (localRes == resolution)
+                if (atlasResolution == _resolution)
                 {
-                    var2.getRGB(var3, var4, resolution, resolution, clock, 0, resolution);
+                    image.getRGB(sourceX, sourceY, _resolution, _resolution, _clock, 0, _resolution);
                 }
                 else
                 {
-                    int[] temp = new int[localRes * localRes];
-                    var2.getRGB(var3, var4, localRes, localRes, temp, 0, localRes);
-                    for (int y = 0; y < resolution; y++)
+                    int[] temp = new int[atlasResolution * atlasResolution];
+                    image.getRGB(sourceX, sourceY, atlasResolution, atlasResolution, temp, 0, atlasResolution);
+                    for (int y = 0; y < _resolution; y++)
                     {
-                        for (int x = 0; x < resolution; x++)
+                        for (int x = 0; x < _resolution; x++)
                         {
-                            clock[y * resolution + x] = temp[(y * localRes / resolution) * localRes + (x * localRes / resolution)];
+                            _clock[y * _resolution + x] = temp[(y * atlasResolution / _resolution) * atlasResolution + (x * atlasResolution / _resolution)];
                         }
                     }
                 }
@@ -82,14 +82,15 @@ public class ClockSprite : DynamicTexture
             {
                 using var ms = new MemoryStream();
                 dialStream.CopyTo(ms);
-                BufferedImage var2 = ImageIO.read(new ByteArrayInputStream(ms.ToArray()));
-                dialResolution = var2.getWidth();
-                int dialPixelCount = dialResolution * dialResolution;
-                if (dial.Length != dialPixelCount)
+                BufferedImage dialImage = ImageIO.read(new ByteArrayInputStream(ms.ToArray()));
+                _dialResolution = dialImage.getWidth();
+                int dialPixelCount = _dialResolution * _dialResolution;
+                if (_dial.Length != dialPixelCount)
                 {
-                    dial = new int[dialPixelCount];
+                    _dial = new int[dialPixelCount];
                 }
-                var2.getRGB(0, 0, dialResolution, dialResolution, dial, 0, dialResolution);
+
+                dialImage.getRGB(0, 0, _dialResolution, _dialResolution, _dial, 0, _dialResolution);
             }
         }
         catch (java.io.IOException ex)
@@ -100,71 +101,69 @@ public class ClockSprite : DynamicTexture
 
     public override void tick()
     {
-        double var1 = 0.0D;
-        if (mc.world != null && mc.player != null)
+        double targetAngle = 0.0D;
+        if (_mc.world != null && _mc.player != null)
         {
-            float var3 = mc.world.getTime(1.0F);
-            var1 = (double)(-var3 * (float)Math.PI * 2.0F);
-            if (mc.world.dimension.IsNether)
+            float worldTime = _mc.world.getTime(1.0F);
+            targetAngle = (double)(-worldTime * (float)Math.PI * 2.0F);
+            if (_mc.world.dimension.IsNether)
             {
-                var1 = Random.Shared.NextDouble() * (double)(float)Math.PI * 2.0D;
+                targetAngle = Random.Shared.NextDouble() * (double)(float)Math.PI * 2.0D;
             }
         }
 
-        double var22;
-        for (var22 = var1 - angle; var22 < -Math.PI; var22 += Math.PI * 2.0D)
+        double angleDifference;
+        for (angleDifference = targetAngle - _angle; angleDifference < -Math.PI; angleDifference += Math.PI * 2.0D)
         {
         }
 
-        while (var22 >= Math.PI)
+        while (angleDifference >= Math.PI)
         {
-            var22 -= Math.PI * 2.0D;
+            angleDifference -= Math.PI * 2.0D;
         }
 
-        if (var22 < -1.0D)
+        if (angleDifference < -1.0D) angleDifference = -1.0D;
+        if (angleDifference > 1.0D) angleDifference = 1.0D;
+
+        _angleDelta += angleDifference * 0.1D;
+        _angleDelta *= 0.8D;
+        _angle += _angleDelta;
+
+        double sinAngle = Math.Sin(_angle);
+        double cosAngle = Math.Cos(_angle);
+
+        int pixelCount = _resolution * _resolution;
+        float invResMinus1 = 1.0f / (_resolution - 1);
+
+        for (int pixelIdx = 0; pixelIdx < pixelCount; ++pixelIdx)
         {
-            var22 = -1.0D;
-        }
+            int alpha = _clock[pixelIdx] >> 24 & 255;
+            int red = _clock[pixelIdx] >> 16 & 255;
+            int green = _clock[pixelIdx] >> 8 & 255;
+            int blue = _clock[pixelIdx] >> 0 & 255;
 
-        if (var22 > 1.0D)
-        {
-            var22 = 1.0D;
-        }
-
-        angleDelta += var22 * 0.1D;
-        angleDelta *= 0.8D;
-        angle += angleDelta;
-        double var5 = Math.Sin(angle);
-        double var7 = Math.Cos(angle);
-
-        int pixelCount = resolution * resolution;
-        float invResMinus1 = 1.0f / (resolution - 1);
-
-        for (int var9 = 0; var9 < pixelCount; ++var9)
-        {
-            int var10 = clock[var9] >> 24 & 255;
-            int var11 = clock[var9] >> 16 & 255;
-            int var12 = clock[var9] >> 8 & 255;
-            int var13 = clock[var9] >> 0 & 255;
-
-            if (Math.Abs(var11 - var13) < 10 && var12 < 40 && var11 > 100)
+            // Logic to detect the "clock face" area (looks for specific bluish-gray tint)
+            if (Math.Abs(red - blue) < 10 && green < 40 && red > 100)
             {
-                double var14 = -((var9 % resolution) * invResMinus1 - 0.5D);
-                double var16 = (var9 / resolution) * invResMinus1 - 0.5D;
-                int var18 = var11;
-                int var19 = (int)((var14 * var7 + var16 * var5 + 0.5D) * dialResolution);
-                int var20 = (int)((var16 * var7 - var14 * var5 + 0.5D) * dialResolution);
-                int var21 = (var19 & (dialResolution - 1)) + (var20 & (dialResolution - 1)) * dialResolution;
-                var10 = dial[var21] >> 24 & 255;
-                var11 = (dial[var21] >> 16 & 255) * var11 / 255;
-                var12 = (dial[var21] >> 8 & 255) * var18 / 255;
-                var13 = (dial[var21] >> 0 & 255) * var18 / 255;
+                double relX = -((pixelIdx % _resolution) * invResMinus1 - 0.5D);
+                double relY = (pixelIdx / _resolution) * invResMinus1 - 0.5D;
+                int origRed = red;
+
+                int dialX = (int)((relX * cosAngle + relY * sinAngle + 0.5D) * _dialResolution);
+                int dialY = (int)((relY * cosAngle - relX * sinAngle + 0.5D) * _dialResolution);
+
+                int dialIdx = (dialX & (_dialResolution - 1)) + (dialY & (_dialResolution - 1)) * _dialResolution;
+
+                alpha = _dial[dialIdx] >> 24 & 255;
+                red = (_dial[dialIdx] >> 16 & 255) * red / 255;
+                green = (_dial[dialIdx] >> 8 & 255) * origRed / 255;
+                blue = (_dial[dialIdx] >> 0 & 255) * origRed / 255;
             }
 
-            pixels[var9 * 4 + 0] = (byte)var11;
-            pixels[var9 * 4 + 1] = (byte)var12;
-            pixels[var9 * 4 + 2] = (byte)var13;
-            pixels[var9 * 4 + 3] = (byte)var10;
+            Pixels[pixelIdx * 4 + 0] = (byte)red;
+            Pixels[pixelIdx * 4 + 1] = (byte)green;
+            Pixels[pixelIdx * 4 + 2] = (byte)blue;
+            Pixels[pixelIdx * 4 + 3] = (byte)alpha;
         }
     }
 }
