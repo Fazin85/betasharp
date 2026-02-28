@@ -154,7 +154,7 @@ public class WorldRenderer : IWorldAccess
 
         EntityRenderDispatcher.instance.func_852_a(world);
         this.world = world;
-        globalRenderBlocks = new BlockRenderer(world);
+        globalRenderBlocks = new BlockRenderer();
         if (world != null)
         {
             world.addWorldAccess(this);
@@ -640,7 +640,7 @@ public class WorldRenderer : IWorldAccess
                 var6.startDrawingQuads();
                 var6.setTranslationD(-var10, -var12, -var14);
                 var6.disableColor();
-                globalRenderBlocks.renderBlockUsingTexture(var9, var2.BlockX, var2.BlockY, var2.BlockZ, 240 + (int)(damagePartialTime * 10.0F));
+                BlockRenderer.RenderBlockByRenderType(world, var9, new BlockPos(var2.BlockX, var2.BlockY, var2.BlockZ), var6, 240 + (int)(damagePartialTime * 10.0F), true);
                 var6.draw();
                 var6.setTranslationD(0.0D, 0.0D, 0.0D);
                 GLManager.GL.Disable(GLEnum.AlphaTest);
