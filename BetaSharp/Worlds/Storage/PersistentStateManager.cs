@@ -23,7 +23,7 @@ public class PersistentStateManager
         return (T?)LoadData(typeof(T), id);
     }
 
-    public PersistentState? LoadData(Type type, string id)
+    public PersistentState? LoadData(Type type, string id) // On server never returns null, on client always
     {
         if (_loadedDataMap.TryGetValue(id, out PersistentState? existingState))
         {

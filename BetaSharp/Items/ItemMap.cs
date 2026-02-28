@@ -16,38 +16,14 @@ public class ItemMap : NetworkSyncedItem
         setMaxCount(1);
     }
 
-    public static MapState getMapState(short mapId, World world)
+    public static MapState getMapState(int mapId, World world)
     {
-        MapState? mapState = (MapState?)world.getOrCreateState(typeof(MapState), "map_" + mapId);
+        string mapName = "map_" + mapId;
+        MapState? mapState = world.persistentStateManager.LoadData<MapState>(mapName);
         if (mapState == null)
         {
-            string mapName = "map_" + mapId;
             mapState = new MapState(mapName);
-            world.setState(mapName, mapState);
-        }
-
-        return mapState;
-    }
-
-    public MapState getSavedMapState(ItemStack stack, World world)
-    {
-        string mapName = "map_" + stack.getDamage();
-        MapState? mapState = (MapState?)world.getOrCreateState(typeof(MapState), mapName);
-        if (mapState == null)
-        {
-            if (world.isRemote)
-            {
-                return getMapState((short)stack.getDamage(), world);
-            }
-            stack.setDamage(world.getIdCount("map"));
-            mapName = "map_" + stack.getDamage();
-            mapState = new MapState(mapName);
-            mapState.CenterX = world.getProperties().SpawnX;
-            mapState.CenterZ = world.getProperties().SpawnZ;
-            mapState.Scale = 3;
-            mapState.Dimension = (sbyte)world.dimension.Id;
-            mapState.markDirty();
-            world.setState(mapName, mapState);
+            world.persistentStateManager.SetData(mapName, mapState);
         }
 
         return mapState;
@@ -273,7 +249,7 @@ public class ItemMap : NetworkSyncedItem
     {
         if (!world.isRemote)
         {
-            MapState mapState = getSavedMapState(itemStack, world);
+            MapState mapState = getMapState(itemStack.getDamage(), world);
             if (entity is EntityPlayer)
             {
                 EntityPlayer entityPlayer = (EntityPlayer)entity;
@@ -290,10 +266,10 @@ public class ItemMap : NetworkSyncedItem
 
     public override void onCraft(ItemStack itemStack, World world, EntityPlayer entityPlayer)
     {
-        itemStack.setDamage(world.getIdCount("map"));
+        itemStack.setDamage(world.persistentStateManager.GetUniqueDataId("map"));
         string mapName = "map_" + itemStack.getDamage();
         MapState mapState = new MapState(mapName);
-        world.setState(mapName, mapState);
+        world.persistentStateManager.SetData(mapName, mapState);
         mapState.CenterX = MathHelper.Floor(entityPlayer.x);
         mapState.CenterZ = MathHelper.Floor(entityPlayer.z);
         mapState.Scale = 3;
@@ -303,7 +279,7 @@ public class ItemMap : NetworkSyncedItem
 
     public override Packet getUpdatePacket(ItemStack stack, World world, EntityPlayer player)
     {
-        byte[] updateData = getSavedMapState(stack, world).getPlayerMarkerPacket(player);
+        byte[] updateData = getMapState(stack.getDamage(), world).getPlayerMarkerPacket(player);
         return updateData == null ? null : new MapUpdateS2CPacket((short)Item.Map.id, (short)stack.getDamage(), updateData);
     }
 }

@@ -236,7 +236,7 @@ public class HeldItemRenderer
             var19.addVertexWithUV(128 + var20, 0 - var20, 0.0D, 1.0D, 0.0D);
             var19.addVertexWithUV(0 - var20, 0 - var20, 0.0D, 0.0D, 0.0D);
             var19.draw();
-            MapState mapState = Item.Map.getSavedMapState(itemToRender, mc.world);
+            MapState mapState = ItemMap.getMapState(itemToRender.getDamage(), mc.world);
             mapRenderer.render(mc.player, mc.textureManager, mapState);
             GLManager.GL.PopMatrix();
         }

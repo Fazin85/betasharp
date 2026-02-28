@@ -3114,21 +3114,6 @@ public abstract class World : BlockView
         }
     }
 
-    public void setState(string id, PersistentState state)
-    {
-        persistentStateManager.SetData(id, state);
-    }
-
-    public PersistentState? getOrCreateState(Type type, string id)
-    {
-        return persistentStateManager.LoadData(type, id);
-    }
-
-    public int getIdCount(string id)
-    {
-        return persistentStateManager.GetUniqueDataId(id);
-    }
-
     public void worldEvent(int @event, int x, int y, int z, int data)
     {
         worldEvent(null, @event, x, y, z, data);
