@@ -17,14 +17,14 @@ public class HeldItemRenderer
     private ItemStack itemToRender;
     private float equippedProgress;
     private float prevEquippedProgress;
-    private readonly BlockRenderer renderBlocksInstance = new();
-    private readonly MapItemRenderer field_28131_f;
+    private readonly BlockRenderer blockRenderer = new();
+    private readonly MapItemRenderer mapRenderer;
     private int field_20099_f = -1;
 
     public HeldItemRenderer(Minecraft var1)
     {
         mc = var1;
-        field_28131_f = new MapItemRenderer(var1.fontRenderer, var1.options, var1.textureManager);
+        mapRenderer = new MapItemRenderer(var1.fontRenderer, var1.options, var1.textureManager);
     }
 
     public void renderItem(EntityLiving var1, ItemStack var2)
@@ -33,7 +33,7 @@ public class HeldItemRenderer
         if (var2.itemId < 256 && BlockRenderer.isSideLit(Block.Blocks[var2.itemId].getRenderType()))
         {
             mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/terrain.png"));
-            renderBlocksInstance.renderBlockOnInventory(Block.Blocks[var2.itemId], var2.getDamage(), var1.getBrightnessAtEyes(1.0F));
+            blockRenderer.renderBlockOnInventory(Block.Blocks[var2.itemId], var2.getDamage(), var1.getBrightnessAtEyes(1.0F));
         }
         else
         {
@@ -152,14 +152,13 @@ public class HeldItemRenderer
         GLManager.GL.Rotate(var3.prevYaw + (var3.yaw - var3.prevYaw) * var1, 0.0F, 1.0F, 0.0F);
         Lighting.turnOn();
         GLManager.GL.PopMatrix();
-        ItemStack var5 = itemToRender;
         float var6 = mc.world.getLuminance(MathHelper.Floor(var3.x), MathHelper.Floor(var3.y), MathHelper.Floor(var3.z));
         float var8;
         float var9;
         float var10;
-        if (var5 != null)
+        if (itemToRender != null)
         {
-            int var7 = Item.ITEMS[var5.itemId].getColorMultiplier(var5.getDamage());
+            int var7 = Item.ITEMS[itemToRender.itemId].getColorMultiplier(itemToRender.getDamage());
             var8 = (var7 >> 16 & 255) / 255.0F;
             var9 = (var7 >> 8 & 255) / 255.0F;
             var10 = (var7 & 255) / 255.0F;
@@ -171,35 +170,35 @@ public class HeldItemRenderer
         }
 
         float var14;
-        if (var5 != null && var5.itemId == Item.Map.id)
+        if (itemToRender != null && itemToRender.itemId == Item.Map.id)
         {
             GLManager.GL.PushMatrix();
             var14 = 0.8F;
-            var8 = var3.getSwingProgress(var1);
-            var9 = MathHelper.Sin(var8 * (float)Math.PI);
-            var10 = MathHelper.Sin(MathHelper.Sqrt(var8) * (float)Math.PI);
-            GLManager.GL.Translate(-var10 * 0.4F, MathHelper.Sin(MathHelper.Sqrt(var8) * (float)Math.PI * 2.0F) * 0.2F, -var9 * 0.2F);
-            var8 = 1.0F - var4 / 45.0F + 0.1F;
-            if (var8 < 0.0F)
+            float swingProgress = var3.getSwingProgress(var1);
+            var9 = MathHelper.Sin(swingProgress * (float)Math.PI);
+            var10 = MathHelper.Sin(MathHelper.Sqrt(swingProgress) * (float)Math.PI);
+            GLManager.GL.Translate(-var10 * 0.4F, MathHelper.Sin(MathHelper.Sqrt(swingProgress) * (float)Math.PI * 2.0F) * 0.2F, -var9 * 0.2F);
+            swingProgress = 1.0F - var4 / 45.0F + 0.1F;
+            if (swingProgress < 0.0F)
             {
-                var8 = 0.0F;
+                swingProgress = 0.0F;
             }
 
-            if (var8 > 1.0F)
+            if (swingProgress > 1.0F)
             {
-                var8 = 1.0F;
+                swingProgress = 1.0F;
             }
 
-            var8 = -MathHelper.Cos(var8 * (float)Math.PI) * 0.5F + 0.5F;
-            GLManager.GL.Translate(0.0F, 0.0F * var14 - (1.0F - var2) * 1.2F - var8 * 0.5F + 0.04F, -0.9F * var14);
+            swingProgress = -MathHelper.Cos(swingProgress * (float)Math.PI) * 0.5F + 0.5F;
+            GLManager.GL.Translate(0.0F, 0.0F * var14 - (1.0F - var2) * 1.2F - swingProgress * 0.5F + 0.04F, -0.9F * var14);
             GLManager.GL.Rotate(90.0F, 0.0F, 1.0F, 0.0F);
-            GLManager.GL.Rotate(var8 * -85.0F, 0.0F, 0.0F, 1.0F);
+            GLManager.GL.Rotate(swingProgress * -85.0F, 0.0F, 0.0F, 1.0F);
             GLManager.GL.Enable(GLEnum.RescaleNormal);
             bindSkinTexture();
 
-            for (int var17 = 0; var17 < 2; ++var17)
+            for (int i = 0; i < 2; i++)
             {
-                int var21 = var17 * 2 - 1;
+                int var21 = i * 2 - 1;
                 GLManager.GL.PushMatrix();
                 GLManager.GL.Translate(-0.0F, -0.6F, 1.1F * var21);
                 GLManager.GL.Rotate(-45 * var21, 1.0F, 0.0F, 0.0F);
@@ -237,11 +236,11 @@ public class HeldItemRenderer
             var19.addVertexWithUV(128 + var20, 0 - var20, 0.0D, 1.0D, 0.0D);
             var19.addVertexWithUV(0 - var20, 0 - var20, 0.0D, 0.0D, 0.0D);
             var19.draw();
-            MapState var22 = Item.Map.getSavedMapState(var5, mc.world);
-            field_28131_f.render(mc.player, mc.textureManager, var22);
+            MapState mapState = ItemMap.getMapState(itemToRender.getDamage(), mc.world);
+            mapRenderer.render(mc.player, mc.textureManager, mapState);
             GLManager.GL.PopMatrix();
         }
-        else if (var5 != null)
+        else if (itemToRender != null)
         {
             GLManager.GL.PushMatrix();
             var14 = 0.8F;
@@ -260,12 +259,12 @@ public class HeldItemRenderer
             GLManager.GL.Rotate(-var10 * 80.0F, 1.0F, 0.0F, 0.0F);
             var8 = 0.4F;
             GLManager.GL.Scale(var8, var8, var8);
-            if (var5.getItem().isHandheldRod())
+            if (itemToRender.getItem().isHandheldRod())
             {
                 GLManager.GL.Rotate(180.0F, 0.0F, 1.0F, 0.0F);
             }
 
-            renderItem(var3, var5);
+            renderItem(var3, itemToRender);
             GLManager.GL.PopMatrix();
         }
         else

@@ -33,7 +33,7 @@ public class MapItemRenderer
     {
         for (int i = 0; i < 128 * 128; ++i)
         {
-            byte color = mapState.colors[i];
+            byte color = mapState.Colors[i];
             if (color / 4 == 0)
             {
                 // render translucent checkerboard pattern for transparent pixels
@@ -72,11 +72,8 @@ public class MapItemRenderer
         GLManager.GL.Enable(GLEnum.AlphaTest);
         GLManager.GL.Disable(GLEnum.Blend);
         textureManager.BindTexture(textureManager.GetTextureId("/misc/mapicons.png"));
-        Iterator it = mapState.icons.iterator();
-
-        while (it.hasNext())
+        foreach (var coord in mapState.Icons)
         {
-            MapCoord coord = (MapCoord)it.next();
             GLManager.GL.PushMatrix();
             GLManager.GL.Translate((sbyte)coord.x / 2.0F + 64.0F, (sbyte)coord.z / 2.0F + 64.0F, -0.02F);
             GLManager.GL.Rotate((sbyte)coord.rotation * 360 / 16.0F, 0.0F, 0.0F, 1.0F);
@@ -94,11 +91,5 @@ public class MapItemRenderer
             tess.draw();
             GLManager.GL.PopMatrix();
         }
-
-        GLManager.GL.PushMatrix();
-        GLManager.GL.Translate(0.0F, 0.0F, -0.04F);
-        GLManager.GL.Scale(1.0F, 1.0F, 1.0F);
-        _textRenderer.DrawString(mapState.id, 0, 0, 0xFF000000);
-        GLManager.GL.PopMatrix();
     }
 }

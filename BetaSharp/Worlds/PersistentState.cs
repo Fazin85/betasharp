@@ -7,9 +7,9 @@ public abstract class PersistentState
     public readonly string id;
     private bool dirty;
 
-    public PersistentState(string var1)
+    public PersistentState(string id)
     {
-        id = var1;
+        this.id = id;
     }
 
     public abstract void readNBT(NBTTagCompound var1);
