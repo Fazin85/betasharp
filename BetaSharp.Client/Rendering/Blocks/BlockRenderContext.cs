@@ -314,6 +314,7 @@ public ref struct BlockRenderContext
         }
     }
 
+
     internal readonly bool DrawBlock(in Block block, in BlockPos pos)
     {
         bool hasRendered = false;
@@ -512,78 +513,96 @@ public ref struct BlockRenderContext
         return hasRendered;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal readonly void DrawTorch(in Block block, in Vec3D pos, float tiltX, float tiltZ)
     {
-        int textureId = block.getTexture(0);
-        if (OverrideTexture >= 0)
-        {
-            textureId = OverrideTexture;
-        }
+        const float texScale = 1.0f / 256.0f;
+        const float radius = 1.0f / 16.0f;
+        const float height = 10.0f / 16.0f;
+        const float tipOffsetBase = 1.0f - height;
 
-        // Standard UV boundaries for the sides of the torch
+        const float topMinUOffset = 7.0f * texScale;
+        const float topMaxUOffset = 9.0f * texScale;
+        const float topMinVOffset = 6.0f * texScale;
+        const float topMaxVOffset = 8.0f * texScale;
+
+        int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTexture(0);
+
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
-        float minU = texU / 256.0F;
-        float maxU = (texU + 15.99F) / 256.0F;
-        float minV = texV / 256.0F;
-        float maxV = (texV + 15.99F) / 256.0F;
 
-        // Custom UV boundaries specifically for the TOP face of the torch (the burning coal part)
-        // 1.75 / 64 = 7 / 256. 9 / 256. This targets a specific 2x2 pixel square on the texture.
-        float topMinU = minU + 7.0f / 256.0f;
-        float topMinV = minV + 6.0f / 256.0f;
-        float topMaxU = minU + 9.0f / 256.0f;
-        float topMaxV = minV + 8.0f / 256.0f; // 1.0f / 32.0f = 8.0f / 256.0f
+        float minU = texU * texScale;
+        float maxU = (texU + 15.99f) * texScale;
+        float minV = texV * texScale;
+        float maxV = (texV + 15.99f) * texScale;
 
-        // Shift origin to the center of the block for easier rotation/tilting math
-        float centerX = (float)pos.x + 0.5f;
-        float centerZ = (float)pos.z + 0.5f;
+        float topMinU = minU + topMinUOffset;
+        float topMinV = minV + topMinVOffset;
+        float topMaxU = minU + topMaxUOffset;
+        float topMaxV = minV + topMaxVOffset;
 
-        float leftX = centerX - 0.5f;
-        float rightX = centerX + 0.5f;
-        float frontZ = centerZ - 0.5f;
-        float backZ = centerZ + 0.5f;
+        float pX = (float)pos.x;
+        float pY = (float)pos.y;
+        float pZ = (float)pos.z;
 
-        // Torch dimensions
-        float radius = 1.0f / 16.0f; // 1 pixel thick from the center
-        float height = 0.625f; // 10 pixels tall (10 / 16)
+        float centerX = pX + 0.5f;
+        float centerZ = pZ + 0.5f;
+        float leftX = pX;
+        float rightX = pX + 1.0f;
+        float frontZ = pZ;
+        float backZ = pZ + 1.0f;
 
-        // TOP FACE (The burning tip)
-        float tipOffsetBase = 1.0f - height; // How far down from the top of the block space the tip sits
+        float yBot = pY;
+        float yTop = pY + 1.0f;
+        float yTip = pY + height;
+
+        float cXmin = centerX - radius;
+        float cXmax = centerX + radius;
+        float cZmin = centerZ - radius;
+        float cZmax = centerZ + radius;
+
+        float tLeftX = leftX + tiltX;
+        float tRightX = rightX + tiltX;
+        float tFrontZ = frontZ + tiltZ;
+        float tBackZ = backZ + tiltZ;
+
+        float cXminT = cXmin + tiltX;
+        float cXmaxT = cXmax + tiltX;
+        float cZminT = cZmin + tiltZ;
+        float cZmaxT = cZmax + tiltZ;
+
         float tipX = centerX + tiltX * tipOffsetBase;
         float tipZ = centerZ + tiltZ * tipOffsetBase;
 
-        Tess.addVertexWithUV(tipX - radius, pos.y + height, tipZ - radius, topMinU, topMinV);
-        Tess.addVertexWithUV(tipX - radius, pos.y + height, tipZ + radius, topMinU, topMaxV);
-        Tess.addVertexWithUV(tipX + radius, pos.y + height, tipZ + radius, topMaxU, topMaxV);
-        Tess.addVertexWithUV(tipX + radius, pos.y + height, tipZ - radius, topMaxU, topMinV);
-
-        // SIDE FACES
-        // The top vertices stay near the center, while the bottom vertices are shifted by tiltX and tiltZ
+        // TOP FACE
+        Tess.addVertexWithUV(tipX - radius, yTip, tipZ - radius, topMinU, topMinV);
+        Tess.addVertexWithUV(tipX - radius, yTip, tipZ + radius, topMinU, topMaxV);
+        Tess.addVertexWithUV(tipX + radius, yTip, tipZ + radius, topMaxU, topMaxV);
+        Tess.addVertexWithUV(tipX + radius, yTip, tipZ - radius, topMaxU, topMinV);
 
         // West Face
-        Tess.addVertexWithUV(centerX - radius, pos.y + 1.0F, frontZ, minU, minV);
-        Tess.addVertexWithUV(centerX - radius + tiltX, pos.y + 0.0F, frontZ + tiltZ, minU, maxV);
-        Tess.addVertexWithUV(centerX - radius + tiltX, pos.y + 0.0F, backZ + tiltZ, maxU, maxV);
-        Tess.addVertexWithUV(centerX - radius, pos.y + 1.0F, backZ, maxU, minV);
+        Tess.addVertexWithUV(cXmin, yTop, frontZ, minU, minV);
+        Tess.addVertexWithUV(cXminT, yBot, tFrontZ, minU, maxV);
+        Tess.addVertexWithUV(cXminT, yBot, tBackZ, maxU, maxV);
+        Tess.addVertexWithUV(cXmin, yTop, backZ, maxU, minV);
 
         // East Face
-        Tess.addVertexWithUV(centerX + radius, pos.y + 1.0F, backZ, minU, minV);
-        Tess.addVertexWithUV(centerX + radius + tiltX, pos.y + 0.0F, backZ + tiltZ, minU, maxV);
-        Tess.addVertexWithUV(centerX + radius + tiltX, pos.y + 0.0F, frontZ + tiltZ, maxU, maxV);
-        Tess.addVertexWithUV(centerX + radius, pos.y + 1.0F, frontZ, maxU, minV);
+        Tess.addVertexWithUV(cXmax, yTop, backZ, minU, minV);
+        Tess.addVertexWithUV(cXmaxT, yBot, tBackZ, minU, maxV);
+        Tess.addVertexWithUV(cXmaxT, yBot, tFrontZ, maxU, maxV);
+        Tess.addVertexWithUV(cXmax, yTop, frontZ, maxU, minV);
 
         // North Face
-        Tess.addVertexWithUV(leftX, pos.y + 1.0F, centerZ + radius, minU, minV);
-        Tess.addVertexWithUV(leftX + tiltX, pos.y + 0.0F, centerZ + radius + tiltZ, minU, maxV);
-        Tess.addVertexWithUV(rightX + tiltX, pos.y + 0.0F, centerZ + radius + tiltZ, maxU, maxV);
-        Tess.addVertexWithUV(rightX, pos.y + 1.0F, centerZ + radius, maxU, minV);
+        Tess.addVertexWithUV(leftX, yTop, cZmax, minU, minV);
+        Tess.addVertexWithUV(tLeftX, yBot, cZmaxT, minU, maxV);
+        Tess.addVertexWithUV(tRightX, yBot, cZmaxT, maxU, maxV);
+        Tess.addVertexWithUV(rightX, yTop, cZmax, maxU, minV);
 
         // South Face
-        Tess.addVertexWithUV(rightX, pos.y + 1.0F, centerZ - radius, minU, minV);
-        Tess.addVertexWithUV(rightX + tiltX, pos.y + 0.0F, centerZ - radius + tiltZ, minU, maxV);
-        Tess.addVertexWithUV(leftX + tiltX, pos.y + 0.0F, centerZ - radius + tiltZ, maxU, maxV);
-        Tess.addVertexWithUV(leftX, pos.y + 1.0F, centerZ - radius, maxU, minV);
+        Tess.addVertexWithUV(rightX, yTop, cZmin, minU, minV);
+        Tess.addVertexWithUV(tRightX, yBot, cZminT, minU, maxV);
+        Tess.addVertexWithUV(tLeftX, yBot, cZminT, maxU, maxV);
+        Tess.addVertexWithUV(leftX, yTop, cZmin, maxU, minV);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -602,15 +621,40 @@ public ref struct BlockRenderContext
         // Stripped down switch (pure assignment, no inline math)
         switch (rotation)
         {
-            case 1: fU = v; fV = 1.0f - h; break;
-            case 2: fU = 1.0f - h; fV = 1.0f - v; break;
-            case 3: fU = 1.0f - v; fV = h; break;
-            case 4: fU = 1.0f - h; fV = v; break;
-            case 5: fU = v; fV = h; break;
-            case 6: fU = h; fV = 1.0f - v; break;
-            case 7: fU = 1.0f - v; fV = 1.0f - h; break;
-            default: fU = h; fV = v; break;
+            case 1:
+                fU = v;
+                fV = 1.0f - h;
+                break;
+            case 2:
+                fU = 1.0f - h;
+                fV = 1.0f - v;
+                break;
+            case 3:
+                fU = 1.0f - v;
+                fV = h;
+                break;
+            case 4:
+                fU = 1.0f - h;
+                fV = v;
+                break;
+            case 5:
+                fU = v;
+                fV = h;
+                break;
+            case 6:
+                fU = h;
+                fV = 1.0f - v;
+                break;
+            case 7:
+                fU = 1.0f - v;
+                fV = 1.0f - h;
+                break;
+            default:
+                fU = h;
+                fV = v;
+                break;
         }
+
         fU = FlipTexture ? 1.0f - fU : fU;
 
         u = texU * 0.00390625f + fU * 0.0625f;
