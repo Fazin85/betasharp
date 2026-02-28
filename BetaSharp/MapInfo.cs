@@ -4,92 +4,92 @@ namespace BetaSharp;
 
 public class MapInfo
 {
-    public readonly EntityPlayer player;
-    public int[] startZ;
-    public int[] endZ;
-    private int nextDirtyPixel;
-    private int colorsUpdateInterval;
-    readonly MapState mapDataObj;
-    private byte[] iconsData;
+    public readonly EntityPlayer Player;
+    public int[] StartZ;
+    public int[] EndZ;
+    private int _nextDirtyPixel;
+    private int _colorsUpdateInterval;
+    private readonly MapState _mapDataObj;
+    private byte[]? _iconsData;
 
-    public MapInfo(MapState var1, EntityPlayer var2)
+    public MapInfo(MapState state, EntityPlayer player)
     {
-        mapDataObj = var1;
-        startZ = new int[128];
-        endZ = new int[128];
-        nextDirtyPixel = 0;
-        colorsUpdateInterval = 0;
-        player = var2;
+        _mapDataObj = state;
+        StartZ = new int[128];
+        EndZ = new int[128];
+        _nextDirtyPixel = 0;
+        _colorsUpdateInterval = 0;
+        Player = player;
 
-        for (int var3 = 0; var3 < startZ.Length; ++var3)
+        for (int i = 0; i < StartZ.Length; ++i)
         {
-            startZ[var3] = 0;
-            endZ[var3] = 127;
+            StartZ[i] = 0;
+            EndZ[i] = 127;
         }
 
     }
 
-    public byte[] getUpdateData()
+    public byte[]? getUpdateData()
     {
-        if (--colorsUpdateInterval < 0)
+        if (--_colorsUpdateInterval < 0)
         {
-            colorsUpdateInterval = 4;
-            byte[] var2 = new byte[mapDataObj.icons.Count * 3 + 1];
-            var2[0] = 1;
+            _colorsUpdateInterval = 4;
+            byte[] data = new byte[_mapDataObj.Icons.Count * 3 + 1];
+            data[0] = 1;
 
-            for (int var3 = 0; var3 < mapDataObj.icons.Count; var3++)
+            for (int iconIndex = 0; iconIndex < _mapDataObj.Icons.Count; iconIndex++)
             {
-                MapCoord var4 = mapDataObj.icons[var3];
-                var2[var3 * 3 + 1] = (byte)(var4.type + (var4.rotation & 15) * 16);
-                var2[var3 * 3 + 2] = var4.x;
-                var2[var3 * 3 + 3] = var4.z;
+                MapCoord icon = _mapDataObj.Icons[iconIndex];
+                data[iconIndex * 3 + 1] = (byte)(icon.type + (icon.rotation & 15) * 16);
+                data[iconIndex * 3 + 2] = icon.x;
+                data[iconIndex * 3 + 3] = icon.z;
             }
 
-            bool var9 = true;
-            if (iconsData != null && iconsData.Length == var2.Length)
+            bool isUnchanged = true;
+            if (_iconsData != null && _iconsData.Length == data.Length)
             {
-                for (int var11 = 0; var11 < var2.Length; var11++)
+                for (int i = 0; i < data.Length; i++)
                 {
-                    if (var2[var11] != iconsData[var11])
+                    if (data[i] != _iconsData[i])
                     {
-                        var9 = false;
+                        isUnchanged = false;
                         break;
                     }
                 }
             }
             else
             {
-                var9 = false;
+                isUnchanged = false;
             }
 
-            if (!var9)
+            if (!isUnchanged)
             {
-                iconsData = var2;
-                return var2;
+                _iconsData = data;
+                return data;
             }
         }
 
-        for (int var8 = 0; var8 < 10; var8++)
+        for (int i = 0; i < 10; i++)
         {
-            int var10 = nextDirtyPixel * 11 % 128;
-            nextDirtyPixel++;
-            if (startZ[var10] >= 0)
+            int dirtyPixel = _nextDirtyPixel * 11 % 128;
+            _nextDirtyPixel++;
+            if (StartZ[dirtyPixel] >= 0)
             {
-                int var12 = endZ[var10] - startZ[var10] + 1;
-                int var5 = startZ[var10];
-                byte[] var6 = new byte[var12 + 3];
-                var6[0] = 0;
-                var6[1] = (byte)var10;
-                var6[2] = (byte)var5;
+                int stripLength = EndZ[dirtyPixel] - StartZ[dirtyPixel] + 1;
+                int startZCoord = StartZ[dirtyPixel];
+                byte[] packetData = new byte[stripLength + 3];
+                packetData[0] = 0;
+                packetData[1] = (byte)dirtyPixel;
+                packetData[2] = (byte)startZCoord;
 
-                for (int var7 = 0; var7 < var6.Length - 3; var7++)
+                for (int pixelOffset = 0; pixelOffset < packetData.Length - 3; pixelOffset++)
                 {
-                    var6[var7 + 3] = mapDataObj.colors[(var7 + var5) * 128 + var10];
+                    packetData[pixelOffset + 3] = _mapDataObj.Colors[(pixelOffset + startZCoord) * 128 + dirtyPixel];
                 }
 
-                endZ[var10] = -1;
-                startZ[var10] = -1;
-                return var6;
+                EndZ[dirtyPixel] = -1;
+                StartZ[dirtyPixel] = -1;
+                return packetData;
             }
         }
 
