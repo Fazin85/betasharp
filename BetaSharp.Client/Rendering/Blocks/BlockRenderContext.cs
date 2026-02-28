@@ -589,41 +589,31 @@ public ref struct BlockRenderContext
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private readonly void CalculateUv(float h, float v, int rotation, int texU, int texV, out float u, out float outV)
     {
-        float fU = h, fV = v;
-        switch (rotation)
+        //  0 and no flip are the most common states
+        if (rotation == 0 && !FlipTexture)
         {
-            case 1:
-                fU = v;
-                fV = 1.0f - h;
-                break;
-            case 2:
-                fU = 1.0f - h;
-                fV = 1.0f - v;
-                break;
-            case 3:
-                fU = 1.0f - v;
-                fV = h;
-                break;
-            case 4:
-                fU = 1.0f - h;
-                fV = v;
-                break;
-            case 5:
-                fU = v;
-                fV = h;
-                break;
-            case 6:
-                fU = h;
-                fV = 1.0f - v;
-                break;
-            case 7:
-                fU = 1.0f - v;
-                fV = 1.0f - h;
-                break;
+            u = texU * 0.00390625f + h * 0.0625f;
+            outV = texV * 0.00390625f + v * 0.0625f;
+            return;
         }
 
-        if (FlipTexture) fU = 1.0f - fU;
-        u = (texU + fU * 16.0f) / 256.0f;
-        outV = (texV + fV * 16.0f) / 256.0f;
+        float fU, fV;
+
+        // Stripped down switch (pure assignment, no inline math)
+        switch (rotation)
+        {
+            case 1: fU = v; fV = 1.0f - h; break;
+            case 2: fU = 1.0f - h; fV = 1.0f - v; break;
+            case 3: fU = 1.0f - v; fV = h; break;
+            case 4: fU = 1.0f - h; fV = v; break;
+            case 5: fU = v; fV = h; break;
+            case 6: fU = h; fV = 1.0f - v; break;
+            case 7: fU = 1.0f - v; fV = 1.0f - h; break;
+            default: fU = h; fV = v; break;
+        }
+        fU = FlipTexture ? 1.0f - fU : fU;
+
+        u = texU * 0.00390625f + fU * 0.0625f;
+        outV = texV * 0.00390625f + fV * 0.0625f;
     }
 }
