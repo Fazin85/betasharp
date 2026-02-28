@@ -3,8 +3,6 @@ using BetaSharp.Client.Rendering.Blocks.Renderers;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.lang;
-using Math = System.Math;
 
 namespace BetaSharp.Client.Rendering.Blocks;
 
@@ -29,7 +27,7 @@ public class BlockRenderer
     private static readonly PistonExtensionRenderer s_pistonExt = new();
 
 
-    public bool RenderBlockByRenderType(IBlockAccess world, Block block, BlockPos pos, Tessellator tess,
+    public static bool RenderBlockByRenderType(IBlockAccess world, Block block, BlockPos pos, Tessellator tess,
         int overrideTexture = -1, bool renderAllFaces = false)
     {
         BlockRendererType type = block.getRenderType();
@@ -77,7 +75,7 @@ public class BlockRenderer
         };
     }
 
-    public void RenderBlockOnInventory(Block block, int metadata, float brightness, Tessellator tess)
+    public static void RenderBlockOnInventory(Block block, int metadata, float brightness, Tessellator tess)
     {
         BlockRendererType renderType = block.getRenderType();
         if (renderType == BlockRendererType.PistonBase)
@@ -111,13 +109,13 @@ public class BlockRenderer
             tess: tess,
             renderAllFaces: true,
             enableAo: false,
-            overrideTexture: (renderType == BlockRendererType.PistonBase) ? 1 : -1
+            overrideTexture: -1
         );
 
         Vec3D origin = new Vec3D(0, 0, 0);
         FaceColors dummyColors = new FaceColors();
 
-        if (renderType == BlockRendererType.Standard || renderType == BlockRendererType.PistonBase)
+        if (renderType == BlockRendererType.Standard)
         {
             void SetFaceColor(int face)
             {
@@ -189,7 +187,7 @@ public class BlockRenderer
         }
     }
 
-    public void RenderBlockFallingSand(Block block, World world, int x, int y, int z, Tessellator tess)
+    public static void RenderBlockFallingSand(Block block, World world, int x, int y, int z, Tessellator tess)
     {
         // Directional shading multipliers for fake 3D depth
         float lightBottom = 0.5F;

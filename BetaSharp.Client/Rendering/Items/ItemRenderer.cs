@@ -12,8 +12,6 @@ namespace BetaSharp.Client.Rendering.Items;
 
 public class ItemRenderer : EntityRenderer
 {
-
-    private readonly BlockRenderer renderBlocks = new();
     private readonly JavaRandom random = new();
     public bool useCustomDisplayColor = true;
 
@@ -75,7 +73,7 @@ public class ItemRenderer : EntityRenderer
                     GLManager.GL.Translate(var16, var17, var18);
                 }
 
-                renderBlocks.RenderBlockOnInventory(Block.Blocks[var10.itemId], var10.getDamage(), var1.getBrightnessAtEyes(var9), Tessellator.instance);
+                BlockRenderer.RenderBlockOnInventory(Block.Blocks[var10.itemId], var10.getDamage(), var1.getBrightnessAtEyes(var9), Tessellator.instance);
                 GLManager.GL.PopMatrix();
             }
         }
@@ -165,7 +163,7 @@ public class ItemRenderer : EntityRenderer
             }
 
             GLManager.GL.Rotate(-90.0F, 0.0F, 1.0F, 0.0F);
-            renderBlocks.RenderBlockOnInventory(var14, var4, 1.0F, Tessellator.instance);
+            BlockRenderer.RenderBlockOnInventory(var14, var4, 1.0F, Tessellator.instance);
             GLManager.GL.PopMatrix();
         }
         else if (var5 >= 0)

@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using BetaSharp.Blocks;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Util.Maths;
@@ -7,11 +8,11 @@ namespace BetaSharp.Client.Rendering.Blocks;
 
 public ref struct BlockRenderContext
 {
-    public IBlockAccess World;
-    public Tessellator Tess;
+    public readonly IBlockAccess World;
+    public readonly Tessellator Tess;
 
     public int OverrideTexture;
-    public bool RenderAllFaces;
+    public readonly bool RenderAllFaces;
     public bool FlipTexture;
     public Box? OverrideBounds;
     public bool EnableAo = true;
@@ -29,17 +30,13 @@ public ref struct BlockRenderContext
     public bool CustomFlag;
 
     public BlockRenderContext(
-        IBlockAccess world,
-        Tessellator tess,
-        int overrideTexture = -1,
-        bool renderAllFaces = false,
-        bool flipTexture = false,
-        Box? bounds = null,
+        IBlockAccess world, Tessellator tess,
+        int overrideTexture = -1, bool renderAllFaces = false,
+        bool flipTexture = false, Box? bounds = null,
         int uvTop = 0, int uvBottom = 0,
         int uvNorth = 0, int uvSouth = 0,
         int uvEast = 0, int uvWest = 0,
-        bool customFlag = false,
-        bool enableAo = true,
+        bool customFlag = false, bool enableAo = true,
         int aoBlendMode = 0)
     {
         World = world;
@@ -70,61 +67,21 @@ public ref struct BlockRenderContext
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
 
-        double bMinX = bb.MinX < 0.0D ? 0.0D : (bb.MinX > 1.0D ? 1.0D : bb.MinX);
-        double bMaxX = bb.MaxX < 0.0D ? 0.0D : (bb.MaxX > 1.0D ? 1.0D : bb.MaxX);
-        double bMinZ = bb.MinZ < 0.0D ? 0.0D : (bb.MinZ > 1.0D ? 1.0D : bb.MinZ);
-        double bMaxZ = bb.MaxZ < 0.0D ? 0.0D : (bb.MaxZ > 1.0D ? 1.0D : bb.MaxZ);
+        float bMinX = bb.MinX < 0.0D ? 0.0F : (float)(bb.MinX > 1.0F ? 1.0F : bb.MinX);
+        float bMaxX = bb.MaxX < 0.0D ? 0.0F : (float)(bb.MaxX > 1.0F ? 1.0F : bb.MaxX);
+        float bMinZ = bb.MinZ < 0.0D ? 0.0F : (float)(bb.MinZ > 1.0F ? 1.0F : bb.MinZ);
+        float bMaxZ = bb.MaxZ < 0.0D ? 0.0F : (float)(bb.MaxZ > 1.0F ? 1.0F : bb.MaxZ);
 
-        void GetUV(double h, double v, out double u, out double outV, int uvRotate, bool flipTexture)
-        {
-            double fU = h, fV = v;
-            switch (uvRotate)
-            {
-                case 1:
-                    fU = v;
-                    fV = 1.0 - h;
-                    break;
-                case 2:
-                    fU = 1.0 - h;
-                    fV = 1.0 - v;
-                    break;
-                case 3:
-                    fU = 1.0 - v;
-                    fV = h;
-                    break;
-                case 4:
-                    fU = 1.0 - h;
-                    fV = v;
-                    break; // mirrored
-                case 5:
-                    fU = v;
-                    fV = h;
-                    break; // mirrored 90
-                case 6:
-                    fU = h;
-                    fV = 1.0 - v;
-                    break; // mirrored 180
-                case 7:
-                    fU = 1.0 - v;
-                    fV = 1.0 - h;
-                    break; // mirrored 270
-            }
+        CalculateUv(bMinX, bMaxZ, UvRotateBottom, texU, texV, out float u0, out float v0);
+        CalculateUv(bMinX, bMinZ, UvRotateBottom, texU, texV, out float u1, out float v1);
+        CalculateUv(bMaxX, bMinZ, UvRotateBottom, texU, texV, out float u2, out float v2);
+        CalculateUv(bMaxX, bMaxZ, UvRotateBottom, texU, texV, out float u3, out float v3);
 
-            if (flipTexture) fU = 1.0 - fU;
-            u = (texU + fU * 16.0D) / 256.0D;
-            outV = (texV + fV * 16.0D) / 256.0D;
-        }
-
-        GetUV(bMinX, bMaxZ, out double u0, out double v0, UvRotateBottom, FlipTexture);
-        GetUV(bMinX, bMinZ, out double u1, out double v1, UvRotateBottom, FlipTexture);
-        GetUV(bMaxX, bMinZ, out double u2, out double v2, UvRotateBottom, FlipTexture);
-        GetUV(bMaxX, bMaxZ, out double u3, out double v3, UvRotateBottom, FlipTexture);
-
-        double minX = pos.x + bb.MinX;
-        double maxX = pos.x + bb.MaxX;
-        double minY = pos.y + bb.MinY;
-        double minZ = pos.z + bb.MinZ;
-        double maxZ = pos.z + bb.MaxZ;
+        float minX = (float)(pos.x + bb.MinX);
+        float maxX = (float)(pos.x + bb.MaxX);
+        float minY = (float)(pos.y + bb.MinY);
+        float minZ = (float)(pos.z + bb.MinZ);
+        float maxZ = (float)(pos.z + bb.MaxZ);
 
         if (EnableAo)
         {
@@ -152,61 +109,21 @@ public ref struct BlockRenderContext
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
 
-        double bMinX = bb.MinX < 0.0D ? 0.0D : (bb.MinX > 1.0D ? 1.0D : bb.MinX);
-        double bMaxX = bb.MaxX < 0.0D ? 0.0D : (bb.MaxX > 1.0D ? 1.0D : bb.MaxX);
-        double bMinZ = bb.MinZ < 0.0D ? 0.0D : (bb.MinZ > 1.0D ? 1.0D : bb.MinZ);
-        double bMaxZ = bb.MaxZ < 0.0D ? 0.0D : (bb.MaxZ > 1.0D ? 1.0D : bb.MaxZ);
+        float bMinX = bb.MinX < 0.0D ? 0.0F : (float)(bb.MinX > 1.0F ? 1.0F : bb.MinX);
+        float bMaxX = bb.MaxX < 0.0D ? 0.0F : (float)(bb.MaxX > 1.0F ? 1.0F : bb.MaxX);
+        float bMinZ = bb.MinZ < 0.0D ? 0.0F : (float)(bb.MinZ > 1.0F ? 1.0F : bb.MinZ);
+        float bMaxZ = bb.MaxZ < 0.0D ? 0.0F : (float)(bb.MaxZ > 1.0F ? 1.0F : bb.MaxZ);
 
-        void GetUV(double h, double v, out double u, out double outV, int uvRotate, bool flipTexture)
-        {
-            double fU = h, fV = v;
-            switch (uvRotate)
-            {
-                case 1:
-                    fU = v;
-                    fV = 1.0 - h;
-                    break;
-                case 2:
-                    fU = 1.0 - h;
-                    fV = 1.0 - v;
-                    break;
-                case 3:
-                    fU = 1.0 - v;
-                    fV = h;
-                    break;
-                case 4:
-                    fU = 1.0 - h;
-                    fV = v;
-                    break; // mirrored
-                case 5:
-                    fU = v;
-                    fV = h;
-                    break; // mirrored 90
-                case 6:
-                    fU = h;
-                    fV = 1.0 - v;
-                    break; // mirrored 180
-                case 7:
-                    fU = 1.0 - v;
-                    fV = 1.0 - h;
-                    break; // mirrored 270
-            }
+        CalculateUv(bMaxX, bMaxZ, UvRotateTop, texU, texV, out float u0, out float v0);
+        CalculateUv(bMaxX, bMinZ, UvRotateTop, texU, texV, out float u1, out float v1);
+        CalculateUv(bMinX, bMinZ, UvRotateTop, texU, texV, out float u2, out float v2);
+        CalculateUv(bMinX, bMaxZ, UvRotateTop, texU, texV, out float u3, out float v3);
 
-            if (flipTexture) fU = 1.0 - fU;
-            u = (texU + fU * 16.0D) / 256.0D;
-            outV = (texV + fV * 16.0D) / 256.0D;
-        }
-
-        GetUV(bMaxX, bMaxZ, out double u0, out double v0, UvRotateTop, FlipTexture);
-        GetUV(bMaxX, bMinZ, out double u1, out double v1, UvRotateTop, FlipTexture);
-        GetUV(bMinX, bMinZ, out double u2, out double v2, UvRotateTop, FlipTexture);
-        GetUV(bMinX, bMaxZ, out double u3, out double v3, UvRotateTop, FlipTexture);
-
-        double minX = pos.x + bb.MinX;
-        double maxX = pos.x + bb.MaxX;
-        double maxY = pos.y + bb.MaxY;
-        double minZ = pos.z + bb.MinZ;
-        double maxZ = pos.z + bb.MaxZ;
+        float minX = (float)(pos.x + bb.MinX);
+        float maxX = (float)(pos.x + bb.MaxX);
+        float maxY = (float)(pos.y + bb.MaxY);
+        float minZ = (float)(pos.z + bb.MinZ);
+        float maxZ = (float)(pos.z + bb.MaxZ);
 
         if (EnableAo)
         {
@@ -234,286 +151,166 @@ public ref struct BlockRenderContext
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
 
-        // Use the static helper to calculate UVs for each corner
-        CalculateUV(bb.MinZ, 1.0 - bb.MaxY, UvRotateNorth, FlipTexture, texU, texV, out double uTL, out double vTL);
-        CalculateUV(bb.MinZ, 1.0 - bb.MinY, UvRotateNorth, FlipTexture, texU, texV, out double uBL, out double vBL);
-        CalculateUV(bb.MaxZ, 1.0 - bb.MinY, UvRotateNorth, FlipTexture, texU, texV, out double uBR, out double vBR);
-        CalculateUV(bb.MaxZ, 1.0 - bb.MaxY, UvRotateNorth, FlipTexture, texU, texV, out double uTR, out double vTR);
+        CalculateUv((float)bb.MinZ, 1.0F - (float)bb.MaxY, UvRotateNorth, texU, texV, out float uTl, out float vTl);
+        CalculateUv((float)bb.MinZ, 1.0F - (float)bb.MinY, UvRotateNorth, texU, texV, out float uBl, out float vBl);
+        CalculateUv((float)bb.MaxZ, 1.0F - (float)bb.MinY, UvRotateNorth, texU, texV, out float uBr, out float vBr);
+        CalculateUv((float)bb.MaxZ, 1.0F - (float)bb.MaxY, UvRotateNorth, texU, texV, out float uTr, out float vTr);
 
-        double minX = pos.x + bb.MinX;
-        double minY = pos.y + bb.MinY; double maxY = pos.y + bb.MaxY;
-        double minZ = pos.z + bb.MinZ; double maxZ = pos.z + bb.MaxZ;
+        float minX = (float)(pos.x + bb.MinX);
+        float minY = (float)(pos.y + bb.MinY);
+        float maxY = (float)(pos.y + bb.MaxY);
+        float minZ = (float)(pos.z + bb.MinZ);
+        float maxZ = (float)(pos.z + bb.MaxZ);
 
-        // CCW Winding: Top-Left -> Bottom-Left -> Bottom-Right -> Top-Right
         if (EnableAo)
         {
             Tess.setColorOpaque_F(colors.RedTopLeft, colors.GreenTopLeft, colors.BlueTopLeft);
-            Tess.addVertexWithUV(minX, maxY, minZ, uTL, vTL);
+            Tess.addVertexWithUV(minX, maxY, minZ, uTl, vTl);
 
             Tess.setColorOpaque_F(colors.RedBottomLeft, colors.GreenBottomLeft, colors.BlueBottomLeft);
-            Tess.addVertexWithUV(minX, minY, minZ, uBL, vBL);
+            Tess.addVertexWithUV(minX, minY, minZ, uBl, vBl);
 
             Tess.setColorOpaque_F(colors.RedBottomRight, colors.GreenBottomRight, colors.BlueBottomRight);
-            Tess.addVertexWithUV(minX, minY, maxZ, uBR, vBR);
+            Tess.addVertexWithUV(minX, minY, maxZ, uBr, vBr);
 
             Tess.setColorOpaque_F(colors.RedTopRight, colors.GreenTopRight, colors.BlueTopRight);
-            Tess.addVertexWithUV(minX, maxY, maxZ, uTR, vTR);
+            Tess.addVertexWithUV(minX, maxY, maxZ, uTr, vTr);
         }
         else
         {
-            Tess.addVertexWithUV(minX, maxY, minZ, uTL, vTL);
-            Tess.addVertexWithUV(minX, minY, minZ, uBL, vBL);
-            Tess.addVertexWithUV(minX, minY, maxZ, uBR, vBR);
-            Tess.addVertexWithUV(minX, maxY, maxZ, uTR, vTR);
+            Tess.addVertexWithUV(minX, maxY, minZ, uTl, vTl);
+            Tess.addVertexWithUV(minX, minY, minZ, uBl, vBl);
+            Tess.addVertexWithUV(minX, minY, maxZ, uBr, vBr);
+            Tess.addVertexWithUV(minX, maxY, maxZ, uTr, vTr);
         }
     }
 
     internal readonly void DrawSouthFace(Block block, in Vec3D pos, in FaceColors colors, int textureId)
     {
         Box bb = OverrideBounds ?? block.BoundingBox;
-        double bMinY = bb.MinY < 0.0 ? 0.0 : (bb.MinY > 1.0 ? 1.0 : bb.MinY);
-        double bMaxY = bb.MaxY < 0.0 ? 0.0 : (bb.MaxY > 1.0 ? 1.0 : bb.MaxY);
-        double bMinZ = bb.MinZ < 0.0 ? 0.0 : (bb.MinZ > 1.0 ? 1.0 : bb.MinZ);
-        double bMaxZ = bb.MaxZ < 0.0 ? 0.0 : (bb.MaxZ > 1.0 ? 1.0 : bb.MaxZ);
+        float bMinY = bb.MinY < 0.0D ? 0.0F : (float)(bb.MinY > 1.0 ? 1.0 : bb.MinY);
+        float bMaxY = bb.MaxY < 0.0D ? 0.0F : (float)(bb.MaxY > 1.0 ? 1.0 : bb.MaxY);
+        float bMinZ = bb.MinZ < 0.0D ? 0.0F : (float)(bb.MinZ > 1.0 ? 1.0 : bb.MinZ);
+        float bMaxZ = bb.MaxZ < 0.0D ? 0.0F : (float)(bb.MaxZ > 1.0 ? 1.0 : bb.MaxZ);
 
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
 
-        void GetUV(double h, double v, out double u, out double outV, int uvRotate, bool flipTexture)
-        {
-            double fU = h, fV = v;
-            switch (uvRotate)
-            {
-                case 1:
-                    fU = v;
-                    fV = 1.0 - h;
-                    break;
-                case 2:
-                    fU = 1.0 - h;
-                    fV = 1.0 - v;
-                    break;
-                case 3:
-                    fU = 1.0 - v;
-                    fV = h;
-                    break;
-                case 4:
-                    fU = 1.0 - h;
-                    fV = v;
-                    break;
-                case 5:
-                    fU = v;
-                    fV = h;
-                    break;
-                case 6:
-                    fU = h;
-                    fV = 1.0 - v;
-                    break;
-                case 7:
-                    fU = 1.0 - v;
-                    fV = 1.0 - h;
-                    break;
-            }
-
-            if (flipTexture) fU = 1.0 - fU;
-            u = (texU + fU * 16.0) / 256.0;
-            outV = (texV + fV * 16.0) / 256.0;
-        }
-
         // X+ Face: Left = maxZ, Right = minZ
-        GetUV(1.0 - bMaxZ, 1.0 - bMaxY, out double uTL, out double vTL, UvRotateSouth, FlipTexture);
-        GetUV(1.0 - bMaxZ, 1.0 - bMinY, out double uBL, out double vBL, UvRotateSouth, FlipTexture);
-        GetUV(1.0 - bMinZ, 1.0 - bMinY, out double uBR, out double vBR, UvRotateSouth, FlipTexture);
-        GetUV(1.0 - bMinZ, 1.0 - bMaxY, out double uTR, out double vTR, UvRotateSouth, FlipTexture);
+        CalculateUv(1.0F - bMaxZ, 1.0F - bMaxY, UvRotateSouth, texU, texV, out float uTl, out float vTl);
+        CalculateUv(1.0F - bMaxZ, 1.0F - bMinY, UvRotateSouth, texU, texV, out float uBl, out float vBl);
+        CalculateUv(1.0F - bMinZ, 1.0F - bMinY, UvRotateSouth, texU, texV, out float uBr, out float vBr);
+        CalculateUv(1.0F - bMinZ, 1.0F - bMaxY, UvRotateSouth, texU, texV, out float uTr, out float vTr);
 
-        double posX = pos.x + bb.MaxX;
-        double minY = pos.y + bb.MinY;
-        double maxY = pos.y + bb.MaxY;
-        double minZ = pos.z + bb.MinZ;
-        double maxZ = pos.z + bb.MaxZ;
+        float posX = (float)(pos.x + bb.MaxX);
+        float minY = (float)(pos.y + bb.MinY);
+        float maxY = (float)(pos.y + bb.MaxY);
+        float minZ = (float)(pos.z + bb.MinZ);
+        float maxZ = (float)(pos.z + bb.MaxZ);
 
         if (EnableAo)
         {
             Tess.setColorOpaque_F(colors.RedTopLeft, colors.GreenTopLeft, colors.BlueTopLeft);
-            Tess.addVertexWithUV(posX, maxY, maxZ, uTL, vTL);
+            Tess.addVertexWithUV(posX, maxY, maxZ, uTl, vTl);
             Tess.setColorOpaque_F(colors.RedBottomLeft, colors.GreenBottomLeft, colors.BlueBottomLeft);
-            Tess.addVertexWithUV(posX, minY, maxZ, uBL, vBL);
+            Tess.addVertexWithUV(posX, minY, maxZ, uBl, vBl);
             Tess.setColorOpaque_F(colors.RedBottomRight, colors.GreenBottomRight, colors.BlueBottomRight);
-            Tess.addVertexWithUV(posX, minY, minZ, uBR, vBR);
+            Tess.addVertexWithUV(posX, minY, minZ, uBr, vBr);
             Tess.setColorOpaque_F(colors.RedTopRight, colors.GreenTopRight, colors.BlueTopRight);
-            Tess.addVertexWithUV(posX, maxY, minZ, uTR, vTR);
+            Tess.addVertexWithUV(posX, maxY, minZ, uTr, vTr);
         }
         else
         {
-            Tess.addVertexWithUV(posX, maxY, maxZ, uTL, vTL);
-            Tess.addVertexWithUV(posX, minY, maxZ, uBL, vBL);
-            Tess.addVertexWithUV(posX, minY, minZ, uBR, vBR);
-            Tess.addVertexWithUV(posX, maxY, minZ, uTR, vTR);
+            Tess.addVertexWithUV(posX, maxY, maxZ, uTl, vTl);
+            Tess.addVertexWithUV(posX, minY, maxZ, uBl, vBl);
+            Tess.addVertexWithUV(posX, minY, minZ, uBr, vBr);
+            Tess.addVertexWithUV(posX, maxY, minZ, uTr, vTr);
         }
     }
 
     internal readonly void DrawEastFace(Block block, in Vec3D pos, in FaceColors colors, int textureId)
     {
         Box bb = OverrideBounds ?? block.BoundingBox;
-        double bMinY = bb.MinY < 0.0 ? 0.0 : (bb.MinY > 1.0 ? 1.0 : bb.MinY);
-        double bMaxY = bb.MaxY < 0.0 ? 0.0 : (bb.MaxY > 1.0 ? 1.0 : bb.MaxY);
-        double bMinX = bb.MinX < 0.0 ? 0.0 : (bb.MinX > 1.0 ? 1.0 : bb.MinX);
-        double bMaxX = bb.MaxX < 0.0 ? 0.0 : (bb.MaxX > 1.0 ? 1.0 : bb.MaxX);
+        float bMinY = bb.MinY < 0.0D ? 0.0F : (float)(bb.MinY > 1.0 ? 1.0 : bb.MinY);
+        float bMaxY = bb.MaxY < 0.0D ? 0.0F : (float)(bb.MaxY > 1.0 ? 1.0 : bb.MaxY);
+        float bMinX = bb.MinX < 0.0D ? 0.0F : (float)(bb.MinX > 1.0 ? 1.0 : bb.MinX);
+        float bMaxX = bb.MaxX < 0.0D ? 0.0F : (float)(bb.MaxX > 1.0 ? 1.0 : bb.MaxX);
 
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
 
-        void GetUV(double h, double v, out double u, out double outV, int uvRotate, bool flipTexture)
-        {
-            double fU = h, fV = v;
-            switch (uvRotate)
-            {
-                case 1:
-                    fU = v;
-                    fV = 1.0 - h;
-                    break;
-                case 2:
-                    fU = 1.0 - h;
-                    fV = 1.0 - v;
-                    break;
-                case 3:
-                    fU = 1.0 - v;
-                    fV = h;
-                    break;
-                case 4:
-                    fU = 1.0 - h;
-                    fV = v;
-                    break;
-                case 5:
-                    fU = v;
-                    fV = h;
-                    break;
-                case 6:
-                    fU = h;
-                    fV = 1.0 - v;
-                    break;
-                case 7:
-                    fU = 1.0 - v;
-                    fV = 1.0 - h;
-                    break;
-            }
-
-            if (flipTexture) fU = 1.0 - fU;
-            u = (texU + fU * 16.0) / 256.0;
-            outV = (texV + fV * 16.0) / 256.0;
-        }
-
         // Z- Face: Left = maxX, Right = minX
-        GetUV(1.0 - bMaxX, 1.0 - bMaxY, out double uTL, out double vTL, UvRotateEast, FlipTexture);
-        GetUV(1.0 - bMaxX, 1.0 - bMinY, out double uBL, out double vBL, UvRotateEast, FlipTexture);
-        GetUV(1.0 - bMinX, 1.0 - bMinY, out double uBR, out double vBR, UvRotateEast, FlipTexture);
-        GetUV(1.0 - bMinX, 1.0 - bMaxY, out double uTR, out double vTR, UvRotateEast, FlipTexture);
+        CalculateUv(1.0F - bMaxX, 1.0F - bMaxY, UvRotateEast, texU, texV, out float uTl, out float vTl);
+        CalculateUv(1.0F - bMaxX, 1.0F - bMinY, UvRotateEast, texU, texV, out float uBl, out float vBl);
+        CalculateUv(1.0F - bMinX, 1.0F - bMinY, UvRotateEast, texU, texV, out float uBr, out float vBr);
+        CalculateUv(1.0F - bMinX, 1.0F - bMaxY, UvRotateEast, texU, texV, out float uTr, out float vTr);
 
-        double minX = pos.x + bb.MinX;
-        double maxX = pos.x + bb.MaxX;
-        double minY = pos.y + bb.MinY;
-        double maxY = pos.y + bb.MaxY;
-        double minZ = pos.z + bb.MinZ;
+        float minX = (float)(pos.x + bb.MinX);
+        float maxX = (float)(pos.x + bb.MaxX);
+        float minY = (float)(pos.y + bb.MinY);
+        float maxY = (float)(pos.y + bb.MaxY);
+        float minZ = (float)(pos.z + bb.MinZ);
 
         if (EnableAo)
         {
             Tess.setColorOpaque_F(colors.RedTopLeft, colors.GreenTopLeft, colors.BlueTopLeft);
-            Tess.addVertexWithUV(maxX, maxY, minZ, uTL, vTL);
+            Tess.addVertexWithUV(maxX, maxY, minZ, uTl, vTl);
             Tess.setColorOpaque_F(colors.RedBottomLeft, colors.GreenBottomLeft, colors.BlueBottomLeft);
-            Tess.addVertexWithUV(maxX, minY, minZ, uBL, vBL);
+            Tess.addVertexWithUV(maxX, minY, minZ, uBl, vBl);
             Tess.setColorOpaque_F(colors.RedBottomRight, colors.GreenBottomRight, colors.BlueBottomRight);
-            Tess.addVertexWithUV(minX, minY, minZ, uBR, vBR);
+            Tess.addVertexWithUV(minX, minY, minZ, uBr, vBr);
             Tess.setColorOpaque_F(colors.RedTopRight, colors.GreenTopRight, colors.BlueTopRight);
-            Tess.addVertexWithUV(minX, maxY, minZ, uTR, vTR);
+            Tess.addVertexWithUV(minX, maxY, minZ, uTr, vTr);
         }
         else
         {
-            Tess.addVertexWithUV(maxX, maxY, minZ, uTL, vTL);
-            Tess.addVertexWithUV(maxX, minY, minZ, uBL, vBL);
-            Tess.addVertexWithUV(minX, minY, minZ, uBR, vBR);
-            Tess.addVertexWithUV(minX, maxY, minZ, uTR, vTR);
+            Tess.addVertexWithUV(maxX, maxY, minZ, uTl, vTl);
+            Tess.addVertexWithUV(maxX, minY, minZ, uBl, vBl);
+            Tess.addVertexWithUV(minX, minY, minZ, uBr, vBr);
+            Tess.addVertexWithUV(minX, maxY, minZ, uTr, vTr);
         }
     }
 
     internal readonly void DrawWestFace(Block block, in Vec3D pos, in FaceColors colors, int textureId)
     {
         Box bb = OverrideBounds ?? block.BoundingBox;
-        double bMinY = bb.MinY < 0.0 ? 0.0 : (bb.MinY > 1.0 ? 1.0 : bb.MinY);
-        double bMaxY = bb.MaxY < 0.0 ? 0.0 : (bb.MaxY > 1.0 ? 1.0 : bb.MaxY);
-        double bMinX = bb.MinX < 0.0 ? 0.0 : (bb.MinX > 1.0 ? 1.0 : bb.MinX);
-        double bMaxX = bb.MaxX < 0.0 ? 0.0 : (bb.MaxX > 1.0 ? 1.0 : bb.MaxX);
+        float bMinY = bb.MinY < 0.0D ? 0.0F : (float)(bb.MinY > 1.0 ? 1.0 : bb.MinY);
+        float bMaxY = bb.MaxY < 0.0D ? 0.0F : (float)(bb.MaxY > 1.0 ? 1.0 : bb.MaxY);
+        float bMinX = bb.MinX < 0.0D ? 0.0F : (float)(bb.MinX > 1.0 ? 1.0 : bb.MinX);
+        float bMaxX = bb.MaxX < 0.0D ? 0.0F : (float)(bb.MaxX > 1.0 ? 1.0 : bb.MaxX);
 
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
 
-        void GetUV(double h, double v, out double u, out double outV, int uvRotate, bool flipTexture)
-        {
-            double fU = h, fV = v;
-            switch (uvRotate)
-            {
-                case 1:
-                    fU = v;
-                    fV = 1.0 - h;
-                    break;
-                case 2:
-                    fU = 1.0 - h;
-                    fV = 1.0 - v;
-                    break;
-                case 3:
-                    fU = 1.0 - v;
-                    fV = h;
-                    break;
-                case 4:
-                    fU = 1.0 - h;
-                    fV = v;
-                    break;
-                case 5:
-                    fU = v;
-                    fV = h;
-                    break;
-                case 6:
-                    fU = h;
-                    fV = 1.0 - v;
-                    break;
-                case 7:
-                    fU = 1.0 - v;
-                    fV = 1.0 - h;
-                    break;
-            }
-
-            if (flipTexture) fU = 1.0 - fU;
-            u = (texU + fU * 16.0) / 256.0;
-            outV = (texV + fV * 16.0) / 256.0;
-        }
-
         // Z+ Face: Left = minX, Right = maxX
-        GetUV(bMinX, 1.0 - bMaxY, out double uTL, out double vTL, UvRotateWest, FlipTexture);
-        GetUV(bMinX, 1.0 - bMinY, out double uBL, out double vBL, UvRotateWest, FlipTexture);
-        GetUV(bMaxX, 1.0 - bMinY, out double uBR, out double vBR, UvRotateWest, FlipTexture);
-        GetUV(bMaxX, 1.0 - bMaxY, out double uTR, out double vTR, UvRotateWest, FlipTexture);
+        CalculateUv(bMinX, 1.0F - bMaxY, UvRotateWest, texU, texV, out float uTl, out float vTl);
+        CalculateUv(bMinX, 1.0F - bMinY, UvRotateWest, texU, texV, out float uBl, out float vBl);
+        CalculateUv(bMaxX, 1.0F - bMinY, UvRotateWest, texU, texV, out float uBr, out float vBr);
+        CalculateUv(bMaxX, 1.0F - bMaxY, UvRotateWest, texU, texV, out float uTr, out float vTr);
 
-        double minX = pos.x + bb.MinX;
-        double maxX = pos.x + bb.MaxX;
-        double minY = pos.y + bb.MinY;
-        double maxY = pos.y + bb.MaxY;
-        double maxZ = pos.z + bb.MaxZ;
+        float minX = (float)(pos.x + bb.MinX);
+        float maxX = (float)(pos.x + bb.MaxX);
+        float minY = (float)(pos.y + bb.MinY);
+        float maxY = (float)(pos.y + bb.MaxY);
+        float maxZ = (float)(pos.z + bb.MaxZ);
 
         if (EnableAo)
         {
             Tess.setColorOpaque_F(colors.RedTopLeft, colors.GreenTopLeft, colors.BlueTopLeft);
-            Tess.addVertexWithUV(minX, maxY, maxZ, uTL, vTL);
+            Tess.addVertexWithUV(minX, maxY, maxZ, uTl, vTl);
             Tess.setColorOpaque_F(colors.RedBottomLeft, colors.GreenBottomLeft, colors.BlueBottomLeft);
-            Tess.addVertexWithUV(minX, minY, maxZ, uBL, vBL);
+            Tess.addVertexWithUV(minX, minY, maxZ, uBl, vBl);
             Tess.setColorOpaque_F(colors.RedBottomRight, colors.GreenBottomRight, colors.BlueBottomRight);
-            Tess.addVertexWithUV(maxX, minY, maxZ, uBR, vBR);
+            Tess.addVertexWithUV(maxX, minY, maxZ, uBr, vBr);
             Tess.setColorOpaque_F(colors.RedTopRight, colors.GreenTopRight, colors.BlueTopRight);
-            Tess.addVertexWithUV(maxX, maxY, maxZ, uTR, vTR);
+            Tess.addVertexWithUV(maxX, maxY, maxZ, uTr, vTr);
         }
         else
         {
-            Tess.addVertexWithUV(minX, maxY, maxZ, uTL, vTL);
-            Tess.addVertexWithUV(minX, minY, maxZ, uBL, vBL);
-            Tess.addVertexWithUV(maxX, minY, maxZ, uBR, vBR);
-            Tess.addVertexWithUV(maxX, maxY, maxZ, uTR, vTR);
+            Tess.addVertexWithUV(minX, maxY, maxZ, uTl, vTl);
+            Tess.addVertexWithUV(minX, minY, maxZ, uBl, vBl);
+            Tess.addVertexWithUV(maxX, minY, maxZ, uBr, vBr);
+            Tess.addVertexWithUV(maxX, maxY, maxZ, uTr, vTr);
         }
     }
 
@@ -557,7 +354,7 @@ public ref struct BlockRenderContext
         float v0, v1, v2, v3;
 
         // BOTTOM FACE (Y - 1)
-        if (RenderAllFaces || bounds.MinY > 0.0D || block.isSideVisible(World, pos.x, pos.y - 1, pos.z, 0))
+        if (RenderAllFaces || bounds.MinY > 0.0F || block.isSideVisible(World, pos.x, pos.y - 1, pos.z, 0))
         {
             if (AoBlendMode <= 0) v0 = v1 = v2 = v3 = lYn;
             else
@@ -583,7 +380,7 @@ public ref struct BlockRenderContext
         }
 
         // TOP FACE (Y + 1)
-        if (RenderAllFaces || bounds.MaxY < 1.0D || block.isSideVisible(World, pos.x, pos.y + 1, pos.z, 1))
+        if (RenderAllFaces || bounds.MaxY < 1.0F || block.isSideVisible(World, pos.x, pos.y + 1, pos.z, 1))
         {
             if (AoBlendMode <= 0) v0 = v1 = v2 = v3 = lYp;
             else
@@ -609,7 +406,7 @@ public ref struct BlockRenderContext
         }
 
         // EAST FACE (Z - 1)
-        if (RenderAllFaces || bounds.MinZ > 0.0D || block.isSideVisible(World, pos.x, pos.y, pos.z - 1, 2))
+        if (RenderAllFaces || bounds.MinZ > 0.0F || block.isSideVisible(World, pos.x, pos.y, pos.z - 1, 2))
         {
             if (AoBlendMode <= 0) v0 = v1 = v2 = v3 = lZn;
             else
@@ -635,7 +432,7 @@ public ref struct BlockRenderContext
         }
 
         // WEST FACE (Z + 1)
-        if (RenderAllFaces || bounds.MaxZ < 1.0D || block.isSideVisible(World, pos.x, pos.y, pos.z + 1, 3))
+        if (RenderAllFaces || bounds.MaxZ < 1.0F || block.isSideVisible(World, pos.x, pos.y, pos.z + 1, 3))
         {
             if (AoBlendMode <= 0) v0 = v1 = v2 = v3 = lZp;
             else
@@ -661,7 +458,7 @@ public ref struct BlockRenderContext
         }
 
         // NORTH FACE (X - 1)
-        if (RenderAllFaces || bounds.MinX > 0.0D || block.isSideVisible(World, pos.x - 1, pos.y, pos.z, 4))
+        if (RenderAllFaces || bounds.MinX > 0.0F || block.isSideVisible(World, pos.x - 1, pos.y, pos.z, 4))
         {
             if (AoBlendMode <= 0) v0 = v1 = v2 = v3 = lXn;
             else
@@ -687,7 +484,7 @@ public ref struct BlockRenderContext
         }
 
         // SOUTH FACE (X + 1)
-        if (RenderAllFaces || bounds.MaxX < 1.0D || block.isSideVisible(World, pos.x + 1, pos.y, pos.z, 5))
+        if (RenderAllFaces || bounds.MaxX < 1.0F || block.isSideVisible(World, pos.x + 1, pos.y, pos.z, 5))
         {
             if (AoBlendMode <= 0) v0 = v1 = v2 = v3 = lXp;
             else
@@ -715,7 +512,7 @@ public ref struct BlockRenderContext
         return hasRendered;
     }
 
-    internal readonly void DrawTorch(in Block block, in Vec3D pos, double tiltX, double tiltZ)
+    internal readonly void DrawTorch(in Block block, in Vec3D pos, float tiltX, float tiltZ)
     {
         int textureId = block.getTexture(0);
         if (OverrideTexture >= 0)
@@ -733,28 +530,28 @@ public ref struct BlockRenderContext
 
         // Custom UV boundaries specifically for the TOP face of the torch (the burning coal part)
         // 1.75 / 64 = 7 / 256. 9 / 256. This targets a specific 2x2 pixel square on the texture.
-        double topMinU = minU + 7.0D / 256.0D;
-        double topMinV = minV + 6.0D / 256.0D;
-        double topMaxU = minU + 9.0D / 256.0D;
-        double topMaxV = minV + 8.0D / 256.0D; // 1.0D / 32.0D = 8.0D / 256.0D
+        float topMinU = minU + 7.0f / 256.0f;
+        float topMinV = minV + 6.0f / 256.0f;
+        float topMaxU = minU + 9.0f / 256.0f;
+        float topMaxV = minV + 8.0f / 256.0f; // 1.0f / 32.0f = 8.0f / 256.0f
 
         // Shift origin to the center of the block for easier rotation/tilting math
-        double centerX = pos.x + 0.5D;
-        double centerZ = pos.z + 0.5D;
+        float centerX = (float)pos.x + 0.5f;
+        float centerZ = (float)pos.z + 0.5f;
 
-        double leftX = centerX - 0.5D;
-        double rightX = centerX + 0.5D;
-        double frontZ = centerZ - 0.5D;
-        double backZ = centerZ + 0.5D;
+        float leftX = centerX - 0.5f;
+        float rightX = centerX + 0.5f;
+        float frontZ = centerZ - 0.5f;
+        float backZ = centerZ + 0.5f;
 
         // Torch dimensions
-        double radius = 1.0D / 16.0D; // 1 pixel thick from the center
-        double height = 0.625D; // 10 pixels tall (10 / 16)
+        float radius = 1.0f / 16.0f; // 1 pixel thick from the center
+        float height = 0.625f; // 10 pixels tall (10 / 16)
 
         // TOP FACE (The burning tip)
-        double tipOffsetBase = 1.0D - height; // How far down from the top of the block space the tip sits
-        double tipX = centerX + tiltX * tipOffsetBase;
-        double tipZ = centerZ + tiltZ * tipOffsetBase;
+        float tipOffsetBase = 1.0f - height; // How far down from the top of the block space the tip sits
+        float tipX = centerX + tiltX * tipOffsetBase;
+        float tipZ = centerZ + tiltZ * tipOffsetBase;
 
         Tess.addVertexWithUV(tipX - radius, pos.y + height, tipZ - radius, topMinU, topMinV);
         Tess.addVertexWithUV(tipX - radius, pos.y + height, tipZ + radius, topMinU, topMaxV);
@@ -765,50 +562,50 @@ public ref struct BlockRenderContext
         // The top vertices stay near the center, while the bottom vertices are shifted by tiltX and tiltZ
 
         // West Face
-        Tess.addVertexWithUV(centerX - radius, pos.y + 1.0D, frontZ, minU, minV);
-        Tess.addVertexWithUV(centerX - radius + tiltX, pos.y + 0.0D, frontZ + tiltZ, minU, maxV);
-        Tess.addVertexWithUV(centerX - radius + tiltX, pos.y + 0.0D, backZ + tiltZ, maxU, maxV);
-        Tess.addVertexWithUV(centerX - radius, pos.y + 1.0D, backZ, maxU, minV);
+        Tess.addVertexWithUV(centerX - radius, pos.y + 1.0F, frontZ, minU, minV);
+        Tess.addVertexWithUV(centerX - radius + tiltX, pos.y + 0.0F, frontZ + tiltZ, minU, maxV);
+        Tess.addVertexWithUV(centerX - radius + tiltX, pos.y + 0.0F, backZ + tiltZ, maxU, maxV);
+        Tess.addVertexWithUV(centerX - radius, pos.y + 1.0F, backZ, maxU, minV);
 
         // East Face
-        Tess.addVertexWithUV(centerX + radius, pos.y + 1.0D, backZ, minU, minV);
-        Tess.addVertexWithUV(centerX + radius + tiltX, pos.y + 0.0D, backZ + tiltZ, minU, maxV);
-        Tess.addVertexWithUV(centerX + radius + tiltX, pos.y + 0.0D, frontZ + tiltZ, maxU, maxV);
-        Tess.addVertexWithUV(centerX + radius, pos.y + 1.0D, frontZ, maxU, minV);
+        Tess.addVertexWithUV(centerX + radius, pos.y + 1.0F, backZ, minU, minV);
+        Tess.addVertexWithUV(centerX + radius + tiltX, pos.y + 0.0F, backZ + tiltZ, minU, maxV);
+        Tess.addVertexWithUV(centerX + radius + tiltX, pos.y + 0.0F, frontZ + tiltZ, maxU, maxV);
+        Tess.addVertexWithUV(centerX + radius, pos.y + 1.0F, frontZ, maxU, minV);
 
         // North Face
-        Tess.addVertexWithUV(leftX, pos.y + 1.0D, centerZ + radius, minU, minV);
-        Tess.addVertexWithUV(leftX + tiltX, pos.y + 0.0D, centerZ + radius + tiltZ, minU, maxV);
-        Tess.addVertexWithUV(rightX + tiltX, pos.y + 0.0D, centerZ + radius + tiltZ, maxU, maxV);
-        Tess.addVertexWithUV(rightX, pos.y + 1.0D, centerZ + radius, maxU, minV);
+        Tess.addVertexWithUV(leftX, pos.y + 1.0F, centerZ + radius, minU, minV);
+        Tess.addVertexWithUV(leftX + tiltX, pos.y + 0.0F, centerZ + radius + tiltZ, minU, maxV);
+        Tess.addVertexWithUV(rightX + tiltX, pos.y + 0.0F, centerZ + radius + tiltZ, maxU, maxV);
+        Tess.addVertexWithUV(rightX, pos.y + 1.0F, centerZ + radius, maxU, minV);
 
         // South Face
-        Tess.addVertexWithUV(rightX, pos.y + 1.0D, centerZ - radius, minU, minV);
-        Tess.addVertexWithUV(rightX + tiltX, pos.y + 0.0D, centerZ - radius + tiltZ, minU, maxV);
-        Tess.addVertexWithUV(leftX + tiltX, pos.y + 0.0D, centerZ - radius + tiltZ, maxU, maxV);
-        Tess.addVertexWithUV(leftX, pos.y + 1.0D, centerZ - radius, maxU, minV);
+        Tess.addVertexWithUV(rightX, pos.y + 1.0F, centerZ - radius, minU, minV);
+        Tess.addVertexWithUV(rightX + tiltX, pos.y + 0.0F, centerZ - radius + tiltZ, minU, maxV);
+        Tess.addVertexWithUV(leftX + tiltX, pos.y + 0.0F, centerZ - radius + tiltZ, maxU, maxV);
+        Tess.addVertexWithUV(leftX, pos.y + 1.0F, centerZ - radius, maxU, minV);
     }
 
-    private static void CalculateUV(double h, double v, int rotation, bool flip, int texU, int texV, out double u,
-        out double outV)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private readonly void CalculateUv(float h, float v, int rotation, int texU, int texV, out float u, out float outV)
     {
-        double fU = h, fV = v;
+        float fU = h, fV = v;
         switch (rotation)
         {
             case 1:
                 fU = v;
-                fV = 1.0 - h;
+                fV = 1.0f - h;
                 break;
             case 2:
-                fU = 1.0 - h;
-                fV = 1.0 - v;
+                fU = 1.0f - h;
+                fV = 1.0f - v;
                 break;
             case 3:
-                fU = 1.0 - v;
+                fU = 1.0f - v;
                 fV = h;
                 break;
             case 4:
-                fU = 1.0 - h;
+                fU = 1.0f - h;
                 fV = v;
                 break;
             case 5:
@@ -817,16 +614,16 @@ public ref struct BlockRenderContext
                 break;
             case 6:
                 fU = h;
-                fV = 1.0 - v;
+                fV = 1.0f - v;
                 break;
             case 7:
-                fU = 1.0 - v;
-                fV = 1.0 - h;
+                fU = 1.0f - v;
+                fV = 1.0f - h;
                 break;
         }
 
-        if (flip) fU = 1.0 - fU;
-        u = (texU + fU * 16.0) / 256.0;
-        outV = (texV + fV * 16.0) / 256.0;
+        if (FlipTexture) fU = 1.0f - fU;
+        u = (texU + fU * 16.0f) / 256.0f;
+        outV = (texV + fV * 16.0f) / 256.0f;
     }
 }
