@@ -60,6 +60,8 @@ public ref struct BlockRenderContext
         CustomFlag = customFlag;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static float Clamp01(float value) => value < 0f ? 0f : (value > 1f ? 1f : value);
 
     internal readonly void DrawBottomFace(Block block, in Vec3D pos, in FaceColors colors, int textureId)
     {
@@ -67,21 +69,30 @@ public ref struct BlockRenderContext
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
 
-        float bMinX = bb.MinX < 0.0D ? 0.0F : (float)(bb.MinX > 1.0F ? 1.0F : bb.MinX);
-        float bMaxX = bb.MaxX < 0.0D ? 0.0F : (float)(bb.MaxX > 1.0F ? 1.0F : bb.MaxX);
-        float bMinZ = bb.MinZ < 0.0D ? 0.0F : (float)(bb.MinZ > 1.0F ? 1.0F : bb.MinZ);
-        float bMaxZ = bb.MaxZ < 0.0D ? 0.0F : (float)(bb.MaxZ > 1.0F ? 1.0F : bb.MaxZ);
+        float bbMinX = (float)bb.MinX;
+        float bbMaxX = (float)bb.MaxX;
+        float bbMinZ = (float)bb.MinZ;
+        float bbMaxZ = (float)bb.MaxZ;
+
+        float bMinX = Clamp01(bbMinX);
+        float bMaxX = Clamp01(bbMaxX);
+        float bMinZ = Clamp01(bbMinZ);
+        float bMaxZ = Clamp01(bbMaxZ);
 
         CalculateUv(bMinX, bMaxZ, UvRotateBottom, texU, texV, out float u0, out float v0);
         CalculateUv(bMinX, bMinZ, UvRotateBottom, texU, texV, out float u1, out float v1);
         CalculateUv(bMaxX, bMinZ, UvRotateBottom, texU, texV, out float u2, out float v2);
         CalculateUv(bMaxX, bMaxZ, UvRotateBottom, texU, texV, out float u3, out float v3);
 
-        float minX = (float)(pos.x + bb.MinX);
-        float maxX = (float)(pos.x + bb.MaxX);
-        float minY = (float)(pos.y + bb.MinY);
-        float minZ = (float)(pos.z + bb.MinZ);
-        float maxZ = (float)(pos.z + bb.MaxZ);
+        float pX = (float)pos.x;
+        float pY = (float)pos.y;
+        float pZ = (float)pos.z;
+
+        float minX = pX + bbMinX;
+        float maxX = pX + bbMaxX;
+        float minY = pY + (float)bb.MinY;
+        float minZ = pZ + bbMinZ;
+        float maxZ = pZ + bbMaxZ;
 
         if (EnableAo)
         {
@@ -109,21 +120,30 @@ public ref struct BlockRenderContext
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
 
-        float bMinX = bb.MinX < 0.0D ? 0.0F : (float)(bb.MinX > 1.0F ? 1.0F : bb.MinX);
-        float bMaxX = bb.MaxX < 0.0D ? 0.0F : (float)(bb.MaxX > 1.0F ? 1.0F : bb.MaxX);
-        float bMinZ = bb.MinZ < 0.0D ? 0.0F : (float)(bb.MinZ > 1.0F ? 1.0F : bb.MinZ);
-        float bMaxZ = bb.MaxZ < 0.0D ? 0.0F : (float)(bb.MaxZ > 1.0F ? 1.0F : bb.MaxZ);
+        float bbMinX = (float)bb.MinX;
+        float bbMaxX = (float)bb.MaxX;
+        float bbMinZ = (float)bb.MinZ;
+        float bbMaxZ = (float)bb.MaxZ;
+
+        float bMinX = Clamp01(bbMinX);
+        float bMaxX = Clamp01(bbMaxX);
+        float bMinZ = Clamp01(bbMinZ);
+        float bMaxZ = Clamp01(bbMaxZ);
 
         CalculateUv(bMaxX, bMaxZ, UvRotateTop, texU, texV, out float u0, out float v0);
         CalculateUv(bMaxX, bMinZ, UvRotateTop, texU, texV, out float u1, out float v1);
         CalculateUv(bMinX, bMinZ, UvRotateTop, texU, texV, out float u2, out float v2);
         CalculateUv(bMinX, bMaxZ, UvRotateTop, texU, texV, out float u3, out float v3);
 
-        float minX = (float)(pos.x + bb.MinX);
-        float maxX = (float)(pos.x + bb.MaxX);
-        float maxY = (float)(pos.y + bb.MaxY);
-        float minZ = (float)(pos.z + bb.MinZ);
-        float maxZ = (float)(pos.z + bb.MaxZ);
+        float pX = (float)pos.x;
+        float pY = (float)pos.y;
+        float pZ = (float)pos.z;
+
+        float minX = pX + bbMinX;
+        float maxX = pX + bbMaxX;
+        float maxY = pY + (float)bb.MaxY;
+        float minZ = pZ + bbMinZ;
+        float maxZ = pZ + bbMaxZ;
 
         if (EnableAo)
         {
@@ -151,28 +171,34 @@ public ref struct BlockRenderContext
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
 
-        CalculateUv((float)bb.MinZ, 1.0F - (float)bb.MaxY, UvRotateNorth, texU, texV, out float uTl, out float vTl);
-        CalculateUv((float)bb.MinZ, 1.0F - (float)bb.MinY, UvRotateNorth, texU, texV, out float uBl, out float vBl);
-        CalculateUv((float)bb.MaxZ, 1.0F - (float)bb.MinY, UvRotateNorth, texU, texV, out float uBr, out float vBr);
-        CalculateUv((float)bb.MaxZ, 1.0F - (float)bb.MaxY, UvRotateNorth, texU, texV, out float uTr, out float vTr);
+        float bbMinY = (float)bb.MinY;
+        float bbMaxY = (float)bb.MaxY;
+        float bbMinZ = (float)bb.MinZ;
+        float bbMaxZ = (float)bb.MaxZ;
 
-        float minX = (float)(pos.x + bb.MinX);
-        float minY = (float)(pos.y + bb.MinY);
-        float maxY = (float)(pos.y + bb.MaxY);
-        float minZ = (float)(pos.z + bb.MinZ);
-        float maxZ = (float)(pos.z + bb.MaxZ);
+        CalculateUv(bbMinZ, 1.0f - bbMaxY, UvRotateNorth, texU, texV, out float uTl, out float vTl);
+        CalculateUv(bbMinZ, 1.0f - bbMinY, UvRotateNorth, texU, texV, out float uBl, out float vBl);
+        CalculateUv(bbMaxZ, 1.0f - bbMinY, UvRotateNorth, texU, texV, out float uBr, out float vBr);
+        CalculateUv(bbMaxZ, 1.0f - bbMaxY, UvRotateNorth, texU, texV, out float uTr, out float vTr);
+
+        float pX = (float)pos.x;
+        float pY = (float)pos.y;
+        float pZ = (float)pos.z;
+
+        float minX = pX + (float)bb.MinX;
+        float minY = pY + bbMinY;
+        float maxY = pY + bbMaxY;
+        float minZ = pZ + bbMinZ;
+        float maxZ = pZ + bbMaxZ;
 
         if (EnableAo)
         {
             Tess.setColorOpaque_F(colors.RedTopLeft, colors.GreenTopLeft, colors.BlueTopLeft);
             Tess.addVertexWithUV(minX, maxY, minZ, uTl, vTl);
-
             Tess.setColorOpaque_F(colors.RedBottomLeft, colors.GreenBottomLeft, colors.BlueBottomLeft);
             Tess.addVertexWithUV(minX, minY, minZ, uBl, vBl);
-
             Tess.setColorOpaque_F(colors.RedBottomRight, colors.GreenBottomRight, colors.BlueBottomRight);
             Tess.addVertexWithUV(minX, minY, maxZ, uBr, vBr);
-
             Tess.setColorOpaque_F(colors.RedTopRight, colors.GreenTopRight, colors.BlueTopRight);
             Tess.addVertexWithUV(minX, maxY, maxZ, uTr, vTr);
         }
@@ -188,25 +214,33 @@ public ref struct BlockRenderContext
     internal readonly void DrawSouthFace(Block block, in Vec3D pos, in FaceColors colors, int textureId)
     {
         Box bb = OverrideBounds ?? block.BoundingBox;
-        float bMinY = bb.MinY < 0.0D ? 0.0F : (float)(bb.MinY > 1.0 ? 1.0 : bb.MinY);
-        float bMaxY = bb.MaxY < 0.0D ? 0.0F : (float)(bb.MaxY > 1.0 ? 1.0 : bb.MaxY);
-        float bMinZ = bb.MinZ < 0.0D ? 0.0F : (float)(bb.MinZ > 1.0 ? 1.0 : bb.MinZ);
-        float bMaxZ = bb.MaxZ < 0.0D ? 0.0F : (float)(bb.MaxZ > 1.0 ? 1.0 : bb.MaxZ);
-
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
 
-        // X+ Face: Left = maxZ, Right = minZ
-        CalculateUv(1.0F - bMaxZ, 1.0F - bMaxY, UvRotateSouth, texU, texV, out float uTl, out float vTl);
-        CalculateUv(1.0F - bMaxZ, 1.0F - bMinY, UvRotateSouth, texU, texV, out float uBl, out float vBl);
-        CalculateUv(1.0F - bMinZ, 1.0F - bMinY, UvRotateSouth, texU, texV, out float uBr, out float vBr);
-        CalculateUv(1.0F - bMinZ, 1.0F - bMaxY, UvRotateSouth, texU, texV, out float uTr, out float vTr);
+        float bbMinY = (float)bb.MinY;
+        float bbMaxY = (float)bb.MaxY;
+        float bbMinZ = (float)bb.MinZ;
+        float bbMaxZ = (float)bb.MaxZ;
 
-        float posX = (float)(pos.x + bb.MaxX);
-        float minY = (float)(pos.y + bb.MinY);
-        float maxY = (float)(pos.y + bb.MaxY);
-        float minZ = (float)(pos.z + bb.MinZ);
-        float maxZ = (float)(pos.z + bb.MaxZ);
+        float bMinY = Clamp01(bbMinY);
+        float bMaxY = Clamp01(bbMaxY);
+        float bMinZ = Clamp01(bbMinZ);
+        float bMaxZ = Clamp01(bbMaxZ);
+
+        CalculateUv(1.0f - bMaxZ, 1.0f - bMaxY, UvRotateSouth, texU, texV, out float uTl, out float vTl);
+        CalculateUv(1.0f - bMaxZ, 1.0f - bMinY, UvRotateSouth, texU, texV, out float uBl, out float vBl);
+        CalculateUv(1.0f - bMinZ, 1.0f - bMinY, UvRotateSouth, texU, texV, out float uBr, out float vBr);
+        CalculateUv(1.0f - bMinZ, 1.0f - bMaxY, UvRotateSouth, texU, texV, out float uTr, out float vTr);
+
+        float pX = (float)pos.x;
+        float pY = (float)pos.y;
+        float pZ = (float)pos.z;
+
+        float posX = pX + (float)bb.MaxX;
+        float minY = pY + bbMinY;
+        float maxY = pY + bbMaxY;
+        float minZ = pZ + bbMinZ;
+        float maxZ = pZ + bbMaxZ;
 
         if (EnableAo)
         {
@@ -231,25 +265,33 @@ public ref struct BlockRenderContext
     internal readonly void DrawEastFace(Block block, in Vec3D pos, in FaceColors colors, int textureId)
     {
         Box bb = OverrideBounds ?? block.BoundingBox;
-        float bMinY = bb.MinY < 0.0D ? 0.0F : (float)(bb.MinY > 1.0 ? 1.0 : bb.MinY);
-        float bMaxY = bb.MaxY < 0.0D ? 0.0F : (float)(bb.MaxY > 1.0 ? 1.0 : bb.MaxY);
-        float bMinX = bb.MinX < 0.0D ? 0.0F : (float)(bb.MinX > 1.0 ? 1.0 : bb.MinX);
-        float bMaxX = bb.MaxX < 0.0D ? 0.0F : (float)(bb.MaxX > 1.0 ? 1.0 : bb.MaxX);
-
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
 
-        // Z- Face: Left = maxX, Right = minX
-        CalculateUv(1.0F - bMaxX, 1.0F - bMaxY, UvRotateEast, texU, texV, out float uTl, out float vTl);
-        CalculateUv(1.0F - bMaxX, 1.0F - bMinY, UvRotateEast, texU, texV, out float uBl, out float vBl);
-        CalculateUv(1.0F - bMinX, 1.0F - bMinY, UvRotateEast, texU, texV, out float uBr, out float vBr);
-        CalculateUv(1.0F - bMinX, 1.0F - bMaxY, UvRotateEast, texU, texV, out float uTr, out float vTr);
+        float bbMinX = (float)bb.MinX;
+        float bbMaxX = (float)bb.MaxX;
+        float bbMinY = (float)bb.MinY;
+        float bbMaxY = (float)bb.MaxY;
 
-        float minX = (float)(pos.x + bb.MinX);
-        float maxX = (float)(pos.x + bb.MaxX);
-        float minY = (float)(pos.y + bb.MinY);
-        float maxY = (float)(pos.y + bb.MaxY);
-        float minZ = (float)(pos.z + bb.MinZ);
+        float bMinX = Clamp01(bbMinX);
+        float bMaxX = Clamp01(bbMaxX);
+        float bMinY = Clamp01(bbMinY);
+        float bMaxY = Clamp01(bbMaxY);
+
+        CalculateUv(1.0f - bMaxX, 1.0f - bMaxY, UvRotateEast, texU, texV, out float uTl, out float vTl);
+        CalculateUv(1.0f - bMaxX, 1.0f - bMinY, UvRotateEast, texU, texV, out float uBl, out float vBl);
+        CalculateUv(1.0f - bMinX, 1.0f - bMinY, UvRotateEast, texU, texV, out float uBr, out float vBr);
+        CalculateUv(1.0f - bMinX, 1.0f - bMaxY, UvRotateEast, texU, texV, out float uTr, out float vTr);
+
+        float pX = (float)pos.x;
+        float pY = (float)pos.y;
+        float pZ = (float)pos.z;
+
+        float minX = pX + bbMinX;
+        float maxX = pX + bbMaxX;
+        float minY = pY + bbMinY;
+        float maxY = pY + bbMaxY;
+        float minZ = pZ + (float)bb.MinZ;
 
         if (EnableAo)
         {
@@ -274,25 +316,33 @@ public ref struct BlockRenderContext
     internal readonly void DrawWestFace(Block block, in Vec3D pos, in FaceColors colors, int textureId)
     {
         Box bb = OverrideBounds ?? block.BoundingBox;
-        float bMinY = bb.MinY < 0.0D ? 0.0F : (float)(bb.MinY > 1.0 ? 1.0 : bb.MinY);
-        float bMaxY = bb.MaxY < 0.0D ? 0.0F : (float)(bb.MaxY > 1.0 ? 1.0 : bb.MaxY);
-        float bMinX = bb.MinX < 0.0D ? 0.0F : (float)(bb.MinX > 1.0 ? 1.0 : bb.MinX);
-        float bMaxX = bb.MaxX < 0.0D ? 0.0F : (float)(bb.MaxX > 1.0 ? 1.0 : bb.MaxX);
-
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
 
-        // Z+ Face: Left = minX, Right = maxX
-        CalculateUv(bMinX, 1.0F - bMaxY, UvRotateWest, texU, texV, out float uTl, out float vTl);
-        CalculateUv(bMinX, 1.0F - bMinY, UvRotateWest, texU, texV, out float uBl, out float vBl);
-        CalculateUv(bMaxX, 1.0F - bMinY, UvRotateWest, texU, texV, out float uBr, out float vBr);
-        CalculateUv(bMaxX, 1.0F - bMaxY, UvRotateWest, texU, texV, out float uTr, out float vTr);
+        float bbMinX = (float)bb.MinX;
+        float bbMaxX = (float)bb.MaxX;
+        float bbMinY = (float)bb.MinY;
+        float bbMaxY = (float)bb.MaxY;
 
-        float minX = (float)(pos.x + bb.MinX);
-        float maxX = (float)(pos.x + bb.MaxX);
-        float minY = (float)(pos.y + bb.MinY);
-        float maxY = (float)(pos.y + bb.MaxY);
-        float maxZ = (float)(pos.z + bb.MaxZ);
+        float bMinX = Clamp01(bbMinX);
+        float bMaxX = Clamp01(bbMaxX);
+        float bMinY = Clamp01(bbMinY);
+        float bMaxY = Clamp01(bbMaxY);
+
+        CalculateUv(bMinX, 1.0f - bMaxY, UvRotateWest, texU, texV, out float uTl, out float vTl);
+        CalculateUv(bMinX, 1.0f - bMinY, UvRotateWest, texU, texV, out float uBl, out float vBl);
+        CalculateUv(bMaxX, 1.0f - bMinY, UvRotateWest, texU, texV, out float uBr, out float vBr);
+        CalculateUv(bMaxX, 1.0f - bMaxY, UvRotateWest, texU, texV, out float uTr, out float vTr);
+
+        float pX = (float)pos.x;
+        float pY = (float)pos.y;
+        float pZ = (float)pos.z;
+
+        float minX = pX + bbMinX;
+        float maxX = pX + bbMaxX;
+        float minY = pY + bbMinY;
+        float maxY = pY + bbMaxY;
+        float maxZ = pZ + (float)bb.MaxZ;
 
         if (EnableAo)
         {
@@ -314,6 +364,8 @@ public ref struct BlockRenderContext
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private readonly bool IsOpaque(int x, int y, int z) => !Block.BlocksAllowVision[World.getBlockId(x, y, z)];
 
     internal readonly bool DrawBlock(in Block block, in BlockPos pos)
     {
@@ -321,192 +373,193 @@ public ref struct BlockRenderContext
         Box bounds = OverrideBounds ?? block.BoundingBox;
 
         int colorMultiplier = block.getColorMultiplier(World, pos.x, pos.y, pos.z);
-        float r = (colorMultiplier >> 16 & 255) / 255.0F;
-        float g = (colorMultiplier >> 8 & 255) / 255.0F;
-        float b = (colorMultiplier & 255) / 255.0F;
+        float r = (colorMultiplier >> 16 & 255) * 0.0039215686F;
+        float g = (colorMultiplier >> 8 & 255) * 0.0039215686F;
+        float b = (colorMultiplier & 255) * 0.0039215686F;
 
+        bool hasOverrideTex = OverrideTexture >= 0;
         bool tintBottom = true, tintTop = true, tintEast = true, tintWest = true, tintNorth = true, tintSouth = true;
-        if (block.textureId == 3 || OverrideTexture >= 0)
+
+        if (block.textureId == 3 || hasOverrideTex)
         {
             tintBottom = tintEast = tintWest = tintNorth = tintSouth = false;
         }
 
-        // Cache luminance for the 6 direct neighbors
-        float lXn = block.getLuminance(World, pos.x - 1, pos.y, pos.z);
-        float lXp = block.getLuminance(World, pos.x + 1, pos.y, pos.z);
-        float lYn = block.getLuminance(World, pos.x, pos.y - 1, pos.z);
-        float lYp = block.getLuminance(World, pos.x, pos.y + 1, pos.z);
-        float lZn = block.getLuminance(World, pos.x, pos.y, pos.z - 1);
-        float lZp = block.getLuminance(World, pos.x, pos.y, pos.z + 1);
-
-        bool opXnYn = !Block.BlocksAllowVision[World.getBlockId(pos.x - 1, pos.y - 1, pos.z)];
-        bool opXnYp = !Block.BlocksAllowVision[World.getBlockId(pos.x - 1, pos.y + 1, pos.z)];
-        bool opXpYn = !Block.BlocksAllowVision[World.getBlockId(pos.x + 1, pos.y - 1, pos.z)];
-        bool opXpYp = !Block.BlocksAllowVision[World.getBlockId(pos.x + 1, pos.y + 1, pos.z)];
-        bool opXnZn = !Block.BlocksAllowVision[World.getBlockId(pos.x - 1, pos.y, pos.z - 1)];
-        bool opXnZp = !Block.BlocksAllowVision[World.getBlockId(pos.x - 1, pos.y, pos.z + 1)];
-        bool opXpZn = !Block.BlocksAllowVision[World.getBlockId(pos.x + 1, pos.y, pos.z - 1)];
-        bool opXpZp = !Block.BlocksAllowVision[World.getBlockId(pos.x + 1, pos.y, pos.z + 1)];
-        bool opYnZn = !Block.BlocksAllowVision[World.getBlockId(pos.x, pos.y - 1, pos.z - 1)];
-        bool opYnZp = !Block.BlocksAllowVision[World.getBlockId(pos.x, pos.y - 1, pos.z + 1)];
-        bool opYpZn = !Block.BlocksAllowVision[World.getBlockId(pos.x, pos.y + 1, pos.z - 1)];
-        bool opYpZp = !Block.BlocksAllowVision[World.getBlockId(pos.x, pos.y + 1, pos.z + 1)];
-
         float v0, v1, v2, v3;
+        bool ao = AoBlendMode > 0;
+        Vec3D vecPos = new Vec3D(pos.x, pos.y, pos.z); // Allocate struct once
 
         // BOTTOM FACE (Y - 1)
         if (RenderAllFaces || bounds.MinY > 0.0F || block.isSideVisible(World, pos.x, pos.y - 1, pos.z, 0))
         {
-            if (AoBlendMode <= 0) v0 = v1 = v2 = v3 = lYn;
+            float lYn = block.getLuminance(World, pos.x, pos.y - 1, pos.z);
+            if (!ao) v0 = v1 = v2 = v3 = lYn;
             else
             {
                 float n = block.getLuminance(World, pos.x, pos.y - 1, pos.z - 1);
                 float s = block.getLuminance(World, pos.x, pos.y - 1, pos.z + 1);
                 float w = block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z);
                 float e = block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z);
-                float nw = (opXnZn || opYnZn) ? w : block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z - 1);
-                float sw = (opXnZp || opYnZp) ? w : block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z + 1);
-                float ne = (opXpZn || opYnZn) ? e : block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z - 1);
-                float se = (opXpZp || opYnZp) ? e : block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z + 1);
-                v0 = (sw + w + s + lYn) / 4.0F;
-                v1 = (w + nw + lYn + n) / 4.0F;
-                v2 = (lYn + n + e + ne) / 4.0F;
-                v3 = (s + lYn + se + e) / 4.0F;
+
+                float nw = (IsOpaque(pos.x - 1, pos.y, pos.z - 1) || IsOpaque(pos.x, pos.y - 1, pos.z - 1)) ? w : block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z - 1);
+                float sw = (IsOpaque(pos.x - 1, pos.y, pos.z + 1) || IsOpaque(pos.x, pos.y - 1, pos.z + 1)) ? w : block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z + 1);
+                float ne = (IsOpaque(pos.x + 1, pos.y, pos.z - 1) || IsOpaque(pos.x, pos.y - 1, pos.z - 1)) ? e : block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z - 1);
+                float se = (IsOpaque(pos.x + 1, pos.y, pos.z + 1) || IsOpaque(pos.x, pos.y - 1, pos.z + 1)) ? e : block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z + 1);
+
+                v0 = (sw + w + s + lYn) * 0.25F;
+                v1 = (w + nw + lYn + n) * 0.25F;
+                v2 = (lYn + n + e + ne) * 0.25F;
+                v3 = (s + lYn + se + e) * 0.25F;
             }
 
             var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.5F, tintBottom);
-            int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 0);
-            DrawBottomFace(block, new Vec3D(pos.x, pos.y, pos.z), colors, textureId);
+            int textureId = hasOverrideTex ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 0);
+            DrawBottomFace(block, in vecPos, colors, textureId);
             hasRendered = true;
         }
 
         // TOP FACE (Y + 1)
         if (RenderAllFaces || bounds.MaxY < 1.0F || block.isSideVisible(World, pos.x, pos.y + 1, pos.z, 1))
         {
-            if (AoBlendMode <= 0) v0 = v1 = v2 = v3 = lYp;
+            float lYp = block.getLuminance(World, pos.x, pos.y + 1, pos.z);
+            if (!ao) v0 = v1 = v2 = v3 = lYp;
             else
             {
                 float n = block.getLuminance(World, pos.x, pos.y + 1, pos.z - 1);
                 float s = block.getLuminance(World, pos.x, pos.y + 1, pos.z + 1);
                 float w = block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z);
                 float e = block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z);
-                float nw = (opXnYp || opYpZn) ? w : block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z - 1);
-                float sw = (opXnYp || opYpZp) ? w : block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z + 1);
-                float ne = (opXpYp || opYpZn) ? e : block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z - 1);
-                float se = (opXpYp || opYpZp) ? e : block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z + 1);
-                v0 = (s + lYp + se + e) / 4.0F;
-                v1 = (lYp + n + e + ne) / 4.0F;
-                v2 = (w + nw + lYp + n) / 4.0F;
-                v3 = (sw + w + s + lYp) / 4.0F;
+
+                float nw = (IsOpaque(pos.x - 1, pos.y + 1, pos.z) || IsOpaque(pos.x, pos.y + 1, pos.z - 1)) ? w : block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z - 1);
+                float sw = (IsOpaque(pos.x - 1, pos.y + 1, pos.z) || IsOpaque(pos.x, pos.y + 1, pos.z + 1)) ? w : block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z + 1);
+                float ne = (IsOpaque(pos.x + 1, pos.y + 1, pos.z) || IsOpaque(pos.x, pos.y + 1, pos.z - 1)) ? e : block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z - 1);
+                float se = (IsOpaque(pos.x + 1, pos.y + 1, pos.z) || IsOpaque(pos.x, pos.y + 1, pos.z + 1)) ? e : block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z + 1);
+
+                v0 = (s + lYp + se + e) * 0.25F;
+                v1 = (lYp + n + e + ne) * 0.25F;
+                v2 = (w + nw + lYp + n) * 0.25F;
+                v3 = (sw + w + s + lYp) * 0.25F;
             }
 
             var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 1.0F, tintTop);
-            int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 1);
-            DrawTopFace(block, new Vec3D(pos.x, pos.y, pos.z), colors, textureId);
+            int textureId = hasOverrideTex ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 1);
+            DrawTopFace(block, in vecPos, colors, textureId);
             hasRendered = true;
         }
 
         // EAST FACE (Z - 1)
         if (RenderAllFaces || bounds.MinZ > 0.0F || block.isSideVisible(World, pos.x, pos.y, pos.z - 1, 2))
         {
-            if (AoBlendMode <= 0) v0 = v1 = v2 = v3 = lZn;
+            float lZn = block.getLuminance(World, pos.x, pos.y, pos.z - 1);
+            if (!ao) v0 = v1 = v2 = v3 = lZn;
             else
             {
                 float u = block.getLuminance(World, pos.x, pos.y + 1, pos.z - 1);
                 float d = block.getLuminance(World, pos.x, pos.y - 1, pos.z - 1);
                 float w = block.getLuminance(World, pos.x - 1, pos.y, pos.z - 1);
                 float e = block.getLuminance(World, pos.x + 1, pos.y, pos.z - 1);
-                float uw = (opXnZn || opYpZn) ? w : block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z - 1);
-                float dw = (opXnZn || opYnZn) ? w : block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z - 1);
-                float ue = (opXpZn || opYpZn) ? e : block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z - 1);
-                float de = (opXpZn || opYnZn) ? e : block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z - 1);
-                v0 = (w + uw + lZn + u) / 4.0F;
-                v1 = (lZn + u + e + ue) / 4.0F;
-                v2 = (d + lZn + de + e) / 4.0F;
-                v3 = (dw + w + d + lZn) / 4.0F;
+
+                float uw = (IsOpaque(pos.x - 1, pos.y, pos.z - 1) || IsOpaque(pos.x, pos.y + 1, pos.z - 1)) ? w : block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z - 1);
+                float dw = (IsOpaque(pos.x - 1, pos.y, pos.z - 1) || IsOpaque(pos.x, pos.y - 1, pos.z - 1)) ? w : block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z - 1);
+                float ue = (IsOpaque(pos.x + 1, pos.y, pos.z - 1) || IsOpaque(pos.x, pos.y + 1, pos.z - 1)) ? e : block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z - 1);
+                float de = (IsOpaque(pos.x + 1, pos.y, pos.z - 1) || IsOpaque(pos.x, pos.y - 1, pos.z - 1)) ? e : block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z - 1);
+
+                v0 = (w + uw + lZn + u) * 0.25F;
+                v1 = (lZn + u + e + ue) * 0.25F;
+                v2 = (d + lZn + de + e) * 0.25F;
+                v3 = (dw + w + d + lZn) * 0.25F;
             }
 
             var colors = FaceColors.AssignVertexColors(v1, v2, v3, v0, r, g, b, 0.8F, tintEast);
-            int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 2);
-            DrawEastFace(block, new Vec3D(pos.x, pos.y, pos.z), colors, textureId);
+            int textureId = hasOverrideTex ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 2);
+            DrawEastFace(block, in vecPos, colors, textureId);
             hasRendered = true;
         }
 
         // WEST FACE (Z + 1)
         if (RenderAllFaces || bounds.MaxZ < 1.0F || block.isSideVisible(World, pos.x, pos.y, pos.z + 1, 3))
         {
-            if (AoBlendMode <= 0) v0 = v1 = v2 = v3 = lZp;
+            float lZp = block.getLuminance(World, pos.x, pos.y, pos.z + 1);
+            if (!ao) v0 = v1 = v2 = v3 = lZp;
             else
             {
                 float u = block.getLuminance(World, pos.x, pos.y + 1, pos.z + 1);
                 float d = block.getLuminance(World, pos.x, pos.y - 1, pos.z + 1);
                 float w = block.getLuminance(World, pos.x - 1, pos.y, pos.z + 1);
                 float e = block.getLuminance(World, pos.x + 1, pos.y, pos.z + 1);
-                float uw = (opXnZp || opYpZp) ? w : block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z + 1);
-                float dw = (opXnZp || opYnZp) ? w : block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z + 1);
-                float ue = (opXpZp || opYpZp) ? e : block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z + 1);
-                float de = (opXpZp || opYnZp) ? e : block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z + 1);
-                v0 = (w + uw + lZp + u) / 4.0F;
-                v1 = (dw + w + d + lZp) / 4.0F;
-                v2 = (d + lZp + de + e) / 4.0F;
-                v3 = (lZp + u + e + ue) / 4.0F;
+
+                float uw = (IsOpaque(pos.x - 1, pos.y, pos.z + 1) || IsOpaque(pos.x, pos.y + 1, pos.z + 1)) ? w : block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z + 1);
+                float dw = (IsOpaque(pos.x - 1, pos.y, pos.z + 1) || IsOpaque(pos.x, pos.y - 1, pos.z + 1)) ? w : block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z + 1);
+                float ue = (IsOpaque(pos.x + 1, pos.y, pos.z + 1) || IsOpaque(pos.x, pos.y + 1, pos.z + 1)) ? e : block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z + 1);
+                float de = (IsOpaque(pos.x + 1, pos.y, pos.z + 1) || IsOpaque(pos.x, pos.y - 1, pos.z + 1)) ? e : block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z + 1);
+
+                v0 = (w + uw + lZp + u) * 0.25F;
+                v1 = (dw + w + d + lZp) * 0.25F;
+                v2 = (d + lZp + de + e) * 0.25F;
+                v3 = (lZp + u + e + ue) * 0.25F;
             }
 
             var colors = FaceColors.AssignVertexColors(v0, v1, v2, v3, r, g, b, 0.8F, tintWest);
-            int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 3);
-            DrawWestFace(block, new Vec3D(pos.x, pos.y, pos.z), colors, textureId);
+            int textureId = hasOverrideTex ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 3);
+            DrawWestFace(block, in vecPos, colors, textureId);
             hasRendered = true;
         }
 
         // NORTH FACE (X - 1)
         if (RenderAllFaces || bounds.MinX > 0.0F || block.isSideVisible(World, pos.x - 1, pos.y, pos.z, 4))
         {
-            if (AoBlendMode <= 0) v0 = v1 = v2 = v3 = lXn;
+            float lXn = block.getLuminance(World, pos.x - 1, pos.y, pos.z);
+            if (!ao) v0 = v1 = v2 = v3 = lXn;
             else
             {
                 float u = block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z);
                 float d = block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z);
                 float n = block.getLuminance(World, pos.x - 1, pos.y, pos.z - 1);
                 float s = block.getLuminance(World, pos.x - 1, pos.y, pos.z + 1);
-                float un = (opXnZn || opXnYp) ? n : block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z - 1);
-                float dn = (opXnZn || opXnYn) ? n : block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z - 1);
-                float us = (opXnZp || opXnYp) ? s : block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z + 1);
-                float ds = (opXnZp || opXnYn) ? s : block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z + 1);
-                v0 = (u + us + lXn + s) / 4.0F;
-                v1 = (u + un + n + lXn) / 4.0F;
-                v2 = (n + lXn + dn + d) / 4.0F;
-                v3 = (d + ds + lXn + s) / 4.0F;
+
+                float un = (IsOpaque(pos.x - 1, pos.y, pos.z - 1) || IsOpaque(pos.x - 1, pos.y + 1, pos.z)) ? n : block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z - 1);
+                float dn = (IsOpaque(pos.x - 1, pos.y, pos.z - 1) || IsOpaque(pos.x - 1, pos.y - 1, pos.z)) ? n : block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z - 1);
+                float us = (IsOpaque(pos.x - 1, pos.y, pos.z + 1) || IsOpaque(pos.x - 1, pos.y + 1, pos.z)) ? s : block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z + 1);
+                float ds = (IsOpaque(pos.x - 1, pos.y, pos.z + 1) || IsOpaque(pos.x - 1, pos.y - 1, pos.z)) ? s : block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z + 1);
+
+                v0 = (u + us + lXn + s) * 0.25F;
+                v1 = (u + un + n + lXn) * 0.25F;
+                v2 = (n + lXn + dn + d) * 0.25F;
+                v3 = (d + ds + lXn + s) * 0.25F;
             }
 
             var colors = FaceColors.AssignVertexColors(v1, v2, v3, v0, r, g, b, 0.6F, tintNorth);
-            int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 4);
-            DrawNorthFace(block, new Vec3D(pos.x, pos.y, pos.z), colors, textureId);
+            int textureId = hasOverrideTex ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 4);
+            DrawNorthFace(block, in vecPos, colors, textureId);
             hasRendered = true;
         }
 
         // SOUTH FACE (X + 1)
         if (RenderAllFaces || bounds.MaxX < 1.0F || block.isSideVisible(World, pos.x + 1, pos.y, pos.z, 5))
         {
-            if (AoBlendMode <= 0) v0 = v1 = v2 = v3 = lXp;
+            float lXp = block.getLuminance(World, pos.x + 1, pos.y, pos.z);
+            if (!ao) v0 = v1 = v2 = v3 = lXp;
             else
             {
                 float u = block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z);
                 float d = block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z);
                 float n = block.getLuminance(World, pos.x + 1, pos.y, pos.z - 1);
                 float s = block.getLuminance(World, pos.x + 1, pos.y, pos.z + 1);
-                float un = (opXpZn || opXpYp) ? n : block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z - 1);
-                float dn = (opXpZn || opXpYn) ? n : block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z - 1);
-                float us = (opXpZp || opXpYp) ? s : block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z + 1);
-                float ds = (opXpZp || opXpYn) ? s : block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z + 1);
-                v0 = (d + ds + lXp + s) / 4.0F;
-                v1 = (n + lXp + dn + d) / 4.0F;
-                v2 = (u + un + n + lXp) / 4.0F;
-                v3 = (u + us + lXp + s) / 4.0F;
+
+                float un = (IsOpaque(pos.x + 1, pos.y, pos.z - 1) || IsOpaque(pos.x + 1, pos.y + 1, pos.z)) ? n : block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z - 1);
+                float dn = (IsOpaque(pos.x + 1, pos.y, pos.z - 1) || IsOpaque(pos.x + 1, pos.y - 1, pos.z)) ? n : block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z - 1);
+                float us = (IsOpaque(pos.x + 1, pos.y, pos.z + 1) || IsOpaque(pos.x + 1, pos.y + 1, pos.z)) ? s : block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z + 1);
+                float ds = (IsOpaque(pos.x + 1, pos.y, pos.z + 1) || IsOpaque(pos.x + 1, pos.y - 1, pos.z)) ? s : block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z + 1);
+
+                v0 = (d + ds + lXp + s) * 0.25F;
+                v1 = (n + lXp + dn + d) * 0.25F;
+                v2 = (u + un + n + lXp) * 0.25F;
+                v3 = (u + us + lXp + s) * 0.25F;
             }
 
             var colors = FaceColors.AssignVertexColors(v3, v0, v1, v2, r, g, b, 0.6F, tintSouth);
-            int textureId = OverrideTexture >= 0 ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 5);
-            DrawSouthFace(block, new Vec3D(pos.x, pos.y, pos.z), colors, textureId);
+            int textureId = hasOverrideTex ? OverrideTexture : block.getTextureId(World, pos.x, pos.y, pos.z, 5);
+            DrawSouthFace(block, in vecPos, colors, textureId);
             hasRendered = true;
         }
 
