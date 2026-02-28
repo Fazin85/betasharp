@@ -28,8 +28,11 @@ public abstract class World : BlockView
     public bool instantBlockUpdateEnabled = false;
     private readonly List<LightUpdate> lightingQueue = [];
     private readonly ILogger<World> _logger = Log.Instance.For<World>();
-    public List<Entity> entities = [];
-    private readonly List<Entity> entitiesToUnload = [];
+
+    public List<Entity> Entities = [];
+    public Dictionary<int, Entity> EntitiesById = new();
+    private readonly HashSet<Entity> _entitiesToUnload = [];
+
     private readonly PriorityQueue<BlockUpdate, (long, long)> _scheduledUpdates = new();
 
     private long
@@ -1054,15 +1057,15 @@ public abstract class World : BlockView
 
     public virtual bool SpawnEntity(Entity entity)
     {
-        int var2 = MathHelper.Floor(entity.x / 16.0D);
-        int var3 = MathHelper.Floor(entity.z / 16.0D);
-        bool var4 = false;
+        int xChunk = MathHelper.Floor(entity.x / 16.0D);
+        int zChunk = MathHelper.Floor(entity.z / 16.0D);
+        bool isPlayer = false;
         if (entity is EntityPlayer)
         {
-            var4 = true;
+            isPlayer = true;
         }
 
-        if (!var4 && !hasChunk(var2, var3))
+        if (!isPlayer && !hasChunk(xChunk, zChunk))
         {
             return false;
         }
@@ -1075,8 +1078,9 @@ public abstract class World : BlockView
                 updateSleepingPlayers();
             }
 
-            GetChunk(var2, var3).AddEntity(entity);
-            entities.Add(entity);
+            GetChunk(xChunk, zChunk).AddEntity(entity);
+            Entities.Add(entity);
+            EntitiesById[entity.id] = entity;
             NotifyEntityAdded(entity);
             return true;
         }
@@ -1127,14 +1131,16 @@ public abstract class World : BlockView
             this.updateSleepingPlayers();
         }
 
-        int var2 = entity.chunkX;
-        int var3 = entity.chunkZ;
-        if (entity.isPersistent && hasChunk(var2, var3))
+        int chunkX = entity.chunkX;
+        int chunkZ = entity.chunkZ;
+        if (entity.isPersistent && hasChunk(chunkX, chunkZ))
         {
-            GetChunk(var2, var3).RemoveEntity(entity);
+            GetChunk(chunkX, chunkZ).RemoveEntity(entity);
         }
 
-        entities.Remove(entity);
+        Entities.Remove(entity);
+        EntitiesById.Remove(entity.id);
+        NotifyEntityRemoved(entity);
         NotifyEntityRemoved(entity);
     }
 
@@ -1179,18 +1185,28 @@ public abstract class World : BlockView
         double var14 = 0.25D;
         List<Entity> var15 = getEntities(entity, box.Expand(var14, var14, var14));
 
+        int collisionCount = 0;
+        const int MAX_COLLISIONS = 24;
+
         for (int var16 = 0; var16 < var15.Count; ++var16)
         {
+            if (collisionCount >= MAX_COLLISIONS)
+            {
+                break;
+            }
+
             Box? var13 = var15[var16].getBoundingBox();
             if (var13 != null && var13.Value.Intersects(box))
             {
                 collidingBoundingBoxes.Add(var13.Value);
+                collisionCount++;
             }
 
             var13 = entity.getCollisionAgainstShape(var15[var16]);
             if (var13 != null && var13.Value.Intersects(box))
             {
                 collidingBoundingBoxes.Add(var13.Value);
+                collisionCount++;
             }
         }
 
@@ -1435,40 +1451,22 @@ public abstract class World : BlockView
 
         Profiler.Stop("updateEntites.updateWeatherEffects");
 
-        foreach (var entity in entitiesToUnload)
+        Entities.RemoveAll(e => _entitiesToUnload.Contains(e));
+
+        foreach (var entity in _entitiesToUnload)
         {
-            entities.Remove(entity);
+            EntitiesById.Remove(entity.id);
         }
 
         Profiler.Start("updateEntites.clearUnloadedEntities");
-
-        int var3;
-        int var4;
-        for (var1 = 0; var1 < entitiesToUnload.Count; ++var1)
-        {
-            var2 = entitiesToUnload[var1];
-            var3 = var2.chunkX;
-            var4 = var2.chunkZ;
-            if (var2.isPersistent && hasChunk(var3, var4))
-            {
-                GetChunk(var3, var4).RemoveEntity(var2);
-            }
-        }
-
-        for (var1 = 0; var1 < entitiesToUnload.Count; ++var1)
-        {
-            NotifyEntityRemoved(entitiesToUnload[var1]);
-        }
-
-        entitiesToUnload.Clear();
-
+        FlushEntities();
         Profiler.Stop("updateEntites.clearUnloadedEntities");
 
         Profiler.Start("updateEntites.updateLoadedEntities");
 
-        for (var1 = 0; var1 < entities.Count; ++var1)
+        for (var1 = 0; var1 < Entities.Count; ++var1)
         {
-            var2 = entities[var1];
+            var2 = Entities[var1];
             if (var2.vehicle != null)
             {
                 if (!var2.vehicle.dead && var2.vehicle.passenger == var2)
@@ -1487,14 +1485,14 @@ public abstract class World : BlockView
 
             if (var2.dead)
             {
-                var3 = var2.chunkX;
-                var4 = var2.chunkZ;
-                if (var2.isPersistent && hasChunk(var3, var4))
+                var chunkX = var2.chunkX;
+                var chunkZ = var2.chunkZ;
+                if (var2.isPersistent && hasChunk(chunkX, chunkZ))
                 {
-                    GetChunk(var3, var4).RemoveEntity(var2);
+                    GetChunk(chunkX, chunkZ).RemoveEntity(var2);
                 }
 
-                entities.RemoveAt(var1--);
+                Entities.RemoveAt(var1--);
                 NotifyEntityRemoved(var2);
             }
         }
@@ -1987,7 +1985,7 @@ public abstract class World : BlockView
 
     public string getEntityCount()
     {
-        return "All: " + entities.Count;
+        return "All: " + Entities.Count;
     }
 
     public string getDebugInfo()
@@ -2560,7 +2558,7 @@ public abstract class World : BlockView
 
     public List<Entity> getEntities()
     {
-        return entities;
+        return Entities;
     }
 
     public void updateBlockEntity(int x, int y, int z, BlockEntity blockEntity)
@@ -2580,7 +2578,7 @@ public abstract class World : BlockView
     {
         int res = 0;
 
-        foreach (var entity in entities)
+        foreach (var entity in Entities)
         {
             if (type.IsInstanceOfType(entity)) res++;
         }
@@ -2590,7 +2588,7 @@ public abstract class World : BlockView
 
     public void addEntities(List<Entity> entities)
     {
-        this.entities.AddRange(entities);
+        this.Entities.AddRange(entities);
 
         for (int var2 = 0; var2 < entities.Count; ++var2)
         {
@@ -2600,7 +2598,7 @@ public abstract class World : BlockView
 
     public void unloadEntities(List<Entity> entities)
     {
-        entitiesToUnload.AddRange(entities);
+        _entitiesToUnload.UnionWith(entities);
     }
 
     public void tickChunks()
@@ -2937,9 +2935,9 @@ public abstract class World : BlockView
             }
         }
 
-        if (!entities.Contains(entity))
+        if (!Entities.Contains(entity))
         {
-            entities.Add(entity);
+            Entities.Add(entity);
         }
     }
 
@@ -2954,58 +2952,44 @@ public abstract class World : BlockView
 
     public void updateEntityLists()
     {
-        foreach (var entity in entitiesToUnload)
-        {
-            entities.Remove(entity);
-        }
+        FlushEntities();
+    }
 
-        int var1;
-        Entity var2;
-        int var3;
-        int var4;
-        for (var1 = 0; var1 < entitiesToUnload.Count; ++var1)
+    private void FlushEntities()
+    {
+        Entities.RemoveAll(e => _entitiesToUnload.Contains(e));
+
+        foreach (var entity in _entitiesToUnload)
         {
-            var2 = entitiesToUnload[var1];
-            var3 = var2.chunkX;
-            var4 = var2.chunkZ;
-            if (var2.isPersistent && hasChunk(var3, var4))
+            EntitiesById.Remove(entity.id);
+
+            if (entity.isPersistent && hasChunk(entity.chunkX, entity.chunkZ))
             {
-                GetChunk(var3, var4).RemoveEntity(var2);
+                GetChunk(entity.chunkX, entity.chunkZ).RemoveEntity(entity);
             }
+            NotifyEntityRemoved(entity);
         }
+        _entitiesToUnload.Clear();
 
-        for (var1 = 0; var1 < entitiesToUnload.Count; ++var1)
+        for (int i = 0; i < Entities.Count; ++i)
         {
-            NotifyEntityRemoved(entitiesToUnload[var1]);
-        }
-
-        entitiesToUnload.Clear();
-
-        for (var1 = 0; var1 < entities.Count; ++var1)
-        {
-            var2 = entities[var1];
-            if (var2.vehicle != null)
+            var entity = Entities[i];
+            if (entity.vehicle != null)
             {
-                if (!var2.vehicle.dead && var2.vehicle.passenger == var2)
+                if (!entity.vehicle.dead && entity.vehicle.passenger == entity) continue;
+                entity.vehicle.passenger = null;
+                entity.vehicle = null;
+            }
+            if (entity.dead)
+            {
+                if (entity.isPersistent && hasChunk(entity.chunkX, entity.chunkZ))
                 {
-                    continue;
+                    GetChunk(entity.chunkX, entity.chunkZ).RemoveEntity(entity);
                 }
 
-                var2.vehicle.passenger = null;
-                var2.vehicle = null;
-            }
-
-            if (var2.dead)
-            {
-                var3 = var2.chunkX;
-                var4 = var2.chunkZ;
-                if (var2.isPersistent && hasChunk(var3, var4))
-                {
-                    GetChunk(var3, var4).RemoveEntity(var2);
-                }
-
-                entities.RemoveAt(var1--);
-                NotifyEntityRemoved(var2);
+                Entities.RemoveAt(i--);
+                EntitiesById.Remove(entity.id); // <-- The missing dictionary sync!
+                NotifyEntityRemoved(entity);
             }
         }
     }
@@ -3140,5 +3124,10 @@ public abstract class World : BlockView
         {
             eventListeners[var7].worldEvent(player, @event, x, y, z, data);
         }
+    }
+
+    public Entity? getEntityByID(int id)
+    {
+        return EntitiesById.TryGetValue(id, out var entity) ? entity : null;
     }
 }
