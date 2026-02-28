@@ -2,7 +2,6 @@ using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Worlds;
-using java.util;
 
 namespace BetaSharp;
 
@@ -14,11 +13,10 @@ public class MapState : PersistentState
     public sbyte scale;
     public byte[] colors = new byte[128*128];
     public int inventoryTicks;
-    public List updateTrackers = new ArrayList();
-    private Map updateTrackersByPlayer = new HashMap();
-    public List icons = new ArrayList();
+    private Dictionary<EntityPlayer, MapInfo> updateTrackers = new();
+    public List<MapCoord> icons = [];
 
-    public MapState(string var1) : base(new(var1))
+    public MapState(string id) : base(id)
     {
     }
 
@@ -83,22 +81,19 @@ public class MapState : PersistentState
 
     public void update(EntityPlayer var1, ItemStack var2)
     {
-        if (!updateTrackersByPlayer.containsKey(var1))
+        if (!updateTrackers.ContainsKey(var1))
         {
-            MapInfo var3 = new MapInfo(this, var1);
-            updateTrackersByPlayer.put(var1, var3);
-            updateTrackers.add(var3);
+            updateTrackers[var1] = new MapInfo(this, var1);
         }
 
-        icons.clear();
+        icons.Clear();
 
-        for (int var14 = 0; var14 < updateTrackers.size(); ++var14)
+        foreach (var mapInfo in updateTrackers.Values.ToList())
         {
-            MapInfo var4 = (MapInfo)updateTrackers.get(var14);
-            if (!var4.player.dead && var4.player.inventory.contains(var2))
+            if (!mapInfo.player.dead && mapInfo.player.inventory.contains(var2))
             {
-                float var5 = (float)(var4.player.x - (double)centerX) / (float)(1 << scale);
-                float var6 = (float)(var4.player.z - (double)centerZ) / (float)(1 << scale);
+                float var5 = (float)(mapInfo.player.x - (double)centerX) / (float)(1 << scale);
+                float var6 = (float)(mapInfo.player.z - (double)centerZ) / (float)(1 << scale);
                 byte var7 = 64;
                 byte var8 = 64;
                 if (var5 >= (float)(-var7) && var6 >= (float)(-var8) && var5 <= (float)var7 && var6 <= (float)var8)
@@ -113,45 +108,44 @@ public class MapState : PersistentState
                         var12 = (byte)(var13 * var13 * 34187121 + var13 * 121 >> 15 & 15);
                     }
 
-                    if (var4.player.dimensionId == dimension)
+                    if (mapInfo.player.dimensionId == dimension)
                     {
-                        icons.add(new MapCoord(this, var9, var10, var11, var12));
+                        icons.Add(new MapCoord(this, var9, var10, var11, var12));
                     }
                 }
             }
             else
             {
-                updateTrackersByPlayer.remove(var4.player);
-                updateTrackers.remove(var4);
+                updateTrackers.Remove(mapInfo.player);
             }
         }
-
     }
 
     public byte[] getPlayerMarkerPacket(EntityPlayer player)
     {
-        MapInfo var4 = (MapInfo)updateTrackersByPlayer.get(player);
-        return var4 == null ? null : var4.getUpdateData();
+        if (updateTrackers.TryGetValue(player, out var mapInfo))
+        {
+            return mapInfo.getUpdateData();
+        }
+        return null;
     }
 
     public void markDirty(int var1, int var2, int var3)
     {
         base.markDirty();
 
-        for (int var4 = 0; var4 < updateTrackers.size(); ++var4)
+        foreach (var mapInfo in updateTrackers.Values)
         {
-            MapInfo var5 = (MapInfo)updateTrackers.get(var4);
-            if (var5.startZ[var1] < 0 || var5.startZ[var1] > var2)
+            if (mapInfo.startZ[var1] < 0 || mapInfo.startZ[var1] > var2)
             {
-                var5.startZ[var1] = var2;
+                mapInfo.startZ[var1] = var2;
             }
 
-            if (var5.endZ[var1] < 0 || var5.endZ[var1] < var3)
+            if (mapInfo.endZ[var1] < 0 || mapInfo.endZ[var1] < var3)
             {
-                var5.endZ[var1] = var3;
+                mapInfo.endZ[var1] = var3;
             }
         }
-
     }
 
     public void updateData(byte[] var1)
@@ -171,7 +165,7 @@ public class MapState : PersistentState
         }
         else if (var1[0] == 1)
         {
-            icons.clear();
+            icons.Clear();
 
             for (var2 = 0; var2 < (var1.Length - 1) / 3; ++var2)
             {
@@ -179,9 +173,8 @@ public class MapState : PersistentState
                 byte var8 = var1[var2 * 3 + 2];
                 byte var5 = var1[var2 * 3 + 3];
                 byte var6 = (byte)(var1[var2 * 3 + 1] / 16);
-                icons.add(new MapCoord(this, var7, var8, var5, var6));
+                icons.Add(new MapCoord(this, var7, var8, var5, var6));
             }
         }
-
     }
 }

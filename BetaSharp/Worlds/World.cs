@@ -1593,27 +1593,27 @@ public abstract class World : BlockView
                 }
             }
 
-            if (double.IsNaN(entity.x) || java.lang.Double.isInfinite(entity.x))
+            if (double.IsNaN(entity.x) || double.IsInfinity(entity.x))
             {
                 entity.x = entity.lastTickX;
             }
 
-            if (double.IsNaN(entity.y) || java.lang.Double.isInfinite(entity.y))
+            if (double.IsNaN(entity.y) || double.IsInfinity(entity.y))
             {
                 entity.y = entity.lastTickY;
             }
 
-            if (double.IsNaN(entity.z) || java.lang.Double.isInfinite(entity.z))
+            if (double.IsNaN(entity.z) || double.IsInfinity(entity.z))
             {
                 entity.z = entity.lastTickZ;
             }
 
-            if (double.IsNaN((double)entity.pitch) || java.lang.Double.isInfinite((double)entity.pitch))
+            if (double.IsNaN(entity.pitch) || double.IsInfinity(entity.pitch))
             {
                 entity.pitch = entity.prevPitch;
             }
 
-            if (double.IsNaN((double)entity.yaw) || java.lang.Double.isInfinite((double)entity.yaw))
+            if (double.IsNaN(entity.yaw) || double.IsInfinity(entity.yaw))
             {
                 entity.yaw = entity.prevYaw;
             }
