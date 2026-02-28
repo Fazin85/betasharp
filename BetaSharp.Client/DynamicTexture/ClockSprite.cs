@@ -1,9 +1,7 @@
 using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Items;
-using java.awt.image;
-using java.io;
-using javax.imageio;
-using IOException = java.io.IOException;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace BetaSharp.Client.DynamicTexture;
 
@@ -17,9 +15,9 @@ internal class ClockSprite : Rendering.Core.Textures.DynamicTexture
     private Minecraft _mc;
     private int _resolution = 16;
 
-    public ClockSprite(Minecraft var1) : base(Item.Clock.getTextureId(0))
+    public ClockSprite(Minecraft mc) : base(Item.Clock.getTextureId(0))
     {
-        _mc = var1;
+        _mc = mc;
         Atlas = FxImage.Items;
     }
 
@@ -52,27 +50,20 @@ internal class ClockSprite : Rendering.Core.Textures.DynamicTexture
             using Stream? stream = mc.texturePackList.SelectedTexturePack.GetResourceAsStream("gui/items.png");
             if (stream != null)
             {
-                using MemoryStream ms = new();
-                stream.CopyTo(ms);
-                BufferedImage image = ImageIO.read(new ByteArrayInputStream(ms.ToArray()));
-                int atlasResolution = image.getWidth() / 16;
-                int sourceX = Sprite % 16 * atlasResolution;
-                int sourceY = Sprite / 16 * atlasResolution;
+                using Image<Rgba32> atlasImage = Image.Load<Rgba32>(stream);
+                int atlasResolution = atlasImage.Width / 16;
+                int sourceX = (Sprite % 16) * atlasResolution;
+                int sourceY = (Sprite / 16) * atlasResolution;
 
-                if (atlasResolution == _resolution)
+                for (int y = 0; y < _resolution; y++)
                 {
-                    image.getRGB(sourceX, sourceY, _resolution, _resolution, _clock, 0, _resolution);
-                }
-                else
-                {
-                    int[] temp = new int[atlasResolution * atlasResolution];
-                    image.getRGB(sourceX, sourceY, atlasResolution, atlasResolution, temp, 0, atlasResolution);
-                    for (int y = 0; y < _resolution; y++)
+                    for (int x = 0; x < _resolution; x++)
                     {
-                        for (int x = 0; x < _resolution; x++)
-                        {
-                            _clock[y * _resolution + x] = temp[y * atlasResolution / _resolution * atlasResolution + x * atlasResolution / _resolution];
-                        }
+                        int srcX = sourceX + (x * atlasResolution / _resolution);
+                        int srcY = sourceY + (y * atlasResolution / _resolution);
+                        
+                        Rgba32 pixel = atlasImage[srcX, srcY];
+                        _clock[y * _resolution + x] = (pixel.A << 24) | (pixel.R << 16) | (pixel.G << 8) | pixel.B;
                     }
                 }
             }
@@ -80,22 +71,28 @@ internal class ClockSprite : Rendering.Core.Textures.DynamicTexture
             using Stream? dialStream = mc.texturePackList.SelectedTexturePack.GetResourceAsStream("misc/dial.png");
             if (dialStream != null)
             {
-                using MemoryStream ms = new();
-                dialStream.CopyTo(ms);
-                BufferedImage dialImage = ImageIO.read(new ByteArrayInputStream(ms.ToArray()));
-                _dialResolution = dialImage.getWidth();
+                using Image<Rgba32> dialImage = Image.Load<Rgba32>(dialStream);
+                _dialResolution = dialImage.Width;
                 int dialPixelCount = _dialResolution * _dialResolution;
+                
                 if (_dial.Length != dialPixelCount)
                 {
                     _dial = new int[dialPixelCount];
                 }
 
-                dialImage.getRGB(0, 0, _dialResolution, _dialResolution, _dial, 0, _dialResolution);
+                for (int y = 0; y < _dialResolution; y++)
+                {
+                    for (int x = 0; x < _dialResolution; x++)
+                    {
+                        Rgba32 pixel = dialImage[x, y];
+                        _dial[y * _dialResolution + x] = (pixel.A << 24) | (pixel.R << 16) | (pixel.G << 8) | pixel.B;
+                    }
+                }
             }
         }
-        catch (IOException ex)
+        catch (Exception ex)
         {
-            ex.printStackTrace();
+            Console.WriteLine(ex.ToString());
         }
     }
 
