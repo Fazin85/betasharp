@@ -91,11 +91,5 @@ public class MapItemRenderer
             tess.draw();
             GLManager.GL.PopMatrix();
         }
-
-        GLManager.GL.PushMatrix();
-        GLManager.GL.Translate(0.0F, 0.0F, -0.04F);
-        GLManager.GL.Scale(1.0F, 1.0F, 1.0F);
-        _textRenderer.DrawString(mapState.id, 0, 0, 0xFF000000);
-        GLManager.GL.PopMatrix();
     }
 }

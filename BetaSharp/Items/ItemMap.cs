@@ -21,8 +21,7 @@ public class ItemMap : NetworkSyncedItem
         MapState? mapState = (MapState?)world.getOrCreateState(typeof(MapState), "map_" + mapId);
         if (mapState == null)
         {
-            int mapIdCount = world.getIdCount("map");
-            string mapName = "map_" + mapIdCount;
+            string mapName = "map_" + mapId;
             mapState = new MapState(mapName);
             world.setState(mapName, mapState);
         }
@@ -36,7 +35,12 @@ public class ItemMap : NetworkSyncedItem
         MapState? mapState = (MapState?)world.getOrCreateState(typeof(MapState), mapName);
         if (mapState == null)
         {
+            if (world.isRemote)
+            {
+                return getMapState((short)stack.getDamage(), world);
+            }
             stack.setDamage(world.getIdCount("map"));
+            mapName = "map_" + stack.getDamage();
             mapState = new MapState(mapName);
             mapState.CenterX = world.getProperties().SpawnX;
             mapState.CenterZ = world.getProperties().SpawnZ;
