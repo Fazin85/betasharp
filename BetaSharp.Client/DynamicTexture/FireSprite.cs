@@ -1,8 +1,8 @@
 using BetaSharp.Blocks;
 
-namespace BetaSharp.Client.Textures;
+namespace BetaSharp.Client.DynamicTexture;
 
-public class FireSprite(int index) : DynamicTexture(Block.Fire.textureId + index * 16)
+internal class FireSprite(int index) : Rendering.Core.Textures.DynamicTexture(Block.Fire.textureId + index * 16)
 {
     private float[] _current = new float[320];
     private float[] _next = new float[320];
@@ -58,8 +58,15 @@ public class FireSprite(int index) : DynamicTexture(Block.Fire.textureId + index
         {
             float intensity = _current[pixelIndex] * 1.8F;
 
-            if (intensity > 1.0F) intensity = 1.0F;
-            if (intensity < 0.0F) intensity = 0.0F;
+            if (intensity > 1.0F)
+            {
+                intensity = 1.0F;
+            }
+
+            if (intensity < 0.0F)
+            {
+                intensity = 0.0F;
+            }
 
             int r = (int)(intensity * 155.0F + 100.0F);
             int g = (int)(intensity * intensity * 255.0F);

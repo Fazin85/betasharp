@@ -1,21 +1,21 @@
 using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Items;
-using BetaSharp.Util.Maths;
 using java.awt.image;
 using java.io;
 using javax.imageio;
+using IOException = java.io.IOException;
 
-namespace BetaSharp.Client.Textures;
+namespace BetaSharp.Client.DynamicTexture;
 
-public class ClockSprite : DynamicTexture
+internal class ClockSprite : Rendering.Core.Textures.DynamicTexture
 {
-    private Minecraft _mc;
-    private int[] _clock = new int[256];
-    private int[] _dial = new int[256];
     private double _angle;
     private double _angleDelta;
-    private int _resolution = 16;
+    private int[] _clock = new int[256];
+    private int[] _dial = new int[256];
     private int _dialResolution = 16;
+    private Minecraft _mc;
+    private int _resolution = 16;
 
     public ClockSprite(Minecraft var1) : base(Item.Clock.getTextureId(0))
     {
@@ -25,11 +25,11 @@ public class ClockSprite : DynamicTexture
 
     public override void Setup(Minecraft mc)
     {
-        this._mc = mc;
+        _mc = mc;
         TextureManager tm = mc.textureManager;
         string atlasPath = "/gui/items.png";
 
-        var handle = tm.GetTextureId(atlasPath);
+        TextureHandle handle = tm.GetTextureId(atlasPath);
         if (handle.Texture != null)
         {
             _resolution = handle.Texture.Width / 16;
@@ -49,15 +49,15 @@ public class ClockSprite : DynamicTexture
 
         try
         {
-            using var stream = mc.texturePackList.SelectedTexturePack.GetResourceAsStream("gui/items.png");
+            using Stream? stream = mc.texturePackList.SelectedTexturePack.GetResourceAsStream("gui/items.png");
             if (stream != null)
             {
-                using var ms = new MemoryStream();
+                using MemoryStream ms = new();
                 stream.CopyTo(ms);
                 BufferedImage image = ImageIO.read(new ByteArrayInputStream(ms.ToArray()));
                 int atlasResolution = image.getWidth() / 16;
-                int sourceX = (Sprite % 16) * atlasResolution;
-                int sourceY = (Sprite / 16) * atlasResolution;
+                int sourceX = Sprite % 16 * atlasResolution;
+                int sourceY = Sprite / 16 * atlasResolution;
 
                 if (atlasResolution == _resolution)
                 {
@@ -71,16 +71,16 @@ public class ClockSprite : DynamicTexture
                     {
                         for (int x = 0; x < _resolution; x++)
                         {
-                            _clock[y * _resolution + x] = temp[(y * atlasResolution / _resolution) * atlasResolution + (x * atlasResolution / _resolution)];
+                            _clock[y * _resolution + x] = temp[y * atlasResolution / _resolution * atlasResolution + x * atlasResolution / _resolution];
                         }
                     }
                 }
             }
 
-            using var dialStream = mc.texturePackList.SelectedTexturePack.GetResourceAsStream("misc/dial.png");
+            using Stream? dialStream = mc.texturePackList.SelectedTexturePack.GetResourceAsStream("misc/dial.png");
             if (dialStream != null)
             {
-                using var ms = new MemoryStream();
+                using MemoryStream ms = new();
                 dialStream.CopyTo(ms);
                 BufferedImage dialImage = ImageIO.read(new ByteArrayInputStream(ms.ToArray()));
                 _dialResolution = dialImage.getWidth();
@@ -93,7 +93,7 @@ public class ClockSprite : DynamicTexture
                 dialImage.getRGB(0, 0, _dialResolution, _dialResolution, _dial, 0, _dialResolution);
             }
         }
-        catch (java.io.IOException ex)
+        catch (IOException ex)
         {
             ex.printStackTrace();
         }
@@ -105,10 +105,10 @@ public class ClockSprite : DynamicTexture
         if (_mc.world != null && _mc.player != null)
         {
             float worldTime = _mc.world.getTime(1.0F);
-            targetAngle = (double)(-worldTime * (float)Math.PI * 2.0F);
+            targetAngle = -worldTime * (float)Math.PI * 2.0F;
             if (_mc.world.dimension.IsNether)
             {
-                targetAngle = Random.Shared.NextDouble() * (double)(float)Math.PI * 2.0D;
+                targetAngle = Random.Shared.NextDouble() * (float)Math.PI * 2.0D;
             }
         }
 
@@ -122,8 +122,15 @@ public class ClockSprite : DynamicTexture
             angleDifference -= Math.PI * 2.0D;
         }
 
-        if (angleDifference < -1.0D) angleDifference = -1.0D;
-        if (angleDifference > 1.0D) angleDifference = 1.0D;
+        if (angleDifference < -1.0D)
+        {
+            angleDifference = -1.0D;
+        }
+
+        if (angleDifference > 1.0D)
+        {
+            angleDifference = 1.0D;
+        }
 
         _angleDelta += angleDifference * 0.1D;
         _angleDelta *= 0.8D;
@@ -137,16 +144,16 @@ public class ClockSprite : DynamicTexture
 
         for (int pixelIdx = 0; pixelIdx < pixelCount; ++pixelIdx)
         {
-            int alpha = _clock[pixelIdx] >> 24 & 255;
-            int red = _clock[pixelIdx] >> 16 & 255;
-            int green = _clock[pixelIdx] >> 8 & 255;
-            int blue = _clock[pixelIdx] >> 0 & 255;
+            int alpha = (_clock[pixelIdx] >> 24) & 255;
+            int red = (_clock[pixelIdx] >> 16) & 255;
+            int green = (_clock[pixelIdx] >> 8) & 255;
+            int blue = (_clock[pixelIdx] >> 0) & 255;
 
             // Logic to detect the "clock face" area (looks for specific bluish-gray tint)
             if (Math.Abs(red - blue) < 10 && green < 40 && red > 100)
             {
-                double relX = -((pixelIdx % _resolution) * invResMinus1 - 0.5D);
-                double relY = (pixelIdx / _resolution) * invResMinus1 - 0.5D;
+                double relX = -(pixelIdx % _resolution * invResMinus1 - 0.5D);
+                double relY = pixelIdx / _resolution * invResMinus1 - 0.5D;
                 int origRed = red;
 
                 int dialX = (int)((relX * cosAngle + relY * sinAngle + 0.5D) * _dialResolution);
@@ -154,10 +161,10 @@ public class ClockSprite : DynamicTexture
 
                 int dialIdx = (dialX & (_dialResolution - 1)) + (dialY & (_dialResolution - 1)) * _dialResolution;
 
-                alpha = _dial[dialIdx] >> 24 & 255;
-                red = (_dial[dialIdx] >> 16 & 255) * red / 255;
-                green = (_dial[dialIdx] >> 8 & 255) * origRed / 255;
-                blue = (_dial[dialIdx] >> 0 & 255) * origRed / 255;
+                alpha = (_dial[dialIdx] >> 24) & 255;
+                red = ((_dial[dialIdx] >> 16) & 255) * red / 255;
+                green = ((_dial[dialIdx] >> 8) & 255) * origRed / 255;
+                blue = ((_dial[dialIdx] >> 0) & 255) * origRed / 255;
             }
 
             Pixels[pixelIdx * 4 + 0] = (byte)red;

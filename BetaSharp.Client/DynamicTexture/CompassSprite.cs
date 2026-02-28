@@ -4,15 +4,16 @@ using BetaSharp.Util.Maths;
 using java.awt.image;
 using java.io;
 using javax.imageio;
+using IOException = java.io.IOException;
 
-namespace BetaSharp.Client.Textures;
+namespace BetaSharp.Client.DynamicTexture;
 
-public class CompassSprite : DynamicTexture
+internal class CompassSprite : Rendering.Core.Textures.DynamicTexture
 {
-    private Minecraft _mc;
-    private int[] _compass = new int[256];
     private double _angle;
     private double _angleDelta;
+    private int[] _compass = new int[256];
+    private Minecraft _mc;
     private int _resolution = 16;
 
     public CompassSprite(Minecraft mc) : base(Item.Compass.getTextureId(0))
@@ -27,7 +28,7 @@ public class CompassSprite : DynamicTexture
         TextureManager tm = mc.textureManager;
         string atlasPath = "/gui/items.png";
 
-        var handle = tm.GetTextureId(atlasPath);
+        TextureHandle handle = tm.GetTextureId(atlasPath);
         if (handle.Texture != null)
         {
             _resolution = handle.Texture.Width / 16;
@@ -46,15 +47,15 @@ public class CompassSprite : DynamicTexture
 
         try
         {
-            using var stream = mc.texturePackList.SelectedTexturePack.GetResourceAsStream("gui/items.png");
+            using Stream? stream = mc.texturePackList.SelectedTexturePack.GetResourceAsStream("gui/items.png");
             if (stream != null)
             {
-                using var ms = new MemoryStream();
+                using MemoryStream ms = new();
                 stream.CopyTo(ms);
                 BufferedImage atlasImage = ImageIO.read(new ByteArrayInputStream(ms.ToArray()));
                 int localRes = atlasImage.getWidth() / 16;
-                int sourceX = (Sprite % 16) * localRes;
-                int sourceY = (Sprite / 16) * localRes;
+                int sourceX = Sprite % 16 * localRes;
+                int sourceY = Sprite / 16 * localRes;
 
                 if (localRes == _resolution)
                 {
@@ -68,13 +69,13 @@ public class CompassSprite : DynamicTexture
                     {
                         for (int x = 0; x < _resolution; x++)
                         {
-                            _compass[y * _resolution + x] = temp[(y * localRes / _resolution) * localRes + (x * localRes / _resolution)];
+                            _compass[y * _resolution + x] = temp[y * localRes / _resolution * localRes + x * localRes / _resolution];
                         }
                     }
                 }
             }
         }
-        catch (java.io.IOException ex)
+        catch (IOException ex)
         {
             ex.printStackTrace();
         }
@@ -86,10 +87,10 @@ public class CompassSprite : DynamicTexture
 
         for (int i = 0; i < pixelCount; ++i)
         {
-            int a = _compass[i] >> 24 & 255;
-            int r = _compass[i] >> 16 & 255;
-            int g = _compass[i] >> 8 & 255;
-            int b = _compass[i] >> 0 & 255;
+            int a = (_compass[i] >> 24) & 255;
+            int r = (_compass[i] >> 16) & 255;
+            int g = (_compass[i] >> 8) & 255;
+            int b = (_compass[i] >> 0) & 255;
             Pixels[i * 4 + 0] = (byte)r;
             Pixels[i * 4 + 1] = (byte)g;
             Pixels[i * 4 + 2] = (byte)b;
@@ -112,11 +113,25 @@ public class CompassSprite : DynamicTexture
         }
 
         double angleDiff;
-        for (angleDiff = targetAngle - _angle; angleDiff < -Math.PI; angleDiff += Math.PI * 2.0D) ;
-        while (angleDiff >= Math.PI) angleDiff -= Math.PI * 2.0D;
+        for (angleDiff = targetAngle - _angle; angleDiff < -Math.PI; angleDiff += Math.PI * 2.0D)
+        {
+            ;
+        }
 
-        if (angleDiff < -1.0D) angleDiff = -1.0D;
-        if (angleDiff > 1.0D) angleDiff = 1.0D;
+        while (angleDiff >= Math.PI)
+        {
+            angleDiff -= Math.PI * 2.0D;
+        }
+
+        if (angleDiff < -1.0D)
+        {
+            angleDiff = -1.0D;
+        }
+
+        if (angleDiff > 1.0D)
+        {
+            angleDiff = 1.0D;
+        }
 
         _angleDelta += angleDiff * 0.1D;
         _angleDelta *= 0.8D;
@@ -133,7 +148,10 @@ public class CompassSprite : DynamicTexture
             int pixelX = (int)(center + 0.5f + cosAngle * offset * 0.3D * needleScale);
             int pixelY = (int)(center - 0.5f - sinAngle * offset * 0.3D * 0.5D * needleScale);
 
-            if (pixelX < 0 || pixelX >= _resolution || pixelY < 0 || pixelY >= _resolution) continue;
+            if (pixelX < 0 || pixelX >= _resolution || pixelY < 0 || pixelY >= _resolution)
+            {
+                continue;
+            }
 
             int pixelIdx = pixelY * _resolution + pixelX;
             Pixels[pixelIdx * 4 + 0] = 100; // R
@@ -147,7 +165,10 @@ public class CompassSprite : DynamicTexture
             int pixelX = (int)(center + 0.5f + sinAngle * offset * 0.3D * needleScale);
             int pixelY = (int)(center - 0.5f + cosAngle * offset * 0.3D * 0.5D * needleScale);
 
-            if (pixelX < 0 || pixelX >= _resolution || pixelY < 0 || pixelY >= _resolution) continue;
+            if (pixelX < 0 || pixelX >= _resolution || pixelY < 0 || pixelY >= _resolution)
+            {
+                continue;
+            }
 
             int pixelIdx = pixelY * _resolution + pixelX;
             bool isPointyEnd = offset >= 0;

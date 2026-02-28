@@ -1,18 +1,18 @@
 using BetaSharp.Blocks;
 
-namespace BetaSharp.Client.Textures;
+namespace BetaSharp.Client.DynamicTexture;
 
-public class WaterSprite() : DynamicTexture(Block.FlowingWater.textureId)
+internal class WaterSideSprite : Rendering.Core.Textures.DynamicTexture
 {
-    private float[] _current = new float[256];
-    private float[] _next = new float[256];
     private readonly float[] _heat = new float[256];
     private readonly float[] _heatDelta = new float[256];
+    private float[] _current = new float[256];
+    private float[] _next = new float[256];
+    private int _ticks;
 
-    public override void Setup(Minecraft mc)
-    {
-        TryLoadCustomTexture(mc, "custom_water_still.png");
-    }
+    public WaterSideSprite() : base(Block.FlowingWater.textureId + 1) => Replicate = 2;
+
+    public override void Setup(Minecraft mc) => TryLoadCustomTexture(mc, "custom_water_flowing.png");
 
     public override void tick()
     {
@@ -23,20 +23,22 @@ public class WaterSprite() : DynamicTexture(Block.FlowingWater.textureId)
             return;
         }
 
+        ++_ticks;
+
         for (int x = 0; x < 16; ++x)
         {
             for (int y = 0; y < 16; ++y)
             {
                 float accumulatedFlow = 0.0F;
 
-                for (int nx = x - 1; nx <= x + 1; ++nx)
+                for (int ny = y - 2; ny <= y; ++ny)
                 {
-                    int sampleX = nx & 15;
-                    int sampleY = y & 15;
+                    int sampleX = x & 15;
+                    int sampleY = ny & 15;
                     accumulatedFlow += _current[sampleX + sampleY * 16];
                 }
 
-                _next[x + y * 16] = accumulatedFlow / 3.3F + _heat[x + y * 16] * 0.8F;
+                _next[x + y * 16] = accumulatedFlow / 3.2F + _heat[x + y * 16] * 0.8F;
             }
         }
 
@@ -51,9 +53,9 @@ public class WaterSprite() : DynamicTexture(Block.FlowingWater.textureId)
                     _heat[x + y * 16] = 0.0F;
                 }
 
-                _heatDelta[x + y * 16] -= 0.1F;
+                _heatDelta[x + y * 16] -= 0.3F;
 
-                if (Random.Shared.NextDouble() < 0.05D)
+                if (Random.Shared.NextDouble() < 0.2D)
                 {
                     _heatDelta[x + y * 16] = 0.5F;
                 }
@@ -64,10 +66,18 @@ public class WaterSprite() : DynamicTexture(Block.FlowingWater.textureId)
 
         for (int pixelIndex = 0; pixelIndex < 256; ++pixelIndex)
         {
-            float intensity = _current[pixelIndex];
+            // The "- _ticks * 16" offset animates the downward flow
+            float intensity = _current[(pixelIndex - _ticks * 16) & 255];
 
-            if (intensity > 1.0F) intensity = 1.0F;
-            if (intensity < 0.0F) intensity = 0.0F;
+            if (intensity > 1.0F)
+            {
+                intensity = 1.0F;
+            }
+
+            if (intensity < 0.0F)
+            {
+                intensity = 0.0F;
+            }
 
             float intensitySq = intensity * intensity;
             int r = (int)(32.0F + intensitySq * 32.0F);

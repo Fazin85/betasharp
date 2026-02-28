@@ -1,7 +1,6 @@
-using BetaSharp.Client.Rendering.Core;
 using Silk.NET.Maths;
 
-namespace BetaSharp.Client.Textures;
+namespace BetaSharp.Client.Rendering.Core.Textures;
 
 public struct Quad
 {

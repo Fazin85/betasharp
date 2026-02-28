@@ -1,25 +1,16 @@
 using BetaSharp.Blocks;
 using BetaSharp.Util.Maths;
 
-namespace BetaSharp.Client.Textures;
+namespace BetaSharp.Client.DynamicTexture;
 
-public class LavaSideSprite : DynamicTexture
+internal class LavaSprite() : Rendering.Core.Textures.DynamicTexture(Block.FlowingLava.textureId)
 {
-    private float[] _current = new float[256];
-    private float[] _next = new float[256];
     private readonly float[] _heat = new float[256];
     private readonly float[] _heatDelta = new float[256];
-    private int _ticks;
+    private float[] _current = new float[256];
+    private float[] _next = new float[256];
 
-    public LavaSideSprite() : base(Block.FlowingLava.textureId + 1)
-    {
-        Replicate = 2;
-    }
-
-    public override void Setup(Minecraft mc)
-    {
-        TryLoadCustomTexture(mc, "custom_lava_flowing.png");
-    }
+    public override void Setup(Minecraft mc) => TryLoadCustomTexture(mc, "custom_lava_still.png");
 
     public override void tick()
     {
@@ -30,8 +21,6 @@ public class LavaSideSprite : DynamicTexture
             return;
         }
 
-        ++_ticks;
-
         for (int x = 0; x < 16; ++x)
         {
             for (int y = 0; y < 16; ++y)
@@ -39,17 +28,21 @@ public class LavaSideSprite : DynamicTexture
                 float accumulatedHeat = 0.0F;
                 int distortX = (int)(MathHelper.Sin(y * (float)Math.PI * 2.0F / 16.0F) * 1.2F);
                 int distortY = (int)(MathHelper.Sin(x * (float)Math.PI * 2.0F / 16.0F) * 1.2F);
-                for (int nx = x - 1; nx <= x + 1; ++nx)
+
+                int nx;
+                for (nx = x - 1; nx <= x + 1; ++nx)
                 {
-                    for (int ny = y - 1; ny <= y + 1; ++ny)
+                    int ny;
+                    for (ny = y - 1; ny <= y + 1; ++ny)
                     {
-                        int sampleX = nx + distortX & 15;
-                        int sampleY = ny + distortY & 15;
+                        int sampleX = (nx + distortX) & 15;
+                        int sampleY = (ny + distortY) & 15;
                         accumulatedHeat += _current[sampleX + sampleY * 16];
                     }
                 }
 
-                _next[x + y * 16] = accumulatedHeat / 10.0F + (_heat[(x + 0 & 15) + (y + 0 & 15) * 16] + _heat[(x + 1 & 15) + (y + 0 & 15) * 16] + _heat[(x + 1 & 15) + (y + 1 & 15) * 16] + _heat[(x + 0 & 15) + (y + 1 & 15) * 16]) / 4.0F * 0.8F;
+                _next[x + y * 16] = accumulatedHeat / 10.0F +
+                                    (_heat[((x + 0) & 15) + ((y + 0) & 15) * 16] + _heat[((x + 1) & 15) + ((y + 0) & 15) * 16] + _heat[((x + 1) & 15) + ((y + 1) & 15) * 16] + _heat[((x + 0) & 15) + ((y + 1) & 15) * 16]) / 4.0F * 0.8F;
                 _heat[x + y * 16] += _heatDelta[x + y * 16] * 0.01F;
 
                 if (_heat[x + y * 16] < 0.0F)
@@ -70,11 +63,17 @@ public class LavaSideSprite : DynamicTexture
 
         for (int pixelIndex = 0; pixelIndex < 256; ++pixelIndex)
         {
-            // The "- _ticks / 3 * 16" offset creates the downward flowing animation
-            float intensity = _current[pixelIndex - _ticks / 3 * 16 & 255] * 2.0F;
+            float intensity = _current[pixelIndex] * 2.0F;
 
-            if (intensity > 1.0F) intensity = 1.0F;
-            if (intensity < 0.0F) intensity = 0.0F;
+            if (intensity > 1.0F)
+            {
+                intensity = 1.0F;
+            }
+
+            if (intensity < 0.0F)
+            {
+                intensity = 0.0F;
+            }
 
             int r = (int)(intensity * 100.0F + 155.0F);
             int g = (int)(intensity * intensity * 255.0F);

@@ -1,17 +1,20 @@
 using BetaSharp.Blocks;
 using BetaSharp.Util.Maths;
 
-namespace BetaSharp.Client.Textures;
+namespace BetaSharp.Client.DynamicTexture;
 
-public class NetherPortalSprite() : DynamicTexture(Block.NetherPortal.textureId)
+internal class NetherPortalSprite() : Rendering.Core.Textures.DynamicTexture(Block.NetherPortal.textureId)
 {
-    private int _ticks;
     private readonly byte[][] _frames = new byte[32][];
+    private int _ticks;
 
     public override void Setup(Minecraft mc)
     {
         TryLoadCustomTexture(mc, "custom_portal.png");
-        if (CustomFrames != null) return;
+        if (CustomFrames != null)
+        {
+            return;
+        }
 
         JavaRandom random = new(100L);
         for (int i = 0; i < _frames.Length; i++)
@@ -34,10 +37,25 @@ public class NetherPortalSprite() : DynamicTexture(Block.NetherPortal.textureId)
                         float distX = (x - offsetX) / 16.0F * 2.0F;
                         float distY = (y - offsetY) / 16.0F * 2.0F;
 
-                        if (distX < -1.0F) distX += 2.0F;
-                        if (distX >= 1.0F) distX -= 2.0F;
-                        if (distY < -1.0F) distY += 2.0F;
-                        if (distY >= 1.0F) distY -= 2.0F;
+                        if (distX < -1.0F)
+                        {
+                            distX += 2.0F;
+                        }
+
+                        if (distX >= 1.0F)
+                        {
+                            distX -= 2.0F;
+                        }
+
+                        if (distY < -1.0F)
+                        {
+                            distY += 2.0F;
+                        }
+
+                        if (distY >= 1.0F)
+                        {
+                            distY -= 2.0F;
+                        }
 
                         float sqDist = distX * distX + distY * distY;
                         float swirlPhase = (float)Math.Atan2(distY, distX) + (frameIdx / 32.0F * (float)Math.PI * 2.0F - sqDist * 10.0F + layer * 2) * (layer * 2 - 1);

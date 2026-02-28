@@ -1,12 +1,11 @@
 using BetaSharp.Client.Options;
 using BetaSharp.Client.Resource.Pack;
-using BetaSharp.Client.Textures;
 using Silk.NET.OpenGL.Legacy;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.Processing;
-using static BetaSharp.Client.Textures.TextureAtlasMipmapGenerator;
+using static BetaSharp.Client.Rendering.Core.Textures.TextureAtlasMipmapGenerator;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Client.Rendering.Core.Textures;
@@ -268,7 +267,7 @@ public class TextureManager : IDisposable
 
             var newTexture = new GLTexture(entry.Key);
             entry.Value.Texture = newTexture;
-            
+
             try
             {
                 using Image<Rgba32> img = LoadImageFromResource(entry.Key);
@@ -282,7 +281,7 @@ public class TextureManager : IDisposable
                 Load(_missingTextureImage, newTexture, false);
             }
         }
-        
+
         var oldImages = new Dictionary<uint, (Image<Rgba32> Image, TextureHandle Handle)>(_images);
         _images.Clear();
         foreach (KeyValuePair<uint, (Image<Rgba32> Image, TextureHandle Handle)> entry in oldImages)
@@ -294,7 +293,7 @@ public class TextureManager : IDisposable
             Load(entry.Value.Image, newTexture, false);
             _images[newTexture.Id] = entry.Value;
         }
-    
+
         foreach (string key in new List<string>(_colors.Keys)) GetColors(key);
 
         foreach (DynamicTexture dynamicTexture in _dynamicTextures)
@@ -310,10 +309,10 @@ public class TextureManager : IDisposable
             texture.tick();
 
             string atlasPath = texture.Atlas == DynamicTexture.FxImage.Terrain ? "/terrain.png" : "/gui/items.png";
-            
+
             TextureHandle atlasHandle = _textures.FirstOrDefault(x => x.Key.EndsWith(atlasPath)).Value;
             atlasHandle ??= GetTextureId(atlasPath);
-            
+
             GLTexture? atlasTexture = atlasHandle.Texture;
             if (atlasTexture == null) continue;
 
@@ -390,7 +389,7 @@ public class TextureManager : IDisposable
                 int srcX = x / scale;
                 int srcIdx = (srcY * srcSize + srcX) * 4;
                 int dstIdx = (y * dstSize + x) * 4;
-                
+
                 dstSpan[dstIdx] = srcSpan[srcIdx];
                 dstSpan[dstIdx + 1] = srcSpan[srcIdx + 1];
                 dstSpan[dstIdx + 2] = srcSpan[srcIdx + 2];

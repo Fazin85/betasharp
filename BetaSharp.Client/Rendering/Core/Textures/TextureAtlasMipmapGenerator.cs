@@ -2,7 +2,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
-namespace BetaSharp.Client.Textures;
+namespace BetaSharp.Client.Rendering.Core.Textures;
 
 public static class TextureAtlasMipmapGenerator
 {    public static Image<Rgba32>[] GenerateMipmaps(Image<Rgba32> atlas, int tileSize)
