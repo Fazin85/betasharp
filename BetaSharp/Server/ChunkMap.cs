@@ -52,52 +52,48 @@ public class ChunkMap
         if (newDistance < oldDistance)
         {
             // Unload chunks that are now out of view distance
-            for (int i = 0; i < players.Count; i++)
+            foreach (var player in players)
             {
-                ServerPlayerEntity player = players[i];
                 int px = (int)player.lastX >> 4;
                 int pz = (int)player.lastZ >> 4;
 
-                for (int cx = px - oldDistance; cx <= px + oldDistance; cx++)
+                foreach (var item in GetChunks(player))
                 {
-                    for (int cz = pz - oldDistance; cz <= pz + oldDistance; cz++)
+                    if (isWithinViewDistance(item.x, item.z, px, pz))
                     {
-                        if (!isWithinViewDistance(cx, cz, px, pz))
-                        {
-                            TrackedChunk chunk = GetOrCreateChunk(cx, cz, false);
-                            chunk?.removePlayer(player);
-                        }
+                        continue;
                     }
+
+                    TrackedChunk chunk = GetOrCreateChunk(item.x, item.z, false);
+                    chunk?.removePlayer(player);
                 }
             }
         }
         else if (newDistance > oldDistance)
         {
             // Load chunks that are now within view distance
-            for (int i = 0; i < players.Count; i++)
+            foreach (var player in players)
             {
-                ServerPlayerEntity player = players[i];
                 int px = (int)player.lastX >> 4;
                 int pz = (int)player.lastZ >> 4;
 
-                for (int cx = px - newDistance; cx <= px + newDistance; cx++)
+                foreach (var item in GetChunks(player))
                 {
-                    for (int cz = pz - newDistance; cz <= pz + newDistance; cz++)
+                    if (isWithinOldViewDistance(item.x, item.z, px, pz, oldDistance))
                     {
-                        if (!isWithinOldViewDistance(cx, cz, px, pz, oldDistance))
+                        continue;
+                    }
+
+                    if (GetOrCreateChunk(item.x, item.z, false) is TrackedChunk chunk)
+                    {
+                        if (!chunk.HasPlayer(player))
                         {
-                            if (GetOrCreateChunk(cx, cz, false) is TrackedChunk chunk)
-                            {
-                                if (!chunk.HasPlayer(player))
-                                {
-                                    chunk.addPlayer(player);
-                                }
-                            }
-                            else
-                            {
-                                loadQueue.Add(cx, cz, player);
-                            }
+                            chunk.addPlayer(player);
                         }
+                    }
+                    else
+                    {
+                        loadQueue.Add(item.x, item.z, player);
                     }
                 }
             }
@@ -113,9 +109,9 @@ public class ChunkMap
 
     public void updateChunks()
     {
-        for (int var1 = 0; var1 < chunksToUpdate.Count; var1++)
+        foreach (var chunk in chunksToUpdate)
         {
-            chunksToUpdate[var1].updateChunk();
+            chunk.updateChunk();
         }
 
         chunksToUpdate.Clear();
@@ -153,64 +149,18 @@ public class ChunkMap
 
     public void addPlayer(ServerPlayerEntity player)
     {
-        int var2 = (int)player.x >> 4;
-        int var3 = (int)player.z >> 4;
         player.lastX = player.x;
         player.lastZ = player.z;
-        int var4 = 0;
-        int var5 = viewDistance;
-        int var6 = 0;
-        int var7 = 0;
-        if (GetOrCreateChunk(var2, var3, false) is TrackedChunk centerChunk)
-        {
-            centerChunk.addPlayer(player);
-        }
-        else
-        {
-            loadQueue.Add(var2, var3, player);
-        }
 
-        for (int var8 = 1; var8 <= var5 * 2; var8++)
+        foreach (var item in GetChunks(player))
         {
-            for (int var9 = 0; var9 < 2; var9++)
+            if (GetOrCreateChunk(item.X, item.Z, false) is { } centerChunk)
             {
-                int[] var10 = DIRECTIONS[var4++ % 4];
-
-                for (int var11 = 0; var11 < var8; var11++)
-                {
-                    var6 += var10[0];
-                    var7 += var10[1];
-                    if (GetOrCreateChunk(var2 + var6, var3 + var7, false) is TrackedChunk chunk)
-                    {
-                        if (!chunk.HasPlayer(player))
-                        {
-                            chunk.addPlayer(player);
-                        }
-                    }
-                    else
-                    {
-                        loadQueue.Add(var2 + var6, var3 + var7, player);
-                    }
-                }
-            }
-        }
-
-        var4 %= 4;
-
-        for (int var13 = 0; var13 < var5 * 2; var13++)
-        {
-            var6 += DIRECTIONS[var4][0];
-            var7 += DIRECTIONS[var4][1];
-            if (GetOrCreateChunk(var2 + var6, var3 + var7, false) is TrackedChunk chunk)
-            {
-                if (!chunk.HasPlayer(player))
-                {
-                    chunk.addPlayer(player);
-                }
+                centerChunk.addPlayer(player);
             }
             else
             {
-                loadQueue.Add(var2 + var6, var3 + var7, player);
+                loadQueue.Add(item.X, item.Z, player);
             }
         }
 
@@ -219,16 +169,10 @@ public class ChunkMap
 
     public void removePlayer(ServerPlayerEntity player)
     {
-        int var2 = (int)player.lastX >> 4;
-        int var3 = (int)player.lastZ >> 4;
-
-        for (int var4 = var2 - viewDistance; var4 <= var2 + viewDistance; var4++)
+        foreach (var item in GetChunks(player))
         {
-            for (int var5 = var3 - viewDistance; var5 <= var3 + viewDistance; var5++)
-            {
-                TrackedChunk var6 = GetOrCreateChunk(var4, var5, false);
-                var6?.removePlayer(player);
-            }
+            var chunk = GetOrCreateChunk(item.X, item.Z, false);
+            chunk?.removePlayer(player);
         }
 
         players.Remove(player);
@@ -244,55 +188,87 @@ public class ChunkMap
 
     public void updatePlayerChunks(ServerPlayerEntity player)
     {
-        int var2 = (int)player.x >> 4;
-        int var3 = (int)player.z >> 4;
-        double var4 = player.lastX - player.x;
-        double var6 = player.lastZ - player.z;
-        double var8 = var4 * var4 + var6 * var6;
-        if (!(var8 < 64.0))
+        int playerChunkCenterX = (int)player.x >> 4;
+        int playerChunkCenterZ = (int)player.z >> 4;
+        double playerDeltaX = player.lastX - player.x;
+        double playerDeltaZ = player.lastZ - player.z;
+        double playerDeltaSquared = playerDeltaX * playerDeltaX + playerDeltaZ * playerDeltaZ;
+        if (playerDeltaSquared < 64.0)
         {
-            int var10 = (int)player.lastX >> 4;
-            int var11 = (int)player.lastZ >> 4;
-            int var12 = var2 - var10;
-            int var13 = var3 - var11;
-            if (var12 != 0 || var13 != 0)
-            {
-                for (int var14 = var2 - viewDistance; var14 <= var2 + viewDistance; var14++)
-                {
-                    for (int var15 = var3 - viewDistance; var15 <= var3 + viewDistance; var15++)
-                    {
-                        if (!isWithinViewDistance(var14, var15, var10, var11))
-                        {
-                            if (GetOrCreateChunk(var14, var15, false) is TrackedChunk chunk)
-                            {
-                                if (!chunk.HasPlayer(player))
-                                {
-                                    chunk.addPlayer(player);
-                                }
-                            }
-                            else
-                            {
-                                loadQueue.Add(var14, var15, player);
-                            }
-                        }
+            return;
+        }
 
-                        if (!isWithinViewDistance(var14 - var12, var15 - var13, var2, var3))
+        int playerLastChunkCenterX = (int)player.lastX >> 4;
+        int playerLastChunkCenterZ = (int)player.lastZ >> 4;
+        int playerChunkCenterDeltaX = playerChunkCenterX - playerLastChunkCenterX;
+        int playerChunkCenterDeltaZ = playerChunkCenterZ - playerLastChunkCenterZ;
+        if (playerChunkCenterDeltaX == 0 && playerChunkCenterDeltaZ == 0)
+        {
+            return;
+        }
+
+        for (int x = playerChunkCenterX - viewDistance; x <= playerChunkCenterX + viewDistance; x++)
+        {
+            for (int z = playerChunkCenterZ - viewDistance; z <= playerChunkCenterZ + viewDistance; z++)
+            {
+                if (!isWithinViewDistance(x, z, playerLastChunkCenterX, playerLastChunkCenterZ))
+                {
+                    if (GetOrCreateChunk(x, z, false) is { } chunk)
+                    {
+                        if (!chunk.HasPlayer(player))
                         {
-                            TrackedChunk var16 = GetOrCreateChunk(var14 - var12, var15 - var13, false);
-                            var16?.removePlayer(player);
+                            chunk.addPlayer(player);
                         }
+                    }
+                    else
+                    {
+                        loadQueue.Add(x, z, player);
                     }
                 }
 
-                player.lastX = player.x;
-                player.lastZ = player.z;
+                if (!isWithinViewDistance(x - playerChunkCenterDeltaX, z - playerChunkCenterDeltaZ, playerChunkCenterX, playerChunkCenterZ))
+                {
+                    TrackedChunk chunk = GetOrCreateChunk(x - playerChunkCenterDeltaX, z - playerChunkCenterDeltaZ, false);
+                    chunk?.removePlayer(player);
+                }
             }
         }
+
+        player.lastX = player.x;
+        player.lastZ = player.z;
     }
 
     public int getBlockViewDistance()
     {
         return viewDistance * 16 - 16;
+    }
+
+    private ReadOnlySpan<ChunkPos> GetChunks(ServerPlayerEntity player)
+    {
+        int playerChunkX = (int)player.x >> 4;
+        int playerChunkZ = (int)player.z >> 4;
+        int diameter = viewDistance * 2 + 1;
+        var chunks = new ChunkPos[diameter * diameter];
+        int index = 0;
+
+        chunks[index++] = new ChunkPos(playerChunkX, playerChunkZ);
+
+        for (int radius = 1; radius <= viewDistance; radius++)
+        {
+            for (int dx = -radius; dx <= radius; dx++)
+                chunks[index++] = new ChunkPos(playerChunkX + dx, playerChunkZ - radius);
+
+            for (int dz = -radius + 1; dz <= radius; dz++)
+                chunks[index++] = new ChunkPos(playerChunkX + radius, playerChunkZ + dz);
+
+            for (int dx = radius - 1; dx >= -radius; dx--)
+                chunks[index++] = new ChunkPos(playerChunkX + dx, playerChunkZ + radius);
+
+            for (int dz = radius - 1; dz >= -radius + 1; dz--)
+                chunks[index++] = new ChunkPos(playerChunkX - radius, playerChunkZ + dz);
+        }
+
+        return chunks;
     }
 
     internal class TrackedChunk
