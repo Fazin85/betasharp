@@ -49,7 +49,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
     {
         moved = false;
         connection.tick();
-        if (ticks - lastKeepAliveTime > 20)
+        if (ticks++ - lastKeepAliveTime > 20)
         {
             sendPacket(new KeepAlivePacket());
         }
@@ -477,7 +477,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
                     continue;
                 }
 
-                if (ChatAllowedCharacters.allowedCharacters.IndexOf(var2[var3]) < 0)
+                if (!ChatAllowedCharacters.IsAllowedCharacter(var2[var3]))
                 {
                     disconnect("Illegal characters in chat");
                     return;
@@ -664,7 +664,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
                 {
                     for (int var6 = 0; var6 < packet.text[var9].Length; var6++)
                     {
-                        if (ChatAllowedCharacters.allowedCharacters.IndexOf(packet.text[var9][var6]) < 0)
+                        if (!ChatAllowedCharacters.IsAllowedCharacter(packet.text[var9][var6]))
                         {
                             var5 = false;
                         }
