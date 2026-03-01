@@ -12,6 +12,7 @@ namespace BetaSharp.Client.Rendering;
 
 public class TextRenderer
 {
+    private const char ColorCodeChar = '§';
     private const string FontPath = "font/Monocraft.ttc";
     private const int AtlasSize = 2048;
     private const int AtlasFontSize = 64;
@@ -98,7 +99,10 @@ public class TextRenderer
         }
         if (_atlasY + cellH > AtlasSize)
         {
-            return new GlyphInfo(advanceWidth, 0, 0, 0, 0, 0, 0);
+            _glyphCache.Clear();
+            ClearAtlasRegion(0, 0, AtlasSize, AtlasSize);
+            _atlasX = 0;
+            _atlasY = 0;
         }
 
         using (Image<Rgba32> glyphImage = new Image<Rgba32>(cellW, cellH))
@@ -109,18 +113,10 @@ public class TextRenderer
             glyphImage.Mutate(ctx => ctx.DrawText(
                 c.ToString(),
                 _font,
-                SixLabors.ImageSharp.Color.White,
+                Color.White,
                 new PointF(drawX, drawY)));
 
-            glyphImage.ProcessPixelRows(_atlasImage, (srcAccessor, dstAccessor) =>
-            {
-                for (int gy = 0; gy < cellH; gy++)
-                {
-                    Span<Rgba32> srcRow = srcAccessor.GetRowSpan(gy);
-                    Span<Rgba32> dstRow = dstAccessor.GetRowSpan(_atlasY + gy);
-                    srcRow.Slice(0, cellW).CopyTo(dstRow.Slice(_atlasX, cellW));
-                }
-            });
+            _atlasImage.Mutate(ctx => ctx.DrawImage(glyphImage, new Point(_atlasX, _atlasY), 1f));
         }
 
         float u0 = (float)_atlasX / AtlasSize;
@@ -139,7 +135,7 @@ public class TextRenderer
     private unsafe void UploadAtlasSubImage(int x, int y, int width, int height)
     {
         if (fontTextureName?.Texture == null) return;
-        byte[] region = new byte[width * height * 4];
+        byte[] region = System.Buffers.ArrayPool<byte>.Shared.Rent(width * height * 4);
         int idx = 0;
         _atlasImage.ProcessPixelRows(accessor =>
         {
@@ -191,7 +187,7 @@ public class TextRenderer
 
         for (int i = 0; i < text.Length; ++i)
         {
-            for (; text.Length > i + 1 && text[i] == 167; i += 2)
+            for (; text.Length > i + 1 && text[i] == ColorCodeChar; i += 2)
             {
                 int colorCode = HexToDec(text[i + 1]);
                 tessellator.setColorRGBA(Guis.Color.FromColorCode(colorCode, (byte)color.A, darken));
@@ -232,7 +228,7 @@ public class TextRenderer
         float total = 0;
         for (int i = 0; i < text.Length; ++i)
         {
-            if (text[i] == 167)
+            if (text[i] == ColorCodeChar)
                 ++i;
             else
                 total += GetOrCreateGlyph(text[i]).AdvanceWidth * DisplayScale;
@@ -247,7 +243,7 @@ public class TextRenderer
         int i = 0;
         for (; i < text.Length; ++i)
         {
-            if (text[i] == 167)
+            if (text[i] == ColorCodeChar)
             {
                 ++i;
                 continue;
