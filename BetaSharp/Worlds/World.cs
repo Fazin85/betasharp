@@ -54,6 +54,7 @@ public abstract class World : BlockView
     public List<EntityPlayer> players = [];
     private bool _allPlayersSleeping;
     public List<Entity> entities = [];
+    private readonly Dictionary<int, Entity> _entitiesById = new();
     public List<Entity> globalEntities = [];
     private readonly List<Entity> _entitiesToUnload = [];
 
@@ -934,11 +935,9 @@ public abstract class World : BlockView
         }
 
         GetChunk(chunkX, chunkZ).AddEntity(entity);
-
         entities.Add(entity);
-
+        _entitiesById[entity.id] = entity;
         NotifyEntityAdded(entity);
-
         return true;
     }
 
@@ -995,6 +994,7 @@ public abstract class World : BlockView
         }
 
         entities.Remove(entity);
+        _entitiesById.Remove(entity.id);
         NotifyEntityRemoved(entity);
     }
 
@@ -1044,18 +1044,28 @@ public abstract class World : BlockView
         List<Entity> nearbyEntities = new List<Entity>();
         getEntities(entity, area.Expand(expansion, expansion, expansion), nearbyEntities);
 
+        int collisionCount = 0;
+        const int MAX_COLLISIONS = 24;
+
         for (int i = 0; i < nearbyEntities.Count; ++i)
         {
+            if (collisionCount >= MAX_COLLISIONS)
+            {
+                break;
+            }
+
             Box? entityBox = nearbyEntities[i].getBoundingBox();
             if (entityBox != null && entityBox.Value.Intersects(area))
             {
                 collidingBoundingBoxes.Add(entityBox.Value);
+                collisionCount++;
             }
 
             entityBox = entity.getCollisionAgainstShape(nearbyEntities[i]);
             if (entityBox != null && entityBox.Value.Intersects(area))
             {
                 collidingBoundingBoxes.Add(entityBox.Value);
+                collisionCount++;
             }
         }
 
@@ -1273,11 +1283,6 @@ public abstract class World : BlockView
         Profiler.Stop("updateEntites.updateWeatherEffects");
 
         Profiler.Start("updateEntites.clearUnloadedEntities");
-        foreach (var entity in _entitiesToUnload)
-        {
-            entities.Remove(entity);
-        }
-
         for (int i = 0; i < _entitiesToUnload.Count; ++i)
         {
             Entity entityToUnload = _entitiesToUnload[i];
@@ -1330,6 +1335,7 @@ public abstract class World : BlockView
                 }
 
                 entities.RemoveAt(i--);
+                _entitiesById.Remove(entity.id);
                 NotifyEntityRemoved(entity);
             }
         }
@@ -2364,9 +2370,9 @@ public abstract class World : BlockView
     public void addEntities(List<Entity> entities)
     {
         this.entities.AddRange(entities);
-
         for (int i = 0; i < entities.Count; ++i)
         {
+            _entitiesById[entities[i].id] = entities[i];
             NotifyEntityAdded(entities[i]);
         }
     }
@@ -2697,13 +2703,9 @@ public abstract class World : BlockView
             {
                 GetChunk(chunkX, chunkZ).RemoveEntity(entity);
             }
+            _entitiesById.Remove(entity.id);
+            NotifyEntityRemoved(entity);
         }
-
-        for (int i = 0; i < _entitiesToUnload.Count; ++i)
-        {
-            NotifyEntityRemoved(_entitiesToUnload[i]);
-        }
-
         _entitiesToUnload.Clear();
 
         for (int i = 0; i < entities.Count; ++i)
@@ -2711,11 +2713,10 @@ public abstract class World : BlockView
             var entity = entities[i];
             if (entity.vehicle != null)
             {
-                if (!entity.vehicle.dead && Equals(entity.vehicle.passenger, entity))
+                if (!entity.vehicle.dead && entity.vehicle.passenger == entity)
                 {
                     continue;
                 }
-
                 entity.vehicle.passenger = null;
                 entity.vehicle = null;
             }
@@ -2730,6 +2731,7 @@ public abstract class World : BlockView
                 }
 
                 entities.RemoveAt(i--);
+                _entitiesById.Remove(entity.id);
                 NotifyEntityRemoved(entity);
             }
         }
@@ -2865,5 +2867,10 @@ public abstract class World : BlockView
         {
             EventListeners[index].worldEvent(player, @event, x, y, z, data);
         }
+    }
+
+    public Entity? getEntityByID(int id)
+    {
+        return _entitiesById.TryGetValue(id, out var entity) ? entity : null;
     }
 }

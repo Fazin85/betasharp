@@ -580,6 +580,11 @@ public class ClientNetworkHandler : NetHandler
 
     private Entity getEntityByID(int entityId)
     {
+        if (mc == null || mc.player == null || worldClient == null)
+        {
+            return null;
+        }
+
         return entityId == mc.player.id ? mc.player : worldClient.GetEntity(entityId);
     }
 
