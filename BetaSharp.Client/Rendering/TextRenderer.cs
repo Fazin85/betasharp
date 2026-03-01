@@ -1,86 +1,165 @@
+using System.Runtime.InteropServices;
 using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Core.Textures;
-using BetaSharp.Util;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.Fonts;
 
 namespace BetaSharp.Client.Rendering;
 
 public class TextRenderer
 {
-    private readonly int[] _charWidth = new int[256];
-    public TextureHandle? fontTextureName;
+    private const string FontPath = "font/Monocraft.ttc";
+    private const int AtlasSize = 2048;
+    private const int AtlasFontSize = 32;
+    private const int GlyphPadding = 2;
+    private const float DisplayScale = 0.25f;
+
+    private readonly Font _font;
+    private readonly TextOptions _textOptions;
+    private readonly Image<Rgba32> _atlasImage;
+    private readonly Dictionary<char, GlyphInfo> _glyphCache = [];
+    private int _atlasX;
+    private int _atlasY;
+    private readonly int _rowHeight;
+
+    public TextureHandle? fontTextureName { get; }
+
+    private readonly TextureManager _textureManager;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private readonly struct GlyphInfo(
+        float advanceWidth,
+        float u0, float v0, float u1, float v1,
+        float width, float height)
+    {
+        public readonly float AdvanceWidth = advanceWidth;
+        public readonly float U0 = u0, V0 = v0, U1 = u1, V1 = v1;
+        public readonly float Width = width, Height = height;
+    }
 
     public TextRenderer(GameOptions options, TextureManager textureManager)
     {
-        Image<Rgba32> fontImage;
-        try
+        _textureManager = textureManager;
+        string path = Path.Combine(AppContext.BaseDirectory, "font", "Monocraft.ttc");
+        if (!File.Exists(path))
         {
-            AssetManager.Asset asset = AssetManager.Instance.getAsset("font/default.png");
-            using var stream = new MemoryStream(asset.getBinaryContent());
-            fontImage = Image.Load<Rgba32>(stream);
+            path = FontPath;
         }
-        catch (Exception ex)
+        if (!File.Exists(path))
         {
-            throw new InvalidOperationException("Failed to load font", ex);
+            throw new InvalidOperationException($"Font file not found. Tried: {Path.Combine(AppContext.BaseDirectory, "font", "Monocraft.ttc")} and {FontPath}");
         }
 
-        int imgWidth = fontImage.Width;
-        int imgHeight = fontImage.Height;
-        int[] pixels = new int[imgWidth * imgHeight];
+        var collection = new FontCollection();
+        IEnumerable<FontFamily> families = collection.AddCollection(path);
+        FontFamily family = families.First();
+        _font = family.CreateFont(AtlasFontSize);
+        _textOptions = new TextOptions(_font);
 
-        fontImage.ProcessPixelRows(accessor =>
+        _rowHeight = AtlasFontSize + GlyphPadding;
+        _atlasImage = new Image<Rgba32>(AtlasSize, AtlasSize);
+        ClearAtlasRegion(0, 0, AtlasSize, AtlasSize);
+
+        fontTextureName = textureManager.Load(_atlasImage);
+        fontTextureName.Texture?.SetFilter(Silk.NET.OpenGL.Legacy.TextureMinFilter.Nearest, Silk.NET.OpenGL.Legacy.TextureMagFilter.Nearest);
+    }
+
+    private static void ClearAtlasRegion(Image<Rgba32> image, int x, int y, int w, int h)
+    {
+        image.Mutate(ctx => ctx.Fill(SixLabors.ImageSharp.Color.Transparent, new Rectangle(x, y, w, h)));
+    }
+
+    private void ClearAtlasRegion(int x, int y, int w, int h)
+    {
+        ClearAtlasRegion(_atlasImage, x, y, w, h);
+    }
+
+    private GlyphInfo GetOrCreateGlyph(char c)
+    {
+        if (_glyphCache.TryGetValue(c, out GlyphInfo info))
+            return info;
+
+        ReadOnlySpan<char> charSpan = stackalloc char[] { c };
+        FontRectangle advanceRect = TextMeasurer.MeasureAdvance(charSpan, _textOptions);
+        FontRectangle boundsRect = TextMeasurer.MeasureBounds(charSpan, _textOptions);
+
+        float advanceWidth = advanceRect.Width;
+        int cellW = Math.Max(1, (int)Math.Ceiling(advanceRect.Width) + GlyphPadding);
+        int cellH = _rowHeight;
+
+        if (_atlasX + cellW > AtlasSize)
         {
-            for (int y = 0; y < accessor.Height; y++)
+            _atlasX = 0;
+            _atlasY += _rowHeight;
+        }
+        if (_atlasY + cellH > AtlasSize)
+        {
+            return new GlyphInfo(advanceWidth, 0, 0, 0, 0, 0, 0);
+        }
+
+        using (Image<Rgba32> glyphImage = new Image<Rgba32>(cellW, cellH))
+        {
+            ClearAtlasRegion(glyphImage, 0, 0, cellW, cellH);
+            float drawX = (float)(-boundsRect.X) + 1f;
+            float drawY = (float)(-boundsRect.Y) + 1f;
+            glyphImage.Mutate(ctx => ctx.DrawText(
+                c.ToString(),
+                _font,
+                SixLabors.ImageSharp.Color.White,
+                new PointF(drawX, drawY)));
+
+            glyphImage.ProcessPixelRows(_atlasImage, (srcAccessor, dstAccessor) =>
             {
-                Span<Rgba32> row = accessor.GetRowSpan(y);
-                for (int x = 0; x < accessor.Width; x++)
+                for (int gy = 0; gy < cellH; gy++)
                 {
-                    Rgba32 p = row[x];
-                    pixels[y * imgWidth + x] = (p.A << 24) | (p.R << 16) | (p.G << 8) | p.B;
+                    Span<Rgba32> srcRow = srcAccessor.GetRowSpan(gy);
+                    Span<Rgba32> dstRow = dstAccessor.GetRowSpan(_atlasY + gy);
+                    srcRow.Slice(0, cellW).CopyTo(dstRow.Slice(_atlasX, cellW));
+                }
+            });
+        }
+
+        float u0 = (float)_atlasX / AtlasSize;
+        float v0 = (float)_atlasY / AtlasSize;
+        float u1 = (float)(_atlasX + cellW) / AtlasSize;
+        float v1 = (float)(_atlasY + cellH) / AtlasSize;
+
+        UploadAtlasSubImage(_atlasX, _atlasY, cellW, cellH);
+
+        info = new GlyphInfo(advanceWidth, u0, v0, u1, v1, cellW, cellH);
+        _glyphCache[c] = info;
+        _atlasX += cellW;
+        return info;
+    }
+
+    private unsafe void UploadAtlasSubImage(int x, int y, int width, int height)
+    {
+        if (fontTextureName?.Texture == null) return;
+        byte[] region = new byte[width * height * 4];
+        int idx = 0;
+        _atlasImage.ProcessPixelRows(accessor =>
+        {
+            for (int row = y; row < y + height; row++)
+            {
+                Span<Rgba32> pixelRow = accessor.GetRowSpan(row);
+                for (int col = x; col < x + width; col++)
+                {
+                    Rgba32 p = pixelRow[col];
+                    region[idx++] = p.R;
+                    region[idx++] = p.G;
+                    region[idx++] = p.B;
+                    region[idx++] = p.A;
                 }
             }
         });
-
-        for (int charIndex = 0; charIndex < 256; ++charIndex)
+        fixed (byte* ptr = region)
         {
-            int col = charIndex % 16;
-            int row = charIndex / 16;
-            int widthInPixels = 0;
-
-            for (int bit = 7; bit >= 0; --bit)
-            {
-                int xOffset = col * 8 + bit;
-                bool columnIsEmpty = true;
-
-                for (int yOffset = 0; yOffset < 8 && columnIsEmpty; ++yOffset)
-                {
-                    int pixelIndex = (row * 8 + yOffset) * imgWidth + xOffset;
-                    int alpha = pixels[pixelIndex] & 255;
-
-                    if (alpha > 0)
-                    {
-                        columnIsEmpty = false;
-                    }
-                }
-
-                if (!columnIsEmpty)
-                {
-                    widthInPixels = bit;
-                    break;
-                }
-            }
-
-            if (charIndex == 32)
-            {
-                widthInPixels = 2;
-            }
-
-            _charWidth[charIndex] = widthInPixels + 2;
+            fontTextureName.Texture!.UploadSubImage(x, y, width, height, ptr);
         }
-
-        fontTextureName = textureManager.Load(fontImage);
     }
 
     public void DrawStringWithShadow(ReadOnlySpan<char> text, int x, int y, Guis.Color color)
@@ -99,9 +178,7 @@ public class TextRenderer
         if (text.IsEmpty) return;
 
         if (darken)
-        {
             color = color.Darken();
-        }
 
         fontTextureName?.Bind();
 
@@ -122,36 +199,23 @@ public class TextRenderer
 
             if (i < text.Length)
             {
-                int charIndex = ChatAllowedCharacters.allowedCharacters.IndexOf(text[i]);
-                if (charIndex >= 0)
+                GlyphInfo glyph = GetOrCreateGlyph(text[i]);
+                if (glyph.Width > 0 && glyph.Height > 0)
                 {
-                    int fontIndex = charIndex + 32;
-                    int u = (fontIndex % 16) * 8;
-                    int v = (fontIndex / 16) * 8;
-
-                    float quadSize = 7.99F;
-                    float uvOffset = 0.0F;
-
-                    tessellator.addVertexWithUV(currentX + 0.0D, currentY + quadSize, 0.0D, (u / 128.0F) + uvOffset, ((v + quadSize) / 128.0F) + uvOffset);
-                    tessellator.addVertexWithUV(currentX + quadSize, currentY + quadSize, 0.0D, ((u + quadSize) / 128.0F) + uvOffset, ((v + quadSize) / 128.0F) + uvOffset);
-                    tessellator.addVertexWithUV(currentX + quadSize, currentY + 0.0D, 0.0D, ((u + quadSize) / 128.0F) + uvOffset, (v / 128.0F) + uvOffset);
-                    tessellator.addVertexWithUV(currentX + 0.0D, currentY + 0.0D, 0.0D, (u / 128.0F) + uvOffset, (v / 128.0F) + uvOffset);
-
-                    currentX += _charWidth[fontIndex];
+                    float w = glyph.Width * DisplayScale;
+                    float h = glyph.Height * DisplayScale;
+                    tessellator.addVertexWithUV(currentX + 0, currentY + h, 0, glyph.U0, glyph.V1);
+                    tessellator.addVertexWithUV(currentX + w, currentY + h, 0, glyph.U1, glyph.V1);
+                    tessellator.addVertexWithUV(currentX + w, currentY + 0, 0, glyph.U1, glyph.V0);
+                    tessellator.addVertexWithUV(currentX + 0, currentY + 0, 0, glyph.U0, glyph.V0);
                 }
+                currentX += glyph.AdvanceWidth * DisplayScale;
             }
         }
 
         tessellator.draw();
     }
 
-    /// <summary>
-    /// Get decimal value of give hex char.
-    /// Non-hex characters are not handled,
-    /// but will still return a value between 0 and 15 inclusive.
-    /// </summary>
-    /// <param name="c">input character (case-insensitive)</param>
-    /// <returns>value between 0-15 inclusive</returns>
     private static int HexToDec(char c)
     {
         int v = c;
@@ -165,31 +229,20 @@ public class TextRenderer
     public int GetStringWidth(ReadOnlySpan<char> text)
     {
         if (text.IsEmpty) return 0;
-
-        int totalWidth = 0;
-
+        float total = 0;
         for (int i = 0; i < text.Length; ++i)
         {
             if (text[i] == 167)
-            {
                 ++i;
-            }
             else
-            {
-                int charIndex = ChatAllowedCharacters.allowedCharacters.IndexOf(text[i]);
-                if (charIndex >= 0)
-                {
-                    totalWidth += _charWidth[charIndex + 32];
-                }
-            }
+                total += GetOrCreateGlyph(text[i]).AdvanceWidth * DisplayScale;
         }
-
-        return totalWidth;
+        return (int)Math.Ceiling(total);
     }
 
     private int GetStringFitLength(ReadOnlySpan<char> text, int maxWidth)
     {
-        int width = 0;
+        float width = 0;
         int lastSpaceIndex = -1;
         int i = 0;
         for (; i < text.Length; ++i)
@@ -200,22 +253,12 @@ public class TextRenderer
                 continue;
             }
             if (text[i] == ' ')
-            {
                 lastSpaceIndex = i;
-            }
-
-            int charIndex = ChatAllowedCharacters.allowedCharacters.IndexOf(text[i]);
-            if (charIndex >= 0)
-            {
-                width += _charWidth[charIndex + 32];
-            }
-
+            width += GetOrCreateGlyph(text[i]).AdvanceWidth * DisplayScale;
             if (width > maxWidth)
             {
                 if (lastSpaceIndex > 0)
-                {
                     return lastSpaceIndex;
-                }
                 return Math.Max(1, i);
             }
         }
@@ -228,6 +271,7 @@ public class TextRenderer
 
         int totalHeight = 0;
         int currentY = y;
+        int lineHeight = (int)((AtlasFontSize + GlyphPadding) * DisplayScale);
 
         while (text.Length > 0)
         {
@@ -249,30 +293,24 @@ public class TextRenderer
                 int fitLength = GetStringFitLength(line, maxWidth);
                 ReadOnlySpan<char> subline = line.Slice(0, Math.Min(fitLength, line.Length));
 
-                while(subline.Length > 0 && subline[subline.Length - 1] == ' ')
-                {
+                while (subline.Length > 0 && subline[subline.Length - 1] == ' ')
                     subline = subline.Slice(0, subline.Length - 1);
-                }
 
                 if (subline.Length > 0 || fitLength > 0)
                 {
                     if (draw && subline.Length > 0)
-                    {
                         DrawString(subline, x, currentY, color);
-                    }
-                    currentY += 8;
-                    totalHeight += 8;
+                    currentY += lineHeight;
+                    totalHeight += lineHeight;
                 }
 
                 line = line.Slice(Math.Min(fitLength, line.Length));
-                while(line.Length > 0 && line[0] == ' ')
-                {
+                while (line.Length > 0 && line[0] == ' ')
                     line = line.Slice(1);
-                }
             }
         }
 
-        if (totalHeight < 8) totalHeight = 8;
+        if (totalHeight < lineHeight) totalHeight = lineHeight;
         outHeight = totalHeight;
     }
 
