@@ -185,7 +185,7 @@ public class GuiScreen : Gui
     {
         if (mc.world != null)
         {
-            DrawGradientRect(0, 0, Width, Height, 0xC0101010, 0xD0101010);
+            DrawGradientRect(0, 0, Width, Height, Color.WorldBackgroundDark, Color.WorldBackground);
         }
         else
         {

@@ -71,8 +71,8 @@ public class GuiLevelLoading(string worldDir, long seed) : GuiScreen
             progress = mc.internalServer.progress;
         }
 
-        DrawCenteredString(FontRenderer, title, Width / 2, Height / 2 - 50, 0xFFFFFF);
-        DrawCenteredString(FontRenderer, progressMsg + " (" + progress + "%)", Width / 2, Height / 2 - 10, 0xFFFFFF);
+        DrawCenteredString(FontRenderer, title, Width / 2, Height / 2 - 50, Color.White);
+        DrawCenteredString(FontRenderer, progressMsg + " (" + progress + "%)", Width / 2, Height / 2 - 10, Color.White);
 
         base.Render(var1, var2, var3);
     }

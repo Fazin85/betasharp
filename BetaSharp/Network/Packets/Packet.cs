@@ -15,7 +15,8 @@ public abstract class Packet
 
     private static readonly Dictionary<int, PacketTracker> s_trackers = new ();
 
-    public readonly long CreationTime = java.lang.System.currentTimeMillis();
+    public readonly long CreationTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+;
     public bool WorldPacket = false;
     private PacketRegisterRout? _rout = null;
 

@@ -64,7 +64,7 @@ public abstract class GuiContainer : GuiScreen
                 GLManager.GL.Disable(GLEnum.DepthTest);
                 int sx = slot.xDisplayPosition;
                 int sy = slot.yDisplayPosition;
-                DrawGradientRect(sx, sy, sx + 16, sy + 16, 0x80FFFFFF, 0x80FFFFFF);
+                DrawGradientRect(sx, sy, sx + 16, sy + 16, Color.BackgroundWhiteAlpha, Color.BackgroundWhiteAlpha);
                 GLManager.GL.Enable(GLEnum.Lighting);
                 GLManager.GL.Enable(GLEnum.DepthTest);
             }
@@ -87,8 +87,8 @@ public abstract class GuiContainer : GuiScreen
                 int tipY = mouseY - guiTop - 12;
                 int textWidth = FontRenderer.GetStringWidth(itemName);
 
-                DrawGradientRect(tipX - 3, tipY - 3, tipX + textWidth + 3, tipY + 8 + 3, 0xC0000000, 0xC0000000);
-                FontRenderer.DrawStringWithShadow(itemName, tipX, tipY, 0xFFFFFFFF);
+                DrawGradientRect(tipX - 3, tipY - 3, tipX + textWidth + 3, tipY + 8 + 3, Color.BlackAlphaC0, Color.BlackAlphaC0);
+                FontRenderer.DrawStringWithShadow(itemName, tipX, tipY, Color.White);
             }
         }
 

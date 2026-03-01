@@ -66,7 +66,7 @@ public class BlockNote : BlockWithEntity
 
     public override void onBlockAction(World world, int x, int y, int z, int data1, int data2)
     {
-        float pitch = (float)java.lang.Math.pow(2.0D, (double)(data2 - 12) / 12.0D);
+        float pitch = (float)Math.Pow(2.0D, (double)(data2 - 12) / 12.0D);
         string instrumentName = "harp";
         if (data1 == 1)
         {

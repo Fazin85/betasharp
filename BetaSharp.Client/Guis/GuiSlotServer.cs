@@ -45,8 +45,8 @@ public class GuiSlotServer : GuiSlot
     protected override void DrawSlot(int index, int x, int y, int height, Tessellator tess)
     {
         ServerData server = _parent.GetServerList()[index];
-        Gui.DrawString(_parent.FontRenderer, server.Name, x + 2, y + 1, 0xFFFFFF);
-        Gui.DrawString(_parent.FontRenderer, server.Ip, x + 2, y + 12, 0x808080);
-        Gui.DrawString(_parent.FontRenderer, server.PopulationInfo ?? "Unknown player count", x + 2, y + 12 + 11, 0x808080);
+        Gui.DrawString(_parent.FontRenderer, server.Name, x + 2, y + 1, Color.White);
+        Gui.DrawString(_parent.FontRenderer, server.Ip, x + 2, y + 12, Color.Gray80);
+        Gui.DrawString(_parent.FontRenderer, server.PopulationInfo ?? "Unknown player count", x + 2, y + 12 + 11, Color.Gray80);
     }
 }

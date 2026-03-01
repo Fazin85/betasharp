@@ -3,19 +3,18 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using BetaSharp.Blocks;
 using BetaSharp.Client.Achievements;
+using BetaSharp.Client.DynamicTexture;
 using BetaSharp.Client.Entities;
 using BetaSharp.Client.Guis;
 using BetaSharp.Client.Input;
 using BetaSharp.Client.Network;
 using BetaSharp.Client.Rendering;
-using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Entities;
 using BetaSharp.Client.Rendering.Items;
 using BetaSharp.Client.Resource;
 using BetaSharp.Client.Resource.Pack;
 using BetaSharp.Client.Sound;
-using BetaSharp.Client.Textures;
 using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Profiling;
@@ -94,7 +93,8 @@ public partial class Minecraft
     public bool inGameHasFocus;
     private int mouseTicksRan;
     public bool isRaining = false;
-    long systemTime = java.lang.System.currentTimeMillis();
+    long systemTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+;
     private int joinPlayerCounter;
     private ImGuiController imGuiController;
     public InternalServer? internalServer;
@@ -497,7 +497,8 @@ public partial class Minecraft
 
         try
         {
-            long lastFpsCheckTime = java.lang.System.currentTimeMillis();
+            long lastFpsCheckTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+;
             int frameCounter = 0;
 
             while (running)
@@ -665,7 +666,8 @@ public partial class Minecraft
                     isGamePaused = (!isMultiplayerWorld() || internalServer != null) && (currentScreen?.PausesGame ?? false);
 
                     for (;
-                         java.lang.System.currentTimeMillis() >= lastFpsCheckTime + 1000L;
+                         DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+ >= lastFpsCheckTime + 1000L;
                          frameCounter = 0)
                     {
                         debug = frameCounter + " fps";
@@ -1260,7 +1262,8 @@ public partial class Minecraft
             }
         }
 
-        systemTime = java.lang.System.currentTimeMillis();
+        systemTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+;
         Profiler.PopGroup();
     }
 
@@ -1268,7 +1271,8 @@ public partial class Minecraft
     {
         while (Mouse.next())
         {
-            long timeSinceLastMouseEvent = java.lang.System.currentTimeMillis() - systemTime;
+            long timeSinceLastMouseEvent = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+ - systemTime;
             if (timeSinceLastMouseEvent <= 200L)
             {
                 int mouseWheelDelta = Mouse.getEventDWheel();
@@ -1702,7 +1706,8 @@ public partial class Minecraft
 
             if (sessionToken == "-")
             {
-                hasPaidCheckTime = java.lang.System.currentTimeMillis();
+                hasPaidCheckTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+;
             }
         }
         else

@@ -83,39 +83,31 @@ public class TextRenderer
         fontTextureName = textureManager.Load(fontImage);
     }
 
-    public void DrawStringWithShadow(ReadOnlySpan<char> text, int x, int y, uint color)
+    public void DrawStringWithShadow(ReadOnlySpan<char> text, int x, int y, Guis.Color color)
     {
         RenderString(text, x + 1, y + 1, color, true);
         DrawString(text, x, y, color);
     }
 
-    public void DrawString(ReadOnlySpan<char> text, int x, int y, uint color)
+    public void DrawString(ReadOnlySpan<char> text, int x, int y, Guis.Color color)
     {
         RenderString(text, x, y, color, false);
     }
 
-    public void RenderString(ReadOnlySpan<char> text, int x, int y, uint color, bool darken)
+    public void RenderString(ReadOnlySpan<char> text, int x, int y, Guis.Color color, bool darken)
     {
         if (text.IsEmpty) return;
 
-        uint alpha = color & 0xFF000000;
         if (darken)
         {
-            color = (color & 0xFCFCFC) >> 2;
-            color |= alpha;
+            color = color.Darken();
         }
 
         fontTextureName?.Bind();
-        float a = (color >> 24 & 255) / 255.0F;
-        float r = (color >> 16 & 255) / 255.0F;
-        float g = (color >> 8 & 255) / 255.0F;
-        float b = (color & 255) / 255.0F;
-
-        if (a == 0.0F) a = 1.0F;
 
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
-        tessellator.setColorRGBA_F(r, g, b, a);
+        tessellator.setColorRGBA(color);
 
         float currentX = x;
         float currentY = y;
@@ -125,25 +117,7 @@ public class TextRenderer
             for (; text.Length > i + 1 && text[i] == 167; i += 2)
             {
                 int colorCode = HexToDec(text[i + 1]);
-
-                int baseColorOffset = (colorCode >> 3 & 1) * 85;
-                int cr = (colorCode >> 2 & 1) * 170 + baseColorOffset;
-                int cg = (colorCode >> 1 & 1) * 170 + baseColorOffset;
-                int cb = (colorCode >> 0 & 1) * 170 + baseColorOffset;
-
-                if (colorCode == 6)
-                {
-                    cr += 85;
-                }
-
-                if (darken)
-                {
-                    cr /= 4;
-                    cg /= 4;
-                    cb /= 4;
-                }
-
-                tessellator.setColorRGBA_F(cr / 255.0F, cg / 255.0F, cb / 255.0F, a);
+                tessellator.setColorRGBA(Guis.Color.FromColorCode(colorCode, (byte)color.A, darken));
             }
 
             if (i < text.Length)
@@ -248,7 +222,7 @@ public class TextRenderer
         return text.Length;
     }
 
-    private void ProcessWrappedText(ReadOnlySpan<char> text, int x, int y, int maxWidth, uint color, bool draw, ref int outHeight)
+    private void ProcessWrappedText(ReadOnlySpan<char> text, int x, int y, int maxWidth, Guis.Color color, bool draw, ref int outHeight)
     {
         if (text.IsEmpty) return;
 
@@ -302,7 +276,7 @@ public class TextRenderer
         outHeight = totalHeight;
     }
 
-    public void DrawStringWrapped(ReadOnlySpan<char> text, int x, int y, int maxWidth, uint color)
+    public void DrawStringWrapped(ReadOnlySpan<char> text, int x, int y, int maxWidth, Guis.Color color)
     {
         int dummyHeight = 0;
         ProcessWrappedText(text, x, y, maxWidth, color, true, ref dummyHeight);
@@ -311,7 +285,7 @@ public class TextRenderer
     public int GetStringHeight(ReadOnlySpan<char> text, int maxWidth)
     {
         int height = 0;
-        ProcessWrappedText(text, 0, 0, maxWidth, 0, false, ref height);
+        ProcessWrappedText(text, 0, 0, maxWidth, Guis.Color.Black, false, ref height);
         return height;
     }
 }

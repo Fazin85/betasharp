@@ -30,7 +30,8 @@ public class GameRenderer
     private readonly MouseFilter _mouseFilterXAxis = new();
     private readonly MouseFilter _mouseFilterYAxis = new();
 
-    private long _prevFrameTime = java.lang.System.currentTimeMillis();
+    private long _prevFrameTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+;
     private readonly JavaRandom _random = new();
     private int _rainSoundCounter;
     private readonly float[] _fogColorBuffer = new float[16];
@@ -213,14 +214,16 @@ public class GameRenderer
     {
         if (!Display.isActive())
         {
-            if (java.lang.System.currentTimeMillis() - _prevFrameTime > 500L)
+            if (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+ - _prevFrameTime > 500L)
             {
                 _client.displayInGameMenu();
             }
         }
         else
         {
-            _prevFrameTime = java.lang.System.currentTimeMillis();
+            _prevFrameTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+;
         }
 
         if (_client.inGameHasFocus)
@@ -670,7 +673,7 @@ public class GameRenderer
         EntityLiving var3 = _client.camera;
         float var4 = 4.0F / _client.options.renderDistance;
         var4 = System.Math.Clamp(var4, 0.25f, 1.0f);
-        var4 = 1.0F - (float)java.lang.Math.pow((double)var4, 0.25D);
+        var4 = 1.0F - (float)Math.Pow(var4, 0.25D);
         Vector3D<double> var5 = var2.getSkyColor(_client.camera, tickDelta);
         float var6 = (float)var5.X;
         float var7 = (float)var5.Y;

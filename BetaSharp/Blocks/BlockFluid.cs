@@ -277,7 +277,7 @@ public abstract class BlockFluid : Block
             flowVec = ((BlockFluid)FlowingLava).getFlow(blockView, x, y, z);
         }
 
-        return flowVec.X == 0.0D && flowVec.Z == 0.0D ? -1000.0D : java.lang.Math.atan2(flowVec.Z, flowVec.X) - Math.PI * 0.5D;
+        return flowVec.X == 0.0D && flowVec.Z == 0.0D ? -1000.0D : Math.Atan2(flowVec.Z, flowVec.X) - Math.PI * 0.5D;
     }
 
     public override void onPlaced(World world, int x, int y, int z)

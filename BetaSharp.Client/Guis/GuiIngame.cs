@@ -153,8 +153,8 @@ public class GuiIngame : Gui
 
             if (_mc.player.isInFluid(Material.Water))
             {
-                i = (int)java.lang.Math.ceil((_mc.player.air - 2) * 10.0D / 300.0D);
-                j = (int)java.lang.Math.ceil(_mc.player.air * 10.0D / 300.0D) - i;
+                i = (int)Math.Ceiling((_mc.player.air - 2) * 10.0D / 300.0D);
+                j = (int)Math.Ceiling(_mc.player.air * 10.0D / 300.0D) - i;
 
                 for (k = 0; k < i + j; ++k)
                 {
@@ -198,7 +198,7 @@ public class GuiIngame : Gui
             }
 
             j = (int)(220.0F * sleepAlpha) << 24 | 1052704;
-            DrawRect(0, 0, scaledWidth, scaledHeight, (uint)j);
+            DrawRect(0, 0, scaledWidth, scaledHeight, Guis.Color.FromArgb((uint)j));
             GLManager.GL.Enable(GLEnum.AlphaTest);
             GLManager.GL.Enable(GLEnum.DepthTest);
         }
@@ -211,25 +211,25 @@ public class GuiIngame : Gui
             if (Minecraft.hasPaidCheckTime > 0L)
                 GLManager.GL.Translate(0.0F, 32.0F, 0.0F);
 
-            font.DrawStringWithShadow("Minecraft Beta 1.7.3 (" + _mc.debug + ")", 2, 2, 0xFFFFFF);
-            font.DrawStringWithShadow(_mc.getEntityDebugInfo(), 2, 22, 0xFFFFFF);
-            font.DrawStringWithShadow(_mc.getParticleAndEntityCountDebugInfo(), 2, 32, 0xFFFFFF);
-            font.DrawStringWithShadow(_mc.getWorldDebugInfo(), 2, 42, 0xFFFFFF);
+            font.DrawStringWithShadow("Minecraft Beta 1.7.3 (" + _mc.debug + ")", 2, 2, Color.White);
+            font.DrawStringWithShadow(_mc.getEntityDebugInfo(), 2, 22, Color.White);
+            font.DrawStringWithShadow(_mc.getParticleAndEntityCountDebugInfo(), 2, 32, Color.White);
+            font.DrawStringWithShadow(_mc.getWorldDebugInfo(), 2, 42, Color.White);
             long maxMem = _gcMonitor.MaxMemoryBytes;
             long usedMem = _gcMonitor.UsedMemoryBytes;
             long heapMem = _gcMonitor.UsedHeapBytes;
             debugStr = "Used memory: " + usedMem * 100L / maxMem + "% (" + usedMem / 1024L / 1024L + "MB) of " + maxMem / 1024L / 1024L + "MB";
-            DrawString(font, debugStr, scaledWidth - font.GetStringWidth(debugStr) - 2, 2, 0xE0E0E0);
+            DrawString(font, debugStr, scaledWidth - font.GetStringWidth(debugStr) - 2, 2, Color.GrayE0);
             debugStr = "GC heap: " + heapMem * 100L / maxMem + "% (" + heapMem / 1024L / 1024L + "MB)";
-            DrawString(font, debugStr, scaledWidth - font.GetStringWidth(debugStr) - 2, 12, 0xE0E0E0);
-            DrawString(font, "x: " + _mc.player.x, 2, 64, 0xE0E0E0);
-            DrawString(font, "y: " + _mc.player.y, 2, 72, 0xE0E0E0);
-            DrawString(font, "z: " + _mc.player.z, 2, 80, 0xE0E0E0);
-            DrawString(font, "f: " + (MathHelper.Floor((double)(_mc.player.yaw * 4.0F / 360.0F) + 0.5D) & 3), 2, 88, 0xE0E0E0);
+            DrawString(font, debugStr, scaledWidth - font.GetStringWidth(debugStr) - 2, 12, Color.GrayE0);
+            DrawString(font, "x: " + _mc.player.x, 2, 64, Color.GrayE0);
+            DrawString(font, "y: " + _mc.player.y, 2, 72, Color.GrayE0);
+            DrawString(font, "z: " + _mc.player.z, 2, 80, Color.GrayE0);
+            DrawString(font, "f: " + (MathHelper.Floor((double)(_mc.player.yaw * 4.0F / 360.0F) + 0.5D) & 3), 2, 88, Color.GrayE0);
 
             if (_mc.internalServer != null)
             {
-                DrawString(font, $"Server TPS: {_mc.internalServer.Tps:F1}", 2, 104, 0xE0E0E0);
+                DrawString(font, $"Server TPS: {_mc.internalServer.Tps:F1}", 2, 104, Color.GrayE0);
             }
 
             GLManager.GL.PopMatrix();
@@ -257,10 +257,10 @@ public class GuiIngame : Gui
                 j = 0xFFFFFF;
                 if (_isRecordMessageRainbow)
                 {
-                    j = Color.HSBtoRGB(t / 50.0F, 0.7F, 0.6F) & 0xFFFFFF;
+                    j = java.awt.Color.HSBtoRGB(t / 50.0F, 0.7F, 0.6F) & 0xFFFFFF;
                 }
 
-                font.DrawString(_recordPlaying, -font.GetStringWidth(_recordPlaying) / 2, -4, (uint)(j + (i << 24)));
+                font.DrawString(_recordPlaying, -font.GetStringWidth(_recordPlaying) / 2, -4, Color.FromArgb((uint)(j + (i << 24))));
                 GLManager.GL.Disable(GLEnum.Blend);
                 GLManager.GL.PopMatrix();
             }
@@ -313,9 +313,9 @@ public class GuiIngame : Gui
                     byte left = 2;
                     int y = -j * 9;
                     debugStr = cl.Message;
-                    DrawRect(left, y - 1, left + 320, y + 8, (uint)(alpha / 2 << 24));
+                    DrawRect(left, y - 1, left + 320, y + 8, Color.FromArgb((uint)(alpha / 2 << 24)));
                     GLManager.GL.Enable(GLEnum.Blend);
-                    font.DrawStringWithShadow(debugStr, left, y, 0xFFFFFF + (uint)(alpha << 24));
+                    font.DrawStringWithShadow(debugStr, left, y, Color.FromArgb(0xFFFFFF + (uint)(alpha << 24)));
                 }
             }
         }
@@ -357,7 +357,7 @@ public class GuiIngame : Gui
                 // Inverted: Bottom is newest (0), Top is oldest (maxScroll)
                 thumbY = top + (int)((long)(maxScroll - _chatScrollPos) * range / maxScroll);
 
-                uint thumbColor = _chatScrollbarDragging ? 0xFFAAAAAA : 0xFFCCCCCC;
+                Color thumbColor = _chatScrollbarDragging ? Color.GrayAA : Color.GrayCC;
                 DrawRect(scrollbarX + 1, thumbY, scrollbarX + scrollbarWidth - 1, thumbY + thumbHeight, thumbColor);
             }
         }
@@ -488,7 +488,7 @@ public class GuiIngame : Gui
         }
 
     }
-   
+
     public void stopChatScrollbarDrag()
     {
         _chatScrollbarDragging = false;

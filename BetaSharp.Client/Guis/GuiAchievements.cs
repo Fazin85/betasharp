@@ -152,7 +152,7 @@ public class GuiAchievements : GuiScreen
     {
         int var1 = (Width - field_27121_a) / 2;
         int var2 = (Height - field_27119_i) / 2;
-        FontRenderer.DrawString("Achievements", var1 + 15, var2 + 5, 0x404040);
+        FontRenderer.DrawString("Achievements", var1 + 15, var2 + 5, Color.Gray40);
     }
 
     protected void func_27109_b(int var1, int var2, float var3)
@@ -257,7 +257,6 @@ public class GuiAchievements : GuiScreen
         int var16;
         int var17;
         int var33;
-        int var38;
         for (var12 = 0; var12 < BetaSharp.Achievements.AllAchievements.Count; ++var12)
         {
             Achievement var28 = BetaSharp.Achievements.AllAchievements[var12];
@@ -267,21 +266,22 @@ public class GuiAchievements : GuiScreen
                 var15 = var28.row * 24 - var5 + 11 + var11;
                 var16 = var28.parent.column * 24 - var4 + 11 + var10;
                 var17 = var28.parent.row * 24 - var5 + 11 + var11;
-                bool var19 = statFileWriter.HasAchievementUnlocked(var28);
-                bool var20 = statFileWriter.CanUnlockAchievement(var28);
-                var38 = Math.Sin(java.lang.System.currentTimeMillis() % 600L / 600.0D * Math.PI * 2.0D) > 0.6D ? 255 : 130;
-                uint color;
-                if (var19)
+                bool unlocked = statFileWriter.HasAchievementUnlocked(var28);
+                bool canUnlock = statFileWriter.CanUnlockAchievement(var28);
+                Color color;
+                if (unlocked)
                 {
-                    color = 0xFF707070U;
+                    color = Color.Gray70;
                 }
-                else if (var20)
+                else if (canUnlock)
                 {
-                    color = 0xFF + (uint)(var38 << 24);
+                    color = Math.Sin(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() % 600L / 600.0D * Math.PI * 2.0D) > 0.6D ?
+                        Color.Blue :
+                        Color.BlueAlpha;
                 }
                 else
                 {
-                    color = 0xFF000000U;
+                    color = Color.Black;
                 }
 
                 DrawHorizontalLine(var14, var16, var15, color);
@@ -315,7 +315,7 @@ public class GuiAchievements : GuiScreen
                 }
                 else if (statFileWriter.CanUnlockAchievement(var30))
                 {
-                    var35 = Math.Sin(java.lang.System.currentTimeMillis() % 600L / 600.0D * Math.PI * 2.0D) < 0.6D ? 0.6F : 0.8F;
+                    var35 = Math.Sin(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() % 600L / 600.0D * Math.PI * 2.0D) < 0.6D ? 0.6F : 0.8F;
                     GLManager.GL.Color4(var35, var35, var35, 1.0F);
                 }
                 else
@@ -379,30 +379,30 @@ public class GuiAchievements : GuiScreen
             var33 = var2 - 4;
             if (statFileWriter.CanUnlockAchievement(var27))
             {
-                var34 = java.lang.Math.max(FontRenderer.GetStringWidth(var31), 120);
+                var34 = Math.Max(FontRenderer.GetStringWidth(var31), 120);
                 int var37 = FontRenderer.GetStringHeight(var32 ?? "", var34);
                 if (statFileWriter.HasAchievementUnlocked(var27))
                 {
                     var37 += 12;
                 }
 
-                DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var37 + 3 + 12, 0xC0000000U, 0xC0000000U);
-                FontRenderer.DrawStringWrapped(var32, var17, var33 + 12, var34, 0xFFA0A0A0);
+                DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var37 + 3 + 12, Color.BlackAlphaC0, Color.BlackAlphaC0);
+                FontRenderer.DrawStringWrapped(var32, var17, var33 + 12, var34, Color.GrayA0);
                 if (statFileWriter.HasAchievementUnlocked(var27))
                 {
-                    FontRenderer.DrawStringWithShadow(StatCollector.TranslateToLocal("achievement.taken"), var17, var33 + var37 + 4, 0xFF9090FF);
+                    FontRenderer.DrawStringWithShadow(StatCollector.TranslateToLocal("achievement.taken"), var17, var33 + var37 + 4, Color.AchievementTakenBlue);
                 }
             }
             else
             {
-                var34 = java.lang.Math.max(FontRenderer.GetStringWidth(var31), 120);
+                var34 = Math.Max(FontRenderer.GetStringWidth(var31), 120);
                 string var39 = StatCollector.TranslateToLocalFormatted("achievement.requires", new object[] { var27.parent.StatName });
-                var38 = FontRenderer.GetStringHeight(var39, var34);
-                DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var38 + 12 + 3, 0xC0000000, 0xC0000000);
-                FontRenderer.DrawStringWrapped(var39, var17, var33 + 12, var34, 0xFF705050);
+                int var38 = FontRenderer.GetStringHeight(var39, var34);
+                DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var38 + 12 + 3, Color.BlackAlphaC0, Color.BlackAlphaC0);
+                FontRenderer.DrawStringWrapped(var39, var17, var33 + 12, var34, Color.AchievementRequiresRed);
             }
 
-            FontRenderer.DrawStringWithShadow(var31, var17, var33, statFileWriter.CanUnlockAchievement(var27) ? var27.isChallenge() ? 0xFFFFFF80 : 0xFFFFFFFF : var27.isChallenge() ? 0xFF808040 : 0xFF808080);
+            FontRenderer.DrawStringWithShadow(var31, var17, var33, statFileWriter.CanUnlockAchievement(var27) ? var27.isChallenge() ? Color.AchievementChallengeYellow : Color.White : var27.isChallenge() ? Color.AchievementChallengeLockedYellow : Color.Gray80);
         }
 
         GLManager.GL.Enable(GLEnum.DepthTest);

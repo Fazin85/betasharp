@@ -28,7 +28,7 @@ public class LargeOakTreeFeature : Feature
             trunkHeight = height - 1;
         }
 
-        int var1 = (int)(1.382D + java.lang.Math.pow(foliageDensity * height / 13.0D, 2.0D));
+        int var1 = (int)(1.382D + Math.Pow(foliageDensity * height / 13.0D, 2.0D));
         if (var1 < 1)
         {
             var1 = 1;
@@ -74,7 +74,7 @@ public class LargeOakTreeFeature : Feature
                         if (tryBranch(var17, var18) == -1)
                         {
                             int[] var19 = [origin[0], origin[1], origin[2]];
-                            double var20 = java.lang.Math.sqrt(java.lang.Math.pow(Math.Abs(origin[0] - var17[0]), 2.0D) + java.lang.Math.pow(Math.Abs(origin[2] - var17[2]), 2.0D));
+                            double var20 = Math.Sqrt(Math.Pow(Math.Abs(origin[0] - var17[0]), 2.0D) + Math.Pow(Math.Abs(origin[2] - var17[2]), 2.0D));
                             double var22 = var20 * branchSlope;
                             if (var17[1] - var22 > var5)
                             {
@@ -176,7 +176,7 @@ public class LargeOakTreeFeature : Feature
             }
             else
             {
-                var4 = (float)java.lang.Math.sqrt(java.lang.Math.pow((double)Math.Abs(var2), 2.0D) - java.lang.Math.pow((double)Math.Abs(var3), 2.0D));
+                var4 = (float)Math.Sqrt(Math.Pow((double)Math.Abs(var2), 2.0D) - Math.Pow((double)Math.Abs(var3), 2.0D));
             }
 
             var4 *= 0.5F;

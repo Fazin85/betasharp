@@ -1,5 +1,6 @@
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
+using BetaSharp.Client.Guis;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Entities.Models;
 
@@ -59,7 +60,6 @@ public class BlockEntitySignRenderer : BlockEntitySpecialRenderer
         GLManager.GL.Scale(var12, -var12, var12);
         GLManager.GL.Normal3(0.0F, 0.0F, -1.0F * var12);
         GLManager.GL.DepthMask(false);
-        byte var13 = 0;
 
         for (int var14 = 0; var14 < var1.Texts.Length; ++var14)
         {
@@ -67,11 +67,11 @@ public class BlockEntitySignRenderer : BlockEntitySpecialRenderer
             if (var14 == var1.CurrentRow)
             {
                 var15 = "> " + var15 + " <";
-                var17.DrawString(var15, -var17.GetStringWidth(var15) / 2, var14 * 10 - var1.Texts.Length * 5, var13);
+                var17.DrawString(var15, -var17.GetStringWidth(var15) / 2, var14 * 10 - var1.Texts.Length * 5, Color.Black);
             }
             else
             {
-                var17.DrawString(var15, -var17.GetStringWidth(var15) / 2, var14 * 10 - var1.Texts.Length * 5, var13);
+                var17.DrawString(var15, -var17.GetStringWidth(var15) / 2, var14 * 10 - var1.Texts.Length * 5, Color.Black);
             }
         }
 

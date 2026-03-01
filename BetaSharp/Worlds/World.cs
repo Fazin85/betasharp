@@ -7,6 +7,7 @@ using BetaSharp.NBT;
 using BetaSharp.PathFinding;
 using BetaSharp.Profiling;
 using BetaSharp.Rules;
+using BetaSharp.Util;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Biomes;

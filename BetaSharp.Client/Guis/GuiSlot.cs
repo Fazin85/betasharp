@@ -139,10 +139,12 @@ public abstract class GuiSlot
 
                     if (mouseX >= contentMinX && mouseX <= contentMaxX && slotIndex >= 0 && relativeY >= 0 && slotIndex < listSize)
                     {
-                        bool isDoubleClick = slotIndex == _selectedElement && (java.lang.System.currentTimeMillis() - _lastClicked < 250L);
+                        bool isDoubleClick = slotIndex == _selectedElement && (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+ - _lastClicked < 250L);
                         ElementClicked(slotIndex, isDoubleClick);
                         _selectedElement = slotIndex;
-                        _lastClicked = java.lang.System.currentTimeMillis();
+                        _lastClicked = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+;
                     }
                     else if (mouseX >= contentMinX && mouseX <= contentMaxX && relativeY < 0)
                     {

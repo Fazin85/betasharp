@@ -24,8 +24,8 @@ public class GuiChest : GuiContainer
 
     protected override void DrawGuiContainerForegroundLayer()
     {
-        FontRenderer.DrawString(_lowerChestInventory.getName(), 8, 6, 0x404040);
-        FontRenderer.DrawString(_upperChestInventory.getName(), 8, _ySize - 96 + 2, 0x404040);
+        FontRenderer.DrawString(_lowerChestInventory.getName(), 8, 6, Color.Gray40);
+        FontRenderer.DrawString(_upperChestInventory.getName(), 8, _ySize - 96 + 2, Color.Gray40);
     }
 
     protected override void DrawGuiContainerBackgroundLayer(float partialTicks)

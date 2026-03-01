@@ -4,13 +4,11 @@ using BetaSharp.Server.Entities;
 using BetaSharp.Server.Internal;
 using BetaSharp.Server.Network;
 using BetaSharp.Server.Worlds;
-using BetaSharp.Util;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Storage;
 using java.lang;
 using java.util;
-using java.util.logging;
 using Microsoft.Extensions.Logging;
 using Exception = System.Exception;
 
@@ -134,7 +132,8 @@ public abstract class MinecraftServer : Runnable, CommandOutput
         }
 
         short startRegionSize = 196;
-        long lastTimeLogged = java.lang.System.currentTimeMillis();
+        long lastTimeLogged = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+;
 
         for (int i = 0; i < worlds.Length; i++)
         {
@@ -148,7 +147,8 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                 {
                     for (int z = -startRegionSize; z <= startRegionSize && running; z += 16)
                     {
-                        long currentTime = java.lang.System.currentTimeMillis();
+                        long currentTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+;
                         if (currentTime < lastTimeLogged)
                         {
                             lastTimeLogged = currentTime;
@@ -233,14 +233,16 @@ public abstract class MinecraftServer : Runnable, CommandOutput
         {
             if (Init())
             {
-                long lastTime = java.lang.System.currentTimeMillis();
+                long lastTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+;
                 long accumulatedTime = 0L;
                 _lastTpsTime = lastTime;
                 _ticksThisSecond = 0;
 
                 while (running)
                 {
-                    long currentTime = java.lang.System.currentTimeMillis();
+                    long currentTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+;
                     long tickLength = currentTime - lastTime;
                     if (tickLength > 2000L)
                     {
@@ -283,7 +285,8 @@ public abstract class MinecraftServer : Runnable, CommandOutput
                         }
                     }
 
-                    long tpsNow = java.lang.System.currentTimeMillis();
+                    long tpsNow = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+;
                     long tpsElapsed = tpsNow - _lastTpsTime;
                     if (tpsElapsed >= 1000L)
                     {

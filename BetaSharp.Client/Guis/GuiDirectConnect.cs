@@ -79,8 +79,8 @@ public class GuiDirectConnect : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, "Direct Connect", Width / 2, 17, 0xFFFFFF);
-        DrawString(FontRenderer, "Server Address", Width / 2 - 100, 94, 0xA0A0A0);
+        DrawCenteredString(FontRenderer, "Direct Connect", Width / 2, 17, Color.White);
+        DrawString(FontRenderer, "Server Address", Width / 2 - 100, 94, Color.GrayA0);
         _serverAddress.DrawTextBox();
         base.Render(mouseX, mouseY, partialTicks);
     }

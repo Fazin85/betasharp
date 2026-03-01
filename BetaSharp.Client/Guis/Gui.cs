@@ -8,35 +8,31 @@ public class Gui
 {
     protected float _zLevel = 0.0F;
 
-    protected static void DrawHorizontalLine(int startX, int endX, int y, uint color)
+    protected static void DrawHorizontalLine(int startX, int endX, int y, Color color)
     {
         if (endX < startX) (startX, endX) = (endX, startX);
         DrawRect(startX, y, endX + 1, y + 1, color);
     }
 
-    protected static void DrawVerticalLine(int x, int startY, int endY, uint color)
+    protected static void DrawVerticalLine(int x, int startY, int endY, Color color)
     {
         if (endY < startY) (startY, endY) = (endY, startY);
         DrawRect(x, startY + 1, x + 1, endY, color);
     }
 
-    protected static void DrawRect(int x1, int y1, int x2, int y2, uint color)
+    protected static void DrawRect(int x1, int y1, int x2, int y2, Color color)
     {
         if (x1 < x2) (x1, x2) = (x2, x1);
         if (y1 < y2) (y1, y2) = (y2, y1);
 
-        float a = (color >> 24 & 255) / 255.0F;
-        float r = (color >> 16 & 255) / 255.0F;
-        float g = (color >> 8 & 255) / 255.0F;
-        float b = (color & 255) / 255.0F;
         Tessellator tess = Tessellator.instance;
 
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.Disable(GLEnum.Texture2D);
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
-        GLManager.GL.Color4(r, g, b, a);
 
         tess.startDrawingQuads();
+        tess.setColorRGBA(color);
         tess.addVertex(x1, y2, 0.0D);
         tess.addVertex(x2, y2, 0.0D);
         tess.addVertex(x2, y1, 0.0D);
@@ -47,18 +43,8 @@ public class Gui
         GLManager.GL.Disable(GLEnum.Blend);
     }
 
-    protected static void DrawGradientRect(int right, int bottom, int left, int top, uint topColor, uint bottomColor)
+    protected static void DrawGradientRect(int right, int bottom, int left, int top, Color topColor, Color bottomColor)
     {
-        float a1 = (topColor >> 24 & 255) / 255.0F;
-        float r1 = (topColor >> 16 & 255) / 255.0F;
-        float g1 = (topColor >> 8 & 255) / 255.0F;
-        float b1 = (topColor & 255) / 255.0F;
-
-        float a2 = (bottomColor >> 24 & 255) / 255.0F;
-        float r2 = (bottomColor >> 16 & 255) / 255.0F;
-        float g2 = (bottomColor >> 8 & 255) / 255.0F;
-        float b2 = (bottomColor & 255) / 255.0F;
-
         GLManager.GL.Disable(GLEnum.Texture2D);
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.Disable(GLEnum.AlphaTest);
@@ -67,10 +53,10 @@ public class Gui
 
         Tessellator tess = Tessellator.instance;
         tess.startDrawingQuads();
-        tess.setColorRGBA_F(r1, g1, b1, a1);
+        tess.setColorRGBA(topColor);
         tess.addVertex(left, bottom, 0.0D);
         tess.addVertex(right, bottom, 0.0D);
-        tess.setColorRGBA_F(r2, g2, b2, a2);
+        tess.setColorRGBA(bottomColor);
         tess.addVertex(right, top, 0.0D);
         tess.addVertex(left, top, 0.0D);
         tess.draw();
@@ -81,12 +67,12 @@ public class Gui
         GLManager.GL.Enable(GLEnum.Texture2D);
     }
 
-    public static void DrawCenteredString(TextRenderer renderer, string text, int x, int y, uint color)
+    public static void DrawCenteredString(TextRenderer renderer, string text, int x, int y, Color color)
     {
         renderer.DrawStringWithShadow(text, x - renderer.GetStringWidth(text) / 2, y, color);
     }
 
-    public static void DrawString(TextRenderer renderer, string text, int x, int y, uint color)
+    public static void DrawString(TextRenderer renderer, string text, int x, int y, Color color)
     {
         renderer.DrawStringWithShadow(text, x, y, color);
     }

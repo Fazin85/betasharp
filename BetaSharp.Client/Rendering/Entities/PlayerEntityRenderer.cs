@@ -1,5 +1,6 @@
 using BetaSharp.Blocks;
 using BetaSharp.Client.Entities;
+using BetaSharp.Client.Guis;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Entities.Models;
@@ -113,7 +114,7 @@ public class PlayerEntityRenderer : LivingEntityRenderer
                     var14.draw();
                     GLManager.GL.Enable(GLEnum.Texture2D);
                     GLManager.GL.DepthMask(true);
-                    var13.DrawString(var12, -var13.GetStringWidth(var12) / 2, 0, 0x20FFFFFF);
+                    var13.DrawString(var12, -var13.GetStringWidth(var12) / 2, 0, Color.WhiteAlpha20);
                     GLManager.GL.Enable(GLEnum.Lighting);
                     GLManager.GL.Disable(GLEnum.Blend);
                     GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);

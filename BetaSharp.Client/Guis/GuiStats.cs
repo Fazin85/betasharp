@@ -90,7 +90,7 @@ public class GuiStats : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         currentSlot.DrawScreen(mouseX, mouseY, partialTicks);
-        DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0xFFFFFF);
+        DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, Color.White);
         base.Render(mouseX, mouseY, partialTicks);
     }
 
@@ -127,6 +127,6 @@ public class GuiStats : GuiScreen
 
     public void drawTranslucentRect(int right, int bottom, int left, int top)
     {
-        DrawGradientRect(right, bottom, left, top, 0xC0000000, 0xC0000000);
+        DrawGradientRect(right, bottom, left, top, Color.BlackAlphaC0, Color.BlackAlphaC0);
     }
 }

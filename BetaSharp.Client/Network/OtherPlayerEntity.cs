@@ -99,7 +99,7 @@ public class OtherPlayerEntity : EntityPlayer
 
         prevStepBobbingAmount = stepBobbingAmount;
         float horizontalSpeed = MathHelper.Sqrt(velocityX * velocityX + velocityZ * velocityZ);
-        float tiltAmount = (float)java.lang.Math.atan(-velocityY * (double)0.2F) * 15.0F;
+        float tiltAmount = (float)Math.Atan(-velocityY * (double)0.2F) * 15.0F;
         if (horizontalSpeed > 0.1F)
         {
             horizontalSpeed = 0.1F;

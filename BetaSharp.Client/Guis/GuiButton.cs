@@ -75,15 +75,15 @@ public class GuiButton : Gui
 
         if (!Enabled)
         {
-            DrawCenteredString(font, DisplayString, XPosition + _width / 2, YPosition + (_height - 8) / 2, 0xFFA0A0A0);
+            DrawCenteredString(font, DisplayString, XPosition + _width / 2, YPosition + (_height - 8) / 2, Color.GrayA0);
         }
         else if (isHovered)
         {
-            DrawCenteredString(font, DisplayString, XPosition + _width / 2, YPosition + (_height - 8) / 2, 0xFFFFA0);
+            DrawCenteredString(font, DisplayString, XPosition + _width / 2, YPosition + (_height - 8) / 2, Color.HoverYellow);
         }
         else
         {
-            DrawCenteredString(font, DisplayString, XPosition + _width / 2, YPosition + (_height - 8) / 2, 0xE0E0E0);
+            DrawCenteredString(font, DisplayString, XPosition + _width / 2, YPosition + (_height - 8) / 2, Color.GrayE0);
         }
     }
 

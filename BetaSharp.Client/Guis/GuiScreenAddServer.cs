@@ -99,9 +99,9 @@ public class GuiScreenAddServer : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, "Edit Server Info", Width / 2, 17, 0xFFFFFF);
-        DrawString(FontRenderer, "Server Name", Width / 2 - 100, 53, 0xA0A0A0);
-        DrawString(FontRenderer, "Server Address", Width / 2 - 100, 94, 0xA0A0A0);
+        DrawCenteredString(FontRenderer, "Edit Server Info", Width / 2, 17, Color.White);
+        DrawString(FontRenderer, "Server Name", Width / 2 - 100, 53, Color.GrayA0);
+        DrawString(FontRenderer, "Server Address", Width / 2 - 100, 94, Color.GrayA0);
         _serverName.DrawTextBox();
         _serverAddress.DrawTextBox();
         base.Render(mouseX, mouseY, partialTicks);

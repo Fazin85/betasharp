@@ -39,8 +39,8 @@ public class MinecartEntityRenderer : EntityRenderer
             if (var22.magnitude() != 0.0D)
             {
                 var22 = var22.normalize();
-                yaw = (float)(java.lang.Math.atan2(var22.z, var22.x) * 180.0D / Math.PI);
-                var19 = (float)(java.lang.Math.atan(var22.y) * 73.0D);
+                yaw = (float)(Math.Atan2(var22.z, var22.x) * 180.0D / Math.PI);
+                var19 = (float)(Math.Atan(var22.y) * 73.0D);
             }
         }
 

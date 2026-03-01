@@ -95,7 +95,7 @@ public class GuiEditSign : GuiScreen
         DrawDefaultBackground();
         if (FontRenderer != null)
         {
-            DrawCenteredString(FontRenderer, ScreenTitle, Width / 2, 40, 0xFFFFFF);
+            DrawCenteredString(FontRenderer, ScreenTitle, Width / 2, 40, Color.White);
         }
 
         GLManager.GL.PushMatrix();

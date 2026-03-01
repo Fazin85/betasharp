@@ -25,7 +25,7 @@ public class GuiInventory : GuiContainer
 
     protected override void DrawGuiContainerForegroundLayer()
     {
-        FontRenderer.DrawString("Crafting", 86, 16, 0x404040);
+        FontRenderer.DrawString("Crafting", 86, 16, Color.Gray40);
     }
 
     public override void Render(int mouseX, int mouseY, float partialTicks)

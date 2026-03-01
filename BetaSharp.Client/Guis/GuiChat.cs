@@ -7,9 +7,6 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiChat : GuiScreen
 {
-    private const uint BackgroundColor = 0x80000000;
-    private const uint TextColorNormal = 0xE0E0E0;
-
     protected string _message = "";
     private int _updateCounter = 0;
     private static readonly string s_allowedChars = ChatAllowedCharacters.allowedCharacters;
@@ -128,7 +125,7 @@ public class GuiChat : GuiScreen
 
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        DrawRect(2, Height - 14, Width - 2, Height - 2, BackgroundColor);
+        DrawRect(2, Height - 14, Width - 2, Height - 2, Color.BackgroundBlackAlpha);
 
         string cursor = (_updateCounter / 6 % 2 == 0) ? "_" : "";
         string textToDraw = "> " + _message + cursor;
@@ -136,7 +133,7 @@ public class GuiChat : GuiScreen
         int y = Height - 12;
         int xBase = 4;
 
-        FontRenderer.DrawStringWithShadow(textToDraw, xBase, y, TextColorNormal);
+        FontRenderer.DrawStringWithShadow(textToDraw, xBase, y, Color.GrayE0);
 
         base.Render(mouseX, mouseY, partialTicks);
     }

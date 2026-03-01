@@ -41,8 +41,8 @@ public class GuiSlotStatsGeneral : GuiSlot
     protected override void DrawSlot(int index, int x, int y, int rowHeight, Tessellator tessellator)
     {
         StatBase stat = Stats.Stats.GeneralStats[index];
-        parentStatsGui.FontRenderer.DrawStringWithShadow(stat.StatName, x + 2, y + 1, index % 2 == 0 ? 0xFFFFFFu : 0x909090u);
+        parentStatsGui.FontRenderer.DrawStringWithShadow(stat.StatName, x + 2, y + 1, index % 2 == 0 ? Color.White : Color.Gray90);
         string formatted = stat.Format(parentStatsGui.statFileWriter.GetStatValue(stat));
-        parentStatsGui.FontRenderer.DrawStringWithShadow(formatted, x + 2 + 213 - parentStatsGui.FontRenderer.GetStringWidth(formatted), y + 1, index % 2 == 0 ? 0xFFFFFF : 0x909090u);
+        parentStatsGui.FontRenderer.DrawStringWithShadow(formatted, x + 2 + 213 - parentStatsGui.FontRenderer.GetStringWidth(formatted), y + 1, index % 2 == 0 ? Color.White : Color.Gray90);
     }
 }

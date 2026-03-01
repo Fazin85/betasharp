@@ -64,7 +64,7 @@ public abstract class GuiSlotStats<T, K>(GuiStats statsGui) : GuiSlot(statsGui.m
     protected void DrawStatValue(StatCrafting? stat, int x, int y, bool useBrightColor)
     {
         string text = stat is not null ? stat.Format(statsGui.statFileWriter.GetStatValue(stat)) : "-";
-        statsGui.FontRenderer.DrawStringWithShadow(text, x - statsGui.FontRenderer.GetStringWidth(text), y + 5, useBrightColor ? 0xFFFFFFu : 0x909090u);
+        statsGui.FontRenderer.DrawStringWithShadow(text, x - statsGui.FontRenderer.GetStringWidth(text), y + 5, useBrightColor ? Color.White : Color.Gray90);
     }
 
     protected override void PostDrawScreen(int mouseX, int mouseY)
@@ -98,7 +98,7 @@ public abstract class GuiSlotStats<T, K>(GuiStats statsGui) : GuiSlot(statsGui.m
                         int textY = mouseY - 12;
                         int textWidth = statsGui.FontRenderer.GetStringWidth(translated);
                         statsGui.drawTranslucentRect(textX - 3, textY - 3, textX + textWidth + 3, textY + 8 + 3);
-                        statsGui.FontRenderer.DrawStringWithShadow(translated, textX, textY, 0xFFFFFFFF);
+                        statsGui.FontRenderer.DrawStringWithShadow(translated, textX, textY, Color.White);
                     }
                 }
             }
@@ -117,7 +117,7 @@ public abstract class GuiSlotStats<T, K>(GuiStats statsGui) : GuiSlot(statsGui.m
                 int textY = y - 12;
                 int textWidth = statsGui.FontRenderer.GetStringWidth(translated);
                 statsGui.drawTranslucentRect(textX - 3, textY - 3, textX + textWidth + 3, textY + 8 + 3);
-                statsGui.FontRenderer.DrawStringWithShadow(translated, textX, textY, 0xFFFFFFFF);
+                statsGui.FontRenderer.DrawStringWithShadow(translated, textX, textY, Color.White);
             }
         }
     }

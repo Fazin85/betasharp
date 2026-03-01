@@ -17,7 +17,7 @@ public class GuiDebugOptions : GuiScreen
     public override void InitGui()
     {
         TranslationStorage translations = TranslationStorage.Instance;
-        _screenTitle = "Debug Options"; 
+        _screenTitle = "Debug Options";
         int optionIndex = 0;
 
         foreach (GameOption option in _gameOptions.DebugScreenOptions)
@@ -62,7 +62,7 @@ public class GuiDebugOptions : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, _screenTitle, Width / 2, 20, 0xFFFFFF);
+        DrawCenteredString(FontRenderer, _screenTitle, Width / 2, 20, Color.White);
         base.Render(mouseX, mouseY, partialTicks);
     }
 }

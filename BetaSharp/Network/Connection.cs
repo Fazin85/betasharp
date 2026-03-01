@@ -99,7 +99,8 @@ public class Connection
             int packetId;
             Packet packet;
             object lockObj;
-            if (!sendQueue.isEmpty() && (lag == 0 || java.lang.System.currentTimeMillis() - ((Packet)sendQueue.get(0)).CreationTime >= lag))
+            if (!sendQueue.isEmpty() && (lag == 0 || DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+ - ((Packet)sendQueue.get(0)).CreationTime >= lag))
             {
                 lockObj = lck;
                 lock (lockObj)
@@ -115,7 +116,8 @@ public class Connection
                 wrotePacket = true;
             }
 
-            if (_delay-- <= 0 && !delayedSendQueue.isEmpty() && (lag == 0 || java.lang.System.currentTimeMillis() - ((Packet)delayedSendQueue.get(0)).CreationTime >= lag))
+            if (_delay-- <= 0 && !delayedSendQueue.isEmpty() && (lag == 0 || DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+ - ((Packet)delayedSendQueue.get(0)).CreationTime >= lag))
             {
                 lockObj = lck;
                 lock (lockObj)

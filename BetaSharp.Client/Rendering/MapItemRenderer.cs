@@ -6,6 +6,7 @@ using java.util;
 using Silk.NET.OpenGL.Legacy;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using Color = BetaSharp.Client.Guis.Color;
 
 namespace BetaSharp.Client.Rendering;
 
@@ -98,7 +99,7 @@ public class MapItemRenderer
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(0.0F, 0.0F, -0.04F);
         GLManager.GL.Scale(1.0F, 1.0F, 1.0F);
-        _textRenderer.DrawString(mapState.id, 0, 0, 0xFF000000);
+        _textRenderer.DrawString(mapState.id, 0, 0, Color.White);
         GLManager.GL.PopMatrix();
     }
 }

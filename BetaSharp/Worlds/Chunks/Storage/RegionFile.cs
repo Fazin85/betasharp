@@ -298,7 +298,8 @@ public class RegionFile
                     }
                 }
 
-                func_22208_b(var1, var2, (int)(java.lang.System.currentTimeMillis() / 1000L));
+                func_22208_b(var1, var2, (int)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+ / 1000L));
             }
             catch (System.IO.IOException var12)
             {

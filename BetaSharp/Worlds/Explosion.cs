@@ -48,7 +48,7 @@ public class Explosion
                         double var6 = (double)(var3 / (var2 - 1.0F) * 2.0F - 1.0F);
                         double var8 = (double)(var4 / (var2 - 1.0F) * 2.0F - 1.0F);
                         double var10 = (double)(var5 / (var2 - 1.0F) * 2.0F - 1.0F);
-                        double var12 = java.lang.Math.sqrt(var6 * var6 + var8 * var8 + var10 * var10);
+                        double var12 = Math.Sqrt(var6 * var6 + var8 * var8 + var10 * var10);
                         var6 /= var12;
                         var8 /= var12;
                         var10 /= var12;

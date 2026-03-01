@@ -67,13 +67,13 @@ public class GuiConnecting : GuiScreen
         TranslationStorage translations = TranslationStorage.Instance;
         if (_clientHandler == null)
         {
-            DrawCenteredString(FontRenderer, translations.TranslateKey("connect.connecting"), Width / 2, Height / 2 - 50, 0xFFFFFF);
-            DrawCenteredString(FontRenderer, "", Width / 2, Height / 2 - 10, 0xFFFFFF);
+            DrawCenteredString(FontRenderer, translations.TranslateKey("connect.connecting"), Width / 2, Height / 2 - 50, Color.White);
+            DrawCenteredString(FontRenderer, "", Width / 2, Height / 2 - 10, Color.White);
         }
         else
         {
-            DrawCenteredString(FontRenderer, translations.TranslateKey("connect.authorizing"), Width / 2, Height / 2 - 50, 0xFFFFFF);
-            DrawCenteredString(FontRenderer, _clientHandler.field_1209_a, Width / 2, Height / 2 - 10, 0xFFFFFF);
+            DrawCenteredString(FontRenderer, translations.TranslateKey("connect.authorizing"), Width / 2, Height / 2 - 50, Color.White);
+            DrawCenteredString(FontRenderer, _clientHandler.field_1209_a, Width / 2, Height / 2 - 10, Color.White);
         }
 
         base.Render(mouseX, mouseY, partialTicks);

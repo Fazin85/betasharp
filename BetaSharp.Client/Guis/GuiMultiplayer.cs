@@ -248,7 +248,7 @@ public class GuiMultiplayer : GuiScreen
     {
         DrawDefaultBackground();
         _serverListSelector.DrawScreen(mouseX, mouseY, partialTicks);
-        DrawCenteredString(FontRenderer, "Play Multiplayer", Width / 2, 20, 0xFFFFFF);
+        DrawCenteredString(FontRenderer, "Play Multiplayer", Width / 2, 20, Color.White);
         base.Render(mouseX, mouseY, partialTicks);
     }
 

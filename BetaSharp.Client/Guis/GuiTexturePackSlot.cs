@@ -59,8 +59,8 @@ public class GuiTexturePackSlot : GuiSlot
         tess.addVertexWithUV(x, y, 0.0D, 0.0D, 0.0D);
         tess.draw();
 
-        Gui.DrawString(_parentTexturePackGui.FontRenderer, pack.TexturePackFileName, x + 32 + 2, y + 1, 0xFFFFFF);
-        Gui.DrawString(_parentTexturePackGui.FontRenderer, pack.FirstDescriptionLine, x + 32 + 2, y + 12, 0x808080);
-        Gui.DrawString(_parentTexturePackGui.FontRenderer, pack.SecondDescriptionLine, x + 32 + 2, y + 12 + 10, 0x808080);
+        Gui.DrawString(_parentTexturePackGui.FontRenderer, pack.TexturePackFileName, x + 32 + 2, y + 1, Color.White);
+        Gui.DrawString(_parentTexturePackGui.FontRenderer, pack.FirstDescriptionLine, x + 32 + 2, y + 12,  Color.Gray80);
+        Gui.DrawString(_parentTexturePackGui.FontRenderer, pack.SecondDescriptionLine, x + 32 + 2, y + 12 + 10, Color.Gray80);
     }
 }
