@@ -47,7 +47,7 @@ public class ServerWorld : World
 
     protected override ChunkSource CreateChunkCache()
     {
-        IChunkStorage var1 = storage.GetChunkStorage(dimension);
+        IChunkStorage var1 = Storage.GetChunkStorage(dimension);
         chunkCache = new ServerChunkCache(this, var1, dimension.CreateChunkGenerator());
         return chunkCache;
     }
@@ -71,8 +71,8 @@ public class ServerWorld : World
 
     public override bool canInteract(EntityPlayer player, int x, int y, int z)
     {
-        int var5 = (int)MathHelper.Abs(x - properties.SpawnX);
-        int var6 = (int)MathHelper.Abs(z - properties.SpawnZ);
+        int var5 = (int)MathHelper.Abs(x - Properties.SpawnX);
+        int var6 = (int)MathHelper.Abs(z - Properties.SpawnZ);
         if (var5 > var6)
         {
             var6 = var5;
@@ -144,7 +144,7 @@ public class ServerWorld : World
 
     public void forceSave()
     {
-        storage.ForceSave();
+        Storage.ForceSave();
     }
 
 

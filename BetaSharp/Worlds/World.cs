@@ -18,93 +18,98 @@ using BetaSharp.Worlds.Dimensions;
 using BetaSharp.Worlds.Storage;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Maths;
-using Exception = System.Exception;
-using Random = System.Random;
 
 namespace BetaSharp.Worlds;
 
 public abstract class World : BlockView
 {
-    private const int AUTOSAVE_PERIOD = 40;
-    public bool instantBlockUpdateEnabled = false;
-    private readonly List<LightUpdate> lightingQueue = [];
     private readonly ILogger<World> _logger = Log.Instance.For<World>();
-    public List<Entity> entities = [];
-    private readonly List<Entity> entitiesToUnload = [];
+    protected readonly IWorldStorage Storage;
+    public readonly Dimension dimension;
+    private ChunkSource _chunkSource;
+    public PersistentStateManager persistentStateManager;
+    protected WorldProperties Properties;
+    protected List<IWorldAccess> EventListeners = [];
+
+    public RuleSet Rules { get; protected set; }
+    public bool isNewWorld;
+    public bool isRemote = false;
+    public int difficulty;
+    private bool _spawnHostileMobs = true;
+    private bool _spawnPeacefulMobs = true;
+
+
+    private static readonly int s_autosavePeriod = 40;
+    protected int AutosavePeriod = s_autosavePeriod;
+    public bool pauseTicking = false;
+    public bool eventProcessingEnabled;
+    private bool _processingDeferred;
+    public bool instantBlockUpdateEnabled = false;
     private readonly PriorityQueue<BlockUpdate, (long, long)> _scheduledUpdates = new();
 
-    private long
-        _eventDeltaTime =
-            0; // difference between world time and the scheduled time of the block events so things don't break when using the time command
+    private long _eventDeltaTime = 0; // difference between world time and the scheduled time of the block events so things don't break when using the time command
 
-    public List<BlockEntity> blockEntities = [];
-    private readonly List<BlockEntity> blockEntityUpdateQueue = [];
+    private readonly long _worldTimeMask = 0xFFFFFFL;
+
     public List<EntityPlayer> players = [];
+    private bool _allPlayersSleeping;
+    public List<Entity> entities = [];
     public List<Entity> globalEntities = [];
-    private readonly long worldTimeMask = 0xFFFFFFL;
+    private readonly List<Entity> _entitiesToUnload = [];
+
+
+    private readonly HashSet<ChunkPos> _activeChunks = new();
+    public List<BlockEntity> blockEntities = [];
+    private readonly List<BlockEntity> _blockEntityUpdateQueue = [];
+
     public int ambientDarkness = 0;
-    protected int lcgBlockSeed = Random.Shared.Next();
-    protected float prevRainingStrength;
-    protected float rainingStrength;
-    protected float prevThunderingStrength;
-    protected float thunderingStrength;
-    protected int ticksSinceLightning = 0;
+    private readonly List<LightUpdate> _lightingQueue = [];
+    private int _lightingUpdatesCounter = 0;
+    private int _lightingUpdatesScheduled;
+
+    protected float PrevRainingStrength;
+    protected float RainingStrength;
+    protected float PrevThunderingStrength;
+    protected float ThunderingStrength;
+    protected int TicksSinceLightning = 0;
     public int lightningTicksLeft = 0;
-    public bool pauseTicking = false;
-    protected int autosavePeriod = AUTOSAVE_PERIOD;
-    public int difficulty;
+
     public JavaRandom random = new();
-    public bool isNewWorld;
-    public readonly Dimension dimension;
-    protected List<IWorldAccess> eventListeners = [];
-    protected ChunkSource chunkSource;
-    protected readonly IWorldStorage storage;
-    protected WorldProperties properties;
-    public bool eventProcessingEnabled;
-    private bool allPlayersSleeping;
-    public PersistentStateManager persistentStateManager;
-    private readonly List<Box> collidingBoundingBoxes = [];
-    private bool processingDeferred;
-    private int lightingUpdatesCounter = 0;
-    private bool spawnHostileMobs = true;
-    private bool spawnPeacefulMobs = true;
-    private int lightingUpdatesScheduled;
-    private readonly HashSet<ChunkPos> activeChunks = new();
-    private int soundCounter = Random.Shared.Next(12000);
-    private readonly List<Entity> tempEntityList = [];
-    public bool isRemote = false;
-    public RuleSet Rules { get; protected set; }
+    private int _lcgBlockSeed = Random.Shared.Next();
+    private int _soundCounter = Random.Shared.Next(12000);
 
     private PathFinder _pathFinder;
 
-    public World(IWorldStorage var1, string var2, Dimension var3, long var4)
+    protected World(IWorldStorage worldStorage, string levelName, Dimension dim, long seed)
     {
         _pathFinder = new(this);
-        storage = var1;
-        persistentStateManager = new PersistentStateManager(var1);
-        properties = new WorldProperties(var4, var2);
-        dimension = var3;
-        var3.SetWorld(this);
-        chunkSource = CreateChunkCache();
-        Rules = properties.RulesTag != null
-            ? RuleSet.FromNBT(RuleRegistry.Instance, properties.RulesTag)
+        Storage = worldStorage;
+        persistentStateManager = new PersistentStateManager(worldStorage);
+        Properties = new WorldProperties(seed, levelName);
+        dimension = dim;
+        dim.SetWorld(this);
+        _chunkSource = CreateChunkCache();
+        Rules = Properties.RulesTag != null
+            ? RuleSet.FromNBT(RuleRegistry.Instance, Properties.RulesTag)
             : new RuleSet(RuleRegistry.Instance);
         updateSkyBrightness();
         prepareWeather();
     }
 
-    public World(IWorldStorage var1, string var2, long var3, Dimension var5)
+    protected World(IWorldStorage worldStorage, string levelName, long seed, Dimension? dim)
     {
         _pathFinder = new(this);
-        storage = var1;
-        persistentStateManager = new PersistentStateManager(var1);
-        properties = var1.LoadProperties();
-        isNewWorld = properties == null;
-        if (var5 != null)
+        Storage = worldStorage;
+        persistentStateManager = new PersistentStateManager(worldStorage);
+        Properties = worldStorage.LoadProperties();
+
+        isNewWorld = Properties == null;
+
+        if (dim != null)
         {
-            dimension = var5;
+            dimension = dim;
         }
-        else if (properties != null && properties.Dimension == -1)
+        else if (Properties != null && Properties.Dimension == -1)
         {
             dimension = Dimension.FromId(-1);
         }
@@ -113,24 +118,25 @@ public abstract class World : BlockView
             dimension = Dimension.FromId(0);
         }
 
-        bool var6 = false;
-        if (properties == null)
+        bool shouldInitializeSpawn = false;
+        if (Properties == null)
         {
-            properties = new WorldProperties(var3, var2);
-            var6 = true;
+            Properties = new WorldProperties(seed, levelName);
+            shouldInitializeSpawn = true;
         }
         else
         {
-            properties.LevelName = var2;
+            Properties.LevelName = levelName;
         }
 
         dimension.SetWorld(this);
-        chunkSource = CreateChunkCache();
-        Rules = properties.RulesTag != null
-            ? RuleSet.FromNBT(RuleRegistry.Instance, properties.RulesTag)
+        _chunkSource = CreateChunkCache();
+
+        Rules = Properties.RulesTag != null
+            ? RuleSet.FromNBT(RuleRegistry.Instance, Properties.RulesTag)
             : new RuleSet(RuleRegistry.Instance);
 
-        if (var6)
+        if (shouldInitializeSpawn)
         {
             initializeSpawnPoint();
         }
@@ -146,54 +152,59 @@ public abstract class World : BlockView
 
     public IWorldStorage getWorldStorage()
     {
-        return storage;
+        return Storage;
     }
 
     protected abstract ChunkSource CreateChunkCache();
 
-    protected void initializeSpawnPoint()
+    private void initializeSpawnPoint()
     {
         eventProcessingEnabled = true;
-        int var1 = 0;
-        byte var2 = 64;
+        int x = 0;
+        byte y = 64;
 
-        int var3;
-        for (var3 = 0; !dimension.IsValidSpawnPoint(var1, var3); var3 += random.NextInt(64) - random.NextInt(64))
+        int z;
+        for (
+            z = 0;
+            !dimension.IsValidSpawnPoint(x, z);
+            z += random.NextInt(64) - random.NextInt(64))
         {
-            var1 += random.NextInt(64) - random.NextInt(64);
+            x += random.NextInt(64) - random.NextInt(64);
         }
 
-        properties.SetSpawn(var1, var2, var3);
+        Properties.SetSpawn(x, y, z);
         eventProcessingEnabled = false;
     }
 
     public virtual void UpdateSpawnPosition()
     {
-        if (properties.SpawnY <= 0)
+        if (Properties.SpawnY <= 0)
         {
-            properties.SpawnY = 64;
+            Properties.SpawnY = 64;
         }
 
-        int var1 = properties.SpawnX;
+        int spawnX = Properties.SpawnX;
 
-        int var2;
-        for (var2 = properties.SpawnZ; getSpawnBlockId(var1, var2) == 0; var2 += random.NextInt(8) - random.NextInt(8))
+        int spawnZ;
+        for (spawnZ = Properties.SpawnZ;
+             getSpawnBlockId(spawnX, spawnZ) == 0;
+             spawnZ += random.NextInt(8) - random.NextInt(8))
         {
-            var1 += random.NextInt(8) - random.NextInt(8);
+            spawnX += random.NextInt(8) - random.NextInt(8);
         }
 
-        properties.SpawnX = var1;
-        properties.SpawnZ = var2;
+        Properties.SpawnX = spawnX;
+        Properties.SpawnZ = spawnZ;
     }
 
-    public int getSpawnBlockId(int var1, int var2)
+    public int getSpawnBlockId(int x, int z)
     {
-        int var3;
-        for (var3 = 63; !isAir(var1, var3 + 1, var2); ++var3)
+        int y;
+        for (y = 63; !isAir(x, y + 1, z); ++y)
         {
         }
 
-        return getBlockId(var1, var3, var2);
+        return getBlockId(x, y, z);
     }
 
     public void saveWorldData()
@@ -204,11 +215,11 @@ public abstract class World : BlockView
     {
         try
         {
-            NBTTagCompound? var2 = properties.PlayerTag;
-            if (var2 != null)
+            NBTTagCompound? tag = Properties.PlayerTag;
+            if (tag != null)
             {
-                player.read(var2);
-                properties.PlayerTag = null;
+                player.read(tag);
+                Properties.PlayerTag = null;
             }
 
             SpawnEntity(player);
@@ -219,9 +230,9 @@ public abstract class World : BlockView
         }
     }
 
-    public void saveWithLoadingDisplay(bool saveEntities, LoadingDisplay loadingDisplay)
+    public void saveWithLoadingDisplay(bool saveEntities, LoadingDisplay? loadingDisplay)
     {
-        if (chunkSource.CanSave())
+        if (_chunkSource.CanSave())
         {
             if (loadingDisplay != null)
             {
@@ -237,7 +248,7 @@ public abstract class World : BlockView
             }
 
             Profiler.Start("saveChunks");
-            chunkSource.Save(saveEntities, loadingDisplay);
+            _chunkSource.Save(saveEntities, loadingDisplay);
             Profiler.Stop("saveChunks");
         }
     }
@@ -245,14 +256,13 @@ public abstract class World : BlockView
     private void save()
     {
         Profiler.Start("checkSessionLock");
-        //checkSessionLock();
         Profiler.Stop("checkSessionLock");
         Profiler.Start("saveWorldInfoAndPlayer");
 
-        properties.RulesTag = new NBTTagCompound();
-        Rules.WriteToNBT(properties.RulesTag);
+        Properties.RulesTag = new NBTTagCompound();
+        Rules.WriteToNBT(Properties.RulesTag);
 
-        storage.Save(properties, players.Cast<EntityPlayer>().ToList());
+        Storage.Save(Properties, players.ToList());
         Profiler.Stop("saveWorldInfoAndPlayer");
 
         Profiler.Start("saveAllData");
@@ -262,7 +272,7 @@ public abstract class World : BlockView
 
     public bool attemptSaving(int i)
     {
-        if (!chunkSource.CanSave())
+        if (!_chunkSource.CanSave())
         {
             return true;
         }
@@ -273,15 +283,14 @@ public abstract class World : BlockView
                 save();
             }
 
-            return chunkSource.Save(false, (LoadingDisplay)null);
+            return _chunkSource.Save(false, null);
         }
     }
 
     public int getBlockId(int x, int y, int z)
     {
-        return x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000
-            ? (y < 0 ? 0 : (y >= 128 ? 0 : GetChunk(x >> 4, z >> 4).GetBlockId(x & 15, y, z & 15)))
-            : 0;
+        if (x < -32000000 || z < -32000000 || x >= 32000000 || z > 32000000 || y < 0 || y >= 128) return 0;
+        return GetChunk(x >> 4, z >> 4).GetBlockId(x & 15, y, z & 15);
     }
 
     public bool isAir(int x, int y, int z)
@@ -310,11 +319,11 @@ public abstract class World : BlockView
             maxY >>= 4;
             maxZ >>= 4;
 
-            for (int var7 = minX; var7 <= maxX; ++var7)
+            for (int x = minX; x <= maxX; ++x)
             {
-                for (int var8 = minZ; var8 <= maxZ; ++var8)
+                for (int z = minZ; z <= maxZ; ++z)
                 {
-                    if (!hasChunk(var7, var8))
+                    if (!hasChunk(x, z))
                     {
                         return false;
                     }
@@ -331,7 +340,7 @@ public abstract class World : BlockView
 
     private bool hasChunk(int x, int z)
     {
-        return chunkSource.IsChunkLoaded(x, z);
+        return _chunkSource.IsChunkLoaded(x, z);
     }
 
     public Chunk GetChunkFromPos(int x, int z)
@@ -341,31 +350,13 @@ public abstract class World : BlockView
 
     public Chunk GetChunk(int chunkX, int chunkZ)
     {
-        return chunkSource.GetChunk(chunkX, chunkZ);
+        return _chunkSource.GetChunk(chunkX, chunkZ);
     }
 
     public virtual bool SetBlockWithoutNotifyingNeighbors(int x, int y, int z, int blockId, int meta)
     {
-        if (x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
-        {
-            if (y < 0)
-            {
-                return false;
-            }
-            else if (y >= 128)
-            {
-                return false;
-            }
-            else
-            {
-                Chunk var6 = GetChunk(x >> 4, z >> 4);
-                return var6.SetBlock(x & 15, y, z & 15, blockId, meta);
-            }
-        }
-        else
-        {
-            return false;
-        }
+        if (x < -32000000 || z < -32000000 || x >= 32000000 || z > 32000000 || y < 0 || y >= 128) return false;
+        return GetChunk(x >> 4, z >> 4).SetBlock(x & 15, y, z & 15, blockId, meta);
     }
 
     public virtual bool SetBlockWithoutNotifyingNeighbors(int x, int y, int z, int blockId)
@@ -382,8 +373,8 @@ public abstract class World : BlockView
             }
             else
             {
-                Chunk var5 = GetChunk(x >> 4, z >> 4);
-                return var5.SetBlock(x & 15, y, z & 15, blockId);
+                Chunk chunk = GetChunk(x >> 4, z >> 4);
+                return chunk.SetBlock(x & 15, y, z & 15, blockId);
             }
         }
         else
@@ -394,48 +385,28 @@ public abstract class World : BlockView
 
     public Material getMaterial(int x, int y, int z)
     {
-        int var4 = getBlockId(x, y, z);
-        return var4 == 0 ? Material.Air : Block.Blocks[var4].material;
+        int blockId = getBlockId(x, y, z);
+        return blockId == 0 ? Material.Air : Block.Blocks[blockId].material;
     }
 
     public int getBlockMeta(int x, int y, int z)
     {
-        if (x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
-        {
-            if (y < 0)
-            {
-                return 0;
-            }
-            else if (y >= 128)
-            {
-                return 0;
-            }
-            else
-            {
-                Chunk var4 = GetChunk(x >> 4, z >> 4);
-                x &= 15;
-                z &= 15;
-                return var4.GetBlockMeta(x, y, z);
-            }
-        }
-        else
-        {
-            return 0;
-        }
+        if (x < -32000000 || z < -32000000 || x >= 32000000 || z > 32000000 || y < 0 || y >= 128) return 0;
+        return GetChunk(x >> 4, z >> 4).GetBlockMeta(x & 15, y, z & 15);
     }
 
     public void setBlockMeta(int x, int y, int z, int meta)
     {
         if (SetBlockMetaWithoutNotifyingNeighbors(x, y, z, meta))
         {
-            int var5 = getBlockId(x, y, z);
-            if (Block.BlocksIngoreMetaUpdate[var5 & 255])
+            int blockId = getBlockId(x, y, z);
+            if (Block.BlocksIngoreMetaUpdate[blockId & 255])
             {
-                blockUpdate(x, y, z, var5);
+                blockUpdate(x, y, z, blockId);
             }
             else
             {
-                notifyNeighbors(x, y, z, var5);
+                notifyNeighbors(x, y, z, blockId);
             }
         }
     }
@@ -454,10 +425,10 @@ public abstract class World : BlockView
             }
             else
             {
-                Chunk var5 = GetChunk(x >> 4, z >> 4);
+                Chunk chunk = GetChunk(x >> 4, z >> 4);
                 x &= 15;
                 z &= 15;
-                var5.SetBlockMeta(x, y, z, meta);
+                chunk.SetBlockMeta(x, y, z, meta);
                 return true;
             }
         }
@@ -495,9 +466,9 @@ public abstract class World : BlockView
 
     public void blockUpdateEvent(int x, int y, int z)
     {
-        for (int var4 = 0; var4 < eventListeners.Count; ++var4)
+        for (int i = 0; i < EventListeners.Count; ++i)
         {
-            eventListeners[var4].blockUpdate(x, y, z);
+            EventListeners[i].blockUpdate(x, y, z);
         }
     }
 
@@ -519,17 +490,17 @@ public abstract class World : BlockView
 
     public void setBlocksDirty(int x, int y, int z)
     {
-        for (int var4 = 0; var4 < eventListeners.Count; ++var4)
+        for (int i = 0; i < EventListeners.Count; ++i)
         {
-            eventListeners[var4].setBlocksDirty(x, y, z, x, y, z);
+            EventListeners[i].setBlocksDirty(x, y, z, x, y, z);
         }
     }
 
     public void setBlocksDirty(int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
     {
-        for (int var7 = 0; var7 < eventListeners.Count; ++var7)
+        for (int i = 0; i < EventListeners.Count; ++i)
         {
-            eventListeners[var7].setBlocksDirty(minX, minY, minZ, maxX, maxY, maxZ);
+            EventListeners[i].setBlocksDirty(minX, minY, minZ, maxX, maxY, maxZ);
         }
     }
 
@@ -547,10 +518,10 @@ public abstract class World : BlockView
     {
         if (!pauseTicking && !isRemote)
         {
-            Block var5 = Block.Blocks[getBlockId(x, y, z)];
-            if (var5 != null)
+            Block block = Block.Blocks[getBlockId(x, y, z)];
+            if (block != null)
             {
-                var5.neighborUpdate(this, x, y, z, blockId);
+                block.neighborUpdate(this, x, y, z, blockId);
             }
         }
     }
@@ -582,66 +553,44 @@ public abstract class World : BlockView
         return getLightLevel(x, y, z, true);
     }
 
-    public int getLightLevel(int x, int y, int z, bool bl)
+    public int getLightLevel(int x, int y, int z, bool checkNeighbors)
     {
-        if (x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
-        {
-            if (bl)
-            {
-                int var5 = getBlockId(x, y, z);
-                if (var5 == Block.Slab.id || var5 == Block.Farmland.id || var5 == Block.CobblestoneStairs.id ||
-                    var5 == Block.WoodenStairs.id)
-                {
-                    int var6 = getLightLevel(x, y + 1, z, false);
-                    int var7 = getLightLevel(x + 1, y, z, false);
-                    int var8 = getLightLevel(x - 1, y, z, false);
-                    int var9 = getLightLevel(x, y, z + 1, false);
-                    int var10 = getLightLevel(x, y, z - 1, false);
-                    if (var7 > var6)
-                    {
-                        var6 = var7;
-                    }
-
-                    if (var8 > var6)
-                    {
-                        var6 = var8;
-                    }
-
-                    if (var9 > var6)
-                    {
-                        var6 = var9;
-                    }
-
-                    if (var10 > var6)
-                    {
-                        var6 = var10;
-                    }
-
-                    return var6;
-                }
-            }
-
-            if (y < 0)
-            {
-                return 0;
-            }
-            else
-            {
-                if (y >= 128)
-                {
-                    return !dimension.HasCeiling ? 15 - ambientDarkness : 0;
-                }
-
-                Chunk var11 = GetChunk(x >> 4, z >> 4);
-                x &= 15;
-                z &= 15;
-                return var11.GetLight(x, y, z, ambientDarkness);
-            }
-        }
-        else
+        if (x < -32000000 || z < -32000000 || x >= 32000000 || z > 32000000)
         {
             return 15;
         }
+
+        if (checkNeighbors)
+        {
+            int blockId = getBlockId(x, y, z);
+            if (blockId == Block.Slab.id || blockId == Block.Farmland.id ||
+                blockId == Block.CobblestoneStairs.id || blockId == Block.WoodenStairs.id)
+            {
+                int neighborMaxLight = getLightLevel(x, y + 1, z, false);
+
+                int lightPosX = getLightLevel(x + 1, y, z, false);
+                int lightNegX = getLightLevel(x - 1, y, z, false);
+                int lightPosZ = getLightLevel(x, y, z + 1, false);
+                int lightNegZ = getLightLevel(x, y, z - 1, false);
+
+                if (lightPosX > neighborMaxLight) neighborMaxLight = lightPosX;
+                if (lightNegX > neighborMaxLight) neighborMaxLight = lightNegX;
+                if (lightPosZ > neighborMaxLight) neighborMaxLight = lightPosZ;
+                if (lightNegZ > neighborMaxLight) neighborMaxLight = lightNegZ;
+
+                return neighborMaxLight;
+            }
+        }
+
+        if (y < 0) return 0;
+
+        if (y >= 128)
+        {
+            return !dimension.HasCeiling ? 15 - ambientDarkness : 0;
+        }
+
+        Chunk chunk = GetChunk(x >> 4, z >> 4);
+        return chunk.GetLight(x & 15, y, z & 15, ambientDarkness);
     }
 
     public bool isTopY(int x, int y, int z)
@@ -662,10 +611,10 @@ public abstract class World : BlockView
             }
             else
             {
-                Chunk var4 = GetChunk(x >> 4, z >> 4);
+                Chunk chunk = GetChunk(x >> 4, z >> 4);
                 x &= 15;
                 z &= 15;
-                return var4.IsAboveMaxHeight(x, y, z);
+                return chunk.IsAboveMaxHeight(x, y, z);
             }
         }
         else
@@ -678,48 +627,49 @@ public abstract class World : BlockView
     {
         if (x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
         {
-            if (!hasChunk(x >> 4, z >> 4))
+            int chunkX = x >> 4;
+            int chunkZ = z >> 4;
+
+            if (!hasChunk(chunkX, chunkZ))
             {
                 return 0;
             }
-            else
-            {
-                Chunk var3 = GetChunk(x >> 4, z >> 4);
-                return var3.GetHeight(x & 15, z & 15);
-            }
+
+            Chunk chunk = GetChunk(chunkX, chunkZ);
+            return chunk.GetHeight(x & 15, z & 15);
         }
-        else
-        {
-            return 0;
-        }
+
+        return 0;
     }
 
-    public void updateLight(LightType lightType, int x, int y, int z, int l)
+    public void updateLight(LightType lightType, int x, int y, int z, int targetLuminance)
     {
-        if (!dimension.HasCeiling || lightType != LightType.Sky)
+        if (dimension.HasCeiling && lightType == LightType.Sky)
         {
-            if (isPosLoaded(x, y, z))
-            {
-                if (lightType == LightType.Sky)
-                {
-                    if (isTopY(x, y, z))
-                    {
-                        l = 15;
-                    }
-                }
-                else if (lightType == LightType.Block)
-                {
-                    int var6 = getBlockId(x, y, z);
-                    if (Block.BlocksLightLuminance[var6] > l)
-                    {
-                        l = Block.BlocksLightLuminance[var6];
-                    }
-                }
+            return;
+        }
 
-                if (getBrightness(lightType, x, y, z) != l)
+        if (isPosLoaded(x, y, z))
+        {
+            if (lightType == LightType.Sky)
+            {
+                if (isTopY(x, y, z))
                 {
-                    queueLightUpdate(lightType, x, y, z, x, y, z);
+                    targetLuminance = 15;
                 }
+            }
+            else if (lightType == LightType.Block)
+            {
+                int blockId = getBlockId(x, y, z);
+                if (Block.BlocksLightLuminance[blockId] > targetLuminance)
+                {
+                    targetLuminance = Block.BlocksLightLuminance[blockId];
+                }
+            }
+
+            if (getBrightness(lightType, x, y, z) != targetLuminance)
+            {
+                queueLightUpdate(lightType, x, y, z, x, y, z);
             }
         }
     }
@@ -738,22 +688,18 @@ public abstract class World : BlockView
 
         if (y >= 0 && y < 128 && x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
         {
-            int var5 = x >> 4;
-            int var6 = z >> 4;
-            if (!hasChunk(var5, var6))
+            int chunkX = x >> 4;
+            int chunkZ = z >> 4;
+            if (!hasChunk(chunkX, chunkZ))
             {
                 return 0;
             }
-            else
-            {
-                Chunk var7 = GetChunk(var5, var6);
-                return var7.GetLight(type, x & 15, y, z & 15);
-            }
+
+            Chunk chunk = GetChunk(chunkX, chunkZ);
+            return chunk.GetLight(type, x & 15, y, z & 15);
         }
-        else
-        {
-            return type.lightValue;
-        }
+
+        return type.lightValue;
     }
 
     public void setLight(LightType lightType, int x, int y, int z, int value)
@@ -766,12 +712,12 @@ public abstract class World : BlockView
                 {
                     if (hasChunk(x >> 4, z >> 4))
                     {
-                        Chunk var6 = GetChunk(x >> 4, z >> 4);
-                        var6.SetLight(lightType, x & 15, y, z & 15, value);
+                        Chunk chunk = GetChunk(x >> 4, z >> 4);
+                        chunk.SetLight(lightType, x & 15, y, z & 15, value);
 
-                        for (int var7 = 0; var7 < eventListeners.Count; ++var7)
+                        for (int i = 0; i < EventListeners.Count; ++i)
                         {
-                            eventListeners[var7].blockUpdate(x, y, z);
+                            EventListeners[i].blockUpdate(x, y, z);
                         }
                     }
                 }
@@ -781,13 +727,13 @@ public abstract class World : BlockView
 
     public float getNaturalBrightness(int x, int y, int z, int blockLight)
     {
-        int var5 = getLightLevel(x, y, z);
-        if (var5 < blockLight)
+        int lightLevel = getLightLevel(x, y, z);
+        if (lightLevel < blockLight)
         {
-            var5 = blockLight;
+            lightLevel = blockLight;
         }
 
-        return dimension.LightLevelToLuminance[var5];
+        return dimension.LightLevelToLuminance[lightLevel];
     }
 
     public float getLuminance(int x, int y, int z)
@@ -810,240 +756,157 @@ public abstract class World : BlockView
         return raycast(start, end, bl, false);
     }
 
-    public HitResult raycast(Vec3D start, Vec3D pos, bool bl, bool bl2)
+    public HitResult raycast(Vec3D start, Vec3D target, bool includeFluids, bool ignoreNonSolid)
     {
-        if (!double.IsNaN(start.x) && !double.IsNaN(start.y) && !double.IsNaN(start.z))
-        {
-            if (!double.IsNaN(pos.x) && !double.IsNaN(pos.y) && !double.IsNaN(pos.z))
-            {
-                int var5 = MathHelper.Floor(pos.x);
-                int var6 = MathHelper.Floor(pos.y);
-                int var7 = MathHelper.Floor(pos.z);
-                int var8 = MathHelper.Floor(start.x);
-                int var9 = MathHelper.Floor(start.y);
-                int var10 = MathHelper.Floor(start.z);
-                int var11 = getBlockId(var8, var9, var10);
-                int var12 = getBlockMeta(var8, var9, var10);
-                Block var13 = Block.Blocks[var11];
-                if ((!bl2 || var13 == null || var13.getCollisionShape(this, var8, var9, var10) != null) && var11 > 0 &&
-                    var13.hasCollision(var12, bl))
-                {
-                    HitResult var14 = var13.raycast(this, var8, var9, var10, start, pos);
-                    if (var14.Type != HitResultType.MISS)
-                    {
-                        return var14;
-                    }
-                }
-
-                var11 = 200;
-
-                while (var11-- >= 0)
-                {
-                    if (double.IsNaN(start.x) || double.IsNaN(start.y) ||
-                        double.IsNaN(start.z))
-                    {
-                        return new HitResult(HitResultType.MISS);
-                    }
-
-                    if (var8 == var5 && var9 == var6 && var10 == var7)
-                    {
-                        return new HitResult(HitResultType.MISS);
-                    }
-
-                    bool var39 = true;
-                    bool var40 = true;
-                    bool var41 = true;
-                    double var15 = 999.0D;
-                    double var17 = 999.0D;
-                    double var19 = 999.0D;
-                    if (var5 > var8)
-                    {
-                        var15 = (double)var8 + 1.0D;
-                    }
-                    else if (var5 < var8)
-                    {
-                        var15 = (double)var8 + 0.0D;
-                    }
-                    else
-                    {
-                        var39 = false;
-                    }
-
-                    if (var6 > var9)
-                    {
-                        var17 = (double)var9 + 1.0D;
-                    }
-                    else if (var6 < var9)
-                    {
-                        var17 = (double)var9 + 0.0D;
-                    }
-                    else
-                    {
-                        var40 = false;
-                    }
-
-                    if (var7 > var10)
-                    {
-                        var19 = (double)var10 + 1.0D;
-                    }
-                    else if (var7 < var10)
-                    {
-                        var19 = (double)var10 + 0.0D;
-                    }
-                    else
-                    {
-                        var41 = false;
-                    }
-
-                    double var21 = 999.0D;
-                    double var23 = 999.0D;
-                    double var25 = 999.0D;
-                    double var27 = pos.x - start.x;
-                    double var29 = pos.y - start.y;
-                    double var31 = pos.z - start.z;
-                    if (var39)
-                    {
-                        var21 = (var15 - start.x) / var27;
-                    }
-
-                    if (var40)
-                    {
-                        var23 = (var17 - start.y) / var29;
-                    }
-
-                    if (var41)
-                    {
-                        var25 = (var19 - start.z) / var31;
-                    }
-
-                    bool var33 = false;
-                    byte var42;
-                    if (var21 < var23 && var21 < var25)
-                    {
-                        if (var5 > var8)
-                        {
-                            var42 = 4;
-                        }
-                        else
-                        {
-                            var42 = 5;
-                        }
-
-                        start.x = var15;
-                        start.y += var29 * var21;
-                        start.z += var31 * var21;
-                    }
-                    else if (var23 < var25)
-                    {
-                        if (var6 > var9)
-                        {
-                            var42 = 0;
-                        }
-                        else
-                        {
-                            var42 = 1;
-                        }
-
-                        start.x += var27 * var23;
-                        start.y = var17;
-                        start.z += var31 * var23;
-                    }
-                    else
-                    {
-                        if (var7 > var10)
-                        {
-                            var42 = 2;
-                        }
-                        else
-                        {
-                            var42 = 3;
-                        }
-
-                        start.x += var27 * var25;
-                        start.y += var29 * var25;
-                        start.z = var19;
-                    }
-
-                    Vec3D var34 = new Vec3D(start.x, start.y, start.z);
-                    var8 = (int)(var34.x = (double)MathHelper.Floor(start.x));
-                    if (var42 == 5)
-                    {
-                        --var8;
-                        ++var34.x;
-                    }
-
-                    var9 = (int)(var34.y = (double)MathHelper.Floor(start.y));
-                    if (var42 == 1)
-                    {
-                        --var9;
-                        ++var34.y;
-                    }
-
-                    var10 = (int)(var34.z = (double)MathHelper.Floor(start.z));
-                    if (var42 == 3)
-                    {
-                        --var10;
-                        ++var34.z;
-                    }
-
-                    int var35 = getBlockId(var8, var9, var10);
-                    int var36 = getBlockMeta(var8, var9, var10);
-                    Block var37 = Block.Blocks[var35];
-                    if ((!bl2 || var37 == null || var37.getCollisionShape(this, var8, var9, var10) != null) &&
-                        var35 > 0 && var37.hasCollision(var36, bl))
-                    {
-                        HitResult var38 = var37.raycast(this, var8, var9, var10, start, pos);
-                        if (var38.Type != HitResultType.MISS)
-                        {
-                            return var38;
-                        }
-                    }
-                }
-
-                return new HitResult(HitResultType.MISS);
-            }
-            else
-            {
-                return new HitResult(HitResultType.MISS);
-            }
-        }
-        else
+        if (double.IsNaN(start.x) || double.IsNaN(start.y) || double.IsNaN(start.z) ||
+            double.IsNaN(target.x) || double.IsNaN(target.y) || double.IsNaN(target.z))
         {
             return new HitResult(HitResultType.MISS);
         }
+
+        int targetX = MathHelper.Floor(target.x);
+        int targetY = MathHelper.Floor(target.y);
+        int targetZ = MathHelper.Floor(target.z);
+        int currentX = MathHelper.Floor(start.x);
+        int currentY = MathHelper.Floor(start.y);
+        int currentZ = MathHelper.Floor(start.z);
+
+        int initialId = getBlockId(currentX, currentY, currentZ);
+        int initialMeta = getBlockMeta(currentX, currentY, currentZ);
+        Block initialBlock = Block.Blocks[initialId];
+
+        if ((!ignoreNonSolid || initialBlock == null ||
+             initialBlock.getCollisionShape(this, currentX, currentY, currentZ) != null) &&
+            initialId > 0 && initialBlock.hasCollision(initialMeta, includeFluids))
+        {
+            HitResult result = initialBlock.raycast(this, currentX, currentY, currentZ, start, target);
+            if (result.Type != HitResultType.MISS) return result;
+        }
+
+        int iterationsRemaining = 200;
+        while (iterationsRemaining-- >= 0)
+        {
+            if (double.IsNaN(start.x) || double.IsNaN(start.y) || double.IsNaN(start.z))
+                return new HitResult(HitResultType.MISS);
+            if (currentX == targetX && currentY == targetY && currentZ == targetZ)
+                return new HitResult(HitResultType.MISS);
+
+            bool canMoveX = true, canMoveY = true, canMoveZ = true;
+            double nextBoundaryX = 999.0D, nextBoundaryY = 999.0D, nextBoundaryZ = 999.0D;
+
+            if (targetX > currentX) nextBoundaryX = currentX + 1.0D;
+            else if (targetX < currentX) nextBoundaryX = currentX + 0.0D;
+            else canMoveX = false;
+
+            if (targetY > currentY) nextBoundaryY = currentY + 1.0D;
+            else if (targetY < currentY) nextBoundaryY = currentY + 0.0D;
+            else canMoveY = false;
+
+            if (targetZ > currentZ) nextBoundaryZ = currentZ + 1.0D;
+            else if (targetZ < currentZ) nextBoundaryZ = currentZ + 0.0D;
+            else canMoveZ = false;
+
+            double deltaX = target.x - start.x;
+            double deltaY = target.y - start.y;
+            double deltaZ = target.z - start.z;
+
+            double scaleX = 999.0D, scaleY = 999.0D, scaleZ = 999.0D;
+            if (canMoveX) scaleX = (nextBoundaryX - start.x) / deltaX;
+            if (canMoveY) scaleY = (nextBoundaryY - start.y) / deltaY;
+            if (canMoveZ) scaleZ = (nextBoundaryZ - start.z) / deltaZ;
+
+            byte hitSide;
+            if (scaleX < scaleY && scaleX < scaleZ)
+            {
+                hitSide = (byte)(targetX > currentX ? 4 : 5);
+                start.x = nextBoundaryX;
+                start.y += deltaY * scaleX;
+                start.z += deltaZ * scaleX;
+            }
+            else if (scaleY < scaleZ)
+            {
+                hitSide = (byte)(targetY > currentY ? 0 : 1);
+                start.x += deltaX * scaleY;
+                start.y = nextBoundaryY;
+                start.z += deltaZ * scaleY;
+            }
+            else
+            {
+                hitSide = (byte)(targetZ > currentZ ? 2 : 3);
+                start.x += deltaX * scaleZ;
+                start.y += deltaY * scaleZ;
+                start.z = nextBoundaryZ;
+            }
+
+            Vec3D currentStepPos = new Vec3D(start.x, start.y, start.z);
+            currentX = (int)(currentStepPos.x = MathHelper.Floor(start.x));
+            if (hitSide == 5)
+            {
+                currentX--;
+                currentStepPos.x++;
+            }
+
+            currentY = (int)(currentStepPos.y = MathHelper.Floor(start.y));
+            if (hitSide == 1)
+            {
+                currentY--;
+                currentStepPos.y++;
+            }
+
+            currentZ = (int)(currentStepPos.z = MathHelper.Floor(start.z));
+            if (hitSide == 3)
+            {
+                currentZ--;
+                currentStepPos.z++;
+            }
+
+            int blockIdAtStep = getBlockId(currentX, currentY, currentZ);
+            int metaAtStep = getBlockMeta(currentX, currentY, currentZ);
+            Block blockAtStep = Block.Blocks[blockIdAtStep];
+
+            if ((!ignoreNonSolid || blockAtStep == null ||
+                 blockAtStep.getCollisionShape(this, currentX, currentY, currentZ) != null) &&
+                blockIdAtStep > 0 && blockAtStep.hasCollision(metaAtStep, includeFluids))
+            {
+                HitResult hit = blockAtStep.raycast(this, currentX, currentY, currentZ, start, target);
+                if (hit.Type != HitResultType.MISS) return hit;
+            }
+        }
+
+        return new HitResult(HitResultType.MISS);
     }
 
     public void playSound(Entity entity, string sound, float volume, float pitch)
     {
-        for (int var5 = 0; var5 < eventListeners.Count; ++var5)
+        for (int i = 0; i < EventListeners.Count; ++i)
         {
-            eventListeners[var5].playSound(sound, entity.x, entity.y - (double)entity.standingEyeHeight, entity.z,
-                volume, pitch);
+            EventListeners[i].playSound(sound, entity.x, entity.y - entity.standingEyeHeight, entity.z, volume,
+                pitch);
         }
     }
 
     public void playSound(double x, double y, double z, string sound, float volume, float pitch)
     {
-        for (int var10 = 0; var10 < eventListeners.Count; ++var10)
+        for (int i = 0; i < EventListeners.Count; ++i)
         {
-            eventListeners[var10].playSound(sound, x, y, z, volume, pitch);
+            EventListeners[i].playSound(sound, x, y, z, volume, pitch);
         }
     }
 
     public void playStreaming(string music, int x, int y, int z)
     {
-        for (int var5 = 0; var5 < eventListeners.Count; ++var5)
+        for (int i = 0; i < EventListeners.Count; ++i)
         {
-            eventListeners[var5].playStreaming(music, x, y, z);
+            EventListeners[i].playStreaming(music, x, y, z);
         }
     }
 
     public void addParticle(string particle, double x, double y, double z, double velocityX, double velocityY,
         double velocityZ)
     {
-        for (int var14 = 0; var14 < eventListeners.Count; ++var14)
+        for (int i = 0; i < EventListeners.Count; ++i)
         {
-            eventListeners[var14].spawnParticle(particle, x, y, z, velocityX, velocityY, velocityZ);
+            EventListeners[i].spawnParticle(particle, x, y, z, velocityX, velocityY, velocityZ);
         }
     }
 
@@ -1055,47 +918,43 @@ public abstract class World : BlockView
 
     public virtual bool SpawnEntity(Entity entity)
     {
-        int var2 = MathHelper.Floor(entity.x / 16.0D);
-        int var3 = MathHelper.Floor(entity.z / 16.0D);
-        bool var4 = false;
-        if (entity is EntityPlayer)
-        {
-            var4 = true;
-        }
+        int chunkX = MathHelper.Floor(entity.x / 16.0D);
+        int chunkZ = MathHelper.Floor(entity.z / 16.0D);
+        bool isPlayer = entity is EntityPlayer;
 
-        if (!var4 && !hasChunk(var2, var3))
+        if (!isPlayer && !hasChunk(chunkX, chunkZ))
         {
             return false;
         }
-        else
-        {
-            if (entity is EntityPlayer)
-            {
-                EntityPlayer var5 = (EntityPlayer)entity;
-                players.Add(var5);
-                updateSleepingPlayers();
-            }
 
-            GetChunk(var2, var3).AddEntity(entity);
-            entities.Add(entity);
-            NotifyEntityAdded(entity);
-            return true;
+        if (entity is EntityPlayer player)
+        {
+            players.Add(player);
+            updateSleepingPlayers();
         }
+
+        GetChunk(chunkX, chunkZ).AddEntity(entity);
+
+        entities.Add(entity);
+
+        NotifyEntityAdded(entity);
+
+        return true;
     }
 
     protected virtual void NotifyEntityAdded(Entity entity)
     {
-        for (int var2 = 0; var2 < eventListeners.Count; ++var2)
+        for (int i = 0; i < EventListeners.Count; ++i)
         {
-            eventListeners[var2].notifyEntityAdded(entity);
+            EventListeners[i].notifyEntityAdded(entity);
         }
     }
 
     protected virtual void NotifyEntityRemoved(Entity entity)
     {
-        for (int var2 = 0; var2 < eventListeners.Count; ++var2)
+        for (int i = 0; i < EventListeners.Count; ++i)
         {
-            eventListeners[var2].notifyEntityRemoved(entity);
+            EventListeners[i].notifyEntityRemoved(entity);
         }
     }
 
@@ -1103,12 +962,12 @@ public abstract class World : BlockView
     {
         if (entity.passenger != null)
         {
-            entity.passenger.setVehicle((Entity)null);
+            entity.passenger.setVehicle(null);
         }
 
         if (entity.vehicle != null)
         {
-            entity.setVehicle((Entity)null);
+            entity.setVehicle(null);
         }
 
         entity.markDead();
@@ -1128,11 +987,11 @@ public abstract class World : BlockView
             this.updateSleepingPlayers();
         }
 
-        int var2 = entity.chunkX;
-        int var3 = entity.chunkZ;
-        if (entity.isPersistent && hasChunk(var2, var3))
+        int chunkX = entity.chunkX;
+        int chunkZ = entity.chunkZ;
+        if (entity.isPersistent && hasChunk(chunkX, chunkZ))
         {
-            GetChunk(var2, var3).RemoveEntity(entity);
+            GetChunk(chunkX, chunkZ).RemoveEntity(entity);
         }
 
         entities.Remove(entity);
@@ -1141,216 +1000,206 @@ public abstract class World : BlockView
 
     public void addWorldAccess(IWorldAccess worldAccess)
     {
-        eventListeners.Add(worldAccess);
+        EventListeners.Add(worldAccess);
     }
 
     public void removeWorldAccess(IWorldAccess worldAccess)
     {
-        eventListeners.Remove(worldAccess);
+        EventListeners.Remove(worldAccess);
     }
 
-    public List<Box> getEntityCollisions(Entity entity, Box box)
+    public List<Box> getEntityCollisions(Entity entity, Box area)
     {
-        collidingBoundingBoxes.Clear();
-        int var3 = MathHelper.Floor(box.MinX);
-        int var4 = MathHelper.Floor(box.MaxX + 1.0D);
-        int var5 = MathHelper.Floor(box.MinY);
-        int var6 = MathHelper.Floor(box.MaxY + 1.0D);
-        int var7 = MathHelper.Floor(box.MinZ);
-        int var8 = MathHelper.Floor(box.MaxZ + 1.0D);
+        return getEntityCollisions(entity, area, new List<Box>());
+    }
 
-        for (int var9 = var3; var9 < var4; ++var9)
+    public List<Box> getEntityCollisions(Entity entity, Box area, List<Box> collidingBoundingBoxes)
+    {
+        int minX = MathHelper.Floor(area.MinX);
+        int maxX = MathHelper.Floor(area.MaxX + 1.0D);
+        int minY = MathHelper.Floor(area.MinY);
+        int maxY = MathHelper.Floor(area.MaxY + 1.0D);
+        int minZ = MathHelper.Floor(area.MinZ);
+        int maxZ = MathHelper.Floor(area.MaxZ + 1.0D);
+
+        for (int x = minX; x < maxX; ++x)
         {
-            for (int var10 = var7; var10 < var8; ++var10)
+            for (int z = minZ; z < maxZ; ++z)
             {
-                if (isPosLoaded(var9, 64, var10))
+                if (isPosLoaded(x, 64, z))
                 {
-                    for (int var11 = var5 - 1; var11 < var6; ++var11)
+                    for (int y = minY - 1; y < maxY; ++y)
                     {
-                        Block var12 = Block.Blocks[getBlockId(var9, var11, var10)];
-                        if (var12 != null)
+                        Block block = Block.Blocks[getBlockId(x, y, z)];
+                        if (block != null)
                         {
-                            var12.addIntersectingBoundingBox(this, var9, var11, var10, box, collidingBoundingBoxes);
+                            block.addIntersectingBoundingBox(this, x, y, z, area, collidingBoundingBoxes);
                         }
                     }
                 }
             }
         }
 
-        double var14 = 0.25D;
-        List<Entity> var15 = getEntities(entity, box.Expand(var14, var14, var14));
+        const double expansion = 0.25D;
+        List<Entity> nearbyEntities = new List<Entity>();
+        getEntities(entity, area.Expand(expansion, expansion, expansion), nearbyEntities);
 
-        for (int var16 = 0; var16 < var15.Count; ++var16)
+        for (int i = 0; i < nearbyEntities.Count; ++i)
         {
-            Box? var13 = var15[var16].getBoundingBox();
-            if (var13 != null && var13.Value.Intersects(box))
+            Box? entityBox = nearbyEntities[i].getBoundingBox();
+            if (entityBox != null && entityBox.Value.Intersects(area))
             {
-                collidingBoundingBoxes.Add(var13.Value);
+                collidingBoundingBoxes.Add(entityBox.Value);
             }
 
-            var13 = entity.getCollisionAgainstShape(var15[var16]);
-            if (var13 != null && var13.Value.Intersects(box))
+            entityBox = entity.getCollisionAgainstShape(nearbyEntities[i]);
+            if (entityBox != null && entityBox.Value.Intersects(area))
             {
-                collidingBoundingBoxes.Add(var13.Value);
+                collidingBoundingBoxes.Add(entityBox.Value);
             }
         }
 
         return collidingBoundingBoxes;
     }
 
-    public int getAmbientDarkness(float partialTicks)
+    protected int getAmbientDarkness(float delta)
     {
-        float var2 = getTime(partialTicks);
-        float var3 = 1.0F - (MathHelper.Cos(var2 * (float)Math.PI * 2.0F) * 2.0F + 0.5F);
-        if (var3 < 0.0F)
-        {
-            var3 = 0.0F;
-        }
+        float timeOfDay = getTime(delta);
 
-        if (var3 > 1.0F)
-        {
-            var3 = 1.0F;
-        }
+        float sunIntensity = 1.0F - (MathHelper.Cos(timeOfDay * (float)Math.PI * 2.0F) * 2.0F + 0.5F);
+        sunIntensity = Math.Clamp(sunIntensity, 0.0F, 1.0F);
 
-        var3 = 1.0F - var3;
-        var3 = (float)((double)var3 * (1.0D - (double)(getRainGradient(partialTicks) * 5.0F) / 16.0D));
-        var3 = (float)((double)var3 * (1.0D - (double)(getThunderGradient(partialTicks) * 5.0F) / 16.0D));
-        var3 = 1.0F - var3;
-        return (int)(var3 * 11.0F);
+        float lightLevel = 1.0F - sunIntensity;
+        lightLevel = (float)(lightLevel * (1.0D - (getRainGradient(delta) * 5.0F) / 16.0D));
+        lightLevel = (float)(lightLevel * (1.0D - (getThunderGradient(delta) * 5.0F) / 16.0D));
+
+        float finalDarknessFactor = 1.0F - lightLevel;
+        return (int)(finalDarknessFactor * 11.0F);
     }
 
     public Vector3D<double> getSkyColor(Entity entity, float partialTicks)
     {
-        float var3 = getTime(partialTicks);
-        float var4 = MathHelper.Cos(var3 * (float)Math.PI * 2.0F) * 2.0F + 0.5F;
-        if (var4 < 0.0F)
+        float timeOfDay = getTime(partialTicks);
+
+        float sunIntensity = MathHelper.Cos(timeOfDay * (float)Math.PI * 2.0F) * 2.0F + 0.5F;
+        sunIntensity = Math.Clamp(sunIntensity, 0.0F, 1.0F);
+
+        int blockX = MathHelper.Floor(entity.x);
+        int blockZ = MathHelper.Floor(entity.z);
+        float temperature = (float)getBiomeSource().GetTemperature(blockX, blockZ);
+        int biomeSkyColorInt = getBiomeSource().GetBiome(blockX, blockZ).GetSkyColorByTemp(temperature);
+
+        float red = (biomeSkyColorInt >> 16 & 255) / 255.0F;
+        float green = (biomeSkyColorInt >> 8 & 255) / 255.0F;
+        float blue = (biomeSkyColorInt & 255) / 255.0F;
+
+        red *= sunIntensity;
+        green *= sunIntensity;
+        blue *= sunIntensity;
+
+        float rainStrength = getRainGradient(partialTicks);
+        if (rainStrength > 0.0F)
         {
-            var4 = 0.0F;
+            float grayscaleLuminance = (red * 0.3F + green * 0.59F + blue * 0.11F) * 0.6F;
+            float rainFactor = 1.0F - rainStrength * (12.0F / 16.0F);
+
+            red = red * rainFactor + grayscaleLuminance * (1.0F - rainFactor);
+            green = green * rainFactor + grayscaleLuminance * (1.0F - rainFactor);
+            blue = blue * rainFactor + grayscaleLuminance * (1.0F - rainFactor);
         }
 
-        if (var4 > 1.0F)
+        float thunderStrength = getThunderGradient(partialTicks);
+        if (thunderStrength > 0.0F)
         {
-            var4 = 1.0F;
-        }
+            float grayscaleLuminance = (red * 0.3F + green * 0.59F + blue * 0.11F) * 0.2F;
+            float thunderFactor = 1.0F - thunderStrength * (12.0F / 16.0F);
 
-        int var5 = MathHelper.Floor(entity.x);
-        int var6 = MathHelper.Floor(entity.z);
-        float var7 = (float)getBiomeSource().GetTemperature(var5, var6);
-        int var8 = getBiomeSource().GetBiome(var5, var6).GetSkyColorByTemp(var7);
-        float var9 = (float)(var8 >> 16 & 255) / 255.0F;
-        float var10 = (float)(var8 >> 8 & 255) / 255.0F;
-        float var11 = (float)(var8 & 255) / 255.0F;
-        var9 *= var4;
-        var10 *= var4;
-        var11 *= var4;
-        float var12 = getRainGradient(partialTicks);
-        float var13;
-        float var14;
-        if (var12 > 0.0F)
-        {
-            var13 = (var9 * 0.3F + var10 * 0.59F + var11 * 0.11F) * 0.6F;
-            var14 = 1.0F - var12 * (12.0F / 16.0F);
-            var9 = var9 * var14 + var13 * (1.0F - var14);
-            var10 = var10 * var14 + var13 * (1.0F - var14);
-            var11 = var11 * var14 + var13 * (1.0F - var14);
-        }
-
-        var13 = getThunderGradient(partialTicks);
-        if (var13 > 0.0F)
-        {
-            var14 = (var9 * 0.3F + var10 * 0.59F + var11 * 0.11F) * 0.2F;
-            float var15 = 1.0F - var13 * (12.0F / 16.0F);
-            var9 = var9 * var15 + var14 * (1.0F - var15);
-            var10 = var10 * var15 + var14 * (1.0F - var15);
-            var11 = var11 * var15 + var14 * (1.0F - var15);
+            red = red * thunderFactor + grayscaleLuminance * (1.0F - thunderFactor);
+            green = green * thunderFactor + grayscaleLuminance * (1.0F - thunderFactor);
+            blue = blue * thunderFactor + grayscaleLuminance * (1.0F - thunderFactor);
         }
 
         if (lightningTicksLeft > 0)
         {
-            var14 = (float)lightningTicksLeft - partialTicks;
-            if (var14 > 1.0F)
-            {
-                var14 = 1.0F;
-            }
+            float lightningFactor = lightningTicksLeft - partialTicks;
+            if (lightningFactor > 1.0F) lightningFactor = 1.0F;
 
-            var14 *= 0.45F;
-            var9 = var9 * (1.0F - var14) + 0.8F * var14;
-            var10 = var10 * (1.0F - var14) + 0.8F * var14;
-            var11 = var11 * (1.0F - var14) + 1.0F * var14;
+            lightningFactor *= 0.45F;
+
+            red = red * (1.0F - lightningFactor) + 0.8F * lightningFactor;
+            green = green * (1.0F - lightningFactor) + 0.8F * lightningFactor;
+            blue = blue * (1.0F - lightningFactor) + 1.0F * lightningFactor;
         }
 
-        return new((double)var9, (double)var10, (double)var11);
+        return new(red, green, blue);
     }
 
-    public float getTime(float var1)
+    public float getTime(float delta)
     {
-        return dimension.GetTimeOfDay(properties.WorldTime, var1);
+        return dimension.GetTimeOfDay(Properties.WorldTime, delta);
     }
 
     public Vector3D<double> getCloudColor(float partialTicks)
     {
-        float var2 = getTime(partialTicks);
-        float var3 = MathHelper.Cos(var2 * (float)Math.PI * 2.0F) * 2.0F + 0.5F;
-        if (var3 < 0.0F)
+        float timeOfDay = getTime(partialTicks);
+
+        float sunIntensity = MathHelper.Cos(timeOfDay * (float)Math.PI * 2.0F) * 2.0F + 0.5F;
+        sunIntensity = Math.Clamp(sunIntensity, 0.0F, 1.0F);
+
+        float red = (_worldTimeMask >> 16 & 255L) / 255.0F;
+        float green = (_worldTimeMask >> 8 & 255L) / 255.0F;
+        float blue = (_worldTimeMask & 255L) / 255.0F;
+
+        float rainStrength = getRainGradient(partialTicks);
+        if (rainStrength > 0.0F)
         {
-            var3 = 0.0F;
+            float grayscaleLuminance = (red * 0.3F + green * 0.59F + blue * 0.11F) * 0.6F;
+            float rainFactor = 1.0F - rainStrength * 0.95F;
+
+            red = red * rainFactor + grayscaleLuminance * (1.0F - rainFactor);
+            green = green * rainFactor + grayscaleLuminance * (1.0F - rainFactor);
+            blue = blue * rainFactor + grayscaleLuminance * (1.0F - rainFactor);
         }
 
-        if (var3 > 1.0F)
+        red *= sunIntensity * 0.9F + 0.1F;
+        green *= sunIntensity * 0.9F + 0.1F;
+        blue *= sunIntensity * 0.85F + 0.15F;
+
+        float thunderStrength = getThunderGradient(partialTicks);
+        if (thunderStrength > 0.0F)
         {
-            var3 = 1.0F;
+            float grayscaleLuminance = (red * 0.3F + green * 0.59F + blue * 0.11F) * 0.2F;
+            float thunderFactor = 1.0F - thunderStrength * 0.95F;
+
+            red = red * thunderFactor + grayscaleLuminance * (1.0F - thunderFactor);
+            green = green * thunderFactor + grayscaleLuminance * (1.0F - thunderFactor);
+            blue = blue * thunderFactor + grayscaleLuminance * (1.0F - thunderFactor);
         }
 
-        float var4 = (float)(worldTimeMask >> 16 & 255L) / 255.0F;
-        float var5 = (float)(worldTimeMask >> 8 & 255L) / 255.0F;
-        float var6 = (float)(worldTimeMask & 255L) / 255.0F;
-        float var7 = getRainGradient(partialTicks);
-        float var8;
-        float var9;
-        if (var7 > 0.0F)
-        {
-            var8 = (var4 * 0.3F + var5 * 0.59F + var6 * 0.11F) * 0.6F;
-            var9 = 1.0F - var7 * 0.95F;
-            var4 = var4 * var9 + var8 * (1.0F - var9);
-            var5 = var5 * var9 + var8 * (1.0F - var9);
-            var6 = var6 * var9 + var8 * (1.0F - var9);
-        }
-
-        var4 *= var3 * 0.9F + 0.1F;
-        var5 *= var3 * 0.9F + 0.1F;
-        var6 *= var3 * 0.85F + 0.15F;
-        var8 = getThunderGradient(partialTicks);
-        if (var8 > 0.0F)
-        {
-            var9 = (var4 * 0.3F + var5 * 0.59F + var6 * 0.11F) * 0.2F;
-            float var10 = 1.0F - var8 * 0.95F;
-            var4 = var4 * var10 + var9 * (1.0F - var10);
-            var5 = var5 * var10 + var9 * (1.0F - var10);
-            var6 = var6 * var10 + var9 * (1.0F - var10);
-        }
-
-        return new((double)var4, (double)var5, (double)var6);
+        return new(red, green, blue);
     }
 
-    public Vector3D<double> getFogColor(float var1)
+    public Vector3D<double> getFogColor(float partialTicks)
     {
-        float var2 = getTime(var1);
-        return dimension.GetFogColor(var2, var1);
+        float timeOfDay = getTime(partialTicks);
+        return dimension.GetFogColor(timeOfDay, partialTicks);
     }
 
     public int getTopSolidBlockY(int x, int z)
     {
-        Chunk var3 = GetChunkFromPos(x, z);
-        int var4 = 127;
-        x &= 15;
+        Chunk chunk = GetChunkFromPos(x, z);
+        int currentY = 127;
+        int localX = x & 15;
+        int localZ = z & 15;
 
-        for (z &= 15; var4 > 0; --var4)
+        for (; currentY > 0; --currentY)
         {
-            int var5 = var3.GetBlockId(x, var4, z);
-            Material var6 = var5 == 0 ? Material.Air : Block.Blocks[var5].material;
-            if (var6.BlocksMovement || var6.IsFluid)
+            int blockId = chunk.GetBlockId(localX, currentY, localZ);
+            Material material = blockId == 0 ? Material.Air : Block.Blocks[blockId].material;
+
+            if (material.BlocksMovement || material.IsFluid)
             {
-                return var4 + 1;
+                return currentY + 1;
             }
         }
 
@@ -1359,33 +1208,26 @@ public abstract class World : BlockView
 
     public float calcualteSkyLightIntensity(float partialTicks)
     {
-        float var2 = getTime(partialTicks);
-        float var3 = 1.0F - (MathHelper.Cos(var2 * (float)Math.PI * 2.0F) * 2.0F + 12.0F / 16.0F);
-        if (var3 < 0.0F)
-        {
-            var3 = 0.0F;
-        }
+        float timeOfDay = getTime(partialTicks);
+        float intensityFactor = 1.0F - (MathHelper.Cos(timeOfDay * (float)Math.PI * 2.0F) * 2.0F + 12.0F / 16.0F);
+        intensityFactor = Math.Clamp(intensityFactor, 0.0F, 1.0F);
 
-        if (var3 > 1.0F)
-        {
-            var3 = 1.0F;
-        }
-
-        return var3 * var3 * 0.5F;
+        return intensityFactor * intensityFactor * 0.5F;
     }
 
     public int getSpawnPositionValidityY(int x, int z)
     {
-        Chunk var3 = GetChunkFromPos(x, z);
-        int var4 = 127;
-        x &= 15;
+        Chunk chunk = GetChunkFromPos(x, z);
+        int currentY = 127;
+        int localX = x & 15;
+        int localZ = z & 15;
 
-        for (int var7 = z & 15; var4 > 0; var4--)
+        for (; currentY > 0; currentY--)
         {
-            int var5 = var3.GetBlockId(x, var4, var7);
-            if (var5 != 0 && Block.Blocks[var5].material.BlocksMovement)
+            int blockId = chunk.GetBlockId(localX, currentY, localZ);
+            if (blockId != 0 && Block.Blocks[blockId].material.BlocksMovement)
             {
-                return var4 + 1;
+                return currentY + 1;
             }
         }
 
@@ -1394,25 +1236,22 @@ public abstract class World : BlockView
 
     public virtual void ScheduleBlockUpdate(int x, int y, int z, int blockId, int tickRate)
     {
-        byte var7 = 8;
-        if (instantBlockUpdateEnabled)
+        const byte loadRadius = 8;
+        if (isRegionLoaded(x - loadRadius, y - loadRadius, z - loadRadius, x + loadRadius, y + loadRadius,
+                z + loadRadius))
         {
-            if (isRegionLoaded(x - var7, y - var7, z - var7, x + var7, y + var7, z + var7))
+            if (instantBlockUpdateEnabled)
             {
-                int var8 = getBlockId(x, y, z);
-                if (var8 == blockId && var8 > 0)
+                int currentBlockId = getBlockId(x, y, z);
+                if (currentBlockId == blockId && currentBlockId > 0)
                 {
-                    Block.Blocks[var8].onTick(this, x, y, z, random);
+                    Block.Blocks[currentBlockId].onTick(this, x, y, z, random);
                 }
             }
-        }
-        else
-        {
-            if (isRegionLoaded(x - var7, y - var7, z - var7, x + var7, y + var7, z + var7))
+            else
             {
                 long scheduledTime = GetEventTime() + tickRate;
                 BlockUpdate blockUpdate = new(x, y, z, blockId, scheduledTime);
-
                 _scheduledUpdates.Enqueue(blockUpdate, (blockUpdate.ScheduledTime, blockUpdate.ScheduledOrder));
             }
         }
@@ -1421,133 +1260,129 @@ public abstract class World : BlockView
     public void tickEntities()
     {
         Profiler.Start("updateEntites.updateWeatherEffects");
-
-        int var1;
-        Entity var2;
-        for (var1 = 0; var1 < globalEntities.Count; ++var1)
+        for (int i = 0; i < globalEntities.Count; ++i)
         {
-            var2 = globalEntities[var1];
-            var2.tick();
-            if (var2.dead)
+            Entity globalEntity = globalEntities[i];
+            globalEntity.tick();
+
+            if (globalEntity.dead)
             {
-                globalEntities.RemoveAt(var1--);
+                globalEntities.RemoveAt(i--);
             }
         }
-
         Profiler.Stop("updateEntites.updateWeatherEffects");
 
-        foreach (var entity in entitiesToUnload)
+        Profiler.Start("updateEntites.clearUnloadedEntities");
+        foreach (var entity in _entitiesToUnload)
         {
             entities.Remove(entity);
         }
 
-        Profiler.Start("updateEntites.clearUnloadedEntities");
-
-        int var3;
-        int var4;
-        for (var1 = 0; var1 < entitiesToUnload.Count; ++var1)
+        for (int i = 0; i < _entitiesToUnload.Count; ++i)
         {
-            var2 = entitiesToUnload[var1];
-            var3 = var2.chunkX;
-            var4 = var2.chunkZ;
-            if (var2.isPersistent && hasChunk(var3, var4))
+            Entity entityToUnload = _entitiesToUnload[i];
+            int chunkX = entityToUnload.chunkX;
+            int chunkZ = entityToUnload.chunkZ;
+
+            if (entityToUnload.isPersistent && hasChunk(chunkX, chunkZ))
             {
-                GetChunk(var3, var4).RemoveEntity(var2);
+                GetChunk(chunkX, chunkZ).RemoveEntity(entityToUnload);
             }
         }
 
-        for (var1 = 0; var1 < entitiesToUnload.Count; ++var1)
+        for (int i = 0; i < _entitiesToUnload.Count; ++i)
         {
-            NotifyEntityRemoved(entitiesToUnload[var1]);
+            NotifyEntityRemoved(_entitiesToUnload[i]);
         }
 
-        entitiesToUnload.Clear();
-
+        _entitiesToUnload.Clear();
         Profiler.Stop("updateEntites.clearUnloadedEntities");
 
         Profiler.Start("updateEntites.updateLoadedEntities");
-
-        for (var1 = 0; var1 < entities.Count; ++var1)
+        for (int i = 0; i < entities.Count; ++i)
         {
-            var2 = entities[var1];
-            if (var2.vehicle != null)
+            Entity entity = entities[i];
+
+            if (entity.vehicle != null)
             {
-                if (!var2.vehicle.dead && var2.vehicle.passenger == var2)
+                if (!entity.vehicle.dead && entity.vehicle.passenger == entity)
                 {
                     continue;
                 }
 
-                var2.vehicle.passenger = null;
-                var2.vehicle = null;
+                entity.vehicle.passenger = null;
+                entity.vehicle = null;
             }
 
-            if (!var2.dead)
+            if (!entity.dead)
             {
-                updateEntity(var2);
+                updateEntity(entity);
             }
 
-            if (var2.dead)
+            if (entity.dead)
             {
-                var3 = var2.chunkX;
-                var4 = var2.chunkZ;
-                if (var2.isPersistent && hasChunk(var3, var4))
+                int chunkX = entity.chunkX;
+                int chunkZ = entity.chunkZ;
+
+                if (entity.isPersistent && hasChunk(chunkX, chunkZ))
                 {
-                    GetChunk(var3, var4).RemoveEntity(var2);
+                    GetChunk(chunkX, chunkZ).RemoveEntity(entity);
                 }
 
-                entities.RemoveAt(var1--);
-                NotifyEntityRemoved(var2);
+                entities.RemoveAt(i--);
+                NotifyEntityRemoved(entity);
             }
         }
 
         Profiler.Stop("updateEntites.updateLoadedEntities");
 
-        processingDeferred = true;
-
+        _processingDeferred = true;
         Profiler.Start("updateEntites.updateLoadedTileEntities");
 
         for (int i = blockEntities.Count - 1; i >= 0; i--)
         {
-            BlockEntity var5 = blockEntities[i];
-            if (!var5.isRemoved())
+            BlockEntity blockEntity = blockEntities[i];
+            if (!blockEntity.isRemoved())
             {
-                var5.tick();
+                blockEntity.tick();
             }
 
-            if (var5.isRemoved())
+            if (blockEntity.isRemoved())
             {
                 blockEntities.RemoveAt(i);
-                Chunk chunk = GetChunk(var5.X >> 4, var5.Z >> 4);
+                Chunk chunk = GetChunk(blockEntity.X >> 4, blockEntity.Z >> 4);
                 if (chunk != null)
                 {
-                    chunk.RemoveBlockEntityAt(var5.X & 15, var5.Y, var5.Z & 15);
+                    chunk.RemoveBlockEntityAt(blockEntity.X & 15, blockEntity.Y, blockEntity.Z & 15);
                 }
             }
         }
 
-        processingDeferred = false;
-        if (blockEntityUpdateQueue.Count > 0)
+        _processingDeferred = false;
+
+        if (_blockEntityUpdateQueue.Count > 0)
         {
-            foreach (BlockEntity var8 in blockEntityUpdateQueue)
+            foreach (BlockEntity queuedBlockEntity in _blockEntityUpdateQueue)
             {
-                if (!var8.isRemoved())
+                if (!queuedBlockEntity.isRemoved())
                 {
-                    if (!blockEntities.Contains(var8))
+                    if (!blockEntities.Contains(queuedBlockEntity))
                     {
-                        blockEntities.Add(var8);
+                        blockEntities.Add(queuedBlockEntity);
                     }
 
-                    Chunk chunk = GetChunk(var8.X >> 4, var8.Z >> 4);
+                    Chunk chunk = GetChunk(queuedBlockEntity.X >> 4, queuedBlockEntity.Z >> 4);
                     if (chunk != null)
                     {
-                        chunk.SetBlockEntity(var8.X & 15, var8.Y, var8.Z & 15, var8);
+                        chunk.SetBlockEntity(queuedBlockEntity.X & 15, queuedBlockEntity.Y, queuedBlockEntity.Z & 15,
+                            queuedBlockEntity);
                     }
 
-                    blockUpdateEvent(var8.X, var8.Y, var8.Z);
+                    blockUpdateEvent(queuedBlockEntity.X, queuedBlockEntity.Y, queuedBlockEntity.Z);
                 }
             }
 
-            blockEntityUpdateQueue.Clear();
+            _blockEntityUpdateQueue.Clear();
         }
 
         Profiler.Stop("updateEntites.updateLoadedTileEntities");
@@ -1555,9 +1390,9 @@ public abstract class World : BlockView
 
     public void processBlockUpdates(IEnumerable<BlockEntity> blockUpdates)
     {
-        if (processingDeferred)
+        if (_processingDeferred)
         {
-            blockEntityUpdateQueue.AddRange(blockUpdates);
+            _blockEntityUpdateQueue.AddRange(blockUpdates);
         }
         else
         {
@@ -1572,16 +1407,19 @@ public abstract class World : BlockView
 
     public virtual void updateEntity(Entity entity, bool requireLoaded)
     {
-        int var3 = MathHelper.Floor(entity.x);
-        int var4 = MathHelper.Floor(entity.z);
-        byte var5 = 32;
-        if (!requireLoaded || isRegionLoaded(var3 - var5, 0, var4 - var5, var3 + var5, 128, var4 + var5))
+        int blockX = MathHelper.Floor(entity.x);
+        int blockZ = MathHelper.Floor(entity.z);
+
+        const byte loadRadius = 32;
+        if (!requireLoaded || isRegionLoaded(blockX - loadRadius, 0, blockZ - loadRadius,
+                blockX + loadRadius, 128, blockZ + loadRadius))
         {
             entity.lastTickX = entity.x;
             entity.lastTickY = entity.y;
             entity.lastTickZ = entity.z;
             entity.prevYaw = entity.yaw;
             entity.prevPitch = entity.pitch;
+
             if (requireLoaded && entity.isPersistent)
             {
                 if (entity.vehicle != null)
@@ -1594,45 +1432,29 @@ public abstract class World : BlockView
                 }
             }
 
-            if (double.IsNaN(entity.x) || java.lang.Double.isInfinite(entity.x))
-            {
-                entity.x = entity.lastTickX;
-            }
+            if (double.IsNaN(entity.x) || double.IsInfinity(entity.x)) entity.x = entity.lastTickX;
+            if (double.IsNaN(entity.y) || double.IsInfinity(entity.y)) entity.y = entity.lastTickY;
+            if (double.IsNaN(entity.z) || double.IsInfinity(entity.z)) entity.z = entity.lastTickZ;
+            if (double.IsNaN(entity.pitch) || double.IsInfinity(entity.pitch)) entity.pitch = entity.prevPitch;
+            if (double.IsNaN(entity.yaw) || double.IsInfinity(entity.yaw)) entity.yaw = entity.prevYaw;
 
-            if (double.IsNaN(entity.y) || java.lang.Double.isInfinite(entity.y))
-            {
-                entity.y = entity.lastTickY;
-            }
+            int newChunkX = MathHelper.Floor(entity.x / 16.0D);
+            int newChunkY = MathHelper.Floor(entity.y / 16.0D);
+            int newChunkZ = MathHelper.Floor(entity.z / 16.0D);
 
-            if (double.IsNaN(entity.z) || java.lang.Double.isInfinite(entity.z))
-            {
-                entity.z = entity.lastTickZ;
-            }
-
-            if (double.IsNaN((double)entity.pitch) || java.lang.Double.isInfinite((double)entity.pitch))
-            {
-                entity.pitch = entity.prevPitch;
-            }
-
-            if (double.IsNaN((double)entity.yaw) || java.lang.Double.isInfinite((double)entity.yaw))
-            {
-                entity.yaw = entity.prevYaw;
-            }
-
-            int var6 = MathHelper.Floor(entity.x / 16.0D);
-            int var7 = MathHelper.Floor(entity.y / 16.0D);
-            int var8 = MathHelper.Floor(entity.z / 16.0D);
-            if (!entity.isPersistent || entity.chunkX != var6 || entity.chunkSlice != var7 || entity.chunkZ != var8)
+            if (!entity.isPersistent || entity.chunkX != newChunkX ||
+                entity.chunkSlice != newChunkY || entity.chunkZ != newChunkZ)
             {
                 if (entity.isPersistent && hasChunk(entity.chunkX, entity.chunkZ))
                 {
                     GetChunk(entity.chunkX, entity.chunkZ).RemoveEntity(entity, entity.chunkSlice);
                 }
 
-                if (hasChunk(var6, var8))
+
+                if (hasChunk(newChunkX, newChunkZ))
                 {
                     entity.isPersistent = true;
-                    GetChunk(var6, var8).AddEntity(entity);
+                    GetChunk(newChunkX, newChunkZ).AddEntity(entity);
                 }
                 else
                 {
@@ -1655,14 +1477,15 @@ public abstract class World : BlockView
         }
     }
 
-    public bool canSpawnEntity(Box box)
+    public bool canSpawnEntity(Box spawnArea)
     {
-        List<Entity> var2 = getEntities((Entity)null, box);
+        List<Entity> nearbyEntities = new List<Entity>();
+        getEntities(null, spawnArea, nearbyEntities);
 
-        for (int var3 = 0; var3 < var2.Count; ++var3)
+        for (int i = 0; i < nearbyEntities.Count; ++i)
         {
-            Entity var4 = var2[var3];
-            if (!var4.dead && var4.preventEntitySpawning)
+            Entity entity = nearbyEntities[i];
+            if (!entity.dead && entity.preventEntitySpawning)
             {
                 return false;
             }
@@ -1671,106 +1494,78 @@ public abstract class World : BlockView
         return true;
     }
 
-    public bool isAnyBlockInBox(Box box)
+    public bool isAnyBlockInBox(Box area)
     {
-        int var2 = MathHelper.Floor(box.MinX);
-        int var3 = MathHelper.Floor(box.MaxX + 1.0);
-        int var4 = MathHelper.Floor(box.MinY);
-        int var5 = MathHelper.Floor(box.MaxY + 1.0);
-        int var6 = MathHelper.Floor(box.MinZ);
-        int var7 = MathHelper.Floor(box.MaxZ + 1.0);
-        if (box.MinX < 0.0)
-        {
-            var2--;
-        }
+        int minX = MathHelper.Floor(area.MinX);
+        int maxX = MathHelper.Floor(area.MaxX + 1.0);
+        int minY = MathHelper.Floor(area.MinY);
+        int maxY = MathHelper.Floor(area.MaxY + 1.0);
+        int minZ = MathHelper.Floor(area.MinZ);
+        int maxZ = MathHelper.Floor(area.MaxZ + 1.0);
 
-        if (box.MinY < 0.0)
-        {
-            var4--;
-        }
+        if (area.MinX < 0.0) minX--;
+        if (area.MinY < 0.0) minY--;
+        if (area.MinZ < 0.0) minZ--;
 
-        if (box.MinZ < 0.0)
+        for (int x = minX; x < maxX; x++)
         {
-            var6--;
-        }
-
-        for (int var8 = var2; var8 < var3; var8++)
-        {
-            for (int var9 = var4; var9 < var5; var9++)
+            for (int y = minY; y < maxY; y++)
             {
-                for (int var10 = var6; var10 < var7; var10++)
+                for (int z = minZ; z < maxZ; z++)
                 {
-                    Block var11 = Block.Blocks[getBlockId(var8, var9, var10)];
-                    if (var11 != null)
-                    {
-                        return true;
-                    }
+                    if (getBlockId(x, y, z) > 0) return true;
                 }
             }
         }
-
         return false;
     }
 
-    public bool isBoxSubmergedInFluid(Box box)
+    public bool isBoxSubmergedInFluid(Box area)
     {
-        int var2 = MathHelper.Floor(box.MinX);
-        int var3 = MathHelper.Floor(box.MaxX + 1.0D);
-        int var4 = MathHelper.Floor(box.MinY);
-        int var5 = MathHelper.Floor(box.MaxY + 1.0D);
-        int var6 = MathHelper.Floor(box.MinZ);
-        int var7 = MathHelper.Floor(box.MaxZ + 1.0D);
-        if (box.MinX < 0.0D)
-        {
-            --var2;
-        }
+        int minX = MathHelper.Floor(area.MinX);
+        int maxX = MathHelper.Floor(area.MaxX + 1.0D);
+        int minY = MathHelper.Floor(area.MinY);
+        int maxY = MathHelper.Floor(area.MaxY + 1.0D);
+        int minZ = MathHelper.Floor(area.MinZ);
+        int maxZ = MathHelper.Floor(area.MaxZ + 1.0D);
 
-        if (box.MinY < 0.0D)
-        {
-            --var4;
-        }
+        if (area.MinX < 0.0D) minX--;
+        if (area.MinY < 0.0D) minY--;
+        if (area.MinZ < 0.0D) minZ--;
 
-        if (box.MinZ < 0.0D)
+        for (int x = minX; x < maxX; ++x)
         {
-            --var6;
-        }
-
-        for (int var8 = var2; var8 < var3; ++var8)
-        {
-            for (int var9 = var4; var9 < var5; ++var9)
+            for (int y = minY; y < maxY; ++y)
             {
-                for (int var10 = var6; var10 < var7; ++var10)
+                for (int z = minZ; z < maxZ; ++z)
                 {
-                    Block var11 = Block.Blocks[getBlockId(var8, var9, var10)];
-                    if (var11 != null && var11.material.IsFluid)
-                    {
-                        return true;
-                    }
+                    Block block = Block.Blocks[getBlockId(x, y, z)];
+                    if (block != null && block.material.IsFluid) return true;
                 }
             }
         }
-
         return false;
     }
 
-    public bool isFireOrLavaInBox(Box box)
+    public bool isFireOrLavaInBox(Box area)
     {
-        int var2 = MathHelper.Floor(box.MinX);
-        int var3 = MathHelper.Floor(box.MaxX + 1.0D);
-        int var4 = MathHelper.Floor(box.MinY);
-        int var5 = MathHelper.Floor(box.MaxY + 1.0D);
-        int var6 = MathHelper.Floor(box.MinZ);
-        int var7 = MathHelper.Floor(box.MaxZ + 1.0D);
-        if (isRegionLoaded(var2, var4, var6, var3, var5, var7))
+        int minX = MathHelper.Floor(area.MinX);
+        int maxX = MathHelper.Floor(area.MaxX + 1.0D);
+        int minY = MathHelper.Floor(area.MinY);
+        int maxY = MathHelper.Floor(area.MaxY + 1.0D);
+        int minZ = MathHelper.Floor(area.MinZ);
+        int maxZ = MathHelper.Floor(area.MaxZ + 1.0D);
+
+        if (isRegionLoaded(minX, minY, minZ, maxX, maxY, maxZ))
         {
-            for (int var8 = var2; var8 < var3; ++var8)
+            for (int x = minX; x < maxX; ++x)
             {
-                for (int var9 = var4; var9 < var5; ++var9)
+                for (int y = minY; y < maxY; ++y)
                 {
-                    for (int var10 = var6; var10 < var7; ++var10)
+                    for (int z = minZ; z < maxZ; ++z)
                     {
-                        int var11 = getBlockId(var8, var9, var10);
-                        if (var11 == Block.Fire.id || var11 == Block.FlowingLava.id || var11 == Block.Lava.id)
+                        int blockId = getBlockId(x, y, z);
+                        if (blockId == Block.Fire.id || blockId == Block.FlowingLava.id || blockId == Block.Lava.id)
                         {
                             return true;
                         }
@@ -1778,123 +1573,109 @@ public abstract class World : BlockView
                 }
             }
         }
-
         return false;
     }
 
     public bool updateMovementInFluid(Box entityBox, Material fluidMaterial, Entity entity)
     {
-        int var4 = MathHelper.Floor(entityBox.MinX);
-        int var5 = MathHelper.Floor(entityBox.MaxX + 1.0D);
-        int var6 = MathHelper.Floor(entityBox.MinY);
-        int var7 = MathHelper.Floor(entityBox.MaxY + 1.0D);
-        int var8 = MathHelper.Floor(entityBox.MinZ);
-        int var9 = MathHelper.Floor(entityBox.MaxZ + 1.0D);
-        if (!isRegionLoaded(var4, var6, var8, var5, var7, var9))
-        {
-            return false;
-        }
-        else
-        {
-            bool var10 = false;
-            Vec3D var11 = new Vec3D(0.0D, 0.0D, 0.0D);
+        int minX = MathHelper.Floor(entityBox.MinX);
+        int maxX = MathHelper.Floor(entityBox.MaxX + 1.0D);
+        int minY = MathHelper.Floor(entityBox.MinY);
+        int maxY = MathHelper.Floor(entityBox.MaxY + 1.0D);
+        int minZ = MathHelper.Floor(entityBox.MinZ);
+        int maxZ = MathHelper.Floor(entityBox.MaxZ + 1.0D);
 
-            for (int var12 = var4; var12 < var5; ++var12)
+        if (!isRegionLoaded(minX, minY, minZ, maxX, maxY, maxZ)) return false;
+
+        bool isSubmerged = false;
+        Vec3D flowVector = new Vec3D(0.0D, 0.0D, 0.0D);
+
+        for (int x = minX; x < maxX; ++x)
+        {
+            for (int y = minY; y < maxY; ++y)
             {
-                for (int var13 = var6; var13 < var7; ++var13)
+                for (int z = minZ; z < maxZ; ++z)
                 {
-                    for (int var14 = var8; var14 < var9; ++var14)
+                    Block block = Block.Blocks[getBlockId(x, y, z)];
+                    if (block != null && block.material == fluidMaterial)
                     {
-                        Block var15 = Block.Blocks[getBlockId(var12, var13, var14)];
-                        if (var15 != null && var15.material == fluidMaterial)
+                        double fluidSurfaceY = y + 1 - BlockFluid.getFluidHeightFromMeta(getBlockMeta(x, y, z));
+
+                        if (maxY >= fluidSurfaceY)
                         {
-                            double var16 = (double)((float)(var13 + 1) -
-                                                    BlockFluid.getFluidHeightFromMeta(getBlockMeta(var12, var13,
-                                                        var14)));
-                            if ((double)var7 >= var16)
-                            {
-                                var10 = true;
-                                var15.applyVelocity(this, var12, var13, var14, entity, var11);
-                            }
+                            isSubmerged = true;
+                            block.applyVelocity(this, x, y, z, entity, flowVector);
                         }
                     }
                 }
             }
-
-            if (var11.magnitude() > 0.0D)
-            {
-                var11 = var11.normalize();
-                double var18 = 0.014D;
-                entity.velocityX += var11.x * var18;
-                entity.velocityY += var11.y * var18;
-                entity.velocityZ += var11.z * var18;
-            }
-
-            return var10;
         }
+
+        if (flowVector.magnitude() > 0.0D)
+        {
+            flowVector = flowVector.normalize();
+            const double flowStrength = 0.014D;
+            entity.velocityX += flowVector.x * flowStrength;
+            entity.velocityY += flowVector.y * flowStrength;
+            entity.velocityZ += flowVector.z * flowStrength;
+        }
+
+        return isSubmerged;
     }
 
-    public bool isMaterialInBox(Box box, Material material)
+    public bool isMaterialInBox(Box area, Material material)
     {
-        int var3 = MathHelper.Floor(box.MinX);
-        int var4 = MathHelper.Floor(box.MaxX + 1.0D);
-        int var5 = MathHelper.Floor(box.MinY);
-        int var6 = MathHelper.Floor(box.MaxY + 1.0D);
-        int var7 = MathHelper.Floor(box.MinZ);
-        int var8 = MathHelper.Floor(box.MaxZ + 1.0D);
+        int minX = MathHelper.Floor(area.MinX);
+        int maxX = MathHelper.Floor(area.MaxX + 1.0D);
+        int minY = MathHelper.Floor(area.MinY);
+        int maxY = MathHelper.Floor(area.MaxY + 1.0D);
+        int minZ = MathHelper.Floor(area.MinZ);
+        int maxZ = MathHelper.Floor(area.MaxZ + 1.0D);
 
-        for (int var9 = var3; var9 < var4; ++var9)
+        for (int x = minX; x < maxX; ++x)
         {
-            for (int var10 = var5; var10 < var6; ++var10)
+            for (int y = minY; y < maxY; ++y)
             {
-                for (int var11 = var7; var11 < var8; ++var11)
+                for (int z = minZ; z < maxZ; ++z)
                 {
-                    Block var12 = Block.Blocks[getBlockId(var9, var10, var11)];
-                    if (var12 != null && var12.material == material)
-                    {
-                        return true;
-                    }
+                    Block block = Block.Blocks[getBlockId(x, y, z)];
+                    if (block != null && block.material == material) return true;
                 }
             }
         }
-
         return false;
     }
 
-    public bool isFluidInBox(Box box, Material fluid)
+    public bool isFluidInBox(Box area, Material fluid)
     {
-        int var3 = MathHelper.Floor(box.MinX);
-        int var4 = MathHelper.Floor(box.MaxX + 1.0D);
-        int var5 = MathHelper.Floor(box.MinY);
-        int var6 = MathHelper.Floor(box.MaxY + 1.0D);
-        int var7 = MathHelper.Floor(box.MinZ);
-        int var8 = MathHelper.Floor(box.MaxZ + 1.0D);
+        int minX = MathHelper.Floor(area.MinX);
+        int maxX = MathHelper.Floor(area.MaxX + 1.0D);
+        int minY = MathHelper.Floor(area.MinY);
+        int maxY = MathHelper.Floor(area.MaxY + 1.0D);
+        int minZ = MathHelper.Floor(area.MinZ);
+        int maxZ = MathHelper.Floor(area.MaxZ + 1.0D);
 
-        for (int var9 = var3; var9 < var4; ++var9)
+        for (int x = minX; x < maxX; ++x)
         {
-            for (int var10 = var5; var10 < var6; ++var10)
+            for (int y = minY; y < maxY; ++y)
             {
-                for (int var11 = var7; var11 < var8; ++var11)
+                for (int z = minZ; z < maxZ; ++z)
                 {
-                    Block var12 = Block.Blocks[getBlockId(var9, var10, var11)];
-                    if (var12 != null && var12.material == fluid)
+                    Block block = Block.Blocks[getBlockId(x, y, z)];
+                    if (block != null && block.material == fluid)
                     {
-                        int var13 = getBlockMeta(var9, var10, var11);
-                        double var14 = (double)(var10 + 1);
-                        if (var13 < 8)
+                        int meta = getBlockMeta(x, y, z);
+                        double waterLevel = (y + 1);
+                        if (meta < 8)
                         {
-                            var14 = (double)(var10 + 1) - (double)var13 / 8.0D;
+                            waterLevel = (y + 1) - meta / 8.0D;
                         }
 
-                        if (var14 >= box.MinY)
-                        {
-                            return true;
-                        }
+                        if (waterLevel >= area.MinY) return true;
                     }
                 }
             }
         }
-
         return false;
     }
 
@@ -1905,41 +1686,42 @@ public abstract class World : BlockView
 
     public virtual Explosion createExplosion(Entity source, double x, double y, double z, float power, bool fire)
     {
-        Explosion var10 = new(this, source, x, y, z, power);
-        var10.isFlaming = fire;
-        var10.doExplosionA();
-        var10.doExplosionB(true);
-        return var10;
+        Explosion explosion = new(this, source, x, y, z, power) { isFlaming = fire };
+        explosion.doExplosionA();
+        explosion.doExplosionB(true);
+        return explosion;
     }
 
-    public float getVisibilityRatio(Vec3D vec, Box box)
+    public float getVisibilityRatio(Vec3D sourcePosition, Box targetBox)
     {
-        double var3 = 1.0D / ((box.MaxX - box.MinX) * 2.0D + 1.0D);
-        double var5 = 1.0D / ((box.MaxY - box.MinY) * 2.0D + 1.0D);
-        double var7 = 1.0D / ((box.MaxZ - box.MinZ) * 2.0D + 1.0D);
-        int var9 = 0;
-        int var10 = 0;
+        double stepSizeX = 1.0D / ((targetBox.MaxX - targetBox.MinX) * 2.0D + 1.0D);
+        double stepSizeY = 1.0D / ((targetBox.MaxY - targetBox.MinY) * 2.0D + 1.0D);
+        double stepSizeZ = 1.0D / ((targetBox.MaxZ - targetBox.MinZ) * 2.0D + 1.0D);
 
-        for (float var11 = 0.0F; var11 <= 1.0F; var11 = (float)((double)var11 + var3))
+        int visiblePoints = 0;
+        int totalPoints = 0;
+
+        for (float progressX = 0.0F; progressX <= 1.0F; progressX = (float)(progressX + stepSizeX))
         {
-            for (float var12 = 0.0F; var12 <= 1.0F; var12 = (float)((double)var12 + var5))
+            for (float progressY = 0.0F; progressY <= 1.0F; progressY = (float)(progressY + stepSizeY))
             {
-                for (float var13 = 0.0F; var13 <= 1.0F; var13 = (float)((double)var13 + var7))
+                for (float progressZ = 0.0F; progressZ <= 1.0F; progressZ = (float)(progressZ + stepSizeZ))
                 {
-                    double var14 = box.MinX + (box.MaxX - box.MinX) * (double)var11;
-                    double var16 = box.MinY + (box.MaxY - box.MinY) * (double)var12;
-                    double var18 = box.MinZ + (box.MaxZ - box.MinZ) * (double)var13;
-                    if (raycast(new Vec3D(var14, var16, var18), vec).Type == HitResultType.MISS)
+                    double sampleX = targetBox.MinX + (targetBox.MaxX - targetBox.MinX) * progressX;
+                    double sampleY = targetBox.MinY + (targetBox.MaxY - targetBox.MinY) * progressY;
+                    double sampleZ = targetBox.MinZ + (targetBox.MaxZ - targetBox.MinZ) * progressZ;
+
+                    if (raycast(new Vec3D(sampleX, sampleY, sampleZ), sourcePosition).Type == HitResultType.MISS)
                     {
-                        ++var9;
+                        visiblePoints++;
                     }
 
-                    ++var10;
+                    totalPoints++;
                 }
             }
         }
 
-        return (float)var9 / (float)var10;
+        return visiblePoints / totalPoints;
     }
 
     public void extinguishFire(EntityPlayer player, int x, int y, int z, int direction)
@@ -1981,7 +1763,7 @@ public abstract class World : BlockView
         }
     }
 
-    public Entity getPlayerForProxy(Type var1)
+    public Entity? getPlayerForProxy(Type type)
     {
         return null;
     }
@@ -1993,33 +1775,35 @@ public abstract class World : BlockView
 
     public string getDebugInfo()
     {
-        return chunkSource.GetDebugInfo();
+        return _chunkSource.GetDebugInfo();
     }
 
-    public BlockEntity getBlockEntity(int x, int y, int z)
+    public BlockEntity? getBlockEntity(int x, int y, int z)
     {
-        Chunk var4 = GetChunk(x >> 4, z >> 4);
-        return var4 != null ? var4.GetBlockEntity(x & 15, y, z & 15) : null;
+        Chunk? chunk = GetChunk(x >> 4, z >> 4);
+        var entity = chunk?.GetBlockEntity(x & 15, y, z & 15) ?? blockEntities.FirstOrDefault(e => e.X == x && e.Y == y && e.Z == z);
+
+        return entity;
     }
 
     public void setBlockEntity(int x, int y, int z, BlockEntity blockEntity)
     {
         if (!blockEntity.isRemoved())
         {
-            if (processingDeferred)
+            if (_processingDeferred)
             {
                 blockEntity.X = x;
                 blockEntity.Y = y;
                 blockEntity.Z = z;
-                blockEntityUpdateQueue.Add(blockEntity);
+                _blockEntityUpdateQueue.Add(blockEntity);
             }
             else
             {
                 blockEntities.Add(blockEntity);
-                Chunk var5 = GetChunk(x >> 4, z >> 4);
-                if (var5 != null)
+                Chunk chunk = GetChunk(x >> 4, z >> 4);
+                if (chunk != null)
                 {
-                    var5.SetBlockEntity(x & 15, y, z & 15, blockEntity);
+                    chunk.SetBlockEntity(x & 15, y, z & 15, blockEntity);
                 }
             }
         }
@@ -2027,36 +1811,30 @@ public abstract class World : BlockView
 
     public void removeBlockEntity(int x, int y, int z)
     {
-        BlockEntity var4 = getBlockEntity(x, y, z);
-        if (var4 != null && processingDeferred)
+        BlockEntity? entity = getBlockEntity(x, y, z);
+        if (entity != null && _processingDeferred)
         {
-            var4.markRemoved();
+            entity.markRemoved();
         }
         else
         {
-            if (var4 != null)
-            {
-                blockEntities.Remove(var4);
-            }
+            Chunk? chunk = GetChunk(x >> 4, z >> 4);
+            chunk?.RemoveBlockEntityAt(x & 15, y, z & 15);
 
-            Chunk var5 = GetChunk(x >> 4, z >> 4);
-            if (var5 != null)
-            {
-                var5.RemoveBlockEntityAt(x & 15, y, z & 15);
-            }
+            if (entity != null) blockEntities.Remove(entity);
         }
     }
 
     public bool isOpaque(int x, int y, int z)
     {
-        Block var4 = Block.Blocks[getBlockId(x, y, z)];
-        return var4 == null ? false : var4.isOpaque();
+        Block? block = Block.Blocks[getBlockId(x, y, z)];
+        return block == null ? false : block.isOpaque();
     }
 
     public bool shouldSuffocate(int x, int y, int z)
     {
-        Block var4 = Block.Blocks[getBlockId(x, y, z)];
-        return var4 == null ? false : var4.material.Suffocates && var4.isFullCube();
+        Block? block = Block.Blocks[getBlockId(x, y, z)];
+        return block == null ? false : block.material.Suffocates && block.isFullCube();
     }
 
     public void savingProgress(LoadingDisplay display)
@@ -2066,43 +1844,38 @@ public abstract class World : BlockView
 
     public bool doLightingUpdates()
     {
-        if (lightingUpdatesCounter >= 50)
+        if (_lightingUpdatesCounter >= 50)
         {
             return false;
         }
-        else
+
+        ++_lightingUpdatesCounter;
+
+        try
         {
-            ++lightingUpdatesCounter;
+            int updatesBudget = 500;
 
-            bool var2;
-            try
+            while (_lightingQueue.Count > 0)
             {
-                int var1 = 500;
-
-                while (lightingQueue.Count > 0)
+                if (updatesBudget <= 0)
                 {
-                    --var1;
-                    if (var1 <= 0)
-                    {
-                        var2 = true;
-                        return var2;
-                    }
-
-                    int lastIndex = lightingQueue.Count - 1;
-                    LightUpdate mcb = lightingQueue[lastIndex];
-
-                    lightingQueue.RemoveAt(lastIndex);
-                    mcb.updateLight(this);
+                    return true;
                 }
 
-                var2 = false;
-            }
-            finally
-            {
-                --lightingUpdatesCounter;
+                updatesBudget--;
+
+                int lastIndex = _lightingQueue.Count - 1;
+                LightUpdate updateTask = _lightingQueue[lastIndex];
+
+                _lightingQueue.RemoveAt(lastIndex);
+                updateTask.updateLight(this);
             }
 
-            return var2;
+            return false;
+        }
+        finally
+        {
+            --_lightingUpdatesCounter;
         }
     }
 
@@ -2111,453 +1884,452 @@ public abstract class World : BlockView
         queueLightUpdate(type, minX, minY, minZ, maxX, maxY, maxZ, true);
     }
 
-    public void queueLightUpdate(LightType type, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, bool bl)
+    public void queueLightUpdate(LightType type, int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
+        bool attemptMerge)
     {
-        if (!dimension.HasCeiling || type != LightType.Sky)
+        if (dimension.HasCeiling && type == LightType.Sky)
         {
-            ++lightingUpdatesScheduled;
+            return;
+        }
 
-            try
+        ++_lightingUpdatesScheduled;
+
+        try
+        {
+            if (_lightingUpdatesScheduled == 50)
             {
-                if (lightingUpdatesScheduled == 50)
+                return;
+            }
+
+            int centerX = (maxX + minX) / 2;
+            int centerZ = (maxZ + minZ) / 2;
+
+            if (isPosLoaded(centerX, 64, centerZ))
+            {
+                if (GetChunkFromPos(centerX, centerZ).IsEmpty())
                 {
                     return;
                 }
 
-                int var9 = (maxX + minX) / 2;
-                int var10 = (maxZ + minZ) / 2;
-                if (isPosLoaded(var9, 64, var10))
+                int queueSize = _lightingQueue.Count;
+                var span = CollectionsMarshal.AsSpan(_lightingQueue);
+
+                if (attemptMerge)
                 {
-                    if (GetChunkFromPos(var9, var10).IsEmpty())
+                    int lookbackCount = Math.Min(5, queueSize);
+
+                    for (int i = 0; i < lookbackCount; ++i)
                     {
-                        return;
-                    }
-
-                    int var11 = lightingQueue.Count;
-                    int var12;
-                    var span = CollectionsMarshal.AsSpan(lightingQueue);
-
-                    if (bl)
-                    {
-                        var12 = 5;
-                        if (var12 > var11)
+                        ref LightUpdate existingUpdate = ref span[queueSize - i - 1];
+                        if (existingUpdate.lightType == type &&
+                            existingUpdate.expand(minX, minY, minZ, maxX, maxY, maxZ))
                         {
-                            var12 = var11;
-                        }
-
-                        for (int var13 = 0; var13 < var12; ++var13)
-                        {
-                            ref LightUpdate var14 = ref span[lightingQueue.Count - var13 - 1];
-                            if (var14.lightType == type && var14.expand(minX, minY, minZ, maxX, maxY, maxZ))
-                            {
-                                return;
-                            }
+                            return;
                         }
                     }
+                }
 
-                    lightingQueue.Add(new LightUpdate(type, minX, minY, minZ, maxX, maxY, maxZ));
-                    var12 = 1000000;
-                    if (lightingQueue.Count > 1000000)
-                    {
-                        _logger.LogInformation($"More than {var12} updates, aborting lighting updates");
-                        lightingQueue.Clear();
-                    }
+                _lightingQueue.Add(new LightUpdate(type, minX, minY, minZ, maxX, maxY, maxZ));
 
-                    return;
+                const int maxQueueCapacity = 1000000;
+                if (_lightingQueue.Count > maxQueueCapacity)
+                {
+                    _logger.LogInformation($"More than {maxQueueCapacity} updates, aborting lighting updates");
+                    _lightingQueue.Clear();
                 }
             }
-            finally
-            {
-                --lightingUpdatesScheduled;
-            }
+        }
+        finally
+        {
+            --_lightingUpdatesScheduled;
         }
     }
 
     public void updateSkyBrightness()
     {
-        int var1 = getAmbientDarkness(1.0F);
-        if (var1 != ambientDarkness)
+        int darkness = getAmbientDarkness(1.0F);
+        if (darkness != ambientDarkness)
         {
-            ambientDarkness = var1;
+            ambientDarkness = darkness;
         }
     }
 
     public void allowSpawning(bool allowMonsterSpawning, bool allowMobSpawning)
     {
-        spawnHostileMobs = allowMonsterSpawning;
-        spawnPeacefulMobs = allowMobSpawning;
+        _spawnHostileMobs = allowMonsterSpawning;
+        _spawnPeacefulMobs = allowMobSpawning;
     }
 
     public virtual void Tick()
     {
         UpdateWeatherCycles();
-        long var2;
+
+        long nextWorldTime;
+
         if (canSkipNight())
         {
-            bool var1 = false;
-            if (spawnHostileMobs && difficulty >= 1)
+            bool wasSpawnInterrupted = false;
+
+            if (_spawnHostileMobs && difficulty >= 1)
             {
-                var1 = NaturalSpawner.SpawnMonstersAndWakePlayers(this, _pathFinder, players);
+                wasSpawnInterrupted = NaturalSpawner.SpawnMonstersAndWakePlayers(this, _pathFinder, players);
             }
 
-            if (!var1)
+            if (!wasSpawnInterrupted)
             {
-                var2 = properties.WorldTime + 24000L;
-                properties.WorldTime = var2 - var2 % 24000L;
+                nextWorldTime = Properties.WorldTime + 24000L;
+                Properties.WorldTime = nextWorldTime - (nextWorldTime % 24000L);
                 afterSkipNight();
             }
         }
 
         Profiler.Start("performSpawning");
-        NaturalSpawner.DoSpawning(this, _pathFinder, spawnHostileMobs, spawnPeacefulMobs);
+        NaturalSpawner.DoSpawning(this, _pathFinder, _spawnHostileMobs, _spawnPeacefulMobs);
         Profiler.Stop("performSpawning");
+
         Profiler.Start("unload100OldestChunks");
-        chunkSource.Tick();
+        _chunkSource.Tick();
         Profiler.Stop("unload100OldestChunks");
 
         Profiler.Start("updateSkylightSubtracted");
-        int var4 = getAmbientDarkness(1.0F);
-        if (var4 != ambientDarkness)
+        int currentAmbientDarkness = getAmbientDarkness(1.0F);
+        if (currentAmbientDarkness != ambientDarkness)
         {
-            ambientDarkness = var4;
+            ambientDarkness = currentAmbientDarkness;
 
-            for (int var5 = 0; var5 < eventListeners.Count; ++var5)
+            for (int i = 0; i < EventListeners.Count; ++i)
             {
-                eventListeners[var5].notifyAmbientDarknessChanged();
+                EventListeners[i].notifyAmbientDarknessChanged();
             }
         }
 
         Profiler.Stop("updateSkylightSubtracted");
 
-        var2 = properties.WorldTime + 1L;
-        if (var2 % (long)autosavePeriod == 0L)
+        nextWorldTime = Properties.WorldTime + 1L;
+        if (nextWorldTime % AutosavePeriod == 0L)
         {
             Profiler.PushGroup("autosave");
-            saveWithLoadingDisplay(false, (LoadingDisplay)null);
+            saveWithLoadingDisplay(false, null);
             Profiler.PopGroup();
         }
 
-        properties.WorldTime = var2;
+        Properties.WorldTime = nextWorldTime;
+
         Profiler.Start("tickUpdates");
         ProcessScheduledTicks(false);
         Profiler.Stop("tickUpdates");
+
         ManageChunkUpdatesAndEvents();
     }
 
     private void prepareWeather()
     {
-        if (properties.IsRaining)
+        if (Properties.IsRaining)
         {
-            rainingStrength = 1.0F;
-            if (properties.IsThundering)
+            RainingStrength = 1.0F;
+            if (Properties.IsThundering)
             {
-                thunderingStrength = 1.0F;
+                ThunderingStrength = 1.0F;
             }
         }
     }
 
     protected virtual void UpdateWeatherCycles()
     {
-        if (!dimension.HasCeiling)
+        if (dimension.HasCeiling) return;
+
+        if (TicksSinceLightning > 0)
         {
-            if (ticksSinceLightning > 0)
-            {
-                --ticksSinceLightning;
-            }
+            --TicksSinceLightning;
+        }
 
-            int var1 = properties.ThunderTime;
-            if (var1 <= 0)
+        int thunderTime = Properties.ThunderTime;
+        if (thunderTime <= 0)
+        {
+            if (Properties.IsThundering)
             {
-                if (properties.IsThundering)
-                {
-                    properties.ThunderTime = random.NextInt(12000) + 3600;
-                }
-                else
-                {
-                    properties.ThunderTime = random.NextInt(168000) + 12000;
-                }
+                Properties.ThunderTime = random.NextInt(12000) + 3600;
             }
             else
             {
-                --var1;
-                properties.ThunderTime = var1;
-                if (var1 <= 0)
-                {
-                    properties.IsThundering = !properties.IsThundering;
-                }
-            }
-
-            int var2 = properties.RainTime;
-            if (var2 <= 0)
-            {
-                if (properties.IsRaining)
-                {
-                    properties.RainTime = random.NextInt(12000) + 12000;
-                }
-                else
-                {
-                    properties.RainTime = random.NextInt(168000) + 12000;
-                }
-            }
-            else
-            {
-                --var2;
-                properties.RainTime = var2;
-                if (var2 <= 0)
-                {
-                    properties.IsRaining = !properties.IsRaining;
-                }
-            }
-
-            prevRainingStrength = rainingStrength;
-            if (properties.IsRaining)
-            {
-                rainingStrength = (float)((double)rainingStrength + 0.01D);
-            }
-            else
-            {
-                rainingStrength = (float)((double)rainingStrength - 0.01D);
-            }
-
-            if (rainingStrength < 0.0F)
-            {
-                rainingStrength = 0.0F;
-            }
-
-            if (rainingStrength > 1.0F)
-            {
-                rainingStrength = 1.0F;
-            }
-
-            prevThunderingStrength = thunderingStrength;
-            if (properties.IsThundering)
-            {
-                thunderingStrength = (float)((double)thunderingStrength + 0.01D);
-            }
-            else
-            {
-                thunderingStrength = (float)((double)thunderingStrength - 0.01D);
-            }
-
-            if (thunderingStrength < 0.0F)
-            {
-                thunderingStrength = 0.0F;
-            }
-
-            if (thunderingStrength > 1.0F)
-            {
-                thunderingStrength = 1.0F;
+                Properties.ThunderTime = random.NextInt(168000) + 12000;
             }
         }
+        else
+        {
+            --thunderTime;
+            Properties.ThunderTime = thunderTime;
+            if (thunderTime <= 0)
+            {
+                Properties.IsThundering = !Properties.IsThundering;
+            }
+        }
+
+        int rainTime = Properties.RainTime;
+        if (rainTime <= 0)
+        {
+            if (Properties.IsRaining)
+            {
+                Properties.RainTime = random.NextInt(12000) + 12000;
+            }
+            else
+            {
+                Properties.RainTime = random.NextInt(168000) + 12000;
+            }
+        }
+        else
+        {
+            --rainTime;
+            Properties.RainTime = rainTime;
+            if (rainTime <= 0)
+            {
+                Properties.IsRaining = !Properties.IsRaining;
+            }
+        }
+
+        PrevRainingStrength = RainingStrength;
+        if (Properties.IsRaining)
+        {
+            RainingStrength = (float)(RainingStrength + 0.01D);
+        }
+        else
+        {
+            RainingStrength = (float)(RainingStrength - 0.01D);
+        }
+
+        RainingStrength = Math.Clamp(RainingStrength, 0.0F, 1.0F);
+
+        PrevThunderingStrength = ThunderingStrength;
+        if (Properties.IsThundering)
+        {
+            ThunderingStrength = (float)(ThunderingStrength + 0.01D);
+        }
+        else
+        {
+            ThunderingStrength = (float)(ThunderingStrength - 0.01D);
+        }
+
+        ThunderingStrength = Math.Clamp(ThunderingStrength, 0.0F, 1.0F);
     }
 
     private void clearWeather()
     {
-        properties.RainTime = 0;
-        properties.IsRaining = false;
-        properties.ThunderTime = 0;
-        properties.IsThundering = false;
+        Properties.RainTime = 0;
+        Properties.IsRaining = false;
+        Properties.ThunderTime = 0;
+        Properties.IsThundering = false;
     }
 
     protected virtual void ManageChunkUpdatesAndEvents()
     {
-        activeChunks.Clear();
-        int var3;
-        int var4;
-        int var6;
-        int var7;
-        for (int var1 = 0; var1 < players.Count; ++var1)
-        {
-            EntityPlayer var2 = players[var1];
-            var3 = MathHelper.Floor(var2.x / 16.0D);
-            var4 = MathHelper.Floor(var2.z / 16.0D);
-            byte var5 = 9;
+        _activeChunks.Clear();
 
-            for (var6 = -var5; var6 <= var5; ++var6)
+        for (int i = 0; i < players.Count; ++i)
+        {
+            EntityPlayer player = players[i];
+            int playerChunkX = MathHelper.Floor(player.x / 16.0D);
+            int playerChunkZ = MathHelper.Floor(player.z / 16.0D);
+            const byte viewDistance = 9;
+
+            for (int xOffset = -viewDistance; xOffset <= viewDistance; ++xOffset)
             {
-                for (var7 = -var5; var7 <= var5; ++var7)
+                for (int zOffset = -viewDistance; zOffset <= viewDistance; ++zOffset)
                 {
-                    activeChunks.Add(new ChunkPos(var6 + var3, var7 + var4));
+                    _activeChunks.Add(new ChunkPos(xOffset + playerChunkX, zOffset + playerChunkZ));
                 }
             }
         }
 
-        if (soundCounter > 0)
+        if (_soundCounter > 0)
         {
-            --soundCounter;
+            --_soundCounter;
         }
 
-        foreach (var p in activeChunks)
+        foreach (var chunkPos in _activeChunks)
         {
-            var3 = p.X * 16;
-            var4 = p.Z * 16;
-            Chunk var14 = GetChunk(p.X, p.Z);
-            int var8;
-            int var9;
-            int var10;
-            if (soundCounter == 0)
+            int worldXBase = chunkPos.X * 16;
+            int worldZBase = chunkPos.Z * 16;
+            Chunk currentChunk = GetChunk(chunkPos.X, chunkPos.Z);
+
+            if (_soundCounter == 0)
             {
-                lcgBlockSeed = lcgBlockSeed * 3 + 1013904223;
-                var6 = lcgBlockSeed >> 2;
-                var7 = var6 & 15;
-                var8 = var6 >> 8 & 15;
-                var9 = var6 >> 16 & 127;
-                var10 = var14.GetBlockId(var7, var9, var8);
-                var7 += var3;
-                var8 += var4;
-                if (var10 == 0 && getBrightness(var7, var9, var8) <= random.NextInt(8) &&
-                    getBrightness(LightType.Sky, var7, var9, var8) <= 0)
+                _lcgBlockSeed = _lcgBlockSeed * 3 + 1013904223;
+                int randomVal = _lcgBlockSeed >> 2;
+                int localX = randomVal & 15;
+                int localZ = randomVal >> 8 & 15;
+                int localY = randomVal >> 16 & 127;
+
+                int blockId = currentChunk.GetBlockId(localX, localY, localZ);
+                int worldX = localX + worldXBase;
+                int worldZ = localZ + worldZBase;
+                if (blockId == 0 && getBrightness(worldX, localY, worldZ) <= random.NextInt(8) &&
+                    getBrightness(LightType.Sky, worldX, localY, worldZ) <= 0)
                 {
-                    EntityPlayer var11 = getClosestPlayer((double)var7 + 0.5D, (double)var9 + 0.5D, (double)var8 + 0.5D,
-                        8.0D);
-                    if (var11 != null &&
-                        var11.getSquaredDistance((double)var7 + 0.5D, (double)var9 + 0.5D, (double)var8 + 0.5D) > 4.0D)
+                    EntityPlayer closest = getClosestPlayer(worldX + 0.5D, localY + 0.5D, worldZ + 0.5D, 8.0D);
+                    if (closest != null &&
+                        closest.getSquaredDistance(worldX + 0.5D, localY + 0.5D, worldZ + 0.5D) > 4.0D)
                     {
-                        playSound((double)var7 + 0.5D, (double)var9 + 0.5D, (double)var8 + 0.5D, "ambient.cave.cave",
-                            0.7F, 0.8F + random.NextFloat() * 0.2F);
-                        soundCounter = random.NextInt(12000) + 6000;
+                        playSound(worldX + 0.5D, localY + 0.5D, worldZ + 0.5D, "ambient.cave.cave", 0.7F,
+                            0.8F + random.NextFloat() * 0.2F);
+                        _soundCounter = random.NextInt(12000) + 6000;
                     }
                 }
             }
 
             if (random.NextInt(100000) == 0 && isRaining() && isThundering())
             {
-                lcgBlockSeed = lcgBlockSeed * 3 + 1013904223;
-                var6 = lcgBlockSeed >> 2;
-                var7 = var3 + (var6 & 15);
-                var8 = var4 + (var6 >> 8 & 15);
-                var9 = getTopSolidBlockY(var7, var8);
-                if (isRaining(var7, var9, var8))
+                _lcgBlockSeed = _lcgBlockSeed * 3 + 1013904223;
+                int randomVal = _lcgBlockSeed >> 2;
+                int worldX = worldXBase + (randomVal & 15);
+                int worldZ = worldZBase + (randomVal >> 8 & 15);
+                int worldY = getTopSolidBlockY(worldX, worldZ);
+
+                if (isRaining(worldX, worldY, worldZ))
                 {
-                    spawnGlobalEntity(new EntityLightningBolt(this, (double)var7, (double)var9, (double)var8));
-                    ticksSinceLightning = 2;
+                    spawnGlobalEntity(new EntityLightningBolt(this, worldX, worldY, worldZ));
+                    TicksSinceLightning = 2;
                 }
             }
 
-            int var15;
             if (random.NextInt(16) == 0)
             {
-                lcgBlockSeed = lcgBlockSeed * 3 + 1013904223;
-                var6 = lcgBlockSeed >> 2;
-                var7 = var6 & 15;
-                var8 = var6 >> 8 & 15;
-                var9 = getTopSolidBlockY(var7 + var3, var8 + var4);
-                if (getBiomeSource().GetBiome(var7 + var3, var8 + var4).GetEnableSnow() && var9 >= 0 && var9 < 128 &&
-                    var14.GetLight(LightType.Block, var7, var9, var8) < 10)
+                _lcgBlockSeed = _lcgBlockSeed * 3 + 1013904223;
+                int randomVal = _lcgBlockSeed >> 2;
+                int localX = randomVal & 15;
+                int localZ = randomVal >> 8 & 15;
+                int worldX = localX + worldXBase;
+                int worldZ = localZ + worldZBase;
+                int worldY = getTopSolidBlockY(worldX, worldZ);
+
+                if (getBiomeSource().GetBiome(worldX, worldZ).GetEnableSnow() && worldY >= 0 && worldY < 128 &&
+                    currentChunk.GetLight(LightType.Block, localX, worldY, localZ) < 10)
                 {
-                    var10 = var14.GetBlockId(var7, var9 - 1, var8);
-                    var15 = var14.GetBlockId(var7, var9, var8);
-                    if (isRaining() && var15 == 0 && Block.Snow.canPlaceAt(this, var7 + var3, var9, var8 + var4) &&
-                        var10 != 0 && var10 != Block.Ice.id && Block.Blocks[var10].material.BlocksMovement)
+                    int blockBelowId = currentChunk.GetBlockId(localX, worldY - 1, localZ);
+                    int currentBlockId = currentChunk.GetBlockId(localX, worldY, localZ);
+
+                    if (isRaining() && currentBlockId == 0 && Block.Snow.canPlaceAt(this, worldX, worldY, worldZ) &&
+                        blockBelowId != 0 && blockBelowId != Block.Ice.id &&
+                        Block.Blocks[blockBelowId].material.BlocksMovement)
                     {
-                        setBlock(var7 + var3, var9, var8 + var4, Block.Snow.id);
+                        setBlock(worldX, worldY, worldZ, Block.Snow.id);
                     }
 
-                    if (var10 == Block.Water.id && var14.GetBlockMeta(var7, var9 - 1, var8) == 0)
+                    if (blockBelowId == Block.Water.id && currentChunk.GetBlockMeta(localX, worldY - 1, localZ) == 0)
                     {
-                        setBlock(var7 + var3, var9 - 1, var8 + var4, Block.Ice.id);
+                        setBlock(worldX, worldY - 1, worldZ, Block.Ice.id);
                     }
                 }
             }
 
-            for (var6 = 0; var6 < 80; ++var6)
+            for (int j = 0; j < 80; ++j)
             {
-                lcgBlockSeed = lcgBlockSeed * 3 + 1013904223;
-                var7 = lcgBlockSeed >> 2;
-                var8 = var7 & 15;
-                var9 = var7 >> 8 & 15;
-                var10 = var7 >> 16 & 127;
-                var15 = var14.Blocks[var8 << 11 | var9 << 7 | var10] & 255;
-                if (Block.BlocksRandomTick[var15])
+                _lcgBlockSeed = _lcgBlockSeed * 3 + 1013904223;
+                int randomTickVal = _lcgBlockSeed >> 2;
+                int localX = randomTickVal & 15;
+                int localZ = randomTickVal >> 8 & 15;
+                int localY = randomTickVal >> 16 & 127;
+
+                int blockId = currentChunk.Blocks[localX << 11 | localZ << 7 | localY] & 255;
+                if (Block.BlocksRandomTick[blockId])
                 {
-                    Block.Blocks[var15].onTick(this, var8 + var3, var10, var9 + var4, random);
+                    Block.Blocks[blockId].onTick(this, localX + worldXBase, localY, localZ + worldZBase, random);
                 }
             }
         }
     }
 
-    public virtual void ProcessScheduledTicks(bool flush)
+    protected virtual void ProcessScheduledTicks(bool forceFlush)
     {
         for (int i = 0; i < 1000; ++i)
         {
             if (_scheduledUpdates.Count == 0) break;
-            if (!flush && _scheduledUpdates.Peek().ScheduledTime > GetEventTime()) break;
+
+            if (!forceFlush && _scheduledUpdates.Peek().ScheduledTime > GetEventTime()) break;
+
             var blockUpdate = _scheduledUpdates.Dequeue();
 
-            byte var5 = 8;
-            if (isRegionLoaded(blockUpdate.X - var5, blockUpdate.Y - var5, blockUpdate.Z - var5, blockUpdate.X + var5,
-                    blockUpdate.Y + var5, blockUpdate.Z + var5))
+            const byte loadRadius = 8;
+            if (isRegionLoaded(blockUpdate.X - loadRadius, blockUpdate.Y - loadRadius, blockUpdate.Z - loadRadius,
+                    blockUpdate.X + loadRadius, blockUpdate.Y + loadRadius, blockUpdate.Z + loadRadius))
             {
-                int blockId = getBlockId(blockUpdate.X, blockUpdate.Y, blockUpdate.Z);
-                if (blockId == blockUpdate.BlockId && blockId > 0)
+                int currentBlockId = getBlockId(blockUpdate.X, blockUpdate.Y, blockUpdate.Z);
+                if (currentBlockId == blockUpdate.BlockId && currentBlockId > 0)
                 {
-                    Block.Blocks[blockId].onTick(this, blockUpdate.X, blockUpdate.Y, blockUpdate.Z, random);
+                    Block.Blocks[currentBlockId].onTick(this, blockUpdate.X, blockUpdate.Y, blockUpdate.Z, random);
                 }
             }
         }
     }
 
-    public void displayTick(int x, int y, int z)
+    public void displayTick(int centerX, int centerY, int centerZ)
     {
-        byte var4 = 16;
-        JavaRandom var5 = new();
+        const byte searchRadius = 16;
+        JavaRandom particleRandom = new();
 
-        for (int var6 = 0; var6 < 1000; ++var6)
+        for (int i = 0; i < 1000; ++i)
         {
-            int var7 = x + random.NextInt(var4) - random.NextInt(var4);
-            int var8 = y + random.NextInt(var4) - random.NextInt(var4);
-            int var9 = z + random.NextInt(var4) - random.NextInt(var4);
-            int var10 = getBlockId(var7, var8, var9);
-            if (var10 > 0)
+            int targetX = centerX + random.NextInt(searchRadius) - random.NextInt(searchRadius);
+            int targetY = centerY + random.NextInt(searchRadius) - random.NextInt(searchRadius);
+            int targetZ = centerZ + random.NextInt(searchRadius) - random.NextInt(searchRadius);
+
+            int blockId = getBlockId(targetX, targetY, targetZ);
+            if (blockId > 0)
             {
-                Block.Blocks[var10].randomDisplayTick(this, var7, var8, var9, var5);
+                Block.Blocks[blockId].randomDisplayTick(this, targetX, targetY, targetZ, particleRandom);
             }
         }
     }
 
-    public List<Entity> getEntities(Entity entity, Box box)
+    public List<Entity> getEntities(Entity? excludeEntity, Box area)
     {
-        tempEntityList.Clear();
-        int var3 = MathHelper.Floor((box.MinX - 2.0D) / 16.0D);
-        int var4 = MathHelper.Floor((box.MaxX + 2.0D) / 16.0D);
-        int var5 = MathHelper.Floor((box.MinZ - 2.0D) / 16.0D);
-        int var6 = MathHelper.Floor((box.MaxZ + 2.0D) / 16.0D);
+        return getEntities(excludeEntity, area, new List<Entity>());
+    }
 
-        for (int var7 = var3; var7 <= var4; ++var7)
+    public List<Entity> getEntities(Entity? excludeEntity, Box area, List<Entity> results)
+    {
+        int minChunkX = MathHelper.Floor((area.MinX - 2.0D) / 16.0D);
+        int maxChunkX = MathHelper.Floor((area.MaxX + 2.0D) / 16.0D);
+        int minChunkZ = MathHelper.Floor((area.MinZ - 2.0D) / 16.0D);
+        int maxChunkZ = MathHelper.Floor((area.MaxZ + 2.0D) / 16.0D);
+
+        for (int chunkX = minChunkX; chunkX <= maxChunkX; ++chunkX)
         {
-            for (int var8 = var5; var8 <= var6; ++var8)
+            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; ++chunkZ)
             {
-                if (hasChunk(var7, var8))
+                if (hasChunk(chunkX, chunkZ))
                 {
-                    GetChunk(var7, var8).CollectOtherEntities(entity, box, tempEntityList);
+                    GetChunk(chunkX, chunkZ).CollectOtherEntities(excludeEntity, area, results);
                 }
             }
         }
 
-        return tempEntityList;
+        return results;
     }
 
-    public List<T> CollectEntitiesOfType<T>(Box box) where T : Entity
+    public List<T> CollectEntitiesOfType<T>(Box area) where T : Entity
     {
-        List<T> res = new();
-        int var3 = MathHelper.Floor((box.MinX - 2.0D) / 16.0D);
-        int var4 = MathHelper.Floor((box.MaxX + 2.0D) / 16.0D);
-        int var5 = MathHelper.Floor((box.MinZ - 2.0D) / 16.0D);
-        int var6 = MathHelper.Floor((box.MaxZ + 2.0D) / 16.0D);
+        List<T> results = new();
 
-        for (int var8 = var3; var8 <= var4; ++var8)
+        int minChunkX = MathHelper.Floor((area.MinX - 2.0D) / 16.0D);
+        int maxChunkX = MathHelper.Floor((area.MaxX + 2.0D) / 16.0D);
+        int minChunkZ = MathHelper.Floor((area.MinZ - 2.0D) / 16.0D);
+        int maxChunkZ = MathHelper.Floor((area.MaxZ + 2.0D) / 16.0D);
+
+        for (int chunkX = minChunkX; chunkX <= maxChunkX; ++chunkX)
         {
-            for (int var9 = var5; var9 <= var6; ++var9)
+            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; ++chunkZ)
             {
-                if (hasChunk(var8, var9))
+                if (hasChunk(chunkX, chunkZ))
                 {
-                    GetChunk(var8, var9).CollectEntitiesOfType<T>(box, res);
+                    GetChunk(chunkX, chunkZ).CollectEntitiesOfType(area, results);
                 }
             }
         }
 
-        return res;
+        return results;
     }
+
+
 
     public List<Entity> getEntities()
     {
@@ -2571,9 +2343,9 @@ public abstract class World : BlockView
             GetChunkFromPos(x, z).MarkDirty();
         }
 
-        for (int var5 = 0; var5 < eventListeners.Count; ++var5)
+        for (int i = 0; i < EventListeners.Count; ++i)
         {
-            eventListeners[var5].updateBlockEntity(x, y, z, blockEntity);
+            EventListeners[i].updateBlockEntity(x, y, z, blockEntity);
         }
     }
 
@@ -2593,51 +2365,51 @@ public abstract class World : BlockView
     {
         this.entities.AddRange(entities);
 
-        for (int var2 = 0; var2 < entities.Count; ++var2)
+        for (int i = 0; i < entities.Count; ++i)
         {
-            NotifyEntityAdded(entities[var2]);
+            NotifyEntityAdded(entities[i]);
         }
     }
 
     public void unloadEntities(List<Entity> entities)
     {
-        entitiesToUnload.AddRange(entities);
+        _entitiesToUnload.AddRange(entities);
     }
 
     public void tickChunks()
     {
-        while (chunkSource.Tick())
+        while (_chunkSource.Tick())
         {
         }
     }
 
-    public bool canPlace(int blockId, int x, int y, int z, bool fallingBlock, int side)
+    public bool canPlace(int blockId, int x, int y, int z, bool isFallingBlock, int side)
     {
-        int var7 = getBlockId(x, y, z);
-        Block var8 = Block.Blocks[var7];
-        Block var9 = Block.Blocks[blockId];
-        Box? var10 = var9.getCollisionShape(this, x, y, z);
-        if (fallingBlock)
+        int existingBlockId = getBlockId(x, y, z);
+        Block? existingBlock = Block.Blocks[existingBlockId];
+        Block? newBlock = Block.Blocks[blockId];
+
+        Box? collisionBox = newBlock?.getCollisionShape(this, x, y, z);
+
+        if (isFallingBlock)
         {
-            var10 = null;
+            collisionBox = null;
         }
 
-        if (var10 != null && !canSpawnEntity(var10.Value))
+        if (collisionBox != null && !canSpawnEntity(collisionBox.Value))
         {
             return false;
         }
-        else
+
+        if (existingBlock == Block.FlowingWater || existingBlock == Block.Water ||
+            existingBlock == Block.FlowingLava || existingBlock == Block.Lava ||
+            existingBlock == Block.Fire || existingBlock == Block.Snow)
         {
-            if (var8 == Block.FlowingWater || var8 == Block.Water || var8 == Block.FlowingLava || var8 == Block.Lava ||
-                var8 == Block.Fire || var8 == Block.Snow)
-            {
-                var8 = null;
-            }
-
-            return blockId > 0 && var8 == null && var9.canPlaceAt(this, x, y, z, side);
+            existingBlock = null;
         }
-    }
 
+        return blockId > 0 && existingBlock == null && newBlock != null && newBlock.canPlaceAt(this, x, y, z, side);
+    }
 
     internal PathEntity findPath(Entity entity, Entity target, float range)
     {
@@ -2686,23 +2458,20 @@ public abstract class World : BlockView
         return result;
     }
 
-    public bool isStrongPoweringSide(int x, int y, int z, int side)
+    private bool isStrongPoweringSide(int x, int y, int z, int side)
     {
-        int var5 = getBlockId(x, y, z);
-        return var5 == 0 ? false : Block.Blocks[var5].isStrongPoweringSide(this, x, y, z, side);
+        int blockId = getBlockId(x, y, z);
+        return blockId != 0 && Block.Blocks[blockId].isStrongPoweringSide(this, x, y, z, side);
     }
 
     public bool isStrongPowered(int x, int y, int z)
     {
-        return isStrongPoweringSide(x, y - 1, z, 0)
-            ? true
-            : (isStrongPoweringSide(x, y + 1, z, 1)
-                ? true
-                : (isStrongPoweringSide(x, y, z - 1, 2)
-                    ? true
-                    : (isStrongPoweringSide(x, y, z + 1, 3)
-                        ? true
-                        : (isStrongPoweringSide(x - 1, y, z, 4) ? true : isStrongPoweringSide(x + 1, y, z, 5)))));
+        if (isStrongPoweringSide(x, y - 1, z, 0)) return true; // Down
+        if (isStrongPoweringSide(x, y + 1, z, 1)) return true; // Up
+        if (isStrongPoweringSide(x, y, z - 1, 2)) return true; // North
+        if (isStrongPoweringSide(x, y, z + 1, 3)) return true; // South
+        if (isStrongPoweringSide(x - 1, y, z, 4)) return true; // West
+        return isStrongPoweringSide(x + 1, y, z, 5); // East
     }
 
     public bool isPoweringSide(int x, int y, int z, int side)
@@ -2711,24 +2480,19 @@ public abstract class World : BlockView
         {
             return isStrongPowered(x, y, z);
         }
-        else
-        {
-            int var5 = getBlockId(x, y, z);
-            return var5 == 0 ? false : Block.Blocks[var5].isPoweringSide(this, x, y, z, side);
-        }
+
+        int blockId = getBlockId(x, y, z);
+        return blockId != 0 && Block.Blocks[blockId].isPoweringSide(this, x, y, z, side);
     }
 
     public bool isPowered(int x, int y, int z)
     {
-        return isPoweringSide(x, y - 1, z, 0)
-            ? true
-            : (isPoweringSide(x, y + 1, z, 1)
-                ? true
-                : (isPoweringSide(x, y, z - 1, 2)
-                    ? true
-                    : (isPoweringSide(x, y, z + 1, 3)
-                        ? true
-                        : (isPoweringSide(x - 1, y, z, 4) ? true : isPoweringSide(x + 1, y, z, 5)))));
+        if (isPoweringSide(x, y - 1, z, 0)) return true; // Down
+        if (isPoweringSide(x, y + 1, z, 1)) return true; // Up
+        if (isPoweringSide(x, y, z - 1, 2)) return true; // North
+        if (isPoweringSide(x, y, z + 1, 3)) return true; // South
+        if (isPoweringSide(x - 1, y, z, 4)) return true; // West
+        return isPoweringSide(x + 1, y, z, 5); // East
     }
 
     public EntityPlayer getClosestPlayer(Entity entity, double range)
@@ -2738,87 +2502,70 @@ public abstract class World : BlockView
 
     public EntityPlayer getClosestPlayer(double x, double y, double z, double range)
     {
-        double var9 = -1.0D;
-        EntityPlayer var11 = null;
+        double minDistanceSquared = -1.0D;
+        EntityPlayer closestPlayer = null;
 
-        for (int var12 = 0; var12 < players.Count; ++var12)
+        for (int i = 0; i < players.Count; ++i)
         {
-            EntityPlayer var13 = players[var12];
-            double var14 = var13.getSquaredDistance(x, y, z);
-            if ((range < 0.0D || var14 < range * range) && (var9 == -1.0D || var14 < var9))
+            EntityPlayer player = players[i];
+            double distanceSquared = player.getSquaredDistance(x, y, z);
+
+            bool withinRange = range < 0.0D || distanceSquared < range * range;
+            bool isClosestSoFar = minDistanceSquared == -1.0D || distanceSquared < minDistanceSquared;
+
+            if (withinRange && isClosestSoFar)
             {
-                var9 = var14;
-                var11 = var13;
+                minDistanceSquared = distanceSquared;
+                closestPlayer = player;
             }
         }
 
-        return var11;
+        return closestPlayer;
     }
 
     public EntityPlayer getPlayer(string name)
     {
-        for (int var2 = 0; var2 < players.Count; ++var2)
+        for (int i = 0; i < players.Count; ++i)
         {
-            if (name.Equals(players[var2].name))
+            if (name.Equals(players[i].name))
             {
-                return players[var2];
+                return players[i];
             }
         }
 
         return null;
     }
 
-    public void handleChunkDataUpdate(int x, int y, int z, int sideX, int sideY, int sideZ, byte[] chunkData)
+    public void handleChunkDataUpdate(int x, int y, int z, int sizeX, int sizeY, int sizeZ, byte[] chunkData)
     {
-        int var8 = x >> 4;
-        int var9 = z >> 4;
-        int var10 = x + sideX - 1 >> 4;
-        int var11 = z + sideZ - 1 >> 4;
-        int var12 = 0;
-        int var13 = y;
-        int var14 = y + sideY;
-        if (y < 0)
+        int startChunkX = x >> 4;
+        int startChunkZ = z >> 4;
+        int endChunkX = (x + sizeX - 1) >> 4;
+        int endChunkZ = (z + sizeZ - 1) >> 4;
+
+        int currentBufferOffset = 0;
+        int minY = Math.Max(0, y);
+        int maxY = Math.Min(128, y + sizeY);
+
+        for (int chunkX = startChunkX; chunkX <= endChunkX; ++chunkX)
         {
-            var13 = 0;
-        }
+            int localStartX = Math.Max(0, x - (chunkX * 16));
+            int localEndX = Math.Min(16, x + sizeX - (chunkX * 16));
 
-        if (var14 > 128)
-        {
-            var14 = 128;
-        }
-
-        for (int var15 = var8; var15 <= var10; ++var15)
-        {
-            int var16 = x - var15 * 16;
-            int var17 = x + sideX - var15 * 16;
-            if (var16 < 0)
+            for (int chunkZ = startChunkZ; chunkZ <= endChunkZ; ++chunkZ)
             {
-                var16 = 0;
-            }
+                int localStartZ = Math.Max(0, z - (chunkZ * 16));
+                int localEndZ = Math.Min(16, z + sizeZ - (chunkZ * 16));
 
-            if (var17 > 16)
-            {
-                var17 = 16;
-            }
+                currentBufferOffset = GetChunk(chunkX, chunkZ).LoadFromPacket(
+                    chunkData,
+                    localStartX, minY, localStartZ,
+                    localEndX, maxY, localEndZ,
+                    currentBufferOffset);
 
-            for (int var18 = var9; var18 <= var11; ++var18)
-            {
-                int var19 = z - var18 * 16;
-                int var20 = z + sideZ - var18 * 16;
-                if (var19 < 0)
-                {
-                    var19 = 0;
-                }
-
-                if (var20 > 16)
-                {
-                    var20 = 16;
-                }
-
-                var12 = GetChunk(var15, var18)
-                    .LoadFromPacket(chunkData, var16, var13, var19, var17, var14, var20, var12);
-                setBlocksDirty(var15 * 16 + var16, var13, var18 * 16 + var19, var15 * 16 + var17, var14,
-                    var18 * 16 + var20);
+                setBlocksDirty(
+                    (chunkX * 16) + localStartX, minY, (chunkZ * 16) + localStartZ,
+                    (chunkX * 16) + localEndX, maxY, (chunkZ * 16) + localEndZ);
             }
         }
     }
@@ -2829,112 +2576,93 @@ public abstract class World : BlockView
 
     public byte[] GetChunkData(int x, int y, int z, int sizeX, int sizeY, int sizeZ)
     {
-        byte[] var7 = new byte[sizeX * sizeY * sizeZ * 5 / 2];
-        int var8 = x >> 4;
-        int var9 = z >> 4;
-        int var10 = x + sizeX - 1 >> 4;
-        int var11 = z + sizeZ - 1 >> 4;
-        int var12 = 0;
-        int var13 = y;
-        int var14 = y + sizeY;
-        if (y < 0)
+        byte[] chunkData = new byte[sizeX * sizeY * sizeZ * 5 / 2];
+
+        int startChunkX = x >> 4;
+        int startChunkZ = z >> 4;
+        int endChunkX = (x + sizeX - 1) >> 4;
+        int endChunkZ = (z + sizeZ - 1) >> 4;
+
+        int currentBufferOffset = 0;
+        int minY = Math.Max(0, y);
+        int maxY = Math.Min(128, y + sizeY);
+
+        for (int chunkX = startChunkX; chunkX <= endChunkX; chunkX++)
         {
-            var13 = 0;
-        }
+            int localStartX = Math.Max(0, x - (chunkX * 16));
+            int localEndX = Math.Min(16, x + sizeX - (chunkX * 16));
 
-        if (var14 > 128)
-        {
-            var14 = 128;
-        }
-
-        for (int var15 = var8; var15 <= var10; var15++)
-        {
-            int var16 = x - var15 * 16;
-            int var17 = x + sizeX - var15 * 16;
-            if (var16 < 0)
+            for (int chunkZ = startChunkZ; chunkZ <= endChunkZ; chunkZ++)
             {
-                var16 = 0;
-            }
+                int localStartZ = Math.Max(0, z - (chunkZ * 16));
+                int localEndZ = Math.Min(16, z + sizeZ - (chunkZ * 16));
 
-            if (var17 > 16)
-            {
-                var17 = 16;
-            }
-
-            for (int var18 = var9; var18 <= var11; var18++)
-            {
-                int var19 = z - var18 * 16;
-                int var20 = z + sizeZ - var18 * 16;
-                if (var19 < 0)
-                {
-                    var19 = 0;
-                }
-
-                if (var20 > 16)
-                {
-                    var20 = 16;
-                }
-
-                var12 = GetChunk(var15, var18).ToPacket(var7, var16, var13, var19, var17, var14, var20, var12);
+                currentBufferOffset = GetChunk(chunkX, chunkZ).ToPacket(
+                    chunkData,
+                    localStartX, minY, localStartZ,
+                    localEndX, maxY, localEndZ,
+                    currentBufferOffset);
             }
         }
 
-        return var7;
+        return chunkData;
     }
 
     public void checkSessionLock()
     {
-        storage.CheckSessionLock();
+        Storage.CheckSessionLock();
     }
 
     public void setTime(long time)
     {
-        properties.WorldTime = time;
+        Properties.WorldTime = time;
     }
 
     public void synchronizeTimeAndUpdates(long time)
     {
-        long deltaTime = time - properties.WorldTime;
+        long deltaTime = time - Properties.WorldTime;
         _eventDeltaTime -= deltaTime;
         setTime(time);
     }
 
     public long getSeed()
     {
-        return properties.RandomSeed;
+        return Properties.RandomSeed;
     }
 
     public long getTime()
     {
-        return properties.WorldTime;
+        return Properties.WorldTime;
     }
 
     private long GetEventTime()
     {
-        return properties.WorldTime + _eventDeltaTime;
+        return Properties.WorldTime + _eventDeltaTime;
     }
 
     public Vec3i getSpawnPos()
     {
-        return new Vec3i(properties.SpawnX, properties.SpawnY, properties.SpawnZ);
+        return new Vec3i(Properties.SpawnX, Properties.SpawnY, Properties.SpawnZ);
     }
 
     public void setSpawnPos(Vec3i pos)
     {
-        properties.SetSpawn(pos.X, pos.Y, pos.Z);
+        Properties.SetSpawn(pos.X, pos.Y, pos.Z);
     }
 
     public void LoadChunksNearEntity(Entity entity)
     {
-        int var2 = MathHelper.Floor(entity.x / 16.0D);
-        int var3 = MathHelper.Floor(entity.z / 16.0D);
-        byte var4 = 2;
+        int chunkX = MathHelper.Floor(entity.x / 16.0D);
+        int chunkZ = MathHelper.Floor(entity.z / 16.0D);
 
-        for (int var5 = var2 - var4; var5 <= var2 + var4; ++var5)
+        // 5x5 area
+        const byte loadRadius = 2;
+
+        for (int x = chunkX - loadRadius; x <= chunkX + loadRadius; ++x)
         {
-            for (int var6 = var3 - var4; var6 <= var3 + var4; ++var6)
+            for (int z = chunkZ - loadRadius; z <= chunkZ + loadRadius; ++z)
             {
-                GetChunk(var5, var6);
+                GetChunk(x, z);
             }
         }
 
@@ -2955,97 +2683,93 @@ public abstract class World : BlockView
 
     public void updateEntityLists()
     {
-        foreach (var entity in entitiesToUnload)
+        foreach (var entity in _entitiesToUnload)
         {
             entities.Remove(entity);
         }
 
-        int var1;
-        Entity var2;
-        int var3;
-        int var4;
-        for (var1 = 0; var1 < entitiesToUnload.Count; ++var1)
+        for (int i = 0; i < _entitiesToUnload.Count; ++i)
         {
-            var2 = entitiesToUnload[var1];
-            var3 = var2.chunkX;
-            var4 = var2.chunkZ;
-            if (var2.isPersistent && hasChunk(var3, var4))
+            var entity = _entitiesToUnload[i];
+            var chunkX = entity.chunkX;
+            var chunkZ = entity.chunkZ;
+            if (entity.isPersistent && hasChunk(chunkX, chunkZ))
             {
-                GetChunk(var3, var4).RemoveEntity(var2);
+                GetChunk(chunkX, chunkZ).RemoveEntity(entity);
             }
         }
 
-        for (var1 = 0; var1 < entitiesToUnload.Count; ++var1)
+        for (int i = 0; i < _entitiesToUnload.Count; ++i)
         {
-            NotifyEntityRemoved(entitiesToUnload[var1]);
+            NotifyEntityRemoved(_entitiesToUnload[i]);
         }
 
-        entitiesToUnload.Clear();
+        _entitiesToUnload.Clear();
 
-        for (var1 = 0; var1 < entities.Count; ++var1)
+        for (int i = 0; i < entities.Count; ++i)
         {
-            var2 = entities[var1];
-            if (var2.vehicle != null)
+            var entity = entities[i];
+            if (entity.vehicle != null)
             {
-                if (!var2.vehicle.dead && var2.vehicle.passenger == var2)
+                if (!entity.vehicle.dead && Equals(entity.vehicle.passenger, entity))
                 {
                     continue;
                 }
 
-                var2.vehicle.passenger = null;
-                var2.vehicle = null;
+                entity.vehicle.passenger = null;
+                entity.vehicle = null;
             }
 
-            if (var2.dead)
+            if (entity.dead)
             {
-                var3 = var2.chunkX;
-                var4 = var2.chunkZ;
-                if (var2.isPersistent && hasChunk(var3, var4))
+                var chunkX = entity.chunkX;
+                var chunkZ = entity.chunkZ;
+                if (entity.isPersistent && hasChunk(chunkX, chunkZ))
                 {
-                    GetChunk(var3, var4).RemoveEntity(var2);
+                    GetChunk(chunkX, chunkZ).RemoveEntity(entity);
                 }
 
-                entities.RemoveAt(var1--);
-                NotifyEntityRemoved(var2);
+                entities.RemoveAt(i--);
+                NotifyEntityRemoved(entity);
             }
         }
     }
 
     public ChunkSource GetChunkSource()
     {
-        return chunkSource;
+        return _chunkSource;
     }
 
     public virtual void playNoteBlockActionAt(int x, int y, int z, int soundType, int pitch)
     {
-        int var6 = getBlockId(x, y, z);
-        if (var6 > 0)
+        int blockId = getBlockId(x, y, z);
+        if (blockId > 0)
         {
-            Block.Blocks[var6].onBlockAction(this, x, y, z, soundType, pitch);
+            Block.Blocks[blockId].onBlockAction(this, x, y, z, soundType, pitch);
         }
     }
 
     public WorldProperties getProperties()
     {
-        return properties;
+        return Properties;
     }
 
     public void updateSleepingPlayers()
     {
-        allPlayersSleeping = players.Count > 0;
+        _allPlayersSleeping = players.Count > 0;
         foreach (var player in players)
         {
             if (!player.isSleeping())
             {
-                allPlayersSleeping = false;
+                _allPlayersSleeping = false;
                 break;
             }
         }
     }
 
-    protected void afterSkipNight()
+    private void afterSkipNight()
     {
-        allPlayersSleeping = false;
+        _allPlayersSleeping = false;
         foreach (var player in players)
         {
             if (player.isSleeping())
@@ -3059,7 +2783,7 @@ public abstract class World : BlockView
 
     public bool canSkipNight()
     {
-        if (!allPlayersSleeping || isRemote)
+        if (!_allPlayersSleeping || isRemote)
         {
             return false;
         }
@@ -3069,29 +2793,29 @@ public abstract class World : BlockView
 
     public float getThunderGradient(float delta)
     {
-        return (prevThunderingStrength + (thunderingStrength - prevThunderingStrength) * delta) *
+        return (PrevThunderingStrength + (ThunderingStrength - PrevThunderingStrength) * delta) *
                getRainGradient(delta);
     }
 
     public float getRainGradient(float delta)
     {
-        return prevRainingStrength + (rainingStrength - prevRainingStrength) * delta;
+        return PrevRainingStrength + (RainingStrength - PrevRainingStrength) * delta;
     }
 
     public void setRainGradient(float rainGradient)
     {
-        prevRainingStrength = rainGradient;
-        rainingStrength = rainGradient;
+        PrevRainingStrength = rainGradient;
+        RainingStrength = rainGradient;
     }
 
     public bool isThundering()
     {
-        return (double)getThunderGradient(1.0F) > 0.9D;
+        return getThunderGradient(1.0F) > 0.9D;
     }
 
     public bool isRaining()
     {
-        return (double)getRainGradient(1.0F) > 0.2D;
+        return getRainGradient(1.0F) > 0.2D;
     }
 
     public bool isRaining(int x, int y, int z)
@@ -3110,8 +2834,8 @@ public abstract class World : BlockView
         }
         else
         {
-            Biome var4 = getBiomeSource().GetBiome(x, z);
-            return var4.GetEnableSnow() ? false : var4.CanSpawnLightningBolt();
+            Biome biome = getBiomeSource().GetBiome(x, z);
+            return biome.GetEnableSnow() ? false : biome.CanSpawnLightningBolt();
         }
     }
 
@@ -3137,9 +2861,9 @@ public abstract class World : BlockView
 
     public void worldEvent(EntityPlayer player, int @event, int x, int y, int z, int data)
     {
-        for (int var7 = 0; var7 < eventListeners.Count; ++var7)
+        for (int index = 0; index < EventListeners.Count; ++index)
         {
-            eventListeners[var7].worldEvent(player, @event, x, y, z, data);
+            EventListeners[index].worldEvent(player, @event, x, y, z, data);
         }
     }
 }
