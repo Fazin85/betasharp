@@ -14,18 +14,31 @@ public class ConnectionListener
     private readonly ILogger<ConnectionListener> _logger = Log.Instance.For<ConnectionListener>();
 
     public volatile bool open;
-    public int connectionCounter = 0;
+    private int _connectionCounter = 0;
+    private readonly object _connectionCounterLock = new();
+    private readonly object _pendingConnectionsLock = new();
+    private readonly object _connectionsLock = new();
     private readonly List<ServerLoginNetworkHandler> _pendingConnections = [];
     private readonly List<ServerPlayNetworkHandler> _connections = [];
     public MinecraftServer server;
     public int port;
 
+    public int GetNextConnectionCounter()
+    {
+        lock (_connectionCounterLock)
+        {
+            return _connectionCounter++;
+        }
+    }
     public ConnectionListener(MinecraftServer server, IPAddress address, int port, bool dualStack = false)
     {
         this.server = server;
 
         Socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
-        Socket.DualMode = dualStack;
+        if (address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
+        {
+            Socket.DualMode = dualStack;
+        }
         Socket.Bind(new IPEndPoint(address, port));
         Socket.Listen();
 
@@ -46,7 +59,10 @@ public class ConnectionListener
 
     public void AddConnection(ServerPlayNetworkHandler connection)
     {
-        _connections.Add(connection);
+        lock (_connectionsLock)
+        {
+            _connections.Add(connection);
+        }
     }
 
     public void AddPendingConnection(ServerLoginNetworkHandler connection)
@@ -57,23 +73,31 @@ public class ConnectionListener
         }
         else
         {
-            _pendingConnections.Add(connection);
+            lock (_pendingConnectionsLock)
+            {
+                _pendingConnections.Add(connection);
+            }
         }
     }
 
     public void AddInternalConnection(InternalConnection connection)
     {
         ServerLoginNetworkHandler loginHandler = new(server, connection);
-        _pendingConnections.Add(loginHandler);
+        lock (_pendingConnectionsLock)
+        {
+            _pendingConnections.Add(loginHandler);
+        }
     }
 
     public void Tick()
     {
-        for (int i = 0; i < _pendingConnections.Count; i++)
+        lock (_pendingConnectionsLock)
         {
-            ServerLoginNetworkHandler connection = _pendingConnections[i];
+            for (int i = 0; i < _pendingConnections.Count; i++)
+            {
+                ServerLoginNetworkHandler connection = _pendingConnections[i];
 
-            try
+                try
             {
                 connection.tick();
             }
@@ -88,12 +112,15 @@ public class ConnectionListener
                 _pendingConnections.RemoveAt(i--);
             }
 
-            connection.connection.interrupt();
+                connection.connection.interrupt();
+            }
         }
 
-        for (int i = 0; i < _connections.Count; i++)
+        lock (_connectionsLock)
         {
-            ServerPlayNetworkHandler connection = _connections[i];
+            for (int i = 0; i < _connections.Count; i++)
+            {
+                ServerPlayNetworkHandler connection = _connections[i];
 
             try
             {
@@ -111,6 +138,7 @@ public class ConnectionListener
             }
 
             connection.connection.interrupt();
+            }
         }
     }
 }

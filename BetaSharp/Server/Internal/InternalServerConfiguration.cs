@@ -103,6 +103,11 @@ public class InternalServerConfiguration : IServerConfiguration
         return false;
     }
 
+    public int GetSpawnRegionSize(int fallback)
+    {
+        return fallback;
+    }
+
     public void Save()
     {
     }
