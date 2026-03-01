@@ -14,9 +14,9 @@ public class TextRenderer
 {
     private const string FontPath = "font/Monocraft.ttc";
     private const int AtlasSize = 2048;
-    private const int AtlasFontSize = 32;
+    private const int AtlasFontSize = 64;
     private const int GlyphPadding = 2;
-    private const float DisplayScale = 0.25f;
+    private const float DisplayScale = 0.125f;
 
     private readonly Font _font;
     private readonly TextOptions _textOptions;
