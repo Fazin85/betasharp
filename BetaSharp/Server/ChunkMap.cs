@@ -124,7 +124,7 @@ public class ChunkMap
 
     public static long GetChunkHash(int chunkX, int chunkZ)
     {
-        return chunkX + 2147483647L | chunkZ + 2147483647L << 32;
+        return (chunkX + 2147483647L) | ((chunkZ + 2147483647L) << 32);
     }
 
     internal TrackedChunk GetOrCreateChunk(int chunkX, int chunkZ, bool createIfAbsent)
@@ -299,7 +299,7 @@ public class ChunkMap
     {
         private readonly ILogger<TrackedChunk> _logger = Log.Instance.For<TrackedChunk>();
         private readonly ChunkMap chunkMap;
-        private readonly List<ServerPlayerEntity> players;
+        private readonly HashSet<ServerPlayerEntity> players;
         private readonly int chunkX;
         private readonly int chunkZ;
         private readonly ChunkPos chunkPos;
@@ -328,7 +328,7 @@ public class ChunkMap
 
         public void addPlayer(ServerPlayerEntity player)
         {
-            if (players.Contains(player))
+            if (!players.Add(player))
             {
                 return;
             }
@@ -338,18 +338,16 @@ public class ChunkMap
                 player.networkHandler.sendPacket(new ChunkStatusUpdateS2CPacket(chunkPos.X, chunkPos.Z, true));
             }
 
-            players.Add(player);
             player.PendingChunkUpdates.Enqueue(chunkPos);
         }
 
         public void removePlayer(ServerPlayerEntity player)
         {
-            if (players.Contains(player))
+            if (players.Remove(player))
             {
-                players.Remove(player);
                 if (players.Count == 0)
                 {
-                    long var2 = chunkX + 2147483647L | chunkZ + 2147483647L << 32;
+                    long var2 = ChunkMap.GetChunkHash(chunkX, chunkZ);
                     chunkMap.chunkMapping.Remove(var2);
                     if (dirtyBlockCount > 0)
                     {
@@ -424,9 +422,8 @@ public class ChunkMap
 
         public void sendPacketToPlayers(Packet packet)
         {
-            for (int var2 = 0; var2 < players.Count; var2++)
+            foreach (var var3 in players)
             {
-                ServerPlayerEntity var3 = players[var2];
                 if (var3.activeChunks.Contains(chunkPos))
                 {
                     var3.networkHandler.sendPacket(packet);
@@ -474,12 +471,11 @@ public class ChunkMap
 
                     for (int var11 = 0; var11 < dirtyBlockCount; var11++)
                     {
-                        int var13 = chunkX * 16 + (dirtyBlockCount >> 12 & 15);
-                        int var15 = dirtyBlockCount & 0xFF;
-                        int var16 = chunkZ * 16 + (dirtyBlockCount >> 8 & 15);
+                        int var13 = chunkX * 16 + (dirtyBlocks[var11] >> 12 & 15);
+                        int var15 = dirtyBlocks[var11] & 0xFF;
+                        int var16 = chunkZ * 16 + (dirtyBlocks[var11] >> 8 & 15);
                         if (Block.BlocksWithEntity[var1.getBlockId(var13, var15, var16)])
                         {
-                            _logger.LogInformation("Sending!");
                             sendBlockEntityUpdate(var1.getBlockEntity(var13, var15, var16));
                         }
                     }

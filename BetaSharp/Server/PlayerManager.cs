@@ -307,19 +307,7 @@ public class PlayerManager
 
     public string getPlayerList()
     {
-        string var1 = "";
-
-        for (int var2 = 0; var2 < players.Count; var2++)
-        {
-            if (var2 > 0)
-            {
-                var1 += ", ";
-            }
-
-            var1 += players[var2].name;
-        }
-
-        return var1;
+        return string.Join(", ", players.ConvertAll(p => p.name));
     }
 
     public void banPlayer(string name)

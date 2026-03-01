@@ -16,7 +16,7 @@ namespace BetaSharp.Server;
 
 public abstract class MinecraftServer : Runnable, CommandOutput
 {
-    public HashMap GIVE_COMMANDS_COOLDOWNS = [];
+    public Dictionary<string, int> GIVE_COMMANDS_COOLDOWNS = [];
     public ConnectionListener connections;
     public IServerConfiguration config;
     public ServerWorld[] worlds;
@@ -27,7 +27,8 @@ public abstract class MinecraftServer : Runnable, CommandOutput
     private int ticks;
     public string progressMessage;
     public int progress;
-    private List pendingCommands = Collections.synchronizedList(new ArrayList());
+    private readonly Queue<Command> _pendingCommands = new();
+    private readonly object _pendingCommandsLock = new();
     public EntityTracker[] entityTrackers = new EntityTracker[2];
     public bool onlineMode;
     public bool spawnAnimals;
@@ -218,6 +219,7 @@ public abstract class MinecraftServer : Runnable, CommandOutput
             if (world != null)
             {
                 saveWorlds();
+                break;
             }
         }
     }
@@ -359,27 +361,17 @@ public abstract class MinecraftServer : Runnable, CommandOutput
 
     private void tick()
     {
-        ArrayList completeCooldowns = [];
-
-        var keys = GIVE_COMMANDS_COOLDOWNS.keySet();
-        var iter = keys.iterator();
-        while (iter.hasNext())
+        // Snapshot keys to allow safe mutation during iteration.
+        var keysSnapshot = new List<string>(GIVE_COMMANDS_COOLDOWNS.Keys);
+        foreach (var key in keysSnapshot)
         {
-            string key = (string)iter.next();
-            int cooldown = (int)GIVE_COMMANDS_COOLDOWNS.get(key);
-            if (cooldown > 0)
+            if (GIVE_COMMANDS_COOLDOWNS.TryGetValue(key, out int cooldown))
             {
-                GIVE_COMMANDS_COOLDOWNS.put(key, cooldown - 1);
+                if (cooldown > 0)
+                    GIVE_COMMANDS_COOLDOWNS[key] = cooldown - 1;
+                else
+                    GIVE_COMMANDS_COOLDOWNS.Remove(key);
             }
-            else
-            {
-                completeCooldowns.add(key);
-            }
-        }
-
-        for (int i = 0; i < completeCooldowns.size(); i++)
-        {
-            GIVE_COMMANDS_COOLDOWNS.remove(completeCooldowns.get(i));
         }
 
         ticks++;
@@ -427,14 +419,23 @@ public abstract class MinecraftServer : Runnable, CommandOutput
 
     public void queueCommands(string str, CommandOutput cmd)
     {
-        pendingCommands.add(new Command(str, cmd));
+        lock (_pendingCommandsLock)
+        {
+            _pendingCommands.Enqueue(new Command(str, cmd));
+        }
     }
 
     public void runPendingCommands()
     {
-        while (pendingCommands.size() > 0)
+        while (true)
         {
-            commandHandler.ExecuteCommand((Command)pendingCommands.remove(0));
+            Command cmd;
+            lock (_pendingCommandsLock)
+            {
+                if (_pendingCommands.Count == 0) break;
+                cmd = _pendingCommands.Dequeue();
+            }
+            commandHandler.ExecuteCommand(cmd);
         }
     }
 
