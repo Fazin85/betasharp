@@ -285,7 +285,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
             handSwingTicks = -1;
             handSwinging = true;
             EntityTracker et = server.getEntityTracker(dimensionId);
-            et.sendToListeners(this, new EntityAnimationPacket(this, 1));
+            et.sendToListeners(this, new EntityAnimationPacket(this, EntityAnimationPacket.EntityAnimation.SwingHand));
         }
     }
 
@@ -309,7 +309,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
         if (isSleeping())
         {
             EntityTracker et = server.getEntityTracker(dimensionId);
-            et.sendToAround(this, new EntityAnimationPacket(this, 3));
+            et.sendToAround(this, new EntityAnimationPacket(this, EntityAnimationPacket.EntityAnimation.WakeUp));
         }
 
         base.wakeUp(resetSleepTimer, updateSleepingPlayers, setSpawnPos);

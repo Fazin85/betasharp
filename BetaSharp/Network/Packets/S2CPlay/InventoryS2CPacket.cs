@@ -4,16 +4,12 @@ using java.util;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
-public class InventoryS2CPacket : Packet
+public class InventoryS2CPacket() : Packet(PacketId.InventoryS2C)
 {
     public int syncId;
     public ItemStack[] contents;
 
-    public InventoryS2CPacket()
-    {
-    }
-
-    public InventoryS2CPacket(int syncId, List contents)
+    public InventoryS2CPacket(int syncId, List contents) : this()
     {
         this.syncId = syncId;
         this.contents = new ItemStack[contents.size()];
