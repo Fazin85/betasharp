@@ -71,7 +71,7 @@ public class TextRenderer
 
     private static void ClearAtlasRegion(Image<Rgba32> image, int x, int y, int w, int h)
     {
-        image.Mutate(ctx => ctx.Fill(SixLabors.ImageSharp.Color.Transparent, new Rectangle(x, y, w, h)));
+        image.Mutate(ctx => ctx.Fill(Color.Transparent, new Rectangle(x, y, w, h)));
     }
 
     private void ClearAtlasRegion(int x, int y, int w, int h)
@@ -108,15 +108,23 @@ public class TextRenderer
         using (Image<Rgba32> glyphImage = new Image<Rgba32>(cellW, cellH))
         {
             ClearAtlasRegion(glyphImage, 0, 0, cellW, cellH);
-            float drawX = (float)(-boundsRect.X) + 1f;
-            float drawY = (float)(-boundsRect.Y) + 1f;
+            float drawX = -boundsRect.X + 1f;
+            float drawY = 1f;
+
             glyphImage.Mutate(ctx => ctx.DrawText(
                 c.ToString(),
                 _font,
                 Color.White,
                 new PointF(drawX, drawY)));
-
-            _atlasImage.Mutate(ctx => ctx.DrawImage(glyphImage, new Point(_atlasX, _atlasY), 1f));
+            glyphImage.ProcessPixelRows(_atlasImage, (srcAccessor, dstAccessor) =>
+            {
+                for (int gy = 0; gy < cellH; gy++)
+                {
+                    Span<Rgba32> srcRow = srcAccessor.GetRowSpan(gy);
+                    Span<Rgba32> dstRow = dstAccessor.GetRowSpan(_atlasY + gy);
+                    srcRow.Slice(0, cellW).CopyTo(dstRow.Slice(_atlasX, cellW));
+                }
+            });
         }
 
         float u0 = (float)_atlasX / AtlasSize;
