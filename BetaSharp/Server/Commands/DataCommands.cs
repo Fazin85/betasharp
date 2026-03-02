@@ -149,7 +149,6 @@ public static class DataCommands
             if (item == null)
             {
                 if (args[1][0] == '_') args[1] = args[1].Substring(1);
-                else FormatPlural(ref args[1]);
                 output.SendMessage("Found 0 instances of " + args[1]);
                 return;
             }
@@ -206,8 +205,7 @@ public static class DataCommands
             }
 
             if (args[1][0] == '_') args[1] = args[1].Substring(1);
-            else if (c == 1) FormatPlural(ref args[1]);
-            output.SendMessage("Found " + list.Count() + " instances of " + args[1]);
+            output.SendMessage("Found " + list.Count() + (c == 1 ? " instance of " : " instances of ") + args[1]);
         }
     }
 
