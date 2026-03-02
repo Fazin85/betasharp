@@ -16,6 +16,7 @@ public unsafe class EmulatedGL : LegacyGL
     private uint _currentProgram = 0;
     private bool _alphaTestEnabled = false;
     private float _alphaThreshold = 0.1f;
+    private int _shadeModel = 1;
 
     private struct LightingState
     {
@@ -116,6 +117,7 @@ public unsafe class EmulatedGL : LegacyGL
             _shader.SetAlphaThreshold(_alphaTestEnabled ? _alphaThreshold : -1.0f);
             _shader.SetEnableLighting(_lightingState.LightingEnabled);
             _shader.SetEnableFog(_fogState.FogEnabled);
+            _shader.SetShadeModel(_shadeModel);
             _dirtyState.StateDirty = false;
         }
 
@@ -469,6 +471,12 @@ public unsafe class EmulatedGL : LegacyGL
 
     public override void ShadeModel(GLEnum mode)
     {
+        int newModel = mode == GLEnum.Smooth ? 1 : 0;
+        if (_shadeModel != newModel)
+        {
+            _shadeModel = newModel;
+            _dirtyState.StateDirty = true;
+        }
     }
 
     public override void Normal3(float nx, float ny, float nz)

@@ -12,6 +12,7 @@ public class FixedFunctionShader
     private readonly int _uUseTexture;
     private readonly int _uTexture0;
     private readonly int _uAlphaThreshold;
+    private readonly int _uShadeModel;
 
     private readonly int _uEnableLighting;
     private readonly int _uLight0Dir;
@@ -48,7 +49,8 @@ uniform vec3 u_Light1Dir;
 uniform vec3 u_Light1Diffuse;
 uniform vec3 u_AmbientLight;
 
-flat out vec4 v_Color;
+flat out vec4 v_ColorFlat;
+out vec4 v_ColorSmooth;
 out vec2 v_TexCoord;
 out float v_FogDist;
 
@@ -61,6 +63,7 @@ void main()
     gl_Position = u_Projection * viewPos;
     v_FogDist = length(viewPos.xyz);
 
+    vec4 finalColor;
     if (u_EnableLighting != 0)
     {
         vec3 normal = normalize(u_NormalMatrix * a_Normal);
@@ -69,23 +72,29 @@ void main()
         vec3 lighting = u_AmbientLight
                       + diff0 * u_Light0Diffuse
                       + diff1 * u_Light1Diffuse;
-        v_Color = vec4(clamp(a_Color.rgb * lighting, 0.0, 1.0), a_Color.a);
+        finalColor = vec4(clamp(a_Color.rgb * lighting, 0.0, 1.0), a_Color.a);
     }
     else
     {
-        v_Color = a_Color;
+        finalColor = a_Color;
     }
-}";
+    
+    v_ColorFlat = finalColor;
+    v_ColorSmooth = finalColor;
+}
+";
 
     private const string FragmentShaderSource = @"
 #version 330 core
-flat in vec4 v_Color;
+flat in vec4 v_ColorFlat;
+in vec4 v_ColorSmooth;
 in vec2 v_TexCoord;
 in float v_FogDist;
 
 uniform sampler2D u_Texture0;
 uniform int u_UseTexture;
 uniform float u_AlphaThreshold;
+uniform int u_ShadeModel;
 
 uniform int u_EnableFog;
 uniform int u_FogMode;      // 0=linear, 1=exp
@@ -98,12 +107,13 @@ out vec4 FragColor;
 
 void main()
 {
+    vec4 finalColor = u_ShadeModel == 1 ? v_ColorSmooth : v_ColorFlat;
     vec4 texColor = vec4(1.0);
     if (u_UseTexture != 0)
     {
         texColor = texture(u_Texture0, v_TexCoord);
     }
-    FragColor = v_Color * texColor;
+    FragColor = finalColor * texColor;
 
     if (FragColor.a < u_AlphaThreshold)
         discard;
@@ -155,6 +165,7 @@ void main()
         _uUseTexture = _gl.GetUniformLocation(Program, "u_UseTexture");
         _uTexture0 = _gl.GetUniformLocation(Program, "u_Texture0");
         _uAlphaThreshold = _gl.GetUniformLocation(Program, "u_AlphaThreshold");
+        _uShadeModel = _gl.GetUniformLocation(Program, "u_ShadeModel");
         _uEnableLighting = _gl.GetUniformLocation(Program, "u_EnableLighting");
         _uLight0Dir = _gl.GetUniformLocation(Program, "u_Light0Dir");
         _uLight0Diffuse = _gl.GetUniformLocation(Program, "u_Light0Diffuse");
@@ -205,6 +216,9 @@ void main()
 
     public void SetAlphaThreshold(float threshold) =>
         _gl.Uniform1(_uAlphaThreshold, threshold);
+
+    public void SetShadeModel(int mode) =>
+        _gl.Uniform1(_uShadeModel, mode);
 
     public void SetEnableLighting(bool enable) =>
         _gl.Uniform1(_uEnableLighting, enable ? 1 : 0);

@@ -71,10 +71,9 @@ public abstract class GuiSlot
 
     public int GetSlotAt(int mouseX, int mouseY)
     {
-        int centerX = _width / 2 - 110;
-        int minX = centerX + 110;
-        int maxX = mouseY - _top - _headerHeight + (int)_amountScrolled - 4;
-        int relativeY = maxX / _posZ;
+        int minX = _width / 2 - 110;
+        int maxX = _width / 2 + 110;
+        int relativeY = mouseY - _top - _headerHeight + (int)_amountScrolled - 4;
         int index = relativeY / _posZ;
 
         return (mouseX >= minX && mouseX <= maxX && index >= 0 && relativeY >= 0 && index < GetSize())

@@ -81,7 +81,8 @@ public abstract class GuiSlotStats<T, K>(GuiStats statsGui) : GuiSlot(statsGui.m
             }
             else
             {
-                string key = mouseX switch
+                int relX = mouseX - centerX;
+                string key = relX switch
                 {
                     var m when m is >= 97 and <= 115 => GetKeyForColumn(0),
                     var m when m is >= 147 and <= 165 => GetKeyForColumn(1),
