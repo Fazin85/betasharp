@@ -54,6 +54,7 @@ public class Slider : Control
     protected override void OnMousePressed(MouseEventArgs e)
     {
         if (!Enabled) return;
+        Minecraft.INSTANCE.sndManager.PlaySoundFX("random.click", 1.0F, 1.0F);
 
         long currentTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         if (currentTime - _lastClickTime < DoubleClickThresholdMs)
@@ -65,23 +66,14 @@ public class Slider : Control
         }
         else
         {
-            _dragging = true;
             SetValueFromMouseX(e.X);
             _lastClickTime = currentTime;
         }
     }
 
-    protected override void OnMouseReleased(MouseEventArgs e)
-    {
-        _dragging = false;
-    }
-
     protected override void OnMouseDragged(MouseEventArgs e)
     {
-        if (_dragging)
-        {
-            SetValueFromMouseX(e.X);
-        }
+        SetValueFromMouseX(e.X);
     }
 
     protected override void OnRendered(RenderEventArgs e)

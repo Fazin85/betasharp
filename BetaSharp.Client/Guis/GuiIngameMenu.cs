@@ -20,17 +20,18 @@ public class GuiIngameMenu : Screen
 
         string quitText = (MC.isMultiplayerWorld() && MC.internalServer == null) ? "Disconnect" : "Save and quit to title";
 
-        Button backToGameButton = new(buttonLeft, centerY + 24 + verticalOffset, "Back to game");
-        Button achievementsButton = new(buttonLeft, centerY + 48 + verticalOffset, StatCollector.TranslateToLocal("gui.achievements"))
+        Control container = new(buttonLeft, centerY + verticalOffset + 24, 200, 116);
+        Button backToGameButton = new(0, 0, "Back to game");
+        Button achievementsButton = new(0, 24, StatCollector.TranslateToLocal("gui.achievements"))
         {
             Size = new(98, 20),
         };
-        Button statsButton = new(centerX + 2, centerY + 48 + verticalOffset, StatCollector.TranslateToLocal("gui.stats"))
+        Button statsButton = new(102, 24, StatCollector.TranslateToLocal("gui.stats"))
         {
             Size = new(98, 20),
         };
-        Button optionsButton = new(buttonLeft, centerY + 96 + verticalOffset, "Options...");
-        Button quitButton = new(buttonLeft, centerY + 100 + verticalOffset, quitText);
+        Button optionsButton = new(0, 72, "Options...");
+        Button quitButton = new(0, 96, quitText);
 
         backToGameButton    .Clicked += (_, _) => MC.OpenScreen(null);
         achievementsButton  .Clicked += (_, _) => MC.OpenScreen(new GuiAchievements(MC.statFileWriter));
@@ -38,7 +39,8 @@ public class GuiIngameMenu : Screen
         optionsButton       .Clicked += (_, _) => MC.OpenScreen(new GuiOptions(this, MC.options));
         quitButton          .Clicked += QuitClicked;
 
-        AddChildren(quitButton, backToGameButton, optionsButton, achievementsButton, statsButton);
+        container.AddChildren(quitButton, backToGameButton, optionsButton, achievementsButton, statsButton);
+        AddChild(container);
     }
 
     private void QuitClicked(object? o, MouseEventArgs e)

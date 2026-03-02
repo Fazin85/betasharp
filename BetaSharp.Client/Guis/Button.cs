@@ -13,6 +13,11 @@ public class Button : Control
         Text = text;
     }
 
+    protected override void OnClicked(MouseEventArgs e)
+    {
+        Minecraft.INSTANCE.sndManager.PlaySoundFX("random.click", 1.0F, 1.0F);
+    }
+
     protected override void OnRendered(RenderEventArgs e)
     {
         var mc = Minecraft.INSTANCE;

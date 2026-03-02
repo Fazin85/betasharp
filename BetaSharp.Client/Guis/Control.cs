@@ -181,7 +181,7 @@ public partial class Control
                 CenteringBehavior.End => Width,
                 _ => throw new InvalidOperationException("Invalid HorizontalCenteringBehavior value"),
             };
-            newX = (int)(parentWidth * _xRatio - offset);
+            newX = (int)Math.Ceiling(parentWidth * _xRatio - offset);
         }
 
         if (Anchor.HasFlag(Anchors.Top) && Anchor.HasFlag(Anchors.Bottom))
@@ -201,7 +201,7 @@ public partial class Control
                 CenteringBehavior.End => Height,
                 _ => throw new InvalidOperationException("Invalid VerticalCenteringBehavior value"),
             };
-            newY = (int)(parentHeight * _yRatio - offset);
+            newY = (int)Math.Floor(parentHeight * _yRatio - offset);
         }
 
         bool wasUpdating = _updatingPosition;

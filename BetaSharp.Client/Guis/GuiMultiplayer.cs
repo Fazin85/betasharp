@@ -75,7 +75,7 @@ public class GuiMultiplayer : Screen
         refreshButton.Clicked += (_, _) => LoadServerList();
         cancelButton.Clicked += (_, _) => MC.OpenScreen(_parentScreen);
 
-        AddChildren(_btnEdit, _btnDelete, _btnSelect, directConnectButton, addServerButton, refreshButton, cancelButton);
+        AddChildren(_serverListSelector, _btnEdit, _btnDelete, _btnSelect, directConnectButton, addServerButton, refreshButton, cancelButton);
     }
 
     public List<ServerData> GetServerList()

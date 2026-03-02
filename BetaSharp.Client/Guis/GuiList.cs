@@ -4,7 +4,7 @@ using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
 
-public abstract class GuiList
+public abstract class GuiList : Control
 {
     private readonly Minecraft _mc;
     private readonly int _width;
@@ -116,8 +116,9 @@ public abstract class GuiList
 
     }
 
-    public void DrawScreen(int mouseX, int mouseY, float tickDelta)
+    protected override void OnRendered(RenderEventArgs e)
     {
+        (int mouseX, int mouseY) = (e.MouseX, e.MouseY);
         DrawBackground();
 
         int listSize = GetSize();

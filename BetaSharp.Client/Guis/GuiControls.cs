@@ -13,23 +13,26 @@ public class GuiControls : Screen
         TranslationStorage translations = TranslationStorage.Instance;
         int leftX = GetLeftColumnX();
 
+        Control container = new(leftX, Height / 6, 310, 188);
+
         for (int i = 0; i < _options.KeyBindings.Length; ++i)
         {
-            AddChild(new ControlsButton(leftX + i % 2 * 160, Height / 6 + 24 * (i >> 1), _options.KeyBindings[i]));
+            container.AddChild(new ControlsButton(i % 2 * 160, 24 * (i >> 1), _options.KeyBindings[i]));
         }
 
-        OptionsSlider sensitivitySlider = new(Width / 2 + 5, Height / 6 + 130, _options.MouseSensitivityOption)
+        OptionsSlider sensitivitySlider = new(150, 130, _options.MouseSensitivityOption)
             { Size = new(125, 20) };
-        ToggleButton invertMouseButton = new(Width / 2 - 155, Height / 6 + 130, _options.InvertMouseOption)
+        ToggleButton invertMouseButton = new(0, 130, _options.InvertMouseOption)
             { Size = new(125, 20) };
-        Button doneButton = new(Width / 2 - 100, Height / 6 + 168, translations.TranslateKey("gui.done"));
+        Button doneButton = new(55, 168, translations.TranslateKey("gui.done"));
         doneButton.Clicked += (_, _) =>
         {
             _options.SaveOptions();
             MC.OpenScreen(parentScreen);
         };
 
-        AddChildren(sensitivitySlider, invertMouseButton, doneButton);
+        container.AddChildren(sensitivitySlider, invertMouseButton, doneButton);
+        AddChild(container);
     }
 
     protected override void OnRendered(RenderEventArgs e)

@@ -35,8 +35,13 @@ public class GuiAchievements : Screen
         short var3 = 141;
         field_27116_m = field_27114_o = field_27112_q = BetaSharp.Achievements.OpenInventory.column * 24 - var2 / 2f - 12;
         field_27115_n = field_27113_p = field_27111_r = BetaSharp.Achievements.OpenInventory.row * 24 - var3 / 2f;
-        Button doneButton = new(Width / 2 + 24, Height / 2 + 74, 80, 20, StatCollector.TranslateToLocal("gui.done"));
+
+        Control container = new(Width / 2 - 128, Height / 2 - 101, 256, 202)
+            { VerticalCenteringBehavior = CenteringBehavior.Middle };
+        Button doneButton = new(152, 175, 80, 20, StatCollector.TranslateToLocal("gui.done"));
         doneButton.Clicked += (_, _) => MC.OpenScreen(null);
+        container.AddChild(doneButton);
+        AddChild(container);
     }
 
     protected override void OnKeyInput(KeyboardEventArgs e)

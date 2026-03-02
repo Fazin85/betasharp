@@ -17,26 +17,25 @@ public class GuiVideoSettings : Screen
         Text = translations.TranslateKey("options.videoTitle");
         DisplayTitle = true;
 
-        int buttonLeft = Width / 2 - 100;
-        int topY = Height / 6;
+        Control container = new(Width / 2 - 155, Height / 6, 310, 188);
 
         for (int i = 0; i < _options.VideoScreenOptions.Length; i++)
         {
             GameOption option = _options.VideoScreenOptions[i];
-            int x = buttonLeft - 55 + (i % 2 * 160);
-            int y = topY + (24 * (i / 2));
+            int x = (i % 2) * 160;
+            int y = 24 * (i / 2);
 
             switch (option)
             {
                 case FloatOption floatOpt:
-                    AddChild(new OptionsSlider(x, y, floatOpt));
+                    container.AddChild(new OptionsSlider(x, y, floatOpt));
                     break;
                 case BoolOption boolOpt:
-                    AddChild(new ToggleButton(x, y, boolOpt));
+                    container.AddChild(new ToggleButton(x, y, boolOpt));
                     break;
                 case CycleOption cycleOpt:
                     var cycleButton = new CycleButton(x, y, cycleOpt);
-                    AddChild(cycleButton);
+                    container.AddChild(cycleButton);
                     if (option == _options.GuiScaleOption)
                     {
                         cycleButton.Clicked += (_, _) =>
@@ -51,14 +50,15 @@ public class GuiVideoSettings : Screen
             }
         }
 
-        Button doneButton = new(buttonLeft, topY + 168, translations.TranslateKey("gui.done"));
+        Button doneButton = new(55, 168, translations.TranslateKey("gui.done"));
         doneButton.Clicked += (_, _) =>
         {
             MC.options.SaveOptions();
             MC.OpenScreen(_parentScreen);
         };
 
-        AddChild(doneButton);
+        container.AddChild(doneButton);
+        AddChild(container);
     }
 
     protected override void OnRendered(RenderEventArgs e)
