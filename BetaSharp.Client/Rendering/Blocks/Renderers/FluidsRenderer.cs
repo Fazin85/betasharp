@@ -64,8 +64,8 @@ public class FluidsRenderer : IBlockRenderer
 
             int texU = (textureId & 15) << 4;
             int texV = textureId & 240;
-            double centerU = (texU + 8.0D) / 256.0D;
-            double centerV = (texV + 8.0D) / 256.0D;
+            float centerU = (texU + 8.0f) / 256.0f;
+            float centerV = (texV + 8.0f) / 256.0f;
 
             // If completely still, use standard flat UVs
             if (flowAngle < -999.0F)
@@ -174,11 +174,11 @@ public class FluidsRenderer : IBlockRenderer
                 hasRendered = true;
 
                 // Crop the UVs vertically so the texture doesn't stretch on short flowing water blocks
-                double minU = (texU + 0) / 256.0F;
-                double maxU = (texU + 16 - 0.01D) / 256.0D;
-                double minV1 = (texV + (1.0F - h1) * 16.0F) / 256.0F; // UV height match for corner 1
-                double minV2 = (texV + (1.0F - h2) * 16.0F) / 256.0F; // UV height match for corner 2
-                double maxV = (texV + 16 - 0.01D) / 256.0D;
+                float minU = (texU + 0) / 256.0F;
+                float maxU = (texU + 16 - 0.01f) / 256.0f;
+                float minV1 = (texV + (1.0F - h1) * 16.0F) / 256.0F; // UV height match for corner 1
+                float minV2 = (texV + (1.0F - h2) * 16.0F) / 256.0F; // UV height match for corner 2
+                float maxV = (texV + 16 - 0.01f) / 256.0f;
 
                 float luminance = block.getLuminance(ctx.World, adjX, pos.y, adjZ);
                 float shadow = (side < 2) ? lightZ : lightX;

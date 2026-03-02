@@ -15,9 +15,9 @@ public class ReedRenderer : IBlockRenderer
 
         ctx.Tess.setColorOpaque_F(luminance * r, luminance * g, luminance * b);
 
-        double renderX = pos.x;
-        double renderY = pos.y;
-        double renderZ = pos.z;
+        float renderX = pos.x;
+        float renderY = pos.y;
+        float renderZ = pos.z;
 
         // Apply random organic offset for grass so it doesn't look grid-aligned
         if (block == Block.Grass) // Assuming Block.TallGrass or equivalent
@@ -25,16 +25,16 @@ public class ReedRenderer : IBlockRenderer
             long hash = pos.x * 3129871L ^ pos.z * 116129781L ^ pos.y;
             hash = hash * hash * 42317861L + hash * 11L;
 
-            renderX += (((hash >> 16 & 15L) / 15.0F) - 0.5D) * 0.5D;
-            renderY += (((hash >> 20 & 15L) / 15.0F) - 1.0D) * 0.2D;
-            renderZ += (((hash >> 24 & 15L) / 15.0F) - 0.5D) * 0.5D;
+            renderX += (((hash >> 16 & 15L) / 15.0F) - 0.5F) * 0.5F;
+            renderY += (((hash >> 20 & 15L) / 15.0F) - 1.0F) * 0.2F;
+            renderZ += (((hash >> 24 & 15L) / 15.0F) - 0.5F) * 0.5F;
         }
 
         RenderCrossedSquares(block, ctx.World.getBlockMeta(pos.x, pos.y, pos.z), renderX, renderY, renderZ, ref ctx);
         return true;
     }
 
-    private void RenderCrossedSquares(Block block, int metadata, double x, double y, double z,
+    private void RenderCrossedSquares(Block block, int metadata, float x, float y, float z,
         ref BlockRenderContext ctx)
     {
         int textureId = block.getTexture(0, metadata);
@@ -46,47 +46,47 @@ public class ReedRenderer : IBlockRenderer
         // Convert texture ID to UV coordinates (0.0 to 1.0 range)
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
-        double minU = texU / 256.0F;
-        double maxU = (texU + 15.99F) / 256.0F;
-        double minV = texV / 256.0F;
-        double maxV = (texV + 15.99F) / 256.0F;
+        float minU = texU / 256.0F;
+        float maxU = (texU + 15.99F) / 256.0F;
+        float minV = texV / 256.0F;
+        float maxV = (texV + 15.99F) / 256.0F;
 
         // Magic number 0.45 means the planes stretch from 0.05 to 0.95 within the block.
         // This slight inset prevents Z-fighting (flickering) if the plant touches an adjacent solid block.
-        double minOffset = 0.5D - 0.45D; // 0.05
-        double maxOffset = 0.5D + 0.45D; // 0.95
+        float minOffset = 0.5F - 0.45F; // 0.05
+        float maxOffset = 0.5F + 0.45F; // 0.95
 
-        double minX = x + minOffset;
-        double maxX = x + maxOffset;
-        double minZ = z + minOffset;
-        double maxZ = z + maxOffset;
+        float minX = x + minOffset;
+        float maxX = x + maxOffset;
+        float minZ = z + minOffset;
+        float maxZ = z + maxOffset;
 
         // --- First Diagonal Plane (Bottom-Left to Top-Right across the X/Z grid) ---
 
         // Front side
-        ctx.Tess.addVertexWithUV(minX, y + 1.0D, minZ, minU, minV);
-        ctx.Tess.addVertexWithUV(minX, y + 0.0D, minZ, minU, maxV);
-        ctx.Tess.addVertexWithUV(maxX, y + 0.0D, maxZ, maxU, maxV);
-        ctx.Tess.addVertexWithUV(maxX, y + 1.0D, maxZ, maxU, minV);
+        ctx.Tess.addVertexWithUV(minX, y + 1.0f, minZ, minU, minV);
+        ctx.Tess.addVertexWithUV(minX, y + 0.0f, minZ, minU, maxV);
+        ctx.Tess.addVertexWithUV(maxX, y + 0.0f, maxZ, maxU, maxV);
+        ctx.Tess.addVertexWithUV(maxX, y + 1.0f, maxZ, maxU, minV);
 
         // Back side (reversed winding order and UVs)
-        ctx.Tess.addVertexWithUV(maxX, y + 1.0D, maxZ, minU, minV);
-        ctx.Tess.addVertexWithUV(maxX, y + 0.0D, maxZ, minU, maxV);
-        ctx.Tess.addVertexWithUV(minX, y + 0.0D, minZ, maxU, maxV);
-        ctx.Tess.addVertexWithUV(minX, y + 1.0D, minZ, maxU, minV);
+        ctx.Tess.addVertexWithUV(maxX, y + 1.0f, maxZ, minU, minV);
+        ctx.Tess.addVertexWithUV(maxX, y + 0.0f, maxZ, minU, maxV);
+        ctx.Tess.addVertexWithUV(minX, y + 0.0f, minZ, maxU, maxV);
+        ctx.Tess.addVertexWithUV(minX, y + 1.0f, minZ, maxU, minV);
 
         // --- Second Diagonal Plane (Top-Left to Bottom-Right across the X/Z grid) ---
 
         // Front side
-        ctx.Tess.addVertexWithUV(minX, y + 1.0D, maxZ, minU, minV);
-        ctx.Tess.addVertexWithUV(minX, y + 0.0D, maxZ, minU, maxV);
-        ctx.Tess.addVertexWithUV(maxX, y + 0.0D, minZ, maxU, maxV);
-        ctx.Tess.addVertexWithUV(maxX, y + 1.0D, minZ, maxU, minV);
+        ctx.Tess.addVertexWithUV(minX, y + 1.0f, maxZ, minU, minV);
+        ctx.Tess.addVertexWithUV(minX, y + 0.0f, maxZ, minU, maxV);
+        ctx.Tess.addVertexWithUV(maxX, y + 0.0f, minZ, maxU, maxV);
+        ctx.Tess.addVertexWithUV(maxX, y + 1.0f, minZ, maxU, minV);
 
         // Back side (reversed winding order and UVs)
-        ctx.Tess.addVertexWithUV(maxX, y + 1.0D, minZ, minU, minV);
-        ctx.Tess.addVertexWithUV(maxX, y + 0.0D, minZ, minU, maxV);
-        ctx.Tess.addVertexWithUV(minX, y + 0.0D, maxZ, maxU, maxV);
-        ctx.Tess.addVertexWithUV(minX, y + 1.0D, maxZ, maxU, minV);
+        ctx.Tess.addVertexWithUV(maxX, y + 1.0f, minZ, minU, minV);
+        ctx.Tess.addVertexWithUV(maxX, y + 0.0f, minZ, minU, maxV);
+        ctx.Tess.addVertexWithUV(minX, y + 0.0f, maxZ, maxU, maxV);
+        ctx.Tess.addVertexWithUV(minX, y + 1.0f, maxZ, maxU, minV);
     }
 }

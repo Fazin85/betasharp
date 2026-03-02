@@ -9,7 +9,7 @@ namespace BetaSharp.Blocks;
 public class BlockRedstoneRepeater : Block
 {
 
-    public static readonly double[] RENDER_OFFSET = [-0.0625D, 1.0D / 16.0D, 0.1875D, 0.3125D];
+    public static readonly float[] RenderOffset = [-0.0625f, 1.0f / 16.0f, 0.1875f, 0.3125f];
     private static readonly int[] DELAY = [1, 2, 3, 4];
     private readonly bool lit;
 
@@ -214,16 +214,16 @@ public class BlockRedstoneRepeater : Block
                 switch (meta & 3)
                 {
                     case 0:
-                        offsetY = RENDER_OFFSET[delayIndex];
+                        offsetY = RenderOffset[delayIndex];
                         break;
                     case 1:
-                        offsetX = -RENDER_OFFSET[delayIndex];
+                        offsetX = -RenderOffset[delayIndex];
                         break;
                     case 2:
-                        offsetY = -RENDER_OFFSET[delayIndex];
+                        offsetY = -RenderOffset[delayIndex];
                         break;
                     case 3:
-                        offsetX = RENDER_OFFSET[delayIndex];
+                        offsetX = RenderOffset[delayIndex];
                         break;
                 }
             }

@@ -14,7 +14,7 @@ public class PistonExtensionRenderer : IBlockRenderer
         // Using CustomFlag to track if this is a ShortArm rendering phase
         bool isShortArm = ctx.CustomFlag;
         float armLength = isShortArm ? 1.0F : 0.5F;
-        double texWidth = isShortArm ? 16.0D : 8.0D;
+        float texWidth = isShortArm ? 16.0f : 8.0f;
 
         int uvTop = 0, uvBottom = 0, uvNorth = 0, uvSouth = 0, uvEast = 0, uvWest = 0;
         Box? bounds = ctx.OverrideBounds ?? block.BoundingBox;
@@ -92,47 +92,47 @@ public class PistonExtensionRenderer : IBlockRenderer
         bool hasRendered = headCtx.DrawBlock(block, pos);
 
         // 2. Render the custom extension arm geometry
-        double x = pos.x;
-        double y = pos.y;
-        double z = pos.z;
+        float x = pos.x;
+        float y = pos.y;
+        float z = pos.z;
 
         switch (facing)
         {
             case 0:
-                RenderPistonArmY(ref ctx, x + 0.375, x + 0.625, y + 0.25, y + 0.25 + armLength, z + 0.625, z + 0.625, luminance * 0.8F, texWidth);
-                RenderPistonArmY(ref ctx, x + 0.625, x + 0.375, y + 0.25, y + 0.25 + armLength, z + 0.375, z + 0.375, luminance * 0.8F, texWidth);
-                RenderPistonArmY(ref ctx, x + 0.375, x + 0.375, y + 0.25, y + 0.25 + armLength, z + 0.375, z + 0.625, luminance * 0.6F, texWidth);
-                RenderPistonArmY(ref ctx, x + 0.625, x + 0.625, y + 0.25, y + 0.25 + armLength, z + 0.625, z + 0.375, luminance * 0.6F, texWidth);
+                RenderPistonArmY(ref ctx, x + 0.375f, x + 0.625f, y + 0.25f, y + 0.25f + armLength, z + 0.625f, z + 0.625f, luminance * 0.8F, texWidth);
+                RenderPistonArmY(ref ctx, x + 0.625f, x + 0.375f, y + 0.25f, y + 0.25f + armLength, z + 0.375f, z + 0.375f, luminance * 0.8F, texWidth);
+                RenderPistonArmY(ref ctx, x + 0.375f, x + 0.375f, y + 0.25f, y + 0.25f + armLength, z + 0.375f, z + 0.625f, luminance * 0.6F, texWidth);
+                RenderPistonArmY(ref ctx, x + 0.625f, x + 0.625f, y + 0.25f, y + 0.25f + armLength, z + 0.625f, z + 0.375f, luminance * 0.6F, texWidth);
                 break;
             case 1:
-                RenderPistonArmY(ref ctx, x + 0.375, x + 0.625, y + 0.75 - armLength, y + 0.75, z + 0.625, z + 0.625, luminance * 0.8F, texWidth);
-                RenderPistonArmY(ref ctx, x + 0.625, x + 0.375, y + 0.75 - armLength, y + 0.75, z + 0.375, z + 0.375, luminance * 0.8F, texWidth);
-                RenderPistonArmY(ref ctx, x + 0.375, x + 0.375, y + 0.75 - armLength, y + 0.75, z + 0.375, z + 0.625, luminance * 0.6F, texWidth);
-                RenderPistonArmY(ref ctx, x + 0.625, x + 0.625, y + 0.75 - armLength, y + 0.75, z + 0.625, z + 0.375, luminance * 0.6F, texWidth);
+                RenderPistonArmY(ref ctx, x + 0.375f, x + 0.625f, y + 0.75f - armLength, y + 0.75f, z + 0.625f, z + 0.625f, luminance * 0.8F, texWidth);
+                RenderPistonArmY(ref ctx, x + 0.625f, x + 0.375f, y + 0.75f - armLength, y + 0.75f, z + 0.375f, z + 0.375f, luminance * 0.8F, texWidth);
+                RenderPistonArmY(ref ctx, x + 0.375f, x + 0.375f, y + 0.75f - armLength, y + 0.75f, z + 0.375f, z + 0.625f, luminance * 0.6F, texWidth);
+                RenderPistonArmY(ref ctx, x + 0.625f, x + 0.625f, y + 0.75f - armLength, y + 0.75f, z + 0.625f, z + 0.375f, luminance * 0.6F, texWidth);
                 break;
             case 2:
-                RenderPistonArmZ(ref ctx, x + 0.375, x + 0.375, y + 0.625, y + 0.375, z + 0.25, z + 0.25 + armLength, luminance * 0.6F, texWidth);
-                RenderPistonArmZ(ref ctx, x + 0.625, x + 0.625, y + 0.375, y + 0.625, z + 0.25, z + 0.25 + armLength, luminance * 0.6F, texWidth);
-                RenderPistonArmZ(ref ctx, x + 0.375, x + 0.625, y + 0.375, y + 0.375, z + 0.25, z + 0.25 + armLength, luminance * 0.5F, texWidth);
-                RenderPistonArmZ(ref ctx, x + 0.625, x + 0.375, y + 0.625, y + 0.625, z + 0.25, z + 0.25 + armLength, luminance, texWidth);
+                RenderPistonArmZ(ref ctx, x + 0.375f, x + 0.375f, y + 0.625f, y + 0.375f, z + 0.25f, z + 0.25f + armLength, luminance * 0.6F, texWidth);
+                RenderPistonArmZ(ref ctx, x + 0.625f, x + 0.625f, y + 0.375f, y + 0.625f, z + 0.25f, z + 0.25f + armLength, luminance * 0.6F, texWidth);
+                RenderPistonArmZ(ref ctx, x + 0.375f, x + 0.625f, y + 0.375f, y + 0.375f, z + 0.25f, z + 0.25f + armLength, luminance * 0.5F, texWidth);
+                RenderPistonArmZ(ref ctx, x + 0.625f, x + 0.375f, y + 0.625f, y + 0.625f, z + 0.25f, z + 0.25f + armLength, luminance, texWidth);
                 break;
             case 3:
-                RenderPistonArmZ(ref ctx, x + 0.375, x + 0.375, y + 0.625, y + 0.375, z + 0.75 - armLength, z + 0.75, luminance * 0.6F, texWidth);
-                RenderPistonArmZ(ref ctx, x + 0.625, x + 0.625, y + 0.375, y + 0.625, z + 0.75 - armLength, z + 0.75, luminance * 0.6F, texWidth);
-                RenderPistonArmZ(ref ctx, x + 0.375, x + 0.625, y + 0.375, y + 0.375, z + 0.75 - armLength, z + 0.75, luminance * 0.5F, texWidth);
-                RenderPistonArmZ(ref ctx, x + 0.625, x + 0.375, y + 0.625, y + 0.625, z + 0.75 - armLength, z + 0.75, luminance, texWidth);
+                RenderPistonArmZ(ref ctx, x + 0.375f, x + 0.375f, y + 0.625f, y + 0.375f, z + 0.75f - armLength, z + 0.75f, luminance * 0.6F, texWidth);
+                RenderPistonArmZ(ref ctx, x + 0.625f, x + 0.625f, y + 0.375f, y + 0.625f, z + 0.75f - armLength, z + 0.75f, luminance * 0.6F, texWidth);
+                RenderPistonArmZ(ref ctx, x + 0.375f, x + 0.625f, y + 0.375f, y + 0.375f, z + 0.75f - armLength, z + 0.75f, luminance * 0.5F, texWidth);
+                RenderPistonArmZ(ref ctx, x + 0.625f, x + 0.375f, y + 0.625f, y + 0.625f, z + 0.75f - armLength, z + 0.75f, luminance, texWidth);
                 break;
             case 4:
-                RenderPistonArmX(ref ctx, x + 0.25, x + 0.25 + armLength, y + 0.375, y + 0.375, z + 0.625, z + 0.375, luminance * 0.5F, texWidth);
-                RenderPistonArmX(ref ctx, x + 0.25, x + 0.25 + armLength, y + 0.625, y + 0.625, z + 0.375, z + 0.625, luminance, texWidth);
-                RenderPistonArmX(ref ctx, x + 0.25, x + 0.25 + armLength, y + 0.375, y + 0.625, z + 0.375, z + 0.375, luminance * 0.6F, texWidth);
-                RenderPistonArmX(ref ctx, x + 0.25, x + 0.25 + armLength, y + 0.625, y + 0.375, z + 0.625, z + 0.625, luminance * 0.6F, texWidth);
+                RenderPistonArmX(ref ctx, x + 0.25f, x + 0.25f + armLength, y + 0.375f, y + 0.375f, z + 0.625f, z + 0.375f, luminance * 0.5F, texWidth);
+                RenderPistonArmX(ref ctx, x + 0.25f, x + 0.25f + armLength, y + 0.625f, y + 0.625f, z + 0.375f, z + 0.625f, luminance, texWidth);
+                RenderPistonArmX(ref ctx, x + 0.25f, x + 0.25f + armLength, y + 0.375f, y + 0.625f, z + 0.375f, z + 0.375f, luminance * 0.6F, texWidth);
+                RenderPistonArmX(ref ctx, x + 0.25f, x + 0.25f + armLength, y + 0.625f, y + 0.375f, z + 0.625f, z + 0.625f, luminance * 0.6F, texWidth);
                 break;
             case 5:
-                RenderPistonArmX(ref ctx, x + 0.75 - armLength, x + 0.75, y + 0.375, y + 0.375, z + 0.625, z + 0.375, luminance * 0.5F, texWidth);
-                RenderPistonArmX(ref ctx, x + 0.75 - armLength, x + 0.75, y + 0.625, y + 0.625, z + 0.375, z + 0.625, luminance, texWidth);
-                RenderPistonArmX(ref ctx, x + 0.75 - armLength, x + 0.75, y + 0.375, y + 0.625, z + 0.375, z + 0.375, luminance * 0.6F, texWidth);
-                RenderPistonArmX(ref ctx, x + 0.75 - armLength, x + 0.75, y + 0.625, y + 0.375, z + 0.625, z + 0.625, luminance * 0.6F, texWidth);
+                RenderPistonArmX(ref ctx, x + 0.75f - armLength, x + 0.75f, y + 0.375f, y + 0.375f, z + 0.625f, z + 0.375f, luminance * 0.5F, texWidth);
+                RenderPistonArmX(ref ctx, x + 0.75f - armLength, x + 0.75f, y + 0.625f, y + 0.625f, z + 0.375f, z + 0.625f, luminance, texWidth);
+                RenderPistonArmX(ref ctx, x + 0.75f - armLength, x + 0.75f, y + 0.375f, y + 0.625f, z + 0.375f, z + 0.375f, luminance * 0.6F, texWidth);
+                RenderPistonArmX(ref ctx, x + 0.75f - armLength, x + 0.75f, y + 0.625f, y + 0.375f, z + 0.625f, z + 0.625f, luminance * 0.6F, texWidth);
                 break;
         }
 
@@ -140,18 +140,18 @@ public class PistonExtensionRenderer : IBlockRenderer
     }
 
 
-    private void RenderPistonArmY(ref BlockRenderContext ctx, double x1, double x2, double y1,
-        double y2, double z1, double z2, float luminance, double textureWidth)
+    private void RenderPistonArmY(ref BlockRenderContext ctx, float x1, float x2, float y1,
+        float y2, float z1, float z2, float luminance, float textureWidth)
     {
         int textureId = 108;
 
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
 
-        double minU = texU / 256.0D;
-        double minV = texV / 256.0D;
-        double maxU = (texU + textureWidth - 0.01D) / 256.0D;
-        double maxV = (texV + 4.0D - 0.01D) / 256.0D;
+        float minU = texU / 256.0f;
+        float minV = texV / 256.0f;
+        float maxU = (texU + textureWidth - 0.01f) / 256.0f;
+        float maxV = (texV + 4.0f - 0.01f) / 256.0f;
 
         ctx.Tess.setColorOpaque_F(luminance, luminance, luminance);
         ctx.Tess.addVertexWithUV(x1, y2, z1, maxU, minV);
@@ -160,18 +160,18 @@ public class PistonExtensionRenderer : IBlockRenderer
         ctx.Tess.addVertexWithUV(x2, y2, z2, maxU, maxV);
     }
 
-    private void RenderPistonArmZ(ref BlockRenderContext ctx, double x1, double x2, double y1,
-        double y2, double z1, double z2, float luminance, double textureWidth)
+    private void RenderPistonArmZ(ref BlockRenderContext ctx, float x1, float x2, float y1,
+        float y2, float z1, float z2, float luminance, float textureWidth)
     {
         int textureId = 108;
 
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
 
-        double minU = texU / 256.0D;
-        double minV = texV / 256.0D;
-        double maxU = (texU + textureWidth - 0.01D) / 256.0D;
-        double maxV = (texV + 4.0D - 0.01D) / 256.0D;
+        float minU = texU / 256.0f;
+        float minV = texV / 256.0f;
+        float maxU = (texU + textureWidth - 0.01f) / 256.0f;
+        float maxV = (texV + 4.0f - 0.01f) / 256.0f;
 
         ctx.Tess.setColorOpaque_F(luminance, luminance, luminance);
         ctx.Tess.addVertexWithUV(x1, y1, z2, maxU, minV);
@@ -180,18 +180,18 @@ public class PistonExtensionRenderer : IBlockRenderer
         ctx.Tess.addVertexWithUV(x2, y2, z2, maxU, maxV);
     }
 
-    private void RenderPistonArmX(ref BlockRenderContext ctx, double x1, double x2, double y1,
-        double y2, double z1, double z2, float luminance, double textureWidth)
+    private void RenderPistonArmX(ref BlockRenderContext ctx, float x1, float x2, float y1,
+        float y2, float z1, float z2, float luminance, float textureWidth)
     {
         int textureId = 108;
 
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
 
-        double minU = texU / 256.0D;
-        double minV = texV / 256.0D;
-        double maxU = (texU + textureWidth - 0.01D) / 256.0D;
-        double maxV = (texV + 4.0D - 0.01D) / 256.0D;
+        float minU = texU / 256.0f;
+        float minV = texV / 256.0f;
+        float maxU = (texU + textureWidth - 0.01f) / 256.0f;
+        float maxV = (texV + 4.0f - 0.01f) / 256.0f;
 
         ctx.Tess.setColorOpaque_F(luminance, luminance, luminance);
         ctx.Tess.addVertexWithUV(x2, y1, z1, maxU, minV);

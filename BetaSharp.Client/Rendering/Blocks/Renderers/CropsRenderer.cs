@@ -13,14 +13,14 @@ public class CropsRenderer : IBlockRenderer
         int metadata = ctx.World.getBlockMeta(pos.x, pos.y, pos.z);
 
         // Crops are pushed down slightly into the soil block
-        double yOffset = pos.y - (1.0D / 16.0D);
+        float yOffset = pos.y - (1.0f / 16.0f);
 
         RenderCropQuads(block, metadata, pos.x, yOffset, pos.z, ref ctx);
 
         return true;
     }
 
-    private void RenderCropQuads(Block block, int metadata, double x, double y, double z, ref BlockRenderContext ctx)
+    private void RenderCropQuads(Block block, int metadata, float x, float y, float z, ref BlockRenderContext ctx)
     {
         int textureId = block.getTexture(0, metadata);
 
@@ -31,15 +31,15 @@ public class CropsRenderer : IBlockRenderer
 
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
-        double minU = (texU / 256.0F);
-        double maxU = ((texU + 15.99F) / 256.0F);
-        double minV = (texV / 256.0F);
-        double maxV = ((texV + 15.99F) / 256.0F);
+        float minU = texU / 256.0F;
+        float maxU = (texU + 15.99F) / 256.0F;
+        float minV = texV / 256.0F;
+        float maxV = (texV + 15.99F) / 256.0F;
 
-        double minX = x + 0.5D - 0.25D; // Left plane X
-        double maxX = x + 0.5D + 0.25D; // Right plane X
-        double minZ = z + 0.5D - 0.5D; // Front plane Z
-        double maxZ = z + 0.5D + 0.5D; // Back plane Z
+        float minX = x + 0.5f - 0.25f; // Left plane X
+        float maxX = x + 0.5f + 0.25f; // Right plane X
+        float minZ = z + 0.5f - 0.5f; // Front plane Z
+        float maxZ = z + 0.5f + 0.5f; // Back plane Z
 
         // --- Vertical Planes (North-South aligned) ---
         ctx.Tess.addVertexWithUV(minX, y + 1.0D, minZ, minU, minV);
@@ -64,10 +64,10 @@ public class CropsRenderer : IBlockRenderer
 
         // --- Horizontal Planes (East-West aligned) ---
         // Reposition coordinates for the crossing planes
-        minX = x + 0.5D - 0.5D;
-        maxX = x + 0.5D + 0.5D;
-        minZ = z + 0.5D - 0.25D;
-        maxZ = z + 0.5D + 0.25D;
+        minX = x + 0.5F - 0.5F;
+        maxX = x + 0.5F + 0.5F;
+        minZ = z + 0.5F - 0.25F;
+        maxZ = z + 0.5F + 0.25F;
 
         ctx.Tess.addVertexWithUV(minX, y + 1.0D, minZ, minU, minV);
         ctx.Tess.addVertexWithUV(minX, y + 0.0D, minZ, minU, maxV);

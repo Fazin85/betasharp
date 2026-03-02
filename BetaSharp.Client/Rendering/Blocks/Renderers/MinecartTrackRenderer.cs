@@ -29,10 +29,10 @@ public class MinecartTrackRenderer : IBlockRenderer
 
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
-        double minU = texU / 256.0D;
-        double maxU = (texU + 15.99D) / 256.0D;
-        double minV = texV / 256.0D;
-        double maxV = (texV + 15.99D) / 256.0D;
+        float minU = texU / 256.0f;
+        float maxU = (texU + 15.99f) / 256.0f;
+        float minV = texV / 256.0f;
+        float maxV = (texV + 15.99f) / 256.0f;
 
         float verticalOffset = 1.0F / 16.0F; // 1 pixel above the ground
 

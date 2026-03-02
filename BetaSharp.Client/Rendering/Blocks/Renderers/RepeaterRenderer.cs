@@ -25,29 +25,29 @@ public class RepeaterRenderer : IBlockRenderer
         ctx.Tess.setColorOpaque_F(luminance, luminance, luminance);
 
         // Torch pins are rendered slightly below the slab surface so they sit inside it
-        double torchVerticalOffset = -0.1875D;
-        double staticTorchX = 0.0D;
-        double staticTorchZ = 0.0D;
-        double delayTorchX = 0.0D;
-        double delayTorchZ = 0.0D;
+        float torchVerticalOffset = -0.1875F;
+        float staticTorchX = 0.0F;
+        float staticTorchZ = 0.0F;
+        float delayTorchX = 0.0F;
+        float delayTorchZ = 0.0F;
 
         switch (direction)
         {
             case 0: // South
-                delayTorchZ = -0.3125D;
-                staticTorchZ = BlockRedstoneRepeater.RENDER_OFFSET[delay];
+                delayTorchZ = -0.3125f;
+                staticTorchZ = BlockRedstoneRepeater.RenderOffset[delay];
                 break;
             case 1: // West
-                delayTorchX = 0.3125D;
-                staticTorchX = -BlockRedstoneRepeater.RENDER_OFFSET[delay];
+                delayTorchX = 0.3125f;
+                staticTorchX = -BlockRedstoneRepeater.RenderOffset[delay];
                 break;
             case 2: // North
-                delayTorchZ = 0.3125D;
-                staticTorchZ = -BlockRedstoneRepeater.RENDER_OFFSET[delay];
+                delayTorchZ = 0.3125f;
+                staticTorchZ = -BlockRedstoneRepeater.RenderOffset[delay];
                 break;
             case 3: // East
-                delayTorchX = -0.3125D;
-                staticTorchX = BlockRedstoneRepeater.RENDER_OFFSET[delay];
+                delayTorchX = -0.3125f;
+                staticTorchX = BlockRedstoneRepeater.RenderOffset[delay];
                 break;
         }
 

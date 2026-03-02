@@ -85,10 +85,6 @@ public class FenceRenderer : IBlockRenderer
             };
             bottomZCtx.DrawBlock(block, pos);
         }
-
-        // Notice we COMPLETELY REMOVED the bounding box reset!
-        // The original 'context' was never mutated, so we don't need to clean up after ourselves.
-
         return hasRendered;
     }
 }

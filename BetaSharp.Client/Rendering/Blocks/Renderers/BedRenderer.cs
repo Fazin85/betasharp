@@ -27,16 +27,16 @@ public class BedRenderer : IBlockRenderer
         int texU = (texBottom & 15) << 4;
         int texV = texBottom & 240;
 
-        double minU = texU / 256.0F;
-        double maxU = (texU + 15.99D) / 256.0D;
-        double minV = texV / 256.0F;
-        double maxV = (texV + 15.99D) / 256.0D;
+        float minU = texU / 256.0F;
+        float maxU = (texU + 15.99f) / 256.0f;
+        float minV = texV / 256.0F;
+        float maxV = (texV + 15.99f) / 256.0f;
 
-        double minX = pos.x + bounds.MinX;
-        double maxX = pos.x + bounds.MaxX;
-        double bedBottomY = pos.y + bounds.MinY + 0.1875D; // Bed legs are 3 pixels tall (3/16 = 0.1875)
-        double minZ = pos.z + bounds.MinZ;
-        double maxZ = pos.z + bounds.MaxZ;
+        float minX = (float)(pos.x + bounds.MinX);
+        float maxX = (float)(pos.x + bounds.MaxX);
+        float bedBottomY =(float)(pos.y + bounds.MinY + 0.1875f); // Bed legs are 3 pixels tall (3/16 = 0.1875)
+        float minZ = (float)(pos.z + bounds.MinZ);
+        float maxZ = (float)(pos.z + bounds.MaxZ);
 
         ctx.Tess.addVertexWithUV(minX, bedBottomY, maxZ, minU, maxV);
         ctx.Tess.addVertexWithUV(minX, bedBottomY, minZ, minU, minV);
@@ -52,12 +52,12 @@ public class BedRenderer : IBlockRenderer
         texV = texTop & 240;
 
         minU = texU / 256.0F;
-        maxU = (texU + 15.99D) / 256.0D;
+        maxU = (texU + 15.99f) / 256.0f;
         minV = texV / 256.0F;
-        maxV = (texV + 15.99D) / 256.0D;
+        maxV = (texV + 15.99f) / 256.0f;
 
-        double u1 = minU, u2 = maxU, u3 = minU, u4 = maxU;
-        double v1 = minV, v2 = minV, v3 = maxV, v4 = maxV;
+        float u1 = minU, u2 = maxU, u3 = minU, u4 = maxU;
+        float v1 = minV, v2 = minV, v3 = maxV, v4 = maxV;
 
         // Rotate top texture based on bed orientation
         if (direction == 0) // South
@@ -86,7 +86,7 @@ public class BedRenderer : IBlockRenderer
             v3 = minV;
         }
 
-        double bedTopY = pos.y + bounds.MaxY;
+        float bedTopY = (float)(pos.y + bounds.MaxY);
 
         ctx.Tess.addVertexWithUV(maxX, bedTopY, maxZ, u3, v3);
         ctx.Tess.addVertexWithUV(maxX, bedTopY, minZ, u1, v1);
@@ -117,7 +117,7 @@ public class BedRenderer : IBlockRenderer
         // East Face (Z - 1)
         if (forwardDir != 2 && (ctx.RenderAllFaces || block.isSideVisible(ctx.World, pos.x, pos.y, pos.z - 1, 2)))
         {
-            faceLuminance = bounds.MinZ > 0.0D
+            faceLuminance = bounds.MinZ > 0.0f
                 ? centerLuminance
                 : block.getLuminance(ctx.World, pos.x, pos.y, pos.z - 1);
             ctx.Tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
@@ -130,7 +130,7 @@ public class BedRenderer : IBlockRenderer
         // West Face (Z + 1)
         if (forwardDir != 3 && (ctx.RenderAllFaces || block.isSideVisible(ctx.World, pos.x, pos.y, pos.z + 1, 3)))
         {
-            faceLuminance = bounds.MaxZ < 1.0D
+            faceLuminance = bounds.MaxZ < 1.0f
                 ? centerLuminance
                 : block.getLuminance(ctx.World, pos.x, pos.y, pos.z + 1);
             ctx.Tess.setColorOpaque_F(lightZ * faceLuminance, lightZ * faceLuminance, lightZ * faceLuminance);
@@ -143,7 +143,7 @@ public class BedRenderer : IBlockRenderer
         // North Face (X - 1)
         if (forwardDir != 4 && (ctx.RenderAllFaces || block.isSideVisible(ctx.World, pos.x - 1, pos.y, pos.z, 4)))
         {
-            faceLuminance = bounds.MinX > 0.0D
+            faceLuminance = bounds.MinX > 0.0f
                 ? centerLuminance
                 : block.getLuminance(ctx.World, pos.x - 1, pos.y, pos.z);
             ctx.Tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);
@@ -156,7 +156,7 @@ public class BedRenderer : IBlockRenderer
         // South Face (X + 1)
         if (forwardDir != 5 && (ctx.RenderAllFaces || block.isSideVisible(ctx.World, pos.x + 1, pos.y, pos.z, 5)))
         {
-            faceLuminance = bounds.MaxX < 1.0D
+            faceLuminance = bounds.MaxX < 1.0f
                 ? centerLuminance
                 : block.getLuminance(ctx.World, pos.x + 1, pos.y, pos.z);
             ctx.Tess.setColorOpaque_F(lightX * faceLuminance, lightX * faceLuminance, lightX * faceLuminance);

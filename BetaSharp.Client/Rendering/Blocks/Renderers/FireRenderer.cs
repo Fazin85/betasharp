@@ -15,10 +15,10 @@ public class FireRenderer : IBlockRenderer
 
         int texU = (textureId & 15) << 4;
         int texV = textureId & 240;
-        double minU = texU / 256.0F;
-        double maxU = (texU + 15.99F) / 256.0F;
-        double minV = texV / 256.0F;
-        double maxV = (texV + 15.99F) / 256.0F;
+        float minU = texU / 256.0F;
+        float maxU = (texU + 15.99F) / 256.0F;
+        float minV = texV / 256.0F;
+        float maxV = (texV + 15.99F) / 256.0F;
 
         float fireHeight = 1.4F;
 
@@ -99,8 +99,8 @@ public class FireRenderer : IBlockRenderer
             // Climbing Ceilings
             if (Block.Fire.isFlammable(ctx.World, pos.x, pos.y + 1, pos.z))
             {
-                double xMax = pos.x + 1, xMin = pos.x;
-                double zMax = pos.z + 1, zMin = pos.z;
+                float xMax = pos.x + 1, xMin = pos.x;
+                float zMax = pos.z + 1, zMin = pos.z;
 
                 minU = texU / 256.0F;
                 maxU = (texU + 15.99F) / 256.0F;
@@ -144,8 +144,8 @@ public class FireRenderer : IBlockRenderer
         }
         else // Render central "X" flames for fire on solid floors
         {
-            double insetSmall = 0.2D, insetLarge = 0.3D;
-            double xC = pos.x + 0.5D, zC = pos.z + 0.5D;
+            float insetSmall = 0.2f, insetLarge = 0.3f;
+            float xC = pos.x + 0.5f, zC = pos.z + 0.5f;
 
             // First diagonal set
             ctx.Tess.addVertexWithUV(xC - insetLarge, pos.y + fireHeight, pos.z + 1, maxU, minV);
@@ -174,7 +174,7 @@ public class FireRenderer : IBlockRenderer
             ctx.Tess.addVertexWithUV(pos.x + 1, pos.y + fireHeight, zC - insetLarge, minU, minV);
 
             // Third set (outer crossing)
-            double i4 = 0.4D, i5 = 0.5D;
+            float i4 = 0.4f, i5 = 0.5f;
             ctx.Tess.addVertexWithUV(xC - i4, pos.y + fireHeight, pos.z, minU, minV);
             ctx.Tess.addVertexWithUV(xC - i5, pos.y, pos.z, minU, maxV);
             ctx.Tess.addVertexWithUV(xC - i5, pos.y, pos.z + 1, maxU, maxV);
