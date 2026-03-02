@@ -624,7 +624,7 @@ public abstract class EntityPlayer : EntityLiving
 
     public abstract void spawn();
 
-    public virtual void onCursorStackChanged(ItemStack stack)
+    public virtual void onCursorStackChanged(ItemStack? stack)
     {
     }
 
