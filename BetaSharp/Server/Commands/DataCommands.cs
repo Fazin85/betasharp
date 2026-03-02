@@ -76,36 +76,34 @@ public static class DataCommands
 
         if (args.Length < 3)
         {
-            if (items.Count == 1) FormatPlural(ref args[1]);
+            if (items.Count != 1) FormatPlural(ref args[1]);
             output.SendMessage("Found " + items.Count + " " + args[1]);
             return;
         }
 
         if (args.Length < 4 && sel != Selector.None)
         {
-            if (LogEntitySub(sel, items, player, args, output)) return;
-
-            if (items.Count == 1) FormatPlural(ref args[1]);
-            output.SendMessage("Found " + items.Count + " " + args[1]);
+            LogEntitySub(sel, items.ToArray(), player, args, output);
             return;
         }
 
         if (!int.TryParse(args[2], out int id))
         {
-            if (LogEntitySub(sel, items.Where(entity => entity.GetType().Name == args[2]), player, args, output)) return;
-
-            int count = 0;
-            foreach (T item in items)
+            // Type comparision is faster than string comparison.
+            // So if we can, compare using type.
+            T[] filtered;
+            if (EntityRegistry.TryGetTypeFromName(args[2], out Type? type))
             {
-                if (item.GetType().Name == args[2])
-                {
-                    count++;
-                    output.SendMessage(" - " + item.id);
-                }
+                args[1] = '_' + type.Name;
+                filtered = items.Where(entity => entity.GetType() == type).ToArray();
+            }
+            else
+            {
+                args[1] = '_' + args[2];
+                filtered = items.Where(entity => entity.GetType().Name == args[2]).ToArray();
             }
 
-            if (count == 1) FormatPlural(ref args[1]);
-            output.SendMessage("Found " + count + " instances of " + args[1]);
+            LogEntitySub(sel, filtered, player, args, output, true);
             return;
         }
 
@@ -143,16 +141,17 @@ public static class DataCommands
         Close = 2
     }
 
-    private static bool LogEntitySub<T>(Selector sel, IEnumerable<T> items, ServerPlayerEntity player, string[] args, CommandOutput output) where T : Entity
+    private static void LogEntitySub<T>(Selector sel, IEnumerable<T> items, ServerPlayerEntity player, string[] args, CommandOutput output, bool listHits = false) where T : Entity
     {
         if (sel == Selector.First)
         {
             T? item = items.FirstOrDefault();
             if (item == null)
             {
-                FormatPlural(ref args[1]);
+                if (args[1][0] == '_') args[1] = args[1].Substring(1);
+                else FormatPlural(ref args[1]);
                 output.SendMessage("Found 0 instances of " + args[1]);
-                return true;
+                return;
             }
 
             LogEntity(item, output);
@@ -183,19 +182,33 @@ public static class DataCommands
 
             if (item == null)
             {
-                FormatPlural(ref args[1]);
                 output.SendMessage("0 matches");
-                return true;
+                return;
             }
 
             LogEntity(item, output);
         }
         else
         {
-            return false;
-        }
+            var list = items.ToList();
+            int c = list.Count();
 
-        return true;
+            // output list of all items
+            if (listHits && c > 0)
+            {
+                string listStr = "";
+                foreach (T item in list)
+                {
+                    listStr += item.id + ", ";
+                }
+
+                output.SendMessage(listStr.Substring(0, listStr.Length - 2));
+            }
+
+            if (args[1][0] == '_') args[1] = args[1].Substring(1);
+            else if (c == 1) FormatPlural(ref args[1]);
+            output.SendMessage("Found " + list.Count() + " instances of " + args[1]);
+        }
     }
 
     private static void FormatPlural(ref string s)
