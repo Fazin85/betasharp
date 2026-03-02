@@ -61,7 +61,7 @@ public ref struct BlockRenderContext
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static float Clamp01(float value) => value < 0f ? 0f : (value > 1f ? 1f : value);
+    private static float Clamp(float value) => value < 0f ? 0f : (value > 1f ? 1f : value);
 
     internal readonly void DrawBottomFace(Block block, in Vec3D pos, in FaceColors colors, int textureId)
     {
@@ -74,10 +74,10 @@ public ref struct BlockRenderContext
         float bbMinZ = (float)bb.MinZ;
         float bbMaxZ = (float)bb.MaxZ;
 
-        float bMinX = Clamp01(bbMinX);
-        float bMaxX = Clamp01(bbMaxX);
-        float bMinZ = Clamp01(bbMinZ);
-        float bMaxZ = Clamp01(bbMaxZ);
+        float bMinX = Clamp(bbMinX);
+        float bMaxX = Clamp(bbMaxX);
+        float bMinZ = Clamp(bbMinZ);
+        float bMaxZ = Clamp(bbMaxZ);
 
         CalculateUv(bMinX, bMaxZ, UvRotateBottom, texU, texV, out float u0, out float v0);
         CalculateUv(bMinX, bMinZ, UvRotateBottom, texU, texV, out float u1, out float v1);
@@ -125,10 +125,10 @@ public ref struct BlockRenderContext
         float bbMinZ = (float)bb.MinZ;
         float bbMaxZ = (float)bb.MaxZ;
 
-        float bMinX = Clamp01(bbMinX);
-        float bMaxX = Clamp01(bbMaxX);
-        float bMinZ = Clamp01(bbMinZ);
-        float bMaxZ = Clamp01(bbMaxZ);
+        float bMinX = Clamp(bbMinX);
+        float bMaxX = Clamp(bbMaxX);
+        float bMinZ = Clamp(bbMinZ);
+        float bMaxZ = Clamp(bbMaxZ);
 
         CalculateUv(bMaxX, bMaxZ, UvRotateTop, texU, texV, out float u0, out float v0);
         CalculateUv(bMaxX, bMinZ, UvRotateTop, texU, texV, out float u1, out float v1);
@@ -222,10 +222,10 @@ public ref struct BlockRenderContext
         float bbMinZ = (float)bb.MinZ;
         float bbMaxZ = (float)bb.MaxZ;
 
-        float bMinY = Clamp01(bbMinY);
-        float bMaxY = Clamp01(bbMaxY);
-        float bMinZ = Clamp01(bbMinZ);
-        float bMaxZ = Clamp01(bbMaxZ);
+        float bMinY = Clamp(bbMinY);
+        float bMaxY = Clamp(bbMaxY);
+        float bMinZ = Clamp(bbMinZ);
+        float bMaxZ = Clamp(bbMaxZ);
 
         CalculateUv(1.0f - bMaxZ, 1.0f - bMaxY, UvRotateSouth, texU, texV, out float uTl, out float vTl);
         CalculateUv(1.0f - bMaxZ, 1.0f - bMinY, UvRotateSouth, texU, texV, out float uBl, out float vBl);
@@ -273,10 +273,10 @@ public ref struct BlockRenderContext
         float bbMinY = (float)bb.MinY;
         float bbMaxY = (float)bb.MaxY;
 
-        float bMinX = Clamp01(bbMinX);
-        float bMaxX = Clamp01(bbMaxX);
-        float bMinY = Clamp01(bbMinY);
-        float bMaxY = Clamp01(bbMaxY);
+        float bMinX = Clamp(bbMinX);
+        float bMaxX = Clamp(bbMaxX);
+        float bMinY = Clamp(bbMinY);
+        float bMaxY = Clamp(bbMaxY);
 
         CalculateUv(1.0f - bMaxX, 1.0f - bMaxY, UvRotateEast, texU, texV, out float uTl, out float vTl);
         CalculateUv(1.0f - bMaxX, 1.0f - bMinY, UvRotateEast, texU, texV, out float uBl, out float vBl);
@@ -324,10 +324,10 @@ public ref struct BlockRenderContext
         float bbMinY = (float)bb.MinY;
         float bbMaxY = (float)bb.MaxY;
 
-        float bMinX = Clamp01(bbMinX);
-        float bMaxX = Clamp01(bbMaxX);
-        float bMinY = Clamp01(bbMinY);
-        float bMaxY = Clamp01(bbMaxY);
+        float bMinX = Clamp(bbMinX);
+        float bMaxX = Clamp(bbMaxX);
+        float bMinY = Clamp(bbMinY);
+        float bMaxY = Clamp(bbMaxY);
 
         CalculateUv(bMinX, 1.0f - bMaxY, UvRotateWest, texU, texV, out float uTl, out float vTl);
         CalculateUv(bMinX, 1.0f - bMinY, UvRotateWest, texU, texV, out float uBl, out float vBl);
