@@ -2,7 +2,7 @@ using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
-public class ScreenHandlerPropertyUpdateS2CPacket() : Packet(PacketId.PlayNoteSoundS2C)
+public class ScreenHandlerPropertyUpdateS2CPacket() : Packet(PacketId.ScreenHandlerPropertyUpdateS2C)
 {
     public int syncId;
     public int propertyId;
