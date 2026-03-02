@@ -1,5 +1,7 @@
 using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core.Textures;
+using BetaSharp.Client.Rendering.Guis;
 using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
@@ -8,63 +10,35 @@ public class Gui
 {
     protected float _zLevel = 0.0F;
 
-    protected static void DrawHorizontalLine(int startX, int endX, int y, Color color)
+    protected static void DrawHorizontalLine(GuiBatch batch, int startX, int endX, int y, Color color)
     {
         if (endX < startX) (startX, endX) = (endX, startX);
-        DrawRect(startX, y, endX + 1, y + 1, color);
+        DrawRect(batch, startX, y, endX + 1, y + 1, color);
     }
 
-    protected static void DrawVerticalLine(int x, int startY, int endY, Color color)
+    protected static void DrawVerticalLine(GuiBatch batch, int x, int startY, int endY, Color color)
     {
         if (endY < startY) (startY, endY) = (endY, startY);
-        DrawRect(x, startY + 1, x + 1, endY, color);
+        DrawRect(batch, x, startY + 1, x + 1, endY, color);
     }
 
-    protected static void DrawRect(int x1, int y1, int x2, int y2, Color color)
+    protected static void DrawRect(GuiBatch batch, int x1, int y1, int x2, int y2, Color color)
     {
         if (x1 < x2) (x1, x2) = (x2, x1);
         if (y1 < y2) (y1, y2) = (y2, y1);
 
-        Tessellator tess = Tessellator.instance;
-
         GLManager.GL.Enable(GLEnum.Blend);
-        GLManager.GL.Disable(GLEnum.Texture2D);
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
 
-        tess.startDrawingQuads();
-        tess.setColorRGBA(color);
-        tess.addVertex(x1, y2, 0.0D);
-        tess.addVertex(x2, y2, 0.0D);
-        tess.addVertex(x2, y1, 0.0D);
-        tess.addVertex(x1, y1, 0.0D);
-        tess.draw();
-
-        GLManager.GL.Enable(GLEnum.Texture2D);
-        GLManager.GL.Disable(GLEnum.Blend);
+        batch.DrawRect(x1, y1, x2, y2, color, 0f);
     }
 
-    protected static void DrawGradientRect(int right, int bottom, int left, int top, Color topColor, Color bottomColor)
+    protected static void DrawGradientRect(GuiBatch batch, int right, int bottom, int left, int top, Color topColor, Color bottomColor)
     {
-        GLManager.GL.Disable(GLEnum.Texture2D);
         GLManager.GL.Enable(GLEnum.Blend);
-        GLManager.GL.Disable(GLEnum.AlphaTest);
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
-        GLManager.GL.ShadeModel(GLEnum.Smooth);
 
-        Tessellator tess = Tessellator.instance;
-        tess.startDrawingQuads();
-        tess.setColorRGBA(topColor);
-        tess.addVertex(left, bottom, 0.0D);
-        tess.addVertex(right, bottom, 0.0D);
-        tess.setColorRGBA(bottomColor);
-        tess.addVertex(right, top, 0.0D);
-        tess.addVertex(left, top, 0.0D);
-        tess.draw();
-
-        GLManager.GL.ShadeModel(GLEnum.Flat);
-        GLManager.GL.Disable(GLEnum.Blend);
-        GLManager.GL.Enable(GLEnum.AlphaTest);
-        GLManager.GL.Enable(GLEnum.Texture2D);
+        batch.DrawGradientRect(left, right, top, bottom, topColor, bottomColor, 0f);
     }
 
     public static void DrawCenteredString(TextRenderer renderer, string text, int x, int y, Color color)
@@ -77,15 +51,13 @@ public class Gui
         renderer.DrawStringWithShadow(text, x, y, color);
     }
 
-    public void DrawTexturedModalRect(int x, int y, int u, int v, int width, int height)
+    public void DrawTexturedModalRect(GuiBatch batch, int x, int y, int u, int v, int width, int height, TextureHandle? texture = null)
     {
-        float f = 0.00390625F;
-        Tessellator tess = Tessellator.instance;
-        tess.startDrawingQuads();
-        tess.addVertexWithUV(x + 0, y + height, _zLevel, (double)((u + 0) * f), (double)((v + height) * f));
-        tess.addVertexWithUV(x + width, y + height, _zLevel, (double)((u + width) * f), (double)((v + height) * f));
-        tess.addVertexWithUV(x + width, y + 0, _zLevel, (double)((u + width) * f), (double)((v + 0) * f));
-        tess.addVertexWithUV(x + 0, y + 0, _zLevel, (double)((u + 0) * f), (double)((v + 0) * f));
-        tess.draw();
+        const float f = 0.00390625F; // 1/256 for 256px textures
+        uint texId = texture != null ? (uint)texture.Id : 0;
+        batch.DrawTexturedQuad(x, y, width, height,
+            (u + 0) * f, (v + height) * f,    // v flipped: top of quad gets texture top (high v)
+            (u + width) * f, (v + 0) * f,
+            Color.White, _zLevel, texId);
     }
 }

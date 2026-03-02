@@ -124,7 +124,7 @@ public class GuiChat : GuiScreen
 
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        DrawRect(2, Height - 14, Width - 2, Height - 2, Color.BackgroundBlackAlpha);
+        DrawRect(mc.guiBatch, 2, Height - 14, Width - 2, Height - 2, Color.BackgroundBlackAlpha);
 
         string cursor = (_updateCounter / 6 % 2 == 0) ? "_" : "";
         string textToDraw = "> " + _message + cursor;

@@ -22,22 +22,22 @@ public class GuiChest : GuiContainer
         _ySize = guiHeightMinus + _inventoryRows * 18;
     }
 
-    protected override void DrawGuiContainerForegroundLayer()
+    protected override void DrawGuiContainerForegroundLayer(int guiLeft, int guiTop)
     {
-        FontRenderer.DrawString(_lowerChestInventory.getName(), 8, 6, Color.Gray40);
-        FontRenderer.DrawString(_upperChestInventory.getName(), 8, _ySize - 96 + 2, Color.Gray40);
+        FontRenderer.DrawString(_lowerChestInventory.getName(), guiLeft + 8, guiTop + 6, Color.Gray40);
+        FontRenderer.DrawString(_upperChestInventory.getName(), guiLeft + 8, guiTop + _ySize - 96 + 2, Color.Gray40);
     }
 
     protected override void DrawGuiContainerBackgroundLayer(float partialTicks)
     {
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/container.png"));
+        var tex = mc.textureManager.GetTextureId("/gui/container.png");
+        mc.textureManager.BindTexture(tex);
 
         int guiLeft = (Width - _xSize) / 2;
         int guiTop = (Height - _ySize) / 2;
 
-        DrawTexturedModalRect(guiLeft, guiTop, 0, 0, _xSize, _inventoryRows * 18 + 17);
-
-        DrawTexturedModalRect(guiLeft, guiTop + _inventoryRows * 18 + 17, 0, 126, _xSize, 96);
+        DrawTexturedModalRect(mc.guiBatch, guiLeft, guiTop, 0, 0, _xSize, _inventoryRows * 18 + 17, tex);
+        DrawTexturedModalRect(mc.guiBatch, guiLeft, guiTop + _inventoryRows * 18 + 17, 0, 126, _xSize, 96, tex);
     }
 }

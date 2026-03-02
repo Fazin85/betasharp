@@ -1,5 +1,6 @@
 using BetaSharp.Client.Input;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Guis;
 using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
@@ -59,9 +60,9 @@ public abstract class GuiSlot
 
     protected abstract void DrawBackground();
 
-    protected abstract void DrawSlot(int index, int x, int y, int height, Tessellator tess);
+    protected abstract void DrawSlot(int index, int x, int y, int height, GuiBatch batch);
 
-    protected virtual void DrawHeader(int x, int y, Tessellator tess) { }
+    protected virtual void DrawHeader(int x, int y, GuiBatch batch) { }
 
     protected virtual void HeaderClicked(int var1, int var2)
     {
@@ -187,26 +188,25 @@ public abstract class GuiSlot
 
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.Disable(GLEnum.Fog);
-        var tess = Tessellator.instance;
+        var batch = _mc.guiBatch;
 
-        _mc.textureManager.BindTexture(_mc.textureManager.GetTextureId("/gui/background.png"));
+        var bgTex = _mc.textureManager.GetTextureId("/gui/background.png");
+        _mc.textureManager.BindTexture(bgTex);
         GLManager.GL.Color4(1.0f, 1.0f, 1.0f, 1.0f);
-        const float textureScale = 32.0f;
+        const float texSize = 256f;
 
-        tess.startDrawingQuads();
-        tess.setColorOpaque_I(0x202020);
-        tess.addVertexWithUV(_left, _bottom, 0.0, _left / textureScale, (_bottom + (int)_amountScrolled) / textureScale);
-        tess.addVertexWithUV(_right, _bottom, 0.0, _right / textureScale, (_bottom + (int)_amountScrolled) / textureScale);
-        tess.addVertexWithUV(_right, _top, 0.0, _right / textureScale, (_top + (int)_amountScrolled) / textureScale);
-        tess.addVertexWithUV(_left, _top, 0.0, _left / textureScale, (_top + (int)_amountScrolled) / textureScale);
-        tess.draw();
+        int scroll = (int)_amountScrolled;
+        batch.DrawTexturedQuad(_left, _top, _right - _left, _bottom - _top,
+            _left / texSize, (_bottom + scroll) / texSize,   // v flipped
+            _right / texSize, (_top + scroll) / texSize,
+            Color.FromArgb(0xFF606060), 0f, (uint)bgTex.Id);
 
         int startX = _width / 2 - 92 - 16;
         int startY = _top + 4 - (int)_amountScrolled;
 
         if (_hasHeader)
         {
-            DrawHeader(startX, startY, tess);
+            DrawHeader(startX, startY, batch);
         }
 
         for (int i = 0; i < listSize; ++i)
@@ -221,24 +221,12 @@ public abstract class GuiSlot
                 int minX = _width / 2 - 110;
                 int maxX = _width / 2 + 110;
                 GLManager.GL.Color4(1.0f, 1.0f, 1.0f, 1.0f);
-                GLManager.GL.Disable(GLEnum.Texture2D);
 
-                tess.startDrawingQuads();
-                tess.setColorOpaque_I(0x808080); // Outer border (Gray)
-                tess.addVertexWithUV(minX, slotY + slotHeight + 2, 0.0, 0.0, 1.0);
-                tess.addVertexWithUV(maxX, slotY + slotHeight + 2, 0.0, 1.0, 1.0);
-                tess.addVertexWithUV(maxX, slotY - 2, 0.0, 1.0, 0.0);
-                tess.addVertexWithUV(minX, slotY - 2, 0.0, 0.0, 0.0);
-                tess.setColorOpaque_I(0x000000); // Inner background (Black)
-                tess.addVertexWithUV(minX + 1, slotY + slotHeight + 1, 0.0, 0.0, 1.0);
-                tess.addVertexWithUV(maxX - 1, slotY + slotHeight + 1, 0.0, 1.0, 1.0);
-                tess.addVertexWithUV(maxX - 1, slotY - 1, 0.0, 1.0, 0.0);
-                tess.addVertexWithUV(minX + 1, slotY - 1, 0.0, 0.0, 0.0);
-                tess.draw();
-                GLManager.GL.Enable(GLEnum.Texture2D);
+                batch.DrawRect(minX, slotY - 2, maxX, slotY + slotHeight + 2, Color.FromArgb(0xFF808080), 0f);
+                batch.DrawRect(minX + 1, slotY - 1, maxX - 1, slotY + slotHeight + 1, Color.FromArgb(0xFF000000), 0f);
             }
 
-            DrawSlot(i, startX, slotY, slotHeight, tess);
+            DrawSlot(i, startX, slotY, slotHeight, batch);
         }
 
         GLManager.GL.Disable(GLEnum.DepthTest);
@@ -249,27 +237,11 @@ public abstract class GuiSlot
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
         GLManager.GL.Disable(GLEnum.AlphaTest);
         GLManager.GL.ShadeModel(GLEnum.Smooth);
-        GLManager.GL.Disable(GLEnum.Texture2D);
 
         // Top/Bottom gradient shadows
         const int shadowHeight = 4;
-        tess.startDrawingQuads();
-        tess.setColorRGBA_I(0x000000, 0);
-        tess.addVertexWithUV(_left, _top + shadowHeight, 0.0, 0.0, 1.0);
-        tess.addVertexWithUV(_right, _top + shadowHeight, 0.0, 1.0, 1.0);
-        tess.setColorOpaque_I(0x000000);
-        tess.addVertexWithUV(_right, _top, 0.0, 1.0, 0.0);
-        tess.addVertexWithUV(_left, _top, 0.0, 0.0, 0.0);
-        tess.draw();
-
-        tess.startDrawingQuads();
-        tess.setColorOpaque_I(0x000000);
-        tess.addVertexWithUV(_left, _bottom, 0.0, 0.0, 1.0);
-        tess.addVertexWithUV(_right, _bottom, 0.0, 1.0, 1.0);
-        tess.setColorRGBA_I(0x000000, 0);
-        tess.addVertexWithUV(_right, _bottom - shadowHeight, 0.0, 1.0, 0.0);
-        tess.addVertexWithUV(_left, _bottom - shadowHeight, 0.0, 0.0, 0.0);
-        tess.draw();
+        batch.DrawGradientRect(_left, _right, _top, _top + shadowHeight, Color.FromArgb(0x00000000), Color.FromArgb(0xFF000000), 0f);
+        batch.DrawGradientRect(_left, _right, _bottom - shadowHeight, _bottom, Color.FromArgb(0xFF000000), Color.FromArgb(0x00000000), 0f);
 
         // Scrollbar Rendering
         int scrollRange = GetContentHeight() - (_bottom - _top - 4);
@@ -280,32 +252,9 @@ public abstract class GuiSlot
             int barY = (int)_amountScrolled * (viewHeight - barHeight) / scrollRange + _top;
             barY = Math.Max(barY, _top);
 
-            // Bar Background
-            tess.startDrawingQuads();
-            tess.setColorOpaque_I(0x000000);
-            tess.addVertexWithUV(scrollbarXStart, _bottom, 0.0, 0.0, 1.0);
-            tess.addVertexWithUV(scrollbarXEnd, _bottom, 0.0, 1.0, 1.0);
-            tess.addVertexWithUV(scrollbarXEnd, _top, 0.0, 1.0, 0.0);
-            tess.addVertexWithUV(scrollbarXStart, _top, 0.0, 0.0, 0.0);
-            tess.draw();
-
-            // Bar Body
-            tess.startDrawingQuads();
-            tess.setColorOpaque_I(0x808080);
-            tess.addVertexWithUV(scrollbarXStart, barY + barHeight, 0.0, 0.0, 1.0);
-            tess.addVertexWithUV(scrollbarXEnd, barY + barHeight, 0.0, 1.0, 1.0);
-            tess.addVertexWithUV(scrollbarXEnd, barY, 0.0, 1.0, 0.0);
-            tess.addVertexWithUV(scrollbarXStart, barY, 0.0, 0.0, 0.0);
-            tess.draw();
-
-            // Bar Highlight
-            tess.startDrawingQuads();
-            tess.setColorOpaque_I(0xC0C0C0);
-            tess.addVertexWithUV(scrollbarXStart, barY + barHeight - 1, 0.0, 0.0, 1.0);
-            tess.addVertexWithUV(scrollbarXEnd - 1, barY + barHeight - 1, 0.0, 1.0, 1.0);
-            tess.addVertexWithUV(scrollbarXEnd - 1, barY, 0.0, 1.0, 0.0);
-            tess.addVertexWithUV(scrollbarXStart, barY, 0.0, 0.0, 0.0);
-            tess.draw();
+            batch.DrawRect(scrollbarXStart, _top, scrollbarXEnd, _bottom, Color.FromArgb(0xFF000000), 0f);
+            batch.DrawRect(scrollbarXStart, barY, scrollbarXEnd, barY + barHeight, Color.FromArgb(0xFF808080), 0f);
+            batch.DrawRect(scrollbarXStart, barY, scrollbarXEnd - 1, barY + barHeight - 1, Color.FromArgb(0xFFC0C0C0), 0f);
         }
 
         PostDrawScreen(mouseX, mouseY);
@@ -318,26 +267,8 @@ public abstract class GuiSlot
 
     private void OverlayBackground(int startY, int endY, int alphaStart, int alphaEnd)
     {
-        var tess = Tessellator.instance;
-        var textureId = (uint)_mc.textureManager.GetTextureId("/gui/background.png").Id;
-
-        _mc.textureManager.BindTexture(_mc.textureManager.GetTextureId("/gui/background.png"));
-        GLManager.GL.Color4(1.0f, 1.0f, 1.0f, 1.0f);
-
-        const float textureScale = 32.0f;
-
-        tess.startDrawingQuads();
-
-        // Bottom vertices
-        tess.setColorRGBA_I(0x404040, alphaEnd);
-        tess.addVertexWithUV(0.0, endY, 0.0, 0.0, endY / (double)textureScale);
-        tess.addVertexWithUV(_width, endY, 0.0, _width / textureScale, endY / (double)textureScale);
-
-        // Top vertices
-        tess.setColorRGBA_I(0x404040, alphaStart);
-        tess.addVertexWithUV(_width, startY, 0.0, _width / textureScale, startY / (double)textureScale);
-        tess.addVertexWithUV(0.0, startY, 0.0, 0.0, startY / (double)textureScale);
-
-        tess.draw();
+        var topColor = Color.FromArgb((uint)((alphaStart << 24) | 0x404040));
+        var bottomColor = Color.FromArgb((uint)((alphaEnd << 24) | 0x404040));
+        _mc.guiBatch.DrawGradientRect(0, _width, startY, endY, topColor, bottomColor, 0f);
     }
 }

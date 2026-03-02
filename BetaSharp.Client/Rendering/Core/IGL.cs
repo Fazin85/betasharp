@@ -100,6 +100,8 @@ public unsafe interface IGL
     void Uniform4(int location, float v0, float v1, float v2, float v3);
     void UniformMatrix4(int location, uint count, bool transpose, float* value);
     void UseProgram(uint program);
+    /// <summary>Restores the default shader used for world/legacy rendering (e.g. after GuiBatch).</summary>
+    void RestoreWorldRenderingState();
     void VertexAttribIPointer(uint index, int size, GLEnum type, uint stride, void* pointer);
     void VertexAttribPointer(uint index, int size, GLEnum type, bool normalized, uint stride, void* pointer);
     void VertexPointer(int size, GLEnum type, uint stride, void* pointer);

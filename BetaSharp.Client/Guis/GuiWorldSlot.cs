@@ -1,4 +1,5 @@
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Guis;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Storage;
 using java.util;
@@ -50,7 +51,7 @@ public class GuiWorldSlot : GuiSlot
         _parentWorldGui.DrawDefaultBackground();
     }
 
-    protected override void DrawSlot(int slotIndex, int x, int y, int slotHeight, Tessellator tessellator)
+    protected override void DrawSlot(int slotIndex, int x, int y, int slotHeight, GuiBatch batch)
     {
         WorldSaveInfo worldInfo = GuiSelectWorld.GetSize(_parentWorldGui)[slotIndex];
         string displayName = worldInfo.DisplayName;

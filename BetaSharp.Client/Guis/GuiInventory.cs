@@ -23,9 +23,9 @@ public class GuiInventory : GuiContainer
         _controlList.Clear();
     }
 
-    protected override void DrawGuiContainerForegroundLayer()
+    protected override void DrawGuiContainerForegroundLayer(int guiLeft, int guiTop)
     {
-        FontRenderer.DrawString("Crafting", 86, 16, Color.Gray40);
+        FontRenderer.DrawString("Crafting", guiLeft + 86, guiTop + 16, Color.Gray40);
     }
 
     public override void Render(int mouseX, int mouseY, float partialTicks)
@@ -44,7 +44,7 @@ public class GuiInventory : GuiContainer
         int guiLeft = (Width - _xSize) / 2;
         int guiTop = (Height - _ySize) / 2;
 
-        DrawTexturedModalRect(guiLeft, guiTop, 0, 0, _xSize, _ySize);
+        DrawTexturedModalRect(mc.guiBatch, guiLeft, guiTop, 0, 0, _xSize, _ySize, texture);
         GLManager.GL.Enable(GLEnum.RescaleNormal);
         GLManager.GL.Enable(GLEnum.ColorMaterial);
         GLManager.GL.PushMatrix();

@@ -1,6 +1,8 @@
 using System.Runtime.InteropServices;
+using GuiColor = BetaSharp.Client.Guis.Color;
 using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Guis;
 using BetaSharp.Client.Rendering.Core.Textures;
 using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
@@ -33,6 +35,7 @@ public class TextRenderer
     private TextureHandle? fontTextureName { get; }
 
     private readonly TextureManager _textureManager;
+    private readonly GuiBatch _guiBatch;
 
     [StructLayout(LayoutKind.Sequential)]
     private readonly struct GlyphInfo(float advanceWidth, float u0, float v0, float u1, float v1, float width, float height)
@@ -42,9 +45,10 @@ public class TextRenderer
         public readonly float Width = width, Height = height;
     }
 
-    public TextRenderer(GameOptions options, TextureManager textureManager)
+    public TextRenderer(GameOptions options, TextureManager textureManager, GuiBatch guiBatch)
     {
         _textureManager = textureManager;
+        _guiBatch = guiBatch;
         string path = Path.Combine(AppContext.BaseDirectory, "font", "Monocraft.ttc");
         if (!File.Exists(path))
         {
@@ -68,6 +72,7 @@ public class TextRenderer
 
         fontTextureName = textureManager.Load(_atlasImage);
         fontTextureName.Texture?.SetFilter(Silk.NET.OpenGL.Legacy.TextureMinFilter.Nearest, Silk.NET.OpenGL.Legacy.TextureMagFilter.Nearest);
+        fontTextureName.Texture?.SetWrap(Silk.NET.OpenGL.Legacy.TextureWrapMode.ClampToEdge, Silk.NET.OpenGL.Legacy.TextureWrapMode.ClampToEdge);
     }
 
     private static void ClearAtlasRegion(Image<Rgba32> image, int x, int y, int w, int h)
@@ -121,7 +126,7 @@ public class TextRenderer
             glyphImage.Mutate(ctx => ctx.DrawText(
                 c.ToString(),
                 _font,
-                Color.White,
+                SixLabors.ImageSharp.Color.White,
                 new PointF(drawX, drawY)));
 
             // High-performance direct memory copy
@@ -189,18 +194,18 @@ public class TextRenderer
         }
     }
 
-    public void DrawStringWithShadow(ReadOnlySpan<char> text, int x, int y, Guis.Color color)
+    public void DrawStringWithShadow(ReadOnlySpan<char> text, int x, int y, GuiColor color)
     {
         RenderString(text, x + 1, y + 1, color, true);
         DrawString(text, x, y, color);
     }
 
-    public void DrawString(ReadOnlySpan<char> text, int x, int y, Guis.Color color)
+    public void DrawString(ReadOnlySpan<char> text, int x, int y, GuiColor color)
     {
         RenderString(text, x, y, color, false);
     }
 
-    public void RenderString(ReadOnlySpan<char> text, int x, int y, Guis.Color color, bool darken)
+    public void RenderString(ReadOnlySpan<char> text, int x, int y, GuiColor color, bool darken)
     {
         if (text.IsEmpty) return;
 
@@ -209,19 +214,16 @@ public class TextRenderer
 
         fontTextureName?.Bind();
 
-        Tessellator tessellator = Tessellator.instance;
-        tessellator.startDrawingQuads();
-        tessellator.setColorRGBA(color);
-
         float currentX = x;
         float currentY = y;
+        var currentColor = color;
 
         for (int i = 0; i < text.Length; ++i)
         {
             for (; text.Length > i + 1 && text[i] == ColorCodeChar; i += 2)
             {
                 int colorCode = HexToDec(text[i + 1]);
-                tessellator.setColorRGBA(Guis.Color.FromColorCode(colorCode, (byte)color.A, darken));
+                currentColor = GuiColor.FromColorCode(colorCode, (byte)color.A, darken);
             }
 
             if (i < text.Length)
@@ -231,17 +233,13 @@ public class TextRenderer
                 {
                     float w = glyph.Width * DisplayScale;
                     float h = glyph.Height * DisplayScale;
-                    tessellator.addVertexWithUV(currentX + 0, currentY + h, 0, glyph.U0, glyph.V1);
-                    tessellator.addVertexWithUV(currentX + w, currentY + h, 0, glyph.U1, glyph.V1);
-                    tessellator.addVertexWithUV(currentX + w, currentY + 0, 0, glyph.U1, glyph.V0);
-                    tessellator.addVertexWithUV(currentX + 0, currentY + 0, 0, glyph.U0, glyph.V0);
+                    _guiBatch.DrawTexturedQuad((int)currentX, (int)currentY, (int)w, (int)h,
+                        glyph.U0, glyph.V0, glyph.U1, glyph.V1, currentColor, 0f, (uint)(fontTextureName?.Id ?? 0));
                 }
 
                 currentX += glyph.AdvanceWidth * DisplayScale;
             }
         }
-
-        tessellator.draw();
     }
 
     private static int HexToDec(char c)
@@ -296,7 +294,7 @@ public class TextRenderer
         return text.Length;
     }
 
-    private void ProcessWrappedText(ReadOnlySpan<char> text, int x, int y, int maxWidth, Guis.Color color, bool draw, ref int outHeight)
+    private void ProcessWrappedText(ReadOnlySpan<char> text, int x, int y, int maxWidth, GuiColor color, bool draw, ref int outHeight)
     {
         if (text.IsEmpty) return;
 
@@ -345,7 +343,7 @@ public class TextRenderer
         outHeight = totalHeight;
     }
 
-    public void DrawStringWrapped(ReadOnlySpan<char> text, int x, int y, int maxWidth, Guis.Color color)
+    public void DrawStringWrapped(ReadOnlySpan<char> text, int x, int y, int maxWidth, GuiColor color)
     {
         int dummyHeight = 0;
         ProcessWrappedText(text, x, y, maxWidth, color, true, ref dummyHeight);
@@ -354,7 +352,7 @@ public class TextRenderer
     public int GetStringHeight(ReadOnlySpan<char> text, int maxWidth)
     {
         int height = 0;
-        ProcessWrappedText(text, 0, 0, maxWidth, Guis.Color.Black, false, ref height);
+        ProcessWrappedText(text, 0, 0, maxWidth, GuiColor.Black, false, ref height);
         return height;
     }
 }

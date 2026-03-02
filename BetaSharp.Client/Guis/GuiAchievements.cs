@@ -246,7 +246,7 @@ public class GuiAchievements : GuiScreen
                     var26 = Block.Bedrock.textureId;
                 }
 
-                DrawTexturedModalRect(var10 + var24 * 16 - var14, var11 + var22 * 16 - var15, var26 % 16 << 4, var26 >> 4 << 4, 16, 16);
+                DrawTexturedModalRect(mc.guiBatch, var10 + var24 * 16 - var14, var11 + var22 * 16 - var15, var26 % 16 << 4, var26 >> 4 << 4, 16, 16, var6);
             }
         }
 
@@ -284,8 +284,8 @@ public class GuiAchievements : GuiScreen
                     color = Color.Black;
                 }
 
-                DrawHorizontalLine(var14, var16, var15, color);
-                DrawVerticalLine(var16, var15, var17, color);
+                DrawHorizontalLine(mc.guiBatch, var14, var16, var15, color);
+                DrawVerticalLine(mc.guiBatch, var16, var15, var17, color);
             }
         }
 
@@ -329,11 +329,11 @@ public class GuiAchievements : GuiScreen
                 var34 = var11 + var17;
                 if (var30.isChallenge())
                 {
-                    DrawTexturedModalRect(var33 - 2, var34 - 2, 26, 202, 26, 26);
+                    DrawTexturedModalRect(mc.guiBatch, var33 - 2, var34 - 2, 26, 202, 26, 26);
                 }
                 else
                 {
-                    DrawTexturedModalRect(var33 - 2, var34 - 2, 0, 202, 26, 26);
+                    DrawTexturedModalRect(mc.guiBatch, var33 - 2, var34 - 2, 0, 202, 26, 26);
                 }
 
                 if (!statFileWriter.CanUnlockAchievement(var30))
@@ -364,7 +364,7 @@ public class GuiAchievements : GuiScreen
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         mc.textureManager.BindTexture(var7);
-        DrawTexturedModalRect(var8, var9, 0, 0, field_27121_a, field_27119_i);
+        DrawTexturedModalRect(mc.guiBatch, var8, var9, 0, 0, field_27121_a, field_27119_i, var7);
         GLManager.GL.PopMatrix();
         _zLevel = 0.0F;
         GLManager.GL.DepthFunc(GLEnum.Lequal);
@@ -386,7 +386,7 @@ public class GuiAchievements : GuiScreen
                     var37 += 12;
                 }
 
-                DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var37 + 3 + 12, Color.BlackAlphaC0, Color.BlackAlphaC0);
+                DrawGradientRect(mc.guiBatch, var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var37 + 3 + 12, Color.BlackAlphaC0, Color.BlackAlphaC0);
                 FontRenderer.DrawStringWrapped(var32, var17, var33 + 12, var34, Color.GrayA0);
                 if (statFileWriter.HasAchievementUnlocked(var27))
                 {
@@ -398,7 +398,7 @@ public class GuiAchievements : GuiScreen
                 var34 = Math.Max(FontRenderer.GetStringWidth(var31), 120);
                 string var39 = StatCollector.TranslateToLocalFormatted("achievement.requires", new object[] { var27.parent.StatName });
                 int var38 = FontRenderer.GetStringHeight(var39, var34);
-                DrawGradientRect(var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var38 + 12 + 3, Color.BlackAlphaC0, Color.BlackAlphaC0);
+                DrawGradientRect(mc.guiBatch, var17 - 3, var33 - 3, var17 + var34 + 3, var33 + var38 + 12 + 3, Color.BlackAlphaC0, Color.BlackAlphaC0);
                 FontRenderer.DrawStringWrapped(var39, var17, var33 + 12, var34, Color.AchievementRequiresRed);
             }
 

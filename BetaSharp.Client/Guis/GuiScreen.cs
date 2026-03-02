@@ -1,6 +1,7 @@
 using BetaSharp.Client.Input;
 using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Guis;
 using java.awt;
 using java.awt.datatransfer;
 using java.util;
@@ -185,7 +186,7 @@ public class GuiScreen : Gui
     {
         if (mc.world != null)
         {
-            DrawGradientRect(0, 0, Width, Height, Color.WorldBackgroundDark, Color.WorldBackground);
+            DrawGradientRect(mc.guiBatch, 0, 0, Width, Height, Color.WorldBackgroundDark, Color.WorldBackground);
         }
         else
         {
@@ -198,19 +199,19 @@ public class GuiScreen : Gui
         GLManager.GL.Disable(EnableCap.Lighting);
         GLManager.GL.Disable(EnableCap.Fog);
 
-        Tessellator tess = Tessellator.instance;
-        mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/background.png"));
+        var bgTex = mc.textureManager.GetTextureId("/gui/background.png");
+        mc.textureManager.BindTexture(bgTex);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
 
-        float scale = 32.0F;
-        tess.startDrawingQuads();
-        tess.setColorOpaque_I(0x404040);
-
-        tess.addVertexWithUV(0.0D, Height, 0.0D, 0.0D, (double)(Height / scale + var1));
-        tess.addVertexWithUV(Width, Height, 0.0D, (double)(Width / scale), (double)(Height / scale + var1));
-        tess.addVertexWithUV(Width, 0.0D, 0.0D, (double)(Width / scale), 0 + var1);
-        tess.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0 + var1);
-        tess.draw();
+        // 256x256 texture: tile (width/32) x (height/32) times. Each tile = 32/256 of texture.
+        const float scale = 32.0F;
+        const float texScale = 256f;
+        float u1 = (Width / scale) * (scale / texScale);
+        float v1 = ((Height + var1) / scale) * (scale / texScale);
+        mc.guiBatch.DrawTexturedQuad(0, 0, Width, Height,
+            0f, v1,      // v1 at top (flip: top samples texture top)
+            u1, (var1 / scale) * (scale / texScale),
+            Color.FromArgb(0xFF808080), 0f, (uint)bgTex.Id);
     }
 
     public virtual void DeleteWorld(bool var1, int var2) { }

@@ -71,7 +71,7 @@ public class ZippedTexturePack : TexturePack
         CloseTexturePackFile();
     }
 
-    public override void BindThumbnailTexture(Minecraft mc)
+    public override TextureHandle? BindThumbnailTexture(Minecraft mc)
     {
         if (_texturePackThumbnail != null && _texturePackName == null)
         {
@@ -81,12 +81,11 @@ public class ZippedTexturePack : TexturePack
         if (_texturePackThumbnail != null && _texturePackName != null)
         {
             mc.textureManager.BindTexture(_texturePackName);
+            return _texturePackName;
         }
-        else
-        {
-            mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/unknown_pack.png"));
-        }
-
+        var unknown = mc.textureManager.GetTextureId("/gui/unknown_pack.png");
+        mc.textureManager.BindTexture(unknown);
+        return unknown;
     }
 
     public override void func_6482_a()

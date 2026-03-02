@@ -62,14 +62,15 @@ public class GuiButton : Gui
 
         TextRenderer font = mc.fontRenderer;
 
-        mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/gui.png"));
+        var guiTex = mc.textureManager.GetTextureId("/gui/gui.png");
+        mc.textureManager.BindTexture(guiTex);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
 
         bool isHovered = mouseX >= XPosition && mouseY >= YPosition && mouseX < XPosition + _width && mouseY < YPosition + _height;
         HoverState hoverState = GetHoverState(isHovered);
 
-        DrawTexturedModalRect(XPosition, YPosition, 0, 46 + (int)hoverState * 20, _width / 2, _height);
-        DrawTexturedModalRect(XPosition + _width / 2, YPosition, 200 - _width / 2, 46 + (int)hoverState * 20, _width / 2, _height);
+        DrawTexturedModalRect(mc.guiBatch, XPosition, YPosition, 0, 46 + (int)hoverState * 20, _width / 2, _height, guiTex);
+        DrawTexturedModalRect(mc.guiBatch, XPosition + _width / 2, YPosition, 200 - _width / 2, 46 + (int)hoverState * 20, _width / 2, _height, guiTex);
 
         MouseDragged(mc, mouseX, mouseY);
 

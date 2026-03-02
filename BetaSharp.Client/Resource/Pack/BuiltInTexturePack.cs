@@ -45,7 +45,7 @@ public class BuiltInTexturePack : TexturePack
 
     }
 
-    public override void BindThumbnailTexture(Minecraft mc)
+    public override TextureHandle? BindThumbnailTexture(Minecraft mc)
     {
         if (texturePackThumbnail != null && _texturePackName == null)
         {
@@ -55,11 +55,10 @@ public class BuiltInTexturePack : TexturePack
         if (texturePackThumbnail != null && _texturePackName != null)
         {
             mc.textureManager.BindTexture(_texturePackName);
+            return _texturePackName;
         }
-        else
-        {
-            mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/unknown_pack.png"));
-        }
-
+        var unknown = mc.textureManager.GetTextureId("/gui/unknown_pack.png");
+        mc.textureManager.BindTexture(unknown);
+        return unknown;
     }
 }

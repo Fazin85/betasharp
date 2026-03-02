@@ -200,8 +200,8 @@ public class GuiTextField : Gui
 
     public void DrawTextBox()
     {
-        DrawRect(_xPos - 1, _yPos - 1, _xPos + _width + 1, _yPos + _height + 1, Color.GrayA0);
-        DrawRect(_xPos, _yPos, _xPos + _width, _yPos + _height, Color.Black);
+        DrawRect(_parentGuiScreen.mc.guiBatch, _xPos - 1, _yPos - 1, _xPos + _width + 1, _yPos + _height + 1, Color.GrayA0);
+        DrawRect(_parentGuiScreen.mc.guiBatch, _xPos, _yPos, _xPos + _width, _yPos + _height, Color.Black);
 
         if (IsEnabled)
         {

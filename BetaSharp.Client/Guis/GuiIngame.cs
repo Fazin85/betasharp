@@ -3,6 +3,7 @@ using BetaSharp.Blocks;
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Guis;
 using BetaSharp.Client.Rendering.Items;
 using BetaSharp.Inventorys;
 using BetaSharp.Items;
@@ -43,6 +44,7 @@ public class GuiIngame : Gui
         int scaledHeight = scaled.ScaledHeight;
         TextRenderer font = _mc.fontRenderer;
         _mc.gameRenderer.setupHudRender();
+        _mc.guiBatch.Begin(scaled);
         GLManager.GL.Enable(GLEnum.Blend);
         if (Minecraft.isFancyGraphicsEnabled())
         {
@@ -62,17 +64,19 @@ public class GuiIngame : Gui
         }
 
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        _mc.textureManager.BindTexture(_mc.textureManager.GetTextureId("/gui/gui.png"));
+        var guiTex = _mc.textureManager.GetTextureId("/gui/gui.png");
+        _mc.textureManager.BindTexture(guiTex);
         InventoryPlayer inventory = _mc.player.inventory;
         _zLevel = -90.0F;
-        DrawTexturedModalRect(scaledWidth / 2 - 91, scaledHeight - 22, 0, 0, 182, 22);
-        DrawTexturedModalRect(scaledWidth / 2 - 91 - 1 + inventory.selectedSlot * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
-        _mc.textureManager.BindTexture(_mc.textureManager.GetTextureId("/gui/icons.png"));
+        DrawTexturedModalRect(_mc.guiBatch, scaledWidth / 2 - 91, scaledHeight - 22, 0, 0, 182, 22, guiTex);
+        DrawTexturedModalRect(_mc.guiBatch, scaledWidth / 2 - 91 - 1 + inventory.selectedSlot * 20, scaledHeight - 22 - 1, 0, 22, 24, 22, guiTex);
+        var iconsTex = _mc.textureManager.GetTextureId("/gui/icons.png");
+        _mc.textureManager.BindTexture(iconsTex);
         if (_mc.options.CameraMode == EnumCameraMode.FirstPerson)
         {
             GLManager.GL.Enable(GLEnum.Blend);
             GLManager.GL.BlendFunc(GLEnum.OneMinusDstColor, GLEnum.OneMinusSrcColor);
-            DrawTexturedModalRect(scaledWidth / 2 - 7, scaledHeight / 2 - 7, 0, 0, 16, 16);
+            DrawTexturedModalRect(_mc.guiBatch, scaledWidth / 2 - 7, scaledHeight / 2 - 7, 0, 0, 16, 16, iconsTex);
             GLManager.GL.Disable(GLEnum.Blend);
         }
         bool heartBlink = _mc.player.hearts / 3 % 2 == 1;
@@ -100,17 +104,17 @@ public class GuiIngame : Gui
                     k = scaledWidth / 2 + 91 - i * 8 - 9;
                     if (i * 2 + 1 < armorValue)
                     {
-                        DrawTexturedModalRect(k, j, 34, 9, 9, 9);
+                        DrawTexturedModalRect(_mc.guiBatch, k, j, 34, 9, 9, 9, iconsTex);
                     }
 
                     if (i * 2 + 1 == armorValue)
                     {
-                        DrawTexturedModalRect(k, j, 25, 9, 9, 9);
+                        DrawTexturedModalRect(_mc.guiBatch, k, j, 25, 9, 9, 9, iconsTex);
                     }
 
                     if (i * 2 + 1 > armorValue)
                     {
-                        DrawTexturedModalRect(k, j, 16, 9, 9, 9);
+                        DrawTexturedModalRect(_mc.guiBatch, k, j, 16, 9, 9, 9, iconsTex);
                     }
                 }
 
@@ -126,28 +130,28 @@ public class GuiIngame : Gui
                     j += _rand.NextInt(2);
                 }
 
-                DrawTexturedModalRect(x, j, 16 + blinkIndex * 9, 0, 9, 9);
+                DrawTexturedModalRect(_mc.guiBatch, x, j, 16 + blinkIndex * 9, 0, 9, 9, iconsTex);
                 if (heartBlink)
                 {
                     if (i * 2 + 1 < lastHealth)
                     {
-                        DrawTexturedModalRect(x, j, 70, 0, 9, 9);
+                        DrawTexturedModalRect(_mc.guiBatch, x, j, 70, 0, 9, 9, iconsTex);
                     }
 
                     if (i * 2 + 1 == lastHealth)
                     {
-                        DrawTexturedModalRect(x, j, 79, 0, 9, 9);
+                        DrawTexturedModalRect(_mc.guiBatch, x, j, 79, 0, 9, 9, iconsTex);
                     }
                 }
 
                 if (i * 2 + 1 < health)
                 {
-                    DrawTexturedModalRect(x, j, 52, 0, 9, 9);
+                    DrawTexturedModalRect(_mc.guiBatch, x, j, 52, 0, 9, 9, iconsTex);
                 }
 
                 if (i * 2 + 1 == health)
                 {
-                    DrawTexturedModalRect(x, j, 61, 0, 9, 9);
+                    DrawTexturedModalRect(_mc.guiBatch, x, j, 61, 0, 9, 9, iconsTex);
                 }
             }
 
@@ -160,11 +164,11 @@ public class GuiIngame : Gui
                 {
                     if (k < i)
                     {
-                        DrawTexturedModalRect(scaledWidth / 2 - 91 + k * 8, scaledHeight - 32 - 9, 16, 18, 9, 9);
+                        DrawTexturedModalRect(_mc.guiBatch, scaledWidth / 2 - 91 + k * 8, scaledHeight - 32 - 9, 16, 18, 9, 9, iconsTex);
                     }
                     else
                     {
-                        DrawTexturedModalRect(scaledWidth / 2 - 91 + k * 8, scaledHeight - 32 - 9, 25, 18, 9, 9);
+                        DrawTexturedModalRect(_mc.guiBatch, scaledWidth / 2 - 91 + k * 8, scaledHeight - 32 - 9, 25, 18, 9, 9, iconsTex);
                     }
                 }
             }
@@ -198,7 +202,7 @@ public class GuiIngame : Gui
             }
 
             j = (int)(220.0F * sleepAlpha) << 24 | 1052704;
-            DrawRect(0, 0, scaledWidth, scaledHeight, Guis.Color.FromArgb((uint)j));
+            DrawRect(_mc.guiBatch, 0, 0, scaledWidth, scaledHeight, Color.FromArgb((uint)j));
             GLManager.GL.Enable(GLEnum.AlphaTest);
             GLManager.GL.Enable(GLEnum.DepthTest);
         }
@@ -313,7 +317,7 @@ public class GuiIngame : Gui
                     byte left = 2;
                     int y = -j * 9;
                     debugStr = cl.Message;
-                    DrawRect(left, y - 1, left + 320, y + 8, Color.FromArgb((uint)(alpha / 2 << 24)));
+                    DrawRect(_mc.guiBatch, left, y - 1, left + 320, y + 8, Color.FromArgb((uint)(alpha / 2 << 24)));
                     GLManager.GL.Enable(GLEnum.Blend);
                     font.DrawStringWithShadow(debugStr, left, y, Color.FromArgb(0xFFFFFF + (uint)(alpha << 24)));
                 }
@@ -358,9 +362,11 @@ public class GuiIngame : Gui
                 thumbY = top + (int)((long)(maxScroll - _chatScrollPos) * range / maxScroll);
 
                 Color thumbColor = _chatScrollbarDragging ? Color.GrayAA : Color.GrayCC;
-                DrawRect(scrollbarX + 1, thumbY, scrollbarX + scrollbarWidth - 1, thumbY + thumbHeight, thumbColor);
+                DrawRect(_mc.guiBatch, scrollbarX + 1, thumbY, scrollbarX + scrollbarWidth - 1, thumbY + thumbHeight, thumbColor);
             }
         }
+
+        _mc.guiBatch.End();
     }
 
     private void renderPumpkinBlur(int screenWidth, int screenHeight)
@@ -370,14 +376,9 @@ public class GuiIngame : Gui
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         GLManager.GL.Disable(GLEnum.AlphaTest);
-        _mc.textureManager.BindTexture(_mc.textureManager.GetTextureId("%blur%/misc/pumpkinblur.png"));
-        Tessellator tess = Tessellator.instance;
-        tess.startDrawingQuads();
-        tess.addVertexWithUV(0.0D, screenHeight, -90.0D, 0.0D, 1.0D);
-        tess.addVertexWithUV(screenWidth, screenHeight, -90.0D, 1.0D, 1.0D);
-        tess.addVertexWithUV(screenWidth, 0.0D, -90.0D, 1.0D, 0.0D);
-        tess.addVertexWithUV(0.0D, 0.0D, -90.0D, 0.0D, 0.0D);
-        tess.draw();
+        var pumpkinTex = _mc.textureManager.GetTextureId("%blur%/misc/pumpkinblur.png");
+        _mc.textureManager.BindTexture(pumpkinTex);
+        _mc.guiBatch.DrawTexturedQuad(0, 0, screenWidth, screenHeight, 0f, 1f, 1f, 0f, Color.White, -90f, (uint)pumpkinTex.Id);
         GLManager.GL.DepthMask(true);
         GLManager.GL.Enable(GLEnum.DepthTest);
         GLManager.GL.Enable(GLEnum.AlphaTest);
@@ -402,14 +403,9 @@ public class GuiIngame : Gui
         GLManager.GL.DepthMask(false);
         GLManager.GL.BlendFunc(GLEnum.Zero, GLEnum.OneMinusSrcColor);
         GLManager.GL.Color4(PrevVignetteBrightness, PrevVignetteBrightness, PrevVignetteBrightness, 1.0F);
-        _mc.textureManager.BindTexture(_mc.textureManager.GetTextureId("%blur%/misc/vignette.png"));
-        Tessellator tess = Tessellator.instance;
-        tess.startDrawingQuads();
-        tess.addVertexWithUV(0.0D, screenHeight, -90.0D, 0.0D, 1.0D);
-        tess.addVertexWithUV(screenWidth, screenHeight, -90.0D, 1.0D, 1.0D);
-        tess.addVertexWithUV(screenWidth, 0.0D, -90.0D, 1.0D, 0.0D);
-        tess.addVertexWithUV(0.0D, 0.0D, -90.0D, 0.0D, 0.0D);
-        tess.draw();
+        var vignetteTex = _mc.textureManager.GetTextureId("%blur%/misc/vignette.png");
+        _mc.textureManager.BindTexture(vignetteTex);
+        _mc.guiBatch.DrawTexturedQuad(0, 0, screenWidth, screenHeight, 0f, 1f, 1f, 0f, Color.White, -90f, (uint)vignetteTex.Id);
         GLManager.GL.DepthMask(true);
         GLManager.GL.Enable(GLEnum.DepthTest);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
@@ -430,18 +426,14 @@ public class GuiIngame : Gui
         GLManager.GL.DepthMask(false);
         GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, portalStrength);
-        _mc.textureManager.BindTexture(_mc.textureManager.GetTextureId("/terrain.png"));
+        var terrainTex = _mc.textureManager.GetTextureId("/terrain.png");
+        _mc.textureManager.BindTexture(terrainTex);
         float u1 = Block.NetherPortal.textureId % 16 / 16.0F;
         float v1 = Block.NetherPortal.textureId / 16 / 16.0F;
         float u2 = (Block.NetherPortal.textureId % 16 + 1) / 16.0F;
         float v2 = (Block.NetherPortal.textureId / 16 + 1) / 16.0F;
-        Tessellator tess = Tessellator.instance;
-        tess.startDrawingQuads();
-        tess.addVertexWithUV(0.0D, screenHeight, -90.0D, (double)u1, (double)v2);
-        tess.addVertexWithUV(screenWidth, screenHeight, -90.0D, (double)u2, (double)v2);
-        tess.addVertexWithUV(screenWidth, 0.0D, -90.0D, (double)u2, (double)v1);
-        tess.addVertexWithUV(0.0D, 0.0D, -90.0D, (double)u1, (double)v1);
-        tess.draw();
+        var portalColor = Color.FromArgb((uint)((byte)(portalStrength * 255) << 24 | 0xFFFFFF));
+        _mc.guiBatch.DrawTexturedQuad(0, 0, screenWidth, screenHeight, u1, v1, u2, v2, portalColor, -90f, (uint)terrainTex.Id);
         GLManager.GL.DepthMask(true);
         GLManager.GL.Enable(GLEnum.DepthTest);
         GLManager.GL.Enable(GLEnum.AlphaTest);

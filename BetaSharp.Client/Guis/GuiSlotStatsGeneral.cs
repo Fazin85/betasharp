@@ -1,4 +1,5 @@
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Guis;
 using BetaSharp.Stats;
 
 namespace BetaSharp.Client.Guis;
@@ -38,7 +39,7 @@ public class GuiSlotStatsGeneral : GuiSlot
         parentStatsGui.DrawDefaultBackground();
     }
 
-    protected override void DrawSlot(int index, int x, int y, int rowHeight, Tessellator tessellator)
+    protected override void DrawSlot(int index, int x, int y, int rowHeight, GuiBatch batch)
     {
         StatBase stat = Stats.Stats.GeneralStats[index];
         parentStatsGui.FontRenderer.DrawStringWithShadow(stat.StatName, x + 2, y + 1, index % 2 == 0 ? Color.White : Color.Gray90);

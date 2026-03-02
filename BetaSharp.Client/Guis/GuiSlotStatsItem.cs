@@ -1,5 +1,6 @@
 using BetaSharp.Client.Guis.Comparators;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Guis;
 using BetaSharp.Stats;
 
 namespace BetaSharp.Client.Guis;
@@ -23,9 +24,9 @@ public class GuiSlotStatsItem : GuiSlotStats<StatCrafting, StatCrafting>
             .ToList();
     }
 
-    protected override void DrawHeader(int x, int y, Tessellator tessellator)
+    protected override void DrawHeader(int x, int y, GuiBatch batch)
     {
-        base.DrawHeader(x, y, tessellator);
+        base.DrawHeader(x, y, batch);
 
         for (int i = 0; i < 3; i++)
         {
@@ -37,7 +38,7 @@ public class GuiSlotStatsItem : GuiSlotStats<StatCrafting, StatCrafting>
         }
     }
 
-    protected override void DrawSlot(int index, int x, int y, int rowHeight, Tessellator tessellator)
+    protected override void DrawSlot(int index, int x, int y, int rowHeight, GuiBatch batch)
     {
         StatCrafting stat = GetStat(index);
         int id = stat.ItemId;

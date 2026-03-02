@@ -1,4 +1,5 @@
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Guis;
 
 namespace BetaSharp.Client.Guis;
 
@@ -42,7 +43,7 @@ public class GuiSlotServer : GuiSlot
         _parent.DrawDefaultBackground();
     }
 
-    protected override void DrawSlot(int index, int x, int y, int height, Tessellator tess)
+    protected override void DrawSlot(int index, int x, int y, int height, GuiBatch batch)
     {
         ServerData server = _parent.GetServerList()[index];
         Gui.DrawString(_parent.FontRenderer, server.Name, x + 2, y + 1, Color.White);

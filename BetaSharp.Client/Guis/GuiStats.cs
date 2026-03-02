@@ -1,5 +1,6 @@
 using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Guis;
 using BetaSharp.Client.Rendering.Items;
 using BetaSharp.Items;
 using BetaSharp.Stats;
@@ -115,18 +116,17 @@ public class GuiStats : GuiScreen
     private void drawSlotTexture(int x, int y, int u, int v)
     {
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/slot.png"));
-        Tessellator tessellator = Tessellator.instance;
-        tessellator.startDrawingQuads();
-        tessellator.addVertexWithUV(x + 0, y + 18, _zLevel, (double)((u + 0) * 0.0078125F), (double)((v + 18) * 0.0078125F));
-        tessellator.addVertexWithUV(x + 18, y + 18, _zLevel, (double)((u + 18) * 0.0078125F), (double)((v + 18) * 0.0078125F));
-        tessellator.addVertexWithUV(x + 18, y + 0, _zLevel, (double)((u + 18) * 0.0078125F), (double)((v + 0) * 0.0078125F));
-        tessellator.addVertexWithUV(x + 0, y + 0, _zLevel, (double)((u + 0) * 0.0078125F), (double)((v + 0) * 0.0078125F));
-        tessellator.draw();
+        var slotTex = mc.textureManager.GetTextureId("/gui/slot.png");
+        mc.textureManager.BindTexture(slotTex);
+        const float uvScale = 0.0078125F;
+        mc.guiBatch.DrawTexturedQuad(x, y, 18, 18,
+            (u + 0) * uvScale, (v + 18) * uvScale,
+            (u + 18) * uvScale, (v + 0) * uvScale,
+            Color.White, _zLevel, (uint)slotTex.Id);
     }
 
     public void drawTranslucentRect(int right, int bottom, int left, int top)
     {
-        DrawGradientRect(right, bottom, left, top, Color.BlackAlphaC0, Color.BlackAlphaC0);
+        DrawGradientRect(mc.guiBatch, right, bottom, left, top, Color.BlackAlphaC0, Color.BlackAlphaC0);
     }
 }

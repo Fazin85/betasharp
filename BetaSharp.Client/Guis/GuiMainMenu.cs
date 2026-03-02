@@ -117,15 +117,14 @@ public class GuiMainMenu : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         DrawDefaultBackground();
-        Tessellator tess = Tessellator.instance;
         short logoWidth = 274;
         int logoX = Width / 2 - logoWidth / 2;
         byte logoY = 30;
-        mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/title/mclogo.png"));
+        var logoTex = mc.textureManager.GetTextureId("/title/mclogo.png");
+        mc.textureManager.BindTexture(logoTex);
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        DrawTexturedModalRect(logoX + 0, logoY + 0, 0, 0, 155, 44);
-        DrawTexturedModalRect(logoX + 155, logoY + 0, 0, 45, 155, 44);
-        tess.setColorOpaque_I(0xFFFFFF);
+        DrawTexturedModalRect(mc.guiBatch, logoX + 0, logoY + 0, 0, 0, 155, 44, logoTex);
+        DrawTexturedModalRect(mc.guiBatch, logoX + 155, logoY + 0, 0, 45, 155, 44, logoTex);
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(Width / 2 + 90, 70.0F, 0.0F);
         GLManager.GL.Rotate(-20.0F, 0.0F, 0.0F, 1.0F);

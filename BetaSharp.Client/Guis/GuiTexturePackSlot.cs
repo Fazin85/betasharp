@@ -1,4 +1,5 @@
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Guis;
 using BetaSharp.Client.Resource.Pack;
 using java.util;
 
@@ -44,20 +45,14 @@ public class GuiTexturePackSlot : GuiSlot
         _parentTexturePackGui.DrawDefaultBackground();
     }
 
-    protected override void DrawSlot(int index, int x, int y, int slotHeight, Tessellator tess)
+    protected override void DrawSlot(int index, int x, int y, int slotHeight, GuiBatch batch)
     {
         var pack = _parentTexturePackGui.mc.texturePackList.AvailableTexturePacks[index];
-        pack.BindThumbnailTexture(_parentTexturePackGui.mc);
+        var tex = pack.BindThumbnailTexture(_parentTexturePackGui.mc);
 
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
 
-        tess.startDrawingQuads();
-        tess.setColorOpaque_I(0xFFFFFF);
-        tess.addVertexWithUV(x, y + slotHeight, 0.0D, 0.0D, 1.0D);
-        tess.addVertexWithUV(x + 32, y + slotHeight, 0.0D, 1.0D, 1.0D);
-        tess.addVertexWithUV(x + 32, y, 0.0D, 1.0D, 0.0D);
-        tess.addVertexWithUV(x, y, 0.0D, 0.0D, 0.0D);
-        tess.draw();
+        batch.DrawTexturedQuad(x, y, 32, slotHeight, 0f, 1f, 1f, 0f, Color.White, 0f, (uint)(tex?.Id ?? 0));
 
         Gui.DrawString(_parentTexturePackGui.FontRenderer, pack.TexturePackFileName, x + 32 + 2, y + 1, Color.White);
         Gui.DrawString(_parentTexturePackGui.FontRenderer, pack.FirstDescriptionLine, x + 32 + 2, y + 12,  Color.Gray80);

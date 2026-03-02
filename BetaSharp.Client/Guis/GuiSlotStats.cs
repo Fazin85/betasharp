@@ -1,4 +1,5 @@
 using BetaSharp.Client.Input;
+using BetaSharp.Client.Rendering.Guis;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Items;
 using BetaSharp.Stats;
@@ -21,7 +22,7 @@ public abstract class GuiSlotStats<T, K>(GuiStats statsGui) : GuiSlot(statsGui.m
 
     protected override void DrawBackground() => statsGui.DrawDefaultBackground();
 
-    protected override void DrawHeader(int x, int y, Tessellator tess)
+    protected override void DrawHeader(int x, int y, GuiBatch batch)
     {
         if (!Mouse.isButtonDown(0))
             HoveredColumn = -1;
@@ -98,7 +99,7 @@ public abstract class GuiSlotStats<T, K>(GuiStats statsGui) : GuiSlot(statsGui.m
                         int textX = mouseX + 12;
                         int textY = mouseY - 12;
                         int textWidth = statsGui.FontRenderer.GetStringWidth(translated);
-                        statsGui.drawTranslucentRect(textX - 3, textY - 3, textX + textWidth + 3, textY + 8 + 3);
+                        statsGui.drawTranslucentRect(textX + textWidth + 3, textY + 8 + 3, textX - 3, textY - 3);
                         statsGui.FontRenderer.DrawStringWithShadow(translated, textX, textY, Color.White);
                     }
                 }
@@ -117,7 +118,7 @@ public abstract class GuiSlotStats<T, K>(GuiStats statsGui) : GuiSlot(statsGui.m
                 int textX = x + 12;
                 int textY = y - 12;
                 int textWidth = statsGui.FontRenderer.GetStringWidth(translated);
-                statsGui.drawTranslucentRect(textX - 3, textY - 3, textX + textWidth + 3, textY + 8 + 3);
+                statsGui.drawTranslucentRect(textX + textWidth + 3, textY + 8 + 3, textX - 3, textY - 3);
                 statsGui.FontRenderer.DrawStringWithShadow(translated, textX, textY, Color.White);
             }
         }

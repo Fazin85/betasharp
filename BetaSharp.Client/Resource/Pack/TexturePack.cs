@@ -1,3 +1,5 @@
+using BetaSharp.Client.Rendering.Core.Textures;
+
 namespace BetaSharp.Client.Resource.Pack;
 
 public abstract class TexturePack
@@ -23,8 +25,9 @@ public abstract class TexturePack
     {
     }
 
-    public virtual void BindThumbnailTexture(Minecraft mc)
+    public virtual TextureHandle? BindThumbnailTexture(Minecraft mc)
     {
+        return null;
     }
 
     public virtual Stream? GetResourceAsStream(string path)

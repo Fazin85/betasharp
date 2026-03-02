@@ -62,9 +62,9 @@ public abstract class GuiContainer : GuiScreen
 
                 GLManager.GL.Disable(GLEnum.Lighting);
                 GLManager.GL.Disable(GLEnum.DepthTest);
-                int sx = slot.xDisplayPosition;
-                int sy = slot.yDisplayPosition;
-                DrawGradientRect(sx, sy, sx + 16, sy + 16, Color.BackgroundWhiteAlpha, Color.BackgroundWhiteAlpha);
+                int sx = guiLeft + slot.xDisplayPosition;
+                int sy = guiTop + slot.yDisplayPosition;
+                DrawGradientRect(mc.guiBatch, sx, sy, sx + 16, sy + 16, Color.BackgroundWhiteAlpha, Color.BackgroundWhiteAlpha);
                 GLManager.GL.Enable(GLEnum.Lighting);
                 GLManager.GL.Enable(GLEnum.DepthTest);
             }
@@ -76,18 +76,18 @@ public abstract class GuiContainer : GuiScreen
         Lighting.turnOff();
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.Disable(GLEnum.DepthTest);
-        DrawGuiContainerForegroundLayer();
+        DrawGuiContainerForegroundLayer(guiLeft, guiTop);
 
         if (playerInv.getCursorStack() == null && hoveredSlot != null && hoveredSlot.hasStack())
         {
             string itemName = ("" + TranslationStorage.Instance.TranslateNamedKey(hoveredSlot.getStack().getItemName())).Trim();
             if (itemName.Length > 0)
             {
-                int tipX = mouseX - guiLeft + 12;
-                int tipY = mouseY - guiTop - 12;
+                int tipX = guiLeft + (mouseX - guiLeft + 12);
+                int tipY = guiTop + (mouseY - guiTop - 12);
                 int textWidth = FontRenderer.GetStringWidth(itemName);
 
-                DrawGradientRect(tipX - 3, tipY - 3, tipX + textWidth + 3, tipY + 8 + 3, Color.BlackAlphaC0, Color.BlackAlphaC0);
+                DrawGradientRect(mc.guiBatch, tipX - 3, tipY - 3, tipX + textWidth + 3, tipY + 8 + 3, Color.BlackAlphaC0, Color.BlackAlphaC0);
                 FontRenderer.DrawStringWithShadow(itemName, tipX, tipY, Color.White);
             }
         }
@@ -105,7 +105,7 @@ public abstract class GuiContainer : GuiScreen
 
             GLManager.GL.Translate(0.0F, 0.0F, 32.0F);
             _itemRenderer.renderItemIntoGUI(FontRenderer, mc.textureManager, playerInv.getCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8);
-            _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, mc.textureManager, playerInv.getCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8);
+            _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, mc.textureManager, playerInv.getCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8, guiLeft, guiTop);
 
             Lighting.turnOff();
             GLManager.GL.Disable(GLEnum.Lighting);
@@ -120,14 +120,16 @@ public abstract class GuiContainer : GuiScreen
         GLManager.GL.Enable(GLEnum.DepthTest);
     }
 
-    protected virtual void DrawGuiContainerForegroundLayer() { }
+    protected virtual void DrawGuiContainerForegroundLayer(int guiLeft, int guiTop) { }
 
     protected abstract void DrawGuiContainerBackgroundLayer(float partialTicks);
 
     private void DrawSlotInventory(Slot slot)
     {
-        int x = slot.xDisplayPosition;
-        int y = slot.yDisplayPosition;
+        int guiLeft = (Width - _xSize) / 2;
+        int guiTop = (Height - _ySize) / 2;
+        int lx = slot.xDisplayPosition;
+        int ly = slot.yDisplayPosition;
         ItemStack item = slot.getStack();
         if (item == null)
         {
@@ -135,15 +137,16 @@ public abstract class GuiContainer : GuiScreen
             if (iconIdx >= 0)
             {
                 GLManager.GL.Disable(GLEnum.Lighting);
-                mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/items.png"));
-                DrawTexturedModalRect(x, y, iconIdx % 16 * 16, iconIdx / 16 * 16, 16, 16);
+                var itemsTex = mc.textureManager.GetTextureId("/gui/items.png");
+                mc.textureManager.BindTexture(itemsTex);
+                DrawTexturedModalRect(mc.guiBatch, guiLeft + lx, guiTop + ly, iconIdx % 16 * 16, iconIdx / 16 * 16, 16, 16, itemsTex);
                 GLManager.GL.Enable(GLEnum.Lighting);
                 return;
             }
         }
 
-        _itemRenderer.renderItemIntoGUI(FontRenderer, mc.textureManager, item, x, y);
-        _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, mc.textureManager, item, x, y);
+        _itemRenderer.renderItemIntoGUI(FontRenderer, mc.textureManager, item, lx, ly);
+        _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, mc.textureManager, item, lx, ly, guiLeft, guiTop);
     }
 
     private Slot GetSlotAtPosition(int mouseX, int mouseY)

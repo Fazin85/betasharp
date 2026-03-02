@@ -51,7 +51,7 @@ public class GuiGameOver : GuiScreen
 
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        DrawGradientRect(0, 0, Width, Height, Color.GameOverBackgroundDarkRed, Color.GameOverBackgroundRed);
+        DrawGradientRect(mc.guiBatch, 0, 0, Width, Height, Color.GameOverBackgroundDarkRed, Color.GameOverBackgroundRed);
         GLManager.GL.PushMatrix();
         GLManager.GL.Scale(2.0F, 2.0F, 2.0F);
         DrawCenteredString(FontRenderer, "Game over!", Width / 2 / 2, 30, Color.White);

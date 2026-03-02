@@ -96,17 +96,16 @@ public unsafe class EmulatedGL : LegacyGL
 
     internal void ActivateShader()
     {
-        if (_currentProgram != _shader.Program)
-        {
-            SilkGL.UseProgram(_shader.Program);
-            _currentProgram = _shader.Program;
-            _dirtyState.DirtyModelView = true;
-            _dirtyState.DirtyProjection = true;
-            _dirtyState.DirtyTextureMatrix = true;
-            _dirtyState.StateDirty = true;
-            if (_lightingState.LightingEnabled) _dirtyState.DirtyLighting = true;
-            if (_fogState.FogEnabled) _dirtyState.DirtyFog = true;
-        }
+        // Always switch to FixedFunctionShader; _currentProgram can be stale when GuiBatch/ImGui
+        // use silkGl.UseProgram directly and bypass our tracking.
+        SilkGL.UseProgram(_shader.Program);
+        _currentProgram = _shader.Program;
+        _dirtyState.DirtyModelView = true;
+        _dirtyState.DirtyProjection = true;
+        _dirtyState.DirtyTextureMatrix = true;
+        _dirtyState.StateDirty = true;
+        if (_lightingState.LightingEnabled) _dirtyState.DirtyLighting = true;
+        if (_fogState.FogEnabled) _dirtyState.DirtyFog = true;
 
         if (_dirtyState.DirtyProjection) { _shader.SetProjection(_projectionStack.Top); _dirtyState.DirtyProjection = false; }
         if (_dirtyState.DirtyTextureMatrix) { _shader.SetTextureMatrix(_textureStack.Top); _dirtyState.DirtyTextureMatrix = false; }
@@ -372,6 +371,7 @@ public unsafe class EmulatedGL : LegacyGL
             case GLEnum.Light1: return;
             case GLEnum.ColorMaterial: return;
             case GLEnum.RescaleNormal: return;
+            case GLEnum.Normalize: return; // Deprecated in core GL; shader handles normals.
         }
         if (_displayLists.IsCompiling) return;
         SilkGL.Enable(cap);
@@ -389,6 +389,7 @@ public unsafe class EmulatedGL : LegacyGL
             case GLEnum.Light1: return;
             case GLEnum.ColorMaterial: return;
             case GLEnum.RescaleNormal: return;
+            case GLEnum.Normalize: return;
         }
         if (_displayLists.IsCompiling) return;
         SilkGL.Disable(cap);
@@ -509,6 +510,11 @@ public unsafe class EmulatedGL : LegacyGL
         _dirtyState.DirtyProjection = true;
         _dirtyState.DirtyTextureMatrix = true;
         base.UseProgram(program);
+    }
+
+    public override void RestoreWorldRenderingState()
+    {
+        UseProgram(_shader.Program);
     }
 
     public override void GetFloat(GLEnum pname, float* data)

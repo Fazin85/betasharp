@@ -31,7 +31,8 @@ public class GuiParticle : Gui
 
     public void render(float partialTicks)
     {
-        mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/particles.png"));
+        var particlesTex = mc.textureManager.GetTextureId("/gui/particles.png");
+        mc.textureManager.BindTexture(particlesTex);
 
         for (int i = 0; i < particles.Count; ++i)
         {
@@ -43,7 +44,7 @@ public class GuiParticle : Gui
             float g = (float)(p.PrevG + (p.G - p.PrevG) * partialTicks);
             float b = (float)(p.PrevB + (p.B - p.PrevB) * partialTicks);
             GLManager.GL.Color4(r, g, b, alpha);
-            DrawTexturedModalRect(x, y, 40, 0, 8, 8);
+            DrawTexturedModalRect(mc.guiBatch, x, y, 40, 0, 8, 8, particlesTex);
         }
 
     }

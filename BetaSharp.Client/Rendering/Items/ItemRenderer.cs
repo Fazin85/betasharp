@@ -186,13 +186,13 @@ public class ItemRenderer : EntityRenderer
             float var9 = (var8 >> 16 & 255) / 255.0F;
             float var10 = (var8 >> 8 & 255) / 255.0F;
             var11 = (var8 & 255) / 255.0F;
-            if (useCustomDisplayColor)
-            {
-                GLManager.GL.Color4(var9, var10, var11, 1.0F);
-            }
+            float r = useCustomDisplayColor ? var9 : 1.0F;
+            float g = useCustomDisplayColor ? var10 : 1.0F;
+            float b = useCustomDisplayColor ? var11 : 1.0F;
 
-            renderTexturedQuad(var6, var7, var5 % 16 * 16, var5 / 16 * 16, 16, 16);
+            renderTexturedQuad(var6, var7, var5 % 16 * 16, var5 / 16 * 16, 16, 16, r, g, b);
             GLManager.GL.Enable(GLEnum.Lighting);
+            GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         }
 
         GLManager.GL.Enable(GLEnum.CullFace);
@@ -206,7 +206,7 @@ public class ItemRenderer : EntityRenderer
         }
     }
 
-    public void renderItemOverlayIntoGUI(TextRenderer var1, TextureManager var2, ItemStack var3, int var4, int var5)
+    public void renderItemOverlayIntoGUI(TextRenderer var1, TextureManager var2, ItemStack var3, int var4, int var5, int screenOffsetX = 0, int screenOffsetY = 0)
     {
         if (var3 != null)
         {
@@ -215,7 +215,7 @@ public class ItemRenderer : EntityRenderer
                 string var6 = "" + var3.count;
                 GLManager.GL.Disable(GLEnum.Lighting);
                 GLManager.GL.Disable(GLEnum.DepthTest);
-                var1.DrawStringWithShadow(var6, var4 + 19 - 2 - var1.GetStringWidth(var6), var5 + 6 + 3, Color.White);
+                var1.DrawStringWithShadow(var6, screenOffsetX + var4 + 19 - 2 - var1.GetStringWidth(var6), screenOffsetY + var5 + 6 + 3, Color.White);
                 GLManager.GL.Enable(GLEnum.Lighting);
                 GLManager.GL.Enable(GLEnum.DepthTest);
             }
@@ -253,13 +253,14 @@ public class ItemRenderer : EntityRenderer
         var1.draw();
     }
 
-    public void renderTexturedQuad(int var1, int var2, int var3, int var4, int var5, int var6)
+    public void renderTexturedQuad(int var1, int var2, int var3, int var4, int var5, int var6, float r = 1f, float g = 1f, float b = 1f)
     {
         float var7 = 0.0F;
         float var8 = 1 / 256f;
         float var9 = 1 / 256f;
         Tessellator var10 = Tessellator.instance;
         var10.startDrawingQuads();
+        var10.setColorRGBA_F(r, g, b, 1.0F);
         var10.addVertexWithUV(var1 + 0, var2 + var6, (double)var7, (double)((var3 + 0) * var8), (double)((var4 + var6) * var9));
         var10.addVertexWithUV(var1 + var5, var2 + var6, (double)var7, (double)((var3 + var5) * var8), (double)((var4 + var6) * var9));
         var10.addVertexWithUV(var1 + var5, var2 + 0, (double)var7, (double)((var3 + var5) * var8), (double)((var4 + 0) * var9));

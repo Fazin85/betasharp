@@ -120,14 +120,14 @@ public class GuiAchievement : Gui
         double animationProgress = calculateAnimationProgress(elapsedTime);
         int achievementX = _achievementWindowWidth - 160;
         int achievementY = 0 - (int)(animationProgress * 36.0D);
-        int achievementTextureId = _theGame.textureManager.GetTextureId("/achievement/bg.png").Id;
+        var achTex = _theGame.textureManager.GetTextureId("/achievement/bg.png");
 
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         GLManager.GL.Enable(GLEnum.Lighting);
-        _theGame.textureManager.BindTexture(_theGame.textureManager.GetTextureId("/achievement/bg.png"));
+        _theGame.textureManager.BindTexture(achTex);
         GLManager.GL.Disable(GLEnum.Lighting);
 
-        DrawTexturedModalRect(achievementX, achievementY, 96, 202, 160, 32);
+        DrawTexturedModalRect(_theGame.guiBatch, achievementX, achievementY, 96, 202, 160, 32, achTex);
         drawAchievementText(achievementX, achievementY);
 
         GLManager.GL.PushMatrix();

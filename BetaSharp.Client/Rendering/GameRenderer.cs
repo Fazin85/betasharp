@@ -280,12 +280,26 @@ public class GameRenderer
                 GLManager.GL.MatrixMode(GLEnum.Modelview);
                 GLManager.GL.LoadIdentity();
                 setupHudRender();
+                GLManager.GL.Clear(ClearBufferMask.ColorBufferBit);
             }
 
             if (_client.currentScreen != null)
             {
                 GLManager.GL.Clear(ClearBufferMask.DepthBufferBit);
-                _client.currentScreen.Render(var16, var17, tickDelta);
+                GLManager.GL.Disable(GLEnum.DepthTest);
+                GLManager.GL.Enable(GLEnum.Blend);
+                GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
+                var scaledRes = new ScaledResolution(_client.options, _client.displayWidth, _client.displayHeight);
+                _client.guiBatch.Begin(scaledRes);
+                try
+                {
+                    _client.currentScreen.Render(var16, var17, tickDelta);
+                }
+                finally
+                {
+                    _client.guiBatch.End();
+                }
+                GLManager.GL.Enable(GLEnum.DepthTest);
                 if (_client.currentScreen != null && _client.currentScreen.ParticlesGui != null)
                 {
                     _client.currentScreen.ParticlesGui.render(tickDelta);

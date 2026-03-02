@@ -492,6 +492,11 @@ public unsafe class LegacyGL : IGL
         SilkGL.UseProgram(program);
     }
 
+    public virtual void RestoreWorldRenderingState()
+    {
+        // No-op for base LegacyGL; EmulatedGL overrides to restore FixedFunctionShader.
+    }
+
     public virtual void VertexAttribIPointer(uint index, int size, GLEnum type, uint stride, void* pointer)
     {
         SilkGL.VertexAttribIPointer(index, size, type, stride, pointer);

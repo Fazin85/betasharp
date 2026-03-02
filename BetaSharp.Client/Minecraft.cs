@@ -34,6 +34,7 @@ using Silk.NET.OpenGL.Legacy.Extensions.ImGui;
 using Exception = System.Exception;
 using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Client.Rendering.Core.OpenGL;
+using BetaSharp.Client.Rendering.Guis;
 
 namespace BetaSharp.Client;
 
@@ -69,6 +70,7 @@ public partial class Minecraft
     private int tempDisplayHeight;
     public GuiAchievement guiAchievement;
     public GuiIngame ingameGUI;
+    public GuiBatch guiBatch;
     public bool skipRenderWorld;
     public HitResult objectMouseOver = new HitResult(HitResultType.MISS);
     public GameOptions options;
@@ -196,6 +198,7 @@ public partial class Minecraft
             Display.getGlfw().SetWindowSizeLimits(Display.getWindowHandle(), 850, 480, maximumWidth, maximumHeight);
 
             GLManager.Init(Display.getGL()!);
+            guiBatch = new GuiBatch(((LegacyGL)GLManager.GL).SilkGL);
 
             Display.getGlfw().SwapInterval(options.VSync ? 1 : 0);
 
@@ -210,7 +213,7 @@ public partial class Minecraft
         }
         texturePackList = new TexturePacks(this, new DirectoryInfo(mcDataDir.getAbsolutePath()));
         textureManager = new TextureManager(this, texturePackList, options);
-        fontRenderer = new TextRenderer(options, textureManager);
+        fontRenderer = new TextRenderer(options, textureManager, guiBatch);
         skinManager = new SkinManager(textureManager);
         WaterColors.loadColors(textureManager.GetColors("/misc/watercolor.png"));
         GrassColors.loadColors(textureManager.GetColors("/misc/grasscolor.png"));
