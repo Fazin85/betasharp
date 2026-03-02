@@ -683,7 +683,7 @@ public unsafe class EmulatedGL : IGL
 
         fixed (byte* ptr = vertexData)
         {
-            _device.UpdateBuffer(_stagingVertexBuffer, 0, (IntPtr)ptr, requiredSize);
+            GLManager.CommandList.UpdateBuffer(_stagingVertexBuffer, 0, (IntPtr)ptr, requiredSize);
         }
 
         DrawWithBuffer(mode, _stagingVertexBuffer, vertexCount);

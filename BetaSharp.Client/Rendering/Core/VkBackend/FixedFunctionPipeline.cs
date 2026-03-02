@@ -170,7 +170,7 @@ public class FixedFunctionPipeline : IDisposable
 
     public void UpdateUniforms(ref FixedFunctionUniforms uniforms)
     {
-        _device.UpdateBuffer(UniformBuffer, 0, ref uniforms);
+        GLManager.CommandList.UpdateBuffer(UniformBuffer, 0, ref uniforms);
     }
 
     public ResourceSet GetDefaultTextureResourceSet() => _defaultTextureResourceSet;
