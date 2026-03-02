@@ -83,7 +83,7 @@ public class CraftingScreenHandler : ScreenHandler
     public override ItemStack quickMove(int slot)
     {
         ItemStack var2 = null;
-        Slot var3 = (Slot)slots.get(slot);
+        Slot var3 = slots[slot];
         if (var3 != null && var3.hasStack())
         {
             ItemStack var4 = var3.getStack();

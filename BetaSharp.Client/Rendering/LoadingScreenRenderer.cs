@@ -137,7 +137,7 @@ public class LoadingScreenRenderer : LoadingDisplay
 
                 try
                 {
-                    java.lang.Thread.yield();
+                    Thread.Yield();
                 }
                 catch (Exception) { }
 

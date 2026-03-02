@@ -75,7 +75,7 @@ public partial class Minecraft
     public SoundManager sndManager = new();
     public MouseHelper mouseHelper;
     public TexturePacks texturePackList;
-    private java.io.File mcDataDir;
+    private string mcDataDir;
     private IWorldStorageSource saveLoader;
     public static long[] frameTimes = new long[512];
     public static long[] tickTimes = new long[512];
@@ -182,8 +182,8 @@ public partial class Minecraft
         Display.setTitle("Minecraft Beta 1.7.3");
 
         mcDataDir = getMinecraftDir();
-        saveLoader = new RegionWorldStorageSource(System.IO.Path.Combine(mcDataDir.getAbsolutePath(), "saves"));
-        options = new GameOptions(this, mcDataDir.getAbsolutePath());
+        saveLoader = new RegionWorldStorageSource(System.IO.Path.Combine(mcDataDir, "saves"));
+        options = new GameOptions(this, mcDataDir);
         Profiler.Enabled = options.DebugMode;
 
         try
@@ -208,7 +208,7 @@ public partial class Minecraft
         {
             _logger.LogError(ex, "Exception");
         }
-        texturePackList = new TexturePacks(this, new DirectoryInfo(mcDataDir.getAbsolutePath()));
+        texturePackList = new TexturePacks(this, new DirectoryInfo(mcDataDir));
         textureManager = new TextureManager(this, texturePackList, options);
         fontRenderer = new TextRenderer(options, textureManager);
         skinManager = new SkinManager(textureManager);
@@ -218,7 +218,7 @@ public partial class Minecraft
         gameRenderer = new GameRenderer(this);
         EntityRenderDispatcher.instance.skinManager = skinManager;
         EntityRenderDispatcher.instance.heldItemRenderer = new HeldItemRenderer(this);
-        statFileWriter = new StatFileWriter(session, mcDataDir.getAbsolutePath());
+        statFileWriter = new StatFileWriter(session, mcDataDir);
 
         StatStringFormatKeyInv format = new(this);
         BetaSharp.Achievements.OpenInventory.GetTranslatedDescription = () =>
@@ -287,7 +287,7 @@ public partial class Minecraft
         GLManager.GL.Viewport(0, 0, (uint)displayWidth, (uint)displayHeight);
         particleManager = new ParticleManager(world, textureManager);
 
-        string dataDirPath = mcDataDir.getAbsolutePath();
+        string dataDirPath = mcDataDir;
 
         _ = new ResourceManager()
             .Add(new BetaResourceDownloader(this, dataDirPath))
@@ -364,9 +364,9 @@ public partial class Minecraft
         tess.draw();
     }
 
-    public static java.io.File getMinecraftDir()
+    public static string getMinecraftDir()
     {
-        return new java.io.File(PathHelper.GetAppDir(nameof(BetaSharp)));
+        return PathHelper.GetAppDir(nameof(BetaSharp));
     }
 
     public IWorldStorageSource getSaveLoader()
@@ -528,7 +528,7 @@ public partial class Minecraft
                         Timer.UpdateTimer();
                     }
 
-                    long tickStartTime = java.lang.System.nanoTime();
+                    long tickStartTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() * 1_000_000L;
                     if (options.DebugMode)
                     {
                         Profiler.PushGroup("runTicks");
@@ -555,7 +555,7 @@ public partial class Minecraft
                         Profiler.PopGroup();
                     }
 
-                    long tickElapsedTime = java.lang.System.nanoTime() - tickStartTime;
+                    long tickElapsedTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() * 1_000_000L - tickStartTime;
                     checkGLError("Pre render");
                     sndManager.UpdateListener(player, Timer.renderPartialTicks);
                     GLManager.GL.Enable(GLEnum.Texture2D);
@@ -623,7 +623,7 @@ public partial class Minecraft
                             toggleFullscreen();
                         }
 
-                        java.lang.Thread.sleep(10L);
+                        Thread.Sleep(10);
                     }
 
                     if (options.ShowDebugInfo)
@@ -632,7 +632,7 @@ public partial class Minecraft
                     }
                     else
                     {
-                        prevFrameTime = java.lang.System.nanoTime();
+                        prevFrameTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() * 1_000_000L;
                     }
 
                     guiAchievement.updateAchievementWindow();
@@ -736,7 +736,7 @@ public partial class Minecraft
                         GLManager.GL.ReadPixels(0, 0, (uint)displayWidth, (uint)displayHeight, PixelFormat.Rgb, PixelType.UnsignedByte, p);
                     }
                 }
-                string result = ScreenShotHelper.saveScreenshot(mcDataDir.getAbsolutePath(), displayWidth, displayHeight, pixels);
+                string result = ScreenShotHelper.saveScreenshot(mcDataDir, displayWidth, displayHeight, pixels);
                 ingameGUI.addChatMessage(result);
             }
         }
@@ -751,10 +751,10 @@ public partial class Minecraft
         long targetFrameTime = 16666666L;
         if (prevFrameTime == -1L)
         {
-            prevFrameTime = java.lang.System.nanoTime();
+            prevFrameTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() * 1_000_000L;
         }
 
-        long currentNanoTime = java.lang.System.nanoTime();
+        long currentNanoTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() * 1_000_000L;
         tickTimes[numRecordedFrameTimes & frameTimes.Length - 1] = tickElapsedTime;
         frameTimes[numRecordedFrameTimes++ & frameTimes.Length - 1] = currentNanoTime - prevFrameTime;
         prevFrameTime = currentNanoTime;

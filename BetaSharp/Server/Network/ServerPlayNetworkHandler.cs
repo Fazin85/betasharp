@@ -13,7 +13,6 @@ using BetaSharp.Server.Internal;
 using BetaSharp.Util;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.util;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Server.Network;
@@ -614,12 +613,12 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
                 player.networkHandler.SendPacket(new ScreenHandlerAcknowledgementPacket(packet.syncId, packet.actionType, false));
                 player.currentScreenHandler.updatePlayerList(player, false);
 
-                int size = player.currentScreenHandler.slots.size();
-                ArrayList var3 = new ArrayList(size);
+                var slotList = player.currentScreenHandler.slots;
+                List<ItemStack?> var3 = new(slotList.Count);
 
-                for (int i = 0; i < size; i++)
+                for (int i = 0; i < slotList.Count; i++)
                 {
-                    var3.add(((Slot)player.currentScreenHandler.slots.get(i)).getStack());
+                    var3.Add(slotList[i].getStack());
                 }
 
                 player.onContentsUpdate(player.currentScreenHandler, var3);

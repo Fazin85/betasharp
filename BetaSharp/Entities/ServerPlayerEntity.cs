@@ -12,7 +12,6 @@ using BetaSharp.Server.Network;
 using BetaSharp.Stats;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.util;
 
 namespace BetaSharp.Entities;
 
@@ -400,7 +399,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     }
 
 
-    public void onContentsUpdate(ScreenHandler handler, List stacks)
+    public void onContentsUpdate(ScreenHandler handler, List<ItemStack?> stacks)
     {
         networkHandler.SendPacket(new InventoryS2CPacket(handler.syncId, stacks));
         networkHandler.SendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, inventory.getCursorStack()));
