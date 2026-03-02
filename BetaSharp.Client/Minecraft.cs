@@ -26,11 +26,9 @@ using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Colors;
 using BetaSharp.Worlds.Storage;
-using ImGuiNET;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Input;
 using Silk.NET.OpenGL.Legacy;
-using Silk.NET.OpenGL.Legacy.Extensions.ImGui;
 using Exception = System.Exception;
 using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Client.Rendering.Core.OpenGL;
@@ -96,9 +94,7 @@ public partial class Minecraft
     long systemTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
 ;
     private int joinPlayerCounter;
-    private ImGuiController imGuiController;
     public InternalServer? internalServer;
-    private GLErrorHandler _glErrorHandler;
 
     public Minecraft(int width, int height, bool isFullscreen)
     {
@@ -176,7 +172,7 @@ public partial class Minecraft
         else
         {
             Display.setDisplayMode(new DisplayMode(displayWidth, displayHeight));
-            Display.setLocation((maximumWidth - displayWidth)  / 2 , (maximumHeight  - displayHeight)  / 2);
+            Display.setLocation((maximumWidth - displayWidth) / 2, (maximumHeight - displayHeight) / 2);
         }
 
         Display.setTitle("Minecraft Beta 1.7.3");
@@ -195,13 +191,13 @@ public partial class Minecraft
             Display.create();
             Display.getGlfw().SetWindowSizeLimits(Display.getWindowHandle(), 850, 480, maximumWidth, maximumHeight);
 
-            GLManager.Init(Display.getGL()!);
+            GLManager.Init(Display.getGraphicsDevice()!);
 
-            Display.getGlfw().SwapInterval(options.VSync ? 1 : 0);
+            // VSync is controlled via Vuldrid swapchain, not GLFW SwapInterval
 
             if (options.DebugMode)
             {
-                _glErrorHandler = new();
+                // GLErrorHandler disabled during Vuldrid migration
             }
         }
         catch (Exception ex)
@@ -226,6 +222,7 @@ public partial class Minecraft
             return format.formatString(BetaSharp.Achievements.OpenInventory.TranslationKey);
         };
 
+        GLManager.BeginFrame();
         loadScreen();
 
         bool anisotropicFiltering = GLManager.GL.IsExtensionPresent("GL_EXT_texture_filter_anisotropic");
@@ -242,18 +239,7 @@ public partial class Minecraft
             GameOptions.MaxAnisotropy = 1.0f;
         }
 
-        try
-        {
-            var window = Display.getWindow();
-            var input = window.CreateInput();
-            imGuiController = new(((LegacyGL)GLManager.GL).SilkGL, window, input);
-            imGuiController.MakeCurrent();
-        }
-        catch (Exception e)
-        {
-            _logger.LogError($"Failed to initialize ImGui: {e}");
-            imGuiController = null;
-        }
+        // ImGui disabled during Vuldrid migration
 
         Keyboard.create(Display.getGlfw(), Display.getWindowHandle());
         Mouse.create(Display.getGlfw(), Display.getWindowHandle(), Display.getWidth(), Display.getHeight());
@@ -315,6 +301,7 @@ public partial class Minecraft
     private void loadScreen()
     {
         ScaledResolution var1 = new(options, displayWidth, displayHeight);
+        GLManager.GL.ClearColor(1.0F, 1.0F, 1.0F, 1.0F);
         GLManager.GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         GLManager.GL.MatrixMode(GLEnum.Projection);
         GLManager.GL.LoadIdentity();
@@ -323,7 +310,6 @@ public partial class Minecraft
         GLManager.GL.LoadIdentity();
         GLManager.GL.Translate(0.0F, 0.0F, -2000.0F);
         GLManager.GL.Viewport(0, 0, (uint)displayWidth, (uint)displayHeight);
-        GLManager.GL.ClearColor(0.0F, 0.0F, 0.0F, 0.0F);
         Tessellator tessellator = Tessellator.instance;
         GLManager.GL.Disable(GLEnum.Lighting);
         GLManager.GL.Enable(GLEnum.Texture2D);
@@ -592,28 +578,7 @@ public partial class Minecraft
                         }
                     }
 
-                    if (imGuiController != null && Timer.DeltaTime > 0.0f && options.ShowDebugInfo && options.DebugMode)
-                    {
-                        imGuiController.Update(Timer.DeltaTime);
-                        ProfilerRenderer.Draw();
-                        ProfilerRenderer.DrawGraph();
-
-                        ImGui.Begin("Render Info");
-                        ImGui.Text($"Chunks Total: {terrainRenderer.chunkRenderer.TotalChunks}");
-                        ImGui.Text($"Chunks Frustum: {terrainRenderer.chunkRenderer.ChunksInFrustum}");
-                        ImGui.Text($"Chunks Occluded: {terrainRenderer.chunkRenderer.ChunksOccluded}");
-                        ImGui.Text($"Chunks Rendered: {terrainRenderer.chunkRenderer.ChunksRendered}");
-                        ImGui.Separator();
-                        ImGui.Text($"Chunk Vertex Buffer Allocated MB: {VertexBuffer<ChunkVertex>.Allocated / 1000000.0}");
-                        ImGui.Text($"ChunkMeshVersion Allocated: {BetaSharp.Util.ChunkMeshVersion.TotalAllocated}");
-                        ImGui.Text($"ChunkMeshVersion Released: {BetaSharp.Util.ChunkMeshVersion.TotalReleased}");
-                        ImGui.Separator();
-                        ImGui.Text($"Texture Binds: {TextureStats.BindsLastFrame} (Avg: {TextureStats.AverageBindsPerFrame:F1}/f)");
-                        ImGui.Text($"Active Textures: {GLTexture.ActiveTextureCount}");
-                        ImGui.End();
-
-                        imGuiController.Render();
-                    }
+                    // ImGui debug rendering disabled during Vuldrid migration
 
                     if (!Display.isActive())
                     {

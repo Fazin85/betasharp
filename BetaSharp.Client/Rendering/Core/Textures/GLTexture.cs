@@ -1,5 +1,6 @@
-using Silk.NET.OpenGL.Legacy;
+using BetaSharp.Client.Rendering.Core.OpenGL;
 using Microsoft.Extensions.Logging;
+using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Rendering.Core.Textures;
 
@@ -13,6 +14,12 @@ public class GLTexture : IDisposable
     public int Width { get; private set; }
     public int Height { get; private set; }
     public static int ActiveTextureCount => s_activeTextures.Count;
+
+    // Sampler state — cached and applied when creating the texture
+    private bool _filterNearest = true;
+    private bool _wrapRepeat = true;
+    private float _anisotropy = 1.0f;
+    private int _maxMipLevel;
 
     public GLTexture(string source)
     {
@@ -33,20 +40,27 @@ public class GLTexture : IDisposable
     public void SetFilter(TextureMinFilter min, TextureMagFilter mag)
     {
         Bind();
+        _filterNearest = mag == TextureMagFilter.Nearest;
+        // Apply via IGL which is now EmulatedGL — this is a no-op there but we track it
         GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMinFilter, (int)min);
         GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMagFilter, (int)mag);
+        // Recreate sampler with new filter if texture already exists
+        UpdateSampler();
     }
 
     public void SetWrap(TextureWrapMode s, TextureWrapMode t)
     {
         Bind();
+        _wrapRepeat = s == TextureWrapMode.Repeat;
         GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureWrapS, (int)s);
         GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureWrapT, (int)t);
+        UpdateSampler();
     }
 
     public void SetMaxLevel(int level)
     {
         Bind();
+        _maxMipLevel = level;
         GLManager.GL.TexParameter(GLEnum.Texture2D, GLEnum.TextureMaxLevel, level);
     }
 
@@ -59,6 +73,9 @@ public class GLTexture : IDisposable
         }
         Bind();
         GLManager.GL.TexImage2D(TextureTarget.Texture2D, level, internalFormat, (uint)width, (uint)height, 0, format, PixelType.UnsignedByte, ptr);
+
+        // After upload, ensure the sampler is created/updated
+        if (level == 0) UpdateSampler();
     }
 
     public unsafe void UploadSubImage(int x, int y, int width, int height, byte* ptr, int level = 0, PixelFormat format = PixelFormat.Rgba)
@@ -69,17 +86,47 @@ public class GLTexture : IDisposable
 
     public void SetAnisotropicFilter(float level)
     {
-        if (GLManager.GL.IsExtensionPresent("GL_EXT_texture_filter_anisotropic"))
-        {
-            Bind();
-            GLManager.GL.TexParameter(GLEnum.Texture2D, (GLEnum)0x84FE, level); // GL_TEXTURE_MAX_ANISOTROPY_EXT
-        }
+        _anisotropy = level;
+        UpdateSampler();
+    }
+
+    private void UpdateSampler()
+    {
+        if (Id == 0) return;
+
+        var gl = GLManager.GL as EmulatedGL;
+        if (gl == null) return;
+
+        // Check if we have a texture registered for this ID
+        if (!gl.TryGetTexture(Id, out var view, out _)) return;
+        if (view == null) return;
+
+        // Create new sampler with current filter/wrap state
+        var addressMode = _wrapRepeat
+            ? global::Vuldrid.SamplerAddressMode.Wrap
+            : global::Vuldrid.SamplerAddressMode.Clamp;
+
+        var filter = _filterNearest
+            ? global::Vuldrid.SamplerFilter.MinPoint_MagPoint_MipPoint
+            : global::Vuldrid.SamplerFilter.MinLinear_MagLinear_MipLinear;
+
+        uint maxAniso = _anisotropy > 1.0f ? (uint)_anisotropy : 0;
+
+        var sampler = GLManager.Factory.CreateSampler(new global::Vuldrid.SamplerDescription(
+            addressMode, addressMode, addressMode,
+            filter,
+            null,
+            maxAniso,
+            0, (uint)_maxMipLevel, 0,
+            global::Vuldrid.SamplerBorderColor.TransparentBlack));
+
+        gl.RegisterTexture(Id, view, sampler);
     }
 
     public void Dispose()
     {
         GC.SuppressFinalize(this);
-        
+
         if (Id != 0)
         {
             GLManager.GL.DeleteTexture(Id);

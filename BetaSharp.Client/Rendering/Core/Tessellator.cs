@@ -248,56 +248,21 @@ public class Tessellator
 
             if (vertexCount > 0)
             {
-                vboIndex = (vboIndex + 1) % vboCount;
-                GLManager.GL.BindBuffer(GLEnum.ArrayBuffer, _vboIds[vboIndex]);
-
-                fixed (int* ptr = rawBuffer)
+                // The rawBuffer contains vertex data in the Vertex layout (32 bytes per vertex).
+                // rawBufferIndex is in number of ints written, so byte count = rawBufferIndex * 4.
+                //TODO: this is shit
+                if (GLManager.GL is OpenGL.EmulatedGL gl)
                 {
-                    GLManager.GL.BufferData(GLEnum.ArrayBuffer, (nuint)(rawBufferIndex * 4), ptr, GLEnum.StreamDraw);
-                }
-
-                if (hasTexture)
-                {
-                    GLManager.GL.TexCoordPointer(2, GLEnum.Float, 32, (void*)12);
-                    GLManager.GL.EnableClientState(GLEnum.TextureCoordArray);
-                }
-                if (hasColor)
-                {
-                    GLManager.GL.ColorPointer(4, ColorPointerType.UnsignedByte, 32, (void*)20);
-                    GLManager.GL.EnableClientState(GLEnum.ColorArray);
-                }
-                if (hasNormals)
-                {
-                    GLManager.GL.NormalPointer(NormalPointerType.Byte, 32, (void*)24);
-                    GLManager.GL.EnableClientState(GLEnum.NormalArray);
-                }
-
-                GLManager.GL.VertexPointer(3, GLEnum.Float, 32, (void*)0);
-
-                GLManager.GL.EnableClientState(GLEnum.VertexArray);
-                if (drawMode == 7 && convertQuadsToTriangles)
-                {
-                    GLManager.GL.DrawArrays(GLEnum.Triangles, 0, (uint)vertexCount);
-                }
-                else
-                {
-                    GLManager.GL.DrawArrays((GLEnum)drawMode, 0, (uint)vertexCount);
-                }
-
-                GLManager.GL.DisableClientState(GLEnum.VertexArray);
-                if (hasTexture)
-                {
-                    GLManager.GL.DisableClientState(GLEnum.TextureCoordArray);
-                }
-
-                if (hasColor)
-                {
-                    GLManager.GL.DisableClientState(GLEnum.ColorArray);
-                }
-
-                if (hasNormals)
-                {
-                    GLManager.GL.DisableClientState(GLEnum.NormalArray);
+                    int byteCount = rawBufferIndex * 4;
+                    ReadOnlySpan<byte> vertexData;
+                    fixed (int* ptr = rawBuffer)
+                    {
+                        vertexData = new ReadOnlySpan<byte>(ptr, byteCount);
+                        GLEnum mode = (drawMode == 7 && convertQuadsToTriangles)
+                            ? GLEnum.Triangles
+                            : (GLEnum)drawMode;
+                        gl.DrawImmediate(mode, vertexData, (uint)vertexCount);
+                    }
                 }
             }
 

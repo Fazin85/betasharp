@@ -1,254 +1,271 @@
-using BetaSharp.Util;
+using System.Runtime.InteropServices;
 using Silk.NET.OpenGL.Legacy;
+using VkBuffer = Vuldrid.DeviceBuffer;
 
 namespace BetaSharp.Client.Rendering.Core.OpenGL;
 
-public unsafe class DisplayListCompiler
+/// <summary>
+/// Vertex format used by display lists and the Tessellator.
+/// Matches the vertex layout expected by the fixed-function pipeline shader.
+/// Layout: Position (12 bytes) + TexCoord (8 bytes) + Color (4 bytes) + Normal (4 bytes) = 28 bytes
+/// Padded to 32 bytes to match the pipeline vertex layout.
+/// </summary>
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public struct EmulatedVertex
 {
-    public enum DLCommandType : byte
-    {
-        DrawChunk,
-        Translate,
-        Color
-    }
+    public float PosX, PosY, PosZ;     // 12 bytes, offset 0
+    public float TexU, TexV;           // 8 bytes, offset 12
+    public byte ColorR, ColorG, ColorB, ColorA; // 4 bytes, offset 20
+    public sbyte NormalX, NormalY, NormalZ, NormalW; // 4 bytes, offset 24
+    public uint _padding;              // 4 bytes, offset 28 (pad to 32)
+}
 
-    internal struct DLCommand
-    {
-        public DLCommandType Type;
-        public uint Vao;
-        public uint Vbo;
-        public int VertexCount;
-        public GLEnum DrawMode;
-        public float X_R, Y_G, Z_B, W_A;
-    }
+/// <summary>
+/// Recorded display list command types.
+/// </summary>
+public enum DLCommandType : byte
+{
+    Draw,
+    Translate,
+    Color,
+    BindTexture,
+    EnableTexture,
+    DisableTexture,
+    CallList,
+}
 
-    private class DisplayList
-    {
-        public PooledList<DLCommand> Commands = new(16);
-    }
+/// <summary>
+/// A single recorded display list command.
+/// </summary>
+[StructLayout(LayoutKind.Explicit)]
+public struct DLCommand
+{
+    [FieldOffset(0)] public DLCommandType Type;
 
-    private readonly GL _gl;
+    // Draw command data
+    [FieldOffset(4)] public GLEnum DrawMode;
+    [FieldOffset(8)] public int DrawOffset;   // byte offset into vertex data
+    [FieldOffset(12)] public int DrawCount;   // vertex count
+
+    // Translate data
+    [FieldOffset(4)] public float TransX;
+    [FieldOffset(8)] public float TransY;
+    [FieldOffset(12)] public float TransZ;
+
+    // Color data
+    [FieldOffset(4)] public float ColorR;
+    [FieldOffset(8)] public float ColorG;
+    [FieldOffset(12)] public float ColorB;
+    [FieldOffset(16)] public float ColorA;
+
+    // Texture data
+    [FieldOffset(4)] public uint TextureId;
+
+    // CallList data
+    [FieldOffset(4)] public uint ListId;
+}
+
+/// <summary>
+/// Compiles and executes display lists using Vuldrid buffers.
+/// </summary>
+public class DisplayListCompiler
+{
+    private readonly EmulatedGL _gl;
+
+    // Display list storage
+    private readonly Dictionary<uint, CompiledDisplayList> _lists = [];
     private uint _nextListId = 1;
-    private readonly Dictionary<uint, DisplayList> _emulatedLists = [];
-    private uint _compilingListId;
-    private DisplayList? _currentList;
 
-    private byte[] _stagingBuffer = new byte[16384];
-    private int _stagingBufferCount = 0;
+    // Recording state
+    private uint _recordingListId;
+    private List<DLCommand>? _recordingCommands;
+    private List<EmulatedVertex>? _recordingVertices;
 
-    private GLEnum _lastDrawMode;
-    private bool _compiledHasTexture;
-    private bool _compiledHasColor;
-    private bool _compiledHasNormals;
-    private uint _compiledStride = 32;
+    public bool IsRecording => _recordingCommands != null;
 
-    public bool IsCompiling { get; private set; }
-
-    public DisplayListCompiler(GL gl)
+    public DisplayListCompiler(EmulatedGL gl)
     {
         _gl = gl;
     }
 
-    public uint GenLists(uint range)
+    public uint AllocateLists(uint range)
     {
-        uint baseId = _nextListId;
-        for (uint i = 0; i < range; i++)
-        {
-            _emulatedLists[_nextListId] = new DisplayList();
-            _nextListId++;
-        }
-        return baseId;
+        uint first = _nextListId;
+        _nextListId += range;
+        return first;
     }
 
-    public void DeleteLists(uint list, uint range)
+    public void BeginList(uint listId)
     {
-        for (uint i = 0; i < range; i++)
-        {
-            uint id = list + i;
-            if (_emulatedLists.TryGetValue(id, out DisplayList? dl))
-            {
-                FreeGpuResources(dl);
-                dl.Commands.Dispose();
-                _emulatedLists.Remove(id);
-            }
-        }
-    }
-
-    public void BeginList(uint list)
-    {
-        IsCompiling = true;
-        _compilingListId = list;
-        _stagingBufferCount = 0;
-        _compiledHasTexture = false;
-        _compiledHasColor = false;
-        _compiledHasNormals = false;
-        _compiledStride = 32;
-
-        if (_emulatedLists.TryGetValue(list, out DisplayList? existing))
-        {
-            FreeGpuResources(existing);
-            existing.Commands.Clear();
-            _currentList = existing;
-        }
-        else
-        {
-            _currentList = new DisplayList();
-            _emulatedLists[list] = _currentList;
-        }
+        _recordingListId = listId;
+        _recordingCommands = [];
+        _recordingVertices = [];
     }
 
     public void EndList()
     {
-        IsCompiling = false;
-        _stagingBufferCount = 0;
-        _currentList = null;
+        if (_recordingCommands == null || _recordingVertices == null)
+            return;
+
+        // Free old list if exists
+        if (_lists.TryGetValue(_recordingListId, out CompiledDisplayList? old))
+        {
+            old.Dispose();
+        }
+
+        var compiled = new CompiledDisplayList(
+            _recordingCommands.ToArray(),
+            _recordingVertices.ToArray(),
+            GLManager.Device);
+
+        _lists[_recordingListId] = compiled;
+
+        _recordingCommands = null;
+        _recordingVertices = null;
     }
 
-    public void CaptureVertexData(byte* data, int byteCount)
+    /// <summary>
+    /// Record a draw command into the current display list.
+    /// </summary>
+    public void RecordDraw(GLEnum mode, ReadOnlySpan<EmulatedVertex> vertices)
     {
-        if (!IsCompiling) return;
+        if (_recordingCommands == null || _recordingVertices == null) return;
 
-        EnsureCapacity(_stagingBufferCount + byteCount);
-        fixed (byte* dst = &_stagingBuffer[0])
+        int offset = _recordingVertices.Count * 32; // 32 bytes per vertex
+        _recordingCommands.Add(new DLCommand
         {
-            System.Buffer.MemoryCopy(data, dst + _stagingBufferCount, byteCount, byteCount);
-        }
-        _stagingBufferCount += byteCount;
-    }
-
-    private void EnsureCapacity(int requiredSize)
-    {
-        if (_stagingBuffer.Length < requiredSize)
-        {
-            int newSize = Math.Max(_stagingBuffer.Length * 2, requiredSize);
-            Array.Resize(ref _stagingBuffer, newSize);
-        }
-    }
-
-    public void SetStride(uint stride) => _compiledStride = stride;
-
-    public void EnableAttribute(GLEnum clientState)
-    {
-        switch (clientState)
-        {
-            case GLEnum.TextureCoordArray: _compiledHasTexture = true; break;
-            case GLEnum.ColorArray: _compiledHasColor = true; break;
-            case GLEnum.NormalArray: _compiledHasNormals = true; break;
-        }
-    }
-
-    public void RecordDraw(GLEnum mode, int vertexCount)
-    {
-        _lastDrawMode = mode;
-
-        if (_stagingBufferCount == 0 || vertexCount == 0) return;
-
-        uint vao = _gl.GenVertexArray();
-        uint vbo = _gl.GenBuffer();
-
-        _gl.BindVertexArray(vao);
-        _gl.BindBuffer(GLEnum.ArrayBuffer, vbo);
-
-        fixed (byte* ptr = &_stagingBuffer[0])
-        {
-            _gl.BufferData(GLEnum.ArrayBuffer, (nuint)_stagingBufferCount, ptr, GLEnum.StaticDraw);
-        }
-
-        uint stride = _compiledStride;
-
-        _gl.EnableVertexAttribArray(0);
-        _gl.VertexAttribPointer(0, 3, GLEnum.Float, false, stride, (void*)0);
-
-        if (_compiledHasColor)
-        {
-            _gl.EnableVertexAttribArray(1);
-            _gl.VertexAttribPointer(1, 4, GLEnum.UnsignedByte, true, stride, (void*)20);
-        }
-        else
-        {
-            _gl.DisableVertexAttribArray(1);
-            _gl.VertexAttrib4(1, 1.0f, 1.0f, 1.0f, 1.0f);
-        }
-
-        if (_compiledHasTexture)
-        {
-            _gl.EnableVertexAttribArray(2);
-            _gl.VertexAttribPointer(2, 2, GLEnum.Float, false, stride, (void*)12);
-        }
-        else
-        {
-            _gl.DisableVertexAttribArray(2);
-        }
-
-        if (_compiledHasNormals)
-        {
-            _gl.EnableVertexAttribArray(3);
-            _gl.VertexAttribPointer(3, 3, GLEnum.Byte, true, stride, (void*)24);
-        }
-        else
-        {
-            _gl.DisableVertexAttribArray(3);
-        }
-
-        _gl.BindVertexArray(0);
-
-        _currentList!.Commands.Add(new DLCommand
-        {
-            Type = DLCommandType.DrawChunk,
-            Vao = vao,
-            Vbo = vbo,
-            VertexCount = vertexCount,
-            DrawMode = _lastDrawMode,
+            Type = DLCommandType.Draw,
+            DrawMode = mode,
+            DrawOffset = offset,
+            DrawCount = vertices.Length,
         });
 
-        _stagingBufferCount = 0;
+        for (int i = 0; i < vertices.Length; i++)
+            _recordingVertices.Add(vertices[i]);
     }
 
     public void RecordTranslate(float x, float y, float z)
     {
-        _currentList!.Commands.Add(new DLCommand { Type = DLCommandType.Translate, X_R = x, Y_G = y, Z_B = z });
+        if (_recordingCommands == null) return;
+        _recordingCommands.Add(new DLCommand
+        {
+            Type = DLCommandType.Translate,
+            TransX = x,
+            TransY = y,
+            TransZ = z
+        });
     }
 
     public void RecordColor(float r, float g, float b, float a)
     {
-        _currentList!.Commands.Add(new DLCommand { Type = DLCommandType.Color, X_R = r, Y_G = g, Z_B = b, W_A = a });
+        if (_recordingCommands == null) return;
+        _recordingCommands.Add(new DLCommand
+        {
+            Type = DLCommandType.Color,
+            ColorR = r,
+            ColorG = g,
+            ColorB = b,
+            ColorA = a
+        });
     }
 
-    public void Execute(uint list, EmulatedGL emuGl)
+    public void RecordBindTexture(uint textureId)
     {
-        if (!_emulatedLists.TryGetValue(list, out DisplayList? dl) || dl.Commands.Count == 0) return;
-
-        Span<DLCommand> span = dl.Commands.Span;
-        for (int i = 0; i < span.Length; i++)
+        if (_recordingCommands == null) return;
+        _recordingCommands.Add(new DLCommand
         {
-            ref DLCommand cmd = ref span[i];
+            Type = DLCommandType.BindTexture,
+            TextureId = textureId
+        });
+    }
+
+    public void RecordCallList(uint listId)
+    {
+        if (_recordingCommands == null) return;
+        _recordingCommands.Add(new DLCommand
+        {
+            Type = DLCommandType.CallList,
+            ListId = listId
+        });
+    }
+
+    public void Execute(uint listId)
+    {
+        if (!_lists.TryGetValue(listId, out CompiledDisplayList? list)) return;
+
+        foreach (ref readonly DLCommand cmd in list.Commands.AsSpan())
+        {
             switch (cmd.Type)
             {
-                case DLCommandType.DrawChunk:
-                    emuGl.ActivateShader();
-                    emuGl.SilkGL.BindVertexArray(cmd.Vao);
-                    emuGl.SilkGL.DrawArrays(cmd.DrawMode, 0, (uint)cmd.VertexCount);
+                case DLCommandType.Draw:
+                    if (list.VertexBuffer != null)
+                    {
+                        _gl.DrawWithBuffer(cmd.DrawMode, list.VertexBuffer, (uint)cmd.DrawCount, (uint)(cmd.DrawOffset / 32));
+                    }
                     break;
+
                 case DLCommandType.Translate:
-                    emuGl.ActiveStack.Translate(cmd.X_R, cmd.Y_G, cmd.Z_B);
-                    emuGl.MarkActiveMatrixDirty();
+                    _gl.Translate(cmd.TransX, cmd.TransY, cmd.TransZ);
                     break;
+
                 case DLCommandType.Color:
-                    emuGl.SilkGL.VertexAttrib4(1, cmd.X_R, cmd.Y_G, cmd.Z_B, cmd.W_A);
+                    _gl.Color4(cmd.ColorR, cmd.ColorG, cmd.ColorB, cmd.ColorA);
+                    break;
+
+                case DLCommandType.BindTexture:
+                    _gl.BindTexture(GLEnum.Texture2D, cmd.TextureId);
+                    break;
+
+                case DLCommandType.CallList:
+                    Execute(cmd.ListId);
                     break;
             }
         }
     }
 
-    private void FreeGpuResources(DisplayList dl)
+    public void DeleteLists(uint first, uint range)
     {
-        foreach (DLCommand cmd in dl.Commands.Span)
+        for (uint i = first; i < first + range; i++)
         {
-            if (cmd.Type == DLCommandType.DrawChunk)
+            if (_lists.Remove(i, out CompiledDisplayList? list))
             {
-                _gl.DeleteBuffer(cmd.Vbo);
-                _gl.DeleteVertexArray(cmd.Vao);
+                list.Dispose();
             }
         }
+    }
+
+    public void Dispose()
+    {
+        foreach (CompiledDisplayList list in _lists.Values)
+            list.Dispose();
+        _lists.Clear();
+    }
+}
+
+/// <summary>
+/// A compiled display list with a GPU vertex buffer and command array.
+/// </summary>
+public class CompiledDisplayList : IDisposable
+{
+    public DLCommand[] Commands { get; }
+    public VkBuffer? VertexBuffer { get; private set; }
+
+    public CompiledDisplayList(DLCommand[] commands, EmulatedVertex[] vertices, global::Vuldrid.GraphicsDevice device)
+    {
+        Commands = commands;
+
+        if (vertices.Length > 0)
+        {
+            uint size = (uint)(vertices.Length * 32);
+            VertexBuffer = device.ResourceFactory.CreateBuffer(
+                new global::Vuldrid.BufferDescription(size, global::Vuldrid.BufferUsage.VertexBuffer));
+            device.UpdateBuffer(VertexBuffer, 0, vertices);
+        }
+    }
+
+    public void Dispose()
+    {
+        VertexBuffer?.Dispose();
+        VertexBuffer = null;
     }
 }

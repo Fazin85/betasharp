@@ -1,21 +1,23 @@
 using BetaSharp.Client.Options;
 using Silk.NET.GLFW;
 using Silk.NET.Maths;
-using Silk.NET.OpenGL.Legacy;
 using Silk.NET.Windowing;
+using Vuldrid;
 
 namespace BetaSharp.Client;
 
 /// <summary>
 /// Display manager class that provides functionality similar to LWJGL's Display class.
-/// Only one display may be open at once.
+/// Now uses a No-API window with Vuldrid (Vulkan) for rendering.
 /// </summary>
 public static unsafe class Display
 {
     private static readonly object _lock = new();
     private static IWindow? _window;
-    private static GL? _gl;
     private static readonly Glfw? _glfw;
+
+    private static GraphicsDevice? _graphicsDevice;
+    private static Swapchain? _swapchain;
 
     // Display properties
     private static DisplayMode _currentMode;
@@ -410,8 +412,7 @@ public static unsafe class Display
         lock (_lock)
         {
             _swapInterval = value;
-            if (isCreated())
-                _window!.VSync = value > 0;
+            // VSync is controlled via swapchain in Vuldrid
         }
     }
 
@@ -424,7 +425,7 @@ public static unsafe class Display
     }
 
     /// <summary>
-    /// Create the OpenGL context.
+    /// Create the window and Vuldrid graphics device.
     /// </summary>
     public static void create()
     {
@@ -439,9 +440,9 @@ public static unsafe class Display
             options.WindowBorder = _resizable ? WindowBorder.Resizable : WindowBorder.Fixed;
             options.VSync = _swapInterval > 0;
             options.IsVisible = true;
-            options.Samples = MSAA_Samples;
-            options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, DebugMode ? ContextFlags.Debug : ContextFlags.Default, new APIVersion(4, 1));
-            
+            options.Samples = 0; // No MSAA through windowing; Vuldrid handles it
+            options.API = GraphicsAPI.None; // No OpenGL — we use Vuldrid/Vulkan
+
             if (_x >= 0 && _y >= 0)
                 options.Position = new Vector2D<int>(_x, _y);
 
@@ -462,14 +463,32 @@ public static unsafe class Display
 
     private static void onLoad()
     {
-        _gl = GL.GetApi(_window);
-        _gl.ClearColor(_r, _g, _b, 1.0f);
-        _gl.Enable(EnableCap.Multisample);
+        // Create Vuldrid GraphicsDevice with a Vulkan backend
+        IntPtr windowHandle = (IntPtr)_window!.Handle;
+
+        GraphicsDeviceOptions gdOptions = new()
+        {
+            PreferStandardClipSpaceYDirection = true,
+            PreferDepthRangeZeroToOne = true,
+            SyncToVerticalBlank = _swapInterval > 0,
+            Debug = DebugMode
+        };
+
+        SwapchainDescription scDesc = new(
+            windowHandle,
+            (uint)_currentMode.getWidth(),
+            (uint)_currentMode.getHeight(),
+            Vuldrid.PixelFormat.D32_Float_S8_UInt,
+            _swapInterval > 0);
+
+        _graphicsDevice = GraphicsDevice.CreateVulkan(gdOptions, scDesc);
+        _swapchain = _graphicsDevice.MainSwapchain;
     }
 
     private static void onResize(Vector2D<int> size)
     {
         _wasResized = true;
+        _graphicsDevice?.ResizeMainWindow((uint)size.X, (uint)size.Y);
     }
 
     private static void onClosing()
@@ -492,7 +511,7 @@ public static unsafe class Display
     }
 
     /// <summary>
-    /// Swap the display buffers.
+    /// Swap the display buffers via Vuldrid.
     /// </summary>
     public static void swapBuffers()
     {
@@ -501,7 +520,11 @@ public static unsafe class Display
             if (!isCreated())
                 throw new InvalidOperationException("Display not created");
 
-            _window!.SwapBuffers();
+            // Submit all recorded commands before presenting
+            Rendering.Core.GLManager.EndFrame();
+            _graphicsDevice?.SwapBuffers();
+            // Begin recording commands for the next frame
+            Rendering.Core.GLManager.BeginFrame();
         }
     }
 
@@ -547,12 +570,15 @@ public static unsafe class Display
             if (!isCreated())
                 return;
 
-            _gl?.Dispose();
+            _graphicsDevice?.WaitForIdle();
+            _swapchain = null;
+            _graphicsDevice?.Dispose();
+            _graphicsDevice = null;
+
             _window?.Close();
             _window?.Dispose();
 
             _window = null;
-            _gl = null;
             _closeRequested = false;
             _wasResized = false;
 
@@ -561,11 +587,19 @@ public static unsafe class Display
     }
 
     /// <summary>
-    /// Gets the OpenGL context.
+    /// Gets the Vuldrid GraphicsDevice.
     /// </summary>
-    public static GL? getGL()
+    public static GraphicsDevice? getGraphicsDevice()
     {
-        return _gl;
+        return _graphicsDevice;
+    }
+
+    /// <summary>
+    /// Gets the Vuldrid Swapchain.
+    /// </summary>
+    public static Swapchain? getSwapchain()
+    {
+        return _swapchain;
     }
 
     public static WindowHandle* getWindowHandle()

@@ -1,4 +1,5 @@
-﻿using ImGuiNET;
+﻿#if IMGUI_ENABLED
+using ImGuiNET;
 
 namespace BetaSharp.Profiling;
 
@@ -306,3 +307,5 @@ public static class ProfilerRenderer
     }
 
 }
+
+#endif
