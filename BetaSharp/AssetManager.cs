@@ -93,8 +93,6 @@ public class AssetManager
         defineAsset("environment/rain.png", AssetType.Binary);
         defineAsset("environment/snow.png", AssetType.Binary);
 
-        defineAsset("font/default.png", AssetType.Binary);
-
         defineAsset("gui/background.png", AssetType.Binary);
         defineAsset("gui/container.png", AssetType.Binary);
         defineAsset("gui/crafting.png", AssetType.Binary);
