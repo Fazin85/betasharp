@@ -5,15 +5,8 @@ namespace BetaSharp.Client.Guis;
 
 public partial class Control
 {
-    public event EventHandler<MouseEventArgs>? Clicked;
     public event EventHandler<MouseEventArgs>? MousePressed;
-    public event EventHandler<MouseEventArgs>? MouseReleased;
-    public event EventHandler<MouseEventArgs>? MouseMoved;
-    public event EventHandler<KeyboardEventArgs>? KeyInput;
-    public event EventHandler<RenderEventArgs>? Rendered;
-    public event EventHandler<FocusEventArgs>? FocusChanged;
-    public event EventHandler<TextEventArgs>? TextChanged;
-
+    protected virtual void OnMousePressed(MouseEventArgs e) { }
     public void DoMousePressed(MouseEventArgs e)
     {
         if (Focusable && !Focused)
@@ -25,8 +18,8 @@ public partial class Control
         MousePressed?.Invoke(this, e);
     }
 
-    protected virtual void OnMousePressed(MouseEventArgs e) { }
-
+    public event EventHandler<MouseEventArgs>? MouseReleased;
+    protected virtual void OnMouseReleased(MouseEventArgs e) { }
     public void DoMouseReleased(MouseEventArgs e)
     {
         OnMouseReleased(e);
@@ -40,40 +33,40 @@ public partial class Control
         _pressedInside = false;
     }
 
-    protected virtual void OnMouseReleased(MouseEventArgs e) { }
-
+    public event EventHandler<MouseEventArgs>? Clicked;
+    protected virtual void OnClicked(MouseEventArgs e) { }
     public void DoClicked(MouseEventArgs e)
     {
         OnClicked(e);
         Clicked?.Invoke(this, e);
     }
 
-    protected virtual void OnClicked(MouseEventArgs e) { }
-
+    public event EventHandler<MouseEventArgs>? MouseMoved;
+    protected virtual void OnMouseMoved(MouseEventArgs e) { }
     public void DoMouseMoved(MouseEventArgs e)
     {
         OnMouseMoved(e);
         MouseMoved?.Invoke(this, e);
     }
 
-    protected virtual void OnMouseMoved(MouseEventArgs e) { }
-
+    public event EventHandler<MouseEventArgs>? MouseDragged;
+    protected virtual void OnMouseDragged(MouseEventArgs e) { }
     public void DoMouseDragged(MouseEventArgs e)
     {
         OnMouseDragged(e);
-        MouseMoved?.Invoke(this, e);
+        MouseDragged?.Invoke(this, e);
     }
 
-    protected virtual void OnMouseDragged(MouseEventArgs e) { }
-
+    public event EventHandler<KeyboardEventArgs>? KeyInput;
+    protected virtual void OnKeyInput(KeyboardEventArgs e) { }
     public void DoKeyInput(KeyboardEventArgs e)
     {
         OnKeyInput(e);
         KeyInput?.Invoke(this, e);
     }
 
-    protected virtual void OnKeyInput(KeyboardEventArgs e) { }
-
+    public event EventHandler<RenderEventArgs>? Rendered;
+    protected virtual void OnRendered(RenderEventArgs e) { }
     public void DoRendered(RenderEventArgs e)
     {
         if (!Visible) return;
@@ -128,21 +121,31 @@ public partial class Control
         }
     }
 
-    protected virtual void OnRendered(RenderEventArgs e) { }
-
+    public event EventHandler<FocusEventArgs>? FocusChanged;
+    protected virtual void OnFocusChanged(FocusEventArgs e) { }
     public void DoFocusChanged(FocusEventArgs e)
     {
         OnFocusChanged(e);
         FocusChanged?.Invoke(this, e);
     }
+    private int _suppressFocusChangedCounter;
+    protected bool ShouldSuppressFocusChanged => _suppressFocusChangedCounter > 0;
+    protected void SuppressFocusChanged(bool suppress)
+    {
+        _suppressFocusChangedCounter = Math.Max(_suppressFocusChangedCounter + (suppress ? 1 : -1), 0);
+    }
 
-    protected virtual void OnFocusChanged(FocusEventArgs e) { }
-
+    public event EventHandler<TextEventArgs>? TextChanged;
+    protected virtual void OnTextChanged(TextEventArgs e) { }
     public void DoTextChanged(TextEventArgs e)
     {
         OnTextChanged(e);
         TextChanged?.Invoke(this, e);
     }
-
-    protected virtual void OnTextChanged(TextEventArgs e) { }
+    private int _suppressTextChangedCounter;
+    protected bool ShouldSuppressTextChanged => _suppressTextChangedCounter > 0;
+    protected void SuppressTextChanged(bool suppress)
+    {
+        _suppressTextChangedCounter = Math.Max(_suppressTextChangedCounter + (suppress ? 1 : -1), 0);
+    }
 }
