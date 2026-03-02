@@ -412,6 +412,7 @@ public partial class Minecraft
         if (newScreen != null)
         {
             setIngameNotInFocus();
+            resize(displayWidth, displayHeight);
             skipRenderWorld = false;
         }
         else
