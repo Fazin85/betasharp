@@ -1,6 +1,8 @@
+using BetaSharp.Threading;
+
 namespace BetaSharp.Server.Threading;
 
-public class ConsoleInputThread : java.lang.Thread
+public class ConsoleInputThread : JavaThread
 {
     private readonly BetaSharpServer mcServer;
 

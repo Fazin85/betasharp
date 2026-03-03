@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Sockets;
 using BetaSharp.Network;
 using BetaSharp.Server.Threading;
+using BetaSharp.Threading;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Server.Network;
@@ -10,7 +11,7 @@ public class ConnectionListener
 {
     public Socket Socket { get; }
 
-    private readonly java.lang.Thread _thread;
+    private readonly JavaThread? _thread;
     private readonly ILogger<ConnectionListener> _logger = Log.Instance.For<ConnectionListener>();
 
     public volatile bool open;

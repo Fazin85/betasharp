@@ -1,6 +1,8 @@
+using BetaSharp.Threading;
+
 namespace BetaSharp.Network;
 
-class NetworkReaderThread : java.lang.Thread
+class NetworkReaderThread : JavaThread
 {
     public readonly Connection netManager;
 

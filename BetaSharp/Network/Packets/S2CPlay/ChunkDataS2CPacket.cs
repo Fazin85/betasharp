@@ -1,6 +1,6 @@
+using System.IO.Compression;
 using System.Net.Sockets;
 using BetaSharp.Worlds;
-using java.util.zip;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
@@ -26,19 +26,14 @@ public class ChunkDataS2CPacket() : Packet(PacketId.ChunkDataS2C)
         this.sizeZ = sizeZ;
         byte[] chunkData = world.GetChunkData(x, y, z, sizeX, sizeY, sizeZ);
         rawData = chunkData;
-        Deflater deflater = new(1);
 
-        try
+        using var ms = new MemoryStream();
+        using (var deflate = new ZLibStream(ms, CompressionLevel.Fastest, leaveOpen: true))
         {
-            deflater.setInput(chunkData);
-            deflater.finish();
-            this.chunkData = new byte[sizeX * sizeY * sizeZ * 5 / 2];
-            chunkDataSize = deflater.deflate(this.chunkData);
+            deflate.Write(chunkData, 0, chunkData.Length);
         }
-        finally
-        {
-            deflater.end();
-        }
+        this.chunkData = ms.ToArray();
+        chunkDataSize = this.chunkData.Length;
     }
 
     public override void Read(NetworkStream stream)
@@ -50,26 +45,26 @@ public class ChunkDataS2CPacket() : Packet(PacketId.ChunkDataS2C)
         sizeY = stream.ReadByte() + 1;
         sizeZ = stream.ReadByte() + 1;
         chunkDataSize = stream.ReadInt();
-        byte[] chunkData = new byte[chunkDataSize];
-        stream.ReadExactly(chunkData);
+        byte[] compressed = new byte[chunkDataSize];
+        stream.ReadExactly(compressed);
 
         this.chunkData = new byte[sizeX * sizeY * sizeZ * 5 / 2];
-        Inflater inflater = new();
-        inflater.setInput(chunkData);
-
         try
         {
-            inflater.inflate(this.chunkData);
+            using var inputMs = new MemoryStream(compressed);
+            using var inflate = new ZLibStream(inputMs, CompressionMode.Decompress);
+            int totalRead = 0;
+            while (totalRead < this.chunkData.Length)
+            {
+                int read = inflate.Read(this.chunkData, totalRead, this.chunkData.Length - totalRead);
+                if (read == 0) break;
+                totalRead += read;
+            }
         }
-        catch (DataFormatException ex)
+        catch (InvalidDataException ex)
         {
-            throw new java.io.IOException("Bad compressed data format");
+            throw new IOException("Bad compressed data format", ex);
         }
-        finally
-        {
-            inflater.end();
-        }
-
     }
 
     public override void Write(NetworkStream stream)

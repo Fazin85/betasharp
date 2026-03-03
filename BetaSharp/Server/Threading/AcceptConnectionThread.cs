@@ -1,11 +1,12 @@
 using System.Net;
 using System.Net.Sockets;
 using BetaSharp.Server.Network;
+using BetaSharp.Threading;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Server.Threading;
 
-internal class AcceptConnectionThread : java.lang.Thread
+internal class AcceptConnectionThread : JavaThread
 {
     private readonly ILogger<AcceptConnectionThread> _logger = Log.Instance.For<AcceptConnectionThread>();
     private readonly ConnectionListener _listener;

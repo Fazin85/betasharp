@@ -1,8 +1,8 @@
-using java.lang;
+using BetaSharp.Threading;
 
 namespace BetaSharp.Network;
 
-internal class NetworkMasterThread : java.lang.Thread
+internal class NetworkMasterThread : JavaThread
 {
     public readonly Connection netManager;
 
@@ -23,7 +23,7 @@ internal class NetworkMasterThread : java.lang.Thread
                 {
                     Connection.getReader(this.netManager).stop();
                 }
-                catch (Throwable) { }
+                catch (Exception) { }
             }
 
             if (Connection.getWriter(this.netManager).isAlive())
@@ -32,13 +32,9 @@ internal class NetworkMasterThread : java.lang.Thread
                 {
                     Connection.getWriter(this.netManager).stop();
                 }
-                catch (Throwable) { }
+                catch (Exception) { }
             }
         }
-        catch (InterruptedException ex)
-        {
-            ex.printStackTrace();
-        }
-
+        catch (ThreadInterruptedException) { }
     }
 }

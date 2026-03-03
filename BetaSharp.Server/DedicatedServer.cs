@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Sockets;
 using BetaSharp.Server.Network;
 using BetaSharp.Server.Threading;
-using java.lang;
 using Microsoft.Extensions.Logging;
 using Exception = System.Exception;
 
@@ -24,10 +23,11 @@ internal class DedicatedServer(IServerConfiguration config) : BetaSharpServer(co
         var1.start();
 
         s_logger.LogInformation("Starting BetaSharp server version Beta 1.7.3");
-        if (Runtime.getRuntime().maxMemory() / 1024L / 1024L < 512L)
+        long maxMemoryMb = GC.GetGCMemoryInfo().TotalAvailableMemoryBytes / 1024L / 1024L;
+        if (maxMemoryMb < 512L)
         {
             s_logger.LogWarning("**** NOT ENOUGH RAM!");
-            s_logger.LogWarning("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
+            s_logger.LogWarning("To start the server with more ram, configure the system to provide more memory.");
         }
 
         s_logger.LogInformation("Loading properties");
@@ -50,7 +50,7 @@ internal class DedicatedServer(IServerConfiguration config) : BetaSharpServer(co
         {
             connections = new ConnectionListener(this, address, port, dualStack);
         }
-        catch (java.io.IOException ex)
+        catch (IOException ex)
         {
             s_logger.LogWarning("**** FAILED TO BIND TO PORT!");
             s_logger.LogWarning($"The exception was: {ex}");
@@ -75,7 +75,7 @@ internal class DedicatedServer(IServerConfiguration config) : BetaSharpServer(co
 
         try
         {
-            DedicatedServerConfiguration config = new(new java.io.File("server.properties"));
+            DedicatedServerConfiguration config = new("server.properties");
             DedicatedServer server = new(config);
 
             new RunServerThread(server, "Server thread").start();
@@ -86,8 +86,8 @@ internal class DedicatedServer(IServerConfiguration config) : BetaSharpServer(co
         }
     }
 
-    public override java.io.File getFile(string path)
+    public override string getFile(string path)
     {
-        return new java.io.File(path);
+        return Path.GetFullPath(path);
     }
 }

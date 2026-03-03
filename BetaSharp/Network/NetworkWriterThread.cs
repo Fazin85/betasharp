@@ -1,6 +1,8 @@
+using BetaSharp.Threading;
+
 namespace BetaSharp.Network;
 
-internal class NetworkWriterThread : java.lang.Thread
+internal class NetworkWriterThread : JavaThread
 {
     public readonly Connection netManager;
 
@@ -41,12 +43,11 @@ internal class NetworkWriterThread : java.lang.Thread
                 {
                     Connection.getOutputStream(netManager)?.Flush();
                 }
-                catch (java.io.IOException ex)
+                catch (IOException ex)
                 {
                     if (!Connection.isDisconnected(netManager))
                     {
                         Connection.disconnect(this.netManager, ex);
-                        ex.printStackTrace();
                     }
                 }
             }

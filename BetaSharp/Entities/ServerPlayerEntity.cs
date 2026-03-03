@@ -12,7 +12,6 @@ using BetaSharp.Server.Network;
 using BetaSharp.Stats;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.util;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Entities;
