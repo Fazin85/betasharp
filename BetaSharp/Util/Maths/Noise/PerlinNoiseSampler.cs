@@ -3,9 +3,9 @@ namespace BetaSharp.Util.Maths.Noise;
 internal class PerlinNoiseSampler : NoiseSampler
 {
     private readonly int[] _permutations;
-    private readonly double _xCoord;
-    private readonly double _yCoord;
-    private readonly double _zCoord;
+    private readonly double _x;
+    private readonly double _y;
+    private readonly double _z;
 
     public PerlinNoiseSampler() : this(new())
     {
@@ -14,9 +14,9 @@ internal class PerlinNoiseSampler : NoiseSampler
     public PerlinNoiseSampler(JavaRandom rand)
     {
         _permutations = new int[512];
-        _xCoord = rand.NextDouble() * 256.0D;
-        _yCoord = rand.NextDouble() * 256.0D;
-        _zCoord = rand.NextDouble() * 256.0D;
+        _x = rand.NextDouble() * 256.0D;
+        _y = rand.NextDouble() * 256.0D;
+        _z = rand.NextDouble() * 256.0D;
 
         for (int i = 0; i < 256; i++)
         {
@@ -34,9 +34,9 @@ internal class PerlinNoiseSampler : NoiseSampler
 
     public double GenerateNoise(double x, double y, double z)
     {
-        x += _xCoord;
-        y += _yCoord;
-        z += _zCoord;
+        x += _x;
+        y += _y;
+        z += _z;
         int xInt = (int)x;
         int yInt = (int)y;
         int zInt = (int)z;
@@ -104,7 +104,7 @@ internal class PerlinNoiseSampler : NoiseSampler
         {
             for (int x = 0; x < xSize; ++x)
             {
-                double xCoord = (xStart + x) * xFrequency + _xCoord;
+                double xCoord = (xStart + x) * xFrequency + _x;
                 int xCoordInt = (int)xCoord;
                 if (xCoord < xCoordInt)
                 {
@@ -118,7 +118,7 @@ internal class PerlinNoiseSampler : NoiseSampler
 
                 for (int z = 0; z < zSize; ++z)
                 {
-                    double zCoord = (zStart + z) * zFrequency + _zCoord;
+                    double zCoord = (zStart + z) * zFrequency + _z;
                     int zCoordInt = (int)zCoord;
                     if (zCoord < zCoordInt)
                     {
@@ -155,7 +155,7 @@ internal class PerlinNoiseSampler : NoiseSampler
 
             for (int x = 0; x < xSize; ++x)
             {
-                double xCoord = (xStart + x) * xFrequency + _xCoord;
+                double xCoord = (xStart + x) * xFrequency + _x;
                 int xCoordInt = (int)xCoord;
                 if (xCoord < xCoordInt)
                 {
@@ -169,7 +169,7 @@ internal class PerlinNoiseSampler : NoiseSampler
 
                 for (int z = 0; z < zSize; ++z)
                 {
-                    double zCoord = (zStart + z) * zFrequency + _zCoord;
+                    double zCoord = (zStart + z) * zFrequency + _z;
                     int zCoordInt = (int)zCoord;
                     if (zCoord < zCoordInt)
                     {
@@ -183,7 +183,7 @@ internal class PerlinNoiseSampler : NoiseSampler
 
                     for (int y = 0; y < ySize; ++y)
                     {
-                        double yCoord = (yStart + y) * yFrequency + _yCoord;
+                        double yCoord = (yStart + y) * yFrequency + _y;
                         int yCoordInt = (int)yCoord;
                         if (yCoord < yCoordInt)
                         {

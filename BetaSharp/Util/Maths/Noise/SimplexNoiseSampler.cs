@@ -4,9 +4,9 @@ internal class SimplexNoiseSampler : NoiseSampler
 {
     private static readonly int[][] grads = [[1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0], [1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1], [0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]];
     private readonly int[] _permutations;
-    private readonly double _xCoord;
-    private readonly double _yCoord;
-    private readonly double _zCoord;
+    private readonly double _x;
+    private readonly double _y;
+    private readonly double _z;
     private static readonly double F2 = 0.5D * (Math.Sqrt(3.0D) - 1.0D);
     private static readonly double G2 = (3.0D - Math.Sqrt(3.0D)) / 6.0D;
 
@@ -17,9 +17,9 @@ internal class SimplexNoiseSampler : NoiseSampler
     public SimplexNoiseSampler(JavaRandom rand)
     {
         _permutations = new int[512];
-        _xCoord = rand.NextDouble() * 256.0D;
-        _yCoord = rand.NextDouble() * 256.0D;
-        _zCoord = rand.NextDouble() * 256.0D;
+        _x = rand.NextDouble() * 256.0D;
+        _y = rand.NextDouble() * 256.0D;
+        _z = rand.NextDouble() * 256.0D;
 
         // Fill perm with values from 0 to 255 in random order, duplicating the first 256 values to the end of the array
         for (int i = 0; i < 256; i++)
@@ -43,11 +43,11 @@ internal class SimplexNoiseSampler : NoiseSampler
 
         for (int x1 = 0; x1 < width; ++x1)
         {
-            double x2 = (x + x1) * xFrequency + _xCoord;
+            double x2 = (x + x1) * xFrequency + _x;
 
             for (int z1 = 0; z1 < depth; ++z1)
             {
-                double z2 = (z + z1) * zFrequency + _yCoord;
+                double z2 = (z + z1) * zFrequency + _y;
                 double s = (x2 + z2) * F2;
                 int i = NoiseSampler.Floor(x2 + s);
                 int j = NoiseSampler.Floor(z2 + s);
