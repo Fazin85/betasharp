@@ -1,6 +1,7 @@
 using BetaSharp.Blocks;
 using BetaSharp.Items;
 using BetaSharp.Recipes;
+using BetaSharp.Registry;
 
 namespace BetaSharp.Stats;
 
@@ -43,9 +44,24 @@ public static class Stats
 
     private static bool _hasBasicItemStatsInitialized;
     private static bool _hasExtendedItemStatsInitialized;
+    private static bool _registriesInitialized;
+
+    private static void EnsureRegistriesInitialized()
+    {
+        if (_registriesInitialized)
+        {
+            return;
+        }
+        _registriesInitialized = true;
+
+        BlockBootstrap.RegisterAll();
+        ItemBootstrap.RegisterAll();
+    }
 
     public static void InitializeItemStats()
     {
+        EnsureRegistriesInitialized();
+
         Used = InitItemUsedStats(Used, "stat.useItem", 16908288, 0, Block.Blocks.Length);
         Broken = InitializeBrokenItemStats(Broken, "stat.breakItem", 16973824, 0, Block.Blocks.Length);
         _hasBasicItemStatsInitialized = true;
@@ -54,6 +70,8 @@ public static class Stats
 
     public static void InitializeExtendedItemStats()
     {
+        EnsureRegistriesInitialized();
+
         Used = InitItemUsedStats(Used, "stat.useItem", 16908288, Block.Blocks.Length, 32000);
         Broken = InitializeBrokenItemStats(Broken, "stat.breakItem", 16973824, Block.Blocks.Length, 32000);
         _hasExtendedItemStatsInitialized = true;

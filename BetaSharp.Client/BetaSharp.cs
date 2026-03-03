@@ -34,6 +34,7 @@ using Silk.NET.OpenGL.Legacy.Extensions.ImGui;
 using Exception = System.Exception;
 using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Client.Rendering.Core.OpenGL;
+using BetaSharp.Registry;
 using System.Runtime;
 
 namespace BetaSharp.Client;
@@ -247,6 +248,10 @@ public partial class BetaSharp
 
         try
         {
+            // Initialize registries before loading any data-driven content that relies on them.
+            BlockBootstrap.RegisterAll();
+            ItemBootstrap.RegisterAll();
+
             var window = Display.getWindow();
             var input = window.CreateInput();
             imGuiController = new(((LegacyGL)GLManager.GL).SilkGL, window, input);

@@ -25,7 +25,7 @@ public static class RecipeLoader
 
         foreach (var recipe in recipes)
         {
-            ItemStack resultStack = BetaSharp.Registry.ItemRegistry.ResolveStack(recipe.Result.Name, recipe.Result.Count, recipe.Result.Meta);
+            ItemStack resultStack = Registry.ItemRegistry.ResolveStack(recipe.Result.Name, recipe.Result.Count, recipe.Result.Meta);
 
             if (recipe.Type == "shaped")
             {
