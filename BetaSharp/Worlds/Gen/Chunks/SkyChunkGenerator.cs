@@ -581,7 +581,7 @@ internal class SkyChunkGenerator : ChunkSource
         BlockSand.fallInstantly = false;
     }
 
-    public bool Save(bool var1, LoadingDisplay loadingDisplay) => true;
+    public bool Save(bool var1, LoadingDisplay display) => true;
 
     public bool Tick() => false;
 

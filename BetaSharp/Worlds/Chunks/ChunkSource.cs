@@ -10,7 +10,7 @@ public interface ChunkSource
 
     void DecorateTerrain(ChunkSource source, int x, int z);
 
-    bool Save(bool saveEntities, LoadingDisplay loadingDisplay);
+    bool Save(bool saveEntities, LoadingDisplay display);
 
     bool Tick();
 

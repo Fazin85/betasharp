@@ -893,7 +893,7 @@ internal class OverworldChunkGenerator : ChunkSource
         BlockSand.fallInstantly = false;
     }
 
-    public bool Save(bool saveEntities, LoadingDisplay loadingDisplay)
+    public bool Save(bool saveEntities, LoadingDisplay display)
     {
         return true;
     }

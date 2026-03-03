@@ -447,7 +447,7 @@ internal class NetherChunkGenerator : ChunkSource
         BlockSand.fallInstantly = false;
     }
 
-    public bool Save(bool bl, LoadingDisplay loadingDisplay) => true;
+    public bool Save(bool bl, LoadingDisplay display) => true;
     public bool Tick() => false;
     public bool CanSave() => true;
     public string GetDebugInfo() => "HellRandomLevelSource";
