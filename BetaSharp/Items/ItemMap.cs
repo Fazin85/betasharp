@@ -5,7 +5,6 @@ using BetaSharp.Network.Packets.S2CPlay;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Chunks;
-using java.lang;
 
 namespace BetaSharp.Items;
 
@@ -19,8 +18,7 @@ public class ItemMap : NetworkSyncedItem
 
     public static MapState getMapState(short mapId, World world)
     {
-        (new StringBuilder()).append("map_").append(mapId).toString();
-        MapState mapState = (MapState)world.getOrCreateState(MapState.Class, "map_" + mapId);
+        MapState? mapState = (MapState?)world.getOrCreateState(typeof(MapState), "map_" + mapId);
         if (mapState == null)
         {
             int mapIdCount = world.getIdCount("map");
@@ -34,17 +32,16 @@ public class ItemMap : NetworkSyncedItem
 
     public MapState getSavedMapState(ItemStack stack, World world)
     {
-        (new StringBuilder()).append("map_").append(stack.getDamage()).toString();
-        MapState mapState = (MapState)world.getOrCreateState(MapState.Class, "map_" + stack.getDamage());
+        string mapName = "map_" + stack.getDamage();
+        MapState? mapState = (MapState?)world.getOrCreateState(typeof(MapState), mapName);
         if (mapState == null)
         {
             stack.setDamage(world.getIdCount("map"));
-            string mapName = "map_" + stack.getDamage();
             mapState = new MapState(mapName);
             mapState.centerX = world.getProperties().SpawnX;
             mapState.centerZ = world.getProperties().SpawnZ;
             mapState.scale = 3;
-            mapState.dimension = (sbyte)world.dimension.id;
+            mapState.dimension = (sbyte)world.dimension.Id;
             mapState.markDirty();
             world.setState(mapName, mapState);
         }
@@ -54,7 +51,7 @@ public class ItemMap : NetworkSyncedItem
 
     public void update(World world, Entity entity, MapState map)
     {
-        if (world.dimension.id == map.dimension)
+        if (world.dimension.Id == map.dimension)
         {
             short mapWidth = 128;
             short mapHeight = 128;
@@ -64,7 +61,7 @@ public class ItemMap : NetworkSyncedItem
             int entityPosX = MathHelper.Floor(entity.x - (double)centerX) / blocksPerPixel + mapWidth / 2;
             int entityPosZ = MathHelper.Floor(entity.z - (double)centerZ) / blocksPerPixel + mapHeight / 2;
             int scanRadius = 128 / blocksPerPixel;
-            if (world.dimension.hasCeiling)
+            if (world.dimension.HasCeiling)
             {
                 scanRadius /= 2;
             }
@@ -92,7 +89,7 @@ public class ItemMap : NetworkSyncedItem
                             byte greenSum = 0;
                             byte blueSum = 0;
                             int[] blockHistogram = new int[256];
-                            Chunk chunk = world.getChunkFromPos(worldX, worldZ);
+                            Chunk chunk = world.GetChunkFromPos(worldX, worldZ);
                             int chunkOffsetX = worldX & 15;
                             int chunkOffsetZ = worldZ & 15;
                             int fluidDepth = 0;
@@ -101,7 +98,7 @@ public class ItemMap : NetworkSyncedItem
                             int sampleZ;
                             int currentY;
                             int colorIndex;
-                            if (world.dimension.hasCeiling)
+                            if (world.dimension.HasCeiling)
                             {
                                 sampleX = worldX + worldZ * 231871;
                                 sampleX = sampleX * sampleX * 31287121 + sampleX * 11;
@@ -122,7 +119,7 @@ public class ItemMap : NetworkSyncedItem
                                 {
                                     for (sampleZ = 0; sampleZ < blocksPerPixel; ++sampleZ)
                                     {
-                                        currentY = chunk.getHeight(sampleX + chunkOffsetX, sampleZ + chunkOffsetZ) + 1;
+                                        currentY = chunk.GetHeight(sampleX + chunkOffsetX, sampleZ + chunkOffsetZ) + 1;
                                         int blockId = 0;
                                         if (currentY > 1)
                                         {
@@ -227,7 +224,7 @@ public class ItemMap : NetworkSyncedItem
         while (!exitLoop)
         {
             foundSurface = true;
-            blockId = chunk.getBlockId(chunkX + dx, scanY - 1, chunkZ + dz);
+            blockId = chunk.GetBlockId(chunkX + dx, scanY - 1, chunkZ + dz);
             if (blockId == 0)
             {
                 foundSurface = false;
@@ -240,7 +237,7 @@ public class ItemMap : NetworkSyncedItem
             if (!foundSurface)
             {
                 --scanY;
-                blockId = chunk.getBlockId(chunkX + dx, scanY - 1, chunkZ + dz);
+                blockId = chunk.GetBlockId(chunkX + dx, scanY - 1, chunkZ + dz);
             }
 
             if (foundSurface)
@@ -255,7 +252,7 @@ public class ItemMap : NetworkSyncedItem
 
                     while (true)
                     {
-                        int fluidBlockId = chunk.getBlockId(chunkX + dx, depthCheckY--, chunkZ + dz);
+                        int fluidBlockId = chunk.GetBlockId(chunkX + dx, depthCheckY--, chunkZ + dz);
                         ++fluidDepth;
                         if (depthCheckY <= 0 || fluidBlockId == 0 || !Block.Blocks[fluidBlockId].material.IsFluid)
                         {
@@ -296,7 +293,7 @@ public class ItemMap : NetworkSyncedItem
         mapState.centerX = MathHelper.Floor(entityPlayer.x);
         mapState.centerZ = MathHelper.Floor(entityPlayer.z);
         mapState.scale = 3;
-        mapState.dimension = (sbyte)world.dimension.id;
+        mapState.dimension = (sbyte)world.dimension.Id;
         mapState.markDirty();
     }
 

@@ -36,10 +36,16 @@ public sealed class PooledList<T>(int initialCapacity = 16) : IDisposable where 
         if (newSize < minCapacity)
             newSize = minCapacity;
 
-        var newBuffer = ArrayPool<T>.Shared.Rent(newSize);
+        T[] newBuffer = ArrayPool<T>.Shared.Rent(newSize);
         Array.Copy(Buffer, newBuffer, Count);
         ArrayPool<T>.Shared.Return(Buffer, clearArray: false);
         Buffer = newBuffer;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Clear()
+    {
+        Count = 0;
     }
 
     public void Dispose()

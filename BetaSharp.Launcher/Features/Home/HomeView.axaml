@@ -1,0 +1,34 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:BetaSharp.Launcher.Features.Home"
+
+             x:Class="BetaSharp.Launcher.Features.Home.HomeView" x:DataType="local:HomeViewModel">
+
+    <Interaction.Behaviors>
+        <EventTriggerBehavior EventName="AttachedToVisualTree">
+            <InvokeCommandAction Command="{Binding InitializeCommand}" />
+        </EventTriggerBehavior>
+    </Interaction.Behaviors>
+
+    <Grid RowDefinitions="Auto *" IsVisible="{CompiledBinding Account, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+        <Grid ColumnDefinitions="* Auto">
+            <StackPanel HorizontalAlignment="Stretch" Orientation="Horizontal" Spacing="25" Grid.Row="0">
+                <Border Width="50" Height="50" CornerRadius="{StaticResource ControlCornerRadius}" ClipToBounds="True">
+                    <Image Source="{CompiledBinding Face}" RenderOptions.BitmapInterpolationMode="None" Stretch="UniformToFill" />
+                </Border>
+
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Welcome" Opacity="0.5" />
+
+                    <TextBlock Text="{CompiledBinding Account.Name, FallbackValue='...'}"
+                               FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </StackPanel>
+            </StackPanel>
+
+            <Button Content="Sign out" Command="{CompiledBinding SignOutCommand}" VerticalAlignment="Center" Grid.Column="1" />
+        </Grid>
+
+        <!-- ReSharper disable once Xaml.StyleClassNotFound -->
+        <Button Content="Play" Classes="accent" Command="{CompiledBinding PlayCommand}" VerticalAlignment="Bottom" Grid.Row="1" />
+    </Grid>
+</UserControl>

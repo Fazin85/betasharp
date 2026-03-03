@@ -1,6 +1,6 @@
 namespace BetaSharp.Util.Maths.Noise;
 
-public class OctaveSimplexNoiseSampler : NoiseSampler
+internal class OctaveSimplexNoiseSampler : NoiseSampler
 {
     private readonly SimplexNoiseSampler[] _octaves;
     private readonly int _octaveCount;

@@ -1,47 +1,45 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
-public class EntityRotateAndMoveRelativeS2CPacket : EntityS2CPacket
+internal class EntityRotateAndMoveRelativeS2CPacket : EntityS2CPacket
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityRotateAndMoveRelativeS2CPacket).TypeHandle);
-
-    public EntityRotateAndMoveRelativeS2CPacket()
+    public EntityRotateAndMoveRelativeS2CPacket() : base(PacketId.EntityRotateAndMoveRelativeS2C)
     {
         rotate = true;
     }
 
-    public EntityRotateAndMoveRelativeS2CPacket(int entityId, byte deltaX, byte deltaY, byte deltaZ, byte yaw, byte pitch) : base(entityId)
+    public EntityRotateAndMoveRelativeS2CPacket(int entityId, byte deltaX, byte deltaY, byte deltaZ, byte yaw, byte pitch) : this()
     {
+        EntityId = entityId;
         this.deltaX = (sbyte)deltaX;
         this.deltaY = (sbyte)deltaY;
         this.deltaZ = (sbyte)deltaZ;
         this.yaw = (sbyte)yaw;
         this.pitch = (sbyte)pitch;
-        rotate = true;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        base.read(stream);
-        deltaX = (sbyte)stream.readByte();
-        deltaY = (sbyte)stream.readByte();
-        deltaZ = (sbyte)stream.readByte();
-        yaw = (sbyte)stream.readByte();
-        pitch = (sbyte)stream.readByte();
+        base.Read(stream);
+        deltaX = (sbyte)stream.ReadByte();
+        deltaY = (sbyte)stream.ReadByte();
+        deltaZ = (sbyte)stream.ReadByte();
+        yaw = (sbyte)stream.ReadByte();
+        pitch = (sbyte)stream.ReadByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        base.write(stream);
-        stream.writeByte(deltaX);
-        stream.writeByte(deltaY);
-        stream.writeByte(deltaZ);
-        stream.writeByte(yaw);
-        stream.writeByte(pitch);
+        base.Write(stream);
+        stream.WriteByte((byte)deltaX);
+        stream.WriteByte((byte)deltaY);
+        stream.WriteByte((byte)deltaZ);
+        stream.WriteByte((byte)yaw);
+        stream.WriteByte((byte)pitch);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 9;
     }

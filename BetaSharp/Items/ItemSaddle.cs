@@ -2,7 +2,7 @@ using BetaSharp.Entities;
 
 namespace BetaSharp.Items;
 
-public class ItemSaddle : Item
+internal class ItemSaddle : Item
 {
 
     public ItemSaddle(int id) : base(id)

@@ -3,7 +3,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Gen.Features;
 
-public class PineTreeFeature : Feature
+internal class PineTreeFeature : Feature
 {
     public override bool Generate(World world, JavaRandom rand, int x, int y, int z)
     {

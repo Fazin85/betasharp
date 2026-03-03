@@ -1,46 +1,40 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
-public class ScreenHandlerPropertyUpdateS2CPacket : Packet
+public class ScreenHandlerPropertyUpdateS2CPacket() : Packet(PacketId.ScreenHandlerPropertyUpdateS2C)
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ScreenHandlerPropertyUpdateS2CPacket).TypeHandle);
-
     public int syncId;
     public int propertyId;
     public int value;
 
-    public ScreenHandlerPropertyUpdateS2CPacket()
-    {
-    }
-
-    public ScreenHandlerPropertyUpdateS2CPacket(int syncId, int propertyId, int value)
+    public ScreenHandlerPropertyUpdateS2CPacket(int syncId, int propertyId, int value) : this()
     {
         this.syncId = syncId;
         this.propertyId = propertyId;
         this.value = value;
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onScreenHandlerPropertyUpdate(this);
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        syncId = (sbyte)stream.readByte();
-        propertyId = stream.readShort();
-        value = stream.readShort();
+        syncId = (sbyte)stream.ReadByte();
+        propertyId = stream.ReadShort();
+        value = stream.ReadShort();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeByte(syncId);
-        stream.writeShort(propertyId);
-        stream.writeShort(value);
+        stream.WriteByte((byte)syncId);
+        stream.WriteShort((short)propertyId);
+        stream.WriteShort((short)value);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 5;
     }

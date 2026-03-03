@@ -4,7 +4,7 @@ using BetaSharp.Screens;
 
 namespace BetaSharp.Inventorys;
 
-public class InventoryCrafting : java.lang.Object, IInventory
+public class InventoryCrafting : IInventory
 {
     private ItemStack[] stackList;
     private int gridWidth;
@@ -76,7 +76,7 @@ public class InventoryCrafting : java.lang.Object, IInventory
         }
     }
 
-    public void setStack(int slotIndex, ItemStack itemStack)
+    public void setStack(int slotIndex, ItemStack? itemStack)
     {
         stackList[slotIndex] = itemStack;
         eventHandler.onSlotUpdate(this);

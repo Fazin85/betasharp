@@ -3,7 +3,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Gen.Features;
 
-public class DeadBushPatchFeature : Feature
+internal class DeadBushPatchFeature : Feature
 {
 
     private readonly int _deadBushBlockId;

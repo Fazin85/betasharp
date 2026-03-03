@@ -1,27 +1,14 @@
 using BetaSharp.Items;
-using BetaSharp.NBT;
 using BetaSharp.Worlds;
 
 namespace BetaSharp.Entities;
 
 public class EntityCow : EntityAnimal
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityCow).TypeHandle);
-
     public EntityCow(World world) : base(world)
     {
         this.texture = "/mob/cow.png";
         this.setBoundingBoxSpacing(0.9F, 1.3F);
-    }
-
-    public override void writeNbt(NBTTagCompound nbt)
-    {
-        base.writeNbt(nbt);
-    }
-
-    public override void readNbt(NBTTagCompound nbt)
-    {
-        base.readNbt(nbt);
     }
 
     protected override string getLivingSound()

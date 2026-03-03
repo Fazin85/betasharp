@@ -5,7 +5,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
-public class BlockFarmland : Block
+internal class BlockFarmland : Block
 {
 
     public BlockFarmland(int id) : base(id, Material.Soil)

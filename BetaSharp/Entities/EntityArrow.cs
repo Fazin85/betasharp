@@ -4,14 +4,11 @@ using BetaSharp.NBT;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.lang;
 
 namespace BetaSharp.Entities;
 
 public class EntityArrow : Entity
 {
-    public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityArrow).TypeHandle);
-
     private int xTile = -1;
     private int yTile = -1;
     private int zTile = -1;
@@ -111,7 +108,7 @@ public class EntityArrow : Entity
         {
             Block.Blocks[blockId].updateBoundingBox(world, xTile, yTile, zTile);
             Box? box = Block.Blocks[blockId].getCollisionShape(world, xTile, yTile, zTile);
-            if (box != null && box.Value.contains(new Vec3D(x, y, z)))
+            if (box != null && box.Value.Contains(new Vec3D(x, y, z)))
             {
                 inGround = true;
             }
@@ -151,13 +148,13 @@ public class EntityArrow : Entity
             Vec3D rayStart = new Vec3D(x, y, z);
             Vec3D rayEnd = new Vec3D(x + velocityX, y + velocityY, z + velocityZ);
             HitResult hit = world.raycast(rayStart, rayEnd, false, true);
-            if (hit != null)
+            if (hit.Type != HitResultType.MISS)
             {
-                rayEnd = new Vec3D(hit.pos.x, hit.pos.y, hit.pos.z);
+                rayEnd = new Vec3D(hit.Pos.x, hit.Pos.y, hit.Pos.z);
             }
 
             Entity hitEntity = null;
-            var candidates = world.getEntities(this, boundingBox.stretch(velocityX, velocityY, velocityZ).expand(1.0D, 1.0D, 1.0D));
+            var candidates = world.getEntities(this, boundingBox.Stretch(velocityX, velocityY, velocityZ).Expand(1.0D, 1.0D, 1.0D));
             double minHitDistance = 0.0D;
 
             float expandAmount;
@@ -167,11 +164,11 @@ public class EntityArrow : Entity
                 if (entity.isCollidable() && (entity != owner || ticksInAir >= 5))
                 {
                     expandAmount = 0.3F;
-                    Box expandedBox = entity.boundingBox.expand((double)expandAmount, (double)expandAmount, (double)expandAmount);
-                    HitResult hitResult = expandedBox.raycast(rayStart, rayEnd);
-                    if (hitResult != null)
+                    Box expandedBox = entity.boundingBox.Expand((double)expandAmount, (double)expandAmount, (double)expandAmount);
+                    HitResult hitResult = expandedBox.Raycast(rayStart, rayEnd);
+                    if (hitResult.Type != HitResultType.MISS)
                     {
-                        double hitDistance = rayStart.distanceTo(hitResult.pos);
+                        double hitDistance = rayStart.distanceTo(hitResult.Pos);
                         if (hitDistance < minHitDistance || minHitDistance == 0.0D)
                         {
                             hitEntity = entity;
@@ -187,11 +184,11 @@ public class EntityArrow : Entity
             }
 
             float horizontalSpeed;
-            if (hit != null)
+            if (hit.Type != HitResultType.MISS)
             {
-                if (hit.entity != null)
+                if (hit.Entity != null)
                 {
-                    if (hit.entity.damage(owner, 4))
+                    if (hit.Entity.damage(owner, 4))
                     {
                         world.playSound(this, "random.drr", 1.0F, 1.2F / (random.NextFloat() * 0.2F + 0.9F));
                         markDead();
@@ -208,14 +205,14 @@ public class EntityArrow : Entity
                 }
                 else
                 {
-                    xTile = hit.blockX;
-                    yTile = hit.blockY;
-                    zTile = hit.blockZ;
+                    xTile = hit.BlockX;
+                    yTile = hit.BlockY;
+                    zTile = hit.BlockZ;
                     inTile = world.getBlockId(xTile, yTile, zTile);
                     inData = world.getBlockMeta(xTile, yTile, zTile);
-                    velocityX = (double)((float)(hit.pos.x - x));
-                    velocityY = (double)((float)(hit.pos.y - y));
-                    velocityZ = (double)((float)(hit.pos.z - z));
+                    velocityX = (double)((float)(hit.Pos.x - x));
+                    velocityY = (double)((float)(hit.Pos.y - y));
+                    velocityZ = (double)((float)(hit.Pos.z - z));
                     horizontalSpeed = MathHelper.Sqrt(velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
                     x -= velocityX / (double)horizontalSpeed * (double)0.05F;
                     y -= velocityY / (double)horizontalSpeed * (double)0.05F;

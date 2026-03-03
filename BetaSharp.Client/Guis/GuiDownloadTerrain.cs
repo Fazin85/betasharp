@@ -48,7 +48,7 @@ public class GuiDownloadTerrain : GuiScreen
     {
         DrawBackground(0);
         TranslationStorage translations = TranslationStorage.Instance;
-        DrawCenteredString(FontRenderer, translations.TranslateKey("multiplayer.downloadingTerrain"), Width / 2, Height / 2 - 50, 0xFFFFFF);
+        DrawCenteredString(FontRenderer, translations.TranslateKey("multiplayer.downloadingTerrain"), Width / 2, Height / 2 - 50, Color.White);
         base.Render(mouseX, mouseY, partialTicks);
     }
 }

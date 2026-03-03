@@ -1,43 +1,37 @@
+using System.Net.Sockets;
 using BetaSharp.Entities;
-using java.io;
 
 namespace BetaSharp.Network.Packets.C2SPlay;
 
-public class ClientCommandC2SPacket : Packet
+public class ClientCommandC2SPacket() : Packet(PacketId.ClientCommandC2S)
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ClientCommandC2SPacket).TypeHandle);
-
     public int entityId;
     public int mode;
 
-    public ClientCommandC2SPacket()
-    {
-    }
-
-    public ClientCommandC2SPacket(Entity ent, int mode)
+    public ClientCommandC2SPacket(Entity ent, int mode) : this()
     {
         entityId = ent.id;
         this.mode = mode;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        entityId = stream.readInt();
-        mode = (sbyte)stream.readByte();
+        entityId = stream.ReadInt();
+        mode = (sbyte)stream.ReadByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(entityId);
-        stream.writeByte(mode);
+        stream.WriteInt(entityId);
+        stream.WriteByte((byte)mode);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.handleClientCommand(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 5;
     }

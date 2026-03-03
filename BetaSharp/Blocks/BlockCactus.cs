@@ -5,7 +5,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
-public class BlockCactus : Block
+internal class BlockCactus : Block
 {
 
     public BlockCactus(int id, int textureId) : base(id, textureId, Material.Cactus)
@@ -66,9 +66,9 @@ public class BlockCactus : Block
         return false;
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return 13;
+        return BlockRendererType.Cactus;
     }
 
     public override bool canPlaceAt(World world, int x, int y, int z)

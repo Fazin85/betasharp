@@ -2,7 +2,7 @@ using BetaSharp.Blocks;
 
 namespace BetaSharp.Items;
 
-public class ItemSpade : ItemTool
+internal class ItemSpade : ItemTool
 {
 
     private static Block[] blocksEffectiveAgainst =

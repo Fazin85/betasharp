@@ -1,11 +1,11 @@
 using BetaSharp.Blocks;
-using java.lang;
 
 namespace BetaSharp.Worlds.Chunks.Light;
 
-public struct LightUpdate
+internal struct LightUpdate
 {
     public readonly LightType lightType;
+
     public int minX;
     public int minY;
     public int minZ;
@@ -30,9 +30,9 @@ public struct LightUpdate
         int var3 = maxY - minY + 1;
         int var4 = maxZ - minZ + 1;
         int var5 = var2 * var3 * var4;
-        if (var5 > -Short.MIN_VALUE)
+        if (var5 > -short.MinValue)
         {
-            Log.Info("Light too large, skipping!");
+            // _logger.LogInformation("Light too large, skipping!");
         }
         else
         {
@@ -57,8 +57,8 @@ public struct LightUpdate
                         var14 = world.isRegionLoaded(var10, 0, var11, 1);
                         if (var14)
                         {
-                            Chunk var15 = world.getChunk(var10 >> 4, var11 >> 4);
-                            if (var15.isEmpty())
+                            Chunk var15 = world.GetChunk(var10 >> 4, var11 >> 4);
+                            if (var15.IsEmpty())
                             {
                                 var14 = false;
                             }

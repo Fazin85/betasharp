@@ -2,7 +2,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Gen.Features;
 
-public class LargeOakTreeFeature : Feature
+internal class LargeOakTreeFeature : Feature
 {
 
     static readonly sbyte[] MINOR_AXES = [2, 0, 0, 1, 2, 1];
@@ -28,7 +28,7 @@ public class LargeOakTreeFeature : Feature
             trunkHeight = height - 1;
         }
 
-        int var1 = (int)(1.382D + java.lang.Math.pow(foliageDensity * height / 13.0D, 2.0D));
+        int var1 = (int)(1.382D + Math.Pow(foliageDensity * height / 13.0D, 2.0D));
         if (var1 < 1)
         {
             var1 = 1;
@@ -67,14 +67,14 @@ public class LargeOakTreeFeature : Feature
                     {
                         double var11 = branchLengthScale * (double)var8 * ((double)random.NextFloat() + 0.328D);
                         double var13 = (double)random.NextFloat() * 2.0D * 3.14159D;
-                        int var15 = MathHelper.Floor(var11 * java.lang.Math.sin(var13) + origin[0] + var9);
-                        int var16 = MathHelper.Floor(var11 * java.lang.Math.cos(var13) + origin[2] + var9);
+                        int var15 = MathHelper.Floor(var11 * Math.Sin(var13) + origin[0] + var9);
+                        int var16 = MathHelper.Floor(var11 * Math.Cos(var13) + origin[2] + var9);
                         int[] var17 = [var15, var3, var16];
                         int[] var18 = [var15, var3 + foliageClusterHeight, var16];
                         if (tryBranch(var17, var18) == -1)
                         {
                             int[] var19 = [origin[0], origin[1], origin[2]];
-                            double var20 = java.lang.Math.sqrt(java.lang.Math.pow(java.lang.Math.abs(origin[0] - var17[0]), 2.0D) + java.lang.Math.pow(java.lang.Math.abs(origin[2] - var17[2]), 2.0D));
+                            double var20 = Math.Sqrt(Math.Pow(Math.Abs(origin[0] - var17[0]), 2.0D) + Math.Pow(Math.Abs(origin[2] - var17[2]), 2.0D));
                             double var22 = var20 * branchSlope;
                             if (var17[1] - var22 > var5)
                             {
@@ -170,13 +170,13 @@ public class LargeOakTreeFeature : Feature
             {
                 var4 = var2;
             }
-            else if (java.lang.Math.abs(var3) >= var2)
+            else if (Math.Abs(var3) >= var2)
             {
                 var4 = 0.0F;
             }
             else
             {
-                var4 = (float)java.lang.Math.sqrt(java.lang.Math.pow((double)java.lang.Math.abs(var2), 2.0D) - java.lang.Math.pow((double)java.lang.Math.abs(var3), 2.0D));
+                var4 = (float)Math.Sqrt(Math.Pow((double)Math.Abs(var2), 2.0D) - Math.Pow((double)Math.Abs(var3), 2.0D));
             }
 
             var4 *= 0.5F;
@@ -210,7 +210,7 @@ public class LargeOakTreeFeature : Feature
         for (var6 = 0; var5 < 3; ++var5)
         {
             var4[var5] = var2[var5] - var1[var5];
-            if (java.lang.Math.abs(var4[var5]) > java.lang.Math.abs(var4[var6]))
+            if (Math.Abs(var4[var5]) > Math.Abs(var4[var6]))
             {
                 var6 = var5;
             }
@@ -317,7 +317,7 @@ public class LargeOakTreeFeature : Feature
         for (var5 = 0; var4 < 3; ++var4)
         {
             var3[var4] = var2[var4] - var1[var4];
-            if (java.lang.Math.abs(var3[var4]) > java.lang.Math.abs(var3[var5]))
+            if (Math.Abs(var3[var4]) > Math.Abs(var3[var5]))
             {
                 var5 = var4;
             }
@@ -359,7 +359,7 @@ public class LargeOakTreeFeature : Feature
                 }
             }
 
-            return var14 == var15 ? -1 : java.lang.Math.abs(var14);
+            return var14 == var15 ? -1 : Math.Abs(var14);
         }
     }
 

@@ -17,8 +17,8 @@ public class ModelSquid : ModelBase
         {
             squidTentacles[var2] = new ModelPart(48, 0);
             double var3 = var2 * Math.PI * 2.0D / squidTentacles.Length;
-            float var5 = (float)java.lang.Math.cos(var3) * 5.0F;
-            float var6 = (float)java.lang.Math.sin(var3) * 5.0F;
+            float var5 = (float)Math.Cos(var3) * 5.0F;
+            float var6 = (float)Math.Sin(var3) * 5.0F;
             squidTentacles[var2].addBox(-1.0F, 0.0F, -1.0F, 2, 18, 2);
             squidTentacles[var2].rotationPointX = var5;
             squidTentacles[var2].rotationPointZ = var6;

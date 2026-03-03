@@ -19,7 +19,7 @@ public class FrustrumCuller : Culler
 
     public bool IsBoxInFrustum(Box box)
     {
-        return frustum.IsBoxInFrustum(box.offset(-_x, -_y, -_z));
+        return frustum.IsBoxInFrustum(box.Offset(-_x, -_y, -_z));
     }
 
     public bool isBoundingBoxInFrustum(Box aabb)

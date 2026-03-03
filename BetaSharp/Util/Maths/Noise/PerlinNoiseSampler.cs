@@ -1,6 +1,6 @@
 namespace BetaSharp.Util.Maths.Noise;
 
-public class PerlinNoiseSampler : NoiseSampler
+internal class PerlinNoiseSampler : NoiseSampler
 {
     private readonly int[] _permutations;
     private readonly double _xCoord;

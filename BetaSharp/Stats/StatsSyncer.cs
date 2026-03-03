@@ -1,294 +1,218 @@
-using BetaSharp.Threading;
-using java.io;
-using java.lang;
-using java.util;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Stats;
 
-public class StatsSyncer
+internal class StatsSynchronizer
 {
-    private volatile bool busy;
-    private volatile Map field_27437_b;
-    private volatile Map field_27436_c;
-    private StatFileWriter statFileWriter;
-    private java.io.File unsentStatsFile;
-    private java.io.File statsFile;
-    private java.io.File tempUnsentStatsFile;
-    private java.io.File tempStatsFile;
-    private java.io.File oldUnsentStatsFile;
-    private java.io.File oldStatsFile;
-    private Session session;
-    private int field_27427_l;
-    private int field_27426_m;
+    private static readonly ILogger<StatsSynchronizer> s_logger = Log.Instance.For<StatsSynchronizer>();
 
-    public StatsSyncer(Session session, StatFileWriter statFileWriter, java.io.File statsFolder)
+    private volatile bool _busy;
+    private volatile Dictionary<StatBase, int> _mergedData;
+    private volatile Dictionary<StatBase, int> _downloadedData;
+
+    private readonly StatFileWriter _statFileWriter;
+    private readonly Session _session;
+
+    private readonly string _unsentStatsFile;
+    private readonly string _statsFile;
+    private readonly string _tempUnsentStatsFile;
+    private readonly string _tempStatsFile;
+    private readonly string _oldUnsentStatsFile;
+    private readonly string _oldStatsFile;
+
+    private int _syncTimeout;
+    private int _timeoutCounter;
+
+    public StatsSynchronizer(Session session, StatFileWriter statFileWriter, string statsFolder)
     {
-        unsentStatsFile = new java.io.File(statsFolder, "stats_" + session.username.ToLower() + "_unsent.dat");
-        statsFile = new java.io.File(statsFolder, "stats_" + session.username.ToLower() + ".dat");
-        oldUnsentStatsFile = new java.io.File(statsFolder, "stats_" + session.username.ToLower() + "_unsent.old");
-        oldStatsFile = new java.io.File(statsFolder, "stats_" + session.username.ToLower() + ".old");
-        tempUnsentStatsFile = new java.io.File(statsFolder, "stats_" + session.username.ToLower() + "_unsent.tmp");
-        tempStatsFile = new java.io.File(statsFolder, "stats_" + session.username.ToLower() + ".tmp");
-        if (!session.username.ToLower().Equals(session.username))
+        string usernameLower = session.username.ToLowerInvariant();
+
+        _unsentStatsFile = System.IO.Path.Combine(statsFolder, $"stats_{usernameLower}_unsent.dat");
+        _statsFile = System.IO.Path.Combine(statsFolder, $"stats_{usernameLower}.dat");
+        _oldUnsentStatsFile = System.IO.Path.Combine(statsFolder, $"stats_{usernameLower}_unsent.old");
+        _oldStatsFile = System.IO.Path.Combine(statsFolder, $"stats_{usernameLower}.old");
+        _tempUnsentStatsFile = System.IO.Path.Combine(statsFolder, $"stats_{usernameLower}_unsent.tmp");
+        _tempStatsFile = System.IO.Path.Combine(statsFolder, $"stats_{usernameLower}.tmp");
+
+        if (usernameLower != session.username)
         {
-            ensureStatFileIsLowercase(statsFolder, "stats_" + session.username + "_unsent.dat", unsentStatsFile);
-            ensureStatFileIsLowercase(statsFolder, "stats_" + session.username + ".dat", statsFile);
-            ensureStatFileIsLowercase(statsFolder, "stats_" + session.username + "_unsent.old", oldUnsentStatsFile);
-            ensureStatFileIsLowercase(statsFolder, "stats_" + session.username + ".old", oldStatsFile);
-            ensureStatFileIsLowercase(statsFolder, "stats_" + session.username + "_unsent.tmp", tempUnsentStatsFile);
-            ensureStatFileIsLowercase(statsFolder, "stats_" + session.username + ".tmp", tempStatsFile);
+            EnsureStatFileIsLowercase(statsFolder, $"stats_{session.username}_unsent.dat", _unsentStatsFile);
+            EnsureStatFileIsLowercase(statsFolder, $"stats_{session.username}.dat", _statsFile);
+            EnsureStatFileIsLowercase(statsFolder, $"stats_{session.username}_unsent.old", _oldUnsentStatsFile);
+            EnsureStatFileIsLowercase(statsFolder, $"stats_{session.username}.old", _oldStatsFile);
+            EnsureStatFileIsLowercase(statsFolder, $"stats_{session.username}_unsent.tmp", _tempUnsentStatsFile);
+            EnsureStatFileIsLowercase(statsFolder, $"stats_{session.username}.tmp", _tempStatsFile);
         }
 
-        this.statFileWriter = statFileWriter;
-        this.session = session;
-        if (unsentStatsFile.exists())
+        _statFileWriter = statFileWriter;
+        _session = session;
+
+        if (File.Exists(_unsentStatsFile))
         {
-            statFileWriter.loadStats(getNewestAvailableStats(unsentStatsFile, tempUnsentStatsFile, oldUnsentStatsFile));
+            statFileWriter.LoadStats(GetNewestAvailableStats(_unsentStatsFile, _tempUnsentStatsFile, _oldUnsentStatsFile));
         }
 
-        receiveStats();
+        ReceiveStats();
     }
 
-    private void ensureStatFileIsLowercase(java.io.File statsFolder, string fileNameNotLowercase, java.io.File file)
+    private void EnsureStatFileIsLowercase(string statsFolder, string fileNameNotLowercase, string targetFile)
     {
-        java.io.File otherFile = new java.io.File(statsFolder, fileNameNotLowercase);
-        if (otherFile.exists() && !otherFile.isDirectory() && !file.exists())
+        string otherFile = System.IO.Path.Combine(statsFolder, fileNameNotLowercase);
+        if (File.Exists(otherFile) && !File.Exists(targetFile))
         {
-            otherFile.renameTo(file);
+            File.Move(otherFile, targetFile);
         }
     }
 
-    private Map getNewestAvailableStats(java.io.File unsentStatsFile, java.io.File tempUnsentStatsFile, java.io.File oldUnsentStatsFile)
+    private Dictionary<StatBase, int> GetNewestAvailableStats(string unsent, string tempUnsent, string oldUnsent)
     {
-        if (unsentStatsFile.exists())
-            return createStatsMapFromFile(unsentStatsFile);
-        if (oldUnsentStatsFile.exists())
-            return createStatsMapFromFile(oldUnsentStatsFile);
-        if (tempUnsentStatsFile.exists())
-            return createStatsMapFromFile(tempUnsentStatsFile);
+        if (File.Exists(unsent)) return CreateStatsMapFromFile(unsent);
+        if (File.Exists(oldUnsent)) return CreateStatsMapFromFile(oldUnsent);
+        if (File.Exists(tempUnsent)) return CreateStatsMapFromFile(tempUnsent);
         return null;
     }
 
-    private Map createStatsMapFromFile(java.io.File statsFile)
+    private Dictionary<StatBase, int> CreateStatsMapFromFile(string filePath)
     {
-        BufferedReader statsFileReader = null;
-
         try
         {
-            statsFileReader = new BufferedReader(new java.io.FileReader(statsFile));
-            StringBuilder sb = new();
-
-            while (true)
-            {
-                string var3 = statsFileReader.readLine();
-                if (var3 == null)
-                {
-                    Map var5 = StatFileWriter.createStatsMap(sb.toString());
-                    return var5;
-                }
-
-                sb.append(var3);
-            }
+            string fileContents = File.ReadAllText(filePath);
+            return StatFileWriter.CreateStatsMap(fileContents);
         }
-        catch (java.lang.Exception ex)
+        catch (Exception ex)
         {
-            ex.printStackTrace();
-        }
-        finally
-        {
-            if (statsFileReader != null)
-            {
-                try
-                {
-                    statsFileReader.close();
-                }
-                catch (java.lang.Exception ex)
-                {
-                    ex.printStackTrace();
-                }
-            }
-
+            s_logger.LogError(ex, $"Exception reading stats from {filePath}");
         }
 
         return null;
     }
 
-    private void func_27410_a(Map statsMap, java.io.File unsentStatsFile, java.io.File tempUnsentStatsFile, java.io.File oldUnsentStatsFile)
+    internal void SaveStatsToFile(Dictionary<StatBase, int> statsMap, string unsentFile, string tempUnsentFile, string oldUnsentFile)
     {
-        PrintWriter fileWriter = new PrintWriter(new java.io.FileWriter(tempUnsentStatsFile, false));
-
         try
         {
-            fileWriter.print(StatFileWriter.func_27185_a(session.username, "local", statsMap));
-        }
-        finally
-        {
-            fileWriter.close();
-        }
+            string jsonContent = StatFileWriter.SerializeStats(_session.username, "local", statsMap);
+            File.WriteAllText(tempUnsentFile, jsonContent);
 
-        if (oldUnsentStatsFile.exists())
-        {
-            oldUnsentStatsFile.delete();
-        }
+            if (File.Exists(oldUnsentFile))
+            {
+                File.Delete(oldUnsentFile);
+            }
 
-        if (unsentStatsFile.exists())
-        {
-            unsentStatsFile.renameTo(oldUnsentStatsFile);
-        }
+            if (File.Exists(unsentFile))
+            {
+                File.Move(unsentFile, oldUnsentFile);
+            }
 
-        tempUnsentStatsFile.renameTo(unsentStatsFile);
+            File.Move(tempUnsentFile, unsentFile);
+        }
+        catch (Exception ex)
+        {
+            s_logger.LogError(ex, "Failed to save stats file.");
+        }
     }
 
-    public void receiveStats()
+    public void ReceiveStats()
     {
-        if (busy)
+        if (_busy)
         {
-            throw new IllegalStateException("Can\'t get stats from server while StatsSyncher is busy!");
+            throw new InvalidOperationException("Can't get stats from server while StatsSyncher is busy!");
         }
-        else
-        {
-            field_27427_l = 100;
-            busy = true;
-            (new ThreadStatSyncerReceive(this)).start();
-        }
+
+        _syncTimeout = 100;
+        _busy = true;
+
+        new Threading.ThreadStatSynchronizerReceive(this).Start();
     }
 
-    public void sendStats(Map var1)
+    public void SendStats(Dictionary<StatBase, int> statsMap)
     {
-        if (busy)
+        if (_busy)
         {
-            throw new IllegalStateException("Can\'t save stats while StatsSyncher is busy!");
+            throw new InvalidOperationException("Can't save stats while StatsSyncher is busy!");
         }
-        else
-        {
-            field_27427_l = 100;
-            busy = true;
-            (new ThreadStatSyncerSend(this, var1)).start();
-        }
+
+        _syncTimeout = 100;
+        _busy = true;
+
+        new Threading.ThreadStatSynchronizerSend(this, statsMap).Start();
     }
 
-    public void syncStatsFileWithMap(Map statsMap)
+    public void SyncStatsFileWithMap(Dictionary<StatBase, int> statsMap)
     {
         int waitCycles = 30;
 
-        while (busy)
+        while (_busy)
         {
             --waitCycles;
-            if (waitCycles <= 0)
-            {
-                break;
-            }
+            if (waitCycles <= 0) break;
 
             try
             {
-                java.lang.Thread.sleep(100L);
+                Thread.Sleep(100);
             }
-            catch (InterruptedException ex)
+            catch (Exception ex)
             {
-                ex.printStackTrace();
+                s_logger.LogError(ex, "Interrupted while waiting for sync.");
             }
         }
 
-        busy = true;
+        _busy = true;
 
         try
         {
-            func_27410_a(statsMap, unsentStatsFile, tempUnsentStatsFile, oldUnsentStatsFile);
-        }
-        catch (java.lang.Exception ex)
-        {
-            ex.printStackTrace();
+            SaveStatsToFile(statsMap, _unsentStatsFile, _tempUnsentStatsFile, _oldUnsentStatsFile);
         }
         finally
         {
-            busy = false;
+            _busy = false;
         }
-
     }
 
-    public bool func_27420_b()
+    public bool IsReadyToSync()
     {
-        return field_27427_l <= 0 && !busy && field_27436_c == null;
+        return _syncTimeout <= 0 && !_busy && _downloadedData == null;
     }
 
-    public void func_27425_c()
+    public void Tick()
     {
-        if (field_27427_l > 0)
+        if (_syncTimeout > 0) --_syncTimeout;
+        if (_timeoutCounter > 0) --_timeoutCounter;
+
+        if (_downloadedData != null)
         {
-            --field_27427_l;
+            _statFileWriter.SetStats(_downloadedData);
+            _downloadedData = null;
         }
 
-        if (field_27426_m > 0)
+        if (_mergedData != null)
         {
-            --field_27426_m;
+            _statFileWriter.AddStats(_mergedData);
+            _mergedData = null;
         }
-
-        if (field_27436_c != null)
-        {
-            statFileWriter.func_27187_c(field_27436_c);
-            field_27436_c = null;
-        }
-
-        if (field_27437_b != null)
-        {
-            statFileWriter.func_27180_b(field_27437_b);
-            field_27437_b = null;
-        }
-
     }
 
-    public static Map func_27422_a(StatsSyncer var0)
+    internal Dictionary<StatBase, int> MergedData
     {
-        return var0.field_27437_b;
+        get => _mergedData;
+        set => _mergedData = value;
     }
 
-    public static java.io.File func_27423_b(StatsSyncer var0)
+    internal bool Busy
     {
-        return var0.statsFile;
+        get => _busy;
+        set => _busy = value;
     }
 
-    public static java.io.File func_27411_c(StatsSyncer var0)
-    {
-        return var0.tempStatsFile;
-    }
+    internal string StatsFile => _statsFile;
+    internal string TempStatsFile => _tempStatsFile;
+    internal string OldStatsFile => _oldStatsFile;
+    internal string UnsentStatsFile => _unsentStatsFile;
+    internal string TempUnsentStatsFile => _tempUnsentStatsFile;
+    internal string OldUnsentStatsFile => _oldUnsentStatsFile;
 
-    public static java.io.File func_27413_d(StatsSyncer var0)
+    internal Dictionary<StatBase, int> FetchNewestAvailableStats(string unsent, string tempUnsent, string oldUnsent)
     {
-        return var0.oldStatsFile;
-    }
-
-    public static void func_27412_a(StatsSyncer var0, Map var1, java.io.File var2, java.io.File var3, java.io.File var4)
-    {
-        var0.func_27410_a(var1, var2, var3, var4);
-    }
-
-    public static Map func_27421_a(StatsSyncer var0, Map var1)
-    {
-        return var0.field_27437_b = var1;
-    }
-
-    public static Map func_27409_a(StatsSyncer var0, java.io.File var1, java.io.File var2, java.io.File var3)
-    {
-        return var0.getNewestAvailableStats(var1, var2, var3);
-    }
-
-    public static bool func_27416_a(StatsSyncer var0, bool var1)
-    {
-        return var0.busy = var1;
-    }
-
-    public static java.io.File func_27414_e(StatsSyncer var0)
-    {
-        return var0.unsentStatsFile;
-    }
-
-    public static java.io.File func_27417_f(StatsSyncer var0)
-    {
-        return var0.tempUnsentStatsFile;
-    }
-
-    public static java.io.File func_27419_g(StatsSyncer var0)
-    {
-        return var0.oldUnsentStatsFile;
+        return GetNewestAvailableStats(unsent, tempUnsent, oldUnsent);
     }
 }

@@ -5,7 +5,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
-public class BlockSnowBlock : Block
+internal class BlockSnowBlock : Block
 {
 
     public BlockSnowBlock(int id, int textureId) : base(id, textureId, Material.SnowBlock)

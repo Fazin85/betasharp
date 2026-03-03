@@ -1,6 +1,6 @@
 namespace BetaSharp;
 
-public enum PressurePlateActiviationRule
+internal enum PressurePlateActiviationRule
 {
     EVERYTHING,
     MOBS,

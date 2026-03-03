@@ -7,13 +7,22 @@ namespace BetaSharp.Entities;
 
 public class EntitySpider : EntityMonster
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntitySpider).TypeHandle);
-
     public EntitySpider(World world) : base(world)
     {
         texture = "/mob/spider.png";
         setBoundingBoxSpacing(1.4F, 0.9F);
         movementSpeed = 0.8F;
+    }
+
+    public override void PostSpawn()
+    {
+        if (world.random.NextInt(100) == 0)
+        {
+            EntitySkeleton skeleton = new EntitySkeleton(world);
+            skeleton.setPositionAndAnglesKeepPrevAngles(x, y, z, yaw, 0.0F);
+            world.SpawnEntity(skeleton);
+            skeleton.setVehicle(this);
+        }
     }
 
     public override double getPassengerRidingHeight()

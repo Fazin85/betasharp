@@ -99,10 +99,10 @@ public class ModelSpider : ModelBase
         float var11 = -(MathHelper.Cos(var1 * 0.6662F * 2.0F + (float)Math.PI) * 0.4F) * var2;
         float var12 = -(MathHelper.Cos(var1 * 0.6662F * 2.0F + (float)Math.PI * 0.5F) * 0.4F) * var2;
         float var13 = -(MathHelper.Cos(var1 * 0.6662F * 2.0F + (float)Math.PI * 3.0F / 2.0F) * 0.4F) * var2;
-        float var14 = java.lang.Math.abs(MathHelper.Sin(var1 * 0.6662F + 0.0F) * 0.4F) * var2;
-        float var15 = java.lang.Math.abs(MathHelper.Sin(var1 * 0.6662F + (float)Math.PI) * 0.4F) * var2;
-        float var16 = java.lang.Math.abs(MathHelper.Sin(var1 * 0.6662F + (float)Math.PI * 0.5F) * 0.4F) * var2;
-        float var17 = java.lang.Math.abs(MathHelper.Sin(var1 * 0.6662F + (float)Math.PI * 3.0F / 2.0F) * 0.4F) * var2;
+        float var14 = Math.Abs(MathHelper.Sin(var1 * 0.6662F + 0.0F) * 0.4F) * var2;
+        float var15 = Math.Abs(MathHelper.Sin(var1 * 0.6662F + (float)Math.PI) * 0.4F) * var2;
+        float var16 = Math.Abs(MathHelper.Sin(var1 * 0.6662F + (float)Math.PI * 0.5F) * 0.4F) * var2;
+        float var17 = Math.Abs(MathHelper.Sin(var1 * 0.6662F + (float)Math.PI * 3.0F / 2.0F) * 0.4F) * var2;
         spiderLeg1.rotateAngleY += var10;
         spiderLeg2.rotateAngleY += -var10;
         spiderLeg3.rotateAngleY += var11;

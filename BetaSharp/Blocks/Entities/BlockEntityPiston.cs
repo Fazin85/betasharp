@@ -89,10 +89,10 @@ public class BlockEntityPiston : BlockEntity
             collisionShapeSizeMultiplier = 1.0F - collisionShapeSizeMultiplier;
         }
 
-        Box? pushCollisionBox = Block.MovingPiston.getPushedBlockCollisionShape(world, x, y, z, _pushedBlockId, collisionShapeSizeMultiplier, _facing);
+        Box? pushCollisionBox = Block.MovingPiston.getPushedBlockCollisionShape(World, X, Y, Z, _pushedBlockId, collisionShapeSizeMultiplier, _facing);
         if (pushCollisionBox != null)
         {
-            List<Entity> entitiesToPush = world.getEntities(null!, pushCollisionBox.Value);
+            List<Entity> entitiesToPush = World.getEntities(null!, pushCollisionBox.Value);
             if (entitiesToPush.Count > 0)
             {
                 List<Entity> pushedEntities = s_pushedEntities.Value!;
@@ -116,11 +116,11 @@ public class BlockEntityPiston : BlockEntity
         if (_progress < 1.0F)
         {
             _progress = _lastProgess = 1.0F;
-            world.removeBlockEntity(x, y, z);
+            World.removeBlockEntity(X, Y, Z);
             markRemoved();
-            if (world.getBlockId(x, y, z) == Block.MovingPiston.id)
+            if (World.getBlockId(X, Y, Z) == Block.MovingPiston.id)
             {
-                world.setBlock(x, y, z, _pushedBlockId, _pushedBlockData);
+                World.setBlock(X, Y, Z, _pushedBlockId, _pushedBlockData);
             }
         }
 
@@ -132,11 +132,11 @@ public class BlockEntityPiston : BlockEntity
         if (_progress >= 1.0F)
         {
             pushEntities(1.0F, 0.25F);
-            world.removeBlockEntity(x, y, z);
+            World.removeBlockEntity(X, Y, Z);
             markRemoved();
-            if (world.getBlockId(x, y, z) == Block.MovingPiston.id)
+            if (World.getBlockId(X, Y, Z) == Block.MovingPiston.id)
             {
-                world.setBlock(x, y, z, _pushedBlockId, _pushedBlockData);
+                World.setBlock(X, Y, Z, _pushedBlockId, _pushedBlockData);
             }
 
         }

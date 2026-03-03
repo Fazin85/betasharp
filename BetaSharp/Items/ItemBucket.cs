@@ -7,7 +7,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Items;
 
-public class ItemBucket : Item
+internal class ItemBucket : Item
 {
 
     private int isFull;
@@ -36,17 +36,17 @@ public class ItemBucket : Item
         double reachDistance = 5.0D;
         Vec3D rayEnd = rayStart + new Vec3D((double)dirX * reachDistance, (double)sinPitch * reachDistance, (double)dirZ * reachDistance);
         HitResult hitResult = world.raycast(rayStart, rayEnd, isFull == 0);
-        if (hitResult == null)
+        if (hitResult.Type == HitResultType.MISS)
         {
             return itemStack;
         }
         else
         {
-            if (hitResult.type == HitResultType.TILE)
+            if (hitResult.Type == HitResultType.TILE)
             {
-                int hitX = hitResult.blockX;
-                int hitY = hitResult.blockY;
-                int hitZ = hitResult.blockZ;
+                int hitX = hitResult.BlockX;
+                int hitY = hitResult.BlockY;
+                int hitZ = hitResult.BlockZ;
                 if (!world.canInteract(entityPlayer, hitX, hitY, hitZ))
                 {
                     return itemStack;
@@ -73,45 +73,45 @@ public class ItemBucket : Item
                         return new ItemStack(Item.Bucket);
                     }
 
-                    if (hitResult.side == 0)
+                    if (hitResult.Side == 0)
                     {
                         --hitY;
                     }
 
-                    if (hitResult.side == 1)
+                    if (hitResult.Side == 1)
                     {
                         ++hitY;
                     }
 
-                    if (hitResult.side == 2)
+                    if (hitResult.Side == 2)
                     {
                         --hitZ;
                     }
 
-                    if (hitResult.side == 3)
+                    if (hitResult.Side == 3)
                     {
                         ++hitZ;
                     }
 
-                    if (hitResult.side == 4)
+                    if (hitResult.Side == 4)
                     {
                         --hitX;
                     }
 
-                    if (hitResult.side == 5)
+                    if (hitResult.Side == 5)
                     {
                         ++hitX;
                     }
 
                     if (world.isAir(hitX, hitY, hitZ) || !world.getMaterial(hitX, hitY, hitZ).IsSolid)
                     {
-                        if (world.dimension.evaporatesWater && isFull == Block.FlowingWater.id)
+                        if (world.dimension.EvaporatesWater && isFull == Block.FlowingWater.id)
                         {
                             world.playSound(x + 0.5D, y + 0.5D, z + 0.5D, "random.fizz", 0.5F, 2.6F + (world.random.NextFloat() - world.random.NextFloat()) * 0.8F);
 
                             for (int particleIndex = 0; particleIndex < 8; ++particleIndex)
                             {
-                                world.addParticle("largesmoke", (double)hitX + java.lang.Math.random(), (double)hitY + java.lang.Math.random(), (double)hitZ + java.lang.Math.random(), 0.0D, 0.0D, 0.0D);
+                                world.addParticle("largesmoke", hitX + Random.Shared.NextDouble(), hitY + Random.Shared.NextDouble(), hitZ + Random.Shared.NextDouble(), 0.0D, 0.0D, 0.0D);
                             }
                         }
                         else
@@ -123,7 +123,7 @@ public class ItemBucket : Item
                     }
                 }
             }
-            else if (isFull == 0 && hitResult.entity is EntityCow)
+            else if (isFull == 0 && hitResult.Entity is EntityCow)
             {
                 return new ItemStack(Item.MilkBucket);
             }

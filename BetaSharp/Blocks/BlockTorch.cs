@@ -5,7 +5,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
-public class BlockTorch : Block
+internal class BlockTorch : Block
 {
 
     public BlockTorch(int id, int textureId) : base(id, textureId, Material.PistonBreakable)
@@ -28,9 +28,9 @@ public class BlockTorch : Block
         return false;
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return 2;
+        return BlockRendererType.Torch;
     }
 
     private bool canPlaceOn(World world, int x, int y, int z)

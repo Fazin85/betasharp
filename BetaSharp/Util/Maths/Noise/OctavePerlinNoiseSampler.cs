@@ -1,6 +1,6 @@
 namespace BetaSharp.Util.Maths.Noise;
 
-public class OctavePerlinNoiseSampler : NoiseSampler
+internal class OctavePerlinNoiseSampler : NoiseSampler
 {
 
     private readonly PerlinNoiseSampler[] _octaves;

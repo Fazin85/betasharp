@@ -1,44 +1,37 @@
+using System.Net.Sockets;
 using BetaSharp.Entities;
-using java.io;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
-public class EntityVehicleSetS2CPacket : Packet
+public class EntityVehicleSetS2CPacket() : PacketBaseEntity(PacketId.EntityVehicleSetS2C)
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityVehicleSetS2CPacket).TypeHandle);
+    public int VehicleEntityId;
 
-    public int entityId;
-    public int vehicleEntityId;
-
-    public EntityVehicleSetS2CPacket()
+    public EntityVehicleSetS2CPacket(Entity entity, Entity vehicle) : this()
     {
+        EntityId = entity.id;
+        VehicleEntityId = vehicle != null ? vehicle.id : -1;
     }
 
-    public EntityVehicleSetS2CPacket(Entity entity, Entity vehicle)
+    public override void Read(NetworkStream stream)
     {
-        entityId = entity.id;
-        vehicleEntityId = vehicle != null ? vehicle.id : -1;
+        base.Read(stream);
+        VehicleEntityId = stream.ReadInt();
     }
 
-    public override int size()
+    public override void Write(NetworkStream stream)
     {
-        return 8;
+        base.Write(stream);
+        stream.WriteInt(VehicleEntityId);
     }
 
-    public override void read(DataInputStream stream)
-    {
-        entityId = stream.readInt();
-        vehicleEntityId = stream.readInt();
-    }
-
-    public override void write(DataOutputStream stream)
-    {
-        stream.writeInt(entityId);
-        stream.writeInt(vehicleEntityId);
-    }
-
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onEntityVehicleSet(this);
+    }
+
+    public override int Size()
+    {
+        return PacketBaseEntitySize + 4;
     }
 }

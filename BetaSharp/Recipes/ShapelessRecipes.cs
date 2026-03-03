@@ -3,7 +3,7 @@ using BetaSharp.Items;
 
 namespace BetaSharp.Recipes;
 
-public class ShapelessRecipes : IRecipe
+internal class ShapelessRecipes : IRecipe
 {
 
     private readonly ItemStack _output;

@@ -8,7 +8,7 @@ using BetaSharp.Worlds.Chunks;
 
 namespace BetaSharp.Worlds;
 
-public class WorldRegionSnapshot : BlockView, IDisposable
+public class WorldRegionSnapshot : IBlockAccess, IDisposable
 {
     private readonly int _chunkX;
     private readonly int _chunkZ;
@@ -42,12 +42,12 @@ public class WorldRegionSnapshot : BlockView, IDisposable
         {
             for (int cz = _chunkZ; cz <= maxChunkZ; ++cz)
             {
-                Chunk originalChunk = world.getChunk(cx, cz);
+                Chunk originalChunk = world.GetChunk(cx, cz);
                 _chunks[cx - _chunkX][cz - _chunkZ] = new(originalChunk);
             }
         }
 
-        _lightTable = (float[])world.dimension.lightLevelToLuminance.Clone();
+        _lightTable = (float[])world.dimension.LightLevelToLuminance.Clone();
         _skylightSubtracted = world.ambientDarkness;
     }
 
@@ -105,7 +105,7 @@ public class WorldRegionSnapshot : BlockView, IDisposable
             NBTTagCompound? nbt = chunk.GetTileEntityNbt(x & 15, y, z & 15);
             if (nbt != null)
             {
-                var newEntity = BlockEntity.createFromNbt(nbt);
+                var newEntity = BlockEntity.CreateFromNbt(nbt);
                 if (newEntity != null)
                 {
                     _tileEntityCache[pos] = newEntity;

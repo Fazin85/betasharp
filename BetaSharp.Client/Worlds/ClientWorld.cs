@@ -21,7 +21,7 @@ public class ClientWorld : World
     private readonly HashSet<Entity> forcedEntities = [];
     private readonly HashSet<Entity> pendingEntities = [];
 
-    public ClientWorld(ClientNetworkHandler netHandler, long seed, int dimId) : base(new EmptyWorldStorage(), "MpServer", Dimension.fromId(dimId), seed)
+    public ClientWorld(ClientNetworkHandler netHandler, long seed, int dimId) : base(new EmptyWorldStorage(), "MpServer", Dimension.FromId(dimId), seed)
     {
         _networkHandler = netHandler;
         setSpawnPos(new Vec3i(8, 64, 8));
@@ -36,9 +36,9 @@ public class ClientWorld : World
         if (ambient != ambientDarkness)
         {
             ambientDarkness = ambient;
-            for (int j = 0; j < eventListeners.Count; ++j)
+            for (int j = 0; j < EventListeners.Count; ++j)
             {
-                eventListeners[j].notifyAmbientDarknessChanged();
+                EventListeners[j].notifyAmbientDarknessChanged();
             }
         }
 
@@ -91,17 +91,17 @@ public class ClientWorld : World
 
     public override void ScheduleBlockUpdate(int x, int y, int z, int blockId, int delay) { }
 
-    public override bool ProcessScheduledTicks(bool flush) => false;
+    protected override void ProcessScheduledTicks(bool flush) { }
 
     public void UpdateChunk(int chunkX, int chunkZ, bool load)
     {
         if (load)
         {
-            _chunkCache.loadChunk(chunkX, chunkZ);
+            _chunkCache.LoadChunk(chunkX, chunkZ);
         }
         else
         {
-            _chunkCache.unloadChunk(chunkX, chunkZ);
+            _chunkCache.UnloadChunk(chunkX, chunkZ);
         }
 
         if (!load)
@@ -240,14 +240,14 @@ public class ClientWorld : World
 
     protected override void UpdateWeatherCycles()
     {
-        if (dimension.hasCeiling) return;
+        if (dimension.HasCeiling) return;
 
-        if (ticksSinceLightning > 0) --ticksSinceLightning;
+        if (TicksSinceLightning > 0) --TicksSinceLightning;
 
-        prevRainingStrength = rainingStrength;
-        rainingStrength = Math.Clamp(rainingStrength + (properties.IsRaining ? 0.01f : -0.01f), 0.0f, 1.0f);
+        PrevRainingStrength = RainingStrength;
+        RainingStrength = Math.Clamp(RainingStrength + (Properties.IsRaining ? 0.01f : -0.01f), 0.0f, 1.0f);
 
-        prevThunderingStrength = thunderingStrength;
-        thunderingStrength = Math.Clamp(thunderingStrength + (properties.IsThundering ? 0.01f : -0.01f), 0.0f, 1.0f);
+        PrevThunderingStrength = ThunderingStrength;
+        ThunderingStrength = Math.Clamp(ThunderingStrength + (Properties.IsThundering ? 0.01f : -0.01f), 0.0f, 1.0f);
     }
 }

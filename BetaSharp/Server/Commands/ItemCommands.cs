@@ -5,7 +5,7 @@ using BetaSharp.Items;
 
 namespace BetaSharp.Server.Commands;
 
-public static class ItemCommands
+internal static class ItemCommands
 {
     private static readonly Dictionary<string, int> itemNameToId = [];
     private static bool lookupTablesBuilt;
@@ -15,7 +15,7 @@ public static class ItemCommands
         BuildItemLookupTables();
     }
 
-    public static void Give(MinecraftServer server, string senderName, string[] args, CommandOutput output)
+    public static void Give(BetaSharpServer server, string senderName, string[] args, CommandOutput output)
     {
         if (args.Length < 1) { output.SendMessage("Usage: give <item> [count]"); return; }
 

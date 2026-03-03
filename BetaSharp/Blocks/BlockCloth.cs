@@ -2,7 +2,7 @@ using BetaSharp.Blocks.Materials;
 
 namespace BetaSharp.Blocks;
 
-public class BlockCloth : Block
+internal class BlockCloth : Block
 {
     public BlockCloth() : base(35, 64, Material.Wool)
     {

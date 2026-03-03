@@ -1,6 +1,6 @@
 namespace BetaSharp.Rules;
 
-public interface IRulesProvider
+internal interface IRulesProvider
 {
     void RegisterAll(RuleRegistry registry);
 }

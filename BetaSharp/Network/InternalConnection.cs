@@ -1,4 +1,6 @@
+using System.Net;
 using BetaSharp.Network.Packets;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Network;
 
@@ -7,6 +9,8 @@ public class InternalConnection : Connection
     public InternalConnection RemoteConnection { get; set; }
 
     public string Name { get; set; }
+
+    private readonly ILogger<InternalConnection> _logger = Log.Instance.For<InternalConnection>();
 
     public InternalConnection(NetHandler? networkHandler, string name)
     {
@@ -48,12 +52,12 @@ public class InternalConnection : Connection
         while (!readQueue.isEmpty())
         {
             Packet packet = (Packet)readQueue.remove(0);
-            packet.apply(networkHandler);
+            packet.Apply(networkHandler);
             count++;
         }
         if (count > 0)
         {
-            // Log.Info($"[{Name}] Processed {count} packets");
+            // _logger.LogInformation($"[{Name}] Processed {count} packets");
         }
     }
 
@@ -76,7 +80,7 @@ public class InternalConnection : Connection
             this.disconnectedReason = disconnectedReason;
             this.disconnectReasonArgs = disconnectReasonArgs;
 
-            Log.Info($"[{Name}] Disconnected: {disconnectedReason}");
+            _logger.LogInformation($"[{Name}] Disconnected: {disconnectedReason}");
 
             if (RemoteConnection != null && RemoteConnection.open)
             {
@@ -93,7 +97,7 @@ public class InternalConnection : Connection
             disconnected = true;
             disconnectedReason = reason;
             disconnectReasonArgs = args;
-            Log.Info($"[{Name}] Remote disconnected: {reason}");
+            _logger.LogInformation($"[{Name}] Remote disconnected: {reason}");
         }
     }
 
@@ -115,8 +119,8 @@ public class InternalConnection : Connection
         }
     }
 
-    public override java.net.SocketAddress? getAddress()
+    public override IPEndPoint getAddress()
     {
-        return new java.net.InetSocketAddress("127.0.0.1", 12345);
+        return new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12345);
     }
 }

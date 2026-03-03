@@ -4,8 +4,6 @@ namespace BetaSharp.Entities;
 
 public class EntityGiantZombie : EntityMonster
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityGiantZombie).TypeHandle);
-
     public EntityGiantZombie(World world) : base(world)
     {
         texture = "/mob/zombie.png";

@@ -3,7 +3,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
-public class BlockMushroom : BlockPlant
+internal class BlockMushroom : BlockPlant
 {
     public BlockMushroom(int i, int j) : base(i, j)
     {

@@ -4,10 +4,8 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Entities;
 
-public class EntityPigZombie : EntityZombie
+internal class EntityPigZombie : EntityZombie
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityPigZombie).TypeHandle);
-
     private int angerLevel;
     private int randomSoundDelay;
     private static readonly ItemStack defaultHeldItem = new ItemStack(Item.GoldenSword, 1);
@@ -33,7 +31,7 @@ public class EntityPigZombie : EntityZombie
 
     public override bool canSpawn()
     {
-        return world.difficulty > 0 && world.canSpawnEntity(boundingBox) && world.getEntityCollisions(this, boundingBox).Count == 0 && !world.isBoxSubmergedInFluid(boundingBox);
+        return world.difficulty > 0 && world.canSpawnEntity(boundingBox) && world.GetEntityCollisions(this, boundingBox).Count == 0 && !world.isBoxSubmergedInFluid(boundingBox);
     }
 
     public override void writeNbt(NBTTagCompound nbt)
@@ -62,7 +60,7 @@ public class EntityPigZombie : EntityZombie
     {
         if (entity is EntityPlayer)
         {
-            var entities = world.getEntities(this, boundingBox.expand(32.0D, 32.0D, 32.0D));
+            var entities = world.getEntities(this, boundingBox.Expand(32.0D, 32.0D, 32.0D));
 
             for (int i = 0; i < entities.Count; ++i)
             {

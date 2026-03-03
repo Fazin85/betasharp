@@ -9,13 +9,11 @@ using BetaSharp.Stats;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Chunks;
-using java.lang;
 
 namespace BetaSharp.Entities;
 
 public abstract class EntityPlayer : EntityLiving
 {
-    public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityPlayer).TypeHandle);
     public InventoryPlayer inventory;
     public ScreenHandler playerScreenHandler;
     public ScreenHandler currentScreenHandler;
@@ -40,8 +38,8 @@ public abstract class EntityPlayer : EntityLiving
     public float sleepOffsetX;
     public float sleepOffsetY;
     public float sleepOffsetZ;
-    private Vec3i playerSpawnCoordinate;
-    private Vec3i startMinecartRidingCoordinate;
+    private Vec3i? playerSpawnCoordinate;
+    private Vec3i? startMinecartRidingCoordinate;
     public int portalCooldown = 20;
     protected bool inTeleportationState;
     public float changeDimensionCooldown;
@@ -56,7 +54,7 @@ public abstract class EntityPlayer : EntityLiving
         currentScreenHandler = playerScreenHandler;
         standingEyeHeight = 1.62F;
         Vec3i var2 = world.getSpawnPos();
-        setPositionAndAnglesKeepPrevAngles((double)var2.x + 0.5D, (double)(var2.y + 1), (double)var2.z + 0.5D, 0.0F, 0.0F);
+        setPositionAndAnglesKeepPrevAngles((double)var2.X + 0.5D, (double)(var2.Y + 1), (double)var2.Z + 0.5D, 0.0F, 0.0F);
         health = 20;
         modelName = "humanoid";
         rotationOffset = 180.0F;
@@ -67,10 +65,10 @@ public abstract class EntityPlayer : EntityLiving
     protected override void initDataTracker()
     {
         base.initDataTracker();
-        dataWatcher.addObject(16, java.lang.Byte.valueOf((byte)0));
+        dataWatcher.AddObject(16,(byte)0);
     }
 
-    public override void tick()
+    protected void TickSleep()
     {
         if (isSleeping())
         {
@@ -100,13 +98,35 @@ public abstract class EntityPlayer : EntityLiving
                 sleepTimer = 0;
             }
         }
+    }
 
-        base.tick();
+    /// <summary>
+    /// Primary Tick entry.
+    /// </summary>
+    /// <remarks>
+    /// Events that should occur on both client and server should go in <see cref="GenericTick"/>
+    /// </remarks>
+    public override void tick()
+    {
+        TickSleep();
+        GenericTick();
+
         if (!world.isRemote && currentScreenHandler != null && !currentScreenHandler.canUse(this))
         {
             closeHandledScreen();
             currentScreenHandler = playerScreenHandler;
         }
+    }
+
+    /// <summary>
+    /// Tick events that needs both server and client goes here.
+    /// </summary>
+    /// <remarks>
+    /// Called from both <see cref="tick"/> and <see cref="ServerPlayerEntity.playerTick"/>
+    /// </remarks>
+    protected void GenericTick()
+    {
+        base.tick();
 
         prevCapeX = capeX;
         prevCapeY = capeY;
@@ -148,7 +168,7 @@ public abstract class EntityPlayer : EntityLiving
         capeX += var1 * 0.25D;
         capeZ += var5 * 0.25D;
         capeY += var3 * 0.25D;
-        increaseStat(Stats.Stats.minutesPlayedStat, 1);
+        increaseStat(Stats.Stats.MinutesPlayedStat, 1);
         if (vehicle == null)
         {
             startMinecartRidingCoordinate = null;
@@ -247,7 +267,7 @@ public abstract class EntityPlayer : EntityLiving
         tilt += (var2 - tilt) * 0.8F;
         if (health > 0)
         {
-            var var3 = world.getEntities(this, boundingBox.expand(1.0D, 0.0D, 1.0D));
+            var var3 = world.getEntities(this, boundingBox.Expand(1.0D, 0.0D, 1.0D));
             if (var3 != null)
             {
                 for (int var4 = 0; var4 < var3.Count; ++var4)
@@ -296,7 +316,7 @@ public abstract class EntityPlayer : EntityLiving
         }
 
         standingEyeHeight = 0.1F;
-        increaseStat(Stats.Stats.deathsStat, 1);
+        increaseStat(Stats.Stats.DeathsStat, 1);
     }
 
     public override void updateKilledAchievement(Entity entityKilled, int score)
@@ -304,11 +324,11 @@ public abstract class EntityPlayer : EntityLiving
         this.score += score;
         if (entityKilled is EntityPlayer)
         {
-            increaseStat(Stats.Stats.playerKillsStat, 1);
+            increaseStat(Stats.Stats.PlayerKillsStat, 1);
         }
         else
         {
-            increaseStat(Stats.Stats.mobKillsStat, 1);
+            increaseStat(Stats.Stats.MobKillsStat, 1);
         }
 
     }
@@ -348,13 +368,13 @@ public abstract class EntityPlayer : EntityLiving
                 var4 = 0.02F;
                 var5 = random.NextFloat() * (float)System.Math.PI * 2.0F;
                 var4 *= random.NextFloat();
-                var3.velocityX += java.lang.Math.cos((double)var5) * (double)var4;
+                var3.velocityX += Math.Cos((double)var5) * (double)var4;
                 var3.velocityY += (double)((random.NextFloat() - random.NextFloat()) * 0.1F);
-                var3.velocityZ += java.lang.Math.sin((double)var5) * (double)var4;
+                var3.velocityZ += Math.Sin((double)var5) * (double)var4;
             }
 
             spawnItem(var3);
-            increaseStat(Stats.Stats.dropStat, 1);
+            increaseStat(Stats.Stats.DropStat, 1);
         }
     }
 
@@ -412,11 +432,11 @@ public abstract class EntityPlayer : EntityLiving
         nbt.SetInteger("Dimension", dimensionId);
         nbt.SetBoolean("Sleeping", sleeping);
         nbt.SetShort("SleepTimer", (short)sleepTimer);
-        if (playerSpawnCoordinate != null)
+        if (playerSpawnCoordinate is (int x, int y, int z))
         {
-            nbt.SetInteger("SpawnX", playerSpawnCoordinate.x);
-            nbt.SetInteger("SpawnY", playerSpawnCoordinate.y);
-            nbt.SetInteger("SpawnZ", playerSpawnCoordinate.z);
+            nbt.SetInteger("SpawnX", x);
+            nbt.SetInteger("SpawnY", y);
+            nbt.SetInteger("SpawnZ", z);
         }
 
     }
@@ -459,7 +479,7 @@ public abstract class EntityPlayer : EntityLiving
 
             if (damageSource is EntityMonster || damageSource is EntityArrow)
             {
-                switch(world.difficulty)
+                switch (world.difficulty)
                 {
                     case 0:
                         amount = 0;
@@ -477,22 +497,19 @@ public abstract class EntityPlayer : EntityLiving
             {
                 return false;
             }
-            else
+
+            if (damageSource is EntityArrow && ((EntityArrow)damageSource).owner != null)
             {
-                java.lang.Object var3 = damageSource;
-                if (damageSource is EntityArrow && ((EntityArrow)damageSource).owner != null)
-                {
-                    var3 = ((EntityArrow)damageSource).owner;
-                }
-
-                if (var3 is EntityLiving)
-                {
-                    commandWolvesToAttack((EntityLiving)var3, false);
-                }
-
-                increaseStat(Stats.Stats.damageTakenStat, amount);
-                return base.damage(damageSource, amount);
+                damageSource = ((EntityArrow)damageSource).owner;
             }
+
+            if (damageSource is EntityLiving)
+            {
+                commandWolvesToAttack((EntityLiving)damageSource, false);
+            }
+
+            increaseStat(Stats.Stats.DamageTakenStat, amount);
+            return base.damage(damageSource, amount);
         }
     }
 
@@ -511,12 +528,10 @@ public abstract class EntityPlayer : EntityLiving
 
             if (entity is not EntityPlayer || isPvpEnabled())
             {
-                var var7 = world.collectEntitiesByClass(EntityWolf.Class, new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(16.0D, 4.0D, 16.0D));
+                var var7 = world.CollectEntitiesOfType<EntityWolf>(new Box(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).Expand(16.0D, 4.0D, 16.0D));
 
-                foreach (Entity var5 in var7)
+                foreach (EntityWolf var6 in var7)
                 {
-                    EntityWolf var6 = (EntityWolf)var5;
-
                     if (!var6.isWolfTamed()) continue;
                     if (var6.getTarget() != null) continue;
                     if (!name.Equals(var6.getWolfOwner())) continue;
@@ -619,7 +634,7 @@ public abstract class EntityPlayer : EntityLiving
                     commandWolvesToAttack((EntityLiving)target, true);
                 }
 
-                increaseStat(Stats.Stats.damageDealtStat, var2);
+                increaseStat(Stats.Stats.DamageDealtStat, var2);
             }
         }
 
@@ -631,7 +646,7 @@ public abstract class EntityPlayer : EntityLiving
 
     public abstract void spawn();
 
-    public virtual void onCursorStackChanged(ItemStack stack)
+    public virtual void onCursorStackChanged(ItemStack? stack)
     {
     }
 
@@ -660,7 +675,7 @@ public abstract class EntityPlayer : EntityLiving
                 return SleepAttemptResult.OTHER_PROBLEM;
             }
 
-            if (world.dimension.isNether)
+            if (world.dimension.IsNether)
             {
                 return SleepAttemptResult.NOT_POSSIBLE_HERE;
             }
@@ -670,7 +685,7 @@ public abstract class EntityPlayer : EntityLiving
                 return SleepAttemptResult.NOT_POSSIBLE_NOW;
             }
 
-            if (java.lang.Math.abs(base.x - (double)x) > 3.0D || java.lang.Math.abs(base.y - (double)y) > 2.0D || java.lang.Math.abs(base.z - (double)z) > 3.0D)
+            if (Math.Abs(base.x - (double)x) > 3.0D || Math.Abs(base.y - (double)y) > 2.0D || Math.Abs(base.z - (double)z) > 3.0D)
             {
                 return SleepAttemptResult.TOO_FAR_AWAY;
             }
@@ -746,18 +761,17 @@ public abstract class EntityPlayer : EntityLiving
     {
         setBoundingBoxSpacing(0.6F, 1.8F);
         resetEyeHeight();
-        Vec3i var4 = sleepingPos;
-        Vec3i var5 = sleepingPos;
-        if (var4 != null && world.getBlockId(var4.x, var4.y, var4.z) == Block.Bed.id)
+        Vec3i? var4 = sleepingPos;
+        if (var4 is (int x, int y, int z) && world.getBlockId(x, y, z) == Block.Bed.id)
         {
-            BlockBed.updateState(world, var4.x, var4.y, var4.z, false);
-            var5 = BlockBed.findWakeUpPosition(world, var4.x, var4.y, var4.z, 0);
+            BlockBed.updateState(world, x, y, z, false);
+            Vec3i? var5 = BlockBed.findWakeUpPosition(world, x, y, z, 0);
             if (var5 == null)
             {
-                var5 = new Vec3i(var4.x, var4.y + 1, var4.z);
+                var5 = new Vec3i(x, y + 1, z);
             }
 
-            setPosition((double)((float)var5.x + 0.5F), (double)((float)var5.y + standingEyeHeight + 0.1F), (double)((float)var5.z + 0.5F));
+            setPosition(var5.Value.X + 0.5F, var5.Value.Y + standingEyeHeight + 0.1F, var5.Value.Z + 0.5F);
         }
 
         sleeping = false;
@@ -784,32 +798,36 @@ public abstract class EntityPlayer : EntityLiving
 
     private bool isSleepingInBed()
     {
-        return world.getBlockId(sleepingPos.x, sleepingPos.y, sleepingPos.z) == Block.Bed.id;
+        return world.getBlockId(sleepingPos.X, sleepingPos.Y, sleepingPos.Z) == Block.Bed.id;
     }
 
-    public static Vec3i findRespawnPosition(World world, Vec3i spawnPos)
+    public static Vec3i? findRespawnPosition(World world, Vec3i? spawnPos)
     {
-        ChunkSource var2 = world.getChunkSource();
-        var2.loadChunk(spawnPos.x - 3 >> 4, spawnPos.z - 3 >> 4);
-        var2.loadChunk(spawnPos.x + 3 >> 4, spawnPos.z - 3 >> 4);
-        var2.loadChunk(spawnPos.x - 3 >> 4, spawnPos.z + 3 >> 4);
-        var2.loadChunk(spawnPos.x + 3 >> 4, spawnPos.z + 3 >> 4);
-        if (world.getBlockId(spawnPos.x, spawnPos.y, spawnPos.z) != Block.Bed.id)
+        if (spawnPos is not (int x, int y, int z))
         {
             return null;
         }
-        else
+
+        ChunkSource chunkSource = world.GetChunkSource();
+
+        chunkSource.LoadChunk((x - 3) >> 4, (z - 3) >> 4);
+        chunkSource.LoadChunk((x + 3) >> 4, (z - 3) >> 4);
+        chunkSource.LoadChunk((x - 3) >> 4, (z + 3) >> 4);
+        chunkSource.LoadChunk((x + 3) >> 4, (z + 3) >> 4);
+
+        if (world.getBlockId(x, y, z) != Block.Bed.id)
         {
-            Vec3i var3 = BlockBed.findWakeUpPosition(world, spawnPos.x, spawnPos.y, spawnPos.z, 0);
-            return var3;
+            return null;
         }
+
+        return BlockBed.findWakeUpPosition(world, x, y, z, 0);
     }
 
     public float getSleepingRotation()
     {
         if (sleepingPos != null)
         {
-            int var1 = world.getBlockMeta(sleepingPos.x, sleepingPos.y, sleepingPos.z);
+            int var1 = world.getBlockMeta(sleepingPos.X, sleepingPos.Y, sleepingPos.Z);
             int var2 = BlockBed.getDirection(var1);
             switch (var2)
             {
@@ -846,16 +864,16 @@ public abstract class EntityPlayer : EntityLiving
     {
     }
 
-    public Vec3i getSpawnPos()
+    public Vec3i? getSpawnPos()
     {
         return playerSpawnCoordinate;
     }
 
-    public void setSpawnPos(Vec3i spawnPos)
+    public void setSpawnPos(Vec3i? spawnPos)
     {
-        if (spawnPos != null)
+        if (spawnPos is (int x, int y, int z))
         {
-            playerSpawnCoordinate = new Vec3i(spawnPos);
+            playerSpawnCoordinate = new Vec3i(x, y, z);
         }
         else
         {
@@ -876,7 +894,7 @@ public abstract class EntityPlayer : EntityLiving
     protected override void jump()
     {
         base.jump();
-        increaseStat(Stats.Stats.jumpStat, 1);
+        increaseStat(Stats.Stats.JumpStat, 1);
     }
 
     public override void travel(float x, float z)
@@ -895,41 +913,41 @@ public abstract class EntityPlayer : EntityLiving
             int var7;
             if (isInFluid(Material.Water))
             {
-                var7 = java.lang.Math.round(MathHelper.Sqrt(x * x + y * y + z * z) * 100.0F);
+                var7 = MathHelper.Round(MathHelper.Sqrt(x * x + y * y + z * z) * 100.0F);
                 if (var7 > 0)
                 {
-                    increaseStat(Stats.Stats.distanceDoveStat, var7);
+                    increaseStat(Stats.Stats.DistanceDoveStat, var7);
                 }
             }
             else if (isInWater())
             {
-                var7 = java.lang.Math.round(MathHelper.Sqrt(x * x + z * z) * 100.0F);
+                var7 = MathHelper.Round(MathHelper.Sqrt(x * x + z * z) * 100.0F);
                 if (var7 > 0)
                 {
-                    increaseStat(Stats.Stats.distanceSwumStat, var7);
+                    increaseStat(Stats.Stats.DistanceSwumStat, var7);
                 }
             }
             else if (isOnLadder())
             {
                 if (y > 0.0D)
                 {
-                    increaseStat(Stats.Stats.distanceClimbedStat, (int)java.lang.Math.round(y * 100.0D));
+                    increaseStat(Stats.Stats.DistanceClimbedStat, (int)MathHelper.Round(y * 100.0D));
                 }
             }
             else if (onGround)
             {
-                var7 = java.lang.Math.round(MathHelper.Sqrt(x * x + z * z) * 100.0F);
+                var7 = MathHelper.Round(MathHelper.Sqrt(x * x + z * z) * 100.0F);
                 if (var7 > 0)
                 {
-                    increaseStat(Stats.Stats.distanceWalkedStat, var7);
+                    increaseStat(Stats.Stats.DistanceWalkedStat, var7);
                 }
             }
             else
             {
-                var7 = java.lang.Math.round(MathHelper.Sqrt(x * x + z * z) * 100.0F);
+                var7 = MathHelper.Round(MathHelper.Sqrt(x * x + z * z) * 100.0F);
                 if (var7 > 25)
                 {
-                    increaseStat(Stats.Stats.distanceFlownStat, var7);
+                    increaseStat(Stats.Stats.DistanceFlownStat, var7);
                 }
             }
 
@@ -938,41 +956,46 @@ public abstract class EntityPlayer : EntityLiving
 
     private void increaseRidingMotionStats(double x, double y, double z)
     {
-        if (vehicle != null)
-        {
-            int var7 = java.lang.Math.round(MathHelper.Sqrt(x * x + y * y + z * z) * 100.0F);
-            if (var7 > 0)
-            {
-                if (vehicle is EntityMinecart)
-                {
-                    increaseStat(Stats.Stats.distanceByMinecartStat, var7);
-                    if (startMinecartRidingCoordinate == null)
-                    {
-                        startMinecartRidingCoordinate = new Vec3i(MathHelper.Floor(base.x), MathHelper.Floor(base.y), MathHelper.Floor(base.z));
-                    }
-                    else if (startMinecartRidingCoordinate.getSqDistanceTo(MathHelper.Floor(base.x), MathHelper.Floor(base.y), MathHelper.Floor(base.z)) >= 1000.0D)
-                    {
-                        increaseStat(Achievements.CraftRail, 1);
-                    }
-                }
-                else if (vehicle is EntityBoat)
-                {
-                    increaseStat(Stats.Stats.distanceByBoatStat, var7);
-                }
-                else if (vehicle is EntityPig)
-                {
-                    increaseStat(Stats.Stats.distanceByPigStat, var7);
-                }
-            }
-        }
+        if (vehicle is null) return;
 
+        int distanceScaled = (int)System.Math.Round(System.Math.Sqrt(x * x + y * y + z * z) * 100.0);
+
+        if (distanceScaled <= 0) return;
+
+        switch (vehicle)
+        {
+            case EntityMinecart:
+                increaseStat(Stats.Stats.DistanceFallenStat, distanceScaled);
+
+                int currentX = MathHelper.Floor(this.x);
+                int currentY = MathHelper.Floor(this.y);
+                int currentZ = MathHelper.Floor(this.z);
+
+                if (startMinecartRidingCoordinate is null)
+                {
+                    startMinecartRidingCoordinate = new Vec3i(currentX, currentY, currentZ);
+                }
+                else if (startMinecartRidingCoordinate.Value.SquaredDistanceTo(new Vec3i(currentX, currentY, currentZ)) >= 1_000_000)
+                {
+                    increaseStat(Achievements.CraftRail, 1);
+                }
+                break;
+
+            case EntityBoat:
+                increaseStat(Stats.Stats.DistanceFallenStat, distanceScaled);
+                break;
+
+            case EntityPig:
+                increaseStat(Stats.Stats.DistanceFallenStat, distanceScaled);
+                break;
+        }
     }
 
     protected override void onLanding(float fallDistance)
     {
         if (fallDistance >= 2.0F)
         {
-            increaseStat(Stats.Stats.distanceFallenStat, (int)java.lang.Math.round((double)fallDistance * 100.0D));
+            increaseStat(Stats.Stats.DistanceFallenStat, (int)MathHelper.Round((double)fallDistance * 100.0D));
         }
 
         base.onLanding(fallDistance);

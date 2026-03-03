@@ -1,15 +1,14 @@
+using BetaSharp.Client.Rendering.Core.OpenGL;
 using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Rendering.Core;
 
 public class GLManager
 {
-    public static GL GL { get => gl; }
+    public static IGL GL { get; private set; }
 
-    private static GL gl;
-
-    public static void Init(GL gl)
+    public static void Init(GL silkGl)
     {
-        GLManager.gl = gl;
+        GL = new EmulatedGL(silkGl);
     }
 }

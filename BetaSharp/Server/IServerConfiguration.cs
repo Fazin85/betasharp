@@ -4,6 +4,7 @@ public interface IServerConfiguration
 {
     string GetServerIp(string fallback);
     int GetServerPort(int fallback);
+    bool GetDualStack(bool fallback);
     bool GetOnlineMode(bool fallback);
     bool GetSpawnAnimals(bool fallback);
     bool GetPvpEnabled(bool fallback);
@@ -15,6 +16,7 @@ public interface IServerConfiguration
     int GetMaxPlayers(int fallback);
     int GetViewDistance(int fallback);
     bool GetWhiteList(bool fallback);
+    int GetSpawnRegionSize(int fallback);
     void Save();
 
     bool GetProperty(string property, bool fallback);

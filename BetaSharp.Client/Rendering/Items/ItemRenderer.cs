@@ -1,6 +1,8 @@
-﻿using BetaSharp.Blocks;
+using BetaSharp.Blocks;
+using BetaSharp.Client.Guis;
 using BetaSharp.Client.Rendering.Blocks;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Client.Rendering.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Items;
@@ -11,15 +13,13 @@ namespace BetaSharp.Client.Rendering.Items;
 
 public class ItemRenderer : EntityRenderer
 {
-
-    private readonly BlockRenderer renderBlocks = new();
     private readonly JavaRandom random = new();
     public bool useCustomDisplayColor = true;
 
     public ItemRenderer()
     {
-        shadowRadius = 0.15F;
-        shadowStrength = 12.0F / 16.0F;
+        ShadowRadius = 0.15F;
+        ShadowStrength = 12.0F / 16.0F;
     }
 
     public void doRenderItem(EntityItem var1, double var2, double var4, double var6, float var8, float var9)
@@ -28,7 +28,7 @@ public class ItemRenderer : EntityRenderer
         ItemStack var10 = var1.stack;
         GLManager.GL.PushMatrix();
         float var11 = MathHelper.Sin((var1.age + var9) / 10.0F + var1.bobPhase) * 0.1F + 0.1F;
-        float var12 = ((var1.age + var9) / 20.0F + var1.bobPhase) * (180.0F / (float)java.lang.Math.PI);
+        float var12 = ((var1.age + var9) / 20.0F + var1.bobPhase) * (180.0F / (float)Math.PI);
         byte var13 = 1;
         if (var1.stack.count > 1)
         {
@@ -50,12 +50,13 @@ public class ItemRenderer : EntityRenderer
         float var16;
         float var17;
         float var18;
-        if (var10.itemId < 256 && BlockRenderer.isSideLit(Block.Blocks[var10.itemId].getRenderType()))
+        if (var10.itemId < 256 && BlockRenderer.IsSideLit(Block.Blocks[var10.itemId].getRenderType()))
         {
             GLManager.GL.Rotate(var12, 0.0F, 1.0F, 0.0F);
             loadTexture("/terrain.png");
             float var28 = 0.25F;
-            if (!Block.Blocks[var10.itemId].isFullCube() && var10.itemId != Block.Slab.id && Block.Blocks[var10.itemId].getRenderType() != 16)
+            if (!Block.Blocks[var10.itemId].isFullCube() && var10.itemId != Block.Slab.id
+                && Block.Blocks[var10.itemId].getRenderType() != BlockRendererType.PistonBase)
             {
                 var28 = 0.5F;
             }
@@ -73,7 +74,7 @@ public class ItemRenderer : EntityRenderer
                     GLManager.GL.Translate(var16, var17, var18);
                 }
 
-                renderBlocks.renderBlockOnInventory(Block.Blocks[var10.itemId], var10.getDamage(), var1.getBrightnessAtEyes(var9));
+                BlockRenderer.RenderBlockOnInventory(Block.Blocks[var10.itemId], var10.getDamage(), var1.getBrightnessAtEyes(var9), Tessellator.instance);
                 GLManager.GL.PopMatrix();
             }
         }
@@ -123,7 +124,7 @@ public class ItemRenderer : EntityRenderer
                     GLManager.GL.Translate(var24, var25, var26);
                 }
 
-                GLManager.GL.Rotate(180.0F - dispatcher.playerViewY, 0.0F, 1.0F, 0.0F);
+                GLManager.GL.Rotate(180.0F - Dispatcher.playerViewY, 0.0F, 1.0F, 0.0F);
                 var15.startDrawingQuads();
                 var15.setNormal(0.0F, 1.0F, 0.0F);
                 var15.addVertexWithUV((double)(0.0F - var21), (double)(0.0F - var22), 0.0D, (double)var16, (double)var19);
@@ -142,7 +143,7 @@ public class ItemRenderer : EntityRenderer
     public void drawItemIntoGui(TextRenderer var1, TextureManager var2, int var3, int var4, int var5, int var6, int var7)
     {
         float var11;
-        if (var3 < 256 && BlockRenderer.isSideLit(Block.Blocks[var3].getRenderType()))
+        if (var3 < 256 && BlockRenderer.IsSideLit(Block.Blocks[var3].getRenderType()))
         {
             var2.BindTexture(var2.GetTextureId("/terrain.png"));
             Block var14 = Block.Blocks[var3];
@@ -163,9 +164,7 @@ public class ItemRenderer : EntityRenderer
             }
 
             GLManager.GL.Rotate(-90.0F, 0.0F, 1.0F, 0.0F);
-            renderBlocks.field_31088_b = useCustomDisplayColor;
-            renderBlocks.renderBlockOnInventory(var14, var4, 1.0F);
-            renderBlocks.field_31088_b = true;
+            BlockRenderer.RenderBlockOnInventory(var14, var4, 1.0F, Tessellator.instance);
             GLManager.GL.PopMatrix();
         }
         else if (var5 >= 0)
@@ -213,15 +212,15 @@ public class ItemRenderer : EntityRenderer
                 string var6 = "" + var3.count;
                 GLManager.GL.Disable(GLEnum.Lighting);
                 GLManager.GL.Disable(GLEnum.DepthTest);
-                var1.DrawStringWithShadow(var6, var4 + 19 - 2 - var1.GetStringWidth(var6), var5 + 6 + 3, 0xFFFFFF);
+                var1.DrawStringWithShadow(var6, var4 + 19 - 2 - var1.GetStringWidth(var6), var5 + 6 + 3, Color.White);
                 GLManager.GL.Enable(GLEnum.Lighting);
                 GLManager.GL.Enable(GLEnum.DepthTest);
             }
 
             if (var3.isDamaged())
             {
-                int var11 = (int)java.lang.Math.round(13.0D - var3.getDamage2() * 13.0D / var3.getMaxDamage());
-                int var7 = (int)java.lang.Math.round(255.0D - var3.getDamage2() * 255.0D / var3.getMaxDamage());
+                int var11 = (int)MathHelper.Round(13.0D - var3.getDamage2() * 13.0D / var3.getMaxDamage());
+                int var7 = (int)MathHelper.Round(255.0D - var3.getDamage2() * 255.0D / var3.getMaxDamage());
                 GLManager.GL.Disable(GLEnum.Lighting);
                 GLManager.GL.Disable(GLEnum.DepthTest);
                 GLManager.GL.Disable(GLEnum.Texture2D);

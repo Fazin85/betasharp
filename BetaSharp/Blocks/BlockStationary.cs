@@ -4,7 +4,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
-public class BlockStationary : BlockFluid
+internal class BlockStationary : BlockFluid
 {
     public BlockStationary(int id, Material material) : base(id, material)
     {

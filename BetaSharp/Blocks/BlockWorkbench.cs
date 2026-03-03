@@ -4,7 +4,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
-public class BlockWorkbench : Block
+internal class BlockWorkbench : Block
 {
 
     public BlockWorkbench(int id) : base(id, Material.Wood)

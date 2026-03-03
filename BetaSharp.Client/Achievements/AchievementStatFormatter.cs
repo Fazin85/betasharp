@@ -1,6 +1,6 @@
 namespace BetaSharp.Client.Achievements;
 
-public interface AchievementStatFormatter
+internal interface AchievementStatFormatter
 {
     string formatString(string var1);
 }

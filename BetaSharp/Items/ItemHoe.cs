@@ -4,7 +4,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Items;
 
-public class ItemHoe : Item
+internal class ItemHoe : Item
 {
 
     public ItemHoe(int id, EnumToolMaterial enumToolMaterial) : base(id)

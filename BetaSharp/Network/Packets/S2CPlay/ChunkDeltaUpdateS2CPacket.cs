@@ -1,13 +1,11 @@
+using System.Net.Sockets;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Chunks;
-using java.io;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
-public class ChunkDeltaUpdateS2CPacket : Packet
+public class ChunkDeltaUpdateS2CPacket() : Packet(PacketId.ChunkDeltaUpdateS2C)
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ChunkDeltaUpdateS2CPacket).TypeHandle);
-
     public int x;
     public int z;
     public short[] positions;
@@ -15,21 +13,15 @@ public class ChunkDeltaUpdateS2CPacket : Packet
     public byte[] blockMetadata;
     public int _size;
 
-    public ChunkDeltaUpdateS2CPacket()
+    public ChunkDeltaUpdateS2CPacket(int x, int z, short[] positions, int size, World world) : this()
     {
-        worldPacket = true;
-    }
-
-    public ChunkDeltaUpdateS2CPacket(int x, int z, short[] positions, int size, World world)
-    {
-        worldPacket = true;
         this.x = x;
         this.z = z;
         this._size = size;
         this.positions = new short[size];
         blockRawIds = new byte[size];
         blockMetadata = new byte[size];
-        Chunk chunk = world.getChunk(x, z);
+        Chunk chunk = world.GetChunk(x, z);
 
         for (int i = 0; i < size; i++)
         {
@@ -37,16 +29,16 @@ public class ChunkDeltaUpdateS2CPacket : Packet
             int blockZ = positions[i] >> 8 & 15;
             int blockY = positions[i] & 255;
             this.positions[i] = positions[i];
-            blockRawIds[i] = (byte)chunk.getBlockId(blockX, blockY, blockZ);
-            blockMetadata[i] = (byte)chunk.getBlockMeta(blockX, blockY, blockZ);
+            blockRawIds[i] = (byte)chunk.GetBlockId(blockX, blockY, blockZ);
+            blockMetadata[i] = (byte)chunk.GetBlockMeta(blockX, blockY, blockZ);
         }
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        x = stream.readInt();
-        z = stream.readInt();
-        _size = stream.readShort() & '\uffff';
+        x = stream.ReadInt();
+        z = stream.ReadInt();
+        _size = stream.ReadShort() & '\uffff';
         positions = new short[_size];
 
         blockRawIds = new byte[_size];
@@ -54,34 +46,34 @@ public class ChunkDeltaUpdateS2CPacket : Packet
 
         for (int i = 0; i < _size; ++i)
         {
-            positions[i] = stream.readShort();
+            positions[i] = stream.ReadShort();
         }
 
-        stream.readFully(blockRawIds);
-        stream.readFully(blockMetadata);
+        stream.ReadExactly(blockRawIds);
+        stream.ReadExactly(blockMetadata);
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(x);
-        stream.writeInt(z);
-        stream.writeShort((short)_size);
+        stream.WriteInt(x);
+        stream.WriteInt(z);
+        stream.WriteShort((short)_size);
 
         for (int i = 0; i < _size; ++i)
         {
-            stream.writeShort(positions[i]);
+            stream.WriteShort(positions[i]);
         }
 
-        stream.write(blockRawIds);
-        stream.write(blockMetadata);
+        stream.Write(blockRawIds);
+        stream.Write(blockMetadata);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onChunkDeltaUpdate(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 10 + _size * 4;
     }

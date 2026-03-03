@@ -1,4 +1,4 @@
-﻿using BetaSharp.Blocks.Entities;
+using BetaSharp.Blocks.Entities;
 using BetaSharp.Client.Achievements;
 using BetaSharp.Client.Entities.FX;
 using BetaSharp.Client.Guis;
@@ -9,26 +9,24 @@ using BetaSharp.NBT;
 using BetaSharp.Stats;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.lang;
 
 namespace BetaSharp.Client.Entities;
 
 public class ClientPlayerEntity : EntityPlayer
 {
-    public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ClientPlayerEntity).TypeHandle);
     public MovementInput movementInput;
-    protected Minecraft mc;
+    protected BetaSharp Game;
     private readonly MouseFilter field_21903_bJ = new();
     private readonly MouseFilter field_21904_bK = new();
     private readonly MouseFilter field_21902_bL = new();
 
-    public ClientPlayerEntity(Minecraft mc, World world, Session session, int dimensionId) : base(world)
+    public ClientPlayerEntity(BetaSharp game, World world, Session session, int dimensionId) : base(world)
     {
-        this.mc = mc;
+        this.Game = game;
         base.dimensionId = dimensionId;
         if (session != null && session.username != null && session.username.Length > 0)
         {
-            skinUrl = "http://s3.amazonaws.com/MinecraftSkins/" + session.username + ".png";
+            skinUrl = session.skinUrl ?? "http://s3.amazonaws.com/MinecraftSkins/" + session.username + ".png";
         }
 
         name = session.username;
@@ -49,9 +47,9 @@ public class ClientPlayerEntity : EntityPlayer
 
     public override void tickMovement()
     {
-        if (!mc.statFileWriter.hasAchievementUnlocked(BetaSharp.Achievements.OpenInventory))
+        if (!Game.statFileWriter.HasAchievementUnlocked(global::BetaSharp.Achievements.OpenInventory))
         {
-            mc.guiAchievement.queueAchievementInformation(BetaSharp.Achievements.OpenInventory);
+            Game.guiAchievement.queueAchievementInformation(global::BetaSharp.Achievements.OpenInventory);
         }
 
         lastScreenDistortion = changeDimensionCooldown;
@@ -62,14 +60,14 @@ public class ClientPlayerEntity : EntityPlayer
                 setVehicle((Entity)null);
             }
 
-            if (mc.currentScreen != null)
+            if (Game.currentScreen != null)
             {
-                mc.displayGuiScreen((GuiScreen)null);
+                Game.displayGuiScreen((GuiScreen)null);
             }
 
             if (changeDimensionCooldown == 0.0F)
             {
-                mc.sndManager.PlaySoundFX("portal.trigger", 1.0F, random.NextFloat() * 0.4F + 0.8F);
+                Game.sndManager.PlaySoundFX("portal.trigger", 1.0F, random.NextFloat() * 0.4F + 0.8F);
             }
 
             changeDimensionCooldown += 0.0125F;
@@ -104,10 +102,10 @@ public class ClientPlayerEntity : EntityPlayer
             cameraOffset = 0.2F;
         }
 
-        pushOutOfBlocks(x - (double)width * 0.35D, boundingBox.minY + 0.5D, z + (double)width * 0.35D);
-        pushOutOfBlocks(x - (double)width * 0.35D, boundingBox.minY + 0.5D, z - (double)width * 0.35D);
-        pushOutOfBlocks(x + (double)width * 0.35D, boundingBox.minY + 0.5D, z - (double)width * 0.35D);
-        pushOutOfBlocks(x + (double)width * 0.35D, boundingBox.minY + 0.5D, z + (double)width * 0.35D);
+        pushOutOfBlocks(x - (double)width * 0.35D, boundingBox.MinY + 0.5D, z + (double)width * 0.35D);
+        pushOutOfBlocks(x - (double)width * 0.35D, boundingBox.MinY + 0.5D, z - (double)width * 0.35D);
+        pushOutOfBlocks(x + (double)width * 0.35D, boundingBox.MinY + 0.5D, z - (double)width * 0.35D);
+        pushOutOfBlocks(x + (double)width * 0.35D, boundingBox.MinY + 0.5D, z + (double)width * 0.35D);
         base.tickMovement();
     }
 
@@ -136,37 +134,37 @@ public class ClientPlayerEntity : EntityPlayer
     public override void closeHandledScreen()
     {
         base.closeHandledScreen();
-        mc.displayGuiScreen(null);
+        Game.displayGuiScreen(null);
     }
 
     public override void openEditSignScreen(BlockEntitySign sign)
     {
-        mc.displayGuiScreen(new GuiEditSign(sign));
+        Game.displayGuiScreen(new GuiEditSign(sign));
     }
 
     public override void openChestScreen(IInventory inventory)
     {
-        mc.displayGuiScreen(new GuiChest(base.inventory, inventory));
+        Game.displayGuiScreen(new GuiChest(base.inventory, inventory));
     }
 
     public override void openCraftingScreen(int x, int y, int z)
     {
-        mc.displayGuiScreen(new GuiCrafting(inventory, world, x, y, z));
+        Game.displayGuiScreen(new GuiCrafting(inventory, world, x, y, z));
     }
 
     public override void openFurnaceScreen(BlockEntityFurnace furnace)
     {
-        mc.displayGuiScreen(new GuiFurnace(inventory, furnace));
+        Game.displayGuiScreen(new GuiFurnace(inventory, furnace));
     }
 
     public override void openDispenserScreen(BlockEntityDispenser dispenser)
     {
-        mc.displayGuiScreen(new GuiDispenser(inventory, dispenser));
+        Game.displayGuiScreen(new GuiDispenser(inventory, dispenser));
     }
 
     public override void sendPickup(Entity entity, int count)
     {
-        mc.particleManager.addEffect(new EntityPickupFX(mc.world, entity, this, -0.5F));
+        Game.particleManager.addEffect(new EntityPickupFX(Game.world, entity, this, -0.5F));
     }
 
     public int getPlayerArmorValue()
@@ -176,7 +174,7 @@ public class ClientPlayerEntity : EntityPlayer
 
     public virtual void sendChatMessage(string message)
     {
-        mc.ingameGUI.addChatMessage($"<{name}> {message}");
+        Game.ingameGUI.addChatMessage($"<{name}> {message}");
     }
 
     public override bool isSneaking()
@@ -208,7 +206,7 @@ public class ClientPlayerEntity : EntityPlayer
 
     public override void respawn()
     {
-        mc.respawn(false, 0);
+        Game.respawn(false, 0);
     }
 
     public override void spawn()
@@ -217,29 +215,32 @@ public class ClientPlayerEntity : EntityPlayer
 
     public override void sendMessage(string message)
     {
-        mc.ingameGUI.addChatMessageTranslate(message);
+        Game.ingameGUI.addChatMessageTranslate(message);
     }
 
     public override void increaseStat(StatBase stat, int value)
     {
         if (stat != null)
         {
-            if (stat.isAchievement())
+            if (stat.IsAchievement())
             {
                 Achievement achievement = (Achievement)stat;
-                if (achievement.parent == null || mc.statFileWriter.hasAchievementUnlocked(achievement.parent))
+                bool parentUnlocked = achievement.parent == null || Game.statFileWriter.HasAchievementUnlocked(achievement.parent);
+                bool alreadyUnlocked = Game.statFileWriter.HasAchievementUnlocked(achievement);
+
+                if (parentUnlocked)
                 {
-                    if (!mc.statFileWriter.hasAchievementUnlocked(achievement))
+                    if (!alreadyUnlocked)
                     {
-                        mc.guiAchievement.queueTakenAchievement(achievement);
+                        Game.guiAchievement.queueTakenAchievement(achievement);
                     }
 
-                    mc.statFileWriter.readStat(stat, value);
+                    Game.statFileWriter.ReadStat(stat, value);
                 }
             }
             else
             {
-                mc.statFileWriter.readStat(stat, value);
+                Game.statFileWriter.ReadStat(stat, value);
             }
 
         }

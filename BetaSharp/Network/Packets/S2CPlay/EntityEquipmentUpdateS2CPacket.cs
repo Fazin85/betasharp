@@ -1,24 +1,17 @@
+using System.Net.Sockets;
 using BetaSharp.Items;
-using java.io;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
-public class EntityEquipmentUpdateS2CPacket : Packet
+public class EntityEquipmentUpdateS2CPacket() : PacketBaseEntity(PacketId.EntityEquipmentUpdateS2C)
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityEquipmentUpdateS2CPacket).TypeHandle);
-
-    public int id;
     public int slot;
     public int itemRawId;
     public int itemDamage;
 
-    public EntityEquipmentUpdateS2CPacket()
+    public EntityEquipmentUpdateS2CPacket(int entityId, int slot, ItemStack itemStack) : this()
     {
-    }
-
-    public EntityEquipmentUpdateS2CPacket(int id, int slot, ItemStack itemStack)
-    {
-        this.id = id;
+        EntityId = entityId;
         this.slot = slot;
         if (itemStack == null)
         {
@@ -32,29 +25,29 @@ public class EntityEquipmentUpdateS2CPacket : Packet
         }
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        id = stream.readInt();
-        slot = stream.readShort();
-        itemRawId = stream.readShort();
-        itemDamage = stream.readShort();
+        base.Read(stream);
+        slot = stream.ReadShort();
+        itemRawId = stream.ReadShort();
+        itemDamage = stream.ReadShort();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(id);
-        stream.writeShort(slot);
-        stream.writeShort(itemRawId);
-        stream.writeShort(itemDamage);
+        base.Write(stream);
+        stream.WriteShort((short)slot);
+        stream.WriteShort((short)itemRawId);
+        stream.WriteShort((short)itemDamage);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onEntityEquipmentUpdate(this);
     }
 
-    public override int size()
+    public override int Size()
     {
-        return 8;
+        return 6 + PacketBaseEntitySize;
     }
 }

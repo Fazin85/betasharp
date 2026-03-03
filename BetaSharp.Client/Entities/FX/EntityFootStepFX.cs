@@ -1,4 +1,5 @@
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using Silk.NET.OpenGL.Legacy;

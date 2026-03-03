@@ -4,7 +4,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Gen.Features;
 
-public class LakeFeature : Feature
+internal class LakeFeature : Feature
 {
 
     private readonly int _waterBlockId;

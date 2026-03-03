@@ -1,17 +1,19 @@
 using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Entities;
 using java.util;
 using Silk.NET.OpenGL.Legacy;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using Color = BetaSharp.Client.Guis.Color;
 
 namespace BetaSharp.Client.Rendering;
 
 public class MapItemRenderer
 {
-    private readonly int[] colors = new int[128*128];
-    private readonly int _textureId;
+    private readonly int[] colors = new int[128 * 128];
+    private readonly TextureHandle _textureId;
     private readonly GameOptions _options;
     private readonly TextRenderer _textRenderer;
 
@@ -21,7 +23,7 @@ public class MapItemRenderer
         _textRenderer = textRenderer;
         _textureId = textureManager.Load(new Image<Rgba32>(128, 128));
 
-        for (int i = 0; i < 128*128; ++i)
+        for (int i = 0; i < 128 * 128; ++i)
         {
             colors[i] = 0;
         }
@@ -30,7 +32,7 @@ public class MapItemRenderer
 
     public void render(EntityPlayer player, TextureManager textureManager, MapState mapState)
     {
-        for (int i = 0; i < 128*128; ++i)
+        for (int i = 0; i < 128 * 128; ++i)
         {
             byte color = mapState.colors[i];
             if (color / 4 == 0)
@@ -57,16 +59,16 @@ public class MapItemRenderer
             }
         }
 
-        textureManager.Bind(colors, 128, 128, _textureId);
+        if (_textureId.Texture != null) textureManager.Bind(colors, 128, 128, _textureId.Texture);
         Tessellator tess = Tessellator.instance;
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)_textureId);
+        _textureId.Bind();
         GLManager.GL.Enable(GLEnum.Blend);
         GLManager.GL.Disable(GLEnum.AlphaTest);
         tess.startDrawingQuads();
-        tess.addVertexWithUV(0,    128,    -0.01F, 0.0D,   1.0D);
-        tess.addVertexWithUV(128,  128,    -0.01F, 1.0D,   1.0D);
-        tess.addVertexWithUV(128,  0,      -0.01F, 1.0D,   0.0D);
-        tess.addVertexWithUV(0,    0,      -0.01F, 0.0D,   0.0D);
+        tess.addVertexWithUV(0, 128, -0.01F, 0.0D, 1.0D);
+        tess.addVertexWithUV(128, 128, -0.01F, 1.0D, 1.0D);
+        tess.addVertexWithUV(128, 0, -0.01F, 1.0D, 0.0D);
+        tess.addVertexWithUV(0, 0, -0.01F, 0.0D, 0.0D);
         tess.draw();
         GLManager.GL.Enable(GLEnum.AlphaTest);
         GLManager.GL.Disable(GLEnum.Blend);
@@ -77,8 +79,8 @@ public class MapItemRenderer
         {
             MapCoord coord = (MapCoord)it.next();
             GLManager.GL.PushMatrix();
-            GLManager.GL.Translate(coord.x / 2.0F + 64.0F, coord.z / 2.0F + 64.0F, -0.02F);
-            GLManager.GL.Rotate(coord.rotation * 360 / 16.0F, 0.0F, 0.0F, 1.0F);
+            GLManager.GL.Translate((sbyte)coord.x / 2.0F + 64.0F, (sbyte)coord.z / 2.0F + 64.0F, -0.02F);
+            GLManager.GL.Rotate((sbyte)coord.rotation * 360 / 16.0F, 0.0F, 0.0F, 1.0F);
             GLManager.GL.Scale(4.0F, 4.0F, 3.0F);
             GLManager.GL.Translate(-(2.0F / 16.0F), 2.0F / 16.0F, 0.0F);
             float uMin = (coord.type % 4 + 0) / 4.0F;
@@ -86,10 +88,10 @@ public class MapItemRenderer
             float uMax = (coord.type % 4 + 1) / 4.0F;
             float vMax = (coord.type / 4 + 1) / 4.0F;
             tess.startDrawingQuads();
-            tess.addVertexWithUV(-1,     1, 0,  uMin,   vMin);
-            tess.addVertexWithUV( 1,     1, 0,  uMax,   vMin);
-            tess.addVertexWithUV( 1,    -1, 0,  uMax,   vMax);
-            tess.addVertexWithUV(-1,    -1, 0,  uMin,   vMax);
+            tess.addVertexWithUV(-1, 1, 0, uMin, vMin);
+            tess.addVertexWithUV(1, 1, 0, uMax, vMin);
+            tess.addVertexWithUV(1, -1, 0, uMax, vMax);
+            tess.addVertexWithUV(-1, -1, 0, uMin, vMax);
             tess.draw();
             GLManager.GL.PopMatrix();
         }
@@ -97,7 +99,7 @@ public class MapItemRenderer
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(0.0F, 0.0F, -0.04F);
         GLManager.GL.Scale(1.0F, 1.0F, 1.0F);
-        _textRenderer.DrawString(mapState.id, 0, 0, 0xFF000000);
+        _textRenderer.DrawString(mapState.id, 0, 0, Color.White);
         GLManager.GL.PopMatrix();
     }
 }

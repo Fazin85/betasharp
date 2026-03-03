@@ -2,7 +2,7 @@ using BetaSharp.Entities;
 
 namespace BetaSharp.Worlds.Biomes;
 
-public class BiomeGenSky : Biome
+internal class BiomeGenSky : Biome
 {
 
     public BiomeGenSky()
@@ -11,7 +11,7 @@ public class BiomeGenSky : Biome
         CreatureList.Clear();
         WaterCreatureList.Clear();
 
-        CreatureList.Add(new SpawnListEntry(EntityChicken.Class, 10));
+        CreatureList.Add(new SpawnListEntry(w => new EntityChicken(w)), 10);
     }
 
     public override int GetSkyColorByTemp(float rand)

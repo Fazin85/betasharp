@@ -2,7 +2,7 @@ using BetaSharp.Entities;
 
 namespace BetaSharp.Client.Rendering.Entities.Models;
 
-public abstract class ModelBase : java.lang.Object
+public abstract class ModelBase
 {
     public float onGround;
     public bool isRiding = false;

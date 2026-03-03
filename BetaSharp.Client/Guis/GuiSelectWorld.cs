@@ -1,4 +1,5 @@
-﻿using BetaSharp.Client.Input;
+using BetaSharp.Client.Input;
+using BetaSharp.Stats;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Storage;
 using java.text;
@@ -19,7 +20,7 @@ public class GuiSelectWorld : GuiScreen
     protected string screenTitle = "Select world";
     private bool selected;
     private int selectedWorld;
-    private List saveList;
+    private List<WorldSaveInfo> saveList;
     private GuiWorldSlot worldSlotContainer;
     private string worldNameHeader;
     private string unsupportedFormatMessage;
@@ -47,20 +48,20 @@ public class GuiSelectWorld : GuiScreen
 
     private void loadSaves()
     {
-        WorldStorageSource worldStorage = mc.getSaveLoader();
-        saveList = worldStorage.getAll();
-        Collections.sort(saveList);
+        IWorldStorageSource worldStorage = Game.getSaveLoader();
+        saveList = worldStorage.GetAll();
+        saveList.Sort();
         selectedWorld = -1;
     }
 
     protected string getSaveFileName(int worldIndex)
     {
-        return ((WorldSaveInfo)saveList.get(worldIndex)).getFileName();
+        return saveList[worldIndex].FileName;
     }
 
     protected string getSaveName(int worldIndex)
     {
-        string worldName = ((WorldSaveInfo)saveList.get(worldIndex)).getDisplayName();
+        string worldName = saveList[worldIndex].DisplayName;
         if (worldName == null || string.IsNullOrEmpty(worldName))
         {
             TranslationStorage translations = TranslationStorage.Instance;
@@ -95,7 +96,7 @@ public class GuiSelectWorld : GuiScreen
             string deleteButtonText = translations.TranslateKey("selectWorld.deleteButton");
             string cancelButtonText = translations.TranslateKey("gui.cancel");
             GuiYesNo confirmDialog = new(this, deleteQuestion, deleteWarning, deleteButtonText, cancelButtonText, worldIndex);
-            mc.displayGuiScreen(confirmDialog);
+            Game.displayGuiScreen(confirmDialog);
         }
     }
 
@@ -112,13 +113,13 @@ public class GuiSelectWorld : GuiScreen
                     selectWorld(selectedWorld);
                     break;
                 case BUTTON_CREATE:
-                    mc.displayGuiScreen(new GuiCreateWorld(this));
+                    Game.displayGuiScreen(new GuiCreateWorld(this));
                     break;
                 case BUTTON_RENAME:
-                    mc.displayGuiScreen(new GuiRenameWorld(this, getSaveFileName(selectedWorld)));
+                    Game.displayGuiScreen(new GuiRenameWorld(this, getSaveFileName(selectedWorld)));
                     break;
                 case BUTTON_CANCEL:
-                    mc.displayGuiScreen(parentScreen);
+                    Game.displayGuiScreen(parentScreen);
                     break;
                 default:
                     worldSlotContainer.ActionPerformed(button);
@@ -132,11 +133,12 @@ public class GuiSelectWorld : GuiScreen
         if (!selected)
         {
             selected = true;
-            mc.playerController = new PlayerControllerSP(mc);
+            Game.statFileWriter.ReadStat(Stats.Stats.LoadWorldStat, 1);
+            Game.playerController = new PlayerControllerSP(Game);
             string worldFileName = getSaveFileName(worldIndex);
             worldFileName ??= "World" + worldIndex;
 
-            mc.startWorld(worldFileName, getSaveName(worldIndex), 0L);
+            Game.startWorld(worldFileName, getSaveName(worldIndex), 0L);
         }
     }
 
@@ -150,27 +152,27 @@ public class GuiSelectWorld : GuiScreen
                 performDelete(worldIndex);
             }
 
-            mc.displayGuiScreen(this);
+            Game.displayGuiScreen(this);
         }
 
     }
 
     private void performDelete(int worldIndex)
     {
-        WorldStorageSource worldStorage = mc.getSaveLoader();
-        worldStorage.flush();
-        worldStorage.delete(getSaveFileName(worldIndex));
+        IWorldStorageSource worldStorage = Game.getSaveLoader();
+        worldStorage.Flush();
+        worldStorage.Delete(getSaveFileName(worldIndex));
         loadSaves();
     }
 
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         worldSlotContainer.DrawScreen(mouseX, mouseY, partialTicks);
-        DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0xFFFFFF);
+        DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, Color.White);
         base.Render(mouseX, mouseY, partialTicks);
     }
 
-    public static List GetSize(GuiSelectWorld screen)
+    public static List<WorldSaveInfo> GetSize(GuiSelectWorld screen)
     {
         return screen.saveList;
     }

@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace BetaSharp.NBT;
 
-public sealed class NBTTagDouble : NBTBase
+internal sealed class NBTTagDouble : NBTBase
 {
     public double Value { get; set; }
 

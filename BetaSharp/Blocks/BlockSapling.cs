@@ -4,7 +4,7 @@ using BetaSharp.Worlds.Gen.Features;
 
 namespace BetaSharp.Blocks;
 
-public class BlockSapling : BlockPlant
+internal class BlockSapling : BlockPlant
 {
     public BlockSapling(int i, int j) : base(i, j)
     {

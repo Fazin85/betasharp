@@ -6,7 +6,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
-public class BlockWeb : Block
+internal class BlockWeb : Block
 {
     public BlockWeb(int id, int texturePosition) : base(id, texturePosition, Material.Cobweb)
     {
@@ -27,9 +27,9 @@ public class BlockWeb : Block
         return null;
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return 1;
+        return BlockRendererType.Reed;
     }
 
     public override bool isFullCube()

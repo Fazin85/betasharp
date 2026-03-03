@@ -3,7 +3,7 @@ using BetaSharp.Entities;
 
 namespace BetaSharp.Items;
 
-public class ItemTool : Item
+internal class ItemTool : Item
 {
 
     private Block[] blocksEffectiveAgainst;

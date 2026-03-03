@@ -9,12 +9,11 @@ namespace BetaSharp.Client.Rendering.Entities;
 
 public class MinecartEntityRenderer : EntityRenderer
 {
-
     protected ModelBase modelMinecart;
 
     public MinecartEntityRenderer()
     {
-        shadowRadius = 0.5F;
+        ShadowRadius = 0.5F;
         modelMinecart = new ModelMinecart();
     }
 
@@ -39,8 +38,8 @@ public class MinecartEntityRenderer : EntityRenderer
             if (var22.magnitude() != 0.0D)
             {
                 var22 = var22.normalize();
-                yaw = (float)(java.lang.Math.atan2(var22.z, var22.x) * 180.0D / Math.PI);
-                var19 = (float)(java.lang.Math.atan(var22.y) * 73.0D);
+                yaw = (float)(Math.Atan2(var22.z, var22.x) * 180.0D / Math.PI);
+                var19 = (float)(Math.Atan(var22.y) * 73.0D);
             }
         }
 
@@ -66,14 +65,13 @@ public class MinecartEntityRenderer : EntityRenderer
             GLManager.GL.Scale(var25, var25, var25);
             GLManager.GL.Translate(0.0F, 5.0F / 16.0F, 0.0F);
             GLManager.GL.Rotate(90.0F, 0.0F, 1.0F, 0.0F);
-            //TODO: WTF WHY ARE WE MAKING A NEW RENDER BLOCKS EVERY TIME
             if (var1.type == 1)
             {
-                new BlockRenderer().renderBlockOnInventory(Block.Chest, 0, var1.getBrightnessAtEyes(tickDelta));
+                BlockRenderer.RenderBlockOnInventory(Block.Chest, 0, var1.getBrightnessAtEyes(tickDelta), Tessellator.instance);
             }
             else if (var1.type == 2)
             {
-                new BlockRenderer().renderBlockOnInventory(Block.Furnace, 0, var1.getBrightnessAtEyes(tickDelta));
+                BlockRenderer.RenderBlockOnInventory(Block.Furnace, 0, var1.getBrightnessAtEyes(tickDelta), Tessellator.instance);
             }
 
             GLManager.GL.Rotate(-90.0F, 0.0F, 1.0F, 0.0F);

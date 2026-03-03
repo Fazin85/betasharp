@@ -2,16 +2,19 @@ using System.Text.Json;
 using BetaSharp.Blocks;
 using BetaSharp.Items;
 using BetaSharp.Recipes.Data;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Recipes;
 
 public static class RecipeLoader
 {
+    private static readonly ILogger s_logger = Log.Instance.For(nameof(RecipeLoader));
+
     public static void LoadAll(CraftingManager manager, string filePath)
     {
         if (!File.Exists(filePath))
         {
-            Log.Info($"[RecipeLoader] WARNING: Could not find recipes file at {filePath}");
+            s_logger.LogWarning($"[RecipeLoader] WARNING: Could not find recipes file at {filePath}");
             return;
         }
 
@@ -34,7 +37,7 @@ public static class RecipeLoader
             }
         }
 
-        Log.Info($"[RecipeLoader] Successfully loaded {recipes.Count} recipes from JSON!");
+        s_logger.LogWarning($"Successfully loaded {recipes.Count}!");
     }
 
     private static void ParseShaped(CraftingManager manager, RecipeModel recipe, ItemStack result)
@@ -51,7 +54,7 @@ public static class RecipeLoader
             foreach (var kvp in recipe.Key)
             {
                 parameters.Add(kvp.Key[0]);
-                parameters.Add(BetaSharp.Registry.ItemRegistry.Resolve(kvp.Value));
+                parameters.Add(Registry.ItemRegistry.Resolve(kvp.Value));
             }
         }
 
@@ -66,7 +69,7 @@ public static class RecipeLoader
         {
             foreach (var ingredient in recipe.Ingredients)
             {
-                parameters.Add(BetaSharp.Registry.ItemRegistry.Resolve(ingredient));
+                parameters.Add(Registry.ItemRegistry.Resolve(ingredient));
             }
         }
 
@@ -84,16 +87,16 @@ public static class RecipeLoader
 
         foreach (var recipe in recipes)
         {
-            object inputObj = BetaSharp.Registry.ItemRegistry.Resolve(recipe.Input);
+            object inputObj = Registry.ItemRegistry.Resolve(recipe.Input);
             int inputId = inputObj switch {
                 Item i => i.id,
                 Block b => b.id,
                 _ => 0
             };
 
-            ItemStack output = BetaSharp.Registry.ItemRegistry.ResolveStack(
-                recipe.Result.Name, 
-                recipe.Result.Count, 
+            ItemStack output = Registry.ItemRegistry.ResolveStack(
+                recipe.Result.Name,
+                recipe.Result.Count,
                 recipe.Result.Meta
             );
 

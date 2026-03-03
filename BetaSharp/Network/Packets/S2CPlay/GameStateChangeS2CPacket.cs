@@ -1,39 +1,33 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
-public class GameStateChangeS2CPacket : Packet
+public class GameStateChangeS2CPacket() : Packet(PacketId.GameStateChangeS2C)
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(GameStateChangeS2CPacket).TypeHandle);
-
     public static readonly string[] REASONS = ["tile.bed.notValid", null, null];
     public int reason;
 
-    public GameStateChangeS2CPacket()
-    {
-    }
-
-    public GameStateChangeS2CPacket(int reason)
+    public GameStateChangeS2CPacket(int reason) : this()
     {
         this.reason = reason;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        reason = (sbyte)stream.readByte();
+        reason = (sbyte)stream.ReadByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeByte(reason);
+        stream.WriteByte((byte)reason);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onGameStateChange(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 1;
     }

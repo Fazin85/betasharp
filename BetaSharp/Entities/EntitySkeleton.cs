@@ -7,8 +7,6 @@ namespace BetaSharp.Entities;
 
 public class EntitySkeleton : EntityMonster
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntitySkeleton).TypeHandle);
-
     private static readonly ItemStack defaultHeldItem = new ItemStack(Item.BOW, 1);
 
     public EntitySkeleton(World world) : base(world)

@@ -4,7 +4,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Items;
 
-public class ItemMinecart : Item
+internal class ItemMinecart : Item
 {
 
     public int minecartType;

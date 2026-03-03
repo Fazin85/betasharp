@@ -1,6 +1,6 @@
 namespace BetaSharp.Items;
 
-public class ItemCoal : Item
+internal class ItemCoal : Item
 {
 
     public ItemCoal(int id) : base(id)
@@ -11,6 +11,6 @@ public class ItemCoal : Item
 
     public override String getItemNameIS(ItemStack itemStack)
     {
-        return itemStack.getDamage() == 1 ? "item.charcoal" : "Item.Coal";
+        return itemStack.getDamage() == 1 ? "item.charcoal" : "item.coal";
     }
 }

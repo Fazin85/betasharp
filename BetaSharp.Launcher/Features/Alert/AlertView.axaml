@@ -1,0 +1,13 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+        x:Class="BetaSharp.Launcher.Features.Alert.AlertView"
+
+        Icon="../../logo.ico" Width="500" Height="120" MinWidth="500" MinHeight="120"
+        Padding="25" CanResize="False" WindowStartupLocation="CenterScreen">
+
+    <StackPanel Spacing="10" VerticalAlignment="Center">
+        <TextBlock x:Name="AlertBlock" TextWrapping="Wrap" />
+        <Button Content="Close" Click="CloseClick" HorizontalAlignment="Right" />
+    </StackPanel>
+</Window>

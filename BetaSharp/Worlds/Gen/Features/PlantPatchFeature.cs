@@ -3,7 +3,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Gen.Features;
 
-public class PlantPatchFeature : Feature
+internal class PlantPatchFeature : Feature
 {
 
     private int plantBlockId;

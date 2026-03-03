@@ -1,4 +1,5 @@
 using BetaSharp.Client.Input;
+using BetaSharp.Client.Options;
 using BetaSharp.NBT;
 
 namespace BetaSharp.Client.Guis;
@@ -20,10 +21,12 @@ public class GuiMultiplayer : GuiScreen
     private ServerData _tempServer = null!;
 
     private readonly GuiScreen _parentScreen;
+    private readonly GameOptions _options;
 
-    public GuiMultiplayer(GuiScreen parentScreen)
+    public GuiMultiplayer(GuiScreen parentScreen, GameOptions options)
     {
         _parentScreen = parentScreen;
+        _options = options;
     }
 
     public List<ServerData> GetServerList()
@@ -76,7 +79,7 @@ public class GuiMultiplayer : GuiScreen
     {
         try
         {
-            string path = System.IO.Path.Combine(Minecraft.getMinecraftDir().getAbsolutePath(), "servers.dat");
+            string path = System.IO.Path.Combine(BetaSharp.getBetaSharpDir().getAbsolutePath(), "servers.dat");
             if (!File.Exists(path)) return;
 
             using FileStream stream = File.OpenRead(path);
@@ -104,7 +107,7 @@ public class GuiMultiplayer : GuiScreen
             NBTTagCompound tag = new();
             tag.SetTag("servers", list);
 
-            string path = System.IO.Path.Combine(Minecraft.getMinecraftDir().getAbsolutePath(), "servers.dat");
+            string path = System.IO.Path.Combine(BetaSharp.getBetaSharpDir().getAbsolutePath(), "servers.dat");
             using FileStream stream = File.OpenWrite(path);
             NbtIo.WriteCompressed(tag, stream);
         }
@@ -137,7 +140,7 @@ public class GuiMultiplayer : GuiScreen
                 string b = "Delete";
                 string c = "Cancel";
                 GuiYesNo yesNo = new(this, q, w, b, c, _selectedServerIndex);
-                mc.displayGuiScreen(yesNo);
+                Game.displayGuiScreen(yesNo);
             }
         }
         else if (button.Id == 1) // Select/Connect
@@ -147,25 +150,25 @@ public class GuiMultiplayer : GuiScreen
         else if (button.Id == 4) // Direct Connect
         {
             _directConnect = true;
-            _tempServer = new ServerData("Minecraft Server", "");
-            mc.displayGuiScreen(new GuiScreenAddServer(this, _tempServer));
+            _tempServer = new ServerData("BetaSharp Server", "");
+            Game.displayGuiScreen(new GuiDirectConnect(this, _tempServer, _options));
         }
         else if (button.Id == 3) // Add
         {
             _addingServer = true;
-            _tempServer = new ServerData("Minecraft Server", "");
-            mc.displayGuiScreen(new GuiScreenAddServer(this, _tempServer));
+            _tempServer = new ServerData("BetaSharp Server", "");
+            Game.displayGuiScreen(new GuiScreenAddServer(this, _tempServer));
         }
         else if (button.Id == 7) // Edit
         {
             _editingServer = true;
             ServerData original = _serverList[_selectedServerIndex];
             _tempServer = new ServerData(original.Name, original.Ip);
-            mc.displayGuiScreen(new GuiScreenAddServer(this, _tempServer));
+            Game.displayGuiScreen(new GuiScreenAddServer(this, _tempServer));
         }
         else if (button.Id == 0) // Cancel
         {
-            mc.displayGuiScreen(_parentScreen);
+            Game.displayGuiScreen(_parentScreen);
         }
         else if (button.Id == 8) // Refresh
         {
@@ -188,7 +191,7 @@ public class GuiMultiplayer : GuiScreen
                 SaveServerList();
                 _selectedServerIndex = -1;
             }
-            mc.displayGuiScreen(this);
+            Game.displayGuiScreen(this);
         }
     }
 
@@ -204,7 +207,7 @@ public class GuiMultiplayer : GuiScreen
             }
             else
             {
-                mc.displayGuiScreen(this);
+                Game.displayGuiScreen(this);
             }
         }
         else if (_addingServer)
@@ -215,7 +218,7 @@ public class GuiMultiplayer : GuiScreen
                 _serverList.Add(_tempServer);
                 SaveServerList();
             }
-            mc.displayGuiScreen(this);
+            Game.displayGuiScreen(this);
         }
         else if (_editingServer)
         {
@@ -227,7 +230,7 @@ public class GuiMultiplayer : GuiScreen
                 server.Ip = _tempServer.Ip;
                 SaveServerList();
             }
-            mc.displayGuiScreen(this);
+            Game.displayGuiScreen(this);
         }
     }
 
@@ -248,7 +251,7 @@ public class GuiMultiplayer : GuiScreen
     {
         DrawDefaultBackground();
         _serverListSelector.DrawScreen(mouseX, mouseY, partialTicks);
-        DrawCenteredString(FontRenderer, "Play Multiplayer", Width / 2, 20, 0xFFFFFF);
+        DrawCenteredString(FontRenderer, "Play Multiplayer", Width / 2, 20, Color.White);
         base.Render(mouseX, mouseY, partialTicks);
     }
 
@@ -285,6 +288,6 @@ public class GuiMultiplayer : GuiScreen
             _ = int.TryParse(parts[1], out portNum);
         }
 
-        mc.displayGuiScreen(new GuiConnecting(mc, host, portNum));
+        Game.displayGuiScreen(new GuiConnecting(Game, host, portNum));
     }
 }

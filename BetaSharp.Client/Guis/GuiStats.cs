@@ -26,7 +26,7 @@ public class GuiStats : GuiScreen
 
     public override void InitGui()
     {
-        screenTitle = StatCollector.translateToLocal("gui.stats");
+        screenTitle = StatCollector.TranslateToLocal("gui.stats");
         slotGeneral = new GuiSlotStatsGeneral(this);
         slotGeneral.RegisterScrollButtons(_controlList, 1, 1);
         slotItem = new GuiSlotStatsItem(this);
@@ -68,7 +68,7 @@ public class GuiStats : GuiScreen
             switch (button.Id)
             {
                 case 0: // DONE
-                    mc.displayGuiScreen(parentScreen);
+                    Game.displayGuiScreen(parentScreen);
                     break;
                 case 1: // GENERAL
                     currentSlot = slotGeneral;
@@ -90,7 +90,7 @@ public class GuiStats : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         currentSlot.DrawScreen(mouseX, mouseY, partialTicks);
-        DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, 0xFFFFFF);
+        DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, Color.White);
         base.Render(mouseX, mouseY, partialTicks);
     }
 
@@ -102,7 +102,7 @@ public class GuiStats : GuiScreen
         GLManager.GL.Rotate(180.0F, 1.0F, 0.0F, 0.0F);
         Lighting.turnOn();
         GLManager.GL.PopMatrix();
-        itemRenderer.drawItemIntoGui(FontRenderer, mc.textureManager, itemId, 0, Item.ITEMS[itemId].getTextureId(0), x + 2, y + 2);
+        itemRenderer.drawItemIntoGui(FontRenderer, Game.textureManager, itemId, 0, Item.ITEMS[itemId].getTextureId(0), x + 2, y + 2);
         Lighting.turnOff();
         GLManager.GL.Disable(GLEnum.RescaleNormal);
     }
@@ -114,9 +114,8 @@ public class GuiStats : GuiScreen
 
     private void drawSlotTexture(int x, int y, int u, int v)
     {
-        int textureId = mc.textureManager.GetTextureId("/gui/slot.png");
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.textureManager.BindTexture(textureId);
+        Game.textureManager.BindTexture(Game.textureManager.GetTextureId("/gui/slot.png"));
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
         tessellator.addVertexWithUV(x + 0, y + 18, _zLevel, (double)((u + 0) * 0.0078125F), (double)((v + 18) * 0.0078125F));
@@ -128,6 +127,6 @@ public class GuiStats : GuiScreen
 
     public void drawTranslucentRect(int right, int bottom, int left, int top)
     {
-        DrawGradientRect(right, bottom, left, top, 0xC0000000, 0xC0000000);
+        DrawGradientRect(right, bottom, left, top, Color.BlackAlphaC0, Color.BlackAlphaC0);
     }
 }

@@ -1,41 +1,35 @@
+using System.Net.Sockets;
 using BetaSharp.Items;
-using java.io;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
-public class ScreenHandlerSlotUpdateS2CPacket : Packet
+public class ScreenHandlerSlotUpdateS2CPacket() : Packet(PacketId.ScreenHandlerSlotUpdateS2C)
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ScreenHandlerSlotUpdateS2CPacket).TypeHandle);
-
     public int syncId;
     public int slot;
     public ItemStack stack;
 
-    public ScreenHandlerSlotUpdateS2CPacket()
-    {
-    }
-
-    public ScreenHandlerSlotUpdateS2CPacket(int syncId, int slot, ItemStack stack)
+    public ScreenHandlerSlotUpdateS2CPacket(int syncId, int slot, ItemStack stack) : this()
     {
         this.syncId = syncId;
         this.slot = slot;
         this.stack = stack == null ? stack : stack.copy();
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onScreenHandlerSlotUpdate(this);
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        syncId = (sbyte)stream.readByte();
-        slot = stream.readShort();
-        short itemId = stream.readShort();
+        syncId = (sbyte)stream.ReadByte();
+        slot = stream.ReadShort();
+        short itemId = stream.ReadShort();
         if (itemId >= 0)
         {
-            sbyte count = (sbyte)stream.readByte();
-            short damage = stream.readShort();
+            sbyte count = (sbyte)stream.ReadByte();
+            short damage = stream.ReadShort();
             stack = new ItemStack(itemId, count, damage);
         }
         else
@@ -45,24 +39,24 @@ public class ScreenHandlerSlotUpdateS2CPacket : Packet
 
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeByte(syncId);
-        stream.writeShort(slot);
+        stream.WriteByte((byte)syncId);
+        stream.WriteShort((short)slot);
         if (stack == null)
         {
-            stream.writeShort(-1);
+            stream.WriteShort(-1);
         }
         else
         {
-            stream.writeShort(stack.itemId);
-            stream.writeByte(stack.count);
-            stream.writeShort(stack.getDamage());
+            stream.WriteShort((short)stack.itemId);
+            stream.WriteByte((byte)stack.count);
+            stream.WriteShort((short)stack.getDamage());
         }
 
     }
 
-    public override int size()
+    public override int Size()
     {
         return 8;
     }

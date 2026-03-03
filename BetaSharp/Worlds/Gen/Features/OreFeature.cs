@@ -3,7 +3,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Gen.Features;
 
-public class OreFeature : Feature
+internal class OreFeature : Feature
 {
 
     private readonly int _minableBlockId;

@@ -7,7 +7,7 @@ using BetaSharp.Worlds.Gen.Features;
 
 namespace BetaSharp.Worlds.Gen.Chunks;
 
-public class NetherChunkGenerator : ChunkSource
+internal class NetherChunkGenerator : ChunkSource
 {
 
     private readonly JavaRandom random;
@@ -24,6 +24,13 @@ public class NetherChunkGenerator : ChunkSource
     private double[] gravelBuffer = new double[256];
     private double[] depthBuffer = new double[256];
     private readonly Carver cave = new NetherCaveCarver();
+    private readonly long _seed;
+    private NetherLavaSpringFeature _featureNetherLavaSpring;
+    private NetherFirePatchFeature _featureNetherFire;
+    private GlowstoneClusterFeature _featureGlowstoneFull;
+    private GlowstoneClusterFeatureRare _featureGlowstoneRare;
+    private PlantPatchFeature _featureBrownMushroom;
+    private PlantPatchFeature _featureRedMushroom;
     double[] perlinNoiseBuffer;
     double[] minLimitPerlinNoiseBuffer;
     double[] maxLimitPerlinNoiseBuffer;
@@ -41,16 +48,30 @@ public class NetherChunkGenerator : ChunkSource
         perlinNoise3 = new OctavePerlinNoiseSampler(random, 4);
         scaleNoise = new OctavePerlinNoiseSampler(random, 10);
         depthNoise = new OctavePerlinNoiseSampler(random, 16);
+        _seed = seed;
+        InitFeatures();
     }
 
-    public void buildTerrain(int chunkX, int chunkZ, byte[] blocks)
+    public ChunkSource CreateParallelInstance() => new NetherChunkGenerator(world, _seed);
+
+    private void InitFeatures()
+    {
+        _featureNetherLavaSpring = new NetherLavaSpringFeature(Block.FlowingLava.id);
+        _featureNetherFire = new NetherFirePatchFeature();
+        _featureGlowstoneFull = new GlowstoneClusterFeature();
+        _featureGlowstoneRare = new GlowstoneClusterFeatureRare();
+        _featureBrownMushroom = new PlantPatchFeature(Block.BrownMushroom.id);
+        _featureRedMushroom = new PlantPatchFeature(Block.RedMushroom.id);
+    }
+
+    public void BuildTerrain(int chunkX, int chunkZ, byte[] blocks)
     {
         byte var4 = 4;
         byte var5 = 32;
         int var6 = var4 + 1;
         byte var7 = 17;
         int var8 = var4 + 1;
-        heightMap = generateHeightMap(heightMap, chunkX * var4, 0, chunkZ * var4, var6, var7, var8);
+        heightMap = GenerateHeightMap(heightMap, chunkX * var4, 0, chunkZ * var4, var6, var7, var8);
 
         for (int var9 = 0; var9 < var4; ++var9)
         {
@@ -117,7 +138,7 @@ public class NetherChunkGenerator : ChunkSource
 
     }
 
-    public void buildSurfaces(int chunkX, int chunkZ, byte[] blocks)
+    public void BuildSurfaces(int chunkX, int chunkZ, byte[] blocks)
     {
         byte var4 = 64;
         double var5 = 1.0D / 32.0D;
@@ -216,23 +237,23 @@ public class NetherChunkGenerator : ChunkSource
 
     }
 
-    public Chunk loadChunk(int x, int z)
+    public Chunk LoadChunk(int x, int z)
     {
-        return getChunk(x, z);
+        return GetChunk(x, z);
     }
 
-    public Chunk getChunk(int chunkX, int chunkZ)
+    public Chunk GetChunk(int chunkX, int chunkZ)
     {
         random.SetSeed(chunkX * 341873128712L + chunkZ * 132897987541L);
-        byte[] var3 = new byte[-java.lang.Short.MIN_VALUE];
-        buildTerrain(chunkX, chunkZ, var3);
-        buildSurfaces(chunkX, chunkZ, var3);
+        byte[] var3 = new byte[-short.MinValue];
+        BuildTerrain(chunkX, chunkZ, var3);
+        BuildSurfaces(chunkX, chunkZ, var3);
         cave.carve(this, world, chunkX, chunkZ, var3);
         Chunk var4 = new Chunk(world, var3, chunkX, chunkZ);
         return var4;
     }
 
-    private double[] generateHeightMap(double[] heightMap, int x, int y, int z, int sizeX, int sizeY, int sizeZ)
+    private double[] GenerateHeightMap(double[] heightMap, int x, int y, int z, int sizeX, int sizeY, int sizeZ)
     {
         if (heightMap == null)
         {
@@ -253,7 +274,7 @@ public class NetherChunkGenerator : ChunkSource
         int var15;
         for (var15 = 0; var15 < sizeY; ++var15)
         {
-            var14[var15] = java.lang.Math.cos(var15 * Math.PI * 6.0D / sizeY) * 2.0D;
+            var14[var15] = Math.Cos(var15 * Math.PI * 6.0D / sizeY) * 2.0D;
             double var16 = var15;
             if (var15 > sizeY / 2)
             {
@@ -364,12 +385,12 @@ public class NetherChunkGenerator : ChunkSource
         return heightMap;
     }
 
-    public bool isChunkLoaded(int x, int z)
+    public bool IsChunkLoaded(int x, int z)
     {
         return true;
     }
 
-    public void decorate(ChunkSource source, int x, int z)
+    public void DecorateTerrain(ChunkSource source, int x, int z)
     {
         BlockSand.fallInstantly = true;
         int var4 = x * 16;
@@ -384,7 +405,7 @@ public class NetherChunkGenerator : ChunkSource
             var7 = var4 + random.NextInt(16) + 8;
             var8 = random.NextInt(120) + 4;
             var9 = var5 + random.NextInt(16) + 8;
-            new NetherLavaSpringFeature(Block.FlowingLava.id).Generate(world, random, var7, var8, var9);
+            _featureNetherLavaSpring.Generate(world, random, var7, var8, var9);
         }
 
         var6 = random.NextInt(random.NextInt(10) + 1) + 1;
@@ -395,7 +416,7 @@ public class NetherChunkGenerator : ChunkSource
             var8 = var4 + random.NextInt(16) + 8;
             var9 = random.NextInt(120) + 4;
             var10 = var5 + random.NextInt(16) + 8;
-            new NetherFirePatchFeature().Generate(world, random, var8, var9, var10);
+            _featureNetherFire.Generate(world, random, var8, var9, var10);
         }
 
         var6 = random.NextInt(random.NextInt(10) + 1);
@@ -405,7 +426,7 @@ public class NetherChunkGenerator : ChunkSource
             var8 = var4 + random.NextInt(16) + 8;
             var9 = random.NextInt(120) + 4;
             var10 = var5 + random.NextInt(16) + 8;
-            new GlowstoneClusterFeature().Generate(world, random, var8, var9, var10);
+            _featureGlowstoneFull.Generate(world, random, var8, var9, var10);
         }
 
         for (var7 = 0; var7 < 10; ++var7)
@@ -413,7 +434,7 @@ public class NetherChunkGenerator : ChunkSource
             var8 = var4 + random.NextInt(16) + 8;
             var9 = random.NextInt(128);
             var10 = var5 + random.NextInt(16) + 8;
-            new GlowstoneClusterFeatureRare().Generate(world, random, var8, var9, var10);
+            _featureGlowstoneRare.Generate(world, random, var8, var9, var10);
         }
 
         if (random.NextInt(1) == 0)
@@ -421,7 +442,7 @@ public class NetherChunkGenerator : ChunkSource
             var7 = var4 + random.NextInt(16) + 8;
             var8 = random.NextInt(128);
             var9 = var5 + random.NextInt(16) + 8;
-            new PlantPatchFeature(Block.BrownMushroom.id).Generate(world, random, var7, var8, var9);
+            _featureBrownMushroom.Generate(world, random, var7, var8, var9);
         }
 
         if (random.NextInt(1) == 0)
@@ -429,28 +450,28 @@ public class NetherChunkGenerator : ChunkSource
             var7 = var4 + random.NextInt(16) + 8;
             var8 = random.NextInt(128);
             var9 = var5 + random.NextInt(16) + 8;
-            new PlantPatchFeature(Block.RedMushroom.id).Generate(world, random, var7, var8, var9);
+            _featureRedMushroom.Generate(world, random, var7, var8, var9);
         }
 
         BlockSand.fallInstantly = false;
     }
 
-    public bool save(bool bl, LoadingDisplay display)
+    public bool Save(bool bl, LoadingDisplay display)
     {
         return true;
     }
 
-    public bool tick()
+    public bool Tick()
     {
         return false;
     }
 
-    public bool canSave()
+    public bool CanSave()
     {
         return true;
     }
 
-    public string getDebugInfo()
+    public string GetDebugInfo()
     {
         return "HellRandomLevelSource";
     }

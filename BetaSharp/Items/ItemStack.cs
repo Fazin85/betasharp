@@ -5,7 +5,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Items;
 
-public class ItemStack : java.lang.Object
+public class ItemStack
 {
     public int count;
     public int bobbingAnimationTime;
@@ -77,7 +77,7 @@ public class ItemStack : java.lang.Object
         bool item = getItem().useOnBlock(this, entityPlayer, world, x, y, z, meta);
         if (item)
         {
-            entityPlayer.increaseStat(Stats.Stats.USED[itemId], 1);
+            entityPlayer.increaseStat(Stats.Stats.Used[itemId], 1);
         }
 
         return item;
@@ -162,7 +162,7 @@ public class ItemStack : java.lang.Object
             {
                 if (entity is EntityPlayer)
                 {
-                    ((EntityPlayer)entity).increaseStat(Stats.Stats.BROKEN[itemId], 1);
+                    ((EntityPlayer)entity).increaseStat(Stats.Stats.Broken[itemId], 1);
                 }
 
                 --count;
@@ -182,7 +182,7 @@ public class ItemStack : java.lang.Object
         bool hit = Item.ITEMS[itemId].postHit(this, entityLiving, entityPlayer);
         if (hit)
         {
-            entityPlayer.increaseStat(Stats.Stats.USED[itemId], 1);
+            entityPlayer.increaseStat(Stats.Stats.Used[itemId], 1);
         }
 
     }
@@ -192,7 +192,7 @@ public class ItemStack : java.lang.Object
         bool mined = Item.ITEMS[itemId].postMine(this, blockId, x, y, z, entityPlayer);
         if (mined)
         {
-            entityPlayer.increaseStat(Stats.Stats.USED[itemId], 1);
+            entityPlayer.increaseStat(Stats.Stats.Used[itemId], 1);
         }
 
     }
@@ -221,7 +221,7 @@ public class ItemStack : java.lang.Object
         return new ItemStack(itemId, count, damage);
     }
 
-    public static bool areEqual(ItemStack a, ItemStack b)
+    public static bool areEqual(ItemStack? a, ItemStack? b)
     {
         return a == null && b == null ? true : (a != null && b != null ? a.equals2(b) : false);
     }
@@ -246,7 +246,7 @@ public class ItemStack : java.lang.Object
         return itemStack == null ? null : itemStack.copy();
     }
 
-    public override string toString()
+    public override string ToString()
     {
         return count + "x" + Item.ITEMS[itemId].getItemName() + "@" + damage;
     }
@@ -263,11 +263,11 @@ public class ItemStack : java.lang.Object
 
     public void onCraft(World world, EntityPlayer entityPlayer)
     {
-        entityPlayer.increaseStat(Stats.Stats.CRAFTED[itemId], count);
+        entityPlayer.increaseStat(Stats.Stats.Crafted[itemId], count);
         Item.ITEMS[itemId].onCraft(this, world, entityPlayer);
     }
 
-    public bool equals(ItemStack itemStack)
+    public bool Equals(ItemStack itemStack)
     {
         return itemId == itemStack.itemId && count == itemStack.count && damage == itemStack.damage;
     }

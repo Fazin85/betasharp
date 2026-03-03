@@ -46,9 +46,9 @@ public class BlockPistonMoving : BlockWithEntity
         return false;
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return -1;
+        return BlockRendererType.Entity;
     }
 
     public override bool isOpaque()
@@ -123,9 +123,9 @@ public class BlockPistonMoving : BlockWithEntity
         }
     }
 
-    public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
+    public override void updateBoundingBox(IBlockAccess iBlockAccess, int x, int y, int z)
     {
-        BlockEntityPiston var5 = getPistonBlockEntity(blockView, x, y, z);
+        BlockEntityPiston var5 = getPistonBlockEntity(iBlockAccess, x, y, z);
         if (var5 != null)
         {
             Block var6 = Block.Blocks[var5.getPushedBlockId()];
@@ -134,7 +134,7 @@ public class BlockPistonMoving : BlockWithEntity
                 return;
             }
 
-            var6.updateBoundingBox(blockView, x, y, z);
+            var6.updateBoundingBox(iBlockAccess, x, y, z);
             float var7 = var5.getProgress(0.0F);
             if (var5.isExtending())
             {
@@ -142,7 +142,7 @@ public class BlockPistonMoving : BlockWithEntity
             }
 
             int var8 = var5.getFacing();
-            BoundingBox = BoundingBox.offset(-(double)(PistonConstants.HEAD_OFFSET_X[var8] * var7), -(double)(PistonConstants.HEAD_OFFSET_Y[var8] * var7), -(double)(PistonConstants.HEAD_OFFSET_Z[var8] * var7));
+            BoundingBox = BoundingBox.Offset(-(double)(PistonConstants.HEAD_OFFSET_X[var8] * var7), -(double)(PistonConstants.HEAD_OFFSET_Y[var8] * var7), -(double)(PistonConstants.HEAD_OFFSET_Z[var8] * var7));
         }
 
     }
@@ -159,12 +159,12 @@ public class BlockPistonMoving : BlockWithEntity
             else
             {
                 Box res = shape.Value;
-                res.minX -= (double)((float)PistonConstants.HEAD_OFFSET_X[facing] * sizeMultiplier);
-                res.maxX -= (double)((float)PistonConstants.HEAD_OFFSET_X[facing] * sizeMultiplier);
-                res.minY -= (double)((float)PistonConstants.HEAD_OFFSET_Y[facing] * sizeMultiplier);
-                res.maxY -= (double)((float)PistonConstants.HEAD_OFFSET_Y[facing] * sizeMultiplier);
-                res.minZ -= (double)((float)PistonConstants.HEAD_OFFSET_Z[facing] * sizeMultiplier);
-                res.maxZ -= (double)((float)PistonConstants.HEAD_OFFSET_Z[facing] * sizeMultiplier);
+                res.MinX -= (double)((float)PistonConstants.HEAD_OFFSET_X[facing] * sizeMultiplier);
+                res.MaxX -= (double)((float)PistonConstants.HEAD_OFFSET_X[facing] * sizeMultiplier);
+                res.MinY -= (double)((float)PistonConstants.HEAD_OFFSET_Y[facing] * sizeMultiplier);
+                res.MaxY -= (double)((float)PistonConstants.HEAD_OFFSET_Y[facing] * sizeMultiplier);
+                res.MinZ -= (double)((float)PistonConstants.HEAD_OFFSET_Z[facing] * sizeMultiplier);
+                res.MaxZ -= (double)((float)PistonConstants.HEAD_OFFSET_Z[facing] * sizeMultiplier);
                 return res;
             }
         }
@@ -174,9 +174,9 @@ public class BlockPistonMoving : BlockWithEntity
         }
     }
 
-    private BlockEntityPiston getPistonBlockEntity(BlockView blockView, int x, int y, int z)
+    private BlockEntityPiston getPistonBlockEntity(IBlockAccess iBlockAccess, int x, int y, int z)
     {
-        BlockEntity? var5 = blockView.getBlockEntity(x, y, z);
+        BlockEntity? var5 = iBlockAccess.getBlockEntity(x, y, z);
         return var5 != null && var5 is BlockEntityPiston ? (BlockEntityPiston)var5 : null;
     }
 }

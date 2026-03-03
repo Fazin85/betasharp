@@ -1,12 +1,13 @@
-using BetaSharp.Blocks;
 using BetaSharp.Items;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Recipes;
 
 public class SmeltingRecipeManager
 {
     private static readonly SmeltingRecipeManager smeltingBase = new();
-    private Dictionary<int, ItemStack> smeltingList = new();
+    private readonly Dictionary<int, ItemStack> smeltingList = [];
+    private readonly ILogger _logger = Log.Instance.For<SmeltingRecipeManager>();
 
     public static SmeltingRecipeManager getInstance()
     {
@@ -16,7 +17,7 @@ public class SmeltingRecipeManager
     private SmeltingRecipeManager()
     {
         RecipeLoader.LoadSmelting(this, "Assets/Recipes/smelting.json");
-        Log.Info($"[SmeltingRecipeManager] {smeltingList.Count} smelting recipes loaded from data.");
+        _logger.LogInformation($"{smeltingList.Count} smelting recipes loaded from data.");
     }
 
     public void AddSmelting(int inputId, ItemStack output)

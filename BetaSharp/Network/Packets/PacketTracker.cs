@@ -1,6 +1,6 @@
 namespace BetaSharp.Network.Packets;
 
-public class PacketTracker
+internal class PacketTracker
 {
     private int count;
     private long size;

@@ -2,7 +2,7 @@ using java.lang;
 
 namespace BetaSharp.Network;
 
-public class NetworkMasterThread : java.lang.Thread
+internal class NetworkMasterThread : java.lang.Thread
 {
     public readonly Connection netManager;
 

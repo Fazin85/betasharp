@@ -1,13 +1,16 @@
 using BetaSharp.Blocks;
 using BetaSharp.Inventorys;
 using BetaSharp.Items;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Recipes;
 
 public class CraftingManager
 {
     private static CraftingManager instance { get; } = new();
-    public List<IRecipe> Recipes { get; } = [];
+    public readonly List<IRecipe> Recipes = [];
+
+    private readonly ILogger<CraftingManager> _logger = Log.Instance.For<CraftingManager>();
 
     public static CraftingManager getInstance()
     {
@@ -18,7 +21,7 @@ public class CraftingManager
     {
         RecipeLoader.LoadAll(this, "Assets/Recipes/recipes.json");
         Recipes.Sort(new RecipeSorter());
-        Log.Info($"[CraftingManager] {Recipes.Count} recipes loaded from data.");
+        _logger.LogInformation($"[CraftingManager] {Recipes.Count} recipes loaded from data.");
     }
 
     public void AddRecipe(ItemStack result, params object[] pattern)

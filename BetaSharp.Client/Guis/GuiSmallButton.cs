@@ -4,25 +4,34 @@ namespace BetaSharp.Client.Guis;
 
 public class GuiSmallButton : GuiButton
 {
+    private readonly GameOption? _option;
 
-    private readonly EnumOptions _optionEnum;
-
-    public GuiSmallButton(int id, int x, int y, string displayStr) : this(id, x, y, null, displayStr)
+    public GuiSmallButton(int id, int x, int y, string displayStr) : base(id, x, y, 150, 20, displayStr)
     {
+        _option = null;
     }
 
     public GuiSmallButton(int id, int x, int y, int buttonWidth, int buttonHeight, string displayStr) : base(id, x, y, buttonWidth, buttonHeight, displayStr)
     {
-        _optionEnum = null;
+        _option = null;
     }
 
-    public GuiSmallButton(int id, int x, int y, EnumOptions option, string displayStr) : base(id, x, y, 150, 20, displayStr)
+    public GuiSmallButton(int id, int x, int y, GameOption option, string displayStr) : base(id, x, y, 150, 20, displayStr)
     {
-        _optionEnum = option;
+        _option = option;
     }
 
-    public EnumOptions returnEnumOptions()
+    public GameOption? Option => _option;
+
+    public void ClickOption()
     {
-        return _optionEnum;
+        if (_option is BoolOption boolOpt)
+        {
+            boolOpt.Toggle();
+        }
+        else if (_option is CycleOption cycleOpt)
+        {
+            cycleOpt.Cycle();
+        }
     }
 }

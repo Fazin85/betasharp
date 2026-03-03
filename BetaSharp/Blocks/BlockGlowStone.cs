@@ -4,7 +4,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Blocks;
 
-public class BlockGlowstone : Block
+internal class BlockGlowstone : Block
 {
 
     public BlockGlowstone(int i, int j, Material material) : base(i, j, material)

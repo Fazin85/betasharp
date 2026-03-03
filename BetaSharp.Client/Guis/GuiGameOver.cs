@@ -14,7 +14,7 @@ public class GuiGameOver : GuiScreen
         _controlList.Clear();
         _controlList.Add(new GuiButton(ButtonRespawn, Width / 2 - 100, Height / 4 + 72, "Respawn"));
         _controlList.Add(new GuiButton(ButtonTitle, Width / 2 - 100, Height / 4 + 96, "Title menu"));
-        if (mc.session == null)
+        if (Game.session == null)
         {
             for (int i = 0; i < _controlList.Count; ++i)
             {
@@ -38,12 +38,12 @@ public class GuiGameOver : GuiScreen
         switch (button.Id)
         {
             case ButtonRespawn:
-                mc.player.respawn();
-                mc.displayGuiScreen(null);
+                Game.player.respawn();
+                Game.displayGuiScreen(null);
                 break;
             case ButtonTitle:
-                mc.changeWorld(null);
-                mc.displayGuiScreen(new GuiMainMenu());
+                Game.changeWorld(null);
+                Game.displayGuiScreen(new GuiMainMenu());
                 break;
         }
 
@@ -51,12 +51,12 @@ public class GuiGameOver : GuiScreen
 
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
-        DrawGradientRect(0, 0, Width, Height, 0x60500000, 0xA0803030);
+        DrawGradientRect(0, 0, Width, Height, Color.GameOverBackgroundDarkRed, Color.GameOverBackgroundRed);
         GLManager.GL.PushMatrix();
         GLManager.GL.Scale(2.0F, 2.0F, 2.0F);
-        DrawCenteredString(FontRenderer, "Game over!", Width / 2 / 2, 30, 0xFFFFFF);
+        DrawCenteredString(FontRenderer, "Game over!", Width / 2 / 2, 30, Color.White);
         GLManager.GL.PopMatrix();
-        DrawCenteredString(FontRenderer, "Score: &e" + mc.player.getScore(), Width / 2, 100, 0xFFFFFF);
+        DrawCenteredString(FontRenderer, "Score: &e" + Game.player.getScore(), Width / 2, 100, Color.White);
         base.Render(mouseX, mouseY, partialTicks);
     }
 }

@@ -3,30 +3,35 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Util.Hit;
 
-public class HitResult : java.lang.Object
+public struct HitResult
 {
-    public HitResultType type;
-    public int blockX;
-    public int blockY;
-    public int blockZ;
-    public int side;
-    public Vec3D pos;
-    public Entity entity;
+    public HitResultType Type;
+    public int BlockX;
+    public int BlockY;
+    public int BlockZ;
+    public int Side;
+    public Vec3D Pos;
+    public Entity? Entity;
 
-    public HitResult(int blockX, int blockY, int blockZ, int side, Vec3D pos)
+    public HitResult(int blockX, int blockY, int blockZ, int side, Vec3D pos, HitResultType type)
     {
-        type = HitResultType.TILE;
-        this.blockX = blockX;
-        this.blockY = blockY;
-        this.blockZ = blockZ;
-        this.side = side;
-        this.pos = pos;
+        Type = type;
+        BlockX = blockX;
+        BlockY = blockY;
+        BlockZ = blockZ;
+        Side = side;
+        Pos = pos;
+    }
+
+    public HitResult(HitResultType type)
+    {
+        Type = type;
     }
 
     public HitResult(Entity entity)
     {
-        type = HitResultType.ENTITY;
-        this.entity = entity;
-        pos = new Vec3D(entity.x, entity.y, entity.z);
+        Type = HitResultType.ENTITY;
+        Entity = entity;
+        Pos = new Vec3D(entity.x, entity.y, entity.z);
     }
 }

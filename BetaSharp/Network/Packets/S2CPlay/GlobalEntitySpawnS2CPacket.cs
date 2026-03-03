@@ -1,24 +1,18 @@
+using System.Net.Sockets;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
-using java.io;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
-public class GlobalEntitySpawnS2CPacket : Packet
+public class GlobalEntitySpawnS2CPacket() : Packet(PacketId.GlobalEntitySpawnS2C)
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(GlobalEntitySpawnS2CPacket).TypeHandle);
-
     public int id;
     public int x;
     public int y;
     public int z;
-    public int type;
+    public byte type;
 
-    public GlobalEntitySpawnS2CPacket()
-    {
-    }
-
-    public GlobalEntitySpawnS2CPacket(Entity ent)
+    public GlobalEntitySpawnS2CPacket(Entity ent) : this()
     {
         id = ent.id;
         x = MathHelper.Floor(ent.x * 32.0D);
@@ -31,30 +25,30 @@ public class GlobalEntitySpawnS2CPacket : Packet
 
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        id = stream.readInt();
-        type = (sbyte)stream.readByte();
-        x = stream.readInt();
-        y = stream.readInt();
-        z = stream.readInt();
+        id = stream.ReadInt();
+        type = (byte)stream.ReadByte();
+        x = stream.ReadInt();
+        y = stream.ReadInt();
+        z = stream.ReadInt();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(id);
-        stream.writeByte(type);
-        stream.writeInt(x);
-        stream.writeInt(y);
-        stream.writeInt(z);
+        stream.WriteInt(id);
+        stream.WriteByte(type);
+        stream.WriteInt(x);
+        stream.WriteInt(y);
+        stream.WriteInt(z);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onLightningEntitySpawn(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 17;
     }

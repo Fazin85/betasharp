@@ -4,7 +4,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
-public class BlockFence : Block
+internal class BlockFence : Block
 {
 
     public BlockFence(int id, int texture) : base(id, texture, Material.Wood)
@@ -31,8 +31,8 @@ public class BlockFence : Block
         return false;
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return 11;
+        return BlockRendererType.Fence;
     }
 }

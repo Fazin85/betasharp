@@ -7,7 +7,6 @@ using BetaSharp.Stats;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.lang;
 
 namespace BetaSharp.Blocks;
 
@@ -147,7 +146,7 @@ public class Block
         slipperiness = 0.6F;
         if (Blocks[id] != null)
         {
-            throw new IllegalArgumentException("Slot " + id + " is already occupied by " + Blocks[id] + " when adding " + this);
+            throw new ArgumentException("Slot " + id + " is already occupied by " + Blocks[id] + " when adding " + this, nameof(id));
         }
         else
         {
@@ -206,9 +205,9 @@ public class Block
         return true;
     }
 
-    public virtual int getRenderType()
+    public virtual BlockRendererType getRenderType()
     {
-        return 0;
+        return BlockRendererType.Standard;
     }
 
     protected Block setHardness(float hardness)
@@ -244,30 +243,30 @@ public class Block
         BoundingBox = new Box(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
-    public virtual float getLuminance(BlockView blockView, int x, int y, int z)
+    public virtual float getLuminance(IBlockAccess iBlockAccess, int x, int y, int z)
     {
-        return blockView.getNaturalBrightness(x, y, z, BlocksLightLuminance[id]);
+        return iBlockAccess.getNaturalBrightness(x, y, z, BlocksLightLuminance[id]);
     }
 
-    public virtual bool isSideVisible(BlockView blockView, int x, int y, int z, int side)
+    public virtual bool isSideVisible(IBlockAccess iBlockAccess, int x, int y, int z, int side)
     {
-        var minX = BoundingBox.minX;
-        var minY = BoundingBox.minY;
-        var minZ = BoundingBox.minZ;
-        var maxX = BoundingBox.maxX;
-        var maxY = BoundingBox.maxY;
-        var maxZ = BoundingBox.maxZ;
-        return side == 0 && minY > 0.0D ? true : (side == 1 && maxY < 1.0D ? true : (side == 2 && minZ > 0.0D ? true : (side == 3 && maxZ < 1.0D ? true : (side == 4 && minX > 0.0D ? true : (side == 5 && maxX < 1.0D ? true : !blockView.isOpaque(x, y, z))))));
+        var minX = BoundingBox.MinX;
+        var minY = BoundingBox.MinY;
+        var minZ = BoundingBox.MinZ;
+        var maxX = BoundingBox.MaxX;
+        var maxY = BoundingBox.MaxY;
+        var maxZ = BoundingBox.MaxZ;
+        return side == 0 && minY > 0.0D ? true : (side == 1 && maxY < 1.0D ? true : (side == 2 && minZ > 0.0D ? true : (side == 3 && maxZ < 1.0D ? true : (side == 4 && minX > 0.0D ? true : (side == 5 && maxX < 1.0D ? true : !iBlockAccess.isOpaque(x, y, z))))));
     }
 
-    public virtual bool isSolidFace(BlockView blockView, int x, int y, int z, int face)
+    public virtual bool isSolidFace(IBlockAccess iBlockAccess, int x, int y, int z, int face)
     {
-        return blockView.getMaterial(x, y, z).IsSolid;
+        return iBlockAccess.getMaterial(x, y, z).IsSolid;
     }
 
-    public virtual int getTextureId(BlockView blockView, int x, int y, int z, int side)
+    public virtual int getTextureId(IBlockAccess iBlockAccess, int x, int y, int z, int side)
     {
-        return getTexture(side, blockView.getBlockMeta(x, y, z));
+        return getTexture(side, iBlockAccess.getBlockMeta(x, y, z));
     }
 
     public virtual int getTexture(int side, int meta)
@@ -282,13 +281,13 @@ public class Block
 
     public virtual Box getBoundingBox(World world, int x, int y, int z)
     {
-        return BoundingBox.offset(x, y, z);
+        return BoundingBox.Offset(x, y, z);
     }
 
     public virtual void addIntersectingBoundingBox(World world, int x, int y, int z, Box box, List<Box> boxes)
     {
         Box? collisionBox = getCollisionShape(world, x, y, z);
-        if (collisionBox != null && box.intersects(collisionBox.Value))
+        if (collisionBox != null && box.Intersects(collisionBox.Value))
         {
             boxes.Add(collisionBox.Value);
         }
@@ -296,7 +295,7 @@ public class Block
 
     public virtual Box? getCollisionShape(World world, int x, int y, int z)
     {
-        return BoundingBox.offset(x, y, z);
+        return BoundingBox.Offset(x, y, z);
     }
 
     public virtual bool isOpaque()
@@ -408,16 +407,16 @@ public class Block
         return resistance / 5.0F;
     }
 
-    public virtual HitResult? raycast(World world, int x, int y, int z, Vec3D startPos, Vec3D endPos)
+    public virtual HitResult raycast(World world, int x, int y, int z, Vec3D startPos, Vec3D endPos)
     {
         updateBoundingBox(world, x, y, z);
         Vec3D pos = new Vec3D(x, y, z);
-        HitResult res = BoundingBox.raycast(startPos - pos, endPos - pos);
-        if (res == null) return null;
-        res.blockX = x;
-        res.blockY = y;
-        res.blockZ = z;
-        res.pos += pos;
+        HitResult res = BoundingBox.Raycast(startPos - pos, endPos - pos);
+        if (res.Type == HitResultType.MISS) return new HitResult(HitResultType.MISS);
+        res.BlockX = x;
+        res.BlockY = y;
+        res.BlockZ = z;
+        res.Pos += pos;
         return res;
     }
 
@@ -462,7 +461,7 @@ public class Block
     {
     }
 
-    public virtual void updateBoundingBox(BlockView blockView, int x, int y, int z)
+    public virtual void updateBoundingBox(IBlockAccess iBlockAccess, int x, int y, int z)
     {
     }
 
@@ -471,12 +470,14 @@ public class Block
         return 0xFFFFFF;
     }
 
-    public virtual int getColorMultiplier(BlockView blockView, int x, int y, int z)
+    public virtual int getColorForFace(int meta, int face) => getColor(meta);
+
+    public virtual int getColorMultiplier(IBlockAccess iBlockAccess, int x, int y, int z)
     {
         return 0xFFFFFF;
     }
 
-    public virtual bool isPoweringSide(BlockView blockView, int x, int y, int z, int side)
+    public virtual bool isPoweringSide(IBlockAccess iBlockAccess, int x, int y, int z, int side)
     {
         return false;
     }
@@ -486,7 +487,7 @@ public class Block
         return false;
     }
 
-    public virtual bool isFlammable(BlockView blockView, int x, int y, int z)
+    public virtual bool isFlammable(IBlockAccess iBlockAccess, int x, int y, int z)
     {
         return false;
     }
@@ -506,7 +507,7 @@ public class Block
 
     public virtual void afterBreak(World world, EntityPlayer player, int x, int y, int z, int meta)
     {
-        player.increaseStat(Stats.Stats.mineBlockStatArray[id], 1);
+        player.increaseStat(Stats.Stats.MineBlockStatArray[id], 1);
         dropStacks(world, x, y, z, meta);
     }
 
@@ -527,7 +528,7 @@ public class Block
 
     public string translateBlockName()
     {
-        return StatCollector.translateToLocal(getBlockName() + ".name");
+        return StatCollector.TranslateToLocal(getBlockName() + ".name");
     }
 
     public string getBlockName()
@@ -575,6 +576,6 @@ public class Block
         }
 
         BlocksAllowVision[0] = true;
-        Stats.Stats.initializeItemStats();
+        Stats.Stats.InitializeItemStats();
     }
 }

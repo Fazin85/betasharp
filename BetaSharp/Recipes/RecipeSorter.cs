@@ -1,6 +1,6 @@
 namespace BetaSharp.Recipes;
 
-public class RecipeSorter : IComparer<IRecipe>
+internal class RecipeSorter : IComparer<IRecipe>
 {
     public int Compare(IRecipe x, IRecipe y)
     {

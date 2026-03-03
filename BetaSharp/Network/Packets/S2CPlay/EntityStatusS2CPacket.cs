@@ -1,43 +1,36 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
-public class EntityStatusS2CPacket : Packet
+public class EntityStatusS2CPacket() : PacketBaseEntity(PacketId.EntityStatusS2C)
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityStatusS2CPacket).TypeHandle);
+    public sbyte EntityStatus;
 
-    public int entityId;
-    public sbyte entityStatus;
-
-    public EntityStatusS2CPacket()
+    public EntityStatusS2CPacket(int entityId, byte status) : this()
     {
+        EntityId = entityId;
+        EntityStatus = (sbyte)status;
     }
 
-    public EntityStatusS2CPacket(int entityId, byte status)
+    public override void Read(NetworkStream stream)
     {
-        this.entityId = entityId;
-        entityStatus = (sbyte)status;
+        base.Read(stream);
+        EntityStatus = (sbyte)stream.ReadByte();
     }
 
-    public override void read(DataInputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        entityId = stream.readInt();
-        entityStatus = (sbyte)stream.readByte();
+        base.Write(stream);
+        stream.WriteByte((byte)EntityStatus);
     }
 
-    public override void write(DataOutputStream stream)
-    {
-        stream.writeInt(entityId);
-        stream.writeByte(entityStatus);
-    }
-
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onEntityStatus(this);
     }
 
-    public override int size()
+    public override int Size()
     {
-        return 5;
+        return PacketBaseEntitySize + 1;
     }
 }

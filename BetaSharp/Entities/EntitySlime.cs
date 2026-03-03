@@ -8,8 +8,6 @@ namespace BetaSharp.Entities;
 
 public class EntitySlime : EntityLiving, Monster
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntitySlime).TypeHandle);
-
     public float squishAmount;
     public float prevSquishAmount;
     private int slimeJumpDelay;
@@ -26,12 +24,12 @@ public class EntitySlime : EntityLiving, Monster
     protected override void initDataTracker()
     {
         base.initDataTracker();
-        dataWatcher.addObject(16, new java.lang.Byte((byte)1));
+        dataWatcher.AddObject(16, (byte)1);
     }
 
     public void setSlimeSize(int size)
     {
-        dataWatcher.updateObject(16, new java.lang.Byte((byte)size));
+        dataWatcher.UpdateObject(16, (byte)size);
         setBoundingBoxSpacing(0.6F * (float)size, 0.6F * (float)size);
         health = size * size;
         setPosition(x, y, z);
@@ -69,7 +67,7 @@ public class EntitySlime : EntityLiving, Monster
                 float spread = random.NextFloat() * 0.5F + 0.5F;
                 float offsetX = MathHelper.Sin(angle) * (float)size * 0.5F * spread;
                 float offsetY = MathHelper.Cos(angle) * (float)size * 0.5F * spread;
-                world.addParticle("slime", base.x + (double)offsetX, boundingBox.minY, z + (double)offsetY, 0.0D, 0.0D, 0.0D);
+                world.addParticle("slime", base.x + (double)offsetX, boundingBox.MinY, z + (double)offsetY, 0.0D, 0.0D, 0.0D);
             }
 
             if (size > 2)
@@ -167,8 +165,8 @@ public class EntitySlime : EntityLiving, Monster
 
     public override bool canSpawn()
     {
-        Chunk chunk = world.getChunkFromPos(MathHelper.Floor(x), MathHelper.Floor(z));
-        return (getSlimeSize() == 1 || world.difficulty > 0) && random.NextInt(10) == 0 && chunk.getSlimeRandom(987234911L).NextInt(10) == 0 && y < 16.0D;
+        Chunk chunk = world.GetChunkFromPos(MathHelper.Floor(x), MathHelper.Floor(z));
+        return (getSlimeSize() == 1 || world.difficulty > 0) && random.NextInt(10) == 0 && chunk.GetSlimeRandom(987234911L).NextInt(10) == 0 && y < 16.0D;
     }
 
     protected override float getSoundVolume()

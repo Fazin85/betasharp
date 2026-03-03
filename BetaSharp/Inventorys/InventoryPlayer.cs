@@ -5,14 +5,14 @@ using BetaSharp.NBT;
 
 namespace BetaSharp.Inventorys;
 
-public class InventoryPlayer : java.lang.Object, IInventory
+public class InventoryPlayer : IInventory
 {
 
     public ItemStack[] main = new ItemStack[36];
     public ItemStack[] armor = new ItemStack[4];
     public int selectedSlot;
     public EntityPlayer player;
-    private ItemStack cursorStack;
+    private ItemStack? cursorStack;
     public bool dirty;
 
     public InventoryPlayer(EntityPlayer player)
@@ -242,7 +242,7 @@ public class InventoryPlayer : java.lang.Object, IInventory
         }
     }
 
-    public void setStack(int slotIndex, ItemStack itemStack)
+    public void setStack(int slotIndex, ItemStack? itemStack)
     {
         ItemStack[] targetArray = main;
         if (slotIndex >= targetArray.Length)
@@ -446,7 +446,7 @@ public class InventoryPlayer : java.lang.Object, IInventory
         dirty = true;
     }
 
-    public void setItemStack(ItemStack itemStack)
+    public void setItemStack(ItemStack? itemStack)
     {
         cursorStack = itemStack;
         player.onCursorStackChanged(itemStack);
@@ -467,7 +467,7 @@ public class InventoryPlayer : java.lang.Object, IInventory
         int slotIndex;
         for (slotIndex = 0; slotIndex < armor.Length; ++slotIndex)
         {
-            if (armor[slotIndex] != null && armor[slotIndex].equals(itemStack))
+            if (armor[slotIndex] != null && armor[slotIndex].Equals(itemStack))
             {
                 return true;
             }
@@ -475,7 +475,7 @@ public class InventoryPlayer : java.lang.Object, IInventory
 
         for (slotIndex = 0; slotIndex < main.Length; ++slotIndex)
         {
-            if (main[slotIndex] != null && main[slotIndex].equals(itemStack))
+            if (main[slotIndex] != null && main[slotIndex].Equals(itemStack))
             {
                 return true;
             }

@@ -25,8 +25,8 @@ public class FireballEntityRenderer : EntityRenderer
         float var17 = 1.0F;
         float var18 = 0.5F;
         float var19 = 0.25F;
-        GLManager.GL.Rotate(180.0F - dispatcher.playerViewY, 0.0F, 1.0F, 0.0F);
-        GLManager.GL.Rotate(-dispatcher.playerViewX, 1.0F, 0.0F, 0.0F);
+        GLManager.GL.Rotate(180.0F - Dispatcher.playerViewY, 0.0F, 1.0F, 0.0F);
+        GLManager.GL.Rotate(-Dispatcher.playerViewX, 1.0F, 0.0F, 0.0F);
         var12.startDrawingQuads();
         var12.setNormal(0.0F, 1.0F, 0.0F);
         var12.addVertexWithUV((double)(0.0F - var18), (double)(0.0F - var19), 0.0D, (double)var13, (double)var16);

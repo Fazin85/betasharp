@@ -6,7 +6,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Items;
 
-public class ItemSign : Item
+internal class ItemSign : Item
 {
 
     public ItemSign(int id) : base(id)

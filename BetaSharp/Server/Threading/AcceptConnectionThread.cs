@@ -1,46 +1,71 @@
+using System.Net;
+using System.Net.Sockets;
 using BetaSharp.Server.Network;
-using java.net;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Server.Threading;
 
-public class AcceptConnectionThread : java.lang.Thread
+internal class AcceptConnectionThread : java.lang.Thread
 {
+    private readonly ILogger<AcceptConnectionThread> _logger = Log.Instance.For<AcceptConnectionThread>();
     private readonly ConnectionListener _listener;
+    private const int MAX_CACHE_SIZE = 1000;
 
     public AcceptConnectionThread(ConnectionListener listener, string name) : base(name)
     {
-        this._listener = listener;
+        _listener = listener;
     }
 
     public override void run()
     {
-        Dictionary<InetAddress, long> map = [];
+        Dictionary<IPAddress, long> map = [];
 
         while (_listener.open)
         {
             try
             {
-                Socket socket = _listener.socket.accept();
-                if (socket != null)
+                Socket socket = _listener.Socket.Accept();
+
+                socket.NoDelay = true;
+
+                var address = ((IPEndPoint?) socket.RemoteEndPoint)?.Address;
+
+                ArgumentNullException.ThrowIfNull(address);
+
+                if (map.TryGetValue(address, out long id) && ! IPAddress.Loopback.Equals(address) && DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+ - id < 5000L)
                 {
-                    socket.setTcpNoDelay(true);
-                    InetAddress addr = socket.getInetAddress();
-                    if (map.ContainsKey(addr) && !"127.0.0.1".Equals(addr.getHostAddress()) && java.lang.System.currentTimeMillis() - map[addr] < 5000L)
+                    map[address] = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+;
+                    socket.Close();
+                }
+                else
+                {
+                    map[address] = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+                    // Prune oldest entry when the cache grows beyond the bounded limit.
+                    if (map.Count > MAX_CACHE_SIZE)
                     {
-                        map[addr] = java.lang.System.currentTimeMillis();
-                        socket.close();
+                        IPAddress? oldest = null;
+                        long oldestTime = long.MaxValue;
+                        foreach (var kv in map)
+                        {
+                            if (kv.Value < oldestTime)
+                            {
+                                oldestTime = kv.Value;
+                                oldest = kv.Key;
+                            }
+                        }
+                        if (oldest != null) map.Remove(oldest);
                     }
-                    else
-                    {
-                        map[addr] = java.lang.System.currentTimeMillis();
-                        ServerLoginNetworkHandler handler = new(_listener.server, socket, "Connection # " + _listener.connectionCounter);
-                        _listener.AddPendingConnection(handler);
-                    }
+
+                    ServerLoginNetworkHandler handler = new(_listener.server, socket, "Connection # " + _listener.GetNextConnectionCounter());
+                    _listener.AddPendingConnection(handler);
                 }
             }
-            catch (java.io.IOException ex)
+            catch (SocketException ex)
             {
-                ex.printStackTrace();
+                _logger.LogError(ex, "Failed to accept connection");
             }
         }
     }

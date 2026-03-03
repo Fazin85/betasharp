@@ -1,6 +1,6 @@
 namespace BetaSharp.NBT;
 
-public sealed class NBTTagByte : NBTBase
+internal sealed class NBTTagByte : NBTBase
 {
     public sbyte Value { get; set; }
 

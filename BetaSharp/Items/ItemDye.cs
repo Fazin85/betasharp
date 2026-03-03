@@ -4,7 +4,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Items;
 
-public class ItemDye : Item
+internal class ItemDye : Item
 {
 
     public static readonly String[] DyeColorNames =

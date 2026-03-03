@@ -1,44 +1,51 @@
+using System.Net.Sockets;
 using BetaSharp.Entities;
-using java.io;
 
 namespace BetaSharp.Network.Packets.Play;
 
-public class EntityAnimationPacket : Packet
+public class EntityAnimationPacket() : PacketBaseEntity(PacketId.EntityAnimation)
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityAnimationPacket).TypeHandle);
-
-    public int id;
     public int animationId;
 
-    public EntityAnimationPacket()
+    public EntityAnimationPacket(Entity ent, int animationId) : this()
     {
-    }
-
-    public EntityAnimationPacket(Entity ent, int animationId)
-    {
-        id = ent.id;
+        EntityId = ent.id;
         this.animationId = animationId;
     }
 
-    public override void read(DataInputStream stream)
+    public EntityAnimationPacket(Entity ent, EntityAnimation animationId) : this()
     {
-        id = stream.readInt();
-        animationId = (sbyte)stream.readByte();
+        EntityId = ent.id;
+        this.animationId = (int)animationId;
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        stream.writeInt(id);
-        stream.writeByte(animationId);
+        base.Read(stream);
+        animationId = (sbyte)stream.ReadByte();
     }
 
-    public override void apply(NetHandler handler)
+    public override void Write(NetworkStream stream)
+    {
+        base.Write(stream);
+        stream.WriteByte((byte)animationId);
+    }
+
+    public override void Apply(NetHandler handler)
     {
         handler.onEntityAnimation(this);
     }
 
-    public override int size()
+    public override int Size()
     {
-        return 5;
+        return PacketBaseEntitySize + 1;
+    }
+
+    public enum EntityAnimation : byte
+    {
+        SwingHand = 1,
+        Hurt = 2,
+        WakeUp = 3,
+        Spawn = 4
     }
 }

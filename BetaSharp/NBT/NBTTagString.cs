@@ -1,6 +1,6 @@
 namespace BetaSharp.NBT;
 
-public sealed class NBTTagString : NBTBase
+internal sealed class NBTTagString : NBTBase
 {
     public string Value { get; set; } = string.Empty;
 

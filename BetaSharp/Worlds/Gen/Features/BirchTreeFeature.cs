@@ -4,7 +4,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Gen.Features;
 
-public class BirchTreeFeature : Feature
+internal class BirchTreeFeature : Feature
 {
 
     public override bool Generate(World world, JavaRandom rand, int x, int y, int z)

@@ -1,6 +1,6 @@
 namespace BetaSharp.NBT;
 
-public sealed class NBTTagEnd : NBTBase
+internal sealed class NBTTagEnd : NBTBase
 {
     public override void ReadTagContents(Stream input)
     {

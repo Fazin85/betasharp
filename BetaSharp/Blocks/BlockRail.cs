@@ -48,9 +48,9 @@ public class BlockRail : Block
         return base.raycast(world, x, y, z, startPos, endPos);
     }
 
-    public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
+    public override void updateBoundingBox(IBlockAccess iBlockAccess, int x, int y, int z)
     {
-        int meta = blockView.getBlockMeta(x, y, z);
+        int meta = iBlockAccess.getBlockMeta(x, y, z);
         if (meta >= 2 && meta <= 5)
         {
             setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 10.0F / 16.0F, 1.0F);
@@ -84,9 +84,9 @@ public class BlockRail : Block
         return false;
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return 9;
+        return BlockRendererType.MinecartTrack;
     }
 
     public override bool canPlaceAt(World world, int x, int y, int z)
@@ -170,7 +170,7 @@ public class BlockRail : Block
                     }
                 }
             }
-            else if (id > 0 && Block.Blocks[id].canEmitRedstonePower() && !alwaysStraight && RailLogic.getNAdjacentTracks(new RailLogic(this, world, x, y, z)) == 3)
+            else if (id > 0 && Block.Blocks[id].canEmitRedstonePower() && !alwaysStraight && RailLogic.GetNAdjacentTracks(new RailLogic(this, world, new Vec3i(x, y, z))) == 3)
             {
                 updateShape(world, x, y, z, false);
             }
@@ -182,7 +182,7 @@ public class BlockRail : Block
     {
         if (!world.isRemote)
         {
-            (new RailLogic(this, world, x, y, z)).updateState(world.isPowered(x, y, z), force);
+            new RailLogic(this, world, new Vec3i(x, y, z)).UpdateState(world.isPowered(x, y, z), force);
         }
     }
 

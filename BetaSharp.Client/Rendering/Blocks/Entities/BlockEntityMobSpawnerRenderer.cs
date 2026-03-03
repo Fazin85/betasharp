@@ -17,13 +17,13 @@ public class BlockEntityMobSpawnerRenderer : BlockEntitySpecialRenderer
         _entityDict.TryGetValue(var1.GetSpawnedEntityId(), out Entity? var9);
         if (var9 == null)
         {
-            var9 = EntityRegistry.create(var1.GetSpawnedEntityId(), null);
+            var9 = EntityRegistry.Create(var1.GetSpawnedEntityId(), null);
             _entityDict.Add(var1.GetSpawnedEntityId(), var9);
         }
 
         if (var9 != null)
         {
-            var9.setWorld(var1.world);
+            var9.setWorld(var1.World);
             float var10 = 7.0F / 16.0F;
             GLManager.GL.Translate(0.0F, 0.4F, 0.0F);
             GLManager.GL.Rotate((float)(var1.LastRotation + (var1.Rotation - var1.LastRotation) * (double)var8) * 10.0F, 0.0F, 1.0F, 0.0F);
@@ -37,8 +37,8 @@ public class BlockEntityMobSpawnerRenderer : BlockEntitySpecialRenderer
         GLManager.GL.PopMatrix();
     }
 
-    public override void renderTileEntityAt(BlockEntity var1, double var2, double var4, double var6, float var8)
+    public override void renderTileEntityAt(BlockEntity blockEntity, double x, double y, double z, float tickDelta)
     {
-        renderTileEntityMobSpawner((BlockEntityMobSpawner)var1, var2, var4, var6, var8);
+        renderTileEntityMobSpawner((BlockEntityMobSpawner)blockEntity, x, y, z, tickDelta);
     }
 }

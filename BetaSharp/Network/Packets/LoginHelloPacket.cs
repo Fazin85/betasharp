@@ -1,11 +1,9 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets;
 
-public class LoginHelloPacket : Packet
+public class LoginHelloPacket() : Packet(PacketId.LoginHello)
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(LoginHelloPacket).TypeHandle);
-
     public const long BETASHARP_CLIENT_SIGNATURE = 0x627368617270; // "bsharp" in hex. Used to identify BetaSharp clients for future protocol extensions without breaking vanilla compatibility.
 
     public int protocolVersion;
@@ -13,11 +11,7 @@ public class LoginHelloPacket : Packet
     public long worldSeed;
     public sbyte dimensionId;
 
-    public LoginHelloPacket()
-    {
-    }
-
-    public LoginHelloPacket(string username, int protocolVersion, long worldSeed, sbyte dimensionId)
+    public LoginHelloPacket(string username, int protocolVersion, long worldSeed, sbyte dimensionId) : this()
     {
         this.username = username;
         this.protocolVersion = protocolVersion;
@@ -25,34 +19,34 @@ public class LoginHelloPacket : Packet
         this.dimensionId = dimensionId;
     }
 
-    public LoginHelloPacket(string username, int protocolVersion)
+    public LoginHelloPacket(string username, int protocolVersion) : this()
     {
         this.username = username;
         this.protocolVersion = protocolVersion;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        protocolVersion = stream.readInt();
-        username = readString(stream, 16);
-        worldSeed = stream.readLong();
-        dimensionId = (sbyte)stream.readByte();
+        protocolVersion = stream.ReadInt();
+        username = stream.ReadLongString(16);
+        worldSeed = stream.ReadLong();
+        dimensionId = (sbyte)stream.ReadByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(protocolVersion);
-        writeString(username, stream);
-        stream.writeLong(worldSeed);
-        stream.writeByte(dimensionId);
+        stream.WriteInt(protocolVersion);
+        stream.WriteLongString(username);
+        stream.WriteLong(worldSeed);
+        stream.WriteByte((byte)dimensionId);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onHello(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 4 + username.Length + 4 + 5;
     }

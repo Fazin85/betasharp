@@ -1,10 +1,12 @@
 using BetaSharp.Client.Network;
 using BetaSharp.Client.Threading;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Client.Guis;
 
 public class GuiConnecting : GuiScreen
 {
+    private readonly ILogger<GuiConnecting> _logger = Log.Instance.For<GuiConnecting>();
 
     private ClientNetworkHandler _clientHandler;
     private bool _cancelled = false;
@@ -12,17 +14,17 @@ public class GuiConnecting : GuiScreen
 
     public override bool PausesGame=> false;
 
-    public GuiConnecting(Minecraft mc, string host, int port)
+    public GuiConnecting(BetaSharp game, string host, int port)
     {
-        Log.Info($"Connecting to {host}, {port}");
-        mc.changeWorld(null);
-        new ThreadConnectToServer(this, mc, host, port).start();
+        _logger.LogInformation($"Connecting to {host}, {port}");
+        game.changeWorld(null);
+        new ThreadConnectToServer(this, game, host, port).start();
     }
 
-    public GuiConnecting(Minecraft mc, ClientNetworkHandler clientHandler)
+    public GuiConnecting(BetaSharp game, ClientNetworkHandler clientHandler)
     {
         _clientHandler = clientHandler;
-        mc.changeWorld(null);
+        game.changeWorld(null);
     }
 
     public override void UpdateScreen()
@@ -53,7 +55,7 @@ public class GuiConnecting : GuiScreen
                 _cancelled = true;
                 _clientHandler?.disconnect();
 
-                mc.displayGuiScreen(new GuiMainMenu());
+                Game.displayGuiScreen(new GuiMainMenu());
                 break;
         }
 
@@ -65,13 +67,13 @@ public class GuiConnecting : GuiScreen
         TranslationStorage translations = TranslationStorage.Instance;
         if (_clientHandler == null)
         {
-            DrawCenteredString(FontRenderer, translations.TranslateKey("connect.connecting"), Width / 2, Height / 2 - 50, 0xFFFFFF);
-            DrawCenteredString(FontRenderer, "", Width / 2, Height / 2 - 10, 0xFFFFFF);
+            DrawCenteredString(FontRenderer, translations.TranslateKey("connect.connecting"), Width / 2, Height / 2 - 50, Color.White);
+            DrawCenteredString(FontRenderer, "", Width / 2, Height / 2 - 10, Color.White);
         }
         else
         {
-            DrawCenteredString(FontRenderer, translations.TranslateKey("connect.authorizing"), Width / 2, Height / 2 - 50, 0xFFFFFF);
-            DrawCenteredString(FontRenderer, _clientHandler.field_1209_a, Width / 2, Height / 2 - 10, 0xFFFFFF);
+            DrawCenteredString(FontRenderer, translations.TranslateKey("connect.authorizing"), Width / 2, Height / 2 - 50, Color.White);
+            DrawCenteredString(FontRenderer, _clientHandler.field_1209_a, Width / 2, Height / 2 - 10, Color.White);
         }
 
         base.Render(mouseX, mouseY, partialTicks);

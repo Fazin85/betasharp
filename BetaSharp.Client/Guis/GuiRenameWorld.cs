@@ -31,9 +31,9 @@ public class GuiRenameWorld : GuiScreen
         _controlList.Clear();
         _controlList.Add(new GuiButton(ButtonRename, Width / 2 - 100, Height / 4 + 96 + 12, translations.TranslateKey("selectWorld.renameButton")));
         _controlList.Add(new GuiButton(ButtonCancel, Width / 2 - 100, Height / 4 + 120 + 12, translations.TranslateKey("gui.cancel")));
-        WorldStorageSource worldStorage = mc.getSaveLoader();
-        WorldProperties worldProperties = worldStorage.getProperties(worldFolderName);
-        string currentWorldName = worldProperties.LevelName;
+        IWorldStorageSource worldStorage = Game.getSaveLoader();
+        WorldProperties? worldProperties = worldStorage.GetProperties(worldFolderName);
+        string currentWorldName = worldProperties?.LevelName ?? string.Empty;
         nameInputField = new GuiTextField(this, FontRenderer, Width / 2 - 100, 60, 200, 20, currentWorldName)
         {
             IsFocused = true
@@ -53,12 +53,12 @@ public class GuiRenameWorld : GuiScreen
             switch (button.Id)
             {
                 case ButtonCancel:
-                    mc.displayGuiScreen(parentScreen);
+                    Game.displayGuiScreen(parentScreen);
                     break;
                 case ButtonRename:
-                    WorldStorageSource worldStorage = mc.getSaveLoader();
-                    worldStorage.rename(worldFolderName, nameInputField.GetText().Trim());
-                    mc.displayGuiScreen(parentScreen);
+                    IWorldStorageSource worldStorage = Game.getSaveLoader();
+                    worldStorage.Rename(worldFolderName, nameInputField.GetText().Trim());
+                    Game.displayGuiScreen(parentScreen);
                     break;
             }
         }
@@ -85,8 +85,8 @@ public class GuiRenameWorld : GuiScreen
     {
         TranslationStorage translations = TranslationStorage.Instance;
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, translations.TranslateKey("selectWorld.renameTitle"), Width / 2, Height / 4 - 60 + 20, 0xFFFFFF);
-        DrawString(FontRenderer, translations.TranslateKey("selectWorld.enterName"), Width / 2 - 100, 47, 0xA0A0A0);
+        DrawCenteredString(FontRenderer, translations.TranslateKey("selectWorld.renameTitle"), Width / 2, Height / 4 - 60 + 20, Color.White);
+        DrawString(FontRenderer, translations.TranslateKey("selectWorld.enterName"), Width / 2 - 100, 47, Color.GrayA0);
         nameInputField.DrawTextBox();
         base.Render(mouseX, mouseY, partialTicks);
     }

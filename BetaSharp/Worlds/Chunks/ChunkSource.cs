@@ -2,19 +2,23 @@ namespace BetaSharp.Worlds.Chunks;
 
 public interface ChunkSource
 {
-    bool isChunkLoaded(int var1, int var2);
+    bool IsChunkLoaded(int x, int z);
 
-    Chunk getChunk(int var1, int var2);
+    Chunk GetChunk(int x, int z);
 
-    Chunk loadChunk(int var1, int var2);
+    Chunk LoadChunk(int x, int z);
 
-    void decorate(ChunkSource var1, int var2, int var3);
+    void DecorateTerrain(ChunkSource source, int x, int z);
 
-    bool save(bool var1, LoadingDisplay var2);
+    bool Save(bool saveEntities, LoadingDisplay display);
 
-    bool tick();
+    bool Tick();
 
-    bool canSave();
+    bool CanSave();
 
-    string getDebugInfo();
+    string GetDebugInfo();
+
+    // Creates a new generator instance that is safe to use on a separate thread.
+    // The default returns the same instance (not parallel-safe for stateful generators).
+    ChunkSource CreateParallelInstance() => this;
 }

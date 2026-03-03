@@ -2,7 +2,7 @@ using BetaSharp.NBT;
 
 namespace BetaSharp.Blocks.Entities;
 
-public class BlockEntityRecordPlayer : BlockEntity
+internal class BlockEntityRecordPlayer : BlockEntity
 {
     public int recordId;
 

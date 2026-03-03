@@ -1,6 +1,6 @@
 namespace BetaSharp.Blocks.Materials
 {
-    public class MaterialLiquid : Material
+    internal class MaterialLiquid : Material
     {
 
         public override bool IsFluid => true;

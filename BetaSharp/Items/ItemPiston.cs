@@ -1,6 +1,6 @@
 namespace BetaSharp.Items;
 
-public class ItemPiston : ItemBlock
+internal class ItemPiston : ItemBlock
 {
 
     public ItemPiston(int id) : base(id)

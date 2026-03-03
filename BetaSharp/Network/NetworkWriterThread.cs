@@ -1,6 +1,6 @@
 namespace BetaSharp.Network;
 
-public class NetworkWriterThread : java.lang.Thread
+internal class NetworkWriterThread : java.lang.Thread
 {
     public readonly Connection netManager;
 
@@ -39,7 +39,7 @@ public class NetworkWriterThread : java.lang.Thread
 
                 try
                 {
-                    Connection.getOutputStream(netManager)?.flush();
+                    Connection.getOutputStream(netManager)?.Flush();
                 }
                 catch (java.io.IOException ex)
                 {

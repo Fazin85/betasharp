@@ -5,24 +5,18 @@ namespace BetaSharp.Client.Sound;
 
 public class SoundPool
 {
+    public bool IsRandom { get; set; } = true;
     private readonly JavaRandom _rand = new();
-    private readonly Map weightedSoundSet = new HashMap();
-    private readonly List loadedSounds = new ArrayList();
-    public int loadedSoundCount = 0;
-    public bool isRandom = true;
+    public int LoadedSoundCount => _allLoadedSounds.Count;
+    private readonly Dictionary<string, List<SoundPoolEntry>> _weightedSoundSet = [];
+    private readonly List<SoundPoolEntry> _allLoadedSounds = [];
 
-    private readonly Dictionary<string, List<SoundPoolEntry>> _weightedSoundSet = new();
-    private readonly List<SoundPoolEntry> _allLoadedSounds = new();
-
-    public int LoadedSoundCount = 0;
-    public bool IsRandom = true;
 
     public SoundPoolEntry AddSound(string soundPath, FileInfo fileInfo)
     {
-        string originalFileName = soundPath;
-
         string soundKey = soundPath;
         int dotIndex = soundKey.IndexOf('.');
+
         if (dotIndex != -1)
         {
             soundKey = soundKey[..dotIndex];
@@ -37,27 +31,28 @@ public class SoundPool
         }
 
         soundKey = soundKey.Replace('/', '.');
+
         if (!_weightedSoundSet.TryGetValue(soundKey, out List<SoundPoolEntry>? variations))
         {
-            variations = new List<SoundPoolEntry>();
+            variations = [];
             _weightedSoundSet[soundKey] = variations;
         }
 
-        SoundPoolEntry entry = new(originalFileName, new Uri(fileInfo.FullName));
+        SoundPoolEntry entry = new(soundPath, new Uri(fileInfo.FullName));
 
         variations.Add(entry);
         _allLoadedSounds.Add(entry);
-        LoadedSoundCount++;
 
         return entry;
     }
 
     public SoundPoolEntry? GetRandomSoundFromSoundPool(string soundKey)
     {
-        if (_weightedSoundSet.TryGetValue(soundKey, out List<SoundPoolEntry>? variations))
+        if (_weightedSoundSet.TryGetValue(soundKey, out List<SoundPoolEntry>? variations) && variations.Count > 0)
         {
             return variations[_rand.NextInt(variations.Count)];
         }
+        
         return null;
     }
 

@@ -1,6 +1,6 @@
 namespace BetaSharp;
 
-public class MapColor : java.lang.Object
+public class MapColor
 {
     public static readonly MapColor[] mapColorArray = new MapColor[16];
     public static readonly MapColor airColor =      new(0,  0x000000);

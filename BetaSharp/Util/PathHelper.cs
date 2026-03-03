@@ -4,8 +4,8 @@ namespace BetaSharp.Util;
 
 public static class PathHelper
 {
-    private static readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-    private static readonly bool IsMacOS = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+    private static readonly bool s_isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+    private static readonly bool s_isMacOs = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
 
     public static string GetAppDir(string appName)
     {
@@ -14,12 +14,12 @@ public static class PathHelper
             userHome = ".";
 
         string path;
-        if (IsWindows)
+        if (s_isWindows)
         {
             string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             path = System.IO.Path.Combine(appData, "." + appName);
         }
-        else if (IsMacOS)
+        else if (s_isMacOs)
         {
             path = System.IO.Path.Combine(userHome, "Library", "Application Support", appName);
         }

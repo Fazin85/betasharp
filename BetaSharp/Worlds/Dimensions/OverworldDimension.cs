@@ -1,5 +1,5 @@
 namespace BetaSharp.Worlds.Dimensions;
 
-public class OverworldDimension : Dimension
+internal class OverworldDimension : Dimension
 {
 }

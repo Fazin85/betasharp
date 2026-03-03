@@ -3,7 +3,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Items;
 
-public class ItemEgg : Item
+internal class ItemEgg : Item
 {
 
     public ItemEgg(int id) : base(id)

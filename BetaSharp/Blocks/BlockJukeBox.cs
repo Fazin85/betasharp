@@ -6,7 +6,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
-public class BlockJukeBox : BlockWithEntity
+internal class BlockJukeBox : BlockWithEntity
 {
 
     public BlockJukeBox(int id, int textureId) : base(id, textureId, Material.Wood)

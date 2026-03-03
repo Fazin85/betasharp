@@ -4,7 +4,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Items;
 
-public class ItemRedstone : Item
+internal class ItemRedstone : Item
 {
 
     public ItemRedstone(int id) : base(id)

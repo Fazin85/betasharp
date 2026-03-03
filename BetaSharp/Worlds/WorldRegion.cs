@@ -6,7 +6,7 @@ using BetaSharp.Worlds.Chunks;
 
 namespace BetaSharp.Worlds;
 
-public class WorldRegion : BlockView
+internal class WorldRegion : IBlockAccess
 {
     private readonly int _chunkX;
     private readonly int _chunkZ;
@@ -34,7 +34,7 @@ public class WorldRegion : BlockView
         {
             for (int cz = _chunkZ; cz <= endZ; ++cz)
             {
-                _chunks[cx - _chunkX][cz - _chunkZ] = world.getChunk(cx, cz);
+                _chunks[cx - _chunkX][cz - _chunkZ] = world.GetChunk(cx, cz);
             }
         }
 
@@ -50,7 +50,7 @@ public class WorldRegion : BlockView
         if (cx >= 0 && cx < _chunks.Length && cz >= 0 && cz < _chunks[cx].Length)
         {
             Chunk chunk = _chunks[cx][cz];
-            return chunk?.getBlockId(x & 15, y, z & 15) ?? 0;
+            return chunk?.GetBlockId(x & 15, y, z & 15) ?? 0;
         }
 
         return 0;
@@ -64,18 +64,18 @@ public class WorldRegion : BlockView
         if (cx < 0 || cx >= _chunks.Length || cz < 0 || cz < 0 || cz >= _chunks[cx].Length)
             return null;
 
-        return _chunks[cx][cz]?.getBlockEntity(x & 15, y, z & 15);
+        return _chunks[cx][cz]?.GetBlockEntity(x & 15, y, z & 15);
     }
 
     public float getNaturalBrightness(int x, int y, int z, int blockLight)
     {
         int finalLight = Math.Max(getRawBrightness(x, y, z), blockLight);
-        return _world.dimension.lightLevelToLuminance[finalLight];
+        return _world.dimension.LightLevelToLuminance[finalLight];
     }
 
     public float getLuminance(int x, int y, int z)
     {
-        return _world.dimension.lightLevelToLuminance[getRawBrightness(x, y, z)];
+        return _world.dimension.LightLevelToLuminance[getRawBrightness(x, y, z)];
     }
 
     public int getRawBrightness(int x, int y, int z)
@@ -107,7 +107,7 @@ public class WorldRegion : BlockView
         int cIdxX = (x >> 4) - _chunkX;
         int cIdxZ = (z >> 4) - _chunkZ;
 
-        return _chunks[cIdxX][cIdxZ].getLight(x & 15, y, z & 15, _world.ambientDarkness);
+        return _chunks[cIdxX][cIdxZ].GetLight(x & 15, y, z & 15, _world.ambientDarkness);
     }
 
     public int getBlockMeta(int x, int y, int z)
@@ -116,7 +116,7 @@ public class WorldRegion : BlockView
 
         int cx = (x >> 4) - _chunkX;
         int cz = (z >> 4) - _chunkZ;
-        return _chunks[cx][cz].getBlockMeta(x & 15, y, z & 15);
+        return _chunks[cx][cz].GetBlockMeta(x & 15, y, z & 15);
     }
 
     public Material getMaterial(int x, int y, int z)

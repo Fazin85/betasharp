@@ -1,4 +1,5 @@
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 
 namespace BetaSharp.Client.Entities.FX;
@@ -8,9 +9,9 @@ public class EntityExplodeFX : EntityFX
 
     public EntityExplodeFX(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) : base(world, x, y, z, velocityX, velocityY, velocityZ)
     {
-        base.velocityX = velocityX + (double)((float)(java.lang.Math.random() * 2.0D - 1.0D) * 0.05F);
-        base.velocityY = velocityY + (double)((float)(java.lang.Math.random() * 2.0D - 1.0D) * 0.05F);
-        base.velocityZ = velocityZ + (double)((float)(java.lang.Math.random() * 2.0D - 1.0D) * 0.05F);
+        base.velocityX = velocityX + (double)((float)(Random.Shared.NextDouble() * 2.0D - 1.0D) * 0.05F);
+        base.velocityY = velocityY + (double)((float)(Random.Shared.NextDouble() * 2.0D - 1.0D) * 0.05F);
+        base.velocityZ = velocityZ + (double)((float)(Random.Shared.NextDouble() * 2.0D - 1.0D) * 0.05F);
         particleRed = particleGreen = particleBlue = random.NextFloat() * 0.3F + 0.7F;
         particleScale = random.NextFloat() * random.NextFloat() * 6.0F + 1.0F;
         particleMaxAge = (int)(16.0D / ((double)random.NextFloat() * 0.8D + 0.2D)) + 2;

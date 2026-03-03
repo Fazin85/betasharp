@@ -3,7 +3,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Gen.Features;
 
-public class NetherLavaSpringFeature : Feature
+internal class NetherLavaSpringFeature : Feature
 {
 
     private int _lavaBlockId;

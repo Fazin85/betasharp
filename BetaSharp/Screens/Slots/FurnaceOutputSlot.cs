@@ -4,7 +4,7 @@ using BetaSharp.Items;
 
 namespace BetaSharp.Screens.Slots;
 
-public class FurnaceOutputSlot : Slot
+internal class FurnaceOutputSlot : Slot
 {
 
     private EntityPlayer thePlayer;

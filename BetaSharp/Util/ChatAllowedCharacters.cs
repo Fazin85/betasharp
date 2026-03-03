@@ -1,5 +1,3 @@
-using java.io;
-
 namespace BetaSharp.Util;
 
 public class ChatAllowedCharacters
@@ -9,20 +7,19 @@ public class ChatAllowedCharacters
 
     private static string GetAllowedCharacters()
     {
-        try
-        {
-            string content = AssetManager.Instance.getAsset("font.txt").getTextContent();
-            if (string.IsNullOrWhiteSpace(content)) return string.Empty;
-            
-            return string.Concat(
-                content.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
-                       .Where(line => !line.StartsWith('#'))
-            );
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex);
-            return string.Empty;
-        }
+        string content = AssetManager.Instance.getAsset("font.txt").getTextContent();
+        if (string.IsNullOrWhiteSpace(content)) return string.Empty;
+
+        return string.Concat(
+            content.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
+                .Where(line => !line.StartsWith('#'))
+        );
     }
+
+    /// <summary>
+    /// Unlike using <see cref="allowedCharacters"/>,
+    /// this is faster and don't need to load asset
+    /// </summary>
+    public static bool IsAllowedCharacter(char c) =>
+        c is >= ' ' and <= '~' || "⌂ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƒáíóúñÑªº¿®¬½¼¡«»;".Contains(c);
 }

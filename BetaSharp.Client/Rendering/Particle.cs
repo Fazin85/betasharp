@@ -2,7 +2,7 @@
 
 namespace BetaSharp.Client.Rendering;
 
-public class Particle : java.lang.Object
+public class Particle
 {
     public double X;
     public double Y;

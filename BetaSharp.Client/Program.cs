@@ -1,6 +1,18 @@
 using BetaSharp;
-using BetaSharp.Client;
+using BetaSharp.Util;
+using Microsoft.Extensions.Logging;
 
-Log.Initialize(new LogOptions(IsServer: false));
-Log.AddCrashHandlers();
-Minecraft.Startup(args);
+Log.Instance.Initialize(PathHelper.GetAppDir(nameof(BetaSharp)));
+
+try
+{
+    BetaSharp.Client.BetaSharp.Startup(args);
+}
+catch (Exception exception)
+{
+    Log.Instance.For<Program>().LogError(exception, "Unhandled exception occured!");
+
+#if DEBUG
+    throw;
+#endif
+}

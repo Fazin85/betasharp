@@ -5,7 +5,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
-public class BlockLog : Block
+internal class BlockLog : Block
 {
     public BlockLog(int id) : base(id, Material.Wood)
     {

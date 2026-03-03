@@ -3,7 +3,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Blocks;
 
-public class BlockGravel : BlockSand
+internal class BlockGravel : BlockSand
 {
     public BlockGravel(int i, int j) : base(i, j)
     {

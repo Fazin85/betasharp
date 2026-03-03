@@ -3,7 +3,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Items;
 
-public class ItemSoup : ItemFood
+internal class ItemSoup : ItemFood
 {
 
     public ItemSoup(int id, int healAmount) : base(id, healAmount, false)

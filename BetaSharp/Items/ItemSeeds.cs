@@ -4,7 +4,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Items;
 
-public class ItemSeeds : Item
+internal class ItemSeeds : Item
 {
 
     private int blockId;

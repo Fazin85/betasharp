@@ -3,7 +3,7 @@ using BetaSharp.Blocks.Materials;
 
 namespace BetaSharp.Items;
 
-public class ItemPickaxe : ItemTool
+internal class ItemPickaxe : ItemTool
 {
 
     private static Block[] blocksEffectiveAgainst =

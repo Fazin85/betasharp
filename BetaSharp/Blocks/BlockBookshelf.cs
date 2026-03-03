@@ -3,7 +3,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Blocks;
 
-public class BlockBookshelf : Block
+internal class BlockBookshelf : Block
 {
     public BlockBookshelf(int id, int textureId) : base(id, textureId, Material.Wood)
     {

@@ -3,14 +3,14 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Gen.Features;
 
-public class GlowstoneClusterFeatureRare : Feature
+internal class GlowstoneClusterFeatureRare : Feature
 {
 
     public override bool Generate(World world, JavaRandom rand, int x, int y, int z)
     {
         if (!world.isAir(x, y, z)) return false;
         if (world.getBlockId(x, y + 1, z) != Block.Netherrack.id) return false;
-        
+
 
         world.setBlock(x, y, z, Block.Glowstone.id);
 
@@ -35,7 +35,7 @@ public class GlowstoneClusterFeatureRare : Feature
 
                     if (blockId == Block.Glowstone.id)
                         ++GlowstoneNeighbors;
-                    
+
                 }
 
                 if (GlowstoneNeighbors == 1)

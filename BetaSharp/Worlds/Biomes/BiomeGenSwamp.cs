@@ -1,5 +1,5 @@
 namespace BetaSharp.Worlds.Biomes;
 
-public class BiomeGenSwamp : Biome
+internal class BiomeGenSwamp : Biome
 {
 }

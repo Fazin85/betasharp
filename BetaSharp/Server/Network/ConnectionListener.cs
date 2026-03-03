@@ -1,79 +1,111 @@
+using System.Net;
+using System.Net.Sockets;
 using BetaSharp.Network;
 using BetaSharp.Server.Threading;
-using java.lang;
-using java.net;
-using java.util.logging;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Server.Network;
 
 public class ConnectionListener
 {
-    public ServerSocket socket;
+    public Socket Socket { get; }
+
     private readonly java.lang.Thread _thread;
+    private readonly ILogger<ConnectionListener> _logger = Log.Instance.For<ConnectionListener>();
+
     public volatile bool open;
-    public int connectionCounter = 0;
+    private int _connectionCounter = 0;
+    private readonly object _connectionCounterLock = new();
+    private readonly object _pendingConnectionsLock = new();
+    private readonly object _connectionsLock = new();
     private readonly List<ServerLoginNetworkHandler> _pendingConnections = [];
     private readonly List<ServerPlayNetworkHandler> _connections = [];
-    public MinecraftServer server;
+    public BetaSharpServer server;
     public int port;
 
-    public ConnectionListener(MinecraftServer server, InetAddress address, int port)
+    public ConnectionListener(BetaSharpServer server, IPAddress address, int port, bool dualStack = false)
     {
         this.server = server;
-        socket = new ServerSocket(port, 0, address);
-        socket.setPerformancePreferences(0, 2, 1);
-        this.port = socket.getLocalPort();
+
+        Socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
+        if (address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
+        {
+            Socket.DualMode = dualStack;
+        }
+        Socket.Bind(new IPEndPoint(address, port));
+        Socket.Listen();
+
+        this.port = port;
         open = true;
         _thread = new AcceptConnectionThread(this, "Listen Thread");
         _thread.start();
     }
 
-    public ConnectionListener(MinecraftServer server)
+    public ConnectionListener(BetaSharpServer server)
     {
         this.server = server;
-        socket = null;
+        Socket = null;
         port = 0;
         open = true;
         _thread = null;
     }
 
+    public int GetNextConnectionCounter()
+    {
+        lock (_connectionCounterLock)
+        {
+            return _connectionCounter++;
+        }
+    }
+
     public void AddConnection(ServerPlayNetworkHandler connection)
     {
-        _connections.Add(connection);
+        lock (_connectionsLock)
+        {
+            _connections.Add(connection);
+        }
     }
 
     public void AddPendingConnection(ServerLoginNetworkHandler connection)
     {
         if (connection == null)
         {
-            throw new IllegalArgumentException("Got null pendingconnection!");
+            throw new ArgumentException("Got null pendingconnection!", nameof(connection));
         }
         else
         {
-            _pendingConnections.Add(connection);
+            lock (_pendingConnectionsLock)
+            {
+                _pendingConnections.Add(connection);
+            }
         }
     }
 
     public void AddInternalConnection(InternalConnection connection)
     {
         ServerLoginNetworkHandler loginHandler = new(server, connection);
-        _pendingConnections.Add(loginHandler);
+        lock (_pendingConnectionsLock)
+        {
+            _pendingConnections.Add(loginHandler);
+        }
     }
 
     public void Tick()
     {
-        for (int i = 0; i < _pendingConnections.Count; i++)
+        lock (_pendingConnectionsLock)
         {
-            ServerLoginNetworkHandler connection = _pendingConnections[i];
+            for (int i = 0; i < _pendingConnections.Count; i++)
+            {
+                ServerLoginNetworkHandler connection = _pendingConnections[i];
 
-            try
+                try
             {
                 connection.tick();
             }
-            catch (java.lang.Exception ex)
+            catch (Exception ex)
             {
                 connection.disconnect("Internal server error");
-                Log.Error($"Failed to handle packet: {ex}");
+                _logger.LogError($"Failed to handle packet: {ex}");
             }
 
             if (connection.closed)
@@ -81,20 +113,23 @@ public class ConnectionListener
                 _pendingConnections.RemoveAt(i--);
             }
 
-            connection.connection.interrupt();
+                connection.connection.interrupt();
+            }
         }
 
-        for (int i = 0; i < _connections.Count; i++)
+        lock (_connectionsLock)
         {
-            ServerPlayNetworkHandler connection = _connections[i];
+            for (int i = 0; i < _connections.Count; i++)
+            {
+                ServerPlayNetworkHandler connection = _connections[i];
 
             try
             {
                 connection.tick();
             }
-            catch (java.lang.Exception ex)
+            catch (Exception ex)
             {
-                Log.Error($"Failed to handle packet: {ex}");
+                _logger.LogError($"Failed to handle packet: {ex}");
                 connection.disconnect("Internal server error");
             }
 
@@ -104,6 +139,7 @@ public class ConnectionListener
             }
 
             connection.connection.interrupt();
+            }
         }
     }
 }

@@ -3,7 +3,7 @@ using BetaSharp.Entities;
 
 namespace BetaSharp.Items;
 
-public class ItemSword : Item
+internal class ItemSword : Item
 {
 
     private int weaponDamage;

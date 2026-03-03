@@ -1,5 +1,5 @@
 namespace BetaSharp.Worlds.Biomes;
 
-public class BiomeGenDesert : Biome
+internal class BiomeGenDesert : Biome
 {
 }

@@ -2,14 +2,11 @@ using BetaSharp.Blocks;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.lang;
 
 namespace BetaSharp.Entities;
 
 public abstract class EntityAnimal : EntityCreature, SpawnableEntity
 {
-    public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityAnimal).TypeHandle);
-
     public EntityAnimal(World world) : base(world)
     {
     }
@@ -32,7 +29,7 @@ public abstract class EntityAnimal : EntityCreature, SpawnableEntity
     public override bool canSpawn()
     {
         int x = MathHelper.Floor(base.x);
-        int y = MathHelper.Floor(boundingBox.minY);
+        int y = MathHelper.Floor(boundingBox.MinY);
         int z = MathHelper.Floor(base.z);
         return world.getBlockId(x, y - 1, z) == Block.GrassBlock.id && world.getBrightness(x, y, z) > 8 && base.canSpawn();
     }

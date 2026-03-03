@@ -4,11 +4,10 @@ using BetaSharp.Items;
 using BetaSharp.Network.Packets;
 using BetaSharp.Network.Packets.S2CPlay;
 using BetaSharp.Util.Maths;
-using java.lang;
 
 namespace BetaSharp.Server.Entities;
 
-public class EntityTrackerEntry : java.lang.Object
+internal class EntityTrackerEntry
 {
     public Entity currentTrackedEntity;
     public int trackedDistance;
@@ -44,12 +43,12 @@ public class EntityTrackerEntry : java.lang.Object
         lastPitch = MathHelper.Floor(entity.pitch * 256.0F / 360.0F);
     }
 
-    public override bool equals(object obj)
+    public override bool Equals(object obj)
     {
         return obj is EntityTrackerEntry entry && entry.currentTrackedEntity.id == currentTrackedEntity.id;
     }
 
-    public override int hashCode()
+    public override int GetHashCode()
     {
         return currentTrackedEntity.id;
     }
@@ -79,8 +78,8 @@ public class EntityTrackerEntry : java.lang.Object
             int var8 = var3 - lastY;
             int var9 = var4 - lastZ;
             object? var10 = null;
-            bool var11 = java.lang.Math.abs(var2) >= 8 || java.lang.Math.abs(var3) >= 8 || java.lang.Math.abs(var4) >= 8;
-            bool var12 = java.lang.Math.abs(var5 - lastYaw) >= 8 || java.lang.Math.abs(var6 - lastPitch) >= 8;
+            bool var11 = Math.Abs(var2) >= 8 || Math.Abs(var3) >= 8 || Math.Abs(var4) >= 8;
+            bool var12 = Math.Abs(var5 - lastYaw) >= 8 || Math.Abs(var6 - lastPitch) >= 8;
             if (var7 < -128 || var7 >= 128 || var8 < -128 || var8 >= 128 || var9 < -128 || var9 >= 128 || ticksSinceLastDismount > 400)
             {
                 ticksSinceLastDismount = 0;
@@ -178,18 +177,15 @@ public class EntityTrackerEntry : java.lang.Object
 
     public void notifyEntityRemoved(ServerPlayerEntity player)
     {
-        if (listeners.Contains(player))
-        {
             listeners.Remove(player);
-        }
     }
 
     public void updateListener(ServerPlayerEntity player)
     {
         if (player != currentTrackedEntity)
         {
-            double var2 = player.x - lastX / 32;
-            double var4 = player.z - lastZ / 32;
+            double var2 = player.x - lastX / 32.0;
+            double var4 = player.z - lastZ / 32.0;
             if (var2 >= -trackedDistance && var2 <= trackedDistance && var4 >= -trackedDistance && var4 <= trackedDistance)
             {
                 if (!listeners.Contains(player))
@@ -236,9 +232,8 @@ public class EntityTrackerEntry : java.lang.Object
                     }
                 }
             }
-            else if (listeners.Contains(player))
+            else if (listeners.Remove(player))
             {
-                listeners.Remove(player);
                 player.networkHandler.sendPacket(new EntityDestroyS2CPacket(currentTrackedEntity.id));
             }
         }
@@ -346,7 +341,7 @@ public class EntityTrackerEntry : java.lang.Object
                 }
                 else
                 {
-                    throw new IllegalArgumentException("Don't know how to add " + currentTrackedEntity.getClass() + "!");
+                    throw new ArgumentException("Don't know how to add " + currentTrackedEntity.GetType() + "!");
                 }
             }
         }
@@ -354,9 +349,8 @@ public class EntityTrackerEntry : java.lang.Object
 
     public void removeListener(ServerPlayerEntity player)
     {
-        if (listeners.Contains(player))
+        if (listeners.Remove(player))
         {
-            listeners.Remove(player);
             player.networkHandler.sendPacket(new EntityDestroyS2CPacket(currentTrackedEntity.id));
         }
     }

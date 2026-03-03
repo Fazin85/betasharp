@@ -4,7 +4,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Blocks;
 
-public class BlockMobSpawner : BlockWithEntity
+internal class BlockMobSpawner : BlockWithEntity
 {
 
     public BlockMobSpawner(int id, int textureId) : base(id, textureId, Material.Stone)

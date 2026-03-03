@@ -3,7 +3,7 @@ using java.util;
 
 namespace BetaSharp.Worlds.Biomes.Source;
 
-public class FixedBiomeSource : BiomeSource
+internal class FixedBiomeSource : BiomeSource
 {
 
     private Biome _biome;
@@ -58,7 +58,7 @@ public class FixedBiomeSource : BiomeSource
         Arrays.fill(biomes, 0, size, _biome);
         Arrays.fill(DownfallMap, 0, size, _downfall);
         Arrays.fill(TemperatureMap, 0, size, _temperature);
-        
+
         return biomes;
     }
 }

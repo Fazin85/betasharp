@@ -5,7 +5,7 @@ using BetaSharp.Items;
 
 namespace BetaSharp.Screens.Slots;
 
-public class CraftingResultSlot : Slot
+internal class CraftingResultSlot : Slot
 {
 
     private readonly IInventory craftMatrix;

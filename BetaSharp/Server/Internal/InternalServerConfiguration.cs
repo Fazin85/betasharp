@@ -1,6 +1,6 @@
 namespace BetaSharp.Server.Internal;
 
-public class InternalServerConfiguration : IServerConfiguration
+internal class InternalServerConfiguration : IServerConfiguration
 {
     private string levelName;
     private string seed;
@@ -73,6 +73,11 @@ public class InternalServerConfiguration : IServerConfiguration
         return "";
     }
 
+    public bool GetDualStack(bool fallback)
+    {
+        return false;
+    }
+
     public int GetServerPort(int fallback)
     {
         return 25565;
@@ -96,6 +101,11 @@ public class InternalServerConfiguration : IServerConfiguration
     public bool GetWhiteList(bool fallback)
     {
         return false;
+    }
+
+    public int GetSpawnRegionSize(int fallback)
+    {
+        return fallback;
     }
 
     public void Save()

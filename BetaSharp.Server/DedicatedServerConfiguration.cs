@@ -2,12 +2,13 @@ using java.io;
 using java.lang;
 using java.util;
 using java.util.logging;
+using Exception = System.Exception;
 
 namespace BetaSharp.Server;
 
-public class DedicatedServerConfiguration : IServerConfiguration
+internal class DedicatedServerConfiguration : IServerConfiguration
 {
-    public static Logger logger = Logger.getLogger("Minecraft");
+    public static Logger logger = Logger.getLogger("BetaSharp");
     private readonly Properties properties = new();
     private readonly java.io.File propertiesFile;
 
@@ -20,7 +21,7 @@ public class DedicatedServerConfiguration : IServerConfiguration
             {
                 properties.load(new FileInputStream(file));
             }
-            catch (java.lang.Exception ex)
+            catch (Exception ex)
             {
                 logger.log(Level.WARNING, "Failed to load " + file, (Throwable)ex);
                 generateNew();
@@ -48,11 +49,11 @@ public class DedicatedServerConfiguration : IServerConfiguration
     {
         try
         {
-            properties.store(new FileOutputStream(propertiesFile), "Minecraft server properties");
+            properties.store(new FileOutputStream(propertiesFile), "BetaSharp server properties");
         }
-        catch (java.lang.Exception ex)
+        catch (Exception ex)
         {
-            logger.log(Level.WARNING, "Failed to save " + propertiesFile, (Throwable)ex);
+            logger.log(Level.WARNING, "Failed to save " + propertiesFile, ex);
             generateNew();
         }
     }
@@ -84,7 +85,7 @@ public class DedicatedServerConfiguration : IServerConfiguration
         {
             return Integer.parseInt(getProperty(property, "" + fallback));
         }
-        catch (java.lang.Exception)
+        catch (Exception)
         {
             properties.setProperty(property, "" + fallback);
             return fallback;
@@ -102,7 +103,7 @@ public class DedicatedServerConfiguration : IServerConfiguration
         {
             return java.lang.Boolean.parseBoolean(getProperty(property, "" + fallback));
         }
-        catch (java.lang.Exception)
+        catch (Exception)
         {
             properties.setProperty(property, "" + fallback);
             return fallback;
@@ -122,6 +123,7 @@ public class DedicatedServerConfiguration : IServerConfiguration
 
     public string GetServerIp(string fallback) => GetProperty("server-ip", fallback);
     public int GetServerPort(int fallback) => GetProperty("server-port", fallback);
+    public bool GetDualStack(bool fallback) => GetProperty("dual-stack", fallback);
     public bool GetOnlineMode(bool fallback) => GetProperty("online-mode", fallback);
     public bool GetSpawnAnimals(bool fallback) => GetProperty("spawn-animals", fallback);
     public bool GetPvpEnabled(bool fallback) => GetProperty("pvp", fallback);
@@ -133,4 +135,5 @@ public class DedicatedServerConfiguration : IServerConfiguration
     public int GetMaxPlayers(int fallback) => GetProperty("max-players", fallback);
     public int GetViewDistance(int fallback) => GetProperty("view-distance", fallback);
     public bool GetWhiteList(bool fallback) => GetProperty("white-list", fallback);
+    public int GetSpawnRegionSize(int fallback) => GetProperty("spawn-region-size", fallback);
 }

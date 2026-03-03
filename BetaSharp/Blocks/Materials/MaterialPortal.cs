@@ -1,6 +1,6 @@
 namespace BetaSharp.Blocks.Materials
 {
-    public class MaterialPortal : Material
+    internal class MaterialPortal : Material
     {
         public override bool IsSolid => false;
         public override bool BlocksVision => false;

@@ -10,12 +10,9 @@ namespace BetaSharp.Client.Rendering.Entities;
 
 public class FallingBlockEntityRenderer : EntityRenderer
 {
-
-    private readonly BlockRenderer renderBlocks = new();
-
     public FallingBlockEntityRenderer()
     {
-        shadowRadius = 0.5F;
+        ShadowRadius = 0.5F;
     }
 
     public void doRenderFallingSand(EntityFallingSand var1, double var2, double var4, double var6, float var8, float var9)
@@ -26,7 +23,7 @@ public class FallingBlockEntityRenderer : EntityRenderer
         Block var10 = Block.Blocks[var1.blockId];
         World var11 = var1.getWorld();
         GLManager.GL.Disable(GLEnum.Lighting);
-        renderBlocks.renderBlockFallingSand(var10, var11, MathHelper.Floor(var1.x), MathHelper.Floor(var1.y), MathHelper.Floor(var1.z));
+        BlockRenderer.RenderBlockFallingSand(var10, var11, MathHelper.Floor(var1.x), MathHelper.Floor(var1.y), MathHelper.Floor(var1.z), Tessellator.instance);
         GLManager.GL.Enable(GLEnum.Lighting);
         GLManager.GL.PopMatrix();
     }

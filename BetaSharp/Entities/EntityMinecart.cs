@@ -4,14 +4,13 @@ using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.lang;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Entities;
 
 //TODO: BREAKING MINECART CRASHES THE GAME!!
 public class EntityMinecart : Entity, IInventory
 {
-    public static readonly Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityMinecart).TypeHandle);
     private ItemStack[] cargoItems;
     public int minecartCurrentDamage;
     public int minecartTimeSinceHit;
@@ -34,6 +33,9 @@ public class EntityMinecart : Entity, IInventory
         [[0, 0, -1], [-1, 0, 0]],
         [[0, 0, -1], [1, 0, 0]]
     ];
+
+    private readonly ILogger<EntityMinecart> _logger = Log.Instance.For<EntityMinecart>();
+
     private int field_9415_k;
     private double field_9414_l;
     private double field_9413_m;
@@ -164,7 +166,7 @@ public class EntityMinecart : Entity, IInventory
 
     public override void animateHurt()
     {
-        Log.Info("Animating hurt");
+        _logger.LogInformation("Animating hurt");
         minecartRockDirection = -minecartRockDirection;
         minecartTimeSinceHit = 10;
         minecartCurrentDamage += minecartCurrentDamage * 10;
@@ -593,7 +595,7 @@ public class EntityMinecart : Entity, IInventory
             }
 
             setRotation(yaw, pitch);
-            var var16 = world.getEntities(this, boundingBox.expand((double)0.2F, 0.0D, (double)0.2F));
+            var var16 = world.getEntities(this, boundingBox.Expand((double)0.2F, 0.0D, (double)0.2F));
             if (var16 != null && var16.Count > 0)
             {
                 for (int var51 = 0; var51 < var16.Count; ++var51)
@@ -934,7 +936,7 @@ public class EntityMinecart : Entity, IInventory
         }
     }
 
-    public void setStack(int slotIndex, ItemStack itemStack)
+    public void setStack(int slotIndex, ItemStack? itemStack)
     {
         cargoItems[slotIndex] = itemStack;
         if (itemStack != null && itemStack.count > getMaxCountPerStack())

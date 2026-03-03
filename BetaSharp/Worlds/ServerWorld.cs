@@ -17,10 +17,10 @@ public class ServerWorld : World
     public ServerChunkCache chunkCache;
     public bool bypassSpawnProtection = false;
     public bool savingDisabled;
-    private readonly MinecraftServer server;
+    private readonly BetaSharpServer server;
     private readonly Dictionary<int, Entity> entitiesById = [];
 
-    public ServerWorld(MinecraftServer server, WorldStorage storage, String name, int dimensionId, long seed) : base(storage, name, seed, Dimension.fromId(dimensionId))
+    public ServerWorld(BetaSharpServer server, IWorldStorage storage, String name, int dimensionId, long seed) : base(storage, name, seed, Dimension.FromId(dimensionId))
     {
         this.server = server;
     }
@@ -47,8 +47,8 @@ public class ServerWorld : World
 
     protected override ChunkSource CreateChunkCache()
     {
-        ChunkStorage var1 = storage.getChunkStorage(dimension);
-        chunkCache = new ServerChunkCache(this, var1, dimension.createChunkGenerator());
+        IChunkStorage var1 = Storage.GetChunkStorage(dimension);
+        chunkCache = new ServerChunkCache(this, var1, dimension.CreateChunkGenerator());
         return chunkCache;
     }
 
@@ -59,7 +59,7 @@ public class ServerWorld : World
         for (int var8 = 0; var8 < blockEntities.Count; var8++)
         {
             BlockEntity var9 = blockEntities[var8];
-            if (var9.x >= minX && var9.y >= minY && var9.z >= minZ && var9.x < maxX && var9.y < maxY && var9.z < maxZ)
+            if (var9.X >= minX && var9.Y >= minY && var9.Z >= minZ && var9.X < maxX && var9.Y < maxY && var9.Z < maxZ)
             {
                 var7.Add(var9);
             }
@@ -71,8 +71,8 @@ public class ServerWorld : World
 
     public override bool canInteract(EntityPlayer player, int x, int y, int z)
     {
-        int var5 = (int)MathHelper.Abs(x - properties.SpawnX);
-        int var6 = (int)MathHelper.Abs(z - properties.SpawnZ);
+        int var5 = (int)MathHelper.Abs(x - Properties.SpawnX);
+        int var6 = (int)MathHelper.Abs(z - Properties.SpawnZ);
         if (var5 > var6)
         {
             var6 = var5;
@@ -106,7 +106,7 @@ public class ServerWorld : World
     {
         if (base.spawnGlobalEntity(entity))
         {
-            server.playerManager.sendToAround(entity.x, entity.y, entity.z, 512.0, dimension.id, new GlobalEntitySpawnS2CPacket(entity));
+            server.playerManager.sendToAround(entity.x, entity.y, entity.z, 512.0, dimension.Id, new GlobalEntitySpawnS2CPacket(entity));
             return true;
         }
         else
@@ -119,7 +119,7 @@ public class ServerWorld : World
     public override void broadcastEntityEvent(Entity entity, byte @event)
     {
         EntityStatusS2CPacket var3 = new EntityStatusS2CPacket(entity.id, @event);
-        server.getEntityTracker(dimension.id).sendToAround(entity, var3);
+        server.getEntityTracker(dimension.Id).sendToAround(entity, var3);
     }
 
 
@@ -131,7 +131,7 @@ public class ServerWorld : World
         };
         var10.doExplosionA();
         var10.doExplosionB(false);
-        server.playerManager.sendToAround(x, y, z, 64.0, dimension.id, new ExplosionS2CPacket(x, y, z, power, var10.destroyedBlockPositions));
+        server.playerManager.sendToAround(x, y, z, 64.0, dimension.Id, new ExplosionS2CPacket(x, y, z, power, var10.destroyedBlockPositions));
         return var10;
     }
 
@@ -139,22 +139,22 @@ public class ServerWorld : World
     public override void playNoteBlockActionAt(int x, int y, int z, int soundType, int pitch)
     {
         base.playNoteBlockActionAt(x, y, z, soundType, pitch);
-        server.playerManager.sendToAround(x, y, z, 64.0, dimension.id, new PlayNoteSoundS2CPacket(x, y, z, soundType, pitch));
+        server.playerManager.sendToAround(x, y, z, 64.0, dimension.Id, new PlayNoteSoundS2CPacket(x, y, z, soundType, pitch));
     }
 
     public void forceSave()
     {
-        storage.forceSave();
+        Storage.ForceSave();
     }
 
 
     protected override void UpdateWeatherCycles()
     {
-        bool var1 = isRaining();
+        bool raining = isRaining();
         base.UpdateWeatherCycles();
-        if (var1 != isRaining())
+        if (raining != isRaining())
         {
-            if (var1)
+            if (raining)
             {
                 server.playerManager.sendToAll(new GameStateChangeS2CPacket(2));
             }

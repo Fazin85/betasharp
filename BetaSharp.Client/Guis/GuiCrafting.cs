@@ -15,20 +15,19 @@ public class GuiCrafting : GuiContainer
     public override void OnGuiClosed()
     {
         base.OnGuiClosed();
-        InventorySlots.onClosed(mc.player);
+        InventorySlots.onClosed(Game.player);
     }
 
     protected override void DrawGuiContainerForegroundLayer()
     {
-        FontRenderer.DrawString("Crafting", 28, 6, 0x404040);
-        FontRenderer.DrawString("Inventory", 8, _ySize - 96 + 2, 0x404040);
+        FontRenderer.DrawString("Crafting", 28, 6, Color.Gray40);
+        FontRenderer.DrawString("Inventory", 8, _ySize - 96 + 2, Color.Gray40);
     }
 
     protected override void DrawGuiContainerBackgroundLayer(float partialTicks)
     {
-        int textureId = mc.textureManager.GetTextureId("/gui/crafting.png");
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.textureManager.BindTexture(textureId);
+        Game.textureManager.BindTexture(Game.textureManager.GetTextureId("/gui/crafting.png"));
         int guiLeft = (Width - _xSize) / 2;
         int guiTop = (Height - _ySize) / 2;
         DrawTexturedModalRect(guiLeft, guiTop, 0, 0, _xSize, _ySize);

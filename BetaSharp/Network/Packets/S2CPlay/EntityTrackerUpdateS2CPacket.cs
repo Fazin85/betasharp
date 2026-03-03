@@ -1,48 +1,41 @@
-using java.io;
-using java.util;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
-public class EntityTrackerUpdateS2CPacket : Packet
+public class EntityTrackerUpdateS2CPacket() : PacketBaseEntity(PacketId.EntityTrackerUpdateS2C)
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityTrackerUpdateS2CPacket).TypeHandle);
+    private List<WatchableObject> trackedValues;
 
-    public int id;
-    private List trackedValues;
-
-    public EntityTrackerUpdateS2CPacket()
+    public EntityTrackerUpdateS2CPacket(int entityId, DataWatcher dataWatcher) : this()
     {
+        EntityId = entityId;
+        trackedValues = dataWatcher.GetDirtyEntries();
     }
 
-    public EntityTrackerUpdateS2CPacket(int entityId, DataWatcher dataWatcher)
+    public override void Read(NetworkStream stream)
     {
-        id = entityId;
-        trackedValues = dataWatcher.getDirtyEntries();
+        base.Read(stream);
+        trackedValues = DataWatcher.ReadWatchableObjects(stream);
     }
 
-    public override void read(DataInputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        id = stream.readInt();
-        trackedValues = DataWatcher.readWatchableObjects(stream);
+        base.Write(stream);
+        DataWatcher.WriteObjectsInListToStream(trackedValues, stream);
     }
 
-    public override void write(DataOutputStream stream)
-    {
-        stream.writeInt(id);
-        DataWatcher.writeObjectsInListToStream(trackedValues, stream);
-    }
-
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onEntityTrackerUpdate(this);
     }
 
-    public override int size()
+    public override int Size()
     {
+        // TODO : this is wrong
         return 5;
     }
 
-    public List getWatchedObjects()
+    public List<WatchableObject> GetWatchedObjects()
     {
         return trackedValues;
     }

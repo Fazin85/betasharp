@@ -5,7 +5,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
-public class BlockPumpkin : Block
+internal class BlockPumpkin : Block
 {
 
     private bool lit;

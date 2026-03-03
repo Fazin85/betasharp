@@ -6,7 +6,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Items;
 
-public class ItemDoor : Item
+internal class ItemDoor : Item
 {
 
     private Material doorMaterial;

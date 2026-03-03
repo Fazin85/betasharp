@@ -3,7 +3,7 @@ using java.nio;
 
 namespace BetaSharp.Util;
 
-public static class BufferHelper
+internal static class BufferHelper
 {
     // Cache reflection for performance
     private static readonly FieldInfo AddressField = typeof(java.nio.Buffer).GetField("address",

@@ -1,1 +1,0 @@
-﻿Most of this code was written by AI. You have been warned.

@@ -1,64 +1,56 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.Play;
 
-public class UpdateSignPacket : Packet
+public class UpdateSignPacket() : Packet(PacketId.UpdateSign)
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(UpdateSignPacket).TypeHandle);
-
     public int x;
     public int y;
     public int z;
     public string[] text;
 
-    public UpdateSignPacket()
+    public UpdateSignPacket(int x, int y, int z, string[] text) : this()
     {
-        worldPacket = true;
-    }
-
-    public UpdateSignPacket(int x, int y, int z, string[] text)
-    {
-        worldPacket = true;
         this.x = x;
         this.y = y;
         this.z = z;
         this.text = text;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        x = stream.readInt();
-        y = stream.readShort();
-        z = stream.readInt();
+        x = stream.ReadInt();
+        y = stream.ReadShort();
+        z = stream.ReadInt();
         text = new string[4];
 
         for (int i = 0; i < 4; ++i)
         {
 
-            text[i] = readString(stream, 15);
+            text[i] = stream.ReadLongString(15);
         }
 
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(x);
-        stream.writeShort(y);
-        stream.writeInt(z);
+        stream.WriteInt(x);
+        stream.WriteShort((short)y);
+        stream.WriteInt(z);
 
         for (int i = 0; i < 4; ++i)
         {
-            writeString(text[i], stream);
+            stream.WriteLongString(text[i]);
         }
 
     }
 
-    public override void apply(NetHandler networkHandler)
+    public override void Apply(NetHandler networkHandler)
     {
         networkHandler.handleUpdateSign(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         int size = 0;
 

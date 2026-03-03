@@ -4,7 +4,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Gen.Features;
 
-public class ClayOreFeature : Feature
+internal class ClayOreFeature : Feature
 {
 
     private readonly int _clayBlockId = Block.Clay.id;

@@ -37,7 +37,7 @@ public class BlockBed : Block
                 meta = world.getBlockMeta(x, y, z);
             }
 
-            if (!world.dimension.hasWorldSpawn())
+            if (!world.dimension.HasWorldSpawn)
             {
                 double posX = (double)x + 0.5D;
                 double posY = (double)y + 0.5D;
@@ -66,7 +66,7 @@ public class BlockBed : Block
                         if (otherPlayer.isSleeping())
                         {
                             Vec3i sleepingPos = otherPlayer.sleepingPos;
-                            if (sleepingPos.x == x && sleepingPos.y == y && sleepingPos.z == z)
+                            if (sleepingPos.X == x && sleepingPos.Y == y && sleepingPos.Z == z)
                             {
                                 occupant = otherPlayer;
                             }
@@ -117,9 +117,9 @@ public class BlockBed : Block
         }
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return 14;
+        return BlockRendererType.Bed;
     }
 
     public override bool isFullCube()
@@ -132,7 +132,7 @@ public class BlockBed : Block
         return false;
     }
 
-    public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
+    public override void updateBoundingBox(IBlockAccess iBlockAccess, int x, int y, int z)
     {
         setDefaultShape();
     }
@@ -199,7 +199,7 @@ public class BlockBed : Block
         world.setBlockMeta(x, y, z, blockMeta);
     }
 
-    public static Vec3i findWakeUpPosition(World world, int x, int y, int z, int skip)
+    public static Vec3i? findWakeUpPosition(World world, int x, int y, int z, int skip)
     {
         int blockMeta = world.getBlockMeta(x, y, z);
         int direction = getDirection(blockMeta);

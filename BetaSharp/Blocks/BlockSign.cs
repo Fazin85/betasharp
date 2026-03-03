@@ -3,21 +3,19 @@ using BetaSharp.Blocks.Materials;
 using BetaSharp.Items;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.lang;
 
 namespace BetaSharp.Blocks;
 
-public class BlockSign : BlockWithEntity
+internal class BlockSign : BlockWithEntity
 {
-    //TODO: SIGNS ARE NOT BEING RENDERED?
-    private Class blockEntityClazz;
-    private bool standing;
+    private readonly Type _blockEntityType;
+    private readonly bool _standing;
 
-    public BlockSign(int id, Class blockEntityClazz, bool standing) : base(id, Material.Wood)
+    public BlockSign(int id, Type blockEntityType, bool standing) : base(id, Material.Wood)
     {
-        this.standing = standing;
+        this._standing = standing;
         textureId = 4;
-        this.blockEntityClazz = blockEntityClazz;
+        this._blockEntityType = blockEntityType;
         float width = 0.25F;
         float height = 1.0F;
         setBoundingBox(0.5F - width, 0.0F, 0.5F - width, 0.5F + width, height, 0.5F + width);
@@ -34,11 +32,11 @@ public class BlockSign : BlockWithEntity
         return base.getBoundingBox(world, x, y, z);
     }
 
-    public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
+    public override void updateBoundingBox(IBlockAccess iBlockAccess, int x, int y, int z)
     {
-        if (!standing)
+        if (!_standing)
         {
-            int facing = blockView.getBlockMeta(x, y, z);
+            int facing = iBlockAccess.getBlockMeta(x, y, z);
             float topOffset = 9.0F / 32.0F;
             float bottomOffset = 25.0F / 32.0F;
             float minExtent = 0.0F;
@@ -64,13 +62,12 @@ public class BlockSign : BlockWithEntity
             {
                 setBoundingBox(0.0F, topOffset, minExtent, thickness, bottomOffset, maxExtent);
             }
-
         }
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return -1;
+        return BlockRendererType.Entity;
     }
 
     public override bool isFullCube()
@@ -87,11 +84,11 @@ public class BlockSign : BlockWithEntity
     {
         try
         {
-            return (BlockEntity)blockEntityClazz.newInstance();
+            return Activator.CreateInstance(_blockEntityType) as BlockEntity;
         }
-        catch (java.lang.Exception exception)
+        catch (Exception exception)
         {
-            throw new RuntimeException(exception);
+            throw new Exception("Unable to get new block entity", exception);
         }
     }
 
@@ -103,7 +100,7 @@ public class BlockSign : BlockWithEntity
     public override void neighborUpdate(World world, int x, int y, int z, int id)
     {
         bool shouldBreak = false;
-        if (standing)
+        if (_standing)
         {
             if (!world.getMaterial(x, y - 1, z).IsSolid)
             {

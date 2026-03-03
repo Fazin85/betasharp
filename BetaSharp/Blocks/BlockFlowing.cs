@@ -4,7 +4,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
-public class BlockFlowing : BlockFluid
+internal class BlockFlowing : BlockFluid
 {
     private readonly ThreadLocal<int> _adjacentSources = new(() => 0);
     private readonly ThreadLocal<bool[]> _spread = new(() => new bool[4]);
@@ -26,7 +26,7 @@ public class BlockFlowing : BlockFluid
     {
         int currentState = getLiquidState(world, x, y, z);
         sbyte spreadRate = 1;
-        if (material == Material.Lava && !world.dimension.evaporatesWater)
+        if (material == Material.Lava && !world.dimension.EvaporatesWater)
         {
             spreadRate = 2;
         }

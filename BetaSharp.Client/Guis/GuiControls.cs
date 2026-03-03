@@ -10,6 +10,8 @@ public class GuiControls : GuiScreen
     private readonly GameOptions _options;
     private int _selectedKey = -1;
     private const int ButtonDone = 200;
+    private const int SensitivityId = 300;
+    private const int InvertMouseId = 301;
 
     public GuiControls(GuiScreen parentScreen, GameOptions options)
     {
@@ -32,8 +34,8 @@ public class GuiControls : GuiScreen
             _controlList.Add(new GuiSmallButton(i, leftX + i % 2 * 160, Height / 6 + 24 * (i >> 1), 70, 20, _options.GetOptionDisplayString(i)));
         }
 
-        _controlList.Add(new GuiSlider(EnumOptions.SENSITIVITY.returnEnumOrdinal(), Width / 2 + 5, Height / 6 + 130, EnumOptions.SENSITIVITY, _options.GetKeyBinding(EnumOptions.SENSITIVITY), _options.GetOptionFloatValue(EnumOptions.SENSITIVITY)).Size(125, 20));
-        _controlList.Add(new GuiSmallButton(EnumOptions.INVERT_MOUSE.returnEnumOrdinal(), Width / 2 - 155, Height / 6 + 130, EnumOptions.INVERT_MOUSE, _options.GetKeyBinding(EnumOptions.INVERT_MOUSE)).Size(125, 20));
+        _controlList.Add(new GuiSlider(SensitivityId, Width / 2 + 5, Height / 6 + 130, _options.MouseSensitivityOption, _options.MouseSensitivityOption.GetDisplayString(translations), _options.MouseSensitivityOption.Value).Size(125, 20));
+        _controlList.Add(new GuiSmallButton(InvertMouseId, Width / 2 - 155, Height / 6 + 130, _options.InvertMouseOption, _options.InvertMouseOption.GetDisplayString(translations)).Size(125, 20));
 
         _controlList.Add(new GuiButton(ButtonDone, Width / 2 - 100, Height / 6 + 168, translations.TranslateKey("gui.done")));
         _screenTitle = translations.TranslateKey("controls.title");
@@ -49,16 +51,19 @@ public class GuiControls : GuiScreen
         switch (button.Id)
         {
             case ButtonDone:
-                mc.displayGuiScreen(_parentScreen);
+                Game.displayGuiScreen(_parentScreen);
                 break;
-            case int id when id == EnumOptions.INVERT_MOUSE.returnEnumOrdinal():
-                _options.InvertMouse = !_options.InvertMouse;
-                button.DisplayString = _options.GetKeyBinding(EnumOptions.INVERT_MOUSE);
+            case InvertMouseId:
+                _options.InvertMouseOption.Toggle();
+                button.DisplayString = _options.InvertMouseOption.GetDisplayString(TranslationStorage.Instance);
                 _options.SaveOptions();
                 break;
             default:
-                _selectedKey = button.Id;
-                button.DisplayString = "> " + _options.GetOptionDisplayString(button.Id) + " <";
+                if (button.Id >= 0 && button.Id < _options.KeyBindings.Length)
+                {
+                    _selectedKey = button.Id;
+                    button.DisplayString = "> " + _options.GetOptionDisplayString(button.Id) + " <";
+                }
                 break;
         }
 
@@ -82,12 +87,12 @@ public class GuiControls : GuiScreen
     public override void Render(int mouseX, int mouseY, float partialTicks)
     {
         DrawDefaultBackground();
-        DrawCenteredString(FontRenderer, _screenTitle, Width / 2, 20, 0xFFFFFF);
+        DrawCenteredString(FontRenderer, _screenTitle, Width / 2, 20, Color.White);
         int leftX = getLeftColumnX();
 
         for (int i = 0; i < _options.KeyBindings.Length; ++i)
         {
-            DrawString(FontRenderer, _options.GetKeyBindingDescription(i), leftX + i % 2 * 160 + 70 + 6, Height / 6 + 24 * (i >> 1) + 7, 0xFFFFFFFF);
+            DrawString(FontRenderer, _options.GetKeyBindingDescription(i), leftX + i % 2 * 160 + 70 + 6, Height / 6 + 24 * (i >> 1) + 7, Color.White);
         }
 
         base.Render(mouseX, mouseY, partialTicks);

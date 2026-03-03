@@ -1,6 +1,6 @@
 namespace BetaSharp.Worlds.Colors;
 
-public class GrassColors : java.lang.Object
+public class GrassColors
 {
     private static int[] grassBuffer = new int[65536];
 
@@ -15,5 +15,10 @@ public class GrassColors : java.lang.Object
         int var4 = (int)((1.0D - temperature) * 255.0D);
         int var5 = (int)((1.0D - downfall) * 255.0D);
         return grassBuffer[var5 << 8 | var4];
+    }
+
+    public static int getDefaultColor()
+    {
+        return 0x79C05A;
     }
 }

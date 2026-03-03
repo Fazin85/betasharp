@@ -26,7 +26,7 @@ public class BiomeSource
 
     public virtual Biome GetBiome(ChunkPos chunkPos)
     {
-        return GetBiome(chunkPos.x << 4, chunkPos.z << 4);
+        return GetBiome(chunkPos.X << 4, chunkPos.Z << 4);
     }
 
     public virtual Biome GetBiome(int x, int z)

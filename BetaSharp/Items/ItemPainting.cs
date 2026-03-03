@@ -3,7 +3,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Items;
 
-public class ItemPainting : Item
+internal class ItemPainting : Item
 {
 
     public ItemPainting(int id) : base(id)
@@ -39,7 +39,7 @@ public class ItemPainting : Item
             }
 
             EntityPainting painting = new EntityPainting(world, x, y, z, direction);
-            if (painting.canHangOnWall())
+            if (painting.CanHangOnWall())
             {
                 if (!world.isRemote)
                 {

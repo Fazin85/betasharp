@@ -4,7 +4,7 @@ using java.util;
 
 namespace BetaSharp.Client.Rendering.Core;
 
-public class GLAllocation : java.lang.Object
+public class GLAllocation
 {
     private static readonly List displayLists = new ArrayList();
     private static readonly List textureNames = new ArrayList();

@@ -5,7 +5,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
-public class BlockPressurePlate : Block
+internal class BlockPressurePlate : Block
 {
 
     private readonly PressurePlateActiviationRule activationRule;
@@ -98,12 +98,12 @@ public class BlockPressurePlate : Block
 
         if (activationRule == PressurePlateActiviationRule.MOBS)
         {
-            entitiesInBox = world.collectEntitiesByClass(EntityLiving.Class, new Box((double)((float)x + detectionInset), (double)y, (double)((float)z + detectionInset), (double)((float)(x + 1) - detectionInset), (double)y + 0.25D, (double)((float)(z + 1) - detectionInset)));
+            entitiesInBox = world.CollectEntitiesOfType<EntityLiving>(new Box((double)((float)x + detectionInset), (double)y, (double)((float)z + detectionInset), (double)((float)(x + 1) - detectionInset), (double)y + 0.25D, (double)((float)(z + 1) - detectionInset))).Cast<Entity>().ToList();
         }
 
         if (activationRule == PressurePlateActiviationRule.PLAYERS)
         {
-            entitiesInBox = world.collectEntitiesByClass(EntityPlayer.Class, new Box((double)((float)x + detectionInset), (double)y, (double)((float)z + detectionInset), (double)((float)(x + 1) - detectionInset), (double)y + 0.25D, (double)((float)(z + 1) - detectionInset)));
+            entitiesInBox = world.CollectEntitiesOfType<EntityPlayer>(new Box((double)((float)x + detectionInset), (double)y, (double)((float)z + detectionInset), (double)((float)(x + 1) - detectionInset), (double)y + 0.25D, (double)((float)(z + 1) - detectionInset))).Cast<Entity>().ToList();
         }
 
         if (entitiesInBox.Count > 0)
@@ -148,9 +148,9 @@ public class BlockPressurePlate : Block
         base.onBreak(world, x, y, z);
     }
 
-    public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
+    public override void updateBoundingBox(IBlockAccess iBlockAccess, int x, int y, int z)
     {
-        bool isPressed = blockView.getBlockMeta(x, y, z) == 1;
+        bool isPressed = iBlockAccess.getBlockMeta(x, y, z) == 1;
         float edgeInset = 1.0F / 16.0F;
         if (isPressed)
         {
@@ -163,9 +163,9 @@ public class BlockPressurePlate : Block
 
     }
 
-    public override bool isPoweringSide(BlockView blockView, int x, int y, int z, int side)
+    public override bool isPoweringSide(IBlockAccess iBlockAccess, int x, int y, int z, int side)
     {
-        return blockView.getBlockMeta(x, y, z) > 0;
+        return iBlockAccess.getBlockMeta(x, y, z) > 0;
     }
 
     public override bool isStrongPoweringSide(World world, int x, int y, int z, int side)

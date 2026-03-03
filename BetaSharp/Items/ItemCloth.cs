@@ -2,7 +2,7 @@ using BetaSharp.Blocks;
 
 namespace BetaSharp.Items;
 
-public class ItemCloth : ItemBlock
+internal class ItemCloth : ItemBlock
 {
 
     public ItemCloth(int id) : base(id)

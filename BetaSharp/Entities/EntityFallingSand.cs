@@ -2,14 +2,11 @@ using BetaSharp.Blocks;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using java.lang;
 
 namespace BetaSharp.Entities;
 
 public class EntityFallingSand : Entity
 {
-    public static readonly new Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(EntityFallingSand).TypeHandle);
-
     public int blockId;
     public int fallTime;
 

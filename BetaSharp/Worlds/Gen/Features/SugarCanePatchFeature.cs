@@ -4,7 +4,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Gen.Features;
 
-public class SugarCanePatchFeature : Feature
+internal class SugarCanePatchFeature : Feature
 {
 
     public override bool Generate(World world, JavaRandom rand, int x, int y, int z)

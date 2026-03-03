@@ -1,38 +1,32 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
-public class CloseScreenS2CPacket : Packet
+public class CloseScreenS2CPacket() : Packet(PacketId.CloseScreenS2C)
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(CloseScreenS2CPacket).TypeHandle);
-
     public int windowId;
 
-    public CloseScreenS2CPacket()
-    {
-    }
-
-    public CloseScreenS2CPacket(int windowId)
+    public CloseScreenS2CPacket(int windowId) : this()
     {
         this.windowId = windowId;
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onCloseScreen(this);
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        windowId = (sbyte)stream.readByte();
+        windowId = (sbyte)stream.ReadByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeByte(windowId);
+        stream.WriteByte((byte)windowId);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 1;
     }

@@ -13,7 +13,7 @@ namespace BetaSharp.Util;
 /// This encoding differs from standard UTF-8 in that it uses two-byte sequences
 /// to encode the null character (U+0000) instead of the single byte used in standard UTF-8.
 /// </remarks>
-public static class ModifiedUtf8
+internal static class ModifiedUtf8
 {
     /// <summary>
     /// Encodes a given string into a byte array using a modified UTF-8 encoding.

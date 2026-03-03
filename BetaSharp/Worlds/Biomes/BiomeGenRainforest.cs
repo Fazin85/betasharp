@@ -3,7 +3,7 @@ using BetaSharp.Worlds.Gen.Features;
 
 namespace BetaSharp.Worlds.Biomes;
 
-public class BiomeGenRainforest : Biome
+internal class BiomeGenRainforest : Biome
 {
 
     public override Feature GetRandomWorldGenForTrees(JavaRandom rand)

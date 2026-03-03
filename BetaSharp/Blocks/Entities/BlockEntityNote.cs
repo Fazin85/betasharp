@@ -4,7 +4,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks.Entities;
 
-public class BlockEntityNote : BlockEntity
+internal class BlockEntityNote : BlockEntity
 {
     public sbyte note;
     public bool powered = false;

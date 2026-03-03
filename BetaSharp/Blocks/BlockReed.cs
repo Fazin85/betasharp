@@ -5,7 +5,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
-public class BlockReed : Block
+internal class BlockReed : Block
 {
 
     public BlockReed(int id, int textureId) : base(id, Material.Plant)
@@ -88,8 +88,8 @@ public class BlockReed : Block
         return false;
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return 1;
+        return BlockRendererType.Reed;
     }
 }

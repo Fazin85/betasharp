@@ -5,7 +5,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Blocks;
 
-public class BlockSand : Block
+internal class BlockSand : Block
 {
     private static readonly ThreadLocal<bool> s_fallInstantly = new(() => false);
 

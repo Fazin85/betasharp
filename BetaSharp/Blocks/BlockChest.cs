@@ -9,7 +9,7 @@ using BetaSharp.Worlds;
 namespace BetaSharp.Blocks;
 
 //NOTE: CHESTS DON'T ROTATE BASED ON PLAYER ORIENTATION, THIS IS VANILLA BEHAVIOR, NOT A BUG
-public class BlockChest : BlockWithEntity
+internal class BlockChest : BlockWithEntity
 {
     private JavaRandom random = new();
 
@@ -18,7 +18,7 @@ public class BlockChest : BlockWithEntity
         textureId = 26;
     }
 
-    public override int getTextureId(BlockView blockView, int x, int y, int z, int side)
+    public override int getTextureId(IBlockAccess iBlockAccess, int x, int y, int z, int side)
     {
         if (side == 1)
         {
@@ -30,10 +30,10 @@ public class BlockChest : BlockWithEntity
         }
         else
         {
-            int blockNorth = blockView.getBlockId(x, y, z - 1);
-            int blockSouth = blockView.getBlockId(x, y, z + 1);
-            int blockWest = blockView.getBlockId(x - 1, y, z);
-            int blockEast = blockView.getBlockId(x + 1, y, z);
+            int blockNorth = iBlockAccess.getBlockId(x, y, z - 1);
+            int blockSouth = iBlockAccess.getBlockId(x, y, z + 1);
+            int blockWest = iBlockAccess.getBlockId(x - 1, y, z);
+            int blockEast = iBlockAccess.getBlockId(x + 1, y, z);
             int textureOffset;
             int cornerBlock1;
             int cornerBlock2;
@@ -73,8 +73,8 @@ public class BlockChest : BlockWithEntity
                         textureOffset = -1;
                     }
 
-                    cornerBlock1 = blockView.getBlockId(blockWest == id ? x - 1 : x + 1, y, z - 1);
-                    cornerBlock2 = blockView.getBlockId(blockWest == id ? x - 1 : x + 1, y, z + 1);
+                    cornerBlock1 = iBlockAccess.getBlockId(blockWest == id ? x - 1 : x + 1, y, z - 1);
+                    cornerBlock2 = iBlockAccess.getBlockId(blockWest == id ? x - 1 : x + 1, y, z + 1);
                     if (side == 3)
                     {
                         textureOffset = -1 - textureOffset;
@@ -106,8 +106,8 @@ public class BlockChest : BlockWithEntity
                     textureOffset = -1;
                 }
 
-                cornerBlock1 = blockView.getBlockId(x - 1, y, blockNorth == id ? z - 1 : z + 1);
-                cornerBlock2 = blockView.getBlockId(x + 1, y, blockNorth == id ? z - 1 : z + 1);
+                cornerBlock1 = iBlockAccess.getBlockId(x - 1, y, blockNorth == id ? z - 1 : z + 1);
+                cornerBlock2 = iBlockAccess.getBlockId(x + 1, y, blockNorth == id ? z - 1 : z + 1);
                 if (side == 4)
                 {
                     textureOffset = -1 - textureOffset;
@@ -206,7 +206,7 @@ public class BlockChest : BlockWithEntity
 
     public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
     {
-        java.lang.Object chestInventory = (BlockEntityChest)world.getBlockEntity(x, y, z);
+        IInventory chestInventory = (BlockEntityChest)world.getBlockEntity(x, y, z);
         if (world.shouldSuffocate(x, y + 1, z))
         {
             return true;

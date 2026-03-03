@@ -1,0 +1,14 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:BetaSharp.Launcher.Features.Splash"
+
+             x:Class="BetaSharp.Launcher.Features.Splash.SplashView" x:DataType="local:SplashViewModel">
+
+    <Interaction.Behaviors>
+        <EventTriggerBehavior EventName="AttachedToVisualTree">
+            <InvokeCommandAction Command="{Binding InitializeCommand}" />
+        </EventTriggerBehavior>
+    </Interaction.Behaviors>
+
+    <Image Source="../../logo.png" VerticalAlignment="Center" Width="175" />
+</UserControl>

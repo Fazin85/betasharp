@@ -3,7 +3,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Blocks;
 
-public class BlockGlass : BlockBreakable
+internal class BlockGlass : BlockBreakable
 {
     public BlockGlass(int id, int texture, Material material, bool bl) : base(id, texture, material, bl)
     {

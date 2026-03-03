@@ -2,7 +2,7 @@ using BetaSharp.Entities;
 
 namespace BetaSharp.Worlds.Biomes;
 
-public class BiomeGenHell : Biome
+internal class BiomeGenHell : Biome
 {
 
     public BiomeGenHell()
@@ -11,7 +11,7 @@ public class BiomeGenHell : Biome
         CreatureList.Clear();
         WaterCreatureList.Clear();
 
-        MonsterList.Add(new SpawnListEntry(EntityGhast.Class, 10));
-        MonsterList.Add(new SpawnListEntry(EntityPigZombie.Class, 10));
+        MonsterList.Add(new SpawnListEntry(w => new EntityGhast(w)), 10);
+        MonsterList.Add(new SpawnListEntry(w => new EntityPigZombie(w)), 10);
     }
 }

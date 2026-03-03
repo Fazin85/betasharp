@@ -1,21 +1,15 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
-public class OpenScreenS2CPacket : Packet
+public class OpenScreenS2CPacket() : Packet(PacketId.OpenScreenS2C)
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(OpenScreenS2CPacket).TypeHandle);
-
     public int syncId;
     public int screenHandlerId;
     public string name;
     public int slotsCount;
 
-    public OpenScreenS2CPacket()
-    {
-    }
-
-    public OpenScreenS2CPacket(int syncId, int screenHandlerId, String name, int size)
+    public OpenScreenS2CPacket(int syncId, int screenHandlerId, String name, int size) : this()
     {
         this.syncId = syncId;
         this.screenHandlerId = screenHandlerId;
@@ -23,28 +17,29 @@ public class OpenScreenS2CPacket : Packet
         slotsCount = size;
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onOpenScreen(this);
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        syncId = (sbyte)stream.readByte();
-        screenHandlerId = (sbyte)stream.readByte();
-        name = stream.readUTF();
-        slotsCount = (sbyte)stream.readByte();
+        syncId = (sbyte)stream.ReadByte();
+        screenHandlerId = (sbyte)stream.ReadByte();
+        name = stream.ReadString();
+        slotsCount = (sbyte)stream.ReadByte();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeByte(syncId);
-        stream.writeByte(screenHandlerId);
-        stream.writeUTF(name);
-        stream.writeByte(slotsCount);
+        stream.WriteByte((byte)syncId);
+        stream.WriteByte((byte)screenHandlerId);
+        // TODO: This writes a 16bit array. should index inventory, or write them as base64 or a 8bit string.
+        stream.WriteString(name);
+        stream.WriteByte((byte)slotsCount);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 3 + name.Length;
     }

@@ -15,17 +15,18 @@ namespace BetaSharp.Server;
 public class PlayerManager
 {
     public List<ServerPlayerEntity> players = [];
-    private readonly MinecraftServer _server;
+    private readonly BetaSharpServer _server;
     private readonly ChunkMap[] _chunkMaps;
     private readonly int _maxPlayerCount;
     protected readonly HashSet<string> bannedPlayers = [];
     protected readonly HashSet<string> bannedIps = [];
     protected readonly HashSet<string> ops = [];
     protected readonly HashSet<string> whitelist = [];
-    private PlayerSaveHandler _saveHandler;
+    private IPlayerStorage _saveHandler;
     private readonly bool _whitelistEnabled;
+    private volatile int _pendingViewDistance = -1;
 
-    public PlayerManager(MinecraftServer server)
+    public PlayerManager(BetaSharpServer server)
     {
         _chunkMaps = new ChunkMap[2];
         _server = server;
@@ -38,16 +39,16 @@ public class PlayerManager
 
     public void saveAllPlayers(ServerWorld[] world)
     {
-        _saveHandler = world[0].getWorldStorage().getPlayerSaveHandler();
+        _saveHandler = world[0].getWorldStorage().GetPlayerStorage();
     }
 
     public void updatePlayerAfterDimensionChange(ServerPlayerEntity player)
     {
-        _chunkMaps[0].removePlayer(player);
-        _chunkMaps[1].removePlayer(player);
-        getChunkMap(player.dimensionId).addPlayer(player);
+        // Removal from the source chunk map is handled by sendPlayerToDimension before coordinate scaling.
+        player.activeChunks.Clear();
+        GetChunkMap(player.dimensionId).addPlayer(player);
         ServerWorld var2 = _server.getWorld(player.dimensionId);
-        var2.chunkCache.loadChunk((int)player.x >> 4, (int)player.z >> 4);
+        var2.chunkCache.LoadChunk((int)player.x >> 4, (int)player.z >> 4);
     }
 
     public int getBlockViewDistance()
@@ -55,42 +56,47 @@ public class PlayerManager
         return _chunkMaps[0].getBlockViewDistance();
     }
 
-    private ChunkMap getChunkMap(int dimensionId)
+    public void SetViewDistance(int newDistance)
+    {
+        _pendingViewDistance = newDistance;
+    }
+
+    private ChunkMap GetChunkMap(int dimensionId)
     {
         return dimensionId == -1 ? _chunkMaps[1] : _chunkMaps[0];
     }
 
     public void loadPlayerData(ServerPlayerEntity player)
     {
-        _saveHandler.loadPlayerData(player);
+        _saveHandler.LoadPlayerData(player);
     }
 
     public void addPlayer(ServerPlayerEntity player)
     {
         players.Add(player);
         ServerWorld var2 = _server.getWorld(player.dimensionId);
-        var2.chunkCache.loadChunk((int)player.x >> 4, (int)player.z >> 4);
+        var2.chunkCache.LoadChunk((int)player.x >> 4, (int)player.z >> 4);
 
-        while (var2.getEntityCollisions(player, player.boundingBox).Count != 0)
+        while (var2.GetEntityCollisions(player, player.boundingBox).Count != 0)
         {
             player.setPosition(player.x, player.y + 1.0, player.z);
         }
 
         var2.SpawnEntity(player);
-        getChunkMap(player.dimensionId).addPlayer(player);
+        GetChunkMap(player.dimensionId).addPlayer(player);
     }
 
     public void updatePlayerChunks(ServerPlayerEntity player)
     {
-        getChunkMap(player.dimensionId).updatePlayerChunks(player);
+        GetChunkMap(player.dimensionId).updatePlayerChunks(player);
     }
 
     public void disconnect(ServerPlayerEntity player)
     {
-        _saveHandler.savePlayerData(player);
+        _saveHandler.SavePlayerData(player);
         _server.getWorld(player.dimensionId).Remove(player);
         players.Remove(player);
-        getChunkMap(player.dimensionId).removePlayer(player);
+        GetChunkMap(player.dimensionId).removePlayer(player);
     }
 
     public ServerPlayerEntity connectPlayer(ServerLoginNetworkHandler loginNetworkHandler, string name)
@@ -107,7 +113,8 @@ public class PlayerManager
         }
         else
         {
-            string var3 = loginNetworkHandler.connection.getAddress().toString();
+            // TODO: This does not work with IPEndpoint's ToString
+            string var3 = loginNetworkHandler.connection.getAddress().ToString();
             var3 = var3.Substring(var3.IndexOf("/") + 1);
             var3 = var3.Substring(0, var3.IndexOf(":"));
             if (bannedIps.Contains(var3))
@@ -140,10 +147,10 @@ public class PlayerManager
     {
         _server.getEntityTracker(player.dimensionId).removeListener(player);
         _server.getEntityTracker(player.dimensionId).onEntityRemoved(player);
-        getChunkMap(player.dimensionId).removePlayer(player);
+        GetChunkMap(player.dimensionId).removePlayer(player);
         players.Remove(player);
         _server.getWorld(player.dimensionId).serverRemove(player);
-        Vec3i var3 = player.getSpawnPos();
+        Vec3i? var3 = player.getSpawnPos();
         player.dimensionId = dimensionId;
         ServerPlayerEntity var4 = new(
             _server, _server.getWorld(player.dimensionId), player.name, new ServerPlayerInteractionManager(_server.getWorld(player.dimensionId))
@@ -153,13 +160,14 @@ public class PlayerManager
             networkHandler = player.networkHandler
         };
         ServerWorld var5 = _server.getWorld(player.dimensionId);
-        if (var3 != null)
+        if (var3 is (int x, int y, int z))
         {
-            Vec3i var6 = EntityPlayer.findRespawnPosition(_server.getWorld(player.dimensionId), var3);
-            if (var6 != null)
+            Vec3i? var6 = EntityPlayer.findRespawnPosition(_server.getWorld(player.dimensionId), var3);
+            if (var6 is (int x2, int y2, int z2))
             {
-                var4.setPositionAndAnglesKeepPrevAngles(var6.x + 0.5F, var6.y + 0.1F, var6.z + 0.5F, 0.0F, 0.0F);
+                var4.setPositionAndAnglesKeepPrevAngles(x2 + 0.5F, y2 + 0.1F, z2 + 0.5F, 0.0F, 0.0F);
                 var4.setSpawnPos(var3);
+
             }
             else
             {
@@ -167,9 +175,9 @@ public class PlayerManager
             }
         }
 
-        var5.chunkCache.loadChunk((int)var4.x >> 4, (int)var4.z >> 4);
+        var5.chunkCache.LoadChunk((int)var4.x >> 4, (int)var4.z >> 4);
 
-        while (var5.getEntityCollisions(var4, var4.boundingBox).Count != 0)
+        while (var5.GetEntityCollisions(var4, var4.boundingBox).Count != 0)
         {
             var4.setPosition(var4.x, var4.y + 1.0, var4.z);
         }
@@ -177,11 +185,10 @@ public class PlayerManager
         var4.networkHandler.sendPacket(new PlayerRespawnPacket((sbyte)var4.dimensionId));
         var4.networkHandler.teleport(var4.x, var4.y, var4.z, var4.yaw, var4.pitch);
         sendWorldInfo(var4, var5);
-        getChunkMap(var4.dimensionId).addPlayer(var4);
+        GetChunkMap(var4.dimensionId).addPlayer(var4);
         var5.SpawnEntity(var4);
         players.Add(var4);
         var4.initScreenHandler();
-        var4.m_41544513();
         return var4;
     }
 
@@ -202,13 +209,18 @@ public class PlayerManager
 
     public void sendPlayerToDimension(ServerPlayerEntity player, int targetDim)
     {
-        ServerWorld currentWorld = _server.getWorld(player.dimensionId);
+        int sourceDim = player.dimensionId;
+        ServerWorld currentWorld = _server.getWorld(sourceDim);
         ServerWorld targetWorld = _server.getWorld(targetDim);
 
         if (targetWorld == null)
         {
             return;
         }
+
+        // Remove from source chunk map NOW, while player.x/z are still in
+        // source-dimension space. 
+        GetChunkMap(sourceDim).removePlayer(player);
 
         player.dimensionId = targetDim;
         player.networkHandler.sendPacket(new PlayerRespawnPacket((sbyte)player.dimensionId));
@@ -245,8 +257,12 @@ public class PlayerManager
             player.setPositionAndAnglesKeepPrevAngles(x, player.y, z, player.yaw, player.pitch);
             targetWorld.updateEntity(player, false);
             targetWorld.chunkCache.forceLoad = true;
-            new PortalForcer().moveToPortal(targetWorld, player);
+            new PortalForcer().MoveToPortal(targetWorld, player);
             targetWorld.chunkCache.forceLoad = false;
+
+            // Fully drain lighting updates generated during portal chunk
+            // creation before the chunks are queued for the client. 
+            while (targetWorld.doLightingUpdates()) { }
         }
 
         updatePlayerAfterDimensionChange(player);
@@ -258,6 +274,14 @@ public class PlayerManager
 
     public void updateAllChunks()
     {
+        int viewDistanceUpdate = _pendingViewDistance;
+        if (viewDistanceUpdate != -1)
+        {
+            _chunkMaps[0].SetViewDistance(viewDistanceUpdate);
+            _chunkMaps[1].SetViewDistance(viewDistanceUpdate);
+            _pendingViewDistance = -1;
+        }
+
         for (int var1 = 0; var1 < _chunkMaps.Length; var1++)
         {
             _chunkMaps[var1].updateChunks();
@@ -266,7 +290,7 @@ public class PlayerManager
 
     public void markDirty(int x, int y, int z, int dimensionId)
     {
-        getChunkMap(dimensionId).markBlockForUpdate(x, y, z);
+        GetChunkMap(dimensionId).markBlockForUpdate(x, y, z);
     }
 
     public void sendToAll(Packet packet)
@@ -292,19 +316,7 @@ public class PlayerManager
 
     public string getPlayerList()
     {
-        string var1 = "";
-
-        for (int var2 = 0; var2 < players.Count; var2++)
-        {
-            if (var2 > 0)
-            {
-                var1 += ", ";
-            }
-
-            var1 += players[var2].name;
-        }
-
-        return var1;
+        return string.Join(", ", players.ConvertAll(p => p.name));
     }
 
     public void banPlayer(string name)
@@ -464,7 +476,7 @@ public class PlayerManager
     {
         for (int var1 = 0; var1 < players.Count; var1++)
         {
-            _saveHandler.savePlayerData(players[var1]);
+            _saveHandler.SavePlayerData(players[var1]);
         }
     }
 

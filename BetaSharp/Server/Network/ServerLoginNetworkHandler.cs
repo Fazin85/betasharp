@@ -1,3 +1,4 @@
+using System.Net.Sockets;
 using BetaSharp.Entities;
 using BetaSharp.Network;
 using BetaSharp.Network.Packets;
@@ -7,8 +8,8 @@ using BetaSharp.Server.Internal;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using java.lang;
-using java.net;
-using java.util.logging;
+using Microsoft.Extensions.Logging;
+using Exception = System.Exception;
 
 namespace BetaSharp.Server.Network;
 
@@ -17,20 +18,22 @@ public class ServerLoginNetworkHandler : NetHandler
     private static JavaRandom random = new();
     public Connection connection;
     public bool closed;
-    private MinecraftServer server;
+    private BetaSharpServer server;
     private int loginTicks;
     private string username;
     private LoginHelloPacket loginPacket;
     private string serverId = "";
 
-    public ServerLoginNetworkHandler(MinecraftServer server, Socket socket, string name)
+    private readonly ILogger<ServerLoginNetworkHandler> _logger = Log.Instance.For<ServerLoginNetworkHandler>();
+
+    public ServerLoginNetworkHandler(BetaSharpServer server, Socket socket, string name)
     {
         this.server = server;
         connection = new Connection(socket, name, this);
         connection.lag = 0;
     }
 
-    public ServerLoginNetworkHandler(MinecraftServer server, Connection connection)
+    public ServerLoginNetworkHandler(BetaSharpServer server, Connection connection)
     {
         this.server = server;
         this.connection = connection;
@@ -60,14 +63,14 @@ public class ServerLoginNetworkHandler : NetHandler
     {
         try
         {
-            Log.Info($"Disconnecting {getConnectionInfo()}: {reason}");
+            _logger.LogInformation($"Disconnecting {getConnectionInfo()}: {reason}");
             connection.sendPacket(new DisconnectPacket(reason));
             connection.disconnect();
             closed = true;
         }
-        catch (java.lang.Exception ex)
+        catch (Exception e)
         {
-            ex.printStackTrace();
+            _logger.LogError(e, e.Message);
         }
     }
 
@@ -129,12 +132,12 @@ public class ServerLoginNetworkHandler : NetHandler
         {
             server.playerManager.loadPlayerData(ent);
             ent.setWorld(server.getWorld(ent.dimensionId));
-            Log.Info($"{getConnectionInfo()} logged in with entity id {ent.id} at ({ent.x}, {ent.y}, {ent.z})");
+            _logger.LogInformation($"{getConnectionInfo()} logged in with entity id {ent.id} at ({ent.x}, {ent.y}, {ent.z})");
             ServerWorld var3 = server.getWorld(ent.dimensionId);
             Vec3i var4 = var3.getSpawnPos();
             ServerPlayNetworkHandler handler = new ServerPlayNetworkHandler(server, connection, ent);
-            handler.sendPacket(new LoginHelloPacket("", ent.id, var3.getSeed(), (sbyte)var3.dimension.id));
-            handler.sendPacket(new PlayerSpawnPositionS2CPacket(var4.x, var4.y, var4.z));
+            handler.sendPacket(new LoginHelloPacket("", ent.id, var3.getSeed(), (sbyte)var3.dimension.Id));
+            handler.sendPacket(new PlayerSpawnPositionS2CPacket(var4.X, var4.Y, var4.Z));
             server.playerManager.sendWorldInfo(ent, var3);
             server.playerManager.sendToAll(new ChatMessagePacket("§e" + ent.name + " joined the game."));
             server.playerManager.addPlayer(ent);
@@ -149,7 +152,7 @@ public class ServerLoginNetworkHandler : NetHandler
 
     public override void onDisconnected(string reason, object[]? objects)
     {
-        Log.Info($"{getConnectionInfo()} lost connection");
+        _logger.LogInformation($"{getConnectionInfo()} lost connection");
         closed = true;
     }
 
@@ -160,8 +163,11 @@ public class ServerLoginNetworkHandler : NetHandler
 
     public string getConnectionInfo()
     {
-        if (connection.getAddress() == null) return "Internal";
-        return username != null ? username + " [" + connection.getAddress()!.toString() + "]" : connection.getAddress()!.toString();
+        var endPoint = connection.getAddress();
+
+        if (endPoint == null) return "Internal";
+
+        return !string.IsNullOrWhiteSpace(username) ? username : endPoint.ToString();
     }
 
     public override bool isServerSide()

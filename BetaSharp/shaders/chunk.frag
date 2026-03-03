@@ -1,4 +1,4 @@
-﻿#version 460
+﻿#version 410
 
 in vec4 vertexColor;
 in vec2 texCoord;
@@ -12,6 +12,9 @@ uniform float fogDensity;
 uniform float fogStart;
 uniform float fogEnd;
 uniform int fogMode;
+
+uniform bool chunkFadeEnabled;
+uniform float fadeProgress;
 
 void main() 
 {
@@ -36,5 +39,14 @@ void main()
     
     fogFactor = clamp(fogFactor, 0.0, 1.0);
     
-    FragColor = mix(fogColor, finalColor, fogFactor);
+    vec4 fogAppliedColor = mix(fogColor, finalColor, fogFactor);
+
+    if (chunkFadeEnabled)
+    {
+        FragColor = mix(fogColor, fogAppliedColor, fadeProgress);
+    }
+    else
+    {
+        FragColor = fogAppliedColor;
+    }
 }

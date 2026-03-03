@@ -1,5 +1,5 @@
 namespace BetaSharp.Entities;
 
-public interface SpawnableEntity
+internal interface SpawnableEntity
 {
 }

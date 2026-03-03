@@ -3,7 +3,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
-public class BlockSponge : Block
+internal class BlockSponge : Block
 {
     public BlockSponge(int id) : base(id, Material.Sponge)
     {

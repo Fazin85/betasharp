@@ -3,7 +3,7 @@ using BetaSharp.Worlds.Colors;
 
 namespace BetaSharp.Items;
 
-public class ItemLeaves : ItemBlock
+internal class ItemLeaves : ItemBlock
 {
 
     public ItemLeaves(int id) : base(id)

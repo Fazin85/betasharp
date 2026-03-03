@@ -2,7 +2,7 @@ using Silk.NET.Maths;
 
 namespace BetaSharp.Client.Rendering.Core;
 
-public struct PositionTextureVertex
+internal struct PositionTextureVertex
 {
     public Vector3D<double> vector3D;
     public float texturePositionX;

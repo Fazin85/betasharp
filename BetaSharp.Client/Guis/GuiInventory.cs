@@ -1,4 +1,5 @@
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Client.Rendering.Entities;
 using BetaSharp.Entities;
 using Silk.NET.OpenGL.Legacy;
@@ -14,7 +15,7 @@ public class GuiInventory : GuiContainer
     public GuiInventory(EntityPlayer player) : base(player.playerScreenHandler)
     {
         AllowUserInput = true;
-        player.increaseStat(BetaSharp.Achievements.OpenInventory, 1);
+        player.increaseStat(global::BetaSharp.Achievements.OpenInventory, 1);
     }
 
     public override void InitGui()
@@ -24,7 +25,7 @@ public class GuiInventory : GuiContainer
 
     protected override void DrawGuiContainerForegroundLayer()
     {
-        FontRenderer.DrawString("Crafting", 86, 16, 0x404040);
+        FontRenderer.DrawString("Crafting", 86, 16, Color.Gray40);
     }
 
     public override void Render(int mouseX, int mouseY, float partialTicks)
@@ -36,9 +37,9 @@ public class GuiInventory : GuiContainer
 
     protected override void DrawGuiContainerBackgroundLayer(float partialTicks)
     {
-        int textureId = mc.textureManager.GetTextureId("/gui/inventory.png");
+        TextureHandle texture = Game.textureManager.GetTextureId("/gui/inventory.png");
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.textureManager.BindTexture(textureId);
+        Game.textureManager.BindTexture(texture);
 
         int guiLeft = (Width - _xSize) / 2;
         int guiTop = (Height - _ySize) / 2;
@@ -53,9 +54,9 @@ public class GuiInventory : GuiContainer
         GLManager.GL.Scale(-scale, scale, scale);
         GLManager.GL.Rotate(180.0F, 0.0F, 0.0F, 1.0F);
 
-        float bodyYaw = mc.player.bodyYaw;
-        float headYaw = mc.player.yaw;
-        float headPitch = mc.player.pitch;
+        float bodyYaw = Game.player.bodyYaw;
+        float headYaw = Game.player.yaw;
+        float headPitch = Game.player.pitch;
         float lookX = guiLeft + 51 - _mouseX;
         float lookY = guiTop + 75 - 50 - _mouseY;
 
@@ -64,19 +65,19 @@ public class GuiInventory : GuiContainer
         GLManager.GL.Rotate(-135.0F, 0.0F, 1.0F, 0.0F);
         GLManager.GL.Rotate(-(float)Math.Atan(lookY / 40.0F) * 20.0F, 1.0F, 0.0F, 0.0F);
 
-        mc.player.bodyYaw = (float)Math.Atan(lookX / 40.0F) * 20.0F;
-        mc.player.yaw = (float)Math.Atan(lookX / 40.0F) * 40.0F;
-        mc.player.pitch = -(float)Math.Atan(lookY / 40.0F) * 20.0F;
-        mc.player.minBrightness = 1.0F;
+        Game.player.bodyYaw = (float)Math.Atan(lookX / 40.0F) * 20.0F;
+        Game.player.yaw = (float)Math.Atan(lookX / 40.0F) * 40.0F;
+        Game.player.pitch = -(float)Math.Atan(lookY / 40.0F) * 20.0F;
+        Game.player.minBrightness = 1.0F;
 
-        GLManager.GL.Translate(0.0F, mc.player.standingEyeHeight, 0.0F);
+        GLManager.GL.Translate(0.0F, Game.player.standingEyeHeight, 0.0F);
         EntityRenderDispatcher.instance.playerViewY = 180.0F;
-        EntityRenderDispatcher.instance.renderEntityWithPosYaw(mc.player, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+        EntityRenderDispatcher.instance.renderEntityWithPosYaw(Game.player, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
 
-        mc.player.minBrightness = 0.0F;
-        mc.player.bodyYaw = bodyYaw;
-        mc.player.yaw = headYaw;
-        mc.player.pitch = headPitch;
+        Game.player.minBrightness = 0.0F;
+        Game.player.bodyYaw = bodyYaw;
+        Game.player.yaw = headYaw;
+        Game.player.pitch = headPitch;
 
         GLManager.GL.PopMatrix();
         Lighting.turnOff();
@@ -87,12 +88,12 @@ public class GuiInventory : GuiContainer
     {
         if (btt.Id == 0)
         {
-            mc.displayGuiScreen(new GuiAchievements(mc.statFileWriter));
+            Game.displayGuiScreen(new GuiAchievements(Game.statFileWriter));
         }
 
         if (btt.Id == 1)
         {
-            mc.displayGuiScreen(new GuiStats(this, mc.statFileWriter));
+            Game.displayGuiScreen(new GuiStats(this, Game.statFileWriter));
         }
 
     }

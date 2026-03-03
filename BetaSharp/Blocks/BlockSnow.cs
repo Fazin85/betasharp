@@ -6,7 +6,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
-public class BlockSnow : Block
+internal class BlockSnow : Block
 {
 
     public BlockSnow(int id, int textureId) : base(id, textureId, Material.SnowLayer)
@@ -19,7 +19,7 @@ public class BlockSnow : Block
     {
         int meta = world.getBlockMeta(x, y, z) & 7;
         return meta >= 3 ?
-            new Box(x + BoundingBox.minX, y + BoundingBox.minY, z + BoundingBox.minZ, x + BoundingBox.maxX, (double)((float)y + 0.5F), z + BoundingBox.maxZ) :
+            new Box(x + BoundingBox.MinX, y + BoundingBox.MinY, z + BoundingBox.MinZ, x + BoundingBox.MaxX, (double)((float)y + 0.5F), z + BoundingBox.MaxZ) :
             null;
     }
 
@@ -33,9 +33,9 @@ public class BlockSnow : Block
         return false;
     }
 
-    public override void updateBoundingBox(BlockView blockView, int x, int y, int z)
+    public override void updateBoundingBox(IBlockAccess iBlockAccess, int x, int y, int z)
     {
-        int meta = blockView.getBlockMeta(x, y, z) & 7;
+        int meta = iBlockAccess.getBlockMeta(x, y, z) & 7;
         float height = (float)(2 * (1 + meta)) / 16.0F;
         setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, height, 1.0F);
     }
@@ -76,7 +76,7 @@ public class BlockSnow : Block
         entityItem.delayBeforeCanPickup = 10;
         world.SpawnEntity(entityItem);
         world.setBlock(x, y, z, 0);
-        player.increaseStat(Stats.Stats.mineBlockStatArray[id], 1);
+        player.increaseStat(Stats.Stats.MineBlockStatArray[id], 1);
     }
 
     public override int getDroppedItemId(int blockMeta, JavaRandom random)
@@ -99,8 +99,8 @@ public class BlockSnow : Block
 
     }
 
-    public override bool isSideVisible(BlockView blockView, int x, int y, int z, int side)
+    public override bool isSideVisible(IBlockAccess iBlockAccess, int x, int y, int z, int side)
     {
-        return side == 1 ? true : base.isSideVisible(blockView, x, y, z, side);
+        return side == 1 ? true : base.isSideVisible(iBlockAccess, x, y, z, side);
     }
 }

@@ -1,11 +1,9 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.Play;
 
-public class PlayerMovePacket : Packet
+public class PlayerMovePacket(PacketId id = PacketId.PlayerMove) : Packet(id)
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayerMovePacket).TypeHandle);
-
     public double x;
     public double y;
     public double z;
@@ -16,31 +14,27 @@ public class PlayerMovePacket : Packet
     public bool changePosition;
     public bool changeLook;
 
-    public PlayerMovePacket()
-    {
-    }
-
-    public PlayerMovePacket(bool onGround)
+    public PlayerMovePacket(bool onGround) : this()
     {
         this.onGround = onGround;
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onPlayerMove(this);
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        onGround = stream.read() != 0;
+        onGround = stream.ReadBoolean();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.write(onGround ? 1 : 0);
+        stream.WriteBoolean(onGround);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 1;
     }

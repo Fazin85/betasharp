@@ -3,7 +3,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Items;
 
-public class ItemFishingRod : Item
+internal class ItemFishingRod : Item
 {
 
     public ItemFishingRod(int id) : base(id)

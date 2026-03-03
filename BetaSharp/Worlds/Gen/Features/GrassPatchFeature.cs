@@ -3,7 +3,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Gen.Features;
 
-public class GrassPatchFeature : Feature
+internal class GrassPatchFeature : Feature
 {
 
     private readonly int _tallGrassBlockId;

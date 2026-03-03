@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL.Legacy;
 
@@ -5,6 +6,7 @@ namespace BetaSharp.Client.Rendering.Core;
 
 public class Shader : IDisposable
 {
+    private readonly ILogger<Shader> _logger = Log.Instance.For<Shader>();
     private readonly uint id;
     private readonly Dictionary<string, int> uniformLocations = [];
 
@@ -100,7 +102,7 @@ public class Shader : IDisposable
 
         if (location == -1)
         {
-            Log.Warn($"Warning: Uniform '{name}' not found in shader");
+            _logger.LogWarning($"Warning: Uniform '{name}' not found in shader");
         }
 
         return location;

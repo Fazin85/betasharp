@@ -1,9 +1,10 @@
+using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Items;
 
 namespace BetaSharp.Inventorys;
 
-public class InventoryLargeChest : java.lang.Object, IInventory
+internal class InventoryLargeChest : BlockEntity, IInventory
 {
     private string name;
     private IInventory upperChest;
@@ -36,7 +37,7 @@ public class InventoryLargeChest : java.lang.Object, IInventory
         return slotIndex >= upperChest.size() ? lowerChest.removeStack(slotIndex - upperChest.size(), amount) : upperChest.removeStack(slotIndex, amount);
     }
 
-    public void setStack(int slotIndex, ItemStack itemStack)
+    public void setStack(int slotIndex, ItemStack? itemStack)
     {
         if (slotIndex >= upperChest.size())
         {

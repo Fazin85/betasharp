@@ -3,7 +3,7 @@ using BetaSharp.Items;
 
 namespace BetaSharp.Recipes;
 
-public class ShapedRecipes : IRecipe
+internal class ShapedRecipes : IRecipe
 {
     private int _width;
     private int _height;

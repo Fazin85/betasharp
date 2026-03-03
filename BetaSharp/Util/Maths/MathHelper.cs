@@ -52,6 +52,18 @@ public static class MathHelper
         return a < 0 ? -((-a - 1) / b) - 1 : a / b;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int Round(float value)
+    {
+        return (int)MathF.Round(value, MidpointRounding.ToPositiveInfinity);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long Round(double value)
+    {
+        return (long)Math.Round(value, MidpointRounding.ToPositiveInfinity);
+    }
+
     static MathHelper()
     {
         for (int i = 0; i < 65536; ++i)

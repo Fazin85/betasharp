@@ -3,7 +3,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Blocks;
 
-public class BlockStone : Block
+internal class BlockStone : Block
 {
     public BlockStone(int id, int textureId) : base(id, textureId, Material.Stone)
     {

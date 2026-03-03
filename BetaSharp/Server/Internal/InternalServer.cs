@@ -1,12 +1,15 @@
 using BetaSharp.Server.Network;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Server.Internal;
 
-public class InternalServer : MinecraftServer
+public class InternalServer : BetaSharpServer
 {
     private readonly string _worldPath;
     private readonly Lock _difficultyLock = new();
     private readonly int _initialDifficulty;
+    private readonly ILogger<InternalServer> _logger = Log.Instance.For<InternalServer>();
+
     private int _lastDifficulty;
 
     public InternalServer(string worldPath, string levelName, string seed, int viewDistance, int initialDifficulty) : base(new InternalServerConfiguration(levelName, seed, viewDistance))
@@ -21,6 +24,7 @@ public class InternalServer : MinecraftServer
     {
         InternalServerConfiguration serverConfiguration = (InternalServerConfiguration)config;
         serverConfiguration.SetViewDistance(viewDistanceChunks);
+        playerManager?.SetViewDistance(viewDistanceChunks);
     }
 
     public volatile bool isReady;
@@ -29,7 +33,7 @@ public class InternalServer : MinecraftServer
     {
         connections = new ConnectionListener(this);
 
-        Log.Info("Starting internal server");
+        _logger.LogInformation("Starting internal server");
 
         bool result = base.Init();
 

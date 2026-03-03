@@ -2,7 +2,7 @@ using BetaSharp.NBT;
 
 namespace BetaSharp.Worlds;
 
-public class DerivingWorldProperties : WorldProperties
+internal class DerivingWorldProperties : WorldProperties
 {
     private readonly WorldProperties _baseProperties;
     public override long RandomSeed { get => _baseProperties.RandomSeed; }

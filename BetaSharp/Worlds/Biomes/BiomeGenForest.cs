@@ -4,12 +4,12 @@ using BetaSharp.Worlds.Gen.Features;
 
 namespace BetaSharp.Worlds.Biomes;
 
-public class BiomeGenForest : Biome
+internal class BiomeGenForest : Biome
 {
 
     public BiomeGenForest()
     {
-        CreatureList.Add(new SpawnListEntry(EntityWolf.Class, 2));
+        CreatureList.Add(new SpawnListEntry(w => new EntityWolf(w)), 2);
     }
 
     public override Feature GetRandomWorldGenForTrees(JavaRandom rand)

@@ -1,12 +1,13 @@
 using System.IO.Compression;
 using java.io;
 using java.util;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Worlds.Chunks.Storage;
 
-public class RegionFile : java.lang.Object
+internal class RegionFile
 {
-    public enum CompressionType : byte
+    internal enum CompressionType : byte
     {
         GZipUnused = 1,
         ZLibDeflate,
@@ -16,6 +17,7 @@ public class RegionFile : java.lang.Object
     private static readonly byte[] emptySector = new byte[4096];
     private readonly java.io.File fileName;
     private readonly RandomAccessFile dataFile;
+    private readonly ILogger<RegionFile> _logger = Log.Instance.For<RegionFile>();
     private readonly int[] offsets = new int[1024];
     private readonly int[] chunkSaveTimes = new int[1024];
     private readonly ArrayList sectorFree;
@@ -128,7 +130,7 @@ public class RegionFile : java.lang.Object
         func_22199_a(var1, var2, var3, var4 + "\n");
     }
 
-    public ChunkDataStream getChunkDataInputStream(int var1, int var2)
+    public ChunkDataStream GetChunkDataInputStream(int var1, int var2)
     {
         lock (this)
         {
@@ -195,7 +197,7 @@ public class RegionFile : java.lang.Object
         }
     }
 
-    public Stream getChunkDataOutputStream(int var1, int var2)
+    public Stream GetChunkDataOutputStream(int var1, int var2)
     {
         if (outOfBounds(var1, var2))
         {
@@ -296,11 +298,12 @@ public class RegionFile : java.lang.Object
                     }
                 }
 
-                func_22208_b(var1, var2, (int)(java.lang.System.currentTimeMillis() / 1000L));
+                func_22208_b(var1, var2, (int)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+ / 1000L));
             }
             catch (System.IO.IOException var12)
             {
-                Log.Error(var12);
+                _logger.LogError(var12, "Exception");
             }
         }
     }

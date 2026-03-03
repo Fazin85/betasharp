@@ -5,7 +5,7 @@ using BetaSharp.Network.Packets.S2CPlay;
 
 namespace BetaSharp.Network;
 
-public abstract class NetHandler : java.lang.Object
+public abstract class NetHandler
 {
     public abstract bool isServerSide();
 

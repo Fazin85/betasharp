@@ -8,7 +8,6 @@ namespace BetaSharp;
 
 public class MapState : PersistentState
 {
-    public static readonly java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(MapState).TypeHandle);
     public int centerX;
     public int centerZ;
     public sbyte dimension;

@@ -1,10 +1,13 @@
 using System.Diagnostics;
 using BetaSharp.Client.Rendering;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Client.Guis;
 
 public class GuiTexturePacks : GuiScreen
 {
+    private readonly ILogger<GuiTexturePacks> _logger = Log.Instance.For<GuiTexturePacks>();
+
     private const int ButtonOpenFolder = 5;
     private const int ButtonDone = 6;
 
@@ -23,8 +26,8 @@ public class GuiTexturePacks : GuiScreen
         TranslationStorage translations = TranslationStorage.Instance;
         _controlList.Add(new GuiSmallButton(ButtonOpenFolder, Width / 2 - 154, Height - 48, translations.TranslateKey("texturePack.openFolder")));
         _controlList.Add(new GuiSmallButton(ButtonDone, Width / 2 + 4, Height - 48, translations.TranslateKey("gui.done")));
-        mc.texturePackList.updateAvaliableTexturePacks();
-        _texturePackFolder = new java.io.File(Minecraft.getMinecraftDir(), "texturepacks").getAbsolutePath();
+        Game.texturePackList.updateAvaliableTexturePacks();
+        _texturePackFolder = new java.io.File(BetaSharp.getBetaSharpDir(), "texturepacks").getAbsolutePath();
         _guiTexturePackSlot = new GuiTexturePackSlot(this);
         _guiTexturePackSlot.RegisterScrollButtons(_controlList, 7, 8);
     }
@@ -46,12 +49,12 @@ public class GuiTexturePacks : GuiScreen
                     }
                     catch (Exception ex)
                     {
-                        Log.Error($"Failed to open URL: {ex.Message}");
+                        _logger.LogError($"Failed to open URL: {ex.Message}");
                     }
                     break;
                 case ButtonDone:
-                    mc.textureManager.Reload();
-                    mc.displayGuiScreen(_parentScreen);
+                    Game.textureManager.Reload();
+                    Game.displayGuiScreen(_parentScreen);
                     break;
                 default:
                     _guiTexturePackSlot.ActionPerformed(btn);
@@ -76,13 +79,13 @@ public class GuiTexturePacks : GuiScreen
         _guiTexturePackSlot.DrawScreen(mouseX, mouseY, partialTicks);
         if (_refreshTimer <= 0)
         {
-            mc.texturePackList.updateAvaliableTexturePacks();
+            Game.texturePackList.updateAvaliableTexturePacks();
             _refreshTimer += 20;
         }
 
         TranslationStorage translations = TranslationStorage.Instance;
-        DrawCenteredString(FontRenderer, translations.TranslateKey("texturePack.title"), Width / 2, 16, 0xFFFFFF);
-        DrawCenteredString(FontRenderer, translations.TranslateKey("texturePack.folderInfo"), Width / 2 - 77, Height - 26, 0x808080);
+        DrawCenteredString(FontRenderer, translations.TranslateKey("texturePack.title"), Width / 2, 16, Color.White);
+        DrawCenteredString(FontRenderer, translations.TranslateKey("texturePack.folderInfo"), Width / 2 - 77, Height - 26, Color.Gray80);
         base.Render(mouseX, mouseY, partialTicks);
     }
 

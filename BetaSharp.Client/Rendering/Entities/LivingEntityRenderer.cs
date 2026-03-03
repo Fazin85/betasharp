@@ -1,9 +1,12 @@
+using BetaSharp.Client.Guis;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Entities.Models;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 using java.lang;
+using Microsoft.Extensions.Logging;
 using Silk.NET.OpenGL.Legacy;
+using Exception = System.Exception;
 
 namespace BetaSharp.Client.Rendering.Entities;
 
@@ -12,11 +15,12 @@ public class LivingEntityRenderer : EntityRenderer
 
     protected ModelBase mainModel;
     protected ModelBase renderPassModel;
+    private readonly ILogger<LivingEntityRenderer> _logger = Log.Instance.For<LivingEntityRenderer>();
 
     public LivingEntityRenderer(ModelBase mainModel, float shadowRadius)
     {
         this.mainModel = mainModel;
-        this.shadowRadius = shadowRadius;
+        this.ShadowRadius = shadowRadius;
     }
 
     public void setRenderPassModel(ModelBase var1)
@@ -60,7 +64,7 @@ public class LivingEntityRenderer : EntityRenderer
                 var15 = 1.0F;
             }
 
-            loadDownloadableImageTexture(var1.skinUrl, var1.getTexture());
+            LoadDownloadableImageTexture(var1.skinUrl, var1.getTexture());
             GLManager.GL.Enable(GLEnum.AlphaTest);
             mainModel.setLivingAnimations(var1, var16, var15, var9);
             mainModel.render(var16, var15, var13, var11 - var10, var12, var14);
@@ -127,9 +131,9 @@ public class LivingEntityRenderer : EntityRenderer
 
             GLManager.GL.Disable(GLEnum.RescaleNormal);
         }
-        catch (java.lang.Exception ex)
+        catch (Exception e)
         {
-            ex.printStackTrace();
+            _logger.LogError(e, e.Message);
         }
 
         GLManager.GL.Enable(GLEnum.CullFace);
@@ -199,7 +203,7 @@ public class LivingEntityRenderer : EntityRenderer
 
     protected virtual void passSpecialRender(EntityLiving var1, double var2, double var4, double var6)
     {
-        if (Minecraft.isDebugInfoEnabled())
+        if (BetaSharp.isDebugInfoEnabled())
         {
             renderLivingLabel(var1, Integer.toString(var1.id), var2, var4, var6, 64);
         }
@@ -208,17 +212,17 @@ public class LivingEntityRenderer : EntityRenderer
 
     protected void renderLivingLabel(EntityLiving var1, string var2, double var3, double var5, double var7, int var9)
     {
-        float var10 = var1.getDistance(dispatcher.cameraEntity);
+        float var10 = var1.getDistance(Dispatcher.cameraEntity);
         if (var10 <= var9)
         {
-            TextRenderer var11 = getTextRenderer();
+            TextRenderer var11 = TextRenderer;
             float var12 = 1.6F;
             float var13 = (float)(1.0D / 60.0D) * var12;
             GLManager.GL.PushMatrix();
             GLManager.GL.Translate((float)var3 + 0.0F, (float)var5 + 2.3F, (float)var7);
             GLManager.GL.Normal3(0.0F, 1.0F, 0.0F);
-            GLManager.GL.Rotate(-dispatcher.playerViewY, 0.0F, 1.0F, 0.0F);
-            GLManager.GL.Rotate(dispatcher.playerViewX, 1.0F, 0.0F, 0.0F);
+            GLManager.GL.Rotate(-Dispatcher.playerViewY, 0.0F, 1.0F, 0.0F);
+            GLManager.GL.Rotate(Dispatcher.playerViewX, 1.0F, 0.0F, 0.0F);
             GLManager.GL.Scale(-var13, -var13, var13);
             GLManager.GL.Disable(GLEnum.Lighting);
             GLManager.GL.DepthMask(false);
@@ -242,10 +246,10 @@ public class LivingEntityRenderer : EntityRenderer
             var14.addVertex(var16 + 1, -1 + var15, 0.0D);
             var14.draw();
             GLManager.GL.Enable(GLEnum.Texture2D);
-            var11.DrawString(var2, -var11.GetStringWidth(var2) / 2, var15, 0x20FFFFFF);
+            var11.DrawString(var2, -var11.GetStringWidth(var2) / 2, var15, Color.WhiteAlpha20);
             GLManager.GL.Enable(GLEnum.DepthTest);
             GLManager.GL.DepthMask(true);
-            var11.DrawString(var2, -var11.GetStringWidth(var2) / 2, var15, 0xFFFFFFFF);
+            var11.DrawString(var2, -var11.GetStringWidth(var2) / 2, var15, Color.WhiteAlpha20);
             GLManager.GL.Enable(GLEnum.Lighting);
             GLManager.GL.Disable(GLEnum.Blend);
             GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);

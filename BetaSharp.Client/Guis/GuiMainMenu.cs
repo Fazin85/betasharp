@@ -1,8 +1,6 @@
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Util.Maths;
 using java.io;
-using java.util;
-using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Guis;
 
@@ -51,6 +49,7 @@ public class GuiMainMenu : GuiScreen
 
     public override void UpdateScreen()
     {
+
     }
 
     protected override void KeyTyped(char eventChar, int eventKey)
@@ -74,7 +73,7 @@ public class GuiMainMenu : GuiScreen
             new GuiButton(ButtonMultiplayer, Width / 2 - 100, buttonTopY + 24, translator.TranslateKey("menu.multiplayer")));
         _controlList.Add(new GuiButton(ButtonTexturePacksAndMods, Width / 2 - 100, buttonTopY + 48, translator.TranslateKey("menu.mods")));
 
-        if (mc.hideQuitButton)
+        if (Game.hideQuitButton)
         {
             _controlList.Add(new GuiButton(ButtonOptions, Width / 2 - 100, buttonTopY + 72, translator.TranslateKey("menu.options")));
         }
@@ -87,7 +86,7 @@ public class GuiMainMenu : GuiScreen
                 translator.TranslateKey("menu.quit")));
         }
 
-        if (mc.session == null)
+        if (Game.session == null || Game.session.sessionId == "-")
         {
             _multiplayerButton.Enabled = false;
         }
@@ -98,19 +97,19 @@ public class GuiMainMenu : GuiScreen
         switch (button.Id)
         {
             case ButtonOptions:
-                mc.displayGuiScreen(new GuiOptions(this, mc.options));
+                Game.displayGuiScreen(new GuiOptions(this, Game.options));
                 break;
             case ButtonSingleplayer:
-                mc.displayGuiScreen(new GuiSelectWorld(this));
+                Game.displayGuiScreen(new GuiSelectWorld(this));
                 break;
             case ButtonMultiplayer:
-                mc.displayGuiScreen(new GuiMultiplayer(this));
+                Game.displayGuiScreen(new GuiMultiplayer(this, Game.options));
                 break;
             case ButtonTexturePacksAndMods:
-                mc.displayGuiScreen(new GuiTexturePacks(this));
+                Game.displayGuiScreen(new GuiTexturePacks(this));
                 break;
             case ButtonQuit:
-                mc.shutdown();
+                Game.shutdown();
                 break;
         }
     }
@@ -122,7 +121,7 @@ public class GuiMainMenu : GuiScreen
         short logoWidth = 274;
         int logoX = Width / 2 - logoWidth / 2;
         byte logoY = 30;
-        GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)mc.textureManager.GetTextureId("/title/mclogo.png"));
+        Game.textureManager.BindTexture(Game.textureManager.GetTextureId("/title/mclogo.png"));
         GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 1.0F);
         DrawTexturedModalRect(logoX + 0, logoY + 0, 0, 0, 155, 44);
         DrawTexturedModalRect(logoX + 155, logoY + 0, 0, 45, 155, 44);
@@ -130,17 +129,17 @@ public class GuiMainMenu : GuiScreen
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(Width / 2 + 90, 70.0F, 0.0F);
         GLManager.GL.Rotate(-20.0F, 0.0F, 0.0F, 1.0F);
-        float splashScale = 1.8F - MathHelper.Abs(MathHelper.Sin(java.lang.System.currentTimeMillis() % 1000L /
-            1000.0F * (float)Math.PI * 2.0F) * 0.1F);
+        float splashScale = 1.8F - MathHelper.Abs(MathHelper.Sin(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+ % 1000L / 1000.0F * (float)Math.PI * 2.0F) * 0.1F);
         splashScale = splashScale * 100.0F / (FontRenderer.GetStringWidth(_splashText) + 32);
         GLManager.GL.Scale(splashScale, splashScale, splashScale);
-        DrawCenteredString(FontRenderer, _splashText, 0, -8, 0xFFFF00);
+        DrawCenteredString(FontRenderer, _splashText, 0, -8, Color.Yellow);
         GLManager.GL.PopMatrix();
-        DrawString(FontRenderer, "Minecraft Beta 1.7.3", 2, 2, 0x505050);
+        DrawString(FontRenderer, "BetaSharp Beta 1.7.3", 2, 2, Color.Gray50);
         string copyrightText = "Copyright Mojang Studios. Not an official Minecraft product.";
-        DrawString(FontRenderer, copyrightText, Width - FontRenderer.GetStringWidth(copyrightText) - 2, Height - 20, 0xFFFFFF);
+        DrawString(FontRenderer, copyrightText, Width - FontRenderer.GetStringWidth(copyrightText) - 2, Height - 20, Color.White);
         string disclaimerText = "Not approved by or associated with Mojang Studios or Microsoft.";
-        DrawString(FontRenderer, disclaimerText, Width - FontRenderer.GetStringWidth(disclaimerText) - 2, Height - 10, 0xFFFFFF);
+        DrawString(FontRenderer, disclaimerText, Width - FontRenderer.GetStringWidth(disclaimerText) - 2, Height - 10, Color.White);
         base.Render(mouseX, mouseY, partialTicks);
     }
 }

@@ -17,7 +17,6 @@ public class GuiEditSign : GuiScreen
     private readonly BlockEntitySign _entitySign;
     private int _updateCounter;
     private int _editLine = 0;
-    private static readonly string s_allowedCharacters = ChatAllowedCharacters.allowedCharacters;
 
     public GuiEditSign(BlockEntitySign sign)
     {
@@ -34,9 +33,9 @@ public class GuiEditSign : GuiScreen
     public override void OnGuiClosed()
     {
         Keyboard.enableRepeatEvents(false);
-        if (mc?.world?.isRemote ?? false)
+        if (Game?.world?.isRemote ?? false)
         {
-            mc.getSendQueue().addToSendQueue(new UpdateSignPacket(_entitySign.x, _entitySign.y, _entitySign.z, _entitySign.Texts));
+            Game.getSendQueue().addToSendQueue(new UpdateSignPacket(_entitySign.X, _entitySign.Y, _entitySign.Z, _entitySign.Texts));
         }
     }
 
@@ -50,7 +49,7 @@ public class GuiEditSign : GuiScreen
         if (button.Enabled && button.Id == ButtonDoneId)
         {
             _entitySign.markDirty();
-            mc?.displayGuiScreen(null);
+            Game?.displayGuiScreen(null);
         }
     }
 
@@ -80,11 +79,11 @@ public class GuiEditSign : GuiScreen
         if (eventKey == Keyboard.KEY_ESCAPE)
         {
             _entitySign.markDirty();
-            mc?.displayGuiScreen(null);
+            Game?.displayGuiScreen(null);
             return;
         }
 
-        if (s_allowedCharacters.IndexOf(eventChar) >= 0 && _entitySign.Texts[_editLine].Length < MaxLineLength)
+        if (ChatAllowedCharacters.IsAllowedCharacter(eventChar) && _entitySign.Texts[_editLine].Length < MaxLineLength)
         {
             _entitySign.Texts[_editLine] += eventChar;
         }
@@ -95,7 +94,7 @@ public class GuiEditSign : GuiScreen
         DrawDefaultBackground();
         if (FontRenderer != null)
         {
-            DrawCenteredString(FontRenderer, ScreenTitle, Width / 2, 40, 0xFFFFFF);
+            DrawCenteredString(FontRenderer, ScreenTitle, Width / 2, 40, Color.White);
         }
 
         GLManager.GL.PushMatrix();

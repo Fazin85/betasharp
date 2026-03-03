@@ -1,6 +1,7 @@
 using BetaSharp.Blocks;
 using BetaSharp.Client.Entities.FX;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
@@ -75,23 +76,12 @@ public class ParticleManager
         {
             if (_fxLayers[var8].size() != 0)
             {
-                int var9 = 0;
-                if (var8 == 0)
-                {
-                    var9 = _renderer.GetTextureId("/particles.png");
-                }
+                TextureHandle texture = null;
+                if (var8 == 0) texture = _renderer.GetTextureId("/particles.png");
+                if (var8 == 1) texture = _renderer.GetTextureId("/terrain.png");
+                if (var8 == 2) texture = _renderer.GetTextureId("/gui/items.png");
 
-                if (var8 == 1)
-                {
-                    var9 = _renderer.GetTextureId("/terrain.png");
-                }
-
-                if (var8 == 2)
-                {
-                    var9 = _renderer.GetTextureId("/gui/items.png");
-                }
-
-                GLManager.GL.BindTexture(GLEnum.Texture2D, (uint)var9);
+                _renderer.BindTexture(texture);
                 Tessellator var10 = Tessellator.instance;
                 var10.startDrawingQuads();
 
@@ -167,37 +157,37 @@ public class ParticleManager
             Block var6 = Block.Blocks[var5];
             Box blockBB = var6.BoundingBox;
             float var7 = 0.1F;
-            double var8 = var1 + _rand.NextDouble() * (blockBB.maxX - blockBB.minX - (var7 * 2.0F)) + var7 + blockBB.minX;
-            double var10 = var2 + _rand.NextDouble() * (blockBB.maxY - blockBB.minY - (var7 * 2.0F)) + var7 + blockBB.minY;
-            double var12 = var3 + _rand.NextDouble() * (blockBB.maxZ - blockBB.minZ - (var7 * 2.0F)) + var7 + blockBB.minZ;
+            double var8 = var1 + _rand.NextDouble() * (blockBB.MaxX - blockBB.MinX - (var7 * 2.0F)) + var7 + blockBB.MinX;
+            double var10 = var2 + _rand.NextDouble() * (blockBB.MaxY - blockBB.MinY - (var7 * 2.0F)) + var7 + blockBB.MinY;
+            double var12 = var3 + _rand.NextDouble() * (blockBB.MaxZ - blockBB.MinZ - (var7 * 2.0F)) + var7 + blockBB.MinZ;
             if (var4 == 0)
             {
-                var10 = var2 + blockBB.minY - var7;
+                var10 = var2 + blockBB.MinY - var7;
             }
 
             if (var4 == 1)
             {
-                var10 = var2 + blockBB.maxY + var7;
+                var10 = var2 + blockBB.MaxY + var7;
             }
 
             if (var4 == 2)
             {
-                var12 = var3 + blockBB.minZ - var7;
+                var12 = var3 + blockBB.MinZ - var7;
             }
 
             if (var4 == 3)
             {
-                var12 = var3 + blockBB.maxZ + var7;
+                var12 = var3 + blockBB.MaxZ + var7;
             }
 
             if (var4 == 4)
             {
-                var8 = var1 + blockBB.minX - var7;
+                var8 = var1 + blockBB.MinX - var7;
             }
 
             if (var4 == 5)
             {
-                var8 = var1 + blockBB.maxX + var7;
+                var8 = var1 + blockBB.MaxX + var7;
             }
 
             addEffect((new EntityDiggingFX(worldObj, var8, var10, var12, 0.0D, 0.0D, 0.0D, var6, var4, worldObj.getBlockMeta(var1, var2, var3))).func_4041_a(var1, var2, var3).scaleVelocity(0.2F).scaleSize(0.6F));

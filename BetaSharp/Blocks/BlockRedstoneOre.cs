@@ -6,7 +6,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
-public class BlockRedstoneOre : Block
+internal class BlockRedstoneOre : Block
 {
 
     private bool lit;

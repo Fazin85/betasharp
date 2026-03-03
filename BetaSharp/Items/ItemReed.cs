@@ -4,7 +4,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Items;
 
-public class ItemReed : Item
+internal class ItemReed : Item
 {
 
     private int field_320_a;

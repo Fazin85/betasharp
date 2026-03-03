@@ -117,6 +117,13 @@ public class ServerPlayerInteractionManager
         int blockMeta = world.getBlockMeta(x, y, z);
         world.worldEvent(player, 2001, x, y, z, blockId + world.getBlockMeta(x, y, z) * 256);
         bool success = finishMining(x, y, z);
+
+        if (success && player.canHarvest(Block.Blocks[blockId]))
+        {
+            Block.Blocks[blockId].afterBreak(world, player, x, y, z, blockMeta);
+            ((ServerPlayerEntity)player).networkHandler.sendPacket(new BlockUpdateS2CPacket(x, y, z, world));
+        }
+
         ItemStack itemStack = player.getHand();
         if (itemStack != null)
         {
@@ -126,12 +133,6 @@ public class ServerPlayerInteractionManager
                 itemStack.onRemoved(player);
                 player.clearStackInHand();
             }
-        }
-
-        if (success && player.canHarvest(Block.Blocks[blockId]))
-        {
-            Block.Blocks[blockId].afterBreak(world, player, x, y, z, blockMeta);
-            ((ServerPlayerEntity)player).networkHandler.sendPacket(new BlockUpdateS2CPacket(x, y, z, world));
         }
 
         return success;

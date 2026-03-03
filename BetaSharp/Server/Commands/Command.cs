@@ -1,6 +1,6 @@
 namespace BetaSharp.Server.Commands;
 
-public class Command
+internal class Command
 {
     public readonly string commandAndArgs;
     public readonly CommandOutput output;

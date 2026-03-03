@@ -1,42 +1,36 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
-public class ItemPickupAnimationS2CPacket : Packet
+public class ItemPickupAnimationS2CPacket() : Packet(PacketId.ItemPickupAnimationS2C)
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(ItemPickupAnimationS2CPacket).TypeHandle);
-
     public int entityId;
     public int collectorEntityId;
 
-    public ItemPickupAnimationS2CPacket()
-    {
-    }
-
-    public ItemPickupAnimationS2CPacket(int entityId, int collectorId)
+    public ItemPickupAnimationS2CPacket(int entityId, int collectorId) : this()
     {
         this.entityId = entityId;
         collectorEntityId = collectorId;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        entityId = stream.readInt();
-        collectorEntityId = stream.readInt();
+        entityId = stream.ReadInt();
+        collectorEntityId = stream.ReadInt();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeInt(entityId);
-        stream.writeInt(collectorEntityId);
+        stream.WriteInt(entityId);
+        stream.WriteInt(collectorEntityId);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onItemPickupAnimation(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 8;
     }

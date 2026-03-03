@@ -1,38 +1,32 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.S2CPlay;
 
-public class WorldTimeUpdateS2CPacket : Packet
+public class WorldTimeUpdateS2CPacket() : Packet(PacketId.WorldTimeUpdateS2C)
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(WorldTimeUpdateS2CPacket).TypeHandle);
-
     public long time;
 
-    public WorldTimeUpdateS2CPacket()
-    {
-    }
-
-    public WorldTimeUpdateS2CPacket(long time)
+    public WorldTimeUpdateS2CPacket(long time) : this()
     {
         this.time = time;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        time = stream.readLong();
+        time = stream.ReadLong();
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeLong(time);
+        stream.WriteLong(time);
     }
 
-    public override void apply(NetHandler handler)
+    public override void Apply(NetHandler handler)
     {
         handler.onWorldTimeUpdate(this);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 8;
     }

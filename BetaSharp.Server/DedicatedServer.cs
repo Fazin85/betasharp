@@ -1,14 +1,17 @@
-using BetaSharp.Launcher;
+using System.Net;
+using System.Net.Sockets;
 using BetaSharp.Server.Network;
 using BetaSharp.Server.Threading;
 using java.lang;
-using java.net;
-using java.util.logging;
+using Microsoft.Extensions.Logging;
+using Exception = System.Exception;
 
 namespace BetaSharp.Server;
 
-public class DedicatedServer(IServerConfiguration config) : MinecraftServer(config)
+internal class DedicatedServer(IServerConfiguration config) : BetaSharpServer(config)
 {
+    private static readonly ILogger<DedicatedServer> s_logger = Log.Instance.For<DedicatedServer>();
+
     protected override PlayerManager CreatePlayerManager()
     {
         return new DedicatedPlayerManager(this);
@@ -20,43 +23,47 @@ public class DedicatedServer(IServerConfiguration config) : MinecraftServer(conf
         var1.setDaemon(true);
         var1.start();
 
-        Log.Info("Starting minecraft server version Beta 1.7.3");
+        s_logger.LogInformation("Starting BetaSharp server version Beta 1.7.3");
         if (Runtime.getRuntime().maxMemory() / 1024L / 1024L < 512L)
         {
-            Log.Warn("**** NOT ENOUGH RAM!");
-            Log.Warn("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
+            s_logger.LogWarning("**** NOT ENOUGH RAM!");
+            s_logger.LogWarning("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
         }
 
-        Log.Info("Loading properties");
+        s_logger.LogInformation("Loading properties");
 
-        string var2 = config.GetServerIp("");
-        InetAddress var3 = null;
-        if (var2.Length > 0)
+        string addressInput = config.GetServerIp("");
+
+        bool dualStack = config.GetDualStack(false);
+
+        var address = dualStack ? IPAddress.IPv6Any : IPAddress.Any;
+
+        if (addressInput.Length > 0)
         {
-            var3 = InetAddress.getByName(var2);
+            address = Dns.GetHostAddresses(addressInput)[0];
         }
 
-        int var4 = config.GetServerPort(25565);
-        Log.Info($"Starting Minecraft server on {(var2.Length == 0 ? "*" : var2)}:{var4}");
+        int port = config.GetServerPort(25565);
+        s_logger.LogInformation($"Starting BetaSharp server on {(addressInput.Length == 0 ? "*" : addressInput)}:{port}");
 
         try
         {
-            connections = new ConnectionListener(this, var3, var4);
+            connections = new ConnectionListener(this, address, port, dualStack);
         }
         catch (java.io.IOException ex)
         {
-            Log.Warn("**** FAILED TO BIND TO PORT!");
-            Log.Warn($"The exception was: {ex}");
-            Log.Warn("Perhaps a server is already running on that port?");
+            s_logger.LogWarning("**** FAILED TO BIND TO PORT!");
+            s_logger.LogWarning($"The exception was: {ex}");
+            s_logger.LogWarning("Perhaps a server is already running on that port?");
             return false;
         }
 
         if (!onlineMode)
         {
-            Log.Warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
-            Log.Warn("The server will make no attempt to authenticate usernames. Beware.");
-            Log.Warn("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");
-            Log.Warn("To change this, set \"online-mode\" to \"true\" in the server.settings file.");
+            s_logger.LogWarning("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
+            s_logger.LogWarning("The server will make no attempt to authenticate usernames. Beware.");
+            s_logger.LogWarning("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");
+            s_logger.LogWarning("To change this, set \"online-mode\" to \"true\" in the server.settings file.");
         }
 
         return base.Init();
@@ -64,36 +71,18 @@ public class DedicatedServer(IServerConfiguration config) : MinecraftServer(conf
 
     public static void Main(string[] args)
     {
-        Log.Initialize(new LogOptions(IsServer: true));
-        Log.AddCrashHandlers();
+        Log.Instance.Initialize(Directory.GetCurrentDirectory());
 
         try
         {
-            if (!JarValidator.ValidateJar("b1.7.3.jar"))
-            {
-                Log.Info("Downloading b1.7.3.jar");
-                var task = MinecraftDownloader.DownloadBeta173Async();
-                task.Wait();
-
-                if (task.Result)
-                {
-                    Log.Info("Successfully downloaded b1.7.3.jar");
-                }
-                else
-                {
-                    Log.Error("Failed to download b1.7.3.jar");
-                    return;
-                }
-            }
-
             DedicatedServerConfiguration config = new(new java.io.File("server.properties"));
             DedicatedServer server = new(config);
 
             new RunServerThread(server, "Server thread").start();
         }
-        catch (java.lang.Exception ex)
+        catch (Exception e)
         {
-            Log.Error($"Failed to start the minecraft server: {ex}");
+            s_logger.LogError($"Failed to start the BetaSharp server: {e}");
         }
     }
 

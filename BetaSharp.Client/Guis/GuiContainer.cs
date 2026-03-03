@@ -27,7 +27,7 @@ public abstract class GuiContainer : GuiScreen
     public override void InitGui()
     {
         base.InitGui();
-        mc.player.currentScreenHandler = InventorySlots;
+        Game.player.currentScreenHandler = InventorySlots;
     }
 
     public override void Render(int mouseX, int mouseY, float partialTicks)
@@ -52,9 +52,9 @@ public abstract class GuiContainer : GuiScreen
         Slot hoveredSlot = null;
 
 
-        for (int i = 0; i < InventorySlots.slots.size(); ++i)
+        for (int i = 0; i < InventorySlots.Slots.Count; ++i)
         {
-            Slot slot = (Slot)InventorySlots.slots.get(i);
+            Slot slot = InventorySlots.Slots[i];
             DrawSlotInventory(slot);
             if (GetIsMouseOverSlot(slot, mouseX, mouseY))
             {
@@ -64,13 +64,13 @@ public abstract class GuiContainer : GuiScreen
                 GLManager.GL.Disable(GLEnum.DepthTest);
                 int sx = slot.xDisplayPosition;
                 int sy = slot.yDisplayPosition;
-                DrawGradientRect(sx, sy, sx + 16, sy + 16, 0x80FFFFFF, 0x80FFFFFF);
+                DrawGradientRect(sx, sy, sx + 16, sy + 16, Color.BackgroundWhiteAlpha, Color.BackgroundWhiteAlpha);
                 GLManager.GL.Enable(GLEnum.Lighting);
                 GLManager.GL.Enable(GLEnum.DepthTest);
             }
         }
 
-        InventoryPlayer playerInv = mc.player.inventory;
+        InventoryPlayer playerInv = Game.player.inventory;
 
         GLManager.GL.Disable(GLEnum.RescaleNormal);
         Lighting.turnOff();
@@ -87,8 +87,8 @@ public abstract class GuiContainer : GuiScreen
                 int tipY = mouseY - guiTop - 12;
                 int textWidth = FontRenderer.GetStringWidth(itemName);
 
-                DrawGradientRect(tipX - 3, tipY - 3, tipX + textWidth + 3, tipY + 8 + 3, 0xC0000000, 0xC0000000);
-                FontRenderer.DrawStringWithShadow(itemName, tipX, tipY, 0xFFFFFFFF);
+                DrawGradientRect(tipX - 3, tipY - 3, tipX + textWidth + 3, tipY + 8 + 3, Color.BlackAlphaC0, Color.BlackAlphaC0);
+                FontRenderer.DrawStringWithShadow(itemName, tipX, tipY, Color.White);
             }
         }
 
@@ -104,8 +104,8 @@ public abstract class GuiContainer : GuiScreen
             GLManager.GL.Enable(GLEnum.DepthTest);
 
             GLManager.GL.Translate(0.0F, 0.0F, 32.0F);
-            _itemRenderer.renderItemIntoGUI(FontRenderer, mc.textureManager, playerInv.getCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8);
-            _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, mc.textureManager, playerInv.getCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8);
+            _itemRenderer.renderItemIntoGUI(FontRenderer, Game.textureManager, playerInv.getCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8);
+            _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, Game.textureManager, playerInv.getCursorStack(), mouseX - guiLeft - 8, mouseY - guiTop - 8);
 
             Lighting.turnOff();
             GLManager.GL.Disable(GLEnum.Lighting);
@@ -135,22 +135,22 @@ public abstract class GuiContainer : GuiScreen
             if (iconIdx >= 0)
             {
                 GLManager.GL.Disable(GLEnum.Lighting);
-                mc.textureManager.BindTexture(mc.textureManager.GetTextureId("/gui/items.png"));
+                Game.textureManager.BindTexture(Game.textureManager.GetTextureId("/gui/items.png"));
                 DrawTexturedModalRect(x, y, iconIdx % 16 * 16, iconIdx / 16 * 16, 16, 16);
                 GLManager.GL.Enable(GLEnum.Lighting);
                 return;
             }
         }
 
-        _itemRenderer.renderItemIntoGUI(FontRenderer, mc.textureManager, item, x, y);
-        _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, mc.textureManager, item, x, y);
+        _itemRenderer.renderItemIntoGUI(FontRenderer, Game.textureManager, item, x, y);
+        _itemRenderer.renderItemOverlayIntoGUI(FontRenderer, Game.textureManager, item, x, y);
     }
 
     private Slot GetSlotAtPosition(int mouseX, int mouseY)
     {
-        for (int i = 0; i < InventorySlots.slots.size(); ++i)
+        for (int i = 0; i < InventorySlots.Slots.Count; ++i)
         {
-            Slot slot = (Slot)InventorySlots.slots.get(i);
+            Slot slot = (Slot)InventorySlots.Slots[i];
             if (GetIsMouseOverSlot(slot, mouseX, mouseY))
             {
                 return slot;
@@ -190,7 +190,7 @@ public abstract class GuiContainer : GuiScreen
             if (slotId != -1)
             {
                 bool isShiftClick = slotId != -999 && (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT));
-                mc.playerController.func_27174_a(InventorySlots.syncId, slotId, button, isShiftClick, mc.player);
+                Game.playerController.func_27174_a(InventorySlots.SyncId, slotId, button, isShiftClick, Game.player);
             }
         }
 
@@ -200,18 +200,18 @@ public abstract class GuiContainer : GuiScreen
 
     protected override void KeyTyped(char eventChar, int eventKey)
     {
-        if (eventKey == Keyboard.KEY_ESCAPE || eventKey == mc.options.KeyBindInventory.keyCode)
+        if (eventKey == Keyboard.KEY_ESCAPE || eventKey == Game.options.KeyBindInventory.keyCode)
         {
-            mc.player.closeHandledScreen();
+            Game.player.closeHandledScreen();
         }
 
     }
 
     public override void OnGuiClosed()
     {
-        if (mc.player != null)
+        if (Game.player != null)
         {
-            mc.playerController.func_20086_a(InventorySlots.syncId, mc.player);
+            Game.playerController.func_20086_a(InventorySlots.SyncId, Game.player);
         }
     }
 
@@ -219,9 +219,9 @@ public abstract class GuiContainer : GuiScreen
     public override void UpdateScreen()
     {
         base.UpdateScreen();
-        if (!mc.player.isAlive() || mc.player.dead)
+        if (!Game.player.isAlive() || Game.player.dead)
         {
-            mc.player.closeHandledScreen();
+            Game.player.closeHandledScreen();
         }
 
     }

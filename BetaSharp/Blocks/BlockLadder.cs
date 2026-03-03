@@ -4,7 +4,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
-public class BlockLadder : Block
+internal class BlockLadder : Block
 {
 
     public BlockLadder(int id, int textureId) : base(id, textureId, Material.PistonBreakable)
@@ -75,9 +75,9 @@ public class BlockLadder : Block
         return false;
     }
 
-    public override int getRenderType()
+    public override BlockRendererType getRenderType()
     {
-        return 8;
+        return BlockRendererType.Ladder;
     }
 
     public override bool canPlaceAt(World world, int x, int y, int z)

@@ -3,7 +3,7 @@ using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Gen.Features;
 
-public class SpringFeature : Feature
+internal class SpringFeature : Feature
 {
 
     private readonly int _liquidBlockId;
@@ -39,7 +39,7 @@ public class SpringFeature : Feature
         if (stoneNeighbors == 3 && airNeighbors == 1)
         {
             world.setBlock(x, y, z, _liquidBlockId);
-            
+
             world.instantBlockUpdateEnabled = true;
             Block.Blocks[_liquidBlockId].onTick(world, x, y, z, rand);
             world.instantBlockUpdateEnabled = false;

@@ -2,7 +2,7 @@ using BetaSharp.Blocks.Materials;
 
 namespace BetaSharp.Blocks;
 
-public class BlockOreStorage : Block
+internal class BlockOreStorage : Block
 {
 
     public BlockOreStorage(int id, int textureId) : base(id, Material.Metal)

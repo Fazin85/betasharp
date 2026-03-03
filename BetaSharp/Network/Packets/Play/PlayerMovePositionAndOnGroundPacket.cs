@@ -1,45 +1,42 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.Play;
 
 public class PlayerMovePositionAndOnGroundPacket : PlayerMovePacket
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(PlayerMovePositionAndOnGroundPacket).TypeHandle);
-
-    public PlayerMovePositionAndOnGroundPacket()
+    public PlayerMovePositionAndOnGroundPacket() : base(PacketId.PlayerMovePositionAndOnGround)
     {
         changePosition = true;
     }
 
-    public PlayerMovePositionAndOnGroundPacket(double x, double y, double eyeHeight, double z, bool onGround)
+    public PlayerMovePositionAndOnGroundPacket(double x, double y, double eyeHeight, double z, bool onGround) : this()
     {
         base.x = x;
         base.y = y;
         base.eyeHeight = eyeHeight;
         base.z = z;
         base.onGround = onGround;
-        changePosition = true;
     }
 
-    public override void read(DataInputStream stream)
+    public override void Read(NetworkStream stream)
     {
-        x = stream.readDouble();
-        y = stream.readDouble();
-        eyeHeight = stream.readDouble();
-        z = stream.readDouble();
-        base.read(stream);
+        x = stream.ReadDouble();
+        y = stream.ReadDouble();
+        eyeHeight = stream.ReadDouble();
+        z = stream.ReadDouble();
+        base.Read(stream);
     }
 
-    public override void write(DataOutputStream stream)
+    public override void Write(NetworkStream stream)
     {
-        stream.writeDouble(x);
-        stream.writeDouble(y);
-        stream.writeDouble(eyeHeight);
-        stream.writeDouble(z);
-        base.write(stream);
+        stream.WriteDouble(x);
+        stream.WriteDouble(y);
+        stream.WriteDouble(eyeHeight);
+        stream.WriteDouble(z);
+        base.Write(stream);
     }
 
-    public override int size()
+    public override int Size()
     {
         return 33;
     }

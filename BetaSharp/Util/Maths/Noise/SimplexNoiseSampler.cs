@@ -1,14 +1,14 @@
 namespace BetaSharp.Util.Maths.Noise;
 
-public class SimplexNoiseSampler : java.lang.Object
+internal class SimplexNoiseSampler
 {
     private static readonly int[][] grads = [[1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0], [1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1], [0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]];
     private readonly int[] _permutations;
     private readonly double _xCoord;
     private readonly double _yCoord;
     private readonly double _zCoord;
-    private static readonly double F2 = 0.5D * (java.lang.Math.sqrt(3.0D) - 1.0D);
-    private static readonly double G2 = (3.0D - java.lang.Math.sqrt(3.0D)) / 6.0D;
+    private static readonly double F2 = 0.5D * (Math.Sqrt(3.0D) - 1.0D);
+    private static readonly double G2 = (3.0D - Math.Sqrt(3.0D)) / 6.0D;
 
     public SimplexNoiseSampler() : this(new())
     {

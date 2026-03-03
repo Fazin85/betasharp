@@ -1,24 +1,16 @@
-using java.io;
+using System.Net.Sockets;
 
 namespace BetaSharp.Network.Packets.Play;
 
-public class KeepAlivePacket : Packet
+public class KeepAlivePacket() : Packet(PacketId.KeepAlive)
 {
-    public static readonly new java.lang.Class Class = ikvm.runtime.Util.getClassFromTypeHandle(typeof(KeepAlivePacket).TypeHandle);
+    public override void Apply(NetHandler handler) { }
 
-    public override void apply(NetHandler handler)
-    {
-    }
+    public override void Read(NetworkStream stream) { }
 
-    public override void read(DataInputStream stream)
-    {
-    }
+    public override void Write(NetworkStream stream) { }
 
-    public override void write(DataOutputStream stream)
-    {
-    }
-
-    public override int size()
+    public override int Size()
     {
         return 0;
     }

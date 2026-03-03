@@ -4,7 +4,7 @@ using BetaSharp.Worlds;
 
 namespace BetaSharp.Blocks;
 
-public class BlockDetectorRail : BlockRail
+internal class BlockDetectorRail : BlockRail
 {
     public BlockDetectorRail(int id, int textureId) : base(id, textureId, true)
     {
@@ -45,9 +45,9 @@ public class BlockDetectorRail : BlockRail
         }
     }
 
-    public override bool isPoweringSide(BlockView blockView, int x, int y, int z, int side)
+    public override bool isPoweringSide(IBlockAccess iBlockAccess, int x, int y, int z, int side)
     {
-        return (blockView.getBlockMeta(x, y, z) & 8) != 0;
+        return (iBlockAccess.getBlockMeta(x, y, z) & 8) != 0;
     }
 
     public override bool isStrongPoweringSide(World world, int x, int y, int z, int side)
@@ -60,7 +60,7 @@ public class BlockDetectorRail : BlockRail
         bool isPowered = (meta & 8) != 0;
         bool hasMinecart = false;
         float detectionInset = 2.0F / 16.0F;
-        var minecartsOnRail = world.collectEntitiesByClass(EntityMinecart.Class, new Box((double)((float)x + detectionInset), (double)y, (double)((float)z + detectionInset), (double)((float)(x + 1) - detectionInset), (double)y + 0.25D, (double)((float)(z + 1) - detectionInset)));
+        var minecartsOnRail = world.CollectEntitiesOfType<EntityMinecart>(new Box((double)((float)x + detectionInset), (double)y, (double)((float)z + detectionInset), (double)((float)(x + 1) - detectionInset), (double)y + 0.25D, (double)((float)(z + 1) - detectionInset)));
         if (minecartsOnRail.Count > 0)
         {
             hasMinecart = true;

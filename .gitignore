@@ -370,3 +370,17 @@ FodyWeavers.xsd
 
 # Visual Studio Code
 .vscode
+
+# ImGui configuration file
+imgui.ini
+
+# Saves and Server Configuration
+*.mcr
+*.dat
+*.dat_old
+*.lock
+banned-ips.txt
+banned-players.txt
+ops.txt
+server.properties
+white-list.txt

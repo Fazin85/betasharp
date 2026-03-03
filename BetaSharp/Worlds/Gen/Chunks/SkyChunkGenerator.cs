@@ -9,7 +9,7 @@ using BetaSharp.Worlds.Gen.Features;
 
 namespace BetaSharp.Worlds.Gen.Chunks;
 
-public class SkyChunkGenerator : ChunkSource
+internal class SkyChunkGenerator : ChunkSource
 {
 
     private JavaRandom rand;
@@ -179,22 +179,22 @@ public class SkyChunkGenerator : ChunkSource
 
     }
 
-    public Chunk loadChunk(int var1, int var2)
+    public Chunk LoadChunk(int var1, int var2)
     {
-        return getChunk(var1, var2);
+        return GetChunk(var1, var2);
     }
 
-    public Chunk getChunk(int var1, int var2)
+    public Chunk GetChunk(int var1, int var2)
     {
         rand.SetSeed(var1 * 341873128712L + var2 * 132897987541L);
-        byte[] var3 = new byte[-java.lang.Short.MIN_VALUE];
+        byte[] var3 = new byte[-short.MinValue];
         Chunk var4 = new Chunk(world, var3, var1, var2);
         field_28075_v = world.getBiomeSource().GetBiomesInArea(field_28075_v, var1 * 16, var2 * 16, 16, 16);
         double[] var5 = world.getBiomeSource().TemperatureMap;
         func_28071_a(var1, var2, var3, field_28075_v, var5);
         func_28072_a(var1, var2, var3, field_28075_v);
         field_28076_u.carve(this, world, var1, var2, var3);
-        var4.populateHeightMap();
+        var4.PopulateHeightMap();
         return var4;
     }
 
@@ -313,12 +313,12 @@ public class SkyChunkGenerator : ChunkSource
         return var1;
     }
 
-    public bool isChunkLoaded(int var1, int var2)
+    public bool IsChunkLoaded(int var1, int var2)
     {
         return true;
     }
 
-    public void decorate(ChunkSource var1, int var2, int var3)
+    public void DecorateTerrain(ChunkSource var1, int var2, int var3)
     {
         BlockSand.fallInstantly = true;
         int var4 = var2 * 16;
@@ -585,22 +585,22 @@ public class SkyChunkGenerator : ChunkSource
         BlockSand.fallInstantly = false;
     }
 
-    public bool save(bool var1, LoadingDisplay var2)
+    public bool Save(bool var1, LoadingDisplay var2)
     {
         return true;
     }
 
-    public bool tick()
+    public bool Tick()
     {
         return false;
     }
 
-    public bool canSave()
+    public bool CanSave()
     {
         return true;
     }
 
-    public string getDebugInfo()
+    public string GetDebugInfo()
     {
         return "RandomLevelSource";
     }

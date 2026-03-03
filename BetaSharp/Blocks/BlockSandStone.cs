@@ -2,7 +2,7 @@ using BetaSharp.Blocks.Materials;
 
 namespace BetaSharp.Blocks;
 
-public class BlockSandStone : Block
+internal class BlockSandStone : Block
 {
     public BlockSandStone(int id) : base(id, 192, Material.Stone)
     {

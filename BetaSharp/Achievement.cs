@@ -22,10 +22,10 @@ public class Achievement : StatBase
     {
     }
 
-    public Achievement(int id, string key, int column, int row, ItemStack icon, Achievement parent) : base(5242880 + id, StatCollector.translateToLocal("achievement." + key))
+    public Achievement(int id, string key, int column, int row, ItemStack icon, Achievement parent) : base(5242880 + id, StatCollector.TranslateToLocal("achievement." + key))
     {
         this.icon = icon;
-        TranslationKey = StatCollector.translateToLocal("achievement." + key + ".desc");
+        TranslationKey = StatCollector.TranslateToLocal("achievement." + key + ".desc");
         this.column = column;
         this.row = row;
         if (column < Achievements.minColumn)
@@ -53,7 +53,7 @@ public class Achievement : StatBase
 
     public Achievement m_66876377()
     {
-        localOnly = true;
+        LocalOnly = true;
         return this;
     }
 
@@ -65,12 +65,12 @@ public class Achievement : StatBase
 
     public Achievement registerAchievement()
     {
-        base.registerStat();
+        base.RegisterStat();
         Achievements.AllAchievements.Add(this);
         return this;
     }
 
-    public override bool isAchievement()
+    public override bool IsAchievement()
     {
         return true;
     }
@@ -90,12 +90,12 @@ public class Achievement : StatBase
         return _isChallenge;
     }
 
-    public override StatBase registerStat()
+    public override StatBase RegisterStat()
     {
         return registerAchievement();
     }
 
-    public override StatBase setLocalOnly()
+    public override StatBase SetLocalOnly()
     {
         return m_66876377();
     }
