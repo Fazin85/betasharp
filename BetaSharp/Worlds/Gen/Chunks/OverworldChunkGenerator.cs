@@ -506,7 +506,7 @@ internal class OverworldChunkGenerator : ChunkSource
 
                 for (int iY = 0; iY < sizeY; ++iY)
                 {
-                    double terrainDensity = 0.0D;
+                    double terrainDensity;
                     double densityOffset = (iY - elevationOffset) * 12.0D / scaleNoiseSample;
                     if (densityOffset < 0.0D)
                     {
