@@ -10,6 +10,6 @@
                 ToolTip.Tip="A Web browser tab will be opened" />
 
         <TextBlock Text="You must own a copy of Minecraft Java edition to use this launcher"
-                   TextWrapping="Wrap" TextAlignment="Center" Opacity="0.5" />
+                   Opacity="0.5" TextWrapping="Wrap" TextAlignment="Center" />
     </StackPanel>
 </UserControl>
