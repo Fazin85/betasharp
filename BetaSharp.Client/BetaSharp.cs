@@ -1,5 +1,5 @@
-using BetaSharp.Client.Options;
 using System.Diagnostics;
+using System.Runtime;
 using System.Runtime.InteropServices;
 using BetaSharp.Blocks;
 using BetaSharp.Client.Achievements;
@@ -8,8 +8,11 @@ using BetaSharp.Client.Entities;
 using BetaSharp.Client.Guis;
 using BetaSharp.Client.Input;
 using BetaSharp.Client.Network;
+using BetaSharp.Client.Options;
 using BetaSharp.Client.Rendering;
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core.OpenGL;
+using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Client.Rendering.Entities;
 using BetaSharp.Client.Rendering.Items;
 using BetaSharp.Client.Resource;
@@ -29,12 +32,10 @@ using BetaSharp.Worlds.Storage;
 using ImGuiNET;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Input;
-using Silk.NET.OpenGL.Legacy;
-using Silk.NET.OpenGL.Legacy.Extensions.ImGui;
+using Silk.NET.OpenGL;
+using Silk.NET.OpenGL.Extensions.ImGui;
 using Exception = System.Exception;
-using BetaSharp.Client.Rendering.Core.Textures;
-using BetaSharp.Client.Rendering.Core.OpenGL;
-using System.Runtime;
+using GLEnum = Silk.NET.OpenGL.Legacy.GLEnum;
 
 namespace BetaSharp.Client;
 

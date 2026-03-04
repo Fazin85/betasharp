@@ -1,4 +1,5 @@
 using Silk.NET.Maths;
+using Silk.NET.OpenGL;
 using Silk.NET.OpenGL.Legacy;
 
 namespace BetaSharp.Client.Rendering.Core.OpenGL;
@@ -147,7 +148,7 @@ void main()
         _gl.AttachShader(Program, fragmentShader);
         _gl.LinkProgram(Program);
 
-        _gl.GetProgram(Program, GLEnum.LinkStatus, out int status);
+        _gl.GetProgram(Program, Silk.NET.OpenGL.GLEnum.LinkStatus, out int status);
         if (status == 0)
         {
             string infoLog = _gl.GetProgramInfoLog(Program);

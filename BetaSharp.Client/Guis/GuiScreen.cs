@@ -190,8 +190,8 @@ public class GuiScreen : Gui
 
     public void DrawBackground(int var1)
     {
-        GLManager.GL.Disable(EnableCap.Lighting);
-        GLManager.GL.Disable(EnableCap.Fog);
+        GLManager.GL.Disable(GLEnum.Lighting);
+        GLManager.GL.Disable(GLEnum.Fog);
 
         Tessellator tess = Tessellator.instance;
         Game.textureManager.BindTexture(Game.textureManager.GetTextureId("/gui/background.png"));

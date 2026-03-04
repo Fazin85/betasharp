@@ -1,7 +1,9 @@
 using System.Runtime.InteropServices;
 using BetaSharp.Client.Guis;
 using BetaSharp.Util;
+using Silk.NET.OpenGL;
 using Silk.NET.OpenGL.Legacy;
+using GLEnum = Silk.NET.OpenGL.Legacy.GLEnum;
 
 namespace BetaSharp.Client.Rendering.Core;
 

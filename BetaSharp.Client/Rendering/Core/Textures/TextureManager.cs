@@ -8,6 +8,7 @@ using SixLabors.ImageSharp.Processing;
 using static BetaSharp.Client.Rendering.Core.Textures.TextureAtlasMipmapGenerator;
 using Microsoft.Extensions.Logging;
 using System.Buffers;
+using Silk.NET.OpenGL;
 
 namespace BetaSharp.Client.Rendering.Core.Textures;
 
