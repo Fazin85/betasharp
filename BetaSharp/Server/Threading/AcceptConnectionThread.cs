@@ -6,26 +6,20 @@ using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Server.Threading;
 
-internal class AcceptConnectionThread : JavaThread
+internal static class AcceptConnectionThread
 {
-    private readonly ILogger<AcceptConnectionThread> _logger = Log.Instance.For<AcceptConnectionThread>();
-    private readonly ConnectionListener _listener;
+    private static readonly ILogger s_logger = Log.Instance.For(nameof(AcceptConnectionThread));
     private const int MAX_CACHE_SIZE = 1000;
 
-    public AcceptConnectionThread(ConnectionListener listener, string name) : base(name)
-    {
-        _listener = listener;
-    }
-
-    public override void run()
+    public static void run(ConnectionListener listener)
     {
         Dictionary<IPAddress, long> map = [];
 
-        while (_listener.open)
+        while (listener.open)
         {
             try
             {
-                Socket socket = _listener.Socket.Accept();
+                Socket socket = listener.Socket.Accept();
 
                 socket.NoDelay = true;
 
@@ -60,13 +54,13 @@ internal class AcceptConnectionThread : JavaThread
                         if (oldest != null) map.Remove(oldest);
                     }
 
-                    ServerLoginNetworkHandler handler = new(_listener.server, socket, "Connection # " + _listener.GetNextConnectionCounter());
-                    _listener.AddPendingConnection(handler);
+                    ServerLoginNetworkHandler handler = new(listener.server, socket, "Connection # " + listener.GetNextConnectionCounter());
+                    listener.AddPendingConnection(handler);
                 }
             }
             catch (SocketException ex)
             {
-                _logger.LogError(ex, "Failed to accept connection");
+                s_logger.LogError(ex, "Failed to accept connection");
             }
         }
     }

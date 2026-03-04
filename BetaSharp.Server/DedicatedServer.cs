@@ -18,9 +18,19 @@ internal class DedicatedServer(IServerConfiguration config) : BetaSharpServer(co
 
     protected override bool Init()
     {
-        ConsoleInputThread var1 = new(this);
-        var1.setDaemon(true);
-        var1.start();
+        Task.Factory.StartNew(
+            () =>
+            {
+                while (!stopped && running)
+                {
+                    string? line = Console.ReadLine();
+                    if (!string.IsNullOrWhiteSpace(line))
+                    {
+                        queueCommands(line, this);
+                    }
+                }
+            },
+            TaskCreationOptions.LongRunning);
 
         s_logger.LogInformation("Starting BetaSharp server version Beta 1.7.3");
         long maxMemoryMb = GC.GetGCMemoryInfo().TotalAvailableMemoryBytes / 1024L / 1024L;
@@ -78,7 +88,7 @@ internal class DedicatedServer(IServerConfiguration config) : BetaSharpServer(co
             DedicatedServerConfiguration config = new("server.properties");
             DedicatedServer server = new(config);
 
-            new RunServerThread(server, "Server thread").start();
+            Task.Factory.StartNew(() => server.run());
         }
         catch (Exception e)
         {

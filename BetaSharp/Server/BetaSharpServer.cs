@@ -323,7 +323,7 @@ public abstract class BetaSharpServer : CommandOutput
                         _lastTpsTime = tpsNow;
                     }
 
-                    JavaThread.sleep(1L);
+                    Task.Delay(1);
                 }
             }
             else
@@ -334,7 +334,7 @@ public abstract class BetaSharpServer : CommandOutput
 
                     try
                     {
-                        JavaThread.sleep(10L);
+                        Task.Delay(10);
                     }
                     catch (ThreadInterruptedException) { }
                 }
@@ -350,7 +350,7 @@ public abstract class BetaSharpServer : CommandOutput
 
                 try
                 {
-                    JavaThread.sleep(10L);
+                    Task.Delay(10);
                 }
                 catch (ThreadInterruptedException) { }
             }
