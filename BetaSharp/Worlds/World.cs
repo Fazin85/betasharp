@@ -1917,7 +1917,7 @@ public abstract class World : IBlockAccess
                 LightUpdate updateTask = _lightingQueue[lastIndex];
 
                 _lightingQueue.RemoveAt(lastIndex);
-                updateTask.updateLight(this);
+                updateTask.UpdateLight(this);
             }
 
             return false;
@@ -1970,8 +1970,8 @@ public abstract class World : IBlockAccess
                     for (int i = 0; i < lookbackCount; ++i)
                     {
                         ref LightUpdate existingUpdate = ref span[queueSize - i - 1];
-                        if (existingUpdate.lightType == type &&
-                            existingUpdate.expand(minX, minY, minZ, maxX, maxY, maxZ))
+                        if (existingUpdate.LightType == type &&
+                            existingUpdate.Expand(minX, minY, minZ, maxX, maxY, maxZ))
                         {
                             return;
                         }
