@@ -82,16 +82,16 @@ public class InternalConnection : Connection
 
     public override void disconnect(string disconnectedReason, params object[] disconnectReasonArgs)
     {
-        if (open)
+        if (!closed)
         {
-            open = false;
+            closed = true;
             disconnected = true;
             this.disconnectedReason = disconnectedReason;
             this.disconnectReasonArgs = disconnectReasonArgs;
 
             _logger.LogInformation($"[{Name}] Disconnected: {disconnectedReason}");
 
-            if (RemoteConnection != null && RemoteConnection.open)
+            if (RemoteConnection != null && !RemoteConnection.closed)
             {
                 RemoteConnection.OnRemoteDisconnect(disconnectedReason, disconnectReasonArgs);
             }
@@ -100,9 +100,9 @@ public class InternalConnection : Connection
 
     public void OnRemoteDisconnect(string reason, object[] args)
     {
-        if (open)
+        if (!closed)
         {
-            open = false;
+            closed = true;
             disconnected = true;
             disconnectedReason = reason;
             disconnectReasonArgs = args;

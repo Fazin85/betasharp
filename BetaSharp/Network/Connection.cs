@@ -9,18 +9,14 @@ namespace BetaSharp.Network;
 public class Connection
 {
     private readonly ILogger<Connection> _logger = Log.Instance.For<Connection>();
-    public static readonly object LOCK = new();
     protected object lck = new();
     private Socket? _socket;
     private readonly IPEndPoint? _address;
-    protected bool open = true;
     protected readonly List<Packet> readQueue = [];
     protected readonly List<Packet> sendQueue = [];
     protected readonly List<Packet> delayedSendQueue = [];
     protected NetHandler? networkHandler;
     protected bool closed;
-    private readonly Task _writer;
-    private readonly Task _reader;
     protected bool disconnected;
     protected string disconnectedReason = "";
     protected object[]? disconnectReasonArgs;
@@ -36,7 +32,7 @@ public class Connection
     public Connection(Socket socket, string address, NetHandler networkHandler)
     {
         _socket = socket;
-        _address = (IPEndPoint?) socket.RemoteEndPoint;
+        _address = (IPEndPoint?)socket.RemoteEndPoint;
         this.networkHandler = networkHandler;
 
         socket.ReceiveTimeout = 30000;
@@ -44,57 +40,47 @@ public class Connection
 
         _networkStream = new NetworkStream(socket);
 
-        _reader = Task.Factory.StartNew(
+        Task.Factory.StartNew(
             () =>
             {
                 while (!closed)
                 {
-                    if (!isOpen(this))
+                    if (!read())
                     {
                         break;
                     }
-
-                    if (isClosed(this))
-                    {
-                        break;
-                    }
-
-                    while (readPacket(this))
-                    {
-                    }
-
-                    waitForSignal(10);
                 }
             },
             TaskCreationOptions.LongRunning);
 
-        _writer = Task.Factory.StartNew(
+        Task.Factory.StartNew(
             () =>
             {
-                while (!closed)
+                try
                 {
-                    if (!isOpen(this))
+                    while (!closed)
                     {
-                        break;
-                    }
-
-                    while (writePacket(this))
-                    {
-                    }
-
-                    waitForSignal(10);
-
-                    try
-                    {
-                        getOutputStream(this)?.Flush();
-                    }
-                    catch (IOException ex)
-                    {
-                        if (!isDisconnected(this))
+                        while (write())
                         {
-                            disconnect(this, ex);
+                        }
+
+                        try
+                        {
+                            _networkStream?.Flush();
+                        }
+                        catch (IOException ex)
+                        {
+                            if (!disconnected)
+                            {
+                                disconnect(ex);
+                            }
                         }
                     }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
                 }
             },
             TaskCreationOptions.LongRunning);
@@ -126,7 +112,6 @@ public class Connection
                 {
                     sendQueue.Add(packet);
                 }
-
             }
         }
     }
@@ -146,7 +131,7 @@ public class Connection
             Packet packet;
             object lockObj;
             if (sendQueue.Count > 0 && (lag == 0 || DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
- - sendQueue[0].CreationTime >= lag))
+                    - sendQueue[0].CreationTime >= lag))
             {
                 lockObj = lck;
                 lock (lockObj)
@@ -163,7 +148,7 @@ public class Connection
             }
 
             if (_delay-- <= 0 && delayedSendQueue.Count > 0 && (lag == 0 || DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
- - delayedSendQueue[0].CreationTime >= lag))
+                    - delayedSendQueue[0].CreationTime >= lag))
             {
                 lockObj = lck;
                 lock (lockObj)
@@ -195,13 +180,7 @@ public class Connection
 
     public virtual void interrupt()
     {
-        wakeSignal.Set();
-    }
-
-    public void waitForSignal(int timeoutMs)
-    {
-        wakeSignal.Wait(timeoutMs);
-        wakeSignal.Reset();
+        // closed = true;
     }
 
     protected virtual bool read()
@@ -225,6 +204,7 @@ public class Connection
                 {
                     readQueue.Add(packet);
                 }
+
                 receivedPacket = true;
             }
             else
@@ -253,13 +233,13 @@ public class Connection
 
     public virtual void disconnect(string disconnectedReason, params object[] disconnectReasonArgs)
     {
-        if (open)
+        if (!closed)
         {
             disconnected = true;
             this.disconnectedReason = disconnectedReason;
             this.disconnectReasonArgs = disconnectReasonArgs;
 
-            open = false;
+            closed = true;
 
             try
             {
@@ -302,7 +282,6 @@ public class Connection
         {
             networkHandler?.onDisconnected(disconnectedReason, disconnectReasonArgs);
         }
-
     }
 
     protected virtual void processPackets()
@@ -323,6 +302,7 @@ public class Connection
                 packet = readQueue[0];
                 readQueue.RemoveAt(0);
             }
+
             packet.Apply(networkHandler);
         }
     }
@@ -339,13 +319,13 @@ public class Connection
 
         _ = Task.Run(async () =>
         {
-            await Task.Delay(2000);
+            // await Task.Delay(2000);
 
             try
             {
-                if (isOpen(this))
+                if (!closed)
                 {
-                    disconnect(this, new Exception("disconnect.closed"));
+                    disconnect(new Exception("disconnect.closed"));
                 }
             }
             catch (Exception ex)
@@ -358,40 +338,5 @@ public class Connection
     public int getDelayedSendQueueSize()
     {
         return delayedSendQueue.Count;
-    }
-
-    public static bool isOpen(Connection conn)
-    {
-        return conn.open;
-    }
-
-    public static bool isClosed(Connection conn)
-    {
-        return conn.closed;
-    }
-
-    public static bool readPacket(Connection conn)
-    {
-        return conn.read();
-    }
-
-    public static bool writePacket(Connection conn)
-    {
-        return conn.write();
-    }
-
-    public static NetworkStream? getOutputStream(Connection conn)
-    {
-        return conn._networkStream;
-    }
-
-    public static bool isDisconnected(Connection conn)
-    {
-        return conn.disconnected;
-    }
-
-    public static void disconnect(Connection conn, Exception ex)
-    {
-        conn.disconnect(ex);
     }
 }
