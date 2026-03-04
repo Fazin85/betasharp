@@ -1,6 +1,6 @@
 using Silk.NET.Core.Attributes;
 
-namespace Silk.NET.OpenGL.Legacy;
+namespace BetaSharp.Client.Rendering.Core.OpenGL;
 
 [NativeName("Name", "GLenum")]
 public enum GLEnum : int
@@ -3625,5 +3625,5 @@ public enum GLEnum : int
 
 public static class LegacyGLEnumExtensions
 {
-    public static OpenGL.GLEnum ToModern(this GLEnum legacyEnum) => (OpenGL.GLEnum)legacyEnum;
+    public static Silk.NET.OpenGL.GLEnum ToModern(this GLEnum legacyEnum) => (Silk.NET.OpenGL.GLEnum)legacyEnum;
 }

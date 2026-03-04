@@ -1,5 +1,5 @@
 using Silk.NET.OpenGL;
-using GLEnum = Silk.NET.OpenGL.Legacy.GLEnum;
+using GLEnum = BetaSharp.Client.Rendering.Core.OpenGL.GLEnum;
 
 namespace BetaSharp.Client.Rendering.Core;
 

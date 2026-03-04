@@ -1,8 +1,8 @@
 using BetaSharp.Client.Rendering.Core;
+using BetaSharp.Client.Rendering.Core.OpenGL;
 using BetaSharp.Util;
 using BetaSharp.Util.Maths;
 using Silk.NET.Maths;
-using Silk.NET.OpenGL.Legacy;
 using Shader = BetaSharp.Client.Rendering.Core.Shader;
 using VertexArray = BetaSharp.Client.Rendering.Core.VertexArray;
 

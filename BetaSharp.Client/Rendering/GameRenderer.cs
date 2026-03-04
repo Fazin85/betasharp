@@ -15,8 +15,7 @@ using BetaSharp.Worlds.Biomes;
 using BetaSharp.Worlds.Chunks;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
-using Silk.NET.OpenGL.Legacy;
-using GLEnum = Silk.NET.OpenGL.Legacy.GLEnum;
+using GLEnum = BetaSharp.Client.Rendering.Core.OpenGL.GLEnum;
 
 namespace BetaSharp.Client.Rendering;
 

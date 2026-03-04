@@ -2,7 +2,7 @@ using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Items;
 using BetaSharp.Stats;
 using Silk.NET.OpenGL;
-using GLEnum = Silk.NET.OpenGL.Legacy.GLEnum;
+using GLEnum = BetaSharp.Client.Rendering.Core.OpenGL.GLEnum;
 
 namespace BetaSharp.Client.Guis;
 

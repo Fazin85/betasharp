@@ -8,8 +8,8 @@ using BetaSharp.Inventorys;
 using BetaSharp.Items;
 using BetaSharp.Util;
 using BetaSharp.Util.Maths;
-using Silk.NET.OpenGL.Legacy;
 using SixLabors.ImageSharp.PixelFormats;
+using BetaSharp.Client.Rendering.Core.OpenGL;
 
 namespace BetaSharp.Client.Guis;
 
