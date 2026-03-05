@@ -56,7 +56,7 @@ internal class BlockTNT : Block
         {
             if ((meta & 1) == 0)
             {
-                dropStack(world, x, y, z, new ItemStack(Block.TNT.id, 1, 0));
+                dropStack(world, x, y, z, new ItemStack(Block.Tnt.id, 1, 0));
             }
             else
             {

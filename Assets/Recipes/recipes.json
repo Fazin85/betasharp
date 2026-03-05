@@ -2,7 +2,7 @@
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:WoodenPickaxe",
+      "Name": "betasharp:wooden_pickaxe",
       "Count": 1,
       "Meta": 0
     },
@@ -12,14 +12,14 @@
       " # "
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:Planks"
+      "#": "betasharp:stick",
+      "X": "betasharp:planks"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:WoodenShovel",
+      "Name": "betasharp:wooden_shovel",
       "Count": 1,
       "Meta": 0
     },
@@ -29,14 +29,14 @@
       "#"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:Planks"
+      "#": "betasharp:stick",
+      "X": "betasharp:planks"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:WoodenAxe",
+      "Name": "betasharp:wooden_axe",
       "Count": 1,
       "Meta": 0
     },
@@ -46,14 +46,14 @@
       " #"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:Planks"
+      "#": "betasharp:stick",
+      "X": "betasharp:planks"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:WoodenHoe",
+      "Name": "betasharp:wooden_hoe",
       "Count": 1,
       "Meta": 0
     },
@@ -63,14 +63,14 @@
       " #"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:Planks"
+      "#": "betasharp:stick",
+      "X": "betasharp:planks"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:StonePickaxe",
+      "Name": "betasharp:stone_pickaxe",
       "Count": 1,
       "Meta": 0
     },
@@ -80,14 +80,14 @@
       " # "
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:Cobblestone"
+      "#": "betasharp:stick",
+      "X": "betasharp:cobblestone"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:StoneShovel",
+      "Name": "betasharp:stone_shovel",
       "Count": 1,
       "Meta": 0
     },
@@ -97,14 +97,14 @@
       "#"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:Cobblestone"
+      "#": "betasharp:stick",
+      "X": "betasharp:cobblestone"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:StoneAxe",
+      "Name": "betasharp:stone_axe",
       "Count": 1,
       "Meta": 0
     },
@@ -114,14 +114,14 @@
       " #"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:Cobblestone"
+      "#": "betasharp:stick",
+      "X": "betasharp:cobblestone"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:StoneHoe",
+      "Name": "betasharp:stone_hoe",
       "Count": 1,
       "Meta": 0
     },
@@ -131,14 +131,14 @@
       " #"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:Cobblestone"
+      "#": "betasharp:stick",
+      "X": "betasharp:cobblestone"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:IronPickaxe",
+      "Name": "betasharp:iron_pickaxe",
       "Count": 1,
       "Meta": 0
     },
@@ -148,14 +148,14 @@
       " # "
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:IronIngot"
+      "#": "betasharp:stick",
+      "X": "betasharp:iron_ingot"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:IronShovel",
+      "Name": "betasharp:iron_shovel",
       "Count": 1,
       "Meta": 0
     },
@@ -165,14 +165,14 @@
       "#"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:IronIngot"
+      "#": "betasharp:stick",
+      "X": "betasharp:iron_ingot"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:IronAxe",
+      "Name": "betasharp:iron_axe",
       "Count": 1,
       "Meta": 0
     },
@@ -182,14 +182,14 @@
       " #"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:IronIngot"
+      "#": "betasharp:stick",
+      "X": "betasharp:iron_ingot"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:IronHoe",
+      "Name": "betasharp:iron_hoe",
       "Count": 1,
       "Meta": 0
     },
@@ -199,14 +199,14 @@
       " #"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:IronIngot"
+      "#": "betasharp:stick",
+      "X": "betasharp:iron_ingot"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:DiamondPickaxe",
+      "Name": "betasharp:diamond_pickaxe",
       "Count": 1,
       "Meta": 0
     },
@@ -216,14 +216,14 @@
       " # "
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:Diamond"
+      "#": "betasharp:stick",
+      "X": "betasharp:diamond"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:DiamondShovel",
+      "Name": "betasharp:diamond_shovel",
       "Count": 1,
       "Meta": 0
     },
@@ -233,14 +233,14 @@
       "#"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:Diamond"
+      "#": "betasharp:stick",
+      "X": "betasharp:diamond"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:DiamondAxe",
+      "Name": "betasharp:diamond_axe",
       "Count": 1,
       "Meta": 0
     },
@@ -250,14 +250,14 @@
       " #"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:Diamond"
+      "#": "betasharp:stick",
+      "X": "betasharp:diamond"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:DiamondHoe",
+      "Name": "betasharp:diamond_hoe",
       "Count": 1,
       "Meta": 0
     },
@@ -267,14 +267,14 @@
       " #"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:Diamond"
+      "#": "betasharp:stick",
+      "X": "betasharp:diamond"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:GoldenPickaxe",
+      "Name": "betasharp:golden_pickaxe",
       "Count": 1,
       "Meta": 0
     },
@@ -284,14 +284,14 @@
       " # "
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:GoldIngot"
+      "#": "betasharp:stick",
+      "X": "betasharp:gold_ingot"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:GoldenShovel",
+      "Name": "betasharp:golden_shovel",
       "Count": 1,
       "Meta": 0
     },
@@ -301,14 +301,14 @@
       "#"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:GoldIngot"
+      "#": "betasharp:stick",
+      "X": "betasharp:gold_ingot"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:GoldenAxe",
+      "Name": "betasharp:golden_axe",
       "Count": 1,
       "Meta": 0
     },
@@ -318,14 +318,14 @@
       " #"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:GoldIngot"
+      "#": "betasharp:stick",
+      "X": "betasharp:gold_ingot"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:GoldenHoe",
+      "Name": "betasharp:golden_hoe",
       "Count": 1,
       "Meta": 0
     },
@@ -335,14 +335,14 @@
       " #"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:GoldIngot"
+      "#": "betasharp:stick",
+      "X": "betasharp:gold_ingot"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Shears",
+      "Name": "betasharp:shears",
       "Count": 1,
       "Meta": 0
     },
@@ -351,13 +351,13 @@
       "# "
     ],
     "Key": {
-      "#": "betasharp:IronIngot"
+      "#": "betasharp:iron_ingot"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:WoodenSword",
+      "Name": "betasharp:wooden_sword",
       "Count": 1,
       "Meta": 0
     },
@@ -367,14 +367,14 @@
       "#"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:Planks"
+      "#": "betasharp:stick",
+      "X": "betasharp:planks"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:StoneSword",
+      "Name": "betasharp:stone_sword",
       "Count": 1,
       "Meta": 0
     },
@@ -384,14 +384,14 @@
       "#"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:Cobblestone"
+      "#": "betasharp:stick",
+      "X": "betasharp:cobblestone"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:IronSword",
+      "Name": "betasharp:iron_sword",
       "Count": 1,
       "Meta": 0
     },
@@ -401,14 +401,14 @@
       "#"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:IronIngot"
+      "#": "betasharp:stick",
+      "X": "betasharp:iron_ingot"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:DiamondSword",
+      "Name": "betasharp:diamond_sword",
       "Count": 1,
       "Meta": 0
     },
@@ -418,14 +418,14 @@
       "#"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:Diamond"
+      "#": "betasharp:stick",
+      "X": "betasharp:diamond"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:GoldenSword",
+      "Name": "betasharp:golden_sword",
       "Count": 1,
       "Meta": 0
     },
@@ -435,14 +435,14 @@
       "#"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:GoldIngot"
+      "#": "betasharp:stick",
+      "X": "betasharp:gold_ingot"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:BOW",
+      "Name": "betasharp:bow",
       "Count": 1,
       "Meta": 0
     },
@@ -452,14 +452,14 @@
       " #X"
     ],
     "Key": {
-      "X": "betasharp:String",
-      "#": "betasharp:Stick"
+      "X": "betasharp:string",
+      "#": "betasharp:stick"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:ARROW",
+      "Name": "betasharp:arrow",
       "Count": 4,
       "Meta": 0
     },
@@ -469,15 +469,15 @@
       "Y"
     ],
     "Key": {
-      "Y": "betasharp:Feather",
-      "X": "betasharp:Flint",
-      "#": "betasharp:Stick"
+      "Y": "betasharp:feather",
+      "X": "betasharp:flint",
+      "#": "betasharp:stick"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:GoldBlock",
+      "Name": "betasharp:gold_block",
       "Count": 1,
       "Meta": 0
     },
@@ -487,13 +487,13 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:GoldIngot"
+      "#": "betasharp:gold_ingot"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:GoldIngot",
+      "Name": "betasharp:gold_ingot",
       "Count": 9,
       "Meta": 0
     },
@@ -501,13 +501,13 @@
       "#"
     ],
     "Key": {
-      "#": "betasharp:GoldBlock"
+      "#": "betasharp:gold_block"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:IronBlock",
+      "Name": "betasharp:iron_block",
       "Count": 1,
       "Meta": 0
     },
@@ -517,13 +517,13 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:IronIngot"
+      "#": "betasharp:iron_ingot"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:IronIngot",
+      "Name": "betasharp:iron_ingot",
       "Count": 9,
       "Meta": 0
     },
@@ -531,13 +531,13 @@
       "#"
     ],
     "Key": {
-      "#": "betasharp:IronBlock"
+      "#": "betasharp:iron_block"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:DiamondBlock",
+      "Name": "betasharp:diamond_block",
       "Count": 1,
       "Meta": 0
     },
@@ -547,13 +547,13 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:Diamond"
+      "#": "betasharp:diamond"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Diamond",
+      "Name": "betasharp:diamond",
       "Count": 9,
       "Meta": 0
     },
@@ -561,13 +561,13 @@
       "#"
     ],
     "Key": {
-      "#": "betasharp:DiamondBlock"
+      "#": "betasharp:diamond_block"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:LapisBlock",
+      "Name": "betasharp:lapis_block",
       "Count": 1,
       "Meta": 0
     },
@@ -577,13 +577,13 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:Dye"
+      "#": "betasharp:dye"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Dye",
+      "Name": "betasharp:dye",
       "Count": 9,
       "Meta": 4
     },
@@ -591,13 +591,13 @@
       "#"
     ],
     "Key": {
-      "#": "betasharp:LapisBlock"
+      "#": "betasharp:lapis_block"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:MushroomStew",
+      "Name": "betasharp:mushroom_stew",
       "Count": 1,
       "Meta": 0
     },
@@ -607,15 +607,15 @@
       "#"
     ],
     "Key": {
-      "X": "betasharp:BrownMushroom",
-      "Y": "betasharp:RedMushroom",
-      "#": "betasharp:Bowl"
+      "X": "betasharp:brown_mushroom",
+      "Y": "betasharp:red_mushroom",
+      "#": "betasharp:bowl"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:MushroomStew",
+      "Name": "betasharp:mushroom_stew",
       "Count": 1,
       "Meta": 0
     },
@@ -625,15 +625,15 @@
       "#"
     ],
     "Key": {
-      "X": "betasharp:RedMushroom",
-      "Y": "betasharp:BrownMushroom",
-      "#": "betasharp:Bowl"
+      "X": "betasharp:red_mushroom",
+      "Y": "betasharp:brown_mushroom",
+      "#": "betasharp:bowl"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Cookie",
+      "Name": "betasharp:cookie",
       "Count": 8,
       "Meta": 0
     },
@@ -641,14 +641,14 @@
       "#X#"
     ],
     "Key": {
-      "X": "betasharp:Dye",
-      "#": "betasharp:Wheat"
+      "X": "betasharp:dye",
+      "#": "betasharp:wheat"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Chest",
+      "Name": "betasharp:chest",
       "Count": 1,
       "Meta": 0
     },
@@ -658,13 +658,13 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:Planks"
+      "#": "betasharp:planks"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Furnace",
+      "Name": "betasharp:furnace",
       "Count": 1,
       "Meta": 0
     },
@@ -674,13 +674,13 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:Cobblestone"
+      "#": "betasharp:cobblestone"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:CraftingTable",
+      "Name": "betasharp:crafting_table",
       "Count": 1,
       "Meta": 0
     },
@@ -689,13 +689,13 @@
       "##"
     ],
     "Key": {
-      "#": "betasharp:Planks"
+      "#": "betasharp:planks"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Sandstone",
+      "Name": "betasharp:sandstone",
       "Count": 1,
       "Meta": 0
     },
@@ -704,13 +704,13 @@
       "##"
     ],
     "Key": {
-      "#": "betasharp:Sand"
+      "#": "betasharp:sand"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:LeatherHelmet",
+      "Name": "betasharp:leather_helmet",
       "Count": 1,
       "Meta": 0
     },
@@ -719,13 +719,13 @@
       "X X"
     ],
     "Key": {
-      "X": "betasharp:Leather"
+      "X": "betasharp:leather"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:LeatherChestplate",
+      "Name": "betasharp:leather_chestplate",
       "Count": 1,
       "Meta": 0
     },
@@ -735,13 +735,13 @@
       "XXX"
     ],
     "Key": {
-      "X": "betasharp:Leather"
+      "X": "betasharp:leather"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:LeatherLeggings",
+      "Name": "betasharp:leather_leggings",
       "Count": 1,
       "Meta": 0
     },
@@ -751,13 +751,13 @@
       "X X"
     ],
     "Key": {
-      "X": "betasharp:Leather"
+      "X": "betasharp:leather"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:LeatherBoots",
+      "Name": "betasharp:leather_boots",
       "Count": 1,
       "Meta": 0
     },
@@ -766,13 +766,13 @@
       "X X"
     ],
     "Key": {
-      "X": "betasharp:Leather"
+      "X": "betasharp:leather"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:ChainHelmet",
+      "Name": "betasharp:chain_helmet",
       "Count": 1,
       "Meta": 0
     },
@@ -781,75 +781,13 @@
       "X X"
     ],
     "Key": {
-      "X": "betasharp:Fire"
+      "X": "betasharp:fire"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:ChainChestplate",
-      "Count": 1,
-      "Meta": 0
-    },
-    "Pattern": [
-      "X X",
-      "XXX",
-      "XXX"
-    ],
-    "Key": {
-      "X": "betasharp:Fire"
-    }
-  },
-  {
-    "Type": "shaped",
-    "Result": {
-      "Name": "betasharp:ChainLeggings",
-      "Count": 1,
-      "Meta": 0
-    },
-    "Pattern": [
-      "XXX",
-      "X X",
-      "X X"
-    ],
-    "Key": {
-      "X": "betasharp:Fire"
-    }
-  },
-  {
-    "Type": "shaped",
-    "Result": {
-      "Name": "betasharp:ChainBoots",
-      "Count": 1,
-      "Meta": 0
-    },
-    "Pattern": [
-      "X X",
-      "X X"
-    ],
-    "Key": {
-      "X": "betasharp:Fire"
-    }
-  },
-  {
-    "Type": "shaped",
-    "Result": {
-      "Name": "betasharp:IronHelmet",
-      "Count": 1,
-      "Meta": 0
-    },
-    "Pattern": [
-      "XXX",
-      "X X"
-    ],
-    "Key": {
-      "X": "betasharp:IronIngot"
-    }
-  },
-  {
-    "Type": "shaped",
-    "Result": {
-      "Name": "betasharp:IronChestplate",
+      "Name": "betasharp:chain_chestplate",
       "Count": 1,
       "Meta": 0
     },
@@ -859,13 +797,13 @@
       "XXX"
     ],
     "Key": {
-      "X": "betasharp:IronIngot"
+      "X": "betasharp:fire"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:IronLeggings",
+      "Name": "betasharp:chain_leggings",
       "Count": 1,
       "Meta": 0
     },
@@ -875,13 +813,13 @@
       "X X"
     ],
     "Key": {
-      "X": "betasharp:IronIngot"
+      "X": "betasharp:fire"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:IronBoots",
+      "Name": "betasharp:chain_boots",
       "Count": 1,
       "Meta": 0
     },
@@ -890,13 +828,13 @@
       "X X"
     ],
     "Key": {
-      "X": "betasharp:IronIngot"
+      "X": "betasharp:fire"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:DiamondHelmet",
+      "Name": "betasharp:iron_helmet",
       "Count": 1,
       "Meta": 0
     },
@@ -905,75 +843,13 @@
       "X X"
     ],
     "Key": {
-      "X": "betasharp:Diamond"
+      "X": "betasharp:iron_ingot"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:DiamondChestplate",
-      "Count": 1,
-      "Meta": 0
-    },
-    "Pattern": [
-      "X X",
-      "XXX",
-      "XXX"
-    ],
-    "Key": {
-      "X": "betasharp:Diamond"
-    }
-  },
-  {
-    "Type": "shaped",
-    "Result": {
-      "Name": "betasharp:DiamondLeggings",
-      "Count": 1,
-      "Meta": 0
-    },
-    "Pattern": [
-      "XXX",
-      "X X",
-      "X X"
-    ],
-    "Key": {
-      "X": "betasharp:Diamond"
-    }
-  },
-  {
-    "Type": "shaped",
-    "Result": {
-      "Name": "betasharp:DiamondBoots",
-      "Count": 1,
-      "Meta": 0
-    },
-    "Pattern": [
-      "X X",
-      "X X"
-    ],
-    "Key": {
-      "X": "betasharp:Diamond"
-    }
-  },
-  {
-    "Type": "shaped",
-    "Result": {
-      "Name": "betasharp:GoldenHelmet",
-      "Count": 1,
-      "Meta": 0
-    },
-    "Pattern": [
-      "XXX",
-      "X X"
-    ],
-    "Key": {
-      "X": "betasharp:GoldIngot"
-    }
-  },
-  {
-    "Type": "shaped",
-    "Result": {
-      "Name": "betasharp:GoldenChestplate",
+      "Name": "betasharp:iron_chestplate",
       "Count": 1,
       "Meta": 0
     },
@@ -983,13 +859,13 @@
       "XXX"
     ],
     "Key": {
-      "X": "betasharp:GoldIngot"
+      "X": "betasharp:iron_ingot"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:GoldenLeggings",
+      "Name": "betasharp:iron_leggings",
       "Count": 1,
       "Meta": 0
     },
@@ -999,13 +875,13 @@
       "X X"
     ],
     "Key": {
-      "X": "betasharp:GoldIngot"
+      "X": "betasharp:iron_ingot"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:GoldenBoots",
+      "Name": "betasharp:iron_boots",
       "Count": 1,
       "Meta": 0
     },
@@ -1014,386 +890,510 @@
       "X X"
     ],
     "Key": {
-      "X": "betasharp:GoldIngot"
+      "X": "betasharp:iron_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:diamond_helmet",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XXX",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:diamond"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:diamond_chestplate",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X X",
+      "XXX",
+      "XXX"
+    ],
+    "Key": {
+      "X": "betasharp:diamond"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:diamond_leggings",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XXX",
+      "X X",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:diamond"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:diamond_boots",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X X",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:diamond"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:golden_helmet",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XXX",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:gold_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:golden_chestplate",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X X",
+      "XXX",
+      "XXX"
+    ],
+    "Key": {
+      "X": "betasharp:gold_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:golden_leggings",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XXX",
+      "X X",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:gold_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:golden_boots",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X X",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:gold_ingot"
     }
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Wool",
+      "Name": "betasharp:wool",
       "Count": 1,
       "Meta": 15
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Wool"
+      "betasharp:dye",
+      "betasharp:wool"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Wool",
+      "Name": "betasharp:wool",
       "Count": 1,
       "Meta": 14
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Wool"
+      "betasharp:dye",
+      "betasharp:wool"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Wool",
+      "Name": "betasharp:wool",
       "Count": 1,
       "Meta": 13
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Wool"
+      "betasharp:dye",
+      "betasharp:wool"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Wool",
+      "Name": "betasharp:wool",
       "Count": 1,
       "Meta": 12
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Wool"
+      "betasharp:dye",
+      "betasharp:wool"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Wool",
+      "Name": "betasharp:wool",
       "Count": 1,
       "Meta": 11
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Wool"
+      "betasharp:dye",
+      "betasharp:wool"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Wool",
+      "Name": "betasharp:wool",
       "Count": 1,
       "Meta": 10
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Wool"
+      "betasharp:dye",
+      "betasharp:wool"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Wool",
+      "Name": "betasharp:wool",
       "Count": 1,
       "Meta": 9
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Wool"
+      "betasharp:dye",
+      "betasharp:wool"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Wool",
+      "Name": "betasharp:wool",
       "Count": 1,
       "Meta": 8
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Wool"
+      "betasharp:dye",
+      "betasharp:wool"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Wool",
+      "Name": "betasharp:wool",
       "Count": 1,
       "Meta": 7
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Wool"
+      "betasharp:dye",
+      "betasharp:wool"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Wool",
+      "Name": "betasharp:wool",
       "Count": 1,
       "Meta": 6
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Wool"
+      "betasharp:dye",
+      "betasharp:wool"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Wool",
+      "Name": "betasharp:wool",
       "Count": 1,
       "Meta": 5
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Wool"
+      "betasharp:dye",
+      "betasharp:wool"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Wool",
+      "Name": "betasharp:wool",
       "Count": 1,
       "Meta": 4
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Wool"
+      "betasharp:dye",
+      "betasharp:wool"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Wool",
+      "Name": "betasharp:wool",
       "Count": 1,
       "Meta": 3
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Wool"
+      "betasharp:dye",
+      "betasharp:wool"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Wool",
+      "Name": "betasharp:wool",
       "Count": 1,
       "Meta": 2
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Wool"
+      "betasharp:dye",
+      "betasharp:wool"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Wool",
+      "Name": "betasharp:wool",
       "Count": 1,
       "Meta": 1
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Wool"
+      "betasharp:dye",
+      "betasharp:wool"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Wool",
+      "Name": "betasharp:wool",
       "Count": 1,
       "Meta": 0
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Wool"
+      "betasharp:dye",
+      "betasharp:wool"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Dye",
+      "Name": "betasharp:dye",
       "Count": 2,
       "Meta": 11
     },
     "Ingredients": [
-      "betasharp:Dandelion"
+      "betasharp:dandelion"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Dye",
+      "Name": "betasharp:dye",
       "Count": 2,
       "Meta": 1
     },
     "Ingredients": [
-      "betasharp:Rose"
+      "betasharp:rose"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Dye",
+      "Name": "betasharp:dye",
       "Count": 3,
       "Meta": 15
     },
     "Ingredients": [
-      "betasharp:Bone"
+      "betasharp:bone"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Dye",
+      "Name": "betasharp:dye",
       "Count": 2,
       "Meta": 9
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Dye"
+      "betasharp:dye",
+      "betasharp:dye"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Dye",
+      "Name": "betasharp:dye",
       "Count": 2,
       "Meta": 14
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Dye"
+      "betasharp:dye",
+      "betasharp:dye"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Dye",
+      "Name": "betasharp:dye",
       "Count": 2,
       "Meta": 10
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Dye"
+      "betasharp:dye",
+      "betasharp:dye"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Dye",
+      "Name": "betasharp:dye",
       "Count": 2,
       "Meta": 8
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Dye"
+      "betasharp:dye",
+      "betasharp:dye"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Dye",
+      "Name": "betasharp:dye",
       "Count": 2,
       "Meta": 7
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Dye"
+      "betasharp:dye",
+      "betasharp:dye"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Dye",
+      "Name": "betasharp:dye",
       "Count": 3,
       "Meta": 7
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Dye",
-      "betasharp:Dye"
+      "betasharp:dye",
+      "betasharp:dye",
+      "betasharp:dye"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Dye",
+      "Name": "betasharp:dye",
       "Count": 2,
       "Meta": 12
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Dye"
+      "betasharp:dye",
+      "betasharp:dye"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Dye",
+      "Name": "betasharp:dye",
       "Count": 2,
       "Meta": 6
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Dye"
+      "betasharp:dye",
+      "betasharp:dye"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Dye",
+      "Name": "betasharp:dye",
       "Count": 2,
       "Meta": 5
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Dye"
+      "betasharp:dye",
+      "betasharp:dye"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Dye",
+      "Name": "betasharp:dye",
       "Count": 2,
       "Meta": 13
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Dye"
+      "betasharp:dye",
+      "betasharp:dye"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Dye",
+      "Name": "betasharp:dye",
       "Count": 3,
       "Meta": 13
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Dye",
-      "betasharp:Dye"
+      "betasharp:dye",
+      "betasharp:dye",
+      "betasharp:dye"
     ]
   },
   {
     "Type": "shapeless",
     "Result": {
-      "Name": "betasharp:Dye",
+      "Name": "betasharp:dye",
       "Count": 4,
       "Meta": 13
     },
     "Ingredients": [
-      "betasharp:Dye",
-      "betasharp:Dye",
-      "betasharp:Dye",
-      "betasharp:Dye"
+      "betasharp:dye",
+      "betasharp:dye",
+      "betasharp:dye",
+      "betasharp:dye"
     ]
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Paper",
+      "Name": "betasharp:paper",
       "Count": 3,
       "Meta": 0
     },
@@ -1401,13 +1401,13 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:SugarCane"
+      "#": "betasharp:sugar_cane"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Book",
+      "Name": "betasharp:book",
       "Count": 1,
       "Meta": 0
     },
@@ -1417,13 +1417,13 @@
       "#"
     ],
     "Key": {
-      "#": "betasharp:Paper"
+      "#": "betasharp:paper"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Fence",
+      "Name": "betasharp:fence",
       "Count": 2,
       "Meta": 0
     },
@@ -1432,13 +1432,13 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:Stick"
+      "#": "betasharp:stick"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Jukebox",
+      "Name": "betasharp:jukebox",
       "Count": 1,
       "Meta": 0
     },
@@ -1448,14 +1448,14 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:Planks",
-      "X": "betasharp:Diamond"
+      "#": "betasharp:planks",
+      "X": "betasharp:diamond"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Noteblock",
+      "Name": "betasharp:noteblock",
       "Count": 1,
       "Meta": 0
     },
@@ -1465,14 +1465,14 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:Planks",
-      "X": "betasharp:Redstone"
+      "#": "betasharp:planks",
+      "X": "betasharp:redstone"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Bookshelf",
+      "Name": "betasharp:bookshelf",
       "Count": 1,
       "Meta": 0
     },
@@ -1482,14 +1482,14 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:Planks",
-      "X": "betasharp:Book"
+      "#": "betasharp:planks",
+      "X": "betasharp:book"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:SnowBlock",
+      "Name": "betasharp:snow_block",
       "Count": 1,
       "Meta": 0
     },
@@ -1498,13 +1498,13 @@
       "##"
     ],
     "Key": {
-      "#": "betasharp:Snowball"
+      "#": "betasharp:snowball"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Clay",
+      "Name": "betasharp:clay",
       "Count": 1,
       "Meta": 0
     },
@@ -1513,13 +1513,13 @@
       "##"
     ],
     "Key": {
-      "#": "betasharp:Clay"
+      "#": "betasharp:clay"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Bricks",
+      "Name": "betasharp:bricks",
       "Count": 1,
       "Meta": 0
     },
@@ -1528,13 +1528,13 @@
       "##"
     ],
     "Key": {
-      "#": "betasharp:Brick"
+      "#": "betasharp:brick"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Glowstone",
+      "Name": "betasharp:glowstone",
       "Count": 1,
       "Meta": 0
     },
@@ -1543,13 +1543,13 @@
       "##"
     ],
     "Key": {
-      "#": "betasharp:GlowstoneDust"
+      "#": "betasharp:glowstone_dust"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Wool",
+      "Name": "betasharp:wool",
       "Count": 1,
       "Meta": 0
     },
@@ -1558,13 +1558,13 @@
       "##"
     ],
     "Key": {
-      "#": "betasharp:String"
+      "#": "betasharp:string"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:TNT",
+      "Name": "betasharp:tnt",
       "Count": 1,
       "Meta": 0
     },
@@ -1574,14 +1574,14 @@
       "X#X"
     ],
     "Key": {
-      "X": "betasharp:Gunpowder",
-      "#": "betasharp:Sand"
+      "X": "betasharp:gunpowder",
+      "#": "betasharp:sand"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Slab",
+      "Name": "betasharp:slab",
       "Count": 3,
       "Meta": 3
     },
@@ -1589,13 +1589,13 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:Cobblestone"
+      "#": "betasharp:cobblestone"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Slab",
+      "Name": "betasharp:slab",
       "Count": 3,
       "Meta": 0
     },
@@ -1603,13 +1603,13 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:Stone"
+      "#": "betasharp:stone"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Slab",
+      "Name": "betasharp:slab",
       "Count": 3,
       "Meta": 1
     },
@@ -1617,13 +1617,13 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:Sandstone"
+      "#": "betasharp:sandstone"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Slab",
+      "Name": "betasharp:slab",
       "Count": 3,
       "Meta": 2
     },
@@ -1631,13 +1631,13 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:Planks"
+      "#": "betasharp:planks"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Ladder",
+      "Name": "betasharp:ladder",
       "Count": 2,
       "Meta": 0
     },
@@ -1647,13 +1647,13 @@
       "# #"
     ],
     "Key": {
-      "#": "betasharp:Stick"
+      "#": "betasharp:stick"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:WoodenDoor",
+      "Name": "betasharp:wooden_door",
       "Count": 1,
       "Meta": 0
     },
@@ -1663,13 +1663,13 @@
       "##"
     ],
     "Key": {
-      "#": "betasharp:Planks"
+      "#": "betasharp:planks"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Trapdoor",
+      "Name": "betasharp:trapdoor",
       "Count": 2,
       "Meta": 0
     },
@@ -1678,13 +1678,13 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:Planks"
+      "#": "betasharp:planks"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:IronDoor",
+      "Name": "betasharp:iron_door",
       "Count": 1,
       "Meta": 0
     },
@@ -1694,13 +1694,13 @@
       "##"
     ],
     "Key": {
-      "#": "betasharp:IronIngot"
+      "#": "betasharp:iron_ingot"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Sign",
+      "Name": "betasharp:sign",
       "Count": 1,
       "Meta": 0
     },
@@ -1710,14 +1710,14 @@
       " X "
     ],
     "Key": {
-      "#": "betasharp:Planks",
-      "X": "betasharp:Stick"
+      "#": "betasharp:planks",
+      "X": "betasharp:stick"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Cake",
+      "Name": "betasharp:cake",
       "Count": 1,
       "Meta": 0
     },
@@ -1727,16 +1727,16 @@
       "CCC"
     ],
     "Key": {
-      "A": "betasharp:MilkBucket",
-      "B": "betasharp:Sugar",
-      "C": "betasharp:Wheat",
-      "E": "betasharp:Egg"
+      "A": "betasharp:milk_bucket",
+      "B": "betasharp:sugar",
+      "C": "betasharp:wheat",
+      "E": "betasharp:egg"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Sugar",
+      "Name": "betasharp:sugar",
       "Count": 1,
       "Meta": 0
     },
@@ -1744,13 +1744,13 @@
       "#"
     ],
     "Key": {
-      "#": "betasharp:SugarCane"
+      "#": "betasharp:sugar_cane"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Planks",
+      "Name": "betasharp:planks",
       "Count": 4,
       "Meta": 0
     },
@@ -1758,13 +1758,13 @@
       "#"
     ],
     "Key": {
-      "#": "betasharp:Log"
+      "#": "betasharp:log"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Stick",
+      "Name": "betasharp:stick",
       "Count": 4,
       "Meta": 0
     },
@@ -1773,13 +1773,13 @@
       "#"
     ],
     "Key": {
-      "#": "betasharp:Planks"
+      "#": "betasharp:planks"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Torch",
+      "Name": "betasharp:torch",
       "Count": 4,
       "Meta": 0
     },
@@ -1788,14 +1788,14 @@
       "#"
     ],
     "Key": {
-      "X": "betasharp:Coal",
-      "#": "betasharp:Stick"
+      "X": "betasharp:coal",
+      "#": "betasharp:stick"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Torch",
+      "Name": "betasharp:torch",
       "Count": 4,
       "Meta": 0
     },
@@ -1804,14 +1804,14 @@
       "#"
     ],
     "Key": {
-      "X": "betasharp:Coal",
-      "#": "betasharp:Stick"
+      "X": "betasharp:coal",
+      "#": "betasharp:stick"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Bowl",
+      "Name": "betasharp:bowl",
       "Count": 4,
       "Meta": 0
     },
@@ -1820,13 +1820,13 @@
       " # "
     ],
     "Key": {
-      "#": "betasharp:Planks"
+      "#": "betasharp:planks"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Rail",
+      "Name": "betasharp:rail",
       "Count": 16,
       "Meta": 0
     },
@@ -1836,14 +1836,14 @@
       "X X"
     ],
     "Key": {
-      "X": "betasharp:IronIngot",
-      "#": "betasharp:Stick"
+      "X": "betasharp:iron_ingot",
+      "#": "betasharp:stick"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:PoweredRail",
+      "Name": "betasharp:powered_rail",
       "Count": 6,
       "Meta": 0
     },
@@ -1853,15 +1853,15 @@
       "XRX"
     ],
     "Key": {
-      "X": "betasharp:GoldIngot",
-      "R": "betasharp:Redstone",
-      "#": "betasharp:Stick"
+      "X": "betasharp:gold_ingot",
+      "R": "betasharp:redstone",
+      "#": "betasharp:stick"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:DetectorRail",
+      "Name": "betasharp:detector_rail",
       "Count": 6,
       "Meta": 0
     },
@@ -1871,15 +1871,15 @@
       "XRX"
     ],
     "Key": {
-      "X": "betasharp:IronIngot",
-      "R": "betasharp:Redstone",
-      "#": "betasharp:StonePressurePlate"
+      "X": "betasharp:iron_ingot",
+      "R": "betasharp:redstone",
+      "#": "betasharp:stone_pressure_plate"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Minecart",
+      "Name": "betasharp:minecart",
       "Count": 1,
       "Meta": 0
     },
@@ -1888,13 +1888,13 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:IronIngot"
+      "#": "betasharp:iron_ingot"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:JackLantern",
+      "Name": "betasharp:jack_lantern",
       "Count": 1,
       "Meta": 0
     },
@@ -1903,14 +1903,14 @@
       "B"
     ],
     "Key": {
-      "A": "betasharp:Pumpkin",
-      "B": "betasharp:Torch"
+      "A": "betasharp:pumpkin",
+      "B": "betasharp:torch"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:ChestMinecart",
+      "Name": "betasharp:chest_minecart",
       "Count": 1,
       "Meta": 0
     },
@@ -1919,14 +1919,14 @@
       "B"
     ],
     "Key": {
-      "A": "betasharp:Chest",
-      "B": "betasharp:Minecart"
+      "A": "betasharp:chest",
+      "B": "betasharp:minecart"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:FurnaceMinecart",
+      "Name": "betasharp:furnace_minecart",
       "Count": 1,
       "Meta": 0
     },
@@ -1935,14 +1935,14 @@
       "B"
     ],
     "Key": {
-      "A": "betasharp:Furnace",
-      "B": "betasharp:Minecart"
+      "A": "betasharp:furnace",
+      "B": "betasharp:minecart"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Boat",
+      "Name": "betasharp:boat",
       "Count": 1,
       "Meta": 0
     },
@@ -1951,13 +1951,13 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:Planks"
+      "#": "betasharp:planks"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Bucket",
+      "Name": "betasharp:bucket",
       "Count": 1,
       "Meta": 0
     },
@@ -1966,13 +1966,13 @@
       " # "
     ],
     "Key": {
-      "#": "betasharp:IronIngot"
+      "#": "betasharp:iron_ingot"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:FlintAndSteel",
+      "Name": "betasharp:flint_and_steel",
       "Count": 1,
       "Meta": 0
     },
@@ -1981,14 +1981,14 @@
       " B"
     ],
     "Key": {
-      "A": "betasharp:IronIngot",
-      "B": "betasharp:Flint"
+      "A": "betasharp:iron_ingot",
+      "B": "betasharp:flint"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Bread",
+      "Name": "betasharp:bread",
       "Count": 1,
       "Meta": 0
     },
@@ -1996,13 +1996,13 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:Wheat"
+      "#": "betasharp:wheat"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:WoodenStairs",
+      "Name": "betasharp:wooden_stairs",
       "Count": 4,
       "Meta": 0
     },
@@ -2012,13 +2012,13 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:Planks"
+      "#": "betasharp:planks"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:FishingRod",
+      "Name": "betasharp:fishing_rod",
       "Count": 1,
       "Meta": 0
     },
@@ -2028,14 +2028,14 @@
       "# X"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:String"
+      "#": "betasharp:stick",
+      "X": "betasharp:string"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:CobblestoneStairs",
+      "Name": "betasharp:cobblestone_stairs",
       "Count": 4,
       "Meta": 0
     },
@@ -2045,13 +2045,13 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:Cobblestone"
+      "#": "betasharp:cobblestone"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Painting",
+      "Name": "betasharp:painting",
       "Count": 1,
       "Meta": 0
     },
@@ -2061,14 +2061,14 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:Wool"
+      "#": "betasharp:stick",
+      "X": "betasharp:wool"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:GoldenApple",
+      "Name": "betasharp:golden_apple",
       "Count": 1,
       "Meta": 0
     },
@@ -2078,14 +2078,14 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:GoldBlock",
-      "X": "betasharp:Apple"
+      "#": "betasharp:gold_block",
+      "X": "betasharp:apple"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Lever",
+      "Name": "betasharp:lever",
       "Count": 1,
       "Meta": 0
     },
@@ -2094,14 +2094,14 @@
       "#"
     ],
     "Key": {
-      "#": "betasharp:Cobblestone",
-      "X": "betasharp:Stick"
+      "#": "betasharp:cobblestone",
+      "X": "betasharp:stick"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:LitRedstoneTorch",
+      "Name": "betasharp:lit_redstone_torch",
       "Count": 1,
       "Meta": 0
     },
@@ -2110,14 +2110,14 @@
       "#"
     ],
     "Key": {
-      "#": "betasharp:Stick",
-      "X": "betasharp:Redstone"
+      "#": "betasharp:stick",
+      "X": "betasharp:redstone"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Repeater",
+      "Name": "betasharp:repeater",
       "Count": 1,
       "Meta": 0
     },
@@ -2126,15 +2126,15 @@
       "III"
     ],
     "Key": {
-      "#": "betasharp:LitRedstoneTorch",
-      "X": "betasharp:Redstone",
-      "I": "betasharp:Stone"
+      "#": "betasharp:lit_redstone_torch",
+      "X": "betasharp:redstone",
+      "I": "betasharp:stone"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Clock",
+      "Name": "betasharp:clock",
       "Count": 1,
       "Meta": 0
     },
@@ -2144,14 +2144,14 @@
       " # "
     ],
     "Key": {
-      "#": "betasharp:GoldIngot",
-      "X": "betasharp:Redstone"
+      "#": "betasharp:gold_ingot",
+      "X": "betasharp:redstone"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Compass",
+      "Name": "betasharp:compass",
       "Count": 1,
       "Meta": 0
     },
@@ -2161,14 +2161,14 @@
       " # "
     ],
     "Key": {
-      "#": "betasharp:IronIngot",
-      "X": "betasharp:Redstone"
+      "#": "betasharp:iron_ingot",
+      "X": "betasharp:redstone"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Map",
+      "Name": "betasharp:map",
       "Count": 1,
       "Meta": 0
     },
@@ -2178,14 +2178,14 @@
       "###"
     ],
     "Key": {
-      "#": "betasharp:Paper",
-      "X": "betasharp:Compass"
+      "#": "betasharp:paper",
+      "X": "betasharp:compass"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Button",
+      "Name": "betasharp:button",
       "Count": 1,
       "Meta": 0
     },
@@ -2194,13 +2194,13 @@
       "#"
     ],
     "Key": {
-      "#": "betasharp:Stone"
+      "#": "betasharp:stone"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:StonePressurePlate",
+      "Name": "betasharp:stone_pressure_plate",
       "Count": 1,
       "Meta": 0
     },
@@ -2208,13 +2208,13 @@
       "##"
     ],
     "Key": {
-      "#": "betasharp:Stone"
+      "#": "betasharp:stone"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:WoodenPressurePlate",
+      "Name": "betasharp:wooden_pressure_plate",
       "Count": 1,
       "Meta": 0
     },
@@ -2222,13 +2222,13 @@
       "##"
     ],
     "Key": {
-      "#": "betasharp:Planks"
+      "#": "betasharp:planks"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Dispenser",
+      "Name": "betasharp:dispenser",
       "Count": 1,
       "Meta": 0
     },
@@ -2238,15 +2238,15 @@
       "#R#"
     ],
     "Key": {
-      "#": "betasharp:Cobblestone",
-      "X": "betasharp:BOW",
-      "R": "betasharp:Redstone"
+      "#": "betasharp:cobblestone",
+      "X": "betasharp:bow",
+      "R": "betasharp:redstone"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Piston",
+      "Name": "betasharp:piston",
       "Count": 1,
       "Meta": 0
     },
@@ -2256,16 +2256,16 @@
       "#R#"
     ],
     "Key": {
-      "#": "betasharp:Cobblestone",
-      "X": "betasharp:IronIngot",
-      "R": "betasharp:Redstone",
-      "T": "betasharp:Planks"
+      "#": "betasharp:cobblestone",
+      "X": "betasharp:iron_ingot",
+      "R": "betasharp:redstone",
+      "T": "betasharp:planks"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:StickyPiston",
+      "Name": "betasharp:sticky_piston",
       "Count": 1,
       "Meta": 0
     },
@@ -2274,14 +2274,14 @@
       "P"
     ],
     "Key": {
-      "S": "betasharp:Slimeball",
-      "P": "betasharp:Piston"
+      "S": "betasharp:slimeball",
+      "P": "betasharp:piston"
     }
   },
   {
     "Type": "shaped",
     "Result": {
-      "Name": "betasharp:Bed",
+      "Name": "betasharp:bed",
       "Count": 1,
       "Meta": 0
     },
@@ -2290,8 +2290,8 @@
       "XXX"
     ],
     "Key": {
-      "#": "betasharp:Wool",
-      "X": "betasharp:Planks"
+      "#": "betasharp:wool",
+      "X": "betasharp:planks"
     }
   }
 ]

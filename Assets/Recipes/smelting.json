@@ -1,90 +1,90 @@
 [
   {
     "Type": "smelting",
-    "Input": "betasharp:IronOre",
+    "Input": "betasharp:iron_ore",
     "Result": {
-      "Name": "betasharp:IronIngot",
+      "Name": "betasharp:iron_ingot",
       "Count": 1,
       "Meta": 0
     }
   },
   {
     "Type": "smelting",
-    "Input": "betasharp:GoldOre",
+    "Input": "betasharp:gold_ore",
     "Result": {
-      "Name": "betasharp:GoldIngot",
+      "Name": "betasharp:gold_ingot",
       "Count": 1,
       "Meta": 0
     }
   },
   {
     "Type": "smelting",
-    "Input": "betasharp:DiamondOre",
+    "Input": "betasharp:diamond_ore",
     "Result": {
-      "Name": "betasharp:Diamond",
+      "Name": "betasharp:diamond",
       "Count": 1,
       "Meta": 0
     }
   },
   {
     "Type": "smelting",
-    "Input": "betasharp:Sand",
+    "Input": "betasharp:sand",
     "Result": {
-      "Name": "betasharp:Glass",
+      "Name": "betasharp:glass",
       "Count": 1,
       "Meta": 0
     }
   },
   {
     "Type": "smelting",
-    "Input": "betasharp:RawPorkchop",
+    "Input": "betasharp:raw_porkchop",
     "Result": {
-      "Name": "betasharp:CookedPorkchop",
+      "Name": "betasharp:cooked_porkchop",
       "Count": 1,
       "Meta": 0
     }
   },
   {
     "Type": "smelting",
-    "Input": "betasharp:RawFish",
+    "Input": "betasharp:raw_fish",
     "Result": {
-      "Name": "betasharp:CookedFish",
+      "Name": "betasharp:cooked_fish",
       "Count": 1,
       "Meta": 0
     }
   },
   {
     "Type": "smelting",
-    "Input": "betasharp:Cobblestone",
+    "Input": "betasharp:cobblestone",
     "Result": {
-      "Name": "betasharp:Stone",
+      "Name": "betasharp:stone",
       "Count": 1,
       "Meta": 0
     }
   },
   {
     "Type": "smelting",
-    "Input": "betasharp:Clay",
+    "Input": "betasharp:clay",
     "Result": {
-      "Name": "betasharp:Brick",
+      "Name": "betasharp:brick",
       "Count": 1,
       "Meta": 0
     }
   },
   {
     "Type": "smelting",
-    "Input": "betasharp:Cactus",
+    "Input": "betasharp:cactus",
     "Result": {
-      "Name": "betasharp:Dye",
+      "Name": "betasharp:dye",
       "Count": 1,
       "Meta": 2
     }
   },
   {
     "Type": "smelting",
-    "Input": "betasharp:Log",
+    "Input": "betasharp:log",
     "Result": {
-      "Name": "betasharp:Coal",
+      "Name": "betasharp:coal",
       "Count": 1,
       "Meta": 1
     }

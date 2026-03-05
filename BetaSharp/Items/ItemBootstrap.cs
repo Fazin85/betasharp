@@ -10,7 +10,8 @@ public static class ItemBootstrap
         {
             if (typeof(Item).IsAssignableFrom(field.FieldType) && field.GetValue(null) is Item item)
             {
-                var id = new Identifier(Identifier.DefaultNamespace, field.Name.ToLowerInvariant());
+                var path = IdUtils.ToSnakeCase(field.Name);
+                var id = new ResourceLocation(ResourceLocation.DefaultNamespace, path);
                 Registries.Items.Register(id, item);
             }
         }

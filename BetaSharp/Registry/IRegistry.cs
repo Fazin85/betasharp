@@ -4,12 +4,12 @@ namespace BetaSharp.Registry;
 
 public interface IRegistry<T>
 {
-    void Register(Identifier id, T value);
+    void Register(ResourceLocation id, T value);
 
-    bool TryGet(Identifier id, out T value);
+    bool TryGet(ResourceLocation id, out T value);
 
-    T Get(Identifier id);
+    T Get(ResourceLocation id);
 
-    IEnumerable<KeyValuePair<Identifier, T>> GetEntries();
+    IEnumerable<KeyValuePair<ResourceLocation, T>> GetEntries();
 }
 

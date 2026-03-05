@@ -61,8 +61,8 @@ public static class RecipeLoader
             // Validate result
             try
             {
-                _ = Identifier.Parse(recipe.Result.Name);
-                _ = Registry.ItemRegistry.ResolveStack(recipe.Result.Name, recipe.Result.Count, recipe.Result.Meta);
+                _ = ResourceLocation.Parse(recipe.Result.Name);
+                _ = ItemRegistry.ResolveStack(recipe.Result.Name, recipe.Result.Count, recipe.Result.Meta);
             }
             catch (Exception ex)
             {
@@ -76,8 +76,8 @@ public static class RecipeLoader
                 {
                     try
                     {
-                        _ = Identifier.Parse(kvp.Value);
-                        _ = Registry.ItemRegistry.Resolve(kvp.Value);
+                        _ = ResourceLocation.Parse(kvp.Value);
+                        _ = ItemRegistry.Resolve(kvp.Value);
                     }
                     catch (Exception ex)
                     {
@@ -91,8 +91,8 @@ public static class RecipeLoader
                 {
                     try
                     {
-                        _ = Identifier.Parse(ingredient);
-                        _ = Registry.ItemRegistry.Resolve(ingredient);
+                        _ = ResourceLocation.Parse(ingredient);
+                        _ = ItemRegistry.Resolve(ingredient);
                     }
                     catch (Exception ex)
                     {
@@ -186,7 +186,7 @@ public static class RecipeLoader
         {
             try
             {
-                _ = Identifier.Parse(recipe.Input);
+                _ = ResourceLocation.Parse(recipe.Input);
                 _ = ItemRegistry.Resolve(recipe.Input);
             }
             catch (Exception ex)
@@ -196,7 +196,7 @@ public static class RecipeLoader
 
             try
             {
-                _ = Identifier.Parse(recipe.Result.Name);
+                _ = ResourceLocation.Parse(recipe.Result.Name);
                 _ = ItemRegistry.ResolveStack(
                     recipe.Result.Name,
                     recipe.Result.Count,

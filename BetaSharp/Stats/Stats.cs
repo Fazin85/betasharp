@@ -204,19 +204,19 @@ public static class Stats
     internal static void RegisterInRegistry(StatBase stat)
     {
         // Use a simple, stable identifier based on the numeric stat id.
-        var id = new Identifier(Identifier.DefaultNamespace, $"stat.{stat.Id}");
+        var id = new ResourceLocation(ResourceLocation.DefaultNamespace, $"stat.{stat.Id}");
         Registries.Stats.Register(id, stat);
     }
 
-    public static StatBase? GetStatByIdentifier(Identifier id)
+    public static StatBase? GetStatByLocation(ResourceLocation id)
     {
         return Registries.Stats.TryGet(id, out var stat) ? stat : null;
     }
 
-    public static StatBase? GetStatByIdentifierString(string idString)
+    public static StatBase? GetStatByLocationString(string idString)
     {
-        var id = Identifier.Parse(idString);
-        return GetStatByIdentifier(id);
+        var id = ResourceLocation.Parse(idString);
+        return GetStatByLocation(id);
     }
 
     static Stats()

@@ -1,5 +1,6 @@
 using BetaSharp.Blocks;
 using BetaSharp.Items;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Registry;
 
@@ -17,7 +18,7 @@ public static class ItemRegistry
     {
         if (!_initialized) Initialize();
 
-        var id = Identifier.Parse(name);
+        var id = ResourceLocation.Parse(name);
 
         if (Registries.Items.TryGet(id, out var item))
         {
@@ -29,6 +30,9 @@ public static class ItemRegistry
             return block;
         }
 
+        // log avaliable items and blocks
+        Log.Instance.For(nameof(ItemRegistry)).LogInformation($"Available items: {string.Join(", ", Registries.Items.GetEntries().Select(x => x.Key.ToString()))}");
+        Log.Instance.For(nameof(ItemRegistry)).LogInformation($"Available blocks: {string.Join(", ", Registries.Blocks.GetEntries().Select(x => x.Key.ToString()))}");
         throw new Exception($"Unknown item or block requested: {name}");
     }
 

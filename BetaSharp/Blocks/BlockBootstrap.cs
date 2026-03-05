@@ -10,7 +10,8 @@ public static class BlockBootstrap
         {
             if (typeof(Block).IsAssignableFrom(field.FieldType) && field.GetValue(null) is Block block)
             {
-                var id = new Identifier(Identifier.DefaultNamespace, field.Name.ToLowerInvariant());
+                var path = IdUtils.ToSnakeCase(field.Name);
+                var id = new ResourceLocation(ResourceLocation.DefaultNamespace, path);
                 Registries.Blocks.Register(id, block);
             }
         }
