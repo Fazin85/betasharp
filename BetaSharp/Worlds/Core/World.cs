@@ -69,15 +69,22 @@ public abstract class World : IBlockAccess
         Properties = new WorldProperties(seed, levelName);
         Dimension = dim;
         dim.SetWorld(this);
-        _chunkSource = CreateChunkCache();
-        Rules = Properties.RulesTag != null
-            ? RuleSet.FromNBT(RuleRegistry.Instance, Properties.RulesTag)
-            : new RuleSet(RuleRegistry.Instance);
 
+        // TODO (Architecture): Decouple subsystem managers from the main World instance.
+        // Currently, TickScheduler, Lighting, Entities, and Environment take the entire World object,
+        // which creates circular dependencies and gives them too much scope.
+        // Future PR: Extract specific interfaces (e.g., IChunkProvider, IBlockAccess) and inject
+        // only the strict dependencies each manager needs to operate.
         TickScheduler = new WorldTickScheduler(this);
         Lighting = new LightingEngine(this);
         Entities = new EntityManager(this);
         Environment = new EnvironmentManager(this);
+
+        _chunkSource = CreateChunkCache();
+
+        Rules = Properties.RulesTag != null
+            ? RuleSet.FromNBT(RuleRegistry.Instance, Properties.RulesTag)
+            : new RuleSet(RuleRegistry.Instance);
 
         Environment.PrepareWeather();
         Environment.UpdateSkyBrightness();
@@ -119,7 +126,13 @@ public abstract class World : IBlockAccess
         Dimension = dim ?? Dimension.FromId(Properties.Dimension == -1 ? -1 : 0);
         Dimension.SetWorld(this);
 
-        Dimension.SetWorld(this);
+        // TODO: Refactor to use Interface Segregation (inject IBlockAccess/IChunkProvider instead of 'this')
+        // to remove circular dependencies and improve unit testing.
+        TickScheduler = new WorldTickScheduler(this);
+        Lighting = new LightingEngine(this);
+        Entities = new EntityManager(this);
+        Environment = new EnvironmentManager(this);
+
         _chunkSource = CreateChunkCache();
 
         Rules = Properties.RulesTag != null
@@ -130,11 +143,6 @@ public abstract class World : IBlockAccess
         {
             InitializeSpawnPoint();
         }
-
-        TickScheduler = new WorldTickScheduler(this);
-        Lighting = new LightingEngine(this);
-        Entities = new EntityManager(this);
-        Environment = new EnvironmentManager(this);
 
         Environment.PrepareWeather();
         Environment.UpdateSkyBrightness();
