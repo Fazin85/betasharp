@@ -147,7 +147,7 @@ public class BlockRail : Block
             }
             else if (base.id == Block.PoweredRail.id)
             {
-                bool isPowered = world.IsPowered(x, y, z) || world.IsPowered(x, y + 1, z);
+                bool isPowered = world.Redstone.IsPowered(x, y, z) || world.Redstone.IsPowered(x, y + 1, z);
                 isPowered = isPowered || isPoweredByConnectedRails(world, x, y, z, meta, true, 0) || isPoweredByConnectedRails(world, x, y, z, meta, false, 0);
                 bool stateChanged = false;
                 if (isPowered && (meta & 8) == 0)
@@ -182,7 +182,7 @@ public class BlockRail : Block
     {
         if (!world.IsRemote)
         {
-            new RailLogic(this, world, new Vec3i(x, y, z)).UpdateState(world.IsPowered(x, y, z), force);
+            new RailLogic(this, world, new Vec3i(x, y, z)).UpdateState(world.Redstone.IsPowered(x, y, z), force);
         }
     }
 
@@ -299,7 +299,7 @@ public class BlockRail : Block
 
             if ((meta & 8) != 0)
             {
-                if (!world.IsPowered(x, y, z) && !world.IsPowered(x, y + 1, z))
+                if (!world.Redstone.IsPowered(x, y, z) && !world.Redstone.IsPowered(x, y + 1, z))
                 {
                     return isPoweredByConnectedRails(world, x, y, z, meta, towardsNegative, depth + 1);
                 }

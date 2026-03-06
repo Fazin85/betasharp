@@ -179,7 +179,7 @@ internal class BlockDispenser : BlockWithEntity
     {
         if (id > 0 && Block.Blocks[id].canEmitRedstonePower())
         {
-            bool isPowered = world.IsPowered(x, y, z) || world.IsPowered(x, y + 1, z);
+            bool isPowered = world.Redstone.IsPowered(x, y, z) || world.Redstone.IsPowered(x, y + 1, z);
             if (isPowered)
             {
                 world.TickScheduler.ScheduleBlockUpdate(x, y, z, base.id, getTickRate());
@@ -190,7 +190,7 @@ internal class BlockDispenser : BlockWithEntity
 
     public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
-        if (world.IsPowered(x, y, z) || world.IsPowered(x, y + 1, z))
+        if (world.Redstone.IsPowered(x, y, z) || world.Redstone.IsPowered(x, y + 1, z))
         {
             dispense(world, x, y, z, random);
         }

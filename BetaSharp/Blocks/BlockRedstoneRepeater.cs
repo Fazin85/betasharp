@@ -122,13 +122,13 @@ public class BlockRedstoneRepeater : Block
         switch (facing)
         {
             case 0:
-                return world.IsPoweringSide(x, y, z + 1, 3) || world.GetBlockId(x, y, z + 1) == Block.RedstoneWire.id && world.GetBlockMeta(x, y, z + 1) > 0;
+                return world.Redstone.IsPoweringSide(x, y, z + 1, 3) || world.GetBlockId(x, y, z + 1) == Block.RedstoneWire.id && world.GetBlockMeta(x, y, z + 1) > 0;
             case 1:
-                return world.IsPoweringSide(x - 1, y, z, 4) || world.GetBlockId(x - 1, y, z) == Block.RedstoneWire.id && world.GetBlockMeta(x - 1, y, z) > 0;
+                return world.Redstone.IsPoweringSide(x - 1, y, z, 4) || world.GetBlockId(x - 1, y, z) == Block.RedstoneWire.id && world.GetBlockMeta(x - 1, y, z) > 0;
             case 2:
-                return world.IsPoweringSide(x, y, z - 1, 2) || world.GetBlockId(x, y, z - 1) == Block.RedstoneWire.id && world.GetBlockMeta(x, y, z - 1) > 0;
+                return world.Redstone.IsPoweringSide(x, y, z - 1, 2) || world.GetBlockId(x, y, z - 1) == Block.RedstoneWire.id && world.GetBlockMeta(x, y, z - 1) > 0;
             case 3:
-                return world.IsPoweringSide(x + 1, y, z, 5) || world.GetBlockId(x + 1, y, z) == Block.RedstoneWire.id && world.GetBlockMeta(x + 1, y, z) > 0;
+                return world.Redstone.IsPoweringSide(x + 1, y, z, 5) || world.GetBlockId(x + 1, y, z) == Block.RedstoneWire.id && world.GetBlockMeta(x + 1, y, z) > 0;
             default:
                 return false;
         }

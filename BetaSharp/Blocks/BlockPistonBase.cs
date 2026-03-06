@@ -109,25 +109,25 @@ public class BlockPistonBase : Block
 
     private bool shouldExtend(World world, int x, int y, int z, int facing)
     {
-        return facing != 0 && world.IsPoweringSide(x, y - 1, z, 0)
+        return facing != 0 && world.Redstone.IsPoweringSide(x, y - 1, z, 0)
             ? true
-            : (facing != 1 && world.IsPoweringSide(x, y + 1, z, 1)
+            : (facing != 1 && world.Redstone.IsPoweringSide(x, y + 1, z, 1)
                 ? true
-                : (facing != 2 && world.IsPoweringSide(x, y, z - 1, 2)
+                : (facing != 2 && world.Redstone.IsPoweringSide(x, y, z - 1, 2)
                     ? true
-                    : (facing != 3 && world.IsPoweringSide(x, y, z + 1, 3)
+                    : (facing != 3 && world.Redstone.IsPoweringSide(x, y, z + 1, 3)
                         ? true
-                        : (facing != 5 && world.IsPoweringSide(x + 1, y, z, 5)
+                        : (facing != 5 && world.Redstone.IsPoweringSide(x + 1, y, z, 5)
                             ? true
-                            : (facing != 4 && world.IsPoweringSide(x - 1, y, z, 4)
+                            : (facing != 4 && world.Redstone.IsPoweringSide(x - 1, y, z, 4)
                                 ? true
-                                : (world.IsPoweringSide(x, y, z, 0)
+                                : (world.Redstone.IsPoweringSide(x, y, z, 0)
                                     ? true
-                                    : (world.IsPoweringSide(x, y + 2, z, 1)
+                                    : (world.Redstone.IsPoweringSide(x, y + 2, z, 1)
                                         ? true
-                                        : (world.IsPoweringSide(x, y + 1, z - 1, 2)
+                                        : (world.Redstone.IsPoweringSide(x, y + 1, z - 1, 2)
                                             ? true
-                                            : (world.IsPoweringSide(x, y + 1, z + 1, 3) ? true : (world.IsPoweringSide(x - 1, y + 1, z, 4) ? true : world.IsPoweringSide(x + 1, y + 1, z, 5)))))))))));
+                                            : (world.Redstone.IsPoweringSide(x, y + 1, z + 1, 3) ? true : (world.Redstone.IsPoweringSide(x - 1, y + 1, z, 4) ? true : world.Redstone.IsPoweringSide(x + 1, y + 1, z, 5)))))))))));
     }
 
     public override void onBlockAction(World world, int x, int y, int z, int data1, int data2)

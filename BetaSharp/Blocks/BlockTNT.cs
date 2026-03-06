@@ -20,7 +20,7 @@ internal class BlockTNT : Block
     public override void onPlaced(World world, int x, int y, int z)
     {
         base.onPlaced(world, x, y, z);
-        if (world.IsPowered(x, y, z))
+        if (world.Redstone.IsPowered(x, y, z))
         {
             onMetadataChange(world, x, y, z, 1);
             world.SetBlock(x, y, z, 0);
@@ -30,7 +30,7 @@ internal class BlockTNT : Block
 
     public override void neighborUpdate(World world, int x, int y, int z, int id)
     {
-        if (id > 0 && Block.Blocks[id].canEmitRedstonePower() && world.IsPowered(x, y, z))
+        if (id > 0 && Block.Blocks[id].canEmitRedstonePower() && world.Redstone.IsPowered(x, y, z))
         {
             onMetadataChange(world, x, y, z, 1);
             world.SetBlock(x, y, z, 0);

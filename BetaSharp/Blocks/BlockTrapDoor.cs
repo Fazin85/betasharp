@@ -155,7 +155,7 @@ internal class BlockTrapDoor : Block
 
             if (id > 0 && Block.Blocks[id].canEmitRedstonePower())
             {
-                bool isPowered = world.IsPowered(x, y, z);
+                bool isPowered = world.Redstone.IsPowered(x, y, z);
                 setOpen(world, x, y, z, isPowered);
             }
 

@@ -217,7 +217,7 @@ internal class BlockDoor : Block
             }
             else if (id > 0 && Block.Blocks[id].canEmitRedstonePower())
             {
-                bool isPowered = world.IsPowered(x, y, z) || world.IsPowered(x, y + 1, z);
+                bool isPowered = world.Redstone.IsPowered(x, y, z) || world.Redstone.IsPowered(x, y + 1, z);
                 setOpen(world, x, y, z, isPowered);
             }
         }

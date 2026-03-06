@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Blocks.Materials;
@@ -12,7 +11,6 @@ using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Chunks;
 using BetaSharp.Worlds.Dimensions;
 using BetaSharp.Worlds.Generation.Biomes.Source;
-using BetaSharp.Worlds.Lighting;
 using BetaSharp.Worlds.Mechanics;
 using BetaSharp.Worlds.Storage;
 using Microsoft.Extensions.Logging;
@@ -38,6 +36,7 @@ public abstract class World : IBlockAccess
     public readonly WorldTickScheduler TickScheduler;
     public readonly LightingEngine Lighting;
     public readonly EnvironmentManager Environment;
+    public readonly RedstoneEngine Redstone;
 
     protected readonly List<IWorldAccess> EventListeners = [];
     protected readonly IWorldStorage Storage;
@@ -79,6 +78,7 @@ public abstract class World : IBlockAccess
         Lighting = new LightingEngine(this);
         Entities = new EntityManager(this);
         Environment = new EnvironmentManager(this);
+        Redstone = new RedstoneEngine(this);
 
         _chunkSource = CreateChunkCache();
 
@@ -132,6 +132,7 @@ public abstract class World : IBlockAccess
         Lighting = new LightingEngine(this);
         Entities = new EntityManager(this);
         Environment = new EnvironmentManager(this);
+        Redstone = new RedstoneEngine(this);
 
         _chunkSource = CreateChunkCache();
 
@@ -1491,83 +1492,6 @@ public abstract class World : IBlockAccess
         Profiler.Stop("AI.PathFinding.FindPathToPosition");
 
         return result;
-    }
-
-    private bool IsStrongPoweringSide(int x, int y, int z, int side)
-    {
-        int blockId = GetBlockId(x, y, z);
-        return blockId != 0 && Block.Blocks[blockId].isStrongPoweringSide(this, x, y, z, side);
-    }
-
-    public bool IsStrongPowered(int x, int y, int z)
-    {
-        if (IsStrongPoweringSide(x, y - 1, z, 0))
-        {
-            return true; // Down
-        }
-
-        if (IsStrongPoweringSide(x, y + 1, z, 1))
-        {
-            return true; // Up
-        }
-
-        if (IsStrongPoweringSide(x, y, z - 1, 2))
-        {
-            return true; // North
-        }
-
-        if (IsStrongPoweringSide(x, y, z + 1, 3))
-        {
-            return true; // South
-        }
-
-        if (IsStrongPoweringSide(x - 1, y, z, 4))
-        {
-            return true; // West
-        }
-
-        return IsStrongPoweringSide(x + 1, y, z, 5); // East
-    }
-
-    public bool IsPoweringSide(int x, int y, int z, int side)
-    {
-        if (ShouldSuffocate(x, y, z))
-        {
-            return IsStrongPowered(x, y, z);
-        }
-
-        int blockId = GetBlockId(x, y, z);
-        return blockId != 0 && Block.Blocks[blockId].isPoweringSide(this, x, y, z, side);
-    }
-
-    public bool IsPowered(int x, int y, int z)
-    {
-        if (IsPoweringSide(x, y - 1, z, 0))
-        {
-            return true; // Down
-        }
-
-        if (IsPoweringSide(x, y + 1, z, 1))
-        {
-            return true; // Up
-        }
-
-        if (IsPoweringSide(x, y, z - 1, 2))
-        {
-            return true; // North
-        }
-
-        if (IsPoweringSide(x, y, z + 1, 3))
-        {
-            return true; // South
-        }
-
-        if (IsPoweringSide(x - 1, y, z, 4))
-        {
-            return true; // West
-        }
-
-        return IsPoweringSide(x + 1, y, z, 5); // East
     }
 
     public EntityPlayer GetClosestPlayer(Entity entity, double range) => Entities.GetClosestPlayer(entity.x, entity.y, entity.z, range);

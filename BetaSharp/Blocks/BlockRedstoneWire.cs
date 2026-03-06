@@ -69,7 +69,7 @@ public class BlockRedstoneWire : Block
         int var8 = world.GetBlockMeta(var2, var3, var4);
         int var9 = 0;
         s_wiresProvidePower.Value = false;
-        bool var10 = world.IsPowered(var2, var3, var4);
+        bool var10 = world.Redstone.IsPowered(var2, var3, var4);
         s_wiresProvidePower.Value = true;
         int var11;
         int var12;

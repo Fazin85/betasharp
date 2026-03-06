@@ -100,7 +100,7 @@ internal class BlockRedstoneTorch : BlockTorch
     private bool shouldUnpower(World world, int x, int y, int z)
     {
         int meta = world.GetBlockMeta(x, y, z);
-        return meta == 5 && world.IsPoweringSide(x, y - 1, z, 0) || (meta == 3 && world.IsPoweringSide(x, y, z - 1, 2) || (meta == 4 && world.IsPoweringSide(x, y, z + 1, 3) || (meta == 1 && world.IsPoweringSide(x - 1, y, z, 4) || meta == 2 && world.IsPoweringSide(x + 1, y, z, 5))));
+        return meta == 5 && world.Redstone.IsPoweringSide(x, y - 1, z, 0) || (meta == 3 && world.Redstone.IsPoweringSide(x, y, z - 1, 2) || (meta == 4 && world.Redstone.IsPoweringSide(x, y, z + 1, 3) || (meta == 1 && world.Redstone.IsPoweringSide(x - 1, y, z, 4) || meta == 2 && world.Redstone.IsPoweringSide(x + 1, y, z, 5))));
     }
 
     public override void onTick(World world, int x, int y, int z, JavaRandom random)

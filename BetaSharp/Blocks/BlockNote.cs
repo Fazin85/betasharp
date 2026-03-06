@@ -20,7 +20,7 @@ internal class BlockNote : BlockWithEntity
     {
         if (id > 0 && Block.Blocks[id].canEmitRedstonePower())
         {
-            bool isPowered = world.IsStrongPowered(x, y, z);
+            bool isPowered = world.Redstone.IsStrongPowered(x, y, z);
             BlockEntityNote blockEntity = (BlockEntityNote)world.GetBlockEntity(x, y, z);
             if (blockEntity.powered != isPowered)
             {
