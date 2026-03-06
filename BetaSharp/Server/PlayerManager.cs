@@ -262,7 +262,7 @@ public class PlayerManager
 
             // Fully drain lighting updates generated during portal chunk
             // creation before the chunks are queued for the client.
-            while (targetWorld.DoLightingUpdates()) { }
+            while (targetWorld.Lighting.DoLightingUpdates()) { }
         }
 
         updatePlayerAfterDimensionChange(player);

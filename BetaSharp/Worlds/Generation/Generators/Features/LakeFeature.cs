@@ -104,7 +104,7 @@ internal class LakeFeature : Feature
                 {
                     if (lakeMask[(dx * 16 + dy) * 8 + dz] &&
                         world.GetBlockId(x + dx, y + dz - 1, z + dy) == Block.Dirt.id &&
-                        world.GetBrightness(LightType.Sky, x + dx, y + dz, z + dy) > 0)
+                        world.Lighting.GetBrightness(LightType.Sky, x + dx, y + dz, z + dy) > 0)
                     {
                         world.SetBlockWithoutNotifyingNeighbors(x + dx, y + dz - 1, z + dy, Block.GrassBlock.id);
                     }

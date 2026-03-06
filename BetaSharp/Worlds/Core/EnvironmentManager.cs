@@ -143,7 +143,7 @@ public class EnvironmentManager
 
     public bool IsRainingAt(int x, int y, int z)
     {
-        if (!IsRaining || !_world.HasSkyLight(x, y, z) || _world.GetTopSolidBlockY(x, z) > y)
+        if (!IsRaining || !_world.Lighting.HasSkyLight(x, y, z) || _world.GetTopSolidBlockY(x, z) > y)
         {
             return false;
         }

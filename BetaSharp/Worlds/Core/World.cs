@@ -26,7 +26,6 @@ public abstract class World : IBlockAccess
 
     private readonly HashSet<ChunkPos> _activeChunks = new();
     private readonly ChunkSource _chunkSource;
-    private readonly List<LightUpdate> _lightingQueue = [];
     private readonly ILogger<World> _logger = Log.Instance.For<World>();
 
     private readonly PathFinder _pathFinder;
@@ -34,17 +33,16 @@ public abstract class World : IBlockAccess
 
     private readonly long _worldTimeMask = 0xFFFFFFL;
     public readonly Dimension Dimension;
+
     public readonly EntityManager Entities;
-
     public readonly WorldTickScheduler TickScheduler;
-
+    public readonly LightingEngine Lighting;
     public readonly EnvironmentManager Environment;
+
     protected readonly List<IWorldAccess> EventListeners = [];
     protected readonly IWorldStorage Storage;
 
     private int _lcgBlockSeed = Random.Shared.Next();
-    private int _lightingUpdatesCounter;
-    private int _lightingUpdatesScheduled;
     private int _soundCounter = Random.Shared.Next(12000);
     private bool _spawnHostileMobs = true;
     private bool _spawnPeacefulMobs = true;
@@ -77,6 +75,7 @@ public abstract class World : IBlockAccess
             : new RuleSet(RuleRegistry.Instance);
 
         TickScheduler = new WorldTickScheduler(this);
+        Lighting = new LightingEngine(this);
         Entities = new EntityManager(this);
         Environment = new EnvironmentManager(this);
 
@@ -133,6 +132,7 @@ public abstract class World : IBlockAccess
         }
 
         TickScheduler = new WorldTickScheduler(this);
+        Lighting = new LightingEngine(this);
         Entities = new EntityManager(this);
         Environment = new EnvironmentManager(this);
 
@@ -175,6 +175,9 @@ public abstract class World : IBlockAccess
         return blockId == 0 ? Material.Air : Block.Blocks[blockId].material;
     }
 
+    public float GetNaturalBrightness(int x, int y, int z, int blockLight) => Lighting.GetNaturalBrightness(x, y, z, blockLight);
+    public float GetLuminance(int x, int y, int z) => Lighting.GetLuminance(x, y, z);
+
     public int GetBlockMeta(int x, int y, int z)
     {
         if (x < -32000000 || z < -32000000 || x >= 32000000 || z > 32000000 || y < 0 || y >= 128)
@@ -185,18 +188,6 @@ public abstract class World : IBlockAccess
         return GetChunk(x >> 4, z >> 4).GetBlockMeta(x & 15, y, z & 15);
     }
 
-    public float GetNaturalBrightness(int x, int y, int z, int blockLight)
-    {
-        int lightLevel = GetLightLevel(x, y, z);
-        if (lightLevel < blockLight)
-        {
-            lightLevel = blockLight;
-        }
-
-        return Dimension.LightLevelToLuminance[lightLevel];
-    }
-
-    public float GetLuminance(int x, int y, int z) => Dimension.LightLevelToLuminance[GetLightLevel(x, y, z)];
 
     public BlockEntity? GetBlockEntity(int x, int y, int z)
     {
@@ -545,7 +536,6 @@ public abstract class World : IBlockAccess
         }
     }
 
-    public bool HasSkyLight(int x, int y, int z) => GetChunk(x >> 4, z >> 4).IsAboveMaxHeight(x & 15, y, z & 15);
 
     public int GetBrightness(int x, int y, int z)
     {
@@ -560,66 +550,6 @@ public abstract class World : IBlockAccess
         }
 
         return GetChunk(x >> 4, z >> 4).GetLight(x & 15, y, z & 15, 0);
-    }
-
-    public int GetLightLevel(int x, int y, int z) => GetLightLevel(x, y, z, true);
-
-    public int GetLightLevel(int x, int y, int z, bool checkNeighbors)
-    {
-        if (x < -32000000 || z < -32000000 || x >= 32000000 || z > 32000000)
-        {
-            return 15;
-        }
-
-        if (checkNeighbors)
-        {
-            int blockId = GetBlockId(x, y, z);
-            if (blockId == Block.Slab.id || blockId == Block.Farmland.id ||
-                blockId == Block.CobblestoneStairs.id || blockId == Block.WoodenStairs.id)
-            {
-                int neighborMaxLight = GetLightLevel(x, y + 1, z, false);
-
-                int lightPosX = GetLightLevel(x + 1, y, z, false);
-                int lightNegX = GetLightLevel(x - 1, y, z, false);
-                int lightPosZ = GetLightLevel(x, y, z + 1, false);
-                int lightNegZ = GetLightLevel(x, y, z - 1, false);
-
-                if (lightPosX > neighborMaxLight)
-                {
-                    neighborMaxLight = lightPosX;
-                }
-
-                if (lightNegX > neighborMaxLight)
-                {
-                    neighborMaxLight = lightNegX;
-                }
-
-                if (lightPosZ > neighborMaxLight)
-                {
-                    neighborMaxLight = lightPosZ;
-                }
-
-                if (lightNegZ > neighborMaxLight)
-                {
-                    neighborMaxLight = lightNegZ;
-                }
-
-                return neighborMaxLight;
-            }
-        }
-
-        if (y < 0)
-        {
-            return 0;
-        }
-
-        if (y >= 128)
-        {
-            return !Dimension.HasCeiling ? 15 - ambientDarkness : 0;
-        }
-
-        Chunk chunk = GetChunk(x >> 4, z >> 4);
-        return chunk.GetLight(x & 15, y, z & 15, ambientDarkness);
     }
 
     public bool IsTopY(int x, int y, int z)
@@ -667,89 +597,6 @@ public abstract class World : IBlockAccess
         }
 
         return 0;
-    }
-
-    public void UpdateLight(LightType lightType, int x, int y, int z, int targetLuminance)
-    {
-        if (Dimension.HasCeiling && lightType == LightType.Sky)
-        {
-            return;
-        }
-
-        if (IsPosLoaded(x, y, z))
-        {
-            if (lightType == LightType.Sky)
-            {
-                if (IsTopY(x, y, z))
-                {
-                    targetLuminance = 15;
-                }
-            }
-            else if (lightType == LightType.Block)
-            {
-                int blockId = GetBlockId(x, y, z);
-                if (Block.BlocksLightLuminance[blockId] > targetLuminance)
-                {
-                    targetLuminance = Block.BlocksLightLuminance[blockId];
-                }
-            }
-
-            if (GetBrightness(lightType, x, y, z) != targetLuminance)
-            {
-                QueueLightUpdate(lightType, x, y, z, x, y, z);
-            }
-        }
-    }
-
-    public int GetBrightness(LightType type, int x, int y, int z)
-    {
-        if (y < 0)
-        {
-            y = 0;
-        }
-
-        if (y >= 128)
-        {
-            return type.lightValue;
-        }
-
-        if (y >= 0 && y < 128 && x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
-        {
-            int chunkX = x >> 4;
-            int chunkZ = z >> 4;
-            if (!HasChunk(chunkX, chunkZ))
-            {
-                return 0;
-            }
-
-            Chunk chunk = GetChunk(chunkX, chunkZ);
-            return chunk.GetLight(type, x & 15, y, z & 15);
-        }
-
-        return type.lightValue;
-    }
-
-    public void SetLight(LightType lightType, int x, int y, int z, int value)
-    {
-        if (x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
-        {
-            if (y >= 0)
-            {
-                if (y < 128)
-                {
-                    if (HasChunk(x >> 4, z >> 4))
-                    {
-                        Chunk chunk = GetChunk(x >> 4, z >> 4);
-                        chunk.SetLight(lightType, x & 15, y, z & 15, value);
-
-                        for (int i = 0; i < EventListeners.Count; ++i)
-                        {
-                            EventListeners[i].blockUpdate(x, y, z);
-                        }
-                    }
-                }
-            }
-        }
     }
 
     public bool CanMonsterSpawn() => ambientDarkness < 4;
@@ -1333,110 +1180,9 @@ public abstract class World : IBlockAccess
 
     public Entity? GetPlayerForProxy(Type type) => null;
 
-
     public string GetDebugInfo() => _chunkSource.GetDebugInfo();
 
     public void SavingProgress(LoadingDisplay display) => SaveWithLoadingDisplay(true, display);
-
-    public bool DoLightingUpdates()
-    {
-        if (_lightingUpdatesCounter >= 50)
-        {
-            return false;
-        }
-
-        ++_lightingUpdatesCounter;
-
-        try
-        {
-            int updatesBudget = 500;
-
-            while (_lightingQueue.Count > 0)
-            {
-                if (updatesBudget <= 0)
-                {
-                    return true;
-                }
-
-                updatesBudget--;
-
-                int lastIndex = _lightingQueue.Count - 1;
-                LightUpdate updateTask = _lightingQueue[lastIndex];
-
-                _lightingQueue.RemoveAt(lastIndex);
-                updateTask.updateLight(this);
-            }
-
-            return false;
-        }
-        finally
-        {
-            --_lightingUpdatesCounter;
-        }
-    }
-
-    public void QueueLightUpdate(LightType type, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) => QueueLightUpdate(type, minX, minY, minZ, maxX, maxY, maxZ, true);
-
-    public void QueueLightUpdate(LightType type, int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
-        bool attemptMerge)
-    {
-        if (Dimension.HasCeiling && type == LightType.Sky)
-        {
-            return;
-        }
-
-        ++_lightingUpdatesScheduled;
-
-        try
-        {
-            if (_lightingUpdatesScheduled == 50)
-            {
-                return;
-            }
-
-            int centerX = (maxX + minX) / 2;
-            int centerZ = (maxZ + minZ) / 2;
-
-            if (IsPosLoaded(centerX, 64, centerZ))
-            {
-                if (GetChunkFromPos(centerX, centerZ).IsEmpty())
-                {
-                    return;
-                }
-
-                int queueSize = _lightingQueue.Count;
-                Span<LightUpdate> span = CollectionsMarshal.AsSpan(_lightingQueue);
-
-                if (attemptMerge)
-                {
-                    int lookbackCount = Math.Min(5, queueSize);
-
-                    for (int i = 0; i < lookbackCount; ++i)
-                    {
-                        ref LightUpdate existingUpdate = ref span[queueSize - i - 1];
-                        if (existingUpdate.lightType == type &&
-                            existingUpdate.expand(minX, minY, minZ, maxX, maxY, maxZ))
-                        {
-                            return;
-                        }
-                    }
-                }
-
-                _lightingQueue.Add(new LightUpdate(type, minX, minY, minZ, maxX, maxY, maxZ));
-
-                const int maxQueueCapacity = 1000000;
-                if (_lightingQueue.Count > maxQueueCapacity)
-                {
-                    _logger.LogInformation($"More than {maxQueueCapacity} updates, aborting lighting updates");
-                    _lightingQueue.Clear();
-                }
-            }
-        }
-        finally
-        {
-            --_lightingUpdatesScheduled;
-        }
-    }
 
     public void allowSpawning(bool allowMonsterSpawning, bool allowMobSpawning)
     {
@@ -1550,7 +1296,7 @@ public abstract class World : IBlockAccess
                 int worldX = localX + worldXBase;
                 int worldZ = localZ + worldZBase;
                 if (blockId == 0 && GetBrightness(worldX, localY, worldZ) <= random.NextInt(8) &&
-                    GetBrightness(LightType.Sky, worldX, localY, worldZ) <= 0)
+                    Lighting.GetBrightness(LightType.Sky, worldX, localY, worldZ) <= 0)
                 {
                     EntityPlayer closest = Entities.GetClosestPlayer(worldX + 0.5D, localY + 0.5D, worldZ + 0.5D, 8.0D);
                     if (closest != null &&

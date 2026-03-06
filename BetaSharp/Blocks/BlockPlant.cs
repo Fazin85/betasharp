@@ -47,7 +47,7 @@ public class BlockPlant : Block
 
     public override bool canGrow(World world, int x, int y, int z)
     {
-        return (world.GetBrightness(x, y, z) >= 8 || world.HasSkyLight(x, y, z)) && canPlantOnTop(world.GetBlockId(x, y - 1, z));
+        return (world.Lighting.GetBrightness(x, y, z) >= 8 || world.Lighting.HasSkyLight(x, y, z)) && canPlantOnTop(world.GetBlockId(x, y - 1, z));
     }
 
     public override Box? getCollisionShape(World world, int x, int y, int z)

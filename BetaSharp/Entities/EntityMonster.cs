@@ -94,18 +94,18 @@ public class EntityMonster : EntityCreature, Monster
         int x = MathHelper.Floor(base.x);
         int y = MathHelper.Floor(boundingBox.MinY);
         int z = MathHelper.Floor(base.z);
-        if (world.GetBrightness(LightType.Sky, x, y, z) > random.NextInt(32))
+        if (world.Lighting.GetBrightness(LightType.Sky, x, y, z) > random.NextInt(32))
         {
             return false;
         }
         else
         {
-            int lightLevel = world.GetLightLevel(x, y, z);
+            int lightLevel = world.Lighting.GetLightLevel(x, y, z);
             if (world.Environment.IsThundering())
             {
                 int ambientDarkness = world.ambientDarkness;
                 world.ambientDarkness = 10;
-                lightLevel = world.GetLightLevel(x, y, z);
+                lightLevel = world.Lighting.GetLightLevel(x, y, z);
                 world.ambientDarkness = ambientDarkness;
             }
 

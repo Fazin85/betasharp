@@ -85,7 +85,7 @@ internal struct LightUpdate
 
                         for (int var27 = minY; var27 <= maxY; ++var27)
                         {
-                            int var16 = world.GetBrightness(lightType, var10, var27, var11);
+                            int var16 = world.Lighting.GetBrightness(lightType, var10, var27, var11);
                             bool var17 = false;
                             int var18 = world.GetBlockId(var10, var27, var11);
                             int var19 = Block.BlockLightOpacity[var18];
@@ -115,12 +115,12 @@ internal struct LightUpdate
                             }
                             else
                             {
-                                var21 = world.GetBrightness(lightType, var10 - 1, var27, var11);
-                                int var22 = world.GetBrightness(lightType, var10 + 1, var27, var11);
-                                int var23 = world.GetBrightness(lightType, var10, var27 - 1, var11);
-                                int var24 = world.GetBrightness(lightType, var10, var27 + 1, var11);
-                                int var25 = world.GetBrightness(lightType, var10, var27, var11 - 1);
-                                int var26 = world.GetBrightness(lightType, var10, var27, var11 + 1);
+                                var21 = world.Lighting.GetBrightness(lightType, var10 - 1, var27, var11);
+                                int var22 = world.Lighting.GetBrightness(lightType, var10 + 1, var27, var11);
+                                int var23 = world.Lighting.GetBrightness(lightType, var10, var27 - 1, var11);
+                                int var24 = world.Lighting.GetBrightness(lightType, var10, var27 + 1, var11);
+                                int var25 = world.Lighting.GetBrightness(lightType, var10, var27, var11 - 1);
+                                int var26 = world.Lighting.GetBrightness(lightType, var10, var27, var11 + 1);
                                 var28 = var21;
                                 if (var22 > var21)
                                 {
@@ -161,29 +161,29 @@ internal struct LightUpdate
 
                             if (var16 != var28)
                             {
-                                world.SetLight(lightType, var10, var27, var11, var28);
+                                world.Lighting.SetLight(lightType, var10, var27, var11, var28);
                                 var21 = var28 - 1;
                                 if (var21 < 0)
                                 {
                                     var21 = 0;
                                 }
 
-                                world.UpdateLight(lightType, var10 - 1, var27, var11, var21);
-                                world.UpdateLight(lightType, var10, var27 - 1, var11, var21);
-                                world.UpdateLight(lightType, var10, var27, var11 - 1, var21);
+                                world.Lighting.UpdateLight(lightType, var10 - 1, var27, var11, var21);
+                                world.Lighting.UpdateLight(lightType, var10, var27 - 1, var11, var21);
+                                world.Lighting.UpdateLight(lightType, var10, var27, var11 - 1, var21);
                                 if (var10 + 1 >= maxX)
                                 {
-                                    world.UpdateLight(lightType, var10 + 1, var27, var11, var21);
+                                    world.Lighting.UpdateLight(lightType, var10 + 1, var27, var11, var21);
                                 }
 
                                 if (var27 + 1 >= maxY)
                                 {
-                                    world.UpdateLight(lightType, var10, var27 + 1, var11, var21);
+                                    world.Lighting.UpdateLight(lightType, var10, var27 + 1, var11, var21);
                                 }
 
                                 if (var11 + 1 >= maxZ)
                                 {
-                                    world.UpdateLight(lightType, var10, var27, var11 + 1, var21);
+                                    world.Lighting.UpdateLight(lightType, var10, var27, var11 + 1, var21);
                                 }
                             }
                         }

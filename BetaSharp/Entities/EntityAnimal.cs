@@ -31,7 +31,7 @@ public abstract class EntityAnimal : EntityCreature, SpawnableEntity
         int x = MathHelper.Floor(base.x);
         int y = MathHelper.Floor(boundingBox.MinY);
         int z = MathHelper.Floor(base.z);
-        return world.GetBlockId(x, y - 1, z) == Block.GrassBlock.id && world.GetBrightness(x, y, z) > 8 && base.canSpawn();
+        return world.GetBlockId(x, y - 1, z) == Block.GrassBlock.id && world.Lighting.GetBrightness(x, y, z) > 8 && base.canSpawn();
     }
 
     public override int getTalkInterval()

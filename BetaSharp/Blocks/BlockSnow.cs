@@ -91,7 +91,7 @@ internal class BlockSnow : Block
 
     public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
-        if (world.GetBrightness(LightType.Block, x, y, z) > 11)
+        if (world.Lighting.GetBrightness(LightType.Block, x, y, z) > 11)
         {
             dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
             world.SetBlock(x, y, z, 0);

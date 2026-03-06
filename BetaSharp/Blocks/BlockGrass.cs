@@ -55,7 +55,7 @@ public class BlockGrass : Block
     {
         if (!world.IsRemote)
         {
-            if (world.GetLightLevel(x, y + 1, z) < 4 && Block.BlockLightOpacity[world.GetBlockId(x, y + 1, z)] > 2)
+            if (world.Lighting.GetLightLevel(x, y + 1, z) < 4 && Block.BlockLightOpacity[world.GetBlockId(x, y + 1, z)] > 2)
             {
                 if (random.NextInt(4) != 0)
                 {
@@ -64,13 +64,13 @@ public class BlockGrass : Block
 
                 world.SetBlock(x, y, z, Block.Dirt.id);
             }
-            else if (world.GetLightLevel(x, y + 1, z) >= 9)
+            else if (world.Lighting.GetLightLevel(x, y + 1, z) >= 9)
             {
                 int spreadX = x + random.NextInt(3) - 1;
                 int spreadY = y + random.NextInt(5) - 3;
                 int spreadZ = z + random.NextInt(3) - 1;
                 int blockAboveId = world.GetBlockId(spreadX, spreadY + 1, spreadZ);
-                if (world.GetBlockId(spreadX, spreadY, spreadZ) == Block.Dirt.id && world.GetLightLevel(spreadX, spreadY + 1, spreadZ) >= 4 && Block.BlockLightOpacity[blockAboveId] <= 2)
+                if (world.GetBlockId(spreadX, spreadY, spreadZ) == Block.Dirt.id && world.Lighting.GetLightLevel(spreadX, spreadY + 1, spreadZ) >= 4 && Block.BlockLightOpacity[blockAboveId] <= 2)
                 {
                     world.SetBlock(spreadX, spreadY, spreadZ, Block.GrassBlock.id);
                 }

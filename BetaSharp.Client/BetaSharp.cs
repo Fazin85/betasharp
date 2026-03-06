@@ -573,7 +573,7 @@ public partial class BetaSharp
                     if (world != null)
                     {
                         if (options.DebugMode) Profiler.Start("updateLighting");
-                        world.DoLightingUpdates();
+                        world.Lighting.DoLightingUpdates();
                         if (options.DebugMode) Profiler.Stop("updateLighting");
                     }
 
@@ -1632,7 +1632,7 @@ public partial class BetaSharp
                 loadingScreen.setLoadingProgress(loadedChunkCount++ * 100 / totalChunksToLoad);
                 world.GetBlockId(centerPos.X + xOffset, 64, centerPos.Z + zOffset);
 
-                while (world.DoLightingUpdates())
+                while (world.Lighting.DoLightingUpdates())
                 {
                 }
             }

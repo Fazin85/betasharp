@@ -191,7 +191,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                 // Phase 3: Batch lighting drain — all neighbors already loaded so sky-light
                 // propagates without border re-queuing.
                 var sw3 = Stopwatch.StartNew();
-                while (world.DoLightingUpdates() && running) { }
+                while (world.Lighting.DoLightingUpdates() && running) { }
                 sw3.Stop();
                 _logger.LogInformation($"  Level {i} lighting: {sw3.ElapsedMilliseconds}ms");
             }
@@ -418,7 +418,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                 // >2-second stalls and "Can't keep up" spam.  Any remaining work
                 // carries over and is processed across subsequent ticks.
                 var lightSw = Stopwatch.StartNew();
-                while (lightSw.ElapsedMilliseconds < 15L && world.DoLightingUpdates())
+                while (lightSw.ElapsedMilliseconds < 15L && world.Lighting.DoLightingUpdates())
                 {
                 }
 

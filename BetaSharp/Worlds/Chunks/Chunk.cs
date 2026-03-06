@@ -171,12 +171,12 @@ public class Chunk
         int topY = World.GetTopY(worldX, worldZ);
         if (topY > height)
         {
-            World.QueueLightUpdate(LightType.Sky, worldX, height, worldZ, worldX, topY, worldZ);
+            World.Lighting.QueueLightUpdate(LightType.Sky, worldX, height, worldZ, worldX, topY, worldZ);
             Dirty = true;
         }
         else if (topY < height)
         {
-            World.QueueLightUpdate(LightType.Sky, worldX, topY, worldZ, worldX, height, worldZ);
+            World.Lighting.QueueLightUpdate(LightType.Sky, worldX, topY, worldZ, worldX, height, worldZ);
             Dirty = true;
         }
     }
@@ -238,7 +238,7 @@ public class Chunk
         }
         else
         {
-            World.QueueLightUpdate(LightType.Sky, worldX, oldHeight, worldZ, worldX, newHeight, worldZ);
+            World.Lighting.QueueLightUpdate(LightType.Sky, worldX, oldHeight, worldZ, worldX, newHeight, worldZ);
             for (int currY = oldHeight; currY < newHeight; ++currY)
             {
                 SkyLight.SetNibble(localX, currY, localZ, 0);
@@ -273,7 +273,7 @@ public class Chunk
 
         if (newHeight != updateY)
         {
-            World.QueueLightUpdate(LightType.Sky, worldX - 1, newHeight, worldZ - 1, worldX + 1, updateY, worldZ + 1);
+            World.Lighting.QueueLightUpdate(LightType.Sky, worldX - 1, newHeight, worldZ - 1, worldX + 1, updateY, worldZ + 1);
         }
 
         Dirty = true;
@@ -317,10 +317,10 @@ public class Chunk
                 UpdateHeightMap(localX, y, localZ);
             }
 
-            World.QueueLightUpdate(LightType.Sky, worldX, y, worldZ, worldX, y, worldZ);
+            World.Lighting.QueueLightUpdate(LightType.Sky, worldX, y, worldZ, worldX, y, worldZ);
         }
 
-        World.QueueLightUpdate(LightType.Block, worldX, y, worldZ, worldX, y, worldZ);
+        World.Lighting.QueueLightUpdate(LightType.Block, worldX, y, worldZ, worldX, y, worldZ);
         LightGaps(localX, localZ);
         Meta.SetNibble(localX, y, localZ, meta);
 
@@ -367,8 +367,8 @@ public class Chunk
             UpdateHeightMap(localX, y, localZ);
         }
 
-        World.QueueLightUpdate(LightType.Sky, worldX, y, worldZ, worldX, y, worldZ);
-        World.QueueLightUpdate(LightType.Block, worldX, y, worldZ, worldX, y, worldZ);
+        World.Lighting.QueueLightUpdate(LightType.Sky, worldX, y, worldZ, worldX, y, worldZ);
+        World.Lighting.QueueLightUpdate(LightType.Block, worldX, y, worldZ, worldX, y, worldZ);
         LightGaps(localX, localZ);
 
         if (rawId != 0 && !World.IsRemote)

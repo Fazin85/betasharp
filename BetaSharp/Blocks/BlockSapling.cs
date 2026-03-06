@@ -17,7 +17,7 @@ internal class BlockSapling : BlockPlant
         if (!world.IsRemote)
         {
             base.onTick(world, x, y, z, random);
-            if (world.GetLightLevel(x, y + 1, z) >= 9 && random.NextInt(30) == 0)
+            if (world.Lighting.GetLightLevel(x, y + 1, z) >= 9 && random.NextInt(30) == 0)
             {
                 int saplingMeta = world.GetBlockMeta(x, y, z);
                 if ((saplingMeta & 8) == 0)

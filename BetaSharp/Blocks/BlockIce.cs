@@ -42,7 +42,7 @@ internal class BlockIce : BlockBreakable
 
     public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
-        if (world.GetBrightness(LightType.Block, x, y, z) > 11 - Block.BlockLightOpacity[id])
+        if (world.Lighting.GetBrightness(LightType.Block, x, y, z) > 11 - Block.BlockLightOpacity[id])
         {
             dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
             world.SetBlock(x, y, z, Block.Water.id);

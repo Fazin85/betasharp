@@ -25,7 +25,7 @@ internal class BlockCrops : BlockPlant
     public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
         base.onTick(world, x, y, z, random);
-        if (world.GetLightLevel(x, y + 1, z) >= 9)
+        if (world.Lighting.GetLightLevel(x, y + 1, z) >= 9)
         {
             int meta = world.GetBlockMeta(x, y, z);
             if (meta < 7)
