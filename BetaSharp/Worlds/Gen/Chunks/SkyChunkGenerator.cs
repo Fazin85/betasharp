@@ -482,6 +482,13 @@ internal class SkyChunkGenerator : ChunkSource
             treeFeature.Generate(_world, _random, featureX, _world.getTopY(featureX, featureZ), featureZ);
         }
 
+        // ====================================================================
+        // Calculate vertical shadows so mushrooms and sun natual light dependent stuff know where the sun is.
+        _world.GetChunk(chunkX, chunkZ).PopulateHeightMap(false);
+        _world.GetChunk(chunkX + 1, chunkZ).PopulateHeightMap(false);
+        _world.GetChunk(chunkX, chunkZ + 1).PopulateHeightMap(false);
+        _world.GetChunk(chunkX + 1, chunkZ + 1).PopulateHeightMap(false);
+
         for (int i = 0; i < 2; ++i)
         {
             featureX = blockX + _random.NextInt(16) + 8;

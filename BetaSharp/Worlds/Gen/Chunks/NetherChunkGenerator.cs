@@ -244,6 +244,7 @@ internal class NetherChunkGenerator : ChunkSource
         BuildSurfaces(chunkX, chunkZ, blocks);
         _cave.carve(this, _world, chunkX, chunkZ, blocks);
         Chunk chunk = new Chunk(_world, blocks, chunkX, chunkZ);
+        chunk.PopulateHeightMapOnly();
         return chunk;
     }
 
@@ -427,6 +428,13 @@ internal class NetherChunkGenerator : ChunkSource
             featureZFallback = blockZ + random.NextInt(16) + 8;
             _featureGlowstoneRare.Generate(_world, random, featureY, featureZ, featureZFallback);
         }
+
+        // ====================================================================
+        // Calculate vertical shadows so mushrooms and sun natual light dependent stuff know where the sun is.
+        _world.GetChunk(x, z).PopulateHeightMap(false);
+        _world.GetChunk(x + 1, z).PopulateHeightMap(false);
+        _world.GetChunk(x, z + 1).PopulateHeightMap(false);
+        _world.GetChunk(x + 1, z + 1).PopulateHeightMap(false);
 
         if (random.NextInt(1) == 0)
         {
