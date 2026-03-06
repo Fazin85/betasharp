@@ -393,7 +393,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
         {
             if (!skipPacketSlotUpdates)
             {
-                networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(handler.SyncId, slot, stack));
+                networkHandler.sendPacket(ScreenHandlerSlotUpdateS2CPacket.Get(handler.SyncId, slot, stack));
             }
         }
     }
@@ -407,12 +407,12 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     public void onContentsUpdate(ScreenHandler handler, List<ItemStack> stacks)
     {
         networkHandler.sendPacket(new InventoryS2CPacket(handler.SyncId, stacks));
-        networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, inventory.getCursorStack()));
+        networkHandler.sendPacket(ScreenHandlerSlotUpdateS2CPacket.Get(-1, -1, inventory.getCursorStack()));
     }
 
     public void onPropertyUpdate(ScreenHandler handler, int syncId, int trackedValue)
     {
-        networkHandler.sendPacket(new ScreenHandlerPropertyUpdateS2CPacket(handler.SyncId, syncId, trackedValue));
+        networkHandler.sendPacket(ScreenHandlerPropertyUpdateS2CPacket.Get(handler.SyncId, syncId, trackedValue));
     }
 
     public override void onCursorStackChanged(ItemStack? stack)
@@ -429,7 +429,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     {
         if (!skipPacketSlotUpdates)
         {
-            networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, inventory.getCursorStack()));
+            networkHandler.sendPacket(ScreenHandlerSlotUpdateS2CPacket.Get(-1, -1, inventory.getCursorStack()));
         }
     }
 

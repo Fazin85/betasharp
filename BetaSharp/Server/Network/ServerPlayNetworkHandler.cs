@@ -420,7 +420,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
         player.skipPacketSlotUpdates = false;
         if (!ItemStack.areEqual(player.inventory.getSelectedItem(), packet.stack))
         {
-            sendPacket(new ScreenHandlerSlotUpdateS2CPacket(player.currentScreenHandler.SyncId, var13.id, player.inventory.getSelectedItem()));
+            sendPacket(ScreenHandlerSlotUpdateS2CPacket.Get(player.currentScreenHandler.SyncId, var13.id, player.inventory.getSelectedItem()));
         }
 
         var2.bypassSpawnProtection = false;

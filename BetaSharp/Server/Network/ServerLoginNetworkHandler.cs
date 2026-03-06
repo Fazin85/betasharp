@@ -143,7 +143,7 @@ public class ServerLoginNetworkHandler : NetHandler
             server.playerManager.addPlayer(ent);
             handler.teleport(ent.x, ent.y, ent.z, ent.yaw, ent.pitch);
             server.connections.AddConnection(handler);
-            handler.sendPacket(new WorldTimeUpdateS2CPacket(var3.getTime()));
+            handler.sendPacket(WorldTimeUpdateS2CPacket.Get(var3.getTime()));
             ent.initScreenHandler();
         }
 
