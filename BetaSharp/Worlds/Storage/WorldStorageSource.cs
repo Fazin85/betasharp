@@ -1,3 +1,5 @@
+using BetaSharp.Worlds.Core;
+
 namespace BetaSharp.Worlds.Storage;
 
 public interface IWorldStorageSource

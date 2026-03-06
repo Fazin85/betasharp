@@ -2,6 +2,7 @@ using BetaSharp.PathFinding;
 using BetaSharp.Profiling;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Entities;
 

@@ -3,6 +3,7 @@ using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Profiling;
 using BetaSharp.Util.Maths;
+using BetaSharp.Worlds.Core;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Worlds.Chunks;

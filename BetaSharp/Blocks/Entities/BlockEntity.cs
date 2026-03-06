@@ -1,6 +1,7 @@
 using BetaSharp.NBT;
 using BetaSharp.Network.Packets;
 using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Blocks.Entities;

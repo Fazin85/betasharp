@@ -4,6 +4,7 @@ using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Util;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 using Silk.NET.Maths;
 
 namespace BetaSharp.Client.Rendering.Chunks;

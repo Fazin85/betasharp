@@ -2,6 +2,7 @@ using BetaSharp.Blocks.Materials;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Blocks;
 

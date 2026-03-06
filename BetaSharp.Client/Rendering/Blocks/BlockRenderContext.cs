@@ -3,6 +3,7 @@ using BetaSharp.Blocks;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Client.Rendering.Blocks;
 

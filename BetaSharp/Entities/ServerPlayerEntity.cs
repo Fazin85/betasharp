@@ -12,6 +12,7 @@ using BetaSharp.Server.Network;
 using BetaSharp.Stats;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 using java.util;
 using Microsoft.Extensions.Logging;
 

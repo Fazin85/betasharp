@@ -5,6 +5,7 @@ using BetaSharp.Network.Packets.S2CPlay;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Chunks;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Items;
 

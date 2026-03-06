@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using BetaSharp.Blocks;
 using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Client.Rendering.Chunks.Occlusion;
 
@@ -9,18 +10,18 @@ public static class ChunkVisibilityComputer
     public static ChunkVisibilityStore Compute(WorldRegionSnapshot cache, int minX, int minY, int minZ)
     {
         ChunkVisibilityStore store = new();
-        
+
         // We use a bitset to track visited blocks (4096 bits = 512 bytes)
         Span<uint> visited = stackalloc uint[(SubChunkRenderer.Size * SubChunkRenderer.Size * SubChunkRenderer.Size) / 32];
-        
+
         // Check connectivity from each face
         for (int f = 0; f < ChunkDirectionExtensions.Count; f++)
         {
             ChunkDirection startFace = (ChunkDirection)f;
             visited.Clear();
-            
+
             ChunkDirectionMask reachable = FloodFill(cache, minX, minY, minZ, startFace, visited);
-            
+
             // For each reachable face, set visibility
             for (int t = 0; t < ChunkDirectionExtensions.Count; t++)
             {
@@ -35,14 +36,14 @@ public static class ChunkVisibilityComputer
     }
 
     private static ChunkDirectionMask FloodFill(
-        WorldRegionSnapshot cache, 
-        int minX, int minY, int minZ, 
-        ChunkDirection startFace, 
+        WorldRegionSnapshot cache,
+        int minX, int minY, int minZ,
+        ChunkDirection startFace,
         Span<uint> visited)
     {
         ChunkDirectionMask reachable = ChunkDirectionMask.None;
         const int totalBlocks = SubChunkRenderer.Size * SubChunkRenderer.Size * SubChunkRenderer.Size;
-        
+
         Span<ushort> queue = stackalloc ushort[totalBlocks];
         int head = 0, tail = 0;
 
@@ -101,11 +102,11 @@ public static class ChunkVisibilityComputer
     }
 
     private static void TryVisit(
-        WorldRegionSnapshot cache, 
-        int minX, int minY, int minZ, 
-        int lx, int ly, int lz, 
-        Span<uint> visited, 
-        Span<ushort> queue, 
+        WorldRegionSnapshot cache,
+        int minX, int minY, int minZ,
+        int lx, int ly, int lz,
+        Span<uint> visited,
+        Span<ushort> queue,
         ref int tail)
     {
         if (lx < 0 || lx >= SubChunkRenderer.Size || ly < 0 || ly >= SubChunkRenderer.Size || lz < 0 || lz >= SubChunkRenderer.Size) return;

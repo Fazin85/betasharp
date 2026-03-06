@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Worlds.Chunks;
 

@@ -3,6 +3,7 @@ using BetaSharp.Client.Rendering.Core.OpenGL;
 using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Client.Entities.FX;
 

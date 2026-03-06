@@ -3,7 +3,8 @@ using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using BetaSharp.Worlds.Colors;
+using BetaSharp.Worlds.ClientData.Colors;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Blocks;
 

@@ -3,6 +3,7 @@ using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Client.Rendering.Core.Textures;
 using BetaSharp.Entities;
 using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 using java.lang;
 
 namespace BetaSharp.Client.Rendering.Blocks.Entities;

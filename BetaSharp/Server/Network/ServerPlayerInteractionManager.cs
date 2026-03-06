@@ -3,6 +3,7 @@ using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Network.Packets.S2CPlay;
 using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Server.Network;
 

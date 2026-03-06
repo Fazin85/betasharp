@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using BetaSharp.NBT;
 using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Entities;

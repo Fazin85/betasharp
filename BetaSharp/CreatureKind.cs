@@ -1,6 +1,7 @@
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
 using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp;
 

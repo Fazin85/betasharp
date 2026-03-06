@@ -19,6 +19,7 @@ using BetaSharp.Stats;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Chunks;
+using BetaSharp.Worlds.Mechanics;
 using BetaSharp.Worlds.Storage;
 using Microsoft.Extensions.Logging;
 using Socket = System.Net.Sockets.Socket;

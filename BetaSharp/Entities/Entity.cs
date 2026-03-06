@@ -4,6 +4,7 @@ using BetaSharp.Items;
 using BetaSharp.NBT;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 using Math = System.Math;
 
 namespace BetaSharp.Entities;

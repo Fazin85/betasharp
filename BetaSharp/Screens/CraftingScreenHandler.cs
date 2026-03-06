@@ -5,6 +5,7 @@ using BetaSharp.Items;
 using BetaSharp.Recipes;
 using BetaSharp.Screens.Slots;
 using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Screens;
 

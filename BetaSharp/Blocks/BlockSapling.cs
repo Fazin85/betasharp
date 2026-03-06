@@ -1,6 +1,7 @@
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using BetaSharp.Worlds.Gen.Features;
+using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Generation.Generators.Features;
 
 namespace BetaSharp.Blocks;
 

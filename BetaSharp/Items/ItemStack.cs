@@ -2,6 +2,7 @@ using BetaSharp.Blocks;
 using BetaSharp.Entities;
 using BetaSharp.NBT;
 using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Items;
 
