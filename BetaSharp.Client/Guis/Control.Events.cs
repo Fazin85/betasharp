@@ -79,11 +79,6 @@ public partial class Control
     {
         if (!Visible) return;
 
-        OnRender(e);
-        Rendered?.Invoke(this, e);
-
-        Point abs = AbsolutePosition;
-
         bool wasScissorEnabled = GLManager.GL.IsEnabled(EnableCap.ScissorTest);
         Span<int> prevScissor = stackalloc int[4];
         GLManager.GL.GetInteger(GetPName.ScissorBox, prevScissor);
@@ -92,8 +87,8 @@ public partial class Control
         ScaledResolution res = new(mc.options, mc.displayWidth, mc.displayHeight);
         int scale = (int)Math.Round(mc.displayWidth / res.ScaledWidthDouble);
 
-        int scissorX = abs.X * scale;
-        int scissorY = (mc.displayHeight - (abs.Y + Height) * scale);
+        int scissorX = AbsX * scale;
+        int scissorY = (mc.displayHeight - (AbsY + Height) * scale);
         int scissorW = Width * scale;
         int scissorH = Height * scale;
 
@@ -112,6 +107,10 @@ public partial class Control
 
         GLManager.GL.PushMatrix();
         GLManager.GL.Translate(X, Y, ZLevel);
+
+        OnRender(e);
+        Rendered?.Invoke(this, e);
+
         foreach (Control child in Children.ToArray())
         {
             child.DoRender(e);

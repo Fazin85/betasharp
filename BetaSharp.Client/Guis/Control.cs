@@ -31,6 +31,8 @@ public partial class Control
             return new(parentAbsPos.X + X, parentAbsPos.Y + Y);
         }
     }
+    public int AbsX => AbsolutePosition.X;
+    public int AbsY => AbsolutePosition.Y;
 
     /// <summary>
     /// Gets the Screen that contains this control, or null if no ancestor is a Screen.
@@ -250,8 +252,8 @@ public partial class Control
         return Descendants
             .Where(c => c is { Focusable: true, Visible: true, Enabled: true } && (c.TabIndex ?? 0) >= 0)
             .OrderBy(c => c.TabIndex ?? int.MaxValue)  // Explicit values navigated first
-            .ThenBy(c => c.AbsolutePosition.Y)         // Remaining are sorted top-to-bottom
-            .ThenBy(c => c.AbsolutePosition.X);        // Then left-to-right
+            .ThenBy(c => c.AbsY)         // Remaining are sorted top-to-bottom
+            .ThenBy(c => c.AbsX);        // Then left-to-right
     }
 
 
@@ -259,26 +261,22 @@ public partial class Control
     {
         Point abs = AbsolutePosition;
 
-        // First, check if point is within this control's bounds
-        if (!Visible ||
-            x < abs.X || y < abs.Y ||
-            x >= abs.X + Width || y >= abs.Y + Height)
+        if (!Visible || !ContainsPoint(x, y))
         {
             return false;
         }
 
-        // Check if parent clips us
         if (_parent != null && !_parent.ContainsPoint(x, y))
         {
             return false;
         }
 
-        // Point is in our bounds - but is it covered by a VISIBLE and ENABLED child?
+        // Make sure the point isn't inside one of our children
         foreach (var child in Children)
         {
             if (child is { Visible: true } && child.ContainsPoint(x, y))
             {
-                return false;  // Point is in an active child, not in "us"
+                return false;
             }
         }
 

@@ -129,8 +129,6 @@ public class GameRenderer
         }
     }
 
-
-
     private void renderWorld(float tickDelta)
     {
         _viewDistance = _client.options.renderDistance * 16.0f;
@@ -201,12 +199,6 @@ public class GameRenderer
             itemRenderer.renderOverlays(tickDelta);
             cameraController.ApplyDamageTiltEffect(tickDelta);
         }
-
-        if (_client.options.ViewBobbing)
-        {
-            cameraController.ApplyViewBobbing(tickDelta);
-        }
-
     }
 
     public void onFrameUpdate(float tickDelta)

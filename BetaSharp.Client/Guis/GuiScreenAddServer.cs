@@ -11,16 +11,25 @@ public class GuiScreenAddServer : Screen
     public GuiScreenAddServer(GuiMultiplayer parentScreen, ServerData serverData)
     {
         Keyboard.enableRepeatEvents(true);
-        int buttonLeft = Width / 2 - 100;
 
-        _doneButton = new(buttonLeft, Height / 4 + 96 + 12, "Done");
-        Button cancelButton = new(buttonLeft, Height / 4 + 120 + 12, "Cancel");
-        _serverName = new(buttonLeft, 66, FontRenderer, serverData.Name)
+        Text = "Edit Server Info";
+        DisplayTitle = true;
+
+        Control container = new(Width / 2 - 100, Height / 2 - 80, 200, 160)
+        {
+            VerticalCenteringBehavior = CenteringBehavior.Middle,
+        };
+
+        Label serverNameLabel = new(0, 0, "Server Name", 0xA0A0A0);
+        _serverName = new(0, 13, FontRenderer, serverData.Name)
         {
             Focused = true,
             MaxLength = 32,
         };
-        _serverAddress = new(buttonLeft, 106, FontRenderer, serverData.Ip) { MaxLength = 128 };
+        Label serverAddressLabel = new(0, 41, "Server Address", 0xA0A0A0);
+        _serverAddress = new(0, 53, FontRenderer, serverData.Ip) { MaxLength = 128 };
+        _doneButton = new(0, 116, "Done");
+        Button cancelButton = new(0, 140, "Cancel");
 
         _doneButton.Clicked += (_, _) => parentScreen.ConfirmClicked(false, 0);
         cancelButton.Clicked += (_, _) =>
@@ -32,7 +41,8 @@ public class GuiScreenAddServer : Screen
         _serverName.KeyInput += FieldKeyPressed;
         _serverAddress.KeyInput += FieldKeyPressed;
 
-        AddChildren(_doneButton, cancelButton, _serverName, _serverAddress);
+        container.AddChildren(serverNameLabel, _serverName, serverAddressLabel, _serverAddress, _doneButton, cancelButton);
+        AddChild(container);
 
         _doneButton.Enabled = _serverName.Text.Length > 0 && _serverAddress.Text.Length > 0 && _serverAddress.Text.Split(":").Length > 0;
     }
@@ -55,8 +65,5 @@ public class GuiScreenAddServer : Screen
     protected override void OnRender(RenderEventArgs e)
     {
         DrawDefaultBackground();
-        Gui.DrawCenteredString(FontRenderer, "Edit Server Info", Width / 2, 17, 0xFFFFFF);
-        Gui.DrawString(FontRenderer, "Server Name", Width / 2 - 100, 53, 0xA0A0A0);
-        Gui.DrawString(FontRenderer, "Server Address", Width / 2 - 100, 94, 0xA0A0A0);
     }
 }

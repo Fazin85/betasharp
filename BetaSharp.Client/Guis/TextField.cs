@@ -8,26 +8,26 @@ namespace BetaSharp.Client.Guis;
 
 public class TextField : Control
 {
-    private enum SelectingType
+    private enum DragSelectBehavior
     {
         Character,
         Word,
         Line,
     }
     private const int LeftPad = 4;
+    private const int CursorPeriod = 5;
     private readonly TextRenderer _fontRenderer;
     public override bool Focusable => true;
     public int MaxLength { get; init; }
-    private const int CursorPeriod = 5;
     private int _cursorCounter;
     private int _caretPosition;
     private int _selectionStart = -1;
     private int _selectionEnd = -1;
     private int _initialSelectionPos = -1;
     private bool HasSelection => _selectionStart != -1 && _selectionEnd != -1 && _selectionStart != _selectionEnd;
-    private SelectingType _selectingType;
+    private DragSelectBehavior _dragSelectBehavior;
 
-    public TextField(int x, int y, TextRenderer fontRenderer, string text) : base(x, y, 200, 20)
+    public TextField(int x, int y, TextRenderer fontRenderer, string text) : base(x, y, 200, 22)
     {
         _fontRenderer = fontRenderer;
         Text = text;
@@ -234,34 +234,53 @@ public class TextField : Control
 
     protected override void OnRender(RenderEventArgs e)
     {
-        Gui.DrawRect(X - 1, Y - 1, X + Width + 1, Y + Height + 1, 0xFFA0A0A0);
-        Gui.DrawRect(X, Y, X + Width, Y + Height, 0xFF000000);
+        Gui.DrawRect(0, 0, Width, Height, 0xFFA0A0A0);
+        Gui.DrawRect(1, 1, Width - 1, Height - 1, 0xFF000000);
+
+        GLManager.GL.PushMatrix();
+        GLManager.GL.Translate(1, 0, 0); // Offset to right to account for border.
+        // Don't have to do this for the Y axis because
 
         if (Enabled)
         {
             bool showCaret = !Focused || _cursorCounter <= 0;
             int safePos = Math.Clamp(_caretPosition, 0, Text.Length);
 
-            if (!HasSelection)
+            Gui.DrawString(_fontRenderer, Text, LeftPad, (Height - 8) / 2, 0xE0E0E0);
+
+            if (showCaret)
             {
-                Gui.DrawString(_fontRenderer, Text, X + LeftPad, Y + (Height - 8) / 2, 0xE0E0E0);
+                if (_caretPosition != Text.Length)
+                {
+                    string textBeforeCursor = Text[..safePos];
+                    int caretX = LeftPad + _fontRenderer.GetStringWidth(textBeforeCursor);
+
+                    Gui.DrawRect(caretX - 1, 6, caretX, Height - LeftPad - 1, HasSelection ? 0xFFA0A0A0 : 0xFFD0D0D0);
+                }
+                else
+                {
+                    int caretX;
+                    if (Text.Length > 0) caretX = 5 + _fontRenderer.GetStringWidth(Text);
+                    else caretX = LeftPad;
+
+                    Gui.DrawString(_fontRenderer, "_", caretX, (Height - 8) / 2, 0xE0E0E0);
+                }
             }
-            else
+
+            if (HasSelection)
             {
+
                 (int start, int end) = GetSelectionRange();
                 string textBeforeSelection = Text[..start];
                 string selectedText = Text[start..end];
 
                 int preSelectionWidth = _fontRenderer.GetStringWidth(textBeforeSelection);
                 int selectionWidth = _fontRenderer.GetStringWidth(selectedText);
-                int textY = Y + (Height - 8) / 2;
 
-                Gui.DrawString(_fontRenderer, Text, X + LeftPad, textY, 0xE0E0E0);
-
-                int selX1 = X + LeftPad + preSelectionWidth - 1;
+                int selX1 = LeftPad + preSelectionWidth - 1;
                 int selX2 = selX1 + selectionWidth + 1;
-                int selY1 = Y + 5;
-                int selY2 = Y + Height - LeftPad;
+                int selY1 = 6;
+                int selY2 = Height - LeftPad - 1;
 
                 Tessellator tess = Tessellator.instance;
                 GLManager.GL.Color4(0.0f, 0.0f, 1.0f, 1.0f);
@@ -279,30 +298,13 @@ public class TextField : Control
                 GLManager.GL.Disable(EnableCap.ColorLogicOp);
                 GLManager.GL.Enable(EnableCap.Texture2D);
             }
-
-            if (!showCaret)
-                return;
-
-            if (_caretPosition != Text.Length)
-            {
-                string textBeforeCursor = Text[..safePos];
-                int caretX = X + LeftPad + _fontRenderer.GetStringWidth(textBeforeCursor);
-
-                Gui.DrawRect(caretX - 1, Y + 5, caretX, Y + Height - LeftPad, 0xFFD0D0D0);
-            }
-            else
-            {
-                int caretX;
-                if (Text.Length > 0) caretX = X + 5 + _fontRenderer.GetStringWidth(Text);
-                else caretX = X + LeftPad;
-
-                Gui.DrawString(_fontRenderer, "_", caretX, Y + (Height - 8) / 2, 0xE0E0E0);
-            }
         }
         else
         {
-            Gui.DrawString(_fontRenderer, Text, X + LeftPad, Y + (Height - 8) / 2, 0x707070);
+            Gui.DrawString(_fontRenderer, Text, LeftPad, (Height - 8) / 2, 0x707070);
         }
+
+        GLManager.GL.PopMatrix();
     }
 
     protected override void OnTextChanged(TextEventArgs e)
@@ -318,7 +320,7 @@ public class TextField : Control
     /// </summary>
     private int GetCharPositionFromPixelX(float pixelX)
     {
-        float relativeX = Math.Max(0, pixelX - X - LeftPad);
+        float relativeX = Math.Max(0, pixelX - AbsX - LeftPad - 1);
         int pos = 0;
 
         int width = 0;
@@ -357,7 +359,7 @@ public class TextField : Control
         {
             (_selectionStart, _selectionEnd) = GetLogicalWordBoundaries(pos);
             _caretPosition = _selectionEnd;
-            _selectingType = SelectingType.Word;
+            _dragSelectBehavior = DragSelectBehavior.Word;
             return;
         }
         if (e.Clicks >= 3) // Triple-click selects all
@@ -365,7 +367,7 @@ public class TextField : Control
             _selectionStart = 0;
             _selectionEnd = Text.Length;
             _caretPosition = pos;
-            _selectingType = SelectingType.Line;
+            _dragSelectBehavior = DragSelectBehavior.Line;
             return;
         }
 
@@ -384,7 +386,7 @@ public class TextField : Control
 
     protected override void OnMouseRelease(MouseEventArgs e)
     {
-        _selectingType = SelectingType.Character;
+        _dragSelectBehavior = DragSelectBehavior.Character;
     }
 
     protected override void OnMouseDrag(MouseEventArgs e)
@@ -393,9 +395,9 @@ public class TextField : Control
         ResetCursorFlash();
 
         int pos = GetCharPositionFromPixelX(e.PixelX);
-        switch (_selectingType)
+        switch (_dragSelectBehavior)
         {
-            case SelectingType.Character:
+            case DragSelectBehavior.Character:
                 {
                     if (_initialSelectionPos == -1)
                         _initialSelectionPos = _caretPosition;
@@ -404,7 +406,7 @@ public class TextField : Control
                     _caretPosition = pos;
                     break;
                 }
-            case SelectingType.Word:
+            case DragSelectBehavior.Word:
                 {
                     (int wordStart, int wordEnd) = GetLogicalWordBoundaries(pos);
                     if (_initialSelectionPos == -1)
@@ -427,7 +429,7 @@ public class TextField : Control
 
                     break;
                 }
-            case SelectingType.Line:
+            case DragSelectBehavior.Line:
                 // TODO: Multiline support
                 _selectionStart = 0;
                 _selectionEnd = Text.Length;

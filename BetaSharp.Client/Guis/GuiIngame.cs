@@ -32,6 +32,8 @@ public class GuiIngame : Control
 
     public GuiIngame(Minecraft gameInstance)
     {
+        Anchor = Anchors.Bottom | Anchors.Left | Anchors.Right | Anchors.Top;
+        Size = new(gameInstance.displayWidth, gameInstance.displayHeight);
         _mc = gameInstance;
         _gcMonitor = new GCMonitor();
     }

@@ -31,14 +31,16 @@ public class GuiConnecting : Screen
     private void AddCancelButton()
     {
         TranslationStorage translations = TranslationStorage.Instance;
-        Button cancelButton = new(Width / 2 - 100, Height / 4 + 120 + 12, translations.TranslateKey("gui.cancel"));
+        Control container = new(Width / 2 - 100, Height / 4 + 120 + 12, 200, 20);
+        Button cancelButton = new(0, 0, translations.TranslateKey("gui.cancel"));
         cancelButton.Clicked += (_, _) =>
         {
             Cancelled = true;
             ClientHandler?.disconnect();
             MC.OpenScreen(new GuiMainMenu());
         };
-        AddChild(cancelButton);
+        container.AddChild(cancelButton);
+        AddChild(container);
     }
 
     protected override void OnTick()

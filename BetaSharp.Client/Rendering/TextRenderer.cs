@@ -123,7 +123,7 @@ public class TextRenderer
 
         for (int i = 0; i < text.Length; ++i)
         {
-            for (; text.Length > i + 1 && text[i] == 167; i += 2)
+            for (; text.Length > i + 1 && text[i] == '§'; i += 2)
             {
                 int colorCode = HexToDec(text[i + 1]);
 
@@ -214,14 +214,14 @@ public class TextRenderer
         return totalWidth;
     }
 
-    private int GetStringFitLength(ReadOnlySpan<char> text, int maxWidth)
+    private int GetStringFitLength(ReadOnlySpan<char> text, int maxWidth, bool withShadow)
     {
         int width = 0;
         int lastSpaceIndex = -1;
         int i = 0;
         for (; i < text.Length; ++i)
         {
-            if (text[i] == 167)
+            if (text[i] == '§')
             {
                 ++i;
                 continue;
@@ -237,7 +237,7 @@ public class TextRenderer
                 width += _charWidth[charIndex + 32];
             }
 
-            if (width > maxWidth)
+            if (width + (withShadow ? 1 : 0) > maxWidth)
             {
                 if (lastSpaceIndex > 0)
                 {
@@ -249,7 +249,7 @@ public class TextRenderer
         return text.Length;
     }
 
-    private void ProcessWrappedText(ReadOnlySpan<char> text, int x, int y, int maxWidth, uint color, bool draw, ref int outHeight)
+    private void ProcessWrappedText(ReadOnlySpan<char> text, int x, int y, int maxWidth, uint color, bool draw, bool shadow, ref int outHeight)
     {
         if (text.IsEmpty) return;
 
@@ -262,8 +262,8 @@ public class TextRenderer
             ReadOnlySpan<char> line;
             if (newlineIndex >= 0)
             {
-                line = text.Slice(0, newlineIndex);
-                text = text.Slice(newlineIndex + 1);
+                line = text[..newlineIndex];
+                text = text[(newlineIndex + 1)..];
             }
             else
             {
@@ -273,28 +273,32 @@ public class TextRenderer
 
             while (line.Length > 0)
             {
-                int fitLength = GetStringFitLength(line, maxWidth);
-                ReadOnlySpan<char> subline = line.Slice(0, Math.Min(fitLength, line.Length));
+                int fitLength = GetStringFitLength(line, maxWidth, shadow);
+                ReadOnlySpan<char> subline = line[..Math.Min(fitLength, line.Length)];
 
-                while(subline.Length > 0 && subline[subline.Length - 1] == ' ')
+                while(subline.Length > 0 && subline[^1] == ' ')
                 {
-                    subline = subline.Slice(0, subline.Length - 1);
+                    subline = subline[..^1];
                 }
 
                 if (subline.Length > 0 || fitLength > 0)
                 {
                     if (draw && subline.Length > 0)
                     {
+                        if (shadow)
+                        {
+                            RenderString(subline, x + 1, currentY + 1, color, true);
+                        }
                         DrawString(subline, x, currentY, color);
                     }
                     currentY += 8;
                     totalHeight += 8;
                 }
 
-                line = line.Slice(Math.Min(fitLength, line.Length));
+                line = line[Math.Min(fitLength, line.Length)..];
                 while(line.Length > 0 && line[0] == ' ')
                 {
-                    line = line.Slice(1);
+                    line = line[1..];
                 }
             }
         }
@@ -306,13 +310,19 @@ public class TextRenderer
     public void DrawStringWrapped(ReadOnlySpan<char> text, int x, int y, int maxWidth, uint color)
     {
         int dummyHeight = 0;
-        ProcessWrappedText(text, x, y, maxWidth, color, true, ref dummyHeight);
+        ProcessWrappedText(text, x, y, maxWidth, color, true, false, ref dummyHeight);
+    }
+
+    public void DrawStringWrappedWithShadow(ReadOnlySpan<char> text, int x, int y, int maxWidth, uint color)
+    {
+        int dummyHeight = 0;
+        ProcessWrappedText(text, x, y, maxWidth, color, true, true, ref dummyHeight);
     }
 
     public int GetStringHeight(ReadOnlySpan<char> text, int maxWidth)
     {
         int height = 0;
-        ProcessWrappedText(text, 0, 0, maxWidth, 0, false, ref height);
+        ProcessWrappedText(text, 0, 0, maxWidth, 0, false, false, ref height);
         return height;
     }
 }

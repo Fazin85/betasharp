@@ -28,15 +28,22 @@ public class GuiMultiplayer : Screen
         LoadServerList();
         Keyboard.enableRepeatEvents(true);
         Children.Clear();
-        _serverListSelector = new GuiListServer(this);
+        _serverListSelector = new GuiListServer(this)
+        {
+            Anchor = Anchors.Top | Anchors.Left | Anchors.Right | Anchors.Bottom
+        };
 
-        _btnEdit = new(Width / 2 - 154, Height - 28, 70, 20, "Edit") { Enabled = false };
-        _btnDelete = new(Width / 2 - 74, Height - 28, 70, 20, "Delete") { Enabled = false };
-        _btnSelect = new(Width / 2 - 154, Height - 52, 100, 20, "Join Server") { Enabled = false };
-        Button directConnectButton = new(Width / 2 - 50, Height - 52, 100, 20, "Direct Connect");
-        Button addServerButton = new(Width / 2 + 4 + 50, Height - 52, 100, 20, "Add server");
-        Button refreshButton = new(Width / 2 + 4, Height - 28, 70, 20, "Refresh");
-        Button cancelButton = new(Width / 2 + 4 + 76, Height - 28, 75, 20, "Cancel");
+        Control container = new(Width / 2 - 154, Height - 52, 308, 44)
+        {
+            Anchor = Anchors.Bottom,
+        };
+        _btnEdit = new(0, 24, 70, 20, "Edit") { Enabled = false };
+        _btnDelete = new(80, 24, 70, 20, "Delete") { Enabled = false };
+        _btnSelect = new(0, 0, 100, 20, "Join Server") { Enabled = false };
+        Button directConnectButton = new(104, 0, 100, 20, "Direct Connect");
+        Button addServerButton = new(208, 0, 100, 20, "Add server");
+        Button refreshButton = new(158, 24, 70, 20, "Refresh");
+        Button cancelButton = new(234, 24, 75, 20, "Cancel");
 
         _btnEdit.Clicked += (_, _) =>
         {
@@ -75,7 +82,8 @@ public class GuiMultiplayer : Screen
         refreshButton.Clicked += (_, _) => LoadServerList();
         cancelButton.Clicked += (_, _) => MC.OpenScreen(_parentScreen);
 
-        AddChildren(_serverListSelector, _btnEdit, _btnDelete, _btnSelect, directConnectButton, addServerButton, refreshButton, cancelButton);
+        container.AddChildren(_btnEdit, _btnDelete, _btnSelect, directConnectButton, addServerButton, refreshButton, cancelButton);
+        AddChildren(_serverListSelector, container);
     }
 
     public List<ServerData> GetServerList()

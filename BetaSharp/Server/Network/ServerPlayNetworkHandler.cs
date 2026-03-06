@@ -472,7 +472,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
             for (int var3 = 0; var3 < var2.Length; var3++)
             {
                 // Allow the section sign (§) for color/style codes as well as the standard allowed characters
-                if (var2[var3] == (char)167) // '§'
+                if (var2[var3] == '§')
                 {
                     continue;
                 }

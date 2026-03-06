@@ -40,11 +40,17 @@ public class GuiSelectWorld : Screen
         loadSaves();
 
         _worldListContainer = new GuiWorldList(this);
-        buttonSelect = new(Width / 2 - 154, Height - 52, 150, 20, translations.TranslateKey("selectWorld.select")) { Enabled = false };
-        buttonRename = new(Width / 2 - 154, Height - 28, 70, 20, translations.TranslateKey("selectWorld.rename")) { Enabled = false };
-        buttonDelete = new(Width / 2 - 74, Height - 28, 70, 20, translations.TranslateKey("selectWorld.delete")) { Enabled = false };
-        Button buttonCreate = new(Width / 2 + 4, Height - 52, 150, 20, translations.TranslateKey("selectWorld.create"));
-        Button buttonCancel = new(Width / 2 + 4, Height - 28, 150, 20, translations.TranslateKey("gui.cancel"));
+
+        // Bottom buttons container
+        Control container = new(Width / 2 - 154, Height - 52, 308, 44)
+        {
+            Anchor = Anchors.Bottom,
+        };
+        buttonSelect = new(0, 0, 150, 20, translations.TranslateKey("selectWorld.select")) { Enabled = false };
+        buttonRename = new(0, 24, 70, 20, translations.TranslateKey("selectWorld.rename")) { Enabled = false };
+        buttonDelete = new(80, 24, 70, 20, translations.TranslateKey("selectWorld.delete")) { Enabled = false };
+        Button buttonCreate = new(158, 0, 150, 20, translations.TranslateKey("selectWorld.create"));
+        Button buttonCancel = new(158, 24, 150, 20, translations.TranslateKey("gui.cancel"));
 
         buttonSelect.Clicked += (_, _) => selectWorld(selectedWorld);
         buttonRename.Clicked += (_, _) => MC.OpenScreen(new GuiRenameWorld(this, getSaveFileName(selectedWorld)));
@@ -52,7 +58,8 @@ public class GuiSelectWorld : Screen
         buttonCreate.Clicked += (_, _) => MC.OpenScreen(new GuiCreateWorld(this));
         buttonCancel.Clicked += (_, _) => MC.OpenScreen(parentScreen);
 
-        AddChildren(_worldListContainer, buttonSelect, buttonRename, buttonDelete, buttonCreate, buttonCancel);
+        container.AddChildren(buttonSelect, buttonRename, buttonDelete, buttonCreate, buttonCancel);
+        AddChildren(_worldListContainer, container);
     }
 
     private void loadSaves()

@@ -9,17 +9,25 @@ public class GuiYesNo : Screen
     {
         _message1 = message1;
         _message2 = message2;
-        Button confirmButton = new(Width / 2 - 155, Height / 6 + 96, confirmButtonText) { Size = new(150, 20) };
-        Button cancelButton = new(Width / 2 - 155 + 160, Height / 6 + 96, cancelButtonText) { Size = new(150, 20) };
+
+        Control container = new(Width / 2 - 155, Height / 2 - 50, 310, 100)
+            { VerticalCenteringBehavior = CenteringBehavior.Middle };
+        Label messageLabel1 = new(0, 0, container.Width, 20, message1, 0xFFFFFF)
+            { TextAlign = Alignment.Top };
+        Label messageLabel2 = new(0, 20, container.Width, 20, message2, 0xFFFFFF)
+            { TextAlign = Alignment.Top };
+        Button confirmButton = new(0, 80, confirmButtonText) { Size = new(150, 20) };
+        Button cancelButton = new(160, 80, cancelButtonText) { Size = new(150, 20) };
+
         confirmButton.Clicked += (_, _) => parentScreen.DeleteWorld(true, worldNumber);
         cancelButton.Clicked += (_, _) => parentScreen.DeleteWorld(false, worldNumber);
-        AddChildren(confirmButton, cancelButton);
+
+        container.AddChildren(messageLabel1, messageLabel2, confirmButton, cancelButton);
+        AddChild(container);
     }
 
     protected override void OnRender(RenderEventArgs e)
     {
         DrawDefaultBackground();
-        Gui.DrawCenteredString(FontRenderer, _message1, Width / 2, 70, 0xFFFFFF);
-        Gui.DrawCenteredString(FontRenderer, _message2, Width / 2, 90, 0xFFFFFF);
     }
 }

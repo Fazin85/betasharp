@@ -29,21 +29,21 @@ public class Button : Control
         bool hovered = PointInBounds(e.MouseX, e.MouseY);
         int buttonTexture = Enabled ? (hovered ? 40 : 20) : 0;
         // Left half of button
-        DrawTextureRegion(X, Y, 0, 46 + buttonTexture, Width / 2, Height);
+        DrawTextureRegion(0, 0, 0, 46 + buttonTexture, Width / 2, Height);
         // Right half of button
-        DrawTextureRegion(X + Width / 2, Y, 200 - Width / 2, 46 + buttonTexture, Width / 2, Height);
+        DrawTextureRegion(Width / 2, 0, 200 - Width / 2, 46 + buttonTexture, Width / 2, Height);
 
         if (!Enabled)
         {
-            Gui.DrawCenteredString(font, Text, X + Width / 2, Y + (Height - 8) / 2, 0xA0A0A0);
+            Gui.DrawCenteredString(font, Text, Width / 2, (Height - 8) / 2, 0xA0A0A0);
         }
         else if (hovered)
         {
-            Gui.DrawCenteredString(font, Text, X + Width / 2, Y + (Height - 8) / 2, 0xFFFFA0);
+            Gui.DrawCenteredString(font, Text, Width / 2, (Height - 8) / 2, 0xFFFFA0);
         }
         else
         {
-            Gui.DrawCenteredString(font, Text, X + Width / 2, Y + (Height - 8) / 2, 0xE0E0E0);
+            Gui.DrawCenteredString(font, Text, Width / 2, (Height - 8) / 2, 0xE0E0E0);
         }
     }
 }
