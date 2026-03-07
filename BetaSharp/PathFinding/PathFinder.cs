@@ -2,7 +2,7 @@ using BetaSharp.Blocks;
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 using javax.swing.text.html;
 
 namespace BetaSharp.PathFinding;
@@ -245,7 +245,7 @@ internal class PathFinder
             {
                 for (int iz = z; iz < z + size.Z; ++iz)
                 {
-                    int blockId = _worldMap.getBlockId(ix, iy, iz);
+                    int blockId = _worldMap.GetBlockId(ix, iy, iz);
                     if (blockId > 0)
                     {
                         if (blockId != Block.IronDoor.id && blockId != Block.Door.id)
@@ -257,7 +257,7 @@ internal class PathFinder
                         }
                         else
                         {
-                            int meta = _worldMap.getBlockMeta(ix, iy, iz);
+                            int meta = _worldMap.GetBlockMeta(ix, iy, iz);
                             if (!BlockDoor.isOpen(meta))
                             {
                                 return 0;

@@ -5,7 +5,7 @@ using BetaSharp.Network.Packets.Play;
 using BetaSharp.Network.Packets.S2CPlay;
 using BetaSharp.Stats;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Client.Network;
 
@@ -39,7 +39,7 @@ public class EntityClientPlayerMP : ClientPlayerEntity
 
     public override void tick()
     {
-        if (world.isPosLoaded(MathHelper.Floor(x), 64, MathHelper.Floor(z)))
+        if (world.IsPosLoaded(MathHelper.Floor(x), 64, MathHelper.Floor(z)))
         {
             base.tick();
             func_4056_N();

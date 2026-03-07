@@ -1,5 +1,5 @@
 using BetaSharp.Entities;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Items;
 
@@ -14,10 +14,10 @@ internal class ItemSnowball : Item
     public override ItemStack use(ItemStack itemStack, World world, EntityPlayer entityPlayer)
     {
         --itemStack.count;
-        world.playSound(entityPlayer, "random.bow", 0.5F, 0.4F / (itemRand.NextFloat() * 0.4F + 0.8F));
-        if (!world.isRemote)
+        world.PlaySound(entityPlayer, "random.bow", 0.5F, 0.4F / (itemRand.NextFloat() * 0.4F + 0.8F));
+        if (!world.IsRemote)
         {
-            world.SpawnEntity(new EntitySnowball(world, entityPlayer));
+            world.Entities.SpawnEntity(new EntitySnowball(world, entityPlayer));
         }
 
         return itemStack;

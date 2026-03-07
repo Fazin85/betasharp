@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 using BetaSharp.Blocks;
 using BetaSharp.Client.Rendering.Core;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Client.Rendering.Blocks;
 
@@ -449,7 +449,7 @@ public ref struct BlockRenderContext
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private readonly bool IsOpaque(int x, int y, int z) => !Block.BlocksAllowVision[World.getBlockId(x, y, z)];
+    private readonly bool IsOpaque(int x, int y, int z) => !Block.BlocksAllowVision[World.GetBlockId(x, y, z)];
 
     internal readonly bool DrawBlock(in Block block, in BlockPos pos)
     {

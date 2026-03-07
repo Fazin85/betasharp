@@ -19,6 +19,7 @@ using BetaSharp.Stats;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Chunks;
+using BetaSharp.Worlds.Mechanics;
 using BetaSharp.Worlds.Storage;
 using Microsoft.Extensions.Logging;
 using Socket = System.Net.Sockets.Socket;
@@ -94,7 +95,7 @@ public class ClientNetworkHandler : NetHandler
         _game.statFileWriter.ReadStat(Stats.Stats.JoinMultiplayerStat, 1);
         worldClient = new ClientWorld(this, packet.worldSeed, packet.dimensionId)
         {
-            isRemote = true
+            IsRemote = true
         };
         _game.changeWorld(worldClient);
         _game.player.dimensionId = packet.dimensionId;
@@ -231,7 +232,7 @@ public class ClientNetworkHandler : NetHandler
             ent.yaw = 0.0F;
             ent.pitch = 0.0F;
             ent.id = packet.id;
-            worldClient.spawnGlobalEntity(ent);
+            worldClient.Entities.SpawnGlobalEntity(ent);
         }
 
     }
@@ -386,7 +387,7 @@ public class ClientNetworkHandler : NetHandler
             int blockY = positions & 255;
             chunk.SetBlock(blockX, blockY, blockZ, blockRawId, metadata);
             worldClient.ClearBlockResets(blockX + x, blockY, blockZ + y, blockX + x, blockY, blockZ + y);
-            worldClient.setBlocksDirty(blockX + x, blockY, blockZ + y, blockX + x, blockY, blockZ + y);
+            worldClient.SetBlocksDirty(blockX + x, blockY, blockZ + y, blockX + x, blockY, blockZ + y);
         }
 
     }
@@ -394,7 +395,7 @@ public class ClientNetworkHandler : NetHandler
     public override void handleChunkData(ChunkDataS2CPacket packet)
     {
         worldClient.ClearBlockResets(packet.x, packet.y, packet.z, packet.x + packet.sizeX - 1, packet.y + packet.sizeY - 1, packet.z + packet.sizeZ - 1);
-        worldClient.handleChunkDataUpdate(packet.x, packet.y, packet.z, packet.sizeX, packet.sizeY, packet.sizeZ, packet.chunkData);
+        worldClient.HandleChunkDataUpdate(packet.x, packet.y, packet.z, packet.sizeX, packet.sizeY, packet.sizeZ, packet.chunkData);
     }
 
     public override void onBlockUpdate(BlockUpdateS2CPacket packet)
@@ -444,7 +445,7 @@ public class ClientNetworkHandler : NetHandler
 
         if (ent != null && collector != null)
         {
-            worldClient.playSound(ent, "random.pop", 0.2F, ((rand.NextFloat() - rand.NextFloat()) * 0.7F + 1.0F) * 2.0F);
+            worldClient.PlaySound(ent, "random.pop", 0.2F, ((rand.NextFloat() - rand.NextFloat()) * 0.7F + 1.0F) * 2.0F);
             _game.particleManager.addEffect(new EntityPickupFX(_game.world, ent, collector, -0.5F));
             worldClient.RemoveEntityFromWorld(packet.entityId);
         }
@@ -562,13 +563,13 @@ public class ClientNetworkHandler : NetHandler
 
     public override void onWorldTimeUpdate(WorldTimeUpdateS2CPacket packet)
     {
-        _game.world.setTime(packet.time);
+        _game.world.SetTime(packet.time);
     }
 
     public override void onPlayerSpawnPosition(PlayerSpawnPositionS2CPacket packet)
     {
         _game.player.setSpawnPos(new Vec3i(packet.x, packet.y, packet.z));
-        _game.world.getProperties().SetSpawn(packet.x, packet.y, packet.z);
+        _game.world.Properties.SetSpawn(packet.x, packet.y, packet.z);
     }
 
     public override void onEntityVehicleSet(EntityVehicleSetS2CPacket packet)
@@ -616,9 +617,9 @@ public class ClientNetworkHandler : NetHandler
         if (packet.dimensionId != _game.player.dimensionId)
         {
             terrainLoaded = false;
-            worldClient = new ClientWorld(this, worldClient.getProperties().RandomSeed, packet.dimensionId)
+            worldClient = new ClientWorld(this, worldClient.Properties.RandomSeed, packet.dimensionId)
             {
-                isRemote = true
+                IsRemote = true
             };
             _game.changeWorld(worldClient);
             _game.player.dimensionId = packet.dimensionId;
@@ -731,9 +732,9 @@ public class ClientNetworkHandler : NetHandler
 
     public override void handleUpdateSign(UpdateSignPacket packet)
     {
-        if (_game.world.isPosLoaded(packet.x, packet.y, packet.z))
+        if (_game.world.IsPosLoaded(packet.x, packet.y, packet.z))
         {
-            BlockEntity blockEnt = _game.world.getBlockEntity(packet.x, packet.y, packet.z);
+            BlockEntity blockEnt = _game.world.GetBlockEntity(packet.x, packet.y, packet.z);
             if (blockEnt is BlockEntitySign)
             {
                 BlockEntitySign signEntity = (BlockEntitySign)blockEnt;
@@ -776,7 +777,7 @@ public class ClientNetworkHandler : NetHandler
 
     public override void onPlayNoteSound(PlayNoteSoundS2CPacket packet)
     {
-        _game.world.playNoteBlockActionAt(packet.xLocation, packet.yLocation, packet.zLocation, packet.instrumentType, packet.pitch);
+        _game.world.PlayNoteBlockActionAt(packet.xLocation, packet.yLocation, packet.zLocation, packet.instrumentType, packet.pitch);
     }
 
     public override void onGameStateChange(GameStateChangeS2CPacket packet)
@@ -789,15 +790,24 @@ public class ClientNetworkHandler : NetHandler
 
         if (reason == 1)
         {
-            worldClient.getProperties().IsRaining = true;
-            worldClient.setRainGradient(1.0F);
+            worldClient.Properties.IsRaining = true;
+            worldClient.Environment.SetRainGradient(1.0F);
         }
         else if (reason == 2)
         {
-            worldClient.getProperties().IsRaining = false;
-            worldClient.setRainGradient(0.0F);
+            worldClient.Properties.IsRaining = false;
+            worldClient.Environment.SetRainGradient(0.0F);
         }
-
+        else if (reason == 7)
+        {
+            worldClient.Properties.IsThundering = true;
+            worldClient.Environment.SetThunderGradient(1.0F);
+        }
+        else if (reason == 8)
+        {
+            worldClient.Properties.IsThundering = false;
+            worldClient.Environment.SetThunderGradient(0.0F);
+        }
     }
 
     public override void onMapUpdate(MapUpdateS2CPacket packet)
@@ -815,7 +825,7 @@ public class ClientNetworkHandler : NetHandler
 
     public override void onWorldEvent(WorldEventS2CPacket packet)
     {
-        _game.world.worldEvent(packet.eventId, packet.x, packet.y, packet.z, packet.data);
+        _game.world.WorldEvent(packet.eventId, packet.x, packet.y, packet.z, packet.data);
     }
 
     public override void onIncreaseStat(IncreaseStatS2CPacket packet)

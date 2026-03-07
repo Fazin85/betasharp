@@ -28,7 +28,8 @@ using BetaSharp.Util;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
-using BetaSharp.Worlds.Colors;
+using BetaSharp.Worlds.ClientData.Colors;
+using BetaSharp.Worlds.Core;
 using BetaSharp.Worlds.Storage;
 using ImGuiNET;
 using Microsoft.Extensions.Logging;
@@ -572,7 +573,7 @@ public partial class BetaSharp
                     if (world != null)
                     {
                         if (options.DebugMode) Profiler.Start("updateLighting");
-                        world.doLightingUpdates();
+                        world.Lighting.DoLightingUpdates();
                         if (options.DebugMode) Profiler.Stop("updateLighting");
                     }
 
@@ -1161,7 +1162,7 @@ public partial class BetaSharp
     {
         if (objectMouseOver.Type != HitResultType.MISS)
         {
-            int blockId = world.getBlockId(objectMouseOver.BlockX, objectMouseOver.BlockY, objectMouseOver.BlockZ);
+            int blockId = world.GetBlockId(objectMouseOver.BlockX, objectMouseOver.BlockY, objectMouseOver.BlockZ);
             if (blockId == Block.GrassBlock.id)
             {
                 blockId = Block.Dirt.id;
@@ -1237,7 +1238,7 @@ public partial class BetaSharp
             {
                 displayGuiScreen((GuiScreen)null);
             }
-            else if (player.isSleeping() && world != null && world.isRemote)
+            else if (player.isSleeping() && world != null && world.IsRemote)
             {
                 displayGuiScreen(new GuiSleepMP());
             }
@@ -1276,19 +1277,19 @@ public partial class BetaSharp
                 if (joinPlayerCounter == 30)
                 {
                     joinPlayerCounter = 0;
-                    world.LoadChunksNearEntity(player);
+                    world.Entities.LoadChunksNearEntity(player);
                 }
             }
 
-            world.difficulty = options.Difficulty;
+            world.Difficulty = options.Difficulty;
             if (internalServer != null)
             {
                 internalServer.SetDifficulty(options.Difficulty);
             }
 
-            if (world.isRemote)
+            if (world.IsRemote)
             {
-                world.difficulty = 3;
+                world.Difficulty = 3;
             }
 
             Profiler.Start("entityRendererUpdate");
@@ -1307,12 +1308,12 @@ public partial class BetaSharp
             Profiler.PushGroup("theWorldUpdateEntities");
             if (!isGamePaused)
             {
-                if (world.lightningTicksLeft > 0)
+                if (world.Environment.LightningTicksLeft > 0)
                 {
-                    --world.lightningTicksLeft;
+                    --world.Environment.LightningTicksLeft;
                 }
 
-                world.tickEntities();
+                world.Entities.TickEntities();
             }
 
             Profiler.PopGroup();
@@ -1534,7 +1535,7 @@ public partial class BetaSharp
 
     public bool isMultiplayerWorld()
     {
-        return world != null && world.isRemote;
+        return world != null && world.IsRemote;
     }
 
     public void startWorld(string worldName, string mainMenuText, long seed)
@@ -1560,13 +1561,13 @@ public partial class BetaSharp
             {
                 if (targetEntity == null)
                 {
-                    player = (ClientPlayerEntity)newWorld.getPlayerForProxy(typeof(ClientPlayerEntity));
+                    player = (ClientPlayerEntity)newWorld.GetPlayerForProxy(typeof(ClientPlayerEntity));
                 }
             }
             else if (player != null)
             {
                 player.teleportToTop();
-                newWorld?.SpawnEntity(player);
+                newWorld?.Entities.SpawnEntity(player);
             }
 
             if (player == null)
@@ -1584,16 +1585,16 @@ public partial class BetaSharp
             playerController.fillHotbar(player);
             if (targetEntity != null)
             {
-                newWorld.saveWorldData();
+                newWorld.SaveWorldData();
             }
 
-            newWorld.addPlayer(player);
+            newWorld.AddPlayer(player);
 
             skinManager.RequestDownload(session.username);
 
-            if (newWorld.isNewWorld)
+            if (newWorld.IsNewWorld)
             {
-                newWorld.savingProgress(loadingScreen);
+                newWorld.SavingProgress(loadingScreen);
             }
 
             camera = player;
@@ -1614,7 +1615,7 @@ public partial class BetaSharp
         int loadedChunkCount = 0;
         int totalChunksToLoad = loadingRadius * 2 / 16 + 1;
         totalChunksToLoad *= totalChunksToLoad;
-        Vec3i centerPos = world.getSpawnPos();
+        Vec3i centerPos = world.GetSpawnPos();
         if (player != null)
         {
             centerPos.X = (int)player.x;
@@ -1626,16 +1627,16 @@ public partial class BetaSharp
             for (int zOffset = -loadingRadius; zOffset <= loadingRadius; zOffset += 16)
             {
                 loadingScreen.setLoadingProgress(loadedChunkCount++ * 100 / totalChunksToLoad);
-                world.getBlockId(centerPos.X + xOffset, 64, centerPos.Z + zOffset);
+                world.GetBlockId(centerPos.X + xOffset, 64, centerPos.Z + zOffset);
 
-                while (world.doLightingUpdates())
+                while (world.Lighting.DoLightingUpdates())
                 {
                 }
             }
         }
 
         loadingScreen.progressStage("Simulating world for a bit");
-        world.tickChunks();
+        world.TickChunks();
     }
 
     public void installResource(string resourcePath, FileInfo resourceFile)
@@ -1689,12 +1690,12 @@ public partial class BetaSharp
 
     public string getWorldDebugInfo()
     {
-        return world.getDebugInfo();
+        return world.GetDebugInfo();
     }
 
     public string getParticleAndEntityCountDebugInfo()
     {
-        return "P: " + particleManager.getStatistics() + ". T: " + world.getEntityCount();
+        return $"P: {particleManager.getStatistics()}. T: {world.Entities.Entities.Count}";
     }
 
     public void respawn(bool ignoreSpawnPosition, int newDimensionId)
@@ -1718,17 +1719,17 @@ public partial class BetaSharp
         }
 
         bool useBedSpawn = respawnPos is not null;
-        Vec3i finalRespawnPos = respawnPos ?? world.getSpawnPos();
+        Vec3i finalRespawnPos = respawnPos ?? world.GetSpawnPos();
 
         world.UpdateSpawnPosition();
-        world.updateEntityLists();
+        world.Entities.UpdateEntityLists();
 
         int previousPlayerId = 0;
 
         if (player is not null)
         {
             previousPlayerId = player.id;
-            world.Remove(player);
+            world.Entities.Remove(player);
         }
 
         camera = null;
@@ -1750,7 +1751,7 @@ public partial class BetaSharp
         }
 
         playerController.flipPlayer(player);
-        world.addPlayer(player);
+        world.AddPlayer(player);
         player.movementInput = new MovementInputFromOptions(options);
         player.id = previousPlayerId;
         player.spawn();

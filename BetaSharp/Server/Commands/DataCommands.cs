@@ -56,13 +56,13 @@ public static class DataCommands
         switch (args[1])
         {
             case "entity":
-                LogEntity(server.getWorld(player.dimensionId).entities, player, args, output);
+                LogEntity(server.getWorld(player.dimensionId).Entities.Entities, player, args, output);
                 return;
             case "player":
-                LogEntity(server.getWorld(player.dimensionId).players, player, args, output);
+                LogEntity(server.getWorld(player.dimensionId).Entities.Players, player, args, output);
                 return;
             case "global":
-                LogEntity(server.getWorld(player.dimensionId).globalEntities, player, args, output);
+                LogEntity(server.getWorld(player.dimensionId).Entities.GlobalEntities, player, args, output);
                 return;
             default:
                 output.SendMessage("Usage: data get [entity|player|global] <target?>");

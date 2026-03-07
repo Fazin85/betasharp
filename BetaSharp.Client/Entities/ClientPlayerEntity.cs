@@ -8,7 +8,7 @@ using BetaSharp.Inventorys;
 using BetaSharp.NBT;
 using BetaSharp.Stats;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Client.Entities;
 
@@ -55,7 +55,7 @@ public class ClientPlayerEntity : EntityPlayer
         lastScreenDistortion = changeDimensionCooldown;
         if (inTeleportationState)
         {
-            if (!world.isRemote && vehicle != null)
+            if (!world.IsRemote && vehicle != null)
             {
                 setVehicle((Entity)null);
             }
@@ -248,7 +248,7 @@ public class ClientPlayerEntity : EntityPlayer
 
     private bool isBlockTranslucent(int x, int y, int z)
     {
-        return world.shouldSuffocate(x, y, z);
+        return world.ShouldSuffocate(x, y, z);
     }
 
     protected override bool pushOutOfBlocks(double posX, double posY, double posZ)

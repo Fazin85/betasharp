@@ -1,5 +1,5 @@
 using BetaSharp.Entities;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Items;
 
@@ -41,9 +41,9 @@ internal class ItemPainting : Item
             EntityPainting painting = new EntityPainting(world, x, y, z, direction);
             if (painting.CanHangOnWall())
             {
-                if (!world.isRemote)
+                if (!world.IsRemote)
                 {
-                    world.SpawnEntity(painting);
+                    world.Entities.SpawnEntity(painting);
                 }
 
                 --itemStack.count;

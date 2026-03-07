@@ -1,5 +1,5 @@
 using BetaSharp.Blocks.Materials;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Blocks;
 
@@ -19,7 +19,7 @@ public class BlockLeavesBase : Block
 
     public override bool isSideVisible(IBlockAccess iBlockAccess, int x, int y, int z, int side)
     {
-        int var6 = iBlockAccess.getBlockId(x, y, z);
+        int var6 = iBlockAccess.GetBlockId(x, y, z);
         return !graphicsLevel && var6 == id ? false : base.isSideVisible(iBlockAccess, x, y, z, side);
     }
 }

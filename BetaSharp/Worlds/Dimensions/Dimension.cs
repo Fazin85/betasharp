@@ -1,23 +1,24 @@
 using BetaSharp.Blocks;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds.Biomes.Source;
 using BetaSharp.Worlds.Chunks;
-using BetaSharp.Worlds.Gen.Chunks;
+using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Generation.Biomes.Source;
+using BetaSharp.Worlds.Generation.Generators.Chunks;
 using Silk.NET.Maths;
 
 namespace BetaSharp.Worlds.Dimensions;
 
 public abstract class Dimension
 {
-    public World World { get; set; } = null!;
-    public BiomeSource BiomeSource { get; set; } = null!;
-    public bool IsNether = false;
+    private readonly float[] _backgroundColor = new float[4];
     public bool EvaporatesWater = false;
     public bool HasCeiling = false;
     public int Id = 0;
-    
+    public bool IsNether = false;
+
     public float[] LightLevelToLuminance = new float[16];
-    private readonly float[] _backgroundColor = new float[4];
+    public World World { get; set; } = null!;
+    public BiomeSource BiomeSource { get; set; } = null!;
 
     public virtual float CloudHeight { get; } = 108.0F;
     public virtual bool HasGround => true;
@@ -39,37 +40,34 @@ public abstract class Dimension
             float factor = 1.0F - i / 15.0F;
             LightLevelToLuminance[i] = (1.0F - factor) / (factor * 3.0F + 1.0F) * (1.0F - offset) + offset;
         }
-
     }
 
-    public virtual void InitBiomeSource()
-    {
-        BiomeSource = new BiomeSource(World);
-    }
+    public virtual void InitBiomeSource() => BiomeSource = new BiomeSource(World);
 
-    public virtual ChunkSource CreateChunkGenerator()
-    {
-        return new OverworldChunkGenerator(World, World.getSeed());
-    }
+    public virtual ChunkSource CreateChunkGenerator() => new OverworldChunkGenerator(World, World.GetSeed());
 
-    public virtual bool IsValidSpawnPoint(int x, int y)
-    {
-        return World.getSpawnBlockId(x, y) == Block.Sand.id;
-    }
+    public virtual bool IsValidSpawnPoint(int x, int y) => World.GetSpawnBlockId(x, y) == Block.Sand.id;
 
     public virtual float GetTimeOfDay(long time, float tickDelta)
     {
         int ticks = (int)(time % 24000L);
         float phase = (ticks + tickDelta) / 24000.0F - 0.25F;
-        
-        if (phase < 0.0F) phase++;
-        if (phase > 1.0F) phase--;
+
+        if (phase < 0.0F)
+        {
+            phase++;
+        }
+
+        if (phase > 1.0F)
+        {
+            phase--;
+        }
 
         float phaseCopy = phase;
-        
+
         phase = 1.0F - (float)((Math.Cos(phase * Math.PI) + 1.0D) / 2.0D);
         phase = phaseCopy + (phase - phaseCopy) / 3.0F;
-        
+
         return phase;
     }
 
@@ -77,18 +75,18 @@ public abstract class Dimension
     {
         float offset = 0.4F;
         float cosAngle = MathHelper.Cos(celestialAngle * (float)Math.PI * 2.0F);
-        
+
         if (cosAngle is >= -0.4F and <= 0.4F)
         {
             float fade = cosAngle / offset * 0.5F + 0.5F;
             float multiplier = 1.0F - (1.0F - MathHelper.Sin(fade * (float)Math.PI)) * 0.99F;
             multiplier *= multiplier;
-            
+
             _backgroundColor[0] = fade * 0.3F + 0.7F;
             _backgroundColor[1] = fade * fade * 0.7F + 0.2F;
             _backgroundColor[2] = fade * fade * 0.0F + 0.2F;
             _backgroundColor[3] = multiplier;
-            
+
             return _backgroundColor;
         }
 
@@ -98,17 +96,17 @@ public abstract class Dimension
     public virtual Vector3D<double> GetFogColor(float celestialAngle, float partialTicks)
     {
         float cosAngle = MathHelper.Cos(celestialAngle * (float)Math.PI * 2.0F) * 2.0F + 0.5F;
-    
+
         cosAngle = Math.Clamp(cosAngle, 0.0F, 1.0F);
 
         float r = 192.0F / 255.0F;
         float g = 216.0F / 255.0F;
         float b = 1.0F;
-        
+
         r *= cosAngle * 0.94F + 0.06F;
         g *= cosAngle * 0.94F + 0.06F;
         b *= cosAngle * 0.91F + 0.09F;
-        
+
         return new Vector3D<double>(r, g, b);
     }
 

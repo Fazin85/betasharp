@@ -3,7 +3,7 @@ using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Blocks;
 
@@ -33,12 +33,12 @@ internal class BlockFurnace : BlockWithEntity
 
     private void updateDirection(World world, int x, int y, int z)
     {
-        if (!world.isRemote)
+        if (!world.IsRemote)
         {
-            int blockNorth = world.getBlockId(x, y, z - 1);
-            int blockSouth = world.getBlockId(x, y, z + 1);
-            int westBlockId = world.getBlockId(x - 1, y, z);
-            int eastBlockId = world.getBlockId(x + 1, y, z);
+            int blockNorth = world.GetBlockId(x, y, z - 1);
+            int blockSouth = world.GetBlockId(x, y, z + 1);
+            int westBlockId = world.GetBlockId(x - 1, y, z);
+            int eastBlockId = world.GetBlockId(x + 1, y, z);
             sbyte direction = 3;
             if (Block.BlocksOpaque[blockNorth] && !Block.BlocksOpaque[blockSouth])
             {
@@ -76,7 +76,7 @@ internal class BlockFurnace : BlockWithEntity
         }
         else
         {
-            int meta = iBlockAccess.getBlockMeta(x, y, z);
+            int meta = iBlockAccess.GetBlockMeta(x, y, z);
             return side != meta ? textureId : (_lit ? textureId + 16 : textureId - 1);
         }
     }
@@ -85,7 +85,7 @@ internal class BlockFurnace : BlockWithEntity
     {
         if (_lit)
         {
-            int var6 = world.getBlockMeta(x, y, z);
+            int var6 = world.GetBlockMeta(x, y, z);
             float particleX = (float)x + 0.5F;
             float particleY = (float)y + 0.0F + random.NextFloat() * 6.0F / 16.0F;
             float particleZ = (float)z + 0.5F;
@@ -93,23 +93,23 @@ internal class BlockFurnace : BlockWithEntity
             float randomOffset = random.NextFloat() * 0.6F - 0.3F;
             if (var6 == 4)
             {
-                world.addParticle("smoke", (double)(particleX - flameOffset), (double)particleY, (double)(particleZ + randomOffset), 0.0D, 0.0D, 0.0D);
-                world.addParticle("flame", (double)(particleX - flameOffset), (double)particleY, (double)(particleZ + randomOffset), 0.0D, 0.0D, 0.0D);
+                world.AddParticle("smoke", (double)(particleX - flameOffset), (double)particleY, (double)(particleZ + randomOffset), 0.0D, 0.0D, 0.0D);
+                world.AddParticle("flame", (double)(particleX - flameOffset), (double)particleY, (double)(particleZ + randomOffset), 0.0D, 0.0D, 0.0D);
             }
             else if (var6 == 5)
             {
-                world.addParticle("smoke", (double)(particleX + flameOffset), (double)particleY, (double)(particleZ + randomOffset), 0.0D, 0.0D, 0.0D);
-                world.addParticle("flame", (double)(particleX + flameOffset), (double)particleY, (double)(particleZ + randomOffset), 0.0D, 0.0D, 0.0D);
+                world.AddParticle("smoke", (double)(particleX + flameOffset), (double)particleY, (double)(particleZ + randomOffset), 0.0D, 0.0D, 0.0D);
+                world.AddParticle("flame", (double)(particleX + flameOffset), (double)particleY, (double)(particleZ + randomOffset), 0.0D, 0.0D, 0.0D);
             }
             else if (var6 == 2)
             {
-                world.addParticle("smoke", (double)(particleX + randomOffset), (double)particleY, (double)(particleZ - flameOffset), 0.0D, 0.0D, 0.0D);
-                world.addParticle("flame", (double)(particleX + randomOffset), (double)particleY, (double)(particleZ - flameOffset), 0.0D, 0.0D, 0.0D);
+                world.AddParticle("smoke", (double)(particleX + randomOffset), (double)particleY, (double)(particleZ - flameOffset), 0.0D, 0.0D, 0.0D);
+                world.AddParticle("flame", (double)(particleX + randomOffset), (double)particleY, (double)(particleZ - flameOffset), 0.0D, 0.0D, 0.0D);
             }
             else if (var6 == 3)
             {
-                world.addParticle("smoke", (double)(particleX + randomOffset), (double)particleY, (double)(particleZ + flameOffset), 0.0D, 0.0D, 0.0D);
-                world.addParticle("flame", (double)(particleX + randomOffset), (double)particleY, (double)(particleZ + flameOffset), 0.0D, 0.0D, 0.0D);
+                world.AddParticle("smoke", (double)(particleX + randomOffset), (double)particleY, (double)(particleZ + flameOffset), 0.0D, 0.0D, 0.0D);
+                world.AddParticle("flame", (double)(particleX + randomOffset), (double)particleY, (double)(particleZ + flameOffset), 0.0D, 0.0D, 0.0D);
             }
 
         }
@@ -122,13 +122,13 @@ internal class BlockFurnace : BlockWithEntity
 
     public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
     {
-        if (world.isRemote)
+        if (world.IsRemote)
         {
             return true;
         }
         else
         {
-            BlockEntityFurnace furnace = (BlockEntityFurnace)world.getBlockEntity(x, y, z);
+            BlockEntityFurnace furnace = (BlockEntityFurnace)world.GetBlockEntity(x, y, z);
             player.openFurnaceScreen(furnace);
             return true;
         }
@@ -136,22 +136,22 @@ internal class BlockFurnace : BlockWithEntity
 
     public static void updateLitState(bool lit, World world, int x, int y, int z)
     {
-        int meta = world.getBlockMeta(x, y, z);
-        BlockEntity furnace = world.getBlockEntity(x, y, z);
+        int meta = world.GetBlockMeta(x, y, z);
+        BlockEntity furnace = world.GetBlockEntity(x, y, z);
         s_ignoreBlockRemoval.Value = true;
         if (lit)
         {
-            world.setBlock(x, y, z, Block.LitFurnace.id);
+            world.SetBlock(x, y, z, Block.LitFurnace.id);
         }
         else
         {
-            world.setBlock(x, y, z, Block.Furnace.id);
+            world.SetBlock(x, y, z, Block.Furnace.id);
         }
 
         s_ignoreBlockRemoval.Value = false;
         world.setBlockMeta(x, y, z, meta);
         furnace.cancelRemoval();
-        world.setBlockEntity(x, y, z, furnace);
+        world.Entities.SetBlockEntity(x, y, z, furnace);
     }
 
     protected override BlockEntity getBlockEntity()
@@ -188,7 +188,7 @@ internal class BlockFurnace : BlockWithEntity
     {
         if (!s_ignoreBlockRemoval.Value)
         {
-            BlockEntityFurnace furnace = (BlockEntityFurnace)world.getBlockEntity(x, y, z);
+            BlockEntityFurnace furnace = (BlockEntityFurnace)world.GetBlockEntity(x, y, z);
 
             for (int slotIndex = 0; slotIndex < furnace.size(); ++slotIndex)
             {
@@ -213,7 +213,7 @@ internal class BlockFurnace : BlockWithEntity
                         droppedItem.velocityX = (double)((float)_random.NextGaussian() * var13);
                         droppedItem.velocityY = (double)((float)_random.NextGaussian() * var13 + 0.2F);
                         droppedItem.velocityZ = (double)((float)_random.NextGaussian() * var13);
-                        world.SpawnEntity(droppedItem);
+                        world.Entities.SpawnEntity(droppedItem);
                     }
                 }
             }

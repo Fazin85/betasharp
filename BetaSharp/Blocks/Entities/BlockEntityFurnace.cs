@@ -143,7 +143,7 @@ public class BlockEntityFurnace : BlockEntity, IInventory
             --burnTime;
         }
 
-        if (!World.isRemote)
+        if (!World.IsRemote)
         {
             if (burnTime == 0 && canAcceptRecipeOutput())
             {
@@ -242,6 +242,6 @@ public class BlockEntityFurnace : BlockEntity, IInventory
 
     public bool canPlayerUse(EntityPlayer player)
     {
-        return World.getBlockEntity(X, Y, Z) != this ? false : player.getSquaredDistance(X + 0.5D, Y + 0.5D, Z + 0.5D) <= 64.0D;
+        return World.GetBlockEntity(X, Y, Z) != this ? false : player.getSquaredDistance(X + 0.5D, Y + 0.5D, Z + 0.5D) <= 64.0D;
     }
 }

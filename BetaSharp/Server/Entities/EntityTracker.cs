@@ -111,7 +111,7 @@ public class EntityTracker
             EntityTrackerEntry var5 = new(entity, trackedDistance, tracingFrequency, alwaysUpdateVelocity);
             entries.Add(var5);
             entriesById[entity.id] = var5;
-            var5.updateListeners(world.getWorld(dimensionId).players.Cast<ServerPlayerEntity>());
+            var5.updateListeners(world.getWorld(dimensionId).Entities.Players.Cast<ServerPlayerEntity>());
         }
     }
 
@@ -140,7 +140,7 @@ public class EntityTracker
 
         foreach (EntityTrackerEntry var3 in entries)
         {
-            var3.notifyNewLocation(world.getWorld(dimensionId).players.Cast<ServerPlayerEntity>());
+            var3.notifyNewLocation(world.getWorld(dimensionId).Entities.Players.Cast<ServerPlayerEntity>());
             if (var3.newPlayerDataUpdated && var3.currentTrackedEntity is ServerPlayerEntity)
             {
                 var1.add((ServerPlayerEntity)var3.currentTrackedEntity);

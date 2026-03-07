@@ -1,5 +1,5 @@
 using BetaSharp.Entities;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Items;
 
@@ -15,10 +15,10 @@ internal class ItemBow : Item
     {
         if (entityPlayer.inventory.consumeInventoryItem(Item.ARROW.id))
         {
-            world.playSound(entityPlayer, "random.bow", 1.0F, 1.0F / (itemRand.NextFloat() * 0.4F + 0.8F));
-            if (!world.isRemote)
+            world.PlaySound(entityPlayer, "random.bow", 1.0F, 1.0F / (itemRand.NextFloat() * 0.4F + 0.8F));
+            if (!world.IsRemote)
             {
-                world.SpawnEntity(new EntityArrow(world, entityPlayer));
+                world.Entities.SpawnEntity(new EntityArrow(world, entityPlayer));
             }
         }
 

@@ -6,7 +6,7 @@ using BetaSharp.Rules;
 using BetaSharp.Stats;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Blocks;
 
@@ -245,7 +245,7 @@ public class Block
 
     public virtual float getLuminance(IBlockAccess iBlockAccess, int x, int y, int z)
     {
-        return iBlockAccess.getNaturalBrightness(x, y, z, BlocksLightLuminance[id]);
+        return iBlockAccess.GetNaturalBrightness(x, y, z, BlocksLightLuminance[id]);
     }
 
     public virtual bool isSideVisible(IBlockAccess iBlockAccess, int x, int y, int z, int side)
@@ -256,17 +256,17 @@ public class Block
         var maxX = BoundingBox.MaxX;
         var maxY = BoundingBox.MaxY;
         var maxZ = BoundingBox.MaxZ;
-        return side == 0 && minY > 0.0D ? true : (side == 1 && maxY < 1.0D ? true : (side == 2 && minZ > 0.0D ? true : (side == 3 && maxZ < 1.0D ? true : (side == 4 && minX > 0.0D ? true : (side == 5 && maxX < 1.0D ? true : !iBlockAccess.isOpaque(x, y, z))))));
+        return side == 0 && minY > 0.0D ? true : (side == 1 && maxY < 1.0D ? true : (side == 2 && minZ > 0.0D ? true : (side == 3 && maxZ < 1.0D ? true : (side == 4 && minX > 0.0D ? true : (side == 5 && maxX < 1.0D ? true : !iBlockAccess.IsOpaque(x, y, z))))));
     }
 
     public virtual bool isSolidFace(IBlockAccess iBlockAccess, int x, int y, int z, int face)
     {
-        return iBlockAccess.getMaterial(x, y, z).IsSolid;
+        return iBlockAccess.GetMaterial(x, y, z).IsSolid;
     }
 
     public virtual int getTextureId(IBlockAccess iBlockAccess, int x, int y, int z, int side)
     {
-        return getTexture(side, iBlockAccess.getBlockMeta(x, y, z));
+        return getTexture(side, iBlockAccess.GetBlockMeta(x, y, z));
     }
 
     public virtual int getTexture(int side, int meta)
@@ -364,7 +364,7 @@ public class Block
 
     public virtual void dropStacks(World world, int x, int y, int z, int meta, float luck)
     {
-        if (!world.isRemote && world.Rules.GetBool(DefaultRules.DoTileDrops))
+        if (!world.IsRemote && world.Rules.GetBool(DefaultRules.DoTileDrops))
         {
             int dropCount = getDroppedItemCount(world.random);
 
@@ -385,7 +385,7 @@ public class Block
 
     protected void dropStack(World world, int x, int y, int z, ItemStack itemStack)
     {
-        if (!world.isRemote && world.Rules.GetBool(DefaultRules.DoTileDrops))
+        if (!world.IsRemote && world.Rules.GetBool(DefaultRules.DoTileDrops))
         {
             float spreadFactor = 0.7F;
             double offsetX = (double)(world.random.NextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
@@ -393,7 +393,7 @@ public class Block
             double offsetZ = (double)(world.random.NextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
             EntityItem droppedItem = new EntityItem(world, (double)x + offsetX, (double)y + offsetY, (double)z + offsetZ, itemStack);
             droppedItem.delayBeforeCanPickup = 10;
-            world.SpawnEntity(droppedItem);
+            world.Entities.SpawnEntity(droppedItem);
         }
     }
 
@@ -436,7 +436,7 @@ public class Block
 
     public virtual bool canPlaceAt(World world, int x, int y, int z)
     {
-        int blockId = world.getBlockId(x, y, z);
+        int blockId = world.GetBlockId(x, y, z);
         return blockId == 0 || Blocks[blockId].material.IsReplaceable;
     }
 

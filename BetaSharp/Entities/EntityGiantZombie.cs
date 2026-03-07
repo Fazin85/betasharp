@@ -1,4 +1,4 @@
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Entities;
 
@@ -16,6 +16,6 @@ public class EntityGiantZombie : EntityMonster
 
     protected override float getBlockPathWeight(int x, int y, int z)
     {
-        return world.getLuminance(x, y, z) - 0.5F;
+        return world.GetLuminance(x, y, z) - 0.5F;
     }
 }

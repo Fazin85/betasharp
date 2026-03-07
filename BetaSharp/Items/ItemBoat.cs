@@ -2,7 +2,7 @@ using BetaSharp.Blocks;
 using BetaSharp.Entities;
 using BetaSharp.Util.Hit;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Items;
 
@@ -31,7 +31,7 @@ internal class ItemBoat : Item
         float dirZ = cosYaw * cosPitch;
         double rayLength = 5.0D;
         Vec3D rayEnd = rayStart + new Vec3D((double)dirX * rayLength, (double)sinPitch * rayLength, (double)dirZ * rayLength);
-        HitResult hitResult = world.raycast(rayStart, rayEnd, true);
+        HitResult hitResult = world.Raycast(rayStart, rayEnd, true);
         if (hitResult.Type == HitResultType.MISS)
         {
             return itemStack;
@@ -43,14 +43,14 @@ internal class ItemBoat : Item
                 int hitX = hitResult.BlockX;
                 int hitY = hitResult.BlockY;
                 int hitZ = hitResult.BlockZ;
-                if (!world.isRemote)
+                if (!world.IsRemote)
                 {
-                    if (world.getBlockId(hitX, hitY, hitZ) == Block.Snow.id)
+                    if (world.GetBlockId(hitX, hitY, hitZ) == Block.Snow.id)
                     {
                         --hitY;
                     }
 
-                    world.SpawnEntity(new EntityBoat(world, (double)((float)hitX + 0.5F), (double)((float)hitY + 1.0F), (double)((float)hitZ + 0.5F)));
+                    world.Entities.SpawnEntity(new EntityBoat(world, (double)((float)hitX + 0.5F), (double)((float)hitY + 1.0F), (double)((float)hitZ + 0.5F)));
                 }
 
                 --itemStack.count;

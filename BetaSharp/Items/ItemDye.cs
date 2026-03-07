@@ -1,6 +1,6 @@
 using BetaSharp.Blocks;
 using BetaSharp.Entities;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Items;
 
@@ -66,10 +66,10 @@ internal class ItemDye : Item
     {
         if (itemStack.getDamage() == 15)
         {
-            int blockId = world.getBlockId(x, y, z);
+            int blockId = world.GetBlockId(x, y, z);
             if (blockId == Block.Sapling.id)
             {
-                if (!world.isRemote)
+                if (!world.IsRemote)
                 {
                     ((BlockSapling)Block.Sapling).generate(world, x, y, z, world.random);
                     --itemStack.count;
@@ -78,7 +78,7 @@ internal class ItemDye : Item
             }
             if (blockId == Block.Wheat.id)
             {
-                if (!world.isRemote)
+                if (!world.IsRemote)
                 {
                     ((BlockCrops)Block.Wheat).applyFullGrowth(world, x, y, z);
                     --itemStack.count;
@@ -87,7 +87,7 @@ internal class ItemDye : Item
             }
             if (blockId == Block.GrassBlock.id)
             {
-                if (!world.isRemote)
+                if (!world.IsRemote)
                 {
                     --itemStack.count;
 
@@ -103,25 +103,25 @@ internal class ItemDye : Item
                             spawnX += itemRand.NextInt(3) - 1;
                             spawnY += (itemRand.NextInt(3) - 1) * itemRand.NextInt(3) / 2;
                             spawnZ += itemRand.NextInt(3) - 1;
-                            if (world.getBlockId(spawnX, spawnY - 1, spawnZ) != Block.GrassBlock.id || world.shouldSuffocate(spawnX, spawnY, spawnZ))
+                            if (world.GetBlockId(spawnX, spawnY - 1, spawnZ) != Block.GrassBlock.id || world.ShouldSuffocate(spawnX, spawnY, spawnZ))
                             {
                                 validPosition = false;
                             }
                         }
 
-                        if (validPosition && world.getBlockId(spawnX, spawnY, spawnZ) == 0)
+                        if (validPosition && world.GetBlockId(spawnX, spawnY, spawnZ) == 0)
                         {
                             if (itemRand.NextInt(10) != 0)
                             {
-                                world.setBlock(spawnX, spawnY, spawnZ, Block.Grass.id, 1);
+                                world.SetBlock(spawnX, spawnY, spawnZ, Block.Grass.id, 1);
                             }
                             else if (itemRand.NextInt(3) != 0)
                             {
-                                world.setBlock(spawnX, spawnY, spawnZ, Block.Dandelion.id);
+                                world.SetBlock(spawnX, spawnY, spawnZ, Block.Dandelion.id);
                             }
                             else
                             {
-                                world.setBlock(spawnX, spawnY, spawnZ, Block.Rose.id);
+                                world.SetBlock(spawnX, spawnY, spawnZ, Block.Rose.id);
                             }
                         }
                     }

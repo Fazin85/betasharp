@@ -4,7 +4,7 @@ using BetaSharp.Inventorys;
 using BetaSharp.Items;
 using BetaSharp.Recipes;
 using BetaSharp.Screens.Slots;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Screens;
 
@@ -61,7 +61,7 @@ public class CraftingScreenHandler : ScreenHandler
     public override void onClosed(EntityPlayer player)
     {
         base.onClosed(player);
-        if (!world.isRemote)
+        if (!world.IsRemote)
         {
             for (int var2 = 0; var2 < 9; ++var2)
             {
@@ -77,7 +77,7 @@ public class CraftingScreenHandler : ScreenHandler
 
     public override bool canUse(EntityPlayer player)
     {
-        return world.getBlockId(x, y, z) != Block.CraftingTable.id ? false : player.getSquaredDistance(x + 0.5D, y + 0.5D, z + 0.5D) <= 64.0D;
+        return world.GetBlockId(x, y, z) != Block.CraftingTable.id ? false : player.getSquaredDistance(x + 0.5D, y + 0.5D, z + 0.5D) <= 64.0D;
     }
 
     public override ItemStack quickMove(int slotNumber)

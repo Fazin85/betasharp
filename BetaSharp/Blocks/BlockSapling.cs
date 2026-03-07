@@ -1,6 +1,6 @@
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
-using BetaSharp.Worlds.Gen.Features;
+using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Generation.Generators.Features;
 
 namespace BetaSharp.Blocks;
 
@@ -14,12 +14,12 @@ internal class BlockSapling : BlockPlant
 
     public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
-        if (!world.isRemote)
+        if (!world.IsRemote)
         {
             base.onTick(world, x, y, z, random);
-            if (world.getLightLevel(x, y + 1, z) >= 9 && random.NextInt(30) == 0)
+            if (world.Lighting.GetLightLevel(x, y + 1, z) >= 9 && random.NextInt(30) == 0)
             {
-                int saplingMeta = world.getBlockMeta(x, y, z);
+                int saplingMeta = world.GetBlockMeta(x, y, z);
                 if ((saplingMeta & 8) == 0)
                 {
                     world.setBlockMeta(x, y, z, saplingMeta | 8);
@@ -41,7 +41,7 @@ internal class BlockSapling : BlockPlant
 
     public void generate(World world, int x, int y, int z, JavaRandom random)
     {
-        int saplingType = world.getBlockMeta(x, y, z) & 3;
+        int saplingType = world.GetBlockMeta(x, y, z) & 3;
         world.SetBlockWithoutNotifyingNeighbors(x, y, z, 0);
         object treeFeature = null;
         if (saplingType == 1)

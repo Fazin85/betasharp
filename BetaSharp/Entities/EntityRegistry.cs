@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using BetaSharp.NBT;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Entities;
@@ -105,7 +105,7 @@ public static class EntityRegistry
                 {
                     entity.setPosition(x, y, z);
                     entity.setPositionAndAngles(x, y, z, 0, 0);
-                    if (!world.SpawnEntity(entity))
+                    if (!world.Entities.SpawnEntity(entity))
                     {
                         s_logger.LogError($"Entity `{name}` with ID:`{id}` failed to join world.");
                     }

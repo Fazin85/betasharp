@@ -3,7 +3,7 @@ using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Blocks;
 
@@ -34,12 +34,12 @@ internal class BlockDispenser : BlockWithEntity
 
     private void updateDirection(World world, int x, int y, int z)
     {
-        if (!world.isRemote)
+        if (!world.IsRemote)
         {
-            int blockNorth = world.getBlockId(x, y, z - 1);
-            int blockSouth = world.getBlockId(x, y, z + 1);
-            int blockWest = world.getBlockId(x - 1, y, z);
-            int blockEast = world.getBlockId(x + 1, y, z);
+            int blockNorth = world.GetBlockId(x, y, z - 1);
+            int blockSouth = world.GetBlockId(x, y, z + 1);
+            int blockWest = world.GetBlockId(x - 1, y, z);
+            int blockEast = world.GetBlockId(x + 1, y, z);
             sbyte direction = 3;
             if (Block.BlocksOpaque[blockNorth] && !Block.BlocksOpaque[blockSouth])
             {
@@ -77,7 +77,7 @@ internal class BlockDispenser : BlockWithEntity
         }
         else
         {
-            int meta = iBlockAccess.getBlockMeta(x, y, z);
+            int meta = iBlockAccess.GetBlockMeta(x, y, z);
             return side != meta ? textureId : textureId + 1;
         }
     }
@@ -89,13 +89,13 @@ internal class BlockDispenser : BlockWithEntity
 
     public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
     {
-        if (world.isRemote)
+        if (world.IsRemote)
         {
             return true;
         }
         else
         {
-            BlockEntityDispenser dispenser = (BlockEntityDispenser)world.getBlockEntity(x, y, z);
+            BlockEntityDispenser dispenser = (BlockEntityDispenser)world.GetBlockEntity(x, y, z);
             player.openDispenserScreen(dispenser);
             return true;
         }
@@ -103,7 +103,7 @@ internal class BlockDispenser : BlockWithEntity
 
     private void dispense(World world, int x, int y, int z, JavaRandom random)
     {
-        int meta = world.getBlockMeta(x, y, z);
+        int meta = world.GetBlockMeta(x, y, z);
         int dirX = 0;
         int dirZ = 0;
         if (meta == 3)
@@ -123,14 +123,14 @@ internal class BlockDispenser : BlockWithEntity
             dirX = -1;
         }
 
-        BlockEntityDispenser dispenser = (BlockEntityDispenser)world.getBlockEntity(x, y, z);
+        BlockEntityDispenser dispenser = (BlockEntityDispenser)world.GetBlockEntity(x, y, z);
         ItemStack itemStack = dispenser.getItemToDispose();
         double spawnX = (double)x + (double)dirX * 0.6D + 0.5D;
         double spawnY = (double)y + 0.5D;
         double spawnZ = (double)z + (double)dirZ * 0.6D + 0.5D;
         if (itemStack == null)
         {
-            world.worldEvent(1001, x, y, z, 0);
+            world.WorldEvent(1001, x, y, z, 0);
         }
         else
         {
@@ -139,22 +139,22 @@ internal class BlockDispenser : BlockWithEntity
                 EntityArrow arrow = new EntityArrow(world, spawnX, spawnY, spawnZ);
                 arrow.setArrowHeading((double)dirX, (double)0.1F, (double)dirZ, 1.1F, 6.0F);
                 arrow.doesArrowBelongToPlayer = true;
-                world.SpawnEntity(arrow);
-                world.worldEvent(1002, x, y, z, 0);
+                world.Entities.SpawnEntity(arrow);
+                world.WorldEvent(1002, x, y, z, 0);
             }
             else if (itemStack.itemId == Item.Egg.id)
             {
                 EntityEgg egg = new EntityEgg(world, spawnX, spawnY, spawnZ);
                 egg.setEggHeading((double)dirX, (double)0.1F, (double)dirZ, 1.1F, 6.0F);
-                world.SpawnEntity(egg);
-                world.worldEvent(1002, x, y, z, 0);
+                world.Entities.SpawnEntity(egg);
+                world.WorldEvent(1002, x, y, z, 0);
             }
             else if (itemStack.itemId == Item.Snowball.id)
             {
                 EntitySnowball snowball = new EntitySnowball(world, spawnX, spawnY, spawnZ);
                 snowball.setSnowballHeading((double)dirX, (double)0.1F, (double)dirZ, 1.1F, 6.0F);
-                world.SpawnEntity(snowball);
-                world.worldEvent(1002, x, y, z, 0);
+                world.Entities.SpawnEntity(snowball);
+                world.WorldEvent(1002, x, y, z, 0);
             }
             else
             {
@@ -166,11 +166,11 @@ internal class BlockDispenser : BlockWithEntity
                 item.velocityX += random.NextGaussian() * (double)0.0075F * 6.0D;
                 item.velocityY += random.NextGaussian() * (double)0.0075F * 6.0D;
                 item.velocityZ += random.NextGaussian() * (double)0.0075F * 6.0D;
-                world.SpawnEntity(item);
-                world.worldEvent(1000, x, y, z, 0);
+                world.Entities.SpawnEntity(item);
+                world.WorldEvent(1000, x, y, z, 0);
             }
 
-            world.worldEvent(2000, x, y, z, dirX + 1 + (dirZ + 1) * 3);
+            world.WorldEvent(2000, x, y, z, dirX + 1 + (dirZ + 1) * 3);
         }
 
     }
@@ -179,10 +179,10 @@ internal class BlockDispenser : BlockWithEntity
     {
         if (id > 0 && Block.Blocks[id].canEmitRedstonePower())
         {
-            bool isPowered = world.isPowered(x, y, z) || world.isPowered(x, y + 1, z);
+            bool isPowered = world.Redstone.IsPowered(x, y, z) || world.Redstone.IsPowered(x, y + 1, z);
             if (isPowered)
             {
-                world.ScheduleBlockUpdate(x, y, z, base.id, getTickRate());
+                world.TickScheduler.ScheduleBlockUpdate(x, y, z, base.id, getTickRate());
             }
         }
 
@@ -190,7 +190,7 @@ internal class BlockDispenser : BlockWithEntity
 
     public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
-        if (world.isPowered(x, y, z) || world.isPowered(x, y + 1, z))
+        if (world.Redstone.IsPowered(x, y, z) || world.Redstone.IsPowered(x, y + 1, z))
         {
             dispense(world, x, y, z, random);
         }
@@ -229,7 +229,7 @@ internal class BlockDispenser : BlockWithEntity
 
     public override void onBreak(World world, int x, int y, int z)
     {
-        BlockEntityDispenser dispenser = (BlockEntityDispenser)world.getBlockEntity(x, y, z);
+        BlockEntityDispenser dispenser = (BlockEntityDispenser)world.GetBlockEntity(x, y, z);
 
         JavaRandom random = s_random.Value!;
 
@@ -256,7 +256,7 @@ internal class BlockDispenser : BlockWithEntity
                     entityItem.velocityX = (double)((float)random.NextGaussian() * var13);
                     entityItem.velocityY = (double)((float)random.NextGaussian() * var13 + 0.2F);
                     entityItem.velocityZ = (double)((float)random.NextGaussian() * var13);
-                    world.SpawnEntity(entityItem);
+                    world.Entities.SpawnEntity(entityItem);
                 }
             }
         }

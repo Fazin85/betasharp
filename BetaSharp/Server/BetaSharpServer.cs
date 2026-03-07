@@ -13,6 +13,7 @@ using java.util;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Threading;
+using BetaSharp.Worlds.Core;
 using Exception = System.Exception;
 
 namespace BetaSharp.Server;
@@ -129,8 +130,8 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                 worlds[i] = new ReadOnlyServerWorld(this, worldStorage, worldDir, i == 0 ? 0 : -1, seed, worlds[0]);
             }
 
-            worlds[i].addWorldAccess(new ServerWorldEventListener(this, worlds[i]));
-            worlds[i].difficulty = config.GetSpawnMonsters(true) ? 1 : 0;
+            worlds[i].AddWorldAccess(new ServerWorldEventListener(this, worlds[i]));
+            worlds[i].Difficulty = config.GetSpawnMonsters(true) ? 1 : 0;
             worlds[i].allowSpawning(config.GetSpawnMonsters(true), spawnAnimals);
             playerManager.saveAllPlayers(worlds);
         }
@@ -147,7 +148,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
             if (i == 0)
             {
                 ServerWorld world = worlds[i];
-                Vec3i spawnPos = world.getSpawnPos();
+                Vec3i spawnPos = world.GetSpawnPos();
 
                 var chunkList = new List<(int cx, int cz)>();
                 for (int x = -startRegionSize; x <= startRegionSize; x += 16)
@@ -190,7 +191,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                 // Phase 3: Batch lighting drain — all neighbors already loaded so sky-light
                 // propagates without border re-queuing.
                 var sw3 = Stopwatch.StartNew();
-                while (world.doLightingUpdates() && running) { }
+                while (world.Lighting.DoLightingUpdates() && running) { }
                 sw3.Stop();
                 _logger.LogInformation($"  Level {i} lighting: {sw3.ElapsedMilliseconds}ms");
             }
@@ -218,7 +219,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
 
         foreach (ServerWorld world in worlds)
         {
-            world.saveWithLoadingDisplay(true, null);
+            world.SaveWithLoadingDisplay(true, null);
             world.forceSave();
         }
     }
@@ -294,7 +295,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                         continue;
                     }
 
-                    if (worlds[0].canSkipNight())
+                    if (worlds[0].Environment.CanSkipNight())
                     {
                         tick();
                         _ticksThisSecond++;
@@ -406,7 +407,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                 ServerWorld world = worlds[i];
                 if (ticks % 20 == 0)
                 {
-                    playerManager.sendToDimension(new WorldTimeUpdateS2CPacket(world.getTime()), world.dimension.Id);
+                    playerManager.sendToDimension(new WorldTimeUpdateS2CPacket(world.GetTime()), world.Dimension.Id);
                 }
 
                 world.Tick();
@@ -417,11 +418,11 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                 // >2-second stalls and "Can't keep up" spam.  Any remaining work
                 // carries over and is processed across subsequent ticks.
                 var lightSw = Stopwatch.StartNew();
-                while (lightSw.ElapsedMilliseconds < 15L && world.doLightingUpdates())
+                while (lightSw.ElapsedMilliseconds < 15L && world.Lighting.DoLightingUpdates())
                 {
                 }
 
-                world.tickEntities();
+                world.Entities.TickEntities();
             }
         }
 

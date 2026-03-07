@@ -1,7 +1,8 @@
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Chunks;
-using BetaSharp.Worlds.Chunks.Storage;
+using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Storage.RegionFormat;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Server.Worlds;
@@ -34,7 +35,7 @@ public class ServerChunkCache : ChunkSource
 
     public void isLoaded(int chunkX, int chunkZ)
     {
-        Vec3i var3 = _world.getSpawnPos();
+        Vec3i var3 = _world.GetSpawnPos();
         int var4 = chunkX * 16 + 8 - var3.X;
         int var5 = chunkZ * 16 + 8 - var3.Z;
         short var6 = 128;
@@ -137,7 +138,7 @@ public class ServerChunkCache : ChunkSource
             try
             {
                 Chunk var3 = _storage.LoadChunk(_world, chunkX, chunkZ);
-                var3?.LastSaveTime = _world.getTime();
+                var3?.LastSaveTime = _world.GetTime();
 
                 return var3;
             }
@@ -170,7 +171,7 @@ public class ServerChunkCache : ChunkSource
         {
             try
             {
-                chunk.LastSaveTime = _world.getTime();
+                chunk.LastSaveTime = _world.GetTime();
                 _storage.SaveChunk(_world, chunk, null, -1);
             }
             catch (java.io.IOException ex)

@@ -1,7 +1,7 @@
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Rules;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Blocks;
 
@@ -71,32 +71,32 @@ internal class BlockFire : Block
             return;
         }
 
-        bool isOnNetherrack = world.getBlockId(x, y - 1, z) == Block.Netherrack.id;
+        bool isOnNetherrack = world.GetBlockId(x, y - 1, z) == Block.Netherrack.id;
         if (!canPlaceAt(world, x, y, z))
         {
-            world.setBlock(x, y, z, 0);
+            world.SetBlock(x, y, z, 0);
         }
 
-        if (isOnNetherrack || !world.isRaining() || !world.isRaining(x, y, z) && !world.isRaining(x - 1, y, z) && !world.isRaining(x + 1, y, z) && !world.isRaining(x, y, z - 1) && !world.isRaining(x, y, z + 1))
+        if (isOnNetherrack || !world.Environment.IsRaining || !world.Environment.IsRainingAt(x, y, z) && !world.Environment.IsRainingAt(x - 1, y, z) && !world.Environment.IsRainingAt(x + 1, y, z) && !world.Environment.IsRainingAt(x, y, z - 1) && !world.Environment.IsRainingAt(x, y, z + 1))
         {
-            int fireAge = world.getBlockMeta(x, y, z);
+            int fireAge = world.GetBlockMeta(x, y, z);
             if (fireAge < 15)
             {
                 world.SetBlockMetaWithoutNotifyingNeighbors(x, y, z, fireAge + random.NextInt(3) / 2);
             }
 
-            world.ScheduleBlockUpdate(x, y, z, id, getTickRate());
+            world.TickScheduler.ScheduleBlockUpdate(x, y, z, id, getTickRate());
             if (!isOnNetherrack && !areBlocksAroundFlammable(world, x, y, z))
             {
-                if (!world.shouldSuffocate(x, y - 1, z) || fireAge > 3)
+                if (!world.ShouldSuffocate(x, y - 1, z) || fireAge > 3)
                 {
-                    world.setBlock(x, y, z, 0);
+                    world.SetBlock(x, y, z, 0);
                 }
 
             }
             else if (!isOnNetherrack && !isFlammable(world, x, y - 1, z) && fireAge == 15 && random.NextInt(4) == 0)
             {
-                world.setBlock(x, y, z, 0);
+                world.SetBlock(x, y, z, 0);
             }
             else
             {
@@ -125,7 +125,7 @@ internal class BlockFire : Block
                                 if (burnChance > 0)
                                 {
                                     int var13 = (burnChance + 40) / (fireAge + 30);
-                                    if (var13 > 0 && random.NextInt(spreadDifficulty) <= var13 && (!world.isRaining() || !world.isRaining(checkX, checkZ, checkY)) && !world.isRaining(checkX - 1, checkZ, z) && !world.isRaining(checkX + 1, checkZ, checkY) && !world.isRaining(checkX, checkZ, checkY - 1) && !world.isRaining(checkX, checkZ, checkY + 1))
+                                    if (var13 > 0 && random.NextInt(spreadDifficulty) <= var13 && (!world.Environment.IsRaining || !world.Environment.IsRainingAt(checkX, checkZ, checkY)) && !world.Environment.IsRainingAt(checkX - 1, checkZ, z) && !world.Environment.IsRainingAt(checkX + 1, checkZ, checkY) && !world.Environment.IsRainingAt(checkX, checkZ, checkY - 1) && !world.Environment.IsRainingAt(checkX, checkZ, checkY + 1))
                                     {
                                         int spreadChance = fireAge + random.NextInt(5) / 4;
                                         if (spreadChance > 15)
@@ -133,7 +133,7 @@ internal class BlockFire : Block
                                             spreadChance = 15;
                                         }
 
-                                        world.setBlock(checkX, checkZ, checkY, id, spreadChance);
+                                        world.SetBlock(checkX, checkZ, checkY, id, spreadChance);
                                     }
                                 }
                             }
@@ -145,17 +145,17 @@ internal class BlockFire : Block
         }
         else
         {
-            world.setBlock(x, y, z, 0);
+            world.SetBlock(x, y, z, 0);
         }
     }
 
     private void trySpreadingFire(World world, int x, int y, int z, int spreadFactor, JavaRandom random, int currentAge)
     {
-        int targetSpreadChance = _spreadChances[world.getBlockId(x, y, z)];
+        int targetSpreadChance = _spreadChances[world.GetBlockId(x, y, z)];
         if (random.NextInt(spreadFactor) < targetSpreadChance)
         {
-            bool isTnt = world.getBlockId(x, y, z) == Block.TNT.id;
-            if (random.NextInt(currentAge + 10) < 5 && !world.isRaining(x, y, z))
+            bool isTnt = world.GetBlockId(x, y, z) == Block.TNT.id;
+            if (random.NextInt(currentAge + 10) < 5 && !world.Environment.IsRainingAt(x, y, z))
             {
                 int newFireAge = currentAge + random.NextInt(5) / 4;
                 if (newFireAge > 15)
@@ -163,11 +163,11 @@ internal class BlockFire : Block
                     newFireAge = 15;
                 }
 
-                world.setBlock(x, y, z, id, newFireAge);
+                world.SetBlock(x, y, z, id, newFireAge);
             }
             else
             {
-                world.setBlock(x, y, z, 0);
+                world.SetBlock(x, y, z, 0);
             }
 
             if (isTnt)
@@ -186,7 +186,7 @@ internal class BlockFire : Block
     private int getBurnChance(World world, int x, int y, int z)
     {
         sbyte initialMax = 0;
-        if (!world.isAir(x, y, z))
+        if (!world.IsAir(x, y, z))
         {
             return 0;
         }
@@ -209,39 +209,39 @@ internal class BlockFire : Block
 
     public override bool isFlammable(IBlockAccess iBlockAccess, int x, int y, int z)
     {
-        return _burnChances[iBlockAccess.getBlockId(x, y, z)] > 0;
+        return _burnChances[iBlockAccess.GetBlockId(x, y, z)] > 0;
     }
 
     public int getBurnChance(World world, int x, int y, int z, int currentChance)
     {
-        int blockBurnChance = _burnChances[world.getBlockId(x, y, z)];
+        int blockBurnChance = _burnChances[world.GetBlockId(x, y, z)];
         return blockBurnChance > currentChance ? blockBurnChance : currentChance;
     }
 
     public override bool canPlaceAt(World world, int x, int y, int z)
     {
-        return world.shouldSuffocate(x, y - 1, z) || areBlocksAroundFlammable(world, x, y, z);
+        return world.ShouldSuffocate(x, y - 1, z) || areBlocksAroundFlammable(world, x, y, z);
     }
 
     public override void neighborUpdate(World world, int x, int y, int z, int id)
     {
-        if (!world.shouldSuffocate(x, y - 1, z) && !areBlocksAroundFlammable(world, x, y, z))
+        if (!world.ShouldSuffocate(x, y - 1, z) && !areBlocksAroundFlammable(world, x, y, z))
         {
-            world.setBlock(x, y, z, 0);
+            world.SetBlock(x, y, z, 0);
         }
     }
 
     public override void onPlaced(World world, int x, int y, int z)
     {
-        if (world.getBlockId(x, y - 1, z) != Block.Obsidian.id || !Block.NetherPortal.create(world, x, y, z))
+        if (world.GetBlockId(x, y - 1, z) != Block.Obsidian.id || !Block.NetherPortal.create(world, x, y, z))
         {
-            if (!world.shouldSuffocate(x, y - 1, z) && !areBlocksAroundFlammable(world, x, y, z))
+            if (!world.ShouldSuffocate(x, y - 1, z) && !areBlocksAroundFlammable(world, x, y, z))
             {
-                world.setBlock(x, y, z, 0);
+                world.SetBlock(x, y, z, 0);
             }
             else
             {
-                world.ScheduleBlockUpdate(x, y, z, id, getTickRate());
+                world.TickScheduler.ScheduleBlockUpdate(x, y, z, id, getTickRate());
             }
         }
     }
@@ -250,14 +250,14 @@ internal class BlockFire : Block
     {
         if (random.NextInt(24) == 0)
         {
-            world.playSound((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "fire.fire", 1.0F + random.NextFloat(), random.NextFloat() * 0.7F + 0.3F);
+            world.PlaySound((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "fire.fire", 1.0F + random.NextFloat(), random.NextFloat() * 0.7F + 0.3F);
         }
 
         int particleIndex;
         float particleX;
         float particleY;
         float particleZ;
-        if (!world.shouldSuffocate(x, y - 1, z) && !Block.Fire.isFlammable(world, x, y - 1, z))
+        if (!world.ShouldSuffocate(x, y - 1, z) && !Block.Fire.isFlammable(world, x, y - 1, z))
         {
             if (Block.Fire.isFlammable(world, x - 1, y, z))
             {
@@ -266,7 +266,7 @@ internal class BlockFire : Block
                     particleX = (float)x + random.NextFloat() * 0.1F;
                     particleY = (float)y + random.NextFloat();
                     particleZ = (float)z + random.NextFloat();
-                    world.addParticle("largesmoke", (double)particleX, (double)particleY, (double)particleZ, 0.0D, 0.0D, 0.0D);
+                    world.AddParticle("largesmoke", (double)particleX, (double)particleY, (double)particleZ, 0.0D, 0.0D, 0.0D);
                 }
             }
 
@@ -277,7 +277,7 @@ internal class BlockFire : Block
                     particleX = (float)(x + 1) - random.NextFloat() * 0.1F;
                     particleY = (float)y + random.NextFloat();
                     particleZ = (float)z + random.NextFloat();
-                    world.addParticle("largesmoke", (double)particleX, (double)particleY, (double)particleZ, 0.0D, 0.0D, 0.0D);
+                    world.AddParticle("largesmoke", (double)particleX, (double)particleY, (double)particleZ, 0.0D, 0.0D, 0.0D);
                 }
             }
 
@@ -288,7 +288,7 @@ internal class BlockFire : Block
                     particleX = (float)x + random.NextFloat();
                     particleY = (float)y + random.NextFloat();
                     particleZ = (float)z + random.NextFloat() * 0.1F;
-                    world.addParticle("largesmoke", (double)particleX, (double)particleY, (double)particleZ, 0.0D, 0.0D, 0.0D);
+                    world.AddParticle("largesmoke", (double)particleX, (double)particleY, (double)particleZ, 0.0D, 0.0D, 0.0D);
                 }
             }
 
@@ -299,7 +299,7 @@ internal class BlockFire : Block
                     particleX = (float)x + random.NextFloat();
                     particleY = (float)y + random.NextFloat();
                     particleZ = (float)(z + 1) - random.NextFloat() * 0.1F;
-                    world.addParticle("largesmoke", (double)particleX, (double)particleY, (double)particleZ, 0.0D, 0.0D, 0.0D);
+                    world.AddParticle("largesmoke", (double)particleX, (double)particleY, (double)particleZ, 0.0D, 0.0D, 0.0D);
                 }
             }
 
@@ -310,7 +310,7 @@ internal class BlockFire : Block
                     particleX = (float)x + random.NextFloat();
                     particleY = (float)(y + 1) - random.NextFloat() * 0.1F;
                     particleZ = (float)z + random.NextFloat();
-                    world.addParticle("largesmoke", (double)particleX, (double)particleY, (double)particleZ, 0.0D, 0.0D, 0.0D);
+                    world.AddParticle("largesmoke", (double)particleX, (double)particleY, (double)particleZ, 0.0D, 0.0D, 0.0D);
                 }
             }
         }
@@ -321,7 +321,7 @@ internal class BlockFire : Block
                 particleX = (float)x + random.NextFloat();
                 particleY = (float)y + random.NextFloat() * 0.5F + 0.5F;
                 particleZ = (float)z + random.NextFloat();
-                world.addParticle("largesmoke", (double)particleX, (double)particleY, (double)particleZ, 0.0D, 0.0D, 0.0D);
+                world.AddParticle("largesmoke", (double)particleX, (double)particleY, (double)particleZ, 0.0D, 0.0D, 0.0D);
             }
         }
 

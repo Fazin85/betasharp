@@ -11,7 +11,7 @@ using BetaSharp.Server.Entities;
 using BetaSharp.Server.Network;
 using BetaSharp.Stats;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 using java.util;
 using Microsoft.Extensions.Logging;
 
@@ -40,14 +40,14 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     {
         interactionManager.player = this;
         this.interactionManager = interactionManager;
-        Vec3i spawnPos = world.getSpawnPos();
+        Vec3i spawnPos = world.GetSpawnPos();
         int x = spawnPos.X;
         int y = spawnPos.Z;
         int z = spawnPos.Y;
-        if (!world.dimension.HasCeiling)
+        if (!world.Dimension.HasCeiling)
         {
             x += random.NextInt(20) - 10;
-            z = world.getSpawnPositionValidityY(x, y);
+            z = world.GetSpawnPositionValidityY(x, y);
             y += random.NextInt(20) - 10;
         }
 

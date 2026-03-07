@@ -1,14 +1,16 @@
 using BetaSharp.Blocks;
-using BetaSharp.Worlds.Biomes;
-using BetaSharp.Worlds.Biomes.Source;
 using BetaSharp.Worlds.Chunks;
-using BetaSharp.Worlds.Gen.Chunks;
+using BetaSharp.Worlds.Generation.Biomes;
+using BetaSharp.Worlds.Generation.Biomes.Source;
+using BetaSharp.Worlds.Generation.Generators.Chunks;
 using Silk.NET.Maths;
 
 namespace BetaSharp.Worlds.Dimensions;
 
 internal class NetherDimension : Dimension
 {
+    public override bool HasWorldSpawn => false;
+
     public override void InitBiomeSource()
     {
         BiomeSource = new FixedBiomeSource(Biome.Hell, 1.0D, 0.0D);
@@ -18,12 +20,7 @@ internal class NetherDimension : Dimension
         Id = -1;
     }
 
-    public override bool HasWorldSpawn => false;
-
-    public override Vector3D<double> GetFogColor(float celestialAngle, float partialTicks)
-    {
-        return new Vector3D<double>(0.2, 0.03, 0.03);
-    }
+    public override Vector3D<double> GetFogColor(float celestialAngle, float partialTicks) => new(0.2, 0.03, 0.03);
 
     protected override void InitBrightnessTable()
     {
@@ -36,14 +33,11 @@ internal class NetherDimension : Dimension
         }
     }
 
-    public override ChunkSource CreateChunkGenerator()
-    {
-        return new NetherChunkGenerator(World, World.getSeed());
-    }
+    public override ChunkSource CreateChunkGenerator() => new NetherChunkGenerator(World, World.GetSeed());
 
     public override bool IsValidSpawnPoint(int x, int z)
     {
-        int blockId = World.getSpawnBlockId(x, z);
+        int blockId = World.GetSpawnBlockId(x, z);
         return blockId != Block.Bedrock.id && blockId != 0 && Block.BlocksOpaque[blockId];
     }
 

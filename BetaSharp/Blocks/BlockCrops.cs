@@ -2,7 +2,7 @@ using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Rules;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
+using BetaSharp.Worlds.Core;
 
 namespace BetaSharp.Blocks;
 
@@ -25,9 +25,9 @@ internal class BlockCrops : BlockPlant
     public override void onTick(World world, int x, int y, int z, JavaRandom random)
     {
         base.onTick(world, x, y, z, random);
-        if (world.getLightLevel(x, y + 1, z) >= 9)
+        if (world.Lighting.GetLightLevel(x, y + 1, z) >= 9)
         {
-            int meta = world.getBlockMeta(x, y, z);
+            int meta = world.GetBlockMeta(x, y, z);
             if (meta < 7)
             {
                 float var7 = getAvailableMoisture(world, x, y, z);
@@ -49,14 +49,14 @@ internal class BlockCrops : BlockPlant
     private float getAvailableMoisture(World world, int x, int y, int z)
     {
         float totalMoisture = 1.0F;
-        int blockNorth = world.getBlockId(x, y, z - 1);
-        int blockSouth = world.getBlockId(x, y, z + 1);
-        int blockWest = world.getBlockId(x - 1, y, z);
-        int blockEast = world.getBlockId(x + 1, y, z);
-        int blockNorthWest = world.getBlockId(x - 1, y, z - 1);
-        int blockNorthEast = world.getBlockId(x + 1, y, z - 1);
-        int blockSouthEast = world.getBlockId(x + 1, y, z + 1);
-        int blockSouthWest = world.getBlockId(x - 1, y, z + 1);
+        int blockNorth = world.GetBlockId(x, y, z - 1);
+        int blockSouth = world.GetBlockId(x, y, z + 1);
+        int blockWest = world.GetBlockId(x - 1, y, z);
+        int blockEast = world.GetBlockId(x + 1, y, z);
+        int blockNorthWest = world.GetBlockId(x - 1, y, z - 1);
+        int blockNorthEast = world.GetBlockId(x + 1, y, z - 1);
+        int blockSouthEast = world.GetBlockId(x + 1, y, z + 1);
+        int blockSouthWest = world.GetBlockId(x - 1, y, z + 1);
         bool cropsEastWest = blockWest == id || blockEast == id;
         bool cropsNorthSouth = blockNorth == id || blockSouth == id;
         bool cropsDiagonals = blockNorthWest == id || blockNorthEast == id || blockSouthEast == id || blockSouthWest == id;
@@ -65,12 +65,12 @@ internal class BlockCrops : BlockPlant
         {
             for (int dz = z - 1; dz <= z + 1; ++dz)
             {
-                int blockBelow = world.getBlockId(dx, y - 1, dz);
+                int blockBelow = world.GetBlockId(dx, y - 1, dz);
                 float cellMoisture = 0.0F;
                 if (blockBelow == Block.Farmland.id)
                 {
                     cellMoisture = 1.0F;
-                    if (world.getBlockMeta(dx, y - 1, dz) > 0)
+                    if (world.GetBlockMeta(dx, y - 1, dz) > 0)
                     {
                         cellMoisture = 3.0F;
                     }
@@ -111,7 +111,7 @@ internal class BlockCrops : BlockPlant
     public override void dropStacks(World world, int x, int y, int z, int meta, float luck)
     {
         base.dropStacks(world, x, y, z, meta, luck);
-        if (!world.isRemote && world.Rules.GetBool(DefaultRules.DoTileDrops))
+        if (!world.IsRemote && world.Rules.GetBool(DefaultRules.DoTileDrops))
         {
             for (int attempt = 0; attempt < 3; ++attempt)
             {
@@ -123,7 +123,7 @@ internal class BlockCrops : BlockPlant
                     float offsetZ = world.random.NextFloat() * spreadFactor + (1.0F - spreadFactor) * 0.5F;
                     EntityItem entityItem = new EntityItem(world, (double)((float)x + offsetX), (double)((float)y + offsetY), (double)((float)z + offsetZ), new ItemStack(Item.Seeds));
                     entityItem.delayBeforeCanPickup = 10;
-                    world.SpawnEntity(entityItem);
+                    world.Entities.SpawnEntity(entityItem);
                 }
             }
 
