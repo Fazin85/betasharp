@@ -236,6 +236,11 @@ public abstract class NetHandler
         handle(packet);
     }
 
+    public virtual void onChunkVisibilityArea(ChunkVisibilityAreaS2CPacket packet)
+    {
+        handle(packet);
+    }
+
     public virtual void onIncreaseStat(IncreaseStatS2CPacket var1)
     {
         handle(var1);

@@ -58,6 +58,7 @@ public enum PacketId : byte
     UpdateSign = 130,
     MapUpdateS2C = 131,
     PlayerConnectionUpdateS2C = 132,
+    ChunkVisibilityArea = 155,
     IncreaseStatS2C = 200,
     Disconnect = 255,
 }

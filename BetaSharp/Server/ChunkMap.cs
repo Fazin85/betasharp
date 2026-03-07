@@ -1,4 +1,4 @@
-﻿using BetaSharp.Blocks;
+using BetaSharp.Blocks;
 using BetaSharp.Blocks.Entities;
 using BetaSharp.Entities;
 using BetaSharp.Network.Packets;
@@ -151,6 +151,17 @@ internal class ChunkMap
     {
         player.lastX = player.x;
         player.lastZ = player.z;
+
+        if (player.networkHandler.connection.BetaSharpClient)
+        {
+            int xc = (int)player.x >> 4;
+            int zc = (int)player.z >> 4;
+            int minX = xc - viewDistance;
+            int maxX = xc + viewDistance;
+            int minZ = zc - viewDistance;
+            int maxZ = zc + viewDistance;
+            player.networkHandler.sendPacket(new ChunkVisibilityAreaS2CPacket(minX, maxX, minZ, maxZ));
+        }
 
         foreach (var item in GetChunks(player))
         {
@@ -311,7 +322,10 @@ internal class ChunkMap
 
             if (player.activeChunks.Add(chunkPos))
             {
-                player.networkHandler.sendPacket(new ChunkStatusUpdateS2CPacket(chunkPos.X, chunkPos.Z, true));
+                if (!player.networkHandler.connection.BetaSharpClient)
+                {
+                    player.networkHandler.sendPacket(new ChunkStatusUpdateS2CPacket(chunkPos.X, chunkPos.Z, true));
+                }
             }
 
             player.PendingChunkUpdates.Enqueue(chunkPos);

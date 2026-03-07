@@ -22,7 +22,7 @@ public class Connection
     protected List delayedSendQueue = Collections.synchronizedList(new ArrayList());
     protected NetHandler? networkHandler;
     protected bool closed;
-    public bool betaSharpClient = false;
+    public bool BetaSharpClient { get; set; } = false;
     private readonly java.lang.Thread _writer;
     private readonly java.lang.Thread _reader;
     protected bool disconnected;
@@ -40,7 +40,7 @@ public class Connection
     public Connection(Socket socket, string address, NetHandler networkHandler)
     {
         _socket = socket;
-        _address = (IPEndPoint?) socket.RemoteEndPoint;
+        _address = (IPEndPoint?)socket.RemoteEndPoint;
         this.networkHandler = networkHandler;
 
         socket.ReceiveTimeout = 30000;
@@ -66,7 +66,7 @@ public class Connection
 
     public virtual void sendPacket(Packet packet)
     {
-        if (packet is ExtendedProtocolPacket && !betaSharpClient) return;
+        if (packet is ExtendedProtocolPacket && !BetaSharpClient) return;
 
         if (!closed)
         {

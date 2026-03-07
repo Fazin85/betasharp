@@ -371,6 +371,17 @@ public class ClientNetworkHandler : NetHandler
         worldClient.UpdateChunk(packet.x, packet.z, packet.load);
     }
 
+    public override void onChunkVisibilityArea(ChunkVisibilityAreaS2CPacket packet)
+    {
+        for (int x = packet.MinX; x <= packet.MaxX; x++)
+        {
+            for (int z = packet.MinZ; z <= packet.MaxZ; z++)
+            {
+                worldClient.UpdateChunk(x, z, true);
+            }
+        }
+    }
+
     public override void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet)
     {
         Chunk chunk = worldClient.GetChunk(packet.x, packet.z);

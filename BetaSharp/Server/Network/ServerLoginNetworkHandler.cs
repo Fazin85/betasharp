@@ -95,7 +95,7 @@ public class ServerLoginNetworkHandler : NetHandler
         }
         if (packet.worldSeed == LoginHelloPacket.BETASHARP_CLIENT_SIGNATURE)
         {
-            connection.betaSharpClient = true;
+            connection.BetaSharpClient = true;
         }
 
         username = packet.username;
