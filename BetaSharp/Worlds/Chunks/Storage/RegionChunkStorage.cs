@@ -121,31 +121,38 @@ internal class RegionChunkStorage : IChunkStorage
 
     public static Chunk LoadChunkFromNbt(World world, NBTTagCompound nbt)
     {
-        int var2 = nbt.GetInteger("xPos");
-        int var3 = nbt.GetInteger("zPos");
-        Chunk var4 = new(world, var2, var3);
-        var4.Blocks = nbt.GetByteArray("Blocks");
-        var4.Meta = new ChunkNibbleArray(nbt.GetByteArray("Data"));
-        var4.SkyLight = new ChunkNibbleArray(nbt.GetByteArray("SkyLight"));
-        var4.BlockLight = new ChunkNibbleArray(nbt.GetByteArray("BlockLight"));
-        var4.HeightMap = nbt.GetByteArray("HeightMap");
-        var4.TerrainPopulated = nbt.GetBoolean("TerrainPopulated");
-        if (!var4.Meta.IsInitialized)
+        int x = nbt.GetInteger("xPos");
+        int y = nbt.GetInteger("zPos");
+        byte[] blocks = nbt.GetByteArray("Blocks");
+        ChunkNibbleArray meta = new ChunkNibbleArray(nbt.GetByteArray("Data"));
+        ChunkNibbleArray skyLight = new ChunkNibbleArray(nbt.GetByteArray("SkyLight"));
+        ChunkNibbleArray blockLight = new ChunkNibbleArray(nbt.GetByteArray("BlockLight"));
+        byte[] heightMap = nbt.GetByteArray("HeightMap");
+        bool terrainPopulated = nbt.GetBoolean("TerrainPopulated");
+
+        Chunk chunk = new(world, x, y,blocks, meta,skyLight, blockLight, heightMap, terrainPopulated);
+
+        if (terrainPopulated)
         {
-            var4.Meta = new ChunkNibbleArray(var4.Blocks.Length);
+            chunk.MarkReadyForNetwork();
         }
 
-        if (var4.HeightMap == null || !var4.SkyLight.IsInitialized)
+        if (!chunk.Meta.IsInitialized)
         {
-            var4.HeightMap = new byte[256];
-            var4.SkyLight = new ChunkNibbleArray(var4.Blocks.Length);
-            var4.PopulateHeightMap();
+            chunk.Meta = new ChunkNibbleArray(chunk.Blocks.Length);
         }
 
-        if (!var4.BlockLight.IsInitialized)
+        if (chunk.HeightMap == null || !chunk.SkyLight.IsInitialized)
         {
-            var4.BlockLight = new ChunkNibbleArray(var4.Blocks.Length);
-            var4.PopulateLight();
+            chunk.HeightMap = new byte[256];
+            chunk.SkyLight = new ChunkNibbleArray(chunk.Blocks.Length);
+            chunk.PopulateHeightMap();
+        }
+
+        if (!chunk.BlockLight.IsInitialized)
+        {
+            chunk.BlockLight = new ChunkNibbleArray(chunk.Blocks.Length);
+            chunk.PopulateLight();
         }
 
         NBTTagList var5 = nbt.GetTagList("Entities");
@@ -155,10 +162,10 @@ internal class RegionChunkStorage : IChunkStorage
             {
                 NBTTagCompound var7 = (NBTTagCompound)var5.TagAt(var6);
                 Entity var8 = EntityRegistry.getEntityFromNbt(var7, world);
-                var4.LastSaveHadEntities = true;
+                chunk.LastSaveHadEntities = true;
                 if (var8 != null)
                 {
-                    var4.AddEntity(var8);
+                    chunk.AddEntity(var8);
                 }
             }
         }
@@ -172,12 +179,12 @@ internal class RegionChunkStorage : IChunkStorage
                 BlockEntity var9 = BlockEntity.CreateFromNbt(var12);
                 if (var9 != null)
                 {
-                    var4.AddBlockEntity(var9);
+                    chunk.AddBlockEntity(var9);
                 }
             }
         }
 
-        return var4;
+        return chunk;
     }
 
     public void SaveEntities(World world, Chunk chunk)

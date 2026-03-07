@@ -184,13 +184,20 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                     world.chunkCache.InsertPreGeneratedChunk(cx, cz, preGenerated[idx]);
                     world.chunkCache.DecorateIfReady(cx, cz);
                 }
+                for (int idx = 0; idx < totalChunks && running; idx++)
+                {
+                    var (cx, cz) = chunkList[idx];
+                    Chunk chunk = world.GetChunk(cx, cz);
+                    chunk.PopulateHeightMap();
+                }
                 sw2.Stop();
                 _logger.LogInformation($"  Level {i} decoration: {sw2.ElapsedMilliseconds}ms");
 
                 // Phase 3: Batch lighting drain — all neighbors already loaded so sky-light
-                // propagates without border re-queuing.
+                // propagates without border re-queuing. Drain completely so the queue cannot
+                // grow faster than we consume (which would otherwise hang the loop).
                 var sw3 = Stopwatch.StartNew();
-                while (world.doLightingUpdates() && running) { }
+                world.doLightingUpdates(drainCompletely: true);
                 sw3.Stop();
                 _logger.LogInformation($"  Level {i} lighting: {sw3.ElapsedMilliseconds}ms");
             }

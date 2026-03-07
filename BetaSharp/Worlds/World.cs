@@ -57,16 +57,13 @@ public abstract class World : IBlockAccess
     public List<Entity> globalEntities = [];
     private readonly List<Entity> _entitiesToUnload = [];
 
-    [ThreadStatic]
-    private static List<Entity>? _tempCollisionEntities;
+    [ThreadStatic] private static List<Entity>? _tempCollisionEntities;
 
     // Reusable scratch list for GetEntityCollisionsScratch — avoids per-call List<Box> allocation.
-    [ThreadStatic]
-    private static List<Box>? _tempCollisionBoxes;
+    [ThreadStatic] private static List<Box>? _tempCollisionBoxes;
 
     // Reusable scratch list for GetEntitiesScratch — avoids per-call List<Entity> allocation.
-    [ThreadStatic]
-    private static List<Entity>? _tempCollisionEntitiesResult;
+    [ThreadStatic] private static List<Entity>? _tempCollisionEntitiesResult;
 
     private readonly HashSet<ChunkPos> _activeChunks = new();
     public List<BlockEntity> blockEntities = [];
@@ -459,6 +456,27 @@ public abstract class World : IBlockAccess
         {
             return false;
         }
+    }
+
+    public virtual bool SetBlockRaw(int x, int y, int z, int blockId)
+    {
+        if (x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000)
+        {
+            if (y < 0 || y >= 128) return false;
+
+            Chunk chunk = GetChunk(x >> 4, z >> 4);
+            return chunk.SetBlockRaw(x & 15, y, z & 15, blockId);
+        }
+
+        return false;
+    }
+
+    public virtual bool SetBlockRaw(int x, int y, int z, int blockId, int meta = 0)
+    {
+        if (x < -32000000 || z < -32000000 || x >= 32000000 || z > 32000000 || y < 0 || y >= 128)
+            return false;
+
+        return GetChunk(x >> 4, z >> 4).SetBlockRaw(x & 15, y, z & 15, blockId, meta);
     }
 
     public bool setBlock(int x, int y, int z, int blockId, int meta)
@@ -1303,6 +1321,7 @@ public abstract class World : IBlockAccess
                 globalEntities.RemoveAt(i--);
             }
         }
+
         Profiler.Stop("updateEntites.updateWeatherEffects");
 
         Profiler.Start("updateEntites.clearUnloadedEntities");
@@ -1546,6 +1565,7 @@ public abstract class World : IBlockAccess
                 }
             }
         }
+
         return false;
     }
 
@@ -1573,6 +1593,7 @@ public abstract class World : IBlockAccess
                 }
             }
         }
+
         return false;
     }
 
@@ -1602,6 +1623,7 @@ public abstract class World : IBlockAccess
                 }
             }
         }
+
         return false;
     }
 
@@ -1672,6 +1694,7 @@ public abstract class World : IBlockAccess
                 }
             }
         }
+
         return false;
     }
 
@@ -1705,6 +1728,7 @@ public abstract class World : IBlockAccess
                 }
             }
         }
+
         return false;
     }
 
@@ -1715,7 +1739,10 @@ public abstract class World : IBlockAccess
 
     public virtual Explosion createExplosion(Entity source, double x, double y, double z, float power, bool fire)
     {
-        Explosion explosion = new(this, source, x, y, z, power) { isFlaming = fire };
+        Explosion explosion = new(this, source, x, y, z, power)
+        {
+            isFlaming = fire
+        };
         explosion.doExplosionA();
         explosion.doExplosionB(true);
         return explosion;
@@ -1871,7 +1898,8 @@ public abstract class World : IBlockAccess
         saveWithLoadingDisplay(true, display);
     }
 
-    public bool doLightingUpdates()
+    /// <param name="drainCompletely">If true, process until the lighting queue is empty (used during spawn preparation). If false, process at most 500 updates per call.</param>
+    public bool doLightingUpdates(bool drainCompletely = false)
     {
         if (_lightingUpdatesCounter >= 50)
         {
@@ -1882,13 +1910,18 @@ public abstract class World : IBlockAccess
 
         try
         {
-            int updatesBudget = 500;
+            int updatesBudget = drainCompletely ? int.MaxValue : 500;
+            const int safetyCap = 50_000_000;
 
             while (_lightingQueue.Count > 0)
             {
                 if (updatesBudget <= 0)
                 {
                     return true;
+                }
+                if (drainCompletely && updatesBudget < int.MaxValue - safetyCap)
+                {
+                    break;
                 }
 
                 updatesBudget--;
@@ -1897,7 +1930,25 @@ public abstract class World : IBlockAccess
                 LightUpdate updateTask = _lightingQueue[lastIndex];
 
                 _lightingQueue.RemoveAt(lastIndex);
-                updateTask.updateLight(this);
+                updateTask.UpdateLight(this);
+                int minChunkX = updateTask.MinX >> 4;
+                int maxChunkX = updateTask.MaxX >> 4;
+                int minChunkZ = updateTask.MinZ >> 4;
+                int maxChunkZ = updateTask.MaxZ >> 4;
+
+                for (int cx = minChunkX; cx <= maxChunkX; cx++)
+                {
+                    for (int cz = minChunkZ; cz <= maxChunkZ; cz++)
+                    {
+                        if (!isRegionLoaded(cx * 16 + 8, 64, cz * 16 + 8, 0))
+                            continue;
+                        Chunk chunk = GetChunk(cx, cz);
+                        if (chunk != null && !chunk.Empty)
+                        {
+                            chunk.MarkReadyForNetwork();
+                        }
+                    }
+                }
             }
 
             return false;
@@ -1950,8 +2001,8 @@ public abstract class World : IBlockAccess
                     for (int i = 0; i < lookbackCount; ++i)
                     {
                         ref LightUpdate existingUpdate = ref span[queueSize - i - 1];
-                        if (existingUpdate.lightType == type &&
-                            existingUpdate.expand(minX, minY, minZ, maxX, maxY, maxZ))
+                        if (existingUpdate.LightType == type &&
+                            existingUpdate.Expand(minX, minY, minZ, maxX, maxY, maxZ))
                         {
                             return;
                         }
@@ -2370,7 +2421,6 @@ public abstract class World : IBlockAccess
     }
 
 
-
     public List<Entity> getEntities()
     {
         return entities;
@@ -2737,9 +2787,11 @@ public abstract class World : IBlockAccess
             {
                 GetChunk(chunkX, chunkZ).RemoveEntity(entity);
             }
+
             _entitiesById.Remove(entity.id);
             NotifyEntityRemoved(entity);
         }
+
         _entitiesToUnload.Clear();
 
         for (int i = 0; i < entities.Count; ++i)
@@ -2751,6 +2803,7 @@ public abstract class World : IBlockAccess
                 {
                     continue;
                 }
+
                 entity.vehicle.passenger = null;
                 entity.vehicle = null;
             }

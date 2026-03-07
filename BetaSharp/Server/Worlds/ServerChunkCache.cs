@@ -73,40 +73,73 @@ public class ServerChunkCache : ChunkSource
                 var4.Load();
             }
 
-            if (!var4.TerrainPopulated
-                && IsChunkLoaded(chunkX + 1, chunkZ + 1)
+            bool canDecorateCenter = !var4.TerrainPopulated
+                && IsChunkLoaded(chunkX, chunkZ)
+                && IsChunkLoaded(chunkX + 1, chunkZ)
                 && IsChunkLoaded(chunkX, chunkZ + 1)
-                && IsChunkLoaded(chunkX + 1, chunkZ))
+                && IsChunkLoaded(chunkX + 1, chunkZ + 1)
+                && !GetChunk(chunkX, chunkZ).IsEmpty()
+                && !GetChunk(chunkX + 1, chunkZ).IsEmpty()
+                && !GetChunk(chunkX, chunkZ + 1).IsEmpty()
+                && !GetChunk(chunkX + 1, chunkZ + 1).IsEmpty();
+            if (canDecorateCenter)
             {
                 DecorateTerrain(this, chunkX, chunkZ);
             }
 
-            if (IsChunkLoaded(chunkX - 1, chunkZ)
-                && !GetChunk(chunkX - 1, chunkZ).TerrainPopulated
-                && IsChunkLoaded(chunkX - 1, chunkZ + 1)
-                && IsChunkLoaded(chunkX, chunkZ + 1)
-                && IsChunkLoaded(chunkX - 1, chunkZ))
+            int cx = chunkX - 1, cz = chunkZ;
+            bool canDecorateWest = IsChunkLoaded(cx, cz)
+                && IsChunkLoaded(cx + 1, cz)
+                && IsChunkLoaded(cx, cz + 1)
+                && IsChunkLoaded(cx + 1, cz + 1)
+                && !GetChunk(cx, cz).TerrainPopulated
+                && !GetChunk(cx, cz).IsEmpty()
+                && !GetChunk(cx + 1, cz).IsEmpty()
+                && !GetChunk(cx, cz + 1).IsEmpty()
+                && !GetChunk(cx + 1, cz + 1).IsEmpty();
+            if (canDecorateWest)
             {
-                DecorateTerrain(this, chunkX - 1, chunkZ);
+                DecorateTerrain(this, cx, cz);
             }
 
-            if (IsChunkLoaded(chunkX, chunkZ - 1)
-                && !GetChunk(chunkX, chunkZ - 1).TerrainPopulated
-                && IsChunkLoaded(chunkX + 1, chunkZ - 1)
-                && IsChunkLoaded(chunkX, chunkZ - 1)
-                && IsChunkLoaded(chunkX + 1, chunkZ))
+            cx = chunkX; cz = chunkZ - 1;
+            bool canDecorateNorth = IsChunkLoaded(cx, cz)
+                && IsChunkLoaded(cx + 1, cz)
+                && IsChunkLoaded(cx, cz + 1)
+                && IsChunkLoaded(cx + 1, cz + 1)
+                && !GetChunk(cx, cz).TerrainPopulated
+                && !GetChunk(cx, cz).IsEmpty()
+                && !GetChunk(cx + 1, cz).IsEmpty()
+                && !GetChunk(cx, cz + 1).IsEmpty()
+                && !GetChunk(cx + 1, cz + 1).IsEmpty();
+            if (canDecorateNorth)
             {
-                DecorateTerrain(this, chunkX, chunkZ - 1);
+                DecorateTerrain(this, cx, cz);
             }
 
-            if (IsChunkLoaded(chunkX - 1, chunkZ - 1)
-                && !GetChunk(chunkX - 1, chunkZ - 1).TerrainPopulated
-                && IsChunkLoaded(chunkX - 1, chunkZ - 1)
-                && IsChunkLoaded(chunkX, chunkZ - 1)
-                && IsChunkLoaded(chunkX - 1, chunkZ))
+            cx = chunkX - 1; cz = chunkZ - 1;
+            bool canDecorateNorthWest = IsChunkLoaded(cx, cz)
+                && IsChunkLoaded(cx + 1, cz)
+                && IsChunkLoaded(cx, cz + 1)
+                && IsChunkLoaded(cx + 1, cz + 1)
+                && !GetChunk(cx, cz).TerrainPopulated
+                && !GetChunk(cx, cz).IsEmpty()
+                && !GetChunk(cx + 1, cz).IsEmpty()
+                && !GetChunk(cx, cz + 1).IsEmpty()
+                && !GetChunk(cx + 1, cz + 1).IsEmpty();
+            if (canDecorateNorthWest)
             {
-                DecorateTerrain(this, chunkX - 1, chunkZ - 1);
+                DecorateTerrain(this, cx, cz);
             }
+
+            // Edge chunks that couldn't be decorated yet (missing neighbors) must still
+            // be sent. Compute terrain-only sky light and mark ready now; if decoration
+            // happens later, DecorateTerrain will re-run PopulateHeightMap.
+           // if (!var4.ReadyForNetwork && !var4.Empty)
+           // {
+           //     var4.PopulateHeightMap();
+           //     var4.MarkReadyForNetwork();
+           // }
         }
 
         return var4;
@@ -187,15 +220,15 @@ public class ServerChunkCache : ChunkSource
 
     public void DecorateTerrain(ChunkSource source, int x, int z)
     {
-        Chunk var4 = GetChunk(x, z);
-        if (!var4.TerrainPopulated)
+        Chunk chunk = GetChunk(x, z);
+
+        if (!chunk.TerrainPopulated)
         {
-            var4.TerrainPopulated = true;
-            if (_generator != null)
-            {
-                _generator.DecorateTerrain(source, x, z);
-                var4.MarkDirty();
-            }
+            chunk.MarkTerrainPopulated();
+            _generator.DecorateTerrain(source, x, z);
+            chunk.PopulateHeightMap();
+            chunk.MarkReadyForNetwork();
+            chunk.MarkDirty();
         }
     }
 
@@ -275,7 +308,7 @@ public class ServerChunkCache : ChunkSource
     // Exposes storage loading so the parallel gen phase can skip already-saved chunks.
     public Chunk? TryLoadFromStorage(int chunkX, int chunkZ) => LoadChunkFromStorage(chunkX, chunkZ);
 
-    /// Creates a parallel-safe generator instance for off-thread terrain generation.
+    /// Creates a parallel-safe generator instance for off-thread terrain generation
     public ChunkSource CreateParallelGenerator() => _generator.CreateParallelInstance();
 
     // Inserts a pre-generated chunk without triggering terrain re-generation.
@@ -292,38 +325,63 @@ public class ServerChunkCache : ChunkSource
         chunk.Load();
     }
 
+
     // Runs the 4 decoration neighbour checks for a newly inserted chunk,
     // mirroring the logic in LoadChunk but without re-generating terrain.
-
     public void DecorateIfReady(int chunkX, int chunkZ)
     {
         if (!IsChunkLoaded(chunkX, chunkZ)) return;
 
-        if (!GetChunk(chunkX, chunkZ).TerrainPopulated
-            && IsChunkLoaded(chunkX + 1, chunkZ + 1)
-            && IsChunkLoaded(chunkX, chunkZ + 1)
-            && IsChunkLoaded(chunkX + 1, chunkZ))
-            DecorateTerrain(this, chunkX, chunkZ);
+        int cx = chunkX, cz = chunkZ;
+        bool canDecorate = IsChunkLoaded(cx, cz)
+            && IsChunkLoaded(cx + 1, cz)
+            && IsChunkLoaded(cx, cz + 1)
+            && IsChunkLoaded(cx + 1, cz + 1)
+            && !GetChunk(cx, cz).TerrainPopulated
+            && !GetChunk(cx, cz).IsEmpty()
+            && !GetChunk(cx + 1, cz).IsEmpty()
+            && !GetChunk(cx, cz + 1).IsEmpty()
+            && !GetChunk(cx + 1, cz + 1).IsEmpty();
+        if (canDecorate)
+            DecorateTerrain(this, cx, cz);
 
-        if (IsChunkLoaded(chunkX - 1, chunkZ)
-            && !GetChunk(chunkX - 1, chunkZ).TerrainPopulated
-            && IsChunkLoaded(chunkX - 1, chunkZ + 1)
-            && IsChunkLoaded(chunkX, chunkZ + 1)
-            && IsChunkLoaded(chunkX - 1, chunkZ))
-            DecorateTerrain(this, chunkX - 1, chunkZ);
+        cx = chunkX - 1; cz = chunkZ;
+        canDecorate = IsChunkLoaded(cx, cz)
+            && IsChunkLoaded(cx + 1, cz)
+            && IsChunkLoaded(cx, cz + 1)
+            && IsChunkLoaded(cx + 1, cz + 1)
+            && !GetChunk(cx, cz).TerrainPopulated
+            && !GetChunk(cx, cz).IsEmpty()
+            && !GetChunk(cx + 1, cz).IsEmpty()
+            && !GetChunk(cx, cz + 1).IsEmpty()
+            && !GetChunk(cx + 1, cz + 1).IsEmpty();
+        if (canDecorate)
+            DecorateTerrain(this, cx, cz);
 
-        if (IsChunkLoaded(chunkX, chunkZ - 1)
-            && !GetChunk(chunkX, chunkZ - 1).TerrainPopulated
-            && IsChunkLoaded(chunkX + 1, chunkZ - 1)
-            && IsChunkLoaded(chunkX, chunkZ - 1)
-            && IsChunkLoaded(chunkX + 1, chunkZ))
-            DecorateTerrain(this, chunkX, chunkZ - 1);
+        cx = chunkX; cz = chunkZ - 1;
+        canDecorate = IsChunkLoaded(cx, cz)
+            && IsChunkLoaded(cx + 1, cz)
+            && IsChunkLoaded(cx, cz + 1)
+            && IsChunkLoaded(cx + 1, cz + 1)
+            && !GetChunk(cx, cz).TerrainPopulated
+            && !GetChunk(cx, cz).IsEmpty()
+            && !GetChunk(cx + 1, cz).IsEmpty()
+            && !GetChunk(cx, cz + 1).IsEmpty()
+            && !GetChunk(cx + 1, cz + 1).IsEmpty();
+        if (canDecorate)
+            DecorateTerrain(this, cx, cz);
 
-        if (IsChunkLoaded(chunkX - 1, chunkZ - 1)
-            && !GetChunk(chunkX - 1, chunkZ - 1).TerrainPopulated
-            && IsChunkLoaded(chunkX - 1, chunkZ - 1)
-            && IsChunkLoaded(chunkX, chunkZ - 1)
-            && IsChunkLoaded(chunkX - 1, chunkZ))
-            DecorateTerrain(this, chunkX - 1, chunkZ - 1);
+        cx = chunkX - 1; cz = chunkZ - 1;
+        canDecorate = IsChunkLoaded(cx, cz)
+            && IsChunkLoaded(cx + 1, cz)
+            && IsChunkLoaded(cx, cz + 1)
+            && IsChunkLoaded(cx + 1, cz + 1)
+            && !GetChunk(cx, cz).TerrainPopulated
+            && !GetChunk(cx, cz).IsEmpty()
+            && !GetChunk(cx + 1, cz).IsEmpty()
+            && !GetChunk(cx, cz + 1).IsEmpty()
+            && !GetChunk(cx + 1, cz + 1).IsEmpty();
+        if (canDecorate)
+            DecorateTerrain(this, cx, cz);
     }
 }
