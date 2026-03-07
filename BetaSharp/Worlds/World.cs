@@ -1898,7 +1898,8 @@ public abstract class World : IBlockAccess
         saveWithLoadingDisplay(true, display);
     }
 
-    public bool doLightingUpdates()
+    /// <param name="drainCompletely">If true, process until the lighting queue is empty (used during spawn preparation). If false, process at most 500 updates per call.</param>
+    public bool doLightingUpdates(bool drainCompletely = false)
     {
         if (_lightingUpdatesCounter >= 50)
         {
@@ -1909,13 +1910,18 @@ public abstract class World : IBlockAccess
 
         try
         {
-            int updatesBudget = 500;
+            int updatesBudget = drainCompletely ? int.MaxValue : 500;
+            const int safetyCap = 50_000_000;
 
             while (_lightingQueue.Count > 0)
             {
                 if (updatesBudget <= 0)
                 {
                     return true;
+                }
+                if (drainCompletely && updatesBudget < int.MaxValue - safetyCap)
+                {
+                    break;
                 }
 
                 updatesBudget--;
@@ -1934,6 +1940,8 @@ public abstract class World : IBlockAccess
                 {
                     for (int cz = minChunkZ; cz <= maxChunkZ; cz++)
                     {
+                        if (!isRegionLoaded(cx * 16 + 8, 64, cz * 16 + 8, 0))
+                            continue;
                         Chunk chunk = GetChunk(cx, cz);
                         if (chunk != null && !chunk.Empty)
                         {

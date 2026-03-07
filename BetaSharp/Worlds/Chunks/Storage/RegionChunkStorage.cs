@@ -129,7 +129,14 @@ internal class RegionChunkStorage : IChunkStorage
         ChunkNibbleArray blockLight = new ChunkNibbleArray(nbt.GetByteArray("BlockLight"));
         byte[] heightMap = nbt.GetByteArray("HeightMap");
         bool terrainPopulated = nbt.GetBoolean("TerrainPopulated");
+
         Chunk chunk = new(world, x, y,blocks, meta,skyLight, blockLight, heightMap, terrainPopulated);
+
+        if (terrainPopulated)
+        {
+            chunk.MarkReadyForNetwork();
+        }
+
         if (!chunk.Meta.IsInitialized)
         {
             chunk.Meta = new ChunkNibbleArray(chunk.Blocks.Length);

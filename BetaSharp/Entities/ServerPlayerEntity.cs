@@ -164,16 +164,25 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
 
         if (shouldSendChunkUpdates)
         {
-            while (CanSendMoreChunkData() && PendingChunkUpdates.TryDequeue(out ChunkPos chunkPos))
+            int chunksToProcess = PendingChunkUpdates.Count;
+
+            while (CanSendMoreChunkData() && chunksToProcess > 0 && PendingChunkUpdates.TryDequeue(out ChunkPos chunkPos))
             {
+                chunksToProcess--;
+
                 ServerWorld world = server.getWorld(dimensionId);
                 if (!activeChunks.Contains(chunkPos)) continue;
+
                 Chunk chunk = world.GetChunk(chunkPos.X, chunkPos.Z);
+
+                if (chunk == null || chunk.Empty) continue;
+
                 if (!chunk.ReadyForNetwork)
                 {
                     PendingChunkUpdates.Enqueue(chunkPos);
-                    break;
+                    continue;
                 }
+
                 SendChunkData(world, chunkPos);
                 SendBlockEntityUpdates(world, chunkPos);
             }
