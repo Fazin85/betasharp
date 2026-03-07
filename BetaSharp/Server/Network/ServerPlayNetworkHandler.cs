@@ -61,7 +61,7 @@ public class ServerPlayNetworkHandler : NetHandler, CommandOutput
         sendPacket(DisconnectPacket.Get(reason));
         connection.disconnect();
         server.playerManager.disconnect(player);
-        server.playerManager.sendToAll(new PlayerConnectionUpdateS2CPacket(
+        server.playerManager.sendToAll(PlayerConnectionUpdateS2CPacket.Get(
             player.id,
             PlayerConnectionUpdateS2CPacket.ConnectionUpdateType.Leave,
             player.name

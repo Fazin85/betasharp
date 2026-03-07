@@ -14,15 +14,17 @@ public class PlayerConnectionUpdateS2CPacket() : ExtendedProtocolPacket(PacketId
     public ConnectionUpdateType type;
     public string name;
 
-    public PlayerConnectionUpdateS2CPacket(
+    public static PlayerConnectionUpdateS2CPacket Get(
         int entityId,
         ConnectionUpdateType type,
         string name
-    ) : this()
+    )
     {
-        this.entityId = entityId;
-        this.type = type;
-        this.name = name;
+        var p = Get<PlayerConnectionUpdateS2CPacket>(PacketId.PlayerConnectionUpdateS2C);
+        p.entityId = entityId;
+        p.type = type;
+        p.name = name;
+        return p;
     }
 
     public override void Read(NetworkStream stream)
