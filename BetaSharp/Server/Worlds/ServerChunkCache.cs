@@ -187,15 +187,13 @@ public class ServerChunkCache : ChunkSource
 
     public void DecorateTerrain(ChunkSource source, int x, int z)
     {
-        Chunk var4 = GetChunk(x, z);
-        if (!var4.TerrainPopulated)
+        Chunk chunk = GetChunk(x, z);
+
+        if (!chunk.TerrainPopulated)
         {
-            var4.TerrainPopulated = true;
-            if (_generator != null)
-            {
-                _generator.DecorateTerrain(source, x, z);
-                var4.MarkDirty();
-            }
+            _generator.DecorateTerrain(source, x, z);
+            chunk.MarkTerrainPopulated();
+            chunk.MarkDirty();
         }
     }
 

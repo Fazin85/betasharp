@@ -24,11 +24,13 @@ public class Chunk
     public readonly int Z;
     public Dictionary<BlockPos, BlockEntity> BlockEntities;
     public List<Entity>[] Entities;
-    public bool TerrainPopulated;
+    public bool TerrainPopulated { get; private set; } = false;
+    public bool ReadyForNetwork { get; private set; } = false;
     public bool Dirty;
     public bool Empty;
     public bool LastSaveHadEntities;
     public long LastSaveTime;
+
 
     private static readonly ILogger<Chunk> s_logger = Log.Instance.For<Chunk>();
 
@@ -36,7 +38,6 @@ public class Chunk
     {
         BlockEntities = [];
         Entities = new List<Entity>[8];
-        TerrainPopulated = false;
         Dirty = false;
         LastSaveHadEntities = false;
         LastSaveTime = 0L;
@@ -49,6 +50,33 @@ public class Chunk
         {
             Entities[i] = [];
         }
+    }
+
+    public Chunk(World world, int x, int z,
+        byte[] blocks, ChunkNibbleArray meta, ChunkNibbleArray skyLight, ChunkNibbleArray blockLight,
+        byte[] heightMap, bool terrainPopulated)
+    {
+        BlockEntities = [];
+        Entities = new List<Entity>[8];
+        Dirty = false;
+        LastSaveHadEntities = false;
+        LastSaveTime = 0L;
+        World = world;
+        X = x;
+        Z = z;
+        HeightMap = new byte[256];
+
+        for (int i = 0; i < Entities.Length; i++)
+        {
+            Entities[i] = [];
+        }
+
+        Blocks = blocks;
+        Meta = meta;
+        SkyLight = skyLight;
+        BlockLight = blockLight;
+        HeightMap = heightMap;
+        TerrainPopulated = terrainPopulated;
     }
 
     public Chunk(World world, byte[] blocks, int x, int z) : this(world, x, z)
@@ -539,6 +567,16 @@ public class Chunk
         {
             World.unloadEntities(Entities[var3]);
         }
+    }
+
+    public void MarkTerrainPopulated()
+    {
+        TerrainPopulated = true;
+    }
+
+    public void MarkReadyForNetwork()
+    {
+        ReadyForNetwork = true;
     }
 
     public virtual void MarkDirty() => Dirty = true;

@@ -12,6 +12,7 @@ using BetaSharp.Server.Network;
 using BetaSharp.Stats;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
+using BetaSharp.Worlds.Chunks;
 using java.util;
 using Microsoft.Extensions.Logging;
 
@@ -167,6 +168,12 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
             {
                 ServerWorld world = server.getWorld(dimensionId);
                 if (!activeChunks.Contains(chunkPos)) continue;
+                Chunk chunk = world.GetChunk(chunkPos.X, chunkPos.Z);
+                if (!chunk.ReadyForNetwork)
+                {
+                    PendingChunkUpdates.Enqueue(chunkPos);
+                    break;
+                }
                 SendChunkData(world, chunkPos);
                 SendBlockEntityUpdates(world, chunkPos);
             }

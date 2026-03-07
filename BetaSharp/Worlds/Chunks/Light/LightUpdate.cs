@@ -6,29 +6,29 @@ internal struct LightUpdate
 {
     public readonly LightType LightType;
 
-    private int _minX;
-    private int _minY;
-    private int _minZ;
-    private int _maxX;
-    private int _maxY;
-    private int _maxZ;
+    public int MinX;
+    public int MinY;
+    public int MinZ;
+    public int MaxX;
+    public int MaxY;
+    public int MaxZ;
 
     public LightUpdate(LightType lightType, int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
     {
         LightType = lightType;
-        _minX = minX;
-        _minY = minY;
-        _minZ = minZ;
-        _maxX = maxX;
-        _maxY = maxY;
-        _maxZ = maxZ;
+        MinX = minX;
+        MinY = minY;
+        MinZ = minZ;
+        MaxX = maxX;
+        MaxY = maxY;
+        MaxZ = maxZ;
     }
 
     public void UpdateLight(World world)
     {
-        int sizeX = _maxX - _minX + 1;
-        int sizeY = _maxY - _minY + 1;
-        int sizeZ = _maxZ - _minZ + 1;
+        int sizeX = MaxX - MinX + 1;
+        int sizeY = MaxY - MinY + 1;
+        int sizeZ = MaxZ - MinZ + 1;
         int updateVolume = sizeX * sizeY * sizeZ;
 
         if (updateVolume > -short.MinValue)
@@ -37,17 +37,17 @@ internal struct LightUpdate
             return;
         }
 
-        int startY = _minY < 0 ? 0 : _minY;
-        int endY = _maxY >= 128 ? 127 : _maxY;
+        int startY = MinY < 0 ? 0 : MinY;
+        int endY = MaxY >= 128 ? 127 : MaxY;
 
         int cachedChunkX = 0;
         int cachedChunkZ = 0;
         bool isCacheValid = false;
         bool isCachedChunkLoaded = false;
 
-        for (int x = _minX; x <= _maxX; ++x)
+        for (int x = MinX; x <= MaxX; ++x)
         {
-            for (int z = _minZ; z <= _maxZ; ++z)
+            for (int z = MinZ; z <= MaxZ; ++z)
             {
                 int chunkX = x >> 4;
                 int chunkZ = z >> 4;
@@ -131,9 +131,9 @@ internal struct LightUpdate
                             world.updateLight(LightType, x, y - 1, z, prop);
                             world.updateLight(LightType, x, y, z - 1, prop);
 
-                            if (x + 1 >= _maxX) world.updateLight(LightType, x + 1, y, z, prop);
-                            if (y + 1 >= _maxY) world.updateLight(LightType, x, y + 1, z, prop);
-                            if (z + 1 >= _maxZ) world.updateLight(LightType, x, y, z + 1, prop);
+                            if (x + 1 >= MaxX) world.updateLight(LightType, x + 1, y, z, prop);
+                            if (y + 1 >= MaxY) world.updateLight(LightType, x, y + 1, z, prop);
+                            if (z + 1 >= MaxZ) world.updateLight(LightType, x, y, z + 1, prop);
                         }
                     }
                 }
@@ -143,27 +143,27 @@ internal struct LightUpdate
 
     public bool Expand(int reqMinX, int reqMinY, int reqMinZ, int reqMaxX, int reqMaxY, int reqMaxZ)
     {
-        if (reqMinX >= _minX && reqMinY >= _minY && reqMinZ >= _minZ &&
-            reqMaxX <= _maxX && reqMaxY <= _maxY && reqMaxZ <= _maxZ)
+        if (reqMinX >= MinX && reqMinY >= MinY && reqMinZ >= MinZ &&
+            reqMaxX <= MaxX && reqMaxY <= MaxY && reqMaxZ <= MaxZ)
         {
             return true;
         }
 
         byte expandTolerance = 1;
 
-        if (reqMinX >= _minX - expandTolerance && reqMinY >= _minY - expandTolerance && reqMinZ >= _minZ - expandTolerance &&
-            reqMaxX <= _maxX + expandTolerance && reqMaxY <= _maxY + expandTolerance && reqMaxZ <= _maxZ + expandTolerance)
+        if (reqMinX >= MinX - expandTolerance && reqMinY >= MinY - expandTolerance && reqMinZ >= MinZ - expandTolerance &&
+            reqMaxX <= MaxX + expandTolerance && reqMaxY <= MaxY + expandTolerance && reqMaxZ <= MaxZ + expandTolerance)
         {
-            int oldVolumeX = _maxX - _minX;
-            int oldVolumeY = _maxY - _minY;
-            int oldVolumeZ = _maxZ - _minZ;
+            int oldVolumeX = MaxX - MinX;
+            int oldVolumeY = MaxY - MinY;
+            int oldVolumeZ = MaxZ - MinZ;
 
-            int newMinX = reqMinX > _minX ? _minX : reqMinX;
-            int newMinY = reqMinY > _minY ? _minY : reqMinY;
-            int newMinZ = reqMinZ > _minZ ? _minZ : reqMinZ;
-            int newMaxX = reqMaxX < _maxX ? _maxX : reqMaxX;
-            int newMaxY = reqMaxY < _maxY ? _maxY : reqMaxY;
-            int newMaxZ = reqMaxZ < _maxZ ? _maxZ : reqMaxZ;
+            int newMinX = reqMinX > MinX ? MinX : reqMinX;
+            int newMinY = reqMinY > MinY ? MinY : reqMinY;
+            int newMinZ = reqMinZ > MinZ ? MinZ : reqMinZ;
+            int newMaxX = reqMaxX < MaxX ? MaxX : reqMaxX;
+            int newMaxY = reqMaxY < MaxY ? MaxY : reqMaxY;
+            int newMaxZ = reqMaxZ < MaxZ ? MaxZ : reqMaxZ;
 
             int newVolumeX = newMaxX - newMinX;
             int newVolumeY = newMaxY - newMinY;
@@ -174,12 +174,12 @@ internal struct LightUpdate
 
             if (newVolume - oldVolume <= 2)
             {
-                _minX = newMinX;
-                _minY = newMinY;
-                _minZ = newMinZ;
-                _maxX = newMaxX;
-                _maxY = newMaxY;
-                _maxZ = newMaxZ;
+                MinX = newMinX;
+                MinY = newMinY;
+                MinZ = newMinZ;
+                MaxX = newMaxX;
+                MaxY = newMaxY;
+                MaxZ = newMaxZ;
                 return true;
             }
         }
