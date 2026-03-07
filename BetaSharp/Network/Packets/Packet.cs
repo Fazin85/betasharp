@@ -35,6 +35,7 @@ public abstract class Packet
             item.Return(this);
             return;
         }
+
         s_logger.LogError("Packet id " + Id + " not found");
     }
 
@@ -45,7 +46,23 @@ public abstract class Packet
             item.Return(packet);
             return;
         }
+
         s_logger.LogError("Packet id " + packet.Id + " not found");
+    }
+
+    public static T Get<T>(PacketId id) where T : Packet => (T)Get((byte)id);
+
+    public Packet Get() => Get(Id);
+    public static Packet Get(PacketId id) => Get((byte)id);
+
+    public static Packet Get(byte id)
+    {
+        if (!Registry.TryGet(id, out PacketRegisterItem? packetR))
+        {
+            throw new Exception("Unable to get packet id " + id);
+        }
+
+        return packetR.Get();
     }
 
     public static Packet? Read(NetworkStream stream, bool server)

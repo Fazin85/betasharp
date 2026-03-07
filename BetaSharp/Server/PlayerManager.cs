@@ -219,7 +219,7 @@ public class PlayerManager
         }
 
         // Remove from source chunk map NOW, while player.x/z are still in
-        // source-dimension space. 
+        // source-dimension space.
         GetChunkMap(sourceDim).removePlayer(player);
 
         player.dimensionId = targetDim;
@@ -261,7 +261,7 @@ public class PlayerManager
             targetWorld.chunkCache.forceLoad = false;
 
             // Fully drain lighting updates generated during portal chunk
-            // creation before the chunks are queued for the client. 
+            // creation before the chunks are queued for the client.
             while (targetWorld.doLightingUpdates()) { }
         }
 
@@ -508,7 +508,7 @@ public class PlayerManager
 
     public void sendWorldInfo(ServerPlayerEntity player, ServerWorld world)
     {
-        player.networkHandler.sendPacket(new WorldTimeUpdateS2CPacket(world.getTime()));
+        player.networkHandler.sendPacket(WorldTimeUpdateS2CPacket.Get(world.getTime()));
         if (world.isRaining())
         {
             player.networkHandler.sendPacket(new GameStateChangeS2CPacket(1));

@@ -220,7 +220,7 @@ internal class EntityTrackerEntry
                         {
                             player.networkHandler
                                 .sendPacket(
-                                    new PlayerSleepUpdateS2CPacket(
+                                    PlayerSleepUpdateS2CPacket.Get(
                                         currentTrackedEntity,
                                         0,
                                         MathHelper.Floor(currentTrackedEntity.x),
@@ -249,17 +249,17 @@ internal class EntityTrackerEntry
 
     private Packet createAddEntityPacket()
     {
-        if (currentTrackedEntity is EntityItem var6)
+        if (currentTrackedEntity is EntityItem item)
         {
-            ItemEntitySpawnS2CPacket var7 = new(var6);
-            var6.x = var7.x / 32.0;
-            var6.y = var7.y / 32.0;
-            var6.z = var7.z / 32.0;
+            var var7 = ItemEntitySpawnS2CPacket.Get(item);
+            item.x = var7.x / 32.0;
+            item.y = var7.y / 32.0;
+            item.z = var7.z / 32.0;
             return var7;
         }
         else if (currentTrackedEntity is ServerPlayerEntity p)
         {
-            return new PlayerSpawnS2CPacket(p);
+            return PlayerSpawnS2CPacket.Get(p);
         }
         else
         {
@@ -287,7 +287,7 @@ internal class EntityTrackerEntry
             }
             else if (currentTrackedEntity is SpawnableEntity)
             {
-                return new LivingEntitySpawnS2CPacket((EntityLiving)currentTrackedEntity);
+                return LivingEntitySpawnS2CPacket.Get((EntityLiving)currentTrackedEntity);
             }
             else if (currentTrackedEntity is EntityFish)
             {
@@ -337,7 +337,7 @@ internal class EntityTrackerEntry
 
                 if (currentTrackedEntity is EntityPainting painting)
                 {
-                    return new PaintingEntitySpawnS2CPacket(painting);
+                    return PaintingEntitySpawnS2CPacket.Get(painting);
                 }
                 else
                 {

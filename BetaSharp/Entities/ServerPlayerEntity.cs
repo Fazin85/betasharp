@@ -219,7 +219,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
 
         if (health != lastHealthScore)
         {
-            networkHandler.sendPacket(new HealthUpdateS2CPacket(health));
+            networkHandler.sendPacket(HealthUpdateS2CPacket.Get(health));
             lastHealthScore = health;
         }
     }
@@ -269,12 +269,12 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
             EntityTracker et = server.getEntityTracker(dimensionId);
             if (item is EntityItem)
             {
-                et.sendToListeners(item, new ItemPickupAnimationS2CPacket(item.id, id));
+                et.sendToListeners(item, ItemPickupAnimationS2CPacket.Get(item.id, id));
             }
 
             if (item is EntityArrow)
             {
-                et.sendToListeners(item, new ItemPickupAnimationS2CPacket(item.id, id));
+                et.sendToListeners(item, ItemPickupAnimationS2CPacket.Get(item.id, id));
             }
         }
 
@@ -299,7 +299,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
         if (sleepAttemptResult == SleepAttemptResult.OK)
         {
             EntityTracker et = server.getEntityTracker(dimensionId);
-            PlayerSleepUpdateS2CPacket packet = new(this, 0, x, y, z);
+            PlayerSleepUpdateS2CPacket packet = PlayerSleepUpdateS2CPacket.Get(this, 0, x, y, z);
             et.sendToListeners(this, packet);
             networkHandler.teleport(x, y, z, yaw, pitch);
             networkHandler.sendPacket(packet);
@@ -350,7 +350,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     public override void openCraftingScreen(int x, int y, int z)
     {
         incrementScreenHandlerSyncId();
-        networkHandler.sendPacket(new OpenScreenS2CPacket(screenHandlerSyncId, 1, "Crafting", 9));
+        networkHandler.sendPacket(OpenScreenS2CPacket.Get(screenHandlerSyncId, 1, "Crafting", 9));
         currentScreenHandler = new CraftingScreenHandler(inventory, world, x, y, z);
         currentScreenHandler.SyncId = screenHandlerSyncId;
         currentScreenHandler.AddListener(this);
@@ -360,7 +360,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     public override void openChestScreen(IInventory inventory)
     {
         incrementScreenHandlerSyncId();
-        networkHandler.sendPacket(new OpenScreenS2CPacket(screenHandlerSyncId, 0, inventory.getName(), inventory.size()));
+        networkHandler.sendPacket(OpenScreenS2CPacket.Get(screenHandlerSyncId, 0, inventory.getName(), inventory.size()));
         currentScreenHandler = new GenericContainerScreenHandler(this.inventory, inventory);
         currentScreenHandler.SyncId = screenHandlerSyncId;
         currentScreenHandler.AddListener(this);
@@ -370,7 +370,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     public override void openFurnaceScreen(BlockEntityFurnace furnace)
     {
         incrementScreenHandlerSyncId();
-        networkHandler.sendPacket(new OpenScreenS2CPacket(screenHandlerSyncId, 2, furnace.getName(), furnace.size()));
+        networkHandler.sendPacket(OpenScreenS2CPacket.Get(screenHandlerSyncId, 2, furnace.getName(), furnace.size()));
         currentScreenHandler = new FurnaceScreenHandler(inventory, furnace);
         currentScreenHandler.SyncId = screenHandlerSyncId;
         currentScreenHandler.AddListener(this);
@@ -380,7 +380,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     public override void openDispenserScreen(BlockEntityDispenser dispenser)
     {
         incrementScreenHandlerSyncId();
-        networkHandler.sendPacket(new OpenScreenS2CPacket(screenHandlerSyncId, 3, dispenser.getName(), dispenser.size()));
+        networkHandler.sendPacket(OpenScreenS2CPacket.Get(screenHandlerSyncId, 3, dispenser.getName(), dispenser.size()));
         currentScreenHandler = new DispenserScreenHandler(inventory, dispenser);
         currentScreenHandler.SyncId = screenHandlerSyncId;
         currentScreenHandler.AddListener(this);
@@ -393,7 +393,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
         {
             if (!skipPacketSlotUpdates)
             {
-                networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(handler.SyncId, slot, stack));
+                networkHandler.sendPacket(ScreenHandlerSlotUpdateS2CPacket.Get(handler.SyncId, slot, stack));
             }
         }
     }
@@ -406,13 +406,13 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
 
     public void onContentsUpdate(ScreenHandler handler, List<ItemStack> stacks)
     {
-        networkHandler.sendPacket(new InventoryS2CPacket(handler.SyncId, stacks));
-        networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, inventory.getCursorStack()));
+        networkHandler.sendPacket(InventoryS2CPacket.Get(handler.SyncId, stacks));
+        networkHandler.sendPacket(ScreenHandlerSlotUpdateS2CPacket.Get(-1, -1, inventory.getCursorStack()));
     }
 
     public void onPropertyUpdate(ScreenHandler handler, int syncId, int trackedValue)
     {
-        networkHandler.sendPacket(new ScreenHandlerPropertyUpdateS2CPacket(handler.SyncId, syncId, trackedValue));
+        networkHandler.sendPacket(ScreenHandlerPropertyUpdateS2CPacket.Get(handler.SyncId, syncId, trackedValue));
     }
 
     public override void onCursorStackChanged(ItemStack? stack)
@@ -429,7 +429,7 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
     {
         if (!skipPacketSlotUpdates)
         {
-            networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, inventory.getCursorStack()));
+            networkHandler.sendPacket(ScreenHandlerSlotUpdateS2CPacket.Get(-1, -1, inventory.getCursorStack()));
         }
     }
 
@@ -463,11 +463,11 @@ public class ServerPlayerEntity : EntityPlayer, ScreenHandlerListener
 
                 while (amount > 100)
                 {
-                    networkHandler.sendPacket(new IncreaseStatS2CPacket(stat.Id, 100));
+                    networkHandler.sendPacket(IncreaseStatS2CPacket.Get(stat.Id, 100));
                     amount -= 100;
                 }
 
-                networkHandler.sendPacket(new IncreaseStatS2CPacket(stat.Id, amount));
+                networkHandler.sendPacket(IncreaseStatS2CPacket.Get(stat.Id, amount));
             }
         }
     }

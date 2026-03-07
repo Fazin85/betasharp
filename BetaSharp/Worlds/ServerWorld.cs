@@ -106,7 +106,7 @@ public class ServerWorld : World
     {
         if (base.spawnGlobalEntity(entity))
         {
-            server.playerManager.sendToAround(entity.x, entity.y, entity.z, 512.0, dimension.Id, new GlobalEntitySpawnS2CPacket(entity));
+            server.playerManager.sendToAround(entity.x, entity.y, entity.z, 512.0, dimension.Id, GlobalEntitySpawnS2CPacket.Get(entity));
             return true;
         }
         else
@@ -139,7 +139,7 @@ public class ServerWorld : World
     public override void playNoteBlockActionAt(int x, int y, int z, int soundType, int pitch)
     {
         base.playNoteBlockActionAt(x, y, z, soundType, pitch);
-        server.playerManager.sendToAround(x, y, z, 64.0, dimension.Id, new PlayNoteSoundS2CPacket(x, y, z, soundType, pitch));
+        server.playerManager.sendToAround(x, y, z, 64.0, dimension.Id, PlayNoteSoundS2CPacket.Get(x, y, z, soundType, pitch));
     }
 
     public void forceSave()
