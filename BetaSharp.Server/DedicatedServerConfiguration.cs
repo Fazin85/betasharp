@@ -1,6 +1,3 @@
-using java.io;
-using java.lang;
-using java.util;
 using Microsoft.Extensions.Logging;
 using Exception = System.Exception;
 
@@ -8,29 +5,46 @@ namespace BetaSharp.Server;
 
 internal class DedicatedServerConfiguration : IServerConfiguration
 {
-    public static ILogger<DedicatedServerConfiguration> logger = Log.Instance.For<DedicatedServerConfiguration>();
-    private readonly Properties properties = new();
-    private readonly java.io.File propertiesFile;
+    private static readonly ILogger<DedicatedServerConfiguration> logger = Log.Instance.For<DedicatedServerConfiguration>();
+    private readonly Dictionary<string, string> _properties = new(StringComparer.Ordinal);
+    private readonly string _propertiesFilePath;
 
-    public DedicatedServerConfiguration(java.io.File file)
+    public DedicatedServerConfiguration(string filePath)
     {
-        propertiesFile = file;
-        if (file.exists())
+        _propertiesFilePath = filePath;
+        if (File.Exists(filePath))
         {
             try
             {
-                properties.load(new FileInputStream(file));
+                LoadProperties(filePath);
             }
             catch (Exception ex)
             {
-                logger.LogWarning(ex, "Failed to load " + file);
+                logger.LogWarning($"Failed to load {filePath}: {ex}");
                 generateNew();
             }
         }
         else
         {
-            logger.LogWarning(file + " does not exist");
+            logger.LogWarning($"{filePath} does not exist");
             generateNew();
+        }
+    }
+
+    private void LoadProperties(string filePath)
+    {
+        foreach (string line in File.ReadAllLines(filePath))
+        {
+            string trimmed = line.Trim();
+            if (trimmed.Length == 0 || trimmed.StartsWith('#'))
+                continue;
+            int idx = trimmed.IndexOf('=');
+            if (idx >= 0)
+            {
+                string key = trimmed[..idx].Trim();
+                string value = trimmed[(idx + 1)..].Trim();
+                _properties[key] = value;
+            }
         }
     }
 
@@ -49,11 +63,16 @@ internal class DedicatedServerConfiguration : IServerConfiguration
     {
         try
         {
-            properties.store(new FileOutputStream(propertiesFile), "BetaSharp server properties");
+            using StreamWriter writer = new(_propertiesFilePath, false);
+            writer.WriteLine("#BetaSharp server properties");
+            foreach (var kv in _properties)
+            {
+                writer.WriteLine($"{kv.Key}={kv.Value}");
+            }
         }
         catch (Exception ex)
         {
-            logger.LogWarning(ex, "Failed to save " + propertiesFile);
+            logger.LogWarning($"Failed to save {_propertiesFilePath}: {ex}");
             generateNew();
         }
     }
@@ -65,13 +84,13 @@ internal class DedicatedServerConfiguration : IServerConfiguration
 
     public string GetProperty(string property, string fallback)
     {
-        if (!properties.containsKey(property))
+        if (!_properties.ContainsKey(property))
         {
-            properties.setProperty(property, fallback);
+            _properties[property] = fallback;
             save();
         }
 
-        return properties.getProperty(property, fallback);
+        return _properties.TryGetValue(property, out string? value) ? value : fallback;
     }
 
     public int getProperty(string property, int fallback)
@@ -83,11 +102,11 @@ internal class DedicatedServerConfiguration : IServerConfiguration
     {
         try
         {
-            return Integer.parseInt(getProperty(property, "" + fallback));
+            return int.Parse(getProperty(property, fallback.ToString()));
         }
         catch (Exception)
         {
-            properties.setProperty(property, "" + fallback);
+            _properties[property] = fallback.ToString();
             return fallback;
         }
     }
@@ -101,11 +120,12 @@ internal class DedicatedServerConfiguration : IServerConfiguration
     {
         try
         {
-            return java.lang.Boolean.parseBoolean(getProperty(property, "" + fallback));
+            string val = getProperty(property, fallback.ToString().ToLower());
+            return string.Equals(val, "true", StringComparison.OrdinalIgnoreCase);
         }
         catch (Exception)
         {
-            properties.setProperty(property, "" + fallback);
+            _properties[property] = fallback.ToString().ToLower();
             return fallback;
         }
     }
@@ -117,7 +137,7 @@ internal class DedicatedServerConfiguration : IServerConfiguration
 
     public void SetProperty(string property, bool value)
     {
-        properties.setProperty(property, "" + value);
+        _properties[property] = value.ToString().ToLower();
         save();
     }
 

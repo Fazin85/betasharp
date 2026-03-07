@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Sockets;
 using BetaSharp.Network;
 using BetaSharp.Server.Threading;
+using BetaSharp.Threading;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Server.Network;
@@ -10,7 +11,7 @@ public class ConnectionListener
 {
     public Socket Socket { get; }
 
-    private readonly java.lang.Thread _thread;
+    private readonly Task? _acceptingTask;
     private readonly ILogger<ConnectionListener> _logger = Log.Instance.For<ConnectionListener>();
 
     public volatile bool open;
@@ -37,8 +38,7 @@ public class ConnectionListener
 
         this.port = port;
         open = true;
-        _thread = new AcceptConnectionThread(this, "Listen Thread");
-        _thread.start();
+        _acceptingTask = Task.Factory.StartNew(() => AcceptConnectionThread.run(this), TaskCreationOptions.LongRunning);
     }
 
     public ConnectionListener(BetaSharpServer server)
@@ -47,7 +47,7 @@ public class ConnectionListener
         Socket = null;
         port = 0;
         open = true;
-        _thread = null;
+        _acceptingTask = null;
     }
 
     public int GetNextConnectionCounter()

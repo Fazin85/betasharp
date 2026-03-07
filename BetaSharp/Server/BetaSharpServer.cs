@@ -4,12 +4,11 @@ using BetaSharp.Server.Entities;
 using BetaSharp.Server.Internal;
 using BetaSharp.Server.Network;
 using BetaSharp.Server.Worlds;
+using BetaSharp.Threading;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds;
 using BetaSharp.Worlds.Chunks;
 using BetaSharp.Worlds.Storage;
-using java.lang;
-using java.util;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Threading;
@@ -17,7 +16,7 @@ using Exception = System.Exception;
 
 namespace BetaSharp.Server;
 
-public abstract class BetaSharpServer : Runnable, CommandOutput
+public abstract class BetaSharpServer : CommandOutput
 {
     public Dictionary<string, int> GIVE_COMMANDS_COOLDOWNS = [];
     public ConnectionListener connections;
@@ -80,17 +79,17 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
         playerManager = CreatePlayerManager();
         entityTrackers[0] = new EntityTracker(this, 0);
         entityTrackers[1] = new EntityTracker(this, -1);
-        long startTime = java.lang.System.nanoTime();
+        long startTime = Stopwatch.GetTimestamp();
         string worldName = config.GetLevelName("world");
         string seedString = config.GetLevelSeed("");
-        long seed = new java.util.Random().nextLong();
+        long seed = Random.Shared.NextInt64();
         if (seedString.Length > 0)
         {
             try
             {
-                seed = Long.parseLong(seedString);
+                seed = long.Parse(seedString);
             }
-            catch (NumberFormatException)
+            catch (FormatException)
             {
                 // Java based string hashing
                 int hash = 0;
@@ -103,11 +102,12 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
         }
 
         _logger.LogInformation($"Preparing level \"{worldName}\"");
-        loadWorld(new RegionWorldStorageSource(getFile(".").getAbsolutePath()), worldName, seed);
+        loadWorld(new RegionWorldStorageSource(getFile(".")), worldName, seed);
 
         if (logHelp)
         {
-            _logger.LogInformation($"Done ({java.lang.System.nanoTime() - startTime}ns)! For help, type \"help\" or \"?\"");
+            long elapsedNs = (Stopwatch.GetTimestamp() - startTime) * 1_000_000_000L / Stopwatch.Frequency;
+            _logger.LogInformation($"Done ({elapsedNs}ns)! For help, type \"help\" or \"?\"");
         }
 
         return true;
@@ -116,7 +116,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
     private void loadWorld(IWorldStorageSource storageSource, string worldDir, long seed)
     {
         worlds = new ServerWorld[2];
-        RegionWorldStorage worldStorage = new RegionWorldStorage(getFile(".").getAbsolutePath(), worldDir, true);
+        RegionWorldStorage worldStorage = new RegionWorldStorage(getFile("."), worldDir, true);
 
         for (int i = 0; i < worlds.Length; i++)
         {
@@ -323,7 +323,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                         _lastTpsTime = tpsNow;
                     }
 
-                    java.lang.Thread.sleep(1L);
+                    Task.Delay(1);
                 }
             }
             else
@@ -334,12 +334,9 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
 
                     try
                     {
-                        java.lang.Thread.sleep(10L);
+                        Task.Delay(10);
                     }
-                    catch (InterruptedException ex)
-                    {
-                        ex.printStackTrace();
-                    }
+                    catch (ThreadInterruptedException) { }
                 }
             }
         }
@@ -353,12 +350,9 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
 
                 try
                 {
-                    java.lang.Thread.sleep(10L);
+                    Task.Delay(10);
                 }
-                catch (InterruptedException interruptedEx)
-                {
-                    interruptedEx.printStackTrace();
-                }
+                catch (ThreadInterruptedException) { }
             }
         }
         finally
@@ -368,9 +362,9 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                 shutdown();
                 stopped = true;
             }
-            catch (Throwable ex)
+            catch (Exception ex)
             {
-                ex.printStackTrace();
+                _logger.LogError(ex, "Exception during shutdown");
             }
             finally
             {
@@ -468,7 +462,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
         }
     }
 
-    public abstract java.io.File getFile(string path);
+    public abstract string getFile(string path);
 
     public void SendMessage(string message)
     {

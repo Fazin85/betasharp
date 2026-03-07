@@ -5,14 +5,14 @@ namespace BetaSharp.Server.Commands;
 
 internal static class ChatCommands
 {
-    private static readonly ILogger s_logger = Log.Instance.For(nameof(ChatCommands));
+    private static readonly ILogger logger = Log.Instance.For("ChatCommands");
 
     public static void Say(BetaSharpServer server, string senderName, string[] args, CommandOutput output)
     {
         if (args.Length == 0) return;
 
         string message = string.Join(" ", args);
-        s_logger.LogInformation("[" + senderName + "] " + message);
+        logger.LogInformation("[" + senderName + "] " + message);
         server.playerManager.sendToAll(new ChatMessagePacket("§d[Server] " + message));
     }
 
@@ -26,10 +26,10 @@ internal static class ChatCommands
 
         string targetName = args[0];
         string message = string.Join(" ", args[1..]);
-        s_logger.LogInformation("[" + senderName + "->" + targetName + "] " + message);
+        logger.LogInformation("[" + senderName + "->" + targetName + "] " + message);
 
         string whisper = "§7" + senderName + " whispers " + message;
-        s_logger.LogInformation(whisper);
+        logger.LogInformation(whisper);
 
         if (!server.playerManager.sendPacket(targetName, new ChatMessagePacket(whisper)))
         {

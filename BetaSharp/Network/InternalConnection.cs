@@ -38,7 +38,10 @@ public class InternalConnection : Connection
 
     protected void ReceivePacket(Packet packet)
     {
-        readQueue.add(packet);
+        lock (lck)
+        {
+            readQueue.Add(packet);
+        }
     }
 
     protected override void processPackets()
@@ -49,9 +52,15 @@ public class InternalConnection : Connection
         }
 
         int count = 0;
-        while (!readQueue.isEmpty())
+        while (true)
         {
-            Packet packet = (Packet)readQueue.remove(0);
+            Packet? packet;
+            lock (lck)
+            {
+                if (readQueue.Count == 0) break;
+                packet = readQueue[0];
+                readQueue.RemoveAt(0);
+            }
             packet.Apply(networkHandler);
             packet.Return();
             count++;
@@ -74,16 +83,16 @@ public class InternalConnection : Connection
 
     public override void disconnect(string disconnectedReason, params object[] disconnectReasonArgs)
     {
-        if (open)
+        if (!closed)
         {
-            open = false;
+            closed = true;
             disconnected = true;
             this.disconnectedReason = disconnectedReason;
             this.disconnectReasonArgs = disconnectReasonArgs;
 
             _logger.LogInformation($"[{Name}] Disconnected: {disconnectedReason}");
 
-            if (RemoteConnection != null && RemoteConnection.open)
+            if (RemoteConnection != null && !RemoteConnection.closed)
             {
                 RemoteConnection.OnRemoteDisconnect(disconnectedReason, disconnectReasonArgs);
             }
@@ -92,9 +101,9 @@ public class InternalConnection : Connection
 
     public void OnRemoteDisconnect(string reason, object[] args)
     {
-        if (open)
+        if (!closed)
         {
-            open = false;
+            closed = true;
             disconnected = true;
             disconnectedReason = reason;
             disconnectReasonArgs = args;
@@ -114,7 +123,7 @@ public class InternalConnection : Connection
     public override void tick()
     {
         processPackets();
-        if (disconnected && readQueue.isEmpty())
+        if (disconnected && readQueue.Count == 0)
         {
             networkHandler?.onDisconnected(disconnectedReason, disconnectReasonArgs);
         }

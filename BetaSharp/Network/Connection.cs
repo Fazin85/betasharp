@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Sockets;
 using BetaSharp.Network.Packets;
 using BetaSharp.Threading;
-using java.util;
 using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Network;
@@ -10,20 +9,14 @@ namespace BetaSharp.Network;
 public class Connection
 {
     private readonly ILogger<Connection> _logger = Log.Instance.For<Connection>();
-    public static readonly object LOCK = new();
-    public static int READ_THREAD_COUNTER;
-    public static int WRITE_THREAD_COUNTER;
     protected object lck = new();
     private Socket? _socket;
     private readonly IPEndPoint? _address;
-    protected bool open = true;
-    protected List readQueue = Collections.synchronizedList(new ArrayList());
-    protected List sendQueue = Collections.synchronizedList(new ArrayList());
-    protected List delayedSendQueue = Collections.synchronizedList(new ArrayList());
+    protected readonly List<Packet> readQueue = [];
+    protected readonly List<Packet> sendQueue = [];
+    protected readonly List<Packet> delayedSendQueue = [];
     protected NetHandler? networkHandler;
     protected bool closed;
-    private readonly java.lang.Thread _writer;
-    private readonly java.lang.Thread _reader;
     protected bool disconnected;
     protected string disconnectedReason = "";
     protected object[]? disconnectReasonArgs;
@@ -39,7 +32,7 @@ public class Connection
     public Connection(Socket socket, string address, NetHandler networkHandler)
     {
         _socket = socket;
-        _address = (IPEndPoint?) socket.RemoteEndPoint;
+        _address = (IPEndPoint?)socket.RemoteEndPoint;
         this.networkHandler = networkHandler;
 
         socket.ReceiveTimeout = 30000;
@@ -47,10 +40,50 @@ public class Connection
 
         _networkStream = new NetworkStream(socket);
 
-        _reader = new NetworkReaderThread(this, address + " read thread");
-        _writer = new NetworkWriterThread(this, address + " write thread");
-        _reader.start();
-        _writer.start();
+        Task.Factory.StartNew(
+            () =>
+            {
+                while (!closed)
+                {
+                    if (!read())
+                    {
+                        break;
+                    }
+                }
+            },
+            TaskCreationOptions.LongRunning);
+
+        Task.Factory.StartNew(
+            () =>
+            {
+                try
+                {
+                    while (!closed)
+                    {
+                        while (write())
+                        {
+                        }
+
+                        try
+                        {
+                            _networkStream?.Flush();
+                        }
+                        catch (IOException ex)
+                        {
+                            if (!disconnected)
+                            {
+                                disconnect(ex);
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
+            },
+            TaskCreationOptions.LongRunning);
     }
 
     protected Connection()
@@ -73,13 +106,12 @@ public class Connection
                 sendQueueSize += packet.Size() + 1;
                 if (Packet.Registry[packet.Id]!.WorldPacket)
                 {
-                    delayedSendQueue.add(packet);
+                    delayedSendQueue.Add(packet);
                 }
                 else
                 {
-                    sendQueue.add(packet);
+                    sendQueue.Add(packet);
                 }
-
             }
         }
     }
@@ -98,13 +130,14 @@ public class Connection
             int[] sizeStats;
             Packet packet;
             object lockObj;
-            if (!sendQueue.isEmpty() && (lag == 0 || DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
- - ((Packet)sendQueue.get(0)).CreationTime >= lag))
+            if (sendQueue.Count > 0 && (lag == 0 || DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                    - sendQueue[0].CreationTime >= lag))
             {
                 lockObj = lck;
                 lock (lockObj)
                 {
-                    packet = (Packet)sendQueue.remove(0);
+                    packet = sendQueue[0];
+                    sendQueue.RemoveAt(0);
                     sendQueueSize -= packet.Size() + 1;
                 }
 
@@ -115,13 +148,14 @@ public class Connection
                 packet.Return();
             }
 
-            if (_delay-- <= 0 && !delayedSendQueue.isEmpty() && (lag == 0 || DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
- - ((Packet)delayedSendQueue.get(0)).CreationTime >= lag))
+            if (_delay-- <= 0 && delayedSendQueue.Count > 0 && (lag == 0 || DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                    - delayedSendQueue[0].CreationTime >= lag))
             {
                 lockObj = lck;
                 lock (lockObj)
                 {
-                    packet = (Packet)delayedSendQueue.remove(0);
+                    packet = delayedSendQueue[0];
+                    delayedSendQueue.RemoveAt(0);
                     sendQueueSize -= packet.Size() + 1;
                 }
 
@@ -148,13 +182,7 @@ public class Connection
 
     public virtual void interrupt()
     {
-        wakeSignal.Set();
-    }
-
-    public void waitForSignal(int timeoutMs)
-    {
-        wakeSignal.Wait(timeoutMs);
-        wakeSignal.Reset();
+        // closed = true;
     }
 
     protected virtual bool read()
@@ -174,7 +202,11 @@ public class Connection
                 int[] sizeStats = TOTAL_READ_SIZE;
                 int packetId = packet.Id;
                 sizeStats[packetId] += packet.Size() + 1;
-                readQueue.add(packet);
+                lock (lck)
+                {
+                    readQueue.Add(packet);
+                }
+
                 receivedPacket = true;
             }
             else
@@ -203,13 +235,13 @@ public class Connection
 
     public virtual void disconnect(string disconnectedReason, params object[] disconnectReasonArgs)
     {
-        if (open)
+        if (!closed)
         {
             disconnected = true;
             this.disconnectedReason = disconnectedReason;
             this.disconnectReasonArgs = disconnectReasonArgs;
-            new NetworkMasterThread(this).start();
-            open = false;
+
+            closed = true;
 
             try
             {
@@ -233,7 +265,7 @@ public class Connection
             disconnect("disconnect.overflow");
         }
 
-        if (readQueue.isEmpty())
+        if (readQueue.Count == 0)
         {
             if (timeout++ == 1200)
             {
@@ -248,11 +280,10 @@ public class Connection
         processPackets();
 
         interrupt();
-        if (disconnected && readQueue.isEmpty())
+        if (disconnected && readQueue.Count == 0)
         {
             networkHandler?.onDisconnected(disconnectedReason, disconnectReasonArgs);
         }
-
     }
 
     protected virtual void processPackets()
@@ -264,9 +295,16 @@ public class Connection
 
         int maxPacketsPerTick = 100;
 
-        while (!readQueue.isEmpty() && maxPacketsPerTick-- >= 0)
+        while (readQueue.Count > 0 && maxPacketsPerTick-- >= 0)
         {
-            Packet packet = (Packet)readQueue.remove(0);
+            Packet packet;
+            lock (lck)
+            {
+                if (readQueue.Count == 0) break;
+                packet = readQueue[0];
+                readQueue.RemoveAt(0);
+            }
+
             packet.Apply(networkHandler);
             packet.Return();
         }
@@ -281,56 +319,27 @@ public class Connection
     {
         interrupt();
         closed = true;
-        new ThreadCloseConnection(this).Start();
+
+        _ = Task.Run(async () =>
+        {
+            // await Task.Delay(2000);
+
+            try
+            {
+                if (!closed)
+                {
+                    disconnect(new Exception("disconnect.closed"));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error closing connection");
+            }
+        });
     }
 
     public int getDelayedSendQueueSize()
     {
-        return delayedSendQueue.size();
-    }
-
-    public static bool isOpen(Connection conn)
-    {
-        return conn.open;
-    }
-
-    public static bool isClosed(Connection conn)
-    {
-        return conn.closed;
-    }
-
-    public static bool readPacket(Connection conn)
-    {
-        return conn.read();
-    }
-
-    public static bool writePacket(Connection conn)
-    {
-        return conn.write();
-    }
-
-    public static NetworkStream? getOutputStream(Connection conn)
-    {
-        return conn._networkStream;
-    }
-
-    public static bool isDisconnected(Connection conn)
-    {
-        return conn.disconnected;
-    }
-
-    public static void disconnect(Connection conn, Exception ex)
-    {
-        conn.disconnect(ex);
-    }
-
-    public static java.lang.Thread getReader(Connection conn)
-    {
-        return conn._reader;
-    }
-
-    public static java.lang.Thread getWriter(Connection conn)
-    {
-        return conn._writer;
+        return delayedSendQueue.Count;
     }
 }

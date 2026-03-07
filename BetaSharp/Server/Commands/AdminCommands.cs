@@ -6,7 +6,7 @@ namespace BetaSharp.Server.Commands;
 
 internal class AdminCommands
 {
-    private static readonly ILogger s_logger = Log.Instance.For(nameof(AdminCommands));
+    private static readonly ILogger logger = Log.Instance.For<AdminCommands>();
 
     public static void List(BetaSharpServer server, string senderName, string[] args, CommandOutput output)
     {
@@ -187,6 +187,6 @@ internal class AdminCommands
     {
         string logMessage = senderName + ": " + message;
         server.playerManager.broadcast("§7(" + logMessage + ")");
-        s_logger.LogInformation(logMessage);
+        logger.LogInformation(logMessage);
     }
 }

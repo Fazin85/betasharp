@@ -173,10 +173,6 @@ public class ServerChunkCache : ChunkSource
                 chunk.LastSaveTime = _world.getTime();
                 _storage.SaveChunk(_world, chunk, null, -1);
             }
-            catch (java.io.IOException ex)
-            {
-                ex.printStackTrace();
-            }
             catch (IOException ex)
             {
                 _logger.LogError(ex, "Exception");
