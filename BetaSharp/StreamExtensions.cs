@@ -154,4 +154,32 @@ internal static class StreamExtensions
             return Encoding.BigEndianUnicode.GetString(buffer);
         }
     }
+
+    extension(FileStream stream)
+    {
+        public void Seek(long pos)
+        {
+            if (pos < 0)
+            {
+                throw new IOException("Negative seek offset.");
+            }
+
+            stream.Seek(pos, SeekOrigin.Begin);
+        }
+
+        public long Length()
+        {
+            return stream.Length;
+        }
+
+        public int ReadInt()
+        {
+            return ((Stream)stream).ReadInt();
+        }
+
+        public void WriteInt(int value)
+        {
+            ((Stream)stream).WriteInt(value);
+        }
+    }
 }
