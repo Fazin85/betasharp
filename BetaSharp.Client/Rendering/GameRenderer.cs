@@ -336,7 +336,7 @@ public class GameRenderer
         double var7 = var4.lastTickX + (var4.x - var4.lastTickX) * (double)tickDelta;
         double var9 = var4.lastTickY + (var4.y - var4.lastTickY) * (double)tickDelta;
         double var11 = var4.lastTickZ + (var4.z - var4.lastTickZ) * (double)tickDelta;
-        ChunkSource var13 = _client.world.GetChunkSource();
+        IChunkSource var13 = _client.world.getChunkSource();
 
         Profiler.Start("updateFog");
         GLManager.GL.Viewport(0, 0, (uint)_client.displayWidth, (uint)_client.displayHeight);
@@ -461,8 +461,8 @@ public class GameRenderer
             {
                 int var16 = var4 + _random.NextInt(var7) - _random.NextInt(var7);
                 int var17 = var6 + _random.NextInt(var7) - _random.NextInt(var7);
-                int var18 = var3.GetTopSolidBlockY(var16, var17);
-                int var19 = var3.GetBlockId(var16, var18 - 1, var17);
+                int var18 = var3.getTopSolidBlockY(var16, var17);
+                int var19 = var3.getBlockId(var16, var18 - 1, var17);
                 if (var18 <= var5 + var7 && var18 >= var5 - var7 && var3.GetBiomeSource().GetBiome(var16, var17).CanSpawnLightningBolt())
                 {
                     float var20 = _random.NextFloat();
@@ -492,13 +492,13 @@ public class GameRenderer
             if (var14 > 0 && _random.NextInt(3) < _rainSoundCounter++)
             {
                 _rainSoundCounter = 0;
-                if (var10 > var2.y + 1.0D && var3.GetTopSolidBlockY(MathHelper.Floor(var2.x), MathHelper.Floor(var2.z)) > MathHelper.Floor(var2.y))
+                if (var10 > var2.y + 1.0D && var3.getTopSolidBlockY(MathHelper.Floor(var2.x), MathHelper.Floor(var2.z)) > MathHelper.Floor(var2.y))
                 {
-                    _client.world.PlaySound(var8, var10, var12, "ambient.weather.rain", 0.1F, 0.5F);
+                    _client.world.playSound(var8, var10, var12, "ambient.weather.rain", 0.1F, 0.5F);
                 }
                 else
                 {
-                    _client.world.PlaySound(var8, var10, var12, "ambient.weather.rain", 0.2F, 1.0F);
+                    _client.world.playSound(var8, var10, var12, "ambient.weather.rain", 0.2F, 1.0F);
                 }
             }
         }
@@ -544,7 +544,7 @@ public class GameRenderer
                     var21 = var17[var18++];
                     if (var21.GetEnableSnow())
                     {
-                        var22 = var4.GetTopSolidBlockY(var19, var20);
+                        var22 = var4.getTopSolidBlockY(var19, var20);
                         if (var22 < 0)
                         {
                             var22 = 0;
@@ -610,7 +610,7 @@ public class GameRenderer
                     var21 = var17[var18++];
                     if (var21.CanSpawnLightningBolt())
                     {
-                        var22 = var4.GetTopSolidBlockY(var19, var20);
+                        var22 = var4.getTopSolidBlockY(var19, var20);
                         var23 = var6 - var16;
                         var24 = var6 + var16;
                         if (var23 < var22)
@@ -779,7 +779,7 @@ public class GameRenderer
                 _client.terrainRenderer.chunkRenderer.SetFogEnd(_viewDistance * 0.8f);
             }
 
-            if (_client.world.Dimension.IsNether)
+            if (_client.world.dimension.IsNether)
             {
                 GLManager.GL.Fog(GLEnum.FogStart, 0.0F);
                 _client.terrainRenderer.chunkRenderer.SetFogStart(0.0f);

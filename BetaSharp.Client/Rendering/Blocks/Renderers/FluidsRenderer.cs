@@ -41,7 +41,7 @@ public class FluidsRenderer : IBlockRenderer
         float lightX = 0.6F; // East/West
 
         Material material = block.material;
-        int meta = ctx.World.GetBlockMeta(pos.x, pos.y, pos.z);
+        int meta = ctx.World.getBlockMeta(pos.x, pos.y, pos.z);
 
         // Calculate the height of the fluid at each of the 4 corners of this block
         float heightNw = GetFluidVertexHeight(ref ctx, pos.x, pos.y, pos.z, material);
@@ -83,7 +83,7 @@ public class FluidsRenderer : IBlockRenderer
             float sinAngle = MathHelper.Sin(flowAngle) * 8.0F / 256.0F;
             float cosAngle = MathHelper.Cos(flowAngle) * 8.0F / 256.0F;
 
-            float luminance = block.getLuminance(ctx.World, pos.x, pos.y, pos.z);
+            float luminance = block.getLuminance(ctx.Lighting, pos.x, pos.y, pos.z);
             ctx.Tess.setColorOpaque_F(lightTop * luminance * tintR, lightTop * luminance * tintG,
                 lightTop * luminance * tintB);
 
@@ -101,7 +101,7 @@ public class FluidsRenderer : IBlockRenderer
         // BOTTOM FACE
         if (ctx.RenderAllFaces || isBottomVisible)
         {
-            float luminance = block.getLuminance(ctx.World, pos.x, pos.y - 1, pos.z);
+            float luminance = block.getLuminance(ctx.Lighting, pos.x, pos.y - 1, pos.z);
             ctx.Tess.setColorOpaque_F(lightBottom * luminance, lightBottom * luminance, lightBottom * luminance);
 
             // Fluids don't use AO, so pass dummy colors
@@ -180,7 +180,7 @@ public class FluidsRenderer : IBlockRenderer
                 float minV2 = (texV + (1.0F - h2) * 16.0F) / 256.0F; // UV height match for corner 2
                 float maxV = (texV + 16 - 0.01f) / 256.0f;
 
-                float luminance = block.getLuminance(ctx.World, adjX, pos.y, adjZ);
+                float luminance = block.getLuminance(ctx.Lighting, adjX, pos.y, adjZ);
                 float shadow = (side < 2) ? lightZ : lightX;
                 luminance *= shadow;
 
@@ -211,12 +211,12 @@ public class FluidsRenderer : IBlockRenderer
             int checkZ = z - (i >> 1 & 1);
 
             // If there is fluid directly above any of the 4 blocks, the corner must be completely full (height 1.0)
-            if (ctx.World.GetMaterial(checkX, y + 1, checkZ) == material)
+            if (ctx.World.getMaterial(checkX, y + 1, checkZ) == material)
             {
                 return 1.0F;
             }
 
-            Material neighborMaterial = ctx.World.GetMaterial(checkX, y, checkZ);
+            Material neighborMaterial = ctx.World.getMaterial(checkX, y, checkZ);
 
             if (neighborMaterial != material)
             {
@@ -229,7 +229,7 @@ public class FluidsRenderer : IBlockRenderer
             }
             else
             {
-                int neighborMeta = ctx.World.GetBlockMeta(checkX, y, checkZ);
+                int neighborMeta = ctx.World.getBlockMeta(checkX, y, checkZ);
                 float fluidDepth = BlockFluid.getFluidHeightFromMeta(neighborMeta);
 
                 // Meta >= 8 (falling fluid) or Meta == 0 (source block)

@@ -118,7 +118,7 @@ public class Chunk
                     minHeight = y;
                 }
 
-                if (!World.Dimension.HasCeiling)
+                if (!World.dimension.HasCeiling)
                 {
                     int lightLevel = 15;
                     int currentY = 127;
@@ -168,7 +168,7 @@ public class Chunk
 
     private void LightGap(int worldX, int worldZ, int height)
     {
-        int topY = World.GetTopY(worldX, worldZ);
+        int topY = World.getTopY(worldX, worldZ);
         if (topY > height)
         {
             World.Lighting.QueueLightUpdate(LightType.Sky, worldX, height, worldZ, worldX, topY, worldZ);
@@ -202,7 +202,7 @@ public class Chunk
             return;
         }
 
-        World.SetBlocksDirty(localX, localZ, newHeight, oldHeight);
+        World.setBlocksDirty(localX, localZ, newHeight, oldHeight);
         HeightMap[(localZ << 4) | localX] = (byte)newHeight;
 
         if (newHeight < MinHeightMapValue)
@@ -296,14 +296,14 @@ public class Chunk
         int worldZ = Z * 16 + localZ;
         Blocks[(localX << 11) | (localZ << 7) | y] = newId;
 
-        if (oldId != 0 && !World.IsRemote)
+        if (oldId != 0 && !World.isRemote)
         {
             Block.Blocks[oldId].onBreak(World, worldX, y, worldZ);
         }
 
         Meta.SetNibble(localX, y, localZ, meta);
 
-        if (!World.Dimension.HasCeiling)
+        if (!World.dimension.HasCeiling)
         {
             if (Block.BlockLightOpacity[newId] != 0)
             {
@@ -371,7 +371,7 @@ public class Chunk
         World.Lighting.QueueLightUpdate(LightType.Block, worldX, y, worldZ, worldX, y, worldZ);
         LightGaps(localX, localZ);
 
-        if (rawId != 0 && !World.IsRemote)
+        if (rawId != 0 && !World.isRemote)
         {
             Block.Blocks[rawId].onPlaced(World, worldX, y, worldZ);
         }

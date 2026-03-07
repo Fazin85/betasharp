@@ -44,7 +44,7 @@ public abstract class Dimension
 
     public virtual void InitBiomeSource() => BiomeSource = new BiomeSource(World);
 
-    public virtual ChunkSource CreateChunkGenerator() => new OverworldChunkGenerator(World, World.GetSeed());
+    public virtual IChunkSource CreateChunkGenerator() => new OverworldIChunkGenerator(World, World.GetSeed());
 
     public virtual bool IsValidSpawnPoint(int x, int y) => World.GetSpawnBlockId(x, y) == Block.Sand.id;
 
@@ -110,10 +110,10 @@ public abstract class Dimension
         return new Vector3D<double>(r, g, b);
     }
 
-    public static Dimension? FromId(int id) => id switch
+    public static Dimension FromId(int id) => id switch
     {
         -1 => new NetherDimension(),
         0 => new OverworldDimension(),
-        _ => null
+        _ => throw new ArgumentOutOfRangeException($"Invalid Dimension:{id}")
     };
 }

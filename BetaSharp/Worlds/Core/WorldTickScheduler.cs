@@ -1,20 +1,24 @@
 using BetaSharp.Blocks;
+using BetaSharp.Util.Maths;
 
 namespace BetaSharp.Worlds.Core;
 
 public class WorldTickScheduler
 {
-    private readonly World _world;
-
+    private readonly WorldBlockView _blockView;
+    private readonly JavaRandom _random;
+    private readonly bool _isRemote;
+    private readonly WorldEventBroadcaster _broadcaster;
     private long _absoluteTickCounter = 0;
-
     private readonly PriorityQueue<BlockUpdate, (long, long)> _scheduledUpdates = new();
-
     public bool instantBlockUpdateEnabled = false;
 
-    public WorldTickScheduler(World world)
+    public WorldTickScheduler(WorldBlockView blockView, JavaRandom random, bool isRemote, WorldEventBroadcaster broadcaster)
     {
-        _world = world;
+        _blockView = blockView;
+        _random = random;
+        _isRemote = isRemote;
+        _broadcaster = broadcaster;
     }
 
     public void Tick(bool forceFlush = false)
@@ -25,17 +29,17 @@ public class WorldTickScheduler
 
     public void ScheduleBlockUpdate(int x, int y, int z, int blockId, int tickRate)
     {
-        if (_world.IsRemote) return;
+        if (_isRemote) return;
 
         const byte loadRadius = 8;
-        if (_world.IsRegionLoaded(x - loadRadius, y - loadRadius, z - loadRadius, x + loadRadius, y + loadRadius, z + loadRadius))
+        if (_blockView.IsRegionLoaded(x - loadRadius, y - loadRadius, z - loadRadius, x + loadRadius, y + loadRadius, z + loadRadius))
         {
             if (instantBlockUpdateEnabled)
             {
-                int currentBlockId = _world.GetBlockId(x, y, z);
+                int currentBlockId = _blockView.getBlockId(x, y, z);
                 if (currentBlockId == blockId && currentBlockId > 0)
                 {
-                    Block.Blocks[currentBlockId].onTick(_world, x, y, z, _world.random);
+                    Block.Blocks[currentBlockId].onTick(_blockView, x, y, z, _random, _broadcaster, _isRemote);
                 }
             }
             else
@@ -49,7 +53,7 @@ public class WorldTickScheduler
 
     private void ProcessScheduledTicks(bool forceFlush)
     {
-        if (_world.IsRemote) return;
+        if (_isRemote) return;
 
         for (int i = 0; i < 1000; ++i)
         {
@@ -60,7 +64,7 @@ public class WorldTickScheduler
             var blockUpdate = _scheduledUpdates.Dequeue();
 
             const byte loadRadius = 8;
-            if (_world.IsRegionLoaded(
+            if (_blockView.IsRegionLoaded(
                     blockUpdate.X - loadRadius,
                     blockUpdate.Y - loadRadius,
                     blockUpdate.Z - loadRadius,
@@ -70,10 +74,10 @@ public class WorldTickScheduler
                 )
                )
             {
-                int currentBlockId = _world.GetBlockId(blockUpdate.X, blockUpdate.Y, blockUpdate.Z);
+                int currentBlockId = _blockView.getBlockId(blockUpdate.X, blockUpdate.Y, blockUpdate.Z);
                 if (currentBlockId == blockUpdate.BlockId && currentBlockId > 0)
                 {
-                    Block.Blocks[currentBlockId].onTick(_world, blockUpdate.X, blockUpdate.Y, blockUpdate.Z, _world.random);
+                    Block.Blocks[currentBlockId].onTick(_blockView, blockUpdate.X, blockUpdate.Y, blockUpdate.Z, _random, _broadcaster, _isRemote);
                 }
             }
         }

@@ -17,7 +17,7 @@ internal class Carver
     /// <param name="chunkX">X-Coordinate of the chunk</param>
     /// <param name="chunkZ">Z-Coordinate of the chunk</param>
     /// <param name="blocks">1D Array of Blocks within this chunk</param>
-    public virtual void carve(ChunkSource source, World world, int chunkX, int chunkZ, byte[] blocks)
+    public virtual void carve(IChunkSource source, World world, int chunkX, int chunkZ, byte[] blocks)
     {
         Rand.SetSeed(world.GetSeed());
         long xOffset = Rand.NextLong() / 2L * 2L + 1L;

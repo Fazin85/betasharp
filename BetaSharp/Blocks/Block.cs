@@ -18,9 +18,9 @@ public class Block
     public static readonly BlockSoundGroup SoundGrassFootstep = new("grass", 1.0F, 1.0F);
     public static readonly BlockSoundGroup SoundStoneFootstep = new("stone", 1.0F, 1.0F);
     public static readonly BlockSoundGroup SoundMetalFootstep = new("stone", 1.0F, 1.5F);
-    public static readonly BlockSoundGroup SoundGlassFootstep = new ("stone", 1.0F, 1.0F, "random.glass");
+    public static readonly BlockSoundGroup SoundGlassFootstep = new("stone", 1.0F, 1.0F, "random.glass");
     public static readonly BlockSoundGroup SoundClothFootstep = new("cloth", 1.0F, 1.0F);
-    public static readonly BlockSoundGroup SoundSandFootstep = new ("sand", 1.0F, 1.0F, "step.gravel");
+    public static readonly BlockSoundGroup SoundSandFootstep = new("sand", 1.0F, 1.0F, "step.gravel");
 
     public static readonly Block[] Blocks = new Block[256];
     public static readonly bool[] BlocksRandomTick = new bool[256];
@@ -100,9 +100,15 @@ public class Block
     public static readonly Block CobblestoneStairs = new BlockStairs(67, Cobblestone).setBlockName("stairsStone").ignoreMetaUpdates();
     public static readonly Block WallSign = new BlockSign(68, typeof(BlockEntitySign), false).setHardness(1.0F).setSoundGroup(SoundWoodFootstep).setBlockName("sign").disableStats().ignoreMetaUpdates();
     public static readonly Block Lever = new BlockLever(69, 96).setHardness(0.5F).setSoundGroup(SoundWoodFootstep).setBlockName("lever").ignoreMetaUpdates();
-    public static readonly Block StonePressurePlate = new BlockPressurePlate(70, Stone.textureId, PressurePlateActiviationRule.MOBS, Material.Stone).setHardness(0.5F).setSoundGroup(SoundStoneFootstep).setBlockName("pressurePlate").ignoreMetaUpdates();
+
+    public static readonly Block StonePressurePlate = new BlockPressurePlate(70, Stone.textureId, PressurePlateActiviationRule.MOBS, Material.Stone).setHardness(0.5F).setSoundGroup(SoundStoneFootstep).setBlockName("pressurePlate")
+        .ignoreMetaUpdates();
+
     public static readonly Block IronDoor = new BlockDoor(71, Material.Metal).setHardness(5.0F).setSoundGroup(SoundMetalFootstep).setBlockName("doorIron").disableStats().ignoreMetaUpdates();
-    public static readonly Block WoodenPressurePlate = new BlockPressurePlate(72, Planks.textureId, PressurePlateActiviationRule.EVERYTHING, Material.Wood).setHardness(0.5F).setSoundGroup(SoundWoodFootstep).setBlockName("pressurePlate").ignoreMetaUpdates();
+
+    public static readonly Block WoodenPressurePlate = new BlockPressurePlate(72, Planks.textureId, PressurePlateActiviationRule.EVERYTHING, Material.Wood).setHardness(0.5F).setSoundGroup(SoundWoodFootstep).setBlockName("pressurePlate")
+        .ignoreMetaUpdates();
+
     public static readonly Block RedstoneOre = new BlockRedstoneOre(73, 51, false).setHardness(3.0F).setResistance(5.0F).setSoundGroup(SoundStoneFootstep).setBlockName("oreRedstone").ignoreMetaUpdates();
     public static readonly Block LitRedstoneOre = new BlockRedstoneOre(74, 51, true).setLuminance(10.0F / 16.0F).setHardness(3.0F).setResistance(5.0F).setSoundGroup(SoundStoneFootstep).setBlockName("oreRedstone").ignoreMetaUpdates();
     public static readonly Block RedstoneTorch = new BlockRedstoneTorch(75, 115, false).setHardness(0.0F).setSoundGroup(SoundWoodFootstep).setBlockName("notGate").ignoreMetaUpdates();
@@ -243,12 +249,12 @@ public class Block
         BoundingBox = new Box(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
-    public virtual float getLuminance(IBlockAccess iBlockAccess, int x, int y, int z)
+    public virtual float getLuminance(LightingEngine lighting, int x, int y, int z)
     {
-        return iBlockAccess.GetNaturalBrightness(x, y, z, BlocksLightLuminance[id]);
+        return lighting.GetNaturalBrightness(x, y, z, BlocksLightLuminance[id]);
     }
 
-    public virtual bool isSideVisible(IBlockAccess iBlockAccess, int x, int y, int z, int side)
+    public virtual bool isSideVisible(IBlockReader iBlockReader, int x, int y, int z, int side)
     {
         var minX = BoundingBox.MinX;
         var minY = BoundingBox.MinY;
@@ -256,17 +262,19 @@ public class Block
         var maxX = BoundingBox.MaxX;
         var maxY = BoundingBox.MaxY;
         var maxZ = BoundingBox.MaxZ;
-        return side == 0 && minY > 0.0D ? true : (side == 1 && maxY < 1.0D ? true : (side == 2 && minZ > 0.0D ? true : (side == 3 && maxZ < 1.0D ? true : (side == 4 && minX > 0.0D ? true : (side == 5 && maxX < 1.0D ? true : !iBlockAccess.IsOpaque(x, y, z))))));
+        return side == 0 && minY > 0.0D
+            ? true
+            : (side == 1 && maxY < 1.0D ? true : (side == 2 && minZ > 0.0D ? true : (side == 3 && maxZ < 1.0D ? true : (side == 4 && minX > 0.0D ? true : (side == 5 && maxX < 1.0D ? true : !iBlockReader.isOpaque(x, y, z))))));
     }
 
-    public virtual bool isSolidFace(IBlockAccess iBlockAccess, int x, int y, int z, int face)
+    public virtual bool isSolidFace(IBlockReader iBlockReader, int x, int y, int z, int face)
     {
-        return iBlockAccess.GetMaterial(x, y, z).IsSolid;
+        return iBlockReader.getMaterial(x, y, z).IsSolid;
     }
 
-    public virtual int getTextureId(IBlockAccess iBlockAccess, int x, int y, int z, int side)
+    public virtual int getTextureId(IBlockReader iBlockReader, int x, int y, int z, int side)
     {
-        return getTexture(side, iBlockAccess.GetBlockMeta(x, y, z));
+        return getTexture(side, iBlockReader.getBlockMeta(x, y, z));
     }
 
     public virtual int getTexture(int side, int meta)
@@ -284,7 +292,7 @@ public class Block
         return BoundingBox.Offset(x, y, z);
     }
 
-    public virtual void addIntersectingBoundingBox(World world, int x, int y, int z, Box box, List<Box> boxes)
+    public virtual void addIntersectingBoundingBox(IBlockReader world, int x, int y, int z, Box box, List<Box> boxes)
     {
         Box? collisionBox = getCollisionShape(world, x, y, z);
         if (collisionBox != null && box.Intersects(collisionBox.Value))
@@ -293,7 +301,7 @@ public class Block
         }
     }
 
-    public virtual Box? getCollisionShape(World world, int x, int y, int z)
+    public virtual Box? getCollisionShape(IBlockReader world, int x, int y, int z)
     {
         return BoundingBox.Offset(x, y, z);
     }
@@ -313,7 +321,7 @@ public class Block
         return true;
     }
 
-    public virtual void onTick(World world, int x, int y, int z, JavaRandom random)
+    public virtual void onTick(WorldBlockView worldView, int x, int y, int z, JavaRandom random, WorldEventBroadcaster broadcaster, bool isRemote)
     {
     }
 
@@ -325,7 +333,7 @@ public class Block
     {
     }
 
-    public virtual void neighborUpdate(World world, int x, int y, int z, int id)
+    public virtual void neighborUpdate(WorldBlockView world, int x, int y, int z, int id)
     {
     }
 
@@ -357,14 +365,14 @@ public class Block
         return hardness < 0.0F ? 0.0F : (!player.canHarvest(this) ? 1.0F / hardness / 100.0F : player.getBlockBreakingSpeed(this) / hardness / 30.0F);
     }
 
-    public void dropStacks(World world, int x, int y, int z, int meta)
+    public void dropStacks(WorldBlockView world, int x, int y, int z, int meta)
     {
         dropStacks(world, x, y, z, meta, 1.0F);
     }
 
-    public virtual void dropStacks(World world, int x, int y, int z, int meta, float luck)
+    public virtual void dropStacks(WorldBlockView world, int x, int y, int z, int meta, float luck)
     {
-        if (!world.IsRemote && world.Rules.GetBool(DefaultRules.DoTileDrops))
+        if (!world.isRemote && world.Rules.GetBool(DefaultRules.DoTileDrops))
         {
             int dropCount = getDroppedItemCount(world.random);
 
@@ -379,21 +387,18 @@ public class Block
                     }
                 }
             }
-
         }
     }
 
-    protected void dropStack(World world, int x, int y, int z, ItemStack itemStack)
+    protected void dropStack(IBlockWorldContext world, int x, int y, int z, ItemStack itemStack)
     {
-        if (!world.IsRemote && world.Rules.GetBool(DefaultRules.DoTileDrops))
+        if (!world.isRemote && world.Rules.GetBool(DefaultRules.DoTileDrops))
         {
             float spreadFactor = 0.7F;
             double offsetX = (double)(world.random.NextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
             double offsetY = (double)(world.random.NextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
             double offsetZ = (double)(world.random.NextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
-            EntityItem droppedItem = new EntityItem(world, (double)x + offsetX, (double)y + offsetY, (double)z + offsetZ, itemStack);
-            droppedItem.delayBeforeCanPickup = 10;
-            world.Entities.SpawnEntity(droppedItem);
+            world.SpawnItemDrop((double)x + offsetX, (double)y + offsetY, (double)z + offsetZ, itemStack);
         }
     }
 
@@ -407,7 +412,7 @@ public class Block
         return resistance / 5.0F;
     }
 
-    public virtual HitResult raycast(World world, int x, int y, int z, Vec3D startPos, Vec3D endPos)
+    public virtual HitResult raycast(IBlockReader world, int x, int y, int z, Vec3D startPos, Vec3D endPos)
     {
         updateBoundingBox(world, x, y, z);
         Vec3D pos = new Vec3D(x, y, z);
@@ -429,14 +434,14 @@ public class Block
         return 0;
     }
 
-    public virtual bool canPlaceAt(World world, int x, int y, int z, int side)
+    public virtual bool canPlaceAt(WorldBlockView world, int x, int y, int z, int side)
     {
         return canPlaceAt(world, x, y, z);
     }
 
-    public virtual bool canPlaceAt(World world, int x, int y, int z)
+    public virtual bool canPlaceAt(WorldBlockView world, int x, int y, int z)
     {
-        int blockId = world.GetBlockId(x, y, z);
+        int blockId = world.getBlockId(x, y, z);
         return blockId == 0 || Blocks[blockId].material.IsReplaceable;
     }
 
@@ -461,7 +466,7 @@ public class Block
     {
     }
 
-    public virtual void updateBoundingBox(IBlockAccess iBlockAccess, int x, int y, int z)
+    public virtual void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z)
     {
     }
 
@@ -472,12 +477,12 @@ public class Block
 
     public virtual int getColorForFace(int meta, int face) => getColor(meta);
 
-    public virtual int getColorMultiplier(IBlockAccess iBlockAccess, int x, int y, int z)
+    public virtual int getColorMultiplier(IBlockReader iBlockReader, int x, int y, int z)
     {
         return 0xFFFFFF;
     }
 
-    public virtual bool isPoweringSide(IBlockAccess iBlockAccess, int x, int y, int z, int side)
+    public virtual bool isPoweringSide(IBlockReader iBlockReader, int x, int y, int z, int side)
     {
         return false;
     }
@@ -487,7 +492,7 @@ public class Block
         return false;
     }
 
-    public virtual bool isFlammable(IBlockAccess iBlockAccess, int x, int y, int z)
+    public virtual bool isFlammable(IBlockReader iBlockReader, int x, int y, int z)
     {
         return false;
     }
@@ -496,7 +501,7 @@ public class Block
     {
     }
 
-    public virtual bool isStrongPoweringSide(World world, int x, int y, int z, int side)
+    public virtual bool isStrongPoweringSide(IBlockReader world, int x, int y, int z, int side)
     {
         return false;
     }

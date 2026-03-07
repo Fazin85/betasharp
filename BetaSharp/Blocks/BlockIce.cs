@@ -19,18 +19,18 @@ internal class BlockIce : BlockBreakable
         return 1;
     }
 
-    public override bool isSideVisible(IBlockAccess iBlockAccess, int x, int y, int z, int side)
+    public override bool isSideVisible(IBlockReader iBlockReader, int x, int y, int z, int side)
     {
-        return base.isSideVisible(iBlockAccess, x, y, z, 1 - side);
+        return base.isSideVisible(iBlockReader, x, y, z, 1 - side);
     }
 
     public override void afterBreak(World world, EntityPlayer player, int x, int y, int z, int meta)
     {
         base.afterBreak(world, player, x, y, z, meta);
-        Material materialBelow = world.GetMaterial(x, y - 1, z);
+        Material materialBelow = world.getMaterial(x, y - 1, z);
         if (materialBelow.BlocksMovement || materialBelow.IsFluid)
         {
-            world.SetBlock(x, y, z, Block.FlowingWater.id);
+            world.setBlock(x, y, z, Block.FlowingWater.id);
         }
 
     }
@@ -40,12 +40,12 @@ internal class BlockIce : BlockBreakable
         return 0;
     }
 
-    public override void onTick(World world, int x, int y, int z, JavaRandom random)
+    public override void onTick(WorldBlockView worldView, int x, int y, int z, JavaRandom random, WorldEventBroadcaster broadcaster, bool isRemote)
     {
-        if (world.Lighting.GetBrightness(LightType.Block, x, y, z) > 11 - Block.BlockLightOpacity[id])
+        if (worldView.getBrightness(LightType.Block, x, y, z) > 11 - Block.BlockLightOpacity[id])
         {
-            dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
-            world.SetBlock(x, y, z, Block.Water.id);
+            dropStacks(worldView, x, y, z, worldView.getBlockMeta(x, y, z));
+            worldView.setBlock(x, y, z, Block.Water.id);
         }
 
     }

@@ -63,7 +63,7 @@ public class EntityTNTPrimed : Entity
 
         if (fuse-- <= 0)
         {
-            if (!world.IsRemote)
+            if (!world.isRemote)
             {
                 markDead();
                 explode();
@@ -75,7 +75,7 @@ public class EntityTNTPrimed : Entity
         }
         else
         {
-            world.AddParticle("smoke", x, y + 0.5D, z, 0.0D, 0.0D, 0.0D);
+            world.addParticle("smoke", x, y + 0.5D, z, 0.0D, 0.0D, 0.0D);
         }
 
     }
@@ -88,7 +88,7 @@ public class EntityTNTPrimed : Entity
         }
 
         const float power = 4.0F;
-        world.CreateExplosion((Entity)null, x, y, z, power);
+        world.createExplosion((Entity)null, x, y, z, power);
     }
 
     public override void writeNbt(NBTTagCompound nbt)

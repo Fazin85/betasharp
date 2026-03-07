@@ -261,7 +261,7 @@ public class WorldRenderer : IWorldAccess
                         var8 = 127;
                     }
 
-                    if (world.IsPosLoaded(MathHelper.Floor(var7.x), var8, MathHelper.Floor(var7.z)))
+                    if (world.isPosLoaded(MathHelper.Floor(var7.x), var8, MathHelper.Floor(var7.z)))
                     {
                         ++countEntitiesRendered;
                         EntityRenderDispatcher.instance.renderEntity(var7, var3);
@@ -330,7 +330,7 @@ public class WorldRenderer : IWorldAccess
 
     public void renderSky(float var1)
     {
-        if (!_game.world.Dimension.IsNether)
+        if (!_game.world.dimension.IsNether)
         {
             GLManager.GL.Disable(GLEnum.Texture2D);
             Vector3D<double> var2 = world.Environment.GetSkyColor(_game.camera, var1);
@@ -351,7 +351,7 @@ public class WorldRenderer : IWorldAccess
             GLManager.GL.Enable(GLEnum.Blend);
             GLManager.GL.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
             Lighting.turnOff();
-            float[] var18 = world.Dimension.GetBackgroundColor(world.GetTime(var1), var1);
+            float[] var18 = world.dimension.GetBackgroundColor(world.GetTime(var1), var1);
             float var9;
             float var10;
             float var11;
@@ -428,7 +428,7 @@ public class WorldRenderer : IWorldAccess
             GLManager.GL.Enable(GLEnum.AlphaTest);
             GLManager.GL.Enable(GLEnum.Fog);
             GLManager.GL.PopMatrix();
-            if (world.Dimension.HasGround)
+            if (world.dimension.HasGround)
             {
                 GLManager.GL.Color3(var3 * 0.2F + 0.04F, var4 * 0.2F + 0.04F, var5 * 0.6F + 0.1F);
             }
@@ -447,7 +447,7 @@ public class WorldRenderer : IWorldAccess
     public void renderClouds(float var1)
     {
         Profiler.Start("renderClouds");
-        if (!_game.world.Dimension.IsNether)
+        if (!_game.world.dimension.IsNether)
         {
             renderCloudsFancy(var1);
         }
@@ -562,7 +562,7 @@ public class WorldRenderer : IWorldAccess
         float var5 = 4.0F;
         double var6 = (_game.camera.prevX + (_game.camera.x - _game.camera.prevX) * (double)var1 + (double)((cloudOffsetX + var1) * 0.03F)) / (double)var4;
         double var8 = (_game.camera.prevZ + (_game.camera.z - _game.camera.prevZ) * (double)var1) / (double)var4 + (double)0.33F;
-        float var10 = world.Dimension.CloudHeight - var2 + 0.33F;
+        float var10 = world.dimension.CloudHeight - var2 + 0.33F;
         int var11 = MathHelper.Floor(var6 / 2048.0D);
         int var12 = MathHelper.Floor(var8 / 2048.0D);
         var6 -= var11 * 2048;
@@ -649,7 +649,7 @@ public class WorldRenderer : IWorldAccess
                 renderEngine.BindTexture(renderEngine.GetTextureId("/terrain.png"));
                 GLManager.GL.Color4(1.0F, 1.0F, 1.0F, 0.5F);
                 GLManager.GL.PushMatrix();
-                var8 = world.GetBlockId(var2.BlockX, var2.BlockY, var2.BlockZ);
+                var8 = world.getBlockId(var2.BlockX, var2.BlockY, var2.BlockZ);
                 Block var9 = var8 > 0 ? Block.Blocks[var8] : null;
                 GLManager.GL.Disable(GLEnum.AlphaTest);
                 GLManager.GL.PolygonOffset(-3.0F, -3.0F);
@@ -663,7 +663,7 @@ public class WorldRenderer : IWorldAccess
                 var6.startDrawingQuads();
                 var6.setTranslationD(-var10, -var12, -var14);
                 var6.disableColor();
-                BlockRenderer.RenderBlockByRenderType(world, var9, new BlockPos(var2.BlockX, var2.BlockY, var2.BlockZ), var6, 240 + (int)(damagePartialTime * 10.0F), true);
+                BlockRenderer.RenderBlockByRenderType(world.Blocks, var9, new BlockPos(var2.BlockX, var2.BlockY, var2.BlockZ), var6, 240 + (int)(damagePartialTime * 10.0F), true);
                 var6.draw();
                 var6.setTranslationD(0.0D, 0.0D, 0.0D);
                 GLManager.GL.Disable(GLEnum.AlphaTest);
@@ -731,10 +731,10 @@ public class WorldRenderer : IWorldAccess
             GLManager.GL.Disable(GLEnum.Texture2D);
             GLManager.GL.DepthMask(false);
             float var6 = 0.002F;
-            int var7 = world.GetBlockId(var2.BlockX, var2.BlockY, var2.BlockZ);
+            int var7 = world.getBlockId(var2.BlockX, var2.BlockY, var2.BlockZ);
             if (var7 > 0)
             {
-                Block.Blocks[var7].updateBoundingBox(world, var2.BlockX, var2.BlockY, var2.BlockZ);
+                Block.Blocks[var7].updateBoundingBox(world.Blocks, var2.BlockX, var2.BlockY, var2.BlockZ);
                 double var8 = var1.lastTickX + (var1.x - var1.lastTickX) * (double)var5;
                 double var10 = var1.lastTickY + (var1.y - var1.lastTickY) * (double)var5;
                 double var12 = var1.lastTickZ + (var1.z - var1.lastTickZ) * (double)var5;
@@ -938,35 +938,35 @@ public class WorldRenderer : IWorldAccess
         switch (var2)
         {
             case 1000:
-                world.PlaySound(var3, var4, var5, "random.click", 1.0F, 1.0F);
+                world.playSound(var3, var4, var5, "random.click", 1.0F, 1.0F);
                 break;
             case 1001:
-                world.PlaySound(var3, var4, var5, "random.click", 1.0F, 1.2F);
+                world.playSound(var3, var4, var5, "random.click", 1.0F, 1.2F);
                 break;
             case 1002:
-                world.PlaySound(var3, var4, var5, "random.bow", 1.0F, 1.2F);
+                world.playSound(var3, var4, var5, "random.bow", 1.0F, 1.2F);
                 break;
             case 1003:
                 if (Random.Shared.NextDouble() < 0.5D)
                 {
-                    world.PlaySound(var3 + 0.5D, var4 + 0.5D, var5 + 0.5D, "random.door_open", 1.0F, world.random.NextFloat() * 0.1F + 0.9F);
+                    world.playSound(var3 + 0.5D, var4 + 0.5D, var5 + 0.5D, "random.door_open", 1.0F, world.random.NextFloat() * 0.1F + 0.9F);
                 }
                 else
                 {
-                    world.PlaySound(var3 + 0.5D, var4 + 0.5D, var5 + 0.5D, "random.door_close", 1.0F, world.random.NextFloat() * 0.1F + 0.9F);
+                    world.playSound(var3 + 0.5D, var4 + 0.5D, var5 + 0.5D, "random.door_close", 1.0F, world.random.NextFloat() * 0.1F + 0.9F);
                 }
                 break;
             case 1004:
-                world.PlaySound((double)(var3 + 0.5F), (double)(var4 + 0.5F), (double)(var5 + 0.5F), "random.fizz", 0.5F, 2.6F + (var7.NextFloat() - var7.NextFloat()) * 0.8F);
+                world.playSound((double)(var3 + 0.5F), (double)(var4 + 0.5F), (double)(var5 + 0.5F), "random.fizz", 0.5F, 2.6F + (var7.NextFloat() - var7.NextFloat()) * 0.8F);
                 break;
             case 1005:
                 if (Item.ITEMS[var6] is ItemRecord)
                 {
-                    world.PlayStreaming(((ItemRecord)Item.ITEMS[var6]).recordName, var3, var4, var5);
+                    world.playStreaming(((ItemRecord)Item.ITEMS[var6]).recordName, var3, var4, var5);
                 }
                 else
                 {
-                    world.PlayStreaming(null, var3, var4, var5);
+                    world.playStreaming(null, var3, var4, var5);
                 }
                 break;
             case 2000:

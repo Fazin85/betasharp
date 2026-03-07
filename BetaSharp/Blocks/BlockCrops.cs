@@ -22,19 +22,19 @@ internal class BlockCrops : BlockPlant
         return id == Block.Farmland.id;
     }
 
-    public override void onTick(World world, int x, int y, int z, JavaRandom random)
+    public override void onTick(WorldBlockView worldView, int x, int y, int z, JavaRandom random, WorldEventBroadcaster broadcaster, bool isRemote)
     {
-        base.onTick(world, x, y, z, random);
-        if (world.Lighting.GetLightLevel(x, y + 1, z) >= 9)
+        base.onTick(worldView, x, y, z, random, broadcaster, isRemote);
+        if (worldView.getLightLevel(x, y + 1, z) >= 9)
         {
-            int meta = world.GetBlockMeta(x, y, z);
+            int meta = worldView.getBlockMeta(x, y, z);
             if (meta < 7)
             {
-                float var7 = getAvailableMoisture(world, x, y, z);
+                float var7 = getAvailableMoisture(worldView, x, y, z);
                 if (random.NextInt((int)(100.0F / var7)) == 0)
                 {
                     ++meta;
-                    world.setBlockMeta(x, y, z, meta);
+                    worldView.setBlockMeta(x, y, z, meta);
                 }
             }
         }
@@ -49,14 +49,14 @@ internal class BlockCrops : BlockPlant
     private float getAvailableMoisture(World world, int x, int y, int z)
     {
         float totalMoisture = 1.0F;
-        int blockNorth = world.GetBlockId(x, y, z - 1);
-        int blockSouth = world.GetBlockId(x, y, z + 1);
-        int blockWest = world.GetBlockId(x - 1, y, z);
-        int blockEast = world.GetBlockId(x + 1, y, z);
-        int blockNorthWest = world.GetBlockId(x - 1, y, z - 1);
-        int blockNorthEast = world.GetBlockId(x + 1, y, z - 1);
-        int blockSouthEast = world.GetBlockId(x + 1, y, z + 1);
-        int blockSouthWest = world.GetBlockId(x - 1, y, z + 1);
+        int blockNorth = world.getBlockId(x, y, z - 1);
+        int blockSouth = world.getBlockId(x, y, z + 1);
+        int blockWest = world.getBlockId(x - 1, y, z);
+        int blockEast = world.getBlockId(x + 1, y, z);
+        int blockNorthWest = world.getBlockId(x - 1, y, z - 1);
+        int blockNorthEast = world.getBlockId(x + 1, y, z - 1);
+        int blockSouthEast = world.getBlockId(x + 1, y, z + 1);
+        int blockSouthWest = world.getBlockId(x - 1, y, z + 1);
         bool cropsEastWest = blockWest == id || blockEast == id;
         bool cropsNorthSouth = blockNorth == id || blockSouth == id;
         bool cropsDiagonals = blockNorthWest == id || blockNorthEast == id || blockSouthEast == id || blockSouthWest == id;
@@ -65,12 +65,12 @@ internal class BlockCrops : BlockPlant
         {
             for (int dz = z - 1; dz <= z + 1; ++dz)
             {
-                int blockBelow = world.GetBlockId(dx, y - 1, dz);
+                int blockBelow = world.getBlockId(dx, y - 1, dz);
                 float cellMoisture = 0.0F;
                 if (blockBelow == Block.Farmland.id)
                 {
                     cellMoisture = 1.0F;
-                    if (world.GetBlockMeta(dx, y - 1, dz) > 0)
+                    if (world.getBlockMeta(dx, y - 1, dz) > 0)
                     {
                         cellMoisture = 3.0F;
                     }
@@ -108,10 +108,10 @@ internal class BlockCrops : BlockPlant
         return BlockRendererType.Crops;
     }
 
-    public override void dropStacks(World world, int x, int y, int z, int meta, float luck)
+    public override void dropStacks(WorldBlockView world, int x, int y, int z, int meta, float luck)
     {
         base.dropStacks(world, x, y, z, meta, luck);
-        if (!world.IsRemote && world.Rules.GetBool(DefaultRules.DoTileDrops))
+        if (!world.isRemote && world.Rules.GetBool(DefaultRules.DoTileDrops))
         {
             for (int attempt = 0; attempt < 3; ++attempt)
             {
@@ -123,7 +123,7 @@ internal class BlockCrops : BlockPlant
                     float offsetZ = world.random.NextFloat() * spreadFactor + (1.0F - spreadFactor) * 0.5F;
                     EntityItem entityItem = new EntityItem(world, (double)((float)x + offsetX), (double)((float)y + offsetY), (double)((float)z + offsetZ), new ItemStack(Item.Seeds));
                     entityItem.delayBeforeCanPickup = 10;
-                    world.Entities.SpawnEntity(entityItem);
+                    world.SpawnEntity(entityItem);
                 }
             }
 

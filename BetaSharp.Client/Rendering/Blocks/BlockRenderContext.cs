@@ -8,7 +8,8 @@ namespace BetaSharp.Client.Rendering.Blocks;
 
 public ref struct BlockRenderContext
 {
-    public readonly IBlockAccess World;
+    public readonly IBlockReader World;
+    public readonly LightingEngine Lighting;
     public readonly Tessellator Tess;
 
     public int OverrideTexture;
@@ -30,7 +31,7 @@ public ref struct BlockRenderContext
     public bool CustomFlag;
 
     public BlockRenderContext(
-        IBlockAccess world, Tessellator tess,
+        IBlockReader world, Tessellator tess,
         int overrideTexture = -1, bool renderAllFaces = false,
         bool flipTexture = false, Box? bounds = null,
         int uvTop = 0, int uvBottom = 0,
@@ -449,7 +450,7 @@ public ref struct BlockRenderContext
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private readonly bool IsOpaque(int x, int y, int z) => !Block.BlocksAllowVision[World.GetBlockId(x, y, z)];
+    private readonly bool IsOpaque(int x, int y, int z) => !Block.BlocksAllowVision[World.getBlockId(x, y, z)];
 
     internal readonly bool DrawBlock(in Block block, in BlockPos pos)
     {
@@ -476,19 +477,19 @@ public ref struct BlockRenderContext
         // BOTTOM FACE (Y - 1)
         if (RenderAllFaces || bounds.MinY > 0.0F || block.isSideVisible(World, pos.x, pos.y - 1, pos.z, 0))
         {
-            float lYn = block.getLuminance(World, pos.x, pos.y - 1, pos.z);
+            float lYn = block.getLuminance(Lighting, pos.x, pos.y - 1, pos.z);
             if (!ao) v0 = v1 = v2 = v3 = lYn;
             else
             {
-                float n = block.getLuminance(World, pos.x, pos.y - 1, pos.z - 1);
-                float s = block.getLuminance(World, pos.x, pos.y - 1, pos.z + 1);
-                float w = block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z);
-                float e = block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z);
+                float n = block.getLuminance(Lighting, pos.x, pos.y - 1, pos.z - 1);
+                float s = block.getLuminance(Lighting, pos.x, pos.y - 1, pos.z + 1);
+                float w = block.getLuminance(Lighting, pos.x - 1, pos.y - 1, pos.z);
+                float e = block.getLuminance(Lighting, pos.x + 1, pos.y - 1, pos.z);
 
-                float nw = (IsOpaque(pos.x - 1, pos.y - 1, pos.z) && IsOpaque(pos.x, pos.y - 1, pos.z - 1)) ? w : block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z - 1);
-                float sw = (IsOpaque(pos.x - 1, pos.y - 1, pos.z) && IsOpaque(pos.x, pos.y - 1, pos.z + 1)) ? w : block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z + 1);
-                float ne = (IsOpaque(pos.x + 1, pos.y - 1, pos.z) && IsOpaque(pos.x, pos.y - 1, pos.z - 1)) ? e : block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z - 1);
-                float se = (IsOpaque(pos.x + 1, pos.y - 1, pos.z) && IsOpaque(pos.x, pos.y - 1, pos.z + 1)) ? e : block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z + 1);
+                float nw = (IsOpaque(pos.x - 1, pos.y - 1, pos.z) && IsOpaque(pos.x, pos.y - 1, pos.z - 1)) ? w : block.getLuminance(Lighting, pos.x - 1, pos.y - 1, pos.z - 1);
+                float sw = (IsOpaque(pos.x - 1, pos.y - 1, pos.z) && IsOpaque(pos.x, pos.y - 1, pos.z + 1)) ? w : block.getLuminance(Lighting, pos.x - 1, pos.y - 1, pos.z + 1);
+                float ne = (IsOpaque(pos.x + 1, pos.y - 1, pos.z) && IsOpaque(pos.x, pos.y - 1, pos.z - 1)) ? e : block.getLuminance(Lighting, pos.x + 1, pos.y - 1, pos.z - 1);
+                float se = (IsOpaque(pos.x + 1, pos.y - 1, pos.z) && IsOpaque(pos.x, pos.y - 1, pos.z + 1)) ? e : block.getLuminance(Lighting, pos.x + 1, pos.y - 1, pos.z + 1);
 
                 v0 = (sw + w + s + lYn) * 0.25F;
                 v1 = (w + nw + lYn + n) * 0.25F;
@@ -507,19 +508,19 @@ public ref struct BlockRenderContext
         // TOP FACE (Y + 1)
         if (RenderAllFaces || bounds.MaxY < 1.0F || block.isSideVisible(World, pos.x, pos.y + 1, pos.z, 1))
         {
-            float lYp = block.getLuminance(World, pos.x, pos.y + 1, pos.z);
+            float lYp = block.getLuminance(Lighting, pos.x, pos.y + 1, pos.z);
             if (!ao) v0 = v1 = v2 = v3 = lYp;
             else
             {
-                float n = block.getLuminance(World, pos.x, pos.y + 1, pos.z - 1);
-                float s = block.getLuminance(World, pos.x, pos.y + 1, pos.z + 1);
-                float w = block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z);
-                float e = block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z);
+                float n = block.getLuminance(Lighting, pos.x, pos.y + 1, pos.z - 1);
+                float s = block.getLuminance(Lighting, pos.x, pos.y + 1, pos.z + 1);
+                float w = block.getLuminance(Lighting, pos.x - 1, pos.y + 1, pos.z);
+                float e = block.getLuminance(Lighting, pos.x + 1, pos.y + 1, pos.z);
 
-                float nw = (IsOpaque(pos.x - 1, pos.y + 1, pos.z) && IsOpaque(pos.x, pos.y + 1, pos.z - 1)) ? w : block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z - 1);
-                float sw = (IsOpaque(pos.x - 1, pos.y + 1, pos.z) && IsOpaque(pos.x, pos.y + 1, pos.z + 1)) ? w : block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z + 1);
-                float ne = (IsOpaque(pos.x + 1, pos.y + 1, pos.z) && IsOpaque(pos.x, pos.y + 1, pos.z - 1)) ? e : block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z - 1);
-                float se = (IsOpaque(pos.x + 1, pos.y + 1, pos.z) && IsOpaque(pos.x, pos.y + 1, pos.z + 1)) ? e : block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z + 1);
+                float nw = (IsOpaque(pos.x - 1, pos.y + 1, pos.z) && IsOpaque(pos.x, pos.y + 1, pos.z - 1)) ? w : block.getLuminance(Lighting, pos.x - 1, pos.y + 1, pos.z - 1);
+                float sw = (IsOpaque(pos.x - 1, pos.y + 1, pos.z) && IsOpaque(pos.x, pos.y + 1, pos.z + 1)) ? w : block.getLuminance(Lighting, pos.x - 1, pos.y + 1, pos.z + 1);
+                float ne = (IsOpaque(pos.x + 1, pos.y + 1, pos.z) && IsOpaque(pos.x, pos.y + 1, pos.z - 1)) ? e : block.getLuminance(Lighting, pos.x + 1, pos.y + 1, pos.z - 1);
+                float se = (IsOpaque(pos.x + 1, pos.y + 1, pos.z) && IsOpaque(pos.x, pos.y + 1, pos.z + 1)) ? e : block.getLuminance(Lighting, pos.x + 1, pos.y + 1, pos.z + 1);
 
                 v0 = (s + lYp + se + e) * 0.25F;
                 v1 = (lYp + n + e + ne) * 0.25F;
@@ -538,19 +539,19 @@ public ref struct BlockRenderContext
         // EAST FACE (Z - 1)
         if (RenderAllFaces || bounds.MinZ > 0.0F || block.isSideVisible(World, pos.x, pos.y, pos.z - 1, 2))
         {
-            float lZn = block.getLuminance(World, pos.x, pos.y, pos.z - 1);
+            float lZn = block.getLuminance(Lighting, pos.x, pos.y, pos.z - 1);
             if (!ao) v0 = v1 = v2 = v3 = lZn;
             else
             {
-                float u = block.getLuminance(World, pos.x, pos.y + 1, pos.z - 1);
-                float d = block.getLuminance(World, pos.x, pos.y - 1, pos.z - 1);
-                float w = block.getLuminance(World, pos.x - 1, pos.y, pos.z - 1);
-                float e = block.getLuminance(World, pos.x + 1, pos.y, pos.z - 1);
+                float u = block.getLuminance(Lighting, pos.x, pos.y + 1, pos.z - 1);
+                float d = block.getLuminance(Lighting, pos.x, pos.y - 1, pos.z - 1);
+                float w = block.getLuminance(Lighting, pos.x - 1, pos.y, pos.z - 1);
+                float e = block.getLuminance(Lighting, pos.x + 1, pos.y, pos.z - 1);
 
-                float uw = (IsOpaque(pos.x - 1, pos.y, pos.z - 1) && IsOpaque(pos.x, pos.y + 1, pos.z - 1)) ? w : block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z - 1);
-                float dw = (IsOpaque(pos.x - 1, pos.y, pos.z - 1) && IsOpaque(pos.x, pos.y - 1, pos.z - 1)) ? w : block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z - 1);
-                float ue = (IsOpaque(pos.x + 1, pos.y, pos.z - 1) && IsOpaque(pos.x, pos.y + 1, pos.z - 1)) ? e : block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z - 1);
-                float de = (IsOpaque(pos.x + 1, pos.y, pos.z - 1) && IsOpaque(pos.x, pos.y - 1, pos.z - 1)) ? e : block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z - 1);
+                float uw = (IsOpaque(pos.x - 1, pos.y, pos.z - 1) && IsOpaque(pos.x, pos.y + 1, pos.z - 1)) ? w : block.getLuminance(Lighting, pos.x - 1, pos.y + 1, pos.z - 1);
+                float dw = (IsOpaque(pos.x - 1, pos.y, pos.z - 1) && IsOpaque(pos.x, pos.y - 1, pos.z - 1)) ? w : block.getLuminance(Lighting, pos.x - 1, pos.y - 1, pos.z - 1);
+                float ue = (IsOpaque(pos.x + 1, pos.y, pos.z - 1) && IsOpaque(pos.x, pos.y + 1, pos.z - 1)) ? e : block.getLuminance(Lighting, pos.x + 1, pos.y + 1, pos.z - 1);
+                float de = (IsOpaque(pos.x + 1, pos.y, pos.z - 1) && IsOpaque(pos.x, pos.y - 1, pos.z - 1)) ? e : block.getLuminance(Lighting, pos.x + 1, pos.y - 1, pos.z - 1);
 
                 v0 = (w + uw + lZn + u) * 0.25F;
                 v1 = (lZn + u + e + ue) * 0.25F;
@@ -576,19 +577,19 @@ public ref struct BlockRenderContext
         // WEST FACE (Z + 1)
         if (RenderAllFaces || bounds.MaxZ < 1.0F || block.isSideVisible(World, pos.x, pos.y, pos.z + 1, 3))
         {
-            float lZp = block.getLuminance(World, pos.x, pos.y, pos.z + 1);
+            float lZp = block.getLuminance(Lighting, pos.x, pos.y, pos.z + 1);
             if (!ao) v0 = v1 = v2 = v3 = lZp;
             else
             {
-                float u = block.getLuminance(World, pos.x, pos.y + 1, pos.z + 1);
-                float d = block.getLuminance(World, pos.x, pos.y - 1, pos.z + 1);
-                float w = block.getLuminance(World, pos.x - 1, pos.y, pos.z + 1);
-                float e = block.getLuminance(World, pos.x + 1, pos.y, pos.z + 1);
+                float u = block.getLuminance(Lighting, pos.x, pos.y + 1, pos.z + 1);
+                float d = block.getLuminance(Lighting, pos.x, pos.y - 1, pos.z + 1);
+                float w = block.getLuminance(Lighting, pos.x - 1, pos.y, pos.z + 1);
+                float e = block.getLuminance(Lighting, pos.x + 1, pos.y, pos.z + 1);
 
-                float uw = (IsOpaque(pos.x - 1, pos.y, pos.z + 1) && IsOpaque(pos.x, pos.y + 1, pos.z + 1)) ? w : block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z + 1);
-                float dw = (IsOpaque(pos.x - 1, pos.y, pos.z + 1) && IsOpaque(pos.x, pos.y - 1, pos.z + 1)) ? w : block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z + 1);
-                float ue = (IsOpaque(pos.x + 1, pos.y, pos.z + 1) && IsOpaque(pos.x, pos.y + 1, pos.z + 1)) ? e : block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z + 1);
-                float de = (IsOpaque(pos.x + 1, pos.y, pos.z + 1) && IsOpaque(pos.x, pos.y - 1, pos.z + 1)) ? e : block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z + 1);
+                float uw = (IsOpaque(pos.x - 1, pos.y, pos.z + 1) && IsOpaque(pos.x, pos.y + 1, pos.z + 1)) ? w : block.getLuminance(Lighting, pos.x - 1, pos.y + 1, pos.z + 1);
+                float dw = (IsOpaque(pos.x - 1, pos.y, pos.z + 1) && IsOpaque(pos.x, pos.y - 1, pos.z + 1)) ? w : block.getLuminance(Lighting, pos.x - 1, pos.y - 1, pos.z + 1);
+                float ue = (IsOpaque(pos.x + 1, pos.y, pos.z + 1) && IsOpaque(pos.x, pos.y + 1, pos.z + 1)) ? e : block.getLuminance(Lighting, pos.x + 1, pos.y + 1, pos.z + 1);
+                float de = (IsOpaque(pos.x + 1, pos.y, pos.z + 1) && IsOpaque(pos.x, pos.y - 1, pos.z + 1)) ? e : block.getLuminance(Lighting, pos.x + 1, pos.y - 1, pos.z + 1);
 
                 v0 = (w + uw + lZp + u) * 0.25F;
                 v1 = (dw + w + d + lZp) * 0.25F;
@@ -614,19 +615,19 @@ public ref struct BlockRenderContext
         // NORTH FACE (X - 1)
         if (RenderAllFaces || bounds.MinX > 0.0F || block.isSideVisible(World, pos.x - 1, pos.y, pos.z, 4))
         {
-            float lXn = block.getLuminance(World, pos.x - 1, pos.y, pos.z);
+            float lXn = block.getLuminance(Lighting, pos.x - 1, pos.y, pos.z);
             if (!ao) v0 = v1 = v2 = v3 = lXn;
             else
             {
-                float u = block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z);
-                float d = block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z);
-                float n = block.getLuminance(World, pos.x - 1, pos.y, pos.z - 1);
-                float s = block.getLuminance(World, pos.x - 1, pos.y, pos.z + 1);
+                float u = block.getLuminance(Lighting, pos.x - 1, pos.y + 1, pos.z);
+                float d = block.getLuminance(Lighting, pos.x - 1, pos.y - 1, pos.z);
+                float n = block.getLuminance(Lighting, pos.x - 1, pos.y, pos.z - 1);
+                float s = block.getLuminance(Lighting, pos.x - 1, pos.y, pos.z + 1);
 
-                float un = (IsOpaque(pos.x - 1, pos.y, pos.z - 1) && IsOpaque(pos.x - 1, pos.y + 1, pos.z)) ? n : block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z - 1);
-                float dn = (IsOpaque(pos.x - 1, pos.y, pos.z - 1) && IsOpaque(pos.x - 1, pos.y - 1, pos.z)) ? n : block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z - 1);
-                float us = (IsOpaque(pos.x - 1, pos.y, pos.z + 1) && IsOpaque(pos.x - 1, pos.y + 1, pos.z)) ? s : block.getLuminance(World, pos.x - 1, pos.y + 1, pos.z + 1);
-                float ds = (IsOpaque(pos.x - 1, pos.y, pos.z + 1) && IsOpaque(pos.x - 1, pos.y - 1, pos.z)) ? s : block.getLuminance(World, pos.x - 1, pos.y - 1, pos.z + 1);
+                float un = (IsOpaque(pos.x - 1, pos.y, pos.z - 1) && IsOpaque(pos.x - 1, pos.y + 1, pos.z)) ? n : block.getLuminance(Lighting, pos.x - 1, pos.y + 1, pos.z - 1);
+                float dn = (IsOpaque(pos.x - 1, pos.y, pos.z - 1) && IsOpaque(pos.x - 1, pos.y - 1, pos.z)) ? n : block.getLuminance(Lighting, pos.x - 1, pos.y - 1, pos.z - 1);
+                float us = (IsOpaque(pos.x - 1, pos.y, pos.z + 1) && IsOpaque(pos.x - 1, pos.y + 1, pos.z)) ? s : block.getLuminance(Lighting, pos.x - 1, pos.y + 1, pos.z + 1);
+                float ds = (IsOpaque(pos.x - 1, pos.y, pos.z + 1) && IsOpaque(pos.x - 1, pos.y - 1, pos.z)) ? s : block.getLuminance(Lighting, pos.x - 1, pos.y - 1, pos.z + 1);
 
                 v0 = (u + us + lXn + s) * 0.25F;
                 v1 = (u + un + n + lXn) * 0.25F;
@@ -652,19 +653,19 @@ public ref struct BlockRenderContext
         // SOUTH FACE (X + 1)
         if (RenderAllFaces || bounds.MaxX < 1.0F || block.isSideVisible(World, pos.x + 1, pos.y, pos.z, 5))
         {
-            float lXp = block.getLuminance(World, pos.x + 1, pos.y, pos.z);
+            float lXp = block.getLuminance(Lighting, pos.x + 1, pos.y, pos.z);
             if (!ao) v0 = v1 = v2 = v3 = lXp;
             else
             {
-                float u = block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z);
-                float d = block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z);
-                float n = block.getLuminance(World, pos.x + 1, pos.y, pos.z - 1);
-                float s = block.getLuminance(World, pos.x + 1, pos.y, pos.z + 1);
+                float u = block.getLuminance(Lighting, pos.x + 1, pos.y + 1, pos.z);
+                float d = block.getLuminance(Lighting, pos.x + 1, pos.y - 1, pos.z);
+                float n = block.getLuminance(Lighting, pos.x + 1, pos.y, pos.z - 1);
+                float s = block.getLuminance(Lighting, pos.x + 1, pos.y, pos.z + 1);
 
-                float un = (IsOpaque(pos.x + 1, pos.y, pos.z - 1) && IsOpaque(pos.x + 1, pos.y + 1, pos.z)) ? n : block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z - 1);
-                float dn = (IsOpaque(pos.x + 1, pos.y, pos.z - 1) && IsOpaque(pos.x + 1, pos.y - 1, pos.z)) ? n : block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z - 1);
-                float us = (IsOpaque(pos.x + 1, pos.y, pos.z + 1) && IsOpaque(pos.x + 1, pos.y + 1, pos.z)) ? s : block.getLuminance(World, pos.x + 1, pos.y + 1, pos.z + 1);
-                float ds = (IsOpaque(pos.x + 1, pos.y, pos.z + 1) && IsOpaque(pos.x + 1, pos.y - 1, pos.z)) ? s : block.getLuminance(World, pos.x + 1, pos.y - 1, pos.z + 1);
+                float un = (IsOpaque(pos.x + 1, pos.y, pos.z - 1) && IsOpaque(pos.x + 1, pos.y + 1, pos.z)) ? n : block.getLuminance(Lighting, pos.x + 1, pos.y + 1, pos.z - 1);
+                float dn = (IsOpaque(pos.x + 1, pos.y, pos.z - 1) && IsOpaque(pos.x + 1, pos.y - 1, pos.z)) ? n : block.getLuminance(Lighting, pos.x + 1, pos.y - 1, pos.z - 1);
+                float us = (IsOpaque(pos.x + 1, pos.y, pos.z + 1) && IsOpaque(pos.x + 1, pos.y + 1, pos.z)) ? s : block.getLuminance(Lighting, pos.x + 1, pos.y + 1, pos.z + 1);
+                float ds = (IsOpaque(pos.x + 1, pos.y, pos.z + 1) && IsOpaque(pos.x + 1, pos.y - 1, pos.z)) ? s : block.getLuminance(Lighting, pos.x + 1, pos.y - 1, pos.z + 1);
 
                 v0 = (d + ds + lXp + s) * 0.25F;
                 v1 = (n + lXp + dn + d) * 0.25F;

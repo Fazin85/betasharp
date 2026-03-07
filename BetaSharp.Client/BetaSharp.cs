@@ -1162,7 +1162,7 @@ public partial class BetaSharp
     {
         if (objectMouseOver.Type != HitResultType.MISS)
         {
-            int blockId = world.GetBlockId(objectMouseOver.BlockX, objectMouseOver.BlockY, objectMouseOver.BlockZ);
+            int blockId = world.getBlockId(objectMouseOver.BlockX, objectMouseOver.BlockY, objectMouseOver.BlockZ);
             if (blockId == Block.GrassBlock.id)
             {
                 blockId = Block.Dirt.id;
@@ -1238,7 +1238,7 @@ public partial class BetaSharp
             {
                 displayGuiScreen((GuiScreen)null);
             }
-            else if (player.isSleeping() && world != null && world.IsRemote)
+            else if (player.isSleeping() && world != null && world.isRemote)
             {
                 displayGuiScreen(new GuiSleepMP());
             }
@@ -1281,15 +1281,15 @@ public partial class BetaSharp
                 }
             }
 
-            world.Difficulty = options.Difficulty;
+            world.difficulty = options.Difficulty;
             if (internalServer != null)
             {
                 internalServer.SetDifficulty(options.Difficulty);
             }
 
-            if (world.IsRemote)
+            if (world.isRemote)
             {
-                world.Difficulty = 3;
+                world.difficulty = 3;
             }
 
             Profiler.Start("entityRendererUpdate");
@@ -1535,7 +1535,7 @@ public partial class BetaSharp
 
     public bool isMultiplayerWorld()
     {
-        return world != null && world.IsRemote;
+        return world != null && world.isRemote;
     }
 
     public void startWorld(string worldName, string mainMenuText, long seed)
@@ -1630,7 +1630,7 @@ public partial class BetaSharp
             for (int zOffset = -loadingRadius; zOffset <= loadingRadius; zOffset += 16)
             {
                 loadingScreen.setLoadingProgress(loadedChunkCount++ * 100 / totalChunksToLoad);
-                world.GetBlockId(centerPos.X + xOffset, 64, centerPos.Z + zOffset);
+                world.getBlockId(centerPos.X + xOffset, 64, centerPos.Z + zOffset);
 
                 while (world.Lighting.DoLightingUpdates())
                 {

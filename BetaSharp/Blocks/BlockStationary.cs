@@ -16,10 +16,10 @@ internal class BlockStationary : BlockFluid
 
     }
 
-    public override void neighborUpdate(World world, int x, int y, int z, int id)
+    public override void neighborUpdate(WorldBlockView world, int x, int y, int z, int id)
     {
         base.neighborUpdate(world, x, y, z, id);
-        if (world.GetBlockId(x, y, z) == base.id)
+        if (world.getBlockId(x, y, z) == base.id)
         {
             convertToFlowing(world, x, y, z);
         }
@@ -28,15 +28,15 @@ internal class BlockStationary : BlockFluid
 
     private void convertToFlowing(World world, int x, int y, int z)
     {
-        int meta = world.GetBlockMeta(x, y, z);
+        int meta = world.getBlockMeta(x, y, z);
         world.pauseTicking = true;
-        world.SetBlockWithoutNotifyingNeighbors(x, y, z, id - 1, meta);
-        world.SetBlocksDirty(x, y, z, x, y, z);
-        world.TickScheduler.ScheduleBlockUpdate(x, y, z, id - 1, getTickRate());
+        world.setBlockWithoutNotifyingNeighbors(x, y, z, id - 1, meta);
+        world.setBlocksDirty(x, y, z, x, y, z);
+        world.ScheduleBlockUpdate(x, y, z, id - 1, getTickRate());
         world.pauseTicking = false;
     }
 
-    public override void onTick(World world, int x, int y, int z, JavaRandom random)
+    public override void onTick(WorldBlockView worldView, int x, int y, int z, JavaRandom random, WorldEventBroadcaster broadcaster, bool isRemote)
     {
         if (material == Material.Lava)
         {
@@ -47,12 +47,12 @@ internal class BlockStationary : BlockFluid
                 x += random.NextInt(3) - 1;
                 ++y;
                 z += random.NextInt(3) - 1;
-                int neighborBlockId = world.GetBlockId(x, y, z);
+                int neighborBlockId = worldView.getBlockId(x, y, z);
                 if (neighborBlockId == 0)
                 {
-                    if (isFlammable(world, x - 1, y, z) || isFlammable(world, x + 1, y, z) || isFlammable(world, x, y, z - 1) || isFlammable(world, x, y, z + 1) || isFlammable(world, x, y - 1, z) || isFlammable(world, x, y + 1, z))
+                    if (isFlammable(worldView, x - 1, y, z) || isFlammable(worldView, x + 1, y, z) || isFlammable(worldView, x, y, z - 1) || isFlammable(worldView, x, y, z + 1) || isFlammable(worldView, x, y - 1, z) || isFlammable(worldView, x, y + 1, z))
                     {
-                        world.SetBlock(x, y, z, Block.Fire.id);
+                        worldView.setBlock(x, y, z, Block.Fire.id);
                         return;
                     }
                 }
@@ -67,6 +67,6 @@ internal class BlockStationary : BlockFluid
 
     private bool isFlammable(World world, int x, int y, int z)
     {
-        return world.GetMaterial(x, y, z).IsBurnable;
+        return world.getMaterial(x, y, z).IsBurnable;
     }
 }

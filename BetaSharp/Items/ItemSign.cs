@@ -20,7 +20,7 @@ internal class ItemSign : Item
         {
             return false;
         }
-        else if (!world.GetMaterial(x, y, z).IsSolid)
+        else if (!world.getMaterial(x, y, z).IsSolid)
         {
             return false;
         }
@@ -51,7 +51,7 @@ internal class ItemSign : Item
                 ++x;
             }
 
-            if (!Block.Sign.canPlaceAt(world, x, y, z))
+            if (!Block.Sign.canPlaceAt(world.Blocks, x, y, z))
             {
                 return false;
             }
@@ -59,15 +59,15 @@ internal class ItemSign : Item
             {
                 if (meta == 1)
                 {
-                    world.SetBlock(x, y, z, Block.Sign.id, MathHelper.Floor((double)((entityPlayer.yaw + 180.0F) * 16.0F / 360.0F) + 0.5D) & 15);
+                    world.setBlock(x, y, z, Block.Sign.id, MathHelper.Floor((double)((entityPlayer.yaw + 180.0F) * 16.0F / 360.0F) + 0.5D) & 15);
                 }
                 else
                 {
-                    world.SetBlock(x, y, z, Block.WallSign.id, meta);
+                    world.setBlock(x, y, z, Block.WallSign.id, meta);
                 }
 
                 --itemStack.count;
-                BlockEntitySign blockEntitySign = (BlockEntitySign)world.GetBlockEntity(x, y, z);
+                BlockEntitySign blockEntitySign = (BlockEntitySign)world.getBlockEntity(x, y, z);
                 if (blockEntitySign != null)
                 {
                     entityPlayer.openEditSignScreen(blockEntitySign);

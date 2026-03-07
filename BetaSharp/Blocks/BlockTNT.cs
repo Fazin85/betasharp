@@ -20,20 +20,20 @@ internal class BlockTNT : Block
     public override void onPlaced(World world, int x, int y, int z)
     {
         base.onPlaced(world, x, y, z);
-        if (world.Redstone.IsPowered(x, y, z))
+        if (world.isPowered(x, y, z))
         {
             onMetadataChange(world, x, y, z, 1);
-            world.SetBlock(x, y, z, 0);
+            world.setBlock(x, y, z, 0);
         }
 
     }
 
-    public override void neighborUpdate(World world, int x, int y, int z, int id)
+    public override void neighborUpdate(WorldBlockView world, int x, int y, int z, int id)
     {
-        if (id > 0 && Block.Blocks[id].canEmitRedstonePower() && world.Redstone.IsPowered(x, y, z))
+        if (id > 0 && Block.Blocks[id].canEmitRedstonePower() && world.isPowered(x, y, z))
         {
             onMetadataChange(world, x, y, z, 1);
-            world.SetBlock(x, y, z, 0);
+            world.setBlock(x, y, z, 0);
         }
 
     }
@@ -47,12 +47,12 @@ internal class BlockTNT : Block
     {
         EntityTNTPrimed entityTNTPrimed = new EntityTNTPrimed(world, (double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F));
         entityTNTPrimed.fuse = world.random.NextInt(entityTNTPrimed.fuse / 4) + entityTNTPrimed.fuse / 8;
-        world.Entities.SpawnEntity(entityTNTPrimed);
+        world.SpawnEntity(entityTNTPrimed);
     }
 
     public override void onMetadataChange(World world, int x, int y, int z, int meta)
     {
-        if (!world.IsRemote)
+        if (!world.isRemote)
         {
             if ((meta & 1) == 0)
             {
@@ -61,8 +61,8 @@ internal class BlockTNT : Block
             else
             {
                 EntityTNTPrimed entityTNTPrimed = new EntityTNTPrimed(world, (double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F));
-                world.Entities.SpawnEntity(entityTNTPrimed);
-                world.PlaySound(entityTNTPrimed, "random.fuse", 1.0F, 1.0F);
+                world.SpawnEntity(entityTNTPrimed);
+                world.playSound(entityTNTPrimed, "random.fuse", 1.0F, 1.0F);
             }
 
         }

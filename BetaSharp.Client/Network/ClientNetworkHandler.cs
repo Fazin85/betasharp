@@ -95,7 +95,7 @@ public class ClientNetworkHandler : NetHandler
         _game.statFileWriter.ReadStat(Stats.Stats.JoinMultiplayerStat, 1);
         worldClient = new ClientWorld(this, packet.worldSeed, packet.dimensionId)
         {
-            IsRemote = true
+            isRemote = true
         };
         _game.changeWorld(worldClient);
         _game.player.dimensionId = packet.dimensionId;
@@ -387,7 +387,7 @@ public class ClientNetworkHandler : NetHandler
             int blockY = positions & 255;
             chunk.SetBlock(blockX, blockY, blockZ, blockRawId, metadata);
             worldClient.ClearBlockResets(blockX + x, blockY, blockZ + y, blockX + x, blockY, blockZ + y);
-            worldClient.SetBlocksDirty(blockX + x, blockY, blockZ + y, blockX + x, blockY, blockZ + y);
+            worldClient.setBlocksDirty(blockX + x, blockY, blockZ + y, blockX + x, blockY, blockZ + y);
         }
 
     }
@@ -445,7 +445,7 @@ public class ClientNetworkHandler : NetHandler
 
         if (ent != null && collector != null)
         {
-            worldClient.PlaySound(ent, "random.pop", 0.2F, ((rand.NextFloat() - rand.NextFloat()) * 0.7F + 1.0F) * 2.0F);
+            worldClient.playSound(ent, "random.pop", 0.2F, ((rand.NextFloat() - rand.NextFloat()) * 0.7F + 1.0F) * 2.0F);
             _game.particleManager.addEffect(new EntityPickupFX(_game.world, ent, collector, -0.5F));
             worldClient.RemoveEntityFromWorld(packet.entityId);
         }
@@ -619,7 +619,7 @@ public class ClientNetworkHandler : NetHandler
             terrainLoaded = false;
             worldClient = new ClientWorld(this, worldClient.Properties.RandomSeed, packet.dimensionId)
             {
-                IsRemote = true
+                isRemote = true
             };
             _game.changeWorld(worldClient);
             _game.player.dimensionId = packet.dimensionId;
@@ -732,9 +732,9 @@ public class ClientNetworkHandler : NetHandler
 
     public override void handleUpdateSign(UpdateSignPacket packet)
     {
-        if (_game.world.IsPosLoaded(packet.x, packet.y, packet.z))
+        if (_game.world.isPosLoaded(packet.x, packet.y, packet.z))
         {
-            BlockEntity blockEnt = _game.world.GetBlockEntity(packet.x, packet.y, packet.z);
+            BlockEntity blockEnt = _game.world.getBlockEntity(packet.x, packet.y, packet.z);
             if (blockEnt is BlockEntitySign)
             {
                 BlockEntitySign signEntity = (BlockEntitySign)blockEnt;
@@ -777,7 +777,7 @@ public class ClientNetworkHandler : NetHandler
 
     public override void onPlayNoteSound(PlayNoteSoundS2CPacket packet)
     {
-        _game.world.PlayNoteBlockActionAt(packet.xLocation, packet.yLocation, packet.zLocation, packet.instrumentType, packet.pitch);
+        _game.world.playNoteBlockActionAt(packet.xLocation, packet.yLocation, packet.zLocation, packet.instrumentType, packet.pitch);
     }
 
     public override void onGameStateChange(GameStateChangeS2CPacket packet)
@@ -825,7 +825,7 @@ public class ClientNetworkHandler : NetHandler
 
     public override void onWorldEvent(WorldEventS2CPacket packet)
     {
-        _game.world.WorldEvent(packet.eventId, packet.x, packet.y, packet.z, packet.data);
+        _game.world.worldEvent(packet.eventId, packet.x, packet.y, packet.z, packet.data);
     }
 
     public override void onIncreaseStat(IncreaseStatS2CPacket packet)

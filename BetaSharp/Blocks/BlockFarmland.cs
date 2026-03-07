@@ -16,7 +16,7 @@ internal class BlockFarmland : Block
         setOpacity(255);
     }
 
-    public override Box? getCollisionShape(World world, int x, int y, int z)
+    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
     {
         return new Box((double)(x + 0), (double)(y + 0), (double)(z + 0), (double)(x + 1), (double)(y + 1), (double)(z + 1));
     }
@@ -36,25 +36,25 @@ internal class BlockFarmland : Block
         return side == 1 && meta > 0 ? textureId - 1 : (side == 1 ? textureId : 2);
     }
 
-    public override void onTick(World world, int x, int y, int z, JavaRandom random)
+    public override void onTick(WorldBlockView worldView, int x, int y, int z, JavaRandom random, WorldEventBroadcaster broadcaster, bool isRemote)
     {
         if (random.NextInt(5) == 0)
         {
-            if (!isWaterNearby(world, x, y, z) && !world.Environment.IsRainingAt(x, y + 1, z))
+            if (!isWaterNearby(worldView, x, y, z) && !worldView.isRaining(x, y + 1, z))
             {
-                int meta = world.GetBlockMeta(x, y, z);
+                int meta = worldView.getBlockMeta(x, y, z);
                 if (meta > 0)
                 {
-                    world.setBlockMeta(x, y, z, meta - 1);
+                    worldView.setBlockMeta(x, y, z, meta - 1);
                 }
-                else if (!hasCrop(world, x, y, z))
+                else if (!hasCrop(worldView, x, y, z))
                 {
-                    world.SetBlock(x, y, z, Block.Dirt.id);
+                    worldView.setBlock(x, y, z, Block.Dirt.id);
                 }
             }
             else
             {
-                world.setBlockMeta(x, y, z, 7);
+                worldView.setBlockMeta(x, y, z, 7);
             }
         }
 
@@ -64,12 +64,12 @@ internal class BlockFarmland : Block
     {
         if (world.random.NextInt(4) == 0)
         {
-            world.SetBlock(x, y, z, Block.Dirt.id);
+            world.setBlock(x, y, z, Block.Dirt.id);
         }
 
     }
 
-    private static bool hasCrop(World world, int x, int y, int z)
+    private static bool hasCrop(IBlockReader world, int x, int y, int z)
     {
         sbyte cropRadius = 0;
 
@@ -77,7 +77,7 @@ internal class BlockFarmland : Block
         {
             for (int var7 = z - cropRadius; var7 <= z + cropRadius; ++var7)
             {
-                if (world.GetBlockId(var6, y + 1, var7) == Block.Wheat.id)
+                if (world.getBlockId(var6, y + 1, var7) == Block.Wheat.id)
                 {
                     return true;
                 }
@@ -87,7 +87,7 @@ internal class BlockFarmland : Block
         return false;
     }
 
-    private static bool isWaterNearby(World world, int x, int y, int z)
+    private static bool isWaterNearby(IBlockReader world, int x, int y, int z)
     {
         for (int checkX = x - 4; checkX <= x + 4; ++checkX)
         {
@@ -95,7 +95,7 @@ internal class BlockFarmland : Block
             {
                 for (int checkZ = z - 4; checkZ <= z + 4; ++checkZ)
                 {
-                    if (world.GetMaterial(checkX, checkY, checkZ) == Material.Water)
+                    if (world.getMaterial(checkX, checkY, checkZ) == Material.Water)
                     {
                         return true;
                     }
@@ -106,13 +106,13 @@ internal class BlockFarmland : Block
         return false;
     }
 
-    public override void neighborUpdate(World world, int x, int y, int z, int id)
+    public override void neighborUpdate(WorldBlockView world, int x, int y, int z, int id)
     {
         base.neighborUpdate(world, x, y, z, id);
-        Material material = world.GetMaterial(x, y + 1, z);
+        Material material = world.getMaterial(x, y + 1, z);
         if (material.IsSolid)
         {
-            world.SetBlock(x, y, z, Block.Dirt.id);
+            world.setBlock(x, y, z, Block.Dirt.id);
         }
 
     }

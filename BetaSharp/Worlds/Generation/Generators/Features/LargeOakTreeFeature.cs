@@ -143,7 +143,7 @@ internal class LargeOakTreeFeature : Feature
                 }
 
                 var11[var9] = var10[var9] + var13;
-                int var14 = world.GetBlockId(var11[0], var11[1], var11[2]);
+                int var14 = world.getBlockId(var11[0], var11[1], var11[2]);
 
                 if (var14 != 0 && var14 != 18)
                 {
@@ -151,7 +151,7 @@ internal class LargeOakTreeFeature : Feature
                     continue;
                 }
 
-                world.SetBlockWithoutNotifyingNeighbors(var11[0], var11[1], var11[2], var6);
+                world.setBlockWithoutNotifyingNeighbors(var11[0], var11[1], var11[2], var6);
                 ++var13;
             }
         }
@@ -236,7 +236,7 @@ internal class LargeOakTreeFeature : Feature
                 var14[var6] = MathHelper.Floor(var1[var6] + var15 + 0.5D);
                 var14[var7] = MathHelper.Floor(var1[var7] + var15 * var10 + 0.5D);
                 var14[var8] = MathHelper.Floor(var1[var8] + var15 * var12 + 0.5D);
-                world.SetBlockWithoutNotifyingNeighbors(var14[0], var14[1], var14[2], var3);
+                world.setBlockWithoutNotifyingNeighbors(var14[0], var14[1], var14[2], var3);
             }
         }
     }
@@ -340,7 +340,7 @@ internal class LargeOakTreeFeature : Feature
             var13[var5] = var1[var5] + var14;
             var13[var6] = MathHelper.Floor(var1[var6] + var14 * var9);
             var13[var7] = MathHelper.Floor(var1[var7] + var14 * var11);
-            int var16 = world.GetBlockId(var13[0], var13[1], var13[2]);
+            int var16 = world.getBlockId(var13[0], var13[1], var13[2]);
             if (var16 != 0 && var16 != 18)
             {
                 break;
@@ -354,7 +354,7 @@ internal class LargeOakTreeFeature : Feature
     {
         int[] var1 = [origin[0], origin[1], origin[2]];
         int[] var2 = [origin[0], origin[1] + height - 1, origin[2]];
-        int var3 = world.GetBlockId(origin[0], origin[1] - 1, origin[2]);
+        int var3 = world.getBlockId(origin[0], origin[1] - 1, origin[2]);
         if (var3 != 2 && var3 != 3)
         {
             return false;

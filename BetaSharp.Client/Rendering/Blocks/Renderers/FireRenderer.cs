@@ -10,7 +10,7 @@ public class FireRenderer : IBlockRenderer
         int textureId = block.getTexture(0);
         if (ctx.OverrideTexture >= 0) textureId = ctx.OverrideTexture;
 
-        float luminance = block.getLuminance(ctx.World, pos.x, pos.y, pos.z);
+        float luminance = block.getLuminance(ctx.Lighting, pos.x, pos.y, pos.z);
         ctx.Tess.setColorOpaque_F(luminance, luminance, luminance);
 
         int texU = (textureId & 15) << 4;
@@ -23,7 +23,7 @@ public class FireRenderer : IBlockRenderer
         float fireHeight = 1.4F;
 
         // If not on a solid/flammable floor, render climbing flames on walls
-        if (!ctx.World.ShouldSuffocate(pos.x, pos.y - 1, pos.z) && !Block.Fire.isFlammable(ctx.World, pos.x, pos.y - 1, pos.z))
+        if (!ctx.World.shouldSuffocate(pos.x, pos.y - 1, pos.z) && !Block.Fire.isFlammable(ctx.World, pos.x, pos.y - 1, pos.z))
         {
             float sideInset = 0.2F;
             float yOffset = 1.0F / 16.0F;

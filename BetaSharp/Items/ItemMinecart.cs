@@ -17,12 +17,12 @@ internal class ItemMinecart : Item
 
     public override bool useOnBlock(ItemStack itemStack, EntityPlayer entityPlayer, World world, int x, int y, int z, int meta)
     {
-        int blockId = world.GetBlockId(x, y, z);
+        int blockId = world.getBlockId(x, y, z);
         if (BlockRail.isRail(blockId))
         {
-            if (!world.IsRemote)
+            if (!world.isRemote)
             {
-                world.Entities.SpawnEntity(new EntityMinecart(world, (double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), minecartType));
+                world.SpawnEntity(new EntityMinecart(world, (double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), minecartType));
             }
 
             --itemStack.count;

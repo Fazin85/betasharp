@@ -1,6 +1,5 @@
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
 using BetaSharp.Worlds.ClientData.Colors;
 using BetaSharp.Worlds.Core;
 
@@ -26,7 +25,7 @@ public class BlockGrass : Block
         return face == 1 ? GrassColors.getDefaultColor() : 0xFFFFFF;
     }
 
-    public override int getTextureId(IBlockAccess iBlockAccess, int x, int y, int z, int side)
+    public override int getTextureId(IBlockReader iBlockReader, int x, int y, int z, int side)
     {
         if (side == 1)
         {
@@ -38,41 +37,41 @@ public class BlockGrass : Block
         }
         else
         {
-            Material materialAbove = iBlockAccess.GetMaterial(x, y + 1, z);
+            Material materialAbove = iBlockReader.getMaterial(x, y + 1, z);
             return materialAbove != Material.SnowLayer && materialAbove != Material.SnowBlock ? 3 : 68;
         }
     }
 
-    public override int getColorMultiplier(IBlockAccess iBlockAccess, int x, int y, int z)
+    public override int getColorMultiplier(IBlockReader iBlockReader, int x, int y, int z)
     {
-        iBlockAccess.GetBiomeSource().GetBiomesInArea(x, z, 1, 1);
-        double temperature = iBlockAccess.GetBiomeSource().TemperatureMap[0];
-        double downfall = iBlockAccess.GetBiomeSource().DownfallMap[0];
+        iBlockReader.getBiomeSource().GetBiomesInArea(x, z, 1, 1);
+        double temperature = iBlockReader.getBiomeSource().TemperatureMap[0];
+        double downfall = iBlockReader.getBiomeSource().DownfallMap[0];
         return GrassColors.getColor(temperature, downfall);
     }
 
-    public override void onTick(World world, int x, int y, int z, JavaRandom random)
+    public override void onTick(WorldBlockView worldView, int x, int y, int z, JavaRandom random, WorldEventBroadcaster broadcaster, bool isRemote)
     {
-        if (!world.IsRemote)
+        if (!worldView.isRemote)
         {
-            if (world.Lighting.GetLightLevel(x, y + 1, z) < 4 && Block.BlockLightOpacity[world.GetBlockId(x, y + 1, z)] > 2)
+            if (worldView.getLightLevel(x, y + 1, z) < 4 && Block.BlockLightOpacity[worldView.getBlockId(x, y + 1, z)] > 2)
             {
                 if (random.NextInt(4) != 0)
                 {
                     return;
                 }
 
-                world.SetBlock(x, y, z, Block.Dirt.id);
+                worldView.setBlock(x, y, z, Block.Dirt.id);
             }
-            else if (world.Lighting.GetLightLevel(x, y + 1, z) >= 9)
+            else if (worldView.getLightLevel(x, y + 1, z) >= 9)
             {
                 int spreadX = x + random.NextInt(3) - 1;
                 int spreadY = y + random.NextInt(5) - 3;
                 int spreadZ = z + random.NextInt(3) - 1;
-                int blockAboveId = world.GetBlockId(spreadX, spreadY + 1, spreadZ);
-                if (world.GetBlockId(spreadX, spreadY, spreadZ) == Block.Dirt.id && world.Lighting.GetLightLevel(spreadX, spreadY + 1, spreadZ) >= 4 && Block.BlockLightOpacity[blockAboveId] <= 2)
+                int blockAboveId = worldView.getBlockId(spreadX, spreadY + 1, spreadZ);
+                if (worldView.getBlockId(spreadX, spreadY, spreadZ) == Block.Dirt.id && worldView.getLightLevel(spreadX, spreadY + 1, spreadZ) >= 4 && Block.BlockLightOpacity[blockAboveId] <= 2)
                 {
-                    world.SetBlock(spreadX, spreadY, spreadZ, Block.GrassBlock.id);
+                    worldView.setBlock(spreadX, spreadY, spreadZ, Block.GrassBlock.id);
                 }
             }
         }

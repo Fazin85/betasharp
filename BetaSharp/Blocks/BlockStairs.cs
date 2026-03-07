@@ -18,12 +18,12 @@ internal class BlockStairs : Block
         setOpacity(255);
     }
 
-    public override void updateBoundingBox(IBlockAccess iBlockAccess, int x, int y, int z)
+    public override void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z)
     {
         setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
     }
 
-    public override Box? getCollisionShape(World world, int x, int y, int z)
+    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
     {
         return base.getCollisionShape(world, x, y, z);
     }
@@ -43,14 +43,14 @@ internal class BlockStairs : Block
         return BlockRendererType.Stairs;
     }
 
-    public override bool isSideVisible(IBlockAccess iBlockAccess, int x, int y, int z, int side)
+    public override bool isSideVisible(IBlockReader iBlockReader, int x, int y, int z, int side)
     {
-        return base.isSideVisible(iBlockAccess, x, y, z, side);
+        return base.isSideVisible(iBlockReader, x, y, z, side);
     }
 
-    public override void addIntersectingBoundingBox(World world, int x, int y, int z, Box box, List<Box> boxes)
+    public override void addIntersectingBoundingBox(IBlockReader world, int x, int y, int z, Box box, List<Box> boxes)
     {
-        int meta = world.GetBlockMeta(x, y, z);
+        int meta = world.getBlockMeta(x, y, z);
         if (meta == 0)
         {
             setBoundingBox(0.0F, 0.0F, 0.0F, 0.5F, 0.5F, 1.0F);
@@ -98,9 +98,9 @@ internal class BlockStairs : Block
         baseBlock.onMetadataChange(world, x, y, z, meta);
     }
 
-    public override float getLuminance(IBlockAccess iBlockAccess, int x, int y, int z)
+    public override float getLuminance(LightingEngine lighting, int x, int y, int z)
     {
-        return baseBlock.getLuminance(iBlockAccess, x, y, z);
+        return baseBlock.getLuminance(lighting, x, y, z);
     }
 
     public override float getBlastResistance(Entity entity)
@@ -133,9 +133,9 @@ internal class BlockStairs : Block
         return baseBlock.getTexture(side);
     }
 
-    public override int getTextureId(IBlockAccess iBlockAccess, int x, int y, int z, int side)
+    public override int getTextureId(IBlockReader iBlockReader, int x, int y, int z, int side)
     {
-        return baseBlock.getTextureId(iBlockAccess, x, y, z, side);
+        return baseBlock.getTextureId(iBlockReader, x, y, z, side);
     }
 
     public override int getTickRate()
@@ -163,7 +163,7 @@ internal class BlockStairs : Block
         return baseBlock.hasCollision(meta, allowLiquids);
     }
 
-    public override bool canPlaceAt(World world, int x, int y, int z)
+    public override bool canPlaceAt(WorldBlockView world, int x, int y, int z)
     {
         return baseBlock.canPlaceAt(world, x, y, z);
     }
@@ -179,7 +179,7 @@ internal class BlockStairs : Block
         baseBlock.onBreak(world, x, y, z);
     }
 
-    public override void dropStacks(World world, int x, int y, int z, int meta, float luck)
+    public override void dropStacks(WorldBlockView world, int x, int y, int z, int meta, float luck)
     {
         baseBlock.dropStacks(world, x, y, z, meta, luck);
     }
@@ -189,9 +189,9 @@ internal class BlockStairs : Block
         baseBlock.onSteppedOn(world, x, y, z, entity);
     }
 
-    public override void onTick(World world, int x, int y, int z, JavaRandom random)
+    public override void onTick(WorldBlockView worldView, int x, int y, int z, JavaRandom random, WorldEventBroadcaster broadcaster, bool isRemote)
     {
-        baseBlock.onTick(world, x, y, z, random);
+        baseBlock.onTick(worldView, x, y, z, random);
     }
 
     public override bool onUse(World world, int x, int y, int z, EntityPlayer player)

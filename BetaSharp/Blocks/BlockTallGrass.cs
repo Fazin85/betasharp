@@ -1,8 +1,7 @@
 using BetaSharp.Items;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
-using BetaSharp.Worlds.ClientData.Colors;
 using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.ClientData.Colors;
 
 namespace BetaSharp.Blocks;
 
@@ -24,9 +23,9 @@ public class BlockTallGrass : BlockPlant
         return meta == 0 ? 0xFFFFFF : GrassColors.getDefaultColor();
     }
 
-    public override int getColorMultiplier(IBlockAccess iBlockAccess, int x, int y, int z)
+    public override int getColorMultiplier(IBlockReader iBlockReader, int x, int y, int z)
     {
-        int meta = iBlockAccess.GetBlockMeta(x, y, z);
+        int meta = iBlockReader.getBlockMeta(x, y, z);
         if (meta == 0)
         {
             return 0xFFFFFF;
@@ -38,9 +37,9 @@ public class BlockTallGrass : BlockPlant
             x = (int)((long)x + (positionSeed >> 14 & 31L));
             y = (int)((long)y + (positionSeed >> 19 & 31L));
             z = (int)((long)z + (positionSeed >> 24 & 31L));
-            iBlockAccess.GetBiomeSource().GetBiomesInArea(x, z, 1, 1);
-            double temperature = iBlockAccess.GetBiomeSource().TemperatureMap[0];
-            double downfall = iBlockAccess.GetBiomeSource().DownfallMap[0];
+            iBlockReader.getBiomeSource().GetBiomesInArea(x, z, 1, 1);
+            double temperature = iBlockReader.getBiomeSource().TemperatureMap[0];
+            double downfall = iBlockReader.getBiomeSource().DownfallMap[0];
             return GrassColors.getColor(temperature, downfall);
         }
     }

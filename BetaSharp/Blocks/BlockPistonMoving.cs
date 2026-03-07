@@ -1,4 +1,4 @@
-﻿using BetaSharp.Blocks.Entities;
+using BetaSharp.Blocks.Entities;
 using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
@@ -24,7 +24,7 @@ public class BlockPistonMoving : BlockWithEntity
 
     public override void onBreak(World world, int x, int y, int z)
     {
-        BlockEntity var5 = world.GetBlockEntity(x, y, z);
+        BlockEntity var5 = world.getBlockEntity(x, y, z);
         if (var5 != null && var5 is BlockEntityPiston)
         {
             ((BlockEntityPiston)var5).finish();
@@ -36,12 +36,12 @@ public class BlockPistonMoving : BlockWithEntity
 
     }
 
-    public override bool canPlaceAt(World world, int x, int y, int z)
+    public override bool canPlaceAt(WorldBlockView world, int x, int y, int z)
     {
         return false;
     }
 
-    public override bool canPlaceAt(World world, int x, int y, int z, int side)
+    public override bool canPlaceAt(WorldBlockView world, int x, int y, int z, int side)
     {
         return false;
     }
@@ -63,9 +63,9 @@ public class BlockPistonMoving : BlockWithEntity
 
     public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
     {
-        if (!world.IsRemote && world.GetBlockEntity(x, y, z) == null)
+        if (!world.isRemote && world.getBlockEntity(x, y, z) == null)
         {
-            world.SetBlock(x, y, z, 0);
+            world.setBlock(x, y, z, 0);
             return true;
         }
         else
@@ -79,9 +79,9 @@ public class BlockPistonMoving : BlockWithEntity
         return 0;
     }
 
-    public override void dropStacks(World world, int x, int y, int z, int meta, float luck)
+    public override void dropStacks(WorldBlockView world, int x, int y, int z, int meta, float luck)
     {
-        if (!world.IsRemote)
+        if (!world.isRemote)
         {
             BlockEntityPiston var7 = getPistonBlockEntity(world, x, y, z);
             if (var7 != null)
@@ -91,9 +91,9 @@ public class BlockPistonMoving : BlockWithEntity
         }
     }
 
-    public override void neighborUpdate(World world, int x, int y, int z, int id)
+    public override void neighborUpdate(WorldBlockView world, int x, int y, int z, int id)
     {
-        if (!world.IsRemote && world.GetBlockEntity(x, y, z) == null)
+        if (!world.isRemote && world.getBlockEntity(x, y, z) == null)
         {
         }
 
@@ -104,7 +104,7 @@ public class BlockPistonMoving : BlockWithEntity
         return new BlockEntityPiston(blockId, blockMeta, facing, extending, source);
     }
 
-    public override Box? getCollisionShape(World world, int x, int y, int z)
+    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
     {
         BlockEntityPiston var5 = getPistonBlockEntity(world, x, y, z);
         if (var5 == null)
@@ -123,9 +123,9 @@ public class BlockPistonMoving : BlockWithEntity
         }
     }
 
-    public override void updateBoundingBox(IBlockAccess iBlockAccess, int x, int y, int z)
+    public override void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z)
     {
-        BlockEntityPiston var5 = getPistonBlockEntity(iBlockAccess, x, y, z);
+        BlockEntityPiston var5 = getPistonBlockEntity(iBlockReader, x, y, z);
         if (var5 != null)
         {
             Block var6 = Block.Blocks[var5.getPushedBlockId()];
@@ -134,7 +134,7 @@ public class BlockPistonMoving : BlockWithEntity
                 return;
             }
 
-            var6.updateBoundingBox(iBlockAccess, x, y, z);
+            var6.updateBoundingBox(iBlockReader, x, y, z);
             float var7 = var5.getProgress(0.0F);
             if (var5.isExtending())
             {
@@ -174,9 +174,9 @@ public class BlockPistonMoving : BlockWithEntity
         }
     }
 
-    private BlockEntityPiston getPistonBlockEntity(IBlockAccess iBlockAccess, int x, int y, int z)
+    private BlockEntityPiston getPistonBlockEntity(IBlockReader iBlockReader, int x, int y, int z)
     {
-        BlockEntity? var5 = iBlockAccess.GetBlockEntity(x, y, z);
+        BlockEntity? var5 = iBlockReader.getBlockEntity(x, y, z);
         return var5 != null && var5 is BlockEntityPiston ? (BlockEntityPiston)var5 : null;
     }
 }

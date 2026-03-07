@@ -3,9 +3,8 @@ using BetaSharp.Entities;
 using BetaSharp.Network.Packets;
 using BetaSharp.Network.Packets.S2CPlay;
 using BetaSharp.Util.Maths;
-using BetaSharp.Worlds;
-using BetaSharp.Worlds.Chunks;
 using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Chunks;
 
 namespace BetaSharp.Items;
 
@@ -19,13 +18,13 @@ public class ItemMap : NetworkSyncedItem
 
     public static MapState getMapState(short mapId, World world)
     {
-        MapState? mapState = (MapState?)world.GetOrCreateState(typeof(MapState), "map_" + mapId);
+        MapState? mapState = (MapState?)world.getOrCreateState(typeof(MapState), "map_" + mapId);
         if (mapState == null)
         {
-            int mapIdCount = world.GetIdCount("map");
+            int mapIdCount = world.getIdCount("map");
             string mapName = "map_" + mapIdCount;
             mapState = new MapState(mapName);
-            world.SetState(mapName, mapState);
+            world.setState(mapName, mapState);
         }
 
         return mapState;
@@ -34,17 +33,17 @@ public class ItemMap : NetworkSyncedItem
     public MapState getSavedMapState(ItemStack stack, World world)
     {
         string mapName = "map_" + stack.getDamage();
-        MapState? mapState = (MapState?)world.GetOrCreateState(typeof(MapState), mapName);
+        MapState? mapState = (MapState?)world.getOrCreateState(typeof(MapState), mapName);
         if (mapState == null)
         {
-            stack.setDamage(world.GetIdCount("map"));
+            stack.setDamage(world.getIdCount("map"));
             mapState = new MapState(mapName);
             mapState.centerX = world.Properties.SpawnX;
             mapState.centerZ = world.Properties.SpawnZ;
             mapState.scale = 3;
-            mapState.dimension = (sbyte)world.Dimension.Id;
+            mapState.dimension = (sbyte)world.dimension.Id;
             mapState.markDirty();
-            world.SetState(mapName, mapState);
+            world.setState(mapName, mapState);
         }
 
         return mapState;
@@ -52,7 +51,7 @@ public class ItemMap : NetworkSyncedItem
 
     public void update(World world, Entity entity, MapState map)
     {
-        if (world.Dimension.Id == map.dimension)
+        if (world.dimension.Id == map.dimension)
         {
             short mapWidth = 128;
             short mapHeight = 128;
@@ -62,7 +61,7 @@ public class ItemMap : NetworkSyncedItem
             int entityPosX = MathHelper.Floor(entity.x - (double)centerX) / blocksPerPixel + mapWidth / 2;
             int entityPosZ = MathHelper.Floor(entity.z - (double)centerZ) / blocksPerPixel + mapHeight / 2;
             int scanRadius = 128 / blocksPerPixel;
-            if (world.Dimension.HasCeiling)
+            if (world.dimension.HasCeiling)
             {
                 scanRadius /= 2;
             }
@@ -99,7 +98,7 @@ public class ItemMap : NetworkSyncedItem
                             int sampleZ;
                             int currentY;
                             int colorIndex;
-                            if (world.Dimension.HasCeiling)
+                            if (world.dimension.HasCeiling)
                             {
                                 sampleX = worldX + worldZ * 231871;
                                 sampleX = sampleX * sampleX * 31287121 + sampleX * 11;
@@ -268,7 +267,7 @@ public class ItemMap : NetworkSyncedItem
 
     public override void inventoryTick(ItemStack itemStack, World world, Entity entity, int slotIndex, bool shouldUpdate)
     {
-        if (!world.IsRemote)
+        if (!world.isRemote)
         {
             MapState mapState = getSavedMapState(itemStack, world);
             if (entity is EntityPlayer)
@@ -287,14 +286,14 @@ public class ItemMap : NetworkSyncedItem
 
     public override void onCraft(ItemStack itemStack, World world, EntityPlayer entityPlayer)
     {
-        itemStack.setDamage(world.GetIdCount("map"));
+        itemStack.setDamage(world.getIdCount("map"));
         string mapName = "map_" + itemStack.getDamage();
         MapState mapState = new MapState(mapName);
-        world.SetState(mapName, mapState);
+        world.setState(mapName, mapState);
         mapState.centerX = MathHelper.Floor(entityPlayer.x);
         mapState.centerZ = MathHelper.Floor(entityPlayer.z);
         mapState.scale = 3;
-        mapState.dimension = (sbyte)world.Dimension.Id;
+        mapState.dimension = (sbyte)world.dimension.Id;
         mapState.markDirty();
     }
 

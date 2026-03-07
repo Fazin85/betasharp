@@ -7,19 +7,19 @@ using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Server.Worlds;
 
-public class ServerChunkCache : ChunkSource
+public class ServerIChunkCache : IChunkSource
 {
-    private readonly ILogger<ServerChunkCache> _logger = Log.Instance.For<ServerChunkCache>();
+    private readonly ILogger<ServerIChunkCache> _logger = Log.Instance.For<ServerIChunkCache>();
     private readonly HashSet<int> _chunksToUnload = [];
     private readonly Chunk _empty;
-    private readonly ChunkSource _generator;
+    private readonly IChunkSource _generator;
     private readonly IChunkStorage _storage;
     public bool forceLoad = false;
     private readonly Dictionary<int, Chunk> _chunksByPos = [];
     private readonly List<Chunk> _chunks = [];
     private readonly ServerWorld _world;
 
-    public ServerChunkCache(ServerWorld world, IChunkStorage storage, ChunkSource generator)
+    public ServerIChunkCache(ServerWorld world, IChunkStorage storage, IChunkSource generator)
     {
         _empty = new EmptyChunk(world, new byte[32768], 0, 0);
         _world = world;
@@ -119,7 +119,7 @@ public class ServerChunkCache : ChunkSource
         _chunksByPos.TryGetValue(ChunkPos.GetHashCode(chunkX, chunkZ), out Chunk? var3);
         if (var3 == null)
         {
-            return !_world.eventProcessingEnabled && !forceLoad ? _empty : LoadChunk(chunkX, chunkZ);
+            return !_world.EventProcessingEnabled && !forceLoad ? _empty : LoadChunk(chunkX, chunkZ);
         }
         else
         {
@@ -186,7 +186,7 @@ public class ServerChunkCache : ChunkSource
     }
 
 
-    public void DecorateTerrain(ChunkSource source, int x, int z)
+    public void DecorateTerrain(IChunkSource source, int x, int z)
     {
         Chunk var4 = GetChunk(x, z);
         if (!var4.TerrainPopulated)
@@ -277,7 +277,7 @@ public class ServerChunkCache : ChunkSource
     public Chunk? TryLoadFromStorage(int chunkX, int chunkZ) => LoadChunkFromStorage(chunkX, chunkZ);
 
     /// Creates a parallel-safe generator instance for off-thread terrain generation.
-    public ChunkSource CreateParallelGenerator() => _generator.CreateParallelInstance();
+    public IChunkSource CreateParallelGenerator() => _generator.CreateParallelInstance();
 
     // Inserts a pre-generated chunk without triggering terrain re-generation.
     // Checks storage first so that saved data is used correctly on server restart.

@@ -20,7 +20,7 @@ public class EntitySpider : EntityMonster
         {
             EntitySkeleton skeleton = new EntitySkeleton(world);
             skeleton.setPositionAndAnglesKeepPrevAngles(x, y, z, yaw, 0.0F);
-            world.Entities.SpawnEntity(skeleton);
+            world.SpawnEntity(skeleton);
             skeleton.setVehicle(this);
         }
     }
@@ -41,7 +41,7 @@ public class EntitySpider : EntityMonster
         if (brightness < 0.5F)
         {
             double distance = 16.0D;
-            return world.GetClosestPlayer(this, distance);
+            return world.getClosestPlayer(this, distance);
         }
         else
         {

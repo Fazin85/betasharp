@@ -55,7 +55,7 @@ public class ClientPlayerEntity : EntityPlayer
         lastScreenDistortion = changeDimensionCooldown;
         if (inTeleportationState)
         {
-            if (!world.IsRemote && vehicle != null)
+            if (!world.isRemote && vehicle != null)
             {
                 setVehicle((Entity)null);
             }
@@ -248,7 +248,7 @@ public class ClientPlayerEntity : EntityPlayer
 
     private bool isBlockTranslucent(int x, int y, int z)
     {
-        return world.ShouldSuffocate(x, y, z);
+        return world.shouldSuffocate(x, y, z);
     }
 
     protected override bool pushOutOfBlocks(double posX, double posY, double posZ)

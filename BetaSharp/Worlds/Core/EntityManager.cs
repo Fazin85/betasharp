@@ -8,12 +8,11 @@ using BetaSharp.Worlds.Chunks;
 
 namespace BetaSharp.Worlds.Core;
 
-// TODO: Replace 'World' dependency with specific scoped interfaces/deps to prevent circular dependencies.
-public class EntityManager(World world)
+public class EntityManager
 {
-    [ThreadStatic] internal static List<Entity>? _tempCollisionEntities;
-    [ThreadStatic] internal static List<Box>? _tempCollisionBoxes;
-    [ThreadStatic] internal static List<Entity>? _tempCollisionEntitiesResult;
+    [ThreadStatic] private static List<Entity>? _tempCollisionEntities;
+    [ThreadStatic] private static List<Box>? _tempCollisionBoxes;
+    [ThreadStatic] private static List<Entity>? _tempCollisionEntitiesResult;
     private readonly List<BlockEntity> _blockEntityUpdateQueue = [];
     private readonly Dictionary<int, Entity> _entitiesById = new();
     private readonly List<Entity> _entitiesToUnload = [];
@@ -25,11 +24,20 @@ public class EntityManager(World world)
 
     public List<EntityPlayer> Players = [];
 
+    private readonly WorldBlockView _blocks;
+    private readonly RuleSet _rules;
 
     public event Action<Entity>? OnEntityAdded;
     public event Action<Entity>? OnEntityRemoved;
     public event Action<Entity>? OnGlobalEntityAdded;
     public event Func<Entity, bool>? OnEntityUpdating;
+    public event Action<int, int, int>? OnBlockUpdateRequired;
+
+    public EntityManager(WorldBlockView blocks, RuleSet rules)
+    {
+        _blocks = blocks;
+        _rules = rules;
+    }
 
     public bool SpawnGlobalEntity(Entity entity)
     {
@@ -52,9 +60,9 @@ public class EntityManager(World world)
             int chunkX = entity.chunkX;
             int chunkZ = entity.chunkZ;
 
-            if (entity.isPersistent && world.GetChunkSource().IsChunkLoaded(chunkX, chunkZ))
+            if (entity.isPersistent && _blocks.ChunkSource.IsChunkLoaded(chunkX, chunkZ))
             {
-                world.GetChunk(chunkX, chunkZ).RemoveEntity(entity);
+                _blocks.GetChunk(chunkX, chunkZ).RemoveEntity(entity);
             }
 
             _entitiesById.Remove(entity.id);
@@ -84,9 +92,9 @@ public class EntityManager(World world)
                 int chunkX = entity.chunkX;
                 int chunkZ = entity.chunkZ;
 
-                if (entity.isPersistent && world.GetChunkSource().IsChunkLoaded(chunkX, chunkZ))
+                if (entity.isPersistent && _blocks.ChunkSource.IsChunkLoaded(chunkX, chunkZ))
                 {
-                    world.GetChunk(chunkX, chunkZ).RemoveEntity(entity);
+                    _blocks.GetChunk(chunkX, chunkZ).RemoveEntity(entity);
                 }
 
                 Entities.RemoveAt(i--);
@@ -102,18 +110,15 @@ public class EntityManager(World world)
         int chunkZ = MathHelper.Floor(entity.z / 16.0D);
         bool isPlayer = entity is EntityPlayer;
 
-        if (!isPlayer && !world.GetChunkSource().IsChunkLoaded(chunkX, chunkZ))
-        {
+        if (!isPlayer && !_blocks.ChunkSource.IsChunkLoaded(chunkX, chunkZ))
             return false;
-        }
+
 
         if (entity is EntityPlayer player)
-        {
             Players.Add(player);
-            world.Environment.UpdateSleepingPlayers();
-        }
 
-        world.GetChunk(chunkX, chunkZ).AddEntity(entity);
+
+        _blocks.GetChunk(chunkX, chunkZ).AddEntity(entity);
         Entities.Add(entity);
         _entitiesById[entity.id] = entity;
 
@@ -135,31 +140,41 @@ public class EntityManager(World world)
 
         entity.markDead();
         if (entity is EntityPlayer player)
-        {
             Players.Remove(player);
-            world.Environment.UpdateSleepingPlayers();
-        }
+
     }
 
     public void ServerRemove(Entity entity)
     {
         entity.markDead();
         if (entity is EntityPlayer player)
-        {
             Players.Remove(player);
-            world.Environment.UpdateSleepingPlayers();
-        }
+
 
         int chunkX = entity.chunkX;
         int chunkZ = entity.chunkZ;
-        if (entity.isPersistent && world.GetChunkSource().IsChunkLoaded(chunkX, chunkZ))
+        if (entity.isPersistent && _blocks.ChunkSource.IsChunkLoaded(chunkX, chunkZ))
         {
-            world.GetChunk(chunkX, chunkZ).RemoveEntity(entity);
+            _blocks.GetChunk(chunkX, chunkZ).RemoveEntity(entity);
         }
 
         Entities.Remove(entity);
         _entitiesById.Remove(entity.id);
         NotifyEntityRemoved(entity);
+    }
+
+    public bool AreAllPlayersAsleep()
+    {
+        if (Players.Count == 0) return false;
+        return Players.All(p => p.isPlayerFullyAsleep());
+    }
+
+    public void WakeAllPlayers()
+    {
+        foreach (var player in Players.Where(p => p.isSleeping()))
+        {
+            player.wakeUp(false, false, true);
+        }
     }
 
     private void NotifyEntityAdded(Entity entity) => OnEntityAdded?.Invoke(entity);
@@ -188,9 +203,9 @@ public class EntityManager(World world)
             int chunkX = entityToUnload.chunkX;
             int chunkZ = entityToUnload.chunkZ;
 
-            if (entityToUnload.isPersistent && world.GetChunkSource().IsChunkLoaded(chunkX, chunkZ))
+            if (entityToUnload.isPersistent && _blocks.ChunkSource.IsChunkLoaded(chunkX, chunkZ))
             {
-                world.GetChunk(chunkX, chunkZ).RemoveEntity(entityToUnload);
+                _blocks.GetChunk(chunkX, chunkZ).RemoveEntity(entityToUnload);
             }
         }
 
@@ -209,7 +224,7 @@ public class EntityManager(World world)
 
             if (entity.vehicle != null)
             {
-                if (!entity.vehicle.dead && entity.vehicle.passenger == entity)
+                if (!entity.vehicle.dead && Equals(entity.vehicle.passenger, entity))
                 {
                     continue;
                 }
@@ -228,9 +243,9 @@ public class EntityManager(World world)
                 int chunkX = entity.chunkX;
                 int chunkZ = entity.chunkZ;
 
-                if (entity.isPersistent && world.GetChunkSource().IsChunkLoaded(chunkX, chunkZ))
+                if (entity.isPersistent && _blocks.ChunkSource.IsChunkLoaded(chunkX, chunkZ))
                 {
-                    world.GetChunk(chunkX, chunkZ).RemoveEntity(entity);
+                    _blocks.GetChunk(chunkX, chunkZ).RemoveEntity(entity);
                 }
 
                 Entities.RemoveAt(i--);
@@ -255,7 +270,7 @@ public class EntityManager(World world)
             if (blockEntity.isRemoved())
             {
                 BlockEntities.RemoveAt(i);
-                Chunk chunk = world.GetChunk(blockEntity.X >> 4, blockEntity.Z >> 4);
+                Chunk chunk = _blocks.GetChunk(blockEntity.X >> 4, blockEntity.Z >> 4);
                 chunk?.RemoveBlockEntityAt(blockEntity.X & 15, blockEntity.Y, blockEntity.Z & 15);
             }
         }
@@ -273,9 +288,9 @@ public class EntityManager(World world)
                         BlockEntities.Add(queuedBlockEntity);
                     }
 
-                    Chunk chunk = world.GetChunk(queuedBlockEntity.X >> 4, queuedBlockEntity.Z >> 4);
+                    Chunk chunk = _blocks.GetChunk(queuedBlockEntity.X >> 4, queuedBlockEntity.Z >> 4);
                     chunk?.SetBlockEntity(queuedBlockEntity.X & 15, queuedBlockEntity.Y, queuedBlockEntity.Z & 15, queuedBlockEntity);
-                    world.BlockUpdateEvent(queuedBlockEntity.X, queuedBlockEntity.Y, queuedBlockEntity.Z);
+                    OnBlockUpdateRequired?.Invoke(queuedBlockEntity.X, queuedBlockEntity.Y, queuedBlockEntity.Z);
                 }
             }
 
@@ -301,7 +316,7 @@ public class EntityManager(World world)
         int blockZ = MathHelper.Floor(entity.z);
         const byte loadRadius = 32;
 
-        if (!requireLoaded || world.IsRegionLoaded(blockX - loadRadius, 0, blockZ - loadRadius, blockX + loadRadius, 128, blockZ + loadRadius))
+        if (!requireLoaded || _blocks.IsRegionLoaded(blockX - loadRadius, 0, blockZ - loadRadius, blockX + loadRadius, 128, blockZ + loadRadius))
         {
             entity.lastTickX = entity.x;
             entity.lastTickY = entity.y;
@@ -352,15 +367,15 @@ public class EntityManager(World world)
 
             if (!entity.isPersistent || entity.chunkX != newChunkX || entity.chunkSlice != newChunkY || entity.chunkZ != newChunkZ)
             {
-                if (entity.isPersistent && world.GetChunkSource().IsChunkLoaded(entity.chunkX, entity.chunkZ))
+                if (entity.isPersistent && _blocks.ChunkSource.IsChunkLoaded(entity.chunkX, entity.chunkZ))
                 {
-                    world.GetChunk(entity.chunkX, entity.chunkZ).RemoveEntity(entity, entity.chunkSlice);
+                    _blocks.GetChunk(entity.chunkX, entity.chunkZ).RemoveEntity(entity, entity.chunkSlice);
                 }
 
-                if (world.GetChunkSource().IsChunkLoaded(newChunkX, newChunkZ))
+                if (_blocks.ChunkSource.IsChunkLoaded(newChunkX, newChunkZ))
                 {
                     entity.isPersistent = true;
-                    world.GetChunk(newChunkX, newChunkZ).AddEntity(entity);
+                    _blocks.GetChunk(newChunkX, newChunkZ).AddEntity(entity);
                 }
                 else
                 {
@@ -405,14 +420,14 @@ public class EntityManager(World world)
         {
             for (int z = minZ; z < maxZ; ++z)
             {
-                if (world.IsPosLoaded(x, 64, z))
+                if (_blocks.IsPosLoaded(x, 64, z))
                 {
                     for (int y = minY - 1; y < maxY; ++y)
                     {
-                        Block block = Block.Blocks[world.GetBlockId(x, y, z)];
+                        Block block = Block.Blocks[_blocks.getBlockId(x, y, z)];
                         if (block != null)
                         {
-                            block.addIntersectingBoundingBox(world, x, y, z, area, collidingBoundingBoxes);
+                            block.addIntersectingBoundingBox(_blocks, x, y, z, area, collidingBoundingBoxes);
                         }
                     }
                 }
@@ -426,7 +441,7 @@ public class EntityManager(World world)
         GetEntities(entity, area.Expand(expansion, expansion, expansion), _tempCollisionEntities);
 
         int collisionCount = 0;
-        int maxCollisions = world.Rules.GetInt(DefaultRules.MaxCollisions);
+        int maxCollisions = _rules.GetInt(DefaultRules.MaxCollisions);
 
         for (int i = 0; i < _tempCollisionEntities.Count; ++i)
         {
@@ -473,9 +488,9 @@ public class EntityManager(World world)
         {
             for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; ++chunkZ)
             {
-                if (world.GetChunkSource().IsChunkLoaded(chunkX, chunkZ))
+                if (_blocks.ChunkSource.IsChunkLoaded(chunkX, chunkZ))
                 {
-                    world.GetChunk(chunkX, chunkZ).CollectOtherEntities(excludeEntity, area, results);
+                    _blocks.GetChunk(chunkX, chunkZ).CollectOtherEntities(excludeEntity, area, results);
                 }
             }
         }
@@ -496,9 +511,9 @@ public class EntityManager(World world)
         {
             for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; ++chunkZ)
             {
-                if (world.HasChunk(chunkX, chunkZ))
+                if (_blocks.HasChunk(chunkX, chunkZ))
                 {
-                    world.GetChunk(chunkX, chunkZ).CollectEntitiesOfType(area, results);
+                    _blocks.GetChunk(chunkX, chunkZ).CollectEntitiesOfType(area, results);
                 }
             }
         }
@@ -581,7 +596,7 @@ public class EntityManager(World world)
         {
             for (int z = chunkZ - loadRadius; z <= chunkZ + loadRadius; ++z)
             {
-                world.GetChunk(x, z);
+                _blocks.GetChunk(x, z);
             }
         }
 
@@ -591,10 +606,10 @@ public class EntityManager(World world)
         }
     }
 
-    public BlockEntity? GetBlockEntity(int x, int y, int z)
+    private BlockEntity? GetBlockEntity(int x, int y, int z)
     {
-        Chunk? chunk = world.GetChunk(x >> 4, z >> 4);
-        return chunk?.GetBlockEntity(x & 15, y, z & 15) ?? BlockEntities.FirstOrDefault(e => e.X == x && e.Y == y && e.Z == z);
+        Chunk chunk = _blocks.GetChunk(x >> 4, z >> 4);
+        return chunk.GetBlockEntity(x & 15, y, z & 15) ?? BlockEntities.FirstOrDefault(e => e.X == x && e.Y == y && e.Z == z);
     }
 
     public void SetBlockEntity(int x, int y, int z, BlockEntity blockEntity)
@@ -611,7 +626,7 @@ public class EntityManager(World world)
             else
             {
                 BlockEntities.Add(blockEntity);
-                world.GetChunk(x >> 4, z >> 4)?.SetBlockEntity(x & 15, y, z & 15, blockEntity);
+                _blocks.GetChunk(x >> 4, z >> 4)?.SetBlockEntity(x & 15, y, z & 15, blockEntity);
             }
         }
     }
@@ -625,7 +640,7 @@ public class EntityManager(World world)
         }
         else
         {
-            world.GetChunk(x >> 4, z >> 4)?.RemoveBlockEntityAt(x & 15, y, z & 15);
+            _blocks.GetChunk(x >> 4, z >> 4)?.RemoveBlockEntityAt(x & 15, y, z & 15);
             if (entity != null)
             {
                 BlockEntities.Remove(entity);

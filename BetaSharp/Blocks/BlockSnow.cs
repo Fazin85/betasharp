@@ -15,9 +15,9 @@ internal class BlockSnow : Block
         setTickRandomly(true);
     }
 
-    public override Box? getCollisionShape(World world, int x, int y, int z)
+    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
     {
-        int meta = world.GetBlockMeta(x, y, z) & 7;
+        int meta = world.getBlockMeta(x, y, z) & 7;
         return meta >= 3 ?
             new Box(x + BoundingBox.MinX, y + BoundingBox.MinY, z + BoundingBox.MinZ, x + BoundingBox.MaxX, (double)((float)y + 0.5F), z + BoundingBox.MaxZ) :
             null;
@@ -33,20 +33,20 @@ internal class BlockSnow : Block
         return false;
     }
 
-    public override void updateBoundingBox(IBlockAccess iBlockAccess, int x, int y, int z)
+    public override void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z)
     {
-        int meta = iBlockAccess.GetBlockMeta(x, y, z) & 7;
+        int meta = iBlockReader.getBlockMeta(x, y, z) & 7;
         float height = (float)(2 * (1 + meta)) / 16.0F;
         setBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, height, 1.0F);
     }
 
-    public override bool canPlaceAt(World world, int x, int y, int z)
+    public override bool canPlaceAt(WorldBlockView world, int x, int y, int z)
     {
-        int blockBelowId = world.GetBlockId(x, y - 1, z);
-        return blockBelowId != 0 && Block.Blocks[blockBelowId].isOpaque() ? world.GetMaterial(x, y - 1, z).BlocksMovement : false;
+        int blockBelowId = world.getBlockId(x, y - 1, z);
+        return blockBelowId != 0 && Block.Blocks[blockBelowId].isOpaque() ? world.getMaterial(x, y - 1, z).BlocksMovement : false;
     }
 
-    public override void neighborUpdate(World world, int x, int y, int z, int id)
+    public override void neighborUpdate(WorldBlockView world, int x, int y, int z, int id)
     {
         breakIfCannotPlace(world, x, y, z);
     }
@@ -55,8 +55,8 @@ internal class BlockSnow : Block
     {
         if (!canPlaceAt(world, x, y, z))
         {
-            dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
-            world.SetBlock(x, y, z, 0);
+            dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
+            world.setBlock(x, y, z, 0);
             return false;
         }
         else
@@ -74,8 +74,8 @@ internal class BlockSnow : Block
         double offsetZ = (double)(world.random.NextFloat() * spreadFactor) + (double)(1.0F - spreadFactor) * 0.5D;
         EntityItem entityItem = new EntityItem(world, (double)x + offsetX, (double)y + offsetY, (double)z + offsetZ, new ItemStack(snowballId, 1, 0));
         entityItem.delayBeforeCanPickup = 10;
-        world.Entities.SpawnEntity(entityItem);
-        world.SetBlock(x, y, z, 0);
+        world.SpawnEntity(entityItem);
+        world.setBlock(x, y, z, 0);
         player.increaseStat(Stats.Stats.MineBlockStatArray[id], 1);
     }
 
@@ -89,18 +89,18 @@ internal class BlockSnow : Block
         return 0;
     }
 
-    public override void onTick(World world, int x, int y, int z, JavaRandom random)
+    public override void onTick(WorldBlockView worldView, int x, int y, int z, JavaRandom random, WorldEventBroadcaster broadcaster, bool isRemote)
     {
-        if (world.Lighting.GetBrightness(LightType.Block, x, y, z) > 11)
+        if (worldView.getBrightness(LightType.Block, x, y, z) > 11)
         {
-            dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
-            world.SetBlock(x, y, z, 0);
+            dropStacks(worldView, x, y, z, worldView.getBlockMeta(x, y, z));
+            worldView.setBlock(x, y, z, 0);
         }
 
     }
 
-    public override bool isSideVisible(IBlockAccess iBlockAccess, int x, int y, int z, int side)
+    public override bool isSideVisible(IBlockReader iBlockReader, int x, int y, int z, int side)
     {
-        return side == 1 ? true : base.isSideVisible(iBlockAccess, x, y, z, side);
+        return side == 1 ? true : base.isSideVisible(iBlockReader, x, y, z, side);
     }
 }

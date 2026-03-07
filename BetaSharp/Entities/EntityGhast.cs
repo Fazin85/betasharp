@@ -37,7 +37,7 @@ public class EntityGhast : EntityFlying, Monster
 
     public override void tickLiving()
     {
-        if (!world.IsRemote && world.Difficulty == 0)
+        if (!world.isRemote && world.difficulty == 0)
         {
             markDead();
         }
@@ -79,7 +79,7 @@ public class EntityGhast : EntityFlying, Monster
 
         if (targetedEntity == null || aggroCooldown-- <= 0)
         {
-            targetedEntity = world.GetClosestPlayer(this, 100.0D);
+            targetedEntity = world.getClosestPlayer(this, 100.0D);
             if (targetedEntity != null)
             {
                 aggroCooldown = 20;
@@ -97,20 +97,20 @@ public class EntityGhast : EntityFlying, Monster
             {
                 if (attackCounter == 10)
                 {
-                    world.PlaySound(this, "mob.ghast.charge", getSoundVolume(), (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
+                    world.playSound(this, "mob.ghast.charge", getSoundVolume(), (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
                 }
 
                 ++attackCounter;
                 if (attackCounter == 20)
                 {
-                    world.PlaySound(this, "mob.ghast.fireball", getSoundVolume(), (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
+                    world.playSound(this, "mob.ghast.fireball", getSoundVolume(), (random.NextFloat() - random.NextFloat()) * 0.2F + 1.0F);
                     EntityFireball fireball = new EntityFireball(world, this, dx2, dy2, dz2);
                     double spawnOffset = 4.0D;
                     Vec3D lookDir = getLook(1.0F);
                     fireball.x = x + lookDir.x * spawnOffset;
                     fireball.y = y + (double)(height / 2.0F) + 0.5D;
                     fireball.z = z + lookDir.z * spawnOffset;
-                    world.Entities.SpawnEntity(fireball);
+                    world.SpawnEntity(fireball);
                     attackCounter = -40;
                 }
             }
@@ -128,7 +128,7 @@ public class EntityGhast : EntityFlying, Monster
             }
         }
 
-        if (!world.IsRemote)
+        if (!world.isRemote)
         {
             sbyte data = dataWatcher.getWatchableObjectByte(16);
             byte isCharging = (byte)(attackCounter > 10 ? 1 : 0);
@@ -150,7 +150,7 @@ public class EntityGhast : EntityFlying, Monster
         for (int i = 1; (double)i < distance; ++i)
         {
             box.Translate(stepX, stepY, stepZ);
-            if (world.Entities.GetEntityCollisions(this, box).Count > 0)
+            if (world.getEntityCollisionsScratch(this, box).Count > 0)
             {
                 return false;
             }
@@ -186,7 +186,7 @@ public class EntityGhast : EntityFlying, Monster
 
     public override bool canSpawn()
     {
-        return random.NextInt(20) == 0 && base.canSpawn() && world.Difficulty > 0;
+        return random.NextInt(20) == 0 && base.canSpawn() && world.difficulty > 0;
     }
 
     public override int getMaxSpawnedInChunk()

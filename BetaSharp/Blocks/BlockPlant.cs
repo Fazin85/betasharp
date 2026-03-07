@@ -14,9 +14,9 @@ public class BlockPlant : Block
         setBoundingBox(0.5F - halfSize, 0.0F, 0.5F - halfSize, 0.5F + halfSize, halfSize * 3.0F, 0.5F + halfSize);
     }
 
-    public override bool canPlaceAt(World world, int x, int y, int z)
+    public override bool canPlaceAt(WorldBlockView world, int x, int y, int z)
     {
-        return base.canPlaceAt(world, x, y, z) && canPlantOnTop(world.GetBlockId(x, y - 1, z));
+        return base.canPlaceAt(world, x, y, z) && canPlantOnTop(world.getBlockId(x, y - 1, z));
     }
 
     protected virtual bool canPlantOnTop(int id)
@@ -24,33 +24,33 @@ public class BlockPlant : Block
         return id == Block.GrassBlock.id || id == Block.Dirt.id || id == Block.Farmland.id;
     }
 
-    public override void neighborUpdate(World world, int x, int y, int z, int id)
+    public override void neighborUpdate(WorldBlockView world, int x, int y, int z, int id)
     {
         base.neighborUpdate(world, x, y, z, id);
         breakIfCannotGrow(world, x, y, z);
     }
 
-    public override void onTick(World world, int x, int y, int z, JavaRandom random)
+    public override void onTick(WorldBlockView worldView, int x, int y, int z, JavaRandom random, WorldEventBroadcaster broadcaster, bool isRemote)
     {
-        breakIfCannotGrow(world, x, y, z);
+        breakIfCannotGrow(worldView, x, y, z);
     }
 
-    protected void breakIfCannotGrow(World world, int x, int y, int z)
+    protected void breakIfCannotGrow(WorldBlockView world, int x, int y, int z)
     {
         if (!canGrow(world, x, y, z))
         {
-            dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
-            world.SetBlock(x, y, z, 0);
+            dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
+            world.setBlock(x, y, z, 0);
         }
 
     }
 
     public override bool canGrow(World world, int x, int y, int z)
     {
-        return (world.Lighting.GetBrightness(x, y, z) >= 8 || world.Lighting.HasSkyLight(x, y, z)) && canPlantOnTop(world.GetBlockId(x, y - 1, z));
+        return (world.getBrightness(x, y, z) >= 8 || world.hasSkyLight(x, y, z)) && canPlantOnTop(world.getBlockId(x, y - 1, z));
     }
 
-    public override Box? getCollisionShape(World world, int x, int y, int z)
+    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
     {
         return null;
     }

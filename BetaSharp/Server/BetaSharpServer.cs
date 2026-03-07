@@ -131,7 +131,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
             }
 
             worlds[i].AddWorldAccess(new ServerWorldEventListener(this, worlds[i]));
-            worlds[i].Difficulty = config.GetSpawnMonsters(true) ? 1 : 0;
+            worlds[i].difficulty = config.GetSpawnMonsters(true) ? 1 : 0;
             worlds[i].allowSpawning(config.GetSpawnMonsters(true), spawnAnimals);
             playerManager.saveAllPlayers(worlds);
         }
@@ -159,8 +159,8 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
 
                 // Phase 1: Parallel terrain generation
                 var sw1 = Stopwatch.StartNew();
-                var threadLocalGen = new ThreadLocal<ChunkSource>(
-                    () => world.chunkCache.CreateParallelGenerator(), trackAllValues: false);
+                var threadLocalGen = new ThreadLocal<IChunkSource>(
+                    () => world.IChunkCache.CreateParallelGenerator(), trackAllValues: false);
                 Parallel.For(0, totalChunks, idx =>
                 {
                     if (!running) return;
@@ -182,8 +182,8 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                         lastTimeLogged = currentTime;
                     }
                     var (cx, cz) = chunkList[idx];
-                    world.chunkCache.InsertPreGeneratedChunk(cx, cz, preGenerated[idx]);
-                    world.chunkCache.DecorateIfReady(cx, cz);
+                    world.IChunkCache.InsertPreGeneratedChunk(cx, cz, preGenerated[idx]);
+                    world.IChunkCache.DecorateIfReady(cx, cz);
                 }
                 sw2.Stop();
                 _logger.LogInformation($"  Level {i} decoration: {sw2.ElapsedMilliseconds}ms");
@@ -295,7 +295,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                         continue;
                     }
 
-                    if (worlds[0].Environment.CanSkipNight())
+                    if (worlds[0].Entities.AreAllPlayersAsleep())
                     {
                         tick();
                         _ticksThisSecond++;
@@ -407,7 +407,7 @@ public abstract class BetaSharpServer : Runnable, CommandOutput
                 ServerWorld world = worlds[i];
                 if (ticks % 20 == 0)
                 {
-                    playerManager.sendToDimension(new WorldTimeUpdateS2CPacket(world.GetTime()), world.Dimension.Id);
+                    playerManager.sendToDimension(new WorldTimeUpdateS2CPacket(world.GetTime()), world.dimension.Id);
                 }
 
                 world.Tick();

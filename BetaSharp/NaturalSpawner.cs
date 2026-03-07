@@ -25,7 +25,7 @@ internal static class NaturalSpawner
 
     private static BlockPos GetRandomSpawningPointInChunk(World world, PathFinder pathFinder, int centerX, int centerZ)
     {
-        pathFinder.SetWorld(world);
+        pathFinder.SetWorld(world.Blocks);
         int x = centerX + world.random.NextInt(16);
         int y = world.random.NextInt(128);
         int z = centerZ + world.random.NextInt(16);
@@ -34,7 +34,7 @@ internal static class NaturalSpawner
 
     internal static void DoSpawning(World world, PathFinder pathFinder, bool spawnHostile, bool spawnPeaceful)
     {
-        pathFinder.SetWorld(world);
+        pathFinder.SetWorld(world.Blocks);
         if (!spawnHostile && !spawnPeaceful) return;
 
         ChunksForSpawning.Clear();
@@ -68,8 +68,8 @@ internal static class NaturalSpawner
                     SpawnListEntry toSpawn = spawnSelector.GetNext(world.random);
 
                     BlockPos spawnPos = GetRandomSpawningPointInChunk(world, pathFinder, chunk.X * 16, chunk.Z * 16);
-                    if (world.ShouldSuffocate(spawnPos.x, spawnPos.y, spawnPos.z)) continue;
-                    if (world.GetMaterial(spawnPos.x, spawnPos.y, spawnPos.z) != creatureKind.SpawnMaterial) continue;
+                    if (world.shouldSuffocate(spawnPos.x, spawnPos.y, spawnPos.z)) continue;
+                    if (world.getMaterial(spawnPos.x, spawnPos.y, spawnPos.z) != creatureKind.SpawnMaterial) continue;
 
                     int spawnedCount = 0;
                     bool breakToNextChunk = false;
@@ -120,7 +120,7 @@ internal static class NaturalSpawner
 
     internal static bool SpawnMonstersAndWakePlayers(World world, PathFinder pathFinder, List<EntityPlayer> players)
     {
-        pathFinder.SetWorld(world);
+        pathFinder.SetWorld(world.Blocks);
         bool monstersSpawned = false;
         foreach (var player in players)
         {
@@ -143,7 +143,7 @@ internal static class NaturalSpawner
                 int newSpawnY;
                 for (newSpawnY = spawnY; newSpawnY > 2; --newSpawnY)
                 {
-                    if (world.ShouldSuffocate(spawnX, newSpawnY - 1, spawnZ)) break;
+                    if (world.shouldSuffocate(spawnX, newSpawnY - 1, spawnZ)) break;
                 }
 
                 while (!CreatureKind.Monster.CanSpawnAtLocation(world, spawnX, newSpawnY, spawnZ) &&

@@ -6,7 +6,7 @@ using BetaSharp.Worlds.Generation.Biomes.Source;
 
 namespace BetaSharp.Worlds.Core;
 
-internal class WorldRegion : IBlockAccess
+internal class WorldRegion : IBlockReader
 {
     private readonly Chunk[][] _chunks;
     private readonly int _chunkX;
@@ -39,7 +39,7 @@ internal class WorldRegion : IBlockAccess
         }
     }
 
-    public int GetBlockId(int x, int y, int z)
+    public int getBlockId(int x, int y, int z)
     {
         if (y is < 0 or >= 128)
         {
@@ -58,7 +58,7 @@ internal class WorldRegion : IBlockAccess
         return 0;
     }
 
-    public BlockEntity? GetBlockEntity(int x, int y, int z)
+    public BlockEntity? getBlockEntity(int x, int y, int z)
     {
         int cx = (x >> 4) - _chunkX;
         int cz = (z >> 4) - _chunkZ;
@@ -74,12 +74,12 @@ internal class WorldRegion : IBlockAccess
     public float GetNaturalBrightness(int x, int y, int z, int blockLight)
     {
         int finalLight = Math.Max(getRawBrightness(x, y, z), blockLight);
-        return _world.Dimension.LightLevelToLuminance[finalLight];
+        return _world.dimension.LightLevelToLuminance[finalLight];
     }
 
-    public float GetLuminance(int x, int y, int z) => _world.Dimension.LightLevelToLuminance[getRawBrightness(x, y, z)];
+    public float GetLuminance(int x, int y, int z) => _world.dimension.LightLevelToLuminance[getRawBrightness(x, y, z)];
 
-    public int GetBlockMeta(int x, int y, int z)
+    public int getBlockMeta(int x, int y, int z)
     {
         if (y is < 0 or >= 128)
         {
@@ -91,23 +91,23 @@ internal class WorldRegion : IBlockAccess
         return _chunks[cx][cz].GetBlockMeta(x & 15, y, z & 15);
     }
 
-    public Material GetMaterial(int x, int y, int z)
+    public Material getMaterial(int x, int y, int z)
     {
-        int var4 = GetBlockId(x, y, z);
+        int var4 = getBlockId(x, y, z);
         return var4 == 0 ? Material.Air : Block.Blocks[var4].material;
     }
 
-    public BiomeSource GetBiomeSource() => _world.GetBiomeSource();
+    public BiomeSource getBiomeSource() => _world.GetBiomeSource();
 
-    public bool IsOpaque(int x, int y, int z)
+    public bool isOpaque(int x, int y, int z)
     {
-        Block block = Block.Blocks[GetBlockId(x, y, z)];
+        Block block = Block.Blocks[getBlockId(x, y, z)];
         return block != null && block.isOpaque();
     }
 
-    public bool ShouldSuffocate(int x, int y, int z)
+    public bool shouldSuffocate(int x, int y, int z)
     {
-        Block block = Block.Blocks[GetBlockId(x, y, z)];
+        Block block = Block.Blocks[getBlockId(x, y, z)];
         return block != null && block.material.BlocksMovement && block.isFullCube();
     }
 
@@ -123,7 +123,7 @@ internal class WorldRegion : IBlockAccess
 
         if (useNeighborLight)
         {
-            int id = GetBlockId(x, y, z);
+            int id = getBlockId(x, y, z);
             if (id == Block.Slab.id || id == Block.Farmland.id || id == Block.WoodenStairs.id || id == Block.CobblestoneStairs.id)
             {
                 int max = getRawBrightness(x, y + 1, z, false);
@@ -142,12 +142,12 @@ internal class WorldRegion : IBlockAccess
 
         if (y >= 128)
         {
-            return Math.Max(0, 15 - _world.ambientDarkness);
+            return Math.Max(0, 15 - _world.Environment.AmbientDarkness);
         }
 
         int cIdxX = (x >> 4) - _chunkX;
         int cIdxZ = (z >> 4) - _chunkZ;
 
-        return _chunks[cIdxX][cIdxZ].GetLight(x & 15, y, z & 15, _world.ambientDarkness);
+        return _chunks[cIdxX][cIdxZ].GetLight(x & 15, y, z & 15, _world.Environment.AmbientDarkness);
     }
 }

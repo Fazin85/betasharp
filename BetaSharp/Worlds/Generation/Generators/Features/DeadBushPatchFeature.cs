@@ -14,7 +14,7 @@ internal class DeadBushPatchFeature : Feature
     {
         while (true)
         {
-            int blockId = world.GetBlockId(x, y, z);
+            int blockId = world.getBlockId(x, y, z);
             if ((blockId != 0 && blockId != Block.Leaves.id) || y <= 0)
             {
                 for (int i = 0; i < 4; ++i)
@@ -22,9 +22,9 @@ internal class DeadBushPatchFeature : Feature
                     int genX = x + rand.NextInt(8) - rand.NextInt(8);
                     int genY = y + rand.NextInt(4) - rand.NextInt(4);
                     int genZ = z + rand.NextInt(8) - rand.NextInt(8);
-                    if (world.IsAir(genX, genY, genZ) && ((BlockPlant)Block.Blocks[_deadBushBlockId]).canGrow(world, genX, genY, genZ))
+                    if (world.isAir(genX, genY, genZ) && ((BlockPlant)Block.Blocks[_deadBushBlockId]).canGrow(world, genX, genY, genZ))
                     {
-                        world.SetBlockWithoutNotifyingNeighbors(genX, genY, genZ, _deadBushBlockId);
+                        world.setBlockWithoutNotifyingNeighbors(genX, genY, genZ, _deadBushBlockId);
                     }
                 }
 

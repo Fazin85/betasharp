@@ -12,21 +12,21 @@ internal class BlockSapling : BlockPlant
         setBoundingBox(0.5F - halfSize, 0.0F, 0.5F - halfSize, 0.5F + halfSize, halfSize * 2.0F, 0.5F + halfSize);
     }
 
-    public override void onTick(World world, int x, int y, int z, JavaRandom random)
+    public override void onTick(WorldBlockView worldView, int x, int y, int z, JavaRandom random, WorldEventBroadcaster broadcaster, bool isRemote)
     {
-        if (!world.IsRemote)
+        if (!isRemote)
         {
-            base.onTick(world, x, y, z, random);
-            if (world.Lighting.GetLightLevel(x, y + 1, z) >= 9 && random.NextInt(30) == 0)
+            base.onTick(worldView, x, y, z, random, broadcaster, isRemote);
+            if (worldView.getLightLevel(x, y + 1, z) >= 9 && random.NextInt(30) == 0)
             {
-                int saplingMeta = world.GetBlockMeta(x, y, z);
+                int saplingMeta = worldView.getBlockMeta(x, y, z);
                 if ((saplingMeta & 8) == 0)
                 {
-                    world.setBlockMeta(x, y, z, saplingMeta | 8);
+                    worldView.setBlockMeta(x, y, z, saplingMeta | 8);
                 }
                 else
                 {
-                    generate(world, x, y, z, random);
+                    generate(worldView, x, y, z, random);
                 }
             }
 
@@ -41,8 +41,8 @@ internal class BlockSapling : BlockPlant
 
     public void generate(World world, int x, int y, int z, JavaRandom random)
     {
-        int saplingType = world.GetBlockMeta(x, y, z) & 3;
-        world.SetBlockWithoutNotifyingNeighbors(x, y, z, 0);
+        int saplingType = world.getBlockMeta(x, y, z) & 3;
+        world.setBlockWithoutNotifyingNeighbors(x, y, z, 0);
         object treeFeature = null;
         if (saplingType == 1)
         {
@@ -63,7 +63,7 @@ internal class BlockSapling : BlockPlant
 
         if (!((Feature)treeFeature).Generate(world, random, x, y, z))
         {
-            world.SetBlockWithoutNotifyingNeighbors(x, y, z, id, saplingType);
+            world.setBlockWithoutNotifyingNeighbors(x, y, z, id, saplingType);
         }
 
     }

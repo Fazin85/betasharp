@@ -67,19 +67,19 @@ internal class BlockDoor : Block
 
     public override Box getBoundingBox(World world, int x, int y, int z)
     {
-        updateBoundingBox(world, x, y, z);
+        updateBoundingBox(world.Blocks, x, y, z);
         return base.getBoundingBox(world, x, y, z);
     }
 
-    public override Box? getCollisionShape(World world, int x, int y, int z)
+    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
     {
-        updateBoundingBox(world, x, y, z);
+        updateBoundingBox(world.Blocks, x, y, z);
         return base.getCollisionShape(world, x, y, z);
     }
 
-    public override void updateBoundingBox(IBlockAccess iBlockAccess, int x, int y, int z)
+    public override void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z)
     {
-        rotate(setOpen(iBlockAccess.GetBlockMeta(x, y, z)));
+        rotate(setOpen(iBlockReader.getBlockMeta(x, y, z)));
     }
 
     public void rotate(int meta)
@@ -121,10 +121,10 @@ internal class BlockDoor : Block
         }
         else
         {
-            int meta = world.GetBlockMeta(x, y, z);
+            int meta = world.getBlockMeta(x, y, z);
             if ((meta & 8) != 0)
             {
-                if (world.GetBlockId(x, y - 1, z) == id)
+                if (world.getBlockId(x, y - 1, z) == id)
                 {
                     onUse(world, x, y - 1, z, player);
                 }
@@ -133,14 +133,14 @@ internal class BlockDoor : Block
             }
             else
             {
-                if (world.GetBlockId(x, y + 1, z) == id)
+                if (world.getBlockId(x, y + 1, z) == id)
                 {
                     world.setBlockMeta(x, y + 1, z, (meta ^ 4) + 8);
                 }
 
                 world.setBlockMeta(x, y, z, meta ^ 4);
-                world.SetBlocksDirty(x, y - 1, z, x, y, z);
-                world.WorldEvent(player, 1003, x, y, z, 0);
+                world.setBlocksDirty(x, y - 1, z, x, y, z);
+                world.worldEvent(player, 1003, x, y, z, 0);
                 return true;
             }
         }
@@ -148,10 +148,10 @@ internal class BlockDoor : Block
 
     public void setOpen(World world, int x, int y, int z, bool open)
     {
-        int meta = world.GetBlockMeta(x, y, z);
+        int meta = world.getBlockMeta(x, y, z);
         if ((meta & 8) != 0)
         {
-            if (world.GetBlockId(x, y - 1, z) == id)
+            if (world.getBlockId(x, y - 1, z) == id)
             {
                 setOpen(world, x, y - 1, z, open);
             }
@@ -159,29 +159,29 @@ internal class BlockDoor : Block
         }
         else
         {
-            bool isOpen = (world.GetBlockMeta(x, y, z) & 4) > 0;
+            bool isOpen = (world.getBlockMeta(x, y, z) & 4) > 0;
             if (isOpen != open)
             {
-                if (world.GetBlockId(x, y + 1, z) == id)
+                if (world.getBlockId(x, y + 1, z) == id)
                 {
                     world.setBlockMeta(x, y + 1, z, (meta ^ 4) + 8);
                 }
 
                 world.setBlockMeta(x, y, z, meta ^ 4);
-                world.SetBlocksDirty(x, y - 1, z, x, y, z);
-                world.WorldEvent((EntityPlayer)null, 1003, x, y, z, 0);
+                world.setBlocksDirty(x, y - 1, z, x, y, z);
+                world.worldEvent((EntityPlayer)null, 1003, x, y, z, 0);
             }
         }
     }
 
-    public override void neighborUpdate(World world, int x, int y, int z, int id)
+    public override void neighborUpdate(WorldBlockView world, int x, int y, int z, int id)
     {
-        int meta = world.GetBlockMeta(x, y, z);
+        int meta = world.getBlockMeta(x, y, z);
         if ((meta & 8) != 0)
         {
-            if (world.GetBlockId(x, y - 1, z) != base.id)
+            if (world.getBlockId(x, y - 1, z) != base.id)
             {
-                world.SetBlock(x, y, z, 0);
+                world.setBlock(x, y, z, 0);
             }
 
             if (id > 0 && Block.Blocks[id].canEmitRedstonePower())
@@ -192,32 +192,32 @@ internal class BlockDoor : Block
         else
         {
             bool wasBroken = false;
-            if (world.GetBlockId(x, y + 1, z) != base.id)
+            if (world.getBlockId(x, y + 1, z) != base.id)
             {
-                world.SetBlock(x, y, z, 0);
+                world.setBlock(x, y, z, 0);
                 wasBroken = true;
             }
 
-            if (!world.ShouldSuffocate(x, y - 1, z))
+            if (!world.shouldSuffocate(x, y - 1, z))
             {
-                world.SetBlock(x, y, z, 0);
+                world.setBlock(x, y, z, 0);
                 wasBroken = true;
-                if (world.GetBlockId(x, y + 1, z) == base.id)
+                if (world.getBlockId(x, y + 1, z) == base.id)
                 {
-                    world.SetBlock(x, y + 1, z, 0);
+                    world.setBlock(x, y + 1, z, 0);
                 }
             }
 
             if (wasBroken)
             {
-                if (!world.IsRemote)
+                if (!world.isRemote)
                 {
                     dropStacks(world, x, y, z, meta);
                 }
             }
             else if (id > 0 && Block.Blocks[id].canEmitRedstonePower())
             {
-                bool isPowered = world.Redstone.IsPowered(x, y, z) || world.Redstone.IsPowered(x, y + 1, z);
+                bool isPowered = world.isPowered(x, y, z) || world.isPowered(x, y + 1, z);
                 setOpen(world, x, y, z, isPowered);
             }
         }
@@ -229,7 +229,7 @@ internal class BlockDoor : Block
         return (blockMeta & 8) != 0 ? 0 : (material == Material.Metal ? Item.IronDoor.id : Item.WoodenDoor.id);
     }
 
-    public override HitResult raycast(World world, int x, int y, int z, Vec3D startPos, Vec3D endPos)
+    public override HitResult raycast(IBlockReader world, int x, int y, int z, Vec3D startPos, Vec3D endPos)
     {
         updateBoundingBox(world, x, y, z);
         return base.raycast(world, x, y, z, startPos, endPos);
@@ -240,9 +240,9 @@ internal class BlockDoor : Block
         return (meta & 4) == 0 ? meta - 1 & 3 : meta & 3;
     }
 
-    public override bool canPlaceAt(World world, int x, int y, int z)
+    public override bool canPlaceAt(WorldBlockView world, int x, int y, int z)
     {
-        return y >= 127 ? false : world.ShouldSuffocate(x, y - 1, z) && base.canPlaceAt(world, x, y, z) && base.canPlaceAt(world, x, y + 1, z);
+        return y >= 127 ? false : world.shouldSuffocate(x, y - 1, z) && base.canPlaceAt(world, x, y, z) && base.canPlaceAt(world, x, y + 1, z);
     }
 
     public static bool isOpen(int meta)

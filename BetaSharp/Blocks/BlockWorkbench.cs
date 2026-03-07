@@ -19,7 +19,7 @@ internal class BlockWorkbench : Block
 
     public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
     {
-        if (world.IsRemote)
+        if (world.isRemote)
         {
             return true;
         }

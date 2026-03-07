@@ -19,7 +19,7 @@ internal class GrassPatchFeature : Feature
     {
         while (true)
         {
-            int blockId = world.GetBlockId(x, y, z);
+            int blockId = world.getBlockId(x, y, z);
             if ((blockId != 0 && blockId != Block.Leaves.id) || y <= 0)
             {
                 for (int i = 0; i < 128; ++i)
@@ -27,9 +27,9 @@ internal class GrassPatchFeature : Feature
                     int genX = x + rand.NextInt(8) - rand.NextInt(8);
                     int genY = y + rand.NextInt(4) - rand.NextInt(4);
                     int genZ = z + rand.NextInt(8) - rand.NextInt(8);
-                    if (world.IsAir(genX, genY, genZ) && ((BlockPlant)Block.Blocks[_tallGrassBlockId]).canGrow(world, genX, genY, genZ))
+                    if (world.isAir(genX, genY, genZ) && ((BlockPlant)Block.Blocks[_tallGrassBlockId]).canGrow(world, genX, genY, genZ))
                     {
-                        world.SetBlockWithoutNotifyingNeighbors(genX, genY, genZ, _tallGrassBlockId, _tallGrassBlockMeta);
+                        world.setBlockWithoutNotifyingNeighbors(genX, genY, genZ, _tallGrassBlockId, _tallGrassBlockMeta);
                     }
                 }
 

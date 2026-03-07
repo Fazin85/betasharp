@@ -23,12 +23,12 @@ internal class BlockSnowBlock : Block
         return 4;
     }
 
-    public override void onTick(World world, int x, int y, int z, JavaRandom random)
+    public override void onTick(WorldBlockView worldView, int x, int y, int z, JavaRandom random, WorldEventBroadcaster broadcaster, bool isRemote)
     {
-        if (world.Lighting.GetBrightness(LightType.Block, x, y, z) > 11)
+        if (worldView.getBrightness(LightType.Block, x, y, z) > 11)
         {
-            dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
-            world.SetBlock(x, y, z, 0);
+            dropStacks(worldView, x, y, z, worldView.getBlockMeta(x, y, z));
+            worldView.setBlock(x, y, z, 0);
         }
 
     }

@@ -40,7 +40,7 @@ public class EntityCreeper : EntityMonster
 
     protected override void attackBlockedEntity(Entity entity, float distance)
     {
-        if (!world.IsRemote)
+        if (!world.isRemote)
         {
             if (timeSinceIgnited > 0)
             {
@@ -58,12 +58,12 @@ public class EntityCreeper : EntityMonster
     public override void tick()
     {
         lastActiveTime = timeSinceIgnited;
-        if (world.IsRemote)
+        if (world.isRemote)
         {
             int state = getCreeperState();
             if (state > 0 && timeSinceIgnited == 0)
             {
-                world.PlaySound(this, "random.fuse", 1.0F, 0.5F);
+                world.playSound(this, "random.fuse", 1.0F, 0.5F);
             }
 
             timeSinceIgnited += state;
@@ -113,14 +113,14 @@ public class EntityCreeper : EntityMonster
 
     protected override void attackEntity(Entity entity, float distance)
     {
-        if (!world.IsRemote)
+        if (!world.isRemote)
         {
             int state = getCreeperState();
             if (state <= 0 && distance < 3.0F || state > 0 && distance < 7.0F)
             {
                 if (timeSinceIgnited == 0)
                 {
-                    world.PlaySound(this, "random.fuse", 1.0F, 0.5F);
+                    world.playSound(this, "random.fuse", 1.0F, 0.5F);
                 }
 
                 setCreeperState(1);
@@ -129,11 +129,11 @@ public class EntityCreeper : EntityMonster
                 {
                     if (getPowered())
                     {
-                        world.CreateExplosion(this, x, y, z, 6.0F);
+                        world.createExplosion(this, x, y, z, 6.0F);
                     }
                     else
                     {
-                        world.CreateExplosion(this, x, y, z, 3.0F);
+                        world.createExplosion(this, x, y, z, 3.0F);
                     }
 
                     markDead();

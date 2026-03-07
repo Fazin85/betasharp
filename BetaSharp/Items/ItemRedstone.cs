@@ -13,7 +13,7 @@ internal class ItemRedstone : Item
 
     public override bool useOnBlock(ItemStack itemStack, EntityPlayer entityPlayer, World world, int x, int y, int z, int meta)
     {
-        if (world.GetBlockId(x, y, z) != Block.Snow.id)
+        if (world.getBlockId(x, y, z) != Block.Snow.id)
         {
             if (meta == 0)
             {
@@ -45,16 +45,16 @@ internal class ItemRedstone : Item
                 ++x;
             }
 
-            if (!world.IsAir(x, y, z))
+            if (!world.isAir(x, y, z))
             {
                 return false;
             }
         }
 
-        if (Block.RedstoneWire.canPlaceAt(world, x, y, z))
+        if (Block.RedstoneWire.canPlaceAt(world.Blocks, x, y, z))
         {
             --itemStack.count;
-            world.SetBlock(x, y, z, Block.RedstoneWire.id);
+            world.setBlock(x, y, z, Block.RedstoneWire.id);
         }
 
         return true;

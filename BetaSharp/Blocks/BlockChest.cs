@@ -18,7 +18,7 @@ internal class BlockChest : BlockWithEntity
         textureId = 26;
     }
 
-    public override int getTextureId(IBlockAccess iBlockAccess, int x, int y, int z, int side)
+    public override int getTextureId(IBlockReader iBlockReader, int x, int y, int z, int side)
     {
         if (side == 1)
         {
@@ -30,10 +30,10 @@ internal class BlockChest : BlockWithEntity
         }
         else
         {
-            int blockNorth = iBlockAccess.GetBlockId(x, y, z - 1);
-            int blockSouth = iBlockAccess.GetBlockId(x, y, z + 1);
-            int blockWest = iBlockAccess.GetBlockId(x - 1, y, z);
-            int blockEast = iBlockAccess.GetBlockId(x + 1, y, z);
+            int blockNorth = iBlockReader.getBlockId(x, y, z - 1);
+            int blockSouth = iBlockReader.getBlockId(x, y, z + 1);
+            int blockWest = iBlockReader.getBlockId(x - 1, y, z);
+            int blockEast = iBlockReader.getBlockId(x + 1, y, z);
             int textureOffset;
             int cornerBlock1;
             int cornerBlock2;
@@ -73,8 +73,8 @@ internal class BlockChest : BlockWithEntity
                         textureOffset = -1;
                     }
 
-                    cornerBlock1 = iBlockAccess.GetBlockId(blockWest == id ? x - 1 : x + 1, y, z - 1);
-                    cornerBlock2 = iBlockAccess.GetBlockId(blockWest == id ? x - 1 : x + 1, y, z + 1);
+                    cornerBlock1 = iBlockReader.getBlockId(blockWest == id ? x - 1 : x + 1, y, z - 1);
+                    cornerBlock2 = iBlockReader.getBlockId(blockWest == id ? x - 1 : x + 1, y, z + 1);
                     if (side == 3)
                     {
                         textureOffset = -1 - textureOffset;
@@ -106,8 +106,8 @@ internal class BlockChest : BlockWithEntity
                     textureOffset = -1;
                 }
 
-                cornerBlock1 = iBlockAccess.GetBlockId(x - 1, y, blockNorth == id ? z - 1 : z + 1);
-                cornerBlock2 = iBlockAccess.GetBlockId(x + 1, y, blockNorth == id ? z - 1 : z + 1);
+                cornerBlock1 = iBlockReader.getBlockId(x - 1, y, blockNorth == id ? z - 1 : z + 1);
+                cornerBlock2 = iBlockReader.getBlockId(x + 1, y, blockNorth == id ? z - 1 : z + 1);
                 if (side == 4)
                 {
                     textureOffset = -1 - textureOffset;
@@ -138,25 +138,25 @@ internal class BlockChest : BlockWithEntity
         return side == 1 ? textureId - 1 : (side == 0 ? textureId - 1 : (side == 3 ? textureId + 1 : textureId));
     }
 
-    public override bool canPlaceAt(World world, int x, int y, int z)
+    public override bool canPlaceAt(WorldBlockView world, int x, int y, int z)
     {
         int adjacentChestCount = 0;
-        if (world.GetBlockId(x - 1, y, z) == id)
+        if (world.getBlockId(x - 1, y, z) == id)
         {
             ++adjacentChestCount;
         }
 
-        if (world.GetBlockId(x + 1, y, z) == id)
+        if (world.getBlockId(x + 1, y, z) == id)
         {
             ++adjacentChestCount;
         }
 
-        if (world.GetBlockId(x, y, z - 1) == id)
+        if (world.getBlockId(x, y, z - 1) == id)
         {
             ++adjacentChestCount;
         }
 
-        if (world.GetBlockId(x, y, z + 1) == id)
+        if (world.getBlockId(x, y, z + 1) == id)
         {
             ++adjacentChestCount;
         }
@@ -166,12 +166,12 @@ internal class BlockChest : BlockWithEntity
 
     private bool hasNeighbor(World world, int x, int y, int z)
     {
-        return world.GetBlockId(x, y, z) != id ? false : (world.GetBlockId(x - 1, y, z) == id ? true : (world.GetBlockId(x + 1, y, z) == id ? true : (world.GetBlockId(x, y, z - 1) == id ? true : world.GetBlockId(x, y, z + 1) == id)));
+        return world.getBlockId(x, y, z) != id ? false : (world.getBlockId(x - 1, y, z) == id ? true : (world.getBlockId(x + 1, y, z) == id ? true : (world.getBlockId(x, y, z - 1) == id ? true : world.getBlockId(x, y, z + 1) == id)));
     }
 
     public override void onBreak(World world, int x, int y, int z)
     {
-        BlockEntityChest chest = (BlockEntityChest)world.GetBlockEntity(x, y, z);
+        BlockEntityChest chest = (BlockEntityChest)world.getBlockEntity(x, y, z);
 
         for (int slot = 0; slot < chest.size(); ++slot)
         {
@@ -196,7 +196,7 @@ internal class BlockChest : BlockWithEntity
                     entityItem.velocityX = (double)((float)random.NextGaussian() * var13);
                     entityItem.velocityY = (double)((float)random.NextGaussian() * var13 + 0.2F);
                     entityItem.velocityZ = (double)((float)random.NextGaussian() * var13);
-                    world.Entities.SpawnEntity(entityItem);
+                    world.SpawnEntity(entityItem);
                 }
             }
         }
@@ -206,50 +206,50 @@ internal class BlockChest : BlockWithEntity
 
     public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
     {
-        IInventory chestInventory = (BlockEntityChest)world.GetBlockEntity(x, y, z);
-        if (world.ShouldSuffocate(x, y + 1, z))
+        IInventory chestInventory = (BlockEntityChest)world.getBlockEntity(x, y, z);
+        if (world.shouldSuffocate(x, y + 1, z))
         {
             return true;
         }
-        else if (world.GetBlockId(x - 1, y, z) == id && world.ShouldSuffocate(x - 1, y + 1, z))
+        else if (world.getBlockId(x - 1, y, z) == id && world.shouldSuffocate(x - 1, y + 1, z))
         {
             return true;
         }
-        else if (world.GetBlockId(x + 1, y, z) == id && world.ShouldSuffocate(x + 1, y + 1, z))
+        else if (world.getBlockId(x + 1, y, z) == id && world.shouldSuffocate(x + 1, y + 1, z))
         {
             return true;
         }
-        else if (world.GetBlockId(x, y, z - 1) == id && world.ShouldSuffocate(x, y + 1, z - 1))
+        else if (world.getBlockId(x, y, z - 1) == id && world.shouldSuffocate(x, y + 1, z - 1))
         {
             return true;
         }
-        else if (world.GetBlockId(x, y, z + 1) == id && world.ShouldSuffocate(x, y + 1, z + 1))
+        else if (world.getBlockId(x, y, z + 1) == id && world.shouldSuffocate(x, y + 1, z + 1))
         {
             return true;
         }
         else
         {
-            if (world.GetBlockId(x - 1, y, z) == id)
+            if (world.getBlockId(x - 1, y, z) == id)
             {
-                chestInventory = new InventoryLargeChest("Large chest", (BlockEntityChest)world.GetBlockEntity(x - 1, y, z), (IInventory)chestInventory);
+                chestInventory = new InventoryLargeChest("Large chest", (BlockEntityChest)world.getBlockEntity(x - 1, y, z), (IInventory)chestInventory);
             }
 
-            if (world.GetBlockId(x + 1, y, z) == id)
+            if (world.getBlockId(x + 1, y, z) == id)
             {
-                chestInventory = new InventoryLargeChest("Large chest", (IInventory)chestInventory, (BlockEntityChest)world.GetBlockEntity(x + 1, y, z));
+                chestInventory = new InventoryLargeChest("Large chest", (IInventory)chestInventory, (BlockEntityChest)world.getBlockEntity(x + 1, y, z));
             }
 
-            if (world.GetBlockId(x, y, z - 1) == id)
+            if (world.getBlockId(x, y, z - 1) == id)
             {
-                chestInventory = new InventoryLargeChest("Large chest", (BlockEntityChest)world.GetBlockEntity(x, y, z - 1), (IInventory)chestInventory);
+                chestInventory = new InventoryLargeChest("Large chest", (BlockEntityChest)world.getBlockEntity(x, y, z - 1), (IInventory)chestInventory);
             }
 
-            if (world.GetBlockId(x, y, z + 1) == id)
+            if (world.getBlockId(x, y, z + 1) == id)
             {
-                chestInventory = new InventoryLargeChest("Large chest", (IInventory)chestInventory, (BlockEntityChest)world.GetBlockEntity(x, y, z + 1));
+                chestInventory = new InventoryLargeChest("Large chest", (IInventory)chestInventory, (BlockEntityChest)world.getBlockEntity(x, y, z + 1));
             }
 
-            if (world.IsRemote)
+            if (world.isRemote)
             {
                 return true;
             }

@@ -42,15 +42,15 @@ internal class BlockSlab : Block
             base.onPlaced(world, x, y, z);
         }
 
-        int blockBelowId = world.GetBlockId(x, y - 1, z);
-        int slabMeta = world.GetBlockMeta(x, y, z);
-        int blockBelowMeta = world.GetBlockMeta(x, y - 1, z);
+        int blockBelowId = world.getBlockId(x, y - 1, z);
+        int slabMeta = world.getBlockMeta(x, y, z);
+        int blockBelowMeta = world.getBlockMeta(x, y - 1, z);
         if (slabMeta == blockBelowMeta)
         {
             if (blockBelowId == Slab.id)
             {
-                world.SetBlock(x, y, z, 0);
-                world.SetBlock(x, y - 1, z, Block.DoubleSlab.id, slabMeta);
+                world.setBlock(x, y, z, 0);
+                world.setBlock(x, y - 1, z, Block.DoubleSlab.id, slabMeta);
             }
 
         }
@@ -76,13 +76,13 @@ internal class BlockSlab : Block
         return doubleSlab;
     }
 
-    public override bool isSideVisible(IBlockAccess iBlockAccess, int x, int y, int z, int side)
+    public override bool isSideVisible(IBlockReader iBlockReader, int x, int y, int z, int side)
     {
         if (this != Block.Slab)
         {
-            base.isSideVisible(iBlockAccess, x, y, z, side);
+            base.isSideVisible(iBlockReader, x, y, z, side);
         }
 
-        return side == 1 ? true : (!base.isSideVisible(iBlockAccess, x, y, z, side) ? false : (side == 0 ? true : iBlockAccess.GetBlockId(x, y, z) != id));
+        return side == 1 ? true : (!base.isSideVisible(iBlockReader, x, y, z, side) ? false : (side == 0 ? true : iBlockReader.getBlockId(x, y, z) != id));
     }
 }

@@ -20,7 +20,7 @@ internal class BlockSponge : Block
             {
                 for (int checkZ = z - radius; checkZ <= z + radius; ++checkZ)
                 {
-                    if (world.GetMaterial(checkX, checkY, checkZ) == Material.Water)
+                    if (world.getMaterial(checkX, checkY, checkZ) == Material.Water)
                     {
                     }
                 }
@@ -39,7 +39,7 @@ internal class BlockSponge : Block
             {
                 for (int checkZ = z - radius; checkZ <= z + radius; ++checkZ)
                 {
-                    world.NotifyNeighbors(checkX, checkY, checkZ, world.GetBlockId(checkX, checkY, checkZ));
+                    world.notifyNeighbors(checkX, checkY, checkZ, world.getBlockId(checkX, checkY, checkZ));
                 }
             }
         }

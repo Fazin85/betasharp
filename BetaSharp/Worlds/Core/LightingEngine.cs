@@ -12,36 +12,38 @@ namespace BetaSharp.Worlds.Core;
 
 public class LightingEngine
 {
-    private readonly World _world;
+    private readonly WorldBlockView _blocks;
+    private readonly Dimension _dimension;
     private readonly ILogger<LightingEngine> _logger = Log.Instance.For<LightingEngine>();
 
     private readonly List<LightUpdate> _lightingQueue = [];
     private int _lightingUpdatesCounter;
     private int _lightingUpdatesScheduled;
 
-    // TODO: Replace 'World' dependency with specific scoped interfaces/deps to prevent circular dependencies.
-    public LightingEngine(World world)
+    public event Action<int, int, int>? OnLightUpdated;
+
+    public LightingEngine(WorldBlockView blocks,Dimension dimension)
     {
-        _world = world;
+        _blocks = blocks;
+        _dimension = dimension;
     }
 
-    // TODO: Many places lioke ness need to use the BlockPos struc
     public float GetNaturalBrightness(int x, int y, int z, int blockLight)
     {
         int lightLevel = GetLightLevel(x, y, z);
         if (lightLevel < blockLight) lightLevel = blockLight;
-        return _world.Dimension.LightLevelToLuminance[lightLevel];
+        return _dimension.LightLevelToLuminance[lightLevel];
     }
 
-    public float GetLuminance(int x, int y, int z) => _world.Dimension.LightLevelToLuminance[GetLightLevel(x, y, z)];
+    public float getLuminance(int x, int y, int z) => _dimension.LightLevelToLuminance[GetLightLevel(x, y, z)];
 
-    public bool HasSkyLight(int x, int y, int z) => _world.GetChunk(x >> 4, z >> 4).IsAboveMaxHeight(x & 15, y, z & 15);
+    public bool HasSkyLight(int x, int y, int z) => _blocks.GetChunk(x >> 4, z >> 4).IsAboveMaxHeight(x & 15, y, z & 15);
 
     public int GetBrightness(int x, int y, int z)
     {
         if (y < 0) return 0;
-        if (y >= 128) return !_world.Dimension.HasCeiling ? 15 : 0;
-        return _world.GetChunk(x >> 4, z >> 4).GetLight(x & 15, y, z & 15, 0);
+        if (y >= 128) return !_dimension.HasCeiling ? 15 : 0;
+        return _blocks.GetChunk(x >> 4, z >> 4).GetLight(x & 15, y, z & 15, 0);
     }
 
     public int GetLightLevel(int x, int y, int z) => GetLightLevel(x, y, z, true);
@@ -52,7 +54,7 @@ public class LightingEngine
 
         if (checkNeighbors)
         {
-            int blockId = _world.GetBlockId(x, y, z);
+            int blockId = _blocks.getBlockId(x, y, z);
             if (blockId == Block.Slab.id || blockId == Block.Farmland.id ||
                 blockId == Block.CobblestoneStairs.id || blockId == Block.WoodenStairs.id)
             {
@@ -72,25 +74,25 @@ public class LightingEngine
         }
 
         if (y < 0) return 0;
-        if (y >= 128) return !_world.Dimension.HasCeiling ? 15 - _world.ambientDarkness : 0;
+        if (y >= 128) return !_dimension.HasCeiling ? 15 - _blocks.AmbientDarkness : 0;
 
-        Chunk chunk = _world.GetChunk(x >> 4, z >> 4);
-        return chunk.GetLight(x & 15, y, z & 15, _world.ambientDarkness);
+        Chunk chunk = _blocks.GetChunk(x >> 4, z >> 4);
+        return chunk.GetLight(x & 15, y, z & 15, _blocks.AmbientDarkness);
     }
 
     public void UpdateLight(LightType lightType, int x, int y, int z, int targetLuminance)
     {
-        if (_world.Dimension.HasCeiling && lightType == LightType.Sky) return;
+        if (_dimension.HasCeiling && lightType == LightType.Sky) return;
 
-        if (_world.IsPosLoaded(x, y, z))
+        if (_blocks.IsPosLoaded(x, y, z))
         {
             if (lightType == LightType.Sky)
             {
-                if (_world.IsTopY(x, y, z)) targetLuminance = 15;
+                if (_blocks.IsTopY(x, y, z)) targetLuminance = 15;
             }
             else if (lightType == LightType.Block)
             {
-                int blockId = _world.GetBlockId(x, y, z);
+                int blockId = _blocks.getBlockId(x, y, z);
                 if (Block.BlocksLightLuminance[blockId] > targetLuminance)
                 {
                     targetLuminance = Block.BlocksLightLuminance[blockId];
@@ -113,9 +115,9 @@ public class LightingEngine
         {
             int chunkX = x >> 4;
             int chunkZ = z >> 4;
-            if (!_world.HasChunk(chunkX, chunkZ)) return 0;
+            if (!_blocks.HasChunk(chunkX, chunkZ)) return 0;
 
-            Chunk chunk = _world.GetChunk(chunkX, chunkZ);
+            Chunk chunk = _blocks.GetChunk(chunkX, chunkZ);
             return chunk.GetLight(type, x & 15, y, z & 15);
         }
 
@@ -128,11 +130,11 @@ public class LightingEngine
         {
             if (y >= 0 && y < 128)
             {
-                if (_world.HasChunk(x >> 4, z >> 4))
+                if (_blocks.HasChunk(x >> 4, z >> 4))
                 {
-                    Chunk chunk = _world.GetChunk(x >> 4, z >> 4);
+                    Chunk chunk = _blocks.GetChunk(x >> 4, z >> 4);
                     chunk.SetLight(lightType, x & 15, y, z & 15, value);
-                    _world.BlockUpdateEvent(x, y, z);
+                    OnLightUpdated?.Invoke(x, y, z);
                 }
             }
         }
@@ -156,7 +158,7 @@ public class LightingEngine
                 LightUpdate updateTask = _lightingQueue[lastIndex];
 
                 _lightingQueue.RemoveAt(lastIndex);
-                updateTask.updateLight(_world);
+                updateTask.updateLight(_blocks,this);
             }
 
             return false;
@@ -172,7 +174,7 @@ public class LightingEngine
 
     public void QueueLightUpdate(LightType type, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, bool attemptMerge)
     {
-        if (_world.Dimension.HasCeiling && type == LightType.Sky) return;
+        if (_dimension.HasCeiling && type == LightType.Sky) return;
 
         ++_lightingUpdatesScheduled;
         try
@@ -182,9 +184,9 @@ public class LightingEngine
             int centerX = (maxX + minX) / 2;
             int centerZ = (maxZ + minZ) / 2;
 
-            if (_world.IsPosLoaded(centerX, 64, centerZ))
+            if (_blocks.IsPosLoaded(centerX, 64, centerZ))
             {
-                if (_world.GetChunkFromPos(centerX, centerZ).IsEmpty()) return;
+                if (_blocks.GetChunkFromPos(centerX, centerZ).IsEmpty()) return;
 
                 int queueSize = _lightingQueue.Count;
                 Span<LightUpdate> span = CollectionsMarshal.AsSpan(_lightingQueue);
@@ -195,7 +197,7 @@ public class LightingEngine
                     for (int i = 0; i < lookbackCount; ++i)
                     {
                         ref LightUpdate existingUpdate = ref span[queueSize - i - 1];
-                        if (existingUpdate.lightType == type &&
+                        if (existingUpdate._lightType == type &&
                             existingUpdate.expand(minX, minY, minZ, maxX, maxY, maxZ))
                         {
                             return;

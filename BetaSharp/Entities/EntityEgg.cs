@@ -107,7 +107,7 @@ public class EntityEgg : Entity
 
         if (field_20052_f)
         {
-            int var1 = world.GetBlockId(field_20056_b, field_20055_c, field_20054_d);
+            int var1 = world.getBlockId(field_20056_b, field_20055_c, field_20054_d);
             if (var1 == field_20053_e)
             {
                 ++field_20050_h;
@@ -133,7 +133,7 @@ public class EntityEgg : Entity
 
         Vec3D var15 = new Vec3D(x, y, z);
         Vec3D var2 = new Vec3D(x + velocityX, y + velocityY, z + velocityZ);
-        HitResult var3 = world.Raycast(var15, var2);
+        HitResult var3 = world.raycast(var15, var2);
         var15 = new Vec3D(x, y, z);
         var2 = new Vec3D(x + velocityX, y + velocityY, z + velocityZ);
         if (var3.Type != HitResultType.MISS)
@@ -141,10 +141,10 @@ public class EntityEgg : Entity
             var2 = new Vec3D(var3.Pos.x, var3.Pos.y, var3.Pos.z);
         }
 
-        if (!world.IsRemote)
+        if (!world.isRemote)
         {
             Entity var4 = null;
-            var var5 = world.Entities.GetEntities(this, boundingBox.Stretch(velocityX, velocityY, velocityZ).Expand(1.0D, 1.0D, 1.0D));
+            var var5 = world.getEntities(this, boundingBox.Stretch(velocityX, velocityY, velocityZ).Expand(1.0D, 1.0D, 1.0D));
             double var6 = 0.0D;
 
             for (int var8 = 0; var8 < var5.Count; ++var8)
@@ -179,7 +179,7 @@ public class EntityEgg : Entity
             {
             }
 
-            if (!world.IsRemote && random.NextInt(8) == 0)
+            if (!world.isRemote && random.NextInt(8) == 0)
             {
                 byte var16 = 1;
                 if (random.NextInt(32) == 0)
@@ -191,13 +191,13 @@ public class EntityEgg : Entity
                 {
                     EntityChicken var21 = new EntityChicken(world);
                     var21.setPositionAndAnglesKeepPrevAngles(x, y, z, yaw, 0.0F);
-                    world.Entities.SpawnEntity(var21);
+                    world.SpawnEntity(var21);
                 }
             }
 
             for (int var18 = 0; var18 < 8; ++var18)
             {
-                world.AddParticle("snowballpoof", x, y, z, 0.0D, 0.0D, 0.0D);
+                world.addParticle("snowballpoof", x, y, z, 0.0D, 0.0D, 0.0D);
             }
 
             markDead();
@@ -237,7 +237,7 @@ public class EntityEgg : Entity
             for (int var7 = 0; var7 < 4; ++var7)
             {
                 float var23 = 0.25F;
-                world.AddParticle("bubble", x - velocityX * (double)var23, y - velocityY * (double)var23, z - velocityZ * (double)var23, velocityX, velocityY, velocityZ);
+                world.addParticle("bubble", x - velocityX * (double)var23, y - velocityY * (double)var23, z - velocityZ * (double)var23, velocityX, velocityY, velocityZ);
             }
 
             var19 = 0.8F;
@@ -274,7 +274,7 @@ public class EntityEgg : Entity
     {
         if (field_20052_f && field_20051_g == player && field_20057_a <= 0 && player.inventory.addItemStackToInventory(new ItemStack(Item.ARROW, 1)))
         {
-            world.PlaySound(this, "random.pop", 0.2F, ((random.NextFloat() - random.NextFloat()) * 0.7F + 1.0F) * 2.0F);
+            world.playSound(this, "random.pop", 0.2F, ((random.NextFloat() - random.NextFloat()) * 0.7F + 1.0F) * 2.0F);
             player.sendPickup(this, 1);
             markDead();
         }

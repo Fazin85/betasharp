@@ -127,10 +127,10 @@ public class CameraController
             GLManager.GL.Translate(0.0F, 0.3F, 0.0F);
             if (!_game.options.DebugCamera)
             {
-                int blockId = _game.world.GetBlockId(MathHelper.Floor(cameraEntity.x), MathHelper.Floor(cameraEntity.y), MathHelper.Floor(cameraEntity.z));
+                int blockId = _game.world.getBlockId(MathHelper.Floor(cameraEntity.x), MathHelper.Floor(cameraEntity.y), MathHelper.Floor(cameraEntity.z));
                 if (blockId == Block.Bed.id)
                 {
-                    int meta = _game.world.GetBlockMeta(MathHelper.Floor(cameraEntity.x), MathHelper.Floor(cameraEntity.y), MathHelper.Floor(cameraEntity.z));
+                    int meta = _game.world.getBlockMeta(MathHelper.Floor(cameraEntity.x), MathHelper.Floor(cameraEntity.y), MathHelper.Floor(cameraEntity.z));
                     int rotation = meta & 3;
                     GLManager.GL.Rotate(rotation * 90, 0.0F, 1.0F, 0.0F);
                 }
@@ -181,14 +181,14 @@ public class CameraController
 
                     if (_game.options.CameraMode == EnumCameraMode.FrontThirdPerson)
                     {
-                        hit = _game.world.Raycast(
+                        hit = _game.world.raycast(
                             new Vec3D(x + offsetX, y + offsetY, z + offsetZ),
                             new Vec3D(x + vecX + offsetX + offsetZ, y + vecY + offsetY, z + vecZ + offsetZ)
                         );
                     }
                     else
                     {
-                        hit = _game.world.Raycast(
+                        hit = _game.world.raycast(
                             new Vec3D(x + offsetX, y + offsetY, z + offsetZ),
                             new Vec3D(x - vecX + offsetX + offsetZ, y - vecY + offsetY, z - vecZ + offsetZ)
                         );

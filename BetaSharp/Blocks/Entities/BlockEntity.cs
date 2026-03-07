@@ -84,7 +84,7 @@ public class BlockEntity
 
     public virtual int getPushedBlockData()
     {
-        return World.GetBlockMeta(X, Y, Z);
+        return World.getBlockMeta(X, Y, Z);
     }
 
     public void markDirty()
@@ -105,7 +105,7 @@ public class BlockEntity
 
     public Block getBlock()
     {
-        return Block.Blocks[World.GetBlockId(X, Y, Z)];
+        return Block.Blocks[World.getBlockId(X, Y, Z)];
     }
 
     public virtual Packet createUpdatePacket()
@@ -119,7 +119,7 @@ public class BlockEntity
 
         if (World != null)
         {
-            int id = World.GetBlockId(X, Y, Z);
+            int id = World.getBlockId(X, Y, Z);
             if (id == 0 || !Block.BlocksWithEntity[id]) return true;
         }
 

@@ -48,7 +48,7 @@ public class PlayerManager
         player.activeChunks.Clear();
         GetChunkMap(player.dimensionId).addPlayer(player);
         ServerWorld var2 = _server.getWorld(player.dimensionId);
-        var2.chunkCache.LoadChunk((int)player.x >> 4, (int)player.z >> 4);
+        var2.IChunkCache.LoadChunk((int)player.x >> 4, (int)player.z >> 4);
     }
 
     public int getBlockViewDistance()
@@ -75,7 +75,7 @@ public class PlayerManager
     {
         players.Add(player);
         ServerWorld var2 = _server.getWorld(player.dimensionId);
-        var2.chunkCache.LoadChunk((int)player.x >> 4, (int)player.z >> 4);
+        var2.IChunkCache.LoadChunk((int)player.x >> 4, (int)player.z >> 4);
 
         while (var2.Entities.GetEntityCollisions(player, player.boundingBox).Count != 0)
         {
@@ -175,7 +175,7 @@ public class PlayerManager
             }
         }
 
-        var5.chunkCache.LoadChunk((int)var4.x >> 4, (int)var4.z >> 4);
+        var5.IChunkCache.LoadChunk((int)var4.x >> 4, (int)var4.z >> 4);
 
         while (var5.Entities.GetEntityCollisions(var4, var4.boundingBox).Count != 0)
         {
@@ -256,9 +256,9 @@ public class PlayerManager
             targetWorld.Entities.SpawnEntity(player);
             player.setPositionAndAnglesKeepPrevAngles(x, player.y, z, player.yaw, player.pitch);
             targetWorld.Entities.UpdateEntity(player, false);
-            targetWorld.chunkCache.forceLoad = true;
+            targetWorld.IChunkCache.forceLoad = true;
             new PortalForcer().MoveToPortal(targetWorld, player);
-            targetWorld.chunkCache.forceLoad = false;
+            targetWorld.IChunkCache.forceLoad = false;
 
             // Fully drain lighting updates generated during portal chunk
             // creation before the chunks are queued for the client.

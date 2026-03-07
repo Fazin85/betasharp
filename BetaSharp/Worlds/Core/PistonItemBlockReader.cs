@@ -8,32 +8,32 @@ namespace BetaSharp.Worlds.Core;
 ///     IBlockAccess implementation for rendering a single piston block in item form.
 ///     Reports a fixed (blockId, metadata) at (0,0,0) and open-air defaults elsewhere.
 /// </summary>
-public sealed class PistonItemBlockAccess : IBlockAccess
+public sealed class PistonItemBlockReader : IBlockReader
 {
     private readonly int _blockId;
     private readonly int _metadata;
 
-    public PistonItemBlockAccess(int blockId, int metadata)
+    public PistonItemBlockReader(int blockId, int metadata)
     {
         _blockId = blockId;
         _metadata = metadata;
     }
 
-    public int GetBlockId(int x, int y, int z) => x == 0 && y == 0 && z == 0 ? _blockId : 0;
+    public int getBlockId(int x, int y, int z) => x == 0 && y == 0 && z == 0 ? _blockId : 0;
 
-    public BlockEntity? GetBlockEntity(int x, int y, int z) => null;
+    public BlockEntity? getBlockEntity(int x, int y, int z) => null;
 
     public float GetNaturalBrightness(int x, int y, int z, int blockLight) => 1.0f;
 
     public float GetLuminance(int x, int y, int z) => 1.0f;
 
-    public int GetBlockMeta(int x, int y, int z) => x == 0 && y == 0 && z == 0 ? _metadata : 0;
+    public int getBlockMeta(int x, int y, int z) => x == 0 && y == 0 && z == 0 ? _metadata : 0;
 
-    public Material GetMaterial(int x, int y, int z) => Material.Air;
+    public Material getMaterial(int x, int y, int z) => Material.Air;
 
-    public bool IsOpaque(int x, int y, int z) => false;
+    public bool isOpaque(int x, int y, int z) => false;
 
-    public bool ShouldSuffocate(int x, int y, int z) => false;
+    public bool shouldSuffocate(int x, int y, int z) => false;
 
-    public BiomeSource GetBiomeSource() => null!;
+    public BiomeSource getBiomeSource() => null!;
 }

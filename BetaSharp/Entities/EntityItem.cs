@@ -54,12 +54,12 @@ public class EntityItem : Entity
         prevY = y;
         prevZ = z;
         velocityY -= (double)0.04F;
-        if (world.GetMaterial(MathHelper.Floor(x), MathHelper.Floor(y), MathHelper.Floor(z)) == Material.Lava)
+        if (world.getMaterial(MathHelper.Floor(x), MathHelper.Floor(y), MathHelper.Floor(z)) == Material.Lava)
         {
             velocityY = (double)0.2F;
             velocityX = (double)((random.NextFloat() - random.NextFloat()) * 0.2F);
             velocityZ = (double)((random.NextFloat() - random.NextFloat()) * 0.2F);
-            world.PlaySound(this, "random.fizz", 0.4F, 2.0F + random.NextFloat() * 0.4F);
+            world.playSound(this, "random.fizz", 0.4F, 2.0F + random.NextFloat() * 0.4F);
         }
 
         pushOutOfBlocks(x, (boundingBox.MinY + boundingBox.MaxY) / 2.0D, z);
@@ -68,7 +68,7 @@ public class EntityItem : Entity
         if (onGround)
         {
             friction = 0.1F * 0.1F * 58.8F;
-            int groundBlockId = world.GetBlockId(MathHelper.Floor(x), MathHelper.Floor(boundingBox.MinY) - 1, MathHelper.Floor(z));
+            int groundBlockId = world.getBlockId(MathHelper.Floor(x), MathHelper.Floor(boundingBox.MinY) - 1, MathHelper.Floor(z));
             if (groundBlockId > 0)
             {
                 friction = Block.Blocks[groundBlockId].slipperiness * 0.98F;
@@ -93,7 +93,7 @@ public class EntityItem : Entity
 
     public override bool checkWaterCollisions()
     {
-        return world.UpdateMovementInFluid(boundingBox, Material.Water, this);
+        return world.updateMovementInFluid(boundingBox, Material.Water, this);
     }
 
     protected override void damage(int amount)
@@ -130,7 +130,7 @@ public class EntityItem : Entity
 
     public override void onPlayerInteraction(EntityPlayer player)
     {
-        if (!world.IsRemote)
+        if (!world.isRemote)
         {
             int pickedUpCount = stack.count;
             if (delayBeforeCanPickup == 0 && player.inventory.addItemStackToInventory(stack))
@@ -145,7 +145,7 @@ public class EntityItem : Entity
                     player.incrementStat(Achievements.KillCow);
                 }
 
-                world.PlaySound(this, "random.pop", 0.2F, ((random.NextFloat() - random.NextFloat()) * 0.7F + 1.0F) * 2.0F);
+                world.playSound(this, "random.pop", 0.2F, ((random.NextFloat() - random.NextFloat()) * 0.7F + 1.0F) * 2.0F);
                 player.sendPickup(this, pickedUpCount);
                 if (stack.count <= 0)
                 {

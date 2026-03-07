@@ -16,12 +16,12 @@ internal class BlockNote : BlockWithEntity
         return textureId;
     }
 
-    public override void neighborUpdate(World world, int x, int y, int z, int id)
+    public override void neighborUpdate(WorldBlockView world, int x, int y, int z, int id)
     {
         if (id > 0 && Block.Blocks[id].canEmitRedstonePower())
         {
-            bool isPowered = world.Redstone.IsStrongPowered(x, y, z);
-            BlockEntityNote blockEntity = (BlockEntityNote)world.GetBlockEntity(x, y, z);
+            bool isPowered = world.isStrongPowered(x, y, z);
+            BlockEntityNote blockEntity = (BlockEntityNote)world.getBlockEntity(x, y, z);
             if (blockEntity.powered != isPowered)
             {
                 if (isPowered)
@@ -37,13 +37,13 @@ internal class BlockNote : BlockWithEntity
 
     public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
     {
-        if (world.IsRemote)
+        if (world.isRemote)
         {
             return true;
         }
         else
         {
-            BlockEntityNote blockEntity = (BlockEntityNote)world.GetBlockEntity(x, y, z);
+            BlockEntityNote blockEntity = (BlockEntityNote)world.getBlockEntity(x, y, z);
             blockEntity.cycleNote();
             blockEntity.playNote(world, x, y, z);
             return true;
@@ -52,9 +52,9 @@ internal class BlockNote : BlockWithEntity
 
     public override void onBlockBreakStart(World world, int x, int y, int z, EntityPlayer player)
     {
-        if (!world.IsRemote)
+        if (!world.isRemote)
         {
-            BlockEntityNote blockEntity = (BlockEntityNote)world.GetBlockEntity(x, y, z);
+            BlockEntityNote blockEntity = (BlockEntityNote)world.getBlockEntity(x, y, z);
             blockEntity.playNote(world, x, y, z);
         }
     }
@@ -88,7 +88,7 @@ internal class BlockNote : BlockWithEntity
             instrumentName = "bassattack";
         }
 
-        world.PlaySound((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "note." + instrumentName, 3.0F, pitch);
-        world.AddParticle("note", (double)x + 0.5D, (double)y + 1.2D, (double)z + 0.5D, (double)data2 / 24.0D, 0.0D, 0.0D);
+        world.playSound((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "note." + instrumentName, 3.0F, pitch);
+        world.addParticle("note", (double)x + 0.5D, (double)y + 1.2D, (double)z + 0.5D, (double)data2 / 24.0D, 0.0D, 0.0D);
     }
 }

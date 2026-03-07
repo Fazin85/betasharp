@@ -63,7 +63,7 @@ public class Explosion
                             int var22 = MathHelper.Floor(var15);
                             int var23 = MathHelper.Floor(var17);
                             int var24 = MathHelper.Floor(var19);
-                            int var25 = worldObj.GetBlockId(var22, var23, var24);
+                            int var25 = worldObj.getBlockId(var22, var23, var24);
                             if (var25 > 0)
                             {
                                 var14 -= (Block.Blocks[var25].getBlastResistance(exploder) + 0.3F) * var21;
@@ -125,11 +125,11 @@ public class Explosion
                 int var36 = var35.x;
                 int var37 = var35.y;
                 int var16 = var35.z;
-                int var38 = worldObj.GetBlockId(var36, var37, var16);
-                int var18 = worldObj.GetBlockId(var36, var37 - 1, var16);
+                int var38 = worldObj.getBlockId(var36, var37, var16);
+                int var18 = worldObj.getBlockId(var36, var37 - 1, var16);
                 if (var38 == 0 && Block.BlocksOpaque[var18] && ExplosionRNG.NextInt(3) == 0)
                 {
-                    worldObj.SetBlock(var36, var37, var16, Block.Fire.id);
+                    worldObj.setBlock(var36, var37, var16, Block.Fire.id);
                 }
             }
         }
@@ -137,7 +137,7 @@ public class Explosion
 
     public void doExplosionB(bool var1)
     {
-        worldObj.PlaySound(explosionX, explosionY, explosionZ, "random.explode", 4.0F, (1.0F + (worldObj.random.NextFloat() - worldObj.random.NextFloat()) * 0.2F) * 0.7F);
+        worldObj.playSound(explosionX, explosionY, explosionZ, "random.explode", 4.0F, (1.0F + (worldObj.random.NextFloat() - worldObj.random.NextFloat()) * 0.2F) * 0.7F);
         List<BlockPos> var2 = new(destroyedBlockPositions);
 
         for (int var3 = var2.Count - 1; var3 >= 0; --var3)
@@ -146,7 +146,7 @@ public class Explosion
             int var5 = var4.x;
             int var6 = var4.y;
             int var7 = var4.z;
-            int var8 = worldObj.GetBlockId(var5, var6, var7);
+            int var8 = worldObj.getBlockId(var5, var6, var7);
             if (var1)
             {
                 double var9 = var5 + worldObj.random.NextFloat();
@@ -164,14 +164,14 @@ public class Explosion
                 var15 *= var23;
                 var17 *= var23;
                 var19 *= var23;
-                worldObj.AddParticle("explode", (var9 + explosionX * 1.0D) / 2.0D, (var11 + explosionY * 1.0D) / 2.0D, (var13 + explosionZ * 1.0D) / 2.0D, var15, var17, var19);
-                worldObj.AddParticle("smoke", var9, var11, var13, var15, var17, var19);
+                worldObj.addParticle("explode", (var9 + explosionX * 1.0D) / 2.0D, (var11 + explosionY * 1.0D) / 2.0D, (var13 + explosionZ * 1.0D) / 2.0D, var15, var17, var19);
+                worldObj.addParticle("smoke", var9, var11, var13, var15, var17, var19);
             }
 
             if (var8 > 0)
             {
-                Block.Blocks[var8].dropStacks(worldObj, var5, var6, var7, worldObj.GetBlockMeta(var5, var6, var7), 0.3F);
-                worldObj.SetBlock(var5, var6, var7, 0);
+                Block.Blocks[var8].dropStacks(worldObj, var5, var6, var7, worldObj.getBlockMeta(var5, var6, var7), 0.3F);
+                worldObj.setBlock(var5, var6, var7, 0);
                 Block.Blocks[var8].onDestroyedByExplosion(worldObj, var5, var6, var7);
             }
         }

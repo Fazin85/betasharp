@@ -12,7 +12,7 @@ internal class BlockLockedChest : Block
         textureId = 26;
     }
 
-    public override int getTextureId(IBlockAccess iBlockAccess, int x, int y, int z, int side)
+    public override int getTextureId(IBlockReader iBlockReader, int x, int y, int z, int side)
     {
         if (side == 1)
         {
@@ -24,10 +24,10 @@ internal class BlockLockedChest : Block
         }
         else
         {
-            int var6 = iBlockAccess.GetBlockId(x, y, z - 1);
-            int var7 = iBlockAccess.GetBlockId(x, y, z + 1);
-            int var8 = iBlockAccess.GetBlockId(x - 1, y, z);
-            int var9 = iBlockAccess.GetBlockId(x + 1, y, z);
+            int var6 = iBlockReader.getBlockId(x, y, z - 1);
+            int var7 = iBlockReader.getBlockId(x, y, z + 1);
+            int var8 = iBlockReader.getBlockId(x - 1, y, z);
+            int var9 = iBlockReader.getBlockId(x + 1, y, z);
             sbyte var10 = 3;
             if (Block.BlocksOpaque[var6] && !Block.BlocksOpaque[var7])
             {
@@ -58,13 +58,13 @@ internal class BlockLockedChest : Block
         return side == 1 ? textureId - 1 : (side == 0 ? textureId - 1 : (side == 3 ? textureId + 1 : textureId));
     }
 
-    public override bool canPlaceAt(World world, int x, int y, int z)
+    public override bool canPlaceAt(WorldBlockView world, int x, int y, int z)
     {
         return true;
     }
 
-    public override void onTick(World world, int x, int y, int z, JavaRandom random)
+    public override void onTick(WorldBlockView worldView, int x, int y, int z, JavaRandom random, WorldEventBroadcaster broadcaster, bool isRemote)
     {
-        world.SetBlock(x, y, z, 0);
+        worldView.setBlock(x, y, z, 0);
     }
 }

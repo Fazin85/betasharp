@@ -10,7 +10,7 @@ using BetaSharp.Worlds.Generation.Generators.Features;
 
 namespace BetaSharp.Worlds.Generation.Generators.Chunks;
 
-internal class SkyChunkGenerator : ChunkSource
+internal class SkyIChunkGenerator : IChunkSource
 {
     private readonly Carver _carver = new CaveCarver();
     private readonly OctavePerlinNoiseSampler _depthNoise;
@@ -35,7 +35,7 @@ internal class SkyChunkGenerator : ChunkSource
     private double[] _selectorNoiseBuffer;
     private double[] _temperatures;
 
-    public SkyChunkGenerator(World world, long seed)
+    public SkyIChunkGenerator(World world, long seed)
     {
         _world = world;
         _random = new JavaRandom(seed);
@@ -67,7 +67,7 @@ internal class SkyChunkGenerator : ChunkSource
 
     public bool IsChunkLoaded(int chunkX, int chunkZ) => true;
 
-    public void DecorateTerrain(ChunkSource source, int chunkX, int chunkZ)
+    public void DecorateTerrain(IChunkSource source, int chunkX, int chunkZ)
     {
         BlockSand.fallInstantly = true;
         int blockX = chunkX * 16;
@@ -231,7 +231,7 @@ internal class SkyChunkGenerator : ChunkSource
             featureZ = blockZ + _random.NextInt(16) + 8;
             Feature treeFeature = chunkBiome.GetRandomWorldGenForTrees(_random);
             treeFeature.prepare(1.0D, 1.0D, 1.0D);
-            treeFeature.Generate(_world, _random, featureX, _world.GetTopY(featureX, featureZ), featureZ);
+            treeFeature.Generate(_world, _random, featureX, _world.getTopY(featureX, featureZ), featureZ);
         }
 
         for (int i = 0; i < 2; ++i)
@@ -320,12 +320,12 @@ internal class SkyChunkGenerator : ChunkSource
             {
                 int offsetX = x - (blockX + 8);
                 int offsetZ = z - (blockZ + 8);
-                int topBlockY = _world.GetTopSolidBlockY(x, z);
+                int topBlockY = _world.getTopSolidBlockY(x, z);
                 double temperatureSample = _temperatures[offsetX * 16 + offsetZ] - (topBlockY - 64) / 64.0D * 0.3D;
 
-                if (temperatureSample < 0.5D && topBlockY > 0 && topBlockY < 128 && _world.IsAir(x, topBlockY, z) && _world.GetMaterial(x, topBlockY - 1, z).BlocksMovement && _world.GetMaterial(x, topBlockY - 1, z) != Material.Ice)
+                if (temperatureSample < 0.5D && topBlockY > 0 && topBlockY < 128 && _world.isAir(x, topBlockY, z) && _world.getMaterial(x, topBlockY - 1, z).BlocksMovement && _world.getMaterial(x, topBlockY - 1, z) != Material.Ice)
                 {
-                    _world.SetBlock(x, topBlockY, z, Block.Snow.id);
+                    _world.setBlock(x, topBlockY, z, Block.Snow.id);
                 }
             }
         }

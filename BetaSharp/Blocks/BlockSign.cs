@@ -21,7 +21,7 @@ internal class BlockSign : BlockWithEntity
         setBoundingBox(0.5F - width, 0.0F, 0.5F - width, 0.5F + width, height, 0.5F + width);
     }
 
-    public override Box? getCollisionShape(World world, int x, int y, int z)
+    public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
     {
         return null;
     }
@@ -32,11 +32,11 @@ internal class BlockSign : BlockWithEntity
         return base.getBoundingBox(world, x, y, z);
     }
 
-    public override void updateBoundingBox(IBlockAccess iBlockAccess, int x, int y, int z)
+    public override void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z)
     {
         if (!_standing)
         {
-            int facing = iBlockAccess.GetBlockMeta(x, y, z);
+            int facing = iBlockReader.getBlockMeta(x, y, z);
             float topOffset = 9.0F / 32.0F;
             float bottomOffset = 25.0F / 32.0F;
             float minExtent = 0.0F;
@@ -97,36 +97,36 @@ internal class BlockSign : BlockWithEntity
         return Item.Sign.id;
     }
 
-    public override void neighborUpdate(World world, int x, int y, int z, int id)
+    public override void neighborUpdate(WorldBlockView world, int x, int y, int z, int id)
     {
         bool shouldBreak = false;
         if (_standing)
         {
-            if (!world.GetMaterial(x, y - 1, z).IsSolid)
+            if (!world.getMaterial(x, y - 1, z).IsSolid)
             {
                 shouldBreak = true;
             }
         }
         else
         {
-            int facing = world.GetBlockMeta(x, y, z);
+            int facing = world.getBlockMeta(x, y, z);
             shouldBreak = true;
-            if (facing == 2 && world.GetMaterial(x, y, z + 1).IsSolid)
+            if (facing == 2 && world.getMaterial(x, y, z + 1).IsSolid)
             {
                 shouldBreak = false;
             }
 
-            if (facing == 3 && world.GetMaterial(x, y, z - 1).IsSolid)
+            if (facing == 3 && world.getMaterial(x, y, z - 1).IsSolid)
             {
                 shouldBreak = false;
             }
 
-            if (facing == 4 && world.GetMaterial(x + 1, y, z).IsSolid)
+            if (facing == 4 && world.getMaterial(x + 1, y, z).IsSolid)
             {
                 shouldBreak = false;
             }
 
-            if (facing == 5 && world.GetMaterial(x - 1, y, z).IsSolid)
+            if (facing == 5 && world.getMaterial(x - 1, y, z).IsSolid)
             {
                 shouldBreak = false;
             }
@@ -134,8 +134,8 @@ internal class BlockSign : BlockWithEntity
 
         if (shouldBreak)
         {
-            dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
-            world.SetBlock(x, y, z, 0);
+            dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
+            world.setBlock(x, y, z, 0);
         }
 
         base.neighborUpdate(world, x, y, z, id);

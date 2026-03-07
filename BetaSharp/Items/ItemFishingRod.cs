@@ -32,10 +32,10 @@ internal class ItemFishingRod : Item
         }
         else
         {
-            world.PlaySound(entityPlayer, "random.bow", 0.5F, 0.4F / (itemRand.NextFloat() * 0.4F + 0.8F));
-            if (!world.IsRemote)
+            world.playSound(entityPlayer, "random.bow", 0.5F, 0.4F / (itemRand.NextFloat() * 0.4F + 0.8F));
+            if (!world.isRemote)
             {
-                world.Entities.SpawnEntity(new EntityFish(world, entityPlayer));
+                world.SpawnEntity(new EntityFish(world, entityPlayer));
             }
 
             entityPlayer.swingHand();

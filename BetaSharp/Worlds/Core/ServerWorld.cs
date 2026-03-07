@@ -18,7 +18,7 @@ public class ServerWorld : World
     private readonly Dictionary<int, Entity> entitiesById = [];
     private readonly BetaSharpServer server;
     public bool bypassSpawnProtection = false;
-    public ServerChunkCache chunkCache;
+    public ServerIChunkCache IChunkCache;
     public bool savingDisabled;
 
     public ServerWorld(BetaSharpServer server, IWorldStorage storage, string name, int dimensionId, long seed) : base(storage, name, seed, Dimension.FromId(dimensionId))
@@ -34,11 +34,11 @@ public class ServerWorld : World
         Entities.OnGlobalEntityAdded += HandleGlobalEntityAdded;
     }
 
-    protected override ChunkSource CreateChunkCache()
+    protected override IChunkSource CreateChunkCache()
     {
-        IChunkStorage chunkStorage = Storage.GetChunkStorage(Dimension);
-        chunkCache = new ServerChunkCache(this, chunkStorage, Dimension.CreateChunkGenerator());
-        return chunkCache;
+        IChunkStorage chunkStorage = Storage.GetChunkStorage(dimension);
+        IChunkCache = new ServerIChunkCache(this, chunkStorage, dimension.CreateChunkGenerator());
+        return IChunkCache;
     }
 
     // --- Entity Event Handlers (Replacing the old overrides) ---
@@ -47,7 +47,7 @@ public class ServerWorld : World
 
     private void HandleEntityRemoved(Entity entity) => entitiesById.Remove(entity.id);
 
-    private void HandleGlobalEntityAdded(Entity entity) => server.playerManager.sendToAround(entity.x, entity.y, entity.z, 512.0, Dimension.Id, new GlobalEntitySpawnS2CPacket(entity));
+    private void HandleGlobalEntityAdded(Entity entity) => server.playerManager.sendToAround(entity.x, entity.y, entity.z, 512.0, dimension.Id, new GlobalEntitySpawnS2CPacket(entity));
 
     private bool HandleEntityUpdating(Entity entity)
     {
@@ -91,7 +91,7 @@ public class ServerWorld : World
         return var7;
     }
 
-    public override bool CanInteract(EntityPlayer player, int x, int y, int z)
+    public override bool canInteract(EntityPlayer player, int x, int y, int z)
     {
         int var5 = (int)MathHelper.Abs(x - Properties.SpawnX);
         int var6 = (int)MathHelper.Abs(z - Properties.SpawnZ);
@@ -106,22 +106,22 @@ public class ServerWorld : World
     public override void BroadcastEntityEvent(Entity entity, byte @event)
     {
         EntityStatusS2CPacket var3 = new(entity.id, @event);
-        server.getEntityTracker(Dimension.Id).sendToAround(entity, var3);
+        server.getEntityTracker(dimension.Id).sendToAround(entity, var3);
     }
 
-    public override Explosion CreateExplosion(Entity source, double x, double y, double z, float power, bool fire)
+    public override Explosion createExplosion(Entity source, double x, double y, double z, float power, bool fire)
     {
         Explosion var10 = new(this, source, x, y, z, power) { isFlaming = fire };
         var10.doExplosionA();
         var10.doExplosionB(false);
-        server.playerManager.sendToAround(x, y, z, 64.0, Dimension.Id, new ExplosionS2CPacket(x, y, z, power, var10.destroyedBlockPositions));
+        server.playerManager.sendToAround(x, y, z, 64.0, dimension.Id, new ExplosionS2CPacket(x, y, z, power, var10.destroyedBlockPositions));
         return var10;
     }
 
-    public override void PlayNoteBlockActionAt(int x, int y, int z, int soundType, int pitch)
+    public override void playNoteBlockActionAt(int x, int y, int z, int soundType, int pitch)
     {
-        base.PlayNoteBlockActionAt(x, y, z, soundType, pitch);
-        server.playerManager.sendToAround(x, y, z, 64.0, Dimension.Id, new PlayNoteSoundS2CPacket(x, y, z, soundType, pitch));
+        base.playNoteBlockActionAt(x, y, z, soundType, pitch);
+        server.playerManager.sendToAround(x, y, z, 64.0, dimension.Id, new PlayNoteSoundS2CPacket(x, y, z, soundType, pitch));
     }
 
     public void forceSave() => Storage.ForceSave();

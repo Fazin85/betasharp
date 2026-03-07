@@ -9,29 +9,29 @@ namespace BetaSharp.Worlds.Core;
 ///     available (inventory rendering, held-item rendering, entity block rendering).
 ///     Returns safe open-air defaults so all block renderers function without modification.
 /// </summary>
-public sealed class NullBlockAccess : IBlockAccess
+public sealed class NullBlockReader : IBlockReader
 {
-    public static readonly NullBlockAccess Instance = new();
+    public static readonly NullBlockReader Instance = new();
 
-    private NullBlockAccess()
+    private NullBlockReader()
     {
     }
 
-    public int GetBlockId(int x, int y, int z) => 0;
+    public int getBlockId(int x, int y, int z) => 0;
 
-    public BlockEntity? GetBlockEntity(int x, int y, int z) => null;
+    public BlockEntity? getBlockEntity(int x, int y, int z) => null;
 
     public float GetNaturalBrightness(int x, int y, int z, int blockLight) => 1.0f;
 
     public float GetLuminance(int x, int y, int z) => 1.0f;
 
-    public int GetBlockMeta(int x, int y, int z) => 0;
+    public int getBlockMeta(int x, int y, int z) => 0;
 
-    public Material GetMaterial(int x, int y, int z) => Material.Air;
+    public Material getMaterial(int x, int y, int z) => Material.Air;
 
-    public bool IsOpaque(int x, int y, int z) => false;
+    public bool isOpaque(int x, int y, int z) => false;
 
-    public bool ShouldSuffocate(int x, int y, int z) => false;
+    public bool shouldSuffocate(int x, int y, int z) => false;
 
-    public BiomeSource GetBiomeSource() => null!;
+    public BiomeSource getBiomeSource() => null!;
 }

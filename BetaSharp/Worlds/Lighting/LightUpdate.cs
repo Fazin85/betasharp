@@ -6,18 +6,18 @@ namespace BetaSharp.Worlds.Lighting;
 
 internal struct LightUpdate
 {
-    public readonly LightType lightType;
+    public readonly LightType _lightType;
 
-    public int minX;
-    public int minY;
-    public int minZ;
-    public int maxX;
-    public int maxY;
-    public int maxZ;
+    private int minX;
+    private int minY;
+    private int minZ;
+    private int maxX;
+    private int maxY;
+    private int maxZ;
 
     public LightUpdate(LightType var1, int var2, int var3, int var4, int var5, int var6, int var7)
     {
-        lightType = var1;
+        _lightType = var1;
         minX = var2;
         minY = var3;
         minZ = var4;
@@ -26,7 +26,7 @@ internal struct LightUpdate
         maxZ = var7;
     }
 
-    public void updateLight(World world)
+    public void updateLight(WorldBlockView world,LightingEngine lighting)
     {
         int var2 = maxX - minX + 1;
         int var3 = maxY - minY + 1;
@@ -85,9 +85,9 @@ internal struct LightUpdate
 
                         for (int var27 = minY; var27 <= maxY; ++var27)
                         {
-                            int var16 = world.Lighting.GetBrightness(lightType, var10, var27, var11);
+                            int var16 = lighting.GetBrightness(_lightType, var10, var27, var11);
                             bool var17 = false;
-                            int var18 = world.GetBlockId(var10, var27, var11);
+                            int var18 = world.getBlockId(var10, var27, var11);
                             int var19 = Block.BlockLightOpacity[var18];
                             if (var19 == 0)
                             {
@@ -95,14 +95,14 @@ internal struct LightUpdate
                             }
 
                             int var20 = 0;
-                            if (lightType == LightType.Sky)
+                            if (_lightType == LightType.Sky)
                             {
                                 if (world.IsTopY(var10, var27, var11))
                                 {
                                     var20 = 15;
                                 }
                             }
-                            else if (lightType == LightType.Block)
+                            else if (_lightType == LightType.Block)
                             {
                                 var20 = Block.BlocksLightLuminance[var18];
                             }
@@ -115,12 +115,12 @@ internal struct LightUpdate
                             }
                             else
                             {
-                                var21 = world.Lighting.GetBrightness(lightType, var10 - 1, var27, var11);
-                                int var22 = world.Lighting.GetBrightness(lightType, var10 + 1, var27, var11);
-                                int var23 = world.Lighting.GetBrightness(lightType, var10, var27 - 1, var11);
-                                int var24 = world.Lighting.GetBrightness(lightType, var10, var27 + 1, var11);
-                                int var25 = world.Lighting.GetBrightness(lightType, var10, var27, var11 - 1);
-                                int var26 = world.Lighting.GetBrightness(lightType, var10, var27, var11 + 1);
+                                var21 = lighting.GetBrightness(_lightType, var10 - 1, var27, var11);
+                                int var22 = lighting.GetBrightness(_lightType, var10 + 1, var27, var11);
+                                int var23 = lighting.GetBrightness(_lightType, var10, var27 - 1, var11);
+                                int var24 = lighting.GetBrightness(_lightType, var10, var27 + 1, var11);
+                                int var25 = lighting.GetBrightness(_lightType, var10, var27, var11 - 1);
+                                int var26 = lighting.GetBrightness(_lightType, var10, var27, var11 + 1);
                                 var28 = var21;
                                 if (var22 > var21)
                                 {
@@ -161,29 +161,29 @@ internal struct LightUpdate
 
                             if (var16 != var28)
                             {
-                                world.Lighting.SetLight(lightType, var10, var27, var11, var28);
+                                lighting.SetLight(_lightType, var10, var27, var11, var28);
                                 var21 = var28 - 1;
                                 if (var21 < 0)
                                 {
                                     var21 = 0;
                                 }
 
-                                world.Lighting.UpdateLight(lightType, var10 - 1, var27, var11, var21);
-                                world.Lighting.UpdateLight(lightType, var10, var27 - 1, var11, var21);
-                                world.Lighting.UpdateLight(lightType, var10, var27, var11 - 1, var21);
+                                lighting.UpdateLight(_lightType, var10 - 1, var27, var11, var21);
+                                lighting.UpdateLight(_lightType, var10, var27 - 1, var11, var21);
+                                lighting.UpdateLight(_lightType, var10, var27, var11 - 1, var21);
                                 if (var10 + 1 >= maxX)
                                 {
-                                    world.Lighting.UpdateLight(lightType, var10 + 1, var27, var11, var21);
+                                    lighting.UpdateLight(_lightType, var10 + 1, var27, var11, var21);
                                 }
 
                                 if (var27 + 1 >= maxY)
                                 {
-                                    world.Lighting.UpdateLight(lightType, var10, var27 + 1, var11, var21);
+                                    lighting.UpdateLight(_lightType, var10, var27 + 1, var11, var21);
                                 }
 
                                 if (var11 + 1 >= maxZ)
                                 {
-                                    world.Lighting.UpdateLight(lightType, var10, var27, var11 + 1, var21);
+                                    lighting.UpdateLight(_lightType, var10, var27, var11 + 1, var21);
                                 }
                             }
                         }

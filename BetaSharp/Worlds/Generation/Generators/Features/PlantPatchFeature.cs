@@ -17,9 +17,9 @@ internal class PlantPatchFeature : Feature
             int genX = x + rand.NextInt(8) - rand.NextInt(8);
             int genY = y + rand.NextInt(4) - rand.NextInt(4);
             int genZ = z + rand.NextInt(8) - rand.NextInt(8);
-            if (world.IsAir(genX, genY, genZ) && ((BlockPlant)Block.Blocks[plantBlockId]).canGrow(world, genX, genY, genZ))
+            if (world.isAir(genX, genY, genZ) && ((BlockPlant)Block.Blocks[plantBlockId]).canGrow(world, genX, genY, genZ))
             {
-                world.SetBlockWithoutNotifyingNeighbors(genX, genY, genZ, plantBlockId);
+                world.setBlockWithoutNotifyingNeighbors(genX, genY, genZ, plantBlockId);
             }
         }
 

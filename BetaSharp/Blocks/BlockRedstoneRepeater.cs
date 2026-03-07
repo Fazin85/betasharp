@@ -24,31 +24,31 @@ public class BlockRedstoneRepeater : Block
         return false;
     }
 
-    public override bool canPlaceAt(World world, int x, int y, int z)
+    public override bool canPlaceAt(WorldBlockView world, int x, int y, int z)
     {
-        return !world.ShouldSuffocate(x, y - 1, z) ? false : base.canPlaceAt(world, x, y, z);
+        return !world.shouldSuffocate(x, y - 1, z) ? false : base.canPlaceAt(world, x, y, z);
     }
 
     public override bool canGrow(World world, int x, int y, int z)
     {
-        return !world.ShouldSuffocate(x, y - 1, z) ? false : base.canGrow(world, x, y, z);
+        return !world.shouldSuffocate(x, y - 1, z) ? false : base.canGrow(world, x, y, z);
     }
 
-    public override void onTick(World world, int x, int y, int z, JavaRandom random)
+    public override void onTick(WorldBlockView worldView, int x, int y, int z, JavaRandom random, WorldEventBroadcaster broadcaster, bool isRemote)
     {
-        int meta = world.GetBlockMeta(x, y, z);
-        bool powered = isPowered(world, x, y, z, meta);
+        int meta = worldView.getBlockMeta(x, y, z);
+        bool powered = isPowered(worldView, x, y, z, meta);
         if (lit && !powered)
         {
-            world.SetBlock(x, y, z, Block.Repeater.id, meta);
+            worldView.setBlock(x, y, z, Block.Repeater.id, meta);
         }
         else if (!lit)
         {
-            world.SetBlock(x, y, z, Block.PoweredRepeater.id, meta);
+            worldView.setBlock(x, y, z, Block.PoweredRepeater.id, meta);
             if (!powered)
             {
                 int delaySetting = (meta & 12) >> 2;
-                world.TickScheduler.ScheduleBlockUpdate(x, y, z, PoweredRepeater.id, DELAY[delaySetting] * 2);
+                worldView.ScheduleBlockUpdate(x, y, z, PoweredRepeater.id, DELAY[delaySetting] * 2);
             }
         }
 
@@ -59,7 +59,7 @@ public class BlockRedstoneRepeater : Block
         return side == 0 ? (lit ? 99 : 115) : (side == 1 ? (lit ? 147 : 131) : 5);
     }
 
-    public override bool isSideVisible(IBlockAccess iBlockAccess, int x, int y, int z, int side)
+    public override bool isSideVisible(IBlockReader iBlockReader, int x, int y, int z, int side)
     {
         return side != 0 && side != 1;
     }
@@ -74,12 +74,12 @@ public class BlockRedstoneRepeater : Block
         return getTexture(side, 0);
     }
 
-    public override bool isStrongPoweringSide(World world, int x, int y, int z, int side)
+    public override bool isStrongPoweringSide(IBlockReader world, int x, int y, int z, int side)
     {
         return isPoweringSide(world, x, y, z, side);
     }
 
-    public override bool isPoweringSide(IBlockAccess iBlockAccess, int x, int y, int z, int side)
+    public override bool isPoweringSide(IBlockReader iBlockReader, int x, int y, int z, int side)
     {
         if (!lit)
         {
@@ -87,30 +87,30 @@ public class BlockRedstoneRepeater : Block
         }
         else
         {
-            int facing = iBlockAccess.GetBlockMeta(x, y, z) & 3;
+            int facing = iBlockReader.getBlockMeta(x, y, z) & 3;
             return facing == 0 && side == 3 ? true : (facing == 1 && side == 4 ? true : (facing == 2 && side == 2 ? true : facing == 3 && side == 5));
         }
     }
 
-    public override void neighborUpdate(World world, int x, int y, int z, int id)
+    public override void neighborUpdate(WorldBlockView world, int x, int y, int z, int id)
     {
         if (!canGrow(world, x, y, z))
         {
-            dropStacks(world, x, y, z, world.GetBlockMeta(x, y, z));
-            world.SetBlock(x, y, z, 0);
+            dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
+            world.setBlock(x, y, z, 0);
         }
         else
         {
-            int meta = world.GetBlockMeta(x, y, z);
+            int meta = world.getBlockMeta(x, y, z);
             bool powered = isPowered(world, x, y, z, meta);
             int delaySetting = (meta & 12) >> 2;
             if (lit && !powered)
             {
-                world.TickScheduler.ScheduleBlockUpdate(x, y, z, base.id, DELAY[delaySetting] * 2);
+                world.ScheduleBlockUpdate(x, y, z, base.id, DELAY[delaySetting] * 2);
             }
             else if (!lit && powered)
             {
-                world.TickScheduler.ScheduleBlockUpdate(x, y, z, base.id, DELAY[delaySetting] * 2);
+                world.ScheduleBlockUpdate(x, y, z, base.id, DELAY[delaySetting] * 2);
             }
 
         }
@@ -122,13 +122,13 @@ public class BlockRedstoneRepeater : Block
         switch (facing)
         {
             case 0:
-                return world.Redstone.IsPoweringSide(x, y, z + 1, 3) || world.GetBlockId(x, y, z + 1) == Block.RedstoneWire.id && world.GetBlockMeta(x, y, z + 1) > 0;
+                return world.isPoweringSide(x, y, z + 1, 3) || world.getBlockId(x, y, z + 1) == Block.RedstoneWire.id && world.getBlockMeta(x, y, z + 1) > 0;
             case 1:
-                return world.Redstone.IsPoweringSide(x - 1, y, z, 4) || world.GetBlockId(x - 1, y, z) == Block.RedstoneWire.id && world.GetBlockMeta(x - 1, y, z) > 0;
+                return world.isPoweringSide(x - 1, y, z, 4) || world.getBlockId(x - 1, y, z) == Block.RedstoneWire.id && world.getBlockMeta(x - 1, y, z) > 0;
             case 2:
-                return world.Redstone.IsPoweringSide(x, y, z - 1, 2) || world.GetBlockId(x, y, z - 1) == Block.RedstoneWire.id && world.GetBlockMeta(x, y, z - 1) > 0;
+                return world.isPoweringSide(x, y, z - 1, 2) || world.getBlockId(x, y, z - 1) == Block.RedstoneWire.id && world.getBlockMeta(x, y, z - 1) > 0;
             case 3:
-                return world.Redstone.IsPoweringSide(x + 1, y, z, 5) || world.GetBlockId(x + 1, y, z) == Block.RedstoneWire.id && world.GetBlockMeta(x + 1, y, z) > 0;
+                return world.isPoweringSide(x + 1, y, z, 5) || world.getBlockId(x + 1, y, z) == Block.RedstoneWire.id && world.getBlockMeta(x + 1, y, z) > 0;
             default:
                 return false;
         }
@@ -136,7 +136,7 @@ public class BlockRedstoneRepeater : Block
 
     public override bool onUse(World world, int x, int y, int z, EntityPlayer player)
     {
-        int meta = world.GetBlockMeta(x, y, z);
+        int meta = world.getBlockMeta(x, y, z);
         int newDelaySetting = (meta & 12) >> 2;
         newDelaySetting = newDelaySetting + 1 << 2 & 12;
         world.setBlockMeta(x, y, z, newDelaySetting | meta & 3);
@@ -155,19 +155,19 @@ public class BlockRedstoneRepeater : Block
         bool powered = isPowered(world, x, y, z, facing);
         if (powered)
         {
-            world.TickScheduler.ScheduleBlockUpdate(x, y, z, id, 1);
+            world.ScheduleBlockUpdate(x, y, z, id, 1);
         }
 
     }
 
     public override void onPlaced(World world, int x, int y, int z)
     {
-        world.NotifyNeighbors(x + 1, y, z, id);
-        world.NotifyNeighbors(x - 1, y, z, id);
-        world.NotifyNeighbors(x, y, z + 1, id);
-        world.NotifyNeighbors(x, y, z - 1, id);
-        world.NotifyNeighbors(x, y - 1, z, id);
-        world.NotifyNeighbors(x, y + 1, z, id);
+        world.notifyNeighbors(x + 1, y, z, id);
+        world.notifyNeighbors(x - 1, y, z, id);
+        world.notifyNeighbors(x, y, z + 1, id);
+        world.notifyNeighbors(x, y, z - 1, id);
+        world.notifyNeighbors(x, y - 1, z, id);
+        world.notifyNeighbors(x, y + 1, z, id);
     }
 
     public override bool isOpaque()
@@ -184,7 +184,7 @@ public class BlockRedstoneRepeater : Block
     {
         if (lit)
         {
-            int meta = world.GetBlockMeta(x, y, z);
+            int meta = world.getBlockMeta(x, y, z);
             double particleX = (double)((float)x + 0.5F) + (double)(random.NextFloat() - 0.5F) * 0.2D;
             double particleY = (double)((float)y + 0.4F) + (double)(random.NextFloat() - 0.5F) * 0.2D;
             double particleZ = (double)((float)z + 0.5F) + (double)(random.NextFloat() - 0.5F) * 0.2D;
@@ -228,7 +228,7 @@ public class BlockRedstoneRepeater : Block
                 }
             }
 
-            world.AddParticle("reddust", particleX + offsetX, particleY, particleZ + offsetY, 0.0D, 0.0D, 0.0D);
+            world.addParticle("reddust", particleX + offsetX, particleY, particleZ + offsetY, 0.0D, 0.0D, 0.0D);
         }
     }
 }
