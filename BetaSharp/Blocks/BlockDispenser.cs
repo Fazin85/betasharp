@@ -134,7 +134,7 @@ internal class BlockDispenser : BlockWithEntity
         }
         else
         {
-            if (itemStack.itemId == Item.ARROW.id)
+            if (itemStack.itemId == Item.Arrow.id)
             {
                 EntityArrow arrow = new EntityArrow(world, spawnX, spawnY, spawnZ);
                 arrow.setArrowHeading((double)dirX, (double)0.1F, (double)dirZ, 1.1F, 6.0F);

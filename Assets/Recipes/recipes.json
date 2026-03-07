@@ -1,0 +1,2297 @@
+[
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:wooden_pickaxe",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XXX",
+      " # ",
+      " # "
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:planks"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:wooden_shovel",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X",
+      "#",
+      "#"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:planks"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:wooden_axe",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XX",
+      "X#",
+      " #"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:planks"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:wooden_hoe",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XX",
+      " #",
+      " #"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:planks"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:stone_pickaxe",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XXX",
+      " # ",
+      " # "
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:cobblestone"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:stone_shovel",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X",
+      "#",
+      "#"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:cobblestone"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:stone_axe",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XX",
+      "X#",
+      " #"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:cobblestone"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:stone_hoe",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XX",
+      " #",
+      " #"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:cobblestone"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:iron_pickaxe",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XXX",
+      " # ",
+      " # "
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:iron_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:iron_shovel",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X",
+      "#",
+      "#"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:iron_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:iron_axe",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XX",
+      "X#",
+      " #"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:iron_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:iron_hoe",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XX",
+      " #",
+      " #"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:iron_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:diamond_pickaxe",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XXX",
+      " # ",
+      " # "
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:diamond"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:diamond_shovel",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X",
+      "#",
+      "#"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:diamond"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:diamond_axe",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XX",
+      "X#",
+      " #"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:diamond"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:diamond_hoe",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XX",
+      " #",
+      " #"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:diamond"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:golden_pickaxe",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XXX",
+      " # ",
+      " # "
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:gold_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:golden_shovel",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X",
+      "#",
+      "#"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:gold_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:golden_axe",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XX",
+      "X#",
+      " #"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:gold_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:golden_hoe",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XX",
+      " #",
+      " #"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:gold_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:shears",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      " #",
+      "# "
+    ],
+    "Key": {
+      "#": "betasharp:iron_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:wooden_sword",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X",
+      "X",
+      "#"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:planks"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:stone_sword",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X",
+      "X",
+      "#"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:cobblestone"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:iron_sword",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X",
+      "X",
+      "#"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:iron_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:diamond_sword",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X",
+      "X",
+      "#"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:diamond"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:golden_sword",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X",
+      "X",
+      "#"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:gold_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:bow",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      " #X",
+      "# X",
+      " #X"
+    ],
+    "Key": {
+      "X": "betasharp:string",
+      "#": "betasharp:stick"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:arrow",
+      "Count": 4,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X",
+      "#",
+      "Y"
+    ],
+    "Key": {
+      "Y": "betasharp:feather",
+      "X": "betasharp:flint",
+      "#": "betasharp:stick"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:gold_block",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "###",
+      "###",
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:gold_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:gold_ingot",
+      "Count": 9,
+      "Meta": 0
+    },
+    "Pattern": [
+      "#"
+    ],
+    "Key": {
+      "#": "betasharp:gold_block"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:iron_block",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "###",
+      "###",
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:iron_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:iron_ingot",
+      "Count": 9,
+      "Meta": 0
+    },
+    "Pattern": [
+      "#"
+    ],
+    "Key": {
+      "#": "betasharp:iron_block"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:diamond_block",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "###",
+      "###",
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:diamond"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:diamond",
+      "Count": 9,
+      "Meta": 0
+    },
+    "Pattern": [
+      "#"
+    ],
+    "Key": {
+      "#": "betasharp:diamond_block"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:lapis_block",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "###",
+      "###",
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:dye"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:dye",
+      "Count": 9,
+      "Meta": 4
+    },
+    "Pattern": [
+      "#"
+    ],
+    "Key": {
+      "#": "betasharp:lapis_block"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:mushroom_stew",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "Y",
+      "X",
+      "#"
+    ],
+    "Key": {
+      "X": "betasharp:brown_mushroom",
+      "Y": "betasharp:red_mushroom",
+      "#": "betasharp:bowl"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:mushroom_stew",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "Y",
+      "X",
+      "#"
+    ],
+    "Key": {
+      "X": "betasharp:red_mushroom",
+      "Y": "betasharp:brown_mushroom",
+      "#": "betasharp:bowl"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:cookie",
+      "Count": 8,
+      "Meta": 0
+    },
+    "Pattern": [
+      "#X#"
+    ],
+    "Key": {
+      "X": "betasharp:dye",
+      "#": "betasharp:wheat"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:chest",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "###",
+      "# #",
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:planks"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:furnace",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "###",
+      "# #",
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:cobblestone"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:crafting_table",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "##",
+      "##"
+    ],
+    "Key": {
+      "#": "betasharp:planks"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:sandstone",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "##",
+      "##"
+    ],
+    "Key": {
+      "#": "betasharp:sand"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:leather_helmet",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XXX",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:leather"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:leather_chestplate",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X X",
+      "XXX",
+      "XXX"
+    ],
+    "Key": {
+      "X": "betasharp:leather"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:leather_leggings",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XXX",
+      "X X",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:leather"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:leather_boots",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X X",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:leather"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:chain_helmet",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XXX",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:fire"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:chain_chestplate",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X X",
+      "XXX",
+      "XXX"
+    ],
+    "Key": {
+      "X": "betasharp:fire"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:chain_leggings",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XXX",
+      "X X",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:fire"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:chain_boots",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X X",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:fire"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:iron_helmet",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XXX",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:iron_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:iron_chestplate",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X X",
+      "XXX",
+      "XXX"
+    ],
+    "Key": {
+      "X": "betasharp:iron_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:iron_leggings",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XXX",
+      "X X",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:iron_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:iron_boots",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X X",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:iron_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:diamond_helmet",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XXX",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:diamond"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:diamond_chestplate",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X X",
+      "XXX",
+      "XXX"
+    ],
+    "Key": {
+      "X": "betasharp:diamond"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:diamond_leggings",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XXX",
+      "X X",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:diamond"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:diamond_boots",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X X",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:diamond"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:golden_helmet",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XXX",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:gold_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:golden_chestplate",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X X",
+      "XXX",
+      "XXX"
+    ],
+    "Key": {
+      "X": "betasharp:gold_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:golden_leggings",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "XXX",
+      "X X",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:gold_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:golden_boots",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X X",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:gold_ingot"
+    }
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:wool",
+      "Count": 1,
+      "Meta": 15
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:wool"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:wool",
+      "Count": 1,
+      "Meta": 14
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:wool"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:wool",
+      "Count": 1,
+      "Meta": 13
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:wool"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:wool",
+      "Count": 1,
+      "Meta": 12
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:wool"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:wool",
+      "Count": 1,
+      "Meta": 11
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:wool"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:wool",
+      "Count": 1,
+      "Meta": 10
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:wool"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:wool",
+      "Count": 1,
+      "Meta": 9
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:wool"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:wool",
+      "Count": 1,
+      "Meta": 8
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:wool"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:wool",
+      "Count": 1,
+      "Meta": 7
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:wool"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:wool",
+      "Count": 1,
+      "Meta": 6
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:wool"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:wool",
+      "Count": 1,
+      "Meta": 5
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:wool"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:wool",
+      "Count": 1,
+      "Meta": 4
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:wool"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:wool",
+      "Count": 1,
+      "Meta": 3
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:wool"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:wool",
+      "Count": 1,
+      "Meta": 2
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:wool"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:wool",
+      "Count": 1,
+      "Meta": 1
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:wool"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:wool",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:wool"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:dye",
+      "Count": 2,
+      "Meta": 11
+    },
+    "Ingredients": [
+      "betasharp:dandelion"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:dye",
+      "Count": 2,
+      "Meta": 1
+    },
+    "Ingredients": [
+      "betasharp:rose"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:dye",
+      "Count": 3,
+      "Meta": 15
+    },
+    "Ingredients": [
+      "betasharp:bone"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:dye",
+      "Count": 2,
+      "Meta": 9
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:dye"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:dye",
+      "Count": 2,
+      "Meta": 14
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:dye"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:dye",
+      "Count": 2,
+      "Meta": 10
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:dye"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:dye",
+      "Count": 2,
+      "Meta": 8
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:dye"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:dye",
+      "Count": 2,
+      "Meta": 7
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:dye"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:dye",
+      "Count": 3,
+      "Meta": 7
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:dye",
+      "betasharp:dye"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:dye",
+      "Count": 2,
+      "Meta": 12
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:dye"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:dye",
+      "Count": 2,
+      "Meta": 6
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:dye"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:dye",
+      "Count": 2,
+      "Meta": 5
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:dye"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:dye",
+      "Count": 2,
+      "Meta": 13
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:dye"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:dye",
+      "Count": 3,
+      "Meta": 13
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:dye",
+      "betasharp:dye"
+    ]
+  },
+  {
+    "Type": "shapeless",
+    "Result": {
+      "Name": "betasharp:dye",
+      "Count": 4,
+      "Meta": 13
+    },
+    "Ingredients": [
+      "betasharp:dye",
+      "betasharp:dye",
+      "betasharp:dye",
+      "betasharp:dye"
+    ]
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:paper",
+      "Count": 3,
+      "Meta": 0
+    },
+    "Pattern": [
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:sugar_cane"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:book",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "#",
+      "#",
+      "#"
+    ],
+    "Key": {
+      "#": "betasharp:paper"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:fence",
+      "Count": 2,
+      "Meta": 0
+    },
+    "Pattern": [
+      "###",
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:stick"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:jukebox",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "###",
+      "#X#",
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:planks",
+      "X": "betasharp:diamond"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:noteblock",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "###",
+      "#X#",
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:planks",
+      "X": "betasharp:redstone"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:bookshelf",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "###",
+      "XXX",
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:planks",
+      "X": "betasharp:book"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:snow_block",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "##",
+      "##"
+    ],
+    "Key": {
+      "#": "betasharp:snowball"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:clay",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "##",
+      "##"
+    ],
+    "Key": {
+      "#": "betasharp:clay"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:bricks",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "##",
+      "##"
+    ],
+    "Key": {
+      "#": "betasharp:brick"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:glowstone",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "##",
+      "##"
+    ],
+    "Key": {
+      "#": "betasharp:glowstone_dust"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:wool",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "##",
+      "##"
+    ],
+    "Key": {
+      "#": "betasharp:string"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:tnt",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X#X",
+      "#X#",
+      "X#X"
+    ],
+    "Key": {
+      "X": "betasharp:gunpowder",
+      "#": "betasharp:sand"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:slab",
+      "Count": 3,
+      "Meta": 3
+    },
+    "Pattern": [
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:cobblestone"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:slab",
+      "Count": 3,
+      "Meta": 0
+    },
+    "Pattern": [
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:stone"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:slab",
+      "Count": 3,
+      "Meta": 1
+    },
+    "Pattern": [
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:sandstone"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:slab",
+      "Count": 3,
+      "Meta": 2
+    },
+    "Pattern": [
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:planks"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:ladder",
+      "Count": 2,
+      "Meta": 0
+    },
+    "Pattern": [
+      "# #",
+      "###",
+      "# #"
+    ],
+    "Key": {
+      "#": "betasharp:stick"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:wooden_door",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "##",
+      "##",
+      "##"
+    ],
+    "Key": {
+      "#": "betasharp:planks"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:trapdoor",
+      "Count": 2,
+      "Meta": 0
+    },
+    "Pattern": [
+      "###",
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:planks"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:iron_door",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "##",
+      "##",
+      "##"
+    ],
+    "Key": {
+      "#": "betasharp:iron_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:sign",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "###",
+      "###",
+      " X "
+    ],
+    "Key": {
+      "#": "betasharp:planks",
+      "X": "betasharp:stick"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:cake",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "AAA",
+      "BEB",
+      "CCC"
+    ],
+    "Key": {
+      "A": "betasharp:milk_bucket",
+      "B": "betasharp:sugar",
+      "C": "betasharp:wheat",
+      "E": "betasharp:egg"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:sugar",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "#"
+    ],
+    "Key": {
+      "#": "betasharp:sugar_cane"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:planks",
+      "Count": 4,
+      "Meta": 0
+    },
+    "Pattern": [
+      "#"
+    ],
+    "Key": {
+      "#": "betasharp:log"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:stick",
+      "Count": 4,
+      "Meta": 0
+    },
+    "Pattern": [
+      "#",
+      "#"
+    ],
+    "Key": {
+      "#": "betasharp:planks"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:torch",
+      "Count": 4,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X",
+      "#"
+    ],
+    "Key": {
+      "X": "betasharp:coal",
+      "#": "betasharp:stick"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:torch",
+      "Count": 4,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X",
+      "#"
+    ],
+    "Key": {
+      "X": "betasharp:coal",
+      "#": "betasharp:stick"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:bowl",
+      "Count": 4,
+      "Meta": 0
+    },
+    "Pattern": [
+      "# #",
+      " # "
+    ],
+    "Key": {
+      "#": "betasharp:planks"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:rail",
+      "Count": 16,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X X",
+      "X#X",
+      "X X"
+    ],
+    "Key": {
+      "X": "betasharp:iron_ingot",
+      "#": "betasharp:stick"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:powered_rail",
+      "Count": 6,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X X",
+      "X#X",
+      "XRX"
+    ],
+    "Key": {
+      "X": "betasharp:gold_ingot",
+      "R": "betasharp:redstone",
+      "#": "betasharp:stick"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:detector_rail",
+      "Count": 6,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X X",
+      "X#X",
+      "XRX"
+    ],
+    "Key": {
+      "X": "betasharp:iron_ingot",
+      "R": "betasharp:redstone",
+      "#": "betasharp:stone_pressure_plate"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:minecart",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "# #",
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:iron_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:jack_lantern",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "A",
+      "B"
+    ],
+    "Key": {
+      "A": "betasharp:pumpkin",
+      "B": "betasharp:torch"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:chest_minecart",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "A",
+      "B"
+    ],
+    "Key": {
+      "A": "betasharp:chest",
+      "B": "betasharp:minecart"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:furnace_minecart",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "A",
+      "B"
+    ],
+    "Key": {
+      "A": "betasharp:furnace",
+      "B": "betasharp:minecart"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:boat",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "# #",
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:planks"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:bucket",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "# #",
+      " # "
+    ],
+    "Key": {
+      "#": "betasharp:iron_ingot"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:flint_and_steel",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "A ",
+      " B"
+    ],
+    "Key": {
+      "A": "betasharp:iron_ingot",
+      "B": "betasharp:flint"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:bread",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:wheat"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:wooden_stairs",
+      "Count": 4,
+      "Meta": 0
+    },
+    "Pattern": [
+      "#  ",
+      "## ",
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:planks"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:fishing_rod",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "  #",
+      " #X",
+      "# X"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:string"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:cobblestone_stairs",
+      "Count": 4,
+      "Meta": 0
+    },
+    "Pattern": [
+      "#  ",
+      "## ",
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:cobblestone"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:painting",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "###",
+      "#X#",
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:wool"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:golden_apple",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "###",
+      "#X#",
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:gold_block",
+      "X": "betasharp:apple"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:lever",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X",
+      "#"
+    ],
+    "Key": {
+      "#": "betasharp:cobblestone",
+      "X": "betasharp:stick"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:lit_redstone_torch",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "X",
+      "#"
+    ],
+    "Key": {
+      "#": "betasharp:stick",
+      "X": "betasharp:redstone"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:repeater",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "#X#",
+      "III"
+    ],
+    "Key": {
+      "#": "betasharp:lit_redstone_torch",
+      "X": "betasharp:redstone",
+      "I": "betasharp:stone"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:clock",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      " # ",
+      "#X#",
+      " # "
+    ],
+    "Key": {
+      "#": "betasharp:gold_ingot",
+      "X": "betasharp:redstone"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:compass",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      " # ",
+      "#X#",
+      " # "
+    ],
+    "Key": {
+      "#": "betasharp:iron_ingot",
+      "X": "betasharp:redstone"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:map",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "###",
+      "#X#",
+      "###"
+    ],
+    "Key": {
+      "#": "betasharp:paper",
+      "X": "betasharp:compass"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:button",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "#",
+      "#"
+    ],
+    "Key": {
+      "#": "betasharp:stone"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:stone_pressure_plate",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "##"
+    ],
+    "Key": {
+      "#": "betasharp:stone"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:wooden_pressure_plate",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "##"
+    ],
+    "Key": {
+      "#": "betasharp:planks"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:dispenser",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "###",
+      "#X#",
+      "#R#"
+    ],
+    "Key": {
+      "#": "betasharp:cobblestone",
+      "X": "betasharp:bow",
+      "R": "betasharp:redstone"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:piston",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "TTT",
+      "#X#",
+      "#R#"
+    ],
+    "Key": {
+      "#": "betasharp:cobblestone",
+      "X": "betasharp:iron_ingot",
+      "R": "betasharp:redstone",
+      "T": "betasharp:planks"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:sticky_piston",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "S",
+      "P"
+    ],
+    "Key": {
+      "S": "betasharp:slimeball",
+      "P": "betasharp:piston"
+    }
+  },
+  {
+    "Type": "shaped",
+    "Result": {
+      "Name": "betasharp:bed",
+      "Count": 1,
+      "Meta": 0
+    },
+    "Pattern": [
+      "###",
+      "XXX"
+    ],
+    "Key": {
+      "#": "betasharp:wool",
+      "X": "betasharp:planks"
+    }
+  }
+]

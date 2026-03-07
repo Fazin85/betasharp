@@ -23,7 +23,7 @@ internal class BlockFire : Block
         registerFlammableBlock(Block.Log.id, 5, 5);
         registerFlammableBlock(Block.Leaves.id, 30, 60);
         registerFlammableBlock(Block.Bookshelf.id, 30, 20);
-        registerFlammableBlock(Block.TNT.id, 15, 100);
+        registerFlammableBlock(Block.Tnt.id, 15, 100);
         registerFlammableBlock(Block.Grass.id, 60, 100);
         registerFlammableBlock(Block.Wool.id, 30, 60);
     }
@@ -154,7 +154,7 @@ internal class BlockFire : Block
         int targetSpreadChance = _spreadChances[world.getBlockId(x, y, z)];
         if (random.NextInt(spreadFactor) < targetSpreadChance)
         {
-            bool isTnt = world.getBlockId(x, y, z) == Block.TNT.id;
+            bool isTnt = world.getBlockId(x, y, z) == Block.Tnt.id;
             if (random.NextInt(currentAge + 10) < 5 && !world.isRaining(x, y, z))
             {
                 int newFireAge = currentAge + random.NextInt(5) / 4;
@@ -172,7 +172,7 @@ internal class BlockFire : Block
 
             if (isTnt)
             {
-                Block.TNT.onMetadataChange(world, x, y, z, 1);
+                Block.Tnt.onMetadataChange(world, x, y, z, 1);
             }
         }
 

@@ -1,12 +1,13 @@
-using BetaSharp.Blocks;
 using BetaSharp.Items;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Recipes;
 
-internal class SmeltingRecipeManager
+public class SmeltingRecipeManager
 {
     private static readonly SmeltingRecipeManager smeltingBase = new();
-    private Dictionary<int, ItemStack> smeltingList = new();
+    private readonly Dictionary<int, ItemStack> smeltingList = [];
+    private readonly ILogger _logger = Log.Instance.For<SmeltingRecipeManager>();
 
     public static SmeltingRecipeManager getInstance()
     {
@@ -15,16 +16,8 @@ internal class SmeltingRecipeManager
 
     private SmeltingRecipeManager()
     {
-        AddSmelting(Block.IronOre.id, new ItemStack(Item.IronIngot));
-        AddSmelting(Block.GoldOre.id, new ItemStack(Item.GoldIngot));
-        AddSmelting(Block.DiamondOre.id, new ItemStack(Item.Diamond));
-        AddSmelting(Block.Sand.id, new ItemStack(Block.Glass));
-        AddSmelting(Item.RawPorkchop.id, new ItemStack(Item.CookedPorkchop));
-        AddSmelting(Item.RawFish.id, new ItemStack(Item.CookedFish));
-        AddSmelting(Block.Cobblestone.id, new ItemStack(Block.Stone));
-        AddSmelting(Item.Clay.id, new ItemStack(Item.Brick));
-        AddSmelting(Block.Cactus.id, new ItemStack(Item.Dye, 1, 2));
-        AddSmelting(Block.Log.id, new ItemStack(Item.Coal, 1, 1));
+        RecipeLoader.LoadSmelting(this, "Assets/Recipes/smelting.json");
+        _logger.LogInformation($"{smeltingList.Count} smelting recipes loaded from data.");
     }
 
     public void AddSmelting(int inputId, ItemStack output)
