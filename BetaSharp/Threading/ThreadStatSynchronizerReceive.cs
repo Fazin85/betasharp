@@ -25,7 +25,7 @@ internal class ThreadStatSynchronizerReceive
                 }
                 else if (File.Exists(_synchronizer.StatsFile))
                 {
-                    _synchronizer.MergedData = _synchronizer.FetchNewestAvailableStats(_synchronizer.StatsFile, _synchronizer.TempStatsFile, _synchronizer.OldStatsFile);
+                    _synchronizer.MergedData = StatsSynchronizer.FetchNewestAvailableStats(_synchronizer.StatsFile, _synchronizer.TempStatsFile, _synchronizer.OldStatsFile);
                 }
             }
             catch (Exception ex)

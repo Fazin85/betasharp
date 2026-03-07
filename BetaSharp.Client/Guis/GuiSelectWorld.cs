@@ -1,5 +1,6 @@
 using BetaSharp.Client.Input;
 using BetaSharp.Worlds.Storage;
+using Microsoft.Extensions.Logging;
 
 namespace BetaSharp.Client.Guis;
 
@@ -12,7 +13,8 @@ public class GuiSelectWorld : GuiScreen
     private const int BUTTON_RENAME = 6;
 
     private readonly string dateFormatter = "MMM d, yyyy HH:mm";
-    
+    private static readonly ILogger s_logger = Log.Instance.For<GuiSelectWorld>();
+
     protected GuiScreen parentScreen;
     protected string screenTitle = "Select world";
     private bool selected;
@@ -155,7 +157,15 @@ public class GuiSelectWorld : GuiScreen
     {
         IWorldStorageSource worldStorage = Game.getSaveLoader();
         worldStorage.Flush();
-        worldStorage.Delete(getSaveFileName(worldIndex));
+        try
+        {
+            worldStorage.Delete(getSaveFileName(worldIndex));
+        }
+        catch (Exception ex)
+        {
+            s_logger.LogError(ex, "Failed to delete world");
+            Game.displayGuiScreen(new GuiError(this, "Failed to delete world", ex.Message));
+        }
         loadSaves();
     }
 
@@ -165,7 +175,7 @@ public class GuiSelectWorld : GuiScreen
         DrawCenteredString(FontRenderer, screenTitle, Width / 2, 20, Color.White);
         base.Render(mouseX, mouseY, partialTicks);
     }
-    
+
     public static List<WorldSaveInfo> GetSize(GuiSelectWorld screen) => screen.saveList;
     public static int onElementSelected(GuiSelectWorld screen, int worldIndex) => screen.selectedWorld = worldIndex;
     public static int getSelectedWorld(GuiSelectWorld screen) => screen.selectedWorld;

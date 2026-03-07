@@ -12,14 +12,6 @@ internal class StatsSynchronizer
 
     private readonly StatFileWriter _statFileWriter;
     private readonly Session _session;
-
-    private readonly string _unsentStatsFile;
-    private readonly string _statsFile;
-    private readonly string _tempUnsentStatsFile;
-    private readonly string _tempStatsFile;
-    private readonly string _oldUnsentStatsFile;
-    private readonly string _oldStatsFile;
-
     private int _syncTimeout;
     private int _timeoutCounter;
 
@@ -27,44 +19,44 @@ internal class StatsSynchronizer
     {
         string usernameLower = session.username.ToLowerInvariant();
 
-        _unsentStatsFile = System.IO.Path.Combine(statsFolder, $"stats_{usernameLower}_unsent.dat");
-        _statsFile = System.IO.Path.Combine(statsFolder, $"stats_{usernameLower}.dat");
-        _oldUnsentStatsFile = System.IO.Path.Combine(statsFolder, $"stats_{usernameLower}_unsent.old");
-        _oldStatsFile = System.IO.Path.Combine(statsFolder, $"stats_{usernameLower}.old");
-        _tempUnsentStatsFile = System.IO.Path.Combine(statsFolder, $"stats_{usernameLower}_unsent.tmp");
-        _tempStatsFile = System.IO.Path.Combine(statsFolder, $"stats_{usernameLower}.tmp");
+        UnsentStatsFile = Path.Combine(statsFolder, $"stats_{usernameLower}_unsent.dat");
+        StatsFile = Path.Combine(statsFolder, $"stats_{usernameLower}.dat");
+        OldUnsentStatsFile = Path.Combine(statsFolder, $"stats_{usernameLower}_unsent.old");
+        OldStatsFile = Path.Combine(statsFolder, $"stats_{usernameLower}.old");
+        TempUnsentStatsFile = Path.Combine(statsFolder, $"stats_{usernameLower}_unsent.tmp");
+        TempStatsFile = Path.Combine(statsFolder, $"stats_{usernameLower}.tmp");
 
         if (usernameLower != session.username)
         {
-            EnsureStatFileIsLowercase(statsFolder, $"stats_{session.username}_unsent.dat", _unsentStatsFile);
-            EnsureStatFileIsLowercase(statsFolder, $"stats_{session.username}.dat", _statsFile);
-            EnsureStatFileIsLowercase(statsFolder, $"stats_{session.username}_unsent.old", _oldUnsentStatsFile);
-            EnsureStatFileIsLowercase(statsFolder, $"stats_{session.username}.old", _oldStatsFile);
-            EnsureStatFileIsLowercase(statsFolder, $"stats_{session.username}_unsent.tmp", _tempUnsentStatsFile);
-            EnsureStatFileIsLowercase(statsFolder, $"stats_{session.username}.tmp", _tempStatsFile);
+            EnsureStatFileIsLowercase(statsFolder, $"stats_{session.username}_unsent.dat", UnsentStatsFile);
+            EnsureStatFileIsLowercase(statsFolder, $"stats_{session.username}.dat", StatsFile);
+            EnsureStatFileIsLowercase(statsFolder, $"stats_{session.username}_unsent.old", OldUnsentStatsFile);
+            EnsureStatFileIsLowercase(statsFolder, $"stats_{session.username}.old", OldStatsFile);
+            EnsureStatFileIsLowercase(statsFolder, $"stats_{session.username}_unsent.tmp", TempUnsentStatsFile);
+            EnsureStatFileIsLowercase(statsFolder, $"stats_{session.username}.tmp", TempStatsFile);
         }
 
         _statFileWriter = statFileWriter;
         _session = session;
 
-        if (File.Exists(_unsentStatsFile))
+        if (File.Exists(UnsentStatsFile))
         {
-            statFileWriter.LoadStats(GetNewestAvailableStats(_unsentStatsFile, _tempUnsentStatsFile, _oldUnsentStatsFile));
+            statFileWriter.LoadStats(GetNewestAvailableStats(UnsentStatsFile, TempUnsentStatsFile, OldUnsentStatsFile));
         }
 
         ReceiveStats();
     }
 
-    private void EnsureStatFileIsLowercase(string statsFolder, string fileNameNotLowercase, string targetFile)
+    private static void EnsureStatFileIsLowercase(string statsFolder, string fileNameNotLowercase, string targetFile)
     {
-        string otherFile = System.IO.Path.Combine(statsFolder, fileNameNotLowercase);
+        string otherFile = Path.Combine(statsFolder, fileNameNotLowercase);
         if (File.Exists(otherFile) && !File.Exists(targetFile))
         {
             File.Move(otherFile, targetFile);
         }
     }
 
-    private Dictionary<StatBase, int> GetNewestAvailableStats(string unsent, string tempUnsent, string oldUnsent)
+    private static Dictionary<StatBase, int> GetNewestAvailableStats(string unsent, string tempUnsent, string oldUnsent)
     {
         if (File.Exists(unsent)) return CreateStatsMapFromFile(unsent);
         if (File.Exists(oldUnsent)) return CreateStatsMapFromFile(oldUnsent);
@@ -72,7 +64,7 @@ internal class StatsSynchronizer
         return null;
     }
 
-    private Dictionary<StatBase, int> CreateStatsMapFromFile(string filePath)
+    private static Dictionary<StatBase, int> CreateStatsMapFromFile(string filePath)
     {
         try
         {
@@ -161,7 +153,7 @@ internal class StatsSynchronizer
 
         try
         {
-            SaveStatsToFile(statsMap, _unsentStatsFile, _tempUnsentStatsFile, _oldUnsentStatsFile);
+            SaveStatsToFile(statsMap, UnsentStatsFile, TempUnsentStatsFile, OldUnsentStatsFile);
         }
         finally
         {
@@ -204,14 +196,14 @@ internal class StatsSynchronizer
         set => _busy = value;
     }
 
-    internal string StatsFile => _statsFile;
-    internal string TempStatsFile => _tempStatsFile;
-    internal string OldStatsFile => _oldStatsFile;
-    internal string UnsentStatsFile => _unsentStatsFile;
-    internal string TempUnsentStatsFile => _tempUnsentStatsFile;
-    internal string OldUnsentStatsFile => _oldUnsentStatsFile;
+    internal string StatsFile { get; }
+    internal string TempStatsFile { get; }
+    internal string OldStatsFile { get; }
+    internal string UnsentStatsFile { get; }
+    internal string TempUnsentStatsFile { get; }
+    internal string OldUnsentStatsFile { get; }
 
-    internal Dictionary<StatBase, int> FetchNewestAvailableStats(string unsent, string tempUnsent, string oldUnsent)
+    internal static Dictionary<StatBase, int> FetchNewestAvailableStats(string unsent, string tempUnsent, string oldUnsent)
     {
         return GetNewestAvailableStats(unsent, tempUnsent, oldUnsent);
     }
