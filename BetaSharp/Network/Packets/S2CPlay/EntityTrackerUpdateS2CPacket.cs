@@ -6,10 +6,12 @@ public class EntityTrackerUpdateS2CPacket() : PacketBaseEntity(PacketId.EntityTr
 {
     public byte[] Data;
 
-    public EntityTrackerUpdateS2CPacket(int entityId, byte[] data) : this()
+    public static EntityTrackerUpdateS2CPacket Get(int entityId, byte[] data)
     {
-        EntityId = entityId;
-        Data = data;
+        var p = Get<EntityTrackerUpdateS2CPacket>(PacketId.EntityTrackerUpdateS2C);
+        p.EntityId = entityId;
+        p.Data = data;
+        return p;
     }
 
     public override void Read(NetworkStream stream)

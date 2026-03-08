@@ -70,6 +70,7 @@ public class Connection
 
         if (!closed)
         {
+            packet.UseCount++;
             object lockObj = lck;
             lock (lockObj)
             {
@@ -115,7 +116,6 @@ public class Connection
                 sizeStats = TOTAL_SEND_SIZE;
                 sizeStats[packet.Id] += packet.Size() + 1;
                 wrotePacket = true;
-                packet.Return();
             }
 
             if (_delay-- <= 0 && !delayedSendQueue.isEmpty() && (lag == 0 || DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
@@ -133,7 +133,6 @@ public class Connection
                 sizeStats[packet.Id] += packet.Size() + 1;
                 _delay = 0;
                 wrotePacket = true;
-                packet.Return();
             }
 
             return wrotePacket;

@@ -1,6 +1,4 @@
-﻿using System.Net.Sockets;
-
-namespace BetaSharp.Network.Packets;
+﻿namespace BetaSharp.Network.Packets;
 
 public abstract class ExtendedProtocolPacket : Packet
 {

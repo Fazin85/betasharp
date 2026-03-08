@@ -173,7 +173,7 @@ public class FactoryItem<T>(int id, Func<T> item) : RegistryItem<Func<T>>(id, it
 
 public class FactoryPoolItem<T>(int id, Func<T> item, int capacity = 32) : RegistryItem<ObjectPool<T>>(id, new ObjectPool<T>(item, capacity)), IDisposable where T : class
 {
-    public T Get() => Item.Get();
+    public virtual T Get() => Item.Get();
     public void Return(T obj) => Item.Return(obj);
     public void Dispose() => Item.Dispose();
 }
