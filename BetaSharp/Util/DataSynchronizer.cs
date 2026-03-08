@@ -138,8 +138,6 @@ public sealed class DataSynchronizer
         {
             SerializeProperty(stream, obj);
         }
-
-        stream.WriteByte(127);
     }
 
     public void WriteChanges(Stream stream)
@@ -157,14 +155,14 @@ public sealed class DataSynchronizer
         }
 
         Dirty = false;
-
-        stream.WriteByte(127);
     }
 
     public void ApplyChanges(Stream stream)
     {
-        for (sbyte b = (sbyte)stream.ReadByte(); b != 127; b = (sbyte)stream.ReadByte())
+        while (true)
         {
+            int b = stream.ReadByte();
+            if (b == -1) break;
             int objectType = (b & 224) >> 5;
             int dataValueId = b & 31;
             DeserializeProperty(stream, objectType, dataValueId);
