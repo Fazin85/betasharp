@@ -20,6 +20,7 @@ public class ServerPlayerInteractionManager
     private int miningY;
     private int miningZ;
     private int startMiningTime;
+    private float miningSpeed;
 
     public ServerPlayerInteractionManager(ServerWorld world)
     {
@@ -80,8 +81,7 @@ public class ServerPlayerInteractionManager
             int blockId = world.getBlockId(x, y, z);
             if (blockId != 0)
             {
-                Block block = Block.Blocks[blockId];
-                float breakProgress = block.getHardness(player) * (ticksSinceFailedStart + 1);
+                float breakProgress = miningSpeed * (ticksSinceFailedStart + 1);
                 if (breakProgress >= 0.7F)
                 {
                     tryBreakBlock(x, y, z);
@@ -109,6 +109,23 @@ public class ServerPlayerInteractionManager
         }
 
         return success;
+    }
+
+    public void UpdateMiningTool()
+    {
+        if (!mining)
+        {
+            miningSpeed = float.MaxValue;
+            return;
+        }
+        int blockId = world.getBlockId(miningX, miningY, miningZ);
+        if (blockId == 0)
+        {
+            miningSpeed = float.MaxValue;
+            return;
+        }
+        Block block = Block.Blocks[blockId];
+        miningSpeed = Math.Min(block.getHardness(player), miningSpeed);
     }
 
     public bool tryBreakBlock(int x, int y, int z)
