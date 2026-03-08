@@ -4,7 +4,7 @@ using BetaSharp.Items;
 using BetaSharp.Rules;
 using BetaSharp.Util.Maths;
 
-namespace BetaSharp.Worlds.Core;
+namespace BetaSharp.Worlds.Core.Systems;
 
 public class WorldEventBroadcaster : IBlockWorldContext
 {

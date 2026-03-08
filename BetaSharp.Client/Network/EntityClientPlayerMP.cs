@@ -6,6 +6,7 @@ using BetaSharp.Network.Packets.S2CPlay;
 using BetaSharp.Stats;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Client.Network;
 

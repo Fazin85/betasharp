@@ -3,6 +3,7 @@ using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Blocks;
 
@@ -171,7 +172,7 @@ public class BlockBed : Block
         worldWrite.SetBlockMeta(x, y, z, meta);
     }
 
-    // Updated 'World' to 'IBlockReader' 
+    // Updated 'World' to 'IBlockReader'
     public static Vec3i? findWakeUpPosition(IBlockReader world, int x, int y, int z, int skip)
     {
         int blockMeta = world.GetBlockMeta(x, y, z);

@@ -4,6 +4,7 @@ using BetaSharp.Entities;
 using BetaSharp.PathFinding;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Core.Systems;
 using BetaSharp.Worlds.Generation.Biomes;
 
 namespace BetaSharp;

@@ -6,7 +6,7 @@ using BetaSharp.Rules;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Chunks;
 
-namespace BetaSharp.Worlds.Core;
+namespace BetaSharp.Worlds.Core.Systems;
 
 public class EntityManager
 {

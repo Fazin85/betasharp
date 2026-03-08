@@ -4,6 +4,7 @@ using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Blocks;
 
@@ -20,13 +21,13 @@ internal class BlockDispenser : BlockWithEntity
     public override void onPlaced(OnPlacedEvt ctx)
     {
         base.onPlaced(ctx);
-        
+
         // If a player/entity placed it, use their yaw. Otherwise, use neighbor logic.
         if (ctx.Placer != null)
         {
             int direction = MathHelper.Floor(ctx.Placer.yaw * 4.0F / 360.0F + 0.5D) & 3;
             int meta = 0;
-            
+
             if (direction == 0) meta = 2;
             else if (direction == 1) meta = 5;
             else if (direction == 2) meta = 3;
@@ -48,7 +49,7 @@ internal class BlockDispenser : BlockWithEntity
             int blockSouth = worldRead.GetBlockId(x, y, z + 1);
             int blockWest = worldRead.GetBlockId(x - 1, y, z);
             int blockEast = worldRead.GetBlockId(x + 1, y, z);
-            
+
             sbyte direction = 3;
             if (BlocksOpaque[blockNorth] && !BlocksOpaque[blockSouth]) direction = 3;
             if (BlocksOpaque[blockSouth] && !BlocksOpaque[blockNorth]) direction = 2;
@@ -92,7 +93,7 @@ internal class BlockDispenser : BlockWithEntity
         int meta = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
         int dirX = 0;
         int dirZ = 0;
-        
+
         if (meta == 3) dirZ = 1;
         else if (meta == 2) dirZ = -1;
         else if (meta == 5) dirX = 1;
@@ -145,7 +146,7 @@ internal class BlockDispenser : BlockWithEntity
                 // item.velocityX = dirX * randomVelocity;
                 // item.velocityY = 0.2F;
                 // item.velocityZ = dirZ * randomVelocity;
-                // 
+                //
                 // // EntityItem velocity usually takes doubles in newer Beta engines
                 // item.velocityX += ctx.Random.NextGaussian() * 0.0075D * 6.0D;
                 // item.velocityY += ctx.Random.NextGaussian() * 0.0075D * 6.0D;
@@ -211,11 +212,11 @@ internal class BlockDispenser : BlockWithEntity
                         // TODO: Implement this
                         // EntityItem entityItem = new(ctx.WorldRead, ctx.X + offsetX, ctx.Y + offsetY, ctx.Z + offsetZ, new ItemStack(stack.itemId, amount, stack.getDamage()));
                         // float floatVar = 0.05F;
-                        // 
+                        //
                         // entityItem.velocityX = (float)random.NextGaussian() * floatVar;
                         // entityItem.velocityY = (float)random.NextGaussian() * floatVar + 0.2F;
                         // entityItem.velocityZ = (float)random.NextGaussian() * floatVar;
-                        // 
+                        //
                         // ctx.Entities.SpawnEntity(entityItem);
                     }
                 }

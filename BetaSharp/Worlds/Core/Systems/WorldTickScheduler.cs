@@ -1,7 +1,7 @@
 using BetaSharp.Blocks;
 using BetaSharp.Util.Maths;
 
-namespace BetaSharp.Worlds.Core;
+namespace BetaSharp.Worlds.Core.Systems;
 
 public class WorldTickScheduler
 {

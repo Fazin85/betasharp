@@ -2,6 +2,7 @@ using BetaSharp.Blocks.Materials;
 using BetaSharp.Entities;
 using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Blocks;
 
@@ -20,18 +21,18 @@ internal class BlockLever : Block
     public override BlockRendererType getRenderType() => BlockRendererType.Lever;
 
     // Converted nested ternaries to clean boolean logic
-    public bool canPlaceAt(IBlockReader world, int x, int y, int z, int side) => 
+    public bool canPlaceAt(IBlockReader world, int x, int y, int z, int side) =>
         (side == 1 && world.ShouldSuffocate(x, y - 1, z)) ||
         (side == 2 && world.ShouldSuffocate(x, y, z + 1)) ||
         (side == 3 && world.ShouldSuffocate(x, y, z - 1)) ||
-        (side == 4 && world.ShouldSuffocate(x + 1, y, z)) || 
+        (side == 4 && world.ShouldSuffocate(x + 1, y, z)) ||
         (side == 5 && world.ShouldSuffocate(x - 1, y, z));
 
-    public override bool canPlaceAt(CanPlaceAtCtx ctx) => 
+    public override bool canPlaceAt(CanPlaceAtCtx ctx) =>
         ctx.WorldRead.ShouldSuffocate(ctx.X - 1, ctx.Y, ctx.Z) ||
         ctx.WorldRead.ShouldSuffocate(ctx.X + 1, ctx.Y, ctx.Z) ||
         ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z - 1) ||
-        ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z + 1) || 
+        ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z + 1) ||
         ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y - 1, ctx.Z);
 
     public override void onPlaced(OnPlacedEvt ctx)
@@ -43,7 +44,7 @@ internal class BlockLever : Block
 
         if (ctx.Direction == 1 && ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y - 1, ctx.Z))
         {
-            // OnPlacedEvt doesn't have a Random instance, so we instantiate one locally 
+            // OnPlacedEvt doesn't have a Random instance, so we instantiate one locally
             // to handle the randomized floor orientation Lever quirk.
             meta = 5 + new JavaRandom().NextInt(2);
         }
@@ -105,7 +106,7 @@ internal class BlockLever : Block
     {
         int meta = iBlockReader.GetBlockMeta(x, y, z) & 7;
         float width = 3.0F / 16.0F;
-        
+
         if (meta == 1) setBoundingBox(0.0F, 0.2F, 0.5F - width, width * 2.0F, 0.8F, 0.5F + width);
         else if (meta == 2) setBoundingBox(1.0F - width * 2.0F, 0.2F, 0.5F - width, 1.0F, 0.8F, 0.5F + width);
         else if (meta == 3) setBoundingBox(0.5F - width, 0.2F, 0.0F, 0.5F + width, 0.8F, width * 2.0F);
@@ -140,13 +141,13 @@ internal class BlockLever : Block
         int meta = worldRead.GetBlockMeta(x, y, z);
         int direction = meta & 7;
         int powered = 8 - (meta & 8);
-        
+
         worldWrite.SetBlockMeta(x, y, z, direction + powered);
         worldWrite.SetBlocksDirty(x, y, z);
         broadcaster.PlaySoundAtPos(x + 0.5D, y + 0.5D, z + 0.5D, "random.click", 0.3F, powered > 0 ? 0.6F : 0.5F);
-        
+
         broadcaster.NotifyNeighbors(x, y, z, id);
-        
+
         if (direction == 1) broadcaster.NotifyNeighbors(x - 1, y, z, id);
         else if (direction == 2) broadcaster.NotifyNeighbors(x + 1, y, z, id);
         else if (direction == 3) broadcaster.NotifyNeighbors(x, y, z - 1, id);
@@ -161,7 +162,7 @@ internal class BlockLever : Block
         {
             ctx.Broadcaster.NotifyNeighbors(ctx.X, ctx.Y, ctx.Z, id);
             int direction = meta & 7;
-            
+
             if (direction == 1) ctx.Broadcaster.NotifyNeighbors(ctx.X - 1, ctx.Y, ctx.Z, id);
             else if (direction == 2) ctx.Broadcaster.NotifyNeighbors(ctx.X + 1, ctx.Y, ctx.Z, id);
             else if (direction == 3) ctx.Broadcaster.NotifyNeighbors(ctx.X, ctx.Y, ctx.Z - 1, id);
@@ -172,7 +173,7 @@ internal class BlockLever : Block
         base.onBreak(ctx);
     }
 
-    public override bool isPoweringSide(IBlockReader iBlockReader, int x, int y, int z, int side) => 
+    public override bool isPoweringSide(IBlockReader iBlockReader, int x, int y, int z, int side) =>
         (iBlockReader.GetBlockMeta(x, y, z) & 8) > 0;
 
     public override bool isStrongPoweringSide(IBlockReader world, int x, int y, int z, int side)
@@ -184,11 +185,11 @@ internal class BlockLever : Block
         }
 
         int direction = meta & 7;
-        return (direction == 6 && side == 1) || 
-               (direction == 5 && side == 1) || 
-               (direction == 4 && side == 2) || 
-               (direction == 3 && side == 3) || 
-               (direction == 2 && side == 4) || 
+        return (direction == 6 && side == 1) ||
+               (direction == 5 && side == 1) ||
+               (direction == 4 && side == 2) ||
+               (direction == 3 && side == 3) ||
+               (direction == 2 && side == 4) ||
                (direction == 1 && side == 5);
     }
 

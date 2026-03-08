@@ -17,7 +17,7 @@ using BetaSharp.Worlds.Storage;
 using Microsoft.Extensions.Logging;
 using Silk.NET.Maths;
 
-namespace BetaSharp.Worlds.Core;
+namespace BetaSharp.Worlds.Core.Systems;
 
 public abstract class World : IBlockWorldContext
 {
@@ -56,9 +56,17 @@ public abstract class World : IBlockWorldContext
     public bool IsNewWorld;
     public bool isRemote { set; get; } = false;
 
-    public bool PauseTicking { get => BlocksReader.PauseTicking; set => BlocksReader.PauseTicking = value; }
+    public bool PauseTicking
+    {
+        get => BlocksReader.PauseTicking;
+        set => BlocksReader.PauseTicking = value;
+    }
 
-    public bool InstantBlockUpdateEnabled { get => TickScheduler.instantBlockUpdateEnabled; set => TickScheduler.instantBlockUpdateEnabled = value; }
+    public bool InstantBlockUpdateEnabled
+    {
+        get => TickScheduler.instantBlockUpdateEnabled;
+        set => TickScheduler.instantBlockUpdateEnabled = value;
+    }
 
     public PersistentStateManager PersistentStateManager;
 
@@ -1193,7 +1201,7 @@ public abstract class World : IBlockWorldContext
                 int localStartZ = Math.Max(0, z - chunkZ * 16);
                 int localEndZ = Math.Min(16, z + sizeZ - chunkZ * 16);
 
-                    currentBufferOffset = _blockHost.GetChunk(chunkX, chunkZ).LoadFromPacket(
+                currentBufferOffset = _blockHost.GetChunk(chunkX, chunkZ).LoadFromPacket(
                     chunkData,
                     localStartX, minY, localStartZ,
                     localEndX, maxY, localEndZ,
@@ -1345,7 +1353,7 @@ public abstract class World : IBlockWorldContext
     public int getBlockMeta(int x, int y, int z) => BlocksReader.GetBlockMeta(x, y, z);
 
     [Obsolete("Use Blocks.SetBlockMeta instead.")]
-        public void setBlockMeta(int x, int y, int z, int meta) => BlockWriter.SetBlockMeta(x, y, z, meta);
+    public void setBlockMeta(int x, int y, int z, int meta) => BlockWriter.SetBlockMeta(x, y, z, meta);
 
     [Obsolete("Use Blocks.SetBlockMetaWithoutNotifyingNeighbors instead.")]
     public virtual bool SetBlockMetaWithoutNotifyingNeighbors(int x, int y, int z, int meta) => BlockWriter.SetBlockMetaWithoutNotifyingNeighbors(x, y, z, meta);

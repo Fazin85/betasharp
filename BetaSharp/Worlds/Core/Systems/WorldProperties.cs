@@ -1,7 +1,7 @@
 using BetaSharp.Entities;
 using BetaSharp.NBT;
 
-namespace BetaSharp.Worlds.Core;
+namespace BetaSharp.Worlds.Core.Systems;
 
 public class WorldProperties
 {

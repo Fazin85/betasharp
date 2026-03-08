@@ -5,6 +5,7 @@ using BetaSharp.Entities;
 using BetaSharp.Items;
 using BetaSharp.Network.Packets.C2SPlay;
 using BetaSharp.Worlds.Core;
+using BetaSharp.Worlds.Core.Systems;
 
 namespace BetaSharp.Client.Input;
 

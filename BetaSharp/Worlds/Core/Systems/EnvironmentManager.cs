@@ -4,7 +4,7 @@ using BetaSharp.Worlds.Dimensions;
 using BetaSharp.Worlds.Generation.Biomes;
 using Silk.NET.Maths;
 
-namespace BetaSharp.Worlds.Core;
+namespace BetaSharp.Worlds.Core.Systems;
 
 public class EnvironmentManager
 {

@@ -1,14 +1,11 @@
-using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using BetaSharp.Blocks;
-using BetaSharp.Util.Maths;
 using BetaSharp.Worlds.Chunks;
 using BetaSharp.Worlds.Dimensions;
 using BetaSharp.Worlds.Lighting;
 using Microsoft.Extensions.Logging;
 
-namespace BetaSharp.Worlds.Core;
+namespace BetaSharp.Worlds.Core.Systems;
 
 public class LightingEngine
 {
