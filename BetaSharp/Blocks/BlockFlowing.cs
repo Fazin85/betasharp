@@ -26,7 +26,7 @@ internal class BlockFlowing : BlockFluid
     {
         int currentState = getLiquidState(ctx);
         sbyte spreadRate = 1;
-        if (material == Material.Lava && !worldView.dimension.EvaporatesWater)
+        if (material == Material.Lava && !ctx.Dimension.EvaporatesWater)
         {
             spreadRate = 2;
         }
@@ -37,19 +37,19 @@ internal class BlockFlowing : BlockFluid
         {
             int minDepth = -100;
             _adjacentSources.Value = 0;
-            int lowestNeighborDepth = getLowestDepth(worldView, x - 1, y, z, minDepth);
-            lowestNeighborDepth = getLowestDepth(worldView, x + 1, y, z, lowestNeighborDepth);
-            lowestNeighborDepth = getLowestDepth(worldView, x, y, z - 1, lowestNeighborDepth);
-            lowestNeighborDepth = getLowestDepth(worldView, x, y, z + 1, lowestNeighborDepth);
+            int lowestNeighborDepth = getLowestDepth(ctx.WorldRead, ctx.X - 1, ctx.Y, ctx.Z, minDepth);
+            lowestNeighborDepth = getLowestDepth(ctx.WorldRead, ctx.X + 1, ctx.Y, ctx.Z, lowestNeighborDepth);
+            lowestNeighborDepth = getLowestDepth(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z - 1, lowestNeighborDepth);
+            lowestNeighborDepth = getLowestDepth(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z + 1, lowestNeighborDepth);
             newLevel = lowestNeighborDepth + spreadRate;
             if (newLevel >= 8 || lowestNeighborDepth < 0)
             {
                 newLevel = -1;
             }
 
-            if (getLiquidState(worldView, x, y + 1, z) >= 0)
+            if (getLiquidState(ctx.WorldRead, ctx.X, ctx.Y + 1, ctx.Z) >= 0)
             {
-                int stateAbove = getLiquidState(worldView, x, y + 1, z);
+                int stateAbove = getLiquidState(ctx.WorldRead, ctx.X, ctx.Y + 1, ctx.Z);
                 if (stateAbove >= 8)
                 {
                     newLevel = stateAbove;
@@ -62,17 +62,17 @@ internal class BlockFlowing : BlockFluid
 
             if (_adjacentSources.Value >= 2 && material == Material.Water)
             {
-                if (worldView.getMaterial(x, y - 1, z).IsSolid)
+                if (ctx.WorldRead.GetMaterial(ctx.X, ctx.Y - 1, ctx.Z).IsSolid)
                 {
                     newLevel = 0;
                 }
-                else if (worldView.getMaterial(x, y - 1, z) == material && worldView.getBlockMeta(x, y, z) == 0)
+                else if (ctx.WorldRead.GetMaterial(ctx.X, ctx.Y - 1, ctx.Z) == material && ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z) == 0)
                 {
                     newLevel = 0;
                 }
             }
 
-            if (material == Material.Lava && currentState < 8 && newLevel < 8 && newLevel > currentState && random.NextInt(4) != 0)
+            if (material == Material.Lava && currentState < 8 && newLevel < 8 && newLevel > currentState && ctx.Random.NextInt(4) != 0)
             {
                 newLevel = currentState;
                 convertToSource = false;
@@ -83,34 +83,34 @@ internal class BlockFlowing : BlockFluid
                 currentState = newLevel;
                 if (newLevel < 0)
                 {
-                    worldView.setBlock(x, y, z, 0);
+                    ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
                 }
                 else
                 {
-                    worldView.setBlockMeta(x, y, z, newLevel);
-                    worldView.ScheduleBlockUpdate(x, y, z, id, getTickRate());
-                    worldView.NotifyNeighbors(x, y, z, id);
+                    ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, newLevel);
+                    ctx.WorldWrite.ScheduleBlockUpdate(ctx.X, ctx.Y, ctx.Z, id, getTickRate());
+                    ctx.Broadcaster.NotifyNeighbors(ctx.X, ctx.Y, ctx.Z, id);
                 }
             }
             else if (convertToSource)
             {
-                this.convertToSource(worldView, x, y, z);
+                this.convertToSource(ctx.WorldRead, ctx.WorldWrite, ctx.Broadcaster, ctx.X, ctx.Y, ctx.Z);
             }
         }
         else
         {
-            this.convertToSource(worldView, x, y, z);
+            this.convertToSource(ctx.WorldRead, ctx.WorldWrite, ctx.Broadcaster, ctx.X, ctx.Y, ctx.Z);
         }
 
-        if (canSpreadTo(worldView, x, y - 1, z))
+        if (canSpreadTo(ctx.WorldRead, ctx.X, ctx.Y - 1, ctx.Z))
         {
             if (currentState >= 8)
             {
-                worldView.setBlock(x, y - 1, z, id, currentState);
+                ctx.WorldWrite.SetBlock(ctx.X, ctx.Y - 1, ctx.Z, id, currentState);
             }
             else
             {
-                worldView.setBlock(x, y - 1, z, id, currentState + 8);
+                ctx.WorldWrite.SetBlock(ctx.X, ctx.Y - 1, ctx.Z, id, currentState + 8);
             }
         }
         else if (currentState >= 0 && (currentState == 0 || isLiquidBreaking(worldView, x, y - 1, z)))
@@ -163,7 +163,7 @@ internal class BlockFlowing : BlockFluid
                 }
                 else
                 {
-                    Block.Blocks[blockId].dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
+                    Blocks[blockId].dropStacks(world, x, y, z, world.getBlockMeta(x, y, z));
                 }
             }
 
@@ -286,10 +286,10 @@ internal class BlockFlowing : BlockFluid
         return spread;
     }
 
-    private bool isLiquidBreaking(World world, int x, int y, int z)
+    private bool isLiquidBreaking(IBlockReader reader, int x, int y, int z)
     {
-        int blockId = world.getBlockId(x, y, z);
-        if (blockId != Block.Door.id && blockId != Block.IronDoor.id && blockId != Block.Sign.id && blockId != Block.Ladder.id && blockId != Block.SugarCane.id)
+        int blockId = reader.GetBlockId(x, y, z);
+        if (blockId !=Door.id && blockId !=IronDoor.id && blockId !=Sign.id && blockId !=Ladder.id && blockId !=SugarCane.id)
         {
             if (blockId == 0)
             {
@@ -297,7 +297,7 @@ internal class BlockFlowing : BlockFluid
             }
             else
             {
-                Material material = Block.Blocks[blockId].material;
+                Material material =Blocks[blockId].material;
                 return material.BlocksMovement;
             }
         }
@@ -307,9 +307,9 @@ internal class BlockFlowing : BlockFluid
         }
     }
 
-    protected int getLowestDepth(World world, int x, int y, int z, int depth)
+    protected int getLowestDepth(IBlockReader reader, int x, int y, int z, int depth)
     {
-        int liquidState = getLiquidState(world, x, y, z);
+        int liquidState = getLiquidState(reader, x, y, z);
         if (liquidState < 0)
         {
             return depth;
@@ -330,19 +330,18 @@ internal class BlockFlowing : BlockFluid
         }
     }
 
-    private bool canSpreadTo(World world, int x, int y, int z)
+    private bool canSpreadTo(IBlockReader reader, int x, int y, int z)
     {
-        Material material = world.getMaterial(x, y, z);
-        return material != base.material && (material != Material.Lava && !isLiquidBreaking(world, x, y, z));
+        Material material = reader.GetMaterial(x, y, z);
+        return material != base.material && (material != Material.Lava && !isLiquidBreaking(reader, x, y, z));
     }
 
-    public override void onPlaced(World world, int x, int y, int z)
+    public override void onPlaced(OnPlacedContext ctx)
     {
-        base.onPlaced(world, x, y, z);
-        if (world.getBlockId(x, y, z) == id)
+        base.onPlaced(ctx);
+        if (ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z) == id)
         {
-            world.ScheduleBlockUpdate(x, y, z, id, getTickRate());
+            ctx.WorldWrite.ScheduleBlockUpdate(ctx.X, ctx.Y, ctx.Z, id, getTickRate());
         }
-
     }
 }

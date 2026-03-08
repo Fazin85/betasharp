@@ -93,7 +93,7 @@ internal class BlockSnow : Block
     {
         if (ctx.Lighting.GetBrightness(LightType.Block, ctx.X, ctx.Y, ctx.Z) > 11)
         {
-            dropStacks(ctx.WorldView, ctx.X, ctx.Y, ctx.Z, ctx.WorldView.getBlockMeta(ctx.X, ctx.Y, ctx.Z));
+            dropStacks(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z, ctx.WorldRead.getBlockMeta(ctx.X, ctx.Y, ctx.Z));
             ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
         }
 

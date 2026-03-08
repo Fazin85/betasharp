@@ -141,22 +141,22 @@ internal class BlockChest : BlockWithEntity
     public override bool canPlaceAt(OnPlacedContext ctx)
     {
         int adjacentChestCount = 0;
-        if (ctx.WorldView.GetBlockId(ctx.X - 1, ctx.Y, ctx.Z) == id)
+        if (ctx.WorldRead.GetBlockId(ctx.X - 1, ctx.Y, ctx.Z) == id)
         {
             ++adjacentChestCount;
         }
 
-        if (ctx.WorldView.GetBlockId(ctx.X + 1, ctx.Y, ctx.Z) == id)
+        if (ctx.WorldRead.GetBlockId(ctx.X + 1, ctx.Y, ctx.Z) == id)
         {
             ++adjacentChestCount;
         }
 
-        if (ctx.WorldView.GetBlockId(ctx.X, ctx.Y, ctx.Z - 1) == id)
+        if (ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z - 1) == id)
         {
             ++adjacentChestCount;
         }
 
-        if (ctx.WorldView.GetBlockId(ctx.X, ctx.Y, ctx.Z + 1) == id)
+        if (ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z + 1) == id)
         {
             ++adjacentChestCount;
         }
@@ -166,12 +166,12 @@ internal class BlockChest : BlockWithEntity
 
     private bool hasNeighbor(OnPlacedContext ctx)
     {
-        return ctx.WorldView.GetBlockId(ctx.X, ctx.Y, ctx.Z) != id ? false : (ctx.WorldView.GetBlockId(ctx.X - 1, ctx.Y, ctx.Z) == id ? true : (ctx.WorldView.GetBlockId(ctx.X + 1, ctx.Y, ctx.Z) == id ? true : (ctx.WorldView.GetBlockId(ctx.X, ctx.Y, ctx.Z - 1) == id ? true : ctx.WorldView.GetBlockId(ctx.X, ctx.Y, ctx.Z + 1) == id)));
+        return ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z) != id ? false : (ctx.WorldRead.GetBlockId(ctx.X - 1, ctx.Y, ctx.Z) == id ? true : (ctx.WorldRead.GetBlockId(ctx.X + 1, ctx.Y, ctx.Z) == id ? true : (ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z - 1) == id ? true : ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z + 1) == id)));
     }
 
     public override void onBreak(OnBreakContext ctx)
     {
-        BlockEntityChest? chest = (BlockEntityChest?)ctx.WorldView.GetBlockEntity(ctx.X, ctx.Y, ctx.Z);
+        BlockEntityChest? chest = (BlockEntityChest?)ctx.WorldRead.GetBlockEntity(ctx.X, ctx.Y, ctx.Z);
 
         for (int slot = 0; slot < chest!.size(); ++slot)
         {
@@ -206,47 +206,47 @@ internal class BlockChest : BlockWithEntity
 
     public override bool onUse(OnUseContext ctx)
     {
-        IInventory chestInventory = (BlockEntityChest)ctx.WorldView.GetBlockEntity(ctx.X, ctx.Y, ctx.Z);
-        if (ctx.WorldView.ShouldSuffocate(ctx.X, ctx.Y + 1, ctx.Z))
+        IInventory chestInventory = (BlockEntityChest)ctx.WorldRead.GetBlockEntity(ctx.X, ctx.Y, ctx.Z);
+        if (ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y + 1, ctx.Z))
         {
             return true;
         }
-        else if (ctx.WorldView.GetBlockId(ctx.X - 1, ctx.Y, ctx.Z) == id && ctx.WorldView.ShouldSuffocate(ctx.X - 1, ctx.Y + 1, ctx.Z))
+        else if (ctx.WorldRead.GetBlockId(ctx.X - 1, ctx.Y, ctx.Z) == id && ctx.WorldRead.ShouldSuffocate(ctx.X - 1, ctx.Y + 1, ctx.Z))
         {
             return true;
         }
-        else if (ctx.WorldView.GetBlockId(ctx.X + 1, ctx.Y, ctx.Z) == id && ctx.WorldView.ShouldSuffocate(ctx.X + 1, ctx.Y + 1, ctx.Z))
+        else if (ctx.WorldRead.GetBlockId(ctx.X + 1, ctx.Y, ctx.Z) == id && ctx.WorldRead.ShouldSuffocate(ctx.X + 1, ctx.Y + 1, ctx.Z))
         {
             return true;
         }
-        else if (ctx.WorldView.GetBlockId(ctx.X, ctx.Y, ctx.Z - 1) == id && ctx.WorldView.ShouldSuffocate(ctx.X, ctx.Y + 1, ctx.Z - 1))
+        else if (ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z - 1) == id && ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y + 1, ctx.Z - 1))
         {
             return true;
         }
-        else if (ctx.WorldView.GetBlockId(ctx.X, ctx.Y, ctx.Z + 1) == id && ctx.WorldView.ShouldSuffocate(ctx.X, ctx.Y + 1, ctx.Z + 1))
+        else if (ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z + 1) == id && ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y + 1, ctx.Z + 1))
         {
             return true;
         }
         else
         {
-            if (ctx.WorldView.GetBlockId(ctx.X - 1, ctx.Y, ctx.Z) == id)
+            if (ctx.WorldRead.GetBlockId(ctx.X - 1, ctx.Y, ctx.Z) == id)
             {
-                chestInventory = new InventoryLargeChest("Large chest", (BlockEntityChest)ctx.WorldView.GetBlockEntity(ctx.X - 1, ctx.Y, ctx.Z), chestInventory);
+                chestInventory = new InventoryLargeChest("Large chest", (BlockEntityChest)ctx.WorldRead.GetBlockEntity(ctx.X - 1, ctx.Y, ctx.Z), chestInventory);
             }
 
-            if (ctx.WorldView.GetBlockId(ctx.X + 1, ctx.Y, ctx.Z) == id)
+            if (ctx.WorldRead.GetBlockId(ctx.X + 1, ctx.Y, ctx.Z) == id)
             {
-                chestInventory = new InventoryLargeChest("Large chest", chestInventory, (BlockEntityChest)ctx.WorldView.GetBlockEntity(ctx.X + 1, ctx.Y, ctx.Z));
+                chestInventory = new InventoryLargeChest("Large chest", chestInventory, (BlockEntityChest)ctx.WorldRead.GetBlockEntity(ctx.X + 1, ctx.Y, ctx.Z));
             }
 
-            if (ctx.WorldView.GetBlockId(ctx.X, ctx.Y, ctx.Z - 1) == id)
+            if (ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z - 1) == id)
             {
-                chestInventory = new InventoryLargeChest("Large chest", (BlockEntityChest)ctx.WorldView.GetBlockEntity(ctx.X, ctx.Y, ctx.Z - 1), chestInventory);
+                chestInventory = new InventoryLargeChest("Large chest", (BlockEntityChest)ctx.WorldRead.GetBlockEntity(ctx.X, ctx.Y, ctx.Z - 1), chestInventory);
             }
 
-            if (ctx.WorldView.GetBlockId(ctx.X, ctx.Y, ctx.Z + 1) == id)
+            if (ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z + 1) == id)
             {
-                chestInventory = new InventoryLargeChest("Large chest", chestInventory, (BlockEntityChest)ctx.WorldView.GetBlockEntity(ctx.X, ctx.Y, ctx.Z + 1));
+                chestInventory = new InventoryLargeChest("Large chest", chestInventory, (BlockEntityChest)ctx.WorldRead.GetBlockEntity(ctx.X, ctx.Y, ctx.Z + 1));
             }
 
             if (ctx.IsRemote)

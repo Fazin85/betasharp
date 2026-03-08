@@ -46,16 +46,16 @@ public class BlockPortal : BlockBreakable
         return false;
     }
 
-    public bool create(World world, int x, int y, int z)
+    public bool create(IBlockReader reader,IBlockWrite writer, int x, int y, int z)
     {
         sbyte extendsInZ = 0;
         sbyte extendsInX = 0;
-        if (world.getBlockId(x - 1, y, z) == Block.Obsidian.id || world.getBlockId(x + 1, y, z) == Block.Obsidian.id)
+        if (reader.GetBlockId(x - 1, y, z) == Obsidian.id || reader.GetBlockId(x + 1, y, z) == Obsidian.id)
         {
             extendsInZ = 1;
         }
 
-        if (world.getBlockId(x, y, z - 1) == Block.Obsidian.id || world.getBlockId(x, y, z + 1) == Block.Obsidian.id)
+        if (reader.GetBlockId(x, y, z - 1) == Obsidian.id || reader.GetBlockId(x, y, z + 1) == Obsidian.id)
         {
             extendsInX = 1;
         }
@@ -66,7 +66,7 @@ public class BlockPortal : BlockBreakable
         }
         else
         {
-            if (world.getBlockId(x - extendsInZ, y, z - extendsInX) == 0)
+            if (reader.GetBlockId(x - extendsInZ, y, z - extendsInX) == 0)
             {
                 x -= extendsInZ;
                 z -= extendsInX;
@@ -81,15 +81,15 @@ public class BlockPortal : BlockBreakable
                     bool isFrame = horizontalOffset == -1 || horizontalOffset == 2 || verticalOffset == -1 || verticalOffset == 3;
                     if (horizontalOffset != -1 && horizontalOffset != 2 || verticalOffset != -1 && verticalOffset != 3)
                     {
-                        int blockId = world.getBlockId(x + extendsInZ * horizontalOffset, y + verticalOffset, z + extendsInX * horizontalOffset);
+                        int blockId = reader.GetBlockId(x + extendsInZ * horizontalOffset, y + verticalOffset, z + extendsInX * horizontalOffset);
                         if (isFrame)
                         {
-                            if (blockId != Block.Obsidian.id)
+                            if (blockId != Obsidian.id)
                             {
                                 return false;
                             }
                         }
-                        else if (blockId != 0 && blockId != Block.Fire.id)
+                        else if (blockId != 0 && blockId != Fire.id)
                         {
                             return false;
                         }
@@ -103,7 +103,7 @@ public class BlockPortal : BlockBreakable
             {
                 for (verticalOffset = 0; verticalOffset < 3; ++verticalOffset)
                 {
-                    world.setBlock(x + extendsInZ * horizontalOffset, y + verticalOffset, z + extendsInX * horizontalOffset, Block.NetherPortal.id);
+                    writer.SetBlock(x + extendsInZ * horizontalOffset, y + verticalOffset, z + extendsInX * horizontalOffset, NetherPortal.id);
                 }
             }
 
@@ -112,48 +112,48 @@ public class BlockPortal : BlockBreakable
         }
     }
 
-    public override void neighborUpdate(WorldBlockView world, int x, int y, int z, int id)
+    public override void neighborUpdate(OnTickContext ctx)
     {
         sbyte offsetX = 0;
         sbyte offsetZ = 1;
-        if (world.GetBlockId(x - 1, y, z) == base.id || world.GetBlockId(x + 1, y, z) == base.id)
+        if (ctx.WorldRead.GetBlockId(ctx.X - 1, ctx.Y, ctx.Z) == id || ctx.WorldRead.GetBlockId(ctx.X + 1, ctx.Y, ctx.Z) == id)
         {
             offsetX = 1;
             offsetZ = 0;
         }
 
         int portalBottomY;
-        for (portalBottomY = y; world.GetBlockId(x, portalBottomY - 1, z) == base.id; --portalBottomY)
+        for (portalBottomY = ctx.Y; ctx.WorldRead.GetBlockId(ctx.X, portalBottomY - 1, ctx.Z) == id; --portalBottomY)
         {
         }
 
-        if (world.GetBlockId(x, portalBottomY - 1, z) != Block.Obsidian.id)
+        if (ctx.WorldRead.GetBlockId(ctx.X, portalBottomY - 1, ctx.Z) != Obsidian.id)
         {
-            world.setBlock(x, y, z, 0);
+            ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
         }
         else
         {
             int blocksAbove;
-            for (blocksAbove = 1; blocksAbove < 4 && world.GetBlockId(x, portalBottomY + blocksAbove, z) == base.id; ++blocksAbove)
+            for (blocksAbove = 1; blocksAbove < 4 && ctx.WorldRead.GetBlockId(ctx.X, portalBottomY + blocksAbove, ctx.Z) == id; ++blocksAbove)
             {
             }
 
-            if (blocksAbove == 3 && world.GetBlockId(x, portalBottomY + blocksAbove, z) == Block.Obsidian.id)
+            if (blocksAbove == 3 && ctx.WorldRead.GetBlockId(ctx.X, portalBottomY + blocksAbove, ctx.Z) == Obsidian.id)
             {
-                bool hasXNeighbors = world.GetBlockId(x - 1, y, z) == base.id || world.GetBlockId(x + 1, y, z) == base.id;
-                bool hasZNeighbors = world.GetBlockId(x, y, z - 1) == base.id || world.GetBlockId(x, y, z + 1) == base.id;
+                bool hasXNeighbors = ctx.WorldRead.GetBlockId(ctx.X - 1, ctx.Y, ctx.Z) == id || ctx.WorldRead.GetBlockId(ctx.X + 1, ctx.Y, ctx.Z) == id;
+                bool hasZNeighbors = ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z - 1) == id || ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z + 1) == id;
                 if (hasXNeighbors && hasZNeighbors)
                 {
-                    world.setBlock(x, y, z, 0);
+                    ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
                 }
-                else if ((world.GetBlockId(x + offsetX, y, z + offsetZ) != Block.Obsidian.id || world.GetBlockId(x - offsetX, y, z - offsetZ) != base.id) && (world.GetBlockId(x - offsetX, y, z - offsetZ) != Block.Obsidian.id || world.GetBlockId(x + offsetX, y, z + offsetZ) != base.id))
+                else if ((ctx.WorldRead.GetBlockId(ctx.X + offsetX, ctx.Y, ctx.Z + offsetZ) != Obsidian.id || ctx.WorldRead.GetBlockId(ctx.X - offsetX, ctx.Y, ctx.Z - offsetZ) != id) && (ctx.WorldRead.GetBlockId(ctx.X - offsetX, ctx.Y, ctx.Z - offsetZ) != Obsidian.id || ctx.WorldRead.GetBlockId(ctx.X + offsetX, ctx.Y, ctx.Z + offsetZ) != id))
                 {
-                    world.setBlock(x, y, z, 0);
+                    ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
                 }
             }
             else
             {
-                world.setBlock(x, y, z, 0);
+                ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
             }
         }
     }

@@ -154,17 +154,17 @@ public class BlockPistonExtension : Block
 
     }
 
-    public override void neighborUpdate(WorldBlockView world, int x, int y, int z, int id)
+    public override void neighborUpdate(OnTickContext ctx)
     {
-        int var6 = getFacing(world.getBlockMeta(x, y, z));
-        int var7 = world.GetBlockId(x - PistonConstants.HEAD_OFFSET_X[var6], y - PistonConstants.HEAD_OFFSET_Y[var6], z - PistonConstants.HEAD_OFFSET_Z[var6]);
-        if (var7 != Block.Piston.id && var7 != Block.StickyPiston.id)
+        int facing = getFacing(ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z));
+        int var7 = ctx.WorldRead.GetBlockId(ctx.X - PistonConstants.HEAD_OFFSET_X[facing], ctx.Y - PistonConstants.HEAD_OFFSET_Y[facing], ctx.Z - PistonConstants.HEAD_OFFSET_Z[facing]);
+        if (var7 != Piston.id && var7 != StickyPiston.id)
         {
-            world.setBlock(x, y, z, 0);
+            ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
         }
         else
         {
-            Block.Blocks[var7].neighborUpdate(world, x - PistonConstants.HEAD_OFFSET_X[var6], y - PistonConstants.HEAD_OFFSET_Y[var6], z - PistonConstants.HEAD_OFFSET_Z[var6], id);
+            Blocks[var7].neighborUpdate(ctx, ctx.X - PistonConstants.HEAD_OFFSET_X[facing], ctx.Y - PistonConstants.HEAD_OFFSET_Y[facing], ctx.Z - PistonConstants.HEAD_OFFSET_Z[facing], id);
         }
 
     }

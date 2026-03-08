@@ -45,15 +45,15 @@ public class BlockRedstoneWire : Block
         return 8388608;
     }
 
-    public override bool canPlaceAt(WorldBlockView var1, int var2, int var3, int var4)
+    public override bool canPlaceAt(OnPlacedContext ctx)
     {
-        return var1.shouldSuffocate(var2, var3 - 1, var4);
+        return ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y - 1, ctx.Z);
     }
 
-    private void updateAndPropagateCurrentStrength(World world, int var2, int var3, int var4)
+    private void updateAndPropagateCurrentStrength(World world, WorldBlockWrite worldWrite, int x, int y, int z)
     {
         HashSet<BlockPos> neighbors = [];
-        func_21030_a(world, var2, var3, var4, var2, var3, var4, neighbors);
+        func_21030_a(world, x, y, z, x, y, z, neighbors);
         List<BlockPos> neighborsCopy = [.. neighbors];
         neighbors.Clear();
 
@@ -338,23 +338,23 @@ public class BlockRedstoneWire : Block
         }
     }
 
-    public override void neighborUpdate(WorldBlockView var1, int var2, int var3, int var4, int var5)
+    public override void neighborUpdate(OnTickContext ctx)
     {
-        if (!var1.isRemote)
+        if (!ctx.IsRemote)
         {
-            int var6 = var1.getBlockMeta(var2, var3, var4);
-            bool var7 = canPlaceAt(var1, var2, var3, var4);
+            int var6 = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+            bool var7 = canPlaceAt(ctx);
             if (!var7)
             {
-                dropStacks(var1, var2, var3, var4, var6);
-                var1.setBlock(var2, var3, var4, 0);
+                dropStacks(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z, var6);
+                ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
             }
             else
             {
-                updateAndPropagateCurrentStrength(var1, var2, var3, var4);
+                updateAndPropagateCurrentStrength(ctx.WorldRead, ctx.WorldWrite, ctx.X, ctx.Y, ctx.Z);
             }
 
-            base.neighborUpdate(var1, var2, var3, var4, var5);
+            base.neighborUpdate(ctx);
         }
     }
 
@@ -374,7 +374,7 @@ public class BlockRedstoneWire : Block
         {
             return false;
         }
-        else if (var1.getBlockMeta(var2, var3, var4) == 0)
+        else if (var1.GetBlockMeta(var2, var3, var4) == 0)
         {
             return false;
         }
@@ -420,34 +420,34 @@ public class BlockRedstoneWire : Block
         return s_wiresProvidePower.Value;
     }
 
-    public override void randomDisplayTick(World var1, int var2, int var3, int var4, JavaRandom var5)
+    public override void randomDisplayTick(OnTickContext ctx)
     {
-        int var6 = var1.getBlockMeta(var2, var3, var4);
+        int var6 = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
         if (var6 > 0)
         {
-            double var7 = (double)var2 + 0.5D + ((double)var5.NextFloat() - 0.5D) * 0.2D;
-            double var9 = (double)((float)var3 + 1.0F / 16.0F);
-            double var11 = (double)var4 + 0.5D + ((double)var5.NextFloat() - 0.5D) * 0.2D;
-            float var13 = (float)var6 / 15.0F;
-            float var14 = var13 * 0.6F + 0.4F;
+            double x = ctx.X + 0.5D + (ctx.Random.NextFloat() - 0.5D) * 0.2D;
+            double y = ctx.Y + 1.0F / 16.0F;
+            double z = ctx.Z + 0.5D + (ctx.Random.NextFloat() - 0.5D) * 0.2D;
+            float var13 = var6 / 15.0F;
+            float xVel = var13 * 0.6F + 0.4F;
             if (var6 == 0)
             {
-                var14 = 0.0F;
+                xVel = 0.0F;
             }
 
-            float var15 = var13 * var13 * 0.7F - 0.5F;
-            float var16 = var13 * var13 * 0.6F - 0.7F;
-            if (var15 < 0.0F)
+            float yVle = var13 * var13 * 0.7F - 0.5F;
+            float zVel = var13 * var13 * 0.6F - 0.7F;
+            if (yVle < 0.0F)
             {
-                var15 = 0.0F;
+                yVle = 0.0F;
             }
 
-            if (var16 < 0.0F)
+            if (zVel < 0.0F)
             {
-                var16 = 0.0F;
+                zVel = 0.0F;
             }
 
-            var1.addParticle("reddust", var7, var9, var11, (double)var14, (double)var15, (double)var16);
+            ctx.Broadcaster.AddParticle("reddust", x, y, z, xVel, yVle, zVel);
         }
 
     }
@@ -473,7 +473,7 @@ public class BlockRedstoneWire : Block
         }
         else
         {
-            int var6 = var0.getBlockMeta(var1, var2, var3);
+            int var6 = var0.GetBlockMeta(var1, var2, var3);
             return var4 == Facings.OPPOSITE[var6 & 3];
         }
     }

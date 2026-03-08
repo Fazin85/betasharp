@@ -11,14 +11,14 @@ internal class BlockFence : Block
     {
     }
 
-    public override bool canPlaceAt(WorldBlockView world, int x, int y, int z)
+    public override bool canPlaceAt(OnPlacedContext ctx)
     {
-        return world.GetBlockId(x, y - 1, z) == id ? true : (!world.getMaterial(x, y - 1, z).IsSolid ? false : base.canPlaceAt(world, x, y, z));
+        return ctx.WorldRead.GetBlockId(ctx.X, ctx.Y - 1, ctx.Z) == id ? true : (!ctx.WorldRead.GetMaterial(ctx.X, ctx.Y - 1, ctx.Z).IsSolid ? false : base.canPlaceAt(ctx));
     }
 
     public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
     {
-        return new Box((double)x, (double)y, (double)z, (double)(x + 1), (double)((float)y + 1.5F), (double)(z + 1));
+        return new Box(x, y, z, x + 1, y + 1.5F, z + 1);
     }
 
     public override bool isOpaque()

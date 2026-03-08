@@ -99,8 +99,8 @@ internal class BlockRedstoneTorch : BlockTorch
         int x = ctx.X;
         int y = ctx.Y;
         int z = ctx.Z;
-        var redstoneEngine = ctx.RedstoneEngine;
-        int meta = ctx.WorldView.getBlockMeta(x, y, z);
+        var redstoneEngine = ctx.Redstone;
+        int meta = ctx.WorldRead.getBlockMeta(x, y, z);
         return meta == 5 && redstoneEngine.IsPoweringSide(x, y - 1, z, 0) || (meta == 3 && redstoneEngine.IsPoweringSide(x, y, z - 1, 2) ||
                                                                      (meta == 4 && redstoneEngine.IsPoweringSide(x, y, z + 1, 3) || (meta == 1 && redstoneEngine.IsPoweringSide(x - 1, y, z, 4) || meta == 2 && redstoneEngine.IsPoweringSide(x + 1, y, z, 5))));
     }
@@ -122,7 +122,7 @@ internal class BlockRedstoneTorch : BlockTorch
         {
             if (shouldTurnOff)
             {
-                ctx.WorldWrite.SetBlock(x, y, z, RedstoneTorch.id, ctx.WorldView.getBlockMeta(x, y, z));
+                ctx.WorldWrite.SetBlock(x, y, z, RedstoneTorch.id, ctx.WorldRead.getBlockMeta(x, y, z));
                 if (isBurnedOut(ctx, true))
                 {
                     ctx.Broadcaster.PlaySoundAtPos(x + 0.5F, y + 0.5F, z + 0.5F, "random.fizz", 0.5F, 2.6F + (ctx.Random.NextFloat() - ctx.Random.NextFloat()) * 0.8F);
@@ -139,7 +139,7 @@ internal class BlockRedstoneTorch : BlockTorch
         }
         else if (!shouldTurnOff && !isBurnedOut(ctx, false))
         {
-            ctx.WorldView.setBlock(x, y, z, Block.LitRedstoneTorch.id, ctx.WorldView.getBlockMeta(x, y, z));
+            ctx.WorldRead.setBlock(x, y, z, Block.LitRedstoneTorch.id, ctx.WorldRead.getBlockMeta(x, y, z));
         }
     }
 

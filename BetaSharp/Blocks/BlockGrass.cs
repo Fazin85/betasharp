@@ -37,7 +37,7 @@ public class BlockGrass : Block
         }
         else
         {
-            Material materialAbove = iBlockReader.getMaterial(x, y + 1, z);
+            Material materialAbove = iBlockReader.GetMaterial(x, y + 1, z);
             return materialAbove != Material.SnowLayer && materialAbove != Material.SnowBlock ? 3 : 68;
         }
     }
@@ -50,28 +50,28 @@ public class BlockGrass : Block
         return GrassColors.getColor(temperature, downfall);
     }
 
-    public override void onTick(WorldBlockView worldView, int x, int y, int z, JavaRandom random, WorldEventBroadcaster broadcaster, bool isRemote)
+    public override void onTick(OnTickContext ctx)
     {
-        if (!worldView.isRemote)
+        if (!ctx.IsRemote)
         {
-            if (worldView.getLightLevel(x, y + 1, z) < 4 && Block.BlockLightOpacity[worldView.GetBlockId(x, y + 1, z)] > 2)
+            if (ctx.Lighting.GetLightLevel(ctx.X, ctx.Y + 1, ctx.Z) < 4 && BlockLightOpacity[ctx.WorldRead.GetBlockId(ctx.X, ctx.Y + 1, ctx.Z)] > 2)
             {
-                if (random.NextInt(4) != 0)
+                if (ctx.Random.NextInt(4) != 0)
                 {
                     return;
                 }
 
-                worldView.setBlock(x, y, z, Block.Dirt.id);
+                ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, Dirt.id);
             }
-            else if (worldView.getLightLevel(x, y + 1, z) >= 9)
+            else if (ctx.Lighting.GetLightLevel(ctx.X, ctx.Y + 1, ctx.Z) >= 9)
             {
-                int spreadX = x + random.NextInt(3) - 1;
-                int spreadY = y + random.NextInt(5) - 3;
-                int spreadZ = z + random.NextInt(3) - 1;
-                int blockAboveId = worldView.GetBlockId(spreadX, spreadY + 1, spreadZ);
-                if (worldView.GetBlockId(spreadX, spreadY, spreadZ) == Block.Dirt.id && worldView.getLightLevel(spreadX, spreadY + 1, spreadZ) >= 4 && Block.BlockLightOpacity[blockAboveId] <= 2)
+                int spreadX = ctx.X + ctx.Random.NextInt(3) - 1;
+                int spreadY = ctx.Y + ctx.Random.NextInt(5) - 3;
+                int spreadZ = ctx.Z + ctx.Random.NextInt(3) - 1;
+                int blockAboveId = ctx.WorldRead.GetBlockId(spreadX, spreadY + 1, spreadZ);
+                if (ctx.WorldRead.GetBlockId(spreadX, spreadY, spreadZ) == Dirt.id && ctx.Lighting.GetLightLevel(spreadX, spreadY + 1, spreadZ) >= 4 && BlockLightOpacity[blockAboveId] <= 2)
                 {
-                    worldView.setBlock(spreadX, spreadY, spreadZ, Block.GrassBlock.id);
+                    ctx.WorldWrite.SetBlock(spreadX, spreadY, spreadZ, GrassBlock.id);
                 }
             }
         }
@@ -79,6 +79,6 @@ public class BlockGrass : Block
 
     public override int getDroppedItemId(int blocKMeta, JavaRandom random)
     {
-        return Block.Dirt.getDroppedItemId(0, random);
+        return Dirt.getDroppedItemId(0, random);
     }
 }

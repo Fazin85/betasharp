@@ -38,46 +38,46 @@ internal class BlockTorch : Block
         return world.ShouldSuffocate(x, y, z) || world.GetBlockId(x, y, z) == Fence.id;
     }
 
-    public override bool canPlaceAt(WorldBlockView world, int x, int y, int z)
+    public override bool canPlaceAt(OnPlacedContext ctx)
     {
-        return world.shouldSuffocate(x - 1, y, z) ? true : (world.shouldSuffocate(x + 1, y, z) ? true : (world.shouldSuffocate(x, y, z - 1) ? true : (world.shouldSuffocate(x, y, z + 1) ? true : canPlaceOn(world, x, y - 1, z))));
+        return ctx.WorldRead.ShouldSuffocate(ctx.X - 1, ctx.Y, ctx.Z) ? true : (ctx.WorldRead.ShouldSuffocate(ctx.X + 1, ctx.Y, ctx.Z) ? true : (ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z - 1) ? true : (ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z + 1) ? true : canPlaceOn(ctx.WorldRead, ctx.X, ctx.Y - 1, ctx.Z))));
     }
 
-    public override void onPlaced(World world, int x, int y, int z, int direction)
+    public override void onPlaced(OnPlacedContext ctx)
     {
-        int meta = world.getBlockMeta(x, y, z);
-        if (direction == 1 && canPlaceOn(world, x, y - 1, z))
+        int meta = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+        if (ctx.Direction == 1 && canPlaceOn(ctx.WorldRead, ctx.X, ctx.Y - 1, ctx.Z))
         {
             meta = 5;
         }
 
-        if (direction == 2 && world.shouldSuffocate(x, y, z + 1))
+        if (ctx.Direction == 2 && ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z + 1))
         {
             meta = 4;
         }
 
-        if (direction == 3 && world.shouldSuffocate(x, y, z - 1))
+        if (ctx.Direction == 3 && ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z - 1))
         {
             meta = 3;
         }
 
-        if (direction == 4 && world.shouldSuffocate(x + 1, y, z))
+        if (ctx.Direction == 4 && ctx.WorldRead.ShouldSuffocate(ctx.X + 1, ctx.Y, ctx.Z))
         {
             meta = 2;
         }
 
-        if (direction == 5 && world.shouldSuffocate(x - 1, y, z))
+        if (ctx.Direction == 5 && ctx.WorldRead.ShouldSuffocate(ctx.X - 1, ctx.Y, ctx.Z))
         {
             meta = 1;
         }
 
-        world.setBlockMeta(x, y, z, meta);
+        ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, meta);
     }
 
     public override void onTick(OnTickContext ctx)
     {
         base.onTick(ctx);
-        if (ctx.WorldView.getBlockMeta(ctx.X, ctx.Y, ctx.Z) == 0)
+        if (ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z) == 0)
         {
             onPlaced(ctx);
         }
@@ -85,64 +85,64 @@ internal class BlockTorch : Block
 
     public override void onPlaced(OnPlacedContext ctx)
     {
-        if (ctx.WorldView.shouldSuffocate(ctx.X - 1, ctx.Y, ctx.Z))
+        if (ctx.WorldRead.ShouldSuffocate(ctx.X - 1, ctx.Y, ctx.Z))
         {
             ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, 1);
         }
-        else if (ctx.WorldView.shouldSuffocate(ctx.X + 1, ctx.Y, ctx.Z))
+        else if (ctx.WorldRead.ShouldSuffocate(ctx.X + 1, ctx.Y, ctx.Z))
         {
             ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, 2);
         }
-        else if (ctx.WorldView.shouldSuffocate(ctx.X, ctx.Y, ctx.Z - 1))
+        else if (ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z - 1))
         {
             ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, 3);
         }
-        else if (ctx.WorldView.shouldSuffocate(ctx.X, ctx.Y, ctx.Z + 1))
+        else if (ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z + 1))
         {
             ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, 4);
         }
-        else if (canPlaceOn(ctx.WorldView, ctx.X, ctx.Y - 1, ctx.Z))
+        else if (canPlaceOn(ctx.WorldRead, ctx.X, ctx.Y - 1, ctx.Z))
         {
             ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, 5);
         }
 
-        breakIfCannotPlaceAt(ctx.WorldView, ctx.X, ctx.Y, ctx.Z);
+        breakIfCannotPlaceAt(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z);
     }
 
     public override void neighborUpdate(OnTickContext ctx)
     {
-        if (breakIfCannotPlaceAt(ctx.WorldView, ctx.X, ctx.Y, ctx.Z))
+        if (breakIfCannotPlaceAt(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z))
         {
-            int meta = ctx.WorldView.getBlockMeta(ctx.X, ctx.Y, ctx.Z);
+            int meta = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
             bool canPlace = false;
-            if (!ctx.WorldView.shouldSuffocate(ctx.X - 1, ctx.Y, ctx.Z) && meta == 1)
+            if (!ctx.WorldRead.ShouldSuffocate(ctx.X - 1, ctx.Y, ctx.Z) && meta == 1)
             {
                 canPlace = true;
             }
 
-            if (!ctx.WorldView.shouldSuffocate(ctx.X + 1, ctx.Y, ctx.Z) && meta == 2)
+            if (!ctx.WorldRead.ShouldSuffocate(ctx.X + 1, ctx.Y, ctx.Z) && meta == 2)
             {
                 canPlace = true;
             }
 
-            if (!ctx.WorldView.shouldSuffocate(ctx.X, ctx.Y, ctx.Z - 1) && meta == 3)
+            if (!ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z - 1) && meta == 3)
             {
                 canPlace = true;
             }
 
-            if (!ctx.WorldView.shouldSuffocate(ctx.X, ctx.Y, ctx.Z + 1) && meta == 4)
+            if (!ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z + 1) && meta == 4)
             {
                 canPlace = true;
             }
 
-            if (!canPlaceOn(ctx.WorldView, ctx.X, ctx.Y - 1, ctx.Z) && meta == 5)
+            if (!canPlaceOn(ctx.WorldRead, ctx.X, ctx.Y - 1, ctx.Z) && meta == 5)
             {
                 canPlace = true;
             }
 
             if (canPlace)
             {
-                dropStacks(ctx.WorldView, ctx.X, ctx.Y, ctx.Z, ctx.WorldView.getBlockMeta(ctx.X, ctx.Y, ctx.Z));
+                dropStacks(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z, ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z));
                 ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
             }
         }
@@ -153,7 +153,7 @@ internal class BlockTorch : Block
     {
         if (!canPlaceAt(world, x, y, z))
         {
-            dropStacks(ctx.WorldView, ctx.X, ctx.Y, ctx.Z, ctx.WorldView.getBlockMeta(ctx.X, ctx.Y, ctx.Z));
+            dropStacks(ctx.WorldView, ctx.X, ctx.Y, ctx.Z, ctx.WorldView.GetBlockMeta(ctx.X, ctx.Y, ctx.Z));
             ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
             return false;
         }
@@ -165,7 +165,7 @@ internal class BlockTorch : Block
 
     public override HitResult raycast(IBlockReader world, int x, int y, int z, Vec3D startPos, Vec3D endPos)
     {
-        int meta = world.getBlockMeta(x, y, z) & 7;
+        int meta = world.GetBlockMeta(x, y, z) & 7;
         float torchWidth = 0.15F;
         if (meta == 1)
         {
@@ -192,38 +192,38 @@ internal class BlockTorch : Block
         return base.raycast(world, x, y, z, startPos, endPos);
     }
 
-    public override void randomDisplayTick(World world, int x, int y, int z, JavaRandom random)
+    public override void randomDisplayTick(OnTickContext ctx)
     {
-        int meta = world.getBlockMeta(x, y, z);
-        float flameX = x + 0.5F;
-        float flameY = y + 0.7F;
-        float flameZ = z + 0.5F;
+        int meta = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+        float flameX = ctx.X + 0.5F;
+        float flameY = ctx.Y + 0.7F;
+        float flameZ = ctx.Z + 0.5F;
         float yOffset = 0.22F;
         float xOffset = 0.27F;
         if (meta == 1)
         {
-            world.addParticle("smoke", flameX - xOffset, flameY + yOffset, flameZ, 0.0D, 0.0D, 0.0D);
-            world.addParticle("flame", flameX - xOffset, flameY + yOffset, flameZ, 0.0D, 0.0D, 0.0D);
+            ctx.Broadcaster.AddParticle("smoke", flameX - xOffset, flameY + yOffset, flameZ, 0.0D, 0.0D, 0.0D);
+            ctx.Broadcaster.AddParticle("flame", flameX - xOffset, flameY + yOffset, flameZ, 0.0D, 0.0D, 0.0D);
         }
         else if (meta == 2)
         {
-            world.addParticle("smoke", flameX + xOffset, flameY + yOffset, flameZ, 0.0D, 0.0D, 0.0D);
-            world.addParticle("flame", flameX + xOffset, flameY + yOffset, flameZ, 0.0D, 0.0D, 0.0D);
+            ctx.Broadcaster.AddParticle("smoke", flameX + xOffset, flameY + yOffset, flameZ, 0.0D, 0.0D, 0.0D);
+            ctx.Broadcaster.AddParticle("flame", flameX + xOffset, flameY + yOffset, flameZ, 0.0D, 0.0D, 0.0D);
         }
         else if (meta == 3)
         {
-            world.addParticle("smoke", flameX, flameY + yOffset, flameZ - xOffset, 0.0D, 0.0D, 0.0D);
-            world.addParticle("flame", flameX, flameY + yOffset, flameZ - xOffset, 0.0D, 0.0D, 0.0D);
+            ctx.Broadcaster.AddParticle("smoke", flameX, flameY + yOffset, flameZ - xOffset, 0.0D, 0.0D, 0.0D);
+            ctx.Broadcaster.AddParticle("flame", flameX, flameY + yOffset, flameZ - xOffset, 0.0D, 0.0D, 0.0D);
         }
         else if (meta == 4)
         {
-            world.addParticle("smoke", flameX, flameY + yOffset, flameZ + xOffset, 0.0D, 0.0D, 0.0D);
-            world.addParticle("flame", flameX, flameY + yOffset, flameZ + xOffset, 0.0D, 0.0D, 0.0D);
+            ctx.Broadcaster.AddParticle("smoke", flameX, flameY + yOffset, flameZ + xOffset, 0.0D, 0.0D, 0.0D);
+            ctx.Broadcaster.AddParticle("flame", flameX, flameY + yOffset, flameZ + xOffset, 0.0D, 0.0D, 0.0D);
         }
         else
         {
-            world.addParticle("smoke", flameX, flameY, flameZ, 0.0D, 0.0D, 0.0D);
-            world.addParticle("flame", flameX, flameY, flameZ, 0.0D, 0.0D, 0.0D);
+            ctx.Broadcaster.AddParticle("smoke", flameX, flameY, flameZ, 0.0D, 0.0D, 0.0D);
+            ctx.Broadcaster.AddParticle("flame", flameX, flameY, flameZ, 0.0D, 0.0D, 0.0D);
         }
 
     }

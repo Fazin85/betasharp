@@ -15,16 +15,16 @@ internal class BlockCactus : Block
 
     public override void onTick(OnTickContext ctx)
     {
-        if (ctx.WorldView.IsAir(ctx.X, ctx.Y + 1, ctx.Z))
+        if (ctx.WorldRead.IsAir(ctx.X, ctx.Y + 1, ctx.Z))
         {
             int heightBelow;
-            for (heightBelow = 1; ctx.WorldView.GetBlockId(ctx.X, ctx.Y - heightBelow, ctx.Z) == id; ++heightBelow)
+            for (heightBelow = 1; ctx.WorldRead.GetBlockId(ctx.X, ctx.Y - heightBelow, ctx.Z) == id; ++heightBelow)
             {
             }
 
             if (heightBelow < 3)
             {
-                int growthStage = ctx.WorldView.getBlockMeta(ctx.X, ctx.Y, ctx.Z);
+                int growthStage = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
                 if (growthStage == 15)
                 {
                     ctx.WorldWrite.SetBlock(ctx.X, ctx.Y + 1, ctx.Z, id);
@@ -71,16 +71,16 @@ internal class BlockCactus : Block
         return BlockRendererType.Cactus;
     }
 
-    public override bool canPlaceAt(WorldBlockView world, int x, int y, int z)
+    public override bool canPlaceAt(OnPlacedContext ctx)
     {
-        return !base.canPlaceAt(world, x, y, z) ? false : canGrow(world, x, y, z);
+        return !base.canPlaceAt(ctx) ? false : canGrow(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z);
     }
 
     public override void neighborUpdate(OnTickContext ctx)
     {
         if (!canGrow(ctx))
         {
-            dropStacks(ctx.WorldView, ctx.X, ctx.Y, ctx.Z, ctx.WorldView.getBlockMeta(ctx.X, ctx.Y, ctx.Z));
+            dropStacks(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z, ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z));
             ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
         }
 
@@ -88,36 +88,36 @@ internal class BlockCactus : Block
 
     public override bool canGrow(OnTickContext ctx)
     {
-        return canGrow(ctx.WorldView, ctx.X, ctx.Y, ctx.Z);
+        return canGrow(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z);
     }
 
     private static bool canGrow(WorldBlockView world, int x, int y, int z)
     {
-        if (world.getMaterial(x - 1, y, z).IsSolid)
+        if (world.GetMaterial(x - 1, y, z).IsSolid)
         {
             return false;
         }
-        else if (world.getMaterial(x + 1, y, z).IsSolid)
+        else if (world.GetMaterial(x + 1, y, z).IsSolid)
         {
             return false;
         }
-        else if (world.getMaterial(x, y, z - 1).IsSolid)
+        else if (world.GetMaterial(x, y, z - 1).IsSolid)
         {
             return false;
         }
-        else if (world.getMaterial(x, y, z + 1).IsSolid)
+        else if (world.GetMaterial(x, y, z + 1).IsSolid)
         {
             return false;
         }
         else
         {
             int blockBelowId = world.GetBlockId(x, y - 1, z);
-            return blockBelowId == Block.Cactus.id || blockBelowId == Block.Sand.id;
+            return blockBelowId == Cactus.id || blockBelowId == Sand.id;
         }
     }
 
     public override void onEntityCollision(World world, int x, int y, int z, Entity entity)
     {
-        entity.damage((Entity)null, 1);
+        entity.damage(null, 1);
     }
 }

@@ -95,7 +95,7 @@ internal class BlockDispenser : BlockWithEntity
         }
         else
         {
-            BlockEntityDispenser? dispenser = (BlockEntityDispenser?)ctx.WorldView.GetBlockEntity(ctx.X, ctx.Y, ctx.Z);
+            BlockEntityDispenser? dispenser = (BlockEntityDispenser?)ctx.WorldRead.GetBlockEntity(ctx.X, ctx.Y, ctx.Z);
             ctx.Player.openDispenserScreen(dispenser);
             return true;
         }
@@ -103,7 +103,7 @@ internal class BlockDispenser : BlockWithEntity
 
     private void dispense(OnTickContext ctx)
     {
-        int meta = ctx.WorldView.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+        int meta = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
         int dirX = 0;
         int dirZ = 0;
         if (meta == 3)
@@ -123,7 +123,7 @@ internal class BlockDispenser : BlockWithEntity
             dirX = -1;
         }
 
-        BlockEntityDispenser? dispenser = (BlockEntityDispenser?)ctx.WorldView.GetBlockEntity(ctx.X, ctx.Y, ctx.Z);
+        BlockEntityDispenser? dispenser = (BlockEntityDispenser?)ctx.WorldRead.GetBlockEntity(ctx.X, ctx.Y, ctx.Z);
         ItemStack itemStack = dispenser.getItemToDispose();
         double spawnX = ctx.X + dirX * 0.6D + 0.5D;
         double spawnY = ctx.Y + 0.5D;
@@ -179,10 +179,10 @@ internal class BlockDispenser : BlockWithEntity
     {
         if (ctx.BlockId > 0 && Blocks[ctx.BlockId].canEmitRedstonePower())
         {
-            bool isPowered = ctx.RedstoneEngine.IsPowered(ctx.X, ctx.Y, ctx.Z) || ctx.RedstoneEngine.IsPowered(ctx.X, ctx.Y + 1, ctx.Z);
+            bool isPowered = ctx.Redstone.IsPowered(ctx.X, ctx.Y, ctx.Z) || ctx.Redstone.IsPowered(ctx.X, ctx.Y + 1, ctx.Z);
             if (isPowered)
             {
-                ctx.WorldView.ScheduleBlockUpdate(ctx.X, ctx.Y, ctx.Z, id, getTickRate());
+                ctx.WorldRead.ScheduleBlockUpdate(ctx.X, ctx.Y, ctx.Z, id, getTickRate());
             }
         }
 
@@ -190,7 +190,7 @@ internal class BlockDispenser : BlockWithEntity
 
     public override void onTick(OnTickContext ctx)
     {
-        if (ctx.RedstoneEngine.IsPowered(ctx.X, ctx.Y, ctx.Z) || ctx.RedstoneEngine.IsPowered(ctx.X, ctx.Y + 1, ctx.Z))
+        if (ctx.Redstone.IsPowered(ctx.X, ctx.Y, ctx.Z) || ctx.Redstone.IsPowered(ctx.X, ctx.Y + 1, ctx.Z))
         {
             dispense(ctx);
         }

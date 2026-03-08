@@ -37,7 +37,7 @@ internal class BlockDetectorRail : BlockRail
     {
         if (!ctx.IsRemote)
         {
-            int meta = ctx.WorldView.getBlockMeta(ctx.X, ctx.Y, ctx.Z);
+            int meta = ctx.WorldRead.getBlockMeta(ctx.X, ctx.Y, ctx.Z);
             if ((meta & 8) != 0)
             {
                 updatePoweredStatus(ctx, meta);
@@ -69,22 +69,22 @@ internal class BlockDetectorRail : BlockRail
         if (hasMinecart && !isPowered)
         {
             ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, meta | 8);
-            ctx.WorldView.NotifyNeighbors(ctx.X, ctx.Y, ctx.Z, id);
-            ctx.WorldView.NotifyNeighbors(ctx.X, ctx.Y - 1, ctx.Z, id);
+            ctx.WorldRead.NotifyNeighbors(ctx.X, ctx.Y, ctx.Z, id);
+            ctx.WorldRead.NotifyNeighbors(ctx.X, ctx.Y - 1, ctx.Z, id);
             ctx.WorldWrite.SetBlocksDirty(ctx.X, ctx.Y, ctx.Z, ctx.X, ctx.Y, ctx.Z);
         }
 
         if (!hasMinecart && isPowered)
         {
             ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, meta & 7);
-            ctx.WorldView.NotifyNeighbors(ctx.X, ctx.Y, ctx.Z, id);
-            ctx.WorldView.NotifyNeighbors(ctx.X, ctx.Y - 1, ctx.Z, id);
+            ctx.WorldRead.NotifyNeighbors(ctx.X, ctx.Y, ctx.Z, id);
+            ctx.WorldRead.NotifyNeighbors(ctx.X, ctx.Y - 1, ctx.Z, id);
             ctx.WorldWrite.SetBlocksDirty(ctx.X, ctx.Y, ctx.Z, ctx.X, ctx.Y, ctx.Z);
         }
 
         if (hasMinecart)
         {
-            ctx.WorldView.ScheduleBlockUpdate(ctx.X, ctx.Y, ctx.Z, id, getTickRate());
+            ctx.WorldRead.ScheduleBlockUpdate(ctx.X, ctx.Y, ctx.Z, id, getTickRate());
         }
 
     }

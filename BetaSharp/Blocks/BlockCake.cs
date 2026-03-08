@@ -72,7 +72,7 @@ internal class BlockCake : Block
         if (ctx.Player.health < 20)
         {
             ctx.Player.heal(3);
-            int slicesEaten = ctx.WorldView.GetBlockMeta(ctx.X, ctx.Y, ctx.Z) + 1;
+            int slicesEaten = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z) + 1;
             if (slicesEaten >= 6)
             {
                 ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
@@ -91,7 +91,7 @@ internal class BlockCake : Block
         if (ctx.Player.health < 20)
         {
             ctx.Player.heal(3);
-            int slicesEaten = ctx.WorldView.GetBlockMeta(ctx.X, ctx.Y, ctx.Z) + 1;
+            int slicesEaten = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z) + 1;
             if (slicesEaten >= 6)
             {
                 ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
@@ -106,14 +106,14 @@ internal class BlockCake : Block
 
     public override bool canPlaceAt(OnPlacedContext ctx)
     {
-        return !base.canPlaceAt(ctx) ? false : canGrow(ctx.WorldView, ctx.X, ctx.Y, ctx.Z);
+        return !base.canPlaceAt(ctx) ? false : canGrow(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z);
     }
 
     public override void neighborUpdate(OnTickContext ctx)
     {
-        if (!canGrow(ctx.WorldView, ctx.X, ctx.Y, ctx.Z))
+        if (!canGrow(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z))
         {
-            dropStacks(ctx.WorldView, ctx.X, ctx.Y, ctx.Z, ctx.WorldView.GetBlockMeta(ctx.X, ctx.Y, ctx.Z));
+            dropStacks(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z, ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z));
             ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
         }
 
@@ -121,7 +121,7 @@ internal class BlockCake : Block
 
     public override bool canGrow(OnTickContext ctx)
     {
-        return canGrow(ctx.WorldView, ctx.X, ctx.Y, ctx.Z);
+        return canGrow(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z);
     }
 
     private static bool canGrow(IBlockReader world, int x, int y, int z)

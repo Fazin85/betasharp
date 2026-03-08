@@ -13,11 +13,13 @@ namespace BetaSharp.Blocks;
 
 public struct OnTickContext
 {
-    public WorldBlockView WorldView;
+    public WorldBlockView WorldRead;
     public WorldBlockWrite WorldWrite;
     public WorldEventBroadcaster Broadcaster;
-    public RedstoneEngine RedstoneEngine;
+    public RedstoneEngine Redstone;
     public EntityManager Entities;
+    public RuleSet Rules;
+    public EnvironmentManager Environment;
     public Dimension Dimension;
     public LightingEngine Lighting;
     public JavaRandom Random;
@@ -32,8 +34,9 @@ public struct OnTickContext
 
 public struct OnPlacedContext
 {
-    public WorldBlockView WorldView;
+    public WorldBlockView WorldRead;
     public WorldBlockWrite WorldWrite;
+    public RedstoneEngine Redstone;
     public EntityLiving Placer;
     public WorldEventBroadcaster Broadcaster;
     public bool IsRemote;
@@ -46,8 +49,9 @@ public struct OnPlacedContext
 
 public struct OnUseContext
 {
-    public WorldBlockView WorldView;
+    public WorldBlockView WorldRead;
     public WorldBlockWrite WorldWrite;
+    public WorldEventBroadcaster Broadcaster;
     public Dimension Dimension;
     public EntityManager Entities;
     public EntityPlayer Player;
@@ -59,8 +63,9 @@ public struct OnUseContext
 
 public struct OnBreakContext
 {
-    public WorldBlockView WorldView;
+    public WorldBlockView WorldRead;
     public WorldBlockWrite WorldWrite;
+    public WorldEventBroadcaster Broadcaster;
     public Dimension Dimension;
     public EntityManager Entities;
     public Entity Entity;
@@ -72,11 +77,9 @@ public struct OnBreakContext
 
 public struct OnBlockBreakStartContext
 {
-    public WorldBlockView WorldView;
-    public WorldBlockWrite WorldWrite;
-    public Dimension Dimension;
-    public EntityPlayer Player;
-    public bool IsRemote;
+    public IBlockReader WorldRead;
+    public IBlockWrite WorldWrite;
+    public WorldEventBroadcaster Broadcaster;
     public int X;
     public int Y;
     public int Z;
@@ -397,7 +400,7 @@ public class Block
     {
     }
 
-    public virtual void randomDisplayTick(World world, int x, int y, int z, JavaRandom random)
+    public virtual void randomDisplayTick(OnTickContext ctx)
     {
     }
 
@@ -508,7 +511,7 @@ public class Block
 
     public virtual bool canPlaceAt(OnPlacedContext ctx)
     {
-        int blockId = ctx.WorldView.GetBlockId(ctx.X, ctx.Y, ctx.Z);
+        int blockId = ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z);
         return blockId == 0 || Blocks[blockId].material.IsReplaceable;
     }
 

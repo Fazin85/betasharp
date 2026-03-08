@@ -25,7 +25,7 @@ internal class BlockSand : Block
 
     public override void neighborUpdate(OnTickContext ctx)
     {
-        ctx.WorldView.ScheduleBlockUpdate(ctx.X, ctx.Y, ctx.Z, id, getTickRate());
+        ctx.WorldRead.ScheduleBlockUpdate(ctx.X, ctx.Y, ctx.Z, id, getTickRate());
     }
 
     public override void onTick(OnTickContext ctx)
@@ -38,9 +38,9 @@ internal class BlockSand : Block
         if (canFallThrough(ctx) && ctx.Y >= 0)
         {
             sbyte checkRadius = 32;
-            if (!fallInstantly && ctx.WorldView.IsRegionLoaded(ctx.X - checkRadius, ctx.Y - checkRadius, ctx.Z - checkRadius, ctx.X + checkRadius, ctx.Y + checkRadius, ctx.Z + checkRadius))
+            if (!fallInstantly && ctx.WorldRead.IsRegionLoaded(ctx.X - checkRadius, ctx.Y - checkRadius, ctx.Z - checkRadius, ctx.X + checkRadius, ctx.Y + checkRadius, ctx.Z + checkRadius))
             {
-                EntityFallingSand fallingSand = new EntityFallingSand(ctx.WorldView, (double)(ctx.X + 0.5F), (double)(ctx.Y + 0.5F), (double)(ctx.Z + 0.5F), id);
+                EntityFallingSand fallingSand = new EntityFallingSand(ctx.WorldRead, (double)(ctx.X + 0.5F), (double)(ctx.Y + 0.5F), (double)(ctx.Z + 0.5F), id);
                 ctx.Entities.SpawnEntity(fallingSand);
             }
             else
@@ -68,7 +68,7 @@ internal class BlockSand : Block
 
     public static bool canFallThrough(OnTickContext ctx)
     {
-        int blockId = ctx.WorldView.GetBlockId(ctx.X, ctx.Y, ctx.Z);
+        int blockId = ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z);
         if (blockId == 0)
         {
             return true;

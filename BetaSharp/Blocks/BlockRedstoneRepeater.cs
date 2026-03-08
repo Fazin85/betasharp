@@ -31,13 +31,13 @@ public class BlockRedstoneRepeater : Block
 
     public override bool canGrow(OnTickContext ctx)
     {
-        return !ctx.WorldView.shouldSuffocate(ctx.X, ctx.Y - 1, ctx.Z) ? false : base.canGrow(ctx);
+        return !ctx.WorldRead.shouldSuffocate(ctx.X, ctx.Y - 1, ctx.Z) ? false : base.canGrow(ctx);
     }
 
     public override void onTick(OnTickContext ctx)
     {
-        int meta = ctx.WorldView.getBlockMeta(ctx.X, ctx.Y, ctx.Z);
-        bool powered = isPowered(ctx.WorldView, ctx.X, ctx.Y, ctx.Z, meta);
+        int meta = ctx.WorldRead.getBlockMeta(ctx.X, ctx.Y, ctx.Z);
+        bool powered = isPowered(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z, meta);
         if (lit && !powered)
         {
             ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, Block.Repeater.id, meta);
@@ -96,13 +96,13 @@ public class BlockRedstoneRepeater : Block
     {
         if (!canGrow(ctx))
         {
-            dropStacks(ctx.WorldView, ctx.X, ctx.Y, ctx.Z, ctx.WorldView.getBlockMeta(ctx.X, ctx.Y, ctx.Z));
+            dropStacks(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z, ctx.WorldRead.getBlockMeta(ctx.X, ctx.Y, ctx.Z));
             ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
         }
         else
         {
-            int meta = ctx.WorldView.getBlockMeta(ctx.X, ctx.Y, ctx.Z);
-            bool powered = isPowered(ctx.WorldView, ctx.X, ctx.Y, ctx.Z, meta);
+            int meta = ctx.WorldRead.getBlockMeta(ctx.X, ctx.Y, ctx.Z);
+            bool powered = isPowered(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z, meta);
             int delaySetting = (meta & 12) >> 2;
             if (lit && !powered)
             {

@@ -170,7 +170,7 @@ internal class BlockStairs : Block
 
     public override void onPlaced(OnPlacedContext ctx)
     {
-        neighborUpdate(new UpdateContext(ctx.WorldView, ctx.WorldWrite, ctx.Broadcaster, ctx.Entities, ctx.Random, ctx.IsRemote, ctx.Time, ctx.X, ctx.Y, ctx.Z));
+        neighborUpdate(new UpdateContext(ctx.WorldRead, ctx.WorldWrite, ctx.Broadcaster, ctx.Entities, ctx.Random, ctx.IsRemote, ctx.Time, ctx.X, ctx.Y, ctx.Z));
         baseBlock.onPlaced(ctx);
     }
 

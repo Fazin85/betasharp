@@ -40,14 +40,14 @@ internal class BlockFarmland : Block
     {
         if (ctx.Random.NextInt(5) == 0)
         {
-            if (!isWaterNearby(ctx.WorldView, ctx.X, ctx.Y, ctx.Z) && !ctx.WorldView.isRaining(ctx.X, ctx.Y + 1, ctx.Z))
+            if (!isWaterNearby(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z) && !ctx.WorldRead.isRaining(ctx.X, ctx.Y + 1, ctx.Z))
             {
-                int meta = ctx.WorldView.getBlockMeta(ctx.X, ctx.Y, ctx.Z);
+                int meta = ctx.WorldRead.getBlockMeta(ctx.X, ctx.Y, ctx.Z);
                 if (meta > 0)
                 {
                     ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, meta - 1);
                 }
-                else if (!hasCrop(ctx.WorldView, ctx.X, ctx.Y, ctx.Z))
+                else if (!hasCrop(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z))
                 {
                     ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, Block.Dirt.id);
                 }
@@ -109,7 +109,7 @@ internal class BlockFarmland : Block
     public override void neighborUpdate(OnTickContext ctx)
     {
         base.neighborUpdate(ctx);
-        Material material = ctx.WorldView.getMaterial(ctx.X, ctx.Y + 1, ctx.Z);
+        Material material = ctx.WorldRead.getMaterial(ctx.X, ctx.Y + 1, ctx.Z);
         if (material.IsSolid)
         {
             ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, Block.Dirt.id);

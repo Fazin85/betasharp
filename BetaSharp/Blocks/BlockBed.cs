@@ -23,18 +23,18 @@ public class BlockBed : Block
         }
         else
         {
-            int meta = ctx.WorldView.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+            int meta = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
             if (!isHeadOfBed(meta))
             {
                 int direction = getDirection(meta);
                 ctx.X += BED_OFFSETS[direction][0];
                 ctx.Z += BED_OFFSETS[direction][1];
-                if (ctx.WorldView.GetBlockId(ctx.X, ctx.Y, ctx.Z) != id)
+                if (ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z) != id)
                 {
                     return true;
                 }
 
-                meta = ctx.WorldView.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+                meta = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
             }
 
             if (!ctx.Dimension.HasWorldSpawn)
@@ -46,7 +46,7 @@ public class BlockBed : Block
                 int direction = getDirection(meta);
                 ctx.X += BED_OFFSETS[direction][0];
                 ctx.Z += BED_OFFSETS[direction][1];
-                if (ctx.WorldView.GetBlockId(ctx.X, ctx.Y, ctx.Z) == id)
+                if (ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z) == id)
                 {
                     ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
                     posX = (posX + ctx.X + 0.5) / 2.0;
@@ -139,21 +139,21 @@ public class BlockBed : Block
 
     public override void neighborUpdate(OnTickContext ctx)
     {
-        int blockMeta = ctx.WorldView.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+        int blockMeta = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
         int direction = getDirection(blockMeta);
         if (isHeadOfBed(blockMeta))
         {
-            if (ctx.WorldView.GetBlockId(ctx.X - BED_OFFSETS[direction][0], ctx.Y, ctx.Z - BED_OFFSETS[direction][1]) != this.id)
+            if (ctx.WorldRead.GetBlockId(ctx.X - BED_OFFSETS[direction][0], ctx.Y, ctx.Z - BED_OFFSETS[direction][1]) != this.id)
             {
                 ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
             }
         }
-        else if (ctx.WorldView.GetBlockId(ctx.X + BED_OFFSETS[direction][0], ctx.Y, ctx.Z + BED_OFFSETS[direction][1]) != this.id)
+        else if (ctx.WorldRead.GetBlockId(ctx.X + BED_OFFSETS[direction][0], ctx.Y, ctx.Z + BED_OFFSETS[direction][1]) != this.id)
         {
             ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
             if (!ctx.IsRemote)
             {
-                dropStacks(ctx.WorldView, ctx.X, ctx.Y, ctx.Z, blockMeta);
+                dropStacks(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z, blockMeta);
             }
         }
 
@@ -186,7 +186,7 @@ public class BlockBed : Block
 
     public static void updateState(OnUseContext ctx, bool occupied)
     {
-        int blockMeta = ctx.WorldView.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
+        int blockMeta = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z);
         if (occupied)
         {
             blockMeta |= 4;

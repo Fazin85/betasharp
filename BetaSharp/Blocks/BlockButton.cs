@@ -78,51 +78,50 @@ internal class BlockButton : Block
 
     public override void neighborUpdate(OnTickContext ctx)
     {
-        if (breakIfCannotPlaceAt(ctx.WorldView, ctx.X, ctx.Y, ctx.Z))
+        if (breakIfCannotPlaceAt(ctx))
         {
-            int facing = ctx.WorldView.getBlockMeta(ctx.X, ctx.Y, ctx.Z) & 7;
+            int facing = ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z) & 7;
             bool shouldBreak = false;
-            if (!ctx.WorldView.shouldSuffocate(ctx.X - 1, ctx.Y, ctx.Z) && facing == 1)
+            if (!ctx.WorldRead.ShouldSuffocate(ctx.X - 1, ctx.Y, ctx.Z) && facing == 1)
             {
                 shouldBreak = true;
             }
 
-            if (!ctx.WorldView.shouldSuffocate(ctx.X + 1, ctx.Y, ctx.Z) && facing == 2)
+            if (!ctx.WorldRead.ShouldSuffocate(ctx.X + 1, ctx.Y, ctx.Z) && facing == 2)
             {
                 shouldBreak = true;
             }
 
-            if (!ctx.WorldView.shouldSuffocate(ctx.X, ctx.Y, ctx.Z - 1) && facing == 3)
+            if (!ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z - 1) && facing == 3)
             {
                 shouldBreak = true;
             }
 
-            if (!ctx.WorldView.shouldSuffocate(ctx.X, ctx.Y, ctx.Z + 1) && facing == 4)
+            if (!ctx.WorldRead.ShouldSuffocate(ctx.X, ctx.Y, ctx.Z + 1) && facing == 4)
             {
                 shouldBreak = true;
             }
 
             if (shouldBreak)
             {
-                dropStacks(ctx.WorldView, ctx.X, ctx.Y, ctx.Z, ctx.WorldView.getBlockMeta(ctx.X, ctx.Y, ctx.Z));
+                dropStacks(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z, ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z));
                 ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
             }
         }
 
     }
 
-    private bool breakIfCannotPlaceAt(IBlockReader reader, IBlockWriter writer, int x, int y, int z)
+    private bool breakIfCannotPlaceAt(OnTickContext ctx)
     {
-        if (!canPlaceAt(reader, writer, x, y, z))
+        if (!canPlaceAt(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z))
         {
-            dropStacks(reader, writer, x, y, z, reader.GetBlockMeta(x, y, z));
-            writer.SetBlock(x, y, z, 0);
+            dropStacks(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z, ctx.WorldRead.GetBlockMeta(ctx.X, ctx.Y, ctx.Z));
+            ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, 0);
             return false;
         }
-        else
-        {
+    
             return true;
-        }
+        
     }
 
     public override void updateBoundingBox(IBlockReader iBlockReader, int x, int y, int z)
@@ -264,31 +263,31 @@ internal class BlockButton : Block
     {
         if (!ctx.IsRemote)
         {
-            int meta = ctx.WorldView.getBlockMeta(ctx.X, ctx.Y, ctx.Z);
+            int meta = ctx.WorldRead.getBlockMeta(ctx.X, ctx.Y, ctx.Z);
             if ((meta & 8) != 0)
             {
                 ctx.WorldWrite.SetBlockMeta(ctx.X, ctx.Y, ctx.Z, meta & 7);
-                ctx.WorldView.NotifyNeighbors(ctx.X, ctx.Y, ctx.Z, id);
+                ctx.WorldRead.NotifyNeighbors(ctx.X, ctx.Y, ctx.Z, id);
                 int facing = meta & 7;
                 if (facing == 1)
                 {
-                    ctx.WorldView.NotifyNeighbors(ctx.X - 1, ctx.Y, ctx.Z, id);
+                    ctx.WorldRead.NotifyNeighbors(ctx.X - 1, ctx.Y, ctx.Z, id);
                 }
                 else if (facing == 2)
                 {
-                    ctx.WorldView.NotifyNeighbors(ctx.X + 1, ctx.Y, ctx.Z, id);
+                    ctx.WorldRead.NotifyNeighbors(ctx.X + 1, ctx.Y, ctx.Z, id);
                 }
                 else if (facing == 3)
                 {
-                    ctx.WorldView.NotifyNeighbors(ctx.X, ctx.Y, ctx.Z - 1, id);
+                    ctx.WorldRead.NotifyNeighbors(ctx.X, ctx.Y, ctx.Z - 1, id);
                 }
                 else if (facing == 4)
                 {
-                    ctx.WorldView.NotifyNeighbors(ctx.X, ctx.Y, ctx.Z + 1, id);
+                    ctx.WorldRead.NotifyNeighbors(ctx.X, ctx.Y, ctx.Z + 1, id);
                 }
                 else
                 {
-                    ctx.WorldView.NotifyNeighbors(ctx.X, ctx.Y - 1, ctx.Z, id);
+                    ctx.WorldRead.NotifyNeighbors(ctx.X, ctx.Y - 1, ctx.Z, id);
                 }
 
                 ctx.Broadcaster.PlaySoundAtPos(ctx.X + 0.5D, ctx.Y + 0.5D, ctx.Z + 0.5D, "random.click", 0.3F, 0.5F);

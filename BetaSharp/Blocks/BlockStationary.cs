@@ -19,7 +19,7 @@ internal class BlockStationary : BlockFluid
     public override void neighborUpdate(OnTickContext ctx)
     {
         base.neighborUpdate(ctx);
-        if (ctx.WorldView.GetBlockId(ctx.X, ctx.Y, ctx.Z) == base.id)
+        if (ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z) == base.id)
         {
             convertToFlowing(ctx);
         }
@@ -28,29 +28,29 @@ internal class BlockStationary : BlockFluid
 
     private void convertToFlowing(OnTickContext ctx)
     {
-        int meta = ctx.WorldView.getBlockMeta(ctx.X, ctx.Y, ctx.Z);
-        ctx.WorldView.PauseTicking = true;
+        int meta = ctx.WorldRead.getBlockMeta(ctx.X, ctx.Y, ctx.Z);
+        ctx.WorldRead.PauseTicking = true;
         ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, id - 1, meta);
         ctx.WorldWrite.SetBlocksDirty(ctx.X, ctx.Y, ctx.Z, ctx.X, ctx.Y, ctx.Z);
-        ctx.WorldView.ScheduleBlockUpdate(ctx.X, ctx.Y, ctx.Z, id - 1, getTickRate());
-        ctx.WorldView.PauseTicking = false;
+        ctx.WorldRead.ScheduleBlockUpdate(ctx.X, ctx.Y, ctx.Z, id - 1, getTickRate());
+        ctx.WorldRead.PauseTicking = false;
     }
 
     public override void onTick(OnTickContext ctx)
     {
         if (material == Material.Lava)
         {
-            int attempts = ctx.WorldView.random.NextInt(3);
+            int attempts = ctx.WorldRead.random.NextInt(3);
 
             for (int attempt = 0; attempt < attempts; ++attempt)
             {
-                ctx.X += ctx.WorldView.random.NextInt(3) - 1;
+                ctx.X += ctx.WorldRead.random.NextInt(3) - 1;
                 ++ctx.Y;
-                ctx.Z += ctx.WorldView.random.NextInt(3) - 1;
-                int neighborBlockId = ctx.WorldView.GetBlockId(ctx.X, ctx.Y, ctx.Z);
+                ctx.Z += ctx.WorldRead.random.NextInt(3) - 1;
+                int neighborBlockId = ctx.WorldRead.GetBlockId(ctx.X, ctx.Y, ctx.Z);
                 if (neighborBlockId == 0)
                 {
-                    if (isFlammable(ctx.WorldView, ctx.X - 1, ctx.Y, ctx.Z) || isFlammable(ctx.WorldView, ctx.X + 1, ctx.Y, ctx.Z) || isFlammable(ctx.WorldView, ctx.X, ctx.Y, ctx.Z - 1) || isFlammable(ctx.WorldView, ctx.X, ctx.Y, ctx.Z + 1) || isFlammable(ctx.WorldView, ctx.X, ctx.Y - 1, ctx.Z) || isFlammable(ctx.WorldView, ctx.X, ctx.Y + 1, ctx.Z))
+                    if (isFlammable(ctx.WorldRead, ctx.X - 1, ctx.Y, ctx.Z) || isFlammable(ctx.WorldRead, ctx.X + 1, ctx.Y, ctx.Z) || isFlammable(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z - 1) || isFlammable(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z + 1) || isFlammable(ctx.WorldRead, ctx.X, ctx.Y - 1, ctx.Z) || isFlammable(ctx.WorldRead, ctx.X, ctx.Y + 1, ctx.Z))
                     {
                         ctx.WorldWrite.SetBlock(ctx.X, ctx.Y, ctx.Z, Block.Fire.id);
                         return;

@@ -18,24 +18,24 @@ internal class BlockReed : Block
 
     public override void onTick(OnTickContext ctx)
     {
-        if (ctx.WorldView.IsAir(ctx.X, ctx.Y + 1, ctx.Z))
+        if (ctx.WorldRead.IsAir(ctx.X, ctx.Y + 1, ctx.Z))
         {
             int heightBelow;
-            for (heightBelow = 1; ctx.WorldView.GetBlockId(ctx.X, ctx.Y - heightBelow, ctx.Z) == id; ++heightBelow)
+            for (heightBelow = 1; ctx.WorldRead.GetBlockId(ctx.X, ctx.Y - heightBelow, ctx.Z) == id; ++heightBelow)
             {
             }
 
             if (heightBelow < 3)
             {
-                int meta = ctx.WorldView.getBlockMeta(ctx.X, ctx.Y, ctx.Z);
+                int meta = ctx.WorldRead.getBlockMeta(ctx.X, ctx.Y, ctx.Z);
                 if (meta == 15)
                 {
-                    ctx.WorldView.setBlock(ctx.X, ctx.Y + 1, ctx.Z, id);
-                    ctx.WorldView.setBlockMeta(ctx.X, ctx.Y, ctx.Z, 0);
+                    ctx.WorldRead.setBlock(ctx.X, ctx.Y + 1, ctx.Z, id);
+                    ctx.WorldRead.setBlockMeta(ctx.X, ctx.Y, ctx.Z, 0);
                 }
                 else
                 {
-                    ctx.WorldView.setBlockMeta(ctx.X, ctx.Y, ctx.Z, meta + 1);
+                    ctx.WorldRead.setBlockMeta(ctx.X, ctx.Y, ctx.Z, meta + 1);
                 }
             }
         }
@@ -57,15 +57,15 @@ internal class BlockReed : Block
     {
         if (!canGrow(ctx))
         {
-            dropStacks(ctx.WorldView, ctx.X, ctx.Y, ctx.Z, ctx.WorldView.getBlockMeta(ctx.X, ctx.Y, ctx.Z));
-            ctx.WorldView.setBlock(ctx.X, ctx.Y, ctx.Z, 0);
+            dropStacks(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z, ctx.WorldRead.getBlockMeta(ctx.X, ctx.Y, ctx.Z));
+            ctx.WorldRead.setBlock(ctx.X, ctx.Y, ctx.Z, 0);
         }
 
     }
 
     public override bool canGrow(OnTickContext ctx)
     {
-        return canPlaceAt(ctx.WorldView, ctx.X, ctx.Y, ctx.Z);
+        return canPlaceAt(ctx.WorldRead, ctx.X, ctx.Y, ctx.Z);
     }
 
     public override Box? getCollisionShape(IBlockReader world, int x, int y, int z)
